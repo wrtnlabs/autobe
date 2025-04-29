@@ -254,3 +254,33 @@ The Implementation agent is the culmination of the AutoBE development pipeline, 
 Internal validation mechanisms ensure high-quality output through multiple feedback loops. First, an embedded TypeScript compiler provides immediate compilation feedback, catching syntax errors and type mismatches. Second, the implementation code is tested against the test suites created by the Test Agent, providing runtime feedback that validates functional correctness. Finally, an internal review agent evaluates the code quality, identifying opportunities for optimization and improvement.
 
 The Implementation agent focuses on creating maintainable, efficient code that correctly implements the business logic while adhering to best practices. It generates service providers that handle database interactions through Prisma, implement security and validation checks, and process business rules according to the requirements specification.
+
+## Roadmap Schedule
+
+```mermaid
+gantt
+  dateFormat YYYY-MM-DD
+  title Roadmap Schedule
+
+  section Interface
+  Facade Controller: active, 2025-04-30, 18d
+  Event Handlers:            2025-05-18, 14d
+  Data Structures:           2025-05-18, 28d
+
+  section Compilers
+  Backend Compiler:     active, 2025-04-30, 32d
+  Schema to TypeScript:         2025-05-18, 14d
+  Prisma Compiler:              2025-05-18, 14d
+
+  section Prompts
+  Analyze            : 2025-04-30, 18d
+  Prisma             : 2025-04-30, 18d
+  Interface          : 2025-05-18, 28d
+  Test Code Generator: 2025-05-18, 42d
+  Implementation     : 2025-06-01, 28d
+
+  section Test Program
+  Compilers: 2025-04-30, 46d
+  Prompts:   2025-04-30, 46d
+  Benchmark: 2025-06-01, 28d
+```
