@@ -1,0 +1,30 @@
+{
+  "private": true,
+  "name": "@autobe/compiler-dependencies",
+  "version": "0.0.0",
+  "author": "Wrtn Technologies",
+  "license": "MIT",
+  "packageManager": "pnpm@10.6.5",
+  "devDependencies": {
+    "@nestia/benchmark": "^6.0.1",
+    "@nestia/core": "^6.0.1",
+    "@nestia/e2e": "^6.0.1",
+    "@nestia/fetcher": "^6.0.1",
+    "@nestjs/common": "^11.1.0",
+    "@nestjs/core": "^11.1.0",
+    "@nestjs/platform-fastify": "^11.1.0",
+    "@nestjs/swagger": "^11.1.5",
+    "@prisma/client": "^6.6.0",
+    "@samchon/openapi": "catalog:agentica",
+    "@types/inquirer": "^9.0.7",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/node": "^22.15.3",
+    "@types/uuid": "^10.0.0",
+    "bcryptjs": "^3.0.2",
+    "dotenv": "^16.5.0",
+    "dotenv-expand": "^12.0.2",
+    "fastify": "^5.3.2",
+    "typescript": "catalog:typescript",
+    "typia": "catalog:agentica"
+  }
+}

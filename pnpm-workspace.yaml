@@ -14,5 +14,3 @@ catalogs:
     "@agentica/rpc": ^0.21.0
     openai: ^4.80.0
     typia: ^9.1.1
-  vite:
-    vitest: ^3.0.9
