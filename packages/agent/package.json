@@ -1,0 +1,67 @@
+{
+  "name": "@autobe/agent",
+  "version": "0.0.0",
+  "description": "AI backend server code generator",
+  "main": "lib/index.js",
+  "module": "lib/index.mjs",
+  "typings": "lib/index.d.ts",
+  "author": "Wrtn Technologies",
+  "license": "MIT",
+  "files": [
+    "LICENSE",
+    "README.md",
+    "lib",
+    "package.json",
+    "prompts",
+    "src"
+  ],
+  "scripts": {
+    "prepare": "ts-patch install",
+    "build": "rimraf lib && rollup -c && tsc",
+    "dev": "rimraf lib && tsc --watch"
+  },
+  "dependencies": {
+    "@agentica/core": "catalog:agentica",
+    "@samchon/openapi": "catalog:agentica",
+    "openai": "catalog:agentica",
+    "typia": "catalog:agentica"
+  },
+  "devDependencies": {
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^12.1.2",
+    "rimraf": "^6.0.1",
+    "rollup": "^4.40.1",
+    "ts-patch": "catalog:typescript",
+    "typescript": "catalog:typescript"
+  },
+  "keywords": [
+    "ai",
+    "api",
+    "api-design",
+    "auto-generation",
+    "autobe",
+    "automation",
+    "backend",
+    "backend-development",
+    "code-generation",
+    "documentation",
+    "e2e-testing",
+    "erd",
+    "nestjs",
+    "openapi",
+    "orm",
+    "postgres",
+    "postgresql",
+    "prisma",
+    "requirements-analysis",
+    "rest",
+    "server",
+    "spiral-model",
+    "swagger",
+    "testing",
+    "typescript",
+    "vibe-coding",
+    "waterfall"
+  ],
+  "packageManager": "pnpm@10.6.5"
+}
