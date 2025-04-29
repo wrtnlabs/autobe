@@ -1,0 +1,28 @@
+{
+  "name": "@autobe/agent",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "prepare": "ts-patch install",
+    "build": "rimraf lib && tsc",
+    "dev": "rimraf lib && tsc --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.6.5",
+  "dependencies": {
+    "@agentica/core": "catalog:agentica",
+    "@samchon/openapi": "catalog:agentica",
+    "openai": "catalog:agentica",
+    "typia": "catalog:agentica"
+  },
+  "devDependencies": {
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^12.1.2",
+    "rollup": "^4.40.1",
+    "ts-patch": "catalog:typescript",
+    "typescript": "catalog:typescript"
+  }
+}

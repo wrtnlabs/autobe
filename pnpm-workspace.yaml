@@ -1,0 +1,18 @@
+packages:
+  - packages/*
+  - test
+  - website
+catalogs:
+  typescript:
+    ts-node: ^10.9.2
+    ts-patch: ^3.3.0
+    typescript: ~5.8.3
+  agentica:
+    "@ryoppippi/unplugin-typia": ^2.2.1
+    "@samchon/openapi": ^4.2.0
+    "@agentica/core": ^0.21.0
+    "@agentica/rpc": ^0.21.0
+    openai: ^4.80.0
+    typia: ^9.1.1
+  vite:
+    vitest: ^3.0.9
