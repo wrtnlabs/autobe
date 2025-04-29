@@ -186,9 +186,8 @@ export class ShoppingCustomerSaleController {
    * @param input Request info of pagination, searching and sorting
    * @returns Paginated sales with summarized information
    * @tag Sale
-   *
-   * @author Samchon
-   */@core.TypedRoute.Patch()
+   */
+  @core.TypedRoute.Patch()
   public async index(
     @HubCustomerAuth() customer: IHubCustomer,
     @core.TypedBody() input: IShoppingSale.IRequest,
