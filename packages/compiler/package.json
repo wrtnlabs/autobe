@@ -1,22 +1,61 @@
 {
   "name": "@autobe/compiler",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "0.0.0",
+  "description": "AI backend server code generator",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "author": "Wrtn Technologies",
+  "license": "MIT",
+  "files": [
+    "LICENSE",
+    "README.md",
+    "lib",
+    "package.json",
+    "src"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prepare": "ts-patch install",
+    "build": "rimraf lib && tsc",
+    "dev": "rimraf lib && tsc --watch"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "packageManager": "pnpm@10.6.5",
   "dependencies": {
     "@samchon/openapi": "catalog:agentica",
     "openai": "catalog:agentica",
     "typia": "catalog:agentica"
   },
   "devDependencies": {
+    "rimraf": "^6.0.1",
     "ts-patch": "catalog:typescript",
     "typescript": "catalog:typescript"
-  }
+  },
+  "keywords": [
+    "ai",
+    "api",
+    "api-design",
+    "auto-generation",
+    "autobe",
+    "automation",
+    "backend",
+    "backend-development",
+    "code-generation",
+    "documentation",
+    "e2e-testing",
+    "erd",
+    "nestjs",
+    "openapi",
+    "orm",
+    "postgres",
+    "postgresql",
+    "prisma",
+    "requirements-analysis",
+    "rest",
+    "server",
+    "spiral-model",
+    "swagger",
+    "testing",
+    "typescript",
+    "vibe-coding",
+    "waterfall"
+  ],
+  "packageManager": "pnpm@10.6.5"
 }
