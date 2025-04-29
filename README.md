@@ -66,7 +66,7 @@ An agent that analyzes requirements specifications to generate database schemas 
 
 The Prisma agent references the requirements specification document created by the [#Analyze Agent](#analyze) to craft the `prisma.schema` file. For each entity and attribute in the database schema, it provides comprehensive documentation including the rationale behind its creation, its purpose, and conceptual explanations. The agent employs normalization techniques to ensure high-quality database design.
 
-Once the DB schema file is written, the Prisma agent compiles it using the built-in Prisma compiler. If compilation errors occur, these are fed back to the AI agent, enabling a self-correction process through compiler feedback. After successful compilation, the schema is converted into ERD documentation using `prisma-markdown`. This documentation is then subjected to a quality assurance process through an internal review agent that verifies and refines the schema.
+Once the DB schema file is written, the Prisma agent compiles it using the built-in Prisma compiler. If compilation errors occur, these are feedback to the AI agent, enabling a self-correction process through compiler feedback. After successful compilation, the schema is converted into ERD documentation using `prisma-markdown`. This documentation is then subjected to a quality assurance process through an internal review agent that verifies and refines the schema.
 
 ```prisma
 /// Final component information on units for sale.
