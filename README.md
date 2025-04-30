@@ -261,6 +261,18 @@ gantt
   dateFormat YYYY-MM-DD
   title Roadmap Schedule
 
+  section Analyze<br>(kakasoo)
+  Prompt Study: active, 2025-04-30, 3d
+  holiday: milestone, 2025-05-01, 1d
+  vacation: milestone, 2025-05-02, 1d
+  holiday: milestone, 2025-05-05, 2d
+  Analyze Agent Structure(6d):, 2025-05-07, 6d
+  TypeScript Backend meet-up: milestone, 2025-05-13, 1d
+  Analyze Agent Prompt tuning(5d):, 2025-05-15, 5d
+  AWSKRUG presentation: milestone, 2025-05-21, 1d
+  Analyze Agent Prompt tuning(10d):, 2025-05-22, 10d
+  
+
   section Interface
   Facade Controller: active, 2025-04-30, 18d
   Event Handlers:            2025-05-18, 14d
