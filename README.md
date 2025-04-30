@@ -271,8 +271,16 @@ gantt
   Analyze Agent Prompt tuning(5d):, 2025-05-15, 5d
   AWSKRUG presentation: milestone, 2025-05-21, 1d
   Analyze Agent Prompt tuning(10d):, 2025-05-22, 10d
-  
 
+  section Prisma<br>(Michael)
+  Project Init Setting & Prompt Study: active, 2025-04-30, 3d
+  Holiday: milestone, 2025-05-01, 6d
+  Design Architecture about Prisma Agent: 2025-05-07, 6d
+  TypeScript Backend meet-up: milestone, 2025-05-13, 1d
+  Prisma Agent Prompt Tuning & Modify Structure: 2025-05-14, 18d
+  UMC X GDGoc Presentation: milestone, 2025-05-21, 1d
+
+  
   section Interface
   Facade Controller: active, 2025-04-30, 18d
   Event Handlers:            2025-05-18, 14d
