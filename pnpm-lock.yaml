@@ -18,6 +18,19 @@ catalogs:
     typia:
       specifier: ^9.1.1
       version: 9.1.1
+  nestia:
+    '@nestia/benchmark':
+      specifier: ^6.0.1
+      version: 6.0.1
+    '@nestia/core':
+      specifier: ^6.0.1
+      version: 6.0.1
+    '@nestia/e2e':
+      specifier: ^6.0.1
+      version: 6.0.1
+    '@nestia/fetcher':
+      specifier: ^6.0.1
+      version: 6.0.1
   typescript:
     ts-patch:
       specifier: ^3.3.0
@@ -73,6 +86,9 @@ importers:
 
   packages/compiler:
     dependencies:
+      '@nestia/core':
+        specifier: catalog:nestia
+        version: 6.0.1(@nestia/fetcher@6.0.1(@samchon/openapi@4.2.0)(typia@9.1.1(@samchon/openapi@4.2.0)(typescript@5.8.3)))(@nestjs/common@11.1.0(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.0(@nestjs/common@11.1.0(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2)(typescript@5.8.3)
       '@samchon/openapi':
         specifier: catalog:agentica
         version: 4.2.0
@@ -105,16 +121,16 @@ importers:
   packages/compiler-dependencies:
     devDependencies:
       '@nestia/benchmark':
-        specifier: ^6.0.1
+        specifier: catalog:nestia
         version: 6.0.1(@samchon/openapi@4.2.0)(typia@9.1.1(@samchon/openapi@4.2.0)(typescript@5.8.3))
       '@nestia/core':
-        specifier: ^6.0.1
+        specifier: catalog:nestia
         version: 6.0.1(@nestia/fetcher@6.0.1(@samchon/openapi@4.2.0)(typia@9.1.1(@samchon/openapi@4.2.0)(typescript@5.8.3)))(@nestjs/common@11.1.0(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.0(@nestjs/common@11.1.0(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2)(typescript@5.8.3)
       '@nestia/e2e':
-        specifier: ^6.0.1
+        specifier: catalog:nestia
         version: 6.0.1
       '@nestia/fetcher':
-        specifier: ^6.0.1
+        specifier: catalog:nestia
         version: 6.0.1(@samchon/openapi@4.2.0)(typia@9.1.1(@samchon/openapi@4.2.0)(typescript@5.8.3))
       '@nestjs/common':
         specifier: ^11.1.0

@@ -19,6 +19,7 @@
     "dev": "rimraf lib && tsc --watch"
   },
   "dependencies": {
+    "@nestia/core": "catalog:nestia",
     "@samchon/openapi": "catalog:agentica",
     "openai": "catalog:agentica",
     "tstl": "^3.0.0",

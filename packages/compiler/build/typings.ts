@@ -12,7 +12,7 @@ interface IFile {
 }
 
 const COMPILER_DEPENDENCIES = `${__dirname}/../../compiler-dependencies`;
-const RAW_OUTPUT = `${__dirname}/../src/raw`;
+const RAW_OUTPUT = `${__dirname}/../src/raw/typings`;
 
 const collectDefinitions = async (lib: string): Promise<IFile[]> => {
   const root: string = `${COMPILER_DEPENDENCIES}/node_modules/${lib}`;
