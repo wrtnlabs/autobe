@@ -15,6 +15,9 @@ catalogs:
     openai:
       specifier: ^4.80.0
       version: 4.96.0
+    tstl:
+      specifier: ^3.0.0
+      version: 3.0.0
     typia:
       specifier: ^9.1.1
       version: 9.1.1
@@ -89,11 +92,8 @@ importers:
       openai:
         specifier: catalog:agentica
         version: 4.96.0(zod@3.24.3)
-      sync-request:
-        specifier: ^6.1.0
-        version: 6.1.0
       tstl:
-        specifier: ^3.0.0
+        specifier: catalog:agentica
         version: 3.0.0
       typia:
         specifier: catalog:agentica
@@ -108,6 +108,9 @@ importers:
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
+      sync-request:
+        specifier: ^6.1.0
+        version: 6.1.0
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@22.15.3)(typescript@5.8.3)
@@ -145,7 +148,7 @@ importers:
         specifier: catalog:agentica
         version: 4.96.0(zod@3.24.3)
       tstl:
-        specifier: ^3.0.0
+        specifier: catalog:agentica
         version: 3.0.0
       typia:
         specifier: catalog:agentica

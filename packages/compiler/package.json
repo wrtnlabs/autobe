@@ -13,22 +13,23 @@
     "src"
   ],
   "scripts": {
-    "prepare": "ts-patch install && ts-node build/typings.ts",
+    "prepare": "ts-patch install",
     "build": "rimraf lib && tsc",
+    "build:external": "ts-node build/external.ts",
     "dev": "rimraf lib && tsc --watch"
   },
   "dependencies": {
     "@nestia/core": "catalog:nestia",
     "@samchon/openapi": "catalog:agentica",
     "openai": "catalog:agentica",
-    "sync-request": "^6.1.0",
-    "tstl": "^3.0.0",
+    "tstl": "catalog:agentica",
     "typia": "catalog:agentica"
   },
   "devDependencies": {
-    "@nestia/migrate": "^6.0.1",
+    "@nestia/migrate": "catalog:nestia",
     "@types/node": "^22.15.3",
     "rimraf": "^6.0.1",
+    "sync-request": "^6.1.0",
     "ts-node": "^10.9.2",
     "ts-patch": "catalog:typescript",
     "typescript": "catalog:typescript"

@@ -20,7 +20,7 @@
     "dotenv": "^16.5.0",
     "dotenv-expand": "^12.0.2",
     "openai": "catalog:agentica",
-    "tstl": "^3.0.0",
+    "tstl": "catalog:agentica",
     "typia": "catalog:agentica"
   },
   "devDependencies": {
