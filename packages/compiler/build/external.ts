@@ -29,13 +29,13 @@ const main = async (): Promise<void> => {
   const unpkg: UnpkgDownloader = new UnpkgDownloader();
   const compiler: AutoBeCompilerBase = new AutoBeCompilerBase((file) => {
     if (file.startsWith("node_modules/") === false) return undefined;
-    const splitted: string[] = file.split("/");
-    const namespaced: boolean = !!splitted[0]?.startsWith("@");
-    if (splitted.length < (namespaced ? 3 : 2)) return undefined;
+    const split: string[] = file.split("/");
+    const namespaced: boolean = !!split[0]?.startsWith("@");
+    if (split.length < (namespaced ? 3 : 2)) return undefined;
 
     const [lib, path] = namespaced
-      ? [`${splitted[1]}/${splitted[2]}`, splitted.slice(3).join("/")]
-      : [splitted[1]!, splitted.slice(2).join("/")];
+      ? [`${split[1]}/${split[2]}`, split.slice(3).join("/")]
+      : [split[1]!, split.slice(2).join("/")];
     const result: string | undefined = unpkg.get(lib, path);
     if (result === undefined) return undefined;
     external[file] = [`/// <reference types="node" />`, result].join("\n\n");
