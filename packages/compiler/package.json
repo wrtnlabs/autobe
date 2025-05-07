@@ -21,10 +21,12 @@
     "@nestia/core": "catalog:nestia",
     "@samchon/openapi": "catalog:agentica",
     "openai": "catalog:agentica",
+    "sync-request": "^6.1.0",
     "tstl": "^3.0.0",
     "typia": "catalog:agentica"
   },
   "devDependencies": {
+    "@nestia/migrate": "^6.0.1",
     "@types/node": "^22.15.3",
     "rimraf": "^6.0.1",
     "ts-node": "^10.9.2",

@@ -1,9 +1,10 @@
 import nestiaCoreTransform from "@nestia/core/lib/transform";
+import syncRequest, { Response } from "sync-request";
 import { VariadicSingleton } from "tstl";
 import ts from "typescript";
 import typiaTransform from "typia/lib/transform";
 
-import { RAW_TYPINGS } from "./raw/typings/RAW_TYPINGS";
+// import { RAW_TYPINGS } from "./raw/typings/RAW_TYPINGS";
 import { IAutoBeCompilerResult } from "./structures/IAutoBeCompilerResult";
 
 export class AutoBeCompiler {
@@ -13,15 +14,14 @@ export class AutoBeCompiler {
     const sourceFiles = new VariadicSingleton((file: string) =>
       ts.createSourceFile(
         file,
-        textFiles.get(file) ?? "",
+        textFiles.get(file) ?? getExternalFile(file) ?? "",
         ts.ScriptTarget.ESNext,
       ),
     );
-    for (const [file, content] of RAW_TYPINGS) {
-      // if (file.endsWith("packageJson.d.ts")) continue;
-      const replaced: string = file.replace("file:///", "");
-      textFiles.set(replaced, content);
-    }
+    // for (const [file, content] of RAW_TYPINGS) {
+    //   const replaced: string = file.replace("file:///", "");
+    //   textFiles.set(replaced, content);
+    // }
     for (const [key, value] of Object.entries(files)) textFiles.set(key, value);
 
     // MAKE PROGRAM
@@ -36,8 +36,17 @@ export class AutoBeCompiler {
         module: ts.ModuleKind.CommonJS,
       },
       {
-        fileExists: (file) => textFiles.has(file),
-        readFile: (file) => textFiles.get(file),
+        fileExists: (file) => {
+          console.log(
+            "fileExists",
+            file,
+            !!getExternalFile(file) || textFiles.has(file),
+          );
+          return !!getExternalFile(file) || textFiles.has(file);
+        },
+        readFile: (file) => {
+          return getExternalFile(file) ?? textFiles.get(file);
+        },
         writeFile: (file, content) => (javascript[file] = content),
         getSourceFile: (file) => sourceFiles.get(file),
         getDefaultLibFileName: () =>
@@ -103,3 +112,19 @@ const getCategory = (
 
 const getMessageText = (text: string | ts.DiagnosticMessageChain): string =>
   typeof text === "string" ? text : text.messageText;
+
+const getExternalFile = (file: string): string | undefined => {
+  if (file.startsWith("node_modules/") === false) return undefined;
+  else if (file.endsWith(".d.ts") === false) return undefined;
+  return esm.get(file.split("node_modules/")[1]!);
+};
+
+const esm = new VariadicSingleton((file: string) => {
+  try {
+    const response: Response = syncRequest("GET", `https://esm.sh/${file}`);
+    if (response.statusCode !== 200) return undefined;
+    return response.getBody("utf8");
+  } catch {
+    return undefined;
+  }
+});

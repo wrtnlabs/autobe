@@ -1,4 +1,5 @@
 /// <reference types="node" />
+import cp from "child_process";
 import fs from "fs";
 import { VariadicSingleton } from "tstl";
 
@@ -13,14 +14,20 @@ interface IFile {
 const COMPILER_DEPENDENCIES = `${__dirname}/../../compiler-dependencies`;
 const RAW_OUTPUT = `${__dirname}/../src/raw/typings`;
 
-const collectDefinitions = async (lib: string): Promise<IFile[]> => {
-  const root: string = `${COMPILER_DEPENDENCIES}/node_modules/${lib}`;
+const collectDefinitions = async (
+  lib: string,
+  root: string = `${COMPILER_DEPENDENCIES}/node_modules/${lib}`,
+): Promise<IFile[]> => {
   const container: IFile[] = [];
 
   // iterate d.ts files
   const iterate = async (location: string): Promise<void> => {
     const directory: string[] = await fs.promises.readdir(location);
     for (const file of directory) {
+      if (file === "node_modules") {
+        await collectDefinitions(lib, `${location}/${file}`);
+        continue;
+      }
       const next: string = `${location}/${file}`;
       const stats: fs.Stats = await fs.promises.stat(next);
       if (stats.isDirectory()) await iterate(next);
@@ -67,15 +74,24 @@ const emendName = (str: string) =>
 
 const getDependencies = async (): Promise<string[]> => {
   interface IPackageJson {
-    devDependencies: Record<string, string>;
+    packages: Record<string, unknown>;
   }
-  const { devDependencies } = JSON.parse(
-    await fs.promises.readFile(`${COMPILER_DEPENDENCIES}/package.json`, "utf8"),
+  const { packages } = JSON.parse(
+    await fs.promises.readFile(
+      `${COMPILER_DEPENDENCIES}/package-lock.json`,
+      "utf8",
+    ),
   ) as IPackageJson;
-  return Object.keys(devDependencies);
+  return Object.keys(packages)
+    .filter((lib) => lib.startsWith("node_modules/"))
+    .map((lib) => lib.substring("node_modules/".length));
 };
 
 const main = async () => {
+  cp.execSync("npm install", {
+    cwd: COMPILER_DEPENDENCIES,
+    stdio: "ignore",
+  });
   if (fs.existsSync(RAW_OUTPUT))
     await fs.promises.rm(RAW_OUTPUT, {
       recursive: true,
@@ -90,8 +106,11 @@ const main = async () => {
   });
 
   const container: IFile[] = [];
-  for (const lib of await getDependencies())
-    for (const file of await collectDefinitions(lib)) {
+  for (const lib of await getDependencies()) {
+    const definitions = await collectDefinitions(lib);
+    if (definitions.some((file) => file.url.endsWith(".d.ts")) === false)
+      continue;
+    for (const file of definitions) {
       const location: string = `${RAW_OUTPUT}/${file.import}.ts`;
       await mkdir.get(location.substring(0, location.lastIndexOf("/")));
       await fs.promises.writeFile(
@@ -101,6 +120,7 @@ const main = async () => {
       );
       container.push(file);
     }
+  }
 
   await fs.promises.writeFile(
     `${RAW_OUTPUT}/RAW_TYPINGS.ts`,
