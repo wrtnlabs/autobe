@@ -2,9 +2,7 @@
   "name": "@autobe/agent",
   "version": "0.0.0",
   "description": "AI backend server code generator",
-  "main": "lib/index.js",
-  "module": "lib/index.mjs",
-  "typings": "lib/index.d.ts",
+  "main": "src/index.ts",
   "author": "Wrtn Technologies",
   "license": "MIT",
   "files": [
@@ -62,6 +60,5 @@
     "typescript",
     "vibe-coding",
     "waterfall"
-  ],
-  "packageManager": "pnpm@10.6.5"
+  ]
 }

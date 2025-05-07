@@ -1,0 +1,34 @@
+{
+  "private": true,
+  "name": "@autobe/test",
+  "version": "0.0.0",
+  "description": "AutoBE Test Program",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsc --noEmit",
+    "dev": "tsc --watch --noEmit",
+    "start": "ts-node src"
+  },
+  "author": "Wrtn Technologies",
+  "license": "MIT",
+  "dependencies": {
+    "@autobe/compiler": "workspace:^",
+    "@nestia/core": "catalog:nestia",
+    "@nestia/e2e": "catalog:nestia",
+    "@samchon/openapi": "catalog:agentica",
+    "chalk": "4.1.2",
+    "dotenv": "^16.5.0",
+    "dotenv-expand": "^12.0.2",
+    "openai": "catalog:agentica",
+    "tstl": "catalog:agentica",
+    "typia": "catalog:agentica"
+  },
+  "devDependencies": {
+    "@nestia/migrate": "^6.0.1",
+    "@types/node": "^22.15.3",
+    "rimraf": "^6.0.1",
+    "ts-node": "^10.9.2",
+    "ts-patch": "catalog:typescript",
+    "typescript": "catalog:typescript"
+  }
+}
