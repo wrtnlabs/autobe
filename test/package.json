@@ -1,0 +1,26 @@
+{
+  "private": true,
+  "name": "@autobe/test",
+  "version": "0.0.0",
+  "description": "AutoBE Test Program",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Wrtn Technologies",
+  "license": "MIT",
+  "dependencies": {
+    "typia": "catalog:agentica",
+    "@nestia/core": "catalog:nestia",
+    "@samchon/openapi": "catalog:agentica",
+    "openai": "catalog:agentica"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "rimraf": "^6.0.1",
+    "ts-node": "^10.9.2",
+    "ts-patch": "catalog:typescript",
+    "typescript": "catalog:typescript"
+  },
+  "packageManager": "pnpm@10.6.5"
+}

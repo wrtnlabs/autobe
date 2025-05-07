@@ -181,6 +181,37 @@ importers:
         specifier: catalog:agentica
         version: 9.1.1(@samchon/openapi@4.2.0)(typescript@5.8.3)
 
+  test:
+    dependencies:
+      '@nestia/core':
+        specifier: catalog:nestia
+        version: 6.0.1(@nestia/fetcher@6.0.1(@samchon/openapi@4.2.0)(typia@9.1.1(@samchon/openapi@4.2.0)(typescript@5.8.3)))(@nestjs/common@11.1.0(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.0(@nestjs/common@11.1.0(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2)(typescript@5.8.3)
+      '@samchon/openapi':
+        specifier: catalog:agentica
+        version: 4.2.0
+      openai:
+        specifier: catalog:agentica
+        version: 4.96.0(zod@3.24.3)
+      typia:
+        specifier: catalog:agentica
+        version: 9.1.1(@samchon/openapi@4.2.0)(typescript@5.8.3)
+    devDependencies:
+      '@types/node':
+        specifier: ^22.15.3
+        version: 22.15.3
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      ts-node:
+        specifier: ^10.9.2
+        version: 10.9.2(@types/node@22.15.3)(typescript@5.8.3)
+      ts-patch:
+        specifier: catalog:typescript
+        version: 3.3.0
+      typescript:
+        specifier: catalog:typescript
+        version: 5.8.3
+
 packages:
 
   '@agentica/core@0.21.0':
