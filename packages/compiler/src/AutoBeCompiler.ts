@@ -1,9 +1,10 @@
+import nestiaCoreTransform from "@nestia/core/lib/transform";
+import { VariadicSingleton } from "tstl";
 import ts from "typescript";
 import typiaTransform from "typia/lib/transform";
-import nestiaCoreTransform from "@nestia/core/lib/transform";
-import { IAutoBeCompilerResult } from "./structures/IAutoBeCompilerResult";
+
 import { RAW_TYPINGS } from "./raw/typings/RAW_TYPINGS";
-import { VariadicSingleton } from "tstl";
+import { IAutoBeCompilerResult } from "./structures/IAutoBeCompilerResult";
 
 export class AutoBeCompiler {
   public compile(files: Record<string, string>): IAutoBeCompilerResult {
@@ -13,11 +14,11 @@ export class AutoBeCompiler {
       ts.createSourceFile(
         file,
         textFiles.get(file) ?? "",
-        ts.ScriptTarget.ESNext
-      )
+        ts.ScriptTarget.ESNext,
+      ),
     );
     for (const [file, content] of RAW_TYPINGS) {
-      if (file.endsWith("packageJson.d.ts")) continue;
+      // if (file.endsWith("packageJson.d.ts")) continue;
       const replaced: string = file.replace("file:///", "");
       textFiles.set(replaced, content);
     }
@@ -48,7 +49,7 @@ export class AutoBeCompiler {
         getCanonicalFileName: (file) => file,
         useCaseSensitiveFileNames: () => false,
         jsDocParsingMode: ts.JSDocParsingMode.ParseAll,
-      }
+      },
     );
 
     // DO COMPILE
@@ -59,17 +60,18 @@ export class AutoBeCompiler {
           {},
           {
             addDiagnostic: (input) => diagnostics.push(input),
-          }
+          },
         ),
         nestiaCoreTransform(
           program,
           {},
           {
             addDiagnostic: (input) => diagnostics.push(input),
-          }
+          },
         ),
       ],
     });
+    diagnostics.push(...ts.getPreEmitDiagnostics(program));
     if (diagnostics.length)
       return {
         type: "failure",
@@ -91,7 +93,7 @@ export class AutoBeCompiler {
 }
 
 const getCategory = (
-  value: ts.DiagnosticCategory
+  value: ts.DiagnosticCategory,
 ): IAutoBeCompilerResult.DiagnosticCategory => {
   if (value === ts.DiagnosticCategory.Message) return "message";
   else if (value === ts.DiagnosticCategory.Suggestion) return "suggestion";

@@ -1,5 +1,4 @@
 /// <reference types="node" />
-
 import fs from "fs";
 import { VariadicSingleton } from "tstl";
 
@@ -36,7 +35,7 @@ const collectDefinitions = async (lib: string): Promise<IFile[]> => {
           variable,
           format: file.endsWith(".d.ts") ? "ts" : "json",
           import: `./${alias}`,
-          url: `file:///node_modules/${alias}`,
+          url: `file:///node_modules/${alias}.${file.substring(file.length - 4)}`,
           content: await fs.promises.readFile(next, "utf8"),
         });
       }
@@ -52,8 +51,8 @@ const collectDefinitions = async (lib: string): Promise<IFile[]> => {
   const pack: IPackageJson = JSON.parse(
     await fs.promises.readFile(
       `${COMPILER_DEPENDENCIES}/node_modules/${lib}/package.json`,
-      "utf8"
-    )
+      "utf8",
+    ),
   );
   return container;
 };
@@ -71,7 +70,7 @@ const getDependencies = async (): Promise<string[]> => {
     devDependencies: Record<string, string>;
   }
   const { devDependencies } = JSON.parse(
-    await fs.promises.readFile(`${COMPILER_DEPENDENCIES}/package.json`, "utf8")
+    await fs.promises.readFile(`${COMPILER_DEPENDENCIES}/package.json`, "utf8"),
   ) as IPackageJson;
   return Object.keys(devDependencies);
 };
@@ -98,7 +97,7 @@ const main = async () => {
       await fs.promises.writeFile(
         location,
         `export const ${file.variable}: string = ${JSON.stringify(file.content)}`,
-        "utf8"
+        "utf8",
       );
       container.push(file);
     }
@@ -108,16 +107,16 @@ const main = async () => {
     [
       ...container.map(
         (file) =>
-          `import { ${file.variable} } from ${JSON.stringify(file.import)}`
+          `import { ${file.variable} } from ${JSON.stringify(file.import)}`,
       ),
       "",
       `export const RAW_TYPINGS: [file: string, content: string][] = [`,
       ...container.map(
-        (file) => `[${JSON.stringify(file.url)}, ${file.variable}],`
+        (file) => `[${JSON.stringify(file.url)}, ${file.variable}],`,
       ),
       "]",
     ].join("\n"),
-    "utf8"
+    "utf8",
   );
 };
 main().catch((error) => {
