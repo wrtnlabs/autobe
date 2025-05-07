@@ -41,7 +41,9 @@ const main = async (): Promise<void> => {
     external[file] = [`/// <reference types="node" />`, result].join("\n\n");
     return result;
   }, []);
-  compiler.compile(await code());
+  compiler.compile({
+    files: await code(),
+  });
 
   await fs.promises.writeFile(
     `${__dirname}/../src/raw/external.json`,

@@ -28,6 +28,9 @@ catalogs:
     '@nestia/e2e':
       specifier: ^6.0.3
       version: 6.0.3
+    '@nestia/migrate':
+      specifier: ^6.0.3
+      version: 6.0.3
   typescript:
     ts-patch:
       specifier: ^3.3.0
@@ -100,8 +103,8 @@ importers:
         version: 9.1.1(@samchon/openapi@4.2.0)(typescript@5.8.3)
     devDependencies:
       '@nestia/migrate':
-        specifier: ^6.0.1
-        version: 6.0.1
+        specifier: catalog:nestia
+        version: 6.0.3
       '@types/node':
         specifier: ^22.15.3
         version: 22.15.3
@@ -276,6 +279,10 @@ packages:
 
   '@nestia/migrate@6.0.1':
     resolution: {integrity: sha512-pVyXIcyISPGRDScLeprXnCnj8gIT8a/g+aExOKb8gRrzrnQJWLXkWf6IwYPE9DckgJiuLtM4ghdidFjc6d5wqg==}
+    hasBin: true
+
+  '@nestia/migrate@6.0.3':
+    resolution: {integrity: sha512-e9Vrkc+TCr1e6Y770618e6KxbYlzIrKFRD53FOA0JQJYDFFwYfC7LSjoWD1OukCJiyNvEXsVPvARPG6TB1yXew==}
     hasBin: true
 
   '@nestjs/common@11.1.0':
@@ -1743,6 +1750,16 @@ snapshots:
       typia: 9.1.1(@samchon/openapi@4.2.0)(typescript@5.8.3)
 
   '@nestia/migrate@6.0.1':
+    dependencies:
+      '@samchon/openapi': 4.2.0
+      commander: 10.0.0
+      inquirer: 8.2.5
+      prettier: 3.5.3
+      tstl: 3.0.0
+      typescript: 5.8.3
+      typia: 9.1.1(@samchon/openapi@4.2.0)(typescript@5.8.3)
+
+  '@nestia/migrate@6.0.3':
     dependencies:
       '@samchon/openapi': 4.2.0
       commander: 10.0.0

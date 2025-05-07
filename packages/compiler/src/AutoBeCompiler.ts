@@ -1,5 +1,5 @@
 import { AutoBeCompilerBase } from "./internal/AutoBeCompilerBase";
-import External from "./raw/external.json";
+import External from "./raw/typings.json";
 
 export class AutoBeCompiler extends AutoBeCompilerBase {
   public constructor() {

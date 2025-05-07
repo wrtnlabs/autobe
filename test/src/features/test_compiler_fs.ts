@@ -4,7 +4,9 @@ import { TestValidator } from "@nestia/e2e";
 export const test_compiler_fs = (): void => {
   const compiler: AutoBeCompiler = new AutoBeCompiler();
   const result: IAutoBeCompilerResult = compiler.compile({
-    "src/MyConfiguration.ts": FILE,
+    files: {
+      "src/MyConfiguration.ts": FILE,
+    },
   });
   TestValidator.equals("result")(result.type)("success");
 };

@@ -1,7 +1,10 @@
 import { AutoBeCompiler, IAutoBeCompilerResult } from "@autobe/compiler";
 import { TestValidator } from "@nestia/e2e";
 import { MigrateApplication } from "@nestia/migrate";
+import fs from "fs";
 import { IValidation } from "typia";
+
+import { TestGlobal } from "../TestGlobal";
 
 export const test_compiler_migrate = async (): Promise<void> => {
   const inspect: IValidation<MigrateApplication> = MigrateApplication.create(
@@ -11,19 +14,41 @@ export const test_compiler_migrate = async (): Promise<void> => {
   );
   if (inspect.success === false)
     throw new Error("Failed to pass the validation");
+
   const app: MigrateApplication = inspect.data;
   const { files }: MigrateApplication.IOutput = app.nest({
     simulate: true,
     e2e: true,
   });
+  const directory: string = `${TestGlobal.ROOT}/assets/migrate`;
+  if (fs.existsSync(directory))
+    await fs.promises.rm(directory, { recursive: true });
+  await fs.promises.mkdir(directory, { recursive: true });
+  for (const f of files) {
+    await fs.promises.mkdir(`${directory}/${f.location}`.replace("//", "/"), {
+      recursive: true,
+    });
+    await fs.promises.writeFile(
+      `${directory}/${f.location}/${f.file}`.replace("//", "/"),
+      f.content,
+      "utf8",
+    );
+  }
 
   const compiler: AutoBeCompiler = new AutoBeCompiler();
   const result: IAutoBeCompilerResult = compiler.compile({
-    ...Object.fromEntries(
+    files: Object.fromEntries(
       files
         .filter((f) => f.location.startsWith("src") && f.file.endsWith(".ts"))
-        .map((f) => [`${f.location}/${f.file}`.replace("//", "/"), f.content]),
+        .map((f) => [
+          `${f.location}/${f.file}`.replace("//", "/"),
+          f.content.replaceAll("@link", "#link"),
+        ]),
     ),
+    paths: {
+      "@ORGANIZATION/PROJECT-api/lib/*": ["./src/api/*"],
+      "@ORGANIZATION/PROJECT-api": ["./src/api"],
+    },
   });
   if (result.type === "failure") console.log(result.diagnostics);
   TestValidator.equals("success")(result.type)("success");

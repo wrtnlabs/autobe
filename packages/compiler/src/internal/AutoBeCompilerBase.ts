@@ -11,11 +11,14 @@ export class AutoBeCompilerBase {
     protected readonly externalFiles: string[],
   ) {}
 
-  public compile(files: Record<string, string>): IAutoBeCompilerResult {
+  public compile(props: {
+    files: Record<string, string>;
+    paths?: Record<string, string[]> | undefined;
+  }): IAutoBeCompilerResult {
     const sourceFiles = new VariadicSingleton((f: string) =>
       ts.createSourceFile(
         f,
-        this.external(f) ?? files[f] ?? "",
+        this.external(f) ?? props.files[f] ?? "",
         ts.ScriptTarget.ESNext,
       ),
     );
@@ -24,7 +27,7 @@ export class AutoBeCompilerBase {
     const diagnostics: ts.Diagnostic[] = [];
     const javascript: Record<string, string> = {};
     const program: ts.Program = ts.createProgram(
-      [...Object.keys(files), ...this.externalFiles],
+      [...Object.keys(props.files), ...this.externalFiles],
       {
         target: ts.ScriptTarget.ESNext,
         module: ts.ModuleKind.CommonJS,
@@ -34,13 +37,14 @@ export class AutoBeCompilerBase {
         esModuleInterop: true,
         experimentalDecorators: true,
         emitDecoratorMetadata: true,
+        paths: props.paths!,
       },
       {
         fileExists: (f) => {
-          return !!files[f] || !!this.external(f);
+          return !!props.files[f] || !!this.external(f);
         },
         readFile: (f) => {
-          return files[f] ?? this.external(f);
+          return props.files[f] ?? this.external(f);
         },
         writeFile: (f, c) => (javascript[f] = c),
         getSourceFile: (f) => sourceFiles.get(f),
