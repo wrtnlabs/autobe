@@ -45,14 +45,6 @@ const collectDefinitions = async (
   return container;
 };
 
-const emendName = (str: string) =>
-  str
-    .replaceAll("@", "_at_")
-    .replaceAll("/", "_slash_")
-    .replaceAll("-", "_dash_")
-    .replaceAll("/", "_")
-    .replaceAll(".", "_");
-
 const getDependencies = async (): Promise<string[]> => {
   interface IPackageJson {
     packages: Record<string, unknown>;
