@@ -30,6 +30,5 @@
     "ts-node": "^10.9.2",
     "ts-patch": "catalog:typescript",
     "typescript": "catalog:typescript"
-  },
-  "packageManager": "pnpm@10.6.5"
+  }
 }
