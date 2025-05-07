@@ -7,3 +7,6 @@ extend-ignore-re = [
 
 [default.extend-words]
 typia = "typia"
+
+[files]
+extend-exclude = ["*.json"]
