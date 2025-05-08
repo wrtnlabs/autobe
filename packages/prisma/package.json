@@ -1,0 +1,23 @@
+{
+  "name": "@autobe/prisma",
+  "version": "0.0.0",
+  "description": "AutoBE Prisma Compiler",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Wrtn Technologies",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "@types/uuid": "^10.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@prisma/generator-helper": "^6.7.0",
+    "@prisma/internals": "^6.7.0",
+    "uuid": "^11.1.0"
+  }
+}

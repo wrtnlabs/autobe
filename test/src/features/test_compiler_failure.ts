@@ -53,7 +53,7 @@ export const test_compiler_failure = async (): Promise<void> => {
       "@ORGANIZATION/PROJECT-api": ["./src/api"],
     },
   });
-  TestValidator.predicate("failure")(
+  TestValidator.predicate("result")(
     () =>
       result.type === "failure" &&
       result.diagnostics.length === 1 &&

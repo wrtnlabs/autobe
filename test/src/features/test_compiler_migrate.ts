@@ -50,5 +50,5 @@ export const test_compiler_migrate = async (): Promise<void> => {
       "@ORGANIZATION/PROJECT-api": ["./src/api"],
     },
   });
-  TestValidator.equals("success")(result.type)("success");
+  TestValidator.equals("result")(result.type)("success");
 };

@@ -6,11 +6,11 @@
   "author": "Wrtn Technologies",
   "license": "MIT",
   "files": [
-    "LICENSE",
-    "README.md",
     "lib",
+    "src",
     "package.json",
-    "src"
+    "LICENSE",
+    "README.md"
   ],
   "scripts": {
     "prepare": "ts-patch install",
