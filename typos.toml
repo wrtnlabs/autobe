@@ -9,4 +9,4 @@ extend-ignore-re = [
 typia = "typia"
 
 [files]
-extend-exclude = ["*.json"]
+extend-exclude = ["*.json", "*.prisma"]
