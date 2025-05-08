@@ -60,5 +60,11 @@
     "typescript",
     "vibe-coding",
     "waterfall"
-  ]
+  ],
+  "publishConfig": {
+    "access": "public",
+    "main": "lib/index.js",
+    "module": "lib/index.mjs",
+    "typings": "lib/index.d.ts"
+  }
 }
