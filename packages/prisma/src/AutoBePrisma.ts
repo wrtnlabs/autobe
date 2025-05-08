@@ -11,10 +11,10 @@ import {
   formatSchema,
   getConfig,
   getDMMF,
-  getSchemaWithPath,
   mergeSchemas,
 } from "@prisma/internals";
 import fs from "fs";
+import path from "path";
 
 export class AutoBePrisma implements IAutoBePrisma {
   public async build(props: IAutoBePrismaProps): Promise<IAutoBePrismaResult> {
@@ -22,7 +22,7 @@ export class AutoBePrisma implements IAutoBePrisma {
     const directory: string = await fs.promises.mkdtemp("autobe-prisma-");
     const clear = async () => {
       try {
-        // await fs.promises.rm(directory, { recursive: true });
+        await fs.promises.rm(directory, { recursive: true });
       } catch {}
     };
     const out = async (result: IAutoBePrismaResult) => {
@@ -30,7 +30,7 @@ export class AutoBePrisma implements IAutoBePrisma {
       return result;
     };
     await fs.promises.mkdir(`${directory}/schemas`);
-    await fs.promises.mkdir(`${directory}/output`);
+    // await fs.promises.mkdir(`${directory}/output`);
 
     try {
       // PARSE SCHEMA FILES
@@ -44,7 +44,7 @@ export class AutoBePrisma implements IAutoBePrisma {
         ignoreEnvVarErrors: true,
       });
 
-      // GENERATE TEMPORARY SCHEMA FILES
+      // STORE SCHEMA FILES
       await Promise.all(
         Object.entries(props.schemas).map(([key, value]) =>
           fs.promises.writeFile(`${directory}/schemas/${key}`, value, "utf-8"),
@@ -52,19 +52,19 @@ export class AutoBePrisma implements IAutoBePrisma {
       );
 
       // GENERATE CLIENT
-      console.log(config.generators[0]);
       await generateClient({
         // locations
         binaryPaths: {},
         schemaPath: `${directory}/schemas`,
         outputDir: `${directory}/output`,
-        runtimeSourcePath: require.resolve("@prisma/client/runtime/library.js"),
+        runtimeSourcePath: require
+          .resolve("@prisma/client/runtime/library.js")
+          .split(path.sep)
+          .slice(0, -1)
+          .join(path.sep),
         generator: {
-          ...config.generators[0]!,
-          output: {
-            fromEnvVar: null,
-            value: `${directory}/output`,
-          },
+          ...config.generators.find((g) => g.name === "client")!,
+          isCustomOutput: true,
         },
         // models
         datamodel: merged,
@@ -79,7 +79,7 @@ export class AutoBePrisma implements IAutoBePrisma {
       });
       return {
         type: "success",
-        files: {},
+        files: await this.collect(`${directory}/output`),
       };
     } catch (error) {
       return out(this.catch(error));
@@ -88,23 +88,13 @@ export class AutoBePrisma implements IAutoBePrisma {
     }
   }
 
-  private async validate(
-    props: IAutoBePrismaProps,
-  ): Promise<IAutoBePrismaResult> {
-    try {
-      return {
-        type: "success",
-        files: {},
-      };
-    } catch (error) {
-      return this.catch(error);
-    }
-  }
-
   private catch(
     error: unknown,
   ): IAutoBePrismaResult.IFailure | IAutoBePrismaResult.IError {
-    if (error instanceof Error && error.name === "GetDmmfError")
+    if (
+      error instanceof Error &&
+      (error.name === "GetDmmfError" || error.name === "MergeSchemasError")
+    )
       return {
         type: "failure",
         reason: error.message,
@@ -121,5 +111,24 @@ export class AutoBePrisma implements IAutoBePrisma {
             }
           : error,
     };
+  }
+
+  private async collect(root: string): Promise<Record<string, string>> {
+    const output: Record<string, string> = {};
+    const iterate = async (location: string) => {
+      const directory: string[] = await fs.promises.readdir(location);
+      for (const file of directory) {
+        const next: string = `${location}/${file}`;
+        const stat: fs.Stats = await fs.promises.stat(next);
+        if (stat.isDirectory()) await iterate(next);
+        else if (file.endsWith(".d.ts"))
+          output[next.substring(root.length + 1)] = await fs.promises.readFile(
+            next,
+            "utf-8",
+          );
+      }
+    };
+    await iterate(root);
+    return output;
   }
 }
