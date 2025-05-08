@@ -11,6 +11,8 @@
   "license": "MIT",
   "dependencies": {
     "@autobe/interface": "workspace:^",
+    "@prisma/client": "^6.7.0",
+    "@prisma/client-generator-js": "^6.7.0",
     "@prisma/generator-helper": "^6.7.0",
     "@prisma/internals": "^6.7.0",
     "uuid": "^11.1.0"

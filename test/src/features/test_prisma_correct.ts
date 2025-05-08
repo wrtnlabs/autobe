@@ -14,5 +14,6 @@ export const test_prisma_correct = async (): Promise<void> => {
       ),
     },
   });
+  console.log(result);
   TestValidator.equals("result")(result.type)("success");
 };
