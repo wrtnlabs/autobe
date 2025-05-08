@@ -18,7 +18,7 @@ import path from "path";
 
 export class AutoBePrisma implements IAutoBePrisma {
   public async build(props: IAutoBePrismaProps): Promise<IAutoBePrismaResult> {
-    // PREPARE DIDRECTORIES
+    // PREPARE DIRECTORIES
     const directory: string = await fs.promises.mkdtemp("autobe-prisma-");
     const clear = async () => {
       try {
