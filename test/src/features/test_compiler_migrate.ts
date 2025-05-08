@@ -1,4 +1,5 @@
-import { AutoBeCompiler, IAutoBeCompilerResult } from "@autobe/compiler";
+import { AutoBeCompiler } from "@autobe/compiler";
+import { IAutoBeCompilerResult } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 import { MigrateApplication } from "@nestia/migrate";
 import fs from "fs";
@@ -36,7 +37,7 @@ export const test_compiler_migrate = async (): Promise<void> => {
   }
 
   const compiler: AutoBeCompiler = new AutoBeCompiler();
-  const result: IAutoBeCompilerResult = compiler.compile({
+  const result: IAutoBeCompilerResult = await compiler.compile({
     files: Object.fromEntries(
       files
         .filter((f) => f.location.startsWith("src") && f.file.endsWith(".ts"))

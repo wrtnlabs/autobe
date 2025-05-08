@@ -5,13 +5,6 @@
   "main": "src/index.ts",
   "author": "Wrtn Technologies",
   "license": "MIT",
-  "files": [
-    "lib",
-    "src",
-    "package.json",
-    "LICENSE",
-    "README.md"
-  ],
   "scripts": {
     "prepare": "ts-patch install",
     "build": "rimraf lib && tsc",
@@ -19,6 +12,7 @@
     "dev": "rimraf lib && tsc --watch"
   },
   "dependencies": {
+    "@autobe/interface": "workspace:^",
     "@nestia/core": "catalog:nestia",
     "@samchon/openapi": "catalog:agentica",
     "openai": "catalog:agentica",
@@ -62,6 +56,13 @@
     "typescript",
     "vibe-coding",
     "waterfall"
+  ],
+  "files": [
+    "lib",
+    "src",
+    "package.json",
+    "LICENSE",
+    "README.md"
   ],
   "publishConfig": {
     "access": "public",

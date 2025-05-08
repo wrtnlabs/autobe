@@ -1,9 +1,10 @@
-import { AutoBeCompiler, IAutoBeCompilerResult } from "@autobe/compiler";
+import { AutoBeCompiler } from "@autobe/compiler";
+import { IAutoBeCompilerResult } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 
-export const test_compiler_fs = (): void => {
+export const test_compiler_fs = async (): Promise<void> => {
   const compiler: AutoBeCompiler = new AutoBeCompiler();
-  const result: IAutoBeCompilerResult = compiler.compile({
+  const result: IAutoBeCompilerResult = await compiler.compile({
     files: {
       "src/MyConfiguration.ts": FILE,
     },

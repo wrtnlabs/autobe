@@ -1,20 +1,19 @@
+import { IAutoBeCompiler, IAutoBeCompilerResult } from "@autobe/interface";
 import nestiaCoreTransform from "@nestia/core/lib/transform";
 import { VariadicSingleton } from "tstl";
 import ts from "typescript";
 import typiaTransform from "typia/lib/transform";
 
-import { IAutoBeCompilerResult } from "../structures/IAutoBeCompilerResult";
-
-export class AutoBeCompilerBase {
+export class AutoBeCompilerBase implements IAutoBeCompiler {
   public constructor(
     protected readonly external: (file: string) => string | undefined,
     protected readonly externalFiles: string[],
   ) {}
 
-  public compile(props: {
+  public async compile(props: {
     files: Record<string, string>;
     paths?: Record<string, string[]> | undefined;
-  }): IAutoBeCompilerResult {
+  }): Promise<IAutoBeCompilerResult> {
     const sourceFiles = new VariadicSingleton((f: string) =>
       ts.createSourceFile(
         f,

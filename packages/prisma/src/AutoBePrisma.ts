@@ -1,16 +1,30 @@
-import { format, getDMMF } from "@prisma/internals";
+import {
+  IAutoBePrisma,
+  IAutoBePrismaProps,
+  IAutoBePrismaResult,
+} from "@autobe/interface";
+import {
+  MultipleSchemas,
+  format,
+  formatSchema,
+  getDMMF,
+} from "@prisma/internals";
 
-import { IAutoBePrismaResult } from "./IAutoBePrismaResult";
-
-export class AutoBePrisma {
-  public async compile(content: string): Promise<IAutoBePrismaResult> {
-    return this.validate(content);
+export class AutoBePrisma implements IAutoBePrisma {
+  public async build(props: IAutoBePrismaProps): Promise<IAutoBePrismaResult> {
+    return this.validate(props);
   }
 
-  private async validate(content: string): Promise<IAutoBePrismaResult> {
+  private async validate(
+    props: IAutoBePrismaProps,
+  ): Promise<IAutoBePrismaResult> {
     try {
-      content = await format(content);
-      await getDMMF({ datamodel: content });
+      const schemas: MultipleSchemas = await formatSchema({
+        schemas: Object.entries(props.schemas),
+      });
+      await getDMMF({
+        datamodel: schemas,
+      });
       return {
         type: "success",
         files: {},

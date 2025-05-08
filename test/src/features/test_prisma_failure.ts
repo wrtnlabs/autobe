@@ -1,19 +1,23 @@
-import { AutoBePrisma, IAutoBePrismaResult } from "@autobe/prisma";
+import { IAutoBePrismaResult } from "@autobe/interface";
+import { AutoBePrisma } from "@autobe/prisma";
 import { TestValidator } from "@nestia/e2e";
 import fs from "fs";
 
 import { TestGlobal } from "../TestGlobal";
 
 export const test_prisma_failure = async (): Promise<void> => {
-  const content: string = [
-    await fs.promises.readFile(
-      `${TestGlobal.ROOT}/assets/schema.prisma`,
-      "utf8",
-    ),
-    "ASDFGHJ",
-    "ZXCVBNM",
-  ].join("\n\n");
-  const result: IAutoBePrismaResult = await new AutoBePrisma().compile(content);
+  const result: IAutoBePrismaResult = await new AutoBePrisma().build({
+    schemas: {
+      "schema.prisma": [
+        await fs.promises.readFile(
+          `${TestGlobal.ROOT}/assets/schema.prisma`,
+          "utf8",
+        ),
+        "ASDFGHJ",
+        "ZXCVBNM",
+      ].join("\n\n"),
+    },
+  });
   TestValidator.predicate("result")(
     () =>
       result.type === "failure" &&
