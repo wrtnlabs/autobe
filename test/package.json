@@ -13,6 +13,8 @@
   "license": "MIT",
   "dependencies": {
     "@autobe/compiler": "workspace:^",
+    "@autobe/interface": "workspace:^",
+    "@autobe/prisma": "workspace:^",
     "@nestia/core": "catalog:nestia",
     "@nestia/e2e": "catalog:nestia",
     "@samchon/openapi": "catalog:agentica",

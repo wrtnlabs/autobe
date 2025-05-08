@@ -1,0 +1,29 @@
+{
+  "name": "@autobe/interface",
+  "version": "0.0.0",
+  "description": "AI backend server code generator",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "rimraf lib && tsc"
+  },
+  "keywords": [],
+  "author": "Wrtn Technologies",
+  "license": "MIT",
+  "devDependencies": {
+    "rimraf": "^6.0.1",
+    "typescript": "catalog:typescript"
+  },
+  "files": [
+    "lib",
+    "src",
+    "package.json",
+    "LICENSE",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "main": "lib/index.js",
+    "module": "lib/index.mjs",
+    "typings": "lib/index.d.ts"
+  }
+}
