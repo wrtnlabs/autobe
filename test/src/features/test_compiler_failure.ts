@@ -6,7 +6,7 @@ import { IValidation } from "typia";
 
 import { TestGlobal } from "../TestGlobal";
 
-export const test_compiler_migrate = async (): Promise<void> => {
+export const test_compiler_failure = async (): Promise<void> => {
   const inspect: IValidation<MigrateApplication> = MigrateApplication.create(
     await fetch("https://shopping-be.wrtn.ai/editor/swagger.json").then((r) =>
       r.json(),
@@ -37,18 +37,26 @@ export const test_compiler_migrate = async (): Promise<void> => {
 
   const compiler: AutoBeCompiler = new AutoBeCompiler();
   const result: IAutoBeCompilerResult = compiler.compile({
-    files: Object.fromEntries(
-      files
-        .filter((f) => f.location.startsWith("src") && f.file.endsWith(".ts"))
-        .map((f) => [
-          `${f.location}/${f.file}`.replace("//", "/"),
-          f.content.replaceAll("@link", "#link"),
-        ]),
-    ),
+    files: {
+      ...Object.fromEntries(
+        files
+          .filter((f) => f.location.startsWith("src") && f.file.endsWith(".ts"))
+          .map((f) => [
+            `${f.location}/${f.file}`.replace("//", "/"),
+            f.content.replaceAll("@link", "#link"),
+          ]),
+      ),
+      "src/error.ts": "asdfasdfasfewfds;",
+    },
     paths: {
       "@ORGANIZATION/PROJECT-api/lib/*": ["./src/api/*"],
       "@ORGANIZATION/PROJECT-api": ["./src/api"],
     },
   });
-  TestValidator.equals("success")(result.type)("success");
+  TestValidator.predicate("failure")(
+    () =>
+      result.type === "failure" &&
+      result.diagnostics.length === 1 &&
+      !!result.diagnostics[0]?.messageText.includes("asdfasdfasfewfds"),
+  );
 };
