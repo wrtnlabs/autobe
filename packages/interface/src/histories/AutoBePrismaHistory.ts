@@ -1,6 +1,8 @@
+import { IAutoBePrismaCompilerResult } from "../compiler/IAutoBePrismaCompilerResult";
 import { AutoBeAgentHistoryBase } from "./AutoBeHistoryBase";
 
 export interface AutoBePrismaHistory extends AutoBeAgentHistoryBase<"prisma"> {
-  files: Record<string, string>;
+  result: IAutoBePrismaCompilerResult;
+  reason: string;
   description: string;
 }
