@@ -13,26 +13,35 @@ import { orchestrateTest } from "../orchestrate/orchestrateTest";
 export const createAutoBeController = <Model extends ILlmSchema.Model>(props: {
   model: Model;
   context: AutoBeContext<Model>;
-}): IAgenticaController.IClass<Model> => ({
-  protocol: "class",
-  name: "autobe",
-  application: (schemas[props.model as "chatgpt"] ??
-    schemas.claude) as any as ILlmApplication<Model>,
-  execute: {
-    analyze: orchestrateAnalyze(props.context),
-    prisma: orchestratePrisma(props.context),
-    interface: orchestrateInterface(props.context),
-    test: orchestrateTest(props.context),
-    realize: orchestrateRealize(props.context),
-  },
-});
+}): IAgenticaController.IClass<Model> => {
+  const application: ILlmApplication<Model> = collection[
+    props.model
+  ] as unknown as ILlmApplication<Model>;
+  return {
+    protocol: "class",
+    name: "autobe",
+    application,
+    execute: {
+      analyze: orchestrateAnalyze(props.context),
+      prisma: orchestratePrisma(props.context),
+      interface: orchestrateInterface(props.context),
+      test: orchestrateTest(props.context),
+      realize: orchestrateRealize(props.context),
+    },
+  };
+};
 
-const schemas = {
+const claude = typia.llm.application<IAutoBeApplication, "claude">();
+const collection = {
   chatgpt: typia.llm.application<
     IAutoBeApplication,
     "chatgpt",
     { reference: true }
   >(),
-  claude: typia.llm.application<IAutoBeApplication, "claude">(),
   gemini: typia.llm.application<IAutoBeApplication, "gemini">(),
+  claude,
+  llama: claude,
+  deepseek: claude,
+  "3.1": claude,
+  "3.0": typia.llm.application<IAutoBeApplication, "3.0">(),
 };
