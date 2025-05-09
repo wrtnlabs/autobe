@@ -118,5 +118,5 @@
       }
     ]
   },
-  "include": ["src", "build/internal/UnpkgDownloader.ts"]
+  "include": ["src"]
 }

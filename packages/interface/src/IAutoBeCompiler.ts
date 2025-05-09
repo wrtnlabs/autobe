@@ -1,6 +1,13 @@
-import { IAutoBeCompilerProps } from "./IAutoBeCompilerProps";
-import { IAutoBeCompilerResult } from "./IAutoBeCompilerResult";
+import { IAutoBePrismaCompilerProps } from "./IAutoBePrismaCompilerProps";
+import { IAutoBePrismaCompilerResult } from "./IAutoBePrismaCompilerResult";
+import { IAutoBeTypeScriptCompilerProps } from "./IAutoBeTypeScriptCompilerProps";
+import { IAutoBeTypeScriptCompilerResult } from "./IAutoBeTypeScriptCompilerResult";
 
 export interface IAutoBeCompiler {
-  compile(props: IAutoBeCompilerProps): Promise<IAutoBeCompilerResult>;
+  prisma(
+    props: IAutoBePrismaCompilerProps,
+  ): Promise<IAutoBePrismaCompilerResult>;
+  typescript(
+    props: IAutoBeTypeScriptCompilerProps,
+  ): Promise<IAutoBeTypeScriptCompilerResult>;
 }
