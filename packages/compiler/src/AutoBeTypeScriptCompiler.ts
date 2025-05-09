@@ -19,7 +19,7 @@ export class AutoBeTypeScriptCompiler implements IAutoBeTypeScriptCompiler {
     const alias: string = props.package ?? "@ORGANIZATION/PROJECT-api";
     const files: Record<string, string> = {
       ...props.files,
-      ...props.prisma,
+      ...(props.prisma ?? {}),
     };
     const sourceFiles = new VariadicSingleton((f: string) =>
       ts.createSourceFile(
