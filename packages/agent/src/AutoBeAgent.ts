@@ -25,14 +25,14 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
    * @param props Properties to construct the agent
    */
   public constructor(private readonly props: IAutoBeProps<Model>) {
+    this.histories_ = props.histories?.slice() ?? [];
+    this.state_ = createAutoBeState(this.histories_);
     this.context_ = {
       model: props.model,
       vendor: props.vendor,
       usage: () => this.agentica_.getTokenUsage(),
       state: () => this.state_,
     };
-    this.histories_ = props.histories?.slice() ?? [];
-    this.state_ = createAutoBeState(this.histories_);
 
     this.agentica_ = new MicroAgentica({
       model: props.model,
