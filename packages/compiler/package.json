@@ -18,16 +18,15 @@
     "@prisma/client-generator-js": "^6.7.0",
     "@prisma/generator-helper": "^6.7.0",
     "@prisma/internals": "^6.7.0",
-    "@samchon/openapi": "catalog:agentica",
-    "openai": "catalog:agentica",
-    "tstl": "catalog:agentica",
-    "typia": "catalog:agentica"
+    "@samchon/openapi": "catalog:samchon",
+    "tstl": "catalog:samchon",
+    "typia": "catalog:samchon"
   },
   "devDependencies": {
     "@types/node": "^22.15.3",
     "rimraf": "^6.0.1",
     "sync-request": "^6.1.0",
-    "ts-node": "^10.9.2",
+    "ts-node": "catalog:typescript",
     "ts-patch": "catalog:typescript",
     "typescript": "catalog:typescript"
   },
@@ -70,7 +69,6 @@
   "publishConfig": {
     "access": "public",
     "main": "lib/index.js",
-    "module": "lib/index.mjs",
     "typings": "lib/index.d.ts"
   }
 }

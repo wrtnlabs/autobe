@@ -9,18 +9,10 @@ catalogs:
     '@agentica/core':
       specifier: ^0.21.0
       version: 0.21.0
-    '@samchon/openapi':
-      specifier: ^4.2.0
-      version: 4.2.0
+  libs:
     openai:
       specifier: ^4.80.0
       version: 4.98.0
-    tstl:
-      specifier: ^3.0.0
-      version: 3.0.0
-    typia:
-      specifier: ^9.2.0
-      version: 9.2.0
   nestia:
     '@nestia/core':
       specifier: ^6.0.3
@@ -28,7 +20,20 @@ catalogs:
     '@nestia/e2e':
       specifier: ^6.0.3
       version: 6.0.3
+  samchon:
+    '@samchon/openapi':
+      specifier: ^4.2.0
+      version: 4.2.0
+    tstl:
+      specifier: ^3.0.0
+      version: 3.0.0
+    typia:
+      specifier: ^9.2.0
+      version: 9.2.0
   typescript:
+    ts-node:
+      specifier: ^10.9.2
+      version: 10.9.2
     ts-patch:
       specifier: ^3.3.0
       version: 3.3.0
@@ -52,14 +57,17 @@ importers:
       '@agentica/core':
         specifier: catalog:agentica
         version: 0.21.0(@modelcontextprotocol/sdk@1.11.1)(@samchon/openapi@4.2.0)(openai@4.98.0(zod@3.24.4))(typia@9.2.0(@samchon/openapi@4.2.0)(typescript@5.8.3))
+      '@autobe/interface':
+        specifier: workspace:^
+        version: link:../interface
       '@samchon/openapi':
-        specifier: catalog:agentica
+        specifier: catalog:samchon
         version: 4.2.0
       openai:
-        specifier: catalog:agentica
+        specifier: catalog:libs
         version: 4.98.0(zod@3.24.4)
       typia:
-        specifier: catalog:agentica
+        specifier: catalog:samchon
         version: 9.2.0(@samchon/openapi@4.2.0)(typescript@5.8.3)
     devDependencies:
       '@rollup/plugin-terser':
@@ -102,16 +110,13 @@ importers:
         specifier: ^6.7.0
         version: 6.7.0(typescript@5.8.3)
       '@samchon/openapi':
-        specifier: catalog:agentica
+        specifier: catalog:samchon
         version: 4.2.0
-      openai:
-        specifier: catalog:agentica
-        version: 4.98.0(zod@3.24.4)
       tstl:
-        specifier: catalog:agentica
+        specifier: catalog:samchon
         version: 3.0.0
       typia:
-        specifier: catalog:agentica
+        specifier: catalog:samchon
         version: 9.2.0(@samchon/openapi@4.2.0)(typescript@5.8.3)
     devDependencies:
       '@types/node':
@@ -124,7 +129,7 @@ importers:
         specifier: ^6.1.0
         version: 6.1.0
       ts-node:
-        specifier: ^10.9.2
+        specifier: catalog:typescript
         version: 10.9.2(@types/node@22.15.17)(typescript@5.8.3)
       ts-patch:
         specifier: catalog:typescript
@@ -134,6 +139,13 @@ importers:
         version: 5.8.3
 
   packages/interface:
+    dependencies:
+      '@samchon/openapi':
+        specifier: catalog:samchon
+        version: 4.2.0
+      typia:
+        specifier: catalog:samchon
+        version: 9.2.0(@samchon/openapi@4.2.0)(typescript@5.8.3)
     devDependencies:
       rimraf:
         specifier: ^6.0.1
@@ -157,7 +169,7 @@ importers:
         specifier: catalog:nestia
         version: 6.0.3
       '@samchon/openapi':
-        specifier: catalog:agentica
+        specifier: catalog:samchon
         version: 4.2.0
       chalk:
         specifier: 4.1.2
@@ -169,13 +181,13 @@ importers:
         specifier: ^12.0.2
         version: 12.0.2
       openai:
-        specifier: catalog:agentica
+        specifier: catalog:libs
         version: 4.98.0(zod@3.24.4)
       tstl:
-        specifier: catalog:agentica
+        specifier: catalog:samchon
         version: 3.0.0
       typia:
-        specifier: catalog:agentica
+        specifier: catalog:samchon
         version: 9.2.0(@samchon/openapi@4.2.0)(typescript@5.8.3)
     devDependencies:
       '@nestia/migrate':
@@ -188,7 +200,7 @@ importers:
         specifier: ^6.0.1
         version: 6.0.1
       ts-node:
-        specifier: ^10.9.2
+        specifier: catalog:typescript
         version: 10.9.2(@types/node@22.15.17)(typescript@5.8.3)
       ts-patch:
         specifier: catalog:typescript
