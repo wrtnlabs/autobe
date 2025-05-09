@@ -1,7 +1,9 @@
 export * from "./IAutoBeCompiler";
-export * from "./IAutoBeCompilerProps";
-export * from "./IAutoBeCompilerResult";
 
-export * from "./IAutoBePrisma";
-export * from "./IAutoBePrismaProps";
-export * from "./IAutoBePrismaResult";
+export * from "./IAutoBeTypeScriptCompiler";
+export * from "./IAutoBeTypeScriptCompilerProps";
+export * from "./IAutoBeTypeScriptCompilerResult";
+
+export * from "./IAutoBePrismaCompiler";
+export * from "./IAutoBePrismaCompilerProps";
+export * from "./IAutoBePrismaCompilerResult";

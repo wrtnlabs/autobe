@@ -14,13 +14,16 @@
   "dependencies": {
     "@autobe/interface": "workspace:^",
     "@nestia/core": "catalog:nestia",
+    "@prisma/client": "^6.7.0",
+    "@prisma/client-generator-js": "^6.7.0",
+    "@prisma/generator-helper": "^6.7.0",
+    "@prisma/internals": "^6.7.0",
     "@samchon/openapi": "catalog:agentica",
     "openai": "catalog:agentica",
     "tstl": "catalog:agentica",
     "typia": "catalog:agentica"
   },
   "devDependencies": {
-    "@nestia/migrate": "catalog:nestia",
     "@types/node": "^22.15.3",
     "rimraf": "^6.0.1",
     "sync-request": "^6.1.0",

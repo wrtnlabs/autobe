@@ -1,16 +1,30 @@
-import { IAutoBeCompiler } from "@autobe/interface";
+import {
+  IAutoBeCompiler,
+  IAutoBePrismaCompiler,
+  IAutoBePrismaCompilerProps,
+  IAutoBePrismaCompilerResult,
+  IAutoBeTypeScriptCompiler,
+  IAutoBeTypeScriptCompilerProps,
+  IAutoBeTypeScriptCompilerResult,
+} from "@autobe/interface";
 
-import { AutoBeCompilerBase } from "./internal/AutoBeCompilerBase";
-import External from "./raw/typings.json";
+import { AutoBePrismaCompiler } from "./AutoBePrismaCompiler";
+import { AutoBeTypeScriptCompiler } from "./AutoBeTypeScriptCompiler";
 
-export class AutoBeCompiler
-  extends AutoBeCompilerBase
-  implements IAutoBeCompiler
-{
-  public constructor() {
-    super(
-      (k) => (External as Record<string, string>)[k],
-      Object.keys(External).filter((f) => f.endsWith(".d.ts")),
-    );
+export class AutoBeCompiler implements IAutoBeCompiler {
+  private readonly prisma_: IAutoBePrismaCompiler = new AutoBePrismaCompiler();
+  private readonly typescript_: IAutoBeTypeScriptCompiler =
+    new AutoBeTypeScriptCompiler();
+
+  public prisma(
+    props: IAutoBePrismaCompilerProps,
+  ): Promise<IAutoBePrismaCompilerResult> {
+    return this.prisma_.compile(props);
+  }
+
+  public typescript(
+    props: IAutoBeTypeScriptCompilerProps,
+  ): Promise<IAutoBeTypeScriptCompilerResult> {
+    return this.typescript_.compile(props);
   }
 }
