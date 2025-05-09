@@ -19,9 +19,10 @@
   },
   "dependencies": {
     "@agentica/core": "catalog:agentica",
-    "@samchon/openapi": "catalog:agentica",
-    "openai": "catalog:agentica",
-    "typia": "catalog:agentica"
+    "@autobe/interface": "workspace:^",
+    "@samchon/openapi": "catalog:samchon",
+    "openai": "catalog:libs",
+    "typia": "catalog:samchon"
   },
   "devDependencies": {
     "@rollup/plugin-terser": "^0.4.4",
@@ -63,7 +64,6 @@
   "publishConfig": {
     "access": "public",
     "main": "lib/index.js",
-    "module": "lib/index.mjs",
     "typings": "lib/index.d.ts"
   }
 }
