@@ -2,5 +2,7 @@ import { AutoBeAgentHistoryBase } from "./AutoBeHistoryBase";
 
 export interface AutoBeAnalyzeHistory
   extends AutoBeAgentHistoryBase<"analyze"> {
-  content: string;
+  files: Record<string, string>;
+  reason: string;
+  description: string;
 }
