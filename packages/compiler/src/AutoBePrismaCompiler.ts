@@ -14,6 +14,7 @@ import {
   mergeSchemas,
 } from "@prisma/internals";
 import fs from "fs";
+import os from "os";
 import path from "path";
 
 export class AutoBePrismaCompiler implements IAutoBePrismaCompiler {
@@ -21,7 +22,9 @@ export class AutoBePrismaCompiler implements IAutoBePrismaCompiler {
     props: IAutoBePrismaCompilerProps,
   ): Promise<IAutoBePrismaCompilerResult> {
     // PREPARE DIRECTORIES
-    const directory: string = await fs.promises.mkdtemp("autobe-prisma-");
+    const directory: string = await fs.promises.mkdtemp(
+      `${os.tmpdir()}/autobe-prisma-`,
+    );
     const clear = async () => {
       try {
         await fs.promises.rm(directory, { recursive: true });
@@ -32,7 +35,6 @@ export class AutoBePrismaCompiler implements IAutoBePrismaCompiler {
       return result;
     };
     await fs.promises.mkdir(`${directory}/schemas`);
-    // await fs.promises.mkdir(`${directory}/output`);
 
     try {
       // PARSE SCHEMA FILES
