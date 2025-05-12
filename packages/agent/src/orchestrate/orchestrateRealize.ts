@@ -1,5 +1,7 @@
-import { AutoBeRealizeHistory } from "@autobe/interface";
-import { AutoBeReplyHistory } from "@autobe/interface/src/histories/AutoBeReplyHistory";
+import {
+  AutoBeAssistantMessageHistory,
+  AutoBeRealizeHistory,
+} from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 
 import { AutoBeContext } from "../context/AutoBeContext";
@@ -9,7 +11,7 @@ export const orchestrateRealize =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
   async (
     props: IAutoBeApplicationProps,
-  ): Promise<AutoBeReplyHistory | AutoBeRealizeHistory> => {
+  ): Promise<AutoBeAssistantMessageHistory | AutoBeRealizeHistory> => {
     ctx;
     props;
     return null!;

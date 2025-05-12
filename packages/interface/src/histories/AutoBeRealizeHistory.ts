@@ -6,4 +6,5 @@ export interface AutoBeRealizeHistory
   result: IAutoBeTypeScriptCompilerResult;
   reason: string;
   description: string;
+  step: number;
 }

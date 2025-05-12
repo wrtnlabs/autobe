@@ -7,4 +7,5 @@ export interface AutoBeInterfaceHistory
   document: OpenApi.IDocument;
   reason: string;
   description: string;
+  step: number;
 }

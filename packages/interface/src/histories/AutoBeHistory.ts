@@ -1,14 +1,14 @@
 import { AutoBeAnalyzeHistory } from "./AutoBeAnalyzeHistory";
+import { AutoBeAssistantMessageHistory } from "./AutoBeAssistantMessageHistory";
 import { AutoBeInterfaceHistory } from "./AutoBeInterfaceHistory";
 import { AutoBePrismaHistory } from "./AutoBePrismaHistory";
 import { AutoBeRealizeHistory } from "./AutoBeRealizeHistory";
-import { AutoBeReplyHistory } from "./AutoBeReplyHistory";
 import { AutoBeTestHistory } from "./AutoBeTestHistory";
-import { AutoBeUserHistory } from "./AutoBeUserHistory";
+import { AutoBeUserMessageHistory } from "./AutoBeUserMessageHistory";
 
 export type AutoBeHistory =
-  | AutoBeUserHistory
-  | AutoBeReplyHistory
+  | AutoBeUserMessageHistory
+  | AutoBeAssistantMessageHistory
   | AutoBeAnalyzeHistory
   | AutoBePrismaHistory
   | AutoBeInterfaceHistory
@@ -17,8 +17,8 @@ export type AutoBeHistory =
 export namespace AutoBeHistory {
   export type Type = AutoBeHistory["type"];
   export interface Mapper {
-    user: AutoBeUserHistory;
-    reply: AutoBeReplyHistory;
+    userMessage: AutoBeUserMessageHistory;
+    assistantMessage: AutoBeAssistantMessageHistory;
     analyze: AutoBeAnalyzeHistory;
     prisma: AutoBePrismaHistory;
     interface: AutoBeInterfaceHistory;
