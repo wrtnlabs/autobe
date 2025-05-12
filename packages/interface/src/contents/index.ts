@@ -1,6 +1,6 @@
-export * from "./AutoBeConversateContent";
+export * from "./AutoBeUserContent";
 
-export * from "./AutoBeConversateAudioContent";
-export * from "./AutoBeConversateFileContent";
-export * from "./AutoBeConversateImageContent";
-export * from "./AutoBeConversateTextContent";
+export * from "./AutoBeUserAudioContent";
+export * from "./AutoBeUserFileContent";
+export * from "./AutoBeUserImageContent";
+export * from "./AutoBeUserTextContent";

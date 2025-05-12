@@ -1,7 +1,6 @@
-import { AutoBeConversateContentBase } from "./AutoBeConversateContentBase";
+import { AutoBeUserContentBase } from "./AutoBeUserContentBase";
 
-export interface AutoBeConversateAudioContent
-  extends AutoBeConversateContentBase<"audio"> {
+export interface AutoBeUserAudioContent extends AutoBeUserContentBase<"audio"> {
   /**
    * Base64 encoded audio data.
    */

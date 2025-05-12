@@ -8,7 +8,7 @@ export function transformToAgenticaHistory<
   operations: readonly AgenticaOperation<Model>[];
   history: AutoBeHistory;
 }): MicroAgenticaHistory<Model> | null {
-  if (props.history.type === "conversate")
+  if (props.history.type === "user" || props.history.type === "reply")
     return props.history as any as MicroAgenticaHistory<Model>;
 
   const operation: AgenticaOperation<Model> | undefined = props.operations.find(
