@@ -30,6 +30,7 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
     this.context_ = {
       model: props.model,
       vendor: props.vendor,
+      compiler: props.compiler,
       usage: () => this.agentica_.getTokenUsage(),
       state: () => this.state_,
     };
