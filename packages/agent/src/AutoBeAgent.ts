@@ -1,5 +1,5 @@
 import { MicroAgentica } from "@agentica/core";
-import { AutoBeConversateContent, AutoBeHistory } from "@autobe/interface";
+import { AutoBeHistory, AutoBeUserContent } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 
 import { AutoBeContext } from "./context/AutoBeContext";
@@ -77,7 +77,7 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
     ACCESSORS
   ----------------------------------------------------------- */
   public async conversate(
-    content: string | AutoBeConversateContent | AutoBeConversateContent[],
+    content: string | AutoBeUserContent | AutoBeUserContent[],
   ): Promise<AutoBeHistory[]> {
     content;
     return [];

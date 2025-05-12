@@ -1,6 +1,6 @@
 export * from "./AutoBeHistory";
 
-export * from "./AutoBeConversateHistory";
+export * from "./AutoBeUserHistory";
 export * from "./AutoBeAnalyzeHistory";
 export * from "./AutoBeInterfaceHistory";
 export * from "./AutoBePrismaHistory";

@@ -1,15 +1,18 @@
+import { AutoBePrismaHistory } from "@autobe/interface";
+import { AutoBeReplyHistory } from "@autobe/interface/src/histories/AutoBeReplyHistory";
 import { ILlmSchema } from "@samchon/openapi";
 
 import { AutoBeContext } from "../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../context/IAutoBeApplicationProps";
-import { IAutoBeApplicationResult } from "../context/IAutoBeApplicationResult";
 
 /**
  * @todo Michael
  */
 export const orchestratePrisma =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
-  async (props: IAutoBeApplicationProps): Promise<IAutoBeApplicationResult> => {
+  async (
+    props: IAutoBeApplicationProps,
+  ): Promise<AutoBeReplyHistory | AutoBePrismaHistory> => {
     ctx;
     props;
     return null!;
