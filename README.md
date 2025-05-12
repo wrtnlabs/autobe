@@ -262,22 +262,22 @@ gantt
   title Roadmap Schedule
 
   section Analyze<br>(kakasoo)
-  Prompt Study: active, 2025-04-30, 3d
-  holiday: milestone, 2025-05-01, 1d
-  vacation: milestone, 2025-05-02, 1d
-  holiday: milestone, 2025-05-05, 2d
-  Analyze Agent Structure(6d):, 2025-05-07, 6d
-  TypeScript Backend meet-up: milestone, 2025-05-13, 1d
-  Analyze Agent Prompt tuning(5d):, 2025-05-15, 5d
+  Prompt Study: done, 2025-04-30, 3d
+  holiday: milestone, done, 2025-05-01, 1d
+  vacation: milestone, done, 2025-05-02, 1d
+  holiday: milestone, done, 2025-05-05, 2d
+  Analyze Agent Structure(6d): done, 2025-05-07, 6d
+  TypeScript Backend meet-up: milestone, done, 2025-05-13, 1d
+  Analyze Agent Prompt tuning(5d): active, 2025-05-15, 5d
   AWSKRUG presentation: milestone, 2025-05-21, 1d
   Analyze Agent Prompt tuning(10d):, 2025-05-22, 10d
 
   section Prisma<br>(Michael)
-  Project Init Setting & Prompt Study: active, 2025-04-30, 3d
-  Holiday: milestone, 2025-05-01, 6d
-  Design Architecture about Prisma Agent: 2025-05-07, 6d
-  TypeScript Backend meet-up: milestone, 2025-05-13, 1d
-  Prisma Agent Prompt Tuning & Modify Structure: 2025-05-14, 18d
+  Project Init Setting & Prompt Study: done, 2025-04-30, 3d
+  Holiday: milestone, done, 2025-05-01, 6d
+  Design Architecture about Prisma Agent: done, 2025-05-07, 6d
+  TypeScript Backend meet-up: milestone, done, 2025-05-13, 1d
+  Prisma Agent Prompt Tuning & Modify Structure: active, 2025-05-14, 18d
   UMC X GDGoc Presentation: milestone, 2025-05-21, 1d
 
   
