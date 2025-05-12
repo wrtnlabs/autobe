@@ -1,6 +1,7 @@
-import { AutoBeUserContentBase } from "./AutoBeUserContentBase";
+import { AutoBeUserMessageContentBase } from "./AutoBeUserMessageContentBase";
 
-export interface AutoBeUserAudioContent extends AutoBeUserContentBase<"audio"> {
+export interface AutoBeUserMessageAudioContent
+  extends AutoBeUserMessageContentBase<"audio"> {
   /**
    * Base64 encoded audio data.
    */

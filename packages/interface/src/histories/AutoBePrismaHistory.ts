@@ -5,4 +5,5 @@ export interface AutoBePrismaHistory extends AutoBeAgentHistoryBase<"prisma"> {
   result: IAutoBePrismaCompilerResult;
   reason: string;
   description: string;
+  step: number;
 }

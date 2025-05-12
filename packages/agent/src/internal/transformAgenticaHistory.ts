@@ -1,15 +1,27 @@
 import { AgenticaOperation, MicroAgenticaHistory } from "@agentica/core";
-import { AutoBeHistory } from "@autobe/interface";
+import {
+  AutoBeAssistantMessageHistory,
+  AutoBeHistory,
+  AutoBeUserMessageHistory,
+} from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 
-export function transformToAgenticaHistory<
+export function transformAgenticaHistory<
   Model extends ILlmSchema.Model,
 >(props: {
   operations: readonly AgenticaOperation<Model>[];
   history: AutoBeHistory;
 }): MicroAgenticaHistory<Model> | null {
-  if (props.history.type === "user" || props.history.type === "reply")
-    return props.history as any as MicroAgenticaHistory<Model>;
+  if (props.history.type === "userMessage")
+    return {
+      ...props.history,
+      toJSON: () => props.history as AutoBeUserMessageHistory,
+    };
+  else if (props.history.type === "assistantMessage")
+    return {
+      ...props.history,
+      toJSON: () => props.history as AutoBeAssistantMessageHistory,
+    };
 
   const operation: AgenticaOperation<Model> | undefined = props.operations.find(
     (op) => op.function.name === props.history.type,

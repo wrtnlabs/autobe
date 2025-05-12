@@ -1,5 +1,5 @@
 import { MicroAgentica } from "@agentica/core";
-import { AutoBeHistory, AutoBeUserContent } from "@autobe/interface";
+import { AutoBeHistory, AutoBeUserMessageContent } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 
 import { AutoBeContext } from "./context/AutoBeContext";
@@ -7,7 +7,7 @@ import { AutoBeState } from "./context/AutoBeState";
 import { AutoBeTokenUsage } from "./context/AutoBeTokenUsage";
 import { createAutoBeController } from "./internal/createAutoBeApplication";
 import { createAutoBeState } from "./internal/createAutoBeState";
-import { transformToAgenticaHistory } from "./internal/transformToAgenticaHistory";
+import { transformAgenticaHistory } from "./internal/transformAgenticaHistory";
 import { IAutoBeProps } from "./structures/IAutoBeProps";
 
 export class AutoBeAgent<Model extends ILlmSchema.Model> {
@@ -54,7 +54,7 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
     this.agentica_.getHistories().push(
       ...this.histories_
         .map((history) =>
-          transformToAgenticaHistory({
+          transformAgenticaHistory({
             operations: this.agentica_.getOperations(),
             history,
           }),
@@ -77,7 +77,7 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
     ACCESSORS
   ----------------------------------------------------------- */
   public async conversate(
-    content: string | AutoBeUserContent | AutoBeUserContent[],
+    content: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
   ): Promise<AutoBeHistory[]> {
     content;
     return [];

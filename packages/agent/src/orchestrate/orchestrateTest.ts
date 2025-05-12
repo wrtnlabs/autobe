@@ -1,5 +1,7 @@
-import { AutoBeTestHistory } from "@autobe/interface";
-import { AutoBeReplyHistory } from "@autobe/interface/src/histories/AutoBeReplyHistory";
+import {
+  AutoBeAssistantMessageHistory,
+  AutoBeTestHistory,
+} from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 
 import { AutoBeContext } from "../context/AutoBeContext";
@@ -9,7 +11,7 @@ export const orchestrateTest =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
   async (
     props: IAutoBeApplicationProps,
-  ): Promise<AutoBeReplyHistory | AutoBeTestHistory> => {
+  ): Promise<AutoBeAssistantMessageHistory | AutoBeTestHistory> => {
     ctx;
     props;
     return null!;
