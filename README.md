@@ -282,14 +282,14 @@ gantt
 
   
   section Interface
-  Facade Controller: active, 2025-04-30, 18d
-  Event Handlers:            2025-05-18, 14d
-  Data Structures:           2025-05-18, 28d
+  Facade Controller: done, 2025-04-30, 18d
+  Event Handlers:          2025-05-18, 14d
+  Data Structures:   done, 2025-05-18, 28d
 
   section Compilers
-  Backend Compiler:     active, 2025-04-30, 32d
-  Schema to TypeScript:         2025-05-18, 14d
-  Prisma Compiler:              2025-05-18, 14d
+  Backend Compiler:     done, 2025-04-30, 32d
+  Schema to TypeScript: done, 2025-05-18, 14d
+  Prisma Compiler:      done, 2025-05-18, 14d
 
   section Prompts
   Analyze  : 2025-04-30, 18d
