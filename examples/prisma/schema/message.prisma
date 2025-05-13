@@ -1,0 +1,39 @@
+/// 채팅 메시지 정보
+model messages {
+  id          String   @id @db.Uuid
+  chatroom_id String   @db.Uuid
+  sender_id   String   @db.Uuid
+  content     String?
+  sent_at     DateTime @db.Timestamptz
+  is_read     Boolean  @db.Boolean
+
+  chatroom          chatrooms       @relation(fields: [chatroom_id], references: [id])
+  sender            users           @relation("user_sent_messages", fields: [sender_id], references: [id])
+  media_attachments message_media[]
+}
+
+/// 채팅방 정보
+model chatrooms {
+  id             String   @id @db.Uuid
+  type           String   @db.VarChar
+  name           String?
+  cover_media_id String?  @db.Uuid
+  created_at     DateTime @db.Timestamptz
+
+  cover_media media?             @relation(fields: [cover_media_id], references: [id])
+  messages    messages[]
+  members     chatroom_members[]
+}
+
+/// 채팅방 멤버(사용자) 관계 N:M
+model chatroom_members {
+  id          String   @id @db.Uuid
+  chatroom_id String   @db.Uuid
+  user_id     String   @db.Uuid
+  joined_at   DateTime @db.Timestamptz
+
+  chatroom chatrooms @relation(fields: [chatroom_id], references: [id])
+  user     users     @relation(fields: [user_id], references: [id])
+
+  @@unique([chatroom_id, user_id])
+}

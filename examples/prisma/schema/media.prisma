@@ -1,0 +1,40 @@
+/// 미디어(Media) 정보
+model media {
+  id         String   @id @db.Uuid
+  type       String   @db.VarChar
+  url        String   @db.VarChar(1024)
+  thumbnail  String?  @db.VarChar(1024)
+  created_at DateTime @db.Timestamptz
+
+  post_links          post_media[]
+  as_profile_image    profiles[]
+  message_attachments message_media[]
+  post_snapshot_media post_snapshot_media[]
+  communities         communities[]
+  chatrooms           chatrooms[]
+}
+
+/// Post 미디어 N:M 연결 테이블
+model post_media {
+  id       String @id @db.Uuid
+  post_id  String @db.Uuid
+  media_id String @db.Uuid
+  sequence Int    @db.Integer
+
+  post  posts @relation(fields: [post_id], references: [id])
+  media media @relation(fields: [media_id], references: [id])
+
+  @@unique([post_id, media_id])
+}
+
+/// Message 미디어 첨부(다대다)
+model message_media {
+  id         String @id @db.Uuid
+  message_id String @db.Uuid
+  media_id   String @db.Uuid
+
+  message messages @relation(fields: [message_id], references: [id])
+  media   media    @relation(fields: [media_id], references: [id])
+
+  @@unique([message_id, media_id])
+}

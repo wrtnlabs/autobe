@@ -19,6 +19,7 @@ Simply describe your requirements to the AI and review the generated code. The b
 
 
 ## Functional Agents
+
 ```mermaid
 flowchart
 subgraph "Backend Coding Agent"
@@ -30,6 +31,12 @@ subgraph "functions"
   coder --"API Design"--> interface("Interface")
   coder --"Test Codes" --> test("Test")
   coder --"Main Program" --> realize("Realize")
+end
+subgraph "compilers"
+  prisma --"diagnoses" --> prismaCompiler("Prisma Compiler")
+  interface --"generates" --> tsCompiler("TypeScript Compiler")
+  test --"validates" --> tsCompiler("TypeScript Compiler")
+  realize --"validates" --> tsCompiler("TypeScript Compiler")
 end
 ```
 

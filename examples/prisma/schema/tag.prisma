@@ -1,0 +1,34 @@
+/// 태그(Tag) 정보
+model tags {
+  id   String @id @db.Uuid
+  name String @unique @db.VarChar
+  type String @db.VarChar
+
+  profile_links      profile_tags[]
+  post_links         post_tags[]
+  post_snapshot_tags post_snapshot_tags[]
+}
+
+/// Profile 관심사 Tag N:M 연결 테이블
+model profile_tags {
+  id         String @id @db.Uuid
+  profile_id String @db.Uuid
+  tag_id     String @db.Uuid
+
+  profile profiles @relation(fields: [profile_id], references: [id])
+  tag     tags     @relation(fields: [tag_id], references: [id])
+
+  @@unique([profile_id, tag_id])
+}
+
+/// Post 해쉬태그 Tag N:M 연결 테이블
+model post_tags {
+  id      String @id @db.Uuid
+  post_id String @db.Uuid
+  tag_id  String @db.Uuid
+
+  post posts @relation(fields: [post_id], references: [id])
+  tag  tags  @relation(fields: [tag_id], references: [id])
+
+  @@unique([post_id, tag_id])
+}
