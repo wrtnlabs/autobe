@@ -3,7 +3,7 @@ import { IAutoBePrismaCompilerResult } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 import fs from "fs";
 
-import { TestGlobal } from "../TestGlobal";
+import { TestGlobal } from "../../TestGlobal";
 
 export const test_compiler_prisma_failure = async (): Promise<void> => {
   const result: IAutoBePrismaCompilerResult =
