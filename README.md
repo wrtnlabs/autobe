@@ -21,6 +21,14 @@ Vibe coding agent of backend server, enhanced by compiler feedback.
 
 Simply describe your requirements to the AI and review the generated code. The backend code produced by `@autobe` is immediately executable and fully functional out of the box, eliminating the need for extensive manual adjustments or debugging.
 
+## Playground
+
+Coming soon... (2025-06-01)
+
+## Documentation Resources
+
+Preparing...
+
 ## Functional Agents
 
 ```mermaid
@@ -264,61 +272,6 @@ Internal validation mechanisms ensure high-quality output through multiple feedb
 
 The Implementation agent focuses on creating maintainable, efficient code that correctly implements the business logic while adhering to best practices. It generates service providers that handle database interactions through Prisma, implement security and validation checks, and process business rules according to the requirements specification.
 
-## Roadmap Schedule
-
-```mermaid
-gantt
-  dateFormat YYYY-MM-DD
-  title Roadmap Schedule
-
-  section Analyze<br>(kakasoo)
-  Prompt Study: done, 2025-04-30, 3d
-  holiday: milestone, done, 2025-05-01, 1d
-  vacation: milestone, done, 2025-05-02, 1d
-  holiday: milestone, done, 2025-05-05, 2d
-  Analyze Agent Structure(6d): done, 2025-05-07, 6d
-  TypeScript Backend meet-up: milestone, done, 2025-05-13, 1d
-  Analyze Agent Prompt tuning(5d): active, 2025-05-15, 5d
-  AWSKRUG presentation: milestone, 2025-05-21, 1d
-  Analyze Agent Prompt tuning(10d):, 2025-05-22, 10d
-
-  section Prisma<br>(Michael)
-  Project Init Setting & Prompt Study: done, 2025-04-30, 3d
-  Holiday: milestone, done, 2025-05-01, 6d
-  Design Architecture about Prisma Agent: done, 2025-05-07, 6d
-  TypeScript Backend meet-up: milestone, done, 2025-05-13, 1d
-  Prisma Agent Prompt Tuning & Modify Structure: active, 2025-05-14, 18d
-  UMC X GDGoc Presentation: milestone, 2025-05-21, 1d
-
-  
-  section Interface
-  Facade Controller: done, 2025-04-30, 18d
-  Event Handlers:          2025-05-18, 14d
-  Data Structures:   done, 2025-05-18, 28d
-
-  section Compilers
-  Backend Compiler:     done, 2025-04-30, 32d
-  Schema to TypeScript: done, 2025-05-18, 14d
-  Prisma Compiler:      done, 2025-05-18, 14d
-
-  section Prompts
-  Analyze  : 2025-04-30, 18d
-  Prisma   : 2025-04-30, 18d
-  Interface: 2025-05-18, 28d
-  Test     : 2025-05-18, 42d
-  Realize  : 2025-06-01, 28d
-
-  section Test Program
-  Compilers: 2025-04-30, 46d
-  Prompts:   2025-04-30, 46d
-  Benchmark: 2025-06-01, 28d
-```
-
-We're developing `@autobe` with dedicated effort, and each unit (agent) is now working properly. We plan to launch the complete service application by 2025-08-01, with the following pre-release schedule:
-
-  - Alpha version: 2025-06-01
-  - Beta version: 2025-07-01
-
 ## Blueprint
 
 ### Full Stack Vibe Coding
@@ -439,3 +392,58 @@ await fs.promises.writeFile(
   "utf8",
 );
 ```
+
+## Roadmap Schedule
+
+```mermaid
+gantt
+  dateFormat YYYY-MM-DD
+  title Roadmap Schedule
+
+  section Analyze<br>(kakasoo)
+  Prompt Study: done, 2025-04-30, 3d
+  holiday: milestone, done, 2025-05-01, 1d
+  vacation: milestone, done, 2025-05-02, 1d
+  holiday: milestone, done, 2025-05-05, 2d
+  Analyze Agent Structure(6d): done, 2025-05-07, 6d
+  TypeScript Backend meet-up: milestone, done, 2025-05-13, 1d
+  Analyze Agent Prompt tuning(5d): active, 2025-05-15, 5d
+  AWSKRUG presentation: milestone, 2025-05-21, 1d
+  Analyze Agent Prompt tuning(10d):, 2025-05-22, 10d
+
+  section Prisma<br>(Michael)
+  Project Init Setting & Prompt Study: done, 2025-04-30, 3d
+  Holiday: milestone, done, 2025-05-01, 6d
+  Design Architecture about Prisma Agent: done, 2025-05-07, 6d
+  TypeScript Backend meet-up: milestone, done, 2025-05-13, 1d
+  Prisma Agent Prompt Tuning & Modify Structure: active, 2025-05-14, 18d
+  UMC X GDGoc Presentation: milestone, 2025-05-21, 1d
+
+  
+  section Interface
+  Facade Controller: done, 2025-04-30, 18d
+  Event Handlers:          2025-05-18, 14d
+  Data Structures:   done, 2025-05-18, 28d
+
+  section Compilers
+  Backend Compiler:     done, 2025-04-30, 32d
+  Schema to TypeScript: done, 2025-05-18, 14d
+  Prisma Compiler:      done, 2025-05-18, 14d
+
+  section Prompts
+  Analyze  : 2025-04-30, 18d
+  Prisma   : 2025-04-30, 18d
+  Interface: 2025-05-18, 28d
+  Test     : 2025-05-18, 42d
+  Realize  : 2025-06-01, 28d
+
+  section Test Program
+  Compilers: 2025-04-30, 46d
+  Prompts:   2025-04-30, 46d
+  Benchmark: 2025-06-01, 28d
+```
+
+We're developing `@autobe` with dedicated effort, and each unit (agent) is now working properly. We plan to launch the complete service application by 2025-08-01, with the following pre-release schedule:
+
+  - Alpha version: 2025-06-01
+  - Beta version: 2025-07-01
