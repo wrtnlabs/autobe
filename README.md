@@ -323,9 +323,14 @@ We're developing `@autobe` with dedicated effort, and each unit (agent) is now w
 
 ```mermaid
 flowchart LR
-vibe("Vibe Coding") --"@autobe"--> backend("Backend Server")
-backend --"@agentica" --> chatbot("AI Chatbot")
-backend --"@autoview" --> front("Front Application")
+vibe("Vibe Coding")
+backend("Backend Server")
+chatbot("AI Chatbot")
+frontend("Front Application")
+
+vibe --"@autobe" --> backend
+backend --"@agentica" --> chatbot
+backend --"@autoview" --> frontend
 ```
 
 Our [WrtnLabs](https://github.com/wrtnlabs) team is developing two more projects, [`@agentica`](https://github.com/wrtnlabs/agentica) and [`@autoview`](https://github.com/wrtnlabs/autoview). Among these, [`@agentica`](https://github.com/wrtnlabs/agentica) automatically creates an AI Chatbot when you simply provide a `swagger.json` file, and [`@autoview`](https://github.com/wrtnlabs/autoview) automatically generates a Frontend Application when you bring a `swagger.json` file.
