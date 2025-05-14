@@ -1,38 +1,39 @@
-## AutoBE
+## AutoBE, Vibe Coding Agent of Backend Server
 
-AI-powered backend server development automation agent.
+[![GitHub License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/wrtnlabs/autobe/blob/master/LICENSE)
+[![NPM Version](https://img.shields.io/npm/v/@autobe/agent.svg)](https://www.npmjs.com/package/@autobe/agent)
+[![NPM Downloads](https://img.shields.io/npm/dm/@autobe/agent.svg)](https://www.npmjs.com/package/@autobe/agent)
+[![Build Status](https://github.com/wrtnlabs/autobe/workflows/build/badge.svg)](https://github.com/wrtnlabs/autobe/actions?query=workflow%3Abuild)
+[![Discord Badge](https://dcbadge.limes.pink/api/server/https://discord.gg/aMhRmzkqCx?style=flat)](https://discord.gg/aMhRmzkqCx)
 
-`@autobe` is an AI agent that analyzes user requirements and automatically generates backend server code of below stack.
+Vibe coding agent of backend server, enhanced by compiler feedback.
+
+`@autobe` is an AI agent of vibe coding that analyzes user requirements and automatically generates backend server code of below stack. And if you combine `@autobe` with [`@agentica`](https://github.com/wrtnlabs/agentica) and [`@autoview`](https://github.com/wrtnlabs/autoview), you can automate not only backend development, but also AI chatbot and frontend application developments.
 
 - TypeScript
 - NestJS
 - Prisma
 - Postgres
 
-Based on the waterfall model but incorporating spiral model's iterative improvement cycles, it produces high-quality code through continuous feedback between users and AI.
-
-The spiral process ensures not only well-structured code but also safe and reliable implementations verified by integrated compilers and automated test programs at each development stage.
+`@autobe` based on the waterfall model but incorporating spiral model's iterative improvement cycles, it produces high-quality code through continuous feedback between users and AI. The spiral process ensures not only well-structured code but also safe and reliable implementations verified by integrated compilers and automated test programs at each development stage.
 
 Simply describe your requirements to the AI and review the generated code. The backend code produced by `@autobe` is immediately executable and fully functional out of the box, eliminating the need for extensive manual adjustments or debugging.
-
-
-
 
 ## Functional Agents
 
 ```mermaid
-flowchart
+flowchart LR
 subgraph "Backend Coding Agent"
   coder("Facade Controller")
 end
-subgraph "functions"
+subgraph "Functional Agents"
   coder --"Requirements Analyses"--> analyze("Analyze")
   coder --"ERD"--> prisma("Prisma")
   coder --"API Design"--> interface("Interface")
   coder --"Test Codes" --> test("Test")
   coder --"Main Program" --> realize("Realize")
 end
-subgraph "compilers"
+subgraph "Compiler Feedback"
   prisma --"diagnoses" --> prismaCompiler("Prisma Compiler")
   interface --"generates" --> tsCompiler("TypeScript Compiler")
   test --"validates" --> tsCompiler("TypeScript Compiler")
@@ -309,4 +310,130 @@ gantt
   Compilers: 2025-04-30, 46d
   Prompts:   2025-04-30, 46d
   Benchmark: 2025-06-01, 28d
+```
+
+We're developing `@autobe` with dedicated effort, and each unit (agent) is now working properly. We plan to launch the complete service application by 2025-08-01, with the following pre-release schedule:
+
+  - Alpha version: 2025-06-01
+  - Beta version: 2025-07-01
+
+## Blueprint
+
+### Full Stack Vibe Coding
+
+```mermaid
+flowchart LR
+vibe("Vibe Coding")
+backend("Backend Server")
+chatbot("AI Chatbot")
+frontend("Front Application")
+
+vibe --"@autobe" --> backend
+backend --"@agentica" --> chatbot
+backend --"@autoview" --> frontend
+```
+
+Our [WrtnLabs](https://github.com/wrtnlabs) team is developing two more projects, [`@agentica`](https://github.com/wrtnlabs/agentica) and [`@autoview`](https://github.com/wrtnlabs/autoview). Among these, [`@agentica`](https://github.com/wrtnlabs/agentica) automatically creates an AI Chatbot when you simply provide a `swagger.json` file, and [`@autoview`](https://github.com/wrtnlabs/autoview) automatically generates a Frontend Application when you bring a `swagger.json` file.
+
+Therefore, you're not just limited to automatically creating a backend with `@autobe` and vibe coding. If you've created a backend server with vibe coding through `@autobe`, you can immediately create an AI Chatbot and Frontend Application along with it
+
+Can you conversate? Then you're a full-stack developer.
+
+### Agentica, AI Function Calling Framework
+
+![Agentica Logo](https://wrtnlabs.io/agentica/og.jpg)
+
+https://github.com/wrtnlabs/agentica
+
+Agentica is an Agentic AI framework specialized in AI Function Calling.
+
+It actually does everything with the function calling, and brings functions from below three protocols. If you put `swagger.json` file of `@autobe` generated backend server, it directly becomes an AI chatbot interacting with it.
+
+  - TypeScript Class/Interface
+  - Swagger/OpenAPI Document
+  - MCP (Model Context Protocol) Server
+
+```typescript
+import { Agentica, assertHttpController } from "@agentica/core";
+import OpenAI from "openai";
+import typia from "typia";
+
+import { MobileFileSystem } from "./services/MobileFileSystem";
+
+const agent = new Agentica({
+  vendor: {
+    api: new OpenAI({ apiKey: "********" }),
+    model: "gpt-4o-mini",
+  },
+  controllers: [
+    // functions from TypeScript class
+    typia.llm.controller<MobileFileSystem, "chatgpt">(
+      "filesystem",
+      MobileFileSystem(),
+    ),
+    // functions from Swagger/OpenAPI
+    assertHttpController({
+      name: "shopping",
+      model: "chatgpt",
+      document: await fetch(
+        "https://shopping-be.wrtn.ai/editor/swagger.json",
+      ).then(r => r.json()),
+      connection: {
+        host: "https://shopping-be.wrtn.ai",
+        headers: { Authorization: "Bearer ********" },
+      },
+    }),
+  ],
+});
+await agent.conversate("I wanna buy MacBook Pro");
+```
+
+### AutoView, Type to React Component
+
+![AutoView](https://github.com/user-attachments/assets/dab3cf89-163f-4934-b3a7-36f1de24ffc4)
+
+https://github.com/wrtnlabs/autoview
+
+AutoView is a frontend automation tool generating React component code from type information of below. If you put `swagger.json` file of `@autobe` generated backend server, it directly becomes a frontend application.
+
+  - TypeScript Type
+  - JSON Schema (OpenAPI Document)
+
+```typescript
+import { AutoViewAgent } from "@autoview/agent";
+import fs from "fs";
+import OpenAI from "openai";
+import typia, { tags } from "typia";
+
+// 1. Define your own TypeScript interface to display
+interface IMember {
+  id: string & tags.Format<"uuid">;
+  name: string;
+  age: number & tags.Minimum<0> & tags.Maximum<100>;
+  thumbnail: string & tags.Format<"uri"> & tags.ContentMediaType;
+}
+
+// 2. Setup the AutoView agent
+const agent = new AutoViewAgent({
+  model: "chatgpt",
+  vendor: {
+    api: new OpenAI({ apiKey: "********" }),
+    model: "o3-mini",
+    isThinkingEnabled: true,
+  },
+  input: {
+    type: "json-schema",
+    unit: typia.json.unit<IMember>(),
+  },
+  transformFunctionName: "transformMember",
+  experimentalAllInOne: true, // recommended for faster and less-error results
+});
+
+// 3. Get the result!
+const result = await agent.generate(); 
+await fs.promises.writeFile(
+  "./src/transformers/transformMember.ts",
+  result.transformTsCode,
+  "utf8",
+);
 ```
