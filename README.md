@@ -1,5 +1,7 @@
 ## AutoBE, Vibe Coding Agent of Backend Server
 
+![AutoBE Logo](https://github.com/user-attachments/assets/a90d14be-fd50-4dc7-ae9d-ca66c2124f31)
+
 [![GitHub License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/wrtnlabs/autobe/blob/master/LICENSE)
 [![NPM Version](https://img.shields.io/npm/v/@autobe/agent.svg)](https://www.npmjs.com/package/@autobe/agent)
 [![NPM Downloads](https://img.shields.io/npm/dm/@autobe/agent.svg)](https://www.npmjs.com/package/@autobe/agent)
