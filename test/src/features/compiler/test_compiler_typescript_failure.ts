@@ -5,9 +5,9 @@ import { MigrateApplication } from "@nestia/migrate";
 import fs from "fs";
 import { IValidation } from "typia";
 
-import { TestGlobal } from "../TestGlobal";
+import { TestGlobal } from "../../TestGlobal";
 
-export const test_compiler_typescript_migrate = async (): Promise<void> => {
+export const test_compiler_typescript_failure = async (): Promise<void> => {
   const inspect: IValidation<MigrateApplication> = MigrateApplication.create(
     await fetch("https://shopping-be.wrtn.ai/editor/swagger.json").then((r) =>
       r.json(),
@@ -38,14 +38,22 @@ export const test_compiler_typescript_migrate = async (): Promise<void> => {
 
   const compiler: AutoBeTypeScriptCompiler = new AutoBeTypeScriptCompiler();
   const result: IAutoBeTypeScriptCompilerResult = await compiler.compile({
-    files: Object.fromEntries(
-      files
-        .filter((f) => f.location.startsWith("src") && f.file.endsWith(".ts"))
-        .map((f) => [
-          `${f.location}/${f.file}`.replace("//", "/"),
-          f.content.replaceAll("@link", "#link"),
-        ]),
-    ),
+    files: {
+      ...Object.fromEntries(
+        files
+          .filter((f) => f.location.startsWith("src") && f.file.endsWith(".ts"))
+          .map((f) => [
+            `${f.location}/${f.file}`.replace("//", "/"),
+            f.content.replaceAll("@link", "#link"),
+          ]),
+      ),
+      "src/error.ts": "asdfasdfasfewfds;",
+    },
   });
-  TestValidator.equals("result")(result.type)("success");
+  TestValidator.predicate("result")(
+    () =>
+      result.type === "failure" &&
+      result.diagnostics.length === 1 &&
+      !!result.diagnostics[0]?.messageText.includes("asdfasdfasfewfds"),
+  );
 };

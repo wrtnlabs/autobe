@@ -5,3 +5,8 @@ export * from "./context/AutoBeTokenUsage";
 export * from "./structures/IAutoBeProps";
 export * from "./structures/IAutoBeConfig";
 export * from "./structures/IAutoBeVendor";
+
+/**
+ * @internal
+ */
+export * as orchestrate from "./orchestrate";

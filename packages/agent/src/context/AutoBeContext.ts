@@ -1,4 +1,4 @@
-import { IAutoBeCompiler } from "@autobe/interface";
+import { AutoBeHistory, IAutoBeCompiler } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 
 import { IAutoBeVendor } from "../structures/IAutoBeVendor";
@@ -9,6 +9,7 @@ export interface AutoBeContext<Model extends ILlmSchema.Model> {
   model: Model;
   vendor: IAutoBeVendor;
   compiler: IAutoBeCompiler;
+  histories: AutoBeHistory[];
   usage: () => AutoBeTokenUsage;
   state: () => AutoBeState;
 }

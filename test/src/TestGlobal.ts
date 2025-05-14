@@ -30,7 +30,11 @@ export class TestGlobal {
   }
 }
 
-interface IEnvironments {}
+interface IEnvironments {
+  CHATGPT_API_KEY?: string;
+  CHATGPT_BASE_URL?: string;
+  CHATGPT_OPTIONS?: string;
+}
 
 const environments = new Singleton(() => {
   const env = dotenv.config();

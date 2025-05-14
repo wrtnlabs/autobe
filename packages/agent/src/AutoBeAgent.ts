@@ -31,6 +31,7 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
       model: props.model,
       vendor: props.vendor,
       compiler: props.compiler,
+      histories: this.histories_,
       usage: () => this.agentica_.getTokenUsage(),
       state: () => this.state_,
     };
@@ -89,5 +90,12 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
 
   public getTokenUsage(): AutoBeTokenUsage {
     return this.agentica_.getTokenUsage();
+  }
+
+  /**
+   * @internal
+   */
+  public getContext(): AutoBeContext<Model> {
+    return this.context_;
   }
 }
