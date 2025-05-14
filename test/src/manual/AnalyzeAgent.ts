@@ -3,7 +3,7 @@ import fs from "fs";
 import OpenAI from "openai";
 import * as readline from "readline";
 
-import { testAgent } from "../../../packages/agent/src/analyze/AnalyzeAgent";
+import { AnalyzeAgent } from "../../../packages/agent/src/analyze/AnalyzeAgent";
 
 config();
 
@@ -26,7 +26,7 @@ async function createAgent() {
   const foldername = new Date().getTime().toString();
   await fs.promises.mkdir(`${__dirname}/${foldername}`);
 
-  return testAgent(
+  return AnalyzeAgent(
     {
       api: new OpenAI({
         apiKey: process.env.OPENAI_KEY,
