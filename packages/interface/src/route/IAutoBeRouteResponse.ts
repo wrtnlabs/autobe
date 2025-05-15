@@ -49,7 +49,7 @@ export interface IAutoBeRouteResponse {
    * {@link OpenApi.IJsonSchema.IReference reference} type.
    *
    * This schema must be a {@link OpenApi.IJsonSchema.IReference reference}
-   * type targtting the {@link IAutoBeRouteDocument.components components}
+   * type targeting the {@link IAutoBeRouteDocument.components components}
    * section as an {@link OpenApi.IJsonSchema.Object object} type.
    *
    * Therefore, its `$ref` property must start with `#/components/schemas/`
