@@ -1,10 +1,9 @@
-import { OpenApi } from "@samchon/openapi";
-
+import { IAutoBeRouteDocument } from "../route/IAutoBeRouteDocument";
 import { AutoBeAgentHistoryBase } from "./AutoBeHistoryBase";
 
 export interface AutoBeInterfaceHistory
   extends AutoBeAgentHistoryBase<"interface"> {
-  document: OpenApi.IDocument;
+  document: IAutoBeRouteDocument;
   reason: string;
   description: string;
   step: number;
