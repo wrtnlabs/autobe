@@ -111,7 +111,7 @@ model shopping_channel_categories {
   /// Creation time of record.
   created_at DateTime @db.Timestamptz
 
-  /// Updadte time of record.
+  /// Update time of record.
   updated_at DateTime @db.Timestamptz
 
   /// Deletion time of record.
