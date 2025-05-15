@@ -438,8 +438,8 @@ gantt
   Realize  : 2025-06-01, 28d
 
   section Test Program
-  Compilers: 2025-04-30, 46d
-  Prompts:   2025-04-30, 46d
+  Compilers: done, 2025-04-30, 46d
+  Prompts:   active, 2025-04-30, 46d
   Benchmark: 2025-06-01, 28d
 ```
 
