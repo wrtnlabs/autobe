@@ -53,7 +53,7 @@ export interface IAutoBeRouteResponse {
    * section as an {@link OpenApi.IJsonSchema.Object object} type.
    *
    * Therefore, its `$ref` property must start with `#/components/schemas/`
-   * prefix. And its naming convetion (of postfix) must follow below rules:
+   * prefix. And its naming convention (of postfix) must follow below rules:
    *
    * - `IEntityName`: Main entity with detailed information (e.g., `IShoppingSale`)
    * - `IEntityName.ISummary`: Simplified response version with essential properties

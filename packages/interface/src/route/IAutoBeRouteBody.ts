@@ -55,7 +55,7 @@ export interface IAutoBeRouteBody {
    * an {@link OpenApi.IJsonSchema.Object object} type.
    *
    * Therefore, its `$ref` property must start with `#/components/schemas/`
-   * prefix. And its naming convetion (of postfix) must follow below rules:
+   * prefix. And its naming convention (of postfix) must follow below rules:
    *
    * - `IEntityName.ICreate`: Request body for creation operations (POST)
    * - `IEntityName.IUpdate`: Request body for update operations (PUT)
