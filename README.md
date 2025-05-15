@@ -184,7 +184,7 @@ An internal review agent continually cross-references the generated interfaces a
 ```typescript
 @Controller("shoppings/customers/sales")
 export class ShoppingCustomerSaleController {
-/**
+  /**
    * List up every summarized sales.
    *
    * List up every {@link IShoppingSale.ISummary summarized sales}.
@@ -431,9 +431,9 @@ gantt
   Prisma Compiler:      done, 2025-05-18, 14d
 
   section Prompts
-  Analyze  : 2025-04-30, 18d
-  Prisma   : 2025-04-30, 18d
-  Interface: 2025-05-18, 28d
+  Analyze  : active, 2025-04-30, 18d
+  Prisma   : active, 2025-04-30, 18d
+  Interface: active, 2025-05-18, 28d
   Test     : 2025-05-18, 42d
   Realize  : 2025-06-01, 28d
 
