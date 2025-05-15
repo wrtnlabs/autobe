@@ -34,6 +34,19 @@ import { IAutoBeRouteOperation } from "./IAutoBeRouteOperation";
  */
 export interface IAutoBeRouteDocument {
   /**
+   * List of API operations.
+   *
+   * This array contains all the API endpoints with their HTTP methods,
+   * descriptions, parameters, request/response structures, etc.
+   * Each operation corresponds to an entry in the paths section of
+   * an OpenAPI document.
+   *
+   * Note that, combination of {@link IAutoBeRouteOperation.path}
+   * and {@link IAutoBeRouteOperation.method} must be unique.
+   */
+  operations: IAutoBeRouteOperation[];
+
+  /**
    * Reusable components of the API operations.
    *
    * This contains schemas, parameters, responses, and other reusable
@@ -82,17 +95,4 @@ export interface IAutoBeRouteDocument {
    * and AI tools understand and maintain the API structure.
    */
   components: OpenApi.IComponents;
-
-  /**
-   * List of API operations.
-   *
-   * This array contains all the API endpoints with their HTTP methods,
-   * descriptions, parameters, request/response structures, etc.
-   * Each operation corresponds to an entry in the paths section of
-   * an OpenAPI document.
-   *
-   * Note that, combination of {@link IAutoBeRouteOperation.path}
-   * and {@link IAutoBeRouteOperation.method} must be unique.
-   */
-  operations: IAutoBeRouteOperation[];
 }
