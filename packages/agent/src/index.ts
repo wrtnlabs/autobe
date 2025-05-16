@@ -9,4 +9,9 @@ export * from "./structures/IAutoBeVendor";
 /**
  * @internal
  */
+export * as factory from "./factory";
+
+/**
+ * @internal
+ */
 export * as orchestrate from "./orchestrate";

@@ -5,9 +5,9 @@ import { ILlmSchema } from "@samchon/openapi";
 import { AutoBeContext } from "./context/AutoBeContext";
 import { AutoBeState } from "./context/AutoBeState";
 import { AutoBeTokenUsage } from "./context/AutoBeTokenUsage";
-import { createAutoBeController } from "./internal/createAutoBeApplication";
-import { createAutoBeState } from "./internal/createAutoBeState";
-import { transformAgenticaHistory } from "./internal/transformAgenticaHistory";
+import { createAgenticaHistory } from "./factory/createAgenticaHistory";
+import { createAutoBeController } from "./factory/createAutoBeApplication";
+import { createAutoBeState } from "./factory/createAutoBeState";
 import { IAutoBeProps } from "./structures/IAutoBeProps";
 
 export class AutoBeAgent<Model extends ILlmSchema.Model> {
@@ -30,6 +30,7 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
     this.context_ = {
       model: props.model,
       vendor: props.vendor,
+      config: props.config,
       compiler: props.compiler,
       histories: this.histories_,
       usage: () => this.agentica_.getTokenUsage(),
@@ -55,7 +56,7 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
     this.agentica_.getHistories().push(
       ...this.histories_
         .map((history) =>
-          transformAgenticaHistory({
+          createAgenticaHistory({
             operations: this.agentica_.getOperations(),
             history,
           }),

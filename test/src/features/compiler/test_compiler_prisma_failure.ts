@@ -5,19 +5,18 @@ import fs from "fs";
 import typia from "typia";
 
 import { TestGlobal } from "../../TestGlobal";
+import { FileSystemIterator } from "../../utils/FileSystemIterator";
 
 export const test_compiler_prisma_failure = async (): Promise<void> => {
   const result: IAutoBePrismaCompilerResult =
     await new AutoBePrismaCompiler().compile({
       files: {
-        "schema.prisma": [
-          await fs.promises.readFile(
-            `${TestGlobal.ROOT}/assets/schema.prisma`,
-            "utf8",
-          ),
-          "ASDFGHJ",
-          "ZXCVBNM",
-        ].join("\n\n"),
+        ...(await FileSystemIterator.read({
+          root: `${TestGlobal.ROOT}/assets/shopping/prisma/schema`,
+          extension: "prisma",
+          prefix: "",
+        })),
+        "invalid.prisma": ["ASDFGHJ", "ZXCVBNM"].join("\n\n"),
       },
     });
   TestValidator.predicate("result")(
