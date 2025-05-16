@@ -1,0 +1,343 @@
+{
+  "id": "1ec2f7e8-decc-44bd-9e46-56b09f90842a",
+  "type": "interface",
+  "document": {
+    "operations": [
+      {
+        "reason": "To register a new member (customer) into the shopping mall system.",
+        "path": "/shopping/members",
+        "method": "post",
+        "description": "Creates a new shopping mall member account. Records member details, links to a citizen record if identity verification has been performed, supports channel-specific membership registration. Email registration is handled separately.",
+        "parameters": [],
+        "body": {
+          "description": "Member registration details.",
+          "schema": {
+            "$ref": "#/components/schemas/IShoppingMember.ICreate"
+          }
+        },
+        "response": {
+          "description": "The newly created member's profile.",
+          "schema": {
+            "$ref": "#/components/schemas/IShoppingMember"
+          }
+        }
+      },
+      {
+        "reason": "To fetch the details of a single member by their ID.",
+        "path": "/shopping/members/{memberId}",
+        "method": "get",
+        "description": "Retrieves details for a specific member. Includes identity linkage, channels, and other personal info.",
+        "parameters": [
+          {
+            "name": "memberId",
+            "description": "Unique identifier of the member.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "body": null,
+        "response": {
+          "description": "Member detail information.",
+          "schema": {
+            "$ref": "#/components/schemas/IShoppingMember"
+          }
+        }
+      },
+      {
+        "reason": "To patch-request/search a paginated list of members (with filters such as date, channel, keyword, etc).",
+        "path": "/shopping/members",
+        "method": "patch",
+        "description": "Retrieves a paginated list of mall members, allowing filtering, sorting, and pagination.",
+        "parameters": [],
+        "body": {
+          "description": "Request filters and pagination.",
+          "schema": {
+            "$ref": "#/components/schemas/IShoppingMember.IRequest"
+          }
+        },
+        "response": {
+          "description": "Paginated list of member summaries.",
+          "schema": {
+            "$ref": "#/components/schemas/IPageIShoppingMember.ISummary"
+          }
+        }
+      },
+      {
+        "reason": "To manage (add) a member's email addresses (multi-email support).",
+        "path": "/shopping/members/{memberId}/emails",
+        "method": "post",
+        "description": "Registers a new email address for a given member. Can be used for login, recovery, or notifications. Supports multiple emails per member.",
+        "parameters": [
+          {
+            "name": "memberId",
+            "description": "Unique identifier of the member.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "body": {
+          "description": "Email address registration.",
+          "schema": {
+            "$ref": "#/components/schemas/IShoppingMemberEmail.ICreate"
+          }
+        },
+        "response": {
+          "description": "The newly registered email object.",
+          "schema": {
+            "$ref": "#/components/schemas/IShoppingMemberEmail"
+          }
+        }
+      },
+      {
+        "reason": "To register a new product (sale) by a seller into the system.",
+        "path": "/shopping/sales",
+        "method": "post",
+        "description": "Allows a seller to register a new product for sale. Handles section and seller linkage. Creates an initial snapshot.",
+        "parameters": [],
+        "body": {
+          "description": "Sale registration information.",
+          "schema": {
+            "$ref": "#/components/schemas/IShoppingSale.ICreate"
+          }
+        },
+        "response": {
+          "description": "The registered sale entity (with first snapshot and category linkage info).",
+          "schema": {
+            "$ref": "#/components/schemas/IShoppingSale"
+          }
+        }
+      },
+      {
+        "reason": "To get full information of a sale/product by its ID.",
+        "path": "/shopping/sales/{saleId}",
+        "method": "get",
+        "description": "Fetches detailed product/sale info, including latest snapshot, section, seller, and category mapping.",
+        "parameters": [
+          {
+            "name": "saleId",
+            "description": "Unique identifier of the sale/product.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "body": null,
+        "response": {
+          "description": "Detailed product/sale object.",
+          "schema": {
+            "$ref": "#/components/schemas/IShoppingSale"
+          }
+        }
+      },
+      {
+        "reason": "To search/paginate a list of products/sales for display or management.",
+        "path": "/shopping/sales",
+        "method": "patch",
+        "description": "Returns a paginated list of products/sales, supporting filtering by section, seller, status, keyword, etc. Returns sale summaries.",
+        "parameters": [],
+        "body": {
+          "description": "Filter and paging details.",
+          "schema": {
+            "$ref": "#/components/schemas/IShoppingSale.IRequest"
+          }
+        },
+        "response": {
+          "description": "Paginated result of sale summaries.",
+          "schema": {
+            "$ref": "#/components/schemas/IPageIShoppingSale.ISummary"
+          }
+        }
+      },
+      {
+        "reason": "To manage snapshots of sale/product information (history, versioning, legal evidence).",
+        "path": "/shopping/sales/{saleId}/snapshots",
+        "method": "get",
+        "description": "Lists all snapshots (versions) for a product/sale, ordered chronologically. Used for history/audit/viewing and comparing previous states.",
+        "parameters": [
+          {
+            "name": "saleId",
+            "description": "Unique identifier of the sale/product.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "body": null,
+        "response": {
+          "description": "List of product/sale snapshots for history & evidence.",
+          "schema": {
+            "$ref": "#/components/schemas/IShoppingSaleSnapshot[]"
+          }
+        }
+      },
+      {
+        "reason": "To add a given product to a customer's cart (creating or updating their cart).",
+        "path": "/shopping/carts/{customerId}/commodities",
+        "method": "post",
+        "description": "Adds a single product (by snapshot) and specific option choices to the given customer's cart. Handles inventory validation, quantity, and creates a pending cartCommodity. Option selections are validated according to the snapshot options/rules.",
+        "parameters": [
+          {
+            "name": "customerId",
+            "description": "Unique identifier of the customer who owns the cart.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "body": {
+          "description": "Information about the product being added to cart and the selected options.",
+          "schema": {
+            "$ref": "#/components/schemas/IShoppingCartCommodity.ICreate"
+          }
+        },
+        "response": {
+          "description": "The created (or updated) cart commodity line.",
+          "schema": {
+            "$ref": "#/components/schemas/IShoppingCartCommodity"
+          }
+        }
+      },
+      {
+        "reason": "To retrieve details of a customer's current cart with all selected commodities, quantities, and options.",
+        "path": "/shopping/carts/{customerId}",
+        "method": "get",
+        "description": "Retrieves the given customer's entire shopping cart, including all currently active (not deleted/published) commodities and their chosen options.",
+        "parameters": [
+          {
+            "name": "customerId",
+            "description": "Unique customer ID (owner of the cart).",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "body": null,
+        "response": {
+          "description": "Full cart object with nested commodities and option choices.",
+          "schema": {
+            "$ref": "#/components/schemas/IShoppingCart"
+          }
+        }
+      },
+      {
+        "reason": "To apply/convert the current customer's cart into an order application (pre-payment state).",
+        "path": "/shopping/customers/{customerId}/orders",
+        "method": "post",
+        "description": "Converts the current active cart items into an order application for the customer. Triggers inventory check, locks selected items, snapshots cart for history, and creates an order ready for payment.",
+        "parameters": [
+          {
+            "name": "customerId",
+            "description": "Customer ID initiating the order application.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "body": {
+          "description": "Order creation input (might include shipping, contact details if not provided in profile).",
+          "schema": {
+            "$ref": "#/components/schemas/IShoppingOrder.ICreate"
+          }
+        },
+        "response": {
+          "description": "The created order (application state, before payment).",
+          "schema": {
+            "$ref": "#/components/schemas/IShoppingOrder"
+          }
+        }
+      },
+      {
+        "reason": "To complete payment (or publish/cancel) for an order, handling multiple possible payment methods and updating confirmation status.",
+        "path": "/shopping/orders/{orderId}/publishes",
+        "method": "post",
+        "description": "Handles payment application for a given order, including cash, deposit, mileage, coupons, and asynchronous (virtual account) methods. Records payment details and changes order state. Used for both payment and cancellation workflows.",
+        "parameters": [
+          {
+            "name": "orderId",
+            "description": "Unique identifier of the order.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "body": {
+          "description": "Payment request data, specifying method(s), amount(s), and credentials.",
+          "schema": {
+            "$ref": "#/components/schemas/IShoppingOrderPublish.ICreate"
+          }
+        },
+        "response": {
+          "description": "Order publish/payment result.",
+          "schema": {
+            "$ref": "#/components/schemas/IShoppingOrderPublish"
+          }
+        }
+      },
+      {
+        "reason": "To issue a new discount coupon (by seller or admin, with given conditions).",
+        "path": "/shopping/coupons",
+        "method": "post",
+        "description": "Issues a new discount coupon, specifying conditions, limits, and time windows. Supports public or code-based distribution.",
+        "parameters": [],
+        "body": {
+          "description": "Coupon issue details (name, value, conditions, limits, etc).",
+          "schema": {
+            "$ref": "#/components/schemas/IShoppingCoupon.ICreate"
+          }
+        },
+        "response": {
+          "description": "The created coupon entity with all application criteria.",
+          "schema": {
+            "$ref": "#/components/schemas/IShoppingCoupon"
+          }
+        }
+      },
+      {
+        "reason": "To allocate or issue a coupon ticket to a customer (public or by code), which may be used for discounts.",
+        "path": "/shopping/customers/{customerId}/coupon-tickets",
+        "method": "post",
+        "description": "Allocates/assigns a coupon (public or code) to a customer as a coupon ticket. Record validity and restrict usage as necessary.",
+        "parameters": [
+          {
+            "name": "customerId",
+            "description": "Customer ID receiving the coupon ticket.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "body": {
+          "description": "Coupon ticket claim info (code if disposable/one-time, or direct for public coupons).",
+          "schema": {
+            "$ref": "#/components/schemas/IShoppingCouponTicket.ICreate"
+          }
+        },
+        "response": {
+          "description": "Issued coupon ticket data.",
+          "schema": {
+            "$ref": "#/components/schemas/IShoppingCouponTicket"
+          }
+        }
+      }
+    ],
+    "components": {
+      "schemas": {}
+    }
+  },
+  "reason": "Step to the interface designing after DB schema generation",
+  "description": "OpenAPI document for a comprehensive multi-channel shopping mall/e-commerce platform. Covers Customer, Seller, Admin systems; Product and Inventory management; Order, Cart, Payment, Coupon, Mileage handling; Inquiries, Reviews, Bulletin Boards; and Favorites. All endpoints follow RESTful conventions, use detailed object schemas, and ensure extensibility, security, and operational transparency. Data models and endpoints are based on the provided requirements, ERD, and business logic.",
+  "started_at": "2025-05-16T09:35:33.803Z",
+  "completed_at": "2025-05-16T09:36:24.254Z",
+  "step": 1
+}
