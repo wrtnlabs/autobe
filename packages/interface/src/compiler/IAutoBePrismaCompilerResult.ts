@@ -5,6 +5,7 @@ export type IAutoBePrismaCompilerResult =
 export namespace IAutoBePrismaCompilerResult {
   export interface ISuccess {
     type: "success";
+    diagrams: Record<string, string>;
     files: Record<string, string>;
   }
   export interface IFailure {

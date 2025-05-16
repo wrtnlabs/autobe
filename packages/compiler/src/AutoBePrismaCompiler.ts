@@ -16,6 +16,7 @@ import {
 import fs from "fs";
 import os from "os";
 import path from "path";
+import { IPrismaMarkdownChapter, PrismaMarkdown } from "prisma-markdown";
 
 export class AutoBePrismaCompiler implements IAutoBePrismaCompiler {
   public async compile(
@@ -88,12 +89,20 @@ export class AutoBePrismaCompiler implements IAutoBePrismaCompiler {
           "node_modules/@prisma/client/index.d.ts":
             "export * from '.prisma/client/default'",
         },
+        diagrams: this.compileDiagrams(document.datamodel),
       };
     } catch (error) {
       return out(this.catch(error));
     } finally {
       await clear();
     }
+  }
+
+  private compileDiagrams(model: DMMF.Datamodel): Record<string, string> {
+    const chapters: IPrismaMarkdownChapter[] = PrismaMarkdown.categorize(model);
+    return Object.fromEntries(
+      chapters.map((ch) => [ch.name, PrismaMarkdown.writeDiagram(ch.diagrams)]),
+    );
   }
 
   private catch(

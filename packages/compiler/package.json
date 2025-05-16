@@ -19,6 +19,7 @@
     "@prisma/generator-helper": "^6.7.0",
     "@prisma/internals": "^6.7.0",
     "@samchon/openapi": "catalog:samchon",
+    "prisma-markdown": "catalog:samchon",
     "tstl": "catalog:samchon",
     "typia": "catalog:samchon"
   },

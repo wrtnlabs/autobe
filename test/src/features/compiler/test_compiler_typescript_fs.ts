@@ -1,6 +1,7 @@
 import { AutoBeTypeScriptCompiler } from "@autobe/compiler";
 import { IAutoBeTypeScriptCompilerResult } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
+import typia from "typia";
 
 export const test_compiler_typescript_fs = async (): Promise<void> => {
   const compiler: AutoBeTypeScriptCompiler = new AutoBeTypeScriptCompiler();
@@ -10,6 +11,7 @@ export const test_compiler_typescript_fs = async (): Promise<void> => {
     },
   });
   TestValidator.equals("result")(result.type)("success");
+  typia.assertEquals(result);
 };
 
 const FILE = `

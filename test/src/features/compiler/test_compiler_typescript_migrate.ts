@@ -3,7 +3,7 @@ import { IAutoBeTypeScriptCompilerResult } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 import { MigrateApplication } from "@nestia/migrate";
 import fs from "fs";
-import { IValidation } from "typia";
+import typia, { IValidation } from "typia";
 
 import { TestGlobal } from "../../TestGlobal";
 
@@ -48,4 +48,5 @@ export const test_compiler_typescript_migrate = async (): Promise<void> => {
     ),
   });
   TestValidator.equals("result")(result.type)("success");
+  typia.assertEquals(result);
 };

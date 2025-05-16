@@ -4,6 +4,7 @@ import {
   IAutoBeTypeScriptCompilerResult,
 } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
+import typia from "typia";
 
 import { TestRepositoryUtil } from "../../utils/TestRepositoryUtil";
 
@@ -21,4 +22,5 @@ export const test_compiler_facade_shopping = async (): Promise<void> => {
     package: "@samchon/shopping-api",
   });
   TestValidator.equals("result")(result.type)("success");
+  typia.assertEquals(result);
 };
