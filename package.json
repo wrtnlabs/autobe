@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "description": "AutoBE Station",
   "scripts": {
-    "build": "pnpm --filter=./packages/** -r build",
+    "build": "pnpm --filter=./packages/** --filter=./test -r build",
     "package:latest": "pnpm --filter=./packages/** -r publish --tag latest",
     "package:next": "pnpm --filter=./packages/** -r publish --tag next",
     "test": "cd test && pnpm start"
