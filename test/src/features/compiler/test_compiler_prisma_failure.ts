@@ -2,6 +2,7 @@ import { AutoBePrismaCompiler } from "@autobe/compiler";
 import { IAutoBePrismaCompilerResult } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 import fs from "fs";
+import typia from "typia";
 
 import { TestGlobal } from "../../TestGlobal";
 
@@ -25,4 +26,5 @@ export const test_compiler_prisma_failure = async (): Promise<void> => {
       result.reason.includes("ASDFGHJ") &&
       result.reason.includes("ZXCVBNM"),
   );
+  typia.assertEquals(result);
 };

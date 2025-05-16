@@ -3,7 +3,7 @@ import { IAutoBeTypeScriptCompilerResult } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 import { MigrateApplication } from "@nestia/migrate";
 import fs from "fs";
-import { IValidation } from "typia";
+import typia, { IValidation } from "typia";
 
 import { TestGlobal } from "../../TestGlobal";
 
@@ -56,4 +56,5 @@ export const test_compiler_typescript_failure = async (): Promise<void> => {
       result.diagnostics.length === 1 &&
       !!result.diagnostics[0]?.messageText.includes("asdfasdfasfewfds"),
   );
+  typia.assertEquals(result);
 };
