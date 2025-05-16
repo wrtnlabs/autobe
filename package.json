@@ -1,12 +1,14 @@
 {
   "private": true,
   "name": "@autobe/station",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "AutoBE Station",
+  "packageManager": "pnpm@10.6.4",
   "scripts": {
     "build": "pnpm --filter=./packages/** --filter=./test -r build",
     "package:latest": "pnpm --filter=./packages/** -r publish --tag latest",
     "package:next": "pnpm --filter=./packages/** -r publish --tag next",
+    "release": "bumpp",
     "test": "cd test && pnpm start"
   },
   "keywords": [],
@@ -14,6 +16,38 @@
   "license": "MIT",
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
+    "bumpp": "^10.1.1",
     "prettier": "^3.5.3"
+  },
+  "changelogithub": {
+    "types": {
+      "feat": {
+        "title": "🚀 Features"
+      },
+      "fix": {
+        "title": "🐞 Bug Fixes"
+      },
+      "perf": {
+        "title": "🏎 Performance"
+      },
+      "docs": {
+        "title": "📝 Documentation"
+      },
+      "test": {
+        "title": "✅ Tests"
+      },
+      "ci": {
+        "title": "🤖 CI"
+      },
+      "style": {
+        "title": "🎨 Styles"
+      },
+      "build": {
+        "title": "📦 Build"
+      },
+      "refactor": {
+        "title": "🔨 Code Refactoring"
+      }
+    }
   }
 }
