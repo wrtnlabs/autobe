@@ -18,7 +18,7 @@ export const test_compiler_facade_shopping = async (): Promise<void> => {
 
   const result: IAutoBeTypeScriptCompilerResult = await compiler.typescript({
     files: await TestRepositoryUtil.src("samchon", "shopping-backend"),
-    prisma: prisma.files,
+    prisma: prisma.schemas,
     package: "@samchon/shopping-api",
   });
   TestValidator.equals("result")(result.type)("success");

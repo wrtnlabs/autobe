@@ -82,13 +82,21 @@ export class AutoBePrismaCompiler implements IAutoBePrismaCompiler {
         clientVersion: "local",
         engineVersion: "local",
       });
+      const rawFiles: Record<string, string> = await this.collect(
+        `${directory}/output`,
+      );
       return {
         type: "success",
-        files: {
-          ...(await this.collect(`${directory}/output`)),
-          "node_modules/@prisma/client/index.d.ts":
+        schemas: Object.fromEntries(
+          Object.entries(rawFiles).filter(([key]) => key.endsWith(".prisma")),
+        ),
+        nodeModules: Object.fromEntries([
+          ...Object.entries(rawFiles).filter(([key]) => key.endsWith(".d.ts")),
+          [
+            "node_modules/@prisma/client/index.d.ts",
             "export * from '.prisma/client/default'",
-        },
+          ],
+        ]),
         document: this.compileDocument(document.datamodel),
         diagrams: this.compileDiagrams(document.datamodel),
       };

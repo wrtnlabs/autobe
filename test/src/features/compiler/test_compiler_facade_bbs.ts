@@ -18,7 +18,7 @@ export const test_compiler_facade_bbs = async (): Promise<void> => {
 
   const result: IAutoBeTypeScriptCompilerResult = await compiler.typescript({
     files: await TestRepositoryUtil.src("samchon", "bbs-backend"),
-    prisma: prisma.files,
+    prisma: prisma.schemas,
     package: "@samchon/bbs-api",
   });
   TestValidator.equals("result")(result.type)("success");

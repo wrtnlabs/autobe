@@ -1,10 +1,10 @@
-import { IMicroAgenticaHistoryJson } from "@agentica/core";
+import { IAgenticaHistoryJson } from "@agentica/core";
 
 import { AutoBeState } from "../../context/AutoBeState";
 
 export const transformInterfaceStateMessage = (
   state: AutoBeState,
-): IMicroAgenticaHistoryJson => ({
+): IAgenticaHistoryJson.IAssistantMessage => ({
   type: "assistantMessage",
   text: predicate(state),
 });
@@ -56,7 +56,7 @@ const predicate = (state: AutoBeState): string => {
     // Prisma Schema Files
     "## Prisma DB Schema",
     "```json",
-    JSON.stringify(state.prisma.result.files),
+    JSON.stringify(state.prisma.result.schemas),
     "```",
     "",
     // Entity Relationship Diagram

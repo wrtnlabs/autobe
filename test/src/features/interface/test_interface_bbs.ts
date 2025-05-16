@@ -72,7 +72,8 @@ export const test_interface_bbs = async () => {
             description: "DB schema about overall e-commerce system",
             result: {
               type: "success",
-              files: prisma.files,
+              schemas: prisma.schemas,
+              nodeModules: prisma.nodeModules,
               document: prisma.document,
               diagrams: prisma.diagrams,
             },
