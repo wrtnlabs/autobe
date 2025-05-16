@@ -1,0 +1,152 @@
+/// Bulletin Board Comment.
+///
+/// Comments can be nested (reply to parent via parent_id), belong to posts,
+/// and require password for modification/deletion. Supports snapshots and
+/// soft deletion.
+///
+/// @namespace BBS
+model bbs_comments {
+  //----
+  // COLUMNS
+  //----
+  /// Primary Key.
+  ///
+  /// @format uuid
+  id String @id @db.Uuid
+
+  /// Belonged post's {@link bbs_posts.id}
+  ///
+  /// @format uuid
+  bbs_post_id String @db.Uuid
+
+  /// Parent comment's {@link bbs_comments.id}
+  ///
+  /// For reply/nesting structure.
+  ///
+  /// @format uuid
+  parent_id String? @db.Uuid
+
+  /// Author name for the comment.
+  author_name String @db.VarChar
+
+  /// Hashed password for comment author (never plaintext).
+  password_hash String @db.VarChar
+
+  /// Creation time of the comment.
+  created_at DateTime @db.Timestamptz
+
+  /// Soft-deletion time.
+  ///
+  /// Content never actually deleted, only marked here.
+  deleted_at DateTime? @db.Timestamptz
+
+  //----
+  // RELATIONS
+  //----
+  /// Target post.
+  post bbs_posts @relation(fields: [bbs_post_id], references: [id], onDelete: Cascade)
+
+  /// Parent comment.
+  ///
+  /// Only when reply case/nested.
+  parent   bbs_comments?  @relation("bbs_comments_parent", fields: [parent_id], references: [id], onDelete: Cascade)
+  /// List of children comments (replies).
+  children bbs_comments[] @relation("bbs_comments_parent")
+
+  /// Snapshots of the comment.
+  snapshots bbs_comment_snapshots[]
+
+  @@index([bbs_post_id, parent_id, created_at])
+  @@index([deleted_at])
+}
+
+/// Comment Snapshot entity.
+///
+/// Snapshot of comment content and attachments; append-only, for audit/history.
+///
+/// @namespace BBS
+model bbs_comment_snapshots {
+  //----
+  // COLUMNS
+  //----
+  /// Primary Key.
+  ///
+  /// @format uuid
+  id String @id @db.Uuid
+
+  /// Belonged comment's {@link bbs_comments.id}
+  ///
+  /// @format uuid
+  bbs_comment_id String @db.Uuid
+
+  /// Format of body.
+  ///
+  /// Allowed values: "MARKDOWN", "HTML", "PLAIN"
+  /// @allowedValues ["MARKDOWN", "HTML", "PLAIN"]
+  body_format String @db.VarChar
+
+  /// Body/content of the comment at this snapshot.
+  body String
+
+  /// IP address of author for this snapshot.
+  ///
+  /// Stored for audit, with restricted access.
+  author_ip String @db.VarChar
+
+  /// Creation time of snapshot.
+  created_at DateTime @db.Timestamptz
+
+  //----
+  // RELATIONS
+  //----
+  /// Belonged comment info.
+  comment bbs_comments @relation(fields: [bbs_comment_id], references: [id], onDelete: Cascade)
+
+  /// Attachments for this comment snapshot (with order).
+  attachments bbs_comment_snapshot_attachments[]
+
+  @@index([bbs_comment_id, created_at])
+}
+
+/// Attachment file for a comment snapshot.
+///
+/// Resolves M:N relation between comment snapshots and files, with sequence/order.
+///
+/// @namespace BBS
+model bbs_comment_snapshot_attachments {
+  //----
+  // COLUMNS
+  //----
+  /// Primary Key.
+  ///
+  /// @format uuid
+  id String @id @db.Uuid
+
+  /// Belonged snapshot's {@link bbs_comment_snapshots.id}
+  ///
+  /// @format uuid
+  bbs_comment_snapshot_id String @db.Uuid
+
+  /// Belonged file's {@link bbs_files.id}
+  ///
+  /// @format uuid
+  bbs_file_id String @db.Uuid
+
+  /// Sequence order for attachments.
+  ///
+  /// @type int
+  sequence Int @db.Integer
+
+  //----
+  // RELATIONS
+  //----
+  /// Associated snapshot.
+  snapshot bbs_comment_snapshots @relation(fields: [bbs_comment_snapshot_id], references: [id], onDelete: Cascade)
+
+  /// Associated file.
+  file bbs_files @relation(fields: [bbs_file_id], references: [id], onDelete: Cascade)
+
+  @@unique([bbs_comment_snapshot_id, sequence])
+  @@index([bbs_comment_snapshot_id])
+  @@index([bbs_file_id])
+}

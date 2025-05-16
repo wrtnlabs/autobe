@@ -6,11 +6,9 @@ extend-ignore-re = [
 ]
 
 [default.extend-words]
+Jeongho = "Jeongho"
+Nam = "Nam"
 typia = "typia"
 
 [files]
-extend-exclude = [
-  "examples",
-  "*.json", 
-  "*.prisma",
-]
+extend-exclude = ["*.json"]

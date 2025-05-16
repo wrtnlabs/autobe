@@ -25,6 +25,12 @@ Simply describe your requirements to the AI and review the generated code. The b
 
 Coming soon... (2025-06-01)
 
+- Examples
+  - BBS (Bullet-in Board System)
+    - [Requirement Analysis](https://github.com/wrtnlabs/autobe/blob/main/examples/bbs/analyze/report.md)
+    - [Prisma DB Scehma Design](https://github.com/wrtnlabs/autobe/blob/main/examples/bbs/prisma)
+    - [API Interface Design (StackBlitz Playground)](https://stackblitz.com/edit/stackblitz-starters-3tksvvxd?file=packages%2Fapi%2Fswagger.json,src%2Fcontrollers%2Fbbs%2Farticles%2FBbsArticlesController.ts)
+
 ## Documentation Resources
 
 Preparing...

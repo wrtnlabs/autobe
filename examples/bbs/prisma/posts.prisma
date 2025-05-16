@@ -1,0 +1,139 @@
+/// Bulletin Board Post.
+///
+/// Posts in the BBS, with snapshot-based revision history and soft deletion.
+/// Password-protected modification/deletion, implemented by storing only hashes.
+///
+/// @namespace BBS
+model bbs_posts {
+  //----
+  // COLUMNS
+  //----
+  /// Primary Key.
+  ///
+  /// @format uuid
+  id String @id @db.Uuid
+
+  /// Author name for the post.
+  author_name String @db.VarChar
+
+  /// Hashed password for post author (never plaintext).
+  ///
+  /// Needed for modification or deletion.
+  password_hash String @db.VarChar
+
+  /// Creation time of the post.
+  created_at DateTime @db.Timestamptz
+
+  /// Soft-deletion time.
+  ///
+  /// Content never actually deleted, only marked here.
+  deleted_at DateTime? @db.Timestamptz
+
+  //----
+  // RELATIONS
+  //----
+  /// Snapshots related to the post.
+  snapshots bbs_post_snapshots[]
+
+  /// Comments on the post.
+  comments bbs_comments[]
+
+  @@index([created_at])
+  @@index([deleted_at])
+}
+
+/// Post Snapshot entity.
+///
+/// A snapshot of a post's content and attachments; immutable record for each
+/// initial creation or update. Snapshots are append-only and never modified.
+///
+/// @namespace BBS
+model bbs_post_snapshots {
+  //----
+  // COLUMNS
+  //----
+  /// Primary Key.
+  ///
+  /// @format uuid
+  id String @id @db.Uuid
+
+  /// Belonged post's {@link bbs_posts.id}
+  ///
+  /// @format uuid
+  bbs_post_id String @db.Uuid
+
+  /// Format of body.
+  ///
+  /// Allowed values: "MARKDOWN", "HTML", "PLAIN"
+  /// @allowedValues ["MARKDOWN", "HTML", "PLAIN"]
+  body_format String @db.VarChar
+
+  /// Title of the post at this snapshot.
+  title String @db.VarChar
+
+  /// Content body of the post at this snapshot.
+  body String
+
+  /// IP address of author for this snapshot.
+  ///
+  /// Stored for audit, with restricted access.
+  author_ip String @db.VarChar
+
+  /// Creation time of this snapshot.
+  created_at DateTime @db.Timestamptz
+
+  //----
+  // RELATIONS
+  //----
+  /// Belonged post info.
+  post bbs_posts @relation(fields: [bbs_post_id], references: [id], onDelete: Cascade)
+
+  /// Attachments for this post snapshot (with order).
+  attachments bbs_post_snapshot_attachments[]
+
+  @@index([bbs_post_id, created_at])
+  @@index([title])
+}
+
+/// Attachment file for a post snapshot.
+///
+/// Resolves M:N relation between post snapshots and files, with sequence/order.
+///
+/// @namespace BBS
+model bbs_post_snapshot_attachments {
+  //----
+  // COLUMNS
+  //----
+  /// Primary Key.
+  ///
+  /// @format uuid
+  id String @id @db.Uuid
+
+  /// Belonged snapshot's {@link bbs_post_snapshots.id}
+  ///
+  /// @format uuid
+  bbs_post_snapshot_id String @db.Uuid
+
+  /// Belonged file's {@link bbs_files.id}
+  ///
+  /// @format uuid
+  bbs_file_id String @db.Uuid
+
+  /// Sequence order for attachments.
+  ///
+  /// @type int
+  sequence Int @db.Integer
+
+  //----
+  // RELATIONS
+  //----
+  /// Associated snapshot.
+  snapshot bbs_post_snapshots @relation(fields: [bbs_post_snapshot_id], references: [id], onDelete: Cascade)
+
+  /// Associated file.
+  file bbs_files @relation(fields: [bbs_file_id], references: [id], onDelete: Cascade)
+
+  @@unique([bbs_post_snapshot_id, sequence])
+  @@index([bbs_post_snapshot_id])
+  @@index([bbs_file_id])
+}
