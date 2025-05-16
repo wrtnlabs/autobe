@@ -10,7 +10,7 @@ interface IFile {
   content: string;
 }
 
-const COMPILER_DEPENDENCIES = `${__dirname}/../../compiler-dependencies`;
+const COMPILER_DEPENDENCIES = `${__dirname}/../../../assets/compiler-dependencies`;
 
 const collectDefinitions = async (
   lib: string,
