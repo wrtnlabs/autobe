@@ -9,10 +9,6 @@
   "keywords": [],
   "author": "Wrtn Technologies",
   "license": "MIT",
-  "devDependencies": {
-    "rimraf": "^6.0.1",
-    "typescript": "catalog:typescript"
-  },
   "files": [
     "lib",
     "src",
@@ -28,5 +24,9 @@
   "dependencies": {
     "@samchon/openapi": "catalog:samchon",
     "typia": "catalog:samchon"
+  },
+  "devDependencies": {
+    "rimraf": "^6.0.1",
+    "typescript": "catalog:typescript"
   }
 }
