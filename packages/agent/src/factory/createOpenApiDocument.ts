@@ -1,5 +1,5 @@
 import { IAutoBeRouteDocument } from "@autobe/interface";
-import { OpenApi } from "@samchon/openapi";
+import { OpenApi, OpenApiV3_1 } from "@samchon/openapi";
 
 export function createOpenApiDocument(
   route: IAutoBeRouteDocument,
@@ -41,10 +41,9 @@ export function createOpenApiDocument(
         : undefined,
     };
   }
-  return {
+  return OpenApi.convert({
     openapi: "3.1.0",
     paths,
     components: route.components,
-    "x-samchon-emended-v4": true,
-  };
+  } as OpenApiV3_1.IDocument);
 }

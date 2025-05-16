@@ -12,7 +12,7 @@ export const transformInterfaceStateMessage = (
 const predicate = (state: AutoBeState): string => {
   if (state.analyze === null)
     return [
-      "Requirement analysis it not yet completed.",
+      "Requirement analysis is not yet completed.",
       "Don't call the interface() tool function,",
       "but say to process the requirement analysis.",
     ].join(" ");
@@ -22,7 +22,7 @@ const predicate = (state: AutoBeState): string => {
       "Don't call the interface() tool function,",
       "but say to process the Prisma DB schema generation.",
     ].join(" ");
-  else if (state.prisma.step !== state.prisma.step)
+  else if (state.analyze.step !== state.prisma.step)
     return [
       "Prisma DB schema generation has not been updated",
       "for the latest requirement analysis.",
