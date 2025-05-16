@@ -43,6 +43,9 @@ export const test_interface_bbs = async () => {
       }),
       model: "gpt-4.1",
     },
+    config: {
+      locale: "en-US",
+    },
     compiler,
   });
   const prisma: IAutoBePrismaCompilerResult = await compiler.prisma({
