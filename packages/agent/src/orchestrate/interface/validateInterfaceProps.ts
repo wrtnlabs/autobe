@@ -51,7 +51,12 @@ export function validateInterfaceProps(
     });
   }
 
-  if (bodyNotFounds.size === 0 || bodyNotObjects.size === 0) return result;
+  if (
+    bodyNotFounds.size === 0 ||
+    bodyNotObjects.size === 0 ||
+    referenceNotFounds.size === 0
+  )
+    return result;
   return {
     success: false,
     data: result.data,

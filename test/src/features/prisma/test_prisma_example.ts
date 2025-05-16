@@ -7,10 +7,15 @@ import OpenAI from "openai";
 import { v4 } from "uuid";
 
 import { TestGlobal } from "../../TestGlobal";
+import { FileSystemIterator } from "../../utils/FileSystemIterator";
 
 export const test_prisma_example = async () => {
   if (TestGlobal.env.CHATGPT_API_KEY === undefined) return false;
-  const files: Record<string, string> = await getAnalyzeFiles();
+  const files: Record<string, string> = await FileSystemIterator.read({
+    root: `${TestGlobal.ROOT}/assets/shopping/docs/requirements`,
+    extension: "md",
+    prefix: "",
+  });
   const agent: AutoBeAgent<"chatgpt"> = new AutoBeAgent({
     model: "chatgpt",
     vendor: {
@@ -41,15 +46,4 @@ export const test_prisma_example = async () => {
   })({
     reason: "just for testing",
   });
-};
-
-const getAnalyzeFiles = async (): Promise<Record<string, string>> => {
-  const root = `${TestGlobal.ROOT}/examples/analyze`;
-  const directory = await fs.promises.readdir(root);
-  const record: Record<string, string> = {};
-  for (const file of directory) {
-    if (file.endsWith(".md") === false) continue;
-    record[file] = await fs.promises.readFile(`${root}/${file}`, "utf-8");
-  }
-  return record;
 };

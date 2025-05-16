@@ -33,6 +33,7 @@ export const orchestrateInterface =
         systemPrompt: {
           execute: () => AutoBeSystemPrompt.INTERFACE,
         },
+        retry: 5,
       },
       controllers: [
         createAutoBeInterfaceApplication({
