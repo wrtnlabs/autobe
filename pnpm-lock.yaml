@@ -20,6 +20,9 @@ catalogs:
     '@nestia/e2e':
       specifier: ^6.0.3
       version: 6.0.3
+    '@nestia/migrate':
+      specifier: ^6.0.3
+      version: 6.0.3
   samchon:
     '@samchon/openapi':
       specifier: ^4.3.0
@@ -69,9 +72,15 @@ importers:
       openai:
         specifier: catalog:libs
         version: 4.98.0(zod@3.24.4)
+      tstl:
+        specifier: catalog:samchon
+        version: 3.0.0
       typia:
         specifier: catalog:samchon
         version: 9.3.0(@samchon/openapi@4.3.0)(typescript@5.8.3)
+      uuid:
+        specifier: ^11.1.0
+        version: 11.1.0
     devDependencies:
       '@rollup/plugin-terser':
         specifier: ^0.4.4
@@ -79,6 +88,12 @@ importers:
       '@rollup/plugin-typescript':
         specifier: ^12.1.2
         version: 12.1.2(rollup@4.40.2)(tslib@2.8.1)(typescript@5.8.3)
+      '@types/node':
+        specifier: ^22.15.18
+        version: 22.15.18
+      '@types/uuid':
+        specifier: ^10.0.0
+        version: 10.0.0
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
@@ -177,6 +192,9 @@ importers:
       '@nestia/e2e':
         specifier: catalog:nestia
         version: 6.0.3
+      '@nestia/migrate':
+        specifier: catalog:nestia
+        version: 6.0.3
       '@samchon/openapi':
         specifier: catalog:samchon
         version: 4.3.0
@@ -202,9 +220,6 @@ importers:
         specifier: ^11.1.0
         version: 11.1.0
     devDependencies:
-      '@nestia/migrate':
-        specifier: ^6.0.1
-        version: 6.0.3
       '@types/node':
         specifier: ^22.15.17
         version: 22.15.17
@@ -795,6 +810,9 @@ packages:
 
   '@types/node@22.15.17':
     resolution: {integrity: sha512-wIX2aSZL5FE+MR0JlvF87BNVrtFWf6AE6rxSE9X7OwnVvoyCQjpzSRJ+M87se/4QCkCiebQAqrJ0y6fwIyi7nw==}
+
+  '@types/node@22.15.18':
+    resolution: {integrity: sha512-v1DKRfUdyW+jJhZNEI1PYy29S2YRxMV5AOO/x/SjKmW0acCIOqmbj6Haf9eHAhsPmrhlHSxEhv/1WszcLWV4cg==}
 
   '@types/node@8.10.66':
     resolution: {integrity: sha512-tktOkFUA4kXx2hhhrB8bIFb5TbwzS4uOhKEmwiD+NoiL0qtP2OQ9mFldbgD4dV1djrlBYP6eBuQZiWjuHUpqFw==}
@@ -2360,7 +2378,7 @@ snapshots:
 
   '@types/node-fetch@2.6.12':
     dependencies:
-      '@types/node': 22.15.17
+      '@types/node': 22.15.18
       form-data: 4.0.2
 
   '@types/node@10.17.60': {}
@@ -2374,6 +2392,10 @@ snapshots:
       undici-types: 6.19.8
 
   '@types/node@22.15.17':
+    dependencies:
+      undici-types: 6.21.0
+
+  '@types/node@22.15.18':
     dependencies:
       undici-types: 6.21.0
 

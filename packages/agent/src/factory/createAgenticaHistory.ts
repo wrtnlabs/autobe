@@ -6,9 +6,7 @@ import {
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 
-export function transformAgenticaHistory<
-  Model extends ILlmSchema.Model,
->(props: {
+export function createAgenticaHistory<Model extends ILlmSchema.Model>(props: {
   operations: readonly AgenticaOperation<Model>[];
   history: AutoBeHistory;
 }): MicroAgenticaHistory<Model> | null {

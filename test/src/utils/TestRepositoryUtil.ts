@@ -2,53 +2,35 @@ import cp from "child_process";
 import fs from "fs";
 
 import { TestGlobal } from "../TestGlobal";
+import { FileSystemIterator } from "./FileSystemIterator";
 
 export namespace TestRepositoryUtil {
   export const prisma = async (
+    account: string,
     project: string,
   ): Promise<Record<string, string>> => {
-    await fork(project);
-    return collect({
-      root: `${TestGlobal.ROOT}/assets/repositories/${project}/prisma/schema`,
+    await fork(account, project);
+    return FileSystemIterator.read({
+      root: `${TestGlobal.ROOT}/assets/repositories/${account}/${project}/prisma/schema`,
       prefix: "",
       extension: "prisma",
     });
   };
 
   export const src = async (
+    account: string,
     project: string,
   ): Promise<Record<string, string>> => {
-    await fork(project);
-    return collect({
-      root: `${TestGlobal.ROOT}/assets/repositories/${project}/src`,
+    await fork(account, project);
+    return FileSystemIterator.read({
+      root: `${TestGlobal.ROOT}/assets/repositories/${account}/${project}/src`,
       prefix: "src/",
       extension: "ts",
     });
   };
 
-  const collect = async (props: {
-    root: string;
-    prefix: string;
-    extension: string;
-  }): Promise<Record<string, string>> => {
-    const output: Record<string, string> = {};
-    const iterate = async (location: string) => {
-      const directory: string[] = await fs.promises.readdir(location);
-      for (const file of directory) {
-        const next: string = `${location}/${file}`;
-        const stat: fs.Stats = await fs.promises.stat(next);
-        if (stat.isDirectory()) await iterate(next);
-        else if (file.endsWith(`.${props.extension}`))
-          output[`${props.prefix}${next.substring(props.root.length + 1)}`] =
-            await fs.promises.readFile(next, "utf-8");
-      }
-    };
-    await iterate(props.root);
-    return output;
-  };
-
-  const fork = async (name: string): Promise<void> => {
-    const location: string = `${TestGlobal.ROOT}/assets/repositories/${name}`;
+  const fork = async (account: string, project: string): Promise<void> => {
+    const location: string = `${TestGlobal.ROOT}/assets/repositories/${account}/${project}`;
     if (fs.existsSync(location))
       cp.execSync("git pull", {
         cwd: location,
@@ -56,12 +38,15 @@ export namespace TestRepositoryUtil {
       });
     else {
       try {
-        await fs.promises.mkdir(`${TestGlobal.ROOT}/assets/repositories`, {
-          recursive: true,
-        });
+        await fs.promises.mkdir(
+          `${TestGlobal.ROOT}/assets/repositories/${account}`,
+          {
+            recursive: true,
+          },
+        );
       } catch {}
-      cp.execSync(`git clone https://github.com/samchon/${name}`, {
-        cwd: `${TestGlobal.ROOT}/assets/repositories`,
+      cp.execSync(`git clone https://github.com/${account}/${project}`, {
+        cwd: `${TestGlobal.ROOT}/assets/repositories/${account}`,
         stdio: "ignore",
       });
     }

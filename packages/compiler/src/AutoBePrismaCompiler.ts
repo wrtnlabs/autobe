@@ -89,6 +89,7 @@ export class AutoBePrismaCompiler implements IAutoBePrismaCompiler {
           "node_modules/@prisma/client/index.d.ts":
             "export * from '.prisma/client/default'",
         },
+        document: this.compileDocument(document.datamodel),
         diagrams: this.compileDiagrams(document.datamodel),
       };
     } catch (error) {
@@ -96,6 +97,10 @@ export class AutoBePrismaCompiler implements IAutoBePrismaCompiler {
     } finally {
       await clear();
     }
+  }
+
+  private compileDocument(model: DMMF.Datamodel): string {
+    return PrismaMarkdown.write(model);
   }
 
   private compileDiagrams(model: DMMF.Datamodel): Record<string, string> {

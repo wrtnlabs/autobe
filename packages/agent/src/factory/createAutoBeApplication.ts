@@ -4,8 +4,9 @@ import typia from "typia";
 
 import { AutoBeContext } from "../context/AutoBeContext";
 import { IAutoBeApplication } from "../context/IAutoBeApplication";
+import { assertSchemaModel } from "../context/assertSchemaModel";
+import { orchestrateInterface } from "../orchestrate/interface/orchestrateInterface";
 import { orchestrateAnalyze } from "../orchestrate/orchestrateAnalyze";
-import { orchestrateInterface } from "../orchestrate/orchestrateInterface";
 import { orchestratePrisma } from "../orchestrate/orchestratePrisma";
 import { orchestrateRealize } from "../orchestrate/orchestrateRealize";
 import { orchestrateTest } from "../orchestrate/orchestrateTest";
@@ -14,6 +15,7 @@ export const createAutoBeController = <Model extends ILlmSchema.Model>(props: {
   model: Model;
   context: AutoBeContext<Model>;
 }): IAgenticaController.IClass<Model> => {
+  assertSchemaModel(props.model);
   const application: ILlmApplication<Model> = collection[
     props.model
   ] as unknown as ILlmApplication<Model>;
@@ -31,14 +33,17 @@ export const createAutoBeController = <Model extends ILlmSchema.Model>(props: {
   };
 };
 
-const claude = typia.llm.application<IAutoBeApplication, "claude">();
+const claude = typia.llm.application<
+  IAutoBeApplication,
+  "claude",
+  { reference: true }
+>();
 const collection = {
   chatgpt: typia.llm.application<
     IAutoBeApplication,
     "chatgpt",
     { reference: true }
   >(),
-  gemini: typia.llm.application<IAutoBeApplication, "gemini">(),
   claude,
   llama: claude,
   deepseek: claude,

@@ -1,13 +1,14 @@
 import { IAutoBeRouteDocument } from "@autobe/interface";
 import { OpenApi } from "@samchon/openapi";
 
-export function transformRouteDocument(
+export function createOpenApiDocument(
   route: IAutoBeRouteDocument,
 ): OpenApi.IDocument {
   const paths: Record<string, OpenApi.IPath> = {};
   for (const op of route.operations) {
     paths[op.path] ??= {};
     paths[op.path][op.method] = {
+      description: op.description,
       parameters: op.parameters.map((p) => ({
         name: p.name,
         in: "path",
