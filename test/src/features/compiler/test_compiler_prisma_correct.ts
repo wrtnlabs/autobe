@@ -1,11 +1,11 @@
 import { AutoBePrismaCompiler } from "@autobe/compiler";
+import { FileSystemIterator } from "@autobe/filesystem";
 import { IAutoBePrismaCompilerResult } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 import fs from "fs";
 import typia from "typia";
 
 import { TestGlobal } from "../../TestGlobal";
-import { FileSystemIterator } from "../../utils/FileSystemIterator";
 
 export const test_compiler_prisma_correct = async (): Promise<void> => {
   const result: IAutoBePrismaCompilerResult =

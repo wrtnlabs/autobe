@@ -13,6 +13,7 @@
   "license": "MIT",
   "dependencies": {
     "@autobe/agent": "workspace:^",
+    "@autobe/filesystem": "workspace:^",
     "@autobe/compiler": "workspace:^",
     "@autobe/interface": "workspace:^",
     "@nestia/core": "catalog:nestia",

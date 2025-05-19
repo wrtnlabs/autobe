@@ -8,6 +8,7 @@ import { IPointer } from "tstl";
 import { v4 } from "uuid";
 
 import { AutoBeSystemPrompt } from "../../constants/AutoBeSystemPrompt";
+import examples from "../../constants/examples.json";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
 import { createAutoBeInterfaceApplication } from "./createAutoBeInterfaceApplication";
@@ -31,7 +32,14 @@ export const orchestrateInterface =
           describe: null,
         },
         systemPrompt: {
-          execute: () => AutoBeSystemPrompt.INTERFACE,
+          execute: () =>
+            AutoBeSystemPrompt.INTERFACE.replace(
+              "%EXAMPLE_BBS_BACKEND%",
+              JSON.stringify(examples.bbs),
+            ).replace(
+              "%EXAMPLE_SHOPPING_BACKEND%",
+              JSON.stringify(examples.shopping),
+            ),
         },
         retry: 8,
       },

@@ -1,5 +1,6 @@
 const terser = require("@rollup/plugin-terser");
 const typescript = require("@rollup/plugin-typescript");
+const json = require("@rollup/plugin-json");
 
 module.exports = {
   input: "./src/index.ts",
@@ -25,5 +26,6 @@ module.exports = {
       mangle: false,
       module: true,
     }),
+    json(),
   ],
 };
