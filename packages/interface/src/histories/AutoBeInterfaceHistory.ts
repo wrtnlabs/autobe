@@ -5,6 +5,5 @@ export interface AutoBeInterfaceHistory
   extends AutoBeAgentHistoryBase<"interface"> {
   document: AutoBeOpenApi.IDocument;
   reason: string;
-  description: string;
   step: number;
 }

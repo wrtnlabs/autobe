@@ -51,7 +51,6 @@ export const orchestrateInterface =
               type: "interface",
               document: next.document,
               reason: props.reason,
-              description: next.description,
               started_at: start.toISOString(),
               completed_at: new Date().toISOString(),
               step: ctx.state().analyze!.step,
