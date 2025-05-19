@@ -1,4 +1,4 @@
-import { IAutoBeRouteDocument } from "@autobe/interface";
+import { AutoBeOpenApi } from "@autobe/interface";
 
 import { IAutoBeApplicationResult } from "../../context/IAutoBeApplicationResult";
 
@@ -23,6 +23,6 @@ export namespace IAutoBeInterfaceApplication {
     /**
      * Document to be generated.
      */
-    document: IAutoBeRouteDocument;
+    document: AutoBeOpenApi.IDocument;
   }
 }

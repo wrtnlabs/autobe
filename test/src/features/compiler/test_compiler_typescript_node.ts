@@ -3,7 +3,7 @@ import { IAutoBeTypeScriptCompilerResult } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 import typia from "typia";
 
-export const test_compiler_typescript_fs = async (): Promise<void> => {
+export const test_compiler_typescript_node = async (): Promise<void> => {
   const compiler: AutoBeTypeScriptCompiler = new AutoBeTypeScriptCompiler();
   const result: IAutoBeTypeScriptCompilerResult = await compiler.compile({
     files: {

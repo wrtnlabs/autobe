@@ -1,8 +1,8 @@
-import { IAutoBeRouteDocument } from "@autobe/interface";
+import { AutoBeOpenApi } from "@autobe/interface";
 import { OpenApi, OpenApiV3_1 } from "@samchon/openapi";
 
 export function createOpenApiDocument(
-  route: IAutoBeRouteDocument,
+  route: AutoBeOpenApi.IDocument,
 ): OpenApi.IDocument {
   const paths: Record<string, OpenApi.IPath> = {};
   for (const op of route.operations) {
@@ -16,12 +16,12 @@ export function createOpenApiDocument(
         description: p.description,
         required: true,
       })),
-      requestBody: op.body
+      requestBody: op.requestBody
         ? {
             content: {
               "application/json": {
                 schema: {
-                  $ref: `#.components/schemas/${op.body.typeName}`,
+                  $ref: `#.components/schemas/${op.requestBody.typeName}`,
                 },
               },
             },
@@ -29,13 +29,13 @@ export function createOpenApiDocument(
             required: true,
           }
         : undefined,
-      responses: op.response
+      responses: op.responseBody
         ? {
             [op.method === "post" ? 201 : 200]: {
               content: {
                 "application/json": {
                   schema: {
-                    $ref: `#/components/schemas/${op.response.typeName}`,
+                    $ref: `#/components/schemas/${op.responseBody.typeName}`,
                   },
                 },
               },

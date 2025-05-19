@@ -1,8 +1,4 @@
-import {
-  IAutoBeRouteDocument,
-  IAutoBeRouteOperation,
-  IAutoBeRouteParameter,
-} from "@autobe/interface";
+import { AutoBeOpenApi } from "@autobe/interface";
 import {
   HttpMigration,
   IHttpMigrateApplication,
@@ -12,7 +8,7 @@ import {
 
 export function invertOpenApiDocument(
   document: OpenApi.IDocument,
-): IAutoBeRouteDocument {
+): AutoBeOpenApi.IDocument {
   const app: IHttpMigrateApplication = HttpMigration.application(document);
   return {
     operations: app.routes
@@ -28,11 +24,12 @@ export function invertOpenApiDocument(
               (p) =>
                 ({
                   name: p.name,
-                  description: p.parameter().description ?? "",
+                  description:
+                    p.parameter().description ?? empty("description"),
                   schema: p.schema as any,
-                }) satisfies IAutoBeRouteParameter,
+                }) satisfies AutoBeOpenApi.IParameter,
             ),
-            body:
+            requestBody:
               r.body?.type === "application/json" &&
               OpenApiTypeChecker.isReference(r.body.schema)
                 ? {
@@ -40,7 +37,7 @@ export function invertOpenApiDocument(
                     typeName: r.body.schema.$ref.split("/").pop()!,
                   }
                 : null,
-            response:
+            responseBody:
               r.success?.type === "application/json" &&
               OpenApiTypeChecker.isReference(r.success.schema)
                 ? {
@@ -49,9 +46,14 @@ export function invertOpenApiDocument(
                     typeName: r.success.schema.$ref.split("/").pop()!,
                   }
                 : null,
-          }) satisfies IAutoBeRouteOperation,
+          }) satisfies AutoBeOpenApi.IOperation,
       ),
-    components: document.components,
+    components: {
+      schemas: (document.components?.schemas ?? {}) as Record<
+        string,
+        AutoBeOpenApi.IJsonSchemaDescriptive
+      >,
+    },
   };
 }
 
