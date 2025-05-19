@@ -4,8 +4,8 @@ import { AutoBeState } from "../../context/AutoBeState";
 
 export const transformInterfaceStateMessage = (
   state: AutoBeState,
-): IAgenticaHistoryJson.IAssistantMessage => ({
-  type: "assistantMessage",
+): IAgenticaHistoryJson.ISystemMessage => ({
+  type: "systemMessage",
   text: predicate(state),
 });
 

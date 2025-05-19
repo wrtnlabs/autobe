@@ -25,6 +25,7 @@ export function validateInterfaceProps(
   const bodyNotObjects: Set<string> = new Set();
   const referenceNotFounds: Set<string> = new Set();
 
+
   for (const key of bodyReferences)
     if (result.data.document.components.schemas?.[key] === undefined)
       bodyNotFounds.add(key);
