@@ -27,6 +27,12 @@ catalogs:
     '@samchon/openapi':
       specifier: ^4.3.0
       version: 4.3.0
+    embed-prisma:
+      specifier: ^1.0.1
+      version: 1.0.1
+    embed-typescript:
+      specifier: ^1.0.0
+      version: 1.0.0
     prisma-markdown:
       specifier: ^3.0.0
       version: 3.0.0
@@ -122,10 +128,10 @@ importers:
         specifier: catalog:samchon
         version: 4.3.0
       embed-prisma:
-        specifier: ^1.0.1
+        specifier: catalog:samchon
         version: 1.0.1(prisma@6.8.1(typescript@5.8.3))(typescript@5.8.3)
       embed-typescript:
-        specifier: ^1.0.0
+        specifier: catalog:samchon
         version: 1.0.0(typescript@5.8.3)
       prisma-markdown:
         specifier: catalog:samchon

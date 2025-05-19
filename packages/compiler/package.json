@@ -15,8 +15,8 @@
     "@autobe/interface": "workspace:^",
     "@nestia/core": "catalog:nestia",
     "@samchon/openapi": "catalog:samchon",
-    "embed-prisma": "^1.0.1",
-    "embed-typescript": "^1.0.0",
+    "embed-prisma": "catalog:samchon",
+    "embed-typescript": "catalog:samchon",
     "prisma-markdown": "catalog:samchon",
     "tstl": "catalog:samchon",
     "typia": "catalog:samchon"
