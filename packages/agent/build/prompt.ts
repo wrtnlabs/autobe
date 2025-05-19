@@ -3,15 +3,18 @@ const path = require("node:path");
 
 const DIRECTORY = path.join(__dirname, "../prompts");
 
-async function main() {
-  const directory = await fs.promises.readdir(DIRECTORY);
-  const record = {};
+async function main(): Promise<void> {
+  const directory: string = await fs.promises.readdir(DIRECTORY);
+  const record: Record<string, string> = {};
 
   for (const file of directory) {
     if (file.endsWith(".md") === false) {
       continue;
     }
-    const content = await fs.promises.readFile(`${DIRECTORY}/${file}`, "utf8");
+    const content: string = await fs.promises.readFile(
+      `${DIRECTORY}/${file}`,
+      "utf8",
+    );
     record[file.substring(0, file.length - 3)] = content
       .split("\r\n")
       .join("\n")

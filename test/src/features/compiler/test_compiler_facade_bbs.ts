@@ -1,12 +1,11 @@
 import { AutoBeCompiler } from "@autobe/compiler";
+import { TestRepositoryUtil } from "@autobe/filesystem";
 import {
   IAutoBePrismaCompilerResult,
   IAutoBeTypeScriptCompilerResult,
 } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 import typia from "typia";
-
-import { TestRepositoryUtil } from "../../utils/TestRepositoryUtil";
 
 export const test_compiler_facade_bbs = async (): Promise<void> => {
   const compiler: AutoBeCompiler = new AutoBeCompiler();

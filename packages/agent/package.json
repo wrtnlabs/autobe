@@ -15,12 +15,14 @@
   "scripts": {
     "prepare": "ts-patch install && pnpm run build:prompt",
     "build": "rimraf lib && pnpm run build:prompt && rollup -c && tsc",
-    "build:prompt": "node build/prompt.js",
+    "build:examples": "ts-node build/examples.ts",
+    "build:prompt": "ts-node build/prompt.ts",
     "dev": "rimraf lib && pnpm run build:prompt && tsc --watch"
   },
   "dependencies": {
     "@agentica/core": "catalog:agentica",
     "@autobe/interface": "workspace:^",
+    "@rollup/plugin-json": "^6.1.0",
     "@samchon/openapi": "catalog:samchon",
     "openai": "catalog:libs",
     "tstl": "catalog:samchon",
@@ -28,12 +30,15 @@
     "uuid": "^11.1.0"
   },
   "devDependencies": {
+    "@autobe/filesystem": "workspace:^",
+    "@autobe/compiler": "workspace:^",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^12.1.2",
     "@types/node": "^22.15.18",
     "@types/uuid": "^10.0.0",
     "rimraf": "^6.0.1",
     "rollup": "^4.40.1",
+    "ts-node": "catalog:typescript",
     "ts-patch": "catalog:typescript",
     "typescript": "catalog:typescript"
   },

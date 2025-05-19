@@ -1,0 +1,21 @@
+{
+  "private": true,
+  "name": "@autobe/filesystem",
+  "version": "0.0.0",
+  "description": "Internal FileSystem for AutoBE Project, not distributed to public",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "rimraf lib && tsc"
+  },
+  "author": "Wrtn Technologies",
+  "license": "MIt",
+  "packageManager": "pnpm@10.6.4",
+  "dependencies": {
+    "tstl": "catalog:samchon"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.19",
+    "rimraf": "^6.0.1",
+    "typescript": "catalog:typescript"
+  }
+}
