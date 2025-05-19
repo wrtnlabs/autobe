@@ -96,9 +96,12 @@ importers:
       '@prisma/internals':
         specifier: ^6.7.0
         version: 6.8.2(typescript@5.8.3)
+<<<<<<< HEAD
       '@rollup/plugin-json':
         specifier: ^6.1.0
         version: 6.1.0(rollup@4.40.2)
+=======
+>>>>>>> c00bf1f (fix: Fix Prisma compiler error logic)
       '@samchon/openapi':
         specifier: catalog:samchon
         version: 4.3.2

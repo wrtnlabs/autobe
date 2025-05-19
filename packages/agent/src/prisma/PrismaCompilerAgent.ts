@@ -91,8 +91,8 @@ export class PrismaCompilerAgent {
         return { files };
       }
 
-      case "error": {
-        console.log(chalk.blueBright("PrismaCompiler - compiler error"));
+      case "exception": {
+        console.log(chalk.blueBright("PrismaCompiler - compiler exception"));
         console.log(chalk.blueBright(JSON.stringify(compiled.error, null, 2)));
         throw new Error(JSON.stringify(compiled.error));
       }
