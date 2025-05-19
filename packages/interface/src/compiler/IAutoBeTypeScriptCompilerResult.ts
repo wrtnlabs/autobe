@@ -1,20 +1,20 @@
 export type IAutoBeTypeScriptCompilerResult =
   | IAutoBeTypeScriptCompilerResult.ISuccess
-  | IAutoBeTypeScriptCompilerResult.IError
-  | IAutoBeTypeScriptCompilerResult.IFailure;
+  | IAutoBeTypeScriptCompilerResult.IFailure
+  | IAutoBeTypeScriptCompilerResult.IException;
 export namespace IAutoBeTypeScriptCompilerResult {
   export interface ISuccess {
     type: "success";
     javascript: Record<string, string>;
   }
-  export interface IError {
-    type: "error";
-    error: unknown;
-  }
   export interface IFailure {
     type: "failure";
     diagnostics: IDiagnostic[];
     javascript: Record<string, string>;
+  }
+  export interface IException {
+    type: "exception";
+    error: unknown;
   }
 
   export interface IDiagnostic {

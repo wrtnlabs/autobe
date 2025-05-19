@@ -14,11 +14,9 @@
   "dependencies": {
     "@autobe/interface": "workspace:^",
     "@nestia/core": "catalog:nestia",
-    "@prisma/client": "^6.7.0",
-    "@prisma/client-generator-js": "^6.7.0",
-    "@prisma/generator-helper": "^6.7.0",
-    "@prisma/internals": "^6.7.0",
     "@samchon/openapi": "catalog:samchon",
+    "embed-prisma": "catalog:samchon",
+    "embed-typescript": "catalog:samchon",
     "prisma-markdown": "catalog:samchon",
     "tstl": "catalog:samchon",
     "typia": "catalog:samchon"
