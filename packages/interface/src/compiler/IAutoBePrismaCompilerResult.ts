@@ -1,7 +1,7 @@
 export type IAutoBePrismaCompilerResult =
   | IAutoBePrismaCompilerResult.ISuccess
   | IAutoBePrismaCompilerResult.IFailure
-  | IAutoBePrismaCompilerResult.IError;
+  | IAutoBePrismaCompilerResult.IException;
 export namespace IAutoBePrismaCompilerResult {
   export interface ISuccess {
     type: "success";
@@ -14,8 +14,8 @@ export namespace IAutoBePrismaCompilerResult {
     type: "failure";
     reason: string;
   }
-  export interface IError {
-    type: "error";
+  export interface IException {
+    type: "exception";
     error: unknown;
   }
 }
