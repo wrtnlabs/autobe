@@ -33,7 +33,7 @@ export const orchestrateInterface =
         systemPrompt: {
           execute: () => AutoBeSystemPrompt.INTERFACE,
         },
-        retry: 5,
+        retry: 8,
       },
       controllers: [
         createAutoBeInterfaceApplication({
@@ -53,26 +53,25 @@ export const orchestrateInterface =
         }),
       ],
       histories: [transformInterfaceStateMessage(ctx.state())],
+      tokenUsage: ctx.usage(),
     });
-    agentica.on("validate", (e) => {
-      console.log("validate", e);
-    });
-
     const histories: MicroAgenticaHistory<Model>[] = await agentica.conversate(
       "Make an OpenAPI document please.",
     );
-    ctx.usage().increment(agentica.getTokenUsage());
     if (result.value !== null) return result.value;
 
-    const last: MicroAgenticaHistory<Model> = histories[histories.length - 1]!;
-    if (last.type !== "assistantMessage") {
+    const last: MicroAgenticaHistory<Model> = histories[histories.length - 1];
+    if (last.type !== "execute" && last.type !== "assistantMessage") {
       // never be happened
       throw new Error("Unexpected type of last message from MicroAgentica.");
     }
     return {
       id: v4(),
       type: "assistantMessage",
-      text: last.text,
+      text:
+        last.type === "assistantMessage"
+          ? last.text
+          : "Failed to pass validation. Try it again please.",
       started_at: start.toISOString(),
       completed_at: new Date().toISOString(),
     } satisfies AutoBeAssistantMessageHistory;

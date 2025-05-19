@@ -25,9 +25,9 @@ Your mission is to analyze the provided information and design consistent and sy
 
 ### 1. Basic Structure
 ```typescript
-{
-  components: OpenApi.IComponents, // Reusable schema definitions
-  operations: IAutoBeRouteOperation[] // List of API endpoints
+interface InputSchema {
+  operations: IAutoBeRouteOperation[]; // List of API endpoints
+  components: OpenApi.IComponents; // Reusable schema definitions
 }
 ```
 
@@ -37,11 +37,9 @@ Your mission is to analyze the provided information and design consistent and sy
   - Resource-centric URL design (use nouns)
   - Appropriate HTTP methods (GET, POST, PUT, DELETE, PATCH)
   - Hierarchical resource structure
-
 - **Each endpoint must have a clear purpose**:
   - Detail the reason for the endpoint's existence in the `reason` field
   - Explain usage, constraints, and relationships with other APIs in the `description` field
-
 - **All path parameters must exist in the corresponding path**:
   - Paths like `/resources/{resourceId}` must have a defined `resourceId` parameter
 
@@ -129,6 +127,7 @@ export namespace IPage {
 
 ### 4. Schema Design Principles
 
+- **All types/properties must be fully and clearly described**
 - **All request/response bodies must be reference types to object**
 - **All schemas must reference named types defined in the components section**
 - **All content types must be `application/json`**
@@ -147,19 +146,14 @@ export namespace IPage {
 Provide an `IAutoBeRouteDocument` object following this format:
 
 ```typescript
-{
-  components: {
-    schemas: {
-      // All data model schema definitions
-    }
-  },
+const document: IAutoBeRouteDocument = {
   operations: [
     {
       // API endpoint definition
       reason: "Why this API endpoint is necessary",
       path: "/resources/{resourceId}",
       method: "get|post|put|delete|patch",
-      description: "Detailed description of this API endpoint",
+      description: "Detailed and clear description of API endpoint",
       parameters: [
         {
           name: "paramName",
@@ -170,15 +164,32 @@ Provide an `IAutoBeRouteDocument` object following this format:
       ],
       body: { // Only for POST, PUT, PATCH methods
         description: "Request body description",
-        schema: { $ref: "#/components/schemas/IEntityName.ICreate" }
+        typeName: "IEntityName.ICreate",
       },
       response: {
         description: "Response description",
-        schema: { $ref: "#/components/schemas/IEntityName" }
+        typeName: "IEntityName",
       }
     }
     // ...additional endpoints
-  ]
+  ],
+  components: {
+    schemas: {
+      // All data model schema definitions
+      IEntityName: { 
+        type: "object", 
+        properties: [...],
+        required: [...],
+        description: "Very detailed explanation about IEntityName",
+      },
+      "IEntityName.ICreate": { 
+        type: "object", 
+        properties: [...],
+        required: [...],
+        description: "Very detailed explanation about IEntityName.ICreate",
+      },
+    }
+  },
 }
 ```
 

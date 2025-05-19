@@ -12,19 +12,16 @@ export function validateInterfaceProps(
 
   const bodyReferences: Set<string> = new Set();
   for (const op of result.data.document.operations) {
-    const predicate = ($ref: string) => {
-      const key: string = $ref.split("/").at(-1)!;
-      if (result.data.document.components.schemas?.[key] === undefined)
-        bodyReferences.add(key);
+    const predicate = (key: string) => {
+      bodyReferences.add(key);
     };
-    if (op.body) predicate(op.body.schema.$ref);
-    if (op.response) predicate(op.response.schema.$ref);
+    if (op.body) predicate(op.body.typeName);
+    if (op.response) predicate(op.response.typeName);
   }
 
   const bodyNotFounds: Set<string> = new Set();
   const bodyNotObjects: Set<string> = new Set();
   const referenceNotFounds: Set<string> = new Set();
-
 
   for (const key of bodyReferences)
     if (result.data.document.components.schemas?.[key] === undefined)
@@ -52,12 +49,11 @@ export function validateInterfaceProps(
     });
   }
 
-  if (
-    bodyNotFounds.size === 0 ||
-    bodyNotObjects.size === 0 ||
-    referenceNotFounds.size === 0
-  )
-    return result;
+  const success: boolean =
+    bodyNotFounds.size === 0 &&
+    bodyNotObjects.size === 0 &&
+    referenceNotFounds.size === 0;
+  if (success === true) return result;
   return {
     success: false,
     data: result.data,
@@ -65,12 +61,12 @@ export function validateInterfaceProps(
       ...[...bodyNotFounds, ...bodyNotObjects].map((key) => ({
         path: `document.components.schemas.${key}`,
         expected: "OpenApi.IJsonSchema.IObject",
-        value: result.data.document.components.schemas?.[key],
+        value: result.data.document.components.schemas?.[key] ?? "undefined",
       })),
       ...Array.from(referenceNotFounds).map((key) => ({
         path: `document.components.schemas.${key}`,
         expected: "OpenApi.IJsonSchema",
-        value: undefined,
+        value: "undefined",
       })),
     ],
   };

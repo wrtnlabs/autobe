@@ -20,7 +20,9 @@ export function createOpenApiDocument(
         ? {
             content: {
               "application/json": {
-                schema: op.body.schema,
+                schema: {
+                  $ref: `#.components/schemas/${op.body.typeName}`,
+                },
               },
             },
             description: op.description,
@@ -32,7 +34,9 @@ export function createOpenApiDocument(
             [op.method === "post" ? 201 : 200]: {
               content: {
                 "application/json": {
-                  schema: op.response.schema,
+                  schema: {
+                    $ref: `#/components/schemas/${op.response.typeName}`,
+                  },
                 },
               },
               description: op.description,

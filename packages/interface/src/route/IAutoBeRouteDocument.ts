@@ -1,4 +1,5 @@
 import { OpenApi } from "@samchon/openapi";
+import { tags } from "typia";
 
 import { IAutoBeRouteOperation } from "./IAutoBeRouteOperation";
 
@@ -43,8 +44,12 @@ export interface IAutoBeRouteDocument {
    *
    * Note that, combination of {@link IAutoBeRouteOperation.path}
    * and {@link IAutoBeRouteOperation.method} must be unique.
+   *
+   * Also, never forget any specification that list listed on the
+   * requirement analysis report and DB design documents. Every
+   * features must be implemented in the API operations.
    */
-  operations: IAutoBeRouteOperation[];
+  operations: IAutoBeRouteOperation[] & tags.MinItems<1>;
 
   /**
    * Reusable components of the API operations.
@@ -56,6 +61,12 @@ export interface IAutoBeRouteDocument {
    * All request and response bodies must reference named types defined
    * in this components section. This ensures consistency and reusability
    * across the API.
+   *
+   * When defining components and their nested properties, please fill
+   * {@link OpenApi.IJsonSchema.description} properties as much and detail
+   * as possible. The descriptions must be enough detailed and conceptually
+   * clear that anyone who reads the document can understand the purpose
+   * and usage of each type and property.
    *
    * ## Type Naming Conventions in Components
    *

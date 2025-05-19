@@ -1,5 +1,3 @@
-import { OpenApi } from "@samchon/openapi";
-
 /**
  * Response body information for OpenAPI operation.
  *
@@ -45,22 +43,29 @@ export interface IAutoBeRouteResponse {
   /**
    * Response body's data type.
    *
-   * Specifies the structure of the returned data using a
-   * {@link OpenApi.IJsonSchema.IReference reference} type.
+   * Specifies the structure of the returned data (response body), that
+   * will be transformed to {@link OpenApi.IJsonSchema.IReference reference}
+   * type in the {@link IAutoBeRouteDocument.IComponents components} section
+   * as an {@link OpenApi.IJsonSchema.IObject object} type.
    *
-   * This schema must be a {@link OpenApi.IJsonSchema.IReference reference}
-   * type targeting the {@link IAutoBeRouteDocument.components components}
-   * section as an {@link OpenApi.IJsonSchema.Object object} type.
-   *
-   * Therefore, its `$ref` property must start with `#/components/schemas/`
-   * prefix. And its naming convention (of postfix) must follow below rules:
+   * Here is the naming convention for the response body type:
    *
    * - `IEntityName`: Main entity with detailed information (e.g., `IShoppingSale`)
    * - `IEntityName.ISummary`: Simplified response version with essential properties
    * - `IEntityName.IInvert`: Alternative view of an entity from a different perspective
    * - `IPageIEntityName`: Paginated results container with `pagination` and `data` properties
    *
-   *  * ```json
+   * What you write:
+   *
+   * ```json
+   * {
+   *   "typeName": "IShoppingOrder"
+   * }
+   * ```
+   *
+   * Transformed to:
+   *
+   * ```json
    * {
    *   "schema": {
    *     "$ref": "#/components/schemas/IShoppingOrder"
@@ -68,5 +73,5 @@ export interface IAutoBeRouteResponse {
    * }
    * ```
    */
-  schema: OpenApi.IJsonSchema.IReference;
+  typeName: string;
 }

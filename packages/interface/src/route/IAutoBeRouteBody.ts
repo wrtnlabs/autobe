@@ -1,5 +1,3 @@
-import { OpenApi } from "@samchon/openapi";
-
 /**
  * Request body information of OpenAPI operation.
  *
@@ -47,19 +45,28 @@ export interface IAutoBeRouteBody {
   description: string;
 
   /**
-   * Request body type.
+   * Request body type name.
    *
-   * This specifies the data structure expected in the request body,
-   * using a {@link OpenApi.IJsonSchema.IReference reference} type defined
-   * in the {@link IAutoBeRouteDocument.IComponents components} section as
-   * an {@link OpenApi.IJsonSchema.Object object} type.
+   * This specifies the data structure expected in the request body, that
+   * will be transformed to {@link OpenApi.IJsonSchema.IReference reference}
+   * type in the {@link IAutoBeRouteDocument.IComponents components} section
+   * as an {@link OpenApi.IJsonSchema.Object object} type.
    *
-   * Therefore, its `$ref` property must start with `#/components/schemas/`
-   * prefix. And its naming convention (of postfix) must follow below rules:
+   * Here is the naming convention for the request body type:
    *
    * - `IEntityName.ICreate`: Request body for creation operations (POST)
    * - `IEntityName.IUpdate`: Request body for update operations (PUT)
    * - `IEntityName.IRequest`: Request parameters for list operations (often with search/pagination)
+   *
+   * What you write:
+   *
+   * ```json
+   * {
+   *   "typeName": "IShoppingOrder.ICreate"
+   * }
+   * ```
+   *
+   * Transformed to:
    *
    * ```json
    * {
@@ -69,5 +76,5 @@ export interface IAutoBeRouteBody {
    * }
    * ```
    */
-  schema: OpenApi.IJsonSchema.IReference;
+  typeName: string;
 }

@@ -39,15 +39,16 @@ import { IAutoBeRouteResponse } from "./IAutoBeRouteResponse";
  */
 export interface IAutoBeRouteOperation {
   /**
-   * Reason why the API operation has been designed.
+   * Specification of the API operation.
    *
    * Before defining the API operation interface, please describe
-   * the reason why you're designing such API operation in detail.
+   * what you're planning to write in this `specification` field.
    *
-   * This helps establish the fundamental purpose and motivation behind
-   * creating this particular endpoint.
+   * The specification must be fully detailed and clear, so that anyone can
+   * understand the purpose and functionality of the API operation and its
+   * related components (e.g., {@link path}, {@link parameters}, {@link body}).
    */
-  reason: string;
+  specification: string;
 
   /**
    * HTTP path of the API operation.

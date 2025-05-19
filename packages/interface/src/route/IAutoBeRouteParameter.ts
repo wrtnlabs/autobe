@@ -65,13 +65,13 @@ export interface IAutoBeRouteParameter {
    * Path parameters are typically primitive types like
    * {@link OpenApi.IJsonSchema.IString strings},
    * {@link OpenApi.IJsonSchema.IInteger integers},
-   * {@link OpenApi.IJsonSchema.INumber numbers},
-   * or constant values of them.
+   * {@link OpenApi.IJsonSchema.INumber numbers}.
+   *
+   * If you need other types, please use request body instead with
+   * object type encapsulation.
    */
   schema:
-    | OpenApi.IJsonSchema.IBoolean
     | OpenApi.IJsonSchema.IInteger
     | OpenApi.IJsonSchema.INumber
-    | OpenApi.IJsonSchema.IString
-    | OpenApi.IJsonSchema.IConstant;
+    | OpenApi.IJsonSchema.IString;
 }
