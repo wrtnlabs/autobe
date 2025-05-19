@@ -1,6 +1,6 @@
 import { AutoBePrismaCompiler } from "@autobe/compiler";
 import { FileSystemIterator, TestRepositoryUtil } from "@autobe/filesystem";
-import { IAutoBeRouteDocument } from "@autobe/interface";
+import { AutoBeOpenApi } from "@autobe/interface";
 import { OpenApi, OpenApiV3_1 } from "@samchon/openapi";
 import fs from "fs";
 import typia from "typia";
@@ -14,7 +14,7 @@ interface IProjectExample {
     diagrams: Record<string, string>;
     document: string;
   };
-  document: IAutoBeRouteDocument;
+  document: AutoBeOpenApi.IDocument;
 }
 
 const example = async (

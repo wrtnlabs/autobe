@@ -63,7 +63,7 @@ export const orchestrateInterface =
       tokenUsage: ctx.usage(),
     });
     agentica.on("validate", (e) =>
-      console.log("validation feedback", e.result.errors.length),
+      console.log("validation feedback", e.result.errors),
     );
 
     const histories: MicroAgenticaHistory<Model>[] = await agentica.conversate(
