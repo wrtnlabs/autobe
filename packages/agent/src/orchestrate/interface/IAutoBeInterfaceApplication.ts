@@ -1,4 +1,4 @@
-import { IAutoBeRouteDocument } from "@autobe/interface";
+import { AutoBeOpenApi } from "@autobe/interface";
 
 import { IAutoBeApplicationResult } from "../../context/IAutoBeApplicationResult";
 
@@ -16,13 +16,8 @@ export interface IAutoBeInterfaceApplication {
 export namespace IAutoBeInterfaceApplication {
   export interface IProps {
     /**
-     * Overall description about the document.
-     */
-    description: string;
-
-    /**
      * Document to be generated.
      */
-    document: IAutoBeRouteDocument;
+    document: AutoBeOpenApi.IDocument;
   }
 }

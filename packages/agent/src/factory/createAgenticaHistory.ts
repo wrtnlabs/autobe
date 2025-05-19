@@ -36,7 +36,6 @@ export function createAgenticaHistory<Model extends ILlmSchema.Model>(props: {
         props.history.type === "analyze" || props.history.type === "interface"
           ? true
           : props.history.result.type === "success",
-      description: props.history.description,
     },
   };
   return {

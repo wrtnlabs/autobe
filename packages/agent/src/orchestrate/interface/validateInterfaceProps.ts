@@ -15,8 +15,8 @@ export function validateInterfaceProps(
     const predicate = (key: string) => {
       bodyReferences.add(key);
     };
-    if (op.body) predicate(op.body.typeName);
-    if (op.response) predicate(op.response.typeName);
+    if (op.requestBody) predicate(op.requestBody.typeName);
+    if (op.responseBody) predicate(op.responseBody.typeName);
   }
 
   const bodyNotFounds: Set<string> = new Set();
@@ -33,7 +33,7 @@ export function validateInterfaceProps(
     )
       bodyNotObjects.add(key);
 
-  for (const [key, value] of Object.entries(
+  for (const value of Object.values(
     result.data.document.components.schemas ?? {},
   )) {
     OpenApiTypeChecker.visit({

@@ -28,7 +28,6 @@ export const createAutoBeInterfaceApplication = <
         await props.build(next);
         return {
           success: true,
-          description: next.description,
         };
       },
     } satisfies IAutoBeInterfaceApplication,

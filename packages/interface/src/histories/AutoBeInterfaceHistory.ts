@@ -1,10 +1,9 @@
-import { IAutoBeRouteDocument } from "../route/IAutoBeRouteDocument";
+import { AutoBeOpenApi } from "../openapi/AutoBeOpenApi";
 import { AutoBeAgentHistoryBase } from "./AutoBeHistoryBase";
 
 export interface AutoBeInterfaceHistory
   extends AutoBeAgentHistoryBase<"interface"> {
-  document: IAutoBeRouteDocument;
+  document: AutoBeOpenApi.IDocument;
   reason: string;
-  description: string;
   step: number;
 }

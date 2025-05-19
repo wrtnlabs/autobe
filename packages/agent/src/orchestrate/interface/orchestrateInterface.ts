@@ -41,7 +41,6 @@ export const orchestrateInterface =
           //   JSON.stringify(examples.shopping),
           // ),
         },
-        retry: 8,
       },
       controllers: [
         createAutoBeInterfaceApplication({
@@ -52,7 +51,6 @@ export const orchestrateInterface =
               type: "interface",
               document: next.document,
               reason: props.reason,
-              description: next.description,
               started_at: start.toISOString(),
               completed_at: new Date().toISOString(),
               step: ctx.state().analyze!.step,
@@ -63,6 +61,10 @@ export const orchestrateInterface =
       histories: [transformInterfaceStateMessage(ctx.state())],
       tokenUsage: ctx.usage(),
     });
+    agentica.on("validate", (e) =>
+      console.log("validation feedback", e.result.errors),
+    );
+
     const histories: MicroAgenticaHistory<Model>[] = await agentica.conversate(
       "Make an OpenAPI document please.",
     );
