@@ -1,21 +1,14 @@
 import { AutoBePrismaCompiler } from "@autobe/compiler";
-import { FileSystemIterator } from "@autobe/filesystem";
+import { TestRepositoryUtil } from "@autobe/filesystem";
 import { IAutoBePrismaCompilerResult } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
-import fs from "fs";
 import typia from "typia";
-
-import { TestGlobal } from "../../TestGlobal";
 
 export const test_compiler_prisma_failure = async (): Promise<void> => {
   const result: IAutoBePrismaCompilerResult =
     await new AutoBePrismaCompiler().compile({
       files: {
-        ...(await FileSystemIterator.read({
-          root: `${TestGlobal.ROOT}/assets/shopping/prisma/schema`,
-          extension: "prisma",
-          prefix: "",
-        })),
+        ...(await TestRepositoryUtil.prisma("samchon", "shopping-backend")),
         "invalid.prisma": ["ASDFGHJ", "ZXCVBNM"].join("\n\n"),
       },
     });
