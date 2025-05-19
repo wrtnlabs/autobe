@@ -1,4 +1,4 @@
-import { Agentica } from "@agentica/core";
+import { Agentica, AgenticaHistory } from "@agentica/core";
 import chalk from "chalk";
 import typia from "typia";
 
@@ -44,7 +44,9 @@ export class PrismaAgent {
     });
   }
 
-  async conversate(input: string): Promise<any> {
+  async conversate(
+    input: string,
+  ): Promise<IPrismaFileInput | AgenticaHistory<"chatgpt">> {
     const response = await this.agent.conversate(input);
 
     const answer = response.at(-1);
@@ -70,6 +72,6 @@ export class PrismaAgent {
       }
     }
 
-    return response.at(-1);
+    return response.at(-1)!;
   }
 }

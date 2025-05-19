@@ -31,6 +31,8 @@ export const orchestratePrisma =
 
     const response = await prismaAgent.conversate(specification);
 
+    const completedAt = new Date().toISOString();
+
     console.log(chalk.white(JSON.stringify(response, null, 2)));
 
     if ("files" in response) {
@@ -41,35 +43,39 @@ export const orchestratePrisma =
         console.log(chalk.cyanBright(file));
         console.log(chalk.cyanBright(JSON.stringify(files[file], null, 2)));
 
-        await fs.promises.writeFile(
-          path.join(`${__dirname}/../../../../examples/prisma/test/${file}`),
-          files[file],
-        );
+        // await fs.promises.writeFile(
+        //   path.join(`${__dirname}/../../../../examples/prisma/test/${file}`),
+        //   files[file],
+        // );
       }
+
+      const prismaAnswer: AutoBePrismaHistory = {
+        id: v4(),
+        started_at: startedAt,
+        completed_at: completedAt,
+        type: "prisma",
+        description: "",
+        reason: "",
+        step: 0,
+        result: {
+          schemas: files,
+          type: "success",
+          diagrams: {},
+          nodeModules: {},
+          document: "",
+        },
+      };
+
+      return prismaAnswer;
+    } else {
+      const messageAnswer: AutoBeAssistantMessageHistory = {
+        id: v4(),
+        type: "assistantMessage",
+        started_at: startedAt,
+        completed_at: completedAt,
+        text: (response as any).text ?? "",
+      };
+
+      return messageAnswer;
     }
-
-    const completedAt = new Date().toISOString();
-
-    const answer: AutoBeAssistantMessageHistory = {
-      id: v4(),
-      type: "assistantMessage",
-      started_at: startedAt,
-      completed_at: completedAt,
-      text: (response as any).text ?? "",
-    };
-
-    // const answer2: AutoBePrismaHistory = {
-    //   id: v4(),
-    //   completed_at: completedAt,
-    //   started_at: startedAt,
-    //   type: "prisma",
-    //   result: {
-    //     type: "",
-    //   },
-    //   reason: "",
-    //   description: "",
-    //   step: 0,
-    // };
-
-    return answer;
   };

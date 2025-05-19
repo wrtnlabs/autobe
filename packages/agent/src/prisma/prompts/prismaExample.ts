@@ -4271,21 +4271,3 @@ model shopping_address_favorites {
   @@index([shopping_address_id])
 }
 `;
-
-// // Filename - schema.prisma (schema.prisma must be same as the example. If "schema.prisma" already exists, you must overwrite it.)
-// generator client {
-//   provider        = "prisma-client-js"
-//   previewFeatures = ["postgresqlExtensions", "views"]
-//   binaryTargets   = ["native", "linux-musl-arm64-openssl-3.0.x"]
-// }
-
-// datasource db {
-//   provider   = "postgresql"
-//   url        = env("DATABASE_URL")
-//   extensions = []
-// }
-
-// generator markdown {
-//   provider = "prisma-markdown"
-//   output   = "../docs/ERD.md"
-// }

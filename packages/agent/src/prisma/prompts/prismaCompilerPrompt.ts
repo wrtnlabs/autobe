@@ -46,4 +46,3 @@ You have the following tools:
 - No other text except the Prisma statements.
 - Exclude the final 2 string.
 `;
-// - No Return "\n" or "\""

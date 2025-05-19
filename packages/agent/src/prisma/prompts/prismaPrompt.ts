@@ -19,5 +19,4 @@ When you call the tools, you must input the given Specification or Prisma schema
   "schema.prisma": string;
   "user.prisma": string;
 }
-
 `;

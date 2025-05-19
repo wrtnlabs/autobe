@@ -138,8 +138,8 @@ model article_snapshots {
 /// In other words, to keep evidence, and prevent fraud.
 ///
 /// @namespace ModelGroupName
-/// @erd Inquiries
-/// @author Author
+/// @erd ERDName
+/// @author AuthorName
 model bbs_articles {
   /// Primary Key.
   ///
@@ -176,6 +176,9 @@ model bbs_articles {
 
   @@index([created_at])
 }
+- The "@namespace" attribute should be the same for related models that belong together. Models that are not related should have different namespaces.
+- For example, models dealing with blog posts would be share the same namespace like "Article". models dealing with comments would be share the same namespace like "Comment". models dealing with shopping/e-commerce would use a different namespace like "Shopping".
+- This helps organize and group related functionality together.
 
 ### Snapshot-based Architecture in Prisma
 Your expert lies in designing database schemas using a snapshot-based architecture. This means:
@@ -195,31 +198,3 @@ Please generate a Prisma schema according to the user's request, referencing the
 ## Prisma Schema Example
 ${PRISMA_EXAMPLE}
 `;
-
-// 3. If you need more information, you ask the user to provide more information. If you don't need more information, you perform the task from the user's request.
-// - When you return the Prisma schema, you must return the Prisma schema in the JSON format.
-// {
-//   "filename": Prisma schema;
-// }
-// - Output Example:
-// {
-//   "schema.prisma": string;
-//   "user.prisma": string;
-// }
-// - You must generate the "prisma.schema" file if is not exists. The "prisma.schema" file content is as follows. must be same with the example:
-// generator client {
-//   provider        = "prisma-client-js"
-//   previewFeatures = ["postgresqlExtensions", "views"]
-//   binaryTargets   = ["native", "linux-musl-arm64-openssl-3.0.x"]
-// }
-
-// datasource db {
-//   provider   = "postgresql"
-//   url        = env("DATABASE_URL")
-//   extensions = []
-// }
-
-// generator markdown {
-//   provider = "prisma-markdown"
-//   output   = "../docs/ERD.md"
-// }

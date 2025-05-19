@@ -1,6 +1,8 @@
 import { MicroAgentica } from "@agentica/core";
 import { MultipleSchemas, formatSchema } from "@prisma/internals";
 import chalk from "chalk";
+import fs from "fs";
+import path from "path";
 import typia from "typia";
 
 import { IPrismaFileInput } from "../../utils/IPrisma";
@@ -40,8 +42,6 @@ export class PrismaCompilerAgent {
     });
   }
 
-  // 왜 이렇게 만들었는지. 써서. -> 마지막 대화내역을 function call로 넣어서 파일 분리.
-
   /**
    * Check the compiler Error of the Prisma Schema.
    * This method returns the Prisma Schema.
@@ -62,6 +62,7 @@ export class PrismaCompilerAgent {
     const formatted: MultipleSchemas = await formatSchema({
       schemas: Object.entries(input.files),
     });
+
     console.log(chalk.blueBright("PrismaCompiler - formatted"));
     console.log(chalk.blueBright(JSON.stringify(formatted, null, 2)));
 
@@ -71,10 +72,12 @@ export class PrismaCompilerAgent {
       files[schema[0]] = schema[1];
     });
 
+    files["schema.prisma"] = (await this.prismaInit()).files["schema.prisma"];
+
     const compiler = this.ctx.compiler;
 
     const compiled = await compiler.prisma({
-      files: files,
+      files,
     });
 
     for (const file of Object.keys(files)) {
@@ -90,9 +93,10 @@ export class PrismaCompilerAgent {
 
       case "error": {
         console.log(chalk.blueBright("PrismaCompiler - compiler error"));
-        console.log(chalk.blueBright(compiled.error));
-        throw new Error(compiled.error as string);
+        console.log(chalk.blueBright(JSON.stringify(compiled.error, null, 2)));
+        throw new Error(JSON.stringify(compiled.error));
       }
+
       case "failure": {
         console.log(chalk.blueBright("PrismaCompiler - compiler failure"));
         console.log(chalk.blueBright(compiled.reason));
@@ -162,6 +166,9 @@ export class PrismaCompilerAgent {
         console.log(
           chalk.blueBright("PrismaCompiler - parseSchemaToFiles try"),
         );
+
+        console.log(chalk.blueBright((parsedAnswer as any)?.text));
+
         const value = JSON.parse((parsedAnswer as any)?.text);
 
         const validValue = typia.assert<IPrismaFileInput>(value);
@@ -178,6 +185,19 @@ export class PrismaCompilerAgent {
 
     console.log(chalk.redBright("PrismaCompiler - error"));
     return { files: {} };
+  }
+
+  private async prismaInit(): Promise<IPrismaFileInput> {
+    const prismaFile = await fs.promises.readFile(
+      path.join(__dirname, "examples", "schema.prisma"),
+      "utf-8",
+    );
+
+    return {
+      files: {
+        "schema.prisma": prismaFile,
+      },
+    };
   }
 
   // /**
