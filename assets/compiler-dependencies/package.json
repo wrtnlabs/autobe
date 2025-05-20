@@ -17,7 +17,7 @@
     "@nestjs/platform-fastify": "^11.1.0",
     "@nestjs/swagger": "^11.1.5",
     "@prisma/client": "^6.6.0",
-    "@samchon/openapi": "^4.3.0",
+    "@samchon/openapi": "^4.3.1",
     "@types/express": "^5.0.1",
     "@types/inquirer": "^9.0.7",
     "@types/jsonwebtoken": "^9.0.9",
@@ -33,6 +33,6 @@
     "serialize-error": "^4.1.0",
     "tgrid": "^1.1.0",
     "typescript": "~5.8.2",
-    "typia": "^9.3.0"
+    "typia": "^9.3.1"
   }
 }

@@ -8,7 +8,7 @@ import { EmbedTypeScript } from "embed-typescript";
 import ts from "typescript";
 import typiaTransform from "typia/lib/transform";
 
-import EXTERNAL from "./raw/typings.json";
+import EXTERNAL from "./raw/external.json";
 
 export class AutoBeTypeScriptCompiler implements IAutoBeTypeScriptCompiler {
   public async compile(
