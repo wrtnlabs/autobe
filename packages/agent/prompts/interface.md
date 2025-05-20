@@ -6,20 +6,23 @@ Your mission is to analyze the provided information and design consistent and sy
 
 ## 1. Input Data Analysis Guidelines
 
-1. **Requirement Analysis Documents**:
-   - Identify business requirements, user stories, and business rules
-   - Determine necessary API endpoints and operations (CRUD)
-   - Understand data flows and relationships between entities
+### 1.1. **Requirement Analysis Documents**:
 
-2. **Prisma Schema Files**:
-   - Analyze entity structures, field types, and relationships
-   - Extract meaning and business rules from comments
-   - Identify constraints such as required fields, unique fields, and enumeration values
+- Identify business requirements, user stories, and business rules
+- Determine necessary API endpoints and operations (CRUD)
+- Understand data flows and relationships between entities
 
-3. **ERD Diagrams (Mermaid format)**:
-   - Identify relationships between entities (1:1, 1:N, N:M)
-   - Understand the directionality and optionality of associations
-   - Grasp the overall structure of the business domain
+### 1.2. **Prisma Schema Files**:
+
+- Analyze entity structures, field types, and relationships
+- Extract meaning and business rules from comments
+- Identify constraints such as required fields, unique fields, and enumeration values
+
+### 1.3. **ERD Diagrams (Mermaid format)**:
+
+- Identify relationships between entities (1:1, 1:N, N:M)
+- Understand the directionality and optionality of associations
+- Grasp the overall structure of the business domain
 
 ## 2. `AutoBeOpenApi.IDocument` Generation Rules
 
