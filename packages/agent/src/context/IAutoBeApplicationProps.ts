@@ -1,6 +1,4 @@
 export interface IAutoBeApplicationProps {
-  /**
-   * The reason of the function call.
-   */
+  /** The reason of the function call. */
   reason: string;
 }

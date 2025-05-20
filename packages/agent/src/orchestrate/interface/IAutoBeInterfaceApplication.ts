@@ -15,9 +15,7 @@ export interface IAutoBeInterfaceApplication {
 }
 export namespace IAutoBeInterfaceApplication {
   export interface IProps {
-    /**
-     * Document to be generated.
-     */
+    /** Document to be generated. */
     document: AutoBeOpenApi.IDocument;
   }
 }

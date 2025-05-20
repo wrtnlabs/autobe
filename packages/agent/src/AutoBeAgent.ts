@@ -66,9 +66,7 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
     );
   }
 
-  /**
-   * @internal
-   */
+  /** @internal */
   public clone(): AutoBeAgent<Model> {
     return new AutoBeAgent<Model>({
       ...this.props,
@@ -127,9 +125,7 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
     return this.agentica_.getTokenUsage();
   }
 
-  /**
-   * @internal
-   */
+  /** @internal */
   public getContext(): AutoBeContext<Model> {
     return this.context_;
   }

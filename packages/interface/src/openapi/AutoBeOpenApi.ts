@@ -3,46 +3,72 @@
  *
  * `AutoBeOpenApi` is a TypeScript interface for the OpenAPI Generative.
  *
- * `AutoBeOpenApi` is basically follows the OpenAPI v3.1 specification, but a
- * little bit shrunk to remove ambiguous and duplicated expressions of OpenAPI
- * v3.1 for the convenience, clarity, and AI generation.
+ * `AutoBeOpenApi` follows the OpenAPI v3.1 specification, but is streamlined to
+ * remove ambiguous and duplicated expressions for improved clarity, AI
+ * generation capabilities, and developer understanding.
  *
  * @author Samchon
  */
 export namespace AutoBeOpenApi {
   /**
-   * Request body information of OpenAPI operation.
+   * Document of the Restful API operations.
    *
-   * This interface defines the structure for request bodies in API routes. It
-   * corresponds to the requestBody section in OpenAPI specifications, providing
-   * both a description and schema reference for the request payload.
+   * This interface serves as the root document for defining Restful API
+   * {@link operations} and {@link components}. It corresponds to the top-level
+   * structure of an OpenAPI specification document, containing all API
+   * operations and reusable components.
    *
-   * The content-type for all request bodies is always `application/json`. Even
-   * when file uploading is required, don't use `multipart/form-data` or
-   * `application/x-www-form-urlencoded` content types. Instead, just define an
-   * URI string property in the request body schema.
+   * This simplified version focuses only on the operations and components,
+   * omitting other OpenAPI elements like info, servers, security schemes, etc.
+   * to keep the structure concise for AI-based code generation.
    *
-   * Note that, all body schemas must be transformable to a
-   * {@link AutoBeOpenApi.IJsonSchema.IReference reference} type defined in the
-   * {@link AutoBeOpenApi.IComponents.schemas components section} as an
-   * {@link AutoBeOpenApi.IJsonSchema.IObject object} type.
+   * IMPORTANT: When creating this document, you MUST ensure that:
    *
-   * In OpenAPI, this might represent:
+   * 1. The API operations and component schemas directly correspond to the Prisma
+   *    DB schema
+   * 2. All entity types and their properties reference and incorporate the
+   *    description comments from the related Prisma DB schema tables and
+   *    columns
+   * 3. Descriptions are detailed and organized into multiple paragraphs
+   * 4. The API fully represents all entities and relationships defined in the
+   *    Prisma schema
    *
-   * ```json
-   * {
-   *   "requestBody": {
-   *     "description": "Creation info of the order",
-   *     "content": {
-   *       "application/json": {
-   *         "schema": {
-   *           "$ref": "#/components/schemas/IShoppingOrder.ICreate"
-   *         }
-   *       }
-   *     }
-   *   }
-   * }
-   * ```
+   * ## Type Naming Conventions
+   *
+   * When defining component schemas, follow these naming conventions for
+   * consistency:
+   *
+   * - **Main Entity Types**: Use `IEntityName` format for main entity with
+   *   detailed information (e.g., `IShoppingSale`)
+   *
+   *   - These MUST directly correspond to entity tables in the Prisma schema
+   *   - Their descriptions MUST incorporate the table description comments from the
+   *       Prisma schema
+   *   - Each property MUST reference the corresponding column description from the
+   *       Prisma schema
+   *   - Entity types should represent the full, detailed version of domain entities
+   * - **Related Operation Types**: Use `IEntityName.IOperation` format with these
+   *   common suffixes:
+   *
+   *   - `IEntityName.ICreate`: Request body for creation operations (POST)
+   *
+   *       - Should include all required fields from the Prisma schema entity
+   *   - `IEntityName.IUpdate`: Request body for update operations (PUT)
+   *
+   *       - Should include updatable fields as defined in the Prisma schema
+   *   - `IEntityName.ISummary`: Simplified response version with essential
+   *       properties
+   *   - `IEntityName.IRequest`: Request parameters for list operations (often with
+   *       search/pagination)
+   *   - `IEntityName.IInvert`: Alternative view of an entity from a different
+   *       perspective
+   *   - `IPageIEntityName`: Paginated results container with `pagination` and
+   *       `data` properties
+   *
+   * These consistent naming patterns create a predictable and self-documenting
+   * API that accurately reflects the underlying Prisma schema, making it easier
+   * for developers to understand the purpose of each schema and its
+   * relationship to the database model.
    */
   export interface IDocument {
     /**
@@ -53,11 +79,22 @@ export namespace AutoBeOpenApi {
      * operation corresponds to an entry in the paths section of an OpenAPI
      * document.
      *
+     * IMPORTANT: For each API operation, ensure that:
+     *
+     * 1. Every independent entity table in the Prisma schema has corresponding API
+     *    operations
+     * 2. The description field refers to and incorporates the description comments
+     *    from the related DB schema tables and columns
+     * 3. The description must be VERY detailed and organized into MULTIPLE
+     *    PARAGRAPHS separated by line breaks, not just a single paragraph
+     * 4. The description should explain the purpose, functionality, and any
+     *    relationships to other entities in the database schema
+     *
      * Note that, combination of {@link AutoBeOpenApi.IOperation.path} and
      * {@link AutoBeOpenApi.IOperation.method} must be unique.
      *
-     * Also, never forget any specification that list listed on the requirement
-     * analysis report and DB design documents. Every features must be
+     * Also, never forget any specification that is listed on the requirement
+     * analysis report and DB design documents. Every feature must be
      * implemented in the API operations.
      *
      * @minItems 1
@@ -71,15 +108,22 @@ export namespace AutoBeOpenApi {
      * referenced throughout the API operations. It corresponds to the
      * components section in an OpenAPI document.
      *
+     * IMPORTANT: For all component types and their properties:
+     *
+     * 1. EVERY component MUST have a detailed description that references the
+     *    corresponding Prisma DB schema table's description comments
+     * 2. EACH property within component types MUST have detailed descriptions that
+     *    reference the corresponding column description comments in the Prisma
+     *    DB schema
+     * 3. All descriptions MUST be organized into MULTIPLE PARAGRAPHS (separated by
+     *    line breaks) based on different aspects of the entity
+     * 4. Descriptions should be comprehensive enough that anyone who reads them
+     *    can understand the purpose, functionality, and relationships of the
+     *    type
+     *
      * All request and response bodies must reference named types defined in
      * this components section. This ensures consistency and reusability across
      * the API.
-     *
-     * When defining components and their nested properties, please fill
-     * {@link AutoBeOpenApi.IJsonSchema.description} properties as much and
-     * detail as possible. The descriptions must be enough detailed and
-     * conceptually clear that anyone who reads the document can understand the
-     * purpose and usage of each type and property.
      *
      * ## Type Naming Conventions in Components
      *
@@ -185,7 +229,7 @@ export namespace AutoBeOpenApi {
      * HTTP path of the API operation.
      *
      * The URL path for accessing this API operation, using path parameters
-     * enclsed in curly braces (e.g., `/shoppings/customers/sales/{saleId}`).
+     * enclosed in curly braces (e.g., `/shoppings/customers/sales/{saleId}`).
      *
      * It must be corresponded to the {@link parameters path parameters}.
      */
@@ -213,15 +257,24 @@ export namespace AutoBeOpenApi {
     /**
      * Detailed description about the API operation.
      *
-     * Please describe the API operation in a human-readable way, and must be
-     * enough detailed to be used as a document. This description will be used
-     * for the next step of vibe coding, implementation of e2e test functions
-     * and main program development.
+     * IMPORTANT: This field MUST be extensively detailed and MUST reference the
+     * description comments from the related Prisma DB schema tables and
+     * columns. The description should be organized into MULTIPLE PARAGRAPHS
+     * separated by line breaks to improve readability and comprehension.
      *
-     * When writing the content, avoid using a single paragraph for the entire
-     * description. Make sure to organize the information into multiple
-     * paragraphs (separated to new lines) based on different subtopics for
-     * better readability and understanding.
+     * For example, include separate paragraphs for:
+     *
+     * - The purpose and overview of the API operation
+     * - Security considerations and user permissions
+     * - Relationship to underlying database entities
+     * - Validation rules and business logic
+     * - Related API operations that might be used together with this one
+     * - Expected behavior and error handling
+     *
+     * When writing the description, be sure to incorporate the corresponding DB
+     * schema's description comments, matching the level of detail and style of
+     * those comments. This ensures consistency between the API documentation
+     * and database structure.
      *
      * If there's a dependency to other APIs, please describe the dependency API
      * operation in this field with detailed reason. For example, if this API
@@ -338,9 +391,7 @@ export namespace AutoBeOpenApi {
     /**
      * Description about the path parameter.
      *
-     * Provides context about what the parameter represents and its purpose in
-     * the API operation. This helps API consumers understand how to use the
-     * parameter correctly.
+     * Make short, concise and clear description about the path parameter.
      */
     description: string;
 
@@ -375,7 +426,7 @@ export namespace AutoBeOpenApi {
    *
    * Note that, all body schemas must be transformable to a
    * {@link AutoBeOpenApi.IJsonSchema.IReference reference} type defined in the
-   * {@link AutoBeOpenApi.IComponents.scheams components section} as an
+   * {@link AutoBeOpenApi.IComponents.schemas components section} as an
    * {@link AutoBeOpenApi.IJsonSchema.IObject object} type.
    *
    * In OpenAPI, this might represent:
@@ -399,11 +450,7 @@ export namespace AutoBeOpenApi {
     /**
      * Description about the request body.
      *
-     * This provides context about what the request body represents and how it
-     * should be used.
-     *
-     * It appears in the OpenAPI documentation to help API consumers understand
-     * the purpose of the payload.
+     * Make short, concise and clear description about the request body.
      */
     description: string;
 
@@ -476,10 +523,7 @@ export namespace AutoBeOpenApi {
     /**
      * Description about the response body.
      *
-     * Provides context about what the response represents and what it contains.
-     *
-     * This helps API consumers understand the structure and meaning of the
-     * returned data.
+     * Make short, concise and clear description about the response body.
      */
     description: string;
 
@@ -535,6 +579,20 @@ export namespace AutoBeOpenApi {
      * An object to hold reusable DTO schemas.
      *
      * In other words, a collection of named JSON schemas.
+     *
+     * IMPORTANT: For each schema in this collection:
+     *
+     * 1. EVERY schema MUST have a detailed description that references and aligns
+     *    with the description comments from the corresponding Prisma DB schema
+     *    tables
+     * 2. EACH property within the schema MUST have detailed descriptions that
+     *    reference and align with the description comments from the
+     *    corresponding DB schema columns
+     * 3. All descriptions MUST be organized into MULTIPLE PARAGRAPHS (separated by
+     *    line breaks) when appropriate
+     * 4. Descriptions should be comprehensive enough that anyone reading them can
+     *    understand the purpose, functionality, and constraints of each type
+     *    and property without needing to reference other documentation
      */
     schemas: Record<string, IJsonSchemaDescriptive>;
 
@@ -721,6 +779,10 @@ export namespace AutoBeOpenApi {
        * regular properties. The key is the name of the regular property, and
        * the value is the type schema info.
        *
+       * IMPORTANT: Each property in this object MUST have a detailed
+       * description that references and aligns with the description comments
+       * from the corresponding Prisma DB schema column.
+       *
        * If you need additional properties that is represented by dynamic key,
        * you can use the {@link additionalProperties} instead.
        */
@@ -836,15 +898,26 @@ export namespace AutoBeOpenApi {
       type: Type;
     }
     interface IAttribute {
-      // /**
-      //  * Description about the type.
-      //  *
-      //  * If you are planning to fill the description, the content must be fully
-      //  * detailed and clear, so that anyone who reads the description can
-      //  * understand the purpose and functionality of the type and how it should
-      //  * be used.
-      //  */
-      // description?: string;
+      /**
+       * Description about the type.
+       *
+       * IMPORTANT: This description MUST be detailed and MUST reference and
+       * align with the description comments from the related Prisma DB schema
+       * tables and columns.
+       *
+       * The description should be comprehensive and organized into MULTIPLE
+       * PARAGRAPHS (separated by line breaks) when appropriate, explaining:
+       *
+       * - The purpose and meaning of this type
+       * - Usage context and relationships
+       * - Constraints and special cases
+       * - Examples when helpful
+       *
+       * Any descriptions should be so detailed and clear that anyone reading
+       * them can understand the type completely without needing to reference
+       * other documentation.
+       */
+      description?: string;
     }
   }
 
@@ -859,25 +932,50 @@ export namespace AutoBeOpenApi {
    * and duplicated expressions of OpenAPI v3.1 for the convenience, clarity,
    * and AI generation.
    *
-   * When filling the description, please make sure to provide fully detailed
-   * and clear information, so that anyone who reads the description can
-   * understand the purpose and functionality of the type.
+   * CRITICAL INSTRUCTIONS FOR OPTIMAL AI GENERATION:
+   *
+   * When creating descriptions for components, types, and properties:
+   *
+   * 1. ALWAYS refer to and incorporate the description comments from the
+   *    corresponding Prisma DB schema tables and columns. The descriptions
+   *    should match the style, level of detail, and terminology used in the
+   *    Prisma schema.
+   * 2. ALL descriptions MUST be organized into MULTIPLE PARAGRAPHS separated by
+   *    line breaks. Single-paragraph descriptions should be avoided.
+   * 3. Descriptions should comprehensively cover:
+   *
+   *    - The purpose and business meaning of the type or property
+   *    - Relationships to other entities
+   *    - Validation rules, constraints, and edge cases
+   *    - Usage context and examples when helpful
+   * 4. For each property of an object type, ensure its description reflects the
+   *    corresponding column description in the Prisma DB schema, maintaining
+   *    the same level of detail and terminology
+   * 5. Descriptions should be so detailed and clear that anyone reading them can
+   *    fully understand the type or property without needing to reference any
+   *    other documentation
    */
   export type IJsonSchemaDescriptive<Schema extends IJsonSchema = IJsonSchema> =
     Omit<Schema, "description"> & {
       /**
        * Description about the type.
        *
-       * This provides context about what the type represents and how it should
-       * be used. Please fill the description with fully detailed and clear
-       * information, so that anyone who reads the description can understand
-       * the purpose and functionality of the type.
+       * CRITICAL: This description MUST be extensively detailed and MUST
+       * reference and align with the description comments from the
+       * corresponding Prisma DB schema tables and columns.
        *
-       * When writing the description, organize your content into multiple
-       * paragraphs (separated to new lines) based on different aspects of the
-       * type rather than using a single paragraph. This structured approach
-       * improves readability and helps readers better understand the type's
-       * various characteristics and use cases.
+       * The description MUST be organized into MULTIPLE PARAGRAPHS (separated
+       * by line breaks) based on different aspects of the type:
+       *
+       * - The purpose and business meaning of the type
+       * - Relationships to other entities in the system
+       * - Validation rules, constraints, and edge cases
+       * - Usage context and examples when helpful
+       *
+       * This structured approach improves readability and helps readers better
+       * understand the type's various characteristics and use cases. The
+       * description should be so comprehensive that anyone reading it can fully
+       * understand the type without needing to reference other documentation.
        */
       description: string;
     };
