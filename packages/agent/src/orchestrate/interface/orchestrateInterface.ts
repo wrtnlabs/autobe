@@ -3,7 +3,8 @@ import {
   AutoBeAssistantMessageHistory,
   AutoBeInterfaceHistory,
 } from "@autobe/interface";
-import { ILlmSchema } from "@samchon/openapi";
+import { MigrateApplication } from "@nestia/migrate";
+import { ILlmSchema, IValidation, OpenApi } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import { v4 } from "uuid";
 
@@ -11,6 +12,7 @@ import { AutoBeSystemPrompt } from "../../constants/AutoBeSystemPrompt";
 // import examples from "../../constants/examples.json";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
+import { createOpenApiDocument } from "../../factory/createOpenApiDocument";
 import { createAutoBeInterfaceApplication } from "./createAutoBeInterfaceApplication";
 import { transformInterfaceStateMessage } from "./transformInterfaceStateMessage";
 
@@ -46,10 +48,30 @@ export const orchestrateInterface =
         createAutoBeInterfaceApplication({
           model: ctx.model,
           build: async (next) => {
+            const swagger: OpenApi.IDocument = createOpenApiDocument(
+              next.document,
+            );
+            const migrate: IValidation<MigrateApplication> =
+              MigrateApplication.create(swagger);
+            if (migrate.success === false) {
+              // never be happened
+              throw new Error("Failed to pass validation.");
+            }
             result.value = {
               id: v4(),
               type: "interface",
               document: next.document,
+              files: {
+                "packages/api/swagger.json": JSON.stringify(swagger, null, 2),
+                ...Object.fromEntries(
+                  migrate.data
+                    .nest({
+                      simulate: true,
+                      e2e: true,
+                    })
+                    .files.map((f) => [`${f.location}/${f.file}`, f.content]),
+                ),
+              },
               reason: props.reason,
               started_at: start.toISOString(),
               completed_at: new Date().toISOString(),
@@ -68,7 +90,22 @@ export const orchestrateInterface =
     const histories: MicroAgenticaHistory<Model>[] = await agentica.conversate(
       "Make an OpenAPI document please.",
     );
-    if (result.value !== null) return result.value;
+    ctx.histories().push(
+      ...histories
+        .filter((h) => h.type === "assistantMessage")
+        .map((h) => ({
+          ...h,
+          id: v4(),
+          started_at: start.toISOString(),
+          completed_at: new Date().toISOString(),
+          step: ctx.state().analyze!.step,
+        })),
+    );
+    if (result.value !== null) {
+      ctx.state().interface = result.value;
+      ctx.histories().push(result.value);
+      return result.value;
+    }
 
     const last: MicroAgenticaHistory<Model> = histories[histories.length - 1];
     if (last.type !== "execute" && last.type !== "assistantMessage") {

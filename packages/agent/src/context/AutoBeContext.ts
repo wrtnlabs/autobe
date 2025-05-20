@@ -11,7 +11,8 @@ export interface AutoBeContext<Model extends ILlmSchema.Model> {
   vendor: IAutoBeVendor;
   config: IAutoBeConfig | undefined;
   compiler: IAutoBeCompiler;
-  usage: () => AutoBeTokenUsage;
+  files: () => Record<string, string>;
+  histories: () => AutoBeHistory[];
   state: () => AutoBeState;
-  histories: AutoBeHistory[];
+  usage: () => AutoBeTokenUsage;
 }

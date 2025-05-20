@@ -23,12 +23,14 @@ Simply describe your requirements to the AI and review the generated code. The b
 
 ## Playground
 
-Coming soon... (2025-06-01)
+Coming soon... (2025-06-01).
 
-- BBS (Bullet-in Board System)
-  - [Requirement Analysis](https://github.com/wrtnlabs/autobe/blob/main/examples/bbs-backend/analyze/report.md)
-  - [Prisma DB Scehma Design](https://github.com/wrtnlabs/autobe/blob/main/examples/bbs-backend/prisma)
-  - [API Interface Design (StackBlitz Playground)](https://stackblitz.com/edit/stackblitz-starters-3tksvvxd?file=packages%2Fapi%2Fswagger.json,src%2Fcontrollers%2Fbbs%2Farticles%2FBbsArticlesController.ts)
+Currently, playground only steps to the [interface step](#interface).
+
+And as `@autobe`'s features are not fully completed, when "E-Commerce" like huge use case comes, [interface function](#interface) tends to write less operations that we've expected.
+
+- [BBS (Bullet-in Board System)](https://stackblitz.com/edit/autobe-demo-bbs?file=docs%2Fanalysis%2Findex.md,docs%2FERD.md,src%2Fapi%2Fstructures%2FIArticle.ts,src%2Fcontrollers%2Farticles%2FArticlesController.ts)
+- [E-Commerce](https://stackblitz.com/edit/stackblitz-starters-vejsbrpk?description=Starter%20project%20for%20Node.js,%20a%20JavaScript%20runtime%20built%20on%20Chrome%27s%20V8%20JavaScript%20engine&file=docs%2Fanalysis%2Findex.md,docs%2FERD.md,src%2Fapi%2Fstructures%2FIShoppingSale.ts,src%2Fcontrollers%2Fshoppings%2Fcustomers%2Forders%2FShoppingsCustomersOrdersController.ts&title=node.new%20Starter)
 
 ## Documentation Resources
 
