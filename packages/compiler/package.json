@@ -8,7 +8,7 @@
   "scripts": {
     "prepare": "ts-patch install",
     "build": "rimraf lib && tsc",
-    "build:typings": "ts-node build/typings.ts",
+    "build:external": "node build/external.js",
     "dev": "rimraf lib && tsc --watch"
   },
   "dependencies": {

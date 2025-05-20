@@ -3,7 +3,6 @@ import { AutoBeState } from "@autobe/agent/src/context/AutoBeState";
 import { AutoBeCompiler } from "@autobe/compiler";
 import { FileSystemIterator } from "@autobe/filesystem";
 import { AutoBeAnalyzeHistory } from "@autobe/interface";
-import fs from "fs";
 import OpenAI from "openai";
 import { v4 } from "uuid";
 
