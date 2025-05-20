@@ -32,6 +32,11 @@ export namespace AutoBeOpenApi {
    * 3. Descriptions are detailed and organized into multiple paragraphs
    * 4. The API fully represents all entities and relationships defined in the
    *    Prisma schema
+   * 5. EVERY SINGLE TABLE in the Prisma DB schema MUST have corresponding API
+   *    operations for CRUD actions (Create, Read, Update, Delete) as
+   *    applicable
+   * 6. NO TABLE should be omitted from the API design - all tables require API
+   *    coverage
    *
    * ## Type Naming Conventions
    *
@@ -79,15 +84,24 @@ export namespace AutoBeOpenApi {
      * operation corresponds to an entry in the paths section of an OpenAPI
      * document.
      *
+     * CRITICAL: This array MUST include operations for EVERY TABLE defined in
+     * the Prisma schema. The AI generation MUST NOT skip or omit any tables
+     * when creating operations. The operations array MUST be complete and
+     * exhaustive, covering all database entities without exception.
+     *
      * IMPORTANT: For each API operation, ensure that:
      *
-     * 1. Every independent entity table in the Prisma schema has corresponding API
-     *    operations
-     * 2. The description field refers to and incorporates the description comments
+     * 1. EVERY independent entity table in the Prisma schema has corresponding API
+     *    operations for basic CRUD functions (at minimum)
+     * 2. ALL TABLES from the Prisma schema MUST have at least one API operation,
+     *    no matter how many tables are in the schema
+     * 3. DO NOT STOP generating API operations until ALL tables have been
+     *    addressed
+     * 4. The description field refers to and incorporates the description comments
      *    from the related DB schema tables and columns
-     * 3. The description must be VERY detailed and organized into MULTIPLE
+     * 5. The description must be VERY detailed and organized into MULTIPLE
      *    PARAGRAPHS separated by line breaks, not just a single paragraph
-     * 4. The description should explain the purpose, functionality, and any
+     * 6. The description should explain the purpose, functionality, and any
      *    relationships to other entities in the database schema
      *
      * Note that, combination of {@link AutoBeOpenApi.IOperation.path} and
@@ -108,6 +122,11 @@ export namespace AutoBeOpenApi {
      * referenced throughout the API operations. It corresponds to the
      * components section in an OpenAPI document.
      *
+     * CRITICAL: Components MUST include type definitions for EVERY TABLE in the
+     * Prisma schema. The AI generation process MUST create schema components
+     * for ALL database entities without exception, regardless of how many
+     * tables are in the database.
+     *
      * IMPORTANT: For all component types and their properties:
      *
      * 1. EVERY component MUST have a detailed description that references the
@@ -120,6 +139,8 @@ export namespace AutoBeOpenApi {
      * 4. Descriptions should be comprehensive enough that anyone who reads them
      *    can understand the purpose, functionality, and relationships of the
      *    type
+     * 5. ALL TABLES from the Prisma schema MUST have corresponding schema
+     *    components, no matter how many tables are in the schema
      *
      * All request and response bodies must reference named types defined in
      * this components section. This ensures consistency and reusability across
@@ -222,6 +243,10 @@ export namespace AutoBeOpenApi {
      * understand the purpose and functionality of the API operation and its
      * related components (e.g., {@link path}, {@link parameters},
      * {@link requestBody}).
+     *
+     * IMPORTANT: The specification MUST identify which Prisma DB table this
+     * operation is associated with, helping ensure complete coverage of all
+     * database entities.
      */
     specification: string;
 
@@ -232,6 +257,10 @@ export namespace AutoBeOpenApi {
      * enclosed in curly braces (e.g., `/shoppings/customers/sales/{saleId}`).
      *
      * It must be corresponded to the {@link parameters path parameters}.
+     *
+     * The path structure should clearly indicate which database entity this
+     * operation is manipulating, helping to ensure all entities have
+     * appropriate API coverage.
      */
     path: string;
 
@@ -296,6 +325,9 @@ export namespace AutoBeOpenApi {
      *
      * This summary will be used in the OpenAPI documentation to give users a
      * quick understanding of the API operation's purpose.
+     *
+     * IMPORTANT: The summary should clearly indicate which Prisma DB table this
+     * operation relates to, helping to ensure all tables have API coverage.
      */
     summary: string;
 
