@@ -19,6 +19,7 @@ export function invertOpenApiDocument(
             specification: empty("specification"),
             method: r.method as "post",
             path: r.path,
+            summary: r.operation().summary ?? empty("summary"),
             description: r.operation().description ?? empty("description"),
             parameters: r.parameters.map(
               (p) =>

@@ -440,7 +440,7 @@ gantt
   section Prompts
   Analyze  : active, 2025-04-30, 18d
   Prisma   : active, 2025-04-30, 18d
-  Interface: active, 2025-05-18, 28d
+  Interface: done, 2025-05-18, 28d
   Test     : 2025-05-18, 42d
   Realize  : 2025-06-01, 28d
 

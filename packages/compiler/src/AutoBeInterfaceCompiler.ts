@@ -62,6 +62,7 @@ function createOpenApiDocument(
   for (const op of route.operations) {
     paths[op.path] ??= {};
     paths[op.path][op.method] = {
+      summary: op.summary,
       description: op.description,
       parameters: op.parameters.map((p) => ({
         name: p.name,
@@ -79,7 +80,7 @@ function createOpenApiDocument(
                 },
               },
             },
-            description: op.description,
+            description: op.requestBody.description,
             required: true,
           }
         : undefined,
@@ -93,7 +94,7 @@ function createOpenApiDocument(
                   },
                 },
               },
-              description: op.description,
+              description: op.responseBody.description,
             },
           }
         : undefined,

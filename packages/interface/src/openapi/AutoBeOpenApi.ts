@@ -3,9 +3,9 @@
  *
  * `AutoBeOpenApi` is a TypeScript interface for the OpenAPI Generative.
  *
- * `AutoBeOpenApi` is basically follows the OpenAPI v3.1 specification,
- * but a little bit shrunk to remove ambiguous and duplicated expressions
- * of OpenAPI v3.1 for the convenience, clarity, and AI generation.
+ * `AutoBeOpenApi` is basically follows the OpenAPI v3.1 specification, but a
+ * little bit shrunk to remove ambiguous and duplicated expressions of OpenAPI
+ * v3.1 for the convenience, clarity, and AI generation.
  *
  * @author Samchon
  */
@@ -13,19 +13,19 @@ export namespace AutoBeOpenApi {
   /**
    * Request body information of OpenAPI operation.
    *
-   * This interface defines the structure for request bodies in API routes.
-   * It corresponds to the requestBody section in OpenAPI specifications,
-   * providing both a description and schema reference for the request payload.
+   * This interface defines the structure for request bodies in API routes. It
+   * corresponds to the requestBody section in OpenAPI specifications, providing
+   * both a description and schema reference for the request payload.
    *
-   * The content-type for all request bodies is always `application/json`.
-   * Even when file uploading is required, don't use `multipart/form-data`
-   * or `application/x-www-form-urlencoded` content types. Instead, just
-   * define an URI string property in the request body schema.
+   * The content-type for all request bodies is always `application/json`. Even
+   * when file uploading is required, don't use `multipart/form-data` or
+   * `application/x-www-form-urlencoded` content types. Instead, just define an
+   * URI string property in the request body schema.
    *
    * Note that, all body schemas must be transformable to a
-   * {@link AutoBeOpenApi.IJsonSchema.IReference reference} type defined in
-   * the {@link AutoBeOpenApi.IComponents.schemas components section} as
-   * an {@link AutoBeOpenApi.IJsonSchema.IObject object} type.
+   * {@link AutoBeOpenApi.IJsonSchema.IReference reference} type defined in the
+   * {@link AutoBeOpenApi.IComponents.schemas components section} as an
+   * {@link AutoBeOpenApi.IJsonSchema.IObject object} type.
    *
    * In OpenAPI, this might represent:
    *
@@ -35,7 +35,9 @@ export namespace AutoBeOpenApi {
    *     "description": "Creation info of the order",
    *     "content": {
    *       "application/json": {
-   *         "schema": { "$ref": "#/components/schemas/IShoppingOrder.ICreate" }
+   *         "schema": {
+   *           "$ref": "#/components/schemas/IShoppingOrder.ICreate"
+   *         }
    *       }
    *     }
    *   }
@@ -47,16 +49,16 @@ export namespace AutoBeOpenApi {
      * List of API operations.
      *
      * This array contains all the API endpoints with their HTTP methods,
-     * descriptions, parameters, request/response structures, etc.
-     * Each operation corresponds to an entry in the paths section of
-     * an OpenAPI document.
+     * descriptions, parameters, request/response structures, etc. Each
+     * operation corresponds to an entry in the paths section of an OpenAPI
+     * document.
      *
-     * Note that, combination of {@link AutoBeOpenApi.IOperation.path}
-     * and {@link AutoBeOpenApi.IOperation.method} must be unique.
+     * Note that, combination of {@link AutoBeOpenApi.IOperation.path} and
+     * {@link AutoBeOpenApi.IOperation.method} must be unique.
      *
-     * Also, never forget any specification that list listed on the
-     * requirement analysis report and DB design documents. Every
-     * features must be implemented in the API operations.
+     * Also, never forget any specification that list listed on the requirement
+     * analysis report and DB design documents. Every features must be
+     * implemented in the API operations.
      *
      * @minItems 1
      */
@@ -65,56 +67,68 @@ export namespace AutoBeOpenApi {
     /**
      * Reusable components of the API operations.
      *
-     * This contains schemas, parameters, responses, and other reusable
-     * elements referenced throughout the API operations. It corresponds
-     * to the components section in an OpenAPI document.
+     * This contains schemas, parameters, responses, and other reusable elements
+     * referenced throughout the API operations. It corresponds to the
+     * components section in an OpenAPI document.
      *
-     * All request and response bodies must reference named types defined
-     * in this components section. This ensures consistency and reusability
-     * across the API.
+     * All request and response bodies must reference named types defined in
+     * this components section. This ensures consistency and reusability across
+     * the API.
      *
      * When defining components and their nested properties, please fill
-     * {@link AutoBeOpenApi.IJsonSchema.description} properties as much and detail
-     * as possible. The descriptions must be enough detailed and conceptually
-     * clear that anyone who reads the document can understand the purpose
-     * and usage of each type and property.
+     * {@link AutoBeOpenApi.IJsonSchema.description} properties as much and
+     * detail as possible. The descriptions must be enough detailed and
+     * conceptually clear that anyone who reads the document can understand the
+     * purpose and usage of each type and property.
      *
      * ## Type Naming Conventions in Components
      *
-     * When defining schema components, follow these standardized naming patterns
-     * for consistency and clarity:
+     * When defining schema components, follow these standardized naming
+     * patterns for consistency and clarity:
      *
      * ### Main Entity Types
+     *
      * - `IEntityName`
+     *
      *   - Primary entity objects (e.g., `IShoppingSale`, `IShoppingOrder`)
      *   - These represent the full, detailed version of domain entities
      *
      * ### Operation-Specific Types
+     *
      * - `IEntityName.ICreate`
+     *
      *   - Request body schemas for creation operations (POST)
      *   - Contains all fields needed to create a new entity
      * - `IEntityName.IUpdate`
+     *
      *   - Request body schemas for update operations (PUT)
      *   - Contains fields that can be modified on an existing entity
      * - `IEntityName.IRequest`
+     *
      *   - Parameters for search/filter/pagination in list operations
      *   - Often contains `search`, `sort`, `page`, and `limit` properties
      *
      * ### View Types
+     *
      * - `IEntityName.ISummary`
+     *
      *   - Simplified view of entities for list operations
      *   - Contains essential properties only, omitting detailed nested objects
-     * - `IEntityName.IAbridge`: Intermediate view with more details than Summary but less than full entity
-     * - `IEntityName.IInvert`: Alternative representation of an entity from a different perspective
+     * - `IEntityName.IAbridge`: Intermediate view with more details than Summary
+     *   but less than full entity
+     * - `IEntityName.IInvert`: Alternative representation of an entity from a
+     *   different perspective
      *
      * ### Container Types
+     *
      * - `IPageIEntityName`
+     *
      *   - Paginated results container
      *   - Usually contains `pagination` and `data` properties
      *
      * These naming conventions create a self-documenting API where the purpose
-     * of each schema is immediately clear from its name. This helps both developers
-     * and AI tools understand and maintain the API structure.
+     * of each schema is immediately clear from its name. This helps both
+     * developers and AI tools understand and maintain the API structure.
      */
     components: AutoBeOpenApi.IComponents;
   }
@@ -122,19 +136,19 @@ export namespace AutoBeOpenApi {
   /**
    * Operation of the Restful API.
    *
-   * This interface defines a single API endpoint with its
-   * HTTP {@link method}, {@link path}, {@link parameters path parameters},
-   * {@link requestBody request body}, and {@link responseBody} structure.
-   * It corresponds to an individual operation in the paths section of
-   * an OpenAPI document.
+   * This interface defines a single API endpoint with its HTTP {@link method},
+   * {@link path}, {@link parameters path parameters},
+   * {@link requestBody request body}, and {@link responseBody} structure. It
+   * corresponds to an individual operation in the paths section of an OpenAPI
+   * document.
    *
-   * Each operation requires a detailed explanation of its purpose through
-   * the reason and description fields, making it clear why the API was
-   * designed and how it should be used.
+   * Each operation requires a detailed explanation of its purpose through the
+   * reason and description fields, making it clear why the API was designed and
+   * how it should be used.
    *
    * All request bodies and responses for this operation must be object types
-   * and must reference named types defined in the components section.
-   * The content-type is always `application/json`. For file upload/download
+   * and must reference named types defined in the components section. The
+   * content-type is always `application/json`. For file upload/download
    * operations, use `string & tags.Format<"uri">` in the appropriate schema
    * instead of binary data formats.
    *
@@ -157,12 +171,13 @@ export namespace AutoBeOpenApi {
     /**
      * Specification of the API operation.
      *
-     * Before defining the API operation interface, please describe
-     * what you're planning to write in this `specification` field.
+     * Before defining the API operation interface, please describe what you're
+     * planning to write in this `specification` field.
      *
      * The specification must be fully detailed and clear, so that anyone can
      * understand the purpose and functionality of the API operation and its
-     * related components (e.g., {@link path}, {@link parameters}, {@link requestBody}).
+     * related components (e.g., {@link path}, {@link parameters},
+     * {@link requestBody}).
      */
     specification: string;
 
@@ -179,14 +194,16 @@ export namespace AutoBeOpenApi {
     /**
      * HTTP method of the API operation.
      *
-     * Note that, if the API operation has {@link requestBody}, method must not be `get`.
+     * Note that, if the API operation has {@link requestBody}, method must not
+     * be `get`.
      *
      * Also, even though the API operation has been designed to only get
-     * information, but it needs complicated request information, it must
-     * be defined as `patch` method with {@link requestBody} data specification.
+     * information, but it needs complicated request information, it must be
+     * defined as `patch` method with {@link requestBody} data specification.
      *
      * - `get`: get information
-     * - `patch`: get information with complicated request data ({@link requestBody})
+     * - `patch`: get information with complicated request data
+     *   ({@link requestBody})
      * - `post`: create new record
      * - `put`: update existing record
      * - `delete`: remove record
@@ -196,33 +213,50 @@ export namespace AutoBeOpenApi {
     /**
      * Detailed description about the API operation.
      *
-     * Please describe the API operation in a human-readable way,
-     * and must be enough detailed to be used as a document.
-     * This description will be used for the next step of viral coding,
-     * implementation of e2e test functions and main program development.
+     * Please describe the API operation in a human-readable way, and must be
+     * enough detailed to be used as a document. This description will be used
+     * for the next step of vibe coding, implementation of e2e test functions
+     * and main program development.
      *
-     * If there's a dependency to other APIs, please describe the
-     * dependency API operation in this field with detailed reason.
-     * For example, if this API operation needs a pre-execution of
-     * other API operation, it must be explicitly described.
+     * When writing the content, avoid using a single paragraph for the entire
+     * description. Make sure to organize the information into multiple
+     * paragraphs (separated to new lines) based on different subtopics for
+     * better readability and understanding.
      *
-     * - `GET /shoppings/customers/sales` must be pre-executed to
-     *   get entire list of summarized sales. Detailed sale information
-     *   would be obtained by specifying the sale ID in the path parameter.
+     * If there's a dependency to other APIs, please describe the dependency API
+     * operation in this field with detailed reason. For example, if this API
+     * operation needs a pre-execution of other API operation, it must be
+     * explicitly described.
+     *
+     * - `GET /shoppings/customers/sales` must be pre-executed to get entire list
+     *   of summarized sales. Detailed sale information would be obtained by
+     *   specifying the sale ID in the path parameter.
      */
     description: string;
 
     /**
+     * Short summary of the API operation.
+     *
+     * This should be a concise description of the API operation, typically one
+     * sentence long. It should provide a quick overview of what the API does
+     * without going into too much detail.
+     *
+     * This summary will be used in the OpenAPI documentation to give users a
+     * quick understanding of the API operation's purpose.
+     */
+    summary: string;
+
+    /**
      * List of path parameters.
      *
-     * Note that, the {@link AutoBeOpenApi.IParameter.name identifier name}
-     * of path parameter must be corresponded to the
+     * Note that, the {@link AutoBeOpenApi.IParameter.name identifier name} of
+     * path parameter must be corresponded to the
      * {@link path API operation path}.
      *
      * For example, if there's an API operation which has {@link path} of
      * `/shoppings/customers/sales/{saleId}/questions/${questionId}/comments/${commentId}`,
-     * its list of {@link AutoBeOpenApi.IParameter.name path parameters}
-     * must be like:
+     * its list of {@link AutoBeOpenApi.IParameter.name path parameters} must be
+     * like:
      *
      * - `saleId`
      * - `questionId`
@@ -233,11 +267,11 @@ export namespace AutoBeOpenApi {
     /**
      * Request body of the API operation.
      *
-     * Defines the payload structure for the request. Contains a description
-     * and schema reference to define the expected input data.
+     * Defines the payload structure for the request. Contains a description and
+     * schema reference to define the expected input data.
      *
-     * Should be `null` for operations that don't require a request body,
-     * such as most "get" operations.
+     * Should be `null` for operations that don't require a request body, such
+     * as most "get" operations.
      */
     requestBody: AutoBeOpenApi.IRequestBody | null;
 
@@ -255,8 +289,8 @@ export namespace AutoBeOpenApi {
   /**
    * Path parameter information for API routes.
    *
-   * This interface defines a path parameter that appears in the URL of
-   * an API endpoint. Path parameters are enclosed in curly braces in the
+   * This interface defines a path parameter that appears in the URL of an API
+   * endpoint. Path parameters are enclosed in curly braces in the
    * {@link AutoBeOpenApi.IOperation.path operation path} and must be defined
    * with their types and descriptions.
    *
@@ -304,9 +338,9 @@ export namespace AutoBeOpenApi {
     /**
      * Description about the path parameter.
      *
-     * Provides context about what the parameter represents and its purpose
-     * in the API operation. This helps API consumers understand how to use
-     * the parameter correctly.
+     * Provides context about what the parameter represents and its purpose in
+     * the API operation. This helps API consumers understand how to use the
+     * parameter correctly.
      */
     description: string;
 
@@ -318,8 +352,8 @@ export namespace AutoBeOpenApi {
      * {@link AutoBeOpenApi.IJsonSchema.IInteger integers},
      * {@link AutoBeOpenApi.IJsonSchema.INumber numbers}.
      *
-     * If you need other types, please use request body instead with
-     * object type encapsulation.
+     * If you need other types, please use request body instead with object type
+     * encapsulation.
      */
     schema:
       | AutoBeOpenApi.IJsonSchema.IInteger
@@ -330,19 +364,19 @@ export namespace AutoBeOpenApi {
   /**
    * Request body information of OpenAPI operation.
    *
-   * This interface defines the structure for request bodies in API routes.
-   * It corresponds to the requestBody section in OpenAPI specifications,
-   * providing both a description and schema reference for the request payload.
+   * This interface defines the structure for request bodies in API routes. It
+   * corresponds to the requestBody section in OpenAPI specifications, providing
+   * both a description and schema reference for the request payload.
    *
-   * The content-type for all request bodies is always `application/json`.
-   * Even when file uploading is required, don't use `multipart/form-data`
-   * or `application/x-www-form-urlencoded` content types. Instead, just
-   * define an URI string property in the request body schema.
+   * The content-type for all request bodies is always `application/json`. Even
+   * when file uploading is required, don't use `multipart/form-data` or
+   * `application/x-www-form-urlencoded` content types. Instead, just define an
+   * URI string property in the request body schema.
    *
    * Note that, all body schemas must be transformable to a
-   * {@link AutoBeOpenApi.IJsonSchema.IReference reference} type defined in
-   * the {@link AutoBeOpenApi.IComponents.scheams components section}
-   * as an {@link AutoBeOpenApi.IJsonSchema.IObject object} type.
+   * {@link AutoBeOpenApi.IJsonSchema.IReference reference} type defined in the
+   * {@link AutoBeOpenApi.IComponents.scheams components section} as an
+   * {@link AutoBeOpenApi.IJsonSchema.IObject object} type.
    *
    * In OpenAPI, this might represent:
    *
@@ -352,7 +386,9 @@ export namespace AutoBeOpenApi {
    *     "description": "Creation info of the order",
    *     "content": {
    *       "application/json": {
-   *         "schema": { "$ref": "#/components/schemas/IShoppingOrder.ICreate" }
+   *         "schema": {
+   *           "$ref": "#/components/schemas/IShoppingOrder.ICreate"
+   *         }
    *       }
    *     }
    *   }
@@ -363,19 +399,19 @@ export namespace AutoBeOpenApi {
     /**
      * Description about the request body.
      *
-     * This provides context about what the request body represents
-     * and how it should be used.
+     * This provides context about what the request body represents and how it
+     * should be used.
      *
-     * It appears in the OpenAPI documentation to help API consumers
-     * understand the purpose of the payload.
+     * It appears in the OpenAPI documentation to help API consumers understand
+     * the purpose of the payload.
      */
     description: string;
 
     /**
      * Request body type name.
      *
-     * This specifies the data structure expected in the request body, that
-     * will be transformed to {@link AutoBeOpenApi.IJsonSchema.IReference reference}
+     * This specifies the data structure expected in the request body, that will
+     * be transformed to {@link AutoBeOpenApi.IJsonSchema.IReference reference}
      * type in the {@link AutoBeOpenApi.IComponents.schemas components section}
      * as an {@link AutoBeOpenApi.IJsonSchema.Object object} type.
      *
@@ -383,7 +419,8 @@ export namespace AutoBeOpenApi {
      *
      * - `IEntityName.ICreate`: Request body for creation operations (POST)
      * - `IEntityName.IUpdate`: Request body for update operations (PUT)
-     * - `IEntityName.IRequest`: Request parameters for list operations (often with search/pagination)
+     * - `IEntityName.IRequest`: Request parameters for list operations (often
+     *   with search/pagination)
      *
      * What you write:
      *
@@ -409,13 +446,13 @@ export namespace AutoBeOpenApi {
   /**
    * Response body information for OpenAPI operation.
    *
-   * This interface defines the structure of a successful response from
-   * an API operation. It provides a description of the response and a schema
-   * reference to define the returned data structure.
+   * This interface defines the structure of a successful response from an API
+   * operation. It provides a description of the response and a schema reference
+   * to define the returned data structure.
    *
-   * The content-type for all responses is always `application/json`.
-   * Even when file downloading is required, don't use `application/octet-stream`
-   * or `multipart/form-data` content types. Instead, just define an URI string
+   * The content-type for all responses is always `application/json`. Even when
+   * file downloading is required, don't use `application/octet-stream` or
+   * `multipart/form-data` content types. Instead, just define an URI string
    * property in the response body schema.
    *
    * In OpenAPI, this might represent:
@@ -449,17 +486,21 @@ export namespace AutoBeOpenApi {
     /**
      * Response body's data type.
      *
-     * Specifies the structure of the returned data (response body), that
-     * will be transformed to {@link AutoBeOpenApi.IJsonSchema.IReference}
-     * type in the {@link AutoBeOpenApi.IComponents.schemas components section}
-     * as an {@link AutoBeOpenApi.IJsonSchema.IObject object} type.
+     * Specifies the structure of the returned data (response body), that will
+     * be transformed to {@link AutoBeOpenApi.IJsonSchema.IReference} type in the
+     * {@link AutoBeOpenApi.IComponents.schemas components section} as an
+     * {@link AutoBeOpenApi.IJsonSchema.IObject object} type.
      *
      * Here is the naming convention for the response body type:
      *
-     * - `IEntityName`: Main entity with detailed information (e.g., `IShoppingSale`)
-     * - `IEntityName.ISummary`: Simplified response version with essential properties
-     * - `IEntityName.IInvert`: Alternative view of an entity from a different perspective
-     * - `IPageIEntityName`: Paginated results container with `pagination` and `data` properties
+     * - `IEntityName`: Main entity with detailed information (e.g.,
+     *   `IShoppingSale`)
+     * - `IEntityName.ISummary`: Simplified response version with essential
+     *   properties
+     * - `IEntityName.IInvert`: Alternative view of an entity from a different
+     *   perspective
+     * - `IPageIEntityName`: Paginated results container with `pagination` and
+     *   `data` properties
      *
      * What you write:
      *
@@ -497,20 +538,20 @@ export namespace AutoBeOpenApi {
      */
     schemas: Record<string, IJsonSchemaDescriptive>;
 
-    /**
-     * Whether includes `Authorization` header or not.
-     */
+    /** Whether includes `Authorization` header or not. */
     authorization?: "header" | undefined;
   }
 
   /**
    * Type schema info.
    *
-   * `AutoBeOpenApi.IJsonSchema` is a type schema info of the OpenAPI Generative.
+   * `AutoBeOpenApi.IJsonSchema` is a type schema info of the OpenAPI
+   * Generative.
    *
    * `AutoBeOpenApi.IJsonSchema` basically follows the JSON schema specification
    * of OpenAPI v3.1, but a little bit shrunk to remove ambiguous and duplicated
-   * expressions of OpenAPI v3.1 for the convenience, clarity, and AI generation.
+   * expressions of OpenAPI v3.1 for the convenience, clarity, and AI
+   * generation.
    */
   export type IJsonSchema =
     | IJsonSchema.IConstant
@@ -522,24 +563,16 @@ export namespace AutoBeOpenApi {
     | IJsonSchema.IObject
     | IJsonSchema.IReference;
   export namespace IJsonSchema {
-    /**
-     * Constant value type.
-     */
+    /** Constant value type. */
     export interface IConstant extends IAttribute {
-      /**
-       * The constant value.
-       */
+      /** The constant value. */
       const: boolean | number | string;
     }
 
-    /**
-     * Boolean type info.
-     */
+    /** Boolean type info. */
     export interface IBoolean extends ISignificant<"boolean"> {}
 
-    /**
-     * Integer type info.
-     */
+    /** Integer type info. */
     export interface IInteger extends ISignificant<"integer"> {
       /**
        * Minimum value restriction.
@@ -555,14 +588,10 @@ export namespace AutoBeOpenApi {
        */
       maximum?: number;
 
-      /**
-       * Exclusive minimum value restriction.
-       */
+      /** Exclusive minimum value restriction. */
       exclusiveMinimum?: number;
 
-      /**
-       * Exclusive maximum value restriction.
-       */
+      /** Exclusive maximum value restriction. */
       exclusiveMaximum?: number;
 
       /**
@@ -574,28 +603,18 @@ export namespace AutoBeOpenApi {
       multipleOf?: number;
     }
 
-    /**
-     * Number (double) type info.
-     */
+    /** Number (double) type info. */
     export interface INumber extends ISignificant<"number"> {
-      /**
-       * Minimum value restriction.
-       */
+      /** Minimum value restriction. */
       minimum?: number;
 
-      /**
-       * Maximum value restriction.
-       */
+      /** Maximum value restriction. */
       maximum?: number;
 
-      /**
-       * Exclusive minimum value restriction.
-       */
+      /** Exclusive minimum value restriction. */
       exclusiveMinimum?: number;
 
-      /**
-       * Exclusive maximum value restriction.
-       */
+      /** Exclusive maximum value restriction. */
       exclusiveMaximum?: number;
 
       /**
@@ -606,13 +625,9 @@ export namespace AutoBeOpenApi {
       multipleOf?: number;
     }
 
-    /**
-     * String type info.
-     */
+    /** String type info. */
     export interface IString extends ISignificant<"string"> {
-      /**
-       * Format restriction.
-       */
+      /** Format restriction. */
       format?:
         | "binary"
         | "byte"
@@ -639,14 +654,10 @@ export namespace AutoBeOpenApi {
         | "relative-json-pointer"
         | (string & {});
 
-      /**
-       * Pattern restriction.
-       */
+      /** Pattern restriction. */
       pattern?: string;
 
-      /**
-       * Content media type restriction.
-       */
+      /** Content media type restriction. */
       contentMediaType?: string;
 
       /**
@@ -664,15 +675,14 @@ export namespace AutoBeOpenApi {
       maxLength?: number;
     }
 
-    /**
-     * Array type info.
-     */
+    /** Array type info. */
     export interface IArray extends ISignificant<"array"> {
       /**
        * Items type info.
        *
        * The `items` means the type of the array elements. In other words, it is
-       * the type schema info of the `T` in the TypeScript array type `Array<T>`.
+       * the type schema info of the `T` in the TypeScript array type
+       * `Array<T>`.
        */
       items: IJsonSchema;
 
@@ -702,16 +712,14 @@ export namespace AutoBeOpenApi {
       maxItems?: number;
     }
 
-    /**
-     * Object type info.
-     */
+    /** Object type info. */
     export interface IObject extends IAttribute {
       /**
        * Properties of the object.
        *
        * The `properties` means a list of key-value pairs of the object's
-       * regular properties. The key is the name of the regular property,
-       * and the value is the type schema info.
+       * regular properties. The key is the name of the regular property, and
+       * the value is the type schema info.
        *
        * If you need additional properties that is represented by dynamic key,
        * you can use the {@link additionalProperties} instead.
@@ -724,9 +732,9 @@ export namespace AutoBeOpenApi {
        * The `additionalProperties` means the type schema info of the additional
        * properties that are not listed in the {@link properties}.
        *
-       * If the value is `false`, it means that the additional properties
-       * are not specified. Otherwise, if the value is {@link IJsonSchema} type,
-       * it means that the additional properties must follow the type schema info.
+       * If the value is `false`, it means that the additional properties are
+       * not specified. Otherwise, if the value is {@link IJsonSchema} type, it
+       * means that the additional properties must follow the type schema info.
        *
        * - `false`: No additional properties
        * - `IJsonSchema`: `Record<string, T>`
@@ -739,7 +747,8 @@ export namespace AutoBeOpenApi {
        * The `required` means a list of the key values of the required
        * {@link properties}. If some property key is not listed in the `required`
        * list, it means that property is optional. Otherwise some property key
-       * exists in the `required` list, it means that the property must be filled.
+       * exists in the `required` list, it means that the property must be
+       * filled.
        *
        * Below is an example of the {@link properties} and `required`.
        *
@@ -769,9 +778,7 @@ export namespace AutoBeOpenApi {
       required: string[];
     }
 
-    /**
-     * Reference type directing named schema.
-     */
+    /** Reference type directing named schema. */
     export interface IReference extends IAttribute {
       /**
        * Reference to the named schema.
@@ -792,64 +799,52 @@ export namespace AutoBeOpenApi {
      *
      * `IOneOf` represents an union type of the TypeScript (`A | B | C`).
      *
-     * For reference, even though your Swagger (or OpenAPI) document has
-     * defined `anyOf` instead of the `oneOf`, {@link AutoBeOpenApi} forcibly
-     * converts it to `oneOf` type.
+     * For reference, even though your Swagger (or OpenAPI) document has defined
+     * `anyOf` instead of the `oneOf`, {@link AutoBeOpenApi} forcibly converts it
+     * to `oneOf` type.
      */
     export interface IOneOf extends IAttribute {
-      /**
-       * List of the union types.
-       */
+      /** List of the union types. */
       oneOf: Exclude<IJsonSchema, IJsonSchema.IOneOf>[];
 
-      /**
-       * Discriminator info of the union type.
-       */
+      /** Discriminator info of the union type. */
       discriminator?: IOneOf.IDiscriminator;
     }
     export namespace IOneOf {
-      /**
-       * Discriminator info of the union type.
-       */
+      /** Discriminator info of the union type. */
       export interface IDiscriminator {
-        /**
-         * Property name for the discriminator.
-         */
+        /** Property name for the discriminator. */
         propertyName: string;
 
         /**
          * Mapping of the discriminator value to the schema name.
          *
          * This property is valid only for {@link IReference} typed
-         * {@link IOneOf.oneof} elements. Therefore, `key` of `mapping` is
-         * the discriminator value, and `value` of `mapping` is the
-         * schema name like `#/components/schemas/SomeObject`.
+         * {@link IOneOf.oneof} elements. Therefore, `key` of `mapping` is the
+         * discriminator value, and `value` of `mapping` is the schema name like
+         * `#/components/schemas/SomeObject`.
          */
         mapping?: Record<string, string>;
       }
     }
 
-    /**
-     * Null type.
-     */
+    /** Null type. */
     export interface INull extends ISignificant<"null"> {}
 
     interface ISignificant<Type extends string> extends IAttribute {
-      /**
-       * Discriminator value of the type.
-       */
+      /** Discriminator value of the type. */
       type: Type;
     }
     interface IAttribute {
-      /**
-       * Description about the type.
-       *
-       * If you are planning to fill the description, the content must be
-       * fully detailed and clear, so that anyone who reads the description
-       * can understand the purpose and functionality of the type and how
-       * it should be used.
-       */
-      description?: string;
+      // /**
+      //  * Description about the type.
+      //  *
+      //  * If you are planning to fill the description, the content must be fully
+      //  * detailed and clear, so that anyone who reads the description can
+      //  * understand the purpose and functionality of the type and how it should
+      //  * be used.
+      //  */
+      // description?: string;
     }
   }
 
@@ -861,22 +856,28 @@ export namespace AutoBeOpenApi {
    *
    * `AutoBeOpenApi.IJsonSchemaDescriptive` basically follows the JSON schema
    * specification of OpenAPI v3.1, but a little bit shrunk to remove ambiguous
-   * and duplicated expressions of OpenAPI v3.1 for the convenience, clarity, and
-   * AI generation.
+   * and duplicated expressions of OpenAPI v3.1 for the convenience, clarity,
+   * and AI generation.
    *
    * When filling the description, please make sure to provide fully detailed
-   * and clear information, so that anyone who reads the description
-   * can understand the purpose and functionality of the type.
+   * and clear information, so that anyone who reads the description can
+   * understand the purpose and functionality of the type.
    */
   export type IJsonSchemaDescriptive<Schema extends IJsonSchema = IJsonSchema> =
     Omit<Schema, "description"> & {
       /**
        * Description about the type.
        *
-       * This provides context about what the type represents and how it
-       * should be used. Please fill the description with fully detailed and
-       * clear information, so that anyone who reads the description
-       * can understand the purpose and functionality of the type.
+       * This provides context about what the type represents and how it should
+       * be used. Please fill the description with fully detailed and clear
+       * information, so that anyone who reads the description can understand
+       * the purpose and functionality of the type.
+       *
+       * When writing the description, organize your content into multiple
+       * paragraphs (separated to new lines) based on different aspects of the
+       * type rather than using a single paragraph. This structured approach
+       * improves readability and helps readers better understand the type's
+       * various characteristics and use cases.
        */
       description: string;
     };
