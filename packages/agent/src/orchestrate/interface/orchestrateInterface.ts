@@ -3,8 +3,7 @@ import {
   AutoBeAssistantMessageHistory,
   AutoBeInterfaceHistory,
 } from "@autobe/interface";
-import { MigrateApplication } from "@nestia/migrate";
-import { ILlmSchema, IValidation, OpenApi } from "@samchon/openapi";
+import { ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import { v4 } from "uuid";
 
@@ -12,7 +11,6 @@ import { AutoBeSystemPrompt } from "../../constants/AutoBeSystemPrompt";
 // import examples from "../../constants/examples.json";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
-import { createOpenApiDocument } from "../../factory/createOpenApiDocument";
 import { createAutoBeInterfaceApplication } from "./createAutoBeInterfaceApplication";
 import { transformInterfaceStateMessage } from "./transformInterfaceStateMessage";
 
@@ -48,30 +46,11 @@ export const orchestrateInterface =
         createAutoBeInterfaceApplication({
           model: ctx.model,
           build: async (next) => {
-            const swagger: OpenApi.IDocument = createOpenApiDocument(
-              next.document,
-            );
-            const migrate: IValidation<MigrateApplication> =
-              MigrateApplication.create(swagger);
-            if (migrate.success === false) {
-              // never be happened
-              throw new Error("Failed to pass validation.");
-            }
             result.value = {
               id: v4(),
               type: "interface",
               document: next.document,
-              files: {
-                "packages/api/swagger.json": JSON.stringify(swagger, null, 2),
-                ...Object.fromEntries(
-                  migrate.data
-                    .nest({
-                      simulate: true,
-                      e2e: true,
-                    })
-                    .files.map((f) => [`${f.location}/${f.file}`, f.content]),
-                ),
-              },
+              files: await ctx.compiler.interface(next.document),
               reason: props.reason,
               started_at: start.toISOString(),
               completed_at: new Date().toISOString(),
@@ -83,9 +62,6 @@ export const orchestrateInterface =
       histories: [transformInterfaceStateMessage(ctx.state())],
       tokenUsage: ctx.usage(),
     });
-    agentica.on("validate", (e) =>
-      console.log("validation feedback", e.result.errors),
-    );
 
     const histories: MicroAgenticaHistory<Model>[] = await agentica.conversate(
       "Make an OpenAPI document please.",

@@ -29,7 +29,7 @@ Currently, playground only steps to the [interface step](#interface).
 
 And as `@autobe`'s features are not fully completed, when "E-Commerce" like huge use case comes, [interface function](#interface) tends to write less operations that we've expected.
 
-- [BBS (Bullet-in Board System)](https://stackblitz.com/edit/autobe-demo-bbs?file=docs%2Fanalysis%2Findex.md,docs%2FERD.md,src%2Fapi%2Fstructures%2FIArticle.ts,src%2Fcontrollers%2Farticles%2FArticlesController.ts)
+- [BBS (Bullet-in Board System)](https://stackblitz.com/edit/autobe-demo-bbs?file=docs%2Fanalysis%2Findex.md,src%2Fapi%2Fstructures%2FIBbsArticle.ts,src%2Fcontrollers%2Fbbs%2Farticles%2FBbsArticlesController.ts,README.md)
 - [E-Commerce](https://stackblitz.com/edit/autobe-demo-shopping?file=docs%2Fanalysis%2Findex.md,docs%2FERD.md,src%2Fapi%2Fstructures%2FIShoppingSale.ts,src%2Fcontrollers%2Fshoppings%2Fcustomers%2Forders%2FShoppingsCustomersOrdersController.ts)
 
 ## Documentation Resources

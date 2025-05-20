@@ -6,17 +6,19 @@
   "author": "Wrtn Technologies",
   "license": "MIT",
   "scripts": {
-    "prepare": "ts-patch install",
-    "build": "rimraf lib && tsc",
-    "build:external": "node build/external.js",
-    "dev": "rimraf lib && tsc --watch"
+    "prepare": "ts-patch install && pnpm run prebuild",
+    "build": "pnpm run prebuild && rimraf lib && tsc",
+    "prebuild": "node build/constants.js && node build/external.js",
+    "dev": "pnpm run build --watch"
   },
   "dependencies": {
     "@autobe/interface": "workspace:^",
     "@nestia/core": "catalog:samchon",
+    "@nestia/migrate": "catalog:samchon",
     "@samchon/openapi": "catalog:samchon",
     "embed-prisma": "catalog:samchon",
     "embed-typescript": "catalog:samchon",
+    "prettier": "^3.5.3",
     "prisma-markdown": "catalog:samchon",
     "tstl": "catalog:samchon",
     "typia": "catalog:samchon"

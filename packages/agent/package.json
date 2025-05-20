@@ -22,7 +22,6 @@
   "dependencies": {
     "@agentica/core": "catalog:agentica",
     "@autobe/interface": "workspace:^",
-    "@nestia/migrate": "catalog:samchon",
     "@rollup/plugin-json": "^6.1.0",
     "@samchon/openapi": "catalog:samchon",
     "openai": "catalog:libs",
