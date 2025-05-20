@@ -20,6 +20,12 @@ export const orchestrateAnalyze =
   async (
     props: IAutoBeApplicationProps,
   ): Promise<AutoBeAssistantMessageHistory | AutoBeAnalyzeHistory> => {
+    if (!props.userPlanningRequirements) {
+      throw new Error(
+        `Unable to prepare a proposal because there is no user requirement`,
+      );
+    }
+
     const started_at = new Date().toISOString();
     const planning = new Planning();
     const planner = Planner(ctx.vendor, planning);
@@ -75,6 +81,7 @@ export const orchestrateAnalyze =
         description: "",
         reason: "",
         files: planning.allFiles(),
+        step: 1,
       } satisfies AutoBeAnalyzeHistory;
     } else {
       throw new Error();
