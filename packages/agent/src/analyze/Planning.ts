@@ -1,10 +1,12 @@
-import fs from "fs";
 import path from "path";
+
+type Filename = string;
+type FileContent = string;
 
 export class Planning {
   constructor(
     private readonly rootFolder?: string,
-    private readonly fileMap: Record<string, string> = {},
+    private readonly fileMap: Record<Filename, FileContent> = {},
   ) {}
 
   /**
@@ -21,10 +23,6 @@ export class Planning {
     markdown: string;
   }): Promise<void> {
     const filename = path.join(this.rootFolder ?? "", input.filename);
-    if (this.rootFolder) {
-      await fs.promises.writeFile(filename, input.markdown);
-    }
-
     this.fileMap[input.filename] = input.markdown;
   }
 
@@ -39,16 +37,22 @@ export class Planning {
   }
 
   /**
+   * Remove markdown file.
+   *
+   * @param input.name filename to remove
+   */
+  async removeFile(input: { filename: `${string}.md` }): Promise<void> {
+    const filename = path.join(this.rootFolder ?? "", input.filename);
+    delete this.fileMap[filename];
+  }
+
+  /**
    * If you decide that you no longer need any reviews,
    * or if the reviewer refuses to do so, call abort.
    * This is a function to end document creation and review, and to respond to users.
    */
   abort(input: {}): "OK" {
     return "OK";
-  }
-
-  getStructure(input: { a: { b: { c: { d: { e: boolean } } } } }) {
-    return input;
   }
 
   /**
