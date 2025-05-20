@@ -3,7 +3,7 @@ import { AutoBeAgentHistoryBase } from "./AutoBeHistoryBase";
 
 export interface AutoBeTestHistory extends AutoBeAgentHistoryBase<"test"> {
   result: IAutoBeTypeScriptCompilerResult;
+  files: Record<string, string>;
   reason: string;
-  description: string;
   step: number;
 }

@@ -1,5 +1,4 @@
-import { AutoBeAgent, factory, orchestrate } from "@autobe/agent";
-import { AutoBeState } from "@autobe/agent/src/context/AutoBeState";
+import { AutoBeAgent, orchestrate } from "@autobe/agent";
 import { AutoBeCompiler } from "@autobe/compiler";
 import { FileSystemIterator, TestRepositoryUtil } from "@autobe/filesystem";
 import {
@@ -9,10 +8,8 @@ import {
   AutoBePrismaHistory,
   IAutoBePrismaCompilerResult,
 } from "@autobe/interface";
-import { MigrateApplication } from "@nestia/migrate";
 import fs from "fs";
 import OpenAI from "openai";
-import { IValidation } from "typia";
 import { v4 } from "uuid";
 
 import { TestGlobal } from "../../TestGlobal";
@@ -34,6 +31,13 @@ export const test_interface_bbs = async () => {
 
   // COMPILER PRISMA
   const compiler: AutoBeCompiler = new AutoBeCompiler();
+  const prisma: IAutoBePrismaCompilerResult = await compiler.prisma({
+    files: prismaFiles,
+  });
+  if (prisma.type !== "success")
+    throw new Error("Failed to pass prisma generate");
+
+  // CONSTRUCT AGENT WITH HISTORIES
   const agent: AutoBeAgent<"chatgpt"> = new AutoBeAgent({
     model: "chatgpt",
     vendor: {
@@ -46,69 +50,44 @@ export const test_interface_bbs = async () => {
       locale: "en-US",
     },
     compiler,
+    histories: [
+      {
+        ...createHistoryProperties(),
+        type: "analyze",
+        reason: "User requested to analyze the requirements",
+        description: "Analysis report about overall e-commerce system",
+        files: analyzeFiles,
+      } satisfies AutoBeAnalyzeHistory,
+      {
+        ...createHistoryProperties(),
+        type: "prisma",
+        reason:
+          "Step to the DB schema generation referencing the analysis report",
+        description: "DB schema about overall e-commerce system",
+        result: {
+          type: "success",
+          schemas: prisma.schemas,
+          nodeModules: prisma.nodeModules,
+          document: prisma.document,
+          diagrams: prisma.diagrams,
+        },
+      } satisfies AutoBePrismaHistory,
+    ],
   });
-  const prisma: IAutoBePrismaCompilerResult = await compiler.prisma({
-    files: prismaFiles,
-  });
-  if (prisma.type !== "success")
-    throw new Error("Failed to pass prisma generate");
 
   // GENERATE INTERFACE
   const result: AutoBeInterfaceHistory | AutoBeAssistantMessageHistory =
-    await orchestrate.interface({
-      ...agent.getContext(),
-      state: () =>
-        ({
-          analyze: {
-            ...createHistoryProperties(),
-            type: "analyze",
-            reason: "User requested to analyze the requirements",
-            description: "Analysis report about overall e-commerce system",
-            files: analyzeFiles,
-          } satisfies AutoBeAnalyzeHistory,
-          prisma: {
-            ...createHistoryProperties(),
-            type: "prisma",
-            reason:
-              "Step to the DB schema generation referencing the analysis report",
-            description: "DB schema about overall e-commerce system",
-            result: {
-              type: "success",
-              schemas: prisma.schemas,
-              nodeModules: prisma.nodeModules,
-              document: prisma.document,
-              diagrams: prisma.diagrams,
-            },
-          } satisfies AutoBePrismaHistory,
-          interface: null,
-          test: null,
-          realize: null,
-        }) satisfies AutoBeState,
-    })({
+    await orchestrate.interface(agent.getContext())({
       reason: "Step to the interface designing after DB schema generation",
     });
   if (result.type !== "interface")
     throw new Error("History type must be interface.");
 
   // REPORT RESULT
-  const document = factory.createOpenApiDocument(result.document);
-  const migrate: IValidation<MigrateApplication> =
-    MigrateApplication.create(document);
-  if (migrate.success === false)
-    throw new Error("Failed to pass the migrate validation.");
-
-  const output: MigrateApplication.IOutput = migrate.data.nest({
-    simulate: true,
-    e2e: true,
-  });
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/bbs/interface`,
     files: {
-      ...Object.fromEntries(
-        output.files.map((f) => [`${f.location}/${f.file}`, f.content]),
-      ),
-      "packages/api/swagger.json": JSON.stringify(document, null, 2),
-      "logs/migrationErrors.json": JSON.stringify(output.errors, null, 2),
+      ...agent.getFiles(),
       "logs/result.json": JSON.stringify(result, null, 2),
       "logs/tokenUsage.json": JSON.stringify(agent.getTokenUsage(), null, 2),
     },

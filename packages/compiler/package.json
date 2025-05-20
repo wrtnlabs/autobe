@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@autobe/interface": "workspace:^",
-    "@nestia/core": "catalog:nestia",
+    "@nestia/core": "catalog:samchon",
     "@samchon/openapi": "catalog:samchon",
     "embed-prisma": "catalog:samchon",
     "embed-typescript": "catalog:samchon",

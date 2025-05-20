@@ -32,9 +32,10 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
       vendor: props.vendor,
       config: props.config,
       compiler: props.compiler,
-      histories: this.histories_,
-      usage: () => this.agentica_.getTokenUsage(),
+      histories: () => this.histories_,
       state: () => this.state_,
+      usage: () => this.agentica_.getTokenUsage(),
+      files: () => this.getFiles(),
     };
 
     this.agentica_ = new MicroAgentica({
@@ -83,6 +84,39 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
   ): Promise<AutoBeHistory[]> {
     content;
     return [];
+  }
+
+  public getFiles(): Record<string, string> {
+    return {
+      ...Object.fromEntries(
+        this.state_.analyze
+          ? Object.entries(this.state_.analyze.files).map(([key, value]) => [
+              `docs/analysis/${key.split("/").at(-1)}`,
+              value,
+            ])
+          : [],
+      ),
+      ...Object.fromEntries(
+        this.state_.prisma?.result.type === "success"
+          ? [
+              ...Object.entries(this.state_.prisma.result.schemas).map(
+                ([key, value]) => [
+                  `prisma/schema/${key.split("/").at(-1)}`,
+                  value,
+                ],
+              ),
+              ["docs/ERD.md", this.state_.prisma.result.document],
+            ]
+          : [],
+      ),
+      ...(this.state_.interface ? this.state_.interface.files : {}),
+      ...(this.state_.test?.result.type === "success"
+        ? this.state_.test.files
+        : {}),
+      ...(this.state_.realize?.result.type === "success"
+        ? this.state_.realize.files
+        : {}),
+    };
   }
 
   public getHistories(): AutoBeHistory[] {

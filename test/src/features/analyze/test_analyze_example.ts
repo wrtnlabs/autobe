@@ -18,7 +18,7 @@ export const test_analyze_example = async () => {
   });
   await orchestrate.analyze({
     ...agent.getContext(),
-    histories: [
+    histories: () => [
       {
         id: v4(),
         type: "userMessage",
