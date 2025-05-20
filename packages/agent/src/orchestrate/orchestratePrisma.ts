@@ -7,9 +7,7 @@ import { ILlmSchema } from "@samchon/openapi";
 import { AutoBeContext } from "../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../context/IAutoBeApplicationProps";
 
-/**
- * @todo Michael
- */
+/** @todo Michael */
 export const orchestratePrisma =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
   async (

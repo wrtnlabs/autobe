@@ -6,12 +6,8 @@ export * from "./structures/IAutoBeProps";
 export * from "./structures/IAutoBeConfig";
 export * from "./structures/IAutoBeVendor";
 
-/**
- * @internal
- */
+/** @internal */
 export * as factory from "./factory";
 
-/**
- * @internal
- */
+/** @internal */
 export * as orchestrate from "./orchestrate";
