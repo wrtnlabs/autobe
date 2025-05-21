@@ -1,10 +1,8 @@
-import { orchestrateInterface } from "@autobe/agent/src/orchestrate/interface/orchestrateInterface";
-import { orchestrateInterfaceEndpoints } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceEndpoints";
+import { orchestrate } from "@autobe/agent";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeAssistantMessageHistory,
   AutoBeInterfaceHistory,
-  AutoBeOpenApi,
 } from "@autobe/interface";
 
 import { TestGlobal } from "../../../TestGlobal";
@@ -18,7 +16,7 @@ export const validate_agent_interface_main = async (
 
   const { agent } = await prepare_agent_interface(owner, project);
   const result: AutoBeInterfaceHistory | AutoBeAssistantMessageHistory =
-    await orchestrateInterface(agent.getContext())({
+    await orchestrate.interface(agent.getContext())({
       reason: "Step to the interface designing after DB schema generation",
     });
   if (result.type !== "interface")

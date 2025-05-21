@@ -29,7 +29,7 @@ export const orchestrateInterface =
       operations,
       components,
     };
-    return {
+    const result: AutoBeInterfaceHistory = {
       type: "interface",
       id: v4(),
       document,
@@ -39,4 +39,7 @@ export const orchestrateInterface =
       started_at: start.toISOString(),
       completed_at: new Date().toISOString(),
     };
+    ctx.histories().push(result);
+    ctx.state().interface = result;
+    return result;
   };
