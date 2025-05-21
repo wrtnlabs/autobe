@@ -96,6 +96,9 @@ importers:
       '@autobe/interface':
         specifier: workspace:^
         version: link:../interface
+      '@prisma/internals':
+        specifier: ^6.7.0
+        version: 6.8.2(typescript@5.8.3)
       '@rollup/plugin-json':
         specifier: ^6.1.0
         version: 6.1.0(rollup@4.41.0)
@@ -133,6 +136,9 @@ importers:
       '@types/uuid':
         specifier: ^10.0.0
         version: 10.0.0
+      chalk:
+        specifier: 4.1.2
+        version: 4.1.2
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
@@ -249,9 +255,6 @@ importers:
       '@samchon/openapi':
         specifier: catalog:samchon
         version: 4.3.3
-      chalk:
-        specifier: 4.1.2
-        version: 4.1.2
       dotenv:
         specifier: ^16.5.0
         version: 16.5.0
@@ -277,6 +280,9 @@ importers:
       '@types/uuid':
         specifier: ^10.0.0
         version: 10.0.0
+      chalk:
+        specifier: 4.1.2
+        version: 4.1.2
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
