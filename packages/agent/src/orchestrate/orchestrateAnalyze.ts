@@ -1,13 +1,12 @@
-import { MicroAgentica } from "@agentica/core";
 import {
   AutoBeAnalyzeHistory,
   AutoBeAssistantMessageHistory,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 import { randomUUID } from "crypto";
-import typia from "typia";
 
 import { Orchestration } from "../analyze/AnalyzeAgent";
+import { createAnalyst } from "../analyze/CreateAnalyst";
 import { createReviewer } from "../analyze/CreateReviewer";
 import { Planner } from "../analyze/Planner";
 import { Planning } from "../analyze/Planning";
@@ -20,46 +19,26 @@ export const orchestrateAnalyze =
   async (
     props: IAutoBeApplicationProps,
   ): Promise<AutoBeAssistantMessageHistory | AutoBeAnalyzeHistory> => {
-    if (!props.userPlanningRequirements) {
+    const userPlanningRequirements = props.userPlanningRequirements;
+    if (!userPlanningRequirements) {
       throw new Error(
         `Unable to prepare a proposal because there is no user requirement`,
       );
     }
 
     const started_at = new Date().toISOString();
+
     const planning = new Planning();
     const planner = Planner(ctx.vendor, planning);
-    const innerAgent = new Orchestration(
-      ctx.vendor,
-      planner,
-      planning,
-      createReviewer,
-    );
-
-    const analyzeAgent = new MicroAgentica({
-      controllers: [
-        {
-          name: "Analyze Agent For Planning",
-          protocol: "class",
-          application: typia.llm.application<Orchestration, "chatgpt">(),
-          execute: innerAgent,
-        },
-      ],
-      model: "chatgpt",
-      vendor: {
-        api: ctx.vendor.api,
-        model: "gpt-4.1",
-      },
-      histories: [
-        {
-          text: props.userPlanningRequirements,
-          type: "assistantMessage",
-        },
-      ],
-    });
 
     const command = "Please write a proposal." as const;
-    const conversations = await analyzeAgent.conversate(command);
+
+    const agent = createAnalyst({
+      execute: new Orchestration(ctx.vendor, planner, planning, createReviewer),
+      api: ctx.vendor.api,
+      userPlanningRequirements,
+    });
+    const conversations = await agent.conversate(command);
 
     const lastMessage = conversations[conversations.length - 1];
     console.log("lastMessage: ", lastMessage.type);

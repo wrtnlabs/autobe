@@ -6,13 +6,16 @@ export const createReviewer = (
 ) => {
   return new MicroAgentica({
     model: "chatgpt",
-    vendor,
+    vendor: {
+      api: vendor.api,
+      model: "gpt-4o-mini",
+    },
     controllers: [],
     config: {
       systemPrompt: {
         common: () => {
           return [
-            "You are an excellent requirements analyst & reviwer agent.",
+            "You are an excellent requirements analyst & reviewer agent.",
             "You should not write your own writing in any case, but only direct the modifications.",
             "Also, reviewers are independent beings, and should never be instructed.",
             "Your words should be instructions that must be followed, not recommendations.",
