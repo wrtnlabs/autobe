@@ -178,6 +178,9 @@ importers:
       embed-typescript:
         specifier: catalog:samchon
         version: 1.0.1(typescript@5.8.3)
+      import2:
+        specifier: ^1.0.3
+        version: 1.0.3
       prettier:
         specifier: ^3.5.3
         version: 3.5.3

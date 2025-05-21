@@ -76,18 +76,20 @@ async function main(): Promise<void> {
       content = content.replace(`{% ${key} %}`, value);
     record[file.substring(0, file.length - 3)] = content;
   }
-  await fs.promises.writeFile(
-    path.resolve(__dirname, "../src/constants/AutoBeSystemPromptConstant.ts"),
-    [
-      `/* eslint-disable no-template-curly-in-string */`,
-      `export const enum AutoBeSystemPromptConstant {`,
-      ...Object.entries(record).map(
-        ([key, value]) => `  ${key.toUpperCase()} = ${JSON.stringify(value)},`,
-      ),
-      `};`,
-      "",
-    ].join("\n"),
-    "utf8",
-  );
+  await FileSystemIterator.save({
+    root: path.resolve(__dirname, "../src/constants"),
+    files: {
+      "AutoBeSystemPromptConstant.ts": [
+        `/* eslint-disable no-template-curly-in-string */`,
+        `export const enum AutoBeSystemPromptConstant {`,
+        ...Object.entries(record).map(
+          ([key, value]) =>
+            `  ${key.toUpperCase()} = ${JSON.stringify(value)},`,
+        ),
+        `};`,
+        "",
+      ].join("\n"),
+    },
+  });
 }
 main().catch(console.error);

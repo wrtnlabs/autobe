@@ -2,8 +2,8 @@ import { AutoBeOpenApi, IAutoBeInterfaceCompiler } from "@autobe/interface";
 import { MigrateApplication } from "@nestia/migrate";
 import { OpenApi, OpenApiV3_1 } from "@samchon/openapi";
 import sortImport from "@trivago/prettier-plugin-sort-imports";
+import import2 from "import2";
 import { format } from "prettier";
-import jsDoc from "prettier-plugin-jsdoc";
 import { IValidation } from "typia";
 
 import { AutoBeCompilerConstants } from "./raw/AutoBeCompilerConstants";
@@ -47,7 +47,7 @@ async function beautify(script: string) {
   try {
     return await format(script, {
       parser: "typescript",
-      plugins: [sortImport, jsDoc],
+      plugins: [sortImport, await import2("prettier-plugin-jsdoc")],
       importOrder: ["<THIRD_PARTY_MODULES>", "^[./]"],
       importOrderSeparation: true,
       importOrderSortSpecifiers: true,
