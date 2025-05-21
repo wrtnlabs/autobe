@@ -1,13 +1,23 @@
+import { OpenApi } from "@samchon/openapi";
 import cp from "child_process";
 import fs from "fs";
 import { VariadicSingleton } from "tstl";
 
 import { FileSystemIterator } from "./FileSystemIterator";
 
-/**
- * @internal
- */
+/** @internal */
 export namespace TestRepositoryUtil {
+  export const analyze = async (
+    account: string,
+    project: string,
+  ): Promise<Record<string, string>> => {
+    await fork.get(account, project);
+    return FileSystemIterator.read({
+      root: `${ROOT}/assets/repositories/${account}/${project}/docs/requirements`,
+      extension: "md",
+    });
+  };
+
   export const prisma = async (
     account: string,
     project: string,
@@ -15,7 +25,6 @@ export namespace TestRepositoryUtil {
     await fork.get(account, project);
     return FileSystemIterator.read({
       root: `${ROOT}/assets/repositories/${account}/${project}/prisma/schema`,
-      prefix: "",
       extension: "prisma",
     });
   };
@@ -30,6 +39,21 @@ export namespace TestRepositoryUtil {
       prefix: "src/",
       extension: "ts",
     });
+  };
+
+  export const swagger = async (
+    account: string,
+    project: string,
+  ): Promise<OpenApi.IDocument> => {
+    await fork.get(account, project);
+    return OpenApi.convert(
+      JSON.parse(
+        await fs.promises.readFile(
+          `${ROOT}/assets/repositories/${account}/${project}/packages/api/swagger.json`,
+          "utf8",
+        ),
+      ),
+    );
   };
 
   const fork = new VariadicSingleton(

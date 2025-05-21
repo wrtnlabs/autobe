@@ -14,19 +14,19 @@ import { v4 } from "uuid";
 
 import { TestGlobal } from "../../TestGlobal";
 
-export const test_agent_interface_shopping = async () => {
+export const test_agent_interface_main_bbs = async () => {
   if (TestGlobal.env.CHATGPT_API_KEY === undefined) return false;
 
   // PREPARE ASSETS
   const analyzeFiles: Record<string, string> = {
     "index.md": await fs.promises.readFile(
-      `${TestGlobal.ROOT}/assets/shopping/docs/requirements/index.md`,
+      `${TestGlobal.ROOT}/assets/bbs/docs/requirements/index.md`,
       "utf8",
     ),
   };
   const prismaFiles: Record<string, string> = await TestRepositoryUtil.prisma(
     "samchon",
-    "shopping-backend",
+    "bbs-backend",
   );
 
   // COMPILER PRISMA
@@ -85,7 +85,7 @@ export const test_agent_interface_shopping = async () => {
 
   // REPORT RESULT
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/shopping/interface`,
+    root: `${TestGlobal.ROOT}/results/bbs/interface`,
     files: {
       ...agent.getFiles(),
       "logs/result.json": JSON.stringify(result, null, 2),

@@ -7,6 +7,7 @@ import jsDoc from "prettier-plugin-jsdoc";
 import { IValidation } from "typia";
 
 import { AutoBeCompilerConstants } from "./raw/AutoBeCompilerConstants";
+import { ArrayUtil } from "./utils/ArrayUtil";
 
 export class AutoBeInterfaceCompiler implements IAutoBeInterfaceCompiler {
   public async compile(
@@ -19,7 +20,7 @@ export class AutoBeInterfaceCompiler implements IAutoBeInterfaceCompiler {
       // never be happened
       throw new Error("Failed to pass validation.");
     }
-    const result: MigrateApplication.IOutput = migrate.data.nest({
+    const compiled: MigrateApplication.IOutput = migrate.data.nest({
       simulate: true,
       e2e: true,
       author: {
@@ -29,14 +30,12 @@ export class AutoBeInterfaceCompiler implements IAutoBeInterfaceCompiler {
     });
     return {
       ...Object.fromEntries(
-        await Promise.all(
-          result.files.map(async (f) => [
-            `${f.location}/${f.file}`,
-            f.file.endsWith(".ts") && f.file.endsWith(".d.ts") === false
-              ? await beautify(f.content)
-              : f.content,
-          ]),
-        ),
+        await ArrayUtil.asyncMap(compiled.files, async (f) => [
+          `${f.location}/${f.file}`,
+          f.file.endsWith(".ts") && f.file.endsWith(".d.ts") === false
+            ? await beautify(f.content)
+            : f.content,
+        ]),
       ),
       "packages/api/swagger.json": JSON.stringify(swagger, null, 2),
       "README.md": AutoBeCompilerConstants.README,

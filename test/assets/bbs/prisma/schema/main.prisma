@@ -28,30 +28,21 @@ model attachment_files {
   //----
   // COLUMNS
   //----
-  /// @format uuid
+  /// Primary Key.
   id String @id @db.Uuid
 
   /// File name, except extension.
-  ///
-  /// @maxLength 255
   name String @db.VarChar
 
   /// Extension.
   ///
   /// Possible to omit like `README` case.
-  ///
-  /// @minLength 1
-  /// @maxLength 8
   extension String? @db.VarChar
 
   /// URL path of the real file.
-  ///
-  /// @format url
   url String @db.VarChar
 
   /// Creation time of file.
-  ///
-  /// @format date-time
   created_at DateTime @db.Timestamptz
 
   //----
@@ -85,7 +76,7 @@ model attachment_files {
 /// @namespace Articles
 /// @author Samchon
 model bbs_articles {
-  /// @format uuid
+  /// Primary Key.
   id String @id @db.Uuid
 
   /// Writer's name.
@@ -110,8 +101,6 @@ model bbs_articles {
   ///
   /// It is created for the first time when an article is created, and is
   /// accumulated every time the article is modified.
-  ///
-  /// @minItems 1
   snapshots bbs_article_snapshots[]
 
   /// List of comments.
@@ -135,12 +124,10 @@ model bbs_article_snapshots {
   //----
   // COLUMNS
   //----
-  /// @format uuid
+  /// Primary Key.
   id String @id @db.Uuid
 
   /// Belong article's {@link bbs_articles.id}
-  ///
-  /// @format uuid
   bbs_article_id String @db.Uuid
 
   /// Format of body.
@@ -155,8 +142,6 @@ model bbs_article_snapshots {
   body String
 
   /// IP address of the snapshot writer.
-  ///
-  /// @format ip
   ip String @db.VarChar
 
   /// Creation time of record.
@@ -195,22 +180,16 @@ model bbs_article_snapshot_files {
   //----
   // COLUMNS
   //----
-  /// @format uuid
+  /// Primary Key.
   id String @id @db.Uuid
 
   /// Belonged snapshot's {@link bbs_article_snapshots.id}
-  ///
-  /// @format uuid
   bbs_article_snapshot_id String @db.Uuid
 
   /// Belonged file's {@link attachment_files.id}
-  ///
-  /// @format uuid
   attachment_file_id String @db.Uuid
 
   /// Sequence of attachment file in the snapshot.
-  ///
-  /// @format int
   sequence Int @db.Integer
 
   //----
@@ -246,19 +225,15 @@ model bbs_article_comments {
   //----
   // COLUMNS
   //----
-  /// @format uuid
+  /// Primary Key.
   id String @id @db.Uuid
 
   /// Belonged article's {@link bbs_articles.id}
-  /// 
-  /// @format uuid
   bbs_article_id String @db.Uuid
 
   /// Parent comment's {@link bbs_article_comments.id}
   ///
   /// Used to express the hierarchical reply structure.
-  ///
-  /// @format uuid
   parent_id String? @db.Uuid
 
   /// Writer's name.
@@ -296,8 +271,6 @@ model bbs_article_comments {
   ///
   /// It is created for the first time when a comment is created, and is
   /// accumulated every time the comment is modified.
-  ///
-  /// @minItems 1
   snapshots bbs_article_comment_snapshots[]
 
   @@index([bbs_article_id, parent_id, created_at])
@@ -317,12 +290,10 @@ model bbs_article_comment_snapshots {
   //----
   // COLUMNS
   //----
-  /// @format uuid
+  /// Primary Key.
   id String @id @db.Uuid
 
   /// Belonged article's {@link bbs_article_comments.id}
-  ///
-  /// @format uuid
   bbs_article_comment_id String @db.Uuid
 
   /// Format of content body.
@@ -334,8 +305,6 @@ model bbs_article_comment_snapshots {
   body String
 
   /// IP address of the snapshot writer.
-  ///
-  /// @format ip
   ip String @db.VarChar
 
   /// Creation time of record.
@@ -367,24 +336,18 @@ model bbs_article_comment_snapshot_files {
   //----
   // COLUMNS
   //----
-  /// @format uuid
+  /// Primary Key.
   id String @id @db.Uuid
 
   /// Belonged snapshot's {@link bbs_article_comment_snapshots.id}
-  ///
-  /// @format uuid
   bbs_article_comment_snapshot_id String @db.Uuid
 
   /// Belonged file's {@link attachment_files.id}
-  ///
-  /// @format uuid
   attachment_file_id String @db.Uuid
 
   /// Sequence order.
   ///
   /// Sequence order of the attached file in the belonged snapshot.
-  ///
-  /// @type int
   sequence Int @db.Integer
 
   //----

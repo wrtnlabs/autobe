@@ -11,6 +11,7 @@
   "license": "MIt",
   "packageManager": "pnpm@10.6.4",
   "dependencies": {
+    "@samchon/openapi": "catalog:samchon",
     "tstl": "catalog:samchon"
   },
   "devDependencies": {

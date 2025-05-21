@@ -23,13 +23,9 @@ model shopping_carts {
   // COLUMNS
   //----
   /// Primary Key.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Belonged customer's {@link shopping_customers.id}
-  ///
-  /// @format uuid
   shopping_customer_id String @db.Uuid
 
   /// Type of the cart creator.
@@ -86,26 +82,17 @@ model shopping_cart_commodities {
   // COLUMNS
   //----
   /// Primary Key.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Belonged cart's {@link shopping_carts.id}
-  ///
-  /// @format uuid
   shopping_cart_id String @db.Uuid
 
   /// Target snapshot's {@link shopping_sale_snapshots.id}
-  ///
-  /// @format uuid
   shopping_sale_snapshot_id String @db.Uuid
 
   /// Volume count.
   ///
   /// The value multiplied to {@link shopping_cart_commodity_stocks.quantity}.
-  ///
-  /// @format uint 
-  /// @minimum 1
   volume Int @db.Integer
 
   /// Creation time of record.
@@ -174,34 +161,21 @@ model shopping_cart_commodity_stocks {
   // COLUMNS
   //----
   /// Primary Key.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Belonged commodity's {@link shopping_cart_commodities.id}
-  ///
-  /// @format uuid
   shopping_cart_commodity_id String @db.Uuid
 
   /// Target unit's {@link shopping_sale_snapshot_units.id}
-  ///
-  /// @format uuid
   shopping_sale_snapshot_unit_id String @db.Uuid
 
   /// Target final stock's {@link shopping_sale_snapshot_unit_stocks.id}
-  ///
-  /// @format uuid
   shopping_sale_snapshot_unit_stock_id String @db.Uuid
 
   /// Quantity count.
-  ///
-  /// @type uint 
-  /// @minimum 1
   quantity Int @db.Integer
 
   /// Sequence order in belonged cart commodity.
-  ///
-  /// @type int
   sequence Int @db.Integer
 
   //----
@@ -249,31 +223,21 @@ model shopping_cart_commodity_stock_choices {
   // COLUMNS
   //----
   /// Primary Key.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Belonged cart-commodity-stock's {@link shopping_cart_commodity_stocks.id}
-  ///
-  /// @format uuid
   shopping_cart_commodity_stock_id String @db.Uuid
 
   /// Target option's {@link shopping_sale_snapshot_unit_options.id}
-  ///
-  /// @format uuid
   shopping_sale_snapshot_unit_option_id String @db.Uuid
 
   /// Selected candidate's {@link shopping_sale_snapshot_unit_option_candidates.id}
-  ///
-  /// @format uuid
   shopping_sale_snapshot_unit_option_candidate_id String? @db.Uuid
 
   /// User-written value for descriptive option.
   value String? @db.VarChar
 
   /// Sequence order in belonged cart-commodity-stock.
-  ///
-  /// @type int
   sequence Int @db.Integer
 
   //----

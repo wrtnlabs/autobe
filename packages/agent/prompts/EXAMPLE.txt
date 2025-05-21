@@ -1,0 +1,143 @@
+## 7. Example Cases
+
+The following examples demonstrate how to properly analyze input data and generate high-quality API operations. These examples serve as reference patterns for creating operations across different business domains.
+
+### 7.1. BBS (Bulletin Board System)
+
+This example illustrates a typical bulletin board system with posts, comments, and user management functionality.
+
+#### 7.1.1. Requirement Analysis Report
+
+The analysis report contains user stories, functional requirements, and business rules for the BBS system.
+
+```json
+{% BBS_ANALYSIS %}
+```
+
+**Key Points to Extract:**
+- Primary user journeys for content creation and consumption
+- Content moderation requirements
+- User authentication and authorization rules
+- Notification requirements
+- Search and filtering capabilities
+
+#### 7.1.2. Prisma DB Schema & ERD
+
+The database schema defines entity relationships crucial for understanding API structures.
+
+```json
+{% BBS_PRISMA %}
+```
+
+**How to Use This Information:**
+- Extract field types, constraints, and relationships from the schema
+- Pay special attention to comment blocks describing tables and columns
+- Use relationship definitions to understand resource hierarchies for URL paths
+- Note any business rules embedded in the schema comments
+
+#### 7.1.3. API Endpoints
+
+These endpoints represent the initial path/method combinations identified in stage 1.
+
+```json
+{% BBS_INTERFACE_ENDPOINTS %}
+```
+
+**Analysis Approach:**
+- Ensure each endpoint follows RESTful conventions
+- Verify resource hierarchies align with database relationships
+- Check for completeness across all entities identified in the schema
+- Look for patterns that suggest standardized API behaviors
+
+#### 7.1.4. API Operations
+
+These show properly generated operations with all required elements.
+
+```json
+{% BBS_INTERFACE_OPERATIONS %}
+```
+
+**Quality Standards Demonstrated:**
+- Detailed multi-paragraph descriptions referencing schema comments
+- Proper parameter definitions with clear types and constraints
+- Appropriate request/response body typeName references
+- Consistent patterns for CRUD operations across resources
+
+### 7.2. Shopping Mall
+
+This example demonstrates a more complex e-commerce system with product catalogs, shopping carts, orders, payments, and user management.
+
+#### 7.2.1. Requirement Analysis Report
+
+The shopping mall has more complex business rules and user journeys than the BBS system.
+
+```json
+{% SHOPPING_ANALYSIS %}
+```
+
+**Key Complexities to Note:**
+- Multi-step checkout processes
+- Inventory management rules
+- Payment processing flows
+- Customer profile management
+- Product catalog hierarchies
+- Order fulfillment workflows
+- Discount and promotion rules
+
+#### 7.2.2. Prisma DB Schema & ERD
+
+This schema illustrates complex relationships between products, categories, carts, orders, and users.
+
+```json
+{% SHOPPING_PRISMA %}
+```
+
+**Complex Patterns to Identify:**
+- Many-to-many relationships (e.g., products to categories)
+- Hierarchical data structures (e.g., category trees)
+- Transactional state machines (e.g., order statuses)
+- Soft deletion patterns for critical business data
+- Audit logging and timestamp tracking
+- Denormalized data for performance optimization
+
+#### 7.2.3. API Endpoints
+
+The shopping mall requires significantly more endpoints than the BBS system.
+
+```json
+{% SHOPPING_INTERFACE_ENDPOINTS %}
+```
+
+**Scale Challenges:**
+- Notice the larger number of endpoints required for a complete e-commerce solution
+- Identify patterns that can be applied consistently across similar resources
+- Note nested resource relationships that reflect database relationships
+- Pay attention to search, filter, and sorting requirements for product listings
+
+#### 7.2.4. API Operations
+
+These operations demonstrate handling complex business logic in API design.
+
+```json
+{% SHOPPING_INTERFACE_OPERATIONS %}
+```
+
+**Advanced Techniques Demonstrated:**
+- Handling multi-step operations with appropriate status codes and responses
+- Managing resource relationships in request/response bodies
+- Documenting complex business rules in operation descriptions
+- Defining specialized search and filter parameters for product catalogs
+- Supporting pagination for large result sets
+- Implementing appropriate error handling for business validation rules
+
+### 7.3. Pattern Recognition and Application
+
+When generating operations for new path/method combinations:
+
+1. **Identify Similar Patterns**: Look for similarities between the current API and these examples
+2. **Apply Consistent Approaches**: Use consistent naming, structure, and description formats
+3. **Scale Appropriately**: Apply more detailed descriptions and parameters for complex operations
+4. **Maintain Quality Standards**: Ensure every operation meets or exceeds the quality shown in these examples
+5. **Verify Completeness**: Check that all paths from stage 1 have corresponding operations
+
+These examples should serve as reference implementations to guide your work in generating comprehensive, high-quality API operations that meet all business requirements while maintaining consistent patterns across the entire API surface.

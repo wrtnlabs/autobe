@@ -24,18 +24,12 @@ model shopping_sales {
   // COLUMNS
   //----
   /// Primary Key.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Belonged section's {@link shopping_sections.id}
-  ///
-  /// @format uuid
   shopping_section_id String @db.Uuid
 
   /// Belonged seller's {@link shopping_customers.id}
-  ///
-  /// @format uuid
   shopping_seller_customer_id String @db.Uuid
 
   /// Creation time of record.
@@ -116,13 +110,9 @@ model shopping_sale_snapshots {
   // COLUMNS
   //----
   /// Primary Key.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Belonged sale's {@link shopping_sales.id}
-  ///
-  /// @format uuid
   shopping_sale_id String @db.Uuid
 
   /// Creation time of record.
@@ -189,13 +179,9 @@ model shopping_sale_snapshot_units {
   // COLUMNS
   //----
   /// Primary Key.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Belonged snapshot's {@link shopping_sale_snapshots.id}
-  ///
-  /// @format uuid
   shopping_sale_snapshot_id String @db.Uuid
 
   /// Representative name of the unit.
@@ -271,13 +257,9 @@ model shopping_sale_snapshot_unit_options {
   // COLUMNS
   //----
   /// Primary Key.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Belonged unit's {@link shopping_sale_snapshot_units.id}
-  ///
-  /// @format uuid
   shopping_sale_snapshot_unit_id String @db.Uuid
 
   /// Name of the option.
@@ -304,8 +286,6 @@ model shopping_sale_snapshot_unit_options {
   variable Boolean @db.Boolean
 
   /// Sequence order in belonged unit.
-  ///
-  /// @type int
   sequence Int @db.Integer
 
   //----
@@ -344,13 +324,9 @@ model shopping_sale_snapshot_unit_option_candidates {
   // COLUMNS
   //----
   /// Primary Key.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Belonged option's {@link shopping_sale_snapshot_unit_options.id}
-  ///
-  /// @format uuid
   shopping_sale_snapshot_unit_option_id String @db.Uuid
 
   /// Representative name of candidate value.
@@ -407,13 +383,9 @@ model shopping_sale_snapshot_unit_stocks {
   // COLUMNS
   //----
   /// Primary Key.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Belonged unit's {@link shopping_sale_snapshot_units.id}
-  ///
-  /// @format uuid
   shopping_sale_snapshot_unit_id String @db.Uuid
 
   /// Name of the final stock.
@@ -424,13 +396,9 @@ model shopping_sale_snapshot_unit_stocks {
   /// This is not real price to pay, but just a nominal price to show.
   /// If this value is greater than the `real_price`, it would be shown
   /// like seller is giving a discount.
-  ///
-  /// @minimum 0
   nominal_price Float @db.DoublePrecision
 
   /// Real price to pay.
-  ///
-  /// @minimum 0
   real_price Float @db.DoublePrecision
 
   /// Initial inventory quantity.
@@ -439,8 +407,6 @@ model shopping_sale_snapshot_unit_stocks {
   /// be sold anymore, because of out of stock. In that case, the seller can
   /// supplement the inventory quantity by registering some 
   /// {@link shopping_sale_snapshot_unit_stock_supplements} records.
-  ///
-  /// @minimum 0
   quantity Int
 
   /// Sequence order in belonged unit.
@@ -487,23 +453,15 @@ model shopping_sale_snapshot_unit_stock_choices {
   // COLUMNS
   //----
   /// Primary Key.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Belonged stock's {@link shopping_sale_snapshot_unit_stocks.id}
-  /// 
-  /// @format uuid
   shopping_sale_snapshot_unit_stock_id String @db.Uuid
 
   /// Belonged option's {@link shopping_sale_snapshot_unit_options.id}
-  ///
-  /// @format uuid
   shopping_sale_snapshot_unit_option_id String @db.Uuid
 
   /// Belonged candidate's {@link shopping_sale_snapshot_unit_option_candidates.id}
-  ///
-  /// @format uuid
   shopping_sale_snapshot_unit_option_candidate_id String @db.Uuid
 
   /// Sequence order in belonged stock.
@@ -543,13 +501,9 @@ model shopping_sale_snapshot_unit_stock_supplements {
   // COLUMNS
   //----
   /// Primary Key.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Belonged stock's {@link shopping_sale_snapshot_unit_stocks.id}
-  ///
-  /// @format uuid
   shopping_sale_snapshot_unit_stock_id String @db.Uuid
 
   /// Supplemented inventory quantity.
@@ -588,18 +542,12 @@ model shopping_sale_snapshot_categories {
   // COLUMNS
   //----
   /// Primary Key.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Belonged snapshot's {@link shopping_sale_snapshots.id}
-  ///
-  /// @format uuid
   shopping_sale_snapshot_id String @db.Uuid
 
   /// Belonged category's {@link shopping_channel_categories.id}
-  ///
-  /// @format uuid
   shopping_channel_category_id String @db.Uuid
 
   /// Sequence order in belonged snapshot.
@@ -628,13 +576,9 @@ model shopping_sale_snapshot_contents {
   // COLUMNS
   //----
   /// Primary Key.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Belonged snapshot's {@link shopping_sale_snapshots.id}
-  ///
-  /// @format uuid
   shopping_sale_snapshot_id String @db.Uuid
 
   /// Title of the content.

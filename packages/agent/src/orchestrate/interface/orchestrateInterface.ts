@@ -1,18 +1,16 @@
-import { MicroAgentica, MicroAgenticaHistory } from "@agentica/core";
 import {
   AutoBeAssistantMessageHistory,
   AutoBeInterfaceHistory,
+  AutoBeOpenApi,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
-import { IPointer } from "tstl";
 import { v4 } from "uuid";
 
-import { AutoBeSystemPrompt } from "../../constants/AutoBeSystemPrompt";
-// import examples from "../../constants/examples.json";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
-import { createAutoBeInterfaceApplication } from "./createAutoBeInterfaceApplication";
-import { transformInterfaceStateMessage } from "./transformInterfaceStateMessage";
+import { orchestrateInterfaceComponents } from "./orchestrateInterfaceComponents";
+import { orchestrateInterfaceEndpoints } from "./orchestrateInterfaceEndpoints";
+import { orchestrateInterfaceOperations } from "./orchestrateInterfaceOperations";
 
 export const orchestrateInterface =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
@@ -20,82 +18,25 @@ export const orchestrateInterface =
     props: IAutoBeApplicationProps,
   ): Promise<AutoBeAssistantMessageHistory | AutoBeInterfaceHistory> => {
     const start: Date = new Date();
-    const result: IPointer<AutoBeInterfaceHistory | null> = {
-      value: null,
+    const endpoints: AutoBeOpenApi.IEndpoint[] =
+      await orchestrateInterfaceEndpoints(ctx);
+    const operations: AutoBeOpenApi.IOperation[] =
+      await orchestrateInterfaceOperations(ctx, endpoints);
+    const components: AutoBeOpenApi.IComponents =
+      await orchestrateInterfaceComponents(ctx, operations);
+
+    const document: AutoBeOpenApi.IDocument = {
+      operations,
+      components,
     };
-    const agentica: MicroAgentica<Model> = new MicroAgentica({
-      model: ctx.model,
-      vendor: ctx.vendor,
-      config: {
-        ...(ctx.config ?? {}),
-        executor: {
-          describe: null,
-        },
-        systemPrompt: {
-          execute: () => AutoBeSystemPrompt.INTERFACE,
-          // AutoBeSystemPrompt.INTERFACE.replace(W
-          //   "%EXAMPLE_BBS_BACKEND%",
-          //   JSON.stringify(examples.bbs),
-          // ).replace(
-          //   "%EXAMPLE_SHOPPING_BACKEND%",
-          //   JSON.stringify(examples.shopping),
-          // ),
-        },
-      },
-      controllers: [
-        createAutoBeInterfaceApplication({
-          model: ctx.model,
-          build: async (next) => {
-            result.value = {
-              id: v4(),
-              type: "interface",
-              document: next.document,
-              files: await ctx.compiler.interface(next.document),
-              reason: props.reason,
-              started_at: start.toISOString(),
-              completed_at: new Date().toISOString(),
-              step: ctx.state().analyze!.step,
-            } satisfies AutoBeInterfaceHistory;
-          },
-        }),
-      ],
-      histories: [transformInterfaceStateMessage(ctx.state())],
-      tokenUsage: ctx.usage(),
-    });
-
-    const histories: MicroAgenticaHistory<Model>[] = await agentica.conversate(
-      "Make an OpenAPI document please.",
-    );
-    ctx.histories().push(
-      ...histories
-        .filter((h) => h.type === "assistantMessage")
-        .map((h) => ({
-          ...h,
-          id: v4(),
-          started_at: start.toISOString(),
-          completed_at: new Date().toISOString(),
-          step: ctx.state().analyze!.step,
-        })),
-    );
-    if (result.value !== null) {
-      ctx.state().interface = result.value;
-      ctx.histories().push(result.value);
-      return result.value;
-    }
-
-    const last: MicroAgenticaHistory<Model> = histories[histories.length - 1];
-    if (last.type !== "execute" && last.type !== "assistantMessage") {
-      // never be happened
-      throw new Error("Unexpected type of last message from MicroAgentica.");
-    }
     return {
+      type: "interface",
       id: v4(),
-      type: "assistantMessage",
-      text:
-        last.type === "assistantMessage"
-          ? last.text
-          : "Failed to pass validation. Try it again please.",
+      document,
+      files: await ctx.compiler.interface(document),
+      reason: props.reason,
+      step: ctx.state().analyze?.step ?? 0,
       started_at: start.toISOString(),
       completed_at: new Date().toISOString(),
-    } satisfies AutoBeAssistantMessageHistory;
+    };
   };

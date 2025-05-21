@@ -15,8 +15,6 @@ model shopping_channels {
   // COLUMNS
   //----
   /// Primary Key.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Identifier code.
@@ -86,20 +84,14 @@ model shopping_channel_categories {
   // COLUMNS
   //----
   /// Primary Key.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Belonged channel's {@link shopping_channels.id}.
-  ///
-  /// @format uuid
   shopping_channel_id String @db.Uuid
 
   /// Parent category's {@link shopping_channel_categories.id}.
   ///
   /// Only when the category is a subcategory of another one.
-  ///
-  /// @format uuid
   parent_id String? @db.Uuid
 
   /// Identifier code.
@@ -111,7 +103,7 @@ model shopping_channel_categories {
   /// Creation time of record.
   created_at DateTime @db.Timestamptz
 
-  /// Update time of record.
+  /// Updadte time of record.
   updated_at DateTime @db.Timestamptz
 
   /// Deletion time of record.
@@ -152,8 +144,6 @@ model shopping_sections {
   // COLUMNS
   //----
   /// Primary Key.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Identifier code.
