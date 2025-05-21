@@ -28,36 +28,24 @@ model shopping_orders {
   // COLUMNS
   //----
   /// Primary Key.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Belonged customer's {@link shopping_customers.id}
-  ///
-  /// @format uuid
   shopping_customer_id String @db.Uuid
 
   /// Target address' {@link shopping_addresses.id}
-  ///
-  /// @format uuid
   shopping_address_id String? @db.Uuid
 
   /// Representative name of the order.
   name String @db.VarChar
 
   /// Amount of cash payment.
-  ///
-  /// @minimum 0
   cash Float @db.DoublePrecision
 
   /// Amount of deposit payment instead of cash.
-  ///
-  /// @minimum 0
   deposit Float @db.DoublePrecision
 
   /// Amount of mileage payment instead of cash.
-  ///
-  /// @minimum 0
   mileage Float @db.DoublePrecision
 
   /// Creation time of record.
@@ -127,18 +115,12 @@ model shopping_order_goods {
   // COLUMNS
   //----
   /// Primary Key.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Belonged order's {@link shopping_orders.id}
-  /// 
-  /// @format uuid
   shopping_order_id String @db.Uuid
 
   /// Belonged cart commodity's {@link shopping_cart_commodities.id}
-  ///
-  /// @format uuid
   shopping_cart_commodity_id String @db.Uuid
 
   /// Belonged seller's {@link shopping_sellers.id}
@@ -146,7 +128,6 @@ model shopping_order_goods {
   /// It can be computed by referencing related {@link shopping_sales},
   /// but denormalized for performance reason.
   ///
-  /// @format uuid
   /// @hidden
   shopping_seller_id String @db.Uuid
 
@@ -156,14 +137,9 @@ model shopping_order_goods {
   /// It's purpose is exactly same with {@link shopping_cart_commodities.volume},
   /// but rewritten because the {@link shopping_cart_commodities} records are
   /// reusable until payment.
-  ///
-  /// @format uint 
-  /// @minimum 1
   volume Int @db.Integer
 
   /// Sequence order(?) in belonged order.
-  ///
-  /// @format int
   sequence Int @db.Integer
 
   /// Confirmation time of order good.
@@ -224,13 +200,9 @@ model shopping_order_publishes {
   // COLUMNS
   //----
   /// Primary Key.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Belonged order's {@link shopping_orders.id}
-  ///
-  /// @format uuid
   shopping_order_id String @db.Uuid
 
   /// Target address' {@link shopping_addresses.id}
@@ -238,8 +210,6 @@ model shopping_order_publishes {
   /// The place to receive the goods. For reference, the address information
   /// also has an information of receiver, and it can be different with the
   /// customer who has ordered.
-  ///
-  /// @format uuid
   shopping_address_id String @db.Uuid
 
   /// Password for encryption.
@@ -306,13 +276,9 @@ model shopping_deliveries {
   // COLUMNS
   //----
   /// Primary Key.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Belonged seller's {@link shopping_sellers.id}
-  ///
-  /// @format uuid
   shopping_seller_customer_id String @db.Uuid
 
   /// Creation time of record.
@@ -351,40 +317,26 @@ model shopping_delivery_pieces {
   // COLUMNS
   //----
   /// Primary Key.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Belonged delivery's {@link shopping_deliveries.id}
-  ///
-  /// @format uuid
   shopping_delivery_id String @db.Uuid
 
   /// Target order-publish'es {@link shopping_order_publishes.id}
-  ///
-  /// @format uuid 
   shopping_order_publish_id String @db.Uuid
 
   /// Target good's {@link shopping_order_goods.id}
-  ///
-  /// @format uuid
   shopping_order_good_id String @db.Uuid
 
   /// Target stock's {@link shopping_sale_snapshot_unit_stocks.id}
-  ///
-  /// @format uuid
   shopping_sale_snapshot_unit_stock_id String @db.Uuid
 
   /// Quantity count.
   ///
   /// It can be precision value to express split shipping.
-  ///
-  /// @exclusiveMinimum 0
   quantity Float @db.DoublePrecision
 
   /// Sequence order in belonged delivery.
-  ///
-  /// @type int
   sequence Int @db.Integer
 
   //----
@@ -408,13 +360,9 @@ model shopping_delivery_shippers {
   // COLUMNS
   //----
   /// Primary Key.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Belonged delivery's {@link shopping_deliveries.id}
-  ///
-  /// @format uuid
   shopping_delivery_id String @db.Uuid
 
   /// Mobile number of shipper.
@@ -450,11 +398,9 @@ model shopping_delivery_journeys {
   // COLUMNS
   //----
   /// Primary Key.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
-  /// @format uuid
+  /// Belonged delivery's {@link shopping_deliveries.id}
   shopping_delivery_id String @db.Uuid
 
   /// Type of journey.

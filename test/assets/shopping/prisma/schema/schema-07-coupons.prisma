@@ -31,13 +31,9 @@
 /// @author Samchon
 model shopping_coupons {
   /// Primary Key.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Belonged administrator or seller's {@link shopping_customers.id}
-  ///
-  /// @format uuid
   shopping_customer_id String @db.Uuid
 
   /// Type of the coupon creator.
@@ -80,16 +76,12 @@ model shopping_coupons {
   /// Discount value.
   ///
   /// If `unit` is percent, range of value is limited from 0 to 100.
-  ///
-  /// @exclusiveMinimum 0
   value Float @db.DoublePrecision
 
   /// Minimum purchase amount for discount.
   /// 
   /// When setting this value, discount coupons cannot be applied to 
   /// order totals that are less than this value.
-  ///
-  /// @exclusiveMinimum 0
   threshold Float? @db.DoublePrecision
 
   /// Maximum amount available for discount.
@@ -125,9 +117,6 @@ model shopping_coupons {
   /// 
   /// In other words, the concept of N coupons being issued on a first-come, 
   /// first-served basis is created.
-  ///
-  /// @format uint 
-  /// @minimum 1
   volume Int? @db.Integer
 
   /// Limited quantity issued per person.
@@ -138,9 +127,6 @@ model shopping_coupons {
   /// 
   /// Of course, by assigning a value of N, the total amount issued to the 
   /// same citizen can be limited.
-  ///
-  /// @format uint 
-  /// @minimum 1
   volume_per_citizen Int? @db.Integer
 
   /// Expiration day(s) value.
@@ -149,9 +135,6 @@ model shopping_coupons {
   /// 
   /// Therefore, customers must use the ticket within N days, if possible, 
   /// from the time it is issued.
-  ///
-  /// @format uint 
-  /// @minimum 1
   expired_in Int? @db.Integer
 
   /// Expiration date.
@@ -237,13 +220,9 @@ model shopping_coupons {
 /// @author Samchon
 model shopping_coupon_criterias {
   /// Primary Key.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Belonged coupon's {@link shopping_coupons.id}
-  ///
-  /// @format uuid
   shopping_coupon_id String @db.Uuid
 
   /// Type of criteria.
@@ -258,8 +237,6 @@ model shopping_coupon_criterias {
   direction String @db.VarChar
 
   /// Sequence order in belonged coupon.
-  ///
-  /// @format int
   sequence Int @db.Integer
 
   //----
@@ -293,13 +270,9 @@ model shopping_coupon_criterias {
 /// @author Samchon
 model shopping_coupon_section_criterias {
   /// Primary Key.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Target section's {@link shopping_coupon_criterias.id}
-  ///
-  /// @format uuid
   shopping_section_id String @db.Uuid
 
   //----
@@ -332,13 +305,9 @@ model shopping_coupon_section_criterias {
 /// @author Samchon
 model shopping_coupon_seller_criterias {
   /// PK + FK.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Target seller's {@link shopping_sellers.id}
-  ///
-  /// @format uuid
   shopping_seller_id String @db.Uuid
 
   //----
@@ -369,13 +338,9 @@ model shopping_coupon_seller_criterias {
 /// @author Samchon
 model shopping_coupon_sale_criterias {
   /// PK + FK.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Target sale's {@link shopping_sales.id}
-  ///
-  /// @format uuid
   shopping_sale_id String @db.Uuid
 
   //----
@@ -406,8 +371,6 @@ model shopping_coupon_sale_criterias {
 /// @author Samchon
 model shopping_coupon_funnel_criterias {
   /// PK + FK.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// What kind of funnel is it?
@@ -445,25 +408,17 @@ model shopping_coupon_funnel_criterias {
 /// @author Samchon
 model shopping_coupon_tickets {
   /// Primary Key.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Belonged customer's {@link shopping_customers.id}
-  ///
-  /// @format uuid
   shopping_customer_id String @db.Uuid
 
   /// Belonged coupon's {@link shopping_coupons.id}
-  ///
-  /// @format uuid
   shopping_coupon_id String @db.Uuid
 
   /// Belonged disposable's {@link shopping_coupon_disposables.id}
   ///
   /// Only when current ticket be issued from one-time code.
-  ///
-  /// @format uuid
   shopping_coupon_disposable_id String? @db.Uuid
 
   /// Creation time of record.
@@ -516,23 +471,15 @@ model shopping_coupon_tickets {
 /// @author Samchon
 model shopping_coupon_ticket_payments {
   /// Primary Key.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Belonged ticket's {@link shopping_coupon_tickets.id}
-  ///
-  /// @format uuid
   shopping_coupon_ticket_id String @db.Uuid
 
   /// Target order's {@link shopping_orders.id}
-  ///
-  /// @format uuid
   shopping_order_id String @db.Uuid
 
   /// Sequence order(?) in belonged order.
-  ///
-  /// @format int
   sequence Int @db.Integer
 
   /// Creation time of record.
@@ -573,13 +520,9 @@ model shopping_coupon_ticket_payments {
 /// @author Samchon
 model shopping_coupon_disposables {
   /// Primary Key.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Belonged coupon's {@link shopping_coupons.id}
-  ///
-  /// @format uuid
   shopping_coupon_id String @db.Uuid
 
   /// Identifier code.

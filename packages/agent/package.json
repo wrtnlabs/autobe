@@ -31,11 +31,11 @@
     "uuid": "^11.1.0"
   },
   "devDependencies": {
-    "@autobe/filesystem": "workspace:^",
     "@autobe/compiler": "workspace:^",
+    "@autobe/filesystem": "workspace:^",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^12.1.2",
-    "@types/node": "^22.15.18",
+    "@types/node": "^22.15.19",
     "@types/uuid": "^10.0.0",
     "chalk": "4.1.2",
     "rimraf": "^6.0.1",

@@ -27,18 +27,12 @@ model shopping_sale_snapshot_inquiries {
   // COLUMNS
   //----
   /// PK + FK.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Belonged snapshot's {@link shopping_sale_snapshots.id}
-  ///
-  /// @format uuid
   shopping_sale_snapshot_id String @db.Uuid
 
   /// Writer customer's {@link shopping_customers.id}
-  ///
-  /// @format uuid
   shopping_customer_id String @db.Uuid
 
   /// Type of the inquiry article.
@@ -93,8 +87,6 @@ model shopping_sale_snapshot_questions {
   // COLUMNS
   //----
   /// PK + FK.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Whether secret or not.
@@ -132,13 +124,9 @@ model shopping_sale_snapshot_reviews {
   // COLUMNS
   //----
   /// PK + FK.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Belonged good's {@link shopping_order_goods.id}
-  ///
-  /// @format uuid
   shopping_order_good_id String @db.Uuid
 
   //----
@@ -166,14 +154,9 @@ model shopping_sale_snapshot_review_snapshots {
   // COLUMNS
   //----
   /// PK + FK.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Estimation score value.
-  ///
-  /// @minimum 0
-  /// @maximum 100
   score Float @db.DoublePrecision
 
   //----
@@ -207,18 +190,12 @@ model shopping_sale_snapshot_inquiry_answers {
   // COLUMNS
   //----
   /// PK + FK
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Belonged inquiry's {@link shopping_sale_snapshot_inquiries.id}
-  ///
-  /// @format uuid
   shopping_sale_snapshot_inquiry_id String @db.Uuid
 
   /// Answered seller's {@link shopping_customers.id}
-  ///
-  /// @format uuid
   shopping_seller_customer_id String @db.Uuid
 
   //----
@@ -251,13 +228,9 @@ model shopping_sale_snapshot_inquiry_comments {
   // COLUMNS
   //----
   /// PK + FK
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Writer's {@link shopping_customers.id}
-  ///
-  /// @format uuid
   shopping_customer_id String @db.Uuid
 
   /// Type of the writer.

@@ -10,6 +10,9 @@
  * @author Samchon
  */
 export namespace AutoBeOpenApi {
+  /* -----------------------------------------------------------
+    DOCUMENT
+  ----------------------------------------------------------- */
   /**
    * Document of the Restful API operations.
    *
@@ -232,7 +235,7 @@ export namespace AutoBeOpenApi {
    * }
    * ```
    */
-  export interface IOperation {
+  export interface IOperation extends IEndpoint {
     /**
      * Specification of the API operation.
      *
@@ -249,39 +252,6 @@ export namespace AutoBeOpenApi {
      * database entities.
      */
     specification: string;
-
-    /**
-     * HTTP path of the API operation.
-     *
-     * The URL path for accessing this API operation, using path parameters
-     * enclosed in curly braces (e.g., `/shoppings/customers/sales/{saleId}`).
-     *
-     * It must be corresponded to the {@link parameters path parameters}.
-     *
-     * The path structure should clearly indicate which database entity this
-     * operation is manipulating, helping to ensure all entities have
-     * appropriate API coverage.
-     */
-    path: string;
-
-    /**
-     * HTTP method of the API operation.
-     *
-     * Note that, if the API operation has {@link requestBody}, method must not
-     * be `get`.
-     *
-     * Also, even though the API operation has been designed to only get
-     * information, but it needs complicated request information, it must be
-     * defined as `patch` method with {@link requestBody} data specification.
-     *
-     * - `get`: get information
-     * - `patch`: get information with complicated request data
-     *   ({@link requestBody})
-     * - `post`: create new record
-     * - `put`: update existing record
-     * - `delete`: remove record
-     */
-    method: "get" | "post" | "put" | "delete" | "patch";
 
     /**
      * Detailed description about the API operation.
@@ -599,6 +569,9 @@ export namespace AutoBeOpenApi {
     typeName: string;
   }
 
+  /* -----------------------------------------------------------
+    JSON SCHEMA
+  ----------------------------------------------------------- */
   /**
    * Reusable components in OpenAPI.
    *
@@ -1011,4 +984,43 @@ export namespace AutoBeOpenApi {
        */
       description: string;
     };
+
+  /* -----------------------------------------------------------
+    BACKGROUNDS
+  ----------------------------------------------------------- */
+  /** API endpoint information. */
+  export interface IEndpoint {
+    /**
+     * HTTP path of the API operation.
+     *
+     * The URL path for accessing this API operation, using path parameters
+     * enclosed in curly braces (e.g., `/shoppings/customers/sales/{saleId}`).
+     *
+     * It must be corresponded to the {@link parameters path parameters}.
+     *
+     * The path structure should clearly indicate which database entity this
+     * operation is manipulating, helping to ensure all entities have
+     * appropriate API coverage.
+     */
+    path: string;
+
+    /**
+     * HTTP method of the API operation.
+     *
+     * Note that, if the API operation has {@link requestBody}, method must not
+     * be `get`.
+     *
+     * Also, even though the API operation has been designed to only get
+     * information, but it needs complicated request information, it must be
+     * defined as `patch` method with {@link requestBody} data specification.
+     *
+     * - `get`: get information
+     * - `patch`: get information with complicated request data
+     *   ({@link requestBody})
+     * - `post`: create new record
+     * - `put`: update existing record
+     * - `delete`: remove record
+     */
+    method: "get" | "post" | "put" | "delete" | "patch";
+  }
 }

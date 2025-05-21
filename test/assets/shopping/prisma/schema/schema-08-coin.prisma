@@ -13,8 +13,6 @@ model shopping_deposits {
   // COLUMNS
   //----
   /// Primary Key.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Identifier code.
@@ -63,23 +61,15 @@ model shopping_deposit_histories {
   // COLUMNS
   //----
   /// Primary Key.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Belonged metadata's {@link shopping_deposits.id}
-  ///
-  /// @format uuid
   shopping_deposit_id String @db.Uuid
 
   /// Belonged citizen's {@link shopping_citizens.id}
-  ///
-  /// @format uuid
   shopping_citizen_id String @db.Uuid
 
-  /// The source record occurred deposit/outcome. 
-  ///
-  /// @format uuid
+  /// The source record occurred deposit/outcome.
   source_id String @db.Uuid
 
   /// Income/outcome amount of deposit.
@@ -89,8 +79,6 @@ model shopping_deposit_histories {
   /// If you want to express the figures for incomes and outcomes as 
   /// positive/negative numbers, you can also multiply this field value by 
   /// the attributed {@link shopping_deposits.direction} value.
-  ///
-  /// @minimum 0
   value Float @db.DoublePrecision
 
   /// Balance value.
@@ -134,18 +122,12 @@ model shopping_deposit_charges {
   // COLUMNS
   //----
   /// Primary Key.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Belonged metadata's {@link shopping_deposits.id}
-  ///
-  /// @format uuid
   shopping_customer_id String @db.Uuid
 
   /// Charging amount.
-  ///
-  /// @exclusiveMinimum 0
   value Float @db.DoublePrecision
 
   /// Creation time of record.
@@ -187,13 +169,9 @@ model shopping_deposit_charge_publishes {
   // COLUMNS
   //----
   /// Primary Key.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Belonged charge appliance's {@link shopping_deposit_charges.id}
-  ///
-  /// @format uuid
   shopping_deposit_charge_id String @db.Uuid
 
   /// Password for encryption.
@@ -238,8 +216,6 @@ model shopping_deposit_charge_publishes {
 /// @author Samchon
 model shopping_mileages {
   /// Primary Key.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Identifier code.
@@ -259,8 +235,6 @@ model shopping_mileages {
   /// Possible to omit, and how to use this default value is up to the
   /// backend program. It is okay to use it as a default value when
   /// creating a new record, or percentage value to be applied.
-  ///
-  /// @minimum 0
   value Float? @db.DoublePrecision
 
   /// Creation time of record.
@@ -286,18 +260,12 @@ model shopping_mileage_donations {
   // COLUMNS
   //----
   /// Primary Key.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Belonged seller's {@link shopping_customers.id}
-  ///
-  /// @format uuid
   shopping_admin_customer_id String @db.Uuid
 
   /// Belonged citizen's {@link shopping_citizens.id}
-  ///
-  /// @format uuid
   shopping_citizen_id String @db.Uuid
 
   /// Amount of donation.
@@ -336,23 +304,15 @@ model shopping_mileage_histories {
   // COLUMNS
   //----
   /// Primary Key.
-  ///
-  /// @format uuid
   id String @id @db.Uuid
 
   /// Belonged metadata's {@link shopping_mileages.id}
-  ///
-  /// @format uuid
   shopping_mileage_id String @db.Uuid
 
   /// Belonged citizen's {@link shopping_citizens.id}
-  ///
-  /// @format uuid
   shopping_citizen_id String @db.Uuid
 
-  /// The source record occurred income/outcome. 
-  ///
-  /// @format uuid
+  /// The source record occurred income/outcome.
   source_id String @db.Uuid
 
   /// Income/outcome amount of mileage.
@@ -362,8 +322,6 @@ model shopping_mileage_histories {
   /// If you want to express the figures for incomes and outcomes as 
   /// positive/negative numbers, you can also multiply this field value by 
   /// the attributed {@link shopping_mileages.direction} value.
-  ///
-  /// @minimum 0
   value Float @db.DoublePrecision
 
   /// Balance value.

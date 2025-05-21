@@ -1,41 +1,40 @@
-import { AutoBeAgent, orchestrate } from "@autobe/agent";
+import { AutoBeAgent } from "@autobe/agent";
+import { invertOpenApiDocument } from "@autobe/agent/src/factory";
 import { AutoBeCompiler } from "@autobe/compiler";
-import { FileSystemIterator, TestRepositoryUtil } from "@autobe/filesystem";
+import { TestRepositoryUtil } from "@autobe/filesystem";
 import {
   AutoBeAnalyzeHistory,
-  AutoBeAssistantMessageHistory,
-  AutoBeInterfaceHistory,
+  AutoBeOpenApi,
   AutoBePrismaHistory,
   IAutoBePrismaCompilerResult,
 } from "@autobe/interface";
-import fs from "fs";
 import OpenAI from "openai";
 import { v4 } from "uuid";
 
-import { TestGlobal } from "../../TestGlobal";
+import { TestGlobal } from "../../../TestGlobal";
 
-export const test_agent_interface_shopping = async () => {
-  if (TestGlobal.env.CHATGPT_API_KEY === undefined) return false;
+export const prepare_agent_interface = async (
+  owner: string,
+  project: string,
+) => {
+  if (TestGlobal.env.CHATGPT_API_KEY === undefined)
+    throw new Error("No OpenAI API key provided");
 
   // PREPARE ASSETS
-  const analyzeFiles: Record<string, string> = {
-    "index.md": await fs.promises.readFile(
-      `${TestGlobal.ROOT}/assets/shopping/docs/requirements/index.md`,
-      "utf8",
-    ),
-  };
-  const prismaFiles: Record<string, string> = await TestRepositoryUtil.prisma(
-    "samchon",
-    "shopping-backend",
+  const analyze: Record<string, string> = await TestRepositoryUtil.analyze(
+    owner,
+    project,
   );
-
-  // COMPILER PRISMA
   const compiler: AutoBeCompiler = new AutoBeCompiler();
   const prisma: IAutoBePrismaCompilerResult = await compiler.prisma({
-    files: prismaFiles,
+    files: await TestRepositoryUtil.prisma(owner, project),
   });
   if (prisma.type !== "success")
-    throw new Error("Failed to pass prisma generate");
+    throw new Error("Failed to pass prisma compilation step");
+
+  const document: AutoBeOpenApi.IDocument = invertOpenApiDocument(
+    await TestRepositoryUtil.swagger(owner, project),
+  );
 
   // CONSTRUCT AGENT WITH HISTORIES
   const agent: AutoBeAgent<"chatgpt"> = new AutoBeAgent({
@@ -56,7 +55,7 @@ export const test_agent_interface_shopping = async () => {
         type: "analyze",
         reason: "User requested to analyze the requirements",
         description: "Analysis report about overall e-commerce system",
-        files: analyzeFiles,
+        files: analyze,
       } satisfies AutoBeAnalyzeHistory,
       {
         ...createHistoryProperties(),
@@ -74,24 +73,12 @@ export const test_agent_interface_shopping = async () => {
       } satisfies AutoBePrismaHistory,
     ],
   });
-
-  // GENERATE INTERFACE
-  const result: AutoBeInterfaceHistory | AutoBeAssistantMessageHistory =
-    await orchestrate.interface(agent.getContext())({
-      reason: "Step to the interface designing after DB schema generation",
-    });
-  if (result.type !== "interface")
-    throw new Error("History type must be interface.");
-
-  // REPORT RESULT
-  await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/shopping/interface`,
-    files: {
-      ...agent.getFiles(),
-      "logs/result.json": JSON.stringify(result, null, 2),
-      "logs/tokenUsage.json": JSON.stringify(agent.getTokenUsage(), null, 2),
-    },
-  });
+  return {
+    analyze,
+    prisma,
+    document,
+    agent,
+  };
 };
 
 const createHistoryProperties = () => ({
