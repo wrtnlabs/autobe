@@ -13,5 +13,4 @@ extend-exclude = [
   "examples",
   "*.json", 
   "*.prisma",
-  "prismaExample.ts"
 ]
