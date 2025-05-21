@@ -26,7 +26,7 @@ export const validate_agent_interface_main = async (
 
   // REPORT RESULT
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/bbs/interface/main`,
+    root: `${TestGlobal.ROOT}/results/${owner}/${project}/interface/main`,
     files: {
       ...agent.getFiles(),
       "logs/result.json": JSON.stringify(result, null, 2),
