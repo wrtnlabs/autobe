@@ -33,17 +33,22 @@ export async function orchestrateInterfaceComponents<
     capacity,
   });
   let progress: number = 0;
-  const output: AutoBeOpenApi.IComponents[] = await Promise.all(
+
+  const x: AutoBeOpenApi.IComponents = {
+    schemas: {},
+  };
+  for (const y of await Promise.all(
     matrix.map((it) =>
       divideAndConquer(ctx, operations, it, 3, (count) => {
         progress += count;
         // console.log(`Progress: ${progress} / ${typeNames.size}`);
       }),
     ),
-  );
-  return {
-    schemas: Object.fromEntries(output.map((it) => Object.entries(it.schemas))),
-  };
+  )) {
+    Object.assign(x.schemas, y.schemas);
+    if (y.authorization) x.authorization = y.authorization;
+  }
+  return x;
 }
 
 async function divideAndConquer<Model extends ILlmSchema.Model>(
