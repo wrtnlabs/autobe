@@ -71,7 +71,7 @@ async function main(): Promise<void> {
       `${DIRECTORY}/${file}`,
       "utf8",
     );
-    content.replaceAll("\r\n", "\n").trim();
+    content = content.replaceAll("\r\n", "\n").trim();
     for (const [key, value] of Object.entries(replaces))
       content = content.replace(`{% ${key} %}`, value);
     record[file.substring(0, file.length - 3)] = content;
