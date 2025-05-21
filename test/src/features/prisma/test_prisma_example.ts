@@ -3,6 +3,8 @@ import { AutoBeState } from "@autobe/agent/src/context/AutoBeState";
 import { AutoBeCompiler } from "@autobe/compiler";
 import { FileSystemIterator } from "@autobe/filesystem";
 import { AutoBeAnalyzeHistory } from "@autobe/interface";
+import { TestValidator } from "@nestia/e2e";
+import fs from "fs";
 import OpenAI from "openai";
 import { v4 } from "uuid";
 
@@ -23,7 +25,7 @@ export const test_prisma_example = async () => {
     },
     compiler: new AutoBeCompiler(),
   });
-  await orchestrate.prisma({
+  const response = await orchestrate.prisma({
     ...agent.getContext(),
     state: () =>
       ({
@@ -45,4 +47,28 @@ export const test_prisma_example = async () => {
   })({
     reason: "just for testing",
   });
+
+  console.log(JSON.stringify(response, null, 2));
+
+  if (response.type === "prisma") {
+    console.log("prisma");
+    if (response.result.type === "success") {
+      console.log("success");
+      const files = response.result.schemas;
+
+      for (const [filename, content] of Object.entries(files)) {
+        if (filename === "schema.prisma") {
+          const schemaPrisma = await fs.promises.readFile(
+            `${TestGlobal.ROOT}/../packages/agent/src/prisma/examples/schema.prisma`,
+            "utf-8",
+          );
+          TestValidator.equals("schema.prisma content")(content)(schemaPrisma);
+
+          return response;
+        }
+      }
+    }
+  }
+
+  throw new Error("Failed to test_prisma_example");
 };
