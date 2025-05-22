@@ -15,12 +15,17 @@ export const validate_agent_interface_main = async (
   if (TestGlobal.env.CHATGPT_API_KEY === undefined) return false;
 
   const { agent } = await prepare_agent_interface(owner, project);
-  const result: AutoBeInterfaceHistory | AutoBeAssistantMessageHistory =
+  let result: AutoBeInterfaceHistory | AutoBeAssistantMessageHistory =
     await orchestrate.interface(agent.getContext())({
       reason: "Step to the interface designing after DB schema generation",
     });
-  if (result.type !== "interface")
-    throw new Error("History type must be interface.");
+  if (result.type !== "interface") {
+    result = await orchestrate.interface(agent.getContext())({
+      reason: "Don't ask me to do that, and just do it right now.",
+    });
+    if (result.type !== "interface")
+      throw new Error("History type must be interface.");
+  }
 
   // REPORT RESULT
   await FileSystemIterator.save({

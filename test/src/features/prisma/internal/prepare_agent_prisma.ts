@@ -5,7 +5,6 @@ import { TestRepositoryUtil } from "@autobe/filesystem";
 import {
   AutoBeAnalyzeHistory,
   AutoBeOpenApi,
-  AutoBePrismaHistory,
   IAutoBePrismaCompilerResult,
 } from "@autobe/interface";
 import OpenAI from "openai";
@@ -13,10 +12,7 @@ import { v4 } from "uuid";
 
 import { TestGlobal } from "../../../TestGlobal";
 
-export const prepare_agent_interface = async (
-  owner: string,
-  project: string,
-) => {
+export const prepare_agent_prisma = async (owner: string, project: string) => {
   if (TestGlobal.env.CHATGPT_API_KEY === undefined)
     throw new Error("No OpenAI API key provided");
 
@@ -57,20 +53,6 @@ export const prepare_agent_interface = async (
         description: `Analysis report about overall ${project} system`,
         files: analyze,
       } satisfies AutoBeAnalyzeHistory,
-      {
-        ...createHistoryProperties(),
-        type: "prisma",
-        reason:
-          "Step to the DB schema generation referencing the analysis report",
-        description: `DB schema about overall ${project} system`,
-        result: {
-          type: "success",
-          schemas: prisma.schemas,
-          nodeModules: prisma.nodeModules,
-          document: prisma.document,
-          diagrams: prisma.diagrams,
-        },
-      } satisfies AutoBePrismaHistory,
     ],
   });
   return {

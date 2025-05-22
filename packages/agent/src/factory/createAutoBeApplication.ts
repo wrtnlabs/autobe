@@ -7,9 +7,9 @@ import { IAutoBeApplication } from "../context/IAutoBeApplication";
 import { assertSchemaModel } from "../context/assertSchemaModel";
 import { orchestrateInterface } from "../orchestrate/interface/orchestrateInterface";
 import { orchestrateAnalyze } from "../orchestrate/orchestrateAnalyze";
-import { orchestratePrisma } from "../orchestrate/orchestratePrisma";
 import { orchestrateRealize } from "../orchestrate/orchestrateRealize";
 import { orchestrateTest } from "../orchestrate/orchestrateTest";
+import { orchestratePrisma } from "../orchestrate/prisma/orchestratePrisma";
 
 export const createAutoBeController = <Model extends ILlmSchema.Model>(props: {
   model: Model;
