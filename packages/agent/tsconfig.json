@@ -1,6 +1,7 @@
 {
   "extends": "../../internals/config/tsconfig.json",
   "compilerOptions": {
+    "outDir": "lib",
     "plugins": [
       { "transform": "typia/lib/transform" },
     ],
