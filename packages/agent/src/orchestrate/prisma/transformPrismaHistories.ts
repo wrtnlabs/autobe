@@ -13,7 +13,7 @@ export const transformPrismaHistories = (
         type: "systemMessage",
         text: [
           "Requirement analysis is not yet completed.",
-          "Don't call the any tool function,",
+          "Don't call any tool function,",
           "but say to process the requirement analysis.",
         ].join(" "),
       },
