@@ -6,7 +6,7 @@ import { ILlmSchema } from "@samchon/openapi";
 import { randomUUID } from "crypto";
 
 import { AnalyzeAgent } from "../analyze/AnalyzeAgent";
-import { createReviewer } from "../analyze/CreateReviewer";
+import { createReviewerAgent } from "../analyze/CreateReviewerAgent";
 import { AutoBeContext } from "../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../context/IAutoBeApplicationProps";
 
@@ -24,8 +24,7 @@ export const orchestrateAnalyze =
     }
 
     const started_at = new Date().toISOString();
-
-    const agent = new AnalyzeAgent(createReviewer, ctx);
+    const agent = new AnalyzeAgent(createReviewerAgent, ctx);
     const response = await agent.conversate(
       [
         `Please write a user requirement report.`,

@@ -1,15 +1,15 @@
-import { IAgenticaVendor, MicroAgentica } from "@agentica/core";
+import { MicroAgentica } from "@agentica/core";
+import { ILlmSchema } from "@samchon/openapi";
 
-export const createReviewer = (
-  vendor: IAgenticaVendor,
-  input: { query: string; currentFiles: Record<string, string> },
+import { AutoBeContext } from "../context/AutoBeContext";
+
+export const createReviewerAgent = <Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  input: ICreateReviewerAgentInput,
 ) => {
   return new MicroAgentica({
-    model: "chatgpt",
-    vendor: {
-      api: vendor.api,
-      model: "gpt-4.1",
-    },
+    model: ctx.model,
+    vendor: ctx.vendor,
     controllers: [],
     config: {
       systemPrompt: {
@@ -74,3 +74,17 @@ export const createReviewer = (
     },
   });
 };
+
+export interface ICreateReviewerAgentInput {
+  /**
+   * Indicates the initial utterance of the user. Identify the purpose of your
+   * documentation for better review.
+   */
+  query: string;
+
+  /**
+   * Hand over the title and name of the file that has been created so far to the
+   * list.
+   */
+  currentFiles: Record<string, string>;
+}

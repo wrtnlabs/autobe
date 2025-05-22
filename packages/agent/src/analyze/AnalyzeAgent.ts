@@ -6,7 +6,7 @@ import typia from "typia";
 import { AutoBeSystemPromptConstant } from "../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../context/AutoBeContext";
 import { assertSchemaModel } from "../context/assertSchemaModel";
-import { createReviewer } from "./CreateReviewer";
+import { createReviewerAgent } from "./CreateReviewerAgent";
 import { Planning } from "./Planning";
 
 type Filename = string;
@@ -17,8 +17,8 @@ export class AnalyzeAgent<Model extends ILlmSchema.Model> {
   private readonly fileMap: Record<Filename, FileContent> = {};
 
   constructor(
-    private readonly reviewer: typeof createReviewer,
-    ctx: AutoBeContext<Model>,
+    private readonly createReviewerAgentFn: typeof createReviewerAgent,
+    private readonly ctx: AutoBeContext<Model>,
   ) {
     assertSchemaModel(ctx.model);
 
@@ -92,7 +92,7 @@ export class AnalyzeAgent<Model extends ILlmSchema.Model> {
 
       const currentFiles = this.fileMap;
 
-      const reviewer = this.reviewer(this.agent.getVendor(), {
+      const reviewer = this.createReviewerAgentFn(this.ctx, {
         query: content,
         currentFiles,
       });
