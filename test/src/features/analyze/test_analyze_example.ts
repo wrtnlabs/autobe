@@ -12,11 +12,12 @@ export const test_analyze_example = async () => {
     model: "chatgpt",
     vendor: {
       api: new OpenAI({ apiKey: TestGlobal.env.CHATGPT_API_KEY }),
-      model: "gpt-4.1",
+      model: "gpt-4o-mini",
     },
     compiler: new AutoBeCompiler(),
   });
-  await orchestrate.analyze({
+
+  return await orchestrate.analyze({
     ...agent.getContext(),
     histories: () => [
       {
@@ -25,7 +26,20 @@ export const test_analyze_example = async () => {
         contents: [
           {
             type: "text",
-            text: "Hello, I wanna make an e-commerce program.",
+            text: `저는 아래와 같은 서비스를 만들고 싶습니다.
+
+\`\`\`md
+### **사내 게시판 요구사항 명세**
+
+| **분류** | **요구사항** |
+| --- | --- |
+| **1. 사용자 인증·권한** | • 회사 이메일 + 비밀번호 로그인만 허용• 최초 발급 비밀번호: **1234**• 최초 로그인 시 **비밀번호 강제 변경** 절차 필수• 로그인 전에는 **모든 게시글·댓글 열람 불가** |
+| **2. 게시판 구조** | • 게시판 유형: **공지사항**, **자유게시판**, **인기게시판**• **인기게시판**: 좋아요 ≥ 10 인 글이 자동 승격 |
+| **3. 글·댓글 기능** | • 글 작성, 수정, 삭제 (본인 + 관리자 권한)• 댓글 및 **대댓글(1‑depth)** 작성·삭제 지원• 글·댓글 모두 **좋아요** 가능 (사용자 당 1회) |
+| **4. UI / UX** | • **왼쪽 네비게이션 바**: 게시판 목록·글쓰기 버튼• **우측 상단**: 로그인/로그아웃, 비밀번호 변경 메뉴 |
+| **5. 기타 제약** | • 삭제된 글·댓글은 복구 불가 (하드 삭제)• 동시 좋아요 중복 방지 처리가 서버 측에 구현될 것 |
+\`\`\`
+`,
           },
         ],
         started_at: new Date().toISOString(),

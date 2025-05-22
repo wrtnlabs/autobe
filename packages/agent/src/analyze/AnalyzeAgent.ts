@@ -1,11 +1,11 @@
-import { IAgenticaVendor, MicroAgentica } from "@agentica/core";
-import typia from "typia";
+import { IAgenticaVendor } from "@agentica/core";
+import chalk from "chalk";
 
 import { createReviewer } from "./CreateReviewer";
 import { Planner } from "./Planner";
 import { Planning } from "./Planning";
 
-class Orchestration {
+export class Orchestration {
   constructor(
     private readonly vender: IAgenticaVendor,
     private readonly planner: ReturnType<typeof Planner>,
@@ -23,7 +23,25 @@ class Orchestration {
     const lastMessage = response[response.length - 1]!;
 
     if ("text" in lastMessage) {
-      console.log("request review\n\n\n", lastMessage.text, "\n\n\n");
+      console.log(
+        chalk.blackBright(
+          JSON.stringify(
+            Object.entries(this.planning.allFiles()).map(
+              ([filename, content]) => {
+                return {
+                  filename,
+                  content,
+                  content_length: content.length,
+                };
+              },
+            ),
+            null,
+            2,
+          ),
+        ) + "\n\n\n",
+      );
+
+      console.log(chalk.green(lastMessage.text) + "\n\n\n");
       const aborted =
         lastMessage.type === "describe" &&
         lastMessage.executes.some((el) => {
@@ -31,6 +49,7 @@ class Orchestration {
             el.protocol === "class" &&
             el.operation.function.name === "abort"
           ) {
+            el.arguments;
             return true;
           }
         });
@@ -39,55 +58,33 @@ class Orchestration {
         return lastMessage.text;
       }
 
-      const currentFiles = await this.planning.allFiles();
-      const reviewer = this.reviewer(this.vender, {
-        query: input.query,
-        currentFiles,
-      });
-      const reviewed = await reviewer.conversate(lastMessage.text);
+      const currentFiles = this.planning.allFiles();
+      const reviewer = this.reviewer(
+        {
+          api: this.vender.api,
+          model: "gpt-4.1",
+        },
+        {
+          query: input.query,
+          currentFiles,
+        },
+      );
+      const [review] = await reviewer.conversate(lastMessage.text);
 
-      if (reviewed[0]?.type === "text") {
-        const review = reviewed[0].text;
-        console.log("review completed\n\n\n", review, "\n\n\n");
-        return this.conversate({
-          query: JSON.stringify({
-            user_query: input.query,
-            message: `THIS IS ANSWER OF REVIEW AGENT. FOLLOW THIS INSTRUCTIONS. AND DON\'T REQUEST ANYTHING.`,
-            review,
-          }),
-        });
+      if (review) {
+        if (review.type === "assistantMessage") {
+          console.log(chalk.red(review.text) + "\n\n\n");
+          return this.conversate({
+            query: JSON.stringify({
+              user_query: input.query,
+              message: `THIS IS ANSWER OF REVIEW AGENT. FOLLOW THIS INSTRUCTIONS. AND DON\'T REQUEST ANYTHING.`,
+              review: review.text,
+            }),
+          });
+        }
       }
     }
 
     return "COMPLETE";
   }
 }
-
-export const AnalyzeAgent = (
-  vendor: IAgenticaVendor,
-  store: {
-    folder: string;
-  },
-) => {
-  const planning = new Planning(store.folder);
-  const analyzeAgent = Planner(vendor, planning);
-  const innerAgent = new Orchestration(
-    vendor,
-    analyzeAgent,
-    planning,
-    createReviewer,
-  );
-
-  return new MicroAgentica({
-    controllers: [
-      {
-        name: "Analyze Agent For Planning",
-        protocol: "class",
-        application: typia.llm.application<Orchestration, "chatgpt">(),
-        execute: innerAgent,
-      },
-    ],
-    model: "chatgpt",
-    vendor: vendor,
-  });
-};

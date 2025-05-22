@@ -2,7 +2,10 @@ import fs from "fs";
 import path from "path";
 
 export class Planning {
-  constructor(private readonly rootFolder: string) {}
+  constructor(
+    private readonly rootFolder?: string,
+    private readonly fileMap: Record<string, string> = {},
+  ) {}
 
   /**
    * Generate markdown file.
@@ -17,8 +20,12 @@ export class Planning {
     filename: `${string}.md`;
     markdown: string;
   }): Promise<void> {
-    const filename = `${this.rootFolder}/${input.filename}`;
-    return fs.promises.writeFile(filename, input.markdown);
+    const filename = path.join(this.rootFolder ?? "", input.filename);
+    if (this.rootFolder) {
+      await fs.promises.writeFile(filename, input.markdown);
+    }
+
+    this.fileMap[input.filename] = input.markdown;
   }
 
   /**
@@ -27,8 +34,8 @@ export class Planning {
    * @param input.filename filename to read.
    */
   async readFile(input: { filename: `${string}.md` }): Promise<string> {
-    const filename = `${this.rootFolder}/${input.filename}`;
-    return fs.promises.readFile(filename, { encoding: "utf-8" });
+    const filename = path.join(this.rootFolder ?? "", input.filename);
+    return this.fileMap[filename];
   }
 
   /**
@@ -36,31 +43,18 @@ export class Planning {
    * or if the reviewer refuses to do so, call abort.
    * This is a function to end document creation and review, and to respond to users.
    */
-  abort(input: { answer: string }): "OK" {
+  abort(input: {}): "OK" {
     return "OK";
+  }
+
+  getStructure(input: { a: { b: { c: { d: { e: boolean } } } } }) {
+    return input;
   }
 
   /**
    * @hidden
    */
-  async allFiles(): Promise<{ path: string; content: string }[]> {
-    const result: { path: string; content: string }[] = [];
-
-    const readRecursive = async (dir: string) => {
-      const entries = await fs.promises.readdir(dir, { withFileTypes: true });
-
-      for (const entry of entries) {
-        const fullPath = path.join(dir, entry.name);
-        if (entry.isDirectory()) {
-          await readRecursive(fullPath);
-        } else if (entry.isFile()) {
-          const content = await fs.promises.readFile(fullPath, "utf-8");
-          result.push({ path: fullPath, content });
-        }
-      }
-    };
-
-    await readRecursive(this.rootFolder);
-    return result;
+  allFiles(): Record<string, string> {
+    return this.fileMap;
   }
 }
