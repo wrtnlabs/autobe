@@ -401,12 +401,10 @@ await fs.promises.writeFile(
 
 ## Roadmap Schedule
 
-### Pre-Release
-
 ```mermaid
 gantt
   dateFormat YYYY-MM-DD
-  title Roadmap Schedule
+  title Pre-Release Roadmap Schedule
 
   section Interface
   Facade Controller: done,   2025-04-30, 18d
