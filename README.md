@@ -8,7 +8,7 @@
 [![Build Status](https://github.com/wrtnlabs/autobe/workflows/build/badge.svg)](https://github.com/wrtnlabs/autobe/actions?query=workflow%3Abuild)
 [![Discord Badge](https://dcbadge.limes.pink/api/server/https://discord.gg/aMhRmzkqCx?style=flat)](https://discord.gg/aMhRmzkqCx)
 
-Vibe coding agent of backend server, enhanced by compiler feedback.
+Vibe coding agent of backend server, enhanced by Compiler Feedback and OpenAPI Validator.
 
 `@autobe` is an AI agent of vibe coding that analyzes user requirements and automatically generates backend server code of below stack. And if you combine `@autobe` with [`@agentica`](https://github.com/wrtnlabs/agentica) and [`@autoview`](https://github.com/wrtnlabs/autoview), you can automate not only backend development, but also AI chatbot and frontend application developments.
 
@@ -17,7 +17,7 @@ Vibe coding agent of backend server, enhanced by compiler feedback.
 - Prisma
 - Postgres
 
-`@autobe` based on the waterfall model but incorporating spiral model's iterative improvement cycles, it produces high-quality code through continuous feedback between users and AI. The spiral process ensures not only well-structured code but also safe and reliable implementations verified by integrated compilers and automated test programs at each development stage.
+`@autobe` based on the waterfall model but incorporating spiral model's iterative improvement cycles, it produces high-quality code through continuous feedback between users and AI. The spiral process ensures not only well-structured code but also safe and reliable implementations verified by integrated compilers, OpenAPI validator, and automated test programs at each development stage.
 
 Simply describe your requirements to the AI and review the generated code. The backend code produced by `@autobe` is immediately executable and fully functional out of the box, eliminating the need for extensive manual adjustments or debugging.
 
@@ -241,7 +241,7 @@ At its core, the Test agent leverages two critical inputs from the Interface age
 
 A key strength of the Test agent is its ability to analyze dependency relationships between API functions. When certain endpoints require preconditions established by other API calls, the agent automatically structures integrated test scenarios that execute functions in the correct sequence. Each test case includes detailed comments explaining the test's purpose, prerequisites, and expected results, serving as both documentation and verification of test intent.
 
-As with other components of the AutoBE system, the Test agent incorporates built-in TypeScript compiler validation to ensure syntactic correctness. When compilation errors occur, they're fed back into the agent, creating a self-correcting learning loop that improves code quality. An internal review agent further evaluates test coverage and quality, suggesting improvements to achieve optimal testing thoroughness.
+As with other components of the `@autobe` system, the Test agent incorporates built-in TypeScript compiler validation to ensure syntactic correctness. When compilation errors occur, they're fed back into the agent, creating a self-correcting learning loop that improves code quality. An internal review agent further evaluates test coverage and quality, suggesting improvements to achieve optimal testing thoroughness.
 
 ```typescript
 export const test_api_shoppings_admins_sales_reviews_comments_create =
@@ -271,7 +271,7 @@ An agent that writes realization code for each API function.
   - Code quality improvement through self-review system
   - Business logic optimization
 
-The Implementation agent is the culmination of the AutoBE development pipeline, synthesizing outputs from all previous agents to create fully functional service provider code for each API endpoint. This agent comprehensively analyzes the requirements specification, Prisma schema, API interfaces, and test code to implement business logic that satisfies all defined requirements.
+The Implementation agent is the culmination of the `@autobe` development pipeline, synthesizing outputs from all previous agents to create fully functional service provider code for each API endpoint. This agent comprehensively analyzes the requirements specification, Prisma schema, API interfaces, and test code to implement business logic that satisfies all defined requirements.
 
 Internal validation mechanisms ensure high-quality output through multiple feedback loops. First, an embedded TypeScript compiler provides immediate compilation feedback, catching syntax errors and type mismatches. Second, the realization code is tested against the test suites created by the Test Agent, providing runtime feedback that validates functional correctness. Finally, an internal review agent evaluates the code quality, identifying opportunities for optimization and improvement.
 
@@ -400,6 +400,8 @@ await fs.promises.writeFile(
 
 ## Roadmap Schedule
 
+### Pre-Release
+
 ```mermaid
 gantt
   dateFormat YYYY-MM-DD
@@ -426,9 +428,9 @@ gantt
 
   
   section Interface
-  Facade Controller: done, 2025-04-30, 18d
-  Event Handlers:          2025-05-18, 14d
-  Data Structures:   done, 2025-05-18, 28d
+  Facade Controller: done,   2025-04-30, 18d
+  Event Handlers:    active, 2025-05-18, 14d
+  Data Structures:   done,   2025-05-18, 28d
 
   section Compilers
   Backend Compiler:     done, 2025-04-30, 32d
@@ -436,19 +438,45 @@ gantt
   Prisma Compiler:      done, 2025-05-18, 14d
 
   section Prompts
-  Analyze  : active, 2025-04-30, 18d
-  Prisma   : active, 2025-04-30, 18d
+  Analyze  : done, 2025-04-30, 18d
+  Prisma   : done, 2025-04-30, 18d
   Interface: done, 2025-05-18, 28d
-  Test     : 2025-05-18, 42d
-  Realize  : 2025-06-01, 28d
+  Test     :       2025-06-01, 28d
+  Realize  :       2025-06-01, 28d
 
   section Test Program
-  Compilers: done, 2025-04-30, 46d
+  Compilers: done,   2025-04-30, 46d
   Prompts:   active, 2025-04-30, 46d
-  Benchmark: 2025-06-01, 28d
+  Benchmark:         2025-06-01, 28d
 ```
 
-We're developing `@autobe` with dedicated effort, and each unit (agent) is now working properly. We plan to launch the complete service application by 2025-08-01, with the following pre-release schedule:
+We are committed to delivering the best possible `@autobe` experience and have confirmed that all functional agents are operating correctly. Prior to our v1.0 official release, we plan to conduct two pre-release phases as outlined below.
+
+However, these alpha and beta pre-releases will lack certain refinements. Streaming functionality will not be available, which means users may experience longer wait times during conversations with the `@autobe` agent while it completes program generation. Additionally, limited event granularity may make it difficult to track the intermediate progress of functional agents.
+
+During this period, comprehensive documentation will not yet be available. Developers who wish to use `@autobe` at the library level may need to refer directly to API documentation, source code comments, or test programs to understand usage patterns.
+
+All these limitations will be resolved in the v1.0 official release.
 
   - Alpha version: 2025-06-01
   - Beta version: 2025-07-01
+
+### Official Release
+
+We will create a comprehensive technical specification website to introduce `@autobe`'s concepts and usage. We'll provide detailed guidance on how to integrate [`@agentica`](https://github.com/wrtnlabs/agentica) with backend servers generated by `@autobe` to create AI chatbot applications, and how to leverage [`@autoview`](https://github.com/wrtnlabs/autoview) with `@autobe` generated servers to instantly build frontend and mobile applications.
+
+Additionally, we will implement streaming processing for `@autobe` agents, allowing users to observe in real-time what the `@autobe` agent is thinking, planning, and creating. We will enhance and document the event API to provide convenience for developers using `@autobe` at the library level.
+
+Once this comprehensive refinement work is completed, `@autobe` will be officially released as version 1.0. We appreciate your anticipation and support.
+
+- Target Release: 2025-08-01
+
+### Hosting Service
+
+We will create an integrated `@autobe` hosting service. When you discuss requirements with the `@autobe` agent through chat, your application will be deployed to our server infrastructure and made available for immediate use.
+
+This integrated hosting service will be connected with [`@agentica`](https://github.com/wrtnlabs/agentica) and [`@autoview`](https://github.com/wrtnlabs/autoview). Simply by discussing requirements with the AI agent, you can automatically generate and deploy not only backend servers but also AI chatbot applications and frontend/mobile applications, all ready for immediate testing and use.
+
+While we cannot yet guarantee the exact launch date for our hosting service, Wrtn Technologies will demonstrate the future of vibe coding. We will show you not the current era's vibe coding where you might succeed once or twice out of 100 attempts and exclaim "wow" with excitement, but the future's vibe coding where 100 attempts yield 100 successes—truly reliable, production-ready automation.
+
+- Target Release: 2025-12-01
