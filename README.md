@@ -408,26 +408,6 @@ gantt
   dateFormat YYYY-MM-DD
   title Roadmap Schedule
 
-  section Analyze<br>(kakasoo)
-  Prompt Study: done, 2025-04-30, 3d
-  holiday: milestone, done, 2025-05-01, 1d
-  vacation: milestone, done, 2025-05-02, 1d
-  holiday: milestone, done, 2025-05-05, 2d
-  Analyze Agent Structure(6d): done, 2025-05-07, 6d
-  TypeScript Backend meet-up: milestone, done, 2025-05-13, 1d
-  Analyze Agent Prompt tuning(5d): active, 2025-05-15, 5d
-  AWSKRUG presentation: milestone, 2025-05-21, 1d
-  Analyze Agent Prompt tuning(10d):, 2025-05-22, 10d
-
-  section Prisma<br>(Michael)
-  Project Init Setting & Prompt Study: done, 2025-04-30, 3d
-  Holiday: milestone, done, 2025-05-01, 6d
-  Design Architecture about Prisma Agent: done, 2025-05-07, 6d
-  TypeScript Backend meet-up: milestone, done, 2025-05-13, 1d
-  Prisma Agent Prompt Tuning & Modify Structure: active, 2025-05-14, 18d
-  UMC X GDGoc Presentation: milestone, 2025-05-21, 1d
-
-  
   section Interface
   Facade Controller: done,   2025-04-30, 18d
   Event Handlers:    active, 2025-05-18, 14d
@@ -438,17 +418,17 @@ gantt
   Schema to TypeScript: done, 2025-05-18, 14d
   Prisma Compiler:      done, 2025-05-18, 14d
 
-  section Prompts
-  Analyze  : done, 2025-04-30, 18d
-  Prisma   : done, 2025-04-30, 18d
-  Interface: done, 2025-05-18, 28d
-  Test     :       2025-06-01, 28d
-  Realize  :       2025-06-01, 28d
+  section Orchestration
+  Analyze  : done,    2025-04-30, 18d
+  Prisma   : done,    2025-04-30, 18d
+  Interface: done,    2025-05-18, 28d
+  Test     : planned, 2025-06-01, 28d
+  Realize  : planned, 2025-06-01, 28d
 
   section Test Program
-  Compilers: done,   2025-04-30, 46d
-  Prompts:   active, 2025-04-30, 46d
-  Benchmark:         2025-06-01, 28d
+  Compilers: done,    2025-04-30, 46d
+  Prompts:   active,  2025-04-30, 46d
+  Benchmark: planned, 2025-06-01, 28d
 ```
 
 We are committed to delivering the best possible `@autobe` experience and have confirmed that all functional agents are operating correctly. Prior to our v1.0 official release, we plan to conduct two pre-release phases as outlined below.
