@@ -69,7 +69,8 @@ export class Orchestration {
           currentFiles,
         },
       );
-      const [review] = await reviewer.conversate(lastMessage.text);
+      const [review, ...rest] = await reviewer.conversate(lastMessage.text);
+      console.log("review: ", review.type, rest.length);
 
       if (review) {
         if (review.type === "assistantMessage") {

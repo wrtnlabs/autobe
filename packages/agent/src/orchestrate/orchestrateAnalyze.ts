@@ -46,33 +46,17 @@ export const orchestrateAnalyze =
       },
       histories: [
         {
-          contents: [
-            {
-              type: "text",
-              text: "",
-            },
-          ],
-          type: "userMessage",
+          text: props.userPlanningRequirements,
+          type: "assistantMessage",
         },
       ],
     });
 
-    const histories = JSON.stringify(ctx.histories, null, 2);
-    const conversations = await analyzeAgent.conversate(
-      JSON.stringify(
-        {
-          message:
-            `History is the history of the user's conversations, and reason is the reason for talking to the anyze agent.` +
-            `Read the following conversations and write a plan as you wish.`,
-          histories,
-          reason: props.reason,
-        },
-        null,
-        2,
-      ),
-    );
+    const command = "Please write a proposal." as const;
+    const conversations = await analyzeAgent.conversate(command);
 
     const lastMessage = conversations[conversations.length - 1];
+    console.log("lastMessage: ", lastMessage.type);
     if (lastMessage.type === "assistantMessage") {
       const completed_at = new Date().toISOString();
       return {
