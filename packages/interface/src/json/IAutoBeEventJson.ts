@@ -65,7 +65,7 @@ export namespace IAutoBeEventJson {
   export interface IPrismaComplete extends IBase<"prismaComplete"> {
     schemas: Record<string, string>;
     diagrams: Record<string, string>;
-    document: AutoBeOpenApi.IDocument;
+    document: string;
     step: number;
   }
   export interface IPrismaValidate extends IBase<"prismaValidate"> {

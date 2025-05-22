@@ -26,6 +26,7 @@ export const orchestratePrisma =
     { reason }: IAutoBeApplicationProps,
     retry: number = 3,
   ): Promise<AutoBePrismaHistory | AutoBeAssistantMessageHistory> => {
+    // TRY FUNCTION CALLING
     const start: Date = new Date();
     const pointer: IPointer<IMakePrismaSchemaFileProps | null> = {
       value: null,
@@ -58,17 +59,28 @@ export const orchestratePrisma =
     );
 
     if (pointer.value !== null) {
-      let result: IAutoBePrismaCompilerResult;
+      // PRISMA SCHEMA FILES ARE GENERATED
+      let result: IAutoBePrismaCompilerResult | null = null;
       const essential = new Singleton(() => {
         agent.on("request", (event) => {
           event.body.tool_choice = "required";
         });
       });
       for (let i: number = 0; i < retry; ++i) {
+        // COMPILATION
         result = await ctx.compiler.prisma({
           files: pointer.value.files,
         });
         if (result.type !== "failure") break;
+        ctx.dispatch({
+          type: "prismaValidate",
+          schemas: pointer.value.files,
+          result,
+          step: ctx.state().analyze?.step ?? 0,
+          created_at: new Date().toISOString(),
+        });
+
+        // RETRY WITH COMPILER FEEDBACK
         essential.get();
         await agent.conversate(
           [
@@ -80,11 +92,13 @@ export const orchestratePrisma =
           ].join("\n"),
         );
       }
+      if (result === null) throw new Error("Unreachable code: not generated");
+
       const history: AutoBePrismaHistory = {
         id: v4(),
         type: "prisma",
         reason,
-        result: result!,
+        result,
         description: pointer.value.description,
         created_at: start.toISOString(),
         completed_at: new Date().toISOString(),
@@ -92,8 +106,18 @@ export const orchestratePrisma =
       };
       ctx.histories().push(history);
       ctx.state().prisma = history;
+      if (result.type === "success")
+        ctx.dispatch({
+          type: "prismaComplete",
+          document: result.document,
+          schemas: result.schemas,
+          diagrams: result.diagrams,
+          step: ctx.state().analyze?.step ?? 0,
+          created_at: new Date().toISOString(),
+        });
       return history;
     } else if (histories.at(-1)?.type === "assistantMessage") {
+      // ONLY ASSISTANT MESSAGE
       const message: AutoBeAssistantMessageHistory = {
         ...(histories.at(-1) as AgenticaAssistantMessageHistory),
         id: v4(),

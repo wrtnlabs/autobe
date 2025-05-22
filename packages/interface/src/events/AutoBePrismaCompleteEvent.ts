@@ -1,10 +1,9 @@
-import { AutoBeOpenApi } from "../openapi/AutoBeOpenApi";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
 export interface AutoBePrismaCompleteEvent
   extends AutoBeEventBase<"prismaComplete"> {
   schemas: Record<string, string>;
   diagrams: Record<string, string>;
-  document: AutoBeOpenApi.IDocument;
+  document: string;
   step: number;
 }
