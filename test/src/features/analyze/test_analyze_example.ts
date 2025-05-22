@@ -20,6 +20,7 @@ export const test_analyze_example = async () => {
   })({
     reason: "The user requested the preparation of the plan.",
     userPlanningRequirements: `
+only write 3 pages.
 \`\`\`md
 ### **사내 게시판 요구사항 명세**
 

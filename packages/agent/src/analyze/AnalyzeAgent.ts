@@ -69,6 +69,7 @@ export class Orchestration {
           currentFiles,
         },
       );
+
       const [review, ...rest] = await reviewer.conversate(lastMessage.text);
       console.log("review: ", review.type, rest.length);
 
