@@ -1,3 +1,5 @@
+import { tags } from "typia";
+
 import { IAutoBeTypeScriptCompilerResult } from "../compiler/IAutoBeTypeScriptCompilerResult";
 import { AutoBeAgentHistoryBase } from "./AutoBeHistoryBase";
 
@@ -7,4 +9,5 @@ export interface AutoBeRealizeHistory
   result: IAutoBeTypeScriptCompilerResult;
   reason: string;
   step: number;
+  completed_at: string & tags.Format<"date-time">;
 }

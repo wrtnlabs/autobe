@@ -1,10 +1,11 @@
 {
-  "name": "@autobe/interface",
+  "name": "@autobe/rpc",
   "version": "0.0.0",
   "description": "AI backend server code generator",
   "main": "src/index.ts",
   "scripts": {
     "build": "rimraf lib && tsc",
+    "dev": "rimraf lib && tsc --watch",
     "prepack": "pnpm run build"
   },
   "keywords": [],
@@ -23,8 +24,9 @@
     "typings": "lib/index.d.ts"
   },
   "dependencies": {
-    "@samchon/openapi": "catalog:samchon",
-    "typia": "catalog:samchon"
+    "@autobe/agent": "workspace:^",
+    "@autobe/interface": "workspace:^",
+    "@samchon/openapi": "catalog:samchon"
   },
   "devDependencies": {
     "rimraf": "^6.0.1",

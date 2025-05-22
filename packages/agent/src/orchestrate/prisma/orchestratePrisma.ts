@@ -9,7 +9,7 @@ import {
   AutoBePrismaHistory,
   IAutoBePrismaCompilerResult,
 } from "@autobe/interface";
-import { ILlmApplication, ILlmController, ILlmSchema } from "@samchon/openapi";
+import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer, Singleton } from "tstl";
 import typia from "typia";
 import { v4 } from "uuid";
@@ -86,20 +86,23 @@ export const orchestratePrisma =
         reason,
         result: result!,
         description: pointer.value.description,
-        started_at: start.toISOString(),
+        created_at: start.toISOString(),
         completed_at: new Date().toISOString(),
         step: ctx.state().analyze?.step ?? 0,
       };
       ctx.histories().push(history);
       ctx.state().prisma = history;
       return history;
-    } else if (histories.at(-1)?.type === "assistantMessage")
-      return {
+    } else if (histories.at(-1)?.type === "assistantMessage") {
+      const message: AutoBeAssistantMessageHistory = {
         ...(histories.at(-1) as AgenticaAssistantMessageHistory),
         id: v4(),
-        started_at: start.toISOString(),
+        created_at: start.toISOString(),
         completed_at: new Date().toISOString(),
       };
+      ctx.histories().push(message);
+      return message;
+    }
     throw new Error("Unreachable code: no function call, no assistant message");
   };
 

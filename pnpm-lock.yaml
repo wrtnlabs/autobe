@@ -232,6 +232,25 @@ importers:
         specifier: catalog:typescript
         version: 5.8.3
 
+  packages/rpc:
+    dependencies:
+      '@autobe/interface':
+        specifier: workspace:^
+        version: link:../interface
+      '@samchon/openapi':
+        specifier: catalog:samchon
+        version: 4.3.3
+    devDependencies:
+      '@autobe/agent':
+        specifier: workspace:^
+        version: link:../agent
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      typescript:
+        specifier: catalog:typescript
+        version: 5.8.3
+
   test:
     dependencies:
       '@autobe/agent':

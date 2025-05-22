@@ -83,7 +83,7 @@ export const prepare_agent_interface = async (
 
 const createHistoryProperties = () => ({
   id: v4(),
-  started_at: new Date().toISOString(),
+  created_at: new Date().toISOString(),
   completed_at: new Date().toISOString(),
   step: 1,
 });
