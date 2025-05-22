@@ -3,7 +3,6 @@ import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeAssistantMessageHistory,
   AutoBeInterfaceEndpointsEvent,
-  AutoBeOpenApi,
 } from "@autobe/interface";
 
 import { TestGlobal } from "../../../TestGlobal";

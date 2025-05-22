@@ -144,7 +144,7 @@ async function process<Model extends ILlmSchema.Model>(
   });
 
   const already: string[] = Object.keys(oldbie.schemas);
-  const histories = await agentica.conversate(
+  await agentica.conversate(
     [
       "Make type components please.",
       "",
