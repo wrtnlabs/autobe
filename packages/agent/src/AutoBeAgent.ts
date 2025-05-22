@@ -5,7 +5,6 @@ import {
   AutoBeUserMessageContent,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
-import { off } from "process";
 
 import { AutoBeContext } from "./context/AutoBeContext";
 import { AutoBeState } from "./context/AutoBeState";
