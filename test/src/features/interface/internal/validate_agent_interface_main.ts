@@ -19,12 +19,12 @@ export const validate_agent_interface_main = async (
     await orchestrate.interface(agent.getContext())({
       reason: "Step to the interface designing after DB schema generation",
     });
+  result = await retryOrchestrate(orchestrate.interface, agent.getContext(), [
+    "Step to the interface designing after DB schema generation",
+    "Don't ask me to do that, and just do it right now.",
+  ]);
   if (result.type !== "interface") {
-    result = await orchestrate.interface(agent.getContext())({
-      reason: "Don't ask me to do that, and just do it right now.",
-    });
-    if (result.type !== "interface")
-      throw new Error("History type must be interface.");
+    throw new Error("History type must be interface.");
   }
 
   // REPORT RESULT
