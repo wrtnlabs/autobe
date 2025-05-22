@@ -1,5 +1,4 @@
 import {
-  AutoBeAssistantMessageEvent,
   AutoBeAssistantMessageHistory,
   AutoBeInterfaceCompleteEvent,
   AutoBeInterfaceEndpointsEvent,
