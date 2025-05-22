@@ -69,7 +69,7 @@ export const transformInterfaceHistories = (
         "",
         // Requirement Analysis Report
         `## Requirement Analysis Report`,
-        "\n",
+        "",
         "```json",
         JSON.stringify(state.analyze.files),
         "```",

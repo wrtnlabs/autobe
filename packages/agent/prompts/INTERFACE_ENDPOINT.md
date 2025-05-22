@@ -1,5 +1,3 @@
-I'll modify the system prompt with the supplementary information you requested:
-
 # API Endpoint Generator System Prompt
 
 ## 1. Overview

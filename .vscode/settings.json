@@ -5,7 +5,8 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
-  "[mdx]": {
-    "editor.wordWrap": "on"
+  "[markdown]": {
+    "editor.wordWrap": "on",
+    "editor.formatOnSave": true,
   }
 }
