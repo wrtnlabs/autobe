@@ -1,14 +1,7 @@
-import path from "path";
-
 type Filename = string;
 type FileContent = string;
 
-export class Planning {
-  constructor(
-    private readonly rootFolder?: string,
-    private readonly fileMap: Record<Filename, FileContent> = {},
-  ) {}
-
+export interface IPlanning {
   /**
    * Generate markdown file. if there is already created file, overwrite it.
    *
@@ -17,34 +10,24 @@ export class Planning {
    * @param input.filename Filename to generate or overwrite.
    * @param input.markdown Markdown file content.
    */
-  async writeFile(input: {
+  writeFile(input: {
     reason: string;
     filename: `${string}.md`;
     markdown: string;
-  }): Promise<void> {
-    const filename = path.join(this.rootFolder ?? "", input.filename);
-    this.fileMap[input.filename] = input.markdown;
-  }
-
+  }): Promise<void>;
   /**
    * Read markdown file content.
    *
    * @param input.filename Filename to read.
    */
-  async readFile(input: { filename: `${string}.md` }): Promise<string> {
-    const filename = path.join(this.rootFolder ?? "", input.filename);
-    return this.fileMap[filename];
-  }
+  readFile(input: { filename: `${string}.md` }): Promise<string>;
 
   /**
    * Remove markdown file.
    *
    * @param input.name Filename to remove
    */
-  async removeFile(input: { filename: `${string}.md` }): Promise<void> {
-    const filename = path.join(this.rootFolder ?? "", input.filename);
-    delete this.fileMap[filename];
-  }
+  removeFile(input: { filename: `${string}.md` }): Promise<void>;
 
   /**
    * If you decide that you no longer need any reviews, or if the reviewer
@@ -57,6 +40,28 @@ export class Planning {
    *
    * @param input.reason Should contain the reason for the abort.
    */
+  abort(input: { reason: string }): "OK";
+}
+
+export class Planning implements IPlanning {
+  constructor(private readonly fileMap: Record<Filename, FileContent> = {}) {}
+
+  async writeFile(input: {
+    reason: string;
+    filename: `${string}.md`;
+    markdown: string;
+  }): Promise<void> {
+    this.fileMap[input.filename] = input.markdown;
+  }
+
+  async readFile(input: { filename: `${string}.md` }): Promise<string> {
+    return this.fileMap[input.filename];
+  }
+
+  async removeFile(input: { filename: `${string}.md` }): Promise<void> {
+    delete this.fileMap[input.filename];
+  }
+
   abort(input: { reason: string }): "OK" {
     return "OK";
   }

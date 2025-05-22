@@ -10,7 +10,7 @@ export const test_analyze_example = async () => {
     model: "chatgpt",
     vendor: {
       api: new OpenAI({ apiKey: TestGlobal.env.CHATGPT_API_KEY }),
-      model: "gpt-4o-mini",
+      model: "gpt-4.1",
     },
     compiler: new AutoBeCompiler(),
   });

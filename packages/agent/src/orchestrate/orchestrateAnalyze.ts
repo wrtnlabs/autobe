@@ -5,11 +5,8 @@ import {
 import { ILlmSchema } from "@samchon/openapi";
 import { randomUUID } from "crypto";
 
-import { Orchestration } from "../analyze/AnalyzeAgent";
-import { createAnalyst } from "../analyze/CreateAnalyst";
+import { AnalyzeAgent } from "../analyze/AnalyzeAgent";
 import { createReviewer } from "../analyze/CreateReviewer";
-import { Planner } from "../analyze/Planner";
-import { Planning } from "../analyze/Planning";
 import { AutoBeContext } from "../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../context/IAutoBeApplicationProps";
 
@@ -28,41 +25,21 @@ export const orchestrateAnalyze =
 
     const started_at = new Date().toISOString();
 
-    const planning = new Planning();
-    const planner = Planner(ctx.vendor, planning);
+    const agent = new AnalyzeAgent(createReviewer, ctx);
+    const response = await agent.conversate(
+      [
+        `Please write a user requirement report.`,
+        "```json",
+        JSON.stringify(userPlanningRequirements),
+        "```",
+      ].join("\n"),
+    );
 
-    const command = "Please write a proposal." as const;
-
-    const agent = createAnalyst({
-      execute: new Orchestration(ctx.vendor, planner, planning, createReviewer),
-      api: ctx.vendor.api,
-      userPlanningRequirements,
-    });
-    const conversations = await agent.conversate(command);
-
-    const lastMessage = conversations[conversations.length - 1];
-    console.log("lastMessage: ", lastMessage.type);
-    if (lastMessage.type === "assistantMessage") {
-      const completed_at = new Date().toISOString();
-      return {
-        id: randomUUID(),
-        type: "assistantMessage",
-        text: lastMessage.text,
-        started_at,
-        completed_at,
-      } satisfies AutoBeAssistantMessageHistory;
-    } else if (lastMessage.type === "describe") {
-      return {
-        id: randomUUID(),
-        type: "analyze",
-        completed_at: new Date().toISOString(),
-        started_at,
-        description: "",
-        reason: "",
-        files: planning.allFiles(),
-        step: 1,
-      } satisfies AutoBeAnalyzeHistory;
-    } else {
-      throw new Error();
-    }
+    return {
+      id: randomUUID(),
+      type: "assistantMessage",
+      text: response,
+      started_at,
+      completed_at: new Date().toISOString(),
+    } satisfies AutoBeAssistantMessageHistory;
   };
