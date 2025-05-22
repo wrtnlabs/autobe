@@ -3,6 +3,7 @@ import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import chalk from "chalk";
 import typia from "typia";
 
+import { AutoBeSystemPromptConstant } from "../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../context/AutoBeContext";
 import { assertSchemaModel } from "../context/assertSchemaModel";
 import { createReviewer } from "./CreateReviewer";
@@ -29,6 +30,19 @@ export class AnalyzeAgent<Model extends ILlmSchema.Model> {
       controllers: [controller],
       model: ctx.model,
       vendor: ctx.vendor,
+      config: {
+        systemPrompt: {
+          common: () => {
+            return AutoBeSystemPromptConstant.ANALYZE.replace(
+              "{% Guidelines %}",
+              AutoBeSystemPromptConstant.ANALYZE_GUIDELINE,
+            ).replace(
+              "{% Example Documentation %}",
+              AutoBeSystemPromptConstant.ANALYZE_EXAMPLE,
+            );
+          },
+        },
+      },
     });
   }
 
