@@ -407,9 +407,9 @@ gantt
   title Pre-Release Roadmap Schedule
 
   section Interface
-  Facade Controller: done,   2025-04-30, 18d
-  Event Handlers:    active, 2025-05-18, 14d
-  Data Structures:   done,   2025-05-18, 28d
+  Facade Controller: done, 2025-04-30, 18d
+  Event Handlers:    done, 2025-05-18, 14d
+  Data Structures:   done, 2025-05-18, 28d
 
   section Compilers
   Backend Compiler:     done, 2025-04-30, 32d

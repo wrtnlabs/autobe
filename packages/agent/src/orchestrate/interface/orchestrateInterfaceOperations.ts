@@ -22,14 +22,27 @@ export async function orchestrateInterfaceOperations<
     array: endpoints,
     capacity,
   });
-  let progress: number = 0;
+  let completed: number = 0;
   const operations: AutoBeOpenApi.IOperation[][] = await Promise.all(
-    matrix.map((it) =>
-      divideAndConquer(ctx, it, 3, (count) => {
-        progress += count;
-        // console.log(`Progress: ${progress} / ${endpoints.length}`);
-      }),
-    ),
+    matrix.map(async (it) => {
+      const row: AutoBeOpenApi.IOperation[] = await divideAndConquer(
+        ctx,
+        it,
+        3,
+        (count) => {
+          completed += count;
+        },
+      );
+      ctx.dispatch({
+        type: "interfaceOperations",
+        operations: row,
+        completed,
+        total: endpoints.length,
+        step: ctx.state().analyze?.step ?? 0,
+        created_at: new Date().toISOString(),
+      });
+      return row;
+    }),
   );
   return operations.flat();
 }

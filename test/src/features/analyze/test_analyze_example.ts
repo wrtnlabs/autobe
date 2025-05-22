@@ -28,8 +28,7 @@ export const test_analyze_example = async () => {
             text: "Hello, I wanna make an e-commerce program.",
           },
         ],
-        started_at: new Date().toISOString(),
-        completed_at: new Date().toISOString(),
+        created_at: new Date().toISOString(),
       } satisfies AutoBeUserMessageHistory,
     ],
   })({

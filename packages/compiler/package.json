@@ -9,7 +9,8 @@
     "prepare": "ts-patch install && pnpm run prebuild",
     "build": "pnpm run prebuild && rimraf lib && tsc",
     "prebuild": "node build/constants.js && node build/external.js",
-    "dev": "pnpm run build --watch"
+    "dev": "pnpm run build --watch",
+    "prepack": "pnpm run build"
   },
   "dependencies": {
     "@autobe/interface": "workspace:^",

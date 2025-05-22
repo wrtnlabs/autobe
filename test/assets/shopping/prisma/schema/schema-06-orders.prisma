@@ -423,9 +423,6 @@ model shopping_delivery_journeys {
   /// Creation time of record.
   created_at DateTime @db.Timestamptz
 
-  /// Start time of journey.
-  started_at DateTime? @db.Timestamptz
-
   /// Completion time of journey.
   completed_at DateTime? @db.Timestamptz
 
