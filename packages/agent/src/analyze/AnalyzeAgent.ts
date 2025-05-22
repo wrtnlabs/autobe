@@ -43,6 +43,7 @@ export class AnalyzeAgent<Model extends ILlmSchema.Model> {
           },
         },
       },
+      tokenUsage: ctx.usage(),
     });
   }
 

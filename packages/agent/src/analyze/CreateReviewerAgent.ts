@@ -7,6 +7,28 @@ export const createReviewerAgent = <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   input: ICreateReviewerAgentInput,
 ) => {
+  // All links specified in the markdown are drawn in advance and provided to LLM.
+  const markdownFiles = Array.from(
+    new Set(
+      Object.values(input.currentFiles).flatMap((content) => {
+        const fileExtensions = ["md"];
+
+        const regex = /\[[^\]]*\]\(([^)]+)\)/g;
+
+        const fileLinks = [...content.matchAll(regex)]
+          .map((match) => match[1])
+          .filter((link) => {
+            const ext = link.split(".").pop()?.toLowerCase();
+            return ext && fileExtensions.includes(ext);
+          });
+
+        return fileLinks;
+      }),
+    ),
+  );
+
+  console.log(markdownFiles);
+
   return new MicroAgentica({
     model: ctx.model,
     vendor: ctx.vendor,
@@ -16,6 +38,7 @@ export const createReviewerAgent = <Model extends ILlmSchema.Model>(
         common: () => {
           return [
             "You are an excellent requirements analyst & reviewer agent.",
+            "",
             `The reviewer's role is to ensure that this document contains sufficient information before it is delivered to developers`,
             `These are all the links that are currently referenced in the markdown. Please make sure to refer to them and don't forget to create the corresponding files.`,
             "Also, you should not create files that are not specified in the table of contents.",
@@ -59,6 +82,12 @@ export const createReviewerAgent = <Model extends ILlmSchema.Model>(
               2,
             ),
             "</CurrentFiles>",
+            "",
+            `These are all the links that are currently referenced in the markdown. Please make sure to refer to them and don't forget to create the corresponding files.`,
+            `<Linked Files>`,
+            markdownFiles.map((filename) => `- ${filename}`),
+            `</Linked Files>`,
+            "",
             "Write a long document, but keep your answer short.",
             "The planner agent can only create and modify one document at a time, so do not ask to create or modify multiple documents at a time.",
             "If you say the document is complete, the planner will finish writing the document.",
@@ -72,6 +101,7 @@ export const createReviewerAgent = <Model extends ILlmSchema.Model>(
         },
       },
     },
+    tokenUsage: ctx.usage(),
   });
 };
 
@@ -83,8 +113,8 @@ export interface ICreateReviewerAgentInput {
   query: string;
 
   /**
-   * Hand over the title and name of the file that has been created so far to the
-   * list.
+   * Hand over the title and name of the file that has been created so far to
+   * the list.
    */
   currentFiles: Record<string, string>;
 }
