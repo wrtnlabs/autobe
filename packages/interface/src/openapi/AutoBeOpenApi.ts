@@ -283,6 +283,8 @@ export namespace AutoBeOpenApi {
      * - `GET /shoppings/customers/sales` must be pre-executed to get entire list
      *   of summarized sales. Detailed sale information would be obtained by
      *   specifying the sale ID in the path parameter.
+     *
+     * > MUST be written in English. Never use other languages.
      */
     description: string;
 
@@ -298,6 +300,8 @@ export namespace AutoBeOpenApi {
      *
      * IMPORTANT: The summary should clearly indicate which Prisma DB table this
      * operation relates to, helping to ensure all tables have API coverage.
+     *
+     * > MUST be written in English. Never use other languages
      */
     summary: string;
 
@@ -394,6 +398,8 @@ export namespace AutoBeOpenApi {
      * Description about the path parameter.
      *
      * Make short, concise and clear description about the path parameter.
+     *
+     * > MUST be written in English. Never use other languages.
      */
     description: string;
 
@@ -453,6 +459,8 @@ export namespace AutoBeOpenApi {
      * Description about the request body.
      *
      * Make short, concise and clear description about the request body.
+     *
+     * > MUST be written in English. Never use other languages.
      */
     description: string;
 
@@ -526,6 +534,8 @@ export namespace AutoBeOpenApi {
      * Description about the response body.
      *
      * Make short, concise and clear description about the response body.
+     *
+     * > MUST be written in English. Never use other languages.
      */
     description: string;
 
@@ -627,7 +637,7 @@ export namespace AutoBeOpenApi {
     | IJsonSchema.IReference;
   export namespace IJsonSchema {
     /** Constant value type. */
-    export interface IConstant extends IAttribute {
+    export interface IConstant {
       /** The constant value. */
       const: boolean | number | string;
     }
@@ -776,7 +786,7 @@ export namespace AutoBeOpenApi {
     }
 
     /** Object type info. */
-    export interface IObject extends IAttribute {
+    export interface IObject extends ISignificant<"object"> {
       /**
        * Properties of the object.
        *
@@ -846,7 +856,7 @@ export namespace AutoBeOpenApi {
     }
 
     /** Reference type directing named schema. */
-    export interface IReference extends IAttribute {
+    export interface IReference {
       /**
        * Reference to the named schema.
        *
@@ -870,7 +880,7 @@ export namespace AutoBeOpenApi {
      * `anyOf` instead of the `oneOf`, {@link AutoBeOpenApi} forcibly converts it
      * to `oneOf` type.
      */
-    export interface IOneOf extends IAttribute {
+    export interface IOneOf {
       /** List of the union types. */
       oneOf: Exclude<IJsonSchema, IJsonSchema.IOneOf>[];
 
@@ -898,31 +908,9 @@ export namespace AutoBeOpenApi {
     /** Null type. */
     export interface INull extends ISignificant<"null"> {}
 
-    interface ISignificant<Type extends string> extends IAttribute {
+    interface ISignificant<Type extends string> {
       /** Discriminator value of the type. */
       type: Type;
-    }
-    interface IAttribute {
-      /**
-       * Description about the type.
-       *
-       * IMPORTANT: This description MUST be detailed and MUST reference and
-       * align with the description comments from the related Prisma DB schema
-       * tables and columns.
-       *
-       * The description should be comprehensive and organized into MULTIPLE
-       * PARAGRAPHS (separated by line breaks) when appropriate, explaining:
-       *
-       * - The purpose and meaning of this type
-       * - Usage context and relationships
-       * - Constraints and special cases
-       * - Examples when helpful
-       *
-       * Any descriptions should be so detailed and clear that anyone reading
-       * them can understand the type completely without needing to reference
-       * other documentation.
-       */
-      description?: string;
     }
   }
 
@@ -981,6 +969,8 @@ export namespace AutoBeOpenApi {
        * understand the type's various characteristics and use cases. The
        * description should be so comprehensive that anyone reading it can fully
        * understand the type without needing to reference other documentation.
+       *
+       * > MUST be written in English. Never use other languages.
        */
       description: string;
     };

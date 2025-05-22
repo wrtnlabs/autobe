@@ -98,7 +98,7 @@ async function process<Model extends ILlmSchema.Model>(
         describe: null,
       },
       systemPrompt: {
-        execute: () => AutoBeSystemPromptConstant.INTERFACE_SCHEMA,
+        common: () => AutoBeSystemPromptConstant.INTERFACE_SCHEMA,
       },
     },
     histories: [

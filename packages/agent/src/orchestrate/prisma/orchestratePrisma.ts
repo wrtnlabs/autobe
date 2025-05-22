@@ -39,7 +39,7 @@ export const orchestratePrisma =
           describe: null,
         },
         systemPrompt: {
-          execute: () => AutoBeSystemPromptConstant.PRISMA,
+          common: () => AutoBeSystemPromptConstant.PRISMA,
         },
       },
       histories: transformPrismaHistories(ctx.state()),
@@ -75,6 +75,8 @@ export const orchestratePrisma =
             "Previous generated prisma schema files are invalid.",
             "",
             "Please re-generate the prisma schema files, referencing the below compilation error message.",
+            "",
+            "--------------------------------------------",
             "",
             result.reason,
           ].join("\n"),

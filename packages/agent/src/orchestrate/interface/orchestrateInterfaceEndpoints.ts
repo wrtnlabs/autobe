@@ -25,7 +25,7 @@ export async function orchestrateInterfaceEndpoints<
         describe: null,
       },
       systemPrompt: {
-        execute: () => AutoBeSystemPromptConstant.INTERFACE_ENDPOINT,
+        common: () => AutoBeSystemPromptConstant.INTERFACE_ENDPOINT,
       },
     },
     histories: transformInterfaceHistories(ctx.state()),
