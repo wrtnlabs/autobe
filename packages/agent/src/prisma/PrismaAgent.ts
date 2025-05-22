@@ -3,10 +3,10 @@ import chalk from "chalk";
 import typia from "typia";
 
 import { IPrismaFileInput } from "../../utils/IPrisma";
+import { AutoBeSystemPromptConstant } from "../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../context/AutoBeContext";
 import { PrismaStructuredOutput } from "../tools/PrismaStructuredOutput";
 import { PrismaGeneratorAgent } from "./PrismaGenerator";
-import { PRISMA_PROMPT } from "./prompts/prismaPrompt";
 
 export class PrismaAgent {
   private readonly agent: Agentica<"chatgpt">;
@@ -36,7 +36,7 @@ export class PrismaAgent {
       config: {
         systemPrompt: {
           common: () => {
-            return PRISMA_PROMPT;
+            return AutoBeSystemPromptConstant.PRISMA_DEFAULT;
           },
         },
         locale: "en-US",

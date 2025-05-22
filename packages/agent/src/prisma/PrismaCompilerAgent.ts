@@ -6,9 +6,9 @@ import path from "path";
 import typia from "typia";
 
 import { IPrismaFileInput } from "../../utils/IPrisma";
+import { AutoBeSystemPromptConstant } from "../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../context/AutoBeContext";
 import { PrismaStructuredOutput } from "../tools/PrismaStructuredOutput";
-import { PRISMA_COMPILER_PROMPT } from "./prompts/prismaCompilerPrompt";
 
 export class PrismaCompilerAgent {
   private agent: MicroAgentica<"chatgpt">;
@@ -34,7 +34,7 @@ export class PrismaCompilerAgent {
       config: {
         systemPrompt: {
           common: () => {
-            return PRISMA_COMPILER_PROMPT;
+            return AutoBeSystemPromptConstant.PRISMA_COMPILER;
           },
         },
         locale: "en-US",
@@ -43,17 +43,11 @@ export class PrismaCompilerAgent {
   }
 
   /**
-   * Check the compiler Error of the Prisma Schema.
-   * This method returns the Prisma Schema.
-   * Input format Example is following:
+   * Check the compiler Error of the Prisma Schema. This method returns the
+   * Prisma Schema. Input format Example is following:
    *
-   * {
-   *   files: {
-   *     "schema.prisma": "Prisma Schema",
-   *     "user.prisma": "Prisma Schema",
-   *     "product.prisma": "Prisma Schema",
-   *   }
-   * }
+   * { files: { "schema.prisma": "Prisma Schema", "user.prisma": "Prisma
+   * Schema", "product.prisma": "Prisma Schema", } }
    *
    * @param input.schema Prisma Schema
    * @returns Prisma Schema

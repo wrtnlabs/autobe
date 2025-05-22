@@ -4,9 +4,9 @@ import fs from "fs";
 import path from "path";
 
 import { IPrismaFileInput } from "../../utils/IPrisma";
+import { AutoBeSystemPromptConstant } from "../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../context/AutoBeContext";
 import { PrismaCompilerAgent } from "./PrismaCompilerAgent";
-import { PRISMA_GENERATOR_PROMPT } from "./prompts/prismaGeneratorPrompt";
 
 export class PrismaGeneratorAgent {
   private agent: MicroAgentica<"chatgpt">;
@@ -23,7 +23,7 @@ export class PrismaGeneratorAgent {
       config: {
         systemPrompt: {
           common: () => {
-            return PRISMA_GENERATOR_PROMPT;
+            return AutoBeSystemPromptConstant.PRISMA_GENERATOR;
           },
         },
         locale: "en-US",
