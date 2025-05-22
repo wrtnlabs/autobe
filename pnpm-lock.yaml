@@ -35,6 +35,9 @@ catalogs:
     prisma-markdown:
       specifier: ^3.0.0
       version: 3.0.1
+    tgrid:
+      specifier: ^1.1.0
+      version: 1.1.0
     tstl:
       specifier: ^3.0.0
       version: 3.0.0
@@ -247,6 +250,40 @@ importers:
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
+      typescript:
+        specifier: catalog:typescript
+        version: 5.8.3
+
+  packages/websocket-server:
+    dependencies:
+      '@autobe/agent':
+        specifier: workspace:^
+        version: link:../agent
+      '@autobe/interface':
+        specifier: workspace:^
+        version: link:../interface
+      '@autobe/rpc':
+        specifier: workspace:^
+        version: link:../rpc
+      '@samchon/openapi':
+        specifier: catalog:samchon
+        version: 4.3.3
+      tgrid:
+        specifier: catalog:samchon
+        version: 1.1.0
+    devDependencies:
+      '@rollup/plugin-terser':
+        specifier: ^0.4.4
+        version: 0.4.4(rollup@4.41.0)
+      '@rollup/plugin-typescript':
+        specifier: ^12.1.2
+        version: 12.1.2(rollup@4.41.0)(tslib@2.8.1)(typescript@5.8.3)
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      rollup:
+        specifier: ^4.40.1
+        version: 4.41.0
       typescript:
         specifier: catalog:typescript
         version: 5.8.3
