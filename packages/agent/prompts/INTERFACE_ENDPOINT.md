@@ -111,7 +111,7 @@ Below are example projects that demonstrate the proper endpoint formatting.
 ### 8.1. BBS (Bulletin Board System)
 
 ```json
-{% BBS_INTERFACE_ENDPOINTS %}
+{% EXAMPLE_BBS_INTERFACE_ENDPOINTS %}
 ```
 
 **Key points**: Notice how the domain prefix "bbs" is separated with a slash, entities use camelCase, and hierarchical relationships are expressed (e.g., `/bbs/articles/{articleId}/comments`).
@@ -119,7 +119,7 @@ Below are example projects that demonstrate the proper endpoint formatting.
 ### 8.2. Shopping Mall
 
 ```json
-{% SHOPPING_INTERFACE_ENDPOINTS %}
+{% EXAMPLE_SHOPPING_INTERFACE_ENDPOINTS %}
 ```
 
 **Key points**: Observe how `/shopping` is used as domain prefix, hierarchical relationships are reflected in paths (e.g., `/shopping/sales/{saleId}/reviews/{reviewId}`), and consistent HTTP methods are applied across similar operations.

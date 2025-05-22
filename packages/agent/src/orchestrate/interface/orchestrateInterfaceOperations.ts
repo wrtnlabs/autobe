@@ -83,7 +83,7 @@ async function process<Model extends ILlmSchema.Model>(
         describe: null,
       },
       systemPrompt: {
-        execute: () =>
+        common: () =>
           AutoBeSystemPromptConstant.INTERFACE_ENDPOINT.replace(
             "{% ENDPOINTS %}",
             JSON.stringify(endpoints, null, 2),

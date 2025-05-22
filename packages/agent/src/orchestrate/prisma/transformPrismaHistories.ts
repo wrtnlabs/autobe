@@ -1,5 +1,6 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
 
+import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../context/AutoBeState";
 
 export const transformPrismaHistories = (
@@ -19,6 +20,10 @@ export const transformPrismaHistories = (
       },
     ];
   return [
+    {
+      type: "systemMessage",
+      text: AutoBeSystemPromptConstant.PRISMA_EXAMPLE,
+    },
     {
       type: "assistantMessage",
       text: [

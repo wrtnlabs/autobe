@@ -37,19 +37,22 @@ const prepareExample = async (
   const document: AutoBeOpenApi.IDocument = invertOpenApiDocument(swagger);
 
   return {
-    [`${title.toUpperCase()}_ANALYSIS`]: JSON.stringify(analysis),
-    [`${title.toUpperCase()}_PRISMA`]: JSON.stringify({
+    [`EXAMPLE_${title.toUpperCase()}_ANALYSIS`]: JSON.stringify(analysis),
+    [`EXAMPLE_${title.toUpperCase()}_PRISMA`]: JSON.stringify({
       schemas: prisma.schemas,
       diagrams: prisma.diagrams,
       document: prisma.document,
     }),
-    [`${title.toUpperCase()}_INTERFACE_ENDPOINTS`]: JSON.stringify({
+    [`EXAMPLE_${title.toUpperCase()}_PRISMA_SCHEMAS`]: JSON.stringify(
+      prisma.schemas,
+    ),
+    [`EXAMPLE_${title.toUpperCase()}_INTERFACE_ENDPOINTS`]: JSON.stringify({
       endpoints: document.operations.map((o) => ({
         path: o.path,
         method: o.method,
       })),
     }),
-    [`${title.toUpperCase()}_INTERFACE_OPERATIONS`]: JSON.stringify({
+    [`EXAMPLE_${title.toUpperCase()}_INTERFACE_OPERATIONS`]: JSON.stringify({
       operations: document.operations,
     }),
   };
@@ -58,7 +61,7 @@ const prepareExample = async (
 async function main(): Promise<void> {
   const directory: string[] = await fs.promises.readdir(DIRECTORY);
   const record: Record<string, string> = {};
-  const replaces: Record<string, string> = {
+  const examples: Record<string, string> = {
     ...(await prepareExample("bbs")),
     ...(await prepareExample("shopping")),
   };
@@ -72,7 +75,7 @@ async function main(): Promise<void> {
       "utf8",
     );
     content = content.replaceAll("\r\n", "\n").trim();
-    for (const [key, value] of Object.entries(replaces))
+    for (const [key, value] of Object.entries(examples))
       content = content.replace(`{% ${key} %}`, value);
     record[file.substring(0, file.length - 3)] = content;
   }
@@ -86,6 +89,10 @@ async function main(): Promise<void> {
           ([key, value]) =>
             `  ${key.toUpperCase()} = ${JSON.stringify(value)},`,
         ),
+        // ...Object.entries(examples).map(
+        //   ([key, value]) =>
+        //     `  ${key.toUpperCase()} = ${JSON.stringify(value)},`,
+        // ),
         `};`,
         "",
       ].join("\n"),
