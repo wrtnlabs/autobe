@@ -1,6 +1,7 @@
 bin/
 lib/
 node_modules/
+./playground/
 
 *.log
 .env
