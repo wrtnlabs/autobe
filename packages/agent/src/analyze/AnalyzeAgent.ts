@@ -1,13 +1,14 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import chalk from "chalk";
+import { IPointer } from "tstl";
 import typia from "typia";
 
 import { AutoBeSystemPromptConstant } from "../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../context/AutoBeContext";
 import { assertSchemaModel } from "../context/assertSchemaModel";
 import { createReviewerAgent } from "./CreateReviewerAgent";
-import { Planning } from "./Planning";
+import { IPlanning, Planning } from "./Planning";
 
 type Filename = string;
 type FileContent = string;
@@ -22,9 +23,16 @@ export class AnalyzeAgent<Model extends ILlmSchema.Model> {
   ) {
     assertSchemaModel(ctx.model);
 
+    const pointer: IPointer<{ files: Record<Filename, FileContent> } | null> = {
+      value: null,
+    };
+
     const controller = createController<Model>({
       model: ctx.model,
       execute: new Planning(this.fileMap),
+      build: async (files: Record<Filename, FileContent>) => {
+        pointer.value = { files };
+      },
     });
     this.agent = new MicroAgentica({
       controllers: [controller],
@@ -122,6 +130,7 @@ export class AnalyzeAgent<Model extends ILlmSchema.Model> {
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   execute: Planning;
+  build: (input: Record<Filename, FileContent>) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
   const application: ILlmApplication<Model> = collection[
@@ -131,7 +140,24 @@ function createController<Model extends ILlmSchema.Model>(props: {
     protocol: "class",
     name: "Planning",
     application,
-    execute: props.execute,
+    // execute: props.execute,
+    execute: {
+      removeFile: (input) => {
+        const response = props.execute.removeFile(input);
+        props.build(props.execute.allFiles());
+        return response;
+      },
+      abort: (input) => {
+        const response = props.execute.abort(input);
+        props.build(props.execute.allFiles());
+        return response;
+      },
+      createOrUpdateFile: (input) => {
+        const response = props.execute.createOrUpdateFile(input);
+        props.build(props.execute.allFiles());
+        return response;
+      },
+    } satisfies IPlanning,
   };
 }
 

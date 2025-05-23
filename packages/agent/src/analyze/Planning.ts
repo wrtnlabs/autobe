@@ -8,19 +8,21 @@ export interface IPlanning {
    * @param input.reason Describe briefly why you made this document, and if you
    *   have any plans for the next one.
    * @param input.filename Filename to generate or overwrite.
-   * @param input.markdown Markdown file content.
+   * @param input.markdown Markdown file content. Only write the content of the
+   *   file. Do not include any questions.
    */
-  writeFile(input: {
+  createOrUpdateFile(input: {
     reason: string;
     filename: `${string}.md`;
     markdown: string;
   }): Promise<void>;
+
   /**
    * Read markdown file content.
    *
    * @param input.filename Filename to read.
    */
-  readFile(input: { filename: `${string}.md` }): Promise<string>;
+  // readFile(input: { filename: `${string}.md` }): Promise<string>;
 
   /**
    * Remove markdown file.
@@ -46,7 +48,7 @@ export interface IPlanning {
 export class Planning implements IPlanning {
   constructor(private readonly fileMap: Record<Filename, FileContent> = {}) {}
 
-  async writeFile(input: {
+  async createOrUpdateFile(input: {
     reason: string;
     filename: `${string}.md`;
     markdown: string;
@@ -54,9 +56,9 @@ export class Planning implements IPlanning {
     this.fileMap[input.filename] = input.markdown;
   }
 
-  async readFile(input: { filename: `${string}.md` }): Promise<string> {
-    return this.fileMap[input.filename];
-  }
+  // async readFile(input: { filename: `${string}.md` }): Promise<string> {
+  //   return this.fileMap[input.filename];
+  // }
 
   async removeFile(input: { filename: `${string}.md` }): Promise<void> {
     delete this.fileMap[input.filename];

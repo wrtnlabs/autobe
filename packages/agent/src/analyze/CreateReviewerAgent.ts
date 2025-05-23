@@ -27,8 +27,6 @@ export const createReviewerAgent = <Model extends ILlmSchema.Model>(
     ),
   );
 
-  console.log(markdownFiles);
-
   return new MicroAgentica({
     model: ctx.model,
     vendor: ctx.vendor,
@@ -43,6 +41,7 @@ export const createReviewerAgent = <Model extends ILlmSchema.Model>(
             `These are all the links that are currently referenced in the markdown. Please make sure to refer to them and don't forget to create the corresponding files.`,
             "Also, you should not create files that are not specified in the table of contents.",
             "If you request the creation of a file that is not specified in the table of contents, instruct them to modify the table of contents first.",
+            "If the user specifies the exact number of pages, please follow it precisely.",
             "",
             "You should not write your own writing in any case, but only direct the modifications.",
             "Also, reviewers are independent beings, and should never be instructed.",

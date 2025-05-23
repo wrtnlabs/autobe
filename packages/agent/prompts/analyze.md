@@ -15,6 +15,8 @@ do not create a document such as 'internal_bulletin_board_service_plan_expanded.
 only update 'internal_bulletin_board_service_plan.md' file.
 
 # Guidelines
+If the user specifies the exact number of pages, please follow it precisely.
+
 {% Guidelines %}
 
 
