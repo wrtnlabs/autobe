@@ -111,12 +111,12 @@ async function process<Model extends ILlmSchema.Model>(
       executor: {
         describe: null,
       },
-      systemPrompt: {
-        common: () => AutoBeSystemPromptConstant.INTERFACE_SCHEMA,
-      },
     },
     histories: [
-      ...transformInterfaceHistories(ctx.state()),
+      ...transformInterfaceHistories(
+        ctx.state(),
+        AutoBeSystemPromptConstant.INTERFACE_SCHEMA,
+      ),
       {
         type: "assistantMessage",
         text: [

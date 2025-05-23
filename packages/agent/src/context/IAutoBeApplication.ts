@@ -10,55 +10,103 @@ export interface IAutoBeApplication {
   /**
    * Run Analyze Agent.
    *
-   * Analyze agent analyzes requirements and creates specification documents.
+   * Executes the Analyze agent to process user requirements and generate a
+   * structured specification document. This agent analyzes all conversation
+   * history between users and AI, separates business logic from technical
+   * requirements, and establishes development priorities and scope.
    *
-   * The Analyze agent serves as the foundation of the entire development
-   * process. It not only captures initial requirements but also continuously
-   * refines understanding through iterative conversation with users. When
-   * requirements are ambiguous or incomplete, it proactively formulates
-   * targeted questions to elicit necessary information before proceeding with
-   * development.
+   * **IMPORTANT**: Only call this function when sufficient requirements have
+   * been discussed to generate a comprehensive specification. The context must
+   * contain enough detail about the system's purpose, core features, data
+   * models, and business rules. If requirements are unclear or incomplete,
+   * continue gathering information through conversation instead.
    *
-   * Additionally, once other agents have generated code, the Analyze agent can
-   * interpret change requests in the context of existing implementations,
-   * assessing the impact and feasibility of modifications while maintaining
-   * system integrity. This comprehensive approach ensures that all subsequent
-   * development stages work from a clear, complete, and consistent
-   * specification.
+   * The agent will automatically generate follow-up questions for any ambiguous
+   * requirements and continuously refine its understanding through iterative
+   * conversation. When executed after other agents have generated code, it can
+   * also interpret change requests in the context of existing implementations.
    */
   analyze(props: IAutoBeApplicationProps): Promise<IAutoBeApplicationResult>;
 
   /**
    * Run prisma agent.
    *
-   * Prisma agent analyzes requirements specifications to generate database
-   * schemas in Prisma format.
+   * Executes the Prisma agent to generate database schema files and ERD
+   * documentation. This agent reads the requirements specification created by
+   * the {@link analyze Analyze agent} and produces a complete Prisma schema with
+   * comprehensive documentation for each entity and attribute.
    *
-   * The Prisma agent references the requirements specification document created
-   * by the {@link analyze} function to craft the `prisma.schema` file. For each
-   * entity and attribute in the database schema, it provides comprehensive
-   * documentation including the rationale behind its creation, its purpose, and
-   * conceptual explanations. The agent employs normalization techniques to
-   * ensure high-quality database design.
+   * **PREREQUISITE**: Only call this function after the {@link analyze} function
+   * has been successfully executed and a requirements specification document
+   * has been generated. The Prisma agent depends on the structured requirements
+   * analysis to design the database schema properly. Without a completed
+   * requirements specification, this function should NOT be called.
    *
-   * Once the DB schema file is written, the Prisma agent compiles it using the
-   * built-in Prisma compiler. If compilation errors occur, these are fed back
-   * to the AI agent, enabling a self-correction process through compiler
-   * feedback. After successful compilation, this schema file is then subjected
-   * to a quality assurance process through an internal review agent that
-   * verifies and refines the schema.
-   *
-   * Note that, never use this function without calling the {@link analyze}
-   * function at least once.
+   * The agent will automatically validate the generated schema using the Prisma
+   * compiler, self-correct any compilation errors through feedback loops, and
+   * generate ERD documentation using prisma-markdown. An internal review
+   * process ensures schema quality and optimization.
    */
   prisma(props: IAutoBeApplicationProps): Promise<IAutoBeApplicationResult>;
 
-  /** Run interface agent. */
+  /**
+   * Run interface agent.
+   *
+   * Executes the Interface agent to design and generate API interfaces. This
+   * agent creates OpenAPI schemas and TypeScript/NestJS code based on the
+   * requirements specification and ERD documentation from previous agents.
+   *
+   * The agent follows a sophisticated pipeline: first constructing formal
+   * OpenAPI Operation Schemas and JSON Schemas, then validating these schemas,
+   * and finally transforming them into NestJS controllers and DTOs. Each
+   * generated interface includes comprehensive JSDoc comments and undergoes
+   * internal review for consistency.
+   */
   interface(props: IAutoBeApplicationProps): Promise<IAutoBeApplicationResult>;
 
-  /** Run test program agent. */
+  /**
+   * Run test program agent.
+   *
+   * Executes the Test agent to generate comprehensive E2E test suites for all
+   * {@link interface API interfaces}. This agent synthesizes outputs from
+   * previous agents to create tests that validate both individual endpoints and
+   * their interactions.
+   *
+   * **PREREQUISITE**: Only call this function after the {@link interface}
+   * function has been successfully executed and API interfaces have been
+   * generated. The Test agent requires the completed API interface definitions,
+   * OpenAPI schemas, and TypeScript code to generate appropriate test
+   * scenarios. Without completed interface design, this function should NOT be
+   * called.
+   *
+   * The agent will analyze dependency relationships between API functions,
+   * structure integrated test scenarios with correct execution sequences, and
+   * enhance pre-generated test scaffolds with business logic validation.
+   * TypeScript compiler validation and internal review ensure test quality and
+   * optimal coverage.
+   */
   test(props: IAutoBeApplicationProps): Promise<IAutoBeApplicationResult>;
 
-  /** Run realize agent. */
+  /**
+   * Run realize agent.
+   *
+   * Executes the Realize agent to implement the actual business logic for each
+   * API endpoint. This agent synthesizes all outputs from previous agents to
+   * generate fully functional service provider code.
+   *
+   * **PREREQUISITE**: Only call this function after the {@link interface}
+   * function has been successfully executed and API interfaces have been
+   * generated. The Realize agent requires the completed API interface
+   * definitions to implement the corresponding service logic. It also benefits
+   * from having test code available for validation. Without completed interface
+   * design, this function should NOT be called.
+   *
+   * The agent will create service implementations with multiple validation
+   * layers: TypeScript compiler feedback, runtime validation through test
+   * execution, and quality optimization through internal review. The generated
+   * code handles database interactions through Prisma, implements security and
+   * validation checks, and processes business rules according to
+   * specifications.
+   */
   realize(props: IAutoBeApplicationProps): Promise<IAutoBeApplicationResult>;
 }

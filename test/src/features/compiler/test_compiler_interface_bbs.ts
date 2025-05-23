@@ -20,7 +20,7 @@ export const test_compiler_interface_bbs = async (): Promise<void> => {
   typia.assertEquals(result);
 
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/bbs/invert`,
+    root: `${TestGlobal.ROOT}/results/samchon/bbs-backend/invert`,
     files: result,
   });
 };

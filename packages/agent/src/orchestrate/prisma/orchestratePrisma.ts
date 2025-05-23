@@ -14,7 +14,6 @@ import { IPointer, Singleton } from "tstl";
 import typia from "typia";
 import { v4 } from "uuid";
 
-import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
@@ -38,9 +37,6 @@ export const orchestratePrisma =
         ...(ctx.config ?? {}),
         executor: {
           describe: null,
-        },
-        systemPrompt: {
-          common: () => AutoBeSystemPromptConstant.PRISMA,
         },
       },
       histories: transformPrismaHistories(ctx.state()),
