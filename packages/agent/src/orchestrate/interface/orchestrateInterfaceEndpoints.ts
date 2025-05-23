@@ -38,11 +38,11 @@ export async function orchestrateInterfaceEndpoints<
       executor: {
         describe: null,
       },
-      systemPrompt: {
-        common: () => AutoBeSystemPromptConstant.INTERFACE_ENDPOINT,
-      },
     },
-    histories: transformInterfaceHistories(ctx.state()),
+    histories: transformInterfaceHistories(
+      ctx.state(),
+      AutoBeSystemPromptConstant.INTERFACE_ENDPOINT,
+    ),
     tokenUsage: ctx.usage(),
     controllers: [
       createApplication({

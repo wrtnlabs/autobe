@@ -4,6 +4,7 @@ import { AutoBeState } from "../../context/AutoBeState";
 
 export const transformInterfaceHistories = (
   state: AutoBeState,
+  systemMessage: string,
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
@@ -54,6 +55,10 @@ export const transformInterfaceHistories = (
       },
     ];
   return [
+    {
+      type: "systemMessage",
+      text: systemMessage,
+    },
     {
       type: "assistantMessage",
       text: [

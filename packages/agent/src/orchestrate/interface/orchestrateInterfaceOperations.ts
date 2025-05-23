@@ -95,15 +95,11 @@ async function process<Model extends ILlmSchema.Model>(
       executor: {
         describe: null,
       },
-      systemPrompt: {
-        common: () =>
-          AutoBeSystemPromptConstant.INTERFACE_ENDPOINT.replace(
-            "{% ENDPOINTS %}",
-            JSON.stringify(endpoints, null, 2),
-          ),
-      },
     },
-    histories: transformInterfaceHistories(ctx.state()),
+    histories: transformInterfaceHistories(
+      ctx.state(),
+      AutoBeSystemPromptConstant.INTERFACE_ENDPOINT,
+    ),
     tokenUsage: ctx.usage(),
     controllers: [
       createApplication({

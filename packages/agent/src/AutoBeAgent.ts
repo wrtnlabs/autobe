@@ -3,8 +3,11 @@ import {
   AutoBeEvent,
   AutoBeHistory,
   AutoBeUserMessageContent,
+  AutoBeUserMessageHistory,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
+import { sleep_for } from "tstl";
+import { v4 } from "uuid";
 
 import { AutoBeContext } from "./context/AutoBeContext";
 import { AutoBeState } from "./context/AutoBeState";
@@ -12,6 +15,7 @@ import { AutoBeTokenUsage } from "./context/AutoBeTokenUsage";
 import { createAgenticaHistory } from "./factory/createAgenticaHistory";
 import { createAutoBeController } from "./factory/createAutoBeApplication";
 import { createAutoBeState } from "./factory/createAutoBeState";
+import { transformFacadeStateMessage } from "./orchestrate/facade/transformFacadeStateMessage";
 import { IAutoBeProps } from "./structures/IAutoBeProps";
 import { emplaceMap } from "./utils/emplaceMap";
 
@@ -50,6 +54,7 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
         this.dispatch(event).catch(() => {});
       },
     };
+    this.listeners_ = new Map();
 
     this.agentica_ = new MicroAgentica({
       model: props.model,
@@ -58,6 +63,9 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
         ...(props.config ?? {}),
         executor: {
           describe: null,
+        },
+        systemPrompt: {
+          execute: () => transformFacadeStateMessage(this.state_),
         },
       },
       controllers: [
@@ -77,7 +85,16 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
         )
         .filter((h) => h !== null),
     );
-    this.listeners_ = new Map();
+    this.agentica_.on("assistantMessage", async (message) => {
+      const start = new Date();
+      this.histories_.push({
+        id: v4(),
+        type: "assistantMessage",
+        text: await message.join(),
+        created_at: start.toISOString(),
+        completed_at: new Date().toISOString(),
+      });
+    });
   }
 
   /** @internal */
@@ -116,8 +133,29 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
   public async conversate(
     content: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
   ): Promise<AutoBeHistory[]> {
-    content;
-    return [];
+    const index: number = this.histories_.length;
+    const userMessageHistory: AutoBeUserMessageHistory = {
+      id: v4(),
+      type: "userMessage",
+      contents:
+        typeof content === "string"
+          ? [
+              {
+                type: "text",
+                text: content,
+              },
+            ]
+          : Array.isArray(content)
+            ? content
+            : [content],
+      created_at: new Date().toISOString(),
+    };
+    this.histories_.push(userMessageHistory);
+    this.dispatch(userMessageHistory).catch(() => {});
+
+    await this.agentica_.conversate(content);
+    await sleep_for(1);
+    return this.histories_.slice(index);
   }
 
   public getFiles(): Record<string, string> {

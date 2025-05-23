@@ -20,7 +20,7 @@ export const test_compiler_interface_shopping = async (): Promise<void> => {
   typia.assertEquals(result);
 
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/shopping/invert`,
+    root: `${TestGlobal.ROOT}/results/samchon/shopping-backend/invert`,
     files: result,
   });
 };

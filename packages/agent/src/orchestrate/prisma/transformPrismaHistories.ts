@@ -22,6 +22,10 @@ export const transformPrismaHistories = (
   return [
     {
       type: "systemMessage",
+      text: AutoBeSystemPromptConstant.PRISMA,
+    },
+    {
+      type: "assistantMessage",
       text: AutoBeSystemPromptConstant.PRISMA_EXAMPLE,
     },
     {

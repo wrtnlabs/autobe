@@ -422,6 +422,7 @@ gantt
   Interface: done,    2025-05-18, 28d
   Test     : planned, 2025-06-01, 28d
   Realize  : planned, 2025-06-01, 28d
+  Facade   : active,  2025-05-18, 18d
 
   section Test Program
   Compilers: done,    2025-04-30, 46d
