@@ -12,9 +12,13 @@ import { AutoBePrismaSchemasEvent } from "./AutoBePrismaSchemasEvent";
 import { AutoBePrismaStartEvent } from "./AutoBePrismaStartEvent";
 import { AutoBePrismaValidateEvent } from "./AutoBePrismaValidateEvent";
 import { AutoBeRealizeCompleteEvent } from "./AutoBeRealizeCompleteEvent";
+import { AutoBeRealizeProgressEvent } from "./AutoBeRealizeProgressEvent";
 import { AutoBeRealizeStartEvent } from "./AutoBeRealizeStartEvent";
+import { AutoBeRealizeValidateEvent } from "./AutoBeRealizeValidateEvent";
 import { AutoBeTestCompleteEvent } from "./AutoBeTestCompleteEvent";
+import { AutoBeTestProgressEvent } from "./AutoBeTestProgressEvent";
 import { AutoBeTestStartEvent } from "./AutoBeTestStartEvent";
+import { AutoBeTestValidateEvent } from "./AutoBeTestValidateEvent";
 import { AutoBeUserMessageEvent } from "./AutoBeUserMessageEvent";
 
 export type AutoBeEvent =
@@ -33,8 +37,12 @@ export type AutoBeEvent =
   | AutoBePrismaCompleteEvent
   | AutoBePrismaValidateEvent
   | AutoBeTestStartEvent
+  | AutoBeTestProgressEvent
+  | AutoBeTestValidateEvent
   | AutoBeTestCompleteEvent
   | AutoBeRealizeStartEvent
+  | AutoBeRealizeProgressEvent
+  | AutoBeRealizeValidateEvent
   | AutoBeRealizeCompleteEvent;
 export namespace AutoBeEvent {
   export type Type = AutoBeEvent["type"];
@@ -54,8 +62,12 @@ export namespace AutoBeEvent {
     interfaceComponents: AutoBeInterfaceComponentsEvent;
     interfaceComplete: AutoBeInterfaceCompleteEvent;
     testStart: AutoBeTestStartEvent;
+    testProgress: AutoBeTestProgressEvent;
+    testValidate: AutoBeTestValidateEvent;
     testComplete: AutoBeTestCompleteEvent;
     realizeStart: AutoBeRealizeStartEvent;
+    realizeProgress: AutoBeRealizeProgressEvent;
+    realizeValidate: AutoBeRealizeValidateEvent;
     realizeComplete: AutoBeRealizeCompleteEvent;
   }
 }

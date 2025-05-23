@@ -23,11 +23,17 @@ export function AutoBePlaygroundEventMovie(
     case "testStart":
     case "realizeStart":
       return <AutoBePlaygroundStartEventMovie event={props.event} />;
+    case "prismaComponents":
+    case "prismaSchemas":
     case "interfaceEndpoints":
     case "interfaceOperations":
     case "interfaceComponents":
+    case "testProgress":
+    case "realizeProgress":
       return <AutoBePlaygroundProgressEventMovie event={props.event} />;
     case "prismaValidate":
+    case "testValidate":
+    case "realizeValidate":
       return <AutoBePlaygroundValidateEventMovie event={props.event} />;
     case "analyzeComplete":
     case "prismaComplete":

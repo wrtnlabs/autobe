@@ -8,6 +8,8 @@ export interface IAutoBeRpcListener {
   analyzeComplete?(event: IAutoBeEventJson.IAnalyzeComplete): Promise<void>;
 
   prismaStart?(event: IAutoBeEventJson.IPrismaStart): Promise<void>;
+  prismaSchemas?(event: IAutoBeEventJson.IPrismaSchemas): Promise<void>;
+  prismaComponents?(event: IAutoBeEventJson.IPrismaComponents): Promise<void>;
   prismaComplete?(event: IAutoBeEventJson.IPrismaComplete): Promise<void>;
   prismaValidate?(event: IAutoBeEventJson.IPrismaValidate): Promise<void>;
 
@@ -24,8 +26,12 @@ export interface IAutoBeRpcListener {
   interfaceComplete?(event: IAutoBeEventJson.IInterfaceComplete): Promise<void>;
 
   testStart?(event: IAutoBeEventJson.ITestStart): Promise<void>;
+  testProgress?(event: IAutoBeEventJson.ITestProgress): Promise<void>;
+  testValidate?(event: IAutoBeEventJson.ITestValidate): Promise<void>;
   testComplete?(event: IAutoBeEventJson.ITestComplete): Promise<void>;
 
   realizeStart?(event: IAutoBeEventJson.IRealizeStart): Promise<void>;
+  realizeProgress?(event: IAutoBeEventJson.IRealizeProgress): Promise<void>;
+  realizeValidate?(event: IAutoBeEventJson.IRealizeValidate): Promise<void>;
   realizeComplete?(event: IAutoBeEventJson.IRealizeComplete): Promise<void>;
 }

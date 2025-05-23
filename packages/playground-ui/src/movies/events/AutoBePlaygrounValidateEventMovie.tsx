@@ -1,4 +1,8 @@
-import { AutoBePrismaValidateEvent } from "@autobe/interface";
+import {
+  AutoBePrismaValidateEvent,
+  AutoBeRealizeValidateEvent,
+  AutoBeTestValidateEvent,
+} from "@autobe/interface";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
@@ -60,7 +64,18 @@ export function AutoBePlaygroundValidateEventMovie(
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
           {props.event.result.type === "failure" ? (
-            props.event.result.reason
+            props.event.type === "prismaValidate" ? (
+              props.event.result.reason
+            ) : (
+              <MarkdownViewer>
+                {props.event.result.diagnostics
+                  .map(
+                    (diag) =>
+                      `- ${diag.file} (${diag.category}): ${diag.messageText}`,
+                  )
+                  .join("\n")}
+              </MarkdownViewer>
+            )
           ) : (
             <MarkdownViewer>
               {JSON.stringify(props.event.result.error, null, 2)}
@@ -73,6 +88,9 @@ export function AutoBePlaygroundValidateEventMovie(
 }
 export namespace AutoBePlaygroundValidateEventMovie {
   export interface IProps {
-    event: AutoBePrismaValidateEvent;
+    event:
+      | AutoBePrismaValidateEvent
+      | AutoBeTestValidateEvent
+      | AutoBeRealizeValidateEvent;
   }
 }
