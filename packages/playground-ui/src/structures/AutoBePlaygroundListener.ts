@@ -2,7 +2,7 @@ import { AutoBeEvent, IAutoBeRpcListener } from "@autobe/interface";
 
 export class AutoBePlaygroundListener {
   private callback: ((event: AutoBeEvent) => Promise<void>) | null;
-  private listener: IAutoBeRpcListener;
+  private listener: Required<IAutoBeRpcListener>;
 
   public constructor() {
     this.callback = null;
@@ -13,13 +13,21 @@ export class AutoBePlaygroundListener {
       userMessage: async (event) => {
         this.callback?.(event);
       },
+
       analyzeStart: async (event) => {
         this.callback?.(event);
       },
       analyzeComplete: async (event) => {
         this.callback?.(event);
       },
+
       prismaStart: async (event) => {
+        this.callback?.(event);
+      },
+      prismaComponents: async (event) => {
+        this.callback?.(event);
+      },
+      prismaSchemas: async (event) => {
         this.callback?.(event);
       },
       prismaComplete: async (event) => {
@@ -28,6 +36,7 @@ export class AutoBePlaygroundListener {
       prismaValidate: async (event) => {
         this.callback?.(event);
       },
+
       interfaceStart: async (event) => {
         this.callback?.(event);
       },
@@ -43,13 +52,27 @@ export class AutoBePlaygroundListener {
       interfaceComplete: async (event) => {
         this.callback?.(event);
       },
+
       testStart: async (event) => {
+        this.callback?.(event);
+      },
+      testProgress: async (event) => {
+        this.callback?.(event);
+      },
+      testValidate: async (event) => {
         this.callback?.(event);
       },
       testComplete: async (event) => {
         this.callback?.(event);
       },
+
       realizeStart: async (event) => {
+        this.callback?.(event);
+      },
+      realizeProgress: async (event) => {
+        this.callback?.(event);
+      },
+      realizeValidate: async (event) => {
         this.callback?.(event);
       },
       realizeComplete: async (event) => {
@@ -62,7 +85,7 @@ export class AutoBePlaygroundListener {
     this.callback = callback;
   }
 
-  public getListener(): IAutoBeRpcListener {
+  public getListener(): Required<IAutoBeRpcListener> {
     return this.listener;
   }
 }

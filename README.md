@@ -426,13 +426,13 @@ gantt
 
   section Test Program
   Compilers: done,    2025-04-30, 46d
-  Prompts:   active,  2025-04-30, 46d
+  Prompts:   done,    2025-04-30, 46d
   Benchmark: planned, 2025-06-01, 28d
 
   section Playground Website
-  websocket: done,   2025-05-18, 14d
-  backend  : done,   2025-06-01, 14d
-  frontend : active, 2025-06-08, 14d
+  websocket: done, 2025-05-18, 14d
+  backend  : done, 2025-06-01, 14d
+  frontend : done, 2025-06-08, 14d
 ```
 
 We are committed to delivering the best possible `@autobe` experience and have confirmed that all functional agents are operating correctly. Prior to our v1.0 official release, we plan to conduct two pre-release phases as outlined below.

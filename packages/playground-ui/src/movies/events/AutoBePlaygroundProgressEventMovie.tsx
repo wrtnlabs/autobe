@@ -2,6 +2,10 @@ import {
   AutoBeInterfaceComponentsEvent,
   AutoBeInterfaceEndpointsEvent,
   AutoBeInterfaceOperationsEvent,
+  AutoBePrismaComponentsEvent,
+  AutoBePrismaSchemasEvent,
+  AutoBeRealizeProgressEvent,
+  AutoBeTestProgressEvent,
 } from "@autobe/interface";
 
 export function AutoBePlaygroundProgressEventMovie(
@@ -16,9 +20,13 @@ export function AutoBePlaygroundProgressEventMovie(
 export namespace AutoBePlaygroundProgressEventMovie {
   export interface IProps {
     event:
+      | AutoBePrismaComponentsEvent
+      | AutoBePrismaSchemasEvent
       | AutoBeInterfaceEndpointsEvent
       | AutoBeInterfaceOperationsEvent
-      | AutoBeInterfaceComponentsEvent;
+      | AutoBeInterfaceComponentsEvent
+      | AutoBeTestProgressEvent
+      | AutoBeRealizeProgressEvent;
   }
 }
 
@@ -27,12 +35,23 @@ function getDescription(
 ): string {
   switch (event.type) {
     case "interfaceEndpoints":
-      const count: number = event.endpoints.length;
-      return `Composing Endpoints: ${count} of ${count}`;
+      const endpoints: number = event.endpoints.length;
+      return `Composing Endpoints: ${endpoints} of ${endpoints}`;
     case "interfaceOperations":
       return `Designing Operations: ${event.completed} of ${event.total}`;
     case "interfaceComponents":
       return `Defining Type Schemas: ${event.completed} of ${event.total}`;
+    case "prismaComponents":
+      const tables: number = event.components
+        .map((c) => c.tables.length)
+        .reduce((a, b) => a + b, 0);
+      return `Composing Prisma Tables: ${tables} of ${tables}`;
+    case "prismaSchemas":
+      return `Generating Prisma Schemas: ${event.completed} of ${event.total}`;
+    case "testProgress":
+      return `Writing Test Functions: ${event.completed} of ${event.total}`;
+    case "realizeProgress":
+      return `Writing Main Controller: ${event.completed} of ${event.total}`;
     default:
       event satisfies never;
       throw new Error("Unknown event type"); // unreachable

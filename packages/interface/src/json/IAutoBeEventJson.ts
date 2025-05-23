@@ -1,6 +1,7 @@
 import { tags } from "typia";
 
 import { IAutoBePrismaCompilerResult } from "../compiler/IAutoBePrismaCompilerResult";
+import { IAutoBeTypeScriptCompilerResult } from "../compiler/IAutoBeTypeScriptCompilerResult";
 import { AutoBeUserMessageContent } from "../histories/contents/AutoBeUserMessageContent";
 import { AutoBeOpenApi } from "../openapi/AutoBeOpenApi";
 
@@ -20,8 +21,12 @@ export type IAutoBeEventJson =
   | IAutoBeEventJson.IInterfaceComponents
   | IAutoBeEventJson.IInterfaceComplete
   | IAutoBeEventJson.ITestStart
+  | IAutoBeEventJson.ITestProgress
+  | IAutoBeEventJson.ITestValidate
   | IAutoBeEventJson.ITestComplete
   | IAutoBeEventJson.IRealizeStart
+  | IAutoBeEventJson.IRealizeProgress
+  | IAutoBeEventJson.IRealizeValidate
   | IAutoBeEventJson.IRealizeComplete;
 export namespace IAutoBeEventJson {
   export type Type = IAutoBeEventJson["type"];
@@ -41,8 +46,12 @@ export namespace IAutoBeEventJson {
     interfaceComponents: IInterfaceComponents;
     interfaceComplete: IInterfaceComplete;
     testStart: ITestStart;
+    testProgress: ITestProgress;
+    testValidate: ITestValidate;
     testComplete: ITestComplete;
     realizeStart: IRealizeStart;
+    realizeProgress: IRealizeProgress;
+    realizeValidate: IRealizeValidate;
     realizeComplete: IRealizeComplete;
   };
 
@@ -78,7 +87,6 @@ export namespace IAutoBeEventJson {
     completed: number;
     total: number;
   }
-
   export interface IPrismaComplete extends IBase<"prismaComplete"> {
     schemas: Record<string, string>;
     diagrams: Record<string, string>;
@@ -124,6 +132,20 @@ export namespace IAutoBeEventJson {
     reason: string;
     step: number;
   }
+  export interface ITestProgress extends IBase<"testProgress"> {
+    filename: string;
+    content: string;
+    completed: number;
+    total: number;
+    step: number;
+  }
+  export interface ITestValidate extends IBase<"testValidate"> {
+    files: Record<string, string>;
+    result:
+      | IAutoBeTypeScriptCompilerResult.IFailure
+      | IAutoBeTypeScriptCompilerResult.IException;
+    step: number;
+  }
   export interface ITestComplete extends IBase<"testComplete"> {
     files: Record<string, string>;
     step: number;
@@ -131,6 +153,20 @@ export namespace IAutoBeEventJson {
 
   export interface IRealizeStart extends IBase<"realizeStart"> {
     reason: string;
+    step: number;
+  }
+  export interface IRealizeProgress extends IBase<"realizeProgress"> {
+    filename: string;
+    content: string;
+    completed: number;
+    total: number;
+    step: number;
+  }
+  export interface IRealizeValidate extends IBase<"realizeValidate"> {
+    files: Record<string, string>;
+    result:
+      | IAutoBeTypeScriptCompilerResult.IFailure
+      | IAutoBeTypeScriptCompilerResult.IException;
     step: number;
   }
   export interface IRealizeComplete extends IBase<"realizeComplete"> {
