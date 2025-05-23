@@ -6,15 +6,15 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { transformPrismaHistories } from "./transformPrismaHistories";
+import { transformPrismaCompilerHistories } from "./transformPrismaCompilerHistories";
 
 export async function orchestratePrismaCompiler<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   files: Record<string, string>,
-  retry: number = 5,
+  retry: number = 10,
 ): Promise<IAutoBePrismaCompilerResult & { description: string }> {
-  const pointer: IPointer<IModifyPrismaSchemaFilesProps | null> = {
-    value: null,
+  const pointer: IPointer<IModifyPrismaSchemaFilesProps> = {
+    value: { files, description: "" },
   };
   const agentica: MicroAgentica<Model> = new MicroAgentica({
     model: ctx.model,
@@ -22,7 +22,7 @@ export async function orchestratePrismaCompiler<Model extends ILlmSchema.Model>(
     config: {
       ...(ctx.config ?? {}),
     },
-    histories: transformPrismaHistories(ctx.state()),
+    histories: transformPrismaCompilerHistories(ctx.state(), files),
     tokenUsage: ctx.usage(),
     controllers: [
       createApplication({
@@ -43,34 +43,65 @@ export async function orchestratePrismaCompiler<Model extends ILlmSchema.Model>(
   let result: IAutoBePrismaCompilerResult;
 
   for (let i: number = 0; i < retry; ++i) {
-    result = await ctx.compiler.prisma({ files });
+    result = await ctx.compiler.prisma({
+      files: pointer.value?.files ?? files,
+    });
 
     if (result.type !== "failure") break;
     ctx.dispatch({
       type: "prismaValidate",
       schemas: files,
       result,
-      step: ctx.state().prisma?.step ?? 0,
+      step: ctx.state().analyze?.step ?? 0,
       created_at: new Date().toISOString(),
     });
 
     await agentica.conversate(
       [
-        "Previous generated prisma schema files are invalid.",
+        "The Prisma schema files have compilation errors that must be fixed. You MUST provide complete, corrected files.",
         "",
-        "Please re-generate the prisma schema files, referencing the below compilation error message.",
+        "============================================== CURRENT FILES ==============================================",
         "",
-        "--------------------------------------------",
+        ...Object.entries(pointer.value?.files ?? files).flatMap(
+          ([filename, content]) => [`### ${filename} ###`, content, ""],
+        ),
+        "",
+        "============================================== COMPILATION ERRORS ==============================================",
         "",
         result.reason,
+        "",
+        "============================================== REQUIREMENTS ==============================================",
+        "",
+        "CRITICAL: You must call the modifyPrismaSchemaFiles function with:",
+        "",
+        "1. **COMPLETE file contents** - Do NOT truncate or abbreviate any content",
+        "2. **ALL files** - Every file from the input must be included in the output",
+        "3. **Fixed errors** - Resolve all compilation errors shown above",
+        "4. **Preserved structure** - Keep all models, fields, relationships, and comments",
+        "5. **Proper syntax** - Ensure valid Prisma schema syntax",
+        "",
+        "IMPORTANT NOTES:",
+        "- Include the ENTIRE content of each file, not summaries or truncated versions",
+        "- Maintain all existing relationships between models",
+        "- Keep all field definitions, attributes, and indexes",
+        "- Preserve all comments and documentation",
+        "- Fix ONLY the compilation errors, don't make unnecessary changes",
+        "",
+        "Example of what NOT to do:",
+        "```",
+        "// ... (truncated for brevity)",
+        "// ... other fields and relationships",
+        "// ... unchanged ...",
+        "```",
+        "",
+        "You must provide the COMPLETE file content for each file.",
       ].join("\n"),
     );
-  }
 
-  if (pointer.value === null)
-    throw new Error(
-      "Unreachable code: Prisma Schema Compiler not generate Prisma Schema",
-    );
+    if (i === retry - 1) {
+      throw new Error("Prisma schema compiler failed");
+    }
+  }
 
   return { ...result!, description: pointer.value.description };
 }
@@ -115,34 +146,49 @@ const collection = {
 
 interface IApplication {
   /**
-   * Modifies and refines Prisma schema files based on compilation feedback.
+   * Fixes compilation errors in Prisma schema files.
    *
-   * Takes existing schema files (potentially with errors) and improves them by
-   * fixing compilation issues, optimizing relationships, and ensuring proper
-   * enterprise patterns. Handles iterative refinement through error-driven
-   * development.
+   * CRITICAL: This function must return COMPLETE file contents, not truncated
+   * versions.
    *
-   * @param props Properties containing the schema files to be modified
+   * Responsibilities:
+   *
+   * 1. Analyze compilation errors in the provided schema files
+   * 2. Fix all syntax and structural issues
+   * 3. Return COMPLETE corrected files (no truncation or abbreviation)
+   * 4. Preserve all existing models, relationships, and business logic
+   * 5. Maintain proper cross-file references and dependencies
+   *
+   * @param props Contains files to fix and requires complete file contents in
+   *   response
    */
   modifyPrismaSchemaFiles(props: IModifyPrismaSchemaFilesProps): void;
 }
 
 interface IModifyPrismaSchemaFilesProps {
   /**
-   * Target collection of Prisma schema files organized by domain/functionality.
+   * COMPLETE Prisma schema files with ALL content included.
    *
-   * Key represents the filename (e.g., "main.prisma", "schema-01-core.prisma",
-   * "schema-02-users.prisma") and value contains the complete schema content
-   * including models, relationships, indexes, and comprehensive documentation.
+   * CRITICAL REQUIREMENTS:
    *
-   * Generated files will be organized following enterprise patterns:
+   * - Each file must contain the ENTIRE schema content
+   * - Do NOT truncate, abbreviate, or use placeholders like "... unchanged ..."
+   * - Include ALL models, fields, relationships, indexes, and comments
+   * - Maintain exact same file organization and naming
    *
-   * - Main.prisma: Configuration, datasource, and generators
-   * - Schema-XX-domain.prisma: Domain-specific entity definitions
-   * - Proper cross-file relationships and dependencies
+   * File organization patterns:
+   *
+   * - Main.prisma: Configuration, datasource, generators
+   * - Schema-XX-domain.prisma: Complete domain-specific models with ALL fields
+   *
+   * Key = filename (e.g., "main.prisma", "schema-01-core.prisma") Value =
+   * COMPLETE file content (no truncation allowed)
    */
   files: Record<string, string>;
 
-  /** Summary description of the application requirements and business context. */
+  /**
+   * Brief description of what was fixed or modified in the schema files. Should
+   * summarize the changes made to resolve compilation errors.
+   */
   description: string;
 }

@@ -13,7 +13,7 @@ import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { transformPrismaHistories } from "./transformPrismaHistories";
+import { transformPrismaComponentsHistories } from "./transformPrismaComponentsHistories";
 
 export async function orchestratePrismaComponents<
   Model extends ILlmSchema.Model,
@@ -31,7 +31,7 @@ export async function orchestratePrismaComponents<
     config: {
       ...(ctx.config ?? {}),
     },
-    histories: transformPrismaHistories(ctx.state()),
+    histories: transformPrismaComponentsHistories(ctx.state()),
     tokenUsage: ctx.usage(),
     controllers: [
       createApplication({

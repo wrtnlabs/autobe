@@ -6,7 +6,7 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { transformPrismaHistories } from "./transformPrismaHistories";
+import { transformPrismaSchemaHistories } from "./transformPrismaSchemaHistories";
 
 export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
@@ -16,7 +16,10 @@ export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
   const entireTables: string[] = Array.from(
     new Set(components.flatMap((c) => c.tables)),
   );
+
+  const total: number = components.reduce((acc, c) => acc + c.tables.length, 0);
   let i: number = 0;
+
   return await Promise.all(
     components.map(async (c) => {
       const result: IMakePrismaSchemaFilesProps = await process(ctx, {
@@ -29,8 +32,8 @@ export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
         created_at: start.toISOString(),
         filename: c.filename,
         content: result.content,
-        completed: ++i,
-        total: components.length,
+        completed: (i += c.tables.length),
+        total,
         step: ctx.state().analyze?.step ?? 0,
       };
       ctx.dispatch(event);
@@ -54,7 +57,7 @@ async function process<Model extends ILlmSchema.Model>(
     config: {
       ...(ctx.config ?? {}),
     },
-    histories: transformPrismaHistories(ctx.state()),
+    histories: transformPrismaSchemaHistories(ctx.state()),
     tokenUsage: ctx.usage(),
     controllers: [
       createApplication({
@@ -159,13 +162,13 @@ interface IApplication {
 
 interface IMakePrismaSchemaFilesProps {
   /**
-   * Collection of Prisma schema files organized by domain/functionality.
+   * Complete Prisma schema content as a single concatenated string.
    *
-   * Key represents the filename (e.g., "main.prisma", "schema-01-core.prisma",
-   * "schema-02-users.prisma") and value contains the complete schema content
-   * including models, relationships, indexes, and comprehensive documentation.
+   * Contains all schema files organized by domain/functionality with clear file
+   * separators. Each file section includes models, relationships, indexes, and
+   * comprehensive documentation following enterprise patterns.
    *
-   * Files should be organized following enterprise patterns:
+   * Content should be organized following enterprise patterns:
    *
    * - Main.prisma: Configuration, datasource, and generators
    * - Schema-XX-domain.prisma: Domain-specific entity definitions
