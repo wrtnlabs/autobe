@@ -10,7 +10,7 @@ import { AutoBePlaygroundServer } from "../AutoBePlaygroundServer";
 const main = async () => {
   const compiler: WorkerConnector<null, null, IAutoBeCompiler> =
     new WorkerConnector(null, null, "process");
-  await compiler.connect(`${__dirname}/compiler.${__filename.substr(-2)}`);
+  await compiler.connect(`${__dirname}/compiler.${path.extname(__filename).slice(1)}`);
 
   const server: AutoBePlaygroundServer<IAutoBeRpcHeader<ILlmSchema.Model>> =
     new AutoBePlaygroundServer({
