@@ -1,5 +1,7 @@
 ## AutoBE, Vibe Coding Agent of Backend Server
 
+<div style="text-align: center">
+
 ![AutoBE Logo](https://github.com/user-attachments/assets/a90d14be-fd50-4dc7-ae9d-ca66c2124f31)
 
 [![GitHub License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/wrtnlabs/autobe/blob/master/LICENSE)
@@ -9,7 +11,10 @@
 [![Discord Badge](https://dcbadge.limes.pink/api/server/https://discord.gg/aMhRmzkqCx?style=flat)](https://discord.gg/aMhRmzkqCx)
 
 [![Fund Raising News](https://wrtnlabs.io/agentica/images/badges/fund-raising-news-202503.svg)](https://www.bloomberg.com/news/videos/2025-03-31/wtrn-on-series-b-funding-growth-strategy-video)
+<span>&nbsp;</span>
 [![One Mission](https://wrtnlabs.io/agentica/images/badges/open-source-mission.svg)](https://github.com/wrtnlabs)
+
+</div>
 
 Vibe coding agent of backend server, enhanced by Compiler Feedback and OpenAPI Validator.
 
