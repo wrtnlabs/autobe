@@ -1,4 +1,5 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
+import { AutoBePrismaSchemasEvent } from "@autobe/interface/src/events/AutoBePrismaSchemasEvent";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -10,35 +11,32 @@ import { transformPrismaHistories } from "./transformPrismaHistories";
 export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   components: { filename: string; tables: string[] }[],
-): Promise<IMakePrismaSchemaFilesProps> {
+): Promise<AutoBePrismaSchemasEvent[]> {
   const start: Date = new Date();
   const entireTables: string[] = Array.from(
     new Set(components.flatMap((c) => c.tables)),
   );
-
-  const files: Record<string, string> = {};
-
-  for (const result of await Promise.all(
+  let i: number = 0;
+  return await Promise.all(
     components.map(async (c) => {
       const result: IMakePrismaSchemaFilesProps = await process(ctx, {
         filename: c.filename,
         tables: c.tables,
         entireTables,
       });
-      ctx.dispatch({
+      const event: AutoBePrismaSchemasEvent = {
         type: "prismaSchemas",
         created_at: start.toISOString(),
-        files: result.files,
+        filename: c.filename,
+        content: result.content,
+        completed: ++i,
+        total: components.length,
         step: ctx.state().analyze?.step ?? 0,
-      });
-
-      return result;
+      };
+      ctx.dispatch(event);
+      return event;
     }),
-  )) {
-    Object.assign(files, result.files);
-  }
-
-  return { files, description: "" };
+  );
 }
 
 async function process<Model extends ILlmSchema.Model>(
@@ -173,7 +171,7 @@ interface IMakePrismaSchemaFilesProps {
    * - Schema-XX-domain.prisma: Domain-specific entity definitions
    * - Proper cross-file relationships and dependencies
    */
-  files: Record<string, string>;
+  content: string;
 
   /** Summary description of the application requirements and business context. */
   description: string;

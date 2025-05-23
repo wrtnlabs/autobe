@@ -2,6 +2,7 @@ import {
   AutoBeAssistantMessageHistory,
   AutoBePrismaHistory,
 } from "@autobe/interface";
+import { AutoBePrismaSchemasEvent } from "@autobe/interface/src/events/AutoBePrismaSchemasEvent";
 import { ILlmSchema } from "@samchon/openapi";
 import { v4 } from "uuid";
 
@@ -28,27 +29,19 @@ export const orchestratePrisma =
     } else ctx.dispatch(components);
 
     // SCHEMAS
-    const { files } = await orchestratePrismaSchemas(
+    const events: AutoBePrismaSchemasEvent[] = await orchestratePrismaSchemas(
       ctx,
       components.components,
     );
 
     // COMPILER
+    const files: Record<string, string> = Object.fromEntries(
+      events.map((e) => [e.filename, e.content]),
+    );
     const { description, ...compiledResult } = await orchestratePrismaCompiler(
       ctx,
       files,
     );
-
-    if (compiledResult.type === "failure") {
-      ctx.dispatch({
-        type: "prismaValidate",
-        schemas: files,
-        result: compiledResult,
-        step: ctx.state().analyze?.step ?? 0,
-        created_at: new Date().toISOString(),
-      });
-    }
-
     const result: AutoBePrismaHistory = {
       type: "prisma",
       id: v4(),
@@ -59,7 +52,16 @@ export const orchestratePrisma =
       result: compiledResult,
       step: ctx.state().analyze?.step ?? 0,
     };
-
+    ctx.histories().push(result);
+    if (compiledResult.type === "success")
+      ctx.dispatch({
+        type: "prismaComplete",
+        schemas: files,
+        document: compiledResult.document,
+        diagrams: compiledResult.diagrams,
+        step: ctx.state().analyze?.step ?? 0,
+        created_at: new Date().toISOString(),
+      });
     return result;
   };
 

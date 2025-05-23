@@ -2,6 +2,9 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
 
 export interface AutoBePrismaSchemasEvent
   extends AutoBeEventBase<"prismaSchemas"> {
-  files: Record<string, string>;
+  filename: string;
+  content: string;
+  completed: number;
+  total: number;
   step: number;
 }

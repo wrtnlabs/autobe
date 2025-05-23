@@ -72,8 +72,11 @@ export namespace IAutoBeEventJson {
     step: number;
   }
   export interface IPrismaSchemas extends IBase<"prismaSchemas"> {
-    files: Record<string, string>;
+    filename: string;
+    content: string;
     step: number;
+    completed: number;
+    total: number;
   }
 
   export interface IPrismaComplete extends IBase<"prismaComplete"> {
