@@ -5,6 +5,8 @@ import {
   AutoBePrismaHistory,
   AutoBePrismaValidateEvent,
 } from "@autobe/interface";
+import { AutoBePrismaComponentsEvent } from "@autobe/interface/src/events/AutoBePrismaComponentsEvent";
+import { AutoBePrismaSchemasEvent } from "@autobe/interface/src/events/AutoBePrismaSchemasEvent";
 
 import { TestGlobal } from "../../../TestGlobal";
 import { prepare_agent_prisma } from "./prepare_agent_prisma";
@@ -16,6 +18,16 @@ export const validate_agent_prisma = async (owner: string, project: string) => {
   const validates: AutoBePrismaValidateEvent[] = [];
   agent.on("prismaValidate", (event) => {
     validates.push(event);
+  });
+
+  const components: AutoBePrismaComponentsEvent[] = [];
+  agent.on("prismaComponents", (event) => {
+    components.push(event);
+  });
+
+  const schemas: AutoBePrismaSchemasEvent[] = [];
+  agent.on("prismaSchemas", (event) => {
+    schemas.push(event);
   });
 
   let result: AutoBePrismaHistory | AutoBeAssistantMessageHistory =
@@ -39,6 +51,8 @@ export const validate_agent_prisma = async (owner: string, project: string) => {
       "logs/validates.json": JSON.stringify(validates, null, 2),
       "logs/result.json": JSON.stringify(result, null, 2),
       "logs/tokenUsage.json": JSON.stringify(agent.getTokenUsage(), null, 2),
+      "logs/components.json": JSON.stringify(components, null, 2),
+      "logs/schemas.json": JSON.stringify(schemas, null, 2),
     },
   });
 };
