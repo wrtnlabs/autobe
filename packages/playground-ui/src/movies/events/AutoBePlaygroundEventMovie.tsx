@@ -1,11 +1,11 @@
 import { AutoBeEvent } from "@autobe/interface";
 
-import { AutoBePlaygroundValidateEventMovie } from "./AutoBePlaygrounValidateEventMovie";
 import { AutoBePlaygroundAssistantMessageEventMovie } from "./AutoBePlaygroundAssistantMessageEventMovie";
 import { AutoBePlaygroundCompleteEventMovie } from "./AutoBePlaygroundCompleteEventMovie";
 import { AutoBePlaygroundProgressEventMovie } from "./AutoBePlaygroundProgressEventMovie";
 import { AutoBePlaygroundStartEventMovie } from "./AutoBePlaygroundStartEventMovie";
 import { AutoBePlaygroundUserMessageEventMovie } from "./AutoBePlaygroundUserMessageEventMovie";
+import { AutoBePlaygroundValidateEventMovie } from "./AutoBePlaygroundValidateEventMovie";
 
 export function AutoBePlaygroundEventMovie(
   props: AutoBePlaygroundEventMovie.IProps,
