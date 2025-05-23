@@ -35,7 +35,7 @@ export function AutoBePlaygroundValidateEventMovie(
         ></Chip>
         <br />
         <br />
-        AI wrote invalid Prisma schema, so compilation error occured.
+        AI wrote invalid Prisma schema, so compilation error occurred.
         <br />
         <br />
         Trying to recover the compile error by studying the AI agent.
