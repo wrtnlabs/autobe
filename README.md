@@ -8,6 +8,9 @@
 [![Build Status](https://github.com/wrtnlabs/autobe/workflows/build/badge.svg)](https://github.com/wrtnlabs/autobe/actions?query=workflow%3Abuild)
 [![Discord Badge](https://dcbadge.limes.pink/api/server/https://discord.gg/aMhRmzkqCx?style=flat)](https://discord.gg/aMhRmzkqCx)
 
+[![Fund Raising News](https://wrtnlabs.io/agentica/images/badges/fund-raising-news-202503.svg)](https://www.bloomberg.com/news/videos/2025-03-31/wtrn-on-series-b-funding-growth-strategy-video)
+[![One Mission](https://wrtnlabs.io/agentica/images/badges/open-source-mission.svg)](https://github.com/wrtnlabs)
+
 Vibe coding agent of backend server, enhanced by Compiler Feedback and OpenAPI Validator.
 
 `@autobe` is an AI agent of vibe coding that analyzes user requirements and automatically generates backend server code of below stack. And if you combine `@autobe` with [`@agentica`](https://github.com/wrtnlabs/agentica) and [`@autoview`](https://github.com/wrtnlabs/autoview), you can automate not only backend development, but also AI chatbot and frontend application developments.
