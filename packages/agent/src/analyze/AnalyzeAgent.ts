@@ -20,18 +20,17 @@ export class AnalyzeAgent<Model extends ILlmSchema.Model> {
   constructor(
     private readonly createReviewerAgentFn: typeof createReviewerAgent,
     private readonly ctx: AutoBeContext<Model>,
+    private readonly pointer: IPointer<{
+      files: Record<Filename, FileContent>;
+    } | null>,
   ) {
     assertSchemaModel(ctx.model);
-
-    const pointer: IPointer<{ files: Record<Filename, FileContent> } | null> = {
-      value: null,
-    };
 
     const controller = createController<Model>({
       model: ctx.model,
       execute: new Planning(this.fileMap),
       build: async (files: Record<Filename, FileContent>) => {
-        pointer.value = { files };
+        this.pointer.value = { files };
       },
     });
     this.agent = new MicroAgentica({
