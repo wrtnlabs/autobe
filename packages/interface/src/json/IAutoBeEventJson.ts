@@ -10,6 +10,8 @@ export type IAutoBeEventJson =
   | IAutoBeEventJson.IAnalyzeStart
   | IAutoBeEventJson.IAnalyzeComplete
   | IAutoBeEventJson.IPrismaStart
+  | IAutoBeEventJson.IPrismaComponents
+  | IAutoBeEventJson.IPrismaSchemas
   | IAutoBeEventJson.IPrismaComplete
   | IAutoBeEventJson.IPrismaValidate
   | IAutoBeEventJson.IInterfaceStart
@@ -29,6 +31,8 @@ export namespace IAutoBeEventJson {
     analyzeStart: IAnalyzeStart;
     analyzeComplete: IAnalyzeComplete;
     prismaStart: IPrismaStart;
+    prismaComponents: IPrismaComponents;
+    prismaSchemas: IPrismaSchemas;
     prismaComplete: IPrismaComplete;
     prismaValidate: IPrismaValidate;
     interfaceStart: IInterfaceStart;
@@ -62,6 +66,16 @@ export namespace IAutoBeEventJson {
     reason: string;
     step: number;
   }
+
+  export interface IPrismaComponents extends IBase<"prismaComponents"> {
+    components: { filename: string; tables: string[] }[];
+    step: number;
+  }
+  export interface IPrismaSchemas extends IBase<"prismaSchemas"> {
+    files: Record<string, string>;
+    step: number;
+  }
+
   export interface IPrismaComplete extends IBase<"prismaComplete"> {
     schemas: Record<string, string>;
     diagrams: Record<string, string>;
