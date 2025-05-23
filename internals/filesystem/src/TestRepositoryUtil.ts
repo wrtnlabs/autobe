@@ -23,10 +23,13 @@ export namespace TestRepositoryUtil {
     project: string,
   ): Promise<Record<string, string>> => {
     await fork.get(account, project);
-    return FileSystemIterator.read({
+    const result: Record<string, string> = await FileSystemIterator.read({
       root: `${ROOT}/assets/repositories/${account}/${project}/prisma/schema`,
       extension: "prisma",
     });
+    for (const [key, value] of Object.entries(result))
+      result[key] = value.replaceAll("@author Samchon", "@author AutoBE");
+    return result;
   };
 
   export const src = async (

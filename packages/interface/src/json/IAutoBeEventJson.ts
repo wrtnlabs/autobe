@@ -109,6 +109,7 @@ export namespace IAutoBeEventJson {
   }
   export interface ITestComplete extends IBase<"testComplete"> {
     files: Record<string, string>;
+    step: number;
   }
 
   export interface IRealizeStart extends IBase<"realizeStart"> {

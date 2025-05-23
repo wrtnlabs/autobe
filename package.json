@@ -9,13 +9,14 @@
     "package:latest": "pnpm --filter=./packages/** -r publish --tag latest",
     "package:next": "pnpm --filter=./packages/** -r publish --tag next",
     "release": "bumpp",
-    "test": "cd test && pnpm start"
+    "playground": "node playground/index.js"
   },
   "keywords": [],
   "author": "Wrtn Technologies",
   "license": "MIT",
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
+    "@types/node": "^22.15.21",
     "bumpp": "^10.1.1",
     "prettier": "^3.5.3",
     "prettier-plugin-jsdoc": "^1.3.2"
