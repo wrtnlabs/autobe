@@ -6,7 +6,6 @@ import {
   AutoBeUserMessageHistory,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
-import { sleep_for } from "tstl";
 import { v4 } from "uuid";
 
 import { AutoBeContext } from "./context/AutoBeContext";
@@ -151,10 +150,9 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
       created_at: new Date().toISOString(),
     };
     this.histories_.push(userMessageHistory);
-    await this.dispatch(userMessageHistory);
+    this.dispatch(userMessageHistory).catch(() => {});
 
     await this.agentica_.conversate(content);
-    // No fixed delay; relying on explicit awaits ensures reliable completion of asynchronous operations.
     return this.histories_.slice(index);
   }
 
