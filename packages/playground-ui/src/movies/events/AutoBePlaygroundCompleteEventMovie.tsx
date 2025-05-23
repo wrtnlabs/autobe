@@ -26,7 +26,7 @@ export function AutoBePlaygroundCompleteEventMovie(
           icon={<GradingIcon />}
           label={title + " Completed"}
           variant="outlined"
-          color="warning"
+          color="success"
         ></Chip>
         <br />
         <br />

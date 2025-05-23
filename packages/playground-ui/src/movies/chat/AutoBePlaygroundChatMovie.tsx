@@ -4,12 +4,14 @@ import {
   IAutoBeRpcService,
   IAutoBeTokenUsageJson,
 } from "@autobe/interface";
+import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import SendIcon from "@mui/icons-material/Send";
 import {
   AppBar,
   Button,
   Container,
   Drawer,
+  IconButton,
   Input,
   Theme,
   Toolbar,
@@ -67,14 +69,11 @@ export function AutoBePlaygroundChatMovie(
         upperDivRef.current === null ||
         middleDivRef.current === null ||
         bottomDivRef.current === null
-      ) {
+      )
         return;
-      }
       const newHeight: number =
         upperDivRef.current.clientHeight + bottomDivRef.current.clientHeight;
-      if (newHeight !== height) {
-        setHeight(newHeight);
-      }
+      if (newHeight !== height) setHeight(newHeight);
     });
   };
 
@@ -88,9 +87,7 @@ export function AutoBePlaygroundChatMovie(
       if (error instanceof Error) {
         alert(error.message);
         setError(error);
-      } else {
-        setError(new Error("Unknown error"));
-      }
+      } else setError(new Error("Unknown error"));
       return;
     }
     setTokenUsage(await props.service.getTokenUsage());
@@ -100,8 +97,11 @@ export function AutoBePlaygroundChatMovie(
   useEffect(() => {
     props.listener.on(async (e) => {
       setEvents([...events, e]);
-      setTokenUsage(await props.service.getTokenUsage());
     });
+    props.service
+      .getTokenUsage()
+      .then(setTokenUsage)
+      .catch(() => {});
   }, []);
 
   //----
@@ -156,6 +156,7 @@ export function AutoBePlaygroundChatMovie(
       </Container>
     </div>
   );
+  console.log("isMobile", isMobile);
   return (
     <>
       <AppBar position="relative" component="div">
@@ -163,6 +164,13 @@ export function AutoBePlaygroundChatMovie(
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             AutoBE Playground
           </Typography>
+          {isMobile ? (
+            <>
+              <IconButton onClick={() => setOpenSide(true)}>
+                <ReceiptLongIcon />
+              </IconButton>
+            </>
+          ) : null}
         </Toolbar>
       </AppBar>
       <div

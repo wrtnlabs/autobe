@@ -24,9 +24,9 @@ export function AutoBePlaygroundStartEventMovie(
       <CardContent>
         <Chip
           icon={<StartIcon />}
-          label={title + " Completed"}
+          label={<>{title + " Started"}</>}
           variant="outlined"
-          color="warning"
+          color="info"
         ></Chip>
         <br />
         <br />
