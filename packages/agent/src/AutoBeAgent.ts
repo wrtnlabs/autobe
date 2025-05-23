@@ -151,10 +151,10 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
       created_at: new Date().toISOString(),
     };
     this.histories_.push(userMessageHistory);
-    this.dispatch(userMessageHistory).catch(() => {});
+    await this.dispatch(userMessageHistory);
 
     await this.agentica_.conversate(content);
-    await sleep_for(1);
+    // No fixed delay; relying on explicit awaits ensures reliable completion of asynchronous operations.
     return this.histories_.slice(index);
   }
 
