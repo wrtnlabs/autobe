@@ -1,8 +1,12 @@
 import { orchestrate } from "@autobe/agent";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
+  AutoBeAnalyzeCompleteEvent,
+  AutoBeAnalyzeStartEvent,
   AutoBeAssistantMessageHistory,
+  AutoBeEvent,
   AutoBeInterfaceHistory,
+  AutoBeUserMessageEvent,
 } from "@autobe/interface";
 
 import { TestGlobal } from "../../../TestGlobal";
@@ -14,7 +18,63 @@ export const validate_agent_interface_main = async (
 ) => {
   if (TestGlobal.env.CHATGPT_API_KEY === undefined) return false;
 
-  const { agent } = await prepare_agent_interface(owner, project);
+  // PREPARE AGENT
+  const { agent, analyze, prisma } = await prepare_agent_interface(
+    owner,
+    project,
+  );
+
+  // TRACE EVENTS
+  const events: AutoBeEvent[] = [
+    {
+      type: "userMessage",
+      contents: [
+        {
+          type: "text",
+          text: "Make shopping mall backend system",
+        },
+      ],
+      created_at: new Date().toISOString(),
+    } satisfies AutoBeUserMessageEvent,
+    {
+      type: "analyzeStart",
+      reason: "User requested to make shopping mall backend system",
+      step: 0,
+      created_at: new Date().toISOString(),
+    } satisfies AutoBeAnalyzeStartEvent,
+    {
+      type: "analyzeComplete",
+      files: analyze,
+      step: 0,
+      created_at: new Date().toISOString(),
+    } satisfies AutoBeAnalyzeCompleteEvent,
+    {
+      type: "prismaStart",
+      reason: "Start DB design after requirements analysis",
+      step: 0,
+      created_at: new Date().toISOString(),
+    },
+    {
+      type: "prismaComplete",
+      schemas: prisma.schemas,
+      document: prisma.document,
+      diagrams: prisma.diagrams,
+      step: 0,
+      created_at: new Date().toISOString(),
+    },
+  ];
+  const trace = (type: AutoBeEvent.Type) => {
+    agent.on(type, (evt) => {
+      events.push(evt);
+    });
+  };
+  trace("interfaceStart");
+  trace("interfaceEndpoints");
+  trace("interfaceOperations");
+  trace("interfaceComponents");
+  trace("interfaceComplete");
+
+  // REQUEST INTERFACE GENERATION
   let result: AutoBeInterfaceHistory | AutoBeAssistantMessageHistory =
     await orchestrate.interface(agent.getContext())({
       reason: "Step to the interface designing after DB schema generation",
@@ -34,6 +94,7 @@ export const validate_agent_interface_main = async (
       ...agent.getFiles(),
       "logs/result.json": JSON.stringify(result, null, 2),
       "logs/tokenUsage.json": JSON.stringify(agent.getTokenUsage(), null, 2),
+      "logs/events.json": JSON.stringify(events, null, 2),
     },
   });
 };

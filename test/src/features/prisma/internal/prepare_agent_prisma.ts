@@ -65,7 +65,7 @@ export const prepare_agent_prisma = async (owner: string, project: string) => {
 
 const createHistoryProperties = () => ({
   id: v4(),
-  started_at: new Date().toISOString(),
+  created_at: new Date().toISOString(),
   completed_at: new Date().toISOString(),
   step: 1,
 });

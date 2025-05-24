@@ -1,8 +1,18 @@
-import { IAgenticaController, MicroAgentica } from "@agentica/core";
-import { AutoBeOpenApi } from "@autobe/interface";
+import {
+  AgenticaAssistantMessageHistory,
+  IAgenticaController,
+  MicroAgentica,
+  MicroAgenticaHistory,
+} from "@agentica/core";
+import {
+  AutoBeAssistantMessageHistory,
+  AutoBeInterfaceEndpointsEvent,
+  AutoBeOpenApi,
+} from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { HashSet, IPointer } from "tstl";
 import typia from "typia";
+import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
@@ -12,7 +22,11 @@ import { transformInterfaceHistories } from "./transformInterfaceHistories";
 
 export async function orchestrateInterfaceEndpoints<
   Model extends ILlmSchema.Model,
->(ctx: AutoBeContext<Model>): Promise<AutoBeOpenApi.IEndpoint[]> {
+>(
+  ctx: AutoBeContext<Model>,
+  content: string = "Make API endpoints for the given assets.",
+): Promise<AutoBeInterfaceEndpointsEvent | AutoBeAssistantMessageHistory> {
+  const start: Date = new Date();
   const pointer: IPointer<AutoBeOpenApi.IEndpoint[] | null> = {
     value: null,
   };
@@ -24,11 +38,11 @@ export async function orchestrateInterfaceEndpoints<
       executor: {
         describe: null,
       },
-      systemPrompt: {
-        common: () => AutoBeSystemPromptConstant.INTERFACE_ENDPOINT,
-      },
     },
-    histories: transformInterfaceHistories(ctx.state()),
+    histories: transformInterfaceHistories(
+      ctx.state(),
+      AutoBeSystemPromptConstant.INTERFACE_ENDPOINT,
+    ),
     tokenUsage: ctx.usage(),
     controllers: [
       createApplication({
@@ -39,17 +53,28 @@ export async function orchestrateInterfaceEndpoints<
       }),
     ],
   });
-  agentica.on("request", async (event) => {
-    event.body.tool_choice = "required";
-  });
 
-  await agentica.conversate("Make API endpoints for the given assets.");
-  if (pointer.value === null) throw new Error("Failed to create endpoints."); // never be happened
-  return new HashSet(
-    pointer.value,
-    OpenApiEndpointComparator.hashCode,
-    OpenApiEndpointComparator.equals,
-  ).toJSON();
+  const histories: MicroAgenticaHistory<Model>[] =
+    await agentica.conversate(content);
+  if (histories.at(-1)?.type === "assistantMessage")
+    return {
+      ...(histories.at(-1)! as AgenticaAssistantMessageHistory),
+      created_at: start.toISOString(),
+      completed_at: new Date().toISOString(),
+      id: v4(),
+    } satisfies AutoBeAssistantMessageHistory;
+  else if (pointer.value === null)
+    throw new Error("Failed to generate endpoints."); // unreachable
+  return {
+    type: "interfaceEndpoints",
+    endpoints: new HashSet(
+      pointer.value,
+      OpenApiEndpointComparator.hashCode,
+      OpenApiEndpointComparator.equals,
+    ).toJSON(),
+    created_at: start.toISOString(),
+    step: ctx.state().analyze?.step ?? 0,
+  } satisfies AutoBeInterfaceEndpointsEvent;
 }
 
 function createApplication<Model extends ILlmSchema.Model>(props: {

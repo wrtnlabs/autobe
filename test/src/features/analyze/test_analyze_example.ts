@@ -17,6 +17,19 @@ export const test_analyze_example = async () => {
 
   return await orchestrate.analyze({
     ...agent.getContext(),
+    histories: () => [
+      {
+        id: v4(),
+        type: "userMessage",
+        contents: [
+          {
+            type: "text",
+            text: "Hello, I wanna make an e-commerce program.",
+          },
+        ],
+        created_at: new Date().toISOString(),
+      } satisfies AutoBeUserMessageHistory,
+    ],
   })({
     reason: "The user requested the preparation of the plan.",
     userPlanningRequirements: `

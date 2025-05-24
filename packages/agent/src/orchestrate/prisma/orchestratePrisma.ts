@@ -1,179 +1,117 @@
 import {
-  AgenticaAssistantMessageHistory,
-  IAgenticaController,
-  MicroAgentica,
-  MicroAgenticaHistory,
-} from "@agentica/core";
-import {
   AutoBeAssistantMessageHistory,
   AutoBePrismaHistory,
   IAutoBePrismaCompilerResult,
 } from "@autobe/interface";
-import { ILlmApplication, ILlmController, ILlmSchema } from "@samchon/openapi";
-import { IPointer, Singleton } from "tstl";
-import typia from "typia";
+import { AutoBePrismaSchemasEvent } from "@autobe/interface/src/events/AutoBePrismaSchemasEvent";
+import { ILlmSchema } from "@samchon/openapi";
 import { v4 } from "uuid";
 
-import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
-import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { transformPrismaHistories } from "./transformPrismaHistories";
+import { orchestratePrismaCompiler } from "./orchestratePrismaCompiler";
+import { orchestratePrismaComponents } from "./orchestratePrismaComponent";
+import { orchestratePrismaSchemas } from "./orchestratePrismaSchema";
 
 export const orchestratePrisma =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
   async (
-    { reason }: IAutoBeApplicationProps,
-    retry: number = 3,
+    props: IAutoBeApplicationProps,
   ): Promise<AutoBePrismaHistory | AutoBeAssistantMessageHistory> => {
     const start: Date = new Date();
-    const pointer: IPointer<IMakePrismaSchemaFileProps | null> = {
-      value: null,
-    };
-    const agent: MicroAgentica<Model> = new MicroAgentica({
-      model: ctx.model,
-      vendor: ctx.vendor,
-      config: {
-        ...(ctx.config ?? {}),
-        executor: {
-          describe: null,
-        },
-        systemPrompt: {
-          common: () => AutoBeSystemPromptConstant.PRISMA,
-        },
-      },
-      histories: transformPrismaHistories(ctx.state()),
-      tokenUsage: ctx.usage(),
-      controllers: [
-        createApplication({
-          model: ctx.model,
-          build: (next) => {
-            pointer.value = next;
-          },
-        }),
-      ],
-    });
-    const histories: MicroAgenticaHistory<Model>[] = await agent.conversate(
-      "Please make Prisma schema files referencing the previous requirement analysis report.",
+
+    // COMPONENTS
+    const components = await orchestratePrismaComponents(ctx);
+
+    if (components.type === "assistantMessage") {
+      ctx.dispatch(components);
+      ctx.histories().push(components);
+      return components;
+    } else ctx.dispatch(components);
+
+    // SCHEMAS
+    const events: AutoBePrismaSchemasEvent[] = await orchestratePrismaSchemas(
+      ctx,
+      components.components,
     );
 
-    if (pointer.value !== null) {
-      let result: IAutoBePrismaCompilerResult;
-      const essential = new Singleton(() => {
-        agent.on("request", (event) => {
-          event.body.tool_choice = "required";
-        });
-      });
-      for (let i: number = 0; i < retry; ++i) {
-        result = await ctx.compiler.prisma({
-          files: pointer.value.files,
-        });
-        if (result.type !== "failure") break;
-        essential.get();
-        await agent.conversate(
-          [
-            "Previous generated prisma schema files are invalid.",
-            "",
-            "Please re-generate the prisma schema files, referencing the below compilation error message.",
-            "",
-            "--------------------------------------------",
-            "",
-            result.reason,
-          ].join("\n"),
-        );
-      }
-      const history: AutoBePrismaHistory = {
-        id: v4(),
-        type: "prisma",
-        reason,
-        result: result!,
-        description: pointer.value.description,
-        started_at: start.toISOString(),
-        completed_at: new Date().toISOString(),
+    // COMPILER
+    const files: Record<string, string> = Object.fromEntries(
+      events.map((e) => [e.filename, e.content]),
+    );
+
+    const { description, ...compiledResult } = await orchestratePrismaCompiler(
+      ctx,
+      files,
+    );
+
+    const result = processCompilerResult(compiledResult);
+
+    const history: AutoBePrismaHistory = {
+      type: "prisma",
+      id: v4(),
+      created_at: start.toISOString(),
+      completed_at: new Date().toISOString(),
+      reason: props.reason,
+      description,
+      result: result,
+      step: ctx.state().analyze?.step ?? 0,
+    };
+    ctx.histories().push(history);
+    ctx.state().prisma = history;
+    if (result.type === "success")
+      ctx.dispatch({
+        type: "prismaComplete",
+        schemas: result.schemas,
+        document: result.document,
+        diagrams: result.diagrams,
         step: ctx.state().analyze?.step ?? 0,
-      };
-      ctx.histories().push(history);
-      ctx.state().prisma = history;
-      return history;
-    } else if (histories.at(-1)?.type === "assistantMessage")
-      return {
-        ...(histories.at(-1) as AgenticaAssistantMessageHistory),
-        id: v4(),
-        started_at: start.toISOString(),
-        completed_at: new Date().toISOString(),
-      };
-    throw new Error("Unreachable code: no function call, no assistant message");
+        created_at: new Date().toISOString(),
+      });
+
+    return history;
   };
 
-function createApplication<Model extends ILlmSchema.Model>(props: {
-  model: Model;
-  build: (next: IMakePrismaSchemaFileProps) => void;
-}): IAgenticaController.IClass<Model> {
-  assertSchemaModel(props.model);
-  const application: ILlmApplication<Model> = collection[
-    props.model
-  ] as unknown as ILlmApplication<Model>;
-  return {
-    protocol: "class",
-    name: "Prisma Generator",
-    application,
-    execute: {
-      makePrismaSchemaFiles: (next) => {
-        props.build(next);
+/**
+ * Process the compiler result to generate the main Prisma schema file.
+ *
+ * If the compiler result is a success, the main Prisma schema file will be
+ * generated.
+ *
+ * @param result - The compiler result to process.
+ * @returns The processed compiler result with the main Prisma schema file.
+ */
+function processCompilerResult(
+  result: IAutoBePrismaCompilerResult,
+): IAutoBePrismaCompilerResult {
+  const content = `
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions", "views"]
+  binaryTargets   = ["native", "linux-musl-arm64-openssl-3.0.x"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = []
+}
+
+generator markdown {
+  provider = "prisma-markdown"
+  output   = "../docs/ERD.md"
+}  
+  `;
+
+  if (result.type === "success") {
+    return {
+      ...result,
+      schemas: {
+        ...result.schemas,
+        "main.prisma": content,
       },
-    } satisfies IApplication,
-  };
-}
+    };
+  }
 
-const claude = typia.llm.application<
-  IApplication,
-  "claude",
-  { reference: true }
->();
-const collection = {
-  chatgpt: typia.llm.application<
-    IApplication,
-    "chatgpt",
-    { reference: true }
-  >(),
-  claude,
-  llama: claude,
-  deepseek: claude,
-  "3.1": claude,
-  "3.0": typia.llm.application<IApplication, "3.0">(),
-};
-
-interface IApplication {
-  /**
-   * Generates comprehensive Prisma schema files based on detailed requirements
-   * analysis.
-   *
-   * Creates multiple organized schema files following enterprise patterns
-   * including proper domain separation, relationship modeling, snapshot
-   * patterns, inheritance, materialized views, and comprehensive documentation.
-   * The generated schemas implement best practices for scalability,
-   * maintainability, and data integrity.
-   *
-   * @param props Properties containing the complete set of Prisma schema files
-   */
-  makePrismaSchemaFiles(props: IMakePrismaSchemaFileProps): void;
-}
-
-interface IMakePrismaSchemaFileProps {
-  /**
-   * Collection of Prisma schema files organized by domain/functionality.
-   *
-   * Key represents the filename (e.g., "main.prisma", "schema-01-core.prisma",
-   * "schema-02-users.prisma") and value contains the complete schema content
-   * including models, relationships, indexes, and comprehensive documentation.
-   *
-   * Files should be organized following enterprise patterns:
-   *
-   * - Main.prisma: Configuration, datasource, and generators
-   * - Schema-XX-domain.prisma: Domain-specific entity definitions
-   * - Proper cross-file relationships and dependencies
-   */
-  files: Record<string, string>;
-
-  description: string;
+  return result;
 }

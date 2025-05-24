@@ -1,7 +1,7 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import { AutoBeOpenApi } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
-import { HashMap, HashSet, IPointer, hash } from "tstl";
+import { HashMap, HashSet, IPointer } from "tstl";
 import typia from "typia";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
@@ -22,14 +22,27 @@ export async function orchestrateInterfaceOperations<
     array: endpoints,
     capacity,
   });
-  let progress: number = 0;
+  let completed: number = 0;
   const operations: AutoBeOpenApi.IOperation[][] = await Promise.all(
-    matrix.map((it) =>
-      divideAndConquer(ctx, it, 3, (count) => {
-        progress += count;
-        // console.log(`Progress: ${progress} / ${endpoints.length}`);
-      }),
-    ),
+    matrix.map(async (it) => {
+      const row: AutoBeOpenApi.IOperation[] = await divideAndConquer(
+        ctx,
+        it,
+        3,
+        (count) => {
+          completed += count;
+        },
+      );
+      ctx.dispatch({
+        type: "interfaceOperations",
+        operations: row,
+        completed,
+        total: endpoints.length,
+        step: ctx.state().analyze?.step ?? 0,
+        created_at: new Date().toISOString(),
+      });
+      return row;
+    }),
   );
   return operations.flat();
 }
@@ -82,15 +95,11 @@ async function process<Model extends ILlmSchema.Model>(
       executor: {
         describe: null,
       },
-      systemPrompt: {
-        common: () =>
-          AutoBeSystemPromptConstant.INTERFACE_ENDPOINT.replace(
-            "{% ENDPOINTS %}",
-            JSON.stringify(endpoints, null, 2),
-          ),
-      },
     },
-    histories: transformInterfaceHistories(ctx.state()),
+    histories: transformInterfaceHistories(
+      ctx.state(),
+      AutoBeSystemPromptConstant.INTERFACE_ENDPOINT,
+    ),
     tokenUsage: ctx.usage(),
     controllers: [
       createApplication({

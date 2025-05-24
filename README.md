@@ -1,5 +1,7 @@
 ## AutoBE, Vibe Coding Agent of Backend Server
 
+<div style="text-align: center">
+
 ![AutoBE Logo](https://github.com/user-attachments/assets/a90d14be-fd50-4dc7-ae9d-ca66c2124f31)
 
 [![GitHub License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/wrtnlabs/autobe/blob/master/LICENSE)
@@ -7,6 +9,12 @@
 [![NPM Downloads](https://img.shields.io/npm/dm/@autobe/agent.svg)](https://www.npmjs.com/package/@autobe/agent)
 [![Build Status](https://github.com/wrtnlabs/autobe/workflows/build/badge.svg)](https://github.com/wrtnlabs/autobe/actions?query=workflow%3Abuild)
 [![Discord Badge](https://dcbadge.limes.pink/api/server/https://discord.gg/aMhRmzkqCx?style=flat)](https://discord.gg/aMhRmzkqCx)
+
+[![Fund Raising News](https://wrtnlabs.io/agentica/images/badges/fund-raising-news-202503.svg)](https://www.bloomberg.com/news/videos/2025-03-31/wtrn-on-series-b-funding-growth-strategy-video)
+<span>&nbsp;</span>
+[![One Mission](https://wrtnlabs.io/agentica/images/badges/open-source-mission.svg)](https://github.com/wrtnlabs)
+
+</div>
 
 Vibe coding agent of backend server, enhanced by Compiler Feedback and OpenAPI Validator.
 
@@ -407,9 +415,9 @@ gantt
   title Pre-Release Roadmap Schedule
 
   section Interface
-  Facade Controller: done,   2025-04-30, 18d
-  Event Handlers:    active, 2025-05-18, 14d
-  Data Structures:   done,   2025-05-18, 28d
+  Facade Controller: done, 2025-04-30, 18d
+  Event Handlers:    done, 2025-05-18, 14d
+  Data Structures:   done, 2025-05-18, 28d
 
   section Compilers
   Backend Compiler:     done, 2025-04-30, 32d
@@ -422,11 +430,17 @@ gantt
   Interface: done,    2025-05-18, 28d
   Test     : planned, 2025-06-01, 28d
   Realize  : planned, 2025-06-01, 28d
+  Facade   : done,    2025-05-18, 18d
 
   section Test Program
   Compilers: done,    2025-04-30, 46d
-  Prompts:   active,  2025-04-30, 46d
+  Prompts:   done,    2025-04-30, 46d
   Benchmark: planned, 2025-06-01, 28d
+
+  section Playground Website
+  websocket: done, 2025-05-18, 14d
+  backend  : done, 2025-06-01, 14d
+  frontend : done, 2025-06-08, 14d
 ```
 
 We are committed to delivering the best possible `@autobe` experience and have confirmed that all functional agents are operating correctly. Prior to our v1.0 official release, we plan to conduct two pre-release phases as outlined below.

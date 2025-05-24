@@ -1,5 +1,7 @@
 import {
   AutoBeAssistantMessageHistory,
+  AutoBeInterfaceCompleteEvent,
+  AutoBeInterfaceEndpointsEvent,
   AutoBeInterfaceHistory,
   AutoBeOpenApi,
 } from "@autobe/interface";
@@ -17,14 +19,25 @@ export const orchestrateInterface =
   async (
     props: IAutoBeApplicationProps,
   ): Promise<AutoBeAssistantMessageHistory | AutoBeInterfaceHistory> => {
+    // ENDPOINTS
     const start: Date = new Date();
-    const endpoints: AutoBeOpenApi.IEndpoint[] =
+    const init: AutoBeAssistantMessageHistory | AutoBeInterfaceEndpointsEvent =
       await orchestrateInterfaceEndpoints(ctx);
+    if (init.type === "assistantMessage") {
+      ctx.dispatch(init);
+      ctx.histories().push(init);
+      return init;
+    } else ctx.dispatch(init);
+
+    // OPERATIONS
     const operations: AutoBeOpenApi.IOperation[] =
-      await orchestrateInterfaceOperations(ctx, endpoints);
+      await orchestrateInterfaceOperations(ctx, init.endpoints);
+
+    // COMPONENTS
     const components: AutoBeOpenApi.IComponents =
       await orchestrateInterfaceComponents(ctx, operations);
 
+    // TYPESCRIPT CODE GENERATION
     const document: AutoBeOpenApi.IDocument = {
       operations,
       components,
@@ -36,10 +49,18 @@ export const orchestrateInterface =
       files: await ctx.compiler.interface(document),
       reason: props.reason,
       step: ctx.state().analyze?.step ?? 0,
-      started_at: start.toISOString(),
+      created_at: start.toISOString(),
       completed_at: new Date().toISOString(),
     };
     ctx.histories().push(result);
     ctx.state().interface = result;
+    ctx.dispatch({
+      type: "interfaceComplete",
+      files: result.files,
+      document: result.document,
+      created_at: start.toISOString(),
+      reason: props.reason,
+      step: ctx.state().analyze?.step ?? 0,
+    } satisfies AutoBeInterfaceCompleteEvent);
     return result;
   };

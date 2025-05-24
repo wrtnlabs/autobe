@@ -38,12 +38,26 @@ export async function orchestrateInterfaceComponents<
     schemas: {},
   };
   for (const y of await Promise.all(
-    matrix.map((it) =>
-      divideAndConquer(ctx, operations, it, 3, (count) => {
-        progress += count;
-        // console.log(`Progress: ${progress} / ${typeNames.size}`);
-      }),
-    ),
+    matrix.map(async (it) => {
+      const row: AutoBeOpenApi.IComponents = await divideAndConquer(
+        ctx,
+        operations,
+        it,
+        3,
+        (count) => {
+          progress += count;
+        },
+      );
+      ctx.dispatch({
+        type: "interfaceComponents",
+        components: row,
+        completed: progress,
+        total: typeNames.size,
+        step: ctx.state().analyze?.step ?? 0,
+        created_at: new Date().toISOString(),
+      });
+      return row;
+    }),
   )) {
     Object.assign(x.schemas, y.schemas);
     if (y.authorization) x.authorization = y.authorization;
@@ -97,12 +111,12 @@ async function process<Model extends ILlmSchema.Model>(
       executor: {
         describe: null,
       },
-      systemPrompt: {
-        common: () => AutoBeSystemPromptConstant.INTERFACE_SCHEMA,
-      },
     },
     histories: [
-      ...transformInterfaceHistories(ctx.state()),
+      ...transformInterfaceHistories(
+        ctx.state(),
+        AutoBeSystemPromptConstant.INTERFACE_SCHEMA,
+      ),
       {
         type: "assistantMessage",
         text: [
@@ -130,7 +144,7 @@ async function process<Model extends ILlmSchema.Model>(
   });
 
   const already: string[] = Object.keys(oldbie.schemas);
-  const histories = await agentica.conversate(
+  await agentica.conversate(
     [
       "Make type components please.",
       "",

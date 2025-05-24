@@ -1,3 +1,5 @@
+import { tags } from "typia";
+
 import { AutoBeAgentHistoryBase } from "./AutoBeHistoryBase";
 
 export interface AutoBeAnalyzeHistory
@@ -6,4 +8,5 @@ export interface AutoBeAnalyzeHistory
   description: string;
   step: number;
   files: Record<string, string>;
+  completed_at: string & tags.Format<"date-time">;
 }

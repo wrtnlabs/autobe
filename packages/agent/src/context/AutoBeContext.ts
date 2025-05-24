@@ -1,4 +1,4 @@
-import { AutoBeHistory, IAutoBeCompiler } from "@autobe/interface";
+import { AutoBeEvent, AutoBeHistory, IAutoBeCompiler } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 
 import { IAutoBeConfig } from "../structures/IAutoBeConfig";
@@ -15,4 +15,5 @@ export interface AutoBeContext<Model extends ILlmSchema.Model> {
   histories: () => AutoBeHistory[];
   state: () => AutoBeState;
   usage: () => AutoBeTokenUsage;
+  dispatch: (event: AutoBeEvent) => void;
 }

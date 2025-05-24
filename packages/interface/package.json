@@ -4,7 +4,8 @@
   "description": "AI backend server code generator",
   "main": "src/index.ts",
   "scripts": {
-    "build": "rimraf lib && tsc"
+    "build": "rimraf lib && tsc",
+    "prepack": "pnpm run build"
   },
   "keywords": [],
   "author": "Wrtn Technologies",
