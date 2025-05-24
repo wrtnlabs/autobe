@@ -26,6 +26,8 @@
     "@rollup/plugin-json": "^6.1.0",
     "@prisma/internals": "^6.7.0",
     "@samchon/openapi": "catalog:samchon",
+    "@types/node": "^22.15.18",
+    "chalk": "4.1.2",
     "openai": "catalog:libs",
     "tstl": "catalog:samchon",
     "typia": "catalog:samchon",

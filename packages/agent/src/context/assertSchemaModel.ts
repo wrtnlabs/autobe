@@ -2,7 +2,7 @@ import { ILlmSchema } from "@samchon/openapi";
 
 export function assertSchemaModel<Model extends ILlmSchema.Model>(
   model: Model,
-): asserts model is Exclude<Model, "gemini"> {
+): asserts model is Exclude<Model, "gemini" | "3.0"> {
   if (model === "gemini")
     throw new Error(
       [
