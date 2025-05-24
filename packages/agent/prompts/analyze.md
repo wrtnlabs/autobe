@@ -42,7 +42,7 @@ Documents and descriptions should be tailored to the language of the user.
 
 Please refer to the document below. The document below has a total of 1,500 characters and should be longer.
 
-# Example Documetation
+# Example Documentation
 {% Example Documentation %}
 
 # Abort
