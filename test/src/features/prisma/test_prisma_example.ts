@@ -33,7 +33,7 @@ export const test_prisma_example = async () => {
           files,
           reason: "",
           description: "",
-          started_at: new Date().toISOString(),
+          created_at: new Date().toISOString(),
           completed_at: new Date().toISOString(),
           step: 0,
         } satisfies AutoBeAnalyzeHistory,
