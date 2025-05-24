@@ -64,7 +64,7 @@ export class Planning implements IPlanning {
     delete this.fileMap[input.filename];
   }
 
-  abort(input: { reason: string }): "OK" {
+  abort(_input: { reason: string }): "OK" {
     return "OK";
   }
 

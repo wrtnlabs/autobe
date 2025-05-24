@@ -1,6 +1,8 @@
 import { AutoBeAgent, orchestrate } from "@autobe/agent";
 import { AutoBeCompiler } from "@autobe/compiler";
+import { AutoBeUserMessageHistory } from "@autobe/interface";
 import OpenAI from "openai";
+import { v4 } from "uuid";
 
 import { TestGlobal } from "../../TestGlobal";
 
