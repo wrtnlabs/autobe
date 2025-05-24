@@ -58,6 +58,8 @@ export const createReviewerAgent = <Model extends ILlmSchema.Model>(
             "It is recommended to ask the planner to write a longer document (more than 1,000 letters) until it gives sufficient utility value.",
             "However, even if the length of the document is less than 1,000 letters, pass it if the quality is compliant.",
             "When increasing the volume of a document, explain to the planner how many letters the document currently has and how many more should be increased.",
+            "Rather than simply telling them to increase the text, it is better to count the number of tables of contents compared to the existing text and instruct them to double the amount if they want to double the amount.",
+            "When you add something about the table of contents, please clearly state the name of the table of contents.",
             "",
             "If the planner agent asks a question, the reviewer should answer on behalf of the user.",
             "Please do not ask any questions.",
@@ -84,7 +86,12 @@ export const createReviewerAgent = <Model extends ILlmSchema.Model>(
             "",
             `These are all the links that are currently referenced in the markdown. Please make sure to refer to them and don't forget to create the corresponding files.`,
             `<Linked Files>`,
-            markdownFiles.map((filename) => `- ${filename}`),
+            markdownFiles.map((filename) => {
+              const isChecked = Object.keys(input.currentFiles).includes(
+                filename,
+              );
+              return `- [${isChecked}] ${filename}`;
+            }),
             `</Linked Files>`,
             "",
             "Write a long document, but keep your answer short.",
