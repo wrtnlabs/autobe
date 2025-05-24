@@ -1,4 +1,4 @@
-## AutoBE, Vibe Coding Agent of Backend Application
+## AutoBE, Vibe Coding Agent for Backend Applications
 
 <div style="text-align: center">
 
@@ -16,17 +16,17 @@
 
 </div>
 
-Backend Vibe Coding Agent, enhanced by Compiler and Validation Feedbacks.
+Backend Vibe Coding Agent, enhanced by Compiler and Validation Feedback.
 
-`@autobe` is an AI agent of vibe coding that analyzes user requirements and automatically generates backend application of below stack. Also, as `@autobe` has been enhanced by TypeScript/Prisma compilers and OpenAPI validator feedbacks, it delivers 100% working code.
+`@autobe` is an AI agent for vibe coding that analyzes user requirements and automatically generates backend applications with the stack below. Since `@autobe` has been enhanced by TypeScript/Prisma compilers and OpenAPI validator feedback, it delivers 100% working code.
 
 - TypeScript
 - NestJS
 - Prisma (Postgres)
 
-If you interact `@autobe` generated backend application with [`@agentica`](https://github.com/wrtnlabs/agentica) or [`@autoview`](https://github.com/wrtnlabs/autoview), you also can automate not only backend development, but also AI chatbot and frontend appliacation developments too.
+If you integrate the `@autobe` generated backend application with [`@agentica`](https://github.com/wrtnlabs/agentica) or [`@autoview`](https://github.com/wrtnlabs/autoview), you can also automate not only backend development, but also AI chatbot and frontend application development.
 
-As these [`@agentica`](https://github.com/wrtnlabs/agentica) and [`@autoview`](https://github.com/wrtnlabs/autoview) also perform the same strategy (compiler and validation feedbacks) with `@autobe`, they also guarantee the 100% working application too.
+Since both [`@agentica`](https://github.com/wrtnlabs/agentica) and [`@autoview`](https://github.com/wrtnlabs/autoview) use the same strategy (compiler and validation feedback) as `@autobe`, they also guarantee 100% working applications.
 
 - [`@agentica`](https://github.com/wrtnlabs/agentica): TypeScript AI function calling framework
 - [`@autoview`](https://github.com/wrtnlabs/autoview): AI frontend coding agent using type information
@@ -37,7 +37,7 @@ subgraph "Backend Coding Agent"
   coder("Facade Controller")
 end
 subgraph "Functional Agents"
-  coder --"Requirements Analyses"--> analyze("Analyze")
+  coder --"Requirements Analysis"--> analyze("Analyze")
   coder --"ERD"--> prisma("Prisma")
   coder --"API Design"--> interface("Interface")
   coder --"Test Codes" --> test("Test")
@@ -52,18 +52,18 @@ subgraph "Compiler Feedback"
 end
 ```
 
-`@autobe` is based on the waterfall model but incorporating spiral model's iterative improvement cycles, it produces high-quality code through continuous feedback between users and AI.
+`@autobe` is based on the waterfall model but incorporates the spiral model's iterative improvement cycles, producing high-quality code through continuous feedback between users and AI.
 
-The sprial process ensures not only well-structured code but also safe and reliable implementations verified by integrated TypeScript/Prisma compilers, OpenAPI validator, and automated test programs at each development stage.
+The spiral process ensures not only well-structured code but also safe and reliable implementations verified by integrated TypeScript/Prisma compilers, OpenAPI validator, and automated test programs at each development stage.
 
 Waterfall    | AutoBE   | Description
 -------------|----------|----------------
-Requirements | Analysis  | Users say AutoBE what they want, and AutoBE helps them discover their needs and make them concrete.
-Analysis     | Analysis  | Write requirement analysis report
-Design       | Prisma    | Write prisma schema (DB ORM) files, and validates them by embedded Prisma compiler. If succeeded, also makes [ERD documentation](https://github.com/samchon/prisma-markdown) for the next step.
-Design       | Interface | Write OpenAPI document, and validates the document by [OpenAPI validator](https://github.com/samchon/openapi). And then converts it to a NestJS project through [OpenAPI generator](https://nestia.io/docs/swagger/editor). The OpenAPI generator contains not only NestJS controllers, but also client side SDK and e2e test programs.
-Development  | Realize   | Write implementation code for each API endpoint starting from the `interface` agent generated, and validates them by embedded TypeScript compiler.
-Testing      | Test      | Write e2e test functions for each API endpoint starting from the `interface` agent generated, and validate them by embedded TypeScript compiler.
+Requirements | Analysis  | Users tell AutoBE what they want, and AutoBE helps them discover their needs and make them concrete.
+Analysis     | Analysis  | Write requirement analysis reports
+Design       | Prisma    | Write prisma schema (DB ORM) files, and validate them using the embedded Prisma compiler. If validation succeeds, also create [ERD documentation](https://github.com/samchon/prisma-markdown) for the next step.
+Design       | Interface | Write OpenAPI documents, and validate them using the [OpenAPI validator](https://github.com/samchon/openapi). Then convert them to a NestJS project through the [OpenAPI generator](https://nestia.io/docs/swagger/editor). The OpenAPI generator includes not only NestJS controllers, but also client-side SDKs and e2e test programs.
+Development  | Realize   | Write implementation code for each API endpoint starting from what the `interface` agent generated, and validate them using the embedded TypeScript compiler.
+Testing      | Test      | Write e2e test functions for each API endpoint starting from what the `interface` agent generated, and validate them using the embedded TypeScript compiler.
 Maintenance  | -         | Users can request AutoBE to modify the backend application. There are no restrictions on the scope of modification, so everything can be changed, including requirements, DB design, API specifications, and test code.
 
 ## Playground
@@ -72,16 +72,16 @@ Maintenance  | -         | Users can request AutoBE to modify the backend applic
 git clone https://github.com/wrtnlabs/autobe
 cd autobe
 pnpm install
-pnpm run playgroudn
+pnpm run playground
 ```
 
-We're preparing playground website, and it would be published at alpha version release (2025-06-01). Until that, please clone this `@autobe` repo, and run the playground application manually like above.
+We're preparing a playground website, and it will be published with the alpha version release (2025-06-01). Until then, please clone this `@autobe` repo and run the playground application manually as shown above.
 
 <!-- Coming soon... (beta release: 2025-06-01).
 
-Currently, playground only steps to the [interface step](#interface). -->
+Currently, the playground only steps through to the [interface step](#interface). -->
 
-If you directly want to see the `@autobe` generated backend application code, click one of below:
+If you want to directly see the `@autobe` generated backend application code, click one of the links below:
 
 - [BBS (Bullet-in Board System)](https://stackblitz.com/edit/autobe-demo-bbs?file=docs%2Fanalysis%2Findex.md,src%2Fapi%2Fstructures%2FIBbsArticle.ts,src%2Fcontrollers%2Fbbs%2Farticles%2FBbsArticlesController.ts,README.md)
 - [E-Commerce](https://stackblitz.com/edit/autobe-demo-shopping?file=docs%2Fanalysis%2Findex.md,src%2Fapi%2Fstructures%2FIShoppingAddressFavorite.ts,src%2Fcontrollers%2Fshopping%2Fcoupons%2FShoppingCouponsController.ts,README.md)
@@ -90,7 +90,7 @@ If you directly want to see the `@autobe` generated backend application code, cl
 
 Preparing...
 
-It would be published at beta release (2025-07-01).
+It will be published with the beta release (2025-07-01).
 
 ## Vibe Coding Ecosystem
 
@@ -99,32 +99,32 @@ It would be published at beta release (2025-07-01).
 ```mermaid
 flowchart LR
 vibe("Vibe Coding")
-backend("Backend Server")
+backend("Backend Application")
 chatbot("AI Chatbot")
-frontend("Front Application")
+frontend("Frontend Application")
 
 vibe --"@autobe" --> backend
 backend --"@agentica" --> chatbot
 backend --"@autoview" --> frontend
 ```
 
-Our [WrtnLabs](https://github.com/wrtnlabs) team is developing two more projects, [`@agentica`](https://github.com/wrtnlabs/agentica) and [`@autoview`](https://github.com/wrtnlabs/autoview). Among these, [`@agentica`](https://github.com/wrtnlabs/agentica) automatically creates an AI Chatbot when you simply provide a `swagger.json` file, and [`@autoview`](https://github.com/wrtnlabs/autoview) automatically generates a Frontend Application when you bring a `swagger.json` file.
+Our [WrtnLabs](https://github.com/wrtnlabs) team is developing two more projects, [`@agentica`](https://github.com/wrtnlabs/agentica) and [`@autoview`](https://github.com/wrtnlabs/autoview). [`@agentica`](https://github.com/wrtnlabs/agentica) automatically creates an AI Chatbot when you simply provide a `swagger.json` file, and [`@autoview`](https://github.com/wrtnlabs/autoview) automatically generates a Frontend Application when you provide a `swagger.json` file.
 
-Therefore, you're not just limited to automatically creating a backend with `@autobe` and vibe coding. If you've created a backend server with vibe coding through `@autobe`, you can immediately create an AI Chatbot and Frontend Application along with it
+Therefore, you're not limited to automatically creating a backend with `@autobe` and vibe coding. If you've created a backend server with vibe coding through `@autobe`, you can immediately create an AI Chatbot and Frontend Application alongside it.
 
-Can you conversate? Then you're a full-stack developer.
+Can you converse? Then you're a full-stack developer.
 
 ### Agentica, AI Function Calling Framework
 
 ![Agentica Logo](https://wrtnlabs.io/agentica/og.jpg)
 
-> `@autobe` is also developed by [`@agentica`](https://github.com/wrtnlabs/agentica)
+> `@autobe` is also developed using [`@agentica`](https://github.com/wrtnlabs/agentica)
 
 https://github.com/wrtnlabs/agentica
 
 Agentica is an Agentic AI framework specialized in AI Function Calling.
 
-It actually does everything with the function calling, and brings functions from below three protocols. If you put `swagger.json` file of `@autobe` generated backend server, it directly becomes an AI chatbot interacting with it.
+It does everything through function calling, and brings functions from the three protocols below. If you provide the `swagger.json` file of an `@autobe` generated backend server, it directly becomes an AI chatbot that interacts with it.
 
   - TypeScript Class/Interface
   - Swagger/OpenAPI Document
@@ -171,7 +171,7 @@ await agent.conversate("I wanna buy MacBook Pro");
 
 https://github.com/wrtnlabs/autoview
 
-AutoView is a frontend automation tool generating React component code from type information of below. If you put `swagger.json` file of `@autobe` generated backend server, it directly becomes a frontend application.
+AutoView is a frontend automation tool that generates React component code from type information from the sources below. If you provide the `swagger.json` file of an `@autobe` generated backend server, it directly becomes a frontend application.
 
   - TypeScript Type
   - JSON Schema (OpenAPI Document)
@@ -290,14 +290,15 @@ subgraph "Backend Coding Agent"
   coder("Facade Controller")
 end
 subgraph "Functional Agents"
-  coder --"Requirements Analyses"--> analyze("Analyze")
+  coder --"Requirements Analysis"--> analyze("Analyze")
   coder --"ERD"--> prisma("Prisma")
   coder --"API Design"--> interface("Interface")
   coder --"Test Codes" --> test("Test")
   coder --"Main Program" --> realize("Realize")
 end
 subgraph "Compiler Feedback"
-  prisma --"diagnoses" --> prismaCompiler("Prisma Compiler")
+  prisma --"validates" --> prismaCompiler("Prisma Compiler")
+  interface --"validates" --> openapiValidator("OpenAPI Validator")
   interface --"generates" --> tsCompiler("TypeScript Compiler")
   test --"validates" --> tsCompiler("TypeScript Compiler")
   realize --"validates" --> tsCompiler("TypeScript Compiler")
@@ -335,7 +336,7 @@ An agent that analyzes requirements specifications to generate database schemas 
   - Automatic ERD documentation generation (using `prisma-markdown`)
   - Schema optimization through self-review system
 
-The Prisma agent references the requirements specification document created by the [#Analyze Agent](#analyze) to craft the `prisma.schema` file. For each entity and attribute in the database schema, it provides comprehensive documentation including the rationale behind its creation, its purpose, and conceptual explanations. The agent employs normalization techniques to ensure high-quality database design.
+The Prisma agent references the requirements specification document created by the [Analyze Agent](#analyze) to craft the `prisma.schema` file. For each entity and attribute in the database schema, it provides comprehensive documentation including the rationale behind its creation, its purpose, and conceptual explanations. The agent employs normalization techniques to ensure high-quality database design.
 
 Once the DB schema file is written, the Prisma agent compiles it using the built-in Prisma compiler. If compilation errors occur, these are fed back to the AI agent, enabling a self-correction process through compiler feedback. After successful compilation, the schema is converted into ERD documentation using [`prisma-markdown`](https://github.com/samchon/prisma-markdown). This documentation is then subjected to a quality assurance process through an internal review agent that verifies and refines the schema.
 
@@ -427,7 +428,7 @@ An agent that designs API interfaces based on requirements specifications and ER
 - **Features**:
   - OpenAPI Operation Schema and JSON Schema generation
   - Detailed API documentation comments
-  - Self validating interface generation pipeline
+  - Self-validating interface generation pipeline
   - NestJS code conversion
 
 The Interface agent bridges the gap between database design and implementation by creating precise, consistent API interfaces. The agent follows a sophisticated generation process that prioritizes correctness and clarity.
@@ -490,7 +491,7 @@ An agent that generates E2E test code for each API interface.
 
 The Test agent synthesizes information from previously generated artifacts to produce thorough end-to-end test suites that validate both individual API endpoints and their interactions. Drawing from the requirements specification, ERD documentation, and interface definitions, it constructs tests that verify functional correctness and business rule compliance.
 
-At its core, the Test agent leverages two critical inputs from the Interface agent's work: firstly, it utilizes both the OpenAPI Operation Schemas and the derived TypeScript/NestJS API interface code that define each endpoint's contract. Secondly, it works with automatically pre-generated e2e test program scaffolds that are mechanically derived from these OpenAPI Operation Schemas. These scaffolds provide the foundation upon which the Test agent builds more sophisticated test scenarios, enhancing them with business logic validation and dependency-aware execution sequences.
+At its core, the Test agent leverages two critical inputs from the Interface agent's work: first, it utilizes both the OpenAPI Operation Schemas and the derived TypeScript/NestJS API interface code that define each endpoint's contract. Second, it works with automatically pre-generated e2e test program scaffolds that are mechanically derived from these OpenAPI Operation Schemas. These scaffolds provide the foundation upon which the Test agent builds more sophisticated test scenarios, enhancing them with business logic validation and dependency-aware execution sequences.
 
 A key strength of the Test agent is its ability to analyze dependency relationships between API functions. When certain endpoints require preconditions established by other API calls, the agent automatically structures integrated test scenarios that execute functions in the correct sequence. Each test case includes detailed comments explaining the test's purpose, prerequisites, and expected results, serving as both documentation and verification of test intent.
 
@@ -510,7 +511,7 @@ export const test_api_shoppings_admins_sales_reviews_comments_create =
   };
 ```
 
-> Systematically generated test code generated by `interface` agent, and `test` agent starts from it
+> Systematically generated test code by the `interface` agent, and the `test` agent starts from it
 
 ### Realize
 
@@ -524,8 +525,8 @@ An agent that writes realization code for each API function.
   - Code quality improvement through self-review system
   - Business logic optimization
 
-The Implementation agent is the culmination of the `@autobe` development pipeline, synthesizing outputs from all previous agents to create fully functional service provider code for each API endpoint. This agent comprehensively analyzes the requirements specification, Prisma schema, API interfaces, and test code to implement business logic that satisfies all defined requirements.
+The Realize agent is the culmination of the `@autobe` development pipeline, synthesizing outputs from all previous agents to create fully functional service provider code for each API endpoint. This agent comprehensively analyzes the requirements specification, Prisma schema, API interfaces, and test code to implement business logic that satisfies all defined requirements.
 
 Internal validation mechanisms ensure high-quality output through multiple feedback loops. First, an embedded TypeScript compiler provides immediate compilation feedback, catching syntax errors and type mismatches. Second, the realization code is tested against the test suites created by the Test Agent, providing runtime feedback that validates functional correctness. Finally, an internal review agent evaluates the code quality, identifying opportunities for optimization and improvement.
 
-The Implementation agent focuses on creating maintainable, efficient code that correctly implements the business logic while adhering to best practices. It generates service providers that handle database interactions through Prisma, implement security and validation checks, and process business rules according to the requirements specification.
+The Realize agent focuses on creating maintainable, efficient code that correctly implements the business logic while adhering to best practices. It generates service providers that handle database interactions through Prisma, implement security and validation checks, and process business rules according to the requirements specification.
