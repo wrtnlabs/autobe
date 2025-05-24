@@ -217,6 +217,8 @@ await fs.promises.writeFile(
 
 ## Roadmap Schedule
 
+### Pre-Releases
+
 ```mermaid
 gantt
   dateFormat YYYY-MM-DD
