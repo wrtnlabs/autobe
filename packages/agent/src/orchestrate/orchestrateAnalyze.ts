@@ -31,7 +31,7 @@ export const orchestrateAnalyze =
       );
     }
 
-    const started_at = new Date().toISOString();
+    const created_at = new Date().toISOString();
     const agent = new AnalyzeAgent(createReviewerAgent, ctx, pointer);
     const response = await agent.conversate(
       [
@@ -49,7 +49,7 @@ export const orchestrateAnalyze =
         description: "",
         reason: "",
         files: pointer.value?.files,
-        started_at,
+        created_at,
         step: 0,
         type: "analyze",
       } satisfies AutoBeAnalyzeHistory;
@@ -58,7 +58,7 @@ export const orchestrateAnalyze =
       id: randomUUID(),
       type: "assistantMessage",
       text: response,
-      started_at,
+      created_at,
       completed_at: new Date().toISOString(),
     } satisfies AutoBeAssistantMessageHistory;
   };

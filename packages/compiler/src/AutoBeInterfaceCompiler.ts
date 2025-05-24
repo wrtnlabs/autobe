@@ -45,7 +45,6 @@ export class AutoBeInterfaceCompiler implements IAutoBeInterfaceCompiler {
 
 async function beautify(script: string) {
   try {
-    const jsDoc = await import("prettier-plugin-jsdoc");
     return await format(script, {
       parser: "typescript",
       plugins: [sortImport, await import2("prettier-plugin-jsdoc")],
