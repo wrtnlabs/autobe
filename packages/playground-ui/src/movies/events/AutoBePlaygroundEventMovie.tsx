@@ -1,5 +1,7 @@
 import { AutoBeEvent } from "@autobe/interface";
 
+import { AutoBePlaygroundAnalyzeReviewMovie } from "./AutoBePlaygroundAnalyzeReviewMovie";
+import { AutoBePlaygroundAnalyzeWriteDocumentMovie } from "./AutoBePlaygroundAnalyzeWriteDocumentMovie";
 import { AutoBePlaygroundAssistantMessageEventMovie } from "./AutoBePlaygroundAssistantMessageEventMovie";
 import { AutoBePlaygroundCompleteEventMovie } from "./AutoBePlaygroundCompleteEventMovie";
 import { AutoBePlaygroundProgressEventMovie } from "./AutoBePlaygroundProgressEventMovie";
@@ -23,8 +25,6 @@ export function AutoBePlaygroundEventMovie(
     case "testStart":
     case "realizeStart":
       return <AutoBePlaygroundStartEventMovie event={props.event} />;
-    case "analyzeReview":
-    case "analyzeWriteDocument":
     case "prismaComponents":
     case "prismaSchemas":
     case "interfaceEndpoints":
@@ -33,6 +33,10 @@ export function AutoBePlaygroundEventMovie(
     case "testProgress":
     case "realizeProgress":
       return <AutoBePlaygroundProgressEventMovie event={props.event} />;
+    case "analyzeWriteDocument":
+      return <AutoBePlaygroundAnalyzeWriteDocumentMovie event={props.event} />;
+    case "analyzeReview":
+      return <AutoBePlaygroundAnalyzeReviewMovie event={props.event} />;
     case "prismaValidate":
     case "testValidate":
     case "realizeValidate":
