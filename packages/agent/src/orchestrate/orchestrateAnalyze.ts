@@ -61,12 +61,14 @@ export const orchestrateAnalyze =
         created_at,
         completed_at: new Date().toISOString(),
       };
+      ctx.histories().push(history);
       ctx.dispatch({
         type: "analyzeComplete",
         files: pointer.value.files,
         step,
         created_at,
       });
+      ctx.state().analyze = history;
       return history;
     }
     const history: AutoBeAssistantMessageHistory = {
