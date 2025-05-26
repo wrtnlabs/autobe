@@ -2,10 +2,6 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
 
 export interface AutoBeAnalyzeWriteDocumentEvent
   extends AutoBeEventBase<"analyzeWriteDocument"> {
-  files: {
-    filename: string;
-    content: string;
-    contentLength: number;
-  }[];
+  files: Record<string, string>;
   step: number;
 }

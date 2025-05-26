@@ -66,13 +66,7 @@ export class AnalyzeAgent<Model extends ILlmSchema.Model> {
     if ("text" in lastMessage) {
       this.ctx.dispatch({
         type: "analyzeWriteDocument",
-        files: Object.entries(this.fileMap).map(([filename, content]) => {
-          return {
-            filename,
-            content,
-            contentLength: content.length,
-          };
-        }),
+        files: this.fileMap,
         created_at: new Date().toISOString(),
         step: this.ctx.state().analyze?.step ?? 0,
       });

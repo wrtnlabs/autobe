@@ -5,6 +5,10 @@ export interface IAutoBeRpcListener {
   userMessage?(event: IAutoBeEventJson.IUserMessage): Promise<void>;
 
   analyzeStart?(event: IAutoBeEventJson.IAnalyzeStart): Promise<void>;
+  analyzeWriteDocument?(
+    event: IAutoBeEventJson.IAnalyzeWriteDocument,
+  ): Promise<void>;
+  analyzeReview?(event: IAutoBeEventJson.IAnalyzeReview): Promise<void>;
   analyzeComplete?(event: IAutoBeEventJson.IAnalyzeComplete): Promise<void>;
 
   prismaStart?(event: IAutoBeEventJson.IPrismaStart): Promise<void>;

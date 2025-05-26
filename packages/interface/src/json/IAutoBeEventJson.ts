@@ -37,6 +37,8 @@ export namespace IAutoBeEventJson {
     userMessage: IUserMessage;
     analyzeStart: IAnalyzeStart;
     analyzeComplete: IAnalyzeComplete;
+    analyzeWriteDocument: IAnalyzeWriteDocument;
+    analyzeReview: IAnalyzeReview;
     prismaStart: IPrismaStart;
     prismaComponents: IPrismaComponents;
     prismaSchemas: IPrismaSchemas;

@@ -27,6 +27,12 @@ export class AutoBeRpcService<Model extends ILlmSchema.Model>
     agent.on("analyzeStart", (event) => {
       listener.analyzeStart!(event).catch(() => {});
     });
+    agent.on("analyzeWriteDocument", (event) => {
+      listener.analyzeWriteDocument!(event).catch(() => {});
+    });
+    agent.on("analyzeReview", (event) => {
+      listener.analyzeReview!(event).catch(() => {});
+    });
     agent.on("analyzeComplete", (event) => {
       listener.analyzeComplete!(event).catch(() => {});
     });
