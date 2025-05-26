@@ -20,6 +20,12 @@ export const orchestratePrisma =
     props: IAutoBeApplicationProps,
   ): Promise<AutoBePrismaHistory | AutoBeAssistantMessageHistory> => {
     const start: Date = new Date();
+    ctx.dispatch({
+      type: "prismaStart",
+      created_at: start.toISOString(),
+      reason: props.reason,
+      step: ctx.state().analyze?.step ?? 0,
+    });
 
     // COMPONENTS
     const components:

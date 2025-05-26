@@ -3,6 +3,7 @@ import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeAssistantMessageHistory,
   AutoBePrismaHistory,
+  AutoBePrismaStartEvent,
   AutoBePrismaValidateEvent,
 } from "@autobe/interface";
 import { AutoBePrismaComponentsEvent } from "@autobe/interface/src/events/AutoBePrismaComponentsEvent";
@@ -15,6 +16,11 @@ export const validate_agent_prisma = async (owner: string, project: string) => {
   if (TestGlobal.env.CHATGPT_API_KEY === undefined) return false;
 
   const { agent } = await prepare_agent_prisma(owner, project);
+  const starts: AutoBePrismaStartEvent[] = [];
+  agent.on("prismaStart", (event) => {
+    starts.push(event);
+  });
+
   const validates: AutoBePrismaValidateEvent[] = [];
   agent.on("prismaValidate", (event) => {
     validates.push(event);
@@ -53,6 +59,7 @@ export const validate_agent_prisma = async (owner: string, project: string) => {
       "logs/tokenUsage.json": JSON.stringify(agent.getTokenUsage(), null, 2),
       "logs/components.json": JSON.stringify(components, null, 2),
       "logs/schemas.json": JSON.stringify(schemas, null, 2),
+      "logs/starts.json": JSON.stringify(starts, null, 2),
     },
   });
 };
