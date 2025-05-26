@@ -68,13 +68,3 @@ function getTitle(
       throw new Error("Unknown event type"); // unreachable
   }
 }
-
-function getFiles(files: Record<string, string>) {
-  return Object.entries(files).map(([filename, content]) => {
-    return {
-      filename,
-      content,
-      contentLength: content.length,
-    };
-  });
-}
