@@ -1,3 +1,4 @@
+import { AutoBeAgent } from "@autobe/agent";
 import {
   AutoBeHistory,
   AutoBeUserMessageContent,
@@ -6,8 +7,6 @@ import {
   IAutoBeTokenUsageJson,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
-
-import { AutoBeAgent } from "../../agent/src";
 
 export class AutoBeRpcService<Model extends ILlmSchema.Model>
   implements IAutoBeRpcService
