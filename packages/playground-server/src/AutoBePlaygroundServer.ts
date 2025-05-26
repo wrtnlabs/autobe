@@ -63,6 +63,7 @@ const save = async (props: {
   root: string;
   files: Record<string, string>;
 }): Promise<void> => {
+  console.log("save", props);
   if (fs.existsSync(props.root))
     await fs.promises.rm(props.root, {
       recursive: true,

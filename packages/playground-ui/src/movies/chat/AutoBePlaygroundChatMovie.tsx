@@ -96,6 +96,10 @@ export function AutoBePlaygroundChatMovie(
 
   useEffect(() => {
     props.listener.on(async (e) => {
+      props.service
+        .getTokenUsage()
+        .then(setTokenUsage)
+        .catch(() => {});
       setEvents((prev) => [...prev, e]);
     });
     props.service
