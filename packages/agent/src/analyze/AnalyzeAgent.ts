@@ -1,6 +1,5 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
-import chalk from "chalk";
 import { IPointer } from "tstl";
 import typia from "typia";
 
@@ -65,23 +64,19 @@ export class AnalyzeAgent<Model extends ILlmSchema.Model> {
     const lastMessage = response[response.length - 1]!;
 
     if ("text" in lastMessage) {
-      console.log(
-        chalk.blackBright(
-          JSON.stringify(
-            Object.entries(this.fileMap).map(([filename, content]) => {
-              return {
-                filename,
-                content,
-                content_length: content.length,
-              };
-            }),
-            null,
-            2,
-          ),
-        ) + "\n\n\n",
-      );
+      this.ctx.dispatch({
+        type: "analyzeWriteDocument",
+        files: Object.entries(this.fileMap).map(([filename, content]) => {
+          return {
+            filename,
+            content,
+            contentLength: content.length,
+          };
+        }),
+        created_at: new Date().toISOString(),
+        step: this.ctx.state().analyze?.step ?? 0,
+      });
 
-      console.log(chalk.green(lastMessage.text) + "\n\n\n");
       const aborted =
         lastMessage.type === "describe" &&
         lastMessage.executes.some((el) => {
@@ -110,7 +105,13 @@ export class AnalyzeAgent<Model extends ILlmSchema.Model> {
 
       if (review) {
         if (review.type === "assistantMessage") {
-          console.log(chalk.red(review.text) + "\n\n\n");
+          this.ctx.dispatch({
+            type: "analyzeReview",
+            review: review.text,
+            created_at: new Date().toISOString(),
+            step: this.ctx.state().analyze?.step ?? 0,
+          });
+
           return this.conversate(
             JSON.stringify({
               user_query: content,

@@ -1,5 +1,7 @@
+import { AutoBeAnalyzeReview } from "./AutoBEAnalyzeReviewEvent";
 import { AutoBeAnalyzeCompleteEvent } from "./AutoBeAnalyzeCompleteEvent";
 import { AutoBeAnalyzeStartEvent } from "./AutoBeAnalyzeStartEvent";
+import { AutoBeAnalyzeWriteDocumentEvent } from "./AutoBeAnalyzeWriteDocumentEvent";
 import { AutoBeAssistantMessageEvent } from "./AutoBeAssistantMessageEvent";
 import { AutoBeInterfaceCompleteEvent } from "./AutoBeInterfaceCompleteEvent";
 import { AutoBeInterfaceComponentsEvent } from "./AutoBeInterfaceComponentsEvent";
@@ -25,6 +27,8 @@ export type AutoBeEvent =
   | AutoBeAssistantMessageEvent
   | AutoBeUserMessageEvent
   | AutoBeAnalyzeStartEvent
+  | AutoBeAnalyzeWriteDocumentEvent
+  | AutoBeAnalyzeReview
   | AutoBeAnalyzeCompleteEvent
   | AutoBeInterfaceStartEvent
   | AutoBeInterfaceEndpointsEvent

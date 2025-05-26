@@ -9,6 +9,8 @@ export type IAutoBeEventJson =
   | IAutoBeEventJson.IAssistantMessage
   | IAutoBeEventJson.IUserMessage
   | IAutoBeEventJson.IAnalyzeStart
+  | IAutoBeEventJson.IAnalyzeWriteDocument
+  | IAutoBeEventJson.IAnalyzeReview
   | IAutoBeEventJson.IAnalyzeComplete
   | IAutoBeEventJson.IPrismaStart
   | IAutoBeEventJson.IPrismaComponents
@@ -66,6 +68,17 @@ export namespace IAutoBeEventJson {
     reason: string;
     step: number;
   }
+
+  export interface IAnalyzeWriteDocument extends IBase<"analyzeWriteDocument"> {
+    files: Record<string, string>;
+    step: number;
+  }
+
+  export interface IAnalyzeReview extends IBase<"analyzeReview"> {
+    review: string;
+    step: number;
+  }
+
   export interface IAnalyzeComplete extends IBase<"analyzeComplete"> {
     files: Record<string, string>;
     step: number;

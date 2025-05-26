@@ -31,7 +31,7 @@ export const orchestrateAnalyze =
       );
     }
 
-    const step = (ctx.state().analyze?.step ?? -1) + 1;
+    const step = ctx.state().analyze?.step ?? 0;
     const created_at = new Date().toISOString();
     ctx.dispatch({
       type: "analyzeStart",
