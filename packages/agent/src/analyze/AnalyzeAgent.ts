@@ -100,8 +100,7 @@ export class AnalyzeAgent<Model extends ILlmSchema.Model> {
         currentFiles,
       });
 
-      const [review, ...rest] = await reviewer.conversate(lastMessage.text);
-      console.log("review: ", review.type, rest.length);
+      const [review] = await reviewer.conversate(lastMessage.text);
 
       if (review) {
         if (review.type === "assistantMessage") {

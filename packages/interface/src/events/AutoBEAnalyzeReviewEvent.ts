@@ -1,6 +1,7 @@
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
-export interface AutoBeAnalyzeReview extends AutoBeEventBase<"analyzeReview"> {
+export interface AutoBeAnalyzeReviewEvent
+  extends AutoBeEventBase<"analyzeReview"> {
   review: string;
   step: number;
 }

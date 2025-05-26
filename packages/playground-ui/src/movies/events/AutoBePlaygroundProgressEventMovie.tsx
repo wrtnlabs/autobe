@@ -7,6 +7,8 @@ import {
   AutoBeRealizeProgressEvent,
   AutoBeTestProgressEvent,
 } from "@autobe/interface";
+import { AutoBeAnalyzeReviewEvent } from "@autobe/interface/src/events/AutoBEAnalyzeReviewEvent";
+import { AutoBeAnalyzeWriteDocumentEvent } from "@autobe/interface/src/events/AutoBeAnalyzeWriteDocumentEvent";
 
 export function AutoBePlaygroundProgressEventMovie(
   props: AutoBePlaygroundProgressEventMovie.IProps,
@@ -20,6 +22,8 @@ export function AutoBePlaygroundProgressEventMovie(
 export namespace AutoBePlaygroundProgressEventMovie {
   export interface IProps {
     event:
+      | AutoBeAnalyzeReviewEvent
+      | AutoBeAnalyzeWriteDocumentEvent
       | AutoBePrismaComponentsEvent
       | AutoBePrismaSchemasEvent
       | AutoBeInterfaceEndpointsEvent
@@ -52,6 +56,10 @@ function getDescription(
       return `Writing Test Functions: ${event.completed} of ${event.total}`;
     case "realizeProgress":
       return `Writing Main Controller: ${event.completed} of ${event.total}`;
+    case "analyzeWriteDocument":
+      return `Analyze user requirements and write documents`;
+    case "analyzeReview":
+      return `Reviewing generated documents by Analyze in progress`;
     default:
       event satisfies never;
       throw new Error("Unknown event type"); // unreachable
