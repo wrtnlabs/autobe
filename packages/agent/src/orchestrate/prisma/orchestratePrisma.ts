@@ -1,5 +1,6 @@
 import {
   AutoBeAssistantMessageHistory,
+  AutoBePrismaComponentsEvent,
   AutoBePrismaHistory,
   IAutoBePrismaCompilerResult,
 } from "@autobe/interface";
@@ -21,11 +22,12 @@ export const orchestratePrisma =
     const start: Date = new Date();
 
     // COMPONENTS
-    const components = await orchestratePrismaComponents(ctx);
-
+    const components:
+      | AutoBeAssistantMessageHistory
+      | AutoBePrismaComponentsEvent = await orchestratePrismaComponents(ctx);
     if (components.type === "assistantMessage") {
-      ctx.dispatch(components);
       ctx.histories().push(components);
+      ctx.dispatch(components);
       return components;
     } else ctx.dispatch(components);
 
