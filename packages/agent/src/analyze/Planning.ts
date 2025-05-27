@@ -4,7 +4,7 @@ type FileContent = string;
 export interface IPlanning {
   /**
    * Generate multiple markdown files. if there is already created files,
-   * overwrite it. Generate serveral markdown files at once.
+   * overwrite it. Generate several markdown files at once.
    */
   createOrUpdateFiles(input: {
     files: Array<{
