@@ -28,7 +28,7 @@ export function MarkdownViewer(props: MarkdownViewer.IProps) {
     return (
       <>
         <Markdown>
-          {"> Markdown grammer error. Please leave a issue on Github."}
+          {"> Markdown syntax error. Please leave a issue on Github."}
         </Markdown>
         <br />
         <br />
