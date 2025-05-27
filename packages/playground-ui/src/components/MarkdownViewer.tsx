@@ -25,14 +25,16 @@ export function MarkdownViewer(props: MarkdownViewer.IProps) {
       </Markdown>
     );
   } catch {
-    <>
-      <Markdown>
-        {"> Markdown grammer error. Please leave a issue on Github."}
-      </Markdown>
-      <br />
-      <br />
-      <pre>{props.children}</pre>
-    </>;
+    return (
+      <>
+        <Markdown>
+          {"> Markdown grammer error. Please leave a issue on Github."}
+        </Markdown>
+        <br />
+        <br />
+        <pre>{props.children}</pre>
+      </>
+    );
   }
 }
 export namespace MarkdownViewer {
