@@ -19,7 +19,8 @@ export interface IPlanning {
 
       /**
        * Markdown file content. Only write the content of the file. Do not
-       * include any questions.
+       * include any questions. This should contain only the contents of the
+       * file. Do not write down any questions or appreciation.
        */
       markdown: string;
     }>;
