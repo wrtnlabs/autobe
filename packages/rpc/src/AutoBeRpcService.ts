@@ -40,6 +40,12 @@ export class AutoBeRpcService<Model extends ILlmSchema.Model>
     agent.on("prismaStart", (event) => {
       listener.prismaStart!(event).catch(() => {});
     });
+    agent.on("prismaComponents", (event) => {
+      listener.prismaComponents!(event).catch(() => {});
+    });
+    agent.on("prismaSchemas", (event) => {
+      listener.prismaSchemas!(event).catch(() => {});
+    });
     agent.on("prismaComplete", (event) => {
       listener.prismaComplete!(event).catch(() => {});
     });
