@@ -4,14 +4,39 @@ import {
   AutoBePrismaCompleteEvent,
   AutoBeRealizeCompleteEvent,
   AutoBeTestCompleteEvent,
+  IAutoBeRpcService,
 } from "@autobe/interface";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import GradingIcon from "@mui/icons-material/Grading";
-import { Card, CardContent, Chip } from "@mui/material";
+import { Button, Card, CardActions, CardContent, Chip } from "@mui/material";
+import StackBlitzSDK from "@stackblitz/sdk";
 
 export function AutoBePlaygroundCompleteEventMovie(
   props: AutoBePlaygroundCompleteEventMovie.IProps,
 ) {
   const title: string = getTitle(props.event);
+  const openStackBlitz = () => {
+    props.service
+      .getFiles()
+      .then((files) => {
+        StackBlitzSDK.openProject(
+          {
+            files,
+            title: `AutoBE Generated Backend Server (${props.event.type})`,
+            template: "node",
+          },
+          {
+            newWindow: true,
+          },
+        );
+      })
+      .catch(() => {
+        alert(
+          "FAiled to get files from the websocket server. Please leave an issue to the Github repo.",
+        );
+      });
+  };
+
   return (
     <Card
       elevation={3}
@@ -35,11 +60,17 @@ export function AutoBePlaygroundCompleteEventMovie(
         <br />
         Please check the result in the file explorer.
       </CardContent>
+      <CardActions style={{ textAlign: "right" }}>
+        <Button startIcon={<ExpandMoreIcon />} onClick={() => openStackBlitz()}>
+          Open in new window
+        </Button>
+      </CardActions>
     </Card>
   );
 }
 export namespace AutoBePlaygroundCompleteEventMovie {
   export interface IProps {
+    service: IAutoBeRpcService;
     event:
       | AutoBeAnalyzeCompleteEvent
       | AutoBePrismaCompleteEvent

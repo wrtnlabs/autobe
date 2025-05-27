@@ -5,24 +5,35 @@ import Markdown from "react-markdown";
 // import remarkMermaidPlugin from "remark-mermaid-plugin";
 
 export function MarkdownViewer(props: MarkdownViewer.IProps) {
-  return (
-    <Markdown
-      components={{
-        img: ({ ...props }) => (
-          <img
-            {...props}
-            style={{
-              display: "block",
-              maxWidth: "100%",
-              height: "auto",
-            }}
-          />
-        ),
-      }}
-    >
-      {props.children}
-    </Markdown>
-  );
+  try {
+    return (
+      <Markdown
+        components={{
+          img: ({ ...props }) => (
+            <img
+              {...props}
+              style={{
+                display: "block",
+                maxWidth: "100%",
+                height: "auto",
+              }}
+            />
+          ),
+        }}
+      >
+        {props.children}
+      </Markdown>
+    );
+  } catch {
+    <>
+      <Markdown>
+        {"> Markdown grammer error. Please leave a issue on Github."}
+      </Markdown>
+      <br />
+      <br />
+      <pre>{props.children}</pre>
+    </>;
+  }
 }
 export namespace MarkdownViewer {
   export interface IProps {

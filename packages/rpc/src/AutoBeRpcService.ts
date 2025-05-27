@@ -93,6 +93,10 @@ export class AutoBeRpcService<Model extends ILlmSchema.Model>
     return this.props.agent.conversate(content);
   }
 
+  public async getFiles(): Promise<Record<string, string>> {
+    return this.props.agent.getFiles();
+  }
+
   public async getHistories(): Promise<AutoBeHistory[]> {
     return this.props.agent.getHistories();
   }
