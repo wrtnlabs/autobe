@@ -1,8 +1,8 @@
 ## AutoBE, Vibe Coding Agent for Backend Applications
 
-<div style="text-align: center">
+<div align="center">
 
-![AutoBE Logo](https://github.com/user-attachments/assets/a90d14be-fd50-4dc7-ae9d-ca66c2124f31)
+![Auto BE - ReadMe Diagram](https://github.com/user-attachments/assets/53cf26cf-f417-4d0c-a969-7b5cc061964f)
 
 [![GitHub License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/wrtnlabs/autobe/blob/master/LICENSE)
 [![NPM Version](https://img.shields.io/npm/v/@autobe/agent.svg)](https://www.npmjs.com/package/@autobe/agent)
@@ -114,7 +114,7 @@ Can you converse? Then you're a full-stack developer.
 
 ### Agentica, AI Function Calling Framework
 
-![Agentica Logo](https://wrtnlabs.io/agentica/og.jpg)
+![Agentica - ReadMe Diagram](https://github.com/user-attachments/assets/1ffbd948-c42b-4925-a237-a78c8714f03b)
 
 > `@autobe` is also developed using [`@agentica`](https://github.com/wrtnlabs/agentica)
 
@@ -165,7 +165,7 @@ await agent.conversate("I wanna buy MacBook Pro");
 
 ### AutoView, Type to React Component
 
-![AutoView](https://github.com/user-attachments/assets/dab3cf89-163f-4934-b3a7-36f1de24ffc4)
+![Auto View - ReadMe Image](https://github.com/user-attachments/assets/b7066cd4-0840-474f-9283-6979b5f91367)
 
 https://github.com/wrtnlabs/autoview
 
