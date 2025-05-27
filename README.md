@@ -1,7 +1,7 @@
 # AutoBE, Vibe Coding Agent for Backend Applications
 
 <div align="center">
-  
+
 ![Auto BE - OG Diagram](https://github.com/user-attachments/assets/d7bd7403-dedb-4194-9a21-4c2fb3af18e8)
 
 [![GitHub License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/wrtnlabs/autobe/blob/master/LICENSE)
@@ -11,7 +11,6 @@
 [![Discord Badge](https://dcbadge.limes.pink/api/server/https://discord.gg/aMhRmzkqCx?style=flat)](https://discord.gg/aMhRmzkqCx)
 
 [![Fund Raising News](https://wrtnlabs.io/agentica/images/badges/fund-raising-news-202503.svg)](https://www.bloomberg.com/news/videos/2025-03-31/wtrn-on-series-b-funding-growth-strategy-video)
-<span>&nbsp;</span>
 [![One Mission](https://wrtnlabs.io/agentica/images/badges/open-source-mission.svg)](https://github.com/wrtnlabs)
 
 </div>
