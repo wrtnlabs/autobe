@@ -27,7 +27,7 @@ export const createReviewerAgent = <Model extends ILlmSchema.Model>(
     ),
   );
 
-  return new MicroAgentica({
+  const agent = new MicroAgentica({
     model: ctx.model,
     vendor: ctx.vendor,
     controllers: [],
@@ -70,17 +70,13 @@ export const createReviewerAgent = <Model extends ILlmSchema.Model>(
             "At this time, the document should be newly created with the name attached to the link, not modified.",
             "<CurrentFiles>",
             JSON.stringify(
-              Object.entries(input.currentFiles)
-                .slice(-2)
-                .map(([filename, content]) => {
-                  return {
-                    filename,
-                    content,
-                    content_length: content.length,
-                  };
-                }),
-              null,
-              2,
+              Object.entries(input.currentFiles).map(([filename, content]) => {
+                return {
+                  filename,
+                  content,
+                  content_length: content.length,
+                };
+              }),
             ),
             "</CurrentFiles>",
             "",
@@ -95,20 +91,24 @@ export const createReviewerAgent = <Model extends ILlmSchema.Model>(
             `</Linked Files>`,
             "",
             "Write a long document, but keep your answer short.",
-            "The planner agent can only create and modify one document at a time, so do not ask to create or modify multiple documents at a time.",
             "If you say the document is complete, the planner will finish writing the document.",
             "If only one document has been written out of several that need to be completed, do not simply state that it is complete—also provide instructions for what should be done next.",
             "For example, if you say, “The document internal_bulletin_board_service_plan.md has already been written with over 1,000 characters. Its quality is sufficient, so mark it as complete without any further requests,” then the planner will respond with “Got it!” and stop writing—even if there are still remaining documents.",
             "Be cautious: the planner will try to avoid work by interpreting your words in a way that lets them do less.",
             "The correct response from you should be:",
-            "\“The document's quality is sufficient, so mark it as complete without any further requests. Now, proceed to write the next document immediately.\”",
+            "\“The document's quality is sufficient, so mark it as complete without any further requests. Now, proceed to write the next documents immediately.\”",
             "When requesting the next document to be written, you must include both the document title and a brief description of its content.",
           ].join("\n");
+        },
+        describe: () => {
+          return "Answer only 'completion' or 'failure'.";
         },
       },
     },
     tokenUsage: ctx.usage(),
   });
+
+  return agent;
 };
 
 export interface ICreateReviewerAgentInput {

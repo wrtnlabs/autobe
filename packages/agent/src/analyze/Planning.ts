@@ -3,26 +3,27 @@ type FileContent = string;
 
 export interface IPlanning {
   /**
-   * Generate markdown file. if there is already created file, overwrite it.
-   *
-   * @param input.reason Describe briefly why you made this document, and if you
-   *   have any plans for the next one.
-   * @param input.filename Filename to generate or overwrite.
-   * @param input.markdown Markdown file content. Only write the content of the
-   *   file. Do not include any questions.
+   * Generate multiple markdown files. if there is already created files,
+   * overwrite it. Generate serveral markdown files at once.
    */
-  createOrUpdateFile(input: {
-    reason: string;
-    filename: `${string}.md`;
-    markdown: string;
-  }): Promise<void>;
+  createOrUpdateFiles(input: {
+    files: Array<{
+      /**
+       * Describe briefly why you made this document, and if you have any plans
+       * for the next one.
+       */
+      reason: string;
 
-  /**
-   * Read markdown file content.
-   *
-   * @param input.filename Filename to read.
-   */
-  // readFile(input: { filename: `${string}.md` }): Promise<string>;
+      /** Filename to generate or overwrite. */
+      filename: `${string}.md`;
+
+      /**
+       * Markdown file content. Only write the content of the file. Do not
+       * include any questions.
+       */
+      markdown: string;
+    }>;
+  }): Promise<void>;
 
   /**
    * Remove markdown file.
@@ -48,17 +49,17 @@ export interface IPlanning {
 export class Planning implements IPlanning {
   constructor(private readonly fileMap: Record<Filename, FileContent> = {}) {}
 
-  async createOrUpdateFile(input: {
-    reason: string;
-    filename: `${string}.md`;
-    markdown: string;
+  async createOrUpdateFiles(input: {
+    files: Array<{
+      reason: string;
+      filename: `${string}.md`;
+      markdown: string;
+    }>;
   }): Promise<void> {
-    this.fileMap[input.filename] = input.markdown;
+    input.files.forEach((file) => {
+      this.fileMap[file.filename] = file.markdown;
+    });
   }
-
-  // async readFile(input: { filename: `${string}.md` }): Promise<string> {
-  //   return this.fileMap[input.filename];
-  // }
 
   async removeFile(input: { filename: `${string}.md` }): Promise<void> {
     delete this.fileMap[input.filename];

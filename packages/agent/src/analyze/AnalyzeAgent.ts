@@ -13,7 +13,7 @@ type Filename = string;
 type FileContent = string;
 
 export class AnalyzeAgent<Model extends ILlmSchema.Model> {
-  private readonly agent: MicroAgentica<Model>;
+  private readonly createInnerAgent: () => MicroAgentica<Model>;
   private readonly fileMap: Record<Filename, FileContent> = {};
 
   constructor(
@@ -32,27 +32,36 @@ export class AnalyzeAgent<Model extends ILlmSchema.Model> {
         this.pointer.value = { files };
       },
     });
-    this.agent = new MicroAgentica({
-      controllers: [controller],
-      model: ctx.model,
-      vendor: ctx.vendor,
-      config: {
-        systemPrompt: {
-          common: () => {
-            return AutoBeSystemPromptConstant.ANALYZE.replace(
-              "{% Guidelines %}",
-              AutoBeSystemPromptConstant.ANALYZE_GUIDELINE,
-            )
-              .replace(
-                "{% Example Documentation %}",
-                AutoBeSystemPromptConstant.ANALYZE_EXAMPLE,
+
+    this.createInnerAgent = (): MicroAgentica<Model> => {
+      const agent = new MicroAgentica({
+        controllers: [controller],
+        model: ctx.model,
+        vendor: ctx.vendor,
+        config: {
+          systemPrompt: {
+            common: () => {
+              return AutoBeSystemPromptConstant.ANALYZE.replace(
+                "{% Guidelines %}",
+                AutoBeSystemPromptConstant.ANALYZE_GUIDELINE,
               )
-              .replace("{% User Locale %}", ctx.config?.locale ?? "en-US");
+                .replace(
+                  "{% Example Documentation %}",
+                  AutoBeSystemPromptConstant.ANALYZE_EXAMPLE,
+                )
+                .replace("{% User Locale %}", ctx.config?.locale ?? "en-US");
+            },
+            describe: () => {
+              return "Answer only 'completion' or 'failure'.";
+            },
           },
         },
-      },
-      tokenUsage: ctx.usage(),
-    });
+        tokenUsage: ctx.usage(),
+        histories: [],
+      });
+
+      return agent;
+    };
   }
 
   /**
@@ -62,7 +71,7 @@ export class AnalyzeAgent<Model extends ILlmSchema.Model> {
    * @returns
    */
   async conversate(content: string): Promise<string> {
-    const response = await this.agent.conversate(content);
+    const response = await this.createInnerAgent().conversate(content);
     const lastMessage = response[response.length - 1]!;
 
     if ("text" in lastMessage) {
@@ -116,6 +125,8 @@ export class AnalyzeAgent<Model extends ILlmSchema.Model> {
           );
         }
       }
+
+      return `If the document is not 1,000 characters, please fill it out in more abundance, and if it exceeds 1,000 characters, please fill out the next document. If you don't have the next document, you can exit now.`;
     }
 
     return "COMPLETE";
@@ -147,8 +158,8 @@ function createController<Model extends ILlmSchema.Model>(props: {
         props.build(props.execute.allFiles());
         return response;
       },
-      createOrUpdateFile: (input) => {
-        const response = props.execute.createOrUpdateFile(input);
+      createOrUpdateFiles: (input) => {
+        const response = props.execute.createOrUpdateFiles(input);
         props.build(props.execute.allFiles());
         return response;
       },
