@@ -32,7 +32,7 @@ export function AutoBePlaygroundCompleteEventMovie(
       })
       .catch(() => {
         alert(
-          "FAiled to get files from the websocket server. Please leave an issue to the Github repo.",
+          "Failed to get files from the websocket server. Please leave an issue to the Github repo.",
         );
       });
   };
