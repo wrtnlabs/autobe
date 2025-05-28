@@ -6,7 +6,7 @@ import { VariadicSingleton } from "tstl";
 import { FileSystemIterator } from "./FileSystemIterator";
 
 /** @internal */
-export namespace TestRepositoryUtil {
+export namespace RepositoryFileSystem {
   export const analyze = async (
     account: string,
     project: string,

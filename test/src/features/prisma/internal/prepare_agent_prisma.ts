@@ -1,7 +1,7 @@
 import { AutoBeAgent } from "@autobe/agent";
 import { invertOpenApiDocument } from "@autobe/agent/src/factory";
 import { AutoBeCompiler } from "@autobe/compiler";
-import { TestRepositoryUtil } from "@autobe/filesystem";
+import { RepositoryFileSystem } from "@autobe/filesystem";
 import {
   AutoBeAnalyzeHistory,
   AutoBeOpenApi,
@@ -17,19 +17,19 @@ export const prepare_agent_prisma = async (owner: string, project: string) => {
     throw new Error("No OpenAI API key provided");
 
   // PREPARE ASSETS
-  const analyze: Record<string, string> = await TestRepositoryUtil.analyze(
+  const analyze: Record<string, string> = await RepositoryFileSystem.analyze(
     owner,
     project,
   );
   const compiler: AutoBeCompiler = new AutoBeCompiler();
   const prisma: IAutoBePrismaCompilerResult = await compiler.prisma({
-    files: await TestRepositoryUtil.prisma(owner, project),
+    files: await RepositoryFileSystem.prisma(owner, project),
   });
   if (prisma.type !== "success")
     throw new Error("Failed to pass prisma compilation step");
 
   const document: AutoBeOpenApi.IDocument = invertOpenApiDocument(
-    await TestRepositoryUtil.swagger(owner, project),
+    await RepositoryFileSystem.swagger(owner, project),
   );
 
   // CONSTRUCT AGENT WITH HISTORIES

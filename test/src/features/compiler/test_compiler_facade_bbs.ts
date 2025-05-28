@@ -1,5 +1,5 @@
 import { AutoBeCompiler } from "@autobe/compiler";
-import { TestRepositoryUtil } from "@autobe/filesystem";
+import { RepositoryFileSystem } from "@autobe/filesystem";
 import {
   IAutoBePrismaCompilerResult,
   IAutoBeTypeScriptCompilerResult,
@@ -10,13 +10,13 @@ import typia from "typia";
 export const test_compiler_facade_bbs = async (): Promise<void> => {
   const compiler: AutoBeCompiler = new AutoBeCompiler();
   const prisma: IAutoBePrismaCompilerResult = await compiler.prisma({
-    files: await TestRepositoryUtil.prisma("samchon", "bbs-backend"),
+    files: await RepositoryFileSystem.prisma("samchon", "bbs-backend"),
   });
   if (prisma.type !== "success")
     throw new Error("Failed to pass prisma generate");
 
   const result: IAutoBeTypeScriptCompilerResult = await compiler.typescript({
-    files: await TestRepositoryUtil.src("samchon", "bbs-backend"),
+    files: await RepositoryFileSystem.src("samchon", "bbs-backend"),
     prisma: prisma.nodeModules,
     package: "@samchon/bbs-api",
   });
