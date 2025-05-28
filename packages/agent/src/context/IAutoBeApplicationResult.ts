@@ -1,3 +1,3 @@
 export interface IAutoBeApplicationResult {
-  success: boolean;
+  type: "success" | "failure" | "exception" | "in-progress";
 }

@@ -24,12 +24,62 @@ export const createAutoBeController = <Model extends ILlmSchema.Model>(props: {
     name: "autobe",
     application,
     execute: {
-      analyze: orchestrateAnalyze(props.context),
-      prisma: orchestratePrisma(props.context),
-      interface: orchestrateInterface(props.context),
-      test: orchestrateTest(props.context),
-      realize: orchestrateRealize(props.context),
-    },
+      analyze: async (next) => {
+        const r = await orchestrateAnalyze(props.context)(next);
+        if (r.type === "analyze")
+          return {
+            type: "success",
+          };
+        else
+          return {
+            type: "in-progress",
+          };
+      },
+      prisma: async (next) => {
+        const r = await orchestratePrisma(props.context)(next);
+        if (r.type === "prisma")
+          return {
+            type: r.result.type,
+          };
+        else
+          return {
+            type: "in-progress",
+          };
+      },
+      interface: async (next) => {
+        const r = await orchestrateInterface(props.context)(next);
+        if (r.type === "interface")
+          return {
+            type: "success",
+          };
+        else
+          return {
+            type: "in-progress",
+          };
+      },
+      test: async (next) => {
+        const r = await orchestrateTest(props.context)(next);
+        if (r.type === "test")
+          return {
+            type: r.result.type,
+          };
+        else
+          return {
+            type: "in-progress",
+          };
+      },
+      realize: async (next) => {
+        const r = await orchestrateRealize(props.context)(next);
+        if (r.type === "realize")
+          return {
+            type: r.result.type,
+          };
+        else
+          return {
+            type: "in-progress",
+          };
+      },
+    } satisfies IAutoBeApplication,
   };
 };
 
