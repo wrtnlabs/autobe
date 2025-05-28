@@ -27,8 +27,8 @@ catalogs:
       specifier: ^4.3.3
       version: 4.3.3
     embed-prisma:
-      specifier: ^1.0.2
-      version: 1.0.2
+      specifier: ^1.1.0
+      version: 1.1.0
     embed-typescript:
       specifier: ^1.0.1
       version: 1.0.1
@@ -183,7 +183,7 @@ importers:
         version: 5.2.2(prettier@3.5.3)
       embed-prisma:
         specifier: catalog:samchon
-        version: 1.0.2(prisma@6.8.2(typescript@5.8.3))(typescript@5.8.3)
+        version: 1.1.0(prisma@6.8.2(typescript@5.8.3))(typescript@5.8.3)
       embed-typescript:
         specifier: catalog:samchon
         version: 1.0.1(typescript@5.8.3)
@@ -1800,8 +1800,8 @@ packages:
   elkjs@0.8.2:
     resolution: {integrity: sha512-L6uRgvZTH+4OF5NE/MBbzQx/WYpru1xCBE9respNj6qznEewGUIfhzmm7horWWxbNO2M0WckQypGctR8lH79xQ==}
 
-  embed-prisma@1.0.2:
-    resolution: {integrity: sha512-2jFddvEiFLVY3dnIwPn+fqAuBXoORdQNyAZDczIleOjh5nHYgcFBsY4MqXCNxHbGBD72EDd9NudessMdopUNwA==}
+  embed-prisma@1.1.0:
+    resolution: {integrity: sha512-3U7Kw0dxXa+z8SaM2VbR46BGR7yUcWsWesPi3k/A9qDYbYq85SDCKbtzUWHi6C8ao/nxbEpQOKtx8rFwaiuJdg==}
 
   embed-typescript@1.0.1:
     resolution: {integrity: sha512-8H9ZQyXA9Cz3nqU0/3FaiLFiYwKT5H06WetdyAICaGHXHZLjYSsvM62vDm5ge3T2DPMn8cdowRPo6xsmcDWr7Q==}
@@ -4519,7 +4519,7 @@ snapshots:
 
   elkjs@0.8.2: {}
 
-  embed-prisma@1.0.2(prisma@6.8.2(typescript@5.8.3))(typescript@5.8.3):
+  embed-prisma@1.1.0(prisma@6.8.2(typescript@5.8.3))(typescript@5.8.3):
     dependencies:
       '@prisma/client': 6.8.2(prisma@6.8.2(typescript@5.8.3))(typescript@5.8.3)
       '@prisma/client-generator-js': 6.8.2(typescript@5.8.3)
