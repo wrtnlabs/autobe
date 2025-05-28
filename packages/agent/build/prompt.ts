@@ -13,7 +13,7 @@ const prepareExample = async (
   title: string,
 ): Promise<Record<string, string>> => {
   const directory: string = path.resolve(
-    `${__dirname}/../../../test/assets/${title}`,
+    `${__dirname}/../../../test/assets/repositories/samchon/${title}-backend`,
   );
   const analysis: Record<string, string> = await FileSystemIterator.read({
     root: path.resolve(`${directory}`),
