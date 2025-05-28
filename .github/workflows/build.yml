@@ -8,6 +8,8 @@ on:
       - 'test/**'
       - 'test/package.json'
       - 'package.json'
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
 jobs:
   Ubuntu:
     runs-on: ubuntu-latest
