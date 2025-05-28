@@ -1,36 +1,30 @@
 import { AutoBeAgent } from "@autobe/agent";
-import { invertOpenApiDocument } from "@autobe/agent/src/factory";
 import { AutoBeCompiler } from "@autobe/compiler";
-import { RepositoryFileSystem } from "@autobe/filesystem";
 import {
   AutoBeAnalyzeHistory,
-  AutoBeOpenApi,
   IAutoBePrismaCompilerResult,
 } from "@autobe/interface";
 import OpenAI from "openai";
 import { v4 } from "uuid";
 
 import { TestGlobal } from "../../../TestGlobal";
+import { TestFileSystem } from "../../../internal/TestFileSystem";
 
 export const prepare_agent_prisma = async (owner: string, project: string) => {
   if (TestGlobal.env.CHATGPT_API_KEY === undefined)
     throw new Error("No OpenAI API key provided");
 
   // PREPARE ASSETS
-  const analyze: Record<string, string> = await RepositoryFileSystem.analyze(
+  const analyze: Record<string, string> = await TestFileSystem.analyze(
     owner,
     project,
   );
   const compiler: AutoBeCompiler = new AutoBeCompiler();
   const prisma: IAutoBePrismaCompilerResult = await compiler.prisma({
-    files: await RepositoryFileSystem.prisma(owner, project),
+    files: await TestFileSystem.prisma(owner, project),
   });
   if (prisma.type !== "success")
     throw new Error("Failed to pass prisma compilation step");
-
-  const document: AutoBeOpenApi.IDocument = invertOpenApiDocument(
-    await RepositoryFileSystem.swagger(owner, project),
-  );
 
   // CONSTRUCT AGENT WITH HISTORIES
   const agent: AutoBeAgent<"chatgpt"> = new AutoBeAgent({
@@ -57,7 +51,6 @@ export const prepare_agent_prisma = async (owner: string, project: string) => {
   return {
     analyze,
     prisma,
-    document,
     agent,
   };
 };
