@@ -77,7 +77,7 @@ async function step<Model extends ILlmSchema.Model>(
   );
   if (pointer.value === null) {
     console.error(
-      "Unraachable error: PrismaCompilerAgent.pointer.value is null",
+      "Unreachable error: PrismaCompilerAgent.pointer.value is null",
     );
     return result; // unreachable
   }
