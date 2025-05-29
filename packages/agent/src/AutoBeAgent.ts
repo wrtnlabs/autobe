@@ -164,7 +164,7 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
   }
 
   public getFiles(): Record<string, string> {
-    return {
+    const files: Record<string, string> = {
       ...Object.fromEntries(
         this.state_.analyze
           ? Object.entries(this.state_.analyze.files).map(([key, value]) => [
@@ -194,6 +194,12 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
         ? this.state_.realize.files
         : {}),
     };
+    return Object.fromEntries(
+      Object.entries(files).map(([k, v]) => [
+        k.startsWith("/") ? k.substring(1) : k,
+        v,
+      ]),
+    );
   }
 
   public getHistories(): AutoBeHistory[] {

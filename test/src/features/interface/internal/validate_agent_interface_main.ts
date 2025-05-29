@@ -92,6 +92,7 @@ export const validate_agent_interface_main = async (
     root: `${TestGlobal.ROOT}/results/${owner}/${project}/interface/main`,
     files: {
       ...agent.getFiles(),
+      "logs/files.json": JSON.stringify(Object.keys(agent.getFiles()), null, 2),
       "logs/result.json": JSON.stringify(result, null, 2),
       "logs/tokenUsage.json": JSON.stringify(agent.getTokenUsage(), null, 2),
       "logs/events.json": JSON.stringify(events, null, 2),

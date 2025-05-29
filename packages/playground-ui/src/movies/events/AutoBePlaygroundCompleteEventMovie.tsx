@@ -19,6 +19,7 @@ export function AutoBePlaygroundCompleteEventMovie(
     props.service
       .getFiles()
       .then((files) => {
+        console.log(files);
         StackBlitzSDK.openProject(
           {
             files,
