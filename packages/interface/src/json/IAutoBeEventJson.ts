@@ -122,6 +122,7 @@ export namespace IAutoBeEventJson {
     failure: IAutoBePrismaCompilerResult.IFailure;
     correction: Record<string, string>;
     reason: string;
+    planning: string;
     step: number;
   }
 

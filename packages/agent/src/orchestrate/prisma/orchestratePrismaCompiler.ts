@@ -85,7 +85,7 @@ async function step<Model extends ILlmSchema.Model>(
     input: files,
     failure: result,
     correction: pointer.value.files,
-    reason: pointer.value.planning,
+    planning: pointer.value.planning,
     step: ctx.state().analyze?.step ?? 0,
     created_at: new Date().toISOString(),
   });

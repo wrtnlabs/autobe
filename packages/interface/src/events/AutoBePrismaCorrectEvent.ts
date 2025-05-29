@@ -6,6 +6,6 @@ export interface AutoBePrismaCorrectEvent
   input: Record<string, string>;
   failure: IAutoBePrismaCompilerResult.IFailure;
   correction: Record<string, string>;
-  reason: string;
+  planning: string;
   step: number;
 }

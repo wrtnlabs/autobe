@@ -11,7 +11,8 @@ export function AutoBePlaygroundPrismaCorrectEventMovie(
     StackBlitzSDK.openProject(
       {
         files: Object.fromEntries([
-          ["reason.log", props.event.reason],
+          ["reason.log", props.event.failure.reason],
+          ["planning.md", props.event.planning],
           ...Object.entries(props.event.input).map(([k, v]) => [
             `input/${k}`,
             v,

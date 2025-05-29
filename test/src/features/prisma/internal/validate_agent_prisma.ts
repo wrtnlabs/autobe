@@ -26,7 +26,8 @@ export const validate_agent_prisma = async (owner: string, project: string) => {
     await FileSystemIterator.save({
       root: `${TestGlobal.ROOT}/results/${owner}/${project}/prisma-correct-${validates.length}`,
       files: Object.fromEntries([
-        ["reason.log", event.reason],
+        ["reason.log", event.failure.reason],
+        ["planning.md", event.planning],
         ...Object.entries(event.input).map(([k, v]) => [`input/${k}`, v]),
         ...Object.entries(event.correction).map(([k, v]) => [
           `correction/${k}`,
