@@ -22,6 +22,7 @@ export type IAutoBeEventJson =
   | IAutoBeEventJson.IInterfaceEndpoints
   | IAutoBeEventJson.IInterfaceOperations
   | IAutoBeEventJson.IInterfaceComponents
+  | IAutoBeEventJson.IInterfaceComplement
   | IAutoBeEventJson.IInterfaceComplete
   | IAutoBeEventJson.ITestStart
   | IAutoBeEventJson.ITestProgress
@@ -50,6 +51,7 @@ export namespace IAutoBeEventJson {
     interfaceEndpoints: IInterfaceEndpoints;
     interfaceOperations: IInterfaceOperations;
     interfaceComponents: IInterfaceComponents;
+    interfaceComplement: IInterfaceComplement;
     interfaceComplete: IInterfaceComplete;
     testStart: ITestStart;
     testProgress: ITestProgress;
@@ -144,6 +146,11 @@ export namespace IAutoBeEventJson {
     components: AutoBeOpenApi.IComponents;
     completed: number;
     total: number;
+    step: number;
+  }
+  export interface IInterfaceComplement extends IBase<"interfaceComplement"> {
+    missed: string[];
+    schemas: Record<string, AutoBeOpenApi.IJsonSchema>;
     step: number;
   }
   export interface IInterfaceComplete extends IBase<"interfaceComplete"> {

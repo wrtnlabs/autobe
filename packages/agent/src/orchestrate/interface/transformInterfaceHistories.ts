@@ -83,6 +83,8 @@ export const transformInterfaceHistories = (
     {
       type: "assistantMessage",
       text: [
+        "Database schema and entity relationship diagrams are ready.",
+        "",
         "## Prisma DB Schema",
         "```json",
         JSON.stringify(state.prisma.result.schemas),

@@ -3,6 +3,7 @@ import { AutoBeAnalyzeCompleteEvent } from "./AutoBeAnalyzeCompleteEvent";
 import { AutoBeAnalyzeStartEvent } from "./AutoBeAnalyzeStartEvent";
 import { AutoBeAnalyzeWriteDocumentEvent } from "./AutoBeAnalyzeWriteDocumentEvent";
 import { AutoBeAssistantMessageEvent } from "./AutoBeAssistantMessageEvent";
+import { AutoBeInterfaceComplementEvent } from "./AutoBeInterfaceComplementEvent";
 import { AutoBeInterfaceCompleteEvent } from "./AutoBeInterfaceCompleteEvent";
 import { AutoBeInterfaceComponentsEvent } from "./AutoBeInterfaceComponentsEvent";
 import { AutoBeInterfaceEndpointsEvent } from "./AutoBeInterfaceEndpointsEvent";
@@ -35,6 +36,7 @@ export type AutoBeEvent =
   | AutoBeInterfaceEndpointsEvent
   | AutoBeInterfaceOperationsEvent
   | AutoBeInterfaceComponentsEvent
+  | AutoBeInterfaceComplementEvent
   | AutoBeInterfaceCompleteEvent
   | AutoBePrismaStartEvent
   | AutoBePrismaComponentsEvent
@@ -69,6 +71,7 @@ export namespace AutoBeEvent {
     interfaceEndpoints: AutoBeInterfaceEndpointsEvent;
     interfaceOperations: AutoBeInterfaceOperationsEvent;
     interfaceComponents: AutoBeInterfaceComponentsEvent;
+    interfaceComplement: AutoBeInterfaceComplementEvent;
     interfaceComplete: AutoBeInterfaceCompleteEvent;
     testStart: AutoBeTestStartEvent;
     testProgress: AutoBeTestProgressEvent;

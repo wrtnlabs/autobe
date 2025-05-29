@@ -30,11 +30,16 @@ export class AutoBePlaygroundServer<Header extends object> {
         return;
       }
 
-      const archive = () =>
-        save({
-          files: result.agent.getFiles(),
-          root: result.cwd,
-        });
+      const archive = async () => {
+        try {
+          await save({
+            files: result.agent.getFiles(),
+            root: result.cwd,
+          });
+        } catch (error) {
+          console.error(error);
+        }
+      };
       result.agent.on("analyzeComplete", archive);
       result.agent.on("prismaComplete", archive);
       result.agent.on("interfaceComplete", archive);

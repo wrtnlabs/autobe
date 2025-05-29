@@ -69,7 +69,8 @@ export const validate_agent_prisma = async (owner: string, project: string) => {
     });
     if (history.type !== "prisma")
       throw new Error("History type must be prisma.");
-  } else if (history.result.type !== "success")
+  }
+  if (history.result.type !== "success")
     throw new Error("Prisma validation failed.");
 
   // REPORT RESULT
@@ -79,6 +80,15 @@ export const validate_agent_prisma = async (owner: string, project: string) => {
       ...agent.getFiles(),
       "logs/validates.json": JSON.stringify(validates, null, 2),
       "logs/result.json": JSON.stringify(history, null, 2),
+      "logs/files.json": JSON.stringify(Object.keys(agent.getFiles()), null, 2),
+      "logs/result-files.json": JSON.stringify(
+        Object.keys({
+          ...history.result.nodeModules,
+          ...history.result.schemas,
+        }),
+        null,
+        2,
+      ),
       "logs/tokenUsage.json": JSON.stringify(agent.getTokenUsage(), null, 2),
       "logs/components.json": JSON.stringify(components, null, 2),
       "logs/schemas.json": JSON.stringify(schemas, null, 2),

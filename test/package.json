@@ -8,7 +8,7 @@
     "prepare": "ts-patch install",
     "build": "tsc --noEmit",
     "dev": "tsc --watch --noEmit",
-    "start": "ts-node src"
+    "start": "rimraf results && ts-node src"
   },
   "author": "Wrtn Technologies",
   "license": "MIT",

@@ -1,11 +1,6 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import { AutoBeOpenApi } from "@autobe/interface";
-import {
-  ILlmApplication,
-  ILlmSchema,
-  IValidation,
-  OpenApiTypeChecker,
-} from "@samchon/openapi";
+import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -184,40 +179,6 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
   const application: ILlmApplication<Model> = collection[
     props.model
   ] as unknown as ILlmApplication<Model>;
-  const validate = (next: unknown): IValidation => {
-    const result: IValidation<IMakeComponentsProps> =
-      typia.validate<IMakeComponentsProps>(next);
-    if (result.success === false) return result;
-    props.pointer.value = result.data.components;
-
-    const errors: IValidation.IError[] = [];
-    for (const value of Object.values(result.data.components.schemas)) {
-      OpenApiTypeChecker.visit({
-        components: result.data.components,
-        schema: value,
-        closure: (v) => {
-          if (OpenApiTypeChecker.isReference(v)) {
-            const key: string = v.$ref.split("/").at(-1)!;
-            if (result.data.components.schemas?.[key] === undefined)
-              errors.push({
-                path: `components.schemas.${key}`,
-                expected: "AutoBeOpenApi.IJsonSchemaDescriptive",
-                value: "undefined",
-              });
-          }
-        },
-      });
-    }
-    if (errors.length !== 0)
-      return {
-        success: false,
-        data: result.data,
-        errors,
-      };
-    return result;
-  };
-
-  application.functions[0].validate = validate;
   return {
     protocol: "class",
     name: "interface",
@@ -225,9 +186,6 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
     execute: {
       makeComponents: async (next) => {
         await props.build(next.components);
-        return {
-          success: true,
-        };
       },
     } satisfies IApplication,
   };
@@ -303,22 +261,26 @@ interface IMakeComponentsProps {
    *
    * Example structure:
    *
-   *     components: {
-   *       schemas: {
-   *         IUser: {
-   *           type: "object",
-   *           properties: {
-   *             id: { type: "string", format: "uuid" },
-   *             email: { type: "string", format: "email" },
-   *             profile: { "$ref": "#/components/schemas/IUserProfile" }
-   *           },
-   *           required: ["id", "email"],
-   *           description: "User entity representing system account holders..."
+   * ```typescript
+   * {
+   *   components: {
+   *     schemas: {
+   *       IUser: {
+   *         type: "object",
+   *         properties: {
+   *           id: { type: "string", format: "uuid" },
+   *           email: { type: "string", format: "email" },
+   *           profile: { "$ref": "#/components/schemas/IUserProfile" }
    *         },
-   *         "IUser.ICreate": { ... },
-   *         // Additional schemas
-   *       }
+   *         required: ["id", "email"],
+   *         description: "User entity representing system account holders..."
+   *       },
+   *       "IUser.ICreate": { ... },
+   *       // Additional schemas
    *     }
+   *   }
+   * }
+   * ```
    */
   components: AutoBeOpenApi.IComponents;
 }

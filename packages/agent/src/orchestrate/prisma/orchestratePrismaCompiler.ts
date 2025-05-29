@@ -14,7 +14,6 @@ export function orchestratePrismaCompiler<Model extends ILlmSchema.Model>(
   files: Record<string, string>,
   retry: number = 8,
 ): Promise<IAutoBePrismaCompilerResult> {
-  files["main.prisma"] = MAIN_PRISMA_FILE;
   return step(ctx, files, retry);
 }
 
@@ -23,6 +22,9 @@ async function step<Model extends ILlmSchema.Model>(
   files: Record<string, string>,
   life: number,
 ): Promise<IAutoBePrismaCompilerResult> {
+  // FIX MAIN PRISMA FILE
+  files["main.prisma"] = MAIN_PRISMA_FILE;
+
   // TRY COMPILATION
   const result: IAutoBePrismaCompilerResult = await ctx.compiler.prisma({
     files,
