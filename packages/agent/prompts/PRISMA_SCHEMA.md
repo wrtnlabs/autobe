@@ -107,9 +107,16 @@ model bbs_article_snapshots {
 
 #### Relationship Guidelines
 
-- **NEVER use mapping names** - Always use `@relation(fields: [...], references: [...])` format WITHOUT any mapping name parameter
-- **Forbidden**: `@relation("MappingName", fields: [...], references: [...])` - This causes compilation errors
-- **Correct**: `@relation(fields: [foreign_key_id], references: [id])`
+- **NEVER use mapping names** 
+  - Always use `@relation(fields: [...], references: [...])` format WITHOUT any mapping name parameter
+- **Forbidden**: 
+  - `article bbs_articles @relation("article", fields: [bbs_article_id], references: [id], onDelete: Cascade)`
+  - `to_files bbs_articles_snapshot_files @relation("to_files")`
+  - `mv_last mv_bbs_article_last_snapshots? @relation("mv_last")`
+- **Correct**:
+  - `article bbs_articles @relation(fields: [bbs_article_id], references: [id], onDelete: Cascade)`
+  - `to_files bbs_article_snapshot_files[]`
+  - `mv_last mv_bbs_article_last_snapshots?`
 - **Always check cross-file references** - Ensure related models exist in other files
 - **Include foreign keys** for all relationships with proper field mapping
 - **Optional relations**: Mark foreign key as optional when appropriate

@@ -39,8 +39,14 @@ Of course, if you're planning to erase some property or relationship from a mode
 - **Mapping name conflicts**: Remove ALL mapping names from @relation directives
 - **Missing foreign keys**: Add required foreign key fields
 - **Circular dependencies**: Restructure relationships carefully
-- **Forbidden**: `@relation("MappingName", fields: [...], references: [...])`
-- **Correct**: `@relation(fields: [foreign_key_id], references: [id])`
+- **Forbidden**: 
+  - `article bbs_articles @relation("article", fields: [bbs_article_id], references: [id], onDelete: Cascade)`
+  - `to_files bbs_articles_snapshot_files @relation("to_files")`
+  - `mv_last mv_bbs_article_last_snapshots? @relation("mv_last")`
+- **Correct**:
+  - `article bbs_articles @relation(fields: [bbs_article_id], references: [id], onDelete: Cascade)`
+  - `to_files bbs_article_snapshot_files[]`
+  - `mv_last mv_bbs_article_last_snapshots?`
 
 #### Type & Constraint Errors
 - **Invalid data types**: Correct to supported Prisma types
