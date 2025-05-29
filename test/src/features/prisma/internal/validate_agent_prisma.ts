@@ -22,14 +22,27 @@ export const validate_agent_prisma = async (owner: string, project: string) => {
   });
 
   const validates: AutoBePrismaValidateEvent[] = [];
+  agent.on("prismaCorrect", async (event) => {
+    await FileSystemIterator.save({
+      root: `${TestGlobal.ROOT}/results/${owner}/${project}/prisma-correct-${validates.length}`,
+      files: Object.fromEntries([
+        ["reason.log", event.reason],
+        ...Object.entries(event.input).map(([k, v]) => [`input/${k}`, v]),
+        ...Object.entries(event.correction).map(([k, v]) => [
+          `correction/${k}`,
+          v,
+        ]),
+      ]),
+    });
+  });
   agent.on("prismaValidate", async (event) => {
     validates.push(event);
     if (event.result.type === "failure")
       await FileSystemIterator.save({
         root: `${TestGlobal.ROOT}/results/${owner}/${project}/prisma-failure-${validates.length}`,
         files: {
-          ...event.schemas,
           "reason.log": event.result.reason,
+          ...event.schemas,
         },
       });
   });
@@ -57,13 +70,6 @@ export const validate_agent_prisma = async (owner: string, project: string) => {
       throw new Error("History type must be prisma.");
   } else if (history.result.type !== "success")
     throw new Error("Prisma validation failed.");
-
-  console.log({
-    starts: starts.length,
-    validates: validates.length,
-    components: components.length,
-    schemas: schemas.length,
-  });
 
   // REPORT RESULT
   await FileSystemIterator.save({

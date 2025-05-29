@@ -16,6 +16,7 @@ export type IAutoBeEventJson =
   | IAutoBeEventJson.IPrismaComponents
   | IAutoBeEventJson.IPrismaSchemas
   | IAutoBeEventJson.IPrismaComplete
+  | IAutoBeEventJson.IPrismaCorrect
   | IAutoBeEventJson.IPrismaValidate
   | IAutoBeEventJson.IInterfaceStart
   | IAutoBeEventJson.IInterfaceEndpoints
@@ -44,6 +45,7 @@ export namespace IAutoBeEventJson {
     prismaSchemas: IPrismaSchemas;
     prismaComplete: IPrismaComplete;
     prismaValidate: IPrismaValidate;
+    prismaCorrect: IPrismaCorrect;
     interfaceStart: IInterfaceStart;
     interfaceEndpoints: IInterfaceEndpoints;
     interfaceOperations: IInterfaceOperations;
@@ -113,6 +115,13 @@ export namespace IAutoBeEventJson {
     result:
       | IAutoBePrismaCompilerResult.IFailure
       | IAutoBePrismaCompilerResult.IException;
+    step: number;
+  }
+  export interface IPrismaCorrect extends IBase<"prismaCorrect"> {
+    input: Record<string, string>;
+    failure: IAutoBePrismaCompilerResult.IFailure;
+    correction: Record<string, string>;
+    reason: string;
     step: number;
   }
 

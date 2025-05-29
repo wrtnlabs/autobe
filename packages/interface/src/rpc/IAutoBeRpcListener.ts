@@ -16,6 +16,7 @@ export interface IAutoBeRpcListener {
   prismaComponents?(event: IAutoBeEventJson.IPrismaComponents): Promise<void>;
   prismaComplete?(event: IAutoBeEventJson.IPrismaComplete): Promise<void>;
   prismaValidate?(event: IAutoBeEventJson.IPrismaValidate): Promise<void>;
+  prismaCorrect?(event: IAutoBeEventJson.IPrismaCorrect): Promise<void>;
 
   interfaceStart?(event: IAutoBeEventJson.IInterfaceStart): Promise<void>;
   interfaceEndpoints?(

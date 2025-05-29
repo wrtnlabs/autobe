@@ -42,6 +42,9 @@ export class AutoBePlaygroundListener {
       prismaValidate: async (event) => {
         this.callback?.(event);
       },
+      prismaCorrect: async (event) => {
+        this.callback?.(event);
+      },
 
       interfaceStart: async (event) => {
         this.callback?.(event);

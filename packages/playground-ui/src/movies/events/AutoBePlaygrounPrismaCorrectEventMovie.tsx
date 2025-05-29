@@ -1,40 +1,35 @@
-import { AutoBePrismaValidateEvent } from "@autobe/interface";
+import { AutoBePrismaCorrectEvent } from "@autobe/interface";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Button, Card, CardActions, CardContent, Chip } from "@mui/material";
 import StackBlitzSDK from "@stackblitz/sdk";
 
-import { ErrorUtil } from "../../utils/ErrorUtil";
-
-export function AutoBePlaygroundPrismaValidateEvent(
-  props: AutoBePlaygroundPrismaValidateEvent.IProps,
+export function AutoBePlaygrounPrismaCorrectEventMovie(
+  props: AutoBePlaygrounPrismaCorrectEventMovie.IProps,
 ) {
-  const openStackBlitz = () => {
+  const openStackBlitz = () =>
     StackBlitzSDK.openProject(
       {
-        files: {
-          ...props.event.schemas,
-          ...(props.event.result.type === "failure"
-            ? {
-                "reason.log": props.event.result.reason,
-              }
-            : {
-                "error.json": JSON.stringify(
-                  ErrorUtil.toJSON(props.event.result.error),
-                  null,
-                  2,
-                ),
-              }),
-        },
-        title: "AutoBE Prisma Validate Report",
-        description: "Report of Prisma Validate Event (Compilation Error)",
+        files: Object.fromEntries([
+          ["reason.log", props.event.reason],
+          ...Object.entries(props.event.input).map(([k, v]) => [
+            `input/${k}`,
+            v,
+          ]),
+          ...Object.entries(props.event.correction).map(([k, v]) => [
+            `correction/${k}`,
+            v,
+          ]),
+        ]),
+        title: "AutoBE Prisma Compile Error Correction",
+        description:
+          "Report of Prisma Correct Event (Recovery from Compilation Error)",
         template: "node",
       },
       {
         newWindow: true,
       },
     );
-  };
   return (
     <Card
       elevation={3}
@@ -63,14 +58,14 @@ export function AutoBePlaygroundPrismaValidateEvent(
       </CardContent>
       <CardActions style={{ textAlign: "right" }}>
         <Button startIcon={<ExpandMoreIcon />} onClick={() => openStackBlitz()}>
-          Open Validation Details
+          Open Correction Details
         </Button>
       </CardActions>
     </Card>
   );
 }
-export namespace AutoBePlaygroundPrismaValidateEvent {
+export namespace AutoBePlaygrounPrismaCorrectEventMovie {
   export interface IProps {
-    event: AutoBePrismaValidateEvent;
+    event: AutoBePrismaCorrectEvent;
   }
 }

@@ -80,6 +80,16 @@ async function step<Model extends ILlmSchema.Model>(
     return result; // unreachable
   }
 
+  ctx.dispatch({
+    type: "prismaCorrect",
+    input: files,
+    failure: result,
+    correction: pointer.value.files,
+    reason: pointer.value.planning,
+    step: ctx.state().analyze?.step ?? 0,
+    created_at: new Date().toISOString(),
+  });
+
   const newFiles: Record<string, string> = {
     ...files,
     ...pointer.value.files,
