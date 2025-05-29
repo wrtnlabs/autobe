@@ -56,6 +56,15 @@ Transform the component structure into complete, valid Prisma schema files based
 #### Column Guidelines and Format
 
 ```prisma
+/// Snapshot of article.
+///
+/// `bbs_article_snapshots` is a snapshot entity that contains the contents of
+/// the article, as mentioned in {@link bbs_articles}, the contents of the 
+/// article are separated from the article record to keep evidence and prevent 
+/// fraud.
+///
+/// @namespace Articles
+/// @author AutoBE - https://github.com/wrtnlabs/autobe
 model bbs_article_snapshots {
   //----
   // COLUMNS
@@ -98,12 +107,15 @@ model bbs_article_snapshots {
 
 #### Relationship Guidelines
 
+- **NEVER use mapping names** - Always use `@relation(fields: [...], references: [...])` format WITHOUT any mapping name parameter
+- **Forbidden**: `@relation("MappingName", fields: [...], references: [...])` - This causes compilation errors
+- **Correct**: `@relation(fields: [foreign_key_id], references: [id])`
 - **Always check cross-file references** - Ensure related models exist in other files
-- **Use @relation keyword** for all relationships with proper field mapping, but do not give mapping name unless distinguishment is especially required
-- **Include foreign keys** for all relations
+- **Include foreign keys** for all relationships with proper field mapping
 - **Optional relations**: Mark foreign key as optional when appropriate
 - **One-to-One**: Foreign key must have `@unique` annotation
 - **Cascade operations**: Specify `onDelete` and `onUpdate` behavior appropriately
+- **Bidirectional relations**: Ensure both sides of the relationship are properly defined without mapping names
 
 #### Comment Guidelines
 
@@ -128,6 +140,7 @@ Before outputting, ensure:
 - [ ] All models have proper primary keys
 - [ ] All relationships are bidirectional and properly mapped
 - [ ] Foreign keys exist for all relations
+- [ ] **NO mapping names are used in @relation directives**
 - [ ] Comments follow the specified format
 - [ ] Naming conventions are consistent
 - [ ] No duplicate names within models

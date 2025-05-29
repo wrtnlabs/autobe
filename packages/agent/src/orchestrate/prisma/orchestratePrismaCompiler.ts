@@ -146,28 +146,25 @@ interface IApplication {
    * Fixes Prisma compilation errors while preserving ALL existing comments,
    * documentation, and schema structure.
    *
-   * Core Rules:
+   * ## Core Rules
    *
-   * 1. Fix ONLY compilation errors - never remove comments or documentation
+   * 1. Fix ONLY compilation errors - never remove comments/documentation
    * 2. Apply minimal changes - preserve original design and relationships
-   * 3. Return COMPLETE files - no truncation or abbreviation allowed
-   * 4. Maintain ALL existing comments, field descriptions, and documentation
-   * 5. Preserve business logic, naming conventions, and architectural patterns
+   * 3. Return COMPLETE files - no truncation allowed
+   * 4. NEVER use mapping names in @relation directives
    *
-   * Critical Preservation Requirements:
+   * ## Preservation Requirements
    *
-   * - Keep ALL comments ("///" and "//")
-   * - Keep ALL field documentation and descriptions
-   * - Keep ALL model-level documentation
-   * - Keep ALL enum descriptions and value comments
+   * - Keep ALL comments (`//` and `///`)
+   * - Keep ALL field/model documentation
+   * - Keep business logic and architectural patterns
+   * - Remove description comments only when erasing properties/relationships
    *
-   * Fix Strategy:
+   * ## Fix Strategy
    *
-   * - Resolve syntax errors without changing structure
-   * - Fix relationship mappings while preserving comments
-   * - Correct type mismatches keeping original documentation
-   * - Add missing foreign keys without removing existing comments
-   * - Resolve cross-file references while maintaining all documentation
+   * - Resolve syntax/relationship errors without changing structure
+   * - Remove mapping names from @relation directives if present
+   * - Add missing foreign keys/constraints while preserving documentation
    */
   modifyPrismaSchemaFiles(props: IModifyPrismaSchemaFilesProps): void;
 }
