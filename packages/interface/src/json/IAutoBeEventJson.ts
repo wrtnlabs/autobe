@@ -13,6 +13,7 @@ export type IAutoBeEventJson =
   | IAutoBeEventJson.IAnalyzeReview
   | IAutoBeEventJson.IAnalyzeComplete
   | IAutoBeEventJson.IPrismaStart
+  | IAutoBeEventJson.IPrismaDraft
   | IAutoBeEventJson.IPrismaComponents
   | IAutoBeEventJson.IPrismaSchemas
   | IAutoBeEventJson.IPrismaComplete
@@ -40,6 +41,7 @@ export namespace IAutoBeEventJson {
     analyzeWriteDocument: IAnalyzeWriteDocument;
     analyzeReview: IAnalyzeReview;
     prismaStart: IPrismaStart;
+    prismaDraft: IPrismaDraft;
     prismaComponents: IPrismaComponents;
     prismaSchemas: IPrismaSchemas;
     prismaComplete: IPrismaComplete;
@@ -88,6 +90,11 @@ export namespace IAutoBeEventJson {
 
   export interface IPrismaStart extends IBase<"prismaStart"> {
     reason: string;
+    step: number;
+  }
+
+  export interface IPrismaDraft extends IBase<"prismaDraft"> {
+    draft: string;
     step: number;
   }
 

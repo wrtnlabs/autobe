@@ -11,6 +11,7 @@ import { transformPrismaSchemaHistories } from "./transformPrismaSchemaHistories
 export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   components: { filename: string; tables: string[] }[],
+  draft?: string,
 ): Promise<AutoBePrismaSchemasEvent[]> {
   const start: Date = new Date();
   const entireTables: string[] = Array.from(
@@ -22,11 +23,15 @@ export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
 
   return await Promise.all(
     components.map(async (c) => {
-      const result: IMakePrismaSchemaFilesProps = await process(ctx, {
-        filename: c.filename,
-        tables: c.tables,
-        entireTables,
-      });
+      const result: IMakePrismaSchemaFilesProps = await process(
+        ctx,
+        {
+          filename: c.filename,
+          tables: c.tables,
+          entireTables,
+        },
+        draft,
+      );
       const event: AutoBePrismaSchemasEvent = {
         type: "prismaSchemas",
         created_at: start.toISOString(),
@@ -47,6 +52,7 @@ async function process<Model extends ILlmSchema.Model>(
   component: { filename: string; tables: string[] } & {
     entireTables: string[];
   },
+  draft?: string,
 ): Promise<IMakePrismaSchemaFilesProps> {
   const pointer: IPointer<IMakePrismaSchemaFilesProps | null> = {
     value: null,
@@ -57,7 +63,7 @@ async function process<Model extends ILlmSchema.Model>(
     config: {
       ...(ctx.config ?? {}),
     },
-    histories: transformPrismaSchemaHistories(ctx.state()),
+    histories: transformPrismaSchemaHistories(ctx.state(), draft),
     tokenUsage: ctx.usage(),
     controllers: [
       createApplication({
@@ -76,29 +82,34 @@ async function process<Model extends ILlmSchema.Model>(
 
   await agentica.conversate(
     [
-      "Please generate Prisma schema files based on the previous requirement analysis report.",
+      draft
+        ? "Please generate Prisma schema files based on the previous Prisma database design document."
+        : "Please generate Prisma schema files based on the previous requirement analysis report.",
+      "",
+      "You Must only use the following tables to generate Prisma schema files.",
       "",
       "**Context:**",
       `- Target filename: \`${component.filename}\``,
       `- Tables to implement in this file: \`${component.tables.join("`, `")}\``,
-      `- All available tables in the system: \`${component.entireTables.join("`, `")}\``,
-      "",
-      "**Instructions:**",
-      "1. Create comprehensive Prisma schema content for the specified tables",
-      "2. Reference the previous requirement analysis to understand business logic and data structures",
-      "3. Establish appropriate relationships between tables using the entireTables list as reference",
-      "4. Include proper field types, constraints, indexes, and documentation",
-      "5. Follow enterprise-level schema design patterns and best practices",
-      "6. Ensure cross-table relationships are accurately modeled based on business requirements",
-      "",
-      "**Key Requirements:**",
-      "- Implement only the tables specified for this file",
-      "- Create foreign key relationships to tables from entireTables when business logic requires it",
-      "- Add comprehensive field documentation and model descriptions",
-      "- Include appropriate indexes for performance optimization",
-      "- Follow consistent naming conventions and data types",
     ].join("\n"),
   );
+
+  // `- All available tables in the system: \`${component.entireTables.join("`, `")}\``,
+  // "",
+  // "**Instructions:**",
+  // "1. Create comprehensive Prisma schema content for the specified tables",
+  // "2. Reference the previous requirement analysis to understand business logic and data structures",
+  // "3. Establish appropriate relationships between tables using the entireTables list as reference",
+  // "4. Include proper field types, constraints, indexes, and documentation",
+  // "5. Follow enterprise-level schema design patterns and best practices",
+  // "6. Ensure cross-table relationships are accurately modeled based on business requirements",
+  // "",
+  // "**Key Requirements:**",
+  // "- Implement only the tables specified for this file",
+  // "- Create foreign key relationships to tables from entireTables when business logic requires it",
+  // "- Add comprehensive field documentation and model descriptions",
+  // "- Include appropriate indexes for performance optimization",
+  // "- Follow consistent naming conventions and data types",
 
   if (pointer.value === null)
     throw new Error("Unreachable code: Prisma Schema not generated");
@@ -146,8 +157,8 @@ const collection = {
 
 interface IApplication {
   /**
-   * Generates comprehensive Prisma schema files based on detailed requirements
-   * analysis.
+   * Generates comprehensive Prisma schema files based on detailed Prisma
+   * database design document.
    *
    * Creates multiple organized schema files following enterprise patterns
    * including proper domain separation, relationship modeling, snapshot

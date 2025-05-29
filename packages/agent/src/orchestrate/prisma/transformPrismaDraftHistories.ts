@@ -3,9 +3,8 @@ import { IAgenticaHistoryJson } from "@agentica/core";
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../context/AutoBeState";
 
-export const transformPrismaComponentsHistories = (
+export const transformPrismaDraftHistories = (
   state: AutoBeState,
-  draft?: string,
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
@@ -20,34 +19,10 @@ export const transformPrismaComponentsHistories = (
         ].join(" "),
       },
     ];
-
-  if (draft) {
-    return [
-      {
-        type: "systemMessage",
-        text: AutoBeSystemPromptConstant.PRISMA_COMPONENT_DRAFT,
-      },
-      {
-        type: "assistantMessage",
-        text: [
-          "Here is the Prisma database design document.",
-          "",
-          "Call the provided tool function to generate Prisma DB schema",
-          "referencing below Prisma database design document.",
-          "",
-          `## Prisma Database Design Document`,
-          "",
-          draft,
-          "",
-        ].join("\n"),
-      },
-    ];
-  }
-
   return [
     {
       type: "systemMessage",
-      text: AutoBeSystemPromptConstant.PRISMA_COMPONENT,
+      text: AutoBeSystemPromptConstant.PRISMA_DRAFT,
     },
     {
       type: "assistantMessage",

@@ -43,6 +43,28 @@ export async function orchestratePrismaCompiler<Model extends ILlmSchema.Model>(
   let result: IAutoBePrismaCompilerResult;
 
   for (let i: number = 0; i < retry; ++i) {
+    const prismaSchema = pointer.value?.files ?? files;
+    Object.assign(prismaSchema, {
+      "main.prisma": `
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions", "views"]
+  binaryTargets   = ["native", "linux-musl-arm64-openssl-3.0.x"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = []
+}
+
+generator markdown {
+  provider = "prisma-markdown"
+  output   = "../docs/ERD.md"
+}
+        `,
+    });
+
     result = await ctx.compiler.prisma({
       files: pointer.value?.files ?? files,
     });

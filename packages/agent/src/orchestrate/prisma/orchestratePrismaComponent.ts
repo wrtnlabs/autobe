@@ -19,6 +19,7 @@ export async function orchestratePrismaComponents<
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
+  isDraft: boolean = false,
   content: string = "Please extract files and tables from the given documents.",
 ): Promise<AutoBeAssistantMessageHistory | AutoBePrismaComponentsEvent> {
   const start: Date = new Date();
@@ -31,7 +32,10 @@ export async function orchestratePrismaComponents<
     config: {
       ...(ctx.config ?? {}),
     },
-    histories: transformPrismaComponentsHistories(ctx.state()),
+    histories: transformPrismaComponentsHistories(
+      ctx.state(),
+      isDraft ? content : undefined,
+    ),
     tokenUsage: ctx.usage(),
     controllers: [
       createApplication({

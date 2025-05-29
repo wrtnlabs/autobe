@@ -7,6 +7,7 @@ import {
   AutoBePrismaValidateEvent,
 } from "@autobe/interface";
 import { AutoBePrismaComponentsEvent } from "@autobe/interface/src/events/AutoBePrismaComponentsEvent";
+import { AutoBePrismaDraftEvent } from "@autobe/interface/src/events/AutoBePrismaDraft";
 import { AutoBePrismaSchemasEvent } from "@autobe/interface/src/events/AutoBePrismaSchemasEvent";
 
 import { TestGlobal } from "../../../TestGlobal";
@@ -19,6 +20,11 @@ export const validate_agent_prisma = async (owner: string, project: string) => {
   const starts: AutoBePrismaStartEvent[] = [];
   agent.on("prismaStart", (event) => {
     starts.push(event);
+  });
+
+  const drafts: AutoBePrismaDraftEvent[] = [];
+  agent.on("prismaDraft", (event) => {
+    drafts.push(event);
   });
 
   const validates: AutoBePrismaValidateEvent[] = [];
@@ -75,6 +81,7 @@ export const validate_agent_prisma = async (owner: string, project: string) => {
       "logs/components.json": JSON.stringify(components, null, 2),
       "logs/schemas.json": JSON.stringify(schemas, null, 2),
       "logs/starts.json": JSON.stringify(starts, null, 2),
+      "logs/drafts.json": JSON.stringify(drafts, null, 2),
     },
   });
 };

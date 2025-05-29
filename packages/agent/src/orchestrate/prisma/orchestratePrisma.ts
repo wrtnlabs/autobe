@@ -4,6 +4,7 @@ import {
   AutoBePrismaHistory,
   IAutoBePrismaCompilerResult,
 } from "@autobe/interface";
+import { AutoBePrismaDraftEvent } from "@autobe/interface/src/events/AutoBePrismaDraft";
 import { AutoBePrismaSchemasEvent } from "@autobe/interface/src/events/AutoBePrismaSchemasEvent";
 import { ILlmSchema } from "@samchon/openapi";
 import { v4 } from "uuid";
@@ -12,8 +13,13 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
 import { orchestratePrismaCompiler } from "./orchestratePrismaCompiler";
 import { orchestratePrismaComponents } from "./orchestratePrismaComponent";
+import { orchestratePrismaDraft } from "./orchestratePrismaDraft";
 import { orchestratePrismaSchemas } from "./orchestratePrismaSchema";
 
+/**
+ * This function executes Prisma Schema Design Draft Generation -> Prisma
+ * Components Generation -> Prisma Schema Generation -> Prisma Compiling
+ */
 export const orchestratePrisma =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
   async (
@@ -27,10 +33,25 @@ export const orchestratePrisma =
       step: ctx.state().analyze?.step ?? 0,
     });
 
+    // DRAFT
+    const draft: AutoBeAssistantMessageHistory | AutoBePrismaDraftEvent =
+      await orchestratePrismaDraft(ctx);
+
+    if (draft.type === "assistantMessage") {
+      ctx.histories().push(draft);
+      ctx.dispatch(draft);
+      return draft;
+    } else ctx.dispatch(draft);
+
     // COMPONENTS
     const components:
       | AutoBeAssistantMessageHistory
-      | AutoBePrismaComponentsEvent = await orchestratePrismaComponents(ctx);
+      | AutoBePrismaComponentsEvent = await orchestratePrismaComponents(
+      ctx,
+      true,
+      draft.draft,
+    );
+
     if (components.type === "assistantMessage") {
       ctx.histories().push(components);
       ctx.dispatch(components);

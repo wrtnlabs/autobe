@@ -1,6 +1,5 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
 
-import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../context/AutoBeState";
 
 export const transformPrismaCompilerHistories = (
@@ -23,7 +22,11 @@ export const transformPrismaCompilerHistories = (
   return [
     {
       type: "systemMessage",
-      text: AutoBeSystemPromptConstant.PRISMA_COMPILER,
+      text: [
+        "You are a world-class Prisma schema validation and error resolution specialist. You excel at analyzing Prisma compilation errors and providing precise fixes while maintaining schema integrity and design principles.",
+        "",
+        "Analyze compilation errors and provide corrected schema files that resolve all issues while maintaining the original design intent.",
+      ].join("\n"),
     },
     {
       type: "assistantMessage",

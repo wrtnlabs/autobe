@@ -5,6 +5,7 @@ import { AutoBeState } from "../../context/AutoBeState";
 
 export const transformPrismaSchemaHistories = (
   state: AutoBeState,
+  draft?: string,
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
@@ -19,6 +20,34 @@ export const transformPrismaSchemaHistories = (
         ].join(" "),
       },
     ];
+
+  if (draft) {
+    return [
+      {
+        type: "systemMessage",
+        text: AutoBeSystemPromptConstant.PRISMA_SCHEMA_DRAFT,
+      },
+      {
+        type: "assistantMessage",
+        text: AutoBeSystemPromptConstant.PRISMA_EXAMPLE,
+      },
+      {
+        type: "systemMessage",
+        text: [
+          "Here is the Prisma database design document.",
+          "",
+          "Call the provided tool function to generate Prisma DB schema",
+          "referencing below Prisma database design document.",
+          "",
+          `## Prisma Database Design Document`,
+          "",
+          draft,
+          "",
+        ].join("\n"),
+      },
+    ];
+  }
+
   return [
     {
       type: "systemMessage",
@@ -29,7 +58,7 @@ export const transformPrismaSchemaHistories = (
       text: AutoBeSystemPromptConstant.PRISMA_EXAMPLE,
     },
     {
-      type: "assistantMessage",
+      type: "systemMessage",
       text: [
         "Here is the requirement analysis report.",
         "",
