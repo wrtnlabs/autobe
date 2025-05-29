@@ -1,9 +1,7 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import { IAutoBePrismaCompilerResult } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
-import fs from "fs";
-import path from "path";
-import { IPointer, VariadicSingleton } from "tstl";
+import { IPointer } from "tstl";
 import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
@@ -81,20 +79,6 @@ async function step<Model extends ILlmSchema.Model>(
     );
     return result; // unreachable
   }
-
-  await save({
-    root: `assets/logs/${Date.now()}`,
-    files: {
-      "reason.md": result.reason,
-      "planning.md": pointer.value.planning,
-      ...Object.fromEntries(
-        Object.entries(pointer.value.files).map(([k, v]) => [`fixed/${k}`, v]),
-      ),
-      ...Object.fromEntries(
-        Object.entries(files).map(([k, v]) => [`input/${k}`, v]),
-      ),
-    },
-  });
 
   const newFiles: Record<string, string> = {
     ...files,
@@ -278,25 +262,3 @@ const MAIN_PRISMA_FILE = StringUtil.trim`
     output   = "../docs/ERD.md"
   }
 `;
-
-const save = async (props: {
-  root: string;
-  files: Record<string, string>;
-}): Promise<void> => {
-  if (fs.existsSync(props.root))
-    await fs.promises.rm(props.root, {
-      recursive: true,
-    });
-  const directory = new VariadicSingleton(async (location: string) => {
-    try {
-      await fs.promises.mkdir(location, {
-        recursive: true,
-      });
-    } catch {}
-  });
-  for (const [key, value] of Object.entries(props.files)) {
-    const file: string = path.resolve(`${props.root}/${key}`);
-    await directory.get(path.dirname(file));
-    await fs.promises.writeFile(file, value, "utf8");
-  }
-};
