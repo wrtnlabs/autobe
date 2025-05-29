@@ -4,8 +4,8 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Button, Card, CardActions, CardContent, Chip } from "@mui/material";
 import StackBlitzSDK from "@stackblitz/sdk";
 
-export function AutoBePlaygrounPrismaCorrectEventMovie(
-  props: AutoBePlaygrounPrismaCorrectEventMovie.IProps,
+export function AutoBePlaygroundPrismaCorrectEventMovie(
+  props: AutoBePlaygroundPrismaCorrectEventMovie.IProps,
 ) {
   const openStackBlitz = () =>
     StackBlitzSDK.openProject(
@@ -64,7 +64,7 @@ export function AutoBePlaygrounPrismaCorrectEventMovie(
     </Card>
   );
 }
-export namespace AutoBePlaygrounPrismaCorrectEventMovie {
+export namespace AutoBePlaygroundPrismaCorrectEventMovie {
   export interface IProps {
     event: AutoBePrismaCorrectEvent;
   }

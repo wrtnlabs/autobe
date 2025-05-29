@@ -1,10 +1,10 @@
 import { AutoBeEvent, IAutoBeRpcService } from "@autobe/interface";
 
-import { AutoBePlaygrounPrismaCorrectEventMovie } from "./AutoBePlaygrounPrismaCorrectEventMovie";
 import { AutoBePlaygroundAnalyzeReviewMovie } from "./AutoBePlaygroundAnalyzeReviewMovie";
 import { AutoBePlaygroundAnalyzeWriteDocumentMovie } from "./AutoBePlaygroundAnalyzeWriteDocumentMovie";
 import { AutoBePlaygroundAssistantMessageEventMovie } from "./AutoBePlaygroundAssistantMessageEventMovie";
 import { AutoBePlaygroundCompleteEventMovie } from "./AutoBePlaygroundCompleteEventMovie";
+import { AutoBePlaygroundPrismaCorrectEventMovie } from "./AutoBePlaygroundPrismaCorrectEventMovie";
 import { AutoBePlaygroundPrismaValidateEventMovie } from "./AutoBePlaygroundPrismaValidateEventMovie";
 import { AutoBePlaygroundProgressEventMovie } from "./AutoBePlaygroundProgressEventMovie";
 import { AutoBePlaygroundStartEventMovie } from "./AutoBePlaygroundStartEventMovie";
@@ -62,7 +62,7 @@ export function AutoBePlaygroundEventMovie(
     case "prismaValidate":
       return <AutoBePlaygroundPrismaValidateEventMovie event={props.event} />;
     case "prismaCorrect":
-      return <AutoBePlaygrounPrismaCorrectEventMovie event={props.event} />;
+      return <AutoBePlaygroundPrismaCorrectEventMovie event={props.event} />;
     default:
       props.event satisfies never;
       throw new Error("Unknown event type"); // unreachable
