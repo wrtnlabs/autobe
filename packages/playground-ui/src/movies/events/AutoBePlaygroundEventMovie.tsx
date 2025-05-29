@@ -31,6 +31,7 @@ export function AutoBePlaygroundEventMovie(
     // PROGRESS EVENTS
     case "prismaComponents":
     case "prismaSchemas":
+    case "prismaDraft":
     case "interfaceEndpoints":
     case "interfaceOperations":
     case "interfaceComponents":

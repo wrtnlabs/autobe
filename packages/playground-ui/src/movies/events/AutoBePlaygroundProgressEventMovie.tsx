@@ -9,6 +9,7 @@ import {
 } from "@autobe/interface";
 import { AutoBeAnalyzeReviewEvent } from "@autobe/interface/src/events/AutoBEAnalyzeReviewEvent";
 import { AutoBeAnalyzeWriteDocumentEvent } from "@autobe/interface/src/events/AutoBeAnalyzeWriteDocumentEvent";
+import { AutoBePrismaDraftEvent } from "@autobe/interface/src/events/AutoBePrismaDraft";
 
 export function AutoBePlaygroundProgressEventMovie(
   props: AutoBePlaygroundProgressEventMovie.IProps,
@@ -24,6 +25,7 @@ export namespace AutoBePlaygroundProgressEventMovie {
     event:
       | AutoBeAnalyzeReviewEvent
       | AutoBeAnalyzeWriteDocumentEvent
+      | AutoBePrismaDraftEvent
       | AutoBePrismaComponentsEvent
       | AutoBePrismaSchemasEvent
       | AutoBeInterfaceEndpointsEvent
