@@ -2,7 +2,6 @@ import {
   AutoBeAssistantMessageHistory,
   AutoBePrismaComponentsEvent,
   AutoBePrismaHistory,
-  IAutoBePrismaCompilerResult,
 } from "@autobe/interface";
 import { AutoBePrismaSchemasEvent } from "@autobe/interface/src/events/AutoBePrismaSchemasEvent";
 import { ILlmSchema } from "@samchon/openapi";
@@ -48,25 +47,20 @@ export const orchestratePrisma =
       events.map((e) => [e.filename, e.content]),
     );
 
-    const { description, ...compiledResult } = await orchestratePrismaCompiler(
-      ctx,
-      files,
-    );
-
-    const result = processCompilerResult(compiledResult);
-
+    const result = await orchestratePrismaCompiler(ctx, files);
     const history: AutoBePrismaHistory = {
       type: "prisma",
       id: v4(),
       created_at: start.toISOString(),
       completed_at: new Date().toISOString(),
       reason: props.reason,
-      description,
+      description: "",
       result: result,
       step: ctx.state().analyze?.step ?? 0,
     };
     ctx.state().prisma = history;
     ctx.histories().push(history);
+
     if (result.type === "success")
       ctx.dispatch({
         type: "prismaComplete",
@@ -76,50 +70,5 @@ export const orchestratePrisma =
         step: ctx.state().analyze?.step ?? 0,
         created_at: new Date().toISOString(),
       });
-
     return history;
   };
-
-/**
- * Process the compiler result to generate the main Prisma schema file.
- *
- * If the compiler result is a success, the main Prisma schema file will be
- * generated.
- *
- * @param result - The compiler result to process.
- * @returns The processed compiler result with the main Prisma schema file.
- */
-function processCompilerResult(
-  result: IAutoBePrismaCompilerResult,
-): IAutoBePrismaCompilerResult {
-  const content = `
-generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["postgresqlExtensions", "views"]
-  binaryTargets   = ["native", "linux-musl-arm64-openssl-3.0.x"]
-}
-
-datasource db {
-  provider   = "postgresql"
-  url        = env("DATABASE_URL")
-  extensions = []
-}
-
-generator markdown {
-  provider = "prisma-markdown"
-  output   = "../docs/ERD.md"
-}  
-  `;
-
-  if (result.type === "success") {
-    return {
-      ...result,
-      schemas: {
-        ...result.schemas,
-        "main.prisma": content,
-      },
-    };
-  }
-
-  return result;
-}

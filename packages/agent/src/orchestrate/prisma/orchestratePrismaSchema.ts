@@ -44,7 +44,9 @@ export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
 
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  component: { filename: string; tables: string[] } & {
+  component: {
+    filename: string;
+    tables: string[];
     entireTables: string[];
   },
 ): Promise<IMakePrismaSchemaFilesProps> {
@@ -57,7 +59,7 @@ async function process<Model extends ILlmSchema.Model>(
     config: {
       ...(ctx.config ?? {}),
     },
-    histories: transformPrismaSchemaHistories(ctx.state()),
+    histories: transformPrismaSchemaHistories(ctx.state().analyze!, component),
     tokenUsage: ctx.usage(),
     controllers: [
       createApplication({

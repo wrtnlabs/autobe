@@ -1,25 +1,14 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
+import { IAutoBePrismaCompilerResult } from "@autobe/interface";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
-import { AutoBeState } from "../../context/AutoBeState";
 
 export const transformPrismaCompilerHistories = (
-  state: AutoBeState,
   files: Record<string, string>,
+  result: IAutoBePrismaCompilerResult.IFailure,
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
-  if (state.analyze === null)
-    return [
-      {
-        type: "systemMessage",
-        text: [
-          "Requirement analysis is not yet completed.",
-          "Don't call any tool function,",
-          "but say to process the requirement analysis.",
-        ].join(" "),
-      },
-    ];
   return [
     {
       type: "systemMessage",
@@ -30,19 +19,28 @@ export const transformPrismaCompilerHistories = (
       text: [
         "Below are the current schema files that failed compilation:",
         "",
-        "============================================== CURRENT SCHEMA FILES ==============================================",
+        "```json",
+        JSON.stringify(files),
+        "```",
+      ].join("\n"),
+    },
+    {
+      type: "assistantMessage",
+      text: [
+        `Here is the compiler error message. Please fix the schema files`,
+        `referencing the error message.`,
         "",
-        Object.entries(files)
-          .map(([filename, content]) => {
-            return [
-              `// =============================================================================`,
-              `// FILE: ${filename}`,
-              `// =============================================================================`,
-              content,
-            ].join("\n");
-          })
-          .join("\n\n"),
+        result.reason,
+      ].join("\n"),
+    },
+    {
+      type: "systemMessage",
+      text: [
+        "Before fixing the schema files,",
+        "study about Prisma schema language",
+        "from the best practices and examples",
         "",
+        AutoBeSystemPromptConstant.PRISMA_EXAMPLE,
       ].join("\n"),
     },
   ];

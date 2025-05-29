@@ -44,18 +44,19 @@ export const validate_agent_prisma = async (owner: string, project: string) => {
     schemas.push(event);
   });
 
-  let result: AutoBePrismaHistory | AutoBeAssistantMessageHistory =
+  let history: AutoBePrismaHistory | AutoBeAssistantMessageHistory =
     await orchestrate.prisma(agent.getContext())({
       reason:
         "Step to the Prisma DB schema generation after requirements analysis",
     });
-  if (result.type !== "prisma") {
-    result = await orchestrate.prisma(agent.getContext())({
+  if (history.type !== "prisma") {
+    history = await orchestrate.prisma(agent.getContext())({
       reason: "Don't ask me to do that, and just do it right now.",
     });
-    if (result.type !== "prisma")
+    if (history.type !== "prisma")
       throw new Error("History type must be prisma.");
-  }
+  } else if (history.result.type !== "success")
+    throw new Error("Prisma validation failed.");
 
   console.log({
     starts: starts.length,
@@ -70,7 +71,7 @@ export const validate_agent_prisma = async (owner: string, project: string) => {
     files: {
       ...agent.getFiles(),
       "logs/validates.json": JSON.stringify(validates, null, 2),
-      "logs/result.json": JSON.stringify(result, null, 2),
+      "logs/result.json": JSON.stringify(history, null, 2),
       "logs/tokenUsage.json": JSON.stringify(agent.getTokenUsage(), null, 2),
       "logs/components.json": JSON.stringify(components, null, 2),
       "logs/schemas.json": JSON.stringify(schemas, null, 2),
