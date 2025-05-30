@@ -201,7 +201,6 @@ const LOGICAL_TYPES = {
   double: "Float",
   string: "String",
   // formats
-  date: "Date",
   datetime: "DateTime",
   uuid: "String",
   uri: "String",

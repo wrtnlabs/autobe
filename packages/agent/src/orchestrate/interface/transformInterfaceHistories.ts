@@ -42,7 +42,7 @@ export const transformInterfaceHistories = (
         ].join(" "),
       },
     ];
-  else if (state.prisma.compiled?.type !== "success")
+  else if (state.prisma.compiled.type !== "success")
     return [
       {
         type: "systemMessage",

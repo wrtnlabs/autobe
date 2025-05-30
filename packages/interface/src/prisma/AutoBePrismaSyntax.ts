@@ -329,15 +329,7 @@ export namespace AutoBePrismaSyntax {
      * - Date: Date-only values (rare, mostly for business dates)
      * - Datetime: Timestamp fields with date and time
      */
-    type:
-      | "boolean"
-      | "int"
-      | "double"
-      | "string"
-      | "uri"
-      | "uuid"
-      | "date"
-      | "datetime";
+    type: "boolean" | "int" | "double" | "string" | "uri" | "uuid" | "datetime";
 
     /**
      * Description explaining the business purpose and usage of this field.

@@ -1,5 +1,6 @@
 import {
   AutoBeAssistantMessageHistory,
+  AutoBePrismaCompleteEvent,
   AutoBePrismaComponentsEvent,
   AutoBePrismaHistory,
   IAutoBePrismaValidation,
@@ -68,15 +69,14 @@ export const orchestratePrisma =
     ctx.state().prisma = history;
     ctx.histories().push(history);
 
-    if (history.result.success === true && history.compiled?.type === "success")
+    if (history.result.success === true && history.compiled.type === "success")
       ctx.dispatch({
         type: "prismaComplete",
         application: history.result.data,
         schemas: history.schemas,
-        document: history.compiled.document,
-        diagrams: history.compiled.diagrams,
+        compiled: history.compiled,
         step: ctx.state().analyze?.step ?? 0,
         created_at: new Date().toISOString(),
-      });
+      } satisfies AutoBePrismaCompleteEvent);
     return history;
   };

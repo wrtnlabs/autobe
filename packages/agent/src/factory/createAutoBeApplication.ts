@@ -46,11 +46,11 @@ export const createAutoBeController = <Model extends ILlmSchema.Model>(props: {
         const r = await orchestratePrisma(props.context)(next);
         if (r.type === "prisma")
           return {
-            type: r.compiled?.type ?? "failure",
+            type: r.compiled.type,
             description:
-              r.compiled?.type === "success"
+              r.compiled.type === "success"
                 ? "Prisma schemas have been generated successfully."
-                : r.result.success === false || r.compiled?.type === "failure"
+                : r.result.success === false || r.compiled.type === "failure"
                   ? "Prisma schemas are generated, but compilation failed."
                   : "Unexpected error occurred while generating Prisma schemas.",
           };

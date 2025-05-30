@@ -36,7 +36,6 @@ export function AutoBePlaygroundCompleteEventMovie(
         );
       });
   };
-
   return (
     <Card
       elevation={3}

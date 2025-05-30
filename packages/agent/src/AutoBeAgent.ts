@@ -174,7 +174,7 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
           : [],
       ),
       ...Object.fromEntries(
-        this.state_.prisma?.compiled?.type === "success"
+        this.state_.prisma?.compiled.type === "success"
           ? [
               ...Object.entries(this.state_.prisma.schemas).map(
                 ([key, value]) => [
