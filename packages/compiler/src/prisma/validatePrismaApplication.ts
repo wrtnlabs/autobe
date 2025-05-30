@@ -18,7 +18,7 @@ export function validatePrismaApplication(
     ...application.files
       .map((file, fi) =>
         file.models.map((model, mi) => {
-          const accessor: string = `appplication.files[${fi}].models[${mi}]`;
+          const accessor: string = `application.files[${fi}].models[${mi}]`;
           return [
             ...validateDuplicatedFields(model, accessor),
             ...validateDuplicatedIndexes(model, accessor),
@@ -55,7 +55,7 @@ function validateDuplicatedFiles(
     if (array.length !== 1)
       array.forEach((container, i) => {
         errors.push({
-          path: `appplication.files[${container.index}]`,
+          path: `application.files[${container.index}]`,
           table: null,
           field: null,
           message: [
@@ -65,7 +65,7 @@ function validateDuplicatedFiles(
             "",
             ...array
               .filter((_oppo, j) => i !== j)
-              .map((oppo) => `- appplication.files[${oppo.index}]`),
+              .map((oppo) => `- application.files[${oppo.index}]`),
           ].join("\n"),
         });
       });
@@ -99,7 +99,7 @@ function validateDuplicatedModels(
     if (array.length !== 1)
       array.forEach((container, i) => {
         errors.push({
-          path: `appplication.files[${container.fileIndex}].models[${container.modelIndex}]`,
+          path: `application.files[${container.fileIndex}].models[${container.modelIndex}]`,
           table: container.model.name,
           field: null,
           message: [
@@ -111,7 +111,7 @@ function validateDuplicatedModels(
               .filter((_oppo, j) => i !== j)
               .map(
                 (oppo) =>
-                  `- appplication.files[${oppo.fileIndex}].models[${oppo.modelIndex}]`,
+                  `- application.files[${oppo.fileIndex}].models[${oppo.modelIndex}]`,
               ),
           ].join("\n"),
         });
