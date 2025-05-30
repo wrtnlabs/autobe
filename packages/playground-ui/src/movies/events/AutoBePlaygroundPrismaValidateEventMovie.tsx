@@ -14,17 +14,20 @@ export function AutoBePlaygroundPrismaValidateEventMovie(
       {
         files: {
           ...props.event.schemas,
-          ...(props.event.result.type === "failure"
+          ...(props.event.compiled.type === "failure"
             ? {
-                "reason.log": props.event.result.reason,
+                "compile-failure-reason.log": props.event.compiled.reason,
               }
-            : {
-                "error.json": JSON.stringify(
-                  ErrorUtil.toJSON(props.event.result.error),
-                  null,
-                  2,
-                ),
-              }),
+            : props.event.compiled.type === "exception"
+              ? {
+                  "compile-error.json": JSON.stringify(
+                    ErrorUtil.toJSON(props.event.compiled.error),
+                    null,
+                    2,
+                  ),
+                }
+              : {}),
+          "result.json": JSON.stringify(props.event.result, null, 2),
         },
         title: "AutoBE Prisma Validate Report",
         description: "Report of Prisma Validate Event (Compilation Error)",

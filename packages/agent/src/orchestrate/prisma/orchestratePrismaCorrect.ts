@@ -26,10 +26,15 @@ async function step<Model extends ILlmSchema.Model>(
   if (result.success) return result; // SUCCESS
 
   // VALIDATION FAILED
+  const schemas: Record<string, string> =
+    await ctx.compiler.prisma.write(application);
   ctx.dispatch({
     type: "prismaValidate",
     result,
-    schemas: await ctx.compiler.prisma.write(application),
+    schemas,
+    compiled: await ctx.compiler.prisma.compile({
+      files: schemas,
+    }),
     step: ctx.state().analyze?.step ?? 0,
     created_at: new Date().toISOString(),
   });

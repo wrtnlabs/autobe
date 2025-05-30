@@ -11,16 +11,10 @@ export function AutoBePlaygroundPrismaCorrectEventMovie(
     StackBlitzSDK.openProject(
       {
         files: Object.fromEntries([
-          ["reason.log", props.event.failure.reason],
+          ["errors.json", JSON.stringify(props.event.failure.errors, null, 2)],
           ["planning.md", props.event.planning],
-          ...Object.entries(props.event.input).map(([k, v]) => [
-            `input/${k}`,
-            v,
-          ]),
-          ...Object.entries(props.event.correction).map(([k, v]) => [
-            `correction/${k}`,
-            v,
-          ]),
+          ["input.json", JSON.stringify(props.event.failure.data, null, 2)],
+          ["correction.json", JSON.stringify(props.event.correction, null, 2)],
         ]),
         title: "AutoBE Prisma Compile Error Correction",
         description:
