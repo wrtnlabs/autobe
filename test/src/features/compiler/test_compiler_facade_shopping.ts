@@ -9,7 +9,7 @@ import typia from "typia";
 
 export const test_compiler_facade_shopping = async (): Promise<void> => {
   const compiler: AutoBeCompiler = new AutoBeCompiler();
-  const prisma: IAutoBePrismaCompilerResult = await compiler.prisma({
+  const prisma: IAutoBePrismaCompilerResult = await compiler.prisma.compile({
     files: await RepositoryFileSystem.prisma("samchon", "shopping-backend"),
   });
   if (prisma.type !== "success") {

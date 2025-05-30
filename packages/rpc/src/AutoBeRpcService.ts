@@ -66,6 +66,9 @@ export class AutoBeRpcService<Model extends ILlmSchema.Model>
     agent.on("interfaceComponents", (event) => {
       listener.interfaceComponents!(event).catch(() => {});
     });
+    agent.on("interfaceComplement", (event) => {
+      listener.interfaceComplement!(event).catch(() => {});
+    });
     agent.on("interfaceComplete", (event) => {
       listener.interfaceComplete!(event).catch(() => {});
     });

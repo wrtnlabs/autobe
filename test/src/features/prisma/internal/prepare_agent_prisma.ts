@@ -20,7 +20,7 @@ export const prepare_agent_prisma = async (owner: string, project: string) => {
     project,
   );
   const compiler: AutoBeCompiler = new AutoBeCompiler();
-  const prisma: IAutoBePrismaCompilerResult = await compiler.prisma({
+  const prisma: IAutoBePrismaCompilerResult = await compiler.prisma.compile({
     files: await TestFileSystem.prisma(owner, project),
   });
   if (prisma.type !== "success")

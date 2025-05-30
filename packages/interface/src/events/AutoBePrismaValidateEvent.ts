@@ -1,11 +1,9 @@
-import { IAutoBePrismaCompilerResult } from "../compiler/IAutoBePrismaCompilerResult";
+import { IAutoBePrismaValidation } from "../prisma/IAutoBePrismaValidation";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
 export interface AutoBePrismaValidateEvent
   extends AutoBeEventBase<"prismaValidate"> {
+  result: IAutoBePrismaValidation.IFailure;
   schemas: Record<string, string>;
-  result:
-    | IAutoBePrismaCompilerResult.IFailure
-    | IAutoBePrismaCompilerResult.IException;
   step: number;
 }

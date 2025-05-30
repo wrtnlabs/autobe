@@ -46,11 +46,11 @@ export const createAutoBeController = <Model extends ILlmSchema.Model>(props: {
         const r = await orchestratePrisma(props.context)(next);
         if (r.type === "prisma")
           return {
-            type: r.result.type,
+            type: r.compiled?.type ?? "failure",
             description:
-              r.result.type === "success"
+              r.compiled?.type === "success"
                 ? "Prisma schemas have been generated successfully."
-                : r.result.type === "failure"
+                : r.result.success === false || r.compiled?.type === "failure"
                   ? "Prisma schemas are generated, but compilation failed."
                   : "Unexpected error occurred while generating Prisma schemas.",
           };
@@ -77,11 +77,11 @@ export const createAutoBeController = <Model extends ILlmSchema.Model>(props: {
         const r = await orchestrateTest(props.context)(next);
         if (r.type === "test")
           return {
-            type: r.result.type,
+            type: r.compiled.type,
             description:
-              r.result.type === "success"
+              r.compiled.type === "success"
                 ? "Test functions have been generated successfully."
-                : r.result.type === "failure"
+                : r.compiled.type === "failure"
                   ? "Test functions are written, but compilation failed."
                   : "Unexpected error occurred while writing test functions.",
           };
@@ -95,11 +95,11 @@ export const createAutoBeController = <Model extends ILlmSchema.Model>(props: {
         const r = await orchestrateRealize(props.context)(next);
         if (r.type === "realize")
           return {
-            type: r.result.type,
+            type: r.compiled.type,
             description:
-              r.result.type === "success"
+              r.compiled.type === "success"
                 ? "API implementation codes have been generated successfully."
-                : r.result.type === "failure"
+                : r.compiled.type === "failure"
                   ? "Implementation codes are composed, but compilation failed."
                   : "Unexpected error occurred while writing implementation codes.",
           };

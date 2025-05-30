@@ -6,6 +6,7 @@ import {
   AutoBeAssistantMessageHistory,
   AutoBeEvent,
   AutoBeInterfaceHistory,
+  AutoBePrismaCompleteEvent,
   AutoBeUserMessageEvent,
 } from "@autobe/interface";
 
@@ -56,12 +57,15 @@ export const validate_agent_interface_main = async (
     },
     {
       type: "prismaComplete",
+      application: {
+        files: [],
+      },
       schemas: prisma.schemas,
       document: prisma.document,
       diagrams: prisma.diagrams,
       step: 0,
       created_at: new Date().toISOString(),
-    },
+    } satisfies AutoBePrismaCompleteEvent,
   ];
   const trace = (type: AutoBeEvent.Type) => {
     agent.on(type, (evt) => {

@@ -5,9 +5,12 @@ import { ArrayUtil } from "../utils/ArrayUtil";
 export function writePrismaApplication(
   app: AutoBePrismaSyntax.IApplication,
 ): Record<string, string> {
-  return Object.fromEntries(
-    app.files.map((file) => [file.filename, writeFile(app, file)]),
-  );
+  return {
+    ...Object.fromEntries(
+      app.files.map((file) => [file.filename, writeFile(app, file)]),
+    ),
+    "main.prisma": MAIN_FILE,
+  };
 }
 
 function writeFile(
@@ -193,3 +196,22 @@ const PHYSICAL_TYPES = {
   datetime: "@db.Timestamptz",
   uri: "@db.VarChar(80000)",
 };
+
+const MAIN_FILE = `
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions", "views"]
+  binaryTargets   = ["native"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = []
+}
+
+generator markdown {
+  provider = "prisma-markdown"
+  output   = "../docs/ERD.md"
+}
+`.trim();

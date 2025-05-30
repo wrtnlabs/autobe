@@ -18,13 +18,15 @@ export class AutoBePrismaCompiler implements IAutoBePrismaCompiler {
     return compiler.compile(props.files);
   }
 
-  public validate(
+  public async validate(
     app: AutoBePrismaSyntax.IApplication,
-  ): IAutoBePrismaValidation {
+  ): Promise<IAutoBePrismaValidation> {
     return validatePrismaApplication(app);
   }
 
-  public write(app: AutoBePrismaSyntax.IApplication): Record<string, string> {
+  public async write(
+    app: AutoBePrismaSyntax.IApplication,
+  ): Promise<Record<string, string>> {
     return writePrismaApplication(app);
   }
 }

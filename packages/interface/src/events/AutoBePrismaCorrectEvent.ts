@@ -1,11 +1,10 @@
-import { IAutoBePrismaCompilerResult } from "../compiler/IAutoBePrismaCompilerResult";
+import { AutoBePrismaSyntax, IAutoBePrismaValidation } from "../prisma";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
 export interface AutoBePrismaCorrectEvent
   extends AutoBeEventBase<"prismaCorrect"> {
-  input: Record<string, string>;
-  failure: IAutoBePrismaCompilerResult.IFailure;
-  correction: Record<string, string>;
+  failure: IAutoBePrismaValidation.IFailure;
+  correction: AutoBePrismaSyntax.IApplication;
   planning: string;
   step: number;
 }

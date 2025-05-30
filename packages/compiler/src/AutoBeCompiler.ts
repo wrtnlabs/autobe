@@ -3,8 +3,6 @@ import {
   IAutoBeCompiler,
   IAutoBeInterfaceCompiler,
   IAutoBePrismaCompiler,
-  IAutoBePrismaCompilerProps,
-  IAutoBePrismaCompilerResult,
   IAutoBeTypeScriptCompiler,
   IAutoBeTypeScriptCompilerProps,
   IAutoBeTypeScriptCompilerResult,
@@ -15,27 +13,23 @@ import { AutoBePrismaCompiler } from "./AutoBePrismaCompiler";
 import { AutoBeTypeScriptCompiler } from "./AutoBeTypeScriptCompiler";
 
 export class AutoBeCompiler implements IAutoBeCompiler {
-  private readonly prisma_: IAutoBePrismaCompiler = new AutoBePrismaCompiler();
-  private readonly interface_: IAutoBeInterfaceCompiler =
-    new AutoBeInterfaceCompiler();
-  private readonly typescript_: IAutoBeTypeScriptCompiler =
-    new AutoBeTypeScriptCompiler();
-
-  public prisma(
-    props: IAutoBePrismaCompilerProps,
-  ): Promise<IAutoBePrismaCompilerResult> {
-    return this.prisma_.compile(props);
-  }
+  public readonly prisma: IAutoBePrismaCompiler = new AutoBePrismaCompiler();
 
   public interface(
     document: AutoBeOpenApi.IDocument,
   ): Promise<Record<string, string>> {
-    return this.interface_.compile(document);
+    return this.interface_compiler_.compile(document);
   }
 
   public typescript(
     props: IAutoBeTypeScriptCompilerProps,
   ): Promise<IAutoBeTypeScriptCompilerResult> {
-    return this.typescript_.compile(props);
+    return this.typescript_compiler_.compile(props);
   }
+
+  private readonly interface_compiler_: IAutoBeInterfaceCompiler =
+    new AutoBeInterfaceCompiler();
+
+  private readonly typescript_compiler_: IAutoBeTypeScriptCompiler =
+    new AutoBeTypeScriptCompiler();
 }

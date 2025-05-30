@@ -42,7 +42,7 @@ export const transformInterfaceHistories = (
         ].join(" "),
       },
     ];
-  else if (state.prisma.result.type !== "success")
+  else if (state.prisma.compiled?.type !== "success")
     return [
       {
         type: "systemMessage",
@@ -87,12 +87,12 @@ export const transformInterfaceHistories = (
         "",
         "## Prisma DB Schema",
         "```json",
-        JSON.stringify(state.prisma.result.schemas),
+        JSON.stringify(state.prisma.schemas),
         "```",
         "",
         "## Entity Relationship Diagrams",
         "```json",
-        JSON.stringify(state.prisma.result.diagrams),
+        JSON.stringify(state.prisma.compiled.diagrams),
         "```",
       ].join("\n"),
     },

@@ -66,7 +66,7 @@ export namespace IAutoBePrismaValidation {
      * problems. These corrections preserve the original business intent while
      * ensuring schema consistency and data integrity.
      */
-    application: AutoBePrismaSyntax.IApplication;
+    data: AutoBePrismaSyntax.IApplication;
   }
 
   /**
@@ -103,7 +103,7 @@ export namespace IAutoBePrismaValidation {
      * allowing error-fixing systems to understand the full context of the
      * schema while addressing specific validation issues.
      */
-    application: AutoBePrismaSyntax.IApplication;
+    data: AutoBePrismaSyntax.IApplication;
 
     /**
      * Array of specific validation errors found in the application structure.

@@ -1,36 +1,36 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
-import { IAutoBePrismaCompilerResult } from "@autobe/interface";
+import { IAutoBePrismaValidation } from "@autobe/interface";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 
-export const transformPrismaCompilerHistories = (
-  files: Record<string, string>,
-  result: IAutoBePrismaCompilerResult.IFailure,
+export const transformPrismaCorrectHistories = (
+  result: IAutoBePrismaValidation.IFailure,
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
   return [
     {
       type: "systemMessage",
-      text: AutoBeSystemPromptConstant.PRISMA_COMPILER,
+      text: AutoBeSystemPromptConstant.PRISMA_CORRECT,
     },
     {
       type: "assistantMessage",
       text: [
-        "Below are the current schema files that failed compilation:",
+        "Here is the Prisma application data what you made:",
         "",
         "```json",
-        JSON.stringify(files),
+        JSON.stringify(result.data),
         "```",
       ].join("\n"),
     },
     {
       type: "assistantMessage",
       text: [
-        `Here is the compiler error message. Please fix the schema files`,
-        `referencing the error message.`,
+        "Below are the list of errors what you have to fix:",
         "",
-        result.reason,
+        "```json",
+        JSON.stringify(result.errors),
+        "```",
       ].join("\n"),
     },
     {

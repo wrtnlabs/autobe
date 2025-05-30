@@ -8,7 +8,7 @@ import { AutoBeAssistantMessageHistory } from "@autobe/interface";
 import { AutoBePrismaComponentsEvent } from "@autobe/interface/src/events/AutoBePrismaComponentsEvent";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
-import typia from "typia";
+import typia, { tags } from "typia";
 import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
@@ -171,6 +171,9 @@ interface IExtractComponentsProps {
 }
 
 interface IComponent {
-  filename: string;
-  tables: string[];
+  /** Filename of the Prisma schema file. */
+  filename: string & tags.Pattern<"^[a-zA-Z0-9._-]+\\.prisma$">;
+
+  /** List of table names that would be stored in the file. */
+  tables: Array<string & tags.Pattern<"^[a-z][a-z0-9_]*$">>;
 }

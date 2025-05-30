@@ -26,7 +26,11 @@ export const prepare_agent_interface = async (
     project,
   );
   const compiler: AutoBeCompiler = new AutoBeCompiler();
-  const prisma: IAutoBePrismaCompilerResult = await compiler.prisma({
+  const schemas: Record<string, string> = await RepositoryFileSystem.prisma(
+    owner,
+    project,
+  );
+  const prisma: IAutoBePrismaCompilerResult = await compiler.prisma.compile({
     files: await RepositoryFileSystem.prisma(owner, project),
   });
   if (prisma.type !== "success")
@@ -63,12 +67,19 @@ export const prepare_agent_interface = async (
           "Step to the DB schema generation referencing the analysis report",
         description: `DB schema about overall ${project} system`,
         result: {
+          success: true,
+          data: {
+            files: [],
+          },
+        },
+        compiled: {
           type: "success",
-          schemas: prisma.schemas,
           nodeModules: prisma.nodeModules,
           document: prisma.document,
           diagrams: prisma.diagrams,
+          schemas,
         },
+        schemas,
       } satisfies AutoBePrismaHistory,
     ],
   });

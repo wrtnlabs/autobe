@@ -30,8 +30,8 @@ export function validatePrismaApplication(
       .flat(2),
   ];
   return errors.length === 0
-    ? { success: true, application }
-    : { success: false, application, errors };
+    ? { success: true, data: application }
+    : { success: false, data: application, errors };
 }
 
 /* -----------------------------------------------------------

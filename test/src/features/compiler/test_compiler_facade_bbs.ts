@@ -9,7 +9,7 @@ import typia from "typia";
 
 export const test_compiler_facade_bbs = async (): Promise<void> => {
   const compiler: AutoBeCompiler = new AutoBeCompiler();
-  const prisma: IAutoBePrismaCompilerResult = await compiler.prisma({
+  const prisma: IAutoBePrismaCompilerResult = await compiler.prisma.compile({
     files: await RepositoryFileSystem.prisma("samchon", "bbs-backend"),
   });
   if (prisma.type !== "success")

@@ -58,6 +58,9 @@ export class AutoBePlaygroundListener {
       interfaceComponents: async (event) => {
         this.callback?.(event);
       },
+      interfaceComplement: async (event) => {
+        this.callback?.(event);
+      },
       interfaceComplete: async (event) => {
         this.callback?.(event);
       },

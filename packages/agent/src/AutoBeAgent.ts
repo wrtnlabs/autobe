@@ -174,23 +174,23 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
           : [],
       ),
       ...Object.fromEntries(
-        this.state_.prisma?.result.type === "success"
+        this.state_.prisma?.compiled?.type === "success"
           ? [
-              ...Object.entries(this.state_.prisma.result.schemas).map(
+              ...Object.entries(this.state_.prisma.schemas).map(
                 ([key, value]) => [
                   `prisma/schema/${key.split("/").at(-1)}`,
                   value,
                 ],
               ),
-              ["docs/ERD.md", this.state_.prisma.result.document],
+              ["docs/ERD.md", this.state_.prisma.compiled.document],
             ]
           : [],
       ),
       ...(this.state_.interface ? this.state_.interface.files : {}),
-      ...(this.state_.test?.result.type === "success"
+      ...(this.state_.test?.compiled.type === "success"
         ? this.state_.test.files
         : {}),
-      ...(this.state_.realize?.result.type === "success"
+      ...(this.state_.realize?.compiled.type === "success"
         ? this.state_.realize.files
         : {}),
     };

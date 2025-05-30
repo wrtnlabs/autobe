@@ -26,26 +26,21 @@ export const validate_agent_prisma = async (owner: string, project: string) => {
     await FileSystemIterator.save({
       root: `${TestGlobal.ROOT}/results/${owner}/${project}/prisma-correct-${validates.length}`,
       files: Object.fromEntries([
-        ["reason.log", event.failure.reason],
+        ["errors.json", JSON.stringify(event.failure.errors, null, 2)],
+        ["correction.json", JSON.stringify(event.correction, null, 2)],
         ["planning.md", event.planning],
-        ...Object.entries(event.input).map(([k, v]) => [`input/${k}`, v]),
-        ...Object.entries(event.correction).map(([k, v]) => [
-          `correction/${k}`,
-          v,
-        ]),
       ]),
     });
   });
   agent.on("prismaValidate", async (event) => {
     validates.push(event);
-    if (event.result.type === "failure")
-      await FileSystemIterator.save({
-        root: `${TestGlobal.ROOT}/results/${owner}/${project}/prisma-failure-${validates.length}`,
-        files: {
-          "reason.log": event.result.reason,
-          ...event.schemas,
-        },
-      });
+    await FileSystemIterator.save({
+      root: `${TestGlobal.ROOT}/results/${owner}/${project}/prisma-failure-${validates.length}`,
+      files: {
+        "errors.json": JSON.stringify(event.result.errors, null, 2),
+        ...event.schemas,
+      },
+    });
   });
 
   const components: AutoBePrismaComponentsEvent[] = [];
@@ -70,7 +65,7 @@ export const validate_agent_prisma = async (owner: string, project: string) => {
     if (history.type !== "prisma")
       throw new Error("History type must be prisma.");
   }
-  if (history.result.type !== "success")
+  if (history.compiled.type !== "success")
     throw new Error("Prisma validation failed.");
 
   // REPORT RESULT
@@ -83,8 +78,8 @@ export const validate_agent_prisma = async (owner: string, project: string) => {
       "logs/files.json": JSON.stringify(Object.keys(agent.getFiles()), null, 2),
       "logs/result-files.json": JSON.stringify(
         Object.keys({
-          ...history.result.nodeModules,
-          ...history.result.schemas,
+          ...history.compiled.nodeModules,
+          ...history.compiled.schemas,
         }),
         null,
         2,

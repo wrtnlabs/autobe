@@ -2,6 +2,7 @@ import {
   AutoBeAssistantMessageHistory,
   AutoBePrismaComponentsEvent,
   AutoBePrismaHistory,
+  IAutoBePrismaValidation,
 } from "@autobe/interface";
 import { AutoBePrismaSchemasEvent } from "@autobe/interface/src/events/AutoBePrismaSchemasEvent";
 import { ILlmSchema } from "@samchon/openapi";
@@ -9,8 +10,8 @@ import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
-import { orchestratePrismaCompiler } from "./orchestratePrismaCompiler";
 import { orchestratePrismaComponents } from "./orchestratePrismaComponent";
+import { orchestratePrismaCorrect } from "./orchestratePrismaCorrect";
 import { orchestratePrismaSchemas } from "./orchestratePrismaSchema";
 
 export const orchestratePrisma =
@@ -41,13 +42,15 @@ export const orchestratePrisma =
       ctx,
       components.components,
     );
-
-    // COMPILER
-    const files: Record<string, string> = Object.fromEntries(
-      events.map((e) => [e.filename, e.content]),
+    const result: IAutoBePrismaValidation = await orchestratePrismaCorrect(
+      ctx,
+      {
+        files: events.map((e) => e.file),
+      },
     );
-
-    const result = await orchestratePrismaCompiler(ctx, files);
+    const schemas: Record<string, string> = await ctx.compiler.prisma.write(
+      result.data,
+    );
     const history: AutoBePrismaHistory = {
       type: "prisma",
       id: v4(),
@@ -56,17 +59,22 @@ export const orchestratePrisma =
       reason: props.reason,
       description: "",
       result: result,
+      schemas,
+      compiled: await ctx.compiler.prisma.compile({
+        files: schemas,
+      }),
       step: ctx.state().analyze?.step ?? 0,
     };
     ctx.state().prisma = history;
     ctx.histories().push(history);
 
-    if (result.type === "success")
+    if (history.result.success === true && history.compiled?.type === "success")
       ctx.dispatch({
         type: "prismaComplete",
-        schemas: result.schemas,
-        document: result.document,
-        diagrams: result.diagrams,
+        application: history.result.data,
+        schemas: history.schemas,
+        document: history.compiled.document,
+        diagrams: history.compiled.diagrams,
         step: ctx.state().analyze?.step ?? 0,
         created_at: new Date().toISOString(),
       });
