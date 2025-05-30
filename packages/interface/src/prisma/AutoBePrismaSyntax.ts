@@ -48,7 +48,7 @@ export namespace AutoBePrismaSyntax {
      * Examples: "schema-02-systematic.prisma", "schema-03-actors.prisma" The
      * number indicates the dependency order for schema generation.
      */
-    filename: string;
+    filename: string & tags.Pattern<"^[a-zA-Z0-9._-]+\\.prisma$">;
 
     /**
      * Business domain namespace that groups related models.
@@ -88,7 +88,7 @@ export namespace AutoBePrismaSyntax {
      * "shopping_customers", "shopping_sale_snapshots", "bbs_articles"
      * Materialized views use "mv_" prefix: "mv_shopping_sale_last_snapshots"
      */
-    name: string;
+    name: string & tags.Pattern<"^[a-z][a-z0-9_]*$">;
 
     /**
      * Detailed description explaining the business purpose and usage of the
@@ -193,7 +193,7 @@ export namespace AutoBePrismaSyntax {
      * Consistently named "id" across all models in the uploaded schemas.
      * Represents the unique identifier for each record in the table.
      */
-    name: string;
+    name: string & tags.Pattern<"^[a-z][a-z0-9_]*$">;
 
     /**
      * Data type of the primary key field.
@@ -229,7 +229,7 @@ export namespace AutoBePrismaSyntax {
      * "shopping_customer_id", "bbs_article_id", "attachment_file_id" For
      * self-references: "parent_id" (e.g., in hierarchical structures)
      */
-    name: string;
+    name: string & tags.Pattern<"^[a-z][a-z0-9_]*$">;
 
     /**
      * Data type of the foreign key field.
@@ -264,7 +264,7 @@ export namespace AutoBePrismaSyntax {
        * of the relationship. Examples: "customer", "channel", "parent",
        * "snapshot"
        */
-      name: string;
+      name: string & tags.Pattern<"^[a-zA-Z_][a-zA-Z0-9_]*$">;
 
       /**
        * Name of the target model being referenced.
@@ -273,14 +273,6 @@ export namespace AutoBePrismaSyntax {
        * "shopping_customers", "shopping_channels", "bbs_articles"
        */
       targetModel: string;
-
-      /**
-       * Name of the target field in the referenced model.
-       *
-       * Almost always "id" since all models use id as primary key. Establishes
-       * the specific field being referenced for the relationship.
-       */
-      targetfield: string;
     };
 
     /**
@@ -321,7 +313,7 @@ export namespace AutoBePrismaSyntax {
      * - Business data: value, quantity, price, volume, balance
      * - Flags: primary, required, exclusive, secret, multiplicative
      */
-    name: string;
+    name: string & tags.Pattern<"^[a-z][a-z0-9_]*$">;
 
     /**
      * Data type of the field for Prisma schema generation.
