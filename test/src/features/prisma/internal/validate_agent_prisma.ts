@@ -27,7 +27,7 @@ export const validate_agent_prisma = async (owner: string, project: string) => {
 
   const validates: AutoBePrismaValidateEvent[] = [];
   agent.on("prismaCorrect", async (event) => {
-    console.log("correted", event.failure.errors.length);
+    console.log("corrected", event.failure.errors.length);
     await FileSystemIterator.save({
       root: `${TestGlobal.ROOT}/results/${owner}/${project}/prisma-correct-${validates.length}`,
       files: Object.fromEntries([
