@@ -1,0 +1,23 @@
+import { AutoBePrismaCompiler } from "@autobe/compiler";
+import { FileSystemIterator } from "@autobe/filesystem";
+import { AutoBePrismaSyntax } from "@autobe/interface";
+import { TestValidator } from "@nestia/e2e";
+import typia from "typia";
+
+import { TestGlobal } from "../../TestGlobal";
+import json from "./application.json";
+
+export const test_compiler_prisma_write = async (): Promise<void> => {
+  const compiler = new AutoBePrismaCompiler();
+  const application = typia.assert<AutoBePrismaSyntax.IApplication>(json);
+  const files = await compiler.write(application);
+  await FileSystemIterator.save({
+    root: `${TestGlobal.ROOT}/results/compiler/prisma/write`,
+    files: Object.fromEntries(
+      Object.entries(files).map(([key, value]) => [key, value]),
+    ),
+  });
+
+  const compiled = await compiler.compile({ files });
+  TestValidator.equals("comile result")(compiled.type)("success");
+};

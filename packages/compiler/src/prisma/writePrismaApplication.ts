@@ -55,8 +55,8 @@ function writeColumns(model: AutoBePrismaSyntax.IModel): string[] {
     "// COLUMNS",
     "//----",
     writePrimary(model.primaryField),
-    ...model.foreignFields.map(writeField),
-    ...model.plainFields.map(writeField),
+    ...model.foreignFields.map((x) => ["", writeField(x)]).flat(),
+    ...model.plainFields.map((x) => ["", writeField(x)]).flat(),
   ];
 }
 
@@ -91,15 +91,19 @@ function writeRelations(
   interface IHasRelationship {
     modelName: string;
     unique: boolean;
+    recursive: boolean;
   }
   const hasRelationships: IHasRelationship[] = app.files
     .map((otherFile) =>
       otherFile.models.map((otherModel) =>
         otherModel.foreignFields
-          .filter((foreign) => foreign.relation.targetModel === otherModel.name)
-          .map((foreign) => ({
+          .filter(
+            (otherForeign) => otherForeign.relation.targetModel === model.name,
+          )
+          .map((otherForeign) => ({
             modelName: otherModel.name,
-            unique: foreign.unique,
+            unique: otherForeign.unique,
+            recursive: otherModel.name === model.name,
           })),
       ),
     )
@@ -111,9 +115,13 @@ function writeRelations(
         model.plainIndexes.every((p) => p.fieldNames[0] !== f.name),
     );
   const contents: string[][] = [
-    model.foreignFields.map(writeConstraint),
-    hasRelationships.map(
-      (r) => `${r.modelName} ${r.modelName}${r.unique ? "?" : "[]"}`,
+    model.foreignFields.map((f) => writeConstraint(model, f)),
+    hasRelationships.map((r) =>
+      [
+        r.modelName,
+        `${r.modelName}${r.unique ? "?" : "[]"}`,
+        ...(r.recursive ? [`@relation("recursive")`] : []),
+      ].join(" "),
     ),
     foreignIndexes.map(writeForeignIndex),
     [
@@ -132,11 +140,19 @@ function writeRelations(
   ];
 }
 
-function writeConstraint(field: AutoBePrismaSyntax.IForeignField): string {
+function writeConstraint(
+  model: AutoBePrismaSyntax.IModel,
+  field: AutoBePrismaSyntax.IForeignField,
+): string {
   return [
     field.relation.name,
     `${field.relation.targetModel}${field.nullable ? "?" : ""}`,
-    `@relation(fields: [${field.name}], references: [id], onDelete: Cascade)`,
+    `@relation(${[
+      ...(model.name === field.relation.targetModel ? [`"recursive"`] : []),
+      `fields: [${field.name}]`,
+      `references: [id]`,
+      `onDelete: Cascade`,
+    ].join(", ")})`,
   ].join(" ");
 }
 
