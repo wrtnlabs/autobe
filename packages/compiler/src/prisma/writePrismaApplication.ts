@@ -187,7 +187,7 @@ const LOGICAL_TYPES = {
 
 const PHYSICAL_TYPES = {
   int: "@db.Integer",
-  dobule: "@db.DoublePrecision",
+  double: "@db.DoublePrecision",
   uuid: "@db.Uuid",
   datetime: "@db.Timestamptz",
   uri: "@db.VarChar(80000)",
