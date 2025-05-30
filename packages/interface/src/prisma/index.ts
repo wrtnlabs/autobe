@@ -1,2 +1,2 @@
-export * from "./AutoBePrismaSyntax";
+export * from "./AutoBePrisma";
 export * from "./IAutoBePrismaValidation";

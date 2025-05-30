@@ -1,12 +1,12 @@
-import { AutoBePrismaSyntax, IAutoBePrismaValidation } from "@autobe/interface";
+import { AutoBePrisma, IAutoBePrismaValidation } from "@autobe/interface";
 import { HashMap, hash } from "tstl";
 
 import { MapUtil } from "../utils/MapUtil";
 
 export function validatePrismaApplication(
-  application: AutoBePrismaSyntax.IApplication,
+  application: AutoBePrisma.IApplication,
 ): IAutoBePrismaValidation {
-  const dict: Map<string, AutoBePrismaSyntax.IModel> = new Map(
+  const dict: Map<string, AutoBePrisma.IModel> = new Map(
     application.files
       .map((file) => file.models)
       .flat()
@@ -38,10 +38,10 @@ export function validatePrismaApplication(
   DUPLICATES
 ----------------------------------------------------------- */
 function validateDuplicatedFiles(
-  app: AutoBePrismaSyntax.IApplication,
+  app: AutoBePrisma.IApplication,
 ): IAutoBePrismaValidation.IError[] {
   interface IFileContainer {
-    file: AutoBePrismaSyntax.IFile;
+    file: AutoBePrisma.IFile;
     index: number;
   }
   const group: Map<string, IFileContainer[]> = new Map();
@@ -73,11 +73,11 @@ function validateDuplicatedFiles(
 }
 
 function validateDuplicatedModels(
-  app: AutoBePrismaSyntax.IApplication,
+  app: AutoBePrisma.IApplication,
 ): IAutoBePrismaValidation.IError[] {
   interface IModelContainer {
-    file: AutoBePrismaSyntax.IFile;
-    model: AutoBePrismaSyntax.IModel;
+    file: AutoBePrisma.IFile;
+    model: AutoBePrisma.IModel;
     fileIndex: number;
     modelIndex: number;
   }
@@ -120,7 +120,7 @@ function validateDuplicatedModels(
 }
 
 function validateDuplicatedFields(
-  model: AutoBePrismaSyntax.IModel,
+  model: AutoBePrisma.IModel,
   accessor: string,
 ): IAutoBePrismaValidation.IError[] {
   const group: Map<string, string[]> = new Map();
@@ -159,7 +159,7 @@ function validateDuplicatedFields(
 }
 
 function validateDuplicatedIndexes(
-  model: AutoBePrismaSyntax.IModel,
+  model: AutoBePrisma.IModel,
   accessor: string,
 ): IAutoBePrismaValidation.IError[] {
   const group: HashMap<string[], string[]> = new HashMap(
@@ -218,7 +218,7 @@ function validateDuplicatedIndexes(
   VALIDATIONS
 ----------------------------------------------------------- */
 function validateIndexes(
-  model: AutoBePrismaSyntax.IModel,
+  model: AutoBePrisma.IModel,
   accessor: string,
 ): IAutoBePrismaValidation.IError[] {
   // EMENSION
@@ -312,9 +312,9 @@ function validateIndexes(
 }
 
 function validateReferences(
-  model: AutoBePrismaSyntax.IModel,
+  model: AutoBePrisma.IModel,
   accessor: string,
-  dict: Map<string, AutoBePrismaSyntax.IModel>,
+  dict: Map<string, AutoBePrisma.IModel>,
 ): IAutoBePrismaValidation.IError[] {
   const errors: IAutoBePrismaValidation.IError[] = [];
   model.foreignFields.forEach((field, i) => {

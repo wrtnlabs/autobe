@@ -1,6 +1,6 @@
 import { AutoBePrismaCompiler } from "@autobe/compiler";
 import { FileSystemIterator } from "@autobe/filesystem";
-import { AutoBePrismaSyntax } from "@autobe/interface";
+import { AutoBePrisma } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 import typia from "typia";
 
@@ -9,7 +9,7 @@ import json from "./recursive.json";
 
 export const test_compiler_prisma_recursive = async (): Promise<void> => {
   const compiler = new AutoBePrismaCompiler();
-  const application = typia.assert<AutoBePrismaSyntax.IApplication>(json);
+  const application = typia.assert<AutoBePrisma.IApplication>(json);
   const files = await compiler.write(application);
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/compiler/prisma/recursive`,

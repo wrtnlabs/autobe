@@ -5,14 +5,14 @@ import { TestValidator } from "@nestia/e2e";
 import typia from "typia";
 
 import { TestGlobal } from "../../TestGlobal";
-import json from "./application.json";
+import json from "./duplicated.json";
 
-export const test_compiler_prisma_write = async (): Promise<void> => {
+export const test_compiler_prisma_duplicated = async (): Promise<void> => {
   const compiler = new AutoBePrismaCompiler();
   const application = typia.assert<AutoBePrisma.IApplication>(json);
   const files = await compiler.write(application);
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/compiler/prisma/write`,
+    root: `${TestGlobal.ROOT}/results/compiler/prisma/duplicated`,
     files: Object.fromEntries(
       Object.entries(files).map(([key, value]) => [key, value]),
     ),

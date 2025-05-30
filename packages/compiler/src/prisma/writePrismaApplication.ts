@@ -1,10 +1,13 @@
-import { AutoBePrismaSyntax } from "@autobe/interface";
+import { AutoBePrisma } from "@autobe/interface";
 
 import { ArrayUtil } from "../utils/ArrayUtil";
+import { MapUtil } from "../utils/MapUtil";
 
 export function writePrismaApplication(
-  app: AutoBePrismaSyntax.IApplication,
+  app: AutoBePrisma.IApplication,
 ): Record<string, string> {
+  for (const file of app.files)
+    for (const model of file.models) fillMappingName(model);
   return {
     ...Object.fromEntries(
       app.files
@@ -16,16 +19,16 @@ export function writePrismaApplication(
 }
 
 function writeFile(
-  app: AutoBePrismaSyntax.IApplication,
-  file: AutoBePrismaSyntax.IFile,
+  app: AutoBePrisma.IApplication,
+  file: AutoBePrisma.IFile,
 ): string {
   return file.models.map((model) => writeModel(app, file, model)).join("\n\n");
 }
 
 function writeModel(
-  app: AutoBePrismaSyntax.IApplication,
-  file: AutoBePrismaSyntax.IFile,
-  model: AutoBePrismaSyntax.IModel,
+  app: AutoBePrisma.IApplication,
+  file: AutoBePrisma.IFile,
+  model: AutoBePrisma.IModel,
 ): string {
   return [
     writeComment(
@@ -46,10 +49,24 @@ function writeModel(
   ].join("\n");
 }
 
+function fillMappingName(model: AutoBePrisma.IModel): void {
+  const group: Map<string, AutoBePrisma.IForeignField[]> = new Map();
+  for (const ff of model.foreignFields) {
+    MapUtil.take(group, ff.relation.targetModel, () => []).push(ff);
+    if (ff.relation.targetModel == model.name)
+      ff.relation.mappingName = "recursive";
+  }
+  for (const array of group.values())
+    if (array.length !== 1)
+      for (const ff of array) {
+        ff.relation.mappingName = `${model.name}_of_${ff.name}`;
+      }
+}
+
 /* -----------------------------------------------------------
   COLUMNS
 ----------------------------------------------------------- */
-function writeColumns(model: AutoBePrismaSyntax.IModel): string[] {
+function writeColumns(model: AutoBePrisma.IModel): string[] {
   return [
     "//----",
     "// COLUMNS",
@@ -60,14 +77,14 @@ function writeColumns(model: AutoBePrismaSyntax.IModel): string[] {
   ];
 }
 
-function writePrimary(field: AutoBePrismaSyntax.IPrimaryField): string {
+function writePrimary(field: AutoBePrisma.IPrimaryField): string {
   return [
     writeComment(field.description),
     `${field.name} String @id @db.Uuid`,
   ].join("\n");
 }
 
-function writeField(field: AutoBePrismaSyntax.IPlainField): string {
+function writeField(field: AutoBePrisma.IPlainField): string {
   const logical: string = LOGICAL_TYPES[field.type];
   const physical: string | undefined =
     PHYSICAL_TYPES[field.type as keyof typeof PHYSICAL_TYPES];
@@ -85,13 +102,13 @@ function writeField(field: AutoBePrismaSyntax.IPlainField): string {
   RELATIONS
 ----------------------------------------------------------- */
 function writeRelations(
-  app: AutoBePrismaSyntax.IApplication,
-  model: AutoBePrismaSyntax.IModel,
+  app: AutoBePrisma.IApplication,
+  model: AutoBePrisma.IModel,
 ): string[] {
   interface IHasRelationship {
     modelName: string;
     unique: boolean;
-    recursive: boolean;
+    mappingName?: string;
   }
   const hasRelationships: IHasRelationship[] = app.files
     .map((otherFile) =>
@@ -103,24 +120,24 @@ function writeRelations(
           .map((otherForeign) => ({
             modelName: otherModel.name,
             unique: otherForeign.unique,
-            recursive: otherModel.name === model.name,
+            mappingName: otherForeign.relation.mappingName,
           })),
       ),
     )
     .flat(2);
-  const foreignIndexes: AutoBePrismaSyntax.IForeignField[] =
+  const foreignIndexes: AutoBePrisma.IForeignField[] =
     model.foreignFields.filter(
       (f) =>
         model.uniqueIndexes.every((u) => u.fieldNames[0] !== f.name) &&
         model.plainIndexes.every((p) => p.fieldNames[0] !== f.name),
     );
   const contents: string[][] = [
-    model.foreignFields.map((f) => writeConstraint(model, f)),
+    model.foreignFields.map(writeConstraint),
     hasRelationships.map((r) =>
       [
-        r.modelName,
+        r.mappingName ?? r.modelName,
         `${r.modelName}${r.unique ? "?" : "[]"}`,
-        ...(r.recursive ? [`@relation("recursive")`] : []),
+        ...(r.mappingName ? [`@relation("${r.mappingName}")`] : []),
       ].join(" "),
     ),
     foreignIndexes.map(writeForeignIndex),
@@ -140,15 +157,14 @@ function writeRelations(
   ];
 }
 
-function writeConstraint(
-  model: AutoBePrismaSyntax.IModel,
-  field: AutoBePrismaSyntax.IForeignField,
-): string {
+function writeConstraint(field: AutoBePrisma.IForeignField): string {
   return [
     field.relation.name,
     `${field.relation.targetModel}${field.nullable ? "?" : ""}`,
     `@relation(${[
-      ...(model.name === field.relation.targetModel ? [`"recursive"`] : []),
+      ...(field.relation.mappingName
+        ? [`"${field.relation.mappingName}"`]
+        : []),
       `fields: [${field.name}]`,
       `references: [id]`,
       `onDelete: Cascade`,
@@ -156,19 +172,19 @@ function writeConstraint(
   ].join(" ");
 }
 
-function writeForeignIndex(field: AutoBePrismaSyntax.IForeignField): string {
+function writeForeignIndex(field: AutoBePrisma.IForeignField): string {
   return `@@${field.unique ? "unique" : "index"}([${field.name}])`;
 }
 
-function writeUniqueIndex(field: AutoBePrismaSyntax.IUniqueIndex): string {
+function writeUniqueIndex(field: AutoBePrisma.IUniqueIndex): string {
   return `@@unique([${field.fieldNames.join(", ")}])`;
 }
 
-function writePlainIndex(field: AutoBePrismaSyntax.IPlainIndex): string {
+function writePlainIndex(field: AutoBePrisma.IPlainIndex): string {
   return `@@index([${field.fieldNames.join(", ")}])`;
 }
 
-function writeGinIndex(field: AutoBePrismaSyntax.IGinIndex): string {
+function writeGinIndex(field: AutoBePrisma.IGinIndex): string {
   return `@@index([${field.fieldName}(ops: raw("gin_trgm_ops"))], type: Gin)`;
 }
 

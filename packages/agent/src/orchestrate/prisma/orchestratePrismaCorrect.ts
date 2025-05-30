@@ -1,5 +1,5 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
-import { AutoBePrismaSyntax, IAutoBePrismaValidation } from "@autobe/interface";
+import { AutoBePrisma, IAutoBePrismaValidation } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -10,7 +10,7 @@ import { transformPrismaCorrectHistories } from "./transformPrismaCorrectHistori
 
 export function orchestratePrismaCorrect<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  application: AutoBePrismaSyntax.IApplication,
+  application: AutoBePrisma.IApplication,
   retry: number = 8,
 ): Promise<IAutoBePrismaValidation> {
   return step(ctx, application, retry);
@@ -18,7 +18,7 @@ export function orchestratePrismaCorrect<Model extends ILlmSchema.Model>(
 
 async function step<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  application: AutoBePrismaSyntax.IApplication,
+  application: AutoBePrisma.IApplication,
   life: number,
 ): Promise<IAutoBePrismaValidation> {
   const result: IAutoBePrismaValidation =
@@ -135,7 +135,7 @@ const collection = {
 
 interface IApplication {
   /**
-   * Fixes validation errors in AutoBePrismaSyntax.IApplication structure while
+   * Fixes validation errors in AutoBePrisma.IApplication structure while
    * preserving ALL existing business logic and model descriptions.
    *
    * ## Core Rules
@@ -164,7 +164,7 @@ interface IApplication {
 
 interface IModifyPrismaSchemaFilesProps {
   /**
-   * Detailed execution plan for fixing AutoBePrismaSyntax validation errors.
+   * Detailed execution plan for fixing AutoBePrisma validation errors.
    *
    * 🎯 Purpose: Enable systematic reasoning and step-by-step error resolution
    * approach for structured schema validation issues
@@ -220,7 +220,7 @@ interface IModifyPrismaSchemaFilesProps {
   planning: string;
 
   /**
-   * Original AutoBePrismaSyntax.IApplication structure that contains validation
+   * Original AutoBePrisma.IApplication structure that contains validation
    * errors and needs correction.
    *
    * 📥 Input Structure:
@@ -254,5 +254,5 @@ interface IModifyPrismaSchemaFilesProps {
    * - Index configurations might include forbidden single foreign keys
    * - Business logic and descriptions must be preserved during fixes
    */
-  files: AutoBePrismaSyntax.IFile[];
+  files: AutoBePrisma.IFile[];
 }

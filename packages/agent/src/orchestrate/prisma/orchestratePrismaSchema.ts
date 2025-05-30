@@ -1,5 +1,5 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
-import { AutoBePrismaSyntax } from "@autobe/interface";
+import { AutoBePrisma } from "@autobe/interface";
 import { AutoBePrismaSchemasEvent } from "@autobe/interface/src/events/AutoBePrismaSchemasEvent";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
@@ -142,5 +142,5 @@ interface IMakePrismaSchemaFileProps {
    * Represents one business domain containing related models, organized for
    * modular schema management and following domain-driven design principles.
    */
-  file: AutoBePrismaSyntax.IFile;
+  file: AutoBePrisma.IFile;
 }

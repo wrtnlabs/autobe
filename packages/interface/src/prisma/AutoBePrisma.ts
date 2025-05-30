@@ -11,7 +11,7 @@ import { tags } from "typia";
  *
  * @author Samchon
  */
-export namespace AutoBePrismaSyntax {
+export namespace AutoBePrisma {
   /**
    * Root interface representing the entire Prisma application schema.
    *
@@ -273,6 +273,9 @@ export namespace AutoBePrismaSyntax {
        * "shopping_customers", "shopping_channels", "bbs_articles"
        */
       targetModel: string;
+
+      /** @internal */
+      mappingName?: string;
     };
 
     /**

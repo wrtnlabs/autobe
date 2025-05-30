@@ -1,10 +1,10 @@
-import { AutoBePrismaSyntax, IAutoBePrismaValidation } from "../prisma";
+import { AutoBePrisma, IAutoBePrismaValidation } from "../prisma";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
 export interface AutoBePrismaCorrectEvent
   extends AutoBeEventBase<"prismaCorrect"> {
   failure: IAutoBePrismaValidation.IFailure;
-  correction: AutoBePrismaSyntax.IApplication;
+  correction: AutoBePrisma.IApplication;
   planning: string;
   step: number;
 }

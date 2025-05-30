@@ -1,5 +1,5 @@
 import {
-  AutoBePrismaSyntax,
+  AutoBePrisma,
   IAutoBePrismaCompiler,
   IAutoBePrismaCompilerProps,
   IAutoBePrismaCompilerResult,
@@ -19,13 +19,13 @@ export class AutoBePrismaCompiler implements IAutoBePrismaCompiler {
   }
 
   public async validate(
-    app: AutoBePrismaSyntax.IApplication,
+    app: AutoBePrisma.IApplication,
   ): Promise<IAutoBePrismaValidation> {
     return validatePrismaApplication(app);
   }
 
   public async write(
-    app: AutoBePrismaSyntax.IApplication,
+    app: AutoBePrisma.IApplication,
   ): Promise<Record<string, string>> {
     return writePrismaApplication(app);
   }

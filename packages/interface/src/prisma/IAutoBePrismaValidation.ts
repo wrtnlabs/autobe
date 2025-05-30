@@ -1,13 +1,13 @@
-import { AutoBePrismaSyntax } from "./AutoBePrismaSyntax";
+import { AutoBePrisma } from "./AutoBePrisma";
 
 /**
  * Union type representing the result of Prisma schema validation.
  *
- * This type encapsulates the outcome of validating an
- * AutoBePrismaSyntax.IApplication structure against Prisma schema rules and
- * business constraints. The validation process checks for structural integrity,
- * referential consistency, naming conventions, and compliance with the
- * established schema generation rules.
+ * This type encapsulates the outcome of validating an AutoBePrisma.IApplication
+ * structure against Prisma schema rules and business constraints. The
+ * validation process checks for structural integrity, referential consistency,
+ * naming conventions, and compliance with the established schema generation
+ * rules.
  *
  * The validation can result in either complete success (all rules satisfied) or
  * failure with detailed error information for precise error resolution.
@@ -29,8 +29,8 @@ export namespace IAutoBePrismaValidation {
   /**
    * Interface representing a successful validation result.
    *
-   * This interface is returned when the AutoBePrismaSyntax.IApplication
-   * structure passes all validation rules including:
+   * This interface is returned when the AutoBePrisma.IApplication structure
+   * passes all validation rules including:
    *
    * - No duplicate model names across all files
    * - No duplicate field names within any model
@@ -53,7 +53,7 @@ export namespace IAutoBePrismaValidation {
     success: true;
 
     /**
-     * The validated and approved AutoBePrismaSyntax application structure.
+     * The validated and approved AutoBePrisma application structure.
      *
      * This contains the complete, validation-passed schema definition that can
      * be safely passed to the code generator for Prisma schema file creation.
@@ -66,17 +66,17 @@ export namespace IAutoBePrismaValidation {
      * problems. These corrections preserve the original business intent while
      * ensuring schema consistency and data integrity.
      */
-    data: AutoBePrismaSyntax.IApplication;
+    data: AutoBePrisma.IApplication;
   }
 
   /**
    * Interface representing a failed validation result with detailed error
    * information.
    *
-   * This interface is returned when the AutoBePrismaSyntax.IApplication
-   * structure contains one or more validation errors. It provides both the
-   * original (potentially flawed) application structure and a comprehensive
-   * list of specific errors that need to be resolved.
+   * This interface is returned when the AutoBePrisma.IApplication structure
+   * contains one or more validation errors. It provides both the original
+   * (potentially flawed) application structure and a comprehensive list of
+   * specific errors that need to be resolved.
    *
    * The error information is structured to enable precise error location
    * identification and targeted fixes without affecting unrelated parts of the
@@ -94,8 +94,7 @@ export namespace IAutoBePrismaValidation {
     success: false;
 
     /**
-     * The original AutoBePrismaSyntax application structure that failed
-     * validation.
+     * The original AutoBePrisma application structure that failed validation.
      *
      * This contains the complete schema definition as it was submitted for
      * validation, including all the elements that caused validation errors.
@@ -103,7 +102,7 @@ export namespace IAutoBePrismaValidation {
      * allowing error-fixing systems to understand the full context of the
      * schema while addressing specific validation issues.
      */
-    data: AutoBePrismaSyntax.IApplication;
+    data: AutoBePrisma.IApplication;
 
     /**
      * Array of specific validation errors found in the application structure.
@@ -143,9 +142,9 @@ export namespace IAutoBePrismaValidation {
      * File path where the validation error occurs.
      *
      * Specifies the exact schema file within the
-     * AutoBePrismaSyntax.IApplication.files array where this error was
-     * detected. This corresponds to the filename property of the IFile
-     * interface and enables targeted file-level error resolution.
+     * AutoBePrisma.IApplication.files array where this error was detected. This
+     * corresponds to the filename property of the IFile interface and enables
+     * targeted file-level error resolution.
      *
      * Examples: "schema-01-articles.prisma", "schema-03-actors.prisma"
      *

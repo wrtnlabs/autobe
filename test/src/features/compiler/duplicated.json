@@ -1,0 +1,1884 @@
+{
+    "files": [
+        {
+            "filename": "schema-01-core.prisma",
+            "namespace": "Core",
+            "models": [
+                {
+                    "name": "users",
+                    "description": "User Accounts - This implements the requirement for account management, authentication, and user platform access described in the requirements (see Functional and Security sections). \n\nRepresents an individual with login ability on the platform. Stores vital authentication and traceable identity details. For example, every participant, moderator, or admin will have an entry here.\n\nKey relationships: Connects to user_profiles for extended information, user_roles for group membership, audit_logs for traceability, posts/threads for authorship. \nSpecial behaviors: Unique email/username constraints; supports soft deletion and audit trails via timestamps.",
+                    "material": false,
+                    "primaryField": {
+                        "name": "id",
+                        "type": "uuid",
+                        "description": "Primary Key. Unique identifier for each user account."
+                    },
+                    "foreignFields": [],
+                    "plainFields": [
+                        {
+                            "name": "email",
+                            "type": "string",
+                            "description": "User's email. - Implements communication and login requirements.\n\nUsed for authentication and potentially for notifications. For example, serves as username credential. Must be unique.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "username",
+                            "type": "string",
+                            "description": "Unique user name. - Implements account uniqueness and user identity requirement.\n\nUsed for login or public display. For example, visible on posts and profile. Must be unique in the system.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "password_hash",
+                            "type": "string",
+                            "description": "Password hash - Implements password security and authentication requirement.\n\nStores bcrypt or similar hash of the user password. Never the raw password. Used in login process, not shown to user.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "created_at",
+                            "type": "datetime",
+                            "description": "Account creation timestamp - Implements audit trail requirement.\n\nAutomatically set at account registration. Used for registration reports, user analytics.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "updated_at",
+                            "type": "datetime",
+                            "description": "Timestamp of last update to user account - Implements audit/audit log and profile update requirement.\n\nSet anytime key account details change. For audits and profile management.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "deleted_at",
+                            "type": "datetime",
+                            "description": "Soft deletion timestamp - Implements privacy and soft deletion/removal requirement.\n\nSet when account is deactivated, instead of hard delete. Allows possible restoration and audit evidence.",
+                            "nullable": true
+                        }
+                    ],
+                    "uniqueIndexes": [
+                        {
+                            "fieldNames": [
+                                "email"
+                            ],
+                            "unique": true
+                        },
+                        {
+                            "fieldNames": [
+                                "username"
+                            ],
+                            "unique": true
+                        }
+                    ],
+                    "plainIndexes": [
+                        {
+                            "fieldNames": [
+                                "created_at"
+                            ]
+                        }
+                    ],
+                    "ginIndexes": [
+                        {
+                            "fieldName": "username"
+                        }
+                    ]
+                },
+                {
+                    "name": "user_profiles",
+                    "description": "User Profiles - Implements extended profile information per user account, as requested in Functional Requirements under profile management. \n\nContains additional user-controlled info like name, bio, avatar, etc. For example, a user's display name, image, and biographical summary.\n\nKey relationships: Required 1:1 link to users; referenced often on UI presentations.\nSpecial behaviors: Enforces 1:1 relationship, nullable fields for optional profile data.",
+                    "material": false,
+                    "primaryField": {
+                        "name": "id",
+                        "type": "uuid",
+                        "description": "Primary Key for each user profile record."
+                    },
+                    "foreignFields": [
+                        {
+                            "name": "user_id",
+                            "type": "uuid",
+                            "description": "Linked user's {@link users.id}. - Implements 1:1 profile-to-user mapping requirement.",
+                            "relation": {
+                                "name": "user",
+                                "targetModel": "users"
+                            },
+                            "unique": true,
+                            "nullable": false
+                        }
+                    ],
+                    "plainFields": [
+                        {
+                            "name": "display_name",
+                            "type": "string",
+                            "description": "User's chosen display name - Implements personalization/identity extension.\n\nUsed as the public-facing name in posts, may be different than username.",
+                            "nullable": true
+                        },
+                        {
+                            "name": "bio",
+                            "type": "string",
+                            "description": "User biography/description - Implements rich profile requirement.\n\nShort description or statement visible on profile.",
+                            "nullable": true
+                        },
+                        {
+                            "name": "avatar_url",
+                            "type": "uri",
+                            "description": "URL for user's avatar image - Supports profile image requirement.\n\nStored as external or CDN path, shown with user's posts.",
+                            "nullable": true
+                        },
+                        {
+                            "name": "location",
+                            "type": "string",
+                            "description": "User-chosen location - Implements optional demographic context.\n\nMay be used for site statistics or personalization, not mandatory.",
+                            "nullable": true
+                        },
+                        {
+                            "name": "created_at",
+                            "type": "datetime",
+                            "description": "Profile creation timestamp - For auditing and reporting.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "updated_at",
+                            "type": "datetime",
+                            "description": "Last update to profile data - For modifications, audit trails.",
+                            "nullable": false
+                        }
+                    ],
+                    "uniqueIndexes": [
+                        {
+                            "fieldNames": [
+                                "user_id"
+                            ],
+                            "unique": true
+                        }
+                    ],
+                    "plainIndexes": [],
+                    "ginIndexes": [
+                        {
+                            "fieldName": "display_name"
+                        }
+                    ]
+                },
+                {
+                    "name": "roles",
+                    "description": "Roles Table - Implements permission group definitions (see User Roles & Permissions requirement).\n\nDefines abstract user roles (admin, moderator, user, etc.) for assigning permissions. For example, 'Moderator' grants editing powers in the forum.\n\nKey relationships: Many-to-many with users via user_roles and with permissions via role_permissions.\nSpecial behaviors: Ensures unique role names; allows for extension of roles over time.",
+                    "material": false,
+                    "primaryField": {
+                        "name": "id",
+                        "type": "uuid",
+                        "description": "Primary Key for each user role."
+                    },
+                    "foreignFields": [],
+                    "plainFields": [
+                        {
+                            "name": "name",
+                            "type": "string",
+                            "description": "Role name - Implements RBAC requirement.\n\nE.g., 'Admin', 'Moderator', 'User', must be unique. Used in access control.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "description",
+                            "type": "string",
+                            "description": "Role description - Implements clarity for administrators.\n\nExplains purpose of the role. Used in admin dashboard.",
+                            "nullable": true
+                        }
+                    ],
+                    "uniqueIndexes": [
+                        {
+                            "fieldNames": [
+                                "name"
+                            ],
+                            "unique": true
+                        }
+                    ],
+                    "plainIndexes": [],
+                    "ginIndexes": [
+                        {
+                            "fieldName": "name"
+                        }
+                    ]
+                },
+                {
+                    "name": "permissions",
+                    "description": "Permissions Table - Implements fine-grained access control (Functional and Security Requirements).\n\nRepresents specific allowed or disallowed actions (e.g., create_post, delete_thread).\n\nKey relationships: Many-to-many with roles via role_permissions.\nSpecial behaviors: Ensures unique permission names.",
+                    "material": false,
+                    "primaryField": {
+                        "name": "id",
+                        "type": "uuid",
+                        "description": "Primary Key for each permission."
+                    },
+                    "foreignFields": [],
+                    "plainFields": [
+                        {
+                            "name": "name",
+                            "type": "string",
+                            "description": "Permission name - Implements access control labeling.\n\nE.g., 'create_post', 'ban_user'. Used programmatically.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "description",
+                            "type": "string",
+                            "description": "Permission description - For administrator understanding.",
+                            "nullable": true
+                        }
+                    ],
+                    "uniqueIndexes": [
+                        {
+                            "fieldNames": [
+                                "name"
+                            ],
+                            "unique": true
+                        }
+                    ],
+                    "plainIndexes": [],
+                    "ginIndexes": [
+                        {
+                            "fieldName": "name"
+                        }
+                    ]
+                },
+                {
+                    "name": "user_roles",
+                    "description": "User Roles Assignment Table - This implements assignment of users to roles (requirement from Roles and Permissions and User Management).\n\nRepresents the many-to-many mapping of users to roles. For example, a user in both 'User' and 'Moderator' roles.\n\nKey relationships: Foreign keys to both users and roles. Junction model for M:N relation.\nSpecial behaviors: Composite unique index for (user_id, role_id) ensures no duplicate assignments.",
+                    "material": false,
+                    "primaryField": {
+                        "name": "id",
+                        "type": "uuid",
+                        "description": "Primary Key for the user_roles assignment."
+                    },
+                    "foreignFields": [
+                        {
+                            "name": "user_id",
+                            "type": "uuid",
+                            "description": "Assigned user's {@link users.id} - Links to account assigned a role.",
+                            "relation": {
+                                "name": "user",
+                                "targetModel": "users"
+                            },
+                            "unique": false,
+                            "nullable": false
+                        },
+                        {
+                            "name": "role_id",
+                            "type": "uuid",
+                            "description": "Assigned role {@link roles.id} - Links to the assigned permission group.",
+                            "relation": {
+                                "name": "role",
+                                "targetModel": "roles"
+                            },
+                            "unique": false,
+                            "nullable": false
+                        }
+                    ],
+                    "plainFields": [
+                        {
+                            "name": "assigned_at",
+                            "type": "datetime",
+                            "description": "Timestamp for when role was assigned - Enables audit and reporting purposes.",
+                            "nullable": false
+                        }
+                    ],
+                    "uniqueIndexes": [
+                        {
+                            "fieldNames": [
+                                "user_id",
+                                "role_id"
+                            ],
+                            "unique": true
+                        }
+                    ],
+                    "plainIndexes": [],
+                    "ginIndexes": []
+                },
+                {
+                    "name": "organizations",
+                    "description": "Organizations Table - Supports multi-tenant, group collaboration, or affiliation (Professional/Best-Practice Extension based on extensibility and potential B2B use).\n\nCaptures user affiliation to an organization (e.g., university club, political group, company).\n\nKey relationships: Users may belong to one or more organizations, supports future extensibility.\nSpecial behaviors: Ensures unique organization names.",
+                    "material": false,
+                    "primaryField": {
+                        "name": "id",
+                        "type": "uuid",
+                        "description": "Primary Key for organization."
+                    },
+                    "foreignFields": [],
+                    "plainFields": [
+                        {
+                            "name": "name",
+                            "type": "string",
+                            "description": "Organization name - Unique per org. Used in user affiliation and for content segmentation.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "description",
+                            "type": "string",
+                            "description": "Optional description of organization for clarity, UI presentation, and reporting.",
+                            "nullable": true
+                        },
+                        {
+                            "name": "created_at",
+                            "type": "datetime",
+                            "description": "Creation timestamp for audit/tracing.",
+                            "nullable": false
+                        }
+                    ],
+                    "uniqueIndexes": [
+                        {
+                            "fieldNames": [
+                                "name"
+                            ],
+                            "unique": true
+                        }
+                    ],
+                    "plainIndexes": [],
+                    "ginIndexes": [
+                        {
+                            "fieldName": "name"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "filename": "schema-02-categories.prisma",
+            "namespace": "Categories",
+            "models": [
+                {
+                    "name": "categories",
+                    "description": "Forum category (main topic area) - This implements the requirement for high-level classification of discussion content. \n\nCategories organize threads and subforums by major topical focus such as 'Politics' or 'Economics' (requirement: 08_content_categorization_search.md). For example, 'Politics' can have multiple subforums for regional issues. \n\nKey relationships: 1:N with subforums, threads inherit category via subforum.\nSpecial behaviors: Categories are managed by admins, may be merged, hidden, or retired via moderation actions.",
+                    "material": false,
+                    "primaryField": {
+                        "name": "id",
+                        "type": "uuid",
+                        "description": "Primary Key. Unique identifier for a category."
+                    },
+                    "foreignFields": [],
+                    "plainFields": [
+                        {
+                            "name": "name",
+                            "type": "string",
+                            "description": "Display name of the category - Implements topic organization requirement. \n\nE.g., 'Politics' or 'Economics'. Must be unique within the system.\nRequired field.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "description",
+                            "type": "string",
+                            "description": "Category description - Implements content clarification for users. \n\nProvides details about category scope or relevant guidelines. For example, describing what belongs in 'Economics'. Optional field.",
+                            "nullable": true
+                        },
+                        {
+                            "name": "created_at",
+                            "type": "datetime",
+                            "description": "Timestamp when the category was created - Implements auditability and chronological sorting. \n\nStandard system field. Auto-populated.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "updated_at",
+                            "type": "datetime",
+                            "description": "Timestamp when the category was last updated - Ensures audit history for admins and content managers.\nAuto-updated.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "deleted_at",
+                            "type": "datetime",
+                            "description": "Soft delete timestamp for the category - Implements archival/deactivation requirement. \n\nCategory is considered inactive if set; do not hard-delete to preserve content history.",
+                            "nullable": true
+                        }
+                    ],
+                    "uniqueIndexes": [
+                        {
+                            "fieldNames": [
+                                "name"
+                            ],
+                            "unique": true
+                        }
+                    ],
+                    "plainIndexes": [
+                        {
+                            "fieldNames": [
+                                "created_at"
+                            ]
+                        }
+                    ],
+                    "ginIndexes": [
+                        {
+                            "fieldName": "name"
+                        }
+                    ]
+                },
+                {
+                    "name": "subforums",
+                    "description": "Subforum section within a category - Implements fine-grained content taxonomy per the requirement for nested topical organization (08_content_categorization_search.md).\n\nSubforums allow for subdivisions of categories (e.g., 'U.S. Politics' within 'Politics'). For example, a thread on 'Elections' might belong to a specific subforum. \n\nKey relationships: Each subforum belongs to a category (1:N), and contains many threads.\nSpecial behaviors: Subforum order, retire/archive, or merge actions can be handled by admins.",
+                    "material": false,
+                    "primaryField": {
+                        "name": "id",
+                        "type": "uuid",
+                        "description": "Primary Key. Unique identifier for subforum."
+                    },
+                    "foreignFields": [
+                        {
+                            "name": "category_id",
+                            "type": "uuid",
+                            "description": "Belonged category's {@link categories.id} - Each subforum is nested under a single category.\nImplements the taxonomy hierarchy requirement.",
+                            "relation": {
+                                "name": "category",
+                                "targetModel": "categories"
+                            },
+                            "unique": false,
+                            "nullable": false
+                        }
+                    ],
+                    "plainFields": [
+                        {
+                            "name": "name",
+                            "type": "string",
+                            "description": "Display name of the subforum - Subdivides category by region or theme (e.g., 'International Relations' under 'Politics').\nRequired, unique per category.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "description",
+                            "type": "string",
+                            "description": "Description of subforum - Clarifies intended focus of this subforum for users and moderators.",
+                            "nullable": true
+                        },
+                        {
+                            "name": "sort_order",
+                            "type": "int",
+                            "description": "Display order index for subforums within a category - Implements UI/UX requirement for configurable sort sequence. Lower is shown earlier.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "created_at",
+                            "type": "datetime",
+                            "description": "Timestamp when the subforum was created - For audit history, reporting, and sort purposes. Required.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "updated_at",
+                            "type": "datetime",
+                            "description": "Timestamp when the subforum was last updated - For administrative tracking and audit trail. Required.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "deleted_at",
+                            "type": "datetime",
+                            "description": "Soft delete timestamp for subforum - Archives or deactivates without removing history; preserves moderation/audit trail.",
+                            "nullable": true
+                        }
+                    ],
+                    "uniqueIndexes": [
+                        {
+                            "fieldNames": [
+                                "category_id",
+                                "name"
+                            ],
+                            "unique": true
+                        }
+                    ],
+                    "plainIndexes": [
+                        {
+                            "fieldNames": [
+                                "category_id",
+                                "sort_order"
+                            ]
+                        }
+                    ],
+                    "ginIndexes": [
+                        {
+                            "fieldName": "name"
+                        }
+                    ]
+                },
+                {
+                    "name": "tags",
+                    "description": "Discussion content tag - Implements the tagging requirement for content classification and user-driven search (08_content_categorization_search.md).\n\nTags help organize threads by subject matter, popular concepts, or community interests (e.g., '#Inflation', '#Elections2024'). Moderators may edit or merge tags. \n\nKey relationships: Many-to-many with threads (thread_tags junction table, in Threads domain), can be suggested or retired.\nSpecial behaviors: Tag usage statistics, moderation, and suggestion management.",
+                    "material": false,
+                    "primaryField": {
+                        "name": "id",
+                        "type": "uuid",
+                        "description": "Primary Key. Unique identifier for each tag."
+                    },
+                    "foreignFields": [],
+                    "plainFields": [
+                        {
+                            "name": "name",
+                            "type": "string",
+                            "description": "Unique tag string - Implements tag creation and suggestion.\nE.g., '#Economy', case-insensitive match for uniqueness.\nRequired, unique system-wide.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "description",
+                            "type": "string",
+                            "description": "Descriptive text to clarify tag intent - Assists with moderation, disambiguation, and user onboarding.\nE.g., distinguishes '#Markets' from similar terms.\nOptional.",
+                            "nullable": true
+                        },
+                        {
+                            "name": "created_at",
+                            "type": "datetime",
+                            "description": "Timestamp of tag creation - For moderation review and trending/usage history.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "updated_at",
+                            "type": "datetime",
+                            "description": "Last updated timestamp - To track moderation and edit history.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "retired_at",
+                            "type": "datetime",
+                            "description": "Timestamp if the tag is retired/deprecated - Implements lifecycle control, allowing tags to be removed from suggestions without orphaning old threads.",
+                            "nullable": true
+                        }
+                    ],
+                    "uniqueIndexes": [
+                        {
+                            "fieldNames": [
+                                "name"
+                            ],
+                            "unique": true
+                        }
+                    ],
+                    "plainIndexes": [
+                        {
+                            "fieldNames": [
+                                "created_at"
+                            ]
+                        }
+                    ],
+                    "ginIndexes": [
+                        {
+                            "fieldName": "name"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "filename": "schema-03-threads.prisma",
+            "namespace": "Threads",
+            "models": [
+                {
+                    "name": "threads",
+                    "description": "Thread entity - This implements the section for discussion thread management, mapped from the requirements in Section 4 (Functional Requirements) and 8 (Content Categorization & Search). \n\nThis model represents individual discussion threads within the forum, supporting both political and economic topics. It stores the thread's basic information and moderation status, and links to the user who started the thread, the category, and subforum. For example, when someone creates a new topic about inflation in the Economy section, a record is inserted here.\n\nKey relationships: linked to users (author), categories, subforums, and aggregates posts, tags, and views via thread_tags and thread_views. \nSpecial behaviors: Soft-deletion for evidence retention, supports pinning/featuring, and moderation flags for locking threads.",
+                    "material": false,
+                    "primaryField": {
+                        "name": "id",
+                        "type": "uuid",
+                        "description": "Primary Key. Unique identifier for each thread. Implements core data model and security recommendations."
+                    },
+                    "foreignFields": [
+                        {
+                            "name": "user_id",
+                            "type": "uuid",
+                            "description": "Author's user {@link users.id} - Implements the requirements for author attribution and permission management.\n\nIdentifies which user created the thread. For example, when a registered user starts a new discussion, this field records the relationship.",
+                            "relation": {
+                                "name": "author",
+                                "targetModel": "users"
+                            },
+                            "unique": false,
+                            "nullable": false
+                        },
+                        {
+                            "name": "category_id",
+                            "type": "uuid",
+                            "description": "Category {@link categories.id} - Implements the requirement for high-level topic segmentation.\n\nLinks the thread to its top-level category (e.g., Politics or Economics).",
+                            "relation": {
+                                "name": "category",
+                                "targetModel": "categories"
+                            },
+                            "unique": false,
+                            "nullable": false
+                        },
+                        {
+                            "name": "subforum_id",
+                            "type": "uuid",
+                            "description": "Subforum {@link subforums.id} - Implements fine granularity in content organization.\n\nReferences the specific subforum inside a category. For example, a thread about Tax Policy in the Economics subforum.",
+                            "relation": {
+                                "name": "subforum",
+                                "targetModel": "subforums"
+                            },
+                            "unique": false,
+                            "nullable": false
+                        }
+                    ],
+                    "plainFields": [
+                        {
+                            "name": "title",
+                            "type": "string",
+                            "description": "Title of the thread - Implements the main entry point for search and discovery.\n\nRepresents the headline or title as entered by the user (e.g., 'Inflation Trends in 2024'). Used in listings, search, and notifications.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "body",
+                            "type": "string",
+                            "description": "Content body of the thread - Implements discussion kickoff and initial post content.\n\nContains the opening statement, question, or reference links. It is the source for moderation and full-text search.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "is_pinned",
+                            "type": "boolean",
+                            "description": "Pinning status - Implements requirement for featured/sticky threads.\n\nIndicates if a thread is pinned to the top of its category or subforum, making it more visible.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "is_locked",
+                            "type": "boolean",
+                            "description": "Lock status - Implements moderation/administration needs.\n\nPrevents further replies or edits when true. For example, a locked thread cannot receive new comments.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "is_deleted",
+                            "type": "boolean",
+                            "description": "Soft delete flag - Implements evidence retention and audit logging.\n\nIf true, the thread is hidden from general view but retained for moderation. Allows for reversible deletions and legal record-keeping.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "created_at",
+                            "type": "datetime",
+                            "description": "Thread creation time - Implements audit and chronological sorting needs.\n\nDate and time when the thread was originally posted. Used for sorting and time-based queries.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "updated_at",
+                            "type": "datetime",
+                            "description": "Last update time - Implements content freshness checks and moderation review.\n\nRecords when the thread was last edited or modified. Important for tracking post activity and moderation.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "deleted_at",
+                            "type": "datetime",
+                            "description": "Actual deletion time - Implements full retention policies and detailed audit needs.\n\nStores the timestamp for when deletion occurred, if applicable. Nullable for threads not deleted.",
+                            "nullable": true
+                        }
+                    ],
+                    "uniqueIndexes": [
+                        {
+                            "fieldNames": [
+                                "title",
+                                "subforum_id"
+                            ],
+                            "unique": true
+                        }
+                    ],
+                    "plainIndexes": [
+                        {
+                            "fieldNames": [
+                                "created_at",
+                                "is_deleted"
+                            ]
+                        },
+                        {
+                            "fieldNames": [
+                                "user_id",
+                                "is_deleted"
+                            ]
+                        }
+                    ],
+                    "ginIndexes": [
+                        {
+                            "fieldName": "title"
+                        },
+                        {
+                            "fieldName": "body"
+                        }
+                    ]
+                },
+                {
+                    "name": "thread_tags",
+                    "description": "Junction table for threads and tags - This implements the tagging system described in Section 8 (Content Categorization & Search) to support M:N relations between threads and tags.\n\nLinks threads with any number of tags for searching and filtering. For example, a thread can be tagged #Inflation, #FiscalPolicy, linking to both the thread and tag entities.\n\nKey relationships: Relates threads to tags. \nSpecial behaviors: Enforces order of tags via sequence field and ensures a thread can have each tag only once.",
+                    "material": false,
+                    "primaryField": {
+                        "name": "id",
+                        "type": "uuid",
+                        "description": "Primary Key. Unique identifier for this thread-tag link. Implements audit and relational mapping needs."
+                    },
+                    "foreignFields": [
+                        {
+                            "name": "thread_id",
+                            "type": "uuid",
+                            "description": "Belonged thread's {@link threads.id} - Establishes the linkage for query efficiency and referential integrity.",
+                            "relation": {
+                                "name": "thread",
+                                "targetModel": "threads"
+                            },
+                            "unique": false,
+                            "nullable": false
+                        },
+                        {
+                            "name": "tag_id",
+                            "type": "uuid",
+                            "description": "Belonged tag's {@link tags.id} - Connects a tag to a thread for categorization and search.",
+                            "relation": {
+                                "name": "tag",
+                                "targetModel": "tags"
+                            },
+                            "unique": false,
+                            "nullable": false
+                        }
+                    ],
+                    "plainFields": [
+                        {
+                            "name": "sequence",
+                            "type": "int",
+                            "description": "Sequence order - Supports deterministic tag listing or display order.\n\nStores the order number of tags for a specific thread. Implements UI/display control.",
+                            "nullable": false
+                        }
+                    ],
+                    "uniqueIndexes": [
+                        {
+                            "fieldNames": [
+                                "thread_id",
+                                "tag_id"
+                            ],
+                            "unique": true
+                        }
+                    ],
+                    "plainIndexes": [
+                        {
+                            "fieldNames": [
+                                "tag_id"
+                            ]
+                        }
+                    ],
+                    "ginIndexes": []
+                },
+                {
+                    "name": "thread_views",
+                    "description": "Tracking for thread views - Implements analytics for thread popularity, section 4 and 8 reporting, and security/session monitoring (from Section 9). \n\nRecords individual view events (optionally user-identified) to assess the popularity and engagement for each thread. For example, counting how many times a thread on Economic Policy has been viewed by registered users or guests.\n\nKey relationships: Links to threads and optionally to users. \nSpecial behaviors: Can record multiple view events for analytics, and optionally anonymize user_id for guest visitors (nullable foreign).",
+                    "material": false,
+                    "primaryField": {
+                        "name": "id",
+                        "type": "uuid",
+                        "description": "Primary Key. Unique identifier per view for analytics granularity."
+                    },
+                    "foreignFields": [
+                        {
+                            "name": "thread_id",
+                            "type": "uuid",
+                            "description": "Viewed thread's {@link threads.id} - The thread this view belongs to.\n\nAllows aggregation of view counts per thread.",
+                            "relation": {
+                                "name": "thread",
+                                "targetModel": "threads"
+                            },
+                            "unique": false,
+                            "nullable": false
+                        },
+                        {
+                            "name": "user_id",
+                            "type": "uuid",
+                            "description": "(Optional) viewer's {@link users.id} - Indicates which user viewed the thread, if authenticated. Nullable for guest/anonymous users.\n\nImplements session/personal analytics and security monitoring.",
+                            "relation": {
+                                "name": "user",
+                                "targetModel": "users"
+                            },
+                            "unique": false,
+                            "nullable": true
+                        }
+                    ],
+                    "plainFields": [
+                        {
+                            "name": "viewed_at",
+                            "type": "datetime",
+                            "description": "View event timestamp - Implements tracking of popularity over time.\n\nIndicates when the thread was viewed. Used for time-based analytics and reporting.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "viewer_ip",
+                            "type": "string",
+                            "description": "Viewer's IP address - Supports abuse detection, rate limiting, and audit logging.\n\nStores the IP address of the viewer. Can be used for security/anti-abuse tools.",
+                            "nullable": true
+                        }
+                    ],
+                    "uniqueIndexes": [],
+                    "plainIndexes": [
+                        {
+                            "fieldNames": [
+                                "thread_id",
+                                "viewed_at"
+                            ]
+                        }
+                    ],
+                    "ginIndexes": []
+                }
+            ]
+        },
+        {
+            "filename": "schema-04-posts.prisma",
+            "namespace": "Posts",
+            "models": [
+                {
+                    "name": "posts",
+                    "description": "Discussion Board Post - This implements the requirement for user-generated content from the functional requirements analysis (see 04_functional_requirements.md). \n\nRepresents individual posts within threads in the political & economic discussion forum. A post is authored by a user, belongs to a parent thread (which in turn is linked to categories and subforums), supports edit history for auditability, and can have replies (allowing basic thread nesting). For example, a user initiates a post on economic theory discussions within its relevant thread.\n\nKey relationships: links to the user account (users), thread container (threads), supports tracking via post_edits and post_replies.\nSpecial behaviors: post content is immutable by default; all edits are tracked in post_edits for evidence, supporting the snapshot pattern.",
+                    "material": false,
+                    "primaryField": {
+                        "name": "id",
+                        "type": "uuid",
+                        "description": "Primary Key. Unique identifier for each post."
+                    },
+                    "foreignFields": [
+                        {
+                            "name": "user_id",
+                            "type": "uuid",
+                            "description": "Author user's {@link users.id} - The user who created this post.",
+                            "relation": {
+                                "name": "user",
+                                "targetModel": "users"
+                            },
+                            "unique": false,
+                            "nullable": false
+                        },
+                        {
+                            "name": "thread_id",
+                            "type": "uuid",
+                            "description": "Parent thread's {@link threads.id} - The thread to which this post belongs.",
+                            "relation": {
+                                "name": "thread",
+                                "targetModel": "threads"
+                            },
+                            "unique": false,
+                            "nullable": false
+                        },
+                        {
+                            "name": "parent_post_id",
+                            "type": "uuid",
+                            "description": "Optional parent post's {@link posts.id} - If this post is a reply or nested under another post, this field links to the parent. Null for top-level thread posts.\n\nImplements threaded/nested discussion pattern from 04_functional_requirements.md (supports reply structure).",
+                            "relation": {
+                                "name": "parent_post",
+                                "targetModel": "posts"
+                            },
+                            "unique": false,
+                            "nullable": true
+                        }
+                    ],
+                    "plainFields": [
+                        {
+                            "name": "content",
+                            "type": "string",
+                            "description": "Content Body - Implements the main user contribution requirement (04_functional_requirements.md). The body of the post. For example, the text the user writes for discussion or reply.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "is_deleted",
+                            "type": "boolean",
+                            "description": "Soft Deletion Flag - Implements moderation and content retention requirement, allowing restoration and audit trails (see 07_moderation_community.md). True if post should be hidden from the forum (not actually deleted).",
+                            "nullable": false
+                        },
+                        {
+                            "name": "created_at",
+                            "type": "datetime",
+                            "description": "Creation Timestamp - Required for all Auditing, Sorting, and Moderation workflows. The datetime when the post was created. For example, used to order posts within threads and support activity timelines.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "updated_at",
+                            "type": "datetime",
+                            "description": "Update Timestamp - Last modification or edit time. Supports chronology for edit history and moderation. Null if never edited.",
+                            "nullable": false
+                        }
+                    ],
+                    "uniqueIndexes": [
+                        {
+                            "fieldNames": [
+                                "thread_id",
+                                "parent_post_id",
+                                "created_at"
+                            ],
+                            "unique": true
+                        }
+                    ],
+                    "plainIndexes": [
+                        {
+                            "fieldNames": [
+                                "user_id",
+                                "created_at"
+                            ]
+                        },
+                        {
+                            "fieldNames": [
+                                "thread_id",
+                                "created_at"
+                            ]
+                        }
+                    ],
+                    "ginIndexes": [
+                        {
+                            "fieldName": "content"
+                        }
+                    ]
+                },
+                {
+                    "name": "post_replies",
+                    "description": "Post Reply Link Table - Implements the threaded/nested replies requirement from 04_functional_requirements.md.\n\nCaptures direct reply relationships between posts, allowing the forum to display which post replies to which (one step of the reply hierarchy). This junction model enables efficient query of all replies to a given post, supporting both simple flat and tree reply interfaces. For example: storing that Post B is a reply to Post A.\n\nKey relationships: references both parent and child posts in one-to-many direction (posts table), enabling reply chains.\nSpecial behaviors: Each unique (parent_post_id, child_post_id) pair is enforced; no self-replies allowed.",
+                    "material": false,
+                    "primaryField": {
+                        "name": "id",
+                        "type": "uuid",
+                        "description": "Primary Key. Unique identifier for each reply link."
+                    },
+                    "foreignFields": [
+                        {
+                            "name": "parent_post_id",
+                            "type": "uuid",
+                            "description": "Parent post's {@link posts.id} - The post to which another post is replying.",
+                            "relation": {
+                                "name": "parent_post",
+                                "targetModel": "posts"
+                            },
+                            "unique": false,
+                            "nullable": false
+                        },
+                        {
+                            "name": "child_post_id",
+                            "type": "uuid",
+                            "description": "Child (reply) post's {@link posts.id} - The post that is replying to the parent.",
+                            "relation": {
+                                "name": "child_post",
+                                "targetModel": "posts"
+                            },
+                            "unique": false,
+                            "nullable": false
+                        }
+                    ],
+                    "plainFields": [
+                        {
+                            "name": "created_at",
+                            "type": "datetime",
+                            "description": "Creation Timestamp - When the reply was created. Implements timestamp requirement for discussion chronology.",
+                            "nullable": false
+                        }
+                    ],
+                    "uniqueIndexes": [
+                        {
+                            "fieldNames": [
+                                "parent_post_id",
+                                "child_post_id"
+                            ],
+                            "unique": true
+                        }
+                    ],
+                    "plainIndexes": [
+                        {
+                            "fieldNames": [
+                                "parent_post_id"
+                            ]
+                        }
+                    ],
+                    "ginIndexes": []
+                },
+                {
+                    "name": "post_edits",
+                    "description": "Post Edit Snapshot - This implements the audit trail and evidence preservation requirement for edited content (e.g. 07_moderation_community.md, see also snapshot-based architecture in requirements).\n\nRecords a complete copy of the post content at the moment of each edit for immutable history, including original, each later edit, and the associated metadata (editor, reason, etc.). For example, if a user edits their post to clarify a point, a new post_edits record is created, referencing the post and containing the entire new content snapshot. This model supports full revert/history/moderation use cases.\n\nKey relationships: links to originating post (posts), the editor (users), and allows reconstruction of the full edit timeline.\nSpecial behaviors: at least one edit record required per post (original version), all later edits are appended in order, preventing tampering or unseen deletions.",
+                    "material": false,
+                    "primaryField": {
+                        "name": "id",
+                        "type": "uuid",
+                        "description": "Primary Key. Unique identifier for each post edit snapshot."
+                    },
+                    "foreignFields": [
+                        {
+                            "name": "post_id",
+                            "type": "uuid",
+                            "description": "Referenced post's {@link posts.id} - The post being edited.",
+                            "relation": {
+                                "name": "post",
+                                "targetModel": "posts"
+                            },
+                            "unique": false,
+                            "nullable": false
+                        },
+                        {
+                            "name": "editor_id",
+                            "type": "uuid",
+                            "description": "Editing user's {@link users.id} - The user who performed this edit. May be different from post creator if edited by moderator/admin.",
+                            "relation": {
+                                "name": "editor",
+                                "targetModel": "users"
+                            },
+                            "unique": false,
+                            "nullable": false
+                        }
+                    ],
+                    "plainFields": [
+                        {
+                            "name": "edit_version",
+                            "type": "int",
+                            "description": "Edit Version Sequence Number - Implements the versioning/auditability requirement. Starts at 1 for original post, increments for each new edit. Used to reconstruct revision history. For example, 1 (original), 2 (first edit), etc.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "content",
+                            "type": "string",
+                            "description": "Snapshot Content - The text as it existed after this edit. Implements evidence and rollback functionality for moderation.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "edit_reason",
+                            "type": "string",
+                            "description": "Edit Reason or Message - Short explanation entered by editor (optional). Enhances transparency. For example: 'fixed typo','removed sensitive info'.",
+                            "nullable": true
+                        },
+                        {
+                            "name": "created_at",
+                            "type": "datetime",
+                            "description": "Edit Timestamp - When this version of the post was created. Used for ordering and moderation workflows.",
+                            "nullable": false
+                        }
+                    ],
+                    "uniqueIndexes": [
+                        {
+                            "fieldNames": [
+                                "post_id",
+                                "edit_version"
+                            ],
+                            "unique": true
+                        }
+                    ],
+                    "plainIndexes": [
+                        {
+                            "fieldNames": [
+                                "editor_id",
+                                "created_at"
+                            ]
+                        }
+                    ],
+                    "ginIndexes": [
+                        {
+                            "fieldName": "content"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "filename": "schema-05-moderation.prisma",
+            "namespace": "Moderation",
+            "models": [
+                {
+                    "name": "flags",
+                    "description": "[Flags for Reported Content] - This implements the user report/flagging system described in the moderation and reporting tools requirement (see Functional Requirements and Moderation documents).\n\nAllows users to flag threads, posts, or comments for review by moderators. For example, a user may flag a post as inappropriate, spam, or off-topic.\n\nKey relationships: Connected to thread or post being reported, the user who made the report, and moderation review flows.\nSpecial behaviors: Flexible design allows future expansion for flagging other entities. Includes flag status and reason. Only moderators/admins can resolve flags. Ensures audit trails and enables community self-moderation.",
+                    "material": false,
+                    "primaryField": {
+                        "name": "id",
+                        "type": "uuid",
+                        "description": "Primary Key. Unique identifier for each flag/report."
+                    },
+                    "foreignFields": [
+                        {
+                            "name": "user_id",
+                            "type": "uuid",
+                            "description": "User's {@link users.id} who submitted this flag. Implements who reported the content and enables tracking repeated/frequent flaggers or abusers. For example, if user123 flags a post as spam, their ID is recorded here.",
+                            "relation": {
+                                "name": "user",
+                                "targetModel": "users"
+                            },
+                            "unique": false,
+                            "nullable": false
+                        },
+                        {
+                            "name": "thread_id",
+                            "type": "uuid",
+                            "description": "Flagged thread's {@link threads.id}, if a thread is being reported. Supports per-thread moderation and review links. Nullable to support alternative targets (like post flags).",
+                            "relation": {
+                                "name": "thread",
+                                "targetModel": "threads"
+                            },
+                            "unique": false,
+                            "nullable": true
+                        },
+                        {
+                            "name": "post_id",
+                            "type": "uuid",
+                            "description": "Flagged post's {@link posts.id}, if a post is being reported. Enables granular moderation. Nullable to support thread-only flags.",
+                            "relation": {
+                                "name": "post",
+                                "targetModel": "posts"
+                            },
+                            "unique": false,
+                            "nullable": true
+                        }
+                    ],
+                    "plainFields": [
+                        {
+                            "name": "reason",
+                            "type": "string",
+                            "description": "Reported reason for flag (e.g., 'Spam', 'Abusive Language', etc.). Implements moderation workflow detail per moderation requirements. Allows moderators to categorize and address the flagged content. For example, a user might select 'harassment' when flagging a comment.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "status",
+                            "type": "string",
+                            "description": "Current status of the flag (e.g., 'Pending', 'Reviewed', 'Dismissed', 'ActionTaken'). Implements moderation workflow states as standardized in moderation requirements. For example, a new flag starts as 'Pending' and is updated by a moderator as addressed.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "created_at",
+                            "type": "datetime",
+                            "description": "Timestamp when flag was created. Implements the audit trail aspect of moderation requirements. For example, tracks exactly when a thread was reported.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "resolved_at",
+                            "type": "datetime",
+                            "description": "Timestamp when flag was resolved (content reviewed and moderator took action or dismissed it). Implements moderation/audit requirements. Can be null to indicate unresolved flags.",
+                            "nullable": true
+                        }
+                    ],
+                    "uniqueIndexes": [
+                        {
+                            "fieldNames": [
+                                "user_id",
+                                "thread_id",
+                                "post_id",
+                                "reason",
+                                "created_at"
+                            ],
+                            "unique": true
+                        }
+                    ],
+                    "plainIndexes": [
+                        {
+                            "fieldNames": [
+                                "status"
+                            ]
+                        },
+                        {
+                            "fieldNames": [
+                                "created_at"
+                            ]
+                        }
+                    ],
+                    "ginIndexes": [
+                        {
+                            "fieldName": "reason"
+                        }
+                    ]
+                },
+                {
+                    "name": "moderation_actions",
+                    "description": "[Moderation Actions Log] - This implements moderation event tracking as described in Moderation and Audit Logging requirements.\n\nStores all actions taken by moderators/admins on reported content. Records the action type, actor, target (thread/post), and the result of the action. For example, if a moderator deletes a post due to a flag, this log entry is created.\n\nKey relationships: Related to moderators (actor), affected threads or posts, and the associated flag (optional).\nSpecial behaviors: Full traceability of moderation for accountability, transparency, and appeals processes. Supports audit trails and dispute management.",
+                    "material": false,
+                    "primaryField": {
+                        "name": "id",
+                        "type": "uuid",
+                        "description": "Primary Key. Unique moderation action event."
+                    },
+                    "foreignFields": [
+                        {
+                            "name": "moderator_id",
+                            "type": "uuid",
+                            "description": "Moderator or admin's {@link users.id} who performed this action. Implements accountability and traceability. For example, user789 is the moderator who deleted a post.",
+                            "relation": {
+                                "name": "moderator",
+                                "targetModel": "users"
+                            },
+                            "unique": false,
+                            "nullable": false
+                        },
+                        {
+                            "name": "flag_id",
+                            "type": "uuid",
+                            "description": "Associated {@link flags.id}, if the action was triggered due to a specific flag/report. Implements linkage between user flag and moderator action. Nullable to allow direct moderation/administrative actions not originated from a user report.",
+                            "relation": {
+                                "name": "flag",
+                                "targetModel": "flags"
+                            },
+                            "unique": false,
+                            "nullable": true
+                        },
+                        {
+                            "name": "thread_id",
+                            "type": "uuid",
+                            "description": "Targeted thread's {@link threads.id}, if relevant. Allows action-level granularity (locking, pinning, removing threads). Nullable to allow actions solely on posts or other targets.",
+                            "relation": {
+                                "name": "thread",
+                                "targetModel": "threads"
+                            },
+                            "unique": false,
+                            "nullable": true
+                        },
+                        {
+                            "name": "post_id",
+                            "type": "uuid",
+                            "description": "Targeted post's {@link posts.id}, if relevant. Supports granularity for content-level actions.",
+                            "relation": {
+                                "name": "post",
+                                "targetModel": "posts"
+                            },
+                            "unique": false,
+                            "nullable": true
+                        }
+                    ],
+                    "plainFields": [
+                        {
+                            "name": "action_type",
+                            "type": "string",
+                            "description": "Type of moderation action (e.g., 'Delete', 'Lock', 'Warn', 'Edit', 'Pin', 'Ban'). Implements standardized log types per requirements. For example, when a moderator locks a thread, the type is 'Lock'.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "reason",
+                            "type": "string",
+                            "description": "Text reason for why this action was taken (e.g., rule violation, spam, etc.). Implements documentation and transparency standards. For example, 'Post contained personal insults'.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "note",
+                            "type": "string",
+                            "description": "Internal note for context or details on the action. Implements best practices for moderation documentation. For example, moderator may add context for why a post was edited instead of deleted.",
+                            "nullable": true
+                        },
+                        {
+                            "name": "created_at",
+                            "type": "datetime",
+                            "description": "Timestamp when the moderation action occurred. Implements audit trail for all moderation operations. For example, records exactly when a ban was issued.",
+                            "nullable": false
+                        }
+                    ],
+                    "uniqueIndexes": [
+                        {
+                            "fieldNames": [
+                                "moderator_id",
+                                "created_at",
+                                "action_type",
+                                "thread_id",
+                                "post_id"
+                            ],
+                            "unique": true
+                        }
+                    ],
+                    "plainIndexes": [
+                        {
+                            "fieldNames": [
+                                "created_at"
+                            ]
+                        },
+                        {
+                            "fieldNames": [
+                                "action_type"
+                            ]
+                        }
+                    ],
+                    "ginIndexes": [
+                        {
+                            "fieldName": "reason"
+                        }
+                    ]
+                },
+                {
+                    "name": "bans",
+                    "description": "[User Suspension and Bans] - This implements the banning and suspension requirements under Moderation & Community Management, Roles/Permissions tables.\n\nTracks which users have been banned or temporarily suspended, by whom, when, and for what reason. Used by the platform to enforce community safety and rules. For example, when a user accumulates repeated policy violations, they can be banned for a defined period.\n\nKey relationships: Linked to banned user, moderator/admin who issued the ban, with optional relation to an originating flag. Supports both permanent and temporary bans.\nSpecial behaviors: Enforces permissions on login/posting. Facilitates appeals and ensures traceability.",
+                    "material": false,
+                    "primaryField": {
+                        "name": "id",
+                        "type": "uuid",
+                        "description": "Primary Key. Unique identifier for each ban record."
+                    },
+                    "foreignFields": [
+                        {
+                            "name": "user_id",
+                            "type": "uuid",
+                            "description": "Banned user's {@link users.id}. Implements tracking of which user is suspended/banned.",
+                            "relation": {
+                                "name": "user",
+                                "targetModel": "users"
+                            },
+                            "unique": false,
+                            "nullable": false
+                        },
+                        {
+                            "name": "moderator_id",
+                            "type": "uuid",
+                            "description": "Moderator's {@link users.id} who issued the ban. Supports traceability and accountability of ban decisions. For example, which moderator took this action.",
+                            "relation": {
+                                "name": "moderator",
+                                "targetModel": "users"
+                            },
+                            "unique": false,
+                            "nullable": false
+                        },
+                        {
+                            "name": "flag_id",
+                            "type": "uuid",
+                            "description": "Linked to user report/flag's {@link flags.id} if the ban resulted from a user report. Implements audit and appeals linkage. Nullable if ban was manually or proactively issued.",
+                            "relation": {
+                                "name": "flag",
+                                "targetModel": "flags"
+                            },
+                            "unique": false,
+                            "nullable": true
+                        }
+                    ],
+                    "plainFields": [
+                        {
+                            "name": "reason",
+                            "type": "string",
+                            "description": "Reason for the ban or suspension (e.g., repeated rule violation, harassment). Implements policy-tracing for ban decisions as outlined in moderation requirements.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "ban_type",
+                            "type": "string",
+                            "description": "Can be 'Temporary' or 'Permanent'. Implements standard ban types and supports time-based restriction, as per requirements. For example, a user may be suspended for 7 days (temporary) or indefinitely (permanent).",
+                            "nullable": false
+                        },
+                        {
+                            "name": "ban_start",
+                            "type": "datetime",
+                            "description": "Timestamp when the ban or suspension starts. Implements required tracking for enforcement periods.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "ban_end",
+                            "type": "datetime",
+                            "description": "Timestamp when the ban/suspension ends (nullable for permanent bans). Implements handling of ongoing or indefinite bans.",
+                            "nullable": true
+                        },
+                        {
+                            "name": "created_at",
+                            "type": "datetime",
+                            "description": "Timestamp when the ban record was created. Implements audit trail and traceability for all bans issued.",
+                            "nullable": false
+                        }
+                    ],
+                    "uniqueIndexes": [
+                        {
+                            "fieldNames": [
+                                "user_id",
+                                "ban_start",
+                                "ban_end"
+                            ],
+                            "unique": true
+                        }
+                    ],
+                    "plainIndexes": [
+                        {
+                            "fieldNames": [
+                                "created_at"
+                            ]
+                        },
+                        {
+                            "fieldNames": [
+                                "ban_type"
+                            ]
+                        }
+                    ],
+                    "ginIndexes": [
+                        {
+                            "fieldName": "reason"
+                        }
+                    ]
+                },
+                {
+                    "name": "audit_logs",
+                    "description": "[System Audit Logs for Moderation] - This implements the audit logging, transparency, and accountability requirements in the Moderation section.\n\nContains unalterable records of key moderation and administration actions for the entire platform. For example, logs of all moderation actions, admin changes, user promotions/demotions, permission updates, thread or post deletions, etc.\n\nKey relationships: Connected to the user (actor), optional thread/post/flag. Can reference other moderation tables.\nSpecial behaviors: Immutable (append-only) log for critical operations. Enables audits, legal compliance, incident response, and rollback investigations.",
+                    "material": false,
+                    "primaryField": {
+                        "name": "id",
+                        "type": "uuid",
+                        "description": "Primary Key. Unique audit event identifier."
+                    },
+                    "foreignFields": [
+                        {
+                            "name": "actor_id",
+                            "type": "uuid",
+                            "description": "User's {@link users.id} who performed the logged action. Implements accountability and ties each event to a responsible actor.",
+                            "relation": {
+                                "name": "actor",
+                                "targetModel": "users"
+                            },
+                            "unique": false,
+                            "nullable": false
+                        },
+                        {
+                            "name": "thread_id",
+                            "type": "uuid",
+                            "description": "Related thread's {@link threads.id} if applicable. Implements full event contextualization for audit review.",
+                            "relation": {
+                                "name": "thread",
+                                "targetModel": "threads"
+                            },
+                            "unique": false,
+                            "nullable": true
+                        },
+                        {
+                            "name": "post_id",
+                            "type": "uuid",
+                            "description": "Related post's {@link posts.id} if applicable. Supports precise audit of content modifications or removals.",
+                            "relation": {
+                                "name": "post",
+                                "targetModel": "posts"
+                            },
+                            "unique": false,
+                            "nullable": true
+                        },
+                        {
+                            "name": "flag_id",
+                            "type": "uuid",
+                            "description": "Related flag's {@link flags.id} if applicable. Enables correlation between audit log and user reports for appeals and dispute resolution.",
+                            "relation": {
+                                "name": "flag",
+                                "targetModel": "flags"
+                            },
+                            "unique": false,
+                            "nullable": true
+                        }
+                    ],
+                    "plainFields": [
+                        {
+                            "name": "event_type",
+                            "type": "string",
+                            "description": "Type of the audit event (e.g., 'ModerationAction', 'BanIssued', 'UserRoleChange', 'ThreadDeleted'). Implements detailed event tracking required in moderation, permissions, and transparency requirements.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "summary",
+                            "type": "string",
+                            "description": "Short summary of event purpose. Implements usability and efficient audit review. For example, 'Post deleted due to guideline violation'.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "details",
+                            "type": "string",
+                            "description": "Full details or description of event. Implements comprehensive traceability and investigation capability. For example, JSON string describing bulk thread actions or previous state.",
+                            "nullable": true
+                        },
+                        {
+                            "name": "created_at",
+                            "type": "datetime",
+                            "description": "Timestamp when the event log was recorded. Implements chrono-traceability for all significant platform changes, as per moderation and admin requirements.",
+                            "nullable": false
+                        }
+                    ],
+                    "uniqueIndexes": [
+                        {
+                            "fieldNames": [
+                                "actor_id",
+                                "created_at",
+                                "event_type",
+                                "summary"
+                            ],
+                            "unique": true
+                        }
+                    ],
+                    "plainIndexes": [
+                        {
+                            "fieldNames": [
+                                "created_at"
+                            ]
+                        },
+                        {
+                            "fieldNames": [
+                                "event_type"
+                            ]
+                        }
+                    ],
+                    "ginIndexes": [
+                        {
+                            "fieldName": "summary"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "filename": "schema-06-notifications.prisma",
+            "namespace": "Notifications",
+            "models": [
+                {
+                    "name": "notifications",
+                    "description": "[User notification entity] - This implements the notifications requirement described in Functional Requirements (section 6: Notifications & Engagement). \n\nRecords individual notifications sent to users for actions including replies, mentions, flagged content, moderation outcomes, or system messages (such as account changes). Provides an auditable and queryable notification trail for all users. For example, creates in-app bell alerts or triggers email notifications when another user replies to a thread, mentions you in a post, or when moderation decisions impact your content.\n\nKey relationships: References {@link users}, {@link threads}, {@link posts}, and optionally {@link moderation_actions} for context. Supports linking to the relevant entity or message. Can expand to support various notification types or channels in the future.\nSpecial behaviors: Marked as read/unread by recipient, optional soft deletion for auditability, supports multiple notification types and optional category-specific payloads.",
+                    "material": false,
+                    "primaryField": {
+                        "name": "id",
+                        "type": "uuid",
+                        "description": "Primary Key. Unique identifier for each notification."
+                    },
+                    "foreignFields": [
+                        {
+                            "name": "user_id",
+                            "type": "uuid",
+                            "description": "Target user's {@link users.id} - Implements notification delivery requirement. \n\nLinks the notification to the recipient user. For example, if a post is replied to, this field identifies the user who should receive the alert. Not nullable: every notification must belong to a user.",
+                            "relation": {
+                                "name": "user",
+                                "targetModel": "users"
+                            },
+                            "unique": false,
+                            "nullable": false
+                        },
+                        {
+                            "name": "thread_id",
+                            "type": "uuid",
+                            "description": "Optional related thread's {@link threads.id} - Implements contextual linking for thread notifications. \n\nIf provided, gives context—e.g., notification relates to activity on this thread. Nullable: not all notifications are tied to a thread (e.g., site-wide alerts).",
+                            "relation": {
+                                "name": "thread",
+                                "targetModel": "threads"
+                            },
+                            "unique": false,
+                            "nullable": true
+                        },
+                        {
+                            "name": "post_id",
+                            "type": "uuid",
+                            "description": "Optional related post's {@link posts.id} - Implements contextual linking for post notifications. \n\nContextualizes notifications to a specific post (such as replies, mentions, or flagged posts). Nullable.",
+                            "relation": {
+                                "name": "post",
+                                "targetModel": "posts"
+                            },
+                            "unique": false,
+                            "nullable": true
+                        },
+                        {
+                            "name": "moderation_action_id",
+                            "type": "uuid",
+                            "description": "Optional moderation action's {@link moderation_actions.id} - Implements moderation notification requirements.\n\nRelates to the moderation event that triggered the notification, e.g., user warned or post removed. Nullable: not all notifications come from moderation actions.",
+                            "relation": {
+                                "name": "moderation_action",
+                                "targetModel": "moderation_actions"
+                            },
+                            "unique": false,
+                            "nullable": true
+                        }
+                    ],
+                    "plainFields": [
+                        {
+                            "name": "type",
+                            "type": "string",
+                            "description": "Type of notification - Implements notification category requirement.\n\nE.g., 'reply', 'mention', 'flag', 'moderator_action', 'system', etc. Used to render and filter notifications appropriately. Required field.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "message",
+                            "type": "string",
+                            "description": "Notification message body - Implements descriptive content requirement. \n\nText content sent to the recipient, such as 'You have a new reply!' May support markdown or limited HTML for formatting. Required field.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "read",
+                            "type": "boolean",
+                            "description": "Whether notification has been read - Implements user engagement tracking.\n\nFor example, when user opens the bell, 'read' is set true. Allows highlighting new/unseen notifications. Required.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "created_at",
+                            "type": "datetime",
+                            "description": "Notification creation datetime - Implements consistent auditing/timestamp requirement.\n\nRecords when notification event occurred. Required. Used for sorting and recency checks.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "deleted_at",
+                            "type": "datetime",
+                            "description": "Time notification was (soft) deleted - Implements audit and history requirements.\n\nNullable: Not set unless notification is deleted. Soft deletion preserves history for audits.",
+                            "nullable": true
+                        }
+                    ],
+                    "uniqueIndexes": [],
+                    "plainIndexes": [
+                        {
+                            "fieldNames": [
+                                "user_id",
+                                "read",
+                                "created_at"
+                            ]
+                        },
+                        {
+                            "fieldNames": [
+                                "thread_id"
+                            ]
+                        },
+                        {
+                            "fieldNames": [
+                                "post_id"
+                            ]
+                        }
+                    ],
+                    "ginIndexes": [
+                        {
+                            "fieldName": "message"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "filename": "schema-07-messaging.prisma",
+            "namespace": "Messaging",
+            "models": [
+                {
+                    "name": "conversations",
+                    "description": "Conversation entity - This implements the private messaging and group chat requirement drawn from the functional requirements and user engagement use-case analysis. \n\nBusiness explanation: Represents a one-on-one or group chat context where users can exchange messages privately, outside of public threads. For example, a conversation could be a private discussion between two users or a group chat among several moderators.\n\nKey relationships: Tied to users (participants). Participants and membership are often modeled via related user-conversation junction tables (referenced as part of user_settings or future expansion). All messages within a conversation reference this conversation.\nSpecial behaviors: Only participants can access the conversation. Can be extended to support group chats by relating to multiple users.",
+                    "material": false,
+                    "primaryField": {
+                        "name": "id",
+                        "type": "uuid",
+                        "description": "Primary Key. Unique identifier for the conversation."
+                    },
+                    "foreignFields": [],
+                    "plainFields": [
+                        {
+                            "name": "title",
+                            "type": "string",
+                            "description": "Title of the conversation - Implements group chat usability for easier navigation (requirement: scalable/private messaging). For business meaning: Optional, for group conversations. For example, 'Moderators Private Room'. Can be null for simple 1-on-1 conversations.",
+                            "nullable": true
+                        },
+                        {
+                            "name": "created_at",
+                            "type": "datetime",
+                            "description": "Timestamp when the conversation was created - Implements data auditability, for sorting and searching conversation start (requirement: platform maintainability/audit). For example, when a conversation is initiated.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "updated_at",
+                            "type": "datetime",
+                            "description": "Timestamp of the most recent message or update - Supports chronological sorting and notification triggers (requirement: user notification/engagement). For example, updated when a new message is sent.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "is_group",
+                            "type": "boolean",
+                            "description": "Whether this is a group conversation - Implements distinction between 1-on-1 and group chats (requirement: group communication expansion). For example, true for 'Moderator Chat', false for direct message.",
+                            "nullable": false
+                        }
+                    ],
+                    "uniqueIndexes": [],
+                    "plainIndexes": [
+                        {
+                            "fieldNames": [
+                                "created_at"
+                            ]
+                        },
+                        {
+                            "fieldNames": [
+                                "updated_at"
+                            ]
+                        }
+                    ],
+                    "ginIndexes": [
+                        {
+                            "fieldName": "title"
+                        }
+                    ]
+                },
+                {
+                    "name": "messages",
+                    "description": "Message entity - Implements the private messaging requirement as detailed in the platform's core social/user engagement features in the requirements document.\n\nBusiness explanation: Represents an individual message sent within a conversation. For example, a user sending 'Hey, are you free to discuss moderation policies?' to another user.\n\nKey relationships: Each message references the conversation it belongs to and the sending user. Messages are strictly ordered and can be soft-deleted or edited for auditability/security per audit trail requirement.\nSpecial behaviors: Only participants in the conversation can view messages. Supports features like edit history or deletion tracking via additional flags/fields if needed.",
+                    "material": false,
+                    "primaryField": {
+                        "name": "id",
+                        "type": "uuid",
+                        "description": "Primary Key. Unique identifier for each message."
+                    },
+                    "foreignFields": [
+                        {
+                            "name": "conversation_id",
+                            "type": "uuid",
+                            "description": "Belonged conversation's {@link conversations.id} - Links the message to its parent conversation (requirement: message-threading, access control). For business meaning: Only messages within this conversation are retrieved when loading chat history.",
+                            "relation": {
+                                "name": "conversation",
+                                "targetModel": "conversations"
+                            },
+                            "unique": false,
+                            "nullable": false
+                        },
+                        {
+                            "name": "sender_id",
+                            "type": "uuid",
+                            "description": "Sender user's {@link users.id} - Links to the user who authored this message (requirement: accountability, notification routing). For example, user who typed and sent the message.",
+                            "relation": {
+                                "name": "sender",
+                                "targetModel": "users"
+                            },
+                            "unique": false,
+                            "nullable": false
+                        }
+                    ],
+                    "plainFields": [
+                        {
+                            "name": "content",
+                            "type": "string",
+                            "description": "Body/content of the message - Implements the actual communication (requirement: core platform function). For example, the text 'Hello, how are you?'. Not nullable, cannot be empty string in enforcement layer.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "created_at",
+                            "type": "datetime",
+                            "description": "Timestamp when this message was sent - Implements audit trail and message ordering (requirement: accountability, search). For example, used in conversation timelines.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "edited_at",
+                            "type": "datetime",
+                            "description": "Timestamp when the message was edited (if applicable) - Enables edit history and transparency (requirement: content integrity/audit). For example, updated if user edits their message. Can be null if never edited.",
+                            "nullable": true
+                        },
+                        {
+                            "name": "deleted_at",
+                            "type": "datetime",
+                            "description": "Timestamp when the message was deleted (if applicable) - Allows for soft deletion for audit trails (requirement: privacy/compliance). For example, set if message is deleted but retained for moderation.",
+                            "nullable": true
+                        }
+                    ],
+                    "uniqueIndexes": [],
+                    "plainIndexes": [
+                        {
+                            "fieldNames": [
+                                "conversation_id",
+                                "created_at"
+                            ]
+                        },
+                        {
+                            "fieldNames": [
+                                "sender_id"
+                            ]
+                        }
+                    ],
+                    "ginIndexes": [
+                        {
+                            "fieldName": "content"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "filename": "schema-08-settings.prisma",
+            "namespace": "Settings",
+            "models": [
+                {
+                    "name": "user_settings",
+                    "description": "User-specific platform, privacy, and notification preferences - This implements the requirement to allow users to manage their forum experience and privacy. \n\nEnables per-user settings like notification preferences, language, privacy toggles, and custom UI options (if available). For example, users may choose to receive email notifications, restrict profile visibility, or alter interface appearance.\n\nKey relationships: Required 1:1 link to the users table; references user account that these settings apply to.\nSpecial behaviors: Enforces 1:1 relationship with users (each user can have only one settings row); per-field option expandability for future needs.",
+                    "material": false,
+                    "primaryField": {
+                        "name": "id",
+                        "type": "uuid",
+                        "description": "Primary Key. Unique identifier for the user_settings row."
+                    },
+                    "foreignFields": [
+                        {
+                            "name": "user_id",
+                            "type": "uuid",
+                            "description": "Belonged user's {@link users.id} - The forum user account this settings row is attached to.",
+                            "relation": {
+                                "name": "user",
+                                "targetModel": "users"
+                            },
+                            "unique": true,
+                            "nullable": false
+                        }
+                    ],
+                    "plainFields": [
+                        {
+                            "name": "email_notifications",
+                            "type": "boolean",
+                            "description": "Email notifications toggle - Implements user communication preference requirement.\n\nIf true, the user receives email notifications about replies, mentions, or other events. Example: 'Send me an email for each new reply.' Default: true.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "privacy_profile_visible",
+                            "type": "boolean",
+                            "description": "Profile visibility option - Implements user privacy management requirement.\n\nIf false, the user's profile is hidden from public/user listings. Example: 'Hide my profile from other users.' Default: true (visible).",
+                            "nullable": false
+                        },
+                        {
+                            "name": "language",
+                            "type": "string",
+                            "description": "Preferred user language - Implements internationalization/usability features.\n\nStores user-selected locale (e.g., 'en', 'ko', 'es'). Example: User sets UI display to Korean. Nullable for default forum language.",
+                            "nullable": true
+                        },
+                        {
+                            "name": "theme",
+                            "type": "string",
+                            "description": "UI theme preference - Implements accessibility/usability expansion.\n\nUser's chosen UI color theme (e.g., 'light', 'dark'). Adds personalization/UX flexibility. Nullable for default.",
+                            "nullable": true
+                        },
+                        {
+                            "name": "created_at",
+                            "type": "datetime",
+                            "description": "Creation timestamp - Implements system data audit requirements.\n\nTime the settings row was initially created. For example, used in audit logs or rollback, never null.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "updated_at",
+                            "type": "datetime",
+                            "description": "Last updated timestamp - Implements system audit and data currency.\n\nTracks when settings were last changed.",
+                            "nullable": false
+                        }
+                    ],
+                    "uniqueIndexes": [
+                        {
+                            "fieldNames": [
+                                "user_id"
+                            ],
+                            "unique": true
+                        }
+                    ],
+                    "plainIndexes": [
+                        {
+                            "fieldNames": [
+                                "language"
+                            ]
+                        }
+                    ],
+                    "ginIndexes": []
+                },
+                {
+                    "name": "site_settings",
+                    "description": "Singleton platform-wide configuration - This implements the administrative requirements for global configuration and community governance defined in the platform setup. \n\nStores forum-wide or system-critical configuration (e.g., site name, legal policies, registration settings, spam protection, allowed file types). For example, used by administrators to update system name, enable/disable new registration, or set featured announcement.\n\nKey relationships: No foreign relations; only a single row allowed.\nSpecial behaviors: Enforced singleton pattern (only one row). Expansion via new columns for additional settings. Modifications restricted to administrators.",
+                    "material": false,
+                    "primaryField": {
+                        "name": "id",
+                        "type": "uuid",
+                        "description": "Primary Key. Unique identifier for the singleton site_settings row."
+                    },
+                    "foreignFields": [],
+                    "plainFields": [
+                        {
+                            "name": "site_name",
+                            "type": "string",
+                            "description": "Forum/site display title - Implements branding requirement from admin needs.\n\nShown in headers, emails, and may influence SEO. For example, 'EconoPolis Community'.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "registration_open",
+                            "type": "boolean",
+                            "description": "New user registration toggle - Implements administrative control requirement.\n\nIf false, new public account signups are disabled (e.g., maintenance, invite-only phase). For example, used to temporarily close registration due to spam wave. Default: true (open).",
+                            "nullable": false
+                        },
+                        {
+                            "name": "default_language",
+                            "type": "string",
+                            "description": "Default forum language - Implements internationalization/usability requirement.\n\nLocale code for unauthenticated visitors or accounts with unset language. For example: 'en' or 'ko'.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "legal_policy_url",
+                            "type": "uri",
+                            "description": "Legal policy link - Implements requirement for privacy/GDPR compliance.\n\nURL pointing to the forum's terms of service/privacy policy.",
+                            "nullable": true
+                        },
+                        {
+                            "name": "allowed_file_types",
+                            "type": "string",
+                            "description": "Accepted file types for uploads - Implements admin content safety policy requirement.\n\nComma-separated string of allowed file extensions or MIME types (e.g., 'jpg,png,gif,mp3,mp4,pdf'). Nullable for default support.",
+                            "nullable": true
+                        },
+                        {
+                            "name": "spam_protection_enabled",
+                            "type": "boolean",
+                            "description": "Enables system-wide anti-spam features - Implements professional recommendation for forum security and anti-abuse.\n\nIf true, rate limiting, CAPTCHA, keyword filters, etc. are active. For example, 'true' during heavy spam attacks. Default: true (enabled).",
+                            "nullable": false
+                        },
+                        {
+                            "name": "created_at",
+                            "type": "datetime",
+                            "description": "Creation time of the site_settings row - Implements system audit requirements/spatial expansion.\n\nSet on initial platform setup. Never null.",
+                            "nullable": false
+                        },
+                        {
+                            "name": "updated_at",
+                            "type": "datetime",
+                            "description": "Last update time - Implements audit/history requirements.\n\nUpdated when admin changes to site settings are made. Never null.",
+                            "nullable": false
+                        }
+                    ],
+                    "uniqueIndexes": [],
+                    "plainIndexes": [],
+                    "ginIndexes": []
+                }
+            ]
+        }
+    ]
+}
