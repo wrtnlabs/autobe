@@ -52,7 +52,7 @@ function validateDuplicatedFiles(
 
   const errors: IAutoBePrismaValidation.IError[] = [];
   for (const array of group.values())
-    if (array.length !== 0)
+    if (array.length !== 1)
       array.forEach((container, i) => {
         errors.push({
           path: `appplication.files[${container.index}]`,
@@ -96,7 +96,7 @@ function validateDuplicatedModels(
 
   const errors: IAutoBePrismaValidation.IError[] = [];
   for (const array of modelContainers.values())
-    if (array.length !== 0)
+    if (array.length !== 1)
       array.forEach((container, i) => {
         errors.push({
           path: `appplication.files[${container.fileIndex}].models[${container.modelIndex}]`,
@@ -140,20 +140,21 @@ function validateDuplicatedFields(
 
   const errors: IAutoBePrismaValidation.IError[] = [];
   for (const [field, array] of group)
-    array.forEach((path, i) => {
-      errors.push({
-        path,
-        table: model.name,
-        field,
-        message: [
-          `Field ${field} is duplicated.`,
-          "",
-          "Accessors of the other duplicated fields are:",
-          "",
-          ...array.filter((_oppo, j) => i !== j).map((a) => `- ${a}`),
-        ].join("\n"),
+    if (array.length !== 1)
+      array.forEach((path, i) => {
+        errors.push({
+          path,
+          table: model.name,
+          field,
+          message: [
+            `Field ${field} is duplicated.`,
+            "",
+            "Accessors of the other duplicated fields are:",
+            "",
+            ...array.filter((_oppo, j) => i !== j).map((a) => `- ${a}`),
+          ].join("\n"),
+        });
       });
-    });
   return errors;
 }
 
@@ -177,22 +178,22 @@ function validateDuplicatedIndexes(
   );
 
   const errors: IAutoBePrismaValidation.IError[] = [];
-  for (const { first: fieldNames, second: array } of group) {
-    array.forEach((path, i) => {
-      errors.push({
-        path,
-        table: model.name,
-        field: null,
-        message: [
-          `Duplicated index found (${fieldNames.join(", ")})`,
-          "",
-          "Accessors of the other duplicated indexes are:",
-          "",
-          ...array.filter((_oppo, j) => i !== j).map((a) => `- ${a}`),
-        ].join("\n"),
+  for (const { first: fieldNames, second: array } of group)
+    if (array.length !== 1)
+      array.forEach((path, i) => {
+        errors.push({
+          path,
+          table: model.name,
+          field: null,
+          message: [
+            `Duplicated index found (${fieldNames.join(", ")})`,
+            "",
+            "Accessors of the other duplicated indexes are:",
+            "",
+            ...array.filter((_oppo, j) => i !== j).map((a) => `- ${a}`),
+          ].join("\n"),
+        });
       });
-    });
-  }
 
   if (
     model.ginIndexes.length !==

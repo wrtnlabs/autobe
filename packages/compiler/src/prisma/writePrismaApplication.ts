@@ -7,7 +7,9 @@ export function writePrismaApplication(
 ): Record<string, string> {
   return {
     ...Object.fromEntries(
-      app.files.map((file) => [file.filename, writeFile(app, file)]),
+      app.files
+        .filter((file) => file.filename !== "main.prisma")
+        .map((file) => [file.filename, writeFile(app, file)]),
     ),
     "main.prisma": MAIN_FILE,
   };
