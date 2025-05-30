@@ -14,7 +14,6 @@ import StackBlitzSDK from "@stackblitz/sdk";
 export function AutoBePlaygroundCompleteEventMovie(
   props: AutoBePlaygroundCompleteEventMovie.IProps,
 ) {
-  const title: string = getTitle(props.event);
   const openStackBlitz = () => {
     props.service
       .getFiles()
@@ -36,6 +35,13 @@ export function AutoBePlaygroundCompleteEventMovie(
         );
       });
   };
+  if (
+    props.event.type === "prismaComplete" &&
+    props.event.compiled.type === "failure"
+  )
+    console.log(props.event);
+  const title: string | null = getTitle(props.event);
+  if (title === null) return null;
   return (
     <Card
       elevation={3}
@@ -81,11 +87,12 @@ export namespace AutoBePlaygroundCompleteEventMovie {
 
 function getTitle(
   event: AutoBePlaygroundCompleteEventMovie.IProps["event"],
-): string {
+): string | null {
   switch (event.type) {
     case "analyzeComplete":
       return "Analyze";
     case "prismaComplete":
+      if (event.compiled.type !== "success") return null;
       return "Prisma";
     case "interfaceComplete":
       return "Interface";

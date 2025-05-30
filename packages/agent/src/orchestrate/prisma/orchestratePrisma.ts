@@ -69,7 +69,7 @@ export const orchestratePrisma =
     ctx.state().prisma = history;
     ctx.histories().push(history);
 
-    if (history.result.success === true && history.compiled.type === "success")
+    if (history.result.success === true)
       ctx.dispatch({
         type: "prismaComplete",
         application: history.result.data,

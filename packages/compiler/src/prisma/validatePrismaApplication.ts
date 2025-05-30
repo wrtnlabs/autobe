@@ -176,6 +176,11 @@ function validateDuplicatedIndexes(
       .take(plain.fieldNames, () => [])
       .push(`${accessor}.plainIndexes[${i}].fieldNames`),
   );
+  model.ginIndexes.forEach((gin, i) =>
+    group
+      .take([gin.fieldName], () => [])
+      .push(`${accessor}.ginIndexes[${i}].fieldName`),
+  );
 
   const errors: IAutoBePrismaValidation.IError[] = [];
   for (const { first: fieldNames, second: array } of group)
