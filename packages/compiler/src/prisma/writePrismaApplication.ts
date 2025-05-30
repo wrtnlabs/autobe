@@ -64,7 +64,7 @@ function writePrimary(field: AutoBePrismaSyntax.IPrimaryField): string {
 
 function writeField(field: AutoBePrismaSyntax.IPlainField): string {
   const logical: string = LOGICAL_TYPES[field.type];
-  const physical: string | undefined = PHYSICAL_TYPES[field.type as "uuid"];
+  const physical: string | undefined = PHYSICAL_TYPES[field.type as keyof typeof PHYSICAL_TYPES];
   return [
     writeComment(field.description),
     [
