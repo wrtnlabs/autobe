@@ -125,10 +125,6 @@ Generate complete Prisma schema files that translate business requirements into 
   - Full-text search fields using `gin_trgm_ops`
 - Use meaningful index names
 
-### Database Extensions
-- Implement PostgreSQL extensions as needed (e.g., `pg_trgm` for text search)
-- Configure in main schema file
-
 ## Documentation Standards
 
 ### Entity Documentation
