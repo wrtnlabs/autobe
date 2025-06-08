@@ -1,10 +1,9 @@
 import { AutoBeOpenApi, IAutoBeInterfaceCompiler } from "@autobe/interface";
-import { MigrateApplication } from "@nestia/migrate";
+import { NestiaMigrateApplication } from "@nestia/migrate";
 import { OpenApi, OpenApiV3_1 } from "@samchon/openapi";
 import sortImport from "@trivago/prettier-plugin-sort-imports";
 import import2 from "import2";
 import { format } from "prettier";
-import { IValidation } from "typia";
 
 import { AutoBeCompilerConstants } from "./raw/AutoBeCompilerConstants";
 import { ArrayUtil } from "./utils/ArrayUtil";
@@ -14,13 +13,11 @@ export class AutoBeInterfaceCompiler implements IAutoBeInterfaceCompiler {
     document: AutoBeOpenApi.IDocument,
   ): Promise<Record<string, string>> {
     const swagger: OpenApi.IDocument = createOpenApiDocument(document);
-    const migrate: IValidation<MigrateApplication> =
-      MigrateApplication.create(swagger);
-    if (migrate.success === false) {
-      // never be happened
-      throw new Error("Failed to pass validation.");
-    }
-    const compiled: MigrateApplication.IOutput = migrate.data.nest({
+    const migrate: NestiaMigrateApplication = new NestiaMigrateApplication(
+      swagger,
+    );
+    const files: Record<string, string> = migrate.nest({
+      keyword: true,
       simulate: true,
       e2e: true,
       author: {
@@ -30,12 +27,15 @@ export class AutoBeInterfaceCompiler implements IAutoBeInterfaceCompiler {
     });
     return {
       ...Object.fromEntries(
-        await ArrayUtil.asyncMap(compiled.files, async (f) => [
-          `${f.location}/${f.file}`,
-          f.file.endsWith(".ts") && f.file.endsWith(".d.ts") === false
-            ? await beautify(f.content)
-            : f.content,
-        ]),
+        await ArrayUtil.asyncMap(
+          Object.entries(files),
+          async ([key, value]) => [
+            key,
+            key.endsWith(".ts") && key.endsWith(".d.ts") === false
+              ? await beautify(value)
+              : value,
+          ],
+        ),
       ),
       "packages/api/swagger.json": JSON.stringify(swagger, null, 2),
       "README.md": AutoBeCompilerConstants.README,
