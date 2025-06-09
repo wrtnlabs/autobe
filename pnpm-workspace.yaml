@@ -8,12 +8,12 @@ catalogs:
     "@agentica/core": ^0.27.2
     "@agentica/rpc": ^0.27.2
   samchon:
-    "@nestia/benchmark": 7.0.0-dev.20250608
-    "@nestia/core": 7.0.0-dev.20250608
-    "@nestia/e2e": 7.0.0-dev.20250608
-    "@nestia/fetcher": 7.0.0-dev.20250608
-    "@nestia/migrate": 7.0.0-dev.20250608
-    "@nestia/sdk": 7.0.0-dev.20250608
+    "@nestia/benchmark": ^7.0.0
+    "@nestia/core": ^7.0.0
+    "@nestia/e2e": ^7.0.0
+    "@nestia/fetcher": ^7.0.0
+    "@nestia/migrate": ^7.0.0
+    "@nestia/sdk": ^7.0.0
     "@samchon/openapi": ^4.3.3
     embed-prisma: ^1.1.0
     embed-typescript: ^1.0.1
