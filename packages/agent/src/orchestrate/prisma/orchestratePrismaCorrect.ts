@@ -13,6 +13,14 @@ export function orchestratePrismaCorrect<Model extends ILlmSchema.Model>(
   application: AutoBePrisma.IApplication,
   retry: number = 8,
 ): Promise<IAutoBePrismaValidation> {
+  const unique: Set<string> = new Set();
+  for (const file of application.files)
+    file.models = file.models.filter((model) => {
+      if (unique.has(model.name)) return false;
+      unique.add(model.name);
+      return true;
+    });
+  application.files = application.files.filter((f) => f.models.length !== 0);
   return step(ctx, application, retry);
 }
 
@@ -76,12 +84,20 @@ async function step<Model extends ILlmSchema.Model>(
     return result; // unreachable
   }
 
+  const correction: AutoBePrisma.IApplication = {
+    files: application.files.map((file) => ({
+      filename: file.filename,
+      namespace: file.namespace,
+      models: file.models.map((model) => {
+        const newbie = pointer.value!.models.find((m) => m.name === model.name);
+        return newbie ?? model;
+      }),
+    })),
+  };
   ctx.dispatch({
     type: "prismaCorrect",
     failure: result,
-    correction: {
-      files: pointer.value.files,
-    },
+    correction,
     planning: pointer.value.planning,
     step: ctx.state().analyze?.step ?? 0,
     created_at: new Date().toISOString(),
@@ -89,7 +105,7 @@ async function step<Model extends ILlmSchema.Model>(
   return step(
     ctx,
     {
-      files: pointer.value.files,
+      files: correction.files,
     },
     life - 1,
   );
@@ -135,124 +151,141 @@ const collection = {
 
 interface IApplication {
   /**
-   * Fixes validation errors in AutoBePrisma.IApplication structure while
-   * preserving ALL existing business logic and model descriptions.
+   * Fixes validation errors in specific AutoBePrisma models while preserving
+   * ALL existing business logic and model descriptions.
    *
    * ## Core Rules
    *
-   * 1. Fix ONLY validation errors - never remove business descriptions
-   * 2. Apply minimal changes - preserve original design intent
-   * 3. Return COMPLETE corrected structure - no data loss allowed
-   * 4. Maintain referential integrity across all models
+   * 1. Fix ONLY validation errors in provided models - never remove business
+   *    descriptions
+   * 2. Apply minimal changes to error models only - preserve original design
+   *    intent
+   * 3. Return ONLY corrected models - unchanged models remain in original schema
+   * 4. Maintain referential integrity with unchanged models
    *
-   * ## Preservation Requirements
+   * ## Targeted Scope
    *
-   * - Keep ALL model and field descriptions
-   * - Keep business logic and architectural patterns
-   * - Maintain relationship semantics and cardinality
-   * - Remove descriptions only when removing duplicate elements
+   * - Process ONLY models with validation errors from IError[] array
+   * - Exclude models without errors from processing and output
+   * - Minimize context usage by returning corrected models only
+   * - Preserve unchanged models in their original state
    *
    * ## Fix Strategy
    *
-   * - Resolve structural validation errors without changing business intent
-   * - Remove duplicate fields/relations while preserving most appropriate ones
-   * - Fix invalid references and type mismatches
-   * - Ensure naming conventions and index rules compliance
+   * - Resolve validation errors within specific models only
+   * - Fix field duplications, invalid references, and type mismatches
+   * - Update cross-model references without modifying target models
+   * - Ensure naming conventions and index rules compliance in corrected models
    */
   correctPrismaSchemaFiles(props: IModifyPrismaSchemaFilesProps): void;
 }
 
 interface IModifyPrismaSchemaFilesProps {
   /**
-   * Detailed execution plan for fixing AutoBePrisma validation errors.
+   * Detailed execution plan for fixing `AutoBePrisma` validation errors in
+   * specific models.
    *
    * 🎯 Purpose: Enable systematic reasoning and step-by-step error resolution
-   * approach for structured schema validation issues
+   * approach for targeted model validation issues
    *
    * 📋 Required Planning Content:
    *
-   * 1. **Error Analysis Summary**
+   * 1. **Error Scope Analysis**
    *
    *    - List all validation errors from IAutoBePrismaValidation.IError[] array
-   *    - Categorize errors by type (duplications, references, types, indexes)
-   *    - Identify root causes and error interdependencies
-   * 2. **Fix Strategy Overview**
+   *    - Extract unique table names from errors to identify affected models
+   *    - Categorize errors by type (field duplications, references, types, indexes)
+   *    - Identify which models need correction vs. which remain unchanged
+   * 2. **Targeted Fix Strategy**
    *
-   *    - Prioritize fixes based on dependencies (fix duplications first)
-   *    - Outline minimal changes needed for each validation error
-   *    - Identify potential impact on other models/relationships
-   * 3. **Step-by-Step Fix Plan**
+   *    - Focus ONLY on models mentioned in validation errors
+   *    - Outline minimal changes needed for each affected model
+   *    - Plan cross-model reference updates (if any) without modifying non-error
+   *         models
+   *    - Ensure unchanged models maintain valid references to corrected models
+   * 3. **Model-Specific Fix Plan**
    *
-   *    - Model-by-model modification plan with specific changes
-   *    - Exact field additions, removals, or renames required
-   *    - Reference updates needed for renamed elements
-   *    - Index corrections to comply with validation rules
-   * 4. **Preservation Checklist**
+   *    - Model-by-model modification plan for ONLY affected models
+   *    - Exact field additions, renames, or type corrections required
+   *    - Reference updates within corrected models only
+   *    - Index corrections limited to affected models
+   * 4. **Minimal Scope Validation**
    *
-   *    - Confirm which descriptions and business logic must be preserved
-   *    - List relationships and constraints to maintain unchanged
-   *    - Identify cross-model dependencies that must remain intact
-   * 5. **Risk Assessment**
+   *    - Confirm which models will be included in output (error models only)
+   *    - List models that will remain unchanged in original schema
+   *    - Identify cross-model dependencies without including unchanged models
+   *    - Preserve all business logic within corrected models
+   * 5. **Targeted Impact Assessment**
    *
-   *    - Potential side effects of each planned fix
-   *    - Validation points to check after applying corrections
-   *    - Ensure no new validation errors are introduced
+   *    - Potential effects of fixes on unchanged models (reference validation)
+   *    - Verification points for corrected models only
+   *    - Ensure no new validation errors in targeted models
+   *    - Confirm minimal output scope compliance
    *
    * 💡 Example Planning Structure:
    *
-   *     ## Error Analysis
-   *     - Error 1: Duplicate field 'name' in shopping_customers model
-   *     - Error 2: Invalid targetModel 'shopping_customer' should be 'shopping_customers'
+   *     ## Error Scope
+   *     - Target Models: shopping_customers, shopping_orders (2 models only)
+   *     - Unchanged Models: All others remain in original schema
    *
-   *     ## Fix Strategy
-   *     1. Remove duplicate 'name' field (keep the more detailed one)
-   *     2. Update foreign key references to use correct plural model name
+   *     ## Targeted Fixes
+   *     - shopping_customers: Remove duplicate 'email' field
+   *     - shopping_orders: Update targetModel reference to 'shopping_customers'
    *
-   *     ## Detailed Steps
-   *     1. shopping_customers model: Remove second 'name' field from plainFields
-   *     2. shopping_orders model: Update targetModel from 'shopping_customer' to 'shopping_customers'
+   *     ## Output Scope
+   *     - Return: Only shopping_customers and shopping_orders models
+   *     - Preserve: All other models unchanged in original schema
    *
-   *     ## Preservation Notes
-   *     - Keep business descriptions for remaining 'name' field
-   *     - Maintain all relationship semantics
-   *     - Preserve all indexes and constraints
+   *     ## Cross-Model Impact
+   *     - Verify: shopping_orders still references shopping_customers correctly
+   *     - No changes needed in other models referencing these
    */
   planning: string;
 
   /**
-   * Original AutoBePrisma.IApplication structure that contains validation
-   * errors and needs correction.
+   * ONLY the specific models that contain validation errors and need
+   * correction.
    *
    * 📥 Input Structure:
    *
-   * - Complete IApplication with files array containing validation errors
-   * - Each file contains models with potential structural issues
-   * - Errors may include duplications, invalid references, or constraint
-   *   violations
+   * - Contains ONLY models mentioned in IAutoBePrismaValidation.IError[] array
+   * - Each model has specific validation errors that need targeted correction
+   * - Models not mentioned in errors are excluded from this input
+   * - Represents minimal scope for error correction
    *
-   * 🔍 Expected Validation Issues:
+   * 🔍 Expected Validation Issues (Model-Specific):
    *
-   * - Duplicate model names across files
-   * - Duplicate field/relation names within models
-   * - Invalid foreign key references to non-existent models
-   * - Single foreign key fields in index arrays
-   * - Non-plural model names or invalid naming conventions
+   * - Duplicate field/relation names within these specific models
+   * - Invalid foreign key references from these models to other models
+   * - Single foreign key fields in index arrays within these models
+   * - Invalid naming conventions within these specific models
+   * - Type validation errors in fields of these models
    *
-   * 📝 Application Content Analysis:
+   * 📝 Model Content Analysis (Targeted Scope):
    *
-   * - All models with their complete field definitions
-   * - All relationships with targetModel and targetfield configurations
-   * - All indexes (unique, plain, GIN) with field references
-   * - All business descriptions and requirement mappings
-   * - Cross-file model references and dependencies
+   * - Complete field definitions for each error model only
+   * - Relationships from these models (may reference unchanged models)
+   * - Indexes within these models that need correction
+   * - Business descriptions specific to these models
+   * - Cross-model references that need validation (read-only for targets)
    *
-   * ⚠️ Processing Notes:
+   * ⚠️ Processing Notes (Focused Approach):
    *
-   * - Structure may contain validation errors that prevent code generation
-   * - Some models might reference non-existent targets
-   * - Field names might violate naming conventions
-   * - Index configurations might include forbidden single foreign keys
-   * - Business logic and descriptions must be preserved during fixes
+   * - Input contains ONLY models with validation errors
+   * - May reference other models not included in this input
+   * - Cross-model references must be validated but target models won't be
+   *   modified
+   * - Output should return corrected versions of ONLY these input models
+   * - All business logic and descriptions within these models must be preserved
+   * - Corrections must not break references from unchanged models
+   *
+   * 🎯 Correction Scope:
+   *
+   * - Fix validation errors within these specific models
+   * - Update internal model structure (fields, relations, indexes)
+   * - Correct references to external models (without modifying targets)
+   * - Maintain compatibility with unchanged models in the full schema
+   * - Return corrected versions of ONLY these models
    */
-  files: AutoBePrisma.IFile[];
+  models: AutoBePrisma.IModel[];
 }

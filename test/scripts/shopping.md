@@ -2,7 +2,7 @@ This is the requirement analysis report of my shopping mall backend project what
 
 Please reform this content following your style, so that make new requirement analysis report for new AI based backend development.
 
-when remaking the requirements analysis report, never ask me anything about detailing. Make all judgments and decisions autonomously by yourself.
+when remaking the requirements analysis report, never ask me whether to go on or not. Do not ask me anything about detailing. Make all judgments and decisions autonomously by yourself.
 
 -----------------------------------------------------
 

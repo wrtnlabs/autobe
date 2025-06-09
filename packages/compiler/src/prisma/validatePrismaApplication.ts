@@ -5,6 +5,7 @@ import { MapUtil } from "../utils/MapUtil";
 
 export function validatePrismaApplication(
   application: AutoBePrisma.IApplication,
+  previous?: AutoBePrisma.IApplication | undefined,
 ): IAutoBePrismaValidation {
   const dict: Map<string, AutoBePrisma.IModel> = new Map(
     application.files
@@ -20,7 +21,7 @@ export function validatePrismaApplication(
         file.models.map((model, mi) => {
           const accessor: string = `application.files[${fi}].models[${mi}]`;
           return [
-            ...validateDuplicatedFields(model, accessor),
+            ...validateDuplicatedFields(dict, model, accessor),
             ...validateDuplicatedIndexes(model, accessor),
             ...validateIndexes(model, accessor),
             ...validateReferences(model, accessor, dict),
@@ -28,10 +29,23 @@ export function validatePrismaApplication(
         }),
       )
       .flat(2),
+    ...(previous ? validateOmissions(application, previous) : []),
   ];
   return errors.length === 0
     ? { success: true, data: application }
     : { success: false, data: application, errors };
+}
+
+/* -----------------------------------------------------------
+  OMISSIONS
+----------------------------------------------------------- */
+function validateOmissions(
+  app: AutoBePrisma.IApplication,
+  prev: AutoBePrisma.IApplication,
+): IAutoBePrismaValidation.IError[] {
+  app;
+  prev;
+  return [];
 }
 
 /* -----------------------------------------------------------
@@ -120,9 +134,13 @@ function validateDuplicatedModels(
 }
 
 function validateDuplicatedFields(
+  dict: Map<string, AutoBePrisma.IModel>,
   model: AutoBePrisma.IModel,
   accessor: string,
 ): IAutoBePrismaValidation.IError[] {
+  const errors: IAutoBePrismaValidation.IError[] = [];
+
+  // FIND DUPLICATED FIELDS
   const group: Map<string, string[]> = new Map();
   MapUtil.take(group, model.primaryField.name, () => []).push(
     `${accessor}.primaryField.name`,
@@ -137,8 +155,6 @@ function validateDuplicatedFields(
       `${accessor}.plainFields[${i}].name`,
     ),
   );
-
-  const errors: IAutoBePrismaValidation.IError[] = [];
   for (const [field, array] of group)
     if (array.length !== 1)
       array.forEach((path, i) => {
@@ -155,6 +171,24 @@ function validateDuplicatedFields(
           ].join("\n"),
         });
       });
+
+  // FIND TABLE NAMED FIELDS
+  model.plainFields.forEach((field, i) => {
+    if (dict.has(field.name) === true)
+      errors.push({
+        path: `${accessor}.plainFields[${i}].name`,
+        table: model.name,
+        field: field.name,
+        message: [
+          `There's a same named table in the application.`,
+          "",
+          "Check whether the field has been designed for denormalization",
+          "like pre-calculation. If do so, remove the field.",
+          "",
+          "Otherwise, change the field name to something else.",
+        ].join("\n"),
+      });
+  });
   return errors;
 }
 
@@ -162,6 +196,9 @@ function validateDuplicatedIndexes(
   model: AutoBePrisma.IModel,
   accessor: string,
 ): IAutoBePrismaValidation.IError[] {
+  const errors: IAutoBePrismaValidation.IError[] = [];
+
+  // FIND DUPLICATED INDEXES
   const group: HashMap<string[], string[]> = new HashMap(
     (x) => hash(...x),
     (x, y) => x.length === y.length && x.every((v, i) => v === y[i]),
@@ -181,8 +218,6 @@ function validateDuplicatedIndexes(
       .take([gin.fieldName], () => [])
       .push(`${accessor}.ginIndexes[${i}].fieldName`),
   );
-
-  const errors: IAutoBePrismaValidation.IError[] = [];
   for (const { first: fieldNames, second: array } of group)
     if (array.length !== 1)
       array.forEach((path, i) => {
@@ -191,7 +226,7 @@ function validateDuplicatedIndexes(
           table: model.name,
           field: null,
           message: [
-            `Duplicated index found (${fieldNames.join(", ")})`,
+            `Duplicated index found (${fieldNames.join(", ")}).`,
             "",
             "Accessors of the other duplicated indexes are:",
             "",
@@ -200,6 +235,79 @@ function validateDuplicatedIndexes(
         });
       });
 
+  // SUBSET RELATIONS
+  model.uniqueIndexes.forEach((unique, i) => {
+    if (unique.fieldNames.length <= 1) return;
+    unique.fieldNames.forEach((_, j, array) => {
+      if (j === array.length - 1) return;
+      const subset: string[] = unique.fieldNames.slice(0, j);
+      if (
+        j === 0 &&
+        model.foreignFields.some(
+          (f) => f.name === subset[0] && f.unique === true,
+        )
+      )
+        errors.push({
+          path: `${accessor}.uniqueIndexes[${i}].fieldNames[0]`,
+          table: model.name,
+          field: null,
+          message: [
+            `Duplicated unique index found (${subset[0]}).`,
+            "",
+            "You have defined an unique index that is already included",
+            "in the foreign field with unique constraint.",
+            "",
+            "Remove this unique index to avoid the duplication.",
+          ].join("\n"),
+        });
+      const cIndex: number = model.uniqueIndexes.findIndex(
+        (u) =>
+          u.fieldNames.length === subset.length &&
+          u.fieldNames.every((name, k) => name === subset[k]),
+      );
+      if (cIndex !== -1)
+        errors.push({
+          path: `${accessor}.uniqueIndexes[${i}].fieldNames`,
+          table: model.name,
+          field: null,
+          message: [
+            `Subset unique index found (${subset.join(", ")}).`,
+            "",
+            "You have defined an unique index with multiple fields,",
+            "but its subset is already defined as an unique index.",
+            "",
+            "Consider to change the unique index to a plain index,",
+            "or drop the redundant unique index please.",
+          ].join("\n"),
+        });
+    });
+  });
+
+  // SUPERSET RELATIONS
+  model.plainIndexes.forEach((x, i) => {
+    model.plainIndexes.forEach((y, j) => {
+      if (i === j) return;
+      else if (
+        x.fieldNames.length < y.fieldNames.length &&
+        x.fieldNames.every((n, z) => y.fieldNames[z] === n)
+      )
+        errors.push({
+          path: `${accessor}.plainIndexes[${i}].fieldNames`,
+          table: model.name,
+          field: null,
+          message: [
+            `Superset plain index found (${y.fieldNames.join(", ")}).`,
+            "",
+            "You have defined a plain index with multiple fields,",
+            "but its superset is already defined as another plain index.",
+            "",
+            "As subset index is vulnerable, drop this plain index please.",
+          ].join("\n"),
+        });
+    });
+  });
+
+  // CONSIDER GIN INDEXES
   if (
     model.ginIndexes.length !==
     new Set(model.ginIndexes.map((g) => g.fieldName)).size

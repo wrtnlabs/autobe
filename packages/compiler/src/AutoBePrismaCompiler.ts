@@ -20,8 +20,9 @@ export class AutoBePrismaCompiler implements IAutoBePrismaCompiler {
 
   public async validate(
     app: AutoBePrisma.IApplication,
+    previous?: AutoBePrisma.IApplication | undefined,
   ): Promise<IAutoBePrismaValidation> {
-    return validatePrismaApplication(app);
+    return validatePrismaApplication(app, previous);
   }
 
   public async write(
