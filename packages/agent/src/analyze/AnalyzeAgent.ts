@@ -42,6 +42,7 @@ export class AnalyzeAgent<Model extends ILlmSchema.Model> {
         model: ctx.model,
         vendor: ctx.vendor,
         config: {
+          ...(ctx.config ?? { locale: "en-US" }),
           systemPrompt: {
             common: () => {
               return AutoBeSystemPromptConstant.ANALYZE.replace(

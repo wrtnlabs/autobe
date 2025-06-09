@@ -67,6 +67,8 @@ Write each scenario using the following structure optimized for test code commen
 **Expected Experience**: [What the user expects to happen and how they'll know it worked]
 
 **Business Value**: [Why this scenario matters to the business]
+
+**Input Test Files**: [The test file names required for combining this scenario. If you have multiple files, connect them with commas.]
 ```
 
 ## Scenario Generation Checklist for Single Endpoint

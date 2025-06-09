@@ -1,7 +1,5 @@
-import { AgenticaAssistantMessageHistory, MicroAgentica } from "@agentica/core";
 import {
   AutoBeAssistantMessageHistory,
-  AutoBeOpenApi,
   AutoBeTestHistory,
 } from "@autobe/interface";
 import { AutoBeTestScenarioEvent } from "@autobe/interface/src/events/AutoBeTestScenarioEvent";
@@ -11,7 +9,6 @@ import { v4 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
 import { orchestrateTestScenario } from "./orchestrateTestScenario";
-import { transformTestHistories } from "./transformTestHistories";
 
 export const orchestrateTest =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
@@ -20,55 +17,24 @@ export const orchestrateTest =
   ): Promise<AutoBeAssistantMessageHistory | AutoBeTestHistory> => {
     props;
     const start: Date = new Date();
-
-    const files = Object.fromEntries(
-      Object.entries(ctx.state().interface?.files ?? {}).filter(
-        ([filename, _]) => {
-          return filename.startsWith("test/features/api/");
-        },
-      ),
-    );
-
     const operations = ctx.state().interface?.document.operations ?? [];
-
     if (operations.length === 0) {
-      const agentica: MicroAgentica<Model> = new MicroAgentica({
-        model: ctx.model,
-        vendor: ctx.vendor,
-        config: {
-          ...(ctx.config ?? {}),
-        },
-        histories: transformTestHistories(ctx.state()),
-        tokenUsage: ctx.usage(),
-        controllers: [],
-      });
-
-      const histories = await agentica.conversate(
-        "Make API endpoints for the given assets.",
-      );
-
-      if (histories.at(-1)?.type === "assistantMessage") {
-        return {
-          ...(histories.at(-1)! as AgenticaAssistantMessageHistory),
-          created_at: start.toISOString(),
-          completed_at: new Date().toISOString(),
-          id: v4(),
-        } satisfies AutoBeAssistantMessageHistory;
-      } else throw new Error("Failed to generate Test."); // unreachable
+      return {
+        id: v4(),
+        type: "assistantMessage",
+        created_at: start.toISOString(),
+        completed_at: new Date().toISOString(),
+        text:
+          "Unable to write test code because there are no Operations, " +
+          "please check if the Interface agent is called.",
+      } satisfies AutoBeAssistantMessageHistory;
     }
 
-    const endpoints: AutoBeOpenApi.IEndpoint[] = operations.map((it) => {
-      return {
-        method: it.method,
-        path: it.path,
-      };
-    });
-
     // SCENARIOS
-    const scenarios: AutoBeTestScenarioEvent = await orchestrateTestScenario(
-      ctx,
-      endpoints,
-    );
+    const scenarios: AutoBeTestScenarioEvent =
+      await orchestrateTestScenario(ctx);
+
+    scenarios;
 
     // Typescript Compiler 사용시
     // Interface Histories에 Test 추가해서 덮어씌워야함.
