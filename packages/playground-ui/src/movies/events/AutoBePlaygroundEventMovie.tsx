@@ -66,7 +66,7 @@ export function AutoBePlaygroundEventMovie(
       return <AutoBePlaygroundPrismaCorrectEventMovie event={props.event} />;
     default:
       props.event satisfies never;
-      throw new Error("Unknown event type"); // unreachable
+      return null;
   }
 }
 export namespace AutoBePlaygroundEventMovie {

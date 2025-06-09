@@ -193,6 +193,10 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
                     ],
                   ]
                 : []),
+              [
+                "autobe/prisma.json",
+                JSON.stringify(this.state_.prisma.result.data, null, 2),
+              ],
             ]
           : [],
       ),

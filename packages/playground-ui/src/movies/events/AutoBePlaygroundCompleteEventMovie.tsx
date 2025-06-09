@@ -17,13 +17,19 @@ export function AutoBePlaygroundCompleteEventMovie(
 ) {
   const [files, setFiles] = useState<Record<string, string>>({});
   useEffect(() => {
-    if (
-      props.event.type === "prismaComplete" &&
-      props.event.compiled.type === "failure"
-    )
-      console.log(props.event);
     (async () => {
-      setFiles(await props.service.getFiles());
+      const files: Record<string, string> = await props.service.getFiles();
+      setFiles(
+        Object.fromEntries(
+          Object.entries(files).filter(
+            ([key]) =>
+              key !== "autobe/histories.json" &&
+              key !== "autobe/prisma.json" &&
+              key !== "autobe/document.json" &&
+              key.endsWith("swagger.json") === false,
+          ),
+        ),
+      );
     })().catch(() => {});
   }, []);
 
