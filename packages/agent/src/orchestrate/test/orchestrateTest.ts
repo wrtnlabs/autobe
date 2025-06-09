@@ -21,6 +21,14 @@ export const orchestrateTest =
     props;
     const start: Date = new Date();
 
+    const files = Object.fromEntries(
+      Object.entries(ctx.state().interface?.files ?? {}).filter(
+        ([filename, _]) => {
+          return filename.startsWith("test/features/api/");
+        },
+      ),
+    );
+
     const operations = ctx.state().interface?.document.operations ?? [];
 
     if (operations.length === 0) {
@@ -62,18 +70,29 @@ export const orchestrateTest =
       endpoints,
     );
 
+    // Typescript Compiler 사용시
+    // Interface Histories에 Test 추가해서 덮어씌워야함.
+    // .ts파일만 들어가야함.
+    const typescriptFiles = {};
     const compiled = await ctx.compiler.typescript({
-      files: {},
+      files: typescriptFiles,
     });
 
-    return {
+    const history: AutoBeTestHistory = {
       type: "test",
       id: v4(),
       completed_at: new Date().toISOString(),
       created_at: start.toISOString(),
-      files: {},
+      files: typescriptFiles,
       compiled,
       reason: "Step to the test generation referencing the interface",
       step: ctx.state().interface?.step ?? 0,
     };
+
+    ctx.state().test = history;
+    ctx.histories().push(history);
+
+    return history;
   };
+
+// 샘플로 쓸만한 asset들 확보해놓기.

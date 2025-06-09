@@ -24,11 +24,12 @@ export const prepare_agent_test = async (owner: string, project: string) => {
     owner,
     project,
   );
-  const compiler: AutoBeCompiler = new AutoBeCompiler();
   const schemas: Record<string, string> = await RepositoryFileSystem.prisma(
     owner,
     project,
   );
+
+  const compiler: AutoBeCompiler = new AutoBeCompiler();
   const prisma: IAutoBePrismaCompilerResult = await compiler.prisma.compile({
     files: await RepositoryFileSystem.prisma(owner, project),
   });
@@ -38,6 +39,8 @@ export const prepare_agent_test = async (owner: string, project: string) => {
   const document: AutoBeOpenApi.IDocument = invertOpenApiDocument(
     await RepositoryFileSystem.swagger(owner, project),
   );
+
+  const interfaces = await compiler.interface(document);
 
   const agent: AutoBeAgent<"chatgpt"> = new AutoBeAgent({
     model: "chatgpt",
@@ -79,7 +82,7 @@ export const prepare_agent_test = async (owner: string, project: string) => {
         type: "interface",
         reason:
           "Step to the interface generation referencing the Prisma schema",
-        files: {},
+        files: interfaces,
         document: document,
       } satisfies AutoBeInterfaceHistory,
     ],
@@ -89,6 +92,7 @@ export const prepare_agent_test = async (owner: string, project: string) => {
     analyze,
     prisma,
     document,
+    interface: interfaces,
     agent,
   };
 };
