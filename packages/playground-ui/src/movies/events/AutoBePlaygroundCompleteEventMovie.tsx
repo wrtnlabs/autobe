@@ -10,36 +10,36 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import GradingIcon from "@mui/icons-material/Grading";
 import { Button, Card, CardActions, CardContent, Chip } from "@mui/material";
 import StackBlitzSDK from "@stackblitz/sdk";
+import { useEffect, useState } from "react";
 
 export function AutoBePlaygroundCompleteEventMovie(
   props: AutoBePlaygroundCompleteEventMovie.IProps,
 ) {
+  const [files, setFiles] = useState<Record<string, string>>({});
+  useEffect(() => {
+    if (
+      props.event.type === "prismaComplete" &&
+      props.event.compiled.type === "failure"
+    )
+      console.log(props.event);
+    (async () => {
+      setFiles(await props.service.getFiles());
+    })().catch(() => {});
+  }, []);
+
   const openStackBlitz = () => {
-    props.service
-      .getFiles()
-      .then((files) => {
-        StackBlitzSDK.openProject(
-          {
-            files,
-            title: `AutoBE Generated Backend Server (${props.event.type})`,
-            template: "node",
-          },
-          {
-            newWindow: true,
-          },
-        );
-      })
-      .catch(() => {
-        alert(
-          "Failed to get files from the websocket server. Please leave an issue to the Github repo.",
-        );
-      });
+    StackBlitzSDK.openProject(
+      {
+        files,
+        title: `AutoBE Generated Backend Server (${props.event.type})`,
+        template: "node",
+      },
+      {
+        newWindow: true,
+      },
+    );
   };
-  if (
-    props.event.type === "prismaComplete" &&
-    props.event.compiled.type === "failure"
-  )
-    console.log(props.event);
+
   const title: string | null = getTitle(props.event);
   if (title === null) return null;
   return (
@@ -61,6 +61,7 @@ export function AutoBePlaygroundCompleteEventMovie(
         <br />
         <br />
         {getTitle(props.event)} has been completed.
+        {getMessage(openStackBlitz, props.event)}
         <br />
         <br />
         Please check the result in the file explorer.
@@ -92,7 +93,7 @@ function getTitle(
     case "analyzeComplete":
       return "Analyze";
     case "prismaComplete":
-      if (event.compiled.type !== "success") return null;
+      if (event.compiled.type !== "success") return "Prisma (Error)";
       return "Prisma";
     case "interfaceComplete":
       return "Interface";
@@ -105,3 +106,29 @@ function getTitle(
       throw new Error("Unknown event type"); // unreachable
   }
 }
+
+const getMessage = (
+  openStackBlitz: () => void,
+  event: AutoBePlaygroundCompleteEventMovie.IProps["event"],
+) => {
+  if (event.type === "prismaComplete" && event.compiled.type === "failure") {
+    return (
+      <>
+        <br />
+        <br />
+        Succeeded to compose <code>AutoBePrisma.IApplication</code> typed AST
+        (Abstract Syntax Tree) data, but failed to generate Prisma schema files
+        from it. This is a bug of <code>@autobe</code>. Please{" "}
+        <a href="https://github.com/wrtnlabs/autobe/issues" target="_blank">
+          write a bug report to our repository
+        </a>{" "}
+        with the
+        <a href="#" onClick={() => openStackBlitz()}>
+          <code>autobe/histories.json</code>
+        </a>{" "}
+        file.
+      </>
+    );
+  }
+  return null;
+};

@@ -174,7 +174,7 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
           : [],
       ),
       ...Object.fromEntries(
-        this.state_.prisma?.compiled.type === "success"
+        this.state_.prisma?.result.success === true
           ? [
               ...Object.entries(this.state_.prisma.schemas).map(
                 ([key, value]) => [
@@ -182,7 +182,17 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
                   value,
                 ],
               ),
-              ["docs/ERD.md", this.state_.prisma.compiled.document],
+              ...(this.state_.prisma.compiled.type === "success"
+                ? [["docs/ERD.md", this.state_.prisma.compiled.document]]
+                : []),
+              ...(this.state_.prisma.compiled.type === "failure"
+                ? [
+                    [
+                      "prisma/compile-error-reason.log",
+                      this.state_.prisma.compiled.reason,
+                    ],
+                  ]
+                : []),
             ]
           : [],
       ),
@@ -192,6 +202,19 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
         : {}),
       ...(this.state_.realize?.compiled.type === "success"
         ? this.state_.realize.files
+        : {}),
+      "autobe/histories.json": JSON.stringify(this.histories_, null, 2),
+      "autobe/tokenUsage.json": JSON.stringify(this.getTokenUsage(), null, 2),
+      ...(this.state_.interface
+        ? {
+            "autobe/document.json": JSON.stringify(
+              this.state_.interface.document,
+              null,
+              2,
+            ),
+            "autobe/swagger.json":
+              this.state_.interface.files["packages/api/swagger.json"],
+          }
         : {}),
     };
     return Object.fromEntries(
