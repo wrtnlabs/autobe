@@ -23,5 +23,5 @@ export const test_compiler_prisma_duplicated = async (): Promise<void> => {
   const compiled: IAutoBePrismaCompilerResult = await compiler.compile({
     files,
   });
-  TestValidator.equals("comile result")(compiled.type)("success");
+  TestValidator.equals("compile result")(compiled.type)("success");
 };
