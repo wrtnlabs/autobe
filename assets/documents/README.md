@@ -26,7 +26,7 @@ At first, [`@autobe`](https://github.com/wrtnlabs/autobe) generated files are pl
   - [src/api/controllers](src/controllers): API controller classes
   - [test/features](test/features): List of e2e test functions
 
-From a source code perspective, all backend files are organized within the src directory.
+From a source code perspective, all backend files are organized within the `src` directory.
 
 When you build the TypeScript source files, compiled files will be placed in the `lib` directory according to the [tsconfig.json](tsconfig.json) configuration.
 
