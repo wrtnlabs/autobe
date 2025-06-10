@@ -192,7 +192,7 @@ function validateDuplicatedFields(
           Check whether the field has been designed for denormalization
           like pre-calculation. If do so, remove the field.
 
-          "Otherwise, change the field name to something else.
+          Otherwise, change the field name to something else.
         `,
       });
   });
