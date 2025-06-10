@@ -1,0 +1,5 @@
+.next/
+typedoc-json/
+
+out/
+_pagefind/
