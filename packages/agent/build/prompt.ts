@@ -1,5 +1,5 @@
 import { AutoBePrismaCompiler } from "@autobe/compiler";
-import { FileSystemIterator, TestRepositoryUtil } from "@autobe/filesystem";
+import { FileSystemIterator, RepositoryFileSystem } from "@autobe/filesystem";
 import { AutoBeOpenApi } from "@autobe/interface";
 import { OpenApi } from "@samchon/openapi";
 import fs from "fs";
@@ -13,7 +13,7 @@ const prepareExample = async (
   title: string,
 ): Promise<Record<string, string>> => {
   const directory: string = path.resolve(
-    `${__dirname}/../../../test/assets/${title}`,
+    `${__dirname}/../../../test/assets/repositories/samchon/${title}-backend`,
   );
   const analysis: Record<string, string> = await FileSystemIterator.read({
     root: path.resolve(`${directory}`),
@@ -30,7 +30,7 @@ const prepareExample = async (
     throw new Error("Failed to compile prisma");
   }
 
-  const swagger: OpenApi.IDocument = await TestRepositoryUtil.swagger(
+  const swagger: OpenApi.IDocument = await RepositoryFileSystem.swagger(
     "samchon",
     `${title}-backend`,
   );

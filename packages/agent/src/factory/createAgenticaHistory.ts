@@ -27,6 +27,7 @@ export function createAgenticaHistory<Model extends ILlmSchema.Model>(props: {
   if (operation === undefined) return null;
   const partial = {
     id: props.history.id,
+    created_at: props.history.created_at,
     type: "execute" as const,
     arguments: {
       reason: props.history.reason,
@@ -35,7 +36,7 @@ export function createAgenticaHistory<Model extends ILlmSchema.Model>(props: {
       success:
         props.history.type === "analyze" || props.history.type === "interface"
           ? true
-          : props.history.result.type === "success",
+          : props.history.compiled.type === "success",
     },
   };
   return {

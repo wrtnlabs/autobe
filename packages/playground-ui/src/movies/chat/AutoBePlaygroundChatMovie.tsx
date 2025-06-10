@@ -134,7 +134,11 @@ export function AutoBePlaygroundChatMovie(
         ref={bodyContainerRef}
       >
         {events.map((e, index) => (
-          <AutoBePlaygroundEventMovie key={index} event={e} />
+          <AutoBePlaygroundEventMovie
+            key={index}
+            service={props.service}
+            event={e}
+          />
         ))}
       </Container>
     </div>

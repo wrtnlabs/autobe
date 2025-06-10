@@ -17,7 +17,6 @@ async function main(): Promise<void> {
       const trace = (str: string) =>
         console.log(`  - ${chalk.green(exec.name)}: ${str}`);
       if (exec.value === false) {
-        console.log(exec);
         trace(chalk.gray("Pass"));
       } else if (exec.error === null) {
         const elapsed: number =

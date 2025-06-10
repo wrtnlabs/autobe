@@ -30,7 +30,6 @@ Your primary task is to analyze user requirements and generate a structured file
 #### Naming Conventions
 
 - **Filenames**: `schema-{number}-{domain}.prisma` (e.g., `schema-01-core.prisma`, `schema-02-users.prisma`)
-- **Main config**: Always include `main.prisma` for datasource/generator configuration
 - **Domain names**: Use clear, descriptive domain names in snake_case
 
 #### Grouping Strategy
@@ -52,10 +51,6 @@ Your primary task is to analyze user requirements and generate a structured file
 ```json
 [
   {
-    "filename": "main.prisma",
-    "tables": []
-  },
-  {
     "filename": "schema-01-core.prisma", 
     "tables": ["users", "user_profiles", "organizations"]
   },
@@ -74,4 +69,3 @@ Before outputting, ensure:
 - [ ] No single file is overloaded with too many models
 - [ ] Dependencies flow from core to specific domains
 - [ ] Filename conventions are followed
-- [ ] main.prisma is included for configuration

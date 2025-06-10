@@ -1,34 +1,41 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
+import { AutoBeAnalyzeHistory } from "@autobe/interface";
+import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
-import { AutoBeState } from "../../context/AutoBeState";
 
 export const transformPrismaSchemaHistories = (
-  state: AutoBeState,
+  analyze: AutoBeAnalyzeHistory,
+  component: {
+    filename: string;
+    tables: string[];
+    entireTables: string[];
+  },
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
-  if (state.analyze === null)
-    return [
-      {
-        type: "systemMessage",
-        text: [
-          "Requirement analysis is not yet completed.",
-          "Don't call any tool function,",
-          "but say to process the requirement analysis.",
-        ].join(" "),
-      },
-    ];
   return [
     {
+      id: v4(),
+      created_at: new Date().toISOString(),
       type: "systemMessage",
       text: AutoBeSystemPromptConstant.PRISMA_SCHEMA,
     },
     {
-      type: "assistantMessage",
-      text: AutoBeSystemPromptConstant.PRISMA_EXAMPLE,
+      id: v4(),
+      created_at: new Date().toISOString(),
+      type: "systemMessage",
+      text: [
+        "Before making prisma schema files,",
+        "learn about the prisma schema language",
+        "from the best practices and examples",
+        "",
+        AutoBeSystemPromptConstant.PRISMA_EXAMPLE,
+      ].join("\n"),
     },
     {
+      id: v4(),
+      created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: [
         "Here is the requirement analysis report.",
@@ -37,13 +44,21 @@ export const transformPrismaSchemaHistories = (
         "referencing below requirement analysis report.",
         "",
         "## User Request",
-        state.analyze.reason,
+        analyze.reason,
         "",
         `## Requirement Analysis Report`,
         "",
         "```json",
-        JSON.stringify(state.analyze.files),
+        JSON.stringify(analyze.files),
         "```",
+        "",
+        "## Context",
+        "",
+        `  - Target filename: ${component.filename}`,
+        `  - Tables what you have to make:`,
+        ...component.tables.map((table) => `    - ${table}`),
+        `  - Entire tables you can reference:`,
+        ...component.entireTables.map((table) => `    - ${table}`),
       ].join("\n"),
     },
   ];

@@ -3,6 +3,7 @@ import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeAssistantMessageHistory,
   AutoBePrismaHistory,
+  AutoBePrismaStartEvent,
   AutoBePrismaValidateEvent,
 } from "@autobe/interface";
 import { AutoBePrismaComponentsEvent } from "@autobe/interface/src/events/AutoBePrismaComponentsEvent";
@@ -15,9 +16,36 @@ export const validate_agent_prisma = async (owner: string, project: string) => {
   if (TestGlobal.env.CHATGPT_API_KEY === undefined) return false;
 
   const { agent } = await prepare_agent_prisma(owner, project);
+  const starts: AutoBePrismaStartEvent[] = [];
+  agent.on("prismaStart", (event) => {
+    console.log("started");
+    starts.push(event);
+  });
+  agent.on("prismaSchemas", (event) => {
+    console.log("progress", event.completed, "of", event.total);
+  });
+
   const validates: AutoBePrismaValidateEvent[] = [];
-  agent.on("prismaValidate", (event) => {
+  agent.on("prismaCorrect", async (event) => {
+    console.log("corrected", event.failure.errors.length);
+    await FileSystemIterator.save({
+      root: `${TestGlobal.ROOT}/results/${owner}/${project}/prisma-correct-${validates.length}`,
+      files: Object.fromEntries([
+        ["errors.json", JSON.stringify(event.failure.errors, null, 2)],
+        ["correction.json", JSON.stringify(event.correction, null, 2)],
+        ["planning.md", event.planning],
+      ]),
+    });
+  });
+  agent.on("prismaValidate", async (event) => {
     validates.push(event);
+    await FileSystemIterator.save({
+      root: `${TestGlobal.ROOT}/results/${owner}/${project}/prisma-failure-${validates.length}`,
+      files: {
+        "errors.json": JSON.stringify(event.result.errors, null, 2),
+        ...event.schemas,
+      },
+    });
   });
 
   const components: AutoBePrismaComponentsEvent[] = [];
@@ -30,17 +58,34 @@ export const validate_agent_prisma = async (owner: string, project: string) => {
     schemas.push(event);
   });
 
-  let result: AutoBePrismaHistory | AutoBeAssistantMessageHistory =
+  let history: AutoBePrismaHistory | AutoBeAssistantMessageHistory =
     await orchestrate.prisma(agent.getContext())({
       reason:
         "Step to the Prisma DB schema generation after requirements analysis",
     });
-  if (result.type !== "prisma") {
-    result = await orchestrate.prisma(agent.getContext())({
+  if (history.type !== "prisma") {
+    history = await orchestrate.prisma(agent.getContext())({
       reason: "Don't ask me to do that, and just do it right now.",
     });
-    if (result.type !== "prisma")
+    if (history.type !== "prisma")
       throw new Error("History type must be prisma.");
+  }
+  if (history.compiled.type !== "success") {
+    await FileSystemIterator.save({
+      root: `${TestGlobal.ROOT}/results/${owner}/${project}/prisma-error`,
+      files: {
+        "result.json": JSON.stringify(history.result, null, 2),
+        ...history.schemas,
+        ...(history.compiled.type === "failure"
+          ? {
+              "reason.log": history.compiled.reason,
+            }
+          : {
+              "error.json": JSON.stringify(history.compiled.error, null, 2),
+            }),
+      },
+    });
+    throw new Error("Prisma validation failed.");
   }
 
   // REPORT RESULT
@@ -49,10 +94,20 @@ export const validate_agent_prisma = async (owner: string, project: string) => {
     files: {
       ...agent.getFiles(),
       "logs/validates.json": JSON.stringify(validates, null, 2),
-      "logs/result.json": JSON.stringify(result, null, 2),
+      "logs/result.json": JSON.stringify(history, null, 2),
+      "logs/files.json": JSON.stringify(Object.keys(agent.getFiles()), null, 2),
+      "logs/result-files.json": JSON.stringify(
+        Object.keys({
+          ...history.compiled.nodeModules,
+          ...history.compiled.schemas,
+        }),
+        null,
+        2,
+      ),
       "logs/tokenUsage.json": JSON.stringify(agent.getTokenUsage(), null, 2),
       "logs/components.json": JSON.stringify(components, null, 2),
       "logs/schemas.json": JSON.stringify(schemas, null, 2),
+      "logs/starts.json": JSON.stringify(starts, null, 2),
     },
   });
 };

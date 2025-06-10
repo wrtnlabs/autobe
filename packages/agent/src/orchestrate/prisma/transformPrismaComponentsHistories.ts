@@ -1,4 +1,5 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
+import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../context/AutoBeState";
@@ -11,6 +12,8 @@ export const transformPrismaComponentsHistories = (
   if (state.analyze === null)
     return [
       {
+        id: v4(),
+        created_at: new Date().toISOString(),
         type: "systemMessage",
         text: [
           "Requirement analysis is not yet completed.",
@@ -21,10 +24,14 @@ export const transformPrismaComponentsHistories = (
     ];
   return [
     {
+      id: v4(),
+      created_at: new Date().toISOString(),
       type: "systemMessage",
       text: AutoBeSystemPromptConstant.PRISMA_COMPONENT,
     },
     {
+      id: v4(),
+      created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: [
         "Here is the requirement analysis report.",

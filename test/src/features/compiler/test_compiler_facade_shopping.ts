@@ -1,5 +1,5 @@
 import { AutoBeCompiler } from "@autobe/compiler";
-import { TestRepositoryUtil } from "@autobe/filesystem";
+import { RepositoryFileSystem } from "@autobe/filesystem";
 import {
   IAutoBePrismaCompilerResult,
   IAutoBeTypeScriptCompilerResult,
@@ -9,8 +9,8 @@ import typia from "typia";
 
 export const test_compiler_facade_shopping = async (): Promise<void> => {
   const compiler: AutoBeCompiler = new AutoBeCompiler();
-  const prisma: IAutoBePrismaCompilerResult = await compiler.prisma({
-    files: await TestRepositoryUtil.prisma("samchon", "shopping-backend"),
+  const prisma: IAutoBePrismaCompilerResult = await compiler.prisma.compile({
+    files: await RepositoryFileSystem.prisma("samchon", "shopping-backend"),
   });
   if (prisma.type !== "success") {
     console.log(prisma);
@@ -18,7 +18,7 @@ export const test_compiler_facade_shopping = async (): Promise<void> => {
   }
 
   const result: IAutoBeTypeScriptCompilerResult = await compiler.typescript({
-    files: await TestRepositoryUtil.src("samchon", "shopping-backend"),
+    files: await RepositoryFileSystem.src("samchon", "shopping-backend"),
     prisma: prisma.nodeModules,
     package: "@samchon/shopping-api",
   });

@@ -1,5 +1,5 @@
 import { AutoBePrismaCompiler } from "@autobe/compiler";
-import { FileSystemIterator, TestRepositoryUtil } from "@autobe/filesystem";
+import { FileSystemIterator, RepositoryFileSystem } from "@autobe/filesystem";
 import { AutoBeOpenApi } from "@autobe/interface";
 import { OpenApi, OpenApiV3_1 } from "@samchon/openapi";
 import fs from "fs";
@@ -22,7 +22,7 @@ const example = async (
   project: string,
 ): Promise<IProjectExample> => {
   const prisma = await new AutoBePrismaCompiler().compile({
-    files: await TestRepositoryUtil.prisma(account, project),
+    files: await RepositoryFileSystem.prisma(account, project),
   });
   if (prisma.type !== "success") throw new Error("Prisma compilation failed.");
 

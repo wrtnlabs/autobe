@@ -1,4 +1,5 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
+import { v4 } from "uuid";
 
 import { AutoBeState } from "../../context/AutoBeState";
 
@@ -11,6 +12,8 @@ export const transformInterfaceHistories = (
   if (state.analyze === null)
     return [
       {
+        id: v4(),
+        created_at: new Date().toISOString(),
         type: "systemMessage",
         text: [
           "Requirement analysis is not yet completed.",
@@ -22,6 +25,8 @@ export const transformInterfaceHistories = (
   else if (state.prisma === null)
     return [
       {
+        id: v4(),
+        created_at: new Date().toISOString(),
         type: "systemMessage",
         text: [
           "Prisma DB schema generation is not yet completed.",
@@ -33,6 +38,8 @@ export const transformInterfaceHistories = (
   else if (state.analyze.step !== state.prisma.step)
     return [
       {
+        id: v4(),
+        created_at: new Date().toISOString(),
         type: "systemMessage",
         text: [
           "Prisma DB schema generation has not been updated",
@@ -42,9 +49,11 @@ export const transformInterfaceHistories = (
         ].join(" "),
       },
     ];
-  else if (state.prisma.result.type !== "success")
+  else if (state.prisma.compiled.type !== "success")
     return [
       {
+        id: v4(),
+        created_at: new Date().toISOString(),
         type: "systemMessage",
         text: [
           "Prisma DB schema generation has not been updated",
@@ -56,10 +65,14 @@ export const transformInterfaceHistories = (
     ];
   return [
     {
+      id: v4(),
+      created_at: new Date().toISOString(),
       type: "systemMessage",
       text: systemMessage,
     },
     {
+      id: v4(),
+      created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: [
         "Requirement analysis and Prisma DB schema generation are ready.",
@@ -81,16 +94,20 @@ export const transformInterfaceHistories = (
       ].join("\n"),
     },
     {
+      id: v4(),
+      created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: [
+        "Database schema and entity relationship diagrams are ready.",
+        "",
         "## Prisma DB Schema",
         "```json",
-        JSON.stringify(state.prisma.result.schemas),
+        JSON.stringify(state.prisma.schemas),
         "```",
         "",
         "## Entity Relationship Diagrams",
         "```json",
-        JSON.stringify(state.prisma.result.diagrams),
+        JSON.stringify(state.prisma.compiled.diagrams),
         "```",
       ].join("\n"),
     },

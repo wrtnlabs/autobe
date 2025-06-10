@@ -27,7 +27,7 @@ import { AutoBePlaygroundConfigureVendorMovie } from "./AutoBePlaygroundConfigur
 export function AutoBePlaygroundConfigureMovie(
   props: AutoBePlaygroundConfigureMovie.IProps,
 ) {
-  const [serverURL, setServerURL] = useState<string>("http://localhost:443");
+  const [serverURL, setServerURL] = useState<string>("http://localhost:5890");
   const [locale, setLocale] = useState(window.navigator.language);
   const [model, setModel] =
     useState<Exclude<ILlmSchema.Model, "gemini" | "3.0">>("chatgpt");

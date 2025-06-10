@@ -1,4 +1,5 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
+import { AutoBePrisma } from "@autobe/interface";
 import { AutoBePrismaSchemasEvent } from "@autobe/interface/src/events/AutoBePrismaSchemasEvent";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
@@ -19,10 +20,9 @@ export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
 
   const total: number = components.reduce((acc, c) => acc + c.tables.length, 0);
   let i: number = 0;
-
   return await Promise.all(
     components.map(async (c) => {
-      const result: IMakePrismaSchemaFilesProps = await process(ctx, {
+      const result: IMakePrismaSchemaFileProps = await process(ctx, {
         filename: c.filename,
         tables: c.tables,
         entireTables,
@@ -30,8 +30,7 @@ export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
       const event: AutoBePrismaSchemasEvent = {
         type: "prismaSchemas",
         created_at: start.toISOString(),
-        filename: c.filename,
-        content: result.content,
+        file: result.file,
         completed: (i += c.tables.length),
         total,
         step: ctx.state().analyze?.step ?? 0,
@@ -44,11 +43,13 @@ export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
 
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  component: { filename: string; tables: string[] } & {
+  component: {
+    filename: string;
+    tables: string[];
     entireTables: string[];
   },
-): Promise<IMakePrismaSchemaFilesProps> {
-  const pointer: IPointer<IMakePrismaSchemaFilesProps | null> = {
+): Promise<IMakePrismaSchemaFileProps> {
+  const pointer: IPointer<IMakePrismaSchemaFileProps | null> = {
     value: null,
   };
   const agentica: MicroAgentica<Model> = new MicroAgentica({
@@ -57,13 +58,14 @@ async function process<Model extends ILlmSchema.Model>(
     config: {
       ...(ctx.config ?? {}),
     },
-    histories: transformPrismaSchemaHistories(ctx.state()),
+    histories: transformPrismaSchemaHistories(ctx.state().analyze!, component),
     tokenUsage: ctx.usage(),
     controllers: [
       createApplication({
         model: ctx.model,
         build: (next) => {
           pointer.value = next;
+          pointer.value.file.filename = component.filename;
         },
       }),
     ],
@@ -73,42 +75,15 @@ async function process<Model extends ILlmSchema.Model>(
       event.body.tool_choice = "required";
     }
   });
-
-  await agentica.conversate(
-    [
-      "Please generate Prisma schema files based on the previous requirement analysis report.",
-      "",
-      "**Context:**",
-      `- Target filename: \`${component.filename}\``,
-      `- Tables to implement in this file: \`${component.tables.join("`, `")}\``,
-      `- All available tables in the system: \`${component.entireTables.join("`, `")}\``,
-      "",
-      "**Instructions:**",
-      "1. Create comprehensive Prisma schema content for the specified tables",
-      "2. Reference the previous requirement analysis to understand business logic and data structures",
-      "3. Establish appropriate relationships between tables using the entireTables list as reference",
-      "4. Include proper field types, constraints, indexes, and documentation",
-      "5. Follow enterprise-level schema design patterns and best practices",
-      "6. Ensure cross-table relationships are accurately modeled based on business requirements",
-      "",
-      "**Key Requirements:**",
-      "- Implement only the tables specified for this file",
-      "- Create foreign key relationships to tables from entireTables when business logic requires it",
-      "- Add comprehensive field documentation and model descriptions",
-      "- Include appropriate indexes for performance optimization",
-      "- Follow consistent naming conventions and data types",
-    ].join("\n"),
-  );
-
+  await agentica.conversate("Make prisma schema file please");
   if (pointer.value === null)
     throw new Error("Unreachable code: Prisma Schema not generated");
-
   return pointer.value;
 }
 
 function createApplication<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  build: (next: IMakePrismaSchemaFilesProps) => void;
+  build: (next: IMakePrismaSchemaFileProps) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
   const application: ILlmApplication<Model> = collection[
@@ -119,7 +94,7 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
     name: "Prisma Generator",
     application,
     execute: {
-      makePrismaSchemaFiles: (next) => {
+      makePrismaSchemaFile: (next) => {
         props.build(next);
       },
     } satisfies IApplication,
@@ -155,27 +130,17 @@ interface IApplication {
    * The generated schemas implement best practices for scalability,
    * maintainability, and data integrity.
    *
-   * @param props Properties containing the complete set of Prisma schema files
+   * @param props Properties containing the file
    */
-  makePrismaSchemaFiles(props: IMakePrismaSchemaFilesProps): void;
+  makePrismaSchemaFile(props: IMakePrismaSchemaFileProps): void;
 }
 
-interface IMakePrismaSchemaFilesProps {
+interface IMakePrismaSchemaFileProps {
   /**
-   * Complete Prisma schema content as a single concatenated string.
+   * Complete definition of a single Prisma schema file.
    *
-   * Contains all schema files organized by domain/functionality with clear file
-   * separators. Each file section includes models, relationships, indexes, and
-   * comprehensive documentation following enterprise patterns.
-   *
-   * Content should be organized following enterprise patterns:
-   *
-   * - Main.prisma: Configuration, datasource, and generators
-   * - Schema-XX-domain.prisma: Domain-specific entity definitions
-   * - Proper cross-file relationships and dependencies
+   * Represents one business domain containing related models, organized for
+   * modular schema management and following domain-driven design principles.
    */
-  content: string;
-
-  /** Summary description of the application requirements and business context. */
-  description: string;
+  file: AutoBePrisma.IFile;
 }

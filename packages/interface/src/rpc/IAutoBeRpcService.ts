@@ -7,6 +7,7 @@ export interface IAutoBeRpcService {
     content: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
   ): Promise<AutoBeHistory[]>;
 
+  getFiles(): Promise<Record<string, string>>;
   getHistories(): Promise<AutoBeHistory[]>;
   getTokenUsage(): Promise<IAutoBeTokenUsageJson>;
 }

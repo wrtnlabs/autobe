@@ -1,10 +1,17 @@
 {
   "name": "@autobe/agent",
-  "version": "0.0.0",
+  "version": "0.6.0",
   "description": "AI backend server code generator",
   "main": "src/index.ts",
   "author": "Wrtn Technologies",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wrtnlabs/autobe"
+  },
+  "bugs": {
+    "url": "https://github.com/wrtnlabs/autobe/issues"
+  },
   "files": [
     "lib",
     "src",

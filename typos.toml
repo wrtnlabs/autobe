@@ -13,4 +13,5 @@ extend-exclude = [
   "examples",
   "*.json", 
   "*.prisma",
+  "test/assets/**",
 ]

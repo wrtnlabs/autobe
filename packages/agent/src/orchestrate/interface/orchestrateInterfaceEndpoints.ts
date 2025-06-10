@@ -47,7 +47,7 @@ export async function orchestrateInterfaceEndpoints<
     controllers: [
       createApplication({
         model: ctx.model,
-        build: async (endpoints) => {
+        build: (endpoints) => {
           pointer.value = endpoints;
         },
       }),
@@ -79,7 +79,7 @@ export async function orchestrateInterfaceEndpoints<
 
 function createApplication<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  build: (endpoints: AutoBeOpenApi.IEndpoint[]) => Promise<void>;
+  build: (endpoints: AutoBeOpenApi.IEndpoint[]) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
@@ -91,11 +91,8 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
     name: "interface",
     application,
     execute: {
-      makeEndpoints: async (next) => {
-        await props.build(next.endpoints);
-        return {
-          success: true,
-        };
+      makeEndpoints: (next) => {
+        props.build(next.endpoints);
       },
     } satisfies IApplication,
   };

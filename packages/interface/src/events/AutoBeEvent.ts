@@ -3,6 +3,7 @@ import { AutoBeAnalyzeCompleteEvent } from "./AutoBeAnalyzeCompleteEvent";
 import { AutoBeAnalyzeStartEvent } from "./AutoBeAnalyzeStartEvent";
 import { AutoBeAnalyzeWriteDocumentEvent } from "./AutoBeAnalyzeWriteDocumentEvent";
 import { AutoBeAssistantMessageEvent } from "./AutoBeAssistantMessageEvent";
+import { AutoBeInterfaceComplementEvent } from "./AutoBeInterfaceComplementEvent";
 import { AutoBeInterfaceCompleteEvent } from "./AutoBeInterfaceCompleteEvent";
 import { AutoBeInterfaceComponentsEvent } from "./AutoBeInterfaceComponentsEvent";
 import { AutoBeInterfaceEndpointsEvent } from "./AutoBeInterfaceEndpointsEvent";
@@ -10,6 +11,7 @@ import { AutoBeInterfaceOperationsEvent } from "./AutoBeInterfaceOperationsEvent
 import { AutoBeInterfaceStartEvent } from "./AutoBeInterfaceStartEvent";
 import { AutoBePrismaCompleteEvent } from "./AutoBePrismaCompleteEvent";
 import { AutoBePrismaComponentsEvent } from "./AutoBePrismaComponentsEvent";
+import { AutoBePrismaCorrectEvent } from "./AutoBePrismaCorrectEvent";
 import { AutoBePrismaSchemasEvent } from "./AutoBePrismaSchemasEvent";
 import { AutoBePrismaStartEvent } from "./AutoBePrismaStartEvent";
 import { AutoBePrismaValidateEvent } from "./AutoBePrismaValidateEvent";
@@ -34,12 +36,14 @@ export type AutoBeEvent =
   | AutoBeInterfaceEndpointsEvent
   | AutoBeInterfaceOperationsEvent
   | AutoBeInterfaceComponentsEvent
+  | AutoBeInterfaceComplementEvent
   | AutoBeInterfaceCompleteEvent
   | AutoBePrismaStartEvent
   | AutoBePrismaComponentsEvent
   | AutoBePrismaSchemasEvent
   | AutoBePrismaCompleteEvent
   | AutoBePrismaValidateEvent
+  | AutoBePrismaCorrectEvent
   | AutoBeTestStartEvent
   | AutoBeTestProgressEvent
   | AutoBeTestValidateEvent
@@ -62,10 +66,12 @@ export namespace AutoBeEvent {
     prismaSchemas: AutoBePrismaSchemasEvent;
     prismaComplete: AutoBePrismaCompleteEvent;
     prismaValidate: AutoBePrismaValidateEvent;
+    prismaCorrect: AutoBePrismaCorrectEvent;
     interfaceStart: AutoBeInterfaceStartEvent;
     interfaceEndpoints: AutoBeInterfaceEndpointsEvent;
     interfaceOperations: AutoBeInterfaceOperationsEvent;
     interfaceComponents: AutoBeInterfaceComponentsEvent;
+    interfaceComplement: AutoBeInterfaceComplementEvent;
     interfaceComplete: AutoBeInterfaceCompleteEvent;
     testStart: AutoBeTestStartEvent;
     testProgress: AutoBeTestProgressEvent;

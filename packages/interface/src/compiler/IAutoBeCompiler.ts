@@ -1,16 +1,11 @@
 import { AutoBeOpenApi } from "../openapi";
-import { IAutoBePrismaCompilerProps } from "./IAutoBePrismaCompilerProps";
-import { IAutoBePrismaCompilerResult } from "./IAutoBePrismaCompilerResult";
+import { IAutoBePrismaCompiler } from "./IAutoBePrismaCompiler";
 import { IAutoBeTypeScriptCompilerProps } from "./IAutoBeTypeScriptCompilerProps";
 import { IAutoBeTypeScriptCompilerResult } from "./IAutoBeTypeScriptCompilerResult";
 
 export interface IAutoBeCompiler {
-  prisma(
-    props: IAutoBePrismaCompilerProps,
-  ): Promise<IAutoBePrismaCompilerResult>;
-
+  prisma: IAutoBePrismaCompiler;
   interface(document: AutoBeOpenApi.IDocument): Promise<Record<string, string>>;
-
   typescript(
     props: IAutoBeTypeScriptCompilerProps,
   ): Promise<IAutoBeTypeScriptCompilerResult>;

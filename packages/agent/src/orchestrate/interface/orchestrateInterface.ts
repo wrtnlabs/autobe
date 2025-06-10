@@ -10,6 +10,7 @@ import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
+import { orchestrateInterfaceComplement } from "./orchestrateInterfaceComplement";
 import { orchestrateInterfaceComponents } from "./orchestrateInterfaceComponents";
 import { orchestrateInterfaceEndpoints } from "./orchestrateInterfaceEndpoints";
 import { orchestrateInterfaceOperations } from "./orchestrateInterfaceOperations";
@@ -33,15 +34,14 @@ export const orchestrateInterface =
     const operations: AutoBeOpenApi.IOperation[] =
       await orchestrateInterfaceOperations(ctx, init.endpoints);
 
-    // COMPONENTS
-    const components: AutoBeOpenApi.IComponents =
-      await orchestrateInterfaceComponents(ctx, operations);
-
-    // TYPESCRIPT CODE GENERATION
+    // TYPE SCHEMAS
     const document: AutoBeOpenApi.IDocument = {
       operations,
-      components,
+      components: await orchestrateInterfaceComponents(ctx, operations),
     };
+    document.components = await orchestrateInterfaceComplement(ctx, document);
+
+    // DO COMPILE
     const result: AutoBeInterfaceHistory = {
       type: "interface",
       id: v4(),
@@ -52,8 +52,8 @@ export const orchestrateInterface =
       created_at: start.toISOString(),
       completed_at: new Date().toISOString(),
     };
-    ctx.histories().push(result);
     ctx.state().interface = result;
+    ctx.histories().push(result);
     ctx.dispatch({
       type: "interfaceComplete",
       files: result.files,

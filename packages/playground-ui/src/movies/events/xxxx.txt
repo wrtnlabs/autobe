@@ -1,0 +1,31 @@
+"Prisma schema validation - (mergeSchemas wasm)
+Error code: P1012
+error: Type "Date" is neither a built-in type, nor refers to another model, composite type, or enum.
+  -->  schema-01-core.prisma:203
+   | 
+202 |   /// Calendar date for this stats record - Implements daily/periodic site tracking, fulfilling reporting requirements.
+203 |   date Date
+   | 
+error: Type "Date" is neither a built-in type, nor refers to another model, composite type, or enum.
+  -->  schema-06-analytics.prisma:18
+   | 
+17 |   /// The statistical period date - Implements the 'daily aggregation' analytics aspect. Represents the day for which analytics are summarized. For example, 2024-06-01. Enforced unique per day. Cannot be null.
+18 |   date Date
+   | 
+error: Error validating model "site_stats": The unique index definition refers to the relation fields date. Index definitions must reference only scalar fields.
+  -->  schema-01-core.prisma:220
+   | 
+219 |   //----
+220 |   @@unique([date])
+   | 
+error: Error validating model "site_stat": The unique index definition refers to the relation fields date. Index definitions must reference only scalar fields.
+  -->  schema-06-analytics.prisma:38
+   | 
+37 |   //----
+38 |   @@unique([date])
+   | 
+
+Validation Error Count: 4
+[Context: mergeSchemas]
+
+Prisma CLI Version : 6.8.2"

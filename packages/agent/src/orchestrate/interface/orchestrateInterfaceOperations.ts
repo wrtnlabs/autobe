@@ -104,7 +104,7 @@ async function process<Model extends ILlmSchema.Model>(
     controllers: [
       createApplication({
         model: ctx.model,
-        build: async (endpoints) => {
+        build: (endpoints) => {
           pointer.value = endpoints;
         },
         pointer,
@@ -129,7 +129,7 @@ async function process<Model extends ILlmSchema.Model>(
 
 function createApplication<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  build: (operations: AutoBeOpenApi.IOperation[]) => Promise<void>;
+  build: (operations: AutoBeOpenApi.IOperation[]) => void;
   pointer: IPointer<AutoBeOpenApi.IOperation[] | null>;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
@@ -166,11 +166,8 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
     name: "interface",
     application,
     execute: {
-      makeOperations: async (next) => {
-        await props.build(next.operations);
-        return {
-          success: true,
-        };
+      makeOperations: (next) => {
+        props.build(next.operations);
       },
     } satisfies IApplication,
   };

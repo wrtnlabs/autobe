@@ -1,3 +1,9 @@
 export interface IAutoBeApplicationResult {
-  success: boolean;
+  type:
+    | "success"
+    | "failure"
+    | "exception"
+    | "in-progress"
+    | "prerequisites-not-satisfied";
+  description: string;
 }

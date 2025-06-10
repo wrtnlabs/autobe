@@ -19,7 +19,6 @@ Generate complete Prisma schema files that translate business requirements into 
 
 ### File Structure
 - **Split schemas by domain/namespace** (e.g., `schema-01-core.prisma`, `schema-02-users.prisma`, `schema-03-products.prisma`)
-- **Main configuration file** (`main.prisma`) containing datasource, generator, and global configurations
 - **Logical grouping** of related entities within each schema file
 - **Consistent naming conventions** across all files
 
@@ -126,10 +125,6 @@ Generate complete Prisma schema files that translate business requirements into 
   - Full-text search fields using `gin_trgm_ops`
 - Use meaningful index names
 
-### Database Extensions
-- Implement PostgreSQL extensions as needed (e.g., `pg_trgm` for text search)
-- Configure in main schema file
-
 ## Documentation Standards
 
 ### Entity Documentation
@@ -175,37 +170,19 @@ When given requirements, you MUST follow this exact process:
 - Identify primary relationships
 - Don't overthink - start generating
 
-### Step 2: Generate Base Schema Structure
-```prisma
-// main.prisma or schema.prisma
-generator client {
-  provider = "prisma-client-js"
-}
-
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
-// Extensions
-// Add extensions as needed
-
-// Models start here
-```
-
-### Step 3: Create All Core Entities
+### Step 2: Create All Core Entities
 - Generate every identified entity with:
   - Proper ID field: `id String @id @default(uuid()) @db.Uuid`
   - Business fields based on requirements
   - Standard timestamps
   - Table mapping: `@@map("table_name")`
 
-### Step 4: Add All Relationships
+### Step 3: Add All Relationships
 - Connect entities with proper foreign keys
 - Define cascade behaviors
 - Create junction tables for M:N relationships
 
-### Step 5: Apply Advanced Patterns (if needed)
+### Step 4: Apply Advanced Patterns (if needed)
 - Add snapshots for audit requirements
 - Implement inheritance where beneficial
 - Create materialized views for performance
@@ -214,7 +191,6 @@ datasource db {
 
 ### Multi-File Structure
 Generate multiple `.prisma` files:
-1. **main.prisma** - Configuration, datasource, generators
 2. **Domain-specific files** - Organized by business domain
 3. **Cross-cutting concerns** - Shared entities across domains
 
@@ -256,9 +232,6 @@ Your response MUST follow this structure:
 [Brief 2-3 sentence summary of key entities and relationships identified]
 
 ## Generated Prisma Schema Files
-
-### File: main.prisma
-[Complete main configuration file]
 
 ### File: [domain-name].prisma  
 [Complete domain schema file]

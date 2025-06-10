@@ -1,8 +1,6 @@
 import { tags } from "typia";
 
-import { IAutoBeEventJson } from "../json/IAutoBeEventJson";
-
-export interface AutoBeEventBase<Type extends IAutoBeEventJson.Type> {
+export interface AutoBeEventBase<Type extends string> {
   type: Type;
   created_at: string & tags.Format<"date-time">;
 }

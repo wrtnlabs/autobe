@@ -1,7 +1,7 @@
 import { AutoBeAgent } from "@autobe/agent";
 import { invertOpenApiDocument } from "@autobe/agent/src/factory";
 import { AutoBeCompiler } from "@autobe/compiler";
-import { TestRepositoryUtil } from "@autobe/filesystem";
+import { RepositoryFileSystem } from "@autobe/filesystem";
 import {
   AutoBeAnalyzeHistory,
   AutoBeOpenApi,
@@ -21,19 +21,23 @@ export const prepare_agent_interface = async (
     throw new Error("No OpenAI API key provided");
 
   // PREPARE ASSETS
-  const analyze: Record<string, string> = await TestRepositoryUtil.analyze(
+  const analyze: Record<string, string> = await RepositoryFileSystem.analyze(
     owner,
     project,
   );
   const compiler: AutoBeCompiler = new AutoBeCompiler();
-  const prisma: IAutoBePrismaCompilerResult = await compiler.prisma({
-    files: await TestRepositoryUtil.prisma(owner, project),
+  const schemas: Record<string, string> = await RepositoryFileSystem.prisma(
+    owner,
+    project,
+  );
+  const prisma: IAutoBePrismaCompilerResult = await compiler.prisma.compile({
+    files: await RepositoryFileSystem.prisma(owner, project),
   });
   if (prisma.type !== "success")
     throw new Error("Failed to pass prisma compilation step");
 
   const document: AutoBeOpenApi.IDocument = invertOpenApiDocument(
-    await TestRepositoryUtil.swagger(owner, project),
+    await RepositoryFileSystem.swagger(owner, project),
   );
 
   // CONSTRUCT AGENT WITH HISTORIES
@@ -54,7 +58,6 @@ export const prepare_agent_interface = async (
         ...createHistoryProperties(),
         type: "analyze",
         reason: "User requested to analyze the requirements",
-        description: `Analysis report about overall ${project} system`,
         files: analyze,
       } satisfies AutoBeAnalyzeHistory,
       {
@@ -64,12 +67,19 @@ export const prepare_agent_interface = async (
           "Step to the DB schema generation referencing the analysis report",
         description: `DB schema about overall ${project} system`,
         result: {
+          success: true,
+          data: {
+            files: [],
+          },
+        },
+        compiled: {
           type: "success",
-          schemas: prisma.schemas,
           nodeModules: prisma.nodeModules,
           document: prisma.document,
           diagrams: prisma.diagrams,
+          schemas,
         },
+        schemas,
       } satisfies AutoBePrismaHistory,
     ],
   });

@@ -1,4 +1,7 @@
 import {
+  AutoBeAnalyzeReviewEvent,
+  AutoBeAnalyzeWriteDocumentEvent,
+  AutoBeInterfaceComplementEvent,
   AutoBeInterfaceComponentsEvent,
   AutoBeInterfaceEndpointsEvent,
   AutoBeInterfaceOperationsEvent,
@@ -7,8 +10,6 @@ import {
   AutoBeRealizeProgressEvent,
   AutoBeTestProgressEvent,
 } from "@autobe/interface";
-import { AutoBeAnalyzeReviewEvent } from "@autobe/interface/src/events/AutoBEAnalyzeReviewEvent";
-import { AutoBeAnalyzeWriteDocumentEvent } from "@autobe/interface/src/events/AutoBeAnalyzeWriteDocumentEvent";
 
 export function AutoBePlaygroundProgressEventMovie(
   props: AutoBePlaygroundProgressEventMovie.IProps,
@@ -29,6 +30,7 @@ export namespace AutoBePlaygroundProgressEventMovie {
       | AutoBeInterfaceEndpointsEvent
       | AutoBeInterfaceOperationsEvent
       | AutoBeInterfaceComponentsEvent
+      | AutoBeInterfaceComplementEvent
       | AutoBeTestProgressEvent
       | AutoBeRealizeProgressEvent;
   }
@@ -45,6 +47,8 @@ function getDescription(
       return `Designing Operations: ${event.completed} of ${event.total}`;
     case "interfaceComponents":
       return `Defining Type Schemas: ${event.completed} of ${event.total}`;
+    case "interfaceComplement":
+      return "Filling missed type schemas";
     case "prismaComponents":
       const tables: number = event.components
         .map((c) => c.tables.length)

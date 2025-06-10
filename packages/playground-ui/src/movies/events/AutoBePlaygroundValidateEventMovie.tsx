@@ -1,5 +1,4 @@
 import {
-  AutoBePrismaValidateEvent,
   AutoBeRealizeValidateEvent,
   AutoBeTestValidateEvent,
 } from "@autobe/interface";
@@ -33,13 +32,13 @@ export function AutoBePlaygroundValidateEventMovie(
       <CardContent>
         <Chip
           icon={<ErrorOutlineIcon />}
-          label={"Prisma Compilation Error"}
+          label={"TypeScript Compilation Error"}
           variant="outlined"
           color="warning"
         ></Chip>
         <br />
         <br />
-        AI wrote invalid Prisma schema, so compilation error occurred.
+        AI wrote invalid TypeScript code so compilation error occurred.
         <br />
         <br />
         Trying to recover the compile error by studying the AI agent.
@@ -58,24 +57,20 @@ export function AutoBePlaygroundValidateEventMovie(
           }
           onClick={() => setExpanded(!expanded)}
         >
-          {expanded ? "Hide Function Calls" : "Show Function Calls"}
+          {expanded ? "Hide Validation Details" : "Show Validation Details"}
         </Button>
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
           {props.event.result.type === "failure" ? (
-            props.event.type === "prismaValidate" ? (
-              props.event.result.reason
-            ) : (
-              <MarkdownViewer>
-                {props.event.result.diagnostics
-                  .map(
-                    (diag) =>
-                      `- ${diag.file} (${diag.category}): ${diag.messageText}`,
-                  )
-                  .join("\n")}
-              </MarkdownViewer>
-            )
+            <MarkdownViewer>
+              {props.event.result.diagnostics
+                .map(
+                  (diag) =>
+                    `- ${diag.file} (${diag.category}): ${diag.messageText}`,
+                )
+                .join("\n")}
+            </MarkdownViewer>
           ) : (
             <MarkdownViewer>
               {JSON.stringify(props.event.result.error, null, 2)}
@@ -88,9 +83,6 @@ export function AutoBePlaygroundValidateEventMovie(
 }
 export namespace AutoBePlaygroundValidateEventMovie {
   export interface IProps {
-    event:
-      | AutoBePrismaValidateEvent
-      | AutoBeTestValidateEvent
-      | AutoBeRealizeValidateEvent;
+    event: AutoBeTestValidateEvent | AutoBeRealizeValidateEvent;
   }
 }

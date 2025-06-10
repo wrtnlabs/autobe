@@ -3,6 +3,11 @@ lib/
 node_modules/
 playground-result/
 
+packages/*/README.md
+internals/*/README.md
+test/README.md
+website/README.md
+
 *.log
 .env
 .idea

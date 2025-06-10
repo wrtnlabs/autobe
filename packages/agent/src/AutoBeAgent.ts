@@ -7,6 +7,7 @@ import {
   AutoBeUserMessageHistory,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
+import { Semaphore } from "tstl";
 import { v4 } from "uuid";
 
 import { AutoBeContext } from "./context/AutoBeContext";
@@ -58,7 +59,10 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
 
     this.agentica_ = new MicroAgentica({
       model: props.model,
-      vendor: props.vendor,
+      vendor: {
+        ...props.vendor,
+        semaphore: new Semaphore(props.vendor.semaphore ?? 16),
+      },
       config: {
         ...(props.config ?? {}),
         executor: {
@@ -164,7 +168,7 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
   }
 
   public getFiles(): Record<string, string> {
-    return {
+    const files: Record<string, string> = {
       ...Object.fromEntries(
         this.state_.analyze
           ? Object.entries(this.state_.analyze.files).map(([key, value]) => [
@@ -174,26 +178,57 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
           : [],
       ),
       ...Object.fromEntries(
-        this.state_.prisma?.result.type === "success"
+        this.state_.prisma?.result.success === true
           ? [
-              ...Object.entries(this.state_.prisma.result.schemas).map(
+              ...Object.entries(this.state_.prisma.schemas).map(
                 ([key, value]) => [
                   `prisma/schema/${key.split("/").at(-1)}`,
                   value,
                 ],
               ),
-              ["docs/ERD.md", this.state_.prisma.result.document],
+              ...(this.state_.prisma.compiled.type === "success"
+                ? [["docs/ERD.md", this.state_.prisma.compiled.document]]
+                : []),
+              ...(this.state_.prisma.compiled.type === "failure"
+                ? [
+                    [
+                      "prisma/compile-error-reason.log",
+                      this.state_.prisma.compiled.reason,
+                    ],
+                  ]
+                : []),
+              [
+                "autobe/prisma.json",
+                JSON.stringify(this.state_.prisma.result.data, null, 2),
+              ],
             ]
           : [],
       ),
       ...(this.state_.interface ? this.state_.interface.files : {}),
-      ...(this.state_.test?.result.type === "success"
+      ...(this.state_.test?.compiled.type === "success"
         ? this.state_.test.files
         : {}),
-      ...(this.state_.realize?.result.type === "success"
+      ...(this.state_.realize?.compiled.type === "success"
         ? this.state_.realize.files
         : {}),
+      "autobe/histories.json": JSON.stringify(this.histories_, null, 2),
+      "autobe/tokenUsage.json": JSON.stringify(this.getTokenUsage(), null, 2),
+      ...(this.state_.interface
+        ? {
+            "autobe/document.json": JSON.stringify(
+              this.state_.interface.document,
+              null,
+              2,
+            ),
+          }
+        : {}),
     };
+    return Object.fromEntries(
+      Object.entries(files).map(([k, v]) => [
+        k.startsWith("/") ? k.substring(1) : k,
+        v,
+      ]),
+    );
   }
 
   public getHistories(): AutoBeHistory[] {

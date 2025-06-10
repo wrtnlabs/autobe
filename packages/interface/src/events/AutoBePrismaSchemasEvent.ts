@@ -1,9 +1,9 @@
+import { AutoBePrisma } from "../prisma";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
 export interface AutoBePrismaSchemasEvent
   extends AutoBeEventBase<"prismaSchemas"> {
-  filename: string;
-  content: string;
+  file: AutoBePrisma.IFile;
   completed: number;
   total: number;
   step: number;

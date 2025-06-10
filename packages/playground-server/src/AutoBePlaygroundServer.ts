@@ -30,11 +30,16 @@ export class AutoBePlaygroundServer<Header extends object> {
         return;
       }
 
-      const archive = () =>
-        save({
-          files: result.agent.getFiles(),
-          root: result.cwd,
-        });
+      const archive = async () => {
+        try {
+          await save({
+            files: result.agent.getFiles(),
+            root: result.cwd,
+          });
+        } catch (error) {
+          console.error(error);
+        }
+      };
       result.agent.on("analyzeComplete", archive);
       result.agent.on("prismaComplete", archive);
       result.agent.on("interfaceComplete", archive);
@@ -63,23 +68,21 @@ const save = async (props: {
   root: string;
   files: Record<string, string>;
 }): Promise<void> => {
-  console.log("save", props);
   if (fs.existsSync(props.root))
     await fs.promises.rm(props.root, {
       recursive: true,
     });
 
+  const directory = new VariadicSingleton(async (location: string) => {
+    try {
+      await fs.promises.mkdir(location, {
+        recursive: true,
+      });
+    } catch {}
+  });
   for (const [key, value] of Object.entries(props.files)) {
     const file: string = path.resolve(`${props.root}/${key}`);
     await directory.get(path.dirname(file));
     await fs.promises.writeFile(file, value, "utf8");
   }
 };
-
-const directory = new VariadicSingleton(async (location: string) => {
-  try {
-    await fs.promises.mkdir(location, {
-      recursive: true,
-    });
-  } catch {}
-});

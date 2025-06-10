@@ -1,3 +1,4 @@
+import { AutoBeAgent } from "@autobe/agent";
 import {
   AutoBeHistory,
   AutoBeUserMessageContent,
@@ -6,8 +7,6 @@ import {
   IAutoBeTokenUsageJson,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
-
-import { AutoBeAgent } from "../../agent/src";
 
 export class AutoBeRpcService<Model extends ILlmSchema.Model>
   implements IAutoBeRpcService
@@ -41,6 +40,12 @@ export class AutoBeRpcService<Model extends ILlmSchema.Model>
     agent.on("prismaStart", (event) => {
       listener.prismaStart!(event).catch(() => {});
     });
+    agent.on("prismaComponents", (event) => {
+      listener.prismaComponents!(event).catch(() => {});
+    });
+    agent.on("prismaSchemas", (event) => {
+      listener.prismaSchemas!(event).catch(() => {});
+    });
     agent.on("prismaComplete", (event) => {
       listener.prismaComplete!(event).catch(() => {});
     });
@@ -60,6 +65,9 @@ export class AutoBeRpcService<Model extends ILlmSchema.Model>
     });
     agent.on("interfaceComponents", (event) => {
       listener.interfaceComponents!(event).catch(() => {});
+    });
+    agent.on("interfaceComplement", (event) => {
+      listener.interfaceComplement!(event).catch(() => {});
     });
     agent.on("interfaceComplete", (event) => {
       listener.interfaceComplete!(event).catch(() => {});
@@ -86,6 +94,10 @@ export class AutoBeRpcService<Model extends ILlmSchema.Model>
     content: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
   ): Promise<AutoBeHistory[]> {
     return this.props.agent.conversate(content);
+  }
+
+  public async getFiles(): Promise<Record<string, string>> {
+    return this.props.agent.getFiles();
   }
 
   public async getHistories(): Promise<AutoBeHistory[]> {
