@@ -216,8 +216,6 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
               null,
               2,
             ),
-            "autobe/swagger.json":
-              this.state_.interface.files["packages/api/swagger.json"],
           }
         : {}),
     };

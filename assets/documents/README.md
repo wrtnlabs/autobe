@@ -15,6 +15,17 @@ This backend program was automatically generated using [`@autobe`](https://githu
 
 This template project has categorized directories like below.
 
+At first, [`@autobe`](https://github.com/wrtnlabs/autobe) generated files are placed like below:
+
+- analysis agent: [docs/analysis](docs/analysis)
+- prisma agent
+  - [prisma/schema](prisma/schema)
+  - [docs/ERD.md](docs/ERD.md)
+- interface agent
+  - [src/api/structures](src/api/structures): DTO structures
+  - [src/api/controllers](src/controllers): API controller classes
+  - [test/features](test/features): List of e2e test functions
+
 As you can see from the below, all of the Backend source files are placed into the [src](src/) directory. When you build the TypeScript source files, compiled files would be placed into the `lib` directory following the [tsconfig.json](tsconfig.json) configuration. Otherwise you build client [SDK](#32-sdk) library for npm publishing and their compiled files would be placed into the [packages](packages) directory.
 
   - [packages/api/](packages/api): SDK module built by `npm run build:api`
