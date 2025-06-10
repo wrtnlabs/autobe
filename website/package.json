@@ -14,12 +14,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/samchon/typia"
+    "url": "https://github.com/wrtnlabs/autobe"
   },
   "author": "Jeongho Nam",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/samchon/typia/issues"
+    "url": "https://github.com/wrtnlabs/autobe/issues"
   },
   "dependencies": {
     "next": "^15.1.0",
