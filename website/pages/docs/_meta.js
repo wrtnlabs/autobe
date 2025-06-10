@@ -1,15 +1,11 @@
-import type { MetaRecord } from "nextra";
+const open = (title) => ({
+  title,
+  theme: {
+    collapsed: false,
+  },
+});
 
-function open(title: string) {
-  return {
-    title,
-    theme: {
-      collapsed: false,
-    },
-  };
-}
-
-const meta: MetaRecord = {
+export default {
   index: "🚀 Getting Started",
   setup: "📦 Setup",
   concepts: open("🔍 Concepts"),
@@ -33,4 +29,3 @@ const meta: MetaRecord = {
     href: "/api",
   },
 };
-export default meta;

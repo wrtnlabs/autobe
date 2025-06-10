@@ -1,5 +1,4 @@
 .next/
-typedoc-json/
-
 out/
-_pagefind/
+public/api/
+typedoc-json/

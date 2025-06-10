@@ -1,9 +1,6 @@
-import { MetaRecord } from "nextra";
-
-const meta: MetaRecord = {
+export default {
   index: "No Coding Agent",
   config: "Configuration",
   event: "Event Handling",
   history: "Prompt Histories",
 };
-export default meta;
