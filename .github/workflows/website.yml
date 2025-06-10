@@ -1,0 +1,30 @@
+name: website
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "packages/*/src/**"
+      - "packages/*/package.json"
+      - "website/**"
+      - package.json
+      - .github/workflows/website.yml
+  pull_request:
+    paths:
+      - "packages/*/src/**"
+      - "packages/*/package.json"
+      - "website/**"
+      - package.json
+      - .github/workflows/website.yml
+jobs:
+  website:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - uses: pnpm/action-setup@av4
+      - name: Root
+        run: pnpm install
+      - name: Website
+        run: pnpm run build
+        working-directory: website
