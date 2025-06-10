@@ -5,7 +5,7 @@ import { TestValidator } from "@nestia/e2e";
 import typia from "typia";
 
 import { TestGlobal } from "../../TestGlobal";
-import json from "./duplicated.json";
+import json from "./examples/duplicated.json";
 
 export const test_compiler_prisma_duplicated = async (): Promise<void> => {
   const compiler = new AutoBePrismaCompiler();

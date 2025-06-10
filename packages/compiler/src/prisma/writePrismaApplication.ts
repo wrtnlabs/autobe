@@ -129,7 +129,8 @@ function writeRelations(
     model.foreignFields.filter(
       (f) =>
         model.uniqueIndexes.every((u) => u.fieldNames[0] !== f.name) &&
-        model.plainIndexes.every((p) => p.fieldNames[0] !== f.name),
+        (f.unique === true ||
+          model.plainIndexes.every((p) => p.fieldNames[0] !== f.name)),
     );
   const contents: string[][] = [
     model.foreignFields.map(writeConstraint),
@@ -173,7 +174,7 @@ function writeConstraint(field: AutoBePrisma.IForeignField): string {
 }
 
 function writeForeignIndex(field: AutoBePrisma.IForeignField): string {
-  return `@@${field.unique ? "unique" : "index"}([${field.name}])`;
+  return `@@${field.unique === true ? "unique" : "index"}([${field.name}])`;
 }
 
 function writeUniqueIndex(field: AutoBePrisma.IUniqueIndex): string {

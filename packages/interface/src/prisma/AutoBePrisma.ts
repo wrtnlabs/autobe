@@ -118,7 +118,6 @@ export namespace AutoBePrisma {
     //----
     // FIELDS
     //----
-
     /**
      * The primary key field of the model.
      *
@@ -150,7 +149,6 @@ export namespace AutoBePrisma {
     //----
     // INDEXES
     //----
-
     /**
      * Array of unique indexes for enforcing data integrity constraints.
      *

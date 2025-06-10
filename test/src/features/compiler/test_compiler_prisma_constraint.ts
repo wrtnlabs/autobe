@@ -5,7 +5,7 @@ import { TestValidator } from "@nestia/e2e";
 import typia from "typia";
 
 import { TestGlobal } from "../../TestGlobal";
-import json from "./constraint.json";
+import json from "./examples/constraint.json";
 
 export const test_compiler_prisma_constraint = async (): Promise<void> => {
   const compiler = new AutoBePrismaCompiler();
