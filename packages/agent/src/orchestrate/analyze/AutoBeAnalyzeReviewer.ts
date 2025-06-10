@@ -1,5 +1,6 @@
 import { MicroAgentica } from "@agentica/core";
 import { ILlmSchema } from "@samchon/openapi";
+import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
@@ -27,10 +28,14 @@ export const AutoBeAnalyzeReviewer = <Model extends ILlmSchema.Model>(
           (el) => el.type === "assistantMessage" || el.type === "userMessage",
         ),
       {
+        id: v4(),
+        created_at: new Date().toISOString(),
         type: "systemMessage",
         text: AutoBeSystemPromptConstant.ANALYZE_REVIEWER,
       },
       {
+        id: v4(),
+        created_at: new Date().toISOString(),
         type: "systemMessage",
         text: [
           "Below are all of the files.",

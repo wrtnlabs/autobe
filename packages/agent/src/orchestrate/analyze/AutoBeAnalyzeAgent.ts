@@ -1,6 +1,7 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import typia from "typia";
+import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
@@ -51,6 +52,8 @@ export class AutoBeAnalyzeAgent<Model extends ILlmSchema.Model> {
         tokenUsage: ctx.usage(),
         histories: [
           {
+            id: v4(),
+            created_at: new Date().toISOString(),
             type: "systemMessage",
             text: AutoBeSystemPromptConstant.ANALYZE.replace(
               "{% User Locale %}",
@@ -58,6 +61,8 @@ export class AutoBeAnalyzeAgent<Model extends ILlmSchema.Model> {
             ),
           },
           {
+            id: v4(),
+            created_at: new Date().toISOString(),
             type: "systemMessage",
             text: [
               "# Guidelines",
@@ -66,6 +71,8 @@ export class AutoBeAnalyzeAgent<Model extends ILlmSchema.Model> {
             ].join("\n"),
           },
           {
+            id: v4(),
+            created_at: new Date().toISOString(),
             type: "systemMessage",
             text: [
               "The following is the name of the entire file.",

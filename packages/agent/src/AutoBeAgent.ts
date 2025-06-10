@@ -7,6 +7,7 @@ import {
   AutoBeUserMessageHistory,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
+import { Semaphore } from "tstl";
 import { v4 } from "uuid";
 
 import { AutoBeContext } from "./context/AutoBeContext";
@@ -58,7 +59,10 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
 
     this.agentica_ = new MicroAgentica({
       model: props.model,
-      vendor: props.vendor,
+      vendor: {
+        ...props.vendor,
+        semaphore: new Semaphore(props.vendor.semaphore ?? 16),
+      },
       config: {
         ...(props.config ?? {}),
         executor: {

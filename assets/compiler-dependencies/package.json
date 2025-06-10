@@ -17,7 +17,7 @@
     "@nestjs/platform-fastify": "^11.1.0",
     "@nestjs/swagger": "^11.1.5",
     "@prisma/client": "^6.6.0",
-    "@samchon/openapi": "^4.3.1",
+    "@samchon/openapi": "^4.3.3",
     "@types/express": "^5.0.1",
     "@types/inquirer": "^9.0.7",
     "@types/jsonwebtoken": "^9.0.9",

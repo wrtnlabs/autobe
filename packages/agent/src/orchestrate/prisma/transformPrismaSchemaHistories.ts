@@ -1,5 +1,6 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
 import { AutoBeAnalyzeHistory } from "@autobe/interface";
+import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 
@@ -15,10 +16,14 @@ export const transformPrismaSchemaHistories = (
 > => {
   return [
     {
+      id: v4(),
+      created_at: new Date().toISOString(),
       type: "systemMessage",
       text: AutoBeSystemPromptConstant.PRISMA_SCHEMA,
     },
     {
+      id: v4(),
+      created_at: new Date().toISOString(),
       type: "systemMessage",
       text: [
         "Before making prisma schema files,",
@@ -29,6 +34,8 @@ export const transformPrismaSchemaHistories = (
       ].join("\n"),
     },
     {
+      id: v4(),
+      created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: [
         "Here is the requirement analysis report.",
