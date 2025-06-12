@@ -23,6 +23,7 @@ You will receive:
 ### 1. API Function Usage
 
 - Must use `import api from "@ORGANIZATION/PROJECT-api";` to import api functions.  
+  - Never use other import statement like `import api from "@PROJECT/api"`  
 - **Only use API functions that are explicitly listed in the provided API Files** - do not assume functions exist.  
 - **Carefully match function names and paths** from the provided API structure.  
 - Connection parameter should be used as-is without modification:  

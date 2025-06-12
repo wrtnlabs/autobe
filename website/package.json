@@ -1,0 +1,40 @@
+{
+  "name": "@autobe/website",
+  "version": "0.1.0",
+  "description": "AutoBE Guide Documents",
+  "private": true,
+  "scripts": {
+    "build": "rimraf .next && rimraf out && pnpm run build:typedoc && next build && pnpm run build:sitemap",
+    "prebuild": "rimraf .next && rimraf out && pnpm run build:typedoc",
+    "postbuild": "pnpm run build:typedoc && pnpm run build:sitemap",
+    "build:typedoc": "node build/typedoc",
+    "build:sitemap": "next-sitemap",
+    "deploy": "node build/deploy",
+    "dev": "next dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wrtnlabs/autobe"
+  },
+  "author": "Jeongho Nam",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wrtnlabs/autobe/issues"
+  },
+  "dependencies": {
+    "next": "^15.1.0",
+    "nextra": "^3.2.5",
+    "nextra-theme-docs": "^3.2.5",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "typescript": "~5.8.3"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.10",
+    "@types/react": "^18.0.35",
+    "gh-pages": "^5.0.0",
+    "next-sitemap": "^4.2.3",
+    "rimraf": "^5.0.0",
+    "typedoc": "^0.27.0"
+  }
+}

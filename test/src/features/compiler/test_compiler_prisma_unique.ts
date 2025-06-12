@@ -6,12 +6,13 @@ import fs from "fs";
 import typia from "typia";
 
 import { TestGlobal } from "../../TestGlobal";
-import json from "./examples/unique.json";
+import json from "./examples/prisma.unique.json";
 
 export const test_compiler_prisma_unique = async (): Promise<void> => {
   const compiler: AutoBePrismaCompiler = new AutoBePrismaCompiler();
   const application: AutoBePrisma.IApplication =
     typia.assert<AutoBePrisma.IApplication>(json);
+
   const files: Record<string, string> = await compiler.write(application);
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/compiler/prisma/unique`,

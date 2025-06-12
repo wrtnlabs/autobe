@@ -8,6 +8,7 @@ import {
 import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
 import { IPointer } from "tstl";
 import typia from "typia";
+import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
@@ -51,6 +52,8 @@ async function step<Model extends ILlmSchema.Model>(
         AutoBeSystemPromptConstant.INTERFACE_COMPLEMENT,
       ),
       {
+        id: v4(),
+        created_at: new Date().toISOString(),
         type: "assistantMessage",
         text: [
           "Here is the OpenAPI document what you've made:",
@@ -61,6 +64,8 @@ async function step<Model extends ILlmSchema.Model>(
         ].join("\n"),
       },
       {
+        id: v4(),
+        created_at: new Date().toISOString(),
         type: "assistantMessage",
         text: [
           "You have missed below schema types in the document.components.schemas:",

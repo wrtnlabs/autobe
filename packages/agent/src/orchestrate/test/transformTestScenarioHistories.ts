@@ -1,4 +1,5 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
+import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../context/AutoBeState";
@@ -11,6 +12,8 @@ export const transformTestScenarioHistories = (
   if (state.analyze === null)
     return [
       {
+        id: v4(),
+        created_at: new Date().toISOString(),
         type: "systemMessage",
         text: [
           "Requirement analysis is not yet completed.",
@@ -22,6 +25,8 @@ export const transformTestScenarioHistories = (
   else if (state.prisma === null)
     return [
       {
+        id: v4(),
+        created_at: new Date().toISOString(),
         type: "systemMessage",
         text: [
           "Prisma DB schema generation is not yet completed.",
@@ -33,6 +38,8 @@ export const transformTestScenarioHistories = (
   else if (state.analyze.step !== state.prisma.step)
     return [
       {
+        id: v4(),
+        created_at: new Date().toISOString(),
         type: "systemMessage",
         text: [
           "Prisma DB schema generation has not been updated",
@@ -45,6 +52,8 @@ export const transformTestScenarioHistories = (
   else if (state.prisma.compiled.type !== "success")
     return [
       {
+        id: v4(),
+        created_at: new Date().toISOString(),
         type: "systemMessage",
         text: [
           "Prisma DB schema generation has not been updated",
@@ -57,6 +66,8 @@ export const transformTestScenarioHistories = (
   else if (state.interface === null)
     return [
       {
+        id: v4(),
+        created_at: new Date().toISOString(),
         type: "systemMessage",
         text: [
           "Interface generation is not yet completed.",
@@ -68,10 +79,14 @@ export const transformTestScenarioHistories = (
 
   return [
     {
+      id: v4(),
+      created_at: new Date().toISOString(),
       type: "systemMessage",
       text: AutoBeSystemPromptConstant.TEST,
     },
     {
+      id: v4(),
+      created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: [
         "Requirement analysis and Prisma DB schema generation are ready.",
@@ -93,6 +108,8 @@ export const transformTestScenarioHistories = (
       ].join("\n"),
     },
     {
+      id: v4(),
+      created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: [
         "Database schema and entity relationship diagrams are ready.",
@@ -109,6 +126,8 @@ export const transformTestScenarioHistories = (
       ].join("\n"),
     },
     {
+      id: v4(),
+      created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: [
         "OpenAPI document generation is ready.",

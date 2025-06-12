@@ -1,9 +1,11 @@
 import { AutoBeAgent } from "@autobe/agent";
+import { AutoBeState } from "@autobe/agent/src/context/AutoBeState";
 import { invertOpenApiDocument } from "@autobe/agent/src/factory/invertOpenApiDocument";
 import { AutoBeCompiler } from "@autobe/compiler";
 import { RepositoryFileSystem } from "@autobe/filesystem";
 import {
   AutoBeAnalyzeHistory,
+  AutoBeHistory,
   AutoBeInterfaceHistory,
   AutoBeOpenApi,
   AutoBePrismaHistory,
@@ -14,8 +16,40 @@ import { v4 } from "uuid";
 
 import { TestGlobal } from "../../../TestGlobal";
 import { TestFileSystem } from "../../../internal/TestFileSystem";
+import { TestHistory } from "../../../internal/TestHistory";
 
-export const prepare_agent_test = async (owner: string, project: string) => {
+export const prepare_agent_test = async (project: string) => {
+  if (TestGlobal.env.CHATGPT_API_KEY === undefined)
+    throw new Error("No OpenAI API key provided");
+
+  const histories: AutoBeHistory[] = await TestHistory.getInterface(project);
+  const compiler: AutoBeCompiler = new AutoBeCompiler();
+  const agent: AutoBeAgent<"chatgpt"> = new AutoBeAgent({
+    model: "chatgpt",
+    vendor: {
+      api: new OpenAI({
+        apiKey: TestGlobal.env.CHATGPT_API_KEY,
+      }),
+      model: "gpt-4.1",
+      semaphore: 16,
+    },
+    config: {
+      locale: "en-US",
+    },
+    compiler,
+    histories,
+  });
+  const state: AutoBeState = agent.getContext().state();
+
+  return {
+    agent,
+    analyze: state.analyze!,
+    prisma: state.prisma!,
+    interface: state.interface!,
+  };
+};
+
+export const prepare_agent_test2 = async (owner: string, project: string) => {
   if (TestGlobal.env.CHATGPT_API_KEY === undefined)
     throw new Error("No OpenAI API key provided");
 

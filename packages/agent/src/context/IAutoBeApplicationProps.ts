@@ -50,6 +50,12 @@ export interface IAutoBeApplicationProps {
    * headings. The entire content of the document will have requirements, such
    * as maintaining informal or formal language.
    *
+   * The style guide should include conventions for Markdown formatting elements
+   * such as headings, lists, and tables. Additionally, it should define
+   * expectations regarding document length and overall composition. When
+   * describing structural guidelines, include a template to illustrate the
+   * recommended format.
+   *
    * # Limiting the volume of a document
    *
    * However, do not go beyond the volume guide; each agent only needs to create

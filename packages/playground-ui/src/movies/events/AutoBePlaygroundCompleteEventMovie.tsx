@@ -22,11 +22,7 @@ export function AutoBePlaygroundCompleteEventMovie(
       setFiles(
         Object.fromEntries(
           Object.entries(files).filter(
-            ([key]) =>
-              key !== "autobe/histories.json" &&
-              key !== "autobe/prisma.json" &&
-              key !== "autobe/document.json" &&
-              key.endsWith("swagger.json") === false,
+            ([_, value]) => new TextEncoder().encode(value).length < 5 * 1024 * 1024, // 5MB
           ),
         ),
       );

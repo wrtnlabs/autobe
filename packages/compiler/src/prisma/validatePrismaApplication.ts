@@ -2,16 +2,28 @@ import { AutoBePrisma, IAutoBePrismaValidation } from "@autobe/interface";
 import { HashMap, hash } from "tstl";
 
 import { MapUtil } from "../utils/MapUtil";
+import { StringUtil } from "../utils/StringUtil";
 
 export function validatePrismaApplication(
   application: AutoBePrisma.IApplication,
-  previous?: AutoBePrisma.IApplication | undefined,
 ): IAutoBePrismaValidation {
-  const dict: Map<string, AutoBePrisma.IModel> = new Map(
+  const dict: Map<string, IModelContainer> = new Map(
     application.files
-      .map((file) => file.models)
-      .flat()
-      .map((model) => [model.name, model]),
+      .map((file, fi) =>
+        file.models.map(
+          (model, mi) =>
+            [
+              model.name,
+              {
+                file,
+                model,
+                fileIndex: fi,
+                modelIndex: mi,
+              },
+            ] satisfies [string, IModelContainer],
+        ),
+      )
+      .flat(),
   );
   const errors: IAutoBePrismaValidation.IError[] = [
     ...validateDuplicatedFiles(application),
@@ -29,23 +41,24 @@ export function validatePrismaApplication(
         }),
       )
       .flat(2),
-    ...(previous ? validateOmissions(application, previous) : []),
   ];
   return errors.length === 0
-    ? { success: true, data: application }
-    : { success: false, data: application, errors };
+    ? {
+        success: true,
+        data: application,
+      }
+    : {
+        success: false,
+        data: application,
+        errors,
+      };
 }
 
-/* -----------------------------------------------------------
-  OMISSIONS
------------------------------------------------------------ */
-function validateOmissions(
-  app: AutoBePrisma.IApplication,
-  prev: AutoBePrisma.IApplication,
-): IAutoBePrismaValidation.IError[] {
-  app;
-  prev;
-  return [];
+interface IModelContainer {
+  file: AutoBePrisma.IFile;
+  model: AutoBePrisma.IModel;
+  fileIndex: number;
+  modelIndex: number;
 }
 
 /* -----------------------------------------------------------
@@ -89,12 +102,6 @@ function validateDuplicatedFiles(
 function validateDuplicatedModels(
   app: AutoBePrisma.IApplication,
 ): IAutoBePrismaValidation.IError[] {
-  interface IModelContainer {
-    file: AutoBePrisma.IFile;
-    model: AutoBePrisma.IModel;
-    fileIndex: number;
-    modelIndex: number;
-  }
   const modelContainers: Map<string, IModelContainer[]> = new Map();
   app.files.forEach((file, fileIndex) => {
     file.models.forEach((model, modelIndex) => {
@@ -134,7 +141,7 @@ function validateDuplicatedModels(
 }
 
 function validateDuplicatedFields(
-  dict: Map<string, AutoBePrisma.IModel>,
+  dict: Map<string, IModelContainer>,
   model: AutoBePrisma.IModel,
   accessor: string,
 ): IAutoBePrismaValidation.IError[] {
@@ -179,14 +186,14 @@ function validateDuplicatedFields(
         path: `${accessor}.plainFields[${i}].name`,
         table: model.name,
         field: field.name,
-        message: [
-          `There's a same named table in the application.`,
-          "",
-          "Check whether the field has been designed for denormalization",
-          "like pre-calculation. If do so, remove the field.",
-          "",
-          "Otherwise, change the field name to something else.",
-        ].join("\n"),
+        message: StringUtil.trim`
+          There's a same named table in the application.
+
+          Check whether the field has been designed for denormalization
+          like pre-calculation. If do so, remove the field.
+
+          Otherwise, change the field name to something else.
+        `,
       });
   });
   return errors;
@@ -251,14 +258,14 @@ function validateDuplicatedIndexes(
           path: `${accessor}.uniqueIndexes[${i}].fieldNames[0]`,
           table: model.name,
           field: null,
-          message: [
-            `Duplicated unique index found (${subset[0]}).`,
-            "",
-            "You have defined an unique index that is already included",
-            "in the foreign field with unique constraint.",
-            "",
-            "Remove this unique index to avoid the duplication.",
-          ].join("\n"),
+          message: StringUtil.trim`
+            Duplicated unique index found (${subset[0]}).
+            
+            You have defined an unique index that is already included,
+            in the foreign field with unique constraint.
+            
+            Remove this unique index to avoid the duplication.
+          `,
         });
       const cIndex: number = model.uniqueIndexes.findIndex(
         (u) =>
@@ -270,15 +277,15 @@ function validateDuplicatedIndexes(
           path: `${accessor}.uniqueIndexes[${i}].fieldNames`,
           table: model.name,
           field: null,
-          message: [
-            `Subset unique index found (${subset.join(", ")}).`,
-            "",
-            "You have defined an unique index with multiple fields,",
-            "but its subset is already defined as an unique index.",
-            "",
-            "Consider to change the unique index to a plain index,",
-            "or drop the redundant unique index please.",
-          ].join("\n"),
+          message: StringUtil.trim`
+            Subset unique index found (${subset.join(", ")}).
+            
+            You have defined an unique index with multiple fields,
+            but its subset is already defined as an unique index.
+            
+            Consider to change the unique index to a plain index,
+            or drop the redundant unique index please.
+          `,
         });
     });
   });
@@ -295,14 +302,14 @@ function validateDuplicatedIndexes(
           path: `${accessor}.plainIndexes[${i}].fieldNames`,
           table: model.name,
           field: null,
-          message: [
-            `Superset plain index found (${y.fieldNames.join(", ")}).`,
-            "",
-            "You have defined a plain index with multiple fields,",
-            "but its superset is already defined as another plain index.",
-            "",
-            "As subset index is vulnerable, drop this plain index please.",
-          ].join("\n"),
+          message: StringUtil.trim`
+            Superset plain index found (${y.fieldNames.join(", ")}).
+            
+            You have defined a plain index with multiple fields,
+            but its superset is already defined as another plain index.
+            
+            As subset index is vulnerable, drop this plain index please.
+          `,
         });
     });
   });
@@ -316,12 +323,13 @@ function validateDuplicatedIndexes(
       path: `${accessor}.ginIndexes[].fieldName`,
       table: model.name,
       field: null,
-      message: [
-        "Duplicated GIN index found.",
-        "",
-        "GIN index can only be used once per field.",
-        "Please remove the duplicated GIN indexes.",
-      ].join("\n"),
+      message: StringUtil.trim`
+        Duplicated GIN index found.
+        
+        GIN index can only be used once per field.
+
+        Please remove the duplicated GIN indexes.
+      `,
     });
 
   return errors;
@@ -400,24 +408,24 @@ function validateIndexes(
           path: `${accessor}.ginIndexes[${i}].fieldName`,
           table: model.name,
           field: null,
-          message: [
-            "GIN index can only be used on string typed field.",
-            `However, the target field ${gin.fieldName} does not exist",
-            "in the {@link plainFields}.`,
-          ].join("\n"),
+          message: StringUtil.trim`
+            GIN index can only be used on string typed field.
+            However, the target field ${gin.fieldName} does not exist
+            in the {@link plainFields}.
+          `,
         });
       else if (model.plainFields[pIndex].type !== "string")
         errors.push({
           path: `${accessor}.ginIndexes[${i}].fieldName`,
           table: model.name,
           field: model.plainFields[pIndex].name,
-          message: [
-            "GIN index can only be used on string typed field.",
-            `However, the target field ${gin.fieldName} is not string,`,
-            `but ${model.plainFields[pIndex].type}.`,
-            "",
-            `- accessor of the wrong typed field: ${`${accessor}.plainFields[${pIndex}].type`}`,
-          ].join("\n"),
+          message: StringUtil.trim`
+            GIN index can only be used on string typed field.
+            However, the target field ${gin.fieldName} is not string,
+            but ${model.plainFields[pIndex].type}.
+            
+            - accessor of the wrong typed field: ${`${accessor}.plainFields[${pIndex}].type`},
+          `,
         });
     },
   });
@@ -427,18 +435,52 @@ function validateIndexes(
 function validateReferences(
   model: AutoBePrisma.IModel,
   accessor: string,
-  dict: Map<string, AutoBePrisma.IModel>,
+  dict: Map<string, IModelContainer>,
 ): IAutoBePrismaValidation.IError[] {
   const errors: IAutoBePrismaValidation.IError[] = [];
+
   model.foreignFields.forEach((field, i) => {
     const target = dict.get(field.relation.targetModel);
-    if (target === undefined)
+    if (target === undefined) {
+      // CHECK EXISTENCE
       errors.push({
         path: `${accessor}.foreignFields[${i}].relation.targetModel`,
         table: model.name,
         field: field.name,
         message: `Target model ${field.relation.targetModel} does not exist.`,
       });
+    } else if (target.model !== model) {
+      // CHECK CROSS REFERENCE
+      target.model.foreignFields.forEach((oppo, j) => {
+        if (oppo.relation.targetModel === model.name) {
+          errors.push({
+            path: `${accessor}.foreignFields[${i}].relation.targetModel`,
+            table: model.name,
+            field: field.name,
+            message: StringUtil.trim`
+              Cross-reference dependency detected between models.
+
+              - accessor of opposite side: application.files[${target.fileIndex}].models[${target.modelIndex}].foreignFields[${j}].relation.targetModel
+
+              Cross-references (circular dependencies) are not permitted in AutoBe Prisma schemas.
+
+              To resolve this issue:
+
+              1. Remove one of the foreign key fields from either model
+              2. Keep only the foreign key that represents the primary relationship direction
+              3. Remove any related indexes that reference the deleted foreign key field
+
+              The foreign key field to remove is typically:
+
+              - A redundant field that can be computed from the existing relationship
+              - A field that duplicates information already accessible through the primary relationship
+
+              Please eliminate the circular dependency and try again.`,
+          });
+        }
+      });
+    }
   });
+
   return errors;
 }

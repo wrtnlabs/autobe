@@ -37,6 +37,12 @@ export function AutoBePlaygroundChatTokenUsageMovie(
             </TableCell>
           </TableRow>
           <TableRow>
+            <TableCell>Input (Cached)</TableCell>
+            <TableCell>
+              {props.tokenUsage.aggregate.input.cached.toLocaleString()}
+            </TableCell>
+          </TableRow>
+          <TableRow>
             <TableCell>Output</TableCell>
             <TableCell>
               {props.tokenUsage.aggregate.output.total.toLocaleString()}

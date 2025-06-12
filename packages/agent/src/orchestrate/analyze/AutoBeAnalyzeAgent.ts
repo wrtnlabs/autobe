@@ -1,62 +1,94 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
-import { IPointer } from "tstl";
 import typia from "typia";
+import { v4 } from "uuid";
 
-import { AutoBeSystemPromptConstant } from "../constants/AutoBeSystemPromptConstant";
-import { AutoBeContext } from "../context/AutoBeContext";
-import { assertSchemaModel } from "../context/assertSchemaModel";
+import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
+import { AutoBeContext } from "../../context/AutoBeContext";
+import { assertSchemaModel } from "../../context/assertSchemaModel";
 import {
   AutoBeAnalyzeFileSystem,
   IAutoBeAnalyzeFileSystem,
 } from "./AutoBeAnalyzeFileSystem";
+import {
+  AutoBEAnalyzeFileMap,
+  AutoBeAnalyzePointer,
+} from "./AutoBeAnalyzePointer";
 import { AutoBeAnalyzeReviewer } from "./AutoBeAnalyzeReviewer";
 
-type Filename = string;
-type FileContent = string;
-
-export class AnalyzeAgent<Model extends ILlmSchema.Model> {
-  private readonly createInnerAgent: () => MicroAgentica<Model>;
-  private readonly fileMap: Record<Filename, FileContent> = {};
+export class AutoBeAnalyzeAgent<Model extends ILlmSchema.Model> {
+  private readonly createAnalyzeAgent: () => MicroAgentica<Model>;
+  private readonly fileMap: AutoBEAnalyzeFileMap = {};
 
   constructor(
     private readonly createReviewerAgentFn: typeof AutoBeAnalyzeReviewer,
     private readonly ctx: AutoBeContext<Model>,
-    private readonly pointer: IPointer<{
-      files: Record<Filename, FileContent>;
-    } | null>,
+    private readonly pointer: AutoBeAnalyzePointer,
+    private readonly filenames: string[],
   ) {
     assertSchemaModel(ctx.model);
 
     const controller = createController<Model>({
       model: ctx.model,
       execute: new AutoBeAnalyzeFileSystem(this.fileMap),
-      build: async (files: Record<Filename, FileContent>) => {
+      build: async (files: AutoBEAnalyzeFileMap) => {
         this.pointer.value = { files };
       },
     });
 
-    this.createInnerAgent = (): MicroAgentica<Model> => {
+    this.createAnalyzeAgent = (): MicroAgentica<Model> => {
       const agent = new MicroAgentica({
         controllers: [controller],
         model: ctx.model,
         vendor: ctx.vendor,
         config: {
-          ...(ctx.config ?? { locale: "en-US" }),
+          locale: ctx.config?.locale,
           systemPrompt: {
-            common: () => {
-              return AutoBeSystemPromptConstant.ANALYZE.replace(
-                "{% Guidelines %}",
-                AutoBeSystemPromptConstant.ANALYZE_GUIDELINE,
-              ).replace("{% User Locale %}", ctx.config?.locale ?? "en-US");
-            },
             describe: () => {
               return "Answer only 'completion' or 'failure'.";
             },
           },
         },
         tokenUsage: ctx.usage(),
-        histories: [],
+        histories: [
+          {
+            id: v4(),
+            created_at: new Date().toISOString(),
+            type: "systemMessage",
+            text: AutoBeSystemPromptConstant.ANALYZE.replace(
+              "{% User Locale %}",
+              ctx.config?.locale ?? "en-US",
+            ),
+          },
+          {
+            id: v4(),
+            created_at: new Date().toISOString(),
+            type: "systemMessage",
+            text: [
+              "# Guidelines",
+              "If the user specifies the exact number of pages, please follow it precisely.",
+              AutoBeSystemPromptConstant.ANALYZE_GUIDELINE,
+            ].join("\n"),
+          },
+          {
+            id: v4(),
+            created_at: new Date().toISOString(),
+            type: "systemMessage",
+            text: [
+              "The following is the name of the entire file.",
+              "Use it to build a table of contents.",
+              this.filenames.map((filename) => `- ${filename}`),
+              "",
+              "However, do not touch other than the file you have to create.",
+            ].join("\n"),
+          },
+        ],
+      });
+
+      agent.on("request", (event) => {
+        if (event.body.tools) {
+          event.body.tool_choice = "required";
+        }
       });
 
       return agent;
@@ -69,8 +101,12 @@ export class AnalyzeAgent<Model extends ILlmSchema.Model> {
    * @param content Conversation from user in this time.
    * @returns
    */
-  async conversate(content: string): Promise<string> {
-    const response = await this.createInnerAgent().conversate(content);
+  async conversate(content: string, retry = 3): Promise<string> {
+    if (retry === 0) {
+      return "Abort due to excess retry count";
+    }
+
+    const response = await this.createAnalyzeAgent().conversate(content);
     const lastMessage = response[response.length - 1]!;
 
     if ("text" in lastMessage) {
@@ -97,13 +133,14 @@ export class AnalyzeAgent<Model extends ILlmSchema.Model> {
         return lastMessage.text;
       }
 
-      const currentFiles = JSON.stringify(this.fileMap);
       const reviewer = this.createReviewerAgentFn(this.ctx, {
         query: content,
-        files: currentFiles,
+        files: JSON.stringify(this.fileMap),
       });
 
-      const [review] = await reviewer.conversate(lastMessage.text);
+      const filenames = Object.keys(this.fileMap).join(",");
+      const command = `Please proceed with the review of these files only.: ${filenames}`;
+      const [review] = await reviewer.conversate(command);
 
       if (review) {
         if (review.type === "assistantMessage") {
@@ -120,11 +157,12 @@ export class AnalyzeAgent<Model extends ILlmSchema.Model> {
               message: `THIS IS ANSWER OF REVIEW AGENT. FOLLOW THIS INSTRUCTIONS. AND DON\'T REQUEST ANYTHING.`,
               review: review.text,
             }),
+            retry - 1,
           );
         }
       }
 
-      return `If the document is not 1,000 characters, please fill it out in more abundance, and if it exceeds 1,000 characters, please fill out the next document. If you don't have the next document, you can exit now.`;
+      return `COMPLETE WITHOUT REVIEW`;
     }
 
     return "COMPLETE";
@@ -134,7 +172,7 @@ export class AnalyzeAgent<Model extends ILlmSchema.Model> {
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   execute: AutoBeAnalyzeFileSystem;
-  build: (input: Record<Filename, FileContent>) => void;
+  build: (input: AutoBEAnalyzeFileMap) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
   const application: ILlmApplication<Model> = collection[
@@ -142,7 +180,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
   ] as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
-    name: "AutoBeAnalyzeFileSystem",
+    name: "Planning",
     application,
     // execute: props.execute,
     execute: {

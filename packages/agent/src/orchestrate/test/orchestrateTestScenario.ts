@@ -4,6 +4,7 @@ import { AutoBeTestScenarioEvent } from "@autobe/interface/src/events/AutoBeTest
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
+import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
@@ -95,10 +96,14 @@ async function process<Model extends ILlmSchema.Model>(
     histories: [
       ...transformTestScenarioHistories(ctx.state()),
       {
+        id: v4(),
+        created_at: new Date().toISOString(),
         type: "systemMessage",
         text: AutoBeSystemPromptConstant.TEST,
       },
       {
+        id: v4(),
+        created_at: new Date().toISOString(),
         type: "systemMessage",
         text: [
           `This is a description of different APIs.`,
@@ -110,6 +115,8 @@ async function process<Model extends ILlmSchema.Model>(
         ].join("\n"),
       },
       {
+        id: v4(),
+        created_at: new Date().toISOString(),
         type: "systemMessage",
         text: [
           "Below is basically the generated test code,",

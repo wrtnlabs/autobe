@@ -4,20 +4,17 @@ import {
   AutoBeAssistantMessageHistory,
 } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
-import { IPointer } from "tstl";
 import typia from "typia";
 import { v4 } from "uuid";
 
-import { AutoBeAnalyzeAgent } from "../analyze/AutoBeAnalyzeAgent";
-import { IFile } from "../analyze/AutoBeAnalyzeFileSystem";
-import { AutoBeAnalyzeReviewer } from "../analyze/AutoBeAnalyzeReviewer";
-import { AutoBeSystemPromptConstant } from "../constants/AutoBeSystemPromptConstant";
-import { AutoBeContext } from "../context/AutoBeContext";
-import { IAutoBeApplicationProps } from "../context/IAutoBeApplicationProps";
-import { assertSchemaModel } from "../context/assertSchemaModel";
-
-type Filename = string;
-type FileContent = string;
+import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
+import { AutoBeContext } from "../../context/AutoBeContext";
+import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
+import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { AutoBeAnalyzeAgent } from "./AutoBeAnalyzeAgent";
+import { IFile } from "./AutoBeAnalyzeFileSystem";
+import { AutoBeAnalyzePointer } from "./AutoBeAnalyzePointer";
+import { AutoBeAnalyzeReviewer } from "./AutoBeAnalyzeReviewer";
 
 /** @todo Kakasoo */
 export const orchestrateAnalyze =
@@ -98,14 +95,16 @@ export const orchestrateAnalyze =
     }
 
     const described = determined.find((el) => el.type === "describe");
-    const filenames = Array.from(
+    const describedFiles = Array.from(
       new Set(
         described
           ? described.executes
               .flatMap((el) => {
                 if (el.protocol === "class") {
                   return (
-                    el.arguments as { files: Array<Pick<IFile, "filename">> }
+                    el.arguments as {
+                      files: Array<Pick<IFile, "filename" | "reason">>;
+                    }
                   ).files;
                 }
                 return null;
@@ -115,33 +114,49 @@ export const orchestrateAnalyze =
       ),
     );
 
+    if (describedFiles.length === 0) {
+      const history: AutoBeAssistantMessageHistory = {
+        id: v4(),
+        type: "assistantMessage",
+        text: "The current requirements are insufficient, so file generation will be suspended. It would be better to continue the conversation.",
+        created_at,
+        completed_at: new Date().toISOString(),
+      };
+      ctx.dispatch({
+        type: "assistantMessage",
+        text: "The current requirements are insufficient, so file generation will be suspended. It would be better to continue the conversation.",
+        created_at,
+      });
+      return history;
+    }
+
     const pointers = await Promise.all(
-      filenames.map(async ({ filename }) => {
-        const pointer: IPointer<{
-          files: Record<Filename, FileContent>;
-        } | null> = {
-          value: null,
-        };
+      describedFiles.map(async ({ filename, reason }) => {
+        const pointer: AutoBeAnalyzePointer = { value: null };
 
         const agent = new AutoBeAnalyzeAgent(
           AutoBeAnalyzeReviewer,
           ctx,
           pointer,
-          filenames.map((el) => el.filename),
+          describedFiles.map((el) => el.filename),
         );
 
         await agent.conversate(
           [
-            `The names of all the files are as follows: ${filenames.join(",")}`,
+            `# Instruction`,
+            `The names of all the files are as follows: ${describedFiles.join(",")}`,
             "Assume that all files are in the same folder. Also, when pointing to the location of a file, go to the relative path.",
             "",
             `Among the various documents, the part you decided to take care of is as follows.: ${filename}`,
             `Only write this document named '${filename}'.`,
             "Never write other documents.",
             "",
+            "# User Planning Requirements",
             "```md",
             JSON.stringify(userPlanningRequirements),
             "```",
+            "The reason why this document needs to be written is as follows.",
+            `- reason: ${reason}`,
           ].join("\n"),
         );
 
@@ -193,16 +208,20 @@ export const orchestrateAnalyze =
 
 class DeterminingFiles {
   /**
-   * Determining the Initial File List
+   * Determining the Initial File List.
    *
    * Design a list of initial documents that you need to create for that
    * requirement. The list of documents is determined only by the name of the
-   * file.
+   * file. If you determine from the conversation that the user's requirements
+   * have not been fully gathered, you must stop the analysis and continue
+   * collecting the remaining requirements. In this case, you do not need to
+   * generate any files. Simply pass an empty array to `input.files`, which is
+   * the input value for the `determine` tool.
    *
    * @param input
    * @returns
    */
-  determine(input: { files: Array<Pick<IFile, "filename">> }) {
+  determine(input: { files: Array<Pick<IFile, "filename" | "reason">> }) {
     return input;
   }
 }

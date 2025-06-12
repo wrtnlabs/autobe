@@ -1,4 +1,4 @@
-import { orchestrate } from "@autobe/agent";
+import { orchestrateTestScenario } from "@autobe/agent/src/orchestrate/test/orchestrateTestScenario";
 import { AutoBeEvent } from "@autobe/interface";
 import typia from "typia";
 
@@ -6,12 +6,12 @@ import { TestGlobal } from "../../../TestGlobal";
 import { prepare_agent_test } from "./prepare_agent_test";
 
 export const validate_agent_test_scenario = async (
-  owner: string,
+  _owner: string,
   project: string,
 ) => {
   if (TestGlobal.env.CHATGPT_API_KEY === undefined) return false;
 
-  const { agent } = await prepare_agent_test(owner, project);
+  const { agent } = await prepare_agent_test(project);
 
   const events: AutoBeEvent[] = [];
   agent.on("testStart", (event) => {
@@ -24,7 +24,7 @@ export const validate_agent_test_scenario = async (
     events.push(event);
   });
 
-  const result = await orchestrate.testScenario(agent.getContext());
+  const result = await orchestrateTestScenario(agent.getContext());
   typia.assert(result);
   return result;
 };

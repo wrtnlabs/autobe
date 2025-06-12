@@ -12,7 +12,7 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { transformTestValidateHistories } from "./transformTestValidateHistories";
 
-export async function orchestrateTestValidate<Model extends ILlmSchema.Model>(
+export async function orchestrateTestCorrect<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   codes: AutoBeTestProgressEvent[],
   retry: number = 5,
@@ -68,11 +68,14 @@ async function step<Model extends ILlmSchema.Model>(
   files: Record<string, string>,
   life: number,
 ): Promise<AutoBeTestValidateEvent> {
-  if (life <= 0) throw new Error("Failed to modify test code.");
+  console.log("life : ", life);
+  if (life <= 0)
+    throw new Error("Failed to modify test code. - retry limit over");
 
   const result = await ctx.compiler.typescript({
     files,
   });
+  console.log("result : ", result.type);
   if (result.type === "success") {
     // SUCCESS
     return {
@@ -94,7 +97,7 @@ async function step<Model extends ILlmSchema.Model>(
 
   // EXCEPTION ERROR
   if (result.type === "exception") {
-    throw new Error(result.error as string);
+    throw new Error(JSON.stringify(result.error, null, 2));
   }
 
   let completed: number = 0;
@@ -141,11 +144,11 @@ async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   diagnotics: IAutoBeTypeScriptCompilerResult.IDiagnostic[],
   code: string,
-): Promise<IModifyTestCodeProps> {
+): Promise<ICorrectTestFunctionProps> {
   console.log("filename : ", diagnotics.at(0)?.file);
   console.log("error : ", diagnotics.map((d) => d.messageText).join("\n"));
 
-  const pointer: IPointer<IModifyTestCodeProps | null> = {
+  const pointer: IPointer<ICorrectTestFunctionProps | null> = {
     value: null,
   };
 
@@ -167,7 +170,7 @@ async function process<Model extends ILlmSchema.Model>(
 
   const agentica = new MicroAgentica({
     model: ctx.model,
-    vendor: ctx.vendor,
+    vendor: { ...ctx.vendor },
     config: {
       ...(ctx.config ?? {}),
     },
@@ -217,13 +220,14 @@ async function process<Model extends ILlmSchema.Model>(
   );
 
   if (pointer.value === null) throw new Error("Failed to modify test code.");
+  console.log(JSON.stringify(pointer.value, null, 2));
 
   return pointer.value;
 }
 
 function createApplication<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  build: (next: IModifyTestCodeProps) => void;
+  build: (next: ICorrectTestFunctionProps) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
@@ -235,7 +239,7 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
     name: "Modify Test Code",
     application,
     execute: {
-      modifyTestCode: (next) => {
+      correctTestCode: (next) => {
         props.build(next);
       },
     } satisfies IApplication,
@@ -263,10 +267,56 @@ const collection = {
 };
 
 interface IApplication {
-  modifyTestCode(props: IModifyTestCodeProps): void;
+  correctTestCode(props: ICorrectTestFunctionProps): void;
 }
 
-interface IModifyTestCodeProps {
-  /** Test Code Content */
+interface ICorrectTestFunctionProps {
+  /**
+   * Step 1: Initial self-reflection on the source code without compiler error
+   * context.
+   *
+   * The AI agent analyzes the previously generated test code to identify
+   * potential issues, relying solely on its understanding of TypeScript syntax,
+   * testing patterns, and best practices.
+   *
+   * This encourages the agent to develop independent debugging skills before
+   * being influenced by external error messages.
+   */
+  think_without_compile_error: string;
+
+  /**
+   * Step 2: Re-evaluation of the code with compiler error messages as
+   * additional context.
+   *
+   * After the initial analysis, the AI agent reviews the same code again, this
+   * time incorporating the specific TypeScript compiler error messages.
+   *
+   * This allows the agent to correlate its initial observations with concrete
+   * compilation failures and refine its understanding of what went wrong.
+   */
+  think_again_with_compile_error: string;
+
+  /**
+   * Step 3: Concrete action plan for fixing the identified issues.
+   *
+   * Based on the analysis from steps 1 and 2, the AI agent formulates a
+   * specific, step-by-step solution strategy.
+   *
+   * This should include what changes need to be made, why those changes are
+   * necessary, and how they will resolve the compilation errors while
+   * maintaining the test's intended functionality.
+   */
+  solution: string;
+
+  /**
+   * Step 4: The corrected TypeScript test code.
+   *
+   * The final, properly fixed TypeScript code that should compile without
+   * errors.
+   *
+   * This represents the implementation of the solution plan from step 3,
+   * containing all necessary corrections to make the test code syntactically
+   * valid and functionally correct.
+   */
   content: string;
 }

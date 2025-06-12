@@ -1,4 +1,5 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
+import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 
@@ -10,10 +11,14 @@ export const transformTestProgressHistories = (
 > => {
   return [
     {
+      id: v4(),
+      created_at: new Date().toISOString(),
       type: "systemMessage",
       text: AutoBeSystemPromptConstant.TEST_PROGRESS,
     },
     {
+      id: v4(),
+      created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: [
         "You are the world's best E2E test code generator.",

@@ -3,12 +3,12 @@ import { FileSystemIterator } from "@autobe/filesystem";
 import { AutoBeEvent } from "@autobe/interface";
 
 import { TestGlobal } from "../../../TestGlobal";
-import { prepare_agent_test } from "./prepare_agent_test";
+import { prepare_agent_test2 } from "./prepare_agent_test";
 
 export const validate_agent_test = async (owner: string, project: string) => {
   if (TestGlobal.env.CHATGPT_API_KEY === undefined) return false;
 
-  const { agent } = await prepare_agent_test(owner, project);
+  const { agent } = await prepare_agent_test2(owner, project);
 
   const events: AutoBeEvent[] = [];
   agent.on("testStart", (event) => {

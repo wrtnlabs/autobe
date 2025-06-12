@@ -9,9 +9,9 @@ import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
+import { orchestrateTestCorrect } from "./orchestrateTestCorrect";
 import { orchestrateTestProgress } from "./orchestrateTestProgress";
 import { orchestrateTestScenario } from "./orchestrateTestScenario";
-import { orchestrateTestValidate } from "./orchestrateTestValidate";
 
 export const orchestrateTest =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
@@ -48,16 +48,12 @@ export const orchestrateTest =
       })
       .flat();
 
-    console.log("Before Progress", scenarios.length);
-
     const codes: AutoBeTestProgressEvent[] = await orchestrateTestProgress(
       ctx,
       scenarios,
     );
 
-    const validate = await orchestrateTestValidate(ctx, codes);
-
-    console.log("Before Compile");
+    const validate = await orchestrateTestCorrect(ctx, codes);
 
     ctx.dispatch({
       type: "testComplete",
@@ -65,8 +61,6 @@ export const orchestrateTest =
       files: validate.files,
       step: ctx.state().interface?.step ?? 0,
     });
-
-    console.log("After Compile");
 
     if (validate.result.type === "success") {
       const history: AutoBeTestHistory = {

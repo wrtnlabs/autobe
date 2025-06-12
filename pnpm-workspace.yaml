@@ -5,8 +5,8 @@ packages:
   - website
 catalogs:
   agentica:
-    "@agentica/core": ^0.27.2
-    "@agentica/rpc": ^0.27.2
+    "@agentica/core": ^0.28.0
+    "@agentica/rpc": ^0.28.0
   samchon:
     "@nestia/benchmark": ^7.0.0
     "@nestia/core": ^7.0.0
@@ -26,6 +26,6 @@ catalogs:
     ts-patch: ^3.3.0
     typescript: ~5.8.3
   libs:
-    openai: ^4.80.0
+    openai: ^5.2.0
 
 useNodeVersion: 22.15.0
