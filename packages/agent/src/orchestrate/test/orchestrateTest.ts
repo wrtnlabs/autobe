@@ -1,6 +1,7 @@
 import {
   AutoBeAssistantMessageHistory,
   AutoBeTestHistory,
+  AutoBeTestProgressEvent,
 } from "@autobe/interface";
 import { AutoBeTestScenarioEvent } from "@autobe/interface/src/events/AutoBeTestScenarioEvent";
 import { ILlmSchema } from "@samchon/openapi";
@@ -8,7 +9,9 @@ import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
+import { orchestrateTestProgress } from "./orchestrateTestProgress";
 import { orchestrateTestScenario } from "./orchestrateTestScenario";
+import { orchestrateTestValidate } from "./orchestrateTestValidate";
 
 export const orchestrateTest =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
@@ -19,7 +22,7 @@ export const orchestrateTest =
     const start: Date = new Date();
     const operations = ctx.state().interface?.document.operations ?? [];
     if (operations.length === 0) {
-      return {
+      const history: AutoBeAssistantMessageHistory = {
         id: v4(),
         type: "assistantMessage",
         created_at: start.toISOString(),
@@ -27,38 +30,70 @@ export const orchestrateTest =
         text:
           "Unable to write test code because there are no Operations, " +
           "please check if the Interface agent is called.",
-      } satisfies AutoBeAssistantMessageHistory;
+      };
+
+      ctx.histories().push(history);
+      ctx.dispatch(history);
+
+      return history;
     }
 
     // SCENARIOS
-    const scenarios: AutoBeTestScenarioEvent =
+    const scenarioEvent: AutoBeTestScenarioEvent =
       await orchestrateTestScenario(ctx);
 
-    scenarios;
+    const scenarios = scenarioEvent.scenarios
+      .map((scenario) => {
+        return scenario.scenarios;
+      })
+      .flat();
 
-    // Typescript Compiler 사용시
-    // Interface Histories에 Test 추가해서 덮어씌워야함.
-    // .ts파일만 들어가야함.
-    const typescriptFiles = {};
-    const compiled = await ctx.compiler.typescript({
-      files: typescriptFiles,
+    console.log("Before Progress", scenarios.length);
+
+    const codes: AutoBeTestProgressEvent[] = await orchestrateTestProgress(
+      ctx,
+      scenarios,
+    );
+
+    const validate = await orchestrateTestValidate(ctx, codes);
+
+    console.log("Before Compile");
+
+    ctx.dispatch({
+      type: "testComplete",
+      created_at: start.toISOString(),
+      files: validate.files,
+      step: ctx.state().interface?.step ?? 0,
     });
 
-    const history: AutoBeTestHistory = {
-      type: "test",
-      id: v4(),
-      completed_at: new Date().toISOString(),
-      created_at: start.toISOString(),
-      files: typescriptFiles,
-      compiled,
-      reason: "Step to the test generation referencing the interface",
-      step: ctx.state().interface?.step ?? 0,
-    };
+    console.log("After Compile");
 
-    ctx.state().test = history;
-    ctx.histories().push(history);
+    if (validate.result.type === "success") {
+      const history: AutoBeTestHistory = {
+        type: "test",
+        id: v4(),
+        completed_at: new Date().toISOString(),
+        created_at: start.toISOString(),
+        files: validate.files,
+        compiled: validate.result,
+        reason: "Step to the test generation referencing the interface",
+        step: ctx.state().interface?.step ?? 0,
+      };
 
-    return history;
+      ctx.state().test = history;
+      ctx.histories().push(history);
+
+      return history;
+    }
+
+    if (validate.result.type === "exception") {
+      throw new Error(validate.result.error as string);
+    } else {
+      throw new Error(
+        "Failed to compile test code. \n\n" +
+          JSON.stringify(validate.result.diagnostics, null, 2),
+      );
+    }
   };
 
 // 샘플로 쓸만한 asset들 확보해놓기.

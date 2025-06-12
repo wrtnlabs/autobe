@@ -17,49 +17,69 @@ export const validate_agent_test = async (owner: string, project: string) => {
   agent.on("testScenario", (event) => {
     events.push(event);
   });
+
+  let testFiles: Record<string, string> = {};
   agent.on("testComplete", (event) => {
+    events.push(event);
+    testFiles = event.files;
+  });
+
+  agent.on("testProgress", async (event) => {
     events.push(event);
   });
 
-  const result = await orchestrate.test(agent.getContext())({
-    reason: "Step to the test generation referencing the interface",
-  });
+  try {
+    const result = await orchestrate.test(agent.getContext())({
+      reason: "Step to the test generation referencing the interface",
+    });
 
-  if (result.type !== "test") {
-    throw new Error("Failed to generate test.");
-  }
-  if (result.compiled.type !== "success") {
+    if (result.type !== "test") {
+      throw new Error("Failed to generate test.");
+    }
+    if (result.compiled.type !== "success") {
+      await FileSystemIterator.save({
+        root: `${TestGlobal.ROOT}/results/${owner}/${project}/test-error`,
+        files: {
+          "result.json": JSON.stringify(result, null, 2),
+          ...result.files,
+          ...(result.compiled.type === "failure"
+            ? {
+                "reason.log": result.reason,
+                "diagnostics.json": JSON.stringify(
+                  result.compiled.diagnostics,
+                  null,
+                  2,
+                ),
+              }
+            : {
+                "error.json": JSON.stringify(result.compiled.error, null, 2),
+              }),
+        },
+      });
+      throw new Error("Failed to compile test code.");
+    }
+
+    // REPORT RESULT
     await FileSystemIterator.save({
-      root: `${TestGlobal.ROOT}/results/${owner}/${project}/test-error`,
+      root: `${TestGlobal.ROOT}/results/${owner}/${project}/test/main`,
       files: {
-        "result.json": JSON.stringify(result, null, 2),
-        ...result.files,
-        ...(result.compiled.type === "failure"
-          ? {
-              "reason.log": result.reason,
-              "diagnostics.json": JSON.stringify(
-                result.compiled.diagnostics,
-                null,
-                2,
-              ),
-            }
-          : {
-              "error.json": JSON.stringify(result.compiled.error, null, 2),
-            }),
+        ...agent.getFiles(),
+        "logs/result.json": JSON.stringify(result, null, 2),
+        "logs/tokenUsage.json": JSON.stringify(agent.getTokenUsage(), null, 2),
+        "logs/files.json": JSON.stringify(
+          Object.keys(agent.getFiles()),
+          null,
+          2,
+        ),
+        "logs/events.json": JSON.stringify(events, null, 2),
       },
     });
-    throw new Error("Failed to compile test code.");
+  } catch (e) {
+    console.log(e);
+  } finally {
+    await FileSystemIterator.save({
+      root: `${TestGlobal.ROOT}/results/${owner}/${project}/test/fail`,
+      files: testFiles,
+    });
   }
-
-  // REPORT RESULT
-  await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${owner}/${project}/test/main`,
-    files: {
-      ...agent.getFiles(),
-      "logs/result.json": JSON.stringify(result, null, 2),
-      "logs/tokenUsage.json": JSON.stringify(agent.getTokenUsage(), null, 2),
-      "logs/files.json": JSON.stringify(Object.keys(agent.getFiles()), null, 2),
-      "logs/events.json": JSON.stringify(events, null, 2),
-    },
-  });
 };

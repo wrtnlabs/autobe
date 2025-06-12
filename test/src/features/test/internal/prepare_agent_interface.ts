@@ -28,6 +28,7 @@ export const prepare_agent_interface = async (project: string) => {
     histories,
   });
   const state: AutoBeState = agent.getContext().state();
+
   return {
     agent,
     analyze: state.analyze!,
