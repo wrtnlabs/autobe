@@ -1,5 +1,5 @@
 export default {
-  index: "Remote Procedure call",
+  index: "Remote Procedure Call",
   nodejs: "NodeJS Server",
   nestjs: "NestJS Server",
   client: "Client Application",

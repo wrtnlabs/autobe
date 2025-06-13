@@ -7,8 +7,8 @@
   "[javascript][typescript][typescriptreact][json]": {
     "editor.formatOnSave": true,
   },
-  "[markdown]": {
+  "[md][mdx]": {
     "editor.wordWrap": "on",
-    "editor.formatOnSave": true,
+    "editor.formatOnSave": false,
   },
 }

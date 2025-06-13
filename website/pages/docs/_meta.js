@@ -6,7 +6,7 @@ const open = (title) => ({
 });
 
 export default {
-  index: "🚀 Getting Started",
+  index: "🙋🏻‍♂️ Introduction",
   setup: "📦 Setup",
   concepts: open("🔍 Concepts"),
 
@@ -22,7 +22,7 @@ export default {
     type: "separator",
     title: "🔗 Appendix",
   },
-  roadmap: "📅 Roadmap",
+  roadmap: open("📅 Roadmap"),
   related: open("📊 Related Projects"),
   api: {
     title: "⇲ API Documents",

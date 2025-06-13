@@ -57,13 +57,13 @@ The spiral process ensures not only well-structured code but also safe and relia
 
 Waterfall    | AutoBE   | Description
 -------------|----------|----------------
-Requirements | Analysis  | Users tell AutoBE what they want, and AutoBE helps them discover their needs and make them concrete.
-Analysis     | Analysis  | Write requirement analysis reports
-Design       | Prisma    | Write prisma schema (DB ORM) files, and validate them using the embedded Prisma compiler. If validation succeeds, also create [ERD documentation](https://github.com/samchon/prisma-markdown) for the next step.
-Design       | Interface | Write OpenAPI documents, and validate them using the [OpenAPI validator](https://github.com/samchon/openapi). Then convert them to a NestJS project through the [OpenAPI generator](https://nestia.io/docs/swagger/editor). The OpenAPI generator includes not only NestJS controllers, but also client-side SDKs and e2e test programs.
-Development  | Realize   | Write implementation code for each API endpoint starting from what the `interface` agent generated, and validate them using the embedded TypeScript compiler.
-Testing      | Test      | Write e2e test functions for each API endpoint starting from what the `interface` agent generated, and validate them using the embedded TypeScript compiler.
-Maintenance  | -         | Users can request AutoBE to modify the backend application. There are no restrictions on the scope of modification, so everything can be changed, including requirements, DB design, API specifications, and test code.
+Requirements | Analysis  | Debate requirements with user.
+Analysis     | Analysis  | Write requirement analysis reports.
+Design       | Prisma    | Write prisma schema (DB ORM) files and draw ERD.
+Design       | Interface | Write OpenAPI document, convert it to a NestJS project.
+Development  | Realize   | Write implementation code for each API endpoint.
+Testing      | Test      | Write e2e test functions for each API endpoint.
+Maintenance  | -         | Users can request AutoBE to modify the backend application.
 
 ## Playground
 
