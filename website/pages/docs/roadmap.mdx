@@ -28,7 +28,33 @@ This involves developing comprehensive multimodal processing capabilities that c
 Additionally, verify whether requirements analysis documents generated through multimodal inputs properly propagate those multimodal assets to Prisma or Interface agents. If necessary, modify the history structure to ensure proper reflection of visual design elements throughout the entire development pipeline.
 
 ## 2. Prisma Agent
-### 2.1. Keyworded SDK
+### 2.1. Compiler Development
+Create a custom Prisma compiler to enable direct Prisma AST construction, validation, and code generation through function calling, replacing the current text-based approach with compilation error feedback.
+
+We initially attempted to have AI write Prisma schema files as text and provide feedback from official Prisma compiler errors. However, since Prisma compiler error messages are difficult even for humans to understand, AI correction based on compilation error messages proved ineffective.
+
+Our new Prisma compiler will define its AST as the [`AutoBePrisma.IApplication`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/prisma/AutoBePrisma.ts) type, featuring detailed description comments at the level of [`AutoBeOpenApi.IDocument`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/openapi/AutoBeOpenApi.ts), enabling AI function calling to understand their meanings.
+
+The compiler will implement custom validation rules to prevent AI from designing incorrect Prisma schemas, detecting not only invalid syntax but also logically contradictory elements in otherwise compilable structures. It will provide comprehensive error reporting with actionable suggestions for AI correction while ensuring integration with existing Prisma ecosystem tools and workflows. Additionally, the system includes performance optimization for large-scale schema generation to handle complex enterprise applications efficiently.
+
+### 2.2. Prohibition Rule
+Implement comprehensive validation rules in the custom Prisma compiler to prevent overly complex database designs and cross-dependencies that are difficult to implement in applications.
+
+While creating our custom Prisma compiler, we decided to add several prohibition clauses to the compiler validation rules. These rules will enforce:
+
+These rules will enforce circular dependency prevention by detecting and preventing circular references between database models that could lead to infinite loops or deadlocks. The system establishes complexity thresholds that limit the number of relationships per model to maintain manageable complexity while ensuring consistent naming patterns across all database entities. Performance optimization rules prevent schema designs that could lead to inefficient queries or poor database performance, while security constraint validation ensures that sensitive data relationships follow security best practices. Finally, scalability guidelines prevent designs that could become bottlenecks as the application scales to handle increased load and user growth.
+
+### 2.3. SQLite Support
+Implement comprehensive SQLite support in the custom Prisma compiler to enable playground website functionality and real-time validation of generated applications without external database dependencies.
+
+Currently, AutoBE's Prisma Agent exclusively targets PostgreSQL DBMS for schema design, creating significant operational limitations that impact both development workflows and user experience. The PostgreSQL dependency prevents the playground website from running generated applications directly in browser environments, as web-based platforms cannot host PostgreSQL servers. This limitation severely restricts the ability to demonstrate AutoBE's capabilities to potential users who want to experience end-to-end functionality without complex setup procedures.
+
+Additionally, AutoBE's own development and testing processes require PostgreSQL infrastructure setup, making it impossible to perform real-time validation of Test and Realize Agent outputs during development cycles. This dependency creates bottlenecks in the development workflow and prevents immediate verification of generated code functionality, forcing developers to rely on external database configurations that may not always be available or properly configured.
+
+To address these critical limitations, we will extend the custom Prisma compiler to support SQLite as a primary alternative database target, enabling seamless operation in constrained environments while maintaining full feature compatibility and business logic integrity.
+
+## 3. Interface Agent
+### 3.1. Keyworded SDK
 Modify the client SDK library and e2e test functions generated from OpenAPI documents to use keyworded parameters instead of positional parameters for enhanced AI compatibility.
 
 `@autobe` uses AI function calling to compose [Generative OpenAPI documents](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/openapi/AutoBeOpenApi.ts), converts them to regular [OpenAPI documents](https://github.com/samchon/openapi/blob/master/src/OpenApi.ts), and generates NestJS projects. For each RESTful API endpoint, it creates SDK libraries for client convenience and ensures e2e test program compilation stability.
@@ -71,24 +97,7 @@ export async function test_api_shoppings_customers_sales_questions_comments_upda
 }
 ```
 
-### 2.2. Compiler Development
-Create a custom Prisma compiler to enable direct Prisma AST construction, validation, and code generation through function calling, replacing the current text-based approach with compilation error feedback.
-
-We initially attempted to have AI write Prisma schema files as text and provide feedback from official Prisma compiler errors. However, since Prisma compiler error messages are difficult even for humans to understand, AI correction based on compilation error messages proved ineffective.
-
-Our new Prisma compiler will define its AST as the [`AutoBePrisma.IApplication`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/prisma/AutoBePrisma.ts) type, featuring detailed description comments at the level of [`AutoBeOpenApi.IDocument`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/openapi/AutoBeOpenApi.ts), enabling AI function calling to understand their meanings.
-
-The compiler will implement custom validation rules to prevent AI from designing incorrect Prisma schemas, detecting not only invalid syntax but also logically contradictory elements in otherwise compilable structures. It will provide comprehensive error reporting with actionable suggestions for AI correction while ensuring integration with existing Prisma ecosystem tools and workflows. Additionally, the system includes performance optimization for large-scale schema generation to handle complex enterprise applications efficiently.
-
-### 2.3. Prohibition Rule
-Implement comprehensive validation rules in the custom Prisma compiler to prevent overly complex database designs and cross-dependencies that are difficult to implement in applications.
-
-While creating our custom Prisma compiler, we decided to add several prohibition clauses to the compiler validation rules. These rules will enforce:
-
-These rules will enforce circular dependency prevention by detecting and preventing circular references between database models that could lead to infinite loops or deadlocks. The system establishes complexity thresholds that limit the number of relationships per model to maintain manageable complexity while ensuring consistent naming patterns across all database entities. Performance optimization rules prevent schema designs that could lead to inefficient queries or poor database performance, while security constraint validation ensures that sensitive data relationships follow security best practices. Finally, scalability guidelines prevent designs that could become bottlenecks as the application scales to handle increased load and user growth.
-
-## 3. Interface Agent
-### 3.1. Review Agent
+### 3.2. Review Agent
 Develop a comprehensive review agent that verifies whether the OpenAPI document (API interface) written by AI properly follows the requirements analysis document and DB schema definition, identifying any missing or vague descriptions.
 
 This review agent will implement sophisticated validation mechanisms including requirements traceability to verify that every requirement from the analysis document is properly addressed in the API interface. The system ensures schema consistency by confirming that API endpoints align with the defined database schema and maintain referential integrity. Completeness validation identifies missing CRUD operations, authentication endpoints, and data validation rules, while documentation quality assessment evaluates the completeness and clarity of API documentation, including parameter descriptions, response schemas, and error handling. Security review verifies that appropriate authentication, authorization, and data validation mechanisms are implemented, and performance considerations assess API design for potential performance bottlenecks and suggest optimizations. Finally, standardization compliance ensures adherence to RESTful API design principles and OpenAPI specification standards.
