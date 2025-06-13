@@ -3,31 +3,13 @@ title: Guide Documents > Concepts > Waterfall
 ---
 import { Tabs } from "nextra/components";
 
-import AutoBeSnippetInterfaceShoppingController from "../../../template/snippet/AutoBeSnippetInterfaceShoppingController.mdx";
-import AutoBeSnippetInterfaceShoppingDto from "../../../template/snippet/AutoBeSnippetInterfaceShoppingDto.mdx";
-import AutoBeSnippetInterfaceShoppingTest from "../../../template/snippet/AutoBeSnippetInterfaceShoppingTest.mdx";
+import AutoBeInterfaceShoppingControllerSnippet from "../../../template/snippets/AutoBeInterfaceShoppingControllerSnippet.mdx";
+import AutoBeInterfaceShoppingDtoSnippet from "../../../template/snippets/AutoBeInterfaceShoppingDtoSnippet.mdx";
+import AutoBeInterfaceShoppingTestSnippet from "../../../template/snippets/AutoBeInterfaceShoppingTestSnippet.mdx";
+import AutoBeWaterfallDiagram from "../../../template/diagrams/AutoBeWaterfallDiagram.mdx";
 
 ## Outline
-```mermaid
-flowchart LR
-subgraph "Backend Coding Agent"
-  coder("Facade Controller")
-end
-subgraph "Functional Agents"
-  coder --"Requirements Analysis"--> analyze("Analyze")
-  coder --"ERD"--> prisma("Prisma")
-  coder --"API Design"--> interface("Interface")
-  coder --"Test Codes" --> test("Test")
-  coder --"Main Program" --> realize("Realize")
-end
-subgraph "Compiler Feedback"
-  prisma --"validates" --> prismaCompiler("Prisma Compiler")
-  interface --"validates" --> openapiValidator("OpenAPI Validator")
-  interface --"generates" --> tsCompiler("TypeScript Compiler")
-  test --"validates" --> tsCompiler("TypeScript Compiler")
-  realize --"validates" --> tsCompiler("TypeScript Compiler")
-end
-```
+<AutoBeWaterfallDiagram />
 
 `@autobe` is based on the waterfall model but incorporates the spiral model's iterative improvement cycles, producing high-quality code through continuous feedback between users and AI.
 
@@ -77,14 +59,14 @@ An agent that generates database schemas through AutoBE's specialized AST-based 
 - **Input**: Requirements specification
 - **Output**: Prisma DB schema and ERD documentation
 - **Features**:
-  - No-code approach using `AutoBePrisma.IApplication` AST structure
+  - No-code approach using [`AutoBePrisma.IApplication`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/prisma/AutoBePrisma.ts) AST structure
   - Built-in AutoBE Prisma compiler for validation and code generation
   - Automatic ERD documentation generation (using `prisma-markdown`)
   - Schema optimization through self-review system
 
-The Prisma agent implements AutoBE's no-code methodology by working with structured data rather than text files. Instead of writing Prisma schema code directly, the AI constructs `AutoBePrisma.IApplication` AST (Abstract Syntax Tree) data through function calling. This approach eliminates syntax errors and ensures consistency by operating at a higher abstraction level.
+The Prisma agent implements AutoBE's no-code methodology by working with structured data rather than text files. Instead of writing Prisma schema code directly, the AI constructs [`AutoBePrisma.IApplication`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/prisma/AutoBePrisma.ts) AST (Abstract Syntax Tree) data through function calling. This approach eliminates syntax errors and ensures consistency by operating at a higher abstraction level.
 
-The workflow begins with analyzing the requirements specification to understand the data model needs. The AI then uses function calling to build the `AutoBePrisma.IApplication` AST, which represents the complete database structure including entities, relationships, attributes, and constraints in a validated format.
+The workflow begins with analyzing the requirements specification to understand the data model needs. The AI then uses function calling to build the [`AutoBePrisma.IApplication`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/prisma/AutoBePrisma.ts) AST, which represents the complete database structure including entities, relationships, attributes, and constraints in a validated format.
 
 AutoBE's built-in Prisma compiler validates this AST for correctness, consistency, and adherence to database design best practices. When validation errors occur, they're immediately fed back to the AI, enabling rapid iteration and refinement. This creates a feedback loop that continuously improves the schema design without manual debugging.
 
@@ -211,13 +193,13 @@ Each generated interface includes comprehensive JSDoc documentation explaining i
 
 <Tabs items={["API Controller", "DTO Type", "E2E Test Function"]}>
   <Tabs.Tab>
-    <AutoBeSnippetInterfaceShoppingController />
+    <AutoBeInterfaceShoppingControllerSnippet />
   </Tabs.Tab>
   <Tabs.Tab>
-    <AutoBeSnippetInterfaceShoppingDto />
+    <AutoBeInterfaceShoppingDtoSnippet />
   </Tabs.Tab>
   <Tabs.Tab>
-    <AutoBeSnippetInterfaceShoppingTest />
+    <AutoBeInterfaceShoppingTestSnippet />
   </Tabs.Tab>
 </Tabs>
 

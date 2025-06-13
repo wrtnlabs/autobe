@@ -4,11 +4,11 @@
   "description": "AutoBE Guide Documents",
   "private": true,
   "scripts": {
-    "build": "rimraf .next && rimraf out && pnpm run build:typedoc && next build && pnpm run build:sitemap",
+    "build": "rimraf .next && rimraf out && pnpm run build:typedoc && next build && pnpm run postbuild",
     "prebuild": "rimraf .next && rimraf out && pnpm run build:typedoc",
-    "postbuild": "pnpm run build:typedoc && pnpm run build:sitemap",
+    "postbuild": "pnpm run build:sitemap",
     "build:typedoc": "node build/typedoc",
-    "build:sitemap": "next-sitemap",
+    "build:sitemap": "node build/sitemap",
     "deploy": "node build/deploy",
     "dev": "next dev"
   },

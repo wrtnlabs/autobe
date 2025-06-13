@@ -76,7 +76,7 @@ Create a custom Prisma compiler to enable direct Prisma AST construction, valida
 
 We initially attempted to have AI write Prisma schema files as text and provide feedback from official Prisma compiler errors. However, since Prisma compiler error messages are difficult even for humans to understand, AI correction based on compilation error messages proved ineffective.
 
-Our new Prisma compiler will define its AST as the `AutoBePrisma.IApplication` type, featuring detailed description comments at the level of [`AutoBeOpenApi.IDocument`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/openapi/AutoBeOpenApi.ts), enabling AI function calling to understand their meanings.
+Our new Prisma compiler will define its AST as the [`AutoBePrisma.IApplication`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/prisma/AutoBePrisma.ts) type, featuring detailed description comments at the level of [`AutoBeOpenApi.IDocument`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/openapi/AutoBeOpenApi.ts), enabling AI function calling to understand their meanings.
 
 The compiler will implement custom validation rules to prevent AI from designing incorrect Prisma schemas, detecting not only invalid syntax but also logically contradictory elements in otherwise compilable structures. It will provide comprehensive error reporting with actionable suggestions for AI correction while ensuring integration with existing Prisma ecosystem tools and workflows. Additionally, the system includes performance optimization for large-scale schema generation to handle complex enterprise applications efficiently.
 
