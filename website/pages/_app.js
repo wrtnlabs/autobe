@@ -5,6 +5,7 @@ export default function Nextra({ Component, pageProps }) {
   return (
     <>
       <Script
+        strategy="afterInteractive"
         type="text/javascript"
         dangerouslySetInnerHTML={{
           __html: `
