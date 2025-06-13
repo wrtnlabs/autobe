@@ -105,8 +105,6 @@ async function process<Model extends ILlmSchema.Model>(
     ].join("\n"),
   );
 
-  console.log(histories.map((history) => history.type).join(", "));
-
   if (pointer.value === null) throw new Error("Failed to create test code.");
   return pointer.value;
 }

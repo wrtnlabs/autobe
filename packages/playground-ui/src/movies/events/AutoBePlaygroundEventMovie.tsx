@@ -8,6 +8,7 @@ import { AutoBePlaygroundPrismaCorrectEventMovie } from "./AutoBePlaygroundPrism
 import { AutoBePlaygroundPrismaValidateEventMovie } from "./AutoBePlaygroundPrismaValidateEventMovie";
 import { AutoBePlaygroundProgressEventMovie } from "./AutoBePlaygroundProgressEventMovie";
 import { AutoBePlaygroundStartEventMovie } from "./AutoBePlaygroundStartEventMovie";
+import { AutoBePlaygroundTestCorrectEventMovie } from "./AutoBePlaygroundTestCorrectEventMovie";
 import { AutoBePlaygroundUserMessageEventMovie } from "./AutoBePlaygroundUserMessageEventMovie";
 import { AutoBePlaygroundValidateEventMovie } from "./AutoBePlaygroundValidateEventMovie";
 
@@ -65,6 +66,8 @@ export function AutoBePlaygroundEventMovie(
       return <AutoBePlaygroundPrismaValidateEventMovie event={props.event} />;
     case "prismaCorrect":
       return <AutoBePlaygroundPrismaCorrectEventMovie event={props.event} />;
+    case "testCorrect":
+      return <AutoBePlaygroundTestCorrectEventMovie event={props.event} />;
     default:
       props.event satisfies never;
       return null;

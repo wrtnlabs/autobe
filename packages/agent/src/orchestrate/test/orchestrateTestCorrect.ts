@@ -15,7 +15,7 @@ import { transformTestCorrectHistories } from "./transformTestCorrectHistories";
 export async function orchestrateTestCorrect<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   codes: AutoBeTestProgressEvent[],
-  retry = 10,
+  retry = 5,
 ): Promise<AutoBeTestCorrectEvent> {
   // 1) Build map of new test files from progress events
   const testFiles = Object.fromEntries(
@@ -42,6 +42,9 @@ export async function orchestrateTestCorrect<Model extends ILlmSchema.Model>(
 
   // 4) Ask the LLM to correct the filtered file set
   const corrected = await step(ctx, files, retry);
+
+  if (corrected.result.type === "failure") {
+  }
 
   // 5) Combine original + corrected files and dispatch event
   const event: AutoBeTestCorrectEvent = {
@@ -134,10 +137,15 @@ async function step<Model extends ILlmSchema.Model>(
     };
   }
 
-  let completed: number = 0;
-
+  // Compile Failed
   if (life <= 0)
-    throw new Error("Failed to modify test code. - retry limit over");
+    return {
+      type: "testCorrect",
+      created_at: new Date().toISOString(),
+      files,
+      result,
+      step: ctx.state().interface?.step ?? 0,
+    };
 
   // VALIDATION FAILED
   const validate = await Promise.all(
@@ -145,9 +153,6 @@ async function step<Model extends ILlmSchema.Model>(
       const code = files[filename];
       const result = await process(ctx, d, code);
 
-      console.log(
-        `${life} - completed for compile: ${++completed} / ${Object.keys(diagnostics).length}`,
-      );
       // Return [filename, modified code]
       return [filename, result.content];
     }),
@@ -176,8 +181,6 @@ async function process<Model extends ILlmSchema.Model>(
   const pointer: IPointer<ICorrectTestFunctionProps | null> = {
     value: null,
   };
-
-  console.log(JSON.stringify(diagnostics, null, 2));
 
   const apiFiles = Object.entries(ctx.state().interface?.files ?? {})
     .filter(([filename]) => {
