@@ -1,10 +1,15 @@
 import { DocsThemeConfig, useConfig } from "nextra-theme-docs";
 import React from "react";
 
+const description: string = "Backend Vibe Coding";
 const config: DocsThemeConfig = {
   logo: () => (
     <>
-      <img src="/favicon/android-chrome-192x192.png" width={32} height={32} />
+      <img
+        src="/autobe/favicon/android-chrome-192x192.png"
+        width={32}
+        height={32}
+      />
       <span
         style={{
           fontWeight: "bold",
@@ -15,7 +20,7 @@ const config: DocsThemeConfig = {
       >
         AutoBE
       </span>
-      Backend Vibe Coding Agent
+      {description}
     </>
   ),
   nextThemes: {
@@ -51,12 +56,12 @@ const config: DocsThemeConfig = {
     return (
       <>
         <title>{`AutoBE > ${config.title}`}</title>
-        <link rel="manifest" href="/favicon/site.webmanifest" />
+        <link rel="manifest" href="/autobe/favicon/site.webmanifest" />
         {/* ICONS */}
         <link
           rel="apple-touch-icon"
           sizes="180x180"
-          href="/favicon/apple-touch-icon.png"
+          href="/autobe/favicon/apple-touch-icon.png"
         />
         {[16, 32].map((size) => (
           <link
@@ -64,7 +69,7 @@ const config: DocsThemeConfig = {
             rel="icon"
             type="image/png"
             sizes={`${size}x${size}`}
-            href={`/favicon/favicon-${size}x${size}.png`}
+            href={`/autobe/favicon/favicon-${size}x${size}.png`}
           />
         ))}
         {/* OG */}
@@ -72,8 +77,8 @@ const config: DocsThemeConfig = {
         <meta name="og:site_name" content="AutoBE Guide Documents" />
         <meta name="og:url" content="https://wrtnlabs.io/autobe" />
         <meta name="og:image" content="https://wrtnlabs.io/autobe/og.jpg" />
-        <meta name="og:title" content="Typia Guide Documents" />
-        <meta name="og:description" content="Backend Vibe Coding Agent" />
+        <meta name="og:title" content="AutoBE Guide Documents" />
+        <meta name="og:description" content={description} />
         {/* TWITTER */}
         <meta name="twitter:card" content="summary" />
         <meta
@@ -81,10 +86,9 @@ const config: DocsThemeConfig = {
           content="https://wrtnlabs.io/autobe/og.jpg"
         />
         <meta name="twitter:title" content="AutoBE Guide Documents" />
-        <meta name="twitter:description" content="Backend Vibe Coding Agent" />
+        <meta name="twitter:description" content={description} />
       </>
     );
   },
 };
-
 export default config;

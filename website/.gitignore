@@ -1,4 +1,6 @@
 .next/
 out/
 public/api/
+public/robots.txt
+public/sitemap*.xml
 typedoc-json/
