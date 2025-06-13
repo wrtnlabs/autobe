@@ -3,7 +3,7 @@ import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 
-export const transformTestValidateHistories = (
+export const transformTestCorrectHistories = (
   apiFiles: Record<string, string>,
   dtoFiles: Record<string, string>,
 ): Array<
@@ -14,7 +14,7 @@ export const transformTestValidateHistories = (
       id: v4(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
-      text: AutoBeSystemPromptConstant.TEST_VALIDATE,
+      text: AutoBeSystemPromptConstant.TEST_CORRECT,
     },
     {
       id: v4(),

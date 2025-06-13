@@ -21,6 +21,7 @@ import {
   AutoBeRealizeStartEvent,
   AutoBeRealizeValidateEvent,
   AutoBeTestCompleteEvent,
+  AutoBeTestCorrectEvent,
   AutoBeTestProgressEvent,
   AutoBeTestStartEvent,
   AutoBeTestValidateEvent,
@@ -53,6 +54,7 @@ export interface IAutoBeRpcListener {
   testStart?(event: AutoBeTestStartEvent): Promise<void>;
   testProgress?(event: AutoBeTestProgressEvent): Promise<void>;
   testValidate?(event: AutoBeTestValidateEvent): Promise<void>;
+  testCorrect?(event: AutoBeTestCorrectEvent): Promise<void>;
   testComplete?(event: AutoBeTestCompleteEvent): Promise<void>;
 
   realizeStart?(event: AutoBeRealizeStartEvent): Promise<void>;

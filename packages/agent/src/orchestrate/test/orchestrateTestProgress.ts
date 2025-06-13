@@ -33,9 +33,6 @@ export async function orchestrateTestProgress<Model extends ILlmSchema.Model>(
         total: scenarios.length,
         step: ctx.state().interface?.step ?? 0,
       };
-
-      console.log(`completed: ${complete}/${scenarios.length}`);
-
       return event;
     }),
   );
@@ -98,7 +95,7 @@ async function process<Model extends ILlmSchema.Model>(
     if (event.body.tools) event.body.tool_choice = "required";
   });
 
-  await agentica.conversate(
+  const histories = await agentica.conversate(
     [
       "Create test code for below scenario:",
       "",
@@ -107,6 +104,8 @@ async function process<Model extends ILlmSchema.Model>(
       "```",
     ].join("\n"),
   );
+
+  console.log(histories.map((history) => history.type).join(", "));
 
   if (pointer.value === null) throw new Error("Failed to create test code.");
   return pointer.value;
@@ -158,29 +157,109 @@ interface IApplication {
 }
 
 interface ICreateTestCodeProps {
-  /** Test Code Content */
-  content: string;
+  /**
+   * Strategic approach for test implementation.
+   *
+   * Define the high-level strategy and logical flow for testing the given
+   * scenario. Focus on test methodology, data preparation, and assertion
+   * strategy.
+   *
+   * ### Critical Requirements
+   *
+   * - Must follow the Test Generation Guildelines.
+   * - Must Planning the test code Never occur the typescript compile error.
+   *
+   * ### Planning Elements:
+   *
+   * #### Test Methodology
+   *
+   * - Identify test scenario type (CRUD operation, authentication flow,
+   *   validation test)
+   * - Define test data requirements and preparation strategy
+   * - Plan positive/negative test cases and edge cases
+   * - Design assertion logic and validation points
+   *
+   * #### Execution Strategy
+   *
+   * - Outline step-by-step test execution flow
+   * - Plan error handling and exception scenarios
+   * - Define cleanup and teardown procedures
+   * - Identify dependencies and prerequisites
+   *
+   * ### Example Plan:
+   *
+   *     Test Strategy: Article Creation Validation
+   *     1. Prepare valid article data with required fields
+   *     2. Execute POST request to create article
+   *     3. Validate response structure and data integrity
+   *     4. Test error scenarios (missing fields, invalid data)
+   *     5. Verify database state changes
+   *     6. Reconsider the plan if it doesn't follow the Test Generation
+   *        Guildelines.
+   */
+  plan: string;
 
   /**
-   * Domain of the test code.
+   * Functional domain classification for test organization.
    *
-   * Related domain of the scenario.
+   * Determines file structure and test categorization based on API
+   * functionality. Used for organizing tests into logical groups and directory
+   * hierarchies.
    *
-   * Domain name must be in english and lowercase.
+   * ### Naming Rules:
    *
-   * ### Example Domain name According to Function name(or Scenario)
+   * - Lowercase English words only
+   * - Singular nouns (e.g., "article", "user", "comment")
+   * - Kebab-case for compound words (e.g., "user-profile", "payment-method")
+   * - Match primary API resource being tested
+   * - Domain Name must be named only one word.
    *
-   * - Domain : articles
+   * ### Domain Examples:
    *
-   *   - Test_api_bbs_articles_patch`
-   *   - Test_api_bbs_articles_getById`
-   *   - Test_api_bbs_articles_post`
-   *   - Test_api_bbs_articles_putById`
-   *   - Test_api_bbs_articles_eraseById`
-   * - Domain : comments
-   *
-   *   - `test_api_bbs_articles_comments_patchByArticleid`
-   *   - `test_api_bbs_articles_comments_postByArticleid`
+   * - `article` → Article management operations
+   * - `comment` → Comment-related functionality
+   * - `auth` → Authentication and authorization
+   * - `user` → User management operations
+   * - `payment` → Payment processing
+   * - `notification` → Notification system
    */
   domain: string;
+
+  /**
+   * Complete TypeScript E2E test implementation.
+   *
+   * Generate fully functional, compilation-error-free test code following
+   *
+   * @nestia/e2e framework conventions and TypeScript best practices.
+   *
+   * ### Technical Implementation Requirements:
+   *
+   * #### Import Declarations
+   * ```typescript
+   * import api from "@ORGANIZATION/PROJECT-api";
+   * import { ITargetType } from "@ORGANIZATION/PROJECT-api/lib/structures/[path]";
+   * import { TestValidator } from "@nestia/e2e";
+   * import typia from "typia";
+   * ```
+   * - Must use exact `@ORGANIZATION/PROJECT-api` module path
+   * - Include `@ORGANIZATION` prefix in all API-related imports
+   * - Import specific DTO types from correct structure paths
+   *
+   * #### Code Quality Standards
+   * - Zero TypeScript compilation errors (mandatory)
+   * - Explicit type annotations for all variables
+   * - Proper async/await patterns throughout
+   * - Comprehensive error handling
+   * - Clean, readable code structure
+   * - Consistent formatting and naming conventions
+   *
+   * ### Critical Error Prevention
+   * - Verify all import paths are correct and accessible
+   * - Ensure type compatibility between variables and assignments
+   * - Include all required object properties and methods
+   * - Validate API function signatures and parameter types
+   * - Confirm proper generic type usage
+   * - Test async function declarations and Promise handling
+   */
+  content: string;
 }

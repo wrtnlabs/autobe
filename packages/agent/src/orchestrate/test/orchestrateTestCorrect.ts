@@ -1,7 +1,7 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import {
+  AutoBeTestCorrectEvent,
   AutoBeTestProgressEvent,
-  AutoBeTestValidateEvent,
   IAutoBeTypeScriptCompilerResult,
 } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
@@ -10,82 +10,74 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { transformTestValidateHistories } from "./transformTestValidateHistories";
+import { transformTestCorrectHistories } from "./transformTestCorrectHistories";
 
 export async function orchestrateTestCorrect<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   codes: AutoBeTestProgressEvent[],
-  retry: number = 5,
-): Promise<AutoBeTestValidateEvent> {
-  const codeFiles = Object.fromEntries(
-    codes.map((code) => {
-      const filename = `test/features/api/${code.filename}`;
-
-      return [filename, code.content];
-    }),
+  retry = 10,
+): Promise<AutoBeTestCorrectEvent> {
+  // 1) Build map of new test files from progress events
+  const testFiles = Object.fromEntries(
+    codes.map(({ filename, content }) => [
+      `test/features/api/${filename}`,
+      content,
+    ]),
   );
 
-  const typescriptFiles = {
-    ...ctx.state().interface?.files,
-    ...codeFiles,
+  // 2) Keep only files outside the test directory from current state
+  const retainedFiles = Object.fromEntries(
+    Object.entries(ctx.state().interface?.files ?? {}).filter(
+      ([filename]) => !filename.startsWith("test/features/api"),
+    ),
+  );
+
+  // 3) Merge and filter: keep .ts/.json, drop anything under "benchmark"
+  const mergedFiles = { ...retainedFiles, ...testFiles };
+  const files = Object.fromEntries(
+    Object.entries(mergedFiles).filter(
+      ([filename]) => filename.endsWith(".ts") || filename.endsWith(".json"),
+    ),
+  );
+
+  // 4) Ask the LLM to correct the filtered file set
+  const corrected = await step(ctx, files, retry);
+
+  // 5) Combine original + corrected files and dispatch event
+  const event: AutoBeTestCorrectEvent = {
+    ...corrected,
+    type: "testCorrect",
+    files: { ...mergedFiles, ...corrected.files },
   };
 
-  const files = Object.keys(typescriptFiles)
-    .filter((filename) => {
-      return (
-        (filename.endsWith(".ts") &&
-          !filename.split("/").includes("benchmark")) ||
-        filename.endsWith(".json")
-      );
-    })
-    .reduce(
-      (obj, key) => {
-        obj[key] = typescriptFiles[key];
-        return obj;
-      },
-      {} as Record<string, string>,
-    );
-
-  ctx.dispatch({
-    type: "testComplete",
-    created_at: new Date().toISOString(),
-    files,
-    step: ctx.state().interface?.step ?? 0,
-  });
-
-  return step(ctx, files, retry);
+  ctx.dispatch(event);
+  return event;
 }
 
 /**
- * 파일마다 테스트 코드를 작성하고, 컴파일 오류를 확인한다.
+ * Modifies test code for each file and checks for compilation errors. When
+ * compilation errors occur, it uses LLM to fix the code and attempts
+ * recompilation. This process repeats up to the maximum retry count until
+ * compilation succeeds.
  *
- * @param ctx
- * @param files
- * @returns
+ * The function is a critical part of the test generation pipeline that ensures
+ * all generated test files are syntactically correct and compilable.
+ *
+ * @param ctx AutoBe context object
+ * @param files Map of files to compile (filename: content)
+ * @param life Number of remaining retry attempts
+ * @returns Event object containing successful compilation result and modified
+ *   files
  */
 async function step<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   files: Record<string, string>,
   life: number,
-): Promise<AutoBeTestValidateEvent> {
-  console.log("life : ", life);
-  if (life <= 0)
-    throw new Error("Failed to modify test code. - retry limit over");
-
+): Promise<AutoBeTestCorrectEvent> {
+  // COMPILE TEST CODE
   const result = await ctx.compiler.typescript({
     files,
   });
-  console.log("result : ", result.type);
-  if (result.type === "success") {
-    // SUCCESS
-    return {
-      type: "testValidate",
-      created_at: new Date().toISOString(),
-      files,
-      result,
-      step: ctx.state().interface?.step ?? 0,
-    };
-  }
 
   ctx.dispatch({
     type: "testValidate",
@@ -95,13 +87,23 @@ async function step<Model extends ILlmSchema.Model>(
     step: ctx.state().interface?.step ?? 0,
   });
 
+  if (result.type === "success") {
+    // SUCCESS
+    return {
+      type: "testCorrect",
+      created_at: new Date().toISOString(),
+      files,
+      result,
+      step: ctx.state().interface?.step ?? 0,
+    };
+  }
+
   // EXCEPTION ERROR
   if (result.type === "exception") {
     throw new Error(JSON.stringify(result.error, null, 2));
   }
 
-  let completed: number = 0;
-
+  // Make the diagnostics object (e.g. { "test/features/api/article.ts": [error1, error2] })
   const diagnostics: Record<
     string,
     IAutoBeTypeScriptCompilerResult.IDiagnostic[]
@@ -114,6 +116,29 @@ async function step<Model extends ILlmSchema.Model>(
     diagnostics[d.file].push(d);
   });
 
+  if (Object.keys(diagnostics).length === 0) {
+    /**
+     * SUCCESS (Because typescript compiler can't success to compile the json
+     * files, so result could be failure. but it's success to compile the ts
+     * files.)
+     */
+    return {
+      type: "testCorrect",
+      created_at: new Date().toISOString(),
+      files,
+      result: {
+        ...result,
+        type: "success",
+      },
+      step: ctx.state().interface?.step ?? 0,
+    };
+  }
+
+  let completed: number = 0;
+
+  if (life <= 0)
+    throw new Error("Failed to modify test code. - retry limit over");
+
   // VALIDATION FAILED
   const validate = await Promise.all(
     Object.entries(diagnostics).map(async ([filename, d]) => {
@@ -123,7 +148,6 @@ async function step<Model extends ILlmSchema.Model>(
       console.log(
         `${life} - completed for compile: ${++completed} / ${Object.keys(diagnostics).length}`,
       );
-
       // Return [filename, modified code]
       return [filename, result.content];
     }),
@@ -135,22 +159,25 @@ async function step<Model extends ILlmSchema.Model>(
 }
 
 /**
- * 에러가 발생한 테스트 파일의 코드를 수정한다.
+ * Modifies the code of test files where errors occurred. This function
+ * processes TypeScript compiler diagnostics and attempts to fix compilation
+ * errors.
  *
- * @param ctx
- * @returns
+ * @param ctx The AutoBeContext containing application state and configuration
+ * @param diagnostics Array of TypeScript compiler diagnostics for the errors
+ * @param code The source code content to be fixed
+ * @returns Promise resolving to corrected test function properties
  */
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  diagnotics: IAutoBeTypeScriptCompilerResult.IDiagnostic[],
+  diagnostics: IAutoBeTypeScriptCompilerResult.IDiagnostic[],
   code: string,
 ): Promise<ICorrectTestFunctionProps> {
-  console.log("filename : ", diagnotics.at(0)?.file);
-  console.log("error : ", diagnotics.map((d) => d.messageText).join("\n"));
-
   const pointer: IPointer<ICorrectTestFunctionProps | null> = {
     value: null,
   };
+
+  console.log(JSON.stringify(diagnostics, null, 2));
 
   const apiFiles = Object.entries(ctx.state().interface?.files ?? {})
     .filter(([filename]) => {
@@ -174,7 +201,7 @@ async function process<Model extends ILlmSchema.Model>(
     config: {
       ...(ctx.config ?? {}),
     },
-    histories: transformTestValidateHistories(apiFiles, dtoFiles),
+    histories: transformTestCorrectHistories(apiFiles, dtoFiles),
     controllers: [
       createApplication({
         model: ctx.model,
@@ -198,15 +225,15 @@ async function process<Model extends ILlmSchema.Model>(
       code,
       "```",
       "",
-      diagnotics.map((diagnotic) => {
-        if (diagnotic.start === undefined || diagnotic.length === undefined)
+      diagnostics.map((diagnostic) => {
+        if (diagnostic.start === undefined || diagnostic.length === undefined)
           return "";
 
         return [
           "## Error Information",
-          `- Position: Characters ${diagnotic.start} to ${diagnotic.start + diagnotic.length}`,
-          `- Error Message: ${diagnotic.messageText}`,
-          `- Problematic Code: \`${code.substring(diagnotic.start, diagnotic.start + diagnotic.length)}\``,
+          `- Position: Characters ${diagnostic.start} to ${diagnostic.start + diagnostic.length}`,
+          `- Error Message: ${diagnostic.messageText}`,
+          `- Problematic Code: \`${code.substring(diagnostic.start, diagnostic.start + diagnostic.length)}\``,
           "",
         ].join("\n");
       }),
@@ -220,7 +247,6 @@ async function process<Model extends ILlmSchema.Model>(
   );
 
   if (pointer.value === null) throw new Error("Failed to modify test code.");
-  console.log(JSON.stringify(pointer.value, null, 2));
 
   return pointer.value;
 }

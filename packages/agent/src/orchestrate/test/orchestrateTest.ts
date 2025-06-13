@@ -53,41 +53,30 @@ export const orchestrateTest =
       scenarios,
     );
 
-    const validate = await orchestrateTestCorrect(ctx, codes);
+    const correct = await orchestrateTestCorrect(ctx, codes);
+
+    const history: AutoBeTestHistory = {
+      type: "test",
+      id: v4(),
+      completed_at: new Date().toISOString(),
+      created_at: start.toISOString(),
+      files: correct.files,
+      compiled: correct.result,
+      reason: "Step to the test generation referencing the interface",
+      step: ctx.state().interface?.step ?? 0,
+    };
 
     ctx.dispatch({
       type: "testComplete",
       created_at: start.toISOString(),
-      files: validate.files,
+      files: correct.files,
       step: ctx.state().interface?.step ?? 0,
     });
 
-    if (validate.result.type === "success") {
-      const history: AutoBeTestHistory = {
-        type: "test",
-        id: v4(),
-        completed_at: new Date().toISOString(),
-        created_at: start.toISOString(),
-        files: validate.files,
-        compiled: validate.result,
-        reason: "Step to the test generation referencing the interface",
-        step: ctx.state().interface?.step ?? 0,
-      };
+    ctx.state().test = history;
+    ctx.histories().push(history);
 
-      ctx.state().test = history;
-      ctx.histories().push(history);
-
-      return history;
-    }
-
-    if (validate.result.type === "exception") {
-      throw new Error(validate.result.error as string);
-    } else {
-      throw new Error(
-        "Failed to compile test code. \n\n" +
-          JSON.stringify(validate.result.diagnostics, null, 2),
-      );
-    }
+    return history;
   };
 
 // 샘플로 쓸만한 asset들 확보해놓기.
