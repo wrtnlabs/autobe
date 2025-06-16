@@ -71,10 +71,12 @@ export function AutoBePlaygroundValidateEventMovie(
                 )
                 .join("\n")}
             </MarkdownViewer>
-          ) : (
+          ) : props.event.result.type === "exception" ? (
             <MarkdownViewer>
               {JSON.stringify(props.event.result.error, null, 2)}
             </MarkdownViewer>
+          ) : (
+            <></>
           )}
         </CardContent>
       </Collapse>
