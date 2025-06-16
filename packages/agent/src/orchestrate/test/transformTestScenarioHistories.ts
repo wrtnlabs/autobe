@@ -1,4 +1,5 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
+import { AutoBeOpenApi } from "@autobe/interface";
 import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
@@ -6,6 +7,8 @@ import { AutoBeState } from "../../context/AutoBeState";
 
 export const transformTestScenarioHistories = (
   state: AutoBeState,
+  endponits: AutoBeOpenApi.IEndpoint[],
+  files: Record<string, string>,
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
@@ -87,19 +90,16 @@ export const transformTestScenarioHistories = (
     {
       id: v4(),
       created_at: new Date().toISOString(),
-      type: "assistantMessage",
+      type: "systemMessage",
       text: [
-        "Requirement analysis and Prisma DB schema generation are ready.",
+        "# Result of Analyze Agent",
+        "- The following document contains the user requirements that were extracted through conversations with the user by the Analyze Agent.",
+        "- The database schema was designed based on these requirements, so you may refer to this document when writing test code or reviewing the schema.",
         "",
-        "Call the provided tool function to generate the OpenAPI document",
-        "referencing below requirement analysis and Prisma DB schema.",
-        "",
-        // User Request
         `## User Request`,
         "",
-        state.analyze.reason,
+        `- ${state.analyze.reason}`,
         "",
-        // Requirement Analysis Report
         `## Requirement Analysis Report`,
         "",
         "```json",
@@ -110,9 +110,12 @@ export const transformTestScenarioHistories = (
     {
       id: v4(),
       created_at: new Date().toISOString(),
-      type: "assistantMessage",
+      type: "systemMessage",
       text: [
-        "Database schema and entity relationship diagrams are ready.",
+        "# Result of Prisma Agent",
+        "- Given the following database schema and entity-relationship diagram, write appropriate test code to validate the constraints and relationships defined in the schema. For example, if there is a unique column, include a test that ensures its uniqueness.",
+        "- The test code should strictly adhere to the schema and relationships—no violations of constraints should occur.",
+        "- Use the information from the schema and diagram to design meaningful and accurate test cases.",
         "",
         "## Prisma DB Schema",
         "```json",
@@ -128,17 +131,52 @@ export const transformTestScenarioHistories = (
     {
       id: v4(),
       created_at: new Date().toISOString(),
-      type: "assistantMessage",
+      type: "systemMessage",
       text: [
-        "OpenAPI document generation is ready.",
+        "# Result of Interfaced Agent",
+        "- OpenAPI document generation is ready.",
         "",
         "Call the provided tool function to generate the user scenarios",
         "referencing below OpenAPI document.",
         "",
-        // OpenAPI Document
         `## OpenAPI Document`,
         "```json",
         JSON.stringify(state.interface.document),
+        "```",
+      ].join("\n"),
+    },
+    {
+      id: v4(),
+      created_at: new Date().toISOString(),
+      type: "systemMessage",
+      text: AutoBeSystemPromptConstant.TEST,
+    },
+    {
+      id: v4(),
+      created_at: new Date().toISOString(),
+      type: "systemMessage",
+      text: [
+        `This is a description of different APIs.`,
+        `Different APIs may have to be called to create one.`,
+        `Check which functions have been developed.`,
+        "```json",
+        JSON.stringify(endponits, null, 2),
+        "```",
+      ].join("\n"),
+    },
+    {
+      id: v4(),
+      created_at: new Date().toISOString(),
+      type: "systemMessage",
+      text: [
+        "Below is basically the generated test code,",
+        "which is a test to verify that the API is simply called and successful.",
+        "Since there is already an automatically generated API,",
+        "when a user requests to create a test scenario, two or more APIs must be combined,",
+        "but a test in which the currently given endpoint is the main must be created.",
+        '"Input Test Files" should be selected from the list of files here.',
+        "```json",
+        JSON.stringify(files, null, 2),
         "```",
       ].join("\n"),
     },

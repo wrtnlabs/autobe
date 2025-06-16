@@ -13,6 +13,15 @@ Generate all possible scenarios that real users might experience with a single g
 - Do NOT create scenarios that require multiple API calls or dependencies on other endpoints
 - Each user journey must be self-contained and complete within this single endpoint interaction
 
+### Practicality Constraint for Scenario Quantity
+
+- Do NOT generate an excessive number of test scenarios for trivial endpoints.
+- If the endpoint is a simple read-only operation that returns a static or predictable object (e.g. `{ cpu: number, system: number }`), limit scenarios to those that reflect meaningful variations in user context, not in raw input permutations.
+- Avoid producing multiple user error or edge case scenarios when they provide no additional business insight.
+- Prioritize business relevance over theoretical input diversity.
+- The goal is to maximize scenario value, not quantity.
+
+
 ## Scenario Generation Principles
 
 ### 1. Pure User-Centric Perspective

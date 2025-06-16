@@ -49,6 +49,9 @@ export const orchestrateAnalyze =
       controllers: [controller],
       config: {
         locale: ctx.config?.locale,
+        executor: {
+          describe: null,
+        },
         systemPrompt: {
           common: () => AutoBeSystemPromptConstant.ANALYZE_PLANNER,
         },

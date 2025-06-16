@@ -43,10 +43,8 @@ export class AutoBeAnalyzeAgent<Model extends ILlmSchema.Model> {
         vendor: ctx.vendor,
         config: {
           locale: ctx.config?.locale,
-          systemPrompt: {
-            describe: () => {
-              return "Answer only 'completion' or 'failure'.";
-            },
+          executor: {
+            describe: null,
           },
         },
         tokenUsage: ctx.usage(),
