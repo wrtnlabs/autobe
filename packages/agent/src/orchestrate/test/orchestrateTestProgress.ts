@@ -95,7 +95,7 @@ async function process<Model extends ILlmSchema.Model>(
     if (event.body.tools) event.body.tool_choice = "required";
   });
 
-  const histories = await agentica.conversate(
+  await agentica.conversate(
     [
       "Create test code for below scenario:",
       "",

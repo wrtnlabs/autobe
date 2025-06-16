@@ -9,6 +9,7 @@ import { AutoBePlaygroundPrismaValidateEventMovie } from "./AutoBePlaygroundPris
 import { AutoBePlaygroundProgressEventMovie } from "./AutoBePlaygroundProgressEventMovie";
 import { AutoBePlaygroundStartEventMovie } from "./AutoBePlaygroundStartEventMovie";
 import { AutoBePlaygroundTestCorrectEventMovie } from "./AutoBePlaygroundTestCorrectEventMovie";
+import { AutoBePlaygroundTestValidateEventMovie } from "./AutoBePlaygroundTestValidateEventMovie";
 import { AutoBePlaygroundUserMessageEventMovie } from "./AutoBePlaygroundUserMessageEventMovie";
 import { AutoBePlaygroundValidateEventMovie } from "./AutoBePlaygroundValidateEventMovie";
 
@@ -55,6 +56,7 @@ export function AutoBePlaygroundEventMovie(
       );
     // VALIDATE EVENTS
     case "testValidate":
+      return <AutoBePlaygroundTestValidateEventMovie event={props.event} />;
     case "realizeValidate":
       return <AutoBePlaygroundValidateEventMovie event={props.event} />;
     // SPECIALIZATIONS
