@@ -4,49 +4,19 @@ title: AutoBE > Guide Documents > WebSocket Protocol > NestJS Server
 import { Tabs } from "nextra/components";
 
 import RemoteSource from "../../../components/RemoteSource";
+import AutoBeRpcNestJsControllerSnippet from "../../../template/snippets/AutoBeRpcNestJsControllerSnippet.mdx";
+import AutoBeRpcNestJsSetupSnippet from "../../../template/snippets/AutoBeRpcNestJsSetupSnippet.mdx";
 
 ## Setup
-<Tabs items={['npm', 'pnpm', 'yarn']}>
-  <Tabs.Tab>
-```bash filename="Terminal" copy
-npm install @nestjs/common @nestjs/core @nestjs/platform-express
-npm install @agentica/core @samchon/openapi
-npm install @agentica/rpc tgrid
+<AutoBeRpcNestJsSetupSnippet />
 
-npm install -D nestia
-npx nestia setup
-```
-  </Tabs.Tab>
-  <Tabs.Tab>
-```bash filename="Terminal" copy
-pnpm install @nestjs/common @nestjs/core @nestjs/platform-express
-pnpm install @agentica/core @samchon/openapi
-pnpm install @agentica/rpc tgrid
+To develop NestJS WebSocket server of `@autobe`, you need to setup these packages.
 
-pnpm install -D nestia
-pnpm nestia setup
-```
-  </Tabs.Tab>
-  <Tabs.Tab>
-```bash filename="Terminal" copy
-# YARN BERRY IS NOT SUPPORTED
-yarn add @nestjs/common @nestjs/core @nestjs/platform-express
-yarn add @agentica/core @samchon/openapi
-yarn add @agentica/rpc tgrid
+At first, install NestJS packages, `@autobe/agent`, `@autobe/compiler` and `@autobe/interface` packages.
 
-yarn add -D nestia
-yarn nestia setup
-```
-  </Tabs.Tab>
-</Tabs>
+At next, install `@autobe/rpc` and [`tgrid`](https://tgrid.com) packages. `tgrid` is a TypeScript based RPC (Remote Procedure Call) framework supporting WebSocket protocol, and `@autobe/rpc` is an wrapper module of `@autobe/core` following the WebSocket RPC.
 
-To develop NestJS WebSocket server of AI chatbot, you need to setup these packages.
-
-At first, install NestJS packages, [`@agentica/core`](/docs/core) and [`@samchon/openapi`](https://github.com/samchon/openapi). `@agentia/core` is the core library of Agentica Framework, and `@samchon/openapi` is a library defining LLM function calling schemas including their converters from the Swagger/OpenAPI documents.
-
-At next, install `@agentica/rpc` and [`tgrid`](https://tgrid.com) packages. `tgrid` is a TypeScript based RPC (Remote Procedure Call) framework supporting WebSocket protocol, and `@agentica/rpc` is an wrapper module of `@agentica/core` following the WebSocket RPC.
-
-At last, install `nestia` package add *devDependencies*, and run `npx nestia setup` command. [`@nestia`](https://nestia.io) is a set of helper libraries for NestJS, enhancing type safety and productivity by combining with [`typia`](https://typia.io) which can compose LLM function calling schemas from a TypeScript class type by compiler skills. Also, `@nestia` makes NestJS to support the WebSocket protocol, so it is essential.
+At last, install `nestia` package add *devDependencies*, and run `npx nestia setup` command. [`@nestia`](https://nestia.io) is a set of helper libraries for NestJS, and it supports WebSocket protocol that is following the RPC (Remote Procedure Call) paradigm.
 
 
 
@@ -70,47 +40,15 @@ To activate WebSocket protocol in NestJS, you have to upgrade the NestJS applica
 
 
 ## API Controller
-```typescript filename="nestjs/src/chat.controller.ts" showLineNumbers copy
-import { 
-  AgenticaRpcService,
-  IAgenticaRpcListener,
-  IAgenticaRpcListener
-} from "@agentica/rpc";
-import { WebSocketRoute } from "@nestia/core";
-import { Controller } from "@nestjs/common";
-import { Driver, WebSocketAcceptor } from "tgrid";
-
-@Controller("chat")
-export class ChatController {
-  @WebSocketRoute()
-  public async start(
-    // @WebSocketRoute.Param("id") id: string,
-    @WebSocketRoute.Acceptor()
-    acceptor: WebSocketAcceptor<
-      null, // header
-      AgenticaRpcService<"chatgpt">,
-      IAgenticaRpcListener
-    >,
-  ): Promise<void> {
-    const agent: Agentica<"chatgpt"> = new Agentica({ ... });
-    const listener: Driver<IAgenticaRpcListener> = acceptor.getDriver();
-    const service: AgenticaRpcService<"chatgpt"> = 
-      new AgenticaRpcService({
-        agent,
-        listener,
-      });
-    await acceptor.accept(service);
-  }
-}
-```
+<AutoBeRpcNestJsControllerSnippet />
 
 You can finalize WebSocket server development like above.
 
-At first, create a controller method decorated by `@WebSocketRoute()`. And in the controller method, define a parameter that is decorated by `@WebSocketRoute.Acceptor()` with the type of `WebSocketAcceptor` specializing `IAgenticaRpcService` and `IAgenticaRpcListener` types.
+At first, create a controller method decorated by `@WebSocketRoute()`. And in the controller method, define a parameter that is decorated by `@WebSocketRoute.Acceptor()` with the type of `WebSocketAcceptor` specializing `IAutoBeRpcService` and `IAutoBeRpcListener` types.
 
-And in the controller method body, create an `Agentica` instance and wrap it into a new `AgenticaRpcService` instance. And then accept the client connection by calling the `WebSocketAcceptor.accept()` function with the `AgenticaRpcService` instance.
+And in the controller method body, create an `AutoBeAgent` instance and wrap it into a new `AutoBeRpcService` instance. And then accept the client connection by calling the `WebSocketAcceptor.accept()` function with the `AutoBeRpcService` instance.
 
-When you've completed the acceptance, everything is completed. When client calls the `IAgenticaRpcService.conversate()` function remotely, server will response to the client by calling the `IAgenticaRpcListener` functions remotely too.
+When you've completed the acceptance, everything is completed. When client calls the `IAutoBeRpcService.conversate()` function remotely, server will response to the client by calling the `IAutoBeRpcListener` functions remotely too.
 
 
 
@@ -195,7 +133,7 @@ After that, just run `npx nestia sdk` command, then SDK library would be generat
 <Tabs items={["Main Program", "SDK Library"]}>
   <Tabs.Tab>
 ```typescript filename="client/src/main.ts" showLineNumbers copy
-import { IAgenticaRpcListener } from "@agentica/rpc";
+import { IAutoBeRpcListener } from "@autobe/rpc";
 import api, { IConnection } from "@ORGANIZATION/PROJECT-api";
 
 const { connector, driver } = await api.functional.chat.start(
@@ -203,19 +141,19 @@ const { connector, driver } = await api.functional.chat.start(
     host: "http://localhost:30001",
   } satisfies IConnection,
   {
-    text: async (evt) => {
-      console.log(evt.role, evt.text);
+    assistantMessage: async (evt) => {
+      console.log("assistant", evt.text);
     },
-    select: async (evt) => {
-      console.log("selector", evt.selection);
+    analyzeComplete: async (evt) => {
+      console.log("analyze completed", evt.files);
     },
-    execute: async (evt) => {
-      console.log("execute", evt.operation, evt.arguments, evt.value);
+    prismaComplete: async (evt) => {
+      console.log("prisma completed", evt.schemas);
     },
-    describe: async (evt) => {
-      console.log("describer", evt.text);
+    interfaceComplete: async (evt) => {
+      console.log("interface completed", evt.schemas);
     },
-  } satisfies IAgenticaRpcListener,
+  } satisfies IAutoBeRpcListener,
 );
 
 await driver.conversate("Hello, what can you do?");
@@ -231,8 +169,7 @@ await connector.close();
  * @nestia Generated by Nestia - https://github.com/samchon/nestia
  */
 //================================================================
-import type { IAgenticaRpcListener } from "@agentica/rpc/lib/IAgenticaRpcListener";
-import type { IAgenticaRpcService } from "@agentica/rpc/lib/IAgenticaRpcService";
+import type { IAutoBeRpcListener, IAutoBeRpcService } from "@autobe/interface";
 import type { IConnection } from "@nestia/fetcher";
 import { WebSocketConnector } from "tgrid";
 import type { Driver } from "tgrid";
@@ -266,8 +203,8 @@ export namespace start {
     driver: Driver<Listener>;
   };
   export type Header = undefined;
-  export type Provider = IAgenticaRpcListener;
-  export type Listener = IAgenticaRpcService<"chatgpt">;
+  export type Provider = IAutoBeRpcListener;
+  export type Listener = IAutoBeRpcService;
 
   export const path = () => "/chat";
 }

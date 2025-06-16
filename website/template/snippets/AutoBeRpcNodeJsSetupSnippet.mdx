@@ -1,0 +1,22 @@
+import { Tabs } from "nextra/components";
+
+<Tabs items={['npm', 'pnpm', 'yarn']}>
+  <Tabs.Tab>
+```bash filename="Terminal" copy
+npm install @autobe/agent @autobe/compiler @autobe/interface
+npm install @autobe/rpc tgrid
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```bash filename="Terminal" copy
+pnpm install @autobe/agent @autobe/compiler @autobe/interface
+pnpm install @autobe/rpc tgrid
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```bash filename="Terminal" copy
+yarn add @autobe/agent @autobe/compiler @autobe/interface
+yarn add @autobe/rpc tgrid
+```
+  </Tabs.Tab>
+</Tabs>

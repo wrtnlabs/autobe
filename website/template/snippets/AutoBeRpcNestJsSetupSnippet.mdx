@@ -1,0 +1,35 @@
+import { Tabs } from "nextra/components";
+
+<Tabs items={['npm', 'pnpm', 'yarn']}>
+  <Tabs.Tab>
+```bash filename="Terminal" copy
+npm install @nestjs/common @nestjs/core @nestjs/platform-express
+npm install @autobe/agent @autobe/compiler @autobe/interface
+npm install @autobe/rpc tgrid
+
+npm install -D nestia
+npx nestia setup
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```bash filename="Terminal" copy
+pnpm install @nestjs/common @nestjs/core @nestjs/platform-express
+pnpm install @autobe/agent @autobe/compiler @autobe/interface
+pnpm install @autobe/rpc tgrid
+
+pnpm install -D nestia
+pnpm nestia setup
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```bash filename="Terminal" copy
+# YARN BERRY IS NOT SUPPORTED
+yarn add @nestjs/common @nestjs/core @nestjs/platform-express
+yarn add @autobe/agent @autobe/compiler @autobe/interface
+yarn add @autobe/rpc tgrid
+
+yarn add -D nestia
+yarn nestia setup
+```
+  </Tabs.Tab>
+</Tabs>

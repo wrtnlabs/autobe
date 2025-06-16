@@ -4,6 +4,13 @@ title: AutoBE > Guide Documents > WebSocket > Remote Procedure Call
 
 import { Tabs } from "nextra/components";
 
+import AutoBeRpcClientMainSnippet from "../../../template/snippets/AutoBeRpcClientMainSnippet.mdx";
+import AutoBeRpcClientSetupSnippet from "../../../template/snippets/AutoBeRpcClientSetupSnippet.mdx";
+import AutoBeRpcNestJsControllerSnippet from "../../../template/snippets/AutoBeRpcNestJsControllerSnippet.mdx";
+import AutoBeRpcNestJsSetupSnippet from "../../../template/snippets/AutoBeRpcNestJsSetupSnippet.mdx";
+import AutoBeRpcNodeJsMainSnippet from "../../../template/snippets/AutoBeRpcNodeJsMainSnippet.mdx";
+import AutoBeRpcNodeJsSetupSnippet from "../../../template/snippets/AutoBeRpcNodeJsSetupSnippet.mdx";
+
 ## `@autobe/rpc`
 RPC module of `@autobe` for WebSocket Communication.
 
@@ -17,103 +24,13 @@ However, don't be afraid of WebSocket application development. Below is the exam
   "NestJS Server",
 ]}>
   <Tabs.Tab>
-```typescript filename="client/src/main.ts" showLineNumbers copy
-import { IAutoBeRpcListener, IAutoBeRpcService } from "@autobe/rpc";
-import { Driver, WebSocketConnector } from "tgrid";
-
-const connector: WebSocketConnector<
-  null,
-  IAutoBeRpcListener, // provider to remote
-  IAutoBeRpcService // controller of remote
-> = new WebSocketConnector(null, {
-  assistantMessage: async (evt) => {
-    console.log("assistant", evt.text);
-  },
-  analyzeComplete: async (evt) => {
-    console.log("analyze completed", evt.files);
-  },
-  prismaComplete: async (evt) => {
-    console.log("prisma completed", evt.schemas);
-  },
-  interfaceComplete: async (evt) => {
-    console.log("interface completed", evt.schemas);
-  },
-});
-await connector.connect("ws://localhost:3001");
-
-const driver: Driver<IAutoBeRpcService> = connector.getDriver();
-await driver.conversate("Hello, what you can do?");
-```
+    <AutoBeRpcClientMainSnippet />
   </Tabs.Tab>
   <Tabs.Tab>
-```typescript filename="nodejs/src/main.ts" showLineNumbers copy
-import { AutoBeAgent } from "@autobe/agent";
-import { AutoBeCompiler } from "@autobe/compiler";
-import { IAutoBeRpcListener, IAutoBeRpcService } from "@autobe/interface";
-import { AutoBeRpcService } from "@autobe/rpc";
-import { WebSocketServer } from "tgrid";
-
-const server: WebSocketServer<
-  null,
-  IAutoBeRpcService,
-  IAutoBeRpcListener
-> = new WebSocketServer();
-await server.open(3_001, async (acceptor) => {
-  const agent: AutoBeAgent<"chatgpt"> = new AutoBeAgent({
-    model: "chatgpt",
-    vendor: {
-      api: new OpenAI({ apiKey: "********" }),
-      model: "gpt-4.1",
-    },
-    compiler: new AutoBeCompiler(),
-  });
-  const service: AutoBeRpcService = new AutoBeRpcService({
-    agent,
-    listener: acceptor.getDriver(),
-  });
-  await acceptor.accept(service);
-});
-```
+    <AutoBeRpcNodeJsMainSnippet />
   </Tabs.Tab>
   <Tabs.Tab>
-```typescript filename="nestjs/src/chat.controller.ts" showLineNumbers copy
-import { AutoBeAgent } from "@autobe/agent";
-import { AutoBeCompiler } from "@autobe/compiler";
-import { IAutoBeRpcListener, IAutoBeRpcService } from "@autobe/interface";
-import { AutoBeRpcService } from "@autobe/rpc";
-import { WebSocketRoute } from "@nestia/core";
-import { Controller } from "@nestjs/common";
-import OpenAI from "openai";
-import { WebSocketAcceptor } from "tgrid";
-
-@Controller("chat")
-export class ChatController {
-  @WebSocketRoute()
-  public async start(
-    // @WebSocketRoute.Param("id") id: string,
-    @WebSocketRoute.Acceptor()
-    acceptor: WebSocketAcceptor<
-      null, // header
-      IAutoBeRpcService, // provider to remote
-      IAutoBeRpcListener // controller of remote
-    >,
-  ): Promise<void> {
-    const agent: AutoBeAgent<"chatgpt"> = new AutoBeAgent({
-      model: "chatgpt",
-      vendor: {
-        api: new OpenAI({ apiKey: "********" }),
-        model: "gpt-4.1",
-      },
-      compiler: new AutoBeCompiler(),
-    });
-    const service: AutoBeRpcService = new AutoBeRpcService({
-      agent,
-      listener: acceptor.getDriver(),
-    });
-    await acceptor.accept(service);
-  }
-}
-```
+    <AutoBeRpcNestJsControllerSnippet />
   </Tabs.Tab>
 </Tabs>
 
@@ -122,26 +39,7 @@ export class ChatController {
 
 ## Setup
 ### NodeJS Server
-<Tabs items={['npm', 'pnpm', 'yarn']}>
-  <Tabs.Tab>
-```bash filename="Terminal" copy
-npm install @autobe/agent @autobe/compiler @autobe/interface
-npm install @autobe/rpc tgrid
-```
-  </Tabs.Tab>
-  <Tabs.Tab>
-```bash filename="Terminal" copy
-pnpm install @autobe/agent @autobe/compiler @autobe/interface
-pnpm install @autobe/rpc tgrid
-```
-  </Tabs.Tab>
-  <Tabs.Tab>
-```bash filename="Terminal" copy
-yarn add @autobe/agent @autobe/compiler @autobe/interface
-yarn add @autobe/rpc tgrid
-```
-  </Tabs.Tab>
-</Tabs>
+<AutoBeRpcNodeJsSetupSnippet />
 
 To develop NodeJS WebSocket server of `@autobe`, you need to install these packages.
 
@@ -150,62 +48,14 @@ At first, install `@autobe/agent`, `@autobe/compiler` and `@autobe/interface` pa
 `tgrid` is a TypeScript based RPC (Remote Procedure Call) framework supporting WebSocket protocol, and `@autobe/rpc` is a wrapper module of `@autobe/agent` following the WebSocket RPC.
 
 ### NestJS Server
-<Tabs items={['npm', 'pnpm', 'yarn']}>
-  <Tabs.Tab>
-```bash filename="Terminal" copy
-npm install @nestjs/common @nestjs/core @nestjs/platform-express
-npm install @autobe/agent @autobe/compiler @autobe/interface
-npm install @autobe/rpc tgrid
-
-npm install -D nestia
-npx nestia setup
-```
-  </Tabs.Tab>
-  <Tabs.Tab>
-```bash filename="Terminal" copy
-pnpm install @nestjs/common @nestjs/core @nestjs/platform-express
-pnpm install @autobe/agent @autobe/compiler @autobe/interface
-pnpm install @autobe/rpc tgrid
-
-pnpm install -D nestia
-pnpm nestia setup
-```
-  </Tabs.Tab>
-  <Tabs.Tab>
-```bash filename="Terminal" copy
-# YARN BERRY IS NOT SUPPORTED
-yarn add @nestjs/common @nestjs/core @nestjs/platform-express
-yarn add @autobe/agent @autobe/compiler @autobe/interface
-yarn add @autobe/rpc tgrid
-
-yarn add -D nestia
-yarn nestia setup
-```
-  </Tabs.Tab>
-</Tabs>
+<AutoBeRpcNestJsSetupSnippet />
 
 Install NestJS and `@autobe` packages, and then setup `nestia`.
 
 [`@nestia`](https://nestia.io) is a set of helper libraries for NestJS, and it supports WebSocket protocol that is following the RPC (Remote Procedure Call) paradigm.
 
 ### Client Application
-<Tabs items={['npm', 'pnpm', 'yarn']}>
-  <Tabs.Tab>
-```bash filename="Terminal" copy
-npm install @autobe/rpc tgrid
-```
-  </Tabs.Tab>
-  <Tabs.Tab>
-```bash filename="Terminal" copy
-pnpm install @autobe/rpc tgrid
-```
-  </Tabs.Tab>
-  <Tabs.Tab>
-```bash filename="Terminal" copy
-yarn add @autobe/rpc tgrid
-```
-  </Tabs.Tab>
-</Tabs>
+<AutoBeRpcClientSetupSnippet />
 
 Just install `@autobe/rpc`, `tgrid` packages.
 
