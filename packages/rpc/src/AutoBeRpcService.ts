@@ -7,99 +7,17 @@ import {
   IAutoBeTokenUsageJson,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
+import typia from "typia";
 
 export class AutoBeRpcService<Model extends ILlmSchema.Model>
   implements IAutoBeRpcService
 {
   public constructor(private readonly props: AgenticaRpcService.IProps<Model>) {
     const { agent, listener } = this.props;
-
-    // MESSAGES
-    agent.on("assistantMessage", (event) => {
-      listener.assistantMessage(event).catch(() => {});
-    });
-    agent.on("userMessage", (event) => {
-      listener.userMessage!(event).catch(() => {});
-    });
-
-    // ANALYZE
-    agent.on("analyzeStart", (event) => {
-      listener.analyzeStart!(event).catch(() => {});
-    });
-    agent.on("analyzeWriteDocument", (event) => {
-      listener.analyzeWriteDocument!(event).catch(() => {});
-    });
-    agent.on("analyzeReview", (event) => {
-      listener.analyzeReview!(event).catch(() => {});
-    });
-    agent.on("analyzeComplete", (event) => {
-      listener.analyzeComplete!(event).catch(() => {});
-    });
-
-    // PRISMA
-    agent.on("prismaStart", (event) => {
-      listener.prismaStart!(event).catch(() => {});
-    });
-    agent.on("prismaComponents", (event) => {
-      listener.prismaComponents!(event).catch(() => {});
-    });
-    agent.on("prismaSchemas", (event) => {
-      listener.prismaSchemas!(event).catch(() => {});
-    });
-    agent.on("prismaComplete", (event) => {
-      listener.prismaComplete!(event).catch(() => {});
-    });
-    agent.on("prismaValidate", (event) => {
-      listener.prismaValidate!(event).catch(() => {});
-    });
-
-    // INTERFACE
-    agent.on("interfaceStart", (event) => {
-      listener.interfaceStart!(event).catch(() => {});
-    });
-    agent.on("interfaceEndpoints", (event) => {
-      listener.interfaceEndpoints!(event).catch(() => {});
-    });
-    agent.on("interfaceOperations", (event) => {
-      listener.interfaceOperations!(event).catch(() => {});
-    });
-    agent.on("interfaceComponents", (event) => {
-      listener.interfaceComponents!(event).catch(() => {});
-    });
-    agent.on("interfaceComplement", (event) => {
-      listener.interfaceComplement!(event).catch(() => {});
-    });
-    agent.on("interfaceComplete", (event) => {
-      listener.interfaceComplete!(event).catch(() => {});
-    });
-
-    // TEST
-    agent.on("testStart", (event) => {
-      listener.testStart!(event).catch(() => {});
-    });
-    agent.on("testScenario", (event) => {
-      listener.testScenario!(event).catch(() => {});
-    });
-    agent.on("testProgress", (event) => {
-      listener.testProgress!(event).catch(() => {});
-    });
-    agent.on("testValidate", (event) => {
-      listener.testValidate!(event).catch(() => {});
-    });
-    agent.on("testCorrect", (event) => {
-      listener.testCorrect!(event).catch(() => {});
-    });
-    agent.on("testComplete", (event) => {
-      listener.testComplete!(event).catch(() => {});
-    });
-
-    // REALIZE
-    agent.on("realizeStart", (event) => {
-      listener.realizeStart!(event).catch(() => {});
-    });
-    agent.on("realizeComplete", (event) => {
-      listener.realizeComplete!(event).catch(() => {});
-    });
+    for (const key of typia.misc.literals<keyof IAutoBeRpcListener>())
+      agent.on(key, (event) => {
+        listener[key]!(event as any).catch(() => {});
+      });
   }
 
   public conversate(

@@ -4,6 +4,7 @@
   "description": "AI backend server code generator",
   "main": "src/index.ts",
   "scripts": {
+    "prepare": "ts-patch install",
     "build": "rimraf lib && tsc",
     "dev": "rimraf lib && tsc --watch",
     "prepack": "pnpm run build"
@@ -33,10 +34,12 @@
   "dependencies": {
     "@autobe/agent": "workspace:^",
     "@autobe/interface": "workspace:^",
-    "@samchon/openapi": "catalog:samchon"
+    "@samchon/openapi": "catalog:samchon",
+    "typia": "catalog:samchon"
   },
   "devDependencies": {
     "rimraf": "^6.0.1",
+    "ts-patch": "catalog:typescript",
     "typescript": "catalog:typescript"
   }
 }

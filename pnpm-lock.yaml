@@ -371,10 +371,16 @@ importers:
       '@samchon/openapi':
         specifier: catalog:samchon
         version: 4.3.3
+      typia:
+        specifier: catalog:samchon
+        version: 9.3.1(@samchon/openapi@4.3.3)(typescript@5.8.3)
     devDependencies:
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
+      ts-patch:
+        specifier: catalog:typescript
+        version: 3.3.0
       typescript:
         specifier: catalog:typescript
         version: 5.8.3
