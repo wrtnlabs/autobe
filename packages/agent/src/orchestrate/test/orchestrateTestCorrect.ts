@@ -1,7 +1,7 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import {
-  AutoBeTestCorrectEvent,
   AutoBeTestProgressEvent,
+  AutoBeTestValidateEvent,
   IAutoBeTypeScriptCompilerResult,
 } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
@@ -15,8 +15,8 @@ import { transformTestCorrectHistories } from "./transformTestCorrectHistories";
 export async function orchestrateTestCorrect<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   codes: AutoBeTestProgressEvent[],
-  retry = 5,
-): Promise<AutoBeTestCorrectEvent> {
+  retry = 8,
+): Promise<AutoBeTestValidateEvent> {
   // 1) Build map of new test files from progress events
   const testFiles = Object.fromEntries(
     codes.map(({ filename, content }) => [
@@ -36,24 +36,22 @@ export async function orchestrateTestCorrect<Model extends ILlmSchema.Model>(
   const mergedFiles = { ...retainedFiles, ...testFiles };
   const files = Object.fromEntries(
     Object.entries(mergedFiles).filter(
-      ([filename]) => filename.endsWith(".ts") || filename.endsWith(".json"),
+      ([filename]) =>
+        (filename.endsWith(".ts") && !filename.startsWith("test/benchmark/")) ||
+        filename.endsWith(".json"),
     ),
   );
 
   // 4) Ask the LLM to correct the filtered file set
-  const corrected = await step(ctx, files, retry);
-
-  if (corrected.result.type === "failure") {
-  }
+  const response = await step(ctx, files, retry);
 
   // 5) Combine original + corrected files and dispatch event
-  const event: AutoBeTestCorrectEvent = {
-    ...corrected,
-    type: "testCorrect",
-    files: { ...mergedFiles, ...corrected.files },
+  const event: AutoBeTestValidateEvent = {
+    ...response,
+    type: "testValidate",
+    files: { ...mergedFiles, ...response.files },
   };
 
-  ctx.dispatch(event);
   return event;
 }
 
@@ -76,24 +74,16 @@ async function step<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   files: Record<string, string>,
   life: number,
-): Promise<AutoBeTestCorrectEvent> {
+): Promise<AutoBeTestValidateEvent> {
   // COMPILE TEST CODE
   const result = await ctx.compiler.typescript({
     files,
   });
 
-  ctx.dispatch({
-    type: "testValidate",
-    created_at: new Date().toISOString(),
-    files,
-    result,
-    step: ctx.state().interface?.step ?? 0,
-  });
-
   if (result.type === "success") {
     // SUCCESS
     return {
-      type: "testCorrect",
+      type: "testValidate",
       created_at: new Date().toISOString(),
       files,
       result,
@@ -103,6 +93,14 @@ async function step<Model extends ILlmSchema.Model>(
 
   // EXCEPTION ERROR
   if (result.type === "exception") {
+    ctx.dispatch({
+      type: "testValidate",
+      created_at: new Date().toISOString(),
+      files,
+      result,
+      step: ctx.state().interface?.step ?? 0,
+    });
+
     throw new Error(JSON.stringify(result.error, null, 2));
   }
 
@@ -126,7 +124,7 @@ async function step<Model extends ILlmSchema.Model>(
      * files.)
      */
     return {
-      type: "testCorrect",
+      type: "testValidate",
       created_at: new Date().toISOString(),
       files,
       result: {
@@ -138,9 +136,17 @@ async function step<Model extends ILlmSchema.Model>(
   }
 
   // Compile Failed
+  ctx.dispatch({
+    type: "testValidate",
+    created_at: new Date().toISOString(),
+    files,
+    result,
+    step: ctx.state().interface?.step ?? 0,
+  });
+
   if (life <= 0)
     return {
-      type: "testCorrect",
+      type: "testValidate",
       created_at: new Date().toISOString(),
       files,
       result,
@@ -151,10 +157,21 @@ async function step<Model extends ILlmSchema.Model>(
   const validate = await Promise.all(
     Object.entries(diagnostics).map(async ([filename, d]) => {
       const code = files[filename];
-      const result = await process(ctx, d, code);
+      const response = await process(ctx, d, code);
+
+      ctx.dispatch({
+        type: "testCorrect",
+        created_at: new Date().toISOString(),
+        files: { ...files, [filename]: response.content },
+        result,
+        solution: response.solution,
+        think_without_compile_error: response.think_without_compile_error,
+        think_again_with_compile_error: response.think_again_with_compile_error,
+        step: ctx.state().interface?.step ?? 0,
+      });
 
       // Return [filename, modified code]
-      return [filename, result.content];
+      return [filename, response.content];
     }),
   );
 

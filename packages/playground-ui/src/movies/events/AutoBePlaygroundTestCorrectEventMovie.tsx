@@ -36,13 +36,13 @@ export function AutoBePlaygroundTestCorrectEventMovie(
       <CardContent>
         <Chip
           icon={<ErrorOutlineIcon />}
-          label={"Prisma Compilation Error"}
+          label={"Typescript Compilation Error"}
           variant="outlined"
           color="warning"
         />
         <br />
         <br />
-        AI wrote invalid Prisma schema, so compilation error occurred.
+        AI wrote invalid Typescript Code, so compilation error occurred.
         <br />
         <br />
         Trying to recover the compile error by studying the AI agent.

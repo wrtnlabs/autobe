@@ -33,6 +33,7 @@ export async function orchestrateTestProgress<Model extends ILlmSchema.Model>(
         total: scenarios.length,
         step: ctx.state().interface?.step ?? 0,
       };
+      ctx.dispatch(event);
       return event;
     }),
   );

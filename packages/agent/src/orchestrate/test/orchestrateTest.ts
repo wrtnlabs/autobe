@@ -16,9 +16,16 @@ import { orchestrateTestScenario } from "./orchestrateTestScenario";
 export const orchestrateTest =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
   async (
-    _props: IAutoBeApplicationProps,
+    props: IAutoBeApplicationProps,
   ): Promise<AutoBeAssistantMessageHistory | AutoBeTestHistory> => {
     const start: Date = new Date();
+    ctx.dispatch({
+      type: "testStart",
+      created_at: start.toISOString(),
+      reason: props.reason,
+      step: ctx.state().analyze?.step ?? 0,
+    });
+
     const operations = ctx.state().interface?.document.operations ?? [];
     if (operations.length === 0) {
       const history: AutoBeAssistantMessageHistory = {
