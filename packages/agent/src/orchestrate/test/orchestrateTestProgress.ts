@@ -1,0 +1,264 @@
+import { IAgenticaController, MicroAgentica } from "@agentica/core";
+import { AutoBeTest, AutoBeTestProgressEvent } from "@autobe/interface";
+import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
+import { IPointer } from "tstl";
+import typia from "typia";
+
+import { AutoBeContext } from "../../context/AutoBeContext";
+import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { transformTestProgressHistories } from "./transformTestProgressHistories";
+
+export async function orchestrateTestProgress<Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  scenarios: AutoBeTest.Scenario[],
+): Promise<AutoBeTestProgressEvent[]> {
+  const start: Date = new Date();
+  let complete: number = 0;
+
+  const events: AutoBeTestProgressEvent[] = await Promise.all(
+    /**
+     * Generate test code for each scenario. Maps through scenarios array to
+     * create individual test code implementations. Each scenario is processed
+     * to generate corresponding test code and progress events.
+     */
+    scenarios.map(async (scenario) => {
+      const code: ICreateTestCodeProps = await process(ctx, scenario);
+
+      const event: AutoBeTestProgressEvent = {
+        type: "testProgress",
+        created_at: start.toISOString(),
+        filename: `${code.domain}/${scenario.functionName}.ts`,
+        content: code.content,
+        completed: ++complete,
+        total: scenarios.length,
+        step: ctx.state().interface?.step ?? 0,
+      };
+      ctx.dispatch(event);
+      return event;
+    }),
+  );
+
+  return events;
+}
+
+/**
+ * Process function that generates test code for each individual scenario. Takes
+ * the AutoBeContext and scenario information as input and uses MicroAgentica to
+ * generate appropriate test code through LLM interaction.
+ *
+ * @param ctx - The AutoBeContext containing model, vendor and configuration
+ * @param scenario - The test scenario information to generate code for
+ * @returns Promise resolving to ICreateTestCodeProps containing the generated
+ *   test code
+ */
+async function process<Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  scenario: AutoBeTest.Scenario,
+): Promise<ICreateTestCodeProps> {
+  const pointer: IPointer<ICreateTestCodeProps | null> = {
+    value: null,
+  };
+
+  const apiFiles = Object.entries(ctx.state().interface?.files ?? {})
+    .filter(([filename]) => {
+      return filename.startsWith("src/api/");
+    })
+    .reduce<Record<string, string>>((acc, [filename, content]) => {
+      return Object.assign(acc, { [filename]: content });
+    }, {});
+
+  const dtoFiles = Object.entries(ctx.state().interface?.files ?? {})
+    .filter(([filename]) => {
+      return filename.startsWith("src/api/structures/");
+    })
+    .reduce<Record<string, string>>((acc, [filename, content]) => {
+      return Object.assign(acc, { [filename]: content });
+    }, {});
+
+  const agentica = new MicroAgentica({
+    model: ctx.model,
+    vendor: ctx.vendor,
+    config: {
+      ...(ctx.config ?? {}),
+    },
+    histories: transformTestProgressHistories(apiFiles, dtoFiles),
+    controllers: [
+      createApplication({
+        model: ctx.model,
+        build: (next) => {
+          pointer.value = next;
+        },
+      }),
+    ],
+  });
+
+  agentica.on("request", async (event) => {
+    if (event.body.tools) event.body.tool_choice = "required";
+  });
+
+  await agentica.conversate(
+    [
+      "Create test code for below scenario:",
+      "",
+      "```json",
+      JSON.stringify(scenario, null, 2),
+      "```",
+    ].join("\n"),
+  );
+
+  if (pointer.value === null) throw new Error("Failed to create test code.");
+  return pointer.value;
+}
+
+function createApplication<Model extends ILlmSchema.Model>(props: {
+  model: Model;
+  build: (next: ICreateTestCodeProps) => void;
+}): IAgenticaController.IClass<Model> {
+  assertSchemaModel(props.model);
+
+  const application: ILlmApplication<Model> = collection[
+    props.model
+  ] as unknown as ILlmApplication<Model>;
+  return {
+    protocol: "class",
+    name: "Create Test Code",
+    application,
+    execute: {
+      createTestCode: (next) => {
+        props.build(next);
+      },
+    } satisfies IApplication,
+  };
+}
+
+const claude = typia.llm.application<
+  IApplication,
+  "claude",
+  {
+    reference: true;
+  }
+>();
+const collection = {
+  chatgpt: typia.llm.application<
+    IApplication,
+    "chatgpt",
+    { reference: true }
+  >(),
+  claude,
+  llama: claude,
+  deepseek: claude,
+  "3.1": claude,
+  "3.0": typia.llm.application<IApplication, "3.0">(),
+};
+
+interface IApplication {
+  createTestCode(props: ICreateTestCodeProps): void;
+}
+
+interface ICreateTestCodeProps {
+  /**
+   * Strategic approach for test implementation.
+   *
+   * Define the high-level strategy and logical flow for testing the given
+   * scenario. Focus on test methodology, data preparation, and assertion
+   * strategy.
+   *
+   * ### Critical Requirements
+   *
+   * - Must follow the Test Generation Guildelines.
+   * - Must Planning the test code Never occur the typescript compile error.
+   *
+   * ### Planning Elements:
+   *
+   * #### Test Methodology
+   *
+   * - Identify test scenario type (CRUD operation, authentication flow,
+   *   validation test)
+   * - Define test data requirements and preparation strategy
+   * - Plan positive/negative test cases and edge cases
+   * - Design assertion logic and validation points
+   *
+   * #### Execution Strategy
+   *
+   * - Outline step-by-step test execution flow
+   * - Plan error handling and exception scenarios
+   * - Define cleanup and teardown procedures
+   * - Identify dependencies and prerequisites
+   *
+   * ### Example Plan:
+   *
+   *     Test Strategy: Article Creation Validation
+   *     1. Prepare valid article data with required fields
+   *     2. Execute POST request to create article
+   *     3. Validate response structure and data integrity
+   *     4. Test error scenarios (missing fields, invalid data)
+   *     5. Verify database state changes
+   *     6. Reconsider the plan if it doesn't follow the Test Generation
+   *        Guildelines.
+   */
+  plan: string;
+
+  /**
+   * Functional domain classification for test organization.
+   *
+   * Determines file structure and test categorization based on API
+   * functionality. Used for organizing tests into logical groups and directory
+   * hierarchies.
+   *
+   * ### Naming Rules:
+   *
+   * - Lowercase English words only
+   * - Singular nouns (e.g., "article", "user", "comment")
+   * - Kebab-case for compound words (e.g., "user-profile", "payment-method")
+   * - Match primary API resource being tested
+   * - Domain Name must be named only one word.
+   *
+   * ### Domain Examples:
+   *
+   * - `article` → Article management operations
+   * - `comment` → Comment-related functionality
+   * - `auth` → Authentication and authorization
+   * - `user` → User management operations
+   * - `payment` → Payment processing
+   * - `notification` → Notification system
+   */
+  domain: string;
+
+  /**
+   * Complete TypeScript E2E test implementation.
+   *
+   * Generate fully functional, compilation-error-free test code following
+   *
+   * @nestia/e2e framework conventions and TypeScript best practices.
+   *
+   * ### Technical Implementation Requirements:
+   *
+   * #### Import Declarations
+   * ```typescript
+   * import api from "@ORGANIZATION/PROJECT-api";
+   * import { ITargetType } from "@ORGANIZATION/PROJECT-api/lib/structures/[path]";
+   * import { TestValidator } from "@nestia/e2e";
+   * import typia from "typia";
+   * ```
+   * - Must use exact `@ORGANIZATION/PROJECT-api` module path
+   * - Include `@ORGANIZATION` prefix in all API-related imports
+   * - Import specific DTO types from correct structure paths
+   *
+   * #### Code Quality Standards
+   * - Zero TypeScript compilation errors (mandatory)
+   * - Explicit type annotations for all variables
+   * - Proper async/await patterns throughout
+   * - Comprehensive error handling
+   * - Clean, readable code structure
+   * - Consistent formatting and naming conventions
+   *
+   * ### Critical Error Prevention
+   * - Verify all import paths are correct and accessible
+   * - Ensure type compatibility between variables and assignments
+   * - Include all required object properties and methods
+   * - Validate API function signatures and parameter types
+   * - Confirm proper generic type usage
+   * - Test async function declarations and Promise handling
+   */
+  content: string;
+}

@@ -14,10 +14,8 @@ export const AutoBeAnalyzeReviewer = <Model extends ILlmSchema.Model>(
     vendor: ctx.vendor,
     controllers: [],
     config: {
-      systemPrompt: {
-        describe: () => {
-          return "Answer only 'completion' or 'failure'.";
-        },
+      executor: {
+        describe: null,
       },
       locale: ctx.config?.locale,
     },

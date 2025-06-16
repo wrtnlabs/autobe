@@ -22,7 +22,8 @@ export function AutoBePlaygroundCompleteEventMovie(
       setFiles(
         Object.fromEntries(
           Object.entries(files).filter(
-            ([_, value]) => new TextEncoder().encode(value).length < 5 * 1024 * 1024, // 5MB
+            ([_, value]) =>
+              new TextEncoder().encode(value).length < 2 * 1024 * 1024, // 2MB
           ),
         ),
       );

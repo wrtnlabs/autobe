@@ -8,6 +8,8 @@ import { AutoBePlaygroundPrismaCorrectEventMovie } from "./AutoBePlaygroundPrism
 import { AutoBePlaygroundPrismaValidateEventMovie } from "./AutoBePlaygroundPrismaValidateEventMovie";
 import { AutoBePlaygroundProgressEventMovie } from "./AutoBePlaygroundProgressEventMovie";
 import { AutoBePlaygroundStartEventMovie } from "./AutoBePlaygroundStartEventMovie";
+import { AutoBePlaygroundTestCorrectEventMovie } from "./AutoBePlaygroundTestCorrectEventMovie";
+import { AutoBePlaygroundTestValidateEventMovie } from "./AutoBePlaygroundTestValidateEventMovie";
 import { AutoBePlaygroundUserMessageEventMovie } from "./AutoBePlaygroundUserMessageEventMovie";
 import { AutoBePlaygroundValidateEventMovie } from "./AutoBePlaygroundValidateEventMovie";
 
@@ -38,6 +40,7 @@ export function AutoBePlaygroundEventMovie(
     case "interfaceComplement":
     case "testProgress":
     case "realizeProgress":
+    case "testScenario":
       return <AutoBePlaygroundProgressEventMovie event={props.event} />;
     // COMPLETE EVENTS
     case "analyzeComplete":
@@ -53,6 +56,7 @@ export function AutoBePlaygroundEventMovie(
       );
     // VALIDATE EVENTS
     case "testValidate":
+      return <AutoBePlaygroundTestValidateEventMovie event={props.event} />;
     case "realizeValidate":
       return <AutoBePlaygroundValidateEventMovie event={props.event} />;
     // SPECIALIZATIONS
@@ -64,6 +68,8 @@ export function AutoBePlaygroundEventMovie(
       return <AutoBePlaygroundPrismaValidateEventMovie event={props.event} />;
     case "prismaCorrect":
       return <AutoBePlaygroundPrismaCorrectEventMovie event={props.event} />;
+    case "testCorrect":
+      return <AutoBePlaygroundTestCorrectEventMovie event={props.event} />;
     default:
       props.event satisfies never;
       return null;

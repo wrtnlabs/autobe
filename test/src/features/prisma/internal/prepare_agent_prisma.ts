@@ -45,6 +45,7 @@ export const prepare_agent_prisma = async (owner: string, project: string) => {
         type: "analyze",
         reason: "User requested to analyze the requirements",
         files: analyze,
+        prefix: project,
       } satisfies AutoBeAnalyzeHistory,
     ],
   });

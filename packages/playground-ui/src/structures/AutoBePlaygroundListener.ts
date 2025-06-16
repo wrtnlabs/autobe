@@ -68,10 +68,16 @@ export class AutoBePlaygroundListener {
       testStart: async (event) => {
         this.callback?.(event);
       },
+      testScenario: async (event) => {
+        this.callback?.(event);
+      },
       testProgress: async (event) => {
         this.callback?.(event);
       },
       testValidate: async (event) => {
+        this.callback?.(event);
+      },
+      testCorrect: async (event) => {
         this.callback?.(event);
       },
       testComplete: async (event) => {

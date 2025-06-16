@@ -59,6 +59,7 @@ export const prepare_agent_interface = async (
         type: "analyze",
         reason: "User requested to analyze the requirements",
         files: analyze,
+        prefix: project,
       } satisfies AutoBeAnalyzeHistory,
       {
         ...createHistoryProperties(),

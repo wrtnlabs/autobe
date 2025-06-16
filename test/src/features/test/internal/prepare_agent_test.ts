@@ -20,6 +20,7 @@ export const prepare_agent_test = async (project: string) => {
         apiKey: TestGlobal.env.CHATGPT_API_KEY,
       }),
       model: "gpt-4.1",
+      semaphore: 2,
     },
     config: {
       locale: "en-US",
@@ -28,6 +29,7 @@ export const prepare_agent_test = async (project: string) => {
     histories,
   });
   const state: AutoBeState = agent.getContext().state();
+
   return {
     agent,
     analyze: state.analyze!,

@@ -90,7 +90,9 @@ async function step<Model extends ILlmSchema.Model>(
     ],
   });
   agentica.on("request", async (event) => {
-    event.body.tool_choice = "required";
+    if (event.body.tools) {
+      event.body.tool_choice = "required";
+    }
   });
 
   await agentica.conversate("Fill missing schema types please");

@@ -6,6 +6,7 @@ import { AutoBeState } from "../../context/AutoBeState";
 
 export const transformPrismaComponentsHistories = (
   state: AutoBeState,
+  prefix: string | null = null,
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
@@ -47,6 +48,26 @@ export const transformPrismaComponentsHistories = (
         "```json",
         JSON.stringify(state.analyze.files),
         "```",
+        "## Prefix",
+        "",
+        `* Prefix provided by the user: ${prefix}`,
+        "",
+        "The user wants all database schema (table) names to start with the prefix provided below.",
+        "If the prefix is `null`, it should be ignored.",
+        "If a prefix is provided, all table names **must begin with it**.",
+        "However, if there is a special-purpose prefix like `mv` (for materialized views), it **must precede** the given prefix.",
+        "",
+        "## Prefix Example",
+        "",
+        "If the prefix is `shopping`, then table names should be like:",
+        "",
+        "* `shopping_sales`",
+        "* `shopping_sale_options`",
+        "",
+        "In cases where a table is created for performance optimization purposes (e.g., materialized views), the `mv_` prefix must come first.",
+        "For example:",
+        "",
+        "* `mv_shopping_daily_stats`",
       ].join("\n"),
     },
   ];

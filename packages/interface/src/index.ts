@@ -5,3 +5,4 @@ export * from "./json";
 export * from "./openapi";
 export * from "./rpc";
 export * from "./prisma";
+export * from "./test";
