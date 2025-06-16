@@ -1,0 +1,222 @@
+---
+title: Agentica > Guide Documents > WebSocket Protocol > Client Application
+---
+import { Tabs } from "nextra/components";
+
+import RemoteSource from "../../../components/RemoteSource";
+
+## Setup
+<Tabs items={['npm', 'pnpm', 'yarn']}>
+  <Tabs.Tab>
+```bash filename="Terminal" copy
+npm install @agentica/rpc tgrid
+npm install @agentica/core @samchon/openapi
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```bash filename="Terminal" copy
+pnpm install @agentica/core @agentica/rpc tgrid
+pnpm install @agentica/core @samchon/openapi
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```bash filename="Terminal" copy
+yarn add @agentica/core @agentica/rpc tgrid
+yarn add @agentica/core @samchon/openapi
+```
+  </Tabs.Tab>
+</Tabs>
+
+You can start WebSocket client Agentic AI application by installing `@agentica/rpc` and [`tgrid`](https://tgrid.com) packages. `tgrid` is a TypeScript based RPC (Remote Procedure Call) framework supporting WebSocket protocol, and `@agentica/rpc` is an wrapper module of [`@agentica/core`](/docs/core) following the WebSocket RPC.
+
+Also, if you want to develop advanced features not only handling text contents but also manging LLM function calling schemas like [#Arguments Hooking](#arguments-hooking) case, you need to setup `@agentica/core` and [`@samchon/openapi`](https://samchon.github.io/openapi) packages too. `@agentica/core` contains detailed event types, and `@samchon/openapi` provides LLM function calling schemas.
+
+
+
+
+## Development
+<Tabs items={[
+  "Main Program", 
+  <code>IAgenticaRpcListener</code>,
+  <code>IAgenticaRpcService</code>,
+]}>
+  <Tabs.Tab>
+```typescript filename="client/src/main.ts" showLineNumbers copy
+import { IAgenticaRpcListener, IAgenticaRpcService } from "@agentica/rpc";
+import { Driver, WebSocketConnector } from "tgrid";
+
+// Create WebSocketConnector with type specifications
+const connector: WebSocketConnector<
+  null,
+  IAgenticaRpcListener,
+  IAgenticaRpcService<"chatgpt">
+> = new WebSocketConnector(null, {
+  // and configuring IAgenticaRpcListener instance
+  // server will call these functions remotely 
+  // (Remote Procedure Call)
+  text: async (evt) => {
+    console.log(evt.role, evt.text);
+  },
+  select: async (evt) => {
+    console.log("selector", evt.selection);
+  },
+  execute: async (evt) => {
+    console.log("execute", evt.operation, evt.arguments, evt.value);
+  },
+  describe: async (evt) => {
+    console.log("describer", evt.text);
+  },
+});
+
+// Connect to the server
+await connector.connect("ws://localhost:3001");
+
+// Call the server's functions remotely (Remote Procedure Call)
+const driver: Driver<IAgenticaRpcService<"chatgpt">> = connector.getDriver();
+await driver.conversate("Hello, what you can do?");
+
+// Disconnect after your job
+await connector.close();
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    <RemoteSource
+      url="https://raw.githubusercontent.com/wrtnlabs/agentica/refs/heads/main/packages/rpc/src/IAgenticaRpcService.ts"
+      filename="@agentica/rpc/IAgenticaRpcService"
+      showLineNumbers />
+  </Tabs.Tab>
+  <Tabs.Tab>
+    <RemoteSource
+      url="https://raw.githubusercontent.com/wrtnlabs/agentica/refs/heads/main/packages/rpc/src/IAgenticaRpcListener.ts"
+      filename="@agentica/rpc/IAgenticaRpcListener"
+      showLineNumbers />
+  </Tabs.Tab>
+</Tabs>
+
+You can develop WebSocket client application like above.
+
+At first, create an `WebSocketConnector` instance with `IAgenticaRpcListener` and `IAgenticaRpcService` type specifications, and constructing the `IAgenticaRpcListener` typed instance to provide event handlers. The `IAgenticaRpcListener` typed would be provided to the WebSocket server, so that the server will call the `IAgenticaRpcListener` functions remotely (Remote Procedure Call).
+
+And then connect to the server with `WebSocketConnector.connect()` method specifying the server's WebSocket address. If server accepts the connection, you can go to the next step. Otherwise server rejects your connection, an exception would be thrown.
+
+After the connection, you can start conversation by calling the server's functions remotely (Remote Procedure Call) to the `Driver<IAgenticaRpcService>` typed instance obtained from the `WebSocketConnector.getDriver()` method. Whenever you call some functions of the `Driver<IAgenticaRpcService>` instance, the server will call the corresponding functions of the `IAgenticaRpcListener` instance.
+
+Note that, WebSocket protocol is different with HTTP protocol. The connection would be kept until you call the `WebSocketConnector.close()` method manually. So, if your business has been completed, please don't forget to closing the connection.
+
+
+
+## Arguments Hooking
+<Tabs items={[
+  'Client Application', 
+  'Server Application',
+  <code>IAgenticaRpcListener</code>
+]}>
+  <Tabs.Tab>
+```typescript filename="client/src/main.ts" showLineNumbers
+import { IAgenticaRpcListener, IAgenticaRpcService } from "@agentica/rpc";
+import { ILlamaSchema, ILlmFunction } from "@samchon/openapi";
+import { Driver, WebSocketConnector } from "tgrid";
+
+const fillArguments = async (
+  param: ILlamaSchema.IParameters
+): Promise<Record<string, any>> => {
+  ...
+};
+
+const connector: WebSocketConnector<
+  null,
+  IAgenticaRpcListener,
+  IAgenticaRpcService<"llama">
+> = new WebSocketConnector(null, {
+  text: async (evt) => {
+    console.log(evt.role, evt.text);
+  },
+  describe: async (evt) => {
+    console.log("describer", evt.text);
+  },
+  call: async (event) => {
+    const func: ILlmFunction<"llama"> | undefined = controllers
+      .find((c) => c.name === event.operation.controller)
+      ?.application.functions.find(
+        (f) => f.name === event.operation.function,
+      );
+    if (!func?.separated?.human) return null;
+    return fillArguments(func.separated.human);
+  },
+});
+await connector.connect("ws://localhost:3001");
+
+const driver: Driver<IAgenticaRpcService<"llama">> = connector.getDriver();
+const controllers = await driver.getControllers();
+await driver.conversate("I wanna create an article with file uploading.");
+
+await connector.close();
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```typescript filename="server/src/main.ts" showLineNumbers
+import { Agentica } from "@agentica/core";
+import {
+  AgenticaRpcService,
+  IAgenticaRpcListener,
+  IAgenticaRpcService,
+} from "@agentica/rpc";
+import { LlamaTypeChecker } from "@samchon/openapi";
+import OpenAI from "openai";
+import { WebSocketServer } from "tgrid";
+import typia from "typia";
+
+const server: WebSocketServer<
+  null,
+  IAgenticaRpcService<"llama">,
+  IAgenticaRpcListener
+> = new WebSocketServer();
+await server.open(3_001, async (acceptor) => {
+  const agent: Agentica<"llama"> = new Agentica({
+    model: "llama",
+    vendor: {
+      api: new OpenAI({
+        apiKey: "********",
+        baseURL: "http://localhost:3000/llama",
+      }),
+      model: "llama-3.3-70b",
+    },
+    controllers: [
+      {
+        name: "bbs",
+        protocol: "class",
+        application: typia.llm.application<BbsArticleService, "llama">({
+          separate: (schema) =>
+            LlamaTypeChecker.isString(schema) &&
+            schema.format === "uri" &&
+            schema.contentMediaType !== undefined,
+        }),
+        execute: new BbsArticleService(),
+      },
+    ],
+  });
+  const service: AgenticaRpcService<"llama"> = new AgenticaRpcService({
+    agent,
+    listener: acceptor.getDriver(),
+  });
+  await acceptor.accept(service);
+});
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    <RemoteSource
+      url="https://raw.githubusercontent.com/wrtnlabs/agentica/refs/heads/main/packages/rpc/src/IAgenticaRpcListener.ts"
+      filename="@agentica/rpc/IAgenticaRpcListener"
+      showLineNumbers />
+  </Tabs.Tab>
+</Tabs>
+
+
+Looking at the `IAgenticaRpcListener` interface provided from client to server for event listening, you can find that only `text` and `describe` functions are mandatory, and the other functions are all optional. Among the optional functions, `call` function is a special one.
+
+When providing `IAgenticaRpcListener` instance to the server, if you construct the `call` function to return some value exception `null` and `undefined`, it would be utilized instead of original arguments of the function calling. And such arguments modification is required when the server has separated the function parameters by a specific rule.
+
+For example, if the WebSocket server has defined a rule that file arguments must be composed by client side by the file uploading window, you can construct the `call` function to return the new arguments combined with the file uploaded assets.
+
+Above is the example utilizing the `call` function for such case.
+

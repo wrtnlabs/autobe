@@ -1,0 +1,98 @@
+---
+title: Agentica > Guide Documents > WebSocket Protocol > NodeJS Server
+---
+import { Tabs } from "nextra/components";
+
+import RemoteSource from "../../../components/RemoteSource";
+
+## Setup
+<Tabs items={['npm', 'pnpm', 'yarn']}>
+  <Tabs.Tab>
+```bash filename="Terminal" copy
+npm install @agentica/core @samchon/openapi typia
+npm install @agentica/rpc tgrid
+npx typia setup
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```bash filename="Terminal" copy
+pnpm install @agentica/core @samchon/openapi typia
+pnpm install @agentica/rpc tgrid
+pnpm typia setup
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```bash filename="Terminal" copy
+# YARN BERRY IS NOT SUPPORTED
+yarn add @agentica/core @samchon/openapi typia
+yarn add @agentica/rpc tgrid
+yarn typia setup
+```
+  </Tabs.Tab>
+</Tabs>
+
+To develop NodeJS WebSocket server of AI chatbot, you need to install these packages.
+
+At first, you have to setup [`@agentica/core`](/docs/core), [`@samchon/openapi`](https://github.com/samchon/openapi) and [`typia`](https://typia.io) basically to construct agent. `@samchon/openapi` is a library defining LLM function calling schemas, and their converters from the Swagger/OpenAPI documents. And `typia` is a framework which can compose LLM function calling schemas from a TypeScript class type by compiler skills.
+
+At next, setup `@agentica/rpc` and [`tgrid`](https://tgrid.com) packages. `tgrid` is a TypeScript based RPC (Remote Procedure Call) framework supporting WebSocket protocol, and `@agentica/rpc` is an wrapper module of `@agentica/core` following the WebSocket RPC.
+
+At last, run `npx typia setup` command. It's because `typia` is a transformer library analyzing TypeScript source code in the compilation level, and it needs additional setup process transforming TypeScript compiler via [`ts-patch`](https://github.com/nonara/ts-patch). If you're not using non-standard TypeScript compiler (not `tsc`), you have to rollback to the standard TypeScript compiler, or setup [`@ryoppippi/unplugin-typia`](https://typia.io/docs/setup/#unplugin-typia) following its guidance.
+
+
+
+
+## Development
+<Tabs items={[
+  "Main Program", 
+  <code>IAgenticaRpcListener</code>,
+  <code>IAgenticaRpcService</code>,
+]}>
+  <Tabs.Tab>
+```typescript filename="nodejs/src/main.ts" showLineNumbers copy
+import { Agentica } from "@agentica/core";
+import {
+  AgenticaRpcService,
+  IAgenticaRpcListener,
+  IAgenticaRpcService
+} from "@agentica/rpc";
+import { Driver, WebSocketServer } from "tgrid";
+
+const server: WebSocketServer<
+  null,
+  IAgenticaRpcService<"chatgpt">,
+  IAgenticaRpcListener
+> = new WebSocketServer();
+await server.open(3_001, async (acceptor) => {
+  const agent: Agentica<"chatgpt"> = new Agentica({ ... });
+  const listener: Driver<IAgenticaRpcListener> = acceptor.getDriver();
+  const service: AgenticaRpcService<"chatgpt"> = 
+    new AgenticaRpcService({
+      agent,
+      listener,
+    });
+  await acceptor.accept(service);
+});
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    <RemoteSource
+      url="https://raw.githubusercontent.com/wrtnlabs/agentica/refs/heads/main/packages/rpc/src/IAgenticaRpcService.ts"
+      filename="@agentica/rpc/IAgenticaRpcService"
+      showLineNumbers />
+  </Tabs.Tab>
+  <Tabs.Tab>
+    <RemoteSource
+      url="https://raw.githubusercontent.com/wrtnlabs/agentica/refs/heads/main/packages/rpc/src/IAgenticaRpcListener.ts"
+      filename="@agentica/rpc/IAgenticaRpcListener"
+      showLineNumbers />
+  </Tabs.Tab>
+</Tabs>
+
+You can develop WebSocket server application like above.
+
+At first, create an `WebSocketServer` instance with `IAgenticaRpcService` and `IAgenticaRpcListener` type specifiactions, and open the server with a port number and a callback function that is called whenever a client is connected.
+
+And in the callback function, create an `Agentica` instance and wrap it into a new `AgenticaRpcService` instance. And then accept the client connection by calling the `WebSocketAcceptor.accept()` function with the `AgenticaRpcService` instance.
+
+When you've completed the acceptance, everything is completed. When client calls the `IAgenticaRpcService.conversate()` function remotely, server will response to the client by calling the `IAgenticaRpcListener` functions remotely too.

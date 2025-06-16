@@ -23,10 +23,12 @@
   },
   "dependencies": {
     "next": "^15.1.0",
+    "next-mdx-remote": "^5.0.0",
     "nextra": "^3.2.5",
     "nextra-theme-docs": "^3.2.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "tstl": "catalog:samchon",
     "typescript": "~5.8.3"
   },
   "devDependencies": {

@@ -1,0 +1,280 @@
+---
+title: Agentica > Guide Documents > WebSocket Protocol > NestJS Server
+---
+import { Tabs } from "nextra/components";
+
+import RemoteSource from "../../../components/RemoteSource";
+
+## Setup
+<Tabs items={['npm', 'pnpm', 'yarn']}>
+  <Tabs.Tab>
+```bash filename="Terminal" copy
+npm install @nestjs/common @nestjs/core @nestjs/platform-express
+npm install @agentica/core @samchon/openapi
+npm install @agentica/rpc tgrid
+
+npm install -D nestia
+npx nestia setup
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```bash filename="Terminal" copy
+pnpm install @nestjs/common @nestjs/core @nestjs/platform-express
+pnpm install @agentica/core @samchon/openapi
+pnpm install @agentica/rpc tgrid
+
+pnpm install -D nestia
+pnpm nestia setup
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```bash filename="Terminal" copy
+# YARN BERRY IS NOT SUPPORTED
+yarn add @nestjs/common @nestjs/core @nestjs/platform-express
+yarn add @agentica/core @samchon/openapi
+yarn add @agentica/rpc tgrid
+
+yarn add -D nestia
+yarn nestia setup
+```
+  </Tabs.Tab>
+</Tabs>
+
+To develop NestJS WebSocket server of AI chatbot, you need to setup these packages.
+
+At first, install NestJS packages, [`@agentica/core`](/docs/core) and [`@samchon/openapi`](https://github.com/samchon/openapi). `@agentia/core` is the core library of Agentica Framework, and `@samchon/openapi` is a library defining LLM function calling schemas including their converters from the Swagger/OpenAPI documents.
+
+At next, install `@agentica/rpc` and [`tgrid`](https://tgrid.com) packages. `tgrid` is a TypeScript based RPC (Remote Procedure Call) framework supporting WebSocket protocol, and `@agentica/rpc` is an wrapper module of `@agentica/core` following the WebSocket RPC.
+
+At last, install `nestia` package add *devDependencies*, and run `npx nestia setup` command. [`@nestia`](https://nestia.io) is a set of helper libraries for NestJS, enhancing type safety and productivity by combining with [`typia`](https://typia.io) which can compose LLM function calling schemas from a TypeScript class type by compiler skills. Also, `@nestia` makes NestJS to support the WebSocket protocol, so it is essential.
+
+
+
+
+## Bootstrap
+```typescript filename="nestjs/src/main.ts" showLineNumbers copy
+import { WebSocketAdaptor } from "@nestia/core";
+import { INestApplication } from "@nestjs/common";
+import { NestFactory } from "@nestjs/core";
+
+import { MyModule } from "./MyModule";
+
+const app: INestApplication = await NestFactory.create(MyModule);
+await WebSocketAdaptor.upgrade(app);
+await app.listen(3_001, "0.0.0.0");
+```
+
+To activate WebSocket protocol in NestJS, you have to upgrade the NestJS application by `WebSocketAdaptor.upgrade()` function. The upgrade function will make NestJS application to support both HTTP and WebSocket protocols.
+
+
+
+
+## API Controller
+```typescript filename="nestjs/src/chat.controller.ts" showLineNumbers copy
+import { 
+  AgenticaRpcService,
+  IAgenticaRpcListener,
+  IAgenticaRpcListener
+} from "@agentica/rpc";
+import { WebSocketRoute } from "@nestia/core";
+import { Controller } from "@nestjs/common";
+import { Driver, WebSocketAcceptor } from "tgrid";
+
+@Controller("chat")
+export class ChatController {
+  @WebSocketRoute()
+  public async start(
+    // @WebSocketRoute.Param("id") id: string,
+    @WebSocketRoute.Acceptor()
+    acceptor: WebSocketAcceptor<
+      null, // header
+      AgenticaRpcService<"chatgpt">,
+      IAgenticaRpcListener
+    >,
+  ): Promise<void> {
+    const agent: Agentica<"chatgpt"> = new Agentica({ ... });
+    const listener: Driver<IAgenticaRpcListener> = acceptor.getDriver();
+    const service: AgenticaRpcService<"chatgpt"> = 
+      new AgenticaRpcService({
+        agent,
+        listener,
+      });
+    await acceptor.accept(service);
+  }
+}
+```
+
+You can finalize WebSocket server development like above.
+
+At first, create a controller method decorated by `@WebSocketRoute()`. And in the controller method, define a parameter that is decorated by `@WebSocketRoute.Acceptor()` with the type of `WebSocketAcceptor` specializing `IAgenticaRpcService` and `IAgenticaRpcListener` types.
+
+And in the controller method body, create an `Agentica` instance and wrap it into a new `AgenticaRpcService` instance. And then accept the client connection by calling the `WebSocketAcceptor.accept()` function with the `AgenticaRpcService` instance.
+
+When you've completed the acceptance, everything is completed. When client calls the `IAgenticaRpcService.conversate()` function remotely, server will response to the client by calling the `IAgenticaRpcListener` functions remotely too.
+
+
+
+
+## Software Development Kit
+### Outline
+<Tabs items={['npm', 'pnpm', 'yarn']}>
+  <Tabs.Tab>
+```bash filename="Terminal" copy
+npx nestia sdk
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```bash filename="Terminal" copy
+pnpm nestia sdk
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```bash filename="Terminal" copy
+# YARN BERRY IS NOT SUPPORTED
+yarn nestia sdk
+```
+  </Tabs.Tab>
+</Tabs>
+
+Interaction library for client application built by [`@nestia/sdk`](https://nestia.io/docs/sdk/).
+
+If you configure `nestia.config.ts` file and run `npx nestia sdk` command, `@nestia/sdk` will generate an SDK (Software Development Kit) library for frontend application which can interact with the backend server, by analyzing your NestJS backend server source codes in the compilation level.
+
+With the SDK library, client application developer can interact with your backend server type safely and conveniently. No more manual interaction code writing is required. Let the client application developer to import the SDK library, and just call the functions embedded in the SDK library.
+
+![Software Development Kit Example](https://user-images.githubusercontent.com/13158709/215004990-368c589d-7101-404e-b81b-fbc936382f05.gif)
+
+### Configuration
+<Tabs items={[
+  <code>nestia.config.ts</code>, 
+  <code>INestiaConfig.ts</code>,
+]}>
+  <Tabs.Tab>
+```typescript copy filename="nestia.config.ts" showLineNumbers {8-17}
+import { INestiaConfig } from "@nestia/sdk";
+import { NestFactory } from "@nestjs/core";
+// import { FastifyAdapter } from "@nestjs/platform-fastify";
+
+import { YourModule } from "./src/YourModule";
+
+const NESTIA_CONFIG: INestiaConfig = {
+  input: async () => {
+    const app = await NestFactory.create(YourModule);
+    // const app = await NestFactory.create(YourModule, new FastifyAdapter());
+    // app.setGlobalPrefix("api");
+    // app.enableVersioning({
+    //     type: VersioningType.URI,
+    //     prefix: "v",
+    // })
+    return app;
+  },
+  output: "src/api",
+};
+export default NESTIA_CONFIG;
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    <RemoteSource 
+      url="https://raw.githubusercontent.com/samchon/nestia/refs/heads/master/packages/sdk/src/INestiaConfig.ts"
+      filename="@nestia/sdk/INestiaConfig"
+      showLineNumbers
+      highlight="10-29" />
+  </Tabs.Tab>
+</Tabs>
+
+Make `nestia.config.ts` file in the root scope of your NestJS backend server, and configure like above. 
+
+You have to configure two things, property `input` and `output`. Write a callback function mounting an NestJS application instance with your module specification to the `input` property, and write destination directory path to the `output` property.
+
+After that, just run `npx nestia sdk` command, then SDK library would be generated.
+
+
+
+
+### Demonstration
+<Tabs items={["Main Program", "SDK Library"]}>
+  <Tabs.Tab>
+```typescript filename="client/src/main.ts" showLineNumbers copy
+import { IAgenticaRpcListener } from "@agentica/rpc";
+import api, { IConnection } from "@ORGANIZATION/PROJECT-api";
+
+const { connector, driver } = await api.functional.chat.start(
+  {
+    host: "http://localhost:30001",
+  } satisfies IConnection,
+  {
+    text: async (evt) => {
+      console.log(evt.role, evt.text);
+    },
+    select: async (evt) => {
+      console.log("selector", evt.selection);
+    },
+    execute: async (evt) => {
+      console.log("execute", evt.operation, evt.arguments, evt.value);
+    },
+    describe: async (evt) => {
+      console.log("describer", evt.text);
+    },
+  } satisfies IAgenticaRpcListener,
+);
+
+await driver.conversate("Hello, what can you do?");
+
+await connector.close();
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```typescript filename="server/api/functional/chat/index.ts" showLineNumbers copy
+/**
+ * @packageDocumentation
+ * @module api.functional.chat
+ * @nestia Generated by Nestia - https://github.com/samchon/nestia
+ */
+//================================================================
+import type { IAgenticaRpcListener } from "@agentica/rpc/lib/IAgenticaRpcListener";
+import type { IAgenticaRpcService } from "@agentica/rpc/lib/IAgenticaRpcService";
+import type { IConnection } from "@nestia/fetcher";
+import { WebSocketConnector } from "tgrid";
+import type { Driver } from "tgrid";
+
+/**
+ * @controller MyChatController.start
+ * @path /chat
+ * @nestia Generated by Nestia - https://github.com/samchon/nestia
+ */
+export async function start(
+  connection: IConnection<start.Header>,
+  provider: start.Provider,
+): Promise<start.Output> {
+  const connector: WebSocketConnector<
+    start.Header,
+    start.Provider,
+    start.Listener
+  > = new WebSocketConnector(connection.headers ?? ({} as any), provider);
+  await connector.connect(
+    `${connection.host.endsWith("/") ? connection.host.substring(0, connection.host.length - 1) : connection.host}${start.path()}`,
+  );
+  const driver: Driver<start.Listener> = connector.getDriver();
+  return {
+    connector,
+    driver,
+  };
+}
+export namespace start {
+  export type Output = {
+    connector: WebSocketConnector<Header, Provider, Listener>;
+    driver: Driver<Listener>;
+  };
+  export type Header = undefined;
+  export type Provider = IAgenticaRpcListener;
+  export type Listener = IAgenticaRpcService<"chatgpt">;
+
+  export const path = () => "/chat";
+}
+```
+  </Tabs.Tab>
+</Tabs>
+
+Here is the demonstration of SDK library generation and its usage.
+
+As you can see, client application developers can interact with the WebSocket server of the AI chatbot, type safely and conveniently, just by importing and calling the SDK library.
