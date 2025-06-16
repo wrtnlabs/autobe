@@ -95,25 +95,27 @@ export const orchestrateAnalyze =
     }
 
     const described = determined.find((el) => el.type === "describe");
-    const describedFiles = Array.from(
-      new Set(
-        described
-          ? described.executes
-              .flatMap((el) => {
-                if (el.protocol === "class") {
-                  return (
-                    el.arguments as {
-                      files: Array<Pick<IFile, "filename" | "reason">>;
-                    }
-                  ).files;
-                }
-                return null;
-              })
-              .filter((el) => el !== null)
-          : [],
-      ),
-    );
+    // const determinedOutput = Array.from(
+    //   new Set(
+    //     described
+    //       ? described.executes
+    //           .map((el) => {
+    //             if (el.protocol === "class") {
+    //               return el.arguments as unknown as IDeterminingInput;
+    //             }
+    //             return null;
+    //           })
+    //           .filter((el) => el !== null)
+    //       : [],
+    //   ),
+    // );
 
+    const determinedOutput = described?.executes.find(
+      (el) => el.protocol === "class" && typia.is<IDeterminingInput>(el.value),
+    )?.value as IDeterminingInput;
+
+    const prefix = determinedOutput.prefix;
+    const describedFiles = determinedOutput.files;
     if (describedFiles.length === 0) {
       const history: AutoBeAssistantMessageHistory = {
         id: v4(),
@@ -175,6 +177,7 @@ export const orchestrateAnalyze =
         id: v4(),
         type: "analyze",
         reason: userPlanningRequirements,
+        prefix,
         files: files,
         step,
         created_at,
@@ -184,6 +187,7 @@ export const orchestrateAnalyze =
       ctx.histories().push(history);
       ctx.dispatch({
         type: "analyzeComplete",
+        prefix,
         files: files,
         step,
         created_at,
@@ -206,6 +210,32 @@ export const orchestrateAnalyze =
     return history;
   };
 
+export interface IDeterminingInput {
+  /**
+   * Prefix for file names and all prisma schema files, table, interface, and
+   * variable names. For example, if you were to create a bulletin board
+   * service, the prefix would be bbs. At this time, the name of the document
+   * would be, for example, 00_bbs_table_of_contents, and bbs would have to be
+   * attached to the name of all documents. This value would then be passed to
+   * other agents as well, in the form of bbs_article, bbs_article_snapshot, and
+   * bbs_comments in the table name. Interfaces will likewise be used in
+   * interfaces and tests because they originate from the name of prisma scheme.
+   * Do not use prefixes that are related to the technology stack (e.g., ts_,
+   * api_, react_) or unnatural prefixes that typically wouldn’t appear in table
+   * names or domain models (e.g., zz_, my_, dev_).
+   *
+   * @title Prefix
+   */
+  prefix: string;
+
+  /**
+   * File name must be English. and it must contains the numbering and prefix.
+   *
+   * @title file names and reason to create.
+   */
+  files: Array<Pick<IFile, "filename" | "reason">>;
+}
+
 class DeterminingFiles {
   /**
    * Determining the Initial File List.
@@ -218,10 +248,10 @@ class DeterminingFiles {
    * generate any files. Simply pass an empty array to `input.files`, which is
    * the input value for the `determine` tool.
    *
-   * @param input
+   * @param input Prefix and files
    * @returns
    */
-  determine(input: { files: Array<Pick<IFile, "filename" | "reason">> }) {
+  determine(input: IDeterminingInput): IDeterminingInput {
     return input;
   }
 }

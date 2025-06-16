@@ -140,26 +140,25 @@ export class AutoBeAnalyzeAgent<Model extends ILlmSchema.Model> {
 
       const filenames = Object.keys(this.fileMap).join(",");
       const command = `Please proceed with the review of these files only.: ${filenames}`;
-      const [review] = await reviewer.conversate(command);
+      const response = await reviewer.conversate(command);
+      const review = response.find((el) => el.type === "assistantMessage");
 
       if (review) {
-        if (review.type === "assistantMessage") {
-          this.ctx.dispatch({
-            type: "analyzeReview",
-            review: review.text,
-            created_at: new Date().toISOString(),
-            step: this.ctx.state().analyze?.step ?? 0,
-          });
+        this.ctx.dispatch({
+          type: "analyzeReview",
+          review: review.text,
+          created_at: new Date().toISOString(),
+          step: this.ctx.state().analyze?.step ?? 0,
+        });
 
-          return this.conversate(
-            JSON.stringify({
-              user_query: content,
-              message: `THIS IS ANSWER OF REVIEW AGENT. FOLLOW THIS INSTRUCTIONS. AND DON\'T REQUEST ANYTHING.`,
-              review: review.text,
-            }),
-            retry - 1,
-          );
-        }
+        return this.conversate(
+          JSON.stringify({
+            user_query: content,
+            message: `THIS IS ANSWER OF REVIEW AGENT. FOLLOW THIS INSTRUCTIONS. AND DON\'T REQUEST ANYTHING.`,
+            review: review.text,
+          }),
+          retry - 1,
+        );
       }
 
       return `COMPLETE WITHOUT REVIEW`;

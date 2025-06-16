@@ -25,13 +25,16 @@ export async function orchestratePrismaComponents<
   const pointer: IPointer<IExtractComponentsProps | null> = {
     value: null,
   };
+
+  const prefix = ctx.state().analyze?.prefix ?? null;
+
   const agentica: MicroAgentica<Model> = new MicroAgentica({
     model: ctx.model,
     vendor: ctx.vendor,
     config: {
       ...(ctx.config ?? {}),
     },
-    histories: transformPrismaComponentsHistories(ctx.state()),
+    histories: transformPrismaComponentsHistories(ctx.state(), prefix),
     tokenUsage: ctx.usage(),
     controllers: [
       createApplication({

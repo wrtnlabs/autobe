@@ -46,6 +46,7 @@ export const validate_agent_interface_main = async (
     {
       type: "analyzeComplete",
       files: analyze,
+      prefix: project,
       step: 0,
       created_at: new Date().toISOString(),
     } satisfies AutoBeAnalyzeCompleteEvent,

@@ -47,7 +47,7 @@
 
 # Guidelines for Document Volume
 
-* It is recommended to instruct the analyze agent to **write a document longer than 2,000 characters** for sufficient utility.
+* It is recommended to instruct the analyze agent to **write a document longer than 2,000 characters** for sufficient utility. (Do not exceed 6,000 characters)
 * If the document is too short, indicate how many characters it currently has and how many more are needed.
 * However, in the case of the table of contents page, it is free from the volume limit.
 * Rather than simply telling them to increase the text, **compare the number of headings to the text length**,
