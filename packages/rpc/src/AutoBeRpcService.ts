@@ -77,6 +77,15 @@ export class AutoBeRpcService<Model extends ILlmSchema.Model>
     agent.on("testStart", (event) => {
       listener.testStart!(event).catch(() => {});
     });
+    agent.on("testScenario", (event) => {
+      listener.testScenario!(event).catch(() => {});
+    });
+    agent.on("testProgress", (event) => {
+      listener.testProgress!(event).catch(() => {});
+    });
+    agent.on("testValidate", (event) => {
+      listener.testValidate!(event).catch(() => {});
+    });
     agent.on("testComplete", (event) => {
       listener.testComplete!(event).catch(() => {});
     });

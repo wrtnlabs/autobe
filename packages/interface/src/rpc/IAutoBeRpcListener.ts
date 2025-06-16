@@ -27,6 +27,7 @@ import {
   AutoBeTestValidateEvent,
   AutoBeUserMessageEvent,
 } from "../events";
+import { AutoBeTestScenarioEvent } from "../events/AutoBeTestScenarioEvent";
 
 export interface IAutoBeRpcListener {
   assistantMessage(event: AutoBeAssistantMessageEvent): Promise<void>;
@@ -52,6 +53,7 @@ export interface IAutoBeRpcListener {
   interfaceComplete?(event: AutoBeInterfaceCompleteEvent): Promise<void>;
 
   testStart?(event: AutoBeTestStartEvent): Promise<void>;
+  testScenario?(event: AutoBeTestScenarioEvent): Promise<void>;
   testProgress?(event: AutoBeTestProgressEvent): Promise<void>;
   testValidate?(event: AutoBeTestValidateEvent): Promise<void>;
   testCorrect?(event: AutoBeTestCorrectEvent): Promise<void>;
