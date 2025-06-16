@@ -1,4 +1,5 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
+import { AutoBeOpenApi } from "@autobe/interface";
 import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
@@ -6,6 +7,8 @@ import { AutoBeState } from "../../context/AutoBeState";
 
 export const transformTestScenarioHistories = (
   state: AutoBeState,
+  endponits: AutoBeOpenApi.IEndpoint[],
+  files: Record<string, string>,
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
@@ -139,6 +142,41 @@ export const transformTestScenarioHistories = (
         `## OpenAPI Document`,
         "```json",
         JSON.stringify(state.interface.document),
+        "```",
+      ].join("\n"),
+    },
+    {
+      id: v4(),
+      created_at: new Date().toISOString(),
+      type: "systemMessage",
+      text: AutoBeSystemPromptConstant.TEST,
+    },
+    {
+      id: v4(),
+      created_at: new Date().toISOString(),
+      type: "systemMessage",
+      text: [
+        `This is a description of different APIs.`,
+        `Different APIs may have to be called to create one.`,
+        `Check which functions have been developed.`,
+        "```json",
+        JSON.stringify(endponits, null, 2),
+        "```",
+      ].join("\n"),
+    },
+    {
+      id: v4(),
+      created_at: new Date().toISOString(),
+      type: "systemMessage",
+      text: [
+        "Below is basically the generated test code,",
+        "which is a test to verify that the API is simply called and successful.",
+        "Since there is already an automatically generated API,",
+        "when a user requests to create a test scenario, two or more APIs must be combined,",
+        "but a test in which the currently given endpoint is the main must be created.",
+        '"Input Test Files" should be selected from the list of files here.',
+        "```json",
+        JSON.stringify(files, null, 2),
         "```",
       ].join("\n"),
     },

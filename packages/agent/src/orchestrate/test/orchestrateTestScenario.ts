@@ -4,9 +4,7 @@ import { AutoBeTestScenarioEvent } from "@autobe/interface/src/events/AutoBeTest
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
-import { v4 } from "uuid";
 
-import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { transformTestScenarioHistories } from "./transformTestScenarioHistories";
@@ -14,7 +12,7 @@ import { transformTestScenarioHistories } from "./transformTestScenarioHistories
 export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
 ): Promise<AutoBeTestScenarioEvent> {
-  const testFiles = Object.entries(ctx.state().interface?.files ?? {})
+  const files = Object.entries(ctx.state().interface?.files ?? {})
     .filter(([filename]) => {
       return filename.startsWith("test/features/api/");
     })
@@ -42,12 +40,12 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
 
   const scenarios: AutoBeTest.IScenario[][] = await Promise.all(
     endpoints.map(async (endpoint, i, arr) => {
-      const otherOperations = arr.filter((_el, j) => i !== j);
+      const endponits = arr.filter((_el, j) => i !== j);
       const rows: AutoBeTest.IScenario[] = await process(
         ctx,
         endpoint,
-        otherOperations,
-        testFiles,
+        endponits,
+        files,
       );
       ctx.dispatch({
         type: "testScenario",
@@ -74,8 +72,8 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   endpoint: AutoBeOpenApi.IEndpoint,
-  others: AutoBeOpenApi.IEndpoint[],
-  testFiles: Record<string, string>,
+  endpoints: AutoBeOpenApi.IEndpoint[],
+  files: Record<string, string>,
 ): Promise<AutoBeTest.IScenario[]> {
   const pointer: IPointer<AutoBeTest.IScenario[] | null> = {
     value: null,
@@ -94,42 +92,7 @@ async function process<Model extends ILlmSchema.Model>(
     },
     tokenUsage: ctx.usage(),
     histories: [
-      ...transformTestScenarioHistories(ctx.state()),
-      {
-        id: v4(),
-        created_at: new Date().toISOString(),
-        type: "systemMessage",
-        text: AutoBeSystemPromptConstant.TEST,
-      },
-      {
-        id: v4(),
-        created_at: new Date().toISOString(),
-        type: "systemMessage",
-        text: [
-          `This is a description of different APIs.`,
-          `Different APIs may have to be called to create one.`,
-          `Check which functions have been developed.`,
-          "```json",
-          JSON.stringify(others, null, 2),
-          "```",
-        ].join("\n"),
-      },
-      {
-        id: v4(),
-        created_at: new Date().toISOString(),
-        type: "systemMessage",
-        text: [
-          "Below is basically the generated test code,",
-          "which is a test to verify that the API is simply called and successful.",
-          "Since there is already an automatically generated API,",
-          "when a user requests to create a test scenario, two or more APIs must be combined,",
-          "but a test in which the currently given endpoint is the main must be created.",
-          '"Input Test Files" should be selected from the list of files here.',
-          "```json",
-          JSON.stringify(testFiles, null, 2),
-          "```",
-        ].join("\n"),
-      },
+      ...transformTestScenarioHistories(ctx.state(), endpoints, files),
     ],
     controllers: [
       createApplication({
