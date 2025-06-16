@@ -112,7 +112,9 @@ async function process<Model extends ILlmSchema.Model>(
     ],
   });
   agentica.on("request", async (event) => {
-    event.body.tool_choice = "required";
+    if (event.body.tools) {
+      event.body.tool_choice = "required";
+    }
   });
   await agentica.conversate(
     [

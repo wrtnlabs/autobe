@@ -8,8 +8,8 @@ import { assertSchemaModel } from "../context/assertSchemaModel";
 import { orchestrateAnalyze } from "../orchestrate/analyze/orchestrateAnalyze";
 import { orchestrateInterface } from "../orchestrate/interface/orchestrateInterface";
 import { orchestrateRealize } from "../orchestrate/orchestrateRealize";
-import { orchestrateTest } from "../orchestrate/orchestrateTest";
 import { orchestratePrisma } from "../orchestrate/prisma/orchestratePrisma";
+import { orchestrateTest } from "../orchestrate/test/orchestrateTest";
 import { StringUtil } from "../utils/StringUtil";
 
 export const createAutoBeController = <Model extends ILlmSchema.Model>(props: {

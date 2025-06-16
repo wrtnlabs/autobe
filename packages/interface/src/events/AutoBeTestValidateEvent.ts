@@ -6,6 +6,7 @@ export interface AutoBeTestValidateEvent
   files: Record<string, string>;
   result:
     | IAutoBeTypeScriptCompilerResult.IFailure
-    | IAutoBeTypeScriptCompilerResult.IException;
+    | IAutoBeTypeScriptCompilerResult.IException
+    | IAutoBeTypeScriptCompilerResult.ISuccess;
   step: number;
 }

@@ -25,6 +25,7 @@ export * from "./AutoBeInterfaceCompleteEvent";
 export * from "./AutoBeTestStartEvent";
 export * from "./AutoBeTestProgressEvent";
 export * from "./AutoBeTestValidateEvent";
+export * from "./AutoBeTestCorrectEvent";
 export * from "./AutoBeTestCompleteEvent";
 
 export * from "./AutoBeRealizeStartEvent";

@@ -15,6 +15,7 @@ import json from "../compiler/examples/prisma.cross.json";
 export const test_agent_prisma_cross = async () => {
   if (TestGlobal.env.CHATGPT_API_KEY === undefined) return;
 
+  const histories = await TestHistory.getAnalyze("bbs");
   const compiler: AutoBeCompiler = new AutoBeCompiler();
   const agent: AutoBeAgent<"chatgpt"> = new AutoBeAgent({
     model: "chatgpt",
@@ -22,7 +23,7 @@ export const test_agent_prisma_cross = async () => {
       api: new OpenAI({ apiKey: TestGlobal.env.CHATGPT_API_KEY }),
       model: "gpt-4.1",
     },
-    histories: await TestHistory.getAnalyze("bbs"),
+    histories: histories,
     compiler,
   });
   const result: IAutoBePrismaValidation = await orchestratePrismaCorrect(

@@ -35,6 +35,7 @@ export const test_prisma_example = async () => {
           created_at: new Date().toISOString(),
           completed_at: new Date().toISOString(),
           step: 0,
+          prefix: "shopping",
         } satisfies AutoBeAnalyzeHistory,
         prisma: null,
         interface: null,
