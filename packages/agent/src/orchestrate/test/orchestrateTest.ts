@@ -16,9 +16,8 @@ import { orchestrateTestScenario } from "./orchestrateTestScenario";
 export const orchestrateTest =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
   async (
-    props: IAutoBeApplicationProps,
+    _props: IAutoBeApplicationProps,
   ): Promise<AutoBeAssistantMessageHistory | AutoBeTestHistory> => {
-    props;
     const start: Date = new Date();
     const operations = ctx.state().interface?.document.operations ?? [];
     if (operations.length === 0) {
@@ -78,5 +77,3 @@ export const orchestrateTest =
 
     return history;
   };
-
-// 샘플로 쓸만한 asset들 확보해놓기.
