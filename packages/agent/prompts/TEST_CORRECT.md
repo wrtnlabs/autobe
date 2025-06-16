@@ -54,11 +54,11 @@ import { Type } from "@ORGANIZATION/PROJECT-api/lib/structures/Type";
 
 #### Comprehensive Module Fix Strategy:
 
-1. **Pattern Detection**: Look for ANY import that contains:
-   - `@[anything]/[project-name]-api` → Replace `@[anything]` with `@ORGANIZATION`
-   - `@[project-name]-api` (missing org prefix) → Add `@ORGANIZATION/` prefix
+1. **Pattern Detection**: Look for ANY import that contains:  
+   - `@[anything]/[project-name]-api` → Replace `@[anything]` with `@ORGANIZATION`  
+   - `@[project-name]-api` (missing org prefix) → Add `@ORGANIZATION/` prefix  
 
-2. **Common Error Patterns to Fix ALL AT ONCE**:
+2. **Common Error Patterns to Fix ALL AT ONCE**:  
 
 ```typescript
 // Error Pattern 1: Wrong organization name
@@ -76,13 +76,13 @@ Cannot find module 'template-api'
 Cannot find module '@wrtnlabs/template-api/lib/structures/IType'
 Cannot find module '@nestia/template-api/lib/structures/IType'
 // Fix: Replace with @ORGANIZATION/template-api/lib/structures/IType
-```
+```  
 
-3. **Comprehensive Import Scan and Fix**:
-   - **BEFORE fixing the reported error**, scan ALL import statements in the code
-   - Identify ALL imports that follow incorrect patterns
-   - Fix ALL of them simultaneously to prevent error loops
-   - Ensure consistent `@ORGANIZATION/PROJECT-api` pattern throughout
+3. **Comprehensive Import Scan and Fix**:  
+   - **BEFORE fixing the reported error**, scan ALL import statements in the code  
+   - Identify ALL imports that follow incorrect patterns  
+   - Fix ALL of them simultaneously to prevent error loops  
+   - Ensure consistent `@ORGANIZATION/PROJECT-api` pattern throughout  
 
 #### Module Resolution Fix Examples:
 
@@ -96,18 +96,19 @@ import { IAttachmentFile } from "@template-api/lib/structures/IAttachmentFile";
 import api from "@ORGANIZATION/template-api";
 import { IBbsArticle } from "@ORGANIZATION/template-api/lib/structures/IBbsArticle";
 import { IAttachmentFile } from "@ORGANIZATION/template-api/lib/structures/IAttachmentFile";
-```
+```  
 
 ### 2. Error Loop Prevention Strategy
 
-**CRITICAL**: To prevent 1 → 2 → 3 → 1 error loops:
+**CRITICAL**: To prevent 1 → 2 → 3 → 1 error loops:  
 
-1. **Holistic Code Analysis**: Before fixing the specific error, analyze ALL import statements in the entire code
-2. **Batch Import Fixes**: Fix ALL import-related issues in a single pass, not just the reported error
-3. **Pattern Consistency**: Ensure ALL imports follow the same `@ORGANIZATION/PROJECT-api` pattern
-4. **Preemptive Fixes**: Look for and fix potential related errors that might surface after the current fix
+1. **Holistic Code Analysis**: Before fixing the specific error, analyze ALL import statements in the entire code  
+2. **Batch Import Fixes**: Fix ALL import-related issues in a single pass, not just the reported error  
+3. **Pattern Consistency**: Ensure ALL imports follow the same `@ORGANIZATION/PROJECT-api` pattern  
+4. **Preemptive Fixes**: Look for and fix potential related errors that might surface after the current fix  
 
-**Implementation Approach**:
+**Implementation Approach**:  
+
 ```typescript
 // Step 1: Scan entire code for ALL these patterns
 const problemPatterns = [
@@ -119,7 +120,7 @@ const problemPatterns = [
 
 // Step 2: Replace ALL matches with @ORGANIZATION/PROJECT-api pattern
 // Step 3: Then fix the specific reported error
-```
+```  
 
 ### 3. API Function Usage Corrections
 
@@ -196,7 +197,7 @@ Example:
   TestValidator.equals("message")(
       [] as IBbsArticleComment[],
     )(data);
-  ```
+  ```  
 
 ### 9. Common TypeScript Error Fixes
 
@@ -210,20 +211,20 @@ Example:
 
 ## Error Resolution Strategy
 
-1. **Full Code Analysis**: FIRST perform comprehensive analysis of ENTIRE codebase for ALL potential TypeScript issues
-2. **Error Chain Identification**: Identify cascading error patterns and relationships between different parts of code
-3. **Holistic Fix Planning**: Plan fixes for ALL related errors that could cause loops, not just the reported error
+1. **Full Code Analysis**: FIRST perform comprehensive analysis of ENTIRE codebase for ALL potential TypeScript issues  
+2. **Error Chain Identification**: Identify cascading error patterns and relationships between different parts of code  
+3. **Holistic Fix Planning**: Plan fixes for ALL related errors that could cause loops, not just the reported error  
 4. **Reference File Consultation**:  
    - For module errors: Consult API Files for correct import paths  
    - For type errors: Consult DTO Files for correct type import paths  
-   - For function calls: Verify method signatures and parameters
-5. **Batch Error Resolution**: Fix ALL identified issues simultaneously in logical groups:
-   - All import/module issues together
+   - For function calls: Verify method signatures and parameters  
+5. **Batch Error Resolution**: Fix ALL identified issues simultaneously in logical groups:  
+   - All import/module issues together  
    - All type declaration issues together  
-   - All function signature issues together
-   - All usage/call site issues together
+   - All function signature issues together  
+   - All usage/call site issues together  
 6. **Context Preservation**: Maintain the original test logic and flow  
-7. **Comprehensive Validation**: Ensure no new compilation errors or cascading issues are introduced
+7. **Comprehensive Validation**: Ensure no new compilation errors or cascading issues are introduced  
 8. **Pattern Consistency**: Keep existing code style and conventions throughout all fixes  
 
 ## Output Requirements
@@ -232,48 +233,48 @@ Example:
 - Maintain all original functionality and test logic  
 - Preserve code formatting and style  
 - Ensure the fix addresses ALL related compilation errors (not just the reported one)  
-- **CRITICAL**: Fix ALL import pattern issues in a single pass to prevent error loops
+- **CRITICAL**: Fix ALL import pattern issues in a single pass to prevent error loops  
 - Do not add explanations, comments, or additional features  
 
 ## Priority Error Handling
 
 1. **Comprehensive Analysis** (HIGHEST priority):  
-   - Scan ENTIRE codebase for ALL potential TypeScript compilation issues
-   - Identify cascading error patterns and relationships
-   - Map error chains that commonly cause loops (import → type → usage → validation)
+   - Scan ENTIRE codebase for ALL potential TypeScript compilation issues  
+   - Identify cascading error patterns and relationships  
+   - Map error chains that commonly cause loops (import → type → usage → validation)  
 
-2. **Batch Error Resolution** (CRITICAL):
-   - Group related errors into logical fix batches:
-     - **Module/Import Batch**: All import paths, module resolution, missing dependencies
+2. **Batch Error Resolution** (CRITICAL):  
+   - Group related errors into logical fix batches:  
+     - **Module/Import Batch**: All import paths, module resolution, missing dependencies  
      - **Type Batch**: All type declarations, interfaces, generic constraints  
-     - **Function Batch**: All function signatures, parameters, return types
-     - **Usage Batch**: All variable assignments, method calls, property access
-     - **Test Batch**: All TestValidator calls, assertion patterns, validation logic
-   - Fix entire batches simultaneously to prevent cascading failures
+     - **Function Batch**: All function signatures, parameters, return types  
+     - **Usage Batch**: All variable assignments, method calls, property access  
+     - **Test Batch**: All TestValidator calls, assertion patterns, validation logic  
+   - Fix entire batches simultaneously to prevent cascading failures  
 
-3. **Specific Error Resolution**:
-   - After comprehensive fixes, verify the originally reported error is resolved
-   - Use DTO Files for type corrections and API Files for function signatures
-   - Ensure consistency with established patterns
+3. **Specific Error Resolution**:  
+   - After comprehensive fixes, verify the originally reported error is resolved  
+   - Use DTO Files for type corrections and API Files for function signatures  
+   - Ensure consistency with established patterns  
 
 4. **General TypeScript Compilation**:  
-   - Apply standard TypeScript error resolution techniques
+   - Apply standard TypeScript error resolution techniques  
    - Maintain type safety throughout all fixes  
 
 ## Error Loop Prevention Protocol
 
-**MANDATORY STEPS to prevent error loops:**
+**MANDATORY STEPS to prevent error loops:**  
 
-1. **Pre-Analysis**: Before fixing reported error, scan entire code for ALL import statements
-2. **Pattern Matching**: Identify ALL imports matching problematic patterns:
-   - `@[anything-except-ORGANIZATION]/[project]-api`
-   - Missing `@ORGANIZATION/` prefix
-   - Inconsistent organization naming
-3. **Comprehensive Fix**: Replace ALL problematic imports with correct `@ORGANIZATION/PROJECT-api` pattern
-4. **Validation**: Ensure ALL imports in the file follow consistent pattern
-5. **Specific Fix**: Then address the specific reported compilation error
+1. **Pre-Analysis**: Before fixing reported error, scan entire code for ALL import statements  
+2. **Pattern Matching**: Identify ALL imports matching problematic patterns:  
+   - `@[anything-except-ORGANIZATION]/[project]-api`  
+   - Missing `@ORGANIZATION/` prefix  
+   - Inconsistent organization naming  
+3. **Comprehensive Fix**: Replace ALL problematic imports with correct `@ORGANIZATION/PROJECT-api` pattern  
+4. **Validation**: Ensure ALL imports in the file follow consistent pattern  
+5. **Specific Fix**: Then address the specific reported compilation error  
 
-**Example of Comprehensive Fix Approach:** 
+**Example of Comprehensive Fix Approach:**  
 
 ```typescript
 // Input code with multiple potential issues:
@@ -286,5 +287,3 @@ import api from "@ORGANIZATION/template-api";
 import { IBbsArticle } from "@ORGANIZATION/template-api/lib/structures/IBbsArticle";
 import { IUser } from "@ORGANIZATION/template-api/lib/structures/IUser";
 ```
-
-This comprehensive approach prevents the 1 → 2 → 3 → 1 error loop by addressing all related issues in a single pass.
