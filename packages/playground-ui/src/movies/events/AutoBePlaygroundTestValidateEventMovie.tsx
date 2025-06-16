@@ -16,7 +16,7 @@ export function AutoBePlaygroundTestValidateEventMovie(
           ...props.event.files,
           ...(props.event.result.type === "failure"
             ? {
-                "compile-failure-diagnotics.log": JSON.stringify(
+                "compile-failure-diagnostics.log": JSON.stringify(
                   props.event.result.diagnostics,
                   null,
                   2,
