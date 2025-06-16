@@ -8,7 +8,7 @@
     "prebuild": "rimraf .next && rimraf out && pnpm run build:typedoc",
     "postbuild": "pnpm run build:sitemap",
     "build:typedoc": "node build/typedoc",
-    "build:sitemap": "node build/sitemap",
+    "build:sitemap": "next-sitemap",
     "deploy": "node build/deploy",
     "dev": "next dev"
   },
@@ -21,15 +21,15 @@
   "bugs": {
     "url": "https://github.com/wrtnlabs/autobe/issues"
   },
+  "homepage": "https://wrtnlabs.io/autobe",
   "dependencies": {
     "next": "^15.1.0",
-    "next-mdx-remote": "^5.0.0",
-    "nextra": "^3.2.5",
-    "nextra-theme-docs": "^3.2.5",
+    "nextra": "^4.2.17",
+    "nextra-theme-docs": "^4.2.17",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "tstl": "catalog:samchon",
-    "typescript": "~5.8.3"
+    "typescript": "catalog:typescript"
   },
   "devDependencies": {
     "@types/node": "^18.11.10",

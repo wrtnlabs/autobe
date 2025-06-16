@@ -1,0 +1,52 @@
+---
+title: AutoBE > Guide Documents > Setup
+---
+import AutoBePlaygroundSection from "../../template/AutoBePlaygroundSection.mdx";
+
+## Playground
+
+<AutoBePlaygroundSection />
+
+## Local Setup
+
+```bash
+git clone https://github.com/wrtnlabs/autobe
+cd autobe
+pnpm install
+pnpm run playground
+```
+
+You can setup playground like application on your local machine.
+
+Clone this `@autobe` repository and run the `playground` script after installing dependencies with `pnpm install`. This will start a local server that you can access to interact with the `@autobe` agent.
+
+## WebSocket Server
+
+```typescript
+import { AutoBeAgent } from "@autobe/agent";
+import { AutoBePlaygroundServer }  from "@autobe/playground-server";
+import { AutoBeCompiler } from "@autobe/compiler";
+import OpenAI from "openai";
+
+const server = new AutoBePlaygroundServer({
+  predicate: async (acceptor) => {
+    return {
+      type: "accept",
+      agent: new AutoBeAgent({
+        vendor: {
+          api: new OpenAI({ apiKey: "********" }),
+          model: "gpt-4.1",
+        },
+        model: "chatgpt",
+        compiler: new AutoBeCompiler(),
+      }),
+      cwd: `${__dirname}/../playground-result`,
+    }
+  },
+});
+await server.listen(3_000);
+```
+
+You can serve the `@autobe` agent as a WebSocket server like above.
+
+About detailed information, please refer to the [Guide Documents > WebSocket Protocol](websocket) page.

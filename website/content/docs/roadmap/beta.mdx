@@ -1,0 +1,518 @@
+---
+title: AutoBE > Guide Documents > Roadmap > Beta Release (progress)
+---
+
+import AutoBeRoadmapPreface from "../../../template/AutoBeRoadmapPreface.mdx";
+
+## Preface
+<AutoBeRoadmapPreface />
+
+## 1. Analysis Agent
+### 1.1. Debate Enhancement
+Enhance the debate functionality of the Analysis Agent to enable sophisticated requirement gathering through iterative dialogue.
+
+Previously, `@autobe` development focused primarily on Proof of Concept (PoC) and unit testing, so the Analysis Agent was validated with single utterances like "I want to create a political/economic discussion board. Since I'm not familiar with programming, please write a requirements analysis report as you see fit."
+
+However, the Analysis Agent must be capable of conducting in-depth "debates" with AI agents regarding actual software development requirements. When users present requirements, the AI agent should analyze them, ask specific questions about ambiguous aspects, discover new elements through Q&A sessions, and pose deeper questions to perfectly specify requirements.
+
+This enhancement will include multi-turn conversation management for complex requirement gathering, enabling the system to maintain context across extended dialogues. The agent will employ intelligent questioning strategies to uncover hidden requirements that users may not initially express, while implementing contextual follow-up mechanisms to clarify ambiguous specifications. Through iterative refinement processes, the system will continuously validate requirements and document the evolution of requirements throughout the debate process, creating a comprehensive audit trail of how specifications develop and mature.
+
+### 1.2. Prefix Rule
+Extract project titles and common prefixes for tables/DTOs from the Analysis Agent to ensure consistent naming conventions across the entire backend architecture.
+
+The Analysis Agent creates requirement analysis documents and generates common prefixes for DB table and DTO definitions. For example, when given a project title like "Shopping Mall," the Analysis Agent should generate a prefix like `shopping`, resulting in DB tables like `shopping_cart_commodities` and DTOs like `ShoppingOrder`.
+
+This system will implement automatic prefix generation based on project domain analysis, ensuring consistent naming convention enforcement across all generated artifacts. The system includes validation rules to ensure prefix compatibility with database and framework requirements, while providing conflict resolution mechanisms for complex multi-domain projects. When applicable, the system will integrate with existing codebase naming patterns to maintain consistency with legacy systems.
+
+### 1.3. Multimodal Support
+Verify whether requirements analysis documents properly reflect design artifacts from Figma and other sources received as images into actual functional designs.
+
+This involves developing comprehensive multimodal processing capabilities that can parse and interpret UI/UX designs from various image formats while extracting functional requirements from visual mockups and wireframes. The system will cross-reference design elements with textual requirements to identify inconsistencies between visual designs and written specifications, ultimately generating detailed API requirements based on UI component interactions.
+
+Additionally, verify whether requirements analysis documents generated through multimodal inputs properly propagate those multimodal assets to Prisma or Interface agents. If necessary, modify the history structure to ensure proper reflection of visual design elements throughout the entire development pipeline.
+
+## 2. Prisma Agent
+### 2.1. Compiler Development
+Create a custom Prisma compiler to enable direct Prisma AST construction, validation, and code generation through function calling, replacing the current text-based approach with compilation error feedback.
+
+We initially attempted to have AI write Prisma schema files as text and provide feedback from official Prisma compiler errors. However, since Prisma compiler error messages are difficult even for humans to understand, AI correction based on compilation error messages proved ineffective.
+
+Our new Prisma compiler will define its AST as the [`AutoBePrisma.IApplication`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/prisma/AutoBePrisma.ts) type, featuring detailed description comments at the level of [`AutoBeOpenApi.IDocument`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/openapi/AutoBeOpenApi.ts), enabling AI function calling to understand their meanings.
+
+The compiler will implement custom validation rules to prevent AI from designing incorrect Prisma schemas, detecting not only invalid syntax but also logically contradictory elements in otherwise compilable structures. It will provide comprehensive error reporting with actionable suggestions for AI correction while ensuring integration with existing Prisma ecosystem tools and workflows. Additionally, the system includes performance optimization for large-scale schema generation to handle complex enterprise applications efficiently.
+
+### 2.2. Prohibition Rule
+Implement comprehensive validation rules in the custom Prisma compiler to prevent overly complex database designs and cross-dependencies that are difficult to implement in applications.
+
+While creating our custom Prisma compiler, we decided to add several prohibition clauses to the compiler validation rules. These rules will enforce:
+
+These rules will enforce circular dependency prevention by detecting and preventing circular references between database models that could lead to infinite loops or deadlocks. The system establishes complexity thresholds that limit the number of relationships per model to maintain manageable complexity while ensuring consistent naming patterns across all database entities. Performance optimization rules prevent schema designs that could lead to inefficient queries or poor database performance, while security constraint validation ensures that sensitive data relationships follow security best practices. Finally, scalability guidelines prevent designs that could become bottlenecks as the application scales to handle increased load and user growth.
+
+### 2.3. SQLite Support
+Implement comprehensive SQLite support in the custom Prisma compiler to enable playground website functionality and real-time validation of generated applications without external database dependencies.
+
+Currently, AutoBE's Prisma Agent exclusively targets PostgreSQL DBMS for schema design, creating significant operational limitations that impact both development workflows and user experience. The PostgreSQL dependency prevents the playground website from running generated applications directly in browser environments, as web-based platforms cannot host PostgreSQL servers. This limitation severely restricts the ability to demonstrate AutoBE's capabilities to potential users who want to experience end-to-end functionality without complex setup procedures.
+
+Additionally, AutoBE's own development and testing processes require PostgreSQL infrastructure setup, making it impossible to perform real-time validation of Test and Realize Agent outputs during development cycles. This dependency creates bottlenecks in the development workflow and prevents immediate verification of generated code functionality, forcing developers to rely on external database configurations that may not always be available or properly configured.
+
+To address these critical limitations, we will extend the custom Prisma compiler to support SQLite as a primary alternative database target, enabling seamless operation in constrained environments while maintaining full feature compatibility and business logic integrity.
+
+## 3. Interface Agent
+### 3.1. Keyworded SDK
+Modify the client SDK library and e2e test functions generated from OpenAPI documents to use keyworded parameters instead of positional parameters for enhanced AI compatibility.
+
+`@autobe` uses AI function calling to compose [Generative OpenAPI documents](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/openapi/AutoBeOpenApi.ts), converts them to regular [OpenAPI documents](https://github.com/samchon/openapi/blob/master/src/OpenApi.ts), and generates NestJS projects. For each RESTful API endpoint, it creates SDK libraries for client convenience and ensures e2e test program compilation stability.
+
+The system currently uses the [`Nestia`](https://nestia.io/docs/swagger/editor/) open-source project to generate NestJS projects and automatically create SDK and e2e test functions from OpenAPI documents. Since this project was created approximately 4 years ago, it uses human-oriented positional parameters rather than AI-oriented keyworded parameters.
+
+To resolve this, we will modify the Nestia code generator to generate keyworded parameters instead of positional parameters, allowing AI to call functions with enhanced flexibility and usability.
+
+```typescript
+// SDK and e2e test code generated with keyword options
+export async function test_api_shoppings_customers_sales_questions_comments_update(
+  connection: api.IConnection,
+) {
+  const output: IShoppingSaleInquiryComment.ISnapshot =
+    await api.functional.shoppings.customers.sales.questions.comments.update(
+      connection,
+      {
+        saleId: typia.random<string & tags.Format<"uuid">>(),
+        inquiryId: typia.random<string & tags.Format<"uuid">>(),
+        id: typia.random<string & tags.Format<"uuid">>(),
+        body: typia.random<IShoppingSaleInquiryComment.ICreate>(),
+      },
+    );
+  typia.assert(output);
+}
+
+// Traditional approach with positional parameters
+export async function test_api_shoppings_customers_sales_questions_comments_update(
+  connection: api.IConnection,
+) {
+  const output: IShoppingSaleInquiryComment.ISnapshot =
+    await api.functional.shoppings.customers.sales.questions.comments.update(
+      connection,
+      typia.random<string & tags.Format<"uuid">>(),
+      typia.random<string & tags.Format<"uuid">>(),
+      typia.random<string & tags.Format<"uuid">>(),
+      typia.random<IShoppingSaleInquiryComment.ICreate>(),
+    );
+  typia.assert(output);
+}
+```
+
+### 3.2. Snapshot Logic
+Implement comprehensive snapshot logic in the Interface Agent to ensure that OpenAPI documents and generated SDKs/e2e tests are properly validated against requirements analysis documents and Prisma DB schema definitions.
+
+### 3.3. Review Agent
+Develop a comprehensive review agent that verifies whether the OpenAPI document (API interface) written by AI properly follows the requirements analysis document and DB schema definition, identifying any missing or vague descriptions.
+
+This review agent will implement sophisticated validation mechanisms including requirements traceability to verify that every requirement from the analysis document is properly addressed in the API interface. The system ensures schema consistency by confirming that API endpoints align with the defined database schema and maintain referential integrity. Completeness validation identifies missing CRUD operations, authentication endpoints, and data validation rules, while documentation quality assessment evaluates the completeness and clarity of API documentation, including parameter descriptions, response schemas, and error handling. Security review verifies that appropriate authentication, authorization, and data validation mechanisms are implemented, and performance considerations assess API design for potential performance bottlenecks and suggest optimizations. Finally, standardization compliance ensures adherence to RESTful API design principles and OpenAPI specification standards.
+
+The agent will generate detailed reports highlighting discrepancies and providing actionable recommendations for improvement.
+
+## 4. Test Agent
+### 4.1. Scenario Agent
+An intelligent agent that creates comprehensive test scenarios from requirements analysis documents and API interfaces, providing detailed testing strategies for each endpoint.
+
+The Scenario Agent analyzes each API endpoint's e2e test function and its related assets (requirements analysis + API controller + DTO files) created by the Interface Agent. It performs dependency analysis to extract prerequisite endpoints needed to call target API endpoints and map their execution order. The agent generates comprehensive test cases including positive, negative, and edge case scenarios for complete testing coverage while mapping data flow to understand how information moves through the system and identify critical testing points. Integration scenario planning designs complex multi-endpoint test scenarios that simulate real-world usage patterns, and performance test scenarios generate load testing scenarios to validate system performance under various conditions. Security test cases create scenarios to test authentication, authorization, and data validation mechanisms throughout the application.
+
+The agent explains to the Coding Agent how to implement these scenarios, providing detailed step-by-step instructions and expected outcomes.
+
+### 4.2. Coding Agent
+An advanced agent that reads scenarios from the Scenario Agent and creates actual executable e2e test code with comprehensive error handling and validation.
+
+The Coding Agent implements automated code generation to transform test scenarios into executable TypeScript/JavaScript test code while generating appropriate mocks for external dependencies and services. It implements comprehensive assertion logic to validate API responses and system behavior, creates and manages test data sets for various testing scenarios, and implements proper test cleanup to ensure test isolation and repeatability. Additionally, the agent integrates with reporting systems to generate detailed test reports with metrics and failure analysis.
+
+### 4.3. Compiler Feedback
+```typescript
+interface ICorrectTestFunctionProps {
+  /**
+   * Step 1: Initial self-reflection on the source code without compiler error
+   * context.
+   *
+   * The AI agent analyzes the previously generated test code to identify
+   * potential issues, relying solely on its understanding of TypeScript syntax,
+   * testing patterns, and best practices.
+   *
+   * This encourages the agent to develop independent debugging skills before
+   * being influenced by external error messages.
+   */
+  think_without_compile_error: string;
+
+  /**
+   * Step 2: Re-evaluation of the code with compiler error messages as
+   * additional context.
+   *
+   * After the initial analysis, the AI agent reviews the same code again, this
+   * time incorporating the specific TypeScript compiler error messages.
+   *
+   * This allows the agent to correlate its initial observations with concrete
+   * compilation failures and refine its understanding of what went wrong.
+   */
+  think_again_with_compile_error: string;
+
+  /**
+   * Step 3: Concrete action plan for fixing the identified issues.
+   *
+   * Based on the analysis from steps 1 and 2, the AI agent formulates a
+   * specific, step-by-step solution strategy.
+   *
+   * This should include what changes need to be made, why those changes are
+   * necessary, and how they will resolve the compilation errors while
+   * maintaining the test's intended functionality.
+   */
+  solution: string;
+
+  /**
+   * Step 4: The corrected TypeScript test code.
+   *
+   * The final, properly fixed TypeScript code that should compile without
+   * errors.
+   *
+   * This represents the implementation of the solution plan from step 3,
+   * containing all necessary corrections to make the test code syntactically
+   * valid and functionally correct.
+   */
+  content: string;
+}
+```
+
+An intelligent agent that analyzes compilation errors from e2e test functions written by the Coding Agent and converts them to correct, functional code through structured output approach.
+
+This agent employs a structured output methodology to perform single-pass compilation error resolution, systematically analyzing TypeScript compilation errors and generating corrected code in a single operation. The approach leverages predefined output schemas to ensure consistent and comprehensive error analysis while providing immediate fixes for common compilation issues.
+
+When the structured output approach successfully resolves compilation problems, it eliminates the need for iterative debugging cycles, significantly improving the efficiency of the test code correction process.
+
+### 4.4. Function Calling
+```typescript
+interface IAutoBeTestCorrectApplication {
+  /**
+   * Step 1: Initial self-reflection and analysis of the test code without compiler error context.
+   * 
+   * The AI agent performs an independent analysis of the provided test code, identifying
+   * potential issues based solely on TypeScript syntax knowledge, testing patterns, and
+   * best practices. This encourages the development of autonomous debugging capabilities
+   * before being influenced by external error messages.
+   */
+  thinkWithoutCompileError(p: {
+    /** AI's analysis and thoughts about potential issues in the code */
+    content: string;
+  }): void;
+
+  /**
+   * Step 2: Re-evaluation of the code incorporating compiler error messages.
+   * 
+   * After the initial analysis, the AI agent reviews the same code again with the benefit
+   * of specific TypeScript compiler error messages. This allows correlation between the
+   * initial observations and concrete compilation failures, leading to a more informed
+   * understanding of the actual problems.
+   */
+  thinkAgainWithCompileError(p: {
+    /** AI's refined analysis incorporating compiler error information */
+    content: string;
+  }): void;
+
+  /**
+   * Step 3: Formulate and report the concrete solution strategy.
+   * 
+   * Based on the analysis from steps 1 and 2, the AI agent creates a detailed action plan
+   * for fixing the identified issues. This should include specific changes to be made,
+   * rationale for each change, and how these modifications will resolve the compilation
+   * errors while preserving the test's intended functionality.
+   */
+  reportSolution(p: {
+    /** The solution plan and strategy description */
+    content: string;
+  }): void;
+
+  /**
+   * Step 4: Apply the corrections and return compilation results.
+   * 
+   * Implements the solution plan by generating the corrected TypeScript code and
+   * immediately attempting compilation to verify the fixes. This provides immediate
+   * feedback on whether the corrections were successful or if further iteration is needed.
+   */
+  applyFixes(p: {
+    /** The corrected TypeScript test code */
+    content: string;
+  }): IAutoBeCompilerResult;
+
+  /**
+   * Step 5: Successfully complete the correction process.
+   * 
+   * Signals that the test code has been successfully corrected and compiles without errors.
+   * This marks the end of the correction workflow and indicates that the AI agent has
+   * successfully resolved all identified issues.
+   */
+  complete(): void;
+
+  /**
+   * Emergency exit: Acknowledge inability to fix the current code.
+   * 
+   * When the AI agent determines that the existing code cannot be repaired through
+   * incremental fixes and requires a complete rewrite, this function provides a graceful
+   * way to abort the current correction attempt. This prevents infinite loops of failed
+   * correction attempts and signals that a fresh approach is needed.
+   */
+  giveUp(): void;
+}
+```
+
+When single-pass compiler feedback fails to resolve compilation bugs in e2e test programs written by the Test Agent, the system implements an advanced function calling strategy that defines the correction process as six specialized functions. This approach delegates the invocation and control of these functions entirely to AI function calling, enabling autonomous problem-solving capabilities that can handle complex compilation issues requiring multiple iterations and deep analysis.
+
+The correction workflow systematically guides the AI through a structured debugging process, from initial code analysis without external influence, through error-informed re-evaluation, to solution formulation and implementation. By entrusting the AI with complete control over when and how to invoke these correction functions, the system enables adaptive problem-solving that can dynamically adjust to different types of compilation challenges while maintaining the flexibility to abandon unsalvageable code when necessary.
+
+### 4.5. Compiler Development
+Create a dedicated compiler for e2e test functions using the same methodology as the Prisma compiler, providing ultimate control over test code generation and validation.
+
+If AI-written e2e test function compilation bugs are still not resolved even with the function calling approach, this involves:
+
+- **Custom AST Structure**: Create a dedicated Abstract Syntax Tree structure specifically designed for e2e test functions
+- **Validator Strategies**: Establish comprehensive validation strategies that understand the unique requirements of e2e testing
+- **TypeScript Code Generator**: Develop a sophisticated code generator that produces optimized, type-safe test code
+- **Integration Framework**: Ensure seamless integration with existing testing frameworks and CI/CD pipelines
+- **Performance Optimization**: Implement advanced optimization techniques for large-scale test suites
+
+However, since this approach requires significant development time, we prioritize resolution through compiler feedback and function calling strategies.
+
+## 5. Realization Agent
+### 5.1. Planner Agent
+An advanced agent that synthesizes all previous processes and writes comprehensive scenarios on how to create the main program for each API endpoint, including detailed technical specifications and implementation strategies.
+
+The Planner Agent performs architecture planning to design the overall architecture for each API endpoint implementation while selecting appropriate technologies and frameworks for optimal performance. It defines step-by-step implementation approaches for complex business logic and plans comprehensive error handling and recovery mechanisms. The agent designs security measures including authentication, authorization, and data validation, plans performance optimization strategies from the ground up, and ensures seamless integration with the testing framework developed by the Test Agent.
+
+### 5.2. Coding Agent
+An expert-level agent that writes high-quality provider code for API endpoints based on scenarios from the Planner Agent, implementing industry best practices and optimal design patterns.
+
+The Coding Agent implements clean architecture principles for maintainable and scalable code while applying appropriate design patterns for different types of business logic. It implements comprehensive error handling with proper logging and monitoring, applies security best practices including input validation and output sanitization, and writes optimized code with consideration for scalability and efficiency. The agent also generates comprehensive inline documentation and API documentation to support long-term maintenance.
+
+### 5.3. Compiler Feedback
+```typescript
+interface ICorrectRealizeFunctionProps {
+  /**
+   * Step 1: Initial self-reflection on the source code without compiler error
+   * context.
+   *
+   * The AI agent analyzes the previously generated realize code to identify
+   * potential issues, relying solely on its understanding of TypeScript syntax,
+   * coding patterns, and best practices.
+   *
+   * This encourages the agent to develop independent debugging skills before
+   * being influenced by external error messages.
+   */
+  think_without_compile_error: string;
+
+  /**
+   * Step 2: Re-evaluation of the code with compiler error messages as
+   * additional context.
+   *
+   * After the initial analysis, the AI agent reviews the same code again, this
+   * time incorporating the specific TypeScript compiler error messages.
+   *
+   * This allows the agent to correlate its initial observations with concrete
+   * compilation failures and refine its understanding of what went wrong.
+   */
+  think_again_with_compile_error: string;
+
+  /**
+   * Step 3: Concrete action plan for fixing the identified issues.
+   *
+   * Based on the analysis from steps 1 and 2, the AI agent formulates a
+   * specific, step-by-step solution strategy.
+   *
+   * This should include what changes need to be made, why those changes are
+   * necessary, and how they will resolve the compilation errors while
+   * maintaining the realize's intended functionality.
+   */
+  solution: string;
+
+  /**
+   * Step 4: The corrected TypeScript realize code.
+   *
+   * The final, properly fixed TypeScript code that should compile without
+   * errors.
+   *
+   * This represents the implementation of the solution plan from step 3,
+   * containing all necessary corrections to make the realize code syntactically
+   * valid and functionally correct.
+   */
+  content: string;
+}
+```
+
+An intelligent agent that analyzes and resolves compilation errors from the Coding Agent with advanced error resolution capabilities.
+
+This agent provides contextual error analysis to understand compilation errors within the broader context of the application architecture while implementing automatic fixes for common compilation issues. It suggests and implements code quality improvements during error resolution, resolves complex dependency issues and version conflicts, and ensures that error fixes don't negatively impact application performance through careful impact analysis.
+
+### 5.4. Function Calling
+```typescript
+interface IAutoBeRealizeCorrectApplication {
+  /**
+   * Step 1: Initial self-reflection and analysis of the realize code without compiler error context.
+   * 
+   * The AI agent performs an independent analysis of the provided realize code, identifying
+   * potential issues based solely on TypeScript syntax knowledge, coding patterns, and
+   * best practices. This encourages the development of autonomous debugging capabilities
+   * before being influenced by external error messages.
+   */
+  thinkWithoutCompileError(p: {
+    /** AI's analysis and thoughts about potential issues in the code */
+    content: string;
+  }): void;
+
+  /**
+   * Step 2: Re-evaluation of the code incorporating compiler error messages.
+   * 
+   * After the initial analysis, the AI agent reviews the same code again with the benefit
+   * of specific TypeScript compiler error messages. This allows correlation between the
+   * initial observations and concrete compilation failures, leading to a more informed
+   * understanding of the actual problems.
+   */
+  thinkAgainWithCompileError(p: {
+    /** AI's refined analysis incorporating compiler error information */
+    content: string;
+  }): void;
+
+  /**
+   * Step 3: Formulate and report the concrete solution strategy.
+   * 
+   * Based on the analysis from steps 1 and 2, the AI agent creates a detailed action plan
+   * for fixing the identified issues. This should include specific changes to be made,
+   * rationale for each change, and how these modifications will resolve the compilation
+   * errors while preserving the realize's intended functionality.
+   */
+  reportSolution(p: {
+    /** The solution plan and strategy description */
+    content: string;
+  }): void;
+
+  /**
+   * Step 4: Apply the corrections and return compilation results.
+   * 
+   * Implements the solution plan by generating the corrected TypeScript code and
+   * immediately attempting compilation to verify the fixes. This provides immediate
+   * feedback on whether the corrections were successful or if further iteration is needed.
+   */
+  applyFixes(p: {
+    /** The corrected TypeScript realize code */
+    content: string;
+  }): IAutoBeCompilerResult;
+
+  /**
+   * Step 5: Successfully complete the correction process.
+   * 
+   * Signals that the realize code has been successfully corrected and compiles without errors.
+   * This marks the end of the correction workflow and indicates that the AI agent has
+   * successfully resolved all identified issues.
+   */
+  complete(): void;
+
+  /**
+   * Emergency exit: Acknowledge inability to fix the current code.
+   * 
+   * When the AI agent determines that the existing code cannot be repaired through
+   * incremental fixes and requires a complete rewrite, this function provides a graceful
+   * way to abort the current correction attempt. This prevents infinite loops of failed
+   * correction attempts and signals that a fresh approach is needed.
+   */
+  giveUp(): void;
+}
+```
+
+Implement the same advanced function calling strategy as the Test Agent for autonomous resolution of complex compilation issues.
+
+When compilation errors are not resolved through one-time compiler feedback, the system defines the correction process as 6 specialized functions with enhanced capabilities for production code:
+
+1. **Production Error Diagnosis**: Specialized analysis for production-level code issues
+2. **Business Logic Validation**: Ensure that error fixes maintain business logic integrity
+3. **Security Impact Assessment**: Evaluate security implications of proposed fixes
+4. **Performance Impact Analysis**: Assess performance implications of code changes
+5. **Production-Safe Implementation**: Apply solutions with production-level safety measures
+6. **Comprehensive Validation**: Perform thorough validation including integration testing
+
+### 5.5. Runtime Validation
+An advanced agent that runs comprehensive validation by executing e2e test programs created by the Test Agent on API provider code written by the Realization Agent.
+
+This agent ensures functional correctness by verifying that implemented APIs meet all functional requirements while ensuring that implementations meet performance benchmarks. It validates that security measures are properly implemented and effective, verifies proper integration between different system components, and ensures that error handling mechanisms work correctly under various failure scenarios. The agent also confirms that data integrity is maintained throughout all operations, providing comprehensive validation of the entire system.
+
+## 6. Enhancement
+### 6.1. Benchmark Testing
+Develop a comprehensive performance measurement program that evaluates all agents comprising `@autobe` and generates detailed analytical reports.
+
+The benchmark system implements performance metrics collection to measure response times, accuracy rates, and resource utilization for each agent while conducting comparative analysis to compare performance across different scenarios and configurations. It tracks performance changes over time through regression testing to identify performance regressions and evaluates agent performance under various load conditions through scalability testing. The system measures code quality, test coverage, and documentation completeness as quality metrics and creates comprehensive markdown reports with visualizations and actionable insights through automated report generation.
+
+The system evaluates each agent using predefined histories for 10 specified scenarios, providing standardized performance benchmarks across all components.
+
+### 6.2. Demonstration
+Create comprehensive demonstration materials including repositories, videos, and community promotion to showcase `@autobe` capabilities.
+
+This includes repository creation to develop complete example projects showcasing different use cases, video production to create professional demonstration videos highlighting key features and capabilities, and community engagement to actively promote `@autobe` in developer communities and conferences. The initiative also develops interactive demonstrations that allow users to experience `@autobe` firsthand, providing tangible evidence of the platform's capabilities.
+
+Example demonstrations:
+- https://www.youtube.com/watch?v=SIgP-1OcAwg
+- https://stackblitz.com/github/wrtnlabs/autobe-example-bbs
+- https://stackblitz.com/github/wrtnlabs/autobe-example-shopping
+
+### 6.3. Documentation
+Create comprehensive guide documentation for `@autobe` following industry best practices and user-centric design principles.
+
+The documentation system will be similar in format to the official documentation of [`@agentica`](https://github.com/wrtnlabs/agentica), Typia, and Nestia:
+- https://wrtnlabs.io/agentica/
+- https://typia.io/
+- https://nestia.io/
+
+Documentation components include getting started guides with step-by-step tutorials for new users, comprehensive API reference documentation with practical examples, and best practices guidelines for optimal `@autobe` usage. The documentation covers troubleshooting with common issues and their solutions, advanced topics providing in-depth coverage of complex features and customization options, and integration guides with instructions for incorporating `@autobe` into existing development workflows.
+
+### 6.4. Technical Articles
+Develop a content strategy for regularly publishing technical articles that promote `@autobe` and establish thought leadership in the automated development space.
+
+Article topics include technical deep dives with detailed explanations of `@autobe` architecture and algorithms, case studies featuring real-world examples of successful `@autobe` implementations, and industry analysis providing insights into the future of automated software development. The content strategy encompasses best practices guides for maximizing `@autobe` effectiveness and community contributions highlighting community projects and collaborative efforts.
+
+### 6.5. Review Agent
+Implement review agents for each component that evaluate outputs and derive improvement points to enhance overall system quality.
+
+For example, the API Interface Review Agent conducts requirements compliance reviews to ensure whether outputs properly reflect requirements analysis documents while ensuring schema consistency and alignment with Prisma DB schema definitions. It performs completeness assessment to identify missing or poorly described elements and provides quality improvement feedback to help interface agents enhance their output quality.
+
+This qualitative feedback system operates differently from compiler feedback, focusing on semantic correctness and completeness rather than syntactic issues.
+
+### 6.6. System Maintenance
+Implement a comprehensive maintenance strategy to ensure continuous improvement and optimal performance of the entire `@autobe` system.
+
+Although the 3-month roadmap focuses on PoC development, the final month includes a dedicated maintenance period to conduct comprehensive system review of the entire development process and architecture. This period focuses on quality enhancement to identify and address areas requiring improvement or strengthening while optimizing system performance and resource utilization. The maintenance phase ensures documentation updates remain current and accurate, addresses any identified issues or edge cases through systematic bug fixes, and finalizes the system for production deployment through thorough preparation procedures.
+
+## 7. Ecosystem
+### 7.1. [`@agentica`](https://github.com/wrtnlabs/agentica) Prerequisites
+Enhance the [`@agentica`](https://github.com/wrtnlabs/agentica) function calling framework to properly identify and manage prerequisite function relationships for complex automation scenarios.
+
+[`@agentica`](https://github.com/wrtnlabs/agentica) is a function calling framework that requires enhancement to properly identify relationships between prerequisite functions while orchestrating execution by making appropriate preliminary calls in the correct sequence. The framework needs improved error handling to manage failures in prerequisite functions gracefully, performance optimization to optimize execution order for better efficiency, and a comprehensive validation framework to implement thorough validation for function call chains.
+
+This enhancement is critical for function calling strategies utilized in compiler feedback correction in Test and Realization agents.
+
+### 7.2. WebSocket Streaming
+Implement comprehensive WebSocket streaming support for real-time communication and progress updates during `@autobe` operations.
+
+Currently, [`@agentica`](https://github.com/wrtnlabs/agentica) and `@autobe` support streaming for text responses from AI agents. However, when served through WebSocket, streaming is not yet supported, and content is delivered as one-time JSON responses.
+
+The implementation includes real-time progress updates to stream progress information for long-running operations while delivering incremental results as they become available. The system provides error streaming with real-time error information and recovery suggestions, robust connection management with automatic reconnection capabilities, and scalability to support multiple concurrent streaming connections efficiently.
+
+Since `@autobe` operations require substantial time for each agent, proper streaming support is essential for user experience.
+
+### 7.3. History Manipulation
+Develop sophisticated history manipulation capabilities to allow users to start `@autobe` processes from intermediate states or with existing artifacts.
+
+This addresses scenarios like: "I already have an ERD. Can you create interfaces and test programs starting from here?"
+
+The system implements reverse engineering capabilities to derive requirements analysis documents from existing ERDs or schemas while reconstructing `@autobe` agent history from existing artifacts. It manages complex state transitions between different starting points, ensures consistency when starting from intermediate states through comprehensive validation, and seamlessly integrates with existing development workflows to provide flexibility in project initiation.
+
+### 7.4. AI Chatbot Development
+![E-commerce Agent Demo](https://github.com/user-attachments/assets/fbfa9f93-304c-4728-933e-deb8ecd7a2af)
+
+Extend `@autobe` capabilities to automatically generate AI chatbots from developed backend services, making advanced AI integration accessible to non-technical users.
+
+Currently, it's possible to serve backend servers developed with `@autobe` through [`@agentica`](https://github.com/wrtnlabs/agentica) to create AI chatbots, but this requires development expertise. The enhancement makes this accessible to anyone by providing automatic integration to generate code that serves [`@agentica`](https://github.com/wrtnlabs/agentica) and converts backends to AI chatbots. The system includes configuration management with user-friendly configuration interfaces, deployment automation to automate the deployment process for generated chatbots, monitoring and analytics capabilities for operational insights, and customization options that allow users to tailor chatbot behavior and appearance to their specific needs.
+
+### 7.5. Data Seeder Agent
+Develop an intelligent data seeding agent that uses AI chatbot technology to help users populate their applications with meaningful initial data.
+
+One critical aspect of backend applications is initial data seeding. For example, a shopping mall created with `@autobe` has no value without products. The Data Seeder Agent addresses this by providing intelligent data generation to create contextually appropriate seed data based on application domain while enabling interactive seeding by converting the backend server into an AI chatbot using [`@agentica`](https://github.com/wrtnlabs/agentica) for user interaction. The system guides users through the data seeding process via conversational interface, ensures seeded data meets application requirements and constraints through comprehensive data validation, supports efficient bulk data operations for large datasets, and provides a template library with pre-built data templates for common application types.

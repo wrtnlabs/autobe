@@ -1,0 +1,272 @@
+---
+title: AutoBE > Guide Documents > WebSocket > Remote Procedure Call
+---
+
+import { Tabs } from "nextra/components";
+
+## `@autobe/rpc`
+RPC module of `@autobe` for WebSocket Communication.
+
+If you are considering to make an `@autobe` based service, WebSocket protocol is essentially required. Chatting application is basically a two-way communication. AI chatbot is also a two-way chat between an user and an assistant, based on events. Therefore, it cannot be a one-way communication HTTP Restful API, and a two-way protocol such as WebSocket is required.
+
+However, don't be afraid of WebSocket application development. Below is the example codes of WebSocket application development utilizing `@autobe/rpc` in both client and server side. Look at the example codes, and feel how easy and type-safe it is.
+
+<Tabs items={[
+  "Client Application",
+  "NodeJS Server",
+  "NestJS Server",
+]}>
+  <Tabs.Tab>
+```typescript filename="client/src/main.ts" showLineNumbers copy
+import { IAutoBeRpcListener, IAutoBeRpcService } from "@autobe/rpc";
+import { Driver, WebSocketConnector } from "tgrid";
+
+const connector: WebSocketConnector<
+  null,
+  IAutoBeRpcListener, // provider to remote
+  IAutoBeRpcService // controller of remote
+> = new WebSocketConnector(null, {
+  assistantMessage: async (evt) => {
+    console.log("assistant", evt.text);
+  },
+  analyzeComplete: async (evt) => {
+    console.log("analyze completed", evt.files);
+  },
+  prismaComplete: async (evt) => {
+    console.log("prisma completed", evt.schemas);
+  },
+  interfaceComplete: async (evt) => {
+    console.log("interface completed", evt.schemas);
+  },
+});
+await connector.connect("ws://localhost:3001");
+
+const driver: Driver<IAutoBeRpcService> = connector.getDriver();
+await driver.conversate("Hello, what you can do?");
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```typescript filename="nodejs/src/main.ts" showLineNumbers copy
+import { AutoBeAgent } from "@autobe/agent";
+import { AutoBeCompiler } from "@autobe/compiler";
+import { IAutoBeRpcListener, IAutoBeRpcService } from "@autobe/interface";
+import { AutoBeRpcService } from "@autobe/rpc";
+import { WebSocketServer } from "tgrid";
+
+const server: WebSocketServer<
+  null,
+  IAutoBeRpcService,
+  IAutoBeRpcListener
+> = new WebSocketServer();
+await server.open(3_001, async (acceptor) => {
+  const agent: AutoBeAgent<"chatgpt"> = new AutoBeAgent({
+    model: "chatgpt",
+    vendor: {
+      api: new OpenAI({ apiKey: "********" }),
+      model: "gpt-4.1",
+    },
+    compiler: new AutoBeCompiler(),
+  });
+  const service: AutoBeRpcService = new AutoBeRpcService({
+    agent,
+    listener: acceptor.getDriver(),
+  });
+  await acceptor.accept(service);
+});
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```typescript filename="nestjs/src/chat.controller.ts" showLineNumbers copy
+import { AutoBeAgent } from "@autobe/agent";
+import { AutoBeCompiler } from "@autobe/compiler";
+import { IAutoBeRpcListener, IAutoBeRpcService } from "@autobe/interface";
+import { AutoBeRpcService } from "@autobe/rpc";
+import { WebSocketRoute } from "@nestia/core";
+import { Controller } from "@nestjs/common";
+import OpenAI from "openai";
+import { WebSocketAcceptor } from "tgrid";
+
+@Controller("chat")
+export class ChatController {
+  @WebSocketRoute()
+  public async start(
+    // @WebSocketRoute.Param("id") id: string,
+    @WebSocketRoute.Acceptor()
+    acceptor: WebSocketAcceptor<
+      null, // header
+      IAutoBeRpcService, // provider to remote
+      IAutoBeRpcListener // controller of remote
+    >,
+  ): Promise<void> {
+    const agent: AutoBeAgent<"chatgpt"> = new AutoBeAgent({
+      model: "chatgpt",
+      vendor: {
+        api: new OpenAI({ apiKey: "********" }),
+        model: "gpt-4.1",
+      },
+      compiler: new AutoBeCompiler(),
+    });
+    const service: AutoBeRpcService = new AutoBeRpcService({
+      agent,
+      listener: acceptor.getDriver(),
+    });
+    await acceptor.accept(service);
+  }
+}
+```
+  </Tabs.Tab>
+</Tabs>
+
+
+
+
+## Setup
+### NodeJS Server
+<Tabs items={['npm', 'pnpm', 'yarn']}>
+  <Tabs.Tab>
+```bash filename="Terminal" copy
+npm install @autobe/agent @autobe/compiler @autobe/interface
+npm install @autobe/rpc tgrid
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```bash filename="Terminal" copy
+pnpm install @autobe/agent @autobe/compiler @autobe/interface
+pnpm install @autobe/rpc tgrid
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```bash filename="Terminal" copy
+yarn add @autobe/agent @autobe/compiler @autobe/interface
+yarn add @autobe/rpc tgrid
+```
+  </Tabs.Tab>
+</Tabs>
+
+To develop NodeJS WebSocket server of `@autobe`, you need to install these packages.
+
+At first, install `@autobe/agent`, `@autobe/compiler` and `@autobe/interface` packages, which are required for chatbot. And then, install `@autobe/rpc` and [`tgrid`](https://tgrid.com) packages. 
+
+`tgrid` is a TypeScript based RPC (Remote Procedure Call) framework supporting WebSocket protocol, and `@autobe/rpc` is a wrapper module of `@autobe/agent` following the WebSocket RPC.
+
+### NestJS Server
+<Tabs items={['npm', 'pnpm', 'yarn']}>
+  <Tabs.Tab>
+```bash filename="Terminal" copy
+npm install @nestjs/common @nestjs/core @nestjs/platform-express
+npm install @autobe/agent @autobe/compiler @autobe/interface
+npm install @autobe/rpc tgrid
+
+npm install -D nestia
+npx nestia setup
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```bash filename="Terminal" copy
+pnpm install @nestjs/common @nestjs/core @nestjs/platform-express
+pnpm install @autobe/agent @autobe/compiler @autobe/interface
+pnpm install @autobe/rpc tgrid
+
+pnpm install -D nestia
+pnpm nestia setup
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```bash filename="Terminal" copy
+# YARN BERRY IS NOT SUPPORTED
+yarn add @nestjs/common @nestjs/core @nestjs/platform-express
+yarn add @autobe/agent @autobe/compiler @autobe/interface
+yarn add @autobe/rpc tgrid
+
+yarn add -D nestia
+yarn nestia setup
+```
+  </Tabs.Tab>
+</Tabs>
+
+Install NestJS and `@autobe` packages, and then setup `nestia`.
+
+[`@nestia`](https://nestia.io) is a set of helper libraries for NestJS, and it supports WebSocket protocol that is following the RPC (Remote Procedure Call) paradigm.
+
+### Client Application
+<Tabs items={['npm', 'pnpm', 'yarn']}>
+  <Tabs.Tab>
+```bash filename="Terminal" copy
+npm install @autobe/rpc tgrid
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```bash filename="Terminal" copy
+pnpm install @autobe/rpc tgrid
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```bash filename="Terminal" copy
+yarn add @autobe/rpc tgrid
+```
+  </Tabs.Tab>
+</Tabs>
+
+Just install `@autobe/rpc`, `tgrid` packages.
+
+
+
+
+## Remote Procedure Call
+```mermaid
+sequenceDiagram
+box Client Application
+  actor User
+  participant Driver as Driver<Listener>
+  participant Connector as Communicator (Client)
+end
+box Server Application
+  participant Acceptor as Communicator (Server)
+  actor Provider
+end
+User->>Driver: 1. calls a function
+Activate User
+Activate Driver
+Driver->>Connector: 2. delivers the function call
+Activate Connector
+Deactivate Driver
+Connector-->>Acceptor: 3. sends a protocolized<br/>network message<br/>meaning a function call
+Deactivate Connector
+Activate Acceptor
+Acceptor->>Provider: 4. calls the function
+Provider->>Acceptor: 5. returns a value
+Acceptor-->>Connector: 6. sends a protocolized<br/>network message<br/>meaning a return value
+Deactivate Acceptor
+Activate Connector
+Connector->>Driver: 7. delivers the return value
+Deactivate Connector
+Activate Driver
+Driver->>User: 8. returns the value
+Deactivate Driver
+Deactivate User
+```
+
+WebSocket protocol with RPC paradigm for `@autobe`.
+
+### Header
+Header value delivered from client to server after the connection.
+
+In [`TGrid`](https://tgrid.com)'s RPC (Remote Procedure Call) paradigm, header means a value that is delivered after the connection from a client to the server. And header is used in most cases to authenticate the connecting client.
+
+In the above example project, `IAuthorizationHeader` is the header type, and is used by server to determine whether to accept the client's connection or not. If the client's header is not valid, the server would reject the connection.
+
+### Provider
+Functions provided from remote system.
+
+Provider is an object instance containing some functions provided for the remote system for RPC (Remote Procedure Call). In many cases, the provide becomes a class instance containing some methods to be called, but it is okay that composing the provider by just an interface type.
+
+Also, the opposite remote system will call provider's functions by the [`Driver<Remote>`](#driver) instance. In the above example, client application is providing `IAutoBeRpcListener` to the server, and server is providing `AutoBeRpcService` (`IAutoBeRpcService`) to the client.
+
+### Driver
+Driver of RPC (Remote Procedure Call).
+
+`Driver` is a proxy instance designed to call functions of the remote system. It has a generic argument `Remote` which means the type of remote system's [Provider](#provider), and you can remotely call the functions of the [Provider](#provider) asynchronously through the `Drive<Remote>` instance.
+
+When you call some function of remote [Provider](#provider) by the `Driver<Listener>` instance, it hooks the function call expression, and delivers the function name and arguments (parameter values) to the remote system through the [Communicator](#communicator). If the remote system succeeded to reply the result of the function call, [Communicator](#communicator) resolves the promise of the function call expression with the result, so that makes `Driver<Remote>` working.
+
+In the above example, client application is calling `IAutoBeRpcService.conversate()` function remotely through the `Driver<IAutoBeRpcService>` typed instance. In that case, `IAutoBeRpcService` is the [Provider](#provider) instance from server to client.
