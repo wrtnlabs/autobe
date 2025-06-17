@@ -20,7 +20,7 @@ export const prepare_agent_test = async (project: string) => {
         apiKey: TestGlobal.env.CHATGPT_API_KEY,
       }),
       model: "gpt-4.1",
-      semaphore: 2,
+      semaphore: 16,
     },
     config: {
       locale: "en-US",
