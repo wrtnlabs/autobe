@@ -1,0 +1,69 @@
+import { Tabs } from "nextra/components";
+
+import RemoteSource from "../../../components/RemoteSource";
+
+## Prompt Histories
+<Tabs 
+  items={[
+    <code>src/main.ts</code>, 
+    <code>AutoBeHistory</code>
+  ]}>
+  <Tabs.Tab>
+```typescript filename="src/main.ts" showLineNumbers {15, 23}
+import { AutoBeAgent } from "@autobe/agent";
+import { AutoBeCompiler } from "@autobe/compiler";
+import OpenAI from "openai";
+
+function getHistories(): Promise<AutoBeHistory[]>;
+function archiveHistories(histories: AutoBeHistory[]): Promise<void>;
+
+const agent = new AutoBeAgent({
+  model: "chatgpt",
+  vendor: {
+    api: new OpenAI({ apiKey: "********" }),
+    model: "gpt-4.1",
+  },
+  compiler: new AutoBeCompiler(),
+  histories: await getHistories(),
+});
+await agent.conversate(`
+  I want to create a political/economic discussion board.
+  
+  Since I'm not familiar with programming, 
+  please write a requirements analysis report as you see fit.
+`);
+await archiveHistories(agent.getHistories());
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    <RemoteSource
+      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/histories/AutoBeHistory.ts"
+      filename="@autobe/interface"
+      showLineNumbers
+    />
+  </Tabs.Tab>
+</Tabs>
+
+When creating an `AutoBeAgent`, you can start from previous conversations by specifying the `histories` property. Also, you can get the conversation histories of current `AutoBeAgent` by calling the `AutoBeAgent.getHistories()` method.
+
+Also, every history types of `@autobe` are collected into `AutoBeHistory` type as an union. Each type of history means:
+
+- [`AutoBeUserMessageHistory`](/api/interfaces/_autobe_interface.AutoBeUserMessageHistory.html)
+- [`AutoBeAssistantMessageHistory`](/api/interfaces/_autobe_interface.AutoBeAssistantMessageHistory.html)
+- [`AutoBeAnalyzeHistory`](/api/interfaces/_autobe_interface.AutoBeAnalyzeHistory.html)
+- [`AutoBePrismaHistory`](/api/interfaces/_autobe_interface.AutoBePrismaHistory.html)
+- [`AutoBeInterfaceHistory`](/api/interfaces/_autobe_interface.AutoBeInterfaceHistory.html)
+- [`AutoBeTestHistory`](/api/interfaces/_autobe_interface.AutoBeTestHistory.html)
+- [`AutoBeRealizeHistory`](/api/interfaces/_autobe_interface.AutoBeRealizeHistory.html)
+
+## Message Histories
+### `AutoBeUserMessageHistory`
+### `AutoBeAssistantMessageHistory`
+
+
+## Development Histories
+### `AutoBeAnalyzeHistory`
+### `AutoBePrismaHistory`
+### `AutoBeInterfaceHistory`
+### `AutoBeTestHistory`
+### `AutoBeRealizeHistory`

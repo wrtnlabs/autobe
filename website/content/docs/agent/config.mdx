@@ -1,0 +1,213 @@
+import { Tabs } from "nextra/components";
+
+import AutoBeAgentSnippet from "../../../template/snippets/AutoBeAgentSnippet.mdx";
+import AutoBeVendorAgentSnippet from "../../../template/snippets/AutoBeVendorAgentSnippet.tsx";
+
+## Configuration
+```typescript filename="src/main.config.ts" showLineNumbers
+import { AutoBeAgent } from "@autobe/agent";
+import { AutoBeCompiler } from "@autobe/compiler";
+import OpenAI from "openai";
+
+const agent = new AutoBeAgent({
+  model: "llama", // JSON schema model
+  vendor: { // LLM vendor specification
+    api: new OpenAI({
+      apiKey: "********",
+      baseURL: "https://openrouter.ai/api/v1",
+    }),
+    model: "meta-llama/llama3.3-70b",
+  },
+  config: { // locale and timezone
+    locale: "en-US",
+    timezone: "America/New_York",
+  },
+  compiler: new AutoBeCompiler(), // compiler
+});
+
+await agent.conversate(`
+  I want to create a political/economic discussion board.
+  
+  Since I'm not familiar with programming, 
+  please write a requirements analysis report as you see fit.
+`);
+```
+
+## Vendor
+<Tabs 
+  items={["OpenAI", "Claude", "DeepSeek", "Meta Llama"]}
+  defaultIndex={3}>
+  <Tabs.Tab>
+    <AutoBeAgentSnippet />
+  </Tabs.Tab>
+  <Tabs.Tab>
+    <AutoBeVendorAgentSnippet 
+      title="Claude" 
+      schema="claude" 
+      vendor="anthropic/claude-3.5-sonnet" />
+  </Tabs.Tab>
+  <Tabs.Tab>
+    <AutoBeVendorAgentSnippet 
+      title="DeepSeek" 
+      schema="deepseek" 
+      vendor="deepseek/deepseek-chat-v3" />
+  </Tabs.Tab>
+  <Tabs.Tab>
+    <AutoBeVendorAgentSnippet 
+      title="Meta Llama" 
+      schema="llama" 
+      vendor="meta-llama/llama3.3-70b" />
+  </Tabs.Tab>
+</Tabs>
+
+When creating an `AutoBeAgent`, you can specify the LLM service vendor of your choice.
+
+`AutoBeAgent` utilizes the OpenAI SDK (`npm i openai`) for LLM (Large Language Model) service interaction. However, this doesn't restrict you to using only OpenAI's GPT models. The OpenAI SDK serves as a connection tool to various LLM vendor APIs, and since most modern LLMs follow OpenAI's API design patterns, you can seamlessly integrate other LLM vendors such as Claude, DeepSeek, and others.
+
+To use alternative vendors, configure the `AutoBeAgent.api.baseURL` and `AutoBeAgent.model` properties with the respective vendor's API endpoint and model name. For example, if you prefer Meta Llama over OpenAI GPT, you can configure it as shown above. Note that since LLM schema models differ between vendors, you must update the `IAgenticProps.model` property to match the vendor's schema model (e.g., `"llama"`).
+
+```mermaid
+flowchart
+  subgraph "JSON Schema Specification"
+    schemav4("JSON Schema v4 ~ v7") --upgrades--> emended[["OpenAPI v3.1 (emended)"]]
+    schema2910("JSON Schema 2019-03") --upgrades--> emended
+    schema2020("JSON Schema 2020-12") --emends--> emended
+  end
+  subgraph "Model Context Protocol"
+    emended --"Artificial Intelligence"--> lfc{{"LLM Function Calling"}}
+    lfc --"OpenAI"--> chatgpt("ChatGPT")
+    lfc --"Google"--> gemini("<s>Gemini</s>")
+    lfc --"Anthropic"--> claude("Claude")
+    lfc --"High-Flyer"--> deepseek("DeepSeek")
+    lfc --"Meta"--> llama("Llama")
+    chatgpt --"3.1"--> custom(["Custom JSON Schema"])
+    gemini --"3.0"--> custom(["Custom JSON Schema"])
+    claude --"3.1"--> standard(["Standard JSON Schema"])
+    deepseek --"3.1"--> standard
+    llama --"3.1"--> standard
+  end
+```
+
+- [`IChatGptSchema`](https://samchon.github.io/openapi/api/types/IChatGptSchema-1.html): OpenAI ChatGPT
+- [`IClaudeSchema`](https://samchon.github.io/openapi/api/types/IClaudeSchema-1.html): Anthropic Claude
+- [`IDeepSeekSchema`](https://samchon.github.io/openapi/api/types/IDeepSeekSchema-1.html): High-Flyer DeepSeek
+- [`IGeminiSchema`](https://samchon.github.io/openapi/api/types/IGeminiSchema-1.html): Google Gemini
+- [`ILlamaSchema`](https://samchon.github.io/openapi/api/types/ILlamaSchema-1.html): Meta Llama
+- [`ILlmSchemaV3`](https://samchon.github.io/openapi/api/types/ILlmSchemaV3-1.html): middle layer based on OpenAPI v3.0 specification
+- [`ILlmSchemaV3_1`](https://samchon.github.io/openapi/api/types/ILlmSchemaV3_1-1.html): middle layer based on OpenAPI v3.1 specification
+
+JSON schema models vary between LLM vendors. When selecting a vendor model, exercise caution when determining the appropriate schema model for the `AutoBeAgent.model` property.
+
+OpenAI and Google Gemini use proprietary JSON schema models rather than standard implementations. Google Gemini's JSON schema specification lacks support for reference types (`$ref`) and union types (`oneOf` or `anyOf`), which are essential for OpenAPI document composition. Consequently, Google Gemini is incompatible with `@autobe`.
+
+Other LLM vendors like Claude, DeepSeek, and Meta Llama implement standard JSON schema models, making them fully compatible with `@autobe`. When using these vendors, you can configure the `AutoBeAgent.model` property with any desired value, including the `"chatgpt"` schema model.
+
+However, this approach is not recommended because OpenAI's JSON schema specification restricts numerous features as listed below. Use the `"chatgpt"` schema model only when specifically using OpenAI as your LLM vendor.
+
+**Restricted features in OpenAI's schema:**
+- `IJsonSchema.INumber.minimum`
+- `IJsonSchema.INumber.maximum`
+- `IJsonSchema.INumber.exclusiveMinimum`
+- `IJsonSchema.INumber.exclusiveMaximum`
+- `IJsonSchema.INumber.multipleOf`
+- `IJsonSchema.IString.minLength`
+- `IJsonSchema.IString.maxLength`
+- `IJsonSchema.IString.format`
+- `IJsonSchema.IString.pattern`
+- `IJsonSchema.IString.contentMediaType`
+- `IJsonSchema.IArray.minItems`
+- `IJsonSchema.IArray.maxItems`
+- `IJsonSchema.IArray.uniqueItems`
+
+## Locale and Timezone
+```typescript filename="src/main.korea.ts" showLineNumbers {13-16}
+import { AutoBeAgent } from "@autobe/agent";
+import { AutoBeCompiler } from "@autobe/compiler";
+import OpenAI from "openai";
+
+const agent = new AutoBeAgent({
+  model: "chatgpt",
+  vendor: {
+    api: new OpenAI({
+      apiKey: "********",
+    }),
+    model: "gpt-4.1",
+  },
+  config: {
+    locale: "ko-KR",
+    timezone: "Asia/Seoul",
+  },
+  compiler: new AutoBeCompiler(),
+});
+
+await agent.conversate(`
+  I want to create a political/economic discussion board.
+  
+  Since I'm not familiar with programming, 
+  please write a requirements analysis report as you see fit.
+`);
+```
+
+You can configure the `locale` and `timezone` properties to customize the AI agent's behavior.
+
+These properties are transmitted to the AI agent, enabling it to consider the user's `locale` and `timezone` context. When you configure the locale property to `ko-KR`, the AI agent will communicate in Korean.
+
+Similarly, when you set the `timezone` property to `Asia/Seoul`, the AI agent considers the geographic location and timezone, which can influence LLM function calling argument composition. For instance, if you ask the AI agent to "consider regulations," it will reference South Korean regulations.
+
+## Compiler
+<Tabs 
+  items={["Embedding", "Separation", "Worker"]}
+  defaultIndex={1}>
+  <Tabs.Tab>
+    <AutoBeAgentSnippet />
+  </Tabs.Tab>
+  <Tabs.Tab>
+```typescript filename="src/main.worker.ts" showLineNumbers
+// connect to worker
+const worker: WorkerConnector<null, null, IAutoBeCompiler> =
+  new WorkerConnector(null, null, "process");
+await worker.connect(
+  `${__dirname}/compiler${path.extname(__filename)}`,
+);
+
+const agent = new AutoBeAgent({
+  model: "chatgpt",
+  vendor: {
+    api: new OpenAI({ apiKey: "********" }),
+    model: "gpt-4.1",
+  },
+  compiler: worker.getDriver(), // compiler from worker
+});
+
+await agent.conversate(`
+  I want to create a political/economic discussion board.
+  
+  Since I'm not familiar with programming, 
+  please write a requirements analysis report as you see fit.
+`);
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```typescript filename="src/compiler.ts" showLineNumbers
+import { AutoBeCompiler } from "@autobe/compiler";
+import { WorkerServer } from "tgrid";
+
+const main = async () => {
+  const compiler: AutoBeCompiler = new AutoBeCompiler();
+  const worker: WorkerServer<null, AutoBeCompiler, null> = new WorkerServer();
+  await worker.open(compiler);
+};
+
+main().catch((error) => {
+  console.log(error);
+  process.exit(-1);
+});
+```
+  </Tabs.Tab>
+</Tabs>
+
+When creating an `AutoBeAgent`, you must provide a `compiler` instance. The `compiler` contains Prisma, OpenAPI, and TypeScript compilers. The simplest approach is to create a new instance of the `AutoBeCompiler` class.
+
+However, since compiler operations are computationally intensive, if you're building a service application with `AutoBeAgent` that handles multiple connections from numerous users, the compiler can become a performance bottleneck. The `AutoBeAgent` server may experience blocking whenever the compiler is occupied with heavy tasks, such as generating Prisma schemas or TypeScript code.
+
+In such scenarios, you can separate the compiler from the main agent and run it in a dedicated `worker` or `process`. Refer to the "Separation" and "Worker" tabs above, and follow the provided code snippets to separate the compiler from the main agent.

@@ -102,13 +102,12 @@ export default async function RootLayout(props) {
           pageMap={await getPageMap()}
           docsRepositoryBase="https://github.com/wrtnlabs/autobe/tree/main/website"
           editLink="Edit this page on GitHub"
-          sidebar={{ defaultMenuCollapseLevel: 1 }}
+          sidebar={{ autoCollapse: false }}
           nextThemes={{
             defaultTheme: "dark",
           }}
           darkMode={false}
           footer={footer}
-          // ...Your additional theme config options
         >
           {props.children}
         </Layout>
