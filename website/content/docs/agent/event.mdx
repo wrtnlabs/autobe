@@ -1,0 +1,92 @@
+import { Tabs } from "nextra/components";
+
+import RemoteSource from "../../../components/RemoteSource";
+
+## Event Handling
+<Tabs 
+  items={[
+    <code>src/main.ts</code>, 
+    <code>AutoBeHistory</code>
+  ]}>
+  <Tabs.Tab>
+```typescript filename="src/main.ts" showLineNumbers
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    <RemoteSource
+      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/events/AutoBeEvent.ts"
+      filename="@autobe/interface"
+      showLineNumbers
+    />
+  </Tabs.Tab>
+</Tabs>
+
+## Message Events
+<Tabs items={[
+  <code>AutoBeAssistantMessageEvent</code>,
+  <code>AutoBeUserMessageEvent</code>,
+  <code>AutoBeUserMessageContent</code>,
+]}>
+  <Tabs.Tab>
+    <RemoteSource
+      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/events/AutoBeAssistantMessageEvent.ts"
+      filename="@autobe/interface"
+      showLineNumbers>
+    </RemoteSource>
+  </Tabs.Tab>
+  <Tabs.Tab>
+    <RemoteSource
+      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/events/AutoBeUserMessageEvent.ts"
+      filename="@autobe/interface"
+      showLineNumbers>
+    </RemoteSource>
+  </Tabs.Tab>
+  <Tabs.Tab>
+    <RemoteSource
+      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/histories/contents/AutoBeUserMessageContent.ts"
+      filename="@autobe/interface"
+      showLineNumbers>
+    </RemoteSource>
+  </Tabs.Tab>
+</Tabs>
+
+## Analyze Events
+```mermaid
+flowchart LR
+  start[Start] --"draft"--> write[Write]
+  write --"emends"--> review[Review]
+  review --"finalize"--> complete[Complete]
+```
+
+## Prisma Events
+```mermaid
+flowchart LR
+  start[Start] --"lists"--> components[Components]
+  components --"designs"--> schemas[Schemas]
+  components --"compiles"--> validate[Validate]
+  validate --"failure"--> correct[Correct]
+  validate --"success" --> complete[Complete]
+```
+
+## Interface Events
+```mermaid
+flowchart LR
+  start[Start] --"lists"--> endpoints[Endpoints]
+  endpoints --"designs"--> operations[Operations]
+  endpoints --"schemas"--> components[Components]
+  endpoints --"fills"--> complement[Complement]
+  endpoints --"compiles"--> complete[Complete]
+```
+
+## Test Events
+```mermaid
+flowchart LR
+  start[Start] --"plans"--> scenarios[Scenarios]
+  scenarios --"writes"--> progress[Progress]
+  scenarios --"compiles"--> validate[Validate]
+  validate --"failure"--> correct[Correct]
+  validate --"success"--> complete[Complete]
+```
+
+## Realize Events
+Not yet implemented.
