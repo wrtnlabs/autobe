@@ -2,15 +2,18 @@ import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import { AutoBeOpenApi, AutoBeTest } from "@autobe/interface";
 import { AutoBeTestScenarioEvent } from "@autobe/interface/src/events/AutoBeTestScenarioEvent";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
-import { IPointer } from "tstl";
+import { HashMap, HashSet, IPointer } from "tstl";
 import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { divideArray } from "../../utils/divideArray";
+import { OpenApiEndpointComparator } from "../interface/OpenApiEndpointComparator";
 import { transformTestScenarioHistories } from "./transformTestScenarioHistories";
 
 export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
+  capacity: number = 4,
 ): Promise<AutoBeTestScenarioEvent> {
   const files = Object.entries(ctx.state().interface?.files ?? {})
     .filter(([filename]) => {
@@ -34,18 +37,25 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
       };
     });
 
+  const matrix: AutoBeOpenApi.IEndpoint[][] = divideArray({
+    array: endpoints,
+    capacity,
+  });
   const start: Date = new Date();
 
   let completed: number = 0;
 
   const scenarios: AutoBeTest.IScenario[][] = await Promise.all(
-    endpoints.map(async (endpoint, i, arr) => {
-      const endponits = arr.filter((_el, j) => i !== j);
-      const rows: AutoBeTest.IScenario[] = await process(
+    matrix.map(async (e) => {
+      const rows: AutoBeTest.IScenario[] = await divideAndConquer(
         ctx,
-        endpoint,
-        endponits,
+        e,
+        endpoints,
         files,
+        3,
+        (count) => {
+          completed += count;
+        },
       );
       ctx.dispatch({
         type: "testScenario",
@@ -69,10 +79,50 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
   };
 }
 
+async function divideAndConquer<Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  endpoints: AutoBeOpenApi.IEndpoint[],
+  allEndpoints: AutoBeOpenApi.IEndpoint[],
+  files: Record<string, string>,
+  retry: number,
+  progress: (completed: number) => void,
+): Promise<AutoBeTest.IScenario[]> {
+  const remained: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(
+    endpoints,
+    OpenApiEndpointComparator.hashCode,
+    OpenApiEndpointComparator.equals,
+  );
+  const scenarios: HashMap<AutoBeOpenApi.IEndpoint, AutoBeTest.Scenario[]> =
+    new HashMap(
+      OpenApiEndpointComparator.hashCode,
+      OpenApiEndpointComparator.equals,
+    );
+  for (let i: number = 0; i < retry; ++i) {
+    if (remained.empty() === true || scenarios.size() >= endpoints.length)
+      break;
+    const before: number = scenarios.size();
+    const newbie: AutoBeTest.IScenario[] = await process(
+      ctx,
+      Array.from(remained),
+      allEndpoints,
+      files,
+    );
+    for (const item of newbie) {
+      scenarios.set(item.endpoint, item.scenarios);
+      remained.erase(item.endpoint);
+    }
+    if (scenarios.size() - before !== 0) progress(scenarios.size() - before);
+  }
+  return Array.from(scenarios.toJSON()).map((it) => ({
+    endpoint: it.first,
+    scenarios: it.second,
+  }));
+}
+
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  endpoint: AutoBeOpenApi.IEndpoint,
   endpoints: AutoBeOpenApi.IEndpoint[],
+  allEndpoints: AutoBeOpenApi.IEndpoint[],
   files: Record<string, string>,
 ): Promise<AutoBeTest.IScenario[]> {
   const pointer: IPointer<AutoBeTest.IScenario[] | null> = {
@@ -92,7 +142,7 @@ async function process<Model extends ILlmSchema.Model>(
     },
     tokenUsage: ctx.usage(),
     histories: [
-      ...transformTestScenarioHistories(ctx.state(), endpoints, files),
+      ...transformTestScenarioHistories(ctx.state(), allEndpoints, files),
     ],
     controllers: [
       createApplication({
@@ -110,10 +160,10 @@ async function process<Model extends ILlmSchema.Model>(
 
   await agentica.conversate(
     [
-      "Make User Scenarios for below endpoint:",
+      "Make User Scenarios for below endpoints:",
       "",
       "```json",
-      JSON.stringify(endpoint, null, 2),
+      JSON.stringify(endpoints, null, 2),
       "```",
     ].join("\n"),
   );

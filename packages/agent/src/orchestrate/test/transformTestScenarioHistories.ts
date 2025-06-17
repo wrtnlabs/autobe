@@ -7,7 +7,7 @@ import { AutoBeState } from "../../context/AutoBeState";
 
 export const transformTestScenarioHistories = (
   state: AutoBeState,
-  endponits: AutoBeOpenApi.IEndpoint[],
+  allEndpoints: AutoBeOpenApi.IEndpoint[],
   files: Record<string, string>,
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
@@ -160,7 +160,7 @@ export const transformTestScenarioHistories = (
         `Different APIs may have to be called to create one.`,
         `Check which functions have been developed.`,
         "```json",
-        JSON.stringify(endponits, null, 2),
+        JSON.stringify(allEndpoints, null, 2),
         "```",
       ].join("\n"),
     },
