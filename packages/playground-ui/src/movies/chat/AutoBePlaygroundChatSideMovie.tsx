@@ -20,12 +20,6 @@ export function AutoBePlaygroundChatSideMovie(
           </Typography>
           <hr />
           {props.error.message}
-          <br />
-          <br />
-          Your OpenAI API key may not valid.
-          <br />
-          <br />
-          <br />
         </>
       ) : null}
       <Typography variant="h5">Agent Information</Typography>

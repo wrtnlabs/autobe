@@ -11,6 +11,7 @@ import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptCo
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { enforceToolCall } from "../../utils/enforceToolCall";
 import { AutoBeAnalyzeAgent } from "./AutoBeAnalyzeAgent";
 import { IFile } from "./AutoBeAnalyzeFileSystem";
 import { AutoBeAnalyzePointer } from "./AutoBeAnalyzePointer";
@@ -64,12 +65,7 @@ export const orchestrateAnalyze =
           ),
       ],
     });
-
-    agentica.on("request", (event) => {
-      if (event.body.tools) {
-        event.body.tool_choice = "required";
-      }
-    });
+    enforceToolCall(agentica);
 
     const determined = await agentica.conversate(
       [

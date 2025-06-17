@@ -10,6 +10,7 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { enforceToolCall } from "../../utils/enforceToolCall";
 import { transformTestCorrectHistories } from "./transformTestCorrectHistories";
 
 export async function orchestrateTestCorrect<Model extends ILlmSchema.Model>(
@@ -231,10 +232,7 @@ async function process<Model extends ILlmSchema.Model>(
       }),
     ],
   });
-
-  agentica.on("request", async (event) => {
-    if (event.body.tools) event.body.tool_choice = "required";
-  });
+  enforceToolCall(agentica);
 
   await agentica.conversate(
     [
@@ -265,9 +263,7 @@ async function process<Model extends ILlmSchema.Model>(
       "Return only the fixed code without explanations.",
     ].join("\n"),
   );
-
   if (pointer.value === null) throw new Error("Failed to modify test code.");
-
   return pointer.value;
 }
 

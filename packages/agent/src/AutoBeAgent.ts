@@ -105,6 +105,10 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
         created_at: history.created_at,
       }).catch(() => {});
     });
+    this.agentica_.on("request", (e) => {
+      if (e.body.parallel_tool_calls !== undefined)
+        delete e.body.parallel_tool_calls;
+    });
   }
 
   /** @internal */

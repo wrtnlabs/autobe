@@ -40,7 +40,10 @@ export async function orchestratePrismaComponents<
       createApplication({
         model: ctx.model,
         build: (next) => {
-          pointer.value = next;
+          pointer.value ??= {
+            components: [],
+          };
+          pointer.value.components.push(...next.components);
         },
       }),
     ],

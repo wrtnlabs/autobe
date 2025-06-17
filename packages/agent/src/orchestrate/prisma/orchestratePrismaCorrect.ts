@@ -6,6 +6,7 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { enforceToolCall } from "../../utils/enforceToolCall";
 import { transformPrismaCorrectHistories } from "./transformPrismaCorrectHistories";
 
 export function orchestratePrismaCorrect<Model extends ILlmSchema.Model>(
@@ -69,11 +70,7 @@ async function step<Model extends ILlmSchema.Model>(
       }),
     ],
   });
-  agentica.on("request", (event) => {
-    if (event.body.tools) {
-      event.body.tool_choice = "required";
-    }
-  });
+  enforceToolCall(agentica);
 
   // REQUEST CORRECTION
   await agentica.conversate(

@@ -48,7 +48,8 @@ export async function orchestrateInterfaceEndpoints<
       createApplication({
         model: ctx.model,
         build: (endpoints) => {
-          pointer.value = endpoints;
+          pointer.value ??= endpoints;
+          pointer.value.push(...endpoints);
         },
       }),
     ],
