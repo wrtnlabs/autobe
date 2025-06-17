@@ -8,6 +8,7 @@ import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptCo
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
+import { enforceToolCall } from "../../utils/enforceToolCall";
 import { OpenApiEndpointComparator } from "./OpenApiEndpointComparator";
 import { transformInterfaceHistories } from "./transformInterfaceHistories";
 
@@ -105,17 +106,13 @@ async function process<Model extends ILlmSchema.Model>(
       createApplication({
         model: ctx.model,
         build: (endpoints) => {
-          pointer.value = endpoints;
+          pointer.value ??= [];
+          pointer.value.push(...endpoints);
         },
-        pointer,
       }),
     ],
   });
-  agentica.on("request", async (event) => {
-    if (event.body.tools) {
-      event.body.tool_choice = "required";
-    }
-  });
+  enforceToolCall(agentica);
   await agentica.conversate(
     [
       "Make API operations for below endpoints:",
@@ -132,7 +129,6 @@ async function process<Model extends ILlmSchema.Model>(
 function createApplication<Model extends ILlmSchema.Model>(props: {
   model: Model;
   build: (operations: AutoBeOpenApi.IOperation[]) => void;
-  pointer: IPointer<AutoBeOpenApi.IOperation[] | null>;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
@@ -143,7 +139,6 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
     const result: IValidation<IMakeOperationProps> =
       typia.validate<IMakeOperationProps>(next);
     if (result.success === false) return result;
-    props.pointer.value = result.data.operations;
 
     const errors: IValidation.IError[] = [];
     result.data.operations.forEach((op, i) => {

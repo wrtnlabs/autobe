@@ -6,12 +6,13 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { enforceToolCall } from "../../utils/enforceToolCall";
 import { transformPrismaCorrectHistories } from "./transformPrismaCorrectHistories";
 
 export function orchestratePrismaCorrect<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   application: AutoBePrisma.IApplication,
-  retry: number = 8,
+  life: number = 4,
 ): Promise<IAutoBePrismaValidation> {
   const unique: Set<string> = new Set();
   for (const file of application.files)
@@ -21,7 +22,7 @@ export function orchestratePrismaCorrect<Model extends ILlmSchema.Model>(
       return true;
     });
   application.files = application.files.filter((f) => f.models.length !== 0);
-  return step(ctx, application, retry);
+  return step(ctx, application, life);
 }
 
 async function step<Model extends ILlmSchema.Model>(
@@ -31,7 +32,9 @@ async function step<Model extends ILlmSchema.Model>(
 ): Promise<IAutoBePrismaValidation> {
   const result: IAutoBePrismaValidation =
     await ctx.compiler.prisma.validate(application);
-  if (result.success) return result; // SUCCESS
+  if (result.success)
+    return result; // SUCCESS
+  else if (life <= 0) return result; // FAILURE
 
   // VALIDATION FAILED
   const schemas: Record<string, string> =
@@ -67,11 +70,7 @@ async function step<Model extends ILlmSchema.Model>(
       }),
     ],
   });
-  agentica.on("request", (event) => {
-    if (event.body.tools) {
-      event.body.tool_choice = "required";
-    }
-  });
+  enforceToolCall(agentica);
 
   // REQUEST CORRECTION
   await agentica.conversate(

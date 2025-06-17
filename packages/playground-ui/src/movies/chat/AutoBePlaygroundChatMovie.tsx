@@ -84,10 +84,13 @@ export function AutoBePlaygroundChatMovie(
     try {
       await props.service.conversate(text);
     } catch (error) {
+      console.error(error);
       if (error instanceof Error) {
         alert(error.message);
         setError(error);
-      } else setError(new Error("Unknown error"));
+      } else {
+        setError(new Error("Unknown error"));
+      }
       return;
     }
     setTokenUsage(await props.service.getTokenUsage());

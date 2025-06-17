@@ -7,6 +7,7 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { enforceToolCall } from "../../utils/enforceToolCall";
 import { transformPrismaSchemaHistories } from "./transformPrismaSchemaHistories";
 
 export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
@@ -64,17 +65,19 @@ async function process<Model extends ILlmSchema.Model>(
       createApplication({
         model: ctx.model,
         build: (next) => {
-          pointer.value = next;
-          pointer.value.file.filename = component.filename;
+          pointer.value ??= {
+            file: {
+              filename: component.filename,
+              namespace: next.file.namespace,
+              models: [],
+            },
+          };
+          pointer.value.file.models.push(...next.file.models);
         },
       }),
     ],
   });
-  agentica.on("request", async (event) => {
-    if (event.body.tools) {
-      event.body.tool_choice = "required";
-    }
-  });
+  enforceToolCall(agentica);
   await agentica.conversate("Make prisma schema file please");
   if (pointer.value === null)
     throw new Error("Unreachable code: Prisma Schema not generated");

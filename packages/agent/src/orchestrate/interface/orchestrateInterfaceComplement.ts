@@ -13,14 +13,15 @@ import { v4 } from "uuid";
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { enforceToolCall } from "../../utils/enforceToolCall";
 import { transformInterfaceHistories } from "./transformInterfaceHistories";
 
 export function orchestrateInterfaceComplement<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   document: AutoBeOpenApi.IDocument,
-  retry: number = 8,
+  life: number = 8,
 ): Promise<AutoBeOpenApi.IComponents> {
-  return step(ctx, document, retry);
+  return step(ctx, document, life);
 }
 
 async function step<Model extends ILlmSchema.Model>(
@@ -79,21 +80,21 @@ async function step<Model extends ILlmSchema.Model>(
       createApplication({
         model: ctx.model,
         build: (next) => {
-          pointer.value = (OpenApiV3_1Emender.convertComponents({
-            schemas: next,
-          }).schemas ?? {}) as Record<
-            string,
-            AutoBeOpenApi.IJsonSchemaDescriptive
-          >;
+          pointer.value ??= {};
+          Object.assign(
+            pointer.value,
+            (OpenApiV3_1Emender.convertComponents({
+              schemas: next,
+            }).schemas ?? {}) as Record<
+              string,
+              AutoBeOpenApi.IJsonSchemaDescriptive
+            >,
+          );
         },
       }),
     ],
   });
-  agentica.on("request", async (event) => {
-    if (event.body.tools) {
-      event.body.tool_choice = "required";
-    }
-  });
+  enforceToolCall(agentica);
 
   await agentica.conversate("Fill missing schema types please");
   if (pointer.value === null) {

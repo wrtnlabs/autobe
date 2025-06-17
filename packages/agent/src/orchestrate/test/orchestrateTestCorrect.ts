@@ -10,12 +10,13 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { enforceToolCall } from "../../utils/enforceToolCall";
 import { transformTestCorrectHistories } from "./transformTestCorrectHistories";
 
 export async function orchestrateTestCorrect<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   codes: AutoBeTestProgressEvent[],
-  retry = 8,
+  life: number = 4,
 ): Promise<AutoBeTestValidateEvent> {
   // 1) Build map of new test files from progress events
   const testFiles = Object.fromEntries(
@@ -43,7 +44,7 @@ export async function orchestrateTestCorrect<Model extends ILlmSchema.Model>(
   );
 
   // 4) Ask the LLM to correct the filtered file set
-  const response = await step(ctx, files, retry);
+  const response = await step(ctx, files, life);
 
   // 5) Combine original + corrected files and dispatch event
   const event: AutoBeTestValidateEvent = {
@@ -231,10 +232,7 @@ async function process<Model extends ILlmSchema.Model>(
       }),
     ],
   });
-
-  agentica.on("request", async (event) => {
-    if (event.body.tools) event.body.tool_choice = "required";
-  });
+  enforceToolCall(agentica);
 
   await agentica.conversate(
     [
@@ -265,9 +263,7 @@ async function process<Model extends ILlmSchema.Model>(
       "Return only the fixed code without explanations.",
     ].join("\n"),
   );
-
   if (pointer.value === null) throw new Error("Failed to modify test code.");
-
   return pointer.value;
 }
 

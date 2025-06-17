@@ -6,6 +6,7 @@ import { v4 } from "uuid";
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { enforceToolCall } from "../../utils/enforceToolCall";
 import {
   AutoBeAnalyzeFileSystem,
   IAutoBeAnalyzeFileSystem,
@@ -32,7 +33,8 @@ export class AutoBeAnalyzeAgent<Model extends ILlmSchema.Model> {
       model: ctx.model,
       execute: new AutoBeAnalyzeFileSystem(this.fileMap),
       build: async (files: AutoBEAnalyzeFileMap) => {
-        this.pointer.value = { files };
+        this.pointer.value ??= { files: {} };
+        Object.assign(this.pointer.value.files, files);
       },
     });
 
@@ -82,14 +84,7 @@ export class AutoBeAnalyzeAgent<Model extends ILlmSchema.Model> {
           },
         ],
       });
-
-      agent.on("request", (event) => {
-        if (event.body.tools) {
-          event.body.tool_choice = "required";
-        }
-      });
-
-      return agent;
+      return enforceToolCall(agent);
     };
   }
 

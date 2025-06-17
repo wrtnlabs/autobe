@@ -8,6 +8,7 @@ import typia from "typia";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
+import { enforceToolCall } from "../../utils/enforceToolCall";
 import { OpenApiEndpointComparator } from "../interface/OpenApiEndpointComparator";
 import { transformTestScenarioHistories } from "./transformTestScenarioHistories";
 
@@ -148,15 +149,13 @@ async function process<Model extends ILlmSchema.Model>(
       createApplication({
         model: ctx.model,
         build: (next) => {
-          pointer.value = next.scenarios;
+          pointer.value ??= [];
+          pointer.value.push(...next.scenarios);
         },
       }),
     ],
   });
-
-  agentica.on("request", async (event) => {
-    if (event.body.tools) event.body.tool_choice = "required";
-  });
+  enforceToolCall(agentica);
 
   await agentica.conversate(
     [
@@ -167,7 +166,6 @@ async function process<Model extends ILlmSchema.Model>(
       "```",
     ].join("\n"),
   );
-
   if (pointer.value === null) throw new Error("Failed to make scenarios.");
   return pointer.value;
 }

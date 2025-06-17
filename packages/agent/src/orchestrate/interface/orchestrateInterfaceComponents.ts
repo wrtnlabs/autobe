@@ -10,6 +10,7 @@ import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptCo
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
+import { enforceToolCall } from "../../utils/enforceToolCall";
 import { transformInterfaceHistories } from "./transformInterfaceHistories";
 
 export async function orchestrateInterfaceComponents<
@@ -131,17 +132,17 @@ async function process<Model extends ILlmSchema.Model>(
       createApplication({
         model: ctx.model,
         build: async (components) => {
-          pointer.value = components;
+          pointer.value ??= {
+            schemas: {},
+          };
+          pointer.value.authorization ??= components.authorization;
+          Object.assign(pointer.value.schemas, components.schemas);
         },
         pointer,
       }),
     ],
   });
-  agentica.on("request", async (event) => {
-    if (event.body.tools) {
-      event.body.tool_choice = "required";
-    }
-  });
+  enforceToolCall(agentica);
 
   const already: string[] = Object.keys(oldbie.schemas);
   await agentica.conversate(
