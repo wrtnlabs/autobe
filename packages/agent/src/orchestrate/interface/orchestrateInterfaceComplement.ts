@@ -18,9 +18,9 @@ import { transformInterfaceHistories } from "./transformInterfaceHistories";
 export function orchestrateInterfaceComplement<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   document: AutoBeOpenApi.IDocument,
-  retry: number = 8,
+  life: number = 8,
 ): Promise<AutoBeOpenApi.IComponents> {
-  return step(ctx, document, retry);
+  return step(ctx, document, life);
 }
 
 async function step<Model extends ILlmSchema.Model>(

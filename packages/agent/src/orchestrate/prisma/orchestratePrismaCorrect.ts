@@ -11,7 +11,7 @@ import { transformPrismaCorrectHistories } from "./transformPrismaCorrectHistori
 export function orchestratePrismaCorrect<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   application: AutoBePrisma.IApplication,
-  life: number = 8,
+  life: number = 4,
 ): Promise<IAutoBePrismaValidation> {
   const unique: Set<string> = new Set();
   for (const file of application.files)

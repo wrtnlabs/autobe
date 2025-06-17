@@ -15,7 +15,7 @@ import { transformTestCorrectHistories } from "./transformTestCorrectHistories";
 export async function orchestrateTestCorrect<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   codes: AutoBeTestProgressEvent[],
-  retry = 8,
+  life: number = 4,
 ): Promise<AutoBeTestValidateEvent> {
   // 1) Build map of new test files from progress events
   const testFiles = Object.fromEntries(
@@ -43,7 +43,7 @@ export async function orchestrateTestCorrect<Model extends ILlmSchema.Model>(
   );
 
   // 4) Ask the LLM to correct the filtered file set
-  const response = await step(ctx, files, retry);
+  const response = await step(ctx, files, life);
 
   // 5) Combine original + corrected files and dispatch event
   const event: AutoBeTestValidateEvent = {
