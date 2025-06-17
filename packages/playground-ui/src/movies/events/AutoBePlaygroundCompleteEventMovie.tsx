@@ -6,34 +6,36 @@ import {
   AutoBeTestCompleteEvent,
   IAutoBeRpcService,
 } from "@autobe/interface";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import DownloadIcon from "@mui/icons-material/Download";
 import GradingIcon from "@mui/icons-material/Grading";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Button, Card, CardActions, CardContent, Chip } from "@mui/material";
 import StackBlitzSDK from "@stackblitz/sdk";
+import JsZip from "jszip";
 import { useEffect, useState } from "react";
+import { VariadicSingleton } from "tstl";
 
 export function AutoBePlaygroundCompleteEventMovie(
   props: AutoBePlaygroundCompleteEventMovie.IProps,
 ) {
   const [files, setFiles] = useState<Record<string, string>>({});
+
   useEffect(() => {
     (async () => {
       const files: Record<string, string> = await props.service.getFiles();
-      setFiles(
-        Object.fromEntries(
-          Object.entries(files).filter(
-            ([_, value]) =>
-              new TextEncoder().encode(value).length < 2 * 1024 * 1024, // 2MB
-          ),
-        ),
-      );
+      setFiles(files);
     })().catch(() => {});
   }, []);
 
   const openStackBlitz = () => {
     StackBlitzSDK.openProject(
       {
-        files,
+        files: Object.fromEntries(
+          Object.entries(files).filter(
+            ([_, value]) =>
+              new TextEncoder().encode(value).length < 2 * 1024 * 1024, // 2MB
+          ),
+        ),
         title: `AutoBE Generated Backend Server (${props.event.type})`,
         template: "node",
       },
@@ -41,6 +43,34 @@ export function AutoBePlaygroundCompleteEventMovie(
         newWindow: true,
       },
     );
+  };
+
+  const download = async () => {
+    const zip: JsZip = new JsZip();
+    const directory = new VariadicSingleton((location: string): JsZip => {
+      const separated: string[] = location.split("/");
+      if (separated.length === 1) return zip.folder(separated[0])!;
+      const parent: JsZip = directory.get(separated.slice(0, -1).join("/"));
+      return parent.folder(separated.at(-1)!)!;
+    });
+    for (const [file, content] of Object.entries(files)) {
+      const separated: string[] = file.split("/");
+      if (separated.length === 1) zip.file(file, content);
+      else {
+        const folder: JsZip = directory.get(separated.slice(0, -1).join("/"));
+        folder.file(separated.at(-1)!, content);
+      }
+    }
+    const data: Blob = await zip.generateAsync({ type: "blob" });
+
+    const url: string = URL.createObjectURL(data);
+    const a: HTMLAnchorElement = document.createElement("a");
+    a.href = url;
+    a.download = `AutoBE.${props.event.type}.zip`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   const title: string | null = getTitle(props.event);
@@ -69,9 +99,22 @@ export function AutoBePlaygroundCompleteEventMovie(
         <br />
         Please check the result in the file explorer.
       </CardContent>
-      <CardActions style={{ textAlign: "right" }}>
-        <Button startIcon={<ExpandMoreIcon />} onClick={() => openStackBlitz()}>
-          Open in new window
+      <CardActions
+        style={{
+          textAlign: "right",
+          justifyContent: "flex-end",
+        }}
+      >
+        <Button
+          startIcon={<DownloadIcon />}
+          onClick={() => {
+            download().catch(console.error);
+          }}
+        >
+          Download
+        </Button>
+        <Button startIcon={<OpenInNewIcon />} onClick={() => openStackBlitz()}>
+          Open in StackBlitz
         </Button>
       </CardActions>
     </Card>
