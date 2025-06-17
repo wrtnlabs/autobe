@@ -379,6 +379,7 @@ function validateIndexes(
             field: null,
             message: `Field ${name} does not exist in model ${model.name}.`,
           });
+        if (props.additional) props.additional(idx, i);
       });
     });
   };
