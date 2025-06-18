@@ -44,9 +44,9 @@ await archiveHistories(agent.getHistories());
   </Tabs.Tab>
 </Tabs>
 
-When creating an `AutoBeAgent`, you can start from previous conversations by specifying the `histories` property. Also, you can get the conversation histories of current `AutoBeAgent` by calling the `AutoBeAgent.getHistories()` method.
+When creating an `AutoBeAgent`, you can start from previous conversations by specifying the `histories` property. Additionally, you can retrieve the conversation histories of the current `AutoBeAgent` by calling the `AutoBeAgent.getHistories()` method.
 
-Also, every history types of `@autobe` are collected into `AutoBeHistory` type as an union. Each type of history means:
+All history types in `@autobe` are collected into the `AutoBeHistory` type as a union. Each history type represents:
 
 - [`AutoBeUserMessageHistory`](/api/interfaces/_autobe_interface.AutoBeUserMessageHistory.html)
 - [`AutoBeAssistantMessageHistory`](/api/interfaces/_autobe_interface.AutoBeAssistantMessageHistory.html)
@@ -56,14 +56,104 @@ Also, every history types of `@autobe` are collected into `AutoBeHistory` type a
 - [`AutoBeTestHistory`](/api/interfaces/_autobe_interface.AutoBeTestHistory.html)
 - [`AutoBeRealizeHistory`](/api/interfaces/_autobe_interface.AutoBeRealizeHistory.html)
 
+
+
+
 ## Message Histories
-### [`AutoBeUserMessageHistory`](/api/interfaces/_autobe_interface.AutoBeUserMessageHistory.html)
-### [`AutoBeAssistantMessageHistory`](/api/interfaces/_autobe_interface.AutoBeAssistantMessageHistory.html)
+Message histories are divided into user conversation history [`AutoBeUserMessageHistory`](/api/interfaces/_autobe_interface.AutoBeUserMessageHistory.html) and assistant conversation history [`AutoBeAssistantMessageHistory`](/api/interfaces/_autobe_interface.AutoBeAssistantMessageHistory.html).
+
+For users, multimodal capabilities are supported, allowing not only text but also image/document file attachments and voice input, which results in different content types. The assistant communicates only through text, so its content type is limited to `string`.
+
+
 
 
 ## Development Histories
 ### [`AutoBeAnalyzeHistory`](/api/interfaces/_autobe_interface.AutoBeAnalyzeHistory.html)
-### [`AutoBePrismaHistory`](/api/interfaces/_autobe_interface.AutoBePrismaHistory.html)
-### [`AutoBeInterfaceHistory`](/api/interfaces/_autobe_interface.AutoBeInterfaceHistory.html)
-### [`AutoBeTestHistory`](/api/interfaces/_autobe_interface.AutoBeTestHistory.html)
-### [`AutoBeRealizeHistory`](/api/interfaces/_autobe_interface.AutoBeRealizeHistory.html)
+
+<RemoteSource
+  url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/histories/AutoBeAnalyzeHistory.ts"
+  filename="@autobe/interface"
+  showLineNumbers />
+
+[`AutoBeAnalyzeHistory`](/api/interfaces/_autobe_interface.AutoBeAnalyzeHistory.html) is a history generated when the `@autobe` agent and user have completed all discussions regarding requirements, and a report has been issued. The report consists of multiple markdown documents, which are stored in the `files` property.
+
+The `step` property indicates which iteration of the requirements analysis report this represents. If this value is not 0, it means the requirements analysis report has been revised that many times. If the `step` value of other histories is lower than [`AutoBeAnalyzeHistory.step`](/api/interfaces/_autobe_interface.AutoBeAnalyzeHistory.html#step), it means those histories have not been reflected in the latest requirements analysis report.
+
+### `AutoBePrismaHistory`
+
+<Tabs items={[
+  <code>AutoBePrismaHistory</code>,
+  <code>AutoBePrisma</code>,
+  <code>IAutoBePrismaValidation</code>,
+  <code>IAutoBePrismaCompilerResult</code>,
+]}>
+  <Tabs.Tab>
+    <RemoteSource
+      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/histories/AutoBePrismaHistory.ts"
+      filename="@autobe/interface"
+      showLineNumbers />
+  </Tabs.Tab>
+  <Tabs.Tab>
+    <RemoteSource
+      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/prisma/AutoBePrisma.ts"
+      filename="@autobe/interface"
+      showLineNumbers />
+  </Tabs.Tab>
+  <Tabs.Tab>
+    <RemoteSource
+      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/prisma/IAutoBePrismaValidation.ts"
+      filename="@autobe/interface"
+      showLineNumbers />
+  </Tabs.Tab>
+  <Tabs.Tab>
+    <RemoteSource
+      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/compiler/IAutoBePrismaCompilerResult.ts"
+      filename="@autobe/interface"
+      showLineNumbers />
+  </Tabs.Tab>
+</Tabs>
+
+[`AutoBePrismaHistory`](/api/interfaces/_autobe_interface.AutoBePrismaHistory.html) is a history generated when `@autobe` analyzes the requirements specification and completes the database design.
+
+`@autobe` constructs data of type [`AutoBePrisma.IApplication`](/api/interfaces/_autobe_interface.AutoBePrisma.IApplication.html) through AI function calling, validates it, and then generates prisma schema files. The validation results are stored in the `result` property as type [`IAutoBePrismaValidation`](/api/types/_autobe_interface.IAutoBePrismaValidation-1.html), and the results of converting this to prisma schema files (code generation) are stored in the `schemas` property.
+
+Note that `@autobe` generally creates valid [`AutoBePrisma.IApplication`](/api/interfaces/_autobe_interface.AutoBePrisma.IApplication.html) data through a validation feedback process. However, when using very small AI models, the [`IAutoBePrismaValidation`](/api/types/_autobe_interface.IAutoBePrismaValidation-1.html) result might have `success := false`. Additionally, the results of compiling the prisma schema files are stored in the `compiled` property as type [`IAutoBePrismaCompilerResult`](/api/types/_autobe_interface.IAutoBePrismaCompilerResult-1.html), which should always compile successfully. If compilation fails, it would be a bug in `@autobe`, so please report it as an issue.
+
+The `step` property indicates which requirements analysis report iteration the database design was performed for. If the [`AutoBePrismaHistory.step`](/api/interfaces/_autobe_interface.AutoBePrismaHistory.html#step) value is lower than [`AutoBeAnalyzeHistory.step`](/api/interfaces/_autobe_interface.AutoBeAnalyzeHistory.html#step), it means the database design has not yet been updated to reflect the latest requirements.
+
+### `AutoBeInterfaceHistory`
+[`AutoBeInterfaceHistory`](/api/interfaces/_autobe_interface.AutoBeInterfaceHistory.html) is a history generated when the RESTful API design is completed based on the previous requirements analysis report and database design.
+
+`@autobe` constructs data of type [`AutoBeOpenApi.IDocument`](/api/interfaces/_autobe_interface.AutoBeOpenApi.IDocument.html) through AI function calling, validates it, and stores it in the `document` property. This is then converted to a formal OpenAPI document ([OpenApi.IDocument](/api/interfaces/_samchon_openapi.OpenApi.IDocument-1.html)), and NestJS API controllers, DTOs, and e2e test code are generated (code generation), with the results stored in the `files` property.
+
+The `step` property indicates which requirements analysis report iteration the API design was performed for. If the [`AutoBeInterfaceHistory.step`](/api/interfaces/_autobe_interface.AutoBeInterfaceHistory.html#step) value is lower than [`AutoBeAnalyzeHistory.step`](/api/interfaces/_autobe_interface.AutoBeAnalyzeHistory.html#step), it means the API design has not yet been updated to reflect the latest requirements.
+
+### `AutoBeTestHistory`
+<Tabs items={[
+  <code>AutoBeTestHistory</code>,
+  <code>IAutoBeTypeScriptCompilerResult</code>,
+]}>
+  <Tabs.Tab>
+    <RemoteSource
+      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/histories/AutoBeTestHistory.ts"
+      filename="@autobe/interface"
+      showLineNumbers />
+  </Tabs.Tab>
+  <Tabs.Tab>
+    <RemoteSource
+      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/compiler/IAutoBeTypeScriptCompilerResult.ts"
+      filename="@autobe/interface"
+      showLineNumbers />
+  </Tabs.Tab>
+</Tabs>
+
+[`AutoBeTestHistory`](/api/interfaces/_autobe_interface.AutoBeTestHistory.html) is a history generated when e2e test code is written based on the previous requirements analysis, database design, and RESTful API specification.
+
+`@autobe` conceives multiple use case scenarios for each API endpoint and implements them as test programs. These test programs are composed of one TypeScript file and a standalone function for each scenario, stored in the `files` property. These are then built using the TypeScript compiler embedded in `@autobe`, with the results stored in the `compiled` property.
+
+When the AI occasionally writes incorrect TypeScript code, `@autobe` provides compilation error messages as feedback, allowing the AI to self-correct. This feedback process usually works correctly, so test code written by AI almost always compiles successfully. However, when using very small AI models, the [`IAutoBeTypeScriptCompilerResult`](/api/types/_autobe_interface.IAutoBeTypeScriptCompilerResult-1.html) result might have `success := false`.
+
+The `step` property indicates which requirements analysis report iteration the test code was written for. If the [`AutoBeTestHistory.step`](/api/interfaces/_autobe_interface.AutoBeTestHistory.html#step) value is lower than [`AutoBeAnalyzeHistory.step`](/api/interfaces/_autobe_interface.AutoBeAnalyzeHistory.html#step), it means the test code has not yet been updated to reflect the latest requirements.
+
+### `AutoBeRealizeHistory`
+Not implemented yet.
