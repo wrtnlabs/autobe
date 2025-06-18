@@ -4,37 +4,21 @@ title: AutoBE > Guide Documents > Agent Library > Configuration
 import { Tabs } from "nextra/components";
 
 import AutoBeAgentSnippet from "../../../template/snippets/AutoBeAgentSnippet.mdx";
-import AutoBeVendorAgentSnippet from "../../../template/snippets/AutoBeVendorAgentSnippet.tsx";
+import AutoBeAgentConfigSnippet from "../../../template/snippets/AutoBeAgentConfigSnippet.mdx";
+import AutoBeAgentVendorSnippet from "../../../template/snippets/AutoBeAgentVendorSnippet.tsx";
 
 ## Configuration
-```typescript filename="src/main.config.ts" showLineNumbers
-import { AutoBeAgent } from "@autobe/agent";
-import { AutoBeCompiler } from "@autobe/compiler";
-import OpenAI from "openai";
+<AutoBeAgentConfigSnippet />
 
-const agent = new AutoBeAgent({
-  model: "llama", // JSON schema model
-  vendor: { // LLM vendor specification
-    api: new OpenAI({
-      apiKey: "********",
-      baseURL: "https://openrouter.ai/api/v1",
-    }),
-    model: "meta-llama/llama3.3-70b",
-  },
-  config: { // locale and timezone
-    locale: "en-US",
-    timezone: "America/New_York",
-  },
-  compiler: new AutoBeCompiler(), // compiler
-});
+When creating an `AutoBeAgent`, you can configure several properties that define how the agent operates and connects to LLM services.
 
-await agent.conversate(`
-  I want to create a political/economic discussion board.
-  
-  Since I'm not familiar with programming, 
-  please write a requirements analysis report as you see fit.
-`);
-```
+The `model` property specifies the JSON schema model that corresponds to your chosen LLM vendor. Different vendors implement different schema specifications, so this setting must align with your selected provider. For OpenAI ChatGPT, you would use `"chatgpt"`, while Anthropic Claude requires `"claude"`, DeepSeek uses `"deepseek"`, and Meta Llama uses `"llama"`.
+
+The `vendor` configuration defines your LLM service connection. The `api` property accepts an OpenAI SDK instance that handles the actual API communication, while the `model` property specifies the exact model name you want to use from that vendor. This flexible approach allows you to connect to various LLM providers beyond OpenAI by configuring the appropriate base URL and authentication.
+
+The `config` section allows you to customize the agent's behavioral context. The `locale` setting determines the language and regional preferences that influence how the agent communicates, while `timezone` helps the agent understand geographical context when making decisions or generating responses that involve time-sensitive information.
+
+Finally, the `compiler` property provides the necessary compilation tools for TypeScript, Prisma, and OpenAPI operations that the agent requires for code generation and analysis tasks.
 
 ## Vendor
 <Tabs 
@@ -44,19 +28,19 @@ await agent.conversate(`
     <AutoBeAgentSnippet />
   </Tabs.Tab>
   <Tabs.Tab>
-    <AutoBeVendorAgentSnippet 
+    <AutoBeAgentVendorSnippet 
       title="Claude" 
       schema="claude" 
       vendor="anthropic/claude-3.5-sonnet" />
   </Tabs.Tab>
   <Tabs.Tab>
-    <AutoBeVendorAgentSnippet 
+    <AutoBeAgentVendorSnippet 
       title="DeepSeek" 
       schema="deepseek" 
       vendor="deepseek/deepseek-chat-v3" />
   </Tabs.Tab>
   <Tabs.Tab>
-    <AutoBeVendorAgentSnippet 
+    <AutoBeAgentVendorSnippet 
       title="Meta Llama" 
       schema="llama" 
       vendor="meta-llama/llama3.3-70b" />

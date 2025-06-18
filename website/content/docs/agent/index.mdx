@@ -1,7 +1,49 @@
+---
+title: AutoBE > Guide Documents > Agent Library
+---
+import { Tabs } from "nextra/components";
+
+import AutoBeAgentSnippet from "../../../template/snippets/AutoBeAgentSnippet.mdx";
+import AutoBeAgentConfigSnippet from "../../../template/snippets/AutoBeAgentConfigSnippet.mdx";
+import AutoBeAgentEventSnippet from "../../../template/snippets/AutoBeAgentEventSnippet.mdx";
+import AutoBeAgentHistorySnippet from "../../../template/snippets/AutoBeAgentHistorySnippet.mdx";
+
 ## Preface
+<AutoBeAgentSnippet />
+
+Let's begin with creating an `AutoBeAgent` class instance.
+
+You can create an `@autobe` application—a no-code AI agent that analyzes user requirements and automatically generates NestJS backend applications—by instantiating an `AutoBeAgent` class and calling its `AutoBeAgent.conversate()` method.
+
+Encourage users to discuss their requirements with the AI agent. `@autobe` will analyze user requirements to meticulously design databases and APIs, write test code to ensure backend application stability, and create backend programs that are robustly protected by the compiler.
+
+If you want to understand the basic usage of the `AutoBeAgent` class, please refer to the sections below. For more detailed and comprehensive information, consult the other pages in this "Agent Library" chapter.
 
 ## Configuration
+<AutoBeAgentConfigSnippet />
+
+When creating an `AutoBeAgent`, you can configure several properties that define how the agent operates and connects to LLM services.
+
+The `model` property specifies the JSON schema model that corresponds to your chosen LLM vendor. Different vendors implement different schema specifications, so this setting must align with your selected provider. For OpenAI ChatGPT, you would use `"chatgpt"`, while Anthropic Claude requires `"claude"`, DeepSeek uses `"deepseek"`, and Meta Llama uses `"llama"`.
+
+The `vendor` configuration defines your LLM service connection. The `api` property accepts an OpenAI SDK instance that handles the actual API communication, while the `model` property specifies the exact model name you want to use from that vendor. This flexible approach allows you to connect to various LLM providers beyond OpenAI by configuring the appropriate base URL and authentication.
+
+The `config` section allows you to customize the agent's behavioral context. The `locale` setting determines the language and regional preferences that influence how the agent communicates, while `timezone` helps the agent understand geographical context when making decisions or generating responses that involve time-sensitive information.
+
+Finally, the `compiler` property provides the necessary compilation tools for TypeScript, Prisma, and OpenAPI operations that the agent requires for code generation and analysis tasks.
 
 ## Event Handling
+<AutoBeAgentEventSnippet />
+
+The `AutoBeAgent` provides real-time event notifications throughout the development process.
+
+These events allow you to monitor progress, handle intermediate states, and respond to completion events. All event types in `@autobe` are collected into the [`AutoBeEvent`](/api/types/_autobe_interface.AutoBeEvent-1.html) type as a union, providing comprehensive coverage of the agent's activities.
+
+Events in AutoBE can be categorized into two main types: message events that track conversation flow between user and assistant, and development events that monitor progress through various development phases.
 
 ## Prompt Histories
+<AutoBeAgentHistorySnippet />
+
+When creating an `AutoBeAgent`, you can start from previous conversations by specifying the `histories` property. Additionally, you can retrieve the conversation histories of the current `AutoBeAgent` by calling the `AutoBeAgent.getHistories()` method.
+
+All history types in `@autobe` are collected into the `AutoBeHistory` type as a union. Each history type represents different aspects: `AutoBeUserMessageHistory`, `AutoBeAssistantMessageHistory`, `AutoBeAnalyzeHistory`, `AutoBePrismaHistory`, `AutoBeInterfaceHistory`, `AutoBeTestHistory`, and `AutoBeRealizeHistory`.

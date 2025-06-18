@@ -1,0 +1,34 @@
+```typescript filename="@agentica" showLineNumbers
+import { Agentica, assertHttpController } from "@agentica/core";
+import OpenAI from "openai";
+import typia from "typia";
+
+import { MobileFileSystem } from "./services/MobileFileSystem";
+
+const agent = new Agentica({
+  vendor: {
+    api: new OpenAI({ apiKey: "********" }),
+    model: "gpt-4o-mini",
+  },
+  controllers: [
+    // functions from TypeScript class
+    typia.llm.controller<MobileFileSystem, "chatgpt">(
+      "filesystem",
+      MobileFileSystem(),
+    ),
+    // functions from Swagger/OpenAPI
+    assertHttpController({
+      name: "shopping",
+      model: "chatgpt",
+      document: await fetch(
+        "https://shopping-be.wrtn.ai/editor/swagger.json",
+      ).then(r => r.json()),
+      connection: {
+        host: "https://shopping-be.wrtn.ai",
+        headers: { Authorization: "Bearer ********" },
+      },
+    }),
+  ],
+});
+await agent.conversate("I wanna buy MacBook Pro");
+```

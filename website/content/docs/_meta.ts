@@ -17,8 +17,8 @@ const meta: MetaRecord = {
     type: "separator",
     title: "🔗 Appendix",
   },
+  ecosystem: "🌐 No Coding Ecosystem",
   roadmap: "📅 Roadmap",
-  related: "📊 Related Projects",
   api: {
     title: "⇲ API Documents",
     href: "/api",

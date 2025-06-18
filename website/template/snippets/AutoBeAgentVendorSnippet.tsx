@@ -1,7 +1,7 @@
 import { compileMdx } from "nextra/compile";
 import { MDXRemote } from "nextra/mdx-remote";
 
-export async function AutoBeVendorAgentSnippet(
+export async function AutoBeAgentVendorSnippet(
   props: AutoBeAgentVendorSnippet.IProps,
 ) {
   const raw = await compileMdx(getContent(props));
@@ -14,7 +14,7 @@ export namespace AutoBeAgentVendorSnippet {
     schema: string;
   }
 }
-export default AutoBeVendorAgentSnippet;
+export default AutoBeAgentVendorSnippet;
 
 function getContent(props: AutoBeAgentVendorSnippet.IProps): string {
   return `\`\`\`typescript filename="src/main.${props.title}.ts" showLineNumbers {6-13}
