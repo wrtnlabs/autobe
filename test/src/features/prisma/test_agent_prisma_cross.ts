@@ -15,7 +15,7 @@ import json from "../compiler/examples/prisma.cross.json";
 export const test_agent_prisma_cross = async () => {
   if (TestGlobal.env.CHATGPT_API_KEY === undefined) return;
 
-  const histories = await TestHistory.getAnalyze("bbs");
+  const histories = await TestHistory.getAnalyze("bbs-backend");
   const compiler: AutoBeCompiler = new AutoBeCompiler();
   const agent: AutoBeAgent<"chatgpt"> = new AutoBeAgent({
     model: "chatgpt",

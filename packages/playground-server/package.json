@@ -1,6 +1,6 @@
 {
   "name": "@autobe/playground-server",
-  "version": "0.7.3",
+  "version": "0.8.0",
   "description": "AI backend server code generator",
   "main": "src/index.ts",
   "scripts": {

@@ -12,17 +12,22 @@ export const validate_agent_test = async (owner: string, project: string) => {
 
   const events: AutoBeEvent[] = [];
   agent.on("testStart", (event) => {
+    console.log("testStart");
     events.push(event);
   });
+
   agent.on("testScenario", (event) => {
+    console.log("testScenario");
     events.push(event);
   });
 
   agent.on("testProgress", async (event) => {
+    console.log("testProgress");
     events.push(event);
   });
 
   agent.on("testValidate", async (event) => {
+    console.log("testValidate");
     if (event.result.type === "exception") {
       await FileSystemIterator.save({
         root: `${TestGlobal.ROOT}/results/${owner}/${project}/test-exception`,
@@ -42,10 +47,12 @@ export const validate_agent_test = async (owner: string, project: string) => {
   });
 
   agent.on("testCorrect", async (event) => {
+    console.log("testCorrect");
     events.push(event);
   });
 
   agent.on("testComplete", (event) => {
+    console.log("testComplete");
     events.push(event);
   });
 
@@ -86,6 +93,7 @@ export const validate_agent_test = async (owner: string, project: string) => {
     root: `${TestGlobal.ROOT}/results/${owner}/${project}/test/main`,
     files: {
       ...agent.getFiles(),
+      "logs/history.json": JSON.stringify(agent.getHistories(), null, 2),
       "logs/result.json": JSON.stringify(result, null, 2),
       "logs/tokenUsage.json": JSON.stringify(agent.getTokenUsage(), null, 2),
       "logs/files.json": JSON.stringify(Object.keys(agent.getFiles()), null, 2),

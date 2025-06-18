@@ -5,10 +5,10 @@ import { RepositoryFileSystem } from "@autobe/filesystem";
 import {
   AutoBeAnalyzeHistory,
   AutoBeInterfaceHistory,
+  AutoBeOpenApi,
   AutoBePrismaHistory,
   IAutoBePrismaCompilerResult,
 } from "@autobe/interface";
-import { AutoBeOpenApi } from "@autobe/interface";
 import OpenAI from "openai";
 import { v4 } from "uuid";
 
@@ -48,8 +48,11 @@ export const prepare_agent_test_main = async (
   const agent: AutoBeAgent<"chatgpt"> = new AutoBeAgent({
     model: "chatgpt",
     vendor: {
-      api: new OpenAI({ apiKey: TestGlobal.env.CHATGPT_API_KEY }),
-      model: "gpt-4.1",
+      api: new OpenAI({
+        apiKey: TestGlobal.env.CHATGPT_API_KEY,
+        baseURL: "https://openrouter.ai/api/v1",
+      }),
+      model: "openai/gpt-4.1",
       semaphore: 16,
     },
     compiler: new AutoBeCompiler(),

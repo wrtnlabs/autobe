@@ -7,7 +7,7 @@ import { prepare_agent_test } from "./prepare_agent_test";
 
 export const validate_agent_test_scenario = async (
   _owner: string,
-  project: "bbs",
+  project: "bbs-backend",
 ) => {
   if (TestGlobal.env.CHATGPT_API_KEY === undefined) return false;
 

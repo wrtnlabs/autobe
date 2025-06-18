@@ -7,7 +7,9 @@ import OpenAI from "openai";
 import { TestGlobal } from "../../../TestGlobal";
 import { TestHistory } from "../../../internal/TestHistory";
 
-export const prepare_agent_test = async (project: string) => {
+export const prepare_agent_test = async (
+  project: "bbs-backend" | "shopping-backend",
+) => {
   if (TestGlobal.env.CHATGPT_API_KEY === undefined)
     throw new Error("No OpenAI API key provided");
 
