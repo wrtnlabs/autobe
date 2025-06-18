@@ -16,14 +16,6 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   capacity: number = 4,
 ): Promise<AutoBeTestScenarioEvent> {
-  const files = Object.entries(ctx.state().interface?.files ?? {})
-    .filter(([filename]) => {
-      return filename.startsWith("test/features/api/");
-    })
-    .reduce<Record<string, string>>((acc, [filename, content]) => {
-      return Object.assign(acc, { [filename]: content });
-    }, {});
-
   const operations = ctx.state().interface?.document.operations ?? [];
   const endpoints: Omit<AutoBeOpenApi.IOperation, "specification">[] =
     operations.map((it) => {
@@ -52,7 +44,6 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
         ctx,
         e,
         endpoints,
-        files,
         3,
         (count) => {
           completed += count;
@@ -84,7 +75,6 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   endpoints: AutoBeOpenApi.IEndpoint[],
   allEndpoints: AutoBeOpenApi.IEndpoint[],
-  files: Record<string, string>,
   retry: number,
   progress: (completed: number) => void,
 ): Promise<AutoBeTest.IScenario[]> {
@@ -106,7 +96,6 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
       ctx,
       Array.from(remained),
       allEndpoints,
-      files,
     );
     for (const item of newbie) {
       scenarios.set(item.endpoint, item.scenarios);
@@ -124,7 +113,6 @@ async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   endpoints: AutoBeOpenApi.IEndpoint[],
   allEndpoints: AutoBeOpenApi.IEndpoint[],
-  files: Record<string, string>,
 ): Promise<AutoBeTest.IScenario[]> {
   const pointer: IPointer<AutoBeTest.IScenario[] | null> = {
     value: null,
@@ -142,9 +130,7 @@ async function process<Model extends ILlmSchema.Model>(
       },
     },
     tokenUsage: ctx.usage(),
-    histories: [
-      ...transformTestScenarioHistories(ctx.state(), allEndpoints, files),
-    ],
+    histories: [...transformTestScenarioHistories(ctx.state(), allEndpoints)],
     controllers: [
       createApplication({
         model: ctx.model,
