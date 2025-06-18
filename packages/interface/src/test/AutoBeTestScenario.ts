@@ -279,5 +279,8 @@ export namespace AutoBeTest {
      * - Maintain consistency in perspective throughout the description
      */
     scenario: string;
+
+    /** Collection of API endpoints that this scenario interacts with. */
+    endpoints: AutoBeOpenApi.IEndpoint[];
   }
 }

@@ -1,11 +1,11 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
+import { AutoBeOpenApi } from "@autobe/interface";
 import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 
 export const transformTestProgressHistories = (
-  apiFiles: Record<string, string>,
-  dtoFiles: Record<string, string>,
+  document: AutoBeOpenApi.IDocument,
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
@@ -32,18 +32,16 @@ export const transformTestProgressHistories = (
         "- Do not invent new helpers or use utilities that are not explicitly shown.",
         "- Keep all tests deterministic and reliable.",
         "",
-        "## File References",
-        "### API Files",
-        "```typescript",
-        JSON.stringify(apiFiles, null, 2),
+        "## OpenAPI Like Document",
+        "```json",
+        JSON.stringify(document),
         "```",
         "",
-        "### DTO Files",
-        "```typescript",
-        JSON.stringify(dtoFiles, null, 2),
-        "```",
+        "Here is the OpenAPI like document only about the API functions and DTOs",
+        "related to the scenario. Use all of them to generate the E2E test code.",
         "",
         "Now generate the E2E test function based on the given scenario.",
+        "",
         "Only output a single `async function` named `test_api_{...}`. No explanation, no commentary.",
       ].join("\n"),
     },

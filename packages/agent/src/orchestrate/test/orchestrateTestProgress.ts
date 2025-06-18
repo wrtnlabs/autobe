@@ -1,6 +1,14 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
-import { AutoBeTest, AutoBeTestProgressEvent } from "@autobe/interface";
-import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
+import {
+  AutoBeOpenApi,
+  AutoBeTest,
+  AutoBeTestProgressEvent,
+} from "@autobe/interface";
+import {
+  ILlmApplication,
+  ILlmSchema,
+  OpenApiTypeChecker,
+} from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 
@@ -59,30 +67,17 @@ async function process<Model extends ILlmSchema.Model>(
   const pointer: IPointer<ICreateTestCodeProps | null> = {
     value: null,
   };
-
-  const apiFiles = Object.entries(ctx.state().interface?.files ?? {})
-    .filter(([filename]) => {
-      return filename.startsWith("src/api/");
-    })
-    .reduce<Record<string, string>>((acc, [filename, content]) => {
-      return Object.assign(acc, { [filename]: content });
-    }, {});
-
-  const dtoFiles = Object.entries(ctx.state().interface?.files ?? {})
-    .filter(([filename]) => {
-      return filename.startsWith("src/api/structures/");
-    })
-    .reduce<Record<string, string>>((acc, [filename, content]) => {
-      return Object.assign(acc, { [filename]: content });
-    }, {});
-
+  const document: AutoBeOpenApi.IDocument = filterDocument(
+    scenario,
+    ctx.state().interface!.document,
+  );
   const agentica = new MicroAgentica({
     model: ctx.model,
     vendor: ctx.vendor,
     config: {
       ...(ctx.config ?? {}),
     },
-    histories: transformTestProgressHistories(apiFiles, dtoFiles),
+    histories: transformTestProgressHistories(document),
     controllers: [
       createApplication({
         model: ctx.model,
@@ -105,6 +100,41 @@ async function process<Model extends ILlmSchema.Model>(
   );
   if (pointer.value === null) throw new Error("Failed to create test code.");
   return pointer.value;
+}
+
+function filterDocument(
+  scneario: AutoBeTest.Scenario,
+  document: AutoBeOpenApi.IDocument,
+): AutoBeOpenApi.IDocument {
+  const operations: AutoBeOpenApi.IOperation[] = document.operations.filter(
+    (op) =>
+      scneario.endpoints.find(
+        (o) => o.method === op.method && o.path === op.path,
+      ) !== undefined,
+  );
+  const components: AutoBeOpenApi.IComponents = {
+    schemas: {},
+  };
+  const visit = (typeName: string) => {
+    OpenApiTypeChecker.visit({
+      components: document.components,
+      schema: { $ref: `#/components/schemas/${typeName}` },
+      closure: (s) => {
+        if (OpenApiTypeChecker.isReference(s)) {
+          const key: string = s.$ref.split("/").pop()!;
+          components.schemas[key] = document.components.schemas[key];
+        }
+      },
+    });
+  };
+  for (const op of operations) {
+    if (op.requestBody) visit(op.requestBody.typeName);
+    if (op.responseBody) visit(op.responseBody.typeName);
+  }
+  return {
+    operations,
+    components,
+  };
 }
 
 function createApplication<Model extends ILlmSchema.Model>(props: {
