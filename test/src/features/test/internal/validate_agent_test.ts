@@ -23,6 +23,21 @@ export const validate_agent_test = async (owner: string, project: string) => {
   });
 
   agent.on("testValidate", async (event) => {
+    if (event.result.type === "exception") {
+      await FileSystemIterator.save({
+        root: `${TestGlobal.ROOT}/results/${owner}/${project}/test-exception`,
+        files: {
+          ...event.files,
+          "logs/tokenUsage.json": JSON.stringify(
+            agent.getTokenUsage(),
+            null,
+            2,
+          ),
+          "logs/events.json": JSON.stringify(events, null, 2),
+          "error.json": JSON.stringify(event.result.error, null, 2),
+        },
+      });
+    }
     events.push(event);
   });
 
@@ -46,6 +61,8 @@ export const validate_agent_test = async (owner: string, project: string) => {
       root: `${TestGlobal.ROOT}/results/${owner}/${project}/test-error`,
       files: {
         "result.json": JSON.stringify(result, null, 2),
+        "logs/tokenUsage.json": JSON.stringify(agent.getTokenUsage(), null, 2),
+        "logs/events.json": JSON.stringify(events, null, 2),
         ...result.files,
         ...(result.compiled.type === "failure"
           ? {
