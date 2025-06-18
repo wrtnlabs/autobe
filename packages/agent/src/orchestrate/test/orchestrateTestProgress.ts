@@ -1,19 +1,25 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import { AutoBeTest, AutoBeTestProgressEvent } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
-import { IPointer } from "tstl";
+import { HashMap, HashSet, IPointer, hash } from "tstl";
 import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { divideArray } from "../../utils/divideArray";
 import { enforceToolCall } from "../../utils/enforceToolCall";
 import { transformTestProgressHistories } from "./transformTestProgressHistories";
 
 export async function orchestrateTestProgress<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   scenarios: AutoBeTest.Scenario[],
+  capacity: number = 3,
 ): Promise<AutoBeTestProgressEvent[]> {
-  const start: Date = new Date();
+  const matrix: AutoBeTest.Scenario[][] = divideArray({
+    array: scenarios,
+    capacity,
+  });
+
   let complete: number = 0;
 
   const events: AutoBeTestProgressEvent[] = await Promise.all(
@@ -22,24 +28,61 @@ export async function orchestrateTestProgress<Model extends ILlmSchema.Model>(
      * create individual test code implementations. Each scenario is processed
      * to generate corresponding test code and progress events.
      */
-    scenarios.map(async (scenario) => {
-      const code: ICreateTestCodeProps = await process(ctx, scenario);
+    matrix.map(async (s) => {
+      const codes: ITestCode[] = await divideAndConquer(ctx, s, 3);
+
+      complete += codes.length;
 
       const event: AutoBeTestProgressEvent = {
         type: "testProgress",
-        created_at: start.toISOString(),
-        filename: `${code.domain}/${scenario.functionName}.ts`,
-        content: code.content,
-        completed: ++complete,
+        created_at: new Date().toISOString(),
+        files: codes.reduce(
+          (acc, code) => {
+            acc[`${code.domain}/${code.functionName}.ts`] = code.content;
+            return acc;
+          },
+          {} as Record<string, string>,
+        ),
+        completed: complete,
         total: scenarios.length,
         step: ctx.state().interface?.step ?? 0,
       };
+
       ctx.dispatch(event);
+
       return event;
     }),
   );
 
   return events;
+}
+
+async function divideAndConquer<Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  scenarios: AutoBeTest.Scenario[],
+  retry: number,
+): Promise<ITestCode[]> {
+  const remained: HashSet<AutoBeTest.Scenario> = new HashSet(
+    scenarios,
+    (x) => hash(x.functionName),
+    (x, y) => x.functionName === y.functionName,
+  );
+  const codes: HashMap<AutoBeTest.Scenario["functionName"], ITestCode> =
+    new HashMap();
+
+  for (let i: number = 0; i < retry; ++i) {
+    if (remained.empty() === true || codes.size() >= scenarios.length) break;
+    const newbie: ITestCode[] = await process(ctx, Array.from(remained));
+    for (const item of newbie) {
+      codes.set(item.functionName, item);
+      remained.erase({
+        scenario: "",
+        functionName: item.functionName,
+      });
+    }
+  }
+
+  return Array.from(codes.toJSON()).map((it) => it.second);
 }
 
 /**
@@ -54,9 +97,9 @@ export async function orchestrateTestProgress<Model extends ILlmSchema.Model>(
  */
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  scenario: AutoBeTest.Scenario,
-): Promise<ICreateTestCodeProps> {
-  const pointer: IPointer<ICreateTestCodeProps | null> = {
+  scenarios: AutoBeTest.Scenario[],
+): Promise<ITestCode[]> {
+  const pointer: IPointer<ITestCode[] | null> = {
     value: null,
   };
 
@@ -87,7 +130,8 @@ async function process<Model extends ILlmSchema.Model>(
       createApplication({
         model: ctx.model,
         build: (next) => {
-          pointer.value = next;
+          pointer.value ??= [];
+          pointer.value.push(...next.codes);
         },
       }),
     ],
@@ -96,14 +140,26 @@ async function process<Model extends ILlmSchema.Model>(
 
   await agentica.conversate(
     [
-      "Create test code for below scenario:",
+      `You must create exactly ${scenarios.length} test codes for the following scenarios:`,
       "",
       "```json",
-      JSON.stringify(scenario, null, 2),
+      JSON.stringify(scenarios, null, 2),
       "```",
+      "",
+      "Requirements:",
+      `- Generate exactly ${scenarios.length} test codes`,
+      "- Each scenario maps to one test code",
+      "- All test codes must be included in the 'codes' array",
+      "- Do not skip any scenarios",
+      "",
+      "Scenarios breakdown:",
+      ...scenarios.map(
+        (scenario, index) => `${index + 1}. ${scenario.functionName}`,
+      ),
     ].join("\n"),
   );
   if (pointer.value === null) throw new Error("Failed to create test code.");
+
   return pointer.value;
 }
 
@@ -151,8 +207,17 @@ const collection = {
 interface IApplication {
   createTestCode(props: ICreateTestCodeProps): void;
 }
-
 interface ICreateTestCodeProps {
+  /**
+   * Create Test codes for each scenarios. Generate multiple test codes based on
+   * the given scenarios.
+   */
+  codes: ITestCode[];
+}
+
+interface ITestCode {
+  /** Test function name. */
+  functionName: string;
   /**
    * Strategic approach for test implementation.
    *
@@ -162,8 +227,8 @@ interface ICreateTestCodeProps {
    *
    * ### Critical Requirements
    *
-   * - Must follow the Test Generation Guildelines.
-   * - Must Planning the test code Never occur the typescript compile error.
+   * - Must follow the Test Generation Guidelines.
+   * - Must plan the test codes to never occur TypeScript compile errors.
    *
    * ### Planning Elements:
    *
@@ -191,7 +256,7 @@ interface ICreateTestCodeProps {
    *     4. Test error scenarios (missing fields, invalid data)
    *     5. Verify database state changes
    *     6. Reconsider the plan if it doesn't follow the Test Generation
-   *        Guildelines.
+   *        Guidelines.
    */
   plan: string;
 

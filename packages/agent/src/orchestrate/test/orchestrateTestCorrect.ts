@@ -19,11 +19,14 @@ export async function orchestrateTestCorrect<Model extends ILlmSchema.Model>(
   life: number = 4,
 ): Promise<AutoBeTestValidateEvent> {
   // 1) Build map of new test files from progress events
-  const testFiles = Object.fromEntries(
-    codes.map(({ filename, content }) => [
-      `test/features/api/${filename}`,
-      content,
-    ]),
+  const testFiles = codes.reduce(
+    (acc, { files }) => {
+      Object.entries(files).forEach(([filename, content]) => {
+        acc[`test/features/api/${filename}`] = content;
+      });
+      return acc;
+    },
+    {} as Record<string, string>,
   );
 
   // 2) Keep only files outside the test directory from current state
