@@ -1,7 +1,7 @@
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
-export interface AutoBeAnalyzeWriteDocumentEvent
-  extends AutoBeEventBase<"analyzeWriteDocument"> {
+export interface AutoBeAnalyzeWriteEvent
+  extends AutoBeEventBase<"analyzeWrite"> {
   files: Record<string, string>;
   step: number;
 }

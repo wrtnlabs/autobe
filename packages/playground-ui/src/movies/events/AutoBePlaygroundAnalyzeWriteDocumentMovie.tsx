@@ -1,10 +1,10 @@
-import { AutoBeAnalyzeWriteDocumentEvent } from "@autobe/interface/src/events/AutoBeAnalyzeWriteDocumentEvent";
+import { AutoBeAnalyzeWriteEvent } from "@autobe/interface/src/events/AutoBeAnalyzeWriteEvent";
 import Button from "@mui/material/Button";
 import StackBlitzSDK from "@stackblitz/sdk";
 import { useCallback } from "react";
 
 export function AutoBePlaygroundAnalyzeWriteDocumentMovie(props: {
-  event: AutoBeAnalyzeWriteDocumentEvent;
+  event: AutoBeAnalyzeWriteEvent;
 }) {
   return (
     <ul>

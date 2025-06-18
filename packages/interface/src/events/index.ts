@@ -4,8 +4,8 @@ export * from "./AutoBeAssistantMessageEvent";
 export * from "./AutoBeUserMessageEvent";
 
 export * from "./AutoBeAnalyzeStartEvent";
-export * from "./AutoBeAnalyzeWriteDocumentEvent";
-export * from "./AutoBEAnalyzeReviewEvent";
+export * from "./AutoBeAnalyzeWriteEvent";
+export * from "./AutoBeAnalyzeReviewEvent";
 export * from "./AutoBeAnalyzeCompleteEvent";
 
 export * from "./AutoBePrismaStartEvent";

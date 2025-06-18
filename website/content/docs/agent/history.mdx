@@ -1,6 +1,10 @@
+---
+title: AutoBE > Guide Documents > Agent Library > Prompt Histories
+---
 import { Tabs } from "nextra/components";
 
 import RemoteSource from "../../../components/RemoteSource";
+import RemoteSourceGroup from "../../../components/RemoteSourceGroup";
 
 ## Prompt Histories
 <Tabs 
@@ -60,6 +64,38 @@ All history types in `@autobe` are collected into the `AutoBeHistory` type as a 
 
 
 ## Message Histories
+<Tabs items={[
+  <code>AutoBeAssistantMessageHistory</code>,
+  <code>AutoBeUserMessageHistory</code>,
+  <code>AutoBeUserMessageContent</code>,
+]}>
+  <Tabs.Tab>
+    <RemoteSource
+      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/histories/AutoBeUserMessageHistory.ts"
+      filename="@autobe/interface"
+      showLineNumbers />
+  </Tabs.Tab>
+  <Tabs.Tab>
+    <RemoteSource
+      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/histories/AutoBeAssistantMessageHistory.ts"
+      filename="@autobe/interface"
+      showLineNumbers />
+  </Tabs.Tab>
+  <Tabs.Tab>
+    <RemoteSourceGroup
+      filename="@autobe/interface"
+      showLineNumbers 
+      urls={[
+        "https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/histories/contents/AutoBeUserMessageContent.ts",
+        "https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/histories/contents/AutoBeUserMessageAudioContent.ts",
+        "https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/histories/contents/AutoBeUserMessageFileContent.ts",
+        "https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/histories/contents/AutoBeUserMessageImageContent.ts",
+        "https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/histories/contents/AutoBeUserMessageTextContent.ts",
+      ]}
+    />
+  </Tabs.Tab>
+</Tabs>
+
 Message histories are divided into user conversation history [`AutoBeUserMessageHistory`](/api/interfaces/_autobe_interface.AutoBeUserMessageHistory.html) and assistant conversation history [`AutoBeAssistantMessageHistory`](/api/interfaces/_autobe_interface.AutoBeAssistantMessageHistory.html).
 
 For users, multimodal capabilities are supported, allowing not only text but also image/document file attachments and voice input, which results in different content types. The assistant communicates only through text, so its content type is limited to `string`.
@@ -68,7 +104,7 @@ For users, multimodal capabilities are supported, allowing not only text but als
 
 
 ## Development Histories
-### [`AutoBeAnalyzeHistory`](/api/interfaces/_autobe_interface.AutoBeAnalyzeHistory.html)
+### `AutoBeAnalyzeHistory`
 
 <RemoteSource
   url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/histories/AutoBeAnalyzeHistory.ts"
@@ -80,7 +116,6 @@ For users, multimodal capabilities are supported, allowing not only text but als
 The `step` property indicates which iteration of the requirements analysis report this represents. If this value is not 0, it means the requirements analysis report has been revised that many times. If the `step` value of other histories is lower than [`AutoBeAnalyzeHistory.step`](/api/interfaces/_autobe_interface.AutoBeAnalyzeHistory.html#step), it means those histories have not been reflected in the latest requirements analysis report.
 
 ### `AutoBePrismaHistory`
-
 <Tabs items={[
   <code>AutoBePrismaHistory</code>,
   <code>AutoBePrisma</code>,
@@ -122,6 +157,31 @@ Note that `@autobe` generally creates valid [`AutoBePrisma.IApplication`](/api/i
 The `step` property indicates which requirements analysis report iteration the database design was performed for. If the [`AutoBePrismaHistory.step`](/api/interfaces/_autobe_interface.AutoBePrismaHistory.html#step) value is lower than [`AutoBeAnalyzeHistory.step`](/api/interfaces/_autobe_interface.AutoBeAnalyzeHistory.html#step), it means the database design has not yet been updated to reflect the latest requirements.
 
 ### `AutoBeInterfaceHistory`
+<Tabs items={[
+  <code>AutoBeInterfaceHistory</code>,
+  <code>AutoBeOpenApi</code>,
+  <code>OpenApi</code>,
+]}>
+  <Tabs.Tab>
+    <RemoteSource
+      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/histories/AutoBeInterfaceHistory.ts"
+      filename="@autobe/interface"
+      showLineNumbers />
+  </Tabs.Tab>
+  <Tabs.Tab>
+    <RemoteSource
+      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/openapi/AutoBeOpenApi.ts"
+      filename="@autobe/interface"
+      showLineNumbers />
+  </Tabs.Tab>
+  <Tabs.Tab>
+    <RemoteSource
+      url="https://raw.githubusercontent.com/samchon/openapi/refs/heads/master/src/OpenApi.ts"
+      filename="@samchon/openapi"
+      showLineNumbers />
+  </Tabs.Tab>
+</Tabs>
+
 [`AutoBeInterfaceHistory`](/api/interfaces/_autobe_interface.AutoBeInterfaceHistory.html) is a history generated when the RESTful API design is completed based on the previous requirements analysis report and database design.
 
 `@autobe` constructs data of type [`AutoBeOpenApi.IDocument`](/api/interfaces/_autobe_interface.AutoBeOpenApi.IDocument.html) through AI function calling, validates it, and stores it in the `document` property. This is then converted to a formal OpenAPI document ([OpenApi.IDocument](/api/interfaces/_samchon_openapi.OpenApi.IDocument-1.html)), and NestJS API controllers, DTOs, and e2e test code are generated (code generation), with the results stored in the `files` property.

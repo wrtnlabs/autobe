@@ -60,7 +60,7 @@ export function AutoBePlaygroundEventMovie(
     case "realizeValidate":
       return <AutoBePlaygroundValidateEventMovie event={props.event} />;
     // SPECIALIZATIONS
-    case "analyzeWriteDocument":
+    case "analyzeWrite":
       return <AutoBePlaygroundAnalyzeWriteDocumentMovie event={props.event} />;
     case "analyzeReview":
       return <AutoBePlaygroundAnalyzeReviewMovie event={props.event} />;

@@ -104,7 +104,7 @@ export class AutoBeAnalyzeAgent<Model extends ILlmSchema.Model> {
 
     if ("text" in lastMessage) {
       this.ctx.dispatch({
-        type: "analyzeWriteDocument",
+        type: "analyzeWrite",
         files: this.fileMap,
         created_at: new Date().toISOString(),
         step: this.ctx.state().analyze?.step ?? 0,

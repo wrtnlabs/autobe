@@ -1,7 +1,7 @@
-import { AutoBeAnalyzeReviewEvent } from "./AutoBEAnalyzeReviewEvent";
 import { AutoBeAnalyzeCompleteEvent } from "./AutoBeAnalyzeCompleteEvent";
+import { AutoBeAnalyzeReviewEvent } from "./AutoBeAnalyzeReviewEvent";
 import { AutoBeAnalyzeStartEvent } from "./AutoBeAnalyzeStartEvent";
-import { AutoBeAnalyzeWriteDocumentEvent } from "./AutoBeAnalyzeWriteDocumentEvent";
+import { AutoBeAnalyzeWriteEvent } from "./AutoBeAnalyzeWriteEvent";
 import { AutoBeAssistantMessageEvent } from "./AutoBeAssistantMessageEvent";
 import { AutoBeInterfaceComplementEvent } from "./AutoBeInterfaceComplementEvent";
 import { AutoBeInterfaceCompleteEvent } from "./AutoBeInterfaceCompleteEvent";
@@ -31,7 +31,7 @@ export type AutoBeEvent =
   | AutoBeAssistantMessageEvent
   | AutoBeUserMessageEvent
   | AutoBeAnalyzeStartEvent
-  | AutoBeAnalyzeWriteDocumentEvent
+  | AutoBeAnalyzeWriteEvent
   | AutoBeAnalyzeReviewEvent
   | AutoBeAnalyzeCompleteEvent
   | AutoBeInterfaceStartEvent
@@ -62,7 +62,7 @@ export namespace AutoBeEvent {
     assistantMessage: AutoBeAssistantMessageEvent;
     userMessage: AutoBeUserMessageEvent;
     analyzeStart: AutoBeAnalyzeStartEvent;
-    analyzeWriteDocument: AutoBeAnalyzeWriteDocumentEvent;
+    analyzeWrite: AutoBeAnalyzeWriteEvent;
     analyzeReview: AutoBeAnalyzeReviewEvent;
     analyzeComplete: AutoBeAnalyzeCompleteEvent;
     prismaStart: AutoBePrismaStartEvent;

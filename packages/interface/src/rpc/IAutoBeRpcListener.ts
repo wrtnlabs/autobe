@@ -2,7 +2,7 @@ import {
   AutoBeAnalyzeCompleteEvent,
   AutoBeAnalyzeReviewEvent,
   AutoBeAnalyzeStartEvent,
-  AutoBeAnalyzeWriteDocumentEvent,
+  AutoBeAnalyzeWriteEvent,
   AutoBeAssistantMessageEvent,
   AutoBeInterfaceComplementEvent,
   AutoBeInterfaceCompleteEvent,
@@ -34,7 +34,7 @@ export interface IAutoBeRpcListener {
   userMessage?(event: AutoBeUserMessageEvent): Promise<void>;
 
   analyzeStart?(event: AutoBeAnalyzeStartEvent): Promise<void>;
-  analyzeWriteDocument?(event: AutoBeAnalyzeWriteDocumentEvent): Promise<void>;
+  analyzeWrite?(event: AutoBeAnalyzeWriteEvent): Promise<void>;
   analyzeReview?(event: AutoBeAnalyzeReviewEvent): Promise<void>;
   analyzeComplete?(event: AutoBeAnalyzeCompleteEvent): Promise<void>;
 

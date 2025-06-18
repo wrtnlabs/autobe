@@ -4,9 +4,10 @@
   "description": "AutoBE Guide Documents",
   "private": true,
   "scripts": {
-    "build": "rimraf .next && rimraf out && pnpm run build:typedoc && next build && pnpm run postbuild",
+    "build": "pnpm run prebuild && pnpm run build:next && pnpm run postbuild",
     "prebuild": "rimraf .next && rimraf out && pnpm run build:typedoc",
     "postbuild": "pnpm run build:pagefind && pnpm run build:sitemap",
+    "build:next": "next build",
     "build:typedoc": "node build/typedoc",
     "build:pagefind": "pagefind --site .next/server/app --output-path out/_pagefind",
     "build:sitemap": "next-sitemap",

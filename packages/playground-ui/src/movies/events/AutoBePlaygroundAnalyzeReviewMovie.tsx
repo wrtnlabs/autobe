@@ -1,4 +1,4 @@
-import { AutoBeAnalyzeReviewEvent } from "@autobe/interface/src/events/AutoBEAnalyzeReviewEvent";
+import { AutoBeAnalyzeReviewEvent } from "@autobe/interface/src/events/AutoBeAnalyzeReviewEvent";
 import { Card, CardContent } from "@mui/material";
 
 import { MarkdownViewer } from "../../components/MarkdownViewer";

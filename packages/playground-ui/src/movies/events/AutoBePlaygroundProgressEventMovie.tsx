@@ -1,6 +1,6 @@
 import {
   AutoBeAnalyzeReviewEvent,
-  AutoBeAnalyzeWriteDocumentEvent,
+  AutoBeAnalyzeWriteEvent,
   AutoBeInterfaceComplementEvent,
   AutoBeInterfaceComponentsEvent,
   AutoBeInterfaceEndpointsEvent,
@@ -25,7 +25,7 @@ export namespace AutoBePlaygroundProgressEventMovie {
   export interface IProps {
     event:
       | AutoBeAnalyzeReviewEvent
-      | AutoBeAnalyzeWriteDocumentEvent
+      | AutoBeAnalyzeWriteEvent
       | AutoBePrismaComponentsEvent
       | AutoBePrismaSchemasEvent
       | AutoBeInterfaceEndpointsEvent
