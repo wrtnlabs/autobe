@@ -101,10 +101,13 @@ export async function test_api_shoppings_customers_sales_questions_comments_upda
 }
 ```
 
-### 3.2. Snapshot Logic
+### 3.2. Authorization
+Implement comprehensive authorization logic in the Interface Agent to ensure that OpenAPI documents and generated SDKs/e2e tests properly reflect authentication and authorization requirements.
+
+### 3.3. Snapshot Logic
 Implement comprehensive snapshot logic in the Interface Agent to ensure that OpenAPI documents and generated SDKs/e2e tests are properly validated against requirements analysis documents and Prisma DB schema definitions.
 
-### 3.3. Review Agent
+### 3.4. Review Agent
 Develop a comprehensive review agent that verifies whether the OpenAPI document (API interface) written by AI properly follows the requirements analysis document and DB schema definition, identifying any missing or vague descriptions.
 
 This review agent will implement sophisticated validation mechanisms including requirements traceability to verify that every requirement from the analysis document is properly addressed in the API interface. The system ensures schema consistency by confirming that API endpoints align with the defined database schema and maintain referential integrity. Completeness validation identifies missing CRUD operations, authentication endpoints, and data validation rules, while documentation quality assessment evaluates the completeness and clarity of API documentation, including parameter descriptions, response schemas, and error handling. Security review verifies that appropriate authentication, authorization, and data validation mechanisms are implemented, and performance considerations assess API design for potential performance bottlenecks and suggest optimizations. Finally, standardization compliance ensures adherence to RESTful API design principles and OpenAPI specification standards.
