@@ -17,7 +17,7 @@ export class AutoBePlaygroundListener {
       analyzeStart: async (event) => {
         this.callback?.(event);
       },
-      analyzeWriteDocument: async (event) => {
+      analyzeWrite: async (event) => {
         this.callback?.(event);
       },
       analyzeReview: async (event) => {

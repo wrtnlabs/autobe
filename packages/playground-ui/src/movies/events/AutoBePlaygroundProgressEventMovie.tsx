@@ -64,7 +64,7 @@ function getDescription(
       return `Writing Test Functions: ${event.completed} of ${event.total}`;
     case "realizeProgress":
       return `Writing Main Controller: ${event.completed} of ${event.total}`;
-    case "analyzeWriteDocument":
+    case "analyzeWrite":
       return `Analyze user requirements and write documents`;
     case "analyzeReview":
       return `Reviewing generated documents by Analyze in progress`;
