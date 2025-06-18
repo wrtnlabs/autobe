@@ -103,12 +103,12 @@ async function process<Model extends ILlmSchema.Model>(
 }
 
 function filterDocument(
-  scneario: AutoBeTest.Scenario,
+  scenario: AutoBeTest.Scenario,
   document: AutoBeOpenApi.IDocument,
 ): AutoBeOpenApi.IDocument {
   const operations: AutoBeOpenApi.IOperation[] = document.operations.filter(
     (op) =>
-      scneario.endpoints.find(
+      scenario.endpoints.find(
         (o) => o.method === op.method && o.path === op.path,
       ) !== undefined,
   );
