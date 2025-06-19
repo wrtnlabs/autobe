@@ -7,6 +7,7 @@ extend-ignore-re = [
 
 [default.extend-words]
 typia = "typia"
+criterias = "criterias"
 
 [files]
 extend-exclude = [
