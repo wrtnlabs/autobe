@@ -2,8 +2,8 @@ import type { MetaRecord } from "nextra";
 
 const meta: MetaRecord = {
   index: "Remote Procedure Call",
-  nodejs: "NodeJS Server",
   nestjs: "NestJS Server",
+  nodejs: "NodeJS Server",
   client: "Client Application",
 };
 export default meta;

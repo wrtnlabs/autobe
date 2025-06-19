@@ -20,7 +20,7 @@ const meta: MetaRecord = {
   ecosystem: "🌐 No-Code Ecosystem",
   roadmap: "📅 Roadmap",
   api: {
-    title: "⇲ API Documents",
+    title: "🔧 API Documents",
     href: "/api",
   },
 };
