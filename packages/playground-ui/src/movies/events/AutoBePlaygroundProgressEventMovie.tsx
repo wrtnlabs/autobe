@@ -59,7 +59,7 @@ function getDescription(
     case "prismaSchemas":
       return `Generating Prisma Schemas: ${event.completed} of ${event.total}`;
     case "testScenario":
-      return `${event.scenarios.at(0)!.endpoint.method.toUpperCase()} ${event.scenarios.at(0)!.endpoint.path}: ${event.total}`;
+      return `${event.scenarios.at(0)!.endpoint.method.toUpperCase()} ${event.scenarios.at(0)!.endpoint.path}, ...Other ${event.scenarios.length} Endpoints: Generated ${event.total} Scenarios`;
     case "testProgress":
       return `Writing Test Functions: ${event.completed} of ${event.total}`;
     case "realizeProgress":
