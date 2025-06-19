@@ -70,6 +70,7 @@ Find comprehensive resources at our [official website](https://wrtnlabs.io/autob
 - 🔍 Concepts
   - [Waterfall Model](https://wrtnlabs.io/autobe/docs/concepts/waterfall)
   - [Compiler Strategy](https://wrtnlabs.io/autobe/docs/concepts/compiler)
+  - [AI Function Calling](https://wrtnlabs.io/autobe/docs/concepts/function-calling)
 
 ### 📖 Features
 - 🤖 Agent Library

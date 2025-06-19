@@ -1,56 +1,53 @@
 ---
 title: Guide Documents > Concepts > Compiler
 ---
+import { Tabs } from "nextra/components";
+
+import RemoteSource from "../../../components/RemoteSource";
 import AutoBeWaterfallDiagram from "../../../template/diagrams/AutoBeWaterfallDiagram.mdx";
 
 ## Outline
+
 <AutoBeWaterfallDiagram />
 
-AutoBE revolutionizes backend development through a sophisticated three-tier compiler infrastructure that transforms natural language requirements into production-ready applications. This vibe coding ecosystem operates on the fundamental principle that conversations should directly generate working software, eliminating the traditional barriers between human intent and machine implementation.
+`@autobe` revolutionizes backend development through a sophisticated three-tier compiler infrastructure that transforms natural language requirements into production-ready applications. This vibe coding ecosystem operates on the fundamental principle that conversations should directly generate working software, eliminating the traditional barriers between human intent and machine implementation.
 
-The compiler architecture consists of three specialized components working in perfect harmony: AutoBE's custom Prisma Compiler for database schema generation, AutoBE's custom OpenAPI Compiler for API specification and interface generation, and the official TypeScript Compiler for final code validation. Each compiler operates on structured Abstract Syntax Tree (AST) data through AI function calling, ensuring 100% syntactic correctness while maintaining semantic integrity throughout the development pipeline.
+The compiler architecture consists of three specialized components working in perfect harmony: `@autobe`'s custom Prisma Compiler for database schema generation, `@autobe`'s custom OpenAPI Compiler for API specification and interface generation, and the official TypeScript Compiler for final code validation. Each compiler operates on structured Abstract Syntax Tree (AST) data through AI function calling, ensuring 100% syntactic correctness while maintaining semantic integrity throughout the development pipeline.
 
-This three-tier architecture operates on the revolutionary principle of "structure first, validate continuously, generate deterministically." Unlike traditional development where errors emerge during coding and testing phases, AutoBE's compiler infrastructure prevents errors at the structural level, ensuring that every generated application works correctly on the first attempt.
+This three-tier architecture operates on the revolutionary principle of "structure first, validate continuously, generate deterministically." Unlike traditional development where errors emerge during coding and testing phases, `@autobe`'s compiler infrastructure prevents errors at the structural level, ensuring that every generated application works correctly on the first attempt.
 
 The vibe coding approach transforms the entire software development lifecycle. Conversations with users become structured requirements, requirements become validated AST structures, AST structures become production-ready code, and production-ready code becomes deployable applications—all without manual intervention or debugging cycles.
 
 ## Prisma Compiler
 
-AutoBE's custom Prisma Compiler represents the foundational layer of the vibe coding infrastructure, transforming business requirements into validated database architectures through sophisticated AST manipulation. This compiler operates exclusively on `AutoBePrisma.IApplication` structures, eliminating the error-prone nature of text-based schema authoring while ensuring perfect consistency between business logic and data storage design.
+<Tabs items={[
+  <code>IAutoBePrismaValidation</code>,
+  <code>AutoBePrisma.IApplication</code>,
+]}>
+  <Tabs.Tab>
+    <RemoteSource 
+      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/prisma/IAutoBePrismaValidation.ts" filename="@autobe/interface" 
+      showLineNumbers />
+  </Tabs.Tab>
+  <Tabs.Tab>
+    <RemoteSource 
+      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/prisma/AutoBePrisma.ts" 
+      filename="@autobe/interface" 
+      showLineNumbers />
+  </Tabs.Tab>
+</Tabs>
+
+`@autobe`'s custom Prisma Compiler represents the foundational layer of the vibe coding infrastructure, transforming business requirements into validated database architectures through sophisticated AST (Abstract Syntax Tree) manipulation. This compiler operates exclusively on [`AutoBePrisma.IApplication`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/prisma/AutoBePrisma.ts) structures, eliminating the error-prone nature of text-based schema authoring while ensuring perfect consistency between business logic and data storage design.
 
 ### Vibe Coding Database Architecture
 
-The Prisma Compiler processes structured data through comprehensive `AutoBePrisma.IApplication` interfaces that capture every aspect of database design as typed, validated structures. AI agents construct these ASTs through function calling, ensuring that database schemas are semantically correct and business-aligned before any code generation occurs.
-
-```typescript
-interface AutoBePrisma.IApplication {
-  files: IFile[];
-}
-
-interface IFile {
-  filename: string & tags.Pattern<"^[a-zA-Z0-9._-]+\\.prisma$">;
-  namespace: string;
-  models: IModel[];
-}
-
-interface IModel {
-  name: string & tags.Pattern<"^[a-z][a-z0-9_]*$">;
-  description: string;
-  material: boolean;
-  primaryField: IPrimaryField;
-  foreignFields: IForeignField[];
-  plainFields: IPlainField[];
-  uniqueIndexes: IUniqueIndex[];
-  plainIndexes: IPlainIndex[];
-  ginIndexes: IGinIndex[];
-}
-```
+The Prisma Compiler processes structured data through comprehensive [`AutoBePrisma.IApplication`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/prisma/AutoBePrisma.ts) interfaces that capture every aspect of database design as typed, validated structures. AI agents construct these ASTs through function calling, ensuring that database schemas are semantically correct and business-aligned before any code generation occurs.
 
 This structured approach fundamentally eliminates the possibility of syntactic errors in database design. Every property is typed, constrained, and validated to ensure that only valid database architectures can be constructed. The function calling interface prevents invalid combinations at the source, creating a development environment where database design errors simply cannot occur.
 
 ### Advanced Semantic Validation
 
-The AutoBE Prisma Compiler implements multi-layered validation logic that operates on complete AST structures, catching design flaws and business logic inconsistencies before any code generation occurs. This validation system understands not just syntax but the semantic relationships that make databases functionally effective.
+The `@autobe` Prisma Compiler implements multi-layered validation logic that operates on complete AST structures, catching design flaws and business logic inconsistencies before any code generation occurs. This validation system understands not just syntax but the semantic relationships that make databases functionally effective.
 
 **Relationship Graph Analysis**: The compiler constructs comprehensive relationship graphs from AST data to detect circular dependencies, orphaned entities, and invalid cardinality constraints. This analysis ensures that database designs will function correctly under all operational conditions, preventing the subtle relationship errors that often plague traditional database development.
 
@@ -62,7 +59,7 @@ The AutoBE Prisma Compiler implements multi-layered validation logic that operat
 
 ### Intelligent Error Prevention System
 
-Unlike traditional compilers that report errors after code generation, the AutoBE Prisma Compiler prevents errors at the AST construction level through sophisticated guidance systems that help AI agents make optimal design decisions.
+Unlike traditional compilers that report errors after code generation, the `@autobe` Prisma Compiler prevents errors at the AST construction level through sophisticated guidance systems that help AI agents make optimal design decisions.
 
 **Real-Time Validation Feedback**: When AI agents attempt to construct invalid AST structures, the function calling system provides immediate, contextual feedback with specific guidance on how to correct issues. This creates a continuous learning loop that improves database design quality in real-time.
 
@@ -80,33 +77,38 @@ Once AST validation succeeds, the Prisma Compiler transforms structured data int
 
 **Constraint Generation and Enforcement**: All business rules and validation logic defined in the AST are automatically translated into appropriate database constraints, ensuring data integrity at the storage level. This includes foreign key constraints, check constraints, and unique constraints that enforce business rules directly in the database.
 
-**ERD Integration and Visualization**: The compiler seamlessly integrates with `prisma-markdown` to generate Entity Relationship Diagrams that accurately reflect AST structures. These diagrams provide visual documentation that stays perfectly synchronized with implementation, enabling better communication between technical and business stakeholders.
+**ERD Integration and Visualization**: The compiler seamlessly integrates with [`prisma-markdown`](https://github.com/samchon/prisma-markdown) to generate Entity Relationship Diagrams that accurately reflect AST structures. These diagrams provide visual documentation that stays perfectly synchronized with implementation, enabling better communication between technical and business stakeholders.
 
 ## OpenAPI Compiler
 
-AutoBE's custom OpenAPI Compiler bridges the critical gap between database design and application implementation, transforming validated AST structures into comprehensive API specifications and complete NestJS applications. This compiler operates on the same vibe coding principles as the Prisma Compiler, ensuring that API designs are syntactically perfect and semantically aligned with business requirements before any code generation occurs.
+<Tabs items={[
+  <code>IValidation</code>,
+  <code>AutoBeOpenApi.IDocument</code>,
+  <code>OpenApi.IDocument</code>,
+]}>
+  <Tabs.Tab>
+    <RemoteSource 
+      url="https://raw.githubusercontent.com/samchon/openapi/refs/heads/master/src/structures/IValidation.ts" filename="@samchon/openapi" 
+      showLineNumbers />
+  </Tabs.Tab>
+  <Tabs.Tab>
+    <RemoteSource 
+      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/openapi/AutoBeOpenApi.ts" 
+      filename="@autobe/interface" 
+      showLineNumbers />
+  </Tabs.Tab>
+  <Tabs.Tab>
+    <RemoteSource 
+      url="https://raw.githubusercontent.com/samchon/openapi/refs/heads/master/src/OpenApi.ts" filename="@samchon/openapi" 
+      showLineNumbers />
+  </Tabs.Tab>
+</Tabs>
+
+`@autobe`'s custom OpenAPI Compiler bridges the critical gap between database design and application implementation, transforming validated AST (Abstract Syntax Tree) structures into comprehensive API specifications and complete NestJS applications. This compiler operates on the same vibe coding principles as the Prisma Compiler, ensuring that API designs are syntactically perfect and semantically aligned with business requirements before any code generation occurs.
 
 ### AST-Driven API Architecture
 
-The OpenAPI Compiler works exclusively with `AutoBeOpenApi.IDocument` AST structures that AI agents construct through function calling, eliminating the possibility of creating invalid or incomplete API specifications. This approach ensures that every API endpoint is thoroughly planned, properly documented, and correctly integrated with the underlying database architecture.
-
-```typescript
-interface AutoBeOpenApi.IDocument {
-  operations: AutoBeOpenApi.IOperation[];
-  components: AutoBeOpenApi.IComponents;
-}
-
-interface AutoBeOpenApi.IOperation {
-  specification: string;
-  description: string;
-  summary: string;
-  path: string;
-  method: "get" | "post" | "put" | "delete" | "patch";
-  parameters: AutoBeOpenApi.IParameter[];
-  requestBody: AutoBeOpenApi.IRequestBody | null;
-  responseBody: AutoBeOpenApi.IResponseBody | null;
-}
-```
+The OpenAPI Compiler works exclusively with [`AutoBeOpenApi.IDocument`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/openapi/AutoBeOpenApi.ts) AST structures that AI agents construct through function calling, eliminating the possibility of creating invalid or incomplete API specifications. This approach ensures that every API endpoint is thoroughly planned, properly documented, and correctly integrated with the underlying database architecture.
 
 The AST structure enforces critical design principles at the construction level, requiring every operation to include detailed specifications that articulate business purpose before defining technical implementation. This constraint ensures that API designs are thoroughly understood and properly planned before code generation begins.
 
@@ -128,20 +130,20 @@ The OpenAPI Compiler implements sophisticated validation and integration logic t
 
 The OpenAPI Compiler operates through a sophisticated transformation pipeline that converts AST structures into multiple output formats while maintaining perfect semantic consistency and ensuring industry standard compliance.
 
-**AST to OpenAPI Transformation**: The first transformation stage converts `AutoBeOpenApi.IDocument` AST into standard `OpenApi.IDocument` format, expanding simplified type references into complete OpenAPI schema definitions while preserving all semantic meaning and business context.
+**AST to OpenAPI Transformation**: The first transformation stage converts [`AutoBeOpenApi.IDocument`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/openapi/AutoBeOpenApi.ts) AST into standard [`OpenApi.IDocument`](https://github.com/samchon/openapi/blob/master/src/OpenApi.ts) format, expanding simplified type references into complete OpenAPI schema definitions while preserving all semantic meaning and business context.
 
 **Industry Standard Validation**: The generated OpenAPI document undergoes comprehensive validation against OpenAPI 3.1 specification standards, ensuring complete industry compliance and compatibility with the broader OpenAPI tooling ecosystem. This validation includes structural verification, cross-reference validation, and specification conformance checking.
 
-**Enhanced NestJS Generation**: The validated OpenAPI document feeds into AutoBE's enhanced code generation pipeline, producing complete NestJS projects with controllers, DTOs, client SDKs, and comprehensive testing frameworks. This generation process includes AutoBE's innovative enhancements designed specifically for vibe coding workflows.
+**Enhanced NestJS Generation**: The validated OpenAPI document feeds into `@autobe`'s enhanced code generation pipeline, producing complete NestJS projects with controllers, DTOs, client SDKs, and comprehensive testing frameworks. This generation process includes `@autobe`'s innovative enhancements designed specifically for vibe coding workflows.
 
 ### Revolutionary Code Generation Enhancements
 
-AutoBE's OpenAPI Compiler includes several groundbreaking enhancements designed specifically for vibe coding workflows and AI-optimized development patterns that significantly improve both AI usability and human developer experience.
+`@autobe`'s OpenAPI Compiler includes several groundbreaking enhancements designed specifically for vibe coding workflows and AI-optimized development patterns that significantly improve both AI usability and human developer experience.
 
-**Keyworded Parameter Innovation**: Unlike traditional code generators that produce positional parameters optimized for human developers, AutoBE generates client SDK functions with keyworded parameters specifically optimized for AI consumption while simultaneously improving human readability and reducing integration errors.
+**Keyworded Parameter Innovation**: Unlike traditional code generators that produce positional parameters optimized for human developers, `@autobe` generates client SDK functions with keyworded parameters specifically optimized for AI consumption while simultaneously improving human readability and reducing integration errors.
 
 ```typescript
-// AutoBE Enhanced Generation (AI & Human Optimized)
+// `@autobe` Enhanced Generation (AI & Human Optimized)
 await api.functional.shoppings.customers.orders.comments.update(
   connection,
   {
@@ -182,7 +184,7 @@ The OpenAPI Compiler provides immediate, intelligent feedback during AST constru
 
 ## TypeScript Compiler
 
-AutoBE leverages the official TypeScript Compiler as the final validation and quality assurance layer in its vibe coding pipeline, ensuring that all generated code meets production standards and integrates seamlessly with the broader TypeScript ecosystem. While AutoBE's AST-based approach eliminates most potential errors before code generation, the TypeScript Compiler serves as the ultimate quality gate that validates perfect integration between generated components and framework requirements.
+`@autobe` leverages the official TypeScript Compiler as the final validation and quality assurance layer in its vibe coding pipeline, ensuring that all generated code meets production standards and integrates seamlessly with the broader TypeScript ecosystem. While `@autobe`'s AST-based approach eliminates most potential errors before code generation, the TypeScript Compiler serves as the ultimate quality gate that validates perfect integration between generated components and framework requirements.
 
 ### Production-Ready Code Validation
 
@@ -198,7 +200,7 @@ The TypeScript Compiler integration provides comprehensive validation that ensur
 
 ### Advanced Error Detection and Analysis
 
-While AutoBE's AST-based approach prevents most errors from occurring, the TypeScript Compiler provides sophisticated error detection for edge cases and complex interactions that might arise from the integration of multiple generated components or framework-specific requirements.
+While `@autobe`'s AST-based approach prevents most errors from occurring, the TypeScript Compiler provides sophisticated error detection for edge cases and complex interactions that might arise from the integration of multiple generated components or framework-specific requirements.
 
 **Cross-Module Integration Analysis**: The compiler validates that types and interfaces generated from different AST components maintain consistency when used together, catching potential integration issues that might not be apparent at the individual AST level. This includes validation of data flow between controllers, services, and data access layers.
 
@@ -210,13 +212,13 @@ While AutoBE's AST-based approach prevents most errors from occurring, the TypeS
 
 ### Comprehensive Development Workflow Support
 
-The TypeScript Compiler integration ensures that AutoBE-generated applications provide the same high-quality development experience as traditionally authored TypeScript applications while maintaining the advantages of automated generation.
+The TypeScript Compiler integration ensures that `@autobe`-generated applications provide the same high-quality development experience as traditionally authored TypeScript applications while maintaining the advantages of automated generation.
 
 **IDE Integration Excellence**: Generated code passes full TypeScript compilation with comprehensive type information, enabling complete IDE support including intelligent autocomplete, real-time error detection, sophisticated refactoring capabilities, and comprehensive navigation features that help developers understand and maintain generated applications.
 
 **Advanced Toolchain Compatibility**: Compiled code integrates seamlessly with the entire TypeScript development ecosystem including advanced linters like ESLint, code formatters like Prettier, bundlers like Webpack and Vite, and testing frameworks like Jest and Vitest, ensuring that generated applications fit naturally into existing development workflows.
 
-**Incremental Development and Maintenance**: The compiler supports incremental builds and development workflows that allow developers to iterate on generated applications, add custom business logic, and extend functionality without losing the benefits of AutoBE's vibe coding approach. This includes support for partial regeneration and selective updates.
+**Incremental Development and Maintenance**: The compiler supports incremental builds and development workflows that allow developers to iterate on generated applications, add custom business logic, and extend functionality without losing the benefits of `@autobe`'s vibe coding approach. This includes support for partial regeneration and selective updates.
 
 **Debugging and Observability Support**: Generated code includes proper source map generation, debugging symbols, and observability hooks that enable effective troubleshooting and performance monitoring in both development and production environments.
 
@@ -232,6 +234,6 @@ The TypeScript Compiler serves as the final checkpoint ensuring that all generat
 
 **Long-term Maintainability Validation**: The compiler ensures that generated code follows TypeScript best practices and established conventions, making it maintainable by development teams even after initial generation. This includes validation of code organization, naming patterns, and architectural consistency that supports long-term software lifecycle management.
 
-**Regeneration Compatibility**: The validation process ensures that applications can be safely regenerated when requirements change, maintaining compatibility with any custom extensions or modifications while preserving the benefits of automated development through AutoBE's vibe coding approach.
+**Regeneration Compatibility**: The validation process ensures that applications can be safely regenerated when requirements change, maintaining compatibility with any custom extensions or modifications while preserving the benefits of automated development through `@autobe`'s vibe coding approach.
 
-The TypeScript Compiler integration completes AutoBE's revolutionary vibe coding infrastructure by ensuring that the sophistication and reliability of AST-based generation translates into production-ready applications that meet the same standards as traditionally developed TypeScript applications, while maintaining the speed, consistency, and quality advantages that make AutoBE's approach transformational for modern software development.
+The TypeScript Compiler integration completes `@autobe`'s revolutionary vibe coding infrastructure by ensuring that the sophistication and reliability of AST-based generation translates into production-ready applications that meet the same standards as traditionally developed TypeScript applications, while maintaining the speed, consistency, and quality advantages that make `@autobe`'s approach transformational for modern software development.
