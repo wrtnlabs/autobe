@@ -2,11 +2,15 @@
 title: AutoBE > Guide Documents
 ---
 import AutoBePlaygroundSection from "../../template/AutoBePlaygroundSection.mdx";
+import AutoBeIntroductionPreface from "../../template/AutoBeIntroductionPreface.mdx";
 import AutoBeRoadmapPreface from "../../template/AutoBeRoadmapPreface.mdx";
+import AutoBeEcosystemPreface from "../../template/AutoBeEcosystemPreface.mdx";
 import AutoBeEcosystemAgenticaSnippet from "../../template/snippets/AutoBeEcosystemAgenticaSnippet.mdx";
+import AutoBeWaterfallDiagram from "../../template/diagrams/AutoBeWaterfallDiagram.mdx";
 
-## AutoBE, No Coding Agent for Backend Applications
-![Auto BE - OG Diagram](https://github.com/user-attachments/assets/d7bd7403-dedb-4194-9a21-4c2fb3af18e8)
+## AutoBE - No-Code Agent for Backend Applications
+
+<AutoBeWaterfallDiagram />
 
 <span style={{ display: "flex", flexDirection: "row" }}>
 {[
@@ -61,46 +65,18 @@ import AutoBeEcosystemAgenticaSnippet from "../../template/snippets/AutoBeEcosys
 ))}
 </span>
 
-Backend No Coding Agent, enhanced by Compiler and Validation Feedback.
-
-`@autobe` is an AI agent for no coding that analyzes user requirements and automatically generates backend applications with the stack below. Since `@autobe` has been enhanced by TypeScript/Prisma compilers and OpenAPI validator feedback, it delivers 100% working code.
-
-- TypeScript
-- NestJS
-- Prisma (Postgres)
-
-
-
+<AutoBeIntroductionPreface />
 
 ## Playground
+
 <AutoBePlaygroundSection />
 
+## No-Code Ecosystem
 
-
-
-## No Coding Ecosystem
-```mermaid
-flowchart LR
-no("No Coding")
-backend("Backend Application")
-chatbot("AI Chatbot")
-frontend("Frontend Application")
-
-no --"@autobe" --> backend
-backend --"@agentica" --> chatbot
-backend --"@autoview" --> frontend
-```
-
-Our [WrtnLabs](https://github.com/wrtnlabs) team is developing two more projects, [`@agentica`](https://github.com/wrtnlabs/agentica) and [`@autoview`](https://github.com/wrtnlabs/autoview). [`@agentica`](https://github.com/wrtnlabs/agentica) automatically creates an AI Chatbot when you simply provide a `swagger.json` file, and [`@autoview`](https://github.com/wrtnlabs/autoview) automatically generates a Frontend Application when you provide a `swagger.json` file.
-
-Therefore, you're not limited to automatically creating a backend with `@autobe` and no coding. If you've created a backend server with no coding through `@autobe`, you can immediately create an AI Chatbot and Frontend Application alongside it.
-
-Can you converse? Then you're a full-stack developer.
+<AutoBeEcosystemPreface />
 
 <AutoBeEcosystemAgenticaSnippet />
 
-
-
-
 ## Roadmap Schedule
+
 <AutoBeRoadmapPreface />
