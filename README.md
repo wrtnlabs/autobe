@@ -3,7 +3,7 @@
 <div align="center"> 
 
 ```mermaid
-flowchart LR
+flowchart
 subgraph "Backend Coding Agent"
   coder("Facade Controller")
 end
@@ -40,7 +40,7 @@ An AI-powered no-code agent that builds backend applications, enhanced by compil
 
 - TypeScript
 - NestJS
-- Prisma (Postgres)
+- Prisma (Postgres / SQLite)
 
 ## Playground
 
@@ -83,10 +83,9 @@ Find comprehensive resources at our [official website](https://wrtnlabs.io/autob
   - [NodeJS Server](https://wrtnlabs.io/autobe/docs/websocket/nodejs)
   - [Client Application](https://wrtnlabs.io/autobe/docs/websocket/client)
 - 🛠️ Backend Stack
-  - [TypeScript](https://wrtnlabs.io/autobe/docs/stack)
+  - [TypeScript](https://wrtnlabs.io/autobe/docs/stack/typescript)
   - [Prisma ORM](https://wrtnlabs.io/autobe/docs/stack/prisma)
   - [NestJS Framework](https://wrtnlabs.io/autobe/docs/stack/nestjs)
-  - [OpenAPI Ecosystem](https://wrtnlabs.io/autobe/docs/stack/openapi)
 
 ### 🔗 Appendix
 - 🌐 [No-Code Ecosystem](https://wrtnlabs.io/autobe/docs/ecosystem)
