@@ -224,7 +224,7 @@ export namespace ShoppingSaleSnapshotProvider {
           input.content,
         ),
         tags: input.tags
-          .sort((a, b) => (a.sequence = b.sequence))
+          .sort((a, b) => a.sequence - b.sequence)
           .map((tag) => tag.value),
       };
     };
