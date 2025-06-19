@@ -1,8 +1,11 @@
 ---
 title: AutoBE > Guide Documents > Backend Stack > NestJS Framework
 ---
+import { Tabs } from "nextra/components";
 
 ## Outline
+
+![NestJS Cat](/images/nestjs-cat.jpg)
 
 NestJS stands as the premier framework for building efficient, scalable Node.js server-side applications, combining progressive JavaScript development with TypeScript's powerful type system and elements of Object-Oriented Programming (OOP), Functional Programming (FP), and Functional Reactive Programming (FRP). Within the TypeScript ecosystem, NestJS has emerged as the most mature and architecturally sophisticated backend framework, making it the natural choice for `@autobe`.
 
@@ -52,25 +55,180 @@ This enterprise adoption validates NestJS's architectural decisions and long-ter
 
 ### Pure TypeScript Type
 
-Traditional NestJS development faces a significant challenge: the requirement for triple schema definition. NestJS needs triple duplicated DTO schema definitions. The 1st is defining TypeScript type, the 2nd and 3rd are calling decorator functions of class-validator and @nestjs/swagger. It's not only annoying, but also error-prone. If you take any mistake on the 2nd or 3rd, it can't be detected by TypeScript compiler. It will be detected only at runtime.
+<Tabs items={["Triple duplicated NestJS DTO", "Pure TypeScript Type in Nestia"]}>
+  <Tabs.Tab>
+```typescript filename="src/api/dto/BbsArticle.ts" showLineNumbers
+import { ApiProperty } from "@nestjs/swagger";
+import {
+  ArrayNotEmpty,
+  Format,
+  IsArray,
+  IsObject,
+  IsOptional,
+  IsString,
+  Match,
+  MaxLength,
+  Type,
+  ValidateNested,
+} from "class-validator";
+ 
+export class BbsArticle {
+  @ApiProperty({
+    format: "uuid",
+  })
+  @IsString()
+  id!: string;
+ 
+  // DUPLICATED SCHEMA DEFINITION
+  // - duplicated function call + property type
+  // - have to specify `isArray` and `nullable` props by yourself
+  @ApiProperty({
+    type: () => AttachmentFile,
+    nullable: true,
+    isArray: true,
+    description: "List of attached files.",
+  })
+  @Type(() => AttachmentFile)
+  @IsArray()
+  @IsOptional()
+  @IsObject({ each: true })
+  @ValidateNested({ each: true })
+  files!: AttachmentFile[] | null;
+ 
+  @ApiProperty({
+    type: "string",
+    nullable: true,
+    minLength: 5,
+    maxLength: 100,
+    description: "Title of the article.",
+  })
+  @IsOptional()
+  @IsString()
+  title!: string | null;
+ 
+  @ApiProperty({
+    description: "Main content body of the article.",
+  })
+  @IsString()
+  body!: string;
+ 
+  @ApiProperty({
+    format: "date-time",
+    description: "Creation time of article",
+  })
+  @IsString()
+  created_at!: string;
+}
+ 
+export class AttachmentFile {
+  @ApiProperty({
+    type: "string",
+    maxLength: 255,
+    pattern: "^[a-zA-Z0-9-_]+$",
+    description: "File name.",
+  })
+  @Matches(/^[a-z0-9]+$/)
+  @MaxLength(255)
+  @IsString()
+  name!: string | null;
+ 
+  @ApiProperty({
+    type: "string",
+    nullable: true,
+    maxLength: 255,
+    pattern: "^[a-zA-Z0-9-_]+$",
+    description: "File extension.",
+  })
+  @Matches(/^[a-z0-9]+$/)
+  @MaxLength(8)
+  @IsOptional()
+  @IsString()
+  extension!: string | null;
+ 
+  @ApiProperty({
+    format: "url",
+    description: "URL of the file.",
+  })
+  @Format("uri")
+  @IsString()
+  url!: string;
+}
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```typescript filename="src/api/structures/IBbsArticle.ts" showLineNumbers
+import { tags } from "typia";
+ 
+export interface IBbsArticle {
+  /**
+   * Primary Key.
+   */
+  id: string & tags.Format<"uuid">;
+ 
+  /**
+   * List of attached files.
+   */
+  files: null | IAttachmentFile[];
+ 
+  /**
+   * Title of the article.
+   */
+  title: null | (string & tags.MinLength<5> & tags.MaxLength<100>);
+ 
+  /**
+   * Main content body of the article.
+   */
+  body: string;
+ 
+  /**
+   * Creation time of article.
+   */
+  created_at: string & tags.Format<"date-time">;
+}
+ 
+export interface IAttachmentFile {
+  /**
+   * File name.
+   */
+  name: string & tags.Pattern<"^[a-z0-9]+$"> & tags.MaxLength<255>;
+ 
+  /**
+   * File extension.
+   */
+  extension: null | (string & tags.Pattern<"^[a-z0-9]+$"> & tags.MaxLength<8>);
+ 
+  /**
+   * URL of the file.
+   */
+  url: string & tags.Format<"uri">;
+}
+```
+  </Tabs.Tab>
+</Tabs>
 
-Besides, nestia needs only pure TypeScript type. You don't need to define any extra schema like class-validator or @nestjs/swagger. Just define pure TypeScript type only (especially recommend to use interface type), then nestia will do all the rest. This elimination of redundant schema definitions is particularly crucial for AI-generated code, where maintaining consistency across multiple schema representations would be prone to errors.
+Traditional NestJS development faces a significant challenge: the requirement for triple schema definition. NestJS needs triple duplicated DTO schema definitions. The 1st is defining TypeScript type, the 2nd and 3rd are calling decorator functions of `class-validator` and `@nestjs/swagger`. It's not only annoying, but also error-prone. If you take any mistake on the 2nd or 3rd, it can't be detected by TypeScript compiler. It will be detected only at runtime.
 
-Nestia leverages pure TypeScript types to provide comprehensive validation and API documentation, eliminating the triple schema definition requirement. For `@autobe`, this means the AI agent can focus on generating clean, type-safe TypeScript interfaces without worrying about maintaining parallel validation and documentation schemas.
+Besides, nestia needs only pure TypeScript type. You don't need to define any extra schema like `class-validator` or @nestjs/swagger. Just define pure TypeScript type only (especially recommend to use interface type), then [`@nestia`](https://github.com/samchon/nestia) will do all the rest. This elimination of redundant schema definitions is particularly crucial for AI-generated code, where maintaining consistency across multiple schema representations would be prone to errors.
+
+[`@nestia`](https://github.com/samchon/nestia) leverages pure TypeScript types to provide comprehensive validation and API documentation, eliminating the triple schema definition requirement. For `@autobe`, this means the AI agent can focus on generating clean, type-safe TypeScript interfaces without worrying about maintaining parallel validation and documentation schemas.
 
 The performance benefits of this approach are remarkable: Runtime validator is 20,000x faster than class-validator, JSON serialization is 200x faster than class-transformer. These performance improvements ensure that AI-generated applications can handle high-throughput scenarios without performance bottlenecks.
 
 ### Software Development Kit
 
-Nestia's SDK generation capability addresses one of the most critical aspects of modern application development: type-safe client-server communication. Nestia analyzes your NestJS backend server code and generates both SDK (Software Development Kit) library for client developers. The SDK library is a collection of typed fetch functions with DTO structures like tRPC.
+![SDK](https://user-images.githubusercontent.com/13158709/215004990-368c589d-7101-404e-b81b-fbc936382f05.gif)
+
+> Left is API controller, and right is test program utilizing SDK library.
+
+[`@nestia`](https://github.com/samchon/nestia)'s SDK generation capability addresses one of the most critical aspects of modern application development: type-safe client-server communication. [`@nestia/sdk`](https://nestia.io/docs/sdk) analyzes your NestJS backend server code and generates both SDK (Software Development Kit) library for client developers. The SDK library is a collection of typed fetch functions with DTO structures like tRPC.
 
 This SDK generation provides several key advantages for AI-generated applications:
 
 **Type-Safe API Integration**: The generated SDK ensures that frontend developers can interact with the backend through fully typed interfaces. Any mismatch between client and server expectations results in compile-time errors rather than runtime failures. This is particularly valuable for `@autobe` because it guarantees that the AI-generated API contracts are enforced at the type level.
 
-**Enhanced E2E Testing Capabilities**: If you develop test functions utilizing the SDK library, you can easily switch the e2e test functions to the performance benchmark functions. Just by utilizing @nestia/e2e and @nestia/benchmark libraries, you can easily measure your NestJS developed backend server's performance through the SDK library utilizing e2e test functions.
+**Enhanced E2E Testing Capabilities**: If you develop test functions utilizing the SDK library, you can easily switch the e2e test functions to the performance benchmark functions. Just by utilizing [`@nestia/e2e`](https://nestia.io/docs/e2e/development/) and [`@nestia/benchmark`](https://nestia.io/docs/e2e/benchmark/) libraries, you can easily measure your NestJS developed backend server's performance through the SDK library utilizing e2e test functions.
 
-New era, age of E2E testing paradigm comes. In the past era, backend developers had developed test programs following the unit test paradigm. However, in the new era, e2e test functions also can take advantages of the type safety. Just import SDK library generated by @nestia/e2e, and call API functions of it with TypeScript type hints.
+New era, age of E2E testing paradigm comes. In the past era, backend developers had developed test programs following the unit test paradigm. However, in the new era, e2e test functions also can take advantages of the type safety. Just import SDK library generated by [`@nestia/e2e`](https://nestia.io/docs/e2e/development/), and call API functions of it with TypeScript type hints.
 
 For AI-generated applications, E2E testing provides superior value over unit testing because:
 
@@ -78,7 +236,7 @@ For AI-generated applications, E2E testing provides superior value over unit tes
 2. **Comprehensive Integration Testing**: Tests verify the entire request-response cycle, catching integration issues that unit tests might miss
 3. **Production-Ready Validation**: E2E tests ensure that the generated APIs work correctly in realistic scenarios
 
-**Performance Benchmarking Integration**: If you've developed e2e test functions utilizing SDK library of @nestia/sdk, you can re-use those e2e test functions in the benchmark program supported by @nestia/benchmark. The benchmark program will run these e2e test functions in parallel and randomly to measure the performance of your backend server.
+**Performance Benchmarking Integration**: If you've developed e2e test functions utilizing SDK library of [`@nestia/sdk`](https://nestia.io/docs/sdk/), you can re-use those e2e test functions in the benchmark program supported by [`@nestia/benchmark`](https://nestia.io/docs/e2e/benchmark/). The benchmark program will run these e2e test functions in parallel and randomly to measure the performance of your backend server.
 
 This capability allows `@autobe` to automatically generate performance benchmarks for every API endpoint, enabling immediate identification of performance bottlenecks and providing feedback to the AI for optimization suggestions.
 
@@ -96,10 +254,10 @@ This capability allows `@autobe` to automatically generate performance benchmark
 
 This waterfall approach provides several critical advantages:
 
-**Guaranteed Consistency**: Since all artifacts (controllers, DTOs, tests, documentation) are generated from the same source OpenAPI specification, there can be no inconsistencies between different representations of the API.
+- **Guaranteed Consistency**: Since all artifacts (controllers, DTOs, tests, documentation) are generated from the same source OpenAPI specification, there can be no inconsistencies between different representations of the API.
 
-**Industry Standard Compliance**: By generating standard OpenAPI documents, `@autobe` ensures that the generated APIs are compatible with the entire OpenAPI ecosystem, including documentation tools, client generators, and testing frameworks.
+- **Industry Standard Compliance**: By generating standard OpenAPI documents, `@autobe` ensures that the generated APIs are compatible with the entire OpenAPI ecosystem, including documentation tools, client generators, and testing frameworks.
 
-**Ecosystem Integration**: Nestia's comprehensive support for this OpenAPI-first approach makes NestJS the ideal framework for `@autobe`'s sophisticated code generation pipeline.
+- **Ecosystem Integration**: Nestia's comprehensive support for this OpenAPI-first approach makes NestJS the ideal framework for `@autobe`'s sophisticated code generation pipeline.
 
-The tight integration between `@autobe`'s AST-based approach and Nestia's OpenAPI generation capabilities creates a uniquely powerful development environment where AI agents can generate enterprise-grade, fully documented, and thoroughly tested APIs through natural conversation while maintaining the highest standards of type safety and architectural consistency.
+The tight integration between `@autobe`'s AST-based approach and Nestia's OpenAPI generation capabilities ([`@nestia/migrate`](https://nestia.io/docs/editor)) creates a uniquely powerful development environment where AI agents can generate enterprise-grade, fully documented, and thoroughly tested APIs through natural conversation while maintaining the highest standards of type safety and architectural consistency.

@@ -11,6 +11,7 @@ catalogs:
     "@nestia/benchmark": ^7.0.0
     "@nestia/core": ^7.0.0
     "@nestia/e2e": ^7.0.0
+    "@nestia/editor": ^7.0.0
     "@nestia/fetcher": ^7.0.0
     "@nestia/migrate": ^7.0.0
     "@nestia/sdk": ^7.0.0

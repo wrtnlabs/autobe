@@ -80,7 +80,114 @@ The schema's declarative nature also provides clear boundaries and constraints t
 
 ## Entity Relationship Diagram
 
-![ERD generation example](https://camo.githubusercontent.com/a433e19efde2c979c869d58e7264458a597dfb921be7048fef53b98532ebf7cd/68747470733a2f2f6769746875622d70726f64756374696f6e2d757365722d61737365742d3632313064662e73332e616d617a6f6e6177732e636f6d2f31333135383730392f3236383137353434312d38306361396338652d346339362d346465622d613863622d3637346539383435656266362e706e67)
+```mermaid
+erDiagram
+"shopping_orders" {
+  String id PK
+  String shopping_customer_id FK
+  String shopping_address_id FK "nullable"
+  String name
+  Float cash
+  Float deposit
+  Float mileage
+  DateTime created_at
+  DateTime deleted_at "nullable"
+}
+"shopping_order_goods" {
+  String id PK
+  String shopping_order_id FK
+  String shopping_cart_commodity_id FK
+  String shopping_seller_id FK
+  Int volume
+  Int sequence
+  DateTime confirmed_at "nullable"
+}
+"shopping_order_publishes" {
+  String id PK
+  String shopping_order_id FK,UK
+  String shopping_address_id FK
+  String password "nullable"
+  DateTime created_at
+  DateTime paid_at "nullable"
+  DateTime cancelled_at "nullable"
+}
+"shopping_deliveries" {
+  String id PK
+  String shopping_seller_customer_id FK
+  DateTime created_at
+  DateTime deleted_at "nullable"
+}
+"shopping_delivery_pieces" {
+  String id PK
+  String shopping_delivery_id FK
+  String shopping_order_publish_id FK
+  String shopping_order_good_id FK
+  String shopping_sale_snapshot_unit_stock_id FK
+  Float quantity
+  Int sequence
+}
+"shopping_delivery_shippers" {
+  String id PK
+  String shopping_delivery_id FK
+  String mobile
+  String name
+  String company "nullable"
+  DateTime created_at
+}
+"shopping_delivery_journeys" {
+  String id PK
+  String shopping_delivery_id FK
+  String type
+  String title "nullable"
+  String description "nullable"
+  Int sequence
+  DateTime created_at
+  DateTime started_at "nullable"
+  DateTime completed_at "nullable"
+  DateTime deleted_at "nullable"
+}
+"shopping_addresses" {
+  String id PK
+  String mobile
+  String name
+  String country
+  String province
+  String city
+  String department
+  String possession
+  String zip_code
+  String special_note "nullable"
+  DateTime created_at
+}
+"shopping_cart_commodities" {
+  String id PK
+  String shopping_cart_id FK
+  String shopping_sale_snapshot_id FK
+  Int volume
+  DateTime created_at
+  DateTime deleted_at "nullable"
+  Boolean published
+}
+"shopping_cart_commodity_stocks" {
+  String id PK
+  String shopping_cart_commodity_id FK
+  String shopping_sale_snapshot_unit_id FK
+  String shopping_sale_snapshot_unit_stock_id FK
+  Int quantity
+  Int sequence
+}
+"shopping_orders" }o--o| "shopping_addresses" : address
+"shopping_order_goods" }o--|| "shopping_orders" : order
+"shopping_order_goods" }o--|| "shopping_cart_commodities" : commodity
+"shopping_order_publishes" |o--|| "shopping_orders" : order
+"shopping_order_publishes" }o--|| "shopping_addresses" : address
+"shopping_delivery_pieces" }o--|| "shopping_deliveries" : delivery
+"shopping_delivery_pieces" }o--|| "shopping_order_publishes" : publish
+"shopping_delivery_pieces" }o--|| "shopping_order_goods" : good
+"shopping_delivery_shippers" }o--|| "shopping_deliveries" : delivery
+"shopping_delivery_journeys" }o--|| "shopping_deliveries" : delivery
+"shopping_cart_commodity_stocks" }o--|| "shopping_cart_commodities" : commodity
+```
 
 Prisma schemas can be automatically transformed into Entity Relationship Diagrams (ERDs) through the [`prisma-markdown`](https://github.com/samchon/prisma-markdown) third-party library, providing a visual representation that significantly enhances AI comprehension of database structures.
 
@@ -91,6 +198,58 @@ The ERDs generated from Prisma schemas maintain perfect fidelity with the underl
 Furthermore, the availability of ERDs enhances the AI's ability to communicate with human users. When `@autobe` needs to explain database structures or propose schema changes, it can reference these visual representations, making complex database concepts accessible to non-technical users and ensuring that the no-code development process remains truly inclusive.
 
 ## Strict Type Checking
+
+```typescript filename="@samchon/shopping-backend" showLineNumbers
+export namespace ShoppingSaleSnapshotProvider {
+  export namespace json {
+    export const transform = async (
+      input: Prisma.shopping_sale_snapshotsGetPayload<
+        ReturnType<typeof json.select>
+      >,
+    ): Promise<Omit<IShoppingSaleSnapshot, "latest">> => {
+      if (input.content === null)
+        throw ErrorProvider.internal(
+          "No shopping_sale_snapshot_contents record exists.",
+        );
+      return {
+        id: input.shopping_sale_id,
+        snapshot_id: input.id,
+        categories: await ArrayUtil.asyncMap(
+          input.to_categories.sort((a, b) => (a.sequence = b.sequence)),
+        )(ShoppingSaleSnapshotCategoryProvider.json.transform),
+        units: input.units
+          .sort((a, b) => a.sequence - b.sequence)
+          .map(ShoppingSaleSnapshotUnitProvider.json.transform),
+        content: ShoppingSaleSnapshotContentProvider.json.transform(
+          input.content,
+        ),
+        tags: input.tags
+          .sort((a, b) => (a.sequence = b.sequence))
+          .map((tag) => tag.value),
+      };
+    };
+    export const select = () =>
+      ({
+        include: {
+          units: ShoppingSaleSnapshotUnitProvider.json.select(),
+          content: ShoppingSaleSnapshotContentProvider.json.select(),
+          to_categories: {
+            select: {
+              category: {
+                select: {
+                  id: true,
+                  shopping_channel_id: true,
+                },
+              },
+              sequence: true,
+            },
+          },
+          tags: true,
+        },
+      }) satisfies Prisma.shopping_sale_snapshotsFindManyArgs;
+  }
+}
+```
 
 When a Prisma schema is defined, the Prisma compiler automatically generates corresponding TypeScript types that encompass not only the data models but also their relationships and query builders. This comprehensive type generation enables TypeScript's compiler to catch all forms of invalid queries at compile time, standing in stark contrast to conventional ORM libraries that can only detect query errors at runtime.
 
