@@ -215,7 +215,7 @@ export namespace ShoppingSaleSnapshotProvider {
         id: input.shopping_sale_id,
         snapshot_id: input.id,
         categories: await ArrayUtil.asyncMap(
-          input.to_categories.sort((a, b) => (a.sequence = b.sequence)),
+          input.to_categories.sort((a, b) => a.sequence - b.sequence),
         )(ShoppingSaleSnapshotCategoryProvider.json.transform),
         units: input.units
           .sort((a, b) => a.sequence - b.sequence)
