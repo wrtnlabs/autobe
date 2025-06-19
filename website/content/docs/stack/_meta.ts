@@ -4,6 +4,6 @@ const meta: MetaRecord = {
   index: "TypeScript",
   prisma: "Prisma ORM",
   nestjs: "NestJS Framework",
-  e2e: "E2E Testing",
+  openapi: "OpenAPI Ecosystem",
 };
 export default meta;

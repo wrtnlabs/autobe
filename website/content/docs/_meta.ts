@@ -11,13 +11,13 @@ const meta: MetaRecord = {
   },
   agent: "🤖 Agent Library",
   websocket: "📡 WebSocket Protocol",
-  backend: "🛠️ Backend Stack",
+  stack: "🛠️ Backend Stack",
 
   "-- appendix": {
     type: "separator",
     title: "🔗 Appendix",
   },
-  ecosystem: "🌐 No Coding Ecosystem",
+  ecosystem: "🌐 No-Code Ecosystem",
   roadmap: "📅 Roadmap",
   api: {
     title: "⇲ API Documents",
