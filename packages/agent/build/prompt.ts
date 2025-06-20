@@ -5,7 +5,7 @@ import { OpenApi } from "@samchon/openapi";
 import fs from "fs";
 import path from "path";
 
-import { invertOpenApiDocument } from "../src/factory";
+import { invertOpenApiDocument } from "../src/factory/invertOpenApiDocument";
 
 const DIRECTORY = path.resolve(__dirname, "../prompts");
 
