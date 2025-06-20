@@ -62,20 +62,20 @@ import { Type } from "@ORGANIZATION/PROJECT-api/lib/structures/Type";
 
 ```typescript
 // Error Pattern 1: Wrong organization name
-Cannot find module '@wrtnlabs/template-api'
-Cannot find module '@nestia/template-api'
-Cannot find module '@anyorg/template-api'
-// Fix: Replace with @ORGANIZATION/template-api
+Cannot find module '@wrtnlabs/PROJECT-api'
+Cannot find module '@nestia/PROJECT-api'
+Cannot find module '@anyorg/PROJECT-api'
+// Fix: Replace with @ORGANIZATION/PROJECT-api
 
 // Error Pattern 2: Missing organization prefix  
-Cannot find module '@template-api'
-Cannot find module 'template-api'
+Cannot find module '@PROJECT-api'
+Cannot find module 'PROJECT-api'
 // Fix: Add @ORGANIZATION/ prefix
 
 // Error Pattern 3: Structure imports with wrong org
-Cannot find module '@wrtnlabs/template-api/lib/structures/IType'
-Cannot find module '@nestia/template-api/lib/structures/IType'
-// Fix: Replace with @ORGANIZATION/template-api/lib/structures/IType
+Cannot find module '@wrtnlabs/PROJECT-api/lib/structures/IType'
+Cannot find module '@nestia/PROJECT-api/lib/structures/IType'
+// Fix: Replace with @ORGANIZATION/PROJECT-api/lib/structures/IType
 ```  
 
 3. **Comprehensive Import Scan and Fix**:  
@@ -88,14 +88,14 @@ Cannot find module '@nestia/template-api/lib/structures/IType'
 
 ```typescript
 // BEFORE (Multiple wrong patterns in same file):
-import api from "@nestia/template-api";
-import { IBbsArticle } from "@wrtnlabs/template-api/lib/structures/IBbsArticle";
-import { IAttachmentFile } from "@template-api/lib/structures/IAttachmentFile";
+import api from "@nestia/PROJECT-api";
+import { IBbsArticle } from "@wrtnlabs/PROJECT-api/lib/structures/IBbsArticle";
+import { IAttachmentFile } from "@PROJECT-api/lib/structures/IAttachmentFile";
 
 // AFTER (All fixed consistently):
-import api from "@ORGANIZATION/template-api";
-import { IBbsArticle } from "@ORGANIZATION/template-api/lib/structures/IBbsArticle";
-import { IAttachmentFile } from "@ORGANIZATION/template-api/lib/structures/IAttachmentFile";
+import api from "@ORGANIZATION/PROJECT-api";
+import { IBbsArticle } from "@ORGANIZATION/PROJECT-api/lib/structures/IBbsArticle";
+import { IAttachmentFile } from "@ORGANIZATION/PROJECT-api/lib/structures/IAttachmentFile";
 ```  
 
 ### 2. Error Loop Prevention Strategy
@@ -278,12 +278,12 @@ Example:
 
 ```typescript
 // Input code with multiple potential issues:
-import api from "@nestia/template-api";                    // Issue 1
-import { IBbsArticle } from "@wrtnlabs/template-api/lib/structures/IBbsArticle";  // Issue 2  
-import { IUser } from "@template-api/lib/structures/IUser";  // Issue 3
+import api from "@nestia/PROJECT-api";                    // Issue 1
+import { IBbsArticle } from "@wrtnlabs/PROJECT-api/lib/structures/IBbsArticle";  // Issue 2  
+import { IUser } from "@PROJECT-api/lib/structures/IUser";  // Issue 3
 
 // Output: ALL issues fixed simultaneously:
-import api from "@ORGANIZATION/template-api";
-import { IBbsArticle } from "@ORGANIZATION/template-api/lib/structures/IBbsArticle";
-import { IUser } from "@ORGANIZATION/template-api/lib/structures/IUser";
+import api from "@ORGANIZATION/PROJECT-api";
+import { IBbsArticle } from "@ORGANIZATION/PROJECT-api/lib/structures/IBbsArticle";
+import { IUser } from "@ORGANIZATION/PROJECT-api/lib/structures/IUser";
 ```
