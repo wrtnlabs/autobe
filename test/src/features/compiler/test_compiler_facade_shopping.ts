@@ -17,11 +17,12 @@ export const test_compiler_facade_shopping = async (): Promise<void> => {
     throw new Error("Failed to pass prisma generate");
   }
 
-  const result: IAutoBeTypeScriptCompilerResult = await compiler.typescript({
-    files: await RepositoryFileSystem.src("samchon", "shopping-backend"),
-    prisma: prisma.nodeModules,
-    package: "@samchon/shopping-api",
-  });
+  const result: IAutoBeTypeScriptCompilerResult =
+    await compiler.typescript.compile({
+      files: await RepositoryFileSystem.src("samchon", "shopping-backend"),
+      prisma: prisma.nodeModules,
+      package: "@samchon/shopping-api",
+    });
   if (result.type !== "success") {
     console.log(result);
   }

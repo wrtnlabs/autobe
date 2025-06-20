@@ -1,5 +1,4 @@
 import { AutoBeAgent } from "@autobe/agent";
-import { invertOpenApiDocument } from "@autobe/agent/src/factory";
 import { AutoBeCompiler } from "@autobe/compiler";
 import { RepositoryFileSystem } from "@autobe/filesystem";
 import {
@@ -36,7 +35,7 @@ export const prepare_agent_interface = async (
   if (prisma.type !== "success")
     throw new Error("Failed to pass prisma compilation step");
 
-  const document: AutoBeOpenApi.IDocument = invertOpenApiDocument(
+  const document: AutoBeOpenApi.IDocument = await compiler.interface.invert(
     await RepositoryFileSystem.swagger(owner, project),
   );
 

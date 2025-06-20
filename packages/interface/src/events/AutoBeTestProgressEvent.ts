@@ -15,7 +15,7 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
  * the generated application functions correctly under realistic operational
  * conditions and properly implements business requirements.
  *
- * @author Samchon
+ * @author Michael
  */
 export interface AutoBeTestProgressEvent
   extends AutoBeEventBase<"testProgress"> {

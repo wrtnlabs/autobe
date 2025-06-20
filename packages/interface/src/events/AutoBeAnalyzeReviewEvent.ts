@@ -15,7 +15,7 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
  * making necessary adjustments to improve the analysis quality and ensure it
  * properly guides subsequent development phases.
  *
- * @author Samchon
+ * @author Kakasoo
  */
 export interface AutoBeAnalyzeReviewEvent
   extends AutoBeEventBase<"analyzeReview"> {

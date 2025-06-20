@@ -14,7 +14,7 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
  * is being generated as part of the comprehensive requirements analysis that
  * will guide the entire development pipeline.
  *
- * @author Samchon
+ * @author Kakasoo
  */
 export interface AutoBeAnalyzeWriteEvent
   extends AutoBeEventBase<"analyzeWrite"> {

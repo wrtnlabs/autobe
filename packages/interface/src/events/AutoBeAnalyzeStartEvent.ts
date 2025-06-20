@@ -14,7 +14,7 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
  * requirements documentation that guides all subsequent development activities
  * including database design, API specification, and implementation.
  *
- * @author Samchon
+ * @author Kakasoo
  */
 export interface AutoBeAnalyzeStartEvent
   extends AutoBeEventBase<"analyzeStart"> {

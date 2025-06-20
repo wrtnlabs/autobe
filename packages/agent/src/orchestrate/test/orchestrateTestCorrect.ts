@@ -77,10 +77,10 @@ async function step<Model extends ILlmSchema.Model>(
   life: number,
 ): Promise<AutoBeTestValidateEvent> {
   // COMPILE TEST CODE
-  const result = await ctx.compiler.typescript({
-    files,
-  });
-
+  const result: IAutoBeTypeScriptCompilerResult =
+    await ctx.compiler.typescript.compile({
+      files,
+    });
   if (result.type === "success") {
     // SUCCESS
     return {

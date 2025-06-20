@@ -15,11 +15,12 @@ export const test_compiler_facade_bbs = async (): Promise<void> => {
   if (prisma.type !== "success")
     throw new Error("Failed to pass prisma generate");
 
-  const result: IAutoBeTypeScriptCompilerResult = await compiler.typescript({
-    files: await RepositoryFileSystem.src("samchon", "bbs-backend"),
-    prisma: prisma.nodeModules,
-    package: "@samchon/bbs-api",
-  });
+  const result: IAutoBeTypeScriptCompilerResult =
+    await compiler.typescript.compile({
+      files: await RepositoryFileSystem.src("samchon", "bbs-backend"),
+      prisma: prisma.nodeModules,
+      package: "@samchon/bbs-api",
+    });
   TestValidator.equals("result")(result.type)("success");
   typia.assertEquals(result);
 };

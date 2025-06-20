@@ -1,6 +1,12 @@
 import { AutoBeOpenApi, IAutoBeInterfaceCompiler } from "@autobe/interface";
 import { NestiaMigrateApplication } from "@nestia/migrate";
-import { OpenApi, OpenApiV3_1 } from "@samchon/openapi";
+import {
+  HttpMigration,
+  IHttpMigrateApplication,
+  OpenApi,
+  OpenApiTypeChecker,
+  OpenApiV3_1,
+} from "@samchon/openapi";
 import sortImport from "@trivago/prettier-plugin-sort-imports";
 import import2 from "import2";
 import { format } from "prettier";
@@ -8,11 +14,34 @@ import { format } from "prettier";
 import { AutoBeCompilerConstants } from "./raw/AutoBeCompilerConstants";
 import { ArrayUtil } from "./utils/ArrayUtil";
 
+/**
+ * Custom Interface compiler that handles API specification and NestJS
+ * application generation.
+ *
+ * This compiler transforms validated {@link AutoBeOpenApi.IDocument} AST
+ * structures into comprehensive NestJS projects through a sophisticated
+ * multi-stage transformation pipeline. The Interface compiler bridges the gap
+ * between database design and application implementation, ensuring perfect
+ * alignment with business requirements and database schemas.
+ *
+ * The compiler leverages NestiaMigrateApplication for robust NestJS project
+ * generation and HttpMigration for bidirectional conversion between AutoBE AST
+ * and standard OpenAPI formats. All generated TypeScript code is automatically
+ * formatted with Prettier and organized with proper import sorting for
+ * production-ready quality.
+ *
+ * Key capabilities include generating complete NestJS applications with
+ * controllers, DTOs, client SDKs, and E2E test scaffolds, all enhanced with
+ * keyworded parameter optimization for AI consumption and comprehensive
+ * documentation derived from AST descriptions.
+ *
+ * @author Samchon
+ */
 export class AutoBeInterfaceCompiler implements IAutoBeInterfaceCompiler {
   public async compile(
     document: AutoBeOpenApi.IDocument,
   ): Promise<Record<string, string>> {
-    const swagger: OpenApi.IDocument = createOpenApiDocument(document);
+    const swagger: OpenApi.IDocument = transformDocument(document);
     const migrate: NestiaMigrateApplication = new NestiaMigrateApplication(
       swagger,
     );
@@ -41,6 +70,18 @@ export class AutoBeInterfaceCompiler implements IAutoBeInterfaceCompiler {
       "README.md": AutoBeCompilerConstants.README,
     };
   }
+
+  public async transform(
+    document: AutoBeOpenApi.IDocument,
+  ): Promise<OpenApi.IDocument> {
+    return transformDocument(document);
+  }
+
+  public async invert(
+    document: OpenApi.IDocument,
+  ): Promise<AutoBeOpenApi.IDocument> {
+    return invertDocument(document);
+  }
 }
 
 async function beautify(script: string) {
@@ -58,9 +99,7 @@ async function beautify(script: string) {
   }
 }
 
-function createOpenApiDocument(
-  route: AutoBeOpenApi.IDocument,
-): OpenApi.IDocument {
+function transformDocument(route: AutoBeOpenApi.IDocument): OpenApi.IDocument {
   const paths: Record<string, OpenApi.IPath> = {};
   for (const op of route.operations) {
     paths[op.path] ??= {};
@@ -108,4 +147,58 @@ function createOpenApiDocument(
     paths,
     components: route.components,
   } as OpenApiV3_1.IDocument);
+}
+
+function invertDocument(document: OpenApi.IDocument): AutoBeOpenApi.IDocument {
+  const app: IHttpMigrateApplication = HttpMigration.application(document);
+  return {
+    operations: app.routes
+      .filter((r) => r.query === null)
+      .map(
+        (r) =>
+          ({
+            specification: empty("specification"),
+            method: r.method as "post",
+            path: r.path,
+            summary: r.operation().summary ?? empty("summary"),
+            description: r.operation().description ?? empty("description"),
+            parameters: r.parameters.map(
+              (p) =>
+                ({
+                  name: p.name,
+                  description:
+                    p.parameter().description ?? empty("description"),
+                  schema: p.schema as any,
+                }) satisfies AutoBeOpenApi.IParameter,
+            ),
+            requestBody:
+              r.body?.type === "application/json" &&
+              OpenApiTypeChecker.isReference(r.body.schema)
+                ? {
+                    description: r.body.description() ?? empty("description"),
+                    typeName: r.body.schema.$ref.split("/").pop()!,
+                  }
+                : null,
+            responseBody:
+              r.success?.type === "application/json" &&
+              OpenApiTypeChecker.isReference(r.success.schema)
+                ? {
+                    description:
+                      r.success.description() ?? empty("description"),
+                    typeName: r.success.schema.$ref.split("/").pop()!,
+                  }
+                : null,
+          }) satisfies AutoBeOpenApi.IOperation,
+      ),
+    components: {
+      schemas: (document.components?.schemas ?? {}) as Record<
+        string,
+        AutoBeOpenApi.IJsonSchemaDescriptive
+      >,
+    },
+  };
+}
+
+function empty(key: string): string {
+  return `Describe ${key} as much as possible with clear and concise words.`;
 }

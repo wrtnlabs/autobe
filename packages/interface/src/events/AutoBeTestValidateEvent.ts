@@ -16,7 +16,7 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
  * compilation issues and improve test code quality through the iterative
  * self-correction mechanism.
  *
- * @author Samchon
+ * @author Michael
  */
 export interface AutoBeTestValidateEvent
   extends AutoBeEventBase<"testValidate"> {
