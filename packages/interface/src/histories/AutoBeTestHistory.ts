@@ -3,10 +3,91 @@ import { tags } from "typia";
 import { IAutoBeTypeScriptCompilerResult } from "../compiler/IAutoBeTypeScriptCompilerResult";
 import { AutoBeAgentHistoryBase } from "./AutoBeHistoryBase";
 
+/**
+ * History record generated when the Test agent writes e2e test code based on
+ * the previous requirements analysis, database design, and RESTful API
+ * specification.
+ *
+ * The Test agent conceives multiple use case scenarios for each API endpoint
+ * and implements them as test programs. These test programs are composed of one
+ * TypeScript file and a standalone function for each scenario, providing
+ * comprehensive coverage of the API functionality and business logic
+ * validation.
+ *
+ * When the AI occasionally writes incorrect TypeScript code, the system
+ * provides compilation error messages as feedback, allowing the AI to
+ * self-correct. This feedback process usually works correctly, so test code
+ * written by AI almost always compiles successfully, ensuring robust and
+ * reliable test suites.
+ *
+ * @author Samchon
+ */
 export interface AutoBeTestHistory extends AutoBeAgentHistoryBase<"test"> {
+  /**
+   * Generated e2e test files as key-value pairs.
+   *
+   * Contains the complete set of TypeScript test files with each key
+   * representing the file path and each value containing the actual test code.
+   * Each test file includes standalone functions that implement specific use
+   * case scenarios for API endpoints, providing comprehensive end-to-end
+   * testing coverage.
+   *
+   * The test files are designed to validate both technical functionality and
+   * business rule implementation, ensuring that the generated APIs work
+   * correctly under realistic operational conditions.
+   */
   files: Record<string, string>;
+
+  /**
+   * Results of compiling the generated test code using the embedded TypeScript
+   * compiler.
+   *
+   * Contains the compilation outcome of the test files built through the
+   * TypeScript compiler. The feedback process usually works correctly, so this
+   * should typically indicate successful compilation. However, when using very
+   * small AI models, the {@link IAutoBeTypeScriptCompilerResult} might have
+   * `success := false`.
+   *
+   * Compilation errors trigger a self-correction feedback loop where the AI
+   * receives detailed error messages and attempts to fix the issues
+   * automatically.
+   */
   compiled: IAutoBeTypeScriptCompilerResult;
+
+  /**
+   * Reason why the Test agent was activated through function calling.
+   *
+   * Explains the specific circumstances that triggered the AI chatbot to invoke
+   * the Test agent via function calling. This could include reasons such as
+   * initial test suite generation after API specification completion, updating
+   * test scenarios due to API changes, or regenerating tests to reflect
+   * modified business requirements or database schemas.
+   */
   reason: string;
+
+  /**
+   * Iteration number of the requirements analysis report this test code was
+   * written for.
+   *
+   * Indicates which version of the requirements analysis this test suite
+   * reflects. If this value is lower than {@link AutoBeAnalyzeHistory.step}, it
+   * means the test code has not yet been updated to reflect the latest
+   * requirements and may need regeneration.
+   *
+   * A value of 0 indicates the initial test suite, while higher values
+   * represent subsequent revisions based on updated requirements, API changes,
+   * or database schema modifications.
+   */
   step: number;
+
+  /**
+   * ISO 8601 timestamp indicating when the test code generation was completed.
+   *
+   * Marks the exact moment when the Test agent finished writing all test
+   * scenarios, completed the compilation validation process, and resolved any
+   * compilation errors through the feedback loop. This timestamp is crucial for
+   * tracking the development timeline and determining the currency of the test
+   * suite relative to other development artifacts.
+   */
   completed_at: string & tags.Format<"date-time">;
 }
