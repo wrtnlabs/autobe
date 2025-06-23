@@ -1,6 +1,7 @@
 import { AutoBeHistory } from "../histories/AutoBeHistory";
 import { AutoBeUserMessageContent } from "../histories/contents/AutoBeUserMessageContent";
 import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
+import { IAutoBeGetFilesOptions } from "./IAutoBeGetFilesOptions";
 
 /**
  * Interface representing the WebSocket RPC service provided by the vibe coding
@@ -60,10 +61,13 @@ export interface IAutoBeRpcService {
    * deployment. File paths maintain the logical organization structure
    * established during generation.
    *
+   * @param options Options specifying the DBMS type for code generation
    * @returns Promise resolving to key-value pairs where keys are file paths and
    *   values are file contents for all generated artifacts
    */
-  getFiles(): Promise<Record<string, string>>;
+  getFiles(
+    options?: Partial<IAutoBeGetFilesOptions>,
+  ): Promise<Record<string, string>>;
 
   /**
    * Retrieves the complete conversation and development history.

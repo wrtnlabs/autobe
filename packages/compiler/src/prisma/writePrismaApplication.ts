@@ -2,48 +2,64 @@ import { AutoBePrisma } from "@autobe/interface";
 
 import { ArrayUtil } from "../utils/ArrayUtil";
 import { MapUtil } from "../utils/MapUtil";
+import { StringUtil } from "../utils/StringUtil";
 
-export function writePrismaApplication(
-  app: AutoBePrisma.IApplication,
-): Record<string, string> {
-  for (const file of app.files)
+export function writePrismaApplication(props: {
+  dbms: "postgres" | "sqlite";
+  application: AutoBePrisma.IApplication;
+}): Record<string, string> {
+  for (const file of props.application.files)
     for (const model of file.models) fillMappingName(model);
   return {
     ...Object.fromEntries(
-      app.files
+      props.application.files
         .filter((file) => file.filename !== "main.prisma")
-        .map((file) => [file.filename, writeFile(app, file)]),
+        .map((file) => [
+          file.filename,
+          writeFile({
+            ...props,
+            file,
+          }),
+        ]),
     ),
-    "main.prisma": MAIN_FILE,
+    "main.prisma":
+      props.dbms === "postgres" ? POSTGRES_MAIN_FILE : SQLITE_MAIN_FILE,
   };
 }
 
-function writeFile(
-  app: AutoBePrisma.IApplication,
-  file: AutoBePrisma.IFile,
-): string {
-  return file.models.map((model) => writeModel(app, file, model)).join("\n\n");
+function writeFile(props: {
+  dbms: "postgres" | "sqlite";
+  application: AutoBePrisma.IApplication;
+  file: AutoBePrisma.IFile;
+}): string {
+  return props.file.models
+    .map((model) =>
+      writeModel({
+        ...props,
+        model,
+      }),
+    )
+    .join("\n\n");
 }
 
-function writeModel(
-  app: AutoBePrisma.IApplication,
-  file: AutoBePrisma.IFile,
-  model: AutoBePrisma.IModel,
-): string {
+function writeModel(props: {
+  dbms: "postgres" | "sqlite";
+  application: AutoBePrisma.IApplication;
+  file: AutoBePrisma.IFile;
+  model: AutoBePrisma.IModel;
+}): string {
   return [
     writeComment(
       [
-        model.description,
+        props.model.description,
         "",
-        ...(model.material ? [] : [`@namespace ${file.namespace}`]),
+        ...(props.model.material ? [] : [`@namespace ${props.file.namespace}`]),
         "@author AutoBE - https://github.com/wrtnlabs/autobe",
       ].join("\n"),
     ),
-    `model ${model.name} {`,
+    `model ${props.model.name} {`,
     indent(
-      ArrayUtil.paddle([writeColumns(model), writeRelations(app, model)]).join(
-        "\n",
-      ),
+      ArrayUtil.paddle([writeColumns(props), writeRelations(props)]).join("\n"),
     ),
     "}",
   ].join("\n");
@@ -66,33 +82,67 @@ function fillMappingName(model: AutoBePrisma.IModel): void {
 /* -----------------------------------------------------------
   COLUMNS
 ----------------------------------------------------------- */
-function writeColumns(model: AutoBePrisma.IModel): string[] {
+function writeColumns(props: {
+  dbms: "postgres" | "sqlite";
+  model: AutoBePrisma.IModel;
+}): string[] {
   return [
     "//----",
     "// COLUMNS",
     "//----",
-    writePrimary(model.primaryField),
-    ...model.foreignFields.map((x) => ["", writeField(x)]).flat(),
-    ...model.plainFields.map((x) => ["", writeField(x)]).flat(),
+    writePrimary({
+      dbms: props.dbms,
+      field: props.model.primaryField,
+    }),
+    ...props.model.foreignFields
+      .map((x) => [
+        "",
+        writeField({
+          dbms: props.dbms,
+          field: x,
+        }),
+      ])
+      .flat(),
+    ...props.model.plainFields
+      .map((x) => [
+        "",
+        writeField({
+          dbms: props.dbms,
+          field: x,
+        }),
+      ])
+      .flat(),
   ];
 }
 
-function writePrimary(field: AutoBePrisma.IPrimaryField): string {
+function writePrimary(props: {
+  dbms: "postgres" | "sqlite";
+  field: AutoBePrisma.IPrimaryField;
+}): string {
+  const type: string | undefined =
+    props.dbms === "postgres" ? POSTGRES_PHYSICAL_TYPES.uuid : undefined;
   return [
-    writeComment(field.description),
-    `${field.name} String @id @db.Uuid`,
+    writeComment(props.field.description),
+    `${props.field.name} String @id${type ? ` ${type}` : ""}`,
   ].join("\n");
 }
 
-function writeField(field: AutoBePrisma.IPlainField): string {
-  const logical: string = LOGICAL_TYPES[field.type];
+function writeField(props: {
+  dbms: "postgres" | "sqlite";
+  field: AutoBePrisma.IPlainField;
+}): string {
+  const logical: string = LOGICAL_TYPES[props.field.type];
   const physical: string | undefined =
-    PHYSICAL_TYPES[field.type as keyof typeof PHYSICAL_TYPES];
+    props.dbms === "postgres"
+      ? POSTGRES_PHYSICAL_TYPES[
+          props.field.type as keyof typeof POSTGRES_PHYSICAL_TYPES
+        ]
+      : undefined;
   return [
-    writeComment(field.description),
+    writeComment(props.field.description),
     [
-      field.name,
-      `${logical}${field.nullable ? "?" : ""}`,
+      props.field.name,
+      `${logical}${props.field.nullable ? "?" : ""}`,
       ...(physical ? [physical] : []),
     ].join(" "),
   ].join("\n");
@@ -101,21 +151,23 @@ function writeField(field: AutoBePrisma.IPlainField): string {
 /* -----------------------------------------------------------
   RELATIONS
 ----------------------------------------------------------- */
-function writeRelations(
-  app: AutoBePrisma.IApplication,
-  model: AutoBePrisma.IModel,
-): string[] {
+function writeRelations(props: {
+  dbms: "postgres" | "sqlite";
+  application: AutoBePrisma.IApplication;
+  model: AutoBePrisma.IModel;
+}): string[] {
   interface IHasRelationship {
     modelName: string;
     unique: boolean;
     mappingName?: string;
   }
-  const hasRelationships: IHasRelationship[] = app.files
+  const hasRelationships: IHasRelationship[] = props.application.files
     .map((otherFile) =>
       otherFile.models.map((otherModel) =>
         otherModel.foreignFields
           .filter(
-            (otherForeign) => otherForeign.relation.targetModel === model.name,
+            (otherForeign) =>
+              otherForeign.relation.targetModel === props.model.name,
           )
           .map((otherForeign) => ({
             modelName: otherModel.name,
@@ -126,14 +178,14 @@ function writeRelations(
     )
     .flat(2);
   const foreignIndexes: AutoBePrisma.IForeignField[] =
-    model.foreignFields.filter(
+    props.model.foreignFields.filter(
       (f) =>
-        model.uniqueIndexes.every((u) => u.fieldNames[0] !== f.name) &&
+        props.model.uniqueIndexes.every((u) => u.fieldNames[0] !== f.name) &&
         (f.unique === true ||
-          model.plainIndexes.every((p) => p.fieldNames[0] !== f.name)),
+          props.model.plainIndexes.every((p) => p.fieldNames[0] !== f.name)),
     );
   const contents: string[][] = [
-    model.foreignFields.map(writeConstraint),
+    props.model.foreignFields.map(writeConstraint),
     hasRelationships.map((r) =>
       [
         r.mappingName ?? r.modelName,
@@ -143,9 +195,11 @@ function writeRelations(
     ),
     foreignIndexes.map(writeForeignIndex),
     [
-      ...model.uniqueIndexes.map(writeUniqueIndex),
-      ...model.plainIndexes.map(writePlainIndex),
-      ...model.ginIndexes.map(writeGinIndex),
+      ...props.model.uniqueIndexes.map(writeUniqueIndex),
+      ...props.model.plainIndexes.map(writePlainIndex),
+      ...(props.dbms === "postgres"
+        ? props.model.ginIndexes.map(writeGinIndex)
+        : []),
     ],
   ];
   if (contents.every((c) => c.length === 0)) return [];
@@ -222,8 +276,7 @@ const LOGICAL_TYPES = {
   uuid: "String",
   uri: "String",
 };
-
-const PHYSICAL_TYPES = {
+const POSTGRES_PHYSICAL_TYPES = {
   int: "@db.Integer",
   double: "@db.DoublePrecision",
   uuid: "@db.Uuid",
@@ -231,21 +284,32 @@ const PHYSICAL_TYPES = {
   uri: "@db.VarChar(80000)",
 };
 
-const MAIN_FILE = `
-generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["postgresqlExtensions", "views"]
-  binaryTargets   = ["native"]
-}
-
-datasource db {
-  provider   = "postgresql"
-  url        = env("DATABASE_URL")
-  extensions = []
-}
-
-generator markdown {
-  provider = "prisma-markdown"
-  output   = "../docs/ERD.md"
-}
-`.trim();
+const POSTGRES_MAIN_FILE = StringUtil.trim`
+  generator client {
+    provider        = "prisma-client-js"
+    previewFeatures = ["postgresqlExtensions", "views"]
+    binaryTargets   = ["native"]
+  }
+  datasource db {
+    provider   = "postgresql"
+    url        = env("DATABASE_URL")
+    extensions = []
+  }
+  generator markdown {
+    provider = "prisma-markdown"
+    output   = "../docs/ERD.md"
+  }
+`;
+const SQLITE_MAIN_FILE = StringUtil.trim`
+  generator client {
+    provider = "prisma-client-js"
+  }
+  datasource db {
+    provider = "sqlite"
+    url      = "file:./prisma.db"
+  }
+  generator markdown {
+    provider = "prisma-markdown"
+    output   = "../docs/ERD.md"
+  }
+`;

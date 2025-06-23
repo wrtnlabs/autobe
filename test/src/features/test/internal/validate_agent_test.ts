@@ -75,7 +75,7 @@ export const validate_agent_test = async (owner: string, project: string) => {
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/${owner}/${project}/test/main`,
     files: {
-      ...agent.getFiles(),
+      ...(await agent.getFiles()),
       "logs/history.json": JSON.stringify(agent.getHistories(), null, 2),
       "logs/result.json": JSON.stringify(result, null, 2),
       "logs/tokenUsage.json": JSON.stringify(agent.getTokenUsage(), null, 2),

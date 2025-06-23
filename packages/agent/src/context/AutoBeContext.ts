@@ -1,5 +1,10 @@
 import { IAgenticaVendor } from "@agentica/core";
-import { AutoBeEvent, AutoBeHistory, IAutoBeCompiler } from "@autobe/interface";
+import {
+  AutoBeEvent,
+  AutoBeHistory,
+  IAutoBeCompiler,
+  IAutoBeGetFilesOptions,
+} from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 
 import { IAutoBeConfig } from "../structures/IAutoBeConfig";
@@ -11,7 +16,7 @@ export interface AutoBeContext<Model extends ILlmSchema.Model> {
   vendor: IAgenticaVendor;
   config: IAutoBeConfig | undefined;
   compiler: IAutoBeCompiler;
-  files: () => Record<string, string>;
+  files: (options: IAutoBeGetFilesOptions) => Promise<Record<string, string>>;
   histories: () => AutoBeHistory[];
   state: () => AutoBeState;
   usage: () => AutoBeTokenUsage;

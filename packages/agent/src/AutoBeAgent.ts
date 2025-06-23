@@ -5,6 +5,7 @@ import {
   AutoBeHistory,
   AutoBeUserMessageContent,
   AutoBeUserMessageHistory,
+  IAutoBeGetFilesOptions,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 import { Semaphore } from "tstl";
@@ -86,7 +87,7 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
       histories: () => this.histories_,
       state: () => this.state_,
       usage: () => this.agentica_.getTokenUsage(),
-      files: () => this.getFiles(),
+      files: (options) => this.getFiles(options),
       dispatch: (event) => {
         this.dispatch(event).catch(() => {});
       },
@@ -282,10 +283,13 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
    * metadata files provide session information including conversation histories
    * and token usage statistics.
    *
+   * @param options Options specifying the DBMS type for code generation
    * @returns Key-value pairs mapping file paths to file contents for all
    *   generated development artifacts
    */
-  public getFiles(): Record<string, string> {
+  public async getFiles(
+    options?: Partial<IAutoBeGetFilesOptions>,
+  ): Promise<Record<string, string>> {
     const files: Record<string, string> = {
       ...Object.fromEntries(
         this.state_.analyze
@@ -298,12 +302,17 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
       ...Object.fromEntries(
         this.state_.prisma?.result.success === true
           ? [
-              ...Object.entries(this.state_.prisma.schemas).map(
-                ([key, value]) => [
-                  `prisma/schema/${key.split("/").at(-1)}`,
-                  value,
-                ],
-              ),
+              ...Object.entries(
+                (options?.dbms ?? "postgres") === "postgres"
+                  ? this.state_.prisma.schemas
+                  : await this.context_.compiler.prisma.write(
+                      this.state_.prisma.result.data,
+                      options!.dbms!,
+                    ),
+              ).map(([key, value]) => [
+                `prisma/schema/${key.split("/").at(-1)}`,
+                value,
+              ]),
               ...(this.state_.prisma.compiled.type === "success"
                 ? [["docs/ERD.md", this.state_.prisma.compiled.document]]
                 : []),

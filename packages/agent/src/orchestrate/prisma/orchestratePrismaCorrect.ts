@@ -37,8 +37,10 @@ async function step<Model extends ILlmSchema.Model>(
   else if (life <= 0) return result; // FAILURE
 
   // VALIDATION FAILED
-  const schemas: Record<string, string> =
-    await ctx.compiler.prisma.write(application);
+  const schemas: Record<string, string> = await ctx.compiler.prisma.write(
+    application,
+    "postgres",
+  );
   ctx.dispatch({
     type: "prismaValidate",
     result,

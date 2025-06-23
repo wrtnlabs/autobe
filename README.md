@@ -160,8 +160,8 @@ gantt
 
   section Analyze Agent
   Debate Enhancement: done,    2025-06-01,  7d
-  Prefix Rule:          active,  2025-06-12,  7d
-  Multimodal:           planned, 2025-07-02, 31d
+  Prefix Rule:        active,  2025-06-12,  7d
+  Multimodal:         planned, 2025-07-02, 31d
 
   section Prisma Agent
   Compiler Development: done,    2025-06-01, 14d

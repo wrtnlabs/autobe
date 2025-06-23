@@ -51,6 +51,7 @@ export const orchestratePrisma =
     );
     const schemas: Record<string, string> = await ctx.compiler.prisma.write(
       result.data,
+      "postgres",
     );
     const history: AutoBePrismaHistory = {
       type: "prisma",

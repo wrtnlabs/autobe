@@ -44,14 +44,18 @@ export class AutoBePrismaCompiler implements IAutoBePrismaCompiler {
   }
 
   public async validate(
-    app: AutoBePrisma.IApplication,
+    application: AutoBePrisma.IApplication,
   ): Promise<IAutoBePrismaValidation> {
-    return validatePrismaApplication(app);
+    return validatePrismaApplication(application);
   }
 
   public async write(
-    app: AutoBePrisma.IApplication,
+    application: AutoBePrisma.IApplication,
+    dbms: "postgres" | "sqlite" = "postgres",
   ): Promise<Record<string, string>> {
-    return writePrismaApplication(app);
+    return writePrismaApplication({
+      application,
+      dbms,
+    });
   }
 }

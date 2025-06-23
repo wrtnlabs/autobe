@@ -32,7 +32,10 @@ export const test_agent_prisma_cross = async () => {
   );
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/prisma/cross`,
-    files: writePrismaApplication(result.data),
+    files: writePrismaApplication({
+      dbms: "postgres",
+      application: result.data,
+    }),
   });
   TestValidator.equals("result")(result.success)(true);
 };

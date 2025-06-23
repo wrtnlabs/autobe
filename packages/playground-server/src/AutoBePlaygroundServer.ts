@@ -33,7 +33,7 @@ export class AutoBePlaygroundServer<Header extends object> {
       const archive = async () => {
         try {
           await save({
-            files: result.agent.getFiles(),
+            files: await result.agent.getFiles(),
             root: result.cwd,
           });
         } catch (error) {

@@ -2,6 +2,7 @@ import { AutoBeAgent } from "@autobe/agent";
 import {
   AutoBeHistory,
   AutoBeUserMessageContent,
+  IAutoBeGetFilesOptions,
   IAutoBeRpcListener,
   IAutoBeRpcService,
   IAutoBeTokenUsageJson,
@@ -91,11 +92,14 @@ export class AutoBeRpcService<Model extends ILlmSchema.Model>
    * implementation code. Files are organized with logical directory structure
    * ready for download or further processing by client applications.
    *
+   * @param options Options specifying the DBMS type for code generation
    * @returns Promise resolving to key-value pairs mapping file paths to
    *   contents
    */
-  public async getFiles(): Promise<Record<string, string>> {
-    return this.props.agent.getFiles();
+  public async getFiles(
+    options?: Partial<IAutoBeGetFilesOptions>,
+  ): Promise<Record<string, string>> {
+    return this.props.agent.getFiles(options);
   }
 
   /**

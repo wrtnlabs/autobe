@@ -43,7 +43,7 @@ export const validate_agent_analyze = async (
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/${owner}/${project}/prisma`,
     files: {
-      ...agent.getFiles(),
+      ...(await agent.getFiles()),
       "logs/result.json": JSON.stringify(history, null, 2),
       "logs/files.json": JSON.stringify(Object.keys(agent.getFiles()), null, 2),
       "logs/tokenUsage.json": JSON.stringify(agent.getTokenUsage(), null, 2),

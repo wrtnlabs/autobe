@@ -18,12 +18,19 @@ import { VariadicSingleton } from "tstl";
 export function AutoBePlaygroundCompleteEventMovie(
   props: AutoBePlaygroundCompleteEventMovie.IProps,
 ) {
-  const [files, setFiles] = useState<Record<string, string>>({});
+  const [postgresFiles, setPostgresFiles] = useState<Record<string, string>>(
+    {},
+  );
+  const [sqliteFiles, setSqliteFiles] = useState<Record<string, string>>({});
 
   useEffect(() => {
     (async () => {
-      const files: Record<string, string> = await props.service.getFiles();
-      setFiles(files);
+      setPostgresFiles(await props.service.getFiles());
+      setSqliteFiles(
+        await props.service.getFiles({
+          dbms: "sqlite",
+        }),
+      );
     })().catch(() => {});
   }, []);
 
@@ -31,7 +38,7 @@ export function AutoBePlaygroundCompleteEventMovie(
     StackBlitzSDK.openProject(
       {
         files: Object.fromEntries(
-          Object.entries(files).filter(
+          Object.entries(sqliteFiles).filter(
             ([_, value]) =>
               new TextEncoder().encode(value).length < 2 * 1024 * 1024, // 2MB
           ),
@@ -53,7 +60,7 @@ export function AutoBePlaygroundCompleteEventMovie(
       const parent: JsZip = directory.get(separated.slice(0, -1).join("/"));
       return parent.folder(separated.at(-1)!)!;
     });
-    for (const [file, content] of Object.entries(files)) {
+    for (const [file, content] of Object.entries(postgresFiles)) {
       const separated: string[] = file.split("/");
       if (separated.length === 1) zip.file(file, content);
       else {

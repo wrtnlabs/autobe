@@ -12,7 +12,10 @@ export const test_compiler_prisma_recursive = async (): Promise<void> => {
   const application: AutoBePrisma.IApplication =
     typia.assert<AutoBePrisma.IApplication>(json);
 
-  const files: Record<string, string> = await compiler.write(application);
+  const files: Record<string, string> = await compiler.write(
+    application,
+    "postgres",
+  );
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/compiler/prisma/recursive`,
     files: Object.fromEntries(

@@ -84,8 +84,12 @@ export interface IAutoBePrismaCompiler {
    * Prisma deployment and database migration processes.
    *
    * @param app Validated Prisma application AST structure
+   * @param dbms Target database management system
    * @returns Promise resolving to key-value pairs mapping schema filenames to
    *   generated Prisma schema content
    */
-  write(app: AutoBePrisma.IApplication): Promise<Record<string, string>>;
+  write(
+    app: AutoBePrisma.IApplication,
+    dbms?: "postgres" | "sqlite",
+  ): Promise<Record<string, string>>;
 }
