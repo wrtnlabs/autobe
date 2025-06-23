@@ -41,7 +41,7 @@ export const validate_agent_test_progress = async (
   typia.assertEquals(codes);
 
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${owner}/${project}/test/plan`,
+    root: `${TestGlobal.ROOT}/results/${owner}/${project}/test/progress`,
     files: {
       "logs/history.json": JSON.stringify(agent.getHistories(), null, 2),
       "logs/codes.json": JSON.stringify(codes, null, 2),
