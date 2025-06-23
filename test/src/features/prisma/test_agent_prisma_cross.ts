@@ -20,7 +20,10 @@ export const test_agent_prisma_cross = async () => {
   const agent: AutoBeAgent<"chatgpt"> = new AutoBeAgent({
     model: "chatgpt",
     vendor: {
-      api: new OpenAI({ apiKey: TestGlobal.env.CHATGPT_API_KEY }),
+      api: new OpenAI({
+        apiKey: TestGlobal.env.CHATGPT_API_KEY,
+        baseURL: TestGlobal.env.CHATGPT_BASE_URL,
+      }),
       model: "gpt-4.1",
     },
     histories: histories,

@@ -49,6 +49,7 @@ export const prepare_agent_test_main = async (
     vendor: {
       api: new OpenAI({
         apiKey: TestGlobal.env.CHATGPT_API_KEY,
+        baseURL: TestGlobal.env.CHATGPT_BASE_URL,
       }),
       model: "gpt-4.1",
       semaphore: 16,
