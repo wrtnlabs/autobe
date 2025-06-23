@@ -12,3 +12,5 @@ website/README.md
 .env
 .idea
 .DS_Store
+
+package-lock.json
