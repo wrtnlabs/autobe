@@ -39,11 +39,6 @@ export class AutoBeTypeScriptCompiler implements IAutoBeTypeScriptCompiler {
     props: IAutoBeTypeScriptCompilerProps,
   ): Promise<IAutoBeTypeScriptCompilerResult> {
     const alias: string = props.package ?? "@ORGANIZATION/PROJECT-api";
-    console.log({
-      [alias]: ["./src/api"],
-      [`${alias}/lib/`]: ["./src/api"],
-      [`${alias}/lib/*`]: ["./src/api/*"],
-    });
     const compiler: EmbedTypeScript = new EmbedTypeScript({
       external: EXTERNAL as Record<string, string>,
       compilerOptions: {
