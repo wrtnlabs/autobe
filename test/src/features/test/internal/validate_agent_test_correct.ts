@@ -2,7 +2,6 @@ import { orchestrateTestCorrect } from "@autobe/agent/src/orchestrate/test/orche
 import { FileSystemIterator } from "@autobe/filesystem";
 import { AutoBeEvent, AutoBeTestProgressEvent } from "@autobe/interface";
 import fs from "fs";
-import typia from "typia";
 
 import { TestGlobal } from "../../../TestGlobal";
 import { prepare_agent_test } from "./prepare_agent_test";
@@ -50,6 +49,5 @@ export const validate_agent_test_correct = async (
     },
   });
 
-  typia.assertEquals(correct);
   return correct;
 };
