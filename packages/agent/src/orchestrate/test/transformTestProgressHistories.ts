@@ -1,12 +1,15 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
-import { AutoBeOpenApi } from "@autobe/interface";
+import { IAutoBeTestPlan } from "@autobe/interface/src/test/AutoBeTestPlan";
 import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 
-export const transformTestProgressHistories = (
-  document: AutoBeOpenApi.IDocument,
-): Array<
+export const transformTestProgressHistories = (props: {
+  plan: IAutoBeTestPlan.IPlan & { method: string; path: string };
+  dto: Record<string, string>;
+  sdk: Record<string, string>;
+  e2e: Record<string, string>;
+}): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
   return [
@@ -21,28 +24,30 @@ export const transformTestProgressHistories = (
       created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: [
-        "You are the world's best E2E test code generator.",
-        "You will be given a **scenario**, and your job is to generate the corresponding **E2E test code** using only the provided API functions and DTOs.",
+        "Here is the list of input material composition.",
         "",
-        "## Rules",
-        "- Follow the base E2E test style strictly. Never use other frameworks like Jest or Mocha.",
-        "- Use `TestValidator.equals(...)` and `typia.assert(...)` to verify results.",
-        "- Use `HubApi.functional.XXX` for all API calls. These are defined in API Files.",
-        "- Use helper functions like `generate_random_xxx(...)` **only if** they already exist in the base test imports.",
-        "- Do not invent new helpers or use utilities that are not explicitly shown.",
-        "- Keep all tests deterministic and reliable.",
+        "Make e2e test functions based on the following information.",
         "",
-        "## OpenAPI Like Document",
+        "## Secnario Plan",
         "```json",
-        JSON.stringify(document),
+        JSON.stringify(props.plan),
         "```",
         "",
-        "Here is the OpenAPI like document only about the API functions and DTOs",
-        "related to the scenario. Use all of them to generate the E2E test code.",
+        "## DTO Definitions",
+        "```json",
+        JSON.stringify(props.dto),
+        "```",
         "",
-        "Now generate the E2E test function based on the given scenario.",
+        "## API (SDK) Functions",
+        "```json",
+        JSON.stringify(props.sdk),
+        "```",
         "",
-        "Only output a single `async function` named `test_api_{...}`. No explanation, no commentary.",
+        "## E2E Mockup Functions",
+        "```json",
+        JSON.stringify(props.e2e),
+        "```",
+        "",
       ].join("\n"),
     },
   ];

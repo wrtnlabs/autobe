@@ -4,7 +4,6 @@ import { IAutoBeTestPlan } from "@autobe/interface/src/test/AutoBeTestPlan";
 import {
   ILlmApplication,
   ILlmSchema,
-  IValidation,
   OpenApiTypeChecker,
 } from "@samchon/openapi";
 import { IPointer } from "tstl";
@@ -30,7 +29,6 @@ export async function orchestrateTestProgress<Model extends ILlmSchema.Model>(
      */
     plans.map(async (plan) => {
       const code: ICreateTestCodeProps = await process(ctx, plan);
-
       const event: AutoBeTestProgressEvent = {
         type: "testProgress",
         created_at: start.toISOString(),
@@ -69,13 +67,24 @@ async function process<Model extends ILlmSchema.Model>(
     plan,
     ctx.state().interface!.document,
   );
+  const files: [string, string][] = Object.entries(
+    await ctx.compiler.interface.compile(document),
+  );
+  const filter = (prefix: string) =>
+    Object.fromEntries(files.filter(([key]) => key.startsWith(prefix)));
+
   const agentica = new MicroAgentica({
     model: ctx.model,
     vendor: ctx.vendor,
     config: {
       ...(ctx.config ?? {}),
     },
-    histories: transformTestProgressHistories(document),
+    histories: transformTestProgressHistories({
+      plan,
+      dto: filter("src/api/structures"),
+      sdk: filter("src/api/functional"),
+      e2e: filter("test/features"),
+    }),
     controllers: [
       createApplication({
         model: ctx.model,
@@ -87,15 +96,7 @@ async function process<Model extends ILlmSchema.Model>(
   });
   enforceToolCall(agentica);
 
-  await agentica.conversate(
-    [
-      "Create test code for below plan:",
-      "",
-      "```json",
-      JSON.stringify(plan, null, 2),
-      "```",
-    ].join("\n"),
-  );
+  await agentica.conversate("Create e2e test functions.");
   if (pointer.value === null) throw new Error("Failed to create test code.");
   return pointer.value;
 }
@@ -151,51 +152,6 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
   const application: ILlmApplication<Model> = collection[
     props.model
   ] as unknown as ILlmApplication<Model>;
-
-  application.functions[0].validate = (next: unknown) => {
-    const result: IValidation<ICreateTestCodeProps> =
-      typia.validate<ICreateTestCodeProps>(next);
-    if (result.success === false) return result;
-
-    const errors: IValidation.IError[] = [];
-
-    const matched = [
-      ...result.data.content.matchAll(
-        /import\s*{[^}]*?_[^}]*?}\s*from\s*['"]@ORGANIZATION\/PROJECT-api\/lib\/structures\/[^'"]+['"];/g,
-      ),
-    ];
-
-    if (matched.length) {
-      errors.push(
-        ...matched
-          .map((el) => {
-            const [importStatement] = el;
-            return importStatement;
-          })
-          .map<IValidation.IError>((importStatement) => {
-            return {
-              path: "data.content",
-              value: result.data,
-              expected: [
-                "Invalid import: Types containing an underscore (_) must be accessed via their namespace.",
-                "```ts",
-                importStatement,
-                "```",
-              ].join("\n"),
-            };
-          }),
-      );
-
-      return {
-        success: false,
-        errors,
-        data: next,
-      };
-    }
-
-    return result;
-  };
-
   return {
     protocol: "class",
     name: "Create Test Code",
