@@ -1,7 +1,6 @@
-import { orchestrateTestProgress } from "@autobe/agent/src/orchestrate/test/orchestrateTestProgress";
+import { orchestrateTestCorrect } from "@autobe/agent/src/orchestrate/test/orchestrateTestCorrect";
 import { FileSystemIterator } from "@autobe/filesystem";
-import { AutoBeEvent } from "@autobe/interface";
-import { IAutoBeTestPlan } from "@autobe/interface/src/test/AutoBeTestPlan";
+import { AutoBeEvent, AutoBeTestProgressEvent } from "@autobe/interface";
 import fs from "fs";
 import typia from "typia";
 
@@ -10,7 +9,7 @@ import { prepare_agent_test } from "./prepare_agent_test";
 
 const ROOT = `${__dirname}/../../../..`;
 
-export const validate_agent_test_progress = async (
+export const validate_agent_test_correct = async (
   owner: "samchon" | "kakasoo" | "michael",
   project: "bbs-backend" | "shopping-backend",
 ) => {
@@ -22,24 +21,21 @@ export const validate_agent_test_progress = async (
   agent.on("testStart", (event) => {
     events.push(event);
   });
-
   agent.on("testPlan", (event) => {
     events.push(event);
   });
-
   agent.on("testComplete", (event) => {
     events.push(event);
   });
 
-  const plans: IAutoBeTestPlan.IScenario[] = JSON.parse(
+  const codes: AutoBeTestProgressEvent[] = JSON.parse(
     await fs.promises.readFile(
-      `${ROOT}/assets/repositories/${owner}/${project}/test/plans.json`,
+      `${ROOT}/assets/repositories/${owner}/${project}/test/codes.json`,
       "utf8",
     ),
   );
 
-  const codes = await orchestrateTestProgress(agent.getContext(), plans);
-  typia.assertEquals(codes);
+  const correct = await orchestrateTestCorrect(agent.getContext(), codes);
 
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/${owner}/${project}/test/plan`,
@@ -49,8 +45,11 @@ export const validate_agent_test_progress = async (
       "logs/tokenUsage.json": JSON.stringify(agent.getTokenUsage(), null, 2),
       "logs/files.json": JSON.stringify(Object.keys(agent.getFiles()), null, 2),
       "logs/events.json": JSON.stringify(events, null, 2),
+      "logs/compiled.json": JSON.stringify(correct.files, null, 2),
+      "logs/correct": JSON.stringify(correct, null, 2),
     },
   });
 
-  return codes;
+  typia.assertEquals(correct);
+  return correct;
 };
