@@ -18,7 +18,7 @@ export const validate_agent_test_plan = async (
   agent.on("testStart", (event) => {
     events.push(event);
   });
-  agent.on("testScenario", (event) => {
+  agent.on("testPlan", (event) => {
     events.push(event);
   });
   agent.on("testComplete", (event) => {

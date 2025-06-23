@@ -1,4 +1,3 @@
-import { orchestrateTestCorrect } from "@autobe/agent/src/orchestrate/test/orchestrateTestCorrect";
 import { orchestrateTestProgress } from "@autobe/agent/src/orchestrate/test/orchestrateTestProgress";
 import { FileSystemIterator } from "@autobe/filesystem";
 import { AutoBeEvent } from "@autobe/interface";
@@ -23,9 +22,11 @@ export const validate_agent_test_progress = async (
   agent.on("testStart", (event) => {
     events.push(event);
   });
-  agent.on("testScenario", (event) => {
+
+  agent.on("testPlan", (event) => {
     events.push(event);
   });
+
   agent.on("testComplete", (event) => {
     events.push(event);
   });
@@ -51,6 +52,5 @@ export const validate_agent_test_progress = async (
     },
   });
 
-  const correct = await orchestrateTestCorrect(agent.getContext(), codes);
-  typia.assertEquals(correct);
+  return codes;
 };

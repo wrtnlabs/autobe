@@ -93,6 +93,7 @@ async function process<Model extends ILlmSchema.Model>(
         },
       }),
     ],
+    tokenUsage: ctx.usage(),
   });
   enforceToolCall(agentica);
 

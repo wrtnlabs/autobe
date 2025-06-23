@@ -21,8 +21,8 @@ import { AutoBeRealizeStartEvent } from "./AutoBeRealizeStartEvent";
 import { AutoBeRealizeValidateEvent } from "./AutoBeRealizeValidateEvent";
 import { AutoBeTestCompleteEvent } from "./AutoBeTestCompleteEvent";
 import { AutoBeTestCorrectEvent } from "./AutoBeTestCorrectEvent";
+import { AutoBeTestPlanEvent } from "./AutoBeTestPlanEvent";
 import { AutoBeTestProgressEvent } from "./AutoBeTestProgressEvent";
-import { AutoBeTestScenarioEvent } from "./AutoBeTestScenarioEvent";
 import { AutoBeTestStartEvent } from "./AutoBeTestStartEvent";
 import { AutoBeTestValidateEvent } from "./AutoBeTestValidateEvent";
 import { AutoBeUserMessageEvent } from "./AutoBeUserMessageEvent";
@@ -47,7 +47,7 @@ export type AutoBeEvent =
   | AutoBePrismaValidateEvent
   | AutoBePrismaCorrectEvent
   | AutoBeTestStartEvent
-  | AutoBeTestScenarioEvent
+  | AutoBeTestPlanEvent
   | AutoBeTestProgressEvent
   | AutoBeTestValidateEvent
   | AutoBeTestCorrectEvent
@@ -56,6 +56,7 @@ export type AutoBeEvent =
   | AutoBeRealizeProgressEvent
   | AutoBeRealizeValidateEvent
   | AutoBeRealizeCompleteEvent;
+
 export namespace AutoBeEvent {
   export type Type = AutoBeEvent["type"];
   export interface Mapper {
@@ -78,7 +79,7 @@ export namespace AutoBeEvent {
     interfaceComplement: AutoBeInterfaceComplementEvent;
     interfaceComplete: AutoBeInterfaceCompleteEvent;
     testStart: AutoBeTestStartEvent;
-    testScenario: AutoBeTestScenarioEvent;
+    testPlan: AutoBeTestPlanEvent;
     testProgress: AutoBeTestProgressEvent;
     testValidate: AutoBeTestValidateEvent;
     testCorrect: AutoBeTestCorrectEvent;
