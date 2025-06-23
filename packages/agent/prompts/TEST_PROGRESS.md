@@ -93,7 +93,7 @@ export interface IShoppingSaleReview {
   id: string & tags.Format<"uuid">;
 
   /**
-   * Descriminator type.
+   * Discriminator type.
    */
   type: "review";
 
@@ -515,7 +515,7 @@ export async function test_api_shopping_sale_review_update(
         body: {
           email: "anonymous@wrtn.io",
           name: "Jaxtyn",
-          nickname: "annonymous",
+          nickname: "anonymous",
           mobile: "821033334444",
           password: "1234",
         } satisfies IShoppingCustomer.IJoin,
@@ -655,7 +655,7 @@ export async function test_api_shopping_sale_review_update(
     connection,
     {
       body: {
-        email: "annonymous@wrtn.io",
+        email: "anonymous@wrtn.io",
         password: "1234",
       } satisfies IShoppingCustomer.ILogin,
     },
