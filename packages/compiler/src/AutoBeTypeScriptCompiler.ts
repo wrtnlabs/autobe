@@ -3,6 +3,7 @@ import {
   IAutoBeTypeScriptCompilerProps,
   IAutoBeTypeScriptCompilerResult,
 } from "@autobe/interface";
+import nestiaCoreTransform from "@nestia/core/lib/transform";
 import { EmbedTypeScript } from "embed-typescript";
 import ts from "typescript";
 import typiaTransform from "typia/lib/transform";
@@ -59,6 +60,13 @@ export class AutoBeTypeScriptCompiler implements IAutoBeTypeScriptCompiler {
       transformers: (program, diagnostics) => ({
         before: [
           typiaTransform(
+            program,
+            {},
+            {
+              addDiagnostic: (input) => diagnostics.push(input),
+            },
+          ),
+          nestiaCoreTransform(
             program,
             {},
             {
