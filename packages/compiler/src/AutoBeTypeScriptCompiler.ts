@@ -3,7 +3,6 @@ import {
   IAutoBeTypeScriptCompilerProps,
   IAutoBeTypeScriptCompilerResult,
 } from "@autobe/interface";
-import nestiaCoreTransform from "@nestia/core/lib/transform";
 import { EmbedTypeScript } from "embed-typescript";
 import ts from "typescript";
 import typiaTransform from "typia/lib/transform";
@@ -40,15 +39,20 @@ export class AutoBeTypeScriptCompiler implements IAutoBeTypeScriptCompiler {
     props: IAutoBeTypeScriptCompilerProps,
   ): Promise<IAutoBeTypeScriptCompilerResult> {
     const alias: string = props.package ?? "@ORGANIZATION/PROJECT-api";
+    console.log({
+      [alias]: ["./src/api"],
+      [`${alias}/lib/`]: ["./src/api"],
+      [`${alias}/lib/*`]: ["./src/api/*"],
+    });
     const compiler: EmbedTypeScript = new EmbedTypeScript({
       external: EXTERNAL as Record<string, string>,
       compilerOptions: {
         target: ts.ScriptTarget.ESNext,
         module: ts.ModuleKind.CommonJS,
         downlevelIteration: true,
+        baseUrl: "./",
         paths: {
           [alias]: ["./src/api"],
-          [`${alias}/lib/`]: ["./src/api"],
           [`${alias}/lib/*`]: ["./src/api/*"],
         },
         strict: true,
@@ -60,13 +64,6 @@ export class AutoBeTypeScriptCompiler implements IAutoBeTypeScriptCompiler {
       transformers: (program, diagnostics) => ({
         before: [
           typiaTransform(
-            program,
-            {},
-            {
-              addDiagnostic: (input) => diagnostics.push(input),
-            },
-          ),
-          nestiaCoreTransform(
             program,
             {},
             {
