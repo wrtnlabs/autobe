@@ -52,7 +52,17 @@ export async function orchestrateTestPlan<Model extends ILlmSchema.Model>(
   return {
     type: "testPlan",
     step: ctx.state().analyze?.step ?? 0,
-    planGroups: exclude,
+    plans: exclude.flatMap((pg) => {
+      return pg.plans.map((plan) => {
+        return {
+          method: pg.method,
+          path: pg.path,
+          draft: plan.draft,
+          functionName: plan.functionName,
+          dependsOn: plan.dependsOn,
+        };
+      });
+    }),
     created_at: new Date().toISOString(),
   } as AutoBeTestPlanEvent;
 }

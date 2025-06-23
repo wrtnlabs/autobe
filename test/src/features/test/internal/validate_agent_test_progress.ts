@@ -30,24 +30,12 @@ export const validate_agent_test_progress = async (
     events.push(event);
   });
 
-  const planGroups: IAutoBeTestPlan.IPlanGroup[] = JSON.parse(
+  const plans: IAutoBeTestPlan.IScenario[] = JSON.parse(
     await fs.promises.readFile(
-      `${ROOT}/assets/repositories/${owner}/${project}/test/test_plan_groups.json`,
+      `${ROOT}/assets/repositories/${owner}/${project}/test/plans.json`,
       "utf8",
     ),
   );
-
-  const plans = planGroups.flatMap((pg) => {
-    return pg.plans.map((plan) => {
-      return {
-        method: pg.method,
-        path: pg.path,
-        draft: plan.draft,
-        functionName: plan.functionName,
-        dependsOn: plan.dependsOn,
-      };
-    });
-  });
 
   const codes = await orchestrateTestProgress(agent.getContext(), plans);
   typia.assertEquals(codes);

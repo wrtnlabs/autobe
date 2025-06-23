@@ -1,8 +1,76 @@
 import { AutoBeOpenApi } from "../openapi";
 
 export namespace IAutoBeTestPlan {
+  export interface IScenario extends IPlan {
+    /**
+     * HTTP path of the API operation.
+     *
+     * The URL path for accessing this API operation, using path parameters
+     * enclosed in curly braces (e.g., `/shoppings/customers/sales/{saleId}`).
+     *
+     * It must be corresponded to the {@link parameters path parameters}.
+     *
+     * The path structure should clearly indicate which database entity this
+     * operation is manipulating, helping to ensure all entities have
+     * appropriate API coverage.
+     */
+    path: string;
+
+    /**
+     * HTTP method of the API operation.
+     *
+     * Note that, if the API operation has {@link requestBody}, method must not
+     * be `get`.
+     *
+     * Also, even though the API operation has been designed to only get
+     * information, but it needs complicated request information, it must be
+     * defined as `patch` method with {@link requestBody} data specification.
+     *
+     * - `get`: get information
+     * - `patch`: get information with complicated request data
+     *   ({@link requestBody})
+     * - `post`: create new record
+     * - `put`: update existing record
+     * - `delete`: remove record
+     */
+    method: "get" | "post" | "put" | "delete" | "patch";
+  }
+
   /** Test plans grouped by endpoint */
-  export interface IPlanGroup extends AutoBeOpenApi.IEndpoint {
+  export interface IPlanGroup {
+    /**
+     * HTTP path of the API operation.
+     *
+     * The URL path for accessing this API operation, using path parameters
+     * enclosed in curly braces (e.g., `/shoppings/customers/sales/{saleId}`).
+     *
+     * It must be corresponded to the {@link parameters path parameters}.
+     *
+     * The path structure should clearly indicate which database entity this
+     * operation is manipulating, helping to ensure all entities have
+     * appropriate API coverage.
+     */
+    path: string;
+
+    /**
+     * HTTP method of the API operation.
+     *
+     * Note that, if the API operation has {@link requestBody}, method must not
+     * be `get`.
+     *
+     * Also, even though the API operation has been designed to only get
+     * information, but it needs complicated request information, it must be
+     * defined as `patch` method with {@link requestBody} data specification.
+     *
+     * - `get`: get information
+     * - `patch`: get information with complicated request data
+     *   ({@link requestBody})
+     * - `post`: create new record
+     * - `put`: update existing record
+     * - `delete`: remove record
+     */
+    method: "get" | "post" | "put" | "delete" | "patch";
+
     /** Array of test plans. */
     plans: IAutoBeTestPlan.IPlan[];
   }
@@ -35,17 +103,16 @@ export namespace IAutoBeTestPlan {
     /**
      * Descriptive function name derived from the user scenario.
      *
-     * The function name serves as a concise, technical identifier that
-     * clearly represents the specific user scenario being described. It
-     * should be immediately understandable and directly correspond to the
-     * user situation without requiring additional context.
+     * The function name serves as a concise, technical identifier that clearly
+     * represents the specific user scenario being described. It should be
+     * immediately understandable and directly correspond to the user situation
+     * without requiring additional context.
      *
      * ## Naming Convention
      *
      * - Must start with `test_` prefix (mandatory requirement)
      * - Use snake_case formatting throughout
-     * - Include the primary user action (create, get, update, delete, list,
-     *   etc.)
+     * - Include the primary user action (create, get, update, delete, list, etc.)
      * - Specify the target resource (user, product, order, profile, etc.)
      * - Add scenario-specific context (valid_data, invalid_email, not_found,
      *   etc.)
@@ -63,16 +130,16 @@ export namespace IAutoBeTestPlan {
      *
      * ## User-Focused Examples
      *
-     * - `test_create_user_profile_with_complete_information` - User providing
-     *   all available profile data
-     * - `test_retrieve_user_profile_when_profile_exists` - User accessing
-     *   their existing profile
+     * - `test_create_user_profile_with_complete_information` - User providing all
+     *   available profile data
+     * - `test_retrieve_user_profile_when_profile_exists` - User accessing their
+     *   existing profile
      * - `test_update_user_email_with_valid_new_address` - User changing their
      *   email to a valid new one
-     * - `test_delete_user_account_when_user_lacks_permission` - User
-     *   attempting account deletion without authorization
-     * - `test_search_user_profiles_with_pagination_preferences` - User
-     *   browsing profiles with specific pagination
+     * - `test_delete_user_account_when_user_lacks_permission` - User attempting
+     *   account deletion without authorization
+     * - `test_search_user_profiles_with_pagination_preferences` - User browsing
+     *   profiles with specific pagination
      *
      * ## Clarity Guidelines
      *

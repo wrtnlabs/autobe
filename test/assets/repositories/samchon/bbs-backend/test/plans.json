@@ -1,0 +1,866 @@
+[
+  {
+    "method": "patch",
+    "path": "/core/users",
+    "draft": "Test retrieving users with different filter conditions and pagination settings. Validate that pages, limits, and filter parameters correctly influence the returned user list. Also verify behavior when the filter returns no results and validate handling of invalid pagination parameters (e.g., negative page number).",
+    "functionName": "test_list_users_with_various_filters_and_pagination",
+    "dependsOn": []
+  },
+  {
+    "method": "patch",
+    "path": "/core/users",
+    "draft": "Verify that searching for users using a role filter or partial username returns only appropriate users. Confirm edge cases such as searching for non-existent roles or keywords.",
+    "functionName": "test_search_users_with_role_and_keyword_filters",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/userRoles",
+        "purpose": "Create a role to later filter users by this role in the test."
+      },
+      {
+        "method": "post",
+        "path": "/core/users",
+        "purpose": "Create users assigned to different roles and usernames to set up filtering scenarios."
+      }
+    ]
+  },
+  {
+    "method": "get",
+    "path": "/core/users/{id}",
+    "draft": "Test retrieving a user profile by a valid user ID and expect correct profile data. Also attempt to retrieve using an invalid or deleted user ID and expect a 404 error.",
+    "functionName": "test_retrieve_user_profile_by_id_success_and_not_found",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/users",
+        "purpose": "Register a user to ensure a valid user ID exists for retrieval."
+      }
+    ]
+  },
+  {
+    "method": "post",
+    "path": "/core/users",
+    "draft": "Test registering a new user with all valid fields and expect successful creation. Verify behavior when attempting to register with missing required fields, invalid email format, or a username that already exists. Attempt duplicate registration to test uniqueness constraints.",
+    "functionName": "test_register_new_user_edge_and_success_cases",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/userRoles",
+        "purpose": "Create a user role in advance so it can be linked to the new user."
+      }
+    ]
+  },
+  {
+    "method": "put",
+    "path": "/core/users/{id}",
+    "draft": "Test updating a user’s profile data (such as email, username, or role). Validate that updates persist and business rules are enforced (e.g., email format, unique username). Attempt updating a non-existent or deleted user and expect a 404. Attempt setting a duplicate email/username to trigger a conflict error.",
+    "functionName": "test_update_user_profile_with_valid_and_invalid_conditions",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/userRoles",
+        "purpose": "Create multiple roles to assign or reassign to the user."
+      },
+      {
+        "method": "post",
+        "path": "/core/users",
+        "purpose": "Register at least two users to enable scenarios for duplicate and update tests."
+      }
+    ]
+  },
+  {
+    "method": "delete",
+    "path": "/core/users/{id}",
+    "draft": "Test soft-deleting a user and verify their profile is no longer returned in user list endpoints, but remains in the database in a soft-deleted state (if applicable). Then, test a hard delete and confirm the user is fully removed. Try deleting an already deleted or non-existent user and expect a 404 error.",
+    "functionName": "test_delete_user_soft_and_hard_and_not_found",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/users",
+        "purpose": "Register a user to delete."
+      }
+    ]
+  },
+  {
+    "method": "patch",
+    "path": "/core/userRoles",
+    "draft": "Test listing user roles with various filters (e.g., role name, description). Validate that pagination works, and verify response when filtering by a non-existent role.",
+    "functionName": "test_list_user_roles_with_filters_and_pagination",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/userRoles",
+        "purpose": "Create roles with diverse names and descriptions for filter tests."
+      }
+    ]
+  },
+  {
+    "method": "patch",
+    "path": "/core/userRoles",
+    "draft": "Attempt to retrieve user roles with invalid filter parameters and confirm appropriate error handling and response format.",
+    "functionName": "test_list_user_roles_with_invalid_filter_parameters",
+    "dependsOn": []
+  },
+  {
+    "method": "get",
+    "path": "/core/userRoles/{id}",
+    "draft": "Attempt to retrieve an existing user role by valid ID and verify that all role details are returned correctly. Also, attempt with a non-existent ID and expect a 404 error. Ensure that requests without proper authentication are rejected with an appropriate error.",
+    "functionName": "test_get_user_role_by_valid_and_invalid_id_with_auth_checks",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/userRoles",
+        "purpose": "Create a user role for use in successful retrieval test cases."
+      }
+    ]
+  },
+  {
+    "method": "get",
+    "path": "/core/userRoles/{id}",
+    "draft": "Test permission controls by attempting to access a user role as a user who lacks sufficient privileges, expecting a 403 Forbidden error.",
+    "functionName": "test_get_user_role_access_forbidden_for_insufficient_privileges",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/users",
+        "purpose": "Create a user without admin or required privileges."
+      },
+      {
+        "method": "post",
+        "path": "/core/userRoles",
+        "purpose": "Create a user role entity to test access restrictions."
+      }
+    ]
+  },
+  {
+    "method": "post",
+    "path": "/core/userRoles",
+    "draft": "Create a user role with all required fields and verify success. Attempt to create a user role with missing or invalid data (such as duplicate role key or missing required fields) and verify that relevant validation or uniqueness errors are returned.",
+    "functionName": "test_create_user_role_with_valid_and_invalid_payloads",
+    "dependsOn": []
+  },
+  {
+    "method": "put",
+    "path": "/core/userRoles/{id}",
+    "draft": "Update a user role's label and description for an existing role. Validate that the update is successful by subsequently retrieving the role details and checking the updated fields.",
+    "functionName": "test_update_user_role_with_valid_data",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/userRoles",
+        "purpose": "Create a user role to ensure an entity exists for updating."
+      }
+    ]
+  },
+  {
+    "method": "put",
+    "path": "/core/userRoles/{id}",
+    "draft": "Attempt to update a user role using a non-existent role ID and expect a 404 error in response.",
+    "functionName": "test_update_user_role_with_non_existent_id",
+    "dependsOn": []
+  },
+  {
+    "method": "put",
+    "path": "/core/userRoles/{id}",
+    "draft": "Try updating a user role with missing or malformed request body fields (e.g., empty label) and expect validation errors or 400 Bad Request responses.",
+    "functionName": "test_update_user_role_with_invalid_fields",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/userRoles",
+        "purpose": "Create a user role to have a target for validation tests."
+      }
+    ]
+  },
+  {
+    "method": "delete",
+    "path": "/core/userRoles/{id}",
+    "draft": "Delete an existing user role. Confirm the role is inaccessible after deletion by retrieving its details (expecting 404 or similar).",
+    "functionName": "test_delete_user_role_and_verify_deletion",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/userRoles",
+        "purpose": "Create a user role that can be deleted."
+      }
+    ]
+  },
+  {
+    "method": "delete",
+    "path": "/core/userRoles/{id}",
+    "draft": "Attempt to delete a user role that does not exist and expect a 404 Not Found response.",
+    "functionName": "test_delete_user_role_with_non_existent_id",
+    "dependsOn": []
+  },
+  {
+    "method": "delete",
+    "path": "/core/userRoles/{id}",
+    "draft": "Try deleting a user role that is currently assigned to users and ensure the system either blocks deletion with an appropriate error or handles role unassignment gracefully.",
+    "functionName": "test_delete_user_role_assigned_to_user",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/userRoles",
+        "purpose": "Create a role to assign to a user."
+      },
+      {
+        "method": "post",
+        "path": "/core/users",
+        "purpose": "Register and associate a user with the created role."
+      }
+    ]
+  },
+  {
+    "method": "patch",
+    "path": "/core/categories",
+    "draft": "Retrieve a paginated list of categories and check if pagination (limit/offset), filtering (by label), and sorting parameters function as expected. Try varying the filters and validate response accuracy.",
+    "functionName": "test_list_categories_with_pagination_and_filters",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/categories",
+        "purpose": "Create multiple categories to ensure there is enough data for pagination and filtering tests."
+      }
+    ]
+  },
+  {
+    "method": "get",
+    "path": "/core/categories/{id}",
+    "draft": "Fetch details for a valid category ID and verify all fields in the response match the expected values.",
+    "functionName": "test_get_category_by_valid_id",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/categories",
+        "purpose": "Create a new category to fetch by ID."
+      }
+    ]
+  },
+  {
+    "method": "get",
+    "path": "/core/categories/{id}",
+    "draft": "Attempt to retrieve a category with a non-existent ID and confirm that a 404 Not Found error is returned.",
+    "functionName": "test_get_category_with_non_existent_id",
+    "dependsOn": []
+  },
+  {
+    "method": "post",
+    "path": "/core/categories",
+    "draft": "Create a new category with valid label and description. Afterwards, fetch the category to ensure correct persistence.",
+    "functionName": "test_create_category_with_valid_data",
+    "dependsOn": []
+  },
+  {
+    "method": "post",
+    "path": "/core/categories",
+    "draft": "Try to create a category with a duplicate label or required-field missing (e.g., no label) and verify appropriate error handling for uniqueness and validation constraints.",
+    "functionName": "test_create_category_with_duplicate_or_missing_label",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/categories",
+        "purpose": "Create a category so a duplicate label can be tested."
+      }
+    ]
+  },
+  {
+    "method": "put",
+    "path": "/core/categories/{id}",
+    "draft": "Update an existing category's label or description and verify the fields change as expected when subsequently retrieving the category.",
+    "functionName": "test_update_category_with_valid_data",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/categories",
+        "purpose": "Create a category to update."
+      }
+    ]
+  },
+  {
+    "method": "put",
+    "path": "/core/categories/{id}",
+    "draft": "Attempt to update a category with missing or invalid fields (e.g., empty label) and confirm validation errors are returned.",
+    "functionName": "test_update_category_with_invalid_fields",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/categories",
+        "purpose": "Create a category for field validation testing."
+      }
+    ]
+  },
+  {
+    "method": "put",
+    "path": "/core/categories/{id}",
+    "draft": "Attempt to update a category with a non-existent ID and expect a 404 Not Found error.",
+    "functionName": "test_update_category_with_non_existent_id",
+    "dependsOn": []
+  },
+  {
+    "method": "delete",
+    "path": "/core/categories/{id}",
+    "draft": "Delete an existing category. After deletion, confirm it's no longer retrievable by ID (expect 404).",
+    "functionName": "test_delete_category_and_verify_deletion",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/categories",
+        "purpose": "Create a category to delete."
+      }
+    ]
+  },
+  {
+    "method": "delete",
+    "path": "/core/categories/{id}",
+    "draft": "Attempt to delete a category with a non-existent ID and ensure a 404 Not Found error is returned.",
+    "functionName": "test_delete_category_with_non_existent_id",
+    "dependsOn": []
+  },
+  {
+    "method": "patch",
+    "path": "/posts/posts",
+    "draft": "Retrieve a paginated and filtered list of posts. Test with various filter values (author, category, status), pagination sizes, and ordering to confirm accuracy of results.",
+    "functionName": "test_list_posts_with_pagination_and_filters",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/users",
+        "purpose": "Create users to assign as authors for the posts."
+      },
+      {
+        "method": "post",
+        "path": "/core/categories",
+        "purpose": "Create categories for the posts."
+      },
+      {
+        "method": "post",
+        "path": "/posts/posts",
+        "purpose": "Create several posts to populate the list."
+      }
+    ]
+  },
+  {
+    "method": "get",
+    "path": "/posts/posts/{id}",
+    "draft": "Retrieve details for a valid post ID and verify all post fields (author, content, status, etc.) are accurate.",
+    "functionName": "test_get_post_by_valid_id",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/users",
+        "purpose": "Ensure an author exists to create the post."
+      },
+      {
+        "method": "post",
+        "path": "/core/categories",
+        "purpose": "Ensure a category exists for the post."
+      },
+      {
+        "method": "post",
+        "path": "/posts/posts",
+        "purpose": "Create a post for retrieval."
+      }
+    ]
+  },
+  {
+    "method": "get",
+    "path": "/posts/posts/{id}",
+    "draft": "Attempt to get a post with a non-existent ID and expect a 404 Not Found error.",
+    "functionName": "test_get_post_with_non_existent_id",
+    "dependsOn": []
+  },
+  {
+    "method": "post",
+    "path": "/posts/posts",
+    "draft": "Create a valid new post with all required fields (title, author, category, content). Verify post is persisted by immediately retrieving the created post.",
+    "functionName": "test_create_post_with_valid_data",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/users",
+        "purpose": "Create a user to act as the author."
+      },
+      {
+        "method": "post",
+        "path": "/core/categories",
+        "purpose": "Create a category for the new post."
+      }
+    ]
+  },
+  {
+    "method": "post",
+    "path": "/posts/posts",
+    "draft": "Attempt to create a post with missing required fields (e.g., no title or author) to ensure validation errors are returned.",
+    "functionName": "test_create_post_with_missing_required_fields",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/users",
+        "purpose": "Ensure a user is present for validation."
+      },
+      {
+        "method": "post",
+        "path": "/core/categories",
+        "purpose": "Ensure a category is present for validation."
+      }
+    ]
+  },
+  {
+    "method": "post",
+    "path": "/posts/posts",
+    "draft": "Try to create multiple posts using the same slug or with a duplicate unique field and confirm that uniqueness constraints are enforced (expect 400 error).",
+    "functionName": "test_create_post_with_duplicate_unique_field",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/users",
+        "purpose": "Create a user to author both posts."
+      },
+      {
+        "method": "post",
+        "path": "/core/categories",
+        "purpose": "Category needed for both test posts."
+      }
+    ]
+  },
+  {
+    "method": "put",
+    "path": "/posts/posts/{id}",
+    "draft": "Update a post's content and status. Confirm changes by retrieving the updated post and inspecting the new field values.",
+    "functionName": "test_update_post_with_valid_data",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/users",
+        "purpose": "Provide an author for the post."
+      },
+      {
+        "method": "post",
+        "path": "/core/categories",
+        "purpose": "Provide a category for the post."
+      },
+      {
+        "method": "post",
+        "path": "/posts/posts",
+        "purpose": "Create the post to be updated."
+      }
+    ]
+  },
+  {
+    "method": "put",
+    "path": "/posts/posts/{id}",
+    "draft": "Test updating a post with missing or invalid fields (e.g., empty content, wrong status) and confirm that validation errors or 400 errors are produced.",
+    "functionName": "test_update_post_with_invalid_fields",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/users",
+        "purpose": "Set up validation context with an author."
+      },
+      {
+        "method": "post",
+        "path": "/core/categories",
+        "purpose": "Set up a category for the post."
+      },
+      {
+        "method": "post",
+        "path": "/posts/posts",
+        "purpose": "Create post for validation testing."
+      }
+    ]
+  },
+  {
+    "method": "put",
+    "path": "/posts/posts/{id}",
+    "draft": "Attempt to update a post with a non-existent post ID and expect a 404 error.",
+    "functionName": "test_update_post_with_non_existent_id",
+    "dependsOn": []
+  },
+  {
+    "method": "delete",
+    "path": "/posts/posts/{id}",
+    "draft": "Delete an existing post and check that it is no longer accessible (expect 404 on retrieval).",
+    "functionName": "test_delete_post_and_verify_deletion",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/users",
+        "purpose": "Author is required to create post."
+      },
+      {
+        "method": "post",
+        "path": "/core/categories",
+        "purpose": "Category needed for post creation."
+      },
+      {
+        "method": "post",
+        "path": "/posts/posts",
+        "purpose": "Create the post to be deleted."
+      }
+    ]
+  },
+  {
+    "method": "delete",
+    "path": "/posts/posts/{id}",
+    "draft": "Attempt to delete a post using a non-existent ID and ensure the API returns a 404.",
+    "functionName": "test_delete_post_with_non_existent_id",
+    "dependsOn": []
+  },
+  {
+    "method": "patch",
+    "path": "/posts/comments",
+    "draft": "Retrieve a filtered, paginated list of comments. Verify that pagination, filtering by post, or commenter, and sorting work as expected.",
+    "functionName": "test_list_comments_with_pagination_and_filters",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/users",
+        "purpose": "Create users as commenters."
+      },
+      {
+        "method": "post",
+        "path": "/posts/posts",
+        "purpose": "Create posts with comments."
+      },
+      {
+        "method": "post",
+        "path": "/posts/comments",
+        "purpose": "Create multiple comments on these posts for listing tests."
+      }
+    ]
+  },
+  {
+    "method": "get",
+    "path": "/posts/comments/{id}",
+    "draft": "Fetch details for a valid comment ID and verify response fields match expected content and related post info.",
+    "functionName": "test_get_comment_by_valid_id",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/users",
+        "purpose": "Commenter must exist for the test."
+      },
+      {
+        "method": "post",
+        "path": "/posts/posts",
+        "purpose": "Need a post to comment on."
+      },
+      {
+        "method": "post",
+        "path": "/posts/comments",
+        "purpose": "Create a comment to fetch."
+      }
+    ]
+  },
+  {
+    "method": "get",
+    "path": "/posts/comments/{id}",
+    "draft": "Attempt to get a comment with an invalid or non-existent ID and expect a 404 Not Found error.",
+    "functionName": "test_get_comment_with_non_existent_id",
+    "dependsOn": []
+  },
+  {
+    "method": "post",
+    "path": "/posts/comments",
+    "draft": "Create a new comment on an existing post by an existing user. Afterwards, fetch and verify comment's persistence and correctness.",
+    "functionName": "test_create_comment_with_valid_data",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/users",
+        "purpose": "Create user as commenter."
+      },
+      {
+        "method": "post",
+        "path": "/posts/posts",
+        "purpose": "Create the post to comment on."
+      }
+    ]
+  },
+  {
+    "method": "post",
+    "path": "/posts/comments",
+    "draft": "Try creating a comment with missing required fields (e.g., no content, no postId) and check for appropriate validation errors or 400 Bad Request responses.",
+    "functionName": "test_create_comment_with_missing_required_fields",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/users",
+        "purpose": "Ensure user entity exists as commenter."
+      },
+      {
+        "method": "post",
+        "path": "/posts/posts",
+        "purpose": "Post entity must be present for association."
+      }
+    ]
+  },
+  {
+    "method": "post",
+    "path": "/posts/comments",
+    "draft": "Attempt to comment on a post that does not exist; expect a 400 or 404 error for foreign key violation.",
+    "functionName": "test_create_comment_with_non_existent_post",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/users",
+        "purpose": "Set up a valid user for the test."
+      }
+    ]
+  },
+  {
+    "method": "put",
+    "path": "/posts/comments/{id}",
+    "draft": "Update an existing comment's content. Confirm that the new content appears after the update by fetching the comment.",
+    "functionName": "test_update_comment_with_valid_data",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/users",
+        "purpose": "Set up a user to make the comment."
+      },
+      {
+        "method": "post",
+        "path": "/posts/posts",
+        "purpose": "Prepare a post for associating the comment."
+      },
+      {
+        "method": "post",
+        "path": "/posts/comments",
+        "purpose": "Create the comment to update."
+      }
+    ]
+  },
+  {
+    "method": "put",
+    "path": "/posts/comments/{id}",
+    "draft": "Attempt to update a comment with missing/invalid fields (e.g., empty content) and check for validation errors.",
+    "functionName": "test_update_comment_with_invalid_fields",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/users",
+        "purpose": "User is needed to make a comment."
+      },
+      {
+        "method": "post",
+        "path": "/posts/posts",
+        "purpose": "A post must exist to comment on."
+      },
+      {
+        "method": "post",
+        "path": "/posts/comments",
+        "purpose": "Create the comment for validation check."
+      }
+    ]
+  },
+  {
+    "method": "put",
+    "path": "/posts/comments/{id}",
+    "draft": "Try to update a comment with a non-existent ID and expect a 404.",
+    "functionName": "test_update_comment_with_non_existent_id",
+    "dependsOn": []
+  },
+  {
+    "method": "delete",
+    "path": "/posts/comments/{id}",
+    "draft": "Soft-delete a comment and confirm the comment is marked as deleted but not physically removed; fetch and check status/flag.",
+    "functionName": "test_delete_comment_and_verify_soft_deletion",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/users",
+        "purpose": "Prepare a commenter user."
+      },
+      {
+        "method": "post",
+        "path": "/posts/posts",
+        "purpose": "Post needed to attach comment."
+      },
+      {
+        "method": "post",
+        "path": "/posts/comments",
+        "purpose": "Comment needed for deletion."
+      }
+    ]
+  },
+  {
+    "method": "delete",
+    "path": "/posts/comments/{id}",
+    "draft": "Attempt to delete a comment with a non-existent ID and confirm a 404 error is produced.",
+    "functionName": "test_delete_comment_with_non_existent_id",
+    "dependsOn": []
+  },
+  {
+    "method": "patch",
+    "path": "/votes/votes",
+    "draft": "Retrieve a paginated, filtered list of votes. Check filtering by voter or target (post/comment), pagination, and sorting.",
+    "functionName": "test_list_votes_with_pagination_and_filters",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/users",
+        "purpose": "Set up users who will place votes."
+      },
+      {
+        "method": "post",
+        "path": "/posts/posts",
+        "purpose": "Have votable posts available."
+      },
+      {
+        "method": "post",
+        "path": "/votes/votes",
+        "purpose": "Create several votes for listing/filtering tests."
+      }
+    ]
+  },
+  {
+    "method": "get",
+    "path": "/votes/votes/{id}",
+    "draft": "Retrieve the full details of a vote record for a valid ID. Check all fields, including voter and target post/comment, are accurate.",
+    "functionName": "test_get_vote_by_valid_id",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/users",
+        "purpose": "Ensure a voter user exists."
+      },
+      {
+        "method": "post",
+        "path": "/posts/posts",
+        "purpose": "Create target post for the vote."
+      },
+      {
+        "method": "post",
+        "path": "/votes/votes",
+        "purpose": "Create the vote for retrieval."
+      }
+    ]
+  },
+  {
+    "method": "get",
+    "path": "/votes/votes/{id}",
+    "draft": "Attempt to get a vote with a non-existent ID and expect a 404 Not Found error.",
+    "functionName": "test_get_vote_with_non_existent_id",
+    "dependsOn": []
+  },
+  {
+    "method": "post",
+    "path": "/votes/votes",
+    "draft": "Create a valid new vote for a post or comment by an existing user. Afterwards, retrieve the created vote to verify persistence and field accuracy.",
+    "functionName": "test_create_vote_with_valid_data",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/users",
+        "purpose": "Voter user must exist."
+      },
+      {
+        "method": "post",
+        "path": "/posts/posts",
+        "purpose": "Post must exist to receive votes."
+      }
+    ]
+  },
+  {
+    "method": "post",
+    "path": "/votes/votes",
+    "draft": "Try to vote twice for the same target as the same user and ensure the system enforces a uniqueness constraint for one vote per user per target.",
+    "functionName": "test_create_vote_with_duplicate_user_target",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/users",
+        "purpose": "Set up a user who will vote."
+      },
+      {
+        "method": "post",
+        "path": "/posts/posts",
+        "purpose": "Target post needed for duplicate vote attempt."
+      }
+    ]
+  },
+  {
+    "method": "put",
+    "path": "/votes/votes/{id}",
+    "draft": "Update the value of an existing vote. Afterwards, fetch the vote to ensure the new value is stored.",
+    "functionName": "test_update_vote_with_valid_data",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/users",
+        "purpose": "Voter for the vote must exist."
+      },
+      {
+        "method": "post",
+        "path": "/posts/posts",
+        "purpose": "Target post needs to be present."
+      },
+      {
+        "method": "post",
+        "path": "/votes/votes",
+        "purpose": "Create the vote to update."
+      }
+    ]
+  },
+  {
+    "method": "put",
+    "path": "/votes/votes/{id}",
+    "draft": "Try updating a vote with an invalid value (outside allowed range) or missing required field; expect validation errors.",
+    "functionName": "test_update_vote_with_invalid_fields",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/users",
+        "purpose": "Provide a voter for this negative case."
+      },
+      {
+        "method": "post",
+        "path": "/posts/posts",
+        "purpose": "Needed for creating the original vote."
+      },
+      {
+        "method": "post",
+        "path": "/votes/votes",
+        "purpose": "Create the vote for the invalid update test."
+      }
+    ]
+  },
+  {
+    "method": "put",
+    "path": "/votes/votes/{id}",
+    "draft": "Attempt to update a vote with a non-existent ID and ensure a 404 is returned.",
+    "functionName": "test_update_vote_with_non_existent_id",
+    "dependsOn": []
+  },
+  {
+    "method": "delete",
+    "path": "/votes/votes/{id}",
+    "draft": "Delete a vote by its ID and check that subsequent retrieval fails with 404 Not Found, confirming deletion.",
+    "functionName": "test_delete_vote_and_verify_deletion",
+    "dependsOn": [
+      {
+        "method": "post",
+        "path": "/core/users",
+        "purpose": "Voter user must be created."
+      },
+      {
+        "method": "post",
+        "path": "/posts/posts",
+        "purpose": "Target post required for vote context."
+      },
+      {
+        "method": "post",
+        "path": "/votes/votes",
+        "purpose": "Vote needed for the deletion test."
+      }
+    ]
+  },
+  {
+    "method": "delete",
+    "path": "/votes/votes/{id}",
+    "draft": "Try to delete a vote using a non-existent ID and ensure a 404 error is returned.",
+    "functionName": "test_delete_vote_with_non_existent_id",
+    "dependsOn": []
+  }
+]

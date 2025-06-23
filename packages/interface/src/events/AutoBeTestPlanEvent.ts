@@ -2,6 +2,6 @@ import { IAutoBeTestPlan } from "../test/AutoBeTestPlan";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
 export interface AutoBeTestPlanEvent extends AutoBeEventBase<"testPlan"> {
-  planGroups: IAutoBeTestPlan.IPlanGroup[];
+  plans: IAutoBeTestPlan.IScenario[];
   step: number;
 }

@@ -44,20 +44,9 @@ export const orchestrateTest =
     }
 
     // PLAN
-    const { planGroups } = await orchestrateTestPlan(ctx);
+    const { plans } = await orchestrateTestPlan(ctx);
 
-    const plans = planGroups.flatMap((pg) => {
-      return pg.plans.map((plan) => {
-        return {
-          method: pg.method,
-          path: pg.path,
-          draft: plan.draft,
-          functionName: plan.functionName,
-          dependsOn: plan.dependsOn,
-        };
-      });
-    });
-
+    // TEST CODE
     const codes: AutoBeTestProgressEvent[] = await orchestrateTestProgress(
       ctx,
       plans,

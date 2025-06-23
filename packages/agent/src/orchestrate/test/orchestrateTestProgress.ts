@@ -17,7 +17,7 @@ import { transformTestProgressHistories } from "./transformTestProgressHistories
 
 export async function orchestrateTestProgress<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  plans: (IAutoBeTestPlan.IPlan & { method: string; path: string })[],
+  plans: IAutoBeTestPlan.IScenario[],
 ): Promise<AutoBeTestProgressEvent[]> {
   const start: Date = new Date();
   let complete: number = 0;
