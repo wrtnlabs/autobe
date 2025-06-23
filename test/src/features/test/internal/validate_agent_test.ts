@@ -12,32 +12,26 @@ export const validate_agent_test = async (owner: string, project: string) => {
 
   const events: AutoBeEvent[] = [];
   agent.on("testStart", (event) => {
-    console.log("testStart");
     events.push(event);
   });
 
-  agent.on("testScenario", (event) => {
-    console.log("testScenario");
+  agent.on("testPlan", (event) => {
     events.push(event);
   });
 
   agent.on("testProgress", async (event) => {
-    console.log("testProgress");
     events.push(event);
   });
 
   agent.on("testValidate", async (event) => {
-    console.log("testValidate");
     events.push(event);
   });
 
   agent.on("testCorrect", async (event) => {
-    console.log("testCorrect");
     events.push(event);
   });
 
   agent.on("testComplete", (event) => {
-    console.log("testComplete");
     events.push(event);
   });
 
