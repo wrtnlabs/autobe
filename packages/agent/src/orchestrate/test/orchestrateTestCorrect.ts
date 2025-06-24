@@ -10,6 +10,7 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { randomBackoffRetry } from "../../utils/backoffRetry";
 import { enforceToolCall } from "../../utils/enforceToolCall";
 import { transformTestCorrectHistories } from "./transformTestCorrectHistories";
 
@@ -235,47 +236,49 @@ async function process<Model extends ILlmSchema.Model>(
   });
   enforceToolCall(agentica);
 
-  await agentica.conversate(
-    [
-      "Fix the compilation error in the provided code.",
-      "",
-      "## Original Code",
-      "```typescript",
-      code,
-      "```",
-      "",
-      diagnostics.map((diagnostic) => {
-        if (diagnostic.start === undefined || diagnostic.length === undefined)
-          return "";
+  await randomBackoffRetry(async () => {
+    await agentica.conversate(
+      [
+        "Fix the compilation error in the provided code.",
+        "",
+        "## Original Code",
+        "```typescript",
+        code,
+        "```",
+        "",
+        diagnostics.map((diagnostic) => {
+          if (diagnostic.start === undefined || diagnostic.length === undefined)
+            return "";
 
-        const checkDtoRegexp = `Cannot find module '@ORGANIZATION/template-api/lib/structures/IBbsArticleComment' or its corresponding type declarations.`;
-        const [group] = [
-          ...checkDtoRegexp.matchAll(
-            /Cannot find module '(.*lib\/structures\/.*)'/g,
-          ),
-        ];
+          const checkDtoRegexp = `Cannot find module '@ORGANIZATION/template-api/lib/structures/IBbsArticleComment' or its corresponding type declarations.`;
+          const [group] = [
+            ...checkDtoRegexp.matchAll(
+              /Cannot find module '(.*lib\/structures\/.*)'/g,
+            ),
+          ];
 
-        const [_, filename] = group ?? [];
+          const [_, filename] = group ?? [];
 
-        return [
-          "## Error Information",
-          `- Position: Characters ${diagnostic.start} to ${diagnostic.start + diagnostic.length}`,
-          `- Error Message: ${diagnostic.messageText}`,
-          `- Problematic Code: \`${code.substring(diagnostic.start, diagnostic.start + diagnostic.length)}\``,
-          filename
-            ? `The type files located under **/lib/structures are declared in '@ORGANIZATION/PROJECT-api/lib/structures'.\n` +
-              `Note: '@ORGANIZATION/PROJECT-api' must be written exactly as is and should not be replaced.\n`
-            : "",
-        ].join("\n");
-      }),
-      "## Instructions",
-      "1. Focus on the specific error location and message",
-      "2. Provide the corrected TypeScript code",
-      "3. Ensure the fix resolves the compilation error",
-      "",
-      "Return only the fixed code without explanations.",
-    ].join("\n"),
-  );
+          return [
+            "## Error Information",
+            `- Position: Characters ${diagnostic.start} to ${diagnostic.start + diagnostic.length}`,
+            `- Error Message: ${diagnostic.messageText}`,
+            `- Problematic Code: \`${code.substring(diagnostic.start, diagnostic.start + diagnostic.length)}\``,
+            filename
+              ? `The type files located under **/lib/structures are declared in '@ORGANIZATION/PROJECT-api/lib/structures'.\n` +
+                `Note: '@ORGANIZATION/PROJECT-api' must be written exactly as is and should not be replaced.\n`
+              : "",
+          ].join("\n");
+        }),
+        "## Instructions",
+        "1. Focus on the specific error location and message",
+        "2. Provide the corrected TypeScript code",
+        "3. Ensure the fix resolves the compilation error",
+        "",
+        "Return only the fixed code without explanations.",
+      ].join("\n"),
+    );
+  });
   if (pointer.value === null) throw new Error("Failed to modify test code.");
   return pointer.value;
 }
