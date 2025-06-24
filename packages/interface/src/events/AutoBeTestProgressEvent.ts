@@ -1,3 +1,4 @@
+import { IAutoBeTestPlan } from "../test/AutoBeTestPlan";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
 /**
@@ -79,4 +80,6 @@ export interface AutoBeTestProgressEvent
    * remains relevant to the current project scope and validation objectives.
    */
   step: number;
+
+  scenario: IAutoBeTestPlan.IScenario;
 }

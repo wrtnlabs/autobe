@@ -59,7 +59,14 @@ export const orchestrateTest =
       id: v4(),
       completed_at: new Date().toISOString(),
       created_at: start.toISOString(),
-      files: correct.files,
+      files: Object.entries(correct.files)
+        .map(([filename, { content }]) => {
+          return { [filename]: content };
+        })
+        .reduce<Record<string, string>>(
+          (acc, cur) => Object.assign(acc, cur),
+          {},
+        ),
       compiled: correct.result,
       reason: "Step to the test generation referencing the interface",
       step: ctx.state().interface?.step ?? 0,
@@ -68,7 +75,14 @@ export const orchestrateTest =
     ctx.dispatch({
       type: "testComplete",
       created_at: start.toISOString(),
-      files: correct.files,
+      files: Object.entries(correct.files)
+        .map(([filename, { content }]) => {
+          return { [filename]: content };
+        })
+        .reduce<Record<string, string>>(
+          (acc, cur) => Object.assign(acc, cur),
+          {},
+        ),
       step: ctx.state().interface?.step ?? 0,
     });
 

@@ -1,4 +1,5 @@
 import { IAutoBeTypeScriptCompilerResult } from "../compiler";
+import { IAutoBeTestPlan } from "../test/AutoBeTestPlan";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
 /**
@@ -33,7 +34,10 @@ export interface AutoBeTestValidateEvent
    * validated and serve as the foundation for either successful completion or
    * correction feedback depending on the compilation results.
    */
-  files: Record<string, string>;
+  files: Record<
+    string,
+    { content: string; scenario?: IAutoBeTestPlan.IScenario }
+  >;
 
   /**
    * Compilation result indicating success, failure, or exception during

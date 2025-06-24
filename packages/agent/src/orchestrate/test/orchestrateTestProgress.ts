@@ -37,6 +37,7 @@ export async function orchestrateTestProgress<Model extends ILlmSchema.Model>(
         completed: ++complete,
         total: plans.length,
         step: ctx.state().interface?.step ?? 0,
+        scenario: plan,
       };
       ctx.dispatch(event);
       return event;
@@ -102,7 +103,7 @@ async function process<Model extends ILlmSchema.Model>(
   return pointer.value;
 }
 
-function filterDocument(
+export function filterDocument(
   plan: IAutoBeTestPlan.IPlan & { method: string; path: string },
   document: AutoBeOpenApi.IDocument,
 ): AutoBeOpenApi.IDocument {
