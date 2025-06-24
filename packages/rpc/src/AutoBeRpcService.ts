@@ -60,75 +60,22 @@ export class AutoBeRpcService<Model extends ILlmSchema.Model>
       });
   }
 
-  /**
-   * Forwards conversation requests to the underlying AutoBeAgent.
-   *
-   * Provides remote access to the agent's conversation capability, accepting
-   * user input in various formats including text strings, single multimodal
-   * content items, or arrays of content supporting text, images, files, and
-   * audio. The conversation drives the vibe coding process remotely while
-   * maintaining full functionality of the local agent.
-   *
-   * Real-time progress events are automatically forwarded to the client through
-   * the established event bridge, ensuring remote clients receive the same
-   * visibility into development activities as local agent users.
-   *
-   * @param content User input as text, single content item, or multimodal array
-   * @returns Promise resolving to array of history records from this
-   *   conversation
-   */
   public conversate(
     content: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
   ): Promise<AutoBeHistory[]> {
     return this.props.agent.conversate(content);
   }
 
-  /**
-   * Retrieves all generated files from the agent's development session.
-   *
-   * Provides remote access to the comprehensive collection of all artifacts
-   * generated throughout the vibe coding pipeline including requirements
-   * documentation, database schemas, API specifications, test suites, and
-   * implementation code. Files are organized with logical directory structure
-   * ready for download or further processing by client applications.
-   *
-   * @param options Options specifying the DBMS type for code generation
-   * @returns Promise resolving to key-value pairs mapping file paths to
-   *   contents
-   */
   public async getFiles(
     options?: Partial<IAutoBeGetFilesOptions>,
   ): Promise<Record<string, string>> {
     return this.props.agent.getFiles(options);
   }
 
-  /**
-   * Retrieves the complete conversation and development history from the agent.
-   *
-   * Provides remote access to the chronologically ordered record of all events
-   * from the agent's session including user messages, assistant responses,
-   * development activities, and completion events. This enables remote clients
-   * to access complete session information for analysis, replay, or archival
-   * purposes.
-   *
-   * @returns Promise resolving to chronologically ordered array of all history
-   *   records
-   */
   public async getHistories(): Promise<AutoBeHistory[]> {
     return this.props.agent.getHistories();
   }
 
-  /**
-   * Retrieves comprehensive AI token usage statistics from the agent.
-   *
-   * Provides remote access to detailed breakdown of token consumption across
-   * all development phases, enabling cost monitoring and performance analysis
-   * from client applications. The statistics are serialized to JSON format for
-   * efficient transmission over the WebSocket connection.
-   *
-   * @returns Promise resolving to comprehensive token usage statistics in JSON
-   *   format
-   */
   public async getTokenUsage(): Promise<IAutoBeTokenUsageJson> {
     return this.props.agent.getTokenUsage().toJSON();
   }

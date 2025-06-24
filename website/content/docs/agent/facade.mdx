@@ -1,15 +1,29 @@
 ---
-title: AutoBE > Guide Documents > Agent Library
+title: AutoBE > Guide Documents > Agent Library > Facade Controller
 ---
 import { Tabs } from "nextra/components";
 
+import RemoteSource from "../../../components/RemoteSource";
+import AutoBeAgentDeclaration from "../../../template/declarations/AutoBeAgentDeclaration.mdx";
 import AutoBeAgentSnippet from "../../../template/snippets/AutoBeAgentSnippet.mdx";
 import AutoBeAgentConfigSnippet from "../../../template/snippets/AutoBeAgentConfigSnippet.mdx";
 import AutoBeAgentEventSnippet from "../../../template/snippets/AutoBeAgentEventSnippet.mdx";
 import AutoBeAgentHistorySnippet from "../../../template/snippets/AutoBeAgentHistorySnippet.mdx";
+import AutoBeAgentGetFilesSnippet from "../../../template/snippets/AutoBeAgentGetFilesSnippet.mdx";
 
 ## Preface
-<AutoBeAgentSnippet />
+
+<Tabs items={[
+  <code>src/main.ts</code>,
+  <code>AutoBeAgent</code>,
+]}>
+  <Tabs.Tab>
+    <AutoBeAgentSnippet />
+  </Tabs.Tab>
+  <Tabs.Tab>
+    <AutoBeAgentDeclaration />
+  </Tabs.Tab>
+</Tabs>
 
 Let's begin with creating an `AutoBeAgent` class instance.
 
@@ -20,6 +34,7 @@ Encourage users to discuss their requirements with the AI agent. `@autobe` will 
 If you want to understand the basic usage of the `AutoBeAgent` class, please refer to the sections below. For more detailed and comprehensive information, consult the other pages in this "Agent Library" chapter.
 
 ## Configuration
+
 <AutoBeAgentConfigSnippet />
 
 When creating an `AutoBeAgent`, you can configure several properties that define how the agent operates and connects to LLM services.
@@ -33,6 +48,7 @@ The `config` section allows you to customize the agent's behavioral context. The
 Finally, the `compiler` property provides the necessary compilation tools for TypeScript, Prisma, and OpenAPI operations that the agent requires for code generation and analysis tasks.
 
 ## Event Handling
+
 <AutoBeAgentEventSnippet />
 
 The `AutoBeAgent` provides real-time event notifications throughout the development process.
@@ -42,8 +58,38 @@ These events allow you to monitor progress, handle intermediate states, and resp
 Events in AutoBE can be categorized into two main types: message events that track conversation flow between user and assistant, and development events that monitor progress through various development phases.
 
 ## Prompt Histories
+
 <AutoBeAgentHistorySnippet />
 
 When creating an `AutoBeAgent`, you can start from previous conversations by specifying the `histories` property. Additionally, you can retrieve the conversation histories of the current `AutoBeAgent` by calling the `AutoBeAgent.getHistories()` method.
 
 All history types in `@autobe` are collected into the `AutoBeHistory` type as a union. Each history type represents different aspects: `AutoBeUserMessageHistory`, `AutoBeAssistantMessageHistory`, `AutoBeAnalyzeHistory`, `AutoBePrismaHistory`, `AutoBeInterfaceHistory`, `AutoBeTestHistory`, and `AutoBeRealizeHistory`.
+
+## Generated Artifacts
+
+<Tabs items={[
+  <code>src/main.artifacts.ts</code>,
+  <code>AutoBeAgent</code>,
+  <code>IAutoBeGetFilesOptions</code>,
+]}>
+  <Tabs.Tab>
+    <AutoBeAgentGetFilesSnippet />
+  </Tabs.Tab>
+  <Tabs.Tab>
+    <AutoBeAgentDeclaration />
+  </Tabs.Tab>
+  <Tabs.Tab>
+    <RemoteSource
+      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/rpc/IAutoBeGetFilesOptions.ts"
+      filename="@authobe/interface"
+      showLineNumbers />
+  </Tabs.Tab>
+</Tabs>
+
+After completing the conversation-driven development process, you can retrieve all generated artifacts using the `getFiles()` method. This method transforms your entire conversation history into a complete, deployable NestJS backend application.
+
+The method requires specifying a database management system through the `dbms` property. Setting this to `"postgres"` generates production-ready code optimized for PostgreSQL deployments with proper connection configurations and performance optimizations. Choosing `"sqlite"` creates lightweight code perfect for local development and testing scenarios without requiring external database server installation.
+
+Your database choice influences the entire generated codebase, from Prisma configurations and connection strings to Docker compose files and environment templates. This ensures immediate deployment compatibility without manual configuration adjustments.
+
+The generated artifacts include requirements analysis documents that formalize your conversational input, comprehensive OpenAPI specifications defining your API contract, complete NestJS implementation code with controllers and services, and thorough test suites covering both unit and end-to-end scenarios. All files are returned as key-value pairs mapping file paths to contents, ready for immediate use in your development workflow.

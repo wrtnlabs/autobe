@@ -48,22 +48,49 @@ export interface IAutoBeRpcService {
   ): Promise<AutoBeHistory[]>;
 
   /**
-   * Retrieves all generated files from the current vibe coding session.
+   * Retrieves all generated files from the current development session.
    *
-   * Returns a comprehensive collection of all files generated throughout the
-   * vibe coding pipeline including requirements documentation, database
-   * schemas, API specifications, test suites, and implementation code. This
-   * provides clients with immediate access to all development artifacts without
-   * needing to track individual completion events.
+   * Transforms the complete conversation-driven development process into a
+   * comprehensive collection of deployable artifacts, including requirements
+   * documentation, database schemas, API specifications, NestJS implementation
+   * code, and test suites. The generated files represent a fully functional
+   * backend application ready for immediate deployment or further
+   * customization.
    *
-   * The returned files represent the complete output of the automated
-   * development process, ready for download, further customization, or
-   * deployment. File paths maintain the logical organization structure
-   * established during generation.
+   * The method produces a meticulously organized project structure that
+   * reflects professional software development standards. Requirements analysis
+   * documents capture and formalize your conversational input into structured
+   * technical specifications, providing clear traceability from user intent to
+   * final implementation. Database artifacts include Prisma schemas with
+   * precise type definitions, relationships, and constraints, along with
+   * migration files for proper database initialization and evolution.
    *
-   * @param options Options specifying the DBMS type for code generation
-   * @returns Promise resolving to key-value pairs where keys are file paths and
-   *   values are file contents for all generated artifacts
+   * The API layer emerges through comprehensive OpenAPI specifications
+   * documenting every endpoint, request format, response structure, and error
+   * condition. Generated NestJS controllers, DTOs, and service classes
+   * implement these specifications with TypeScript's strong typing system
+   * providing compile-time safety. Quality assurance is embedded throughout
+   * with complete test suites covering both unit and end-to-end scenarios.
+   *
+   * The database configuration specified through the `dbms` option
+   * fundamentally shapes the entire generated codebase. PostgreSQL
+   * configuration produces production-ready code with robust connection pooling
+   * and enterprise-grade optimizations, while SQLite generates lightweight code
+   * perfect for local development and rapid prototyping without external
+   * dependencies.
+   *
+   * All artifacts maintain perfect consistency across the chosen database
+   * system, from Prisma configurations and connection strings to Docker compose
+   * files and environment templates. This deep integration ensures immediate
+   * deployment compatibility without manual configuration adjustments.
+   *
+   * @param options Configuration specifying the target database management
+   *   system and other code generation preferences that influence the structure
+   *   and characteristics of the generated project files
+   * @returns Promise resolving to key-value pairs mapping logical file paths to
+   *   complete file contents for all generated development artifacts, ready for
+   *   immediate file system operations, build integration, or deployment
+   *   workflows
    */
   getFiles(
     options?: Partial<IAutoBeGetFilesOptions>,

@@ -1,7 +1,7 @@
 import type { MetaRecord } from "nextra";
 
 const meta: MetaRecord = {
-  index: "No-Code Agent",
+  facade: "Facade Controller",
   config: "Configuration",
   event: "Event Handling",
   history: "Prompt Histories",

@@ -75,12 +75,12 @@ Find comprehensive resources at our [official website](https://wrtnlabs.io/autob
 
 ### 📖 Features
 - 🤖 Agent Library
-  - [No-Code Agent](https://wrtnlabs.io/autobe/docs/agent)
+  - [Facade Controller](https://wrtnlabs.io/autobe/docs/agent/facade)
   - [Configuration](https://wrtnlabs.io/autobe/docs/agent/config)
   - [Event Handling](https://wrtnlabs.io/autobe/docs/agent/event)
   - [Prompt Histories](https://wrtnlabs.io/autobe/docs/agent/history)
 - 📡 WebSocket Protocol
-  - [Remote Procedure Call](https://wrtnlabs.io/autobe/docs/websocket)
+  - [Remote Procedure Call](https://wrtnlabs.io/autobe/docs/websocket/rpc)
   - [NestJS Server](https://wrtnlabs.io/autobe/docs/websocket/nestjs)
   - [NodeJS Server](https://wrtnlabs.io/autobe/docs/websocket/nodejs)
   - [Client Application](https://wrtnlabs.io/autobe/docs/websocket/client)

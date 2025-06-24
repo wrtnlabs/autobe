@@ -156,63 +156,6 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
     });
   }
 
-  /**
-   * Registers an event listener for specific development phase events.
-   *
-   * Enables client applications to receive real-time notifications about
-   * conversation flow, development progress, and completion events throughout
-   * the vibe coding pipeline. Event listeners provide visibility into agent
-   * activities and enable responsive user interfaces that can display progress,
-   * handle artifacts, and provide feedback.
-   *
-   * The type-safe event system ensures that listeners receive properly typed
-   * events corresponding to their registration type, enabling robust event
-   * handling without runtime type issues. Multiple listeners can be registered
-   * for the same event type to support complex notification requirements.
-   *
-   * @param type Event type to listen for (e.g., "analyzeComplete",
-   *   "prismaStart")
-   * @param listener Callback function that receives the typed event when fired
-   * @returns The agent instance for method chaining
-   */
-  public on<Type extends AutoBeEvent.Type>(
-    type: Type,
-    listener: (event: AutoBeEvent.Mapper[Type]) => Promise<void> | void,
-  ): this {
-    emplaceMap(this.listeners_, type, () => new Set()).add(
-      listener as (event: AutoBeEvent) => any,
-    );
-    return this;
-  }
-
-  /**
-   * Unregisters a previously registered event listener.
-   *
-   * Removes the specified event listener from the agent's notification system,
-   * stopping further event notifications for that particular listener function.
-   * This is useful for cleanup, dynamic listener management, or when components
-   * no longer need to receive specific event notifications.
-   *
-   * The listener function reference must exactly match the function that was
-   * originally registered with {@link on} for successful removal. If no matching
-   * listener is found, the operation has no effect.
-   *
-   * @param type Event type the listener was registered for
-   * @param listener The exact listener function reference to remove
-   * @returns The agent instance for method chaining
-   */
-  public off<Type extends AutoBeEvent.Type>(
-    type: Type,
-    listener: (event: AutoBeEvent.Mapper[Type]) => Promise<void> | void,
-  ): this {
-    const set = this.listeners_.get(type);
-    if (set === undefined) return this;
-
-    set.delete(listener as (event: AutoBeEvent) => any);
-    if (set.size === 0) this.listeners_.delete(type);
-    return this;
-  }
-
   /* -----------------------------------------------------------
     ACCESSORS
   ----------------------------------------------------------- */
@@ -270,22 +213,47 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
   /**
    * Retrieves all generated files from the current development session.
    *
-   * Returns a comprehensive collection of all artifacts generated throughout
-   * the vibe coding pipeline including requirements documentation, database
-   * schemas with ERD diagrams, OpenAPI specifications, NestJS project files,
-   * test suites, implementation code, and metadata. Files are organized with
-   * logical directory structure reflecting their purpose and development
-   * phase.
+   * Transforms the complete conversation-driven development process into a
+   * comprehensive collection of deployable artifacts, including requirements
+   * documentation, database schemas, API specifications, NestJS implementation
+   * code, and test suites. The generated files represent a fully functional
+   * backend application ready for immediate deployment or further
+   * customization.
    *
-   * The file collection includes both source artifacts (schemas,
-   * specifications) and generated code (controllers, DTOs, tests, services)
-   * ready for immediate use, further customization, or deployment. Additional
-   * metadata files provide session information including conversation histories
-   * and token usage statistics.
+   * The method produces a meticulously organized project structure that
+   * reflects professional software development standards. Requirements analysis
+   * documents capture and formalize your conversational input into structured
+   * technical specifications, providing clear traceability from user intent to
+   * final implementation. Database artifacts include Prisma schemas with
+   * precise type definitions, relationships, and constraints, along with
+   * migration files for proper database initialization and evolution.
    *
-   * @param options Options specifying the DBMS type for code generation
-   * @returns Key-value pairs mapping file paths to file contents for all
-   *   generated development artifacts
+   * The API layer emerges through comprehensive OpenAPI specifications
+   * documenting every endpoint, request format, response structure, and error
+   * condition. Generated NestJS controllers, DTOs, and service classes
+   * implement these specifications with TypeScript's strong typing system
+   * providing compile-time safety. Quality assurance is embedded throughout
+   * with complete test suites covering both unit and end-to-end scenarios.
+   *
+   * The database configuration specified through the `dbms` option
+   * fundamentally shapes the entire generated codebase. PostgreSQL
+   * configuration produces production-ready code with robust connection pooling
+   * and enterprise-grade optimizations, while SQLite generates lightweight code
+   * perfect for local development and rapid prototyping without external
+   * dependencies.
+   *
+   * All artifacts maintain perfect consistency across the chosen database
+   * system, from Prisma configurations and connection strings to Docker compose
+   * files and environment templates. This deep integration ensures immediate
+   * deployment compatibility without manual configuration adjustments.
+   *
+   * @param options Configuration specifying the target database management
+   *   system and other code generation preferences that influence the structure
+   *   and characteristics of the generated project files
+   * @returns Promise resolving to key-value pairs mapping logical file paths to
+   *   complete file contents for all generated development artifacts, ready for
+   *   immediate file system operations, build integration, or deployment
+   *   workflows
    */
   public async getFiles(
     options?: Partial<IAutoBeGetFilesOptions>,
@@ -403,14 +371,6 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
     return this.agentica_.getTokenUsage();
   }
 
-  /* -----------------------------------------------------------
-    CONTEXTS
-  ----------------------------------------------------------- */
-  /** @internal */
-  public getContext(): AutoBeContext<Model> {
-    return this.context_;
-  }
-
   /** @internal */
   private async dispatch(event: AutoBeEvent): Promise<void> {
     const set = this.listeners_.get(event.type);
@@ -422,5 +382,70 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
         } catch {}
       }),
     );
+  }
+
+  /* -----------------------------------------------------------
+    EVENT HANDLERS
+  ----------------------------------------------------------- */
+  /**
+   * Registers an event listener for specific development phase events.
+   *
+   * Enables client applications to receive real-time notifications about
+   * conversation flow, development progress, and completion events throughout
+   * the vibe coding pipeline. Event listeners provide visibility into agent
+   * activities and enable responsive user interfaces that can display progress,
+   * handle artifacts, and provide feedback.
+   *
+   * The type-safe event system ensures that listeners receive properly typed
+   * events corresponding to their registration type, enabling robust event
+   * handling without runtime type issues. Multiple listeners can be registered
+   * for the same event type to support complex notification requirements.
+   *
+   * @param type Event type to listen for (e.g., "analyzeComplete",
+   *   "prismaStart")
+   * @param listener Callback function that receives the typed event when fired
+   * @returns The agent instance for method chaining
+   */
+  public on<Type extends AutoBeEvent.Type>(
+    type: Type,
+    listener: (event: AutoBeEvent.Mapper[Type]) => Promise<void> | void,
+  ): this {
+    emplaceMap(this.listeners_, type, () => new Set()).add(
+      listener as (event: AutoBeEvent) => any,
+    );
+    return this;
+  }
+
+  /**
+   * Unregisters a previously registered event listener.
+   *
+   * Removes the specified event listener from the agent's notification system,
+   * stopping further event notifications for that particular listener function.
+   * This is useful for cleanup, dynamic listener management, or when components
+   * no longer need to receive specific event notifications.
+   *
+   * The listener function reference must exactly match the function that was
+   * originally registered with {@link on} for successful removal. If no matching
+   * listener is found, the operation has no effect.
+   *
+   * @param type Event type the listener was registered for
+   * @param listener The exact listener function reference to remove
+   * @returns The agent instance for method chaining
+   */
+  public off<Type extends AutoBeEvent.Type>(
+    type: Type,
+    listener: (event: AutoBeEvent.Mapper[Type]) => Promise<void> | void,
+  ): this {
+    const set = this.listeners_.get(type);
+    if (set === undefined) return this;
+
+    set.delete(listener as (event: AutoBeEvent) => any);
+    if (set.size === 0) this.listeners_.delete(type);
+    return this;
+  }
+
+  /** @internal */
+  public getContext(): AutoBeContext<Model> {
+    return this.context_;
   }
 }
