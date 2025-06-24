@@ -6,6 +6,7 @@ import { Tabs } from "nextra/components";
 import AutoBeAgentEventSnippet from "../../../template/snippets/AutoBeAgentEventSnippet.mdx";
 import LocalSource from "../../../components/LocalSource";
 import LocalSourceGroup from "../../../components/LocalSourceGroup";
+import RemoteSource from "../../../components/RemoteSource";
 
 ## Event Handling
 <Tabs items={[
@@ -206,8 +207,8 @@ The `step` property indicates which requirements analysis report iteration the d
       showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
-    <LocalSource
-      path="https://raw.githubusercontent.com/samchon/openapi/refs/heads/master/src/OpenApi.ts"
+    <RemoteSource
+      url="https://raw.githubusercontent.com/samchon/openapi/refs/heads/master/src/OpenApi.ts"
       filename="@samchon/openapi"
       showLineNumbers />
   </Tabs.Tab>
