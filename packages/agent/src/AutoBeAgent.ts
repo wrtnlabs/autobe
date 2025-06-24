@@ -384,16 +384,8 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
   }
 
   /** @internal */
-  private async dispatch(event: AutoBeEvent): Promise<void> {
-    const set = this.listeners_.get(event.type);
-    if (set === undefined) return;
-    await Promise.all(
-      Array.from(set).map(async (listener) => {
-        try {
-          await listener(event);
-        } catch {}
-      }),
-    );
+  public getContext(): AutoBeContext<Model> {
+    return this.context_;
   }
 
   /* -----------------------------------------------------------
@@ -457,7 +449,15 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
   }
 
   /** @internal */
-  public getContext(): AutoBeContext<Model> {
-    return this.context_;
+  private async dispatch(event: AutoBeEvent): Promise<void> {
+    const set = this.listeners_.get(event.type);
+    if (set === undefined) return;
+    await Promise.all(
+      Array.from(set).map(async (listener) => {
+        try {
+          await listener(event);
+        } catch {}
+      }),
+    );
   }
 }
