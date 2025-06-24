@@ -4,8 +4,8 @@ title: AutoBE > Guide Documents > Agent Library > Event Handling
 import { Tabs } from "nextra/components";
 
 import AutoBeAgentEventSnippet from "../../../template/snippets/AutoBeAgentEventSnippet.mdx";
-import RemoteSource from "../../../components/RemoteSource";
-import RemoteSourceGroup from "../../../components/RemoteSourceGroup";
+import LocalSource from "../../../components/LocalSource";
+import LocalSourceGroup from "../../../components/LocalSourceGroup";
 
 ## Event Handling
 <Tabs items={[
@@ -16,8 +16,8 @@ import RemoteSourceGroup from "../../../components/RemoteSourceGroup";
     <AutoBeAgentEventSnippet />
   </Tabs.Tab>
   <Tabs.Tab>
-    <RemoteSource
-      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/events/AutoBeEvent.ts"
+    <LocalSource
+      path="packages/interface/src/events/AutoBeEvent.ts"
       filename="@autobe/interface"
       showLineNumbers
     />
@@ -39,29 +39,27 @@ Events in AutoBE can be categorized into two main types:
   <code>AutoBeUserMessageContent</code>,
 ]}>
   <Tabs.Tab>
-    <RemoteSource
-      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/events/AutoBeUserMessageEvent.ts"
+    <LocalSource
+      path="packages/interface/src/events/AutoBeUserMessageEvent.ts"
       filename="@autobe/interface"
-      showLineNumbers>
-    </RemoteSource>
+      showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
-    <RemoteSource
-      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/events/AutoBeAssistantMessageEvent.ts"
+    <LocalSource
+      path="packages/interface/src/events/AutoBeAssistantMessageEvent.ts"
       filename="@autobe/interface"
-      showLineNumbers>
-    </RemoteSource>
+      showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
-    <RemoteSourceGroup
+    <LocalSourceGroup
       filename="@autobe/interface"
       showLineNumbers 
-      urls={[
-        "https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/histories/contents/AutoBeUserMessageContent.ts",
-        "https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/histories/contents/AutoBeUserMessageAudioContent.ts",
-        "https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/histories/contents/AutoBeUserMessageFileContent.ts",
-        "https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/histories/contents/AutoBeUserMessageImageContent.ts",
-        "https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/histories/contents/AutoBeUserMessageTextContent.ts",
+      paths={[
+        "packages/interface/src/histories/contents/AutoBeUserMessageContent.ts",
+        "packages/interface/src/histories/contents/AutoBeUserMessageAudioContent.ts",
+        "packages/interface/src/histories/contents/AutoBeUserMessageFileContent.ts",
+        "packages/interface/src/histories/contents/AutoBeUserMessageImageContent.ts",
+        "packages/interface/src/histories/contents/AutoBeUserMessageTextContent.ts",
       ]}
     />
   </Tabs.Tab>
@@ -77,32 +75,28 @@ These events are essential for building interactive interfaces, logging conversa
 ### Analyze Events
 <Tabs items={["start", "write", "review", "complete"]}>
   <Tabs.Tab>
-    <RemoteSource
-      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/events/AutoBeAnalyzeStartEvent.ts"
+    <LocalSource
+      path="packages/interface/src/events/AutoBeAnalyzeStartEvent.ts"
       filename="@autobe/interface"
-      showLineNumbers>
-    </RemoteSource>
+      showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
-    <RemoteSource
-      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/events/AutoBeAnalyzeWriteEvent.ts"
+    <LocalSource
+      path="packages/interface/src/events/AutoBeAnalyzeWriteEvent.ts"
       filename="@autobe/interface"
-      showLineNumbers>
-    </RemoteSource>
+      showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
-    <RemoteSource
-      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/events/AutoBeAnalyzeReviewEvent.ts"
+    <LocalSource
+      path="packages/interface/src/events/AutoBeAnalyzeReviewEvent.ts"
       filename="@autobe/interface"
-      showLineNumbers>
-    </RemoteSource>
+      showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
-    <RemoteSource
-      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/events/AutoBeAnalyzeCompleteEvent.ts"
+    <LocalSource
+      path="packages/interface/src/events/AutoBeAnalyzeCompleteEvent.ts"
       filename="@autobe/interface"
-      showLineNumbers>
-    </RemoteSource>
+      showLineNumbers />
   </Tabs.Tab>
 </Tabs>
 
@@ -130,34 +124,34 @@ The `step` property indicates which iteration of the requirements analysis repor
   <code>IAutoBePrismaCompilerResult</code>,
 ]}>
   <Tabs.Tab>
-    <RemoteSourceGroup 
+    <LocalSourceGroup 
       filename="@autobe/interface"
       showLineNumbers
-      urls={[
-        "https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/events/AutoBePrismaStartEvent.ts",
-        "https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/events/AutoBePrismaComponentsEvent.ts",
-        "https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/events/AutoBePrismaSchemasEvent.ts",
-        "https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/events/AutoBePrismaValidateEvent.ts",
-        "https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/events/AutoBePrismaCorrectEvent.ts",
-        "https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/events/AutoBePrismaCompleteEvent.ts"
+      paths={[
+        "packages/interface/src/events/AutoBePrismaStartEvent.ts",
+        "packages/interface/src/events/AutoBePrismaComponentsEvent.ts",
+        "packages/interface/src/events/AutoBePrismaSchemasEvent.ts",
+        "packages/interface/src/events/AutoBePrismaValidateEvent.ts",
+        "packages/interface/src/events/AutoBePrismaCorrectEvent.ts",
+        "packages/interface/src/events/AutoBePrismaCompleteEvent.ts"
       ]} 
     />
   </Tabs.Tab>
   <Tabs.Tab>
-    <RemoteSource
-      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/prisma/AutoBePrisma.ts"
+    <LocalSource
+      path="packages/interface/src/prisma/AutoBePrisma.ts"
       filename="@autobe/interface"
       showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
-    <RemoteSource
-      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/prisma/IAutoBePrismaValidation.ts"
+    <LocalSource
+      path="packages/interface/src/prisma/IAutoBePrismaValidation.ts"
       filename="@autobe/interface"
       showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
-    <RemoteSource
-      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/compiler/IAutoBePrismaCompilerResult.ts"
+    <LocalSource
+      path="packages/interface/src/compiler/IAutoBePrismaCompilerResult.ts"
       filename="@autobe/interface"
       showLineNumbers />
   </Tabs.Tab>
@@ -192,28 +186,28 @@ The `step` property indicates which requirements analysis report iteration the d
   <code>OpenApi</code>,
 ]}>
   <Tabs.Tab>
-    <RemoteSourceGroup 
+    <LocalSourceGroup 
       filename="@autobe/interface"
       showLineNumbers
-      urls={[
-        "https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/events/AutoBeInterfaceStartEvent.ts",
-        "https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/events/AutoBeInterfaceEndpointsEvent.ts",
-        "https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/events/AutoBeInterfaceOperationsEvent.ts",
-        "https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/events/AutoBeInterfaceComponentsEvent.ts",
-        "https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/events/AutoBeInterfaceComplementEvent.ts",
-        "https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/events/AutoBeInterfaceCompleteEvent.ts"
+      paths={[
+        "packages/interface/src/events/AutoBeInterfaceStartEvent.ts",
+        "packages/interface/src/events/AutoBeInterfaceEndpointsEvent.ts",
+        "packages/interface/src/events/AutoBeInterfaceOperationsEvent.ts",
+        "packages/interface/src/events/AutoBeInterfaceComponentsEvent.ts",
+        "packages/interface/src/events/AutoBeInterfaceComplementEvent.ts",
+        "packages/interface/src/events/AutoBeInterfaceCompleteEvent.ts"
       ]} 
     />
   </Tabs.Tab>
   <Tabs.Tab>
-    <RemoteSource
-      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/openapi/AutoBeOpenApi.ts"
+    <LocalSource
+      path="packages/interface/src/openapi/AutoBeOpenApi.ts"
       filename="@autobe/interface"
       showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
-    <RemoteSource
-      url="https://raw.githubusercontent.com/samchon/openapi/refs/heads/master/src/OpenApi.ts"
+    <LocalSource
+      path="https://raw.githubusercontent.com/samchon/openapi/refs/heads/master/src/OpenApi.ts"
       filename="@samchon/openapi"
       showLineNumbers />
   </Tabs.Tab>
@@ -248,22 +242,22 @@ The `step` property indicates which requirements analysis report iteration the A
   <code>IAutoBeTypeScriptCompilerResult</code>,
 ]}>
   <Tabs.Tab>
-    <RemoteSourceGroup 
+    <LocalSourceGroup 
       filename="@autobe/interface"
       showLineNumbers
-      urls={[
-        "https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/events/AutoBeTestStartEvent.ts",
-        "https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/events/AutoBeTestScenarioEvent.ts",
-        "https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/events/AutoBeTestProgressEvent.ts",
-        "https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/events/AutoBeTestValidateEvent.ts",
-        "https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/events/AutoBeTestCorrectEvent.ts",
-        "https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/events/AutoBeTestCompleteEvent.ts"
+      paths={[
+        "packages/interface/src/events/AutoBeTestStartEvent.ts",
+        "packages/interface/src/events/AutoBeTestScenarioEvent.ts",
+        "packages/interface/src/events/AutoBeTestProgressEvent.ts",
+        "packages/interface/src/events/AutoBeTestValidateEvent.ts",
+        "packages/interface/src/events/AutoBeTestCorrectEvent.ts",
+        "packages/interface/src/events/AutoBeTestCompleteEvent.ts"
       ]} 
     />
   </Tabs.Tab>
   <Tabs.Tab>
-    <RemoteSource
-      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/compiler/IAutoBeTypeScriptCompilerResult.ts"
+    <LocalSource
+      path="packages/interface/src/compiler/IAutoBeTypeScriptCompilerResult.ts"
       filename="@autobe/interface"
       showLineNumbers />
   </Tabs.Tab>

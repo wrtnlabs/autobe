@@ -3,6 +3,7 @@ title: Guide Documents > Concepts > Compiler
 ---
 import { Tabs } from "nextra/components";
 
+import LocalSource from "../../../components/LocalSource";
 import RemoteSource from "../../../components/RemoteSource";
 import AutoBeWaterfallDiagram from "../../../template/diagrams/AutoBeWaterfallDiagram.mdx";
 
@@ -25,13 +26,14 @@ The vibe coding approach transforms the entire software development lifecycle. C
   <code>AutoBePrisma.IApplication</code>,
 ]}>
   <Tabs.Tab>
-    <RemoteSource 
-      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/prisma/IAutoBePrismaValidation.ts" filename="@autobe/interface" 
+    <LocalSource 
+      path="packages/interface/src/prisma/IAutoBePrismaValidation.ts" 
+      filename="@autobe/interface" 
       showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
-    <RemoteSource 
-      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/prisma/AutoBePrisma.ts" 
+    <LocalSource 
+      path="packages/interface/src/prisma/AutoBePrisma.ts" 
       filename="@autobe/interface" 
       showLineNumbers />
   </Tabs.Tab>
@@ -88,18 +90,20 @@ Once AST validation succeeds, the Prisma Compiler transforms structured data int
 ]}>
   <Tabs.Tab>
     <RemoteSource 
-      url="https://raw.githubusercontent.com/samchon/openapi/refs/heads/master/src/structures/IValidation.ts" filename="@samchon/openapi" 
+      url="https://raw.githubusercontent.com/samchon/openapi/refs/heads/master/src/structures/IValidation.ts" 
+      filename="@samchon/openapi" 
       showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
-    <RemoteSource 
-      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/openapi/AutoBeOpenApi.ts" 
+    <LocalSource 
+      path="packages/interface/src/openapi/AutoBeOpenApi.ts" 
       filename="@autobe/interface" 
       showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
     <RemoteSource 
-      url="https://raw.githubusercontent.com/samchon/openapi/refs/heads/master/src/OpenApi.ts" filename="@samchon/openapi" 
+      url="https://raw.githubusercontent.com/samchon/openapi/refs/heads/master/src/OpenApi.ts" 
+      filename="@samchon/openapi" 
       showLineNumbers />
   </Tabs.Tab>
 </Tabs>

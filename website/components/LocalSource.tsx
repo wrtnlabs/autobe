@@ -1,14 +1,15 @@
 import { compileMdx } from "nextra/compile";
 import { MDXRemote } from "nextra/mdx-remote";
-import { VariadicSingleton } from "tstl";
 
-export const RemoteSource = async (props: {
-  url: string;
+import { getLocalSourceFile } from "./internal/getLocalSourceFile";
+
+export const LocalSource = async (props: {
+  path: string;
   filename?: string;
   showLineNumbers?: boolean;
   highlight?: string;
 }) => {
-  const content: string = await loader.get(props.url);
+  const content: string = await getLocalSourceFile(props.path);
   const header: string = [
     `${BRACKET}typescript`,
     !!props.filename?.length
@@ -22,7 +23,6 @@ export const RemoteSource = async (props: {
   );
   return <MDXRemote compiledSource={raw} />;
 };
-export default RemoteSource;
+export default LocalSource;
 
 const BRACKET = "```";
-const loader = new VariadicSingleton((url) => fetch(url).then((r) => r.text()));

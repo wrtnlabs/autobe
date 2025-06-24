@@ -46,11 +46,22 @@ import { emplaceMap } from "./utils/emplaceMap";
  * @author Samchon
  */
 export class AutoBeAgent<Model extends ILlmSchema.Model> {
+  /** @internal */
+  private readonly props_: IAutoBeProps<Model>;
+
+  /** @internal */
   private readonly agentica_: MicroAgentica<Model>;
+
+  /** @internal */
   private readonly histories_: AutoBeHistory[];
+
+  /** @internal */
   private readonly context_: AutoBeContext<Model>;
 
+  /** @internal */
   private readonly state_: AutoBeState;
+
+  /** @internal */
   private readonly listeners_: Map<
     string,
     Set<(event: AutoBeEvent) => Promise<void> | void>
@@ -76,7 +87,8 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
    *   behavioral context, compilation tools, and optional conversation
    *   histories for session continuation
    */
-  public constructor(private readonly props: IAutoBeProps<Model>) {
+  public constructor(props: IAutoBeProps<Model>) {
+    this.props_ = props;
     this.histories_ = props.histories?.slice() ?? [];
     this.state_ = createAutoBeState(this.histories_);
     this.context_ = {
@@ -151,7 +163,7 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
   /** @internal */
   public clone(): AutoBeAgent<Model> {
     return new AutoBeAgent<Model>({
-      ...this.props,
+      ...this.props_,
       histories: this.histories_.slice(),
     });
   }

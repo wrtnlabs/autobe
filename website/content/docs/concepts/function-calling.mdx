@@ -3,6 +3,7 @@ title: AutoBE > Guide Documents > Concepts > AI Function Calling
 ---
 import { Tabs } from "nextra/components";
 
+import LocalSource from "../../../components/LocalSource";
 import RemoteSource from "../../../components/RemoteSource";
 
 ## AI Function Calling
@@ -13,19 +14,20 @@ import RemoteSource from "../../../components/RemoteSource";
   <code>AutoBeOpenApi.IDocument</code>,
 ]}>
   <Tabs.Tab>
-    <RemoteSource 
-      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/prisma/IAutoBePrismaValidation.ts" filename="@autobe/interface" 
-      showLineNumbers />
-  </Tabs.Tab>
-  <Tabs.Tab>
-    <RemoteSource 
-      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/prisma/AutoBePrisma.ts" 
+    <LocalSource 
+      path="packages/interface/src/prisma/IAutoBePrismaValidation.ts" 
       filename="@autobe/interface" 
       showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
-    <RemoteSource 
-      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/openapi/AutoBeOpenApi.ts" 
+    <LocalSource 
+      path="packages/interface/src/prisma/AutoBePrisma.ts" 
+      filename="@autobe/interface" 
+      showLineNumbers />
+  </Tabs.Tab>
+  <Tabs.Tab>
+    <LocalSource 
+      path="packages/interface/src/openapi/AutoBeOpenApi.ts" 
       filename="@autobe/interface" 
       showLineNumbers />
   </Tabs.Tab>
@@ -73,14 +75,14 @@ interface ICodeGenerator {
 ```
   </Tabs.Tab>
   <Tabs.Tab>
-     <RemoteSource
-        url="https://raw.githubusercontent.com/wrtnlabs/autobe/main/packages/interface/src/prisma/AutoBePrisma.ts"
+     <LocalSource
+        path="packages/interface/src/prisma/AutoBePrisma.ts"
         filename="@autobe/interface"
         showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
-     <RemoteSource
-        url="https://raw.githubusercontent.com/wrtnlabs/autobe/main/packages/interface/src/openapi/AutoBeOpenApi.ts"
+     <LocalSource
+        path="packages/interface/src/openapi/AutoBeOpenApi.ts"
         filename="@autobe/interface"
         showLineNumbers />
   </Tabs.Tab>

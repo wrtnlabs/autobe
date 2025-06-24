@@ -4,8 +4,9 @@ title: AutoBE > Guide Documents > Agent Library > Prompt Histories
 import { Tabs } from "nextra/components";
 
 import AutoBeAgentHistorySnippet from "../../../template/snippets/AutoBeAgentHistorySnippet.mdx";
+import LocalSource from "../../../components/LocalSource";
+import LocalSourceGroup from "../../../components/LocalSourceGroup";
 import RemoteSource from "../../../components/RemoteSource";
-import RemoteSourceGroup from "../../../components/RemoteSourceGroup";
 
 ## Prompt Histories
 <Tabs 
@@ -17,8 +18,8 @@ import RemoteSourceGroup from "../../../components/RemoteSourceGroup";
     <AutoBeAgentHistorySnippet />
   </Tabs.Tab>
   <Tabs.Tab>
-    <RemoteSource
-      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/histories/AutoBeHistory.ts"
+    <LocalSource
+      path="packages/interface/src/histories/AutoBeHistory.ts"
       filename="@autobe/interface"
       showLineNumbers
     />
@@ -47,27 +48,27 @@ All history types in `@autobe` are collected into the `AutoBeHistory` type as a 
   <code>AutoBeUserMessageContent</code>,
 ]}>
   <Tabs.Tab>
-    <RemoteSource
-      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/histories/AutoBeUserMessageHistory.ts"
+    <LocalSource
+      path="packages/interface/src/histories/AutoBeUserMessageHistory.ts"
       filename="@autobe/interface"
       showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
-    <RemoteSource
-      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/histories/AutoBeAssistantMessageHistory.ts"
+    <LocalSource
+      path="packages/interface/src/histories/AutoBeAssistantMessageHistory.ts"
       filename="@autobe/interface"
       showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
-    <RemoteSourceGroup
+    <LocalSourceGroup
       filename="@autobe/interface"
       showLineNumbers 
-      urls={[
-        "https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/histories/contents/AutoBeUserMessageContent.ts",
-        "https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/histories/contents/AutoBeUserMessageAudioContent.ts",
-        "https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/histories/contents/AutoBeUserMessageFileContent.ts",
-        "https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/histories/contents/AutoBeUserMessageImageContent.ts",
-        "https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/histories/contents/AutoBeUserMessageTextContent.ts",
+      paths={[
+        "packages/interface/src/histories/contents/AutoBeUserMessageContent.ts",
+        "packages/interface/src/histories/contents/AutoBeUserMessageAudioContent.ts",
+        "packages/interface/src/histories/contents/AutoBeUserMessageFileContent.ts",
+        "packages/interface/src/histories/contents/AutoBeUserMessageImageContent.ts",
+        "packages/interface/src/histories/contents/AutoBeUserMessageTextContent.ts",
       ]}
     />
   </Tabs.Tab>
@@ -83,8 +84,8 @@ For users, multimodal capabilities are supported, allowing not only text but als
 ## Development Histories
 ### `AutoBeAnalyzeHistory`
 
-<RemoteSource
-  url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/histories/AutoBeAnalyzeHistory.ts"
+<LocalSource
+  path="packages/interface/src/histories/AutoBeAnalyzeHistory.ts"
   filename="@autobe/interface"
   showLineNumbers />
 
@@ -100,26 +101,26 @@ The `step` property indicates which iteration of the requirements analysis repor
   <code>IAutoBePrismaCompilerResult</code>,
 ]}>
   <Tabs.Tab>
-    <RemoteSource
-      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/histories/AutoBePrismaHistory.ts"
+    <LocalSource
+      path="packages/interface/src/histories/AutoBePrismaHistory.ts"
       filename="@autobe/interface"
       showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
-    <RemoteSource
-      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/prisma/AutoBePrisma.ts"
+    <LocalSource
+      path="packages/interface/src/prisma/AutoBePrisma.ts"
       filename="@autobe/interface"
       showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
-    <RemoteSource
-      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/prisma/IAutoBePrismaValidation.ts"
+    <LocalSource
+      path="packages/interface/src/prisma/IAutoBePrismaValidation.ts"
       filename="@autobe/interface"
       showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
-    <RemoteSource
-      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/compiler/IAutoBePrismaCompilerResult.ts"
+    <LocalSource
+      path="packages/interface/src/compiler/IAutoBePrismaCompilerResult.ts"
       filename="@autobe/interface"
       showLineNumbers />
   </Tabs.Tab>
@@ -140,14 +141,14 @@ The `step` property indicates which requirements analysis report iteration the d
   <code>OpenApi</code>,
 ]}>
   <Tabs.Tab>
-    <RemoteSource
-      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/histories/AutoBeInterfaceHistory.ts"
+    <LocalSource
+      path="packages/interface/src/histories/AutoBeInterfaceHistory.ts"
       filename="@autobe/interface"
       showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
-    <RemoteSource
-      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/openapi/AutoBeOpenApi.ts"
+    <LocalSource
+      path="packages/interface/src/openapi/AutoBeOpenApi.ts"
       filename="@autobe/interface"
       showLineNumbers />
   </Tabs.Tab>
@@ -171,14 +172,14 @@ The `step` property indicates which requirements analysis report iteration the A
   <code>IAutoBeTypeScriptCompilerResult</code>,
 ]}>
   <Tabs.Tab>
-    <RemoteSource
-      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/histories/AutoBeTestHistory.ts"
+    <LocalSource
+      path="packages/interface/src/histories/AutoBeTestHistory.ts"
       filename="@autobe/interface"
       showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
-    <RemoteSource
-      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/compiler/IAutoBeTypeScriptCompilerResult.ts"
+    <LocalSource
+      path="packages/interface/src/compiler/IAutoBeTypeScriptCompilerResult.ts"
       filename="@autobe/interface"
       showLineNumbers />
   </Tabs.Tab>

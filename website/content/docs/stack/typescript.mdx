@@ -3,7 +3,7 @@ title: AutoBE > Guide Documents > Backend Stack > TypeScript
 ---
 import { Tabs } from "nextra/components";
 
-import RemoteSource from "../../../components/RemoteSource";
+import LocalSource from "../../../components/LocalSource";
 
 ## Outline
 
@@ -82,16 +82,16 @@ interface ICodeGenerator {
 ```
   </Tabs.Tab>
   <Tabs.Tab>
-     <RemoteSource
-        url="https://raw.githubusercontent.com/wrtnlabs/autobe/main/packages/interface/src/prisma/AutoBePrisma.ts"
-        filename="@autobe/interface"
-        showLineNumbers />
+    <LocalSource
+      path="packages/interface/src/prisma/AutoBePrisma.ts"
+      filename="@autobe/interface"
+      showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
-     <RemoteSource
-        url="https://raw.githubusercontent.com/wrtnlabs/autobe/main/packages/interface/src/openapi/AutoBeOpenApi.ts"
-        filename="@autobe/interface"
-        showLineNumbers />
+    <LocalSource
+      path="packages/interface/src/openapi/AutoBeOpenApi.ts"
+      filename="@autobe/interface"
+      showLineNumbers />
   </Tabs.Tab>
 </Tabs>
 

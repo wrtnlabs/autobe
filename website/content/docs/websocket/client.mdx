@@ -3,7 +3,7 @@ title: AutoBE > Guide Documents > WebSocket Protocol > Client Application
 ---
 import { Tabs } from "nextra/components";
 
-import RemoteSource from "../../../components/RemoteSource";
+import LocalSource from "../../../components/LocalSource";
 import AutoBeRpcNodeJsMainSnippet from "../../../template/snippets/AutoBeRpcNodeJsMainSnippet.mdx";
 import AutoBeRpcClientMainSnippet from "../../../template/snippets/AutoBeRpcClientMainSnippet.mdx";
 import AutoBeRpcClientSetupSnippet from "../../../template/snippets/AutoBeRpcClientSetupSnippet.mdx";
@@ -28,14 +28,14 @@ You can start WebSocket client application by installing `@autobe/rpc` and [`tgr
     <AutoBeRpcClientMainSnippet />
   </Tabs.Tab>
   <Tabs.Tab>
-    <RemoteSource
-      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/rpc/IAutoBeRpcService.ts"
+    <LocalSource
+      path="packages/interface/src/rpc/IAutoBeRpcService.ts"
       filename="@autobe/interface/IAutoBeRpcService"
       showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
-    <RemoteSource
-      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/rpc/IAutoBeRpcListener.ts"
+    <LocalSource
+      path="packages/interface/src/rpc/IAutoBeRpcListener.ts"
       filename="@autobe/interface/IAutoBeRpcListener"
       showLineNumbers />
   </Tabs.Tab>

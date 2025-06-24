@@ -3,7 +3,7 @@ title: AutoBE > Guide Documents > WebSocket Protocol > NodeJS Server
 ---
 import { Tabs } from "nextra/components";
 
-import RemoteSource from "../../../components/RemoteSource";
+import LocalSource from "../../../components/LocalSource";
 import AutoBeRpcNodeJsMainSnippet from "../../../template/snippets/AutoBeRpcNodeJsMainSnippet.mdx";
 import AutoBeRpcNodeJsSetupSnippet from "../../../template/snippets/AutoBeRpcNodeJsSetupSnippet.mdx";
 
@@ -29,14 +29,14 @@ At first, install `@autobe/agent`, `@autobe/compiler` and `@autobe/interface` pa
     <AutoBeRpcNodeJsMainSnippet />
   </Tabs.Tab>
   <Tabs.Tab>
-    <RemoteSource
-      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/rpc/IAutoBeRpcService.ts"
+    <LocalSource
+      url="packages/interface/src/rpc/IAutoBeRpcService.ts"
       filename="@autobe/interface/IAutoBeRpcService"
       showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
-    <RemoteSource
-      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/rpc/IAutoBeRpcListener.ts"
+    <LocalSource
+      url="packages/interface/src/rpc/IAutoBeRpcListener.ts"
       filename="@autobe/interface/IAutoBeRpcListener"
       showLineNumbers />
   </Tabs.Tab>

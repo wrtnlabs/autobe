@@ -3,7 +3,7 @@ title: AutoBE > Guide Documents > Agent Library > Facade Controller
 ---
 import { Tabs } from "nextra/components";
 
-import RemoteSource from "../../../components/RemoteSource";
+import LocalSource from "../../../components/LocalSource";
 import AutoBeAgentDeclaration from "../../../template/declarations/AutoBeAgentDeclaration.mdx";
 import AutoBeAgentSnippet from "../../../template/snippets/AutoBeAgentSnippet.mdx";
 import AutoBeAgentConfigSnippet from "../../../template/snippets/AutoBeAgentConfigSnippet.mdx";
@@ -21,7 +21,10 @@ import AutoBeAgentGetFilesSnippet from "../../../template/snippets/AutoBeAgentGe
     <AutoBeAgentSnippet />
   </Tabs.Tab>
   <Tabs.Tab>
-    <AutoBeAgentDeclaration />
+    <LocalSource
+      path="packages/agent/lib/AutoBeAgent.d.ts"
+      filename="@autobe/agent"
+      showLineNumbers />
   </Tabs.Tab>
 </Tabs>
 
@@ -76,11 +79,14 @@ All history types in `@autobe` are collected into the `AutoBeHistory` type as a 
     <AutoBeAgentGetFilesSnippet />
   </Tabs.Tab>
   <Tabs.Tab>
-    <AutoBeAgentDeclaration />
+    <LocalSource
+      path="packages/agent/lib/AutoBeAgent.d.ts"
+      filename="@autobe/agent"
+      showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
-    <RemoteSource
-      url="https://raw.githubusercontent.com/wrtnlabs/autobe/refs/heads/main/packages/interface/src/rpc/IAutoBeGetFilesOptions.ts"
+    <LocalSource
+      path="packages/interface/src/rpc/IAutoBeGetFilesOptions.ts"
       filename="@autobe/interface"
       showLineNumbers />
   </Tabs.Tab>
