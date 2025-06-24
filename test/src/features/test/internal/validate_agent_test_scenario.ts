@@ -1,15 +1,12 @@
-import { orchestrateTestProgress } from "@autobe/agent/src/orchestrate/test/orchestrateTestProgress";
+import { orchestrateTestScenario } from "@autobe/agent/src/orchestrate/test/orchestrateTestScenario";
 import { FileSystemIterator } from "@autobe/filesystem";
-import { AutoBeEvent, AutoBeTestScenarioEvent } from "@autobe/interface";
-import fs from "fs";
+import { AutoBeEvent } from "@autobe/interface";
 import typia from "typia";
 
 import { TestGlobal } from "../../../TestGlobal";
 import { prepare_agent_test } from "./prepare_agent_test";
 
-const ROOT = `${__dirname}/../../../..`;
-
-export const validate_agent_test_progress = async (
+export const validate_agent_test_scenario = async (
   owner: "samchon" | "kakasoo" | "michael",
   project: "bbs-backend" | "shopping-backend",
 ) => {
@@ -21,35 +18,27 @@ export const validate_agent_test_progress = async (
   agent.on("testStart", (event) => {
     events.push(event);
   });
-
   agent.on("testScenario", (event) => {
     events.push(event);
   });
-
   agent.on("testComplete", (event) => {
     events.push(event);
   });
 
-  const plans: AutoBeTestScenarioEvent.IScenario[] = JSON.parse(
-    await fs.promises.readFile(
-      `${ROOT}/assets/repositories/${owner}/${project}/test/plans.json`,
-      "utf8",
-    ),
-  );
-
-  const codes = await orchestrateTestProgress(agent.getContext(), plans);
-  typia.assertEquals(codes);
+  const result = await orchestrateTestScenario(agent.getContext());
+  typia.assert(result);
 
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${owner}/${project}/test/progress`,
+    root: `${TestGlobal.ROOT}/results/${owner}/${project}/test/scenario`,
     files: {
+      "scenarios.json": JSON.stringify(result.scenarios, null, 2),
       "logs/history.json": JSON.stringify(agent.getHistories(), null, 2),
-      "logs/codes.json": JSON.stringify(codes, null, 2),
+      "logs/result.json": JSON.stringify(result, null, 2),
       "logs/tokenUsage.json": JSON.stringify(agent.getTokenUsage(), null, 2),
       "logs/files.json": JSON.stringify(Object.keys(agent.getFiles()), null, 2),
       "logs/events.json": JSON.stringify(events, null, 2),
     },
   });
 
-  return codes;
+  return result;
 };
