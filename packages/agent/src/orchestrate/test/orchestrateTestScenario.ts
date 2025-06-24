@@ -123,7 +123,9 @@ const createHistoryProperties = (
   operations: AutoBeOpenApi.IOperation[],
   include: Pick<AutoBeOpenApi.IOperation, "method" | "path">[],
   exclude: Pick<AutoBeOpenApi.IOperation, "method" | "path">[],
-) => [
+): Array<
+  IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
+> => [
   {
     id: v4(),
     created_at: new Date().toISOString(),
