@@ -2,7 +2,7 @@ const cp = require("child_process");
 const path = require("path");
 
 const dependencies = path.resolve(
-  `${__dirname}/../../../assets/compiler-dependencies`,
+  `${__dirname}/../../../internals/compiler-dependencies`,
 );
 
 console.log("---------------------------------------");

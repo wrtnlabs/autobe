@@ -3,7 +3,6 @@ title: AutoBE > Guide Documents > Agent Library > Event Handling
 ---
 import { Tabs } from "nextra/components";
 
-import AutoBeAgentEventSnippet from "../../../template/snippets/AutoBeAgentEventSnippet.mdx";
 import LocalSource from "../../../components/LocalSource";
 import LocalSourceGroup from "../../../components/LocalSourceGroup";
 import RemoteSource from "../../../components/RemoteSource";
@@ -14,7 +13,11 @@ import RemoteSource from "../../../components/RemoteSource";
   <code>AutoBeEvent</code>
 ]}>
   <Tabs.Tab>
-    <AutoBeAgentEventSnippet />
+    <LocalSource
+      path="internals/website-examples/src/agent/main.event.ts"
+      filename="main.event.ts"
+      showLineNumbers
+      highlight="14-35" />
   </Tabs.Tab>
   <Tabs.Tab>
     <LocalSource

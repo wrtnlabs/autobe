@@ -3,19 +3,23 @@ title: AutoBE > Guide Documents > Agent Library > Prompt Histories
 ---
 import { Tabs } from "nextra/components";
 
-import AutoBeAgentHistorySnippet from "../../../template/snippets/AutoBeAgentHistorySnippet.mdx";
 import LocalSource from "../../../components/LocalSource";
 import LocalSourceGroup from "../../../components/LocalSourceGroup";
 import RemoteSource from "../../../components/RemoteSource";
 
 ## Prompt Histories
+
 <Tabs 
   items={[
     <code>src/main.ts</code>, 
     <code>AutoBeHistory</code>
   ]}>
   <Tabs.Tab>
-    <AutoBeAgentHistorySnippet />
+    <LocalSource
+      path="internals/website-examples/src/agent/main.history.ts"
+      filename="main.history.ts"
+      showLineNumbers 
+      highlight="16, 24"/>
   </Tabs.Tab>
   <Tabs.Tab>
     <LocalSource
@@ -38,10 +42,8 @@ All history types in `@autobe` are collected into the `AutoBeHistory` type as a 
 - [`AutoBeTestHistory`](/api/interfaces/_autobe_interface.AutoBeTestHistory.html)
 - [`AutoBeRealizeHistory`](/api/interfaces/_autobe_interface.AutoBeRealizeHistory.html)
 
-
-
-
 ## Message Histories
+
 <Tabs items={[
   <code>AutoBeAssistantMessageHistory</code>,
   <code>AutoBeUserMessageHistory</code>,
@@ -78,10 +80,8 @@ Message histories are divided into user conversation history [`AutoBeUserMessage
 
 For users, multimodal capabilities are supported, allowing not only text but also image/document file attachments and voice input, which results in different content types. The assistant communicates only through text, so its content type is limited to `string`.
 
-
-
-
 ## Development Histories
+
 ### `AutoBeAnalyzeHistory`
 
 <LocalSource
@@ -135,6 +135,7 @@ Note that `@autobe` generally creates valid [`AutoBePrisma.IApplication`](/api/i
 The `step` property indicates which requirements analysis report iteration the database design was performed for. If the [`AutoBePrismaHistory.step`](/api/interfaces/_autobe_interface.AutoBePrismaHistory.html#step) value is lower than [`AutoBeAnalyzeHistory.step`](/api/interfaces/_autobe_interface.AutoBeAnalyzeHistory.html#step), it means the database design has not yet been updated to reflect the latest requirements.
 
 ### `AutoBeInterfaceHistory`
+
 <Tabs items={[
   <code>AutoBeInterfaceHistory</code>,
   <code>AutoBeOpenApi</code>,
@@ -167,6 +168,7 @@ The `step` property indicates which requirements analysis report iteration the d
 The `step` property indicates which requirements analysis report iteration the API design was performed for. If the [`AutoBeInterfaceHistory.step`](/api/interfaces/_autobe_interface.AutoBeInterfaceHistory.html#step) value is lower than [`AutoBeAnalyzeHistory.step`](/api/interfaces/_autobe_interface.AutoBeAnalyzeHistory.html#step), it means the API design has not yet been updated to reflect the latest requirements.
 
 ### `AutoBeTestHistory`
+
 <Tabs items={[
   <code>AutoBeTestHistory</code>,
   <code>IAutoBeTypeScriptCompilerResult</code>,
@@ -194,4 +196,5 @@ When the AI occasionally writes incorrect TypeScript code, `@autobe` provides co
 The `step` property indicates which requirements analysis report iteration the test code was written for. If the [`AutoBeTestHistory.step`](/api/interfaces/_autobe_interface.AutoBeTestHistory.html#step) value is lower than [`AutoBeAnalyzeHistory.step`](/api/interfaces/_autobe_interface.AutoBeAnalyzeHistory.html#step), it means the test code has not yet been updated to reflect the latest requirements.
 
 ### `AutoBeRealizeHistory`
+
 Not implemented yet.

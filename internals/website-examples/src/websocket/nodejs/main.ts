@@ -1,15 +1,12 @@
-```typescript filename="nodejs/src/main.ts" showLineNumbers copy
 import { AutoBeAgent } from "@autobe/agent";
 import { AutoBeCompiler } from "@autobe/compiler";
 import { IAutoBeRpcListener, IAutoBeRpcService } from "@autobe/interface";
 import { AutoBeRpcService } from "@autobe/rpc";
+import OpenAI from "openai";
 import { WebSocketServer } from "tgrid";
 
-const server: WebSocketServer<
-  null,
-  IAutoBeRpcService,
-  IAutoBeRpcListener
-> = new WebSocketServer();
+const server: WebSocketServer<null, IAutoBeRpcService, IAutoBeRpcListener> =
+  new WebSocketServer();
 await server.open(3_001, async (acceptor) => {
   const agent: AutoBeAgent<"chatgpt"> = new AutoBeAgent({
     model: "chatgpt",
@@ -19,10 +16,9 @@ await server.open(3_001, async (acceptor) => {
     },
     compiler: new AutoBeCompiler(),
   });
-  const service: AutoBeRpcService = new AutoBeRpcService({
+  const service: AutoBeRpcService<"chatgpt"> = new AutoBeRpcService({
     agent,
     listener: acceptor.getDriver(),
   });
   await acceptor.accept(service);
 });
-```

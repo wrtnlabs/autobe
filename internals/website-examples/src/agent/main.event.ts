@@ -1,4 +1,3 @@
-```typescript filename="src/main.ts" showLineNumbers {14-39}
 import { AutoBeAgent } from "@autobe/agent";
 import { AutoBeCompiler } from "@autobe/compiler";
 import OpenAI from "openai";
@@ -13,10 +12,10 @@ const agent = new AutoBeAgent({
 });
 
 agent.on("userMessage", (event) => {
-  console.log("User message:", event.content);
+  console.log("User message contents:", event.contents);
 });
 agent.on("assistantMessage", (event) => {
-  console.log("Assistant message:", event.message);
+  console.log("Assistant message:", event.text);
 });
 agent.on("analyzeComplete", (event) => {
   console.log("Analyze complete:", event.files);
@@ -29,11 +28,7 @@ agent.on("prismaComplete", (event) => {
   );
 });
 agent.on("interfaceComplete", (event) => {
-  console.log(
-    "Interface complete:",
-    event.document,
-    event.files,
-  );
+  console.log("Interface complete:", event.document, event.files);
 });
 agent.on("testComplete", (event) => {
   console.log("Test complete:", event.files);
@@ -45,4 +40,3 @@ await agent.conversate(`
   Since I'm not familiar with programming, 
   please write a requirements analysis report as you see fit.
 `);
-```

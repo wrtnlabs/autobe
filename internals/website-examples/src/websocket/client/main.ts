@@ -1,5 +1,4 @@
-```typescript filename="client/src/main.ts" showLineNumbers copy
-import { IAutoBeRpcListener, IAutoBeRpcService } from "@autobe/rpc";
+import { IAutoBeRpcListener, IAutoBeRpcService } from "@autobe/interface";
 import { Driver, WebSocketConnector } from "tgrid";
 
 const connector: WebSocketConnector<
@@ -17,7 +16,7 @@ const connector: WebSocketConnector<
     console.log("prisma completed", evt.schemas);
   },
   interfaceComplete: async (evt) => {
-    console.log("interface completed", evt.schemas);
+    console.log("interface completed", evt.files);
   },
   testComplete: async (evt) => {
     console.log("test completed", evt.files);
@@ -30,4 +29,3 @@ await connector.connect("ws://localhost:3001");
 
 const driver: Driver<IAutoBeRpcService> = connector.getDriver();
 await driver.conversate("Hello, what you can do?");
-```

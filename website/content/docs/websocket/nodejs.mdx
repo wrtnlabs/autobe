@@ -4,10 +4,10 @@ title: AutoBE > Guide Documents > WebSocket Protocol > NodeJS Server
 import { Tabs } from "nextra/components";
 
 import LocalSource from "../../../components/LocalSource";
-import AutoBeRpcNodeJsMainSnippet from "../../../template/snippets/AutoBeRpcNodeJsMainSnippet.mdx";
 import AutoBeRpcNodeJsSetupSnippet from "../../../template/snippets/AutoBeRpcNodeJsSetupSnippet.mdx";
 
 ## Setup
+
 <AutoBeRpcNodeJsSetupSnippet />
 
 To develop NodeJS WebSocket server of `@autobe`, you need to install these packages.
@@ -16,17 +16,18 @@ At first, install `@autobe/agent`, `@autobe/compiler` and `@autobe/interface` pa
 
 `tgrid` is a TypeScript based RPC (Remote Procedure Call) framework supporting WebSocket protocol, and `@autobe/rpc` is a wrapper module of `@autobe/agent` following the WebSocket RPC.
 
-
-
-
 ## Development
+
 <Tabs items={[
   "Main Program", 
   <code>IAutoBeRpcService</code>,
   <code>IAutoBeRpcListener</code>,
 ]}>
   <Tabs.Tab>
-    <AutoBeRpcNodeJsMainSnippet />
+    <LocalSource
+      path="internals/website-examples/src/websocket/nodejs/main.ts"
+      filename="nodejs/main.ts"
+      showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
     <LocalSource

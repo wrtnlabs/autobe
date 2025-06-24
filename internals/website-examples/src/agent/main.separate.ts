@@ -1,10 +1,13 @@
-```typescript filename="src/main.ts" showLineNumbers {15, 23}
 import { AutoBeAgent } from "@autobe/agent";
-import { AutoBeCompiler } from "@autobe/compiler";
+import { IAutoBeCompiler } from "@autobe/interface";
 import OpenAI from "openai";
+import path from "path";
+import { WorkerConnector } from "tgrid";
 
-function getHistories(): Promise<AutoBeHistory[]>;
-function archiveHistories(histories: AutoBeHistory[]): Promise<void>;
+// connect to worker
+const worker: WorkerConnector<null, null, IAutoBeCompiler> =
+  new WorkerConnector(null, null, "process");
+await worker.connect(`${__dirname}/compiler${path.extname(__filename)}`);
 
 const agent = new AutoBeAgent({
   model: "chatgpt",
@@ -12,14 +15,12 @@ const agent = new AutoBeAgent({
     api: new OpenAI({ apiKey: "********" }),
     model: "gpt-4.1",
   },
-  compiler: new AutoBeCompiler(),
-  histories: await getHistories(),
+  compiler: worker.getDriver(), // compiler from worker
 });
+
 await agent.conversate(`
   I want to create a political/economic discussion board.
   
   Since I'm not familiar with programming, 
   please write a requirements analysis report as you see fit.
 `);
-await archiveHistories(agent.getHistories());
-```

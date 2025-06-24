@@ -2,7 +2,7 @@ const fs = require("fs");
 
 const main = async () => {
   const readme = await fs.promises.readFile(
-    `${__dirname}/../../../assets/documents/README.md`,
+    `${__dirname}/../../../internals/documents/README.md`,
     "utf8",
   );
   try {

@@ -1,0 +1,30 @@
+{
+  "name": "@autobe/website-examples",
+  "version": "0.0.0",
+  "description": "Website Example Codes",
+  "scripts": {
+    "build": "tsc"
+  },
+  "author": "Wrtn Technologies",
+  "license": "MIT",
+  "dependencies": {
+    "@autobe/agent": "workspace:^",
+    "@autobe/compiler": "workspace:^",
+    "@autobe/interface": "workspace:^",
+    "@autobe/rpc": "workspace:^",
+    "@nestjs/common": "^11.1.3",
+    "@nestjs/core": "^11.1.3",
+    "@nestia/core": "catalog:samchon",
+    "@nestia/e2e": "catalog:samchon",
+    "@nestia/migrate": "catalog:samchon",
+    "@samchon/openapi": "catalog:samchon",
+    "openai": "catalog:libs",
+    "tgrid": "catalog:samchon",
+    "typia": "catalog:samchon"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.17",
+    "ts-node": "catalog:typescript",
+    "typescript": "catalog:typescript"
+  }
+}
