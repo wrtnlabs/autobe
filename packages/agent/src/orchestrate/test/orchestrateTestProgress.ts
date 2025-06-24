@@ -19,28 +19,27 @@ import { transformTestProgressHistories } from "./transformTestProgressHistories
 
 export async function orchestrateTestProgress<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  plans: AutoBeTestScenarioEvent.IScenario[],
+  scenarios: AutoBeTestScenarioEvent.IScenario[],
 ): Promise<AutoBeTestWriteEvent[]> {
   const start: Date = new Date();
   let complete: number = 0;
 
   const events: AutoBeTestWriteEvent[] = await Promise.all(
     /**
-     * Generate test code for each plan. Maps through plans array to create
-     * individual test code implementations. Each plan is processed to generate
-     * corresponding test code and progress events.
+     * Generate test code for each scenario. Maps through plans array to create
+     * individual test code implementations. Each scenario is processed to
+     * generate corresponding test code and progress events.
      */
-    plans.map(async (plan) => {
-      const code: ICreateTestCodeProps = await process(ctx, plan);
+    scenarios.map(async (scenario) => {
+      const code: ICreateTestCodeProps = await process(ctx, scenario);
       const event: AutoBeTestWriteEvent = {
         type: "testWrite",
         created_at: start.toISOString(),
-        filename: `${code.domain}/${plan.functionName}.ts`,
+        filename: `${code.domain}/${scenario.functionName}.ts`,
         content: code.content,
         completed: ++complete,
-        total: plans.length,
+        total: scenarios.length,
         step: ctx.state().interface?.step ?? 0,
-        scenario: plan,
       };
       ctx.dispatch(event);
       return event;
@@ -51,12 +50,12 @@ export async function orchestrateTestProgress<Model extends ILlmSchema.Model>(
 }
 
 /**
- * Process function that generates test code for each individual plan. Takes the
- * AutoBeContext and plan information as input and uses MicroAgentica to
+ * Process function that generates test code for each individual scenario. Takes
+ * the AutoBeContext and scenario information as input and uses MicroAgentica to
  * generate appropriate test code through LLM interaction.
  *
  * @param ctx - The AutoBeContext containing model, vendor and configuration
- * @param scenario - The test plan information to generate code for
+ * @param scenario - The test scenario information to generate code for
  * @returns Promise resolving to ICreateTestCodeProps containing the generated
  *   test code
  */
@@ -201,8 +200,9 @@ interface ICreateTestCodeProps {
   /**
    * Strategic approach for test implementation.
    *
-   * Define the high-level strategy and logical flow for testing the given plan.
-   * Focus on test methodology, data preparation, and assertion strategy.
+   * Define the high-level strategy and logical flow for testing the given
+   * scenario. Focus on test methodology, data preparation, and assertion
+   * strategy.
    *
    * ### Critical Requirements
    *
@@ -213,8 +213,8 @@ interface ICreateTestCodeProps {
    *
    * #### Test Methodology
    *
-   * - Identify test plan type (CRUD operation, authentication flow, validation
-   *   test)
+   * - Identify test scenario type (CRUD operation, authentication flow,
+   *   validation test)
    * - Define test data requirements and preparation strategy
    * - Plan positive/negative test cases and edge cases
    * - Design assertion logic and validation points
@@ -234,10 +234,10 @@ interface ICreateTestCodeProps {
    *     3. Validate response structure and data integrity
    *     4. Test error plans (missing fields, invalid data)
    *     5. Verify database state changes
-   *     6. Reconsider the plan if it doesn't follow the Test Generation
+   *     6. Reconsider the scenario if it doesn't follow the Test Generation
    *        Guildelines.
    */
-  plan: string;
+  scenario: string;
 
   /**
    * Functional domain classification for test organization.

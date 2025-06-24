@@ -80,6 +80,8 @@ export type AutoBeEvent =
   | AutoBeRealizeCompleteEvent;
 
 export namespace AutoBeEvent {
+  export type Type = AutoBeEvent["type"];
+
   /**
    * Type literal union of all possible event type strings.
    *
