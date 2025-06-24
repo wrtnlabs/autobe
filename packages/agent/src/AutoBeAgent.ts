@@ -283,7 +283,7 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
           : [],
       ),
       ...Object.fromEntries(
-        this.state_.prisma?.result.success === true
+        !!this.state_.prisma?.result
           ? [
               ...Object.entries(
                 (options?.dbms ?? "postgres") === "postgres"
@@ -315,12 +315,8 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
           : [],
       ),
       ...(this.state_.interface ? this.state_.interface.files : {}),
-      ...(this.state_.test?.compiled.type === "success"
-        ? this.state_.test.files
-        : {}),
-      ...(this.state_.realize?.compiled.type === "success"
-        ? this.state_.realize.files
-        : {}),
+      ...(this.state_.test ? this.state_.test.files : {}),
+      ...(this.state_.realize ? this.state_.realize.files : {}),
       "autobe/histories.json": JSON.stringify(this.histories_, null, 2),
       "autobe/tokenUsage.json": JSON.stringify(this.getTokenUsage(), null, 2),
       ...(this.state_.interface

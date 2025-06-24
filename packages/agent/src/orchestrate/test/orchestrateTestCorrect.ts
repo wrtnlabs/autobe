@@ -23,13 +23,13 @@ export async function orchestrateTestCorrect<Model extends ILlmSchema.Model>(
   scenarios: AutoBeTestScenarioEvent.IScenario[],
   life: number = 4,
 ): Promise<AutoBeTestValidateEvent> {
-  const scenarioMap = new Map<string, AutoBeTestScenarioEvent.IScenario>();
+  const scenarioMap: Map<string, AutoBeTestScenarioEvent.IScenario> = new Map();
   codes.forEach(({ filename }, index) => {
     scenarioMap.set(filename, scenarios[index]);
   });
 
   // 1) Build map of new test files from progress events
-  const testFiles = codes
+  const testFiles: Record<string, string> = codes
     .map(({ filename, content }) => {
       return {
         [`test/features/api/${filename}`]: content,
@@ -38,7 +38,9 @@ export async function orchestrateTestCorrect<Model extends ILlmSchema.Model>(
     .reduce<Record<string, string>>((acc, cur) => Object.assign(acc, cur), {});
 
   // 2) Keep only files outside the test directory from current state
-  const retainedFiles = Object.entries(ctx.state().interface?.files ?? {})
+  const retainedFiles: Record<string, string> = Object.entries(
+    ctx.state().interface?.files ?? {},
+  )
     .filter(([filename]) => {
       return !filename.startsWith("test/features/api");
     })
@@ -48,8 +50,11 @@ export async function orchestrateTestCorrect<Model extends ILlmSchema.Model>(
     .reduce<Record<string, string>>((acc, cur) => Object.assign(acc, cur), {});
 
   // 3) Merge and filter: keep .ts/.json, drop anything under "benchmark"
-  const mergedFiles = { ...retainedFiles, ...testFiles };
-  const files = Object.fromEntries(
+  const mergedFiles: Record<string, string> = {
+    ...retainedFiles,
+    ...testFiles,
+  };
+  const files: Record<string, string> = Object.fromEntries(
     Object.entries(mergedFiles).filter(
       ([filename]) =>
         (filename.endsWith(".ts") && !filename.startsWith("test/benchmark/")) ||
@@ -58,7 +63,12 @@ export async function orchestrateTestCorrect<Model extends ILlmSchema.Model>(
   );
 
   // 4) Ask the LLM to correct the filtered file set
-  const response = await step(ctx, files, scenarioMap, life);
+  const response: AutoBeTestValidateEvent = await step(
+    ctx,
+    files,
+    scenarioMap,
+    life,
+  );
 
   // 5) Combine original + corrected files and dispatch event
   const event: AutoBeTestValidateEvent = {
@@ -66,7 +76,6 @@ export async function orchestrateTestCorrect<Model extends ILlmSchema.Model>(
     type: "testValidate",
     files: { ...mergedFiles, ...response.files },
   };
-
   return event;
 }
 
@@ -117,7 +126,6 @@ async function step<Model extends ILlmSchema.Model>(
       result,
       step: ctx.state().interface?.step ?? 0,
     });
-
     throw new Error(JSON.stringify(result.error, null, 2));
   }
 
@@ -171,13 +179,17 @@ async function step<Model extends ILlmSchema.Model>(
     };
 
   // VALIDATION FAILED
-  const validate = await Promise.all(
+  const validate: [string, string][] = await Promise.all(
     Object.entries(diagnostics).map(async ([filename, d]) => {
-      const scenario = scenarioMap.get(filename)!;
-
-      const code = files[filename];
-      const response = await process(ctx, d, code, scenario);
-
+      const scenario: AutoBeTestScenarioEvent.IScenario =
+        scenarioMap.get(filename)!;
+      const code: string = files[filename];
+      const response: ICorrectTestFunctionProps = await process(
+        ctx,
+        d,
+        code,
+        scenario,
+      );
       ctx.dispatch({
         type: "testCorrect",
         created_at: new Date().toISOString(),
@@ -194,8 +206,10 @@ async function step<Model extends ILlmSchema.Model>(
     }),
   );
 
-  const newFiles = { ...files, ...Object.fromEntries(validate) };
-
+  const newFiles: Record<string, string> = {
+    ...files,
+    ...Object.fromEntries(validate),
+  };
   return step(ctx, newFiles, scenarioMap, life - 1);
 }
 
