@@ -1,11 +1,11 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
-import { AutoBeOpenApi } from "@autobe/interface";
 import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 
 export const transformTestCorrectHistories = (
-  document: AutoBeOpenApi.IDocument | null,
+  apiFiles: Record<string, string>,
+  dtoFiles: Record<string, string>,
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
@@ -33,19 +33,15 @@ export const transformTestCorrectHistories = (
         "- Keep all tests deterministic and reliable.",
         "",
         "## File References",
-        "### OpenAPI Like Document",
-        "```json",
-        JSON.stringify(document),
+        "### API Files",
+        "```typescript",
+        JSON.stringify(apiFiles, null, 2),
         "```",
-        // "### API Files",
-        // "```typescript",
-        // JSON.stringify(apiFiles, null, 2),
-        // "```",
-        // "",
-        // "### DTO Files",
-        // "```typescript",
-        // JSON.stringify(dtoFiles, null, 2),
-        // "```",
+        "",
+        "### DTO Files",
+        "```typescript",
+        JSON.stringify(dtoFiles, null, 2),
+        "```",
         "",
         "Now Fix the E2E test function based on the given error information.",
         "Only output a single `async function` named `test_api_{...}`. No explanation, no commentary.",

@@ -1,6 +1,5 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import {
-  AutoBeOpenApi,
   AutoBeTestFile,
   AutoBeTestScenario,
   AutoBeTestValidateEvent,
@@ -57,13 +56,6 @@ export async function orchestrateTestCorrect<Model extends ILlmSchema.Model>(
     ...retainedFiles,
     ...testFiles,
   };
-  // const files: AutoBeTestFile[] = Object.fromEntries(
-  //   Object.entries(mergedFiles).filter(
-  //     ([filename]) =>
-  //       (filename.endsWith(".ts") && !filename.startsWith("test/benchmark/")) ||
-  //       filename.endsWith(".json"),
-  //   ),
-  // );
 
   // 4) Ask the LLM to correct the filtered file set
   const response: AutoBeTestValidateEvent = await step(
@@ -82,7 +74,17 @@ export async function orchestrateTestCorrect<Model extends ILlmSchema.Model>(
   const event: AutoBeTestValidateEvent = {
     ...response,
     type: "testValidate",
-    files: { ...mergedFiles, ...response.files },
+    files: [
+      ...Object.entries(mergedFiles).map(
+        ([filename, content]): AutoBeTestFile => {
+          return {
+            location: filename,
+            content,
+          };
+        },
+      ),
+      ...response.files,
+    ],
   };
   return event;
 }
@@ -254,26 +256,29 @@ async function process<Model extends ILlmSchema.Model>(
     value: null,
   };
 
-  let document: AutoBeOpenApi.IDocument | null = null;
+  const files: [string, string][] = [];
   if (scenario) {
-    document = filterDocument(scenario, ctx.state().interface!.document);
+    const document = filterDocument(scenario, ctx.state().interface!.document);
+    files.push(
+      ...Object.entries(await ctx.compiler.interface.compile(document)),
+    );
   }
 
-  // const apiFiles = Object.entries(ctx.state().interface?.files ?? {})
-  //   .filter(([filename]) => {
-  //     return filename.startsWith("src/api/");
-  //   })
-  //   .reduce<Record<string, string>>((acc, [filename, content]) => {
-  //     return Object.assign(acc, { [filename]: content });
-  //   }, {});
+  const apiFiles = files
+    .filter(([filename]) => {
+      return filename.startsWith("src/api/");
+    })
+    .reduce<Record<string, string>>((acc, [filename, content]) => {
+      return Object.assign(acc, { [filename]: content });
+    }, {});
 
-  // const dtoFiles = Object.entries(ctx.state().interface?.files ?? {})
-  //   .filter(([filename]) => {
-  //     return filename.startsWith("src/api/structures/");
-  //   })
-  //   .reduce<Record<string, string>>((acc, [filename, content]) => {
-  //     return Object.assign(acc, { [filename]: content });
-  //   }, {});
+  const dtoFiles = files
+    .filter(([filename]) => {
+      return filename.startsWith("src/api/structures/");
+    })
+    .reduce<Record<string, string>>((acc, [filename, content]) => {
+      return Object.assign(acc, { [filename]: content });
+    }, {});
 
   const agentica = new MicroAgentica({
     model: ctx.model,
@@ -281,7 +286,7 @@ async function process<Model extends ILlmSchema.Model>(
     config: {
       ...(ctx.config ?? {}),
     },
-    histories: transformTestCorrectHistories(document),
+    histories: transformTestCorrectHistories(apiFiles, dtoFiles),
     controllers: [
       createApplication({
         model: ctx.model,
