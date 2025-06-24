@@ -315,7 +315,11 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
           : [],
       ),
       ...(this.state_.interface ? this.state_.interface.files : {}),
-      ...(this.state_.test ? this.state_.test.files : {}),
+      ...(this.state_.test
+        ? Object.fromEntries(
+            this.state_.test.files.map((f) => [f.location, f.content]),
+          )
+        : {}),
       ...(this.state_.realize ? this.state_.realize.files : {}),
       "autobe/histories.json": JSON.stringify(this.histories_, null, 2),
       "autobe/tokenUsage.json": JSON.stringify(this.getTokenUsage(), null, 2),

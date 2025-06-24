@@ -2,6 +2,7 @@ import { tags } from "typia";
 
 import { IAutoBeTypeScriptCompilerResult } from "../compiler/IAutoBeTypeScriptCompilerResult";
 import { AutoBeAgentHistoryBase } from "./AutoBeHistoryBase";
+import { AutoBeTestFile } from "./contents/AutoBeTestFile";
 
 /**
  * History record generated when the Test agent writes e2e test code based on
@@ -24,19 +25,23 @@ import { AutoBeAgentHistoryBase } from "./AutoBeHistoryBase";
  */
 export interface AutoBeTestHistory extends AutoBeAgentHistoryBase<"test"> {
   /**
-   * Generated e2e test files as key-value pairs.
+   * Collection of generated e2e test files with detailed scenario metadata.
    *
-   * Contains the complete set of TypeScript test files with each key
-   * representing the file path and each value containing the actual test code.
-   * Each test file includes standalone functions that implement specific use
-   * case scenarios for API endpoints, providing comprehensive end-to-end
-   * testing coverage.
+   * Contains an array of test file objects where each file represents a
+   * specific testing scenario with its location, content, and associated
+   * scenario information. Each test file includes standalone functions that
+   * implement particular use case scenarios for API endpoints, providing
+   * comprehensive end-to-end testing coverage with rich contextual
+   * information.
    *
-   * The test files are designed to validate both technical functionality and
-   * business rule implementation, ensuring that the generated APIs work
-   * correctly under realistic operational conditions.
+   * Unlike simple key-value pairs, this structure allows for detailed tracking
+   * of test scenarios, their purposes, and their relationships to specific API
+   * endpoints and business requirements. The test files are designed to
+   * validate both technical functionality and business rule implementation,
+   * ensuring that the generated APIs work correctly under realistic operational
+   * conditions.
    */
-  files: Record<string, string>;
+  files: AutoBeTestFile[];
 
   /**
    * Results of compiling the generated test code using the embedded TypeScript

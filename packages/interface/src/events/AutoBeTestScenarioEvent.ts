@@ -1,4 +1,4 @@
-import { AutoBeOpenApi } from "../openapi";
+import { AutoBeTestScenario } from "../histories";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
 /**
@@ -26,7 +26,7 @@ export interface AutoBeTestScenarioEvent
    * scenarios represent complete test cases ready for compilation and
    * execution.
    */
-  scenarios: AutoBeTestScenarioEvent.IScenario[];
+  scenarios: AutoBeTestScenario[];
 
   /**
    * Current step in the test generation workflow.
@@ -36,73 +36,4 @@ export interface AutoBeTestScenarioEvent
    * requirements iteration.
    */
   step: number;
-}
-
-export namespace AutoBeTestScenarioEvent {
-  /**
-   * A single test scenario for an API endpoint.
-   *
-   * Contains everything needed to test a specific function: the target
-   * endpoint, generated test code, and any prerequisite functions that must be
-   * called to set up proper test conditions.
-   */
-  export interface IScenario {
-    /**
-     * The API endpoint being tested.
-     *
-     * Contains the complete endpoint specification including URL, method,
-     * parameters, and expected responses that will be validated by this test
-     * scenario.
-     */
-    endpoint: AutoBeOpenApi.IEndpoint;
-
-    /**
-     * Generated test code for this endpoint.
-     *
-     * Initial test implementation created by the AI agent. This code may be
-     * refined through compilation feedback and validation cycles.
-     */
-    draft: string;
-
-    /**
-     * Name of the function being tested.
-     *
-     * The identifier of the API function that this test case targets, used for
-     * organizing and tracking test results.
-     */
-    functionName: string;
-
-    /**
-     * Functions that must be called before running the main test.
-     *
-     * Dependencies required to set up test data, authenticate users, create
-     * resources, or establish other conditions needed for the test to execute
-     * successfully.
-     */
-    dependencies: IDependency[];
-  }
-
-  /**
-   * A dependency function that must be called before the main test.
-   *
-   * Represents a prerequisite API call needed to prepare the system state for
-   * successful test execution.
-   */
-  export interface IDependency {
-    /**
-     * Why this dependency is needed.
-     *
-     * Explains the role of this prerequisite function in setting up the
-     * conditions required for the main test to succeed.
-     */
-    purpose: string;
-
-    /**
-     * The API endpoint for this dependency function.
-     *
-     * Complete specification of the prerequisite function that needs to be
-     * called, including parameters and expected behavior.
-     */
-    endpoint: AutoBeOpenApi.IEndpoint;
-  }
 }
