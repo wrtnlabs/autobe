@@ -33,23 +33,16 @@ export async function orchestrateTestCorrect<Model extends ILlmSchema.Model>(
   );
 
   // 1) Build map of new test files from progress events
-  const testFiles: Record<string, string> = codes
-    .map(({ filename, content }) => {
-      return {
-        [filename]: content,
-      };
-    })
-    .reduce<Record<string, string>>((acc, cur) => Object.assign(acc, cur), {});
+  const testFiles: Record<string, string> = Object.fromEntries(
+    codes.map((c) => [c.filename, c.content]),
+  );
 
   // 2) Keep only files outside the test directory from current state
-  const retainedFiles: Record<string, string> = Object.entries(
-    ctx.state().interface?.files ?? {},
-  )
-    .filter(([key]) => filterTestFileName(key))
-    .map(([filename, content]) => {
-      return { [filename]: content };
-    })
-    .reduce<Record<string, string>>((acc, cur) => Object.assign(acc, cur), {});
+  const retainedFiles: Record<string, string> = Object.fromEntries(
+    Object.entries(ctx.state().interface?.files ?? {}).filter(([key]) =>
+      filterTestFileName(key),
+    ),
+  );
 
   // 3) Merge and filter: keep .ts/.json, drop anything under "benchmark"
   const mergedFiles: Record<string, string> = {
@@ -104,14 +97,7 @@ async function step<Model extends ILlmSchema.Model>(
   // COMPILE TEST CODE
   const result: IAutoBeTypeScriptCompilerResult =
     await ctx.compiler.typescript.compile({
-      files: files
-        .map((file) => {
-          return { [file.location]: file.content };
-        })
-        .reduce<Record<string, string>>(
-          (acc, cur) => Object.assign(acc, cur),
-          {},
-        ),
+      files: Object.fromEntries(files.map((f) => [f.location, f.content])),
     });
 
   if (result.type === "success") {
