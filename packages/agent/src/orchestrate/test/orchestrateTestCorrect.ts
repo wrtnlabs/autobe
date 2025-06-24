@@ -1,7 +1,8 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import {
   AutoBeOpenApi,
-  AutoBeTestScenarioEvent,
+  AutoBeTestFile,
+  AutoBeTestScenario,
   AutoBeTestValidateEvent,
   AutoBeTestWriteEvent,
   IAutoBeTypeScriptCompilerResult,
@@ -20,13 +21,15 @@ import { transformTestCorrectHistories } from "./transformTestCorrectHistories";
 export async function orchestrateTestCorrect<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   codes: AutoBeTestWriteEvent[],
-  scenarios: AutoBeTestScenarioEvent.IScenario[],
+  scenarios: AutoBeTestScenario[],
   life: number = 4,
 ): Promise<AutoBeTestValidateEvent> {
-  const scenarioMap: Map<string, AutoBeTestScenarioEvent.IScenario> = new Map();
-  codes.forEach(({ filename }, index) => {
-    scenarioMap.set(filename, scenarios[index]);
-  });
+  const files: AutoBeTestFile[] = codes.map(
+    ({ filename, content }, index): AutoBeTestFile => {
+      const scenario = scenarios[index];
+      return { location: filename, content, scenario };
+    },
+  );
 
   // 1) Build map of new test files from progress events
   const testFiles: Record<string, string> = codes
@@ -54,19 +57,24 @@ export async function orchestrateTestCorrect<Model extends ILlmSchema.Model>(
     ...retainedFiles,
     ...testFiles,
   };
-  const files: Record<string, string> = Object.fromEntries(
-    Object.entries(mergedFiles).filter(
-      ([filename]) =>
-        (filename.endsWith(".ts") && !filename.startsWith("test/benchmark/")) ||
-        filename.endsWith(".json"),
-    ),
-  );
+  // const files: AutoBeTestFile[] = Object.fromEntries(
+  //   Object.entries(mergedFiles).filter(
+  //     ([filename]) =>
+  //       (filename.endsWith(".ts") && !filename.startsWith("test/benchmark/")) ||
+  //       filename.endsWith(".json"),
+  //   ),
+  // );
 
   // 4) Ask the LLM to correct the filtered file set
   const response: AutoBeTestValidateEvent = await step(
     ctx,
-    files,
-    scenarioMap,
+    files.filter((f) => {
+      return (
+        (f.location.endsWith(".ts") &&
+          !f.location.startsWith("test/benchmark/")) ||
+        f.location.endsWith(".json")
+      );
+    }),
     life,
   );
 
@@ -96,16 +104,23 @@ export async function orchestrateTestCorrect<Model extends ILlmSchema.Model>(
  */
 async function step<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  files: Record<string, string>,
-  scenarioMap: Map<string, AutoBeTestScenarioEvent.IScenario>,
+  files: AutoBeTestFile[],
   life: number,
 ): Promise<AutoBeTestValidateEvent> {
   // COMPILE TEST CODE
 
   const result: IAutoBeTypeScriptCompilerResult =
     await ctx.compiler.typescript.compile({
-      files,
+      files: files
+        .map((file) => {
+          return { [file.location]: file.content };
+        })
+        .reduce<Record<string, string>>(
+          (acc, cur) => Object.assign(acc, cur),
+          {},
+        ),
     });
+
   if (result.type === "success") {
     // SUCCESS
     return {
@@ -179,38 +194,44 @@ async function step<Model extends ILlmSchema.Model>(
     };
 
   // VALIDATION FAILED
-  const validate: [string, string][] = await Promise.all(
-    Object.entries(diagnostics).map(async ([filename, d]) => {
-      const scenario: AutoBeTestScenarioEvent.IScenario =
-        scenarioMap.get(filename)!;
-      const code: string = files[filename];
-      const response: ICorrectTestFunctionProps = await process(
-        ctx,
-        d,
-        code,
-        scenario,
-      );
-      ctx.dispatch({
-        type: "testCorrect",
-        created_at: new Date().toISOString(),
-        files: { ...files, [filename]: response.content },
-        result,
-        solution: response.solution,
-        think_without_compile_error: response.think_without_compile_error,
-        think_again_with_compile_error: response.think_again_with_compile_error,
-        step: ctx.state().interface?.step ?? 0,
-      });
+  const validatedFiles: AutoBeTestFile[] = await Promise.all(
+    Object.entries(diagnostics).map(
+      async ([filename, d]): Promise<AutoBeTestFile> => {
+        const file = files.find((f) => f.location === filename);
+        const code: string = file?.content!;
+        const scenario = file?.scenario!;
 
-      // Return [filename, modified code]
-      return [filename, response.content];
-    }),
+        const response: ICorrectTestFunctionProps = await process(
+          ctx,
+          d,
+          code,
+          scenario,
+        );
+        ctx.dispatch({
+          type: "testCorrect",
+          created_at: new Date().toISOString(),
+          files: { ...files, [filename]: response.content },
+          result,
+          solution: response.solution,
+          think_without_compile_error: response.think_without_compile_error,
+          think_again_with_compile_error:
+            response.think_again_with_compile_error,
+          step: ctx.state().interface?.step ?? 0,
+        });
+
+        return { location: filename, content: code, scenario: scenario };
+      },
+    ),
   );
 
-  const newFiles: Record<string, string> = {
-    ...files,
-    ...Object.fromEntries(validate),
-  };
-  return step(ctx, newFiles, scenarioMap, life - 1);
+  return step(
+    ctx,
+    files.map((f) => {
+      const validated = validatedFiles.find((v) => v.location === f.location);
+      return validated ? validated : f;
+    }),
+    life - 1,
+  );
 }
 
 /**
@@ -227,7 +248,7 @@ async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   diagnostics: IAutoBeTypeScriptCompilerResult.IDiagnostic[],
   code: string,
-  scenario: AutoBeTestScenarioEvent.IScenario,
+  scenario: AutoBeTestScenario,
 ): Promise<ICorrectTestFunctionProps> {
   const pointer: IPointer<ICorrectTestFunctionProps | null> = {
     value: null,

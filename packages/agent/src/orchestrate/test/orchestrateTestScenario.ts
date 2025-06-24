@@ -3,8 +3,11 @@ import {
   IAgenticaHistoryJson,
   MicroAgentica,
 } from "@agentica/core";
-import { AutoBeOpenApi } from "@autobe/interface";
-import { AutoBeTestScenarioEvent } from "@autobe/interface";
+import {
+  AutoBeOpenApi,
+  AutoBeTestScenario,
+  AutoBeTestScenarioEvent,
+} from "@autobe/interface";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -69,7 +72,7 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
           draft: plan.draft,
           functionName: plan.functionName,
           dependencies: plan.dependsOn,
-        } satisfies AutoBeTestScenarioEvent.IScenario;
+        } satisfies AutoBeTestScenario;
       });
     }),
     created_at: new Date().toISOString(),

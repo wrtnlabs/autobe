@@ -47,7 +47,9 @@ export const validate_agent_test = async (owner: string, project: string) => {
       root: `${TestGlobal.ROOT}/results/${owner}/${project}/test-error`,
       files: {
         "result.json": JSON.stringify(result, null, 2),
-        ...result.files,
+        ...result.files
+          .map((f) => ({ [f.location]: f.content }))
+          .reduce((acc, cur) => Object.assign(acc, cur), {}),
         ...(result.compiled.type === "failure"
           ? {
               "reason.log": result.reason,

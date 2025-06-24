@@ -1,6 +1,6 @@
 import { orchestrateTestProgress } from "@autobe/agent/src/orchestrate/test/orchestrateTestProgress";
 import { FileSystemIterator } from "@autobe/filesystem";
-import { AutoBeEvent, AutoBeTestScenarioEvent } from "@autobe/interface";
+import { AutoBeEvent, AutoBeTestScenario } from "@autobe/interface";
 import fs from "fs";
 import typia from "typia";
 
@@ -30,7 +30,7 @@ export const validate_agent_test_write = async (
     events.push(event);
   });
 
-  const scenarios: AutoBeTestScenarioEvent.IScenario[] = JSON.parse(
+  const scenarios: AutoBeTestScenario[] = JSON.parse(
     await fs.promises.readFile(
       `${ROOT}/assets/repositories/${owner}/${project}/test/scenarios.json`,
       "utf8",

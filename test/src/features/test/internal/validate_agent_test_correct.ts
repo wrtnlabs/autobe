@@ -2,7 +2,7 @@ import { orchestrateTestCorrect } from "@autobe/agent/src/orchestrate/test/orche
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeEvent,
-  AutoBeTestScenarioEvent,
+  AutoBeTestScenario,
   AutoBeTestWriteEvent,
 } from "@autobe/interface";
 import fs from "fs";
@@ -31,7 +31,7 @@ export const validate_agent_test_correct = async (
     events.push(event);
   });
 
-  const scenarios: AutoBeTestScenarioEvent.IScenario[] = JSON.parse(
+  const scenarios: AutoBeTestScenario[] = JSON.parse(
     await fs.promises.readFile(
       `${ROOT}/assets/repositories/${owner}/${project}/test/scenarios.json`,
       "utf8",

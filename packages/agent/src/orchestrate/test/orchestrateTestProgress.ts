@@ -1,7 +1,7 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import {
   AutoBeOpenApi,
-  AutoBeTestScenarioEvent,
+  AutoBeTestScenario,
   AutoBeTestWriteEvent,
 } from "@autobe/interface";
 import {
@@ -19,7 +19,7 @@ import { transformTestProgressHistories } from "./transformTestProgressHistories
 
 export async function orchestrateTestProgress<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  scenarios: AutoBeTestScenarioEvent.IScenario[],
+  scenarios: AutoBeTestScenario[],
 ): Promise<AutoBeTestWriteEvent[]> {
   const start: Date = new Date();
   let complete: number = 0;
@@ -61,7 +61,7 @@ export async function orchestrateTestProgress<Model extends ILlmSchema.Model>(
  */
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  scenario: AutoBeTestScenarioEvent.IScenario,
+  scenario: AutoBeTestScenario,
 ): Promise<ICreateTestCodeProps> {
   const pointer: IPointer<ICreateTestCodeProps | null> = {
     value: null,
@@ -106,7 +106,7 @@ async function process<Model extends ILlmSchema.Model>(
 }
 
 export function filterDocument(
-  scenario: AutoBeTestScenarioEvent.IScenario,
+  scenario: AutoBeTestScenario,
   document: AutoBeOpenApi.IDocument,
 ): AutoBeOpenApi.IDocument {
   const operations: AutoBeOpenApi.IOperation[] = document.operations.filter(

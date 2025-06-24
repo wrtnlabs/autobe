@@ -1,4 +1,5 @@
 import { IAutoBeTypeScriptCompilerResult } from "../compiler";
+import { AutoBeTestFile } from "../histories";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
 /**
@@ -21,19 +22,21 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
 export interface AutoBeTestValidateEvent
   extends AutoBeEventBase<"testValidate"> {
   /**
-   * Test files being validated by the TypeScript compiler as key-value pairs.
+   * Collection of test files that contained compilation errors with their
+   * detailed scenario metadata.
    *
-   * Contains the TypeScript test files that are undergoing compilation
-   * validation. Each key represents the file path and each value contains the
-   * test code that includes standalone functions implementing specific use case
-   * scenarios for API endpoints. These files represent the current state of
-   * test implementation that needs validation.
+   * Contains the structured test file objects that failed compilation before
+   * correction. Each file includes its location, problematic source code
+   * content, and associated scenario information that provides context for
+   * understanding the compilation issues. These files serve as a comprehensive
+   * baseline for measuring the effectiveness of the correction process.
    *
-   * The files provide context for understanding what test scenarios are being
-   * validated and serve as the foundation for either successful completion or
-   * correction feedback depending on the compilation results.
+   * Unlike simple key-value pairs, this structure preserves the rich metadata
+   * about each test scenario, enabling better analysis of what specific test
+   * patterns or business logic implementations led to compilation failures and
+   * how they can be systematically improved.
    */
-  files: Record<string, string>;
+  files: AutoBeTestFile[];
 
   /**
    * Compilation result indicating success, failure, or exception during
