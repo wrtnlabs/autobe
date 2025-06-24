@@ -89,10 +89,13 @@ export namespace AutoBeEvent {
    * switch statements, and event filtering logic.
    *
    * The type enables type-safe event handling by ensuring that only valid event
-   * type strings can be used when subscribing to events, filtering even export
-   * type Type = AutoBeEvent["type"];
-   *
-   * /** Type mapping interface that associates event type strings with their
+   * type strings can be used when subscribing to events, filtering event
+   * streams, or implementing event handlers.
+   */
+  export type Type = AutoBeEvent["type"];
+
+  /**
+   * Type mapping interface that associates event type strings with their
    * corresponding event object types.
    *
    * This mapping provides a type-safe way to access specific event types by
