@@ -51,9 +51,9 @@ export const validate_agent_test_correct = async (
     scenarios,
   );
 
-  const files = Object.entries(correct.files)
-    .map(([filename, content]) => {
-      return { [`compiled/${filename}`]: content };
+  const files = correct.files
+    .map((file) => {
+      return { [`compiled/${file.location}`]: file.content };
     })
     .reduce<Record<string, string>>((acc, cur) => {
       return Object.assign(acc, cur);
