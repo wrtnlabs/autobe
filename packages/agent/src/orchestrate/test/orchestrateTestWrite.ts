@@ -1,23 +1,17 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
-import {
-  AutoBeOpenApi,
-  AutoBeTestScenario,
-  AutoBeTestWriteEvent,
-} from "@autobe/interface";
-import {
-  ILlmApplication,
-  ILlmSchema,
-  OpenApiTypeChecker,
-} from "@samchon/openapi";
+import { AutoBeTestScenario, AutoBeTestWriteEvent } from "@autobe/interface";
+import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { enforceToolCall } from "../../utils/enforceToolCall";
-import { transformTestProgressHistories } from "./transformTestProgressHistories";
+import { compileTestScenario } from "./compileTestScenario";
+import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
+import { transformTestWriteHistories } from "./transformTestWriteHistories";
 
-export async function orchestrateTestProgress<Model extends ILlmSchema.Model>(
+export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   scenarios: AutoBeTestScenario[],
 ): Promise<AutoBeTestWriteEvent[]> {
@@ -66,15 +60,10 @@ async function process<Model extends ILlmSchema.Model>(
   const pointer: IPointer<ICreateTestCodeProps | null> = {
     value: null,
   };
-  const document: AutoBeOpenApi.IDocument = filterDocument(
+  const artifacts: IAutoBeTestScenarioArtifacts = await compileTestScenario(
+    ctx,
     scenario,
-    ctx.state().interface!.document,
   );
-  const files: [string, string][] = Object.entries(
-    await ctx.compiler.interface.compile(document),
-  );
-  const filter = (prefix: string) =>
-    Object.fromEntries(files.filter(([key]) => key.startsWith(prefix)));
 
   const agentica = new MicroAgentica({
     model: ctx.model,
@@ -82,11 +71,9 @@ async function process<Model extends ILlmSchema.Model>(
     config: {
       ...(ctx.config ?? {}),
     },
-    histories: transformTestProgressHistories({
-      scenario: scenario,
-      dto: filter("src/api/structures"),
-      sdk: filter("src/api/functional"),
-      e2e: filter("test/features"),
+    histories: transformTestWriteHistories({
+      scenario,
+      artifacts,
     }),
     controllers: [
       createApplication({
@@ -103,52 +90,6 @@ async function process<Model extends ILlmSchema.Model>(
   await agentica.conversate("Create e2e test functions.");
   if (pointer.value === null) throw new Error("Failed to create test code.");
   return pointer.value;
-}
-
-export function filterDocument(
-  scenario: AutoBeTestScenario,
-  document: AutoBeOpenApi.IDocument,
-): AutoBeOpenApi.IDocument {
-  const operations: AutoBeOpenApi.IOperation[] = document.operations.filter(
-    (op) => {
-      if (
-        scenario.endpoint.method === op.method &&
-        scenario.endpoint.path === op.path
-      ) {
-        return true;
-      } else if (
-        scenario.dependencies.some(
-          (dp) =>
-            dp.endpoint.method === op.method && dp.endpoint.path === op.path,
-        )
-      ) {
-        return true;
-      }
-    },
-  );
-  const components: AutoBeOpenApi.IComponents = {
-    schemas: {},
-  };
-  const visit = (typeName: string) => {
-    OpenApiTypeChecker.visit({
-      components: document.components,
-      schema: { $ref: `#/components/schemas/${typeName}` },
-      closure: (s) => {
-        if (OpenApiTypeChecker.isReference(s)) {
-          const key: string = s.$ref.split("/").pop()!;
-          components.schemas[key] = document.components.schemas[key];
-        }
-      },
-    });
-  };
-  for (const op of operations) {
-    if (op.requestBody) visit(op.requestBody.typeName);
-    if (op.responseBody) visit(op.responseBody.typeName);
-  }
-  return {
-    operations,
-    components,
-  };
 }
 
 function createApplication<Model extends ILlmSchema.Model>(props: {

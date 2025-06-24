@@ -9,8 +9,8 @@ import { v4 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
 import { orchestrateTestCorrect } from "./orchestrateTestCorrect";
-import { orchestrateTestProgress } from "./orchestrateTestProgress";
 import { orchestrateTestScenario } from "./orchestrateTestScenario";
+import { orchestrateTestWrite } from "./orchestrateTestWrite";
 
 export const orchestrateTest =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
@@ -47,7 +47,7 @@ export const orchestrateTest =
     const { scenarios } = await orchestrateTestScenario(ctx);
 
     // TEST CODE
-    const codes: AutoBeTestWriteEvent[] = await orchestrateTestProgress(
+    const codes: AutoBeTestWriteEvent[] = await orchestrateTestWrite(
       ctx,
       scenarios,
     );

@@ -2,10 +2,10 @@ import { IAgenticaHistoryJson } from "@agentica/core";
 import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
+import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
 
 export const transformTestCorrectHistories = (
-  apiFiles: Record<string, string>,
-  dtoFiles: Record<string, string>,
+  artifacts: IAutoBeTestScenarioArtifacts,
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
@@ -35,12 +35,12 @@ export const transformTestCorrectHistories = (
         "## File References",
         "### API Files",
         "```typescript",
-        JSON.stringify(apiFiles, null, 2),
+        JSON.stringify(artifacts.sdk),
         "```",
         "",
         "### DTO Files",
         "```typescript",
-        JSON.stringify(dtoFiles, null, 2),
+        JSON.stringify(artifacts.dto),
         "```",
         "",
         "Now Fix the E2E test function based on the given error information.",
