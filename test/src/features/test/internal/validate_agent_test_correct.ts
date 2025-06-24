@@ -36,16 +36,24 @@ export const validate_agent_test_correct = async (
 
   const correct = await orchestrateTestCorrect(agent.getContext(), codes);
 
+  const files = Object.entries(correct.files)
+    .map(([filename, { content }]) => {
+      return { [`compiled/${filename}`]: content };
+    })
+    .reduce<Record<string, string>>((acc, cur) => {
+      return Object.assign(acc, cur);
+    }, {});
+
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${owner}/${project}/test/plan`,
+    root: `${TestGlobal.ROOT}/results/${owner}/${project}/test/correct`,
     files: {
+      ...files,
       "logs/history.json": JSON.stringify(agent.getHistories(), null, 2),
       "logs/codes.json": JSON.stringify(codes, null, 2),
       "logs/tokenUsage.json": JSON.stringify(agent.getTokenUsage(), null, 2),
       "logs/files.json": JSON.stringify(Object.keys(agent.getFiles()), null, 2),
       "logs/events.json": JSON.stringify(events, null, 2),
       "logs/compiled.json": JSON.stringify(correct.files, null, 2),
-      "logs/correct": JSON.stringify(correct, null, 2),
     },
   });
 

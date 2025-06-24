@@ -35,11 +35,8 @@ export async function orchestrateTestCorrect<Model extends ILlmSchema.Model>(
 
   // 2) Keep only files outside the test directory from current state
   const retainedFiles = Object.entries(ctx.state().interface?.files ?? {})
-    .filter(([filename]) => !filename.startsWith("test/features/api"))
-    .map(([filename, content]) => {
-      return {
-        [`test/features/api/${filename}`]: { content },
-      };
+    .filter(([filename]) => {
+      return !filename.startsWith("test/features/api");
     })
     .reduce<Record<string, { content: string }>>(
       (acc, cur) => Object.assign(acc, cur),
@@ -95,7 +92,7 @@ async function step<Model extends ILlmSchema.Model>(
   // COMPILE TEST CODE
 
   const fileMap = Object.entries(files)
-    .map(([filename, content]) => {
+    .map(([filename, { content }]) => {
       return { [filename]: content };
     })
     .reduce<Record<string, string>>((acc, cur) => Object.assign(acc, cur), {});
@@ -179,25 +176,28 @@ async function step<Model extends ILlmSchema.Model>(
 
   // VALIDATION FAILED
   const validate = await Promise.all(
-    Object.entries(diagnostics).map(async ([filename, d]) => {
-      const scenario = files[filename].scenario;
-      const code = files[filename].content;
-      const response = await process(ctx, d, code, scenario);
+    Object.entries(diagnostics).map(
+      async ([filename, d]): Promise<[string, { content: string }]> => {
+        const scenario = files[filename].scenario;
+        const code = files[filename].content;
+        const response = await process(ctx, d, code, scenario);
 
-      ctx.dispatch({
-        type: "testCorrect",
-        created_at: new Date().toISOString(),
-        files: { ...fileMap, [filename]: response.content },
-        result,
-        solution: response.solution,
-        think_without_compile_error: response.think_without_compile_error,
-        think_again_with_compile_error: response.think_again_with_compile_error,
-        step: ctx.state().interface?.step ?? 0,
-      });
+        ctx.dispatch({
+          type: "testCorrect",
+          created_at: new Date().toISOString(),
+          files: { ...fileMap, [filename]: response.content },
+          result,
+          solution: response.solution,
+          think_without_compile_error: response.think_without_compile_error,
+          think_again_with_compile_error:
+            response.think_again_with_compile_error,
+          step: ctx.state().interface?.step ?? 0,
+        });
 
-      // Return [filename, modified code]
-      return [filename, response.content];
-    }),
+        // Return [filename, modified code]
+        return [filename, { content: response.content }];
+      },
+    ),
   );
 
   const newFiles = { ...files, ...Object.fromEntries(validate) };

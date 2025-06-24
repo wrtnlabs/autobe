@@ -2,9 +2,7 @@ import fs from "fs";
 import path from "path";
 import { VariadicSingleton } from "tstl";
 
-/**
- * @internal
- */
+/** @internal */
 export namespace FileSystemIterator {
   export const read = async (props: {
     root: string;
@@ -44,9 +42,10 @@ export namespace FileSystemIterator {
       } catch {}
     });
     for (const [key, value] of Object.entries(props.files)) {
+      console.log(key);
       const file: string = path.resolve(`${props.root}/${key}`);
       await directory.get(path.dirname(file));
-      await fs.promises.writeFile(file, value, "utf8");
+      await fs.promises.writeFile(file, value ?? "", "utf8");
     }
   };
 }
