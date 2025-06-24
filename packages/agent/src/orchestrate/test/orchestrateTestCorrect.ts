@@ -53,8 +53,6 @@ export async function orchestrateTestCorrect<Model extends ILlmSchema.Model>(
   // 4) Ask the LLM to correct the filtered file set
   const response: AutoBeTestValidateEvent = await step(ctx, files, life);
 
-  
-
   // 5) Combine original + corrected files and dispatch event
   const event: AutoBeTestValidateEvent = {
     ...response,
