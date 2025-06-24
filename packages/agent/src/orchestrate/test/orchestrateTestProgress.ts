@@ -1,6 +1,9 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
-import { AutoBeOpenApi, AutoBeTestProgressEvent } from "@autobe/interface";
-import { IAutoBeTestPlan } from "@autobe/interface/src/test/AutoBeTestPlan";
+import {
+  AutoBeOpenApi,
+  AutoBeTestScenarioEvent,
+  AutoBeTestWriteEvent,
+} from "@autobe/interface";
 import {
   ILlmApplication,
   ILlmSchema,
@@ -16,12 +19,12 @@ import { transformTestProgressHistories } from "./transformTestProgressHistories
 
 export async function orchestrateTestProgress<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  plans: IAutoBeTestPlan.IScenario[],
-): Promise<AutoBeTestProgressEvent[]> {
+  plans: AutoBeTestScenarioEvent.IScenario[],
+): Promise<AutoBeTestWriteEvent[]> {
   const start: Date = new Date();
   let complete: number = 0;
 
-  const events: AutoBeTestProgressEvent[] = await Promise.all(
+  const events: AutoBeTestWriteEvent[] = await Promise.all(
     /**
      * Generate test code for each plan. Maps through plans array to create
      * individual test code implementations. Each plan is processed to generate
@@ -29,8 +32,8 @@ export async function orchestrateTestProgress<Model extends ILlmSchema.Model>(
      */
     plans.map(async (plan) => {
       const code: ICreateTestCodeProps = await process(ctx, plan);
-      const event: AutoBeTestProgressEvent = {
-        type: "testProgress",
+      const event: AutoBeTestWriteEvent = {
+        type: "testWrite",
         created_at: start.toISOString(),
         filename: `${code.domain}/${plan.functionName}.ts`,
         content: code.content,
@@ -53,19 +56,19 @@ export async function orchestrateTestProgress<Model extends ILlmSchema.Model>(
  * generate appropriate test code through LLM interaction.
  *
  * @param ctx - The AutoBeContext containing model, vendor and configuration
- * @param plan - The test plan information to generate code for
+ * @param scenario - The test plan information to generate code for
  * @returns Promise resolving to ICreateTestCodeProps containing the generated
  *   test code
  */
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  plan: IAutoBeTestPlan.IPlan & { method: string; path: string },
+  scenario: AutoBeTestScenarioEvent.IScenario,
 ): Promise<ICreateTestCodeProps> {
   const pointer: IPointer<ICreateTestCodeProps | null> = {
     value: null,
   };
   const document: AutoBeOpenApi.IDocument = filterDocument(
-    plan,
+    scenario,
     ctx.state().interface!.document,
   );
   const files: [string, string][] = Object.entries(
@@ -81,7 +84,7 @@ async function process<Model extends ILlmSchema.Model>(
       ...(ctx.config ?? {}),
     },
     histories: transformTestProgressHistories({
-      plan,
+      scenario: scenario,
       dto: filter("src/api/structures"),
       sdk: filter("src/api/functional"),
       e2e: filter("test/features"),
@@ -104,16 +107,20 @@ async function process<Model extends ILlmSchema.Model>(
 }
 
 export function filterDocument(
-  plan: IAutoBeTestPlan.IPlan & { method: string; path: string },
+  scenario: AutoBeTestScenarioEvent.IScenario,
   document: AutoBeOpenApi.IDocument,
 ): AutoBeOpenApi.IDocument {
   const operations: AutoBeOpenApi.IOperation[] = document.operations.filter(
     (op) => {
-      if (plan.method === op.method && plan.path === op.path) {
+      if (
+        scenario.endpoint.method === op.method &&
+        scenario.endpoint.path === op.path
+      ) {
         return true;
       } else if (
-        plan.dependsOn.some(
-          (dp) => dp.method === op.method && dp.path === op.path,
+        scenario.dependencies.some(
+          (dp) =>
+            dp.endpoint.method === op.method && dp.endpoint.path === op.path,
         )
       ) {
         return true;

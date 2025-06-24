@@ -4,8 +4,7 @@ import {
   MicroAgentica,
 } from "@agentica/core";
 import { AutoBeOpenApi } from "@autobe/interface";
-import { AutoBeTestPlanEvent } from "@autobe/interface/src/events/AutoBeTestPlanEvent";
-import { IAutoBeTestPlan } from "@autobe/interface/src/test/AutoBeTestPlan";
+import { AutoBeTestScenarioEvent } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -16,10 +15,11 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { enforceToolCall } from "../../utils/enforceToolCall";
+import { IAutoBeTestScenarioApplication } from "./structures/IAutoBeTestScenarioApplication";
 
-export async function orchestrateTestPlan<Model extends ILlmSchema.Model>(
+export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-): Promise<AutoBeTestPlanEvent> {
+): Promise<AutoBeTestScenarioEvent> {
   const operations = ctx.state().interface?.document.operations ?? [];
   if (operations.length === 0) {
     throw new Error(
@@ -27,7 +27,7 @@ export async function orchestrateTestPlan<Model extends ILlmSchema.Model>(
     );
   }
 
-  const exclude: IAutoBeTestPlan.IPlanGroup[] = [];
+  const exclude: IAutoBeTestScenarioApplication.IScenarioGroup[] = [];
   let include: AutoBeOpenApi.IOperation[] = Array.from(operations);
 
   do {
@@ -35,13 +35,23 @@ export async function orchestrateTestPlan<Model extends ILlmSchema.Model>(
 
     await Promise.all(
       matrix.map(async (_include) => {
-        exclude.push(...(await execute(ctx, operations, _include, exclude)));
+        exclude.push(
+          ...(await execute(
+            ctx,
+            operations,
+            _include,
+            exclude.map((x) => x.endpoint),
+          )),
+        );
       }),
     );
 
     include = include.filter((op) => {
       if (
-        exclude.some((pg) => pg.method === op.method && pg.path === op.path)
+        exclude.some(
+          (pg) =>
+            pg.endpoint.method === op.method && pg.endpoint.path === op.path,
+        )
       ) {
         return false;
       }
@@ -50,21 +60,20 @@ export async function orchestrateTestPlan<Model extends ILlmSchema.Model>(
   } while (include.length > 0);
 
   return {
-    type: "testPlan",
+    type: "testScenario",
     step: ctx.state().analyze?.step ?? 0,
-    plans: exclude.flatMap((pg) => {
-      return pg.plans.map((plan) => {
+    scenarios: exclude.flatMap((pg) => {
+      return pg.scenarios.map((plan) => {
         return {
-          method: pg.method,
-          path: pg.path,
+          endpoint: pg.endpoint,
           draft: plan.draft,
           functionName: plan.functionName,
-          dependsOn: plan.dependsOn,
-        };
+          dependencies: plan.dependsOn,
+        } satisfies AutoBeTestScenarioEvent.IScenario;
       });
     }),
     created_at: new Date().toISOString(),
-  } as AutoBeTestPlanEvent;
+  } as AutoBeTestScenarioEvent;
 }
 
 const execute = async <Model extends ILlmSchema.Model>(
@@ -73,7 +82,7 @@ const execute = async <Model extends ILlmSchema.Model>(
   include: Pick<AutoBeOpenApi.IOperation, "method" | "path">[],
   exclude: Pick<AutoBeOpenApi.IOperation, "method" | "path">[],
 ) => {
-  const pointer: IPointer<IAutoBeTestPlan.IPlanGroup[]> = {
+  const pointer: IPointer<IAutoBeTestScenarioApplication.IScenarioGroup[]> = {
     value: [],
   };
   const agentica: MicroAgentica<Model> = new MicroAgentica({
@@ -92,7 +101,7 @@ const execute = async <Model extends ILlmSchema.Model>(
         model: ctx.model,
         build: (next) => {
           pointer.value ??= [];
-          pointer.value.push(...next.planGroups);
+          pointer.value.push(...next.scenarioGroups);
         },
       }),
     ],
@@ -116,7 +125,7 @@ const createHistoryProperties = (
     id: v4(),
     created_at: new Date().toISOString(),
     type: "systemMessage",
-    text: AutoBeSystemPromptConstant.TEST_PLAN,
+    text: AutoBeSystemPromptConstant.TEST_SCENARIO,
   } satisfies IAgenticaHistoryJson.ISystemMessage,
   {
     id: v4(),
@@ -162,7 +171,7 @@ const createHistoryProperties = (
 
 function createApplication<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  build: (next: IMakePlanProps) => void;
+  build: (next: IAutoBeTestScenarioApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
@@ -171,24 +180,29 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
   ] as unknown as ILlmApplication<Model>;
 
   application.functions[0].validate = (next: unknown): IValidation => {
-    const result: IValidation<IMakePlanProps> =
-      typia.validate<IMakePlanProps>(next);
+    const result: IValidation<IAutoBeTestScenarioApplication.IProps> =
+      typia.validate<IAutoBeTestScenarioApplication.IProps>(next);
     if (result.success === false) return result;
 
     const errors: IValidation.IError[] = [];
-    result.data.planGroups.forEach((pg, i, arr) => {
+    result.data.scenarioGroups.forEach((pg, i, arr) => {
       arr.forEach((target, j) => {
-        if (i !== j && target.method === pg.method && target.path === pg.path) {
+        if (
+          i !== j &&
+          target.endpoint.method === pg.endpoint.method &&
+          target.endpoint.path === pg.endpoint.path
+        ) {
           if (
             !errors.some(
               (el) =>
-                el.path !== `planGroups[${j}].path` && el.value !== target.path,
+                el.path !== `planGroups[${j}].path` &&
+                el.value !== target.endpoint.path,
             )
           ) {
             errors.push({
               path: `planGroups[${j}].path`,
               expected: `planGroup's {method + path} cannot duplicated.`,
-              value: target.path,
+              value: target.endpoint.path,
             });
           }
 
@@ -196,13 +210,13 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
             !errors.some(
               (el) =>
                 el.path !== `planGroups[${j}].method` &&
-                el.value !== target.method,
+                el.value !== target.endpoint.method,
             )
           ) {
             errors.push({
               path: `planGroups[${j}].method`,
               expected: `planGroup's {method + path} cannot duplicated.`,
-              value: target.method,
+              value: target.endpoint.method,
             });
           }
         }
@@ -220,21 +234,20 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
 
     return result;
   };
-
   return {
     protocol: "class",
     name: "Make test plans",
     application,
     execute: {
-      makePlan: (next) => {
+      makeScenario: (next) => {
         props.build(next);
       },
-    } satisfies IApplication,
+    } satisfies IAutoBeTestScenarioApplication,
   };
 }
 
 const claude = typia.llm.application<
-  IApplication,
+  IAutoBeTestScenarioApplication,
   "claude",
   {
     reference: true;
@@ -242,7 +255,7 @@ const claude = typia.llm.application<
 >();
 const collection = {
   chatgpt: typia.llm.application<
-    IApplication,
+    IAutoBeTestScenarioApplication,
     "chatgpt",
     { reference: true }
   >(),
@@ -250,19 +263,5 @@ const collection = {
   llama: claude,
   deepseek: claude,
   "3.1": claude,
-  "3.0": typia.llm.application<IApplication, "3.0">(),
+  "3.0": typia.llm.application<IAutoBeTestScenarioApplication, "3.0">(),
 };
-
-interface IApplication {
-  /**
-   * Make test plans for the given endpoints.
-   *
-   * @param props Properties containing the endpoints and test plans.
-   */
-  makePlan(props: IMakePlanProps): void;
-}
-
-interface IMakePlanProps {
-  /** Array of test plan group. */
-  planGroups: IAutoBeTestPlan.IPlanGroup[];
-}

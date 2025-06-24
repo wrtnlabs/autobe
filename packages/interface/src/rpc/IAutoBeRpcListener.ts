@@ -22,12 +22,12 @@ import {
   AutoBeRealizeValidateEvent,
   AutoBeTestCompleteEvent,
   AutoBeTestCorrectEvent,
-  AutoBeTestProgressEvent,
   AutoBeTestStartEvent,
   AutoBeTestValidateEvent,
+  AutoBeTestWriteEvent,
   AutoBeUserMessageEvent,
 } from "../events";
-import { AutoBeTestPlanEvent } from "../events/AutoBeTestPlanEvent";
+import { AutoBeTestScenarioEvent } from "../events/AutoBeTestScenarioEvent";
 
 /**
  * Interface for WebSocket RPC event listener provided by client applications to
@@ -244,7 +244,7 @@ export interface IAutoBeRpcListener {
    * applications to show the scope of validation coverage being designed for
    * the application.
    */
-  testPlan?(event: AutoBeTestPlanEvent): Promise<void>;
+  testScenario?(event: AutoBeTestScenarioEvent): Promise<void>;
 
   /**
    * Optional handler for test code generation progress events.
@@ -253,7 +253,7 @@ export interface IAutoBeRpcListener {
    * to track incremental progress and show which API endpoints are being
    * validated through comprehensive test scenarios.
    */
-  testProgress?(event: AutoBeTestProgressEvent): Promise<void>;
+  testWrite?(event: AutoBeTestWriteEvent): Promise<void>;
 
   /**
    * Optional handler for test code validation events.

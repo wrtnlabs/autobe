@@ -1,11 +1,11 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
-import { IAutoBeTestPlan } from "@autobe/interface/src/test/AutoBeTestPlan";
+import { AutoBeTestScenarioEvent } from "@autobe/interface";
 import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 
 export const transformTestProgressHistories = (props: {
-  plan: IAutoBeTestPlan.IPlan & { method: string; path: string };
+  scenario: AutoBeTestScenarioEvent.IScenario;
   dto: Record<string, string>;
   sdk: Record<string, string>;
   e2e: Record<string, string>;
@@ -30,7 +30,7 @@ export const transformTestProgressHistories = (props: {
         "",
         "## Secnario Plan",
         "```json",
-        JSON.stringify(props.plan),
+        JSON.stringify(props.scenario),
         "```",
         "",
         "## DTO Definitions",

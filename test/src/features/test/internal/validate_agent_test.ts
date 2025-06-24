@@ -15,11 +15,11 @@ export const validate_agent_test = async (owner: string, project: string) => {
     events.push(event);
   });
 
-  agent.on("testPlan", (event) => {
+  agent.on("testScenario", (event) => {
     events.push(event);
   });
 
-  agent.on("testProgress", async (event) => {
+  agent.on("testWrite", async (event) => {
     events.push(event);
   });
 

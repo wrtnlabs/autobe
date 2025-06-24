@@ -1,82 +1,30 @@
-import { AutoBeOpenApi } from "../openapi";
+import { AutoBeOpenApi } from "@autobe/interface";
 
-export namespace IAutoBeTestPlan {
-  export interface IScenario extends IPlan {
-    /**
-     * HTTP path of the API operation.
-     *
-     * The URL path for accessing this API operation, using path parameters
-     * enclosed in curly braces (e.g., `/shoppings/customers/sales/{saleId}`).
-     *
-     * It must be corresponded to the {@link parameters path parameters}.
-     *
-     * The path structure should clearly indicate which database entity this
-     * operation is manipulating, helping to ensure all entities have
-     * appropriate API coverage.
-     */
-    path: string;
+export interface IAutoBeTestScenarioApplication {
+  /**
+   * Make test scenarios for the given endpoints.
+   *
+   * @param props Properties containing the endpoints and test scenarios.
+   */
+  makeScenario(props: IAutoBeTestScenarioApplication.IProps): void;
+}
 
-    /**
-     * HTTP method of the API operation.
-     *
-     * Note that, if the API operation has {@link requestBody}, method must not
-     * be `get`.
-     *
-     * Also, even though the API operation has been designed to only get
-     * information, but it needs complicated request information, it must be
-     * defined as `patch` method with {@link requestBody} data specification.
-     *
-     * - `get`: get information
-     * - `patch`: get information with complicated request data
-     *   ({@link requestBody})
-     * - `post`: create new record
-     * - `put`: update existing record
-     * - `delete`: remove record
-     */
-    method: "get" | "post" | "put" | "delete" | "patch";
+export namespace IAutoBeTestScenarioApplication {
+  export interface IProps {
+    /** Array of test scenario groups. */
+    scenarioGroups: IAutoBeTestScenarioApplication.IScenarioGroup[];
   }
 
-  /** Test plans grouped by endpoint */
-  export interface IPlanGroup {
-    /**
-     * HTTP path of the API operation.
-     *
-     * The URL path for accessing this API operation, using path parameters
-     * enclosed in curly braces (e.g., `/shoppings/customers/sales/{saleId}`).
-     *
-     * It must be corresponded to the {@link parameters path parameters}.
-     *
-     * The path structure should clearly indicate which database entity this
-     * operation is manipulating, helping to ensure all entities have
-     * appropriate API coverage.
-     */
-    path: string;
+  export interface IScenarioGroup {
+    /** Target API endpoint to test. */
+    endpoint: AutoBeOpenApi.IEndpoint;
 
-    /**
-     * HTTP method of the API operation.
-     *
-     * Note that, if the API operation has {@link requestBody}, method must not
-     * be `get`.
-     *
-     * Also, even though the API operation has been designed to only get
-     * information, but it needs complicated request information, it must be
-     * defined as `patch` method with {@link requestBody} data specification.
-     *
-     * - `get`: get information
-     * - `patch`: get information with complicated request data
-     *   ({@link requestBody})
-     * - `post`: create new record
-     * - `put`: update existing record
-     * - `delete`: remove record
-     */
-    method: "get" | "post" | "put" | "delete" | "patch";
-
-    /** Array of test plans. */
-    plans: IAutoBeTestPlan.IPlan[];
+    /** Array of test scenarios. */
+    scenarios: IScenario[];
   }
 
   /**
-   * Represents a test plan for a single API operation.
+   * Represents a test scenario for a single API operation.
    *
    * This interface extends `AutoBeOpenApi.IEndpoint`, inheriting its HTTP
    * method and path information, and adds two key properties:
@@ -90,7 +38,7 @@ export namespace IAutoBeTestPlan {
    * This structure is intended to help organize test specifications for complex
    * workflows and ensure that all prerequisites are explicitly declared.
    */
-  export interface IPlan {
+  export interface IScenario {
     /**
      * A detailed natural language description of how this API endpoint should
      * be tested. This should include both successful and failure scenarios,
@@ -168,18 +116,13 @@ export namespace IAutoBeTestPlan {
     dependsOn: IDependsOn[];
   }
 
-  /**
-   * Represents a dependent API operation required to set up the test context
-   * for a primary API test plan.
-   *
-   * This interface also extends `AutoBeOpenApi.IEndpoint`, including `method`
-   * and `path`, and adds a `purpose` field to clearly explain why this
-   * dependency is necessary.
-   */
-  export interface IDependsOn extends AutoBeOpenApi.IEndpoint {
+  export interface IDependsOn {
+    /** Target API endpoint that must be executed before the main operation. */
+    endpoint: AutoBeOpenApi.IEndpoint;
+
     /**
-     * A concise explanation of why this API call is required before executing
-     * the test for the main operation.
+     * A concise exscenarioation of why this API call is required before
+     * executing the test for the main operation.
      *
      * Example: "Creates a category so that a product can be linked to it during
      * creation."

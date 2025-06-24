@@ -1,6 +1,6 @@
 import { orchestrateTestCorrect } from "@autobe/agent/src/orchestrate/test/orchestrateTestCorrect";
 import { FileSystemIterator } from "@autobe/filesystem";
-import { AutoBeEvent, AutoBeTestProgressEvent } from "@autobe/interface";
+import { AutoBeEvent, AutoBeTestWriteEvent } from "@autobe/interface";
 import fs from "fs";
 
 import { TestGlobal } from "../../../TestGlobal";
@@ -20,14 +20,14 @@ export const validate_agent_test_correct = async (
   agent.on("testStart", (event) => {
     events.push(event);
   });
-  agent.on("testPlan", (event) => {
+  agent.on("testScenario", (event) => {
     events.push(event);
   });
   agent.on("testComplete", (event) => {
     events.push(event);
   });
 
-  const codes: AutoBeTestProgressEvent[] = JSON.parse(
+  const codes: AutoBeTestWriteEvent[] = JSON.parse(
     await fs.promises.readFile(
       `${ROOT}/assets/repositories/${owner}/${project}/test/codes.json`,
       "utf8",

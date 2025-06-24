@@ -1,6 +1,6 @@
 import { IAutoBeTypeScriptCompilerResult } from "../compiler";
-import { IAutoBeTestPlan } from "../test/AutoBeTestPlan";
 import { AutoBeEventBase } from "./AutoBeEventBase";
+import { AutoBeTestScenarioEvent } from "./AutoBeTestScenarioEvent";
 
 /**
  * Event fired when the Test agent validates the generated test code using the
@@ -36,7 +36,7 @@ export interface AutoBeTestValidateEvent
    */
   files: Record<
     string,
-    { content: string; scenario?: IAutoBeTestPlan.IScenario }
+    { content: string; scenario?: AutoBeTestScenarioEvent.IScenario }
   >;
 
   /**

@@ -1,7 +1,6 @@
 import { orchestrateTestProgress } from "@autobe/agent/src/orchestrate/test/orchestrateTestProgress";
 import { FileSystemIterator } from "@autobe/filesystem";
-import { AutoBeEvent } from "@autobe/interface";
-import { IAutoBeTestPlan } from "@autobe/interface/src/test/AutoBeTestPlan";
+import { AutoBeEvent, AutoBeTestScenarioEvent } from "@autobe/interface";
 import fs from "fs";
 import typia from "typia";
 
@@ -23,7 +22,7 @@ export const validate_agent_test_progress = async (
     events.push(event);
   });
 
-  agent.on("testPlan", (event) => {
+  agent.on("testScenario", (event) => {
     events.push(event);
   });
 
@@ -31,7 +30,7 @@ export const validate_agent_test_progress = async (
     events.push(event);
   });
 
-  const plans: IAutoBeTestPlan.IScenario[] = JSON.parse(
+  const plans: AutoBeTestScenarioEvent.IScenario[] = JSON.parse(
     await fs.promises.readFile(
       `${ROOT}/assets/repositories/${owner}/${project}/test/plans.json`,
       "utf8",

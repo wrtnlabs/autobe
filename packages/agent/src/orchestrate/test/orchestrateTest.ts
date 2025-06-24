@@ -1,7 +1,7 @@
 import {
   AutoBeAssistantMessageHistory,
   AutoBeTestHistory,
-  AutoBeTestProgressEvent,
+  AutoBeTestWriteEvent,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 import { v4 } from "uuid";
@@ -9,8 +9,8 @@ import { v4 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
 import { orchestrateTestCorrect } from "./orchestrateTestCorrect";
-import { orchestrateTestPlan } from "./orchestrateTestPlan";
 import { orchestrateTestProgress } from "./orchestrateTestProgress";
+import { orchestrateTestScenario } from "./orchestrateTestScenario";
 
 export const orchestrateTest =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
@@ -44,10 +44,10 @@ export const orchestrateTest =
     }
 
     // PLAN
-    const { plans } = await orchestrateTestPlan(ctx);
+    const { scenarios: plans } = await orchestrateTestScenario(ctx);
 
     // TEST CODE
-    const codes: AutoBeTestProgressEvent[] = await orchestrateTestProgress(
+    const codes: AutoBeTestWriteEvent[] = await orchestrateTestProgress(
       ctx,
       plans,
     );

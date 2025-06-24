@@ -1,4 +1,4 @@
-import { orchestrateTestPlan } from "@autobe/agent/src/orchestrate/test/orchestrateTestPlan";
+import { orchestrateTestScenario } from "@autobe/agent/src/orchestrate/test/orchestrateTestScenario";
 import { FileSystemIterator } from "@autobe/filesystem";
 import { AutoBeEvent } from "@autobe/interface";
 import typia from "typia";
@@ -18,20 +18,20 @@ export const validate_agent_test_plan = async (
   agent.on("testStart", (event) => {
     events.push(event);
   });
-  agent.on("testPlan", (event) => {
+  agent.on("testScenario", (event) => {
     events.push(event);
   });
   agent.on("testComplete", (event) => {
     events.push(event);
   });
 
-  const result = await orchestrateTestPlan(agent.getContext());
+  const result = await orchestrateTestScenario(agent.getContext());
   typia.assert(result);
 
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/${owner}/${project}/test/plan`,
     files: {
-      "plans.json": JSON.stringify(result.plans, null, 2),
+      "scenarios.json": JSON.stringify(result.scenarios, null, 2),
       "logs/history.json": JSON.stringify(agent.getHistories(), null, 2),
       "logs/result.json": JSON.stringify(result, null, 2),
       "logs/tokenUsage.json": JSON.stringify(agent.getTokenUsage(), null, 2),

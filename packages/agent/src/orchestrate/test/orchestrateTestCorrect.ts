@@ -1,11 +1,11 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import {
   AutoBeOpenApi,
-  AutoBeTestProgressEvent,
+  AutoBeTestScenarioEvent,
   AutoBeTestValidateEvent,
+  AutoBeTestWriteEvent,
   IAutoBeTypeScriptCompilerResult,
 } from "@autobe/interface";
-import { IAutoBeTestPlan } from "@autobe/interface/src/test/AutoBeTestPlan";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -19,7 +19,7 @@ import { transformTestCorrectHistories } from "./transformTestCorrectHistories";
 
 export async function orchestrateTestCorrect<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  codes: AutoBeTestProgressEvent[],
+  codes: AutoBeTestWriteEvent[],
   life: number = 4,
 ): Promise<AutoBeTestValidateEvent> {
   // 1) Build map of new test files from progress events
@@ -30,7 +30,10 @@ export async function orchestrateTestCorrect<Model extends ILlmSchema.Model>(
       };
     })
     .reduce<
-      Record<string, { content: string; scenario: IAutoBeTestPlan.IScenario }>
+      Record<
+        string,
+        { content: string; scenario: AutoBeTestScenarioEvent.IScenario }
+      >
     >((acc, cur) => Object.assign(acc, cur), {});
 
   // 2) Keep only files outside the test directory from current state
@@ -85,7 +88,7 @@ async function step<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   files: Record<
     string,
-    { content: string; scenario?: IAutoBeTestPlan.IScenario }
+    { content: string; scenario?: AutoBeTestScenarioEvent.IScenario }
   >,
   life: number,
 ): Promise<AutoBeTestValidateEvent> {
@@ -219,7 +222,7 @@ async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   diagnostics: IAutoBeTypeScriptCompilerResult.IDiagnostic[],
   code: string,
-  scenario?: IAutoBeTestPlan.IScenario,
+  scenario?: AutoBeTestScenarioEvent.IScenario,
 ): Promise<ICorrectTestFunctionProps> {
   const pointer: IPointer<ICorrectTestFunctionProps | null> = {
     value: null,
