@@ -57,4 +57,25 @@ export interface IAutoBeRpcVendor {
    * endpoint based on the configured model and vendor detection.
    */
   baseURL?: string;
+
+  /**
+   * Maximum number of concurrent API requests allowed.
+   *
+   * Controls the concurrency level for AI API calls to prevent rate limiting,
+   * manage resource consumption, and optimize system performance. The vibe
+   * coding pipeline may make multiple parallel requests during development
+   * phases, and this setting ensures controlled resource utilization.
+   *
+   * A reasonable default provides balanced performance while respecting typical
+   * API rate limits. Lower values reduce resource consumption but may slow
+   * development progress, while higher values can improve performance but risk
+   * hitting rate limits or overwhelming the AI service.
+   *
+   * Set to undefined to disable concurrency limiting, allowing unlimited
+   * parallel requests (use with caution based on your API limits and
+   * infrastructure capacity).
+   *
+   * @default 16
+   */
+  semaphore?: number | undefined;
 }

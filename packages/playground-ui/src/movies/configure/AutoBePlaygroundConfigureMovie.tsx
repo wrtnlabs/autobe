@@ -34,6 +34,7 @@ export function AutoBePlaygroundConfigureMovie(
   const [vendorConfig, setVendorConfig] = useState<IAutoBeRpcVendor>({
     model: "gpt-4.1",
     apiKey: "",
+    semaphore: 16,
   });
 
   const [progress, setProgress] = useState(false);

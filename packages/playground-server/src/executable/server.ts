@@ -30,6 +30,7 @@ const main = async () => {
                 baseURL: acceptor.header.vendor.baseURL,
               }),
               model: acceptor.header.vendor.model,
+              semaphore: acceptor.header.vendor.semaphore,
             },
             config: {
               locale: acceptor.header.locale,
