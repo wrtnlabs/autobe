@@ -14,7 +14,8 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { randomBackoffRetry } from "../../utils/backoffRetry";
 import { enforceToolCall } from "../../utils/enforceToolCall";
-import { filterDocument } from "./orchestrateTestProgress";
+import { compileTestScenario } from "./compileTestScenario";
+import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
 import { transformTestCorrectHistories } from "./transformTestCorrectHistories";
 
 export async function orchestrateTestCorrect<Model extends ILlmSchema.Model>(
@@ -255,30 +256,10 @@ async function process<Model extends ILlmSchema.Model>(
   const pointer: IPointer<ICorrectTestFunctionProps | null> = {
     value: null,
   };
-
-  const files: [string, string][] = [];
-  if (scenario) {
-    const document = filterDocument(scenario, ctx.state().interface!.document);
-    files.push(
-      ...Object.entries(await ctx.compiler.interface.compile(document)),
-    );
-  }
-
-  const apiFiles = files
-    .filter(([filename]) => {
-      return filename.startsWith("src/api/");
-    })
-    .reduce<Record<string, string>>((acc, [filename, content]) => {
-      return Object.assign(acc, { [filename]: content });
-    }, {});
-
-  const dtoFiles = files
-    .filter(([filename]) => {
-      return filename.startsWith("src/api/structures/");
-    })
-    .reduce<Record<string, string>>((acc, [filename, content]) => {
-      return Object.assign(acc, { [filename]: content });
-    }, {});
+  const artifacts: IAutoBeTestScenarioArtifacts = await compileTestScenario(
+    ctx,
+    scenario,
+  );
 
   const agentica = new MicroAgentica({
     model: ctx.model,
@@ -286,7 +267,7 @@ async function process<Model extends ILlmSchema.Model>(
     config: {
       ...(ctx.config ?? {}),
     },
-    histories: transformTestCorrectHistories(apiFiles, dtoFiles),
+    histories: transformTestCorrectHistories(artifacts),
     controllers: [
       createApplication({
         model: ctx.model,

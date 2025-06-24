@@ -1,4 +1,4 @@
-import { orchestrateTestProgress } from "@autobe/agent/src/orchestrate/test/orchestrateTestProgress";
+import { orchestrateTestWrite } from "@autobe/agent/src/orchestrate/test/orchestrateTestWrite";
 import { FileSystemIterator } from "@autobe/filesystem";
 import { AutoBeEvent, AutoBeTestScenario } from "@autobe/interface";
 import fs from "fs";
@@ -37,7 +37,7 @@ export const validate_agent_test_write = async (
     ),
   );
 
-  const codes = await orchestrateTestProgress(agent.getContext(), scenarios);
+  const codes = await orchestrateTestWrite(agent.getContext(), scenarios);
   typia.assertEquals(codes);
 
   await FileSystemIterator.save({
