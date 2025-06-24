@@ -21,13 +21,7 @@ export const validate_agent_test_correct = async (
   const { agent } = await prepare_agent_test(project);
 
   const events: AutoBeEvent[] = [];
-  agent.on("testStart", (event) => {
-    events.push(event);
-  });
-  agent.on("testScenario", (event) => {
-    events.push(event);
-  });
-  agent.on("testComplete", (event) => {
+  agent.on("testValidate", (event) => {
     events.push(event);
   });
 
@@ -38,7 +32,7 @@ export const validate_agent_test_correct = async (
     ),
   );
 
-  const codes: AutoBeTestWriteEvent[] = JSON.parse(
+  const writes: AutoBeTestWriteEvent[] = JSON.parse(
     await fs.promises.readFile(
       `${ROOT}/assets/repositories/${owner}/${project}/test/codes.json`,
       "utf8",
@@ -47,7 +41,7 @@ export const validate_agent_test_correct = async (
 
   const correct = await orchestrateTestCorrect(
     agent.getContext(),
-    codes,
+    writes,
     scenarios,
   );
 
@@ -64,7 +58,8 @@ export const validate_agent_test_correct = async (
     files: {
       ...files,
       "logs/history.json": JSON.stringify(agent.getHistories(), null, 2),
-      "logs/codes.json": JSON.stringify(codes, null, 2),
+      "logs/writes.json": JSON.stringify(writes, null, 2),
+      "logs/correct.json": JSON.stringify(correct, null, 2),
       "logs/tokenUsage.json": JSON.stringify(agent.getTokenUsage(), null, 2),
       "logs/files.json": JSON.stringify(Object.keys(agent.getFiles()), null, 2),
       "logs/events.json": JSON.stringify(events, null, 2),

@@ -81,4 +81,8 @@ export class AutoBeTypeScriptCompiler implements IAutoBeTypeScriptCompiler {
       ...(props.prisma ?? {}),
     });
   }
+
+  public async getExternal(location: string): Promise<string | undefined> {
+    return (EXTERNAL as Record<string, string>)[location] ?? undefined;
+  }
 }

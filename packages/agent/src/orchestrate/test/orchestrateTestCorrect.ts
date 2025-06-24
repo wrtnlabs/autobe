@@ -45,13 +45,28 @@ export async function orchestrateTestCorrect<Model extends ILlmSchema.Model>(
   );
 
   // 3) Merge and filter: keep .ts/.json, drop anything under "benchmark"
+  const external = async (
+    location: string,
+  ): Promise<Record<string, string>> => {
+    const content: string | undefined =
+      await ctx.compiler.typescript.getExternal(location);
+    if (content === undefined) throw new Error(`File not found: ${location}`);
+    return { [location]: content };
+  };
   const mergedFiles: Record<string, string> = {
     ...retainedFiles,
     ...testFiles,
+    ...(await external("node_modules/@nestia/e2e/lib/TestValidator.d.ts")),
+    ...(await external("node_modules/@nestia/fetcher/lib/IConnection.d.ts")),
   };
 
   // 4) Ask the LLM to correct the filtered file set
-  const response: AutoBeTestValidateEvent = await step(ctx, files, life);
+  const response: AutoBeTestValidateEvent = await step(
+    ctx,
+    mergedFiles,
+    files,
+    life,
+  );
 
   // 5) Combine original + corrected files and dispatch event
   const event: AutoBeTestValidateEvent = {
@@ -82,20 +97,22 @@ export async function orchestrateTestCorrect<Model extends ILlmSchema.Model>(
  * all generated test files are syntactically correct and compilable.
  *
  * @param ctx AutoBe context object
- * @param files Map of files to compile (filename: content)
+ * @param entireFiles Map of all files to compile (filename: content)
+ * @param testFiles Map of files to compile (filename: content)
  * @param life Number of remaining retry attempts
  * @returns Event object containing successful compilation result and modified
  *   files
  */
 async function step<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  files: AutoBeTestFile[],
+  entireFiles: Record<string, string>,
+  testFiles: AutoBeTestFile[],
   life: number,
 ): Promise<AutoBeTestValidateEvent> {
   // COMPILE TEST CODE
   const result: IAutoBeTypeScriptCompilerResult =
     await ctx.compiler.typescript.compile({
-      files: Object.fromEntries(files.map((f) => [f.location, f.content])),
+      files: entireFiles,
     });
 
   if (result.type === "success") {
@@ -103,7 +120,7 @@ async function step<Model extends ILlmSchema.Model>(
     return {
       type: "testValidate",
       created_at: new Date().toISOString(),
-      files,
+      files: testFiles,
       result,
       step: ctx.state().interface?.step ?? 0,
     };
@@ -114,7 +131,7 @@ async function step<Model extends ILlmSchema.Model>(
     ctx.dispatch({
       type: "testValidate",
       created_at: new Date().toISOString(),
-      files,
+      files: testFiles,
       result,
       step: ctx.state().interface?.step ?? 0,
     });
@@ -143,7 +160,7 @@ async function step<Model extends ILlmSchema.Model>(
     return {
       type: "testValidate",
       created_at: new Date().toISOString(),
-      files,
+      files: testFiles,
       result: {
         ...result,
         type: "success",
@@ -156,7 +173,7 @@ async function step<Model extends ILlmSchema.Model>(
   ctx.dispatch({
     type: "testValidate",
     created_at: new Date().toISOString(),
-    files,
+    files: testFiles,
     result,
     step: ctx.state().interface?.step ?? 0,
   });
@@ -165,7 +182,7 @@ async function step<Model extends ILlmSchema.Model>(
     return {
       type: "testValidate",
       created_at: new Date().toISOString(),
-      files,
+      files: testFiles,
       result,
       step: ctx.state().interface?.step ?? 0,
     };
@@ -174,7 +191,7 @@ async function step<Model extends ILlmSchema.Model>(
   const validatedFiles: AutoBeTestFile[] = await Promise.all(
     Object.entries(diagnostics).map(
       async ([filename, d]): Promise<AutoBeTestFile> => {
-        const file = files.find((f) => f.location === filename);
+        const file = testFiles.find((f) => f.location === filename);
         const code: string = file?.content!;
         const scenario = file?.scenario!;
 
@@ -187,7 +204,7 @@ async function step<Model extends ILlmSchema.Model>(
         ctx.dispatch({
           type: "testCorrect",
           created_at: new Date().toISOString(),
-          files: { ...files, [filename]: response.content },
+          files: { ...testFiles, [filename]: response.content },
           result,
           solution: response.solution,
           think_without_compile_error: response.think_without_compile_error,
@@ -203,7 +220,8 @@ async function step<Model extends ILlmSchema.Model>(
 
   return step(
     ctx,
-    files.map((f) => {
+    entireFiles,
+    testFiles.map((f) => {
       const validated = validatedFiles.find((v) => v.location === f.location);
       return validated ? validated : f;
     }),

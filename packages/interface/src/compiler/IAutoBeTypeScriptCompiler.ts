@@ -49,4 +49,27 @@ export interface IAutoBeTypeScriptCompiler {
   compile(
     props: IAutoBeTypeScriptCompilerProps,
   ): Promise<IAutoBeTypeScriptCompilerResult>;
+
+  /**
+   * Retrieves the content of an external dependency file from `node_modules` by
+   * its location path.
+   *
+   * This method provides access to specific files within the `node_modules`
+   * directory, enabling the TypeScript compiler to read dependency source
+   * files, type definitions, package configurations, and other resources
+   * required for compilation and type checking processes.
+   *
+   * The location parameter should specify the relative path from the
+   * `node_modules` root to the target file. This is essential for resolving
+   * module imports, accessing TypeScript declaration files (`.d.ts`), reading
+   * `package.json` configurations, and obtaining framework-specific resources
+   * needed during the compilation process.
+   *
+   * @param location Relative path from node_modules to the target file (e.g.,
+   *   "node_modules/@nestjs/core/package.json",
+   *   "node_modules/typescript/lib/typescript.d.ts")
+   * @returns Promise resolving to the file content as string, or undefined if
+   *   the file does not exist or cannot be accessed
+   */
+  getExternal(location: string): Promise<string | undefined>;
 }
