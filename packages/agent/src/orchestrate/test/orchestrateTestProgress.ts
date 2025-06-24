@@ -32,8 +32,15 @@ export async function orchestrateTestProgress<Model extends ILlmSchema.Model>(
       const event: AutoBeTestProgressEvent = {
         type: "testProgress",
         created_at: start.toISOString(),
-        filename: `${code.domain}/${plan.functionName}.ts`,
-        content: code.content,
+        progress: {
+          file: {
+            filename: `${code.domain}/${plan.functionName}.ts`,
+            content: code.content,
+          },
+          dependsOn: plan.dependsOn,
+          path: plan.path,
+          method: plan.method,
+        },
         completed: ++complete,
         total: plans.length,
         step: ctx.state().interface?.step ?? 0,

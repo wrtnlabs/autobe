@@ -1,10 +1,15 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import {
-  AutoBeTestProgressEvent,
+  AutoBeOpenApi,
   AutoBeTestValidateEvent,
   IAutoBeTypeScriptCompilerResult,
 } from "@autobe/interface";
-import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
+import { IAutoBeTestProgress } from "@autobe/interface/src/test/AutoBeTestProgress";
+import {
+  ILlmApplication,
+  ILlmSchema,
+  OpenApiTypeChecker,
+} from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 
@@ -15,45 +20,18 @@ import { transformTestCorrectHistories } from "./transformTestCorrectHistories";
 
 export async function orchestrateTestCorrect<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  codes: AutoBeTestProgressEvent[],
+  progresses: IAutoBeTestProgress.IProgress[],
   life: number = 4,
 ): Promise<AutoBeTestValidateEvent> {
-  // 1) Build map of new test files from progress events
-  const testFiles = Object.fromEntries(
-    codes.map(({ filename, content }) => [
-      `test/features/api/${filename}`,
-      content,
-    ]),
-  );
+  const response = await step(ctx, progresses, life);
 
-  // 2) Keep only files outside the test directory from current state
-  const retainedFiles = Object.fromEntries(
-    Object.entries(ctx.state().interface?.files ?? {}).filter(
-      ([filename]) => !filename.startsWith("test/features/api"),
-    ),
-  );
-
-  // 3) Merge and filter: keep .ts/.json, drop anything under "benchmark"
-  const mergedFiles = { ...retainedFiles, ...testFiles };
-  const files = Object.fromEntries(
-    Object.entries(mergedFiles).filter(
-      ([filename]) =>
-        (filename.endsWith(".ts") && !filename.startsWith("test/benchmark/")) ||
-        filename.endsWith(".json"),
-    ),
-  );
-
-  // 4) Ask the LLM to correct the filtered file set
-  const response = await step(ctx, files, life);
-
-  // 5) Combine original + corrected files and dispatch event
-  const event: AutoBeTestValidateEvent = {
+  return {
     ...response,
-    type: "testValidate",
-    files: { ...mergedFiles, ...response.files },
+    files: {
+      ...ctx.state().interface?.files,
+      ...response.files,
+    },
   };
-
-  return event;
 }
 
 /**
@@ -73,9 +51,28 @@ export async function orchestrateTestCorrect<Model extends ILlmSchema.Model>(
  */
 async function step<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  files: Record<string, string>,
+  progresses: IAutoBeTestProgress.IProgress[],
   life: number,
 ): Promise<AutoBeTestValidateEvent> {
+  const testFiles = Object.fromEntries(
+    progresses.map((progress) => {
+      return [
+        `test/features/api/${progress.file.filename}`,
+        progress.file.content,
+      ];
+    }),
+  );
+
+  const filteredFiles = Object.fromEntries(
+    Object.entries(ctx.state().interface?.files ?? {}).filter(
+      ([filename]) =>
+        (filename.endsWith(".ts") && !filename.startsWith("test/benchmark/")) ||
+        filename.endsWith(".json"),
+    ),
+  );
+
+  const files = { ...filteredFiles, ...testFiles };
+
   // COMPILE TEST CODE
   const result: IAutoBeTypeScriptCompilerResult =
     await ctx.compiler.typescript.compile({
@@ -155,30 +152,42 @@ async function step<Model extends ILlmSchema.Model>(
     };
 
   // VALIDATION FAILED
-  const validate = await Promise.all(
-    Object.entries(diagnostics).map(async ([filename, d]) => {
-      const code = files[filename];
-      const response = await process(ctx, d, code);
+  const validatedProgresses: IAutoBeTestProgress.IProgress[] =
+    await Promise.all(
+      Object.entries(diagnostics).map(
+        async ([filename, d]): Promise<IAutoBeTestProgress.IProgress> => {
+          const progress = progresses.find(
+            (progress) =>
+              `test/features/api/${progress.file.filename}` === filename,
+          );
 
-      ctx.dispatch({
-        type: "testCorrect",
-        created_at: new Date().toISOString(),
-        files: { ...files, [filename]: response.content },
-        result,
-        solution: response.solution,
-        think_without_compile_error: response.think_without_compile_error,
-        think_again_with_compile_error: response.think_again_with_compile_error,
-        step: ctx.state().interface?.step ?? 0,
-      });
+          if (progress === undefined) throw new Error("Progress not found.");
+          const response = await process(ctx, progress, d);
 
-      // Return [filename, modified code]
-      return [filename, response.content];
-    }),
-  );
+          ctx.dispatch({
+            type: "testCorrect",
+            created_at: new Date().toISOString(),
+            files: { ...files, [filename]: response.content },
+            result,
+            solution: response.solution,
+            think_without_compile_error: response.think_without_compile_error,
+            think_again_with_compile_error:
+              response.think_again_with_compile_error,
+            step: ctx.state().interface?.step ?? 0,
+          });
 
-  const newFiles = { ...files, ...Object.fromEntries(validate) };
+          return {
+            ...progress,
+            file: {
+              filename: progress.file.filename,
+              content: response.content,
+            },
+          };
+        },
+      ),
+    );
 
-  return step(ctx, newFiles, life - 1);
+  return step(ctx, validatedProgresses, life - 1);
 }
 
 /**
@@ -193,28 +202,23 @@ async function step<Model extends ILlmSchema.Model>(
  */
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
+  progress: IAutoBeTestProgress.IProgress,
   diagnostics: IAutoBeTypeScriptCompilerResult.IDiagnostic[],
-  code: string,
 ): Promise<ICorrectTestFunctionProps> {
   const pointer: IPointer<ICorrectTestFunctionProps | null> = {
     value: null,
   };
 
-  const apiFiles = Object.entries(ctx.state().interface?.files ?? {})
-    .filter(([filename]) => {
-      return filename.startsWith("src/api/");
-    })
-    .reduce<Record<string, string>>((acc, [filename, content]) => {
-      return Object.assign(acc, { [filename]: content });
-    }, {});
+  const document: AutoBeOpenApi.IDocument = filterDocument(
+    progress,
+    ctx.state().interface!.document,
+  );
+  const files: [string, string][] = Object.entries(
+    await ctx.compiler.interface.compile(document),
+  );
 
-  const dtoFiles = Object.entries(ctx.state().interface?.files ?? {})
-    .filter(([filename]) => {
-      return filename.startsWith("src/api/structures/");
-    })
-    .reduce<Record<string, string>>((acc, [filename, content]) => {
-      return Object.assign(acc, { [filename]: content });
-    }, {});
+  const filter = (prefix: string) =>
+    Object.fromEntries(files.filter(([key]) => key.startsWith(prefix)));
 
   const agentica = new MicroAgentica({
     model: ctx.model,
@@ -222,7 +226,11 @@ async function process<Model extends ILlmSchema.Model>(
     config: {
       ...(ctx.config ?? {}),
     },
-    histories: transformTestCorrectHistories(apiFiles, dtoFiles),
+    histories: transformTestCorrectHistories({
+      dto: filter("src/api/structures"),
+      sdk: filter("src/api/functional"),
+      e2e: filter("test/features"),
+    }),
     controllers: [
       createApplication({
         model: ctx.model,
@@ -241,7 +249,7 @@ async function process<Model extends ILlmSchema.Model>(
       "",
       "## Original Code",
       "```typescript",
-      code,
+      progress.file.content,
       "```",
       "",
       diagnostics.map((diagnostic) => {
@@ -261,7 +269,7 @@ async function process<Model extends ILlmSchema.Model>(
           "## Error Information",
           `- Position: Characters ${diagnostic.start} to ${diagnostic.start + diagnostic.length}`,
           `- Error Message: ${diagnostic.messageText}`,
-          `- Problematic Code: \`${code.substring(diagnostic.start, diagnostic.start + diagnostic.length)}\``,
+          `- Problematic Code: \`${progress.file.content.substring(diagnostic.start, diagnostic.start + diagnostic.length)}\``,
           filename
             ? `The type files located under **/lib/structures are declared in '@ORGANIZATION/PROJECT-api/lib/structures'.\n` +
               `Note: '@ORGANIZATION/PROJECT-api' must be written exactly as is and should not be replaced.\n`
@@ -278,6 +286,48 @@ async function process<Model extends ILlmSchema.Model>(
   );
   if (pointer.value === null) throw new Error("Failed to modify test code.");
   return pointer.value;
+}
+
+function filterDocument(
+  progress: IAutoBeTestProgress.IProgress,
+  document: AutoBeOpenApi.IDocument,
+): AutoBeOpenApi.IDocument {
+  const operations: AutoBeOpenApi.IOperation[] = document.operations.filter(
+    (op) => {
+      if (progress.method === op.method && progress.path === op.path) {
+        return true;
+      } else if (
+        progress.dependsOn.some(
+          (dp) => dp.method === op.method && dp.path === op.path,
+        )
+      ) {
+        return true;
+      }
+    },
+  );
+  const components: AutoBeOpenApi.IComponents = {
+    schemas: {},
+  };
+  const visit = (typeName: string) => {
+    OpenApiTypeChecker.visit({
+      components: document.components,
+      schema: { $ref: `#/components/schemas/${typeName}` },
+      closure: (s) => {
+        if (OpenApiTypeChecker.isReference(s)) {
+          const key: string = s.$ref.split("/").pop()!;
+          components.schemas[key] = document.components.schemas[key];
+        }
+      },
+    });
+  };
+  for (const op of operations) {
+    if (op.requestBody) visit(op.requestBody.typeName);
+    if (op.responseBody) visit(op.responseBody.typeName);
+  }
+  return {
+    operations,
+    components,
+  };
 }
 
 function createApplication<Model extends ILlmSchema.Model>(props: {

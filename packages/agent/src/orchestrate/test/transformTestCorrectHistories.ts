@@ -3,10 +3,11 @@ import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 
-export const transformTestCorrectHistories = (
-  apiFiles: Record<string, string>,
-  dtoFiles: Record<string, string>,
-): Array<
+export const transformTestCorrectHistories = (props: {
+  dto: Record<string, string>;
+  sdk: Record<string, string>;
+  e2e: Record<string, string>;
+}): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
   return [
@@ -28,19 +29,24 @@ export const transformTestCorrectHistories = (
         "- Follow the base E2E test style strictly. Never use other frameworks like Jest or Mocha.",
         "- Use `TestValidator.equals(...)` and `typia.assert(...)` to verify results.",
         "- Use `api.functional.XXX` for all API calls. These are defined in API Files.",
-        "- Use helper functions like `generate_random_xxx(...)` **only if** they already exist in the base test imports.",
         "- Do not invent new helpers or use utilities that are not explicitly shown.",
         "- Keep all tests deterministic and reliable.",
         "",
-        "## File References",
-        "### API Files",
-        "```typescript",
-        JSON.stringify(apiFiles, null, 2),
+        "## DTO Definitions",
+        "```json",
+        JSON.stringify(props.dto),
         "```",
         "",
-        "### DTO Files",
-        "```typescript",
-        JSON.stringify(dtoFiles, null, 2),
+        "## API (SDK) Functions",
+        "```json",
+        JSON.stringify(props.sdk),
+        "```",
+        "",
+        "## E2E Mockup Functions",
+        "```json",
+        JSON.stringify(props.e2e),
+        "```",
+        "",
         "```",
         "",
         "Now Fix the E2E test function based on the given error information.",

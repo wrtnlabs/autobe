@@ -1,3 +1,4 @@
+import { IAutoBeTestProgress } from "../test/AutoBeTestProgress";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
 /**
@@ -20,29 +21,33 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
 export interface AutoBeTestProgressEvent
   extends AutoBeEventBase<"testProgress"> {
   /**
-   * Name of the test file that has been completed.
+   * Progress information containing the test code implementation and related
+   * API endpoints.
    *
-   * Specifies the filename of the TypeScript test file that was just generated,
-   * which contains standalone functions implementing specific use case
-   * scenarios for particular API endpoints. The filename provides context about
-   * which part of the API functionality is being validated by this test file.
+   * This property contains:
+   *
+   * 1. The complete test code file that has been automatically generated based on
+   *    the test plan specifications, including:
+   *
+   *    - Test file name
+   *    - Implementation content with test cases and assertions
+   *    - Setup code for test environment
+   * 2. The target API endpoint information that this test validates:
+   *
+   *    - HTTP path (e.g. "/api/users/{id}")
+   *    - HTTP method (GET, POST, PUT, DELETE, PATCH)
+   * 3. A list of dependent API endpoints that must be called before running this
+   *    test:
+   *
+   *    - Prerequisites like data creation
+   *    - Authentication/authorization steps
+   *    - Any other setup operations needed
+   *
+   * This comprehensive information ensures proper test execution order and
+   * validates that the API behaves correctly within the full business workflow
+   * context.
    */
-  filename: string;
-
-  /**
-   * Content of the completed test file.
-   *
-   * Contains the actual TypeScript test code that was generated for this file,
-   * including test scenarios that validate API functionality, business logic
-   * implementation, error handling, and edge cases. The content represents
-   * working test code that ensures the API endpoints behave correctly according
-   * to the established requirements and specifications.
-   *
-   * This test code validates both technical functionality and business rule
-   * implementation, providing comprehensive coverage that ensures the generated
-   * APIs work correctly under realistic operational conditions.
-   */
-  content: string;
+  progress: IAutoBeTestProgress.IProgress;
 
   /**
    * Number of test files that have been completed so far.

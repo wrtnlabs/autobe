@@ -3,6 +3,7 @@ import {
   AutoBeTestHistory,
   AutoBeTestProgressEvent,
 } from "@autobe/interface";
+import { IAutoBeTestProgress } from "@autobe/interface/src/test/AutoBeTestProgress";
 import { ILlmSchema } from "@samchon/openapi";
 import { v4 } from "uuid";
 
@@ -52,7 +53,11 @@ export const orchestrateTest =
       plans,
     );
 
-    const correct = await orchestrateTestCorrect(ctx, codes);
+    const progresses: IAutoBeTestProgress.IProgress[] = codes.map((code) => {
+      return code.progress;
+    });
+
+    const correct = await orchestrateTestCorrect(ctx, progresses);
 
     const history: AutoBeTestHistory = {
       type: "test",
