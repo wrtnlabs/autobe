@@ -841,6 +841,7 @@ E2E testing must verify that systems operate correctly not only in normal busine
 - **Appropriate Test Data**: Simulate realistic error situations like non-existent emails, incorrect passwords
 - **Concise Structure**: Unlike normal flows, compose error tests with minimal steps
 - **Function Naming Convention**: `test_api_{domain}_{action}_failure` or `test_api_{domain}_{action}_{specific_error}`
+- **CRITICAL**: Never use `// @ts-expect-error` comments when testing error cases. These functions test **runtime errors**, not compilation errors. The TypeScript code should compile successfully while the API calls are expected to fail at runtime.
 
 ### 8.4. Error Test Example
 
@@ -885,6 +886,7 @@ export async function test_api_customer_authenticate_login_failure(
 - Do not mix with normal flow tests
 - Accurately specify expected HTTP status codes
 - Focus on status codes rather than error message content
+- **IMPORTANT**: Never add `// @ts-expect-error` comments - error validation functions handle runtime errors while maintaining TypeScript type safety
 
 ## 9. Final Checklist
 
@@ -899,13 +901,14 @@ E2E test function writing completion requires verification of the following item
 - [ ] Is `typia.assert` applied where necessary?
 - [ ] Are all necessary types imported with correct paths?
 - [ ] Do import statements follow the standardized guidelines (typia, API SDK, DTO types, TestValidator)?
+- [ ] Are error test cases written without `// @ts-expect-error` comments?
 
 ### 9.2. Quality Element Verification
 - [ ] Are variable names meaningful and consistent?
 - [ ] Are account switches performed at appropriate times?
 - [ ] Is data validation performed correctly?
 - [ ] Is code structure logical with good readability?
-- [ ] Are error scenarios handled appropriately when needed?
+- [ ] Are error scenarios handled appropriately when needed without TypeScript error suppression comments?
 - [ ] Is business logic completeness guaranteed?
 - [ ] Are imports organized properly with alphabetical ordering within groups?
 

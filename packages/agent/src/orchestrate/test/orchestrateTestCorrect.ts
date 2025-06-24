@@ -15,6 +15,7 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { randomBackoffRetry } from "../../utils/backoffRetry";
 import { enforceToolCall } from "../../utils/enforceToolCall";
 import { compileTestScenario } from "./compileTestScenario";
+import { filterTestFileName } from "./filterTestFileName";
 import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
 import { transformTestCorrectHistories } from "./transformTestCorrectHistories";
 
@@ -26,31 +27,22 @@ export async function orchestrateTestCorrect<Model extends ILlmSchema.Model>(
 ): Promise<AutoBeTestValidateEvent> {
   const files: AutoBeTestFile[] = codes.map(
     ({ filename, content }, index): AutoBeTestFile => {
-      const scenario = scenarios[index];
+      const scenario: AutoBeTestScenario = scenarios[index];
       return { location: filename, content, scenario };
     },
   );
 
   // 1) Build map of new test files from progress events
-  const testFiles: Record<string, string> = codes
-    .map(({ filename, content }) => {
-      return {
-        [`test/features/api/${filename}`]: content,
-      };
-    })
-    .reduce<Record<string, string>>((acc, cur) => Object.assign(acc, cur), {});
+  const testFiles: Record<string, string> = Object.fromEntries(
+    codes.map((c) => [c.filename, c.content]),
+  );
 
   // 2) Keep only files outside the test directory from current state
-  const retainedFiles: Record<string, string> = Object.entries(
-    ctx.state().interface?.files ?? {},
-  )
-    .filter(([filename]) => {
-      return !filename.startsWith("test/features/api");
-    })
-    .map(([filename, content]) => {
-      return { [filename]: content };
-    })
-    .reduce<Record<string, string>>((acc, cur) => Object.assign(acc, cur), {});
+  const retainedFiles: Record<string, string> = Object.fromEntries(
+    Object.entries(ctx.state().interface?.files ?? {}).filter(([key]) =>
+      filterTestFileName(key),
+    ),
+  );
 
   // 3) Merge and filter: keep .ts/.json, drop anything under "benchmark"
   const mergedFiles: Record<string, string> = {
@@ -59,17 +51,7 @@ export async function orchestrateTestCorrect<Model extends ILlmSchema.Model>(
   };
 
   // 4) Ask the LLM to correct the filtered file set
-  const response: AutoBeTestValidateEvent = await step(
-    ctx,
-    files.filter((f) => {
-      return (
-        (f.location.endsWith(".ts") &&
-          !f.location.startsWith("test/benchmark/")) ||
-        f.location.endsWith(".json")
-      );
-    }),
-    life,
-  );
+  const response: AutoBeTestValidateEvent = await step(ctx, files, life);
 
   // 5) Combine original + corrected files and dispatch event
   const event: AutoBeTestValidateEvent = {
@@ -111,17 +93,9 @@ async function step<Model extends ILlmSchema.Model>(
   life: number,
 ): Promise<AutoBeTestValidateEvent> {
   // COMPILE TEST CODE
-
   const result: IAutoBeTypeScriptCompilerResult =
     await ctx.compiler.typescript.compile({
-      files: files
-        .map((file) => {
-          return { [file.location]: file.content };
-        })
-        .reduce<Record<string, string>>(
-          (acc, cur) => Object.assign(acc, cur),
-          {},
-        ),
+      files: Object.fromEntries(files.map((f) => [f.location, f.content])),
     });
 
   if (result.type === "success") {

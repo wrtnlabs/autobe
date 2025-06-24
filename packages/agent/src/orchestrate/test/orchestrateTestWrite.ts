@@ -29,7 +29,7 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
       const event: AutoBeTestWriteEvent = {
         type: "testWrite",
         created_at: start.toISOString(),
-        filename: `${code.domain}/${scenario.functionName}.ts`,
+        filename: `test/features/api/${code.domain}/${scenario.functionName}.ts`,
         content: code.content,
         completed: ++complete,
         total: scenarios.length,

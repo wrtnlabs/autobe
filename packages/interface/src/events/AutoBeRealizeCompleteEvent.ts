@@ -1,3 +1,4 @@
+import { IAutoBeTypeScriptCompilerResult } from "../compiler/IAutoBeTypeScriptCompilerResult";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
 /**
@@ -36,6 +37,31 @@ export interface AutoBeRealizeCompleteEvent
    * customization.
    */
   files: Record<string, string>;
+
+  /**
+   * Results of compiling the generated implementation TypeScript files through
+   * the TypeScript compiler.
+   *
+   * Contains the {@link IAutoBeTypeScriptCompilerResult} from processing the
+   * generated implementation files through the TypeScript compilation pipeline.
+   * This compilation result validates the complete application code including
+   * service classes, business logic, data access layers, and all integration
+   * components to ensure the final implementation is syntactically correct and
+   * ready for execution.
+   *
+   * Through the Realize agent's internal compiler feedback process, this result
+   * is typically successful as the agent iteratively refines the generated code
+   * based on compilation diagnostics. However, in rare cases where the compiler
+   * feedback iteration limit is exceeded, the result may indicate failure
+   * despite the agent's correction attempts. Such failure occurrences are
+   * extremely infrequent due to the sophisticated feedback mechanisms built
+   * into the Realize agent's code generation process.
+   *
+   * Successful compilation indicates that the generated implementation is
+   * production-ready and represents a fully functional application that can be
+   * deployed immediately without any syntax or integration issues.
+   */
+  compiled: IAutoBeTypeScriptCompilerResult;
 
   /**
    * Final iteration number of the requirements analysis this implementation was

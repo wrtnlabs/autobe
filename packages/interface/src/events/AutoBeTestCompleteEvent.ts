@@ -1,3 +1,4 @@
+import { IAutoBeTypeScriptCompilerResult } from "../compiler/IAutoBeTypeScriptCompilerResult";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
 /**
@@ -37,6 +38,31 @@ export interface AutoBeTestCompleteEvent
    * of expected system behavior.
    */
   files: Record<string, string>;
+
+  /**
+   * Results of compiling the generated e2e test TypeScript files through the
+   * TypeScript compiler.
+   *
+   * Contains the {@link IAutoBeTypeScriptCompilerResult} from processing the
+   * generated test files through the TypeScript compilation pipeline. This
+   * compilation result validates test code syntax, type safety, framework
+   * integration, and dependency resolution to ensure that all generated test
+   * scenarios are syntactically correct and ready for execution.
+   *
+   * Through the Test agent's internal compiler feedback process, this result is
+   * typically successful as the agent iteratively refines the generated code
+   * based on compilation diagnostics. However, in rare cases where the compiler
+   * feedback iteration limit is exceeded, the result may indicate failure
+   * despite the agent's correction attempts. Such failure occurrences are
+   * extremely infrequent due to the sophisticated feedback mechanisms built
+   * into the Test agent's code generation process.
+   *
+   * Successful compilation indicates that the generated test suite is
+   * production-ready and can be executed immediately to validate the
+   * corresponding API implementations without any syntax or integration
+   * issues.
+   */
+  compiled: IAutoBeTypeScriptCompilerResult;
 
   /**
    * Final iteration number of the requirements analysis this test suite was
