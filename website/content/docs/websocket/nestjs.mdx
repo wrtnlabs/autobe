@@ -3,7 +3,7 @@ title: AutoBE > Guide Documents > WebSocket Protocol > NestJS Server
 ---
 import { Tabs } from "nextra/components";
 
-import LocalSource from "../../../components/LocalSource";
+import RemoteSource from "../../../components/RemoteSource";
 import AutoBeRpcNestJsControllerSnippet from "../../../template/snippets/AutoBeRpcNestJsControllerSnippet.mdx";
 import AutoBeRpcNestJsSetupSnippet from "../../../template/snippets/AutoBeRpcNestJsSetupSnippet.mdx";
 
@@ -112,8 +112,8 @@ export default NESTIA_CONFIG;
 ```
   </Tabs.Tab>
   <Tabs.Tab>
-    <LocalSource 
-      path="packages/sdk/src/INestiaConfig.ts"
+    <RemoteSource 
+      url="https://raw.githubusercontent.com/samchon/nestia/refs/heads/master/packages/sdk/src/INestiaConfig.ts"
       filename="@nestia/sdk/INestiaConfig"
       showLineNumbers
       highlight="10-29" />
