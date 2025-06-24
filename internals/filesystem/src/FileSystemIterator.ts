@@ -42,7 +42,6 @@ export namespace FileSystemIterator {
       } catch {}
     });
     for (const [key, value] of Object.entries(props.files)) {
-      console.log(key);
       const file: string = path.resolve(`${props.root}/${key}`);
       await directory.get(path.dirname(file));
       await fs.promises.writeFile(file, value ?? "", "utf8");
