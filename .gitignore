@@ -4,6 +4,7 @@ node_modules/
 playground-result/
 
 packages/*/README.md
+repositories/
 test/README.md
 website/README.md
 
