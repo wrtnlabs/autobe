@@ -31,9 +31,9 @@ export namespace IAutoBeTestScenarioApplication {
    *
    * - `draft`: A free-form, human-readable test scenario description for the API
    *   endpoint.
-   * - `dependsOn`: A list of other API endpoints that must be invoked beforehand
-   *   in order to prepare the context for this test. Each dependency includes
-   *   the purpose of the dependency.
+   * - `dependencies`: A list of other API endpoints that must be invoked
+   *   beforehand in order to prepare the context for this test. Each dependency
+   *   includes the purpose of the dependency.
    *
    * This structure is intended to help organize test specifications for complex
    * workflows and ensure that all prerequisites are explicitly declared.
@@ -113,10 +113,10 @@ export namespace IAutoBeTestScenarioApplication {
      * scenario. This helps express dependencies such as data creation or
      * authentication steps required to reach the intended test state.
      */
-    dependsOn: IDependsOn[];
+    dependencies: IDependencies[];
   }
 
-  export interface IDependsOn {
+  export interface IDependencies {
     /** Target API endpoint that must be executed before the main operation. */
     endpoint: AutoBeOpenApi.IEndpoint;
 

@@ -41,7 +41,7 @@ Your output must be an array of grouped test plans, using the following structur
     plans: [
       {
         draft: "Test product creation by submitting two requests with the same product.pid. Confirm that the second request returns a uniqueness constraint error.",
-        dependsOn: [
+        dependencies: [
           {
             method: "post",
             path: "/shopping/categories",
@@ -56,7 +56,7 @@ Your output must be an array of grouped test plans, using the following structur
       },
       {
         draft: "Verify that missing required fields like 'name' or 'price' trigger appropriate validation errors.",
-        dependsOn: []
+        dependencies: []
       }
     ]
   },
@@ -66,7 +66,7 @@ Your output must be an array of grouped test plans, using the following structur
     plans: [
       {
         draft: "Attempt to update a product with an invalid productId and expect a 404 error.",
-        dependsOn: []
+        dependencies: []
       }
     ]
   }
@@ -75,7 +75,7 @@ Your output must be an array of grouped test plans, using the following structur
 
 - Each top-level object is a **plan group** for a single unique endpoint (`method + path`).
 - The `plans` array contains **one or more test drafts** for that endpoint.
-- Each `draft` may list its **prerequisite API calls** in the `dependsOn` array, which includes `method`, `path`, and a `purpose` for context.
+- Each `draft` may list its **prerequisite API calls** in the `dependencies` array, which includes `method`, `path`, and a `purpose` for context.
 
 ---
 
@@ -96,8 +96,8 @@ Your output must be an array of grouped test plans, using the following structur
     method: "patch",
     path: "/blog/posts/{postId}",
     plans: [
-      { draft: "...", dependsOn: [...] },
-      { draft: "...", dependsOn: [...] }
+      { draft: "...", dependencies: [...] },
+      { draft: "...", dependencies: [...] }
     ]
   }
 ]
@@ -130,7 +130,7 @@ Your output must be an array of grouped test plans, using the following structur
    - Incorporate constraints mentioned in the API description such as uniqueness, foreign key requirements, or authentication.
    - For complex operations, include multiple steps within the same `draft` string (e.g., create → verify → delete).
 
-2. **dependsOn**:
+2. **dependencies**:
    - List other API operations that must be invoked before this test can be executed.
    - Each item must include `method`, `path`, and `purpose`.
    - The `purpose` field should explain *why* the dependency is needed in the test setup.

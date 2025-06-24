@@ -71,7 +71,7 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
           endpoint: pg.endpoint,
           draft: plan.draft,
           functionName: plan.functionName,
-          dependencies: plan.dependsOn,
+          dependencies: plan.dependencies,
         } satisfies AutoBeTestScenario;
       });
     }),
