@@ -1,4 +1,4 @@
-import { MicroAgentica } from "@agentica/core";
+import { IAgenticaVendor, MicroAgentica } from "@agentica/core";
 import {
   AutoBeAssistantMessageHistory,
   AutoBeEvent,
@@ -88,12 +88,20 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
    *   histories for session continuation
    */
   public constructor(props: IAutoBeProps<Model>) {
+    // INITIALIZE MEMBERS
     this.props_ = props;
     this.histories_ = props.histories?.slice() ?? [];
     this.state_ = createAutoBeState(this.histories_);
+    this.listeners_ = new Map();
+
+    // CONSTRUCT AGENTICA
+    const vendor: IAgenticaVendor = {
+      ...props.vendor,
+      semaphore: new Semaphore(props.vendor.semaphore ?? 16),
+    };
     this.context_ = {
+      vendor,
       model: props.model,
-      vendor: props.vendor,
       config: props.config,
       compiler: props.compiler,
       histories: () => this.histories_,
@@ -104,14 +112,9 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
         this.dispatch(event).catch(() => {});
       },
     };
-    this.listeners_ = new Map();
-
     this.agentica_ = new MicroAgentica({
+      vendor,
       model: props.model,
-      vendor: {
-        ...props.vendor,
-        semaphore: new Semaphore(props.vendor.semaphore ?? 16),
-      },
       config: {
         ...(props.config ?? {}),
         executor: {
