@@ -89,6 +89,29 @@ async function process<Model extends ILlmSchema.Model>(
 
   await agentica.conversate("Create e2e test functions.");
   if (pointer.value === null) throw new Error("Failed to create test code.");
+
+  const typeReferences: string[] = Array.from(
+    new Set(
+      Object.keys(artifacts.document.components.schemas).map(
+        (key) => key.split(".")[0]!,
+      ),
+    ),
+  );
+  pointer.value.content = pointer.value.content
+    .replace(/^[ \t]*import\b[\s\S]*?;[ \t]*$/gm, "")
+    .trim();
+  pointer.value.content = [
+    `import { TestValidator } from "@nestia/e2e";`,
+    `import typia, { tags } from "typia";`,
+    "",
+    `import api from "@ORGANIZATION/PROJECT-api";`,
+    ...typeReferences.map(
+      (ref) =>
+        `import type { ${ref} } from "@ORGANIZATION/PROJECT-api/lib/structures/${ref}";`,
+    ),
+    "",
+    pointer.value.content,
+  ].join("\n");
   return pointer.value;
 }
 
@@ -147,8 +170,9 @@ interface ICreateTestCodeProps {
    *
    * ### Critical Requirements
    *
-   * - Must follow the Test Generation Guildelines.
-   * - Must Planning the test code Never occur the typescript compile error.
+   * - Must follow the Test Generation Guidelines.
+   * - Must Planning the test code Never occur the TypeScript compile error.
+   * - NEVER include import statements in planning or implementation.
    *
    * ### Planning Elements:
    *
@@ -176,7 +200,7 @@ interface ICreateTestCodeProps {
    *     4. Test error plans (missing fields, invalid data)
    *     5. Verify database state changes
    *     6. Reconsider the scenario if it doesn't follow the Test Generation
-   *        Guildelines.
+   *        Guidelines.
    */
   scenario: string;
 
@@ -215,16 +239,14 @@ interface ICreateTestCodeProps {
    *
    * ### Technical Implementation Requirements:
    *
-   * #### Import Declarations
-   * ```typescript
-   * import api from "@ORGANIZATION/PROJECT-api";
-   * import { ITargetType } from "@ORGANIZATION/PROJECT-api/lib/structures/[path]";
-   * import { TestValidator } from "@nestia/e2e";
-   * import typia from "typia";
-   * ```
-   * - Must use exact `@ORGANIZATION/PROJECT-api` module path
-   * - Include `@ORGANIZATION` prefix in all API-related imports
-   * - Import specific DTO types from correct structure paths
+   * #### NO IMPORT DECLARATIONS
+   * - NEVER write any import statements
+   * - Start code directly with `export async function`
+   * - All dependencies assumed globally available:
+   *   - `api` for SDK functions
+   *   - `typia` for validation and random data
+   *   - All DTO types (ITargetType, etc.)
+   *   - `TestValidator` for assertions
    *
    * #### Code Quality Standards
    * - Zero TypeScript compilation errors (mandatory)
@@ -235,12 +257,12 @@ interface ICreateTestCodeProps {
    * - Consistent formatting and naming conventions
    *
    * ### Critical Error Prevention
-   * - Verify all import paths are correct and accessible
+   * - Verify all API function signatures and parameter types
    * - Ensure type compatibility between variables and assignments
    * - Include all required object properties and methods
-   * - Validate API function signatures and parameter types
    * - Confirm proper generic type usage
    * - Test async function declarations and Promise handling
+   * - NO IMPORT STATEMENTS ANYWHERE IN CODE
    */
   content: string;
 }
