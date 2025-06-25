@@ -171,7 +171,7 @@ interface ICreateTestCodeProps {
    * ### Critical Requirements
    *
    * - Must follow the Test Generation Guidelines.
-   * - Must Planning the test code Never occur the typescript compile error.
+   * - Must Planning the test code Never occur the TypeScript compile error.
    * - NEVER include import statements in planning or implementation.
    *
    * ### Planning Elements:
