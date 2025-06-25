@@ -18,6 +18,7 @@ export async function compileTestScenario<Model extends ILlmSchema.Model>(
   const filter = (prefix: string) =>
     Object.fromEntries(entries.filter(([key]) => key.startsWith(prefix)));
   return {
+    document,
     sdk: filter("src/api/functional"),
     dto: filter("src/api/structures"),
     e2e: filter("test/features"),

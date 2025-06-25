@@ -38,7 +38,6 @@ export const validate_agent_test_write = async (
       "utf8",
     ),
   );
-
   const writes: AutoBeTestWriteEvent[] = await orchestrateTestWrite(
     agent.getContext(),
     scenarios,
@@ -46,8 +45,16 @@ export const validate_agent_test_write = async (
   typia.assertEquals(writes);
 
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${owner}/${project}/test/progress`,
+    root: `${TestGlobal.ROOT}/results/${owner}/${project}/test/write`,
     files: {
+      ...Object.fromEntries(
+        Object.entries(
+          await agent.getFiles({
+            dbms: "sqlite",
+          }),
+        ).filter(([key]) => key.startsWith("test/features") === false),
+      ),
+      ...Object.fromEntries(writes.map((w) => [w.filename, w.content])),
       "logs/history.json": JSON.stringify(agent.getHistories(), null, 2),
       "logs/writes.json": JSON.stringify(writes, null, 2),
       "logs/tokenUsage.json": JSON.stringify(agent.getTokenUsage(), null, 2),
