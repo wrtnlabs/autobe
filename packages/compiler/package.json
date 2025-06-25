@@ -15,7 +15,7 @@
   "scripts": {
     "prepare": "ts-patch install && pnpm run prebuild",
     "build": "pnpm run prebuild && rimraf lib && tsc",
-    "prebuild": "node build/constants.js && node build/external.js",
+    "prebuild": "ts-node build/template.ts && ts-node build/external.ts",
     "dev": "pnpm run build --watch",
     "prepack": "pnpm run build"
   },
@@ -35,6 +35,7 @@
     "typia": "catalog:samchon"
   },
   "devDependencies": {
+    "@autobe/filesystem": "workspace:^",
     "@types/node": "^22.15.3",
     "rimraf": "^6.0.1",
     "sync-request": "^6.1.0",

@@ -1,105 +1,56 @@
 import { orchestrate } from "@autobe/agent";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
-  AutoBeAnalyzeCompleteEvent,
-  AutoBeAnalyzeStartEvent,
   AutoBeAssistantMessageHistory,
   AutoBeEvent,
   AutoBeInterfaceHistory,
-  AutoBePrismaCompleteEvent,
-  AutoBeUserMessageEvent,
 } from "@autobe/interface";
 
+import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
+import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_interface } from "./prepare_agent_interface";
 
 export const validate_agent_interface_main = async (
-  owner: string,
-  project: string,
+  factory: TestFactory,
+  project: TestProject,
 ) => {
   if (TestGlobal.env.CHATGPT_API_KEY === undefined) return false;
 
   // PREPARE AGENT
-  const { agent, analyze, prisma } = await prepare_agent_interface(
-    owner,
-    project,
-  );
-
-  // TRACE EVENTS
-  const events: AutoBeEvent[] = [
-    {
-      type: "userMessage",
-      contents: [
-        {
-          type: "text",
-          text: "Make shopping mall backend system",
-        },
-      ],
-      created_at: new Date().toISOString(),
-    } satisfies AutoBeUserMessageEvent,
-    {
-      type: "analyzeStart",
-      reason: "User requested to make shopping mall backend system",
-      step: 0,
-      created_at: new Date().toISOString(),
-    } satisfies AutoBeAnalyzeStartEvent,
-    {
-      type: "analyzeComplete",
-      files: analyze,
-      prefix: project,
-      step: 0,
-      created_at: new Date().toISOString(),
-    } satisfies AutoBeAnalyzeCompleteEvent,
-    {
-      type: "prismaStart",
-      reason: "Start DB design after requirements analysis",
-      step: 0,
-      created_at: new Date().toISOString(),
-    },
-    {
-      type: "prismaComplete",
-      application: {
-        files: [],
-      },
-      schemas: prisma.schemas,
-      compiled: prisma,
-      step: 0,
-      created_at: new Date().toISOString(),
-    } satisfies AutoBePrismaCompleteEvent,
-  ];
-  const trace = (type: AutoBeEvent.Type) => {
-    agent.on(type, (evt) => {
-      events.push(evt);
-    });
+  const { agent } = await prepare_agent_interface(factory, project);
+  const events: AutoBeEvent[] = [];
+  const enroll = (event: AutoBeEvent) => {
+    events.push(event);
   };
-  trace("interfaceStart");
-  trace("interfaceEndpoints");
-  trace("interfaceOperations");
-  trace("interfaceComponents");
-  trace("interfaceComplete");
+  agent.on("interfaceStart", enroll);
+  agent.on("interfaceEndpoints", enroll);
+  agent.on("interfaceOperations", enroll);
+  agent.on("interfaceComponents", enroll);
+  agent.on("interfaceComplement", enroll);
+  agent.on("interfaceComplete", enroll);
 
   // REQUEST INTERFACE GENERATION
-  let result: AutoBeInterfaceHistory | AutoBeAssistantMessageHistory =
-    await orchestrate.interface(agent.getContext())({
-      reason: "Step to the interface designing after DB schema generation",
+  const go = (reason: string) =>
+    orchestrate.interface(agent.getContext())({
+      reason,
     });
+  let result: AutoBeInterfaceHistory | AutoBeAssistantMessageHistory = await go(
+    "Step to the interface designing after DB schema generation",
+  );
   if (result.type !== "interface") {
-    result = await orchestrate.interface(agent.getContext())({
-      reason: "Don't ask me to do that, and just do it right now.",
-    });
+    result = await go("Don't ask me to do that, and just do it right now.");
     if (result.type !== "interface")
       throw new Error("History type must be interface.");
   }
 
   // REPORT RESULT
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${owner}/${project}/interface/main`,
+    root: `${TestGlobal.ROOT}/results/${project}/interface/main`,
     files: {
       ...(await agent.getFiles()),
-      "logs/files.json": JSON.stringify(Object.keys(agent.getFiles()), null, 2),
-      "logs/result.json": JSON.stringify(result, null, 2),
-      "logs/tokenUsage.json": JSON.stringify(agent.getTokenUsage(), null, 2),
       "logs/events.json": JSON.stringify(events, null, 2),
+      "logs/result.json": JSON.stringify(result, null, 2),
     },
   });
 };

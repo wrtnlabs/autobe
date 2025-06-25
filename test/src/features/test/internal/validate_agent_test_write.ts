@@ -1,60 +1,61 @@
 import { orchestrateTestWrite } from "@autobe/agent/src/orchestrate/test/orchestrateTestWrite";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
-  AutoBeEvent,
   AutoBeTestScenario,
   AutoBeTestWriteEvent,
+  IAutoBeTypeScriptCompilerResult,
 } from "@autobe/interface";
 import fs from "fs";
 import typia from "typia";
 
+import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
+import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_test } from "./prepare_agent_test";
 
-const ROOT = `${__dirname}/../../../..`;
-
 export const validate_agent_test_write = async (
-  owner: "samchon" | "kakasoo" | "michael",
-  project: "bbs-backend" | "shopping-backend",
+  factory: TestFactory,
+  project: TestProject,
 ) => {
   if (TestGlobal.env.CHATGPT_API_KEY === undefined) return false;
 
-  const { agent } = await prepare_agent_test(project);
-
-  const events: AutoBeEvent[] = [];
-  agent.on("testStart", (event) => {
-    events.push(event);
-  });
-  agent.on("testScenario", (event) => {
-    events.push(event);
-  });
-  agent.on("testComplete", (event) => {
-    events.push(event);
-  });
-
+  // PREPARE ASSETS
+  const { agent } = await prepare_agent_test(factory, project);
   const scenarios: AutoBeTestScenario[] = JSON.parse(
     await fs.promises.readFile(
-      `${ROOT}/assets/repositories/${owner}/${project}/test/scenarios.json`,
+      `${TestGlobal.ROOT}/assets/histories/${project}.test.scenarios.json`,
       "utf8",
     ),
   );
+  typia.assert(scenarios);
 
+  // GENERATE TEST FUNCTIONS
   const writes: AutoBeTestWriteEvent[] = await orchestrateTestWrite(
     agent.getContext(),
     scenarios,
   );
-  typia.assertEquals(writes);
+  typia.assert(writes);
 
+  // REPORT RESULT
+  const files: Record<string, string> = await agent.getFiles();
+  const compiled: IAutoBeTypeScriptCompilerResult = await agent
+    .getContext()
+    .compiler.typescript.compile({
+      files: Object.fromEntries(
+        Object.entries(files).filter(
+          ([key]) =>
+            (key.startsWith("src/") || key.startsWith("test/")) &&
+            key.endsWith(".ts"),
+        ),
+      ),
+    });
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${owner}/${project}/test/progress`,
+    root: `${TestGlobal.ROOT}/results/${project}/test/write`,
     files: {
-      "logs/history.json": JSON.stringify(agent.getHistories(), null, 2),
+      ...files,
       "logs/writes.json": JSON.stringify(writes, null, 2),
-      "logs/tokenUsage.json": JSON.stringify(agent.getTokenUsage(), null, 2),
-      "logs/files.json": JSON.stringify(Object.keys(agent.getFiles()), null, 2),
-      "logs/events.json": JSON.stringify(events, null, 2),
+      "logs/compiled.json": JSON.stringify(compiled, null, 2),
     },
   });
-
   return writes;
 };

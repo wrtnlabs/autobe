@@ -1,44 +1,34 @@
 import { orchestrateTestScenario } from "@autobe/agent/src/orchestrate/test/orchestrateTestScenario";
 import { FileSystemIterator } from "@autobe/filesystem";
-import { AutoBeEvent } from "@autobe/interface";
+import { AutoBeTestScenarioEvent } from "@autobe/interface";
 import typia from "typia";
 
+import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
+import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_test } from "./prepare_agent_test";
 
 export const validate_agent_test_scenario = async (
-  owner: "samchon" | "kakasoo" | "michael",
-  project: "bbs-backend" | "shopping-backend",
+  factory: TestFactory,
+  project: TestProject,
 ) => {
   if (TestGlobal.env.CHATGPT_API_KEY === undefined) return false;
 
-  const { agent } = await prepare_agent_test(project);
+  // PREPARE ASSETS
+  const { agent } = await prepare_agent_test(factory, project);
 
-  const events: AutoBeEvent[] = [];
-  agent.on("testStart", (event) => {
-    events.push(event);
-  });
-  agent.on("testScenario", (event) => {
-    events.push(event);
-  });
-  agent.on("testComplete", (event) => {
-    events.push(event);
-  });
-
-  const result = await orchestrateTestScenario(agent.getContext());
+  // GENERATE TEST SCENARIOS
+  const result: AutoBeTestScenarioEvent = await orchestrateTestScenario(
+    agent.getContext(),
+  );
   typia.assert(result);
 
+  // REPORT RESULT
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${owner}/${project}/test/scenario`,
+    root: `${TestGlobal.ROOT}/results/${project}/test/scenario`,
     files: {
-      "scenarios.json": JSON.stringify(result.scenarios, null, 2),
-      "logs/history.json": JSON.stringify(agent.getHistories(), null, 2),
-      "logs/result.json": JSON.stringify(result, null, 2),
-      "logs/tokenUsage.json": JSON.stringify(agent.getTokenUsage(), null, 2),
-      "logs/files.json": JSON.stringify(Object.keys(agent.getFiles()), null, 2),
-      "logs/events.json": JSON.stringify(events, null, 2),
+      ...(await agent.getFiles()),
+      "logs/scenarios.json": JSON.stringify(result.scenarios, null, 2),
     },
   });
-
-  return result;
 };

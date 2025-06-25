@@ -1,52 +1,52 @@
-import { orchestrate } from "@autobe/agent";
+import { AutoBeAgent, orchestrate } from "@autobe/agent";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeAnalyzeHistory,
   AutoBeAssistantMessageHistory,
+  AutoBeHistory,
+  AutoBeUserMessageHistory,
 } from "@autobe/interface";
-import { promises } from "fs";
-import path from "path";
 import typia from "typia";
 
+import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
-import { prepare_agent_analyze } from "./prepare_agent_analyze";
+import { TestHistory } from "../../../internal/TestHistory";
+import { TestProject } from "../../../structures/TestProject";
 
 export const validate_agent_analyze = async (
-  owner: "samchon" | "kakasoo",
-  project: "bbs-backend" | "shopping-backend" | "sns-backend",
+  factory: TestFactory,
+  project: TestProject,
 ) => {
   if (TestGlobal.env.CHATGPT_API_KEY === undefined) return false;
 
-  const { agent } = await prepare_agent_analyze(project);
+  // PREPARE ASSETS
+  const [history]: AutoBeHistory[] = await TestHistory.getAnalyze(project);
+  typia.assertGuard<AutoBeUserMessageHistory>(history);
 
-  const history: AutoBeAssistantMessageHistory | AutoBeAnalyzeHistory =
-    await orchestrate.analyze({
+  const agent: AutoBeAgent<"chatgpt"> = factory.createAgent([history]);
+
+  // GENERATE REPORT
+  const go = (reason: string) =>
+    orchestrate.analyze({
       ...agent.getContext(),
     })({
-      reason: "The user requested the preparation of the plan.",
-      userPlanningRequirements: await promises.readFile(
-        path.join(__dirname, `./${project}.user_planning_requirement.md`),
-        {
-          encoding: "utf-8",
-        },
-      ),
+      reason,
     });
-
-  typia.assertGuard<"analyze">(history.type);
-  typia.assertEquals(history.files);
-
-  if (JSON.stringify(history.files) === "{}") {
-    throw new Error("Analyze cannot generate files.");
+  let result: AutoBeAssistantMessageHistory | AutoBeAnalyzeHistory = await go(
+    "The user requested the preparation of the plan.",
+  );
+  if (result.type !== "analyze") {
+    result = await go("Don't ask me to do that, and just do it right now.");
+    if (result.type !== "analyze")
+      throw new Error("History type must be analyze.");
   }
 
   // REPORT RESULT
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${owner}/${project}/prisma`,
+    root: `${TestGlobal.ROOT}/results/${project}/analyze`,
     files: {
       ...(await agent.getFiles()),
-      "logs/result.json": JSON.stringify(history, null, 2),
-      "logs/files.json": JSON.stringify(Object.keys(agent.getFiles()), null, 2),
-      "logs/tokenUsage.json": JSON.stringify(agent.getTokenUsage(), null, 2),
+      "logs/result.json": JSON.stringify(result, null, 2),
     },
   });
 };

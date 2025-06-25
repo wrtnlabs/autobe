@@ -1,0 +1,122 @@
+[
+  {
+    "path": "/bbs/users",
+    "method": "patch"
+  },
+  {
+    "path": "/bbs/users/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/bbs/users",
+    "method": "post"
+  },
+  {
+    "path": "/bbs/users/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/bbs/users/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/bbs/userRoles",
+    "method": "patch"
+  },
+  {
+    "path": "/bbs/userRoles/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/bbs/userRoles",
+    "method": "post"
+  },
+  {
+    "path": "/bbs/userRoles/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/bbs/userRoles/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/bbs/categories",
+    "method": "patch"
+  },
+  {
+    "path": "/bbs/categories/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/bbs/categories",
+    "method": "post"
+  },
+  {
+    "path": "/bbs/categories/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/bbs/categories/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/bbs/posts",
+    "method": "patch"
+  },
+  {
+    "path": "/bbs/posts/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/bbs/posts",
+    "method": "post"
+  },
+  {
+    "path": "/bbs/posts/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/bbs/posts/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/bbs/comments",
+    "method": "patch"
+  },
+  {
+    "path": "/bbs/comments/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/bbs/comments",
+    "method": "post"
+  },
+  {
+    "path": "/bbs/comments/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/bbs/comments/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/bbs/votes",
+    "method": "patch"
+  },
+  {
+    "path": "/bbs/votes/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/bbs/votes",
+    "method": "post"
+  },
+  {
+    "path": "/bbs/votes/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/bbs/votes/{id}",
+    "method": "delete"
+  }
+]

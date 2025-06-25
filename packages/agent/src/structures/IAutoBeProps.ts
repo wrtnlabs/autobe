@@ -1,6 +1,11 @@
-import { AutoBeHistory, IAutoBeCompiler } from "@autobe/interface";
+import {
+  AutoBeHistory,
+  IAutoBeCompiler,
+  IAutoBeTokenUsageJson,
+} from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 
+import { AutoBeTokenUsage } from "../context/AutoBeTokenUsage";
 import { IAutoBeConfig } from "./IAutoBeConfig";
 import { IAutoBeVendor } from "./IAutoBeVendor";
 
@@ -101,4 +106,15 @@ export interface IAutoBeProps<Model extends ILlmSchema.Model> {
    * time-sensitive operations throughout the development process.
    */
   config?: IAutoBeConfig | undefined;
+
+  /**
+   * Token usage information.
+   *
+   * You can start token usage tracing by assigning this property.
+   *
+   * If you assign {@link IAutoBeTokenUsageJson} value, the token usage tracing
+   * would be from the value. Otherwise you assign the {@link AutoBeTokenUsage}
+   * typed instance, the tracing would be binded to the instance.
+   */
+  tokenUsage?: IAutoBeTokenUsageJson | AutoBeTokenUsage | undefined;
 }

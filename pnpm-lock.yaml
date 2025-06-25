@@ -258,6 +258,9 @@ importers:
         specifier: catalog:samchon
         version: 9.3.1(@samchon/openapi@4.3.3)(typescript@5.8.3)
     devDependencies:
+      '@autobe/filesystem':
+        specifier: workspace:^
+        version: link:../../internals/filesystem
       '@types/node':
         specifier: ^22.15.3
         version: 22.15.19
