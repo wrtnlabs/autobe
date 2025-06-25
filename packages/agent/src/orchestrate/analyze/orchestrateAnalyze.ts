@@ -23,18 +23,11 @@ export const orchestrateAnalyze =
   async (
     props: IAutoBeApplicationProps,
   ): Promise<AutoBeAssistantMessageHistory | AutoBeAnalyzeHistory> => {
-    const userPlanningRequirements = props.userPlanningRequirements;
-    if (!userPlanningRequirements) {
-      throw new Error(
-        `Unable to prepare a proposal because there is no user requirement`,
-      );
-    }
-
     const step = ctx.state().analyze?.step ?? 0;
     const created_at = new Date().toISOString();
     ctx.dispatch({
       type: "analyzeStart",
-      reason: userPlanningRequirements,
+      reason: props.reason,
       step,
       created_at,
     });
@@ -68,12 +61,7 @@ export const orchestrateAnalyze =
     enforceToolCall(agentica);
 
     const determined = await agentica.conversate(
-      [
-        "Design a complete list of documents for that document",
-        "```md",
-        userPlanningRequirements,
-        "```",
-      ].join("\n"),
+      "Design a complete list of documents for that document",
     );
 
     const lastMessage = determined[determined.length - 1]!;
@@ -152,10 +140,6 @@ export const orchestrateAnalyze =
             `Only write this document named '${filename}'.`,
             "Never write other documents.",
             "",
-            "# User Planning Requirements",
-            "```md",
-            JSON.stringify(userPlanningRequirements),
-            "```",
             "The reason why this document needs to be written is as follows.",
             `- reason: ${reason}`,
           ].join("\n"),
@@ -175,7 +159,7 @@ export const orchestrateAnalyze =
       const history: AutoBeAnalyzeHistory = {
         id: v4(),
         type: "analyze",
-        reason: userPlanningRequirements,
+        reason: props.reason,
         prefix,
         files: files,
         step,
