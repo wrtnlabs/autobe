@@ -12,8 +12,6 @@ import { TestGlobal } from "../../../TestGlobal";
 import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_test } from "./prepare_agent_test";
 
-const ROOT = `${__dirname}/../../../..`;
-
 export const validate_agent_test_correct = async (
   factory: TestFactory,
   project: TestProject,
@@ -24,13 +22,13 @@ export const validate_agent_test_correct = async (
   const { agent } = await prepare_agent_test(factory, project);
   const scenarios: AutoBeTestScenario[] = JSON.parse(
     await fs.promises.readFile(
-      `${ROOT}/assets/histories/${project}.test.scenarios.json`,
+      `${TestGlobal.ROOT}/assets/histories/${project}.test.scenarios.json`,
       "utf8",
     ),
   );
   const writes: AutoBeTestWriteEvent[] = JSON.parse(
     await fs.promises.readFile(
-      `${ROOT}/assets/histories/${project}.test.writes.json`,
+      `${TestGlobal.ROOT}/assets/histories/${project}.test.writes.json`,
       "utf8",
     ),
   );
