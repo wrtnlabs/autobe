@@ -1,11 +1,6 @@
-import { AutoBeAgent, orchestrate } from "@autobe/agent";
+import { AutoBeAgent } from "@autobe/agent";
 import { FileSystemIterator } from "@autobe/filesystem";
-import {
-  AutoBeAnalyzeHistory,
-  AutoBeAssistantMessageHistory,
-  AutoBeHistory,
-  AutoBeUserMessageHistory,
-} from "@autobe/interface";
+import { AutoBeHistory, AutoBeUserMessageHistory } from "@autobe/interface";
 import typia from "typia";
 
 import { TestFactory } from "../../../TestFactory";
@@ -22,21 +17,17 @@ export const validate_agent_analyze = async (
   // PREPARE ASSETS
   const [history]: AutoBeHistory[] = await TestHistory.getAnalyze(project);
   typia.assertGuard<AutoBeUserMessageHistory>(history);
+  const content: string | null =
+    history.contents[0].type === "text" ? history.contents[0].text : null;
+  if (content === null) throw new Error("History must have a text content.");
 
   const agent: AutoBeAgent<"chatgpt"> = factory.createAgent([history]);
 
   // GENERATE REPORT
-  const go = (reason: string) =>
-    orchestrate.analyze({
-      ...agent.getContext(),
-    })({
-      reason,
-    });
-  let result: AutoBeAssistantMessageHistory | AutoBeAnalyzeHistory = await go(
-    "The user requested the preparation of the plan.",
-  );
+  const go = (message: string) => agent.conversate(message);
+  let [result]: AutoBeHistory[] = await go(content);
   if (result.type !== "analyze") {
-    result = await go("Don't ask me to do that, and just do it right now.");
+    [result] = await go("Don't ask me to do that, and just do it right now.");
     if (result.type !== "analyze")
       throw new Error("History type must be analyze.");
   }

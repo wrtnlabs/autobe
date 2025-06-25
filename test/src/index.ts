@@ -78,9 +78,16 @@ async function main(): Promise<void> {
   console.log("Token Usage");
   console.table([
     {
-      total: tokenUsage.aggregate.total,
-      input: tokenUsage.aggregate.input.total,
-      output: tokenUsage.aggregate.output.total,
+      component: "Total",
+      value: tokenUsage.aggregate.total,
+    },
+    {
+      component: "Input",
+      value: tokenUsage.aggregate.input.total,
+    },
+    {
+      component: "Output",
+      value: tokenUsage.aggregate.output.total,
     },
   ]);
   if (exceptions.length !== 0) process.exit(-1);
