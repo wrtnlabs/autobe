@@ -57,6 +57,7 @@ export const orchestrateAnalyze =
             (el) => el.type === "assistantMessage" || el.type === "userMessage",
           ),
       ],
+      tokenUsage: ctx.usage(),
     });
     enforceToolCall(agentica);
 
@@ -82,21 +83,6 @@ export const orchestrateAnalyze =
     }
 
     const described = determined.find((el) => el.type === "describe");
-    // const determinedOutput = Array.from(
-    //   new Set(
-    //     described
-    //       ? described.executes
-    //           .map((el) => {
-    //             if (el.protocol === "class") {
-    //               return el.arguments as unknown as IDeterminingInput;
-    //             }
-    //             return null;
-    //           })
-    //           .filter((el) => el !== null)
-    //       : [],
-    //   ),
-    // );
-
     const determinedOutput = described?.executes.find(
       (el) => el.protocol === "class" && typia.is<IDeterminingInput>(el.value),
     )?.value as IDeterminingInput;

@@ -25,11 +25,13 @@ export const validate_agent_analyze = async (
 
   // GENERATE REPORT
   const go = (message: string) => agent.conversate(message);
-  let [result]: AutoBeHistory[] = await go(content);
-  if (result.type !== "analyze") {
-    [result] = await go("Don't ask me to do that, and just do it right now.");
-    if (result.type !== "analyze")
-      throw new Error("History type must be analyze.");
+
+  let results: AutoBeHistory[] = await go(content);
+
+  if (results.every((el) => el.type !== "analyze")) {
+    results = await go("Don't ask me to do that, and just do it right now.");
+    if (results.every((el) => el.type !== "analyze"))
+      throw new Error("Some history type must be analyze.");
   }
 
   // REPORT RESULT
@@ -37,7 +39,11 @@ export const validate_agent_analyze = async (
     root: `${TestGlobal.ROOT}/results/${project}/analyze`,
     files: {
       ...(await agent.getFiles()),
-      "logs/result.json": JSON.stringify(result, null, 2),
+      "logs/result.json": JSON.stringify(
+        results.find((el) => el.type === "analyze"),
+        null,
+        2,
+      ),
     },
   });
 };
