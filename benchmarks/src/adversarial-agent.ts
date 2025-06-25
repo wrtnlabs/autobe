@@ -28,18 +28,13 @@ export class AdversarialAgent {
   private benchmarkId: string;
 
   constructor(apiKey: string, baseURL?: string, runsPerScenario: number = 3) {
-    this.openai = new OpenAI({
-      apiKey,
-      baseURL,
-    });
+    // Initialize core configuration
+    this.openai = new OpenAI({ apiKey, baseURL });
     this.runsPerScenario = runsPerScenario;
     this.benchmarkId = `benchmark-${Date.now()}`;
+    this.logsDir = this.createLogsDirectory();
     
-    const path = require('path');
-    const workingDir = process.cwd();
-    this.logsDir = path.join(workingDir, 'benchmark-logs', new Date().toISOString().split('T')[0], this.benchmarkId);
-    
-    // Initialize components
+    // Initialize components with dependencies
     this.logger = new BenchmarkLogger(this.logsDir);
     this.fileManager = new FileManager(this.logsDir, this.logger);
     this.validation = new ValidationEngine(this.openai);
@@ -48,6 +43,13 @@ export class AdversarialAgent {
     this.reportGenerator = new ReportGenerator(this.logsDir);
     
     this.scenarios = getDefaultScenarios();
+  }
+
+  private createLogsDirectory(): string {
+    const path = require('path');
+    const workingDir = process.cwd();
+    const dateString = new Date().toISOString().split('T')[0];
+    return path.join(workingDir, 'benchmark-logs', dateString, this.benchmarkId);
   }
 
   async runBenchmark(agent: AutoBeAgentType, scenario: TestScenario): Promise<BenchmarkResult> {
@@ -120,9 +122,10 @@ export class AdversarialAgent {
         agent, runId, result, stageCompleted, stageStartTime, currentStage
       );
 
-      // Execute initial prompt with timeout
+      // Stage 1: Requirements Analysis (MANDATORY FIRST STEP)
+      this.logger.log(runId, `🎯 Stage 1/3: Requirements Analysis`);
       this.logger.log(runId, `Executing initial prompt: ${scenario.initialPrompt.substring(0, 100)}...`);
-      console.log("🚀 Executing initial prompt...");
+      console.log("🚀 Stage 1/3: Requirements Analysis - Executing initial prompt...");
       
       eventTimeouts.push(this.eventHandler.createStageTimeout(runId, result, stageCompleted, 'analyze', 180000));
       const analysisHistory = await agent.conversate(scenario.initialPrompt);
@@ -138,16 +141,28 @@ export class AdversarialAgent {
         analysisResult = fallbackAnalysis;
       }
 
-      // Execute follow-up prompts with enhanced monitoring
+      // Execute follow-up prompts in MANDATORY ORDER: Prisma → Interface
+      const stageNames = ['prisma', 'interface'];
+      const stageDescriptions = ['Database Schema', 'API Interface'];
+      
       for (const [index, prompt] of scenario.followUpPrompts.entries()) {
-        const newStage = index === 0 ? 'prisma' : 'interface';
+        const stageNumber = index + 2; // Stage 2 and 3
+        const currentStageName = stageNames[index];
+        const stageDescription = stageDescriptions[index];
+        
+        // Ensure we don't exceed expected stages
+        if (index >= stageNames.length) {
+          this.logger.log(runId, `WARNING: Unexpected additional prompt beyond 3-stage workflow`, 'WARN');
+          break;
+        }
         
         // Update current stage and start time
-        currentStage = newStage;
+        currentStage = currentStageName;
         stageStartTime = Date.now();
         
-        this.logger.log(runId, `Executing follow-up prompt ${index + 1} (${currentStage} stage): ${prompt.substring(0, 100)}...`);
-        console.log(`🔄 Executing follow-up prompt ${index + 1}...`);
+        this.logger.log(runId, `🎯 Stage ${stageNumber}/3: ${stageDescription} (${currentStage})`);
+        this.logger.log(runId, `Executing prompt: ${prompt.substring(0, 100)}...`);
+        console.log(`🔄 Stage ${stageNumber}/3: ${stageDescription} - Executing prompt...`);
         
         // Set timeout for this stage
         eventTimeouts.push(this.eventHandler.createStageTimeout(runId, result, stageCompleted, currentStage, 180000));
@@ -157,7 +172,7 @@ export class AdversarialAgent {
         // Wait for events to be processed
         await new Promise(resolve => setTimeout(resolve, 2000));
         
-        // Fallback validation for current stage
+        // Stage-specific fallback validation
         if (currentStage === 'prisma') {
           const fallbackPrisma = this.fallbackValidator.validatePrisma(
             stageHistory, runId, result, stageStartTime, stageCompleted, currentStage
@@ -219,20 +234,40 @@ export class AdversarialAgent {
       prismaResult = prismaResult || eventResults.prismaResult;
       interfaceResult = interfaceResult || eventResults.interfaceResult;
 
-      // Validate flow completion (basic success/failure)
-      this.logger.log(runId, 'Validating flow completion');
-      this.logger.log(runId, `Analysis result: ${analysisResult ? 'Present' : 'Missing'}`);
-      this.logger.log(runId, `Prisma result: ${prismaResult ? 'Present' : 'Missing'}`);
-      this.logger.log(runId, `Interface result: ${interfaceResult ? 'Present' : 'Missing'}`);
+      // Validate flow completion - all 3 stages must succeed
+      this.logger.log(runId, 'Validating 3-stage flow completion (Analysis → Prisma → Interface)');
       
-      const flowValidation = this.validation.validateFlow(scenario, {
+      const stageResults = {
         analysis: analysisResult,
         prisma: prismaResult,
         interface: interfaceResult
-      });
-
+      };
+      
+      // Log each stage status clearly
+      const analysisSuccess = !!analysisResult;
+      const prismaSuccess = !!prismaResult;
+      const interfaceSuccess = !!interfaceResult;
+      
+      this.logger.log(runId, `Stage 1 - Requirements Analysis: ${analysisSuccess ? '✅ SUCCESS' : '❌ FAILED'}`);
+      this.logger.log(runId, `Stage 2 - Prisma Schema: ${prismaSuccess ? '✅ SUCCESS' : '❌ FAILED'}`);
+      this.logger.log(runId, `Stage 3 - API Interface: ${interfaceSuccess ? '✅ SUCCESS' : '❌ FAILED'}`);
+      
+      const flowValidation = this.validation.validateFlow(scenario, stageResults);
+      
       result.flowSuccess = flowValidation.success;
       result.errors = flowValidation.errors;
+      
+      // Update stage success status in result
+      result.stages.analyze.success = analysisSuccess;
+      result.stages.prisma.success = prismaSuccess;
+      result.stages.interface.success = interfaceSuccess;
+      
+      const allStagesSuccessful = analysisSuccess && prismaSuccess && interfaceSuccess;
+      this.logger.log(runId, `Overall Flow Result: ${allStagesSuccessful ? '✅ ALL STAGES COMPLETED' : '❌ INCOMPLETE FLOW'}`);
+      
+      if (allStagesSuccessful !== result.flowSuccess) {
+        this.logger.log(runId, `WARNING: Stage success (${allStagesSuccessful}) differs from flow validation (${result.flowSuccess})`, 'WARN');
+      }
       
       if (!result.flowSuccess) {
         result.failureReason = this.determineFailureReason(result);
@@ -252,8 +287,12 @@ export class AdversarialAgent {
 
       console.log(`
 ${result.flowSuccess ? '✅' : '❌'} Flow completed: ${scenario.name}
+📋 Stage Results:
+   1. Requirements Analysis: ${result.stages.analyze.success ? '✅' : '❌'}
+   2. Prisma Schema: ${result.stages.prisma.success ? '✅' : '❌'}  
+   3. API Interface: ${result.stages.interface.success ? '✅' : '❌'}
 ⏱️  Total duration: ${result.duration}ms
-🔄 Flow success: ${result.flowSuccess ? 'Yes' : 'No'}
+🎯 Flow success: ${result.flowSuccess ? 'Yes (All 3 stages completed)' : 'No (Missing stages)'}
 📊 Completeness score: ${result.completenessScore}%
 `);
 
@@ -295,34 +334,19 @@ ${result.flowSuccess ? '✅' : '❌'} Flow completed: ${scenario.name}
     category?: string;
   }> {
     const timestamp = new Date().toISOString();
-    
-    // Categorize question first
     const category = this.categorizeQuestion(question, questionIndex);
-    
-    this.logger.log(runId, `[${category.toUpperCase()}] Question (${questionIndex + 1}/${totalQuestions}): ${question}`);
-    console.log(`🤔 [${category.toUpperCase()}] Question (${questionIndex + 1}/${totalQuestions}): ${question}`);
+    const questionProgress = `${questionIndex + 1}/${totalQuestions}`;
+    const categoryTag = `[${category.toUpperCase()}]`;
     
     try {
-      // Get response from agent (conversate returns conversation history)
+      // Execute question and get response first (no early logging)
       const conversationHistory = await agent.conversate(question);
-      
-      // Extract the last assistant message as response
       const lastMessage = conversationHistory[conversationHistory.length - 1];
       const response = lastMessage?.type === 'assistantMessage' ? (lastMessage as any).text : 'No response received';
-      
-      // Validate response quality using GPT
       const validation = await this.validation.validateResponse(question, response);
       
-      // Log everything together for better readability
-      this.logger.log(runId, `[${category.toUpperCase()}] Q&A Complete (${questionIndex + 1}/${totalQuestions}):`);
-      this.logger.log(runId, `  Question: ${question}`);
-      this.logger.log(runId, `  Response (${response.length} chars): ${response}`);
-      this.logger.log(runId, `  Validation: ${validation.validated ? 'PASS' : 'FAIL'}`);
-      if (!validation.validated && validation.issues.length > 0) {
-        this.logger.log(runId, `  Issues: ${validation.issues.join('; ')}`, 'WARN');
-      }
-      
-      console.log(`${validation.validated ? '✅' : '⚠️'} [${category.toUpperCase()}] Response: ${validation.validated ? 'Good' : 'Needs improvement'}`);
+      // Now log the complete Q&A pair together
+      this.logCompleteQuestionAnswer(runId, categoryTag, questionProgress, question, response, validation);
       
       return {
         question,
@@ -335,12 +359,8 @@ ${result.flowSuccess ? '✅' : '❌'} Flow completed: ${scenario.name}
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
       
-      // Log error with category
-      this.logger.log(runId, `[${category.toUpperCase()}] Q&A Failed (${questionIndex + 1}/${totalQuestions}):`);
-      this.logger.log(runId, `  Question: ${question}`);
-      this.logger.log(runId, `  Error: ${errorMessage}`, 'ERROR');
-      
-      console.log(`❌ [${category.toUpperCase()}] Failed to get response: ${error}`);
+      // Log failed Q&A pair
+      this.logFailedQuestionAnswer(runId, categoryTag, questionProgress, question, errorMessage);
       
       return {
         question,
@@ -353,21 +373,66 @@ ${result.flowSuccess ? '✅' : '❌'} Flow completed: ${scenario.name}
     }
   }
 
+  private logCompleteQuestionAnswer(runId: string, categoryTag: string, questionProgress: string, question: string, response: string, validation: { validated: boolean; issues: string[] }): void {
+    const statusIcon = validation.validated ? '✅' : '⚠️';
+    const statusText = validation.validated ? 'PASS' : 'FAIL';
+    const responsePreview = response.length > 100 ? response.substring(0, 100) + '...' : response;
+    
+    // Log complete Q&A pair to file
+    this.logger.log(runId, `${categoryTag} Q&A Complete (${questionProgress}):`);
+    this.logger.log(runId, `  Question: ${question}`);
+    this.logger.log(runId, `  Response (${response.length} chars): ${response}`);
+    this.logger.log(runId, `  Validation: ${statusText}`);
+    
+    const hasValidationIssues = !validation.validated && validation.issues.length > 0;
+    if (hasValidationIssues) {
+      this.logger.log(runId, `  Issues: ${validation.issues.join('; ')}`, 'WARN');
+    }
+    
+    // Log complete Q&A pair to console
+    console.log(`
+${statusIcon} ${categoryTag} Q&A Completed (${questionProgress}):
+❓ Question: ${question}
+💬 Response: ${responsePreview}
+📊 Validation: ${statusText}${hasValidationIssues ? ` (Issues: ${validation.issues.join('; ')})` : ''}
+`);
+  }
+
+  private logFailedQuestionAnswer(runId: string, categoryTag: string, questionProgress: string, question: string, errorMessage: string): void {
+    // Log failed Q&A pair to file
+    this.logger.log(runId, `${categoryTag} Q&A Failed (${questionProgress}):`);
+    this.logger.log(runId, `  Question: ${question}`);
+    this.logger.log(runId, `  Error: ${errorMessage}`, 'ERROR');
+    
+    // Log failed Q&A pair to console
+    console.log(`
+❌ ${categoryTag} Q&A Failed (${questionProgress}):
+❓ Question: ${question}
+🚫 Error: ${errorMessage}
+`);
+  }
+
   private determineFailureReason(result: BenchmarkResult): string {
-    // Check stage failures
-    if (!result.stages.analyze.success) {
+    const { stages, errors } = result;
+    
+    // Check stage failures with early returns
+    if (!stages.analyze.success) {
       return 'Analysis stage failed';
     }
-    if (!result.stages.prisma.success) {
-      return `Prisma stage failed: ${result.stages.prisma.errors.join(', ') || 'Unknown error'}`;
+    
+    if (!stages.prisma.success) {
+      const prismaErrors = stages.prisma.errors.join(', ') || 'Unknown error';
+      return `Prisma stage failed: ${prismaErrors}`;
     }
-    if (!result.stages.interface.success) {
+    
+    if (!stages.interface.success) {
       return 'Interface stage failed';
     }
     
     // Check general errors
-    if (result.errors.length > 0) {
-      return `General errors: ${result.errors.join(', ')}`;
+    const hasGeneralErrors = errors.length > 0;
+    if (hasGeneralErrors) {
+      return `General errors: ${errors.join(', ')}`;
     }
     
     return 'Unknown failure reason';
@@ -376,115 +441,70 @@ ${result.flowSuccess ? '✅' : '❌'} Flow completed: ${scenario.name}
   private categorizeQuestion(question: string, _questionIndex: number): string {
     const questionLower = question.toLowerCase();
     
-    // Analysis-related keywords
-    const isAnalysisRelated = questionLower.includes('requirements analysis') || 
-                             questionLower.includes('in the requirements') ||
-                             questionLower.includes('분석에') ||
-                             questionLower.includes('요구사항');
-    if (isAnalysisRelated) {
+    // Analysis-related keywords with early return
+    const analysisKeywords = ['requirements analysis', 'in the requirements', '분석에', '요구사항'];
+    const hasAnalysisKeywords = analysisKeywords.some(keyword => questionLower.includes(keyword));
+    if (hasAnalysisKeywords) {
       return 'analysis';
     }
     
-    // Schema/Database-related keywords
-    const isSchemaRelated = questionLower.includes('database schema') || 
-                           questionLower.includes('schema design') ||
-                           questionLower.includes('schema') ||
-                           questionLower.includes('데이터베이스') ||
-                           questionLower.includes('스키마');
-    if (isSchemaRelated) {
+    // Schema/Database-related keywords with early return
+    const schemaKeywords = ['database schema', 'schema design', 'schema', '데이터베이스', '스키마'];
+    const hasSchemaKeywords = schemaKeywords.some(keyword => questionLower.includes(keyword));
+    if (hasSchemaKeywords) {
       return 'schema';
     }
     
-    // API/Interface-related keywords
-    const isApiRelated = questionLower.includes('api interface') || 
-                        questionLower.includes('api') ||
-                        questionLower.includes('endpoint') ||
-                        questionLower.includes('interface') ||
-                        questionLower.includes('인터페이스');
-    if (isApiRelated) {
+    // API/Interface-related keywords with early return
+    const apiKeywords = ['api interface', 'api', 'endpoint', 'interface', '인터페이스'];
+    const hasApiKeywords = apiKeywords.some(keyword => questionLower.includes(keyword));
+    if (hasApiKeywords) {
       return 'api';
     }
     
-    // Security-related keywords
-    const isSecurityRelated = questionLower.includes('security') || 
-                             questionLower.includes('authentication') ||
-                             questionLower.includes('authorization') ||
-                             questionLower.includes('payment') ||
-                             questionLower.includes('보안') ||
-                             questionLower.includes('인증') ||
-                             questionLower.includes('결제');
-    if (isSecurityRelated) {
+    // Security-related keywords with early return
+    const securityKeywords = ['security', 'authentication', 'authorization', 'payment', '보안', '인증', '결제'];
+    const hasSecurityKeywords = securityKeywords.some(keyword => questionLower.includes(keyword));
+    if (hasSecurityKeywords) {
       return 'security';
     }
     
-    // Performance-related keywords
-    const isPerformanceRelated = questionLower.includes('performance') || 
-                                questionLower.includes('optimization') ||
-                                questionLower.includes('speed') ||
-                                questionLower.includes('concurrent') ||
-                                questionLower.includes('rate limiting') ||
-                                questionLower.includes('성능') ||
-                                questionLower.includes('최적화') ||
-                                questionLower.includes('동시');
-    if (isPerformanceRelated) {
+    // Performance-related keywords with early return
+    const performanceKeywords = ['performance', 'optimization', 'speed', 'concurrent', 'rate limiting', '성능', '최적화', '동시'];
+    const hasPerformanceKeywords = performanceKeywords.some(keyword => questionLower.includes(keyword));
+    if (hasPerformanceKeywords) {
       return 'performance';
     }
     
-    // Error Handling-related keywords
-    const isErrorHandlingRelated = questionLower.includes('error') || 
-                                  questionLower.includes('failure') ||
-                                  questionLower.includes('exception') ||
-                                  questionLower.includes('timeout') ||
-                                  questionLower.includes('connection fail') ||
-                                  questionLower.includes('에러') ||
-                                  questionLower.includes('실패') ||
-                                  questionLower.includes('오류');
-    if (isErrorHandlingRelated) {
+    // Error Handling-related keywords with early return
+    const errorHandlingKeywords = ['error', 'failure', 'exception', 'timeout', 'connection fail', '에러', '실패', '오류'];
+    const hasErrorHandlingKeywords = errorHandlingKeywords.some(keyword => questionLower.includes(keyword));
+    if (hasErrorHandlingKeywords) {
       return 'errorHandling';
     }
     
-    // Data Consistency-related keywords
-    const isDataConsistencyRelated = questionLower.includes('consistency') || 
-                                    questionLower.includes('transaction') ||
-                                    questionLower.includes('rollback') ||
-                                    questionLower.includes('concurrent') ||
-                                    questionLower.includes('inventory') ||
-                                    questionLower.includes('stock') ||
-                                    questionLower.includes('일관성') ||
-                                    questionLower.includes('트랜잭션') ||
-                                    questionLower.includes('재고');
-    if (isDataConsistencyRelated) {
+    // Data Consistency-related keywords with early return
+    const dataConsistencyKeywords = ['consistency', 'transaction', 'rollback', 'concurrent', 'inventory', 'stock', '일관성', '트랜잭션', '재고'];
+    const hasDataConsistencyKeywords = dataConsistencyKeywords.some(keyword => questionLower.includes(keyword));
+    if (hasDataConsistencyKeywords) {
       return 'dataConsistency';
     }
     
-    // User Experience-related keywords
-    const isUserExperienceRelated = questionLower.includes('user') || 
-                                   questionLower.includes('content') ||
-                                   questionLower.includes('length limit') ||
-                                   questionLower.includes('search') ||
-                                   questionLower.includes('recommendation') ||
-                                   questionLower.includes('discount') ||
-                                   questionLower.includes('shipping') ||
-                                   questionLower.includes('사용자') ||
-                                   questionLower.includes('콘텐츠') ||
-                                   questionLower.includes('검색') ||
-                                   questionLower.includes('추천') ||
-                                   questionLower.includes('할인') ||
-                                   questionLower.includes('배송');
-    if (isUserExperienceRelated) {
+    // User Experience-related keywords with early return
+    const userExperienceKeywords = ['user', 'content', 'length limit', 'search', 'recommendation', 'discount', 'shipping', '사용자', '콘텐츠', '검색', '추천', '할인', '배송'];
+    const hasUserExperienceKeywords = userExperienceKeywords.some(keyword => questionLower.includes(keyword));
+    if (hasUserExperienceKeywords) {
       return 'userExperience';
     }
     
-    // Default to general for system-wide questions
     return 'general';
   }
 
   async runScenarioMultipleTimes(agent: AutoBeAgentType, scenario: TestScenario): Promise<ScenarioResults> {
     const scenarioStartTime = Date.now();
-    const scenarioId = `scenario-${scenario.name.replace(/\s+/g, '-').toLowerCase()}-${scenarioStartTime}`;
+    const scenarioId = this.createScenarioId(scenario.name, scenarioStartTime);
     
-    this.logger.log(scenarioId, `Starting scenario "${scenario.name}" with ${this.runsPerScenario} runs`);
-    console.log(`\n🔄 Running scenario "${scenario.name}" ${this.runsPerScenario} times...`);
+    this.logScenarioStart(scenarioId, scenario.name);
     
     const runs: BenchmarkResult[] = [];
     let successfulRuns = 0;
@@ -492,81 +512,115 @@ ${result.flowSuccess ? '✅' : '❌'} Flow completed: ${scenario.name}
     for (let i = 1; i <= this.runsPerScenario; i++) {
       console.log(`\n📍 Run ${i}/${this.runsPerScenario} for ${scenario.name}`);
       
-      try {
-        const result = await this.runBenchmark(agent, scenario);
-        runs.push(result);
-        
-        if (result.flowSuccess) {
-          successfulRuns++;
-        }
-        
-        // Wait between runs to avoid rate limiting and give agent fresh context
-        if (i < this.runsPerScenario) {
-          console.log("⏸️  Waiting 3 seconds before next run...");
-          await new Promise(resolve => setTimeout(resolve, 3000));
-        }
-        
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        const failedRunId = `${scenario.name.replace(/\s+/g, '-').toLowerCase()}-${Date.now()}-FAILED`;
-        
-        console.error(`❌ Run ${i} failed:`, error);
-        
-        // Try to log the error, but don't fail if logging fails
-        try {
-          this.logger.log(failedRunId, `Run ${i} failed with critical error: ${errorMessage}`, 'ERROR');
-        } catch (logError) {
-          console.error(`Failed to log error for run ${i}:`, logError);
-        }
-        
-        // Create a failed result
-        const failedResult: BenchmarkResult = {
-          testName: scenario.name,
-          runId: failedRunId,
-          flowSuccess: false,
-          duration: 0,
-          errors: [errorMessage],
-          stages: {
-            analyze: { success: false, duration: 0, errors: [] },
-            prisma: { success: false, duration: 0, errors: [] },
-            interface: { success: false, duration: 0, errors: [] }
-          },
-          adversarialQuestions: [],
-          completenessScore: 0,
-          completenessBreakdown: {
-            analysis: { total: 0, validated: 0, score: 0 },
-            schema: { total: 0, validated: 0, score: 0 },
-            api: { total: 0, validated: 0, score: 0 },
-            security: { total: 0, validated: 0, score: 0 },
-            performance: { total: 0, validated: 0, score: 0 },
-            errorHandling: { total: 0, validated: 0, score: 0 },
-            dataConsistency: { total: 0, validated: 0, score: 0 },
-            userExperience: { total: 0, validated: 0, score: 0 },
-            general: { total: 0, validated: 0, score: 0 }
-          },
-          logs: [],
-          generatedFiles: {},
-          failureReason: `Critical error in run ${i}: ${errorMessage}`,
-          timestamp: new Date().toISOString()
-        };
-        
-        // Try to save run data, but don't fail if saving fails
-        try {
-          this.fileManager.saveRunData(failedResult);
-        } catch (saveError) {
-          console.error(`Failed to save failed run data for ${failedRunId}:`, saveError);
-        }
-        
-        runs.push(failedResult);
+      const runResult = await this.executeScenarioRun(agent, scenario, i);
+      runs.push(runResult);
+      
+      if (runResult.flowSuccess) {
+        successfulRuns++;
+      }
+      
+      const isNotLastRun = i < this.runsPerScenario;
+      if (isNotLastRun) {
+        console.log("⏸️  Waiting 3 seconds before next run...");
+        await new Promise(resolve => setTimeout(resolve, 3000));
       }
     }
     
     const totalScenarioDuration = Date.now() - scenarioStartTime;
+    const scenarioMetrics = this.calculateScenarioMetrics(runs, successfulRuns, totalScenarioDuration);
+    
+    this.logScenarioCompletion(scenarioId, scenario.name, scenarioMetrics, successfulRuns);
+    
+    return {
+      scenarioName: scenario.name,
+      totalRuns: this.runsPerScenario,
+      successfulRuns,
+      ...scenarioMetrics,
+      runs
+    };
+  }
+
+  private createScenarioId(scenarioName: string, startTime: number): string {
+    return `scenario-${scenarioName.replace(/\s+/g, '-').toLowerCase()}-${startTime}`;
+  }
+
+  private logScenarioStart(scenarioId: string, scenarioName: string): void {
+    this.logger.log(scenarioId, `Starting scenario "${scenarioName}" with ${this.runsPerScenario} runs`);
+    console.log(`\n🔄 Running scenario "${scenarioName}" ${this.runsPerScenario} times...`);
+  }
+
+  private async executeScenarioRun(agent: AutoBeAgentType, scenario: TestScenario, runNumber: number): Promise<BenchmarkResult> {
+    try {
+      return await this.runBenchmark(agent, scenario);
+    } catch (error) {
+      return this.createFailedRunResult(scenario, runNumber, error);
+    }
+  }
+
+  private createFailedRunResult(scenario: TestScenario, runNumber: number, error: unknown): BenchmarkResult {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const failedRunId = `${scenario.name.replace(/\s+/g, '-').toLowerCase()}-${Date.now()}-FAILED`;
+    
+    console.error(`❌ Run ${runNumber} failed:`, error);
+    
+    this.tryLogError(failedRunId, runNumber, errorMessage);
+    
+    const failedResult: BenchmarkResult = {
+      testName: scenario.name,
+      runId: failedRunId,
+      flowSuccess: false,
+      duration: 0,
+      errors: [errorMessage],
+      stages: {
+        analyze: { success: false, duration: 0, errors: [] },
+        prisma: { success: false, duration: 0, errors: [] },
+        interface: { success: false, duration: 0, errors: [] }
+      },
+      adversarialQuestions: [],
+      completenessScore: 0,
+      completenessBreakdown: {
+        analysis: { total: 0, validated: 0, score: 0 },
+        schema: { total: 0, validated: 0, score: 0 },
+        api: { total: 0, validated: 0, score: 0 },
+        security: { total: 0, validated: 0, score: 0 },
+        performance: { total: 0, validated: 0, score: 0 },
+        errorHandling: { total: 0, validated: 0, score: 0 },
+        dataConsistency: { total: 0, validated: 0, score: 0 },
+        userExperience: { total: 0, validated: 0, score: 0 },
+        general: { total: 0, validated: 0, score: 0 }
+      },
+      logs: [],
+      generatedFiles: {},
+      failureReason: `Critical error in run ${runNumber}: ${errorMessage}`,
+      timestamp: new Date().toISOString()
+    };
+    
+    this.trySaveFailedRunData(failedResult, failedRunId);
+    
+    return failedResult;
+  }
+
+  private tryLogError(failedRunId: string, runNumber: number, errorMessage: string): void {
+    try {
+      this.logger.log(failedRunId, `Run ${runNumber} failed with critical error: ${errorMessage}`, 'ERROR');
+    } catch (logError) {
+      console.error(`Failed to log error for run ${runNumber}:`, logError);
+    }
+  }
+
+  private trySaveFailedRunData(failedResult: BenchmarkResult, failedRunId: string): void {
+    try {
+      this.fileManager.saveRunData(failedResult);
+    } catch (saveError) {
+      console.error(`Failed to save failed run data for ${failedRunId}:`, saveError);
+    }
+  }
+
+  private calculateScenarioMetrics(runs: BenchmarkResult[], successfulRuns: number, totalScenarioDuration: number) {
     const successRate = (successfulRuns / this.runsPerScenario) * 100;
     const averageCompleteness = runs.reduce((sum, run) => sum + run.completenessScore, 0) / runs.length;
     const averageDuration = runs.reduce((sum, run) => sum + run.duration, 0) / runs.length;
     
-    // Calculate average completeness breakdown
     const averageCompletenessBreakdown = {
       analysis: runs.reduce((sum, run) => sum + run.completenessBreakdown.analysis.score, 0) / runs.length,
       schema: runs.reduce((sum, run) => sum + run.completenessBreakdown.schema.score, 0) / runs.length,
@@ -579,36 +633,33 @@ ${result.flowSuccess ? '✅' : '❌'} Flow completed: ${scenario.name}
       general: runs.reduce((sum, run) => sum + run.completenessBreakdown.general.score, 0) / runs.length
     };
     
-    // Calculate average stage timings
     const averageStageTimings = {
       analysis: runs.reduce((sum, run) => sum + run.stages.analyze.duration, 0) / runs.length,
       schema: runs.reduce((sum, run) => sum + run.stages.prisma.duration, 0) / runs.length,
       api: runs.reduce((sum, run) => sum + run.stages.interface.duration, 0) / runs.length
     };
-    
-    this.logger.log(scenarioId, `Scenario completed in ${totalScenarioDuration}ms (${(totalScenarioDuration / 1000).toFixed(1)}s)`);
-    this.logger.log(scenarioId, `Success rate: ${successRate.toFixed(1)}% (${successfulRuns}/${this.runsPerScenario})`);
-    
-    console.log(`
-📊 Scenario "${scenario.name}" Summary:
-   Success Rate: ${successRate.toFixed(1)}% (${successfulRuns}/${this.runsPerScenario})
-   Average Completeness: ${averageCompleteness.toFixed(1)}%
-   Average Duration: ${averageDuration.toFixed(0)}ms
-   Total Scenario Duration: ${(totalScenarioDuration / 1000).toFixed(1)}s
-`);
-    
+
     return {
-      scenarioName: scenario.name,
-      totalRuns: this.runsPerScenario,
-      successfulRuns,
       successRate,
       averageCompleteness,
       averageCompletenessBreakdown,
       averageDuration,
       averageStageTimings,
-      totalScenarioDuration,
-      runs
+      totalScenarioDuration
     };
+  }
+
+  private logScenarioCompletion(scenarioId: string, scenarioName: string, metrics: { successRate: number; averageCompleteness: number; averageDuration: number; totalScenarioDuration: number }, successfulRuns: number): void {
+    this.logger.log(scenarioId, `Scenario completed in ${metrics.totalScenarioDuration}ms (${(metrics.totalScenarioDuration / 1000).toFixed(1)}s)`);
+    this.logger.log(scenarioId, `Success rate: ${metrics.successRate.toFixed(1)}% (${successfulRuns}/${this.runsPerScenario})`);
+    
+    console.log(`
+📊 Scenario "${scenarioName}" Summary:
+   Success Rate: ${metrics.successRate.toFixed(1)}% (${successfulRuns}/${this.runsPerScenario})
+   Average Completeness: ${metrics.averageCompleteness.toFixed(1)}%
+   Average Duration: ${metrics.averageDuration.toFixed(0)}ms
+   Total Scenario Duration: ${(metrics.totalScenarioDuration / 1000).toFixed(1)}s
+`);
   }
 
   async runAllBenchmarks(agent: AutoBeAgentType): Promise<BenchmarkSummary> {
