@@ -11,8 +11,8 @@ import { BenchmarkLogger } from "./logger";
 import { FileManager } from "./file-manager";
 import { ValidationEngine } from "./validation";
 import { EventHandler } from "./event-handler";
-import { FallbackValidator } from "./fallback-validator";
 import { ReportGenerator } from "./report-generator";
+import { formatDuration, formatDurationSecondsFromMs } from "./time-utils";
 
 export class AdversarialAgent {
   private openai: OpenAI;
@@ -22,7 +22,6 @@ export class AdversarialAgent {
   private fileManager: FileManager;
   private validation: ValidationEngine;
   private eventHandler: EventHandler;
-  private fallbackValidator: FallbackValidator;
   private reportGenerator: ReportGenerator;
   private logsDir: string;
   private benchmarkId: string;
@@ -39,7 +38,6 @@ export class AdversarialAgent {
     this.fileManager = new FileManager(this.logsDir, this.logger);
     this.validation = new ValidationEngine(this.openai);
     this.eventHandler = new EventHandler(this.logger);
-    this.fallbackValidator = new FallbackValidator(this.logger);
     this.reportGenerator = new ReportGenerator(this.logsDir);
     
     this.scenarios = getDefaultScenarios();
@@ -118,8 +116,9 @@ export class AdversarialAgent {
       this.logger.log(runId, 'Setting up event listeners');
 
       // Set up event listeners to track stage completions
+      const stageContext = { currentStage, stageStartTime };
       const eventHandler = this.eventHandler.setupEventListeners(
-        agent, runId, result, stageCompleted, stageStartTime, currentStage
+        agent, runId, result, stageCompleted, stageContext
       );
 
       // Stage 1: Requirements Analysis (MANDATORY FIRST STEP)
@@ -128,18 +127,10 @@ export class AdversarialAgent {
       console.log("🚀 Stage 1/3: Requirements Analysis - Executing initial prompt...");
       
       eventTimeouts.push(this.eventHandler.createStageTimeout(runId, result, stageCompleted, 'analyze', 180000));
-      const analysisHistory = await agent.conversate(scenario.initialPrompt);
+      await agent.conversate(scenario.initialPrompt);
       
-      // Wait a bit for events to be processed
+      // Wait for events to be processed
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Fallback validation if no event was received
-      const fallbackAnalysis = this.fallbackValidator.validateAnalysis(
-        analysisHistory, runId, result, stageStartTime, stageCompleted
-      );
-      if (fallbackAnalysis) {
-        analysisResult = fallbackAnalysis;
-      }
 
       // Execute follow-up prompts in MANDATORY ORDER: Prisma → Interface
       const stageNames = ['prisma', 'interface'];
@@ -159,6 +150,8 @@ export class AdversarialAgent {
         // Update current stage and start time
         currentStage = currentStageName;
         stageStartTime = Date.now();
+        stageContext.currentStage = currentStage;
+        stageContext.stageStartTime = stageStartTime;
         
         this.logger.log(runId, `🎯 Stage ${stageNumber}/3: ${stageDescription} (${currentStage})`);
         this.logger.log(runId, `Executing prompt: ${prompt.substring(0, 100)}...`);
@@ -167,32 +160,53 @@ export class AdversarialAgent {
         // Set timeout for this stage
         eventTimeouts.push(this.eventHandler.createStageTimeout(runId, result, stageCompleted, currentStage, 180000));
         
-        const stageHistory = await agent.conversate(prompt);
+        const stageResponse = await agent.conversate(prompt);
+        
+        // Log the stage response for debugging
+        if (stageResponse && stageResponse.length > 0) {
+          const lastMessage = stageResponse[stageResponse.length - 1];
+          if (lastMessage && (lastMessage as any).text) {
+            const responseText = (lastMessage as any).text;
+            this.logger.log(runId, `🔍 Stage ${currentStage} response preview: ${responseText.substring(0, 200)}...`);
+            
+            // Check if response contains Prisma-related content
+            if (currentStage === 'prisma') {
+              const hasPrismaKeywords = responseText.includes('model ') || 
+                                       responseText.includes('prisma') || 
+                                       responseText.includes('schema') ||
+                                       responseText.includes('generator') ||
+                                       responseText.includes('datasource');
+              this.logger.log(runId, `🔍 Prisma response contains schema keywords: ${hasPrismaKeywords}`);
+              
+              if (hasPrismaKeywords) {
+                this.logger.log(runId, `🔍 Full Prisma response: ${responseText}`);
+              }
+            }
+            
+            // Check if response contains API-related content
+            if (currentStage === 'interface') {
+              const hasApiKeywords = responseText.includes('API') || 
+                                    responseText.includes('endpoint') || 
+                                    responseText.includes('swagger') ||
+                                    responseText.includes('interface') ||
+                                    responseText.includes('specification');
+              this.logger.log(runId, `🔍 Interface response contains API keywords: ${hasApiKeywords}`);
+            }
+          }
+        }
         
         // Wait for events to be processed
         await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        // Stage-specific fallback validation
-        if (currentStage === 'prisma') {
-          const fallbackPrisma = this.fallbackValidator.validatePrisma(
-            stageHistory, runId, result, stageStartTime, stageCompleted, currentStage
-          );
-          if (fallbackPrisma) {
-            prismaResult = fallbackPrisma;
-          }
-        } else if (currentStage === 'interface') {
-          const fallbackInterface = this.fallbackValidator.validateInterface(
-            stageHistory, runId, result, stageStartTime, stageCompleted, currentStage
-          );
-          if (fallbackInterface) {
-            interfaceResult = fallbackInterface;
-          }
-        }
       }
 
-      // Run adversarial questions in batches of 16
+      // Collect generated artifacts for context-aware adversarial questioning
+      const generatedArtifacts = this.collectGeneratedArtifacts(analysisResult, prismaResult, interfaceResult);
+      this.logger.log(runId, `Collected artifacts: Analysis=${!!analysisResult}, Prisma=${!!prismaResult}, Interface=${!!interfaceResult}`);
+      
+      // Run adversarial questions in batches of 16 with generated context
       this.logger.log(runId, `Starting adversarial questioning with ${scenario.adversarialPrompts.length} questions`);
       console.log(`\n🔥 Starting adversarial questioning (${scenario.adversarialPrompts.length} questions in batches of 16)...`);
+      console.log(`📋 Available artifacts: ${generatedArtifacts.availableArtifacts.join(', ')}`);
       
       const batchSize = 16;
       const questionResults: Array<{
@@ -213,7 +227,7 @@ export class AdversarialAgent {
         this.logger.log(runId, `Processing batch ${batchNumber}/${totalBatches} with ${batch.length} questions`);
         
         const batchPromises = batch.map((adversarialPrompt, batchIndex) => 
-          this.askAdversarialQuestion(agent, adversarialPrompt, runId, i + batchIndex, scenario.adversarialPrompts.length)
+          this.askAdversarialQuestionWithContext(agent, adversarialPrompt, generatedArtifacts, runId, i + batchIndex, scenario.adversarialPrompts.length)
         );
         
         const batchResults = await Promise.all(batchPromises);
@@ -230,9 +244,13 @@ export class AdversarialAgent {
 
       // Get final results from event handler
       const eventResults = eventHandler.getResults();
+      this.logger.log(runId, `EventHandler results: Analysis=${!!eventResults.analysisResult}, Prisma=${!!eventResults.prismaResult}, Interface=${!!eventResults.interfaceResult}`);
+      
       analysisResult = analysisResult || eventResults.analysisResult;
       prismaResult = prismaResult || eventResults.prismaResult;
       interfaceResult = interfaceResult || eventResults.interfaceResult;
+      
+      this.logger.log(runId, `Final results after merge: Analysis=${!!analysisResult}, Prisma=${!!prismaResult}, Interface=${!!interfaceResult}`);
 
       // Validate flow completion - all 3 stages must succeed
       this.logger.log(runId, 'Validating 3-stage flow completion (Analysis → Prisma → Interface)');
@@ -282,7 +300,7 @@ export class AdversarialAgent {
       
       result.duration = Date.now() - startTime;
 
-      this.logger.log(runId, `Flow completed in ${result.duration}ms with ${result.flowSuccess ? 'SUCCESS' : 'FAILURE'}`);
+      this.logger.log(runId, `Flow completed in ${formatDuration(result.duration)} with ${result.flowSuccess ? 'SUCCESS' : 'FAILURE'}`);
       this.logger.log(runId, `Completeness score: ${result.completenessScore}%`);
 
       console.log(`
@@ -291,7 +309,7 @@ ${result.flowSuccess ? '✅' : '❌'} Flow completed: ${scenario.name}
    1. Requirements Analysis: ${result.stages.analyze.success ? '✅' : '❌'}
    2. Prisma Schema: ${result.stages.prisma.success ? '✅' : '❌'}  
    3. API Interface: ${result.stages.interface.success ? '✅' : '❌'}
-⏱️  Total duration: ${result.duration}ms
+⏱️  Total duration: ${formatDuration(result.duration)}
 🎯 Flow success: ${result.flowSuccess ? 'Yes (All 3 stages completed)' : 'No (Missing stages)'}
 📊 Completeness score: ${result.completenessScore}%
 `);
@@ -325,7 +343,61 @@ ${result.flowSuccess ? '✅' : '❌'} Flow completed: ${scenario.name}
     return result;
   }
 
-  private async askAdversarialQuestion(agent: AutoBeAgentType, question: string, runId: string, questionIndex: number, totalQuestions: number): Promise<{
+  private collectGeneratedArtifacts(analysisResult: any, prismaResult: any, interfaceResult: any): {
+    availableArtifacts: string[];
+    analysisContent: string;
+    prismaContent: string;
+    interfaceContent: string;
+    contextPrompt: string;
+  } {
+    const availableArtifacts: string[] = [];
+    let analysisContent = '';
+    let prismaContent = '';
+    let interfaceContent = '';
+
+    // Extract analysis content
+    if (analysisResult?.files) {
+      availableArtifacts.push('Requirements Analysis');
+      const analysisFiles = Object.entries(analysisResult.files)
+        .map(([filename, content]) => `### ${filename}\n${content}`)
+        .join('\n\n');
+      analysisContent = `## Requirements Analysis\n${analysisFiles}`;
+    }
+
+    // Extract Prisma schema content
+    if (prismaResult?.schemas) {
+      availableArtifacts.push('Prisma Database Schema');
+      const schemaFiles = Object.entries(prismaResult.schemas)
+        .map(([filename, content]) => `### ${filename}\n${content}`)
+        .join('\n\n');
+      prismaContent = `## Prisma Database Schema\n${schemaFiles}`;
+    }
+
+    // Extract API interface content
+    if (interfaceResult?.files) {
+      availableArtifacts.push('API Interface Specification');
+      const interfaceFiles = Object.entries(interfaceResult.files)
+        .map(([filename, content]) => `### ${filename}\n${content}`)
+        .join('\n\n');
+      interfaceContent = `## API Interface Specification\n${interfaceFiles}`;
+    }
+
+    // Create context prompt with all available artifacts
+    const contextSections = [analysisContent, prismaContent, interfaceContent].filter(Boolean);
+    const contextPrompt = contextSections.length > 0 
+      ? `\n\n# GENERATED ARTIFACTS TO REFERENCE\n\nPlease base your answer on the following generated artifacts:\n\n${contextSections.join('\n\n')}\n\n# QUESTION\n\n`
+      : '\n\n# QUESTION\n\nNote: No generated artifacts are available yet for this question.\n\n';
+
+    return {
+      availableArtifacts,
+      analysisContent,
+      prismaContent,
+      interfaceContent,
+      contextPrompt
+    };
+  }
+
+  private async askAdversarialQuestionWithContext(agent: AutoBeAgentType, question: string, artifacts: any, runId: string, questionIndex: number, totalQuestions: number): Promise<{
     question: string;
     response: string;
     validated: boolean;
@@ -339,14 +411,17 @@ ${result.flowSuccess ? '✅' : '❌'} Flow completed: ${scenario.name}
     const categoryTag = `[${category.toUpperCase()}]`;
     
     try {
-      // Execute question and get response first (no early logging)
-      const conversationHistory = await agent.conversate(question);
+      // Create context-aware question by including generated artifacts
+      const contextAwareQuestion = artifacts.contextPrompt + question;
+      
+      // Execute question with context and get response
+      const conversationHistory = await agent.conversate(contextAwareQuestion);
       const lastMessage = conversationHistory[conversationHistory.length - 1];
       const response = lastMessage?.type === 'assistantMessage' ? (lastMessage as any).text : 'No response received';
       const validation = await this.validation.validateResponse(question, response);
       
-      // Now log the complete Q&A pair together
-      this.logCompleteQuestionAnswer(runId, categoryTag, questionProgress, question, response, validation);
+      // Log complete Q&A pair with context info
+      this.logCompleteQuestionAnswerWithContext(runId, categoryTag, questionProgress, question, response, validation, artifacts.availableArtifacts);
       
       return {
         question,
@@ -373,13 +448,16 @@ ${result.flowSuccess ? '✅' : '❌'} Flow completed: ${scenario.name}
     }
   }
 
-  private logCompleteQuestionAnswer(runId: string, categoryTag: string, questionProgress: string, question: string, response: string, validation: { validated: boolean; issues: string[] }): void {
+
+  private logCompleteQuestionAnswerWithContext(runId: string, categoryTag: string, questionProgress: string, question: string, response: string, validation: { validated: boolean; issues: string[] }, availableArtifacts: string[]): void {
     const statusIcon = validation.validated ? '✅' : '⚠️';
     const statusText = validation.validated ? 'PASS' : 'FAIL';
     const responsePreview = response.length > 100 ? response.substring(0, 100) + '...' : response;
+    const artifactsInfo = availableArtifacts.length > 0 ? `Based on: ${availableArtifacts.join(', ')}` : 'No artifacts available';
     
     // Log complete Q&A pair to file
     this.logger.log(runId, `${categoryTag} Q&A Complete (${questionProgress}):`);
+    this.logger.log(runId, `  Context: ${artifactsInfo}`);
     this.logger.log(runId, `  Question: ${question}`);
     this.logger.log(runId, `  Response (${response.length} chars): ${response}`);
     this.logger.log(runId, `  Validation: ${statusText}`);
@@ -392,11 +470,13 @@ ${result.flowSuccess ? '✅' : '❌'} Flow completed: ${scenario.name}
     // Log complete Q&A pair to console
     console.log(`
 ${statusIcon} ${categoryTag} Q&A Completed (${questionProgress}):
+📋 Context: ${artifactsInfo}
 ❓ Question: ${question}
 💬 Response: ${responsePreview}
 📊 Validation: ${statusText}${hasValidationIssues ? ` (Issues: ${validation.issues.join('; ')})` : ''}
 `);
   }
+
 
   private logFailedQuestionAnswer(runId: string, categoryTag: string, questionProgress: string, question: string, errorMessage: string): void {
     // Log failed Q&A pair to file
@@ -650,15 +730,15 @@ ${statusIcon} ${categoryTag} Q&A Completed (${questionProgress}):
   }
 
   private logScenarioCompletion(scenarioId: string, scenarioName: string, metrics: { successRate: number; averageCompleteness: number; averageDuration: number; totalScenarioDuration: number }, successfulRuns: number): void {
-    this.logger.log(scenarioId, `Scenario completed in ${metrics.totalScenarioDuration}ms (${(metrics.totalScenarioDuration / 1000).toFixed(1)}s)`);
+    this.logger.log(scenarioId, `Scenario completed in ${formatDuration(metrics.totalScenarioDuration)}`);
     this.logger.log(scenarioId, `Success rate: ${metrics.successRate.toFixed(1)}% (${successfulRuns}/${this.runsPerScenario})`);
     
     console.log(`
 📊 Scenario "${scenarioName}" Summary:
    Success Rate: ${metrics.successRate.toFixed(1)}% (${successfulRuns}/${this.runsPerScenario})
    Average Completeness: ${metrics.averageCompleteness.toFixed(1)}%
-   Average Duration: ${metrics.averageDuration.toFixed(0)}ms
-   Total Scenario Duration: ${(metrics.totalScenarioDuration / 1000).toFixed(1)}s
+   Average Duration: ${formatDuration(metrics.averageDuration)}
+   Total Scenario Duration: ${formatDurationSecondsFromMs(metrics.totalScenarioDuration)}
 `);
   }
 
@@ -713,10 +793,10 @@ ${statusIcon} ${categoryTag} Q&A Completed (${questionProgress}):
       api: results.reduce((sum, r) => sum + r.averageStageTimings.api, 0) / results.length
     };
     
-    this.logger.log(this.benchmarkId, `Full benchmark completed in ${totalBenchmarkDuration}ms (${(totalBenchmarkDuration / 1000).toFixed(1)}s)`);
+    this.logger.log(this.benchmarkId, `Full benchmark completed in ${formatDuration(totalBenchmarkDuration)}`);
     this.logger.log(this.benchmarkId, `Overall success rate: ${overallSuccessRate.toFixed(1)}%`);
     
-    console.log(`\n🏁 Benchmark completed in ${(totalBenchmarkDuration / 1000).toFixed(1)} seconds`);
+    console.log(`\n🏁 Benchmark completed in ${formatDurationSecondsFromMs(totalBenchmarkDuration)}`);
 
     // Save benchmark summary to JSON for further analysis
     const summary: BenchmarkSummary = {

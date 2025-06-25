@@ -1,5 +1,6 @@
 import { BenchmarkSummary } from "./types";
 import path from "path";
+import { formatDuration, formatDurationSecondsFromMs } from "./time-utils";
 
 export class ReportGenerator {
   private logsDir: string;
@@ -12,7 +13,7 @@ export class ReportGenerator {
     const report = `# Adversarial Benchmark Report
 
 **Generated:** ${new Date().toISOString()}
-**Duration:** ${(summary.totalBenchmarkDuration / 1000).toFixed(1)}s (${(summary.totalBenchmarkDuration / 60000).toFixed(1)} minutes)
+**Duration:** ${formatDurationSecondsFromMs(summary.totalBenchmarkDuration)}
 
 ## Summary
 
@@ -30,9 +31,9 @@ export class ReportGenerator {
   - User Experience: ${summary.overallCompletenessBreakdown.userExperience.toFixed(1)}%
   - General: ${summary.overallCompletenessBreakdown.general.toFixed(1)}%
 - **Overall Stage Timings:**
-  - Analysis: ${summary.overallStageTimings.analysis.toFixed(0)}ms (${(summary.overallStageTimings.analysis / 60000).toFixed(1)} minutes)
-  - Schema: ${summary.overallStageTimings.schema.toFixed(0)}ms (${(summary.overallStageTimings.schema / 60000).toFixed(1)} minutes)
-  - API: ${summary.overallStageTimings.api.toFixed(0)}ms (${(summary.overallStageTimings.api / 60000).toFixed(1)} minutes)
+  - Analysis: ${formatDuration(summary.overallStageTimings.analysis)}
+  - Schema: ${formatDuration(summary.overallStageTimings.schema)}
+  - API: ${formatDuration(summary.overallStageTimings.api)}
 - **Start Time:** ${summary.startTime}
 - **End Time:** ${summary.endTime}
 
@@ -52,19 +53,19 @@ ${summary.scenarios.map(scenario => `
   - Data Consistency: ${scenario.averageCompletenessBreakdown.dataConsistency.toFixed(1)}%
   - User Experience: ${scenario.averageCompletenessBreakdown.userExperience.toFixed(1)}%
   - General: ${scenario.averageCompletenessBreakdown.general.toFixed(1)}%
-- **Average Duration:** ${scenario.averageDuration.toFixed(0)}ms (${(scenario.averageDuration / 60000).toFixed(1)} minutes)
+- **Average Duration:** ${formatDuration(scenario.averageDuration)}
 - **Average Stage Timings:**
-  - Analysis: ${scenario.averageStageTimings.analysis.toFixed(0)}ms (${(scenario.averageStageTimings.analysis / 60000).toFixed(1)} minutes)
-  - Schema: ${scenario.averageStageTimings.schema.toFixed(0)}ms (${(scenario.averageStageTimings.schema / 60000).toFixed(1)} minutes)
-  - API: ${scenario.averageStageTimings.api.toFixed(0)}ms (${(scenario.averageStageTimings.api / 60000).toFixed(1)} minutes)
-- **Total Scenario Time:** ${(scenario.totalScenarioDuration / 1000).toFixed(1)}s (${(scenario.totalScenarioDuration / 60000).toFixed(1)} minutes)
+  - Analysis: ${formatDuration(scenario.averageStageTimings.analysis)}
+  - Schema: ${formatDuration(scenario.averageStageTimings.schema)}
+  - API: ${formatDuration(scenario.averageStageTimings.api)}
+- **Total Scenario Time:** ${formatDurationSecondsFromMs(scenario.totalScenarioDuration)}
 
 #### Run Details
 
 ${scenario.runs.map((run, index) => `
 **Run ${index + 1}** (ID: \`${run.runId}\`)
 - Flow Success: ${run.flowSuccess ? '✅ Yes' : '❌ No'}
-- Duration: ${run.duration}ms (${(run.duration / 60000).toFixed(1)} minutes)
+- Duration: ${formatDuration(run.duration)}
 - Completeness Score: ${run.completenessScore}%
   - Analysis: ${run.completenessBreakdown.analysis.score}% (${run.completenessBreakdown.analysis.validated}/${run.completenessBreakdown.analysis.total})
   - Schema: ${run.completenessBreakdown.schema.score}% (${run.completenessBreakdown.schema.validated}/${run.completenessBreakdown.schema.total})
@@ -76,9 +77,9 @@ ${scenario.runs.map((run, index) => `
   - User Experience: ${run.completenessBreakdown.userExperience.score}% (${run.completenessBreakdown.userExperience.validated}/${run.completenessBreakdown.userExperience.total})
   - General: ${run.completenessBreakdown.general.score}% (${run.completenessBreakdown.general.validated}/${run.completenessBreakdown.general.total})
 - Stages:
-  - Analysis: ${run.stages.analyze.success ? '✅' : '❌'} (${run.stages.analyze.duration}ms / ${(run.stages.analyze.duration / 60000).toFixed(1)}min)${run.stages.analyze.errors.length > 0 ? ` - Errors: ${run.stages.analyze.errors.join(', ')}` : ''}
-  - Prisma: ${run.stages.prisma.success ? '✅' : '❌'} (${run.stages.prisma.duration}ms / ${(run.stages.prisma.duration / 60000).toFixed(1)}min)${run.stages.prisma.errors.length > 0 ? ` - Errors: ${run.stages.prisma.errors.join(', ')}` : ''}${run.stages.prisma.compilationDetails ? ` - ${run.stages.prisma.compilationDetails}` : ''}
-  - Interface: ${run.stages.interface.success ? '✅' : '❌'} (${run.stages.interface.duration}ms / ${(run.stages.interface.duration / 60000).toFixed(1)}min)${run.stages.interface.errors.length > 0 ? ` - Errors: ${run.stages.interface.errors.join(', ')}` : ''}
+  - Analysis: ${run.stages.analyze.success ? '✅' : '❌'} (${formatDuration(run.stages.analyze.duration)})${run.stages.analyze.errors.length > 0 ? ` - Errors: ${run.stages.analyze.errors.join(', ')}` : ''}
+  - Prisma: ${run.stages.prisma.success ? '✅' : '❌'} (${formatDuration(run.stages.prisma.duration)})${run.stages.prisma.errors.length > 0 ? ` - Errors: ${run.stages.prisma.errors.join(', ')}` : ''}${run.stages.prisma.compilationDetails ? ` - ${run.stages.prisma.compilationDetails}` : ''}
+  - Interface: ${run.stages.interface.success ? '✅' : '❌'} (${formatDuration(run.stages.interface.duration)})${run.stages.interface.errors.length > 0 ? ` - Errors: ${run.stages.interface.errors.join(', ')}` : ''}
 ${run.failureReason ? `- **Failure Reason:** ${run.failureReason}` : ''}
 ${run.errors.length > 0 ? `- **Detailed Errors:**\n${run.errors.map(error => `  - ${error}`).join('\n')}` : ''}
 `).join('')}
@@ -124,9 +125,9 @@ ${this.generateAnalysis(summary)}
     let stageAnalysis = "";
     
     stageAnalysis += `**Stage Performance Overview:**\n`;
-    stageAnalysis += `- **Analysis Stage:** ${summary.overallStageTimings.analysis.toFixed(0)}ms (${(summary.overallStageTimings.analysis / 60000).toFixed(1)} minutes) average duration\n`;
-    stageAnalysis += `- **Schema Stage:** ${summary.overallStageTimings.schema.toFixed(0)}ms (${(summary.overallStageTimings.schema / 60000).toFixed(1)} minutes) average duration\n`;
-    stageAnalysis += `- **API Stage:** ${summary.overallStageTimings.api.toFixed(0)}ms (${(summary.overallStageTimings.api / 60000).toFixed(1)} minutes) average duration\n\n`;
+    stageAnalysis += `- **Analysis Stage:** ${formatDuration(summary.overallStageTimings.analysis)} average duration\n`;
+    stageAnalysis += `- **Schema Stage:** ${formatDuration(summary.overallStageTimings.schema)} average duration\n`;
+    stageAnalysis += `- **API Stage:** ${formatDuration(summary.overallStageTimings.api)} average duration\n\n`;
     
     // Additional detailed stage analysis
     const analysisStageStats = this.calculateStageStats(summary);

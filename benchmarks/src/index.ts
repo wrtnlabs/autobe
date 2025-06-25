@@ -5,6 +5,7 @@ import { OpenAI } from "openai";
 import path from "path";
 
 import { AdversarialAgent } from "./adversarial-agent";
+import { formatDuration, formatDurationSecondsFromMs } from "./time-utils";
 
 async function runAdversarialBenchmarks() {
   console.log("🔥 Running Adversarial Benchmarks...\n");
@@ -74,8 +75,8 @@ ${benchmarkSummary.scenarios
     (scenarioResult) => `  - ${scenarioResult.scenarioName}:
     Flow Success: ${scenarioResult.successRate.toFixed(1)}% (${scenarioResult.successfulRuns}/${scenarioResult.totalRuns})
     Completeness: ${scenarioResult.averageCompleteness.toFixed(1)}%
-    Avg Run Duration: ${scenarioResult.averageDuration.toFixed(0)}ms
-    Total Scenario Time: ${(scenarioResult.totalScenarioDuration / 1000).toFixed(1)}s`,
+    Avg Run Duration: ${formatDuration(scenarioResult.averageDuration)}
+    Total Scenario Time: ${formatDurationSecondsFromMs(scenarioResult.totalScenarioDuration)}`,
   )
   .join("\n")}
 `);
