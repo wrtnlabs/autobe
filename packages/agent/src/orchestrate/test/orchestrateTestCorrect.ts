@@ -259,7 +259,7 @@ async function process<Model extends ILlmSchema.Model>(
     config: {
       ...(ctx.config ?? {}),
     },
-    histories: transformTestCorrectHistories(artifacts),
+    histories: transformTestCorrectHistories(code, artifacts),
     controllers: [
       createApplication({
         model: ctx.model,
@@ -277,33 +277,31 @@ async function process<Model extends ILlmSchema.Model>(
       [
         "Fix the compilation error in the provided code.",
         "",
-        "## Original Code",
-        "```typescript",
-        code,
-        "```",
-        "",
         diagnostics.map((diagnostic) => {
           if (diagnostic.start === undefined || diagnostic.length === undefined)
             return "";
+          const typiaError =
+            diagnostic.messageText ===
+            "Cannot find name 'Format'. Did you mean 'FormData'?";
 
-          const checkDtoRegexp = `Cannot find module '@ORGANIZATION/template-api/lib/structures/IBbsArticleComment' or its corresponding type declarations.`;
-          const [group] = [
-            ...checkDtoRegexp.matchAll(
-              /Cannot find module '(.*lib\/structures\/.*)'/g,
-            ),
-          ];
-
-          const [_, filename] = group ?? [];
+          const jestError =
+            diagnostic.messageText === "Cannot find name 'expect'.";
 
           return [
             "## Error Information",
             `- Position: Characters ${diagnostic.start} to ${diagnostic.start + diagnostic.length}`,
             `- Error Message: ${diagnostic.messageText}`,
             `- Problematic Code: \`${code.substring(diagnostic.start, diagnostic.start + diagnostic.length)}\``,
-            filename
-              ? `The type files located under **/lib/structures are declared in '@ORGANIZATION/PROJECT-api/lib/structures'.\n` +
-                `Note: '@ORGANIZATION/PROJECT-api' must be written exactly as is and should not be replaced.\n`
-              : "",
+            ...(typiaError
+              ? [
+                  `- Hint: If you want to use typia.tags, You must use tags.Format instead of Format.`,
+                ]
+              : []),
+            ...(jestError
+              ? [
+                  `- Hint: Detected invalid assertion pattern expect function. Please use TestValidator.equals("description")(expected)(actual).`,
+                ]
+              : []),
           ].join("\n");
         }),
         "## Instructions",

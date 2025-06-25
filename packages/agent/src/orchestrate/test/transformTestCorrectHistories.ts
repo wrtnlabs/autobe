@@ -5,11 +5,29 @@ import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptCo
 import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
 
 export const transformTestCorrectHistories = (
+  code: string,
   artifacts: IAutoBeTestScenarioArtifacts,
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
   return [
+    {
+      id: v4(),
+      created_at: new Date().toISOString(),
+      type: "systemMessage",
+      text: AutoBeSystemPromptConstant.TEST_WRITE,
+    },
+    {
+      id: v4(),
+      created_at: new Date().toISOString(),
+      type: "assistantMessage",
+      text: [
+        "# Original Code", //
+        "```typescript",
+        code,
+        "```",
+      ].join("\n"),
+    },
     {
       id: v4(),
       created_at: new Date().toISOString(),

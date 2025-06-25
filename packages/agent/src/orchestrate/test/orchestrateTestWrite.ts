@@ -112,6 +112,12 @@ async function process<Model extends ILlmSchema.Model>(
     "",
     pointer.value.content,
   ].join("\n");
+
+  pointer.value.content = pointer.value.content.replaceAll(
+    'string & Format<"uuid">',
+    'string & tags.Format<"uuid">',
+  );
+
   return pointer.value;
 }
 
