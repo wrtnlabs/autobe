@@ -23,7 +23,7 @@ async function main(): Promise<void> {
             baseURL: TestGlobal.env.CHATGPT_BASE_URL,
           }),
           model: "gpt-4.1",
-          semaphore: 16,
+          semaphore: Number(TestGlobal.getArguments("semaphore")?.[0] ?? "16"),
         },
         config: {
           locale: "en-US",
