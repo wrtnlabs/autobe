@@ -34,7 +34,7 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
   let include: AutoBeOpenApi.IOperation[] = Array.from(operations);
 
   do {
-    const matrix = divideArray({ array: include, capacity: 30 });
+    const matrix = divideArray({ array: include, capacity: 5 });
 
     await Promise.all(
       matrix.map(async (_include) => {
