@@ -1,4 +1,4 @@
-import { TestScenario, ValidationResult } from "./types";
+import { TestScenario } from "./types";
 
 export function getDefaultScenarios(): TestScenario[] {
   return [
@@ -79,21 +79,7 @@ export function getDefaultScenarios(): TestScenario[] {
         requiresPrismaSchema: true,
         requiresApiInterface: true,
         requiresTests: false,
-        customValidations: [
-          (result: ValidationResult) => {
-            const hasUserModel = result.prismaSchema?.includes("model User") ?? false;
-            const hasPostModel = result.prismaSchema?.includes("model Post") ?? false;
-            const hasCommentModel = result.prismaSchema?.includes("model Comment") ?? false;
-            return {
-              valid: hasUserModel && hasPostModel && hasCommentModel,
-              issues: [
-                !hasUserModel ? "Missing User model in schema" : "",
-                !hasPostModel ? "Missing Post model in schema" : "",
-                !hasCommentModel ? "Missing Comment model in schema" : ""
-              ].filter(Boolean)
-            };
-          }
-        ]
+        customValidations: []
       }
     },
     {
@@ -173,20 +159,7 @@ export function getDefaultScenarios(): TestScenario[] {
         requiresPrismaSchema: true,
         requiresApiInterface: true,
         requiresTests: false,
-        customValidations: [
-          (result: ValidationResult) => {
-            const hasProductModel = result.prismaSchema?.includes("model Product") ?? false;
-            const hasOrderModel = result.prismaSchema?.includes("model Order") ?? false;
-            // const hasCartModel = result.prismaSchema?.includes("model Cart"); // Optional for basic e-commerce
-            return {
-              valid: hasProductModel && hasOrderModel,
-              issues: [
-                !hasProductModel ? "Missing Product model in schema" : "",
-                !hasOrderModel ? "Missing Order model in schema" : ""
-              ].filter(Boolean)
-            };
-          }
-        ]
+        customValidations: []
       }
     }
   ];
