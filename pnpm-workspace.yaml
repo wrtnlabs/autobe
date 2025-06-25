@@ -2,6 +2,7 @@ packages:
   - internals/*
   - packages/*
   - test
+  - benchmarks
   - website
 catalogs:
   agentica:
