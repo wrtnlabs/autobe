@@ -22,7 +22,6 @@
   "scripts": {
     "prepare": "ts-patch install && pnpm run build:prompt",
     "build": "rimraf lib && pnpm run build:prompt && rollup -c && tsc",
-    "build:examples": "ts-node build/examples.ts",
     "build:prompt": "ts-node build/prompt.ts",
     "dev": "rimraf lib && pnpm run build:prompt && tsc --watch",
     "prepack": "pnpm run build"

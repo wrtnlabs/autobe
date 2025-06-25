@@ -11,7 +11,7 @@ export namespace RepositoryFileSystem {
     account: string,
     project: string,
   ): Promise<Record<string, string>> => {
-    await fork.get(account, project);
+    await vs.get(account, project);
     return FileSystemIterator.read({
       root: `${ROOT}/internals/repositories/${account}/${project}/docs/requirements`,
       extension: "md",
@@ -22,7 +22,7 @@ export namespace RepositoryFileSystem {
     account: string,
     project: string,
   ): Promise<Record<string, string>> => {
-    await fork.get(account, project);
+    await vs.get(account, project);
     const result: Record<string, string> = await FileSystemIterator.read({
       root: `${ROOT}/internals/repositories/${account}/${project}/prisma/schema`,
       extension: "prisma",
@@ -36,7 +36,7 @@ export namespace RepositoryFileSystem {
     account: string,
     project: string,
   ): Promise<Record<string, string>> => {
-    await fork.get(account, project);
+    await vs.get(account, project);
     return FileSystemIterator.read({
       root: `${ROOT}/internals/repositories/${account}/${project}/src`,
       prefix: "src/",
@@ -48,7 +48,7 @@ export namespace RepositoryFileSystem {
     account: string,
     project: string,
   ): Promise<OpenApi.IDocument> => {
-    await fork.get(account, project);
+    await vs.get(account, project);
     return OpenApi.convert(
       JSON.parse(
         await fs.promises.readFile(
@@ -59,7 +59,14 @@ export namespace RepositoryFileSystem {
     );
   };
 
-  const fork = new VariadicSingleton(
+  export const clone = async (
+    account: string,
+    project: string,
+  ): Promise<void> => {
+    await vs.get(account, project);
+  };
+
+  const vs = new VariadicSingleton(
     async (account: string, project: string): Promise<void> => {
       const location: string = `${ROOT}/internals/repositories/${account}/${project}`;
       if (fs.existsSync(location))
