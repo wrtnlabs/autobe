@@ -1,18 +1,46 @@
+import { AutoBeAgent, AutoBeTokenUsage } from "@autobe/agent";
+import { AutoBeCompiler } from "@autobe/compiler";
 import { DynamicExecutor } from "@nestia/e2e";
 import chalk from "chalk";
+import OpenAI from "openai";
 import path from "path";
 import process from "process";
 
+import { TestFactory } from "./TestFactory";
 import { TestGlobal } from "./TestGlobal";
 
 async function main(): Promise<void> {
-  // DO TEST
+  // PREPARE ENVIRONMENT
+  const compiler: AutoBeCompiler = new AutoBeCompiler();
+  const tokenUsage: AutoBeTokenUsage = new AutoBeTokenUsage();
+  const factory: TestFactory = {
+    createAgent: (histories) =>
+      new AutoBeAgent({
+        model: "chatgpt",
+        vendor: {
+          api: new OpenAI({
+            apiKey: TestGlobal.env.CHATGPT_API_KEY,
+            baseURL: TestGlobal.env.CHATGPT_BASE_URL,
+          }),
+          model: "gpt-4.1",
+          semaphore: Number(TestGlobal.getArguments("semaphore")?.[0] ?? "16"),
+        },
+        config: {
+          locale: "en-US",
+        },
+        compiler,
+        histories,
+        tokenUsage,
+      }),
+  };
   const include: string[] = TestGlobal.getArguments("include");
   const exclude: string[] = TestGlobal.getArguments("exclude");
+
+  // DO TEST
   const report: DynamicExecutor.IReport = await DynamicExecutor.validate({
     prefix: "test_",
     location: path.join(__dirname, "features"),
-    parameters: () => [],
+    parameters: () => [factory],
     onComplete: (exec: DynamicExecutor.IExecution) => {
       const trace = (str: string) =>
         console.log(`  - ${chalk.green(exec.name)}: ${str}`);
@@ -45,8 +73,24 @@ async function main(): Promise<void> {
     }
     console.log("Failed");
     console.log("Elapsed time", report.time.toLocaleString(), `ms`);
-    process.exit(-1);
   }
+
+  console.log("Token Usage");
+  console.table([
+    {
+      component: "Total",
+      value: tokenUsage.aggregate.total,
+    },
+    {
+      component: "Input",
+      value: tokenUsage.aggregate.input.total,
+    },
+    {
+      component: "Output",
+      value: tokenUsage.aggregate.output.total,
+    },
+  ]);
+  if (exceptions.length !== 0) process.exit(-1);
 }
 main().catch((error) => {
   console.error(error);

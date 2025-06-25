@@ -12,8 +12,9 @@ const DIRECTORY = path.resolve(__dirname, "../prompts");
 const prepareExample = async (
   title: string,
 ): Promise<Record<string, string>> => {
+  await RepositoryFileSystem.clone("samchon", `${title}-backend`);
   const directory: string = path.resolve(
-    `${__dirname}/../../../test/assets/repositories/samchon/${title}-backend`,
+    `${__dirname}/../../../internals/repositories/samchon/${title}-backend`,
   );
   const analysis: Record<string, string> = await FileSystemIterator.read({
     root: path.resolve(`${directory}`),

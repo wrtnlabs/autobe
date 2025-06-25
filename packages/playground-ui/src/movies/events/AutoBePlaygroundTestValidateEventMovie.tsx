@@ -13,7 +13,9 @@ export function AutoBePlaygroundTestValidateEventMovie(
     StackBlitzSDK.openProject(
       {
         files: {
-          ...props.event.files,
+          ...props.event.files
+            .map((f) => ({ [f.location]: f.content }))
+            .reduce((acc, cur) => Object.assign(acc, cur), {}),
           ...(props.event.result.type === "failure"
             ? {
                 "compile-failure-diagnostics.log": JSON.stringify(

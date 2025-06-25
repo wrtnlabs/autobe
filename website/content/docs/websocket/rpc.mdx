@@ -1,17 +1,15 @@
 ---
 title: AutoBE > Guide Documents > WebSocket > Remote Procedure Call
 ---
-
 import { Tabs } from "nextra/components";
 
-import AutoBeRpcClientMainSnippet from "../../../template/snippets/AutoBeRpcClientMainSnippet.mdx";
+import LocalSource from "../../../components/LocalSource";
 import AutoBeRpcClientSetupSnippet from "../../../template/snippets/AutoBeRpcClientSetupSnippet.mdx";
-import AutoBeRpcNestJsControllerSnippet from "../../../template/snippets/AutoBeRpcNestJsControllerSnippet.mdx";
 import AutoBeRpcNestJsSetupSnippet from "../../../template/snippets/AutoBeRpcNestJsSetupSnippet.mdx";
-import AutoBeRpcNodeJsMainSnippet from "../../../template/snippets/AutoBeRpcNodeJsMainSnippet.mdx";
 import AutoBeRpcNodeJsSetupSnippet from "../../../template/snippets/AutoBeRpcNodeJsSetupSnippet.mdx";
 
 ## `@autobe/rpc`
+
 RPC module of `@autobe` for WebSocket Communication.
 
 If you are considering to make an `@autobe` based service, WebSocket protocol is essentially required. Chatting application is basically a two-way communication. AI chatbot is also a two-way chat between an user and an assistant, based on events. Therefore, it cannot be a one-way communication HTTP Restful API, and a two-way protocol such as WebSocket is required.
@@ -24,21 +22,29 @@ However, don't be afraid of WebSocket application development. Below is the exam
   "NestJS Server",
 ]}>
   <Tabs.Tab>
-    <AutoBeRpcClientMainSnippet />
+    <LocalSource
+      path="internals/website-examples/src/websocket/client/main.ts"
+      filename="client/main.ts"
+      showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
-    <AutoBeRpcNodeJsMainSnippet />
+    <LocalSource
+      path="internals/website-examples/src/websocket/nodejs/main.ts"
+      filename="nodejs/main.ts"
+      showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
-    <AutoBeRpcNestJsControllerSnippet />
+    <LocalSource
+      path="internals/website-examples/src/websocket/nestjs/chat.controller.ts"
+      filename="nestjs/chat.controller.ts"
+      showLineNumbers />
   </Tabs.Tab>
 </Tabs>
 
-
-
-
 ## Setup
+
 ### NodeJS Server
+
 <AutoBeRpcNodeJsSetupSnippet />
 
 To develop NodeJS WebSocket server of `@autobe`, you need to install these packages.
@@ -48,6 +54,7 @@ At first, install `@autobe/agent`, `@autobe/compiler` and `@autobe/interface` pa
 `tgrid` is a TypeScript based RPC (Remote Procedure Call) framework supporting WebSocket protocol, and `@autobe/rpc` is a wrapper module of `@autobe/agent` following the WebSocket RPC.
 
 ### NestJS Server
+
 <AutoBeRpcNestJsSetupSnippet />
 
 Install NestJS and `@autobe` packages, and then setup `nestia`.
@@ -55,14 +62,13 @@ Install NestJS and `@autobe` packages, and then setup `nestia`.
 [`@nestia`](https://nestia.io) is a set of helper libraries for NestJS, and it supports WebSocket protocol that is following the RPC (Remote Procedure Call) paradigm.
 
 ### Client Application
+
 <AutoBeRpcClientSetupSnippet />
 
 Just install `@autobe/rpc`, `tgrid` packages.
 
-
-
-
 ## Remote Procedure Call
+
 ```mermaid
 sequenceDiagram
 box Client Application
@@ -99,6 +105,7 @@ Deactivate User
 WebSocket protocol with RPC paradigm for `@autobe`.
 
 ### Header
+
 Header value delivered from client to server after the connection.
 
 In [`TGrid`](https://tgrid.com)'s RPC (Remote Procedure Call) paradigm, header means a value that is delivered after the connection from a client to the server. And header is used in most cases to authenticate the connecting client.
@@ -106,6 +113,7 @@ In [`TGrid`](https://tgrid.com)'s RPC (Remote Procedure Call) paradigm, header m
 In the above example project, `IAuthorizationHeader` is the header type, and is used by server to determine whether to accept the client's connection or not. If the client's header is not valid, the server would reject the connection.
 
 ### Provider
+
 Functions provided from remote system.
 
 Provider is an object instance containing some functions provided for the remote system for RPC (Remote Procedure Call). In many cases, the provide becomes a class instance containing some methods to be called, but it is okay that composing the provider by just an interface type.
@@ -113,6 +121,7 @@ Provider is an object instance containing some functions provided for the remote
 Also, the opposite remote system will call provider's functions by the [`Driver<Remote>`](#driver) instance. In the above example, client application is providing `IAutoBeRpcListener` to the server, and server is providing `AutoBeRpcService` (`IAutoBeRpcService`) to the client.
 
 ### Driver
+
 Driver of RPC (Remote Procedure Call).
 
 `Driver` is a proxy instance designed to call functions of the remote system. It has a generic argument `Remote` which means the type of remote system's [Provider](#provider), and you can remotely call the functions of the [Provider](#provider) asynchronously through the `Drive<Remote>` instance.

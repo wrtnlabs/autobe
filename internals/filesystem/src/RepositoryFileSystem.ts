@@ -11,9 +11,9 @@ export namespace RepositoryFileSystem {
     account: string,
     project: string,
   ): Promise<Record<string, string>> => {
-    await fork.get(account, project);
+    await vs.get(account, project);
     return FileSystemIterator.read({
-      root: `${ROOT}/assets/repositories/${account}/${project}/docs/requirements`,
+      root: `${ROOT}/internals/repositories/${account}/${project}/docs/requirements`,
       extension: "md",
     });
   };
@@ -22,9 +22,9 @@ export namespace RepositoryFileSystem {
     account: string,
     project: string,
   ): Promise<Record<string, string>> => {
-    await fork.get(account, project);
+    await vs.get(account, project);
     const result: Record<string, string> = await FileSystemIterator.read({
-      root: `${ROOT}/assets/repositories/${account}/${project}/prisma/schema`,
+      root: `${ROOT}/internals/repositories/${account}/${project}/prisma/schema`,
       extension: "prisma",
     });
     for (const [key, value] of Object.entries(result))
@@ -36,9 +36,9 @@ export namespace RepositoryFileSystem {
     account: string,
     project: string,
   ): Promise<Record<string, string>> => {
-    await fork.get(account, project);
+    await vs.get(account, project);
     return FileSystemIterator.read({
-      root: `${ROOT}/assets/repositories/${account}/${project}/src`,
+      root: `${ROOT}/internals/repositories/${account}/${project}/src`,
       prefix: "src/",
       extension: "ts",
     });
@@ -48,20 +48,27 @@ export namespace RepositoryFileSystem {
     account: string,
     project: string,
   ): Promise<OpenApi.IDocument> => {
-    await fork.get(account, project);
+    await vs.get(account, project);
     return OpenApi.convert(
       JSON.parse(
         await fs.promises.readFile(
-          `${ROOT}/assets/repositories/${account}/${project}/packages/api/swagger.json`,
+          `${ROOT}/internals/repositories/${account}/${project}/packages/api/swagger.json`,
           "utf8",
         ),
       ),
     );
   };
 
-  const fork = new VariadicSingleton(
+  export const clone = async (
+    account: string,
+    project: string,
+  ): Promise<void> => {
+    await vs.get(account, project);
+  };
+
+  const vs = new VariadicSingleton(
     async (account: string, project: string): Promise<void> => {
-      const location: string = `${ROOT}/assets/repositories/${account}/${project}`;
+      const location: string = `${ROOT}/internals/repositories/${account}/${project}`;
       if (fs.existsSync(location))
         cp.execSync("git pull", {
           cwd: location,
@@ -69,12 +76,12 @@ export namespace RepositoryFileSystem {
         });
       else {
         try {
-          await fs.promises.mkdir(`${ROOT}/assets/repositories/${account}`, {
+          await fs.promises.mkdir(`${ROOT}/internals/repositories/${account}`, {
             recursive: true,
           });
         } catch {}
         cp.execSync(`git clone https://github.com/${account}/${project}`, {
-          cwd: `${ROOT}/assets/repositories/${account}`,
+          cwd: `${ROOT}/internals/repositories/${account}`,
           stdio: "ignore",
         });
       }

@@ -11,7 +11,7 @@ import sortImport from "@trivago/prettier-plugin-sort-imports";
 import import2 from "import2";
 import { format } from "prettier";
 
-import { AutoBeCompilerConstants } from "./raw/AutoBeCompilerConstants";
+import { AutoBeCompilerTemplate } from "./raw/AutoBeCompilerTemplate";
 import { ArrayUtil } from "./utils/ArrayUtil";
 
 /**
@@ -67,7 +67,7 @@ export class AutoBeInterfaceCompiler implements IAutoBeInterfaceCompiler {
         ),
       ),
       "packages/api/swagger.json": JSON.stringify(swagger, null, 2),
-      "README.md": AutoBeCompilerConstants.README,
+      ...AutoBeCompilerTemplate,
     };
   }
 

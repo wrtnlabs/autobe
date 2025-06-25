@@ -13,6 +13,7 @@
   {
     "id": "4444a46e-6ede-4049-b27a-628e6e96271f",
     "type": "analyze",
+    "prefix": "bbs",
     "reason": "Create a requirements analysis report for a political/economic discussion board. The report should be about 3 pages long and suitable for someone with no programming background. Use clear, non-technical explanations for the system purpose, features, user roles, data structure, and business rules. Do not include any design requirements, as the user did not provide any. If user input is vague or incomplete, supplement only with standard best practices for such platforms.",
     "files": {
       "00_toc.md": "# Table of Contents\n\n1. [Introduction and Purpose](01_introduction_and_purpose.md)\n2. [Key Features and User Roles](02_key_features_and_user_roles.md)\n3. [Data Structure and Business Rules](03_data_structure_and_business_rules.md)\n\nEach section is designed to clearly lay out the purpose, main functions, target users, and operational guidelines for the discussion board, using accessible language suitable for non-technical readers.",

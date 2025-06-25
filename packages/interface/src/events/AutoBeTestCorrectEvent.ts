@@ -1,4 +1,5 @@
 import { IAutoBeTypeScriptCompilerResult } from "../compiler";
+import { AutoBeTestFile } from "../histories";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
 /**
@@ -29,15 +30,21 @@ export interface AutoBeTestCorrectEvent extends AutoBeEventBase<"testCorrect"> {
   created_at: string;
 
   /**
-   * Test files that contained compilation errors as key-value pairs.
+   * Collection of test files that contained compilation errors with their
+   * detailed scenario metadata.
    *
-   * Contains the TypeScript test files that failed compilation before
-   * correction. Each key represents the file path and each value contains the
-   * test code that had compilation issues. These files provide context for
-   * understanding what problems were encountered and serve as a baseline for
-   * measuring the effectiveness of the correction process.
+   * Contains the structured test file objects that failed compilation before
+   * correction. Each file includes its location, problematic source code
+   * content, and associated scenario information that provides context for
+   * understanding the compilation issues. These files serve as a comprehensive
+   * baseline for measuring the effectiveness of the correction process.
+   *
+   * Unlike simple key-value pairs, this structure preserves the rich metadata
+   * about each test scenario, enabling better analysis of what specific test
+   * patterns or business logic implementations led to compilation failures and
+   * how they can be systematically improved.
    */
-  files: Record<string, string>;
+  files: AutoBeTestFile[];
 
   /**
    * The compilation failure details that triggered the correction process.

@@ -3,15 +3,15 @@ lib/
 node_modules/
 playground-result/
 
+repositories/
 packages/*/README.md
-internals/*/README.md
 test/README.md
 website/README.md
+internals/*/README.md
+!internals/documents/README.md
 
 *.log
 .env
 .envrc
 .idea
 .DS_Store
-
-package-lock.json

@@ -164,7 +164,7 @@ const getMessage = (
   openStackBlitz: () => void,
   event: AutoBePlaygroundCompleteEventMovie.IProps["event"],
 ) => {
-  if (event.type === "prismaComplete" && event.compiled.type === "failure") {
+  if (event.type === "prismaComplete" && event.compiled.type === "failure")
     return (
       <>
         <br />
@@ -182,6 +182,27 @@ const getMessage = (
         file.
       </>
     );
-  }
+  else if (
+    (event.type === "testComplete" || event.type === "realizeComplete") &&
+    event.compiled.type !== "success"
+  )
+    return (
+      <>
+        <br />
+        <br />
+        Succeeded to compose{" "}
+        {event.type === "testComplete" ? "test functions" : "realize functions"}
+        , but failed to pass the TypeScript compilation. This is a bug of{" "}
+        <code>@autobe</code>. Please{" "}
+        <a href="https://github.com/wrtnlabs/autobe/issues" target="_blank">
+          write a bug report to our repository
+        </a>{" "}
+        with the
+        <a href="#" onClick={() => openStackBlitz()}>
+          <code>autobe/histories.json</code>
+        </a>{" "}
+        file.
+      </>
+    );
   return null;
 };

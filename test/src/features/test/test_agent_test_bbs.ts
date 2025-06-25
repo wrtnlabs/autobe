@@ -1,4 +1,5 @@
-import { validate_agent_test } from "./internal/validate_agent_test";
+import { TestFactory } from "../../TestFactory";
+import { validate_agent_test_main } from "./internal/validate_agent_test_main";
 
-export const test_agent_test_bbs = () =>
-  validate_agent_test("samchon", "bbs-backend");
+export const test_agent_test_bbs = (factory: TestFactory) =>
+  validate_agent_test_main(factory, "bbs-backend");

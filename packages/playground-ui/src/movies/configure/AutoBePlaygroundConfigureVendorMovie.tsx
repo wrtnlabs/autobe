@@ -10,6 +10,9 @@ export function AutoBePlaygroundConfigureVendorMovie(
   const [apiKey, setApiKey] = useState<string>(props.config.apiKey);
   const [model, setModel] = useState<string>(props.config.model);
   const [baseURL, setBaseURL] = useState<string>(props.config.baseURL ?? "");
+  const [semaphore, setSemaphore] = useState<number>(
+    props.config.semaphore ?? 16,
+  );
 
   const handleApiKey = (value: string) => {
     setApiKey(value);
@@ -33,6 +36,15 @@ export function AutoBePlaygroundConfigureVendorMovie(
       model,
       apiKey,
       baseURL: value.length !== 0 ? value : undefined,
+    });
+  };
+  const handleSemaphore = (value: number) => {
+    setSemaphore(value);
+    props.onChange({
+      model,
+      apiKey,
+      baseURL,
+      semaphore: value,
     });
   };
 
@@ -67,6 +79,14 @@ export function AutoBePlaygroundConfigureVendorMovie(
             baseURL || "http://localhost:8000",
           ) === false
         }
+      />
+      <br />
+      <TextField
+        type="number"
+        label="Semaphore"
+        defaultValue={semaphore}
+        fullWidth
+        onChange={(e) => handleSemaphore(Number(e.target.value))}
       />
     </>
   );

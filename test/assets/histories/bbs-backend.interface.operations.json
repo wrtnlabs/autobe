@@ -1,0 +1,608 @@
+[
+  {
+    "specification": "Fetch a paginated, filterable list of users from the 'users' table. This covers searching and bulk-retrieval, supporting administrative and moderation tasks. Follows requirements from the Core data entity and related user roles. Returns biographical, status, and profile information. Accepts filters for username, email, status, user_role_id, and date range. Supports pagination and sorting. Sensitive fields (like password hash) are not returned.\n\nThis operation powers user management features and is crucial for both everyday moderation and user administration. Follows all business rules regarding user visibility, organization, and security. Similar list/retrieval endpoints exist for other entities. Supports auditing and reporting by providing indexed/sorted result sets.",
+    "description": "Retrieves a paginated and optionally filtered list of users. Sensitive fields like password_hash are never returned. Supports searching by username, email, user role, status, and date range. Integrates user_roles for permission context. Used by admins for monitoring, auditing, and user management. Requires appropriate authentication and authorization.\n\nConsistent with business rules: Only appropriate role can view personal or sensitive statuses. Allows for pagination, sorting by created_at or username, and advanced filtering to support large-scale boards. Returns total count for paging UX.\n\nPotential errors include improper permissions, invalid filters, or overbroad search scopes. See also GET /bbs/users/{id} for detail retrieval, POST /bbs/users for creation, PUT /bbs/users/{id} for updates, and DELETE /bbs/users/{id} for removals.",
+    "summary": "List/search users (table: users) with support for advanced filtering, pagination, and sorting.",
+    "parameters": [],
+    "requestBody": {
+      "description": "Search and pagination info for user list retrieval.",
+      "typeName": "IUser.IRequest"
+    },
+    "responseBody": {
+      "description": "Paginated list of user summaries, matching provided filters.",
+      "typeName": "IPageIUser.ISummary"
+    },
+    "path": "/bbs/users",
+    "method": "patch"
+  },
+  {
+    "specification": "Retrieve detailed information for a single user from the 'users' table using their unique ID. This operation returns publicly viewable profile, role, and account status data, while excluding confidential/sensitive fields. Relies on the users table and user_roles reference for context.\n\nEnforces strong validation: only allows retrieval if user exists and caller is appropriately authorized. Used for profile views by admins, moderators, or for self-view by the user themself. Core for all platforms with user profiles, per requirements and ERD.\n\nLinked to user_roles for permission correlation and possible lookup. Relies on business rules on visibility and privacy. Returns null or error if the user is not found, or caller lacks permission.",
+    "description": "Fetches the complete public and administrative information of a single user specified by their unique identifier. Confidential fields like password hashes are excluded. Permissions check that caller can see the requested user info. Used in profile views, account management, and auditing.\n\nBusiness rules strictly regulate what information is included based on user role and relationship. Returns not found if the ID does not correspond to any user. Compatible with matching endpoints for list/search, update, or delete. Relies on users table and user_roles mapping.",
+    "summary": "Get detailed user info by user ID (table: users, ref user_roles).",
+    "parameters": [
+      {
+        "name": "id",
+        "description": "Target user's unique ID (UUID).",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    ],
+    "requestBody": null,
+    "responseBody": {
+      "description": "Complete profile, role, and account status for the specified user.",
+      "typeName": "IUser"
+    },
+    "path": "/bbs/users/{id}",
+    "method": "get"
+  },
+  {
+    "specification": "Create a new user record in the 'users' table, with assignments for role, basic profile, and credentials, supporting secure registration. Leverages business rules for email and username uniqueness, secure password handling, role validation, and required fields. Sensitive info in input (like password) is hashed before storage.\n\nValidates all fields per schema: must include valid email, username, password, and initial user_role_id. Upon success, provides full profile for the new user, excluding confidential data. Enforces strong input validation to protect integrity and security.",
+    "description": "Registers a new user on the system, after validating role, uniqueness, and email format. Only administrators or the registration flow may call this. Securely hashes the supplied password before storage. Role is checked against user_roles. Responds with the new user's profile (excluding confidential fields). Related operations: PATCH for user list, GET for user details, PUT for update, DELETE for removal.",
+    "summary": "Create user (table: users): registration/administrative add.",
+    "parameters": [],
+    "requestBody": {
+      "description": "User creation information, including username, email, password, bio, role, etc.",
+      "typeName": "IUser.ICreate"
+    },
+    "responseBody": {
+      "description": "Profile of the newly created user, excluding confidential info.",
+      "typeName": "IUser"
+    },
+    "path": "/bbs/users",
+    "method": "post"
+  },
+  {
+    "specification": "Update an existing user's profile, role, or status in the 'users' table by ID. Implements security rules permitting only self-update (for profile) or admin/moderator update (for roles/status, etc.). Enforces uniqueness for email and username and role validation. Sensitive fields like passwords are updated via dedicated routes only, not here.\n\nRequires full or partial user replacement input. Only allowed fields are updated; system fields like created_at remain immutable. User existence and permissions checked at call time. Responds with the new user profile, excluding confidential fields.",
+    "description": "Modifies an existing user's profile or permissions. Validates unique username, email, and correct user role. Requires authentication and appropriate authority (e.g., administrators for changing roles/status). Passwords are not updated here—instead, use a dedicated password change endpoint. Responds with the new full profile view. Supports self-edit for non-sensitive changes if authorized. Related: PATCH list, GET by ID, POST (create), DELETE (remove).",
+    "summary": "Update user profile/role/status (table: users) by ID.",
+    "parameters": [
+      {
+        "name": "id",
+        "description": "Target user's unique ID (UUID).",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    ],
+    "requestBody": {
+      "description": "User update information. May include username, email, bio, user_role_id, status, etc.",
+      "typeName": "IUser.IUpdate"
+    },
+    "responseBody": {
+      "description": "Updated user profile excluding confidential info.",
+      "typeName": "IUser"
+    },
+    "path": "/bbs/users/{id}",
+    "method": "put"
+  },
+  {
+    "specification": "Remove (soft-delete) a user from the 'users' table using their ID, per business rules on moderation, user bans, or requests for account deletion. Applies to administrators or, where permitted by policy, to the user themselves (self-deletion). Deletes are soft—actual removal only flagged unless regulatory hard-delete is triggered elsewhere.\n\nEnforces authentication and permission checks and always logs action for auditability. Follows business rules about preserving content for moderation/history. Responds with success/failure and a brief profile for confirmation. Related endpoints exist for listing, viewing, and updating users.",
+    "description": "Soft-deletes a user (marks as removed/inactive) instead of hard removal, for audit and moderation purposes. Only admins or authorized users can perform this action. The operation will not remove posts/comments/votes created by the user, but will disable the user. Action is logged. Documentation references alternative hard-delete endpoint if needed. Returns deleted user's public info for confirmation. Errors on permission fail or if user not found.",
+    "summary": "Delete (soft) user account by ID (table: users).",
+    "parameters": [
+      {
+        "name": "id",
+        "description": "Target user's unique ID (UUID).",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    ],
+    "requestBody": null,
+    "responseBody": {
+      "description": "Basic profile of the deleted user (or error message), for action confirmation.",
+      "typeName": "IUser.ISummary"
+    },
+    "path": "/bbs/users/{id}",
+    "method": "delete"
+  },
+  {
+    "specification": "Returns a list of all user roles in the 'user_roles' table with support for filtering (name/description), sorting, and pagination. Provides context for access control and permissions, allowing administrators to manage or review available roles/types. Exposes role metadata for user assignment and privilege management tools.\n\nOperation supports business rules of unique per-name roles, descriptive metadata, and is key for user/admin interfaces listing or assigning roles. Does not modify or remove roles. Returns essential attributes only (id, name, description).",
+    "description": "Retrieves a paginated and optionally filtered list of user roles available to assign to users. Useful for system administrators creating, modifying, or auditing user privileges. Supports filter by role name/description and pagination. May require admin privilege depending on system configuration. Related to GET /bbs/userRoles/{id} for individual details, POST for creation, PUT for update, DELETE for removal.",
+    "summary": "List/search user roles (table: user_roles) with filtering, paging, sorting.",
+    "parameters": [],
+    "requestBody": {
+      "description": "Search/filter criteria (optional) and pagination info for user roles list retrieval.",
+      "typeName": "IUserRole.IRequest"
+    },
+    "responseBody": {
+      "description": "Paginated list of user roles, matching the filter/search criteria.",
+      "typeName": "IPageIUserRole"
+    },
+    "path": "/bbs/userRoles",
+    "method": "patch"
+  },
+  {
+    "specification": "Get details about a single user role from the 'user_roles' table by its unique ID. Returns name, description, and ID for that role. Used by admin interfaces to show or edit privileges and for informational lookups in user management views.\n\nReturns not found if no matching role; checks permission for access if required by policy. Operation is strictly read-only and does not include related user lists (see /bbs/users for that).",
+    "description": "Fetches a user role's details by its unique identifier. Displays information for reference in the user management screens or permission audit tools. Used in admin logic for assigning, creating, or updating roles. Related to PATCH for list, POST for create, PUT for update, DELETE for remove.",
+    "summary": "Get a user role's details by ID (table: user_roles).",
+    "parameters": [
+      {
+        "name": "id",
+        "description": "User role's unique ID (UUID).",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    ],
+    "requestBody": null,
+    "responseBody": {
+      "description": "Role metadata: ID, name, description, and context for the specified role.",
+      "typeName": "IUserRole"
+    },
+    "path": "/bbs/userRoles/{id}",
+    "method": "get"
+  },
+  {
+    "specification": "Create a new user role in the 'user_roles' table. Used to add new permission types to the board, enabling flexible assignment of user capabilities. This supports business rules that only admins can add roles and that each role must have a unique name.\n\nValidates for required fields (name, description) and uniqueness. Upon creation, returns the full metadata for the new role. Used in system configuration and management interfaces. Related to list, detail, update, delete endpoints.",
+    "description": "Adds a new user role type for future assignment to users. Ensures unique name and descriptive string. Requires admin-level authentication. Responds with the role's metadata, as stored. See PATCH for role list, GET for details, PUT for updates, DELETE for removal.",
+    "summary": "Create a new user role (table: user_roles).",
+    "parameters": [],
+    "requestBody": {
+      "description": "Role creation information, including unique name and description.",
+      "typeName": "IUserRole.ICreate"
+    },
+    "responseBody": {
+      "description": "Full metadata of the newly created user role.",
+      "typeName": "IUserRole"
+    },
+    "path": "/bbs/userRoles",
+    "method": "post"
+  },
+  {
+    "specification": "Update an existing user role (e.g., name or description) by ID in the 'user_roles' table. This is required to implement evolving permissions structures or clarify role descriptions. Follows the constraint that role names remain unique and critical roles may not be altered without appropriate privilege.\n\nRequires admin authentication, and checks constraints for name uniqueness. Returns the new metadata for the edited role. Business rule: only some roles may be changed (no demotion of system 'admin' role, for example).",
+    "description": "Edits a user role by ID, allowing name or description changes. Validates inputs, enforces uniqueness, and restricts modification of protected roles. Provides updated metadata upon success. Admin-only operation. Related endpoints: PATCH for list/search, GET for detail, POST for create, DELETE for remove.",
+    "summary": "Update a user role by ID (table: user_roles, constraints: uniqueness/protection).",
+    "parameters": [
+      {
+        "name": "id",
+        "description": "Target user role's unique ID (UUID).",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    ],
+    "requestBody": {
+      "description": "User role update information (may include name and/or description).",
+      "typeName": "IUserRole.IUpdate"
+    },
+    "responseBody": {
+      "description": "The updated user role metadata.",
+      "typeName": "IUserRole"
+    },
+    "path": "/bbs/userRoles/{id}",
+    "method": "put"
+  },
+  {
+    "specification": "Remove a user role from the 'user_roles' table by its unique ID. Enforces administrative policy (only admins may remove roles) and checks business constraints (e.g., cannot remove roles still assigned to active users or critical system roles). Normally, this is a soft-delete or disables future use; audit trail is kept unless configured for hard delete. Used to close obsolete or deprecated permission sets, keeping system roles updated.\n\nReturns basic info for confirmation. Fails with error if the role is protected or in use. Related endpoints: patch for listing/search, get for details, post for create, put for update.",
+    "description": "Deletes (or disables) a user role by its unique ID, enforcing that the role is not in use and that critical roles are protected. Only admins can perform this. Returns the deleted role's info for confirmation. Errors on protected/in-use roles or permission issues.",
+    "summary": "Delete a user role by ID (table: user_roles, protected roles/business constraints).",
+    "parameters": [
+      {
+        "name": "id",
+        "description": "Target user role's unique ID (UUID).",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    ],
+    "requestBody": null,
+    "responseBody": {
+      "description": "Summary info about the deleted role or error message.",
+      "typeName": "IUserRole.ISummary"
+    },
+    "path": "/bbs/userRoles/{id}",
+    "method": "delete"
+  },
+  {
+    "specification": "Retrieve a paginated, searchable, and sortable list of all categories for the discussion board. This endpoint allows clients to fetch many records at once, using filtering by keyword, name, or created date. Pagination and sorting parameters can be provided in the body. This operation is for administrators and users to browse or manage the list of available topic categories. Matches the DB 'categories' table, which organizes posts and ensures content is discoverable by topic. Returns a paged result, including total count and page information for UI presentation. Only users with view permissions can access this list.",
+    "description": "This API endpoint fetches a list of all categories that organize the discussion topics within the political/economic discussion board platform. \n\nCategories enable users to navigate and post in different topical areas, such as 'Politics', 'Economics', or 'International News'. The endpoint supports pagination (page number and size), searching (by keyword, name, or description), and sorting (by name, created_at, etc.), referencing the structure found in the Prisma categories model (including properties: id, name, description, created_at).\n\nSecurity is managed through user permissions—administrators can view all categories, while regular users only see categories enabled for posting. The endpoint is optimized for performance, supports filtering of inactive or deleted categories (if soft deletion added), and provides meta-information for accurate client-side UI.\n\nValidation enforces valid search/sort parameters. Common errors include invalid queries or lack of permission. Typical use cases include displaying the category selection when creating or browsing posts.\n\nRelated operations: GET /bbs/categories/{id} for category detail, POST /bbs/categories for creation, PUT /bbs/categories/{id} for update, DELETE /bbs/categories/{id} for removal.",
+    "summary": "List, search, and sort categories (Prisma table: categories)",
+    "parameters": [],
+    "requestBody": {
+      "description": "List/search/filter options for retrieving categories, including page, limit, keyword search, and sort order.",
+      "typeName": "IBbsCategory.IRequest"
+    },
+    "responseBody": {
+      "description": "Paginated list of category summaries with meta-information (total count, next/prev page, etc.)",
+      "typeName": "IPageIBbsCategory.ISummary"
+    },
+    "path": "/bbs/categories",
+    "method": "patch"
+  },
+  {
+    "specification": "Retrieve detailed information about a single discussion board category. Uses the provided category ID to fetch matching record from the Prisma 'categories' table. Used to display category name, description, and creation date in UIs. The endpoint ensures that details are only shown to users with permission to view this category. Returns full category info, including id, name, description, and created_at. If not found, returns a clear error.",
+    "description": "This endpoint retrieves the full details of a category entity, as represented in the 'categories' table of the Prisma schema. \n\nUsers, moderators, and administrators can use this to view the name, description, and created_at of a specific topic category. The operation enforces proper security: if the category does not exist or the user is not authorized, it returns an appropriate error.\n\nValidation ensures the category ID is a valid UUID, matching the id column of the categories table. This endpoint is critical for category management interfaces, post creation wizards, and for admins reviewing topic organization.\n\nRelated endpoints: PATCH /bbs/categories for category lists, POST /bbs/categories for creation, PUT /bbs/categories/{id} for editing, DELETE /bbs/categories/{id} for removal.",
+    "summary": "Fetch details of a single category (Prisma table: categories)",
+    "parameters": [
+      {
+        "name": "id",
+        "description": "Target category's unique ID (UUID)",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    ],
+    "requestBody": null,
+    "responseBody": {
+      "description": "All properties of the requested category (id, name, description, created_at, etc.)",
+      "typeName": "IBbsCategory"
+    },
+    "path": "/bbs/categories/{id}",
+    "method": "get"
+  },
+  {
+    "specification": "Create a new discussion topic category. Accepts category name and description, assigning a unique ID and creation timestamp. Only administrators may create new categories, enforcing business rules from the requirements and the categories Prisma model. The request body must provide valid input, and response includes the new record. Attempts to create duplicate names or invalid input are prohibited and errors returned. Audited for traceability.",
+    "description": "Allows a platform administrator to add a new discussion category, expanding organizational structure for posts. The input must match required fields in the categories table (name, description); server assigns id and created_at.\n\nSecurity is enforced: only users with admin privileges may use this operation. Validation checks for uniqueness of the name and appropriate content in the description, based on business rules and database constraints. Category creation is traced for audit trail, supporting content management by staff.\n\nThis endpoint ties directly to board organization functions, supporting system scalability and responsiveness to user interests. Errors will occur if a category with the same name exists or if required fields are missing. Related operations: PATCH (listing), GET (detail), PUT (edit), DELETE (removal).",
+    "summary": "Create a new category (Prisma table: categories)",
+    "parameters": [],
+    "requestBody": {
+      "description": "Required information to create a new category (name, description)",
+      "typeName": "IBbsCategory.ICreate"
+    },
+    "responseBody": {
+      "description": "Full record for the newly created category, including id and timestamps.",
+      "typeName": "IBbsCategory"
+    },
+    "path": "/bbs/categories",
+    "method": "post"
+  },
+  {
+    "specification": "Update the properties (name, description) of an existing discussion category. The ID in the path determines the record, which is then updated using request body properties. Only administrators can perform this operation. Enforces uniqueness on category name per business logic. Updates are audited (updated fields and timestamp). If the category doesn't exist or permissions are lacking, returns an error. Uses Prisma 'categories' model, modifying fields: name, description.",
+    "description": "This endpoint enables administrators to modify attributes of a category in the discussion board system, following permissions and auditing rules from requirements and schema (categories model).\n\nThe category's ID must be supplied in the path. The body provides new values for name and description. Validations ensure names remain unique, content is valid, and timestamps are correctly updated. The operation is audited for traceability.\n\nCommon errors include not found category, name already taken, or permission denied. Changes are immediately reflected in organizational interfaces and post-creation workflows. Related endpoints: POST /bbs/categories for creation, PATCH for list, DELETE for removal, GET for detail.",
+    "summary": "Update an existing category (Prisma table: categories)",
+    "parameters": [
+      {
+        "name": "id",
+        "description": "Target category's unique ID (UUID)",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    ],
+    "requestBody": {
+      "description": "New name and/or description for the category",
+      "typeName": "IBbsCategory.IUpdate"
+    },
+    "responseBody": {
+      "description": "Full record for the updated category, showing all current fields.",
+      "typeName": "IBbsCategory"
+    },
+    "path": "/bbs/categories/{id}",
+    "method": "put"
+  },
+  {
+    "specification": "Remove a discussion category by ID. Only administrators can perform deletions. If the business rule is soft deletion, marks as deleted; otherwise, physically removes. Enforces existence and permission, returns relevant status. Matches requirements for maintainability and the Prisma 'categories' table (category id is the key). Returns confirmation or record details if needed. Prevents deletion of categories in use by posts, or cascades if allowed. Errors if ID does not exist, or if deletion compromises integrity or violates business rules.",
+    "description": "This endpoint deletes a category from the platform using its unique ID in the path, enforcing admin-only permissions and integrity requirements from both business logic and database schema (categories table).\n\nThe category must exist, and system prevents removal if the category is in use (contains posts) unless cascading or soft-delete policies are set. Physical vs soft deletion is implemented according to design. Success returns a confirmation or the deleted category's detail. Audit trail logs the operation. Error responses for not found or permission denied are provided. Related endpoints: PATCH (listing), GET (view), POST (create), PUT (edit).",
+    "summary": "Delete an existing category (Prisma table: categories)",
+    "parameters": [
+      {
+        "name": "id",
+        "description": "Target category's unique ID (UUID)",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    ],
+    "requestBody": null,
+    "responseBody": {
+      "description": "Confirmation of deletion (could be boolean, id, or deleted record)",
+      "typeName": "IBbsCategory.IDelete"
+    },
+    "path": "/bbs/categories/{id}",
+    "method": "delete"
+  },
+  {
+    "specification": "List, search, and filter posts within the discussion board. Returns paginated, sortable set of post summaries based on search criteria in the request body. Allows filtering by category, keyword, author, or date. Implements requirements for scalable navigation and topic discovery. Uses Prisma 'posts' model, supports advanced search and UI projection. Sensitive to user permissions: may hide or flag deleted/hidden posts. Returns meta-information (total, pages, etc.).",
+    "description": "This endpoint retrieves a paginated, searchable list of discussion posts, representing the 'posts' table in Prisma and business requirements for user content discovery.\n\nAllows filtering by various parameters: category, author, keyword in title/content, or creation date range. Supports pagination controls (page number, size) and custom sorting. Returns post summaries for display in feeds, search results, or category navigation.\n\nSecurity filters ensure only authorized or visible posts are returned (for example, hiding deleted or flagged posts for general users). Validation ensures correct input for search/filter fields. Typical errors include out-of-range pages, invalid filters, or lack of access.\n\nRelated endpoints: GET for post detail, POST for creation, PUT for update, DELETE for removal.",
+    "summary": "Search, filter, and list posts (Prisma table: posts)",
+    "parameters": [],
+    "requestBody": {
+      "description": "Filtering, paging, and search info to list posts",
+      "typeName": "IBbsPost.IRequest"
+    },
+    "responseBody": {
+      "description": "Paginated list of post summaries with meta fields",
+      "typeName": "IPageIBbsPost.ISummary"
+    },
+    "path": "/bbs/posts",
+    "method": "patch"
+  },
+  {
+    "specification": "Retrieve the detail of a single post by its unique ID. Provides all properties (title, content, author, category, timestamps, vote tallies) as per the Prisma 'posts' table and business needs for detail views. Supports permission checks for viewing deleted/hidden posts. Used by post detail UI or for moderation review. Returns error if not found or no access.",
+    "description": "Fetches full detail of a single discussion post, as defined in the Prisma schema (posts model), including fields such as id, title, content, author info, category, created_at, updated_at, and vote tallies.\n\nOnly posts the user is permitted to view (e.g., not deleted, visible per policy) are returned. Validates that ID is a proper UUID and exists; if not, returns a not found error. Used by main post detail UIs, admin panels, and moderation tools.\n\nRelated endpoints: PATCH for list/search, POST for creation, PUT/DELETE for modification/removal.",
+    "summary": "Get post detail by ID (Prisma table: posts)",
+    "parameters": [
+      {
+        "name": "id",
+        "description": "Unique post ID (UUID) identifying the record to fetch",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    ],
+    "requestBody": null,
+    "responseBody": {
+      "description": "Complete post record with all properties and relationships",
+      "typeName": "IBbsPost"
+    },
+    "path": "/bbs/posts/{id}",
+    "method": "get"
+  },
+  {
+    "specification": "Create a new discussion post (thread) under a chosen category. Enforces business rules: user must be authenticated, provide title, content, and assign a category. Saves the post and returns the new post record, as defined in the Prisma 'posts' model. Validates input for required fields and possible anti-abuse logic (rate limits, banned users). On success, returns post with assigned ID and creation timestamp. Errors on missing info, invalid input, or permission denied.",
+    "description": "This endpoint enables an authenticated user to start a new discussion by submitting a post, following site rules and constraints found in the requirements and posts schema (Prisma model).\n\nInput includes at least a title, content, and category, matching fields in posts. Security enforces only registered, unbanned users may post. Input is validated: title/content are required, category must exist, and content follows site guidelines.\n\nSuccessful requests return the complete new post record, including assigned id and creation time. Rate limiting and abuse prevention logic may be applied (e.g., block spammers, detect duplicate posts). Related endpoints: PATCH for list/search, GET for detail, PUT for update, DELETE for removal.",
+    "summary": "Create a new discussion post (Prisma table: posts)",
+    "parameters": [],
+    "requestBody": {
+      "description": "Required information to create a new board post (title, content, category_id)",
+      "typeName": "IBbsPost.ICreate"
+    },
+    "responseBody": {
+      "description": "Full details of the newly created post (all required fields and defaults)",
+      "typeName": "IBbsPost"
+    },
+    "path": "/bbs/posts",
+    "method": "post"
+  },
+  {
+    "specification": "Edit the properties of an existing discussion post, identified by its unique ID. Accepts new values for title, content, and/or category. Enforces business rules: only original author or moderator can edit (and possibly, only within a time window). Audits changes via updated_at and change history. Returns updated post record as per posts Prisma model. Validates input for constraints and permissions. Responds with errors for unauthorized, invalid, or no-change edits.",
+    "description": "This endpoint updates a discussion post in the database, matching rules and structure of the posts Prisma table (id, title, content, category_id, updated_at).\n\nThe target post is specified by ID in the path. The request body provides new values, which are validated for correctness (e.g., title/content required, valid category, follows editorial policies). Only the post author, moderators, or admins may update a post, often within a policy-defined time window. All changes are logged for traceability.\n\nErrors occur for resource not found, validation failure, or lack of permission. Successful update returns the full, current post record. Related endpoints: POST for new thread, PATCH for list/search, DELETE for removal, GET for detail.",
+    "summary": "Update a discussion post by ID (Prisma table: posts)",
+    "parameters": [
+      {
+        "name": "id",
+        "description": "Target post's unique ID (UUID)",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    ],
+    "requestBody": {
+      "description": "Values for updating the post (title, content, category_id)",
+      "typeName": "IBbsPost.IUpdate"
+    },
+    "responseBody": {
+      "description": "Full current record of the updated post",
+      "typeName": "IBbsPost"
+    },
+    "path": "/bbs/posts/{id}",
+    "method": "put"
+  },
+  {
+    "specification": "Remove an existing post from the board by its unique ID. Applies business rules for soft or hard deletion: only post author, moderator, or admin can perform, and post must exist. Ensures permissions and content integrity (may require reasoning for deletion/audit). Returns confirmation/removed post or status. Prisma posts model; error if not found or not allowed.",
+    "description": "Deletes a discussion post identified by its unique ID, enforcing board policy and business rules outlined in schema and requirements (posts model).\n\nPermitted for the post's author (if within a time window), moderators, or admins. May use soft or hard deletion—post is either flagged as deleted (timestamped), or removed from DB, depending on policy. Deletion may be prevented if post is referenced elsewhere (e.g., comments), unless cascading allowed. Success returns confirmation or deleted record. Errors for resource not found, permission denied, or violation of constraints. Related endpoints: PUT (update), POST (create), GET (view), PATCH (list/search).",
+    "summary": "Delete a post by ID (Prisma table: posts)",
+    "parameters": [
+      {
+        "name": "id",
+        "description": "Target post's unique ID (UUID)",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    ],
+    "requestBody": null,
+    "responseBody": {
+      "description": "Deletion result (confirmation or deleted record)",
+      "typeName": "IBbsPost.IDelete"
+    },
+    "path": "/bbs/posts/{id}",
+    "method": "delete"
+  },
+  {
+    "specification": "List, filter, and search all comment entities in the discussion board. This operation is tied to the 'comments' table in the Prisma DB schema, which represents replies or nested discussions related to posts and other comments. Results support searching and pagination. Useful for displaying comment threads, moderating replies, or retrieving comment lists based on criteria such as postId, userId, creation date, or text match. Incorporates role-based access for filtering deleted or moderated comments if necessary.",
+    "description": "This API operation retrieves a paginated and searchable list of comments from the discussion board. It enables query-based filtering by various parameters such as parent post, user (author), or parent comment for nested replies. Comments are returned with relevant details from the 'comments' table (such as id, user_id, post_id, parent_id, content, timestamps, and soft deletion status), matching the Prisma schema documentation.\n\nThe operation includes logic for role-based access: regular users see only active comments, while moderators/admins may see all including soft-deleted or flagged ones. This facilitates both public facing listings and moderation tools. The response supports pagination fields (page size, number), sorting (e.g., by creation date, popularity), and full-text search (via 'content').\n\nSearching for comments related to a specific post or user is accomplished with query parameters. Error handling covers cases such as invalid pagination info, unauthorized access to deleted content, or system errors.\n\nRelated API operations include creating a comment (POST /bbs/comments), retrieving a specific comment (GET /bbs/comments/{id}), updating or deleting a comment (PUT/DELETE /bbs/comments/{id}). Moderators may use this for review of reported or deleted comments.",
+    "summary": "Retrieve a list of comments with search and pagination (comments table)",
+    "parameters": [],
+    "requestBody": {
+      "description": "Filtering, pagination, and search parameters for comment listing.",
+      "typeName": "IBbsComment.IRequest"
+    },
+    "responseBody": {
+      "description": "Paginated list of comments matching search criteria.",
+      "typeName": "IPageIBbsComment"
+    },
+    "path": "/bbs/comments",
+    "method": "patch"
+  },
+  {
+    "specification": "Retrieve a single discussion comment by its unique ID. Maps to the 'comments' table in the Prisma schema. This endpoint is used whenever a client needs full details about a specific comment, such as showing a threaded reply, supporting moderation review, or loading a permalinking comment in client applications.",
+    "description": "Fetches the full details of a single comment specified by its unique ID, according to the 'comments' Prisma schema. Returns comment attributes: id, user_id, post_id, parent_id, content, timestamps (created, updated, deleted), and nested relationship info. Ensures users only access comments they are authorized to see—soft-deleted comments may be visible only to moderators, not regular users.\n\nThis endpoint is used for loading individual comments, e.g., on a detailed comment page, during moderation review, or when navigating directly to a permalinking comment. Enforces access control, clean error handling (not found, forbidden, etc.), and connects with related operations for listing or manipulating comments.",
+    "summary": "Get full details for a specific comment (comments table)",
+    "parameters": [
+      {
+        "name": "id",
+        "description": "Unique ID of the comment to retrieve.",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    ],
+    "requestBody": null,
+    "responseBody": {
+      "description": "Detailed comment information.",
+      "typeName": "IBbsComment"
+    },
+    "path": "/bbs/comments/{id}",
+    "method": "get"
+  },
+  {
+    "specification": "Create a new reply (comment) on a post or as a reply to another comment. This targets the 'comments' table in the Prisma schema. Allows registered users to contribute discussions or responses by submitting comment content, post association, and optional parent comment reference (for nested replies).",
+    "description": "Allows a registered user to add a new comment to a post, or as a reply to another comment (supports threading). The request includes identifiers for the parent post, optional parent comment (if nested), comment content, and author (handled by authenticated session). Enforcement of business rules: only logged-in users may comment, the post must be valid, and the parent comment (if any) must exist. The operation ensures content is stored and properly linked in the 'comments' table, allowing for threaded replies per Prisma schema logic.\n\nHandles input validation, spam/profanity checks, and records audit info (timestamps, author). Moderation tools will process/report inappropriate content after creation. Related operations: listing comments, updating/deleting by author, reading single comments.",
+    "summary": "Create a new comment or reply on a post (comments table)",
+    "parameters": [],
+    "requestBody": {
+      "description": "Data for the new comment, including post, optional parent, and content.",
+      "typeName": "IBbsComment.ICreate"
+    },
+    "responseBody": {
+      "description": "Created comment details.",
+      "typeName": "IBbsComment"
+    },
+    "path": "/bbs/comments",
+    "method": "post"
+  },
+  {
+    "specification": "Update an existing comment (identified by ID) with new content. Supports editing replies on the discussion board. Employs the 'comments' table in the Prisma schema, tracking all changes for accountability. Authorization rules apply—typically, only the original author or moderators may edit comments, and editing may be time-limited.",
+    "description": "Enables the original author (or a moderator) to edit the contents of a comment. The request receives the comment's unique ID (path parameter) and updated content (request body). Only fields allowed by the business policy (mainly 'content') can be modified. Audit information (updated_at) is refreshed on each edit; original authorship and post/thread associations cannot be altered.\n\nValidation checks the actor's permissions and ensures edits comply with moderation policy (no abusive content, etc.). Editing windows may be enforced for regular users (e.g., only within 15 minutes), while moderators can override. Changes are persisted per the 'comments' Prisma schema, and outcome errors include forbidden, not found, or invalid input.",
+    "summary": "Edit the body of an existing comment (comments table)",
+    "parameters": [
+      {
+        "name": "id",
+        "description": "ID of the comment to update.",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    ],
+    "requestBody": {
+      "description": "Fields to update for the selected comment—typically just 'content'.",
+      "typeName": "IBbsComment.IUpdate"
+    },
+    "responseBody": {
+      "description": "Updated comment details.",
+      "typeName": "IBbsComment"
+    },
+    "path": "/bbs/comments/{id}",
+    "method": "put"
+  },
+  {
+    "specification": "Delete (soft-delete) a comment by its ID, either by the original author or moderator. Implements content removal policy for the 'comments' table. Uses soft deletion to preserve moderation history while hiding from regular users.",
+    "description": "Marks a comment as deleted (soft deletion) based on its unique ID. Only the comment's author or a moderator may delete (soft-delete), conforming to the discussion board's rules and the 'comments' Prisma schema. Actual content is preserved but flagged as deleted to allow audit and moderation—a key requirement in the business rules.\n\nValidation includes authorization checks, error handling for missing or already deleted comments, and updates the 'deleted_at' timestamp. Related endpoints allow listing with or without deleted items based on user role. This action does not physically remove the comment from the database, enabling restoration or review if needed.",
+    "summary": "Soft-delete a comment (comments table) by ID",
+    "parameters": [
+      {
+        "name": "id",
+        "description": "ID of the comment to soft-delete.",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    ],
+    "requestBody": null,
+    "responseBody": {
+      "description": "Deleted comment record (soft deleted).",
+      "typeName": "IBbsComment"
+    },
+    "path": "/bbs/comments/{id}",
+    "method": "delete"
+  },
+  {
+    "specification": "List, filter, and search all voting records in the discussion board. This endpoint connects to the 'votes' Prisma table, which records upvotes or downvotes for posts and comments. Used to analyze voting trends, moderate voting abuse, or surface most/least upvoted items. Supports search, filtering by user, post, or comment, sorting, and pagination.",
+    "description": "Retrieves a paginated and filterable list of all votes cast in the system. Query parameters may include filtering by voter, related post, related comment, creation date, and vote value (+1 or -1). Incorporates the business logic that each vote belongs to one user and points to either one post or one comment (never both, enforcing mutual exclusivity as per 'votes' Prisma schema).\n\nUsed by moderators for audit, by users to track voting history, and for analytics (popular content, suspicious activity, etc.). Supports role-based access—full listing for admins, restricted for regular users. Pagination, sorting, and search capabilities included; handles edge cases for invalid queries or restricted access.\n\nRelated endpoints: creating a vote, updating/removing a vote, retrieving a specific vote's details.",
+    "summary": "Search and list votes with filters and pagination (votes table)",
+    "parameters": [],
+    "requestBody": {
+      "description": "Filtering, search, and pagination criteria for listing votes.",
+      "typeName": "IBbsVote.IRequest"
+    },
+    "responseBody": {
+      "description": "Paginated and filtered results of vote records.",
+      "typeName": "IPageIBbsVote"
+    },
+    "path": "/bbs/votes",
+    "method": "patch"
+  },
+  {
+    "specification": "Fetch a specific vote's details by its unique ID. Uses the 'votes' table in the Prisma schema. Supports moderation, user history auditing, and client retrieval of individual vote information for a post or comment.",
+    "description": "Fetches all available metadata about a vote, identified by its UUID. Fields returned include: vote id, user id (voter), related post id or comment id (one is always null), vote value (+1/-1), and timestamps. Authorization logic ensures only moderators/admins or the vote's owner may view this if privacy settings demand it, per requirements analysis and 'votes' Prisma schema. Used for display of voting metadata, dispute resolution, or audit trail.\n\nHandles errors if the vote is missing, deleted, or access is restricted. Complements endpoints for listing votes, changing vote value, or removing votes.",
+    "summary": "Fetch details for a single vote by vote ID (votes table)",
+    "parameters": [
+      {
+        "name": "id",
+        "description": "Unique ID of the vote record to fetch.",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    ],
+    "requestBody": null,
+    "responseBody": {
+      "description": "Detailed information about the vote record.",
+      "typeName": "IBbsVote"
+    },
+    "path": "/bbs/votes/{id}",
+    "method": "get"
+  },
+  {
+    "specification": "Cast a new vote (upvote or downvote) on a post or comment. Targets the 'votes' table in the Prisma schema, governed by business rules allowing only registered users to vote, and exactly one vote per user per item (uniqueness constraint).",
+    "description": "Processes user intent to upvote or downvote either a post or a comment. Input includes voter identity (from authenticated session, not request body), and target post or comment id, not both (mutually exclusive). Value must be +1 (upvote) or -1 (downvote), per discussion board policy and Prisma 'votes' constraints. Voting is allowed only for registered users, and only one vote per item is permitted for fairness—handled by a unique constraint.\n\nBusiness rules require audit recording, automatic adjustment of tallies, and handling of attempted duplicate votes (may overwrite, reject, or return an error, depending on policy). Administration may examine voting history for abuse. Related endpoints handle updating and removing votes.",
+    "summary": "Create a new vote on a post or comment (votes table)",
+    "parameters": [],
+    "requestBody": {
+      "description": "Voting action details (target type, target ID, and vote value).",
+      "typeName": "IBbsVote.ICreate"
+    },
+    "responseBody": {
+      "description": "Created vote record details.",
+      "typeName": "IBbsVote"
+    },
+    "path": "/bbs/votes",
+    "method": "post"
+  },
+  {
+    "specification": "Edit the vote value (+1/-1) for an existing vote record by ID. Implements correction of voting actions for the 'votes' Prisma schema. Business rules may restrict who can edit their votes or allow only recent votes to be changed.",
+    "description": "Allows a registered user (voter) to change their vote value (+1/-1) for a previously cast vote, identified by vote ID. The request body must specify the new value (and only this field); only the owner of the vote or a moderator may perform this action, in accordance with business rules and 'votes' table policies. Editing may be time-limited for standard users (e.g., only within 10 minutes of original vote), with moderators able to override as needed. Vote target (post or comment) and user association cannot be altered via editing.\n\nAudit and validation logic ensures proper authorization, existence of the vote, and compliance with business policies. Returns the updated vote record, implements full error handling (not found, forbidden, etc.), and supports moderation adjustment use cases.",
+    "summary": "Edit an existing vote's value (votes table)",
+    "parameters": [
+      {
+        "name": "id",
+        "description": "Vote ID to update.",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    ],
+    "requestBody": {
+      "description": "Fields to update—primarily the vote value (+1 or -1).",
+      "typeName": "IBbsVote.IUpdate"
+    },
+    "responseBody": {
+      "description": "Updated vote record.",
+      "typeName": "IBbsVote"
+    },
+    "path": "/bbs/votes/{id}",
+    "method": "put"
+  },
+  {
+    "specification": "Delete an existing vote record—removes user's feedback from either a post or comment. Tied to the 'votes' table in the Prisma schema. Operates under business rules enforcing that users may remove their own votes, with moderators given override powers for moderation/audit reasons.",
+    "description": "Deletes a vote record identified by vote ID. Only the voting user or a moderator may perform this operation, per discussion board policies. Removal is permanent (hard deletion), and the 'votes' table in the Prisma schema ensures related content is updated accordingly (e.g., vote tally may be adjusted on post or comment). Use cases include vote retraction by a user, housekeeping by moderators, or rollback of vote abuse.\n\nValidation covers existence of the vote, authorization policies, and error handling for missing or already deleted items. Distinguishes itself from soft-deletion (used for comments, not votes).",
+    "summary": "Delete a vote by ID (votes table, hard delete)",
+    "parameters": [
+      {
+        "name": "id",
+        "description": "Vote ID to delete.",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    ],
+    "requestBody": null,
+    "responseBody": {
+      "description": "Confirmation of vote deletion (previous vote record or status).",
+      "typeName": "IBbsVote"
+    },
+    "path": "/bbs/votes/{id}",
+    "method": "delete"
+  }
+]

@@ -5,28 +5,28 @@ import { Tabs } from "nextra/components";
 
 import LocalSource from "../../../components/LocalSource";
 import RemoteSource from "../../../components/RemoteSource";
-import AutoBeRpcNodeJsMainSnippet from "../../../template/snippets/AutoBeRpcNodeJsMainSnippet.mdx";
-import AutoBeRpcClientMainSnippet from "../../../template/snippets/AutoBeRpcClientMainSnippet.mdx";
 import AutoBeRpcClientSetupSnippet from "../../../template/snippets/AutoBeRpcClientSetupSnippet.mdx";
 
 ## Setup
+
 <AutoBeRpcClientSetupSnippet />
 
 You can start WebSocket client application by installing `@autobe/rpc` and [`tgrid`](https://tgrid.com) packages.
 
 `tgrid` is a TypeScript based RPC (Remote Procedure Call) framework supporting WebSocket protocol, and `@autobe/rpc` is an wrapper module of [`@autobe/core`](/docs/core) following the WebSocket RPC.
 
-
-
-
 ## Development
+
 <Tabs items={[
   "Main Program", 
   <code>IAutoBeRpcListener</code>,
   <code>IAutoBeRpcService</code>,
 ]}>
   <Tabs.Tab>
-    <AutoBeRpcClientMainSnippet />
+    <LocalSource
+      path="internals/website-examples/src/websocket/client/main.ts"
+      filename="client/main.ts"
+      showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
     <LocalSource
@@ -52,8 +52,6 @@ After the connection, you can start conversation by calling the server's functio
 
 Note that, WebSocket protocol is different with HTTP protocol. The connection would be kept until you call the `WebSocketConnector.close()` method manually. So, if your business has been completed, please don't forget to closing the connection.
 
-
-
 ## Event Listener
 <Tabs items={[
   'Client Application', 
@@ -61,10 +59,16 @@ Note that, WebSocket protocol is different with HTTP protocol. The connection wo
   <code>IAutoBeRpcListener</code>
 ]}>
   <Tabs.Tab>
-    <AutoBeRpcClientMainSnippet />
+    <LocalSource
+      path="internals/website-examples/src/websocket/client/main.ts"
+      filename="client/main.ts"
+      showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
-    <AutoBeRpcNodeJsMainSnippet />
+    <LocalSource
+      path="internals/website-examples/src/websocket/nodejs/main.ts"
+      filename="nodejs/main.ts"
+      showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
     <RemoteSource

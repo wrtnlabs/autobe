@@ -5,30 +5,32 @@ import {
   AutoBeInterfaceEndpointsEvent,
 } from "@autobe/interface";
 
+import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
+import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_interface } from "./prepare_agent_interface";
 
 export const validate_agent_interface_endpoints = async (
-  owner: string,
-  project: string,
+  factory: TestFactory,
+  project: TestProject,
 ) => {
   if (TestGlobal.env.CHATGPT_API_KEY === undefined) return false;
 
-  const { agent } = await prepare_agent_interface(owner, project);
+  const { agent } = await prepare_agent_interface(factory, project);
+  const go = (message?: string) =>
+    orchestrateInterfaceEndpoints(agent.getContext(), message);
   let result: AutoBeInterfaceEndpointsEvent | AutoBeAssistantMessageHistory =
-    await orchestrateInterfaceEndpoints(agent.getContext());
-  if (result.type === "assistantMessage")
-    result = await orchestrateInterfaceEndpoints(
-      agent.getContext(),
-      "Don't ask me to whether do or not. Just do it.",
-    );
-  if (result.type === "assistantMessage")
-    throw new Error("Failed to generate interface endpoints.");
+    await go();
+  if (result.type === "assistantMessage") {
+    result = await go("Don't ask me to whether do or not. Just do it.");
+    if (result.type === "assistantMessage")
+      throw new Error("Failed to generate interface endpoints.");
+  }
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${owner}/${project}/interface/endpoints`,
+    root: `${TestGlobal.ROOT}/results/${project}/interface/endpoints`,
     files: {
-      "endpoints.json": JSON.stringify(result, null, 2),
-      "tokenUsage.json": JSON.stringify(agent.getTokenUsage(), null, 2),
+      ...(await agent.getFiles()),
+      "logs/endpoints.json": JSON.stringify(result.endpoints, null, 2),
     },
   });
 };

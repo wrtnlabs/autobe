@@ -9,13 +9,18 @@ import {
 import { AutoBePrismaComponentsEvent } from "@autobe/interface/src/events/AutoBePrismaComponentsEvent";
 import { AutoBePrismaSchemasEvent } from "@autobe/interface/src/events/AutoBePrismaSchemasEvent";
 
+import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
+import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_prisma } from "./prepare_agent_prisma";
 
-export const validate_agent_prisma = async (owner: string, project: string) => {
+export const validate_agent_prisma = async (
+  factory: TestFactory,
+  project: TestProject,
+) => {
   if (TestGlobal.env.CHATGPT_API_KEY === undefined) return false;
 
-  const { agent } = await prepare_agent_prisma(owner, project);
+  const { agent } = await prepare_agent_prisma(factory, project);
   const starts: AutoBePrismaStartEvent[] = [];
   agent.on("prismaStart", (event) => {
     console.log("started");
@@ -27,9 +32,8 @@ export const validate_agent_prisma = async (owner: string, project: string) => {
 
   const validates: AutoBePrismaValidateEvent[] = [];
   agent.on("prismaCorrect", async (event) => {
-    console.log("corrected", event.failure.errors.length);
     await FileSystemIterator.save({
-      root: `${TestGlobal.ROOT}/results/${owner}/${project}/prisma-correct-${validates.length}`,
+      root: `${TestGlobal.ROOT}/results/${project}/prisma-correct-${validates.length}`,
       files: Object.fromEntries([
         ["errors.json", JSON.stringify(event.failure.errors, null, 2)],
         ["correction.json", JSON.stringify(event.correction, null, 2)],
@@ -40,7 +44,7 @@ export const validate_agent_prisma = async (owner: string, project: string) => {
   agent.on("prismaValidate", async (event) => {
     validates.push(event);
     await FileSystemIterator.save({
-      root: `${TestGlobal.ROOT}/results/${owner}/${project}/prisma-failure-${validates.length}`,
+      root: `${TestGlobal.ROOT}/results/${project}/prisma-failure-${validates.length}`,
       files: {
         "errors.json": JSON.stringify(event.result.errors, null, 2),
         ...event.schemas,
@@ -72,7 +76,7 @@ export const validate_agent_prisma = async (owner: string, project: string) => {
   }
   if (history.compiled.type !== "success") {
     await FileSystemIterator.save({
-      root: `${TestGlobal.ROOT}/results/${owner}/${project}/prisma-error`,
+      root: `${TestGlobal.ROOT}/results/${project}/prisma-error`,
       files: {
         "result.json": JSON.stringify(history.result, null, 2),
         ...history.schemas,
@@ -90,7 +94,7 @@ export const validate_agent_prisma = async (owner: string, project: string) => {
 
   // REPORT RESULT
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${owner}/${project}/prisma`,
+    root: `${TestGlobal.ROOT}/results/${project}/prisma`,
     files: {
       ...(await agent.getFiles()),
       "logs/validates.json": JSON.stringify(validates, null, 2),

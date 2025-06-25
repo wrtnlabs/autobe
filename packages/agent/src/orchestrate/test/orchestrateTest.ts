@@ -1,7 +1,9 @@
 import {
   AutoBeAssistantMessageHistory,
+  AutoBeOpenApi,
   AutoBeTestHistory,
-  AutoBeTestProgressEvent,
+  AutoBeTestValidateEvent,
+  AutoBeTestWriteEvent,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 import { v4 } from "uuid";
@@ -9,8 +11,8 @@ import { v4 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
 import { orchestrateTestCorrect } from "./orchestrateTestCorrect";
-import { orchestrateTestPlan } from "./orchestrateTestPlan";
-import { orchestrateTestProgress } from "./orchestrateTestProgress";
+import { orchestrateTestScenario } from "./orchestrateTestScenario";
+import { orchestrateTestWrite } from "./orchestrateTestWrite";
 
 export const orchestrateTest =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
@@ -25,7 +27,8 @@ export const orchestrateTest =
       step: ctx.state().analyze?.step ?? 0,
     });
 
-    const operations = ctx.state().interface?.document.operations ?? [];
+    const operations: AutoBeOpenApi.IOperation[] =
+      ctx.state().interface?.document.operations ?? [];
     if (operations.length === 0) {
       const history: AutoBeAssistantMessageHistory = {
         id: v4(),
@@ -36,24 +39,25 @@ export const orchestrateTest =
           "Unable to write test code because there are no Operations, " +
           "please check if the Interface agent is called.",
       };
-
       ctx.histories().push(history);
       ctx.dispatch(history);
-
       return history;
     }
 
     // PLAN
-    const { plans } = await orchestrateTestPlan(ctx);
+    const { scenarios } = await orchestrateTestScenario(ctx);
 
     // TEST CODE
-    const codes: AutoBeTestProgressEvent[] = await orchestrateTestProgress(
+    const codes: AutoBeTestWriteEvent[] = await orchestrateTestWrite(
       ctx,
-      plans,
+      scenarios,
     );
 
-    const correct = await orchestrateTestCorrect(ctx, codes);
-
+    const correct: AutoBeTestValidateEvent = await orchestrateTestCorrect(
+      ctx,
+      codes,
+      scenarios,
+    );
     const history: AutoBeTestHistory = {
       type: "test",
       id: v4(),
@@ -64,11 +68,13 @@ export const orchestrateTest =
       reason: "Step to the test generation referencing the interface",
       step: ctx.state().interface?.step ?? 0,
     };
-
     ctx.dispatch({
       type: "testComplete",
       created_at: start.toISOString(),
-      files: correct.files,
+      files: correct.files
+        .map((f) => ({ [f.location]: f.content }))
+        .reduce((acc, cur) => Object.assign(acc, cur), {}),
+      compiled: correct.result,
       step: ctx.state().interface?.step ?? 0,
     });
 

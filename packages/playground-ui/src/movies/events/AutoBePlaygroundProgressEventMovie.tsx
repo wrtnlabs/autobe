@@ -8,9 +8,9 @@ import {
   AutoBePrismaComponentsEvent,
   AutoBePrismaSchemasEvent,
   AutoBeRealizeProgressEvent,
-  AutoBeTestProgressEvent,
+  AutoBeTestScenarioEvent,
+  AutoBeTestWriteEvent,
 } from "@autobe/interface";
-import { AutoBeTestPlanEvent } from "@autobe/interface/src/events/AutoBeTestPlanEvent";
 
 export function AutoBePlaygroundProgressEventMovie(
   props: AutoBePlaygroundProgressEventMovie.IProps,
@@ -32,8 +32,8 @@ export namespace AutoBePlaygroundProgressEventMovie {
       | AutoBeInterfaceOperationsEvent
       | AutoBeInterfaceComponentsEvent
       | AutoBeInterfaceComplementEvent
-      | AutoBeTestPlanEvent
-      | AutoBeTestProgressEvent
+      | AutoBeTestScenarioEvent
+      | AutoBeTestWriteEvent
       | AutoBeRealizeProgressEvent;
   }
 }
@@ -58,9 +58,9 @@ function getDescription(
       return `Composing Prisma Tables: ${tables} of ${tables}`;
     case "prismaSchemas":
       return `Generating Prisma Schemas: ${event.completed} of ${event.total}`;
-    case "testPlan":
-      return `Generating Test Plan Completed: ${event.plans.length}`;
-    case "testProgress":
+    case "testScenario":
+      return `Generating Test Plan Completed: ${event.scenarios.length}`;
+    case "testWrite":
       return `Writing Test Functions: ${event.completed} of ${event.total}`;
     case "realizeProgress":
       return `Writing Main Controller: ${event.completed} of ${event.total}`;

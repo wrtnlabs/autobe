@@ -2,13 +2,11 @@ import fs from "fs";
 import path from "path";
 import { VariadicSingleton } from "tstl";
 
-/**
- * @internal
- */
+/** @internal */
 export namespace FileSystemIterator {
   export const read = async (props: {
     root: string;
-    extension: string;
+    extension?: string;
     prefix?: string;
   }): Promise<Record<string, string>> => {
     const output: Record<string, string> = {};
@@ -18,7 +16,10 @@ export namespace FileSystemIterator {
         const next: string = `${location}/${file}`;
         const stat: fs.Stats = await fs.promises.stat(next);
         if (stat.isDirectory()) await iterate(next);
-        else if (file.endsWith(`.${props.extension}`))
+        else if (
+          !props.extension?.length ||
+          file.endsWith(`.${props.extension}`)
+        )
           output[
             `${props.prefix ?? ""}${next.substring(props.root.length + 1)}`
           ] = await fs.promises.readFile(next, "utf-8");
@@ -46,7 +47,7 @@ export namespace FileSystemIterator {
     for (const [key, value] of Object.entries(props.files)) {
       const file: string = path.resolve(`${props.root}/${key}`);
       await directory.get(path.dirname(file));
-      await fs.promises.writeFile(file, value, "utf8");
+      await fs.promises.writeFile(file, value ?? "", "utf8");
     }
   };
 }

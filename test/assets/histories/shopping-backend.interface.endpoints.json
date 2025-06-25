@@ -1,0 +1,1342 @@
+[
+  {
+    "path": "/shopping/users",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/users/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/users",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/users/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/users/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/userProfiles",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/userProfiles/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/userProfiles",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/userProfiles/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/userProfiles/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/organizations",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/organizations/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/organizations",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/organizations/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/organizations/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/roles",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/roles/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/roles",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/roles/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/roles/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/sessions",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/sessions/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/sessions",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/sessions/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/sessions/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/locales",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/locales/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/locales",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/locales/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/locales/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/consents",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/consents/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/consents",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/consents/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/consents/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/accessLogs",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/accessLogs/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/accessLogs",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/accessLogs/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/accessLogs/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/products",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/products/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/products",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/products/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/products/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/productVariants",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/productVariants/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/productVariants",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/productVariants/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/productVariants/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/productCategories",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/productCategories/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/productCategories",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/productCategories/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/productCategories/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/productOptions",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/productOptions/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/productOptions",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/productOptions/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/productOptions/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/productTags",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/productTags/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/productTags",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/productTags/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/productTags/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/productMedia",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/productMedia/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/productMedia",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/productMedia/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/productMedia/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/inventory",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/inventory/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/inventory",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/inventory/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/inventory/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/importFeeds",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/importFeeds/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/importFeeds",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/importFeeds/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/importFeeds/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/catalogEvents",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/catalogEvents/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/catalogEvents",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/catalogEvents/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/catalogEvents/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/catalogEvidence",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/catalogEvidence/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/catalogEvidence",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/catalogEvidence/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/catalogEvidence/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/cart",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/cart/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/cart",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/cart/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/cart/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/cartItem",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/cartItem/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/cartItem",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/cartItem/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/cartItem/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/order",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/order/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/order",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/order/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/order/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/orderItem",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/orderItem/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/orderItem",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/orderItem/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/orderItem/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/orderStatus",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/orderStatus/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/orderStatus",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/orderStatus/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/orderStatus/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/orderLog",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/orderLog/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/orderLog",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/orderLog/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/orderLog/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/orderEvidence",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/orderEvidence/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/orderEvidence",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/orderEvidence/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/orderEvidence/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/payments",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/payments/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/payments",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/payments/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/payments/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/paymentMethods",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/paymentMethods/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/paymentMethods",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/paymentMethods/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/paymentMethods/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/discounts",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/discounts/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/discounts",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/discounts/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/discounts/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/discountRules",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/discountRules/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/discountRules",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/discountRules/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/discountRules/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/discountCampaigns",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/discountCampaigns/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/discountCampaigns",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/discountCampaigns/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/discountCampaigns/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/transactions",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/transactions/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/transactions",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/transactions/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/transactions/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/vouchers",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/vouchers/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/vouchers",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/vouchers/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/vouchers/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/loyaltyPoints",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/loyaltyPoints/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/loyaltyPoints",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/loyaltyPoints/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/loyaltyPoints/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/refunds",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/refunds/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/refunds",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/refunds/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/refunds/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/paymentAudits",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/paymentAudits/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/paymentAudits",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/paymentAudits/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/paymentAudits/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/messageThreads",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/messageThreads/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/messageThreads",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/messageThreads/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/messageThreads/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/messages",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/messages/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/messages",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/messages/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/messages/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/notifications",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/notifications/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/notifications",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/notifications/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/notifications/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/reviews",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/reviews/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/reviews",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/reviews/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/reviews/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/reviewMedia",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/reviewMedia/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/reviewMedia",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/reviewMedia/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/reviewMedia/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/reviewModerations",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/reviewModerations/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/reviewModerations",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/reviewModerations/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/reviewModerations/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/reviewSentiments",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/reviewSentiments/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/reviewSentiments",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/reviewSentiments/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/reviewSentiments/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/sentimentAnalysisLogs",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/sentimentAnalysisLogs/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/sentimentAnalysisLogs",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/sentimentAnalysisLogs/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/sentimentAnalysisLogs/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/favorites",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/favorites/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/favorites",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/favorites/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/favorites/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/bookmarks",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/bookmarks/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/bookmarks",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/bookmarks/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/bookmarks/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/personalizationEvents",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/personalizationEvents/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/personalizationEvents",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/personalizationEvents/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/personalizationEvents/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/recommendations",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/recommendations/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/recommendations",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/recommendations/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/recommendations/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/personalizationAudits",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/personalizationAudits/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/personalizationAudits",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/personalizationAudits/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/personalizationAudits/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/aiModels",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/aiModels/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/aiModels",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/aiModels/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/aiModels/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/aiModelVersions",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/aiModelVersions/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/aiModelVersions",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/aiModelVersions/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/aiModelVersions/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/aiTrainingData",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/aiTrainingData/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/aiTrainingData",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/aiTrainingData/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/aiTrainingData/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/aiFeatureStore",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/aiFeatureStore/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/aiFeatureStore",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/aiFeatureStore/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/aiFeatureStore/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/aiDecisionLogs",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/aiDecisionLogs/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/aiDecisionLogs",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/aiDecisionLogs/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/aiDecisionLogs/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/aiFeedback",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/aiFeedback/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/aiFeedback",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/aiFeedback/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/aiFeedback/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/securityEvent",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/securityEvent/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/securityEvent",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/securityEvent/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/securityEvent/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/permission",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/permission/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/permission",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/permission/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/permission/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/policy",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/policy/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/policy",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/policy/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/policy/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/auditLog",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/auditLog/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/auditLog",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/auditLog/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/auditLog/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/complianceReport",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/complianceReport/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/complianceReport",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/complianceReport/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/complianceReport/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/dataRetention",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/dataRetention/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/dataRetention",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/dataRetention/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/dataRetention/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/evidenceArchive",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/evidenceArchive/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/evidenceArchive",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/evidenceArchive/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/evidenceArchive/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/apiClients",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/apiClients/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/apiClients",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/apiClients/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/apiClients/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/apiTokens",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/apiTokens/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/apiTokens",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/apiTokens/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/apiTokens/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/apiAudits",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/apiAudits/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/apiAudits",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/apiAudits/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/apiAudits/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/integrationChannels",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/integrationChannels/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/integrationChannels",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/integrationChannels/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/integrationChannels/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/channelSessions",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/channelSessions/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/channelSessions",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/channelSessions/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/channelSessions/{id}",
+    "method": "delete"
+  },
+  {
+    "path": "/shopping/webhookEvents",
+    "method": "patch"
+  },
+  {
+    "path": "/shopping/webhookEvents/{id}",
+    "method": "get"
+  },
+  {
+    "path": "/shopping/webhookEvents",
+    "method": "post"
+  },
+  {
+    "path": "/shopping/webhookEvents/{id}",
+    "method": "put"
+  },
+  {
+    "path": "/shopping/webhookEvents/{id}",
+    "method": "delete"
+  }
+]

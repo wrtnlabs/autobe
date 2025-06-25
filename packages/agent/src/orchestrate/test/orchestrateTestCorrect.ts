@@ -1,7 +1,9 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import {
-  AutoBeTestProgressEvent,
+  AutoBeTestFile,
+  AutoBeTestScenario,
   AutoBeTestValidateEvent,
+  AutoBeTestWriteEvent,
   IAutoBeTypeScriptCompilerResult,
 } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
@@ -10,49 +12,78 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { randomBackoffRetry } from "../../utils/backoffRetry";
 import { enforceToolCall } from "../../utils/enforceToolCall";
+import { compileTestScenario } from "./compileTestScenario";
+import { filterTestFileName } from "./filterTestFileName";
+import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
 import { transformTestCorrectHistories } from "./transformTestCorrectHistories";
 
 export async function orchestrateTestCorrect<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  codes: AutoBeTestProgressEvent[],
+  codes: AutoBeTestWriteEvent[],
+  scenarios: AutoBeTestScenario[],
   life: number = 4,
 ): Promise<AutoBeTestValidateEvent> {
+  const files: AutoBeTestFile[] = codes.map(
+    ({ filename, content }, index): AutoBeTestFile => {
+      const scenario: AutoBeTestScenario = scenarios[index];
+      return { location: filename, content, scenario };
+    },
+  );
+
   // 1) Build map of new test files from progress events
-  const testFiles = Object.fromEntries(
-    codes.map(({ filename, content }) => [
-      `test/features/api/${filename}`,
-      content,
-    ]),
+  const testFiles: Record<string, string> = Object.fromEntries(
+    codes.map((c) => [c.filename, c.content]),
   );
 
   // 2) Keep only files outside the test directory from current state
-  const retainedFiles = Object.fromEntries(
-    Object.entries(ctx.state().interface?.files ?? {}).filter(
-      ([filename]) => !filename.startsWith("test/features/api"),
+  const retainedFiles: Record<string, string> = Object.fromEntries(
+    Object.entries(ctx.state().interface?.files ?? {}).filter(([key]) =>
+      filterTestFileName(key),
     ),
   );
 
   // 3) Merge and filter: keep .ts/.json, drop anything under "benchmark"
-  const mergedFiles = { ...retainedFiles, ...testFiles };
-  const files = Object.fromEntries(
-    Object.entries(mergedFiles).filter(
-      ([filename]) =>
-        (filename.endsWith(".ts") && !filename.startsWith("test/benchmark/")) ||
-        filename.endsWith(".json"),
-    ),
-  );
+  const external = async (
+    location: string,
+  ): Promise<Record<string, string>> => {
+    const content: string | undefined =
+      await ctx.compiler.typescript.getExternal(location);
+    if (content === undefined) throw new Error(`File not found: ${location}`);
+    return { [location]: content };
+  };
+  const mergedFiles: Record<string, string> = {
+    ...retainedFiles,
+    ...testFiles,
+    ...(await external("node_modules/@nestia/e2e/lib/TestValidator.d.ts")),
+    ...(await external("node_modules/@nestia/fetcher/lib/IConnection.d.ts")),
+  };
 
   // 4) Ask the LLM to correct the filtered file set
-  const response = await step(ctx, files, life);
+  const response: AutoBeTestValidateEvent = await step(
+    ctx,
+    mergedFiles,
+    files,
+    life,
+  );
 
   // 5) Combine original + corrected files and dispatch event
   const event: AutoBeTestValidateEvent = {
     ...response,
     type: "testValidate",
-    files: { ...mergedFiles, ...response.files },
+    files: [
+      ...Object.entries(mergedFiles).map(
+        ([filename, content]): AutoBeTestFile => {
+          return {
+            location: filename,
+            content,
+          };
+        },
+      ),
+      ...response.files,
+    ],
   };
-
   return event;
 }
 
@@ -66,27 +97,30 @@ export async function orchestrateTestCorrect<Model extends ILlmSchema.Model>(
  * all generated test files are syntactically correct and compilable.
  *
  * @param ctx AutoBe context object
- * @param files Map of files to compile (filename: content)
+ * @param entireFiles Map of all files to compile (filename: content)
+ * @param testFiles Map of files to compile (filename: content)
  * @param life Number of remaining retry attempts
  * @returns Event object containing successful compilation result and modified
  *   files
  */
 async function step<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  files: Record<string, string>,
+  entireFiles: Record<string, string>,
+  testFiles: AutoBeTestFile[],
   life: number,
 ): Promise<AutoBeTestValidateEvent> {
   // COMPILE TEST CODE
   const result: IAutoBeTypeScriptCompilerResult =
     await ctx.compiler.typescript.compile({
-      files,
+      files: entireFiles,
     });
+
   if (result.type === "success") {
     // SUCCESS
     return {
       type: "testValidate",
       created_at: new Date().toISOString(),
-      files,
+      files: testFiles,
       result,
       step: ctx.state().interface?.step ?? 0,
     };
@@ -97,11 +131,10 @@ async function step<Model extends ILlmSchema.Model>(
     ctx.dispatch({
       type: "testValidate",
       created_at: new Date().toISOString(),
-      files,
+      files: testFiles,
       result,
       step: ctx.state().interface?.step ?? 0,
     });
-
     throw new Error(JSON.stringify(result.error, null, 2));
   }
 
@@ -127,7 +160,7 @@ async function step<Model extends ILlmSchema.Model>(
     return {
       type: "testValidate",
       created_at: new Date().toISOString(),
-      files,
+      files: testFiles,
       result: {
         ...result,
         type: "success",
@@ -140,7 +173,7 @@ async function step<Model extends ILlmSchema.Model>(
   ctx.dispatch({
     type: "testValidate",
     created_at: new Date().toISOString(),
-    files,
+    files: testFiles,
     result,
     step: ctx.state().interface?.step ?? 0,
   });
@@ -149,36 +182,51 @@ async function step<Model extends ILlmSchema.Model>(
     return {
       type: "testValidate",
       created_at: new Date().toISOString(),
-      files,
+      files: testFiles,
       result,
       step: ctx.state().interface?.step ?? 0,
     };
 
   // VALIDATION FAILED
-  const validate = await Promise.all(
-    Object.entries(diagnostics).map(async ([filename, d]) => {
-      const code = files[filename];
-      const response = await process(ctx, d, code);
+  const validatedFiles: AutoBeTestFile[] = await Promise.all(
+    Object.entries(diagnostics).map(
+      async ([filename, d]): Promise<AutoBeTestFile> => {
+        const file = testFiles.find((f) => f.location === filename);
+        const code: string = file?.content!;
+        const scenario = file?.scenario!;
 
-      ctx.dispatch({
-        type: "testCorrect",
-        created_at: new Date().toISOString(),
-        files: { ...files, [filename]: response.content },
-        result,
-        solution: response.solution,
-        think_without_compile_error: response.think_without_compile_error,
-        think_again_with_compile_error: response.think_again_with_compile_error,
-        step: ctx.state().interface?.step ?? 0,
-      });
+        const response: ICorrectTestFunctionProps = await process(
+          ctx,
+          d,
+          code,
+          scenario,
+        );
+        ctx.dispatch({
+          type: "testCorrect",
+          created_at: new Date().toISOString(),
+          files: { ...testFiles, [filename]: response.content },
+          result,
+          solution: response.solution,
+          think_without_compile_error: response.think_without_compile_error,
+          think_again_with_compile_error:
+            response.think_again_with_compile_error,
+          step: ctx.state().interface?.step ?? 0,
+        });
 
-      // Return [filename, modified code]
-      return [filename, response.content];
-    }),
+        return { location: filename, content: code, scenario: scenario };
+      },
+    ),
   );
 
-  const newFiles = { ...files, ...Object.fromEntries(validate) };
-
-  return step(ctx, newFiles, life - 1);
+  return step(
+    ctx,
+    entireFiles,
+    testFiles.map((f) => {
+      const validated = validatedFiles.find((v) => v.location === f.location);
+      return validated ? validated : f;
+    }),
+    life - 1,
+  );
 }
 
 /**
@@ -195,26 +243,15 @@ async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   diagnostics: IAutoBeTypeScriptCompilerResult.IDiagnostic[],
   code: string,
+  scenario: AutoBeTestScenario,
 ): Promise<ICorrectTestFunctionProps> {
   const pointer: IPointer<ICorrectTestFunctionProps | null> = {
     value: null,
   };
-
-  const apiFiles = Object.entries(ctx.state().interface?.files ?? {})
-    .filter(([filename]) => {
-      return filename.startsWith("src/api/");
-    })
-    .reduce<Record<string, string>>((acc, [filename, content]) => {
-      return Object.assign(acc, { [filename]: content });
-    }, {});
-
-  const dtoFiles = Object.entries(ctx.state().interface?.files ?? {})
-    .filter(([filename]) => {
-      return filename.startsWith("src/api/structures/");
-    })
-    .reduce<Record<string, string>>((acc, [filename, content]) => {
-      return Object.assign(acc, { [filename]: content });
-    }, {});
+  const artifacts: IAutoBeTestScenarioArtifacts = await compileTestScenario(
+    ctx,
+    scenario,
+  );
 
   const agentica = new MicroAgentica({
     model: ctx.model,
@@ -222,7 +259,7 @@ async function process<Model extends ILlmSchema.Model>(
     config: {
       ...(ctx.config ?? {}),
     },
-    histories: transformTestCorrectHistories(apiFiles, dtoFiles),
+    histories: transformTestCorrectHistories(artifacts),
     controllers: [
       createApplication({
         model: ctx.model,
@@ -235,47 +272,49 @@ async function process<Model extends ILlmSchema.Model>(
   });
   enforceToolCall(agentica);
 
-  await agentica.conversate(
-    [
-      "Fix the compilation error in the provided code.",
-      "",
-      "## Original Code",
-      "```typescript",
-      code,
-      "```",
-      "",
-      diagnostics.map((diagnostic) => {
-        if (diagnostic.start === undefined || diagnostic.length === undefined)
-          return "";
+  await randomBackoffRetry(async () => {
+    await agentica.conversate(
+      [
+        "Fix the compilation error in the provided code.",
+        "",
+        "## Original Code",
+        "```typescript",
+        code,
+        "```",
+        "",
+        diagnostics.map((diagnostic) => {
+          if (diagnostic.start === undefined || diagnostic.length === undefined)
+            return "";
 
-        const checkDtoRegexp = `Cannot find module '@ORGANIZATION/template-api/lib/structures/IBbsArticleComment' or its corresponding type declarations.`;
-        const [group] = [
-          ...checkDtoRegexp.matchAll(
-            /Cannot find module '(.*lib\/structures\/.*)'/g,
-          ),
-        ];
+          const checkDtoRegexp = `Cannot find module '@ORGANIZATION/template-api/lib/structures/IBbsArticleComment' or its corresponding type declarations.`;
+          const [group] = [
+            ...checkDtoRegexp.matchAll(
+              /Cannot find module '(.*lib\/structures\/.*)'/g,
+            ),
+          ];
 
-        const [_, filename] = group ?? [];
+          const [_, filename] = group ?? [];
 
-        return [
-          "## Error Information",
-          `- Position: Characters ${diagnostic.start} to ${diagnostic.start + diagnostic.length}`,
-          `- Error Message: ${diagnostic.messageText}`,
-          `- Problematic Code: \`${code.substring(diagnostic.start, diagnostic.start + diagnostic.length)}\``,
-          filename
-            ? `The type files located under **/lib/structures are declared in '@ORGANIZATION/PROJECT-api/lib/structures'.\n` +
-              `Note: '@ORGANIZATION/PROJECT-api' must be written exactly as is and should not be replaced.\n`
-            : "",
-        ].join("\n");
-      }),
-      "## Instructions",
-      "1. Focus on the specific error location and message",
-      "2. Provide the corrected TypeScript code",
-      "3. Ensure the fix resolves the compilation error",
-      "",
-      "Return only the fixed code without explanations.",
-    ].join("\n"),
-  );
+          return [
+            "## Error Information",
+            `- Position: Characters ${diagnostic.start} to ${diagnostic.start + diagnostic.length}`,
+            `- Error Message: ${diagnostic.messageText}`,
+            `- Problematic Code: \`${code.substring(diagnostic.start, diagnostic.start + diagnostic.length)}\``,
+            filename
+              ? `The type files located under **/lib/structures are declared in '@ORGANIZATION/PROJECT-api/lib/structures'.\n` +
+                `Note: '@ORGANIZATION/PROJECT-api' must be written exactly as is and should not be replaced.\n`
+              : "",
+          ].join("\n");
+        }),
+        "## Instructions",
+        "1. Focus on the specific error location and message",
+        "2. Provide the corrected TypeScript code",
+        "3. Ensure the fix resolves the compilation error",
+        "",
+        "Return only the fixed code without explanations.",
+      ].join("\n"),
+    );
+  });
   if (pointer.value === null) throw new Error("Failed to modify test code.");
   return pointer.value;
 }

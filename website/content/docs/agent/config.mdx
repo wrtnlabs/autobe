@@ -3,12 +3,13 @@ title: AutoBE > Guide Documents > Agent Library > Configuration
 ---
 import { Tabs } from "nextra/components";
 
-import AutoBeAgentSnippet from "../../../template/snippets/AutoBeAgentSnippet.mdx";
-import AutoBeAgentConfigSnippet from "../../../template/snippets/AutoBeAgentConfigSnippet.mdx";
-import AutoBeAgentVendorSnippet from "../../../template/snippets/AutoBeAgentVendorSnippet.tsx";
+import LocalSource from "../../../components/LocalSource";
 
 ## Configuration
-<AutoBeAgentConfigSnippet />
+<LocalSource
+  path="internals/website-examples/src/agent/main.config.ts"
+  filename="main.config.ts"
+  showLineNumbers />
 
 When creating an `AutoBeAgent`, you can configure several properties that define how the agent operates and connects to LLM services.
 
@@ -25,25 +26,31 @@ Finally, the `compiler` property provides the necessary compilation tools for Ty
   items={["OpenAI", "Claude", "DeepSeek", "Meta Llama"]}
   defaultIndex={3}>
   <Tabs.Tab>
-    <AutoBeAgentSnippet />
+    <LocalSource
+      path="internals/website-examples/src/agent/main.ts"
+      filename="main.ts"
+      showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
-    <AutoBeAgentVendorSnippet 
-      title="Claude" 
-      schema="claude" 
-      vendor="anthropic/claude-3.5-sonnet" />
+    <LocalSource
+      path="internals/website-examples/src/agent/main.claude.ts"
+      filename="main.claude.ts"
+      showLineNumbers
+      highlight="6-13" />
   </Tabs.Tab>
   <Tabs.Tab>
-    <AutoBeAgentVendorSnippet 
-      title="DeepSeek" 
-      schema="deepseek" 
-      vendor="deepseek/deepseek-chat-v3" />
+    <LocalSource
+      path="internals/website-examples/src/agent/main.deepseek.ts"
+      filename="main.deepseek.ts"
+      showLineNumbers
+      highlight="6-13" />
   </Tabs.Tab>
   <Tabs.Tab>
-    <AutoBeAgentVendorSnippet 
-      title="Meta Llama" 
-      schema="llama" 
-      vendor="meta-llama/llama3.3-70b" />
+    <LocalSource
+      path="internals/website-examples/src/agent/main.llama.ts"
+      filename="main.llama.ts"
+      showLineNumbers
+      highlight="6-13" />
   </Tabs.Tab>
 </Tabs>
 
@@ -107,33 +114,12 @@ However, this approach is not recommended because OpenAI's JSON schema specifica
 - `IJsonSchema.IArray.uniqueItems`
 
 ## Locale and Timezone
-```typescript filename="src/main.korea.ts" showLineNumbers {13-16}
-import { AutoBeAgent } from "@autobe/agent";
-import { AutoBeCompiler } from "@autobe/compiler";
-import OpenAI from "openai";
 
-const agent = new AutoBeAgent({
-  model: "chatgpt",
-  vendor: {
-    api: new OpenAI({
-      apiKey: "********",
-    }),
-    model: "gpt-4.1",
-  },
-  config: {
-    locale: "ko-KR",
-    timezone: "Asia/Seoul",
-  },
-  compiler: new AutoBeCompiler(),
-});
-
-await agent.conversate(`
-  I want to create a political/economic discussion board.
-  
-  Since I'm not familiar with programming, 
-  please write a requirements analysis report as you see fit.
-`);
-```
+<LocalSource
+  path="internals/website-examples/src/agent/main.korea.ts"
+  filename="main.korea.ts"
+  showLineNumbers
+  highlight="13-16" />
 
 You can configure the `locale` and `timezone` properties to customize the AI agent's behavior.
 
@@ -146,50 +132,23 @@ Similarly, when you set the `timezone` property to `Asia/Seoul`, the AI agent co
   items={["Embedding", "Separation", "Worker"]}
   defaultIndex={1}>
   <Tabs.Tab>
-    <AutoBeAgentSnippet />
+    <LocalSource
+      path="internals/website-examples/src/agent/main.ts"
+      filename="main.ts"
+      showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
-```typescript filename="src/main.worker.ts" showLineNumbers
-// connect to worker
-const worker: WorkerConnector<null, null, IAutoBeCompiler> =
-  new WorkerConnector(null, null, "process");
-await worker.connect(
-  `${__dirname}/compiler${path.extname(__filename)}`,
-);
-
-const agent = new AutoBeAgent({
-  model: "chatgpt",
-  vendor: {
-    api: new OpenAI({ apiKey: "********" }),
-    model: "gpt-4.1",
-  },
-  compiler: worker.getDriver(), // compiler from worker
-});
-
-await agent.conversate(`
-  I want to create a political/economic discussion board.
-  
-  Since I'm not familiar with programming, 
-  please write a requirements analysis report as you see fit.
-`);
-```
+    <LocalSource
+      path="internals/website-examples/src/agent/main.separate.ts"
+      filename="main.separate.ts"
+      showLineNumbers
+      highlight="8-10, 18" />
   </Tabs.Tab>
   <Tabs.Tab>
-```typescript filename="src/compiler.ts" showLineNumbers
-import { AutoBeCompiler } from "@autobe/compiler";
-import { WorkerServer } from "tgrid";
-
-const main = async () => {
-  const compiler: AutoBeCompiler = new AutoBeCompiler();
-  const worker: WorkerServer<null, AutoBeCompiler, null> = new WorkerServer();
-  await worker.open(compiler);
-};
-
-main().catch((error) => {
-  console.log(error);
-  process.exit(-1);
-});
-```
+    <LocalSource
+      path="internals/website-examples/src/agent/compiler.worker.ts"
+      filename="compiler.worker.ts"
+      showLineNumbers />
   </Tabs.Tab>
 </Tabs>
 

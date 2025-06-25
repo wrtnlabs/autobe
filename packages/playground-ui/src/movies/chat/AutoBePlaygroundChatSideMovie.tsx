@@ -28,6 +28,7 @@ export function AutoBePlaygroundChatSideMovie(
         <li>Model: {props.header.model}</li>
         <li>Locale: {props.header.locale}</li>
         <li>Timezone: {props.header.timezone}</li>
+        <li>Semaphore: {props.header.vendor.semaphore ?? 16}</li>
       </ul>
       <br />
       <br />

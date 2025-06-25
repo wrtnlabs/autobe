@@ -3,11 +3,12 @@ title: AutoBE > Guide Documents > WebSocket Protocol > NestJS Server
 ---
 import { Tabs } from "nextra/components";
 
+import LocalSource from "../../../components/LocalSource";
 import RemoteSource from "../../../components/RemoteSource";
-import AutoBeRpcNestJsControllerSnippet from "../../../template/snippets/AutoBeRpcNestJsControllerSnippet.mdx";
 import AutoBeRpcNestJsSetupSnippet from "../../../template/snippets/AutoBeRpcNestJsSetupSnippet.mdx";
 
 ## Setup
+
 <AutoBeRpcNestJsSetupSnippet />
 
 To develop NestJS WebSocket server of `@autobe`, you need to setup these packages.
@@ -18,29 +19,21 @@ At next, install `@autobe/rpc` and [`tgrid`](https://tgrid.com) packages. `tgrid
 
 At last, install `nestia` package add *devDependencies*, and run `npx nestia setup` command. [`@nestia`](https://nestia.io) is a set of helper libraries for NestJS, and it supports WebSocket protocol that is following the RPC (Remote Procedure Call) paradigm.
 
-
-
-
 ## Bootstrap
-```typescript filename="nestjs/src/main.ts" showLineNumbers copy
-import { WebSocketAdaptor } from "@nestia/core";
-import { INestApplication } from "@nestjs/common";
-import { NestFactory } from "@nestjs/core";
 
-import { MyModule } from "./MyModule";
-
-const app: INestApplication = await NestFactory.create(MyModule);
-await WebSocketAdaptor.upgrade(app);
-await app.listen(3_001, "0.0.0.0");
-```
+<LocalSource
+  path="internals/website-examples/src/websocket/nestjs/main.ts"
+  filename="nestjs/main.ts"
+  showLineNumbers />
 
 To activate WebSocket protocol in NestJS, you have to upgrade the NestJS application by `WebSocketAdaptor.upgrade()` function. The upgrade function will make NestJS application to support both HTTP and WebSocket protocols.
 
-
-
-
 ## API Controller
-<AutoBeRpcNestJsControllerSnippet />
+
+<LocalSource
+  path="internals/website-examples/src/websocket/nestjs/chat.controller.ts"
+  filename="nestjs/chat.controller.ts"
+  showLineNumbers />
 
 You can finalize WebSocket server development like above.
 
@@ -50,11 +43,10 @@ And in the controller method body, create an `AutoBeAgent` instance and wrap it 
 
 When you've completed the acceptance, everything is completed. When client calls the `IAutoBeRpcService.conversate()` function remotely, server will response to the client by calling the `IAutoBeRpcListener` functions remotely too.
 
-
-
-
 ## Software Development Kit
+
 ### Outline
+
 <Tabs items={['npm', 'pnpm', 'yarn']}>
   <Tabs.Tab>
 ```bash filename="Terminal" copy
@@ -83,6 +75,7 @@ With the SDK library, client application developer can interact with your backen
 ![Software Development Kit Example](https://user-images.githubusercontent.com/13158709/215004990-368c589d-7101-404e-b81b-fbc936382f05.gif)
 
 ### Configuration
+
 <Tabs items={[
   <code>nestia.config.ts</code>, 
   <code>INestiaConfig.ts</code>,
@@ -126,10 +119,8 @@ You have to configure two things, property `input` and `output`. Write a callbac
 
 After that, just run `npx nestia sdk` command, then SDK library would be generated.
 
-
-
-
 ### Demonstration
+
 <Tabs items={["Main Program", "SDK Library"]}>
   <Tabs.Tab>
 ```typescript filename="client/src/main.ts" showLineNumbers copy

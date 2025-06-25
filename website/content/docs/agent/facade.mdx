@@ -4,11 +4,6 @@ title: AutoBE > Guide Documents > Agent Library > Facade Controller
 import { Tabs } from "nextra/components";
 
 import LocalSource from "../../../components/LocalSource";
-import AutoBeAgentSnippet from "../../../template/snippets/AutoBeAgentSnippet.mdx";
-import AutoBeAgentConfigSnippet from "../../../template/snippets/AutoBeAgentConfigSnippet.mdx";
-import AutoBeAgentEventSnippet from "../../../template/snippets/AutoBeAgentEventSnippet.mdx";
-import AutoBeAgentHistorySnippet from "../../../template/snippets/AutoBeAgentHistorySnippet.mdx";
-import AutoBeAgentGetFilesSnippet from "../../../template/snippets/AutoBeAgentGetFilesSnippet.mdx";
 
 ## Preface
 
@@ -17,7 +12,10 @@ import AutoBeAgentGetFilesSnippet from "../../../template/snippets/AutoBeAgentGe
   <code>AutoBeAgent</code>,
 ]}>
   <Tabs.Tab>
-    <AutoBeAgentSnippet />
+    <LocalSource
+      path="internals/website-examples/src/agent/main.ts"
+      filename="main.ts"
+      showLineNumbers />
   </Tabs.Tab>
   <Tabs.Tab>
     <LocalSource
@@ -37,7 +35,10 @@ If you want to understand the basic usage of the `AutoBeAgent` class, please ref
 
 ## Configuration
 
-<AutoBeAgentConfigSnippet />
+<LocalSource
+  path="internals/website-examples/src/agent/main.config.ts"
+  filename="main.config.ts"
+  showLineNumbers />
 
 When creating an `AutoBeAgent`, you can configure several properties that define how the agent operates and connects to LLM services.
 
@@ -51,7 +52,11 @@ Finally, the `compiler` property provides the necessary compilation tools for Ty
 
 ## Event Handling
 
-<AutoBeAgentEventSnippet />
+<LocalSource
+  path="internals/website-examples/src/agent/main.event.ts"
+  filename="main.event.ts"
+  showLineNumbers
+  highlight="14-35" />
 
 The `AutoBeAgent` provides real-time event notifications throughout the development process.
 
@@ -61,7 +66,11 @@ Events in AutoBE can be categorized into two main types: message events that tra
 
 ## Prompt Histories
 
-<AutoBeAgentHistorySnippet />
+<LocalSource
+  path="internals/website-examples/src/agent/main.history.ts"
+  filename="main.history.ts"
+  showLineNumbers
+  highlight="16, 24" />
 
 When creating an `AutoBeAgent`, you can start from previous conversations by specifying the `histories` property. Additionally, you can retrieve the conversation histories of the current `AutoBeAgent` by calling the `AutoBeAgent.getHistories()` method.
 
@@ -75,7 +84,11 @@ All history types in `@autobe` are collected into the `AutoBeHistory` type as a 
   <code>IAutoBeGetFilesOptions</code>,
 ]}>
   <Tabs.Tab>
-    <AutoBeAgentGetFilesSnippet />
+    <LocalSource
+      path="internals/website-examples/src/agent/main.artifacts.ts"
+      filename="main.artifacts.ts"
+      showLineNumbers
+      highlight="26-29" />
   </Tabs.Tab>
   <Tabs.Tab>
     <LocalSource

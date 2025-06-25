@@ -1,0 +1,1218 @@
+{
+  "schemas": {
+    "IUser.IRequest": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string",
+          "description": "필터링을 위한 사용자 이름(Username).\n\n부분 일치 검색을 허용하여, 입력된 값이 포함된 모든 사용자를 조회할 수 있습니다. 입력값이 없으면 이 조건은 적용되지 않습니다."
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "이메일 주소로 필터링.\n\n정확히 일치하는 이메일 주소로 사용자를 조회합니다. 입력값이 없으면 조건이 적용되지 않습니다."
+        },
+        "user_role_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "사용자 역할(User Role)로 필터링.\n\n특정 역할을 가진 사용자 목록만을 조회할 때 사용합니다."
+        },
+        "status": {
+          "type": "string",
+          "description": "사용자 상태(예: active, suspended, banned 등)를 지정하여 필터링할 수 있습니다.\n\n상태값이 없으면 모든 상태의 사용자를 조회합니다."
+        },
+        "created_from": {
+          "type": "string",
+          "format": "date-time",
+          "description": "계정 생성일 범위의 시작일(From).\n\n이 날짜 이후에 생성된 사용자만을 필터링합니다."
+        },
+        "created_to": {
+          "type": "string",
+          "format": "date-time",
+          "description": "계정 생성일 범위의 종료일(To).\n\n이 날짜 이전에 생성된 사용자만을 필터링합니다."
+        },
+        "page": {
+          "type": "integer",
+          "format": "uint32",
+          "description": "페이지 번호.\n\n페이지네이션 처리를 위해 사용되며, 주어진 페이지의 데이터를 조회합니다."
+        },
+        "limit": {
+          "type": "integer",
+          "format": "uint32",
+          "default": 100,
+          "description": "페이지 당 데이터 개수.\n\n리스트 뷰에서 한 페이지에 반환할 사용자 수를 지정합니다(기본값 100)."
+        },
+        "sort_by": {
+          "type": "string",
+          "description": "정렬 기준 필드명(예: created_at, username 등).\n\n지정되지 않으면 기본 정렬 기준이 적용됩니다."
+        },
+        "sort_order": {
+          "oneOf": [
+            {
+              "const": "asc",
+              "description": "정렬 방향.\n\n'asc'는 오름차순, 'desc'는 내림차순입니다."
+            },
+            {
+              "const": "desc",
+              "description": "정렬 방향.\n\n'asc'는 오름차순, 'desc'는 내림차순입니다."
+            }
+          ],
+          "description": "정렬 방향.\n\n'asc'는 오름차순, 'desc'는 내림차순입니다."
+        }
+      },
+      "description": "사용자 목록(Users)을 필터링 및 검색하는데 사용되는 요청 구조체입니다.\n\n이 타입은 관리 기능 및 모더레이션을 위해 구축되었으며, 사용자명, 이메일, 역할, 상태 등 여러 필드로 세분화된 검색이 가능합니다. 작성 시 Prisma users 테이블 및 요구사항분석 User 엔터티의 필수 검색 조건을 충분히 반영하였습니다.\n\nUI/UX 상에서 대규모 사용자 리스트를 효율적으로 페이징/정렬/검색 구현에 이상적입니다.",
+      "required": []
+    },
+    "IPageIUser.ISummary": {
+      "type": "object",
+      "properties": {
+        "pagination": {
+          "$ref": "#/components/schemas/IPage.IPagination"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/IUser.ISummary"
+          },
+          "description": "사용자 요약 정보 객체 배열.\n\n각 객체는 IUser.ISummary 타입으로, 리스트 표시용으로 필요한 최소 정보를 포함합니다."
+        }
+      },
+      "required": [
+        "pagination",
+        "data"
+      ],
+      "description": "사용자 목록 페이징 결과 타입입니다.\n\n데이터는 pagination(페이지 정보)와 data(사용자 요약 정보 배열)로 구성됩니다. 이 구조는 표준적인 IPage<T> 컨벤션에 따라 정의되어 대규모 데이터의 효율적인 리스팅과 페이지 이동 로직을 지원합니다."
+    },
+    "IUser": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "고유한 사용자 식별자(Primary Key).\n\nPrisma users.id 컬럼에 해당하며, 각 사용자를 유일하게 식별하는 UUID입니다."
+        },
+        "user_role_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "사용자 역할 식별자.\n\nPrisma users.user_role_id와 연동되며, 현재 사용자의 권한/권한 정의를 지정합니다.\nUI에서는 역할명 조회 시 user_roles 테이블을 참조하세요."
+        },
+        "username": {
+          "type": "string",
+          "description": "사용자명.\n\n플랫폼 내에서 표시되는 고유 이름으로, 중복 불가 정책을 적용받습니다. 예: politicoFan88"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "이메일 주소.\n\n로그인 및 알림용이며, 중복될 수 없습니다. 예시: user@example.com"
+        },
+        "bio": {
+          "oneOf": [
+            {
+              "type": "string",
+              "description": "간략한 자기소개.\n\n사용자 프로필 내에서 본인을 표현하는 선택적 문장입니다. 예시: '경제학도, 토론광'"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "간략한 자기소개.\n\n사용자 프로필 내에서 본인을 표현하는 선택적 문장입니다. 예시: '경제학도, 토론광'"
+        },
+        "role": {
+          "$ref": "#/components/schemas/IUserRole",
+          "description": "user_roles의 상세 객체.\n\n이 필드는 user_role_id가 참조하는 역할 정보를 추가로 제공합니다."
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "계정 생성 시각.\n\n서비스 가입 및 감사 기능, 오더링 등에 사용되는 UTC 타임스탬프입니다."
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "마지막 프로필 수정 시각.\n\n변경 이력 추적 및 최신 정보 판단에 사용됩니다."
+        },
+        "status": {
+          "type": "string",
+          "description": "계정 상태.\n\n비즈니스 규칙에 따라 'active', 'suspended', 'banned' 등의 값으로 관리됩니다."
+        }
+      },
+      "required": [
+        "id",
+        "user_role_id",
+        "username",
+        "email",
+        "password_hash",
+        "created_at",
+        "updated_at",
+        "status"
+      ],
+      "description": "정치/경제 토론 게시판의 사용자 실체(User Entity)입니다.\n\n이 구조체는 Prisma users 테이블 주석 및 요구분석 User 엔터티의 설명을 기반으로 하였으며, 플랫폼 내 등록 회원 정보를 표준화된 방식으로 나타냅니다. 모든 공개/비공개 필드를 포함하고, 권한 정보 연동, 프로필 속성, 상태값 등 비즈니스 핵심 데이터를 체계적으로 명세합니다.\n\n사용자는 각종 글쓰기, 댓글, 투표, 모더레이션 등 다양한 활동의 주체이며, 회원가입, 권한관리, 활동 기록 등 여러 기능에서 참조됩니다."
+    },
+    "IUser.ICreate": {
+      "type": "object",
+      "properties": {
+        "user_role_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "생성 시 지정할 사용자 역할의 식별자(필수).\n\n회원 가입 프로세스나 관리 기능에서 역할을 지정합니다. user_roles.id와 반드시 매핑되어야 하며, 유효성 검사 필요."
+        },
+        "username": {
+          "type": "string",
+          "description": "가입 시 지정할 사용자명(필수).\n\n고유성이 보장되어야 하며, 표준 프로필명 규칙을 따릅니다."
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "사용자 이메일 주소(필수).\n\n중복 불가하며, 인증 및 알림에 사용됩니다."
+        },
+        "bio": {
+          "oneOf": [
+            {
+              "type": "string",
+              "description": "선택적 자기소개(짧은 텍스트).\n\n가입 시 본인 소개를 입력할 수 있으며, 필수는 아닙니다."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "선택적 자기소개(짧은 텍스트).\n\n가입 시 본인 소개를 입력할 수 있으며, 필수는 아닙니다."
+        },
+        "password": {
+          "type": "string",
+          "description": "순수 비밀번호(필수, 미가공).\n\n저장 전 반드시 해시되어야 하며, 전달 형태는 평문입니다. password_hash는 서버 내부에서만 관리합니다."
+        },
+        "status": {
+          "type": "string",
+          "description": "계정 초기 상태(기본값: 'active').\n\n필요 시 관리자가 명시적으로 상태값을 지정할 수 있습니다."
+        }
+      },
+      "required": [
+        "user_role_id",
+        "username",
+        "email",
+        "password"
+      ],
+      "description": "사용자 신규 등록 요청에 사용되는 데이터 구조체입니다.\n\n회원 가입/관리 기능에서 신규 사용자를 등록할 때 사용되며, 전달받은 평문 비밀번호는 서버에서 안전하게 해싱되어 저장됩니다. Prisma users 테이블 스키마에서 요구하는 필수 속성을 반드시 포함하도록 설계하였습니다. 이메일/유저명 중복, 역할 유효성 검사, 상태값 검증 등 주요 비즈니스 제약 조건을 준수합니다."
+    },
+    "IUser.IUpdate": {
+      "type": "object",
+      "properties": {
+        "user_role_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "업데이트할 사용자 역할 식별자.\n\n필요 시 권한 변동에만 포함. user_roles.id로 유효성 검사 필요."
+        },
+        "username": {
+          "type": "string",
+          "description": "수정할 사용자명.\n\n중복 불가(유일값 보장)."
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "수정할 이메일 주소.\n\n예: 변경 시 이메일 인증 필요 등 추가 로직이 반영될 수 있습니다."
+        },
+        "bio": {
+          "oneOf": [
+            {
+              "type": "string",
+              "description": "업데이트할 자기소개(선택)."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "업데이트할 자기소개(선택)."
+        },
+        "status": {
+          "type": "string",
+          "description": "계정 상태 변경(예: 정지, 차단 등)."
+        }
+      },
+      "description": "사용자 정보(프로필, 권한, 상태 등) 수정 시 사용하는 구조체입니다.\n\nPrisma users 테이블의 수정 가능한 컬럼을 모두 반영, 각 필드는 선택적으로 제공됩니다. 비밀번호 수정은 별도 엔드포인트로 처리하며 본 구조체에는 포함하지 않습니다. 관리자의 경우 권한, 상태값 변경에 활용하며 일반 사용자는 자기소개, 이메일, 사용자명 등 프로필 편집에 사용됩니다.",
+      "required": []
+    },
+    "IUser.ISummary": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "사용자 고유 식별자.\n\n각 사용자별 UUID(Primary Key)입니다."
+        },
+        "username": {
+          "type": "string",
+          "description": "플랫폼 내에서의 사용자명.\n\n리스트 또는 요약 보기에 사용됩니다."
+        },
+        "user_role_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "사용자 역할 식별자.\n\n빠른 권한 분류/필터링용으로 활용됩니다."
+        },
+        "status": {
+          "type": "string",
+          "description": "계정 상태값.\n\n요약 리스트용으로, 예: active, suspended, banned 등."
+        }
+      },
+      "required": [
+        "id",
+        "username",
+        "user_role_id",
+        "status"
+      ],
+      "description": "사용자 요약 정보 구조체로, 리스트 표시 및 피드 결과에 활용합니다.\n\nPrisma users 테이블의 주요 표시 필드만을 빠르게 조회하고, 개별 사용자 상세 정보가 필요하지 않을 때 최적화된 응답 구조입니다."
+    },
+    "IUserRole.IRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "역할명을 포함하여 검색할 문자열(부분 일치 지원).\n\n입력된 값이 있으면 name 컬럼에 유사한 역할만 리스트합니다."
+        },
+        "description": {
+          "type": "string",
+          "description": "역할 설명을 통한 필터링.\n\n관리/검색 화면에서 설명의 일부 또는 전체 일치로 필터링할 수 있습니다."
+        },
+        "page": {
+          "type": "integer",
+          "format": "uint32",
+          "description": "페이지 번호(페이징용)."
+        },
+        "limit": {
+          "type": "integer",
+          "format": "uint32",
+          "default": 100,
+          "description": "페이지당 결과 수(디폴트 100)."
+        },
+        "sort_by": {
+          "type": "string",
+          "description": "정렬 기준 필드명.\n\n예: name, created_at 등. 미지정시 기본순으로 표기됩니다."
+        },
+        "sort_order": {
+          "oneOf": [
+            {
+              "const": "asc",
+              "description": "정렬 방향.\n\n'asc': 오름차순, 'desc': 내림차순."
+            },
+            {
+              "const": "desc",
+              "description": "정렬 방향.\n\n'asc': 오름차순, 'desc': 내림차순."
+            }
+          ],
+          "description": "정렬 방향.\n\n'asc': 오름차순, 'desc': 내림차순."
+        }
+      },
+      "description": "사용자 역할(User Role) 리스트 및 검색 요청 타입입니다.\n\nIUserRole 엔티티의 name, description 등으로 부분 일치 검색이 가능하며, 대규모 결과에 대비한 페이징, 정렬 필드를 지원합니다. 관리/설정 UI 구현 및 역할 관리 기능에 최적화 되어 있습니다.",
+      "required": []
+    },
+    "IPageIUserRole": {
+      "type": "object",
+      "properties": {
+        "pagination": {
+          "$ref": "#/components/schemas/IPage.IPagination"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/IUserRole"
+          },
+          "description": "IUserRole 객체 배열.\n\n관리/설정용 마스터 데이터로, 각 객체에는 사용자 권한명, 권한 설명, 식별자 등이 포함됩니다."
+        }
+      },
+      "required": [
+        "pagination",
+        "data"
+      ],
+      "description": "사용자 역할 마스터 데이터의 페이지네이션 결과 타입입니다.\n\n전체 역할 리스트 관리, 권한 부여/편집 관리 등 대규모 관리 화면 개발에 사용됩니다. IPage<T> UI 패턴에 맞춘 구조입니다."
+    },
+    "IUserRole": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "역할 고유 식별자(Primary Key).\n\n각 권한별로 UUID가 발급됩니다."
+        },
+        "name": {
+          "type": "string",
+          "description": "역할명(예: member, moderator, administrator 등).\n\n관리/검색/RBAC 구현에 사용됩니다. 유일값을 보장합니다."
+        },
+        "description": {
+          "type": "string",
+          "description": "역할의 상세 설명.\n\n적용 권한, 기능, 용도 등이 요약되어 있습니다."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "description"
+      ],
+      "description": "사용자 역할(User Role) 엔티티 정보 구조체입니다.\n\nPrisma user_roles 테이블 컬럼과 요구분석 역할 정책에 따라, 사용자가 갖는 권한과 설명을 명확하게 나타냅니다.\n\n사용자 프로필, 권한 관리, 설정 UI 등에서 권한 부여 대상 조회에 항상 참조됩니다."
+    },
+    "IUserRole.ICreate": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "신규 생성할 권한명(필수).\n\n유일성(Unique) 보장 필요, 예: 'supervisor', 'contentAuditor' 등."
+        },
+        "description": {
+          "type": "string",
+          "description": "신규 생성 권한의 설명.\n\n권한의 역할이나 적용 범위를 명확히 기입."
+        }
+      },
+      "required": [
+        "name",
+        "description"
+      ],
+      "description": "사용자 역할(User Role) 신규 등록 요청에 사용하는 타입입니다.\n\n시스템 설정, 권한 마스터 추가, 역할 분할 등 관리/운영용 주요 엔드포인트에서 활용되며, name/description validation과 유일성 검사가 선행되어야 합니다."
+    },
+    "IUserRole.IUpdate": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "수정할 권한명.\n\n이름은 유일성 유지 필요(시스템 롤일 경우 수정 제한)."
+        },
+        "description": {
+          "type": "string",
+          "description": "권한 설명 업데이트."
+        }
+      },
+      "description": "사용자 역할 정보 수정 요청 타입입니다.\n\nrole의 name, description 중 일부/전체의 업데이트를 프론트엔드에서 받으며, 수정 가능한 필드/권한 보호 정책이 적용됩니다.",
+      "required": []
+    },
+    "IUserRole.ISummary": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "권한 고유 식별자(UUID).\n\n리스트/선택용 요약 키로 사용합니다."
+        },
+        "name": {
+          "type": "string",
+          "description": "권한(역할)명.\n\n리스트 및 드롭다운 등 UI 컴포넌트 표시용."
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ],
+      "description": "User Role(권한) 요약 정보 타입.\n\n대용량 리스트, 셀렉트 등 요약 표현에 최적화된 구조입니다. 주로 name, id만 클라이언트에 제공됩니다."
+    },
+    "IPage.IPagination": {
+      "type": "object",
+      "properties": {
+        "current": {
+          "type": "integer",
+          "format": "uint32",
+          "description": "Current page number.\n\nIndicates which page in total results this is. Used throughout paginated listings."
+        },
+        "limit": {
+          "type": "integer",
+          "format": "uint32",
+          "description": "Maximum records per page (page size).\n\nDefaults to 100 as per requirement analysis unless overridden by client. Optimizes server payload and client rendering. \n"
+        },
+        "records": {
+          "type": "integer",
+          "format": "uint32",
+          "description": "Total number of available records in the database for this search/filter.\n\nRequired for UI to calculate navigation and limits."
+        },
+        "pages": {
+          "type": "integer",
+          "format": "uint32",
+          "description": "Total number of pages for the result set.\n\nCalculated as (records/limit) with rounding up. Informs UI if next/previous are available."
+        }
+      },
+      "required": [
+        "current",
+        "limit",
+        "records",
+        "pages"
+      ],
+      "description": "Pagination metadata shared by all paged listing response types (IPage<T>).\n\nProvides page navigation, record count, and sizing, as demanded by scalable content delivery requirements for boards and admin tools."
+    },
+    "IBbsCategory.IRequest": {
+      "type": "object",
+      "properties": {
+        "page": {
+          "type": "integer",
+          "description": "Page number for paginated retrieval.\n\nOptional filtering mechanism to divide results into discrete sets.\n\nSee IPage.IRequest in standard component definitions."
+        },
+        "limit": {
+          "type": "integer",
+          "description": "Number of categories per page.\n\nPagination field as in standard paging. Default is 100.\n\nReference: Pagination controls per business rules."
+        },
+        "keyword": {
+          "type": "string",
+          "description": "Keyword to search categories by name or description.\n\nImplements business requirement for category navigation and discovery.\n\nReference: Category search usability from requirements."
+        },
+        "created_from": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Start of created_at date range, to filter categories by creation date.\n\nUseful for audit/history tracing.\n\nReference: Prisma categories.created_at."
+        },
+        "created_to": {
+          "type": "string",
+          "format": "date-time",
+          "description": "End of created_at date range for filtering.\n\nEnables searching categories added within a defined period.\n\nReference: Prisma categories.created_at."
+        },
+        "sort": {
+          "type": "string",
+          "description": "Sort order for categories. E.g., 'name', 'created_at', possibly with asc/desc direction.\n\nAllows clients to specify result order."
+        }
+      },
+      "description": "Object specifying criteria for searching, filtering, sorting, and paging category listings.\n\nImplements UI scenarios such as searching by name/description, paging, and sorting in management screens or post wizards.\n\nUses standard IPage.IRequest pattern.",
+      "required": []
+    },
+    "IPageIBbsCategory.ISummary": {
+      "type": "object",
+      "properties": {
+        "pagination": {
+          "$ref": "#/components/schemas/IPage.IPagination",
+          "description": "Paging information including total, current page, and limits."
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/IBbsCategory.ISummary"
+          },
+          "description": "Array of category summaries for the current page."
+        }
+      },
+      "required": [
+        "pagination",
+        "data"
+      ],
+      "description": "A paginated response containing an array of IBbsCategory.ISummary objects and associated page metadata.\n\nSupports navigation of category lists, as required for both end-user and admin workflows."
+    },
+    "IBbsCategory": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Unique identifier for the category record.\n\nImplements the primary key and enables referencing between posts and categories.\n\nReference: Prisma categories.id"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the category. Must be unique. Describes discussion topic area (e.g., 'Politics', 'Economics').\n\nKey for content organization per requirements.\n\nReference: Prisma categories.name"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the category, explaining scope and nature of posts allowed.\n\nFor display in browse/post UIs.\n\nReference: Prisma categories.description"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the category was created.\n\nPermits auditing, ordering, and filter/search.\n\nReference: Prisma categories.created_at"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "description",
+        "created_at"
+      ],
+      "description": "Represents a discussion category as an object for browsing, post organization, and administration.\n\nDirect mapping to categories table in Prisma schema and data entity model."
+    },
+    "IBbsCategory.ICreate": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Proposed name for the new category. Must not conflict with existing category names.\n\nFulfills admin-driven content structure expansion per requirements.\n\nReference: Prisma categories.name"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the category, explaining intended scope.\n\nFacilitates content organization and administrator communication.\n\nReference: Prisma categories.description"
+        }
+      },
+      "required": [
+        "name",
+        "description"
+      ],
+      "description": "Fields required to create a new discussion category.\n\nUsed in admin workflows to expand discussion areas and handled by POST /categories endpoint per business rules."
+    },
+    "IBbsCategory.IUpdate": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "(Optional) New or edited category name. Must be unique if provided.\n\nAllows administrators to rename topic areas.\n\nReference: Prisma categories.name"
+        },
+        "description": {
+          "type": "string",
+          "description": "(Optional) Updated description for the category.\n\nCommunicates changes in topic scope.\n\nReference: Prisma categories.description"
+        }
+      },
+      "description": "Fields optional for updating existing categories.\n\nUsed for administrative editing, with business constraints on renaming, uniqueness, and auditability.",
+      "required": []
+    },
+    "IBbsCategory.IDelete": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "ID of the category deleted.\n\nOften included in confirmation responses after removal.\n\nReference: Prisma categories.id"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the category deleted.\n\nAudit and UI feedback purposes.\n\nReference: Prisma categories.name"
+        },
+        "deleted": {
+          "type": "boolean",
+          "description": "Indicates whether the category was successfully deleted.\n\nImplements business rule for deletion confirmation feedback."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "deleted"
+      ],
+      "description": "Confirmation object for a deleted category, providing id, name, and deletion status. Used in API confirmation responses and audit."
+    },
+    "IBbsCategory.ISummary": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Unique identifier for the category. See IBbsCategory.id"
+        },
+        "name": {
+          "type": "string",
+          "description": "Short human-readable name of the category.\n\nFor efficient list-screen views, search, and quick navigation.\n\nReference: IBbsCategory.name"
+        },
+        "description": {
+          "type": "string",
+          "description": "Brief description for category preview displays."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "description"
+      ],
+      "description": "Summary view of a category, used for paginated lists and drop-downs.\n\nKey fields for quick UI projection, less detailed than full IBbsCategory."
+    },
+    "IBbsPost.IRequest": {
+      "type": "object",
+      "properties": {
+        "page": {
+          "type": "integer",
+          "description": "Page number for paginated retrieval.\n\nReference: IPage.IRequest paging controls."
+        },
+        "limit": {
+          "type": "integer",
+          "description": "Records per page, default 100. Implements standard pagination required for scalable result sets.\n\nReference: List screens and admin views."
+        },
+        "category_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Filter for posts assigned to a specific discussion category.\n\nImplements organization and navigation business rules.\n\nReference: Prisma posts.category_id"
+        },
+        "author_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Filter for posts authored by a specific user. Fulfills profile and analytics use cases."
+        },
+        "keyword": {
+          "type": "string",
+          "description": "Text search applied to post title or content. Implements advanced UI search functionality.\n\nReference: Search usability rules."
+        },
+        "created_from": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Lower bound for creation timestamp as a filter. For history/auditing/reporting.\n\nReference: Prisma posts.created_at."
+        },
+        "created_to": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Upper bound for creation timestamp as a filter. For reporting or data export.\n\nReference: Prisma posts.created_at."
+        },
+        "sort": {
+          "type": "string",
+          "description": "Sort order (e.g., by 'created_at', 'title', with asc/desc). Application-layer sorting per UI/UX needs."
+        }
+      },
+      "description": "Request object specifying filters, search, paging, and sort parameters for listing/searching discussion posts.\n\nFulfills bulk retrieval, filtering, and discovery as required for feeds and admin dashboards.",
+      "required": []
+    },
+    "IPageIBbsPost.ISummary": {
+      "type": "object",
+      "properties": {
+        "pagination": {
+          "$ref": "#/components/schemas/IPage.IPagination",
+          "description": "Paging metadata for understanding the current window of results."
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/IBbsPost.ISummary"
+          },
+          "description": "Array of post summary objects for response page."
+        }
+      },
+      "required": [
+        "pagination",
+        "data"
+      ],
+      "description": "Paginated structure for delivering a list of IBbsPost.ISummary objects matching supplied filters/search."
+    },
+    "IBbsPost": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Unique post identifier.\n\nReference: Prisma posts.id"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "ID of the authoring user.\n\nImplements accountability, enables lookups of user-created content.\n\nReference: posts.user_id"
+        },
+        "category_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "ID of linked category. Enforces the requirement that every post has a topic.\n\nReference: posts.category_id"
+        },
+        "title": {
+          "type": "string",
+          "description": "Headline or subject of the post, visible in feeds and lists. For topic engagement and discovery.\n\nReference: posts.title"
+        },
+        "content": {
+          "type": "string",
+          "description": "Full text/content of the post. Allows for expansive discussion per business rules.\n\nReference: posts.content"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the post was created. Used for listings, recency, and reporting.\n\nReference: posts.created_at"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the post was last edited. Enables change/audit tracking.\n\nReference: posts.updated_at"
+        },
+        "deleted_at": {
+          "oneOf": [
+            {
+              "type": "string",
+              "format": "date-time",
+              "description": "Nullable field marking post as soft-deleted if set. Used for moderation/audit, only visible to certain roles.\n\nReference: posts.deleted_at"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Nullable field marking post as soft-deleted if set. Used for moderation/audit, only visible to certain roles.\n\nReference: posts.deleted_at"
+        }
+      },
+      "required": [
+        "id",
+        "user_id",
+        "category_id",
+        "title",
+        "content",
+        "created_at",
+        "updated_at"
+      ],
+      "description": "Represents a full discussion post entity, encompassing all main fields.\n\nDirectly maps to the posts table in Prisma schema.\n\nSupports feeds, post detail, editing, and moderation."
+    },
+    "IBbsPost.ICreate": {
+      "type": "object",
+      "properties": {
+        "category_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Required category association (topic context).\n\nReference: posts.category_id"
+        },
+        "title": {
+          "type": "string",
+          "description": "Title for the new post.\n\nReference: posts.title"
+        },
+        "content": {
+          "type": "string",
+          "description": "Body/content of the new post.\n\nReference: posts.content"
+        }
+      },
+      "required": [
+        "category_id",
+        "title",
+        "content"
+      ],
+      "description": "Payload for creating a new discussion post.\n\nUsed by POST /posts, validating business rules for required content and association."
+    },
+    "IBbsPost.IUpdate": {
+      "type": "object",
+      "properties": {
+        "category_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "(Optional) New or changed category assignment.\n\nFor moving posts between topical areas.\n\nReference: posts.category_id"
+        },
+        "title": {
+          "type": "string",
+          "description": "(Optional) New or updated title. Allows topic rewording for clarity."
+        },
+        "content": {
+          "type": "string",
+          "description": "(Optional) Updated post body/content.\n\nSupports revision history and content correction."
+        }
+      },
+      "description": "Fields optional for updating an existing post. Enables partial updates with strong business rule validation.",
+      "required": []
+    },
+    "IBbsPost.IDelete": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "ID of the post deleted.\n\nProvided for confirmation and possible undo/audit.\n\nReference: posts.id"
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the deleted post for feedback.\n\nReference: posts.title"
+        },
+        "deleted": {
+          "type": "boolean",
+          "description": "Indicates post has been successfully deleted."
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "deleted"
+      ],
+      "description": "Confirmation object for deleted post responses, supporting audit trail and UI feedback."
+    },
+    "IBbsPost.ISummary": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Unique post identifier. Matches IBbsPost.id"
+        },
+        "category_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Category of the post. See IBbsPost.category_id"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Author of the post. See IBbsPost.user_id"
+        },
+        "title": {
+          "type": "string",
+          "description": "Title for list display.\n\nKey to efficient UIs and feeds."
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation timestamp for ordering recent posts."
+        }
+      },
+      "required": [
+        "id",
+        "category_id",
+        "user_id",
+        "title",
+        "created_at"
+      ],
+      "description": "Condensed projection of a post for list browser, feed, and pagination. Excludes content/details for light-weight listing.\n\nReference: posts table in Prisma schema."
+    },
+    "IBbsComment.IRequest": {
+      "type": "object",
+      "properties": {
+        "page": {
+          "type": "integer",
+          "description": "Page number for pagination.\n\nUsed to retrieve a specific page of comments from the full list. Reflects standard UI pattern for paging, per requirement analysis. Optional. (See IPage.IRequest)"
+        },
+        "limit": {
+          "type": "integer",
+          "description": "Number of comments to return per page.\n\nSupports efficient transfer and display for UIs, defaulting to 100 or as configured. Controls the page size. (See IPage.IRequest)"
+        },
+        "post_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "UUID of the parent discussion post to filter comments by post.\n\nUsed to list only comments associated with a specific post, per business rules for threaded discussions. Optional filter."
+        },
+        "user_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "UUID of the comment author (user) to filter comments by author.\n\nSupports user-specific comment history review for moderation or profile. Optional filter."
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "UUID of parent comment (if filtering for nested/reply comments).\n\nEnables retrieval of replies to a specific comment. Optional."
+        },
+        "keyword": {
+          "type": "string",
+          "description": "Keywords or phrase for full-text search in comments content.\n\nAllows searching of comment text for moderation or thematic filtering. Optional."
+        },
+        "created_start": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Start date-time filter for comment creation.\n\nRestricts search to comments created after this timestamp. Supports audit trails and recent activity filtering."
+        },
+        "created_end": {
+          "type": "string",
+          "format": "date-time",
+          "description": "End date-time filter for comment creation.\n\nRestricts to comments created before this timestamp. Useful for report generation and tracing participation history."
+        }
+      },
+      "description": "Request body for searching, paginating, and filtering comments in the discussion board (comments table).\n\nProperties directly map to common filtering, searching, and paging fields as per requirements analysis and Prisma DB schema. Implements highly flexible comment listings for both user-facing and moderation/admin UIs. All filters are optional but can be combined. Based on IPage.IRequest and expands it with content-specific filters. Used frequently in moderation/audit/reporting flows.",
+      "required": []
+    },
+    "IPageIBbsComment": {
+      "type": "object",
+      "properties": {
+        "pagination": {
+          "$ref": "#/components/schemas/IPage.IPagination"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/IBbsComment"
+          },
+          "description": "Array of comment entities on this page.\n\nContains the actual comments returned per requested filters and page."
+        }
+      },
+      "required": [
+        "pagination",
+        "data"
+      ],
+      "description": "Paginated result container for comment entity queries (comments table).\n\nWraps an array of IBbsComment instances along with metadata about total records, current page, page size, and total pages. Required for scalable comment list presentation as required by requirements analysis. See standard IPage<T> container as reference."
+    },
+    "IBbsComment": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Unique identifier (UUID) for the comment.\n\nPrimary key for looking up, editing, or linking to the comment. Maps to 'id' column in schema."
+        },
+        "user_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "UUID of comment author (user).\n\nForeign key relating comment to the registered user who wrote it. See users table in schema and ERD."
+        },
+        "post_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "UUID of parent post.\n\nForeign key to the associated discussion topic (required unless only threaded by parent_id). See posts table."
+        },
+        "parent_id": {
+          "oneOf": [
+            {
+              "type": "string",
+              "format": "uuid",
+              "description": "UUID of parent comment, if this is a threaded reply.\n\nSelf-referential foreign key supporting nested replies. Nullable for top-level comments."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "UUID of parent comment, if this is a threaded reply.\n\nSelf-referential foreign key supporting nested replies. Nullable for top-level comments."
+        },
+        "content": {
+          "type": "string",
+          "description": "Text content of the comment.\n\nMain body of user reply/text as per requirement analysis. Must not be empty."
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the comment was created.\n\nUsed for sorting, timeline views, and audit trails. Maps to created_at in DB."
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last update timestamp for the comment.\n\nTracks edit history and enforces business logic on editability. Maps to updated_at in DB."
+        },
+        "deleted_at": {
+          "oneOf": [
+            {
+              "type": "string",
+              "format": "date-time",
+              "description": "Timestamp for when comment was soft-deleted, if applicable.\n\nImplements policy for hiding (and recovering) violated, flagged, or removed posts. Nullable for active comments."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Timestamp for when comment was soft-deleted, if applicable.\n\nImplements policy for hiding (and recovering) violated, flagged, or removed posts. Nullable for active comments."
+        }
+      },
+      "required": [
+        "id",
+        "user_id",
+        "post_id",
+        "content",
+        "created_at",
+        "updated_at"
+      ],
+      "description": "Represents a single reply or comment posted to a discussion or as a nested reply, as defined in the comments table of the Prisma schema.\n\nEnables hierarchical/nested discussion structures (via parent_id). Includes all fields supporting creation, edit history, deletion context, and moderation as required by business rules in requirements analysis. See ERD relationship diagram for usage context in the platform. Used in both user-facing views and admin/moderation tools."
+    },
+    "IBbsComment.ICreate": {
+      "type": "object",
+      "properties": {
+        "post_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "UUID of the discussion post to which this comment belongs.\n\nRequired to link comment to its discussion context per business rules."
+        },
+        "parent_id": {
+          "oneOf": [
+            {
+              "type": "string",
+              "format": "uuid",
+              "description": "UUID of parent comment (for threaded/nested replies).\n\nOptional. Enables reply-to-comment feature as outlined in requirement analysis."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "UUID of parent comment (for threaded/nested replies).\n\nOptional. Enables reply-to-comment feature as outlined in requirement analysis."
+        },
+        "content": {
+          "type": "string",
+          "description": "Text content/body of the comment or reply.\n\nMust not be empty and must comply with community guidelines."
+        }
+      },
+      "required": [
+        "post_id",
+        "content"
+      ],
+      "description": "Request body for creating a new comment or nested reply on a post (comments table).\n\nIncludes only the fields writable by a user: post association, optional parent comment, and the comment body text. Relies on session to determine author (user_id)—see authentication flows. Follows all validation, anti-abuse, and business rules for comment submissions."
+    },
+    "IBbsComment.IUpdate": {
+      "type": "object",
+      "properties": {
+        "content": {
+          "type": "string",
+          "description": "The new text body for the existing comment.\n\nCan be updated only if business/time constraints are met, per edit policy."
+        }
+      },
+      "required": [
+        "content"
+      ],
+      "description": "Request body for updating/editing the content of an existing comment (comments table).\n\nOnly the content field is mutable via edit endpoint, enforcing business rules on authorship and limited editability. Author/user_id is determined by authentication context."
+    },
+    "IBbsVote.IRequest": {
+      "type": "object",
+      "properties": {
+        "page": {
+          "type": "integer",
+          "description": "Page number for vote list pagination.\n\nStandard IPage semantics applied to vote entity—see requirements for scalable UI handling."
+        },
+        "limit": {
+          "type": "integer",
+          "description": "Number of votes per page.\n\nAllows controlling fetch size for analytics or admin tools—see IPage.IRequest."
+        },
+        "user_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "UUID of voting user (voter).\n\nFilter to retrieve only votes cast by a specific user, for history or moderation."
+        },
+        "post_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "UUID of a post, filtering votes cast on a particular post.\n\nSupports drill-down voting analysis for a post. Optional filter."
+        },
+        "comment_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "UUID of a comment to filter votes associated with that comment.\n\nFacilitates in-depth analysis of voting per reply. Optional filter."
+        },
+        "value": {
+          "oneOf": [
+            {
+              "const": 1,
+              "description": "The value (+1 for upvote, -1 for downvote) to filter votes by vote type.\n\nSupports reporting upvote/downvote ratios in admin analytics. Optional filter."
+            },
+            {
+              "const": -1,
+              "description": "The value (+1 for upvote, -1 for downvote) to filter votes by vote type.\n\nSupports reporting upvote/downvote ratios in admin analytics. Optional filter."
+            }
+          ],
+          "description": "The value (+1 for upvote, -1 for downvote) to filter votes by vote type.\n\nSupports reporting upvote/downvote ratios in admin analytics. Optional filter."
+        },
+        "created_start": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Created-at lower bound timestamp for votes.\n\nRestricts listing to votes placed after this time. Used for reporting/audit range queries."
+        },
+        "created_end": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Created-at upper bound timestamp for votes.\n\nLimits query to votes cast before this timestamp. Enables reporting on time ranges."
+        }
+      },
+      "description": "Request body for listing, searching, and filtering votes within the discussion board, referencing the votes table in the Prisma schema.\n\nFollows standard IPage request conventions, expanded to additionally filter by voting user, post or comment, value (+1/-1), and date ranges for analytics, moderation, or user feedback history. Used primarily by admin and moderation panels.",
+      "required": []
+    },
+    "IPageIBbsVote": {
+      "type": "object",
+      "properties": {
+        "pagination": {
+          "$ref": "#/components/schemas/IPage.IPagination"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/IBbsVote"
+          },
+          "description": "Array of IBbsVote entities on this page.\n\nMain payload of the paginated vote list response, as per IPage design."
+        }
+      },
+      "required": [
+        "pagination",
+        "data"
+      ],
+      "description": "Standard paginated response for lists of vote entities (votes table).\n\nWraps an array of IBbsVote records with pagination metadata for list views, analytics, and moderation/auditing interfaces. Implements requirements for scalable, filtered voting record retrieval."
+    },
+    "IBbsVote": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Unique identifier (UUID) for this vote record.\n\nPrimary key in the votes table; supports precise retrieval and audit."
+        },
+        "user_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "UUID of the user who cast the vote.\n\nForeign key referencing the users table; identifies the voter."
+        },
+        "post_id": {
+          "oneOf": [
+            {
+              "type": "string",
+              "format": "uuid",
+              "description": "UUID of the post on which this vote was cast, if any.\n\nNull if the vote is for a comment, per mutual exclusivity rule in schema."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "UUID of the post on which this vote was cast, if any.\n\nNull if the vote is for a comment, per mutual exclusivity rule in schema."
+        },
+        "comment_id": {
+          "oneOf": [
+            {
+              "type": "string",
+              "format": "uuid",
+              "description": "UUID of the comment this vote is for, if any.\n\nNull if vote is for a post. Guarantees mutual exclusivity between post_id and comment_id."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "UUID of the comment this vote is for, if any.\n\nNull if vote is for a post. Guarantees mutual exclusivity between post_id and comment_id."
+        },
+        "value": {
+          "oneOf": [
+            {
+              "const": 1,
+              "description": "Vote value: +1 for upvote, -1 for downvote.\n\nEnforces board policy for feedback and ranking content as described in requirements and voting system business rules."
+            },
+            {
+              "const": -1,
+              "description": "Vote value: +1 for upvote, -1 for downvote.\n\nEnforces board policy for feedback and ranking content as described in requirements and voting system business rules."
+            }
+          ],
+          "description": "Vote value: +1 for upvote, -1 for downvote.\n\nEnforces board policy for feedback and ranking content as described in requirements and voting system business rules."
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when this vote was created.\n\nUsed for reporting, analytics, moderation timelines, and auditing. Maps to created_at in schema."
+        }
+      },
+      "required": [
+        "id",
+        "user_id",
+        "value",
+        "created_at"
+      ],
+      "description": "Represents an individual vote (upvote or downvote) placed by a user on a post or comment.\n\nCaptures voter, association to content (post or comment), value, and creation time, all in alignment with voting system requirements and Prisma schema relationships. Used for analytics, content surfacing, abuse protection, and ranking."
+    },
+    "IBbsVote.ICreate": {
+      "type": "object",
+      "properties": {
+        "post_id": {
+          "oneOf": [
+            {
+              "type": "string",
+              "format": "uuid",
+              "description": "UUID of the post to vote on, if voting on a post.\n\nMutually exclusive with comment_id—one must be supplied. Dictates the target of the vote as per voting policy/business rules."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "UUID of the post to vote on, if voting on a post.\n\nMutually exclusive with comment_id—one must be supplied. Dictates the target of the vote as per voting policy/business rules."
+        },
+        "comment_id": {
+          "oneOf": [
+            {
+              "type": "string",
+              "format": "uuid",
+              "description": "UUID of the comment to vote on, if voting on a comment.\n\nMutually exclusive with post_id. Only one target (post or comment) can be supplied per business policy."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "UUID of the comment to vote on, if voting on a comment.\n\nMutually exclusive with post_id. Only one target (post or comment) can be supplied per business policy."
+        },
+        "value": {
+          "oneOf": [
+            {
+              "const": 1,
+              "description": "Vote value: +1 to upvote, -1 to downvote.\n\nBusiness logic only allows these exact values. Used to compute voting tallies."
+            },
+            {
+              "const": -1,
+              "description": "Vote value: +1 to upvote, -1 to downvote.\n\nBusiness logic only allows these exact values. Used to compute voting tallies."
+            }
+          ],
+          "description": "Vote value: +1 to upvote, -1 to downvote.\n\nBusiness logic only allows these exact values. Used to compute voting tallies."
+        }
+      },
+      "required": [
+        "value"
+      ],
+      "description": "Request body for creating a new vote, as required by the voting business logic and votes Prisma schema.\n\nUser is determined from authentication/session. Exactly one of post_id or comment_id must be provided—never both. The vote is then recorded for that target entity. Value must be +1 or -1. Includes all validations for target existence, uniqueness, and policy constraints."
+    },
+    "IBbsVote.IUpdate": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "oneOf": [
+            {
+              "const": 1,
+              "description": "The new vote value to replace the existing vote record with (+1/-1).\n\nBusiness rules require only changing value, not target or user association."
+            },
+            {
+              "const": -1,
+              "description": "The new vote value to replace the existing vote record with (+1/-1).\n\nBusiness rules require only changing value, not target or user association."
+            }
+          ],
+          "description": "The new vote value to replace the existing vote record with (+1/-1).\n\nBusiness rules require only changing value, not target or user association."
+        }
+      },
+      "required": [
+        "value"
+      ],
+      "description": "Request body for updating an existing vote (changing the value from upvote to downvote or vice versa).\n\nImplements business logic that only the value can be changed after vote creation. User association and target remain immutable. Used for user corrections or moderation features."
+    }
+  }
+}

@@ -23,7 +23,8 @@ export * from "./AutoBeInterfaceComplementEvent";
 export * from "./AutoBeInterfaceCompleteEvent";
 
 export * from "./AutoBeTestStartEvent";
-export * from "./AutoBeTestProgressEvent";
+export * from "./AutoBeTestScenarioEvent";
+export * from "./AutoBeTestWriteEvent";
 export * from "./AutoBeTestValidateEvent";
 export * from "./AutoBeTestCorrectEvent";
 export * from "./AutoBeTestCompleteEvent";

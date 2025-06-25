@@ -1,0 +1,424 @@
+[
+  {
+    "endpoint": {
+      "method": "patch",
+      "path": "/core/users"
+    },
+    "draft": "Test retrieving a list of users with default pagination and no filters. Verify the response includes expected default page size and ordering. Also, test filtering by email and role to ensure filtering logic works correctly, including case-insensitivity if supported. Check requesting a page number beyond the number of available pages to confirm correct error or empty result handling.",
+    "functionName": "test_list_users_with_pagination_and_filtering",
+    "dependencies": []
+  },
+  {
+    "endpoint": {
+      "method": "get",
+      "path": "/core/users/{id}"
+    },
+    "draft": "Test retrieving detailed profile info for a user with a valid user ID. Also, check that requesting a non-existent user ID results in an appropriate error (e.g., 404). Ensure that if access control applies, requesting another user's profile without permission results in access denied or appropriate error code.",
+    "functionName": "test_get_user_profile_by_id_success_and_failure",
+    "dependencies": [
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/core/users"
+        },
+        "purpose": "Create a user in order to have a valid ID for retrieval."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "method": "post",
+      "path": "/core/users"
+    },
+    "draft": "Test user registration with valid data, ensuring a new user is created and unique constraints (such as unique email/username) are enforced. Attempt to register with a duplicate email and verify error is returned. Test required field validation by omitting key fields.",
+    "functionName": "test_register_user_with_valid_and_invalid_data",
+    "dependencies": []
+  },
+  {
+    "endpoint": {
+      "method": "put",
+      "path": "/core/users/{id}"
+    },
+    "draft": "Attempt to update a user profile with valid changes and verify the updates are persisted. Modify immutable or restricted fields and ensure system rejects these changes. Submit updates for a non-existent user and ensure a 404 error is returned.",
+    "functionName": "test_update_user_profile_success_and_failure",
+    "dependencies": [
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/core/users"
+        },
+        "purpose": "Create a user to update and verify correct functioning."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "method": "delete",
+      "path": "/core/users/{id}"
+    },
+    "draft": "Soft-delete a user (if supported) and ensure the user becomes inaccessible but data is not physically removed. Fully delete a user and confirm all data is purged. Attempt to delete a non-existent user and expect an appropriate error response.",
+    "functionName": "test_delete_user_soft_and_hard",
+    "dependencies": [
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/core/users"
+        },
+        "purpose": "Create a user to verify both deletion modes."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "method": "patch",
+      "path": "/core/userRoles"
+    },
+    "draft": "Test listing user roles with and without filters (e.g., by label). Check pagination and ensure edge case handling when filters match no results. Request a page beyond the available results to ensure correct behavior.",
+    "functionName": "test_list_user_roles_with_filtering_and_pagination",
+    "dependencies": []
+  },
+  {
+    "endpoint": {
+      "method": "get",
+      "path": "/core/userRoles/{id}"
+    },
+    "draft": "Retrieve user role details with a valid ID. Attempt to fetch a non-existing role and confirm an appropriate error (e.g., 404) is returned.",
+    "functionName": "test_get_user_role_details_by_id",
+    "dependencies": [
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/core/userRoles"
+        },
+        "purpose": "Create a user role to test retrieval."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "method": "post",
+      "path": "/core/userRoles"
+    },
+    "draft": "Test creating a new user role with a valid label and description. Attempt to create a role with a duplicate label to verify uniqueness enforcement. Test missing required field validation.",
+    "functionName": "test_create_user_role_validation_and_uniqueness",
+    "dependencies": []
+  },
+  {
+    "endpoint": {
+      "method": "put",
+      "path": "/core/userRoles/{id}"
+    },
+    "draft": "Edit a user role's label and description with valid input and verify changes are saved. Attempt to update a non-existent role and ensure 404 is returned. Try editing a role to have a duplicate label and confirm proper error is returned.",
+    "functionName": "test_update_user_role_with_valid_and_invalid_input",
+    "dependencies": [
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/core/userRoles"
+        },
+        "purpose": "Create a baseline user role for updates."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "method": "delete",
+      "path": "/core/userRoles/{id}"
+    },
+    "draft": "Delete a user role and verify it is removed from list results. Attempt to delete a role that is still assigned to a user and confirm business logic enforcement (should either reject or unassign users). Try deleting a non-existent role and ensure an error is returned.",
+    "functionName": "test_delete_user_role_with_dependency_check",
+    "dependencies": [
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/core/userRoles"
+        },
+        "purpose": "Create a user role for deletion."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "method": "patch",
+      "path": "/core/categories"
+    },
+    "draft": "List categories with default and custom pagination settings. Apply filters (e.g., by label or type) to ensure accurate search results. Request an out-of-bounds page to test empty result handling.",
+    "functionName": "test_list_categories_with_pagination_and_filters",
+    "dependencies": []
+  },
+  {
+    "endpoint": {
+      "method": "get",
+      "path": "/core/categories/{id}"
+    },
+    "draft": "Retrieve a category's details by valid ID. Attempt retrieving a category with a non-existent ID and confirm appropriate error (e.g., 404) is returned.",
+    "functionName": "test_get_category_details_by_id",
+    "dependencies": [
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/core/categories"
+        },
+        "purpose": "Create a category to test retrieval."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "method": "post",
+      "path": "/core/categories"
+    },
+    "draft": "Create a category supplying all required fields. Ensure creation fails for duplicate labels or missing mandatory fields. Validate that categories can be created with optional metadata fields.",
+    "functionName": "test_create_category_with_required_and_optional_fields",
+    "dependencies": []
+  },
+  {
+    "endpoint": {
+      "method": "put",
+      "path": "/core/categories/{id}"
+    },
+    "draft": "Update an existing category's fields with valid data. Attempt to update a category with a label that already exists to test uniqueness. Try updating non-existent categories and check error handling.",
+    "functionName": "test_update_category_with_valid_and_invalid_data",
+    "dependencies": [
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/core/categories"
+        },
+        "purpose": "Create a sample category to update."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "method": "delete",
+      "path": "/core/categories/{id}"
+    },
+    "draft": "Delete a category and verify it is removed from list results. Attempt to delete a category that is in use by another record and ensure dependency constraint is enforced. Try deleting a non-existent category and expect an appropriate error.",
+    "functionName": "test_delete_category_with_and_without_dependencies",
+    "dependencies": [
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/core/categories"
+        },
+        "purpose": "Create a category for deletion test."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "method": "patch",
+      "path": "/posts/posts"
+    },
+    "draft": "List posts with different filters (e.g., by author, by category). Ensure pagination works and requesting with no available results returns an empty array. Test sort ordering (e.g., by most recent).",
+    "functionName": "test_list_posts_with_varied_filters_and_pagination",
+    "dependencies": []
+  },
+  {
+    "endpoint": {
+      "method": "get",
+      "path": "/posts/posts/{id}"
+    },
+    "draft": "Retrieve a post by its valid ID and check returned data fields. Attempt to retrieve a non-existent post and confirm proper error handling (e.g., 404).",
+    "functionName": "test_get_post_by_id_success_and_not_found",
+    "dependencies": [
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/posts/posts"
+        },
+        "purpose": "Create a post for retrieval testing."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "method": "post",
+      "path": "/posts/posts"
+    },
+    "draft": "Create a post with required fields, verifying successful creation. Try creating a post with missing mandatory fields and expect validation errors. Attempt to create a duplicate post, if uniqueness constraints apply, and confirm correct error handling.",
+    "functionName": "test_create_post_with_valid_and_invalid_requests",
+    "dependencies": []
+  },
+  {
+    "endpoint": {
+      "method": "put",
+      "path": "/posts/posts/{id}"
+    },
+    "draft": "Update a post with valid input and verify updates are saved. Attempt to modify immutable fields and ensure the system rejects these. Try updating a non-existent post and confirm 404 error.",
+    "functionName": "test_update_post_valid_and_invalid_cases",
+    "dependencies": [
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/posts/posts"
+        },
+        "purpose": "Create a post to update."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "method": "delete",
+      "path": "/posts/posts/{id}"
+    },
+    "draft": "Delete a post by ID and ensure it is no longer retrievable or appears in lists. Attempt to delete a post that does not exist and confirm appropriate error.",
+    "functionName": "test_delete_post_and_verify_removal",
+    "dependencies": [
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/posts/posts"
+        },
+        "purpose": "Create a post to test the deletion process."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "method": "patch",
+      "path": "/posts/comments"
+    },
+    "draft": "List comments with and without filters (e.g., by post ID or author). Ensure pagination and empty result behavior is handled. Test boundary conditions for comment listing.",
+    "functionName": "test_list_comments_with_filters_and_pagination",
+    "dependencies": []
+  },
+  {
+    "endpoint": {
+      "method": "get",
+      "path": "/posts/comments/{id}"
+    },
+    "draft": "Fetch detailed information about a comment by its ID. Attempt retrieval with an invalid or non-existent ID and verify appropriate error codes.",
+    "functionName": "test_get_comment_details_success_and_failure",
+    "dependencies": [
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/posts/comments"
+        },
+        "purpose": "Create a comment to test retrieval."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "method": "post",
+      "path": "/posts/comments"
+    },
+    "draft": "Create a new comment with required fields to a valid post. Attempt to submit a comment to a non-existent post and expect failure. Omit required fields and verify validation errors occur.",
+    "functionName": "test_create_comment_with_valid_and_invalid_data",
+    "dependencies": [
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/posts/posts"
+        },
+        "purpose": "Create a post to comment on."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "method": "put",
+      "path": "/posts/comments/{id}"
+    },
+    "draft": "Update an existing comment's content successfully. Attempt to update a non-existent or deleted comment and check error handling. Modify deletion status and verify logic enforcement.",
+    "functionName": "test_update_comment_content_and_status",
+    "dependencies": [
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/posts/comments"
+        },
+        "purpose": "Create a comment in order to update."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "method": "delete",
+      "path": "/posts/comments/{id}"
+    },
+    "draft": "Soft-delete a comment and confirm it is excluded from listings but not physically removed. Attempt to delete an already deleted or non-existent comment and verify error behavior.",
+    "functionName": "test_delete_comment_and_verify_soft_deletion",
+    "dependencies": [
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/posts/comments"
+        },
+        "purpose": "Create a comment for testing deletion."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "method": "patch",
+      "path": "/votes/votes"
+    },
+    "draft": "List votes with filters (by targetType/targetId/voter) and pagination. Check behavior with no matching results and edge cases like large page numbers. Ensure ordering consistency.",
+    "functionName": "test_list_votes_with_varied_filters",
+    "dependencies": []
+  },
+  {
+    "endpoint": {
+      "method": "get",
+      "path": "/votes/votes/{id}"
+    },
+    "draft": "Retrieve a vote's details by ID. Attempt to fetch a vote with a non-existent ID, confirming proper error handling.",
+    "functionName": "test_get_vote_details_success_and_not_found",
+    "dependencies": [
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/votes/votes"
+        },
+        "purpose": "Create a vote for retrieval scenarios."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "method": "post",
+      "path": "/votes/votes"
+    },
+    "draft": "Create a new vote with valid voter, targetType, and targetId. Test submitting a vote for the same (voter, targetType, targetId) combination twice to check uniqueness. Submit invalid or incomplete data for validation errors.",
+    "functionName": "test_create_vote_with_validation_and_uniqueness_enforcement",
+    "dependencies": []
+  },
+  {
+    "endpoint": {
+      "method": "put",
+      "path": "/votes/votes/{id}"
+    },
+    "draft": "Edit a vote's value successfully. Attempt to update a vote with invalid data or non-existent vote ID and expect errors. Try modifying an immutable field and ensure rejection.",
+    "functionName": "test_update_vote_success_failure_and_immutability",
+    "dependencies": [
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/votes/votes"
+        },
+        "purpose": "Create a vote to update for these scenarios."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "method": "delete",
+      "path": "/votes/votes/{id}"
+    },
+    "draft": "Delete a vote and ensure it cannot be retrieved or counted in lists. Attempt to delete a vote that does not exist and observe error behavior.",
+    "functionName": "test_delete_vote_and_confirm_removal",
+    "dependencies": [
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/votes/votes"
+        },
+        "purpose": "Create a vote for deletion test."
+      }
+    ]
+  }
+]
