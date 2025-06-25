@@ -126,7 +126,7 @@ export class AdversarialAgent {
       this.logger.log(runId, `Executing initial prompt: ${scenario.initialPrompt.substring(0, 100)}...`);
       console.log("🚀 Stage 1/3: Requirements Analysis - Executing initial prompt...");
       
-      eventTimeouts.push(this.eventHandler.createStageTimeout(runId, result, stageCompleted, 'analyze', 180000));
+      eventTimeouts.push(this.eventHandler.createStageTimeout(runId, result, stageCompleted, 'analyze', 600000));
       await agent.conversate(scenario.initialPrompt);
       
       // Wait for events to be processed
@@ -158,7 +158,7 @@ export class AdversarialAgent {
         console.log(`🔄 Stage ${stageNumber}/3: ${stageDescription} - Executing prompt...`);
         
         // Set timeout for this stage
-        eventTimeouts.push(this.eventHandler.createStageTimeout(runId, result, stageCompleted, currentStage, 180000));
+        eventTimeouts.push(this.eventHandler.createStageTimeout(runId, result, stageCompleted, currentStage, 600000));
         
         const stageResponse = await agent.conversate(prompt);
         

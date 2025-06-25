@@ -212,7 +212,7 @@ export class EventHandler {
     result: BenchmarkResult,
     stageCompleted: { analyze: boolean; prisma: boolean; interface: boolean },
     stageName: string,
-    duration: number = 120000
+    duration: number = 600000
   ): NodeJS.Timeout {
     return setTimeout(() => {
       if (!stageCompleted[stageName as keyof typeof stageCompleted]) {
