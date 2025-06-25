@@ -122,7 +122,7 @@ export interface IUser {
 }
 ```
 
-### 2.5.2. Invaild Usage Examples
+### 2.5.2. Invalid Usage Examples
 
 ```ts
 export interface IUser {

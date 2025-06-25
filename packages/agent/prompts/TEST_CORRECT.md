@@ -190,15 +190,36 @@ const problemPatterns = [
 - Fix async/await usage errors  
 - Correct function parameter types (especially `connection: api.IConnection`)  
 
+아래와 같이 수정해보면 어떨까요? `expect`나 다른 assertion 함수 사용 시 `TestValidator`를 사용해야 한다는 메시지를 자연스럽게 전달하면서, `TestValidator`의 사용 형식도 명확하게 안내해줍니다:
+
 ### 6. Test Validator Usage Corrections
 
-- Fix `TestValidator` method calls:  
+- ❗ Do **not** use other assertion methods like `expect`, `assert`, or `typia.assert`.  
+  Always replace them with `TestValidator` methods to ensure consistent and descriptive test output.
+
+- ✅ Correct usage examples:  
+  ```ts
+  TestValidator.equals("should match the result")(expected)(actual);
+  TestValidator.predicate("should return true")(condition);
+  TestValidator.error("should throw an error")(task);
+  ```
+
+* 🛠 If you're currently using code like:
 
   ```ts
-  TestValidator.equals("title", exceptionFunction)(expected)(actual);
-  TestValidator.predicate("title")(condition);
-  TestValidator.error("title")(task);
-  ```  
+  expect(actual).toEqual(expected); // ❌ don't use this
+  assert(condition); // ❌ avoid this too
+  ```
+
+  👉 Refactor to:
+
+  ```ts
+  TestValidator.equals("describe what is being tested")(expected)(actual);
+  ```
+
+* Using `TestValidator` helps provide clear error messages with context (`title`), which is especially helpful for debugging.
+
+
 
 - Correct currying function usage  
 - Fix assertion patterns  

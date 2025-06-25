@@ -118,6 +118,11 @@ async function process<Model extends ILlmSchema.Model>(
     'string & tags.Format<"uuid">',
   );
 
+  // pointer.value.content = pointer.value.content.replaceAll(
+  //   "expect",
+  //   'TestValidator.equals("validate")',
+  // );
+
   return pointer.value;
 }
 
