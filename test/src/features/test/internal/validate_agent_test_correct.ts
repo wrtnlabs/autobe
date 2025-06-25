@@ -50,7 +50,7 @@ export const validate_agent_test_correct = async (
     files: {
       ...(await agent.getFiles()),
       "logs/correct.json": JSON.stringify(correct, null, 2),
-      "logs/validtes.json": JSON.stringify(validates, null, 2),
+      "logs/validates.json": JSON.stringify(validates, null, 2),
     },
   });
   return correct;
