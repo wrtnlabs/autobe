@@ -2,6 +2,7 @@ import { AutoBeAgent, AutoBeTokenUsage } from "@autobe/agent";
 import { AutoBeCompiler } from "@autobe/compiler";
 import { DynamicExecutor } from "@nestia/e2e";
 import chalk from "chalk";
+import fs from "fs";
 import OpenAI from "openai";
 import path from "path";
 import process from "process";
@@ -54,6 +55,13 @@ async function main(): Promise<void> {
       } else {
         trace(chalk.red(exec.error.name));
       }
+      fs.promises
+        .writeFile(
+          `${TestGlobal.ROOT}/tokenUsage.log`,
+          JSON.stringify(tokenUsage, null, 2),
+          "utf8",
+        )
+        .catch(() => {});
     },
     filter: (name) =>
       (include.length ? include.some((str) => name.includes(str)) : true) &&
