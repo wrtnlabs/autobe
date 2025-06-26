@@ -17,10 +17,31 @@ export interface BenchmarkResult {
   duration: number;
   errors: string[];
   stages: {
-    analyze: { success: boolean; duration: number; errors: string[]; output?: string };
-    prisma: { success: boolean; duration: number; errors: string[]; output?: string; compilationDetails?: string };
-    interface: { success: boolean; duration: number; errors: string[]; output?: string };
-    test?: { success: boolean; duration: number; errors: string[]; output?: string };
+    analyze: {
+      success: boolean;
+      duration: number;
+      errors: string[];
+      output?: string;
+    };
+    prisma: {
+      success: boolean;
+      duration: number;
+      errors: string[];
+      output?: string;
+      compilationDetails?: string;
+    };
+    interface: {
+      success: boolean;
+      duration: number;
+      errors: string[];
+      output?: string;
+    };
+    test?: {
+      success: boolean;
+      duration: number;
+      errors: string[];
+      output?: string;
+    };
   };
   adversarialQuestions: {
     question: string;
@@ -68,8 +89,8 @@ export interface ScenarioResults {
   averageDuration: number;
   averageStageTimings: {
     analysis: number; // Average duration for analysis stage
-    schema: number;   // Average duration for schema stage
-    api: number;      // Average duration for API stage
+    schema: number; // Average duration for schema stage
+    api: number; // Average duration for API stage
   };
   totalScenarioDuration: number; // Total time for all runs of this scenario
   runs: BenchmarkResult[];
@@ -94,8 +115,8 @@ export interface BenchmarkSummary {
   };
   overallStageTimings: {
     analysis: number; // Average duration for analysis stage across all scenarios
-    schema: number;   // Average duration for schema stage across all scenarios
-    api: number;      // Average duration for API stage across all scenarios
+    schema: number; // Average duration for schema stage across all scenarios
+    api: number; // Average duration for API stage across all scenarios
   };
   scenarios: ScenarioResults[];
   startTime: string;
@@ -113,6 +134,9 @@ export interface TestScenario {
     requiresPrismaSchema: boolean;
     requiresApiInterface: boolean;
     requiresTests: boolean;
-    customValidations: ((result: ValidationResult) => { valid: boolean; issues: string[] })[];
+    customValidations: ((result: ValidationResult) => {
+      valid: boolean;
+      issues: string[];
+    })[];
   };
 }

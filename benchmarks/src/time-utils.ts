@@ -1,6 +1,4 @@
-/**
- * Time utility functions for formatting duration in multiple units
- */
+/** Time utility functions for formatting duration in multiple units */
 
 export function formatDuration(milliseconds: number): string {
   const minutes = (milliseconds / 60000).toFixed(1);

@@ -54,7 +54,7 @@ async function runAdversarialBenchmarks() {
 
     // Get benchmark logs directory path
     const logsDir = adversarialAgent.getLogsDirectory();
-    
+
     console.log(`
 📊 Benchmark report saved to: ${rootReportPath}
 📊 Archived report saved to: ${logsReportPath}

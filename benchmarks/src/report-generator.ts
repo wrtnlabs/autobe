@@ -1,6 +1,7 @@
-import { BenchmarkSummary } from "./types";
 import path from "path";
+
 import { formatDuration, formatDurationSecondsFromMs } from "./time-utils";
+import { BenchmarkSummary } from "./types";
 
 export class ReportGenerator {
   private logsDir: string;
@@ -39,7 +40,9 @@ export class ReportGenerator {
 
 ## Scenario Results
 
-${summary.scenarios.map(scenario => `
+${summary.scenarios
+  .map(
+    (scenario) => `
 ### ${scenario.scenarioName}
 
 - **Flow Success Rate:** ${scenario.successRate.toFixed(1)}% (${scenario.successfulRuns}/${scenario.totalRuns} runs)
@@ -62,9 +65,11 @@ ${summary.scenarios.map(scenario => `
 
 #### Run Details
 
-${scenario.runs.map((run, index) => `
+${scenario.runs
+  .map(
+    (run, index) => `
 **Run ${index + 1}** (ID: \`${run.runId}\`)
-- Flow Success: ${run.flowSuccess ? '✅ Yes' : '❌ No'}
+- Flow Success: ${run.flowSuccess ? "✅ Yes" : "❌ No"}
 - Duration: ${formatDuration(run.duration)}
 - Completeness Score: ${run.completenessScore}%
   - Analysis: ${run.completenessBreakdown.analysis.score}% (${run.completenessBreakdown.analysis.validated}/${run.completenessBreakdown.analysis.total})
@@ -77,13 +82,17 @@ ${scenario.runs.map((run, index) => `
   - User Experience: ${run.completenessBreakdown.userExperience.score}% (${run.completenessBreakdown.userExperience.validated}/${run.completenessBreakdown.userExperience.total})
   - General: ${run.completenessBreakdown.general.score}% (${run.completenessBreakdown.general.validated}/${run.completenessBreakdown.general.total})
 - Stages:
-  - Analysis: ${run.stages.analyze.success ? '✅' : '❌'} (${formatDuration(run.stages.analyze.duration)})${run.stages.analyze.errors.length > 0 ? ` - Errors: ${run.stages.analyze.errors.join(', ')}` : ''}
-  - Prisma: ${run.stages.prisma.success ? '✅' : '❌'} (${formatDuration(run.stages.prisma.duration)})${run.stages.prisma.errors.length > 0 ? ` - Errors: ${run.stages.prisma.errors.join(', ')}` : ''}${run.stages.prisma.compilationDetails ? ` - ${run.stages.prisma.compilationDetails}` : ''}
-  - Interface: ${run.stages.interface.success ? '✅' : '❌'} (${formatDuration(run.stages.interface.duration)})${run.stages.interface.errors.length > 0 ? ` - Errors: ${run.stages.interface.errors.join(', ')}` : ''}
-${run.failureReason ? `- **Failure Reason:** ${run.failureReason}` : ''}
-${run.errors.length > 0 ? `- **Detailed Errors:**\n${run.errors.map(error => `  - ${error}`).join('\n')}` : ''}
-`).join('')}
-`).join('')}
+  - Analysis: ${run.stages.analyze.success ? "✅" : "❌"} (${formatDuration(run.stages.analyze.duration)})${run.stages.analyze.errors.length > 0 ? ` - Errors: ${run.stages.analyze.errors.join(", ")}` : ""}
+  - Prisma: ${run.stages.prisma.success ? "✅" : "❌"} (${formatDuration(run.stages.prisma.duration)})${run.stages.prisma.errors.length > 0 ? ` - Errors: ${run.stages.prisma.errors.join(", ")}` : ""}${run.stages.prisma.compilationDetails ? ` - ${run.stages.prisma.compilationDetails}` : ""}
+  - Interface: ${run.stages.interface.success ? "✅" : "❌"} (${formatDuration(run.stages.interface.duration)})${run.stages.interface.errors.length > 0 ? ` - Errors: ${run.stages.interface.errors.join(", ")}` : ""}
+${run.failureReason ? `- **Failure Reason:** ${run.failureReason}` : ""}
+${run.errors.length > 0 ? `- **Detailed Errors:**\n${run.errors.map((error) => `  - ${error}`).join("\n")}` : ""}
+`,
+  )
+  .join("")}
+`,
+  )
+  .join("")}
 
 ## Analysis
 
@@ -99,7 +108,10 @@ ${this.generateAnalysis(summary)}
 
   private generateAnalysis(summary: BenchmarkSummary): string {
     const benchmarkTotalRuns = summary.totalRuns;
-    const successfulRuns = summary.scenarios.reduce((sum, s) => sum + s.successfulRuns, 0);
+    const successfulRuns = summary.scenarios.reduce(
+      (sum, s) => sum + s.successfulRuns,
+      0,
+    );
     const failedRuns = benchmarkTotalRuns - successfulRuns;
 
     let analysis = `### Key Insights
@@ -123,17 +135,20 @@ ${this.generateAnalysis(summary)}
 
     // Analyze stage performance from summary data
     let stageAnalysis = "";
-    
+
     stageAnalysis += `**Stage Performance Overview:**\n`;
     stageAnalysis += `- **Analysis Stage:** ${formatDuration(summary.overallStageTimings.analysis)} average duration\n`;
     stageAnalysis += `- **Schema Stage:** ${formatDuration(summary.overallStageTimings.schema)} average duration\n`;
     stageAnalysis += `- **API Stage:** ${formatDuration(summary.overallStageTimings.api)} average duration\n\n`;
-    
+
     // Additional detailed stage analysis
     const analysisStageStats = this.calculateStageStats(summary);
     stageAnalysis += `**Stage Success Rates:**\n`;
     Object.entries(analysisStageStats).forEach(([stageName, stats]) => {
-      const successRate = stats.total > 0 ? (stats.success / stats.total * 100).toFixed(1) : '0.0';
+      const successRate =
+        stats.total > 0
+          ? ((stats.success / stats.total) * 100).toFixed(1)
+          : "0.0";
       stageAnalysis += `- **${stageName.charAt(0).toUpperCase() + stageName.slice(1)} Stage:** ${successRate}% success rate (${stats.success}/${stats.total} runs)\n`;
     });
 
@@ -144,18 +159,23 @@ ${this.generateAnalysis(summary)}
       analysis += `\n### Failure Analysis
 
 `;
-      const failedRuns = summary.scenarios.flatMap(s => s.runs.filter(r => !r.flowSuccess));
-      
+      const failedRuns = summary.scenarios.flatMap((s) =>
+        s.runs.filter((r) => !r.flowSuccess),
+      );
+
       if (failedRuns.length > 0) {
         // Group failures by reason
         const failureReasons = new Map<string, number>();
         const stageFailures = { analyze: 0, prisma: 0, interface: 0 };
-        
-        failedRuns.forEach(run => {
+
+        failedRuns.forEach((run) => {
           if (run.failureReason) {
-            failureReasons.set(run.failureReason, (failureReasons.get(run.failureReason) || 0) + 1);
+            failureReasons.set(
+              run.failureReason,
+              (failureReasons.get(run.failureReason) || 0) + 1,
+            );
           }
-          
+
           if (!run.stages.analyze.success) stageFailures.analyze++;
           if (!run.stages.prisma.success) stageFailures.prisma++;
           if (!run.stages.interface.success) stageFailures.interface++;
@@ -174,9 +194,9 @@ ${this.generateAnalysis(summary)}
         analysis += `- Interface Stage Failures: ${stageFailures.interface}\n`;
 
         // Most problematic errors
-        const allErrors = failedRuns.flatMap(run => run.errors);
+        const allErrors = failedRuns.flatMap((run) => run.errors);
         const errorCounts = new Map<string, number>();
-        allErrors.forEach(error => {
+        allErrors.forEach((error) => {
           errorCounts.set(error, (errorCounts.get(error) || 0) + 1);
         });
 
@@ -205,22 +225,38 @@ ${this.generateAnalysis(summary)}
       analysis += `- **Improvement Needed:** Completeness score is below 70%. Enhance response quality for adversarial questions.\n`;
     }
 
-    if (summary.totalBenchmarkDuration > 30 * 60 * 1000) { // 30 minutes
+    if (summary.totalBenchmarkDuration > 30 * 60 * 1000) {
+      // 30 minutes
       analysis += `- **Performance:** Benchmark took over 30 minutes. Consider optimizing stage timeouts or agent response times.\n`;
     }
 
     // Stage-specific recommendations
     const recommendationStageStats = this.calculateStageStats(summary);
-    
-    if (recommendationStageStats.analyze.total > 0 && (recommendationStageStats.analyze.success / recommendationStageStats.analyze.total) < 0.8) {
+
+    if (
+      recommendationStageStats.analyze.total > 0 &&
+      recommendationStageStats.analyze.success /
+        recommendationStageStats.analyze.total <
+        0.8
+    ) {
       analysis += `- **Analysis Stage:** ${((recommendationStageStats.analyze.success / recommendationStageStats.analyze.total) * 100).toFixed(1)}% success rate. Consider improving requirements analysis prompts.\n`;
     }
-    
-    if (recommendationStageStats.prisma.total > 0 && (recommendationStageStats.prisma.success / recommendationStageStats.prisma.total) < 0.8) {
+
+    if (
+      recommendationStageStats.prisma.total > 0 &&
+      recommendationStageStats.prisma.success /
+        recommendationStageStats.prisma.total <
+        0.8
+    ) {
       analysis += `- **Prisma Stage:** ${((recommendationStageStats.prisma.success / recommendationStageStats.prisma.total) * 100).toFixed(1)}% success rate. Consider improving schema generation prompts or fallback validation.\n`;
     }
-    
-    if (recommendationStageStats.interface.total > 0 && (recommendationStageStats.interface.success / recommendationStageStats.interface.total) < 0.8) {
+
+    if (
+      recommendationStageStats.interface.total > 0 &&
+      recommendationStageStats.interface.success /
+        recommendationStageStats.interface.total <
+        0.8
+    ) {
       analysis += `- **Interface Stage:** ${((recommendationStageStats.interface.success / recommendationStageStats.interface.total) * 100).toFixed(1)}% success rate. Consider improving API specification prompts.\n`;
     }
 
@@ -231,11 +267,11 @@ ${this.generateAnalysis(summary)}
     const stageStats = {
       analyze: { success: 0, total: 0, totalDuration: 0 },
       prisma: { success: 0, total: 0, totalDuration: 0 },
-      interface: { success: 0, total: 0, totalDuration: 0 }
+      interface: { success: 0, total: 0, totalDuration: 0 },
     };
 
-    summary.scenarios.forEach(scenario => {
-      scenario.runs.forEach(run => {
+    summary.scenarios.forEach((scenario) => {
+      scenario.runs.forEach((run) => {
         Object.entries(run.stages).forEach(([stageName, stage]) => {
           if (stageName in stageStats) {
             const stageKey = stageName as keyof typeof stageStats;
@@ -251,6 +287,6 @@ ${this.generateAnalysis(summary)}
   }
 
   getReportPath(): string {
-    return path.join(this.logsDir, 'benchmark-report.md');
+    return path.join(this.logsDir, "benchmark-report.md");
   }
 }
