@@ -231,7 +231,6 @@ export async function test_api_{naming_convention}(
 
 ### 4.5. Data Consistency Validation
 
-* Always use the `TestValidator.equals()` function to validate data consistency.
 * Avoid using `TestValidator.notEquals()`. To assert that `b` is not of type `a`, write:
   `TestValidator.equals(false)(typia.is<typeof a>(b))`.
 * You **must** use validation functions from `TestValidator` — do **not** use `typia.is`, `typia.assert`, Node's `assert`, or Jest's `expect`.

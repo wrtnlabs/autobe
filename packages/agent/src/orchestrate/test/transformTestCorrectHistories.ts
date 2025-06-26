@@ -14,12 +14,6 @@ export const transformTestCorrectHistories = (
     {
       id: v4(),
       created_at: new Date().toISOString(),
-      type: "systemMessage",
-      text: AutoBeSystemPromptConstant.TEST_WRITE,
-    },
-    {
-      id: v4(),
-      created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: [
         "# Original Code", //
@@ -33,6 +27,18 @@ export const transformTestCorrectHistories = (
       created_at: new Date().toISOString(),
       type: "systemMessage",
       text: AutoBeSystemPromptConstant.TEST_CORRECT,
+    },
+    {
+      id: v4(),
+      created_at: new Date().toISOString(),
+      type: "systemMessage",
+      text: AutoBeSystemPromptConstant.TEST_VALIDATOR,
+    },
+    {
+      id: v4(),
+      created_at: new Date().toISOString(),
+      type: "systemMessage",
+      text: AutoBeSystemPromptConstant.TEST_TYPESCRIPT_SYNTAX,
     },
     {
       id: v4(),
