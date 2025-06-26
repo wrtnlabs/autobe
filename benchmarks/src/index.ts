@@ -21,15 +21,17 @@ async function runAdversarialBenchmarks() {
       api: new OpenAI({
         apiKey: process.env.CHATGPT_API_KEY,
         baseURL: process.env.CHATGPT_BASE_URL,
+        maxRetries: 20,
       }),
       model: "gpt-4.1",
+      semaphore: 32,
     },
     compiler: new AutoBeCompiler(),
   });
 
   // Get runs per scenario from environment or default to 3
   const runsPerScenario = parseInt(
-    process.env.BENCHMARK_RUNS_PER_SCENARIO || "1",
+    process.env.BENCHMARK_RUNS_PER_SCENARIO || "10",
   );
 
   const adversarialAgent = new AdversarialAgent(
@@ -50,9 +52,13 @@ async function runAdversarialBenchmarks() {
     const logsReportPath = adversarialAgent.getReportPath();
     fs.writeFileSync(logsReportPath, report);
 
+    // Get benchmark logs directory path
+    const logsDir = adversarialAgent.getLogsDirectory();
+    
     console.log(`
 📊 Benchmark report saved to: ${rootReportPath}
 📊 Archived report saved to: ${logsReportPath}
+📁 Benchmark logs directory: ${logsDir}
 
 ${"=".repeat(60)}
 FINAL BENCHMARK SUMMARY
