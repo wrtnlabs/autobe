@@ -22,6 +22,13 @@ export const orchestrateInterface =
   ): Promise<AutoBeAssistantMessageHistory | AutoBeInterfaceHistory> => {
     // ENDPOINTS
     const start: Date = new Date();
+    ctx.dispatch({
+      type: "interfaceStart",
+      created_at: start.toISOString(),
+      reason: props.reason,
+      step: ctx.state().analyze?.step ?? 0,
+    });
+
     const init: AutoBeAssistantMessageHistory | AutoBeInterfaceEndpointsEvent =
       await orchestrateInterfaceEndpoints(ctx);
     if (init.type === "assistantMessage") {
