@@ -31,18 +31,6 @@ export const transformTestCorrectHistories = (
     {
       id: v4(),
       created_at: new Date().toISOString(),
-      type: "systemMessage",
-      text: AutoBeSystemPromptConstant.TEST_VALIDATOR,
-    },
-    {
-      id: v4(),
-      created_at: new Date().toISOString(),
-      type: "systemMessage",
-      text: AutoBeSystemPromptConstant.TEST_TYPESCRIPT_SYNTAX,
-    },
-    {
-      id: v4(),
-      created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: [
         "You are the world's best TypeScript compiler error fixer.",
