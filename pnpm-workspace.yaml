@@ -1,9 +1,9 @@
 packages:
   - internals/filesystem
+  - internals/website-examples
   - packages/*
   - test
   - website
-  - website/examples
 catalogs:
   agentica:
     "@agentica/core": ^0.29.0
