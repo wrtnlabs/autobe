@@ -124,6 +124,7 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
           execute: () => transformFacadeStateMessage(this.state_),
         },
       },
+      tokenUsage: props.tokenUsage,
       controllers: [
         createAutoBeController({
           model: props.model,
