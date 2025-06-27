@@ -112,7 +112,12 @@ async function step<Model extends ILlmSchema.Model>(
   // COMPILE TEST CODE
   const result: IAutoBeTypeScriptCompilerResult =
     await ctx.compiler.typescript.compile({
-      files: entireFiles,
+      files: {
+        ...entireFiles,
+        ...testFiles
+          .map((el) => ({ [el.location]: el.content }))
+          .reduce((acc, cur) => Object.assign(acc, cur), {}),
+      },
     });
 
   if (result.type === "success") {
@@ -213,14 +218,29 @@ async function step<Model extends ILlmSchema.Model>(
           step: ctx.state().interface?.step ?? 0,
         });
 
-        return { location: filename, content: code, scenario: scenario };
+        return {
+          location: filename,
+          content: response.content,
+          scenario: scenario,
+        };
       },
     ),
   );
 
   return step(
     ctx,
-    entireFiles,
+    Object.entries(entireFiles)
+      .map(([filename, content]) => {
+        const overwrited = validatedFiles.find(
+          (el) => el.location === filename,
+        );
+        return overwrited
+          ? { [overwrited.location]: overwrited.content }
+          : {
+              [filename]: content,
+            };
+      })
+      .reduce((acc, cur) => Object.assign(acc, cur), {}),
     testFiles.map((f) => {
       const validated = validatedFiles.find((v) => v.location === f.location);
       return validated ? validated : f;

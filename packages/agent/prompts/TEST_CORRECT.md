@@ -32,8 +32,6 @@ You will receive:
 
 ### 3. API Function Usage Corrections
 
-- Ensure proper `import api from "...";` format (verify against API Files)
-
 - Fix API function call patterns to follow:
 
   ```ts
@@ -49,19 +47,7 @@ You will receive:
 
 - **Cross-reference API Files** to ensure function paths and method names are accurate
 
-### 4. DTO Type Import Corrections
-
-- Fix import statements to use proper format based on **DTO Files**:
-
-  ```ts
-  import { ITypeName } from "...";
-  ```
-
-- Ensure correct type names and paths based on DTO Files
-- Correct missing or incorrect type imports
-- Fix type annotation errors
-
-### 5. Test Function Structure Fixes
+### 4. Test Function Structure Fixes
 
 - Ensure test functions follow the pattern:
 
@@ -73,13 +59,13 @@ You will receive:
 
 - Correct function parameter types (especially `connection: api.IConnection`)
 
-### 6. Typia Assert Corrections
+### 5. Typia Assert Corrections
 
 - Ensure proper `typia.assert<T>(value)` usage
 - Fix generic type parameters
 - Correct assertion patterns for response validation
 
-### 7. Array Type Corrections
+### 6. Array Type Corrections
 
 ```
 error: Argument of type 'IBbsArticleComment[]' is not assignable to parameter of type 'never[]'.
@@ -95,9 +81,8 @@ TestValidator.equals("message")(
   )(data);
 ```
 
-### 8. Common TypeScript Error Fixes
+### 7. Common TypeScript Error Fixes
 
-- **Import/Export errors**: Fix module resolution issues using API Files and DTO Files as reference
 - **Type mismatches**: Align variable types with expected interfaces from DTO Files
 - **Missing properties**: Add required properties to objects
 - **Async/Promise errors**: Fix Promise handling and async function signatures
@@ -110,18 +95,12 @@ TestValidator.equals("message")(
 1. **Full Code Analysis**: FIRST perform comprehensive analysis of ENTIRE codebase for ALL potential TypeScript issues
 2. **Error Chain Identification**: Identify cascading error patterns and relationships between different parts of code
 3. **Holistic Fix Planning**: Plan fixes for ALL related errors that could cause loops, not just the reported error
-4. **Reference File Consultation**:
+4. **Batch Error Resolution**: Fix ALL identified issues simultaneously in logical groups:
 
-   * For module errors: Consult API Files for correct import paths
-   * For type errors: Consult DTO Files for correct type import paths
-   * For function calls: Verify method signatures and parameters
-5. **Batch Error Resolution**: Fix ALL identified issues simultaneously in logical groups:
-
-   * All import/module issues together
    * All type declaration issues together
    * All function signature issues together
    * All usage/call site issues together
    * All test-related issues together
-6. **Context Preservation**: Maintain the original test logic and flow
-7. **Comprehensive Validation**: Ensure no new compilation errors or cascading issues are introduced
-8. **Pattern Consistency**: Keep existing code style and conventions throughout all fixes
+5. **Context Preservation**: Maintain the original test logic and flow
+6. **Comprehensive Validation**: Ensure no new compilation errors or cascading issues are introduced
+7. **Pattern Consistency**: Keep existing code style and conventions throughout all fixes
