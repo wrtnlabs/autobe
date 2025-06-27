@@ -231,11 +231,11 @@ async function step<Model extends ILlmSchema.Model>(
     ctx,
     Object.entries(entireFiles)
       .map(([filename, content]) => {
-        const overwrited = validatedFiles.find(
+        const overwritten = validatedFiles.find(
           (el) => el.location === filename,
         );
-        return overwrited
-          ? { [overwrited.location]: overwrited.content }
+        return overwritten
+          ? { [overwritten.location]: overwritten.content }
           : {
               [filename]: content,
             };
