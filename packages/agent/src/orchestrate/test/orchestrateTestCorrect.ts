@@ -273,25 +273,6 @@ async function process<Model extends ILlmSchema.Model>(
     scenario,
   );
 
-  const agentica = new MicroAgentica({
-    model: ctx.model,
-    vendor: { ...ctx.vendor },
-    config: {
-      ...(ctx.config ?? {}),
-    },
-    histories: transformTestCorrectHistories(code, artifacts),
-    controllers: [
-      createApplication({
-        model: ctx.model,
-        build: (next) => {
-          pointer.value = next;
-        },
-      }),
-    ],
-    tokenUsage: ctx.usage(),
-  });
-  enforceToolCall(agentica);
-
   const lines = code.split("\n").map((line, num, arr) => {
     const start = arr
       .slice(0, num)
@@ -305,18 +286,37 @@ async function process<Model extends ILlmSchema.Model>(
     };
   });
 
+  const agentica = new MicroAgentica({
+    model: ctx.model,
+    vendor: { ...ctx.vendor },
+    config: {
+      ...(ctx.config ?? {}),
+    },
+    histories: transformTestCorrectHistories(
+      code,
+      artifacts,
+      diagnostics.map((diagnostic) =>
+        diagnostic.start === undefined || diagnostic.length === undefined
+          ? ""
+          : formatDiagnostic(code, lines, diagnostic),
+      ),
+    ),
+    controllers: [
+      createApplication({
+        model: ctx.model,
+        build: (next) => {
+          pointer.value = next;
+        },
+      }),
+    ],
+    tokenUsage: ctx.usage(),
+  });
+  enforceToolCall(agentica);
+
   await randomBackoffRetry(async () => {
     await agentica.conversate(
       [
-        "Fix the compilation error in the provided code.",
-        "",
-        ...diagnostics.map((diagnostic) =>
-          diagnostic.start === undefined || diagnostic.length === undefined
-            ? ""
-            : formatDiagnostic(code, lines, diagnostic),
-        ),
-        "",
-        "## Instructions",
+        "# Instructions",
         "1. Focus on the specific error location and message",
         "2. Provide the corrected TypeScript code",
         "3. Ensure the fix resolves the compilation error",
@@ -326,6 +326,36 @@ async function process<Model extends ILlmSchema.Model>(
     );
   });
   if (pointer.value === null) throw new Error("Failed to modify test code.");
+
+  const typeReferences: string[] = Array.from(
+    new Set(
+      Object.keys(artifacts.document.components.schemas).map(
+        (key) => key.split(".")[0]!,
+      ),
+    ),
+  );
+
+  pointer.value.content = pointer.value.content
+    .replace(/^[ \t]*import\b[\s\S]*?;[ \t]*$/gm, "")
+    .trim();
+  pointer.value.content = [
+    `import { TestValidator } from "@nestia/e2e";`,
+    `import typia, { tags } from "typia";`,
+    "",
+    `import api from "@ORGANIZATION/PROJECT-api";`,
+    ...typeReferences.map(
+      (ref) =>
+        `import type { ${ref} } from "@ORGANIZATION/PROJECT-api/lib/structures/${ref}";`,
+    ),
+    "",
+    pointer.value.content,
+  ].join("\n");
+
+  pointer.value.content = pointer.value.content.replaceAll(
+    'string & Format<"uuid">',
+    'string & tags.Format<"uuid">',
+  );
+
   return pointer.value;
 }
 
@@ -361,8 +391,6 @@ function formatDiagnostic(
     }
 
     const errorLines = createAdjustedArray(errorLine?.line ?? 0);
-    console.log(errorLine?.line);
-    console.log(errorLines);
 
     const context = errorLines
       .map((num) => {

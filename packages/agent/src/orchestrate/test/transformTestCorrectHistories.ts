@@ -7,6 +7,7 @@ import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioAr
 export const transformTestCorrectHistories = (
   code: string,
   artifacts: IAutoBeTestScenarioArtifacts,
+  diagnostics: string[],
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
@@ -22,10 +23,14 @@ export const transformTestCorrectHistories = (
       created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: [
-        "# Original Code", //
+        "# Original Code",
         "```typescript",
         code,
         "```",
+        "",
+        "# Compile Errors",
+        "Fix the compilation error in the provided code.",
+        ...diagnostics,
       ].join("\n"),
     },
     {
