@@ -151,6 +151,7 @@ async function step<Model extends ILlmSchema.Model>(
 
   result.diagnostics.forEach((d) => {
     if (d.file === null) return;
+    if (!d.file.startsWith("test/features/api")) return;
 
     diagnostics[d.file] = diagnostics[d.file] ?? [];
     diagnostics[d.file].push(d);
