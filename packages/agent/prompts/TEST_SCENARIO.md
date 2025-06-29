@@ -168,7 +168,7 @@ Test scenarios must cover not only successful business flows but also various er
 
 ### 6.4. Error Scenario Example
 
-```typescript
+```ts
 {
   draft: "Test product creation failure caused by attempting to create a product with a duplicate SKU. First, create a seller account authorized to create products. Then, create an initial product with a specific SKU to set up the conflict condition. Finally, attempt to create another product with the same SKU and verify that the system returns a conflict error indicating SKU uniqueness violation. Note that these steps must be executed in order to properly simulate the scenario.",
   functionName: "test_create_product_with_duplicate_sku",
@@ -183,9 +183,8 @@ Test scenarios must cover not only successful business flows but also various er
     }
   ]
 }
-````
+```
 
----
 
 **Additional Notes:**
 
@@ -196,9 +195,6 @@ Test scenarios must cover not only successful business flows but also various er
 * Providing clear and detailed `draft` text describing the full user workflow and error expectations helps downstream agents or developers generate complete and realistic test implementations.
 
 By following these guidelines, generated test scenarios will be comprehensive, accurate, and fully grounded in the actual API ecosystem and business logic.
-
-
-
 
 ## 7. Final Checklist
 
@@ -248,69 +244,3 @@ By following these guidelines, generated test scenarios will be comprehensive, a
 - **Implementation Feasibility**: Ensure scenarios can be realistically implemented using available APIs
 - **Business Value**: Focus on scenarios that test important business functionality
 - **User-Centric Design**: Write scenarios from the user's perspective and goals
-
-## 8. Error Scenario Generation (Appendix)
-
-### 8.1. Purpose and Importance of Error Scenarios
-Test scenarios must cover not only successful business flows but also various error conditions to ensure robust system behavior. Error scenarios help verify that appropriate responses are returned for invalid inputs, unauthorized access, resource conflicts, and business rule violations.
-
-### 8.2. Error Scenario Categories
-- **Validation Errors**: Invalid input data, missing required fields, format violations
-- **Authentication/Authorization Errors**: Unauthorized access, insufficient permissions, expired sessions
-- **Resource State Errors**: Operations on non-existent resources, invalid state transitions
-- **Business Rule Violations**: Attempts to violate domain-specific constraints and rules
-- **System Constraint Violations**: Duplicate resource creation, referential integrity violations
-
-### 8.3. Error Scenario Writing Guidelines
-- **Specific Error Conditions**: Clearly define the error condition being tested
-- **Expected Error Response**: Specify what type of error response should be returned
-- **Realistic Error Situations**: Model error conditions that actually occur in real usage
-- **Recovery Scenarios**: Consider how users might recover from or handle error conditions
-
-### 8.4. Error Scenario Example
-```typescript
-{
-  draft: "Test product creation failure when attempting to create a product with a duplicate SKU. Create an initial product with a specific SKU, then attempt to create another product with the same SKU. Verify that the system returns a conflict error indicating SKU uniqueness violation.",
-  functionName: "test_create_product_with_duplicate_sku",
-  dependencies: [
-    {
-      endpoint: { method: "post", path: "/shopping/sellers/auth/join" },
-      purpose: "Create a seller account with permission to create products"
-    },
-    {
-      endpoint: { method: "post", path: "/shopping/sellers/sales" },
-      purpose: "Create the first product with a specific SKU to establish the conflict condition"
-    }
-  ]
-}
-```
-
-## 9. Final Checklist
-
-Test scenario generation completion requires verification of the following items:
-
-### 9.1. Essential Element Verification
-- [ ] Are all included endpoints covered with appropriate scenarios?
-- [ ] Do scenarios reflect realistic business workflows and user journeys?
-- [ ] Are function names descriptive and follow the user-centric naming convention?
-- [ ] Are all necessary dependencies identified and properly ordered?
-- [ ] Do dependency purposes clearly explain why each prerequisite is needed?
-- [ ] Are both success and failure scenarios included for complex operations?
-- [ ] Do scenarios test relevant business rules and validation constraints?
-
-### 9.2. Quality Element Verification
-- [ ] Are scenario descriptions detailed enough for developers to implement?
-- [ ] Do scenarios represent authentic user needs and workflows?
-- [ ] Is the business context clearly explained for each scenario?
-- [ ] Are error scenarios realistic and cover important failure conditions?
-- [ ] Do multi-step scenarios include all necessary intermediate steps?
-- [ ] Are scenarios grouped logically by endpoint and functionality?
-
-### 9.3. Structural Verification
-- [ ] Does the output follow the correct IAutoBeTestScenarioApplication.IProps structure?
-- [ ] Are all endpoint objects properly formatted with method and path?
-- [ ] Do all scenarios include required fields (draft, functionName, dependencies)?
-- [ ] Are dependency objects complete with endpoint and purpose information?
-- [ ] Is each endpoint method/path combination unique in the scenario groups?
-
-Please adhere to all these principles and guidelines to generate comprehensive and accurate API test scenarios. Your mission is to create scenario blueprints that enable developers to build robust, business-focused E2E test suites that thoroughly validate API functionality and business logic.
