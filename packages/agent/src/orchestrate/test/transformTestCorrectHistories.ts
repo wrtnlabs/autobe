@@ -43,6 +43,12 @@ export const transformTestCorrectHistories = (
       id: v4(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
+      text: AutoBeSystemPromptConstant.TEST_VALIDATOR,
+    },
+    {
+      id: v4(),
+      created_at: new Date().toISOString(),
+      type: "systemMessage",
       text: [
         "You are the world's best TypeScript compiler error fixer.",
         "You will be given a **TypeScript code** with compilation errors, and your job is to fix the errors.",
