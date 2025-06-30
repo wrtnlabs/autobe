@@ -2,11 +2,13 @@ import {
   IAutoBeCompiler,
   IAutoBeInterfaceCompiler,
   IAutoBePrismaCompiler,
+  IAutoBeTestCompiler,
   IAutoBeTypeScriptCompiler,
 } from "@autobe/interface";
 
 import { AutoBeInterfaceCompiler } from "./AutoBeInterfaceCompiler";
 import { AutoBePrismaCompiler } from "./AutoBePrismaCompiler";
+import { AutoBeTestCompiler } from "./AutoBeTestCompiler";
 import { AutoBeTypeScriptCompiler } from "./AutoBeTypeScriptCompiler";
 
 /**
@@ -39,4 +41,6 @@ export class AutoBeCompiler implements IAutoBeCompiler {
 
   public readonly typescript: IAutoBeTypeScriptCompiler =
     new AutoBeTypeScriptCompiler();
+
+  public readonly test: IAutoBeTestCompiler = new AutoBeTestCompiler();
 }

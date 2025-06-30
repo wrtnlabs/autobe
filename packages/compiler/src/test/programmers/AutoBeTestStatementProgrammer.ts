@@ -1,0 +1,82 @@
+import { AutoBeTest } from "@autobe/interface";
+import { NestiaMigrateSchemaProgrammer } from "@nestia/migrate/lib/programmers/NestiaMigrateSchemaProgrammer";
+import ts from "typescript";
+
+import { IAutoBeTestProgrammerContext } from "../IAutoBeTestProgrammerContext";
+import { writeTestExpression } from "../writeTestExpression";
+import { writeTestStatement } from "../writeTestStatement";
+
+export namespace AutoBeTestStatementProgrammer {
+  export const blockStatement = (
+    ctx: IAutoBeTestProgrammerContext,
+    stmt: AutoBeTest.IBlockStatement,
+  ): ts.Statement[] => [
+    ts.factory.createBlock(
+      stmt.statements.map((child) => writeTestStatement(ctx, child)).flat(),
+      true,
+    ),
+  ];
+
+  export const expressionStatement = (
+    ctx: IAutoBeTestProgrammerContext,
+    stmt: AutoBeTest.IExpressionStatement,
+  ): ts.Statement[] => [
+    ts.factory.createExpressionStatement(
+      writeTestExpression(ctx, stmt.expression),
+    ),
+  ];
+
+  export const variableDeclaration = (
+    ctx: IAutoBeTestProgrammerContext,
+    stmt: AutoBeTest.IVariableDeclaration,
+  ): ts.Statement[] => {
+    const typeNode: ts.TypeNode = NestiaMigrateSchemaProgrammer.write({
+      components: ctx.document.components,
+      importer: ctx.importer,
+      schema: stmt.schema,
+    });
+    return [
+      ts.factory.createVariableStatement(
+        undefined,
+        ts.factory.createVariableDeclarationList(
+          [
+            ts.factory.createVariableDeclaration(
+              stmt.name,
+              undefined,
+              typeNode,
+              undefined,
+            ),
+          ],
+          stmt.mutability === "const"
+            ? ts.NodeFlags.Constant
+            : ts.NodeFlags.Let,
+        ),
+      ),
+    ];
+  };
+
+  export const ifStatement = (
+    ctx: IAutoBeTestProgrammerContext,
+    stmt: AutoBeTest.IIfStatement,
+  ): ts.Statement[] => [
+    ts.factory.createIfStatement(
+      writeTestExpression(ctx, stmt.condition),
+      writeTestStatement(ctx, stmt.then)[0],
+      stmt.else ? writeTestStatement(ctx, stmt.else)[0] : undefined,
+    ),
+  ];
+
+  export const returnStatement = (
+    ctx: IAutoBeTestProgrammerContext,
+    stmt: AutoBeTest.IReturnStatement,
+  ): ts.Statement[] => [
+    ts.factory.createReturnStatement(writeTestExpression(ctx, stmt.value)),
+  ];
+
+  export const throwStatement = (
+    ctx: IAutoBeTestProgrammerContext,
+    stmt: AutoBeTest.IThrowStatement,
+  ): ts.Statement[] => [
+    ts.factory.createThrowStatement(writeTestExpression(ctx, stmt.expression)),
+  ];
+}

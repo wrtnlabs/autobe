@@ -1,5 +1,6 @@
 import { IAutoBeInterfaceCompiler } from "./IAutoBeInterfaceCompiler";
 import { IAutoBePrismaCompiler } from "./IAutoBePrismaCompiler";
+import { IAutoBeTestCompiler } from "./IAutoBeTestCompiler";
 import { IAutoBeTypeScriptCompiler } from "./IAutoBeTypeScriptCompiler";
 
 /**
@@ -76,4 +77,6 @@ export interface IAutoBeCompiler {
    * code contains compilation errors that need iterative refinement.
    */
   typescript: IAutoBeTypeScriptCompiler;
+
+  test: IAutoBeTestCompiler;
 }
