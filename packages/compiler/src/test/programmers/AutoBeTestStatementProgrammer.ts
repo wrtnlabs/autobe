@@ -7,78 +7,71 @@ import { writeTestExpression } from "../writeTestExpression";
 import { writeTestStatement } from "../writeTestStatement";
 
 export namespace AutoBeTestStatementProgrammer {
-  export const blockStatement = (
+  export const block = (
     ctx: IAutoBeTestProgrammerContext,
-    stmt: AutoBeTest.IBlockStatement,
-  ): ts.Statement[] => [
+    stmt: AutoBeTest.IBlock,
+  ): ts.Block =>
     ts.factory.createBlock(
       stmt.statements.map((child) => writeTestStatement(ctx, child)).flat(),
       true,
-    ),
-  ];
+    );
 
   export const expressionStatement = (
     ctx: IAutoBeTestProgrammerContext,
     stmt: AutoBeTest.IExpressionStatement,
-  ): ts.Statement[] => [
+  ): ts.ExpressionStatement =>
     ts.factory.createExpressionStatement(
       writeTestExpression(ctx, stmt.expression),
-    ),
-  ];
+    );
 
   export const variableDeclaration = (
     ctx: IAutoBeTestProgrammerContext,
     stmt: AutoBeTest.IVariableDeclaration,
-  ): ts.Statement[] => {
+  ): ts.VariableStatement => {
     const typeNode: ts.TypeNode = NestiaMigrateSchemaProgrammer.write({
       components: ctx.document.components,
       importer: ctx.importer,
       schema: stmt.schema,
     });
-    return [
-      ts.factory.createVariableStatement(
-        undefined,
-        ts.factory.createVariableDeclarationList(
-          [
-            ts.factory.createVariableDeclaration(
-              stmt.name,
-              undefined,
-              typeNode,
-              undefined,
-            ),
-          ],
-          stmt.mutability === "const"
-            ? ts.NodeFlags.Constant
-            : ts.NodeFlags.Let,
-        ),
+    return ts.factory.createVariableStatement(
+      undefined,
+      ts.factory.createVariableDeclarationList(
+        [
+          ts.factory.createVariableDeclaration(
+            stmt.name,
+            undefined,
+            typeNode,
+            undefined,
+          ),
+        ],
+        stmt.mutability === "const" ? ts.NodeFlags.Constant : ts.NodeFlags.Let,
       ),
-    ];
+    );
   };
 
   export const ifStatement = (
     ctx: IAutoBeTestProgrammerContext,
     stmt: AutoBeTest.IIfStatement,
-  ): ts.Statement[] => [
+  ): ts.IfStatement =>
     ts.factory.createIfStatement(
       writeTestExpression(ctx, stmt.condition),
-      writeTestStatement(ctx, stmt.thenStatement)[0],
+      block(ctx, stmt.thenStatement),
       stmt.elseStatement
-        ? writeTestStatement(ctx, stmt.elseStatement)[0]
+        ? stmt.elseStatement.type === "ifStatement"
+          ? ifStatement(ctx, stmt.elseStatement)
+          : block(ctx, stmt.elseStatement)
         : undefined,
-    ),
-  ];
+    );
 
   export const returnStatement = (
     ctx: IAutoBeTestProgrammerContext,
     stmt: AutoBeTest.IReturnStatement,
-  ): ts.Statement[] => [
-    ts.factory.createReturnStatement(writeTestExpression(ctx, stmt.value)),
-  ];
+  ): ts.ReturnStatement =>
+    ts.factory.createReturnStatement(writeTestExpression(ctx, stmt.value));
 
   export const throwStatement = (
     ctx: IAutoBeTestProgrammerContext,
     stmt: AutoBeTest.IThrowStatement,
-  ): ts.Statement[] => [
-    ts.factory.createThrowStatement(writeTestExpression(ctx, stmt.expression)),
-  ];
+  ): ts.ThrowStatement =>
+    ts.factory.createThrowStatement(writeTestExpression(ctx, stmt.expression));
 }

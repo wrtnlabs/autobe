@@ -5,6 +5,7 @@ import { IAutoBeTestProgrammerContext } from "./IAutoBeTestProgrammerContext";
 import { AutoBeTestAccessorProgrammer } from "./programmers/AutoBeTestAccessorProgrammer";
 import { AutoBeTestFunctionalProgrammer } from "./programmers/AutoBeTestFunctionalProgrammer";
 import { AutoBeTestLiteralProgrammer } from "./programmers/AutoBeTestLiteralProgrammer";
+import { AutoBeTestPredicateProgrammer } from "./programmers/AutoBeTestPredicateProgrammer";
 import { AutoBeTestRandomProgrammer } from "./programmers/AutoBeTestRandomProgrammer";
 
 export const writeTestExpression = (
@@ -17,4 +18,5 @@ const factory = {
   ...AutoBeTestFunctionalProgrammer,
   ...AutoBeTestLiteralProgrammer,
   ...AutoBeTestRandomProgrammer,
+  ...AutoBeTestPredicateProgrammer,
 };

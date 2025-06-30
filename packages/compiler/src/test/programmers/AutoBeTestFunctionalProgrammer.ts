@@ -3,7 +3,7 @@ import ts from "typescript";
 
 import { IAutoBeTestProgrammerContext } from "../IAutoBeTestProgrammerContext";
 import { writeTestExpression } from "../writeTestExpression";
-import { writeTestStatement } from "../writeTestStatement";
+import { AutoBeTestStatementProgrammer } from "./AutoBeTestStatementProgrammer";
 
 export namespace AutoBeTestFunctionalProgrammer {
   export const arrowFunction = (
@@ -11,12 +11,12 @@ export namespace AutoBeTestFunctionalProgrammer {
     expr: AutoBeTest.IArrowFunction,
   ): ts.ArrowFunction =>
     ts.factory.createArrowFunction(
-      undefined,
+      [ts.factory.createModifier(ts.SyntaxKind.AsyncKeyword)],
       undefined,
       [],
       undefined,
       undefined,
-      writeTestStatement(ctx, expr.body)[0] as ts.Block,
+      AutoBeTestStatementProgrammer.block(ctx, expr.body),
     );
 
   export const callExpression = (
