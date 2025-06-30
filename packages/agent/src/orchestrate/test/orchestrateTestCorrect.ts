@@ -277,11 +277,12 @@ function replaceExpectAndActual(
       if (errorLine?.text.includes(targetStr)) {
         function swapTestValidatorArgsMultiline(code: string): string {
           return code.replace(
-            /TestValidator\.equals\((['"`][^'"`]+['"`])\)\s*\(([\s\S]*?)\)\s*\(([\s\S]*?)\)/g,
+            /TestValidator\.equals\((['"`][\s\S]*?['"`])\)\s*\(([\s\S]*?)\)\s*\(([\s\S]*?)\)/g,
             (_, title, a, b) =>
               `TestValidator.equals(${title})(${b.trim()})(${a.trim()})`,
           );
         }
+
         errorLine.text = swapTestValidatorArgsMultiline(errorLine.text);
         file.content = lines.map((el) => el.text).join("\n");
 
