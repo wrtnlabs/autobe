@@ -29,6 +29,7 @@ export function writeTestFunction(props: IAutoBeTestCompilerProps): string {
       props.function.statements
         .map((stmt) => writeTestStatement(ctx, stmt))
         .flat(),
+      true,
     ),
   );
   return FilePrinter.write({

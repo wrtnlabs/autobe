@@ -34,6 +34,7 @@ export namespace AutoBeTestLiteralProgrammer {
   ): ts.ArrayLiteralExpression =>
     ts.factory.createArrayLiteralExpression(
       expr.elements.map((elem) => writeTestExpression(ctx, elem)),
+      true,
     );
 
   export const objectLiteral = (

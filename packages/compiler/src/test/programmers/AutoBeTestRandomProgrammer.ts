@@ -128,7 +128,9 @@ export namespace AutoBeTestRandomProgrammer {
     ctx: IAutoBeTestProgrammerContext,
     expr: AutoBeTest.INumberRandom,
   ): ts.CallExpression => {
-    const intersection: ts.TypeNode[] = [];
+    const intersection: ts.TypeNode[] = [
+      ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+    ];
     if (expr.minimum !== null)
       intersection.push(
         createTypiaTag(ctx, "Minimum", [
@@ -262,9 +264,9 @@ export namespace AutoBeTestRandomProgrammer {
       [],
     );
 
-  export const domainRandom = (
+  export const keywordRandom = (
     ctx: IAutoBeTestProgrammerContext,
-    expr: AutoBeTest.IDomainRandom,
+    expr: AutoBeTest.IKeywordRandom,
   ): ts.Expression => {
     let value: ts.Expression = ts.factory.createPropertyAccessExpression(
       ts.factory.createIdentifier(

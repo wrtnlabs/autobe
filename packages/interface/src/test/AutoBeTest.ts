@@ -336,7 +336,7 @@ export namespace AutoBeTest {
     expression: IExpression;
   }
 
-  /** @ignore Base interface for type discrimination in statement union types. */
+  /** @ignore Base Interface for type discrimination in statement union types. */
   interface IStatementBase<Type extends string> {
     type: Type;
   }
@@ -402,13 +402,13 @@ export namespace AutoBeTest {
     | IStringRandom
     | IPatternRandom
     | IFormatRandom
-    | IDomainRandom
+    | IKeywordRandom
     | IEqualPredicate
     | INotEqualPredicate
     | IConditionalPredicate
     | IErrorPredicate;
 
-  /** @ignore Base interface for type discrimination in expression union types. */
+  /** @ignore Base Interface for type discrimination in expression union types. */
   interface IExpressionBase<Type extends string> {
     type: Type;
   }
@@ -1560,7 +1560,7 @@ export namespace AutoBeTest {
    * actual user input and business content, improving test scenario
    * authenticity and catching real-world edge cases.
    */
-  export interface IDomainRandom extends IExpressionBase<"domainRandom"> {
+  export interface IKeywordRandom extends IExpressionBase<"keywordRandom"> {
     /**
      * Domain-specific data generation keyword.
      *
@@ -1808,7 +1808,7 @@ export namespace AutoBeTest {
      * AI condition construction: Build conditions that accurately represent
      * business rules and constraints relevant to the test scenario.
      */
-    condition: IExpression;
+    expression: IExpression;
   }
 
   /**

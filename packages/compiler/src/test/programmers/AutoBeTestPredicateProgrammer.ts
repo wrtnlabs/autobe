@@ -78,7 +78,7 @@ export namespace AutoBeTestPredicateProgrammer {
       ),
       arguments: [
         ts.factory.createStringLiteral(expression.title),
-        writeTestExpression(ctx, expression.condition),
+        writeTestExpression(ctx, expression.expression),
       ],
     });
 
