@@ -39,6 +39,18 @@ export namespace AutoBeTestFunctionalProgrammer {
       expr.arguments.map((arg) => writeTestExpression(ctx, arg)),
     );
 
+  export const conditionalExpression = (
+    ctx: IAutoBeTestProgrammerContext,
+    expr: AutoBeTest.IConditionalExpression,
+  ): ts.ConditionalExpression =>
+    ts.factory.createConditionalExpression(
+      writeTestExpression(ctx, expr.condition),
+      undefined,
+      writeTestExpression(ctx, expr.whenTrue),
+      undefined,
+      writeTestExpression(ctx, expr.whenFalse),
+    );
+
   export const prefixUnaryExpression = (
     ctx: IAutoBeTestProgrammerContext,
     expr: AutoBeTest.IPrefixUnaryExpression,

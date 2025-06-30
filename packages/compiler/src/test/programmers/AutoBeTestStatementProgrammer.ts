@@ -61,8 +61,10 @@ export namespace AutoBeTestStatementProgrammer {
   ): ts.Statement[] => [
     ts.factory.createIfStatement(
       writeTestExpression(ctx, stmt.condition),
-      writeTestStatement(ctx, stmt.then)[0],
-      stmt.else ? writeTestStatement(ctx, stmt.else)[0] : undefined,
+      writeTestStatement(ctx, stmt.thenStatement)[0],
+      stmt.elseStatement
+        ? writeTestStatement(ctx, stmt.elseStatement)[0]
+        : undefined,
     ),
   ];
 

@@ -24,8 +24,8 @@ export namespace AutoBeTest {
   }
   export interface IIfStatement extends IStatementBase<"ifStatement"> {
     condition: IExpression;
-    then: IBlockStatement;
-    else: IBlockStatement | IIfStatement | null;
+    thenStatement: IBlockStatement;
+    elseStatement: IBlockStatement | IIfStatement | null;
   }
   export interface IVariableDeclaration
     extends IStatementBase<"variableDeclaration"> {
@@ -126,6 +126,13 @@ export namespace AutoBeTest {
     arguments: IExpression[];
   }
 
+  export interface IConditionalExpression
+    extends IExpressionBase<"conditionalExpression"> {
+    condition: IExpression;
+    whenTrue: IExpression;
+    whenFalse: IExpression;
+  }
+
   export interface IPrefixUnaryExpression
     extends IExpressionBase<"prefixUnaryExpression"> {
     operator: "!" | "++" | "--";
@@ -208,7 +215,7 @@ export namespace AutoBeTest {
   export interface IIntegerRandom extends IExpressionBase<"integerRandom"> {
     minimum: number | null;
     maximum: number | null;
-    multleOf: number | null;
+    multipleOf: number | null;
   }
 
   export interface INumberRandom extends IExpressionBase<"numberRandom"> {

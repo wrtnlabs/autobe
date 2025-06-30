@@ -113,6 +113,14 @@ export namespace AutoBeTestRandomProgrammer {
           ),
         ]),
       );
+    if (expr.multipleOf !== null)
+      intersection.push(
+        createTypiaTag(ctx, "MultipleOf", [
+          ts.factory.createLiteralTypeNode(
+            ts.factory.createNumericLiteral(expr.multipleOf),
+          ),
+        ]),
+      );
     return createTypiaRandom(ctx, intersection);
   };
 
@@ -134,6 +142,14 @@ export namespace AutoBeTestRandomProgrammer {
         createTypiaTag(ctx, "Maximum", [
           ts.factory.createLiteralTypeNode(
             ts.factory.createNumericLiteral(expr.maximum),
+          ),
+        ]),
+      );
+    if (expr.multipleOf !== null)
+      intersection.push(
+        createTypiaTag(ctx, "MultipleOf", [
+          ts.factory.createLiteralTypeNode(
+            ts.factory.createNumericLiteral(expr.multipleOf),
           ),
         ]),
       );
