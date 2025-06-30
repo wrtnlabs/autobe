@@ -12,10 +12,11 @@ export interface AutoBeTestScenario {
   endpoint: AutoBeOpenApi.IEndpoint;
 
   /**
-   * Generated test code for this endpoint.
-   *
-   * Initial test implementation created by the AI agent. This code may be
-   * refined through compilation feedback and validation cycles.
+   * A detailed natural language description of how this API endpoint should
+   * be tested. This should include both successful and failure scenarios,
+   * business rule validations, edge cases, and any sequence of steps
+   * necessary to perform the test. A subsequent agent will use this draft to
+   * generate multiple concrete test cases.
    */
   draft: string;
 
