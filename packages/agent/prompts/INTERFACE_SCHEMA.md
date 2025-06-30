@@ -70,7 +70,7 @@ For paginated results, use the standard `IPage<T>` interface:
 /**
  * A page.
  *
- * Collection of records with pagination indformation.
+ * Collection of records with pagination information.
  *
  * @author Samchon
  */
