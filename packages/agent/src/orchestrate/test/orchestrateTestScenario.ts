@@ -210,29 +210,29 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
           target.endpoint.path === pg.endpoint.path
         ) {
           if (
-            !errors.some(
+            !errors.find(
               (el) =>
-                el.path !== `planGroups[${j}].path` &&
-                el.value !== target.endpoint.path,
+                el.path === `scenarioGroups[${j}].path` &&
+                el.value === target.endpoint.path,
             )
           ) {
             errors.push({
-              path: `planGroups[${j}].path`,
-              expected: `planGroup's {method + path} cannot duplicated.`,
+              path: `scenarioGroups[${j}].path`,
+              expected: `scenarioGroup's {method + path} cannot duplicated.`,
               value: target.endpoint.path,
             });
           }
 
           if (
-            !errors.some(
+            !errors.find(
               (el) =>
-                el.path !== `planGroups[${j}].method` &&
-                el.value !== target.endpoint.method,
+                el.path === `scenarioGroups[${j}].method` &&
+                el.value === target.endpoint.method,
             )
           ) {
             errors.push({
-              path: `planGroups[${j}].method`,
-              expected: `planGroup's {method + path} cannot duplicated.`,
+              path: `scenarioGroups[${j}].method`,
+              expected: `scenarioGroup's {method + path} cannot duplicated.`,
               value: target.endpoint.method,
             });
           }

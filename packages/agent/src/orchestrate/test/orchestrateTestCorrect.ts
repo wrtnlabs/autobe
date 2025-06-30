@@ -151,6 +151,7 @@ async function step<Model extends ILlmSchema.Model>(
 
   result.diagnostics.forEach((d) => {
     if (d.file === null) return;
+    if (!d.file.startsWith("test/features/api/")) return;
 
     diagnostics[d.file] = diagnostics[d.file] ?? [];
     diagnostics[d.file].push(d);
@@ -197,13 +198,21 @@ async function step<Model extends ILlmSchema.Model>(
     Object.entries(diagnostics).map(
       async ([filename, d]): Promise<AutoBeTestFile> => {
         const file = testFiles.find((f) => f.location === filename);
-        const code: string = file?.content!;
         const scenario = file?.scenario!;
+
+        d = d.filter((diagnostic) => replaceExpectAndActual(diagnostic, file));
+        if (d.length === 0 && typeof file?.content === "string") {
+          return {
+            location: filename,
+            content: file.content,
+            scenario: scenario,
+          };
+        }
 
         const response: ICorrectTestFunctionProps = await process(
           ctx,
           d,
-          code,
+          file?.content!,
           scenario,
         );
         ctx.dispatch({
@@ -249,6 +258,41 @@ async function step<Model extends ILlmSchema.Model>(
   );
 }
 
+function replaceExpectAndActual(
+  diagnostic: IAutoBeTypeScriptCompilerResult.IDiagnostic,
+  file?: AutoBeTestFile,
+): boolean {
+  const isAssignabilityError =
+    /Argument of type '([^']+)' is not assignable to parameter of type '([^']+)'/.test(
+      diagnostic.messageText,
+    );
+
+  if (file?.content && isAssignabilityError) {
+    const targetStr = "TestValidator.equals";
+    const lines = transformLines(file?.content);
+
+    const start = diagnostic.start;
+    if (typeof start === "number") {
+      const errorLine = lines.find((line) => line.end > start);
+      if (errorLine?.text.includes(targetStr)) {
+        function swapTestValidatorArgsMultiline(code: string): string {
+          return code.replace(
+            /TestValidator\.equals\((['"`][^'"`]+['"`])\)\s*\(([\s\S]*?)\)\s*\(([\s\S]*?)\)/g,
+            (_, title, a, b) =>
+              `TestValidator.equals(${title})(${b.trim()})(${a.trim()})`,
+          );
+        }
+        errorLine.text = swapTestValidatorArgsMultiline(errorLine.text);
+        file.content = lines.map((el) => el.text).join("\n");
+
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
 /**
  * Modifies the code of test files where errors occurred. This function
  * processes TypeScript compiler diagnostics and attempts to fix compilation
@@ -273,18 +317,7 @@ async function process<Model extends ILlmSchema.Model>(
     scenario,
   );
 
-  const lines = code.split("\n").map((line, num, arr) => {
-    const start = arr
-      .slice(0, num)
-      .map((el) => el.length + 1)
-      .reduce((acc, cur) => acc + cur, 0);
-    return {
-      line: num + 1,
-      text: line,
-      start: start,
-      end: start + line.length + 1, // exclusive
-    };
-  });
+  const lines = transformLines(code);
 
   const agentica = new MicroAgentica({
     model: ctx.model,
@@ -357,6 +390,21 @@ async function process<Model extends ILlmSchema.Model>(
   );
 
   return pointer.value;
+}
+
+function transformLines(code: string) {
+  return code.split("\n").map((line, num, arr) => {
+    const start = arr
+      .slice(0, num)
+      .map((el) => el.length + 1)
+      .reduce((acc, cur) => acc + cur, 0);
+    return {
+      line: num + 1,
+      text: line,
+      start: start,
+      end: start + line.length + 1, // exclusive
+    };
+  });
 }
 
 function formatDiagnostic(
