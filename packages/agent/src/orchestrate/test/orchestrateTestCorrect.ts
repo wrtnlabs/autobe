@@ -200,37 +200,14 @@ async function step<Model extends ILlmSchema.Model>(
         const file = testFiles.find((f) => f.location === filename);
         const scenario = file?.scenario!;
 
-        d = d.filter((diagnostic) => {
-          const isAssignabilityError =
-            /Argument of type '([^']+)' is not assignable to parameter of type '([^']+)'/.test(
-              diagnostic.messageText,
-            );
-
-          if (file?.content && isAssignabilityError) {
-            const targetStr = "TestValidator.equals";
-            const lines = transformLines(file?.content);
-
-            const start = diagnostic.start;
-            if (typeof start === "number") {
-              const errorLine = lines.find((line) => line.end > start);
-              if (errorLine?.text.includes(targetStr)) {
-                function swapTestValidatorArgsMultiline(code: string): string {
-                  return code.replace(
-                    /TestValidator\.equals\((['"`][^'"`]+['"`])\)\s*\(([\s\S]*?)\)\s*\(([\s\S]*?)\)/g,
-                    (_, title, a, b) =>
-                      `TestValidator.equals(${title})(${b.trim()})(${a.trim()})`,
-                  );
-                }
-                errorLine.text = swapTestValidatorArgsMultiline(errorLine.text);
-                file.content = lines.join("\n");
-
-                return false;
-              }
-            }
-          }
-
-          return true;
-        });
+        d = d.filter((diagnostic) => replaceExpectAndActual(diagnostic, file));
+        if (d.length === 0 && typeof file?.content === "string") {
+          return {
+            location: filename,
+            content: file.content,
+            scenario: scenario,
+          };
+        }
 
         const response: ICorrectTestFunctionProps = await process(
           ctx,
@@ -279,6 +256,41 @@ async function step<Model extends ILlmSchema.Model>(
     }),
     life - 1,
   );
+}
+
+function replaceExpectAndActual(
+  diagnostic: IAutoBeTypeScriptCompilerResult.IDiagnostic,
+  file?: AutoBeTestFile,
+): boolean {
+  const isAssignabilityError =
+    /Argument of type '([^']+)' is not assignable to parameter of type '([^']+)'/.test(
+      diagnostic.messageText,
+    );
+
+  if (file?.content && isAssignabilityError) {
+    const targetStr = "TestValidator.equals";
+    const lines = transformLines(file?.content);
+
+    const start = diagnostic.start;
+    if (typeof start === "number") {
+      const errorLine = lines.find((line) => line.end > start);
+      if (errorLine?.text.includes(targetStr)) {
+        function swapTestValidatorArgsMultiline(code: string): string {
+          return code.replace(
+            /TestValidator\.equals\((['"`][^'"`]+['"`])\)\s*\(([\s\S]*?)\)\s*\(([\s\S]*?)\)/g,
+            (_, title, a, b) =>
+              `TestValidator.equals(${title})(${b.trim()})(${a.trim()})`,
+          );
+        }
+        errorLine.text = swapTestValidatorArgsMultiline(errorLine.text);
+        file.content = lines.map((el) => el.text).join("\n");
+
+        return false;
+      }
+    }
+  }
+
+  return true;
 }
 
 /**
