@@ -16,10 +16,22 @@ export namespace IAutoBeTestScenarioApplication {
   }
 
   export interface IScenarioGroup {
-    /** Target API endpoint to test. */
+    /**
+     * Target API endpoint to test.
+     *
+     * This must be **unique** across all scenario groups. An endpoint is
+     * identified by its `path` and `method` combination.
+     *
+     * Multiple test scenarios may exist for a single endpoint.
+     */
     endpoint: AutoBeOpenApi.IEndpoint;
 
-    /** Array of test scenarios. */
+    /**
+     * An array of test scenarios associated with the given endpoint.
+     *
+     * Each scenario represents a specific test case for the same `path` and
+     * `method`.
+     */
     scenarios: IScenario[];
   }
 
