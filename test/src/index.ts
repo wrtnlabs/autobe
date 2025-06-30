@@ -84,20 +84,11 @@ async function main(): Promise<void> {
   }
 
   console.log("Token Usage");
-  console.table([
-    {
-      component: "Total",
-      value: tokenUsage.aggregate.total,
-    },
-    {
-      component: "Input",
-      value: tokenUsage.aggregate.input.total,
-    },
-    {
-      component: "Output",
-      value: tokenUsage.aggregate.output.total,
-    },
-  ]);
+  console.table({
+    Total: tokenUsage.aggregate.total.toLocaleString("en-US"),
+    Input: tokenUsage.aggregate.input.total.toLocaleString("en-US"),
+    Output: tokenUsage.aggregate.output.total.toLocaleString("en-US"),
+  });
   if (exceptions.length !== 0) process.exit(-1);
 }
 main().catch((error) => {
