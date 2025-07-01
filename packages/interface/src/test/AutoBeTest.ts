@@ -259,7 +259,55 @@ export namespace AutoBeTest {
     | IReturnStatement
     | IThrowStatement;
 
+  /**
+   * Block for grouping statements in specific structural contexts.
+   *
+   * **SPECIAL USE ONLY**: This type represents a block of statements and
+   * should only be used in specific contexts where statement grouping is
+   * structurally required:
+   *
+   * - If/else statement branches
+   *
+   *   - {@link IIfStatement.thenStatement}
+   *   - {@link IIfStatement.elseStatement}
+   * - Arrow function bodies: {@link IArrowFunction.body}
+   * - Other contexts requiring explicit block scoping
+   *
+   * Unlike a block statement, this is not a statement itself but a structural
+   * container for statements. For normal test function flow, use individual
+   * statements directly rather than wrapping them in blocks.
+   *
+   * **Updated for API-first workflow**: Blocks can now contain
+   * `IApiOperateStatement` for API operations, predicate expressions for
+   * validations, and other statement types as needed within conditional logic
+   * or function bodies.
+   *
+   * AI function calling restriction: Do not use for general statement grouping
+   * in main function flow. Reserve for structural requirements only
+   * (conditional branches, function bodies).
+   */
   export interface IBlock extends IStatementBase<"block"> {
+    /**
+     * Nested statements within this block.
+     *
+     * Each statement represents a step within the grouped operation. Can
+     * include any valid statement type:
+     *
+     * - `IApiOperateStatement` for API operations within conditional logic
+     * - Predicate expressions for validations within blocks
+     * - `IVariableDeclaration` for computed values within conditional branches
+     * - Other statement types as needed for the block's purpose
+     *
+     * Maintains the same ordering significance as the root function's
+     * statements array.
+     *
+     * Example business context - Block: "Premium Customer Workflow"
+     *
+     * - API operation: Verify premium status
+     * - API operation: Access exclusive content
+     * - Predicate: Validate premium features are available
+     * - API operation: Log premium usage
+     */
     statements: IStatement[];
   }
 
