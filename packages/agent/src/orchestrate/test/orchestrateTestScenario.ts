@@ -201,55 +201,22 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
       typia.validate<IAutoBeTestScenarioApplication.IProps>(next);
     if (result.success === false) return result;
 
-    const errors: IValidation.IError[] = [];
-    result.data.scenarioGroups.forEach((pg, i, arr) => {
-      arr.forEach((target, j) => {
-        if (
-          i !== j &&
-          target.endpoint.method === pg.endpoint.method &&
-          target.endpoint.path === pg.endpoint.path
-        ) {
-          if (
-            !errors.find(
-              (el) =>
-                el.path === `scenarioGroups[${j}].path` &&
-                el.value === target.endpoint.path,
-            )
-          ) {
-            errors.push({
-              path: `scenarioGroups[${j}].path`,
-              expected: `scenarioGroup's {method + path} cannot duplicated.`,
-              value: target.endpoint.path,
-            });
-          }
+    const scenarioGroups: IAutoBeTestScenarioApplication.IScenarioGroup[] = [];
+    result.data.scenarioGroups.forEach((sg) => {
+      const created = scenarioGroups.find(
+        (el) =>
+          el.endpoint.method === sg.endpoint.method &&
+          el.endpoint.path === sg.endpoint.path,
+      );
 
-          if (
-            !errors.find(
-              (el) =>
-                el.path === `scenarioGroups[${j}].method` &&
-                el.value === target.endpoint.method,
-            )
-          ) {
-            errors.push({
-              path: `scenarioGroups[${j}].method`,
-              expected: `scenarioGroup's {method + path} cannot duplicated.`,
-              value: target.endpoint.method,
-            });
-          }
-        }
-      });
+      if (created) {
+        created.scenarios.push(...sg.scenarios);
+      } else {
+        scenarioGroups.push(sg);
+      }
     });
 
-    if (errors.length !== 0) {
-      console.log(JSON.stringify(errors, null, 2), "errors");
-      return {
-        success: false,
-        errors,
-        data: next,
-      };
-    }
-
-    return result;
+    return { success: true, data: scenarioGroups };
   };
   return {
     protocol: "class",
