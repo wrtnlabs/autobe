@@ -1,4 +1,4 @@
-import { IAutoBeTypeScriptCompilerResult } from "../compiler";
+import { IAutoBeTypeScriptCompileResult } from "../compiler";
 import { AutoBeTestFile } from "../histories";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
@@ -42,12 +42,12 @@ export interface AutoBeTestValidateEvent
    * Compilation result indicating success, failure, or exception during
    * validation.
    *
-   * Contains the complete {@link IAutoBeTypeScriptCompilerResult} from the
+   * Contains the complete {@link IAutoBeTypeScriptCompileResult} from the
    * validation process, which can be:
    *
-   * - {@link IAutoBeTypeScriptCompilerResult.ISuccess} for successful compilation
-   * - {@link IAutoBeTypeScriptCompilerResult.IFailure} for compilation errors
-   * - {@link IAutoBeTypeScriptCompilerResult.IException} for unexpected runtime
+   * - {@link IAutoBeTypeScriptCompileResult.ISuccess} for successful compilation
+   * - {@link IAutoBeTypeScriptCompileResult.IFailure} for compilation errors
+   * - {@link IAutoBeTypeScriptCompileResult.IException} for unexpected runtime
    *   errors
    *
    * Success results indicate that the test suite is ready for completion, while
@@ -56,9 +56,9 @@ export interface AutoBeTestValidateEvent
    * application architecture.
    */
   result:
-    | IAutoBeTypeScriptCompilerResult.IFailure
-    | IAutoBeTypeScriptCompilerResult.IException
-    | IAutoBeTypeScriptCompilerResult.ISuccess;
+    | IAutoBeTypeScriptCompileResult.IFailure
+    | IAutoBeTypeScriptCompileResult.IException
+    | IAutoBeTypeScriptCompileResult.ISuccess;
 
   /**
    * Iteration number of the requirements analysis this test validation was

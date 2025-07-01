@@ -4,7 +4,7 @@ import {
   AutoBeTestScenario,
   AutoBeTestValidateEvent,
   AutoBeTestWriteEvent,
-  IAutoBeTypeScriptCompilerResult,
+  IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
@@ -110,7 +110,7 @@ async function step<Model extends ILlmSchema.Model>(
   life: number,
 ): Promise<AutoBeTestValidateEvent> {
   // COMPILE TEST CODE
-  const result: IAutoBeTypeScriptCompilerResult =
+  const result: IAutoBeTypeScriptCompileResult =
     await ctx.compiler.typescript.compile({
       files: {
         ...entireFiles,
@@ -146,7 +146,7 @@ async function step<Model extends ILlmSchema.Model>(
   // Make the diagnostics object (e.g. { "test/features/api/article.ts": [error1, error2] })
   const diagnostics: Record<
     string,
-    IAutoBeTypeScriptCompilerResult.IDiagnostic[]
+    IAutoBeTypeScriptCompileResult.IDiagnostic[]
   > = {};
 
   result.diagnostics.forEach((d) => {
@@ -259,7 +259,7 @@ async function step<Model extends ILlmSchema.Model>(
 }
 
 function replaceExpectAndActual(
-  diagnostic: IAutoBeTypeScriptCompilerResult.IDiagnostic,
+  diagnostic: IAutoBeTypeScriptCompileResult.IDiagnostic,
   file?: AutoBeTestFile,
 ): boolean {
   const isAssignabilityError =
@@ -305,7 +305,7 @@ function replaceExpectAndActual(
  */
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  diagnostics: IAutoBeTypeScriptCompilerResult.IDiagnostic[],
+  diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[],
   code: string,
   scenario: AutoBeTestScenario,
 ): Promise<ICorrectTestFunctionProps> {
@@ -415,7 +415,7 @@ function formatDiagnostic(
     start: number;
     end: number; // exclusive
   }[],
-  diagnostic: IAutoBeTypeScriptCompilerResult.IDiagnostic,
+  diagnostic: IAutoBeTypeScriptCompileResult.IDiagnostic,
 ): string {
   const { start, length, messageText } = diagnostic;
   const message = messageText;

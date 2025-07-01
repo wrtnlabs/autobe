@@ -1,6 +1,6 @@
 import { tags } from "typia";
 
-import { IAutoBeTypeScriptCompilerResult } from "../compiler/IAutoBeTypeScriptCompilerResult";
+import { IAutoBeTypeScriptCompileResult } from "../compiler/IAutoBeTypeScriptCompileResult";
 import { AutoBeAgentHistoryBase } from "./AutoBeHistoryBase";
 import { AutoBeTestFile } from "./contents/AutoBeTestFile";
 
@@ -50,14 +50,14 @@ export interface AutoBeTestHistory extends AutoBeAgentHistoryBase<"test"> {
    * Contains the compilation outcome of the test files built through the
    * TypeScript compiler. The feedback process usually works correctly, so this
    * should typically indicate successful compilation. However, when using very
-   * small AI models, the {@link IAutoBeTypeScriptCompilerResult} might have
+   * small AI models, the {@link IAutoBeTypeScriptCompileResult} might have
    * `success := false`.
    *
    * Compilation errors trigger a self-correction feedback loop where the AI
    * receives detailed error messages and attempts to fix the issues
    * automatically.
    */
-  compiled: IAutoBeTypeScriptCompilerResult;
+  compiled: IAutoBeTypeScriptCompileResult;
 
   /**
    * Reason why the Test agent was activated through function calling.

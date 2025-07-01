@@ -1,4 +1,4 @@
-import { IAutoBePrismaCompilerResult } from "../compiler";
+import { IAutoBePrismaCompileResult } from "../compiler";
 import { AutoBePrisma } from "../prisma";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
@@ -55,7 +55,7 @@ export interface AutoBePrismaCompleteEvent
   /**
    * Results of compiling the generated Prisma schema files.
    *
-   * Contains the {@link IAutoBePrismaCompilerResult} from processing the
+   * Contains the {@link IAutoBePrismaCompileResult} from processing the
    * generated schemas through the Prisma compiler. This should always indicate
    * successful compilation since the schemas are generated from pre-validated
    * AST structures. The compilation results include documentation, diagrams,
@@ -65,7 +65,7 @@ export interface AutoBePrismaCompleteEvent
    * correctly in the target database environment and integrate properly with
    * the broader development ecosystem.
    */
-  compiled: IAutoBePrismaCompilerResult;
+  compiled: IAutoBePrismaCompileResult;
 
   /**
    * Iteration number of the requirements analysis this database design was

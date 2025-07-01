@@ -1,0 +1,15 @@
+{
+  "private": true,
+  "name": "@autobe/nestjs-dependencies",
+  "version": "0.0.0",
+  "author": "Wrtn Technologies",
+  "license": "MIT",
+  "devDependencies": {
+    "@nestia/e2e": "^7.0.0",
+    "@nestia/fetcher": "^7.0.0",
+    "@samchon/openapi": "^4.3.3",
+    "@types/node": "^22.15.3",
+    "typescript": "~5.8.3",
+    "typia": "^9.3.1"
+  }
+}

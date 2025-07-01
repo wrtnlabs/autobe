@@ -3,7 +3,7 @@ import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeTestScenario,
   AutoBeTestWriteEvent,
-  IAutoBeTypeScriptCompilerResult,
+  IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import fs from "fs";
 import typia from "typia";
@@ -38,7 +38,7 @@ export const validate_agent_test_write = async (
 
   // REPORT RESULT
   const files: Record<string, string> = await agent.getFiles();
-  const compiled: IAutoBeTypeScriptCompilerResult = await agent
+  const compiled: IAutoBeTypeScriptCompileResult = await agent
     .getContext()
     .compiler.typescript.compile({
       files: Object.fromEntries(

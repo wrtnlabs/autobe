@@ -1,4 +1,4 @@
-import { AutoBeOpenApi, IAutoBeTestCompilerProps } from "@autobe/interface";
+import { AutoBeOpenApi, IAutoBeTestWriteProps } from "@autobe/interface";
 import { NestiaMigrateImportProgrammer } from "@nestia/migrate/lib/programmers/NestiaMigrateImportProgrammer";
 import ts, { FunctionDeclaration } from "typescript";
 
@@ -10,7 +10,7 @@ interface WriteTestContext {
   document: AutoBeOpenApi.IDocument;
 }
 
-export function writeTestFunction(props: IAutoBeTestCompilerProps): string {
+export function writeTestFunction(props: IAutoBeTestWriteProps): string {
   const ctx: WriteTestContext = {
     importer: new NestiaMigrateImportProgrammer(),
     document: props.document,

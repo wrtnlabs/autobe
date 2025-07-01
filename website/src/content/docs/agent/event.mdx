@@ -125,7 +125,7 @@ The `step` property indicates which iteration of the requirements analysis repor
   "Prisma Events",
   <code>AutoBePrisma</code>,
   <code>IAutoBePrismaValidation</code>,
-  <code>IAutoBePrismaCompilerResult</code>,
+  <code>IAutoBePrismaCompileResult</code>,
 ]}>
   <Tabs.Tab>
     <LocalSourceGroup 
@@ -155,7 +155,7 @@ The `step` property indicates which iteration of the requirements analysis repor
   </Tabs.Tab>
   <Tabs.Tab>
     <LocalSource
-      path="packages/interface/src/compiler/IAutoBePrismaCompilerResult.ts"
+      path="packages/interface/src/compiler/IAutoBePrismaCompileResult.ts"
       filename="@autobe/interface"
       showLineNumbers />
   </Tabs.Tab>
@@ -179,7 +179,7 @@ Once all schema designs are completed, the [`AutoBePrismaValidateEvent`](/api/in
 
 `@autobe` constructs data of type [`AutoBePrisma.IApplication`](/api/interfaces/_autobe_interface.AutoBePrisma.IApplication.html) through AI function calling, validates it, and then generates prisma schema files. The validation results are stored in the `result` property as type [`IAutoBePrismaValidation`](/api/types/_autobe_interface.IAutoBePrismaValidation-1.html), and the results of converting this to prisma schema files (code generation) are stored in the `schemas` property.
 
-Note that `@autobe` generally creates valid [`AutoBePrisma.IApplication`](/api/interfaces/_autobe_interface.AutoBePrisma.IApplication.html) data through a validation feedback process. However, when using very small AI models, the [`IAutoBePrismaValidation`](/api/types/_autobe_interface.IAutoBePrismaValidation-1.html) result might have `success := false`. Additionally, the results of compiling the prisma schema files are stored in the `compiled` property as type [`IAutoBePrismaCompilerResult`](/api/types/_autobe_interface.IAutoBePrismaCompilerResult-1.html), which should always compile successfully. If compilation fails, it would be a bug in `@autobe`, so please report it as an issue.
+Note that `@autobe` generally creates valid [`AutoBePrisma.IApplication`](/api/interfaces/_autobe_interface.AutoBePrisma.IApplication.html) data through a validation feedback process. However, when using very small AI models, the [`IAutoBePrismaValidation`](/api/types/_autobe_interface.IAutoBePrismaValidation-1.html) result might have `success := false`. Additionally, the results of compiling the prisma schema files are stored in the `compiled` property as type [`IAutoBePrismaCompileResult`](/api/types/_autobe_interface.IAutoBePrismaCompileResult-1.html), which should always compile successfully. If compilation fails, it would be a bug in `@autobe`, so please report it as an issue.
 
 The `step` property indicates which requirements analysis report iteration the database design was performed for. If the [`AutoBePrismaCompleteEvent.step`](/api/interfaces/_autobe_interface.AutoBePrismaCompleteEvent.html#step) value is lower than [`AutoBeAnalyzeCompleteEvent.step`](/api/interfaces/_autobe_interface.AutoBeAnalyzeCompleteEvent.html#step), it means the database design has not yet been updated to reflect the latest requirements.
 
@@ -243,7 +243,7 @@ The `step` property indicates which requirements analysis report iteration the A
 ### Test Events
 <Tabs items={[
   "Test Events",
-  <code>IAutoBeTypeScriptCompilerResult</code>,
+  <code>IAutoBeTypeScriptCompileResult</code>,
 ]}>
   <Tabs.Tab>
     <LocalSourceGroup 
@@ -261,7 +261,7 @@ The `step` property indicates which requirements analysis report iteration the A
   </Tabs.Tab>
   <Tabs.Tab>
     <LocalSource
-      path="packages/interface/src/compiler/IAutoBeTypeScriptCompilerResult.ts"
+      path="packages/interface/src/compiler/IAutoBeTypeScriptCompileResult.ts"
       filename="@autobe/interface"
       showLineNumbers />
   </Tabs.Tab>
@@ -288,7 +288,7 @@ Once all test code writing is complete, the [`AutoBeTestCompleteEvent`](/api/int
 
 `@autobe` conceives multiple use case scenarios for each API endpoint and implements them as test programs. These test programs are composed of one TypeScript file and a standalone function for each scenario, stored in the `files` property. These are then built using the TypeScript compiler embedded in `@autobe`, with the results stored in the `compiled` property.
 
-When the AI occasionally writes incorrect TypeScript code, `@autobe` provides compilation error messages as feedback, allowing the AI to self-correct. This feedback process usually works correctly, so test code written by AI almost always compiles successfully. However, when using very small AI models, the [`IAutoBeTypeScriptCompilerResult`](/api/types/_autobe_interface.IAutoBeTypeScriptCompilerResult-1.html) result might have `success := false`.
+When the AI occasionally writes incorrect TypeScript code, `@autobe` provides compilation error messages as feedback, allowing the AI to self-correct. This feedback process usually works correctly, so test code written by AI almost always compiles successfully. However, when using very small AI models, the [`IAutoBeTypeScriptCompileResult`](/api/types/_autobe_interface.IAutoBeTypeScriptCompileResult-1.html) result might have `success := false`.
 
 The `step` property indicates which requirements analysis report iteration the test code was written for. If the [`AutoBeTestCompleteEvent.step`](/api/interfaces/_autobe_interface.AutoBeTestCompleteEvent.html#step) value is lower than [`AutoBeAnalyzeCompleteEvent.step`](/api/interfaces/_autobe_interface.AutoBeAnalyzeCompleteEvent.html#step), it means the test code has not yet been updated to reflect the latest requirements.
 

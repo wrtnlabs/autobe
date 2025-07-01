@@ -1,4 +1,4 @@
-import { IAutoBeTypeScriptCompilerResult } from "../compiler/IAutoBeTypeScriptCompilerResult";
+import { IAutoBeTypeScriptCompileResult } from "../compiler/IAutoBeTypeScriptCompileResult";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
 /**
@@ -43,7 +43,7 @@ export interface AutoBeTestCompleteEvent
    * Results of compiling the generated e2e test TypeScript files through the
    * TypeScript compiler.
    *
-   * Contains the {@link IAutoBeTypeScriptCompilerResult} from processing the
+   * Contains the {@link IAutoBeTypeScriptCompileResult} from processing the
    * generated test files through the TypeScript compilation pipeline. This
    * compilation result validates test code syntax, type safety, framework
    * integration, and dependency resolution to ensure that all generated test
@@ -62,7 +62,7 @@ export interface AutoBeTestCompleteEvent
    * corresponding API implementations without any syntax or integration
    * issues.
    */
-  compiled: IAutoBeTypeScriptCompilerResult;
+  compiled: IAutoBeTypeScriptCompileResult;
 
   /**
    * Final iteration number of the requirements analysis this test suite was

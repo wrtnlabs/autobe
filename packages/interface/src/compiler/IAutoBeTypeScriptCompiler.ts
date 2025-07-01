@@ -1,5 +1,5 @@
-import { IAutoBeTypeScriptCompilerProps } from "./IAutoBeTypeScriptCompilerProps";
-import { IAutoBeTypeScriptCompilerResult } from "./IAutoBeTypeScriptCompilerResult";
+import { IAutoBeTypeScriptCompileProps } from "./IAutoBeTypeScriptCompileProps";
+import { IAutoBeTypeScriptCompileResult } from "./IAutoBeTypeScriptCompileResult";
 
 /**
  * Interface for the official TypeScript compiler used for final code validation
@@ -47,8 +47,8 @@ export interface IAutoBeTypeScriptCompiler {
    *   generated outputs, or detailed error information for AI feedback
    */
   compile(
-    props: IAutoBeTypeScriptCompilerProps,
-  ): Promise<IAutoBeTypeScriptCompilerResult>;
+    props: IAutoBeTypeScriptCompileProps,
+  ): Promise<IAutoBeTypeScriptCompileResult>;
 
   /**
    * Retrieves the content of an external dependency file from `node_modules` by
