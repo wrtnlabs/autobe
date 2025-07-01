@@ -225,6 +225,9 @@ export namespace AutoBeTest {
     statements: IStatement[];
   }
 
+  /* -----------------------------------------------------------
+    STATEMENTS
+  ----------------------------------------------------------- */
   /**
    * Union type representing all possible statement types in test functions.
    *
@@ -793,9 +796,13 @@ export namespace AutoBeTest {
    * specific type discriminator value.
    */
   interface IStatementBase<Type extends string> {
+    /** Discriminator type for identifying the statement type. */
     type: Type;
   }
 
+  /* -----------------------------------------------------------
+    THE EXPRESSION
+  ----------------------------------------------------------- */
   /**
    * Union type encompassing all possible expressions in test scenarios.
    *
@@ -836,6 +843,10 @@ export namespace AutoBeTest {
     | IPrefixUnaryExpression
     | IPostfixUnaryExpression
     | IBinaryExpression
+    | IArrayFilterExpression
+    | IArrayForEachExpression
+    | IArrayMapExpression
+    | IArrayRepeatExpression
     | IBooleanLiteral
     | INumericLiteral
     | IStringLiteral
@@ -843,7 +854,6 @@ export namespace AutoBeTest {
     | IObjectLiteral
     | INullLiteral
     | IUndefinedKeyword
-    | IArrayRandom
     | IPickRandom
     | ISampleRandom
     | IBooleanRandom
@@ -866,9 +876,13 @@ export namespace AutoBeTest {
    * specific type discriminator value.
    */
   interface IExpressionBase<Type extends string> {
+    /** Discriminator type for identifying the expression type. */
     type: Type;
   }
 
+  /* -----------------------------------------------------------
+    ACCESSORS
+  ----------------------------------------------------------- */
   /**
    * Identifier expression for referencing variables and utility functions.
    *
@@ -1063,6 +1077,9 @@ export namespace AutoBeTest {
     argumentExpression: IExpression;
   }
 
+  /* -----------------------------------------------------------
+    FUNCTIONAL
+  ----------------------------------------------------------- */
   /**
    * Arrow function expression for callback definitions.
    *
@@ -1077,7 +1094,7 @@ export namespace AutoBeTest {
    * E2E testing scenarios:
    *
    * - Callback functions for IErrorPredicate (testing expected API errors)
-   * - Generator functions for IArrayRandom (creating test data arrays)
+   * - Generator functions for IArrayRepeatExpression (creating test data arrays)
    * - Filter/transform functions for captured data manipulation
    * - Event handler functions for specialized testing scenarios
    *
@@ -1416,6 +1433,224 @@ export namespace AutoBeTest {
   }
 
   /**
+   * Array filter expression for selecting elements that meet criteria.
+   *
+   * Filters array elements based on a predicate function, keeping only elements
+   * that satisfy the specified condition. Essential for extracting subsets of
+   * business data from captured API responses or test collections based on
+   * business rules and conditions.
+   *
+   * E2E testing scenarios:
+   *
+   * - Filtering products by category or price range from API response arrays
+   * - Selecting active users from captured user lists for business operations
+   * - Finding orders with specific status from API response collections
+   * - Extracting eligible items for business rule validation
+   *
+   * **Primary usage**: Processing captured data from API operations to create
+   * focused datasets for subsequent operations or validations.
+   *
+   * AI function calling strategy: Use when business logic requires working with
+   * specific subsets of data captured from API responses, especially for
+   * conditional operations or validation scenarios.
+   */
+  export interface IArrayFilterExpression
+    extends IExpressionBase<"arrayFilterExpression"> {
+    /**
+     * Array expression to be filtered.
+     *
+     * Should evaluate to an array containing business entities or data captured
+     * from API operations. Can reference variables from previous API calls,
+     * array literals, or other expressions that produce arrays.
+     *
+     * Examples:
+     *
+     * - Reference to captured product array from API response
+     * - Array of user entities from previous API operations
+     * - Collection of business data for processing
+     */
+    expression: IExpression;
+
+    /**
+     * Arrow function defining the filter criteria.
+     *
+     * Called for each array element to determine if it should be included in
+     * the filtered result. Should return a boolean expression that evaluates
+     * business conditions relevant to the filtering purpose.
+     *
+     * The function parameter represents the current array element being
+     * evaluated and can be used to access properties for business logic
+     * conditions.
+     */
+    function: IArrowFunction;
+  }
+
+  /**
+   * Array forEach expression for iterating over elements with side effects.
+   *
+   * Executes a function for each array element without returning a new array.
+   * Used for performing operations on each element such as validation, logging,
+   * or side-effect operations that don't require collecting results.
+   *
+   * E2E testing scenarios:
+   *
+   * - Validating each product in a collection meets business requirements
+   * - Logging details of each order for debugging test scenarios
+   * - Performing individual validations on user entities from API responses
+   * - Executing side-effect operations on captured business data
+   *
+   * **Note**: Use when you need to process each element but don't need to
+   * transform or collect results. For transformations, use
+   * IArrayMapExpression.
+   *
+   * AI function calling strategy: Use for validation operations or side effects
+   * on each element of captured data collections, especially when the operation
+   * doesn't produce a new collection.
+   */
+  export interface IArrayForEachExpression
+    extends IExpressionBase<"arrayForEachExpression"> {
+    /**
+     * Array expression to iterate over.
+     *
+     * Should evaluate to an array containing business entities or data that
+     * requires individual processing. Often references collections captured
+     * from API operations or constructed arrays for testing.
+     *
+     * Examples:
+     *
+     * - Array of customers from API response requiring individual validation
+     * - Collection of orders needing status verification
+     * - List of products requiring individual business rule checks
+     */
+    expression: IExpression;
+
+    /**
+     * Arrow function executed for each array element.
+     *
+     * Called once for each element in the array. Should contain operations that
+     * process the individual element, such as validation calls, logging
+     * operations, or other side effects relevant to the business scenario.
+     *
+     * The function parameter represents the current array element and can be
+     * used to access properties and perform element-specific operations.
+     */
+    function: IArrowFunction;
+  }
+
+  /**
+   * Array map expression for transforming elements into new values.
+   *
+   * Transforms each array element using a function, producing a new array with
+   * the transformed values. Essential for data transformation, extraction of
+   * specific properties, and converting between data formats in business
+   * scenarios.
+   *
+   * E2E testing scenarios:
+   *
+   * - Extracting IDs from captured entity arrays for subsequent API operations
+   * - Transforming product data for different API request formats
+   * - Converting user objects to summary data for business validations
+   * - Creating parameter arrays from captured business entities
+   *
+   * **Primary usage**: Data transformation when you need to convert captured
+   * API response data into formats suitable for subsequent operations or when
+   * extracting specific information from business entities.
+   *
+   * AI function calling strategy: Use when business logic requires transforming
+   * collections of captured data into different formats, especially for
+   * preparing data for subsequent API operations.
+   */
+  export interface IArrayMapExpression
+    extends IExpressionBase<"arrayMapExpression"> {
+    /**
+     * Array expression to be transformed.
+     *
+     * Should evaluate to an array containing business entities or data that
+     * needs transformation. Often references collections captured from API
+     * operations that require conversion to different formats.
+     *
+     * Examples:
+     *
+     * - Array of product entities requiring ID extraction
+     * - Collection of users needing transformation to summary format
+     * - Business data requiring format conversion for API parameters
+     */
+    expression: IExpression;
+
+    /**
+     * Arrow function defining the transformation logic.
+     *
+     * Called for each array element to produce the transformed value. Should
+     * return an expression that represents the desired transformation of the
+     * input element, creating business-appropriate output data.
+     *
+     * The function parameter represents the current array element being
+     * transformed and can be used to access properties and create the
+     * transformed result.
+     */
+    function: IArrowFunction;
+  }
+
+  /**
+   * Array repeat generator for dynamic test data creation.
+   *
+   * Generates arrays with specified length by repeating a generator function.
+   * Essential for creating realistic test data that simulates collections like
+   * product lists, user arrays, or transaction histories for use in API
+   * operations.
+   *
+   * **Primary usage**: Creating dynamic test data for API operation parameters
+   * that require arrays, or for generating test scenarios with specific data
+   * sizes.
+   *
+   * E2E testing importance: Enables testing with realistic data volumes and
+   * variations that reflect real-world usage patterns, particularly when
+   * combined with `IApiOperateStatement` for bulk operations.
+   *
+   * AI function calling strategy: Use when business scenarios require
+   * collections of specific size rather than fixed arrays, especially for API
+   * operations that handle multiple entities.
+   */
+  export interface IArrayRepeatExpression
+    extends IExpressionBase<"arrayRepeatExpression"> {
+    /**
+     * Expression determining the array length.
+     *
+     * Can be a literal number for fixed length or a random generator for
+     * variable length. Should reflect realistic business constraints (e.g.,
+     * reasonable product quantities, user list sizes).
+     *
+     * Examples:
+     *
+     * - INumericLiteral(5) for exactly 5 elements
+     * - IIntegerRandom for variable length within business limits
+     *
+     * AI consideration: Choose lengths appropriate for the business context
+     * (e.g., 1-10 for shopping cart items, 10-100 for product catalogs).
+     */
+    length: IExpression;
+
+    /**
+     * Arrow function for generating individual array elements.
+     *
+     * Called once for each array element to generate the element value. Should
+     * produce business-appropriate data for the array's purpose.
+     *
+     * The function typically uses random generators to create varied but
+     * realistic business entities. Can also reference captured data from
+     * previous API operations to create related test data.
+     *
+     * AI implementation requirement: Generate meaningful business data rather
+     * than arbitrary random values. Consider how the generated data will be
+     * used in subsequent API operations.
+     */
+    function: IArrowFunction;
+  }
+
+  /* -----------------------------------------------------------
+    LITERALS
+  ----------------------------------------------------------- */
+  /**
    * Boolean literal for true/false values.
    *
    * Represents direct boolean values used in conditions, flags, and business
@@ -1654,61 +1889,9 @@ export namespace AutoBeTest {
     value: undefined;
   }
 
-  /**
-   * Random array generator for dynamic test data creation.
-   *
-   * Generates arrays with random length and elements using a generator
-   * function. Essential for creating realistic test data that simulates
-   * variable-length business collections like product lists, user arrays, or
-   * transaction histories for use in API operations.
-   *
-   * **Primary usage**: Creating dynamic test data for API operation parameters
-   * that require arrays, or for generating test scenarios with variable data
-   * sizes.
-   *
-   * E2E testing importance: Enables testing with realistic data volumes and
-   * variations that reflect real-world usage patterns, particularly when
-   * combined with `IApiOperateStatement` for bulk operations.
-   *
-   * AI function calling strategy: Use when business scenarios require
-   * collections of variable size rather than fixed arrays, especially for API
-   * operations that handle multiple entities.
-   */
-  export interface IArrayRandom extends IExpressionBase<"arrayRandom"> {
-    /**
-     * Expression determining the array length.
-     *
-     * Can be a literal number for fixed length or a random generator for
-     * variable length. Should reflect realistic business constraints (e.g.,
-     * reasonable product quantities, user list sizes).
-     *
-     * Examples:
-     *
-     * - INumericLiteral(5) for exactly 5 elements
-     * - IIntegerRandom for variable length within business limits
-     *
-     * AI consideration: Choose lengths appropriate for the business context
-     * (e.g., 1-10 for shopping cart items, 10-100 for product catalogs).
-     */
-    length: IExpression;
-
-    /**
-     * Arrow function for generating individual array elements.
-     *
-     * Called once for each array element to generate the element value. Should
-     * produce business-appropriate data for the array's purpose.
-     *
-     * The function typically uses random generators to create varied but
-     * realistic business entities. Can also reference captured data from
-     * previous API operations to create related test data.
-     *
-     * AI implementation requirement: Generate meaningful business data rather
-     * than arbitrary random values. Consider how the generated data will be
-     * used in subsequent API operations.
-     */
-    generate: IArrowFunction;
-  }
-
+  /* -----------------------------------------------------------
+    RANDOM
+  ----------------------------------------------------------- */
   /**
    * Random picker for selecting from predefined options.
    *

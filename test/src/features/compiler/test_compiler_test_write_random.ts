@@ -37,28 +37,6 @@ export const test_compiler_test_write_random = async (): Promise<void> => {
       pattern: "^[a-zA-Z0-9]{5,10}$",
     },
     {
-      type: "arrayRandom",
-      length: {
-        type: "numericLiteral",
-        value: 5,
-      },
-      generate: {
-        type: "arrowFunction",
-        body: {
-          type: "block",
-          statements: [
-            {
-              type: "returnStatement",
-              value: {
-                type: "numericLiteral",
-                value: 1,
-              },
-            },
-          ],
-        },
-      },
-    },
-    {
       type: "pickRandom",
       expression: {
         type: "arrayLiteral",
@@ -136,9 +114,6 @@ export const test_compiler_test_write_random = async (): Promise<void> => {
     result.includes(
       `typia.random<string & tags.Pattern<"^[a-zA-Z0-9]{5,10}$">>()`,
     ),
-  );
-  TestValidator.predicate("array")(
-    result.includes("await ArrayUtil.asyncRepeat(5)(async () => {"),
   );
   TestValidator.predicate("pick")(result.includes("RandomGenerator.pick(["));
   TestValidator.predicate("sample")(

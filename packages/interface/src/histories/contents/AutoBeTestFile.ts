@@ -21,7 +21,7 @@ export interface AutoBeTestFile {
    * may be organized by API endpoints, feature modules, or business domains to
    * ensure logical test suite organization and easy navigation.
    *
-   * Example: "tests/e2e/users/authentication.test.ts"
+   * Example: "test/features/api/order/test_api_shopping_order_publish.ts"
    */
   location: string;
 
