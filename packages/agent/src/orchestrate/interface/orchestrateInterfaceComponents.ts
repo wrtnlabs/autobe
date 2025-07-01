@@ -127,7 +127,6 @@ async function process<Model extends ILlmSchema.Model>(
         ].join("\n"),
       },
     ],
-    tokenUsage: ctx.usage(),
     controllers: [
       createApplication({
         model: ctx.model,
@@ -145,27 +144,33 @@ async function process<Model extends ILlmSchema.Model>(
   enforceToolCall(agentica);
 
   const already: string[] = Object.keys(oldbie.schemas);
-  await agentica.conversate(
-    [
-      "Make type components please.",
-      "",
-      "Here is the list of request/response bodies' type names from",
-      "OpenAPI operations. Make type components of them. If more object",
-      "types are required during making the components, please make them",
-      "too.",
-      "",
-      ...Array.from(remained).map((k) => `- \`${k}\``),
-      ...(already.length !== 0
-        ? [
-            "",
-            "> By the way, here is the list of components schemas what you've",
-            "> already made. So, you don't need to make them again.",
-            ">",
-            ...already.map((k) => `> - \`${k}\``),
-          ]
-        : []),
-    ].join("\n"),
-  );
+  await agentica
+    .conversate(
+      [
+        "Make type components please.",
+        "",
+        "Here is the list of request/response bodies' type names from",
+        "OpenAPI operations. Make type components of them. If more object",
+        "types are required during making the components, please make them",
+        "too.",
+        "",
+        ...Array.from(remained).map((k) => `- \`${k}\``),
+        ...(already.length !== 0
+          ? [
+              "",
+              "> By the way, here is the list of components schemas what you've",
+              "> already made. So, you don't need to make them again.",
+              ">",
+              ...already.map((k) => `> - \`${k}\``),
+            ]
+          : []),
+      ].join("\n"),
+    )
+    .finally(() => {
+      const tokenUsageMap = ctx.usage();
+      tokenUsageMap.root.increment(agentica.getTokenUsage());
+      tokenUsageMap.interface.increment(agentica.getTokenUsage());
+    });
   if (pointer.value === null) {
     // never be happened
     throw new Error("Failed to create components.");

@@ -75,7 +75,6 @@ async function step<Model extends ILlmSchema.Model>(
         ].join("\n"),
       },
     ],
-    tokenUsage: ctx.usage(),
     controllers: [
       createApplication({
         model: ctx.model,
@@ -96,7 +95,11 @@ async function step<Model extends ILlmSchema.Model>(
   });
   enforceToolCall(agentica);
 
-  await agentica.conversate("Fill missing schema types please");
+  await agentica.conversate("Fill missing schema types please").finally(() => {
+    const tokenUsageMap = ctx.usage();
+    tokenUsageMap.root.increment(agentica.getTokenUsage());
+    tokenUsageMap.interface.increment(agentica.getTokenUsage());
+  });
   if (pointer.value === null) {
     // unreachable
     throw new Error(

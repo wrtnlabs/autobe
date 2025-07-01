@@ -10,6 +10,7 @@ import { ILlmSchema } from "@samchon/openapi";
 import { IAutoBeConfig } from "../structures/IAutoBeConfig";
 import { AutoBeState } from "./AutoBeState";
 import { AutoBeTokenUsage } from "./AutoBeTokenUsage";
+import { IAutoBeApplication } from "./IAutoBeApplication";
 
 export interface AutoBeContext<Model extends ILlmSchema.Model> {
   model: Model;
@@ -19,6 +20,8 @@ export interface AutoBeContext<Model extends ILlmSchema.Model> {
   files: (options: IAutoBeGetFilesOptions) => Promise<Record<string, string>>;
   histories: () => AutoBeHistory[];
   state: () => AutoBeState;
-  usage: () => AutoBeTokenUsage;
+  usage: () => {
+    [key in "root" | keyof IAutoBeApplication]: AutoBeTokenUsage;
+  };
   dispatch: (event: AutoBeEvent) => void;
 }

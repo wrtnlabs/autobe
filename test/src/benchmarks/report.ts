@@ -11,9 +11,18 @@ export function generateReport(
   }[],
   startTime: number,
 ) {
-  const tokenUsage = results.reduce((acc, v) => {
-    return AutoBeTokenUsage.plus(acc, v.agent.getTokenUsage());
-  }, new AutoBeTokenUsage());
+  const tokenUsage = results
+    .map((v) => v.agent.getTokenUsage())
+    .reduce((acc, v) => {
+      return {
+        root: AutoBeTokenUsage.plus(acc.root, v.root),
+        analyze: AutoBeTokenUsage.plus(acc.analyze, v.analyze),
+        prisma: AutoBeTokenUsage.plus(acc.prisma, v.prisma),
+        interface: AutoBeTokenUsage.plus(acc.interface, v.interface),
+        test: AutoBeTokenUsage.plus(acc.test, v.test),
+        realize: AutoBeTokenUsage.plus(acc.realize, v.realize),
+      };
+    });
 
   return `
 Benchmark Report
@@ -52,8 +61,21 @@ ${(["analyze", "prisma", "interface"] as const)
   )
   .join("\n")}
 - Total Token Usage
-  - Aggregate: ${tokenUsage.aggregate.total.toLocaleString("en-US")}
-  - Call: ${tokenUsage.call.total.toLocaleString("en-US")}
-  - Describe: ${tokenUsage.describe.total.toLocaleString("en-US")}
+${(
+  [
+    ["Total", "root"],
+    ["Analyze", "analyze"],
+    ["Prisma", "prisma"],
+    ["Interface", "interface"],
+    ["Test", "test"],
+    ["Realize", "realize"],
+  ] as const
+).map(
+  ([name, key]) => `  - ${name}:
+    - Sum: ${tokenUsage[key].aggregate.total.toLocaleString("en-US")}
+    - Input: ${tokenUsage[key].aggregate.input.total.toLocaleString("en-US")}
+    - Output: ${tokenUsage[key].aggregate.output.total.toLocaleString("en-US")}
+  `,
+)}
 `;
 }

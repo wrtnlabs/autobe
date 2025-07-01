@@ -55,7 +55,6 @@ async function correct<Model extends ILlmSchema.Model>(
         },
       }),
     ],
-    tokenUsage: ctx.usage(),
   });
   enforceToolCall(agentica);
 
@@ -70,6 +69,10 @@ async function correct<Model extends ILlmSchema.Model>(
         "Return only the fixed code without explanations.",
       ].join("\n"),
     );
+  }).finally(() => {
+    const tokenUsageMap = ctx.usage();
+    tokenUsageMap.root.increment(agentica.getTokenUsage());
+    tokenUsageMap.test.increment(agentica.getTokenUsage());
   });
   if (pointer.value === null) throw new Error("Failed to modify test code.");
   pointer.value.content = complementTestWrite({

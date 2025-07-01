@@ -97,7 +97,6 @@ const execute = async <Model extends ILlmSchema.Model>(
         describe: null,
       },
     },
-    tokenUsage: ctx.usage(),
     histories: createHistoryProperties(ops, include, exclude),
     controllers: [
       createApplication({
@@ -111,7 +110,11 @@ const execute = async <Model extends ILlmSchema.Model>(
   });
   enforceToolCall(agentica);
 
-  await agentica.conversate(`create test scenarios.`);
+  await agentica.conversate(`create test scenarios.`).finally(() => {
+    const tokenUsageMap = ctx.usage();
+    tokenUsageMap.root.increment(agentica.getTokenUsage());
+    tokenUsageMap.test.increment(agentica.getTokenUsage());
+  });
   if (pointer.value.length === 0) {
     throw new Error("Failed to create test plans.");
   }

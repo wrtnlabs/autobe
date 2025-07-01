@@ -49,7 +49,6 @@ export class AutoBeAnalyzeAgent<Model extends ILlmSchema.Model> {
             describe: null,
           },
         },
-        tokenUsage: ctx.usage(),
         histories: [
           {
             id: v4(),
@@ -99,7 +98,13 @@ export class AutoBeAnalyzeAgent<Model extends ILlmSchema.Model> {
       return "Abort due to excess retry count";
     }
 
-    const response = await this.createAnalyzeAgent().conversate(content);
+    const agent = this.createAnalyzeAgent();
+    const response = await agent.conversate(content);
+
+    const tokenUsageMap = this.ctx.usage();
+    tokenUsageMap.root.increment(agent.getTokenUsage());
+    tokenUsageMap.analyze.increment(agent.getTokenUsage());
+
     const lastMessage = response[response.length - 1]!;
 
     if ("text" in lastMessage) {
@@ -134,6 +139,9 @@ export class AutoBeAnalyzeAgent<Model extends ILlmSchema.Model> {
       const filenames = Object.keys(this.fileMap).join(",");
       const command = `Please proceed with the review of these files only.: ${filenames}`;
       const response = await reviewer.conversate(command);
+      tokenUsageMap.root.increment(reviewer.getTokenUsage());
+      tokenUsageMap.analyze.increment(reviewer.getTokenUsage());
+
       const review = response.find((el) => el.type === "assistantMessage");
 
       if (review) {

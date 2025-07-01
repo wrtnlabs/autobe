@@ -43,7 +43,6 @@ export const AutoBeAnalyzeReviewer = <Model extends ILlmSchema.Model>(
         ].join("\n"),
       },
     ],
-    tokenUsage: ctx.usage(),
   });
 
   return agent;

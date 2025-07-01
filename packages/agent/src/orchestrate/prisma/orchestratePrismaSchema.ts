@@ -60,7 +60,6 @@ async function process<Model extends ILlmSchema.Model>(
       ...(ctx.config ?? {}),
     },
     histories: transformPrismaSchemaHistories(ctx.state().analyze!, component),
-    tokenUsage: ctx.usage(),
     controllers: [
       createApplication({
         model: ctx.model,
@@ -78,7 +77,12 @@ async function process<Model extends ILlmSchema.Model>(
     ],
   });
   enforceToolCall(agentica);
-  await agentica.conversate("Make prisma schema file please");
+  await agentica.conversate("Make prisma schema file please").finally(() => {
+    const tokenUsageMap = ctx.usage();
+    tokenUsageMap.root.increment(agentica.getTokenUsage());
+    tokenUsageMap.prisma.increment(agentica.getTokenUsage());
+  });
+
   if (pointer.value === null)
     throw new Error("Unreachable code: Prisma Schema not generated");
   return pointer.value;

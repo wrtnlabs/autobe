@@ -43,7 +43,6 @@ export async function orchestrateInterfaceEndpoints<
       ctx.state(),
       AutoBeSystemPromptConstant.INTERFACE_ENDPOINT,
     ),
-    tokenUsage: ctx.usage(),
     controllers: [
       createApplication({
         model: ctx.model,
@@ -55,8 +54,13 @@ export async function orchestrateInterfaceEndpoints<
     ],
   });
 
-  const histories: MicroAgenticaHistory<Model>[] =
-    await agentica.conversate(content);
+  const histories: MicroAgenticaHistory<Model>[] = await agentica
+    .conversate(content)
+    .finally(() => {
+      const tokenUsageMap = ctx.usage();
+      tokenUsageMap.root.increment(agentica.getTokenUsage());
+      tokenUsageMap.interface.increment(agentica.getTokenUsage());
+    });
   if (histories.at(-1)?.type === "assistantMessage")
     return {
       ...(histories.at(-1)! as AgenticaAssistantMessageHistory),
