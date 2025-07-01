@@ -34,6 +34,7 @@ interface IEnvironments {
   CHATGPT_API_KEY?: string;
   CHATGPT_BASE_URL?: string;
   CHATGPT_OPTIONS?: string;
+  OPENAI_SEMAPHORE?: string;
 }
 
 const environments = new Singleton(() => {
