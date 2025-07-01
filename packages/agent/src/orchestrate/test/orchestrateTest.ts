@@ -58,6 +58,7 @@ export const orchestrateTest =
       codes,
       scenarios,
     );
+
     const history: AutoBeTestHistory = {
       type: "test",
       id: v4(),
