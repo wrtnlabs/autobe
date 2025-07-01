@@ -1,8 +1,8 @@
 import { AutoBeOpenApi, AutoBeTestScenario } from "@autobe/interface";
 import { ILlmSchema, OpenApiTypeChecker } from "@samchon/openapi";
 
-import { AutoBeContext } from "../../context/AutoBeContext";
-import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
+import { AutoBeContext } from "../../../context/AutoBeContext";
+import { IAutoBeTestScenarioArtifacts } from "../structures/IAutoBeTestScenarioArtifacts";
 
 export async function compileTestScenario<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
