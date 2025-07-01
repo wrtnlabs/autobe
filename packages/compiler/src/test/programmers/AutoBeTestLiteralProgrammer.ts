@@ -50,6 +50,7 @@ export namespace AutoBeTestLiteralProgrammer {
           writeTestExpression(ctx, e.value),
         ),
       ),
+      true,
     );
 
   export const nullLiteral = (

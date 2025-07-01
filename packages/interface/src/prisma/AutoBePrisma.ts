@@ -1,13 +1,66 @@
 import { tags } from "typia";
 
 /**
- * Namespace containing all interfaces for generating Prisma ORM schema through
- * code generation.
+ * AST type system for programmatic Prisma ORM schema generation through AI
+ * function calling.
  *
- * This namespace defines the structure for converting requirements into Prisma
- * schema files, following the patterns observed in the uploaded schema files
- * where models are organized by business domains (Systematic, Actors, Sales,
- * Carts, Orders, Coupons, Coins, Inquiries, Favorites, Articles).
+ * This namespace defines a comprehensive Abstract Syntax Tree structure that
+ * enables AI agents to construct complete Prisma schema files at the AST level.
+ * Each type corresponds to specific Prisma Schema Language (PSL) constructs,
+ * allowing precise control over generated database schemas while maintaining
+ * type safety and business logic accuracy.
+ *
+ * ## Core Purpose
+ *
+ * The system is designed for systematic generation where AI function calls
+ * build database schemas step-by-step, mapping business requirements to
+ * executable Prisma schema code. Instead of generating raw PSL strings, AI
+ * agents construct structured AST objects that represent:
+ *
+ * - Complete database schemas organized by business domains
+ * - Properly typed models with relationships and constraints
+ * - Performance-optimized indexes for common query patterns
+ * - Business-appropriate data types and validation rules
+ *
+ * ## Architecture Overview
+ *
+ * - **IApplication**: Root container representing the entire database schema
+ * - **IFile**: Domain-specific schema files organized by business functionality
+ * - **IModel**: Database tables representing business entities with full
+ *   relationship mapping
+ * - **Fields**: Primary keys, foreign keys, and business data fields with proper
+ *   typing
+ * - **Indexes**: Performance optimization through unique, regular, and full-text
+ *   search indexes
+ *
+ * ## Domain-Driven Schema Organization
+ *
+ * Schemas are typically organized into multiple domain-specific files following
+ * DDD principles:
+ *
+ * - Core/System: Foundation entities and application configuration
+ * - Identity: User management, authentication, and authorization
+ * - Business Logic: Domain-specific entities and workflows
+ * - Transactions: Financial operations and payment processing
+ * - Communication: Messaging, notifications, and user interactions
+ * - Content: Media management, documentation, and publishing systems
+ * - Analytics: Reporting, metrics, and business intelligence data
+ *
+ * ## Database Design Patterns
+ *
+ * The generated schemas follow enterprise-grade patterns:
+ *
+ * - UUID primary keys for distributed system compatibility and security
+ * - Snapshot/versioning tables for audit trails and data history
+ * - Junction tables for many-to-many relationship management
+ * - Materialized views for performance optimization of complex queries
+ * - Soft deletion patterns with timestamp-based lifecycle management
+ * - Full-text search capabilities using PostgreSQL GIN indexes
+ *
+ * Each generated schema reflects real business workflows where entities
+ * maintain proper relationships, data integrity constraints, and performance
+ * characteristics suitable for production applications handling complex
+ * business logic and high query volumes.
  *
  * @author Samchon
  */

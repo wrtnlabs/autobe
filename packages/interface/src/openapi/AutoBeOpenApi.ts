@@ -1,11 +1,59 @@
 /**
- * OpenAPI Generative TypeScript Interface
+ * AST type system for programmatic OpenAPI specification generation through AI
+ * function calling.
  *
- * `AutoBeOpenApi` is a TypeScript interface for the OpenAPI Generative.
+ * This namespace defines a comprehensive Abstract Syntax Tree structure that
+ * enables AI agents to construct complete OpenAPI v3.1 specification documents
+ * at the AST level. Each type corresponds to specific OpenAPI specification
+ * constructs, allowing precise control over generated API documentation while
+ * maintaining type safety and business logic accuracy.
  *
- * `AutoBeOpenApi` follows the OpenAPI v3.1 specification, but is streamlined to
- * remove ambiguous and duplicated expressions for improved clarity, AI
- * generation capabilities, and developer understanding.
+ * ## Core Purpose
+ *
+ * The system is designed for systematic generation where AI function calls
+ * build API specifications step-by-step, mapping business requirements to
+ * executable OpenAPI documents. Instead of generating raw OpenAPI JSON/YAML
+ * strings, AI agents construct structured AST objects that represent:
+ *
+ * - Complete REST API specifications with proper operation definitions
+ * - Comprehensive type schemas aligned with database structures
+ * - Detailed parameter and response body specifications
+ * - Consistent naming conventions and documentation standards
+ *
+ * ## Architecture Overview
+ *
+ * - **IDocument**: Root container representing the entire OpenAPI specification
+ * - **IOperation**: Individual API endpoints with HTTP methods, paths, and data
+ *   structures
+ * - **IComponents**: Reusable schema definitions and security configurations
+ * - **IJsonSchema**: Type system following OpenAPI v3.1 JSON Schema specification
+ * - **Parameters & Bodies**: Request/response structures with validation rules
+ *
+ * ## OpenAPI v3.1 Compliance
+ *
+ * This implementation follows the OpenAPI v3.1 specification but is streamlined
+ * to:
+ *
+ * - Remove ambiguous and duplicated expressions for improved clarity
+ * - Enhance AI generation capabilities through simplified type structures
+ * - Maintain developer understanding with consistent patterns
+ * - Support comprehensive API documentation with detailed descriptions
+ *
+ * ## Design Principles
+ *
+ * The generated specifications follow enterprise-grade patterns:
+ *
+ * - Consistent RESTful API design with standard HTTP methods
+ * - Comprehensive CRUD operation coverage for all business entities
+ * - Type-safe request/response schemas with validation constraints
+ * - Detailed documentation with multi-paragraph descriptions
+ * - Reusable component schemas for maintainability and consistency
+ * - Security-aware design with authorization considerations
+ *
+ * Each generated OpenAPI document reflects real business workflows where API
+ * operations provide complete access to underlying data models, maintain proper
+ * REST conventions, and include comprehensive documentation suitable for
+ * developer consumption and automated tooling integration.
  *
  * @author Samchon
  */
