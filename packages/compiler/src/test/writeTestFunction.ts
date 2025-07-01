@@ -1,19 +1,20 @@
 import { AutoBeOpenApi, IAutoBeTestCompilerProps } from "@autobe/interface";
 import { NestiaMigrateImportProgrammer } from "@nestia/migrate/lib/programmers/NestiaMigrateImportProgrammer";
+import { HttpMigration, IHttpMigrateApplication } from "@samchon/openapi";
+import { HashMap, Pair, hash } from "tstl";
 import ts, { FunctionDeclaration } from "typescript";
 
+import { transformOpenApiDocument } from "../interface/transformOpenApi";
 import { FilePrinter } from "../utils/FilePrinter";
+import { IAutoBeTestApiFunction } from "./IAutoBeTestApiFunction";
+import { IAutoBeTestProgrammerContext } from "./IAutoBeTestProgrammerContext";
 import { writeTestStatement } from "./writeTestStatement";
 
-interface WriteTestContext {
-  importer: NestiaMigrateImportProgrammer;
-  document: AutoBeOpenApi.IDocument;
-}
-
 export function writeTestFunction(props: IAutoBeTestCompilerProps): string {
-  const ctx: WriteTestContext = {
+  const ctx: IAutoBeTestProgrammerContext = {
     importer: new NestiaMigrateImportProgrammer(),
     document: props.document,
+    endpoints: associate(props.document),
   };
   const decla: FunctionDeclaration = ts.factory.createFunctionDeclaration(
     [
@@ -42,3 +43,46 @@ export function writeTestFunction(props: IAutoBeTestCompilerProps): string {
     ],
   });
 }
+
+function associate(
+  document: AutoBeOpenApi.IDocument,
+): HashMap<AutoBeOpenApi.IEndpoint, IAutoBeTestApiFunction> {
+  const operations: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation> =
+    new HashMap(
+      document.operations.map(
+        (o) =>
+          new Pair(
+            {
+              method: o.method,
+              path: o.path,
+            },
+            o,
+          ),
+      ),
+      comparator.hash,
+      comparator.equals,
+    );
+  const functions: HashMap<AutoBeOpenApi.IEndpoint, IAutoBeTestApiFunction> =
+    new HashMap(comparator.hash, comparator.equals);
+
+  const migrate: IHttpMigrateApplication = HttpMigration.application(
+    transformOpenApiDocument(document),
+  );
+  for (const route of migrate.routes) {
+    const endpoint: AutoBeOpenApi.IEndpoint = {
+      path: route.path,
+      method: route.method as "get",
+    };
+    functions.emplace(endpoint, {
+      accessor: "api." + route.accessor.join("."),
+      operation: operations.get(endpoint),
+    });
+  }
+  return functions;
+}
+
+const comparator = {
+  hash: (x: AutoBeOpenApi.IEndpoint): number => hash(x.path, x.method),
+  equals: (x: AutoBeOpenApi.IEndpoint, y: AutoBeOpenApi.IEndpoint): boolean =>
+    x.path === y.path && x.method === y.method,
+};

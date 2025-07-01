@@ -5,12 +5,12 @@ import {
   IHttpMigrateApplication,
   OpenApi,
   OpenApiTypeChecker,
-  OpenApiV3_1,
 } from "@samchon/openapi";
 import sortImport from "@trivago/prettier-plugin-sort-imports";
 import import2 from "import2";
 import { format } from "prettier";
 
+import { transformOpenApiDocument } from "./interface/transformOpenApi";
 import { AutoBeCompilerTemplate } from "./raw/AutoBeCompilerTemplate";
 import { ArrayUtil } from "./utils/ArrayUtil";
 
@@ -41,7 +41,7 @@ export class AutoBeInterfaceCompiler implements IAutoBeInterfaceCompiler {
   public async compile(
     document: AutoBeOpenApi.IDocument,
   ): Promise<Record<string, string>> {
-    const swagger: OpenApi.IDocument = transformDocument(document);
+    const swagger: OpenApi.IDocument = transformOpenApiDocument(document);
     const migrate: NestiaMigrateApplication = new NestiaMigrateApplication(
       swagger,
     );
@@ -74,7 +74,7 @@ export class AutoBeInterfaceCompiler implements IAutoBeInterfaceCompiler {
   public async transform(
     document: AutoBeOpenApi.IDocument,
   ): Promise<OpenApi.IDocument> {
-    return transformDocument(document);
+    return transformOpenApiDocument(document);
   }
 
   public async invert(
@@ -97,56 +97,6 @@ async function beautify(script: string) {
   } catch {
     return script;
   }
-}
-
-function transformDocument(route: AutoBeOpenApi.IDocument): OpenApi.IDocument {
-  const paths: Record<string, OpenApi.IPath> = {};
-  for (const op of route.operations) {
-    paths[op.path] ??= {};
-    paths[op.path][op.method] = {
-      summary: op.summary,
-      description: op.description,
-      parameters: op.parameters.map((p) => ({
-        name: p.name,
-        in: "path",
-        schema: p.schema,
-        description: p.description,
-        required: true,
-      })),
-      requestBody: op.requestBody
-        ? {
-            content: {
-              "application/json": {
-                schema: {
-                  $ref: `#.components/schemas/${op.requestBody.typeName}`,
-                },
-              },
-            },
-            description: op.requestBody.description,
-            required: true,
-          }
-        : undefined,
-      responses: op.responseBody
-        ? {
-            [op.method === "post" ? 201 : 200]: {
-              content: {
-                "application/json": {
-                  schema: {
-                    $ref: `#/components/schemas/${op.responseBody.typeName}`,
-                  },
-                },
-              },
-              description: op.responseBody.description,
-            },
-          }
-        : undefined,
-    };
-  }
-  return OpenApi.convert({
-    openapi: "3.1.0",
-    paths,
-    components: route.components,
-  } as OpenApiV3_1.IDocument);
 }
 
 function invertDocument(document: OpenApi.IDocument): AutoBeOpenApi.IDocument {

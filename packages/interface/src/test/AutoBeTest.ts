@@ -262,9 +262,9 @@ export namespace AutoBeTest {
   /**
    * Block for grouping statements in specific structural contexts.
    *
-   * **SPECIAL USE ONLY**: This type represents a block of statements and
-   * should only be used in specific contexts where statement grouping is
-   * structurally required:
+   * **SPECIAL USE ONLY**: This type represents a block of statements and should
+   * only be used in specific contexts where statement grouping is structurally
+   * required:
    *
    * - If/else statement branches
    *
@@ -350,23 +350,107 @@ export namespace AutoBeTest {
     endpoint: AutoBeOpenApi.IEndpoint;
 
     /**
-     * Array of argument expressions passed to the API function.
+     * Single argument object for the API function call.
      *
-     * These arguments must match the parameter signature of the target API
-     * operation as defined in the OpenAPI specification. The order and types
-     * must correspond exactly to the function signature.
+     * **CRITICAL**: All API functions accept exactly one object parameter that
+     * contains all necessary data for the operation. This argument object is
+     * constructed based on the API operation's specification and follows a
+     * standardized structure.
      *
-     * Common patterns:
+     * **Object Structure Rules:**
      *
-     * - Connection parameter (typically first argument)
-     * - Request body objects for POST/PUT operations
-     * - Path parameters for resource identification
-     * - Query parameters for filtering and pagination
+     * The argument object is constructed by combining path parameters and
+     * request body data according to the following rules based on the target
+     * {@link AutoBeOpenApi.IOperation}:
      *
-     * AI validation: Ensure argument types and count match the target API
-     * operation's signature from the OpenAPI specification.
+     * 1. **Path Parameters**: Each parameter from
+     *    `AutoBeOpenApi.IOperation.parameters` becomes a property in the
+     *    argument object, where:
+     *
+     *    - Property name: `AutoBeOpenApi.IParameter.name`
+     *    - Property value: Expression matching `AutoBeOpenApi.IParameter.schema`
+     *    - Example: `{ saleId: "uuid-string", customerId: "another-uuid" }`
+     * 2. **Request Body**: If `AutoBeOpenApi.IOperation.requestBody` exists:
+     *
+     *    - Add a `body` property containing the request body data
+     *    - Value type: Object literal matching the requestBody's typeName schema
+     *    - Example: `{ body: { name: "Product Name", price: 99.99 } }`
+     * 3. **Combined Structure**: When both path parameters and request body exist:
+     *
+     *    ```typescript
+     *    {
+     *      // Path parameters as individual properties
+     *      "saleId": "uuid-value",
+     *      "customerId": "another-uuid",
+     *      // Request body as 'body' property
+     *      "body": {
+     *        "name": "Updated Product",
+     *        "price": 149.99,
+     *        "description": "Enhanced product description"
+     *      }
+     *    }
+     *    ```
+     *
+     * **Special Cases:**
+     *
+     * - **No Parameters**: When `parameters` is empty array AND `requestBody` is
+     *   null, set this to `null` (the API function requires no arguments)
+     * - **Only Path Parameters**: When `requestBody` is null but `parameters`
+     *   exist, create object with only path parameter properties
+     * - **Only Request Body**: When `parameters` is empty but `requestBody`
+     *   exists, create object with only the `body` property
+     *
+     * **AI Construction Strategy:**
+     *
+     * 1. Analyze the target `AutoBeOpenApi.IOperation` specification
+     * 2. Extract all path parameters and create corresponding object properties
+     * 3. If request body exists, add it as the `body` property
+     * 4. Ensure all property values match the expected types from OpenAPI schema
+     * 5. Use realistic business data that reflects actual API usage patterns
+     *
+     * **Type Safety Requirements:**
+     *
+     * - Path parameter values must match their schema types (string, integer,
+     *   etc.)
+     * - Request body structure must exactly match the referenced schema type
+     * - All required properties must be included with valid values
+     * - Optional properties can be omitted or included based on test scenario
+     *   needs
+     *
+     * **Business Context Examples:**
+     *
+     * ```typescript
+     * // GET /customers/{customerId}/orders/{orderId} (no request body)
+     * {
+     *   customerId: "cust-123",
+     *   orderId: "order-456"
+     * }
+     *
+     * // POST /customers (only request body)
+     * {
+     *   body: {
+     *     name: "John Doe",
+     *     email: "john@example.com",
+     *     phone: "+1-555-0123"
+     *   }
+     * }
+     *
+     * // PUT /customers/{customerId}/orders/{orderId} (both path params and body)
+     * {
+     *   customerId: "cust-123",
+     *   orderId: "order-456",
+     *   body: {
+     *     status: "shipped",
+     *     trackingNumber: "TRACK123",
+     *     estimatedDelivery: "2024-12-25"
+     *   }
+     * }
+     *
+     * // GET /health (no parameters or body)
+     * null
+     * ```
      */
-    arguments: IExpression[];
+    argument: IObjectLiteral | null;
 
     /**
      * Optional variable name for capturing the API response.
