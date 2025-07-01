@@ -62,11 +62,11 @@ export const orchestrateTest =
     // DO COMPILE
     const files: AutoBeTestFile[] = corrects.map((c) => c.file);
     const compiled: IAutoBeTypeScriptCompileResult =
-      await ctx.compiler.typescript.compile({
+      await ctx.compiler.test.compile({
         files: {
           ...Object.fromEntries(
-            Object.entries(ctx.state().interface!.files).filter(([key]) =>
-              key.startsWith("test/features"),
+            Object.entries(ctx.state().interface!.files).filter(
+              ([key]) => key.startsWith("src/api") === true,
             ),
           ),
           ...Object.fromEntries(files.map((f) => [f.location, f.content])),

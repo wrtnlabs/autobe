@@ -8,7 +8,7 @@ export const test_compiler_test_compile = async (): Promise<void> => {
   const result: IAutoBeTypeScriptCompileResult = await compiler.compile({
     files: {
       "src/api/structures/ISomething.ts": StringUtil.trim`
-        import { tags } from "typia";
+      import { tags } from "typia";
 
         export interface ISomething {
           id: string & tags.Format<"uuid">;

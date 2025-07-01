@@ -15,11 +15,19 @@ export async function compileTestScenario<Model extends ILlmSchema.Model>(
   const entries: [string, string][] = Object.entries(
     await ctx.compiler.interface.compile(document),
   );
-  const filter = (prefix: string) =>
-    Object.fromEntries(entries.filter(([key]) => key.startsWith(prefix)));
+  const filter = (prefix: string, exclude?: string) => {
+    const result: [string, string][] = entries.filter(
+      ([key]) => key.startsWith(prefix) === true,
+    );
+    return Object.fromEntries(
+      exclude
+        ? result.filter(([key]) => key.startsWith(exclude) === false)
+        : result,
+    );
+  };
   return {
     document,
-    sdk: filter("src/api/functional"),
+    sdk: filter("src/api", "src/api/structures"),
     dto: filter("src/api/structures"),
     e2e: filter("test/features"),
   };
