@@ -202,24 +202,9 @@ async function step<Model extends ILlmSchema.Model>(
         const file = testFiles.find((f) => f.location === filename);
         const scenario = file?.scenario!;
 
-        const filtered: IAutoBeTypeScriptCompilerResult.IDiagnostic[] = [];
-        for (const diagnostic of d) {
-          if (await replaceExpectAndActual(ctx, diagnostic, files, file)) {
-            filtered.push(diagnostic);
-          }
-        }
-
-        if (filtered.length === 0 && typeof file?.content === "string") {
-          return {
-            location: filename,
-            content: file.content,
-            scenario: scenario,
-          };
-        }
-
         const response: ICorrectTestFunctionProps = await process(
           ctx,
-          filtered,
+          d,
           file?.content!,
           scenario,
         );
@@ -264,62 +249,6 @@ async function step<Model extends ILlmSchema.Model>(
     }),
     life - 1,
   );
-}
-
-async function replaceExpectAndActual<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
-  initialDiagnostic: IAutoBeTypeScriptCompilerResult.IDiagnostic,
-  files: Record<string, string>,
-  file?: AutoBeTestFile,
-): Promise<boolean> {
-  const isAssignabilityError =
-    /Argument of type '([^']+)' is not assignable to parameter of type '([^']+)'/.test(
-      initialDiagnostic.messageText,
-    );
-
-  if (file?.content && isAssignabilityError) {
-    const targetStr = "TestValidator.equals";
-    const lines = transformLines(file?.content);
-
-    const start = initialDiagnostic.start;
-    if (typeof start === "number") {
-      const errorLine = lines.find((line) => line.end > start);
-      if (errorLine?.text.includes(targetStr)) {
-        function swapTestValidatorArgsMultiline(code: string): string {
-          return code.replace(
-            /TestValidator\.equals\((['"`][\s\S]*?['"`])\)\s*\(([\s\S]*?)\)\s*\(([\s\S]*?)\)/g,
-            (_, title, a, b) =>
-              `TestValidator.equals(${title})(${b.trim()})(${a.trim()})`,
-          );
-        }
-
-        errorLine.text = swapTestValidatorArgsMultiline(errorLine.text);
-        const contentAfterupdate = lines.map((el) => el.text).join("\n");
-
-        const compiled = await ctx.compiler.typescript.compile({
-          files: {
-            ...files,
-            [file.location]: contentAfterupdate,
-          },
-        });
-        if (compiled.type === "failure") {
-          if (
-            compiled.diagnostics.some(
-              (d) =>
-                d.file === file.location && d.start === initialDiagnostic.start,
-            )
-          ) {
-            return true;
-          }
-        }
-
-        file.content = contentAfterupdate;
-        return false;
-      }
-    }
-  }
-
-  return true;
 }
 
 /**
