@@ -1,9 +1,10 @@
 import {
   AutoBeAssistantMessageHistory,
   AutoBeOpenApi,
+  AutoBeTestFile,
   AutoBeTestHistory,
   AutoBeTestValidateEvent,
-  AutoBeTestWriteEvent,
+  IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 import { v4 } from "uuid";
@@ -13,6 +14,7 @@ import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
 import { orchestrateTestCorrect } from "./orchestrateTestCorrect";
 import { orchestrateTestScenario } from "./orchestrateTestScenario";
 import { orchestrateTestWrite } from "./orchestrateTestWrite";
+import { IAutoBeTestWriteResult } from "./structures/IAutoBeTestWriteResult";
 
 export const orchestrateTest =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
@@ -48,38 +50,47 @@ export const orchestrateTest =
     const { scenarios } = await orchestrateTestScenario(ctx);
 
     // TEST CODE
-    const codes: AutoBeTestWriteEvent[] = await orchestrateTestWrite(
+    const written: IAutoBeTestWriteResult[] = await orchestrateTestWrite(
       ctx,
       scenarios,
+    );
+    const corrects: AutoBeTestValidateEvent[] = await orchestrateTestCorrect(
+      ctx,
+      written,
     );
 
-    const correct: AutoBeTestValidateEvent = await orchestrateTestCorrect(
-      ctx,
-      codes,
-      scenarios,
-    );
+    // DO COMPILE
+    const files: AutoBeTestFile[] = corrects.map((c) => c.file);
+    const compiled: IAutoBeTypeScriptCompileResult =
+      await ctx.compiler.test.compile({
+        files: {
+          ...Object.fromEntries(
+            Object.entries(ctx.state().interface!.files).filter(
+              ([key]) => key.startsWith("src/api") === true,
+            ),
+          ),
+          ...Object.fromEntries(files.map((f) => [f.location, f.content])),
+        },
+      });
+
     const history: AutoBeTestHistory = {
       type: "test",
       id: v4(),
       completed_at: new Date().toISOString(),
       created_at: start.toISOString(),
-      files: correct.files,
-      compiled: correct.result,
+      files,
+      compiled,
       reason: "Step to the test generation referencing the interface",
       step: ctx.state().interface?.step ?? 0,
     };
     ctx.dispatch({
       type: "testComplete",
       created_at: start.toISOString(),
-      files: correct.files
-        .map((f) => ({ [f.location]: f.content }))
-        .reduce((acc, cur) => Object.assign(acc, cur), {}),
-      compiled: correct.result,
+      files: Object.fromEntries(files.map((f) => [f.location, f.content])),
+      compiled,
       step: ctx.state().interface?.step ?? 0,
     });
-
     ctx.state().test = history;
     ctx.histories().push(history);
-
     return history;
   };

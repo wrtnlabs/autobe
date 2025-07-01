@@ -8,40 +8,55 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { randomBackoffRetry } from "../../utils/backoffRetry";
 import { enforceToolCall } from "../../utils/enforceToolCall";
-import { compileTestScenario } from "./compileTestScenario";
+import { compileTestScenario } from "./compile/compileTestScenario";
+import { complementTestWrite } from "./compile/complementTestWrite";
 import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
+import { IAutoBeTestWriteResult } from "./structures/IAutoBeTestWriteResult";
 import { transformTestWriteHistories } from "./transformTestWriteHistories";
 
 export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   scenarios: AutoBeTestScenario[],
-): Promise<AutoBeTestWriteEvent[]> {
+): Promise<IAutoBeTestWriteResult[]> {
   const start: Date = new Date();
   let complete: number = 0;
 
-  const events: AutoBeTestWriteEvent[] = await Promise.all(
+  const writes: IAutoBeTestWriteResult[] = await Promise.all(
     /**
      * Generate test code for each scenario. Maps through plans array to create
      * individual test code implementations. Each scenario is processed to
      * generate corresponding test code and progress events.
      */
     scenarios.map(async (scenario) => {
-      const code: ICreateTestCodeProps = await process(ctx, scenario);
+      const artifacts: IAutoBeTestScenarioArtifacts = await compileTestScenario(
+        ctx,
+        scenario,
+      );
+      const result: ICreateTestCodeProps = await process(
+        ctx,
+        scenario,
+        artifacts,
+      );
       const event: AutoBeTestWriteEvent = {
         type: "testWrite",
         created_at: start.toISOString(),
-        filename: `test/features/api/${code.domain}/${scenario.functionName}.ts`,
-        content: code.content,
+        file: {
+          location: `test/features/api/${result.domain}/${scenario.functionName}.ts`,
+          content: result.content,
+          scenario,
+        },
         completed: ++complete,
         total: scenarios.length,
         step: ctx.state().interface?.step ?? 0,
       };
       ctx.dispatch(event);
-      return event;
+      return {
+        artifacts,
+        file: event.file,
+      };
     }),
   );
-
-  return events;
+  return writes;
 }
 
 /**
@@ -51,21 +66,18 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
  *
  * @param ctx - The AutoBeContext containing model, vendor and configuration
  * @param scenario - The test scenario information to generate code for
+ * @param artifacts - The artifacts containing the reference files and schemas
  * @returns Promise resolving to ICreateTestCodeProps containing the generated
  *   test code
  */
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   scenario: AutoBeTestScenario,
+  artifacts: IAutoBeTestScenarioArtifacts,
 ): Promise<ICreateTestCodeProps> {
   const pointer: IPointer<ICreateTestCodeProps | null> = {
     value: null,
   };
-  const artifacts: IAutoBeTestScenarioArtifacts = await compileTestScenario(
-    ctx,
-    scenario,
-  );
-
   const agentica = new MicroAgentica({
     model: ctx.model,
     vendor: ctx.vendor,
@@ -91,37 +103,12 @@ async function process<Model extends ILlmSchema.Model>(
   await randomBackoffRetry(async () => {
     await agentica.conversate("Create e2e test functions.");
   });
-
   if (pointer.value === null) throw new Error("Failed to create test code.");
 
-  const typeReferences: string[] = Array.from(
-    new Set(
-      Object.keys(artifacts.document.components.schemas).map(
-        (key) => key.split(".")[0]!,
-      ),
-    ),
-  );
-  pointer.value.content = pointer.value.content
-    .replace(/^[ \t]*import\b[\s\S]*?;[ \t]*$/gm, "")
-    .trim();
-  pointer.value.content = [
-    `import { TestValidator } from "@nestia/e2e";`,
-    `import typia, { tags } from "typia";`,
-    "",
-    `import api from "@ORGANIZATION/PROJECT-api";`,
-    ...typeReferences.map(
-      (ref) =>
-        `import type { ${ref} } from "@ORGANIZATION/PROJECT-api/lib/structures/${ref}";`,
-    ),
-    "",
-    pointer.value.content,
-  ].join("\n");
-
-  pointer.value.content = pointer.value.content.replaceAll(
-    'string & Format<"uuid">',
-    'string & tags.Format<"uuid">',
-  );
-
+  pointer.value.content = complementTestWrite({
+    content: pointer.value.content,
+    artifacts,
+  });
   return pointer.value;
 }
 

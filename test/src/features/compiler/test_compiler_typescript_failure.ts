@@ -1,6 +1,6 @@
 import { AutoBeTypeScriptCompiler } from "@autobe/compiler";
 import { FileSystemIterator } from "@autobe/filesystem";
-import { IAutoBeTypeScriptCompilerResult } from "@autobe/interface";
+import { IAutoBeTypeScriptCompileResult } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 import { NestiaMigrateApplication } from "@nestia/migrate";
 import typia from "typia";
@@ -24,7 +24,7 @@ export const test_compiler_typescript_failure = async (): Promise<void> => {
   });
 
   const compiler: AutoBeTypeScriptCompiler = new AutoBeTypeScriptCompiler();
-  const result: IAutoBeTypeScriptCompilerResult = await compiler.compile({
+  const result: IAutoBeTypeScriptCompileResult = await compiler.compile({
     files: {
       ...Object.fromEntries(
         Object.entries(files)

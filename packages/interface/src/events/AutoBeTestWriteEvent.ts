@@ -1,3 +1,4 @@
+import { AutoBeTestFile } from "../histories/contents/AutoBeTestFile";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
 /**
@@ -19,29 +20,20 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
  */
 export interface AutoBeTestWriteEvent extends AutoBeEventBase<"testWrite"> {
   /**
-   * Name of the test file that has been written and completed.
+   * Complete test file information including location, content, and scenario
+   * metadata.
    *
-   * Specifies the filename of the TypeScript test file that was just generated,
-   * which contains standalone functions implementing specific use case
-   * scenarios for particular API endpoints. The filename provides context about
-   * which part of the API functionality is being validated by this test file.
+   * Contains all the details about the test file that was just written and
+   * completed, including its file system location, the complete TypeScript
+   * source code content, and comprehensive scenario metadata describing what
+   * this test covers. This unified structure provides rich context about the
+   * test's purpose, target API endpoints, and expected behavior patterns.
+   *
+   * The file information enables better understanding of the test suite
+   * development progress and helps stakeholders monitor how comprehensive
+   * validation coverage is being built for the generated application.
    */
-  filename: string;
-
-  /**
-   * Content of the completed test file.
-   *
-   * Contains the actual TypeScript test code that was generated for this file,
-   * including test scenarios that validate API functionality, business logic
-   * implementation, error handling, and edge cases. The content represents
-   * working test code that ensures the API endpoints behave correctly according
-   * to the established requirements and specifications.
-   *
-   * This test code validates both technical functionality and business rule
-   * implementation, providing comprehensive coverage that ensures the generated
-   * APIs work correctly under realistic operational conditions.
-   */
-  content: string;
+  file: AutoBeTestFile;
 
   /**
    * Number of test files that have been written and completed so far.

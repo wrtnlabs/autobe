@@ -1,4 +1,4 @@
-import { IAutoBeTypeScriptCompilerResult } from "../compiler";
+import { IAutoBeTypeScriptCompileResult } from "../compiler";
 import { AutoBeTestFile } from "../histories";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
@@ -49,7 +49,7 @@ export interface AutoBeTestCorrectEvent extends AutoBeEventBase<"testCorrect"> {
   /**
    * The compilation failure details that triggered the correction process.
    *
-   * Contains the specific {@link IAutoBeTypeScriptCompilerResult.IFailure}
+   * Contains the specific {@link IAutoBeTypeScriptCompileResult.IFailure}
    * information describing the compilation errors that were detected in the
    * test code. This includes error messages, file locations, type issues, or
    * other compilation problems that prevented successful test code validation.
@@ -57,7 +57,7 @@ export interface AutoBeTestCorrectEvent extends AutoBeEventBase<"testCorrect"> {
    * The failure information provides the diagnostic foundation for the AI's
    * understanding of what went wrong and guides the correction strategy.
    */
-  result: IAutoBeTypeScriptCompilerResult.IFailure;
+  result: IAutoBeTypeScriptCompileResult.IFailure;
 
   /**
    * AI's initial analysis of the test code before encountering compilation

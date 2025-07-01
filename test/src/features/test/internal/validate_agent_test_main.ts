@@ -6,6 +6,7 @@ import {
   AutoBeTestHistory,
 } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
+import typia from "typia";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
@@ -56,8 +57,8 @@ export const validate_agent_test_main = async (
     root: `${TestGlobal.ROOT}/results/${project}/test/main`,
     files: {
       ...(await agent.getFiles()),
-      // "logs/events.json": JSON.stringify(events, null, 2),
-      // "logs/result.json": JSON.stringify(result, null, 2),
+      "logs/events.json": typia.json.stringify(events),
+      "logs/result.json": typia.json.stringify(result),
     },
   });
   TestValidator.equals("result")(result.compiled.type)("success");

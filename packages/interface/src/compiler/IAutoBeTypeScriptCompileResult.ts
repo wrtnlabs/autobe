@@ -14,12 +14,12 @@
  *
  * @author Samchon
  */
-export type IAutoBeTypeScriptCompilerResult =
-  | IAutoBeTypeScriptCompilerResult.ISuccess
-  | IAutoBeTypeScriptCompilerResult.IFailure
-  | IAutoBeTypeScriptCompilerResult.IException;
+export type IAutoBeTypeScriptCompileResult =
+  | IAutoBeTypeScriptCompileResult.ISuccess
+  | IAutoBeTypeScriptCompileResult.IFailure
+  | IAutoBeTypeScriptCompileResult.IException;
 
-export namespace IAutoBeTypeScriptCompilerResult {
+export namespace IAutoBeTypeScriptCompileResult {
   /**
    * Successful compilation result with generated JavaScript output.
    *

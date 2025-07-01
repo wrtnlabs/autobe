@@ -1,6 +1,6 @@
 import { AutoBePrismaCompiler } from "@autobe/compiler";
 import { FileSystemIterator } from "@autobe/filesystem";
-import { AutoBePrisma, IAutoBePrismaCompilerResult } from "@autobe/interface";
+import { AutoBePrisma, IAutoBePrismaCompileResult } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 import typia from "typia";
 
@@ -23,7 +23,7 @@ export const test_compiler_prisma_duplicated = async (): Promise<void> => {
     ),
   });
 
-  const compiled: IAutoBePrismaCompilerResult = await compiler.compile({
+  const compiled: IAutoBePrismaCompileResult = await compiler.compile({
     files,
   });
   TestValidator.equals("compile result")(compiled.type)("success");

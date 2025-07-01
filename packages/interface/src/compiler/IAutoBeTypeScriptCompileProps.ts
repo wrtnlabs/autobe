@@ -15,7 +15,7 @@
  *
  * @author Samchon
  */
-export interface IAutoBeTypeScriptCompilerProps {
+export interface IAutoBeTypeScriptCompileProps {
   /**
    * TypeScript source files to compile as key-value pairs.
    *

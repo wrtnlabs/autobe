@@ -1,4 +1,4 @@
-import { AutoBeOpenApi, IAutoBeTestCompilerProps } from "@autobe/interface";
+import { AutoBeOpenApi, IAutoBeTestWriteProps } from "@autobe/interface";
 import { NestiaMigrateImportProgrammer } from "@nestia/migrate/lib/programmers/NestiaMigrateImportProgrammer";
 import { HttpMigration, IHttpMigrateApplication } from "@samchon/openapi";
 import { HashMap, Pair, hash } from "tstl";
@@ -10,7 +10,7 @@ import { IAutoBeTestApiFunction } from "./IAutoBeTestApiFunction";
 import { IAutoBeTestProgrammerContext } from "./IAutoBeTestProgrammerContext";
 import { writeTestStatement } from "./writeTestStatement";
 
-export function writeTestFunction(props: IAutoBeTestCompilerProps): string {
+export function writeTestFunction(props: IAutoBeTestWriteProps): string {
   const ctx: IAutoBeTestProgrammerContext = {
     importer: new NestiaMigrateImportProgrammer(),
     document: props.document,

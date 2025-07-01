@@ -1,15 +1,15 @@
 import { AutoBeCompiler } from "@autobe/compiler";
 import { RepositoryFileSystem } from "@autobe/filesystem";
 import {
-  IAutoBePrismaCompilerResult,
-  IAutoBeTypeScriptCompilerResult,
+  IAutoBePrismaCompileResult,
+  IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 import typia from "typia";
 
 export const test_compiler_facade_shopping = async (): Promise<void> => {
   const compiler: AutoBeCompiler = new AutoBeCompiler();
-  const prisma: IAutoBePrismaCompilerResult = await compiler.prisma.compile({
+  const prisma: IAutoBePrismaCompileResult = await compiler.prisma.compile({
     files: await RepositoryFileSystem.prisma("samchon", "shopping-backend"),
   });
   if (prisma.type !== "success") {
@@ -17,7 +17,7 @@ export const test_compiler_facade_shopping = async (): Promise<void> => {
     throw new Error("Failed to pass prisma generate");
   }
 
-  const result: IAutoBeTypeScriptCompilerResult =
+  const result: IAutoBeTypeScriptCompileResult =
     await compiler.typescript.compile({
       files: await RepositoryFileSystem.src("samchon", "shopping-backend"),
       prisma: prisma.nodeModules,

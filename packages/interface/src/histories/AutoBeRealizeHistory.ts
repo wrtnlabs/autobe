@@ -1,6 +1,6 @@
 import { tags } from "typia";
 
-import { IAutoBeTypeScriptCompilerResult } from "../compiler/IAutoBeTypeScriptCompilerResult";
+import { IAutoBeTypeScriptCompileResult } from "../compiler/IAutoBeTypeScriptCompileResult";
 import { AutoBeAgentHistoryBase } from "./AutoBeHistoryBase";
 
 /**
@@ -50,7 +50,7 @@ export interface AutoBeRealizeHistory
    * error messages and attempts to correct implementation issues while
    * maintaining alignment with the established architectural contracts.
    */
-  compiled: IAutoBeTypeScriptCompilerResult;
+  compiled: IAutoBeTypeScriptCompileResult;
 
   /**
    * Reason why the Realize agent was activated through function calling.

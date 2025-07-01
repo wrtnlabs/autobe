@@ -53,5 +53,5 @@ export interface AutoBeTestFile {
    * analysis, and ensuring that all business requirements are adequately tested
    * across the test suite.
    */
-  scenario?: AutoBeTestScenario;
+  scenario: AutoBeTestScenario;
 }

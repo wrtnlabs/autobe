@@ -1,8 +1,8 @@
 import {
   AutoBePrisma,
+  IAutoBePrismaCompileResult,
   IAutoBePrismaCompiler,
   IAutoBePrismaCompilerProps,
-  IAutoBePrismaCompilerResult,
   IAutoBePrismaValidation,
 } from "@autobe/interface";
 import { EmbedPrisma } from "embed-prisma";
@@ -38,7 +38,7 @@ import { writePrismaApplication } from "./prisma/writePrismaApplication";
 export class AutoBePrismaCompiler implements IAutoBePrismaCompiler {
   public async compile(
     props: IAutoBePrismaCompilerProps,
-  ): Promise<IAutoBePrismaCompilerResult> {
+  ): Promise<IAutoBePrismaCompileResult> {
     const compiler: EmbedPrisma = new EmbedPrisma();
     return compiler.compile(props.files);
   }
