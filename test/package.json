@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@autobe/test",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "description": "AutoBE Test Program",
   "main": "src/index.ts",
   "scripts": {
@@ -15,8 +15,8 @@
   "license": "MIT",
   "dependencies": {
     "@autobe/agent": "workspace:^",
-    "@autobe/filesystem": "workspace:^",
     "@autobe/compiler": "workspace:^",
+    "@autobe/filesystem": "workspace:^",
     "@autobe/interface": "workspace:^",
     "@nestia/core": "catalog:samchon",
     "@nestia/e2e": "catalog:samchon",
@@ -25,6 +25,7 @@
     "dotenv": "^16.5.0",
     "dotenv-expand": "^12.0.2",
     "openai": "catalog:libs",
+    "safe-stable-stringify": "^2.5.0",
     "tstl": "catalog:samchon",
     "typia": "catalog:samchon",
     "uuid": "^11.1.0"

@@ -5,6 +5,7 @@ import {
   AutoBeTestValidateEvent,
   AutoBeTestWriteEvent,
 } from "@autobe/interface";
+import { TestValidator } from "@nestia/e2e";
 import fs from "fs";
 
 import { TestFactory } from "../../../TestFactory";
@@ -53,5 +54,6 @@ export const validate_agent_test_correct = async (
       "logs/validates.json": JSON.stringify(validates, null, 2),
     },
   });
+  TestValidator.equals("result")(correct.result.type)("success");
   return correct;
 };

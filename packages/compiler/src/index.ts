@@ -1,4 +1,5 @@
 export * from "./AutoBeCompiler";
-export * from "./AutoBeTypeScriptCompiler";
-export * from "./AutoBeInterfaceCompiler";
 export * from "./AutoBePrismaCompiler";
+export * from "./AutoBeInterfaceCompiler";
+export * from "./AutoBeTestCompiler";
+export * from "./AutoBeTypeScriptCompiler";

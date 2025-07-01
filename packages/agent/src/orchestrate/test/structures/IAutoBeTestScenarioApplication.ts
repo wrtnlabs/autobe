@@ -16,27 +16,31 @@ export namespace IAutoBeTestScenarioApplication {
   }
 
   export interface IScenarioGroup {
-    /** Target API endpoint to test. */
+    /**
+     * Target API endpoint to test.
+     *
+     * This must be **unique** across all scenario groups. An endpoint is
+     * identified by its `path` and `method` combination.
+     *
+     * Multiple test scenarios may exist for a single endpoint.
+     */
     endpoint: AutoBeOpenApi.IEndpoint;
 
-    /** Array of test scenarios. */
+    /**
+     * An array of test scenarios associated with the given endpoint.
+     *
+     * Each scenario represents a specific test case for the same `path` and
+     * `method`.
+     */
     scenarios: IScenario[];
   }
 
   /**
    * Represents a test scenario for a single API operation.
    *
-   * This interface extends `AutoBeOpenApi.IEndpoint`, inheriting its HTTP
-   * method and path information, and adds two key properties:
-   *
-   * - `draft`: A free-form, human-readable test scenario description for the API
-   *   endpoint.
-   * - `dependsOn`: A list of other API endpoints that must be invoked beforehand
-   *   in order to prepare the context for this test. Each dependency includes
-   *   the purpose of the dependency.
-   *
-   * This structure is intended to help organize test specifications for complex
-   * workflows and ensure that all prerequisites are explicitly declared.
+   * This interface defines a structured, user-centric test draft that includes
+   * a descriptive function name, a detailed scenario draft, and logical
+   * dependencies on other endpoints required for context or setup.
    */
   export interface IScenario {
     /**
@@ -44,7 +48,7 @@ export namespace IAutoBeTestScenarioApplication {
      * be tested. This should include both successful and failure scenarios,
      * business rule validations, edge cases, and any sequence of steps
      * necessary to perform the test. A subsequent agent will use this draft to
-     * generate multiple test scenarios.
+     * generate multiple concrete test cases.
      */
     draft: string;
 
@@ -109,20 +113,26 @@ export namespace IAutoBeTestScenarioApplication {
     functionName: string;
 
     /**
-     * A list of other API endpoints that must be executed before this test
-     * scenario. This helps express dependencies such as data creation or
-     * authentication steps required to reach the intended test state.
+     * A list of other API endpoints that this scenario logically depends on.
+     *
+     * These dependencies represent context or prerequisite conditions, such as
+     * authentication, resource creation, or data setup, that are relevant to
+     * the test. This list is not a strict execution order — if ordering is
+     * important, it must be described explicitly in the `purpose`.
      */
-    dependsOn: IDependsOn[];
+    dependencies: IDependencies[];
   }
 
-  export interface IDependsOn {
-    /** Target API endpoint that must be executed before the main operation. */
+  export interface IDependencies {
+    /** Target API endpoint that this scenario depends on. */
     endpoint: AutoBeOpenApi.IEndpoint;
 
     /**
-     * A concise exscenarioation of why this API call is required before
-     * executing the test for the main operation.
+     * A concise explanation of why this API call is relevant or required for
+     * the main test scenario.
+     *
+     * This should describe the contextual or setup role of the dependency, such
+     * as creating necessary data or establishing user authentication.
      *
      * Example: "Creates a category so that a product can be linked to it during
      * creation."

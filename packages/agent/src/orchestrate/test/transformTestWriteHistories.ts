@@ -21,6 +21,18 @@ export const transformTestWriteHistories = (props: {
     {
       id: v4(),
       created_at: new Date().toISOString(),
+      type: "systemMessage",
+      text: AutoBeSystemPromptConstant.TEST_VALIDATOR,
+    },
+    {
+      id: v4(),
+      created_at: new Date().toISOString(),
+      type: "systemMessage",
+      text: AutoBeSystemPromptConstant.TEST_TYPESCRIPT_SYNTAX,
+    },
+    {
+      id: v4(),
+      created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: [
         "Here is the list of input material composition.",

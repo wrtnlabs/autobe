@@ -6,6 +6,7 @@ import {
   AutoBeTestHistory,
 } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
+import stringify from "safe-stable-stringify";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
@@ -20,8 +21,15 @@ export const validate_agent_test_main = async (
 
   // PREPARE AGENT
   const { agent } = await prepare_agent_test(factory, project);
+
+  const map = new Map<string, true>();
   const events: AutoBeEvent[] = [];
   const enroll = (event: AutoBeEvent) => {
+    if (!map.has(event.type)) {
+      map.set(event.type, true);
+      console.log(event.type);
+    }
+
     events.push(event);
   };
   agent.on("testStart", enroll);
@@ -49,8 +57,8 @@ export const validate_agent_test_main = async (
     root: `${TestGlobal.ROOT}/results/${project}/test/main`,
     files: {
       ...(await agent.getFiles()),
-      "logs/events.json": JSON.stringify(events, null, 2),
-      "logs/result.json": JSON.stringify(result, null, 2),
+      "logs/events.json": stringify(events, null, 2),
+      "logs/result.json": stringify(result, null, 2),
     },
   });
   TestValidator.equals("result")(result.compiled.type)("success");

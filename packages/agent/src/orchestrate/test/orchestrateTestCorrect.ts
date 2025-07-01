@@ -110,9 +110,16 @@ async function step<Model extends ILlmSchema.Model>(
   life: number,
 ): Promise<AutoBeTestValidateEvent> {
   // COMPILE TEST CODE
+  const files = {
+    ...entireFiles,
+    ...testFiles
+      .map((el) => ({ [el.location]: el.content }))
+      .reduce((acc, cur) => Object.assign(acc, cur), {}),
+  };
+
   const result: IAutoBeTypeScriptCompilerResult =
     await ctx.compiler.typescript.compile({
-      files: entireFiles,
+      files: files,
     });
 
   if (result.type === "success") {
@@ -146,6 +153,7 @@ async function step<Model extends ILlmSchema.Model>(
 
   result.diagnostics.forEach((d) => {
     if (d.file === null) return;
+    if (!d.file.startsWith("test/features/api/")) return;
 
     diagnostics[d.file] = diagnostics[d.file] ?? [];
     diagnostics[d.file].push(d);
@@ -192,13 +200,12 @@ async function step<Model extends ILlmSchema.Model>(
     Object.entries(diagnostics).map(
       async ([filename, d]): Promise<AutoBeTestFile> => {
         const file = testFiles.find((f) => f.location === filename);
-        const code: string = file?.content!;
         const scenario = file?.scenario!;
 
         const response: ICorrectTestFunctionProps = await process(
           ctx,
           d,
-          code,
+          file?.content!,
           scenario,
         );
         ctx.dispatch({
@@ -213,14 +220,29 @@ async function step<Model extends ILlmSchema.Model>(
           step: ctx.state().interface?.step ?? 0,
         });
 
-        return { location: filename, content: code, scenario: scenario };
+        return {
+          location: filename,
+          content: response.content,
+          scenario: scenario,
+        };
       },
     ),
   );
 
   return step(
     ctx,
-    entireFiles,
+    Object.entries(entireFiles)
+      .map(([filename, content]) => {
+        const overwritten = validatedFiles.find(
+          (el) => el.location === filename,
+        );
+        return overwritten
+          ? { [overwritten.location]: overwritten.content }
+          : {
+              [filename]: content,
+            };
+      })
+      .reduce((acc, cur) => Object.assign(acc, cur), {}),
     testFiles.map((f) => {
       const validated = validatedFiles.find((v) => v.location === f.location);
       return validated ? validated : f;
@@ -253,13 +275,23 @@ async function process<Model extends ILlmSchema.Model>(
     scenario,
   );
 
+  const lines = transformLines(code);
+
   const agentica = new MicroAgentica({
     model: ctx.model,
     vendor: { ...ctx.vendor },
     config: {
       ...(ctx.config ?? {}),
     },
-    histories: transformTestCorrectHistories(artifacts),
+    histories: transformTestCorrectHistories(
+      code,
+      artifacts,
+      diagnostics.map((diagnostic) =>
+        diagnostic.start === undefined || diagnostic.length === undefined
+          ? ""
+          : formatDiagnostic(code, lines, diagnostic),
+      ),
+    ),
     controllers: [
       createApplication({
         model: ctx.model,
@@ -275,38 +307,7 @@ async function process<Model extends ILlmSchema.Model>(
   await randomBackoffRetry(async () => {
     await agentica.conversate(
       [
-        "Fix the compilation error in the provided code.",
-        "",
-        "## Original Code",
-        "```typescript",
-        code,
-        "```",
-        "",
-        diagnostics.map((diagnostic) => {
-          if (diagnostic.start === undefined || diagnostic.length === undefined)
-            return "";
-
-          const checkDtoRegexp = `Cannot find module '@ORGANIZATION/template-api/lib/structures/IBbsArticleComment' or its corresponding type declarations.`;
-          const [group] = [
-            ...checkDtoRegexp.matchAll(
-              /Cannot find module '(.*lib\/structures\/.*)'/g,
-            ),
-          ];
-
-          const [_, filename] = group ?? [];
-
-          return [
-            "## Error Information",
-            `- Position: Characters ${diagnostic.start} to ${diagnostic.start + diagnostic.length}`,
-            `- Error Message: ${diagnostic.messageText}`,
-            `- Problematic Code: \`${code.substring(diagnostic.start, diagnostic.start + diagnostic.length)}\``,
-            filename
-              ? `The type files located under **/lib/structures are declared in '@ORGANIZATION/PROJECT-api/lib/structures'.\n` +
-                `Note: '@ORGANIZATION/PROJECT-api' must be written exactly as is and should not be replaced.\n`
-              : "",
-          ].join("\n");
-        }),
-        "## Instructions",
+        "# Instructions",
         "1. Focus on the specific error location and message",
         "2. Provide the corrected TypeScript code",
         "3. Ensure the fix resolves the compilation error",
@@ -316,7 +317,173 @@ async function process<Model extends ILlmSchema.Model>(
     );
   });
   if (pointer.value === null) throw new Error("Failed to modify test code.");
+
+  const typeReferences: string[] = Array.from(
+    new Set(
+      Object.keys(artifacts.document.components.schemas).map(
+        (key) => key.split(".")[0]!,
+      ),
+    ),
+  );
+
+  pointer.value.content = pointer.value.content
+    .replace(/^[ \t]*import\b[\s\S]*?;[ \t]*$/gm, "")
+    .trim();
+  pointer.value.content = [
+    `import { TestValidator } from "@nestia/e2e";`,
+    `import typia, { tags } from "typia";`,
+    "",
+    `import api from "@ORGANIZATION/PROJECT-api";`,
+    ...typeReferences.map(
+      (ref) =>
+        `import type { ${ref} } from "@ORGANIZATION/PROJECT-api/lib/structures/${ref}";`,
+    ),
+    "",
+    pointer.value.content,
+  ].join("\n");
+
+  pointer.value.content = pointer.value.content.replaceAll(
+    'string & Format<"uuid">',
+    'string & tags.Format<"uuid">',
+  );
+
   return pointer.value;
+}
+
+function transformLines(code: string) {
+  return code.split("\n").map((line, num, arr) => {
+    const start = arr
+      .slice(0, num)
+      .map((el) => el.length + 1)
+      .reduce((acc, cur) => acc + cur, 0);
+    return {
+      line: num + 1,
+      text: line,
+      start: start,
+      end: start + line.length + 1, // exclusive
+    };
+  });
+}
+
+function formatDiagnostic(
+  code: string,
+  lines: {
+    line: number; // line number
+    text: string;
+    start: number;
+    end: number; // exclusive
+  }[],
+  diagnostic: IAutoBeTypeScriptCompilerResult.IDiagnostic,
+): string {
+  const { start, length, messageText } = diagnostic;
+  const message = messageText;
+  if (typeof start === "number" && typeof length === "number") {
+    const end = start + length;
+    const problematicCode = code.substring(start, end);
+    const errorLine = lines.find((line) => line.end > start) ?? null;
+    const lineText = errorLine?.text ?? "";
+
+    const hints = getHints(message, lineText);
+
+    function createAdjustedArray(n: number): number[] {
+      let start = n - 2;
+
+      // 시작 값이 음수라면, 0부터 시작해서 5개의 숫자 생성
+      if (start < 0) {
+        start = 0;
+      }
+
+      return Array.from({ length: 5 }, (_, i) => start + i);
+    }
+
+    const errorLines = createAdjustedArray(errorLine?.line ?? 0);
+
+    const context = errorLines
+      .map((num) => {
+        if (num === errorLine?.line) {
+          if (lines[num - 1]) {
+            return `${lines[num - 1]?.text} // <- ERROR LINE (line:${num})`;
+          }
+        }
+        if (lines[num - 1]) {
+          return lines[num - 1]?.text;
+        }
+
+        return null;
+      })
+      .filter((el) => el !== null);
+
+    return [
+      "## Error Information",
+      `- Position: Characters ${start} to ${end}`,
+      `- Error Message: ${message}`,
+      `- Error Lines: \n${
+        context.length
+          ? [
+              "\t```ts", //
+              ...context.map((el) => `\t${el}`),
+              "\t```",
+            ].join("\n")
+          : "(none)"
+      }`,
+      `- Problematic Code: ${problematicCode.length > 0 ? `\`${problematicCode}\`` : "(none)"}`,
+      ...hints.map((hint) => `- Hint: ${hint}`),
+    ].join("\n");
+  }
+  return ["## Error Information", `- Error Message: ${message}`].join("\n");
+}
+
+function getHints(message: string, lineText: string): string[] {
+  const isTestValidator = lineText.includes("TestValidator");
+  const isTypia =
+    message === "Cannot find name 'Format'. Did you mean 'FormData'?";
+  const isJest = message === "Cannot find name 'expect'.";
+  const isCurrying =
+    isTestValidator && message === "Expected 1 arguments, but got 2";
+  const isAssignability =
+    /Argument of type '([^']+)' is not assignable to parameter of type '([^']+)'/.test(
+      message,
+    );
+
+  const hints: string[] = [];
+
+  if (isTypia) {
+    hints.push(
+      "If you want to use typia tags, use `tags.Format` instead of `Format`.",
+    );
+  }
+
+  if (isJest) {
+    hints.push(
+      'Detected invalid `expect` usage. Use `TestValidator.equals("description")(expected)(actual)`.',
+    );
+  }
+
+  if (isCurrying) {
+    hints.push(
+      "`TestValidator.equals` is a curried function and must be called in **three steps**: `title → expected → actual`.",
+    );
+  } else if (isTestValidator) {
+    hints.push(
+      "The second argument `expected` must be assignable from the type of `actual`. Consider swapping the order if you get a type error.",
+    );
+  }
+
+  if (isAssignability && isTestValidator) {
+    const match = lineText
+      .trim()
+      .match(/TestValidator\.equals\("([^"]+)"\)\(([^)]+)\)\(([^)]+)\)/);
+    if (match) {
+      const [, title, expected, actual] = match;
+      if (actual.includes(expected)) {
+        hints.push(
+          `You can try rearranging the order like this: TestValidator.equals("${title}")(${actual})(${expected})`,
+        );
+      }
+    }
+  }
+
+  return hints;
 }
 
 function createApplication<Model extends ILlmSchema.Model>(props: {

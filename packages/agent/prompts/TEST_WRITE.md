@@ -107,6 +107,31 @@ export const test_api_shoppings_customers_sales_reviews_update = async (
 **Comprehensive Analysis Approach:**
 The Agent must understand the **interrelationships** among these 4 input materials beyond analyzing them individually. You must comprehensively understand how business flows required by scenarios can be implemented with DTOs and SDK, and how mock function structures map to actual requirements. Additionally, you must infer **unspecified parts** from given materials and proactively discover **additional elements needed** for complete E2E testing.
 
+### 2.5. Typia Guide
+
+When defining validation rules for input or response structures using `typia`, you **must** utilize `tags` exclusively through the `tags` namespace provided by the `typia` module. This ensures strict type safety, clarity, and compatibility with automated code generation and schema extraction.
+For example, to use tags.Format<'uuid'>, you must reference it as tags.Format, not simply Format.
+
+#### 2.5.1. Correct Usage Examples
+
+```ts
+export interface IUser {
+  username: string & tags.MinLength<3> & tags.MaxLength<20>;
+  email: string & tags.Format<"email">;
+  age: number & tags.Type<"uint32"> & tags.Minimum<18>;
+}
+```
+
+### 2.5.2. Invalid Usage Examples
+
+```ts
+export interface IUser {
+  username: string & MinLength<3> & MaxLength<20>;
+  email: string & Format<"email">;
+  age: number & Type<"uint32"> & Minimum<18>;
+}
+```
+
 ## 3. Core Writing Principles
 
 ### 3.1. No Import Statements Rule
@@ -205,12 +230,58 @@ export async function test_api_{naming_convention}(
 - Accurately distinguish APIs accessible only after login in respective sessions
 
 ### 4.5. Data Consistency Validation
-- Use `TestValidator.equals()` function to validate data consistency
-- Appropriately validate ID matching, state changes, data integrity
-- Confirm accurate structure matching when comparing arrays or objects
-- **Format**: `TestValidator.equals("description")(expected)(actual)`
-- Add descriptions for clear error messages when validation fails
-- **Error Situation Validation**: Use `TestValidator.error()` or `TestValidator.httpError()` for expected errors
+
+* Avoid using `TestValidator.notEquals()`. To assert that `b` is not of type `a`, write:
+  `TestValidator.equals(false)(typia.is<typeof a>(b))`.
+* You **must** use validation functions from `TestValidator` — do **not** use `typia.is`, `typia.assert`, Node's `assert`, or Jest's `expect`.
+  Using `TestValidator` ensures failure messages are descriptive via the `title`, making debugging much easier.
+* Appropriately validate ID matching, state transitions, and data integrity.
+* When comparing arrays or objects, ensure structural accuracy.
+* **Format**: `TestValidator.equals("description")(expected)(actual)`
+* Always include a clear description to provide meaningful error messages on test failure.
+* **Error Case Validation**: For expected error scenarios, use `TestValidator.error()` or `TestValidator.httpError()`.
+
+### 4.6. Test Validator Usage Guidelines
+
+#### ✅ Purpose
+
+The `TestValidator` utility is required for all test assertions to ensure consistency, readability, and easier debugging. It provides descriptive error messages through the use of a `title`.
+
+#### ✅ Standard Usage Format
+
+```ts
+TestValidator.equals("description")(expected)(actual);
+```
+
+* `description`: A short, clear explanation of the test purpose
+* `expected`: The expected value
+* `actual`: The actual value being tested
+
+#### ✅ Examples
+
+```ts
+TestValidator.equals("Check commit existence and type")("object")(typeof system.commit);
+TestValidator.equals("Validate array length")(3)(data.length);
+TestValidator.equals("Assert value is not of type A")(false)(typia.is<typeof A>(b));
+```
+
+#### 🚫 Incorrect Usage Examples
+
+```ts
+TestValidator.equals("Wrong usage")("object", typeof system.commit)(typeof system.commit); // ❌ Invalid currying
+expect(x).toBe(y);   // ❌ Do not use Jest's expect
+assert.equal(x, y);  // ❌ Do not use Node.js assert
+typia.assert(x);     // ❌ Do not use typia.assert directly
+```
+
+#### 💡 Additional Guidelines
+
+* To assert a value is **not** of a given type, use:
+  `TestValidator.equals(false)(typia.is<Type>(value))`
+* **Never** use `typia.is`, `typia.assert`, `expect`, or `assert` directly in tests.
+  Only `TestValidator` functions must be used to maintain consistent test behavior and clear failure messages.
+* For error case validation, use `TestValidator.error()` or `TestValidator.httpError()`.
+
 
 ## 5. Complete Implementation Example
 

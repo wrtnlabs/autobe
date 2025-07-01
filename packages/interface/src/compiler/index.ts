@@ -6,3 +6,5 @@ export * from "./IAutoBeInterfaceCompiler";
 export * from "./IAutoBePrismaCompiler";
 export * from "./IAutoBePrismaCompilerProps";
 export * from "./IAutoBePrismaCompilerResult";
+export * from "./IAutoBeTestCompiler";
+export * from "./IAutoBeTestCompilerProps";

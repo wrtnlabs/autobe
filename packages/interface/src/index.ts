@@ -3,5 +3,6 @@ export * from "./events";
 export * from "./histories";
 export * from "./json";
 export * from "./openapi";
-export * from "./rpc";
 export * from "./prisma";
+export * from "./rpc";
+export * from "./test";

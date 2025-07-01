@@ -34,7 +34,7 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
   let include: AutoBeOpenApi.IOperation[] = Array.from(operations);
 
   do {
-    const matrix = divideArray({ array: include, capacity: 30 });
+    const matrix = divideArray({ array: include, capacity: 5 });
 
     await Promise.all(
       matrix.map(async (_include) => {
@@ -71,7 +71,7 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
           endpoint: pg.endpoint,
           draft: plan.draft,
           functionName: plan.functionName,
-          dependencies: plan.dependsOn,
+          dependencies: plan.dependencies,
         } satisfies AutoBeTestScenario;
       });
     }),
@@ -123,7 +123,9 @@ const createHistoryProperties = (
   operations: AutoBeOpenApi.IOperation[],
   include: Pick<AutoBeOpenApi.IOperation, "method" | "path">[],
   exclude: Pick<AutoBeOpenApi.IOperation, "method" | "path">[],
-) => [
+): Array<
+  IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
+> => [
   {
     id: v4(),
     created_at: new Date().toISOString(),
@@ -135,10 +137,18 @@ const createHistoryProperties = (
     created_at: new Date().toISOString(),
     type: "systemMessage",
     text: [
+      "# Operations",
       "Below are the full operations. Please refer to this.",
       "Your role is to draft all test cases for each given Operation.",
       "It is also permissible to write multiple test codes on a single endpoint.",
       "However, rather than meaningless tests, business logic tests should be written and an E2E test situation should be assumed.",
+      "",
+      "Please carefully analyze each operation to identify all dependencies required for testing.",
+      "For example, if you want to test liking and then deleting a post,",
+      "you might think to test post creation, liking, and unlike operations.",
+      "However, even if not explicitly mentioned, user registration and login are essential prerequisites.",
+      "Pay close attention to IDs and related values in the API,",
+      "and ensure you identify all dependencies between endpoints.",
       "",
       "```json",
       JSON.stringify(
@@ -146,6 +156,10 @@ const createHistoryProperties = (
           path: el.path,
           method: el.method,
           summary: el.summary,
+          description: el.description,
+          parameters: el.parameters,
+          requestBody: el.requestBody,
+          responseBody: el.responseBody,
         })),
       ),
       "```",
@@ -187,55 +201,22 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
       typia.validate<IAutoBeTestScenarioApplication.IProps>(next);
     if (result.success === false) return result;
 
-    const errors: IValidation.IError[] = [];
-    result.data.scenarioGroups.forEach((pg, i, arr) => {
-      arr.forEach((target, j) => {
-        if (
-          i !== j &&
-          target.endpoint.method === pg.endpoint.method &&
-          target.endpoint.path === pg.endpoint.path
-        ) {
-          if (
-            !errors.some(
-              (el) =>
-                el.path !== `planGroups[${j}].path` &&
-                el.value !== target.endpoint.path,
-            )
-          ) {
-            errors.push({
-              path: `planGroups[${j}].path`,
-              expected: `planGroup's {method + path} cannot duplicated.`,
-              value: target.endpoint.path,
-            });
-          }
+    const scenarioGroups: IAutoBeTestScenarioApplication.IScenarioGroup[] = [];
+    result.data.scenarioGroups.forEach((sg) => {
+      const created = scenarioGroups.find(
+        (el) =>
+          el.endpoint.method === sg.endpoint.method &&
+          el.endpoint.path === sg.endpoint.path,
+      );
 
-          if (
-            !errors.some(
-              (el) =>
-                el.path !== `planGroups[${j}].method` &&
-                el.value !== target.endpoint.method,
-            )
-          ) {
-            errors.push({
-              path: `planGroups[${j}].method`,
-              expected: `planGroup's {method + path} cannot duplicated.`,
-              value: target.endpoint.method,
-            });
-          }
-        }
-      });
+      if (created) {
+        created.scenarios.push(...sg.scenarios);
+      } else {
+        scenarioGroups.push(sg);
+      }
     });
 
-    if (errors.length !== 0) {
-      console.log(JSON.stringify(errors, null, 2), "errors");
-      return {
-        success: false,
-        errors,
-        data: next,
-      };
-    }
-
-    return result;
+    return { success: true, data: scenarioGroups };
   };
   return {
     protocol: "class",
