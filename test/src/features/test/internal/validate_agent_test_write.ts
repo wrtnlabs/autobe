@@ -1,8 +1,8 @@
 import { orchestrateTestWrite } from "@autobe/agent/src/orchestrate/test/orchestrateTestWrite";
+import { IAutoBeTestWriteResult } from "@autobe/agent/src/orchestrate/test/structures/IAutoBeTestWriteResult";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeTestScenario,
-  AutoBeTestWriteEvent,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import fs from "fs";
@@ -30,7 +30,7 @@ export const validate_agent_test_write = async (
   typia.assert(scenarios);
 
   // GENERATE TEST FUNCTIONS
-  const writes: AutoBeTestWriteEvent[] = await orchestrateTestWrite(
+  const writes: IAutoBeTestWriteResult[] = await orchestrateTestWrite(
     agent.getContext(),
     scenarios,
   );
