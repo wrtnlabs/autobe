@@ -1,9 +1,10 @@
 import { AutoBeOpenApi, IAutoBeTestWriteProps } from "@autobe/interface";
 import { NestiaMigrateImportProgrammer } from "@nestia/migrate/lib/programmers/NestiaMigrateImportProgrammer";
 import { HttpMigration, IHttpMigrateApplication } from "@samchon/openapi";
-import { HashMap, Pair, hash } from "tstl";
+import { HashMap, Pair } from "tstl";
 import ts, { FunctionDeclaration } from "typescript";
 
+import { AutoBeEndpointComparator } from "../interface/AutoBeEndpointComparator";
 import { transformOpenApiDocument } from "../interface/transformOpenApi";
 import { FilePrinter } from "../utils/FilePrinter";
 import { IAutoBeTestApiFunction } from "./IAutoBeTestApiFunction";
@@ -47,6 +48,7 @@ export function writeTestFunction(props: IAutoBeTestWriteProps): string {
 function associate(
   document: AutoBeOpenApi.IDocument,
 ): HashMap<AutoBeOpenApi.IEndpoint, IAutoBeTestApiFunction> {
+  // associate operations and functions
   const operations: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation> =
     new HashMap(
       document.operations.map(
@@ -59,12 +61,16 @@ function associate(
             o,
           ),
       ),
-      comparator.hash,
-      comparator.equals,
+      AutoBeEndpointComparator.hashCode,
+      AutoBeEndpointComparator.equals,
     );
   const functions: HashMap<AutoBeOpenApi.IEndpoint, IAutoBeTestApiFunction> =
-    new HashMap(comparator.hash, comparator.equals);
+    new HashMap(
+      AutoBeEndpointComparator.hashCode,
+      AutoBeEndpointComparator.equals,
+    );
 
+  // from migrate application
   const migrate: IHttpMigrateApplication = HttpMigration.application(
     transformOpenApiDocument(document),
   );
@@ -80,9 +86,3 @@ function associate(
   }
   return functions;
 }
-
-const comparator = {
-  hash: (x: AutoBeOpenApi.IEndpoint): number => hash(x.path, x.method),
-  equals: (x: AutoBeOpenApi.IEndpoint, y: AutoBeOpenApi.IEndpoint): boolean =>
-    x.path === y.path && x.method === y.method,
-};
