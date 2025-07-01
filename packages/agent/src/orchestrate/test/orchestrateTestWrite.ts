@@ -40,8 +40,11 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
       const event: AutoBeTestWriteEvent = {
         type: "testWrite",
         created_at: start.toISOString(),
-        filename: `test/features/api/${result.domain}/${scenario.functionName}.ts`,
-        content: result.content,
+        file: {
+          location: `test/features/api/${result.domain}/${scenario.functionName}.ts`,
+          content: result.content,
+          scenario,
+        },
         completed: ++complete,
         total: scenarios.length,
         step: ctx.state().interface?.step ?? 0,
@@ -49,11 +52,7 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
       ctx.dispatch(event);
       return {
         artifacts,
-        file: {
-          location: event.filename,
-          content: event.content,
-          scenario: scenario,
-        },
+        file: event.file,
       };
     }),
   );
