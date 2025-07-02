@@ -50,13 +50,20 @@ export const orchestrateRealize =
 
         const compiled = await ctx.compiler.typescript.compile({ files });
 
-        ctx.dispatch({});
+        const now = new Date().toISOString();
+        ctx.dispatch({
+          type: "realizeComplete",
+          compiled: compiled,
+          created_at: now,
+          files: files,
+          step: ctx.state().analyze?.step ?? 0,
+        });
 
         return {
           id: v4(),
           type: "realize",
-          completed_at: new Date().toISOString(),
-          created_at: new Date().toISOString(),
+          completed_at: now,
+          created_at: now,
           compiled,
           files,
           reason: props.reason,
