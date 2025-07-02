@@ -1,4 +1,4 @@
-import { orchestrateRealize } from "@autobe/agent/src/orchestrate/orchestrateRealize";
+import { orchestrateRealize } from "@autobe/agent/src/orchestrate/realize/orchestrateRealize";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeAssistantMessageHistory,
