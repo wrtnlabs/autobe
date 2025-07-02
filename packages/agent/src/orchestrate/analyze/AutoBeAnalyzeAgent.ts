@@ -102,8 +102,9 @@ export class AutoBeAnalyzeAgent<Model extends ILlmSchema.Model> {
     const response = await agent.conversate(content);
 
     const tokenUsageMap = this.ctx.usage();
-    tokenUsageMap.root.increment(agent.getTokenUsage());
-    tokenUsageMap.analyze.increment(agent.getTokenUsage());
+    const tokenUsage = agent.getTokenUsage();
+    tokenUsageMap.root.increment(tokenUsage);
+    tokenUsageMap.analyze.increment(tokenUsage);
 
     const lastMessage = response[response.length - 1]!;
 
