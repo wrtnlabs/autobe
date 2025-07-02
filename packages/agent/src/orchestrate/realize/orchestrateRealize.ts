@@ -27,7 +27,7 @@ export const orchestrateRealize =
       throw new Error();
     }
 
-    const codes: RealizeValidatorOutput[] = await Promise.all(
+    const codes: (RealizeValidatorOutput | FAILED)[] = await Promise.all(
       ops.map(async (op) =>
         pipe(
           op,
@@ -40,25 +40,42 @@ export const orchestrateRealize =
     );
 
     if (codes.length) {
-      const files = {
-        ...ctx.state().interface?.files,
-        ...codes
-          .map((code) => ({ [code.location]: code.content }))
-          .reduce((acc, cur) => Object.assign(acc, cur), {}),
-      };
+      if (codes.every((code) => code !== FAILED)) {
+        const files = {
+          ...ctx.state().interface?.files,
+          ...codes
+            .map((code) => ({ [code.location]: code.content }))
+            .reduce((acc, cur) => Object.assign(acc, cur), {}),
+        };
 
-      const compiled = await ctx.compiler.typescript.compile({ files });
+        const compiled = await ctx.compiler.typescript.compile({ files });
 
-      return {
-        id: v4(),
-        type: "realize",
-        completed_at: new Date().toISOString(),
-        created_at: new Date().toISOString(),
-        compiled,
-        files,
-        reason: props.reason,
-        step: ctx.state().analyze?.step ?? 0,
-      } satisfies AutoBeRealizeHistory;
+        return {
+          id: v4(),
+          type: "realize",
+          completed_at: new Date().toISOString(),
+          created_at: new Date().toISOString(),
+          compiled,
+          files,
+          reason: props.reason,
+          step: ctx.state().analyze?.step ?? 0,
+        } satisfies AutoBeRealizeHistory;
+      } else {
+        const total = codes.length;
+        const failedCount = codes.filter((code) => code === FAILED).length;
+        const successCount = total - failedCount;
+
+        return {
+          id: v4(),
+          type: "assistantMessage",
+          completed_at: new Date().toISOString(),
+          created_at: new Date().toISOString(),
+          text: [
+            `Out of ${total} code blocks, ${successCount} succeeded, but ${failedCount} failed.`,
+            `The process has been stopped due to the failure. Please review the failed steps and try again.`,
+          ].join("\n"),
+        } satisfies AutoBeAssistantMessageHistory;
+      }
     }
 
     return {
