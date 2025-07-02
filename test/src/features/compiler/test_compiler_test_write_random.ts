@@ -37,28 +37,6 @@ export const test_compiler_test_write_random = async (): Promise<void> => {
       pattern: "^[a-zA-Z0-9]{5,10}$",
     },
     {
-      type: "arrayRandom",
-      length: {
-        type: "numericLiteral",
-        value: 5,
-      },
-      generate: {
-        type: "arrowFunction",
-        body: {
-          type: "block",
-          statements: [
-            {
-              type: "returnStatement",
-              value: {
-                type: "numericLiteral",
-                value: 1,
-              },
-            },
-          ],
-        },
-      },
-    },
-    {
       type: "pickRandom",
       expression: {
         type: "arrayLiteral",
@@ -107,9 +85,8 @@ export const test_compiler_test_write_random = async (): Promise<void> => {
 
   TestValidator.predicate("import")(
     () =>
-      result.includes(
-        `import { ArrayUtil, RandomGenerator } from "@nestia/e2e";`,
-      ) && result.includes(`import typia, { tags } from "typia";`),
+      result.includes(`import { RandomGenerator } from "@nestia/e2e";`) &&
+      result.includes(`import typia, { tags } from "typia";`),
   );
   TestValidator.predicate("boolean")(() =>
     result.includes(`Math.random() <= 0.75`),
@@ -136,9 +113,6 @@ export const test_compiler_test_write_random = async (): Promise<void> => {
     result.includes(
       `typia.random<string & tags.Pattern<"^[a-zA-Z0-9]{5,10}$">>()`,
     ),
-  );
-  TestValidator.predicate("array")(
-    result.includes("await ArrayUtil.asyncRepeat(5)(async () => {"),
   );
   TestValidator.predicate("pick")(result.includes("RandomGenerator.pick(["));
   TestValidator.predicate("sample")(

@@ -1,5 +1,6 @@
 import { AutoBeTest } from "@autobe/interface";
 import ts from "typescript";
+import { ExpressionFactory } from "typia/lib/factories/ExpressionFactory";
 
 import { IAutoBeTestProgrammerContext } from "../IAutoBeTestProgrammerContext";
 import { writeTestExpression } from "../writeTestExpression";
@@ -78,7 +79,52 @@ export namespace AutoBeTestFunctionalProgrammer {
       OPERATORS[expr.operator],
       writeTestExpression(ctx, expr.right),
     );
+
+  export const arrayFilterExpression = (
+    ctx: IAutoBeTestProgrammerContext,
+    expr: AutoBeTest.IArrayFilterExpression,
+  ): ts.AwaitExpression =>
+    arrayExpression(ctx, "asyncFilter", [expr.expression, expr.function]);
+
+  export const arrayForEachExpression = (
+    ctx: IAutoBeTestProgrammerContext,
+    expr: AutoBeTest.IArrayForEachExpression,
+  ): ts.AwaitExpression =>
+    arrayExpression(ctx, "asyncForEach", [expr.expression, expr.function]);
+
+  export const arrayMapExpression = (
+    ctx: IAutoBeTestProgrammerContext,
+    expr: AutoBeTest.IArrayMapExpression,
+  ): ts.AwaitExpression =>
+    arrayExpression(ctx, "asyncMap", [expr.expression, expr.function]);
+
+  export const arrayRepeatExpression = (
+    ctx: IAutoBeTestProgrammerContext,
+    expr: AutoBeTest.IArrayRepeatExpression,
+  ): ts.AwaitExpression =>
+    arrayExpression(ctx, "asyncRepeat", [expr.length, expr.function]);
 }
+
+const arrayExpression = (
+  ctx: IAutoBeTestProgrammerContext,
+  name: string,
+  argList: AutoBeTest.IExpression[],
+): ts.AwaitExpression =>
+  ts.factory.createAwaitExpression(
+    ExpressionFactory.currying({
+      function: ts.factory.createPropertyAccessExpression(
+        ts.factory.createIdentifier(
+          ctx.importer.external({
+            type: "instance",
+            library: "@nestia/e2e",
+            name: "ArrayUtil",
+          }),
+        ),
+        name,
+      ),
+      arguments: argList.map((a) => writeTestExpression(ctx, a)),
+    }),
+  );
 
 const POSTFIX_UNARY_OPERATORS = {
   "++": ts.SyntaxKind.PlusPlusToken,

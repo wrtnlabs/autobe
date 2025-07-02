@@ -6,29 +6,6 @@ import { IAutoBeTestProgrammerContext } from "../IAutoBeTestProgrammerContext";
 import { writeTestExpression } from "../writeTestExpression";
 
 export namespace AutoBeTestRandomProgrammer {
-  export const arrayRandom = (
-    ctx: IAutoBeTestProgrammerContext,
-    expr: AutoBeTest.IArrayRandom,
-  ): ts.AwaitExpression =>
-    ts.factory.createAwaitExpression(
-      ExpressionFactory.currying({
-        function: ts.factory.createPropertyAccessExpression(
-          ts.factory.createIdentifier(
-            ctx.importer.external({
-              type: "instance",
-              library: "@nestia/e2e",
-              name: "ArrayUtil",
-            }),
-          ),
-          "asyncRepeat",
-        ),
-        arguments: [
-          writeTestExpression(ctx, expr.length),
-          writeTestExpression(ctx, expr.generate),
-        ],
-      }),
-    );
-
   export const pickRandom = (
     ctx: IAutoBeTestProgrammerContext,
     expr: AutoBeTest.IPickRandom,

@@ -15,10 +15,11 @@ export function generateReport(
     .map((v) => v.agent.getTokenUsage())
     .reduce((acc, v) => AutoBeTokenUsage.plus(acc, v), new AutoBeTokenUsage());
 
+  const successList = results.filter((v) => v.success);
   return `
 Benchmark Report
 
-- Success: ${((results.filter((v) => v.success).length / results.length) * 100).toFixed(2)}% (${results.filter((v) => v.success).length} / ${results.length})
+- Success: ${((successList.length / results.length) * 100).toFixed(2)}% (${successList.length} / ${results.length})
 - Total time: ${formatDurationSecondsFromMs(Date.now() - startTime)}
 - Avg time per run: ${formatDurationSecondsFromMs(
     results

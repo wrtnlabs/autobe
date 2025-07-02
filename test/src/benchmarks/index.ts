@@ -118,6 +118,17 @@ async function runBenchmarks(props: {
               clientAgent,
               log: (message: string, level?: "INFO" | "ERROR" | "WARN") =>
                 logger.log(runId, message, level),
+            }).finally(() => {
+              {
+                const context = getAutobeContext();
+                fs.promises
+                  .writeFile(
+                    `${context.logsDir}/${context.runId}/report.json`,
+                    JSON.stringify(context, null, 2),
+                    "utf8",
+                  )
+                  .catch(() => {});
+              }
             }),
         );
         return result;
