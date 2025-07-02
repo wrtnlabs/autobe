@@ -56,9 +56,9 @@ export const orchestrateRealize =
         created_at: new Date().toISOString(),
         compiled,
         files,
-        reason: "",
+        reason: props.reason,
         step: ctx.state().analyze?.step ?? 0,
-      };
+      } satisfies AutoBeRealizeHistory;
     }
 
     return {
@@ -67,7 +67,7 @@ export const orchestrateRealize =
       completed_at: new Date().toISOString(),
       created_at: new Date().toISOString(),
       text: "Any codes can not be generated.",
-    };
+    } satisfies AutoBeAssistantMessageHistory;
   };
 
 function pipe<A, B, C, D, E>(
