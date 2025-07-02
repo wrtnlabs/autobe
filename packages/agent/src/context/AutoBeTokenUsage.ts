@@ -7,7 +7,7 @@ import {
 import { IAutoBeApplication } from "./IAutoBeApplication";
 
 export class AutoBeTokenUsage {
-  public readonly root: AgenticaTokenUsage;
+  public readonly facade: AgenticaTokenUsage;
   public readonly analyze: AgenticaTokenUsage;
   public readonly prisma: AgenticaTokenUsage;
   public readonly interface: AgenticaTokenUsage;
@@ -16,7 +16,7 @@ export class AutoBeTokenUsage {
 
   public constructor(props?: IAutoBeTokenUsageJson) {
     if (props === undefined) {
-      this.root = new AgenticaTokenUsage();
+      this.facade = new AgenticaTokenUsage();
       this.analyze = new AgenticaTokenUsage();
       this.prisma = new AgenticaTokenUsage();
       this.interface = new AgenticaTokenUsage();
@@ -25,7 +25,7 @@ export class AutoBeTokenUsage {
       return;
     }
 
-    this.root = new AgenticaTokenUsage(props.root);
+    this.facade = new AgenticaTokenUsage(props.facade);
     this.analyze = new AgenticaTokenUsage(props.analyze);
     this.prisma = new AgenticaTokenUsage(props.prisma);
     this.interface = new AgenticaTokenUsage(props.interface);
@@ -37,7 +37,7 @@ export class AutoBeTokenUsage {
     usage: AgenticaTokenUsage,
     additionalStages: (keyof IAutoBeApplication)[] = [],
   ) {
-    this.root.increment(usage);
+    this.facade.increment(usage);
     additionalStages.forEach((stage) => {
       this[stage].increment(usage);
     });
@@ -52,7 +52,7 @@ export class AutoBeTokenUsage {
 
   public static plus(usageA: AutoBeTokenUsage, usageB: AutoBeTokenUsage) {
     return new AutoBeTokenUsage({
-      root: AgenticaTokenUsage.plus(usageA.root, usageB.root),
+      facade: AgenticaTokenUsage.plus(usageA.facade, usageB.facade),
       analyze: AgenticaTokenUsage.plus(usageA.analyze, usageB.analyze),
       prisma: AgenticaTokenUsage.plus(usageA.prisma, usageB.prisma),
       interface: AgenticaTokenUsage.plus(usageA.interface, usageB.interface),
@@ -63,7 +63,7 @@ export class AutoBeTokenUsage {
 
   public toJSON(): IAutoBeTokenUsageJson {
     return {
-      root: this.root.toJSON(),
+      facade: this.facade.toJSON(),
       analyze: this.analyze.toJSON(),
       prisma: this.prisma.toJSON(),
       interface: this.interface.toJSON(),
@@ -73,18 +73,18 @@ export class AutoBeTokenUsage {
   }
 
   /** @internal */
-  private static keys(): ("root" | keyof IAutoBeApplication)[] {
-    return ["root", "analyze", "prisma", "interface", "test", "realize"];
+  private static keys(): ("facade" | keyof IAutoBeApplication)[] {
+    return ["facade", "analyze", "prisma", "interface", "test", "realize"];
   }
 }
 
 /** Type check statements */
 1 as unknown as AutoBeTokenUsage satisfies {
-  [key in "root" | keyof IAutoBeApplication]: AgenticaTokenUsage;
+  [key in "facade" | keyof IAutoBeApplication]: AgenticaTokenUsage;
 };
 
 1 as unknown as IAutoBeTokenUsageJson satisfies {
-  [key in "root" | keyof IAutoBeApplication]: IAutoBeInternalTokenUsageJson;
+  [key in "facade" | keyof IAutoBeApplication]: IAutoBeInternalTokenUsageJson;
 };
 
 1 as unknown as IAutoBeInternalTokenUsageJson satisfies IAgenticaTokenUsageJson;

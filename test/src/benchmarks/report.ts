@@ -55,7 +55,7 @@ ${(["analyze", "prisma", "interface"] as const)
 - Total Token Usage
 ${(
   [
-    ["Total", "root"],
+    ["Total", "facade"],
     ["Analyze", "analyze"],
     ["Prisma", "prisma"],
     ["Interface", "interface"],

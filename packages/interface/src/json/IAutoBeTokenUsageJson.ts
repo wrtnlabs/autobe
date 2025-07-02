@@ -26,7 +26,7 @@ export interface IAutoBeTokenUsageJson {
    * development pipeline. This aggregate view enables overall cost assessment
    * and resource utilization analysis for complete project automation.
    */
-  root: IAutoBeInternalTokenUsageJson;
+  facade: IAutoBeInternalTokenUsageJson;
 
   /** Token usage for the analysis phase */
   analyze: IAutoBeInternalTokenUsageJson;
