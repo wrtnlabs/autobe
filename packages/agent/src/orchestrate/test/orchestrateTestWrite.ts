@@ -102,9 +102,8 @@ async function process<Model extends ILlmSchema.Model>(
   await randomBackoffRetry(async () => {
     await agentica.conversate("Create e2e test functions.");
   }).finally(() => {
-    const tokenUsageMap = ctx.usage();
-    tokenUsageMap.root.increment(agentica.getTokenUsage());
-    tokenUsageMap.test.increment(agentica.getTokenUsage());
+    const tokenUsage = agentica.getTokenUsage();
+    ctx.usage().record(tokenUsage, ["test"]);
   });
   if (pointer.value === null) throw new Error("Failed to create test code.");
 

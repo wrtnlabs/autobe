@@ -13,7 +13,9 @@
  * maintaining high-quality output across requirements analysis, database
  * design, API specification, testing, and implementation phases.
  *
- * @author Samchon
+ * This comment written by @Samchon
+ *
+ * @author sunrabbit123
  */
 export interface IAutoBeTokenUsageJson {
   /**
@@ -23,6 +25,46 @@ export interface IAutoBeTokenUsageJson {
    * combining all input and output tokens used by every agent throughout the
    * development pipeline. This aggregate view enables overall cost assessment
    * and resource utilization analysis for complete project automation.
+   */
+  root: IAutoBeInternalTokenUsageJson;
+
+  /** Token usage for the analysis phase */
+  analyze: IAutoBeInternalTokenUsageJson;
+  /** Token usage for the Prisma schema generation phase */
+  prisma: IAutoBeInternalTokenUsageJson;
+  /** Token usage for the interface generation phase */
+  interface: IAutoBeInternalTokenUsageJson;
+  /** Token usage for the test generation phase */
+  test: IAutoBeInternalTokenUsageJson;
+  /** Token usage for the implementation phase */
+  realize: IAutoBeInternalTokenUsageJson;
+}
+
+/**
+ * Interface representing comprehensive token usage statistics across all AI
+ * agents in the vibe coding system.
+ *
+ * This interface provides detailed tracking of token consumption throughout the
+ * entire automated development pipeline, enabling cost monitoring, performance
+ * analysis, and optimization of AI resource utilization. The token usage data
+ * captures both aggregate statistics and component-specific breakdowns across
+ * different agent types and processing phases.
+ *
+ * Token usage tracking is essential for understanding the computational costs
+ * of the vibe coding process and optimizing AI agent efficiency while
+ * maintaining high-quality output across requirements analysis, database
+ * design, API specification, testing, and implementation phases.
+ *
+ * @author Samchon
+ */
+export interface IAutoBeInternalTokenUsageJson {
+  /**
+   * Total sum of token usage for each stage in the internal agent.
+   *
+   * Represents the total token consumption across all internal agent stages
+   * including initialization, selection, cancellation, calling, and
+   * description. This enables monitoring and analysis of resource usage at each
+   * stage of the process.
    */
   aggregate: IAutoBeTokenUsageJson.IComponent;
 

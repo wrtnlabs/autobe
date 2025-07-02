@@ -167,9 +167,8 @@ async function process<Model extends ILlmSchema.Model>(
       ].join("\n"),
     )
     .finally(() => {
-      const tokenUsageMap = ctx.usage();
-      tokenUsageMap.root.increment(agentica.getTokenUsage());
-      tokenUsageMap.interface.increment(agentica.getTokenUsage());
+      const tokenUsage = agentica.getTokenUsage();
+      ctx.usage().record(tokenUsage, ["interface"]);
     });
   if (pointer.value === null) {
     // never be happened

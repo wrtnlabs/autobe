@@ -120,9 +120,14 @@ async function main(): Promise<void> {
 
   console.log("Token Usage");
   console.table({
-    Total: tokenUsage.aggregate.total.toLocaleString("en-US"),
-    Input: tokenUsage.aggregate.input.total.toLocaleString("en-US"),
-    Output: tokenUsage.aggregate.output.total.toLocaleString("en-US"),
+    Total: tokenUsage.root.aggregate.total.toLocaleString("en-US"),
+    Input: tokenUsage.root.aggregate.input.total.toLocaleString("en-US"),
+    Output: tokenUsage.root.aggregate.output.total.toLocaleString("en-US"),
+    Analyze: tokenUsage.analyze.aggregate.total.toLocaleString("en-US"),
+    Prisma: tokenUsage.prisma.aggregate.total.toLocaleString("en-US"),
+    Interface: tokenUsage.interface.aggregate.total.toLocaleString("en-US"),
+    Test: tokenUsage.test.aggregate.total.toLocaleString("en-US"),
+    Realize: tokenUsage.realize.aggregate.total.toLocaleString("en-US"),
   });
   if (exceptions.length !== 0) process.exit(-1);
 }

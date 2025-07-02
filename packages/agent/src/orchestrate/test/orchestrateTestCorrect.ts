@@ -70,9 +70,8 @@ async function correct<Model extends ILlmSchema.Model>(
       ].join("\n"),
     );
   }).finally(() => {
-    const tokenUsageMap = ctx.usage();
-    tokenUsageMap.root.increment(agentica.getTokenUsage());
-    tokenUsageMap.test.increment(agentica.getTokenUsage());
+    const tokenUsage = agentica.getTokenUsage();
+    ctx.usage().record(tokenUsage, ["test"]);
   });
   if (pointer.value === null) throw new Error("Failed to modify test code.");
   pointer.value.content = complementTestWrite({

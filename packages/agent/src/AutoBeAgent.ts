@@ -14,7 +14,6 @@ import { v4 } from "uuid";
 import { AutoBeContext } from "./context/AutoBeContext";
 import { AutoBeState } from "./context/AutoBeState";
 import { AutoBeTokenUsage } from "./context/AutoBeTokenUsage";
-import { IAutoBeApplication } from "./context/IAutoBeApplication";
 import { createAgenticaHistory } from "./factory/createAgenticaHistory";
 import { createAutoBeController } from "./factory/createAutoBeApplication";
 import { createAutoBeState } from "./factory/createAutoBeState";
@@ -63,9 +62,7 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
   private readonly state_: AutoBeState;
 
   /** @internal */
-  private readonly usage_: {
-    [key in "root" | keyof IAutoBeApplication]: AutoBeTokenUsage;
-  };
+  private readonly usage_: AutoBeTokenUsage;
 
   /** @internal */
   private readonly listeners_: Map<
@@ -100,14 +97,10 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
     this.state_ = createAutoBeState(this.histories_);
     this.listeners_ = new Map();
 
-    this.usage_ = {
-      root: new AutoBeTokenUsage(),
-      analyze: new AutoBeTokenUsage(),
-      prisma: new AutoBeTokenUsage(),
-      interface: new AutoBeTokenUsage(),
-      test: new AutoBeTokenUsage(),
-      realize: new AutoBeTokenUsage(),
-    } as const;
+    this.usage_ =
+      props.tokenUsage instanceof AutoBeTokenUsage
+        ? props.tokenUsage
+        : new AutoBeTokenUsage(props.tokenUsage);
 
     // CONSTRUCT AGENTICA
     const vendor: IAgenticaVendor = {
@@ -121,10 +114,7 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
       compiler: props.compiler,
       histories: () => this.histories_,
       state: () => this.state_,
-      usage: () => ({
-        ...this.usage_,
-        root: this.agentica_.getTokenUsage(),
-      }),
+      usage: () => this.getTokenUsage(),
       files: (options) => this.getFiles(options),
       dispatch: (event) => {
         this.dispatch(event).catch(() => {});
@@ -142,7 +132,7 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
           execute: () => transformFacadeStateMessage(this.state_),
         },
       },
-      tokenUsage: props.tokenUsage,
+      tokenUsage: props.tokenUsage?.root,
       controllers: [
         createAutoBeController({
           model: props.model,
@@ -150,7 +140,6 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
         }),
       ],
     });
-    this.usage_.root = this.agentica_.getTokenUsage();
 
     this.agentica_.getHistories().push(
       ...this.histories_
@@ -411,9 +400,7 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
    * @returns Comprehensive token usage statistics with detailed breakdowns by
    *   agent, operation type, and consumption category
    */
-  public getTokenUsage(): {
-    [key in "root" | keyof IAutoBeApplication]: AutoBeTokenUsage;
-  } {
+  public getTokenUsage(): AutoBeTokenUsage {
     return this.usage_;
   }
 

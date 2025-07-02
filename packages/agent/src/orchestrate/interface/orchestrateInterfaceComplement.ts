@@ -96,9 +96,8 @@ async function step<Model extends ILlmSchema.Model>(
   enforceToolCall(agentica);
 
   await agentica.conversate("Fill missing schema types please").finally(() => {
-    const tokenUsageMap = ctx.usage();
-    tokenUsageMap.root.increment(agentica.getTokenUsage());
-    tokenUsageMap.interface.increment(agentica.getTokenUsage());
+    const tokenUsage = agentica.getTokenUsage();
+    ctx.usage().record(tokenUsage, ["interface"]);
   });
   if (pointer.value === null) {
     // unreachable

@@ -101,10 +101,8 @@ export class AutoBeAnalyzeAgent<Model extends ILlmSchema.Model> {
     const agent = this.createAnalyzeAgent();
     const response = await agent.conversate(content);
 
-    const tokenUsageMap = this.ctx.usage();
     const tokenUsage = agent.getTokenUsage();
-    tokenUsageMap.root.increment(tokenUsage);
-    tokenUsageMap.analyze.increment(tokenUsage);
+    this.ctx.usage().record(tokenUsage, ["analyze"]);
 
     const lastMessage = response[response.length - 1]!;
 
@@ -140,8 +138,7 @@ export class AutoBeAnalyzeAgent<Model extends ILlmSchema.Model> {
       const filenames = Object.keys(this.fileMap).join(",");
       const command = `Please proceed with the review of these files only.: ${filenames}`;
       const response = await reviewer.conversate(command);
-      tokenUsageMap.root.increment(reviewer.getTokenUsage());
-      tokenUsageMap.analyze.increment(reviewer.getTokenUsage());
+      this.ctx.usage().record(reviewer.getTokenUsage(), ["analyze"]);
 
       const review = response.find((el) => el.type === "assistantMessage");
 

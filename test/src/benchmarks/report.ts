@@ -13,16 +13,7 @@ export function generateReport(
 ) {
   const tokenUsage = results
     .map((v) => v.agent.getTokenUsage())
-    .reduce((acc, v) => {
-      return {
-        root: AutoBeTokenUsage.plus(acc.root, v.root),
-        analyze: AutoBeTokenUsage.plus(acc.analyze, v.analyze),
-        prisma: AutoBeTokenUsage.plus(acc.prisma, v.prisma),
-        interface: AutoBeTokenUsage.plus(acc.interface, v.interface),
-        test: AutoBeTokenUsage.plus(acc.test, v.test),
-        realize: AutoBeTokenUsage.plus(acc.realize, v.realize),
-      };
-    });
+    .reduce((acc, v) => AutoBeTokenUsage.plus(acc, v), new AutoBeTokenUsage());
 
   return `
 Benchmark Report

@@ -27,25 +27,25 @@ export function AutoBePlaygroundChatTokenUsageMovie(
           <TableRow>
             <TableCell>Total</TableCell>
             <TableCell>
-              {props.tokenUsage.aggregate.total.toLocaleString()}
+              {props.tokenUsage.root.aggregate.total.toLocaleString()}
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell>Input</TableCell>
             <TableCell>
-              {props.tokenUsage.aggregate.input.total.toLocaleString()}
+              {props.tokenUsage.root.aggregate.input.total.toLocaleString()}
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell>Input (Cached)</TableCell>
             <TableCell>
-              {props.tokenUsage.aggregate.input.cached.toLocaleString()}
+              {props.tokenUsage.root.aggregate.input.cached.toLocaleString()}
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell>Output</TableCell>
             <TableCell>
-              {props.tokenUsage.aggregate.output.total.toLocaleString()}
+              {props.tokenUsage.root.aggregate.output.total.toLocaleString()}
             </TableCell>
           </TableRow>
         </TableBody>

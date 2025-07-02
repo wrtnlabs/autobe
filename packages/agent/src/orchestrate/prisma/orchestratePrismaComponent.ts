@@ -51,9 +51,8 @@ export async function orchestratePrismaComponents<
   const histories: MicroAgenticaHistory<Model>[] = await agentica
     .conversate(content)
     .finally(() => {
-      const tokenUsageMap = ctx.usage();
-      tokenUsageMap.root.increment(agentica.getTokenUsage());
-      tokenUsageMap.prisma.increment(agentica.getTokenUsage());
+      const tokenUsage = agentica.getTokenUsage();
+      ctx.usage().record(tokenUsage, ["prisma"]);
     });
   if (histories.at(-1)?.type === "assistantMessage")
     return {

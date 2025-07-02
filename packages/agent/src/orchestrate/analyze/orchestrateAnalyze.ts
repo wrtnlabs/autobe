@@ -63,9 +63,8 @@ export const orchestrateAnalyze =
     const determined = await agentica
       .conversate("Design a complete list of documents for that document")
       .finally(() => {
-        const tokenUsageMap = ctx.usage();
-        tokenUsageMap.root.increment(agentica.getTokenUsage());
-        tokenUsageMap.analyze.increment(agentica.getTokenUsage());
+        const tokenUsage = agentica.getTokenUsage();
+        ctx.usage().record(tokenUsage, ["analyze"]);
       });
 
     const lastMessage = determined[determined.length - 1]!;

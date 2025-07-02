@@ -291,6 +291,7 @@ async function registerAutobeEvents(
     });
 
     // REPORT RESULT
+    // Save Prisma schema files to log directory for result tracking
     await FileSystemIterator.save({
       root: `${context.logsDir}/${context.runId}/prisma`,
       files: event.schemas,
