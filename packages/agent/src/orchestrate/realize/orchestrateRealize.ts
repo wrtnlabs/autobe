@@ -25,12 +25,6 @@ export const orchestrateRealize =
       throw new Error();
     }
 
-    const controllers: [string, string][] = Object.entries(
-      ctx.state().interface?.files ?? {},
-    ).filter(([filename]) => {
-      return filename.endsWith("controller.ts");
-    });
-
     const codes: RealizeValidatorOutput[] = await Promise.all(
       ops.map(async (op) =>
         pipe(
