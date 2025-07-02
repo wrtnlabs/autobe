@@ -1,7 +1,7 @@
 import { ILlmSchema } from "@samchon/openapi";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { RealizeCoderOutput } from "./orchestrateRealizeCoder";
+import { RealizeIntegratorOutput } from "./orchestrateRealizeIntegrator";
 
 export interface RealizeValidatorOutput {
   location: string;
@@ -13,7 +13,7 @@ export const orchestrateRealizeValidator = async <
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
-  props: RealizeCoderOutput,
+  props: RealizeIntegratorOutput,
 ): Promise<RealizeValidatorOutput> => {
   ctx;
   return null!;

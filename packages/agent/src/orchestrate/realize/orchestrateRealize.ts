@@ -8,8 +8,12 @@ import { v4 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
 import { orchestrateRealizeCoder } from "./orchestrateRealizeCoder";
+import { orchestrateRealizeIntegrator } from "./orchestrateRealizeIntegrator";
 import { orchestrateRealizePlanner } from "./orchestrateRealizePlanner";
-import { orchestrateRealizeValidator } from "./orchestrateRealizeValidator";
+import {
+  RealizeValidatorOutput,
+  orchestrateRealizeValidator,
+} from "./orchestrateRealizeValidator";
 
 export const orchestrateRealize =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
@@ -21,16 +25,23 @@ export const orchestrateRealize =
       throw new Error();
     }
 
-    const codes = await Promise.all(
-      ops?.map(async (op) => {
-        return orchestrateRealizePlanner(ctx, op).then(async (plan) => {
-          return orchestrateRealizeCoder(ctx, plan).then((code) => {
-            return orchestrateRealizeValidator(ctx, code); // -- --include function_name
-          });
-        });
-      }),
+    const controllers: [string, string][] = Object.entries(
+      ctx.state().interface?.files ?? {},
+    ).filter(([filename]) => {
+      return filename.endsWith("controller.ts");
+    });
+
+    const codes: RealizeValidatorOutput[] = await Promise.all(
+      ops.map(async (op) =>
+        pipe(
+          op,
+          (op) => orchestrateRealizePlanner(ctx, op),
+          (p) => orchestrateRealizeCoder(ctx, p),
+          (c) => orchestrateRealizeIntegrator(ctx, c),
+          (i) => orchestrateRealizeValidator(ctx, i),
+        ),
+      ),
     );
-    props;
 
     if (codes.length) {
       const files = {
@@ -62,3 +73,15 @@ export const orchestrateRealize =
       text: "Any codes can not be generated.",
     };
   };
+
+function pipe<A, B, C, D, E>(
+  a: A,
+  ab: (a: A) => Promise<B>,
+  bc: (b: B) => Promise<C>,
+  cd: (c: C) => Promise<D>,
+  de: (d: D) => Promise<E>,
+): Promise<E>;
+
+function pipe(a: any, ...fns: Array<(arg: any) => Promise<any>>): Promise<any> {
+  return fns.reduce((prev, fn) => prev.then(fn), Promise.resolve(a));
+}

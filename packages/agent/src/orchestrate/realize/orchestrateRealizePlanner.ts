@@ -3,7 +3,10 @@ import { ILlmSchema } from "@samchon/openapi";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 
-export interface RealizePlannerOutput {}
+export interface RealizePlannerOutput {
+  /** Name of single function as provider logic */
+  functionName: string;
+}
 
 export const orchestrateRealizePlanner = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
