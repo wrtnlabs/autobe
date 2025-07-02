@@ -7,8 +7,13 @@ export interface RealizePlannerOutput {
   /**
    * The name of the function to be generated.
    *
-   * Derived from the Swagger path and method. Used as the function entry point
-   * in both code generation and test code.
+   * Derived from the Swagger path and method. The function name must be written
+   * in snake_case. It serves as the entry point in both code generation and
+   * test code.
+   *
+   * Once the function is generated, the function name and file name will be the
+   * same. The generated file will be located at
+   * `src/providers/${function_name}.ts`.
    */
   functionName: string;
 
@@ -18,7 +23,7 @@ export interface RealizePlannerOutput {
    * Includes input values passed via URL path or query string. Used for type
    * definitions, validation, and function signature construction.
    */
-  parameters: AutoBeOpenApi.IParameter;
+  parameters: AutoBeOpenApi.IParameter[];
 
   /**
    * Schema definition for the request body input.
@@ -27,7 +32,7 @@ export interface RealizePlannerOutput {
    * data passed in the body (e.g., JSON). Used for generating function
    * arguments or DTOs.
    */
-  inputSchema: AutoBeOpenApi.IRequestBody;
+  inputSchema: AutoBeOpenApi.IRequestBody | null;
 
   /**
    * Schema definition for the response body.
@@ -35,7 +40,7 @@ export interface RealizePlannerOutput {
    * Extracted from the responses section of Swagger. Used to define the return
    * type and expected output in test code.
    */
-  outputSchema: AutoBeOpenApi.IResponseBody;
+  outputSchema: AutoBeOpenApi.IResponseBody | null;
 
   /**
    * Natural language description of the function’s purpose.
@@ -51,7 +56,7 @@ export interface RealizePlannerOutput {
    * Extracted from the Swagger operation method. Used to define the request
    * type during code and test generation.
    */
-  operationType: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+  operationType: "get" | "post" | "put" | "delete" | "patch";
 
   /**
    * List of scenario descriptions for test code generation.
@@ -85,8 +90,26 @@ export const orchestrateRealizePlanner = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   operation: AutoBeOpenApi.IOperation,
 ): Promise<RealizePlannerOutput> => {
-  ctx;
-  operation;
+  const testScenarios =
+    ctx
+      .state()
+      .test?.files.filter(
+        (el) =>
+          el.scenario.endpoint.method === operation.method &&
+          el.scenario.endpoint.path === operation.path,
+      )
+      .map((el) => el.scenario.draft) ?? [];
 
-  return null!;
+  return {
+    description: operation.description,
+    parameters: operation.parameters,
+    inputSchema: operation.requestBody,
+    outputSchema: operation.responseBody,
+    operationType: operation.method,
+    testScenarios: testScenarios,
+    functionName: `${operation.method}_${operation.path
+      .replaceAll("-", "_")
+      .replaceAll("{", "$")
+      .replaceAll("}", "")}`,
+  } satisfies RealizePlannerOutput;
 };
