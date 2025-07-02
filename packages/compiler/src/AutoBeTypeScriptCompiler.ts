@@ -1,14 +1,14 @@
 import {
+  IAutoBeTypeScriptCompileProps,
+  IAutoBeTypeScriptCompileResult,
   IAutoBeTypeScriptCompiler,
-  IAutoBeTypeScriptCompilerProps,
-  IAutoBeTypeScriptCompilerResult,
 } from "@autobe/interface";
 import nestiaCoreTransform from "@nestia/core/lib/transform";
 import { EmbedTypeScript } from "embed-typescript";
 import ts from "typescript";
 import typiaTransform from "typia/lib/transform";
 
-import EXTERNAL from "./raw/external.json";
+import NestJSExternal from "./raw/nestjs.json";
 
 /**
  * Official TypeScript compiler for final code validation and quality assurance.
@@ -37,11 +37,11 @@ import EXTERNAL from "./raw/external.json";
  */
 export class AutoBeTypeScriptCompiler implements IAutoBeTypeScriptCompiler {
   public async compile(
-    props: IAutoBeTypeScriptCompilerProps,
-  ): Promise<IAutoBeTypeScriptCompilerResult> {
+    props: IAutoBeTypeScriptCompileProps,
+  ): Promise<IAutoBeTypeScriptCompileResult> {
     const alias: string = props.package ?? "@ORGANIZATION/PROJECT-api";
     const compiler: EmbedTypeScript = new EmbedTypeScript({
-      external: EXTERNAL as Record<string, string>,
+      external: NestJSExternal as Record<string, string>,
       compilerOptions: {
         target: ts.ScriptTarget.ESNext,
         module: ts.ModuleKind.CommonJS,
@@ -83,6 +83,6 @@ export class AutoBeTypeScriptCompiler implements IAutoBeTypeScriptCompiler {
   }
 
   public async getExternal(location: string): Promise<string | undefined> {
-    return (EXTERNAL as Record<string, string>)[location] ?? undefined;
+    return (NestJSExternal as Record<string, string>)[location] ?? undefined;
   }
 }

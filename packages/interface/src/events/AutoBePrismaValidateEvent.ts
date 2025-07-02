@@ -1,4 +1,4 @@
-import { IAutoBePrismaCompilerResult } from "../compiler";
+import { IAutoBePrismaCompileResult } from "../compiler";
 import { IAutoBePrismaValidation } from "../prisma/IAutoBePrismaValidation";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
@@ -39,16 +39,16 @@ export interface AutoBePrismaValidateEvent
   /**
    * Results of attempting to compile the current database design.
    *
-   * Contains the {@link IAutoBePrismaCompilerResult} from the compilation
-   * attempt that revealed the validation issues. Even when validation fails,
-   * the compiler may provide partial results or additional diagnostic
-   * information that helps understand the scope and nature of the problems.
+   * Contains the {@link IAutoBePrismaCompileResult} from the compilation attempt
+   * that revealed the validation issues. Even when validation fails, the
+   * compiler may provide partial results or additional diagnostic information
+   * that helps understand the scope and nature of the problems.
    *
    * The compilation results offer additional context beyond the validation
    * failure, potentially including information about which parts of the design
    * are working correctly and which specific areas need attention.
    */
-  compiled: IAutoBePrismaCompilerResult;
+  compiled: IAutoBePrismaCompileResult;
 
   /**
    * Generated schema files that failed validation as key-value pairs.

@@ -1,4 +1,4 @@
-import { IAutoBeTypeScriptCompilerResult } from "../compiler/IAutoBeTypeScriptCompilerResult";
+import { IAutoBeTypeScriptCompileResult } from "../compiler/IAutoBeTypeScriptCompileResult";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
 /**
@@ -41,8 +41,8 @@ export interface AutoBeRealizeValidateEvent
    * Compilation failure or exception details describing what errors were
    * detected.
    *
-   * Contains either {@link IAutoBeTypeScriptCompilerResult.IFailure} for
-   * compilation errors or {@link IAutoBeTypeScriptCompilerResult.IException} for
+   * Contains either {@link IAutoBeTypeScriptCompileResult.IFailure} for
+   * compilation errors or {@link IAutoBeTypeScriptCompileResult.IException} for
    * unexpected runtime errors during the compilation process. The result
    * provides comprehensive diagnostic information including error messages,
    * file locations, and specific issues that prevent successful compilation.
@@ -53,8 +53,8 @@ export interface AutoBeRealizeValidateEvent
    * overall application architecture.
    */
   result:
-    | IAutoBeTypeScriptCompilerResult.IFailure
-    | IAutoBeTypeScriptCompilerResult.IException;
+    | IAutoBeTypeScriptCompileResult.IFailure
+    | IAutoBeTypeScriptCompileResult.IException;
 
   /**
    * Iteration number of the requirements analysis this validation was performed

@@ -1,5 +1,11 @@
-import { IAutoBeTestCompilerProps } from "./IAutoBeTestCompilerProps";
+import { IAutoBeTestWriteProps } from "./IAutoBeTestWriteProps";
+import { IAutoBeTypeScriptCompileProps } from "./IAutoBeTypeScriptCompileProps";
+import { IAutoBeTypeScriptCompileResult } from "./IAutoBeTypeScriptCompileResult";
 
 export interface IAutoBeTestCompiler {
-  write(props: IAutoBeTestCompilerProps): Promise<string>;
+  compile(
+    props: IAutoBeTypeScriptCompileProps,
+  ): Promise<IAutoBeTypeScriptCompileResult>;
+  write(props: IAutoBeTestWriteProps): Promise<string>;
+  getExternal(): Promise<Record<string, string>>;
 }

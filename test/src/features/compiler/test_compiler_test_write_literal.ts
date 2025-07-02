@@ -71,6 +71,8 @@ export const test_compiler_test_write_literal = async (): Promise<void> => {
     document,
     scenario,
     function: {
+      plan: "",
+      draft: "",
       statements: [
         ...expressions.map(
           (e) =>

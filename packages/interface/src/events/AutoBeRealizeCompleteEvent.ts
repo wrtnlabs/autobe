@@ -1,4 +1,4 @@
-import { IAutoBeTypeScriptCompilerResult } from "../compiler/IAutoBeTypeScriptCompilerResult";
+import { IAutoBeTypeScriptCompileResult } from "../compiler/IAutoBeTypeScriptCompileResult";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
 /**
@@ -42,7 +42,7 @@ export interface AutoBeRealizeCompleteEvent
    * Results of compiling the generated implementation TypeScript files through
    * the TypeScript compiler.
    *
-   * Contains the {@link IAutoBeTypeScriptCompilerResult} from processing the
+   * Contains the {@link IAutoBeTypeScriptCompileResult} from processing the
    * generated implementation files through the TypeScript compilation pipeline.
    * This compilation result validates the complete application code including
    * service classes, business logic, data access layers, and all integration
@@ -61,7 +61,7 @@ export interface AutoBeRealizeCompleteEvent
    * production-ready and represents a fully functional application that can be
    * deployed immediately without any syntax or integration issues.
    */
-  compiled: IAutoBeTypeScriptCompilerResult;
+  compiled: IAutoBeTypeScriptCompileResult;
 
   /**
    * Final iteration number of the requirements analysis this implementation was

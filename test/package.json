@@ -8,7 +8,8 @@
     "prepare": "ts-patch install",
     "build": "tsc --noEmit",
     "dev": "tsc --watch --noEmit",
-    "start": "rimraf results && ts-node src"
+    "start": "rimraf results && ts-node src",
+    "bench": "ts-node src/benchmarks"
   },
   "author": "Wrtn Technologies",
   "license": "MIT",
@@ -24,7 +25,6 @@
     "dotenv": "^16.5.0",
     "dotenv-expand": "^12.0.2",
     "openai": "catalog:libs",
-    "safe-stable-stringify": "^2.5.0",
     "tstl": "catalog:samchon",
     "typia": "catalog:samchon",
     "uuid": "^11.1.0"

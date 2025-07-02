@@ -3,6 +3,7 @@ packages:
   - internals/website-examples
   - packages/*
   - test
+  - benchmarks
   - website
 catalogs:
   agentica:

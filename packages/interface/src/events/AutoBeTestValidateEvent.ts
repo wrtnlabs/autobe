@@ -1,4 +1,4 @@
-import { IAutoBeTypeScriptCompilerResult } from "../compiler";
+import { IAutoBeTypeScriptCompileResult } from "../compiler";
 import { AutoBeTestFile } from "../histories";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
@@ -6,7 +6,7 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
  * Event fired when the Test agent validates the generated test code using the
  * embedded TypeScript compiler.
  *
- * This event occurs when the Test agent submits the generated test files to the
+ * This event occurs when the Test agent submits a generated test file to the
  * TypeScript compiler for validation, ensuring that the test code compiles
  * correctly and integrates properly with the API specifications and database
  * schemas. The validation process serves as a quality gate that ensures test
@@ -22,32 +22,32 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
 export interface AutoBeTestValidateEvent
   extends AutoBeEventBase<"testValidate"> {
   /**
-   * Collection of test files that contained compilation errors with their
+   * Test file that is being validated or contained compilation errors with its
    * detailed scenario metadata.
    *
-   * Contains the structured test file objects that failed compilation before
-   * correction. Each file includes its location, problematic source code
-   * content, and associated scenario information that provides context for
-   * understanding the compilation issues. These files serve as a comprehensive
-   * baseline for measuring the effectiveness of the correction process.
+   * Contains the structured test file object that is undergoing validation or
+   * failed compilation. The file includes its location, source code content,
+   * and associated scenario information that provides context for understanding
+   * any compilation issues. This file serves as a comprehensive baseline for
+   * measuring the effectiveness of the correction process.
    *
    * Unlike simple key-value pairs, this structure preserves the rich metadata
-   * about each test scenario, enabling better analysis of what specific test
+   * about the test scenario, enabling better analysis of what specific test
    * patterns or business logic implementations led to compilation failures and
    * how they can be systematically improved.
    */
-  files: AutoBeTestFile[];
+  file: AutoBeTestFile;
 
   /**
    * Compilation result indicating success, failure, or exception during
    * validation.
    *
-   * Contains the complete {@link IAutoBeTypeScriptCompilerResult} from the
+   * Contains the complete {@link IAutoBeTypeScriptCompileResult} from the
    * validation process, which can be:
    *
-   * - {@link IAutoBeTypeScriptCompilerResult.ISuccess} for successful compilation
-   * - {@link IAutoBeTypeScriptCompilerResult.IFailure} for compilation errors
-   * - {@link IAutoBeTypeScriptCompilerResult.IException} for unexpected runtime
+   * - {@link IAutoBeTypeScriptCompileResult.ISuccess} for successful compilation
+   * - {@link IAutoBeTypeScriptCompileResult.IFailure} for compilation errors
+   * - {@link IAutoBeTypeScriptCompileResult.IException} for unexpected runtime
    *   errors
    *
    * Success results indicate that the test suite is ready for completion, while
@@ -56,9 +56,9 @@ export interface AutoBeTestValidateEvent
    * application architecture.
    */
   result:
-    | IAutoBeTypeScriptCompilerResult.IFailure
-    | IAutoBeTypeScriptCompilerResult.IException
-    | IAutoBeTypeScriptCompilerResult.ISuccess;
+    | IAutoBeTypeScriptCompileResult.IFailure
+    | IAutoBeTypeScriptCompileResult.IException
+    | IAutoBeTypeScriptCompileResult.ISuccess;
 
   /**
    * Iteration number of the requirements analysis this test validation was

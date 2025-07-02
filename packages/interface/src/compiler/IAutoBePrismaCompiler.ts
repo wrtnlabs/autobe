@@ -1,7 +1,7 @@
 import { AutoBePrisma } from "../prisma/AutoBePrisma";
 import { IAutoBePrismaValidation } from "../prisma/IAutoBePrismaValidation";
-import { IAutoBePrismaCompilerProps } from "./IAutoBePrismaCompilerProps";
-import { IAutoBePrismaCompilerResult } from "./IAutoBePrismaCompilerResult";
+import { IAutoBePrismaCompilerProps } from "./IAutoBePrismaCompileProps";
+import { IAutoBePrismaCompileResult } from "./IAutoBePrismaCompileResult";
 
 /**
  * Interface for the custom Prisma compiler that handles database schema
@@ -45,7 +45,7 @@ export interface IAutoBePrismaCompiler {
    */
   compile(
     props: IAutoBePrismaCompilerProps,
-  ): Promise<IAutoBePrismaCompilerResult>;
+  ): Promise<IAutoBePrismaCompileResult>;
 
   /**
    * Validates Prisma application AST structure for correctness and best

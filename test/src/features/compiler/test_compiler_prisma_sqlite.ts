@@ -3,7 +3,7 @@ import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeHistory,
   AutoBePrismaHistory,
-  IAutoBePrismaCompilerResult,
+  IAutoBePrismaCompileResult,
 } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 
@@ -36,7 +36,7 @@ const validate = async (
     ),
   });
 
-  const result: IAutoBePrismaCompilerResult = await compiler.compile({
+  const result: IAutoBePrismaCompileResult = await compiler.compile({
     files,
   });
   TestValidator.equals("result")(result.type)("success");

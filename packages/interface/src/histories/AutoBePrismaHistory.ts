@@ -1,6 +1,6 @@
 import { tags } from "typia";
 
-import { IAutoBePrismaCompilerResult } from "../compiler";
+import { IAutoBePrismaCompileResult } from "../compiler";
 import { IAutoBePrismaValidation } from "../prisma";
 import { AutoBeAgentHistoryBase } from "./AutoBeHistoryBase";
 
@@ -67,7 +67,7 @@ export interface AutoBePrismaHistory extends AutoBeAgentHistoryBase<"prisma"> {
    * database-specific constraints to ensure the schemas will work correctly in
    * the target database environment.
    */
-  compiled: IAutoBePrismaCompilerResult;
+  compiled: IAutoBePrismaCompileResult;
 
   /**
    * Reason why the Prisma agent was activated through function calling.

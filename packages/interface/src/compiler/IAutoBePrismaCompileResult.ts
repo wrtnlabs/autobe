@@ -15,12 +15,12 @@
  *
  * @author Samchon
  */
-export type IAutoBePrismaCompilerResult =
-  | IAutoBePrismaCompilerResult.ISuccess
-  | IAutoBePrismaCompilerResult.IFailure
-  | IAutoBePrismaCompilerResult.IException;
+export type IAutoBePrismaCompileResult =
+  | IAutoBePrismaCompileResult.ISuccess
+  | IAutoBePrismaCompileResult.IFailure
+  | IAutoBePrismaCompileResult.IException;
 
-export namespace IAutoBePrismaCompilerResult {
+export namespace IAutoBePrismaCompileResult {
   /**
    * Successful compilation result containing all generated artifacts.
    *
