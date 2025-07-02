@@ -85,9 +85,8 @@ export const test_compiler_test_write_random = async (): Promise<void> => {
 
   TestValidator.predicate("import")(
     () =>
-      result.includes(
-        `import { ArrayUtil, RandomGenerator } from "@nestia/e2e";`,
-      ) && result.includes(`import typia, { tags } from "typia";`),
+      result.includes(`import { RandomGenerator } from "@nestia/e2e";`) &&
+      result.includes(`import typia, { tags } from "typia";`),
   );
   TestValidator.predicate("boolean")(() =>
     result.includes(`Math.random() <= 0.75`),
