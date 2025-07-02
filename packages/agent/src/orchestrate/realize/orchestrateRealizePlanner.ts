@@ -86,6 +86,7 @@ export const orchestrateRealizePlanner = async <Model extends ILlmSchema.Model>(
   operation: AutoBeOpenApi.IOperation,
 ): Promise<RealizePlannerOutput> => {
   ctx;
+  operation;
 
   return null!;
 };

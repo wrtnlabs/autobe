@@ -20,6 +20,8 @@ export const orchestrateRealize =
   async (
     props: IAutoBeApplicationProps,
   ): Promise<AutoBeAssistantMessageHistory | AutoBeRealizeHistory> => {
+    props;
+
     const ops = ctx.state().interface?.document.operations;
     if (!ops) {
       throw new Error();

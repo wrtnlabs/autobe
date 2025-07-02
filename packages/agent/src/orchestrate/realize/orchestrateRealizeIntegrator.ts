@@ -58,6 +58,8 @@ export const orchestrateRealizeIntegrator = async <
   ctx: AutoBeContext<Model>,
   props: RealizeCoderOutput,
 ): Promise<RealizeIntegratorOutput> => {
+  props;
+
   const controllers: [string, string][] = Object.entries(
     ctx.state().interface?.files ?? {},
   ).filter(([filename]) => {
