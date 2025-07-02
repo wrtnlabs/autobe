@@ -50,6 +50,8 @@ export const orchestrateRealize =
 
         const compiled = await ctx.compiler.typescript.compile({ files });
 
+        ctx.dispatch({});
+
         return {
           id: v4(),
           type: "realize",
@@ -65,11 +67,21 @@ export const orchestrateRealize =
         const failedCount = codes.filter((code) => code === FAILED).length;
         const successCount = total - failedCount;
 
+        const now = new Date().toISOString();
+        ctx.dispatch({
+          type: "assistantMessage",
+          text: [
+            `Out of ${total} code blocks, ${successCount} succeeded, but ${failedCount} failed.`,
+            `The process has been stopped due to the failure. Please review the failed steps and try again.`,
+          ].join("\n"),
+          created_at: now,
+        });
+
         return {
           id: v4(),
           type: "assistantMessage",
-          completed_at: new Date().toISOString(),
-          created_at: new Date().toISOString(),
+          completed_at: now,
+          created_at: now,
           text: [
             `Out of ${total} code blocks, ${successCount} succeeded, but ${failedCount} failed.`,
             `The process has been stopped due to the failure. Please review the failed steps and try again.`,
@@ -78,23 +90,38 @@ export const orchestrateRealize =
       }
     }
 
+    const now = new Date().toISOString();
+    ctx.dispatch({
+      type: "assistantMessage",
+      text: "Any codes can not be generated.",
+      created_at: now,
+    });
+
     return {
       id: v4(),
       type: "assistantMessage",
-      completed_at: new Date().toISOString(),
-      created_at: new Date().toISOString(),
+      completed_at: now,
+      created_at: now,
       text: "Any codes can not be generated.",
     } satisfies AutoBeAssistantMessageHistory;
   };
 
+export const FAILED = Symbol("FAILED");
+export type FAILED = typeof FAILED;
+
 function pipe<A, B, C, D, E>(
   a: A,
-  ab: (a: A) => Promise<B>,
-  bc: (b: B) => Promise<C>,
-  cd: (c: C) => Promise<D>,
-  de: (d: D) => Promise<E>,
-): Promise<E>;
+  ab: (a: A) => Promise<B | FAILED>,
+  bc: (b: B) => Promise<C | FAILED>,
+  cd: (c: C) => Promise<D | FAILED>,
+  de: (d: D) => Promise<E | FAILED>,
+): Promise<E | FAILED>;
 
 function pipe(a: any, ...fns: Array<(arg: any) => Promise<any>>): Promise<any> {
-  return fns.reduce((prev, fn) => prev.then(fn), Promise.resolve(a));
+  return fns.reduce((prev, fn) => {
+    return prev.then((result) => {
+      if (result === FAILED) return FAILED;
+      return fn(result);
+    });
+  }, Promise.resolve(a));
 }
