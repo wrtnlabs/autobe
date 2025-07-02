@@ -7,8 +7,8 @@ import { IAutoBeApplication } from "../context/IAutoBeApplication";
 import { assertSchemaModel } from "../context/assertSchemaModel";
 import { orchestrateAnalyze } from "../orchestrate/analyze/orchestrateAnalyze";
 import { orchestrateInterface } from "../orchestrate/interface/orchestrateInterface";
-import { orchestrateRealize } from "../orchestrate/orchestrateRealize";
 import { orchestratePrisma } from "../orchestrate/prisma/orchestratePrisma";
+import { orchestrateRealize } from "../orchestrate/realize/orchestrateRealize";
 import { orchestrateTest } from "../orchestrate/test/orchestrateTest";
 import { StringUtil } from "../utils/StringUtil";
 
