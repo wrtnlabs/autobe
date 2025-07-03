@@ -1,6 +1,9 @@
-import { FAILED } from "@autobe/agent/src/orchestrate/realize/orchestrateRealize";
+import {
+  FAILED,
+  pipe,
+} from "@autobe/agent/src/orchestrate/realize/orchestrateRealize";
 import { orchestrateRealizeCoder } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeCoder";
-import { RealizePlannerOutput } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizePlanner";
+import { orchestrateRealizePlanner } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizePlanner";
 import { IAutoBeRealizeCorderApplication } from "@autobe/agent/src/orchestrate/realize/structures/IAutoBeRealizeCorderApplication";
 import { FileSystemIterator } from "@autobe/filesystem";
 import { AutoBeEvent } from "@autobe/interface";
@@ -36,15 +39,26 @@ export const validate_agent_realize_coder = async (
   agent.on("realizeValidate", enroll);
   agent.on("realizeComplete", enroll);
 
+  const ctx = agent.getContext();
+
+  const ops = ctx.state().interface?.document.operations ?? [];
+
   // DO TEST GENERATION
-  const go = () =>
-    orchestrateRealizeCoder(
-      agent.getContext(),
-      typia.random<RealizePlannerOutput>(),
+  const go = async () =>
+    await Promise.all(
+      ops.map(async (op) =>
+        pipe(
+          op,
+          (op) => orchestrateRealizePlanner(ctx, op),
+          (c) => orchestrateRealizeCoder(ctx, c),
+        ),
+      ),
     );
 
-  const result: IAutoBeRealizeCorderApplication.RealizeCoderOutput | FAILED =
-    await go();
+  const result: (
+    | IAutoBeRealizeCorderApplication.RealizeCoderOutput
+    | FAILED
+  )[] = await go();
 
   const histories = agent.getHistories();
 
@@ -58,5 +72,5 @@ export const validate_agent_realize_coder = async (
       "logs/histories.json": typia.json.stringify(histories),
     },
   });
-  TestValidator.predicate("result")(result !== FAILED);
+  TestValidator.predicate("result")(result.every((el) => el !== FAILED));
 };

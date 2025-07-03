@@ -108,6 +108,7 @@ export const orchestrateRealizePlanner = async <Model extends ILlmSchema.Model>(
     operationType: operation.method,
     testScenarios: testScenarios,
     functionName: `${operation.method}_${operation.path
+      .replaceAll("/", "_")
       .replaceAll("-", "_")
       .replaceAll("{", "$")
       .replaceAll("}", "")}`,
