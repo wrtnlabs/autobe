@@ -17,6 +17,7 @@ import {
   AutoBePrismaStartEvent,
   AutoBePrismaValidateEvent,
   AutoBeRealizeCompleteEvent,
+  AutoBeRealizeIntegratorEvent,
   AutoBeRealizeProgressEvent,
   AutoBeRealizeStartEvent,
   AutoBeRealizeValidateEvent,
@@ -302,6 +303,15 @@ export interface IAutoBeRpcListener {
    * application functionality is being assembled.
    */
   realizeProgress?(event: AutoBeRealizeProgressEvent): Promise<void>;
+
+  /**
+   * Optional handler for implementation integrator events.
+   *
+   * Called when the Realize agent begins integrating the application with
+   * external services and infrastructure, enabling client applications to show
+   * the progress of the final implementation phase.
+   */
+  realizeIntegrator?(event: AutoBeRealizeIntegratorEvent): Promise<void>;
 
   /**
    * Optional handler for implementation validation events.
