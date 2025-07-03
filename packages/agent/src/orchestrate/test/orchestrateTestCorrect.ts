@@ -11,7 +11,6 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { randomBackoffRetry } from "../../utils/backoffRetry";
 import { enforceToolCall } from "../../utils/enforceToolCall";
-import { complementTestWrite } from "./compile/complementTestWrite";
 import { IAutoBeTestWriteResult } from "./structures/IAutoBeTestWriteResult";
 import { transformTestCorrectHistories } from "./transformTestCorrectHistories";
 
@@ -45,6 +44,9 @@ async function correct<Model extends ILlmSchema.Model>(
     vendor: { ...ctx.vendor },
     config: {
       ...(ctx.config ?? {}),
+      executor: {
+        describe: null,
+      },
     },
     histories: await transformTestCorrectHistories(ctx, written, event.result),
     controllers: [
@@ -74,11 +76,6 @@ async function correct<Model extends ILlmSchema.Model>(
     ctx.usage().record(tokenUsage, ["test"]);
   });
   if (pointer.value === null) throw new Error("Failed to modify test code.");
-  pointer.value.content = complementTestWrite({
-    content: pointer.value.content,
-    artifacts: written.artifacts,
-  });
-
   event = await compile(ctx, {
     ...written,
     file: {
@@ -160,7 +157,6 @@ const collection = {
   llama: claude,
   deepseek: claude,
   "3.1": claude,
-  "3.0": typia.llm.application<IApplication, "3.0">(),
 };
 
 interface IApplication {

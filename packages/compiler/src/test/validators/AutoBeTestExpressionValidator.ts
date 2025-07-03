@@ -234,4 +234,12 @@ export namespace AutoBeTestExpressionValidator {
   ): void => {
     arrowFunction(ctx, item.function, `${path}.function`);
   };
+
+  export const httpErrorPredicate = (
+    ctx: IAutoBeTextValidateContext,
+    item: AutoBeTest.IHttpErrorPredicate,
+    path: string,
+  ): void => {
+    arrowFunction(ctx, item.function, `${path}.function`);
+  };
 }

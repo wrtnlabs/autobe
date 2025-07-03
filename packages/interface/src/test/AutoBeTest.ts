@@ -1,33 +1,7 @@
 import { AutoBeOpenApi } from "../openapi/AutoBeOpenApi";
 
 /**
- * Random number generator for decimal/floating-point values.
- *
- * Generates random decimal values within specified ranges and constraints.
- * Essential for business data like prices, percentages, measurements, and
- * calculated values used in API operations and business validations.
- *
- * E2E testing scenarios:
- *
- * - Product prices and costs for API operation parameters
- * - Percentage values and rates for business calculations
- * - /** Prefix unary expression for operators applied before operands.
- *
- * Represents unary operators that appear before their operands:
- *
- * - "!" for logical negation
- * - "++" for pre-increment
- * - "--" for pre-decrement
- *
- * E2E testing usage:
- *
- * - Logical negation for condition inversion in business logic
- * - Increment/decrement for counter operations (rare in typical test scenarios)
- *
- * **Note**: Operations should be on captured data orimport { AutoBeOpenApi }
- * from "../openapi/AutoBeOpenApi";
- *
- * /** AST type system for programmatic E2E test function generation through AI
+ * AST type system for programmatic E2E test function generation through AI
  * function calling.
  *
  * This namespace defines a comprehensive Abstract Syntax Tree structure that
@@ -92,63 +66,6 @@ export namespace AutoBeTest {
    * In the context of E2E testing, this typically maps to complete business
    * scenarios like "customer purchase flow" or "seller product management",
    * where each statement handles one aspect of the workflow.
-   *
-   * @example
-   *   ```typescript
-   *   // Generated function represents:
-   *   export async function test_api_customer_purchase_flow(
-   *     connection: api.IConnection
-   *   ): Promise<void> {
-   *     // Create seller account and verify
-   *     const seller: ISeller = await api.functional.sellers.join(connection, {
-   *       email: "seller@example.com",
-   *       name: "Test Seller",
-   *       password: "secure123"
-   *     });
-   *     TestValidator.equals("Seller creation")(
-   *       "seller@example.com",
-   *       seller.email
-   *     );
-   *
-   *     // Create product with business validation
-   *     const product: IProduct = await api.functional.products.create(connection, {
-   *       sellerId: seller.id,
-   *       name: "Premium Headphones",
-   *       price: 299.99,
-   *       category: "electronics"
-   *     });
-   *     TestValidator.equals("Product should belong to seller")(
-   *       seller.id,
-   *       product.sellerId
-   *     );
-   *
-   *     // Customer registration and purchase
-   *     const customer: ICustomer = await api.functional.customers.join(connection, {
-   *       email: "customer@example.com",
-   *       name: "John Doe"
-   *     });
-   *
-   *     // Conditional logic based on business rules
-   *     if (customer.verified) {
-   *       const order: IOrder = await api.functional.orders.create(connection, {
-   *         customerId: customer.id,
-   *         items: [{ productId: product.id, quantity: 1 }]
-   *       });
-   *       TestValidator.equals("Order total should match product price")(
-   *         product.price,
-   *         order.total
-   *       );
-   *     }
-   *
-   *     // Error case validation
-   *     await TestValidator.error("Should reject invalid payment")(() =>
-   *       api.functional.orders.payment(connection, {
-   *         orderId: "invalid-id",
-   *         amount: -100
-   *       })
-   *     );
-   *   }
-   *   ```;
    */
   export interface IFunction {
     /**
@@ -190,17 +107,6 @@ export namespace AutoBeTest {
      * The draft should be complete, executable TypeScript code that represents
      * the full test function implementation. This code will then be analyzed
      * and converted into the corresponding AST statements structure.
-     *
-     * Example format:
-     *
-     * ```typescript
-     * export async function test_scenario_name(connection: api.IConnection): Promise<void> {
-     *   // Implementation based on the plan above
-     *   const entity = await api.functional.entities.create(connection, { ... });
-     *   TestValidator.equals("validation description")(expected, actual);
-     *   // ... more implementation
-     * }
-     * ```
      */
     draft: string;
 
@@ -289,7 +195,10 @@ export namespace AutoBeTest {
    * in main function flow. Reserve for structural requirements only
    * (conditional branches, function bodies).
    */
-  export interface IBlock extends IStatementBase<"block"> {
+  export interface IBlock {
+    /** Type discriminator. */
+    type: "block";
+
     /**
      * Nested statements within this block.
      *
@@ -338,8 +247,10 @@ export namespace AutoBeTest {
    * ensure proper response handling and type safety in business test
    * scenarios.
    */
-  export interface IApiOperateStatement
-    extends IStatementBase<"apiOperateStatement"> {
+  export interface IApiOperateStatement {
+    /** Type discriminator. */
+    type: "apiOperateStatement";
+
     /**
      * API endpoint specification defining the operation to be called.
      *
@@ -359,6 +270,10 @@ export namespace AutoBeTest {
      * contains all necessary data for the operation. This argument object is
      * constructed based on the API operation's specification and follows a
      * standardized structure.
+     *
+     * **⚠️ CRITICAL AI RESTRICTION: This MUST be an AST expression, NOT a JSON
+     * value! ⚠️** **❌ WRONG: { "name": "John", "age": 30 } (raw JSON object)**
+     * **✅ CORRECT: IObjectLiteralExpression with proper AST structure**
      *
      * **Object Structure Rules:**
      *
@@ -462,8 +377,8 @@ export namespace AutoBeTest {
      *
      * - `string`: When API operation returns data that needs to be captured
      *
-     *   - Creates: `const variableName = typia.assert<ResponseType>(await
-     *       api.operation(...))`
+     *   - Creates: `const variableName: ApiResponseType =
+     *       typia.assert<ResponseType>(await api.operation(...))`
      *   - The response is automatically type-validated using typia.assert
      *   - Variable can be referenced in subsequent test steps
      * - `null`: When API operation returns void or response is not needed
@@ -509,8 +424,10 @@ export namespace AutoBeTest {
    * AI function calling usage: Select when the business action's execution is
    * the goal, not data capture, and when the operation is NOT an API call.
    */
-  export interface IExpressionStatement
-    extends IStatementBase<"expressionStatement"> {
+  export interface IExpressionStatement {
+    /** Type discriminator. */
+    type: "expressionStatement";
+
     /**
      * The expression to be executed as a statement.
      *
@@ -570,7 +487,10 @@ export namespace AutoBeTest {
    * business logic branching is required that cannot be expressed through
    * predicates.
    */
-  export interface IIfStatement extends IStatementBase<"ifStatement"> {
+  export interface IIfStatement {
+    /** Type discriminator. */
+    type: "ifStatement";
+
     /**
      * Boolean expression determining which branch to execute.
      *
@@ -634,8 +554,10 @@ export namespace AutoBeTest {
    * data dependencies between business operations, but should not be used for
    * direct API function calls.
    */
-  export interface IVariableDeclaration
-    extends IStatementBase<"variableDeclaration"> {
+  export interface IVariableDeclaration {
+    /** Type discriminator. */
+    type: "variableDeclaration";
+
     /**
      * Variable identifier name for subsequent references.
      *
@@ -729,7 +651,10 @@ export namespace AutoBeTest {
    * calling context, such as helper functions within arrow function
    * expressions.
    */
-  export interface IReturnStatement extends IStatementBase<"returnStatement"> {
+  export interface IReturnStatement {
+    /** Type discriminator. */
+    type: "returnStatement";
+
     /**
      * Expression representing the value to be returned.
      *
@@ -771,7 +696,10 @@ export namespace AutoBeTest {
    * violations that require explicit error reporting and cannot be handled by
    * the standard predicate validation system.
    */
-  export interface IThrowStatement extends IStatementBase<"throwStatement"> {
+  export interface IThrowStatement {
+    /** Type discriminator. */
+    type: "throwStatement";
+
     /**
      * Expression that evaluates to the error to be thrown.
      *
@@ -786,18 +714,6 @@ export namespace AutoBeTest {
      * Example: new Error("Customer verification failed: invalid email format")
      */
     expression: IExpression;
-  }
-
-  /**
-   * @internal Base interface for type discrimination in statement union types.
-   *
-   * Provides the foundational structure for all statement types in the AST.
-   * Each concrete statement implementation extends this interface with their
-   * specific type discriminator value.
-   */
-  interface IStatementBase<Type extends string> {
-    /** Discriminator type for identifying the statement type. */
-    type: Type;
   }
 
   /* -----------------------------------------------------------
@@ -872,19 +788,8 @@ export namespace AutoBeTest {
     | IEqualPredicate
     | INotEqualPredicate
     | IConditionalPredicate
-    | IErrorPredicate;
-
-  /**
-   * @internal Base interface for type discrimination in expression union types.
-   *
-   * Provides the foundational structure for all expression types in the AST.
-   * Each concrete expression implementation extends this interface with their
-   * specific type discriminator value.
-   */
-  interface IExpressionBase<Type extends string> {
-    /** Discriminator type for identifying the expression type. */
-    type: Type;
-  }
+    | IErrorPredicate
+    | IHttpErrorPredicate;
 
   /* -----------------------------------------------------------
     LITERALS
@@ -906,7 +811,10 @@ export namespace AutoBeTest {
    * **Note**: Often used as arguments in `IApiOperateStatement` for boolean
    * parameters, or in conditional expressions for business logic.
    */
-  export interface IBooleanLiteral extends IExpressionBase<"booleanLiteral"> {
+  export interface IBooleanLiteral {
+    /** Type discriminator. */
+    type: "booleanLiteral";
+
     /**
      * The boolean value (true or false).
      *
@@ -935,7 +843,10 @@ export namespace AutoBeTest {
    * **Note**: Commonly used as arguments in `IApiOperateStatement` for numeric
    * parameters, or in comparisons with captured API response data.
    */
-  export interface INumericLiteral extends IExpressionBase<"numericLiteral"> {
+  export interface INumericLiteral {
+    /** Type discriminator. */
+    type: "numericLiteral";
+
     /**
      * The numeric value.
      *
@@ -960,7 +871,10 @@ export namespace AutoBeTest {
    * reflects actual user input and system behavior, especially as parameters
    * for API operations and in comparisons with captured response data.
    */
-  export interface IStringLiteral extends IExpressionBase<"stringLiteral"> {
+  export interface IStringLiteral {
+    /** Type discriminator. */
+    type: "stringLiteral";
+
     /**
      * The string value.
      *
@@ -1006,14 +920,21 @@ export namespace AutoBeTest {
    * list data rather than dynamic array generation from captured API
    * responses.
    */
-  export interface IArrayLiteralExpression
-    extends IExpressionBase<"arrayLiteralExpression"> {
+  export interface IArrayLiteralExpression {
+    /** Type discriminator. */
+    type: "arrayLiteralExpression";
+
     /**
      * Array of expressions representing the array elements.
      *
      * Each element can be any valid expression (literals, identifiers
      * referencing captured data, function calls, etc.). Elements should
      * represent meaningful business data appropriate for the array's purpose.
+     *
+     * **⚠️ CRITICAL AI RESTRICTION: Each element MUST be an AST expression, NOT
+     * raw JSON values! ⚠️** **❌ WRONG: ["item1", "item2", 123] (raw JSON
+     * values)** **✅ CORRECT: [IStringLiteral, IStringLiteral, INumericLiteral]
+     * (AST expressions)**
      *
      * Examples:
      *
@@ -1042,8 +963,10 @@ export namespace AutoBeTest {
    * `IApiOperateStatement` calls and configuration objects that drive business
    * operations.
    */
-  export interface IObjectLiteralExpression
-    extends IExpressionBase<"objectLiteralExpression"> {
+  export interface IObjectLiteralExpression {
+    /** Type discriminator. */
+    type: "objectLiteralExpression";
+
     /**
      * Array of property assignments defining the object structure.
      *
@@ -1058,12 +981,6 @@ export namespace AutoBeTest {
      * **For test data**: Can mix literal values with references to captured
      * data from previous API operations to create realistic business
      * scenarios.
-     *
-     * Examples:
-     *
-     * - { name: "John Doe", email: "john@example.com" } for user creation
-     * - { productId: product.id, quantity: 2 } mixing captured data with literals
-     * - { status: "active", verified: true } for business state objects
      *
      * AI validation requirement: Ensure properties match the target schema
      * definition exactly when used for API operations, including required
@@ -1090,7 +1007,10 @@ export namespace AutoBeTest {
    * rather than undefined or omitted properties, particularly in API request
    * bodies or when comparing with captured API response data.
    */
-  export interface INullLiteral extends IExpressionBase<"nullLiteral"> {
+  export interface INullLiteral {
+    /** Type discriminator. */
+    type: "nullLiteral";
+
     /**
      * Always null value.
      *
@@ -1119,8 +1039,10 @@ export namespace AutoBeTest {
    * requirements dictate undefined usage, or when working with captured data
    * that may contain undefined values.
    */
-  export interface IUndefinedKeyword
-    extends IExpressionBase<"undefinedKeyword"> {
+  export interface IUndefinedKeyword {
+    /** Type discriminator. */
+    type: "undefinedKeyword";
+
     /**
      * Always undefined value.
      *
@@ -1146,8 +1068,6 @@ export namespace AutoBeTest {
    * Common E2E testing usage:
    *
    * - Referencing captured data from previous API operations
-   * - Accessing utility function namespaces (e.g., "TestValidator")
-   * - Using validation utilities (e.g., "typia")
    * - Referencing business entities from previous steps
    * - Accessing non-API SDK utilities
    *
@@ -1155,7 +1075,10 @@ export namespace AutoBeTest {
    * test scope, excluding direct API function references which should use
    * dedicated statement types.
    */
-  export interface IIdentifier extends IExpressionBase<"identifier"> {
+  export interface IIdentifier {
+    /** Type discriminator. */
+    type: "identifier";
+
     /**
      * The identifier name being referenced.
      *
@@ -1163,21 +1086,16 @@ export namespace AutoBeTest {
      *
      * - Previously declared variable names (from IApiOperateStatement or
      *   IVariableDeclaration)
-     * - Imported utility function/module names (TestValidator, typia)
      * - Global utility names
      * - Parameter names from function scope
      *
-     * **Should NOT** reference API functions directly (e.g., avoid
-     * "api.functional.customers.create"). Use IApiOperateStatement for API
-     * operations instead.
+     * **Should NOT** reference API functions directly. Use IApiOperateStatement
+     * for API operations instead.
      *
      * Examples:
      *
      * - "seller" (previously captured from API operation)
      * - "product" (previously captured from API operation)
-     * - "TestValidator" (validation utility)
-     * - "typia" (type assertion utility)
-     * - "connection" (function parameter)
      *
      * AI naming consistency: Must match exactly with variable names from
      * previous IApiOperateStatement.variableName or IVariableDeclaration.name.
@@ -1199,7 +1117,6 @@ export namespace AutoBeTest {
    *
    * - Accessing properties of captured API response data (customer.id,
    *   order.status)
-   * - Navigating utility function namespaces (TestValidator.equals, typia.assert)
    * - Extracting business data for subsequent operations
    * - Optional chaining for safe property access
    *
@@ -1207,25 +1124,16 @@ export namespace AutoBeTest {
    * data access and utility function calls, but NOT for API operations which
    * have their own dedicated statement type.
    */
-  export interface IPropertyAccessExpression
-    extends IExpressionBase<"propertyAccessExpression"> {
+  export interface IPropertyAccessExpression {
+    /** Type discriminator. */
+    type: "propertyAccessExpression";
+
     /**
      * The base expression being accessed.
      *
      * Typically an IIdentifier for the root object, but can be another property
      * access expression for chained access. Represents the object whose
      * property is being accessed.
-     *
-     * **Should NOT** represent API namespace access (e.g., avoid
-     * "api.functional"). Use IApiOperateStatement for API operations instead.
-     *
-     * Examples:
-     *
-     * - IIdentifier("TestValidator") for TestValidator.equals
-     * - IIdentifier("customer") for customer.id (where customer was captured via
-     *   IApiOperateStatement)
-     * - IIdentifier("typia") for typia.assert
-     * - Previous property access for deeper chains in captured data
      */
     expression: IExpression;
 
@@ -1250,16 +1158,6 @@ export namespace AutoBeTest {
      * correspond to actual properties defined in DTO schemas or utility
      * function names.
      *
-     * **Should NOT** represent API endpoint paths. Use IApiOperateStatement for
-     * API operations instead.
-     *
-     * Examples:
-     *
-     * - "id" (for entity identifiers from captured API data)
-     * - "equals" (for TestValidator.equals utility function)
-     * - "assert" (for typia.assert utility function)
-     * - "status" (for business state properties from API responses)
-     *
      * AI validation requirement: Ensure property exists on the base
      * expression's type according to schema definitions, excluding API paths.
      */
@@ -1280,14 +1178,13 @@ export namespace AutoBeTest {
    * - Accessing properties with special characters from captured data
    * - Computed property access based on test data
    *
-   * **Note**: This should NOT be used for API function calls. Use
-   * `IApiOperateStatement` for all API operations instead.
-   *
    * AI function calling context: Use when property access requires computation
    * or when accessing array elements by index in captured data.
    */
-  export interface IElementAccessExpression
-    extends IExpressionBase<"elementAccessExpression"> {
+  export interface IElementAccessExpression {
+    /** Type discriminator. */
+    type: "elementAccessExpression";
+
     /**
      * The base expression being indexed/accessed.
      *
@@ -1344,14 +1241,13 @@ export namespace AutoBeTest {
    * - Logical negation for condition inversion in business logic
    * - Increment/decrement for counter operations (rare in typical test scenarios)
    *
-   * **Note**: Operations should be on captured data or computed values, not on
-   * direct API call results. Use `IApiOperateStatement` for API operations.
-   *
    * AI function calling context: Use for simple unary operations needed in
    * business logic conditions or calculations involving captured test data.
    */
-  export interface IPrefixUnaryExpression
-    extends IExpressionBase<"prefixUnaryExpression"> {
+  export interface IPrefixUnaryExpression {
+    /** Type discriminator. */
+    type: "prefixUnaryExpression";
+
     /**
      * The unary operator to apply.
      *
@@ -1385,15 +1281,14 @@ export namespace AutoBeTest {
    * - Counter operations where original value is used before modification
    * - Loop iteration variables (though rare in typical E2E test scenarios)
    *
-   * **Note**: Operations should be on captured data or computed values, not on
-   * direct API call results. Use `IApiOperateStatement` for API operations.
-   *
    * AI function calling context: Use when the original value is needed before
    * the increment/decrement operation, typically in scenarios involving
    * iteration or counting with captured test data.
    */
-  export interface IPostfixUnaryExpression
-    extends IExpressionBase<"postfixUnaryExpression"> {
+  export interface IPostfixUnaryExpression {
+    /** Type discriminator. */
+    type: "postfixUnaryExpression";
+
     /**
      * The unary operator to apply.
      *
@@ -1418,16 +1313,14 @@ export namespace AutoBeTest {
    * logical operations. Essential for implementing business logic conditions,
    * calculations, and validations in test scenarios using captured data.
    *
-   * **Important**: Both operands should typically reference captured data from
-   * API operations, computed values, or literals. For API operations
-   * themselves, use `IApiOperateStatement` instead.
-   *
    * E2E testing importance: Critical for implementing business rule
    * validations, data comparisons, and conditional logic that reflects
    * real-world application behavior using data captured from API responses.
    */
-  export interface IBinaryExpression
-    extends IExpressionBase<"binaryExpression"> {
+  export interface IBinaryExpression {
+    /** Type discriminator. */
+    type: "binaryExpression";
+
     /**
      * Left operand of the binary operation.
      *
@@ -1491,9 +1384,6 @@ export namespace AutoBeTest {
    * inline conditional value selection. Useful when values need to be chosen
    * based on business conditions within expressions.
    *
-   * **Note**: For complex conditional logic involving API operations, consider
-   * using `IIfStatement` with `IApiOperateStatement` instead.
-   *
    * E2E testing scenarios:
    *
    * - Conditional parameter values based on captured test data
@@ -1505,8 +1395,10 @@ export namespace AutoBeTest {
    * values based on runtime conditions within expressions, where the conditions
    * and values don't involve direct API calls.
    */
-  export interface IConditionalExpression
-    extends IExpressionBase<"conditionalExpression"> {
+  export interface IConditionalExpression {
+    /** Type discriminator. */
+    type: "conditionalExpression";
+
     /**
      * Boolean condition determining which value to select.
      *
@@ -1543,10 +1435,6 @@ export namespace AutoBeTest {
    * or specialized operations. In E2E testing, commonly needed for array
    * operations, error handling callbacks, or random data generation functions.
    *
-   * **IMPORTANT**: Should NOT contain direct API function calls in the body. If
-   * API operations are needed within the function, use `IApiOperateStatement`
-   * within the function body.
-   *
    * E2E testing scenarios:
    *
    * - Callback functions for IErrorPredicate (testing expected API errors)
@@ -1558,7 +1446,10 @@ export namespace AutoBeTest {
    * function parameters or when data transformation callbacks are needed within
    * the test flow.
    */
-  export interface IArrowFunction extends IExpressionBase<"arrowFunction"> {
+  export interface IArrowFunction {
+    /** Type discriminator. */
+    type: "arrowFunction";
+
     /**
      * The function body containing the function's logic.
      *
@@ -1583,8 +1474,6 @@ export namespace AutoBeTest {
    * **IMPORTANT: For API function calls, use `IApiOperateStatement` instead.**
    * This type should only be used for:
    *
-   * - Validation functions (TestValidator.equals, TestValidator.error)
-   * - Utility functions (typia.assert, typia.is)
    * - Helper functions and transformations
    * - Built-in JavaScript functions
    * - Non-API library function calls
@@ -1597,7 +1486,10 @@ export namespace AutoBeTest {
    * operations in test scenarios, but should NOT be used for SDK API calls
    * which have their own dedicated statement type.
    */
-  export interface ICallExpression extends IExpressionBase<"callExpression"> {
+  export interface ICallExpression {
+    /** Type discriminator. */
+    type: "callExpression";
+
     /**
      * Expression representing the function to be called.
      *
@@ -1606,8 +1498,6 @@ export namespace AutoBeTest {
      *
      * Typically represents utility functions:
      *
-     * - TestValidator.equals, TestValidator.error
-     * - Typia.assert, typia.is
      * - Built-in functions (Array.from, Object.keys, etc.)
      * - Helper/transformation functions
      *
@@ -1627,8 +1517,6 @@ export namespace AutoBeTest {
      *
      * Common patterns:
      *
-     * - Validation parameters for TestValidator calls
-     * - Type assertion parameters for typia calls
      * - Transformation parameters for utility functions
      *
      * AI validation: Ensure argument types and count match the target
@@ -1646,10 +1534,6 @@ export namespace AutoBeTest {
    * - Date object creation for timestamp values
    * - Custom object instantiation when required by utility functions
    *
-   * **Note**: Should NOT be used for API-related object creation. API
-   * operations that create business entities should use `IApiOperateStatement`
-   * instead.
-   *
    * E2E testing context: Most commonly used for creating Error objects in throw
    * statements or Date objects for time-sensitive test data. Also used for
    * instantiating utility objects that don't involve API calls.
@@ -1658,7 +1542,10 @@ export namespace AutoBeTest {
    * instantiation rather than literal values, excluding API-related entity
    * creation.
    */
-  export interface INewExpression extends IExpressionBase<"newExpression"> {
+  export interface INewExpression {
+    /** Type discriminator. */
+    type: "newExpression";
+
     /**
      * Expression representing the constructor function.
      *
@@ -1707,8 +1594,10 @@ export namespace AutoBeTest {
    * specific subsets of data captured from API responses, especially for
    * conditional operations or validation scenarios.
    */
-  export interface IArrayFilterExpression
-    extends IExpressionBase<"arrayFilterExpression"> {
+  export interface IArrayFilterExpression {
+    /** Type discriminator. */
+    type: "arrayFilterExpression";
+
     /**
      * Array expression to be filtered.
      *
@@ -1760,8 +1649,10 @@ export namespace AutoBeTest {
    * on each element of captured data collections, especially when the operation
    * doesn't produce a new collection.
    */
-  export interface IArrayForEachExpression
-    extends IExpressionBase<"arrayForEachExpression"> {
+  export interface IArrayForEachExpression {
+    /** Type discriminator. */
+    type: "arrayForEachExpression";
+
     /**
      * Array expression to iterate over.
      *
@@ -1813,8 +1704,10 @@ export namespace AutoBeTest {
    * collections of captured data into different formats, especially for
    * preparing data for subsequent API operations.
    */
-  export interface IArrayMapExpression
-    extends IExpressionBase<"arrayMapExpression"> {
+  export interface IArrayMapExpression {
+    /** Type discriminator. */
+    type: "arrayMapExpression";
+
     /**
      * Array expression to be transformed.
      *
@@ -1864,14 +1757,21 @@ export namespace AutoBeTest {
    * collections of specific size rather than fixed arrays, especially for API
    * operations that handle multiple entities.
    */
-  export interface IArrayRepeatExpression
-    extends IExpressionBase<"arrayRepeatExpression"> {
+  export interface IArrayRepeatExpression {
+    /** Type discriminator. */
+    type: "arrayRepeatExpression";
+
     /**
      * Expression determining the array length.
      *
      * Can be a literal number for fixed length or a random generator for
      * variable length. Should reflect realistic business constraints (e.g.,
      * reasonable product quantities, user list sizes).
+     *
+     * **⚠️ CRITICAL AI RESTRICTION: This MUST be an AST expression, NOT a raw
+     * number! ⚠️** **❌ WRONG: 5 (raw number)** **✅ CORRECT: INumericLiteral
+     * with value: 5 (AST expression)** **✅ CORRECT: IIntegerRandom for variable
+     * length (AST expression)**
      *
      * Examples:
      *
@@ -1923,7 +1823,10 @@ export namespace AutoBeTest {
    * AI function calling usage: Use when business logic requires selection from
    * a constrained set of valid options that reflect real API constraints.
    */
-  export interface IPickRandom extends IExpressionBase<"pickRandom"> {
+  export interface IPickRandom {
+    /** Type discriminator. */
+    type: "pickRandom";
+
     /**
      * Expression evaluating to the collection from which to pick.
      *
@@ -1967,7 +1870,10 @@ export namespace AutoBeTest {
    * selections from a larger set without duplication, particularly for API
    * operations that handle multiple entities.
    */
-  export interface ISampleRandom extends IExpressionBase<"sampleRandom"> {
+  export interface ISampleRandom {
+    /** Type discriminator. */
+    type: "sampleRandom";
+
     /**
      * Expression evaluating to the collection from which to sample.
      *
@@ -2020,7 +1926,10 @@ export namespace AutoBeTest {
    * boolean outcomes rather than deterministic values, especially for creating
    * diverse API operation parameters.
    */
-  export interface IBooleanRandom extends IExpressionBase<"booleanRandom"> {
+  export interface IBooleanRandom {
+    /** Type discriminator. */
+    type: "booleanRandom";
+
     /**
      * Probability of generating true (0.0 to 1.0).
      *
@@ -2053,7 +1962,10 @@ export namespace AutoBeTest {
    * actual business value ranges and constraints, particularly for API
    * operation parameters and validation scenarios.
    */
-  export interface IIntegerRandom extends IExpressionBase<"integerRandom"> {
+  export interface IIntegerRandom {
+    /** Type discriminator. */
+    type: "integerRandom";
+
     /**
      * Minimum value (inclusive).
      *
@@ -2124,7 +2036,10 @@ export namespace AutoBeTest {
    * - Financial calculations and monetary values
    * - Performance metrics and business KPIs
    */
-  export interface INumberRandom extends IExpressionBase<"numberRandom"> {
+  export interface INumberRandom {
+    /** Type discriminator. */
+    type: "numberRandom";
+
     /**
      * Minimum value (inclusive).
      *
@@ -2196,7 +2111,10 @@ export namespace AutoBeTest {
    * **API usage**: Commonly used to generate string parameters for
    * `IApiOperateStatement` calls with appropriate length constraints.
    */
-  export interface IStringRandom extends IExpressionBase<"stringRandom"> {
+  export interface IStringRandom {
+    /** Type discriminator. */
+    type: "stringRandom";
+
     /**
      * Minimum string length.
      *
@@ -2257,7 +2175,10 @@ export namespace AutoBeTest {
    * AI pattern usage: Ensure patterns match actual business format requirements
    * and API validation rules.
    */
-  export interface IPatternRandom extends IExpressionBase<"patternRandom"> {
+  export interface IPatternRandom {
+    /** Type discriminator. */
+    type: "patternRandom";
+
     /**
      * Regular expression pattern for string generation.
      *
@@ -2289,7 +2210,10 @@ export namespace AutoBeTest {
    * represents realistic business data types, particularly essential for API
    * operation parameters that require specific formats.
    */
-  export interface IFormatRandom extends IExpressionBase<"formatRandom"> {
+  export interface IFormatRandom {
+    /** Type discriminator. */
+    type: "formatRandom";
+
     /**
      * Standardized format specification for data generation.
      *
@@ -2376,7 +2300,10 @@ export namespace AutoBeTest {
    * actual user input and business content, improving test scenario
    * authenticity and catching real-world edge cases in API operations.
    */
-  export interface IKeywordRandom extends IExpressionBase<"keywordRandom"> {
+  export interface IKeywordRandom {
+    /** Type discriminator. */
+    type: "keywordRandom";
+
     /**
      * Domain-specific data generation keyword.
      *
@@ -2437,7 +2364,10 @@ export namespace AutoBeTest {
    * to validate response data and confirm business logic execution. Essential
    * for maintaining test reliability and catching regressions.
    */
-  export interface IEqualPredicate extends IExpressionBase<"equalPredicate"> {
+  export interface IEqualPredicate {
+    /** Type discriminator. */
+    type: "equalPredicate";
+
     /**
      * Descriptive title explaining what is being validated.
      *
@@ -2499,10 +2429,8 @@ export namespace AutoBeTest {
   /**
    * Inequality validation predicate for TestValidator assertion.
    *
-   * Generates TestValidator.equals(false)(typia.is<Type>(value)) calls or
-   * similar to verify that values are NOT equal or that a value is NOT of a
-   * specific type. Used for negative validations and ensuring values have
-   * changed or differ from previous states.
+   * Used for negative validations and ensuring values have changed or differ
+   * from previous states.
    *
    * **Preferred over manual validation**: Use this instead of `IIfStatement`
    * with throw statements for inequality checking.
@@ -2518,8 +2446,10 @@ export namespace AutoBeTest {
    * differences or ensuring values have been modified by API operations.
    * Important for testing update operations and data transformations.
    */
-  export interface INotEqualPredicate
-    extends IExpressionBase<"notEqualPredicate"> {
+  export interface INotEqualPredicate {
+    /** Type discriminator. */
+    type: "notEqualPredicate";
+
     /**
      * Descriptive title explaining what inequality is being validated.
      *
@@ -2595,8 +2525,10 @@ export namespace AutoBeTest {
    * testing complex business logic and rule-based systems with API
    * integration.
    */
-  export interface IConditionalPredicate
-    extends IExpressionBase<"conditionalPredicate"> {
+  export interface IConditionalPredicate {
+    /** Type discriminator. */
+    type: "conditionalPredicate";
+
     /**
      * Descriptive title explaining the conditional logic being validated.
      *
@@ -2638,28 +2570,38 @@ export namespace AutoBeTest {
   }
 
   /**
-   * Error validation predicate for TestValidator assertion.
+   * General error validation predicate for TestValidator assertion.
    *
-   * Generates TestValidator.error() or TestValidator.httpError() calls to
-   * verify that operations correctly throw errors under specific conditions.
-   * Critical for testing error handling, business rule violations, and security
-   * constraints in API operations.
+   * Generates TestValidator.error() call to verify that operations correctly
+   * throw errors under specific conditions. Used for testing general error
+   * handling, business rule violations, and non-HTTP specific error conditions
+   * in API operations.
    *
    * **Preferred over manual error testing**: Use this instead of `IIfStatement`
-   * with throw statements or try-catch blocks for error validation.
+   * with throw statements or try-catch blocks for general error validation.
+   *
+   * **When to use IErrorPredicate vs IHttpErrorPredicate**:
+   *
+   * - Use `IErrorPredicate` for general error conditions that don't require
+   *   specific HTTP status code validation
+   * - Use `IHttpErrorPredicate` when you need to verify specific HTTP status
+   *   codes (400, 401, 403, 404, 500, etc.) from API operations
    *
    * E2E testing scenarios:
    *
-   * - Testing authentication failures with invalid credentials in API calls
-   * - Verifying authorization errors for restricted API operations
-   * - Confirming validation errors for invalid input data in API requests
-   * - Ensuring proper error responses for business rule violations
+   * - Testing business logic validation errors without specific HTTP status needs
+   * - Verifying general exception handling in utility functions
+   * - Confirming error throwing for invalid business operations
+   * - Testing custom error conditions that don't map to HTTP status codes
    *
    * AI function calling usage: Use when business scenarios should intentionally
-   * fail to test error handling and system security. Essential for negative
-   * testing and ensuring robust API error responses.
+   * fail to test general error handling. For HTTP-specific errors with status
+   * codes, prefer `IHttpErrorPredicate` for more precise validation.
    */
-  export interface IErrorPredicate extends IExpressionBase<"errorPredicate"> {
+  export interface IErrorPredicate {
+    /** Type discriminator. */
+    type: "errorPredicate";
+
     /**
      * Descriptive title explaining the error condition being tested.
      *
@@ -2669,13 +2611,14 @@ export namespace AutoBeTest {
      *
      * Examples:
      *
-     * - "Should fail login with invalid email address"
-     * - "Should reject order creation without payment method"
-     * - "Should return 403 for unauthorized customer access"
-     * - "Should validate required fields in registration"
+     * - "Should fail business validation with invalid data"
+     * - "Should throw error for duplicate entity creation"
+     * - "Should reject operation with insufficient business context"
+     * - "Should validate required business rule constraints"
      *
      * AI title strategy: Focus on the specific error condition and business
-     * context that should trigger the failure.
+     * context that should trigger the failure, emphasizing general error
+     * conditions rather than HTTP-specific responses.
      */
     title: string;
 
@@ -2685,21 +2628,202 @@ export namespace AutoBeTest {
      * Encapsulates the API operation or business logic that is expected to
      * fail. The function should contain realistic API operations (using
      * IApiOperateStatement within the function body) with invalid data or
-     * unauthorized access attempts that trigger appropriate error responses.
+     * conditions that trigger appropriate error responses.
      *
      * **Note**: The function body can contain IApiOperateStatement calls since
      * this is specifically for testing API error conditions.
      *
      * Common patterns:
      *
-     * - API calls with invalid authentication credentials
+     * - API calls with invalid business data that should trigger general errors
      * - API operations with malformed or missing required data
-     * - Unauthorized access attempts to restricted API resources
      * - Business rule violations that should be rejected by API operations
+     * - General validation failures that don't require HTTP status specificity
      *
      * AI function construction: Create realistic error scenarios that test
-     * actual business constraints and security measures rather than arbitrary
-     * technical failures. Focus on API operation error conditions.
+     * actual business constraints and general error handling rather than
+     * HTTP-specific status code validation. Focus on API operation error
+     * conditions that throw general errors.
+     */
+    function: IArrowFunction;
+  }
+
+  /**
+   * HTTP-specific error validation predicate for TestValidator assertion.
+   *
+   * Generates TestValidator.httpError() call to verify that API operations
+   * correctly return specific HTTP status codes under error conditions.
+   * Essential for testing REST API error responses, authentication failures,
+   * authorization issues, and HTTP-specific business rule violations.
+   *
+   * **Preferred over general error testing**: Use this instead of
+   * `IErrorPredicate` when you need to validate specific HTTP status codes from
+   * API operations.
+   *
+   * **When to use IHttpErrorPredicate vs IErrorPredicate**:
+   *
+   * - Use `IHttpErrorPredicate` for API operations that should return specific
+   *   HTTP status codes (400, 401, 403, 404, 500, etc.)
+   * - Use `IErrorPredicate` for general error conditions that don't require HTTP
+   *   status code validation
+   *
+   * E2E testing scenarios:
+   *
+   * - Testing authentication failures (401 Unauthorized) with invalid credentials
+   * - Verifying authorization errors (403 Forbidden) for restricted API
+   *   operations
+   * - Confirming validation errors (400 Bad Request) for invalid input data
+   * - Ensuring proper not found responses (404 Not Found) for missing resources
+   * - Testing server errors (500 Internal Server Error) for system failures
+   * - Validating conflict responses (409 Conflict) for duplicate operations
+   * - Checking rate limiting responses (429 Too Many Requests)
+   *
+   * **HTTP Status Code Categories**:
+   *
+   * - **4xx Client Errors**: Invalid requests, authentication, authorization
+   * - **5xx Server Errors**: Internal server problems, service unavailable
+   * - **Common Status Codes**:
+   *
+   *   - 400: Bad Request (invalid input data)
+   *   - 401: Unauthorized (authentication required)
+   *   - 403: Forbidden (insufficient permissions)
+   *   - 404: Not Found (resource doesn't exist)
+   *   - 409: Conflict (duplicate resource)
+   *   - 422: Unprocessable Entity (validation errors)
+   *   - 429: Too Many Requests (rate limiting)
+   *   - 500: Internal Server Error (server problems)
+   *
+   * AI function calling usage: Use when business scenarios should intentionally
+   * fail with specific HTTP status codes to test API error handling and ensure
+   * proper REST API compliance. Critical for testing API security, validation,
+   * and proper error response codes.
+   */
+  export interface IHttpErrorPredicate {
+    /** Type discriminator. */
+    type: "httpErrorPredicate";
+
+    /**
+     * Descriptive title explaining the HTTP error condition being tested.
+     *
+     * Should clearly describe what HTTP error is expected, including the
+     * specific status code and business context. This helps understand the
+     * negative test case purpose and assists with debugging when expected HTTP
+     * errors don't occur.
+     *
+     * Examples:
+     *
+     * - "Should return 401 for invalid authentication credentials"
+     * - "Should return 403 for unauthorized customer access"
+     * - "Should return 400 for missing required fields in registration"
+     * - "Should return 404 for non-existent product ID"
+     * - "Should return 409 for duplicate email registration"
+     * - "Should return 422 for invalid business data format"
+     * - "Should return 429 for rate limit exceeded"
+     * - "Should return 500 for server processing errors"
+     *
+     * AI title strategy: Include both the expected HTTP status code and the
+     * business context that should trigger the error. This makes test failures
+     * more informative and helps with API debugging.
+     */
+    title: string;
+
+    /**
+     * Expected HTTP status code that should be returned.
+     *
+     * Must be a valid HTTP status code (typically 400-599 for error responses).
+     * Should match the specific error condition being tested and follow REST
+     * API conventions for error responses.
+     *
+     * **Common HTTP Error Status Codes**:
+     *
+     * **Client Error Codes (4xx)**:
+     *
+     * - 400: Bad Request - Invalid request syntax or data
+     * - 401: Unauthorized - Authentication required or failed
+     * - 403: Forbidden - Authenticated but insufficient permissions
+     * - 404: Not Found - Requested resource doesn't exist
+     * - 405: Method Not Allowed - HTTP method not supported
+     * - 409: Conflict - Resource conflict (e.g., duplicate)
+     * - 422: Unprocessable Entity - Valid syntax but semantic errors
+     * - 429: Too Many Requests - Rate limit exceeded
+     *
+     * **Server Error Codes (5xx)**:
+     *
+     * - 500: Internal Server Error - Generic server error
+     * - 502: Bad Gateway - Invalid response from upstream server
+     * - 503: Service Unavailable - Server temporarily unavailable
+     * - 504: Gateway Timeout - Upstream server timeout
+     *
+     * AI status code selection: Choose status codes that accurately represent
+     * the error condition being tested. Follow REST API conventions:
+     *
+     * - Use 4xx for client-side errors (invalid data, authentication, etc.)
+     * - Use 5xx for server-side errors (system failures, service issues)
+     * - Match the specific error semantics (401 for auth, 404 for not found)
+     */
+    status: number;
+
+    /**
+     * Arrow function containing the API operation that should return the
+     * specified HTTP error status code.
+     *
+     * Encapsulates the API operation that is expected to fail with the specific
+     * HTTP status code. The function should contain realistic API operations
+     * (using IApiOperateStatement within the function body) with conditions
+     * that trigger the expected HTTP error response.
+     *
+     * **Note**: The function body can contain IApiOperateStatement calls since
+     * this is specifically for testing API HTTP error conditions.
+     *
+     * **HTTP Error Testing Patterns**:
+     *
+     * **Authentication Errors (401)**:
+     *
+     * - API calls with invalid or expired tokens
+     * - Login attempts with wrong credentials
+     * - Access without required authentication headers
+     *
+     * **Authorization Errors (403)**:
+     *
+     * - API calls with insufficient user permissions
+     * - Access to restricted resources by unauthorized users
+     * - Operations requiring admin privileges by regular users
+     *
+     * **Validation Errors (400, 422)**:
+     *
+     * - API calls with missing required fields
+     * - Invalid data format or type in request body
+     * - Business rule violations in API parameters
+     *
+     * **Not Found Errors (404)**:
+     *
+     * - API calls with non-existent resource IDs
+     * - Access to deleted or unavailable resources
+     * - Invalid endpoint or resource paths
+     *
+     * **Conflict Errors (409)**:
+     *
+     * - Duplicate resource creation attempts
+     * - Concurrent modification conflicts
+     * - Business rule conflicts (e.g., duplicate emails)
+     *
+     * **Rate Limiting Errors (429)**:
+     *
+     * - Excessive API calls within time window
+     * - Quota exceeded for API operations
+     * - Throttling due to usage limits
+     *
+     * **Server Errors (5xx)**:
+     *
+     * - API calls that trigger internal server errors
+     * - Operations that cause service unavailability
+     * - Database connection or processing failures
+     *
+     * AI function construction: Create realistic error scenarios that test
+     * actual HTTP error conditions and API security measures. Focus on API
+     * operations that should return specific HTTP status codes rather than
+     * general exceptions. Ensure the error condition matches the expected
+     * status code semantics.
      */
     function: IArrowFunction;
   }
@@ -2758,6 +2882,11 @@ export namespace AutoBeTest {
      * Expression that evaluates to the property value. Type must match the
      * expected type for this property in the target schema. Should represent
      * realistic business data appropriate for the property's purpose.
+     *
+     * **⚠️ CRITICAL AI RESTRICTION: This MUST be an AST expression, NOT a raw
+     * value! ⚠️** **❌ WRONG: "John Doe" (raw string)** **❌ WRONG: 123 (raw
+     * number)** **❌ WRONG: true (raw boolean)** **✅ CORRECT: IStringLiteral,
+     * INumericLiteral, IBooleanLiteral (AST expressions)**
      *
      * **API usage**: When used in API operation parameters, must generate
      * values compatible with the API specification requirements.

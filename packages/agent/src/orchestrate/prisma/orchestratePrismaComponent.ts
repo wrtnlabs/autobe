@@ -33,6 +33,9 @@ export async function orchestratePrismaComponents<
     vendor: ctx.vendor,
     config: {
       ...(ctx.config ?? {}),
+      executor: {
+        describe: null,
+      },
     },
     histories: transformPrismaComponentsHistories(ctx.state(), prefix),
     controllers: [
@@ -108,7 +111,6 @@ const collection = {
   llama: claude,
   deepseek: claude,
   "3.1": claude,
-  "3.0": typia.llm.application<IApplication, "3.0">(),
 };
 
 interface IApplication {

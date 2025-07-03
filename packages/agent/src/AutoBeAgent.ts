@@ -110,7 +110,9 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
     this.context_ = {
       vendor,
       model: props.model,
-      config: props.config,
+      config: {
+        ...props.config,
+      },
       compiler: props.compiler,
       histories: () => this.histories_,
       state: () => this.state_,
