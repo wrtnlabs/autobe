@@ -396,6 +396,64 @@ const intermediatePart = complex.calculation;
 const result = intermediatePart.with(multiple.parts);
 ```
 
+### 4.0.2. Critical Unary Expression Type Requirements
+
+**🚨 NEVER USE "unaryExpression" AS A TYPE NAME**
+
+**ABSOLUTE PROHIBITION**: Do not use generic "unaryExpression" type names. The AutoBeTest AST system requires specific unary expression types based on operator position.
+
+**❌ WRONG - Generic unary expression type**:
+```typescript
+{
+  type: "unaryExpression",  // ❌ This type does not exist in AutoBeTest
+  operator: "!",
+  operand: { type: "identifier", text: "condition" }
+}
+```
+
+**✅ CORRECT - Specific positioned unary expression types**:
+```typescript
+// For operators BEFORE the operand (!, ++, --, +, -)
+{
+  type: "prefixUnaryExpression",  // ✅ Operator comes BEFORE operand
+  operator: "!",
+  operand: { type: "identifier", text: "condition" }
+}
+
+// For operators AFTER the operand (++, --)
+{
+  type: "postfixUnaryExpression",  // ✅ Operator comes AFTER operand
+  operator: "++",
+  operand: { type: "identifier", text: "counter" }
+}
+```
+
+**Decision Rules for Unary Expression Types**:
+
+1. **Use `IPrefixUnaryExpression` when operator comes BEFORE operand**:
+   - `!condition` → `type: "prefixUnaryExpression"`
+   - `++counter` → `type: "prefixUnaryExpression"`
+   - `--value` → `type: "prefixUnaryExpression"`
+   - `-number` → `type: "prefixUnaryExpression"`
+   - `+value` → `type: "prefixUnaryExpression"`
+
+2. **Use `IPostfixUnaryExpression` when operator comes AFTER operand**:
+   - `counter++` → `type: "postfixUnaryExpression"`
+   - `value--` → `type: "postfixUnaryExpression"`
+
+**Quick Reference**:
+- **Prefix**: `OPERATOR operand` → `prefixUnaryExpression`
+- **Postfix**: `operand OPERATOR` → `postfixUnaryExpression`
+- **NEVER**: `unaryExpression` (does not exist in AutoBeTest)
+
+**Why This Matters**:
+- AutoBeTest AST system has no generic "unaryExpression" type
+- Operator position affects evaluation order and semantics
+- Incorrect type names cause AST construction failures
+- Proper type selection ensures correct code generation
+
+**AI Function Calling Requirement**: Always determine operator position relative to operand and use the appropriate specific type (`prefixUnaryExpression` or `postfixUnaryExpression`). Never use generic "unaryExpression" type names.
+
 ### 4.1. IFunction Structure Requirements
 
 #### 4.1.1. Strategic Plan
@@ -433,8 +491,57 @@ Since you'll need to convert the draft to AST later, avoid using TypeScript feat
 - Explicit variable declarations: `const userId = user.id;`
 - Array method patterns: `arrayMap`, `arrayFilter`, `arrayForEach`, `arrayRepeat`
 - Predicate patterns: `equalPredicate`, `conditionalPredicate`, `errorPredicate`
+- Random generation patterns: `formatRandom`, `keywordRandom`, `numberRandom`, `stringRandom`, `pickRandom`, `integerRandom`, `booleanRandom`
 - Clear if/else chains for conditional logic
 - Separate statements for complex operations
+
+**🚨 RANDOM GENERATION USAGE IN DRAFT**:
+
+Use appropriate random generators instead of hardcoded values to create realistic, varied test data:
+
+**✅ PREFERRED RANDOM PATTERNS**:
+```typescript
+// Email addresses and identifiers
+email: formatRandom("email")
+userId: formatRandom("uuid")
+timestamp: formatRandom("date-time")
+
+// Names and text content
+name: keywordRandom("name")
+description: keywordRandom("paragraph")
+content: keywordRandom("content")
+mobile: keywordRandom("mobile")
+
+// Numeric values with business constraints
+price: numberRandom({ minimum: 1000, maximum: 100000, multipleOf: 100 })
+quantity: integerRandom({ minimum: 1, maximum: 10 })
+score: integerRandom({ minimum: 0, maximum: 100, multipleOf: 5 })
+
+// String values with length constraints
+nickname: stringRandom({ minLength: 5, maxLength: 15 })
+code: stringRandom({ minLength: 8, maxLength: 12 })
+
+// Selection from predefined options
+category: pickRandom(["electronics", "clothing", "books", "home"])
+status: pickRandom(["pending", "approved", "rejected"])
+role: pickRandom(["user", "admin", "moderator"])
+
+// Boolean flags with probability
+isActive: booleanRandom({ probability: 0.8 })
+isVerified: booleanRandom({ probability: 0.6 })
+
+// Dynamic arrays
+tags: arrayRepeat(integerRandom({ minimum: 2, maximum: 5 }), () => stringRandom({ minLength: 3, maxLength: 10 }))
+```
+
+**❌ AVOID HARDCODED VALUES**:
+```typescript
+// Don't use fixed values like these:
+email: "john@example.com"         // → formatRandom("email")
+name: "John Doe"                  // → keywordRandom("name")
+price: 99.99                      // → numberRandom({ minimum: 10, maximum: 500 })
+category: "electronics"           // → pickRandom(["electronics", "clothing", ...])
+```
 
 ```typescript
 /**
@@ -468,10 +575,10 @@ export const test_api_shopping_sale_review_update = async (
     { method: "post", path: "/shoppings/sellers/authenticate/join" },
     {
       body: {
-        email: "john@wrtn.io",
-        name: "John Doe",
-        nickname: "john-doe",
-        mobile: "821011112222",
+        email: formatRandom("email"),
+        name: keywordRandom("name"),
+        nickname: stringRandom({ minLength: 5, maxLength: 15 }),
+        mobile: keywordRandom("mobile"),
         password: "1234",
       },
     },
@@ -482,22 +589,22 @@ export const test_api_shopping_sale_review_update = async (
     { method: "post", path: "/shoppings/sellers/sales" },
     {
       body: {
-        name: "Sample Product",
-        description: "This is a sample product for testing",
-        price: 10000,
+        name: keywordRandom("name") + " Product",
+        description: keywordRandom("paragraph"),
+        price: numberRandom({ minimum: 1000, maximum: 100000, multipleOf: 100 }),
         currency: "KRW",
-        category: "electronics",
+        category: pickRandom(["electronics", "clothing", "books", "home", "sports"]),
         units: [{
           name: "Default Unit",
           primary: true,
           stocks: [{
             name: "Default Stock",
-            quantity: 100,
-            price: 10000,
+            quantity: integerRandom({ minimum: 50, maximum: 500 }),
+            price: numberRandom({ minimum: 1000, maximum: 100000, multipleOf: 100 }),
           }],
         }],
         images: [],
-        tags: [],
+        tags: arrayRepeat(integerRandom({ minimum: 2, maximum: 5 }), () => stringRandom({ minLength: 3, maxLength: 10 })),
       },
     },
   );
@@ -507,10 +614,10 @@ export const test_api_shopping_sale_review_update = async (
     { method: "post", path: "/shoppings/customers/authenticate/join" },
     {
       body: {
-        email: "anonymous@wrtn.io",
-        name: "Jaxtyn",
-        nickname: "anonymous",
-        mobile: "821033334444",
+        email: formatRandom("email"),
+        name: keywordRandom("name"),
+        nickname: stringRandom({ minLength: 5, maxLength: 15 }),
+        mobile: keywordRandom("mobile"),
         password: "1234",
       },
     },
@@ -536,9 +643,9 @@ export const test_api_shopping_sale_review_update = async (
         stocks: await arrayMap(sale.units, async (unit) => ({
           unit_id: unit.id,
           stock_id: unit.stocks[0].id,
-          quantity: 1,
+          quantity: integerRandom({ minimum: 1, maximum: 5 }),
         })),
-        volume: 1,
+        volume: integerRandom({ minimum: 1, maximum: 3 }),
       },
     },
   );
@@ -551,7 +658,7 @@ export const test_api_shopping_sale_review_update = async (
         goods: [
           {
             commodity_id: commodity.id,
-            volume: 1,
+            volume: integerRandom({ minimum: 1, maximum: 3 }),
           },
         ],
       },
@@ -565,14 +672,14 @@ export const test_api_shopping_sale_review_update = async (
       orderId: order.id,
       body: {
         address: {
-          mobile: "821033334444",
-          name: "Jaxtyn",
+          mobile: keywordRandom("mobile"),
+          name: keywordRandom("name"),
           country: "South Korea",
           province: "Seoul",
-          city: "Seoul Seocho-gu",
-          department: "Wrtn Apartment",
-          possession: "140-1415",
-          zip_code: "08273",
+          city: "Seoul " + pickRandom(["Gangnam-gu", "Seocho-gu", "Songpa-gu", "Mapo-gu"]),
+          department: keywordRandom("name") + " Apartment",
+          possession: integerRandom({ minimum: 100, maximum: 999 }) + "-" + integerRandom({ minimum: 1000, maximum: 9999 }),
+          zip_code: stringRandom({ minLength: 5, maxLength: 5 }),
         },
         vendor: {
           code: "@payment-vendor-code",
@@ -587,7 +694,7 @@ export const test_api_shopping_sale_review_update = async (
     { method: "post", path: "/shoppings/sellers/authenticate/login" },
     {
       body: {
-        email: "john@wrtn.io",
+        email: seller.email,
         password: "1234",
       },
     },
@@ -609,7 +716,7 @@ export const test_api_shopping_sale_review_update = async (
       publish_id: publish.id,
       good_id: good.id,
       stock_id: stock.id,
-      quantity: 1,
+      quantity: integerRandom({ minimum: 1, maximum: 5 }),
     }));
   });
 
@@ -629,9 +736,9 @@ export const test_api_shopping_sale_review_update = async (
         ],
         shippers: [
           {
-            company: "Lozen",
-            name: "QuickMan",
-            mobile: "01055559999",
+            company: pickRandom(["CJ Logistics", "Hanjin", "Lotte Global", "Korea Post"]),
+            name: keywordRandom("name"),
+            mobile: keywordRandom("mobile"),
           }
         ],
       },
@@ -643,7 +750,7 @@ export const test_api_shopping_sale_review_update = async (
     { method: "post", path: "/shoppings/customers/authenticate/login" },
     {
       body: {
-        email: "anonymous@wrtn.io",
+        email: customer.email,
         password: "1234",
       },
     },
@@ -656,11 +763,11 @@ export const test_api_shopping_sale_review_update = async (
       saleId: sale.id,
       body: {
         good_id: order.goods[0].id,
-        title: "Some title",
-        body: "Some content body",
-        format: "md",
+        title: stringRandom({ minLength: 10, maxLength: 50 }),
+        body: keywordRandom("paragraph"),
+        format: pickRandom(["md", "html", "text"]),
         files: [],
-        score: 100,
+        score: integerRandom({ minimum: 1, maximum: 100, multipleOf: 5 }),
       },
     },
   );
@@ -672,8 +779,8 @@ export const test_api_shopping_sale_review_update = async (
       saleId: sale.id,
       id: review.id,
       body: {
-        title: "Some new title",
-        body: "Some new content body",
+        title: "Updated: " + stringRandom({ minLength: 10, maxLength: 40 }),
+        body: "Modified content: " + keywordRandom("paragraph"),
       },
     },
   );
@@ -689,12 +796,11 @@ export const test_api_shopping_sale_review_update = async (
   
   // Validate review modifications
   equalPredicate("Review snapshots should include update", 
-    [...review.snapshots, snapshot], 
-    updatedReview.snapshots
+    review.snapshots.length + 1, 
+    updatedReview.snapshots.length
   );
-  equalPredicate("Review title should be updated", 
-    "Some new title", 
-    updatedReview.snapshots[updatedReview.snapshots.length - 1].title
+  conditionalPredicate("Review title should be updated", 
+    updatedReview.snapshots[updatedReview.snapshots.length - 1].title.startsWith("Updated:")
   );
 };
 ```
@@ -950,5 +1056,7 @@ Before generating AST:
 - [ ] Error scenarios test realistic business constraints
 - [ ] **NO raw JSON values used in expression fields**
 - [ ] **All unsupported TypeScript features converted to AST equivalents**
+- [ ] **Random generation used instead of hardcoded values**
+- [ ] **Correct unary expression types (prefixUnaryExpression/postfixUnaryExpression) used**
 
 Your goal is to create AST structures that generate robust, comprehensive E2E tests representing complete business workflows with proper data flow, realistic business scenarios, and thorough validation coverage following the exact patterns provided in the draft guidelines.

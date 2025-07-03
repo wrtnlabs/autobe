@@ -17,10 +17,18 @@ export namespace AutoBeTestOperatorProgrammer {
       writeTestExpression(ctx, expr.whenFalse),
     );
 
+  export const typeOfExpression = (
+    ctx: IAutoBeTestProgrammerContext,
+    expr: AutoBeTest.ITypeOfExpression,
+  ): ts.TypeOfExpression =>
+    ts.factory.createTypeOfExpression(
+      writeTestExpression(ctx, expr.expression),
+    );
+
   export const prefixUnaryExpression = (
     ctx: IAutoBeTestProgrammerContext,
     expr: AutoBeTest.IPrefixUnaryExpression,
-  ): ts.PrefixUnaryExpression =>
+  ): ts.TypeOfExpression | ts.PrefixUnaryExpression =>
     ts.factory.createPrefixUnaryExpression(
       PREFIX_UNARY_OPERATORS[expr.operator],
       writeTestExpression(ctx, expr.operand),

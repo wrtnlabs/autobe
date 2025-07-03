@@ -32,11 +32,9 @@ export const test_compiler_test_write_literal = async (): Promise<void> => {
     },
     {
       type: "nullLiteral",
-      value: null,
     },
     {
       type: "undefinedKeyword",
-      value: undefined,
     },
     {
       type: "arrayLiteralExpression",

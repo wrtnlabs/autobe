@@ -63,6 +63,14 @@ export namespace AutoBeTestExpressionValidator {
   /* -----------------------------------------------------------
     OPERATORS
   ----------------------------------------------------------- */
+  export const typeOfExpression = (
+    ctx: IAutoBeTextValidateContext,
+    item: AutoBeTest.ITypeOfExpression,
+    path: string,
+  ): void => {
+    validateTestExpression(ctx, item.expression, `${path}.expression`);
+  };
+
   export const prefixUnaryExpression = (
     ctx: IAutoBeTextValidateContext,
     item: AutoBeTest.IPrefixUnaryExpression,

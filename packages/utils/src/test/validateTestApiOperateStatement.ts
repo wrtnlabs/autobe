@@ -41,7 +41,7 @@ export const validateTestApiOperateStatement = (
           : "null",
     });
     return;
-  } else if (stmt.argument !== null) {
+  } else if (!!stmt.argument) {
     // check properties
     const keys: Set<string> = new Set(
       stmt.argument.properties.map((p) => p.name),
@@ -61,7 +61,7 @@ export const validateTestApiOperateStatement = (
       });
 
     // check variable name
-    if (stmt.variableName === null)
+    if (stmt.variableName === null || stmt.variableName === undefined)
       ctx.errors.push({
         path: `${path}.variableName`,
         value: null,
@@ -69,7 +69,7 @@ export const validateTestApiOperateStatement = (
       });
   } else {
     // check variable name
-    if (stmt.variableName !== null)
+    if (stmt.variableName !== null && stmt.variableName !== undefined)
       ctx.errors.push({
         path: `${path}.variableName`,
         value: stmt.variableName,

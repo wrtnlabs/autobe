@@ -39,7 +39,7 @@ export namespace AutoBeTestStatementValidator {
   ): void => {
     validateTestExpression(ctx, item.condition, `${path}.condition`);
     block(ctx, item.thenStatement, `${path}.thenStatement`);
-    if (item.elseStatement !== null)
+    if (!!item.elseStatement)
       if (item.elseStatement.type === "block")
         block(ctx, item.elseStatement, `${path}.elseStatement`);
       else
