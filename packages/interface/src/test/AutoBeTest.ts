@@ -1,3 +1,5 @@
+import { OpenApi } from "@samchon/openapi";
+
 import { AutoBeOpenApi } from "../openapi/AutoBeOpenApi";
 
 /**
@@ -610,7 +612,7 @@ export namespace AutoBeTest {
      * AI function calling requirement: Must match the exact schema of the API
      * operation being called to ensure type consistency.
      */
-    schema: AutoBeOpenApi.IJsonSchema;
+    schema: OpenApi.IJsonSchema;
 
     /**
      * Variable mutability specification.
