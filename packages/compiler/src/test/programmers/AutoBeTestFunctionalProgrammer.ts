@@ -2,9 +2,9 @@ import { AutoBeTest } from "@autobe/interface";
 import ts from "typescript";
 import { ExpressionFactory } from "typia/lib/factories/ExpressionFactory";
 
-import { IAutoBeTestProgrammerContext } from "../IAutoBeTestProgrammerContext";
-import { writeTestExpression } from "../writeTestExpression";
 import { AutoBeTestStatementProgrammer } from "./AutoBeTestStatementProgrammer";
+import { IAutoBeTestProgrammerContext } from "./IAutoBeTestProgrammerContext";
+import { writeTestExpression } from "./writeTestExpression";
 
 export namespace AutoBeTestFunctionalProgrammer {
   export const arrowFunction = (

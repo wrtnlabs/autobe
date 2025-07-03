@@ -1,8 +1,8 @@
 import { AutoBeTest } from "@autobe/interface";
 import ts from "typescript";
 
+import { AutoBeTestStatementProgrammer } from "./AutoBeTestStatementProgrammer";
 import { IAutoBeTestProgrammerContext } from "./IAutoBeTestProgrammerContext";
-import { AutoBeTestStatementProgrammer } from "./programmers/AutoBeTestStatementProgrammer";
 
 export const writeTestStatement = (
   ctx: IAutoBeTestProgrammerContext,

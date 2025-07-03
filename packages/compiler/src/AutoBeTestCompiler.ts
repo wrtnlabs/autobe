@@ -9,7 +9,7 @@ import ts from "typescript";
 import typiaTransform from "typia/lib/transform";
 
 import TestExternal from "./raw/test.json";
-import { writeTestFunction } from "./test/writeTestFunction";
+import { writeTestFunction } from "./test/programmers/writeTestFunction";
 
 export class AutoBeTestCompiler implements IAutoBeTestCompiler {
   public async compile(

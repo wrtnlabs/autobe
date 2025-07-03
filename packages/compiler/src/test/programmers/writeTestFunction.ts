@@ -4,9 +4,9 @@ import { HttpMigration, IHttpMigrateApplication } from "@samchon/openapi";
 import { HashMap, Pair } from "tstl";
 import ts, { FunctionDeclaration } from "typescript";
 
-import { AutoBeEndpointComparator } from "../interface/AutoBeEndpointComparator";
-import { transformOpenApiDocument } from "../interface/transformOpenApi";
-import { FilePrinter } from "../utils/FilePrinter";
+import { AutoBeEndpointComparator } from "../../interface/AutoBeEndpointComparator";
+import { transformOpenApiDocument } from "../../interface/transformOpenApi";
+import { FilePrinter } from "../../utils/FilePrinter";
 import { IAutoBeTestApiFunction } from "./IAutoBeTestApiFunction";
 import { IAutoBeTestProgrammerContext } from "./IAutoBeTestProgrammerContext";
 import { writeTestStatement } from "./writeTestStatement";

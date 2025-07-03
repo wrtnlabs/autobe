@@ -1,12 +1,12 @@
 import { AutoBeTest } from "@autobe/interface";
 import ts from "typescript";
 
+import { AutoBeTestAccessorProgrammer } from "./AutoBeTestAccessorProgrammer";
+import { AutoBeTestFunctionalProgrammer } from "./AutoBeTestFunctionalProgrammer";
+import { AutoBeTestLiteralProgrammer } from "./AutoBeTestLiteralProgrammer";
+import { AutoBeTestPredicateProgrammer } from "./AutoBeTestPredicateProgrammer";
+import { AutoBeTestRandomProgrammer } from "./AutoBeTestRandomProgrammer";
 import { IAutoBeTestProgrammerContext } from "./IAutoBeTestProgrammerContext";
-import { AutoBeTestAccessorProgrammer } from "./programmers/AutoBeTestAccessorProgrammer";
-import { AutoBeTestFunctionalProgrammer } from "./programmers/AutoBeTestFunctionalProgrammer";
-import { AutoBeTestLiteralProgrammer } from "./programmers/AutoBeTestLiteralProgrammer";
-import { AutoBeTestPredicateProgrammer } from "./programmers/AutoBeTestPredicateProgrammer";
-import { AutoBeTestRandomProgrammer } from "./programmers/AutoBeTestRandomProgrammer";
 
 export const writeTestExpression = (
   ctx: IAutoBeTestProgrammerContext,

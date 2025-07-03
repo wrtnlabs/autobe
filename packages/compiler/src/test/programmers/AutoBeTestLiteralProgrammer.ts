@@ -2,8 +2,8 @@ import { AutoBeTest } from "@autobe/interface";
 import ts from "typescript";
 import { Escaper } from "typia/lib/utils/Escaper";
 
-import { IAutoBeTestProgrammerContext } from "../IAutoBeTestProgrammerContext";
-import { writeTestExpression } from "../writeTestExpression";
+import { IAutoBeTestProgrammerContext } from "./IAutoBeTestProgrammerContext";
+import { writeTestExpression } from "./writeTestExpression";
 
 export namespace AutoBeTestLiteralProgrammer {
   export const booleanLiteral = (
@@ -30,7 +30,7 @@ export namespace AutoBeTestLiteralProgrammer {
 
   export const arrayLiteral = (
     ctx: IAutoBeTestProgrammerContext,
-    expr: AutoBeTest.IArrayLiteral,
+    expr: AutoBeTest.IArrayLiteralExpression,
   ): ts.ArrayLiteralExpression =>
     ts.factory.createArrayLiteralExpression(
       expr.elements.map((elem) => writeTestExpression(ctx, elem)),
@@ -39,7 +39,7 @@ export namespace AutoBeTestLiteralProgrammer {
 
   export const objectLiteral = (
     ctx: IAutoBeTestProgrammerContext,
-    expr: AutoBeTest.IObjectLiteral,
+    expr: AutoBeTest.IObjectLiteralExpression,
   ): ts.ObjectLiteralExpression =>
     ts.factory.createObjectLiteralExpression(
       expr.properties.map((e) =>

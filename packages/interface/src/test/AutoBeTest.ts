@@ -453,7 +453,7 @@ export namespace AutoBeTest {
      * null
      * ```
      */
-    argument: IObjectLiteral | null;
+    argument: IObjectLiteralExpression | null;
 
     /**
      * Optional variable name for capturing the API response.
@@ -740,7 +740,7 @@ export namespace AutoBeTest {
      * Can reference previously captured data from API operations or computed
      * values, but should not contain direct API calls.
      */
-    value: IExpression;
+    expression: IExpression;
   }
 
   /**
@@ -850,8 +850,8 @@ export namespace AutoBeTest {
     | IBooleanLiteral
     | INumericLiteral
     | IStringLiteral
-    | IArrayLiteral
-    | IObjectLiteral
+    | IArrayLiteralExpression
+    | IObjectLiteralExpression
     | INullLiteral
     | IUndefinedKeyword
     | IPickRandom
@@ -1767,7 +1767,8 @@ export namespace AutoBeTest {
    * list data rather than dynamic array generation from captured API
    * responses.
    */
-  export interface IArrayLiteral extends IExpressionBase<"arrayLiteral"> {
+  export interface IArrayLiteralExpression
+    extends IExpressionBase<"arrayLiteral"> {
     /**
      * Array of expressions representing the array elements.
      *
@@ -1802,7 +1803,8 @@ export namespace AutoBeTest {
    * `IApiOperateStatement` calls and configuration objects that drive business
    * operations.
    */
-  export interface IObjectLiteral extends IExpressionBase<"objectLiteral"> {
+  export interface IObjectLiteralExpression
+    extends IExpressionBase<"objectLiteral"> {
     /**
      * Array of property assignments defining the object structure.
      *
