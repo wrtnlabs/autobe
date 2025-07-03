@@ -102,16 +102,8 @@ Your AST generation follows a systematic three-phase approach:
 - `AutoBeTest.IArrayLiteralExpression.elements`
 - `AutoBeTest.IArrayRepeatExpression.length`
 - `AutoBeTest.ISampleRandom.length`
-- `AutoBeTest.IConditionalExpression.condition`
-- `AutoBeTest.IConditionalExpression.whenTrue`
-- `AutoBeTest.IConditionalExpression.whenFalse`
-- `AutoBeTest.IBinaryExpression.left`
-- `AutoBeTest.IBinaryExpression.right`
-- `AutoBeTest.IEqualPredicate.x`
-- `AutoBeTest.IEqualPredicate.y`
-- `AutoBeTest.INotEqualPredicate.x`
-- `AutoBeTest.INotEqualPredicate.y`
-- `AutoBeTest.IConditionalPredicate.expression`
+- All predicate expression fields
+- All binary/unary expression operands
 
 **Quick Conversion Reference**:
 ```typescript
@@ -119,6 +111,289 @@ Your AST generation follows a systematic three-phase approach:
 123 → { type: "numericLiteral", value: 123 }
 true → { type: "booleanLiteral", value: true }
 null → { type: "nullLiteral", value: null }
+```
+
+### 4.0.1. TypeScript Feature Conversion Rules
+
+**🚨 CONVERT UNSUPPORTED TYPESCRIPT FEATURES TO AST EQUIVALENTS**
+
+If your draft contains TypeScript features not supported by AutoBeTest AST types, you MUST implement workarounds using available AST constructs:
+
+#### 4.0.1.1. Template Literals
+**Draft Pattern**: `` `Hello ${user.name}!` ``
+**AST Conversion**: Use `IBinaryExpression` with string concatenation
+```typescript
+{
+  type: "binaryExpression",
+  left: { type: "stringLiteral", value: "Hello " },
+  operator: "+",
+  right: {
+    type: "binaryExpression", 
+    left: {
+      type: "propertyAccessExpression",
+      expression: { type: "identifier", text: "user" },
+      questionDot: false,
+      name: "name"
+    },
+    operator: "+",
+    right: { type: "stringLiteral", value: "!" }
+  }
+}
+```
+
+#### 4.0.1.2. Destructuring Assignment
+**Draft Pattern**: `const {id, name} = customer;`
+**AST Conversion**: Use separate `IVariableDeclaration` statements with `IPropertyAccessExpression`
+```typescript
+// Convert to:
+const id = customer.id;
+const name = customer.name;
+
+// AST:
+[
+  {
+    type: "variableDeclaration",
+    name: "id",
+    mutability: "const",
+    schema: { /* appropriate schema */ },
+    initializer: {
+      type: "propertyAccessExpression",
+      expression: { type: "identifier", text: "customer" },
+      questionDot: false,
+      name: "id"
+    }
+  },
+  {
+    type: "variableDeclaration", 
+    name: "name",
+    mutability: "const",
+    schema: { /* appropriate schema */ },
+    initializer: {
+      type: "propertyAccessExpression",
+      expression: { type: "identifier", text: "customer" },
+      questionDot: false,
+      name: "name"
+    }
+  }
+]
+```
+
+#### 4.0.1.3. For/While Loops
+**Draft Pattern**: `for (const item of items) { processItem(item); }`
+**AST Conversion**: Use `IArrayForEachExpression`
+```typescript
+{
+  type: "expressionStatement",
+  expression: {
+    type: "arrayForEachExpression",
+    expression: { type: "identifier", text: "items" },
+    function: {
+      type: "arrowFunction",
+      body: {
+        type: "block",
+        statements: [
+          {
+            type: "expressionStatement",
+            expression: {
+              type: "callExpression",
+              expression: { type: "identifier", text: "processItem" },
+              arguments: [{ type: "identifier", text: "item" }]
+            }
+          }
+        ]
+      }
+    }
+  }
+}
+```
+
+#### 4.0.1.4. Switch Statements
+**Draft Pattern**: 
+```typescript
+switch (status) {
+  case "pending": return "Processing";
+  case "completed": return "Done";
+  default: return "Unknown";
+}
+```
+**AST Conversion**: Use nested `IIfStatement` chains
+```typescript
+{
+  type: "ifStatement",
+  condition: {
+    type: "binaryExpression",
+    left: { type: "identifier", text: "status" },
+    operator: "===",
+    right: { type: "stringLiteral", value: "pending" }
+  },
+  thenStatement: {
+    type: "block",
+    statements: [
+      {
+        type: "returnStatement",
+        expression: { type: "stringLiteral", value: "Processing" }
+      }
+    ]
+  },
+  elseStatement: {
+    type: "ifStatement",
+    condition: {
+      type: "binaryExpression",
+      left: { type: "identifier", text: "status" },
+      operator: "===", 
+      right: { type: "stringLiteral", value: "completed" }
+    },
+    thenStatement: {
+      type: "block",
+      statements: [
+        {
+          type: "returnStatement",
+          expression: { type: "stringLiteral", value: "Done" }
+        }
+      ]
+    },
+    elseStatement: {
+      type: "block",
+      statements: [
+        {
+          type: "returnStatement",
+          expression: { type: "stringLiteral", value: "Unknown" }
+        }
+      ]
+    }
+  }
+}
+```
+
+#### 4.0.1.5. Try/Catch Blocks
+**Draft Pattern**: 
+```typescript
+try {
+  await api.createUser(invalidData);
+} catch (error) {
+  // Handle error
+}
+```
+**AST Conversion**: Use `IErrorPredicate` or `IHttpErrorPredicate`
+```typescript
+{
+  type: "expressionStatement",
+  expression: {
+    type: "errorPredicate",
+    title: "Should throw error for invalid user data",
+    function: {
+      type: "arrowFunction",
+      body: {
+        type: "block",
+        statements: [
+          {
+            type: "apiOperateStatement",
+            endpoint: { method: "post", path: "/users" },
+            argument: {
+              type: "objectLiteralExpression",
+              properties: [
+                {
+                  type: "propertyAssignment",
+                  name: "body", 
+                  value: { type: "identifier", text: "invalidData" }
+                }
+              ]
+            },
+            variableName: null
+          }
+        ]
+      }
+    }
+  }
+}
+```
+
+#### 4.0.1.6. Spread Operators
+**Draft Pattern**: `[...existingItems, newItem]`
+**AST Conversion**: Use explicit array construction or array methods
+```typescript
+// Convert to explicit array construction or use arrayMap to combine
+{
+  type: "callExpression",
+  expression: {
+    type: "propertyAccessExpression",
+    expression: { type: "identifier", text: "existingItems" },
+    questionDot: false,
+    name: "concat"
+  },
+  arguments: [
+    {
+      type: "arrayLiteralExpression",
+      elements: [{ type: "identifier", text: "newItem" }]
+    }
+  ]
+}
+```
+
+#### 4.0.1.7. Arrow Functions Without Blocks
+**Draft Pattern**: `items.map(item => item.id)`
+**AST Conversion**: Use `IArrowFunction` with `IBlock` containing return statement
+```typescript
+{
+  type: "arrayMapExpression",
+  expression: { type: "identifier", text: "items" },
+  function: {
+    type: "arrowFunction",
+    body: {
+      type: "block",
+      statements: [
+        {
+          type: "returnStatement",
+          expression: {
+            type: "propertyAccessExpression",
+            expression: { type: "identifier", text: "item" },
+            questionDot: false,
+            name: "id"
+          }
+        }
+      ]
+    }
+  }
+}
+```
+
+#### 4.0.1.8. Nullish Coalescing
+**Draft Pattern**: `value ?? defaultValue`
+**AST Conversion**: Use conditional expressions or logical OR
+```typescript
+{
+  type: "binaryExpression",
+  left: { type: "identifier", text: "value" },
+  operator: "||",
+  right: { type: "identifier", text: "defaultValue" }
+}
+```
+
+#### 4.0.1.9. Optional Chaining
+**Draft Pattern**: `user?.profile?.name`
+**AST Conversion**: Use `IPropertyAccessExpression` with `questionDot: true`
+```typescript
+{
+  type: "propertyAccessExpression",
+  expression: {
+    type: "propertyAccessExpression",
+    expression: { type: "identifier", text: "user" },
+    questionDot: true,
+    name: "profile"
+  },
+  questionDot: true,
+  name: "name"
+}
+```
+
+#### 4.0.1.10. Complex Expressions
+**Draft Pattern**: Complex multi-line expressions
+**AST Conversion**: Break down into multiple `IVariableDeclaration` statements
+```typescript
+// Instead of: const result = complex.calculation.with(multiple.parts);
+// Break into:
+const intermediatePart = complex.calculation;
+const result = intermediatePart.with(multiple.parts);
 ```
 
 ### 4.1. IFunction Structure Requirements
@@ -137,6 +412,29 @@ The `plan` field must contain comprehensive analysis:
 
 #### 4.1.2. Draft Implementation
 The `draft` field must contain complete, executable TypeScript code following this exact pattern:
+
+**🚨 DRAFT CODE RESTRICTIONS - AVOID THESE TYPESCRIPT FEATURES:**
+
+Since you'll need to convert the draft to AST later, avoid using TypeScript features that aren't directly supported by AutoBeTest AST types. Write simpler, more explicit code:
+
+**❌ AVOID IN DRAFT**:
+- **Template literals**: `` `Hello ${user.name}!` `` → Use string concatenation: `"Hello " + user.name + "!"`
+- **Destructuring**: `const {id, name} = user;` → Use separate assignments: `const id = user.id; const name = user.name;`
+- **For/while loops**: `for (const item of items)` → Use array methods: `await arrayForEach(items, async (item) => { ... })`
+- **Switch statements**: `switch(status) { case "x": ... }` → Use if/else chains: `if (status === "x") { ... } else if ...`
+- **Try/catch blocks**: `try { ... } catch { ... }` → Use error predicates: `errorPredicate("Should fail", async () => { ... })`
+- **Spread operators**: `[...array, item]` → Use concat: `array.concat([item])` or explicit construction
+- **Arrow functions without blocks**: `x => x.id` → Use full syntax: `async (x) => { return x.id; }`
+- **Nullish coalescing**: `value ?? default` → Use logical OR: `value || default`
+- **Complex nested expressions**: Break into multiple variable assignments
+
+**✅ PREFERRED DRAFT PATTERNS**:
+- Simple property access: `user.profile.name`
+- Explicit variable declarations: `const userId = user.id;`
+- Array method patterns: `arrayMap`, `arrayFilter`, `arrayForEach`, `arrayRepeat`
+- Predicate patterns: `equalPredicate`, `conditionalPredicate`, `errorPredicate`
+- Clear if/else chains for conditional logic
+- Separate statements for complex operations
 
 ```typescript
 /**
@@ -452,125 +750,9 @@ endpoint: {
 - **Non-null**: When API returns data needed for subsequent operations
 - **Null**: When API returns void or response not needed for workflow
 
-### 4.3. Draft Guidelines Reference Patterns
+### 4.3. Expression Construction Patterns
 
-Use these exact patterns from the draft guideline:
-
-#### API Operation Pattern:
-```typescript
-const responseVariable = await apiOperate(
-  { 
-    method: "post", 
-    path: "/customers/{customerId}/orders", 
-  },
-  {
-    customerId: customer.id,
-    body: {
-      items: selectedProducts,
-      paymentMethod: "credit_card",
-      shippingAddress: customer.address
-    },
-  },
-);
-```
-
-#### Array Iteration Patterns:
-```typescript
-// Array mapping
-const productIds = await arrayMap(products, async (product, index, array) => {
-  return product.id;
-});
-
-// Array filtering
-const activeProducts = await arrayFilter(products, async (product, index, array) => {
-  return product.status === "active";
-});
-
-// Array iteration
-await arrayForEach(orders, async (order, index, array) => {
-  // Process each order
-  console.log(`Processing order ${order.id}`);
-});
-
-// Array generation
-const testData = await arrayRepeat(5, async (index) => {
-  return {
-    name: stringRandom({ minLength: 5, maxLength: 20 }),
-    price: numberRandom({ minimum: 10, maximum: 1000 })
-  };
-});
-```
-
-#### Validation Predicate Patterns:
-```typescript
-// Equality validation
-equalPredicate("Customer name should match input", "John Doe", customer.name);
-
-// Inequality validation
-notEqualPredicate("New order ID should differ from previous", previousOrderId, newOrder.id);
-
-// Conditional validation
-conditionalPredicate("Premium customer should have discount", customer.tier === "premium" && order.discount > 0);
-
-// Error validation
-errorPredicate("Should reject invalid email", async () => {
-  await apiOperate({ method: "post", path: "/users" }, {
-    body: { email: "invalid-email", name: "Test User" }
-  });
-});
-```
-
-#### Random Data Generation Patterns:
-```typescript
-// Integer with constraints
-const quantity = integerRandom({ minimum: 1, maximum: 10, multipleOf: 1 });
-
-// Decimal numbers
-const price = numberRandom({ minimum: 0.01, maximum: 999.99, multipleOf: 0.01 });
-
-// String with length constraints
-const productName = stringRandom({ minLength: 5, maxLength: 50 });
-
-// Pattern-based strings
-const productSku = patternRandom("[A-Z]{3}-[0-9]{6}");
-
-// Format-based data
-const userEmail = formatRandom("email");
-const createdAt = formatRandom("date-time");
-const userId = formatRandom("uuid");
-
-// Domain-specific data
-const customerName = keywordRandom("name");
-const phoneNumber = keywordRandom("mobile");
-const description = keywordRandom("paragraph");
-
-// Boolean with probability
-const isPremium = booleanRandom(0.3); // 30% chance of premium
-
-// Random selection
-const selectedCategory = pickRandom(["electronics", "clothing", "books", "toys"]);
-
-// Random sampling
-const featuredProducts = sampleRandom(allProducts, 3);
-```
-
-#### Data Access Patterns:
-```typescript
-// Property access
-const customerId = customer.id;
-const orderTotal = order.summary.total;
-
-// Optional chaining
-const discount = customer.preferences?.notifications?.email;
-
-// Array element access
-const firstItem = order.items[0];
-const lastItem = order.items[order.items.length - 1];
-```
-
-### 4.4. Expression Construction Patterns
-
-#### 4.4.1. Literal Values
+#### 4.3.1. Literal Values
 Use business-appropriate literal values:
 ```typescript
 // String literals for business data
@@ -592,7 +774,7 @@ Use business-appropriate literal values:
 }
 ```
 
-#### 4.4.2. Random Data Generation
+#### 4.3.2. Random Data Generation
 Use appropriate random generators:
 ```typescript
 // Format-based for standard formats
@@ -616,7 +798,7 @@ Use appropriate random generators:
 }
 ```
 
-#### 4.4.3. Data Access Patterns
+#### 4.3.3. Data Access Patterns
 ```typescript
 // Property access for captured data
 {
@@ -635,9 +817,9 @@ Use appropriate random generators:
 }
 ```
 
-### 4.5. Validation Predicate Construction
+### 4.4. Validation Predicate Construction
 
-#### 4.5.1. Equality Validation
+#### 4.4.1. Equality Validation
 ```typescript
 {
   type: "equalPredicate",
@@ -652,7 +834,7 @@ Use appropriate random generators:
 }
 ```
 
-#### 4.5.2. Conditional Validation
+#### 4.4.2. Conditional Validation
 ```typescript
 {
   type: "conditionalPredicate",
@@ -671,7 +853,7 @@ Use appropriate random generators:
 }
 ```
 
-#### 4.5.3. Error Testing
+#### 4.4.3. Error Testing
 ```typescript
 {
   type: "errorPredicate",
@@ -767,5 +949,6 @@ Before generating AST:
 - [ ] Authentication and session management handled properly
 - [ ] Error scenarios test realistic business constraints
 - [ ] **NO raw JSON values used in expression fields**
+- [ ] **All unsupported TypeScript features converted to AST equivalents**
 
 Your goal is to create AST structures that generate robust, comprehensive E2E tests representing complete business workflows with proper data flow, realistic business scenarios, and thorough validation coverage following the exact patterns provided in the draft guidelines.

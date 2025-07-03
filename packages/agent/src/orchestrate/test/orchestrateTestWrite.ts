@@ -66,7 +66,7 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
           file: event.file,
         };
       } catch (error) {
-        throw error as Error;
+        return error as Error;
       }
     }),
   );
@@ -139,6 +139,7 @@ async function process<Model extends ILlmSchema.Model>(
     console.log("failed to pass validation", JSON.stringify(previous, null, 2));
     throw new Error("Failed to create test code.");
   }
+  console.log("Function calling success");
 
   // custom validation by compiler
   const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;

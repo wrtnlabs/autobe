@@ -107,6 +107,13 @@ export namespace AutoBeTest {
      * The draft should be complete, executable TypeScript code that represents
      * the full test function implementation. This code will then be analyzed
      * and converted into the corresponding AST statements structure.
+     *
+     * **⚠️ CRITICAL: Avoid TypeScript features that complicate AST conversion!
+     * ⚠️** **❌ AVOID**: Template literals, destructuring, for/while loops,
+     * switch statements, try/catch blocks, spread operators, arrow functions
+     * without blocks **✅ USE**: Simple property access, explicit variables,
+     * array methods (arrayMap, arrayForEach), predicate functions, clear
+     * if/else chains
      */
     draft: string;
 
@@ -122,6 +129,15 @@ export namespace AutoBeTest {
      * draft TypeScript code into structured AST representations, ensuring that
      * the implementation follows the predetermined approach and creates a
      * complete data flow chain representing the business scenario.
+     *
+     * **⚠️ CRITICAL: Convert unsupported TypeScript features to AutoBeTest AST
+     * equivalents! ⚠️**
+     *
+     * - Template literals → String concatenation with IBinaryExpression
+     * - Destructuring → Separate IPropertyAccessExpression statements
+     * - Loops → IArrayForEachExpression/IArrayMapExpression
+     * - Switch statements → Nested IIfStatement chains
+     * - Try/catch → IErrorPredicate/IHttpErrorPredicate
      *
      * AI function calling strategy: Build statements by parsing the draft code
      * and converting each logical operation into appropriate AST statement
