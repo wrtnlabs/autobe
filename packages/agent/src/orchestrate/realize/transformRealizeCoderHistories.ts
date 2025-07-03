@@ -2,9 +2,11 @@ import { IAgenticaHistoryJson } from "@agentica/core";
 import { v4 } from "uuid";
 
 import { AutoBeState } from "../../context/AutoBeState";
+import { RealizePlannerOutput } from "./orchestrateRealizePlanner";
 
-export const transformTestScenarioHistories = (
+export const transformRealizeCoderHistories = (
   state: AutoBeState,
+  props: RealizePlannerOutput,
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
@@ -95,7 +97,12 @@ export const transformTestScenarioHistories = (
       id: v4(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
-      text: ["write code by following files."].join("\n"),
+      text: [
+        "write code by following information of operation.",
+        "```json",
+        JSON.stringify(props),
+        "```",
+      ].join("\n"),
     },
   ];
 };

@@ -9,6 +9,7 @@ import { enforceToolCall } from "../../utils/enforceToolCall";
 import { FAILED } from "./orchestrateRealize";
 import { RealizePlannerOutput } from "./orchestrateRealizePlanner";
 import { IAutoBeRealizeCorderApplication } from "./structures/IAutoBeRealizeCorderApplication";
+import { transformRealizeCoderHistories } from "./transformRealizeCoderHistories";
 
 /**
  * Generates a TypeScript function implementation based on the given plan.
@@ -33,7 +34,6 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
   props: RealizePlannerOutput,
 ): Promise<IAutoBeRealizeCorderApplication.RealizeCoderOutput | FAILED> => {
   ctx;
-  props;
 
   const pointer: IPointer<Pick<
     IAutoBeRealizeCorderApplication.RealizeCoderOutput,
@@ -59,7 +59,7 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
         describe: null,
       },
     },
-    histories: [],
+    histories: transformRealizeCoderHistories(ctx.state(), props),
   });
   enforceToolCall(agent);
 
