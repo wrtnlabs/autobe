@@ -78,7 +78,9 @@ export const orchestrateTest =
       id: v4(),
       completed_at: new Date().toISOString(),
       created_at: start.toISOString(),
-      files: files.filter((f) => f.location.startsWith("test/features/")),
+      files: files.filter(
+        (f) => f.scenario && f.location.startsWith("test/features/"),
+      ),
       compiled,
       reason: "Step to the test generation referencing the interface",
       step: ctx.state().interface?.step ?? 0,
@@ -88,7 +90,7 @@ export const orchestrateTest =
       created_at: start.toISOString(),
       files: Object.fromEntries(
         files
-          .filter((f) => f.location.startsWith("test/features/"))
+          .filter((f) => f.scenario && f.location.startsWith("test/features/"))
           .map((f) => [f.location, f.content]),
       ),
       compiled,
