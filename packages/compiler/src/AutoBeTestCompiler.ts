@@ -79,7 +79,7 @@ export class AutoBeTestCompiler implements IAutoBeTestCompiler {
       function: props.function,
       document: props.document,
       endpoints: endpoints,
-      errors: [],
+      errors,
     });
     return errors.length !== 0 ? errors : null;
   }
