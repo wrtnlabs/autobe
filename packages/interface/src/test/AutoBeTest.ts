@@ -509,7 +509,7 @@ export namespace AutoBeTest {
      * Variable naming should follow business domain conventions (e.g.,
      * "customer", "order", "product") rather than technical naming.
      */
-    variableName?: (string & tags.Pattern<"^[a-z][a-zA-Z0-9]*$">) | null;
+    variableName?: (string & tags.Pattern<"^[a-zA-Z][a-zA-Z0-9]*$">) | null;
   }
 
   /**
@@ -687,7 +687,7 @@ export namespace AutoBeTest {
      * AI naming strategy: Use business entity names that clearly indicate what
      * the variable represents in the test scenario.
      */
-    name: string & tags.Pattern<"^[a-z][a-zA-Z0-9]*$"> & tags.MinLength<1>;
+    name: string & tags.Pattern<"^[a-zA-Z][a-zA-Z0-9]*$"> & tags.MinLength<1>;
 
     /**
      * Complete type schema definition from OpenAPI specifications.
@@ -1197,7 +1197,7 @@ export namespace AutoBeTest {
      * AI naming consistency: Must match exactly with variable names from
      * previous IApiOperateStatement.variableName or IVariableDeclaration.name.
      */
-    text: string & tags.Pattern<"^[a-z][a-zA-Z0-9]*$">;
+    text: string & tags.Pattern<"^[a-zA-Z][a-zA-Z0-9]*$">;
   }
 
   /**
@@ -2370,7 +2370,7 @@ export namespace AutoBeTest {
      *
      * - "SKU-[0-9]{6}" for product SKUs in business systems
      * - "[A-Z]{3}-[0-9]{4}" for order codes in API operations
-     * - "[a-z]{5,10}" for username patterns with length constraints
+     * - "[a-zA-Z]{5,10}" for username patterns with length constraints
      * - "[A-Z]{2}[0-9]{8}" for business reference numbers
      *
      * AI pattern creation: Ensure patterns generate valid data that passes
