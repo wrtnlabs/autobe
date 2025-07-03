@@ -28,7 +28,7 @@ export namespace AutoBeTestLiteralProgrammer {
     expr: AutoBeTest.IStringLiteral,
   ): ts.StringLiteral => ts.factory.createStringLiteral(expr.value);
 
-  export const arrayLiteral = (
+  export const arrayLiteralExpression = (
     ctx: IAutoBeTestProgrammerContext,
     expr: AutoBeTest.IArrayLiteralExpression,
   ): ts.ArrayLiteralExpression =>
@@ -37,7 +37,7 @@ export namespace AutoBeTestLiteralProgrammer {
       true,
     );
 
-  export const objectLiteral = (
+  export const objectLiteralExpression = (
     ctx: IAutoBeTestProgrammerContext,
     expr: AutoBeTest.IObjectLiteralExpression,
   ): ts.ObjectLiteralExpression =>

@@ -39,7 +39,7 @@ export const test_compiler_test_write_random = async (): Promise<void> => {
     {
       type: "pickRandom",
       expression: {
-        type: "arrayLiteral",
+        type: "arrayLiteralExpression",
         elements: [1, 2, 3, 4, 5].map((value) => ({
           type: "numericLiteral",
           value: value,
@@ -49,13 +49,16 @@ export const test_compiler_test_write_random = async (): Promise<void> => {
     {
       type: "sampleRandom",
       expression: {
-        type: "arrayLiteral",
+        type: "arrayLiteralExpression",
         elements: [1, 2, 3, 4, 5].map((value) => ({
           type: "numericLiteral",
           value: value,
         })),
       },
-      count: 2,
+      length: {
+        type: "numericLiteral",
+        value: 2,
+      },
     },
     ...typia.misc.literals<AutoBeTest.IKeywordRandom["keyword"]>().map(
       (keyword) =>

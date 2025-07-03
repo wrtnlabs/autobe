@@ -42,7 +42,7 @@ export namespace AutoBeTestRandomProgrammer {
       ),
       arguments: [
         writeTestExpression(ctx, expr.expression),
-        ts.factory.createNumericLiteral(expr.count),
+        writeTestExpression(ctx, expr.length),
       ],
     });
 
