@@ -60,4 +60,13 @@ export interface IAutoBeConfig {
    * @default System timezone or "UTC" if unavailable
    */
   timezone?: string;
+
+  /**
+   * Backoff strategy for retrying failed operations.
+   *
+   * Defines the logic for retrying failed operations when the agent encounters
+   * errors. This includes retrying function calls, API requests, and other
+   * operations that may fail due to temporary issues.
+   */
+  backoffStrategy?: (props: { count: number; error: unknown }) => number;
 }

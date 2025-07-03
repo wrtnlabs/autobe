@@ -6,7 +6,6 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { randomBackoffRetry } from "../../utils/backoffRetry";
 import { enforceToolCall } from "../../utils/enforceToolCall";
 import { compileTestScenario } from "./compile/compileTestScenario";
 import { complementTestWrite } from "./compile/complementTestWrite";
@@ -99,12 +98,11 @@ async function process<Model extends ILlmSchema.Model>(
   });
   enforceToolCall(agentica);
 
-  await randomBackoffRetry(async () => {
-    await agentica.conversate("Create e2e test functions.");
-  }).finally(() => {
+  await agentica.conversate("Create e2e test functions.").finally(() => {
     const tokenUsage = agentica.getTokenUsage();
     ctx.usage().record(tokenUsage, ["test"]);
   });
+
   if (pointer.value === null) throw new Error("Failed to create test code.");
 
   pointer.value.content = complementTestWrite({

@@ -5,6 +5,10 @@ settings:
   excludeLinksFromLockfile: false
 
 catalogs:
+  agentica:
+    '@agentica/core':
+      specifier: ^0.29.2
+      version: 0.29.2
   libs:
     openai:
       specifier: ^5.2.0
@@ -22,6 +26,18 @@ catalogs:
     '@samchon/openapi':
       specifier: ^4.3.3
       version: 4.3.3
+    embed-prisma:
+      specifier: ^1.1.0
+      version: 1.1.0
+    embed-typescript:
+      specifier: ^1.0.1
+      version: 1.0.1
+    prisma-markdown:
+      specifier: ^3.0.0
+      version: 3.0.1
+    tgrid:
+      specifier: ^1.1.0
+      version: 1.1.0
     tstl:
       specifier: ^3.0.0
       version: 3.0.0
@@ -137,7 +153,7 @@ importers:
     dependencies:
       '@agentica/core':
         specifier: catalog:agentica
-        version: 0.29.0(@samchon/openapi@4.3.3)(openai@5.2.0(zod@3.25.57))(typia@9.3.1(@samchon/openapi@4.3.3)(typescript@5.8.3))
+        version: 0.29.2(@samchon/openapi@4.3.3)(openai@5.2.0(zod@3.25.57))(typia@9.3.1(@samchon/openapi@4.3.3)(typescript@5.8.3))
       '@autobe/interface':
         specifier: workspace:^
         version: link:../interface
@@ -548,8 +564,8 @@ importers:
 
 packages:
 
-  '@agentica/core@0.29.0':
-    resolution: {integrity: sha512-1PPP4rKJRyjmes1Ld6rE5Qcr27K8jrWnqGkzr7/ewlofn6yWuJCa1xFW2m4wwgC4eAWVU3Gatzxh6aymNgWidQ==}
+  '@agentica/core@0.29.2':
+    resolution: {integrity: sha512-FgGyQEQoFB4SSDscZS6EmpmnjsPyevXstgQKlXB6sZxk9Cw3MCX9yw/XEF5TTGIB3UtOO36tePTkLJ/3dEpdvg==}
     peerDependencies:
       '@samchon/openapi': ^4.3.3
       openai: ^5.2.0
@@ -4863,7 +4879,7 @@ packages:
 
 snapshots:
 
-  '@agentica/core@0.29.0(@samchon/openapi@4.3.3)(openai@5.2.0(zod@3.25.57))(typia@9.3.1(@samchon/openapi@4.3.3)(typescript@5.8.3))':
+  '@agentica/core@0.29.2(@samchon/openapi@4.3.3)(openai@5.2.0(zod@3.25.57))(typia@9.3.1(@samchon/openapi@4.3.3)(typescript@5.8.3))':
     dependencies:
       '@samchon/openapi': 4.3.3
       openai: 5.2.0(zod@3.25.57)
