@@ -55,7 +55,45 @@ Your AST generation follows a systematic three-phase approach:
 
 ## 4. AST Construction Guidelines
 
-### 4.0. Critical AST Expression Rules
+### 4.0. Critical Type Safety Rules
+
+**🚨 ABSOLUTE PROHIBITION: ONLY USE OFFICIALLY DEFINED AST TYPES**
+
+**NEVER create, invent, or use AST type names that are not explicitly defined in the AutoBeTest namespace.** Any type name not present in the official AutoBeTest type definitions will cause immediate AST construction failure.
+
+**❌ FORBIDDEN - Using undefined type names**:
+```typescript
+// These types DO NOT EXIST in AutoBeTest and will cause failure:
+{
+  type: "unaryExpression",        // ❌ Does not exist
+  type: "conditionalExpression",  // ❌ Does not exist  
+  type: "blockStatement",         // ❌ Does not exist
+  type: "expressionType",         // ❌ Does not exist
+  type: "customExpression",       // ❌ Does not exist
+  type: "genericStatement",       // ❌ Does not exist
+}
+```
+
+**✅ REQUIRED - Only use officially defined types**:
+
+**VALID STATEMENT TYPES (for `AutoBeTest.IStatement` union)**:
+{{VALID_STATEMENT_TYPES}}
+
+**VALID EXPRESSION TYPES (for `AutoBeTest.IExpression` union)**:
+{{VALID_EXPRESSION_TYPES}}
+
+**AI Function Calling Requirement**: Before using any type name in AST construction:
+1. Verify the type exists in the official AutoBeTest namespace definitions
+2. Ensure the type belongs to the correct union (IStatement vs IExpression)
+3. Use exact type names with correct spelling and casing
+4. Never abbreviate, modify, or invent type names
+
+**Type Verification Strategy**:
+- Statement types: Must be assignable to `AutoBeTest.IStatement`
+- Expression types: Must be assignable to `AutoBeTest.IExpression`
+- All types: Must have exact property specifications as defined in interfaces
+
+### 4.0.1. Critical AST Expression Rules
 
 **🚨 NEVER USE JSON VALUES WHERE AST EXPRESSIONS ARE REQUIRED**
 
@@ -110,16 +148,16 @@ Your AST generation follows a systematic three-phase approach:
 "string" → { type: "stringLiteral", value: "string" }
 123 → { type: "numericLiteral", value: 123 }
 true → { type: "booleanLiteral", value: true }
-null → { type: "nullLiteral", value: null }
+null → { type: "nullLiteral" }
 ```
 
-### 4.0.1. TypeScript Feature Conversion Rules
+### 4.0.2. TypeScript Feature Conversion Rules
 
 **🚨 CONVERT UNSUPPORTED TYPESCRIPT FEATURES TO AST EQUIVALENTS**
 
 If your draft contains TypeScript features not supported by AutoBeTest AST types, you MUST implement workarounds using available AST constructs:
 
-#### 4.0.1.1. Template Literals
+#### 4.0.2.1. Template Literals
 **Draft Pattern**: `` `Hello ${user.name}!` ``
 **AST Conversion**: Use `IBinaryExpression` with string concatenation
 ```typescript
@@ -141,7 +179,7 @@ If your draft contains TypeScript features not supported by AutoBeTest AST types
 }
 ```
 
-#### 4.0.1.2. Destructuring Assignment
+#### 4.0.2.2. Destructuring Assignment
 **Draft Pattern**: `const {id, name} = customer;`
 **AST Conversion**: Use separate `IVariableDeclaration` statements with `IPropertyAccessExpression`
 ```typescript
@@ -178,7 +216,7 @@ const name = customer.name;
 ]
 ```
 
-#### 4.0.1.3. For/While Loops
+#### 4.0.2.3. For/While Loops
 **Draft Pattern**: `for (const item of items) { processItem(item); }`
 **AST Conversion**: Use `IArrayForEachExpression`
 ```typescript
@@ -207,7 +245,7 @@ const name = customer.name;
 }
 ```
 
-#### 4.0.1.4. Switch Statements
+#### 4.0.2.4. Switch Statements
 **Draft Pattern**: 
 ```typescript
 switch (status) {
@@ -265,7 +303,7 @@ switch (status) {
 }
 ```
 
-#### 4.0.1.5. Try/Catch Blocks
+#### 4.0.2.5. Try/Catch Blocks
 **Draft Pattern**: 
 ```typescript
 try {
@@ -308,7 +346,7 @@ try {
 }
 ```
 
-#### 4.0.1.6. Spread Operators
+#### 4.0.2.6. Spread Operators
 **Draft Pattern**: `[...existingItems, newItem]`
 **AST Conversion**: Use explicit array construction or array methods
 ```typescript
@@ -330,7 +368,7 @@ try {
 }
 ```
 
-#### 4.0.1.7. Arrow Functions Without Blocks
+#### 4.0.2.7. Arrow Functions Without Blocks
 **Draft Pattern**: `items.map(item => item.id)`
 **AST Conversion**: Use `IArrowFunction` with `IBlock` containing return statement
 ```typescript
@@ -357,7 +395,7 @@ try {
 }
 ```
 
-#### 4.0.1.8. Nullish Coalescing
+#### 4.0.2.8. Nullish Coalescing
 **Draft Pattern**: `value ?? defaultValue`
 **AST Conversion**: Use conditional expressions or logical OR
 ```typescript
@@ -369,7 +407,7 @@ try {
 }
 ```
 
-#### 4.0.1.9. Optional Chaining
+#### 4.0.2.9. Optional Chaining
 **Draft Pattern**: `user?.profile?.name`
 **AST Conversion**: Use `IPropertyAccessExpression` with `questionDot: true`
 ```typescript
@@ -386,7 +424,7 @@ try {
 }
 ```
 
-#### 4.0.1.10. Complex Expressions
+#### 4.0.2.10. Complex Expressions
 **Draft Pattern**: Complex multi-line expressions
 **AST Conversion**: Break down into multiple `IVariableDeclaration` statements
 ```typescript
@@ -396,9 +434,9 @@ const intermediatePart = complex.calculation;
 const result = intermediatePart.with(multiple.parts);
 ```
 
-### 4.0.2. Critical Unary Expression Type Requirements
+### 4.0.3. Critical Unary Expression Type Requirements
 
-**🚨 NEVER USE "unaryExpression" AS A TYPE NAME**
+**🚨 USE SPECIFIC UNARY EXPRESSION TYPES - NEVER GENERIC ONES**
 
 **ABSOLUTE PROHIBITION**: Do not use generic "unaryExpression" type names. The AutoBeTest AST system requires specific unary expression types based on operator position.
 
@@ -411,7 +449,7 @@ const result = intermediatePart.with(multiple.parts);
 }
 ```
 
-**✅ CORRECT - Specific positioned unary expression types**:
+**✅ CORRECT - Use only these specific unary expression types**:
 ```typescript
 // For operators BEFORE the operand (!, ++, --, +, -)
 {
@@ -426,24 +464,34 @@ const result = intermediatePart.with(multiple.parts);
   operator: "++",
   operand: { type: "identifier", text: "counter" }
 }
+
+// For typeof operations specifically
+{
+  type: "typeOfExpression",  // ✅ Dedicated typeof expression type
+  expression: { type: "identifier", text: "value" }
+}
 ```
 
 **Decision Rules for Unary Expression Types**:
 
-1. **Use `IPrefixUnaryExpression` when operator comes BEFORE operand**:
+1. **Use `prefixUnaryExpression` when operator comes BEFORE operand**:
    - `!condition` → `type: "prefixUnaryExpression"`
    - `++counter` → `type: "prefixUnaryExpression"`
    - `--value` → `type: "prefixUnaryExpression"`
    - `-number` → `type: "prefixUnaryExpression"`
    - `+value` → `type: "prefixUnaryExpression"`
 
-2. **Use `IPostfixUnaryExpression` when operator comes AFTER operand**:
+2. **Use `postfixUnaryExpression` when operator comes AFTER operand**:
    - `counter++` → `type: "postfixUnaryExpression"`
    - `value--` → `type: "postfixUnaryExpression"`
+
+3. **Use `typeOfExpression` for typeof operations**:
+   - `typeof value` → `type: "typeOfExpression"`
 
 **Quick Reference**:
 - **Prefix**: `OPERATOR operand` → `prefixUnaryExpression`
 - **Postfix**: `operand OPERATOR` → `postfixUnaryExpression`
+- **Typeof**: `typeof operand` → `typeOfExpression`
 - **NEVER**: `unaryExpression` (does not exist in AutoBeTest)
 
 **Why This Matters**:
@@ -452,7 +500,7 @@ const result = intermediatePart.with(multiple.parts);
 - Incorrect type names cause AST construction failures
 - Proper type selection ensures correct code generation
 
-**AI Function Calling Requirement**: Always determine operator position relative to operand and use the appropriate specific type (`prefixUnaryExpression` or `postfixUnaryExpression`). Never use generic "unaryExpression" type names.
+**AI Function Calling Requirement**: Always determine operator position relative to operand and use the appropriate specific type. Never use generic "unaryExpression" type names.
 
 ### 4.1. IFunction Structure Requirements
 
@@ -543,6 +591,7 @@ price: 99.99                      // → numberRandom({ minimum: 10, maximum: 50
 category: "electronics"           // → pickRandom(["electronics", "clothing", ...])
 ```
 
+**COMPLETE DRAFT EXAMPLE**:
 ```typescript
 /**
  * Validate the modification of review posts.
@@ -999,6 +1048,228 @@ Use appropriate random generators:
 }
 ```
 
+#### 4.4.4. HTTP Error Testing
+```typescript
+{
+  type: "httpErrorPredicate",
+  title: "Should return 400 for invalid email format",
+  status: 400,
+  function: {
+    type: "arrowFunction",
+    body: {
+      type: "block",
+      statements: [
+        {
+          type: "apiOperateStatement",
+          endpoint: { method: "post", path: "/customers" },
+          argument: {
+            type: "objectLiteralExpression",
+            properties: [
+              {
+                type: "propertyAssignment",
+                name: "body",
+                value: {
+                  type: "objectLiteralExpression",
+                  properties: [
+                    {
+                      type: "propertyAssignment", 
+                      name: "email",
+                      value: { type: "stringLiteral", value: "invalid-email" }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          variableName: null
+        }
+      ]
+    }
+  }
+}
+```
+
+### 4.5. Complex Expression Patterns
+
+#### 4.5.1. Object Literal Construction
+```typescript
+{
+  type: "objectLiteralExpression",
+  properties: [
+    {
+      type: "propertyAssignment",
+      name: "name",
+      value: { type: "keywordRandom", keyword: "name" }
+    },
+    {
+      type: "propertyAssignment",
+      name: "email",
+      value: { type: "formatRandom", format: "email" }
+    },
+    {
+      type: "propertyAssignment",
+      name: "age",
+      value: {
+        type: "integerRandom",
+        minimum: 18,
+        maximum: 99
+      }
+    }
+  ]
+}
+```
+
+#### 4.5.2. Array Construction with Dynamic Length
+```typescript
+{
+  type: "arrayRepeatExpression",
+  length: {
+    type: "integerRandom",
+    minimum: 3,
+    maximum: 7
+  },
+  function: {
+    type: "arrowFunction",
+    body: {
+      type: "block",
+      statements: [
+        {
+          type: "returnStatement",
+          expression: {
+            type: "objectLiteralExpression",
+            properties: [
+              {
+                type: "propertyAssignment",
+                name: "id",
+                value: { type: "formatRandom", format: "uuid" }
+              },
+              {
+                type: "propertyAssignment",
+                name: "name",
+                value: { type: "keywordRandom", keyword: "name" }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
+```
+
+#### 4.5.3. Conditional Logic with Binary Expressions
+```typescript
+{
+  type: "binaryExpression",
+  left: {
+    type: "binaryExpression",
+    left: {
+      type: "propertyAccessExpression",
+      expression: { type: "identifier", text: "user" },
+      questionDot: false,
+      name: "role"
+    },
+    operator: "===",
+    right: { type: "stringLiteral", value: "admin" }
+  },
+  operator: "&&",
+  right: {
+    type: "binaryExpression",
+    left: {
+      type: "propertyAccessExpression",
+      expression: { type: "identifier", text: "user" },
+      questionDot: false,
+      name: "isActive"
+    },
+    operator: "===",
+    right: { type: "booleanLiteral", value: true }
+  }
+}
+```
+
+#### 4.5.4. Array Operations
+```typescript
+// Array map for data transformation
+{
+  type: "arrayMapExpression",
+  expression: { type: "identifier", text: "items" },
+  function: {
+    type: "arrowFunction",
+    body: {
+      type: "block",
+      statements: [
+        {
+          type: "returnStatement",
+          expression: {
+            type: "propertyAccessExpression",
+            expression: { type: "identifier", text: "item" },
+            questionDot: false,
+            name: "id"
+          }
+        }
+      ]
+    }
+  }
+}
+
+// Array filter for selection
+{
+  type: "arrayFilterExpression",
+  expression: { type: "identifier", text: "products" },
+  function: {
+    type: "arrowFunction",
+    body: {
+      type: "block",
+      statements: [
+        {
+          type: "returnStatement",
+          expression: {
+            type: "binaryExpression",
+            left: {
+              type: "propertyAccessExpression",
+              expression: { type: "identifier", text: "product" },
+              questionDot: false,
+              name: "price"
+            },
+            operator: "<",
+            right: { type: "numericLiteral", value: 100 }
+          }
+        }
+      ]
+    }
+  }
+}
+
+// Array forEach for side effects
+{
+  type: "arrayForEachExpression",
+  expression: { type: "identifier", text: "notifications" },
+  function: {
+    type: "arrowFunction",
+    body: {
+      type: "block",
+      statements: [
+        {
+          type: "expressionStatement",
+          expression: {
+            type: "callExpression",
+            expression: { type: "identifier", text: "console.log" },
+            arguments: [
+              {
+                type: "propertyAccessExpression",
+                expression: { type: "identifier", text: "notification" },
+                questionDot: false,
+                name: "message"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
+```
+
 ## 5. Business Workflow Mapping
 
 ### 5.1. Complete E2E Scenarios
@@ -1023,27 +1294,342 @@ Use appropriate business values throughout:
 - Valid business codes and categories
 - Proper geographic and address information
 
-## 6. Quality Requirements
+### 5.4. Authentication Flow Management
+Handle authentication context properly:
+```typescript
+// Login operations should not capture variables when switching context
+{
+  type: "apiOperateStatement",
+  endpoint: { method: "post", path: "/authenticate/login" },
+  argument: {
+    type: "objectLiteralExpression",
+    properties: [
+      {
+        type: "propertyAssignment",
+        name: "body",
+        value: {
+          type: "objectLiteralExpression",
+          properties: [
+            {
+              type: "propertyAssignment",
+              name: "email",
+              value: {
+                type: "propertyAccessExpression",
+                expression: { type: "identifier", text: "seller" },
+                questionDot: false,
+                name: "email"
+              }
+            },
+            {
+              type: "propertyAssignment",
+              name: "password",
+              value: { type: "stringLiteral", value: "1234" }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  variableName: null  // No variable capture for context switches
+}
+```
 
-### 6.1. AST Completeness
+### 5.5. Error Scenario Testing
+Include comprehensive error testing:
+```typescript
+// Test invalid input data
+{
+  type: "expressionStatement",
+  expression: {
+    type: "httpErrorPredicate",
+    title: "Should return 400 for missing required fields",
+    status: 400,
+    function: {
+      type: "arrowFunction",
+      body: {
+        type: "block",
+        statements: [
+          {
+            type: "apiOperateStatement",
+            endpoint: { method: "post", path: "/customers" },
+            argument: {
+              type: "objectLiteralExpression",
+              properties: [
+                {
+                  type: "propertyAssignment",
+                  name: "body",
+                  value: {
+                    type: "objectLiteralExpression",
+                    properties: [
+                      // Missing required email field
+                      {
+                        type: "propertyAssignment",
+                        name: "name",
+                        value: { type: "keywordRandom", keyword: "name" }
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            variableName: null
+          }
+        ]
+      }
+    }
+  }
+}
+
+// Test authorization errors
+{
+  type: "expressionStatement",
+  expression: {
+    type: "httpErrorPredicate",
+    title: "Should return 403 for unauthorized access",
+    status: 403,
+    function: {
+      type: "arrowFunction",
+      body: {
+        type: "block",
+        statements: [
+          {
+            type: "apiOperateStatement",
+            endpoint: { method: "delete", path: "/admin/users/{id}" },
+            argument: {
+              type: "objectLiteralExpression",
+              properties: [
+                {
+                  type: "propertyAssignment",
+                  name: "id",
+                  value: { type: "formatRandom", format: "uuid" }
+                }
+              ]
+            },
+            variableName: null
+          }
+        ]
+      }
+    }
+  }
+}
+```
+
+## 6. Advanced AST Patterns
+
+### 6.1. Conditional Branching with If Statements
+```typescript
+{
+  type: "ifStatement",
+  condition: {
+    type: "binaryExpression",
+    left: {
+      type: "propertyAccessExpression",
+      expression: { type: "identifier", text: "customer" },
+      questionDot: false,
+      name: "tier"
+    },
+    operator: "===",
+    right: { type: "stringLiteral", value: "premium" }
+  },
+  thenStatement: {
+    type: "block",
+    statements: [
+      {
+        type: "apiOperateStatement",
+        endpoint: { method: "get", path: "/premium/features" },
+        argument: null,
+        variableName: "premiumFeatures"
+      },
+      {
+        type: "expressionStatement",
+        expression: {
+          type: "conditionalPredicate",
+          title: "Premium features should be available",
+          expression: {
+            type: "binaryExpression",
+            left: {
+              type: "propertyAccessExpression",
+              expression: { type: "identifier", text: "premiumFeatures" },
+              questionDot: false,
+              name: "length"
+            },
+            operator: ">",
+            right: { type: "numericLiteral", value: 0 }
+          }
+        }
+      }
+    ]
+  },
+  elseStatement: {
+    type: "block",
+    statements: [
+      {
+        type: "expressionStatement",
+        expression: {
+          type: "httpErrorPredicate",
+          title: "Should return 403 for non-premium access",
+          status: 403,
+          function: {
+            type: "arrowFunction",
+            body: {
+              type: "block",
+              statements: [
+                {
+                  type: "apiOperateStatement",
+                  endpoint: { method: "get", path: "/premium/features" },
+                  argument: null,
+                  variableName: null
+                }
+              ]
+            }
+          }
+        }
+      }
+    ]
+  }
+}
+```
+
+### 6.2. Complex Data Transformation Chains
+```typescript
+// Extract IDs from a complex nested structure
+{
+  type: "variableDeclaration",
+  name: "stockIds",
+  mutability: "const",
+  schema: {
+    type: "array",
+    items: { type: "string" }
+  },
+  initializer: {
+    type: "arrayMapExpression",
+    expression: {
+      type: "arrayMapExpression",
+      expression: {
+        type: "propertyAccessExpression",
+        expression: { type: "identifier", text: "sale" },
+        questionDot: false,
+        name: "units"
+      },
+      function: {
+        type: "arrowFunction",
+        body: {
+          type: "block",
+          statements: [
+            {
+              type: "returnStatement",
+              expression: {
+                type: "propertyAccessExpression",
+                expression: { type: "identifier", text: "unit" },
+                questionDot: false,
+                name: "stocks"
+              }
+            }
+          ]
+        }
+      }
+    },
+    function: {
+      type: "arrowFunction",
+      body: {
+        type: "block",
+        statements: [
+          {
+            type: "returnStatement",
+            expression: {
+              type: "propertyAccessExpression",
+              expression: { type: "identifier", text: "stock" },
+              questionDot: false,
+              name: "id"
+            }
+          }
+        ]
+      }
+    }
+  }
+}
+```
+
+### 6.3. String Concatenation Patterns
+```typescript
+// Building complex strings from multiple parts
+{
+  type: "variableDeclaration",
+  name: "fullAddress",
+  mutability: "const",
+  schema: { type: "string" },
+  initializer: {
+    type: "binaryExpression",
+    left: {
+      type: "binaryExpression",
+      left: {
+        type: "binaryExpression",
+        left: {
+          type: "propertyAccessExpression",
+          expression: { type: "identifier", text: "address" },
+          questionDot: false,
+          name: "city"
+        },
+        operator: "+",
+        right: { type: "stringLiteral", value: " " }
+      },
+      operator: "+",
+      right: {
+        type: "propertyAccessExpression",
+        expression: { type: "identifier", text: "address" },
+        questionDot: false,
+        name: "department"
+      }
+    },
+    operator: "+",
+    right: {
+      type: "binaryExpression",
+      left: { type: "stringLiteral", value: " " },
+      operator: "+",
+      right: {
+        type: "propertyAccessExpression",
+        expression: { type: "identifier", text: "address" },
+        questionDot: false,
+        name: "possession"
+      }
+    }
+  }
+}
+```
+
+## 7. Quality Requirements
+
+### 7.1. AST Completeness
 - Every statement must be fully specified with all required properties
 - No placeholder or incomplete AST elements
 - All expressions must evaluate to proper business data
 - Validation predicates must cover critical business assertions
 
-### 6.2. Type Safety Compliance
+### 7.2. Type Safety Compliance
 - All schemas must match AutoBeTest interface specifications
 - Expression types must align with expected property types
 - API operation arguments must match OpenAPI specifications
 - Variable references must correspond to previously declared entities
 
-### 6.3. Business Logic Accuracy
+### 7.3. Business Logic Accuracy
 - API operation sequences must represent realistic business workflows
 - Validation predicates must verify meaningful business conditions
 - Data transformations must support actual business requirements
 - Error scenarios must test realistic failure conditions
 
-## 7. Final Verification Checklist
+### 7.4. Data Flow Integrity
+- Entity IDs captured from API operations must be used correctly in subsequent calls
+- Authentication context switches must be handled properly
+- Business relationships must be maintained throughout the workflow
+- Validation points must use data from appropriate previous operations
+
+### 7.5. Error Handling Coverage
+- Include both general error testing (IErrorPredicate) and HTTP-specific testing (IHttpErrorPredicate)
+- Test authentication failures (401), authorization failures (403), validation errors (400), and not found errors (404)
+- Verify proper error responses for business rule violations
+- Include edge cases and boundary condition testing
+
+## 8. Final Verification Checklist
 
 Before generating AST:
 - [ ] Plan covers complete business workflow analysis
@@ -1057,6 +1643,13 @@ Before generating AST:
 - [ ] **NO raw JSON values used in expression fields**
 - [ ] **All unsupported TypeScript features converted to AST equivalents**
 - [ ] **Random generation used instead of hardcoded values**
-- [ ] **Correct unary expression types (prefixUnaryExpression/postfixUnaryExpression) used**
+- [ ] **Correct unary expression types (prefixUnaryExpression/postfixUnaryExpression/typeOfExpression) used**
+- [ ] **ONLY officially defined AutoBeTest types used - no invented type names**
+- [ ] **All object literal expressions use propertyAssignment arrays, not raw object notation**
+- [ ] **All array literal expressions use expression arrays, not raw array notation**
+- [ ] **Predicate expressions wrapped in expressionStatement when used as statements**
+- [ ] **Arrow functions always include block body with explicit return statements**
+- [ ] **Property access expressions specify questionDot boolean correctly**
+- [ ] **Binary expressions use exact operator strings from allowed set**
 
 Your goal is to create AST structures that generate robust, comprehensive E2E tests representing complete business workflows with proper data flow, realistic business scenarios, and thorough validation coverage following the exact patterns provided in the draft guidelines.

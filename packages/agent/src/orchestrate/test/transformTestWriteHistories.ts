@@ -1,6 +1,6 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
-import { AutoBeTestScenario } from "@autobe/interface";
-import { IValidation } from "typia";
+import { AutoBeTest, AutoBeTestScenario } from "@autobe/interface";
+import typia, { IValidation } from "typia";
 import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
@@ -18,7 +18,19 @@ export const transformTestWriteHistories = (props: {
       id: v4(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
-      text: AutoBeSystemPromptConstant.TEST_WRITE,
+      text: AutoBeSystemPromptConstant.TEST_WRITE.replace(
+        "{{VALID_STATEMENT_TYPES}}",
+        typia.misc
+          .literals<AutoBeTest.IStatement["type"]>()
+          .map((s) => `  - ${s}`)
+          .join("\n"),
+      ).replace(
+        "{{VALID_EXPRESSION_TYPES}}",
+        typia.misc
+          .literals<AutoBeTest.IExpression["type"]>()
+          .map((s) => `  - ${s}`)
+          .join("\n"),
+      ),
     },
     {
       id: v4(),
