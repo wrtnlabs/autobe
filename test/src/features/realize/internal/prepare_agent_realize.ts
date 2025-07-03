@@ -6,7 +6,7 @@ import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
 import { TestHistory } from "../../../internal/TestHistory";
 
-export const prepare_agent_realize_planner = async (
+export const prepare_agent_realize = async (
   factory: TestFactory,
   project: "bbs-backend" | "shopping-backend",
 ) => {

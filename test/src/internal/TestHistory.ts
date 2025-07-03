@@ -37,6 +37,7 @@ export namespace TestHistory {
     type: "analyze" | "prisma" | "interface" | "test";
   }): Promise<AutoBeHistory[]> => {
     const location: string = `${TestGlobal.ROOT}/assets/histories/${props.project}.${props.type}.json`;
+    console.log(location);
     const content: string = await fs.promises.readFile(location, "utf8");
     const histories: AutoBeHistory[] = JSON.parse(content);
     return typia.assert(histories);

@@ -1,7 +1,7 @@
 import { ILlmSchema } from "@samchon/openapi";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { RealizeCoderOutput } from "./orchestrateRealizeCoder";
+import { IAutoBeRealizeCorderApplication } from "./structures/IAutoBeRealizeCorderApplication";
 
 /**
  * The result of integrating the generated code into the actual application
@@ -56,7 +56,7 @@ export const orchestrateRealizeIntegrator = async <
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
-  props: RealizeCoderOutput,
+  props: IAutoBeRealizeCorderApplication.RealizeCoderOutput,
 ): Promise<RealizeIntegratorOutput> => {
   props;
 
