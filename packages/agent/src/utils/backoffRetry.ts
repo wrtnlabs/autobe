@@ -1,4 +1,4 @@
-export function randomBackoffSterategy(props: {
+export function randomBackoffStrategy(props: {
   count: number;
   error: unknown;
 }): number {
