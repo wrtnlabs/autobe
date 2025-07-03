@@ -187,6 +187,7 @@ export namespace AutoBeTestExpressionValidator {
     path: string,
   ): void => {
     validateTestExpression(ctx, item.expression, `${path}.expression`);
+    validateTestExpression(ctx, item.length, `${path}.length`);
   };
 
   export const booleanRandom = (): void => {};
