@@ -1,34 +1,14 @@
-import { ILlmSchema } from "@samchon/openapi";
+import { IAgenticaController, MicroAgentica } from "@agentica/core";
+import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
+import { IPointer } from "tstl";
+import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
+import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { enforceToolCall } from "../../utils/enforceToolCall";
+import { FAILED } from "./orchestrateRealize";
 import { RealizePlannerOutput } from "./orchestrateRealizePlanner";
-
-/**
- * The result of the code generation step, representing a fully generated
- * TypeScript function.
- */
-export interface RealizeCoderOutput {
-  /**
-   * The name of the function to be generated.
-   *
-   * This name will be used as the function's identifier and as the export name
-   * in the provider file.
-   */
-  functionName: string;
-
-  /**
-   * The raw TypeScript code string implementing the function.
-   *
-   * - The implementation must be valid TypeScript code.
-   * - It should focus solely on the logic of the function.
-   * - Import statements do **not** need to be included. They will be
-   *   automatically inserted by the system.
-   * - Any unused imports will be automatically removed by eslint.
-   * - Type annotations (e.g. for parameters and return types) should be omitted
-   *   if they can be inferred.
-   */
-  implementationCode: string;
-}
+import { IAutoBeRealizeCorderApplication } from "./structures/IAutoBeRealizeCorderApplication";
 
 /**
  * Generates a TypeScript function implementation based on the given plan.
@@ -51,9 +31,85 @@ export interface RealizeCoderOutput {
 export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: RealizePlannerOutput,
-): Promise<RealizeCoderOutput> => {
+): Promise<IAutoBeRealizeCorderApplication.RealizeCoderOutput | FAILED> => {
   ctx;
   props;
 
-  return null!;
+  const pointer: IPointer<Pick<
+    IAutoBeRealizeCorderApplication.RealizeCoderOutput,
+    "implementationCode"
+  > | null> = {
+    value: null,
+  };
+
+  const controller = createApplication({
+    model: ctx.model,
+    build: (props) => {
+      pointer.value = props.result;
+    },
+  });
+
+  const agent = new MicroAgentica({
+    controllers: [controller],
+    model: ctx.model,
+    vendor: ctx.vendor,
+    config: {
+      ...ctx.config,
+      executor: {
+        describe: null,
+      },
+    },
+    histories: [],
+  });
+  enforceToolCall(agent);
+
+  await agent.conversate("Write code.");
+
+  if (pointer.value === null) {
+    return FAILED;
+  }
+
+  return { ...pointer.value, functionName: props.functionName };
+};
+
+function createApplication<Model extends ILlmSchema.Model>(props: {
+  model: Model;
+  build: (next: IAutoBeRealizeCorderApplication.IProps) => void;
+}): IAgenticaController.IClass<Model> {
+  assertSchemaModel(props.model);
+
+  const application: ILlmApplication<Model> = collection[
+    props.model
+  ] as unknown as ILlmApplication<Model>;
+
+  return {
+    protocol: "class",
+    name: "Write code",
+    application,
+    execute: {
+      programing: (next) => {
+        props.build(next);
+      },
+    } satisfies IAutoBeRealizeCorderApplication,
+  };
+}
+
+const claude = typia.llm.application<
+  IAutoBeRealizeCorderApplication,
+  "claude",
+  {
+    reference: true;
+  }
+>();
+const collection = {
+  chatgpt: typia.llm.application<
+    IAutoBeRealizeCorderApplication,
+    "chatgpt",
+    { reference: true }
+  >(),
+  claude,
+  llama: claude,
+  deepseek: claude,
+  "3.1": claude,
+  "3.0": typia.llm.application<IAutoBeRealizeCorderApplication, "3.0">(),
 };
