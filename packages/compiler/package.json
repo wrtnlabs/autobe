@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@autobe/interface": "workspace:^",
+    "@autobe/utils": "workspace:^",
     "@nestia/core": "catalog:samchon",
     "@nestia/migrate": "catalog:samchon",
     "@samchon/openapi": "catalog:samchon",

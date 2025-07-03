@@ -53,6 +53,8 @@ const POSTFIX_UNARY_OPERATORS = {
 
 const PREFIX_UNARY_OPERATORS = {
   ...POSTFIX_UNARY_OPERATORS,
+  "+": ts.SyntaxKind.PlusToken,
+  "-": ts.SyntaxKind.MinusToken,
   "!": ts.SyntaxKind.ExclamationToken,
 } as const;
 

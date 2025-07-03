@@ -29,6 +29,7 @@
   "dependencies": {
     "@agentica/core": "catalog:agentica",
     "@autobe/interface": "workspace:^",
+    "@autobe/utils": "workspace:^",
     "@rollup/plugin-json": "^6.1.0",
     "@prisma/internals": "^6.7.0",
     "@samchon/openapi": "catalog:samchon",

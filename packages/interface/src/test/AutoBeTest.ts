@@ -1273,7 +1273,7 @@ export namespace AutoBeTest {
      * - "++": Pre-increment (modify then use value)
      * - "--": Pre-decrement (modify then use value)
      */
-    operator: "!" | "++" | "--";
+    operator: "!" | "++" | "--" | "-" | "+";
 
     /**
      * The operand expression to which the operator is applied.
