@@ -20,12 +20,44 @@ export const orchestrateRealize =
   async (
     props: IAutoBeApplicationProps,
   ): Promise<AutoBeAssistantMessageHistory | AutoBeRealizeHistory> => {
-    props;
-
     const ops = ctx.state().interface?.document.operations;
     if (!ops) {
       throw new Error();
     }
+
+    const lockController = (() => {
+      const locks = new Map<string, Promise<any>>();
+
+      async function withLock<T>(
+        key: string,
+        fn: () => Promise<T>,
+      ): Promise<T> {
+        const prev = locks.get(key) ?? Promise.resolve();
+
+        let release: () => void;
+        const current = new Promise<void>((res) => {
+          release = res;
+        });
+
+        locks.set(
+          key,
+          prev.then(() => current),
+        );
+
+        try {
+          return await fn();
+        } finally {
+          release!();
+          if (locks.get(key) === current) {
+            locks.delete(key);
+          }
+        }
+      }
+
+      return {
+        withLock,
+      };
+    })();
 
     const codes: (RealizeValidatorOutput | FAILED)[] = await Promise.all(
       ops.map(async (op) =>
@@ -33,7 +65,8 @@ export const orchestrateRealize =
           op,
           (op) => orchestrateRealizePlanner(ctx, op),
           (p) => orchestrateRealizeCoder(ctx, p),
-          (c) => orchestrateRealizeIntegrator(ctx, c),
+          (c) =>
+            orchestrateRealizeIntegrator(ctx, c, op, lockController.withLock),
           (i) => orchestrateRealizeValidator(ctx, i),
         ),
       ),
