@@ -18,6 +18,7 @@
     "@autobe/compiler": "workspace:^",
     "@autobe/filesystem": "workspace:^",
     "@autobe/interface": "workspace:^",
+    "@autobe/utils": "workspace:^",
     "@nestia/core": "catalog:samchon",
     "@nestia/e2e": "catalog:samchon",
     "@nestia/migrate": "catalog:samchon",

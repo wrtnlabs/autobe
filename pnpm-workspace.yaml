@@ -7,8 +7,8 @@ packages:
   - website
 catalogs:
   agentica:
-    "@agentica/core": ^0.29.2
-    "@agentica/rpc": ^0.29.2
+    "@agentica/core": ^0.29.4
+    "@agentica/rpc": ^0.29.34
   samchon:
     "@nestia/benchmark": ^7.0.0
     "@nestia/core": ^7.0.0
@@ -17,7 +17,7 @@ catalogs:
     "@nestia/fetcher": ^7.0.0
     "@nestia/migrate": ^7.0.0
     "@nestia/sdk": ^7.0.0
-    "@samchon/openapi": ^4.3.3
+    "@samchon/openapi": ^4.4.0-dev.20250704-4
     embed-prisma: ^1.1.0
     embed-typescript: ^1.0.1
     prisma-markdown: ^3.0.0

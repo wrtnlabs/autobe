@@ -1,5 +1,6 @@
 import { AutoBeTest } from "@autobe/interface";
 import { NestiaMigrateSchemaProgrammer } from "@nestia/migrate/lib/programmers/NestiaMigrateSchemaProgrammer";
+import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
 import ts from "typescript";
 
 import { IAutoBeTestApiFunction } from "./IAutoBeTestApiFunction";
@@ -32,7 +33,9 @@ export namespace AutoBeTestStatementProgrammer {
     const typeNode: ts.TypeNode = NestiaMigrateSchemaProgrammer.write({
       components: ctx.document.components,
       importer: ctx.importer,
-      schema: stmt.schema,
+      schema: OpenApiV3_1Emender.convertSchema(ctx.document.components)(
+        stmt.schema,
+      ),
     });
     return ts.factory.createVariableStatement(
       undefined,
@@ -82,7 +85,7 @@ export namespace AutoBeTestStatementProgrammer {
   ): ts.Statement[] => {
     // find the function
     const func: IAutoBeTestApiFunction = ctx.endpoints.get(stmt.endpoint);
-    if (stmt.variableName !== null && func.operation.responseBody !== null)
+    if (!!stmt.variableName?.length && !!func.operation.responseBody)
       ctx.importer.dto(func.operation.responseBody.typeName);
 
     // make await function call expression
@@ -99,7 +102,7 @@ export namespace AutoBeTestStatementProgrammer {
 
     // the default statement with variable declaration?
     const output: ts.Statement[] = [
-      stmt.variableName !== null
+      !!stmt.variableName?.length
         ? ts.factory.createVariableStatement(
             undefined,
             ts.factory.createVariableDeclarationList(
@@ -107,7 +110,7 @@ export namespace AutoBeTestStatementProgrammer {
                 ts.factory.createVariableDeclaration(
                   stmt.variableName,
                   undefined,
-                  func.operation.responseBody !== null
+                  !!func.operation.responseBody
                     ? ts.factory.createTypeReferenceNode(
                         func.operation.responseBody.typeName,
                       )
@@ -124,7 +127,7 @@ export namespace AutoBeTestStatementProgrammer {
     ];
 
     // typia.assert for type guard
-    if (stmt.variableName !== null)
+    if (!!stmt.variableName?.length)
       output.push(
         ts.factory.createExpressionStatement(
           ts.factory.createCallExpression(

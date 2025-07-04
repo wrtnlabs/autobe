@@ -8,6 +8,8 @@ extend-ignore-re = [
 [default.extend-words]
 typia = "typia"
 criterias = "criterias"
+Jeongho = "Jeongho"
+Nam = "Nam"
 
 [files]
 extend-exclude = [

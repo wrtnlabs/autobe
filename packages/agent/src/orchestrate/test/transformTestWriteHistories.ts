@@ -1,5 +1,6 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
-import { AutoBeTestScenario } from "@autobe/interface";
+import { AutoBeTest, AutoBeTestScenario } from "@autobe/interface";
+import typia, { IValidation } from "typia";
 import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
@@ -8,6 +9,7 @@ import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioAr
 export const transformTestWriteHistories = (props: {
   scenario: AutoBeTestScenario;
   artifacts: IAutoBeTestScenarioArtifacts;
+  failure: IValidation.IFailure | null;
 }): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
@@ -16,19 +18,19 @@ export const transformTestWriteHistories = (props: {
       id: v4(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
-      text: AutoBeSystemPromptConstant.TEST_WRITE,
-    },
-    {
-      id: v4(),
-      created_at: new Date().toISOString(),
-      type: "systemMessage",
-      text: AutoBeSystemPromptConstant.TEST_VALIDATOR,
-    },
-    {
-      id: v4(),
-      created_at: new Date().toISOString(),
-      type: "systemMessage",
-      text: AutoBeSystemPromptConstant.TEST_TYPESCRIPT_SYNTAX,
+      text: AutoBeSystemPromptConstant.TEST_WRITE.replace(
+        "{{VALID_STATEMENT_TYPES}}",
+        typia.misc
+          .literals<AutoBeTest.IStatement["type"]>()
+          .map((s) => `  - ${s}`)
+          .join("\n"),
+      ).replace(
+        "{{VALID_EXPRESSION_TYPES}}",
+        typia.misc
+          .literals<AutoBeTest.IExpression["type"]>()
+          .map((s) => `  - ${s}`)
+          .join("\n"),
+      ),
     },
     {
       id: v4(),
@@ -39,27 +41,41 @@ export const transformTestWriteHistories = (props: {
         "",
         "Make e2e test functions based on the following information.",
         "",
-        "## Secnario Plan",
+        "## Scenario Plan",
         "```json",
         JSON.stringify(props.scenario),
         "```",
         "",
-        "## DTO Definitions",
+        "## OpenAPI Document",
         "```json",
-        JSON.stringify(props.artifacts.dto),
-        "```",
-        "",
-        "## API (SDK) Functions",
-        "```json",
-        JSON.stringify(props.artifacts.sdk),
-        "```",
-        "",
-        "## E2E Mockup Functions",
-        "```json",
-        JSON.stringify(props.artifacts.e2e),
+        JSON.stringify(props.artifacts.document),
         "```",
         "",
       ].join("\n"),
     },
+    ...(props.failure !== null
+      ? [
+          {
+            id: v4(),
+            created_at: new Date().toISOString(),
+            type: "assistantMessage",
+            text: [
+              "You have written a test function by AI function calling,",
+              "but the function calling generated argument could not pass",
+              "the validation rule",
+              "",
+              "Here is the validation error information. Please fix the error",
+              "when re-trying the AI functiopn calling.",
+              "",
+              "- `data`: Previous composed argument what you've written",
+              "- `errors`: Validation error information",
+              "",
+              "```json",
+              JSON.stringify(props.failure),
+              "```",
+            ].join("\n"),
+          } satisfies IAgenticaHistoryJson.IAssistantMessage,
+        ]
+      : []),
   ];
 };

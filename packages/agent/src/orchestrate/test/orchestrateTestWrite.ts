@@ -1,14 +1,19 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
-import { AutoBeTestScenario, AutoBeTestWriteEvent } from "@autobe/interface";
-import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
+import {
+  AutoBeOpenApi,
+  AutoBeTest,
+  AutoBeTestScenario,
+  AutoBeTestWriteEvent,
+} from "@autobe/interface";
+import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 
+import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { enforceToolCall } from "../../utils/enforceToolCall";
 import { compileTestScenario } from "./compile/compileTestScenario";
-import { complementTestWrite } from "./compile/complementTestWrite";
 import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
 import { IAutoBeTestWriteResult } from "./structures/IAutoBeTestWriteResult";
 import { transformTestWriteHistories } from "./transformTestWriteHistories";
@@ -16,11 +21,13 @@ import { transformTestWriteHistories } from "./transformTestWriteHistories";
 export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   scenarios: AutoBeTestScenario[],
+  life: number = 4,
 ): Promise<IAutoBeTestWriteResult[]> {
   const start: Date = new Date();
   let complete: number = 0;
 
-  const writes: IAutoBeTestWriteResult[] = await Promise.all(
+  console.log("Number of scenarios:", scenarios.length);
+  const writes: Array<IAutoBeTestWriteResult | null> = await Promise.all(
     /**
      * Generate test code for each scenario. Maps through plans array to create
      * individual test code implementations. Each scenario is processed to
@@ -31,17 +38,26 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
         ctx,
         scenario,
       );
-      const result: ICreateTestCodeProps = await process(
+      const result: ICreateTestCodeProps | null = await process(
         ctx,
         scenario,
         artifacts,
+        life,
+        null,
       );
+      if (result === null) return null;
+
       const event: AutoBeTestWriteEvent = {
         type: "testWrite",
         created_at: start.toISOString(),
         file: {
           location: `test/features/api/${result.domain}/${scenario.functionName}.ts`,
-          content: result.content,
+          function: result.function,
+          content: await ctx.compiler.test.write({
+            scenario,
+            document: ctx.state().interface!.document,
+            function: result.function,
+          }),
           scenario,
         },
         completed: ++complete,
@@ -55,7 +71,8 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
       };
     }),
   );
-  return writes;
+  console.log(ctx.usage().test.aggregate);
+  return writes.filter((w) => w !== null);
 }
 
 /**
@@ -73,7 +90,11 @@ async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   scenario: AutoBeTestScenario,
   artifacts: IAutoBeTestScenarioArtifacts,
-): Promise<ICreateTestCodeProps> {
+  life: number,
+  failure: IValidation.IFailure | null,
+): Promise<ICreateTestCodeProps | null> {
+  // function calling
+  const trials: IValidation.IFailure[] = [];
   const pointer: IPointer<ICreateTestCodeProps | null> = {
     value: null,
   };
@@ -82,10 +103,31 @@ async function process<Model extends ILlmSchema.Model>(
     vendor: ctx.vendor,
     config: {
       ...(ctx.config ?? {}),
+      executor: {
+        describe: null,
+      },
+      systemPrompt: {
+        execute: () => AutoBeSystemPromptConstant.FUNCTION_CALLING,
+        validate: (events) =>
+          [
+            AutoBeSystemPromptConstant.TEST_VALIDATE,
+            ...(events.length !== 0
+              ? [
+                  "",
+                  AutoBeSystemPromptConstant.TEST_VALIDATE_REPEAT.replace(
+                    "${{HISTORICAL_ERRORS}}",
+                    JSON.stringify(events.map((e) => e.result.errors)),
+                  ),
+                ]
+              : []),
+          ].join("\n"),
+      },
+      retry: 4,
     },
     histories: transformTestWriteHistories({
       scenario,
       artifacts,
+      failure,
     }),
     controllers: [
       createApplication({
@@ -97,19 +139,45 @@ async function process<Model extends ILlmSchema.Model>(
     ],
   });
   enforceToolCall(agentica);
+  agentica.on("validate", (e) => {
+    trials.push(e.result);
+  });
 
   await agentica.conversate("Create e2e test functions.").finally(() => {
     const tokenUsage = agentica.getTokenUsage();
     ctx.usage().record(tokenUsage, ["test"]);
   });
+  if (pointer.value === null) {
+    console.log(
+      "failed to pass validation",
+      (trials.at(-1)?.data as ICreateTestCodeProps | undefined)?.function.draft,
+      trials.map((t) => t.errors.map((e) => e.path)),
+      JSON.stringify(trials.at(-1), null, 2),
+    );
+    return null;
+  }
+  console.log(
+    "Function calling success",
+    JSON.stringify(
+      trials.map((t) => t.errors),
+      null,
+      2,
+    ),
+  );
 
-  if (pointer.value === null) throw new Error("Failed to create test code.");
-
-  pointer.value.content = complementTestWrite({
-    content: pointer.value.content,
-    artifacts,
+  // custom validation by compiler
+  const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
+  const errors: IValidation.IError[] | null = await ctx.compiler.test.validate({
+    document,
+    function: pointer.value.function,
   });
-  return pointer.value;
+  return errors === null || life <= 0
+    ? pointer.value
+    : process(ctx, scenario, artifacts, --life, {
+        success: false,
+        data: pointer.value,
+        errors,
+      });
 }
 
 function createApplication<Model extends ILlmSchema.Model>(props: {
@@ -136,9 +204,7 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
 const claude = typia.llm.application<
   IApplication,
   "claude",
-  {
-    reference: true;
-  }
+  { reference: true }
 >();
 const collection = {
   chatgpt: typia.llm.application<
@@ -150,7 +216,6 @@ const collection = {
   llama: claude,
   deepseek: claude,
   "3.1": claude,
-  "3.0": typia.llm.application<IApplication, "3.0">(),
 };
 
 interface IApplication {
@@ -158,49 +223,6 @@ interface IApplication {
 }
 
 interface ICreateTestCodeProps {
-  /**
-   * Strategic approach for test implementation.
-   *
-   * Define the high-level strategy and logical flow for testing the given
-   * scenario. Focus on test methodology, data preparation, and assertion
-   * strategy.
-   *
-   * ### Critical Requirements
-   *
-   * - Must follow the Test Generation Guidelines.
-   * - Must Planning the test code Never occur the TypeScript compile error.
-   * - NEVER include import statements in planning or implementation.
-   *
-   * ### Planning Elements:
-   *
-   * #### Test Methodology
-   *
-   * - Identify test scenario type (CRUD operation, authentication flow,
-   *   validation test)
-   * - Define test data requirements and preparation strategy
-   * - Plan positive/negative test cases and edge cases
-   * - Design assertion logic and validation points
-   *
-   * #### Execution Strategy
-   *
-   * - Outline step-by-step test execution flow
-   * - Plan error handling and exception plans
-   * - Define cleanup and teardown procedures
-   * - Identify dependencies and prerequisites
-   *
-   * ### Example Plan:
-   *
-   *     Test Strategy: Article Creation Validation
-   *     1. Prepare valid article data with required fields
-   *     2. Execute POST request to create article
-   *     3. Validate response structure and data integrity
-   *     4. Test error plans (missing fields, invalid data)
-   *     5. Verify database state changes
-   *     6. Reconsider the scenario if it doesn't follow the Test Generation
-   *        Guidelines.
-   */
-  scenario: string;
-
   /**
    * Functional domain classification for test organization.
    *
@@ -227,39 +249,6 @@ interface ICreateTestCodeProps {
    */
   domain: string;
 
-  /**
-   * Complete TypeScript E2E test implementation.
-   *
-   * Generate fully functional, compilation-error-free test code following
-   *
-   * @nestia/e2e framework conventions and TypeScript best practices.
-   *
-   * ### Technical Implementation Requirements:
-   *
-   * #### NO IMPORT DECLARATIONS
-   * - NEVER write any import statements
-   * - Start code directly with `export async function`
-   * - All dependencies assumed globally available:
-   *   - `api` for SDK functions
-   *   - `typia` for validation and random data
-   *   - All DTO types (ITargetType, etc.)
-   *   - `TestValidator` for assertions
-   *
-   * #### Code Quality Standards
-   * - Zero TypeScript compilation errors (mandatory)
-   * - Explicit type annotations for all variables
-   * - Proper async/await patterns throughout
-   * - Comprehensive error handling
-   * - Clean, readable code structure
-   * - Consistent formatting and naming conventions
-   *
-   * ### Critical Error Prevention
-   * - Verify all API function signatures and parameter types
-   * - Ensure type compatibility between variables and assignments
-   * - Include all required object properties and methods
-   * - Confirm proper generic type usage
-   * - Test async function declarations and Promise handling
-   * - NO IMPORT STATEMENTS ANYWHERE IN CODE
-   */
-  content: string;
+  /** E2E test function implementation. */
+  function: AutoBeTest.IFunction;
 }
