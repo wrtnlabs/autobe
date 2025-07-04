@@ -1561,6 +1561,8 @@ export namespace AutoBeTest {
    * - `object.property` (use IPropertyAccessExpression instead)
    * - `console.log` (use IPropertyAccessExpression instead)
    * - `Math.max` (use IPropertyAccessExpression instead)
+   * - `array.length` (use IPropertyAccessExpression instead)
+   * - `string.includes` (use IPropertyAccessExpression instead)
    *
    * **✅ CORRECT - Binary expressions only:**
    *
@@ -1572,7 +1574,7 @@ export namespace AutoBeTest {
    * **For property/method access, use the appropriate expression types:**
    *
    * - Property access: Use `IPropertyAccessExpression` (e.g., `user.name`,
-   *   `Array.isArray`)
+   *   `Array.isArray`, `array.length`)
    * - Array/object indexing: Use `IElementAccessExpression` (e.g., `items[0]`,
    *   `obj["key"]`)
    * - Method calls: Use `ICallExpression` with `IPropertyAccessExpression` for
@@ -1582,6 +1584,8 @@ export namespace AutoBeTest {
    *
    * - Using IBinaryExpression for dot notation (`.`) - this is property access,
    *   not a binary operator
+   * - Using IBinaryExpression for `.length`, `.includes()`, etc. - these are
+   *   property/method access
    * - Confusing property access with binary operations
    * - Mixing structural navigation with computational operations
    *
@@ -1600,8 +1604,9 @@ export namespace AutoBeTest {
      * In business contexts, often represents actual values from captured API
      * responses or business entities from previous operations.
      *
-     * **Note**: If you need to access object properties (like `user.name`), use
-     * IPropertyAccessExpression as the left operand, not IBinaryExpression.
+     * **Note**: If you need to access object properties (like `user.name`,
+     * `array.length`), use IPropertyAccessExpression as the left operand, not
+     * IBinaryExpression.
      */
     left: IExpression;
 
@@ -1610,15 +1615,41 @@ export namespace AutoBeTest {
      *
      * **⚠️ IMPORTANT: These are computational/logical operators ONLY! ⚠️**
      *
+     * **🚨 CRITICAL JavaScript Requirements: 🚨**
+     *
+     * **❌ NEVER use loose equality operators:**
+     *
+     * - `==` (loose equality) - This is NOT supported and causes type coercion
+     *   bugs
+     * - `!=` (loose inequality) - This is NOT supported and causes type coercion
+     *   bugs
+     *
+     * **✅ ALWAYS use strict equality operators:**
+     *
+     * - `===` (strict equality) - Use this for all equality comparisons
+     * - `!==` (strict inequality) - Use this for all inequality comparisons
+     *
+     * **Why strict equality is required:**
+     *
+     * - Prevents unexpected type coercion (e.g., `"0" == 0` is true, but `"0" ===
+     *   0` is false)
+     * - Ensures predictable behavior in business logic
+     * - Follows TypeScript and modern JavaScript best practices
+     * - Avoids subtle bugs in API response validation
+     *
      * Do NOT include:
      *
      * - `.` (dot) - This is property access, use IPropertyAccessExpression
      * - `[]` (brackets) - This is element access, use IElementAccessExpression
      * - `()` (parentheses) - This is function call, use ICallExpression
+     * - `.length`, `.includes`, etc. - These are property/method access, use
+     *   IPropertyAccessExpression
+     * - '.length ===': Capsule left expression into IPropertyAccessExpression
+     * - '[0] >=' Capsule left expression into IElementAccessExpression
      *
      * **Comparison operators:**
      *
-     * - "===", "!==": Strict equality/inequality (preferred for type safety)
+     * - "===", "!==": Strict equality/inequality (REQUIRED - never use == or !=)
      * - "<", "<=", ">", ">=": Numerical/string comparisons
      *
      * **Arithmetic operators:**
@@ -1630,10 +1661,14 @@ export namespace AutoBeTest {
      * - "&&": Logical AND (both conditions must be true)
      * - "||": Logical OR (either condition can be true)
      *
-     * AI selection guide: Use === for equality checks, logical operators for
-     * combining business conditions, arithmetic for calculations on captured
-     * data. For property access, method calls, or array indexing, use the
-     * appropriate expression types instead.
+     * AI selection guide:
+     *
+     * - Use === for equality checks (NEVER ==)
+     * - Use !== for inequality checks (NEVER !=)
+     * - Use logical operators for combining business conditions
+     * - Use arithmetic for calculations on captured data
+     * - For property access, method calls, or array indexing, use the appropriate
+     *   expression types instead
      */
     operator:
       | "==="
@@ -1659,8 +1694,8 @@ export namespace AutoBeTest {
      * represents expected values, business rule thresholds, or additional
      * captured data from API responses.
      *
-     * **Note**: If you need to access object properties (like `order.status`),
-     * use IPropertyAccessExpression as the right operand, not
+     * **Note**: If you need to access object properties (like `order.status`,
+     * `items.length`), use IPropertyAccessExpression as the right operand, not
      * IBinaryExpression.
      */
     right: IExpression;

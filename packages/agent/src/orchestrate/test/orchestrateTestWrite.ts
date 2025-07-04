@@ -113,7 +113,19 @@ async function process<Model extends ILlmSchema.Model>(
       },
       systemPrompt: {
         execute: () => AutoBeSystemPromptConstant.FUNCTION_CALLING,
-        validate: () => AutoBeSystemPromptConstant.TEST_VALIDATE,
+        validate: (events) =>
+          [
+            AutoBeSystemPromptConstant.TEST_VALIDATE,
+            ...(events.length !== 0
+              ? [
+                  "",
+                  AutoBeSystemPromptConstant.TEST_VALIDATE_REPEAT.replace(
+                    "${{HISTORICAL_ERRORS}}",
+                    JSON.stringify(events.map((e) => e.result.errors)),
+                  ),
+                ]
+              : []),
+          ].join("\n"),
       },
       retry: 5,
     },
