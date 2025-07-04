@@ -19,6 +19,7 @@ import { createAutoBeController } from "./factory/createAutoBeApplication";
 import { createAutoBeState } from "./factory/createAutoBeState";
 import { transformFacadeStateMessage } from "./orchestrate/facade/transformFacadeStateMessage";
 import { IAutoBeProps } from "./structures/IAutoBeProps";
+import { randomBackoffStrategy } from "./utils/backoffRetry";
 import { emplaceMap } from "./utils/emplaceMap";
 
 /**
@@ -111,6 +112,7 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
       vendor,
       model: props.model,
       config: {
+        backoffStrategy: randomBackoffStrategy,
         ...props.config,
       },
       compiler: props.compiler,

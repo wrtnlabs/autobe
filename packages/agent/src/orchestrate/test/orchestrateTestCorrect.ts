@@ -9,7 +9,6 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { randomBackoffRetry } from "../../utils/backoffRetry";
 import { enforceToolCall } from "../../utils/enforceToolCall";
 import { IAutoBeTestWriteResult } from "./structures/IAutoBeTestWriteResult";
 import { transformTestCorrectHistories } from "./transformTestCorrectHistories";
@@ -60,8 +59,8 @@ async function correct<Model extends ILlmSchema.Model>(
   });
   enforceToolCall(agentica);
 
-  await randomBackoffRetry(async () => {
-    await agentica.conversate(
+  await agentica
+    .conversate(
       [
         "# Instructions",
         "1. Focus on the specific error location and message",
@@ -70,11 +69,11 @@ async function correct<Model extends ILlmSchema.Model>(
         "",
         "Return only the fixed code without explanations.",
       ].join("\n"),
-    );
-  }).finally(() => {
-    const tokenUsage = agentica.getTokenUsage();
-    ctx.usage().record(tokenUsage, ["test"]);
-  });
+    )
+    .finally(() => {
+      const tokenUsage = agentica.getTokenUsage();
+      ctx.usage().record(tokenUsage, ["test"]);
+    });
   if (pointer.value === null) throw new Error("Failed to modify test code.");
   event = await compile(ctx, {
     ...written,

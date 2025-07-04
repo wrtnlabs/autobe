@@ -12,7 +12,6 @@ import typia from "typia";
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { randomBackoffRetry } from "../../utils/backoffRetry";
 import { enforceToolCall } from "../../utils/enforceToolCall";
 import { compileTestScenario } from "./compile/compileTestScenario";
 import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
@@ -148,9 +147,7 @@ async function process<Model extends ILlmSchema.Model>(
     trials.push(e.result);
   });
 
-  await randomBackoffRetry(() =>
-    agentica.conversate("Create e2e test functions."),
-  ).finally(() => {
+  await agentica.conversate("Create e2e test functions.").finally(() => {
     const tokenUsage = agentica.getTokenUsage();
     ctx.usage().record(tokenUsage, ["test"]);
   });
