@@ -27,56 +27,52 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
   let complete: number = 0;
 
   console.log("Number of scenarios:", scenarios.length);
-  const writes: Array<IAutoBeTestWriteResult | Error> = await Promise.all(
+  const writes: Array<IAutoBeTestWriteResult | null> = await Promise.all(
     /**
      * Generate test code for each scenario. Maps through plans array to create
      * individual test code implementations. Each scenario is processed to
      * generate corresponding test code and progress events.
      */
     scenarios.map(async (scenario) => {
-      try {
-        const artifacts: IAutoBeTestScenarioArtifacts =
-          await compileTestScenario(ctx, scenario);
-        const result: ICreateTestCodeProps = await process(
-          ctx,
-          scenario,
-          artifacts,
-          life,
-          null,
-        );
-        const event: AutoBeTestWriteEvent = {
-          type: "testWrite",
-          created_at: start.toISOString(),
-          file: {
-            location: `test/features/api/${result.domain}/${scenario.functionName}.ts`,
-            function: result.function,
-            content: await ctx.compiler.test.write({
-              scenario,
-              document: ctx.state().interface!.document,
-              function: result.function,
-            }),
+      const artifacts: IAutoBeTestScenarioArtifacts = await compileTestScenario(
+        ctx,
+        scenario,
+      );
+      const result: ICreateTestCodeProps | null = await process(
+        ctx,
+        scenario,
+        artifacts,
+        life,
+        null,
+      );
+      if (result === null) return null;
+
+      const event: AutoBeTestWriteEvent = {
+        type: "testWrite",
+        created_at: start.toISOString(),
+        file: {
+          location: `test/features/api/${result.domain}/${scenario.functionName}.ts`,
+          function: result.function,
+          content: await ctx.compiler.test.write({
             scenario,
-          },
-          completed: ++complete,
-          total: scenarios.length,
-          step: ctx.state().interface?.step ?? 0,
-        };
-        ctx.dispatch(event);
-        return {
-          artifacts,
-          file: event.file,
-        };
-      } catch (error) {
-        return error as Error;
-      }
+            document: ctx.state().interface!.document,
+            function: result.function,
+          }),
+          scenario,
+        },
+        completed: ++complete,
+        total: scenarios.length,
+        step: ctx.state().interface?.step ?? 0,
+      };
+      ctx.dispatch(event);
+      return {
+        artifacts,
+        file: event.file,
+      };
     }),
   );
   console.log(ctx.usage().test.aggregate);
-  const error: Error | undefined = writes.find(
-    (write) => write instanceof Error,
-  ) as Error | undefined;
-  if (error) throw error;
-  return writes as IAutoBeTestWriteResult[];
+  return writes.filter((w) => w !== null);
 }
 
 /**
@@ -96,7 +92,7 @@ async function process<Model extends ILlmSchema.Model>(
   artifacts: IAutoBeTestScenarioArtifacts,
   life: number,
   failure: IValidation.IFailure | null,
-): Promise<ICreateTestCodeProps> {
+): Promise<ICreateTestCodeProps | null> {
   // function calling
   const trials: IValidation.IFailure[] = [];
   const pointer: IPointer<ICreateTestCodeProps | null> = {
@@ -158,7 +154,7 @@ async function process<Model extends ILlmSchema.Model>(
       trials.map((t) => t.errors.map((e) => e.path)),
       JSON.stringify(trials.at(-1), null, 2),
     );
-    throw new Error("Failed to create test code.");
+    return null;
   }
   console.log(
     "Function calling success",
