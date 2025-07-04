@@ -73,7 +73,7 @@ export const test_compiler_test_write_random = async (): Promise<void> => {
     scenario,
     function: {
       plan: "",
-      draft: "",
+      // draft: "",
       statements: [
         ...expressions.map(
           (e) =>

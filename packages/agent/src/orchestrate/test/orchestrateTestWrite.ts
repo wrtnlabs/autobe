@@ -9,6 +9,7 @@ import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 
+import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { randomBackoffRetry } from "../../utils/backoffRetry";
@@ -26,6 +27,7 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
   const start: Date = new Date();
   let complete: number = 0;
 
+  console.log("Number of scenarios:", scenarios.length);
   const writes: Array<IAutoBeTestWriteResult | Error> = await Promise.all(
     /**
      * Generate test code for each scenario. Maps through plans array to create
@@ -70,6 +72,7 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
       }
     }),
   );
+  console.log(ctx.usage().test.aggregate);
   const error: Error | undefined = writes.find(
     (write) => write instanceof Error,
   ) as Error | undefined;
@@ -96,7 +99,7 @@ async function process<Model extends ILlmSchema.Model>(
   failure: IValidation.IFailure | null,
 ): Promise<ICreateTestCodeProps> {
   // function calling
-  let previous: IValidation.IFailure | null = null;
+  const trials: IValidation.IFailure[] = [];
   const pointer: IPointer<ICreateTestCodeProps | null> = {
     value: null,
   };
@@ -107,6 +110,9 @@ async function process<Model extends ILlmSchema.Model>(
       ...(ctx.config ?? {}),
       executor: {
         describe: null,
+      },
+      systemPrompt: {
+        execute: () => AutoBeSystemPromptConstant.FUNCTION_CALLING,
       },
       retry: 5,
     },
@@ -126,7 +132,7 @@ async function process<Model extends ILlmSchema.Model>(
   });
   enforceToolCall(agentica);
   agentica.on("validate", (e) => {
-    previous = e.result;
+    trials.push(e.result);
   });
 
   await randomBackoffRetry(() =>
@@ -136,10 +142,24 @@ async function process<Model extends ILlmSchema.Model>(
     ctx.usage().record(tokenUsage, ["test"]);
   });
   if (pointer.value === null) {
-    console.log("failed to pass validation", JSON.stringify(previous, null, 2));
+    console.log(
+      "failed to pass validation",
+      JSON.stringify(
+        trials.map((t) => t.errors),
+        null,
+        2,
+      ),
+    );
     throw new Error("Failed to create test code.");
   }
-  console.log("Function calling success");
+  console.log(
+    "Function calling success",
+    JSON.stringify(
+      trials.map((t) => t.errors),
+      null,
+      2,
+    ),
+  );
 
   // custom validation by compiler
   const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;

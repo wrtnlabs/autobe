@@ -17,7 +17,7 @@ catalogs:
     "@nestia/fetcher": ^7.0.0
     "@nestia/migrate": ^7.0.0
     "@nestia/sdk": ^7.0.0
-    "@samchon/openapi": ^4.3.3
+    "@samchon/openapi": ^4.4.0-dev.20250704-3
     embed-prisma: ^1.1.0
     embed-typescript: ^1.0.1
     prisma-markdown: ^3.0.0

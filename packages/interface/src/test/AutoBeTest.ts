@@ -95,31 +95,34 @@ export namespace AutoBeTest {
      */
     plan: string;
 
-    /**
-     * Draft TypeScript code implementation of the test function.
-     *
-     * This field contains a preliminary TypeScript implementation of the test
-     * function based on the strategic plan. The draft serves as an intermediate
-     * step between planning and AST construction, allowing AI agents to:
-     *
-     * - Visualize the actual code structure before AST generation
-     * - Ensure proper TypeScript syntax and API usage patterns
-     * - Validate the logical flow and data dependencies
-     * - Identify any missing components or validation steps
-     * - Refine the approach before committing to AST statements
-     *
-     * The draft should be complete, executable TypeScript code that represents
-     * the full test function implementation. This code will then be analyzed
-     * and converted into the corresponding AST statements structure.
-     *
-     * **⚠️ CRITICAL: Avoid TypeScript features that complicate AST conversion!
-     * ⚠️** **❌ AVOID**: Template literals, destructuring, for/while loops,
-     * switch statements, try/catch blocks, spread operators, arrow functions
-     * without blocks **✅ USE**: Simple property access, explicit variables,
-     * array methods (arrayMap, arrayForEach), predicate functions, clear
-     * if/else chains
-     */
-    draft: string;
+    // /**
+    //  * Draft TypeScript code implementation of the test function.
+    //  *
+    //  * This field contains a preliminary TypeScript implementation of the test
+    //  * function based on the strategic plan. The draft serves as an intermediate
+    //  * step between planning and AST construction, allowing AI agents to:
+    //  *
+    //  * - Visualize the actual code structure before AST generation
+    //  * - Ensure proper TypeScript syntax and API usage patterns
+    //  * - Validate the logical flow and data dependencies
+    //  * - Identify any missing components or validation steps
+    //  * - Refine the approach before committing to AST statements
+    //  *
+    //  * The draft should be complete, executable TypeScript code that represents
+    //  * the full test function implementation. This code will then be analyzed
+    //  * and converted into the corresponding AST statements structure.
+    //  *
+    //  * **⚠️ CRITICAL: Avoid TypeScript features that complicate AST conversion!
+    //  * ⚠️**
+    //  *
+    //  * **❌ AVOID**: Template literals, destructuring, for/while loops, switch
+    //  * statements, try/catch blocks, spread operators, arrow functions without
+    //  * blocks
+    //  *
+    //  * **✅ USE**: Simple property access, explicit variables, array methods
+    //  * (arrayMap, arrayForEach), predicate functions, clear if/else chains
+    //  */
+    // draft: string;
 
     /**
      * Array of statements that comprise the test function body.
@@ -509,7 +512,7 @@ export namespace AutoBeTest {
      * Variable naming should follow business domain conventions (e.g.,
      * "customer", "order", "product") rather than technical naming.
      */
-    variableName?: (string & tags.Pattern<"^[a-zA-Z][a-zA-Z0-9]*$">) | null;
+    variableName?: (string & tags.Pattern<"^[a-zA-Z_$][a-zA-Z0-9_$]*$">) | null;
   }
 
   /**
@@ -687,7 +690,9 @@ export namespace AutoBeTest {
      * AI naming strategy: Use business entity names that clearly indicate what
      * the variable represents in the test scenario.
      */
-    name: string & tags.Pattern<"^[a-zA-Z][a-zA-Z0-9]*$"> & tags.MinLength<1>;
+    name: string &
+      tags.Pattern<"^[a-zA-Z_$][a-zA-Z0-9_$]*$"> &
+      tags.MinLength<1>;
 
     /**
      * Complete type schema definition from OpenAPI specifications.
@@ -1162,42 +1167,91 @@ export namespace AutoBeTest {
    * **IMPORTANT**: Should NOT reference API functions directly. API operations
    * should use `IApiOperateStatement` instead.
    *
+   * **🚨 CRITICAL: SIMPLE IDENTIFIERS ONLY! 🚨**
+   *
+   * This interface is ONLY for simple identifiers (single variable names). DO
+   * NOT use compound expressions like:
+   *
+   * **❌ WRONG - These are NOT simple identifiers:**
+   *
+   * - `Array.isArray` (use IPropertyAccessExpression instead)
+   * - `user.name` (use IPropertyAccessExpression instead)
+   * - `items[0]` (use IElementAccessExpression instead)
+   * - `console.log` (use IPropertyAccessExpression instead)
+   * - `Math.random` (use IPropertyAccessExpression instead)
+   * - `x.y?.z` (use chained IPropertyAccessExpression instead)
+   *
+   * **✅ CORRECT - Simple identifiers only:**
+   *
+   * - `seller` (variable name)
+   * - `product` (variable name)
+   * - `Array` (global constructor name)
+   * - `console` (global object name)
+   * - `Math` (global object name)
+   *
+   * **For compound access, use the appropriate expression types:**
+   *
+   * - Property access: Use `IPropertyAccessExpression` (e.g., `user.name`)
+   * - Array/object indexing: Use `IElementAccessExpression` (e.g., `items[0]`)
+   * - Method calls: Use `ICallExpression` with `IPropertyAccessExpression` for
+   *   the function
+   *
    * Common E2E testing usage:
    *
    * - Referencing captured data from previous API operations
    * - Referencing business entities from previous steps
-   * - Accessing non-API SDK utilities
+   * - Accessing non-API SDK utilities (simple names only)
    *
-   * AI function calling context: Use when referencing any named entity in the
-   * test scope, excluding direct API function references which should use
-   * dedicated statement types.
+   * AI function calling context: Use when referencing any simple named entity
+   * in the test scope, excluding direct API function references which should
+   * use dedicated statement types. For any property access or method calls, use
+   * the appropriate expression types instead.
    */
   export interface IIdentifier {
     /** Type discriminator. */
     type: "identifier";
 
     /**
-     * The identifier name being referenced.
+     * The simple identifier name being referenced.
      *
-     * Must correspond to a valid identifier in the current scope:
+     * Must be a SIMPLE identifier name (single word) that corresponds to a
+     * valid identifier in the current scope:
      *
      * - Previously declared variable names (from IApiOperateStatement or
      *   IVariableDeclaration)
-     * - Global utility names
+     * - Global utility names (simple names only, not property paths)
      * - Parameter names from function scope
      *
      * **Should NOT** reference API functions directly. Use IApiOperateStatement
      * for API operations instead.
      *
+     * **MUST NOT contain dots, brackets, or any compound access patterns.** For
+     * compound access, use IPropertyAccessExpression or
+     * IElementAccessExpression.
+     *
      * Examples:
+     *
+     * **✅ CORRECT - Simple identifiers:**
      *
      * - "seller" (previously captured from API operation)
      * - "product" (previously captured from API operation)
+     * - "Array" (global constructor, to be used with IPropertyAccessExpression
+     *   for Array.isArray)
+     * - "console" (global object, to be used with IPropertyAccessExpression for
+     *   console.log)
+     *
+     * **❌ WRONG - Compound expressions (use other expression types):**
+     *
+     * - "Array.isArray" (use IPropertyAccessExpression instead)
+     * - "user.name" (use IPropertyAccessExpression instead)
+     * - "items[0]" (use IElementAccessExpression instead)
      *
      * AI naming consistency: Must match exactly with variable names from
      * previous IApiOperateStatement.variableName or IVariableDeclaration.name.
+     * Keep it simple - just the variable name, nothing more.
      */
-    text: string & tags.Pattern<"^[a-zA-Z][a-zA-Z0-9]*$">;
+    text: string &
+      tags.Pattern<"^[a-zA-Z_$][a-zA-Z0-9_$]*(\.[a-zA-Z_$][a-zA-Z0-9_$]*)*$">;
   }
 
   /**
@@ -1493,6 +1547,44 @@ export namespace AutoBeTest {
    * logical operations. Essential for implementing business logic conditions,
    * calculations, and validations in test scenarios using captured data.
    *
+   * **🚨 CRITICAL: DO NOT confuse with property access or element access! 🚨**
+   *
+   * This interface is ONLY for binary operators (===, !==, +, -, etc.). Do NOT
+   * use this for:
+   *
+   * **❌ WRONG - These are NOT binary expressions:**
+   *
+   * - `Array.isArray` (use IPropertyAccessExpression instead)
+   * - `user.name` (use IPropertyAccessExpression instead)
+   * - `items[0]` (use IElementAccessExpression instead)
+   * - `x.y` (use IPropertyAccessExpression instead)
+   * - `object.property` (use IPropertyAccessExpression instead)
+   * - `console.log` (use IPropertyAccessExpression instead)
+   * - `Math.max` (use IPropertyAccessExpression instead)
+   *
+   * **✅ CORRECT - Binary expressions only:**
+   *
+   * - `x === y` (equality comparison)
+   * - `a + b` (arithmetic operation)
+   * - `count > 0` (comparison operation)
+   * - `isActive && isValid` (logical operation)
+   *
+   * **For property/method access, use the appropriate expression types:**
+   *
+   * - Property access: Use `IPropertyAccessExpression` (e.g., `user.name`,
+   *   `Array.isArray`)
+   * - Array/object indexing: Use `IElementAccessExpression` (e.g., `items[0]`,
+   *   `obj["key"]`)
+   * - Method calls: Use `ICallExpression` with `IPropertyAccessExpression` for
+   *   the function
+   *
+   * **Common AI mistakes to avoid:**
+   *
+   * - Using IBinaryExpression for dot notation (`.`) - this is property access,
+   *   not a binary operator
+   * - Confusing property access with binary operations
+   * - Mixing structural navigation with computational operations
+   *
    * E2E testing importance: Critical for implementing business rule
    * validations, data comparisons, and conditional logic that reflects
    * real-world application behavior using data captured from API responses.
@@ -1507,11 +1599,22 @@ export namespace AutoBeTest {
      * Typically represents the primary value being compared or operated upon.
      * In business contexts, often represents actual values from captured API
      * responses or business entities from previous operations.
+     *
+     * **Note**: If you need to access object properties (like `user.name`), use
+     * IPropertyAccessExpression as the left operand, not IBinaryExpression.
      */
     left: IExpression;
 
     /**
      * Binary operator defining the operation type.
+     *
+     * **⚠️ IMPORTANT: These are computational/logical operators ONLY! ⚠️**
+     *
+     * Do NOT include:
+     *
+     * - `.` (dot) - This is property access, use IPropertyAccessExpression
+     * - `[]` (brackets) - This is element access, use IElementAccessExpression
+     * - `()` (parentheses) - This is function call, use ICallExpression
      *
      * **Comparison operators:**
      *
@@ -1529,7 +1632,8 @@ export namespace AutoBeTest {
      *
      * AI selection guide: Use === for equality checks, logical operators for
      * combining business conditions, arithmetic for calculations on captured
-     * data.
+     * data. For property access, method calls, or array indexing, use the
+     * appropriate expression types instead.
      */
     operator:
       | "==="
@@ -1544,7 +1648,8 @@ export namespace AutoBeTest {
       | "/"
       | "%"
       | "&&"
-      | "||";
+      | "||"
+      | "instanceof";
 
     /**
      * Right operand of the binary operation.
@@ -1553,6 +1658,10 @@ export namespace AutoBeTest {
      * second condition in logical operations. In business contexts, often
      * represents expected values, business rule thresholds, or additional
      * captured data from API responses.
+     *
+     * **Note**: If you need to access object properties (like `order.status`),
+     * use IPropertyAccessExpression as the right operand, not
+     * IBinaryExpression.
      */
     right: IExpression;
   }
@@ -2487,8 +2596,16 @@ export namespace AutoBeTest {
     /**
      * Domain-specific data generation keyword.
      *
-     * Predefined generators for common business data types used in API
-     * operations:
+     * **🚨 CRITICAL: ONLY use the exact predefined constant values! 🚨**
+     *
+     * **❌ UNSUPPORTED values that will cause errors:**
+     *
+     * - "title", "comment", "article", "description", "text", "body"
+     * - "summary", "details", "note", "message", "subject", "sentence"
+     * - "address", "phone", "email", "url", "username"
+     * - Any value not explicitly listed in the supported constants below
+     *
+     * **✅ SUPPORTED constant values ONLY:**
      *
      * **Text & Content:**
      *
@@ -2502,16 +2619,37 @@ export namespace AutoBeTest {
      * - "mobile": Mobile phone numbers for contact information in APIs
      * - "name": Personal names (first, last, full) for user-related operations
      *
-     * AI domain selection: Choose domains that provide realistic data
-     * appropriate for the business context and API field purpose.
+     * **🎯 AI SELECTION STRATEGY: Map your needs to existing constants!**
+     *
+     * Before trying unsupported values, find the closest match from available
+     * options:
+     *
+     * - **Need titles/headers?** → Use "content" (generic text content)
+     * - **Need comments/descriptions?** → Use "paragraph" (realistic paragraph
+     *   text)
+     * - **Need articles/body text?** → Use "paragraph" (longer text content)
+     * - **Need details/summaries?** → Use "content" (general text fields)
+     * - **Need phone numbers?** → Use "mobile" (phone number format)
+     * - **Need usernames/IDs?** → Use "alphaNumeric" (mixed identifier format)
+     * - **Need codes/tokens?** → Use "alphabets" (alphabetic strings)
      *
      * **Usage strategy for API operations:**
      *
      * - Use "name" for user registration and profile API calls
      * - Use "mobile" for contact information in business APIs
-     * - Use "paragraph" for descriptions and content in API requests
-     * - Use "content" for general text fields in API parameters
-     * - Use "alphabets"/"alphaNumeric" for codes and identifiers in API calls
+     * - Use "paragraph" for descriptions, comments, articles, and content in API
+     *   requests
+     * - Use "content" for general text fields, titles, subjects in API parameters
+     * - Use "alphabets"/"alphaNumeric" for codes, usernames, and identifiers in
+     *   API calls
+     *
+     * **⚠️ REMINDER: The system only supports these 6 exact constants. No
+     * exceptions!** If you need functionality not covered by these constants,
+     * use other generators like:
+     *
+     * - IStringRandom for custom length text
+     * - IFormatRandom for specific formats (email, url, etc.)
+     * - IPatternRandom for custom patterns
      */
     keyword:
       | "alphabets"

@@ -49,7 +49,7 @@ export namespace AutoBeTestOperatorProgrammer {
   ): ts.BinaryExpression =>
     ts.factory.createBinaryExpression(
       writeTestExpression(ctx, expr.left),
-      OPERATORS[expr.operator],
+      BINARY_OPERATORS[expr.operator],
       writeTestExpression(ctx, expr.right),
     );
 }
@@ -66,7 +66,7 @@ const PREFIX_UNARY_OPERATORS = {
   "!": ts.SyntaxKind.ExclamationToken,
 } as const;
 
-const OPERATORS = {
+const BINARY_OPERATORS = {
   "===": ts.SyntaxKind.EqualsEqualsEqualsToken,
   "!==": ts.SyntaxKind.ExclamationEqualsEqualsToken,
   "<": ts.SyntaxKind.LessThanToken,
@@ -80,4 +80,5 @@ const OPERATORS = {
   "%": ts.SyntaxKind.PercentToken,
   "&&": ts.SyntaxKind.AmpersandAmpersandToken,
   "||": ts.SyntaxKind.BarBarToken,
+  instanceof: ts.SyntaxKind.InstanceOfKeyword,
 } as const;
