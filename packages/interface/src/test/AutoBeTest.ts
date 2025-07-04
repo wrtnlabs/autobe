@@ -95,34 +95,34 @@ export namespace AutoBeTest {
      */
     plan: string;
 
-    // /**
-    //  * Draft TypeScript code implementation of the test function.
-    //  *
-    //  * This field contains a preliminary TypeScript implementation of the test
-    //  * function based on the strategic plan. The draft serves as an intermediate
-    //  * step between planning and AST construction, allowing AI agents to:
-    //  *
-    //  * - Visualize the actual code structure before AST generation
-    //  * - Ensure proper TypeScript syntax and API usage patterns
-    //  * - Validate the logical flow and data dependencies
-    //  * - Identify any missing components or validation steps
-    //  * - Refine the approach before committing to AST statements
-    //  *
-    //  * The draft should be complete, executable TypeScript code that represents
-    //  * the full test function implementation. This code will then be analyzed
-    //  * and converted into the corresponding AST statements structure.
-    //  *
-    //  * **⚠️ CRITICAL: Avoid TypeScript features that complicate AST conversion!
-    //  * ⚠️**
-    //  *
-    //  * **❌ AVOID**: Template literals, destructuring, for/while loops, switch
-    //  * statements, try/catch blocks, spread operators, arrow functions without
-    //  * blocks
-    //  *
-    //  * **✅ USE**: Simple property access, explicit variables, array methods
-    //  * (arrayMap, arrayForEach), predicate functions, clear if/else chains
-    //  */
-    // draft: string;
+    /**
+     * Draft TypeScript code implementation of the test function.
+     *
+     * This field contains a preliminary TypeScript implementation of the test
+     * function based on the strategic plan. The draft serves as an intermediate
+     * step between planning and AST construction, allowing AI agents to:
+     *
+     * - Visualize the actual code structure before AST generation
+     * - Ensure proper TypeScript syntax and API usage patterns
+     * - Validate the logical flow and data dependencies
+     * - Identify any missing components or validation steps
+     * - Refine the approach before committing to AST statements
+     *
+     * The draft should be complete, executable TypeScript code that represents
+     * the full test function implementation. This code will then be analyzed
+     * and converted into the corresponding AST statements structure.
+     *
+     * **⚠️ CRITICAL: Avoid TypeScript features that complicate AST conversion!
+     * ⚠️**
+     *
+     * **❌ AVOID**: Template literals, destructuring, for/while loops, switch
+     * statements, try/catch blocks, spread operators, arrow functions without
+     * blocks
+     *
+     * **✅ USE**: Simple property access, explicit variables, array methods
+     * (arrayMap, arrayForEach), predicate functions, clear if/else chains
+     */
+    draft: string;
 
     /**
      * Array of statements that comprise the test function body.
@@ -2146,6 +2146,38 @@ export namespace AutoBeTest {
    *
    * AI function calling usage: Use when business logic requires selection from
    * a constrained set of valid options that reflect real API constraints.
+   *
+   * **🚨 CRITICAL AI REQUIREMENT: MUST use 'expression' property! 🚨**
+   *
+   * **❌ WRONG - Do NOT use these invalid property names:**
+   *
+   * - `items: [1, 2, 3, 4]` ❌ No such property exists!
+   * - `options: ["a", "b", "c"]` ❌ No such property exists!
+   * - `choices: [...]` ❌ No such property exists!
+   * - `values: [...]` ❌ No such property exists!
+   * - `array: [...]` ❌ No such property exists!
+   * - `list: [...]` ❌ No such property exists!
+   *
+   * **✅ CORRECT - MUST use 'expression' property:**
+   *
+   * ```typescript
+   * {
+   *   "type": "pickRandom",
+   *   "expression": {
+   *     "type": "arrayLiteralExpression",
+   *     "elements": [
+   *       { "type": "stringLiteral", "value": "option1" },
+   *       { "type": "stringLiteral", "value": "option2" }
+   *     ]
+   *   }
+   * }
+   * ```
+   *
+   * **⚠️ CRITICAL: expression must be IExpression AST type, NOT raw values!**
+   *
+   * The interface ONLY has 'type' and 'expression' properties. There are NO
+   * other properties like 'items', 'options', 'choices', etc. Always use
+   * 'expression'!
    */
   export interface IPickRandom {
     /** Type discriminator. */
@@ -2154,9 +2186,44 @@ export namespace AutoBeTest {
     /**
      * Expression evaluating to the collection from which to pick.
      *
+     * **🚨 CRITICAL: This is the ONLY property for the target collection! 🚨**
+     *
+     * **PROPERTY NAME ENFORCEMENT:**
+     *
+     * - Property name is 'expression' (not 'items', 'options', 'choices', etc.)
+     * - This is the ONLY way to specify the collection to pick from
+     * - Do NOT invent other property names - they don't exist in this interface
+     *
      * Typically an array literal containing valid business options or an
      * identifier referencing a predefined collection. Can also reference data
      * captured from previous API operations.
+     *
+     * **⚠️ CRITICAL AI RESTRICTION: Must be AST expression, NOT raw array! ⚠️**
+     *
+     * **❌ WRONG - Raw values or invalid properties:**
+     *
+     * ```typescript
+     * {
+     *   "type": "pickRandom",
+     *   "items": ["electronics", "clothing"] // ❌ No 'items' property!
+     * }
+     * ```
+     *
+     * **✅ CORRECT - Proper AST expression:**
+     *
+     * ```typescript
+     * {
+     *   "type": "pickRandom",
+     *   "expression": {
+     *     // ✅ Correct property name
+     *     "type": "arrayLiteralExpression",
+     *     "elements": [
+     *       { "type": "stringLiteral", "value": "electronics" },
+     *       { "type": "stringLiteral", "value": "clothing" }
+     *     ]
+     *   }
+     * }
+     * ```
      *
      * Examples:
      *

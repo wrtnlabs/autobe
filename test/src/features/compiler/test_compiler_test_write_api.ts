@@ -31,7 +31,7 @@ export async function test_compiler_test_write_api(): Promise<void> {
     scenario,
     function: {
       plan: "",
-      // draft: "",
+      draft: "",
       statements: [stmt],
     },
   });

@@ -127,7 +127,7 @@ async function process<Model extends ILlmSchema.Model>(
               : []),
           ].join("\n"),
       },
-      retry: 5,
+      retry: 4,
     },
     histories: transformTestWriteHistories({
       scenario,
@@ -157,11 +157,8 @@ async function process<Model extends ILlmSchema.Model>(
   if (pointer.value === null) {
     console.log(
       "failed to pass validation",
-      JSON.stringify(
-        trials.map((t) => t.errors),
-        null,
-        2,
-      ),
+      trials.map((t) => t.errors.map((e) => e.path)),
+      JSON.stringify(trials.at(-1), null, 2),
     );
     throw new Error("Failed to create test code.");
   }

@@ -616,7 +616,7 @@ score: integerRandom({ minimum: 0, maximum: 100, multipleOf: 5 })
 nickname: stringRandom({ minLength: 5, maxLength: 15 })
 code: stringRandom({ minLength: 8, maxLength: 12 })
 
-// Selection from predefined options
+// Selection from array expression
 category: pickRandom(["electronics", "clothing", "books", "home"])
 status: pickRandom(["pending", "approved", "rejected"])
 role: pickRandom(["user", "admin", "moderator"])
