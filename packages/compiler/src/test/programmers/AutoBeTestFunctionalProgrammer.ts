@@ -44,25 +44,25 @@ export namespace AutoBeTestFunctionalProgrammer {
     ctx: IAutoBeTestProgrammerContext,
     expr: AutoBeTest.IArrayFilterExpression,
   ): ts.AwaitExpression =>
-    arrayExpression(ctx, "asyncFilter", [expr.expression, expr.function]);
+    arrayExpression(ctx, "asyncFilter", [expr.array, expr.function]);
 
   export const arrayForEachExpression = (
     ctx: IAutoBeTestProgrammerContext,
     expr: AutoBeTest.IArrayForEachExpression,
   ): ts.AwaitExpression =>
-    arrayExpression(ctx, "asyncForEach", [expr.expression, expr.function]);
+    arrayExpression(ctx, "asyncForEach", [expr.array, expr.function]);
 
   export const arrayMapExpression = (
     ctx: IAutoBeTestProgrammerContext,
     expr: AutoBeTest.IArrayMapExpression,
   ): ts.AwaitExpression =>
-    arrayExpression(ctx, "asyncMap", [expr.expression, expr.function]);
+    arrayExpression(ctx, "asyncMap", [expr.array, expr.function]);
 
   export const arrayRepeatExpression = (
     ctx: IAutoBeTestProgrammerContext,
     expr: AutoBeTest.IArrayRepeatExpression,
   ): ts.AwaitExpression =>
-    arrayExpression(ctx, "asyncRepeat", [expr.length, expr.function]);
+    arrayExpression(ctx, "asyncRepeat", [expr.count, expr.function]);
 }
 
 const arrayExpression = (

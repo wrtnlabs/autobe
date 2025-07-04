@@ -22,7 +22,7 @@ export namespace AutoBeTestRandomProgrammer {
         "pick",
       ),
       undefined,
-      [writeTestExpression(ctx, expr.expression)],
+      [writeTestExpression(ctx, expr.array)],
     );
 
   export const sampleRandom = (
@@ -41,8 +41,8 @@ export namespace AutoBeTestRandomProgrammer {
         "sample",
       ),
       arguments: [
-        writeTestExpression(ctx, expr.expression),
-        writeTestExpression(ctx, expr.length),
+        writeTestExpression(ctx, expr.array),
+        writeTestExpression(ctx, expr.count),
       ],
     });
 

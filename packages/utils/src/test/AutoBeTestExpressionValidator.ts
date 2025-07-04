@@ -162,19 +162,19 @@ export namespace AutoBeTestExpressionValidator {
     item: AutoBeTest.IArrayRepeatExpression,
     path: string,
   ): void => {
-    validateTestExpression(ctx, item.length, `${path}.length`);
+    validateTestExpression(ctx, item.count, `${path}.length`);
     arrowFunction(ctx, item.function, `${path}.function`);
   };
 
   const arrayClosureExpression = (
     ctx: IAutoBeTextValidateContext,
     item: {
-      expression: AutoBeTest.IExpression;
+      array: AutoBeTest.IExpression;
       function: AutoBeTest.IArrowFunction;
     },
     path: string,
   ): void => {
-    validateTestExpression(ctx, item.expression, `${path}.expression`);
+    validateTestExpression(ctx, item.array, `${path}.expression`);
     arrowFunction(ctx, item.function, `${path}.function`);
   };
 
@@ -186,7 +186,7 @@ export namespace AutoBeTestExpressionValidator {
     item: AutoBeTest.IPickRandom,
     path: string,
   ): void => {
-    validateTestExpression(ctx, item.expression, `${path}.expression`);
+    validateTestExpression(ctx, item.array, `${path}.expression`);
   };
 
   export const sampleRandom = (
@@ -194,8 +194,8 @@ export namespace AutoBeTestExpressionValidator {
     item: AutoBeTest.ISampleRandom,
     path: string,
   ): void => {
-    validateTestExpression(ctx, item.expression, `${path}.expression`);
-    validateTestExpression(ctx, item.length, `${path}.length`);
+    validateTestExpression(ctx, item.array, `${path}.expression`);
+    validateTestExpression(ctx, item.count, `${path}.length`);
   };
 
   export const booleanRandom = (): void => {};

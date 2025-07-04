@@ -157,6 +157,7 @@ async function process<Model extends ILlmSchema.Model>(
   if (pointer.value === null) {
     console.log(
       "failed to pass validation",
+      (trials.at(-1)?.data as ICreateTestCodeProps | undefined)?.function.draft,
       trials.map((t) => t.errors.map((e) => e.path)),
       JSON.stringify(trials.at(-1), null, 2),
     );

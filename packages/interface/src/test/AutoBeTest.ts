@@ -1925,17 +1925,27 @@ export namespace AutoBeTest {
     /**
      * Array expression to be filtered.
      *
-     * Should evaluate to an array containing business entities or data captured
-     * from API operations. Can reference variables from previous API calls,
-     * array literals, or other expressions that produce arrays.
+     * Must be an expression that evaluates to an array containing business
+     * entities or data that requires filtering based on specific criteria. Can
+     * reference variables from previous API calls, array literals, or other
+     * expressions that produce arrays.
+     *
+     * The array elements will be individually evaluated by the filter function
+     * to determine inclusion in the filtered result. Each element should be
+     * compatible with the filtering logic defined in the function parameter.
      *
      * Examples:
      *
      * - Reference to captured product array from API response
      * - Array of user entities from previous API operations
-     * - Collection of business data for processing
+     * - Collection of business data requiring conditional processing
+     * - Variable references to previously constructed arrays
+     *
+     * Business context: Typically represents collections of entities that need
+     * subset selection based on business rules, such as active users, available
+     * products, or eligible transactions.
      */
-    expression: IExpression;
+    array: IExpression;
 
     /**
      * Arrow function defining the filter criteria.
@@ -1980,17 +1990,28 @@ export namespace AutoBeTest {
     /**
      * Array expression to iterate over.
      *
-     * Should evaluate to an array containing business entities or data that
-     * requires individual processing. Often references collections captured
-     * from API operations or constructed arrays for testing.
+     * Must be an expression that evaluates to an array containing business
+     * entities or data that requires individual element processing. Often
+     * references collections captured from API operations or constructed arrays
+     * for testing.
+     *
+     * Each element in the array will be passed to the function for processing.
+     * The array can contain any type of business data appropriate for the
+     * intended operation.
      *
      * Examples:
      *
      * - Array of customers from API response requiring individual validation
      * - Collection of orders needing status verification
      * - List of products requiring individual business rule checks
+     * - User entities from previous API calls needing processing
+     *
+     * Business context: Represents collections where each element needs
+     * individual attention, such as validation, logging, or side-effect
+     * operations that don't transform the data but perform actions based on
+     * each element's properties.
      */
-    expression: IExpression;
+    array: IExpression;
 
     /**
      * Arrow function executed for each array element.
@@ -2035,17 +2056,28 @@ export namespace AutoBeTest {
     /**
      * Array expression to be transformed.
      *
-     * Should evaluate to an array containing business entities or data that
-     * needs transformation. Often references collections captured from API
-     * operations that require conversion to different formats.
+     * Must be an expression that evaluates to an array containing business
+     * entities or data that needs transformation. Often references collections
+     * captured from API operations that require conversion to different
+     * formats.
+     *
+     * Each element in the array will be passed to the transformation function
+     * to produce a corresponding element in the resulting array. The original
+     * array remains unchanged.
      *
      * Examples:
      *
      * - Array of product entities requiring ID extraction
      * - Collection of users needing transformation to summary format
      * - Business data requiring format conversion for API parameters
+     * - Entity arrays from API responses needing property extraction
+     *
+     * Business context: Represents source data that needs to be converted to a
+     * different format or structure, such as extracting specific fields,
+     * calculating derived values, or preparing data for subsequent API
+     * operations.
      */
-    expression: IExpression;
+    array: IExpression;
 
     /**
      * Arrow function defining the transformation logic.
@@ -2086,26 +2118,42 @@ export namespace AutoBeTest {
     type: "arrayRepeatExpression";
 
     /**
-     * Expression determining the array length.
+     * Expression determining how many elements to generate.
      *
-     * Can be a literal number for fixed length or a random generator for
-     * variable length. Should reflect realistic business constraints (e.g.,
-     * reasonable product quantities, user list sizes).
+     * Must be an expression that evaluates to a number representing the desired
+     * array length. Can be a literal number for fixed length or a random
+     * generator for variable length. Should reflect realistic business
+     * constraints and use cases.
      *
      * **⚠️ CRITICAL AI RESTRICTION: This MUST be an AST expression, NOT a raw
-     * number! ⚠️** **❌ WRONG: 5 (raw number)** **✅ CORRECT: INumericLiteral
-     * with value: 5 (AST expression)** **✅ CORRECT: IIntegerRandom for variable
-     * length (AST expression)**
+     * number! ⚠️**
+     *
+     * **❌ WRONG: 5 (raw number)** **✅ CORRECT: INumericLiteral with value: 5
+     * (AST expression)** **✅ CORRECT: IIntegerRandom for variable length (AST
+     * expression)**
      *
      * Examples:
      *
-     * - INumericLiteral(5) for exactly 5 elements
-     * - IIntegerRandom for variable length within business limits
+     * - `INumericLiteral(5)` for exactly 5 elements
+     * - `IIntegerRandom({ minimum: 3, maximum: 7 })` for variable length
+     * - `IIdentifier("itemCount")` for dynamic count from captured data
      *
-     * AI consideration: Choose lengths appropriate for the business context
-     * (e.g., 1-10 for shopping cart items, 10-100 for product catalogs).
+     * Business considerations:
+     *
+     * - 1-10 for shopping cart items (realistic user behavior)
+     * - 5-20 for product reviews (typical engagement levels)
+     * - 10-100 for product catalogs (reasonable inventory sizes)
+     * - 3-8 for team member lists (typical business team sizes)
+     *
+     * The count should be appropriate for the business context and reflect
+     * realistic data volumes that would be encountered in actual API
+     * operations.
+     *
+     * AI constraint setting: Choose counts that make business sense for the
+     * specific use case, considering both realistic data volumes and system
+     * performance implications when used in API operations.
      */
-    length: IExpression;
+    count: IExpression;
 
     /**
      * Arrow function for generating individual array elements.
@@ -2128,115 +2176,53 @@ export namespace AutoBeTest {
     RANDOM
   ----------------------------------------------------------- */
   /**
-   * Random picker for selecting from predefined options.
+   * Randomly selects an element from an array expression.
    *
-   * Randomly selects one element from a provided array or collection. Essential
-   * for choosing from predefined business options like categories, statuses, or
-   * configuration values, particularly for API operation parameters.
-   *
-   * E2E testing scenarios:
-   *
-   * - Random category selection from available options for API calls
-   * - Status selection from valid business states for test data
-   * - Configuration option selection for API parameters
-   * - User role assignment from available roles for test scenarios
-   *
-   * **Note**: Often used to generate realistic parameters for
-   * `IApiOperateStatement` by selecting from valid business values.
-   *
-   * AI function calling usage: Use when business logic requires selection from
-   * a constrained set of valid options that reflect real API constraints.
-   *
-   * **🚨 CRITICAL AI REQUIREMENT: MUST use 'expression' property! 🚨**
-   *
-   * **❌ WRONG - Do NOT use these invalid property names:**
-   *
-   * - `items: [1, 2, 3, 4]` ❌ No such property exists!
-   * - `options: ["a", "b", "c"]` ❌ No such property exists!
-   * - `choices: [...]` ❌ No such property exists!
-   * - `values: [...]` ❌ No such property exists!
-   * - `array: [...]` ❌ No such property exists!
-   * - `list: [...]` ❌ No such property exists!
-   *
-   * **✅ CORRECT - MUST use 'expression' property:**
-   *
-   * ```typescript
-   * {
-   *   "type": "pickRandom",
-   *   "expression": {
-   *     "type": "arrayLiteralExpression",
-   *     "elements": [
-   *       { "type": "stringLiteral", "value": "option1" },
-   *       { "type": "stringLiteral", "value": "option2" }
-   *     ]
-   *   }
-   * }
-   * ```
-   *
-   * **⚠️ CRITICAL: expression must be IExpression AST type, NOT raw values!**
-   *
-   * The interface ONLY has 'type' and 'expression' properties. There are NO
-   * other properties like 'items', 'options', 'choices', etc. Always use
-   * 'expression'!
+   * Picks one element randomly from the provided array expression. Used for
+   * selecting categories, status values, etc. for API parameters and test
+   * data.
    */
   export interface IPickRandom {
-    /** Type discriminator. */
+    /** Type discriminator */
     type: "pickRandom";
 
     /**
-     * Expression evaluating to the collection from which to pick.
+     * Array expression to pick from.
      *
-     * **🚨 CRITICAL: This is the ONLY property for the target collection! 🚨**
+     * Must be an expression that evaluates to an array containing the candidate
+     * elements for random selection. Can be any expression type that produces
+     * an array:
      *
-     * **PROPERTY NAME ENFORCEMENT:**
+     * - Array literals with explicit elements
+     * - Variable references to previously captured arrays
+     * - Function calls that return arrays
+     * - Property access to array properties
      *
-     * - Property name is 'expression' (not 'items', 'options', 'choices', etc.)
-     * - This is the ONLY way to specify the collection to pick from
-     * - Do NOT invent other property names - they don't exist in this interface
+     * The array should contain at least one element for meaningful random
+     * selection. All elements should be of compatible types appropriate for the
+     * business context.
      *
-     * Typically an array literal containing valid business options or an
-     * identifier referencing a predefined collection. Can also reference data
-     * captured from previous API operations.
-     *
-     * **⚠️ CRITICAL AI RESTRICTION: Must be AST expression, NOT raw array! ⚠️**
-     *
-     * **❌ WRONG - Raw values or invalid properties:**
-     *
-     * ```typescript
-     * {
-     *   "type": "pickRandom",
-     *   "items": ["electronics", "clothing"] // ❌ No 'items' property!
-     * }
-     * ```
-     *
-     * **✅ CORRECT - Proper AST expression:**
+     * Example:
      *
      * ```typescript
      * {
      *   "type": "pickRandom",
-     *   "expression": {
-     *     // ✅ Correct property name
+     *   "array": {
      *     "type": "arrayLiteralExpression",
      *     "elements": [
      *       { "type": "stringLiteral", "value": "electronics" },
-     *       { "type": "stringLiteral", "value": "clothing" }
+     *       { "type": "stringLiteral", "value": "clothing" },
+     *       { "type": "stringLiteral", "value": "books" }
      *     ]
      *   }
      * }
      * ```
      *
-     * Examples:
-     *
-     * - Array of category names: ["electronics", "clothing", "books"]
-     * - Array of status values: ["pending", "approved", "rejected"]
-     * - Array of configuration options for API parameters
-     * - Reference to captured data: availableRoles (from previous API call)
-     *
-     * AI requirement: Ensure all options in the collection are valid for the
-     * business context where the selection will be used, especially if the
-     * result will be used in API operations.
+     * Business usage: Commonly used for selecting random categories, status
+     * values, or options in API operation parameters to create varied test
+     * scenarios.
      */
-    expression: IExpression;
+    array: IExpression;
   }
 
   /**
@@ -2266,33 +2252,69 @@ export namespace AutoBeTest {
     type: "sampleRandom";
 
     /**
-     * Expression evaluating to the collection from which to sample.
+     * Array expression containing the collection to sample from.
      *
-     * Should contain more elements than the count to enable meaningful random
-     * selection. Elements should be valid business entities appropriate for the
-     * sampling context. Can reference captured data from previous API
-     * operations.
+     * Must be an expression that evaluates to an array containing more elements
+     * than the requested sample count to enable meaningful random selection.
+     * Elements should be valid business entities appropriate for the sampling
+     * context.
+     *
+     * Can reference captured data from previous API operations, array literals,
+     * or other expressions that produce collections suitable for sampling.
      *
      * Examples:
      *
      * - Array of product IDs from captured API response
      * - Collection of user entities from previous API call
      * - Available options from business configuration
+     * - Variable references to previously constructed arrays
+     *
+     * The collection size should exceed the `count` parameter to ensure
+     * meaningful random sampling without duplication.
+     *
+     * Business context: Typically represents pools of available entities like
+     * product catalogs, user lists, or option sets that need subset selection
+     * for API operations.
      */
-    expression: IExpression;
+    array: IExpression;
 
     /**
-     * Number of elements to select from the collection.
+     * Expression determining how many elements to select from the collection.
      *
-     * Must be less than or equal to the collection size. Should represent
-     * realistic business requirements for the sampling scenario (e.g., 3-5
-     * featured products, 10 sample users).
+     * Must be an expression that evaluates to a number representing the desired
+     * sample size. Should be less than or equal to the collection size to avoid
+     * sampling errors. Should represent realistic business requirements for the
+     * sampling scenario.
      *
-     * AI consideration: Choose counts that make business sense for the specific
-     * use case and available collection size, especially when the result will
-     * be used in API operations.
+     * **⚠️ CRITICAL AI RESTRICTION: This MUST be an AST expression, NOT a raw
+     * number! ⚠️**
+     *
+     * **❌ WRONG: 3 (raw number)** **✅ CORRECT: INumericLiteral with value: 3
+     * (AST expression)** **✅ CORRECT: IIntegerRandom for variable count (AST
+     * expression)**
+     *
+     * Examples:
+     *
+     * - `INumericLiteral(3)` for exactly 3 featured products
+     * - `IIntegerRandom({ minimum: 2, maximum: 5 })` for variable selection
+     * - `IIdentifier("sampleSize")` for dynamic count from captured data
+     *
+     * Business considerations:
+     *
+     * - 3-5 for featured products (typical homepage display)
+     * - 5-10 for sample users (reasonable notification batch)
+     * - 10-20 for transaction samples (meaningful analysis size)
+     * - 2-8 for recommended items (typical recommendation count)
+     *
+     * The count should be appropriate for the business context and not exceed
+     * the available collection size. Consider both user experience and system
+     * performance when selecting sample sizes for API operations.
+     *
+     * AI selection strategy: Choose counts that reflect realistic business
+     * requirements and typical usage patterns, especially when the sampled data
+     * will be used in subsequent API operations.
      */
-    length: IExpression;
+    count: IExpression;
   }
 
   /**

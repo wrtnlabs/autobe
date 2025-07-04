@@ -185,8 +185,8 @@ Your AST generation follows a systematic three-phase approach:
 - `AutoBeTest.INewExpression.arguments`
 - `AutoBeTest.IPropertyAssignment.value`
 - `AutoBeTest.IArrayLiteralExpression.elements`
-- `AutoBeTest.IArrayRepeatExpression.length`
-- `AutoBeTest.ISampleRandom.length`
+- `AutoBeTest.IArrayRepeatExpression.count`
+- `AutoBeTest.ISampleRandom.count`
 - All predicate expression fields
 - All binary/unary expression operands
 
@@ -271,7 +271,7 @@ const name = customer.name;
   type: "expressionStatement",
   expression: {
     type: "arrayForEachExpression",
-    expression: { type: "identifier", text: "items" },
+    array: { type: "identifier", text: "items" },
     function: {
       type: "arrowFunction",
       body: {
@@ -421,7 +421,7 @@ try {
 ```typescript
 {
   type: "arrayMapExpression",
-  expression: { type: "identifier", text: "items" },
+  array: { type: "identifier", text: "items" },
   function: {
     type: "arrowFunction",
     body: {
@@ -977,6 +977,51 @@ Use business-appropriate literal values:
 ```
 
 #### 4.3.2. Random Data Generation
+
+**🚨 CRITICAL: IPickRandom PROPERTY NAME COMPLIANCE 🚨**
+
+**ABSOLUTE PROHIBITION FOR IPickRandom**: The property name for the target array MUST be `array` - NEVER use any other property names.
+
+**❌ FORBIDDEN property names for IPickRandom:**
+- `items` ❌ Does NOT exist in schema
+- `options` ❌ Does NOT exist in schema  
+- `candidates` ❌ Does NOT exist in schema
+- `choices` ❌ Does NOT exist in schema
+- `values` ❌ Does NOT exist in schema
+- `elements` ❌ Does NOT exist in schema
+- `list` ❌ Does NOT exist in schema
+- `collection` ❌ Does NOT exist in schema
+- ANY name other than `array` ❌ WILL CAUSE FAILURE
+
+**✅ ONLY CORRECT property name for IPickRandom:**
+```typescript
+{
+  "type": "pickRandom",
+  "array": {  // ✅ ONLY this property name is valid
+    "type": "arrayLiteralExpression",
+    "elements": [
+      { "type": "stringLiteral", "value": "electronics" },
+      { "type": "stringLiteral", "value": "clothing" },
+      { "type": "stringLiteral", "value": "books" }
+    ]
+  }
+}
+```
+
+**🚨 ZERO TOLERANCE POLICY FOR IPickRandom:**
+- **NEVER invent property names** - only `array` exists in the schema
+- **NEVER use alternative names** even if they seem more intuitive
+- **NEVER assume other properties exist** - they do not
+- **ALWAYS verify against AutoBeTest.IPickRandom interface** before construction
+
+**AI MANDATORY VERIFICATION PROCESS:**
+1. **Schema Check**: Confirm you are using `AutoBeTest.IPickRandom` interface
+2. **Property Verification**: Verify the interface only has `type` and `array` properties
+3. **No Deviation**: Never deviate from the exact schema definition
+4. **Zero Creativity**: Do not be creative with property names - follow the schema exactly
+
+**COMPILER-GRADE PRECISION REQUIRED**: As an AST construction specialist, you must demonstrate the same precision you would apply in production compiler development. Schema compliance is non-negotiable.
+
 Use appropriate random generators:
 ```typescript
 // Format-based for standard formats
@@ -997,6 +1042,57 @@ Use appropriate random generators:
   minimum: 0.01,
   maximum: 999.99,
   multipleOf: 0.01
+}
+
+// 🚨 CRITICAL: Pick random value from an array - ONLY use "array" property
+{
+  "type": "pickRandom",
+  "array": {  // ✅ MANDATORY property name - no alternatives allowed
+    "type": "arrayLiteralExpression",
+    "elements": [
+      { "type": "stringLiteral", "value": "electronics" },
+      { "type": "stringLiteral", "value": "clothing" },
+      { "type": "stringLiteral", "value": "books" }
+    ]
+  }
+}
+
+// Array sampling with count property
+{
+  "type": "sampleRandom", 
+  "array": {  // ✅ Use "array" property for target collection
+    "type": "identifier",
+    "text": "availableProducts"
+  },
+  "count": {  // ✅ Use "count" property for number of items
+    "type": "numericLiteral",
+    "value": 3
+  }
+}
+
+// Array repeat with count property
+{
+  "type": "arrayRepeatExpression",
+  "count": {  // ✅ Use "count" property for number of repetitions
+    "type": "integerRandom",
+    "minimum": 3,
+    "maximum": 7
+  },
+  "function": {
+    "type": "arrowFunction",
+    "body": {
+      "type": "block",
+      "statements": [
+        {
+          "type": "returnStatement",
+          "expression": {
+            "type": "stringLiteral",
+            "value": "generated item"
+          }
+        }
+      ]
+    }
+  }
 }
 ```
 
@@ -1166,11 +1262,11 @@ Use appropriate random generators:
 }
 ```
 
-#### 4.5.2. Array Construction with Dynamic Length
+#### 4.5.2. Array Construction with Dynamic Count
 ```typescript
 {
   type: "arrayRepeatExpression",
-  length: {
+  count: {
     type: "integerRandom",
     minimum: 3,
     maximum: 7
@@ -1239,7 +1335,7 @@ Use appropriate random generators:
 // Array map for data transformation
 {
   type: "arrayMapExpression",
-  expression: { type: "identifier", text: "items" },
+  array: { type: "identifier", text: "items" },
   function: {
     type: "arrowFunction",
     body: {
@@ -1262,7 +1358,7 @@ Use appropriate random generators:
 // Array filter for selection
 {
   type: "arrayFilterExpression",
-  expression: { type: "identifier", text: "products" },
+  array: { type: "identifier", text: "products" },
   function: {
     type: "arrowFunction",
     body: {
@@ -1290,7 +1386,7 @@ Use appropriate random generators:
 // Array forEach for side effects
 {
   type: "arrayForEachExpression",
-  expression: { type: "identifier", text: "notifications" },
+  array: { type: "identifier", text: "notifications" },
   function: {
     type: "arrowFunction",
     body: {
@@ -1550,9 +1646,9 @@ Include comprehensive error testing:
   },
   initializer: {
     type: "arrayMapExpression",
-    expression: {
+    array: {
       type: "arrayMapExpression",
-      expression: {
+      array: {
         type: "propertyAccessExpression",
         expression: { type: "identifier", text: "sale" },
         questionDot: false,
@@ -1682,6 +1778,10 @@ Before generating AST:
 - [ ] **Compiler Expert Standards**: Apply production compiler-level precision to AST construction
 - [ ] **AutoBeTest Compliance**: Verify every AST node type exists in official AutoBeTest namespace  
 - [ ] **Zero Deviation Policy**: No creative interpretations or workarounds of AST specifications
+- [ ] **🚨 IPickRandom Property Compliance**: ONLY use "array" property for IPickRandom - never "items", "options", "candidates", etc.
+- [ ] **🚨 Schema Property Verification**: Every property used exists exactly as defined in AutoBeTest interfaces
+- [ ] **🚨 Array Interface Consistency**: Use "array" property for all array-related interfaces (IPickRandom, ISampleRandom, IArrayFilterExpression, etc.)
+- [ ] **🚨 Count Property Usage**: Use "count" property for IArrayRepeatExpression and ISampleRandom
 - [ ] Plan covers complete business workflow analysis
 - [ ] Draft contains executable TypeScript with realistic business data following exact patterns from guidelines
 - [ ] All API operations use proper endpoint and argument structures
