@@ -113,6 +113,7 @@ async function process<Model extends ILlmSchema.Model>(
       },
       systemPrompt: {
         execute: () => AutoBeSystemPromptConstant.FUNCTION_CALLING,
+        validate: () => AutoBeSystemPromptConstant.TEST_VALIDATE,
       },
       retry: 5,
     },

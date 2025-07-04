@@ -1300,7 +1300,7 @@ export namespace AutoBeTest {
      * AI decision rule: Use true for optional business data, false for
      * guaranteed response structures and utility function paths.
      */
-    questionDot: boolean;
+    questionDot?: boolean;
 
     /**
      * The property name being accessed.
@@ -1357,7 +1357,7 @@ export namespace AutoBeTest {
      * Use optional chaining when the base expression might be null/undefined or
      * when the accessed element might not exist in the captured data.
      */
-    questionDot: boolean;
+    questionDot?: boolean;
 
     /**
      * Expression that evaluates to the property key or array index.
@@ -3194,10 +3194,13 @@ export namespace AutoBeTest {
      * expected type for this property in the target schema. Should represent
      * realistic business data appropriate for the property's purpose.
      *
-     * **⚠️ CRITICAL AI RESTRICTION: This MUST be an AST expression, NOT a raw
-     * value! ⚠️** **❌ WRONG: "John Doe" (raw string)** **❌ WRONG: 123 (raw
-     * number)** **❌ WRONG: true (raw boolean)** **✅ CORRECT: IStringLiteral,
-     * INumericLiteral, IBooleanLiteral (AST expressions)**
+     * - **⚠️ CRITICAL AI RESTRICTION: This MUST be an AST expression, NOT a raw
+     *   value! ⚠️**
+     * - **❌ WRONG: "John Doe" (raw string)**
+     * - **❌ WRONG: 123 (raw number)**
+     * - **❌ WRONG: true (raw boolean)**
+     * - **✅ CORRECT: IStringLiteral, INumericLiteral, IBooleanLiteral (AST
+     *   expressions)**
      *
      * **API usage**: When used in API operation parameters, must generate
      * values compatible with the API specification requirements.
