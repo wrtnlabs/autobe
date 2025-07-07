@@ -22,19 +22,10 @@ export const validate_agent_realize_integrator = async (
 
   const map = new Map<string, true>();
   const events: AutoBeEvent[] = [];
-  const enroll = async (event: AutoBeEvent) => {
+  const enroll = (event: AutoBeEvent) => {
     if (!map.has(event.type)) {
       map.set(event.type, true);
       console.log(event.type);
-    }
-
-    if (event.type === "realizeIntegrator") {
-      await FileSystemIterator.save({
-        root: `${TestGlobal.ROOT}/results/${project}/realize/integrator/logs`,
-        files: {
-          "integrator.json": typia.json.stringify(event),
-        },
-      });
     }
 
     events.push(event);
