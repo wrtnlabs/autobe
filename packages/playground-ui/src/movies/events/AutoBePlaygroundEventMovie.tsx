@@ -40,6 +40,7 @@ export function AutoBePlaygroundEventMovie(
     case "interfaceComplement":
     case "testWrite":
     case "realizeProgress":
+    case "realizeIntegrator":
     case "testScenario":
       return <AutoBePlaygroundProgressEventMovie event={props.event} />;
     // COMPLETE EVENTS
