@@ -1,12 +1,15 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
 import { v4 } from "uuid";
 
+import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../context/AutoBeState";
+import { IAutoBeTestScenarioArtifacts } from "../test/structures/IAutoBeTestScenarioArtifacts";
 import { RealizePlannerOutput } from "./orchestrateRealizePlanner";
 
 export const transformRealizeCoderHistories = (
   state: AutoBeState,
   props: RealizePlannerOutput,
+  artifacts: IAutoBeTestScenarioArtifacts,
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
@@ -93,6 +96,35 @@ export const transformRealizeCoderHistories = (
   }
 
   return [
+    {
+      id: v4(),
+      created_at: new Date().toISOString(),
+      type: "systemMessage",
+      text: [
+        AutoBeSystemPromptConstant.REALIZE_CODER,
+        "",
+        "# Prisma Schemas",
+        JSON.stringify(state.prisma.schemas),
+        "",
+        "# SDK",
+        "",
+        "The following is the SDK for the API. Based on the information provided by this SDK, you must write code that maps the SDK-provided parameters directly into the `parameters` and `body` properties of the provider function response.",
+        "If there are no parameters, define `parameters` as `Record<string, never>`. Similarly, if there is no body, define `body` as `Record<string, never>`.",
+        "**Every function must be implemented to accept both `parameters` and `body`, without exception.**",
+        "If any required type information is referenced in the SDK, refer to the definitions in the DTO section.",
+        "",
+        "```json",
+        JSON.stringify(artifacts.sdk),
+        "```",
+        "",
+        "# DTO",
+        "if you want to import this files, write this: 'import { something } from '../api/structures/something';'",
+        "",
+        "```json",
+        JSON.stringify(artifacts.dto),
+        "```",
+      ].join("\n"),
+    },
     {
       id: v4(),
       created_at: new Date().toISOString(),
