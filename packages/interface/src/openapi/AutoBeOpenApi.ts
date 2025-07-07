@@ -391,6 +391,58 @@ export namespace AutoBeOpenApi {
      * Should be null for operations that don't return any data.
      */
     responseBody: AutoBeOpenApi.IResponseBody | null;
+
+    /**
+     * Authorization
+     *
+     * Defines which user role is subject to strategies such as membership
+     * registration, login, token issuance, refresh token, etc.
+     */
+    authorization: IAuthorization;
+  }
+
+  /**
+   * Authorization - Authentication and user type information
+   *
+   * This field defines how the API authenticates the request and restricts
+   * access to specific user types.
+   *
+   * ✅ Only the `Authorization` HTTP header is used for authentication. The
+   * expected format is:
+   *
+   * Authorization: Bearer <access_token>
+   *
+   * The token must be a bearer token (e.g., JWT or similar), and when parsed,
+   * it is guaranteed to include at least the authenticated actor's `id` field.
+   * No other headers or cookie-based authentication methods are supported.
+   */
+  export interface IAuthorization {
+    /**
+     * Allowed user types for this API
+     *
+     * Specifies which user types are permitted to access this API. Example:
+     * ["admin", "customer", "seller"]
+     *
+     * This is not a permission level or access control role. Instead, it
+     * describes **who** the user is — their type within the service's domain
+     * model. Typically matches a "member type" or similar field in the user
+     * database.
+     *
+     * For example:
+     *
+     * - "admin": system administrator
+     * - "customer": general end-user
+     * - "seller": third-party vendor or merchant
+     */
+    role: string[];
+
+    /**
+     * Authentication method type
+     *
+     * Currently only `"bearer"` is supported, which uses a Bearer token in the
+     * HTTP Authorization header.
+     */
+    type: "Bearer";
   }
 
   /**
