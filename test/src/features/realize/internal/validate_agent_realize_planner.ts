@@ -35,6 +35,7 @@ export const validate_agent_realize_planner = async (
 
   agent.on("realizeStart", enroll);
   agent.on("realizeProgress", enroll);
+  agent.on("realizeIntegrator", enroll);
   agent.on("realizeValidate", enroll);
   agent.on("realizeComplete", enroll);
 
