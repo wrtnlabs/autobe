@@ -95,9 +95,7 @@ export const orchestrateRealizeIntegrator = async <
     const currentCode = files?.[filename];
     if (!currentCode) throw new Error(`Controller file ${filename} not found.`);
 
-    const pointer: IPointer<
-      (IIntegrateControllerProps & { code: string }) | null
-    > = {
+    const pointer: IPointer<IIntegrateControllerProps | null> = {
       value: null,
     };
 
@@ -121,7 +119,6 @@ export const orchestrateRealizeIntegrator = async <
           build: (next) => {
             pointer.value = {
               ...next,
-              code: currentCode,
             };
           },
         }),
@@ -141,21 +138,20 @@ export const orchestrateRealizeIntegrator = async <
       .replace(/\s+/g, "\\s+"); // 모든 공백을 \s+로 변경
 
     const regex = new RegExp(targetEscaped, "gm");
-    pointer.value.code = pointer.value.code.replace(
+    const resultCode = currentCode.replace(
       regex,
       pointer.value.modifiedCode.trim(),
     );
 
     // TODO: Apply Retry Logic when replace failed
-
-    files[filename] = pointer.value.code;
+    files[filename] = resultCode;
 
     const event: AutoBeRealizeIntegratorEvent = {
       type: "realizeIntegrator",
       created_at: new Date().toISOString(),
       step: ctx.state().test?.step ?? 0,
       file: {
-        [filename]: pointer.value.code,
+        [filename]: resultCode,
       },
       result: "success",
     };
