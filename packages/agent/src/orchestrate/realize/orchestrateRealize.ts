@@ -45,6 +45,7 @@ export const orchestrateRealize =
         );
 
         try {
+          await prev;
           return await fn();
         } finally {
           release!();
@@ -59,6 +60,8 @@ export const orchestrateRealize =
       };
     })();
 
+    const files = ctx.state().interface?.files ?? {};
+
     const codes: (RealizeValidatorOutput | FAILED)[] = await Promise.all(
       ops.map(async (op) =>
         pipe(
@@ -66,7 +69,13 @@ export const orchestrateRealize =
           (op) => orchestrateRealizePlanner(ctx, op),
           (p) => orchestrateRealizeCoder(ctx, p),
           (c) =>
-            orchestrateRealizeIntegrator(ctx, c, op, lockController.withLock),
+            orchestrateRealizeIntegrator(
+              ctx,
+              c,
+              op,
+              files,
+              lockController.withLock,
+            ),
           (i) => orchestrateRealizeValidator(ctx, i),
         ),
       ),
