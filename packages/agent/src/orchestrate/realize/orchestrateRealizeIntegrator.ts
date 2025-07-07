@@ -2,6 +2,7 @@ import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import { AutoBeOpenApi } from "@autobe/interface";
 import { AutoBeRealizeIntegratorEvent } from "@autobe/interface/src/events/AutoBeRealizeIntegratorEvent";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
+import prettier from "prettier";
 import { IPointer } from "tstl";
 import typia from "typia";
 
@@ -138,9 +139,9 @@ export const orchestrateRealizeIntegrator = async <
       .replace(/\s+/g, "\\s+"); // 모든 공백을 \s+로 변경
 
     const regex = new RegExp(targetEscaped, "gm");
-    const resultCode = currentCode.replace(
-      regex,
-      pointer.value.modifiedCode.trim(),
+    const resultCode = await prettier.format(
+      currentCode.replace(regex, pointer.value.modifiedCode.trim()),
+      { parser: "typescript" },
     );
 
     // TODO: Apply Retry Logic when replace failed
