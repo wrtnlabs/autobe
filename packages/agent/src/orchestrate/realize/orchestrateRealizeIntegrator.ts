@@ -1,7 +1,14 @@
-import { ILlmSchema } from "@samchon/openapi";
+import { IAgenticaController, MicroAgentica } from "@agentica/core";
+import { AutoBeOpenApi } from "@autobe/interface";
+import { AutoBeRealizeIntegratorEvent } from "@autobe/interface/src/events/AutoBeRealizeIntegratorEvent";
+import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
+import { IPointer } from "tstl";
+import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
+import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { RealizeCoderOutput } from "./orchestrateRealizeCoder";
+import { transformRealizeIntegratorHistories } from "./transformRealizeIntegratorHistories";
 
 /**
  * The result of integrating the generated code into the actual application
@@ -50,26 +57,190 @@ export interface RealizeIntegratorOutput {
  *
  * @param ctx - AutoBE context including current source files and settings
  * @param props - Output from the code generation step to be integrated
+ * @param operation - The operation being integrated
+ * @param withLock - Lock function to prevent concurrent modifications to the
+ *   same controller file
  * @returns Integration status, indicating success or failure of insertion
  */
+
 export const orchestrateRealizeIntegrator = async <
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
   props: RealizeCoderOutput,
-): Promise<RealizeIntegratorOutput> => {
-  props;
+  operation: AutoBeOpenApi.IOperation,
+  files: Record<string, string>,
+  withLock: <T>(key: string, fn: () => Promise<T>) => Promise<T>,
+): Promise<AutoBeRealizeIntegratorEvent> => {
+  const controllers: [string, string][] = Object.entries(files).filter(
+    ([filename]) => filename.endsWith("Controller.ts"),
+  );
 
-  const controllers: [string, string][] = Object.entries(
-    ctx.state().interface?.files ?? {},
-  ).filter(([filename]) => {
-    return filename.endsWith("controller.ts");
+  const expected =
+    operation.path
+      .split("/")
+      .slice(1, 3)
+      .map((p) => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase())
+      .join("") + "Controller.ts";
+
+  const controller = controllers.find(([filename]) =>
+    filename.endsWith(expected),
+  );
+
+  if (controller === undefined) throw new Error("Controller not found.");
+
+  const [filename] = controller;
+
+  return withLock(filename, async () => {
+    const currentCode = files?.[filename];
+    if (!currentCode) throw new Error(`Controller file ${filename} not found.`);
+
+    const pointer: IPointer<
+      (IIntegrateControllerProps & { code: string }) | null
+    > = {
+      value: null,
+    };
+
+    const agentica: MicroAgentica<Model> = new MicroAgentica({
+      model: ctx.model,
+      vendor: ctx.vendor,
+      config: {
+        ...ctx.config,
+        executor: {
+          describe: null,
+        },
+      },
+      histories: transformRealizeIntegratorHistories(
+        currentCode,
+        props,
+        operation,
+      ),
+      controllers: [
+        createApplication({
+          model: ctx.model,
+          build: (next) => {
+            pointer.value = {
+              ...next,
+              code: currentCode,
+            };
+          },
+        }),
+      ],
+    });
+
+    await agentica.conversate(
+      "Modify the code to integrate the function into the controller.",
+    );
+
+    if (pointer.value === null) throw new Error("Failed to integrate code.");
+
+    // indent를 무시하는 정규표현식으로 replace
+    const targetEscaped = pointer.value.targetCode
+      .trim()
+      .replace(/[.*+?^${}()|[\]\\]/g, "\\$&") // 정규표현식 특수문자 escape
+      .replace(/\s+/g, "\\s+"); // 모든 공백을 \s+로 변경
+
+    const regex = new RegExp(targetEscaped, "gm");
+    pointer.value.code = pointer.value.code.replace(
+      regex,
+      pointer.value.modifiedCode.trim(),
+    );
+
+    // TODO: Apply Retry Logic when replace failed
+
+    files[filename] = pointer.value.code;
+
+    const event: AutoBeRealizeIntegratorEvent = {
+      type: "realizeIntegrator",
+      created_at: new Date().toISOString(),
+      step: ctx.state().test?.step ?? 0,
+      file: {
+        [filename]: pointer.value.code,
+      },
+      result: "success",
+    };
+
+    ctx.dispatch(event);
+
+    return event;
   });
-
-  // Placeholder: insert props.implementationCode into selected controller
-  // Inject necessary import statements for used types/functions
-  // Optionally run TypeScript compiler in dry-run mode to validate correctness
-  controllers;
-
-  return null!;
 };
+
+function createApplication<Model extends ILlmSchema.Model>(props: {
+  model: Model;
+  build: (next: IIntegrateControllerProps) => void;
+}): IAgenticaController.IClass<Model> {
+  assertSchemaModel(props.model);
+
+  const application: ILlmApplication<Model> = collection[
+    props.model
+  ] as unknown as ILlmApplication<Model>;
+  return {
+    protocol: "class",
+    name: "Integrate Controller",
+    application,
+    execute: {
+      integrateController: (next) => {
+        props.build(next);
+      },
+    } satisfies IApplication,
+  };
+}
+
+const claude = typia.llm.application<
+  IApplication,
+  "claude",
+  {
+    reference: true;
+  }
+>();
+const collection = {
+  chatgpt: typia.llm.application<
+    IApplication,
+    "chatgpt",
+    { reference: true }
+  >(),
+  claude,
+  llama: claude,
+  deepseek: claude,
+  "3.1": claude,
+  "3.0": typia.llm.application<IApplication, "3.0">(),
+};
+
+interface IApplication {
+  integrateController(props: IIntegrateControllerProps): void;
+}
+
+interface IIntegrateControllerProps {
+  /**
+   * The original target method code that needs to be modified.
+   *
+   * Extract and return only the specific controller method that matches the
+   * OpenAPI operation, including its decorators, signature, and body.
+   */
+  targetCode: string;
+
+  /**
+   * The modified version of the target method with function integration.
+   *
+   * Return the same method as targetCode but with the method body replaced by
+   * the function call. Keep the method signature identical, only change the
+   * body to call the integrated function with proper parameters.
+   */
+  modifiedCode: string;
+
+  // /**
+  //  * The complete controller file with the function integration applied.
+  //  *
+  //  * Take the transformation shown in targetCode → modifiedCode and apply it to
+  //  * the complete controller file:
+  //  *
+  //  * - Find the method in the full controller that matches targetCode
+  //  * - Replace it with the modified version as shown in modifiedCode
+  //  * - Keep all other parts of the file unchanged (imports, other methods, etc.)
+  //  *
+  //  * Return the complete controller file where only the target method has been
+  //  * modified according to the demonstrated pattern.
+  //  */
+  // code: string;
+}
