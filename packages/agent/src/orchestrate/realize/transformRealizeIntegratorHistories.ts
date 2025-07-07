@@ -2,8 +2,8 @@ import { IAgenticaHistoryJson } from "@agentica/core";
 import { AutoBeOpenApi } from "@autobe/interface";
 import { v4 } from "uuid";
 
-import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
-import { RealizeCoderOutput } from "../orchestrateRealizeCoder";
+import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
+import { RealizeCoderOutput } from "./orchestrateRealizeCoder";
 
 export const transformRealizeIntegratorHistories = (
   code: string,
