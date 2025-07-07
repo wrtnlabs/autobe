@@ -50,7 +50,7 @@ export const validate_agent_realize_coder = async (
         pipe(
           op,
           (op) => orchestrateRealizePlanner(ctx, op),
-          (c) => orchestrateRealizeCoder(ctx, c),
+          (c) => orchestrateRealizeCoder(ctx, op, c),
         ),
       ),
     );
@@ -60,13 +60,25 @@ export const validate_agent_realize_coder = async (
     | FAILED
   )[] = await go();
 
+  const providers = result
+    .filter((el) => el !== FAILED)
+    .reduce<Record<string, string>>((acc, cur) => {
+      return Object.assign(acc, {
+        [`src/providers/${cur.functionName}.ts`]: cur.implementationCode,
+      });
+    }, {});
+
   const histories = agent.getHistories();
+  const prisma = agent.getContext().state().prisma?.compiled;
+  const nodeModules = prisma?.type === "success" ? prisma.nodeModules : {};
 
   // REPORT RESULT
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/${project}/realize/main`,
     files: {
       ...(await agent.getFiles()),
+      ...providers,
+      ...nodeModules,
       "logs/events.json": typia.json.stringify(events),
       "logs/result.json": typia.json.stringify(result),
       "logs/histories.json": typia.json.stringify(histories),
