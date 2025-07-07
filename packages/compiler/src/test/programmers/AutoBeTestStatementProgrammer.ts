@@ -1,6 +1,6 @@
 import { AutoBeTest } from "@autobe/interface";
-import { NestiaMigrateSchemaProgrammer } from "@nestia/migrate/lib/programmers/NestiaMigrateSchemaProgrammer";
-import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
+// import { NestiaMigrateSchemaProgrammer } from "@nestia/migrate/lib/programmers/NestiaMigrateSchemaProgrammer";
+// import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
 import ts from "typescript";
 
 import { IAutoBeTestApiFunction } from "./IAutoBeTestApiFunction";
@@ -26,32 +26,32 @@ export namespace AutoBeTestStatementProgrammer {
       writeTestExpression(ctx, stmt.expression),
     );
 
-  export const variableDeclaration = (
-    ctx: IAutoBeTestProgrammerContext,
-    stmt: AutoBeTest.IVariableDeclaration,
-  ): ts.VariableStatement => {
-    const typeNode: ts.TypeNode = NestiaMigrateSchemaProgrammer.write({
-      components: ctx.document.components,
-      importer: ctx.importer,
-      schema: OpenApiV3_1Emender.convertSchema(ctx.document.components)(
-        stmt.schema,
-      ),
-    });
-    return ts.factory.createVariableStatement(
-      undefined,
-      ts.factory.createVariableDeclarationList(
-        [
-          ts.factory.createVariableDeclaration(
-            stmt.name,
-            undefined,
-            typeNode,
-            undefined,
-          ),
-        ],
-        stmt.mutability === "const" ? ts.NodeFlags.Constant : ts.NodeFlags.Let,
-      ),
-    );
-  };
+  // export const variableDeclaration = (
+  //   ctx: IAutoBeTestProgrammerContext,
+  //   stmt: AutoBeTest.IVariableDeclaration,
+  // ): ts.VariableStatement => {
+  //   const typeNode: ts.TypeNode = NestiaMigrateSchemaProgrammer.write({
+  //     components: ctx.document.components,
+  //     importer: ctx.importer,
+  //     schema: OpenApiV3_1Emender.convertSchema(ctx.document.components)(
+  //       stmt.schema,
+  //     ),
+  //   });
+  //   return ts.factory.createVariableStatement(
+  //     undefined,
+  //     ts.factory.createVariableDeclarationList(
+  //       [
+  //         ts.factory.createVariableDeclaration(
+  //           stmt.name,
+  //           undefined,
+  //           typeNode,
+  //           undefined,
+  //         ),
+  //       ],
+  //       stmt.mutability === "const" ? ts.NodeFlags.Constant : ts.NodeFlags.Let,
+  //     ),
+  //   );
+  // };
 
   export const ifStatement = (
     ctx: IAutoBeTestProgrammerContext,

@@ -9,7 +9,6 @@ import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 
-import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { enforceToolCall } from "../../utils/enforceToolCall";
@@ -33,43 +32,45 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
      * individual test code implementations. Each scenario is processed to
      * generate corresponding test code and progress events.
      */
-    scenarios.map(async (scenario) => {
-      const artifacts: IAutoBeTestScenarioArtifacts = await compileTestScenario(
-        ctx,
-        scenario,
-      );
-      const result: ICreateTestCodeProps | null = await process(
-        ctx,
-        scenario,
-        artifacts,
-        life,
-        null,
-      );
-      if (result === null) return null;
+    scenarios.map(
+      async (
+        scenario: AutoBeTestScenario,
+      ): Promise<IAutoBeTestWriteResult | null> => {
+        const artifacts: IAutoBeTestScenarioArtifacts =
+          await compileTestScenario(ctx, scenario);
+        const result: ICreateTestCodeProps | null = await (async () => {
+          try {
+            return await process(ctx, scenario, artifacts, life, null);
+          } catch {
+            return null;
+          }
+        })();
+        if (result === null) return null;
 
-      const event: AutoBeTestWriteEvent = {
-        type: "testWrite",
-        created_at: start.toISOString(),
-        file: {
-          location: `test/features/api/${result.domain}/${scenario.functionName}.ts`,
-          function: result.function,
-          content: await ctx.compiler.test.write({
-            scenario,
-            document: ctx.state().interface!.document,
+        const event: AutoBeTestWriteEvent = {
+          type: "testWrite",
+          created_at: start.toISOString(),
+          file: {
+            location: `test/features/api/${result.domain}/${scenario.functionName}.ts`,
             function: result.function,
-          }),
-          scenario,
-        },
-        completed: ++complete,
-        total: scenarios.length,
-        step: ctx.state().interface?.step ?? 0,
-      };
-      ctx.dispatch(event);
-      return {
-        artifacts,
-        file: event.file,
-      };
-    }),
+            content: await ctx.compiler.test.write({
+              scenario,
+              document: ctx.state().interface!.document,
+              function: result.function,
+            }),
+            scenario,
+          },
+          completed: ++complete,
+          total: scenarios.length,
+          step: ctx.state().interface?.step ?? 0,
+        };
+        ctx.dispatch(event);
+        return {
+          artifacts,
+          file: event.file,
+        };
+      },
+    ),
   );
   console.log(ctx.usage().test.aggregate);
   return writes.filter((w) => w !== null);
@@ -106,22 +107,6 @@ async function process<Model extends ILlmSchema.Model>(
       executor: {
         describe: null,
       },
-      systemPrompt: {
-        execute: () => AutoBeSystemPromptConstant.FUNCTION_CALLING,
-        validate: (events) =>
-          [
-            AutoBeSystemPromptConstant.TEST_VALIDATE,
-            ...(events.length !== 0
-              ? [
-                  "",
-                  AutoBeSystemPromptConstant.TEST_VALIDATE_REPEAT.replace(
-                    "${{HISTORICAL_ERRORS}}",
-                    JSON.stringify(events.map((e) => e.result.errors)),
-                  ),
-                ]
-              : []),
-          ].join("\n"),
-      },
       retry: 4,
     },
     histories: transformTestWriteHistories({
@@ -156,14 +141,7 @@ async function process<Model extends ILlmSchema.Model>(
     );
     return null;
   }
-  console.log(
-    "Function calling success",
-    JSON.stringify(
-      trials.map((t) => t.errors),
-      null,
-      2,
-    ),
-  );
+  console.log("Function calling success", trials.length + 1);
 
   // custom validation by compiler
   const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
