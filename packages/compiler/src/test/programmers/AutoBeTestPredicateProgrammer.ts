@@ -74,7 +74,7 @@ export namespace AutoBeTestPredicateProgrammer {
             name: "TestValidator",
           }),
         ),
-        "conditional",
+        "predicate",
       ),
       arguments: [
         ts.factory.createStringLiteral(expression.title),

@@ -1,10 +1,10 @@
 import { AutoBeOpenApi, IAutoBeTestWriteProps } from "@autobe/interface";
+import { AutoBeEndpointComparator } from "@autobe/utils";
 import { NestiaMigrateImportProgrammer } from "@nestia/migrate/lib/programmers/NestiaMigrateImportProgrammer";
 import { HttpMigration, IHttpMigrateApplication } from "@samchon/openapi";
 import { HashMap, Pair } from "tstl";
 import ts, { FunctionDeclaration } from "typescript";
 
-import { AutoBeEndpointComparator } from "../../interface/AutoBeEndpointComparator";
 import { transformOpenApiDocument } from "../../interface/transformOpenApi";
 import { FilePrinter } from "../../utils/FilePrinter";
 import { IAutoBeTestApiFunction } from "./IAutoBeTestApiFunction";
@@ -25,7 +25,21 @@ export function writeTestFunction(props: IAutoBeTestWriteProps): string {
     undefined,
     props.scenario.functionName,
     undefined,
-    [],
+    [
+      ts.factory.createParameterDeclaration(
+        undefined,
+        undefined,
+        "connection",
+        undefined,
+        ts.factory.createTypeReferenceNode(
+          `${ctx.importer.external({
+            type: "default",
+            name: "api",
+            library: `@ORGANIZATION/PROJECT-api`,
+          })}.IConnection`,
+        ),
+      ),
+    ],
     undefined,
     ts.factory.createBlock(
       props.function.statements
@@ -37,7 +51,7 @@ export function writeTestFunction(props: IAutoBeTestWriteProps): string {
   return FilePrinter.write({
     statements: [
       ...ctx.importer.toStatements(
-        (key) => `@ORGANIZATION/${key}-api/lib/structures/${key}`,
+        (key) => `@ORGANIZATION/PROJECT-api/lib/structures/${key}`,
       ),
       FilePrinter.newLine(),
       FilePrinter.description(decla, props.scenario.draft),
@@ -80,7 +94,7 @@ function associate(
       method: route.method as "get",
     };
     functions.emplace(endpoint, {
-      accessor: "api." + route.accessor.join("."),
+      accessor: "api.functional." + route.accessor.join("."),
       operation: operations.get(endpoint),
     });
   }

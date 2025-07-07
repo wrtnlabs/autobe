@@ -5,8 +5,13 @@ import {
   AutoBeTestScenario,
   AutoBeTestWriteEvent,
 } from "@autobe/interface";
+import {
+  AutoBeEndpointComparator,
+  IAutoBeTextValidateContext,
+  validateTestFunction,
+} from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
-import { IPointer } from "tstl";
+import { HashMap, IPointer, Pair } from "tstl";
 import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
@@ -25,7 +30,6 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
   const start: Date = new Date();
   let complete: number = 0;
 
-  console.log("Number of scenarios:", scenarios.length);
   const writes: Array<IAutoBeTestWriteResult | null> = await Promise.all(
     /**
      * Generate test code for each scenario. Maps through plans array to create
@@ -72,7 +76,6 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
       },
     ),
   );
-  console.log(ctx.usage().test.aggregate);
   return writes.filter((w) => w !== null);
 }
 
@@ -117,6 +120,7 @@ async function process<Model extends ILlmSchema.Model>(
     controllers: [
       createApplication({
         model: ctx.model,
+        document: ctx.state().interface!.document,
         build: (next) => {
           pointer.value = next;
         },
@@ -160,13 +164,52 @@ async function process<Model extends ILlmSchema.Model>(
 
 function createApplication<Model extends ILlmSchema.Model>(props: {
   model: Model;
+  document: AutoBeOpenApi.IDocument;
   build: (next: ICreateTestCodeProps) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
+  const endpoints: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation> =
+    new HashMap(
+      props.document.operations.map(
+        (op) =>
+          new Pair(
+            {
+              method: op.method,
+              path: op.path,
+            },
+            op,
+          ),
+      ),
+      AutoBeEndpointComparator.hashCode,
+      AutoBeEndpointComparator.equals,
+    );
   const application: ILlmApplication<Model> = collection[
     props.model
   ] as unknown as ILlmApplication<Model>;
+  application.functions[0].validate = (
+    input: unknown,
+  ): IValidation<unknown> => {
+    const result: IValidation<ICreateTestCodeProps> =
+      typia.validate<ICreateTestCodeProps>(input);
+    if (result.success === false) return result;
+
+    const context: IAutoBeTextValidateContext = {
+      function: result.data.function,
+      document: props.document,
+      endpoints,
+      errors: [],
+    };
+    validateTestFunction(context);
+    return context.errors.length === 0
+      ? result
+      : {
+          success: false,
+          data: result.data,
+          errors: context.errors,
+        };
+  };
+
   return {
     protocol: "class",
     name: "Create Test Code",

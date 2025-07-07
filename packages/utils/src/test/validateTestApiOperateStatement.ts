@@ -17,11 +17,14 @@ export const validateTestApiOperateStatement = (
     ctx.errors.push({
       path: `${path}.endpoint`,
       value: stmt.endpoint,
-      expected: [
+      expected: ctx.document.operations
+        .map((o) => `AutoBeOpenApi.IEndpoint<"${o.method}", "${o.path}">`)
+        .join(" | "),
+      description: [
         "You can use only endpoints defined in the OpenAPI document.",
         "",
         ctx.document.operations
-          .map((o) => `- ${o.method} ${o.path}`)
+          .map((o) => `- { method: "${o.method}", path: "${o.path}" }`)
           .join("\n"),
       ].join("\n"),
     });
