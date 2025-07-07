@@ -1,4 +1,5 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
+import { AutoBeOpenApi } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -6,6 +7,8 @@ import typia from "typia";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { enforceToolCall } from "../../utils/enforceToolCall";
+import { compileTestScenario } from "../test/compile/compileTestScenario";
+import { IAutoBeTestScenarioArtifacts } from "../test/structures/IAutoBeTestScenarioArtifacts";
 import { FAILED } from "./orchestrateRealize";
 import { RealizePlannerOutput } from "./orchestrateRealizePlanner";
 import { IAutoBeRealizeCorderApplication } from "./structures/IAutoBeRealizeCorderApplication";
@@ -31,9 +34,19 @@ import { transformRealizeCoderHistories } from "./transformRealizeCoderHistories
  */
 export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
+  operation: AutoBeOpenApi.IOperation,
   props: RealizePlannerOutput,
 ): Promise<IAutoBeRealizeCorderApplication.RealizeCoderOutput | FAILED> => {
-  ctx;
+  const artifacts: IAutoBeTestScenarioArtifacts = await compileTestScenario(
+    ctx,
+    {
+      endpoint: {
+        method: operation.method,
+        path: operation.path,
+      },
+      dependencies: [],
+    },
+  );
 
   const pointer: IPointer<Pick<
     IAutoBeRealizeCorderApplication.RealizeCoderOutput,
@@ -59,15 +72,25 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
         describe: null,
       },
     },
-    histories: transformRealizeCoderHistories(ctx.state(), props),
+    histories: transformRealizeCoderHistories(ctx.state(), props, artifacts),
   });
   enforceToolCall(agent);
 
   await agent.conversate("Write code.");
+  const tokenUsage = agent.getTokenUsage();
+  ctx.usage().record(tokenUsage, ["realize"]);
 
   if (pointer.value === null) {
     return FAILED;
   }
+
+  pointer.value.implementationCode = [
+    'import { MyGlobal } from "../MyGlobal";',
+    "",
+    pointer.value.implementationCode,
+  ].join("\n");
+
+  console.log({ ...pointer.value, functionName: props.functionName });
 
   return { ...pointer.value, functionName: props.functionName };
 };

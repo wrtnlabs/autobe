@@ -32,7 +32,7 @@ export const orchestrateRealize =
         pipe(
           op,
           (op) => orchestrateRealizePlanner(ctx, op),
-          (p) => orchestrateRealizeCoder(ctx, p),
+          (p) => orchestrateRealizeCoder(ctx, op, p),
           (c) => orchestrateRealizeIntegrator(ctx, c),
           (i) => orchestrateRealizeValidator(ctx, i),
         ),
