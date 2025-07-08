@@ -41,7 +41,14 @@ export const validate_agent_test_write = async (
     ...Object.entries(await agent.getFiles()).filter(
       ([key]) => key.startsWith("test/features") === false,
     ),
-    ...writes.map((w) => [w.file.location, w.file.content]),
+    ...writes
+      .map((w) => [
+        [w.event.location.replace(".ts", ".scenario"), w.event.scenario],
+        [w.event.location.replace(".ts", ".draft.ts"), w.event.draft],
+        [w.event.location.replace(".ts", ".review"), w.event.review],
+        [w.event.location, w.event.final],
+      ])
+      .flat(),
   ]);
   const compiled: IAutoBeTypeScriptCompileResult = await agent
     .getContext()
@@ -58,12 +65,6 @@ export const validate_agent_test_write = async (
     root: `${TestGlobal.ROOT}/results/${project}/test/write`,
     files: {
       ...files,
-      ...Object.fromEntries(
-        writes.map((w) => [
-          w.file.location.replace(".ts", ".json"),
-          JSON.stringify(w.file.function, null, 2),
-        ]),
-      ),
       "logs/writes.json": JSON.stringify(writes, null, 2),
       "logs/compiled.json": JSON.stringify(compiled, null, 2),
     },

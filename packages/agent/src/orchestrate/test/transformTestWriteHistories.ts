@@ -1,81 +1,93 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
-import { AutoBeTest, AutoBeTestScenario } from "@autobe/interface";
-import typia, { IValidation } from "typia";
+import { AutoBeTestScenario } from "@autobe/interface";
+import { StringUtil, transformOpenApiDocument } from "@autobe/utils";
+import {
+  HttpMigration,
+  IHttpMigrateApplication,
+  OpenApi,
+} from "@samchon/openapi";
+import typia from "typia";
 import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
 
-export const transformTestWriteHistories = (props: {
-  scenario: AutoBeTestScenario;
-  artifacts: IAutoBeTestScenarioArtifacts;
-  failure: IValidation.IFailure | null;
-}): Array<
+export const transformTestWriteHistories = (
+  scenario: AutoBeTestScenario,
+  artifacts: IAutoBeTestScenarioArtifacts,
+): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
-> => {
-  return [
-    {
-      id: v4(),
-      created_at: new Date().toISOString(),
-      type: "systemMessage",
-      text: AutoBeSystemPromptConstant.TEST_WRITE.replace(
-        "{{VALID_STATEMENT_TYPES}}",
-        typia.misc
-          .literals<AutoBeTest.IStatement["type"]>()
-          .map((s) => `  - ${s}`)
-          .join("\n"),
-      ).replace(
-        "{{VALID_EXPRESSION_TYPES}}",
-        typia.misc
-          .literals<AutoBeTest.IExpression["type"]>()
-          .map((s) => `  - ${s}`)
-          .join("\n"),
-      ),
-    },
-    {
-      id: v4(),
-      created_at: new Date().toISOString(),
-      type: "assistantMessage",
-      text: [
-        "Here is the list of input material composition.",
-        "",
-        "Make e2e test functions based on the following information.",
-        "",
-        "## Scenario Plan",
-        "```json",
-        JSON.stringify(props.scenario),
-        "```",
-        "",
-        "## OpenAPI Document",
-        "```json",
-        JSON.stringify(props.artifacts.document),
-        "```",
-        "",
-      ].join("\n"),
-    },
-    ...(props.failure !== null
-      ? [
-          {
-            id: v4(),
-            created_at: new Date().toISOString(),
-            type: "assistantMessage",
-            text: [
-              "You have written a test function by AI function calling,",
-              "but the function calling generated argument could not pass",
-              "the validation rule",
-              "",
-              "Here is the validation error information. Please fix the error",
-              "when re-trying the AI functiopn calling.",
-              "",
-              "- `data`: Previous composed argument what you've written",
-              "- `errors`: Validation error information",
-              "",
-              "```json",
-              JSON.stringify(props.failure),
-              "```",
-            ].join("\n"),
-          } satisfies IAgenticaHistoryJson.IAssistantMessage,
-        ]
-      : []),
-  ];
+> => [
+  transformArtifact(scenario, artifacts),
+  {
+    id: v4(),
+    created_at: new Date().toISOString(),
+    type: "systemMessage",
+    text: AutoBeSystemPromptConstant.TEST_WRITE.replace(
+      "${{AutoBeTestScenario}}",
+      JSON.stringify(typia.llm.parameters<AutoBeTestScenario, "llama">()),
+    ),
+  },
+];
+
+const transformArtifact = (
+  scenario: AutoBeTestScenario,
+  artifacts: IAutoBeTestScenarioArtifacts,
+):
+  | IAgenticaHistoryJson.IAssistantMessage
+  | IAgenticaHistoryJson.ISystemMessage => {
+  const document: OpenApi.IDocument = transformOpenApiDocument(
+    artifacts.document,
+  );
+  const app: IHttpMigrateApplication = HttpMigration.application(document);
+  return {
+    id: v4(),
+    created_at: new Date().toISOString(),
+    type: "systemMessage",
+    text: StringUtil.trim`
+        Here is the list of input material composition.
+
+        Make e2e test functions based on the following information.
+
+        ## Scenario Plan
+
+        Here is the scenario plan what you have to implement.
+
+        \`\`\`json
+        ${JSON.stringify(scenario)}
+        \`\`\`
+
+        ## DTO Definitions
+
+        You can use these DTO definitions.
+
+        ${Object.keys(artifacts.document.components.schemas)
+          .map((k) => `- ${k}`)
+          .join("\n")}
+
+        \`\`\`json
+        ${JSON.stringify(artifacts.dto)}
+        \`\`\`
+
+        ## API (SDK) Functions
+
+        You can use these API functions.
+
+        ${app.routes.map((r) => `- api.functional.${r.accessor.join(".")}`).join("\n")}
+
+        And here is the declaration files of the API functions.
+        
+        \`\`\`json
+        ${JSON.stringify(artifacts.sdk)}
+        \`\`\`
+
+        ## E2E Mockup Functions
+
+        Just reference, and never follow this code as it is.
+
+        \`\`\`json
+        ${JSON.stringify(artifacts.e2e)}
+        \`\`\`
+      `,
+  };
 };
