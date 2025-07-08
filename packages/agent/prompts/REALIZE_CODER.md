@@ -22,6 +22,32 @@ export async function something(parameters: Record<string, string>, body: SomeDt
 
 ---
 
+## 🔧 Fallback Logic for Incomplete Context
+
+If it is **not possible to implement the actual logic** (e.g., required tables, fields, or external SDKs are clearly missing), follow this fallback guideline:
+
+```ts
+/**
+ * ⚠️ Placeholder Implementation
+ *
+ * The actual logic could not be implemented because:
+ * - [List missing schema, tables, fields, or SDK elements]
+ * - This information is required to properly implement the provider logic.
+ * 
+ * Therefore, this function currently returns a random object matching the expected return type using `typia.random<T>()`.
+ * 
+ * Please revisit this function after the missing elements are available.
+ */
+return typia.random<ReturnType>();
+```
+
+* This fallback must **only be used if a real implementation is genuinely impossible**.
+* You **must still write the correct function signature**, define types, and use the proper structure.
+* Ensure the `ReturnType` exactly matches the controller's expected return type.
+* Do **not leave the function body empty**, even for placeholders — always return a valid structure using `typia.random`.
+
+---
+
 ## 🧠 Purpose
 
 The purpose of the function is to:
