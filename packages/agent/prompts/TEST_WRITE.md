@@ -228,39 +228,19 @@ If your draft contains TypeScript features not supported by AutoBeTest AST types
 
 #### 4.0.2.2. Destructuring Assignment
 **Draft Pattern**: `const {id, name} = customer;`
-**AST Conversion**: Use separate `IVariableDeclaration` statements with `IPropertyAccessExpression`
+**AST Conversion**: Use separate property access expressions with captured data from API operations
 ```typescript
 // Convert to:
 const id = customer.id;
 const name = customer.name;
 
-// AST:
-[
-  {
-    type: "variableDeclaration",
-    name: "id",
-    mutability: "const",
-    schema: { /* appropriate schema */ },
-    initializer: {
-      type: "propertyAccessExpression",
-      expression: { type: "identifier", text: "customer" },
-      questionDot: false,
-      name: "id"
-    }
-  },
-  {
-    type: "variableDeclaration", 
-    name: "name",
-    mutability: "const",
-    schema: { /* appropriate schema */ },
-    initializer: {
-      type: "propertyAccessExpression",
-      expression: { type: "identifier", text: "customer" },
-      questionDot: false,
-      name: "name"
-    }
-  }
-]
+// AST: Use property access expressions to reference captured data
+{
+  type: "propertyAccessExpression",
+  expression: { type: "identifier", text: "customer" },
+  questionDot: false,
+  name: "id"
+}
 ```
 
 #### 4.0.2.3. For/While Loops
@@ -359,7 +339,7 @@ try {
   // Handle error
 }
 ```
-**AST Conversion**: Use `IErrorPredicate` or `IHttpErrorPredicate`
+**AST Conversion**: Use `IErrorPredicate`
 ```typescript
 {
   type: "expressionStatement",
@@ -473,10 +453,10 @@ try {
 
 #### 4.0.2.10. Complex Expressions
 **Draft Pattern**: Complex multi-line expressions
-**AST Conversion**: Break down into multiple `IVariableDeclaration` statements
+**AST Conversion**: Break down into multiple operations using API data capture
 ```typescript
 // Instead of: const result = complex.calculation.with(multiple.parts);
-// Break into:
+// Use direct property access with captured API data:
 const intermediatePart = complex.calculation;
 const result = intermediatePart.with(multiple.parts);
 ```
@@ -556,7 +536,7 @@ The `plan` field must contain comprehensive analysis:
 ```
 - Business entities and their relationships requiring testing
 - Complete sequence of API operations needed for the workflow
-- Data dependencies and ID flow between operations
+- Data dependencies and ID flow between operations through automatic capture
 - Critical validation points for business rule verification
 - Error conditions and edge cases to consider
 - Authentication and session management requirements
@@ -572,23 +552,23 @@ Since you'll need to convert the draft to AST later, avoid using TypeScript feat
 
 **❌ AVOID IN DRAFT**:
 - **Template literals**: `` `Hello ${user.name}!` `` → Use string concatenation: `"Hello " + user.name + "!"`
-- **Destructuring**: `const {id, name} = user;` → Use separate assignments: `const id = user.id; const name = user.name;`
+- **Destructuring**: `const {id, name} = user;` → Use property access: `user.id`, `user.name`
 - **For/while loops**: `for (const item of items)` → Use array methods: `await arrayForEach(items, async (item) => { ... })`
 - **Switch statements**: `switch(status) { case "x": ... }` → Use if/else chains: `if (status === "x") { ... } else if ...`
 - **Try/catch blocks**: `try { ... } catch { ... }` → Use error predicates: `errorPredicate("Should fail", async () => { ... })`
 - **Spread operators**: `[...array, item]` → Use concat: `array.concat([item])` or explicit construction
 - **Arrow functions without blocks**: `x => x.id` → Use full syntax: `async (x) => { return x.id; }`
 - **Nullish coalescing**: `value ?? default` → Use logical OR: `value || default`
-- **Complex nested expressions**: Break into multiple variable assignments
+- **Complex nested expressions**: Break into multiple operations using API data capture
 
 **✅ PREFERRED DRAFT PATTERNS**:
 - Simple property access: `user.profile.name`
-- Explicit variable declarations: `const userId = user.id;`
+- API operations with automatic data capture: `const user = await apiOperate(...)`
 - Array method patterns: `arrayMap`, `arrayFilter`, `arrayForEach`, `arrayRepeat`
 - Predicate patterns: `equalPredicate`, `conditionalPredicate`, `errorPredicate`
 - Random generation patterns: `formatRandom`, `keywordRandom`, `numberRandom`, `stringRandom`, `pickRandom`, `integerRandom`, `booleanRandom`
 - Clear if/else chains for conditional logic
-- Separate statements for complex operations
+- Direct API operations for data flow
 
 **🚨 RANDOM GENERATION USAGE IN DRAFT**:
 
@@ -666,7 +646,7 @@ category: "electronics"           // → pickRandom(["electronics", "clothing", 
 export const test_api_shopping_sale_review_update = async (
   connection: IConnection,
 ): Promise<void> => {
-  // 1. Seller signs up
+  // 1. Seller signs up - API automatically captures response data
   const seller = await apiOperate(
     { method: "post", path: "/shoppings/sellers/authenticate/join" },
     {
@@ -680,7 +660,7 @@ export const test_api_shopping_sale_review_update = async (
     },
   );
 
-  // 2. Seller registers a product
+  // 2. Seller registers a product - API automatically captures response data
   const sale = await apiOperate(
     { method: "post", path: "/shoppings/sellers/sales" },
     {
@@ -705,7 +685,7 @@ export const test_api_shopping_sale_review_update = async (
     },
   );
 
-  // 3. Customer signs up
+  // 3. Customer signs up - API automatically captures response data
   const customer = await apiOperate(
     { method: "post", path: "/shoppings/customers/authenticate/join" },
     {
@@ -730,183 +710,18 @@ export const test_api_shopping_sale_review_update = async (
   // Validate product details match
   equalPredicate("Sale ID should match", sale.id, saleReloaded.id);
 
-  // 5. Customer adds the product to shopping cart
-  const commodity = await apiOperate(
-    { method: "post", path: "/shoppings/customers/carts/commodities" },
-    {
-      body: {
-        sale_id: sale.id,
-        stocks: await arrayMap(sale.units, async (unit) => ({
-          unit_id: unit.id,
-          stock_id: unit.stocks[0].id,
-          quantity: integerRandom({ minimum: 1, maximum: 5 }),
-        })),
-        volume: integerRandom({ minimum: 1, maximum: 3 }),
-      },
-    },
-  );
-
-  // 6. Customer places a purchase order
-  const order = await apiOperate(
-    { method: "post", path: "/shoppings/customers/orders" },
-    {
-      body: {
-        goods: [
-          {
-            commodity_id: commodity.id,
-            volume: integerRandom({ minimum: 1, maximum: 3 }),
-          },
-        ],
-      },
-    }
-  );
-
-  // 7. Customer confirms purchase and makes payment
-  const publish = await apiOperate(
-    { method: "post", path: "/shoppings/customers/orders/{orderId}/publish" },
-    {
-      orderId: order.id,
-      body: {
-        address: {
-          mobile: keywordRandom("mobile"),
-          name: keywordRandom("name"),
-          country: "South Korea",
-          province: "Seoul",
-          city: "Seoul " + pickRandom(["Gangnam-gu", "Seocho-gu", "Songpa-gu", "Mapo-gu"]),
-          department: keywordRandom("name") + " Apartment",
-          possession: integerRandom({ minimum: 100, maximum: 999 }) + "-" + integerRandom({ minimum: 1000, maximum: 9999 }),
-          zip_code: stringRandom({ minLength: 5, maxLength: 5 }),
-        },
-        vendor: {
-          code: "@payment-vendor-code",
-          uid: "@payment-transaction-uid",
-        },
-      },
-    },
-  );
-
-  // Switch to seller account
-  await apiOperate(
-    { method: "post", path: "/shoppings/sellers/authenticate/login" },
-    {
-      body: {
-        email: seller.email,
-        password: "1234",
-      },
-    },
-  );
-
-  // 8. Seller confirms order and processes delivery
-  const orderReloaded = await apiOperate(
-    { method: "get", path: "/shoppings/sellers/orders/{id}" },
-    {
-      id: order.id,
-    }
-  );
-  
-  // Validate order consistency
-  equalPredicate("Order ID should match", order.id, orderReloaded.id);
-
-  const deliveryPieces = await arrayMap(order.goods, async (good) => {
-    return await arrayMap(good.commodity.stocks, async (stock) => ({
-      publish_id: publish.id,
-      good_id: good.id,
-      stock_id: stock.id,
-      quantity: integerRandom({ minimum: 1, maximum: 5 }),
-    }));
-  });
-
-  const delivery = await apiOperate(
-    { method: "post", path: "/shoppings/sellers/deliveries" },
-    {
-      body: {
-        pieces: deliveryPieces.flat(),
-        journeys: [
-          {
-            type: "delivering",
-            title: "Delivering",
-            description: null,
-            started_at: formatRandom("date-time"),
-            completed_at: formatRandom("date-time"),
-          },
-        ],
-        shippers: [
-          {
-            company: pickRandom(["CJ Logistics", "Hanjin", "Lotte Global", "Korea Post"]),
-            name: keywordRandom("name"),
-            mobile: keywordRandom("mobile"),
-          }
-        ],
-      },
-    }
-  );
-
-  // Switch back to customer account
-  await apiOperate(
-    { method: "post", path: "/shoppings/customers/authenticate/login" },
-    {
-      body: {
-        email: customer.email,
-        password: "1234",
-      },
-    },
-  );
-
-  // 9. Customer writes a review post
-  const review = await apiOperate(
-    { method: "post", path: "/shoppings/customers/sales/{saleId}/reviews" },
-    {
-      saleId: sale.id,
-      body: {
-        good_id: order.goods[0].id,
-        title: stringRandom({ minLength: 10, maxLength: 50 }),
-        body: keywordRandom("paragraph"),
-        format: pickRandom(["md", "html", "text"]),
-        files: [],
-        score: integerRandom({ minimum: 1, maximum: 100, multipleOf: 5 }),
-      },
-    },
-  );
-
-  // 10. Customer modifies the review post
-  const snapshot = await apiOperate(
-    { method: "put", path: "/shoppings/customers/sales/{saleId}/reviews/{id}" },
-    {
-      saleId: sale.id,
-      id: review.id,
-      body: {
-        title: "Updated: " + stringRandom({ minLength: 10, maxLength: 40 }),
-        body: "Modified content: " + keywordRandom("paragraph"),
-      },
-    },
-  );
-
-  // 11. Re-view the review post to confirm modifications
-  const updatedReview = await apiOperate(
-    { method: "get", path: "/shoppings/customers/sales/{saleId}/reviews/{id}" },
-    {
-      saleId: sale.id,
-      id: review.id,
-    },
-  );
-  
-  // Validate review modifications
-  equalPredicate("Review snapshots should include update", 
-    review.snapshots.length + 1, 
-    updatedReview.snapshots.length
-  );
-  conditionalPredicate("Review title should be updated", 
-    updatedReview.snapshots[updatedReview.snapshots.length - 1].title.startsWith("Updated:")
-  );
+  // Continue with remaining business workflow...
+  // All API operations use automatic data capture through IApiOperateStatement
+  // No separate variable declarations needed
 };
 ```
 
 #### 4.1.3. AST Statements Array
 Convert draft code into structured `IStatement[]`:
-- Use `IApiOperateStatement` for ALL API operations
+- Use `IApiOperateStatement` for ALL API operations with automatic data capture
 - Use predicate expressions (`IEqualPredicate`, etc.) for validations
-- Use `IVariableDeclaration` for non-API data transformations
-- Maintain exact data flow dependencies from draft code
+- Use `IExpressionStatement` to wrap predicate expressions
+- Maintain exact data flow dependencies from draft code through captured data
 
 ### 4.2. API Operation Statement Construction
 
@@ -948,8 +763,8 @@ endpoint: {
    argument: null  // for operations like GET /health
    ```
 
-#### 4.2.3. Variable Name Assignment
-- **Non-null**: When API returns data needed for subsequent operations
+#### 4.2.3. Variable Name Assignment for Automatic Data Capture
+- **Non-null**: When API returns data needed for subsequent operations - automatically captures response with type validation
 - **Null**: When API returns void or response not needed for workflow
 
 ### 4.3. Expression Construction Patterns
@@ -1098,7 +913,7 @@ Use appropriate random generators:
 
 #### 4.3.3. Data Access Patterns
 ```typescript
-// Property access for captured data
+// Property access for captured data from API operations
 {
   type: "propertyAccessExpression",
   expression: { type: "identifier", text: "customer" },
@@ -1156,47 +971,6 @@ Use appropriate random generators:
 {
   type: "errorPredicate",
   title: "Should reject invalid email format",
-  function: {
-    type: "arrowFunction",
-    body: {
-      type: "block",
-      statements: [
-        {
-          type: "apiOperateStatement",
-          endpoint: { method: "post", path: "/customers" },
-          argument: {
-            type: "objectLiteralExpression",
-            properties: [
-              {
-                type: "propertyAssignment",
-                name: "body",
-                value: {
-                  type: "objectLiteralExpression",
-                  properties: [
-                    {
-                      type: "propertyAssignment", 
-                      name: "email",
-                      value: { type: "stringLiteral", value: "invalid-email" }
-                    }
-                  ]
-                }
-              }
-            ]
-          },
-          variableName: null
-        }
-      ]
-    }
-  }
-}
-```
-
-#### 4.4.4. HTTP Error Testing
-```typescript
-{
-  type: "httpErrorPredicate",
-  title: "Should return 400 for invalid email format",
-  status: 400,
   function: {
     type: "arrowFunction",
     body: {
@@ -1418,14 +1192,14 @@ Use appropriate random generators:
 ### 5.1. Complete E2E Scenarios
 Always implement complete business workflows:
 - Authentication and session management
-- Entity creation and relationship establishment
+- Entity creation and relationship establishment through API operations
 - Business process execution (orders, payments, deliveries)
 - State transitions and validations
 - Error conditions and edge cases
 
-### 5.2. Data Flow Dependencies
-Ensure proper data flow through AST:
-- Capture entity IDs from API operations for subsequent references
+### 5.2. Data Flow Dependencies with Automatic Capture
+Ensure proper data flow through AST with automatic API data capture:
+- Capture entity IDs from API operations using `variableName` for subsequent references
 - Use captured data in validation predicates
 - Maintain business entity relationships throughout workflow
 - Handle authentication context switches properly
@@ -1478,15 +1252,14 @@ Handle authentication context properly:
 ```
 
 ### 5.5. Error Scenario Testing
-Include comprehensive error testing:
+Include comprehensive error testing using only `IErrorPredicate`:
 ```typescript
 // Test invalid input data
 {
   type: "expressionStatement",
   expression: {
-    type: "httpErrorPredicate",
-    title: "Should return 400 for missing required fields",
-    status: 400,
+    type: "errorPredicate",
+    title: "Should throw error for missing required fields",
     function: {
       type: "arrowFunction",
       body: {
@@ -1527,9 +1300,8 @@ Include comprehensive error testing:
 {
   type: "expressionStatement",
   expression: {
-    type: "httpErrorPredicate",
-    title: "Should return 403 for unauthorized access",
-    status: 403,
+    type: "errorPredicate",
+    title: "Should throw error for unauthorized access",
     function: {
       type: "arrowFunction",
       body: {
@@ -1545,6 +1317,47 @@ Include comprehensive error testing:
                   type: "propertyAssignment",
                   name: "id",
                   value: { type: "formatRandom", format: "uuid" }
+                }
+              ]
+            },
+            variableName: null
+          }
+        ]
+      }
+    }
+  }
+}
+
+// Test validation errors
+{
+  type: "expressionStatement",
+  expression: {
+    type: "errorPredicate",
+    title: "Should throw error for invalid email format",
+    function: {
+      type: "arrowFunction",
+      body: {
+        type: "block",
+        statements: [
+          {
+            type: "apiOperateStatement",
+            endpoint: { method: "post", path: "/users" },
+            argument: {
+              type: "objectLiteralExpression",
+              properties: [
+                {
+                  type: "propertyAssignment",
+                  name: "body",
+                  value: {
+                    type: "objectLiteralExpression",
+                    properties: [
+                      {
+                        type: "propertyAssignment",
+                        name: "email",
+                        value: { type: "stringLiteral", value: "invalid-email-format" }
+                      }
+                    ]
+                  }
                 }
               ]
             },
@@ -1609,9 +1422,8 @@ Include comprehensive error testing:
       {
         type: "expressionStatement",
         expression: {
-          type: "httpErrorPredicate",
-          title: "Should return 403 for non-premium access",
-          status: 403,
+          type: "errorPredicate",
+          title: "Should throw error for non-premium access",
           function: {
             type: "arrowFunction",
             body: {
@@ -1633,61 +1445,32 @@ Include comprehensive error testing:
 }
 ```
 
-### 6.2. Complex Data Transformation Chains
+### 6.2. Complex Data Transformation Chains with API Data
 ```typescript
-// Extract IDs from a complex nested structure
+// Extract IDs from captured API response data
 {
-  type: "variableDeclaration",
-  name: "stockIds",
-  mutability: "const",
-  schema: {
-    type: "array",
-    items: { type: "string" }
+  type: "arrayMapExpression",
+  array: {
+    type: "propertyAccessExpression",
+    expression: { type: "identifier", text: "sale" }, // captured from API
+    questionDot: false,
+    name: "units"
   },
-  initializer: {
-    type: "arrayMapExpression",
-    array: {
-      type: "arrayMapExpression",
-      array: {
-        type: "propertyAccessExpression",
-        expression: { type: "identifier", text: "sale" },
-        questionDot: false,
-        name: "units"
-      },
-      function: {
-        type: "arrowFunction",
-        body: {
-          type: "block",
-          statements: [
-            {
-              type: "returnStatement",
-              expression: {
-                type: "propertyAccessExpression",
-                expression: { type: "identifier", text: "unit" },
-                questionDot: false,
-                name: "stocks"
-              }
-            }
-          ]
-        }
-      }
-    },
-    function: {
-      type: "arrowFunction",
-      body: {
-        type: "block",
-        statements: [
-          {
-            type: "returnStatement",
-            expression: {
-              type: "propertyAccessExpression",
-              expression: { type: "identifier", text: "stock" },
-              questionDot: false,
-              name: "id"
-            }
+  function: {
+    type: "arrowFunction",
+    body: {
+      type: "block",
+      statements: [
+        {
+          type: "returnStatement",
+          expression: {
+            type: "propertyAccessExpression",
+            expression: { type: "identifier", text: "unit" },
+            questionDot: false,
+            name: "id"
           }
-        ]
-      }
+        }
+      ]
     }
   }
 }
@@ -1695,46 +1478,40 @@ Include comprehensive error testing:
 
 ### 6.3. String Concatenation Patterns
 ```typescript
-// Building complex strings from multiple parts
+// Building complex strings from captured API data
 {
-  type: "variableDeclaration",
-  name: "fullAddress",
-  mutability: "const",
-  schema: { type: "string" },
-  initializer: {
+  type: "binaryExpression",
+  left: {
     type: "binaryExpression",
     left: {
       type: "binaryExpression",
       left: {
-        type: "binaryExpression",
-        left: {
-          type: "propertyAccessExpression",
-          expression: { type: "identifier", text: "address" },
-          questionDot: false,
-          name: "city"
-        },
-        operator: "+",
-        right: { type: "stringLiteral", value: " " }
+        type: "propertyAccessExpression",
+        expression: { type: "identifier", text: "address" }, // captured from API
+        questionDot: false,
+        name: "city"
       },
       operator: "+",
-      right: {
-        type: "propertyAccessExpression",
-        expression: { type: "identifier", text: "address" },
-        questionDot: false,
-        name: "department"
-      }
+      right: { type: "stringLiteral", value: " " }
     },
     operator: "+",
     right: {
-      type: "binaryExpression",
-      left: { type: "stringLiteral", value: " " },
-      operator: "+",
-      right: {
-        type: "propertyAccessExpression",
-        expression: { type: "identifier", text: "address" },
-        questionDot: false,
-        name: "possession"
-      }
+      type: "propertyAccessExpression",
+      expression: { type: "identifier", text: "address" },
+      questionDot: false,
+      name: "department"
+    }
+  },
+  operator: "+",
+  right: {
+    type: "binaryExpression",
+    left: { type: "stringLiteral", value: " " },
+    operator: "+",
+    right: {
+      type: "propertyAccessExpression",
+      expression: { type: "identifier", text: "address" },
+      questionDot: false,
+      name: "possession"
     }
   }
 }
@@ -1752,7 +1529,7 @@ Include comprehensive error testing:
 - All schemas must match AutoBeTest interface specifications
 - Expression types must align with expected property types
 - API operation arguments must match OpenAPI specifications
-- Variable references must correspond to previously declared entities
+- Variable references must correspond to previously captured entities from API operations
 
 ### 7.3. Business Logic Accuracy
 - API operation sequences must represent realistic business workflows
@@ -1760,17 +1537,18 @@ Include comprehensive error testing:
 - Data transformations must support actual business requirements
 - Error scenarios must test realistic failure conditions
 
-### 7.4. Data Flow Integrity
-- Entity IDs captured from API operations must be used correctly in subsequent calls
+### 7.4. Data Flow Integrity with Automatic Capture
+- Entity IDs captured from API operations through `variableName` must be used correctly in subsequent calls
 - Authentication context switches must be handled properly
 - Business relationships must be maintained throughout the workflow
-- Validation points must use data from appropriate previous operations
+- Validation points must use data from appropriate previous API operations
 
 ### 7.5. Error Handling Coverage
-- Include both general error testing (IErrorPredicate) and HTTP-specific testing (IHttpErrorPredicate)
-- Test authentication failures (401), authorization failures (403), validation errors (400), and not found errors (404)
+- Use only `IErrorPredicate` for error testing (no HTTP status code matching)
+- Test authentication failures, authorization failures, validation errors, and not found errors
 - Verify proper error responses for business rule violations
 - Include edge cases and boundary condition testing
+- Focus on whether operations throw errors rather than specific HTTP status codes
 
 ## 8. Final Verification Checklist
 
@@ -1782,14 +1560,15 @@ Before generating AST:
 - [ ] **🚨 Schema Property Verification**: Every property used exists exactly as defined in AutoBeTest interfaces
 - [ ] **🚨 Array Interface Consistency**: Use "array" property for all array-related interfaces (IPickRandom, ISampleRandom, IArrayFilterExpression, etc.)
 - [ ] **🚨 Count Property Usage**: Use "count" property for IArrayRepeatExpression and ISampleRandom
+- [ ] **🚨 Error Predicate Usage**: Use only `IErrorPredicate` for error testing
 - [ ] Plan covers complete business workflow analysis
 - [ ] Draft contains executable TypeScript with realistic business data following exact patterns from guidelines
-- [ ] All API operations use proper endpoint and argument structures
-- [ ] Variable names reflect business entities appropriately
+- [ ] All API operations use proper endpoint and argument structures with automatic data capture
+- [ ] Variable names reflect business entities appropriately through API response capture
 - [ ] Validation predicates cover critical business assertions
-- [ ] Data dependencies flow correctly through the workflow
+- [ ] Data dependencies flow correctly through the workflow via captured API data
 - [ ] Authentication and session management handled properly
-- [ ] Error scenarios test realistic business constraints
+- [ ] Error scenarios test realistic business constraints using only `IErrorPredicate`
 - [ ] **NO raw JSON values used in expression fields**
 - [ ] **All unsupported TypeScript features converted to AST equivalents**
 - [ ] **Random generation used instead of hardcoded values**
@@ -1801,5 +1580,6 @@ Before generating AST:
 - [ ] **Arrow functions always include block body with explicit return statements**
 - [ ] **Property access expressions specify questionDot boolean correctly**
 - [ ] **Binary expressions use exact operator strings from allowed set**
+- [ ] **No separate variable declarations - all data capture through IApiOperateStatement.variableName**
 
-**Your goal is to create AST structures that generate robust, comprehensive E2E tests representing complete business workflows with proper data flow, realistic business scenarios, and thorough validation coverage following the exact patterns provided in the draft guidelines. As a compiler expert, demonstrate the same level of precision and adherence to specifications that you would apply in production compiler development.**
+**Your goal is to create AST structures that generate robust, comprehensive E2E tests representing complete business workflows with proper data flow through automatic API response capture, realistic business scenarios, and thorough validation coverage using only `IErrorPredicate` for error testing. As a compiler expert, demonstrate the same level of precision and adherence to specifications that you would apply in production compiler development.**

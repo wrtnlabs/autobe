@@ -6,14 +6,13 @@ import {
   IAutoBeTypeScriptCompileProps,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
-import { validateTestFunction } from "@autobe/utils";
+import { AutoBeEndpointComparator, validateTestFunction } from "@autobe/utils";
 import { EmbedTypeScript } from "embed-typescript";
 import { HashMap, Pair } from "tstl";
 import ts from "typescript";
 import { IValidation } from "typia";
 import typiaTransform from "typia/lib/transform";
 
-import { AutoBeEndpointComparator } from "./interface/AutoBeEndpointComparator";
 import TestExternal from "./raw/test.json";
 import { writeTestFunction } from "./test/programmers/writeTestFunction";
 

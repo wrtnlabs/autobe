@@ -62,11 +62,11 @@ export namespace AutoBeTestStatementValidator {
     validateTestExpression(ctx, item.expression, `${path}.expression`);
   };
 
-  export const variableDeclaration = (
-    ctx: IAutoBeTextValidateContext,
-    item: AutoBeTest.IVariableDeclaration,
-    path: string,
-  ): void => {
-    validateTestExpression(ctx, item.initializer, `${path}.initializer`);
-  };
+  // export const variableDeclaration = (
+  //   ctx: IAutoBeTextValidateContext,
+  //   item: AutoBeTest.IVariableDeclaration,
+  //   path: string,
+  // ): void => {
+  //   validateTestExpression(ctx, item.initializer, `${path}.initializer`);
+  // };
 }

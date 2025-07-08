@@ -660,7 +660,12 @@ export namespace AutoBeOpenApi {
     schemas: Record<string, IJsonSchemaDescriptive>;
 
     /** Whether includes `Authorization` header or not. */
-    authorization?: "header" | undefined;
+    authorization?: {
+      roles: {
+        title: string;
+        description: string;
+      }[];
+    };
   }
 
   /**

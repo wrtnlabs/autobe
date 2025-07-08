@@ -1,6 +1,6 @@
 import { AutoBeTest } from "@autobe/interface";
-import { NestiaMigrateSchemaProgrammer } from "@nestia/migrate/lib/programmers/NestiaMigrateSchemaProgrammer";
-import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
+// import { NestiaMigrateSchemaProgrammer } from "@nestia/migrate/lib/programmers/NestiaMigrateSchemaProgrammer";
+// import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
 import ts from "typescript";
 
 import { IAutoBeTestApiFunction } from "./IAutoBeTestApiFunction";
@@ -26,32 +26,32 @@ export namespace AutoBeTestStatementProgrammer {
       writeTestExpression(ctx, stmt.expression),
     );
 
-  export const variableDeclaration = (
-    ctx: IAutoBeTestProgrammerContext,
-    stmt: AutoBeTest.IVariableDeclaration,
-  ): ts.VariableStatement => {
-    const typeNode: ts.TypeNode = NestiaMigrateSchemaProgrammer.write({
-      components: ctx.document.components,
-      importer: ctx.importer,
-      schema: OpenApiV3_1Emender.convertSchema(ctx.document.components)(
-        stmt.schema,
-      ),
-    });
-    return ts.factory.createVariableStatement(
-      undefined,
-      ts.factory.createVariableDeclarationList(
-        [
-          ts.factory.createVariableDeclaration(
-            stmt.name,
-            undefined,
-            typeNode,
-            undefined,
-          ),
-        ],
-        stmt.mutability === "const" ? ts.NodeFlags.Constant : ts.NodeFlags.Let,
-      ),
-    );
-  };
+  // export const variableDeclaration = (
+  //   ctx: IAutoBeTestProgrammerContext,
+  //   stmt: AutoBeTest.IVariableDeclaration,
+  // ): ts.VariableStatement => {
+  //   const typeNode: ts.TypeNode = NestiaMigrateSchemaProgrammer.write({
+  //     components: ctx.document.components,
+  //     importer: ctx.importer,
+  //     schema: OpenApiV3_1Emender.convertSchema(ctx.document.components)(
+  //       stmt.schema,
+  //     ),
+  //   });
+  //   return ts.factory.createVariableStatement(
+  //     undefined,
+  //     ts.factory.createVariableDeclarationList(
+  //       [
+  //         ts.factory.createVariableDeclaration(
+  //           stmt.name,
+  //           undefined,
+  //           typeNode,
+  //           undefined,
+  //         ),
+  //       ],
+  //       stmt.mutability === "const" ? ts.NodeFlags.Constant : ts.NodeFlags.Let,
+  //     ),
+  //   );
+  // };
 
   export const ifStatement = (
     ctx: IAutoBeTestProgrammerContext,
@@ -82,7 +82,7 @@ export namespace AutoBeTestStatementProgrammer {
   export const apiOperateStatement = (
     ctx: IAutoBeTestProgrammerContext,
     stmt: AutoBeTest.IApiOperateStatement,
-  ): ts.Statement[] => {
+  ): ts.Statement => {
     // find the function
     const func: IAutoBeTestApiFunction = ctx.endpoints.get(stmt.endpoint);
     if (!!stmt.variableName?.length && !!func.operation.responseBody)
@@ -99,53 +99,42 @@ export namespace AutoBeTestStatementProgrammer {
         ],
       ),
     );
+    if (stmt.variableName === null || stmt.variableName === undefined)
+      return ts.factory.createExpressionStatement(initializer);
 
-    // the default statement with variable declaration?
-    const output: ts.Statement[] = [
-      !!stmt.variableName?.length
-        ? ts.factory.createVariableStatement(
-            undefined,
-            ts.factory.createVariableDeclarationList(
-              [
-                ts.factory.createVariableDeclaration(
-                  stmt.variableName,
-                  undefined,
-                  !!func.operation.responseBody
-                    ? ts.factory.createTypeReferenceNode(
-                        func.operation.responseBody.typeName,
-                      )
-                    : ts.factory.createKeywordTypeNode(
-                        ts.SyntaxKind.UndefinedKeyword,
-                      ),
-                  initializer,
-                ),
-              ],
-              ts.NodeFlags.Const,
-            ),
-          )
-        : ts.factory.createExpressionStatement(initializer),
-    ];
-
-    // typia.assert for type guard
-    if (!!stmt.variableName?.length)
-      output.push(
-        ts.factory.createExpressionStatement(
-          ts.factory.createCallExpression(
-            ts.factory.createPropertyAccessExpression(
-              ts.factory.createIdentifier(
-                ctx.importer.external({
-                  type: "default",
-                  library: "typia",
-                  name: "typia",
-                }),
-              ),
-              "assert",
-            ),
-            undefined,
-            [ts.factory.createIdentifier(stmt.variableName)],
-          ),
+    const assertion = ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(
+        ts.factory.createIdentifier(
+          ctx.importer.external({
+            type: "default",
+            library: "typia",
+            name: "typia",
+          }),
         ),
-      );
-    return output;
+        "assert",
+      ),
+      undefined,
+      [initializer],
+    );
+    return ts.factory.createVariableStatement(
+      undefined,
+      ts.factory.createVariableDeclarationList(
+        [
+          ts.factory.createVariableDeclaration(
+            stmt.variableName,
+            undefined,
+            !!func.operation.responseBody
+              ? ts.factory.createTypeReferenceNode(
+                  func.operation.responseBody.typeName,
+                )
+              : ts.factory.createKeywordTypeNode(
+                  ts.SyntaxKind.UndefinedKeyword,
+                ),
+            assertion,
+          ),
+        ],
+        ts.NodeFlags.Const,
+      ),
+    );
   };
 }

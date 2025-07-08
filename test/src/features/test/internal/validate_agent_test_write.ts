@@ -37,7 +37,12 @@ export const validate_agent_test_write = async (
   typia.assert(writes);
 
   // REPORT RESULT
-  const files: Record<string, string> = await agent.getFiles();
+  const files: Record<string, string> = Object.fromEntries([
+    ...Object.entries(await agent.getFiles()).filter(
+      ([key]) => key.startsWith("test/features") === false,
+    ),
+    ...writes.map((w) => [w.file.location, w.file.content]),
+  ]);
   const compiled: IAutoBeTypeScriptCompileResult = await agent
     .getContext()
     .compiler.typescript.compile({
@@ -53,6 +58,12 @@ export const validate_agent_test_write = async (
     root: `${TestGlobal.ROOT}/results/${project}/test/write`,
     files: {
       ...files,
+      ...Object.fromEntries(
+        writes.map((w) => [
+          w.file.location.replace(".ts", ".json"),
+          JSON.stringify(w.file.function, null, 2),
+        ]),
+      ),
       "logs/writes.json": JSON.stringify(writes, null, 2),
       "logs/compiled.json": JSON.stringify(compiled, null, 2),
     },

@@ -74,7 +74,7 @@ export namespace AutoBeTestPredicateProgrammer {
             name: "TestValidator",
           }),
         ),
-        "conditional",
+        "predicate",
       ),
       arguments: [
         ts.factory.createStringLiteral(expression.title),
@@ -103,25 +103,25 @@ export namespace AutoBeTestPredicateProgrammer {
       ],
     });
 
-  export const httpErrorPredicate = (
-    ctx: IAutoBeTestProgrammerContext,
-    expression: AutoBeTest.IHttpErrorPredicate,
-  ): ts.CallExpression =>
-    ExpressionFactory.currying({
-      function: ts.factory.createPropertyAccessExpression(
-        ts.factory.createIdentifier(
-          ctx.importer.external({
-            type: "instance",
-            library: "@nestia/e2e",
-            name: "TestValidator",
-          }),
-        ),
-        "httpError",
-      ),
-      arguments: [
-        ts.factory.createStringLiteral(expression.title),
-        ts.factory.createNumericLiteral(expression.status),
-        writeTestExpression(ctx, expression.function),
-      ],
-    });
+  // export const httpErrorPredicate = (
+  //   ctx: IAutoBeTestProgrammerContext,
+  //   expression: AutoBeTest.IHttpErrorPredicate,
+  // ): ts.CallExpression =>
+  //   ExpressionFactory.currying({
+  //     function: ts.factory.createPropertyAccessExpression(
+  //       ts.factory.createIdentifier(
+  //         ctx.importer.external({
+  //           type: "instance",
+  //           library: "@nestia/e2e",
+  //           name: "TestValidator",
+  //         }),
+  //       ),
+  //       "httpError",
+  //     ),
+  //     arguments: [
+  //       ts.factory.createStringLiteral(expression.title),
+  //       ts.factory.createNumericLiteral(expression.status),
+  //       writeTestExpression(ctx, expression.function),
+  //     ],
+  //   });
 }
