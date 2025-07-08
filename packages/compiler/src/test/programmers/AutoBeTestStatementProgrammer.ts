@@ -1,8 +1,7 @@
 import { AutoBeTest } from "@autobe/interface";
-// import { NestiaMigrateSchemaProgrammer } from "@nestia/migrate/lib/programmers/NestiaMigrateSchemaProgrammer";
-// import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
 import ts from "typescript";
 
+import { FilePrinter } from "../../utils/FilePrinter";
 import { IAutoBeTestApiFunction } from "./IAutoBeTestApiFunction";
 import { IAutoBeTestProgrammerContext } from "./IAutoBeTestProgrammerContext";
 import { writeTestExpression } from "./writeTestExpression";
@@ -14,7 +13,21 @@ export namespace AutoBeTestStatementProgrammer {
     stmt: AutoBeTest.IBlock,
   ): ts.Block =>
     ts.factory.createBlock(
-      stmt.statements.map((child) => writeTestStatement(ctx, child)).flat(),
+      stmt.statements
+        .map((child, i) => [
+          ...writeTestStatement(ctx, child).filter((childStmt, j) =>
+            j === 0
+              ? ts.addSyntheticLeadingComment(
+                  childStmt,
+                  ts.SyntaxKind.SingleLineCommentTrivia,
+                  JSON.stringify(child),
+                  true,
+                )
+              : childStmt,
+          ),
+          ...(i !== 0 ? [FilePrinter.newLine()] : []),
+        ])
+        .flat(),
       true,
     );
 
@@ -82,7 +95,7 @@ export namespace AutoBeTestStatementProgrammer {
   export const apiOperateStatement = (
     ctx: IAutoBeTestProgrammerContext,
     stmt: AutoBeTest.IApiOperateStatement,
-  ): ts.Statement => {
+  ): ts.Statement[] => {
     // find the function
     const func: IAutoBeTestApiFunction = ctx.endpoints.get(stmt.endpoint);
     if (!!stmt.variableName?.length && !!func.operation.responseBody)
@@ -100,23 +113,9 @@ export namespace AutoBeTestStatementProgrammer {
       ),
     );
     if (stmt.variableName === null || stmt.variableName === undefined)
-      return ts.factory.createExpressionStatement(initializer);
+      return [ts.factory.createExpressionStatement(initializer)];
 
-    const assertion = ts.factory.createCallExpression(
-      ts.factory.createPropertyAccessExpression(
-        ts.factory.createIdentifier(
-          ctx.importer.external({
-            type: "default",
-            library: "typia",
-            name: "typia",
-          }),
-        ),
-        "assert",
-      ),
-      undefined,
-      [initializer],
-    );
-    return ts.factory.createVariableStatement(
+    const variable: ts.VariableStatement = ts.factory.createVariableStatement(
       undefined,
       ts.factory.createVariableDeclarationList(
         [
@@ -130,11 +129,26 @@ export namespace AutoBeTestStatementProgrammer {
               : ts.factory.createKeywordTypeNode(
                   ts.SyntaxKind.UndefinedKeyword,
                 ),
-            assertion,
+            initializer,
           ),
         ],
         ts.NodeFlags.Const,
       ),
     );
+    const assertion = ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(
+        ts.factory.createIdentifier(
+          ctx.importer.external({
+            type: "default",
+            library: "typia",
+            name: "typia",
+          }),
+        ),
+        "assert",
+      ),
+      undefined,
+      [ts.factory.createIdentifier(stmt.variableName)],
+    );
+    return [variable, ts.factory.createExpressionStatement(assertion)];
   };
 }
