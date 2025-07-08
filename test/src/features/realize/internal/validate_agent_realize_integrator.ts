@@ -37,8 +37,6 @@ export const validate_agent_realize_integrator = async (
   agent.on("realizeValidate", enroll);
   agent.on("realizeComplete", enroll);
 
-  const files = interface_.files;
-
   const operations = interface_.document.operations;
 
   const lockController = (() => {
@@ -156,7 +154,6 @@ async function patch_core_users({ filters, sort, page, pageSize, requester }) {
     `,
       },
       operation,
-      files,
       lockController.withLock,
     );
 
