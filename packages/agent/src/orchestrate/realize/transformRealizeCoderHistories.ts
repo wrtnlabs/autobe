@@ -80,20 +80,6 @@ export const transformRealizeCoderHistories = (
         ].join(" "),
       },
     ];
-  else if (state.test === null) {
-    return [
-      {
-        id: v4(),
-        created_at: new Date().toISOString(),
-        type: "systemMessage",
-        text: [
-          "Test generation is not yet completed.",
-          "Don't call the any too function,",
-          "but say to process the test generation.",
-        ].join(" "),
-      },
-    ];
-  }
 
   return [
     {
