@@ -11,7 +11,7 @@ import { compileTestScenario } from "../test/compile/compileTestScenario";
 import { IAutoBeTestScenarioArtifacts } from "../test/structures/IAutoBeTestScenarioArtifacts";
 import { FAILED } from "./orchestrateRealize";
 import { RealizePlannerOutput } from "./orchestrateRealizePlanner";
-import { IAutoBeRealizeCorderApplication } from "./structures/IAutoBeRealizeCorderApplication";
+import { IAutoBeRealizeCoderApplication } from "./structures/IAutoBeRealizeCorderApplication";
 import { transformRealizeCoderHistories } from "./transformRealizeCoderHistories";
 
 /**
@@ -36,7 +36,7 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   operation: AutoBeOpenApi.IOperation,
   props: RealizePlannerOutput,
-): Promise<IAutoBeRealizeCorderApplication.RealizeCoderOutput | FAILED> => {
+): Promise<IAutoBeRealizeCoderApplication.RealizeCoderOutput | FAILED> => {
   const artifacts: IAutoBeTestScenarioArtifacts = await compileTestScenario(
     ctx,
     {
@@ -49,7 +49,7 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
   );
 
   const pointer: IPointer<Pick<
-    IAutoBeRealizeCorderApplication.RealizeCoderOutput,
+    IAutoBeRealizeCoderApplication.RealizeCoderOutput,
     "implementationCode"
   > | null> = {
     value: null,
@@ -98,7 +98,7 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
 
 function createApplication<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  build: (next: IAutoBeRealizeCorderApplication.IProps) => void;
+  build: (next: IAutoBeRealizeCoderApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 

@@ -1,8 +1,8 @@
-export interface IAutoBeRealizeCorderApplication {
-  programing: (next: IAutoBeRealizeCorderApplication.IProps) => void;
+export interface IAutoBeRealizeCoderApplication {
+  programing: (next: IAutoBeRealizeCoderApplication.IProps) => void;
 }
 
-export namespace IAutoBeRealizeCorderApplication {
+export namespace IAutoBeRealizeCoderApplication {
   export interface IProps {
     result: RealizeCoderOutput;
   }

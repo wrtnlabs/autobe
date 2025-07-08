@@ -14,6 +14,7 @@ import {
   RealizeValidatorOutput,
   orchestrateRealizeValidator,
 } from "./orchestrateRealizeValidator";
+import { IAutoBeRealizeCoderApplication } from "./structures/IAutoBeRealizeCorderApplication";
 
 export const orchestrateRealize =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
@@ -27,24 +28,35 @@ export const orchestrateRealize =
       throw new Error();
     }
 
-    const codes: (RealizeValidatorOutput | FAILED)[] = await Promise.all(
+    const codes: (
+      | IAutoBeRealizeCoderApplication.RealizeCoderOutput
+      | FAILED
+    )[] = await Promise.all(
       ops.map(async (op) =>
         pipe(
           op,
           (op) => orchestrateRealizePlanner(ctx, op),
           (p) => orchestrateRealizeCoder(ctx, op, p),
+        ),
+      ),
+    );
+
+    const vaildates: (RealizeValidatorOutput | FAILED)[] = await Promise.all(
+      codes.map(async (c) =>
+        pipe(
+          c,
           (c) => orchestrateRealizeIntegrator(ctx, c),
           (i) => orchestrateRealizeValidator(ctx, i),
         ),
       ),
     );
 
-    if (codes.length) {
-      if (codes.every((code) => code !== FAILED)) {
+    if (vaildates.length) {
+      if (vaildates.every((v) => v !== FAILED)) {
         const files = {
           ...ctx.state().interface?.files,
-          ...codes
-            .map((code) => ({ [code.location]: code.content }))
+          ...vaildates
+            .map((v) => ({ [v.location]: v.content }))
             .reduce((acc, cur) => Object.assign(acc, cur), {}),
         };
 
