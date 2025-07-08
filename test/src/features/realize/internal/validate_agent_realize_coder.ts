@@ -8,6 +8,8 @@ import { IAutoBeRealizeCorderApplication } from "@autobe/agent/src/orchestrate/r
 import { FileSystemIterator } from "@autobe/filesystem";
 import { AutoBeEvent } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
+import { readFile } from "fs/promises";
+import path from "path";
 import typia from "typia";
 
 import { TestFactory } from "../../../TestFactory";
@@ -79,6 +81,15 @@ export const validate_agent_realize_coder = async (
       ...(await agent.getFiles()),
       ...providers,
       ...nodeModules,
+      "src/providers/jwtDecode.ts": await readFile(
+        path.join(
+          __dirname,
+          "../../../../../internals/template/src/providers/jwtDecode.ts",
+        ),
+        {
+          encoding: "utf-8",
+        },
+      ),
       "logs/events.json": typia.json.stringify(events),
       "logs/result.json": typia.json.stringify(result),
       "logs/histories.json": typia.json.stringify(histories),
