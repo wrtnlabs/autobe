@@ -1,4 +1,8 @@
-import { IAgenticaController, MicroAgentica } from "@agentica/core";
+import {
+  AgenticaSystemPrompt,
+  IAgenticaController,
+  MicroAgentica,
+} from "@agentica/core";
 import {
   AutoBeOpenApi,
   AutoBeTest,
@@ -10,10 +14,17 @@ import {
   IAutoBeTextValidateContext,
   validateTestFunction,
 } from "@autobe/utils";
-import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
+import {
+  ILlmApplication,
+  ILlmSchema,
+  IValidation,
+  OpenApi,
+  OpenApiTypeChecker,
+} from "@samchon/openapi";
 import { HashMap, IPointer, Pair } from "tstl";
-import typia from "typia";
+import typia, { IJsonSchemaUnit } from "typia";
 
+import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { enforceToolCall } from "../../utils/enforceToolCall";
@@ -110,6 +121,22 @@ async function process<Model extends ILlmSchema.Model>(
       executor: {
         describe: null,
       },
+      systemPrompt: {
+        validate: (events) =>
+          [
+            AgenticaSystemPrompt.VALIDATE_REPEATED.replace(
+              "${{HISTORICAL_ERRORS}}",
+              JSON.stringify(events.map((e) => e.result.errors)),
+            ),
+            AutoBeSystemPromptConstant.TEST_VALIDATE.replace(
+              "${{AutoBeTest.IStatement}}",
+              getUnionTypeName(typia.json.schema<AutoBeTest.IStatement>()),
+            ).replace(
+              "${{AutoBeTest.IExpression}}",
+              getUnionTypeName(typia.json.schema<AutoBeTest.IExpression>()),
+            ),
+          ].join("\n\n"),
+      },
       retry: 4,
     },
     histories: transformTestWriteHistories({
@@ -160,6 +187,20 @@ async function process<Model extends ILlmSchema.Model>(
         data: pointer.value,
         errors,
       });
+}
+
+function getUnionTypeName(unit: IJsonSchemaUnit): string {
+  if (OpenApiTypeChecker.isReference(unit.schema) === false) return "unknown";
+
+  const typeName: string = unit.schema.$ref.split("/").pop() ?? "";
+  const schema: OpenApi.IJsonSchema | undefined =
+    unit.components.schemas?.[typeName];
+  if (schema === undefined || OpenApiTypeChecker.isOneOf(schema) === false)
+    return "unknown";
+  return schema.oneOf
+    .filter(OpenApiTypeChecker.isReference)
+    .map((r) => r.$ref.split("/").pop() ?? "")
+    .join(" | ");
 }
 
 function createApplication<Model extends ILlmSchema.Model>(props: {

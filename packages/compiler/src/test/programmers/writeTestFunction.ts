@@ -7,9 +7,9 @@ import ts, { FunctionDeclaration } from "typescript";
 
 import { transformOpenApiDocument } from "../../interface/transformOpenApi";
 import { FilePrinter } from "../../utils/FilePrinter";
+import { AutoBeTestStatementProgrammer } from "./AutoBeTestStatementProgrammer";
 import { IAutoBeTestApiFunction } from "./IAutoBeTestApiFunction";
 import { IAutoBeTestProgrammerContext } from "./IAutoBeTestProgrammerContext";
-import { writeTestStatement } from "./writeTestStatement";
 
 export function writeTestFunction(props: IAutoBeTestWriteProps): string {
   const ctx: IAutoBeTestProgrammerContext = {
@@ -41,10 +41,10 @@ export function writeTestFunction(props: IAutoBeTestWriteProps): string {
       ),
     ],
     undefined,
-    ts.factory.createBlock(
-      props.function.statements.map((stmt) => writeTestStatement(ctx, stmt)),
-      true,
-    ),
+    AutoBeTestStatementProgrammer.block(ctx, {
+      type: "block",
+      statements: props.function.statements,
+    }),
   );
   return FilePrinter.write({
     statements: [

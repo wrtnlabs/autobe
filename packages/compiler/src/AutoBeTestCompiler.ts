@@ -15,6 +15,7 @@ import typiaTransform from "typia/lib/transform";
 
 import TestExternal from "./raw/test.json";
 import { writeTestFunction } from "./test/programmers/writeTestFunction";
+import { FilePrinter } from "./utils/FilePrinter";
 
 export class AutoBeTestCompiler implements IAutoBeTestCompiler {
   public async compile(
@@ -84,7 +85,8 @@ export class AutoBeTestCompiler implements IAutoBeTestCompiler {
   }
 
   public async write(props: IAutoBeTestWriteProps): Promise<string> {
-    return writeTestFunction(props);
+    const content: string = writeTestFunction(props);
+    return FilePrinter.beautify(content);
   }
 
   public async getExternal(): Promise<Record<string, string>> {
