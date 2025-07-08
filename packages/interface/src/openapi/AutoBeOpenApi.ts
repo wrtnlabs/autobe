@@ -420,19 +420,32 @@ export namespace AutoBeOpenApi {
     /**
      * Allowed user types for this API
      *
-     * Specifies which user types are permitted to access this API. Example:
-     * ["admin", "customer", "seller"]
+     * Specifies which user types are permitted to access this API.
      *
      * This is not a permission level or access control role. Instead, it
      * describes **who** the user is — their type within the service's domain
-     * model. Typically matches a "member type" or similar field in the user
+     * model. It must correspond 1:1 with how the user is represented in the
      * database.
      *
-     * For example:
+     * Examples:
      *
-     * - "admin": system administrator
-     * - "customer": general end-user
-     * - "seller": third-party vendor or merchant
+     * - "buyer": a customer who makes purchases
+     * - "seller": a vendor who offers products
+     * - "moderator": a content reviewer or manager
+     *
+     * ⚠️ Important: Each `role` must **exactly match a table name defined in
+     * the database schema**. This is not merely a convention or example — it is
+     * a strict requirement.
+     *
+     * A valid role must meet the following criteria:
+     *
+     * - It must uniquely map to a user group at the database level, represented
+     *   by a dedicated table.
+     * - It must not overlap semantically with other roles — for instance, both
+     *   `admin` and `administrator` must not exist to describe the same type.
+     *
+     * Therefore, if a user type cannot be clearly and uniquely distinguished in
+     * the database, It **cannot** be used as a valid `role` here.
      */
     role: string[];
 
