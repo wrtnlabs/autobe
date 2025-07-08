@@ -86,11 +86,12 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
 
   pointer.value.implementationCode = [
     'import { MyGlobal } from "../MyGlobal";',
+    'import typia, { tags } from "typia";',
+    'import { Prisma } from "@prisma/client";',
+    'import { jwtDecode } from "./jwtDecode"',
     "",
     pointer.value.implementationCode,
   ].join("\n");
-
-  console.log({ ...pointer.value, functionName: props.functionName });
 
   return { ...pointer.value, functionName: props.functionName };
 };
