@@ -137,11 +137,10 @@ export const orchestrateRealizeIntegrator = async <
       `import { ${props.functionName} } from "src/providers/${props.functionName}.ts";`,
     ];
 
-    // indent를 무시하는 정규표현식으로 replace
     const targetEscaped = pointer.value.targetCode
       .trim()
-      .replace(/[.*+?^${}()|[\]\\]/g, "\\$&") // 정규표현식 특수문자 escape
-      .replace(/\s+/g, "\\s+"); // 모든 공백을 \s+로 변경
+      .replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+      .replace(/\s+/g, "\\s+");
 
     importCodes.forEach((code) => {
       if (currentCode.includes(code) === false) {
