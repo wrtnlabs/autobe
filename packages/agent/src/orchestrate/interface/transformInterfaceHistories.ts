@@ -125,6 +125,7 @@ export const transformInterfaceHistories = (
       text: [
         "Database schema and entity relationship diagrams are ready.",
         "You should also look at this and consider logic including membership/login and token issuance.",
+        "You can use table's name to define role in operations.",
         "",
         "## Prisma DB Schema",
         "```json",
