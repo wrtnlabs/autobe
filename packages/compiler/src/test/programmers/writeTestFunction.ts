@@ -42,9 +42,7 @@ export function writeTestFunction(props: IAutoBeTestWriteProps): string {
     ],
     undefined,
     ts.factory.createBlock(
-      props.function.statements
-        .map((stmt) => writeTestStatement(ctx, stmt))
-        .flat(),
+      props.function.statements.map((stmt) => writeTestStatement(ctx, stmt)),
       true,
     ),
   );

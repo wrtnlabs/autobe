@@ -82,7 +82,7 @@ export namespace AutoBeTestStatementProgrammer {
   export const apiOperateStatement = (
     ctx: IAutoBeTestProgrammerContext,
     stmt: AutoBeTest.IApiOperateStatement,
-  ): ts.Statement[] => {
+  ): ts.Statement => {
     // find the function
     const func: IAutoBeTestApiFunction = ctx.endpoints.get(stmt.endpoint);
     if (!!stmt.variableName?.length && !!func.operation.responseBody)
@@ -99,53 +99,42 @@ export namespace AutoBeTestStatementProgrammer {
         ],
       ),
     );
+    if (stmt.variableName === null || stmt.variableName === undefined)
+      return ts.factory.createExpressionStatement(initializer);
 
-    // the default statement with variable declaration?
-    const output: ts.Statement[] = [
-      !!stmt.variableName?.length
-        ? ts.factory.createVariableStatement(
-            undefined,
-            ts.factory.createVariableDeclarationList(
-              [
-                ts.factory.createVariableDeclaration(
-                  stmt.variableName,
-                  undefined,
-                  !!func.operation.responseBody
-                    ? ts.factory.createTypeReferenceNode(
-                        func.operation.responseBody.typeName,
-                      )
-                    : ts.factory.createKeywordTypeNode(
-                        ts.SyntaxKind.UndefinedKeyword,
-                      ),
-                  initializer,
-                ),
-              ],
-              ts.NodeFlags.Const,
-            ),
-          )
-        : ts.factory.createExpressionStatement(initializer),
-    ];
-
-    // typia.assert for type guard
-    if (!!stmt.variableName?.length)
-      output.push(
-        ts.factory.createExpressionStatement(
-          ts.factory.createCallExpression(
-            ts.factory.createPropertyAccessExpression(
-              ts.factory.createIdentifier(
-                ctx.importer.external({
-                  type: "default",
-                  library: "typia",
-                  name: "typia",
-                }),
-              ),
-              "assert",
-            ),
-            undefined,
-            [ts.factory.createIdentifier(stmt.variableName)],
-          ),
+    const assertion = ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(
+        ts.factory.createIdentifier(
+          ctx.importer.external({
+            type: "default",
+            library: "typia",
+            name: "typia",
+          }),
         ),
-      );
-    return output;
+        "assert",
+      ),
+      undefined,
+      [initializer],
+    );
+    return ts.factory.createVariableStatement(
+      undefined,
+      ts.factory.createVariableDeclarationList(
+        [
+          ts.factory.createVariableDeclaration(
+            stmt.variableName,
+            undefined,
+            !!func.operation.responseBody
+              ? ts.factory.createTypeReferenceNode(
+                  func.operation.responseBody.typeName,
+                )
+              : ts.factory.createKeywordTypeNode(
+                  ts.SyntaxKind.UndefinedKeyword,
+                ),
+            assertion,
+          ),
+        ],
+        ts.NodeFlags.Const,
+      ),
+    );
   };
 }
