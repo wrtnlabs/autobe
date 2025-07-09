@@ -466,6 +466,38 @@ if (condition) {
 }
 ```
 
+**TestValidator.error() type safety:**
+When using `TestValidator.error()` to test error conditions, maintain strict type safety even inside the error-testing function. Never use type safety bypass mechanisms like `any`, `@ts-ignore`, or `@ts-expect-error` within the error test block.
+
+**IMPORTANT: Skip TypeScript compilation error scenarios**
+If the test scenario requires intentionally omitting required fields or creating TypeScript compilation errors to test validation, **DO NOT IMPLEMENT** these test cases. Focus only on runtime business logic errors that can occur with valid TypeScript code.
+
+```typescript
+// CORRECT: Test runtime business logic errors with valid types
+TestValidator.error("duplicate email fails")(() => {
+  return api.functional.users.create(connection, {
+    body: {
+      email: existingUser.email, // This will cause a runtime business logic error
+      name: RandomGenerator.name(),
+      password: "validPassword123",
+    } satisfies IUser.ICreate,
+  });
+});
+
+// WRONG: Don't test TypeScript compilation errors - SKIP THESE SCENARIOS
+TestValidator.error("missing name fails")(() => {
+  return api.functional.users.create(connection, {
+    body: {
+      // name: intentionally omitted ← DON'T DO THIS
+      email: typia.random<string & tags.Format<"email">>(),
+      password: "validPassword123",
+    } as any, // ← NEVER USE THIS
+  });
+});
+```
+
+**Rule:** Only test scenarios that involve runtime errors with properly typed, valid TypeScript code. Skip any test scenarios that require type system violations or compilation errors.
+
 **Important:** TestValidator functions are curried. Always check `node_modules/@nestia/e2e/lib/TestValidator.d.ts` for exact usage patterns.
 
 ### 3.6. Authentication Handling
