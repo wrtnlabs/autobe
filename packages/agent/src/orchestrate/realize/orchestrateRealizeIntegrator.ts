@@ -70,9 +70,10 @@ export const orchestrateRealizeIntegrator = async <
   ctx: AutoBeContext<Model>,
   props: RealizeCoderOutput,
   operation: AutoBeOpenApi.IOperation,
-  files: Record<string, string>,
   withLock: <T>(key: string, fn: () => Promise<T>) => Promise<T>,
 ): Promise<AutoBeRealizeIntegratorEvent> => {
+  const files = ctx.state().interface?.files ?? {};
+
   const controllers: [string, string][] = Object.entries(files).filter(
     ([filename]) => filename.endsWith("Controller.ts"),
   );
@@ -93,7 +94,7 @@ export const orchestrateRealizeIntegrator = async <
   const [filename] = controller;
 
   return withLock(filename, async () => {
-    const currentCode = files?.[filename];
+    let currentCode = files?.[filename];
     if (!currentCode) throw new Error(`Controller file ${filename} not found.`);
 
     const pointer: IPointer<IIntegrateControllerProps | null> = {
@@ -132,11 +133,20 @@ export const orchestrateRealizeIntegrator = async <
 
     if (pointer.value === null) throw new Error("Failed to integrate code.");
 
-    // indent를 무시하는 정규표현식으로 replace
+    const importCodes = [
+      `import { ${props.functionName} } from "src/providers/${props.functionName}.ts";`,
+    ];
+
     const targetEscaped = pointer.value.targetCode
       .trim()
-      .replace(/[.*+?^${}()|[\]\\]/g, "\\$&") // 정규표현식 특수문자 escape
-      .replace(/\s+/g, "\\s+"); // 모든 공백을 \s+로 변경
+      .replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+      .replace(/\s+/g, "\\s+");
+
+    importCodes.forEach((code) => {
+      if (currentCode.includes(code) === false) {
+        currentCode = code + "\n" + currentCode;
+      }
+    });
 
     const regex = new RegExp(targetEscaped, "gm");
     const resultCode = await prettier.format(

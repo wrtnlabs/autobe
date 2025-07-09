@@ -1,6 +1,7 @@
 import {
   AutoBeAssistantMessageHistory,
   AutoBeRealizeHistory,
+  AutoBeRealizeIntegratorEvent,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 import { v4 } from "uuid";
@@ -10,10 +11,7 @@ import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
 import { orchestrateRealizeCoder } from "./orchestrateRealizeCoder";
 import { orchestrateRealizeIntegrator } from "./orchestrateRealizeIntegrator";
 import { orchestrateRealizePlanner } from "./orchestrateRealizePlanner";
-import {
-  RealizeValidatorOutput,
-  orchestrateRealizeValidator,
-} from "./orchestrateRealizeValidator";
+import { orchestrateRealizeValidator } from "./orchestrateRealizeValidator";
 
 export const orchestrateRealize =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
@@ -60,29 +58,34 @@ export const orchestrateRealize =
       };
     })();
 
-    const files = ctx.state().interface?.files ?? {};
-
-    const codes: (RealizeValidatorOutput | FAILED)[] = await Promise.all(
-      ops.map(async (op) =>
-        pipe(
-          op,
-          (op) => orchestrateRealizePlanner(ctx, op),
-          (p) => orchestrateRealizeCoder(ctx, p),
-          (c) =>
-            orchestrateRealizeIntegrator(
-              ctx,
-              c,
-              op,
-              files,
-              lockController.withLock,
-            ),
-          (i) => orchestrateRealizeValidator(ctx, i),
+    const integratedCodes: (AutoBeRealizeIntegratorEvent | FAILED)[] =
+      await Promise.all(
+        ops.map(async (op) =>
+          pipe(
+            op,
+            (op) => orchestrateRealizePlanner(ctx, op),
+            (p) => orchestrateRealizeCoder(ctx, p),
+            (c) =>
+              orchestrateRealizeIntegrator(ctx, c, op, lockController.withLock),
+          ),
         ),
-      ),
-    );
+      );
+
+    const successes: AutoBeRealizeIntegratorEvent[] = [];
+    const failures: FAILED[] = [];
+
+    for (const code of integratedCodes) {
+      if (code === FAILED) {
+        failures.push(code);
+      } else {
+        successes.push(code);
+      }
+    }
+
+    const codes = await orchestrateRealizeValidator(ctx, successes);
 
     if (codes.length) {
-      if (codes.every((code) => code !== FAILED)) {
+      if (codes.every((code) => code.result === "success")) {
         const files = {
           ...ctx.state().interface?.files,
           ...codes
@@ -113,7 +116,7 @@ export const orchestrateRealize =
         } satisfies AutoBeRealizeHistory;
       } else {
         const total = codes.length;
-        const failedCount = codes.filter((code) => code === FAILED).length;
+        const failedCount = failures.length;
         const successCount = total - failedCount;
 
         const now = new Date().toISOString();
@@ -158,13 +161,12 @@ export const orchestrateRealize =
 export const FAILED = Symbol("FAILED");
 export type FAILED = typeof FAILED;
 
-function pipe<A, B, C, D, E>(
+function pipe<A, B, C, D>(
   a: A,
   ab: (a: A) => Promise<B | FAILED>,
   bc: (b: B) => Promise<C | FAILED>,
   cd: (c: C) => Promise<D | FAILED>,
-  de: (d: D) => Promise<E | FAILED>,
-): Promise<E | FAILED>;
+): Promise<D | FAILED>;
 
 function pipe(a: any, ...fns: Array<(arg: any) => Promise<any>>): Promise<any> {
   return fns.reduce((prev, fn) => {
