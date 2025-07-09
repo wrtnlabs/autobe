@@ -77,6 +77,8 @@ Complete DTO type information is provided for all entities your test function wi
 - Ensure you populate the correct data types when creating test data
 - Understand the relationships between different DTO types (e.g., `ICreate` vs `IUpdate` vs base type)
 
+**⚠️ NOTE: The above DTO example is FICTIONAL - use only the actual DTOs provided in the next assistant prompt!**
+
 ### 2.3. API SDK Function Definition
 
 ```typescript
@@ -176,6 +178,8 @@ This is the API SDK function definition that your E2E test will call. The functi
 - The function comments provide important business context and behavior details
 - Path parameters are included in the `Props` type alongside the request body
 
+**⚠️ NOTE: The above API function example is FICTIONAL - use only the actual API function provided in the next assistant prompt!**
+
 ### 2.4. E2E Mock Function Template
 
 ```typescript
@@ -193,6 +197,8 @@ export const test_api_shoppings_customers_sales_reviews_update = async (
 ```
 
 This is a **reference template** that demonstrates basic E2E test function structure, but it's filled with random data without business logic - this is NOT what you should generate.
+
+**⚠️ NOTE: The above template uses FICTIONAL functions and types - use only the actual materials provided in the next assistant prompt!**
 
 **Template Analysis Requirements:**
 
@@ -240,6 +246,19 @@ You must understand the **interrelationships** among all input materials beyond 
 - Edge cases and error scenarios that should be tested
 
 ## 3. Code Generation Requirements
+
+## ⚠️ CRITICAL WARNING: Example Code Limitations
+
+**ALL EXAMPLE CODE IN THIS DOCUMENT IS FICTIONAL AND FOR ILLUSTRATION ONLY!**
+
+The API functions, DTO types, and entities shown in examples (such as `api.functional.bbs.articles.create`, `IBbsArticle`, `IShoppingSeller`, etc.) are **NOT REAL** and do not exist in any actual system. These examples are provided solely to demonstrate code structure, patterns, and testing workflows.
+
+**YOU MUST ONLY USE:**
+- The actual API SDK function definition provided in the next assistant prompt
+- The actual DTO types provided in the next assistant prompt  
+- The actual test scenario provided in the next assistant prompt
+
+**NEVER use functions or types from the examples below - they are fictional!**
 
 ### 3.1. Test Function Structure
 
@@ -312,6 +331,8 @@ export async function test_api_shopping_sale_review_update(
 }
 ```
 
+**⚠️ NOTE: The above example uses FICTIONAL functions and types - use only the actual materials provided in the next assistant prompt!**
+
 **Parameter structure:**
 - First parameter: Always pass the `connection` variable
 - Second parameter: Either omitted (if no path params or request body) or a single object containing:
@@ -327,7 +348,7 @@ export async function test_api_shopping_sale_review_update(
 - Skip variable assignment and assertion for void return types
 
 **API function calling pattern:**
-Use the pattern `api.functional.{path}.{method}(connection, props)` based on the API SDK function definition.
+Use the pattern `api.functional.{path}.{method}(connection, props)` based on the API SDK function definition provided in the next assistant prompt.
 
 ### 3.3. Random Data Generation
 
@@ -450,6 +471,8 @@ export async function test_api_shopping_sale_review_update(
   typia.assert(seller);
 }
 ```
+
+**⚠️ NOTE: The above example uses FICTIONAL functions and types - use only the actual materials provided in the next assistant prompt!**
 
 **Authentication behavior:**
 - When API functions return authentication tokens, the SDK automatically stores them in `connection.headers`
@@ -738,6 +761,8 @@ export async function test_api_shopping_sale_review_update(
 }
 ```
 
+**⚠️ NOTE: The above example uses FICTIONAL functions and types - use only the actual materials provided in the next assistant prompt!**
+
 This example demonstrates:
 - **Complete business workflow**: From user registration to final validation
 - **Multiple user roles**: Switching between seller and customer accounts
@@ -786,5 +811,7 @@ Before submitting your generated E2E test code, verify:
 - [ ] Code includes comprehensive documentation and comments
 - [ ] No external imports or functions are defined outside the main function
 - [ ] All assertions use proper TestValidator functions or conditional logic
+- [ ] **CRITICAL**: Only API functions and DTOs from the provided materials are used (not from examples)
+- [ ] **CRITICAL**: No fictional functions or types from examples are used
 
 Generate your E2E test code following these guidelines to ensure comprehensive, maintainable, and reliable API testing.
