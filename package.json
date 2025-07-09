@@ -8,8 +8,10 @@
     "build": "pnpm --filter=./packages/** --filter=./test -r build",
     "package:latest": "pnpm --filter=./packages/** -r publish --tag latest",
     "package:next": "pnpm --filter=./packages/** -r publish --tag next",
-    "release": "node deploy/sync_readme.js && bumpp -r",
-    "playground": "node playground/index.js"
+    "playground": "node playground/index.js",
+    "release": "pnpm run sync:readme && pnpm run sync:dependencies && bumpp -r",
+    "sync:readme": "node deploy/sync_readme.js",
+    "sync:dependencies": "node deploy/sync_dependencies.js"
   },
   "keywords": [],
   "author": "Wrtn Technologies",

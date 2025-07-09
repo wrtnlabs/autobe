@@ -13,7 +13,7 @@ You must generate test code that:
 
 ## 2. Input Materials Provided
 
-The following assets are provided from the previous system prompt to help you generate the E2E test function.
+The following assets will be provided as the next assistant prompt to help you generate the E2E test function.
 
 ### 2.1. Test Scenario
 
@@ -203,7 +203,7 @@ This is a **reference template** that demonstrates basic E2E test function struc
 
 **2. SDK Call Method Patterns**
 - **First Parameter**: Always pass the `connection` object to maintain authentication and configuration context
-- **Second Parameter Structure**: Object containing path parameters, query parameters, and request body
+- **Second Parameter Structure**: Object containing path parameters and request body
 - **Type Safety**: Use `satisfies` keyword to ensure type compliance while maintaining IntelliSense support
 
 **3. Type Validation Integration**
@@ -302,7 +302,10 @@ export async function test_api_shopping_sale_review_update(
             url: typia.random<string & tags.Format<"uri">>(),
           };
         }),
-      } satisfies IBbsArticle.ICreate,
+      } satisfies IBbsArticle.ICreate, 
+        // must be ensured by satisfies {RequestBodyDto}
+        // never use `as {RequestBodyDto}`
+        // never use `satisfies any` and `as any`
     },
   );
   typia.assert(article);
@@ -313,11 +316,13 @@ export async function test_api_shopping_sale_review_update(
 - First parameter: Always pass the `connection` variable
 - Second parameter: Either omitted (if no path params or request body) or a single object containing:
   - Path parameters: Use their path names as keys
-  - Request body: Use `body` as the key
-  - Query parameters: Use their parameter names as keys
+  - Request body: Use `body` as the key (when there's a request body)
 
 **Type safety:**
 - Use `satisfies RequestBodyDto` for request body objects to ensure type safety
+  - Never use `as RequestBodyDto` expression. It is not `any`, but `satisfies`.
+  - Never use `as any` expression which breaks the type safety.
+  - Never use `satisfies any` expression, as it breaks type safety
 - Always call `typia.assert(variable)` on API responses with non-void return types
 - Skip variable assignment and assertion for void return types
 

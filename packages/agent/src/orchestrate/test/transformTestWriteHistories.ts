@@ -18,7 +18,6 @@ export const transformTestWriteHistories = (
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => [
-  transformArtifact(scenario, artifacts),
   {
     id: v4(),
     created_at: new Date().toISOString(),
@@ -28,6 +27,7 @@ export const transformTestWriteHistories = (
       JSON.stringify(typia.llm.parameters<AutoBeTestScenario, "llama">()),
     ),
   },
+  transformArtifact(scenario, artifacts),
 ];
 
 const transformArtifact = (
@@ -43,7 +43,7 @@ const transformArtifact = (
   return {
     id: v4(),
     created_at: new Date().toISOString(),
-    type: "systemMessage",
+    type: "assistantMessage",
     text: StringUtil.trim`
         Here is the list of input material composition.
 

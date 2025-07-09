@@ -39,7 +39,7 @@ export const validate_agent_test_write = async (
   // REPORT RESULT
   const files: Record<string, string> = Object.fromEntries([
     ...Object.entries(await agent.getFiles()).filter(
-      ([key]) => key.startsWith("test/features") === false,
+      ([key]) => key.startsWith("test") === false,
     ),
     ...writes
       .map((w) => [
@@ -57,7 +57,8 @@ export const validate_agent_test_write = async (
         Object.entries(files).filter(
           ([key]) =>
             (key.startsWith("src/") || key.startsWith("test/")) &&
-            key.endsWith(".ts"),
+            key.endsWith(".ts") &&
+            key.endsWith(".draft.ts") === false,
         ),
       ),
     });
