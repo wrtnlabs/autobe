@@ -83,6 +83,7 @@ export const validate_agent_realize_coder = async (
         path.join(
           __dirname,
           "../../../../../internals/template/src/providers/jwtDecode.ts",
+          "../../../../../internals/template/src/MyGlobal.ts",
         ),
         {
           encoding: "utf-8",
