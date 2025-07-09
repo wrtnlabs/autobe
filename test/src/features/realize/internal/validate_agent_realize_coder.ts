@@ -83,6 +83,14 @@ export const validate_agent_realize_coder = async (
         path.join(
           __dirname,
           "../../../../../internals/template/src/providers/jwtDecode.ts",
+        ),
+        {
+          encoding: "utf-8",
+        },
+      ),
+      "src/MyGlobal.ts": await readFile(
+        path.join(
+          __dirname,
           "../../../../../internals/template/src/MyGlobal.ts",
         ),
         {
@@ -95,4 +103,40 @@ export const validate_agent_realize_coder = async (
     },
   });
   TestValidator.predicate("result")(result.every((el) => el !== FAILED));
+
+  const res = await ctx.compiler.typescript.compile({
+    files: {
+      ...Object.entries(await agent.getFiles())
+        .filter(([key]) => {
+          return key.startsWith("src");
+        })
+        .reduce(
+          (acc, [filename, content]) =>
+            Object.assign(acc, { [filename]: content }),
+          {},
+        ),
+      ...providers,
+      ...nodeModules,
+      "src/providers/jwtDecode.ts": await readFile(
+        path.join(
+          __dirname,
+          "../../../../../internals/template/src/providers/jwtDecode.ts",
+        ),
+        {
+          encoding: "utf-8",
+        },
+      ),
+      "src/MyGlobal.ts": await readFile(
+        path.join(
+          __dirname,
+          "../../../../../internals/template/src/MyGlobal.ts",
+        ),
+        {
+          encoding: "utf-8",
+        },
+      ),
+    },
+  });
+
+  TestValidator.equals("compile success")(res.type)("success");
 };
