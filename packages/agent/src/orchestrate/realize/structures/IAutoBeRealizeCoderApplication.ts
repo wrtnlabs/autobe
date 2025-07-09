@@ -12,13 +12,8 @@ export namespace IAutoBeRealizeCoderApplication {
    * TypeScript function.
    */
   export interface RealizeCoderOutput {
-    /**
-     * The name of the function to be generated.
-     *
-     * This name will be used as the function's identifier and as the export
-     * name in the provider file.
-     */
-    functionName: string;
+    /** The name of the file to be generated. */
+    filename: string;
 
     /**
      * The raw TypeScript code string implementing the function.

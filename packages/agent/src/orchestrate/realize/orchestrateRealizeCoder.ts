@@ -1,5 +1,8 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
-import { AutoBeOpenApi } from "@autobe/interface";
+import {
+  AutoBeOpenApi,
+  IAutoBeTypeScriptCompileResult,
+} from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import sortImport from "@trivago/prettier-plugin-sort-imports";
 import { format } from "prettier";
@@ -11,8 +14,8 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { enforceToolCall } from "../../utils/enforceToolCall";
 import { compileTestScenario } from "../test/compile/compileTestScenario";
 import { IAutoBeTestScenarioArtifacts } from "../test/structures/IAutoBeTestScenarioArtifacts";
-import { FAILED } from "./orchestrateRealize";
 import { RealizePlannerOutput } from "./orchestrateRealizePlanner";
+import { FAILED } from "./structures/IAutoBeReailizeFailedSymbol";
 import { IAutoBeRealizeCoderApplication } from "./structures/IAutoBeRealizeCoderApplication";
 import { transformRealizeCoderHistories } from "./transformRealizeCoderHistories";
 
@@ -38,6 +41,8 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   operation: AutoBeOpenApi.IOperation,
   props: RealizePlannerOutput,
+  previous: string | null,
+  diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[],
 ): Promise<IAutoBeRealizeCoderApplication.RealizeCoderOutput | FAILED> => {
   const artifacts: IAutoBeTestScenarioArtifacts = await compileTestScenario(
     ctx,
@@ -74,7 +79,13 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
         describe: null,
       },
     },
-    histories: transformRealizeCoderHistories(ctx.state(), props, artifacts),
+    histories: transformRealizeCoderHistories(
+      ctx.state(),
+      props,
+      artifacts,
+      previous,
+      diagnostics,
+    ),
   });
   enforceToolCall(agent);
 
@@ -113,7 +124,10 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
     pointer.value.implementationCode,
   ].join("\n");
 
-  return { ...pointer.value, functionName: props.functionName };
+  return {
+    ...pointer.value,
+    filename: `src/providers/${props.functionName}.ts`,
+  };
 };
 
 function createApplication<Model extends ILlmSchema.Model>(props: {

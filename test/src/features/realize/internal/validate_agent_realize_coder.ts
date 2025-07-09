@@ -1,9 +1,4 @@
-import {
-  FAILED,
-  pipe,
-} from "@autobe/agent/src/orchestrate/realize/orchestrateRealize";
-import { orchestrateRealizeCoder } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeCoder";
-import { orchestrateRealizePlanner } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizePlanner";
+import { writeCodeUntilCompilePassed } from "@autobe/agent/src/orchestrate/realize/orchestrateRealize";
 import { IAutoBeRealizeCoderApplication } from "@autobe/agent/src/orchestrate/realize/structures/IAutoBeRealizeCoderApplication";
 import { FileSystemIterator } from "@autobe/filesystem";
 import { AutoBeEvent } from "@autobe/interface";
@@ -46,27 +41,16 @@ export const validate_agent_realize_coder = async (
   const ops = ctx.state().interface?.document.operations ?? [];
 
   // DO TEST GENERATION
-  const go = async () =>
-    await Promise.all(
-      ops.map(async (op) =>
-        pipe(
-          op,
-          (op) => orchestrateRealizePlanner(ctx, op),
-          (c) => orchestrateRealizeCoder(ctx, op, c),
-        ),
-      ),
-    );
+  const go = async () => await writeCodeUntilCompilePassed(ctx, ops);
 
-  const result: (IAutoBeRealizeCoderApplication.RealizeCoderOutput | FAILED)[] =
+  const result: IAutoBeRealizeCoderApplication.RealizeCoderOutput[] =
     await go();
 
-  const providers = result
-    .filter((el) => el !== FAILED)
-    .reduce<Record<string, string>>((acc, cur) => {
-      return Object.assign(acc, {
-        [`src/providers/${cur.functionName}.ts`]: cur.implementationCode,
-      });
-    }, {});
+  const codes = result.reduce<Record<string, string>>((acc, cur) => {
+    return Object.assign(acc, {
+      [cur.filename]: cur.implementationCode,
+    });
+  }, {});
 
   const histories = agent.getHistories();
   const prisma = agent.getContext().state().prisma?.compiled;
@@ -77,32 +61,13 @@ export const validate_agent_realize_coder = async (
     root: `${TestGlobal.ROOT}/results/${project}/realize/main`,
     files: {
       ...(await agent.getFiles()),
-      ...providers,
+      ...codes,
       ...nodeModules,
-      "src/providers/jwtDecode.ts": await readFile(
-        path.join(
-          __dirname,
-          "../../../../../internals/template/src/providers/jwtDecode.ts",
-        ),
-        {
-          encoding: "utf-8",
-        },
-      ),
-      "src/MyGlobal.ts": await readFile(
-        path.join(
-          __dirname,
-          "../../../../../internals/template/src/MyGlobal.ts",
-        ),
-        {
-          encoding: "utf-8",
-        },
-      ),
       "logs/events.json": typia.json.stringify(events),
       "logs/result.json": typia.json.stringify(result),
       "logs/histories.json": typia.json.stringify(histories),
     },
   });
-  TestValidator.predicate("result")(result.every((el) => el !== FAILED));
 
   const res = await ctx.compiler.typescript.compile({
     files: {
@@ -115,7 +80,7 @@ export const validate_agent_realize_coder = async (
             Object.assign(acc, { [filename]: content }),
           {},
         ),
-      ...providers,
+      ...codes,
       ...nodeModules,
       "src/providers/jwtDecode.ts": await readFile(
         path.join(
@@ -138,5 +103,11 @@ export const validate_agent_realize_coder = async (
     },
   });
 
+  console.log(
+    JSON.stringify(res.type === "failure" ? res.diagnostics : [], null, 2),
+    "diagnostics",
+  );
   TestValidator.equals("compile success")(res.type)("success");
+
+  // TODO: Need to check for missing Providers
 };

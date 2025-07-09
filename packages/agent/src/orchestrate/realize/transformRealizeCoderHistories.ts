@@ -1,4 +1,5 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
+import { IAutoBeTypeScriptCompileResult } from "@autobe/interface";
 import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
@@ -10,6 +11,8 @@ export const transformRealizeCoderHistories = (
   state: AutoBeState,
   props: RealizePlannerOutput,
   artifacts: IAutoBeTestScenarioArtifacts,
+  previous: string | null,
+  diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[],
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
@@ -121,6 +124,27 @@ export const transformRealizeCoderHistories = (
         "```",
       ].join("\n"),
     },
+    ...(previous !== null
+      ? [
+          {
+            id: v4(),
+            created_at: new Date().toISOString(),
+            type: "assistantMessage",
+            text: [
+              "The code you previously wrote is as follows:",
+              "```typescript",
+              previous,
+              "```",
+              "",
+              "However, the following errors occured:",
+              "```json",
+              JSON.stringify(diagnostics, null, 2),
+              "",
+              "Please take these facts into account when writing the next version of the code.",
+            ].join("\n"),
+          } as const,
+        ]
+      : []),
     {
       id: v4(),
       created_at: new Date().toISOString(),
