@@ -1,6 +1,7 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import { AutoBeOpenApi } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
+import { format } from "prettier";
 import { IPointer } from "tstl";
 import typia from "typia";
 
@@ -83,6 +84,16 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
   if (pointer.value === null) {
     return FAILED;
   }
+
+  pointer.value.implementationCode = await format(
+    pointer.value.implementationCode,
+  );
+
+  pointer.value.implementationCode = pointer.value.implementationCode
+    .replaceAll('import { MyGlobal } from "../MyGlobal";', "")
+    .replaceAll('import typia, { tags } from "typia";', "")
+    .replaceAll('import { Prisma } from "@prisma/client";', "")
+    .replaceAll('import { jwtDecode } from "./jwtDecode"', "");
 
   pointer.value.implementationCode = [
     'import { MyGlobal } from "../MyGlobal";',
