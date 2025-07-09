@@ -1,18 +1,20 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import { AutoBeOpenApi } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
+import sortImport from "@trivago/prettier-plugin-sort-imports";
+import { format } from "prettier";
 import { IPointer } from "tstl";
 import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { enforceToolCall } from "../../utils/enforceToolCall";
+import { compileTestScenario } from "../test/compile/compileTestScenario";
 import { IAutoBeTestScenarioArtifacts } from "../test/structures/IAutoBeTestScenarioArtifacts";
 import { FAILED } from "./orchestrateRealize";
 import { RealizePlannerOutput } from "./orchestrateRealizePlanner";
 import { IAutoBeRealizeCoderApplication } from "./structures/IAutoBeRealizeCoderApplication";
 import { transformRealizeCoderHistories } from "./transformRealizeCoderHistories";
-import { getTestScenarioArtifacts } from "../test/compile/getTestScenarioArtifacts";
 
 /**
  * Generates a TypeScript function implementation based on the given plan.
@@ -37,7 +39,7 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
   operation: AutoBeOpenApi.IOperation,
   props: RealizePlannerOutput,
 ): Promise<IAutoBeRealizeCoderApplication.RealizeCoderOutput | FAILED> => {
-  const artifacts: IAutoBeTestScenarioArtifacts = await getTestScenarioArtifacts(
+  const artifacts: IAutoBeTestScenarioArtifacts = await compileTestScenario(
     ctx,
     {
       endpoint: {
@@ -83,6 +85,24 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
   if (pointer.value === null) {
     return FAILED;
   }
+
+  pointer.value.implementationCode = await format(
+    pointer.value.implementationCode,
+    {
+      parser: "typescript",
+      plugins: [sortImport, await import("prettier-plugin-jsdoc")],
+      importOrder: ["<THIRD_PARTY_MODULES>", "^[./]"],
+      importOrderSeparation: true,
+      importOrderSortSpecifiers: true,
+      importOrderParserPlugins: ["decorators-legacy", "typescript", "jsx"],
+    },
+  );
+
+  pointer.value.implementationCode = pointer.value.implementationCode
+    .replaceAll('import { MyGlobal } from "../MyGlobal";', "")
+    .replaceAll('import typia, { tags } from "typia";', "")
+    .replaceAll('import { Prisma } from "@prisma/client";', "")
+    .replaceAll('import { jwtDecode } from "./jwtDecode"', "");
 
   pointer.value.implementationCode = [
     'import { MyGlobal } from "../MyGlobal";',

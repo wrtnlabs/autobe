@@ -305,7 +305,7 @@ throw new NotFoundException();
 
 ### 🚫 Default Import Rules
 
-Please skip the import statement below because it is automatically entered.
+Please skip the import statement below because it is automatically entered. Adding it will cause a "Duplicated" error. This import statement is automatically inserted, so it should not be added manually.
 
 ```ts
 import { MyGlobal } from "../MyGlobal";,
