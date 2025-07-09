@@ -8,7 +8,7 @@
     "prepare": "ts-patch install",
     "build": "tsc --noEmit",
     "dev": "tsc --watch --noEmit",
-    "start": "ts-node src",
+    "start": "node build/prompt.js && ts-node src",
     "bench": "ts-node src/benchmarks"
   },
   "author": "Wrtn Technologies",

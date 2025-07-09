@@ -35,10 +35,11 @@ export async function test_compiler_test_write_api(): Promise<void> {
       statements: [stmt],
     },
   });
+  console.log(result);
 
   TestValidator.predicate("import")(() =>
     result.includes(
-      `import { IPageIBbsArticle } from "@ORGANIZATION/IPageIBbsArticle-api/lib/structures/IPageIBbsArticle"`,
+      `import { IPageIBbsArticle } from "@ORGANIZATION/PROJECT-api/lib/structures/IPageIBbsArticle"`,
     ),
   );
   TestValidator.predicate("call")(() =>
