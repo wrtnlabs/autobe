@@ -793,44 +793,76 @@ This example demonstrates:
 ## 4. Quality Standards and Best Practices
 
 ### 4.1. Code Quality
+
 - Write clean, readable, and maintainable code
-- Use meaningful variable names and clear comments
-- Follow TypeScript best practices and proper typing
-- Ensure proper error handling and edge case coverage
+- Use meaningful variable names that reflect business entities and contexts
+- Follow TypeScript best practices and maintain strict type safety
+- Ensure proper error handling and comprehensive edge case coverage
+- Never include import statements - start directly with `export async function`
 
 ### 4.2. Test Design
+
 - Create realistic business scenarios that mirror real user workflows
-- Test both successful operations and error conditions
+- Implement complete user journeys from authentication to final validation
+- Test both successful operations and error conditions thoroughly
 - Validate all aspects of the API response and business logic
-- Include proper setup and teardown steps
+- Include proper setup, execution, and cleanup steps
+- Handle data dependencies and resource management appropriately
 
 ### 4.3. Data Management
-- Use appropriate random data generation for test inputs
-- Ensure data relationships are maintained correctly
-- Validate data integrity throughout the test flow
-- Clean up test data when necessary
+
+- Use appropriate random data generation for test inputs with proper constraints
+- Ensure data relationships are maintained correctly throughout the workflow
+- Validate data integrity at each step of the test flow
+- Implement secure test data generation practices
+- Clean up test data and resources when necessary
+- Avoid hardcoding sensitive information in test data
 
 ### 4.4. Documentation
-- Provide comprehensive function documentation
-- Explain the business context and test purpose
-- Document each step of the test workflow
-- Include rationale for test design decisions
+
+- Provide comprehensive function documentation explaining business context
+- Explain the test purpose and why this specific test is necessary
+- Document each step of the test workflow with clear, descriptive comments
+- Include rationale for test design decisions and business rule validations
+- Use step-by-step comments that explain business purpose, not just technical operations
 
 ## 5. Final Checklist
 
 Before submitting your generated E2E test code, verify:
 
+**Function Structure:**
 - [ ] Function follows the correct naming convention: `test_api_{domain}_{functionName}`
 - [ ] Function has exactly one parameter: `connection: api.IConnection`
+- [ ] No import statements - code starts directly with `export async function`
+- [ ] No external imports or functions are defined outside the main function
+
+**API Integration:**
 - [ ] All API calls use proper parameter structure and type safety
-- [ ] Random data generation uses appropriate constraints and formats
+- [ ] API function calling follows the exact SDK pattern from provided materials
 - [ ] All API responses are properly validated with `typia.assert()`
 - [ ] Authentication is handled correctly without manual token management
-- [ ] Test follows a logical business workflow
-- [ ] Code includes comprehensive documentation and comments
-- [ ] No external imports or functions are defined outside the main function
+
+**Business Logic:**
+- [ ] Test follows a logical, realistic business workflow
+- [ ] Complete user journey from authentication to final validation
+- [ ] Proper data dependencies and setup procedures
+- [ ] Edge cases and error conditions are appropriately tested
+
+**Code Quality:**
+- [ ] Random data generation uses appropriate constraints and formats
 - [ ] All assertions use proper TestValidator functions or conditional logic
+- [ ] Code includes comprehensive documentation and comments
+- [ ] Variable naming is descriptive and follows business context
+
+**Type Safety & Code Quality:**
 - [ ] **CRITICAL**: Only API functions and DTOs from the provided materials are used (not from examples)
 - [ ] **CRITICAL**: No fictional functions or types from examples are used
+- [ ] **CRITICAL**: No type safety violations (`any`, `@ts-ignore`, `@ts-expect-error`)
+- [ ] Follows proper TypeScript conventions and type safety practices
+
+**Performance & Security:**
+- [ ] Efficient resource usage and proper cleanup where necessary
+- [ ] Secure test data generation practices
+- [ ] No hardcoded sensitive information in test data
 
 Generate your E2E test code following these guidelines to ensure comprehensive, maintainable, and reliable API testing.
