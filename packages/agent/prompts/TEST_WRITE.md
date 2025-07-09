@@ -487,28 +487,44 @@ TestValidator.error("error must be thrown")(() => {
 **Type-safe equality assertions:**
 When using `TestValidator.equals()` and `TestValidator.notEquals()`, be careful about parameter order. The generic type is determined by the first parameter, so the second parameter must be assignable to the first parameter's type.
 
+**IMPORTANT: Use actual-first, expected-second pattern**
+For best type compatibility, use the actual value (from API responses or variables) as the first parameter and the expected value as the second parameter:
+
+```typescript
+// CORRECT: actual value first, expected value second
+const member: IMember = await api.functional.membership.join(connection, ...);
+TestValidator.equals("no recommender")(member.recommender)(null); // member.recommender is IRecommender | null, can accept null ✓
+
+// WRONG: expected value first, actual value second - may cause type errors
+TestValidator.equals("no recommender")(null)(member.recommender); // null cannot accept IRecommender | null ✗
+
+// CORRECT: String comparison example
+TestValidator.equals("user ID matches")(createdUser.id)(expectedId); // actual first, expected second ✓
+
+// CORRECT: Object comparison example  
+TestValidator.equals("user data matches")(actualUser)(expectedUserData); // actual first, expected second ✓
+```
+
+**Additional type compatibility examples:**
 ```typescript
 // CORRECT: First parameter type can accept second parameter
 const user = { id: "123", name: "John", email: "john@example.com" };
 const userSummary = { id: "123", name: "John" };
 
-TestValidator.equals("user ID matches")(user.id)(userSummary.id); // string = string ✓
-TestValidator.equals("user summary matches")(userSummary)(user); // WRONG: user has extra properties
-
-// CORRECT: Use proper order for type compatibility
 TestValidator.equals("user contains summary data")(user)(userSummary); // user type can accept userSummary ✓
+TestValidator.equals("user summary matches")(userSummary)(user); // WRONG: userSummary cannot accept user with extra properties ✗
 
 // CORRECT: Extract specific properties for comparison
-TestValidator.equals("user ID matches")(userSummary.id)(user.id); // string = string ✓
-TestValidator.equals("user name matches")(userSummary.name)(user.name); // string = string ✓
+TestValidator.equals("user ID matches")(user.id)(userSummary.id); // string = string ✓
+TestValidator.equals("user name matches")(user.name)(userSummary.name); // string = string ✓
 
 // CORRECT: Union type parameter order
 const value: string | null = getSomeValue();
 TestValidator.equals("value should be null")(value)(null); // string | null can accept null ✓
-TestValidator.equals("value should be null")(null)(value); // WRONG: null cannot accept string | null
+TestValidator.equals("value should be null")(null)(value); // WRONG: null cannot accept string | null ✗
 ```
 
-**Rule:** If `TestValidator.equals(title)(x)(y)` causes type errors because `y` cannot be assigned to `x`'s type, reverse the order to `TestValidator.equals(title)(y)(x)` or extract specific properties for comparison.
+**Rule:** Use the pattern `TestValidator.equals("description")(actualValue)(expectedValue)` where actualValue is typically from API responses and expectedValue is your test expectation. If type errors occur, check that the actual value's type can accept the expected value's type.
 
 **Custom assertions:**
 For complex validation logic not covered by TestValidator, use standard conditional logic:
