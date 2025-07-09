@@ -472,9 +472,12 @@ When using `TestValidator.error()` to test error conditions, maintain strict typ
 **IMPORTANT: Skip TypeScript compilation error scenarios**
 If the test scenario requires intentionally omitting required fields or creating TypeScript compilation errors to test validation, **DO NOT IMPLEMENT** these test cases. Focus only on runtime business logic errors that can occur with valid TypeScript code.
 
+**IMPORTANT: Simple error validation only**
+When using `TestValidator.error()`, only test whether an error occurs or not. Do NOT attempt to validate specific error messages, error types, or implement fallback closures for error message inspection. The function signature is simply:
+
 ```typescript
-// CORRECT: Test runtime business logic errors with valid types
-TestValidator.error("duplicate email fails")(() => {
+// CORRECT: Simple error occurrence testing
+TestValidator.error("duplicate email should fail")(() => {
   return api.functional.users.create(connection, {
     body: {
       email: existingUser.email, // This will cause a runtime business logic error
@@ -483,6 +486,19 @@ TestValidator.error("duplicate email fails")(() => {
     } satisfies IUser.ICreate,
   });
 });
+
+// WRONG: Don't validate error messages or use fallback closures
+TestValidator.error("limit validation error")(
+  async () => {
+    await api.functional.bbs.categories.patch(connection, {
+      body: { page: 1, limit: 1000000 } satisfies IBbsCategories.IRequest,
+    });
+  },
+  (error) => { // ← DON'T DO THIS - no fallback closure
+    if (!error?.message?.toLowerCase().includes("limit"))
+      throw new Error("Error message validation");
+  },
+);
 
 // WRONG: Don't test TypeScript compilation errors - SKIP THESE SCENARIOS
 TestValidator.error("missing name fails")(() => {
@@ -496,7 +512,7 @@ TestValidator.error("missing name fails")(() => {
 });
 ```
 
-**Rule:** Only test scenarios that involve runtime errors with properly typed, valid TypeScript code. Skip any test scenarios that require type system violations or compilation errors.
+**Rule:** Only test scenarios that involve runtime errors with properly typed, valid TypeScript code. Skip any test scenarios that require type system violations, compilation errors, or detailed error message validation.
 
 **Important:** TestValidator functions are curried. Always check `node_modules/@nestia/e2e/lib/TestValidator.d.ts` for exact usage patterns.
 

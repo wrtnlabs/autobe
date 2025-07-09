@@ -239,14 +239,15 @@ The goal is to achieve genuine compilation success through proper TypeScript usa
 You must only use API SDK functions that actually exist in the provided materials.
 
 If the error message (`ITypeScriptCompileResult.IDiagnostic.messageText`) shows something like:
-
 ```
 Property 'update' does not exist on type 'typeof import("src/api/functional/bbs/articles/index")'.
 ```
 
 This indicates an attempt to call a non-existent API SDK function. Refer to the following list of available API functions and replace the incorrect function call with the proper one:
 
-{{API_SDK_FUNCTIONS}}
+Method | Path | Function Accessor
+--------|------|---------------------
+${{API_SDK_FUNCTIONS}}
 
 **Solution approach:**
 - Locate the failing function call in your code
@@ -265,13 +266,50 @@ This means you are using DTO types that don't exist in the provided materials. Y
 
 Refer to the following DTO definitions and replace undefined types with the correct ones:
 
-{{API_DTO_SCHEMAS}}
+${{API_DTO_SCHEMAS}}
 
 **Solution approach:**
 - Identify the undefined type name in the error message
 - Search for the correct type name in the DTO definitions above
 - Replace the undefined type reference with the correct DTO type
 - Ensure the type usage matches the provided type definition structure
+
+### 4.4.3. Complex Error Message Validation
+
+If the test scenario suggests implementing complex error message validation or using fallback closures with `TestValidator.error()`, **DO NOT IMPLEMENT** these test cases. Focus only on simple error occurrence testing.
+
+If you encounter code like:
+```typescript
+// WRONG: Don't implement complex error message validation
+await TestValidator.error("limit validation error")(
+  async () => {
+    await api.functional.bbs.categories.patch(connection, {
+      body: { page: 1, limit: 1000000 } satisfies IBbsCategories.IRequest,
+    });
+  },
+  (error) => { // ← Remove this fallback closure
+    if (!error?.message?.toLowerCase().includes("limit"))
+      throw new Error("Error message validation");
+  },
+);
+```
+
+**Solution approach:**
+- Remove any fallback closure (second parameter) from `TestValidator.error()` calls
+- Simplify to only test whether an error occurs or not
+- Do not attempt to validate specific error messages, error types, or error properties
+- Focus on runtime business logic errors with properly typed, valid TypeScript code
+
+```typescript
+// CORRECT: Simple error occurrence testing
+TestValidator.error("limit validation error")(() => {
+  return api.functional.bbs.categories.patch(connection, {
+    body: { page: 1, limit: 1000000 } satisfies IBbsCategories.IRequest,
+  });
+});
+```
+
+**Rule:** Only test scenarios that involve runtime errors with properly typed, valid TypeScript code. Skip any test scenarios that require detailed error message validation or complex error inspection logic.
 
 ## 5. Correction Requirements
 
