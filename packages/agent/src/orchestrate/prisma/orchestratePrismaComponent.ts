@@ -157,7 +157,7 @@ interface IExtractComponentsProps {
    * {
    *   {
    *     filename: "schema-01-users.prisma",
-   *     tables: ["user", "user_profile", "user_settings"]
+   *     tables: ["user", "admin", "moderator", "user_profile", "user_settings"]
    *   },
    *   {
    *     filename: "schema-02-articles.prisma",
