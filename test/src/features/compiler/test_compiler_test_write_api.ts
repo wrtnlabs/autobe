@@ -44,7 +44,7 @@ export async function test_compiler_test_write_api(): Promise<void> {
   );
   TestValidator.predicate("call")(() =>
     result.includes(
-      `const page: IPageIBbsArticle.ISummary = await api.bbs.articles.patch(connection, {`,
+      `const page: IPageIBbsArticle.ISummary = await api.functional.bbs.articles.patch(connection, {`,
     ),
   );
   TestValidator.predicate("assert")(() =>
