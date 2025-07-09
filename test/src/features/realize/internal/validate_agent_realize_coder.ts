@@ -4,7 +4,7 @@ import {
 } from "@autobe/agent/src/orchestrate/realize/orchestrateRealize";
 import { orchestrateRealizeCoder } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeCoder";
 import { orchestrateRealizePlanner } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizePlanner";
-import { IAutoBeRealizeCoderApplication } from "@autobe/agent/src/orchestrate/realize/structures/IAutoBeRealizeCorderApplication";
+import { IAutoBeRealizeCoderApplication } from "@autobe/agent/src/orchestrate/realize/structures/IAutoBeRealizeCoderApplication";
 import { FileSystemIterator } from "@autobe/filesystem";
 import { AutoBeEvent } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
