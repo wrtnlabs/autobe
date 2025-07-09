@@ -11,16 +11,16 @@ import typia from "typia";
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
 import { TestProject } from "../../../structures/TestProject";
-import { prepare_agent_realize_planner } from "./prepare_agent_realize_planner";
+import { prepare_agent_realize_coder } from "./prepare_agent_realize_coder";
 
-export const validate_agent_realize_planner = async (
+export const validate_agent_realize = async (
   factory: TestFactory,
   project: TestProject,
 ) => {
   if (TestGlobal.env.CHATGPT_API_KEY === undefined) return false;
 
   // PREPARE AGENT
-  const { agent } = await prepare_agent_realize_planner(factory, project);
+  const { agent } = await prepare_agent_realize_coder(factory, project);
 
   const map = new Map<string, true>();
   const events: AutoBeEvent[] = [];

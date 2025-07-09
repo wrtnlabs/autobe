@@ -83,6 +83,7 @@ export const test_compiler_test_write_predicate = async (): Promise<void> => {
         ),
       ],
     },
+    prettier: false,
   });
 
   TestValidator.predicate("equal")(() =>

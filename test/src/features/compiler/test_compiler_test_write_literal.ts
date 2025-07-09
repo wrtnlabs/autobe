@@ -81,6 +81,7 @@ export const test_compiler_test_write_literal = async (): Promise<void> => {
         ),
       ],
     },
+    prettier: false,
   });
   TestValidator.predicate("binary")(() => result.includes("3 !== 4"));
   TestValidator.predicate("boolean")(() => result.includes("false"));

@@ -4,9 +4,9 @@ import { ILlmSchema, OpenApiTypeChecker } from "@samchon/openapi";
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeTestScenarioArtifacts } from "../structures/IAutoBeTestScenarioArtifacts";
 
-export async function compileTestScenario<Model extends ILlmSchema.Model>(
+export async function getTestScenarioArtifacts<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  scenario: AutoBeTestScenario,
+  scenario: Pick<AutoBeTestScenario, "endpoint" | "dependencies">,
 ): Promise<IAutoBeTestScenarioArtifacts> {
   const document: AutoBeOpenApi.IDocument = filterDocument(
     scenario,
@@ -34,7 +34,7 @@ export async function compileTestScenario<Model extends ILlmSchema.Model>(
 }
 
 function filterDocument(
-  scenario: AutoBeTestScenario,
+  scenario: Pick<AutoBeTestScenario, "endpoint" | "dependencies">,
   document: AutoBeOpenApi.IDocument,
 ): AutoBeOpenApi.IDocument {
   const operations: AutoBeOpenApi.IOperation[] = document.operations.filter(

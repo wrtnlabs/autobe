@@ -61,9 +61,12 @@ export const orchestrateTest =
       ctx,
       written,
     );
+    const success: AutoBeTestValidateEvent[] = corrects.filter(
+      (c) => c.result.type === "success",
+    );
 
     // DO COMPILE
-    const files: AutoBeTestFile[] = corrects.map((c) => c.file);
+    const files: AutoBeTestFile[] = success.map((c) => c.file);
     const compiled: IAutoBeTypeScriptCompileResult =
       await ctx.compiler.test.compile({
         files: {

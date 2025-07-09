@@ -2,7 +2,6 @@ import { AutoBeAgent, AutoBeTokenUsage } from "@autobe/agent";
 import { AutoBeCompiler } from "@autobe/compiler";
 import { DynamicExecutor } from "@nestia/e2e";
 import chalk from "chalk";
-import cp from "child_process";
 import fs from "fs";
 import OpenAI from "openai";
 import path from "path";
@@ -12,14 +11,6 @@ import { TestFactory } from "./TestFactory";
 import { TestGlobal } from "./TestGlobal";
 
 async function main(): Promise<void> {
-  if (TestGlobal.env.CHATGPT_API_KEY !== undefined) {
-    console.log("Build system prompts");
-    cp.execSync("pnpm run build:prompt", {
-      cwd: `${__dirname}/../../packages/agent`,
-      stdio: "inherit",
-    });
-  }
-
   // PREPARE ENVIRONMENT
   const compiler: AutoBeCompiler = new AutoBeCompiler();
   const tokenUsage: AutoBeTokenUsage = new AutoBeTokenUsage();

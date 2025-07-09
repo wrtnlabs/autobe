@@ -14,6 +14,7 @@ import {
   RealizeValidatorOutput,
   orchestrateRealizeValidator,
 } from "./orchestrateRealizeValidator";
+import { IAutoBeRealizeCoderApplication } from "./structures/IAutoBeRealizeCoderApplication";
 
 export const orchestrateRealize =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
@@ -27,24 +28,37 @@ export const orchestrateRealize =
       throw new Error();
     }
 
-    const codes: (RealizeValidatorOutput | FAILED)[] = await Promise.all(
+    const codes: (
+      | IAutoBeRealizeCoderApplication.RealizeCoderOutput
+      | FAILED
+    )[] = await Promise.all(
       ops.map(async (op) =>
         pipe(
           op,
           (op) => orchestrateRealizePlanner(ctx, op),
-          (p) => orchestrateRealizeCoder(ctx, p),
-          (c) => orchestrateRealizeIntegrator(ctx, c),
-          (i) => orchestrateRealizeValidator(ctx, i),
+          (p) => orchestrateRealizeCoder(ctx, op, p),
         ),
       ),
     );
 
-    if (codes.length) {
-      if (codes.every((code) => code !== FAILED)) {
+    const vaildates: (RealizeValidatorOutput | FAILED)[] = await Promise.all(
+      codes
+        .filter((el) => el !== FAILED)
+        .map(async (c) =>
+          pipe(
+            c,
+            (c) => orchestrateRealizeIntegrator(ctx, c),
+            (i) => orchestrateRealizeValidator(ctx, i),
+          ),
+        ),
+    );
+
+    if (vaildates.length) {
+      if (vaildates.every((v) => v !== FAILED)) {
         const files = {
           ...ctx.state().interface?.files,
-          ...codes
-            .map((code) => ({ [code.location]: code.content }))
+          ...vaildates
+            .map((v) => ({ [v.location]: v.content }))
             .reduce((acc, cur) => Object.assign(acc, cur), {}),
         };
 
@@ -116,7 +130,25 @@ export const orchestrateRealize =
 export const FAILED = Symbol("FAILED");
 export type FAILED = typeof FAILED;
 
-function pipe<A, B, C, D, E>(
+export function pipe<A, B>(
+  a: A,
+  ab: (a: A) => Promise<B | FAILED>,
+): Promise<B | FAILED>;
+
+export function pipe<A, B, C>(
+  a: A,
+  ab: (a: A) => Promise<B | FAILED>,
+  bc: (b: B) => Promise<C | FAILED>,
+): Promise<C | FAILED>;
+
+export function pipe<A, B, C, D>(
+  a: A,
+  ab: (a: A) => Promise<B | FAILED>,
+  bc: (b: B) => Promise<C | FAILED>,
+  cd: (c: C) => Promise<D | FAILED>,
+): Promise<D | FAILED>;
+
+export function pipe<A, B, C, D, E>(
   a: A,
   ab: (a: A) => Promise<B | FAILED>,
   bc: (b: B) => Promise<C | FAILED>,
@@ -124,7 +156,10 @@ function pipe<A, B, C, D, E>(
   de: (d: D) => Promise<E | FAILED>,
 ): Promise<E | FAILED>;
 
-function pipe(a: any, ...fns: Array<(arg: any) => Promise<any>>): Promise<any> {
+export function pipe(
+  a: any,
+  ...fns: Array<(arg: any) => Promise<any>>
+): Promise<any> {
   return fns.reduce((prev, fn) => {
     return prev.then((result) => {
       if (result === FAILED) return FAILED;

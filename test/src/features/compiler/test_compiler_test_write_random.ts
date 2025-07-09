@@ -84,6 +84,7 @@ export const test_compiler_test_write_random = async (): Promise<void> => {
         ),
       ],
     },
+    prettier: false,
   });
 
   TestValidator.predicate("import")(

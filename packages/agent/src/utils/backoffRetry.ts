@@ -61,5 +61,13 @@ function isRetryError(error: any): boolean {
     return true;
   }
 
+  if (
+    (error?.message as string)?.startsWith(
+      `SyntaxError: Expected ',' or '}' after property value in JSON at position`,
+    )
+  ) {
+    return true;
+  }
+
   return false;
 }

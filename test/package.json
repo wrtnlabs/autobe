@@ -8,7 +8,7 @@
     "prepare": "ts-patch install",
     "build": "tsc --noEmit",
     "dev": "tsc --watch --noEmit",
-    "start": "rimraf results && ts-node src",
+    "start": "node build/prompt.js && ts-node src",
     "bench": "ts-node src/benchmarks"
   },
   "author": "Wrtn Technologies",
@@ -20,6 +20,7 @@
     "@autobe/interface": "workspace:^",
     "@autobe/utils": "workspace:^",
     "@nestia/core": "catalog:samchon",
+    "@nestia/fetcher": "catalog:samchon",
     "@nestia/e2e": "catalog:samchon",
     "@nestia/migrate": "catalog:samchon",
     "@samchon/openapi": "catalog:samchon",

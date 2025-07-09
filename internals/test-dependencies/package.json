@@ -5,11 +5,11 @@
   "author": "Wrtn Technologies",
   "license": "MIT",
   "devDependencies": {
-    "@nestia/e2e": "^7.0.0",
-    "@nestia/fetcher": "^7.0.0",
-    "@samchon/openapi": "^4.3.3",
+    "@nestia/e2e": "^7.0.3",
+    "@nestia/fetcher": "^7.0.3",
+    "@samchon/openapi": "^4.4.1",
     "@types/node": "^22.15.3",
     "typescript": "~5.8.3",
-    "typia": "^9.3.1"
+    "typia": "^9.4.0"
   }
 }
