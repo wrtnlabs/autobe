@@ -417,6 +417,22 @@ Use the pattern `api.functional.{path}.{method}(connection, props)` based on the
 
 ### 3.6. Random Data Generation
 
+**CRITICAL: Always provide generic type arguments to `typia.random<T>()`**
+The `typia.random<T>()` function requires explicit generic type arguments. Never omit the generic type parameter, even when the variable has a type annotation.
+
+```typescript
+// WRONG: Missing generic type argument causes compilation error
+const x = typia.random(); // ← Compilation error
+const x: string & tags.Format<"uuid"> = typia.random(); // ← Compilation error
+
+// CORRECT: Always provide generic type argument
+const x = typia.random<string & tags.Format<"uuid">>();
+const x: string = typia.random<string & tags.Format<"uuid">>();
+const x: string & tags.Format<"uuid"> = typia.random<string & tags.Format<"uuid">>();
+```
+
+**Rule:** Always use the pattern `typia.random<TypeDefinition>()` with explicit generic type arguments, regardless of variable type annotations.
+
 #### 3.6.1. Numeric Values
 
 Generate random numbers with constraints using intersection types:

@@ -255,6 +255,7 @@ If the original code attempts to implement functionality that cannot be realized
 - **Import Errors**: Remember no import statements should be used in E2E tests
 - **Authentication Issues**: Use only actual authentication APIs provided in materials
 - **TestValidator Errors**: Apply proper curried function syntax and parameter order
+- **typia.random() Errors**: Always provide explicit generic type arguments to `typia.random<T>()`
 
 ### 4.4. Special Compilation Error Patterns and Solutions
 
@@ -440,6 +441,33 @@ TestValidator.error(title)(asyncFunction);
 4. **Verify function signatures**: Check that each curried call receives exactly one parameter
 
 **Rule:** All `TestValidator` functions are curried and must be called with the pattern `TestValidator.functionName(param1)(param2)(param3)` rather than `TestValidator.functionName(param1, param2, param3)`.
+
+### 4.4.7. Missing Generic Type Arguments in typia.random()
+
+If you encounter compilation errors related to `typia.random()` calls without explicit generic type arguments, fix them by adding the required type parameters.
+
+**CRITICAL: Always provide generic type arguments to typia.random()**
+The `typia.random()` function requires explicit generic type arguments. This is a common source of compilation errors in E2E tests.
+
+**Common error patterns to fix:**
+```typescript
+// WRONG: Missing generic type argument causes compilation error
+const x = typia.random(); // ← Compilation error
+const x: string & tags.Format<"uuid"> = typia.random(); // ← Still compilation error
+
+// CORRECT: Always provide explicit generic type arguments
+const x = typia.random<string & tags.Format<"uuid">>();
+const x: string = typia.random<string & tags.Format<"uuid">>();
+const x: string & tags.Format<"uuid"> = typia.random<string & tags.Format<"uuid">>();
+```
+
+**Solution approach:**
+1. **Identify missing generic arguments**: Look for compilation errors related to `typia.random()` calls
+2. **Add explicit type parameters**: Ensure all `typia.random()` calls have `<TypeDefinition>` generic arguments
+3. **Use appropriate types**: Match the generic type with the intended data type for the test
+4. **Verify compilation**: Check that the fix resolves the compilation error
+
+**Rule:** Always use the pattern `typia.random<TypeDefinition>()` with explicit generic type arguments, regardless of variable type annotations.
 
 ## 5. Correction Requirements
 
