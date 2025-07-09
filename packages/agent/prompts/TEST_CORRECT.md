@@ -217,20 +217,44 @@ export namespace IAutoBeTypeScriptCompileResult {
 
 The goal is to achieve genuine compilation success through proper TypeScript usage, not to hide errors through type system suppression.
 
+**IMPLEMENTATION FEASIBILITY REQUIREMENT:**
+If the original code attempts to implement functionality that cannot be realized with the provided API functions and DTO types, **REMOVE those parts** during error correction. Only fix and retain code that is technically feasible with the actual materials provided.
+
 ### 4.2. Diagnostic Analysis Process
 
+**Systematic Error Analysis:**
 1. **Error Categorization**: Focus on `"error"` category diagnostics first, as these prevent successful compilation
-2. **Location Mapping**: Use `file`, `start`, and `length` to pinpoint exact error locations in the source code
-3. **Error Code Analysis**: Reference TypeScript diagnostic codes to understand specific error types
-4. **Message Interpretation**: Analyze `messageText` to understand the root cause and required corrections
+2. **Error Priority Assessment**: 
+   - Type system violations and missing type definitions
+   - API function signature mismatches
+   - Import/export issues and module resolution
+   - Syntax errors and malformed expressions
+   - Logic errors and incorrect implementations
+3. **Location Mapping**: Use `file`, `start`, and `length` to pinpoint exact error locations in the source code
+4. **Error Code Analysis**: Reference TypeScript diagnostic codes to understand specific error types
+5. **Message Interpretation**: Analyze `messageText` to understand the root cause and required corrections
+
+**Root Cause Identification:**
+- Analyze each diagnostic's file location, error code, and message
+- Identify patterns in errors that suggest systematic issues
+- Determine if errors are related to incorrect API usage, type mismatches, or logic problems
+- Check for cascading errors where fixing one issue resolves multiple diagnostics
 
 ### 4.3. Systematic Error Resolution
 
+**Error Resolution Strategy:**
 - Prioritize errors over warnings and suggestions
 - Fix errors that may be causing cascading issues first
 - Maintain all original functionality while resolving compilation issues
 - Ensure the corrected code follows all guidelines from the original system prompt
 - Verify that fixes don't introduce new compilation errors
+
+**Common Error Resolution Patterns:**
+- **Type Mismatches**: Use correct types from provided DTO definitions
+- **Function Signature Errors**: Match exact API SDK function signatures
+- **Import Errors**: Remember no import statements should be used in E2E tests
+- **Authentication Issues**: Use only actual authentication APIs provided in materials
+- **TestValidator Errors**: Apply proper curried function syntax and parameter order
 
 ### 4.4. Special Compilation Error Patterns and Solutions
 
@@ -313,28 +337,45 @@ TestValidator.error("limit validation error")(() => {
 
 When fixing `TestValidator.equals()` and `TestValidator.notEquals()` calls, be careful about parameter order. The generic type is determined by the first parameter, so the second parameter must be assignable to the first parameter's type.
 
+**IMPORTANT: Use actual-first, expected-second pattern**
+For best type compatibility, use the actual value (from API responses or variables) as the first parameter and the expected value as the second parameter:
+
+```typescript
+// CORRECT: actual value first, expected value second
+const member: IMember = await api.functional.membership.join(connection, ...);
+TestValidator.equals("no recommender")(member.recommender)(null); // member.recommender is IRecommender | null, can accept null ✓
+
+// WRONG: expected value first, actual value second - may cause type errors
+TestValidator.equals("no recommender")(null)(member.recommender); // null cannot accept IRecommender | null ✗
+
+// CORRECT: String comparison example
+TestValidator.equals("user ID matches")(createdUser.id)(expectedId); // actual first, expected second ✓
+
+// CORRECT: Object comparison example  
+TestValidator.equals("user data matches")(actualUser)(expectedUserData); // actual first, expected second ✓
+```
+
+**Additional type compatibility examples:**
 ```typescript
 // CORRECT: First parameter type can accept second parameter
 const user = { id: "123", name: "John", email: "john@example.com" };
 const userSummary = { id: "123", name: "John" };
 
-TestValidator.equals("user ID matches")(user.id)(userSummary.id); // string = string ✓
-TestValidator.equals("user summary matches")(userSummary)(user); // WRONG: user has extra properties
-
-// CORRECT: Use proper order for type compatibility
 TestValidator.equals("user contains summary data")(user)(userSummary); // user type can accept userSummary ✓
+TestValidator.equals("user summary matches")(userSummary)(user); // WRONG: userSummary cannot accept user with extra properties ✗
 
 // CORRECT: Extract specific properties for comparison
-TestValidator.equals("user ID matches")(userSummary.id)(user.id); // string = string ✓
-TestValidator.equals("user name matches")(userSummary.name)(user.name); // string = string ✓
+TestValidator.equals("user ID matches")(user.id)(userSummary.id); // string = string ✓
+TestValidator.equals("user name matches")(user.name)(userSummary.name); // string = string ✓
 
 // CORRECT: Union type parameter order
 const value: string | null = getSomeValue();
 TestValidator.equals("value should be null")(value)(null); // string | null can accept null ✓
-TestValidator.equals("value should be null")(null)(value); // WRONG: null cannot accept string | null
+TestValidator.equals("value should be null")(null)(value); // WRONG: null cannot accept string | null ✗
 ```
 
 **Solution approach:**
+- Use the pattern `TestValidator.equals("description")(actualValue)(expectedValue)` where actualValue is typically from API responses
 - If compilation errors occur with `TestValidator.equals(title)(x)(y)` because `y` cannot be assigned to `x`'s type, reverse the order to `TestValidator.equals(title)(y)(x)`
 - Alternatively, extract specific properties for comparison to ensure type compatibility
 - Apply the same logic to `TestValidator.notEquals()` calls
@@ -400,16 +441,30 @@ TestValidator.error(title)(asyncFunction);
 
 **Rule:** All `TestValidator` functions are curried and must be called with the pattern `TestValidator.functionName(param1)(param2)(param3)` rather than `TestValidator.functionName(param1, param2, param3)`.
 
-**Rule:** When compilation errors indicate attempts to use non-existent functionality, remove those parts entirely rather than trying to work around them with type suppression or incorrect implementations.
-
 ## 5. Correction Requirements
 
 Your corrected code must:
 
+**Compilation Success:**
 - Resolve all TypeScript compilation errors identified in the diagnostics
-- Maintain the original test functionality and business logic
-- Follow all conventions and requirements from the original system prompt
 - Compile successfully without any errors or warnings
-- Preserve comprehensive test coverage and validation logic
+- Maintain proper TypeScript syntax and type safety
 
-Analyze the compilation diagnostics systematically and generate corrected code that achieves successful compilation while maintaining all original requirements and functionality.
+**Functionality Preservation:**
+- Maintain the original test functionality and business logic
+- Preserve comprehensive test coverage and validation logic
+- Keep all realistic and implementable test scenarios
+
+**Code Quality:**
+- Follow all conventions and requirements from the original system prompt
+- Use proper TestValidator curried function syntax
+- Apply actual-first, expected-second pattern for equality assertions
+- Remove only unimplementable functionality, not working code
+
+**Systematic Approach:**
+- Analyze compilation diagnostics systematically
+- Address root causes rather than just symptoms
+- Ensure fixes don't introduce new compilation errors
+- Verify the corrected code maintains test coherence
+
+Generate corrected code that achieves successful compilation while maintaining all original requirements and functionality.

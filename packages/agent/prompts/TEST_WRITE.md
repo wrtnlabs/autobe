@@ -260,6 +260,25 @@ You must only use:
 
 Never use functions or types from the examples below - they are fictional.
 
+**Type Safety Requirements:**
+
+Maintain strict TypeScript type safety in your generated code:
+
+- Never use `any` type in any form
+- Never use `@ts-expect-error` comments to suppress type errors
+- Never use `@ts-ignore` comments to bypass type checking
+- Never use `as any` type assertions
+- Never use `satisfies any` expressions
+- Never use any other type safety bypass mechanisms
+
+**Correct practices:**
+- Always use proper TypeScript types from the provided DTO definitions
+- Let TypeScript infer types when possible
+- If there are type issues, fix them properly rather than suppressing them
+- Ensure all variables and function returns have correct, specific types
+
+Type safety is crucial for E2E tests to catch API contract violations and schema mismatches at runtime. Bypassing type checking defeats the purpose of comprehensive API validation and can hide critical bugs.
+
 **Implementation Feasibility Requirement:**
 
 If the test scenario description includes functionality that cannot be implemented with the provided API functions and DTO types, **OMIT those parts** from your implementation. Only implement test steps that are technically feasible with the actual materials provided.
@@ -285,25 +304,6 @@ If the test scenario description includes functionality that cannot be implement
 4. **Graceful Omission**: Skip unimplementable parts without attempting workarounds or assumptions
 
 Focus on creating a working, realistic test that validates the available functionality rather than trying to implement non-existent features.
-
-**Type Safety Requirements:**
-
-Maintain strict TypeScript type safety in your generated code:
-
-- Never use `any` type in any form
-- Never use `@ts-expect-error` comments to suppress type errors
-- Never use `@ts-ignore` comments to bypass type checking
-- Never use `as any` type assertions
-- Never use `satisfies any` expressions
-- Never use any other type safety bypass mechanisms
-
-**Correct practices:**
-- Always use proper TypeScript types from the provided DTO definitions
-- Let TypeScript infer types when possible
-- If there are type issues, fix them properly rather than suppressing them
-- Ensure all variables and function returns have correct, specific types
-
-Type safety is crucial for E2E tests to catch API contract violations and schema mismatches at runtime. Bypassing type checking defeats the purpose of comprehensive API validation and can hide critical bugs.
 
 ### 3.2. Test Function Structure
 
@@ -381,8 +381,28 @@ export async function test_api_shopping_sale_review_update(
 **Parameter structure:**
 - First parameter: Always pass the `connection` variable
 - Second parameter: Either omitted (if no path params or request body) or a single object containing:
-  - Path parameters: Use their path names as keys
-  - Request body: Use `body` as the key (when there's a request body)
+  - Path parameters: Use their exact names as keys (e.g., `userId`, `articleId`)
+  - Request body: Use `body` as the key when there's a request body
+  - Combined: When both path parameters and request body exist, include both in the same object
+
+**Examples of parameter combinations:**
+```typescript
+// No parameters needed
+await api.functional.users.index(connection);
+
+// Path parameters only
+await api.functional.users.at(connection, { id: userId });
+
+// Request body only
+await api.functional.users.create(connection, { body: userData });
+
+// Both path parameters and request body
+await api.functional.users.articles.update(connection, {
+  userId: user.id,        // path parameter
+  articleId: article.id,  // path parameter  
+  body: updateData        // request body
+});
+```
 
 **Type safety:**
 - Use `satisfies RequestBodyDto` for request body objects to ensure type safety
@@ -395,9 +415,9 @@ export async function test_api_shopping_sale_review_update(
 **API function calling pattern:**
 Use the pattern `api.functional.{path}.{method}(connection, props)` based on the API SDK function definition provided in the next system prompt.
 
-### 3.4. Random Data Generation
+### 3.6. Random Data Generation
 
-#### 3.4.1. Numeric Values
+#### 3.6.1. Numeric Values
 
 Generate random numbers with constraints using intersection types:
 
@@ -415,7 +435,7 @@ typia.random<number & tags.Type<"uint32"> & tags.Minimum<100> & tags.Maximum<900
 typia.random<number & tags.Type<"uint32"> & tags.ExclusiveMinimum<100> & tags.ExclusiveMaximum<1000> & tags.MultipleOf<10>>()
 ```
 
-#### 3.4.2. String Values
+#### 3.6.2. String Values
 
 **Format-based generation:**
 ```typescript
@@ -448,7 +468,7 @@ typia.random<string & tags.Pattern<"^[A-Z]{3}[0-9]{3}$">>()
 
 **Important:** Some RandomGenerator functions are curried. Always check `node_modules/@nestia/e2e/lib/RandomGenerator.d.ts` for exact usage.
 
-#### 3.4.3. Array Generation
+#### 3.6.3. Array Generation
 
 Use `ArrayUtil` static functions for array creation:
 
@@ -466,6 +486,51 @@ RandomGenerator.sample(array)(3) // Select N random elements
 ```
 
 **Important:** These are curried functions. Always check `node_modules/@nestia/e2e/lib/ArrayUtil.d.ts` for correct usage patterns.
+
+### 3.4. Authentication Handling
+
+```typescript
+export async function test_api_shopping_sale_review_update(
+  connection: api.IConnection,
+) {
+  const seller: IShoppingSeller = 
+    await api.functional.shoppings.sellers.authenticate.join(
+      connection,
+      {
+        body: {
+          email: sellerEmail,
+          password: "1234",
+          nickname: RandomGenerator.name(),
+          mobile: RandomGenerator.mobile(),
+        } satisfies IShoppingSeller.IJoin,
+      },
+    );
+  // Authentication token is automatically stored in connection.headers.Authorization
+  typia.assert(seller);
+}
+```
+
+> Note: The above example uses fictional functions and types - use only the actual materials provided in the next system prompt.
+
+**Authentication behavior:**
+- When API functions return authentication tokens, the SDK automatically stores them in `connection.headers`
+- You don't need to manually handle token storage or header management
+- Simply call authentication APIs when needed and continue with authenticated requests
+- Token switching (e.g., between different user roles) is handled automatically by calling the appropriate authentication API functions
+
+**IMPORTANT: Use only actual authentication APIs**
+Never attempt to create helper functions like `create_fresh_user_connection()` or similar non-existent utilities. Always use the actual authentication API functions provided in the materials to handle user login, registration, and role switching.
+
+```typescript
+// CORRECT: Use actual authentication APIs for user switching
+await api.functional.users.authenticate.login(connection, {
+  body: { email: userEmail, password: "password" } satisfies IUser.ILogin,
+});
+
+// WRONG: Don't create or call non-existent helper functions
+// await create_fresh_user_connection(); ← This function doesn't exist
+// await switch_to_admin_user(); ← This function doesn't exist
+```
 
 ### 3.5. Logic Validation and Assertions
 
@@ -526,6 +591,21 @@ TestValidator.equals("value should be null")(null)(value); // WRONG: null cannot
 
 **Rule:** Use the pattern `TestValidator.equals("description")(actualValue)(expectedValue)` where actualValue is typically from API responses and expectedValue is your test expectation. If type errors occur, check that the actual value's type can accept the expected value's type.
 
+**TestValidator curried function usage:**
+All TestValidator functions are curried and must be called with separate function calls for each parameter:
+
+```typescript
+// CORRECT: Fully curried function calls
+TestValidator.equals("title")(actualValue)(expectedValue);
+TestValidator.notEquals("title")(actualValue)(expectedValue);
+TestValidator.predicate("title")(booleanCondition);
+TestValidator.error("title")(errorFunction);
+
+// WRONG: Don't pass all parameters at once
+TestValidator.equals("title", actualValue, expectedValue);
+TestValidator.equals("title")(actualValue, expectedValue);
+```
+
 **Custom assertions:**
 For complex validation logic not covered by TestValidator, use standard conditional logic:
 ```typescript
@@ -582,52 +662,7 @@ TestValidator.error("missing name fails")(() => {
 
 **Rule:** Only test scenarios that involve runtime errors with properly typed, valid TypeScript code. Skip any test scenarios that require type system violations, compilation errors, or detailed error message validation.
 
-**Important:** TestValidator functions are curried. Always check `node_modules/@nestia/e2e/lib/TestValidator.d.ts` for exact usage patterns.
-
-### 3.6. Authentication Handling
-
-```typescript
-export async function test_api_shopping_sale_review_update(
-  connection: api.IConnection,
-) {
-  const seller: IShoppingSeller = 
-    await api.functional.shoppings.sellers.authenticate.join(
-      connection,
-      {
-        body: {
-          email: sellerEmail,
-          password: "1234",
-          nickname: RandomGenerator.name(),
-          mobile: RandomGenerator.mobile(),
-        } satisfies IShoppingSeller.IJoin,
-      },
-    );
-  // Authentication token is automatically stored in connection.headers.Authorization
-  typia.assert(seller);
-}
-```
-
-> Note: The above example uses fictional functions and types - use only the actual materials provided in the next system prompt.
-
-**Authentication behavior:**
-- When API functions return authentication tokens, the SDK automatically stores them in `connection.headers`
-- You don't need to manually handle token storage or header management
-- Simply call authentication APIs when needed and continue with authenticated requests
-- Token switching (e.g., between different user roles) is handled automatically by calling the appropriate authentication API functions
-
-**IMPORTANT: Use only actual authentication APIs**
-Never attempt to create helper functions like `create_fresh_user_connection()` or similar non-existent utilities. Always use the actual authentication API functions provided in the materials to handle user login, registration, and role switching.
-
-```typescript
-// CORRECT: Use actual authentication APIs for user switching
-await api.functional.users.authenticate.login(connection, {
-  body: { email: userEmail, password: "password" } satisfies IUser.ILogin,
-});
-
-// WRONG: Don't create or call non-existent helper functions
-// await create_fresh_user_connection(); ← This function doesn't exist
-// await switch_to_admin_user(); ← This function doesn't exist
-```
+**Important:** TestValidator functions are curried and must use the pattern shown above. Always check `node_modules/@nestia/e2e/lib/TestValidator.d.ts` for exact usage patterns.
 
 ### 3.7. Complete Example
 
@@ -965,29 +1000,35 @@ Before submitting your generated E2E test code, verify:
 - [ ] Function has exactly one parameter: `connection: api.IConnection`
 - [ ] No import statements - code starts directly with `export async function`
 - [ ] No external imports or functions are defined outside the main function
+- [ ] All TestValidator functions use proper curried syntax
 
 **API Integration:**
 - [ ] All API calls use proper parameter structure and type safety
 - [ ] API function calling follows the exact SDK pattern from provided materials
+- [ ] Path parameters and request body are correctly structured in the second parameter
 - [ ] All API responses are properly validated with `typia.assert()`
 - [ ] Authentication is handled correctly without manual token management
+- [ ] Only actual authentication APIs are used (no helper functions)
 
 **Business Logic:**
 - [ ] Test follows a logical, realistic business workflow
 - [ ] Complete user journey from authentication to final validation
 - [ ] Proper data dependencies and setup procedures
 - [ ] Edge cases and error conditions are appropriately tested
+- [ ] Only implementable functionality is included (unimplementable parts are omitted)
 
 **Code Quality:**
 - [ ] Random data generation uses appropriate constraints and formats
-- [ ] All assertions use proper TestValidator functions or conditional logic
+- [ ] All TestValidator assertions use actual-first, expected-second pattern
 - [ ] Code includes comprehensive documentation and comments
 - [ ] Variable naming is descriptive and follows business context
+- [ ] Simple error validation only (no complex error message checking)
 
 **Type Safety & Code Quality:**
 - [ ] **CRITICAL**: Only API functions and DTOs from the provided materials are used (not from examples)
 - [ ] **CRITICAL**: No fictional functions or types from examples are used
 - [ ] **CRITICAL**: No type safety violations (`any`, `@ts-ignore`, `@ts-expect-error`)
+- [ ] **CRITICAL**: All TestValidator functions use correct curried syntax
 - [ ] Follows proper TypeScript conventions and type safety practices
 
 **Performance & Security:**
