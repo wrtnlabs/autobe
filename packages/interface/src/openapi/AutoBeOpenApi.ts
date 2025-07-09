@@ -398,7 +398,7 @@ export namespace AutoBeOpenApi {
      * Defines which user role is subject to strategies such as membership
      * registration, login, token issuance, refresh token, etc.
      */
-    authorization: IAuthorization;
+    authorization?: IAuthorization;
   }
 
   /**
