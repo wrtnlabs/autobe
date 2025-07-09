@@ -21,14 +21,8 @@ export const validate_agent_test_main = async (
 
   // PREPARE AGENT
   const { agent } = await prepare_agent_test(factory, project);
-
-  const map = new Map<string, true>();
   const events: AutoBeEvent[] = [];
   const enroll = (event: AutoBeEvent) => {
-    if (!map.has(event.type)) {
-      map.set(event.type, true);
-      console.log(event.type);
-    }
     events.push(event);
   };
   agent.on("testStart", enroll);
