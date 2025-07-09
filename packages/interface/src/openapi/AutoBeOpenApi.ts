@@ -391,6 +391,71 @@ export namespace AutoBeOpenApi {
      * Should be null for operations that don't return any data.
      */
     responseBody: AutoBeOpenApi.IResponseBody | null;
+
+    /**
+     * Authorization
+     *
+     * Defines which user role is subject to strategies such as membership
+     * registration, login, token issuance, refresh token, etc.
+     */
+    authorization: IAuthorization;
+  }
+
+  /**
+   * Authorization - Authentication and user type information
+   *
+   * This field defines how the API authenticates the request and restricts
+   * access to specific user types.
+   *
+   * ✅ Only the `Authorization` HTTP header is used for authentication. The
+   * expected format is:
+   *
+   * Authorization: Bearer <access_token>
+   *
+   * The token must be a bearer token (e.g., JWT or similar), and when parsed,
+   * it is guaranteed to include at least the authenticated actor's `id` field.
+   * No other headers or cookie-based authentication methods are supported.
+   */
+  export interface IAuthorization {
+    /**
+     * Allowed user types for this API
+     *
+     * Specifies which user types are permitted to access this API.
+     *
+     * This is not a permission level or access control role. Instead, it
+     * describes **who** the user is — their type within the service's domain
+     * model. It must correspond 1:1 with how the user is represented in the
+     * database.
+     *
+     * Examples:
+     *
+     * - "buyer": a customer who makes purchases
+     * - "seller": a vendor who offers products
+     * - "moderator": a content reviewer or manager
+     *
+     * ⚠️ Important: Each `role` must **exactly match a table name defined in
+     * the database schema**. This is not merely a convention or example — it is
+     * a strict requirement.
+     *
+     * A valid role must meet the following criteria:
+     *
+     * - It must uniquely map to a user group at the database level, represented
+     *   by a dedicated table.
+     * - It must not overlap semantically with other roles — for instance, both
+     *   `admin` and `administrator` must not exist to describe the same type.
+     *
+     * Therefore, if a user type cannot be clearly and uniquely distinguished in
+     * the database, It **cannot** be used as a valid `role` here.
+     */
+    role: string[];
+
+    /**
+     * Authentication method type
+     *
+     * Currently only `"bearer"` is supported, which uses a Bearer token in the
+     * HTTP Authorization header.
+     */
+    type: "Bearer";
   }
 
   /**

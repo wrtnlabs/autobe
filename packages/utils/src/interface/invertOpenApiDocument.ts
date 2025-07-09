@@ -47,6 +47,10 @@ export function invertOpenApiDocument(
                     typeName: r.success.schema.$ref.split("/").pop()!,
                   }
                 : null,
+            authorization: {
+              role: [],
+              type: "Bearer",
+            },
           }) satisfies AutoBeOpenApi.IOperation,
       ),
     components: {

@@ -97,8 +97,7 @@ export const orchestrateRealizePlanner = async <Model extends ILlmSchema.Model>(
         (el) =>
           el.scenario.endpoint.method === operation.method &&
           el.scenario.endpoint.path === operation.path,
-      )
-      .map((el) => el.scenario.draft) ?? [];
+      ) ?? [];
 
   return {
     description: operation.description,
@@ -106,8 +105,9 @@ export const orchestrateRealizePlanner = async <Model extends ILlmSchema.Model>(
     inputSchema: operation.requestBody,
     outputSchema: operation.responseBody,
     operationType: operation.method,
-    testScenarios: testScenarios,
+    testScenarios: testScenarios.map((el) => el.scenario.draft),
     functionName: `${operation.method}_${operation.path
+      .replaceAll("/", "_")
       .replaceAll("-", "_")
       .replaceAll("{", "$")
       .replaceAll("}", "")}`,

@@ -6,14 +6,14 @@ import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
 import { TestHistory } from "../../../internal/TestHistory";
 
-export const prepare_agent_realize_planner = async (
+export const prepare_agent_realize_coder = async (
   factory: TestFactory,
   project: "bbs-backend" | "shopping-backend",
 ) => {
   if (TestGlobal.env.CHATGPT_API_KEY === undefined)
     throw new Error("No OpenAI API key provided");
 
-  const histories: AutoBeHistory[] = await TestHistory.getTest(project);
+  const histories: AutoBeHistory[] = await TestHistory.getInterface(project);
   const agent: AutoBeAgent<"chatgpt"> = factory.createAgent(histories);
   const state: AutoBeState = agent.getContext().state();
 
