@@ -58,6 +58,9 @@ async function process<Model extends ILlmSchema.Model>(
     vendor: ctx.vendor,
     config: {
       ...(ctx.config ?? {}),
+      executor: {
+        describe: null,
+      },
     },
     histories: transformPrismaSchemaHistories(ctx.state().analyze!, component),
     controllers: [
