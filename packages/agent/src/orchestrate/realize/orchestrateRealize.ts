@@ -14,7 +14,7 @@ import {
   RealizeValidatorOutput,
   orchestrateRealizeValidator,
 } from "./orchestrateRealizeValidator";
-import { IAutoBeRealizeCoderApplication } from "./structures/IAutoBeRealizeCorderApplication";
+import { IAutoBeRealizeCoderApplication } from "./structures/IAutoBeRealizeCoderApplication";
 
 export const orchestrateRealize =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>

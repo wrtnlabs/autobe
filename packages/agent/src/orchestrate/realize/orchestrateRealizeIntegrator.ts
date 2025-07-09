@@ -1,7 +1,7 @@
 import { ILlmSchema } from "@samchon/openapi";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { IAutoBeRealizeCoderApplication } from "./structures/IAutoBeRealizeCorderApplication";
+import { IAutoBeRealizeCoderApplication } from "./structures/IAutoBeRealizeCoderApplication";
 
 /**
  * The result of integrating the generated code into the actual application

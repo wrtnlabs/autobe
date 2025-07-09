@@ -11,7 +11,7 @@ import { compileTestScenario } from "../test/compile/compileTestScenario";
 import { IAutoBeTestScenarioArtifacts } from "../test/structures/IAutoBeTestScenarioArtifacts";
 import { FAILED } from "./orchestrateRealize";
 import { RealizePlannerOutput } from "./orchestrateRealizePlanner";
-import { IAutoBeRealizeCoderApplication } from "./structures/IAutoBeRealizeCorderApplication";
+import { IAutoBeRealizeCoderApplication } from "./structures/IAutoBeRealizeCoderApplication";
 import { transformRealizeCoderHistories } from "./transformRealizeCoderHistories";
 
 /**
@@ -114,12 +114,12 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
       programing: (next) => {
         props.build(next);
       },
-    } satisfies IAutoBeRealizeCorderApplication,
+    } satisfies IAutoBeRealizeCoderApplication,
   };
 }
 
 const claude = typia.llm.application<
-  IAutoBeRealizeCorderApplication,
+  IAutoBeRealizeCoderApplication,
   "claude",
   {
     reference: true;
@@ -127,7 +127,7 @@ const claude = typia.llm.application<
 >();
 const collection = {
   chatgpt: typia.llm.application<
-    IAutoBeRealizeCorderApplication,
+    IAutoBeRealizeCoderApplication,
     "chatgpt",
     { reference: true }
   >(),
