@@ -33,6 +33,9 @@ export async function orchestratePrismaComponents<
     vendor: ctx.vendor,
     config: {
       ...(ctx.config ?? {}),
+      executor: {
+        describe: null,
+      },
     },
     histories: transformPrismaComponentsHistories(ctx.state(), prefix),
     controllers: [
