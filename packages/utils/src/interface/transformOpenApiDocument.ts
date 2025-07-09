@@ -22,7 +22,7 @@ export function transformOpenApiDocument(
             content: {
               "application/json": {
                 schema: {
-                  $ref: `#.components/schemas/${op.requestBody.typeName}`,
+                  $ref: `#/components/schemas/${op.requestBody.typeName}`,
                 },
               },
             },
