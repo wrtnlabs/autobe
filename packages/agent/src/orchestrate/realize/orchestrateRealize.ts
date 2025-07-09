@@ -42,13 +42,15 @@ export const orchestrateRealize =
     );
 
     const vaildates: (RealizeValidatorOutput | FAILED)[] = await Promise.all(
-      codes.map(async (c) =>
-        pipe(
-          c,
-          (c) => orchestrateRealizeIntegrator(ctx, c),
-          (i) => orchestrateRealizeValidator(ctx, i),
+      codes
+        .filter((el) => el !== FAILED)
+        .map(async (c) =>
+          pipe(
+            c,
+            (c) => orchestrateRealizeIntegrator(ctx, c),
+            (i) => orchestrateRealizeValidator(ctx, i),
+          ),
         ),
-      ),
     );
 
     if (vaildates.length) {
