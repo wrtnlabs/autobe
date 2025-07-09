@@ -3,16 +3,16 @@ import { IAutoBeTypeScriptCompileResult } from "@autobe/interface";
 import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
-import { IAutoBeTestWriteResult } from "./structures/IAutoBeTestWriteResult";
+import { IAutoBeTestFunction } from "./structures/IAutoBeTestFunction";
 import { transformTestWriteHistories } from "./transformTestWriteHistories";
 
 export const transformTestCorrectHistories = (
-  written: IAutoBeTestWriteResult,
+  func: IAutoBeTestFunction,
   failure: IAutoBeTypeScriptCompileResult.IFailure,
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => [
-  ...transformTestWriteHistories(written.scenario, written.artifacts),
+  ...transformTestWriteHistories(func.scenario, func.artifacts),
   {
     id: v4(),
     created_at: new Date().toISOString(),
@@ -20,7 +20,7 @@ export const transformTestCorrectHistories = (
     text: [
       "## Generated TypeScript Code",
       "```typescript",
-      written.event.final,
+      func.script,
       "```",
       "",
       "## Compile Errors",
@@ -37,10 +37,10 @@ export const transformTestCorrectHistories = (
     type: "systemMessage",
     text: AutoBeSystemPromptConstant.TEST_CORRECT.replace(
       "{{API_DTO_SCHEMAS}}",
-      transformTestWriteHistories.structures(written.artifacts),
+      transformTestWriteHistories.structures(func.artifacts),
     ).replace(
       "{{API_SDK_FUNCTIONS}}",
-      transformTestWriteHistories.functional(written.artifacts),
+      transformTestWriteHistories.functional(func.artifacts),
     ),
   },
 ];

@@ -13,42 +13,58 @@ import { enforceToolCall } from "../../utils/enforceToolCall";
 import { forceRetry } from "../../utils/forceRetry";
 import { completeTestCode } from "./compile/completeTestCode";
 import { IAutoBeTestCorrectApplication } from "./structures/IAutoBeTestCorrectApplication";
+import { IAutoBeTestFunction } from "./structures/IAutoBeTestFunction";
 import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
 import { IAutoBeTestWriteResult } from "./structures/IAutoBeTestWriteResult";
 import { transformTestCorrectHistories } from "./transformTestCorrectHistories";
 
-export const orchestrateTestCorrect = <Model extends ILlmSchema.Model>(
+export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  results: IAutoBeTestWriteResult[],
+  writeResult: IAutoBeTestWriteResult[],
   life: number = 4,
 ): Promise<AutoBeTestValidateEvent[]> =>
   Promise.all(
-    results.map((written) =>
+    writeResult.map((w) =>
       forceRetry(async () => {
-        const event: AutoBeTestValidateEvent = await compile(ctx, written);
-        return predicate(ctx, written, event, life);
+        const event: AutoBeTestValidateEvent = await compile(ctx, {
+          artifacts: w.artifacts,
+          scenario: w.scenario,
+          location: w.event.location,
+          script: w.event.final,
+        });
+        return predicate(
+          ctx,
+          {
+            artifacts: w.artifacts,
+            scenario: w.scenario,
+            location: w.event.location,
+            script: w.event.final,
+          },
+          event,
+          life,
+        );
       }),
     ),
   );
 
 const compile = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  result: IAutoBeTestWriteResult,
+  func: IAutoBeTestFunction,
 ): Promise<AutoBeTestValidateEvent> => {
   const compiled: IAutoBeTypeScriptCompileResult =
     await ctx.compiler.test.compile({
       files: {
-        ...result.artifacts.dto,
-        ...result.artifacts.sdk,
-        [result.event.location]: result.event.final,
+        ...func.artifacts.dto,
+        ...func.artifacts.sdk,
+        [func.location]: func.script,
       },
     });
   return {
     type: "testValidate",
     file: {
-      scenario: result.scenario,
-      location: result.event.location,
-      content: result.event.final,
+      scenario: func.scenario,
+      location: func.location,
+      content: func.script,
     },
     result: compiled,
     created_at: new Date().toISOString(),
@@ -58,19 +74,19 @@ const compile = async <Model extends ILlmSchema.Model>(
 
 const predicate = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  written: IAutoBeTestWriteResult,
+  content: IAutoBeTestFunction,
   event: AutoBeTestValidateEvent,
   life: number,
 ): Promise<AutoBeTestValidateEvent> => {
   ctx.dispatch(event);
   return event.result.type === "failure"
-    ? correct(ctx, written, event, life - 1)
+    ? correct(ctx, content, event, life - 1)
     : event;
 };
 
 const correct = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  result: IAutoBeTestWriteResult,
+  content: IAutoBeTestFunction,
   validate: AutoBeTestValidateEvent,
   life: number,
 ): Promise<AutoBeTestValidateEvent> => {
@@ -90,11 +106,11 @@ const correct = async <Model extends ILlmSchema.Model>(
       },
       retry: 4,
     },
-    histories: transformTestCorrectHistories(result, validate.result),
+    histories: transformTestCorrectHistories(content, validate.result),
     controllers: [
       createApplication({
         model: ctx.model,
-        artifacts: result.artifacts,
+        artifacts: content.artifacts,
         build: (next) => {
           pointer.value = next;
         },
@@ -121,8 +137,12 @@ const correct = async <Model extends ILlmSchema.Model>(
     step: ctx.state().analyze?.step ?? 0,
     ...pointer.value,
   });
-  validate = await compile(ctx, result);
-  return predicate(ctx, result, validate, life);
+  const newContent: IAutoBeTestFunction = {
+    ...content,
+    script: pointer.value.final,
+  };
+  const newValidate: AutoBeTestValidateEvent = await compile(ctx, newContent);
+  return predicate(ctx, newContent, newValidate, life);
 };
 
 const createApplication = <Model extends ILlmSchema.Model>(props: {

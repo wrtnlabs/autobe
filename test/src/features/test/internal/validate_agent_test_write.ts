@@ -1,5 +1,6 @@
 import { orchestrateTestWrite } from "@autobe/agent/src/orchestrate/test/orchestrateTestWrite";
 import { IAutoBeTestWriteResult } from "@autobe/agent/src/orchestrate/test/structures/IAutoBeTestWriteResult";
+import { AutoBeCompilerTemplate } from "@autobe/compiler/src/raw/AutoBeCompilerTemplate";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeTestScenario,
@@ -66,6 +67,7 @@ export const validate_agent_test_write = async (
     root: `${TestGlobal.ROOT}/results/${project}/test/write`,
     files: {
       ...files,
+      "test/tsconfig.json": AutoBeCompilerTemplate["test/tsconfig.json"],
       "logs/results.json": typia.json.stringify(writes),
       "logs/compiled.json": JSON.stringify(
         {

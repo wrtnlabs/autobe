@@ -245,9 +245,7 @@ Property 'update' does not exist on type 'typeof import("src/api/functional/bbs/
 
 This indicates an attempt to call a non-existent API SDK function. Refer to the following list of available API functions and replace the incorrect function call with the proper one:
 
-Method | Path | Function Accessor
---------|------|---------------------
-${{API_SDK_FUNCTIONS}}
+{{API_SDK_FUNCTIONS}}
 
 **Solution approach:**
 - Locate the failing function call in your code
@@ -266,7 +264,7 @@ This means you are using DTO types that don't exist in the provided materials. Y
 
 Refer to the following DTO definitions and replace undefined types with the correct ones:
 
-${{API_DTO_SCHEMAS}}
+{{API_DTO_SCHEMAS}}
 
 **Solution approach:**
 - Identify the undefined type name in the error message
@@ -310,6 +308,99 @@ TestValidator.error("limit validation error")(() => {
 ```
 
 **Rule:** Only test scenarios that involve runtime errors with properly typed, valid TypeScript code. Skip any test scenarios that require detailed error message validation or complex error inspection logic.
+
+### 4.4.4. Type-safe Equality Assertions
+
+When fixing `TestValidator.equals()` and `TestValidator.notEquals()` calls, be careful about parameter order. The generic type is determined by the first parameter, so the second parameter must be assignable to the first parameter's type.
+
+```typescript
+// CORRECT: First parameter type can accept second parameter
+const user = { id: "123", name: "John", email: "john@example.com" };
+const userSummary = { id: "123", name: "John" };
+
+TestValidator.equals("user ID matches")(user.id)(userSummary.id); // string = string ✓
+TestValidator.equals("user summary matches")(userSummary)(user); // WRONG: user has extra properties
+
+// CORRECT: Use proper order for type compatibility
+TestValidator.equals("user contains summary data")(user)(userSummary); // user type can accept userSummary ✓
+
+// CORRECT: Extract specific properties for comparison
+TestValidator.equals("user ID matches")(userSummary.id)(user.id); // string = string ✓
+TestValidator.equals("user name matches")(userSummary.name)(user.name); // string = string ✓
+
+// CORRECT: Union type parameter order
+const value: string | null = getSomeValue();
+TestValidator.equals("value should be null")(value)(null); // string | null can accept null ✓
+TestValidator.equals("value should be null")(null)(value); // WRONG: null cannot accept string | null
+```
+
+**Solution approach:**
+- If compilation errors occur with `TestValidator.equals(title)(x)(y)` because `y` cannot be assigned to `x`'s type, reverse the order to `TestValidator.equals(title)(y)(x)`
+- Alternatively, extract specific properties for comparison to ensure type compatibility
+- Apply the same logic to `TestValidator.notEquals()` calls
+
+### 4.4.5. Unimplementable Scenario Components
+
+If the original code attempts to implement functionality that cannot be realized with the provided API functions and DTO types, **REMOVE those parts** during error correction. Only fix and retain code that is technically feasible with the actual materials provided.
+
+**Examples of unimplementable functionality to REMOVE:**
+- Code attempting to call API functions that don't exist in the provided SDK function definitions
+- Code using DTO properties that don't exist in the provided type definitions
+- Code implementing features that require API endpoints not available in the materials
+- Code with data filtering or searching using parameters not supported by the actual DTO types
+
+```typescript
+// REMOVE: If code tries to call non-existent bulk ship function
+// await api.functional.orders.bulkShip(connection, {...}); ← Remove this entirely
+
+// REMOVE: If code tries to use non-existent date filter properties
+// { startDate: "2024-01-01", endDate: "2024-12-31" } ← Remove these properties
+```
+
+**Solution approach:**
+1. **Identify unimplementable code**: Look for compilation errors related to non-existent API functions or DTO properties
+2. **Verify against provided materials**: Check if the functionality exists in the actual API SDK functions and DTO definitions
+3. **Remove entire code blocks**: Delete the unimplementable functionality rather than trying to fix it
+4. **Maintain test flow**: Ensure the remaining code still forms a coherent test workflow
+5. **Focus on feasible functionality**: Preserve and fix only the parts that can be properly implemented
+
+### 4.4.6. Incorrect TestValidator Curried Function Usage
+
+If you encounter incorrect usage of `TestValidator` functions that are not properly curried, fix them to use the correct curried function call pattern.
+
+**Common incorrect patterns to fix:**
+```typescript
+// WRONG: Passing all parameters at once
+TestValidator.equals(title, x, y);
+TestValidator.notEquals(title, x, y);
+TestValidator.error(title, asyncFunction);
+
+// WRONG: Partial currying with multiple parameters
+TestValidator.equals(title)(x, y);
+TestValidator.notEquals(title)(x, y);
+
+// WRONG: Missing currying steps
+TestValidator.predicate(title, condition);
+```
+
+**Correct curried function patterns:**
+```typescript
+// CORRECT: Fully curried TestValidator calls
+TestValidator.equals(title)(x)(y);
+TestValidator.notEquals(title)(x)(y);
+TestValidator.predicate(title)(condition);
+TestValidator.error(title)(asyncFunction);
+```
+
+**Solution approach:**
+1. **Identify incorrect patterns**: Look for compilation errors related to incorrect parameter counts or function signatures
+2. **Apply proper currying**: Convert all parameters to sequential function calls
+3. **Maintain type safety**: Ensure parameter order follows the type-safe guidelines (first parameter determines generic type)
+4. **Verify function signatures**: Check that each curried call receives exactly one parameter
+
+**Rule:** All `TestValidator` functions are curried and must be called with the pattern `TestValidator.functionName(param1)(param2)(param3)` rather than `TestValidator.functionName(param1, param2, param3)`.
+
+**Rule:** When compilation errors indicate attempts to use non-existent functionality, remove those parts entirely rather than trying to work around them with type suppression or incorrect implementations.
 
 ## 5. Correction Requirements
 

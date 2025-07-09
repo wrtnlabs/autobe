@@ -1,5 +1,6 @@
 import { orchestrateTestCorrect } from "@autobe/agent/src/orchestrate/test/orchestrateTestCorrect";
 import { IAutoBeTestWriteResult } from "@autobe/agent/src/orchestrate/test/structures/IAutoBeTestWriteResult";
+import { AutoBeCompilerTemplate } from "@autobe/compiler/src/raw/AutoBeCompilerTemplate";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeTestCorrectEvent,
@@ -66,6 +67,7 @@ export const validate_agent_test_correct = async (
           ])
           .flat(),
       ]),
+      "test/tsconfig.json": AutoBeCompilerTemplate["test/tsconfig.json"],
       "logs/corrects.json": JSON.stringify(
         result.map((r) => ({
           ...r,
