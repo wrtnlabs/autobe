@@ -7,12 +7,12 @@ import typia from "typia";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { enforceToolCall } from "../../utils/enforceToolCall";
-import { compileTestScenario } from "../test/compile/compileTestScenario";
 import { IAutoBeTestScenarioArtifacts } from "../test/structures/IAutoBeTestScenarioArtifacts";
 import { FAILED } from "./orchestrateRealize";
 import { RealizePlannerOutput } from "./orchestrateRealizePlanner";
 import { IAutoBeRealizeCoderApplication } from "./structures/IAutoBeRealizeCoderApplication";
 import { transformRealizeCoderHistories } from "./transformRealizeCoderHistories";
+import { getTestScenarioArtifacts } from "../test/compile/getTestScenarioArtifacts";
 
 /**
  * Generates a TypeScript function implementation based on the given plan.
@@ -37,7 +37,7 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
   operation: AutoBeOpenApi.IOperation,
   props: RealizePlannerOutput,
 ): Promise<IAutoBeRealizeCoderApplication.RealizeCoderOutput | FAILED> => {
-  const artifacts: IAutoBeTestScenarioArtifacts = await compileTestScenario(
+  const artifacts: IAutoBeTestScenarioArtifacts = await getTestScenarioArtifacts(
     ctx,
     {
       endpoint: {
