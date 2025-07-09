@@ -34,8 +34,8 @@ export async function test_compiler_test_write_api(): Promise<void> {
       draft: "",
       statements: [stmt],
     },
+    prettier: false,
   });
-  console.log(result);
 
   TestValidator.predicate("import")(() =>
     result.includes(

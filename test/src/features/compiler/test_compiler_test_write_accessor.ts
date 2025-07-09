@@ -61,6 +61,7 @@ export const test_compiler_test_write_accessor = async (): Promise<void> => {
         ),
       ],
     },
+    prettier: false,
   });
   TestValidator.predicate("identifier")(() => result.includes("something"));
   TestValidator.predicate("property")(() => result.includes("a.b?.c"));

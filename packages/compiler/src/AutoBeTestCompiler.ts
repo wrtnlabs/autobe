@@ -86,7 +86,7 @@ export class AutoBeTestCompiler implements IAutoBeTestCompiler {
 
   public async write(props: IAutoBeTestWriteProps): Promise<string> {
     const content: string = writeTestFunction(props);
-    return FilePrinter.beautify(content);
+    return props.prettier === false ? content : FilePrinter.beautify(content);
   }
 
   public async getExternal(): Promise<Record<string, string>> {
