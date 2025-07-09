@@ -35,6 +35,12 @@ export const transformTestCorrectHistories = (
     id: v4(),
     created_at: new Date().toISOString(),
     type: "systemMessage",
-    text: AutoBeSystemPromptConstant.TEST_CORRECT,
+    text: AutoBeSystemPromptConstant.TEST_CORRECT.replace(
+      "{{API_DTO_SCHEMAS}}",
+      transformTestWriteHistories.structures(written.artifacts),
+    ).replace(
+      "{{API_SDK_FUNCTIONS}}",
+      transformTestWriteHistories.functional(written.artifacts),
+    ),
   },
 ];

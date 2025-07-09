@@ -13,12 +13,12 @@ You must generate test code that:
 
 ## 2. Input Materials Provided
 
-The following assets will be provided as the next assistant prompt to help you generate the E2E test function.
+The following assets will be provided as the next system prompt to help you generate the E2E test function.
 
 ### 2.1. Test Scenario
 
 ```json
-${{AutoBeTestScenario}}
+{{AutoBeTestScenario}}
 ```
 
 This contains the complete test scenario specification:
@@ -77,7 +77,7 @@ Complete DTO type information is provided for all entities your test function wi
 - Ensure you populate the correct data types when creating test data
 - Understand the relationships between different DTO types (e.g., `ICreate` vs `IUpdate` vs base type)
 
-**⚠️ NOTE: The above DTO example is FICTIONAL - use only the actual DTOs provided in the next assistant prompt!**
+**⚠️ NOTE: The above DTO example is FICTIONAL - use only the actual DTOs provided in the next system prompt!**
 
 ### 2.3. API SDK Function Definition
 
@@ -178,7 +178,7 @@ This is the API SDK function definition that your E2E test will call. The functi
 - The function comments provide important business context and behavior details
 - Path parameters are included in the `Props` type alongside the request body
 
-**⚠️ NOTE: The above API function example is FICTIONAL - use only the actual API function provided in the next assistant prompt!**
+**⚠️ NOTE: The above API function example is FICTIONAL - use only the actual API function provided in the next system prompt!**
 
 ### 2.4. E2E Mock Function Template
 
@@ -198,7 +198,7 @@ export const test_api_shoppings_customers_sales_reviews_update = async (
 
 This is a **reference template** that demonstrates basic E2E test function structure, but it's filled with random data without business logic - this is NOT what you should generate.
 
-**⚠️ NOTE: The above template uses FICTIONAL functions and types - use only the actual materials provided in the next assistant prompt!**
+**⚠️ NOTE: The above template uses FICTIONAL functions and types - use only the actual materials provided in the next system prompt!**
 
 **Template Analysis Requirements:**
 
@@ -254,9 +254,9 @@ You must understand the **interrelationships** among all input materials beyond 
 All example code in this document is fictional and for illustration only. The API functions, DTO types, and entities shown in examples (such as `api.functional.bbs.articles.create`, `IBbsArticle`, `IShoppingSeller`, etc.) do not exist in any actual system. These examples are provided solely to demonstrate code structure, patterns, and testing workflows.
 
 You must only use:
-- The actual API SDK function definition provided in the next assistant prompt
-- The actual DTO types provided in the next assistant prompt  
-- The actual test scenario provided in the next assistant prompt
+- The actual API SDK function definition provided in the next system prompt
+- The actual DTO types provided in the next system prompt  
+- The actual test scenario provided in the next system prompt
 
 Never use functions or types from the examples below - they are fictional.
 
@@ -350,7 +350,7 @@ export async function test_api_shopping_sale_review_update(
 }
 ```
 
-> Note: The above example uses fictional functions and types - use only the actual materials provided in the next assistant prompt.
+> Note: The above example uses fictional functions and types - use only the actual materials provided in the next system prompt.
 
 **Parameter structure:**
 - First parameter: Always pass the `connection` variable
@@ -367,7 +367,7 @@ export async function test_api_shopping_sale_review_update(
 - Skip variable assignment and assertion for void return types
 
 **API function calling pattern:**
-Use the pattern `api.functional.{path}.{method}(connection, props)` based on the API SDK function definition provided in the next assistant prompt.
+Use the pattern `api.functional.{path}.{method}(connection, props)` based on the API SDK function definition provided in the next system prompt.
 
 ### 3.4. Random Data Generation
 
@@ -523,7 +523,7 @@ export async function test_api_shopping_sale_review_update(
 }
 ```
 
-> Note: The above example uses fictional functions and types - use only the actual materials provided in the next assistant prompt.
+> Note: The above example uses fictional functions and types - use only the actual materials provided in the next system prompt.
 
 **Authentication behavior:**
 - When API functions return authentication tokens, the SDK automatically stores them in `connection.headers`
@@ -812,7 +812,7 @@ export async function test_api_shopping_sale_review_update(
 }
 ```
 
-> Note: The above example uses fictional functions and types - use only the actual materials provided in the next assistant prompt.
+> Note: The above example uses fictional functions and types - use only the actual materials provided in the next system prompt.
 
 This example demonstrates:
 - **Complete business workflow**: From user registration to final validation

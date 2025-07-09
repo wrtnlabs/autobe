@@ -12,39 +12,25 @@ import { v4 } from "uuid";
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
 
-export const transformTestWriteHistories = (
+export function transformTestWriteHistories(
   scenario: AutoBeTestScenario,
   artifacts: IAutoBeTestScenarioArtifacts,
-): Array<
-  IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
-> => [
-  {
-    id: v4(),
-    created_at: new Date().toISOString(),
-    type: "systemMessage",
-    text: AutoBeSystemPromptConstant.TEST_WRITE.replace(
-      "${{AutoBeTestScenario}}",
-      JSON.stringify(typia.llm.parameters<AutoBeTestScenario, "llama">()),
-    ),
-  },
-  transformArtifact(scenario, artifacts),
-];
-
-const transformArtifact = (
-  scenario: AutoBeTestScenario,
-  artifacts: IAutoBeTestScenarioArtifacts,
-):
-  | IAgenticaHistoryJson.IAssistantMessage
-  | IAgenticaHistoryJson.ISystemMessage => {
-  const document: OpenApi.IDocument = transformOpenApiDocument(
-    artifacts.document,
-  );
-  const app: IHttpMigrateApplication = HttpMigration.application(document);
-  return {
-    id: v4(),
-    created_at: new Date().toISOString(),
-    type: "assistantMessage",
-    text: StringUtil.trim`
+): Array<IAgenticaHistoryJson.ISystemMessage> {
+  return [
+    {
+      id: v4(),
+      created_at: new Date().toISOString(),
+      type: "systemMessage",
+      text: AutoBeSystemPromptConstant.TEST_WRITE.replace(
+        "{{AutoBeTestScenario}}",
+        JSON.stringify(typia.llm.parameters<AutoBeTestScenario, "llama">()),
+      ),
+    },
+    {
+      id: v4(),
+      created_at: new Date().toISOString(),
+      type: "systemMessage",
+      text: StringUtil.trim`
         Here is the list of input material composition.
 
         Make e2e test functions based on the following information.
@@ -61,25 +47,17 @@ const transformArtifact = (
 
         You can use these DTO definitions.
 
-        ${Object.keys(artifacts.document.components.schemas)
-          .map((k) => `- ${k}`)
-          .join("\n")}
+        Never use the DTO definitions that are not listed here.
 
-        \`\`\`json
-        ${JSON.stringify(artifacts.dto)}
-        \`\`\`
+        ${transformTestWriteHistories.structures(artifacts)}
 
         ## API (SDK) Functions
 
         You can use these API functions.
 
-        ${app.routes.map((r) => `- api.functional.${r.accessor.join(".")}`).join("\n")}
+        Never use the functions that are not listed here.
 
-        And here is the declaration files of the API functions.
-        
-        \`\`\`json
-        ${JSON.stringify(artifacts.sdk)}
-        \`\`\`
+        ${transformTestWriteHistories.functional(artifacts)}
 
         ## E2E Mockup Functions
 
@@ -89,5 +67,41 @@ const transformArtifact = (
         ${JSON.stringify(artifacts.e2e)}
         \`\`\`
       `,
-  };
-};
+    },
+  ];
+}
+export namespace transformTestWriteHistories {
+  export function structures(artifacts: IAutoBeTestScenarioArtifacts): string {
+    return StringUtil.trim`
+      ${Object.keys(artifacts.document.components.schemas)
+        .map((k) => `- ${k}`)
+        .join("\n")}
+
+      \`\`\`json
+      ${JSON.stringify(artifacts.dto)}
+      \`\`\`
+    `;
+  }
+
+  export function functional(artifacts: IAutoBeTestScenarioArtifacts): string {
+    const document: OpenApi.IDocument = transformOpenApiDocument(
+      artifacts.document,
+    );
+    const app: IHttpMigrateApplication = HttpMigration.application(document);
+    return StringUtil.trim`
+      Method | Path | Function Accessor
+      -------|------|-------------------
+      ${app.routes
+        .map((r) =>
+          [r.method, r.path, `api.functional.${r.accessor.join(".")}`].join(
+            " | ",
+          ),
+        )
+        .join("\n")}
+
+      \`\`\`json
+      ${JSON.stringify(artifacts.sdk)}
+      \`\`\`
+    `;
+  }
+}

@@ -1,7 +1,10 @@
 import { orchestrateTestCorrect } from "@autobe/agent/src/orchestrate/test/orchestrateTestCorrect";
 import { IAutoBeTestWriteResult } from "@autobe/agent/src/orchestrate/test/structures/IAutoBeTestWriteResult";
 import { FileSystemIterator } from "@autobe/filesystem";
-import { AutoBeTestValidateEvent } from "@autobe/interface";
+import {
+  AutoBeTestCorrectEvent,
+  AutoBeTestValidateEvent,
+} from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 import fs from "fs";
 
@@ -26,11 +29,11 @@ export const validate_agent_test_correct = async (
   );
 
   // CORRECT TEST FUNCTIONS
-  const validates: AutoBeTestValidateEvent[] = [];
-  agent.on("testValidate", (event) => {
-    validates.push(event);
+  const events: Map<string, AutoBeTestCorrectEvent> = new Map();
+  agent.on("testCorrect", (event) => {
+    events.set(event.file.location, event);
   });
-  const corrects: AutoBeTestValidateEvent[] = await orchestrateTestCorrect(
+  const result: AutoBeTestValidateEvent[] = await orchestrateTestCorrect(
     agent.getContext(),
     writes,
   );
@@ -39,19 +42,50 @@ export const validate_agent_test_correct = async (
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/${project}/test/correct`,
     files: {
-      ...(await agent.getFiles()),
+      ...Object.fromEntries([
+        ...Object.entries(await agent.getFiles()).filter(
+          ([key]) => key.startsWith("test/features") === false,
+        ),
+        ...result.map((r) => [r.file.location, r.file.content]),
+        ...Array.from(events.values())
+          .map((e) => [
+            [
+              e.file.location.replace(".ts", ".scenario"),
+              JSON.stringify(e.file.scenario, null, 2),
+            ],
+            [
+              e.file.location.replace(".ts", ".1.think"),
+              e.think_without_compile_error,
+            ],
+            [
+              e.file.location.replace(".ts", ".2.think"),
+              e.think_again_with_compile_error,
+            ],
+            [e.file.location.replace(".ts", ".review"), e.review],
+            [e.file.location.replace(".ts", ".draft"), e.draft],
+          ])
+          .flat(),
+      ]),
       "logs/corrects.json": JSON.stringify(
-        corrects.map((c) => ({
-          ...c,
+        result.map((r) => ({
+          ...r,
           javascript: undefined,
         })),
         null,
         2,
       ),
-      "logs/validates.json": JSON.stringify(validates, null, 2),
+      "logs/failures.json": JSON.stringify(
+        result
+          .map((c) => c.result)
+          .filter((r) => r.type === "failure")
+          .map((r) => r.diagnostics)
+          .flat(),
+        null,
+        2,
+      ),
     },
   });
-  TestValidator.equals("result")(corrects.map((c) => c.result.type))(
-    new Array(corrects.length).fill("success"),
+  TestValidator.equals("result")(result.length)(
+    result.filter((r) => r.result.type === "success").length,
   );
 };

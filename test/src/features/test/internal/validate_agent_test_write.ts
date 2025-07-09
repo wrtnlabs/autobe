@@ -44,7 +44,7 @@ export const validate_agent_test_write = async (
     ...writes
       .map((w) => [
         [w.event.location.replace(".ts", ".scenario"), w.event.scenario],
-        [w.event.location.replace(".ts", ".draft.ts"), w.event.draft],
+        [w.event.location.replace(".ts", ".draft"), w.event.draft],
         [w.event.location.replace(".ts", ".review"), w.event.review],
         [w.event.location, w.event.final],
       ])
@@ -56,7 +56,7 @@ export const validate_agent_test_write = async (
       files: Object.fromEntries(
         Object.entries(files).filter(
           ([key]) =>
-            (key.startsWith("src/") || key.startsWith("test/")) &&
+            (key.startsWith("src/api") || key.startsWith("test/")) &&
             key.endsWith(".ts") &&
             key.endsWith(".draft.ts") === false,
         ),
@@ -77,5 +77,9 @@ export const validate_agent_test_write = async (
       ),
     },
   });
-  return writes;
+  if (process.argv.includes("--archive"))
+    await fs.promises.writeFile(
+      `${TestGlobal.ROOT}/assets/histories/${project}.test.writes.json`,
+      JSON.stringify(writes, null, 2),
+    );
 };

@@ -7,6 +7,7 @@ import typia from "typia";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { enforceToolCall } from "../../utils/enforceToolCall";
+import { forceRetry } from "../../utils/forceRetry";
 import { completeTestCode } from "./compile/completeTestCode";
 import { getTestScenarioArtifacts } from "./compile/getTestScenarioArtifacts";
 import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
@@ -27,30 +28,32 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
      * individual test code implementations. Each scenario is processed to
      * generate corresponding test code and progress events.
      */
-    scenarios.map(async (scenario) => {
-      const artifacts: IAutoBeTestScenarioArtifacts =
-        await getTestScenarioArtifacts(ctx, scenario);
-      const result: IAutoBeTestWriteApplication.IProps = await process(
-        ctx,
-        scenario,
-        artifacts,
-      );
-      const event: AutoBeTestWriteEvent = {
-        type: "testWrite",
-        created_at: start.toISOString(),
-        location: `test/features/api/${result.domain}/${scenario.functionName}.ts`,
-        ...result,
-        completed: ++complete,
-        total: scenarios.length,
-        step: ctx.state().interface?.step ?? 0,
-      };
-      ctx.dispatch(event);
-      return {
-        scenario,
-        artifacts,
-        event,
-      };
-    }),
+    scenarios.map((scenario) =>
+      forceRetry(async () => {
+        const artifacts: IAutoBeTestScenarioArtifacts =
+          await getTestScenarioArtifacts(ctx, scenario);
+        const result: IAutoBeTestWriteApplication.IProps = await process(
+          ctx,
+          scenario,
+          artifacts,
+        );
+        const event: AutoBeTestWriteEvent = {
+          type: "testWrite",
+          created_at: start.toISOString(),
+          location: `test/features/api/${result.domain}/${scenario.functionName}.ts`,
+          ...result,
+          completed: ++complete,
+          total: scenarios.length,
+          step: ctx.state().interface?.step ?? 0,
+        };
+        ctx.dispatch(event);
+        return {
+          scenario,
+          artifacts,
+          event,
+        };
+      }),
+    ),
   );
 }
 

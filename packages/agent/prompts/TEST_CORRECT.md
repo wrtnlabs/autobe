@@ -232,12 +232,46 @@ The goal is to achieve genuine compilation success through proper TypeScript usa
 - Ensure the corrected code follows all guidelines from the original system prompt
 - Verify that fixes don't introduce new compilation errors
 
-### 4.3. Code Quality Preservation
+### 4.4. Special Compilation Error Patterns and Solutions
 
-- Preserve the original business logic and test workflow
-- Maintain proper TypeScript type safety without using bypass mechanisms
-- Follow the established coding conventions and patterns
-- Keep comprehensive documentation and comments intact
+### 4.4.1. Non-existent API SDK Function Calls
+
+You must only use API SDK functions that actually exist in the provided materials.
+
+If the error message (`ITypeScriptCompileResult.IDiagnostic.messageText`) shows something like:
+
+```
+Property 'update' does not exist on type 'typeof import("src/api/functional/bbs/articles/index")'.
+```
+
+This indicates an attempt to call a non-existent API SDK function. Refer to the following list of available API functions and replace the incorrect function call with the proper one:
+
+{{API_SDK_FUNCTIONS}}
+
+**Solution approach:**
+- Locate the failing function call in your code
+- Find the correct function name from the table above
+- Replace the non-existent function call with the correct API SDK function
+- Ensure the function signature matches the provided SDK specification
+
+### 4.4.2. Undefined DTO Type References
+
+If the error message shows:
+```
+Cannot find module '@ORGANIZATION/PROJECT-api/lib/structures/ISomeDtoTypeName.ts' or its corresponding type declarations
+```
+
+This means you are using DTO types that don't exist in the provided materials. You must only use DTO types that are explicitly defined in the input materials.
+
+Refer to the following DTO definitions and replace undefined types with the correct ones:
+
+{{API_DTO_SCHEMAS}}
+
+**Solution approach:**
+- Identify the undefined type name in the error message
+- Search for the correct type name in the DTO definitions above
+- Replace the undefined type reference with the correct DTO type
+- Ensure the type usage matches the provided type definition structure
 
 ## 5. Correction Requirements
 

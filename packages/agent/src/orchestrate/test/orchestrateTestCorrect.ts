@@ -10,6 +10,7 @@ import typia from "typia";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { enforceToolCall } from "../../utils/enforceToolCall";
+import { forceRetry } from "../../utils/forceRetry";
 import { completeTestCode } from "./compile/completeTestCode";
 import { IAutoBeTestCorrectApplication } from "./structures/IAutoBeTestCorrectApplication";
 import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
@@ -22,10 +23,12 @@ export const orchestrateTestCorrect = <Model extends ILlmSchema.Model>(
   life: number = 4,
 ): Promise<AutoBeTestValidateEvent[]> =>
   Promise.all(
-    results.map(async (written) => {
-      const event: AutoBeTestValidateEvent = await compile(ctx, written);
-      return predicate(ctx, written, event, life);
-    }),
+    results.map((written) =>
+      forceRetry(async () => {
+        const event: AutoBeTestValidateEvent = await compile(ctx, written);
+        return predicate(ctx, written, event, life);
+      }),
+    ),
   );
 
 const compile = async <Model extends ILlmSchema.Model>(
@@ -68,11 +71,11 @@ const predicate = async <Model extends ILlmSchema.Model>(
 const correct = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   result: IAutoBeTestWriteResult,
-  event: AutoBeTestValidateEvent,
+  validate: AutoBeTestValidateEvent,
   life: number,
 ): Promise<AutoBeTestValidateEvent> => {
-  if (event.result.type !== "failure") return event;
-  else if (--life <= 0) return event;
+  if (validate.result.type !== "failure") return validate;
+  else if (--life <= 0) return validate;
 
   const pointer: IPointer<IAutoBeTestCorrectApplication.IProps | null> = {
     value: null,
@@ -87,7 +90,7 @@ const correct = async <Model extends ILlmSchema.Model>(
       },
       retry: 4,
     },
-    histories: transformTestCorrectHistories(result, event.result),
+    histories: transformTestCorrectHistories(result, validate.result),
     controllers: [
       createApplication({
         model: ctx.model,
@@ -109,8 +112,17 @@ const correct = async <Model extends ILlmSchema.Model>(
       ctx.usage().record(tokenUsage, ["test"]);
     });
   if (pointer.value === null) throw new Error("Failed to modify test code.");
-  event = await compile(ctx, result);
-  return predicate(ctx, result, event, life);
+
+  ctx.dispatch({
+    type: "testCorrect",
+    created_at: new Date().toISOString(),
+    file: validate.file,
+    result: validate.result,
+    step: ctx.state().analyze?.step ?? 0,
+    ...pointer.value,
+  });
+  validate = await compile(ctx, result);
+  return predicate(ctx, result, validate, life);
 };
 
 const createApplication = <Model extends ILlmSchema.Model>(props: {
