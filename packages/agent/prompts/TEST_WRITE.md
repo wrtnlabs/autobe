@@ -247,20 +247,39 @@ You must understand the **interrelationships** among all input materials beyond 
 
 ## 3. Code Generation Requirements
 
-## ⚠️ CRITICAL WARNING: Example Code Limitations
+### 3.1. Critical Requirements and Type Safety
 
-**ALL EXAMPLE CODE IN THIS DOCUMENT IS FICTIONAL AND FOR ILLUSTRATION ONLY!**
+**Example Code Limitations:**
 
-The API functions, DTO types, and entities shown in examples (such as `api.functional.bbs.articles.create`, `IBbsArticle`, `IShoppingSeller`, etc.) are **NOT REAL** and do not exist in any actual system. These examples are provided solely to demonstrate code structure, patterns, and testing workflows.
+All example code in this document is fictional and for illustration only. The API functions, DTO types, and entities shown in examples (such as `api.functional.bbs.articles.create`, `IBbsArticle`, `IShoppingSeller`, etc.) do not exist in any actual system. These examples are provided solely to demonstrate code structure, patterns, and testing workflows.
 
-**YOU MUST ONLY USE:**
+You must only use:
 - The actual API SDK function definition provided in the next assistant prompt
 - The actual DTO types provided in the next assistant prompt  
 - The actual test scenario provided in the next assistant prompt
 
-**NEVER use functions or types from the examples below - they are fictional!**
+Never use functions or types from the examples below - they are fictional.
 
-### 3.1. Test Function Structure
+**Type Safety Requirements:**
+
+Maintain strict TypeScript type safety in your generated code:
+
+- Never use `any` type in any form
+- Never use `@ts-expect-error` comments to suppress type errors
+- Never use `@ts-ignore` comments to bypass type checking
+- Never use `as any` type assertions
+- Never use `satisfies any` expressions
+- Never use any other type safety bypass mechanisms
+
+**Correct practices:**
+- Always use proper TypeScript types from the provided DTO definitions
+- Let TypeScript infer types when possible
+- If there are type issues, fix them properly rather than suppressing them
+- Ensure all variables and function returns have correct, specific types
+
+Type safety is crucial for E2E tests to catch API contract violations and schema mismatches at runtime. Bypassing type checking defeats the purpose of comprehensive API validation and can hide critical bugs.
+
+### 3.2. Test Function Structure
 
 ```typescript
 /**
@@ -300,7 +319,7 @@ export async function test_api_{domain}_{functionName}(
 - If you need helper functions, define them inside the main function
 - Use clear, descriptive comments for each major step
 
-### 3.2. API SDK Function Invocation
+### 3.3. API SDK Function Invocation
 
 ```typescript
 export async function test_api_shopping_sale_review_update(
@@ -331,7 +350,7 @@ export async function test_api_shopping_sale_review_update(
 }
 ```
 
-**⚠️ NOTE: The above example uses FICTIONAL functions and types - use only the actual materials provided in the next assistant prompt!**
+> Note: The above example uses fictional functions and types - use only the actual materials provided in the next assistant prompt.
 
 **Parameter structure:**
 - First parameter: Always pass the `connection` variable
@@ -350,9 +369,9 @@ export async function test_api_shopping_sale_review_update(
 **API function calling pattern:**
 Use the pattern `api.functional.{path}.{method}(connection, props)` based on the API SDK function definition provided in the next assistant prompt.
 
-### 3.3. Random Data Generation
+### 3.4. Random Data Generation
 
-#### 3.3.1. Numeric Values
+#### 3.4.1. Numeric Values
 
 Generate random numbers with constraints using intersection types:
 
@@ -370,7 +389,7 @@ typia.random<number & tags.Type<"uint32"> & tags.Minimum<100> & tags.Maximum<900
 typia.random<number & tags.Type<"uint32"> & tags.ExclusiveMinimum<100> & tags.ExclusiveMaximum<1000> & tags.MultipleOf<10>>()
 ```
 
-#### 3.3.2. String Values
+#### 3.4.2. String Values
 
 **Format-based generation:**
 ```typescript
@@ -403,7 +422,7 @@ typia.random<string & tags.Pattern<"^[A-Z]{3}[0-9]{3}$">>()
 
 **Important:** Some RandomGenerator functions are curried. Always check `node_modules/@nestia/e2e/lib/RandomGenerator.d.ts` for exact usage.
 
-#### 3.3.3. Array Generation
+#### 3.4.3. Array Generation
 
 Use `ArrayUtil` static functions for array creation:
 
@@ -422,7 +441,7 @@ RandomGenerator.sample(array)(3) // Select N random elements
 
 **Important:** These are curried functions. Always check `node_modules/@nestia/e2e/lib/ArrayUtil.d.ts` for correct usage patterns.
 
-### 3.4. Logic Validation and Assertions
+### 3.5. Logic Validation and Assertions
 
 ```typescript
 TestValidator.equals("x equals y")(3)(3);
@@ -449,7 +468,7 @@ if (condition) {
 
 **Important:** TestValidator functions are curried. Always check `node_modules/@nestia/e2e/lib/TestValidator.d.ts` for exact usage patterns.
 
-### 3.5. Authentication Handling
+### 3.6. Authentication Handling
 
 ```typescript
 export async function test_api_shopping_sale_review_update(
@@ -472,7 +491,7 @@ export async function test_api_shopping_sale_review_update(
 }
 ```
 
-**⚠️ NOTE: The above example uses FICTIONAL functions and types - use only the actual materials provided in the next assistant prompt!**
+> Note: The above example uses fictional functions and types - use only the actual materials provided in the next assistant prompt.
 
 **Authentication behavior:**
 - When API functions return authentication tokens, the SDK automatically stores them in `connection.headers`
@@ -480,7 +499,7 @@ export async function test_api_shopping_sale_review_update(
 - Simply call authentication APIs when needed and continue with authenticated requests
 - Token switching (e.g., between different user roles) is handled automatically
 
-### 3.6. Complete Example
+### 3.7. Complete Example
 
 ```typescript
 /**
@@ -761,7 +780,7 @@ export async function test_api_shopping_sale_review_update(
 }
 ```
 
-**⚠️ NOTE: The above example uses FICTIONAL functions and types - use only the actual materials provided in the next assistant prompt!**
+> Note: The above example uses fictional functions and types - use only the actual materials provided in the next assistant prompt.
 
 This example demonstrates:
 - **Complete business workflow**: From user registration to final validation
