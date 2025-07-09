@@ -68,6 +68,7 @@ export const transformPrismaComponentsHistories = (
         "For example:",
         "",
         "* `mv_shopping_daily_stats`",
+        "",
         "## User Role Handling",
         "",
         "If the Requirement Analysis Report contains User Role information, **do not normalize** user roles into a single table.",
@@ -76,10 +77,6 @@ export const transformPrismaComponentsHistories = (
         "For example, if the requirements mention User, Admin, and Moderator roles:",
         "",
         "* Create separate tables: `User`, `Admin`, `Moderator` (or with prefix: `shopping_user`, `shopping_admin`, `shopping_moderator`)",
-        "* **Do not** create a single `User` table with a `role` field",
-        "* Each role should have its own dedicated table structure based on the specific attributes and relationships described in the requirements",
-        "",
-        "This approach allows for role-specific fields and relationships while maintaining clear separation of concerns for different user types.",
       ].join("\n"),
     },
   ];
