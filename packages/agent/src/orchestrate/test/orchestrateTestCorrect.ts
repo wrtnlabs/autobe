@@ -10,7 +10,9 @@ import typia from "typia";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { enforceToolCall } from "../../utils/enforceToolCall";
+import { completeTestCode } from "./compile/completeTestCode";
 import { IAutoBeTestCorrectApplication } from "./structures/IAutoBeTestCorrectApplication";
+import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
 import { IAutoBeTestWriteResult } from "./structures/IAutoBeTestWriteResult";
 import { transformTestCorrectHistories } from "./transformTestCorrectHistories";
 
@@ -89,6 +91,7 @@ const correct = async <Model extends ILlmSchema.Model>(
     controllers: [
       createApplication({
         model: ctx.model,
+        artifacts: result.artifacts,
         build: (next) => {
           pointer.value = next;
         },
@@ -112,6 +115,7 @@ const correct = async <Model extends ILlmSchema.Model>(
 
 const createApplication = <Model extends ILlmSchema.Model>(props: {
   model: Model;
+  artifacts: IAutoBeTestScenarioArtifacts;
   build: (next: IAutoBeTestCorrectApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> => {
   assertSchemaModel(props.model);
@@ -125,6 +129,8 @@ const createApplication = <Model extends ILlmSchema.Model>(props: {
     application,
     execute: {
       rewrite: (next) => {
+        next.draft = completeTestCode(props.artifacts, next.draft);
+        next.final = completeTestCode(props.artifacts, next.final);
         props.build(next);
       },
     } satisfies IAutoBeTestCorrectApplication,

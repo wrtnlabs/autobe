@@ -66,8 +66,15 @@ export const validate_agent_test_write = async (
     root: `${TestGlobal.ROOT}/results/${project}/test/write`,
     files: {
       ...files,
-      "logs/writes.json": JSON.stringify(writes, null, 2),
-      "logs/compiled.json": JSON.stringify(compiled, null, 2),
+      "logs/results.json": typia.json.stringify(writes),
+      "logs/compiled.json": JSON.stringify(
+        {
+          ...compiled,
+          javascript: undefined,
+        },
+        null,
+        2,
+      ),
     },
   });
   return writes;
