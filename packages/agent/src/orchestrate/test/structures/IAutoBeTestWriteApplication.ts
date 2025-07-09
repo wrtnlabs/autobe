@@ -52,25 +52,49 @@ export namespace IAutoBeTestWriteApplication {
      * comprehensive error handling.
      *
      * Workflow: Strategic plan → TypeScript implementation → Functional test
-     * code Critical: NO import statements, start directly with 'export async
-     * function'
+     * code
+     *
+     * Critical: NO import statements, start directly with 'export async function'
      */
     draft: string;
 
     /**
      * Step 4: Code review and quality assessment.
      *
-     * AI performs a thorough review of the draft implementation, checking for:
+     * AI performs a thorough review of the draft implementation, examining:
      *
-     * - Code quality and best practices adherence
-     * - Test coverage completeness
-     * - TypeScript compilation compatibility
-     * - Framework convention compliance
-     * - Logic correctness and edge case handling
+     * **Compilation & Syntax:**
      *
-     * Workflow: Draft code → Critical analysis → Improvement recommendations
-     * The review must identify specific issues and provide actionable feedback
-     * for refinement.
+     * - TypeScript compilation errors and type mismatches
+     * - Syntax errors and missing semicolons/brackets
+     * - Correct function signatures and parameter types
+     *
+     * **Framework Compliance:**
+     *
+     * - @nestia/e2e framework conventions adherence
+     * - Proper API SDK function calling patterns
+     * - Correct use of typia.assert() and TestValidator functions
+     *
+     * **Business Logic & Test Coverage:**
+     *
+     * - Complete workflow implementation (authentication → data setup → main test
+     *   → validation)
+     * - Realistic business scenarios and user journeys
+     * - Edge case handling and error condition testing
+     * - Proper data dependencies and cleanup procedures
+     *
+     * **Code Quality & Security:**
+     *
+     * - Type safety violations (any, @ts-ignore, etc.)
+     * - Variable naming and code organization
+     * - Performance considerations and resource management
+     * - Security best practices in test data generation
+     *
+     * Workflow: Draft code → Systematic analysis → Specific improvement
+     * recommendations
+     *
+     * The review must identify concrete issues with line-by-line feedback and
+     * provide actionable solutions for each problem discovered.
      */
     review: string;
 
@@ -83,8 +107,10 @@ export namespace IAutoBeTestWriteApplication {
      * must be resolved, and the code must meet the highest quality standards.
      *
      * Workflow: Review feedback → Code refinement → Production-ready
-     * implementation This is the ultimate deliverable that will be used in the
-     * actual test suite.
+     * implementation
+     *
+     * This is the ultimate deliverable that will be used in the actual test
+     * suite.
      */
     final: string;
   }
