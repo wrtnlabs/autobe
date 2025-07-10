@@ -55,10 +55,7 @@ export interface AutoBeTestValidateEvent
    * improve test code quality and resolve integration issues with the
    * application architecture.
    */
-  result:
-    | IAutoBeTypeScriptCompileResult.IFailure
-    | IAutoBeTypeScriptCompileResult.IException
-    | IAutoBeTypeScriptCompileResult.ISuccess;
+  result: IAutoBeTypeScriptCompileResult;
 
   /**
    * Iteration number of the requirements analysis this test validation was

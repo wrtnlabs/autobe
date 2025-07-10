@@ -169,16 +169,16 @@ gantt
 
   section Interface Agent
   Keyworded SDK:  done,    2025-06-01, 10d
-  Authorization:  planned, 2025-06-19, 18d
+  Authorization:  active,  2025-06-19, 18d
   Snapshot Logic: planned, 2025-06-23, 14d
   Review Agent:   planned, 2025-07-02, 30d
 
   section Test Agent
-  Scenario Agent:       done,   2025-06-01, 10d        
-  Coding Agent:         done,   2025-06-12, 14d
-  Compiler Feedback:    done,   2025-06-12, 14d
-  Function Calling:     done,   2025-06-18, 14d
-  Compiler Development: active, 2025-07-02, 60d
+  Scenario Agent:       done, 2025-06-01, 10d        
+  Coding Agent:         done, 2025-06-12, 14d
+  Compiler Feedback:    done, 2025-06-12, 14d
+  Function Calling:     done, 2025-06-18, 14d
+  Compiler Development: done, 2025-07-02, 60d
 
   section Realize Agent
   Planner Agent:      active,  2025-07-02, 30d

@@ -1,6 +1,6 @@
 {
   "name": "@autobe/agent",
-  "version": "0.9.2",
+  "version": "0.10.0",
   "description": "AI backend server code generator",
   "main": "src/index.ts",
   "author": "Wrtn Technologies",
@@ -29,6 +29,7 @@
   "dependencies": {
     "@agentica/core": "catalog:agentica",
     "@autobe/interface": "workspace:^",
+    "@autobe/utils": "workspace:^",
     "@prisma/internals": "^6.7.0",
     "@rollup/plugin-json": "^6.1.0",
     "@samchon/openapi": "catalog:samchon",

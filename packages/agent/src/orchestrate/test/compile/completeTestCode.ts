@@ -1,27 +1,25 @@
 import { IAutoBeTestScenarioArtifacts } from "../structures/IAutoBeTestScenarioArtifacts";
 
-export function complementTestWrite(props: {
-  content: string;
-  artifacts: IAutoBeTestScenarioArtifacts;
-}): string {
+export function completeTestCode(
+  artifacts: IAutoBeTestScenarioArtifacts,
+  code: string,
+): string {
   const typeReferences: string[] = Array.from(
     new Set(
-      Object.keys(props.artifacts.document.components.schemas).map(
+      Object.keys(artifacts.document.components.schemas).map(
         (key) => key.split(".")[0]!,
       ),
     ),
   );
 
-  let content: string = props.content
-    .replace(/^[ \t]*import\b[\s\S]*?;[ \t]*$/gm, "")
-    .trim();
-  content = content.replace(/^[ \t]*import\b[\s\S]*?;[ \t]*$/gm, "").trim();
-  content = content.replaceAll(
+  code = code.replace(/^[ \t]*import\b[\s\S]*?;[ \t]*$/gm, "").trim();
+  code = code.replace(/^[ \t]*import\b[\s\S]*?;[ \t]*$/gm, "").trim();
+  code = code.replaceAll(
     'string & Format<"uuid">',
     'string & tags.Format<"uuid">',
   );
-  content = [
-    `import { TestValidator } from "@nestia/e2e";`,
+  code = [
+    `import { ArrayUtil, RandomGenerator, TestValidator } from "@nestia/e2e";`,
     `import { IConnection } from "@nestia/fetcher";`,
     `import typia, { tags } from "typia";`,
     "",
@@ -31,7 +29,7 @@ export function complementTestWrite(props: {
         `import type { ${ref} } from "@ORGANIZATION/PROJECT-api/lib/structures/${ref}";`,
     ),
     "",
-    content,
+    code,
   ].join("\n");
-  return content;
+  return code;
 }

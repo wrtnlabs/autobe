@@ -10,45 +10,107 @@ import typia from "typia";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { enforceToolCall } from "../../utils/enforceToolCall";
-import { complementTestWrite } from "./compile/complementTestWrite";
+import { forceRetry } from "../../utils/forceRetry";
+import { completeTestCode } from "./compile/completeTestCode";
+import { IAutoBeTestCorrectApplication } from "./structures/IAutoBeTestCorrectApplication";
+import { IAutoBeTestFunction } from "./structures/IAutoBeTestFunction";
+import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
 import { IAutoBeTestWriteResult } from "./structures/IAutoBeTestWriteResult";
 import { transformTestCorrectHistories } from "./transformTestCorrectHistories";
 
-export function orchestrateTestCorrect<Model extends ILlmSchema.Model>(
+export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  results: IAutoBeTestWriteResult[],
+  writeResult: IAutoBeTestWriteResult[],
   life: number = 4,
-): Promise<AutoBeTestValidateEvent[]> {
-  return Promise.all(
-    results.map(async (written) => {
-      const event: AutoBeTestValidateEvent = await compile(ctx, written);
-      return predicate(ctx, written, event, life);
-    }),
+): Promise<AutoBeTestValidateEvent[]> =>
+  Promise.all(
+    writeResult.map((w) =>
+      forceRetry(async () => {
+        const event: AutoBeTestValidateEvent = await compile(ctx, {
+          artifacts: w.artifacts,
+          scenario: w.scenario,
+          location: w.event.location,
+          script: w.event.final,
+        });
+        return predicate(
+          ctx,
+          {
+            artifacts: w.artifacts,
+            scenario: w.scenario,
+            location: w.event.location,
+            script: w.event.final,
+          },
+          event,
+          life,
+        );
+      }),
+    ),
   );
-}
 
-async function correct<Model extends ILlmSchema.Model>(
+const compile = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  written: IAutoBeTestWriteResult,
+  func: IAutoBeTestFunction,
+): Promise<AutoBeTestValidateEvent> => {
+  const compiled: IAutoBeTypeScriptCompileResult =
+    await ctx.compiler.test.compile({
+      files: {
+        ...func.artifacts.dto,
+        ...func.artifacts.sdk,
+        [func.location]: func.script,
+      },
+    });
+  return {
+    type: "testValidate",
+    file: {
+      scenario: func.scenario,
+      location: func.location,
+      content: func.script,
+    },
+    result: compiled,
+    created_at: new Date().toISOString(),
+    step: ctx.state().analyze?.step ?? 0,
+  };
+};
+
+const predicate = async <Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  content: IAutoBeTestFunction,
   event: AutoBeTestValidateEvent,
   life: number,
-): Promise<AutoBeTestValidateEvent> {
-  if (event.result.type !== "failure") return event;
-  else if (--life <= 0) return event;
+): Promise<AutoBeTestValidateEvent> => {
+  ctx.dispatch(event);
+  return event.result.type === "failure"
+    ? correct(ctx, content, event, life - 1)
+    : event;
+};
 
-  const pointer: IPointer<ICorrectTestFunctionProps | null> = {
+const correct = async <Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  content: IAutoBeTestFunction,
+  validate: AutoBeTestValidateEvent,
+  life: number,
+): Promise<AutoBeTestValidateEvent> => {
+  if (validate.result.type !== "failure") return validate;
+  else if (--life <= 0) return validate;
+
+  const pointer: IPointer<IAutoBeTestCorrectApplication.IProps | null> = {
     value: null,
   };
   const agentica = new MicroAgentica({
     model: ctx.model,
-    vendor: { ...ctx.vendor },
+    vendor: ctx.vendor,
     config: {
       ...(ctx.config ?? {}),
+      executor: {
+        describe: null,
+      },
+      retry: 4,
     },
-    histories: await transformTestCorrectHistories(ctx, written, event.result),
+    histories: transformTestCorrectHistories(content, validate.result),
     controllers: [
       createApplication({
         model: ctx.model,
+        artifacts: content.artifacts,
         build: (next) => {
           pointer.value = next;
         },
@@ -59,72 +121,35 @@ async function correct<Model extends ILlmSchema.Model>(
 
   await agentica
     .conversate(
-      [
-        "# Instructions",
-        "1. Focus on the specific error location and message",
-        "2. Provide the corrected TypeScript code",
-        "3. Ensure the fix resolves the compilation error",
-        "",
-        "Return only the fixed code without explanations.",
-      ].join("\n"),
+      "Fix the `AutoBeTest.IFunction` data to resolve the compilation error.",
     )
     .finally(() => {
       const tokenUsage = agentica.getTokenUsage();
       ctx.usage().record(tokenUsage, ["test"]);
     });
   if (pointer.value === null) throw new Error("Failed to modify test code.");
-  pointer.value.content = complementTestWrite({
-    content: pointer.value.content,
-    artifacts: written.artifacts,
-  });
 
-  event = await compile(ctx, {
-    ...written,
-    file: {
-      ...written.file,
-      content: pointer.value.content,
-    },
-  });
-  return predicate(ctx, written, event, life);
-}
-
-async function predicate<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
-  written: IAutoBeTestWriteResult,
-  event: AutoBeTestValidateEvent,
-  life: number,
-): Promise<AutoBeTestValidateEvent> {
-  ctx.dispatch(event);
-  return event.result.type === "failure"
-    ? correct(ctx, written, event, life - 1)
-    : event;
-}
-
-async function compile<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
-  written: IAutoBeTestWriteResult,
-): Promise<AutoBeTestValidateEvent> {
-  const compiled: IAutoBeTypeScriptCompileResult =
-    await ctx.compiler.test.compile({
-      files: {
-        ...written.artifacts.dto,
-        ...written.artifacts.sdk,
-        [written.file.location]: written.file.content,
-      },
-    });
-  return {
-    type: "testValidate",
-    file: written.file,
-    result: compiled,
+  ctx.dispatch({
+    type: "testCorrect",
     created_at: new Date().toISOString(),
+    file: validate.file,
+    result: validate.result,
     step: ctx.state().analyze?.step ?? 0,
+    ...pointer.value,
+  });
+  const newContent: IAutoBeTestFunction = {
+    ...content,
+    script: pointer.value.final,
   };
-}
+  const newValidate: AutoBeTestValidateEvent = await compile(ctx, newContent);
+  return predicate(ctx, newContent, newValidate, life);
+};
 
-function createApplication<Model extends ILlmSchema.Model>(props: {
+const createApplication = <Model extends ILlmSchema.Model>(props: {
   model: Model;
-  build: (next: ICorrectTestFunctionProps) => void;
-}): IAgenticaController.IClass<Model> {
+  artifacts: IAutoBeTestScenarioArtifacts;
+  build: (next: IAutoBeTestCorrectApplication.IProps) => void;
+}): IAgenticaController.IClass<Model> => {
   assertSchemaModel(props.model);
 
   const application: ILlmApplication<Model> = collection[
@@ -135,15 +160,17 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
     name: "Modify Test Code",
     application,
     execute: {
-      correctTestCode: (next) => {
+      rewrite: (next) => {
+        next.draft = completeTestCode(props.artifacts, next.draft);
+        next.final = completeTestCode(props.artifacts, next.final);
         props.build(next);
       },
-    } satisfies IApplication,
+    } satisfies IAutoBeTestCorrectApplication,
   };
-}
+};
 
 const claude = typia.llm.application<
-  IApplication,
+  IAutoBeTestCorrectApplication,
   "claude",
   {
     reference: true;
@@ -151,7 +178,7 @@ const claude = typia.llm.application<
 >();
 const collection = {
   chatgpt: typia.llm.application<
-    IApplication,
+    IAutoBeTestCorrectApplication,
     "chatgpt",
     { reference: true }
   >(),
@@ -159,60 +186,4 @@ const collection = {
   llama: claude,
   deepseek: claude,
   "3.1": claude,
-  "3.0": typia.llm.application<IApplication, "3.0">(),
 };
-
-interface IApplication {
-  correctTestCode(props: ICorrectTestFunctionProps): void;
-}
-
-interface ICorrectTestFunctionProps {
-  /**
-   * Step 1: Initial self-reflection on the source code without compiler error
-   * context.
-   *
-   * The AI agent analyzes the previously generated test code to identify
-   * potential issues, relying solely on its understanding of TypeScript syntax,
-   * testing patterns, and best practices.
-   *
-   * This encourages the agent to develop independent debugging skills before
-   * being influenced by external error messages.
-   */
-  think_without_compile_error: string;
-
-  /**
-   * Step 2: Re-evaluation of the code with compiler error messages as
-   * additional context.
-   *
-   * After the initial analysis, the AI agent reviews the same code again, this
-   * time incorporating the specific TypeScript compiler error messages.
-   *
-   * This allows the agent to correlate its initial observations with concrete
-   * compilation failures and refine its understanding of what went wrong.
-   */
-  think_again_with_compile_error: string;
-
-  /**
-   * Step 3: Concrete action plan for fixing the identified issues.
-   *
-   * Based on the analysis from steps 1 and 2, the AI agent formulates a
-   * specific, step-by-step solution strategy.
-   *
-   * This should include what changes need to be made, why those changes are
-   * necessary, and how they will resolve the compilation errors while
-   * maintaining the test's intended functionality.
-   */
-  solution: string;
-
-  /**
-   * Step 4: The corrected TypeScript test code.
-   *
-   * The final, properly fixed TypeScript code that should compile without
-   * errors.
-   *
-   * This represents the implementation of the solution plan from step 3,
-   * containing all necessary corrections to make the test code syntactically
-   * valid and functionally correct.
-   */
-  content: string;
-}

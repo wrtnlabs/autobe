@@ -3,6 +3,7 @@ import {
   AutoBeOpenApi,
   AutoBeTestFile,
   AutoBeTestHistory,
+  AutoBeTestScenarioEvent,
   AutoBeTestValidateEvent,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
@@ -47,20 +48,25 @@ export const orchestrateTest =
     }
 
     // PLAN
-    const { scenarios } = await orchestrateTestScenario(ctx);
+    const scenarioEvent: AutoBeTestScenarioEvent =
+      await orchestrateTestScenario(ctx);
+    ctx.dispatch(scenarioEvent);
 
     // TEST CODE
     const written: IAutoBeTestWriteResult[] = await orchestrateTestWrite(
       ctx,
-      scenarios,
+      scenarioEvent.scenarios,
     );
     const corrects: AutoBeTestValidateEvent[] = await orchestrateTestCorrect(
       ctx,
       written,
     );
+    const success: AutoBeTestValidateEvent[] = corrects.filter(
+      (c) => c.result.type === "success",
+    );
 
     // DO COMPILE
-    const files: AutoBeTestFile[] = corrects.map((c) => c.file);
+    const files: AutoBeTestFile[] = success.map((c) => c.file);
     const compiled: IAutoBeTypeScriptCompileResult =
       await ctx.compiler.test.compile({
         files: {

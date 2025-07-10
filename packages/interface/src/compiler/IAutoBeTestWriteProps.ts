@@ -6,4 +6,5 @@ export interface IAutoBeTestWriteProps {
   document: AutoBeOpenApi.IDocument;
   scenario: AutoBeTestScenario;
   function: AutoBeTest.IFunction;
+  prettier?: boolean;
 }

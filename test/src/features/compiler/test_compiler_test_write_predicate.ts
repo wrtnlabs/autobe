@@ -83,6 +83,7 @@ export const test_compiler_test_write_predicate = async (): Promise<void> => {
         ),
       ],
     },
+    prettier: false,
   });
 
   TestValidator.predicate("equal")(() =>
@@ -94,7 +95,7 @@ export const test_compiler_test_write_predicate = async (): Promise<void> => {
     ),
   );
   TestValidator.predicate("conditional")(() =>
-    result.includes(`TestValidator.conditional("conditional")(true)`),
+    result.includes(`TestValidator.predicate("conditional")(true)`),
   );
   TestValidator.predicate("error")(
     () =>

@@ -9,7 +9,10 @@ import {
   AutoBePrismaSchemasEvent,
   AutoBeRealizeIntegratorEvent,
   AutoBeRealizeProgressEvent,
+  AutoBeRealizeValidateEvent,
+  AutoBeTestCorrectEvent,
   AutoBeTestScenarioEvent,
+  AutoBeTestValidateEvent,
   AutoBeTestWriteEvent,
 } from "@autobe/interface";
 
@@ -35,8 +38,11 @@ export namespace AutoBePlaygroundProgressEventMovie {
       | AutoBeInterfaceComplementEvent
       | AutoBeTestScenarioEvent
       | AutoBeTestWriteEvent
+      | AutoBeTestValidateEvent
+      | AutoBeTestCorrectEvent
       | AutoBeRealizeProgressEvent
-      | AutoBeRealizeIntegratorEvent;
+      | AutoBeRealizeIntegratorEvent
+      | AutoBeRealizeValidateEvent;
   }
 }
 
@@ -64,6 +70,12 @@ function getDescription(
       return `Generating Test Plan Completed: ${event.scenarios.length}`;
     case "testWrite":
       return `Writing Test Functions: ${event.completed} of ${event.total}`;
+    case "testValidate":
+      return `Validating Test Function: ${event.result.type}`;
+    case "testCorrect":
+      return `Correcting Test Function`;
+    case "realizeValidate":
+      return `Validating Realize Function: ${event.result.type}`;
     case "realizeProgress":
       return `Writing Main Controller: ${event.completed} of ${event.total}`;
     case "realizeIntegrator":

@@ -20,31 +20,21 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
  */
 export interface AutoBeTestCorrectEvent extends AutoBeEventBase<"testCorrect"> {
   /**
-   * Timestamp when the correction process was initiated.
+   * The test file that contained compilation errors with its detailed scenario
+   * metadata.
    *
-   * Records the exact moment when the compilation error was detected and the
-   * correction process began. This timestamp helps track the duration of the
-   * self-correction feedback loop and provides temporal context for
-   * understanding the iterative improvement process.
-   */
-  created_at: string;
-
-  /**
-   * Collection of test files that contained compilation errors with their
-   * detailed scenario metadata.
-   *
-   * Contains the structured test file objects that failed compilation before
-   * correction. Each file includes its location, problematic source code
+   * Contains the structured test file object that failed compilation before
+   * correction. The file includes its location, problematic source code
    * content, and associated scenario information that provides context for
-   * understanding the compilation issues. These files serve as a comprehensive
+   * understanding the compilation issues. This file serves as a comprehensive
    * baseline for measuring the effectiveness of the correction process.
    *
    * Unlike simple key-value pairs, this structure preserves the rich metadata
-   * about each test scenario, enabling better analysis of what specific test
+   * about the test scenario, enabling better analysis of what specific test
    * patterns or business logic implementations led to compilation failures and
    * how they can be systematically improved.
    */
-  files: AutoBeTestFile[];
+  file: AutoBeTestFile;
 
   /**
    * The compilation failure details that triggered the correction process.
@@ -60,17 +50,17 @@ export interface AutoBeTestCorrectEvent extends AutoBeEventBase<"testCorrect"> {
   result: IAutoBeTypeScriptCompileResult.IFailure;
 
   /**
-   * AI's initial analysis of the test code before encountering compilation
-   * errors.
+   * AI's initial analysis of the test scenario without compilation error
+   * context.
    *
-   * Contains the AI's reasoning process and understanding of the test
-   * requirements before compilation feedback was provided. This initial
-   * thinking demonstrates the AI's approach to test scenario implementation and
-   * provides insight into the original logic that led to the compilation
-   * issues.
+   * Contains the AI's clean analysis of the original test scenario, business
+   * requirements, and intended functionality before considering compilation
+   * errors. This analysis establishes a clear understanding of what the test
+   * should accomplish and the expected business workflow.
    *
-   * This baseline thinking helps understand the AI's initial interpretation of
-   * the requirements and how it evolves through the correction process.
+   * This baseline thinking helps maintain the original test purpose during
+   * error correction and provides insight into the AI's initial interpretation
+   * of the requirements.
    */
   think_without_compile_error: string;
 
@@ -88,19 +78,45 @@ export interface AutoBeTestCorrectEvent extends AutoBeEventBase<"testCorrect"> {
   think_again_with_compile_error: string;
 
   /**
-   * AI's proposed solution strategy for resolving the compilation issues.
+   * The first corrected version of the test code addressing compilation errors.
    *
-   * Describes the specific approach the AI will take to correct the compilation
-   * errors while maintaining the integrity of the test scenarios. The solution
-   * strategy explains what changes will be made, why they are necessary, and
-   * how they will resolve the issues without compromising test coverage or
-   * business logic validation.
+   * Contains the AI's initial attempt to fix the compilation issues while
+   * preserving the original business logic and test workflow. This draft
+   * represents the direct application of error correction strategies identified
+   * during the analysis phase.
    *
-   * This solution planning provides transparency into the AI's correction
-   * methodology and helps stakeholders understand the quality improvement
-   * process.
+   * The draft code demonstrates the AI's approach to resolving TypeScript
+   * compilation errors while maintaining the intended test functionality and
+   * following established conventions.
    */
-  solution: string;
+  draft: string;
+
+  /**
+   * AI's comprehensive review and validation of the corrected draft code.
+   *
+   * Contains the AI's evaluation of the draft implementation, examining both
+   * technical correctness and business logic preservation. This review process
+   * identifies any remaining issues and validates that compilation errors have
+   * been properly resolved.
+   *
+   * The review provides insight into the AI's quality assurance process and
+   * helps stakeholders understand how the correction maintains test integrity.
+   */
+  review: string;
+
+  /**
+   * The final production-ready corrected test code.
+   *
+   * Contains the polished version of the corrected test code that incorporates
+   * all review feedback and validation results. This represents the completed
+   * error correction process, guaranteed to compile successfully while
+   * preserving all original test functionality.
+   *
+   * The final implementation serves as the definitive solution that replaces
+   * the compilation-failed code and demonstrates the AI's ability to learn from
+   * errors and produce high-quality test code.
+   */
+  final: string;
 
   /**
    * Iteration number of the requirements analysis this test correction was

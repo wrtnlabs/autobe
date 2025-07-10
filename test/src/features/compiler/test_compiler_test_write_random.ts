@@ -38,7 +38,7 @@ export const test_compiler_test_write_random = async (): Promise<void> => {
     },
     {
       type: "pickRandom",
-      expression: {
+      array: {
         type: "arrayLiteralExpression",
         elements: [1, 2, 3, 4, 5].map((value) => ({
           type: "numericLiteral",
@@ -48,14 +48,14 @@ export const test_compiler_test_write_random = async (): Promise<void> => {
     },
     {
       type: "sampleRandom",
-      expression: {
+      array: {
         type: "arrayLiteralExpression",
         elements: [1, 2, 3, 4, 5].map((value) => ({
           type: "numericLiteral",
           value: value,
         })),
       },
-      length: {
+      count: {
         type: "numericLiteral",
         value: 2,
       },
@@ -84,6 +84,7 @@ export const test_compiler_test_write_random = async (): Promise<void> => {
         ),
       ],
     },
+    prettier: false,
   });
 
   TestValidator.predicate("import")(

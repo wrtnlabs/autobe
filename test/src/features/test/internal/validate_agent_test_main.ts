@@ -21,15 +21,8 @@ export const validate_agent_test_main = async (
 
   // PREPARE AGENT
   const { agent } = await prepare_agent_test(factory, project);
-
-  const map = new Map<string, true>();
   const events: AutoBeEvent[] = [];
   const enroll = (event: AutoBeEvent) => {
-    if (!map.has(event.type)) {
-      map.set(event.type, true);
-      console.log(event.type);
-    }
-
     events.push(event);
   };
   agent.on("testStart", enroll);
@@ -59,7 +52,8 @@ export const validate_agent_test_main = async (
     root: `${TestGlobal.ROOT}/results/${project}/test/main`,
     files: {
       ...(await agent.getFiles()),
-      "logs/events.json": typia.json.stringify(events),
+      "logs/compiled.json": JSON.stringify(result.compiled, null, 2),
+      "logs/events.json": JSON.stringify(events, null, 2),
       "logs/result.json": typia.json.stringify(result),
       "logs/histories.json": typia.json.stringify(histories),
     },

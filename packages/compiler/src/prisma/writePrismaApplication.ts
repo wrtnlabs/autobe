@@ -1,8 +1,8 @@
 import { AutoBePrisma } from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
 
 import { ArrayUtil } from "../utils/ArrayUtil";
 import { MapUtil } from "../utils/MapUtil";
-import { StringUtil } from "../utils/StringUtil";
 
 export function writePrismaApplication(props: {
   dbms: "postgres" | "sqlite";

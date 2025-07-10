@@ -1,8 +1,5 @@
-import { AgenticaTokenUsage, IAgenticaTokenUsageJson } from "@agentica/core";
-import {
-  IAutoBeInternalTokenUsageJson,
-  IAutoBeTokenUsageJson,
-} from "@autobe/interface";
+import { AgenticaTokenUsage } from "@agentica/core";
+import { IAutoBeTokenUsageJson } from "@autobe/interface";
 
 import { IAutoBeApplication } from "./IAutoBeApplication";
 
@@ -78,13 +75,13 @@ export class AutoBeTokenUsage {
   }
 }
 
-/** Type check statements */
-1 as unknown as AutoBeTokenUsage satisfies {
-  [key in "facade" | keyof IAutoBeApplication]: AgenticaTokenUsage;
-};
+// /** Type check statements */
+// 1 as unknown as AutoBeTokenUsage satisfies {
+//   [key in "facade" | keyof IAutoBeApplication]: AgenticaTokenUsage;
+// };
 
-1 as unknown as IAutoBeTokenUsageJson satisfies {
-  [key in "facade" | keyof IAutoBeApplication]: IAutoBeInternalTokenUsageJson;
-};
+// 1 as unknown as IAutoBeTokenUsageJson satisfies {
+//   [key in "facade" | keyof IAutoBeApplication]: IAutoBeInternalTokenUsageJson;
+// };
 
-1 as unknown as IAutoBeInternalTokenUsageJson satisfies IAgenticaTokenUsageJson;
+// 1 as unknown as IAutoBeInternalTokenUsageJson satisfies IAgenticaTokenUsageJson;

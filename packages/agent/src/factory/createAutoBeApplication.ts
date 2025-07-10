@@ -1,4 +1,5 @@
 import { IAgenticaController } from "@agentica/core";
+import { StringUtil } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import typia from "typia";
 
@@ -10,7 +11,6 @@ import { orchestrateInterface } from "../orchestrate/interface/orchestrateInterf
 import { orchestratePrisma } from "../orchestrate/prisma/orchestratePrisma";
 import { orchestrateRealize } from "../orchestrate/realize/orchestrateRealize";
 import { orchestrateTest } from "../orchestrate/test/orchestrateTest";
-import { StringUtil } from "../utils/StringUtil";
 
 export const createAutoBeController = <Model extends ILlmSchema.Model>(props: {
   model: Model;
@@ -128,5 +128,4 @@ const collection = {
   llama: claude,
   deepseek: claude,
   "3.1": claude,
-  "3.0": typia.llm.application<IAutoBeApplication, "3.0">(),
 };

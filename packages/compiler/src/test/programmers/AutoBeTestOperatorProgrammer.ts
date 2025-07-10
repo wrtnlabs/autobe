@@ -17,10 +17,18 @@ export namespace AutoBeTestOperatorProgrammer {
       writeTestExpression(ctx, expr.whenFalse),
     );
 
+  export const typeOfExpression = (
+    ctx: IAutoBeTestProgrammerContext,
+    expr: AutoBeTest.ITypeOfExpression,
+  ): ts.TypeOfExpression =>
+    ts.factory.createTypeOfExpression(
+      writeTestExpression(ctx, expr.expression),
+    );
+
   export const prefixUnaryExpression = (
     ctx: IAutoBeTestProgrammerContext,
     expr: AutoBeTest.IPrefixUnaryExpression,
-  ): ts.PrefixUnaryExpression =>
+  ): ts.TypeOfExpression | ts.PrefixUnaryExpression =>
     ts.factory.createPrefixUnaryExpression(
       PREFIX_UNARY_OPERATORS[expr.operator],
       writeTestExpression(ctx, expr.operand),
@@ -41,7 +49,7 @@ export namespace AutoBeTestOperatorProgrammer {
   ): ts.BinaryExpression =>
     ts.factory.createBinaryExpression(
       writeTestExpression(ctx, expr.left),
-      OPERATORS[expr.operator],
+      BINARY_OPERATORS[expr.operator],
       writeTestExpression(ctx, expr.right),
     );
 }
@@ -53,10 +61,12 @@ const POSTFIX_UNARY_OPERATORS = {
 
 const PREFIX_UNARY_OPERATORS = {
   ...POSTFIX_UNARY_OPERATORS,
+  "+": ts.SyntaxKind.PlusToken,
+  "-": ts.SyntaxKind.MinusToken,
   "!": ts.SyntaxKind.ExclamationToken,
 } as const;
 
-const OPERATORS = {
+const BINARY_OPERATORS = {
   "===": ts.SyntaxKind.EqualsEqualsEqualsToken,
   "!==": ts.SyntaxKind.ExclamationEqualsEqualsToken,
   "<": ts.SyntaxKind.LessThanToken,
@@ -70,4 +80,5 @@ const OPERATORS = {
   "%": ts.SyntaxKind.PercentToken,
   "&&": ts.SyntaxKind.AmpersandAmpersandToken,
   "||": ts.SyntaxKind.BarBarToken,
+  instanceof: ts.SyntaxKind.InstanceOfKeyword,
 } as const;

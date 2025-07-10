@@ -8,8 +8,9 @@ import {
   AutoBeTestScenario,
   AutoBeTestScenarioEvent,
 } from "@autobe/interface";
+import { AutoBeEndpointComparator } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
-import { IPointer } from "tstl";
+import { HashMap, IPointer, Pair } from "tstl";
 import typia from "typia";
 import { v4 } from "uuid";
 
@@ -18,37 +19,67 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { enforceToolCall } from "../../utils/enforceToolCall";
+import { forceRetry } from "../../utils/forceRetry";
 import { IAutoBeTestScenarioApplication } from "./structures/IAutoBeTestScenarioApplication";
 
 export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
 ): Promise<AutoBeTestScenarioEvent> {
-  const operations = ctx.state().interface?.document.operations ?? [];
+  const operations: AutoBeOpenApi.IOperation[] =
+    ctx.state().interface?.document.operations ?? [];
   if (operations.length === 0) {
     throw new Error(
       "Cannot write test scenarios because these are no operations.",
     );
   }
 
+  const dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation> =
+    new HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>(
+      operations.map(
+        (op) =>
+          new Pair(
+            {
+              path: op.path,
+              method: op.method,
+            },
+            op,
+          ),
+      ),
+      AutoBeEndpointComparator.hashCode,
+      AutoBeEndpointComparator.equals,
+    );
+  const endpointNotFound: string = [
+    `You have to select one of the endpoints below`,
+    "",
+    " method | path ",
+    "--------|------",
+    ...operations.map((op) => `\`${op.method}\` | \`${op.path}\``).join("\n"),
+  ].join("\n");
+
   const exclude: IAutoBeTestScenarioApplication.IScenarioGroup[] = [];
   let include: AutoBeOpenApi.IOperation[] = Array.from(operations);
 
   do {
-    const matrix = divideArray({ array: include, capacity: 5 });
-
+    const matrix: AutoBeOpenApi.IOperation[][] = divideArray({
+      array: include,
+      capacity: 5,
+    });
     await Promise.all(
-      matrix.map(async (_include) => {
+      matrix.map(async (include) => {
         exclude.push(
-          ...(await execute(
-            ctx,
-            operations,
-            _include,
-            exclude.map((x) => x.endpoint),
+          ...(await forceRetry(() =>
+            execute(
+              ctx,
+              dict,
+              endpointNotFound,
+              operations,
+              include,
+              exclude.map((x) => x.endpoint),
+            ),
           )),
         );
       }),
     );
-
     include = include.filter((op) => {
       if (
         exclude.some(
@@ -81,9 +112,11 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
 
 const execute = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  ops: AutoBeOpenApi.IOperation[],
-  include: Pick<AutoBeOpenApi.IOperation, "method" | "path">[],
-  exclude: Pick<AutoBeOpenApi.IOperation, "method" | "path">[],
+  dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>,
+  endpointNotFound: string,
+  entire: AutoBeOpenApi.IOperation[],
+  include: AutoBeOpenApi.IEndpoint[],
+  exclude: AutoBeOpenApi.IEndpoint[],
 ) => {
   const pointer: IPointer<IAutoBeTestScenarioApplication.IScenarioGroup[]> = {
     value: [],
@@ -97,10 +130,12 @@ const execute = async <Model extends ILlmSchema.Model>(
         describe: null,
       },
     },
-    histories: createHistoryProperties(ops, include, exclude),
+    histories: createHistoryProperties(entire, include, exclude),
     controllers: [
       createApplication({
         model: ctx.model,
+        endpointNotFound,
+        dict,
         build: (next) => {
           pointer.value ??= [];
           pointer.value.push(...next.scenarioGroups);
@@ -122,7 +157,7 @@ const execute = async <Model extends ILlmSchema.Model>(
 };
 
 const createHistoryProperties = (
-  operations: AutoBeOpenApi.IOperation[],
+  entire: AutoBeOpenApi.IOperation[],
   include: Pick<AutoBeOpenApi.IOperation, "method" | "path">[],
   exclude: Pick<AutoBeOpenApi.IOperation, "method" | "path">[],
 ): Array<
@@ -154,14 +189,9 @@ const createHistoryProperties = (
       "",
       "```json",
       JSON.stringify(
-        operations.map((el) => ({
-          path: el.path,
-          method: el.method,
-          summary: el.summary,
-          description: el.description,
-          parameters: el.parameters,
-          requestBody: el.requestBody,
-          responseBody: el.responseBody,
+        entire.map((el) => ({
+          ...el,
+          specification: undefined,
         })),
       ),
       "```",
@@ -190,6 +220,8 @@ const createHistoryProperties = (
 
 function createApplication<Model extends ILlmSchema.Model>(props: {
   model: Model;
+  endpointNotFound: string;
+  dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>;
   build: (next: IAutoBeTestScenarioApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
@@ -203,6 +235,7 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
       typia.validate<IAutoBeTestScenarioApplication.IProps>(next);
     if (result.success === false) return result;
 
+    // merge to unique scenario groups
     const scenarioGroups: IAutoBeTestScenarioApplication.IScenarioGroup[] = [];
     result.data.scenarioGroups.forEach((sg) => {
       const created = scenarioGroups.find(
@@ -210,7 +243,6 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
           el.endpoint.method === sg.endpoint.method &&
           el.endpoint.path === sg.endpoint.path,
       );
-
       if (created) {
         created.scenarios.push(...sg.scenarios);
       } else {
@@ -218,7 +250,38 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
       }
     });
 
-    return { success: true, data: scenarioGroups };
+    // validate endpoints
+    const errors: IValidation.IError[] = [];
+    scenarioGroups.forEach((group, i) => {
+      if (props.dict.has(group.endpoint) === false)
+        errors.push({
+          value: group.endpoint,
+          path: `$input.scenarioGroups[${i}].endpoint`,
+          expected: "AutoBeOpenApi.IEndpoint",
+          description: props.endpointNotFound,
+        });
+      group.scenarios.forEach((s, j) => {
+        s.dependencies.forEach((dep, k) => {
+          if (props.dict.has(dep.endpoint) === false)
+            errors.push({
+              value: dep.endpoint,
+              path: `$input.scenarioGroups[${i}].scenarios[${j}].dependencies[${k}].endpoint`,
+              expected: "AutoBeOpenApi.IEndpoint",
+              description: props.endpointNotFound,
+            });
+        });
+      });
+    });
+    return errors.length === 0
+      ? {
+          success: true,
+          data: scenarioGroups,
+        }
+      : {
+          success: false,
+          data: scenarioGroups,
+          errors,
+        };
   };
   return {
     protocol: "class",
@@ -249,5 +312,4 @@ const collection = {
   llama: claude,
   deepseek: claude,
   "3.1": claude,
-  "3.0": typia.llm.application<IAutoBeTestScenarioApplication, "3.0">(),
 };

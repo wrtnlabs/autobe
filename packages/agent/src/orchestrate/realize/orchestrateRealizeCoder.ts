@@ -9,7 +9,7 @@ import typia from "typia";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { enforceToolCall } from "../../utils/enforceToolCall";
-import { compileTestScenario } from "../test/compile/compileTestScenario";
+import { getTestScenarioArtifacts } from "../test/compile/getTestScenarioArtifacts";
 import { IAutoBeTestScenarioArtifacts } from "../test/structures/IAutoBeTestScenarioArtifacts";
 import { FAILED } from "./orchestrateRealize";
 import { RealizePlannerOutput } from "./orchestrateRealizePlanner";
@@ -39,16 +39,14 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
   operation: AutoBeOpenApi.IOperation,
   props: RealizePlannerOutput,
 ): Promise<IAutoBeRealizeCoderApplication.RealizeCoderOutput | FAILED> => {
-  const artifacts: IAutoBeTestScenarioArtifacts = await compileTestScenario(
-    ctx,
-    {
+  const artifacts: IAutoBeTestScenarioArtifacts =
+    await getTestScenarioArtifacts(ctx, {
       endpoint: {
         method: operation.method,
         path: operation.path,
       },
       dependencies: [],
-    },
-  );
+    });
 
   const pointer: IPointer<Pick<
     IAutoBeRealizeCoderApplication.RealizeCoderOutput,
