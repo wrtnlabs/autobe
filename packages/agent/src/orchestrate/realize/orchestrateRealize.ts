@@ -108,9 +108,7 @@ export const orchestrateRealize =
         }),
       );
 
-    const integratedSuccesses = integrated.filter(
-      (i) => i !== FAILED,
-    ) as AutoBeRealizeIntegratorEvent[];
+    const integratedSuccesses = integrated.filter((i) => i !== FAILED);
 
     const validates = await orchestrateRealizeValidator(
       ctx,
