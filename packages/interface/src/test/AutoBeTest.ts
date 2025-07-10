@@ -453,7 +453,7 @@ export namespace AutoBeTest {
      * null
      * ```
      */
-    argument: IObjectLiteral | null;
+    argument: IObjectLiteralExpression | null;
 
     /**
      * Optional variable name for capturing the API response.
@@ -740,7 +740,7 @@ export namespace AutoBeTest {
      * Can reference previously captured data from API operations or computed
      * values, but should not contain direct API calls.
      */
-    value: IExpression;
+    expression: IExpression;
   }
 
   /**
@@ -834,26 +834,31 @@ export namespace AutoBeTest {
    * dedicated statement type rather than call expressions.
    */
   export type IExpression =
+    // LITERALS
+    | IBooleanLiteral
+    | INumericLiteral
+    | IStringLiteral
+    | IArrayLiteralExpression
+    | IObjectLiteralExpression
+    | INullLiteral
+    | IUndefinedKeyword
+    // ACCESSORS
     | IIdentifier
     | IPropertyAccessExpression
     | IElementAccessExpression
-    | IArrowFunction
-    | ICallExpression
-    | INewExpression
+    // OPERATORS
     | IPrefixUnaryExpression
     | IPostfixUnaryExpression
     | IBinaryExpression
+    // FUNCTIONAL
+    | IArrowFunction
+    | ICallExpression
+    | INewExpression
     | IArrayFilterExpression
     | IArrayForEachExpression
     | IArrayMapExpression
     | IArrayRepeatExpression
-    | IBooleanLiteral
-    | INumericLiteral
-    | IStringLiteral
-    | IArrayLiteral
-    | IObjectLiteral
-    | INullLiteral
-    | IUndefinedKeyword
+    // RANDOM GENERATORS
     | IPickRandom
     | ISampleRandom
     | IBooleanRandom
@@ -863,6 +868,7 @@ export namespace AutoBeTest {
     | IPatternRandom
     | IFormatRandom
     | IKeywordRandom
+    // PREDICATORS
     | IEqualPredicate
     | INotEqualPredicate
     | IConditionalPredicate
@@ -878,6 +884,250 @@ export namespace AutoBeTest {
   interface IExpressionBase<Type extends string> {
     /** Discriminator type for identifying the expression type. */
     type: Type;
+  }
+
+  /* -----------------------------------------------------------
+    LITERALS
+  ----------------------------------------------------------- */
+  /**
+   * Boolean literal for true/false values.
+   *
+   * Represents direct boolean values used in conditions, flags, and business
+   * rule specifications. Common in test scenarios for setting feature flags,
+   * validation states, and binary business decisions.
+   *
+   * E2E testing usage:
+   *
+   * - Feature flags (enabled: true/false)
+   * - Business state flags (active, verified, completed)
+   * - Validation parameters for API operations
+   * - Configuration options for test scenarios
+   *
+   * **Note**: Often used as arguments in `IApiOperateStatement` for boolean
+   * parameters, or in conditional expressions for business logic.
+   */
+  export interface IBooleanLiteral extends IExpressionBase<"booleanLiteral"> {
+    /**
+     * The boolean value (true or false).
+     *
+     * Should represent meaningful business states rather than arbitrary
+     * true/false values. Consider the business context when selecting the value
+     * based on the intended test scenario.
+     */
+    value: boolean;
+  }
+
+  /**
+   * Numeric literal for number values.
+   *
+   * Represents direct numeric values including integers, decimals, and
+   * floating-point numbers. Essential for business data like quantities,
+   * prices, scores, and identifiers used in test scenarios.
+   *
+   * E2E testing scenarios:
+   *
+   * - Product quantities and prices for API operation parameters
+   * - Score values and ratings in business validations
+   * - Pagination parameters (page, limit) for API calls
+   * - Business thresholds and limits for conditional logic
+   * - Mathematical calculations with captured data
+   *
+   * **Note**: Commonly used as arguments in `IApiOperateStatement` for numeric
+   * parameters, or in comparisons with captured API response data.
+   */
+  export interface INumericLiteral extends IExpressionBase<"numericLiteral"> {
+    /**
+     * The numeric value.
+     *
+     * Can be integer or floating-point number. Should represent realistic
+     * business values appropriate for the test scenario context (e.g.,
+     * reasonable prices, quantities, scores).
+     *
+     * AI consideration: Use business-appropriate values rather than arbitrary
+     * numbers (e.g., 10000 for price instead of 12345.67).
+     */
+    value: number;
+  }
+
+  /**
+   * String literal for text values.
+   *
+   * Represents direct string values including business names, descriptions,
+   * identifiers, and formatted data. One of the most commonly used literal
+   * types in E2E testing for realistic business data.
+   *
+   * E2E testing importance: Critical for providing realistic business data that
+   * reflects actual user input and system behavior, especially as parameters
+   * for API operations and in comparisons with captured response data.
+   */
+  export interface IStringLiteral extends IExpressionBase<"stringLiteral"> {
+    /**
+     * The string value.
+     *
+     * Should contain realistic business data appropriate for the context:
+     *
+     * - Names: "John Doe", "Acme Corporation"
+     * - Emails: "john@example.com"
+     * - Descriptions: "High-quality wireless headphones"
+     * - Codes: "PROMO2024", "SKU-12345"
+     * - Status values: "pending", "approved", "completed"
+     *
+     * **Usage context**: Commonly used as arguments in `IApiOperateStatement`
+     * for string parameters, in predicate validations for expected values, or
+     * in conditional expressions for business logic.
+     *
+     * AI content strategy: Use meaningful, realistic values that reflect actual
+     * business scenarios rather than placeholder text like "string" or "test".
+     */
+    value: string;
+  }
+
+  /**
+   * Array literal for creating array values directly.
+   *
+   * Represents direct array construction with explicit elements. Essential for
+   * providing list data in test scenarios such as multiple products, user
+   * lists, or configuration arrays, particularly as parameters for API
+   * operations.
+   *
+   * E2E testing scenarios:
+   *
+   * - Product lists for bulk API operations
+   * - Tag arrays for categorization in API requests
+   * - Multiple item selections for API parameters
+   * - Configuration option lists for test setup
+   * - Multiple entity references for relationship testing
+   *
+   * **Note**: Commonly used as arguments in `IApiOperateStatement` when API
+   * operations require array parameters, or for constructing test data to be
+   * used in business logic.
+   *
+   * AI function calling usage: Use when business scenarios require explicit
+   * list data rather than dynamic array generation from captured API
+   * responses.
+   */
+  export interface IArrayLiteralExpression
+    extends IExpressionBase<"arrayLiteralExpression"> {
+    /**
+     * Array of expressions representing the array elements.
+     *
+     * Each element can be any valid expression (literals, identifiers
+     * referencing captured data, function calls, etc.). Elements should
+     * represent meaningful business data appropriate for the array's purpose.
+     *
+     * Examples:
+     *
+     * - [product1, product2, product3] for entity arrays (referencing captured
+     *   data)
+     * - ["electronics", "gadgets"] for category tags
+     * - [{ name: "file1.jpg" }, { name: "file2.jpg" }] for file lists
+     * - [seller.id, customer.id] for ID arrays (mixing captured data)
+     *
+     * AI content strategy: Populate with realistic business data that reflects
+     * actual usage patterns, mixing literals and references to captured data as
+     * appropriate.
+     */
+    elements: IExpression[];
+  }
+
+  /**
+   * Object literal for creating object values directly.
+   *
+   * Represents direct object construction with explicit properties. The primary
+   * mechanism for creating request bodies, configuration objects, and
+   * structured data in E2E test scenarios, particularly as parameters for API
+   * operations.
+   *
+   * E2E testing importance: Critical for API request bodies in
+   * `IApiOperateStatement` calls and configuration objects that drive business
+   * operations.
+   */
+  export interface IObjectLiteralExpression
+    extends IExpressionBase<"objectLiteralExpression"> {
+    /**
+     * Array of property assignments defining the object structure.
+     *
+     * Each property represents a key-value pair in the object. Properties
+     * should correspond to actual DTO structure requirements and business data
+     * needs when used as API request bodies.
+     *
+     * **For API operations**: Must align with API schema requirements when used
+     * as arguments in `IApiOperateStatement`. Property names and value types
+     * should match expected DTO interfaces.
+     *
+     * **For test data**: Can mix literal values with references to captured
+     * data from previous API operations to create realistic business
+     * scenarios.
+     *
+     * Examples:
+     *
+     * - { name: "John Doe", email: "john@example.com" } for user creation
+     * - { productId: product.id, quantity: 2 } mixing captured data with literals
+     * - { status: "active", verified: true } for business state objects
+     *
+     * AI validation requirement: Ensure properties match the target schema
+     * definition exactly when used for API operations, including required
+     * fields and types.
+     */
+    properties: IPropertyAssignment[];
+  }
+
+  /**
+   * Null literal for explicit null values.
+   *
+   * Represents explicit null values used in business scenarios where absence of
+   * data is meaningful. Important for optional fields, cleared states, and
+   * explicit "no value" conditions in API operations and business logic.
+   *
+   * E2E testing scenarios:
+   *
+   * - Optional relationship fields in API request bodies
+   * - Cleared user preferences in business state
+   * - Explicit "no selection" states for optional parameters
+   * - Default null values for optional business data in API operations
+   *
+   * AI decision context: Use when business logic specifically requires null
+   * rather than undefined or omitted properties, particularly in API request
+   * bodies or when comparing with captured API response data.
+   */
+  export interface INullLiteral extends IExpressionBase<"nullLiteral"> {
+    /**
+     * Always null value.
+     *
+     * Type safety ensures this can only be null, providing clear intent for
+     * explicit null assignment in business scenarios.
+     */
+    value: null;
+  }
+
+  /**
+   * Undefined keyword for explicit undefined values.
+   *
+   * Represents explicit undefined values used when business logic requires
+   * undefined rather than null or omitted properties. Less commonly used than
+   * null in typical business scenarios, but necessary for certain API
+   * operations or business logic conditions.
+   *
+   * E2E testing usage:
+   *
+   * - Explicit undefined state representation in business logic
+   * - Clearing previously set values in test scenarios
+   * - API parameters that distinguish between null and undefined
+   * - Conditional expressions where undefined has specific meaning
+   *
+   * AI guidance: Prefer null over undefined unless specific business or API
+   * requirements dictate undefined usage, or when working with captured data
+   * that may contain undefined values.
+   */
+  export interface IUndefinedKeyword
+    extends IExpressionBase<"undefinedKeyword"> {
+    /**
+     * Always undefined value.
+     *
+     * Type safety ensures this can only be undefined, providing clear intent
+     * for explicit undefined assignment in business scenarios.
+     */
+    value: undefined;
   }
 
   /* -----------------------------------------------------------
@@ -1078,206 +1328,8 @@ export namespace AutoBeTest {
   }
 
   /* -----------------------------------------------------------
-    FUNCTIONAL
+    OPERATORS
   ----------------------------------------------------------- */
-  /**
-   * Arrow function expression for callback definitions.
-   *
-   * Used primarily for callback functions required by certain utility functions
-   * or specialized operations. In E2E testing, commonly needed for array
-   * operations, error handling callbacks, or random data generation functions.
-   *
-   * **IMPORTANT**: Should NOT contain direct API function calls in the body. If
-   * API operations are needed within the function, use `IApiOperateStatement`
-   * within the function body.
-   *
-   * E2E testing scenarios:
-   *
-   * - Callback functions for IErrorPredicate (testing expected API errors)
-   * - Generator functions for IArrayRepeatExpression (creating test data arrays)
-   * - Filter/transform functions for captured data manipulation
-   * - Event handler functions for specialized testing scenarios
-   *
-   * AI function calling usage: Generate when utility operations require
-   * function parameters or when data transformation callbacks are needed within
-   * the test flow.
-   */
-  export interface IArrowFunction extends IExpressionBase<"arrowFunction"> {
-    /**
-     * The function body containing the function's logic.
-     *
-     * Contains the statements that comprise the function's implementation. In
-     * test contexts, typically contains simple operations like data
-     * transformation, validation, or utility calls.
-     *
-     * Can include IApiOperateStatement for API operations within the callback,
-     * though this should be used judiciously and only when the callback
-     * specifically requires API interactions.
-     *
-     * Should represent meaningful business logic rather than arbitrary
-     * computational operations.
-     */
-    body: IBlock;
-  }
-
-  /**
-   * Function call expression for non-API function invocations and utility
-   * calls.
-   *
-   * **IMPORTANT: For API function calls, use `IApiOperateStatement` instead.**
-   * This type should only be used for:
-   *
-   * - Validation functions (TestValidator.equals, TestValidator.error)
-   * - Utility functions (typia.assert, typia.is)
-   * - Helper functions and transformations
-   * - Built-in JavaScript functions
-   * - Non-API library function calls
-   *
-   * Essential for E2E testing for utility operations, but API calls should use
-   * the dedicated `IApiOperateStatement` for proper handling of business
-   * operations and response capturing.
-   *
-   * AI function calling importance: This represents utility and validation
-   * operations in test scenarios, but should NOT be used for SDK API calls
-   * which have their own dedicated statement type.
-   */
-  export interface ICallExpression extends IExpressionBase<"callExpression"> {
-    /**
-     * Expression representing the function to be called.
-     *
-     * **Should NOT represent API/SDK functions** - use `IApiOperateStatement`
-     * for those instead.
-     *
-     * Typically represents utility functions:
-     *
-     * - TestValidator.equals, TestValidator.error
-     * - Typia.assert, typia.is
-     * - Built-in functions (Array.from, Object.keys, etc.)
-     * - Helper/transformation functions
-     *
-     * Can also be a simple identifier for direct function references.
-     *
-     * AI requirement: Must NOT resolve to SDK API functions. Those should use
-     * the dedicated API function call statement type.
-     */
-    expression: IExpression;
-
-    /**
-     * Array of argument expressions passed to the function.
-     *
-     * Each argument must match the expected parameter type of the called
-     * function. Order and types must correspond exactly to the function
-     * signature defined in utility or validation documentation.
-     *
-     * Common patterns:
-     *
-     * - Validation parameters for TestValidator calls
-     * - Type assertion parameters for typia calls
-     * - Transformation parameters for utility functions
-     *
-     * AI validation: Ensure argument types and count match the target
-     * function's signature exactly, excluding API functions.
-     */
-    arguments: IExpression[];
-  }
-
-  /**
-   * New expression for object instantiation.
-   *
-   * Creates new instances of objects, primarily used for:
-   *
-   * - Error object creation for throw statements
-   * - Date object creation for timestamp values
-   * - Custom object instantiation when required by utility functions
-   *
-   * **Note**: Should NOT be used for API-related object creation. API
-   * operations that create business entities should use `IApiOperateStatement`
-   * instead.
-   *
-   * E2E testing context: Most commonly used for creating Error objects in throw
-   * statements or Date objects for time-sensitive test data. Also used for
-   * instantiating utility objects that don't involve API calls.
-   *
-   * AI function calling usage: Use when business logic requires explicit object
-   * instantiation rather than literal values, excluding API-related entity
-   * creation.
-   */
-  export interface INewExpression extends IExpressionBase<"newExpression"> {
-    /**
-     * Expression representing the constructor function.
-     *
-     * Typically an identifier for built-in constructors:
-     *
-     * - "Error" for error objects
-     * - "Date" for date objects
-     * - Custom class identifiers when needed for utility purposes
-     *
-     * Should NOT represent API-related constructors or entity builders.
-     */
-    expression: IExpression;
-
-    /**
-     * Arguments passed to the constructor.
-     *
-     * Must match the constructor's parameter signature. For Error objects:
-     * typically string message For Date objects: typically string or number
-     * timestamp For other constructors: appropriate parameter types
-     *
-     * Arguments should be derived from captured data, literals, or
-     * computations, not from direct API calls.
-     */
-    arguments: IExpression[];
-  }
-
-  /**
-   * Conditional expression for inline value selection.
-   *
-   * Represents the ternary operator (condition ? trueValue : falseValue) for
-   * inline conditional value selection. Useful when values need to be chosen
-   * based on business conditions within expressions.
-   *
-   * **Note**: For complex conditional logic involving API operations, consider
-   * using `IIfStatement` with `IApiOperateStatement` instead.
-   *
-   * E2E testing scenarios:
-   *
-   * - Conditional parameter values based on captured test data
-   * - Dynamic value selection based on business rules from API responses
-   * - Fallback value specification for optional data
-   * - Simple conditional logic within expression contexts
-   *
-   * AI function calling context: Use when business logic requires different
-   * values based on runtime conditions within expressions, where the conditions
-   * and values don't involve direct API calls.
-   */
-  export interface IConditionalExpression
-    extends IExpressionBase<"conditionalExpression"> {
-    /**
-     * Boolean condition determining which value to select.
-     *
-     * Should represent meaningful business logic conditions based on captured
-     * data rather than arbitrary technical conditions. Can reference data
-     * captured from previous API operations.
-     */
-    condition: IExpression;
-
-    /**
-     * Expression evaluated and returned when condition is true.
-     *
-     * Represents the primary or expected value for the business scenario. Can
-     * reference captured API data or computed values.
-     */
-    whenTrue: IExpression;
-
-    /**
-     * Expression evaluated and returned when condition is false.
-     *
-     * Represents the alternative or fallback value for the business scenario.
-     * Can reference captured API data or computed values.
-     */
-    whenFalse: IExpression;
-  }
-
   /**
    * Prefix unary expression for operators applied before operands.
    *
@@ -1430,6 +1482,207 @@ export namespace AutoBeTest {
      * captured data from API responses.
      */
     right: IExpression;
+  }
+
+  /**
+   * Conditional expression for inline value selection.
+   *
+   * Represents the ternary operator (condition ? trueValue : falseValue) for
+   * inline conditional value selection. Useful when values need to be chosen
+   * based on business conditions within expressions.
+   *
+   * **Note**: For complex conditional logic involving API operations, consider
+   * using `IIfStatement` with `IApiOperateStatement` instead.
+   *
+   * E2E testing scenarios:
+   *
+   * - Conditional parameter values based on captured test data
+   * - Dynamic value selection based on business rules from API responses
+   * - Fallback value specification for optional data
+   * - Simple conditional logic within expression contexts
+   *
+   * AI function calling context: Use when business logic requires different
+   * values based on runtime conditions within expressions, where the conditions
+   * and values don't involve direct API calls.
+   */
+  export interface IConditionalExpression
+    extends IExpressionBase<"conditionalExpression"> {
+    /**
+     * Boolean condition determining which value to select.
+     *
+     * Should represent meaningful business logic conditions based on captured
+     * data rather than arbitrary technical conditions. Can reference data
+     * captured from previous API operations.
+     */
+    condition: IExpression;
+
+    /**
+     * Expression evaluated and returned when condition is true.
+     *
+     * Represents the primary or expected value for the business scenario. Can
+     * reference captured API data or computed values.
+     */
+    whenTrue: IExpression;
+
+    /**
+     * Expression evaluated and returned when condition is false.
+     *
+     * Represents the alternative or fallback value for the business scenario.
+     * Can reference captured API data or computed values.
+     */
+    whenFalse: IExpression;
+  }
+
+  /* -----------------------------------------------------------
+    FUNCTIONAL
+  ----------------------------------------------------------- */
+  /**
+   * Arrow function expression for callback definitions.
+   *
+   * Used primarily for callback functions required by certain utility functions
+   * or specialized operations. In E2E testing, commonly needed for array
+   * operations, error handling callbacks, or random data generation functions.
+   *
+   * **IMPORTANT**: Should NOT contain direct API function calls in the body. If
+   * API operations are needed within the function, use `IApiOperateStatement`
+   * within the function body.
+   *
+   * E2E testing scenarios:
+   *
+   * - Callback functions for IErrorPredicate (testing expected API errors)
+   * - Generator functions for IArrayRepeatExpression (creating test data arrays)
+   * - Filter/transform functions for captured data manipulation
+   * - Event handler functions for specialized testing scenarios
+   *
+   * AI function calling usage: Generate when utility operations require
+   * function parameters or when data transformation callbacks are needed within
+   * the test flow.
+   */
+  export interface IArrowFunction extends IExpressionBase<"arrowFunction"> {
+    /**
+     * The function body containing the function's logic.
+     *
+     * Contains the statements that comprise the function's implementation. In
+     * test contexts, typically contains simple operations like data
+     * transformation, validation, or utility calls.
+     *
+     * Can include IApiOperateStatement for API operations within the callback,
+     * though this should be used judiciously and only when the callback
+     * specifically requires API interactions.
+     *
+     * Should represent meaningful business logic rather than arbitrary
+     * computational operations.
+     */
+    body: IBlock;
+  }
+
+  /**
+   * Function call expression for non-API function invocations and utility
+   * calls.
+   *
+   * **IMPORTANT: For API function calls, use `IApiOperateStatement` instead.**
+   * This type should only be used for:
+   *
+   * - Validation functions (TestValidator.equals, TestValidator.error)
+   * - Utility functions (typia.assert, typia.is)
+   * - Helper functions and transformations
+   * - Built-in JavaScript functions
+   * - Non-API library function calls
+   *
+   * Essential for E2E testing for utility operations, but API calls should use
+   * the dedicated `IApiOperateStatement` for proper handling of business
+   * operations and response capturing.
+   *
+   * AI function calling importance: This represents utility and validation
+   * operations in test scenarios, but should NOT be used for SDK API calls
+   * which have their own dedicated statement type.
+   */
+  export interface ICallExpression extends IExpressionBase<"callExpression"> {
+    /**
+     * Expression representing the function to be called.
+     *
+     * **Should NOT represent API/SDK functions** - use `IApiOperateStatement`
+     * for those instead.
+     *
+     * Typically represents utility functions:
+     *
+     * - TestValidator.equals, TestValidator.error
+     * - Typia.assert, typia.is
+     * - Built-in functions (Array.from, Object.keys, etc.)
+     * - Helper/transformation functions
+     *
+     * Can also be a simple identifier for direct function references.
+     *
+     * AI requirement: Must NOT resolve to SDK API functions. Those should use
+     * the dedicated API function call statement type.
+     */
+    expression: IExpression;
+
+    /**
+     * Array of argument expressions passed to the function.
+     *
+     * Each argument must match the expected parameter type of the called
+     * function. Order and types must correspond exactly to the function
+     * signature defined in utility or validation documentation.
+     *
+     * Common patterns:
+     *
+     * - Validation parameters for TestValidator calls
+     * - Type assertion parameters for typia calls
+     * - Transformation parameters for utility functions
+     *
+     * AI validation: Ensure argument types and count match the target
+     * function's signature exactly, excluding API functions.
+     */
+    arguments: IExpression[];
+  }
+
+  /**
+   * New expression for object instantiation.
+   *
+   * Creates new instances of objects, primarily used for:
+   *
+   * - Error object creation for throw statements
+   * - Date object creation for timestamp values
+   * - Custom object instantiation when required by utility functions
+   *
+   * **Note**: Should NOT be used for API-related object creation. API
+   * operations that create business entities should use `IApiOperateStatement`
+   * instead.
+   *
+   * E2E testing context: Most commonly used for creating Error objects in throw
+   * statements or Date objects for time-sensitive test data. Also used for
+   * instantiating utility objects that don't involve API calls.
+   *
+   * AI function calling usage: Use when business logic requires explicit object
+   * instantiation rather than literal values, excluding API-related entity
+   * creation.
+   */
+  export interface INewExpression extends IExpressionBase<"newExpression"> {
+    /**
+     * Expression representing the constructor function.
+     *
+     * Typically an identifier for built-in constructors:
+     *
+     * - "Error" for error objects
+     * - "Date" for date objects
+     * - Custom class identifiers when needed for utility purposes
+     *
+     * Should NOT represent API-related constructors or entity builders.
+     */
+    expression: IExpression;
+
+    /**
+     * Arguments passed to the constructor.
+     *
+     * Must match the constructor's parameter signature. For Error objects:
+     * typically string message For Date objects: typically string or number
+     * timestamp For other constructors: appropriate parameter types
+     *
+     * Arguments should be derived from captured data, literals, or
+     * computations, not from direct API calls.
+     */
+    arguments: IExpression[];
   }
 
   /**
@@ -1648,248 +1901,6 @@ export namespace AutoBeTest {
   }
 
   /* -----------------------------------------------------------
-    LITERALS
-  ----------------------------------------------------------- */
-  /**
-   * Boolean literal for true/false values.
-   *
-   * Represents direct boolean values used in conditions, flags, and business
-   * rule specifications. Common in test scenarios for setting feature flags,
-   * validation states, and binary business decisions.
-   *
-   * E2E testing usage:
-   *
-   * - Feature flags (enabled: true/false)
-   * - Business state flags (active, verified, completed)
-   * - Validation parameters for API operations
-   * - Configuration options for test scenarios
-   *
-   * **Note**: Often used as arguments in `IApiOperateStatement` for boolean
-   * parameters, or in conditional expressions for business logic.
-   */
-  export interface IBooleanLiteral extends IExpressionBase<"booleanLiteral"> {
-    /**
-     * The boolean value (true or false).
-     *
-     * Should represent meaningful business states rather than arbitrary
-     * true/false values. Consider the business context when selecting the value
-     * based on the intended test scenario.
-     */
-    value: boolean;
-  }
-
-  /**
-   * Numeric literal for number values.
-   *
-   * Represents direct numeric values including integers, decimals, and
-   * floating-point numbers. Essential for business data like quantities,
-   * prices, scores, and identifiers used in test scenarios.
-   *
-   * E2E testing scenarios:
-   *
-   * - Product quantities and prices for API operation parameters
-   * - Score values and ratings in business validations
-   * - Pagination parameters (page, limit) for API calls
-   * - Business thresholds and limits for conditional logic
-   * - Mathematical calculations with captured data
-   *
-   * **Note**: Commonly used as arguments in `IApiOperateStatement` for numeric
-   * parameters, or in comparisons with captured API response data.
-   */
-  export interface INumericLiteral extends IExpressionBase<"numericLiteral"> {
-    /**
-     * The numeric value.
-     *
-     * Can be integer or floating-point number. Should represent realistic
-     * business values appropriate for the test scenario context (e.g.,
-     * reasonable prices, quantities, scores).
-     *
-     * AI consideration: Use business-appropriate values rather than arbitrary
-     * numbers (e.g., 10000 for price instead of 12345.67).
-     */
-    value: number;
-  }
-
-  /**
-   * String literal for text values.
-   *
-   * Represents direct string values including business names, descriptions,
-   * identifiers, and formatted data. One of the most commonly used literal
-   * types in E2E testing for realistic business data.
-   *
-   * E2E testing importance: Critical for providing realistic business data that
-   * reflects actual user input and system behavior, especially as parameters
-   * for API operations and in comparisons with captured response data.
-   */
-  export interface IStringLiteral extends IExpressionBase<"stringLiteral"> {
-    /**
-     * The string value.
-     *
-     * Should contain realistic business data appropriate for the context:
-     *
-     * - Names: "John Doe", "Acme Corporation"
-     * - Emails: "john@example.com"
-     * - Descriptions: "High-quality wireless headphones"
-     * - Codes: "PROMO2024", "SKU-12345"
-     * - Status values: "pending", "approved", "completed"
-     *
-     * **Usage context**: Commonly used as arguments in `IApiOperateStatement`
-     * for string parameters, in predicate validations for expected values, or
-     * in conditional expressions for business logic.
-     *
-     * AI content strategy: Use meaningful, realistic values that reflect actual
-     * business scenarios rather than placeholder text like "string" or "test".
-     */
-    value: string;
-  }
-
-  /**
-   * Array literal for creating array values directly.
-   *
-   * Represents direct array construction with explicit elements. Essential for
-   * providing list data in test scenarios such as multiple products, user
-   * lists, or configuration arrays, particularly as parameters for API
-   * operations.
-   *
-   * E2E testing scenarios:
-   *
-   * - Product lists for bulk API operations
-   * - Tag arrays for categorization in API requests
-   * - Multiple item selections for API parameters
-   * - Configuration option lists for test setup
-   * - Multiple entity references for relationship testing
-   *
-   * **Note**: Commonly used as arguments in `IApiOperateStatement` when API
-   * operations require array parameters, or for constructing test data to be
-   * used in business logic.
-   *
-   * AI function calling usage: Use when business scenarios require explicit
-   * list data rather than dynamic array generation from captured API
-   * responses.
-   */
-  export interface IArrayLiteral extends IExpressionBase<"arrayLiteral"> {
-    /**
-     * Array of expressions representing the array elements.
-     *
-     * Each element can be any valid expression (literals, identifiers
-     * referencing captured data, function calls, etc.). Elements should
-     * represent meaningful business data appropriate for the array's purpose.
-     *
-     * Examples:
-     *
-     * - [product1, product2, product3] for entity arrays (referencing captured
-     *   data)
-     * - ["electronics", "gadgets"] for category tags
-     * - [{ name: "file1.jpg" }, { name: "file2.jpg" }] for file lists
-     * - [seller.id, customer.id] for ID arrays (mixing captured data)
-     *
-     * AI content strategy: Populate with realistic business data that reflects
-     * actual usage patterns, mixing literals and references to captured data as
-     * appropriate.
-     */
-    elements: IExpression[];
-  }
-
-  /**
-   * Object literal for creating object values directly.
-   *
-   * Represents direct object construction with explicit properties. The primary
-   * mechanism for creating request bodies, configuration objects, and
-   * structured data in E2E test scenarios, particularly as parameters for API
-   * operations.
-   *
-   * E2E testing importance: Critical for API request bodies in
-   * `IApiOperateStatement` calls and configuration objects that drive business
-   * operations.
-   */
-  export interface IObjectLiteral extends IExpressionBase<"objectLiteral"> {
-    /**
-     * Array of property assignments defining the object structure.
-     *
-     * Each property represents a key-value pair in the object. Properties
-     * should correspond to actual DTO structure requirements and business data
-     * needs when used as API request bodies.
-     *
-     * **For API operations**: Must align with API schema requirements when used
-     * as arguments in `IApiOperateStatement`. Property names and value types
-     * should match expected DTO interfaces.
-     *
-     * **For test data**: Can mix literal values with references to captured
-     * data from previous API operations to create realistic business
-     * scenarios.
-     *
-     * Examples:
-     *
-     * - { name: "John Doe", email: "john@example.com" } for user creation
-     * - { productId: product.id, quantity: 2 } mixing captured data with literals
-     * - { status: "active", verified: true } for business state objects
-     *
-     * AI validation requirement: Ensure properties match the target schema
-     * definition exactly when used for API operations, including required
-     * fields and types.
-     */
-    properties: IPropertyAssignment[];
-  }
-
-  /**
-   * Null literal for explicit null values.
-   *
-   * Represents explicit null values used in business scenarios where absence of
-   * data is meaningful. Important for optional fields, cleared states, and
-   * explicit "no value" conditions in API operations and business logic.
-   *
-   * E2E testing scenarios:
-   *
-   * - Optional relationship fields in API request bodies
-   * - Cleared user preferences in business state
-   * - Explicit "no selection" states for optional parameters
-   * - Default null values for optional business data in API operations
-   *
-   * AI decision context: Use when business logic specifically requires null
-   * rather than undefined or omitted properties, particularly in API request
-   * bodies or when comparing with captured API response data.
-   */
-  export interface INullLiteral extends IExpressionBase<"nullLiteral"> {
-    /**
-     * Always null value.
-     *
-     * Type safety ensures this can only be null, providing clear intent for
-     * explicit null assignment in business scenarios.
-     */
-    value: null;
-  }
-
-  /**
-   * Undefined keyword for explicit undefined values.
-   *
-   * Represents explicit undefined values used when business logic requires
-   * undefined rather than null or omitted properties. Less commonly used than
-   * null in typical business scenarios, but necessary for certain API
-   * operations or business logic conditions.
-   *
-   * E2E testing usage:
-   *
-   * - Explicit undefined state representation in business logic
-   * - Clearing previously set values in test scenarios
-   * - API parameters that distinguish between null and undefined
-   * - Conditional expressions where undefined has specific meaning
-   *
-   * AI guidance: Prefer null over undefined unless specific business or API
-   * requirements dictate undefined usage, or when working with captured data
-   * that may contain undefined values.
-   */
-  export interface IUndefinedKeyword
-    extends IExpressionBase<"undefinedKeyword"> {
-    /**
-     * Always undefined value.
-     *
-     * Type safety ensures this can only be undefined, providing clear intent
-     * for explicit undefined assignment in business scenarios.
-     */
-    value: undefined;
-  }
-
-  /* -----------------------------------------------------------
     RANDOM
   ----------------------------------------------------------- */
   /**
@@ -1984,7 +1995,7 @@ export namespace AutoBeTest {
      * use case and available collection size, especially when the result will
      * be used in API operations.
      */
-    count: number;
+    length: IExpression;
   }
 
   /**

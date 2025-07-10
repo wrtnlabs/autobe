@@ -40,16 +40,13 @@ export namespace TestHistory {
     const content: string = await fs.promises.readFile(location, "utf8");
     const histories: AutoBeHistory[] = JSON.parse(content);
 
-    // TODO: Remove this after the history is fixed
     if (props.type === "test") {
       return typia.assert(
         histories.map((h) => {
           if (h.type === "test") {
             const files = h.files.filter((f) => f.scenario);
-            return {
-              ...h,
-              files,
-            };
+
+            return { ...h, files };
           }
           return h;
         }),

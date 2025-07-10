@@ -39,14 +39,14 @@ export const test_compiler_test_write_literal = async (): Promise<void> => {
       value: undefined,
     },
     {
-      type: "arrayLiteral",
+      type: "arrayLiteralExpression",
       elements: [1, 2, 3, 4].map((value) => ({
         type: "numericLiteral",
         value,
       })),
     },
     {
-      type: "objectLiteral",
+      type: "objectLiteralExpression",
       properties: [
         {
           type: "propertyAssignment",

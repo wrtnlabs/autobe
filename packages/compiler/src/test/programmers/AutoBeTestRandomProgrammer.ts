@@ -2,8 +2,8 @@ import { AutoBeTest } from "@autobe/interface";
 import ts from "typescript";
 import { ExpressionFactory } from "typia/lib/factories/ExpressionFactory";
 
-import { IAutoBeTestProgrammerContext } from "../IAutoBeTestProgrammerContext";
-import { writeTestExpression } from "../writeTestExpression";
+import { IAutoBeTestProgrammerContext } from "./IAutoBeTestProgrammerContext";
+import { writeTestExpression } from "./writeTestExpression";
 
 export namespace AutoBeTestRandomProgrammer {
   export const pickRandom = (
@@ -42,7 +42,7 @@ export namespace AutoBeTestRandomProgrammer {
       ),
       arguments: [
         writeTestExpression(ctx, expr.expression),
-        ts.factory.createNumericLiteral(expr.count),
+        writeTestExpression(ctx, expr.length),
       ],
     });
 

@@ -8,3 +8,4 @@ export * from "./IAutoBePrismaCompileProps";
 export * from "./IAutoBePrismaCompileResult";
 export * from "./IAutoBeTestCompiler";
 export * from "./IAutoBeTestWriteProps";
+export * from "./IAutoBeTestValidateProps";

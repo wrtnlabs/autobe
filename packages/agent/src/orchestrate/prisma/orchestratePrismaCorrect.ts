@@ -60,6 +60,9 @@ async function step<Model extends ILlmSchema.Model>(
     vendor: ctx.vendor,
     config: {
       ...(ctx.config ?? {}),
+      executor: {
+        describe: null,
+      },
     },
     histories: transformPrismaCorrectHistories(result),
     controllers: [

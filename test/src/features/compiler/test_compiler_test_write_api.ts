@@ -12,13 +12,13 @@ export async function test_compiler_test_write_api(): Promise<void> {
       path: "/bbs/articles",
     },
     argument: {
-      type: "objectLiteral",
+      type: "objectLiteralExpression",
       properties: [
         {
           type: "propertyAssignment",
           name: "body",
           value: {
-            type: "objectLiteral",
+            type: "objectLiteralExpression",
             properties: [],
           },
         },

@@ -1,8 +1,8 @@
 import { AutoBeTest } from "@autobe/interface";
 import ts from "typescript";
 
-import { IAutoBeTestProgrammerContext } from "../IAutoBeTestProgrammerContext";
-import { writeTestExpression } from "../writeTestExpression";
+import { IAutoBeTestProgrammerContext } from "./IAutoBeTestProgrammerContext";
+import { writeTestExpression } from "./writeTestExpression";
 
 export namespace AutoBeTestAccessorProgrammer {
   export const identifier = (

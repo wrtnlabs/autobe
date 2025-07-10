@@ -8,6 +8,7 @@ import typia from "typia";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { enforceToolCall } from "../../utils/enforceToolCall";
+import { forceRetry } from "../../utils/forceRetry";
 import { transformPrismaSchemaHistories } from "./transformPrismaSchemaHistories";
 
 export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
@@ -23,11 +24,13 @@ export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
   let i: number = 0;
   return await Promise.all(
     components.map(async (c) => {
-      const result: IMakePrismaSchemaFileProps = await process(ctx, {
-        filename: c.filename,
-        tables: c.tables,
-        entireTables,
-      });
+      const result: IMakePrismaSchemaFileProps = await forceRetry(() =>
+        process(ctx, {
+          filename: c.filename,
+          tables: c.tables,
+          entireTables,
+        }),
+      );
       const event: AutoBePrismaSchemasEvent = {
         type: "prismaSchemas",
         created_at: start.toISOString(),
@@ -58,6 +61,9 @@ async function process<Model extends ILlmSchema.Model>(
     vendor: ctx.vendor,
     config: {
       ...(ctx.config ?? {}),
+      executor: {
+        describe: null,
+      },
     },
     histories: transformPrismaSchemaHistories(ctx.state().analyze!, component),
     controllers: [

@@ -1,15 +1,21 @@
 import {
+  AutoBeOpenApi,
   IAutoBeTestCompiler,
+  IAutoBeTestValidateProps,
   IAutoBeTestWriteProps,
   IAutoBeTypeScriptCompileProps,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import { EmbedTypeScript } from "embed-typescript";
+import { HashMap, Pair } from "tstl";
 import ts from "typescript";
+import { IValidation } from "typia";
 import typiaTransform from "typia/lib/transform";
 
+import { AutoBeEndpointComparator } from "./interface/AutoBeEndpointComparator";
 import TestExternal from "./raw/test.json";
-import { writeTestFunction } from "./test/writeTestFunction";
+import { writeTestFunction } from "./test/programmers/writeTestFunction";
+import { validateTestFunction } from "./test/validators/validateTestFunction";
 
 export class AutoBeTestCompiler implements IAutoBeTestCompiler {
   public async compile(
@@ -46,6 +52,36 @@ export class AutoBeTestCompiler implements IAutoBeTestCompiler {
       }),
     });
     return compiler.compile(props.files);
+  }
+
+  public async validate(
+    props: IAutoBeTestValidateProps,
+  ): Promise<IValidation.IError[] | null> {
+    const errors: IValidation.IError[] = [];
+    const endpoints: HashMap<
+      AutoBeOpenApi.IEndpoint,
+      AutoBeOpenApi.IOperation
+    > = new HashMap(
+      props.document.operations.map(
+        (op) =>
+          new Pair(
+            {
+              method: op.method,
+              path: op.path,
+            },
+            op,
+          ),
+      ),
+      AutoBeEndpointComparator.hashCode,
+      AutoBeEndpointComparator.equals,
+    );
+    validateTestFunction({
+      function: props.function,
+      document: props.document,
+      endpoints: endpoints,
+      errors,
+    });
+    return errors.length !== 0 ? errors : null;
   }
 
   public async write(props: IAutoBeTestWriteProps): Promise<string> {

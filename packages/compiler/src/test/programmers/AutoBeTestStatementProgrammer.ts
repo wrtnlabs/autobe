@@ -2,10 +2,10 @@ import { AutoBeTest } from "@autobe/interface";
 import { NestiaMigrateSchemaProgrammer } from "@nestia/migrate/lib/programmers/NestiaMigrateSchemaProgrammer";
 import ts from "typescript";
 
-import { IAutoBeTestApiFunction } from "../IAutoBeTestApiFunction";
-import { IAutoBeTestProgrammerContext } from "../IAutoBeTestProgrammerContext";
-import { writeTestExpression } from "../writeTestExpression";
-import { writeTestStatement } from "../writeTestStatement";
+import { IAutoBeTestApiFunction } from "./IAutoBeTestApiFunction";
+import { IAutoBeTestProgrammerContext } from "./IAutoBeTestProgrammerContext";
+import { writeTestExpression } from "./writeTestExpression";
+import { writeTestStatement } from "./writeTestStatement";
 
 export namespace AutoBeTestStatementProgrammer {
   export const block = (
@@ -68,7 +68,7 @@ export namespace AutoBeTestStatementProgrammer {
     ctx: IAutoBeTestProgrammerContext,
     stmt: AutoBeTest.IReturnStatement,
   ): ts.ReturnStatement =>
-    ts.factory.createReturnStatement(writeTestExpression(ctx, stmt.value));
+    ts.factory.createReturnStatement(writeTestExpression(ctx, stmt.expression));
 
   export const throwStatement = (
     ctx: IAutoBeTestProgrammerContext,

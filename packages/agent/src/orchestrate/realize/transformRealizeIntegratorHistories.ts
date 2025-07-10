@@ -3,11 +3,11 @@ import { AutoBeOpenApi } from "@autobe/interface";
 import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
-import { RealizeCoderOutput } from "./orchestrateRealizeCoder";
+import { IAutoBeRealizeCoderApplication } from "./structures/IAutoBeRealizeCoderApplication";
 
 export const transformRealizeIntegratorHistories = (
   code: string,
-  props: RealizeCoderOutput,
+  props: IAutoBeRealizeCoderApplication.RealizeCoderOutput,
   operation: AutoBeOpenApi.IOperation,
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage

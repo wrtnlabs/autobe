@@ -1,42 +1,23 @@
-import { RetryOptions } from "./types/BackoffOptions";
-
-/**
- * @param fn Function to Apply the retry logic.
- * @param maxRetries How many time to try. Max Retry is 5.
- * @returns
- */
-export async function randomBackoffRetry<T>(
-  fn: () => Promise<T>,
-  options: Partial<RetryOptions> = {},
-): Promise<T> {
-  const {
-    maxRetries = 5,
-    baseDelay = 4_000,
-    maxDelay = 60_000,
-    jitter = 0.8,
-    handleError = isRetryError,
-  } = options;
-
-  let lastError: unknown;
-
-  for (let attempt = 0; attempt < maxRetries; attempt++) {
-    try {
-      return await fn();
-    } catch (err) {
-      lastError = err;
-
-      if (attempt === maxRetries - 1) throw err;
-
-      if (!handleError(err)) throw err;
-
-      const tempDelay = Math.min(baseDelay * 2 ** attempt, maxDelay);
-      const delay = tempDelay * (1 + Math.random() * jitter);
-
-      await new Promise((res) => setTimeout(res, delay));
-    }
+export function randomBackoffStrategy(props: {
+  count: number;
+  error: unknown;
+}): number {
+  const { count, error } = props;
+  if (count > 5) {
+    throw error;
   }
 
-  throw lastError;
+  if (isRetryError(error) === false) {
+    throw error;
+  }
+
+  const baseDelay = 4_000;
+  const maxDelay = 60_000;
+  const jitter = 0.8;
+  const tempDelay = Math.min(baseDelay * 2 ** count, maxDelay);
+  const delay = tempDelay * (1 + Math.random() * jitter);
+
+  return delay;
 }
 
 function isRetryError(error: any): boolean {
@@ -77,6 +58,14 @@ function isRetryError(error: any): boolean {
 
   // 5) fetch abort
   if (error?.message === "terminated" || error?.name === "AbortError") {
+    return true;
+  }
+
+  if (
+    (error?.message as string)?.startsWith(
+      `SyntaxError: Expected ',' or '}' after property value in JSON at position`,
+    )
+  ) {
     return true;
   }
 

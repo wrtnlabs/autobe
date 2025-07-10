@@ -8,7 +8,8 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { RealizeCoderOutput } from "./orchestrateRealizeCoder";
+import { FAILED } from "./orchestrateRealize";
+import { IAutoBeRealizeCoderApplication } from "./structures/IAutoBeRealizeCoderApplication";
 import { transformRealizeIntegratorHistories } from "./transformRealizeIntegratorHistories";
 
 /**
@@ -63,16 +64,16 @@ export interface RealizeIntegratorOutput {
  *   same controller file
  * @returns Integration status, indicating success or failure of insertion
  */
-
 export const orchestrateRealizeIntegrator = async <
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
-  props: RealizeCoderOutput,
+  props: IAutoBeRealizeCoderApplication.RealizeCoderOutput,
   operation: AutoBeOpenApi.IOperation,
   withLock: <T>(key: string, fn: () => Promise<T>) => Promise<T>,
-): Promise<AutoBeRealizeIntegratorEvent> => {
+): Promise<AutoBeRealizeIntegratorEvent | FAILED> => {
   const files = ctx.state().interface?.files ?? {};
+  files[`src/providers/${props.functionName}.ts`] = props.implementationCode;
 
   const controllers: [string, string][] = Object.entries(files).filter(
     ([filename]) => filename.endsWith("Controller.ts"),
@@ -89,7 +90,7 @@ export const orchestrateRealizeIntegrator = async <
     filename.endsWith(expected),
   );
 
-  if (controller === undefined) throw new Error("Controller not found.");
+  if (controller === undefined) return FAILED;
 
   const [filename] = controller;
 
@@ -131,10 +132,10 @@ export const orchestrateRealizeIntegrator = async <
       "Modify the code to integrate the function into the controller.",
     );
 
-    if (pointer.value === null) throw new Error("Failed to integrate code.");
+    if (pointer.value === null) return FAILED;
 
     const importCodes = [
-      `import { ${props.functionName} } from "src/providers/${props.functionName}.ts";`,
+      `import { ${props.functionName} } from "../../../providers/${props.functionName}";`,
     ];
 
     const targetEscaped = pointer.value.targetCode
