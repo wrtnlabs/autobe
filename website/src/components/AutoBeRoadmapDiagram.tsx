@@ -1,4 +1,3 @@
-import mermaidPlugin from "mdx-mermaid";
 import { compileMdx } from "nextra/compile";
 import { Mermaid } from "nextra/components";
 import { MDXRemote } from "nextra/mdx-remote";
