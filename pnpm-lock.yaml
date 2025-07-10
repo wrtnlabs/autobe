@@ -5,31 +5,11 @@ settings:
   excludeLinksFromLockfile: false
 
 catalogs:
-  agentica:
-    '@agentica/core':
-      specifier: ^0.30.2
-      version: 0.30.2
-  libs:
-    openai:
-      specifier: ^5.2.0
-      version: 5.2.0
   samchon:
-    '@samchon/openapi':
-      specifier: ^4.5.0
-      version: 4.5.0
     tstl:
       specifier: ^3.0.0
       version: 3.0.0
-    typia:
-      specifier: ^9.5.0
-      version: 9.5.0
   typescript:
-    ts-node:
-      specifier: ^10.9.2
-      version: 10.9.2
-    ts-patch:
-      specifier: ^3.3.0
-      version: 3.3.0
     typescript:
       specifier: ~5.8.3
       version: 5.8.3
@@ -110,7 +90,7 @@ importers:
         version: 4.5.0
       openai:
         specifier: catalog:libs
-        version: 5.2.0(zod@3.25.57)
+        version: 5.2.0(ws@8.18.3)(zod@3.25.57)
       tgrid:
         specifier: catalog:samchon
         version: 1.1.0
@@ -132,7 +112,7 @@ importers:
     dependencies:
       '@agentica/core':
         specifier: catalog:agentica
-        version: 0.30.2(@samchon/openapi@4.5.0)(openai@5.2.0(zod@3.25.57))(typia@9.5.0(typescript@5.8.3))
+        version: 0.30.2(@samchon/openapi@4.5.0)(openai@5.2.0(ws@8.18.3)(zod@3.25.57))(typia@9.5.0(typescript@5.8.3))
       '@autobe/interface':
         specifier: workspace:^
         version: link:../interface
@@ -147,7 +127,7 @@ importers:
         version: 4.5.0
       openai:
         specifier: catalog:libs
-        version: 5.2.0(zod@3.25.57)
+        version: 5.2.0(ws@8.18.3)(zod@3.25.57)
       tstl:
         specifier: catalog:samchon
         version: 3.0.0
@@ -294,7 +274,7 @@ importers:
         version: 4.5.0
       openai:
         specifier: catalog:libs
-        version: 5.2.0(zod@3.25.57)
+        version: 5.2.0(ws@8.18.3)(zod@3.25.57)
       tgrid:
         specifier: catalog:samchon
         version: 1.1.0
@@ -493,7 +473,7 @@ importers:
         version: 12.0.2
       openai:
         specifier: catalog:libs
-        version: 5.2.0(zod@3.25.57)
+        version: 5.2.0(ws@8.18.3)(zod@3.25.57)
       tstl:
         specifier: catalog:samchon
         version: 3.0.0
@@ -4835,6 +4815,18 @@ packages:
       utf-8-validate:
         optional: true
 
+  ws@8.18.3:
+    resolution: {integrity: sha512-PEIGCY5tSlUt50cqyMXfCzX+oOPqN0vuGqWzbcJ2xvnkzkq46oOpz7dQaTDBdfICb4N14+GARUDw2XV2N4tvzg==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: '>=5.0.2'
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
+
   xtend@4.0.2:
     resolution: {integrity: sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==}
     engines: {node: '>=0.4'}
@@ -4887,10 +4879,10 @@ packages:
 
 snapshots:
 
-  '@agentica/core@0.30.2(@samchon/openapi@4.5.0)(openai@5.2.0(zod@3.25.57))(typia@9.5.0(typescript@5.8.3))':
+  '@agentica/core@0.30.2(@samchon/openapi@4.5.0)(openai@5.2.0(ws@8.18.3)(zod@3.25.57))(typia@9.5.0(typescript@5.8.3))':
     dependencies:
       '@samchon/openapi': 4.5.0
-      openai: 5.2.0(zod@3.25.57)
+      openai: 5.2.0(ws@8.18.3)(zod@3.25.57)
       tstl: 3.0.0
       typia: 9.5.0(typescript@5.8.3)
       uuid: 11.1.0
@@ -8635,8 +8627,9 @@ snapshots:
       regex: 6.0.1
       regex-recursion: 6.0.2
 
-  openai@5.2.0(zod@3.25.57):
+  openai@5.2.0(ws@8.18.3)(zod@3.25.57):
     optionalDependencies:
+      ws: 8.18.3
       zod: 3.25.57
 
   ora@5.4.1:
@@ -9939,6 +9932,9 @@ snapshots:
   wrappy@1.0.2: {}
 
   ws@7.5.10: {}
+
+  ws@8.18.3:
+    optional: true
 
   xtend@4.0.2:
     optional: true
