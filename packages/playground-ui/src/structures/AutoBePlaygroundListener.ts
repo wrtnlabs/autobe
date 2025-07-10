@@ -90,9 +90,6 @@ export class AutoBePlaygroundListener {
       realizeProgress: async (event) => {
         this.callback?.(event);
       },
-      realizeController: async (event) => {
-        this.callback?.(event);
-      },
       realizeValidate: async (event) => {
         this.callback?.(event);
       },
