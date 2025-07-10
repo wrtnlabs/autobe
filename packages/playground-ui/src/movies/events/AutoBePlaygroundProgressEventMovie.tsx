@@ -7,7 +7,7 @@ import {
   AutoBeInterfaceOperationsEvent,
   AutoBePrismaComponentsEvent,
   AutoBePrismaSchemasEvent,
-  AutoBeRealizeIntegratorEvent,
+  AutoBeRealizeControllerEvent,
   AutoBeRealizeProgressEvent,
   AutoBeRealizeValidateEvent,
   AutoBeTestCorrectEvent,
@@ -41,7 +41,7 @@ export namespace AutoBePlaygroundProgressEventMovie {
       | AutoBeTestValidateEvent
       | AutoBeTestCorrectEvent
       | AutoBeRealizeProgressEvent
-      | AutoBeRealizeIntegratorEvent
+      | AutoBeRealizeControllerEvent
       | AutoBeRealizeValidateEvent;
   }
 }
@@ -78,7 +78,7 @@ function getDescription(
       return `Validating Realize Function: ${event.result.type}`;
     case "realizeProgress":
       return `Writing Main Controller: ${event.completed} of ${event.total}`;
-    case "realizeIntegrator":
+    case "realizeController":
       return `Integrating Function into Controller: ${event.result}`;
     case "analyzeWrite":
       return `Analyze user requirements and write documents`;

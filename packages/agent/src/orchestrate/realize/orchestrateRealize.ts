@@ -2,16 +2,13 @@ import {
   AutoBeAssistantMessageHistory,
   AutoBeOpenApi,
   AutoBeRealizeHistory,
-  AutoBeRealizeIntegratorEvent,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
-import { createKeyLock } from "../../utils/createKeyLock";
 import { orchestrateRealizeCoder } from "./orchestrateRealizeCoder";
-import { orchestrateRealizeIntegrator } from "./orchestrateRealizeIntegrator";
 import { orchestrateRealizePlanner } from "./orchestrateRealizePlanner";
 import { IAutoBeRealizeCoderApplication } from "./structures/IAutoBeRealizeCoderApplication";
 
@@ -26,7 +23,16 @@ export const orchestrateRealize =
       throw new Error();
     }
 
-    const lock = createKeyLock();
+    const files: Record<string, string> = {
+      ...ctx.state().interface?.files,
+      ...ctx.state().test?.files.reduce(
+        (acc, file) => {
+          acc[file.location] = file.content;
+          return acc;
+        },
+        {} as Record<string, string>,
+      ),
+    };
 
     const codes: IAutoBeRealizeCoderApplication.IPipeOutput[] =
       await Promise.all(
@@ -35,7 +41,7 @@ export const orchestrateRealize =
           result: await pipe(
             op,
             (op) => orchestrateRealizePlanner(ctx, op),
-            (p) => orchestrateRealizeCoder(ctx, op, p),
+            (p) => orchestrateRealizeCoder(ctx, op, p, files),
           ),
         })),
       );
@@ -62,19 +68,6 @@ export const orchestrateRealize =
         });
       }
     }
-
-    const integrated: (AutoBeRealizeIntegratorEvent | FAILED)[] =
-      await Promise.all(
-        successes.map(async ({ operation, result }) => {
-          return await orchestrateRealizeIntegrator(
-            ctx,
-            result,
-            operation,
-            lock,
-          );
-        }),
-      );
-    integrated;
 
     const now = new Date().toISOString();
     ctx.dispatch({

@@ -36,6 +36,7 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   operation: AutoBeOpenApi.IOperation,
   props: RealizePlannerOutput,
+  files: Record<string, string>,
 ): Promise<IAutoBeRealizeCoderApplication.RealizeCoderOutput | FAILED> => {
   const artifacts: IAutoBeTestScenarioArtifacts =
     await getTestScenarioArtifacts(ctx, {
@@ -98,6 +99,9 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
     "",
     pointer.value.implementationCode,
   ].join("\n");
+
+  files[`src/providers/${props.functionName}.ts`] =
+    pointer.value.implementationCode;
 
   return { ...pointer.value, functionName: props.functionName };
 };

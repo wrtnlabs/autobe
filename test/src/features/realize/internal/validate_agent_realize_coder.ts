@@ -45,6 +45,8 @@ export const validate_agent_realize_coder = async (
 
   const ops = ctx.state().interface?.document.operations ?? [];
 
+  const files = await agent.getFiles();
+
   // DO TEST GENERATION
   const go = async () =>
     await Promise.all(
@@ -52,7 +54,7 @@ export const validate_agent_realize_coder = async (
         pipe(
           op,
           (op) => orchestrateRealizePlanner(ctx, op),
-          (c) => orchestrateRealizeCoder(ctx, op, c),
+          (c) => orchestrateRealizeCoder(ctx, op, c, files),
         ),
       ),
     );

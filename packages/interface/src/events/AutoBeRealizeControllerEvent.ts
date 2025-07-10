@@ -1,7 +1,7 @@
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
-export interface AutoBeRealizeIntegratorEvent
-  extends AutoBeEventBase<"realizeIntegrator"> {
+export interface AutoBeRealizeControllerEvent
+  extends AutoBeEventBase<"realizeController"> {
   /**
    * The step number of the requirements analysis this implementation was
    * completed for.

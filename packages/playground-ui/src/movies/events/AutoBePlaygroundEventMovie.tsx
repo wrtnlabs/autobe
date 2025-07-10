@@ -37,7 +37,7 @@ export function AutoBePlaygroundEventMovie(
     case "interfaceComplement":
     case "testWrite":
     case "realizeProgress":
-    case "realizeIntegrator":
+    case "realizeController":
     case "testScenario":
     case "testCorrect":
     case "testValidate":

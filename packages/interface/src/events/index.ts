@@ -31,6 +31,6 @@ export * from "./AutoBeTestCompleteEvent";
 
 export * from "./AutoBeRealizeStartEvent";
 export * from "./AutoBeRealizeProgressEvent";
-export * from "./AutoBeRealizeIntegratorEvent";
+export * from "./AutoBeRealizeControllerEvent";
 export * from "./AutoBeRealizeValidateEvent";
 export * from "./AutoBeRealizeCompleteEvent";
