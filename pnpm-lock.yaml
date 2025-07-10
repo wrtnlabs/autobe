@@ -166,24 +166,15 @@ importers:
       '@prisma/internals':
         specifier: ^6.7.0
         version: 6.8.2(typescript@5.8.3)
-      '@rollup/plugin-json':
-        specifier: ^6.1.0
-        version: 6.1.0(rollup@4.41.0)
       '@samchon/openapi':
         specifier: catalog:samchon
         version: 4.5.0
       '@types/node':
         specifier: ^22.15.18
         version: 22.15.19
-      chalk:
-        specifier: 4.1.2
-        version: 4.1.2
       openai:
         specifier: catalog:libs
         version: 5.2.0(zod@3.25.57)
-      prettier:
-        specifier: ^3.5.3
-        version: 3.5.3
       tstl:
         specifier: catalog:samchon
         version: 3.0.0
@@ -200,6 +191,9 @@ importers:
       '@autobe/filesystem':
         specifier: workspace:^
         version: link:../../internals/filesystem
+      '@rollup/plugin-json':
+        specifier: ^6.1.0
+        version: 6.1.0(rollup@4.41.0)
       '@rollup/plugin-terser':
         specifier: ^0.4.4
         version: 0.4.4(rollup@4.41.0)

@@ -2,7 +2,6 @@ import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import { AutoBeOpenApi } from "@autobe/interface";
 import { AutoBeRealizeIntegratorEvent } from "@autobe/interface/src/events/AutoBeRealizeIntegratorEvent";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
-import prettier from "prettier";
 import { IPointer } from "tstl";
 import typia from "typia";
 
@@ -150,9 +149,8 @@ export const orchestrateRealizeIntegrator = async <
     });
 
     const regex = new RegExp(targetEscaped, "gm");
-    const resultCode = await prettier.format(
+    const resultCode = await ctx.compiler.typescript.beautify(
       currentCode.replace(regex, pointer.value.modifiedCode.trim()),
-      { parser: "typescript" },
     );
 
     // TODO: Apply Retry Logic when replace failed

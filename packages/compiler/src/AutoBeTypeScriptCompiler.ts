@@ -9,6 +9,7 @@ import ts from "typescript";
 import typiaTransform from "typia/lib/transform";
 
 import NestJSExternal from "./raw/nestjs.json";
+import { FilePrinter } from "./utils/FilePrinter";
 
 /**
  * Official TypeScript compiler for final code validation and quality assurance.
@@ -84,5 +85,9 @@ export class AutoBeTypeScriptCompiler implements IAutoBeTypeScriptCompiler {
 
   public async getExternal(location: string): Promise<string | undefined> {
     return (NestJSExternal as Record<string, string>)[location] ?? undefined;
+  }
+
+  public beautify(script: string): Promise<string> {
+    return FilePrinter.beautify(script);
   }
 }

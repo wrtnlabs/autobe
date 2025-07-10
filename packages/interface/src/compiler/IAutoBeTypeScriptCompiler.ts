@@ -72,4 +72,26 @@ export interface IAutoBeTypeScriptCompiler {
    *   the file does not exist or cannot be accessed
    */
   getExternal(location: string): Promise<string | undefined>;
+
+  /**
+   * Applies code formatting and beautification to TypeScript code using
+   * Prettier.
+   *
+   * This method formats the provided TypeScript code according to consistent
+   * styling rules and best practices, ensuring uniform code appearance across
+   * the entire codebase. The beautification process includes proper
+   * indentation, line breaks, spacing, and other formatting standards that
+   * enhance code readability and maintainability.
+   *
+   * This is particularly valuable in automated code generation scenarios where
+   * AI-generated code may lack consistent formatting. The beautification
+   * ensures that all generated code meets professional standards and integrates
+   * seamlessly with existing codebases that follow established formatting
+   * conventions.
+   *
+   * @param script The TypeScript code string to be formatted and beautified
+   * @returns Promise resolving to the formatted TypeScript code string with
+   *   consistent styling and improved readability
+   */
+  beautify(script: string): Promise<string>;
 }
