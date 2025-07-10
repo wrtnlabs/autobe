@@ -14,33 +14,9 @@ catalogs:
       specifier: ^5.2.0
       version: 5.2.0
   samchon:
-    '@nestia/core':
-      specifier: ^7.1.0
-      version: 7.1.0
-    '@nestia/e2e':
-      specifier: ^7.1.0
-      version: 7.1.0
-    '@nestia/fetcher':
-      specifier: ^7.1.0
-      version: 7.1.0
-    '@nestia/migrate':
-      specifier: ^7.1.0
-      version: 7.1.0
     '@samchon/openapi':
       specifier: ^4.5.0
       version: 4.5.0
-    embed-prisma:
-      specifier: ^1.1.0
-      version: 1.1.0
-    embed-typescript:
-      specifier: ^1.0.1
-      version: 1.0.1
-    prisma-markdown:
-      specifier: ^3.0.0
-      version: 3.0.1
-    tgrid:
-      specifier: ^1.1.0
-      version: 1.1.0
     tstl:
       specifier: ^3.0.0
       version: 3.0.0
@@ -169,9 +145,6 @@ importers:
       '@samchon/openapi':
         specifier: catalog:samchon
         version: 4.5.0
-      '@types/node':
-        specifier: ^22.15.18
-        version: 22.15.19
       openai:
         specifier: catalog:libs
         version: 5.2.0(zod@3.25.57)
@@ -211,7 +184,7 @@ importers:
         version: 4.41.0
       ts-node:
         specifier: catalog:typescript
-        version: 10.9.2(@types/node@22.15.19)(typescript@5.8.3)
+        version: 10.9.2(@types/node@22.15.21)(typescript@5.8.3)
       ts-patch:
         specifier: catalog:typescript
         version: 3.3.0

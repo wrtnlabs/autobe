@@ -12,7 +12,6 @@ import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
 import { orchestrateRealizeCoder } from "./orchestrateRealizeCoder";
 import { orchestrateRealizeIntegrator } from "./orchestrateRealizeIntegrator";
 import { orchestrateRealizePlanner } from "./orchestrateRealizePlanner";
-import { orchestrateRealizeValidator } from "./orchestrateRealizeValidator";
 import { IAutoBeRealizeCoderApplication } from "./structures/IAutoBeRealizeCoderApplication";
 
 export const orchestrateRealize =
@@ -107,14 +106,7 @@ export const orchestrateRealize =
           );
         }),
       );
-
-    const integratedSuccesses = integrated.filter((i) => i !== FAILED);
-
-    const validates = await orchestrateRealizeValidator(
-      ctx,
-      integratedSuccesses,
-    );
-    validates;
+    integrated;
 
     const now = new Date().toISOString();
     ctx.dispatch({
