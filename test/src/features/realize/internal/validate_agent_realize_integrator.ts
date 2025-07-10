@@ -1,4 +1,5 @@
 import { orchestrateRealizeIntegrator } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeIntegrator";
+import { createKeyLock } from "@autobe/agent/src/utils/createKeyLock";
 import { FileSystemIterator } from "@autobe/filesystem";
 import { AutoBeEvent, AutoBeOpenApi } from "@autobe/interface";
 import typia from "typia";
@@ -39,37 +40,7 @@ export const validate_agent_realize_integrator = async (
 
   const operations = interface_.document.operations;
 
-  const lockController = (() => {
-    const locks = new Map<string, Promise<any>>();
-
-    async function withLock<T>(key: string, fn: () => Promise<T>): Promise<T> {
-      const prev = locks.get(key) ?? Promise.resolve();
-
-      let release: () => void;
-      const current = new Promise<void>((res) => {
-        release = res;
-      });
-
-      locks.set(
-        key,
-        prev.then(() => current),
-      );
-
-      try {
-        await prev;
-        return await fn();
-      } finally {
-        release!();
-        if (locks.get(key) === current) {
-          locks.delete(key);
-        }
-      }
-    }
-
-    return {
-      withLock,
-    };
-  })();
+  const lock = createKeyLock();
 
   // DO TEST GENERATION
   const go = (operation: AutoBeOpenApi.IOperation) =>
@@ -154,7 +125,7 @@ async function patch_core_users({ filters, sort, page, pageSize, requester }) {
     `,
       },
       operation,
-      lockController.withLock,
+      lock,
     );
 
   const result = await Promise.all(

@@ -9,6 +9,7 @@ import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
+import { createKeyLock } from "../../utils/createKeyLock";
 import { orchestrateRealizeCoder } from "./orchestrateRealizeCoder";
 import { orchestrateRealizeIntegrator } from "./orchestrateRealizeIntegrator";
 import { orchestrateRealizePlanner } from "./orchestrateRealizePlanner";
@@ -25,40 +26,7 @@ export const orchestrateRealize =
       throw new Error();
     }
 
-    const lockController = (() => {
-      const locks = new Map<string, Promise<any>>();
-
-      async function withLock<T>(
-        key: string,
-        fn: () => Promise<T>,
-      ): Promise<T> {
-        const prev = locks.get(key) ?? Promise.resolve();
-
-        let release: () => void;
-        const current = new Promise<void>((res) => {
-          release = res;
-        });
-
-        locks.set(
-          key,
-          prev.then(() => current),
-        );
-
-        try {
-          await prev;
-          return await fn();
-        } finally {
-          release!();
-          if (locks.get(key) === current) {
-            locks.delete(key);
-          }
-        }
-      }
-
-      return {
-        withLock,
-      };
-    })();
+    const lock = createKeyLock();
 
     const codes: IAutoBeRealizeCoderApplication.IPipeOutput[] =
       await Promise.all(
@@ -102,7 +70,7 @@ export const orchestrateRealize =
             ctx,
             result,
             operation,
-            lockController.withLock,
+            lock,
           );
         }),
       );

@@ -7,27 +7,10 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { createKeyLock } from "../../utils/createKeyLock";
 import { FAILED } from "./orchestrateRealize";
 import { IAutoBeRealizeCoderApplication } from "./structures/IAutoBeRealizeCoderApplication";
 import { transformRealizeIntegratorHistories } from "./transformRealizeIntegratorHistories";
-
-/**
- * The result of integrating the generated code into the actual application
- * files (e.g., controller).
- */
-export interface RealizeIntegratorOutput {
-  /**
-   * Indicates the result of the integration process.
-   *
-   * - "success": The function was correctly inserted, imported, and passed
-   *   compilation.
-   * - "fail": The integration did not complete (e.g., target controller not
-   *   found, syntax error).
-   * - "exception": An unexpected error occurred (e.g., I/O failure, invalid
-   *   context state).
-   */
-  result: "success" | "fail" | "exception";
-}
 
 /**
  * Integrates the generated function into an appropriate controller file,
@@ -69,7 +52,7 @@ export const orchestrateRealizeIntegrator = async <
   ctx: AutoBeContext<Model>,
   props: IAutoBeRealizeCoderApplication.RealizeCoderOutput,
   operation: AutoBeOpenApi.IOperation,
-  lock: <T>(key: string, fn: () => Promise<T>) => Promise<T>,
+  lock: ReturnType<typeof createKeyLock>,
 ): Promise<AutoBeRealizeIntegratorEvent | FAILED> => {
   const files = ctx.state().interface?.files ?? {};
   files[`src/providers/${props.functionName}.ts`] = props.implementationCode;
@@ -93,7 +76,7 @@ export const orchestrateRealizeIntegrator = async <
 
   const [filename] = controller;
 
-  return lock(filename, async () => {
+  return lock.withLock(filename, async () => {
     let currentCode = files?.[filename];
     if (!currentCode) throw new Error(`Controller file ${filename} not found.`);
 
