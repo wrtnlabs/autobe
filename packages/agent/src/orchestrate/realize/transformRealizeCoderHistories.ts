@@ -89,9 +89,31 @@ export const transformRealizeCoderHistories = (
       id: v4(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
+      text: AutoBeSystemPromptConstant.REALIZE_CODER,
+    },
+    {
+      id: v4(),
+      created_at: new Date().toISOString(),
+      type: "systemMessage",
+      text: AutoBeSystemPromptConstant.REALIZE_CODER_TYPESCRIPT,
+    },
+    {
+      id: v4(),
+      created_at: new Date().toISOString(),
+      type: "systemMessage",
+      text: AutoBeSystemPromptConstant.REALIZE_CODER_NODE,
+    },
+    {
+      id: v4(),
+      created_at: new Date().toISOString(),
+      type: "systemMessage",
+      text: AutoBeSystemPromptConstant.REALIZE_CODER_TYPIA,
+    },
+    {
+      id: v4(),
+      created_at: new Date().toISOString(),
+      type: "systemMessage",
       text: [
-        AutoBeSystemPromptConstant.REALIZE_CODER,
-        "",
         "# Prisma Schemas",
         "```json",
         JSON.stringify(state.prisma.schemas),

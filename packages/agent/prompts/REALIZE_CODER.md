@@ -8,192 +8,174 @@ All code must be written as **provider logic**, and structured as a **single fun
 
 ## 📌 Function Structure
 
-The function must always take the following **two arguments** (headers 제거됨):
+The function must always take the following **three arguments**:
 
 ```ts
 export async function something(
-  parameters: Record<string, string>, // If you know exactly what DTO type is, make sure to import it and fill it out.
-  body: Record<string, any> // If you know exactly what DTO type is, make sure to import it and fill it out.
+  user: { id: string & tags.format<'uuid'>, type: string },
+  parameters: Record<string, string>,
+  body: Record<string, any>
 ) {
   ...
 }
 ```
 
-* Even for GET requests or when `parameters` or `body` are not required, the structure must remain the same.
-* In such cases, use the following empty types:
-  `_parameters: Record<string, never>`, `_body: Record<string, never>`
-
----
-
-## ❗ Strictly Prohibited
-
-1. Use of the `any` type
-2. Assuming that certain fields exist, such as:
-
-   * `body.user.id`, `parameters.id`, etc.
-3. Writing logic based on assumptions or inferences when required context (e.g., user/auth info) is missing
-
-→ In such cases, do **not write any code**. Instead, leave the function body empty and write **clear and sufficient comments** explaining why.
-
----
-
-### 🚫 Parameter Validation Not Required
-
-* The provider function does **not** need to perform any validation on incoming `parameters` or `body` values.
-* You can assume that **all DTO-defined values are present and valid**.
-* **Validation is not the provider's responsibility** — it is handled upstream.
-* Therefore, do **not** write any manual checks for missing or invalid fields in `parameters` or `body`.
-
-✅ Example
+This structure must be used even for GET requests or when `parameters` or `body` are unused.
+In such cases, define them as:
 
 ```ts
-// ❌ Do not write this
-if (!parameters.id) throw new Error("Missing parameter: id");
+_parameters: Record<string, never>
+_body: Record<string, never>
+```
 
-// ✅ Just use it directly
-const { id } = parameters;
+> ⚠️ Do not omit any of the three arguments. All functions must include user, parameters, and body, even if some of them are unused. This ensures consistent structure and prevents runtime or compilation errors due to missing parameters.
+
+---
+
+## 🚫 Strictly Prohibited
+
+1. Use of `any`
+2. Use of `as` for type assertions (except in narrowly allowed branding cases)
+3. Assuming field presence without declaration (e.g., `parameters.id`)
+4. Manual validation (all values are assumed to be valid and present)
+5. Unapproved imports (e.g., lodash)
+    - The type defined in `src/api/structures` can be imported and used indefinitely as an exception. prioritize the use of the type defined here over the type of Prisma.
+6. Using `MyGlobal.user`, `MyGlobal.requestUserId`, or similar – always use the provided `user` argument
+
+---
+
+## ✅ Approved and Required Practices
+
+### ✅ Structural Type Conformance Using `satisfies`
+
+Always use `satisfies` to ensure proper type structure:
+
+```ts
+const input = {
+  name: body.name,
+  description: body.description,
+  created_at: new Date(),
+} satisfies bbsCategory.CreateCategoryInput;
+
+await MyGlobal.prisma.categories.create({ data: input });
+```
+
+> ⚠️ **Tip:**
+Do **not** access Prisma types (e.g., `PrismaClientKnownRequestError`) via > `MyGlobal.prisma`.
+For **any** Prisma type, always reference it directly from the `Prisma` namespace, > for example:
+>
+> ```ts
+> Prisma.PrismaClientKnownRequestError
+> Prisma.SomeOtherType
+> ```
+>
+> These Prisma types are globally available and **do not require manual imports**.
+> Avoid accessing Prisma types through `MyGlobal` or `MyGlobal.prisma` as this is incorrect and will cause errors.
+
+### ✅ Default Fallback for Optional or Nullable Fields
+
+Use `?? null` to ensure compatibility with optional or nullable fields:
+
+```ts
+const input = {
+  name: body.name ?? null,
+  description: body.description ?? null,
+} satisfies bbsUserRoles.UpdateInput;
+```
+
+### ✅ Array Typing
+
+Avoid using `[]` without a type:
+
+```ts
+const users = [] satisfies IBbsUsers[];
+```
+
+Or declare concrete values with `satisfies`:
+
+```ts
+const users = [
+  {
+    id: "uuid",
+    name: "Alice",
+  },
+] satisfies IBbsUsers[];
 ```
 
 ---
 
-## ✅ Type Assertion Rules
+## 🧾 Fallback for Incomplete Context
 
-* You may use `as` for type assertions in safe and clear situations, such as:
-
-```ts
-const user = {
-  role: "admin",
-} as const;
-```
-
-* Prefer `satisfies` for object literals:
-
-```ts
-const result = {
-  status: 'ok',
-  count: 5,
-} satisfies { status: string; count: number };
-```
-
----
-
-## 🔧 Fallback Logic for Incomplete Context
-
-If it is **not possible to implement the actual logic**, use this fallback:
+If logic cannot be implemented due to missing schema/types, use the following fallback:
 
 ```ts
 /**
  * ⚠️ Placeholder Implementation
  *
  * The actual logic could not be implemented because:
- * - [List missing schema, tables, fields, or SDK elements]
- * - This information is required to properly implement the provider logic.
+ * - [List missing schema, tables, or DTOs]
  * 
  * Therefore, this function currently returns a random object matching the expected return type using `typia.random<T>()`.
  * 
- * Please revisit this function after the missing elements are available.
+ * Please revisit this function once the required elements are available.
  */
 return typia.random<ReturnType>();
 ```
 
 ---
 
-## 🧾 Parameter & Body Types
+## 🌐 Global Access Rules
 
-* You must **explicitly define types** for both `parameters` and `body`, either:
+* Always access the database via the injected global instance:
 
-  1. Importing from SDK/DTO
-  2. Matching the DTO shape exactly
+```ts
+MyGlobal.prisma.users.findFirst({
+  where: {
+    id: userId,
+  } satisfies Prisma.UsersWhereInput,
+});
+```
 
-* Do **not** use `any`, and avoid implicit typing.
+* Never use `MyGlobal.logs.create(...)` directly — always go through `MyGlobal.prisma`.
 
 ---
 
-## 🛠 SDK & DB Access
+## 🧩 Type Standard: Date
 
-Use the global instance as follows:
+* **❌ Do not use** native `Date` type in type definitions.
 
-```ts
-MyGlobal.prisma.users.findMany();
-```
+* **✅ Instead, always use**:
 
-✅ Allowed:
+  ```ts
+  string & tags.Format<'date-time'>
+  ```
 
-```ts
-MyGlobal.prisma.logs.create({ data: { ... } });
-```
+* This format ensures:
 
-❌ Not allowed:
+  * Compatibility with JSON serialization
+  * Interoperability with Swagger / OpenAPI
+  * Better alignment with Prisma's internal behavior
 
-```ts
-MyGlobal.logs.create({ data: { ... } });
-```
+* **Prisma Note**:
+  Most Prisma `DateTime` fields return ISO string values via `.toISOString()`.
+  Therefore, you should **convert all `Date` values to ISO strings before assignment**, and always treat them as:
 
-### 🔍 Additional Prisma Rule: Writing `where` Conditions
+  ```ts
+  string & tags.Format<'date-time'>
+  ```
 
-* Do not use `any` in `where` clauses.
-* Prefer inline construction or `satisfies` like this:
+* Example:
 
-```ts
-const condition = {
-  id: userId,
-} satisfies Prisma.UsersWhereInput;
+  ```ts
+  const createdAt: string & tags.Format<'date-time'> = new Date().toISOString();
+  ```
 
-await MyGlobal.prisma.users.findFirst({ where: condition });
-```
+## 🧠 Purpose
 
----
+Your job is to:
 
-## ❗ Error Handling Rules
-
-✅ Allowed:
-
-```ts
-throw new Error("User not found");
-```
-
-❌ Not allowed:
-
-```ts
-throw "User not found";
-throw new NotFoundException();
-```
-
----
-
-## 🚫 Import Rules
-
-* Only import SDK/DTO types
-
-✅ Allowed:
-
-```ts
-import { IPost } from "../api/structures/IPost";
-```
-
-❌ Not allowed:
-
-```ts
-import _ from "lodash";
-```
-
-* **The following imports are injected automatically and must not be added manually:**
-
-```ts
-import { MyGlobal } from "../MyGlobal";
-import typia, { tags } from "typia";
-import { Prisma } from "@prisma/client";
-```
-
----
-
-### 🧠 Purpose
-
-The purpose of the function is to:
-
-* Receive **inputs as-is from the controller**
-* Return **outputs matching the controller's return type**
-* Supplement **logic to satisfy the user’s requirements**
-
----
-
+* Receive `user`, `parameters`, and `body` from the controller
+* Resolve all TypeScript compilation errors precisely
+* Never bypass the type system using `as` (except for brand/literal use cases as outlined)
+* Maintain full compatibility with DTOs and Prisma input types
+* Ensure code is safe, clean, and production-quality

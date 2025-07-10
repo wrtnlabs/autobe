@@ -1,5 +1,5 @@
-import { writeCodeUntilCompilePassed } from "@autobe/agent/src/orchestrate/realize/orchestrateRealize";
 import { IAutoBeRealizeCoderApplication } from "@autobe/agent/src/orchestrate/realize/structures/IAutoBeRealizeCoderApplication";
+import { writeCodeUntilCompilePassed } from "@autobe/agent/src/orchestrate/realize/writeCodeUntilCompilePassed";
 import { FileSystemIterator } from "@autobe/filesystem";
 import { AutoBeEvent } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
@@ -43,8 +43,10 @@ export const validate_agent_realize_coder = async (
   // DO TEST GENERATION
   const go = async () => await writeCodeUntilCompilePassed(ctx, ops);
 
-  const result: IAutoBeRealizeCoderApplication.RealizeCoderOutput[] =
-    await go();
+  const result: Pick<
+    IAutoBeRealizeCoderApplication.RealizeCoderOutput,
+    "filename" | "implementationCode"
+  >[] = await go();
 
   const codes = result.reduce<Record<string, string>>((acc, cur) => {
     return Object.assign(acc, {

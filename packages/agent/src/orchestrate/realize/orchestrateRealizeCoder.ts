@@ -43,7 +43,13 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
   props: RealizePlannerOutput,
   previous: string | null,
   diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[],
-): Promise<IAutoBeRealizeCoderApplication.RealizeCoderOutput | FAILED> => {
+): Promise<
+  | Pick<
+      IAutoBeRealizeCoderApplication.RealizeCoderOutput,
+      "filename" | "implementationCode"
+    >
+  | FAILED
+> => {
   const artifacts: IAutoBeTestScenarioArtifacts = await compileTestScenario(
     ctx,
     {
@@ -65,7 +71,7 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
   const controller = createApplication({
     model: ctx.model,
     build: (props) => {
-      pointer.value = props.result;
+      pointer.value = props.output;
     },
   });
 
@@ -112,6 +118,8 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
   pointer.value.implementationCode = pointer.value.implementationCode
     .replaceAll('import { MyGlobal } from "../MyGlobal";', "")
     .replaceAll('import typia, { tags } from "typia";', "")
+    .replaceAll('import { tags } from "typia";', "")
+    .replaceAll('import typia from "typia";', "")
     .replaceAll('import { Prisma } from "@prisma/client";', "")
     .replaceAll('import { jwtDecode } from "./jwtDecode"', "");
 
@@ -145,7 +153,7 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
     name: "Write code",
     application,
     execute: {
-      programing: (next) => {
+      programming: (next) => {
         props.build(next);
       },
     } satisfies IAutoBeRealizeCoderApplication,

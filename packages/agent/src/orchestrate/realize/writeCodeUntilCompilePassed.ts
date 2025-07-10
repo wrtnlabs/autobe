@@ -19,7 +19,12 @@ export async function writeCodeUntilCompilePassed<
   ctx: AutoBeContext<Model>,
   ops: AutoBeOpenApi.IOperation[],
   retry: number = 3,
-): Promise<IAutoBeRealizeCoderApplication.RealizeCoderOutput[]> {
+): Promise<
+  Pick<
+    IAutoBeRealizeCoderApplication.RealizeCoderOutput,
+    "filename" | "implementationCode"
+  >[]
+> {
   const files = Object.entries(await ctx.files({ dbms: "postgres" }))
     .filter(([key]) => {
       return key.startsWith("src");
@@ -66,7 +71,10 @@ export async function writeCodeUntilCompilePassed<
       | {
           type: "success";
           op: AutoBeOpenApi.IOperation;
-          result: IAutoBeRealizeCoderApplication.RealizeCoderOutput;
+          result: Pick<
+            IAutoBeRealizeCoderApplication.RealizeCoderOutput,
+            "filename" | "implementationCode"
+          >;
         }
       | {
           type: "failed";
@@ -95,19 +103,11 @@ export async function writeCodeUntilCompilePassed<
             op,
             (op) => orchestrateRealizePlanner(ctx, op),
             (p) => {
-              const d = diagnostics.filter(
-                (el) => el.file === `src/providers/${p.functionName}.ts`,
-              );
+              const filename = `src/providers/${p.functionName}.ts` as const;
+              const d = diagnostics.filter((el) => el.file === filename);
+              const c = entireCodes[filename]?.content ?? null;
 
-              const c =
-                entireCodes[`src/providers/${p.functionName}.ts` as const];
-              return orchestrateRealizeCoder(
-                ctx,
-                op,
-                p,
-                typeof c === "string" ? c : null,
-                d,
-              );
+              return orchestrateRealizeCoder(ctx, op, p, c, d);
             },
           );
 

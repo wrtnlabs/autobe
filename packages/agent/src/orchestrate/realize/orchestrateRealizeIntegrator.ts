@@ -56,7 +56,10 @@ export const orchestrateRealizeIntegrator = async <
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
-  props: IAutoBeRealizeCoderApplication.RealizeCoderOutput,
+  props: Pick<
+    IAutoBeRealizeCoderApplication.RealizeCoderOutput,
+    "filename" | "implementationCode"
+  >,
 ): Promise<RealizeIntegratorOutput> => {
   props;
 
