@@ -60,8 +60,8 @@ export interface RealizeIntegratorOutput {
  * @param ctx - AutoBE context including current source files and settings
  * @param props - Output from the code generation step to be integrated
  * @param operation - The operation being integrated
- * @param withLock - Lock function to prevent concurrent modifications to the
- *   same controller file
+ * @param lock - Lock function to prevent concurrent modifications to the same
+ *   controller file
  * @returns Integration status, indicating success or failure of insertion
  */
 export const orchestrateRealizeIntegrator = async <
@@ -70,7 +70,7 @@ export const orchestrateRealizeIntegrator = async <
   ctx: AutoBeContext<Model>,
   props: IAutoBeRealizeCoderApplication.RealizeCoderOutput,
   operation: AutoBeOpenApi.IOperation,
-  withLock: <T>(key: string, fn: () => Promise<T>) => Promise<T>,
+  lock: <T>(key: string, fn: () => Promise<T>) => Promise<T>,
 ): Promise<AutoBeRealizeIntegratorEvent | FAILED> => {
   const files = ctx.state().interface?.files ?? {};
   files[`src/providers/${props.functionName}.ts`] = props.implementationCode;
@@ -94,7 +94,7 @@ export const orchestrateRealizeIntegrator = async <
 
   const [filename] = controller;
 
-  return withLock(filename, async () => {
+  return lock(filename, async () => {
     let currentCode = files?.[filename];
     if (!currentCode) throw new Error(`Controller file ${filename} not found.`);
 
