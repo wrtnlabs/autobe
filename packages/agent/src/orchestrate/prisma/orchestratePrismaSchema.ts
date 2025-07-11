@@ -83,11 +83,11 @@ async function process<Model extends ILlmSchema.Model>(
     ],
   });
   enforceToolCall(agentica);
+
   await agentica.conversate("Make prisma schema file please").finally(() => {
     const tokenUsage = agentica.getTokenUsage();
     ctx.usage().record(tokenUsage, ["prisma"]);
   });
-
   if (pointer.value === null)
     throw new Error("Unreachable code: Prisma Schema not generated");
   return pointer.value;

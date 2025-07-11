@@ -8,13 +8,14 @@ import {
 } from "@autobe/interface";
 import { AutoBePrismaComponentsEvent } from "@autobe/interface/src/events/AutoBePrismaComponentsEvent";
 import { AutoBePrismaSchemasEvent } from "@autobe/interface/src/events/AutoBePrismaSchemasEvent";
+import fs from "fs";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
 import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_prisma } from "./prepare_agent_prisma";
 
-export const validate_agent_prisma = async (
+export const validate_agent_prisma_main = async (
   factory: TestFactory,
   project: TestProject,
 ) => {
@@ -114,4 +115,10 @@ export const validate_agent_prisma = async (
       "logs/starts.json": JSON.stringify(starts, null, 2),
     },
   });
+  if (process.argv.includes("--archive"))
+    await fs.promises.writeFile(
+      `${TestGlobal.ROOT}/assets/histories/${project}.prisma.json`,
+      JSON.stringify(agent.getHistories(), null, 2),
+      "utf8",
+    );
 };
