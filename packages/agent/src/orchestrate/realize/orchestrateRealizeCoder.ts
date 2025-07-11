@@ -106,14 +106,17 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
     .replaceAll('import { MyGlobal } from "../MyGlobal";', "")
     .replaceAll('import typia, { tags } from "typia";', "")
     .replaceAll('import { tags } from "typia";', "")
+    .replaceAll('import { tags, typia } from "typia";', "")
     .replaceAll('import typia from "typia";', "")
     .replaceAll('import { Prisma } from "@prisma/client";', "")
-    .replaceAll('import { jwtDecode } from "./jwtDecode"', "");
+    .replaceAll('import { jwtDecode } from "./jwtDecode"', "")
+    .replaceAll('import { v4 } from "uuid"', "");
   pointer.value.implementationCode = [
     'import { MyGlobal } from "../MyGlobal";',
     'import typia, { tags } from "typia";',
     'import { Prisma } from "@prisma/client";',
-    'import { jwtDecode } from "./jwtDecode"',
+    'import { jwtDecode } from "./jwtDecode";',
+    'import { v4 } from "uuid";',
     "",
     pointer.value.implementationCode,
   ].join("\n");

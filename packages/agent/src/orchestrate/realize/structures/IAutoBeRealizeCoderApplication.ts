@@ -1,29 +1,35 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 
-import { FAILED } from "../orchestrateRealize";
+import { FAILED } from "./IAutoBeReailizeFailedSymbol";
 
 export interface IAutoBeRealizeCoderApplication {
   programming: (input: IAutoBeRealizeCoderApplication.IProps) => void;
 }
 
 export namespace IAutoBeRealizeCoderApplication {
+  /**
+   * Properties for the component or function that consumes the output of the
+   * code generation pipeline.
+   */
   export interface IProps {
+    /**
+     * The detailed output of the code generation process, containing all phases
+     * from planning to final implementation of a TypeScript provider function.
+     */
     output: RealizeCoderOutput;
   }
 
   /**
-   * Represents the complete output of a code generation pipeline. Each phase is
-   * a progressive refinement of a TypeScript function implementation.
+   * Represents the complete output of a code generation pipeline. Each field
+   * corresponds to a stage in the Chain of Thought (CoT) process for generating
+   * a production-quality TypeScript function.
    *
    * All fields contain TypeScript code strings and follow these rules:
    *
-   * - The implementation must be valid TypeScript code.
-   * - It should focus solely on the logic of the function.
-   * - Import statements do **not** need to be included. They will be
-   *   automatically inserted by the system.
-   * - Any unused imports will be automatically removed by eslint.
-   * - Type annotations (e.g. for parameters and return types) should be omitted
-   *   if they can be inferred.
+   * - All code must be valid TypeScript or structurally valid even if incomplete.
+   * - Each phase builds upon the previous one and must resolve specific concerns.
+   * - All phases must follow system conventions around structure, typing, and
+   *   logic.
    */
   export interface RealizeCoderOutput {
     /** The name of the file to be generated (e.g., "user.create.ts") */
@@ -60,6 +66,16 @@ export namespace IAutoBeRealizeCoderApplication {
      * - Use only allowed imports — DTOs and Prisma types
      * - Use `MyGlobal.prisma` for DB access and respect Prisma typing rules
      *
+     * ⚠️ TypeScript-specific considerations:
+     *
+     * - Do **not** use native `Date` objects directly; convert all dates with
+     *   `.toISOString()`
+     * - Use `string & tags.Format<'date-time'>` for all date/time typed fields
+     * - Prefer `satisfies` for DTO conformance instead of unsafe `as` casts
+     * - Avoid weak typing such as `any`, `as any`, or `satisfies any`
+     * - Use branded types (e.g., `tags.Format<'uuid'>`) and literal unions where
+     *   applicable
+     *
      * ✅ Example Structure:
      *
      * ```ts
@@ -77,10 +93,22 @@ export namespace IAutoBeRealizeCoderApplication {
      * }
      * ```
      *
-     * If required models, types, or fields are not available:
+     * 🔥 Error Handling Plan:
      *
-     * - Clearly explain missing parts in a placeholder comment
-     * - Return a mock result using `typia.random<T>()`
+     * If an error is expected or encountered during implementation:
+     *
+     * - Clearly document the error message(s) and TypeScript error codes.
+     * - Analyze the root cause (e.g., type mismatch, missing field, nullability
+     *   issue).
+     * - Define concrete steps to resolve the issue, such as:
+     *
+     *   - Adjusting type declarations or using Prisma-generated input types.
+     *   - Using `?? undefined` to normalize nullable fields.
+     *   - Applying correct relation handling (e.g., `connect` instead of direct
+     *       foreign key assignment).
+     *   - Ensuring `Date` fields use `.toISOString()` and branded types.
+     * - Include fallback or workaround plans if a direct fix is complex.
+     * - If no error is present, simply omit this section.
      *
      * This plan ensures the function will:
      *
@@ -90,38 +118,96 @@ export namespace IAutoBeRealizeCoderApplication {
     plan: string;
 
     /**
-     * Phase 1: Draft code
+     * ✏️ Phase 1: Draft code
      *
-     * A rough TypeScript draft that outlines the initial structure and logic of
-     * the function. This code focuses on the high-level flow, key steps, and
-     * placeholder values. It doesn't need to be complete or compilable at this
-     * stage.
+     * This is the initial drafting phase where you outline the basic skeleton
+     * of the function.
+     *
+     * - The function signature must correctly include `user`, `parameters`, and
+     *   `body` arguments.
+     * - Design the main flow of business logic, such as DB fetches and early
+     *   returns based on conditions.
+     * - Mark any incomplete or missing parts clearly with placeholders (e.g.,
+     *   comments or temporary values).
+     *
+     * ⚠️ Import rules:
+     *
+     * - Do NOT add any new import statements manually.
+     * - All necessary imports are provided globally or by the system
+     *   automatically.
+     * - Writing import statements directly is prohibited and may cause compile
+     *   errors. If import errors occur, check your environment configuration.
+     *
+     * ✅ Requirements:
+     *
+     * - Avoid using the `any` type at all costs to ensure type safety.
+     * - Do NOT assign native `Date` objects directly; always convert dates using
+     *   `.toISOString()` before assignment.
+     * - Maintain a single-function structure; avoid using classes.
      */
-    draft: string;
 
     /**
-     * Phase 2: Review code
+     * 🔍 Phase 2: Review code
      *
-     * A refined version of the draft code that includes more complete logic. It
-     * should be closer to a working implementation and ideally compile without
-     * errors.
+     * A refined version of the draft with improved completeness.
+     *
+     * - Replace placeholder logic with real DTO-conformant operations.
+     * - Add error handling (`throw new Error(...)`) where necessary.
+     * - Begin resolving structural or type mismatches.
+     *
+     * ✅ Requirements:
+     *
+     * - Use `satisfies` to ensure DTO conformity.
+     * - Avoid unsafe `as` casts unless only for branding or literal narrowing.
+     * - Include `.toISOString()` for all date fields.
+     * - Ensure all object keys strictly conform to the expected type definitions.
      */
     review: string;
 
     /**
-     * Phase 3: With compiler feedback (optional)
+     * 🛠 Phase 3: With compiler feedback (optional)
      *
-     * A modified version of the review code that addresses any TypeScript
-     * compiler errors. This field is **optional** and should only be present if
-     * compiler feedback was needed.
+     * A correction pass that applies fixes for compile-time errors that arose
+     * during the review stage (if any).
+     *
+     * ✅ Must:
+     *
+     * - Resolve all TypeScript errors without using `as any`
+     * - Provide safe brand casting only if required (e.g., `as string &
+     *   tags.Format<'uuid'>`)
      */
     withCompilerFeedback?: string;
 
     /**
-     * Phase 4: Final implementation
+     * ✅ Phase 4: Final implementation
      *
-     * The complete and correct TypeScript function implementation. This version
-     * must successfully compile and reflect all required logic and fixes.
+     * The complete and fully correct TypeScript function implementation.
+     *
+     * - Passes strict type checking without errors.
+     * - Uses only safe branding or literal type assertions.
+     * - Converts all Date values properly to ISO string format.
+     * - Follows DTO structures using `satisfies`.
+     * - Avoids any weak typing such as `any`, `as any`, or `satisfies any`.
+     * - Uses only allowed imports (e.g., from `src/api/structures` and
+     *   `MyGlobal.prisma`).
+     *
+     * ⚠️ Prohibited Practices:
+     *
+     * - Do NOT add or modify import statements manually. Imports are handled
+     *   automatically by the system.
+     * - Do NOT use `any`, `as any`, or `satisfies any` to bypass type checking.
+     * - Do NOT assign native `Date` objects directly; always convert them to ISO
+     *   strings with `.toISOString()`.
+     * - Do NOT use unsafe type assertions except for safe branding or literal
+     *   narrowing.
+     * - Do NOT write code outside the single async function structure (e.g., no
+     *   classes or multiple functions).
+     * - Do NOT perform any input validation — assume all inputs are already
+     *   validated.
+     * - Do NOT use dynamic import expressions (`import()`); all imports must be
+     *   static.
+     * - Do NOT rely on DTO types for database update input; always use
+     *   Prisma-generated input types.
      */
     implementationCode: string;
   }

@@ -107,6 +107,8 @@ export async function writeCodeUntilCompilePassed<
               const d = diagnostics.filter((el) => el.file === filename);
               const c = entireCodes[filename]?.content ?? null;
 
+              console.log(JSON.stringify({ d, c, filename }, null, 2));
+
               return orchestrateRealizeCoder(ctx, op, p, c, d);
             },
           );
@@ -126,6 +128,9 @@ export async function writeCodeUntilCompilePassed<
           };
         }),
     );
+    console.log();
+    console.log();
+    console.log();
 
     for (const c of generatedCodes) {
       if (c.type === "success") {
@@ -162,6 +167,7 @@ export async function writeCodeUntilCompilePassed<
       break;
     } else if (compiled.type === "failure") {
       diagnostics = compiled.diagnostics;
+      console.log(JSON.stringify(diagnostics, null, 2), i);
     }
   }
 
