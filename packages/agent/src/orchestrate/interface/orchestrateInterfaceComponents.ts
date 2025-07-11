@@ -11,6 +11,7 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { enforceToolCall } from "../../utils/enforceToolCall";
+import { forceRetry } from "../../utils/forceRetry";
 import { transformInterfaceHistories } from "./transformInterfaceHistories";
 
 export async function orchestrateInterfaceComponents<
@@ -76,11 +77,8 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
   for (let i: number = 0; i < retry; ++i) {
     if (remained.size === 0) break;
     const before: number = remained.size;
-    const newbie: AutoBeOpenApi.IComponents = await process(
-      ctx,
-      operations,
-      components,
-      remained,
+    const newbie: AutoBeOpenApi.IComponents = await forceRetry(() =>
+      process(ctx, operations, components, remained),
     );
     for (const key of Object.keys(newbie.schemas)) {
       components.schemas[key] = newbie.schemas[key];

@@ -14,6 +14,7 @@ import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptCo
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { enforceToolCall } from "../../utils/enforceToolCall";
+import { forceRetry } from "../../utils/forceRetry";
 import { transformInterfaceHistories } from "./transformInterfaceHistories";
 
 export function orchestrateInterfaceComplement<Model extends ILlmSchema.Model>(
@@ -21,7 +22,7 @@ export function orchestrateInterfaceComplement<Model extends ILlmSchema.Model>(
   document: AutoBeOpenApi.IDocument,
   life: number = 8,
 ): Promise<AutoBeOpenApi.IComponents> {
-  return step(ctx, document, life);
+  return forceRetry(() => step(ctx, document, life));
 }
 
 async function step<Model extends ILlmSchema.Model>(
