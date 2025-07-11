@@ -6,16 +6,16 @@ import {
   IAutoBeTypeScriptCompileProps,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
+import { AutoBeEndpointComparator, validateTestFunction } from "@autobe/utils";
 import { EmbedTypeScript } from "embed-typescript";
 import { HashMap, Pair } from "tstl";
 import ts from "typescript";
 import { IValidation } from "typia";
 import typiaTransform from "typia/lib/transform";
 
-import { AutoBeEndpointComparator } from "./interface/AutoBeEndpointComparator";
 import TestExternal from "./raw/test.json";
 import { writeTestFunction } from "./test/programmers/writeTestFunction";
-import { validateTestFunction } from "./test/validators/validateTestFunction";
+import { FilePrinter } from "./utils/FilePrinter";
 
 export class AutoBeTestCompiler implements IAutoBeTestCompiler {
   public async compile(
@@ -85,7 +85,8 @@ export class AutoBeTestCompiler implements IAutoBeTestCompiler {
   }
 
   public async write(props: IAutoBeTestWriteProps): Promise<string> {
-    return writeTestFunction(props);
+    const content: string = writeTestFunction(props);
+    return props.prettier === false ? content : FilePrinter.beautify(content);
   }
 
   public async getExternal(): Promise<Record<string, string>> {

@@ -22,7 +22,7 @@ export namespace AutoBeTestRandomProgrammer {
         "pick",
       ),
       undefined,
-      [writeTestExpression(ctx, expr.expression)],
+      [writeTestExpression(ctx, expr.array)],
     );
 
   export const sampleRandom = (
@@ -41,8 +41,8 @@ export namespace AutoBeTestRandomProgrammer {
         "sample",
       ),
       arguments: [
-        writeTestExpression(ctx, expr.expression),
-        writeTestExpression(ctx, expr.length),
+        writeTestExpression(ctx, expr.array),
+        writeTestExpression(ctx, expr.count),
       ],
     });
 
@@ -74,7 +74,7 @@ export namespace AutoBeTestRandomProgrammer {
         ),
       ]),
     ];
-    if (expr.minimum !== null)
+    if (expr.minimum !== null && expr.minimum !== undefined)
       intersection.push(
         createTypiaTag(ctx, "Minimum", [
           ts.factory.createLiteralTypeNode(
@@ -82,7 +82,7 @@ export namespace AutoBeTestRandomProgrammer {
           ),
         ]),
       );
-    if (expr.maximum !== null)
+    if (expr.maximum !== null && expr.maximum !== undefined)
       intersection.push(
         createTypiaTag(ctx, "Maximum", [
           ts.factory.createLiteralTypeNode(
@@ -90,7 +90,7 @@ export namespace AutoBeTestRandomProgrammer {
           ),
         ]),
       );
-    if (expr.multipleOf !== null)
+    if (expr.multipleOf !== null && expr.multipleOf !== undefined)
       intersection.push(
         createTypiaTag(ctx, "MultipleOf", [
           ts.factory.createLiteralTypeNode(
@@ -108,7 +108,7 @@ export namespace AutoBeTestRandomProgrammer {
     const intersection: ts.TypeNode[] = [
       ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
     ];
-    if (expr.minimum !== null)
+    if (expr.minimum !== null && expr.minimum !== undefined)
       intersection.push(
         createTypiaTag(ctx, "Minimum", [
           ts.factory.createLiteralTypeNode(
@@ -116,7 +116,7 @@ export namespace AutoBeTestRandomProgrammer {
           ),
         ]),
       );
-    if (expr.maximum !== null)
+    if (expr.maximum !== null && expr.maximum !== undefined)
       intersection.push(
         createTypiaTag(ctx, "Maximum", [
           ts.factory.createLiteralTypeNode(
@@ -124,7 +124,7 @@ export namespace AutoBeTestRandomProgrammer {
           ),
         ]),
       );
-    if (expr.multipleOf !== null)
+    if (expr.multipleOf !== null && expr.multipleOf !== undefined)
       intersection.push(
         createTypiaTag(ctx, "MultipleOf", [
           ts.factory.createLiteralTypeNode(
@@ -142,7 +142,7 @@ export namespace AutoBeTestRandomProgrammer {
     const intersection: ts.TypeNode[] = [
       ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
     ];
-    if (expr.minLength !== null)
+    if (expr.minLength !== null && expr.minLength !== undefined)
       intersection.push(
         createTypiaTag(ctx, "MinLength", [
           ts.factory.createLiteralTypeNode(
@@ -150,7 +150,7 @@ export namespace AutoBeTestRandomProgrammer {
           ),
         ]),
       );
-    if (expr.maxLength !== null)
+    if (expr.maxLength !== null && expr.maxLength !== undefined)
       intersection.push(
         createTypiaTag(ctx, "MaxLength", [
           ts.factory.createLiteralTypeNode(

@@ -33,6 +33,9 @@ export async function orchestratePrismaComponents<
     vendor: ctx.vendor,
     config: {
       ...(ctx.config ?? {}),
+      executor: {
+        describe: null,
+      },
     },
     histories: transformPrismaComponentsHistories(ctx.state(), prefix),
     controllers: [
@@ -108,7 +111,6 @@ const collection = {
   llama: claude,
   deepseek: claude,
   "3.1": claude,
-  "3.0": typia.llm.application<IApplication, "3.0">(),
 };
 
 interface IApplication {
@@ -157,7 +159,7 @@ interface IExtractComponentsProps {
    * {
    *   {
    *     filename: "schema-01-users.prisma",
-   *     tables: ["user", "user_profile", "user_settings"]
+   *     tables: ["user", "admin", "moderator", "user_profile", "user_settings"]
    *   },
    *   {
    *     filename: "schema-02-articles.prisma",

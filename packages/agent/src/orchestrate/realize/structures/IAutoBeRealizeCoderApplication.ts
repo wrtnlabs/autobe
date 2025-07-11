@@ -1,3 +1,7 @@
+import { AutoBeOpenApi } from "@autobe/interface";
+
+import { FAILED } from "../orchestrateRealize";
+
 export interface IAutoBeRealizeCoderApplication {
   programming: (input: IAutoBeRealizeCoderApplication.IProps) => void;
 }
@@ -120,5 +124,11 @@ export namespace IAutoBeRealizeCoderApplication {
      * must successfully compile and reflect all required logic and fixes.
      */
     implementationCode: string;
+  }
+
+  export interface IPipeOutput {
+    result: RealizeCoderOutput | FAILED;
+
+    operation: AutoBeOpenApi.IOperation;
   }
 }

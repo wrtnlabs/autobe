@@ -1,6 +1,6 @@
 import { AutoBeTestCompiler } from "@autobe/compiler";
-import { StringUtil } from "@autobe/compiler/src/utils/StringUtil";
 import { IAutoBeTypeScriptCompileResult } from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
 import { TestValidator } from "@nestia/e2e";
 
 export const test_compiler_test_compile = async (): Promise<void> => {

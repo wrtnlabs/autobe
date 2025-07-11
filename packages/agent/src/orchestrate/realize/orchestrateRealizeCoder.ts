@@ -4,15 +4,13 @@ import {
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
-import sortImport from "@trivago/prettier-plugin-sort-imports";
-import { format } from "prettier";
 import { IPointer } from "tstl";
 import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { enforceToolCall } from "../../utils/enforceToolCall";
-import { compileTestScenario } from "../test/compile/compileTestScenario";
+import { getTestScenarioArtifacts } from "../test/compile/getTestScenarioArtifacts";
 import { IAutoBeTestScenarioArtifacts } from "../test/structures/IAutoBeTestScenarioArtifacts";
 import { RealizePlannerOutput } from "./orchestrateRealizePlanner";
 import { FAILED } from "./structures/IAutoBeReailizeFailedSymbol";
@@ -50,16 +48,14 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
     >
   | FAILED
 > => {
-  const artifacts: IAutoBeTestScenarioArtifacts = await compileTestScenario(
-    ctx,
-    {
+  const artifacts: IAutoBeTestScenarioArtifacts =
+    await getTestScenarioArtifacts(ctx, {
       endpoint: {
         method: operation.method,
         path: operation.path,
       },
       dependencies: [],
-    },
-  );
+    });
 
   const pointer: IPointer<Pick<
     IAutoBeRealizeCoderApplication.RealizeCoderOutput,
@@ -103,18 +99,9 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
     return FAILED;
   }
 
-  pointer.value.implementationCode = await format(
+  pointer.value.implementationCode = await ctx.compiler.typescript.beautify(
     pointer.value.implementationCode,
-    {
-      parser: "typescript",
-      plugins: [sortImport, await import("prettier-plugin-jsdoc")],
-      importOrder: ["<THIRD_PARTY_MODULES>", "^[./]"],
-      importOrderSeparation: true,
-      importOrderSortSpecifiers: true,
-      importOrderParserPlugins: ["decorators-legacy", "typescript", "jsx"],
-    },
   );
-
   pointer.value.implementationCode = pointer.value.implementationCode
     .replaceAll('import { MyGlobal } from "../MyGlobal";', "")
     .replaceAll('import typia, { tags } from "typia";', "")
@@ -122,7 +109,6 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
     .replaceAll('import typia from "typia";', "")
     .replaceAll('import { Prisma } from "@prisma/client";', "")
     .replaceAll('import { jwtDecode } from "./jwtDecode"', "");
-
   pointer.value.implementationCode = [
     'import { MyGlobal } from "../MyGlobal";',
     'import typia, { tags } from "typia";',

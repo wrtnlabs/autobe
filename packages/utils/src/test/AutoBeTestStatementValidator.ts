@@ -39,7 +39,7 @@ export namespace AutoBeTestStatementValidator {
   ): void => {
     validateTestExpression(ctx, item.condition, `${path}.condition`);
     block(ctx, item.thenStatement, `${path}.thenStatement`);
-    if (item.elseStatement !== null)
+    if (!!item.elseStatement)
       if (item.elseStatement.type === "block")
         block(ctx, item.elseStatement, `${path}.elseStatement`);
       else
@@ -62,11 +62,11 @@ export namespace AutoBeTestStatementValidator {
     validateTestExpression(ctx, item.expression, `${path}.expression`);
   };
 
-  export const variableDeclaration = (
-    ctx: IAutoBeTextValidateContext,
-    item: AutoBeTest.IVariableDeclaration,
-    path: string,
-  ): void => {
-    validateTestExpression(ctx, item.initializer, `${path}.initializer`);
-  };
+  // export const variableDeclaration = (
+  //   ctx: IAutoBeTextValidateContext,
+  //   item: AutoBeTest.IVariableDeclaration,
+  //   path: string,
+  // ): void => {
+  //   validateTestExpression(ctx, item.initializer, `${path}.initializer`);
+  // };
 }

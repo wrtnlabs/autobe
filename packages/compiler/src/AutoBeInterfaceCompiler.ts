@@ -1,18 +1,12 @@
 import { AutoBeOpenApi, IAutoBeInterfaceCompiler } from "@autobe/interface";
+import { invertOpenApiDocument } from "@autobe/utils";
 import { NestiaMigrateApplication } from "@nestia/migrate";
-import {
-  HttpMigration,
-  IHttpMigrateApplication,
-  OpenApi,
-  OpenApiTypeChecker,
-} from "@samchon/openapi";
-import sortImport from "@trivago/prettier-plugin-sort-imports";
-import import2 from "import2";
-import { format } from "prettier";
+import { OpenApi } from "@samchon/openapi";
 
 import { transformOpenApiDocument } from "./interface/transformOpenApi";
 import { AutoBeCompilerTemplate } from "./raw/AutoBeCompilerTemplate";
 import { ArrayUtil } from "./utils/ArrayUtil";
+import { FilePrinter } from "./utils/FilePrinter";
 
 /**
  * Custom Interface compiler that handles API specification and NestJS
@@ -61,7 +55,7 @@ export class AutoBeInterfaceCompiler implements IAutoBeInterfaceCompiler {
           async ([key, value]) => [
             key,
             key.endsWith(".ts") && key.endsWith(".d.ts") === false
-              ? await beautify(value)
+              ? await FilePrinter.beautify(value)
               : value,
           ],
         ),
@@ -80,79 +74,6 @@ export class AutoBeInterfaceCompiler implements IAutoBeInterfaceCompiler {
   public async invert(
     document: OpenApi.IDocument,
   ): Promise<AutoBeOpenApi.IDocument> {
-    return invertDocument(document);
+    return invertOpenApiDocument(document);
   }
-}
-
-async function beautify(script: string) {
-  try {
-    return await format(script, {
-      parser: "typescript",
-      plugins: [sortImport, await import2("prettier-plugin-jsdoc")],
-      importOrder: ["<THIRD_PARTY_MODULES>", "^[./]"],
-      importOrderSeparation: true,
-      importOrderSortSpecifiers: true,
-      importOrderParserPlugins: ["decorators-legacy", "typescript", "jsx"],
-    });
-  } catch {
-    return script;
-  }
-}
-
-function invertDocument(document: OpenApi.IDocument): AutoBeOpenApi.IDocument {
-  const app: IHttpMigrateApplication = HttpMigration.application(document);
-  return {
-    operations: app.routes
-      .filter((r) => r.query === null)
-      .map(
-        (r) =>
-          ({
-            specification: empty("specification"),
-            method: r.method as "post",
-            path: r.path,
-            summary: r.operation().summary ?? empty("summary"),
-            description: r.operation().description ?? empty("description"),
-            parameters: r.parameters.map(
-              (p) =>
-                ({
-                  name: p.name,
-                  description:
-                    p.parameter().description ?? empty("description"),
-                  schema: p.schema as any,
-                }) satisfies AutoBeOpenApi.IParameter,
-            ),
-            requestBody:
-              r.body?.type === "application/json" &&
-              OpenApiTypeChecker.isReference(r.body.schema)
-                ? {
-                    description: r.body.description() ?? empty("description"),
-                    typeName: r.body.schema.$ref.split("/").pop()!,
-                  }
-                : null,
-            responseBody:
-              r.success?.type === "application/json" &&
-              OpenApiTypeChecker.isReference(r.success.schema)
-                ? {
-                    description:
-                      r.success.description() ?? empty("description"),
-                    typeName: r.success.schema.$ref.split("/").pop()!,
-                  }
-                : null,
-            authorization: {
-              role: [],
-              type: "Bearer",
-            },
-          }) satisfies AutoBeOpenApi.IOperation,
-      ),
-    components: {
-      schemas: (document.components?.schemas ?? {}) as Record<
-        string,
-        AutoBeOpenApi.IJsonSchemaDescriptive
-      >,
-    },
-  };
-}
-
-function empty(key: string): string {
-  return `Describe ${key} as much as possible with clear and concise words.`;
 }

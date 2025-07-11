@@ -34,16 +34,17 @@ export async function test_compiler_test_write_api(): Promise<void> {
       draft: "",
       statements: [stmt],
     },
+    prettier: false,
   });
 
   TestValidator.predicate("import")(() =>
     result.includes(
-      `import { IPageIBbsArticle } from "@ORGANIZATION/IPageIBbsArticle-api/lib/structures/IPageIBbsArticle"`,
+      `import { IPageIBbsArticle } from "@ORGANIZATION/PROJECT-api/lib/structures/IPageIBbsArticle"`,
     ),
   );
   TestValidator.predicate("call")(() =>
     result.includes(
-      `const page: IPageIBbsArticle.ISummary = await api.bbs.articles.patch(connection, {`,
+      `const page: IPageIBbsArticle.ISummary = await api.functional.bbs.articles.patch(connection, {`,
     ),
   );
   TestValidator.predicate("assert")(() =>

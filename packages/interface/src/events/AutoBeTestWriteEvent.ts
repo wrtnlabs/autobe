@@ -1,4 +1,3 @@
-import { AutoBeTestFile } from "../histories/contents/AutoBeTestFile";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
 /**
@@ -20,20 +19,56 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
  */
 export interface AutoBeTestWriteEvent extends AutoBeEventBase<"testWrite"> {
   /**
-   * Complete test file information including location, content, and scenario
-   * metadata.
+   * File system path where the test file should be located.
    *
-   * Contains all the details about the test file that was just written and
-   * completed, including its file system location, the complete TypeScript
-   * source code content, and comprehensive scenario metadata describing what
-   * this test covers. This unified structure provides rich context about the
-   * test's purpose, target API endpoints, and expected behavior patterns.
+   * Specifies the relative or absolute path for the test file within the
+   * project structure. This location typically follows testing conventions and
+   * may be organized by API endpoints, feature modules, or business domains to
+   * ensure logical test suite organization and easy navigation.
    *
-   * The file information enables better understanding of the test suite
-   * development progress and helps stakeholders monitor how comprehensive
-   * validation coverage is being built for the generated application.
+   * Example: "test/features/api/order/test_api_shopping_order_publish.ts"
    */
-  file: AutoBeTestFile;
+  location: string;
+
+  /**
+   * Test scenario description and implementation strategy.
+   *
+   * Detailed explanation of the business scenario to be tested, including
+   * step-by-step execution plan and test methodology.
+   */
+  scenario: string;
+
+  /**
+   * Functional domain category for test organization.
+   *
+   * Primary API resource domain (e.g., "user", "article", "payment") used for
+   * file structure and logical test grouping.
+   */
+  domain: string;
+
+  /**
+   * Initial test code implementation.
+   *
+   * First working version of the TypeScript E2E test function, implementing the
+   * complete business scenario with proper types and SDK usage.
+   */
+  draft: string;
+
+  /**
+   * Code review feedback and improvement suggestions.
+   *
+   * Quality assessment results identifying issues, best practice violations,
+   * and specific recommendations for code refinement.
+   */
+  review: string;
+
+  /**
+   * Final production-ready test code.
+   *
+   * Polished implementation incorporating all review feedback, ready for
+   * deployment in the actual test suite.
+   */
+  final: string;
 
   /**
    * Number of test files that have been written and completed so far.

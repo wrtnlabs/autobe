@@ -45,6 +45,7 @@ export namespace TestHistory {
         histories.map((h) => {
           if (h.type === "test") {
             const files = h.files.filter((f) => f.scenario);
+
             return { ...h, files };
           }
           return h;

@@ -1,3 +1,6 @@
+import sortImport from "@trivago/prettier-plugin-sort-imports";
+import import2 from "import2";
+import { format } from "prettier";
 import ts from "typescript";
 
 export namespace FilePrinter {
@@ -34,5 +37,20 @@ export namespace FilePrinter {
         ),
       );
     return (props.top ?? "") + script;
+  };
+
+  export const beautify = async (script: string): Promise<string> => {
+    try {
+      return await format(script, {
+        parser: "typescript",
+        plugins: [sortImport, await import2("prettier-plugin-jsdoc")],
+        importOrder: ["<THIRD_PARTY_MODULES>", "^[./]"],
+        importOrderSeparation: true,
+        importOrderSortSpecifiers: true,
+        importOrderParserPlugins: ["decorators-legacy", "typescript", "jsx"],
+      });
+    } catch {
+      return script;
+    }
   };
 }

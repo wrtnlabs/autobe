@@ -1,6 +1,7 @@
+import { StringUtil } from "@autobe/utils";
+
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../context/AutoBeState";
-import { StringUtil } from "../../utils/StringUtil";
 
 export function transformFacadeStateMessage(state: AutoBeState): string {
   const currentState: ICurrentState = getCurrentState(state);

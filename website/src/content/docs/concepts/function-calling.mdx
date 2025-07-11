@@ -8,30 +8,7 @@ import RemoteSource from "../../../components/RemoteSource";
 
 ## AI Function Calling
 
-<Tabs items={[
-  <code>IAutoBePrismaValidation</code>,
-  <code>AutoBePrisma.IApplication</code>,
-  <code>AutoBeOpenApi.IDocument</code>,
-]}>
-  <Tabs.Tab>
-    <LocalSource 
-      path="packages/interface/src/prisma/IAutoBePrismaValidation.ts" 
-      filename="@autobe/interface" 
-      showLineNumbers />
-  </Tabs.Tab>
-  <Tabs.Tab>
-    <LocalSource 
-      path="packages/interface/src/prisma/AutoBePrisma.ts" 
-      filename="@autobe/interface" 
-      showLineNumbers />
-  </Tabs.Tab>
-  <Tabs.Tab>
-    <LocalSource 
-      path="packages/interface/src/openapi/AutoBeOpenApi.ts" 
-      filename="@autobe/interface" 
-      showLineNumbers />
-  </Tabs.Tab>
-</Tabs>
+![AI Function Calling](/images/ai-function-calling.webp)
 
 `@autobe` fundamentally prefers AI function calling to generate AST (Abstract Syntax Tree) data over having AI write raw programming code as text. The system validates the AST data generated through AI function calling, provides feedback to the AI for correction when errors are detected, and finally converts the validated AST data into actual programming code.
 
@@ -46,7 +23,8 @@ This approach creates a comprehensive development story that ensures both type s
 <Tabs items={[
   "Schema Generation",
   <code>AutoBePrisma.IApplication</code>,
-  <code>AutoBeOpenApi.IDocument</code>
+  <code>AutoBeOpenApi.IDocument</code>,
+  <code>AutoBeTest.IFunction</code>,
 ]}>
   <Tabs.Tab>
 ```typescript
@@ -71,6 +49,8 @@ interface ICodeGenerator {
    * Generate OpenAPI document for RESTful API design.
    */
   generateOpenApiDocument(app: AutoBeOpenApi.IDocument): void;
+
+  generateTestFunction(func: AutoBeTest.IFunction): void;
 }
 ```
   </Tabs.Tab>
@@ -83,6 +63,12 @@ interface ICodeGenerator {
   <Tabs.Tab>
      <LocalSource
         path="packages/interface/src/openapi/AutoBeOpenApi.ts"
+        filename="@autobe/interface"
+        showLineNumbers />
+  </Tabs.Tab>
+  <Tabs.Tab>
+     <LocalSource
+        path="packages/interface/src/test/AutoBeTest.ts"
         filename="@autobe/interface"
         showLineNumbers />
   </Tabs.Tab>

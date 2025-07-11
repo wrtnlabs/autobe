@@ -1,0 +1,316 @@
+import {
+  AgenticaSystemPrompt,
+  IAgenticaController,
+  MicroAgentica,
+} from "@agentica/core";
+import {
+  AutoBeOpenApi,
+  AutoBeTest,
+  AutoBeTestScenario,
+  AutoBeTestWriteEvent,
+} from "@autobe/interface";
+import {
+  AutoBeEndpointComparator,
+  IAutoBeTextValidateContext,
+  validateTestFunction,
+} from "@autobe/utils";
+import {
+  ILlmApplication,
+  ILlmSchema,
+  IValidation,
+  OpenApi,
+  OpenApiTypeChecker,
+} from "@samchon/openapi";
+import { HashMap, IPointer, Pair } from "tstl";
+import typia, { IJsonSchemaUnit } from "typia";
+
+import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
+import { AutoBeContext } from "../../context/AutoBeContext";
+import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { enforceToolCall } from "../../utils/enforceToolCall";
+import { compileTestScenario } from "./compile/compileTestScenario";
+import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
+import { IAutoBeTestWriteResult } from "./structures/IAutoBeTestWriteResult";
+import { transformTestWriteHistories } from "./transformTestWriteHistories";
+
+export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  scenarios: AutoBeTestScenario[],
+  life: number = 4,
+): Promise<IAutoBeTestWriteResult[]> {
+  const start: Date = new Date();
+  let complete: number = 0;
+
+  const writes: Array<IAutoBeTestWriteResult | null> = await Promise.all(
+    /**
+     * Generate test code for each scenario. Maps through plans array to create
+     * individual test code implementations. Each scenario is processed to
+     * generate corresponding test code and progress events.
+     */
+    scenarios.map(
+      async (
+        scenario: AutoBeTestScenario,
+      ): Promise<IAutoBeTestWriteResult | null> => {
+        const artifacts: IAutoBeTestScenarioArtifacts =
+          await compileTestScenario(ctx, scenario);
+        const result: ICreateTestCodeProps | null = await (async () => {
+          try {
+            return await process(ctx, scenario, artifacts, life, null);
+          } catch {
+            return null;
+          }
+        })();
+        if (result === null) return null;
+
+        const event: AutoBeTestWriteEvent = {
+          type: "testWrite",
+          created_at: start.toISOString(),
+          file: {
+            location: `test/features/api/${result.domain}/${scenario.functionName}.ts`,
+            function: result.function,
+            content: await ctx.compiler.test.write({
+              scenario,
+              document: ctx.state().interface!.document,
+              function: result.function,
+            }),
+            scenario,
+          },
+          completed: ++complete,
+          total: scenarios.length,
+          step: ctx.state().interface?.step ?? 0,
+        };
+        ctx.dispatch(event);
+        return {
+          artifacts,
+          file: event.file,
+        };
+      },
+    ),
+  );
+  return writes.filter((w) => w !== null);
+}
+
+/**
+ * Process function that generates test code for each individual scenario. Takes
+ * the AutoBeContext and scenario information as input and uses MicroAgentica to
+ * generate appropriate test code through LLM interaction.
+ *
+ * @param ctx - The AutoBeContext containing model, vendor and configuration
+ * @param scenario - The test scenario information to generate code for
+ * @param artifacts - The artifacts containing the reference files and schemas
+ * @returns Promise resolving to ICreateTestCodeProps containing the generated
+ *   test code
+ */
+async function process<Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  scenario: AutoBeTestScenario,
+  artifacts: IAutoBeTestScenarioArtifacts,
+  life: number,
+  failure: IValidation.IFailure | null,
+): Promise<ICreateTestCodeProps | null> {
+  // function calling
+  const trials: IValidation.IFailure[] = [];
+  const pointer: IPointer<ICreateTestCodeProps | null> = {
+    value: null,
+  };
+  const agentica = new MicroAgentica({
+    model: ctx.model,
+    vendor: ctx.vendor,
+    config: {
+      ...(ctx.config ?? {}),
+      executor: {
+        describe: null,
+      },
+      systemPrompt: {
+        validate: (events) =>
+          [
+            AgenticaSystemPrompt.VALIDATE_REPEATED.replace(
+              "${{HISTORICAL_ERRORS}}",
+              JSON.stringify(events.map((e) => e.result.errors)),
+            ),
+            AutoBeSystemPromptConstant.TEST_VALIDATE.replace(
+              "${{AutoBeTest.IStatement}}",
+              getUnionTypeName(typia.json.schema<AutoBeTest.IStatement>()),
+            ).replace(
+              "${{AutoBeTest.IExpression}}",
+              getUnionTypeName(typia.json.schema<AutoBeTest.IExpression>()),
+            ),
+          ].join("\n\n"),
+      },
+      retry: 4,
+    },
+    histories: transformTestWriteHistories({
+      scenario,
+      artifacts,
+      failure,
+    }),
+    controllers: [
+      createApplication({
+        model: ctx.model,
+        document: ctx.state().interface!.document,
+        build: (next) => {
+          pointer.value = next;
+        },
+      }),
+    ],
+  });
+  enforceToolCall(agentica);
+  agentica.on("validate", (e) => {
+    trials.push(e.result);
+  });
+
+  await agentica.conversate("Create e2e test functions.").finally(() => {
+    const tokenUsage = agentica.getTokenUsage();
+    ctx.usage().record(tokenUsage, ["test"]);
+  });
+  if (pointer.value === null) {
+    console.log(
+      "failed to pass validation",
+      (trials.at(-1)?.data as ICreateTestCodeProps | undefined)?.function.draft,
+      trials.map((t) => t.errors.map((e) => e.path)),
+      JSON.stringify(trials.at(-1), null, 2),
+    );
+    return null;
+  }
+  console.log("Function calling success", trials.length + 1);
+
+  // custom validation by compiler
+  const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
+  const errors: IValidation.IError[] | null = await ctx.compiler.test.validate({
+    document,
+    function: pointer.value.function,
+  });
+  return errors === null || life <= 0
+    ? pointer.value
+    : process(ctx, scenario, artifacts, --life, {
+        success: false,
+        data: pointer.value,
+        errors,
+      });
+}
+
+function getUnionTypeName(unit: IJsonSchemaUnit): string {
+  if (OpenApiTypeChecker.isReference(unit.schema) === false) return "unknown";
+
+  const typeName: string = unit.schema.$ref.split("/").pop() ?? "";
+  const schema: OpenApi.IJsonSchema | undefined =
+    unit.components.schemas?.[typeName];
+  if (schema === undefined || OpenApiTypeChecker.isOneOf(schema) === false)
+    return "unknown";
+  return schema.oneOf
+    .filter(OpenApiTypeChecker.isReference)
+    .map((r) => r.$ref.split("/").pop() ?? "")
+    .join(" | ");
+}
+
+function createApplication<Model extends ILlmSchema.Model>(props: {
+  model: Model;
+  document: AutoBeOpenApi.IDocument;
+  build: (next: ICreateTestCodeProps) => void;
+}): IAgenticaController.IClass<Model> {
+  assertSchemaModel(props.model);
+
+  const endpoints: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation> =
+    new HashMap(
+      props.document.operations.map(
+        (op) =>
+          new Pair(
+            {
+              method: op.method,
+              path: op.path,
+            },
+            op,
+          ),
+      ),
+      AutoBeEndpointComparator.hashCode,
+      AutoBeEndpointComparator.equals,
+    );
+  const application: ILlmApplication<Model> = collection[
+    props.model
+  ] as unknown as ILlmApplication<Model>;
+  application.functions[0].validate = (
+    input: unknown,
+  ): IValidation<unknown> => {
+    const result: IValidation<ICreateTestCodeProps> =
+      typia.validate<ICreateTestCodeProps>(input);
+    if (result.success === false) return result;
+
+    const context: IAutoBeTextValidateContext = {
+      function: result.data.function,
+      document: props.document,
+      endpoints,
+      errors: [],
+    };
+    validateTestFunction(context);
+    return context.errors.length === 0
+      ? result
+      : {
+          success: false,
+          data: result.data,
+          errors: context.errors,
+        };
+  };
+
+  return {
+    protocol: "class",
+    name: "Create Test Code",
+    application,
+    execute: {
+      createTestCode: (next) => {
+        props.build(next);
+      },
+    } satisfies IApplication,
+  };
+}
+
+const claude = typia.llm.application<
+  IApplication,
+  "claude",
+  { reference: true }
+>();
+const collection = {
+  chatgpt: typia.llm.application<
+    IApplication,
+    "chatgpt",
+    { reference: true }
+  >(),
+  claude,
+  llama: claude,
+  deepseek: claude,
+  "3.1": claude,
+};
+
+interface IApplication {
+  createTestCode(props: ICreateTestCodeProps): void;
+}
+
+interface ICreateTestCodeProps {
+  /**
+   * Functional domain classification for test organization.
+   *
+   * Determines file structure and test categorization based on API
+   * functionality. Used for organizing tests into logical groups and directory
+   * hierarchies.
+   *
+   * ### Naming Rules:
+   *
+   * - Lowercase English words only
+   * - Singular nouns (e.g., "article", "user", "comment")
+   * - Kebab-case for compound words (e.g., "user-profile", "payment-method")
+   * - Match primary API resource being tested
+   * - Domain Name must be named only one word.
+   *
+   * ### Domain Examples:
+   *
+   * - `article` → Article management operations
+   * - `comment` → Comment-related functionality
+   * - `auth` → Authentication and authorization
+   * - `user` → User management operations
+   * - `payment` → Payment processing
+   * - `notification` → Notification system
+   */
+  domain: string;
+
+  /** E2E test function implementation. */
+  function: AutoBeTest.IFunction;
+}

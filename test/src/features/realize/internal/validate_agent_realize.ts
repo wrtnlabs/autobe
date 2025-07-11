@@ -6,12 +6,13 @@ import {
   AutoBeRealizeHistory,
 } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
-import typia from "typia";
+
+// import typia from "typia";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
 import { TestProject } from "../../../structures/TestProject";
-import { prepare_agent_realize_coder } from "./prepare_agent_realize_coder";
+import { prepare_agent_realize } from "./prepare_agent_realize";
 
 export const validate_agent_realize = async (
   factory: TestFactory,
@@ -20,7 +21,7 @@ export const validate_agent_realize = async (
   if (TestGlobal.env.CHATGPT_API_KEY === undefined) return false;
 
   // PREPARE AGENT
-  const { agent } = await prepare_agent_realize_coder(factory, project);
+  const { agent } = await prepare_agent_realize(factory, project);
 
   const map = new Map<string, true>();
   const events: AutoBeEvent[] = [];
@@ -52,16 +53,16 @@ export const validate_agent_realize = async (
       throw new Error("Failed to generate realize.");
   }
 
-  const histories = agent.getHistories();
+  // const histories = agent.getHistories();
 
   // REPORT RESULT
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/${project}/realize/main`,
     files: {
       ...(await agent.getFiles()),
-      "logs/events.json": typia.json.stringify(events),
-      "logs/result.json": typia.json.stringify(result),
-      "logs/histories.json": typia.json.stringify(histories),
+      // "logs/events.json": typia.json.stringify(events),
+      // "logs/result.json": typia.json.stringify(result),
+      // "logs/histories.json": typia.json.stringify(histories),
     },
   });
   TestValidator.equals("result")(result.compiled.type)("success");

@@ -1,8 +1,8 @@
 import { AutoBePrisma, IAutoBePrismaValidation } from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
 import { HashMap, hash } from "tstl";
 
 import { MapUtil } from "../utils/MapUtil";
-import { StringUtil } from "../utils/StringUtil";
 
 export function validatePrismaApplication(
   application: AutoBePrisma.IApplication,

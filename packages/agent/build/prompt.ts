@@ -1,11 +1,10 @@
 import { AutoBePrismaCompiler } from "@autobe/compiler";
 import { FileSystemIterator, RepositoryFileSystem } from "@autobe/filesystem";
 import { AutoBeOpenApi } from "@autobe/interface";
+import { invertOpenApiDocument } from "@autobe/utils";
 import { OpenApi } from "@samchon/openapi";
 import fs from "fs";
 import path from "path";
-
-import { invertOpenApiDocument } from "../src/factory/invertOpenApiDocument";
 
 const DIRECTORY = path.resolve(__dirname, "../prompts");
 

@@ -1,318 +1,85 @@
 [
   {
     "endpoint": {
-      "method": "patch",
-      "path": "/core/users"
+      "path": "/bbs/posts/{postId}/comments",
+      "method": "patch"
     },
-    "draft": "Test retrieving a list of users with default pagination and no filters. Verify the response includes expected default page size and ordering. Also, test filtering by email and role to ensure filtering logic works correctly, including case-insensitivity if supported. Check requesting a page number beyond the number of available pages to confirm correct error or empty result handling.",
-    "functionName": "test_list_users_with_pagination_and_filtering",
-    "dependencies": []
-  },
-  {
-    "endpoint": {
-      "method": "get",
-      "path": "/core/users/{id}"
-    },
-    "draft": "Test retrieving detailed profile info for a user with a valid user ID. Also, check that requesting a non-existent user ID results in an appropriate error (e.g., 404). Ensure that if access control applies, requesting another user's profile without permission results in access denied or appropriate error code.",
-    "functionName": "test_get_user_profile_by_id_success_and_failure",
+    "draft": "Test retrieving a paginated and filtered list of comments for a specific post. First, create a user and a post, and add several comments to that post, some of which are nested replies. Then use the list/search comments endpoint with and without filters like author, date range, and parent comment to verify that only the relevant comments are returned as per query. Confirm that the returned comments match filter criteria, are paginated correctly, and do not include deleted comments. Also test edge cases like empty results and invalid filters.",
+    "functionName": "test_list_comments_for_post_with_various_filters",
     "dependencies": [
       {
         "endpoint": {
           "method": "post",
-          "path": "/core/users"
+          "path": "/bbs/users"
         },
-        "purpose": "Create a user in order to have a valid ID for retrieval."
+        "purpose": "Create a test user who will be the author of posts and comments."
+      },
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/bbs/posts"
+        },
+        "purpose": "Create a post to which comments will be added."
+      },
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/bbs/posts/{postId}/comments"
+        },
+        "purpose": "Add several comments (including replies) to prepare for the filter and pagination tests."
       }
     ]
   },
   {
     "endpoint": {
-      "method": "post",
-      "path": "/core/users"
+      "path": "/bbs/posts/{postId}/comments/{id}",
+      "method": "get"
     },
-    "draft": "Test user registration with valid data, ensuring a new user is created and unique constraints (such as unique email/username) are enforced. Attempt to register with a duplicate email and verify error is returned. Test required field validation by omitting key fields.",
-    "functionName": "test_register_user_with_valid_and_invalid_data",
-    "dependencies": []
-  },
-  {
-    "endpoint": {
-      "method": "put",
-      "path": "/core/users/{id}"
-    },
-    "draft": "Attempt to update a user profile with valid changes and verify the updates are persisted. Modify immutable or restricted fields and ensure system rejects these changes. Submit updates for a non-existent user and ensure a 404 error is returned.",
-    "functionName": "test_update_user_profile_success_and_failure",
+    "draft": "Validate fetching a single comment's full details by ID under a given post. First, create a post and add a comment to it. Retrieve the comment by its ID and verify that all expected fields (content, author, timestamps, parent information etc.) are present. Then attempt to fetch a non-existent or unrelated comment ID and verify the API returns the correct not-found or error response. Also check permission scenarios: different users accessing the same comment (public vs. restricted).",
+    "functionName": "test_get_single_comment_details_success_and_not_found",
     "dependencies": [
       {
         "endpoint": {
           "method": "post",
-          "path": "/core/users"
+          "path": "/bbs/users"
         },
-        "purpose": "Create a user to update and verify correct functioning."
+        "purpose": "Create a user account to author the comment."
+      },
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/bbs/posts"
+        },
+        "purpose": "Create a post for the comment."
+      },
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/bbs/posts/{postId}/comments"
+        },
+        "purpose": "Create a comment whose ID will be fetched for the success case."
       }
     ]
   },
   {
     "endpoint": {
-      "method": "delete",
-      "path": "/core/users/{id}"
+      "path": "/bbs/posts/{postId}/comments",
+      "method": "post"
     },
-    "draft": "Soft-delete a user (if supported) and ensure the user becomes inaccessible but data is not physically removed. Fully delete a user and confirm all data is purged. Attempt to delete a non-existent user and expect an appropriate error response.",
-    "functionName": "test_delete_user_soft_and_hard",
+    "draft": "Test adding a new top-level comment to an existing post. For a successful path, create a user and a post, then submit a valid comment (non-empty content). Confirm the comment is recorded and returned with the expected metadata. For input validation, attempt comments with empty content or referencing a non-existent post and verify appropriate validation or not-found errors are returned. Also attempt to comment while unauthenticated and assert the expected permission error is returned.",
+    "functionName": "test_create_comment_on_post_valid_and_invalid",
     "dependencies": [
       {
         "endpoint": {
           "method": "post",
-          "path": "/core/users"
+          "path": "/bbs/users"
         },
-        "purpose": "Create a user to verify both deletion modes."
-      }
-    ]
-  },
-  {
-    "endpoint": {
-      "method": "patch",
-      "path": "/core/userRoles"
-    },
-    "draft": "Test listing user roles with and without filters (e.g., by label). Check pagination and ensure edge case handling when filters match no results. Request a page beyond the available results to ensure correct behavior.",
-    "functionName": "test_list_user_roles_with_filtering_and_pagination",
-    "dependencies": []
-  },
-  {
-    "endpoint": {
-      "method": "get",
-      "path": "/core/userRoles/{id}"
-    },
-    "draft": "Retrieve user role details with a valid ID. Attempt to fetch a non-existing role and confirm an appropriate error (e.g., 404) is returned.",
-    "functionName": "test_get_user_role_details_by_id",
-    "dependencies": [
+        "purpose": "Create a user who will author the comment."
+      },
       {
         "endpoint": {
           "method": "post",
-          "path": "/core/userRoles"
-        },
-        "purpose": "Create a user role to test retrieval."
-      }
-    ]
-  },
-  {
-    "endpoint": {
-      "method": "post",
-      "path": "/core/userRoles"
-    },
-    "draft": "Test creating a new user role with a valid label and description. Attempt to create a role with a duplicate label to verify uniqueness enforcement. Test missing required field validation.",
-    "functionName": "test_create_user_role_validation_and_uniqueness",
-    "dependencies": []
-  },
-  {
-    "endpoint": {
-      "method": "put",
-      "path": "/core/userRoles/{id}"
-    },
-    "draft": "Edit a user role's label and description with valid input and verify changes are saved. Attempt to update a non-existent role and ensure 404 is returned. Try editing a role to have a duplicate label and confirm proper error is returned.",
-    "functionName": "test_update_user_role_with_valid_and_invalid_input",
-    "dependencies": [
-      {
-        "endpoint": {
-          "method": "post",
-          "path": "/core/userRoles"
-        },
-        "purpose": "Create a baseline user role for updates."
-      }
-    ]
-  },
-  {
-    "endpoint": {
-      "method": "delete",
-      "path": "/core/userRoles/{id}"
-    },
-    "draft": "Delete a user role and verify it is removed from list results. Attempt to delete a role that is still assigned to a user and confirm business logic enforcement (should either reject or unassign users). Try deleting a non-existent role and ensure an error is returned.",
-    "functionName": "test_delete_user_role_with_dependency_check",
-    "dependencies": [
-      {
-        "endpoint": {
-          "method": "post",
-          "path": "/core/userRoles"
-        },
-        "purpose": "Create a user role for deletion."
-      }
-    ]
-  },
-  {
-    "endpoint": {
-      "method": "patch",
-      "path": "/core/categories"
-    },
-    "draft": "List categories with default and custom pagination settings. Apply filters (e.g., by label or type) to ensure accurate search results. Request an out-of-bounds page to test empty result handling.",
-    "functionName": "test_list_categories_with_pagination_and_filters",
-    "dependencies": []
-  },
-  {
-    "endpoint": {
-      "method": "get",
-      "path": "/core/categories/{id}"
-    },
-    "draft": "Retrieve a category's details by valid ID. Attempt retrieving a category with a non-existent ID and confirm appropriate error (e.g., 404) is returned.",
-    "functionName": "test_get_category_details_by_id",
-    "dependencies": [
-      {
-        "endpoint": {
-          "method": "post",
-          "path": "/core/categories"
-        },
-        "purpose": "Create a category to test retrieval."
-      }
-    ]
-  },
-  {
-    "endpoint": {
-      "method": "post",
-      "path": "/core/categories"
-    },
-    "draft": "Create a category supplying all required fields. Ensure creation fails for duplicate labels or missing mandatory fields. Validate that categories can be created with optional metadata fields.",
-    "functionName": "test_create_category_with_required_and_optional_fields",
-    "dependencies": []
-  },
-  {
-    "endpoint": {
-      "method": "put",
-      "path": "/core/categories/{id}"
-    },
-    "draft": "Update an existing category's fields with valid data. Attempt to update a category with a label that already exists to test uniqueness. Try updating non-existent categories and check error handling.",
-    "functionName": "test_update_category_with_valid_and_invalid_data",
-    "dependencies": [
-      {
-        "endpoint": {
-          "method": "post",
-          "path": "/core/categories"
-        },
-        "purpose": "Create a sample category to update."
-      }
-    ]
-  },
-  {
-    "endpoint": {
-      "method": "delete",
-      "path": "/core/categories/{id}"
-    },
-    "draft": "Delete a category and verify it is removed from list results. Attempt to delete a category that is in use by another record and ensure dependency constraint is enforced. Try deleting a non-existent category and expect an appropriate error.",
-    "functionName": "test_delete_category_with_and_without_dependencies",
-    "dependencies": [
-      {
-        "endpoint": {
-          "method": "post",
-          "path": "/core/categories"
-        },
-        "purpose": "Create a category for deletion test."
-      }
-    ]
-  },
-  {
-    "endpoint": {
-      "method": "patch",
-      "path": "/posts/posts"
-    },
-    "draft": "List posts with different filters (e.g., by author, by category). Ensure pagination works and requesting with no available results returns an empty array. Test sort ordering (e.g., by most recent).",
-    "functionName": "test_list_posts_with_varied_filters_and_pagination",
-    "dependencies": []
-  },
-  {
-    "endpoint": {
-      "method": "get",
-      "path": "/posts/posts/{id}"
-    },
-    "draft": "Retrieve a post by its valid ID and check returned data fields. Attempt to retrieve a non-existent post and confirm proper error handling (e.g., 404).",
-    "functionName": "test_get_post_by_id_success_and_not_found",
-    "dependencies": [
-      {
-        "endpoint": {
-          "method": "post",
-          "path": "/posts/posts"
-        },
-        "purpose": "Create a post for retrieval testing."
-      }
-    ]
-  },
-  {
-    "endpoint": {
-      "method": "post",
-      "path": "/posts/posts"
-    },
-    "draft": "Create a post with required fields, verifying successful creation. Try creating a post with missing mandatory fields and expect validation errors. Attempt to create a duplicate post, if uniqueness constraints apply, and confirm correct error handling.",
-    "functionName": "test_create_post_with_valid_and_invalid_requests",
-    "dependencies": []
-  },
-  {
-    "endpoint": {
-      "method": "put",
-      "path": "/posts/posts/{id}"
-    },
-    "draft": "Update a post with valid input and verify updates are saved. Attempt to modify immutable fields and ensure the system rejects these. Try updating a non-existent post and confirm 404 error.",
-    "functionName": "test_update_post_valid_and_invalid_cases",
-    "dependencies": [
-      {
-        "endpoint": {
-          "method": "post",
-          "path": "/posts/posts"
-        },
-        "purpose": "Create a post to update."
-      }
-    ]
-  },
-  {
-    "endpoint": {
-      "method": "delete",
-      "path": "/posts/posts/{id}"
-    },
-    "draft": "Delete a post by ID and ensure it is no longer retrievable or appears in lists. Attempt to delete a post that does not exist and confirm appropriate error.",
-    "functionName": "test_delete_post_and_verify_removal",
-    "dependencies": [
-      {
-        "endpoint": {
-          "method": "post",
-          "path": "/posts/posts"
-        },
-        "purpose": "Create a post to test the deletion process."
-      }
-    ]
-  },
-  {
-    "endpoint": {
-      "method": "patch",
-      "path": "/posts/comments"
-    },
-    "draft": "List comments with and without filters (e.g., by post ID or author). Ensure pagination and empty result behavior is handled. Test boundary conditions for comment listing.",
-    "functionName": "test_list_comments_with_filters_and_pagination",
-    "dependencies": []
-  },
-  {
-    "endpoint": {
-      "method": "get",
-      "path": "/posts/comments/{id}"
-    },
-    "draft": "Fetch detailed information about a comment by its ID. Attempt retrieval with an invalid or non-existent ID and verify appropriate error codes.",
-    "functionName": "test_get_comment_details_success_and_failure",
-    "dependencies": [
-      {
-        "endpoint": {
-          "method": "post",
-          "path": "/posts/comments"
-        },
-        "purpose": "Create a comment to test retrieval."
-      }
-    ]
-  },
-  {
-    "endpoint": {
-      "method": "post",
-      "path": "/posts/comments"
-    },
-    "draft": "Create a new comment with required fields to a valid post. Attempt to submit a comment to a non-existent post and expect failure. Omit required fields and verify validation errors occur.",
-    "functionName": "test_create_comment_with_valid_and_invalid_data",
-    "dependencies": [
-      {
-        "endpoint": {
-          "method": "post",
-          "path": "/posts/posts"
+          "path": "/bbs/posts"
         },
         "purpose": "Create a post to comment on."
       }
@@ -320,104 +87,1955 @@
   },
   {
     "endpoint": {
-      "method": "put",
-      "path": "/posts/comments/{id}"
+      "path": "/bbs/posts/{postId}/comments/{id}",
+      "method": "put"
     },
-    "draft": "Update an existing comment's content successfully. Attempt to update a non-existent or deleted comment and check error handling. Modify deletion status and verify logic enforcement.",
-    "functionName": "test_update_comment_content_and_status",
+    "draft": "Verify updating an existing comment's content by its author and test permission enforcement. Create two users: one who authors a comment on a post, and another who tries to edit it. The original author should be able to update the comment content successfully, with 'updated_at' reflecting the change. The other user should receive a permission error. Also check validation: editing with empty content, updating a comment that is already soft-deleted, or one that does not exist, and verify the system returns appropriate errors and messages.",
+    "functionName": "test_update_comment_content_owner_and_permission",
     "dependencies": [
       {
         "endpoint": {
           "method": "post",
-          "path": "/posts/comments"
+          "path": "/bbs/users"
         },
-        "purpose": "Create a comment in order to update."
+        "purpose": "Create the original author user."
+      },
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/bbs/users"
+        },
+        "purpose": "Create a second user who will attempt an unauthorized edit."
+      },
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/bbs/posts"
+        },
+        "purpose": "Create a post the comment belongs to."
+      },
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/bbs/posts/{postId}/comments"
+        },
+        "purpose": "Original author creates a comment to be updated."
       }
     ]
   },
   {
     "endpoint": {
-      "method": "delete",
-      "path": "/posts/comments/{id}"
+      "path": "/bbs/posts/{postId}/comments/{id}",
+      "method": "delete"
     },
-    "draft": "Soft-delete a comment and confirm it is excluded from listings but not physically removed. Attempt to delete an already deleted or non-existent comment and verify error behavior.",
-    "functionName": "test_delete_comment_and_verify_soft_deletion",
+    "draft": "Test comment deletion (soft delete) by various actors: original author, moderator/administrator, and unrelated user. First, create users for each role and a post with a comment by the author. The author should be able to soft-delete their own comment, which sets the 'deleted_at' field. A moderator/administrator should also be able to delete the comment regardless of authorship. An unrelated user attempting deletion should receive a permission error. Confirm deletion is idempotent (trying to delete an already deleted comment returns an error or no-op). Attempt to delete a non-existent comment and verify correct error handling. Also check that a deleted comment cannot be interacted with by regular users.",
+    "functionName": "test_delete_comment_by_author_moderator_and_unauthorized",
     "dependencies": [
       {
         "endpoint": {
           "method": "post",
-          "path": "/posts/comments"
+          "path": "/bbs/users"
         },
-        "purpose": "Create a comment for testing deletion."
+        "purpose": "Create the author of the comment."
+      },
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/bbs/users"
+        },
+        "purpose": "Create a moderator/administrator user for permission testing."
+      },
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/bbs/users"
+        },
+        "purpose": "Create an unrelated user who will attempt unauthorized deletion."
+      },
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/bbs/posts"
+        },
+        "purpose": "Create the target post for the comments."
+      },
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/bbs/posts/{postId}/comments"
+        },
+        "purpose": "Have author create a comment, which will be deleted by various actors."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/categories",
+      "method": "patch"
+    },
+    "draft": "Test successful retrieval of a paginated list of categories with valid search and filter options. The test should verify that authorized users can specify different combinations of search keywords, filter parameters, and pagination controls (pageSize, pageNumber) and receive corresponding category lists with category metadata, respecting all query criteria. The test should verify the integrity and correctness of the pagination, as well as the property completeness for each listed category record.",
+    "functionName": "test_list_categories_with_valid_pagination_and_filters",
+    "dependencies": [
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/bbs/categories"
+        },
+        "purpose": "Create multiple categories with varied names and descriptions to ensure the listing endpoint has relevant data to paginate and filter."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/categories",
+      "method": "patch"
+    },
+    "draft": "Test listing categories using invalid pagination inputs, such as negative page numbers, zero or negative page sizes, or excessively large page size values. The API should respond with a validation error, correctly describing the offending input and not returning data. This ensures backend pagination logic is robust to client errors.",
+    "functionName": "test_list_categories_with_invalid_pagination_parameters",
+    "dependencies": []
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/categories/{id}",
+      "method": "get"
+    },
+    "draft": "Test successful retrieval of a single category's details using a valid category UUID. The returned data must include accurate name, description, and creation date. This is the primary lookup for category selection and detail view workflows.",
+    "functionName": "test_get_category_by_id_successful",
+    "dependencies": [
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/bbs/categories"
+        },
+        "purpose": "Create a new category to extract a UUID for lookup in this scenario."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/categories/{id}",
+      "method": "get"
+    },
+    "draft": "Test attempting to retrieve a category using a valid-looking but non-existent UUID. The API should return a not-found error, ensuring the integrity of error messaging and status codes for missing resources.",
+    "functionName": "test_get_category_by_nonexistent_id",
+    "dependencies": []
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/categories",
+      "method": "post"
+    },
+    "draft": "Test category creation with valid name and description by an authenticated administrator. The new category should be created successfully and available for listing and post assignment. This validates the happy path for category management.",
+    "functionName": "test_create_category_with_valid_data",
+    "dependencies": []
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/categories",
+      "method": "post"
+    },
+    "draft": "Test creating a category with a name that already exists in the system. The API must reject this with a uniqueness constraint violation error, maintaining category name uniqueness. Steps: first, create a category with a specific name; then, attempt to create another category with the same name and verify the uniqueness error.",
+    "functionName": "test_create_category_with_duplicate_name",
+    "dependencies": [
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/bbs/categories"
+        },
+        "purpose": "Create the baseline category with a unique name for conflict scenario setup."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/categories",
+      "method": "post"
+    },
+    "draft": "Test creating a category with a missing or blank name and/or description. The API should validate the input, reject the request, and return a meaningful error about the missing or empty required fields.",
+    "functionName": "test_create_category_with_empty_name_or_description",
+    "dependencies": []
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/categories/{id}",
+      "method": "put"
+    },
+    "draft": "Test updating both the name and description of a category using valid, non-duplicate values. Verify that the changes are saved and reflected in subsequent retrievals. Ensures correctness for administrative editing workflows.",
+    "functionName": "test_update_category_name_and_description_successful",
+    "dependencies": [
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/bbs/categories"
+        },
+        "purpose": "Create a new category to update in this scenario."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/categories/{id}",
+      "method": "put"
+    },
+    "draft": "Test updating a category's name to one that already exists in the system. The API must return a uniqueness error, preventing name collisions. Steps: create two distinct categories; then, attempt to update the second one to have the same name as the first.",
+    "functionName": "test_update_category_with_duplicate_name",
+    "dependencies": [
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/bbs/categories"
+        },
+        "purpose": "Create the original category whose name will be duplicated."
+      },
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/bbs/categories"
+        },
+        "purpose": "Create a second category that will be updated to reference the duplicate name."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/categories/{id}",
+      "method": "put"
+    },
+    "draft": "Test attempting to update a category by clearing out required fields like name or description (e.g., sending an empty string). The operation should fail input validation and reject the update, returning errors about missing required data.",
+    "functionName": "test_update_category_with_empty_fields",
+    "dependencies": [
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/bbs/categories"
+        },
+        "purpose": "Create a category for testing unsuccessful update attempts."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/categories/{id}",
+      "method": "delete"
+    },
+    "draft": "Test successful deletion of a category that has no posts assigned to it. After deletion, the category should no longer exist, and its name should be available for reuse. This ensures the endpoint's happy path and proper removal logic.",
+    "functionName": "test_delete_category_with_no_dependent_posts",
+    "dependencies": [
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/bbs/categories"
+        },
+        "purpose": "Create a category that has no posts assigned, preparing it for deletion."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/categories/{id}",
+      "method": "delete"
+    },
+    "draft": "Test deleting a category that is still referenced by existing posts. The API must reject the deletion request and return a conflict or dependency error, requiring administrators to handle or reassign dependent posts first. Steps: create a category, create a post assigned to that category, and attempt deletion.",
+    "functionName": "test_delete_category_with_dependent_posts",
+    "dependencies": [
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/bbs/categories"
+        },
+        "purpose": "Create the target category to be assigned to a post."
+      },
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/bbs/users"
+        },
+        "purpose": "Create a user who will create the post (since posts require authentication)."
+      },
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/bbs/posts"
+        },
+        "purpose": "Create a post in the target category so that the category is not deletable by default."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/categories/{id}",
+      "method": "delete"
+    },
+    "draft": "Test deletion of a category using a non-existent UUID. The API should return an appropriate error, confirming robust error messaging for phantom resources.",
+    "functionName": "test_delete_category_with_nonexistent_id",
+    "dependencies": []
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/userRoles",
+      "method": "patch"
+    },
+    "draft": "Test listing user roles with valid pagination and search filters. First, ensure there are multiple user roles in the system (creating new roles if necessary). As an authenticated administrator, send a paginated search request with filters (for example, partial role name or description) and verify that the response only includes matching user role records, respects pagination settings, and provides accurate total counts. Response must never contain user-related data and should only include user role metadata.",
+    "functionName": "test_list_user_roles_with_valid_pagination_and_search",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/userRoles",
+          "method": "post"
+        },
+        "purpose": "Create several user roles to ensure sufficient data for filtering and pagination scenarios."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/userRoles",
+      "method": "patch"
+    },
+    "draft": "Test listing user roles with invalid pagination parameters (e.g., negative page size, excessively large page number, or malformed filters). As an administrator, attempt to query roles with these incorrect options and verify that the system returns validation or error responses as appropriate, rather than silently failing or exposing unwanted records.",
+    "functionName": "test_list_user_roles_invalid_pagination_parameters",
+    "dependencies": []
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/userRoles",
+      "method": "patch"
+    },
+    "draft": "Test that attempting to list user roles without a valid authentication token (or with insufficient privileges) is rejected. Attempt the API call as an unauthenticated or underprivileged user and ensure that the endpoint returns a proper authorization error, never exposing user role data.",
+    "functionName": "test_list_user_roles_requires_authorization",
+    "dependencies": []
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/userRoles/{id}",
+      "method": "get"
+    },
+    "draft": "Test retrieval of a user role's details by valid UUID. First, create a new role and then use its returned id to fetch the role using this API. Verify that all metadata (name, description, id) matches the creation payload and no user information is included.",
+    "functionName": "test_get_user_role_by_valid_id",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/userRoles",
+          "method": "post"
+        },
+        "purpose": "Create a new user role and obtain its UUID for retrieval."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/userRoles/{id}",
+      "method": "get"
+    },
+    "draft": "Test retrieval with an invalid or non-existent UUID. Attempt to fetch a user role using an invalid ID format and then with a well-formed but non-existent UUID. Confirm both cases result in not-found or validation error responses with no data leakage.",
+    "functionName": "test_get_user_role_by_invalid_id",
+    "dependencies": []
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/userRoles/{id}",
+      "method": "get"
+    },
+    "draft": "Test that retrieval of user role information is forbidden without valid authentication or sufficient privileges. Attempt to retrieve a role as an unauthenticated or underprivileged user and ensure proper authorization error is returned.",
+    "functionName": "test_get_user_role_requires_authorization",
+    "dependencies": []
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/userRoles",
+      "method": "post"
+    },
+    "draft": "Test successful creation of a new user role with a unique name and valid description. As an administrator, provide correct payload values and verify that the resulting role in the system matches the input data and is available for role assignment and listing.",
+    "functionName": "test_create_user_role_with_valid_data",
+    "dependencies": []
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/userRoles",
+      "method": "post"
+    },
+    "draft": "Test that attempting to create a user role with a name that already exists results in a duplicate error. Create a role, then attempt to create another with the same name. The system should return a validation or conflict error indicating name uniqueness violation.",
+    "functionName": "test_create_user_role_with_duplicate_name",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/userRoles",
+          "method": "post"
+        },
+        "purpose": "Create the initial user role whose name will be duplicated in the tested scenario."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/userRoles",
+      "method": "post"
+    },
+    "draft": "Test user role creation with invalid payloads, such as missing required fields (name or description), empty strings, or invalid formats. Ensure that all such requests are rejected with clear validation errors and that no partial or invalid records are created.",
+    "functionName": "test_create_user_role_with_invalid_payload",
+    "dependencies": []
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/userRoles/{id}",
+      "method": "put"
+    },
+    "draft": "Test updating a user role's name and description with valid data. First, create a role, then update it using this endpoint. Confirm the role reflects the changes in listing and details, and uniqueness rules are still enforced.",
+    "functionName": "test_update_user_role_with_valid_data",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/userRoles",
+          "method": "post"
+        },
+        "purpose": "Create a user role and obtain its ID for updating."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/userRoles/{id}",
+      "method": "put"
+    },
+    "draft": "Test error when updating a user role to use a name already assigned to another role. Create two distinct roles, then attempt to update the second role to have the first role's name. The update must fail with a duplicate/uniqueness validation error.",
+    "functionName": "test_update_user_role_with_duplicate_name",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/userRoles",
+          "method": "post"
+        },
+        "purpose": "Create the first user role (for name conflict setup)."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/userRoles",
+          "method": "post"
+        },
+        "purpose": "Create the second user role (target for update)."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/userRoles/{id}",
+      "method": "put"
+    },
+    "draft": "Test update attempts with invalid payload data, such as empty name/description or improper types. The update should fail, and the system must report the errors in a clear, user-readable manner, with the role left unchanged.",
+    "functionName": "test_update_user_role_with_invalid_data",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/userRoles",
+          "method": "post"
+        },
+        "purpose": "Create a user role to be updated with invalid data."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/userRoles/{id}",
+      "method": "put"
+    },
+    "draft": "Test that updating a user role without a valid or sufficiently privileged authentication token is rejected. Attempt the operation as an unauthenticated or unauthorized user and expect the operation to fail with a permission error.",
+    "functionName": "test_update_user_role_requires_authorization",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/userRoles",
+          "method": "post"
+        },
+        "purpose": "Create a user role for authorization testing."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/userRoles/{id}",
+      "method": "delete"
+    },
+    "draft": "Test successful deactivation (soft-delete) of a user role by a privileged administrator. First, create a user role, then delete it using this endpoint. Afterwards, fetch the role to confirm its status is marked as inactive/deleted rather than removed, and audit/meta info remains intact.",
+    "functionName": "test_delete_user_role_success_and_audit",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/userRoles",
+          "method": "post"
+        },
+        "purpose": "Create a user role to be deleted and audited."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/userRoles/{id}",
+      "method": "delete"
+    },
+    "draft": "Test deleting with an invalid or non-existent role UUID. Attempt to delete with a malformed or non-existent ID and expect a clear not-found or validation error, ensuring no unrelated roles are affected.",
+    "functionName": "test_delete_user_role_with_invalid_id",
+    "dependencies": []
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/userRoles/{id}",
+      "method": "delete"
+    },
+    "draft": "Test that deleting a user role is forbidden if the user is not authenticated or lacks necessary privileges. Attempts as unauthorized or unauthenticated users must fail with proper authorization errors.",
+    "functionName": "test_delete_user_role_requires_authorization",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/userRoles",
+          "method": "post"
+        },
+        "purpose": "Create a user role to test permission handling."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/votes",
+      "method": "patch"
+    },
+    "draft": "Test listing votes with advanced filters and pagination as an administrator. First, an admin account must be created and authenticated to access this privileged endpoint. Several users, posts, and comments must exist, and there should be votes cast on various posts and comments by different users to create meaningful filter conditions. The admin requests a paginated list filtering by voter, target type (post/comment), or specific value (+1/-1). Validate response accuracy, appropriate pagination, filter effects, and that only valid results matching criteria are returned. Edge cases: zero matching results, paginating past last page, and using invalid filter parameters.",
+    "functionName": "test_list_votes_with_filter_and_pagination_as_admin",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/users",
+          "method": "post"
+        },
+        "purpose": "Create users for voting and to serve as the admin account. Required for both data population and administrative privileges."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts",
+          "method": "post"
+        },
+        "purpose": "Create discussion posts to be voted on."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts/{postId}/comments",
+          "method": "post"
+        },
+        "purpose": "Create comments so votes can exist on both posts and comments."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/votes",
+          "method": "post"
+        },
+        "purpose": "Cast several votes on various posts and comments by different users to set up meaningful filtering scenarios."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/votes",
+      "method": "patch"
+    },
+    "draft": "Test that a non-authenticated or unauthorized user cannot list votes through this endpoint. Attempt to request the votes list as a guest (no bearer token), a regular user (non-privileged), and expect access to be denied each time with appropriate error codes.",
+    "functionName": "test_list_votes_unauthorized_access_denied",
+    "dependencies": []
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/votes/{id}",
+      "method": "get"
+    },
+    "draft": "Test retrieving the details of a single vote by its ID both as the owner who cast the vote and as a privileged moderator/admin. First, create a post or comment, then cast a vote on it as a normal user. Retrieve that vote detail while authenticated as its owner. Then, use a moderator/admin account to retrieve the same vote detail and ensure sensitive data is appropriately included or excluded as per their role. Responses must provide all relevant vote details but never expose other users' sensitive voting history without privilege.",
+    "functionName": "test_get_vote_detail_as_owner_and_moderator",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/users",
+          "method": "post"
+        },
+        "purpose": "Create user accounts, including owner and moderator/admin."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts",
+          "method": "post"
+        },
+        "purpose": "Create post to be voted upon."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/votes",
+          "method": "post"
+        },
+        "purpose": "Owner user casts the vote to be retrieved."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/votes/{id}",
+      "method": "get"
+    },
+    "draft": "Test that retrieving a vote by ID fails if the requester is neither the owner nor a privileged user, or if the vote does not exist. Attempt to get a vote as another non-admin user and as a guest/unauthenticated user. Also request a completely non-existent vote ID. Expect access denied and not-found errors as appropriate.",
+    "functionName": "test_get_vote_detail_unauthorized_or_not_found",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/votes",
+          "method": "post"
+        },
+        "purpose": "Create a vote record to ensure a known vote exists for ID references."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/votes",
+      "method": "post"
+    },
+    "draft": "Test successful creation of a vote on a post. Authenticate as a regular user, ensure a post exists, then attempt to vote (+1 or -1 as allowed). Response must include the correct association with the target post and voter, and apply unique constraints (cannot double vote).",
+    "functionName": "test_create_vote_on_post_with_valid_data",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/users",
+          "method": "post"
+        },
+        "purpose": "Create and authenticate a regular user eligible to vote."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts",
+          "method": "post"
+        },
+        "purpose": "Post to be voted on."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/votes",
+      "method": "post"
+    },
+    "draft": "Test that a user cannot create more than one vote on the same target (post or comment). After successfully creating the first vote, attempt to cast a second vote by the same user on the same entity. Expect a unique constraint or business rule violation error. Ensure both post and comment targets are validated for this business rule.",
+    "functionName": "test_create_vote_duplicate_on_same_target_fails",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/users",
+          "method": "post"
+        },
+        "purpose": "Create a user who will attempt to vote multiple times."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts",
+          "method": "post"
+        },
+        "purpose": "Create post and/or comment to serve as voting targets."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/votes",
+          "method": "post"
+        },
+        "purpose": "Cast the initial vote to trigger the duplication error on second attempt."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/votes",
+      "method": "post"
+    },
+    "draft": "Test that users who are not authenticated (no bearer token) cannot cast a vote. Attempt vote creation as a guest; expect fail with an authentication error.",
+    "functionName": "test_create_vote_unauthorized_user_fails",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/posts",
+          "method": "post"
+        },
+        "purpose": "Post to set up a legitimate voting target."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/votes",
+      "method": "post"
+    },
+    "draft": "Test that creating a vote with an invalid or nonexistent post/comment ID results in an error. Attempt to cast a vote with a random or deleted post/comment as the target. System should reject the request with an appropriate not-found error message.",
+    "functionName": "test_create_vote_with_invalid_target_returns_error",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/users",
+          "method": "post"
+        },
+        "purpose": "Prepare a valid user for vote submission."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/votes/{id}",
+      "method": "put"
+    },
+    "draft": "Test that the owner of a vote can update its value (e.g., from +1 to -1). First, create a user, a target (post/comment), and cast a vote. Then, as the voting user, update the vote's value. Validate that the updated value is reflected in both the vote record and any related tallies/aggregates.",
+    "functionName": "test_update_vote_value_successful_as_owner",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/users",
+          "method": "post"
+        },
+        "purpose": "Create user to own the vote."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts",
+          "method": "post"
+        },
+        "purpose": "Provide a target for voting."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/votes",
+          "method": "post"
+        },
+        "purpose": "Create the initial vote to be updated."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/votes/{id}",
+      "method": "put"
+    },
+    "draft": "Test that only the vote owner or privileged users can update vote records. Attempt to update a vote as another non-privileged user (not the voter), as a guest, and as a moderator to confirm permission boundaries. Expect errors where not allowed and success only for allowed roles.",
+    "functionName": "test_update_vote_as_non_owner_or_unauthorized_fails",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/users",
+          "method": "post"
+        },
+        "purpose": "Prepare owner and other users (some privileged, some not) to test permissions."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts",
+          "method": "post"
+        },
+        "purpose": "Provide a voting target."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/votes",
+          "method": "post"
+        },
+        "purpose": "Produce a vote record to test update access."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/votes/{id}",
+      "method": "put"
+    },
+    "draft": "Test updating a vote with an invalid (nonexistent) ID fails with a not-found response. Attempt to update a non-existing vote and validate the correct error behavior.",
+    "functionName": "test_update_vote_with_invalid_id_returns_not_found",
+    "dependencies": []
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/votes/{id}",
+      "method": "delete"
+    },
+    "draft": "Test that the vote owner and an admin can successfully delete a vote, freeing the user to vote again on that target. First, cast a vote, then delete it as the owner and again as an admin on a different record. Confirm vote is removed and user can re-cast it afterward. Related tallies should be updated accordingly.",
+    "functionName": "test_delete_vote_successful_by_owner_and_admin",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/users",
+          "method": "post"
+        },
+        "purpose": "Create necessary users (owner and admin)."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts",
+          "method": "post"
+        },
+        "purpose": "Set up targets for votes."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/votes",
+          "method": "post"
+        },
+        "purpose": "Cast votes by different users on various targets."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/votes/{id}",
+      "method": "delete"
+    },
+    "draft": "Test that a non-owner/non-privileged user cannot delete another person's vote. Create a vote, attempt deletion with another regular user. Validate that access is denied and vote remains present.",
+    "functionName": "test_delete_vote_as_non_owner_fails",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/users",
+          "method": "post"
+        },
+        "purpose": "Create multiple user accounts, including one to own the vote and one to perform the unauthorized delete."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts",
+          "method": "post"
+        },
+        "purpose": "Create a target for voting."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/votes",
+          "method": "post"
+        },
+        "purpose": "Owner user casts the original vote to be deleted."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/votes/{id}",
+      "method": "delete"
+    },
+    "draft": "Test that deletion fails with a proper error if the vote ID is invalid or already deleted. Attempt to delete a vote that does not exist or after it has already been deleted, and verify not-found or conflict error responses.",
+    "functionName": "test_delete_vote_with_invalid_id_fails",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/users",
+          "method": "post"
+        },
+        "purpose": "Set up a valid user for proper delete attempts."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/posts",
+      "method": "patch"
+    },
+    "draft": "Test listing posts with valid search, filter, and pagination parameters. A user creates multiple posts in various categories. Then, the user requests a list of posts filtered by category, sorted by creation date, and paginated with a reasonable limit and offset. The response should include only posts matching the filters, respect pagination constraints, and provide accurate metadata (total count, current page, etc.).",
+    "functionName": "test_list_posts_with_valid_filters_and_pagination",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/users",
+          "method": "post"
+        },
+        "purpose": "Create a user account for posting and authentication."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/categories",
+          "method": "post"
+        },
+        "purpose": "Create category records to assign posts for filtering tests."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts",
+          "method": "post"
+        },
+        "purpose": "Create multiple posts across different categories for the list/filter scenario."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/posts",
+      "method": "patch"
+    },
+    "draft": "Test listing posts with invalid or unsupported parameters. Attempt to use out-of-range pagination (e.g., negative limits), invalid filter keys, or non-existent category IDs. The API should gracefully reject such requests with validation errors, ensuring no database records are leaked and error messages are clear.",
+    "functionName": "test_list_posts_invalid_parameters",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/users",
+          "method": "post"
+        },
+        "purpose": "Create a user for valid authentication."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/posts/{id}",
+      "method": "get"
+    },
+    "draft": "Test successful retrieval of a post's details by its ID. Create a post, then fetch it by its ID. Validate that the response contains correct title, content, author info, category, timestamps, and no missing required fields.",
+    "functionName": "test_get_post_by_id_success",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/users",
+          "method": "post"
+        },
+        "purpose": "Create a user account to be the author of the post."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/categories",
+          "method": "post"
+        },
+        "purpose": "Create a category to assign to the post."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts",
+          "method": "post"
+        },
+        "purpose": "Create a new post and extract its ID for retrieval."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/posts/{id}",
+      "method": "get"
+    },
+    "draft": "Test error handling when requesting details for a non-existent or malformed post ID. Attempt to fetch a post using a random UUID that does not correspond to any record, and verify that the API returns a not-found or validation error as appropriate, with no sensitive information exposed.",
+    "functionName": "test_get_post_with_invalid_or_nonexistent_id",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/users",
+          "method": "post"
+        },
+        "purpose": "Create a user for valid authentication."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/posts",
+      "method": "post"
+    },
+    "draft": "Test successful creation of a new post with valid title, content, and category assignment. After creating the user and category, make a post as the user. Validate that the response includes the correct ID, author, category information, and post metadata. The post should then be visible in list and detail endpoints.",
+    "functionName": "test_create_post_with_valid_data",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/users",
+          "method": "post"
+        },
+        "purpose": "Register a user account who will create the post."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/categories",
+          "method": "post"
+        },
+        "purpose": "Create a category under which the post will be submitted."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/posts",
+      "method": "post"
+    },
+    "draft": "Test failure to create a post due to missing required fields (e.g., empty title, missing category) or invalid input types. Attempt to submit the post with blank content, non-existent category ID, or invalid characters/lengths. The API must reject such submissions with detailed validation errors and no post should be created.",
+    "functionName": "test_create_post_with_missing_or_invalid_data",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/users",
+          "method": "post"
+        },
+        "purpose": "Create a user for authentication context."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/posts/{id}",
+      "method": "put"
+    },
+    "draft": "Test updating an existing post by its author with valid data. The user edits their own post (changes title, content, category) and receives updated post information. Validate that changes are saved, timestamps are updated, and all constraints (valid category, non-empty fields) are enforced.",
+    "functionName": "test_update_post_with_valid_data_by_author",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/users",
+          "method": "post"
+        },
+        "purpose": "Register a user who will be the post author."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/categories",
+          "method": "post"
+        },
+        "purpose": "Create initial and target categories for reassignment."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts",
+          "method": "post"
+        },
+        "purpose": "Create the post to be updated."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/posts/{id}",
+      "method": "put"
+    },
+    "draft": "Test update failure due to invalid data, such as assigning a non-existent category, duplicate or empty title, or forbidden content. Attempt the update and validate that the API returns precise, actionable validation errors, with no data being updated on the server.",
+    "functionName": "test_update_post_with_invalid_data",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/users",
+          "method": "post"
+        },
+        "purpose": "User needed for author/authentication."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/categories",
+          "method": "post"
+        },
+        "purpose": "Create category for at least one valid assignment."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts",
+          "method": "post"
+        },
+        "purpose": "Create the post record to be updated."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/posts/{id}",
+      "method": "put"
+    },
+    "draft": "Test that users cannot update posts they did not author and do not have special privileges. Attempt to update a post from a different user account, expecting an authorization failure with appropriate error response and no change to the post.",
+    "functionName": "test_update_post_by_non_author_or_non_privileged_user",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/users",
+          "method": "post"
+        },
+        "purpose": "Create both the original post author user and a distinct user who attempts the unauthorized update."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/categories",
+          "method": "post"
+        },
+        "purpose": "Create category for the original post."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts",
+          "method": "post"
+        },
+        "purpose": "Create the post associated with the first user."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/posts/{id}",
+      "method": "delete"
+    },
+    "draft": "Test successful post deletion (soft delete or hard delete as per business logic) by the post's author. Create a post, then delete it as the same user. Confirm the response indicates success and the post no longer appears in lists or detail lookups.",
+    "functionName": "test_delete_post_by_author",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/users",
+          "method": "post"
+        },
+        "purpose": "Register the user who will both author and delete the post."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/categories",
+          "method": "post"
+        },
+        "purpose": "Create the post's category."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts",
+          "method": "post"
+        },
+        "purpose": "Create the post to be deleted."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/posts/{id}",
+      "method": "delete"
+    },
+    "draft": "Test that a user who is not the author of a post and lacks necessary privileges cannot delete the post. Attempt deletion from a different user account. Validate that the attempt is rejected due to authorization rules, the post remains in the system, and no sensitive information is leaked.",
+    "functionName": "test_delete_post_by_non_author",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/users",
+          "method": "post"
+        },
+        "purpose": "Register both the post's author and an additional user to attempt the unauthorized delete."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/categories",
+          "method": "post"
+        },
+        "purpose": "Create the post's category."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts",
+          "method": "post"
+        },
+        "purpose": "Create the post to set up the scenario."
       }
     ]
   },
   {
     "endpoint": {
       "method": "patch",
-      "path": "/votes/votes"
+      "path": "/bbs/users"
     },
-    "draft": "List votes with filters (by targetType/targetId/voter) and pagination. Check behavior with no matching results and edge cases like large page numbers. Ensure ordering consistency.",
-    "functionName": "test_list_votes_with_varied_filters",
+    "draft": "Test successful retrieval of a paginated, filtered list of users as a privileged moderator/administrator. Authenticate with bearer token as an admin, then use valid search and filter parameters (username substring, email domain, status) with pagination settings. Verify response includes user data (excluding sensitive fields) and pagination metadata. Ensure only matching records are returned and the system enforces pagination defaults.",
+    "functionName": "test_list_users_with_valid_filters_and_pagination",
+    "dependencies": [
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/bbs/users"
+        },
+        "purpose": "Create several user accounts with diverse attributes (roles, usernames, emails, statuses) to enable meaningful filtering and pagination tests."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "method": "patch",
+      "path": "/bbs/users"
+    },
+    "draft": "Attempt to list users using an invalid filter (e.g., date range in an unsupported format, invalid status value). Authenticate as administrator. Verify the API returns appropriate validation error indicating filter type or value is incorrect.",
+    "functionName": "test_list_users_with_invalid_filter_type",
+    "dependencies": []
+  },
+  {
+    "endpoint": {
+      "method": "patch",
+      "path": "/bbs/users"
+    },
+    "draft": "Attempt to list users as a non-privileged user (e.g., regular user role without moderation/admin rights). Authenticate with bearer token of standard user and submit list/search request. Expect a forbidden/permission denied error, verifying access control enforcement for user listing.",
+    "functionName": "test_list_users_without_privileges_permission_denied",
+    "dependencies": [
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/bbs/users"
+        },
+        "purpose": "Register a standard user (non-privileged role) for unauthorized access attempt."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "method": "get",
+      "path": "/bbs/users/{id}"
+    },
+    "draft": "Test admin successfully retrieving full profile of a specific user. Authenticate as administrator, then request the profile using the target user's UUID. Validate response contains all expected public information (excluding credentials), role, status, and timestamps, and correctly handles edge cases like long bios or special characters.",
+    "functionName": "test_get_user_profile_success_by_admin",
+    "dependencies": [
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/bbs/users"
+        },
+        "purpose": "Register a specific user whose profile will be fetched in admin/mgr context."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "method": "get",
+      "path": "/bbs/users/{id}"
+    },
+    "draft": "Try to fetch a profile using an invalid or non-existent user UUID as an administrator. Validate that the API returns a not-found error or informative message, confirming protected error handling for missing users.",
+    "functionName": "test_get_user_profile_not_found",
     "dependencies": []
   },
   {
     "endpoint": {
       "method": "get",
-      "path": "/votes/votes/{id}"
+      "path": "/bbs/users/{id}"
     },
-    "draft": "Retrieve a vote's details by ID. Attempt to fetch a vote with a non-existent ID, confirming proper error handling.",
-    "functionName": "test_get_vote_details_success_and_not_found",
+    "draft": "Attempt to retrieve another user's profile as a non-admin (standard user, not target user or admin). Authenticate as a non-privileged user, then submit GET request for another user's ID. Expect a forbidden/permission denied error, confirming that only privileged roles may access other user accounts.",
+    "functionName": "test_get_user_profile_unauthorized_access",
     "dependencies": [
       {
         "endpoint": {
           "method": "post",
-          "path": "/votes/votes"
+          "path": "/bbs/users"
         },
-        "purpose": "Create a vote for retrieval scenarios."
+        "purpose": "Create a standard user for unauthorized access attempt."
       }
     ]
   },
   {
     "endpoint": {
       "method": "post",
-      "path": "/votes/votes"
+      "path": "/bbs/users"
     },
-    "draft": "Create a new vote with valid voter, targetType, and targetId. Test submitting a vote for the same (voter, targetType, targetId) combination twice to check uniqueness. Submit invalid or incomplete data for validation errors.",
-    "functionName": "test_create_vote_with_validation_and_uniqueness_enforcement",
-    "dependencies": []
+    "draft": "Test successful creation of a user account via admin privileges. Submit well-formed data for all required fields (unique username, valid email, strong password, assigned valid existing role, optional bio) and verify that API returns the created user profile excluding password.",
+    "functionName": "test_create_user_with_valid_data",
+    "dependencies": [
+      {
+        "endpoint": {
+          "method": "patch",
+          "path": "/bbs/userRoles"
+        },
+        "purpose": "List valid user roles to obtain a roleId for new user registration."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "method": "post",
+      "path": "/bbs/users"
+    },
+    "draft": "Attempt to register a new user with an email or username that already exists in the system. Validate that the API returns an error for uniqueness constraint violation (duplicate email or username).",
+    "functionName": "test_create_user_with_duplicate_email_or_username",
+    "dependencies": [
+      {
+        "endpoint": {
+          "method": "patch",
+          "path": "/bbs/userRoles"
+        },
+        "purpose": "List or create valid role to be able to assign role_id."
+      },
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/bbs/users"
+        },
+        "purpose": "Register an initial user to establish email/username conflict scenario."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "method": "post",
+      "path": "/bbs/users"
+    },
+    "draft": "Attempt user registration with either an invalid role reference or improperly formatted email/password/username. Validate that the API returns proper validation errors for each specific field failure.",
+    "functionName": "test_create_user_with_invalid_role_or_format",
+    "dependencies": [
+      {
+        "endpoint": {
+          "method": "patch",
+          "path": "/bbs/userRoles"
+        },
+        "purpose": "Fetch valid roles and note roles to simulate invalid role ID."
+      }
+    ]
   },
   {
     "endpoint": {
       "method": "put",
-      "path": "/votes/votes/{id}"
+      "path": "/bbs/users/{id}"
     },
-    "draft": "Edit a vote's value successfully. Attempt to update a vote with invalid data or non-existent vote ID and expect errors. Try modifying an immutable field and ensure rejection.",
-    "functionName": "test_update_vote_success_failure_and_immutability",
+    "draft": "Test a user successfully updating their own profile (username, email, bio, role change) with valid data. Authenticate as the user, submit valid changes, and confirm the updated response reflects those changes and maintains uniqueness/integrity constraints.",
+    "functionName": "test_update_user_profile_as_self_with_valid_data",
     "dependencies": [
       {
         "endpoint": {
           "method": "post",
-          "path": "/votes/votes"
+          "path": "/bbs/users"
         },
-        "purpose": "Create a vote to update for these scenarios."
+        "purpose": "Register the test user who will later update their profile."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "method": "put",
+      "path": "/bbs/users/{id}"
+    },
+    "draft": "Try updating another user's profile as a non-privileged user (not admin, not the target user). Submit valid update payload and verify a permission denied or forbidden error is returned.",
+    "functionName": "test_update_other_user_profile_without_admin_permission",
+    "dependencies": [
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/bbs/users"
+        },
+        "purpose": "Register two standard users: one will try to update the other's profile."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "method": "put",
+      "path": "/bbs/users/{id}"
+    },
+    "draft": "Attempt to update a user's profile with an email or username that already exists on another user account. Validate the API returns proper error for uniqueness conflict and doesn't perform the update.",
+    "functionName": "test_update_user_profile_with_duplicate_email_or_username",
+    "dependencies": [
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/bbs/users"
+        },
+        "purpose": "Register at least two users: one for update, one as the conflicting target."
       }
     ]
   },
   {
     "endpoint": {
       "method": "delete",
-      "path": "/votes/votes/{id}"
+      "path": "/bbs/users/{id}"
     },
-    "draft": "Delete a vote and ensure it cannot be retrieved or counted in lists. Attempt to delete a vote that does not exist and observe error behavior.",
-    "functionName": "test_delete_vote_and_confirm_removal",
+    "draft": "Test soft-deleting (deactivating) a user account as an administrator. Authenticate as admin, target a user, and perform DELETE. Verify returned status reflects 'deleted', the user cannot log in, but their audit and content remain available for review as per business rules.",
+    "functionName": "test_soft_delete_user_account_as_admin",
     "dependencies": [
       {
         "endpoint": {
           "method": "post",
-          "path": "/votes/votes"
+          "path": "/bbs/users"
         },
-        "purpose": "Create a vote for deletion test."
+        "purpose": "Register a user account to be deactivated/soft deleted."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "method": "delete",
+      "path": "/bbs/users/{id}"
+    },
+    "draft": "Attempt to soft-delete (deactivate) a user account as a non-privileged user (not admin, not the account owner). Expect an error for insufficient permissions—confirming business logic for account management control.",
+    "functionName": "test_attempt_soft_delete_by_non_admin_permission_denied",
+    "dependencies": [
+      {
+        "endpoint": {
+          "method": "post",
+          "path": "/bbs/users"
+        },
+        "purpose": "Register both a test user and a target user for unauthorized deletion scenario."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "method": "delete",
+      "path": "/bbs/users/{id}"
+    },
+    "draft": "Attempt to soft-delete a non-existent user ID as administrator. Validate the API returns a not-found error and does not alter other records.",
+    "functionName": "test_soft_delete_user_account_that_does_not_exist",
+    "dependencies": []
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/comments/{commentId}/comments",
+      "method": "patch"
+    },
+    "draft": "Test listing all direct replies to a valid parent comment. First, create a user and log in to obtain authentication. Create a post, then add a comment to this post. Proceed to create multiple replies to this comment using the proper threading mechanism. Then, retrieve the list of replies with various pagination and filter settings. The test must verify that only direct (not deeply nested) replies are returned, the structure matches pagination requests, and content and author data aligns with created replies. Confirm that accessing this endpoint for an existing comment that has no replies returns an empty paginated list.",
+    "functionName": "test_list_replies_to_comment_with_valid_parent_comment_and_pagination",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/users",
+          "method": "post"
+        },
+        "purpose": "Register a new user and obtain credentials for authentication. Required for all subsequent actions."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/categories",
+          "method": "post"
+        },
+        "purpose": "Create or obtain a valid post category necessary to create a post."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts",
+          "method": "post"
+        },
+        "purpose": "Create a post as the registered user within a category to use as the base for comments."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts/{postId}/comments",
+          "method": "post"
+        },
+        "purpose": "Create the parent comment for which replies will be queried."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/comments/{commentId}/comments",
+          "method": "post"
+        },
+        "purpose": "Create multiple replies to the parent comment to populate the reply thread."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/comments/{commentId}/comments",
+      "method": "patch"
+    },
+    "draft": "Test error handling and access control when retrieving replies for a comment that has been deleted (soft-deleted). First, create a user, a category, and a post. Add a comment, then soft-delete (mark as deleted) the comment using the delete comment endpoint. Attempt to request replies for the deleted parent comment and verify that the system responds with an appropriate error or empty result, ensuring no unauthorized access or logical violation.",
+    "functionName": "test_list_replies_to_deleted_parent_comment",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/users",
+          "method": "post"
+        },
+        "purpose": "Register a user for all further actions."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/categories",
+          "method": "post"
+        },
+        "purpose": "Create a valid category for post creation."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts",
+          "method": "post"
+        },
+        "purpose": "Create a post to host the comment."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts/{postId}/comments",
+          "method": "post"
+        },
+        "purpose": "Create the parent comment to be tested for deletion."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts/{postId}/comments/{id}",
+          "method": "delete"
+        },
+        "purpose": "Soft-delete the newly created parent comment before testing the replies list operation."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/comments/{commentId}/comments",
+      "method": "patch"
+    },
+    "draft": "Test error handling when attempting to retrieve replies with an invalid or non-existent parent comment ID. Attempt to retrieve replies for a random UUID that does not correspond to any existing comment and verify the system returns a proper not-found error.",
+    "functionName": "test_list_replies_with_invalid_comment_id",
+    "dependencies": []
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/comments/{commentId}/comments/{id}",
+      "method": "get"
+    },
+    "draft": "Test successful retrieval of reply details for a valid reply under a parent comment. Begin by registering a user, creating a post, adding a comment, and then creating a direct reply to this comment. Request the reply details by specifying both the parent comment ID and the reply ID. Validate that the returned data matches the created reply, includes all required metadata, and does not leak any fields meant to be hidden from regular users.",
+    "functionName": "test_get_reply_details_with_valid_reply_and_permission",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/users",
+          "method": "post"
+        },
+        "purpose": "Register a user for all subsequent actions."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/categories",
+          "method": "post"
+        },
+        "purpose": "Create a category for post creation."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts",
+          "method": "post"
+        },
+        "purpose": "Create a post as base content."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts/{postId}/comments",
+          "method": "post"
+        },
+        "purpose": "Add a comment to the post."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/comments/{commentId}/comments",
+          "method": "post"
+        },
+        "purpose": "Create a reply to the comment, to be fetched."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/comments/{commentId}/comments/{id}",
+      "method": "get"
+    },
+    "draft": "Test error and access behavior for requesting details of a reply that has been soft-deleted. After creating user, post, comment, and reply, soft-delete the reply. Then request the reply's details and check that the system does not return the content, or provides an appropriate error indicating inaccessible or deleted resource.",
+    "functionName": "test_get_reply_details_for_deleted_reply",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/users",
+          "method": "post"
+        },
+        "purpose": "Register user for actions."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/categories",
+          "method": "post"
+        },
+        "purpose": "Create category for post."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts",
+          "method": "post"
+        },
+        "purpose": "Make a post to host comments."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts/{postId}/comments",
+          "method": "post"
+        },
+        "purpose": "Make the parent comment."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/comments/{commentId}/comments",
+          "method": "post"
+        },
+        "purpose": "Create reply (nested comment)."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/comments/{commentId}/comments/{id}",
+          "method": "delete"
+        },
+        "purpose": "Soft-delete the reply before attempting to fetch details."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/comments/{commentId}/comments/{id}",
+      "method": "get"
+    },
+    "draft": "Test error response when attempting to fetch details for a non-existent reply or using mismatched parent and reply IDs. Try using random or fake UUIDs and confirm system returns a not-found or appropriate error.",
+    "functionName": "test_get_reply_details_with_invalid_ids",
+    "dependencies": []
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/comments/{commentId}/comments",
+      "method": "post"
+    },
+    "draft": "Test successful creation of a nested reply (threaded comment) to an existing comment by an authenticated user. Workflow: register user, create category, create post, add a comment, then submit a reply with valid content fields. Verify that the returned reply is correctly associated with the parent comment and includes accurate author and timestamp data.",
+    "functionName": "test_create_reply_to_comment_with_valid_auth_and_data",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/users",
+          "method": "post"
+        },
+        "purpose": "Register a user for all further actions."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/categories",
+          "method": "post"
+        },
+        "purpose": "Create a post category for test setup."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts",
+          "method": "post"
+        },
+        "purpose": "Create a post as parent object."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts/{postId}/comments",
+          "method": "post"
+        },
+        "purpose": "Create the parent comment for reply creation."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/comments/{commentId}/comments",
+      "method": "post"
+    },
+    "draft": "Test reply creation failures: a) attempt reply with missing or empty content, and b) attempt reply creation when unauthenticated (no or invalid token). Both tests must confirm proper error responses — validation errors for bad data, authentication errors for unauthorized access.",
+    "functionName": "test_create_reply_with_invalid_data_or_unauthorized",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/users",
+          "method": "post"
+        },
+        "purpose": "Register user for post/thread context."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/categories",
+          "method": "post"
+        },
+        "purpose": "Create category for post."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts",
+          "method": "post"
+        },
+        "purpose": "Create post as base content."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts/{postId}/comments",
+          "method": "post"
+        },
+        "purpose": "Parent comment setup; necessary for reply attempt."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/comments/{commentId}/comments",
+      "method": "post"
+    },
+    "draft": "Test behavior when attempting to post a reply to a comment ID that does not exist. Attempt reply creation as an authenticated user, specifying a random or invalid commentId value, and verify that the system returns an appropriate not-found or error response.",
+    "functionName": "test_create_reply_to_nonexistent_parent_comment",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/users",
+          "method": "post"
+        },
+        "purpose": "User registration for authentication."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/comments/{commentId}/comments/{id}",
+      "method": "put"
+    },
+    "draft": "Test successfully updating a reply as its original author. Steps: register user, create category, post, comment, then submit a reply. Issue an update to the reply's content; validate the response reflects the new content and updated_at timestamp, and that the author is unchanged. Only the owner or privileged moderator should be permitted. Attempt update as another user and confirm access is denied.",
+    "functionName": "test_update_reply_with_valid_owner_and_data",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/users",
+          "method": "post"
+        },
+        "purpose": "Register user and (optionally) second user for privilege check."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/categories",
+          "method": "post"
+        },
+        "purpose": "Create category for post."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts",
+          "method": "post"
+        },
+        "purpose": "Post for comment/reply context."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts/{postId}/comments",
+          "method": "post"
+        },
+        "purpose": "Create parent comment."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/comments/{commentId}/comments",
+          "method": "post"
+        },
+        "purpose": "Create reply to update."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/comments/{commentId}/comments/{id}",
+      "method": "put"
+    },
+    "draft": "Test that updating a reply fails when submitting invalid (e.g., empty) content or targeting a reply that has already been soft-deleted. Workflow: as above, but after creating the reply, first delete it, then attempt to update. Validate the error messages and ensure deleted replies cannot be altered.",
+    "functionName": "test_update_reply_with_invalid_content_or_deleted_reply",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/users",
+          "method": "post"
+        },
+        "purpose": "Register user for content ownership."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/categories",
+          "method": "post"
+        },
+        "purpose": "Category (for post creation)."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts",
+          "method": "post"
+        },
+        "purpose": "Create post to allow comments."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts/{postId}/comments",
+          "method": "post"
+        },
+        "purpose": "Add parent comment."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/comments/{commentId}/comments",
+          "method": "post"
+        },
+        "purpose": "Add reply to parent."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/comments/{commentId}/comments/{id}",
+          "method": "delete"
+        },
+        "purpose": "Delete the reply before testing update operation."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/comments/{commentId}/comments/{id}",
+      "method": "put"
+    },
+    "draft": "Test error response when an unauthorized user attempts to update a reply they do not own. Scenario: have one user create the reply, then attempt to update it as a second user or without authentication, confirming proper permission errors.",
+    "functionName": "test_update_reply_by_unauthorized_user",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/users",
+          "method": "post"
+        },
+        "purpose": "Register two users for privilege separation."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/categories",
+          "method": "post"
+        },
+        "purpose": "Category for post hierarchy."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts",
+          "method": "post"
+        },
+        "purpose": "Post for comment context."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts/{postId}/comments",
+          "method": "post"
+        },
+        "purpose": "Create target comment."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/comments/{commentId}/comments",
+          "method": "post"
+        },
+        "purpose": "Have first user create reply."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/comments/{commentId}/comments/{id}",
+      "method": "delete"
+    },
+    "draft": "Test that the author of a reply can soft-delete their own reply. Steps: create user, category, post, parent comment, and reply. Delete the reply and verify the reply is marked as deleted, not hard-deleted, and can no longer be accessed by regular users.",
+    "functionName": "test_delete_reply_with_owner_permission",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/users",
+          "method": "post"
+        },
+        "purpose": "Register user for full chain of creation."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/categories",
+          "method": "post"
+        },
+        "purpose": "Create category for posts."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts",
+          "method": "post"
+        },
+        "purpose": "Create post."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts/{postId}/comments",
+          "method": "post"
+        },
+        "purpose": "Parent comment creation."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/comments/{commentId}/comments",
+          "method": "post"
+        },
+        "purpose": "Reply to be deleted."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/comments/{commentId}/comments/{id}",
+      "method": "delete"
+    },
+    "draft": "Test that deleting a reply as a non-owner (different user) or without authentication fails with a proper permission error. Have one user create the reply, then attempt deletion by a second user or unauthenticated call. System must enforce only the owner or moderator can delete replies.",
+    "functionName": "test_delete_reply_by_unauthorized_user",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/users",
+          "method": "post"
+        },
+        "purpose": "Register two users; one to own the reply and the other to test permission denial."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/categories",
+          "method": "post"
+        },
+        "purpose": "Create test category."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts",
+          "method": "post"
+        },
+        "purpose": "Create post for context."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts/{postId}/comments",
+          "method": "post"
+        },
+        "purpose": "Create base comment."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/comments/{commentId}/comments",
+          "method": "post"
+        },
+        "purpose": "Create a reply as the first user."
+      }
+    ]
+  },
+  {
+    "endpoint": {
+      "path": "/bbs/comments/{commentId}/comments/{id}",
+      "method": "delete"
+    },
+    "draft": "Test deleting a reply that has already been soft-deleted. Create user, category, post, comment, and reply, then delete the reply. Attempt to delete the same reply again and confirm the system returns error indicating reply already deleted or not found.",
+    "functionName": "test_delete_reply_that_is_already_deleted",
+    "dependencies": [
+      {
+        "endpoint": {
+          "path": "/bbs/users",
+          "method": "post"
+        },
+        "purpose": "Register user for actions."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/categories",
+          "method": "post"
+        },
+        "purpose": "Category for post context."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts",
+          "method": "post"
+        },
+        "purpose": "Create post for comment hierarchy."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/posts/{postId}/comments",
+          "method": "post"
+        },
+        "purpose": "Make parent comment."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/comments/{commentId}/comments",
+          "method": "post"
+        },
+        "purpose": "Add reply for target."
+      },
+      {
+        "endpoint": {
+          "path": "/bbs/comments/{commentId}/comments/{id}",
+          "method": "delete"
+        },
+        "purpose": "Delete reply before retesting delete operation."
       }
     ]
   }
