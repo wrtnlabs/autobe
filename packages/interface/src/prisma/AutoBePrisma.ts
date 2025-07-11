@@ -305,29 +305,10 @@ export namespace AutoBePrisma {
      * Prisma relation configuration defining the association details.
      *
      * Specifies how this foreign key connects to the target model, including
-     * relation name, target model, and target field.
+     * relation name, target model, and target field. This configuration is used
+     * to generate the appropriate Prisma relation directive in the schema.
      */
-    relation: {
-      /**
-       * Name of the relation property in the Prisma model.
-       *
-       * Used to access the related model instance. Usually a descriptive name
-       * of the relationship. Examples: "customer", "channel", "parent",
-       * "snapshot"
-       */
-      name: string & tags.Pattern<"^[a-zA-Z_][a-zA-Z0-9_]*$">;
-
-      /**
-       * Name of the target model being referenced.
-       *
-       * Must match exactly with an existing model name in the schema. Examples:
-       * "shopping_customers", "shopping_channels", "bbs_articles"
-       */
-      targetModel: string;
-
-      /** @internal */
-      mappingName?: string;
-    };
+    relation: IRelation;
 
     /**
      * Whether this foreign key has a unique constraint.
@@ -347,6 +328,88 @@ export namespace AutoBePrisma {
      * rules about mandatory vs optional associations.
      */
     nullable: boolean;
+  }
+
+  /**
+   * Interface representing a Prisma relation configuration between models.
+   *
+   * This interface defines how foreign key fields establish relationships with
+   * their target models. It provides the necessary information for Prisma to
+   * generate appropriate relation directives (@relation) in the schema,
+   * enabling proper relational data modeling and ORM functionality.
+   *
+   * The relation configuration is essential for:
+   *
+   * - Generating correct Prisma relation syntax
+   * - Establishing bidirectional relationships between models
+   * - Enabling proper type-safe querying through Prisma client
+   * - Supporting complex relationship patterns (1:1, 1:N, M:N)
+   */
+  export interface IRelation {
+    /**
+     * Name of the relation property in the Prisma model.
+     *
+     * This becomes the property name used to access the related model instance
+     * through the Prisma client. Should be descriptive and reflect the business
+     * relationship being modeled.
+     *
+     * Examples:
+     *
+     * - "customer" for shopping_customer_id field
+     * - "channel" for shopping_channel_id field
+     * - "parent" for parent_id field in hierarchical structures
+     * - "snapshot" for versioning relationships
+     * - "article" for bbs_article_id field
+     *
+     * Naming convention: camelCase, descriptive of the relationship's business
+     * meaning
+     */
+    name: string & tags.Pattern<"^[a-zA-Z_][a-zA-Z0-9_]*$">;
+
+    /**
+     * Name of the target model being referenced by this relation.
+     *
+     * Must exactly match an existing model name in the schema. This is used by
+     * Prisma to establish the foreign key constraint and generate the
+     * appropriate relation mapping.
+     *
+     * Examples:
+     *
+     * - "shopping_customers" for customer relationships
+     * - "shopping_channels" for channel relationships
+     * - "bbs_articles" for article relationships
+     * - "attachment_files" for file attachments
+     *
+     * The target model should exist in the same schema or be accessible through
+     * the Prisma schema configuration.
+     */
+    targetModel: string;
+
+    /**
+     * Optional explicit mapping name for complex relationship scenarios.
+     *
+     * Used internally by Prisma to handle advanced relationship patterns such
+     * as:
+     *
+     * - Self-referential relationships with multiple foreign keys
+     * - Complex many-to-many relationships through junction tables
+     * - Relationships that require custom naming to avoid conflicts
+     *
+     * When not specified, Prisma automatically generates appropriate mapping
+     * names based on the model names and field names. This field should only be
+     * used when the automatic naming conflicts with other relationships or when
+     * specific naming is required for business logic.
+     *
+     * Examples:
+     *
+     * - "ParentChild" for hierarchical self-references
+     * - "CustomerOrder" for customer-order relationships
+     * - "UserProfile" for user-profile 1:1 relationships
+     *
+     * @internal This field is primarily used by the code generation system
+     * and should not be modified unless dealing with complex relationship patterns.
+     */
+    mappingName?: string;
   }
 
   /**
@@ -380,7 +443,6 @@ export namespace AutoBePrisma {
      * - String: Text data, names, descriptions, codes
      * - Uri: URL/URI fields for links and references
      * - Uuid: UUID fields (for non-foreign-key UUIDs)
-     * - Date: Date-only values (rare, mostly for business dates)
      * - Datetime: Timestamp fields with date and time
      */
     type: "boolean" | "int" | "double" | "string" | "uri" | "uuid" | "datetime";
