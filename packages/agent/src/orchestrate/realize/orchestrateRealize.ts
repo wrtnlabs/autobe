@@ -9,8 +9,10 @@ import { v4 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
 import { orchestrateRealizeCoder } from "./orchestrateRealizeCoder";
+import { orchestrateRealizeDecorator } from "./orchestrateRealizeDecorator";
 import { orchestrateRealizePlanner } from "./orchestrateRealizePlanner";
 import { IAutoBeRealizeCoderApplication } from "./structures/IAutoBeRealizeCoderApplication";
+import { IAutoBeRealizeDecoratorApplication } from "./structures/IAutoBeRealizeDecoratorApplication";
 
 export const orchestrateRealize =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
@@ -22,6 +24,31 @@ export const orchestrateRealize =
     if (!ops) {
       throw new Error();
     }
+
+    ops.forEach((op, i) => {
+      if (!op.authorization?.role) {
+        op.authorization = {
+          role: [],
+          type: "Bearer",
+        };
+      }
+
+      if (i === 1) op.authorization.role.push("user");
+      if (i === 2) op.authorization.role.push("admin");
+      if (i === 3) op.authorization.role.push("moderator");
+    });
+
+    ctx.dispatch({
+      type: "realizeStart",
+      created_at: new Date().toISOString(),
+      reason: props.reason,
+      step: ctx.state().test?.step ?? 0,
+    });
+
+    const decorators: IAutoBeRealizeDecoratorApplication.IProps[] =
+      await orchestrateRealizeDecorator(ctx);
+
+    decorators;
 
     const files: Record<string, string> = {
       ...ctx.state().interface?.files,
