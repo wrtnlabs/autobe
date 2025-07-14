@@ -40,6 +40,7 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
   operation: AutoBeOpenApi.IOperation,
   props: RealizePlannerOutput,
   previous: string | null,
+  total: IAutoBeTypeScriptCompileResult.IDiagnostic[],
   diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[],
 ): Promise<
   | Pick<
@@ -86,6 +87,7 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
       props,
       artifacts,
       previous,
+      total,
       diagnostics,
     ),
   });

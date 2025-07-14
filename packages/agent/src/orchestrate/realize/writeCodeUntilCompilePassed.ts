@@ -13,6 +13,11 @@ import { orchestrateRealizePlanner } from "./orchestrateRealizePlanner";
 import { FAILED } from "./structures/IAutoBeReailizeFailedSymbol";
 import { IAutoBeRealizeCoderApplication } from "./structures/IAutoBeRealizeCoderApplication";
 
+interface Diagnostic {
+  total: IAutoBeTypeScriptCompileResult.IDiagnostic[];
+  current: IAutoBeTypeScriptCompileResult.IDiagnostic[];
+}
+
 export async function writeCodeUntilCompilePassed<
   Model extends ILlmSchema.Model,
 >(
@@ -64,7 +69,7 @@ export async function writeCodeUntilCompilePassed<
     },
   };
 
-  let diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[] = [];
+  let diagnostics: Diagnostic = { current: [], total: [] };
 
   for (let i = 0; i < retry; i++) {
     const generatedCodes: (
@@ -84,11 +89,11 @@ export async function writeCodeUntilCompilePassed<
     )[] = await Promise.all(
       ops
         .filter((op) => {
-          if (diagnostics.length === 0) {
+          if (diagnostics.current.length === 0) {
             return true;
           }
 
-          return diagnostics.some(
+          return diagnostics.current.some(
             (el) =>
               el.file ===
               `src/providers/${op.method}_${op.path
@@ -104,12 +109,16 @@ export async function writeCodeUntilCompilePassed<
             (op) => orchestrateRealizePlanner(ctx, op),
             (p) => {
               const filename = `src/providers/${p.functionName}.ts` as const;
-              const d = diagnostics.filter((el) => el.file === filename);
+              const t = diagnostics.total.filter((el) => el.file === filename);
+
+              const d = diagnostics.current.filter(
+                (el) => el.file === filename,
+              );
               const c = entireCodes[filename]?.content ?? null;
 
               console.log(JSON.stringify({ d, c, filename }, null, 2));
 
-              return orchestrateRealizeCoder(ctx, op, p, c, d);
+              return orchestrateRealizeCoder(ctx, op, p, c, t, d);
             },
           );
 
@@ -166,7 +175,9 @@ export async function writeCodeUntilCompilePassed<
     ) {
       break;
     } else if (compiled.type === "failure") {
-      diagnostics = compiled.diagnostics;
+      diagnostics.current = compiled.diagnostics;
+      diagnostics.total = [...diagnostics.total, ...compiled.diagnostics];
+
       console.log(JSON.stringify(diagnostics, null, 2), i);
     }
   }
