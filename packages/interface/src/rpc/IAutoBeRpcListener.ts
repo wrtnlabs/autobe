@@ -17,6 +17,7 @@ import {
   AutoBePrismaStartEvent,
   AutoBePrismaValidateEvent,
   AutoBeRealizeCompleteEvent,
+  AutoBeRealizeDecoratorEvent,
   AutoBeRealizeProgressEvent,
   AutoBeRealizeStartEvent,
   AutoBeRealizeValidateEvent,
@@ -293,6 +294,14 @@ export interface IAutoBeRpcListener {
    * the final implementation phase.
    */
   realizeStart?(event: AutoBeRealizeStartEvent): Promise<void>;
+
+  /**
+   * Optional handler for decorator generation events.
+   *
+   * Called when the Realize agent begins generating decorators, enabling client
+   * applications to indicate the start of the decorator generation phase.
+   */
+  realizeDecorator?(event: AutoBeRealizeDecoratorEvent): Promise<void>;
 
   /**
    * Optional handler for implementation progress events.

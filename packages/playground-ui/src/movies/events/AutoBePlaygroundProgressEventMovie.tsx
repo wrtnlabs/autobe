@@ -7,6 +7,7 @@ import {
   AutoBeInterfaceOperationsEvent,
   AutoBePrismaComponentsEvent,
   AutoBePrismaSchemasEvent,
+  AutoBeRealizeDecoratorEvent,
   AutoBeRealizeProgressEvent,
   AutoBeRealizeValidateEvent,
   AutoBeTestCorrectEvent,
@@ -37,6 +38,7 @@ export namespace AutoBePlaygroundProgressEventMovie {
       | AutoBeInterfaceComplementEvent
       | AutoBeTestScenarioEvent
       | AutoBeTestWriteEvent
+      | AutoBeRealizeDecoratorEvent
       | AutoBeTestValidateEvent
       | AutoBeTestCorrectEvent
       | AutoBeRealizeProgressEvent
@@ -72,6 +74,8 @@ function getDescription(
       return `Validating Test Function: ${event.result.type}`;
     case "testCorrect":
       return `Correcting Test Function`;
+    case "realizeDecorator":
+      return `Generating Decorators`;
     case "realizeValidate":
       return `Validating Realize Function: ${event.result.type}`;
     case "realizeProgress":

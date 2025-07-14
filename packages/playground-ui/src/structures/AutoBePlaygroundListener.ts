@@ -87,6 +87,9 @@ export class AutoBePlaygroundListener {
       realizeStart: async (event) => {
         this.callback?.(event);
       },
+      realizeDecorator: async (event) => {
+        this.callback?.(event);
+      },
       realizeProgress: async (event) => {
         this.callback?.(event);
       },

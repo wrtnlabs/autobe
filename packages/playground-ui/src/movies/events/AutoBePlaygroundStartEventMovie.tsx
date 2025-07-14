@@ -2,6 +2,7 @@ import {
   AutoBeAnalyzeStartEvent,
   AutoBeInterfaceStartEvent,
   AutoBePrismaStartEvent,
+  AutoBeRealizeDecoratorEvent,
   AutoBeRealizeStartEvent,
   AutoBeTestStartEvent,
 } from "@autobe/interface";
@@ -42,7 +43,8 @@ export namespace AutoBePlaygroundStartEventMovie {
       | AutoBePrismaStartEvent
       | AutoBeInterfaceStartEvent
       | AutoBeTestStartEvent
-      | AutoBeRealizeStartEvent;
+      | AutoBeRealizeStartEvent
+      | AutoBeRealizeDecoratorEvent;
   }
 }
 
@@ -60,6 +62,8 @@ function getTitle(
       return "Test";
     case "realizeStart":
       return "Realize";
+    case "realizeDecorator":
+      return "Realize Decorator";
     default:
       event satisfies never;
       throw new Error("Unknown event type"); // unreachable
