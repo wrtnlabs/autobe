@@ -175,7 +175,7 @@ export const transformRealizeCoderHistories = (
               previous,
               "```",
               "",
-              "However, the following errors occured:",
+              "However, the following errors occurred:",
               "```json",
               JSON.stringify(diagnostics),
               "",

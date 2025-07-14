@@ -17,7 +17,7 @@ export const orchestrateRealize =
     props;
     const ops = ctx.state().interface?.document.operations;
     if (!ops) {
-      throw new Error("Can't do realize agent beacuse operations are nothing.");
+      throw new Error("Can't do realize agent because operations are nothing.");
     }
 
     await writeCodeUntilCompilePassed(ctx, ops, 3);
