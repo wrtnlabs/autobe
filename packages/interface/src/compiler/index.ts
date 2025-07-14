@@ -1,4 +1,4 @@
-// BASIC COMPIELR
+// BASIC COMPILER
 export * from "./IAutoBeCompiler";
 export * from "./IAutoBeTypeScriptCompiler";
 export * from "./IAutoBeTypeScriptCompileProps";

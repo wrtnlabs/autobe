@@ -52,7 +52,7 @@ export interface IAutoBeRealizeTestResult {
    * understand the concurrency testing coverage and the application's
    * performance characteristics under parallel request scenarios.
    */
-  simulaneous: number;
+  simultaneous: number;
 
   /**
    * Complete collection of individual test operation results with detailed

@@ -50,7 +50,7 @@ export interface AutoBeRealizeTestStartEvent
    * requests correctly. The simultaneous limit prevents system overload and
    * maintains test reliability under controlled load conditions.
    */
-  simulateneous: number;
+  simultaneous: number;
 
   /**
    * Iteration number of the requirements analysis this test execution
