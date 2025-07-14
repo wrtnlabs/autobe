@@ -13,9 +13,9 @@ import ts from "typescript";
 import { IValidation } from "typia";
 import typiaTransform from "typia/lib/transform";
 
-import TestExternal from "./raw/test.json";
-import { writeTestFunction } from "./test/programmers/writeTestFunction";
-import { FilePrinter } from "./utils/FilePrinter";
+import TestExternal from "../raw/test.json";
+import { FilePrinter } from "../utils/FilePrinter";
+import { writeTestFunction } from "./programmers/writeTestFunction";
 
 export class AutoBeTestCompiler implements IAutoBeTestCompiler {
   public async compile(

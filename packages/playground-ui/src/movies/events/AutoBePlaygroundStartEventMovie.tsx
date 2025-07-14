@@ -3,6 +3,7 @@ import {
   AutoBeInterfaceStartEvent,
   AutoBePrismaStartEvent,
   AutoBeRealizeStartEvent,
+  AutoBeRealizeTestStartEvent,
   AutoBeTestStartEvent,
 } from "@autobe/interface";
 import StartIcon from "@mui/icons-material/Start";
@@ -42,7 +43,8 @@ export namespace AutoBePlaygroundStartEventMovie {
       | AutoBePrismaStartEvent
       | AutoBeInterfaceStartEvent
       | AutoBeTestStartEvent
-      | AutoBeRealizeStartEvent;
+      | AutoBeRealizeStartEvent
+      | AutoBeRealizeTestStartEvent;
   }
 }
 
@@ -60,6 +62,8 @@ function getTitle(
       return "Test";
     case "realizeStart":
       return "Realize";
+    case "realizeTestStart":
+      return "Final E2E Test";
     default:
       event satisfies never;
       throw new Error("Unknown event type"); // unreachable

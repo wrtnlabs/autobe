@@ -1,11 +1,24 @@
+// BASIC COMPIELR
 export * from "./IAutoBeCompiler";
 export * from "./IAutoBeTypeScriptCompiler";
 export * from "./IAutoBeTypeScriptCompileProps";
 export * from "./IAutoBeTypeScriptCompileResult";
+
+// INTERAFCE
 export * from "./IAutoBeInterfaceCompiler";
+
+// PRISMA
 export * from "./IAutoBePrismaCompiler";
 export * from "./IAutoBePrismaCompileProps";
 export * from "./IAutoBePrismaCompileResult";
+
+// TEST
 export * from "./IAutoBeTestCompiler";
 export * from "./IAutoBeTestWriteProps";
 export * from "./IAutoBeTestValidateProps";
+
+// REALIZE
+export * from "./IAutoBeRealizeCompiler";
+export * from "./IAutoBeRealizeTestProps";
+export * from "./IAutoBeRealizeTestOperation";
+export * from "./IAutoBeRealizeTestResult";

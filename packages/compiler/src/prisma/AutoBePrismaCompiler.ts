@@ -7,8 +7,8 @@ import {
 } from "@autobe/interface";
 import { EmbedPrisma } from "embed-prisma";
 
-import { validatePrismaApplication } from "./prisma/validatePrismaApplication";
-import { writePrismaApplication } from "./prisma/writePrismaApplication";
+import { validatePrismaApplication } from "./validatePrismaApplication";
+import { writePrismaApplication } from "./writePrismaApplication";
 
 /**
  * Custom Prisma compiler that handles database schema validation and
