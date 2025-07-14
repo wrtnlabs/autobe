@@ -22,8 +22,8 @@ import { AutoBeOpenApi } from "../openapi";
  */
 export interface IAutoBeInterfaceCompiler {
   /**
-   * Compiles AutoBE OpenAPI AST document into complete NestJS application
-   * files.
+   * Writes complete NestJS application files from validated AutoBE OpenAPI AST
+   * document.
    *
    * Performs the complete transformation pipeline from validated
    * {@link AutoBeOpenApi.IDocument} AST structures to production-ready NestJS
@@ -31,8 +31,8 @@ export interface IAutoBeInterfaceCompiler {
    * test scaffolds, and all supporting infrastructure code with comprehensive
    * documentation and type safety assurance.
    *
-   * The compilation process includes revolutionary enhancements such as
-   * keyworded parameter optimization for AI consumption, comprehensive JSDoc
+   * The writing process includes revolutionary enhancements such as keyworded
+   * parameter optimization for AI consumption, comprehensive JSDoc
    * documentation derived from AST descriptions, intelligent test scaffolds,
    * and end-to-end type safety throughout the entire application stack.
    *
@@ -41,7 +41,7 @@ export interface IAutoBeInterfaceCompiler {
    * @returns Promise resolving to key-value pairs mapping file paths to
    *   generated NestJS project contents ready for deployment
    */
-  compile(document: AutoBeOpenApi.IDocument): Promise<Record<string, string>>;
+  write(document: AutoBeOpenApi.IDocument): Promise<Record<string, string>>;
 
   /**
    * Transforms AutoBE OpenAPI AST document to standard OpenAPI specification.

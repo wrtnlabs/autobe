@@ -16,7 +16,7 @@ export const test_compiler_interface_bbs = async (): Promise<void> => {
     ),
   );
   const result: Record<string, string> =
-    await compiler.interface.compile(document);
+    await compiler.interface.write(document);
   typia.assertEquals(result);
 
   await FileSystemIterator.save({

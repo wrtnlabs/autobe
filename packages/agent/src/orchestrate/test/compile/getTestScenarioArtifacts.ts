@@ -13,7 +13,7 @@ export async function getTestScenarioArtifacts<Model extends ILlmSchema.Model>(
     ctx.state().interface!.document,
   );
   const entries: [string, string][] = Object.entries(
-    await ctx.compiler.interface.compile(document),
+    await ctx.compiler.interface.write(document),
   );
   const filter = (prefix: string, exclude?: string) => {
     const result: [string, string][] = entries.filter(

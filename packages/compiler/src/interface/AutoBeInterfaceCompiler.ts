@@ -32,7 +32,7 @@ import { transformOpenApiDocument } from "./transformOpenApi";
  * @author Samchon
  */
 export class AutoBeInterfaceCompiler implements IAutoBeInterfaceCompiler {
-  public async compile(
+  public async write(
     document: AutoBeOpenApi.IDocument,
   ): Promise<Record<string, string>> {
     const swagger: OpenApi.IDocument = transformOpenApiDocument(document);
