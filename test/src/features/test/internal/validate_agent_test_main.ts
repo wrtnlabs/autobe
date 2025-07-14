@@ -6,6 +6,7 @@ import {
   AutoBeTestHistory,
 } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
+import fs from "fs";
 import typia from "typia";
 
 import { TestFactory } from "../../../TestFactory";
@@ -59,4 +60,10 @@ export const validate_agent_test_main = async (
     },
   });
   TestValidator.equals("result")(result.compiled.type)("success");
+  if (process.argv.includes("--archive"))
+    await fs.promises.writeFile(
+      `${TestGlobal.ROOT}/assets/histories/${project}.test.json`,
+      JSON.stringify(agent.getHistories(), null, 2),
+      "utf8",
+    );
 };

@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@autobe/test",
-  "version": "0.10.1",
+  "version": "0.10.6",
   "description": "AutoBE Test Program",
   "main": "src/index.ts",
   "scripts": {
@@ -9,6 +9,7 @@
     "build": "tsc --noEmit",
     "dev": "tsc --watch --noEmit",
     "start": "node build/prompt.js && ts-node src",
+    "archive": "bash build/archive.sh",
     "bench": "ts-node src/benchmarks"
   },
   "author": "Wrtn Technologies",

@@ -32,9 +32,15 @@ export namespace TestHistory {
       type: "test",
     });
 
+  export const getRealize = (project: TestProject) =>
+    getHistories({
+      project,
+      type: "realize",
+    });
+
   const getHistories = async (props: {
     project: TestProject;
-    type: "analyze" | "prisma" | "interface" | "test";
+    type: "analyze" | "prisma" | "interface" | "test" | "realize";
   }): Promise<AutoBeHistory[]> => {
     const location: string = `${TestGlobal.ROOT}/assets/histories/${props.project}.${props.type}.json`;
     const content: string = await fs.promises.readFile(location, "utf8");

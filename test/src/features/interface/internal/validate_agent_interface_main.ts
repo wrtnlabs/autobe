@@ -5,6 +5,7 @@ import {
   AutoBeEvent,
   AutoBeInterfaceHistory,
 } from "@autobe/interface";
+import fs from "fs";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
@@ -53,4 +54,10 @@ export const validate_agent_interface_main = async (
       "logs/result.json": JSON.stringify(result, null, 2),
     },
   });
+  if (process.argv.includes("--archive"))
+    await fs.promises.writeFile(
+      `${TestGlobal.ROOT}/assets/histories/${project}.interface.json`,
+      JSON.stringify(agent.getHistories(), null, 2),
+      "utf8",
+    );
 };

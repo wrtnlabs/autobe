@@ -8,7 +8,7 @@ packages/*/README.md
 test/README.md
 website/README.md
 internals/*/README.md
-!internals/documents/README.md
+!internals/template/README.md
 
 *.log
 .env

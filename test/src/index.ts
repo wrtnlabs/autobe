@@ -11,6 +11,10 @@ import { TestFactory } from "./TestFactory";
 import { TestGlobal } from "./TestGlobal";
 
 async function main(): Promise<void> {
+  console.log("---------------------------------------------------");
+  console.log("AutoBE Test Program");
+  console.log("---------------------------------------------------");
+
   // PREPARE ENVIRONMENT
   const compiler: AutoBeCompiler = new AutoBeCompiler();
   const tokenUsage: AutoBeTokenUsage = new AutoBeTokenUsage();

@@ -1,6 +1,7 @@
 import { AutoBeAgent } from "@autobe/agent";
 import { FileSystemIterator } from "@autobe/filesystem";
 import { AutoBeHistory, AutoBeUserMessageHistory } from "@autobe/interface";
+import fs from "fs";
 import typia from "typia";
 
 import { TestFactory } from "../../../TestFactory";
@@ -8,7 +9,7 @@ import { TestGlobal } from "../../../TestGlobal";
 import { TestHistory } from "../../../internal/TestHistory";
 import { TestProject } from "../../../structures/TestProject";
 
-export const validate_agent_analyze = async (
+export const validate_agent_analyze_main = async (
   factory: TestFactory,
   project: TestProject,
 ) => {
@@ -46,4 +47,10 @@ export const validate_agent_analyze = async (
       ),
     },
   });
+  if (process.argv.includes("--archive"))
+    await fs.promises.writeFile(
+      `${TestGlobal.ROOT}/assets/histories/${project}.analyze.json`,
+      JSON.stringify(agent.getHistories(), null, 2),
+      "utf8",
+    );
 };
