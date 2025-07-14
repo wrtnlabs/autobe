@@ -4,7 +4,7 @@ export * from "./IAutoBeTypeScriptCompiler";
 export * from "./IAutoBeTypeScriptCompileProps";
 export * from "./IAutoBeTypeScriptCompileResult";
 
-// INTERAFCE
+// INTERFACE
 export * from "./IAutoBeInterfaceCompiler";
 
 // PRISMA
