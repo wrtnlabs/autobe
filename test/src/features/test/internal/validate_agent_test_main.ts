@@ -57,6 +57,7 @@ export const validate_agent_test_main = async (
       "logs/events.json": JSON.stringify(events, null, 2),
       "logs/result.json": typia.json.stringify(result),
       "logs/histories.json": typia.json.stringify(histories),
+      "pnpm-workspace.yaml": "",
     },
   });
   TestValidator.equals("result")(result.compiled.type)("success");
