@@ -25,19 +25,6 @@ export const orchestrateRealize =
       throw new Error();
     }
 
-    ops.forEach((op, i) => {
-      if (!op.authorization?.role) {
-        op.authorization = {
-          role: [],
-          type: "Bearer",
-        };
-      }
-
-      if (i === 1) op.authorization.role.push("user");
-      if (i === 2) op.authorization.role.push("admin");
-      if (i === 3) op.authorization.role.push("moderator");
-    });
-
     ctx.dispatch({
       type: "realizeStart",
       created_at: new Date().toISOString(),
