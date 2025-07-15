@@ -1,5 +1,5 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
-import { AutoBeAnalyzeHistory } from "@autobe/interface";
+import { AutoBeAnalyzeHistory, AutoBePrisma } from "@autobe/interface";
 import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
@@ -10,6 +10,11 @@ export const transformPrismaSchemaHistories = (
     filename: string;
     tables: string[];
     entireTables: string[];
+  },
+  remained?: {
+    done: AutoBePrisma.IModel[];
+    todo: string[];
+    namespace: string;
   },
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
@@ -61,5 +66,29 @@ export const transformPrismaSchemaHistories = (
         ...component.entireTables.map((table) => `    - ${table}`),
       ].join("\n"),
     },
+    ...(remained
+      ? [
+          {
+            type: "assistantMessage",
+            id: v4(),
+            created_at: new Date().toISOString(),
+            text: [
+              "You made these prisma models before:",
+              "",
+              "```json",
+              JSON.stringify({
+                filename: component.filename,
+                namespace: remained.namespace,
+                models: remained.done,
+              }),
+              "```",
+              "",
+              "However, you have not made these prisma models yet:",
+              "",
+              ...remained.todo.map((s) => `- ${s}`),
+            ].join("\n"),
+          } satisfies IAgenticaHistoryJson.IAssistantMessage,
+        ]
+      : []),
   ];
 };
