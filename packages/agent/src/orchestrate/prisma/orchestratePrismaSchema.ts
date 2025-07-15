@@ -90,12 +90,19 @@ async function process<Model extends ILlmSchema.Model>(
   });
   if (pointer.value === null)
     throw new Error("Unreachable code: Prisma Schema not generated");
-  if (component.tables.length !== pointer.value.file.models.length)
-    console.log(
-      "Warning: Mismatch in table count",
-      component.tables,
-      pointer.value.file.models.map((m) => m.name),
+
+  const file: AutoBePrisma.IFile = pointer.value.file;
+  if (component.tables.length !== file.models.length) {
+    const remained: string[] = component.tables.filter(
+      (x) => !file.models.some((m) => m.name === x),
     );
+    const fulfillment: IMakePrismaSchemaFileProps = await process(ctx, {
+      filename: component.filename,
+      tables: remained,
+      entireTables: component.entireTables,
+    });
+    pointer.value.file.models.push(...fulfillment.file.models);
+  }
   return pointer.value;
 }
 
