@@ -1,6 +1,8 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import { AutoBeRealizeDecoratorEvent } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
+import fs from "fs/promises";
+import path from "path";
 import { IPointer } from "tstl";
 import typia from "typia";
 
@@ -9,6 +11,7 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { enforceToolCall } from "../../utils/enforceToolCall";
 import { IAutoBeRealizeDecoratorApplication } from "./structures/IAutoBeRealizeDecoratorApplication";
 import { transformRealizeDecoratorHistories } from "./transformRealizeDecorator";
+import { transformRealizeDecoratorCorrectHistories } from "./transformRealizeDecoratorCorrectHistories";
 
 /**
  * 1. Create decorator and its parameters. and design the Authorization Provider.
@@ -112,7 +115,100 @@ async function process<Model extends ILlmSchema.Model>(
 
   if (pointer.value === null) throw new Error("Failed to create decorator.");
 
-  return pointer.value;
+  const templateFiles = {
+    "src/MyGlobal.ts": await fs.readFile(
+      path.join(__dirname, "../../../../../internals/template/src/MyGlobal.ts"),
+      "utf-8",
+    ),
+    "src/authentications/jwtAuthorize.ts": await fs.readFile(
+      path.join(
+        __dirname,
+        "../../../../../internals/template/src/providers/jwtAuthorize.ts",
+      ),
+      "utf-8",
+    ),
+  };
+
+  return await correctDecorator(
+    ctx,
+    pointer.value,
+    prismaClients,
+    templateFiles,
+  );
+}
+
+async function correctDecorator<Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  result: IAutoBeRealizeDecoratorApplication.IProps,
+  prismaClients: Record<string, string>,
+  templateFiles: Record<string, string>,
+  life: number = 4,
+): Promise<IAutoBeRealizeDecoratorApplication.IProps> {
+  // Check Compile
+  const files = {
+    ...templateFiles,
+    ...prismaClients,
+    [`src/decorators/${result.decorator.name}.ts`]: result.decorator.code,
+    [`src/authentications/${result.provider.name}.ts`]: result.provider.code,
+  };
+
+  const compiled = await ctx.compiler.typescript.compile({
+    files,
+  });
+
+  if (compiled.type === "success") {
+    return result;
+  } else if (compiled.type === "exception" || life === 0) {
+    // TODO: Add Failure Event Dispatch
+    return result;
+  }
+
+  const pointer: IPointer<IAutoBeRealizeDecoratorApplication.IProps | null> = {
+    value: null,
+  };
+
+  const agentica: MicroAgentica<Model> = new MicroAgentica({
+    model: ctx.model,
+    vendor: ctx.vendor,
+    config: {
+      ...(ctx.config ?? {}),
+      executor: {
+        describe: null,
+      },
+    },
+    histories: transformRealizeDecoratorCorrectHistories(
+      result,
+      prismaClients,
+      templateFiles,
+      compiled.diagnostics,
+    ),
+    controllers: [
+      createApplication({
+        model: ctx.model,
+        build: (next) => {
+          pointer.value = next;
+        },
+      }),
+    ],
+  });
+  enforceToolCall(agentica);
+
+  await agentica
+    .conversate("Please correct the decorator and the provider.")
+    .finally(() => {
+      const tokenUsage = agentica.getTokenUsage();
+      ctx.usage().record(tokenUsage, ["realize"]);
+    });
+
+  if (pointer.value === null) throw new Error("Failed to correct decorator.");
+
+  return await correctDecorator(
+    ctx,
+    pointer.value,
+    prismaClients,
+    templateFiles,
+    life - 1,
+  );
 }
 
 function createApplication<Model extends ILlmSchema.Model>(props: {
@@ -155,51 +251,3 @@ const collection = {
   deepseek: claude,
   "3.1": claude,
 };
-
-// interface IAutoBeRealizeDecoratorApplication.IProps {
-//   /**
-//    * The name of the authentication Provider function in {role}Authorize format
-//    * (e.g., adminAuthorize, userAuthorize). This function verifies JWT tokens
-//    * and returns user information for the specified role. It should handle JWT
-//    * validation, role verification, and database queries to ensure the user
-//    * exists and has proper permissions.
-//    */
-//   providerFunctionName: string;
-
-//   /**
-//    * The name of the Payload type in {Role}Payload format (e.g., AdminPayload,
-//    * UserPayload). This interface defines the structure of the authenticated
-//    * user data that will be used as the parameter type when using decorators in
-//    * Controllers. Must include 'id' (UUID format) and 'type' (role
-//    * discriminator) fields.
-//    */
-//   decoratorTypeName: string;
-
-//   /**
-//    * Complete TypeScript code for the authentication Provider function and its
-//    * corresponding Payload interface. Must include: JWT token verification using
-//    * jwtAuthorize function, role type checking, database query using
-//    * MyGlobal.prisma.{tableName} pattern, proper error handling with NestJS
-//    * exceptions, and the Payload interface definition with appropriate typia
-//    * tags for type safety.
-//    */
-//   provider: string;
-
-//   /**
-//    * The name of the Decorator to be generated in {Role}Auth format (e.g.,
-//    * AdminAuth, UserAuth). This decorator will be used as a parameter decorator
-//    * in Controller methods to automatically authenticate and authorize users for
-//    * the specific role, injecting the authenticated user payload.
-//    */
-//   decoratorName: string;
-
-//   /**
-//    * Complete TypeScript code for the authentication Decorator implementation.
-//    * Must include: SwaggerCustomizer integration for API documentation with
-//    * bearer token security, createParamDecorator implementation for the actual
-//    * authentication logic, Singleton pattern for efficient decorator instance
-//    * management, and proper integration with the corresponding Provider
-//    * function.
-//    */
-//   decorator: string;
-// }
