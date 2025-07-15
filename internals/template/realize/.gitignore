@@ -1,0 +1,13 @@
+bin/
+dist/
+lib/
+node_modules/
+
+prisma/migrations
+prisma/schema/migrations
+prisma/bbs.db
+
+*.DS_Store
+package-lock.json
+pnpm-lock.yaml
+.npmrc

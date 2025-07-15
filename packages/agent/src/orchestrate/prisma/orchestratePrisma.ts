@@ -53,6 +53,8 @@ export const orchestratePrisma =
       result.data,
       "postgres",
     );
+
+    // PROPAGATE HISTORY
     const history: AutoBePrismaHistory = {
       type: "prisma",
       id: v4(),

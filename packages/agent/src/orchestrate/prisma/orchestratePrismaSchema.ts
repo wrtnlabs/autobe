@@ -90,6 +90,12 @@ async function process<Model extends ILlmSchema.Model>(
   });
   if (pointer.value === null)
     throw new Error("Unreachable code: Prisma Schema not generated");
+  if (component.tables.length !== pointer.value.file.models.length)
+    console.log(
+      "Warning: Mismatch in table count",
+      component.tables,
+      pointer.value.file.models.map((m) => m.name),
+    );
   return pointer.value;
 }
 

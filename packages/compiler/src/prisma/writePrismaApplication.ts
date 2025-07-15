@@ -178,12 +178,16 @@ function writeRelations(props: {
     )
     .flat(2);
   const foreignIndexes: AutoBePrisma.IForeignField[] =
-    props.model.foreignFields.filter(
-      (f) =>
+    props.model.foreignFields.filter((f) => {
+      if (f.unique === true)
+        return props.model.uniqueIndexes.every(
+          (u) => u.fieldNames.length !== 1 || u.fieldNames[0] !== f.name,
+        );
+      return (
         props.model.uniqueIndexes.every((u) => u.fieldNames[0] !== f.name) &&
-        (f.unique === true ||
-          props.model.plainIndexes.every((p) => p.fieldNames[0] !== f.name)),
-    );
+        props.model.plainIndexes.every((p) => p.fieldNames[0] !== f.name)
+      );
+    });
   const contents: string[][] = [
     props.model.foreignFields.map(writeConstraint),
     hasRelationships.map((r) =>
@@ -306,7 +310,7 @@ const SQLITE_MAIN_FILE = StringUtil.trim`
   }
   datasource db {
     provider = "sqlite"
-    url      = "file:./prisma.db"
+    url      = "file:../../data.db"
   }
   generator markdown {
     provider = "prisma-markdown"
