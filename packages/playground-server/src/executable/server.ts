@@ -13,7 +13,7 @@ import typia from "typia";
 import { AutoBePlaygroundServer } from "../AutoBePlaygroundServer";
 
 const main = async () => {
-  // @todo: must be separated to each acception
+  // @todo: must be separated to each acceptance
   const listener: IAutoBeCompilerListener = {
     realize: {
       test: {
