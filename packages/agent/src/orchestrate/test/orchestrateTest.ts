@@ -70,7 +70,7 @@ export const orchestrateTest =
     const compiler: IAutoBeCompiler = await ctx.compiler();
     const result: AutoBeTestFile[] = success.map((c) => c.file);
     const compiled: IAutoBeTypeScriptCompileResult =
-      await compiler.test.compile({
+      await compiler.typescript.compile({
         files: Object.fromEntries([
           ...Object.entries(
             await ctx.files({

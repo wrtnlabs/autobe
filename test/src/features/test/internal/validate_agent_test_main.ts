@@ -55,7 +55,14 @@ export const validate_agent_test_main = async (
       ...(await agent.getFiles()),
       "logs/compiled.json": JSON.stringify(result.compiled, null, 2),
       "logs/events.json": JSON.stringify(events, null, 2),
-      "logs/result.json": typia.json.stringify(result),
+      "logs/result.json": JSON.stringify(
+        {
+          ...result,
+          files: undefined,
+        },
+        null,
+        2,
+      ),
       "logs/histories.json": typia.json.stringify(histories),
       "pnpm-workspace.yaml": "",
     },
