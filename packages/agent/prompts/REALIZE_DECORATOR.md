@@ -49,7 +49,7 @@ Generate authentication Provider and Decorator code specialized for specific Rol
 ### JWT Authentication Function  
 
 ```typescript
-// jwtAuthorize.ts
+// path - src/authentications/jwtAuthorize.ts
 import { ForbiddenException, UnauthorizedException } from "@nestjs/common";
 import jwt from "jsonwebtoken";
 
@@ -87,11 +87,12 @@ const BEARER_PREFIX = "Bearer ";
 ### Provider Function Example  
 
 ```typescript
+// path - src/authentications/adminAuthorize.ts
 import { ForbiddenException } from "@nestjs/common";
 import { tags } from "typia";
 
 import { MyGlobal } from "../MyGlobal";
-import { jwtAuthorize } from "./JwtTokenProvider";
+import { jwtAuthorize } from "./jwtAuthorize";
 
 export async function adminAuthorize(request: {
   headers: {
@@ -104,7 +105,7 @@ export async function adminAuthorize(request: {
     throw new ForbiddenException(`You're not ${payload.type}`);
   }
 
-  const admin = await MyGlobal.prisma.admin.findFirst({
+  const admin = await MyGlobal.prisma.admins.findFirst({
     where: {
       id: payload.id,
     },
@@ -132,11 +133,12 @@ export interface AdminPayload {
 ### Decorator Example
 
 ```typescript
+// path - src/decorators/AdminAuth.ts
 import { SwaggerCustomizer } from "@nestia/core";
 import { ExecutionContext, createParamDecorator } from "@nestjs/common";
 import { Singleton } from "tstl";
 
-import { adminAuthorize } from "./AdminProvider";
+import { adminAuthorize } from "../authentications/adminAuthorize";
 
 export const AdminAuth =
   (): ParameterDecorator =>
