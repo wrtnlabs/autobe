@@ -92,16 +92,16 @@ async function process<Model extends ILlmSchema.Model>(
     throw new Error("Unreachable code: Prisma Schema not generated");
 
   const file: AutoBePrisma.IFile = pointer.value.file;
-  if (component.tables.length !== file.models.length) {
-    const remained: string[] = component.tables.filter(
-      (x) => !file.models.some((m) => m.name === x),
-    );
-    const fulfillment: IMakePrismaSchemaFileProps = await process(ctx, {
+  const remained: string[] = component.tables.filter((x) =>
+    file.models.every((m) => m.name !== x),
+  );
+  if (remained.length !== 0) {
+    const fulfill: IMakePrismaSchemaFileProps = await process(ctx, {
       filename: component.filename,
       tables: remained,
       entireTables: component.entireTables,
     });
-    pointer.value.file.models.push(...fulfillment.file.models);
+    pointer.value.file.models.push(...fulfill.file.models);
   }
   return pointer.value;
 }
