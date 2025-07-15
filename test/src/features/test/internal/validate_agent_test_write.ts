@@ -4,6 +4,7 @@ import { AutoBeCompilerInterfaceTemplate } from "@autobe/compiler/src/raw/AutoBe
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeTestScenario,
+  IAutoBeCompiler,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import fs from "fs";
@@ -38,6 +39,7 @@ export const validate_agent_test_write = async (
   typia.assert(writes);
 
   // REPORT RESULT
+  const compiler: IAutoBeCompiler = await agent.getContext().compiler.get();
   const files: Record<string, string> = Object.fromEntries([
     ...Object.entries(await agent.getFiles()).filter(
       ([key]) => key.startsWith("test") === false,
@@ -51,9 +53,8 @@ export const validate_agent_test_write = async (
       ])
       .flat(),
   ]);
-  const compiled: IAutoBeTypeScriptCompileResult = await agent
-    .getContext()
-    .compiler.typescript.compile({
+  const result: IAutoBeTypeScriptCompileResult =
+    await compiler.typescript.compile({
       files: Object.fromEntries(
         Object.entries(files).filter(
           ([key]) =>
@@ -72,7 +73,7 @@ export const validate_agent_test_write = async (
       "logs/results.json": typia.json.stringify(writes),
       "logs/compiled.json": JSON.stringify(
         {
-          ...compiled,
+          ...result,
           javascript: undefined,
         },
         null,

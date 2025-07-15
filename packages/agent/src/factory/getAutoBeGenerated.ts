@@ -1,4 +1,8 @@
-import { AutoBeHistory, IAutoBeGetFilesOptions } from "@autobe/interface";
+import {
+  AutoBeHistory,
+  IAutoBeCompiler,
+  IAutoBeGetFilesOptions,
+} from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 import typia from "typia";
 
@@ -28,14 +32,12 @@ export async function getAutoBeGenerated<Model extends ILlmSchema.Model>(
   );
 
   // PRISMA
+  const compiler: IAutoBeCompiler = await ctx.compiler.get();
   if (state.prisma?.step === state.analyze.step) {
     const schemaFiles: Record<string, string> =
       (options?.dbms ?? "postgres") === "postgres"
         ? state.prisma.schemas
-        : await ctx.compiler.prisma.write(
-            state.prisma.result.data,
-            options!.dbms!,
-          );
+        : await compiler.prisma.write(state.prisma.result.data, options!.dbms!);
     Object.assign<
       Record<string, string>,
       Record<string, string>,
@@ -60,7 +62,7 @@ export async function getAutoBeGenerated<Model extends ILlmSchema.Model>(
 
   // INTERFACE
   if (state.interface?.step === state.analyze.step) {
-    const files: Record<string, string> = await ctx.compiler.interface.write(
+    const files: Record<string, string> = await compiler.interface.write(
       state.interface.document,
     );
     Object.assign<
@@ -91,7 +93,7 @@ export async function getAutoBeGenerated<Model extends ILlmSchema.Model>(
     >(
       ret,
       Object.fromEntries(state.test.files.map((f) => [f.location, f.content])),
-      await ctx.compiler.test.getTemplate(),
+      await compiler.test.getTemplate(),
     );
 
   // REALIZE
@@ -100,7 +102,7 @@ export async function getAutoBeGenerated<Model extends ILlmSchema.Model>(
       Record<string, string>,
       Record<string, string>,
       Record<string, string>
-    >(ret, state.realize.files, await ctx.compiler.realize.getTemplate());
+    >(ret, state.realize.files, await compiler.realize.getTemplate());
 
   // LOGGING
   Object.assign<Record<string, string>, Record<string, string>>(ret, {

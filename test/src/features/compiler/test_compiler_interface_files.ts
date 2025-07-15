@@ -15,7 +15,7 @@ export const test_compiler_interface_files = async (): Promise<void> => {
       model: "gpt-4.1",
     },
     histories: await TestHistory.getInterface("bbs-backend"),
-    compiler: new AutoBeCompiler(),
+    compiler: (listener) => new AutoBeCompiler(listener),
   });
 
   const files: Record<string, string> = await agent.getFiles();

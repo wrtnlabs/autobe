@@ -5,6 +5,7 @@ import {
   AutoBeTestHistory,
   AutoBeTestScenarioEvent,
   AutoBeTestValidateEvent,
+  IAutoBeCompiler,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
@@ -66,13 +67,14 @@ export const orchestrateTest =
     );
 
     // DO COMPILE
-    const files: AutoBeTestFile[] = success.map((c) => c.file);
+    const compiler: IAutoBeCompiler = await ctx.compiler.get();
+    const result: AutoBeTestFile[] = success.map((c) => c.file);
     const compiled: IAutoBeTypeScriptCompileResult =
-      await ctx.compiler.test.compile({
+      await compiler.test.compile({
         files: await ctx.files({
           dbms: "sqlite",
         }),
-        ...Object.fromEntries(files.map((f) => [f.location, f.content])),
+        ...Object.fromEntries(result.map((f) => [f.location, f.content])),
       });
 
     const history: AutoBeTestHistory = {
@@ -80,7 +82,7 @@ export const orchestrateTest =
       id: v4(),
       completed_at: new Date().toISOString(),
       created_at: start.toISOString(),
-      files,
+      files: result,
       compiled,
       reason: "Step to the test generation referencing the interface",
       step: ctx.state().interface?.step ?? 0,
@@ -88,7 +90,7 @@ export const orchestrateTest =
     ctx.dispatch({
       type: "testComplete",
       created_at: start.toISOString(),
-      files: Object.fromEntries(files.map((f) => [f.location, f.content])),
+      files: Object.fromEntries(result.map((f) => [f.location, f.content])),
       compiled,
       step: ctx.state().interface?.step ?? 0,
     });

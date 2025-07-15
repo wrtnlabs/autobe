@@ -54,10 +54,10 @@ const main = async (): Promise<void> => {
     name: "AutoBeCompilerRealizeTemplate",
     files: {
       ...(await getDefinition("compiler/IAutoBeRealizeTestOperation.ts")),
-      ...(await getDefinition("compiler/IAutoBeRealizeTestProps.ts")),
+      ...(await getDefinition("compiler/IAutoBeRealizeTestConfig.ts")),
       ...(await getDefinition("compiler/IAutoBeRealizeTestResult.ts")),
-      ...(await getDefinition("rpc/IAutoBeRealizeTestListener.ts")),
-      ...(await getDefinition("rpc/IAutoBeRealizeTestService.ts")),
+      ...(await getDefinition("compiler/IAutoBeRealizeTestListener.ts")),
+      ...(await getDefinition("compiler/IAutoBeRealizeTestService.ts")),
     },
   });
 };

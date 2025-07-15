@@ -4,10 +4,13 @@ import { AutoBeOpenApi } from "@autobe/interface";
 import { OpenApi } from "@samchon/openapi";
 import typia from "typia";
 
+import { TestFactory } from "../../TestFactory";
 import { TestGlobal } from "../../TestGlobal";
 
-export const test_compiler_interface_write = async (): Promise<void> => {
-  const compiler: AutoBeCompiler = new AutoBeCompiler();
+export const test_compiler_interface_write = async (
+  factory: TestFactory,
+): Promise<void> => {
+  const compiler: AutoBeCompiler = factory.createCompiler();
   const document: AutoBeOpenApi.IDocument = await compiler.interface.invert(
     OpenApi.convert(
       await fetch(

@@ -1,5 +1,5 @@
-import { IAutoBeRealizeTestProps } from "../compiler/IAutoBeRealizeTestProps";
 import { IAutoBeRealizeTestResult } from "../compiler/IAutoBeRealizeTestResult";
+import { IAutoBeRealizeTestConfig } from "./IAutoBeRealizeTestConfig";
 
 /**
  * Interface representing the Worker RPC service for executing comprehensive E2E
@@ -41,8 +41,8 @@ export interface IAutoBeRealizeTestService {
    *
    * **Environment Preparation**:
    *
-   * - Configuration of test environment with generated implementation files and
-   *   database schemas
+   * - Configuration of test environment with pre-loaded implementation files and
+   *   database schemas from the worker context
    * - Optional database reset for clean testing conditions that eliminate
    *   interference from residual data
    * - Package dependency resolution and testing infrastructure setup
@@ -83,14 +83,15 @@ export interface IAutoBeRealizeTestService {
    * intensive test operations from the main process while maintaining
    * comprehensive validation accuracy.
    *
-   * @param props Complete test execution configuration including generated
-   *   implementation files, database schemas, execution parameters, and
-   *   environmental specifications required for comprehensive backend
-   *   application validation in the worker environment
+   * @param config Basic test execution configuration including database reset
+   *   and concurrency control settings. The worker process is expected to have
+   *   access to pre-loaded implementation files, database schemas, and package
+   *   configuration through its initialization context, requiring only
+   *   execution parameters for the test suite run.
    * @returns Promise resolving to comprehensive test execution results
    *   including configuration details, individual operation outcomes, timing
    *   information, success/failure analysis, and definitive production
    *   readiness assessment from the isolated worker execution context
    */
-  execute(props: IAutoBeRealizeTestProps): Promise<IAutoBeRealizeTestResult>;
+  execute(config: IAutoBeRealizeTestConfig): Promise<IAutoBeRealizeTestResult>;
 }

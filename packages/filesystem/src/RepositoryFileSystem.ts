@@ -28,7 +28,7 @@ export namespace RepositoryFileSystem {
       extension: "prisma",
     });
     for (const [key, value] of Object.entries(result))
-      result[key] = value.replaceAll("@author Samchon", "@author AutoBE");
+      result[key] = value.split("@author Samchon").join("@author AutoBE");
     return result;
   };
 

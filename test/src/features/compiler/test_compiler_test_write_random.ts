@@ -2,10 +2,13 @@ import { AutoBeTest } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 import typia from "typia";
 
+import { TestFactory } from "../../TestFactory";
 import { prepare_compiler_test } from "./internal/prepare_compiler_test";
 
-export const test_compiler_test_write_random = async (): Promise<void> => {
-  const { compiler, document, scenario } = await prepare_compiler_test();
+export const test_compiler_test_write_random = async (
+  factory: TestFactory,
+): Promise<void> => {
+  const { compiler, document, scenario } = await prepare_compiler_test(factory);
   const expressions: AutoBeTest.IExpression[] = [
     {
       type: "booleanRandom",

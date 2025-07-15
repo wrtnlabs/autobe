@@ -1,5 +1,6 @@
 import {
   IAutoBeCompiler,
+  IAutoBeCompilerListener,
   IAutoBeInterfaceCompiler,
   IAutoBePrismaCompiler,
   IAutoBeRealizeCompiler,
@@ -36,6 +37,8 @@ import { AutoBeTestCompiler } from "./test/AutoBeTestCompiler";
  * @author Samchon
  */
 export class AutoBeCompiler implements IAutoBeCompiler {
+  public constructor(private readonly listener: IAutoBeCompilerListener) {}
+
   public readonly prisma: IAutoBePrismaCompiler = new AutoBePrismaCompiler();
 
   public readonly interface: IAutoBeInterfaceCompiler =
@@ -47,6 +50,6 @@ export class AutoBeCompiler implements IAutoBeCompiler {
   public readonly test: IAutoBeTestCompiler = new AutoBeTestCompiler();
 
   public readonly realize: IAutoBeRealizeCompiler = new AutoBeRealizeCompiler(
-    this.typescript,
+    this.listener.realize,
   );
 }

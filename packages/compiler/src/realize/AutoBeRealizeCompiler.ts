@@ -1,31 +1,33 @@
 import {
   IAutoBeRealizeCompiler,
+  IAutoBeRealizeCompilerListener,
   IAutoBeRealizeTestProps,
   IAutoBeRealizeTestResult,
-  IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 
-import { AutoBeTypeScriptCompiler } from "../AutoBeTypeScriptCompiler";
 import { AutoBeCompilerInterfaceTemplate } from "../raw/AutoBeCompilerInterfaceTemplate";
 import { AutoBeCompilerRealizeTemplate } from "../raw/AutoBeCompilerRealizeTemplate";
 import { AutoBeCompilerTestTemplate } from "../raw/AutoBeCompilerTestTemplate";
+import { testRealizeProject } from "./testRealizeProject";
 
 export class AutoBeRealizeCompiler implements IAutoBeRealizeCompiler {
-  public constructor(private readonly tsc: AutoBeTypeScriptCompiler) {}
+  public constructor(
+    private readonly listener: IAutoBeRealizeCompilerListener,
+  ) {}
 
-  public async test(
+  public test(
     props: IAutoBeRealizeTestProps,
   ): Promise<IAutoBeRealizeTestResult> {
-    const result: IAutoBeTypeScriptCompileResult = await this.tsc.compile({
-      ...props,
-      files: {
-        ...props.files,
-        ...AutoBeCompilerRealizeTemplate,
+    return testRealizeProject(
+      {
+        ...props,
+        files: {
+          ...props.files,
+          ...AutoBeCompilerRealizeTemplate,
+        },
       },
-    });
-    if (result.type !== "success")
-      throw new Error("Failed to compile TypeScript files.");
-    return null!;
+      this.listener.test,
+    );
   }
 
   public async getTemplate(): Promise<Record<string, string>> {

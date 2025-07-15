@@ -3,11 +3,11 @@ import { Driver, WorkerServer } from "tgrid";
 
 import { MyBackend } from "../src/MyBackend";
 import { MyGlobal } from "../src/MyGlobal";
+import { IAutoBeRealizeTestConfig } from "./autobe/compiler/IAutoBeRealizeTestConfig";
+import { IAutoBeRealizeTestListener } from "./autobe/compiler/IAutoBeRealizeTestListener";
 import { IAutoBeRealizeTestOperation } from "./autobe/compiler/IAutoBeRealizeTestOperation";
-import { IAutoBeRealizeTestProps } from "./autobe/compiler/IAutoBeRealizeTestProps";
 import { IAutoBeRealizeTestResult } from "./autobe/compiler/IAutoBeRealizeTestResult";
-import { IAutoBeRealizeTestListener } from "./autobe/rpc/IAutoBeRealizeTestListener";
-import { IAutoBeRealizeTestService } from "./autobe/rpc/IAutoBeRealizeTestService";
+import { IAutoBeRealizeTestService } from "./autobe/compiler/IAutoBeRealizeTestService";
 import { TestAutomation } from "./helpers/TestAutomation";
 
 class AutoBeRealizeTestService implements IAutoBeRealizeTestService {
@@ -16,7 +16,7 @@ class AutoBeRealizeTestService implements IAutoBeRealizeTestService {
   ) {}
 
   public async execute(
-    props: IAutoBeRealizeTestProps,
+    config: IAutoBeRealizeTestConfig,
   ): Promise<IAutoBeRealizeTestResult> {
     const start: Date = new Date();
     const operations: IAutoBeRealizeTestOperation[] = [];
@@ -28,8 +28,8 @@ class AutoBeRealizeTestService implements IAutoBeRealizeTestService {
       },
       close: (backend: MyBackend): Promise<void> => backend.close(),
       options: {
-        reset: props.reset ?? true,
-        simultaneous: props.simultaneous ?? 1,
+        reset: config.reset ?? true,
+        simultaneous: config.simultaneous ?? 1,
       },
       onComplete: (exec: DynamicExecutor.IExecution): void => {
         const op: IAutoBeRealizeTestOperation = {
@@ -48,8 +48,8 @@ class AutoBeRealizeTestService implements IAutoBeRealizeTestService {
       },
     });
     return {
-      reset: props.reset ?? true,
-      simultaneous: props.simultaneous ?? 1,
+      reset: config.reset ?? true,
+      simultaneous: config.simultaneous ?? 1,
       operations,
       started_at: start.toISOString(),
       completed_at: new Date().toISOString(),

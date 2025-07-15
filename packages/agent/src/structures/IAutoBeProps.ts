@@ -1,6 +1,7 @@
 import {
   AutoBeHistory,
   IAutoBeCompiler,
+  IAutoBeCompilerListener,
   IAutoBeTokenUsageJson,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
@@ -76,7 +77,9 @@ export interface IAutoBeProps<Model extends ILlmSchema.Model> {
    * can be separated into dedicated worker processes to prevent blocking the
    * main agent during computationally intensive compilation operations.
    */
-  compiler: IAutoBeCompiler;
+  compiler: (
+    listener: IAutoBeCompilerListener,
+  ) => IAutoBeCompiler | Promise<IAutoBeCompiler>;
 
   /**
    * Optional conversation and development histories for session continuation.

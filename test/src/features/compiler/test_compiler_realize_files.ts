@@ -15,7 +15,7 @@ export const test_compiler_realize_files = async (): Promise<void> => {
       api: new OpenAI({ apiKey: "" }),
       model: "gpt-4.1",
     },
-    compiler: new AutoBeCompiler(),
+    compiler: (listener) => new AutoBeCompiler(listener),
     histories: [
       ...(await TestHistory.getTest("bbs-backend")),
       {

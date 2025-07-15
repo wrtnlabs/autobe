@@ -44,7 +44,7 @@ async function main() {
         config: {
           locale: "en-US",
         },
-        compiler: new AutoBeCompiler(),
+        compiler: (listener) => new AutoBeCompiler(listener),
         tokenUsage: new AutoBeTokenUsage(),
       });
       const semaphore = autobe.getContext().vendor.semaphore as Semaphore;
@@ -327,9 +327,9 @@ async function registerAutobeEvents(
 
   autobe.on("interfaceComplete", async (event) => {
     const context = getAutobeContext();
-    const files = await autobe
-      .getContext()
-      .compiler.interface.write(event.document);
+    const files = await (
+      await autobe.getContext().compiler.get()
+    ).interface.write(event.document);
     context.stages.interface.endTime = Date.now();
     context.stages.interface.output = Object.keys(files).join(", ");
     const duration =
