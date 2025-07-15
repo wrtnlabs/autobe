@@ -41,6 +41,8 @@ export async function orchestrateRealizeDecorator<
   const result: Record<string, string> = {};
   const decorators: IAutoBeRealizeDecoratorApplication.IProps[] = [];
 
+  let completed = 0;
+
   for (const role of roles) {
     const decorator: IAutoBeRealizeDecoratorApplication.IProps = await process(
       ctx,
@@ -54,12 +56,15 @@ export async function orchestrateRealizeDecorator<
       decorator.provider.code;
 
     decorators.push(decorator);
+    completed++;
   }
 
   const events: AutoBeRealizeDecoratorEvent = {
     type: "realizeDecorator",
     created_at: new Date().toISOString(),
     files: result,
+    completed,
+    total: roles.length,
   };
 
   ctx.dispatch(events);
