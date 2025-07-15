@@ -18,6 +18,7 @@
     "@nestjs/swagger": "^11.1.5",
     "@prisma/client": "^6.6.0",
     "@samchon/openapi": "^4.5.0",
+    "@types/cli-progress": "^3.11.6",
     "@types/express": "^5.0.1",
     "@types/inquirer": "^9.0.7",
     "@types/jsonwebtoken": "^9.0.9",
