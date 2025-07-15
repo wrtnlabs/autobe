@@ -41,7 +41,7 @@ export async function orchestrateRealizeDecorator<
     ),
   );
 
-  const result: Record<string, string> = {};
+  const files: Record<string, string> = {};
   const decorators: IAutoBeRealizeDecoratorApplication.IProps[] = [];
 
   let completed = 0;
@@ -53,9 +53,9 @@ export async function orchestrateRealizeDecorator<
       prismaClients,
     );
 
-    result[`src/decorators/${decorator.decorator.name}.ts`] =
+    files[`src/decorators/${decorator.decorator.name}.ts`] =
       decorator.decorator.code;
-    result[`src/authentications/${decorator.provider.name}.ts`] =
+    files[`src/authentications/${decorator.provider.name}.ts`] =
       decorator.provider.code;
 
     decorators.push(decorator);
@@ -65,9 +65,10 @@ export async function orchestrateRealizeDecorator<
   const events: AutoBeRealizeDecoratorEvent = {
     type: "realizeDecorator",
     created_at: new Date().toISOString(),
-    files: result,
+    files,
     completed,
     total: roles.length,
+    step: ctx.state().test?.step ?? 0,
   };
 
   ctx.dispatch(events);
