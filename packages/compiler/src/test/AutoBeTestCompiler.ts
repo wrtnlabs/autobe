@@ -53,11 +53,7 @@ export class AutoBeTestCompiler implements IAutoBeTestCompiler {
         ],
       }),
     });
-    return compiler.compile(
-      Object.fromEntries(
-        Object.entries(props.files).filter(([key]) => key.endsWith(".ts")),
-      ),
-    );
+    return compiler.compile(props.files);
   }
 
   public async validate(
