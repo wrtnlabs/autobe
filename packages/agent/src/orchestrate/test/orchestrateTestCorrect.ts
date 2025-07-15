@@ -52,7 +52,7 @@ const compile = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   func: IAutoBeTestFunction,
 ): Promise<AutoBeTestValidateEvent> => {
-  const compiler: IAutoBeCompiler = await ctx.compiler.get();
+  const compiler: IAutoBeCompiler = await ctx.compiler();
   const result: IAutoBeTypeScriptCompileResult = await compiler.test.compile({
     files: {
       ...func.artifacts.dto,

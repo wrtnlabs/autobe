@@ -7,7 +7,6 @@ import {
   IAutoBeGetFilesOptions,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
-import { Singleton } from "tstl";
 
 import { IAutoBeConfig } from "../structures/IAutoBeConfig";
 import { AutoBeState } from "./AutoBeState";
@@ -17,8 +16,8 @@ export interface AutoBeContext<Model extends ILlmSchema.Model> {
   model: Model;
   vendor: IAgenticaVendor;
   config: IAutoBeConfig | undefined;
-  compiler: Singleton<Promise<IAutoBeCompiler>>;
   compilerListener: IAutoBeCompilerListener;
+  compiler: () => Promise<IAutoBeCompiler>;
   files: (options: IAutoBeGetFilesOptions) => Promise<Record<string, string>>;
   histories: () => AutoBeHistory[];
   state: () => AutoBeState;

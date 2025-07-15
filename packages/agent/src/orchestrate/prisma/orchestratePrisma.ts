@@ -54,7 +54,7 @@ export const orchestratePrisma =
     );
 
     // COMPILE
-    const compiler: IAutoBeCompiler = await ctx.compiler.get();
+    const compiler: IAutoBeCompiler = await ctx.compiler();
     const schemas: Record<string, string> = await compiler.prisma.write(
       result.data,
       "postgres",

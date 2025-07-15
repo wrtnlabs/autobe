@@ -328,7 +328,7 @@ async function registerAutobeEvents(
   autobe.on("interfaceComplete", async (event) => {
     const context = getAutobeContext();
     const files = await (
-      await autobe.getContext().compiler.get()
+      await autobe.getContext().compiler()
     ).interface.write(event.document);
     context.stages.interface.endTime = Date.now();
     context.stages.interface.output = Object.keys(files).join(", ");

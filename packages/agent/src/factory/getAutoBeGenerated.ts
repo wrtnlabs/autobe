@@ -32,7 +32,7 @@ export async function getAutoBeGenerated<Model extends ILlmSchema.Model>(
   );
 
   // PRISMA
-  const compiler: IAutoBeCompiler = await ctx.compiler.get();
+  const compiler: IAutoBeCompiler = await ctx.compiler();
   if (state.prisma?.step === state.analyze.step) {
     const schemaFiles: Record<string, string> =
       (options?.dbms ?? "postgres") === "postgres"

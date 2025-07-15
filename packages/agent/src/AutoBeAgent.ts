@@ -118,6 +118,9 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
         },
       },
     };
+    const compiler = new Singleton(async () =>
+      props.compiler(compilerListener),
+    );
     this.context_ = {
       vendor,
       model: props.model,
@@ -125,7 +128,7 @@ export class AutoBeAgent<Model extends ILlmSchema.Model> {
         backoffStrategy: randomBackoffStrategy,
         ...props.config,
       },
-      compiler: new Singleton(async () => props.compiler(compilerListener)),
+      compiler: () => compiler.get(),
       compilerListener,
       histories: () => this.histories_,
       state: () => this.state_,

@@ -39,7 +39,7 @@ export const validate_agent_test_write = async (
   typia.assert(writes);
 
   // REPORT RESULT
-  const compiler: IAutoBeCompiler = await agent.getContext().compiler.get();
+  const compiler: IAutoBeCompiler = await agent.getContext().compiler();
   const files: Record<string, string> = Object.fromEntries([
     ...Object.entries(await agent.getFiles()).filter(
       ([key]) => key.startsWith("test") === false,

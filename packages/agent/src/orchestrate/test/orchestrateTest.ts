@@ -67,7 +67,7 @@ export const orchestrateTest =
     );
 
     // DO COMPILE
-    const compiler: IAutoBeCompiler = await ctx.compiler.get();
+    const compiler: IAutoBeCompiler = await ctx.compiler();
     const result: AutoBeTestFile[] = success.map((c) => c.file);
     const compiled: IAutoBeTypeScriptCompileResult =
       await compiler.test.compile({

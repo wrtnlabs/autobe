@@ -12,7 +12,7 @@ export async function getTestScenarioArtifacts<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   scenario: Pick<AutoBeTestScenario, "endpoint" | "dependencies">,
 ): Promise<IAutoBeTestScenarioArtifacts> {
-  const compiler: IAutoBeCompiler = await ctx.compiler.get();
+  const compiler: IAutoBeCompiler = await ctx.compiler();
   const document: AutoBeOpenApi.IDocument = filterDocument(
     scenario,
     ctx.state().interface!.document,

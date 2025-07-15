@@ -83,7 +83,7 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
     return FAILED;
   }
 
-  const compiler: IAutoBeCompiler = await ctx.compiler.get();
+  const compiler: IAutoBeCompiler = await ctx.compiler();
   pointer.value.implementationCode = await compiler.typescript.beautify(
     pointer.value.implementationCode,
   );

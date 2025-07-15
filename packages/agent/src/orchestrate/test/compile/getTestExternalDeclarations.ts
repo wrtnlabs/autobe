@@ -7,7 +7,7 @@ import { AutoBeContext } from "../../../context/AutoBeContext";
 export async function getTestExternalDeclarations<
   Model extends ILlmSchema.Model,
 >(ctx: AutoBeContext<Model>): Promise<Record<string, string>> {
-  const compiler = await ctx.compiler.get();
+  const compiler = await ctx.compiler();
   return singleton.get(compiler.test);
 }
 

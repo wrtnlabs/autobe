@@ -106,7 +106,7 @@ export const validate_agent_realize_coder = async (
   });
   TestValidator.predicate("result")(result.every((el) => el !== FAILED));
 
-  const compiler = await ctx.compiler.get();
+  const compiler = await ctx.compiler();
   const res = await compiler.typescript.compile({
     files: {
       ...Object.entries(await agent.getFiles())

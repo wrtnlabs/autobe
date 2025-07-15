@@ -65,13 +65,13 @@ export interface IAutoBeProps<Model extends ILlmSchema.Model> {
   vendor: IAutoBeVendor;
 
   /**
-   * Compilation infrastructure for TypeScript, Prisma, and OpenAPI operations.
+   * Compiler factory function for TypeScript, Prisma, and OpenAPI operations.
    *
-   * Provides the essential compilation tools required for the sophisticated
-   * AST-based development pipeline. The compiler handles validation,
-   * transformation, and code generation across all development phases including
-   * Prisma schema compilation, OpenAPI document validation, and TypeScript code
-   * compilation.
+   * Factory function that creates compiler instances required for the
+   * sophisticated AST-based development pipeline. The compiler handles
+   * validation, transformation, and code generation across all development
+   * phases including Prisma schema compilation, OpenAPI document validation,
+   * and TypeScript code compilation.
    *
    * For high-performance scenarios with multiple concurrent users, the compiler
    * can be separated into dedicated worker processes to prevent blocking the

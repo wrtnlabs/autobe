@@ -34,7 +34,7 @@ async function step<Model extends ILlmSchema.Model>(
   application: AutoBePrisma.IApplication,
   life: number,
 ): Promise<IAutoBePrismaValidation> {
-  const compiler: IAutoBeCompiler = await ctx.compiler.get();
+  const compiler: IAutoBeCompiler = await ctx.compiler();
   const result: IAutoBePrismaValidation =
     await compiler.prisma.validate(application);
   if (result.success)

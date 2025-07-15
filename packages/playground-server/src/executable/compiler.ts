@@ -1,9 +1,12 @@
 import { AutoBeCompiler } from "@autobe/compiler";
+import { IAutoBeCompilerListener } from "@autobe/interface";
 import { WorkerServer } from "tgrid";
 
 const main = async () => {
-  const compiler = new AutoBeCompiler();
   const worker = new WorkerServer();
+  const compiler = new AutoBeCompiler(
+    worker.getDriver<IAutoBeCompilerListener>(),
+  );
   await worker.open(compiler);
 };
 main().catch((error) => {
