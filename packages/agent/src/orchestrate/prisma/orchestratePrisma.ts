@@ -3,6 +3,7 @@ import {
   AutoBePrismaCompleteEvent,
   AutoBePrismaComponentsEvent,
   AutoBePrismaHistory,
+  IAutoBeCompiler,
   IAutoBePrismaValidation,
 } from "@autobe/interface";
 import { AutoBePrismaSchemasEvent } from "@autobe/interface/src/events/AutoBePrismaSchemasEvent";
@@ -38,21 +39,28 @@ export const orchestratePrisma =
       return components;
     } else ctx.dispatch(components);
 
-    // SCHEMAS
+    // CONSTRUCT AST DATA
     const events: AutoBePrismaSchemasEvent[] = await orchestratePrismaSchemas(
       ctx,
       components.components,
     );
+
+    // VALIDATE
     const result: IAutoBePrismaValidation = await orchestratePrismaCorrect(
       ctx,
       {
         files: events.map((e) => e.file),
       },
     );
-    const schemas: Record<string, string> = await ctx.compiler.prisma.write(
+
+    // COMPILE
+    const compiler: IAutoBeCompiler = await ctx.compiler();
+    const schemas: Record<string, string> = await compiler.prisma.write(
       result.data,
       "postgres",
     );
+
+    // PROPAGATE
     const history: AutoBePrismaHistory = {
       type: "prisma",
       id: v4(),
@@ -62,14 +70,13 @@ export const orchestratePrisma =
       description: "",
       result: result,
       schemas,
-      compiled: await ctx.compiler.prisma.compile({
+      compiled: await compiler.prisma.compile({
         files: schemas,
       }),
       step: ctx.state().analyze?.step ?? 0,
     };
     ctx.state().prisma = history;
     ctx.histories().push(history);
-
     if (history.result.success === true)
       ctx.dispatch({
         type: "prismaComplete",

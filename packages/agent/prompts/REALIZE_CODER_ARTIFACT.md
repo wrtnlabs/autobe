@@ -33,5 +33,5 @@ if you want to import this files, write this: 'import { something } from '../api
 ```
 # Document
 ```json
-{artifacts_docuemnt}
+{artifacts_docuement}
 ```

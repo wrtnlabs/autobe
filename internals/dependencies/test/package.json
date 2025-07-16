@@ -1,0 +1,15 @@
+{
+  "private": true,
+  "name": "@autobe/test-dependencies",
+  "version": "0.0.0",
+  "author": "Wrtn Technologies",
+  "license": "MIT",
+  "devDependencies": {
+    "@nestia/e2e": "^7.1.1",
+    "@nestia/fetcher": "^7.1.1",
+    "@samchon/openapi": "^4.5.0",
+    "@types/node": "^22.15.3",
+    "typescript": "~5.8.3",
+    "typia": "^9.5.0"
+  }
+}

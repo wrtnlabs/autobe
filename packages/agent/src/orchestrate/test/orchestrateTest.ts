@@ -5,6 +5,7 @@ import {
   AutoBeTestHistory,
   AutoBeTestScenarioEvent,
   AutoBeTestValidateEvent,
+  IAutoBeCompiler,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
@@ -66,17 +67,18 @@ export const orchestrateTest =
     );
 
     // DO COMPILE
-    const files: AutoBeTestFile[] = success.map((c) => c.file);
+    const compiler: IAutoBeCompiler = await ctx.compiler();
+    const result: AutoBeTestFile[] = success.map((c) => c.file);
     const compiled: IAutoBeTypeScriptCompileResult =
-      await ctx.compiler.test.compile({
-        files: {
-          ...Object.fromEntries(
-            Object.entries(ctx.state().interface!.files).filter(
-              ([key]) => key.startsWith("src/api") === true,
-            ),
-          ),
-          ...Object.fromEntries(files.map((f) => [f.location, f.content])),
-        },
+      await compiler.typescript.compile({
+        files: Object.fromEntries([
+          ...Object.entries(
+            await ctx.files({
+              dbms: "sqlite",
+            }),
+          ).filter(([key]) => key.endsWith(".ts")),
+          ...result.map((f) => [f.location, f.content]),
+        ]),
       });
 
     const history: AutoBeTestHistory = {
@@ -84,7 +86,7 @@ export const orchestrateTest =
       id: v4(),
       completed_at: new Date().toISOString(),
       created_at: start.toISOString(),
-      files,
+      files: result,
       compiled,
       reason: "Step to the test generation referencing the interface",
       step: ctx.state().interface?.step ?? 0,
@@ -92,7 +94,7 @@ export const orchestrateTest =
     ctx.dispatch({
       type: "testComplete",
       created_at: start.toISOString(),
-      files: Object.fromEntries(files.map((f) => [f.location, f.content])),
+      files: Object.fromEntries(result.map((f) => [f.location, f.content])),
       compiled,
       step: ctx.state().interface?.step ?? 0,
     });

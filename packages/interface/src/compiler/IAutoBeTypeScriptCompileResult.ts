@@ -33,16 +33,16 @@ export namespace IAutoBeTypeScriptCompileResult {
     /** Discriminator indicating successful compilation. */
     type: "success";
 
-    /**
-     * Generated JavaScript files as key-value pairs.
-     *
-     * Contains the compiled JavaScript output with each key representing the
-     * output file path and each value containing the generated JavaScript code.
-     * The compiled code is ready for execution in Node.js environments and
-     * maintains all functionality specified in the original TypeScript source
-     * while ensuring optimal runtime performance.
-     */
-    javascript: Record<string, string>;
+    // /**
+    //  * Generated JavaScript files as key-value pairs.
+    //  *
+    //  * Contains the compiled JavaScript output with each key representing the
+    //  * output file path and each value containing the generated JavaScript code.
+    //  * The compiled code is ready for execution in Node.js environments and
+    //  * maintains all functionality specified in the original TypeScript source
+    //  * while ensuring optimal runtime performance.
+    //  */
+    // javascript: Record<string, string>;
   }
 
   /**
@@ -70,15 +70,15 @@ export namespace IAutoBeTypeScriptCompileResult {
      */
     diagnostics: IDiagnostic[];
 
-    /**
-     * Partial JavaScript output despite compilation failures.
-     *
-     * Contains any JavaScript code that was successfully generated before
-     * compilation failures occurred. This partial output can provide context
-     * for understanding which parts of the code compiled correctly and which
-     * areas require correction during the AI feedback and refinement process.
-     */
-    javascript: Record<string, string>;
+    // /**
+    //  * Partial JavaScript output despite compilation failures.
+    //  *
+    //  * Contains any JavaScript code that was successfully generated before
+    //  * compilation failures occurred. This partial output can provide context
+    //  * for understanding which parts of the code compiled correctly and which
+    //  * areas require correction during the AI feedback and refinement process.
+    //  */
+    // javascript: Record<string, string>;
   }
 
   /**

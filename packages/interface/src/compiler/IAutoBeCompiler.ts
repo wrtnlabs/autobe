@@ -1,5 +1,6 @@
 import { IAutoBeInterfaceCompiler } from "./IAutoBeInterfaceCompiler";
 import { IAutoBePrismaCompiler } from "./IAutoBePrismaCompiler";
+import { IAutoBeRealizeCompiler } from "./IAutoBeRealizeCompiler";
 import { IAutoBeTestCompiler } from "./IAutoBeTestCompiler";
 import { IAutoBeTypeScriptCompiler } from "./IAutoBeTypeScriptCompiler";
 
@@ -79,4 +80,6 @@ export interface IAutoBeCompiler {
   typescript: IAutoBeTypeScriptCompiler;
 
   test: IAutoBeTestCompiler;
+
+  realize: IAutoBeRealizeCompiler;
 }

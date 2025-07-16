@@ -1,9 +1,10 @@
 import { orchestrateTestWrite } from "@autobe/agent/src/orchestrate/test/orchestrateTestWrite";
 import { IAutoBeTestWriteResult } from "@autobe/agent/src/orchestrate/test/structures/IAutoBeTestWriteResult";
-import { AutoBeCompilerTemplate } from "@autobe/compiler/src/raw/AutoBeCompilerTemplate";
+import { AutoBeCompilerInterfaceTemplate } from "@autobe/compiler/src/raw/AutoBeCompilerInterfaceTemplate";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeTestScenario,
+  IAutoBeCompiler,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import fs from "fs";
@@ -38,6 +39,7 @@ export const validate_agent_test_write = async (
   typia.assert(writes);
 
   // REPORT RESULT
+  const compiler: IAutoBeCompiler = await agent.getContext().compiler();
   const files: Record<string, string> = Object.fromEntries([
     ...Object.entries(await agent.getFiles()).filter(
       ([key]) => key.startsWith("test") === false,
@@ -51,9 +53,8 @@ export const validate_agent_test_write = async (
       ])
       .flat(),
   ]);
-  const compiled: IAutoBeTypeScriptCompileResult = await agent
-    .getContext()
-    .compiler.typescript.compile({
+  const result: IAutoBeTypeScriptCompileResult =
+    await compiler.typescript.compile({
       files: Object.fromEntries(
         Object.entries(files).filter(
           ([key]) =>
@@ -67,16 +68,10 @@ export const validate_agent_test_write = async (
     root: `${TestGlobal.ROOT}/results/${project}/test/write`,
     files: {
       ...files,
-      "test/tsconfig.json": AutoBeCompilerTemplate["test/tsconfig.json"],
+      "test/tsconfig.json":
+        AutoBeCompilerInterfaceTemplate["test/tsconfig.json"],
       "logs/results.json": typia.json.stringify(writes),
-      "logs/compiled.json": JSON.stringify(
-        {
-          ...compiled,
-          javascript: undefined,
-        },
-        null,
-        2,
-      ),
+      "logs/compiled.json": JSON.stringify(result, null, 2),
     },
   });
   if (process.argv.includes("--archive"))

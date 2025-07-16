@@ -1,15 +1,18 @@
 import {
   IAutoBeCompiler,
+  IAutoBeCompilerListener,
   IAutoBeInterfaceCompiler,
   IAutoBePrismaCompiler,
+  IAutoBeRealizeCompiler,
   IAutoBeTestCompiler,
   IAutoBeTypeScriptCompiler,
 } from "@autobe/interface";
 
-import { AutoBeInterfaceCompiler } from "./AutoBeInterfaceCompiler";
-import { AutoBePrismaCompiler } from "./AutoBePrismaCompiler";
-import { AutoBeTestCompiler } from "./AutoBeTestCompiler";
 import { AutoBeTypeScriptCompiler } from "./AutoBeTypeScriptCompiler";
+import { AutoBeInterfaceCompiler } from "./interface/AutoBeInterfaceCompiler";
+import { AutoBePrismaCompiler } from "./prisma/AutoBePrismaCompiler";
+import { AutoBeRealizeCompiler } from "./realize/AutoBeRealizeCompiler";
+import { AutoBeTestCompiler } from "./test/AutoBeTestCompiler";
 
 /**
  * Comprehensive compilation infrastructure for the vibe coding pipeline.
@@ -34,6 +37,8 @@ import { AutoBeTypeScriptCompiler } from "./AutoBeTypeScriptCompiler";
  * @author Samchon
  */
 export class AutoBeCompiler implements IAutoBeCompiler {
+  public constructor(private readonly listener: IAutoBeCompilerListener) {}
+
   public readonly prisma: IAutoBePrismaCompiler = new AutoBePrismaCompiler();
 
   public readonly interface: IAutoBeInterfaceCompiler =
@@ -43,4 +48,8 @@ export class AutoBeCompiler implements IAutoBeCompiler {
     new AutoBeTypeScriptCompiler();
 
   public readonly test: IAutoBeTestCompiler = new AutoBeTestCompiler();
+
+  public readonly realize: IAutoBeRealizeCompiler = new AutoBeRealizeCompiler(
+    this.listener.realize,
+  );
 }

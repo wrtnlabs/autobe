@@ -1,4 +1,8 @@
-import { AutoBeOpenApi, AutoBeTestScenario } from "@autobe/interface";
+import {
+  AutoBeOpenApi,
+  AutoBeTestScenario,
+  IAutoBeCompiler,
+} from "@autobe/interface";
 import { ILlmSchema, OpenApiTypeChecker } from "@samchon/openapi";
 
 import { AutoBeContext } from "../../../context/AutoBeContext";
@@ -8,12 +12,13 @@ export async function getTestScenarioArtifacts<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   scenario: Pick<AutoBeTestScenario, "endpoint" | "dependencies">,
 ): Promise<IAutoBeTestScenarioArtifacts> {
+  const compiler: IAutoBeCompiler = await ctx.compiler();
   const document: AutoBeOpenApi.IDocument = filterDocument(
     scenario,
     ctx.state().interface!.document,
   );
   const entries: [string, string][] = Object.entries(
-    await ctx.compiler.interface.compile(document),
+    await compiler.interface.write(document),
   );
   const filter = (prefix: string, exclude?: string) => {
     const result: [string, string][] = entries.filter(

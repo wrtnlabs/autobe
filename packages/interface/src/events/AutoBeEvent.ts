@@ -18,6 +18,10 @@ import { AutoBePrismaValidateEvent } from "./AutoBePrismaValidateEvent";
 import { AutoBeRealizeCompleteEvent } from "./AutoBeRealizeCompleteEvent";
 import { AutoBeRealizeProgressEvent } from "./AutoBeRealizeProgressEvent";
 import { AutoBeRealizeStartEvent } from "./AutoBeRealizeStartEvent";
+import { AutoBeRealizeTestCompleteEvent } from "./AutoBeRealizeTestCompleteEvent";
+import { AutoBeRealizeTestOperationEvent } from "./AutoBeRealizeTestOperationEvent";
+import { AutoBeRealizeTestResetEvent } from "./AutoBeRealizeTestResetEvent";
+import { AutoBeRealizeTestStartEvent } from "./AutoBeRealizeTestStartEvent";
 import { AutoBeRealizeValidateEvent } from "./AutoBeRealizeValidateEvent";
 import { AutoBeTestCompleteEvent } from "./AutoBeTestCompleteEvent";
 import { AutoBeTestCorrectEvent } from "./AutoBeTestCorrectEvent";
@@ -52,32 +56,41 @@ import { AutoBeUserMessageEvent } from "./AutoBeUserMessageEvent";
 export type AutoBeEvent =
   | AutoBeAssistantMessageEvent
   | AutoBeUserMessageEvent
+  // ANALYZE
   | AutoBeAnalyzeStartEvent
   | AutoBeAnalyzeWriteEvent
   | AutoBeAnalyzeReviewEvent
   | AutoBeAnalyzeCompleteEvent
+  // INTERFACE
   | AutoBeInterfaceStartEvent
   | AutoBeInterfaceEndpointsEvent
   | AutoBeInterfaceOperationsEvent
   | AutoBeInterfaceComponentsEvent
   | AutoBeInterfaceComplementEvent
   | AutoBeInterfaceCompleteEvent
+  // PRISMA
   | AutoBePrismaStartEvent
   | AutoBePrismaComponentsEvent
   | AutoBePrismaSchemasEvent
   | AutoBePrismaCompleteEvent
   | AutoBePrismaValidateEvent
   | AutoBePrismaCorrectEvent
+  // TEST
   | AutoBeTestStartEvent
   | AutoBeTestScenarioEvent
   | AutoBeTestWriteEvent
   | AutoBeTestValidateEvent
   | AutoBeTestCorrectEvent
   | AutoBeTestCompleteEvent
+  // REALIZE
   | AutoBeRealizeStartEvent
   | AutoBeRealizeProgressEvent
   | AutoBeRealizeValidateEvent
-  | AutoBeRealizeCompleteEvent;
+  | AutoBeRealizeCompleteEvent
+  | AutoBeRealizeTestStartEvent
+  | AutoBeRealizeTestResetEvent
+  | AutoBeRealizeTestOperationEvent
+  | AutoBeRealizeTestCompleteEvent;
 
 export namespace AutoBeEvent {
   /**
@@ -116,31 +129,40 @@ export namespace AutoBeEvent {
   export interface Mapper {
     assistantMessage: AutoBeAssistantMessageEvent;
     userMessage: AutoBeUserMessageEvent;
+    // ANALYZE
     analyzeStart: AutoBeAnalyzeStartEvent;
     analyzeWrite: AutoBeAnalyzeWriteEvent;
     analyzeReview: AutoBeAnalyzeReviewEvent;
     analyzeComplete: AutoBeAnalyzeCompleteEvent;
+    // PRISMA
     prismaStart: AutoBePrismaStartEvent;
     prismaComponents: AutoBePrismaComponentsEvent;
     prismaSchemas: AutoBePrismaSchemasEvent;
     prismaComplete: AutoBePrismaCompleteEvent;
     prismaValidate: AutoBePrismaValidateEvent;
     prismaCorrect: AutoBePrismaCorrectEvent;
+    // INTERFACE
     interfaceStart: AutoBeInterfaceStartEvent;
     interfaceEndpoints: AutoBeInterfaceEndpointsEvent;
     interfaceOperations: AutoBeInterfaceOperationsEvent;
     interfaceComponents: AutoBeInterfaceComponentsEvent;
     interfaceComplement: AutoBeInterfaceComplementEvent;
     interfaceComplete: AutoBeInterfaceCompleteEvent;
+    // TEST
     testStart: AutoBeTestStartEvent;
     testScenario: AutoBeTestScenarioEvent;
     testWrite: AutoBeTestWriteEvent;
     testValidate: AutoBeTestValidateEvent;
     testCorrect: AutoBeTestCorrectEvent;
     testComplete: AutoBeTestCompleteEvent;
+    // REALIZE
     realizeStart: AutoBeRealizeStartEvent;
     realizeProgress: AutoBeRealizeProgressEvent;
     realizeValidate: AutoBeRealizeValidateEvent;
     realizeComplete: AutoBeRealizeCompleteEvent;
+    realizeTestStart: AutoBeRealizeTestStartEvent;
+    realizeTestReset: AutoBeRealizeTestResetEvent;
+    realizeTestOperation: AutoBeRealizeTestOperationEvent;
+    realizeTestComplete: AutoBeRealizeTestCompleteEvent;
   }
 }

@@ -29,6 +29,7 @@
     "dotenv-expand": "^12.0.2",
     "openai": "catalog:libs",
     "tstl": "catalog:samchon",
+    "tgrid": "catalog:samchon",
     "typia": "catalog:samchon",
     "uuid": "^11.1.0"
   },

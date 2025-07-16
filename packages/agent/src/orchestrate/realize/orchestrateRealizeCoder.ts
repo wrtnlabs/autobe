@@ -1,6 +1,7 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import {
   AutoBeOpenApi,
+  IAutoBeCompiler,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
@@ -101,7 +102,8 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
     return FAILED;
   }
 
-  pointer.value.implementationCode = await ctx.compiler.typescript.beautify(
+  const compiler: IAutoBeCompiler = await ctx.compiler();
+  pointer.value.implementationCode = await compiler.typescript.beautify(
     pointer.value.implementationCode,
   );
   pointer.value.implementationCode = pointer.value.implementationCode

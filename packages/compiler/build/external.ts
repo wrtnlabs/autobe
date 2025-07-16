@@ -3,7 +3,7 @@ import path from "path";
 
 function external(name: string): void {
   const dependencies: string = path.resolve(
-    `${__dirname}/../../../internals/${name}-dependencies`,
+    `${__dirname}/../../../internals/dependencies/${name}`,
   );
   console.log(`- Processing ${name} dependencies: ${dependencies}`);
   console.log(`  - installing...`);

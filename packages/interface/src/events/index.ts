@@ -33,3 +33,7 @@ export * from "./AutoBeRealizeStartEvent";
 export * from "./AutoBeRealizeProgressEvent";
 export * from "./AutoBeRealizeValidateEvent";
 export * from "./AutoBeRealizeCompleteEvent";
+export * from "./AutoBeRealizeTestStartEvent";
+export * from "./AutoBeRealizeTestResetEvent";
+export * from "./AutoBeRealizeTestOperationEvent";
+export * from "./AutoBeRealizeTestCompleteEvent";

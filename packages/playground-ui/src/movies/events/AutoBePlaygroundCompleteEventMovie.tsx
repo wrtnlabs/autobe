@@ -3,6 +3,7 @@ import {
   AutoBeInterfaceCompleteEvent,
   AutoBePrismaCompleteEvent,
   AutoBeRealizeCompleteEvent,
+  AutoBeRealizeTestCompleteEvent,
   AutoBeTestCompleteEvent,
   IAutoBeRpcService,
 } from "@autobe/interface";
@@ -135,7 +136,8 @@ export namespace AutoBePlaygroundCompleteEventMovie {
       | AutoBePrismaCompleteEvent
       | AutoBeInterfaceCompleteEvent
       | AutoBeTestCompleteEvent
-      | AutoBeRealizeCompleteEvent;
+      | AutoBeRealizeCompleteEvent
+      | AutoBeRealizeTestCompleteEvent;
   }
 }
 
@@ -154,6 +156,8 @@ function getTitle(
       return "Test";
     case "realizeComplete":
       return "Realize";
+    case "realizeTestComplete":
+      return "Final E2E Test";
     default:
       event satisfies never;
       throw new Error("Unknown event type"); // unreachable

@@ -1,5 +1,9 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
-import { AutoBePrisma, IAutoBePrismaValidation } from "@autobe/interface";
+import {
+  AutoBePrisma,
+  IAutoBeCompiler,
+  IAutoBePrismaValidation,
+} from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -30,14 +34,15 @@ async function step<Model extends ILlmSchema.Model>(
   application: AutoBePrisma.IApplication,
   life: number,
 ): Promise<IAutoBePrismaValidation> {
+  const compiler: IAutoBeCompiler = await ctx.compiler();
   const result: IAutoBePrismaValidation =
-    await ctx.compiler.prisma.validate(application);
+    await compiler.prisma.validate(application);
   if (result.success)
     return result; // SUCCESS
   else if (life <= 0) return result; // FAILURE
 
   // VALIDATION FAILED
-  const schemas: Record<string, string> = await ctx.compiler.prisma.write(
+  const schemas: Record<string, string> = await compiler.prisma.write(
     application,
     "postgres",
   );
@@ -45,7 +50,7 @@ async function step<Model extends ILlmSchema.Model>(
     type: "prismaValidate",
     result,
     schemas,
-    compiled: await ctx.compiler.prisma.compile({
+    compiled: await compiler.prisma.compile({
       files: schemas,
     }),
     step: ctx.state().analyze?.step ?? 0,

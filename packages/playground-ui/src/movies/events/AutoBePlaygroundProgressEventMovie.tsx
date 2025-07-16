@@ -8,6 +8,8 @@ import {
   AutoBePrismaComponentsEvent,
   AutoBePrismaSchemasEvent,
   AutoBeRealizeProgressEvent,
+  AutoBeRealizeTestOperationEvent,
+  AutoBeRealizeTestResetEvent,
   AutoBeRealizeValidateEvent,
   AutoBeTestCorrectEvent,
   AutoBeTestScenarioEvent,
@@ -40,7 +42,9 @@ export namespace AutoBePlaygroundProgressEventMovie {
       | AutoBeTestValidateEvent
       | AutoBeTestCorrectEvent
       | AutoBeRealizeProgressEvent
-      | AutoBeRealizeValidateEvent;
+      | AutoBeRealizeValidateEvent
+      | AutoBeRealizeTestResetEvent
+      | AutoBeRealizeTestOperationEvent;
   }
 }
 
@@ -80,6 +84,10 @@ function getDescription(
       return `Analyze user requirements and write documents`;
     case "analyzeReview":
       return `Reviewing generated documents by Analyze in progress`;
+    case "realizeTestReset":
+      return `Reset DB for E2E Test`;
+    case "realizeTestOperation":
+      return `Operated E2E Test Function: ${event.name}`;
     default:
       event satisfies never;
       throw new Error("Unknown event type"); // unreachable

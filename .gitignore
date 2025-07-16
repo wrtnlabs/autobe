@@ -2,6 +2,7 @@ bin/
 lib/
 node_modules/
 playground-result/
+temporary/
 
 repositories/
 packages/*/README.md

@@ -52,6 +52,11 @@ async function process<Model extends ILlmSchema.Model>(
     tables: string[];
     entireTables: string[];
   },
+  remained?: {
+    done: AutoBePrisma.IModel[];
+    todo: string[];
+    namespace: string;
+  },
 ): Promise<IMakePrismaSchemaFileProps> {
   const pointer: IPointer<IMakePrismaSchemaFileProps | null> = {
     value: null,
@@ -65,7 +70,11 @@ async function process<Model extends ILlmSchema.Model>(
         describe: null,
       },
     },
-    histories: transformPrismaSchemaHistories(ctx.state().analyze!, component),
+    histories: transformPrismaSchemaHistories(
+      ctx.state().analyze!,
+      component,
+      remained,
+    ),
     controllers: [
       createApplication({
         model: ctx.model,
@@ -90,6 +99,27 @@ async function process<Model extends ILlmSchema.Model>(
   });
   if (pointer.value === null)
     throw new Error("Unreachable code: Prisma Schema not generated");
+
+  const file: AutoBePrisma.IFile = pointer.value.file;
+  const todo: string[] = (remained?.todo ?? component.tables).filter((x) =>
+    file.models.every((m) => m.name !== x),
+  );
+  if (todo.length !== 0) {
+    const fulfill: IMakePrismaSchemaFileProps = await process(
+      ctx,
+      {
+        filename: component.filename,
+        tables: component.tables,
+        entireTables: component.entireTables,
+      },
+      {
+        done: [...(remained?.done ?? []), ...file.models],
+        todo,
+        namespace: file.namespace,
+      },
+    );
+    pointer.value.file.models.push(...fulfill.file.models);
+  }
   return pointer.value;
 }
 

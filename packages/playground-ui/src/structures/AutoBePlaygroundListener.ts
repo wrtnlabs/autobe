@@ -14,6 +14,7 @@ export class AutoBePlaygroundListener {
         this.callback?.(event);
       },
 
+      // ANALYZE
       analyzeStart: async (event) => {
         this.callback?.(event);
       },
@@ -27,6 +28,7 @@ export class AutoBePlaygroundListener {
         this.callback?.(event);
       },
 
+      // PRISMA
       prismaStart: async (event) => {
         this.callback?.(event);
       },
@@ -46,6 +48,7 @@ export class AutoBePlaygroundListener {
         this.callback?.(event);
       },
 
+      // INTERFACE
       interfaceStart: async (event) => {
         this.callback?.(event);
       },
@@ -65,6 +68,7 @@ export class AutoBePlaygroundListener {
         this.callback?.(event);
       },
 
+      // TEST
       testStart: async (event) => {
         this.callback?.(event);
       },
@@ -84,6 +88,7 @@ export class AutoBePlaygroundListener {
         this.callback?.(event);
       },
 
+      // REALIZE
       realizeStart: async (event) => {
         this.callback?.(event);
       },
@@ -94,6 +99,18 @@ export class AutoBePlaygroundListener {
         this.callback?.(event);
       },
       realizeComplete: async (event) => {
+        this.callback?.(event);
+      },
+      realizeTestStart: async (event) => {
+        this.callback?.(event);
+      },
+      realizeTestReset: async (event) => {
+        this.callback?.(event);
+      },
+      realizeTestOperation: async (event) => {
+        this.callback?.(event);
+      },
+      realizeTestComplete: async (event) => {
         this.callback?.(event);
       },
     };

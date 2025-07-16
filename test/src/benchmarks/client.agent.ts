@@ -277,10 +277,7 @@ ${Object.entries(history.schemas)
       return [
         {
           role: "user",
-          content: `${history.reason}
-        ${Object.entries(history.files)
-          .map(([key, value]) => `- ${key}:\n\`\`\`${value}\`\`\``)
-          .join("\n\n")}`,
+          content: JSON.stringify(history.document),
         },
       ];
     default:

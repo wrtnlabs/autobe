@@ -53,7 +53,6 @@ export const orchestrateInterface =
       type: "interface",
       id: v4(),
       document,
-      files: await ctx.compiler.interface.compile(document),
       reason: props.reason,
       step: ctx.state().analyze?.step ?? 0,
       created_at: start.toISOString(),
@@ -63,7 +62,6 @@ export const orchestrateInterface =
     ctx.histories().push(result);
     ctx.dispatch({
       type: "interfaceComplete",
-      files: result.files,
       document: result.document,
       created_at: start.toISOString(),
       reason: props.reason,
