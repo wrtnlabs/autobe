@@ -47,7 +47,7 @@ export async function writeCodeUntilCompilePassed<
       content: await readFile(
         path.join(
           __dirname,
-          "../../../../../internals/template/src/providers/jwtDecode.ts",
+          "../../../../../internals/template/realize/src/providers/jwtDecode.ts",
         ),
         {
           encoding: "utf-8",
@@ -59,7 +59,7 @@ export async function writeCodeUntilCompilePassed<
       content: await readFile(
         path.join(
           __dirname,
-          "../../../../../internals/template/src/MyGlobal.ts",
+          "../../../../../internals/template/realize/src/MyGlobal.ts",
         ),
         {
           encoding: "utf-8",
@@ -116,8 +116,6 @@ export async function writeCodeUntilCompilePassed<
               );
               const c = entireCodes[filename]?.content ?? null;
 
-              console.log(JSON.stringify({ d, c, filename }, null, 2));
-
               return orchestrateRealizeCoder(ctx, op, p, c, t, d);
             },
           );
@@ -137,9 +135,6 @@ export async function writeCodeUntilCompilePassed<
           };
         }),
     );
-    console.log();
-    console.log();
-    console.log();
 
     for (const c of generatedCodes) {
       if (c.type === "success") {
@@ -152,7 +147,8 @@ export async function writeCodeUntilCompilePassed<
 
     const prisma = ctx.state().prisma?.compiled;
     const nodeModules = prisma?.type === "success" ? prisma.nodeModules : {};
-    const compiled = await ctx.compiler.typescript.compile({
+    const compiler = await ctx.compiler();
+    const compiled = await compiler.typescript.compile({
       files: {
         ...files,
         ...nodeModules,
