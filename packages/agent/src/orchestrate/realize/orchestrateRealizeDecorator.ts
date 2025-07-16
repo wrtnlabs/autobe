@@ -46,10 +46,25 @@ export async function orchestrateRealizeDecorator<
 
   let completed = 0;
 
+  const templateFiles = {
+    "src/MyGlobal.ts": await fs.readFile(
+      path.join(__dirname, "../../../../../internals/template/src/MyGlobal.ts"),
+      "utf-8",
+    ),
+    "src/authentications/jwtAuthorize.ts": await fs.readFile(
+      path.join(
+        __dirname,
+        "../../../../../internals/template/src/providers/jwtAuthorize.ts",
+      ),
+      "utf-8",
+    ),
+  };
+
   for (const role of roles) {
     const decorator: IAutoBeRealizeDecoratorApplication.IProps = await process(
       ctx,
       role,
+      templateFiles,
       prismaClients,
     );
 
@@ -79,6 +94,7 @@ export async function orchestrateRealizeDecorator<
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   role: string,
+  templateFiles: Record<string, string>,
   prismaClients: Record<string, string>,
 ): Promise<IAutoBeRealizeDecoratorApplication.IProps> {
   const pointer: IPointer<IAutoBeRealizeDecoratorApplication.IProps | null> = {
@@ -115,20 +131,6 @@ async function process<Model extends ILlmSchema.Model>(
     });
 
   if (pointer.value === null) throw new Error("Failed to create decorator.");
-
-  const templateFiles = {
-    "src/MyGlobal.ts": await fs.readFile(
-      path.join(__dirname, "../../../../../internals/template/src/MyGlobal.ts"),
-      "utf-8",
-    ),
-    "src/authentications/jwtAuthorize.ts": await fs.readFile(
-      path.join(
-        __dirname,
-        "../../../../../internals/template/src/providers/jwtAuthorize.ts",
-      ),
-      "utf-8",
-    ),
-  };
 
   return await correctDecorator(
     ctx,
