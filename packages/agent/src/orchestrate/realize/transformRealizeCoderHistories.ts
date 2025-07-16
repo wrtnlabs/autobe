@@ -126,10 +126,7 @@ export const transformRealizeCoderHistories = (
       )
         .replaceAll(`{artifacts_sdk}`, JSON.stringify(artifacts.sdk))
         .replaceAll(`{artifacts_dto}`, JSON.stringify(artifacts.dto))
-        .replaceAll(
-          `{artifacts_docuement}`,
-          JSON.stringify(artifacts.document),
-        ),
+        .replaceAll(`{artifacts_document}`, JSON.stringify(artifacts.document)),
     },
     ...(previous !== null
       ? [
