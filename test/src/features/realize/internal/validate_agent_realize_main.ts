@@ -6,6 +6,7 @@ import {
   AutoBeRealizeHistory,
 } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
+import fs from "fs";
 
 // import typia from "typia";
 
@@ -14,7 +15,7 @@ import { TestGlobal } from "../../../TestGlobal";
 import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_realize } from "./prepare_agent_realize";
 
-export const validate_agent_realize = async (
+export const validate_agent_realize_main = async (
   factory: TestFactory,
   project: TestProject,
 ) => {
@@ -37,17 +38,12 @@ export const validate_agent_realize = async (
   agent.on("realizeStart", enroll);
   agent.on("realizeProgress", enroll);
   agent.on("realizeValidate", enroll);
+  agent.on("realizeDecorator", enroll);
+  agent.on("realizeDecoratorValidate", enroll);
+  agent.on("realizeDecoratorCorrect", enroll);
   agent.on("realizeComplete", enroll);
 
   const ctx = agent.getContext();
-
-  const roles =
-    ctx
-      .state()
-      .interface?.document.components.authorization?.map((auth) => auth.name) ??
-    [];
-
-  console.log("Roles", roles);
 
   // DO TEST GENERATION
   const go = (reason: string) =>
@@ -76,4 +72,11 @@ export const validate_agent_realize = async (
     },
   });
   TestValidator.equals("result")(result.compiled.type)("success");
+
+  if (process.argv.includes("--archive"))
+    await fs.promises.writeFile(
+      `${TestGlobal.ROOT}/assets/histories/${project}.realize.json`,
+      JSON.stringify(agent.getHistories(), null, 2),
+      "utf8",
+    );
 };

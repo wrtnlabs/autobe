@@ -18,7 +18,9 @@ import {
   AutoBePrismaStartEvent,
   AutoBePrismaValidateEvent,
   AutoBeRealizeCompleteEvent,
+  AutoBeRealizeDecoratorCorrectEvent,
   AutoBeRealizeDecoratorEvent,
+  AutoBeRealizeDecoratorValidateEvent,
   AutoBeRealizeProgressEvent,
   AutoBeRealizeStartEvent,
   AutoBeRealizeTestCompleteEvent,
@@ -327,6 +329,29 @@ export interface IAutoBeRpcListener {
    * applications to indicate the start of the decorator generation phase.
    */
   realizeDecorator?(event: AutoBeRealizeDecoratorEvent): Promise<void>;
+
+  /**
+   * Optional handler for decorator validation events.
+   *
+   * Called when the Realize agent validates the generated decorator, enabling
+   * client applications to show quality assurance processes and potential
+   * correction activities for the decorator.
+   */
+  realizeDecoratorValidate?(
+    event: AutoBeRealizeDecoratorValidateEvent,
+  ): Promise<void>;
+
+  /**
+   * Optional handler for decorator correction events.
+   *
+   * Called when the Realize agent corrects compilation failures in the
+   * generated decorator implementation code, enabling client applications to
+   * show that issues are being resolved automatically through iterative
+   * improvement.
+   */
+  realizeDecoratorCorrect?(
+    event: AutoBeRealizeDecoratorCorrectEvent,
+  ): Promise<void>;
 
   /**
    * Optional handler for implementation progress events.

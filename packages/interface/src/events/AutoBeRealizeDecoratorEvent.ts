@@ -1,6 +1,16 @@
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
-/** @author Michael */
+/**
+ * Event fired when the Realize decorator agent generates decorator
+ * implementation code.
+ *
+ * This event occurs when the Realize agent completes generating TypeScript
+ * decorator implementations and their associated provider files. The event
+ * provides detailed information about the generated files, progress metrics,
+ * and the current step in the realization process.
+ *
+ * @author Michael
+ */
 export interface AutoBeRealizeDecoratorEvent
   extends AutoBeEventBase<"realizeDecorator"> {
   /**

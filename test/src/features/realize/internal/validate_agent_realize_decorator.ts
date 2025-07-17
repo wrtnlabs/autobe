@@ -1,7 +1,7 @@
 import { orchestrateRealizeDecorator } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeDecorator";
 import { FileSystemIterator } from "@autobe/filesystem";
 import { AutoBeEvent, IAutoBeCompiler } from "@autobe/interface";
-import fs from "fs/promises";
+import fs from "fs";
 import path from "path";
 import typia from "typia";
 
@@ -31,6 +31,8 @@ export const validate_agent_realize_decorator = async (
 
   agent.on("realizeStart", enroll);
   agent.on("realizeDecorator", enroll);
+  agent.on("realizeDecoratorValidate", enroll);
+  agent.on("realizeDecoratorCorrect", enroll);
   agent.on("realizeProgress", enroll);
   agent.on("realizeValidate", enroll);
   agent.on("realizeComplete", enroll);
@@ -45,14 +47,14 @@ export const validate_agent_realize_decorator = async (
     prisma?.type === "success" ? prisma.nodeModules : {};
 
   const files: Record<string, string> = {
-    "src/MyGlobal.ts": await fs.readFile(
+    "src/MyGlobal.ts": await fs.promises.readFile(
       path.join(
         __dirname,
         "../../../../../internals/template/realize/src/MyGlobal.ts",
       ),
       "utf-8",
     ),
-    "src/authentications/jwtAuthorize.ts": await fs.readFile(
+    "src/authentications/jwtAuthorize.ts": await fs.promises.readFile(
       path.join(
         __dirname,
         "../../../../../internals/template/realize/src/providers/jwtAuthorize.ts",

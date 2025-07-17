@@ -64,33 +64,30 @@ export async function orchestrateRealizeDecorator<
     ...prismaClients,
   };
 
-  for (const role of roles) {
-    const decorator: IAutoBeRealizeDecoratorApplication.IProps = await process(
-      ctx,
-      role,
-      templateFiles,
-      prismaClients,
-    );
+  await Promise.all(
+    roles.map(async (role) => {
+      const decorator: IAutoBeRealizeDecoratorApplication.IProps =
+        await process(ctx, role, templateFiles, prismaClients);
 
-    files[`src/decorators/${decorator.decorator.name}.ts`] =
-      decorator.decorator.code;
-    files[`src/authentications/${decorator.provider.name}.ts`] =
-      decorator.provider.code;
+      files[`src/decorators/${decorator.decorator.name}.ts`] =
+        decorator.decorator.code;
+      files[`src/authentications/${decorator.provider.name}.ts`] =
+        decorator.provider.code;
 
-    decorators.push(decorator);
-    completed++;
-  }
+      decorators.push(decorator);
 
-  const events: AutoBeRealizeDecoratorEvent = {
-    type: "realizeDecorator",
-    created_at: new Date().toISOString(),
-    files,
-    completed,
-    total: roles.length,
-    step: ctx.state().test?.step ?? 0,
-  };
+      const events: AutoBeRealizeDecoratorEvent = {
+        type: "realizeDecorator",
+        created_at: new Date().toISOString(),
+        files,
+        completed: ++completed,
+        total: roles.length,
+        step: ctx.state().test?.step ?? 0,
+      };
 
-  ctx.dispatch(events);
+      ctx.dispatch(events);
+    }),
+  );
 
   return decorators;
 }
@@ -165,10 +162,17 @@ async function correctDecorator<Model extends ILlmSchema.Model>(
     files,
   });
 
+  ctx.dispatch({
+    type: "realizeDecoratorValidate",
+    created_at: new Date().toISOString(),
+    result: compiled,
+    files,
+    step: ctx.state().test?.step ?? 0,
+  });
+
   if (compiled.type === "success") {
     return result;
   } else if (compiled.type === "exception" || life === 0) {
-    // TODO: Add Failure Event Dispatch
     return result;
   }
 
@@ -210,6 +214,22 @@ async function correctDecorator<Model extends ILlmSchema.Model>(
     });
 
   if (pointer.value === null) throw new Error("Failed to correct decorator.");
+
+  const correctedFiles: Record<string, string> = {
+    ...files,
+    [`src/decorators/${pointer.value.decorator.name}.ts`]:
+      pointer.value.decorator.code,
+    [`src/authentications/${pointer.value.provider.name}.ts`]:
+      pointer.value.provider.code,
+  };
+
+  ctx.dispatch({
+    type: "realizeDecoratorCorrect",
+    created_at: new Date().toISOString(),
+    files: correctedFiles,
+    result: compiled,
+    step: ctx.state().test?.step ?? 0,
+  });
 
   return await correctDecorator(
     ctx,
