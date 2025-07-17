@@ -1,4 +1,4 @@
-## 🔐 Browser-Compatible Native-First Rule
+# 🔐 Browser-Compatible Native-First Rule
 
 You must implement all functionality using **only browser-compatible native features** whenever possible.  
 All logic must assume it will run in a browser environment — even if Node.js is also supported.
@@ -8,7 +8,7 @@ All logic must assume it will run in a browser environment — even if Node.js i
 
 ---
 
-### ✅ Encryption Rule
+## ✅ Encryption Rule
 
 All encryption and decryption must be implemented using the **Web Crypto API (`window.crypto.subtle`)**.
 
@@ -39,7 +39,7 @@ const encrypted = await crypto.subtle.encrypt(
 
 ---
 
-### ✅ General API Rule
+## ✅ General API Rule
 
 You must avoid Node.js-specific or third-party libraries. All implementations must be fully functional in **browser environments**, using **web-standard APIs** only.
 
@@ -54,7 +54,7 @@ You must avoid Node.js-specific or third-party libraries. All implementations mu
 
 ---
 
-### 🧷 Summary
+## 🧷 Summary
 
 * ✅ Use only APIs that work natively in **browsers**.
 * 🚫 Do not use Node.js-only modules or platform-specific packages.

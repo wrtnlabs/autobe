@@ -16,6 +16,7 @@ TypeScript error `TS2322` usually occurs because:
 2. You **assigned `null`** to a field that is not nullable in the Prisma schema.
 3. You **used DTO types** (e.g., `IBbsUserRoles`) instead of the Prisma model update type.
 4. You **assigned values to optional fields** without checking ownership or value type.
+5. You **used dynamic imports** (e.g., `import("@prisma/client")`) that bypass proper static typing.
 
 ---
 
@@ -26,6 +27,8 @@ TypeScript error `TS2322` usually occurs because:
 **DO:**
 
 ```ts
+import { Prisma } from "@prisma/client";
+
 const data: Prisma.User_rolesUpdateInput = {};
 ```
 
@@ -86,36 +89,49 @@ const uuid = v4() as string & tags.Format<'uuid'>;
 
 ---
 
+#### ✅ 6. Never use dynamic import for Prisma types
+
+Dynamic imports like `import("@prisma/client")`:
+
+```ts
+const { Prisma } = await import("@prisma/client"); // ❌ Do not use
+```
+
+should **never** be used for type access. This **bypasses static type checking** and **breaks tooling support**. Always use static imports:
+
+```ts
+import { Prisma } from "@prisma/client"; // ✅ Safe and typed
+```
+
+---
+
 ### 💡 Copyable Safe Pattern
 
 ```ts
+import { Prisma } from "@prisma/client";
+
 const data: Prisma.User_rolesUpdateInput = {};
 if ("name" in body) data.name = body.name ?? undefined;
 if ("description" in body) data.description = body.description ?? undefined;
 ```
 
-> 🧠 This avoids errors by:
->
-> * Using the exact type expected by Prisma
-> * Avoiding `null` on non-nullable fields
-> * Treating `undefined` as “do not update”
-
 ---
 
 ### ❌ Common Pitfalls and Fixes
 
-| ❌ Bad Practice                           | ✅ Fix                                   |
-| ---------------------------------------- | --------------------------------------- |
-| Manually define `data` as inline object  | Use `Prisma.ModelUpdateInput`           |
-| Assign `null` to non-nullable fields     | Use `?? undefined` or omit              |
-| Use DTOs like `IBbsUserRoles` for update | Only use DTOs for API input/output      |
-| Assign `data = body` directly            | Extract and normalize fields explicitly |
+| ❌ Bad Practice                             | ✅ Fix                                   |
+| ------------------------------------------ | --------------------------------------- |
+| Manually define `data` as inline object    | Use `Prisma.ModelUpdateInput`           |
+| Assign `null` to non-nullable fields       | Use `?? undefined` or omit              |
+| Use DTOs like `IBbsUserRoles` for update   | Only use DTOs for API input/output      |
+| Assign `data = body` directly              | Extract and normalize fields explicitly |
+| Use `import("@prisma/client")` dynamically | Use static `import { Prisma } ...`      |
 
 ---
 
 ### ✅ Rule of Thumb
 
-> **If you're passing `data` into Prisma, it must be type-compatible with `Prisma.ModelUpdateInput` — no exceptions.**
+> **If you're passing `data` into Prisma, it must be type-compatible with `Prisma.ModelUpdateInput` — and must be built using statically imported types. No exceptions.**
 
 ---
 
@@ -126,3 +142,4 @@ if ("description" in body) data.description = body.description ?? undefined;
 3. Use `hasOwnProperty` to detect intent.
 4. Don’t use `null` unless the schema allows it.
 5. Never use DTO types for `data`.
+6. **Never use `import("@prisma/client")` dynamically — always use static import.**
