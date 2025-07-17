@@ -54,4 +54,18 @@ export const validate_agent_prisma_schemas = async (
       `${TestGlobal.ROOT}/assets/histories/${project}.prisma.schemas.json`,
       JSON.stringify(result, null, 2),
     );
+
+  const expected: string[] = ce.components
+    .map((c) => c.tables)
+    .flat()
+    .sort();
+  const actual: string[] = Array.from(
+    new Set(result.map((e) => e.file.models.map((m) => m.name)).flat()),
+  ).sort();
+  console.log(
+    expected,
+    actual,
+    expected.length === actual.length &&
+      expected.every((v, i) => v === actual[i]),
+  );
 };

@@ -1,5 +1,5 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
-import { AutoBeAnalyzeHistory, AutoBePrisma } from "@autobe/interface";
+import { AutoBePrisma } from "@autobe/interface";
 import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
@@ -16,7 +16,11 @@ export const transformPrismaSchemaHistories = (
       id: v4(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
-      text: AutoBeSystemPromptConstant.PRISMA_SCHEMA,
+      text:
+        AutoBeSystemPromptConstant.PRISMA_SCHEMA +
+        "\n\n" +
+        "// This is fake value to avoid system prompt caching, so that ignore it please: " +
+        v4(),
     },
     {
       id: v4(),
@@ -39,13 +43,12 @@ export const transformPrismaSchemaHistories = (
       created_at: new Date().toISOString(),
       type: "systemMessage",
       text: [
-        "You have to make models (tables) from the target component of below.",
-        "Never make models from the other components. The other components'",
-        "models are already made. So never make them again.",
+        "You've already taken a mistake that creating models from the other components.",
+        "Note that, you have to make models from the target component only. Never make",
+        "models from the other components. The other components' models are already made.",
         "",
         "```json",
         JSON.stringify({
-          otherComponents,
           targetComponent,
         }),
         "```",

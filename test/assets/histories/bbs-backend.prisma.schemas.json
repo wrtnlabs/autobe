@@ -1,66 +1,48 @@
 [
   {
     "type": "prismaSchemas",
-    "created_at": "2025-07-17T10:40:40.058Z",
+    "created_at": "2025-07-17T11:09:30.930Z",
     "file": {
       "filename": "schema-01-systematic.prisma",
       "namespace": "Systematic",
       "models": [
         {
           "name": "discussionboard_channels",
-          "description": "Discussion Channel Registry - This implements the requirement to centralize channel-level configuration and indexing, as outlined in the \"Board & Topic Configuration\" in the requirements (02_discussionboard_functional_requirements.md) and the platform overview. \n\nProvides a normalized structure for registering all top-level discussion board channels (e.g., political, economic, etc.). Channels serve as containers that group sections and boards under logical topical umbrellas. Maintains 3NF by separating channel metadata from sections and board-specific configurations. For example, when a new \"World Politics\" or \"Domestic Economy\" channel is introduced, the system records core metadata here for reference and management.\n\nKey relationships: Each channel contains multiple sections ({@link discussionboard_sections}). Channels are referenced by board configuration, audit logs, and section mapping.\nSpecial behaviors: Disabling a channel logically (soft delete) disables all its sections/boards as well.",
+          "description": "Channel entity for grouping discussion boards - This implements the requirement for modular organization (from Overview & Scope, Functional Requirements §6) to enable grouping boards under channels for broader site structure and hierarchy. \n\nBusiness purpose: Supports scalable board grouping (e.g. 'Politics', 'Economics') for permission and structure management. Maintains full normalization by separating channels from boards (see Boards domain for per-board data). For example, a 'Politics' channel can contain several boards on different subtopics.\n\nKey relationships: Boards reference channels via foreign key (not modeled here). Special behaviors: Channels can be created, renamed, archived.",
           "material": false,
           "primaryField": {
             "name": "id",
             "type": "uuid",
-            "description": "Primary Key. Unique channel identifier."
+            "description": "Primary Key."
           },
           "foreignFields": [],
           "plainFields": [
             {
-              "name": "code",
-              "type": "string",
-              "description": "Channel code - Implements the requirement to assign unique, short symbolic IDs for internal/external channel references. Used for routing and admin configuration. Example: 'POLITICS', 'ECON'.",
-              "nullable": false
-            },
-            {
               "name": "name",
               "type": "string",
-              "description": "Channel display name - Human-readable name for the channel as shown in navigation and admin tools. Example: 'Political Forum'.",
+              "description": "Channel display name - Implements the naming requirement for top-level board grouping. Must be unique per platform. For example: 'Economics', 'Politics'.",
               "nullable": false
             },
             {
               "name": "description",
               "type": "string",
-              "description": "Channel description - Optional longer format channel summary for users and admins. Enables enhanced navigation/search. Example: 'All discussions about domestic and world politics.'",
+              "description": "Optional description giving channel context or guidelines. Implements usability and discoverability requirements. For example: 'Wide-ranging discussions on economics and finance'.",
               "nullable": true
             },
             {
-              "name": "is_enabled",
+              "name": "order",
+              "type": "int",
+              "description": "Integer for channel ordering in UI/navigation - supports administrative requirements for ordered display. 1 = top, increasing numbers = lower. For example: Order=1 → highest channel, 2 → second, etc.",
+              "nullable": false
+            },
+            {
+              "name": "is_active",
               "type": "boolean",
-              "description": "Channel enabled flag - Whether the channel is active or frozen (soft delete flag, mapped to business workflow for disabling large content sections temporarily). Deprecated channels are not shown to users.",
-              "nullable": false
-            },
-            {
-              "name": "created_at",
-              "type": "datetime",
-              "description": "Created At - Timestamp when the channel entry was created to meet audit requirements. Maintains normalization; not calculated.",
-              "nullable": false
-            },
-            {
-              "name": "updated_at",
-              "type": "datetime",
-              "description": "Updated At - Timestamp of last channel info modification. Used for audit logs and admin reference.",
+              "description": "Flag for active/inactive state - Implements administrative enable/disable for channels without deletion. Normalized as a simple flag. For example: Admin disables channel to hide it from user view.",
               "nullable": false
             }
           ],
           "uniqueIndexes": [
-            {
-              "fieldNames": [
-                "code"
-              ],
-              "unique": true
-            },
             {
               "fieldNames": [
                 "name"
@@ -71,47 +53,33 @@
           "plainIndexes": [
             {
               "fieldNames": [
-                "is_enabled"
-              ]
-            },
-            {
-              "fieldNames": [
-                "created_at"
+                "order"
               ]
             }
           ],
           "ginIndexes": [
             {
               "fieldName": "name"
-            },
-            {
-              "fieldName": "description"
             }
           ]
         },
         {
           "name": "discussionboard_sections",
-          "description": "Discussion Section Registry - Implements hierarchical nesting of sections under channels, as outlined in the \"Board & Topic Configuration\" and requirements for multi-tiered forum structure. \n\nEnables channels to be subdivided into multiple sections (e.g., 'International Affairs', 'Policy Debates') for categorized discussions. Maintains strict 3NF: each section is atomic, references its owning channel, and never duplicates data. For example, when configuring a new section under a channel, system stores its metadata here and ties it to a channel.\n\nKey relationships: Belongs to {@link discussionboard_channels}; referenced by board definitions in other components.\nSpecial behaviors: Disabling a section (soft delete flag) disables all boards within that section.",
+          "description": "Sub-structure entity within channels, for sectionalizing groups of boards - Implements requirements for granular information architecture and navigation (from Overview & Scope, Functional §6). Normalized by decoupling sections from channels and boards; each section belongs to a channel and can contain multiple boards (referenced in Boards domain).\n\nBusiness purpose: Enables admins to organize boards within finer-grained sections, e.g. 'Macroeconomics' under 'Economics'. For example, 'Breaking News' section within 'Politics' channel collects specific boards.\n\nKey relationships: References channels via foreign key. Special behaviors: Section ordering, activation/archival possible.",
           "material": false,
           "primaryField": {
             "name": "id",
             "type": "uuid",
-            "description": "Primary Key. Unique section identifier."
+            "description": "Primary Key."
           },
           "foreignFields": [
             {
               "name": "discussionboard_channel_id",
               "type": "uuid",
-              "description": "Belonged channel's {@link discussionboard_channels.id}. Section's parent channel.",
+              "description": "Belonged channel's discussionboard_channels.id. Associates section to its parent channel for logical navigation and access control.",
               "relation": {
-                "name": "discussionboard_channel",
-                "targetModel": "discussionboard_channels",
-                "fields": [
-                  "discussionboard_channel_id"
-                ],
-                "references": [
-                  "id"
-                ]
+                "name": "fk_discussionboard_sections_channel",
+                "targetModel": "discussionboard_channels"
               },
               "unique": false,
               "nullable": false
@@ -119,50 +87,31 @@
           ],
           "plainFields": [
             {
-              "name": "code",
-              "type": "string",
-              "description": "Section code - Implements business requirement for unique section codes for programmatic API access and quick config lookups. For example: 'INT_AFFAIRS'.",
-              "nullable": false
-            },
-            {
               "name": "name",
               "type": "string",
-              "description": "Section display name - Human-friendly name for this section in navigation and admin consoles. Example: 'International Affairs'.",
+              "description": "Section display name. Implements requirement for understandable, user-facing section titles. Example: 'Policy Analysis'.",
               "nullable": false
             },
             {
               "name": "description",
               "type": "string",
-              "description": "Section description - Optional longer text for details and enhanced search. Example: 'Focus on global policy matters'.",
+              "description": "Optional section description for admins/users. Supports information architecture transparency and discoverability. Example: 'Current policy discussions'.",
               "nullable": true
             },
             {
-              "name": "is_enabled",
+              "name": "order",
+              "type": "int",
+              "description": "Integer for admin-controlled section order. Implements UI navigation sequence control, normalized as independent attribute. For example: section with order = 1 shows before order = 2.",
+              "nullable": false
+            },
+            {
+              "name": "is_active",
               "type": "boolean",
-              "description": "Section enabled flag - Whether the section is visible and active. Used in admin processes, never calculated.",
-              "nullable": false
-            },
-            {
-              "name": "created_at",
-              "type": "datetime",
-              "description": "Created At - Timestamp for when the section record was created; satisfies traceability/auditability.",
-              "nullable": false
-            },
-            {
-              "name": "updated_at",
-              "type": "datetime",
-              "description": "Updated At - Last modification time for the section; supports admin workflows.",
+              "description": "True if section is active (displayed in UI); false for archived/hidden. Matches the need for admin toggle of section visibility. Example: Admin hides an obsolete section by setting this to false.",
               "nullable": false
             }
           ],
           "uniqueIndexes": [
-            {
-              "fieldNames": [
-                "discussionboard_channel_id",
-                "code"
-              ],
-              "unique": true
-            },
             {
               "fieldNames": [
                 "discussionboard_channel_id",
@@ -174,63 +123,54 @@
           "plainIndexes": [
             {
               "fieldNames": [
-                "is_enabled"
+                "discussionboard_channel_id"
               ]
             },
             {
               "fieldNames": [
-                "discussionboard_channel_id"
+                "order"
               ]
             }
           ],
           "ginIndexes": [
             {
               "fieldName": "name"
-            },
-            {
-              "fieldName": "description"
             }
           ]
         },
         {
           "name": "discussionboard_configurations",
-          "description": "Global Board Configuration Key/Value Store - Implements platform-level configuration requirements for programmatic, dynamic behavior as referenced in admin features. \n\nThis registry provides a fully normalized, flexible settings store for system-wide toggles, limits, and configurable behaviors (e.g., max post lengths, file uploads enabled). Uses key/value pairing fully compliant with 3NF. For example, when an admin toggles the global 'ALLOW_IMAGE_UPLOADS', it's updated here; when the post length limit changes, this table records config history and values.\n\nKey relationships: Not directly linked to user or board entities. Accessed by admin tools and validated by application logic.\nSpecial behaviors: Only system admins (from otherComponents) may modify/update entries.",
+          "description": "Platform-wide configuration key-value store - Implements requirements for administrative setting and customization (see Functional Requirements §5, §6).\n\nBusiness purpose: Allows persistent storage of system configuration, feature flags, and global options without code changes. 3NF compliance enforced—each config is atomic. For example: 'max_post_length', 'maintenance_mode'.\n\nKey relationships: No foreign keys; all values isolated to ensure decoupling. Special behaviors: Key uniqueness required; changes auditable via audit logs.",
           "material": false,
           "primaryField": {
             "name": "id",
             "type": "uuid",
-            "description": "Primary Key. Unique config row."
+            "description": "Primary Key."
           },
           "foreignFields": [],
           "plainFields": [
             {
               "name": "config_key",
               "type": "string",
-              "description": "Config key - Implements requirement for human- and program-readable configuration keys (e.g., 'MAX_POST_LENGTH', 'ALLOW_IMAGE_UPLOADS'). Uniquely identifies each global setting.",
+              "description": "Configuration key name. Implements business requirement for named configuration parameters (e.g., feature flags, length limits). For example: 'max_post_length'. Enforced unique.",
               "nullable": false
             },
             {
               "name": "config_value",
               "type": "string",
-              "description": "Config value - Implements business need for storing arbitrary config values as normalized strings (could be parsed as int, bool, etc. by application). For example: '4096', 'true'. Maintains atomicity of data.",
+              "description": "Configuration value as string (can store JSON-serialized data or primitives as string). Implements flexibility for admins/devops to store platform options. For example: '5000' (max_post_length), '{\"enabled\":true}' (feature flags).",
               "nullable": false
             },
             {
               "name": "description",
               "type": "string",
-              "description": "Setting description - User/admin-facing description of what this config controls. Improves clarity for maintenance and auditing. Example: 'Maximum post length (in characters)'.",
+              "description": "Optional description for the configuration entry. Supports admin transparency and facilitates system inspection. For example: 'Limit for max characters per post'.",
               "nullable": true
-            },
-            {
-              "name": "created_at",
-              "type": "datetime",
-              "description": "Created At - Timestamp when config was created. Enables config version tracking.",
-              "nullable": false
             },
             {
               "name": "updated_at",
               "type": "datetime",
-              "description": "Updated At - Last modified time for config row; ensures traceability.",
+              "description": "Timestamp for most recent update. Implements auditability and change history. For example: Config changed by admin is timestamped here.",
               "nullable": false
             }
           ],
@@ -245,6 +185,69 @@
           "plainIndexes": [
             {
               "fieldNames": [
+                "updated_at"
+              ]
+            }
+          ],
+          "ginIndexes": [
+            {
+              "fieldName": "config_key"
+            }
+          ]
+        },
+        {
+          "name": "discussionboard_audit_logs",
+          "description": "Persistent audit trail for system actions - Implements platform audit/logging requirements (from Functional Requirements §10, Business Rules §4, Security).\n\nBusiness purpose: Records all critical actions like config changes, admin assignments, content deletions, logins, etc. 3NF maintained—one log per action, no calculated aggregation. For example: admin role change, post deletion, ban event.\n\nKey relationships: Actions may relate to user/admin IDs or config IDs (references to external tables not included here; stored as UUID or reference string). Special behaviors: Immutability—no delete/alter, all entries persisted for compliance.",
+          "material": false,
+          "primaryField": {
+            "name": "id",
+            "type": "uuid",
+            "description": "Primary Key."
+          },
+          "foreignFields": [],
+          "plainFields": [
+            {
+              "name": "action_type",
+              "type": "string",
+              "description": "Type/category of action logged. Implements business rule for tracked system events, e.g., 'config_change', 'user_ban', 'role_assignment', etc. For example: 'post_delete'.",
+              "nullable": false
+            },
+            {
+              "name": "actor_id",
+              "type": "uuid",
+              "description": "UUID of user/admin/actor who performed the action. Ensures traceability and accountability (requirement: all critical actions log actor).\n\nFor example: moderator deleting a comment logs their user_id here.",
+              "nullable": false
+            },
+            {
+              "name": "target_id",
+              "type": "uuid",
+              "description": "UUID identifying the target of the action (may be post, comment, user, or config entry). Null when not applicable. Implements traceability to action subject. For example: post being deleted, configuration altered, etc.",
+              "nullable": true
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "description": "Detailed description of the action/event. Supports transparency for admins/investigators. For example: 'User banned for repeated violations' or 'Config changed: max_post_length = 5000'.",
+              "nullable": true
+            },
+            {
+              "name": "created_at",
+              "type": "datetime",
+              "description": "Timestamp when the audit action occurred. Implements security and order-of-event business rules for incident investigation. For example: when a user was banned or a post deleted.",
+              "nullable": false
+            }
+          ],
+          "uniqueIndexes": [],
+          "plainIndexes": [
+            {
+              "fieldNames": [
+                "action_type",
+                "created_at"
+              ]
+            },
+            {
+              "fieldNames": [
+                "actor_id",
                 "created_at"
               ]
             }
@@ -254,64 +257,302 @@
               "fieldName": "description"
             }
           ]
-        },
+        }
+      ]
+    },
+    "completed": 27,
+    "total": 27,
+    "step": 0
+  },
+  {
+    "type": "prismaSchemas",
+    "created_at": "2025-07-17T11:09:30.930Z",
+    "file": {
+      "filename": "schema-02-actors.prisma",
+      "namespace": "Actors",
+      "models": [
         {
-          "name": "discussionboard_audit_logs",
-          "description": "System Activity Audit Log - Implements the system-wide requirement for traceable audit logging of sensitive or important actions (see 'Audit Logging & Analytics', 'Security & Compliance', 'Moderation' requirements in the requirements analysis doc). \n\nProvides a fully normalized, immutable record of key events: account updates, critical admin/moderator tasks, role/permission changes, major platform settings changes, any flagged security events. Designed for admins to review a chronological, filterable system history.\n\nKey relationships: Optionally references associated channel ({@link discussionboard_channels}) or section ({@link discussionboard_sections}) for major area events, but logs may exist platform-wide (reference fields are nullable). Actor (user) information is stored via user_id, referencing the Actors component.\nSpecial behaviors: No deletions, only append. Ensures normalization by not storing derived aggregates, only atomic event data.",
+          "name": "discussionboard_users",
+          "description": "User Entity - This implements the user account management, registration, and authentication requirements. It is the root actor for all user-level functions across the discussion board, and is referenced for roles, profile, posts, comments, and all engagement functions. 3NF compliance: Only atomic user information is stored, profile, permissions, and history are modeled in related tables. Example: used for authentication, access control, and referencing content ownership. Key relationships: One-to-one with user_profiles, one-to-one/optional with moderators/admins. Special behaviors include uniqueness enforcement on username and email.",
           "material": false,
           "primaryField": {
             "name": "id",
             "type": "uuid",
-            "description": "Primary Key. Unique audit log row."
+            "description": "Primary Key. Uniquely identifies each registered discussion board user."
+          },
+          "foreignFields": [],
+          "plainFields": [
+            {
+              "name": "username",
+              "type": "string",
+              "description": "Unique username for authentication and display. Implements the user identity requirement. Ensures normalization by not duplicating nicknames elsewhere. Example: '@alice99'. Must be unique.",
+              "nullable": false
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "description": "User's registered email address. Used for notifications and account recovery. 3NF by not duplicating in other tables. Example: 'user@example.com'. Must be unique.",
+              "nullable": false
+            },
+            {
+              "name": "password_hash",
+              "type": "string",
+              "description": "Password hash for secure authentication. Fulfills authentication and security requirements. Only hash, never plaintext. Example: bcrypt value.",
+              "nullable": false
+            },
+            {
+              "name": "created_at",
+              "type": "datetime",
+              "description": "Account creation timestamp. Required for audit trail and user lifecycle. Used in account creation flow. Example: '2025-07-17T20:09:30+09:00'.",
+              "nullable": false
+            },
+            {
+              "name": "updated_at",
+              "type": "datetime",
+              "description": "Most recent account update timestamp. For audit and change-tracking purposes. 3NF as atomic event metadata. Example: '2025-07-17T20:09:30+09:00'.",
+              "nullable": false
+            },
+            {
+              "name": "deleted_at",
+              "type": "datetime",
+              "description": "Timestamp when the account was soft-deleted. Satisfies account deletion and recovery requirements. Null for active accounts. Example: '2025-07-17T20:09:30+09:00'.",
+              "nullable": true
+            }
+          ],
+          "uniqueIndexes": [
+            {
+              "fieldNames": [
+                "username"
+              ],
+              "unique": true
+            },
+            {
+              "fieldNames": [
+                "email"
+              ],
+              "unique": true
+            }
+          ],
+          "plainIndexes": [
+            {
+              "fieldNames": [
+                "created_at"
+              ]
+            }
+          ],
+          "ginIndexes": [
+            {
+              "fieldName": "username"
+            }
+          ]
+        },
+        {
+          "name": "discussionboard_moderators",
+          "description": "Moderator Role Entity - Each record indicates a user currently or previously assigned moderator rights, matching the business requirement for role-based permissions and escalations. 3NF: Only reference to user, all mutable and timeline fields are part of audit trails/settings elsewhere. Used for moderator checks, permission audits. Key relationship: references discussionboard_users. Only one moderator record per user is allowed (unique constraint on user_id).",
+          "material": false,
+          "primaryField": {
+            "name": "id",
+            "type": "uuid",
+            "description": "Primary Key. Uniquely identifies the moderator role assignment record."
+          },
+          "foreignFields": [
+            {
+              "name": "user_id",
+              "type": "uuid",
+              "description": "Referenced user's id assigned as moderator. Links to {@link discussionboard_users.id}.",
+              "relation": {
+                "name": "moderator_user",
+                "targetModel": "discussionboard_users"
+              },
+              "unique": true,
+              "nullable": false
+            }
+          ],
+          "plainFields": [
+            {
+              "name": "granted_at",
+              "type": "datetime",
+              "description": "Timestamp when moderator role was granted. Needed for escalation audit, all timestamps are atomic. Example: '2025-07-17T20:09:30+09:00'.",
+              "nullable": false
+            },
+            {
+              "name": "revoked_at",
+              "type": "datetime",
+              "description": "Timestamp when moderator role was revoked, if applicable. Supports demotion audit for compliance. Null for currently active moderators. Example: '2025-07-17T20:09:30+09:00'.",
+              "nullable": true
+            }
+          ],
+          "uniqueIndexes": [
+            {
+              "fieldNames": [
+                "user_id"
+              ],
+              "unique": true
+            }
+          ],
+          "plainIndexes": [
+            {
+              "fieldNames": [
+                "granted_at"
+              ]
+            }
+          ],
+          "ginIndexes": []
+        },
+        {
+          "name": "discussionboard_admins",
+          "description": "Admin Role Entity - Represents users assigned with administrator privileges as required by the admin features (configuration, role assignment, full access). Fulfills rules for system configuration access, audit, and permission change history. Follows 3NF by separating admin flag from user, keeps all timeline data atomic. One-to-one relationship with users (unique user_id).",
+          "material": false,
+          "primaryField": {
+            "name": "id",
+            "type": "uuid",
+            "description": "Primary Key. Uniquely identifies the admin role assignment record."
+          },
+          "foreignFields": [
+            {
+              "name": "user_id",
+              "type": "uuid",
+              "description": "Referenced user's id assigned as admin. Links to {@link discussionboard_users.id}.",
+              "relation": {
+                "name": "admin_user",
+                "targetModel": "discussionboard_users"
+              },
+              "unique": true,
+              "nullable": false
+            }
+          ],
+          "plainFields": [
+            {
+              "name": "granted_at",
+              "type": "datetime",
+              "description": "Timestamp when admin role was granted. Supports permission change auditing. Example: '2025-07-17T20:09:30+09:00'.",
+              "nullable": false
+            },
+            {
+              "name": "revoked_at",
+              "type": "datetime",
+              "description": "Timestamp when admin role was revoked, if applicable (null if active). Supports demotion tracking. Example: '2025-07-17T20:09:30+09:00'.",
+              "nullable": true
+            }
+          ],
+          "uniqueIndexes": [
+            {
+              "fieldNames": [
+                "user_id"
+              ],
+              "unique": true
+            }
+          ],
+          "plainIndexes": [
+            {
+              "fieldNames": [
+                "granted_at"
+              ]
+            }
+          ],
+          "ginIndexes": []
+        },
+        {
+          "name": "discussionboard_user_profiles",
+          "description": "User Profile Entity - Stores non-auth-sensitive customizations such as display name, avatar, bio, and notification setting, separating mutable UI data from core authentication. Directly referenced for displaying user information, making all profile data atomic. Ensures each user has at most one profile. One-to-one with users. Maintains 3NF by not duplicating profile fields in users.",
+          "material": false,
+          "primaryField": {
+            "name": "id",
+            "type": "uuid",
+            "description": "Primary Key. Uniquely identifies each user profile record."
+          },
+          "foreignFields": [
+            {
+              "name": "user_id",
+              "type": "uuid",
+              "description": "Reference to the corresponding {@link discussionboard_users.id} for 1:1 relationship.",
+              "relation": {
+                "name": "profile_user",
+                "targetModel": "discussionboard_users"
+              },
+              "unique": true,
+              "nullable": false
+            }
+          ],
+          "plainFields": [
+            {
+              "name": "display_name",
+              "type": "string",
+              "description": "Custom user display name for UI presentation, separate from auth username. Optional for defaulting to username. Example: 'Alice99'.",
+              "nullable": true
+            },
+            {
+              "name": "avatar_url",
+              "type": "uri",
+              "description": "URL of user's avatar image, fulfilling the UI/UX requirement for profile customization. Only stores image URI. Nullable. Example: 'https://example.com/avatar/u123.png'.",
+              "nullable": true
+            },
+            {
+              "name": "bio",
+              "type": "string",
+              "description": "Short about/bio. Mutable, nullable freeform text for 3NF compliance. Example: 'Political enthusiast, coffee lover.'",
+              "nullable": true
+            },
+            {
+              "name": "notification_opt_in",
+              "type": "boolean",
+              "description": "True if the user wants to receive notifications. Fulfills notification opt-in/opt-out requirements. Not nullable (default is required per system design). Example: true.",
+              "nullable": false
+            }
+          ],
+          "uniqueIndexes": [
+            {
+              "fieldNames": [
+                "user_id"
+              ],
+              "unique": true
+            }
+          ],
+          "plainIndexes": [
+            {
+              "fieldNames": [
+                "display_name"
+              ]
+            }
+          ],
+          "ginIndexes": [
+            {
+              "fieldName": "display_name"
+            }
+          ]
+        }
+      ]
+    },
+    "completed": 6,
+    "total": 27,
+    "step": 0
+  },
+  {
+    "type": "prismaSchemas",
+    "created_at": "2025-07-17T11:09:30.930Z",
+    "file": {
+      "filename": "schema-03-boards.prisma",
+      "namespace": "Boards",
+      "models": [
+        {
+          "name": "discussionboard_boards",
+          "description": "Discussion Board Configuration - This implements the core requirement for defining and organizing discussion boards based on the 'Overview & Scope', sections on Board & Topic Configuration, and Functional Requirements 6 & 9 from the requirements document. \n\nBusiness purpose: Enables admins to create, manage, merge, archive, and organize discussion boards, each representing a major topic or category. Boards hold collections of threads/posts and define their own rules and configuration boundaries. Maintains 3NF compliance by separating board definitions from their settings and tags. For example, 'Global Politics', 'US Economy', or specialty boards (e.g., 'Elections 2025').\n\nKey relationships: Used by posts, settings, and tags (not defined here, but referenced externally). Links to channels/sections (external).\nSpecial behaviors: Board code and name must be unique, may be referenced in cross-board migrations or analytics.",
+          "material": false,
+          "primaryField": {
+            "name": "id",
+            "type": "uuid",
+            "description": "Primary Key. Unique identifier for this board."
           },
           "foreignFields": [
             {
               "name": "discussionboard_channel_id",
               "type": "uuid",
-              "description": "Optional channel ({@link discussionboard_channels.id}) affected by this event. Supports auditing channel/section area configuration or moderation. Nullable for global events.",
+              "description": "Belonged channel's {@link discussionboard_channels.id}. Each board is grouped under a higher-level channel (external model).",
               "relation": {
-                "name": "channel",
+                "name": "discussionboard_channel",
+                "type": "belongsTo",
                 "targetModel": "discussionboard_channels",
-                "fields": [
-                  "discussionboard_channel_id"
-                ],
-                "references": [
-                  "id"
-                ]
-              },
-              "unique": false,
-              "nullable": true
-            },
-            {
-              "name": "discussionboard_section_id",
-              "type": "uuid",
-              "description": "Optional section ({@link discussionboard_sections.id}) affected by this event. Nullable; only filled for section-scoped events.",
-              "relation": {
-                "name": "section",
-                "targetModel": "discussionboard_sections",
-                "fields": [
-                  "discussionboard_section_id"
-                ],
-                "references": [
-                  "id"
-                ]
-              },
-              "unique": false,
-              "nullable": true
-            },
-            {
-              "name": "actor_id",
-              "type": "uuid",
-              "description": "Actor user id ({@link discussionboard_users.id} from Actors component) - who performed this event. Ensures actor accountability.",
-              "relation": {
-                "name": "actor_user",
-                "targetModel": "discussionboard_users",
-                "fields": [
-                  "actor_id"
-                ],
-                "references": [
-                  "id"
-                ]
+                "targetField": "id"
               },
               "unique": false,
               "nullable": false
@@ -319,21 +560,379 @@
           ],
           "plainFields": [
             {
-              "name": "event_type",
+              "name": "code",
               "type": "string",
-              "description": "Event type - Implements requirement to track actionable event nature (e.g., 'CREATE_USER', 'DELETE_POST', 'UPDATE_ROLE'). Enables filtering in admin tools.",
+              "description": "Board unique code - Enforces unique short identifier for board management and internal references (e.g., 'intl', 'eco'). Implements code-based navigation (Functional Req 6).",
               "nullable": false
             },
             {
-              "name": "event_message",
+              "name": "name",
               "type": "string",
-              "description": "Event message - Detailed description of what happened, supporting traceability and internal reporting. E.g., 'User X changed config setting Y'.",
+              "description": "Board display name - Implements business requirement for board title, shown to end users. For example, 'International Politics'.",
+              "nullable": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "description": "Board description - Purpose, guidelines, and summary of this board's function. Displayed on entry and in search/listing results.",
+              "nullable": true
+            },
+            {
+              "name": "is_active",
+              "type": "boolean",
+              "description": "Board active status - Implements business rule to enable/disable the board for user submissions. Used for archiving, maintenance, or soft deletion workflows.",
               "nullable": false
             },
             {
               "name": "created_at",
               "type": "datetime",
-              "description": "Created at - Timestamp of when the event was logged. Immutable post-write; never calculated.",
+              "description": "Board creation timestamp - Enforces audit/logging requirements. When this board was created.",
+              "nullable": false
+            },
+            {
+              "name": "updated_at",
+              "type": "datetime",
+              "description": "Board last updated timestamp (for settings/audit). Tracks last admin change to this board.",
+              "nullable": false
+            },
+            {
+              "name": "archived_at",
+              "type": "datetime",
+              "description": "Board archived timestamp. When present, the board is archived. Enables admins to hide old/obsolete boards but preserve for history.",
+              "nullable": true
+            }
+          ],
+          "uniqueIndexes": [
+            {
+              "fieldNames": [
+                "code"
+              ],
+              "unique": true
+            },
+            {
+              "fieldNames": [
+                "name"
+              ],
+              "unique": true
+            }
+          ],
+          "plainIndexes": [
+            {
+              "fieldNames": [
+                "discussionboard_channel_id"
+              ]
+            },
+            {
+              "fieldNames": [
+                "is_active"
+              ]
+            }
+          ],
+          "ginIndexes": [
+            {
+              "fieldName": "name"
+            },
+            {
+              "fieldName": "description"
+            }
+          ]
+        },
+        {
+          "name": "discussionboard_board_settings",
+          "description": "Discussion Board Settings - This implements the requirements for configurable, role-based board settings, drawn from Functional Requirements 6, 9, 10, and Business Rule 3. \n\nBusiness purpose: Stores advanced/configurable options for each board—such as moderation levels, posting rules, content restrictions, and feature toggles—maintaining one-to-one relationship with a board. 3NF compliance is achieved by separating dynamic settings (which may be changed without editing the board entity). For example, per-board max post length or enabled features.\n\nKey relationships: Linked to a single {@link discussionboard_boards.id} (foreign key, unique), provides the target for per-board config panels for admins/moderators.\nSpecial behaviors: Ensures role-based or feature-driven restrictions are tracked independently of board/table structure.",
+          "material": false,
+          "primaryField": {
+            "name": "id",
+            "type": "uuid",
+            "description": "Primary Key. Unique identifier for this board's settings."
+          },
+          "foreignFields": [
+            {
+              "name": "discussionboard_board_id",
+              "type": "uuid",
+              "description": "Belonged board's {@link discussionboard_boards.id}. Settings are always attached to exactly one board (1:1).",
+              "relation": {
+                "name": "discussionboard_board",
+                "type": "belongsTo",
+                "targetModel": "discussionboard_boards",
+                "targetField": "id"
+              },
+              "unique": true,
+              "nullable": false
+            }
+          ],
+          "plainFields": [
+            {
+              "name": "enable_post_attachments",
+              "type": "boolean",
+              "description": "Whether file attachments are enabled in posts on this board. Implements the per-board control from Functional Requirements 6.",
+              "nullable": false
+            },
+            {
+              "name": "max_post_length",
+              "type": "int",
+              "description": "Maximum allowed post length for this board. Implements restriction from Functional Requirements 3 and 6, and can vary by board. Value is in characters.",
+              "nullable": false
+            },
+            {
+              "name": "moderation_mode",
+              "type": "string",
+              "description": "Moderation level/mode for this board (e.g., 'open', 'restricted', 'invite-only'). Enables feature toggling and special rules per board, as in Functional Requirements 4 and 6.",
+              "nullable": false
+            },
+            {
+              "name": "allow_anonymous_posts",
+              "type": "boolean",
+              "description": "Whether anonymous (non-authenticated) users may create posts. Implements role-based restriction from Business Rules 3 and Functional Requirements 3.",
+              "nullable": false
+            },
+            {
+              "name": "created_at",
+              "type": "datetime",
+              "description": "Board settings creation timestamp. Audit logging per Functional Requirements 10.",
+              "nullable": false
+            },
+            {
+              "name": "updated_at",
+              "type": "datetime",
+              "description": "Last modification time for these settings.",
+              "nullable": false
+            }
+          ],
+          "uniqueIndexes": [
+            {
+              "fieldNames": [
+                "discussionboard_board_id"
+              ],
+              "unique": true
+            }
+          ],
+          "plainIndexes": [
+            {
+              "fieldNames": [
+                "moderation_mode"
+              ]
+            }
+          ],
+          "ginIndexes": []
+        },
+        {
+          "name": "discussionboard_board_tags",
+          "description": "Board Tags - This implements tagging requirements from Functional Requirements 3 and 9, providing a normalized set of tags assignable to boards and their discussion threads. \n\nBusiness purpose: Enables users and admins to filter, discover, or group boards and posts by topic, as well as enable advanced search. Maintains 3NF—the tags table provides a master list of allowed tags (with unique constraint), decoupling tag application from boards/posts themselves. For example: 'elections', 'macroeconomics'.\n\nKey relationships: Used by board-tag and post-tag assignment tables (junction tables—elsewhere). No direct foreign keys.\nSpecial behaviors: Tag names are unique, can support full-text or fuzzy search for advanced navigation. Used to validate input in admin panels.",
+          "material": false,
+          "primaryField": {
+            "name": "id",
+            "type": "uuid",
+            "description": "Primary Key. Unique identifier for this tag."
+          },
+          "foreignFields": [],
+          "plainFields": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Tag name - Implements unique, discoverable label for searching and filtering boards/posts. Example: 'elections'.",
+              "nullable": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "description": "Optional tag description. Explains the relevance or scope of this tag to users, helping avoid ambiguous usage.",
+              "nullable": true
+            },
+            {
+              "name": "created_at",
+              "type": "datetime",
+              "description": "Tag creation time (for audit/tracking, as in Functional Req 10).",
+              "nullable": false
+            }
+          ],
+          "uniqueIndexes": [
+            {
+              "fieldNames": [
+                "name"
+              ],
+              "unique": true
+            }
+          ],
+          "plainIndexes": [
+            {
+              "fieldNames": [
+                "created_at"
+              ]
+            }
+          ],
+          "ginIndexes": [
+            {
+              "fieldName": "name"
+            },
+            {
+              "fieldName": "description"
+            }
+          ]
+        }
+      ]
+    },
+    "completed": 12,
+    "total": 27,
+    "step": 0
+  },
+  {
+    "type": "prismaSchemas",
+    "created_at": "2025-07-17T11:09:30.930Z",
+    "file": {
+      "filename": "schema-04-posts.prisma",
+      "namespace": "Posts",
+      "models": [
+        {
+          "name": "discussionboard_posts",
+          "description": "Discussion Post - Implements the core posting requirement from the requirements analysis (Functional Requirements §3 & §6, Business Rules §1). \n\nBusiness Purpose: Represents a top-level discussion post in a forum board. Each post is created by a user (actor), is associated with a board, and is the root entity for threaded discussions. Maintains 3NF normalization by separating posts from comments and user/profile information. For example, when a user starts a new topic in the 'Economics' board, a record is created here.\n\nKey relationships: references the user who authored the post, the board which contains it, and channels/sections if applicable via FKs (foreign keys are referenced but not redefined here, as those tables exist in other components).\nSpecial behaviors: Only non-calculated, atomic data is stored here. All edits/versions are in the edit history table, and attachments are in a separate table.",
+          "material": false,
+          "primaryField": {
+            "name": "id",
+            "type": "uuid",
+            "description": "Primary Key. Unique identifier for the post as required by normalization and audit requirements."
+          },
+          "foreignFields": [
+            {
+              "name": "discussionboard_user_id",
+              "type": "uuid",
+              "description": "Authoring user's {@link discussionboard_users.id}. Links this post to its creator. Maintains referential integrity and supports user-based access and queries.",
+              "relation": {
+                "name": "UserOnPost",
+                "targetModel": "discussionboard_users",
+                "targetField": "id"
+              },
+              "unique": false,
+              "nullable": false
+            },
+            {
+              "name": "discussionboard_board_id",
+              "type": "uuid",
+              "description": "Board's {@link discussionboard_boards.id}. Associates this post with the specific board/forum where it was published.",
+              "relation": {
+                "name": "BoardOnPost",
+                "targetModel": "discussionboard_boards",
+                "targetField": "id"
+              },
+              "unique": false,
+              "nullable": false
+            }
+          ],
+          "plainFields": [
+            {
+              "name": "title",
+              "type": "string",
+              "description": "Title of the post - Implements the post content requirement. Business meaning: Headline shown in thread listings and search. Ensures normalization by storing only the atomic, user-submitted title. For example: 'What drives inflation in 2025?'. Not nullable as every post must have a title.",
+              "nullable": false
+            },
+            {
+              "name": "body",
+              "type": "string",
+              "description": "Body content of the post - Implements the post content requirement. Stores the full text submitted by the user, separated from edits and attachments for normalization. For example, the primary discussion text. Not nullable for posting system integrity.",
+              "nullable": false
+            },
+            {
+              "name": "created_at",
+              "type": "datetime",
+              "description": "Timestamp when post was first created - Implements auditing and time-sorting requirements. Business meaning: Used to show when a post started. Ensures normalization by storing atomic time-of-creation only. Always present.",
+              "nullable": false
+            },
+            {
+              "name": "updated_at",
+              "type": "datetime",
+              "description": "Last-modified timestamp - Implements edit/audit trail requirements. Updates on every post change, used for UI freshness. Always present for integrity and recovery.",
+              "nullable": false
+            },
+            {
+              "name": "deleted_at",
+              "type": "datetime",
+              "description": "Timestamp when post was deleted (soft-deletion pattern) - Implements admin recovery and retention policy. Nullable: only set when deleted. Ensures normalization by tracking deletion separately from active data. For admins to restore or permanently purge posts as required by §6 and Audit/Logging needs.",
+              "nullable": true
+            }
+          ],
+          "uniqueIndexes": [
+            {
+              "fieldNames": [
+                "discussionboard_board_id",
+                "title"
+              ],
+              "unique": true
+            }
+          ],
+          "plainIndexes": [
+            {
+              "fieldNames": [
+                "created_at"
+              ]
+            },
+            {
+              "fieldNames": [
+                "discussionboard_user_id",
+                "created_at"
+              ]
+            }
+          ],
+          "ginIndexes": [
+            {
+              "fieldName": "title"
+            },
+            {
+              "fieldName": "body"
+            }
+          ]
+        },
+        {
+          "name": "discussionboard_post_edits",
+          "description": "Edit History of Posts - Implements the edit tracking requirement (Functional §6, Business Rules §1). \n\nBusiness Purpose: Preserves a historical record every time a post is edited. Allows full audit trail for admin and moderator review. Maintains 3NF normalization by storing each edit as a separate record. Example: User edits a post to update corrections; this table tracks the previous and new versions for compliance and rollback.\n\nKey relationships: Links to the main post and the user who made the edit (could be original author or moderator in case of administrative edits).\nSpecial behaviors: Atomic edit information only, no calculated/aggregated fields. Snapshots can enable admins to review or restore any historical version.",
+          "material": false,
+          "primaryField": {
+            "name": "id",
+            "type": "uuid",
+            "description": "Primary Key. Unique identifier for each edit snapshot for robust tracking."
+          },
+          "foreignFields": [
+            {
+              "name": "discussionboard_post_id",
+              "type": "uuid",
+              "description": "Target post's {@link discussionboard_posts.id} - links this edit to its parent post. Maintains referential integrity and normalization.",
+              "relation": {
+                "name": "PostOnEdit",
+                "targetModel": "discussionboard_posts",
+                "targetField": "id"
+              },
+              "unique": false,
+              "nullable": false
+            },
+            {
+              "name": "discussionboard_user_id",
+              "type": "uuid",
+              "description": "Editing user's {@link discussionboard_users.id} - user who applied the edit (could be post author or moderator).",
+              "relation": {
+                "name": "UserOnEdit",
+                "targetModel": "discussionboard_users",
+                "targetField": "id"
+              },
+              "unique": false,
+              "nullable": false
+            }
+          ],
+          "plainFields": [
+            {
+              "name": "body_before",
+              "type": "string",
+              "description": "Body content before the edit - Implements full edit history. Stores the prior content as required for audit and compliance. Ensures normalization by capturing only the changed content snapshot. For example, the post content before corrections. Not nullable for audit reliability.",
+              "nullable": false
+            },
+            {
+              "name": "body_after",
+              "type": "string",
+              "description": "Body content after the edit - Stores the new, post-edited content. Complements body_before for complete reversibility. Not nullable.",
+              "nullable": false
+            },
+            {
+              "name": "edited_at",
+              "type": "datetime",
+              "description": "Edit action timestamp - Implements the audit log. Shows exactly when the edit occurred. Always present.",
               "nullable": false
             }
           ],
@@ -341,18 +940,1176 @@
           "plainIndexes": [
             {
               "fieldNames": [
-                "actor_id"
+                "discussionboard_post_id",
+                "edited_at"
+              ]
+            }
+          ],
+          "ginIndexes": []
+        },
+        {
+          "name": "discussionboard_post_attachments",
+          "description": "Post Attachments - Implements the attachment/media requirement for posts (Functional §6). \n\nBusiness Purpose: Stores file references for attachments (images, documents, etc.) that users upload alongside posts. Maintains normalization by decoupling file metadata and references from the main post entity (atomicity), allowing multiple files per post. For example, a user uploads an image supporting their argument—this data lives here.\n\nKey relationships: Each attachment links to a specific post and tracks its uploader (must be a user).\nSpecial behaviors: No actual files are stored here, only metadata and reference URIs.",
+          "material": false,
+          "primaryField": {
+            "name": "id",
+            "type": "uuid",
+            "description": "Primary Key. Unique attachment ID for file reference purposes."
+          },
+          "foreignFields": [
+            {
+              "name": "discussionboard_post_id",
+              "type": "uuid",
+              "description": "Parent post's {@link discussionboard_posts.id} - associates the attachment to its related post. Maintains referential integrity.",
+              "relation": {
+                "name": "PostOnAttachment",
+                "targetModel": "discussionboard_posts",
+                "targetField": "id"
+              },
+              "unique": false,
+              "nullable": false
+            },
+            {
+              "name": "discussionboard_user_id",
+              "type": "uuid",
+              "description": "Uploading user's {@link discussionboard_users.id} - tracks who uploaded the file.",
+              "relation": {
+                "name": "UserOnAttachment",
+                "targetModel": "discussionboard_users",
+                "targetField": "id"
+              },
+              "unique": false,
+              "nullable": false
+            }
+          ],
+          "plainFields": [
+            {
+              "name": "file_uri",
+              "type": "uri",
+              "description": "URI to the stored file (image, PDF, etc.) - Business meaning: allows client consumers to retrieve/display the uploaded media. Null not allowed to ensure all references are valid.",
+              "nullable": false
+            },
+            {
+              "name": "file_name",
+              "type": "string",
+              "description": "Original file name at upload - Implements traceability and user expectations. Ensures normalization by storing the atomic original name only. For example, 'budget2025_chart.png'. Not nullable.",
+              "nullable": false
+            },
+            {
+              "name": "file_type",
+              "type": "string",
+              "description": "MIME type or file extension, e.g., 'image/png', 'application/pdf' - Implements upload/content-type check requirements. Used for validation and UI display. Not nullable.",
+              "nullable": false
+            },
+            {
+              "name": "uploaded_at",
+              "type": "datetime",
+              "description": "Timestamp of upload event - For ordering and audit. Not nullable.",
+              "nullable": false
+            }
+          ],
+          "uniqueIndexes": [],
+          "plainIndexes": [
+            {
+              "fieldNames": [
+                "discussionboard_post_id",
+                "uploaded_at"
+              ]
+            }
+          ],
+          "ginIndexes": []
+        }
+      ]
+    },
+    "completed": 15,
+    "total": 27,
+    "step": 0
+  },
+  {
+    "type": "prismaSchemas",
+    "created_at": "2025-07-17T11:09:30.930Z",
+    "file": {
+      "filename": "schema-05-comments.prisma",
+      "namespace": "Comments",
+      "models": [
+        {
+          "name": "discussionboard_comments",
+          "description": "Comment entity for posts - This implements the requirement for persistent, auditable user comments attached to posts (see Functional Requirements: Commenting & Community Interaction; Business Rules: Content Creation; Audit & Logging).\n\nThis model enables users to comment on posts, supporting threaded, timestamped conversation and moderation. Fully normalized per 3NF: user/post foreign keys, no redundant fields. For example, a comment is linked to one post and one author user. \n\nKey relationships: references posts in otherComponents (discussionboard_posts.id) and users (discussionboard_users.id).\nSpecial behaviors: Soft-deletion and edit window are managed via business logic. All deletions are soft for admin recoverability, edits restricted by edit window rules.",
+          "material": false,
+          "primaryField": {
+            "name": "id",
+            "type": "uuid",
+            "description": "Primary Key. Uniquely identifies each comment record."
+          },
+          "foreignFields": [
+            {
+              "name": "discussionboard_post_id",
+              "type": "uuid",
+              "description": "Target post's {@link discussionboard_posts.id}. Links the comment to its parent post.",
+              "relation": {
+                "name": "fk_discussionboard_comments_post_id",
+                "targetModel": "discussionboard_posts",
+                "targetField": "id"
+              },
+              "unique": false,
+              "nullable": false
+            },
+            {
+              "name": "discussionboard_user_id",
+              "type": "uuid",
+              "description": "Authoring user's {@link discussionboard_users.id}. Identifies the creator of this comment.",
+              "relation": {
+                "name": "fk_discussionboard_comments_user_id",
+                "targetModel": "discussionboard_users",
+                "targetField": "id"
+              },
+              "unique": false,
+              "nullable": false
+            },
+            {
+              "name": "parent_id",
+              "type": "uuid",
+              "description": "Parent comment's {@link discussionboard_comments.id} for threaded/nested replies. Null if top-level comment.",
+              "relation": {
+                "name": "fk_discussionboard_comments_parent_id",
+                "targetModel": "discussionboard_comments",
+                "targetField": "id"
+              },
+              "unique": false,
+              "nullable": true
+            }
+          ],
+          "plainFields": [
+            {
+              "name": "body",
+              "type": "string",
+              "description": "Comment body content - The main text of the user comment. Required for display, search, and audit. Ensures normalization by storing the atomic unit of comment content. For example: 'I totally agree with your view on this topic.'",
+              "nullable": false
+            },
+            {
+              "name": "created_at",
+              "type": "datetime",
+              "description": "Creation timestamp - Records when a comment is submitted, for audit/logging (Requirement: Audit Logging & Analytics).",
+              "nullable": false
+            },
+            {
+              "name": "updated_at",
+              "type": "datetime",
+              "description": "Last update timestamp - Records when the comment content was last modified (Requirement: Editable Content, Audit trail). Null if never edited.",
+              "nullable": true
+            },
+            {
+              "name": "deleted_at",
+              "type": "datetime",
+              "description": "Soft delete timestamp - Marks when a comment is deleted (Requirement: Deleted Content Recoverability). Null if not deleted. Ensures resources can be undeleted per admin policy.",
+              "nullable": true
+            }
+          ],
+          "uniqueIndexes": [
+            {
+              "fieldNames": [
+                "id"
+              ],
+              "unique": true
+            }
+          ],
+          "plainIndexes": [
+            {
+              "fieldNames": [
+                "discussionboard_post_id",
+                "created_at"
+              ]
+            },
+            {
+              "fieldNames": [
+                "discussionboard_user_id",
+                "created_at"
+              ]
+            },
+            {
+              "fieldNames": [
+                "parent_id"
+              ]
+            }
+          ],
+          "ginIndexes": [
+            {
+              "fieldName": "body"
+            }
+          ]
+        },
+        {
+          "name": "discussionboard_comment_edits",
+          "description": "Comment edit history (snapshot) entity - Implements the audit log of all edits to a comment, for transparency (see Functional Requirements: Audit Logging & Analytics; Business Rules: Edit/Delete Tracking).\n\nStores a full snapshot of every edit of a given comment, including previous versions. 3NF compliance: Each revision references only the specific comment, author, and edit time, with actual content independent of parent comment to avoid duplication. For example, editing a comment creates a new history entry, preserving previous versions.\n\nKey relationships: References the comment being edited and the user who performed the edit. Each edit is immutable. \nSpecial behaviors: Entries are ordered chronologically per comment.",
+          "material": false,
+          "primaryField": {
+            "name": "id",
+            "type": "uuid",
+            "description": "Primary Key. Uniquely identifies each comment edit record."
+          },
+          "foreignFields": [
+            {
+              "name": "discussionboard_comment_id",
+              "type": "uuid",
+              "description": "Edited comment's {@link discussionboard_comments.id}. Links snapshot to the main comment entity.",
+              "relation": {
+                "name": "fk_comment_edits_comment_id",
+                "targetModel": "discussionboard_comments",
+                "targetField": "id"
+              },
+              "unique": false,
+              "nullable": false
+            },
+            {
+              "name": "editor_user_id",
+              "type": "uuid",
+              "description": "Editing user's {@link discussionboard_users.id}. Records which user made a particular edit.",
+              "relation": {
+                "name": "fk_comment_edits_editor_user_id",
+                "targetModel": "discussionboard_users",
+                "targetField": "id"
+              },
+              "unique": false,
+              "nullable": false
+            }
+          ],
+          "plainFields": [
+            {
+              "name": "edited_body",
+              "type": "string",
+              "description": "Edited comment content - Stores the snapshot text as it existed after edit. Maintains normalization. For example: original 'Great point'; edited 'Great point, thanks for sharing.'",
+              "nullable": false
+            },
+            {
+              "name": "edited_at",
+              "type": "datetime",
+              "description": "Edit timestamp - When this snapshot was recorded, for full auditability. Required for edit window enforcement and chronological history.",
+              "nullable": false
+            }
+          ],
+          "uniqueIndexes": [
+            {
+              "fieldNames": [
+                "id"
+              ],
+              "unique": true
+            }
+          ],
+          "plainIndexes": [
+            {
+              "fieldNames": [
+                "discussionboard_comment_id",
+                "edited_at"
+              ]
+            }
+          ],
+          "ginIndexes": [
+            {
+              "fieldName": "edited_body"
+            }
+          ]
+        },
+        {
+          "name": "discussionboard_comment_attachments",
+          "description": "Attachment entity for comment files - Implements the file attachment requirement for comments (Functional Requirements: File Uploads, Content Management).\n\nAllows users to upload files or images related to their comments; each attachment is linked to one comment. 3NF compliance guaranteed: URLs and metadata are not duplicated or aggregated, only atomic attachment data per row. For example, a comment may attach one or more images, each as a separate row.\n\nKey relationships: Each attachment references a single comment and records metadata. Linked to comments and storage by foreign and plain fields.\nSpecial behaviors: Attachments can be soft-deleted by users/moderators but not physically removed until retention period expires.",
+          "material": false,
+          "primaryField": {
+            "name": "id",
+            "type": "uuid",
+            "description": "Primary Key. Uniquely identifies each comment attachment record."
+          },
+          "foreignFields": [
+            {
+              "name": "discussionboard_comment_id",
+              "type": "uuid",
+              "description": "Belonged comment's {@link discussionboard_comments.id}. Foreign key to associate attachment with its parent comment.",
+              "relation": {
+                "name": "fk_comment_attachments_comment_id",
+                "targetModel": "discussionboard_comments",
+                "targetField": "id"
+              },
+              "unique": false,
+              "nullable": false
+            }
+          ],
+          "plainFields": [
+            {
+              "name": "file_url",
+              "type": "uri",
+              "description": "File URL/location - Implements the attachment file reference per comment (Requirement: File Uploads). Ensures atomic storage of unique resource locators. For example: 'https://cdn.example.com/uploaded/images/abc123.png'.",
+              "nullable": false
+            },
+            {
+              "name": "file_name",
+              "type": "string",
+              "description": "Original file name - Stores the original uploaded filename for user-facing display and audit. Maintains 3NF by not duplicating info across attachments. For example: 'screenshot-issue.png'.",
+              "nullable": false
+            },
+            {
+              "name": "file_size",
+              "type": "int",
+              "description": "Size of the uploaded file in bytes - For storage management and uploads policy (Requirement: File Upload Quotas).",
+              "nullable": false
+            },
+            {
+              "name": "uploaded_at",
+              "type": "datetime",
+              "description": "Upload timestamp - Records when the attachment was uploaded, supporting retention/audit/rate-limiting policies.",
+              "nullable": false
+            },
+            {
+              "name": "deleted_at",
+              "type": "datetime",
+              "description": "Soft delete timestamp - Marks removal for retention & admin audit requirements. Null if not deleted.",
+              "nullable": true
+            }
+          ],
+          "uniqueIndexes": [
+            {
+              "fieldNames": [
+                "id"
+              ],
+              "unique": true
+            }
+          ],
+          "plainIndexes": [
+            {
+              "fieldNames": [
+                "discussionboard_comment_id"
+              ]
+            },
+            {
+              "fieldNames": [
+                "uploaded_at"
+              ]
+            }
+          ],
+          "ginIndexes": []
+        }
+      ]
+    },
+    "completed": 9,
+    "total": 27,
+    "step": 0
+  },
+  {
+    "type": "prismaSchemas",
+    "created_at": "2025-07-17T11:09:30.930Z",
+    "file": {
+      "filename": "schema-06-engagements.prisma",
+      "namespace": "Engagements",
+      "models": [
+        {
+          "name": "discussionboard_likes",
+          "description": "Discussion board likes - This implements the per-post/comment liking feature from the functional requirements (Section 3 and 6) and user journeys. \n\nBusiness explanation: Stores each user's like action on a post or comment, enabling like counts, unlike, and preventing duplicate likes. Maintains 3NF by separating likes from posts/comments themselves. Example: When a user likes a post, a discussionboard_likes row is created linking the user to post/comment. \n\nKey relationships: references users, posts and comments; ensures no duplicate likes per user-item pair. Special behaviors: uniqueness constraint for one like per user per target.",
+          "material": false,
+          "primaryField": {
+            "name": "id",
+            "type": "uuid",
+            "description": "Primary Key."
+          },
+          "foreignFields": [
+            {
+              "name": "discussionboard_user_id",
+              "type": "uuid",
+              "description": "Belonged user's {@link discussionboard_users.id}. Identifies the liker.",
+              "relation": {
+                "name": "user_like",
+                "targetModel": "discussionboard_users",
+                "targetField": "id"
+              },
+              "unique": false,
+              "nullable": false
+            },
+            {
+              "name": "discussionboard_post_id",
+              "type": "uuid",
+              "description": "Liked post's {@link discussionboard_posts.id}. May be null if this like references a comment instead.",
+              "relation": {
+                "name": "post_like",
+                "targetModel": "discussionboard_posts",
+                "targetField": "id"
+              },
+              "unique": false,
+              "nullable": true
+            },
+            {
+              "name": "discussionboard_comment_id",
+              "type": "uuid",
+              "description": "Liked comment's {@link discussionboard_comments.id}. May be null if this like references a post instead.",
+              "relation": {
+                "name": "comment_like",
+                "targetModel": "discussionboard_comments",
+                "targetField": "id"
+              },
+              "unique": false,
+              "nullable": true
+            }
+          ],
+          "plainFields": [
+            {
+              "name": "created_at",
+              "type": "datetime",
+              "description": "Timestamp when the like was created - For audit and engagement analytics. Enforces normalization by serving as atomic timestamp. Example: Used to sort likes chronologically.",
+              "nullable": false
+            }
+          ],
+          "uniqueIndexes": [
+            {
+              "fieldNames": [
+                "discussionboard_user_id",
+                "discussionboard_post_id",
+                "discussionboard_comment_id"
+              ],
+              "unique": true
+            }
+          ],
+          "plainIndexes": [
+            {
+              "fieldNames": [
+                "discussionboard_post_id",
+                "created_at"
+              ]
+            },
+            {
+              "fieldNames": [
+                "discussionboard_comment_id",
+                "created_at"
+              ]
+            }
+          ],
+          "ginIndexes": []
+        },
+        {
+          "name": "discussionboard_reports",
+          "description": "Discussion board reports - This implements the reporting/inappropriate content flagging feature for posts or comments as described in the functional and business requirements.\n\nBusiness explanation: Records each user's report of a post or comment, supporting moderation workflows and report histories. Maintains 3NF by linking reporter, item, and reason in a separate table. Example: User flags a comment as abuse; this table logs reporter, item, reason, and timestamp for moderators.\n\nKey relationships: references users, posts, comments. Special behaviors: can have multiple reports per user-item (no uniqueness imposed to allow repeated reports).",
+          "material": false,
+          "primaryField": {
+            "name": "id",
+            "type": "uuid",
+            "description": "Primary Key."
+          },
+          "foreignFields": [
+            {
+              "name": "discussionboard_user_id",
+              "type": "uuid",
+              "description": "Reporting user's {@link discussionboard_users.id}.",
+              "relation": {
+                "name": "user_report",
+                "targetModel": "discussionboard_users",
+                "targetField": "id"
+              },
+              "unique": false,
+              "nullable": false
+            },
+            {
+              "name": "discussionboard_post_id",
+              "type": "uuid",
+              "description": "Reported post's {@link discussionboard_posts.id}. Nullable if content is a comment.",
+              "relation": {
+                "name": "post_report",
+                "targetModel": "discussionboard_posts",
+                "targetField": "id"
+              },
+              "unique": false,
+              "nullable": true
+            },
+            {
+              "name": "discussionboard_comment_id",
+              "type": "uuid",
+              "description": "Reported comment's {@link discussionboard_comments.id}. Nullable if content is a post.",
+              "relation": {
+                "name": "comment_report",
+                "targetModel": "discussionboard_comments",
+                "targetField": "id"
+              },
+              "unique": false,
+              "nullable": true
+            }
+          ],
+          "plainFields": [
+            {
+              "name": "reason",
+              "type": "string",
+              "description": "Text reason for the report - Implements the requirement for mandatory reporter justification. Example: 'Spam', 'Harassment', or custom reason. Ensures atomic, normalized storage of report justification.",
+              "nullable": false
+            },
+            {
+              "name": "created_at",
+              "type": "datetime",
+              "description": "Timestamp when the report was created - For moderation queue sorting and audit trail. 3NF enforced as no derived fields present.",
+              "nullable": false
+            }
+          ],
+          "uniqueIndexes": [],
+          "plainIndexes": [
+            {
+              "fieldNames": [
+                "discussionboard_post_id",
+                "created_at"
+              ]
+            },
+            {
+              "fieldNames": [
+                "discussionboard_comment_id",
+                "created_at"
+              ]
+            }
+          ],
+          "ginIndexes": [
+            {
+              "fieldName": "reason"
+            }
+          ]
+        },
+        {
+          "name": "discussionboard_bookmarks",
+          "description": "Discussion board bookmarks - Implements the user bookmarking/following of threads or posts feature, as required for personalized content browsing (Section 3 and 7).\n\nBusiness explanation: Allows users to save posts or threads to their bookmarks, supporting rapid retrieval and personal curation. Each row links a user to a post they have saved. Maintains 3NF by keeping bookmarks distinct from posts' main data.\nFor example: User bookmarks a post to read later; a row is created linking the user and the post.\n\nKey relationships: references users and posts. Special behaviors: one bookmark per user per post enforced by a unique index.",
+          "material": false,
+          "primaryField": {
+            "name": "id",
+            "type": "uuid",
+            "description": "Primary Key."
+          },
+          "foreignFields": [
+            {
+              "name": "discussionboard_user_id",
+              "type": "uuid",
+              "description": "Bookmarking user's {@link discussionboard_users.id}.",
+              "relation": {
+                "name": "user_bookmark",
+                "targetModel": "discussionboard_users",
+                "targetField": "id"
+              },
+              "unique": false,
+              "nullable": false
+            },
+            {
+              "name": "discussionboard_post_id",
+              "type": "uuid",
+              "description": "Bookmarked post's {@link discussionboard_posts.id}.",
+              "relation": {
+                "name": "post_bookmark",
+                "targetModel": "discussionboard_posts",
+                "targetField": "id"
+              },
+              "unique": false,
+              "nullable": false
+            }
+          ],
+          "plainFields": [
+            {
+              "name": "created_at",
+              "type": "datetime",
+              "description": "Timestamp when the bookmark was created - For user engagement tracking and chronological sorting. Enforces normalization by keeping time atomic and distinct.",
+              "nullable": false
+            }
+          ],
+          "uniqueIndexes": [
+            {
+              "fieldNames": [
+                "discussionboard_user_id",
+                "discussionboard_post_id"
+              ],
+              "unique": true
+            }
+          ],
+          "plainIndexes": [
+            {
+              "fieldNames": [
+                "discussionboard_user_id",
+                "created_at"
+              ]
+            }
+          ],
+          "ginIndexes": []
+        },
+        {
+          "name": "discussionboard_follows",
+          "description": "Discussion board follows - Implements the notification/follow feature on threads, authors, or boards as described in Section 7 (user engagement).\n\nBusiness explanation: Tracks which users follow which threads/authors for notification delivery and personalized feeds. Each row links a user with a thread/author/board they follow. Maintains normalization by segregating this linking in a dedicated table. For example: User subscribes to a post, author, or board for update notifications; this creates a row here.\n\nKey relationships: references users, posts, boards (optional); optionally, can extend to other entities as platform expands. Special behaviors: one follow per user per followed target, uniqueness enforced via composite index.",
+          "material": false,
+          "primaryField": {
+            "name": "id",
+            "type": "uuid",
+            "description": "Primary Key."
+          },
+          "foreignFields": [
+            {
+              "name": "discussionboard_user_id",
+              "type": "uuid",
+              "description": "Follower's {@link discussionboard_users.id}.",
+              "relation": {
+                "name": "user_follow",
+                "targetModel": "discussionboard_users",
+                "targetField": "id"
+              },
+              "unique": false,
+              "nullable": false
+            },
+            {
+              "name": "discussionboard_post_id",
+              "type": "uuid",
+              "description": "Followed post's {@link discussionboard_posts.id}. Nullable if following an author/board.",
+              "relation": {
+                "name": "post_follow",
+                "targetModel": "discussionboard_posts",
+                "targetField": "id"
+              },
+              "unique": false,
+              "nullable": true
+            },
+            {
+              "name": "discussionboard_board_id",
+              "type": "uuid",
+              "description": "Followed board's {@link discussionboard_boards.id}. Nullable if not following a board.",
+              "relation": {
+                "name": "board_follow",
+                "targetModel": "discussionboard_boards",
+                "targetField": "id"
+              },
+              "unique": false,
+              "nullable": true
+            },
+            {
+              "name": "followed_user_id",
+              "type": "uuid",
+              "description": "Followed author's {@link discussionboard_users.id}. Nullable if not following an author. (Field clarifies semantic: user can follow another user for notifications).",
+              "relation": {
+                "name": "author_follow",
+                "targetModel": "discussionboard_users",
+                "targetField": "id"
+              },
+              "unique": false,
+              "nullable": true
+            }
+          ],
+          "plainFields": [
+            {
+              "name": "created_at",
+              "type": "datetime",
+              "description": "Timestamp when the follow was created - Needed for user engagement analytics and chronological queries. Follows normalization by enforcing atomic date-time representation.",
+              "nullable": false
+            }
+          ],
+          "uniqueIndexes": [
+            {
+              "fieldNames": [
+                "discussionboard_user_id",
+                "discussionboard_post_id",
+                "discussionboard_board_id",
+                "followed_user_id"
+              ],
+              "unique": true
+            }
+          ],
+          "plainIndexes": [
+            {
+              "fieldNames": [
+                "discussionboard_user_id",
+                "created_at"
+              ]
+            }
+          ],
+          "ginIndexes": []
+        }
+      ]
+    },
+    "completed": 19,
+    "total": 27,
+    "step": 0
+  },
+  {
+    "type": "prismaSchemas",
+    "created_at": "2025-07-17T11:09:30.930Z",
+    "file": {
+      "filename": "schema-07-moderation.prisma",
+      "namespace": "Moderation",
+      "models": [
+        {
+          "name": "discussionboard_moderation_notes",
+          "description": "Moderation Note entity – Implements the business requirement to allow moderators and admins to leave system-logged notes relating to moderation actions or board curation (see Functional Requirements §4, Business Rules §1, and User Roles §3). This model provides an audit trail for critical moderation events and decisions and is a compliance/audit tool. Maintains 3NF by isolating all note data; for example, each note is tied to a specific user or action but contains only atomic business fields (no denormalized summaries). Usage: a moderator leaves justification for a post deletion or ban. Key relationships: references moderator/admin who made the note (via foreign key to discussionboard_moderators or discussionboard_admins in Actors namespace), and optionally links to a specific post/comment/user if relevant. Special behaviors: notes are immutable after creation to preserve audit reliability.",
+          "material": false,
+          "primaryField": {
+            "name": "id",
+            "type": "uuid",
+            "description": "Primary Key. Unique identifier for each moderation note."
+          },
+          "foreignFields": [
+            {
+              "name": "created_by_moderator_id",
+              "type": "uuid",
+              "description": "Author moderator's {@link discussionboard_moderators.id}. Who created this note. Points to existing moderator in Actors.",
+              "relation": {
+                "name": "moderation_notes_created_by_moderator_id_fkey",
+                "targetModel": "discussionboard_moderators"
+              },
+              "unique": false,
+              "nullable": false
+            },
+            {
+              "name": "target_post_id",
+              "type": "uuid",
+              "description": "If this note is about a post, references {@link discussionboard_posts.id}. Nullable for generic notes.",
+              "relation": {
+                "name": "moderation_notes_target_post_id_fkey",
+                "targetModel": "discussionboard_posts"
+              },
+              "unique": false,
+              "nullable": true
+            },
+            {
+              "name": "target_comment_id",
+              "type": "uuid",
+              "description": "If this note concerns a comment, references {@link discussionboard_comments.id}. Nullable for non-comment notes.",
+              "relation": {
+                "name": "moderation_notes_target_comment_id_fkey",
+                "targetModel": "discussionboard_comments"
+              },
+              "unique": false,
+              "nullable": true
+            },
+            {
+              "name": "target_user_id",
+              "type": "uuid",
+              "description": "If this note concerns a user, references {@link discussionboard_users.id} (Actors). Nullable.",
+              "relation": {
+                "name": "moderation_notes_target_user_id_fkey",
+                "targetModel": "discussionboard_users"
+              },
+              "unique": false,
+              "nullable": true
+            }
+          ],
+          "plainFields": [
+            {
+              "name": "body",
+              "type": "string",
+              "description": "The moderation note's main content – reason, context, details. Implements requirements regarding traceable moderation actions. Only atomic (not pre-calculated or denormalized).",
+              "nullable": false
+            },
+            {
+              "name": "created_at",
+              "type": "datetime",
+              "description": "Timestamp when the moderation note was created. Required by audit and compliance requirements.",
+              "nullable": false
+            }
+          ],
+          "uniqueIndexes": [],
+          "plainIndexes": [
+            {
+              "fieldNames": [
+                "created_by_moderator_id",
+                "created_at"
+              ]
+            }
+          ],
+          "ginIndexes": [
+            {
+              "fieldName": "body"
+            }
+          ]
+        },
+        {
+          "name": "discussionboard_bans",
+          "description": "Ban or restriction record – Satisfies key requirements for moderation enforcement and business rules regarding user bans/mutes (Functional Requirements §4, Business Rules §1, User Journey #2). Keeps a structured record of all ban/mute actions, supporting dispute audit and compliance. Maintains 3NF as all attributes (reason, period, etc) are atomic and none are calculated. Usage: a moderator/admin bans or temporarily mutes a user for abuse or spam. Key relationships: references the banned user (Actors), the moderator/admin who imposed the ban, and optional related post/comment. Special behaviors: bans are never physically deleted for audit purposes; expiration tracked with ended_at.",
+          "material": false,
+          "primaryField": {
+            "name": "id",
+            "type": "uuid",
+            "description": "Primary Key. Unique per ban record."
+          },
+          "foreignFields": [
+            {
+              "name": "banned_user_id",
+              "type": "uuid",
+              "description": "The banned user's {@link discussionboard_users.id}.",
+              "relation": {
+                "name": "bans_banned_user_id_fkey",
+                "targetModel": "discussionboard_users"
+              },
+              "unique": false,
+              "nullable": false
+            },
+            {
+              "name": "banned_by_moderator_id",
+              "type": "uuid",
+              "description": "Moderator/admin who imposed the ban {@link discussionboard_moderators.id} or {@link discussionboard_admins.id}. Required for accountability. (Actors)",
+              "relation": {
+                "name": "bans_banned_by_moderator_id_fkey",
+                "targetModel": "discussionboard_moderators"
+              },
+              "unique": false,
+              "nullable": false
+            },
+            {
+              "name": "related_post_id",
+              "type": "uuid",
+              "description": "If this ban relates to a specific post, references {@link discussionboard_posts.id}. Nullable.",
+              "relation": {
+                "name": "bans_related_post_id_fkey",
+                "targetModel": "discussionboard_posts"
+              },
+              "unique": false,
+              "nullable": true
+            },
+            {
+              "name": "related_comment_id",
+              "type": "uuid",
+              "description": "If ban is due to a comment, references {@link discussionboard_comments.id}. Nullable.",
+              "relation": {
+                "name": "bans_related_comment_id_fkey",
+                "targetModel": "discussionboard_comments"
+              },
+              "unique": false,
+              "nullable": true
+            }
+          ],
+          "plainFields": [
+            {
+              "name": "reason",
+              "type": "string",
+              "description": "Description of why the ban/mute was applied. Implements audit requirement. Example: spam, abuse, malicious reporting. 3NF – atomic text.",
+              "nullable": false
+            },
+            {
+              "name": "started_at",
+              "type": "datetime",
+              "description": "Datetime when ban/mute began. Satisfies compliance logging and duration calculation.",
+              "nullable": false
+            },
+            {
+              "name": "ended_at",
+              "type": "datetime",
+              "description": "Datetime when ban/mute ends (null = permanent ban). Satisfies business rules about temporary bans. Nullable for permanent bans only.",
+              "nullable": true
+            },
+            {
+              "name": "is_permanent",
+              "type": "boolean",
+              "description": "Flag: true for permanent ban, false for temporary mute/ban. Implements business logic for duration distinction.",
+              "nullable": false
+            },
+            {
+              "name": "created_at",
+              "type": "datetime",
+              "description": "Record creation timestamp for audit integrity. Required by business rules, atomic value.",
+              "nullable": false
+            }
+          ],
+          "uniqueIndexes": [
+            {
+              "fieldNames": [
+                "banned_user_id",
+                "started_at"
+              ],
+              "unique": true
+            }
+          ],
+          "plainIndexes": [
+            {
+              "fieldNames": [
+                "banned_by_moderator_id"
+              ]
+            },
+            {
+              "fieldNames": [
+                "is_permanent",
+                "ended_at"
+              ]
+            }
+          ],
+          "ginIndexes": [
+            {
+              "fieldName": "reason"
+            }
+          ]
+        },
+        {
+          "name": "discussionboard_report_histories",
+          "description": "History/audit record for reports – Implements business rules about keeping an audit trail of user reports, moderation workflows, and appeals (Functional Requirements §4, §8, Business Rules §2, User Journey #2). This model logs every step in the lifecycle of a user-generated report: creation, review, moderator actions, and eventual outcome. Maintains 3NF by associating each event with a report ID and atomic fields for each fact. Usage: supports reporting on moderator handling, dispute reviews, and moderation analytics. Key relationships: links to report (Engagements), the user who submitted the report, and the assigned moderator (Actors). Special behaviors: immutable once recorded; optimizes search by moderator or report ID.",
+          "material": false,
+          "primaryField": {
+            "name": "id",
+            "type": "uuid",
+            "description": "Primary Key. Unique row per report history event."
+          },
+          "foreignFields": [
+            {
+              "name": "report_id",
+              "type": "uuid",
+              "description": "References reported item {@link discussionboard_reports.id} (Engagements schema).",
+              "relation": {
+                "name": "report_histories_report_id_fkey",
+                "targetModel": "discussionboard_reports"
+              },
+              "unique": false,
+              "nullable": false
+            },
+            {
+              "name": "submitted_by_user_id",
+              "type": "uuid",
+              "description": "User who submitted the original report {@link discussionboard_users.id}.",
+              "relation": {
+                "name": "report_histories_submitted_by_user_id_fkey",
+                "targetModel": "discussionboard_users"
+              },
+              "unique": false,
+              "nullable": false
+            },
+            {
+              "name": "assigned_moderator_id",
+              "type": "uuid",
+              "description": "Moderator assigned to handle review {@link discussionboard_moderators.id}. Nullable if unassigned at step.",
+              "relation": {
+                "name": "report_histories_assigned_moderator_id_fkey",
+                "targetModel": "discussionboard_moderators"
+              },
+              "unique": false,
+              "nullable": true
+            }
+          ],
+          "plainFields": [
+            {
+              "name": "status",
+              "type": "string",
+              "description": "Text code for this event's status ('submitted', 'reviewed', 'actioned', 'dismissed'). Implements audit and lining to moderation workflows. 3NF: atomic string, not computed.",
+              "nullable": false
+            },
+            {
+              "name": "note",
+              "type": "string",
+              "description": "Moderator or system note at this event. E.g. 'Flagged as duplicate', 'Warning sent'. Supports audit outcome traceability. 3NF: atomic text.",
+              "nullable": false
+            },
+            {
+              "name": "created_at",
+              "type": "datetime",
+              "description": "Timestamp of this report event. Implements audit, search, and traceability requirements.",
+              "nullable": false
+            }
+          ],
+          "uniqueIndexes": [
+            {
+              "fieldNames": [
+                "report_id",
+                "created_at"
+              ],
+              "unique": true
+            }
+          ],
+          "plainIndexes": [
+            {
+              "fieldNames": [
+                "assigned_moderator_id",
+                "status"
+              ]
+            }
+          ],
+          "ginIndexes": [
+            {
+              "fieldName": "note"
+            }
+          ]
+        },
+        {
+          "name": "discussionboard_action_logs",
+          "description": "Moderator/Admin action log – Implements the audit and compliance requirements (Functional §10, Business Rules §4). Records every critical moderator/admin action, such as deletions, bans, role adjustments, configuration changes. Maintains full auditability in compliance with business and privacy policy, registering who did what, when, and why. Maintains 3NF with atomic event_type, details, and references. Usage: admin reviews for compliance or incident tracking. Key relationships: references acting moderator/admin (Actors) and target entity (post, comment, user, board – nullable for generic actions). Special behaviors: cannot be deleted, only appended.",
+          "material": false,
+          "primaryField": {
+            "name": "id",
+            "type": "uuid",
+            "description": "Primary Key for action log record."
+          },
+          "foreignFields": [
+            {
+              "name": "actor_moderator_id",
+              "type": "uuid",
+              "description": "Moderator/admin who performed this action {@link discussionboard_moderators.id} (Actors). Required for all audit records.",
+              "relation": {
+                "name": "action_logs_actor_moderator_id_fkey",
+                "targetModel": "discussionboard_moderators"
+              },
+              "unique": false,
+              "nullable": false
+            },
+            {
+              "name": "target_post_id",
+              "type": "uuid",
+              "description": "If the action concerned a post, references {@link discussionboard_posts.id}. Nullable for unrelated actions.",
+              "relation": {
+                "name": "action_logs_target_post_id_fkey",
+                "targetModel": "discussionboard_posts"
+              },
+              "unique": false,
+              "nullable": true
+            },
+            {
+              "name": "target_comment_id",
+              "type": "uuid",
+              "description": "If the action concerned a comment, references {@link discussionboard_comments.id}. Nullable.",
+              "relation": {
+                "name": "action_logs_target_comment_id_fkey",
+                "targetModel": "discussionboard_comments"
+              },
+              "unique": false,
+              "nullable": true
+            },
+            {
+              "name": "target_user_id",
+              "type": "uuid",
+              "description": "If this action concerned a user account, references {@link discussionboard_users.id} (Actors schema). Nullable.",
+              "relation": {
+                "name": "action_logs_target_user_id_fkey",
+                "targetModel": "discussionboard_users"
+              },
+              "unique": false,
+              "nullable": true
+            }
+          ],
+          "plainFields": [
+            {
+              "name": "event_type",
+              "type": "string",
+              "description": "Type of action/event (ban, unban, delete_post, change_role, etc). Implements audit and analytics. Only atomic, not pre-aggregated.",
+              "nullable": false
+            },
+            {
+              "name": "details",
+              "type": "string",
+              "description": "Descriptive details/context for this action. Satisfies compliance need for context in audit logs. 3NF: not denormalized.",
+              "nullable": false
+            },
+            {
+              "name": "created_at",
+              "type": "datetime",
+              "description": "Timestamp of the action. For audit purposes and business rules.",
+              "nullable": false
+            }
+          ],
+          "uniqueIndexes": [],
+          "plainIndexes": [
+            {
+              "fieldNames": [
+                "actor_moderator_id",
+                "created_at"
               ]
             },
             {
               "fieldNames": [
                 "event_type"
               ]
+            }
+          ],
+          "ginIndexes": [
+            {
+              "fieldName": "details"
+            }
+          ]
+        }
+      ]
+    },
+    "completed": 23,
+    "total": 27,
+    "step": 0
+  },
+  {
+    "type": "prismaSchemas",
+    "created_at": "2025-07-17T11:09:30.930Z",
+    "file": {
+      "filename": "schema-08-notifications.prisma",
+      "namespace": "Notifications",
+      "models": [
+        {
+          "name": "discussionboard_notifications",
+          "description": "Notification records - This implements the notification delivery and tracking requirement from the Discussion Board Functional Requirements (Section 7).\n\nThis table logs each notification delivered to a user (such as replies, mentions, likes, moderation actions) for audit, visibility, and async retry if delivery fails. Maintains full 3NF normalization by referencing users and notification content separately, without redundant/cached data. For example, a notification about a new reply to a user's post creates a row here referencing the relevant user and notification type. \n\nKey relationships: references discussionboard_users (notification recipient) and possibly other entities via notification_target_type/id for actor/content. \nSpecial behaviors: notifications are not deleted for audit; status indicates user state (unread, read, etc.), and delivery channels support web, email, or push. Supports eventual re-delivery for failed messages.",
+          "material": false,
+          "primaryField": {
+            "name": "id",
+            "type": "uuid",
+            "description": "Primary Key."
+          },
+          "foreignFields": [
+            {
+              "name": "discussionboard_user_id",
+              "type": "uuid",
+              "description": "Notification recipient's {@link discussionboard_users.id}",
+              "relation": {
+                "name": "user",
+                "targetModel": "discussionboard_users",
+                "targetField": "id"
+              },
+              "unique": false,
+              "nullable": false
+            }
+          ],
+          "plainFields": [
+            {
+              "name": "notification_type",
+              "type": "string",
+              "description": "Type of notification (e.g., reply, like, mention, report, moderation-action). Implements the notification categorization requirement and supports filtering/grouping by type. Ensures normalization by storing type as an atomic value. E.g., 'reply', 'like', 'mention'.",
+              "nullable": false
+            },
+            {
+              "name": "notification_target_type",
+              "type": "string",
+              "description": "Type of entity the notification refers to (e.g., 'discussionboard_posts', 'discussionboard_comments', etc.). Implements support for linking notifications to diverse content types in 3NF; value indicates target model/table. For example, 'discussionboard_posts'.",
+              "nullable": true
+            },
+            {
+              "name": "notification_target_id",
+              "type": "uuid",
+              "description": "ID of the entity this notification refers to (may be post, comment, user, etc., depending on target type); supports polymorphic association without redundancy. E.g., points to a specific discussionboard_posts.id or discussionboard_comments.id.",
+              "nullable": true
+            },
+            {
+              "name": "delivered_via",
+              "type": "string",
+              "description": "Indicates the channel used for notification delivery (web, email, push, etc.). Fulfills delivery tracking and channel selection requirements; atomic value. Example: 'email', 'web', or 'push'.",
+              "nullable": false
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "description": "Current state of the notification for the user (e.g., 'unread', 'read', 'dismissed', 'failed'). Implements 3NF separation of business state and supports filtering unread notifications. E.g., 'unread', 'read'.",
+              "nullable": false
+            },
+            {
+              "name": "created_at",
+              "type": "datetime",
+              "description": "Timestamp when the notification was created and sent. Implements the requirement for chronological ordering and audit trail. 3NF ensured by only storing the atomic value. For example, used to display notification sequences.",
+              "nullable": false
+            },
+            {
+              "name": "read_at",
+              "type": "datetime",
+              "description": "Timestamp when the user marked this notification as read (null if unread). Implements read tracking in line with user journeys. Maintains normalization as a simple atomic property, not derived/calculated. Example: when user clicks notification.",
+              "nullable": true
+            },
+            {
+              "name": "error",
+              "type": "string",
+              "description": "Any delivery error message if sending failed. Implements the need to diagnose failed deliveries. 3NF maintained as error information is atomic and non-redundant. Example: 'SMTP connection failed'.",
+              "nullable": true
+            }
+          ],
+          "uniqueIndexes": [
+            {
+              "fieldNames": [
+                "id"
+              ],
+              "unique": true
+            }
+          ],
+          "plainIndexes": [
+            {
+              "fieldNames": [
+                "discussionboard_user_id",
+                "status"
+              ]
             },
             {
               "fieldNames": [
-                "discussionboard_channel_id",
-                "discussionboard_section_id"
+                "notification_type"
               ]
             },
             {
@@ -363,13 +2120,107 @@
           ],
           "ginIndexes": [
             {
-              "fieldName": "event_message"
+              "fieldName": "error"
             }
           ]
+        },
+        {
+          "name": "discussionboard_notification_preferences",
+          "description": "User notification preferences - This implements the user-configurable notification filtering/delivery channel requirements from Discussion Board Functional Requirements (Section 7).\n\nAllows each user to specify which types of notifications they want, channels (web, email, push), and whether to opt in/out per type. Maintains 3NF normalization by separating user notification preferences from the notification delivery logs and users table. For example, user can disable 'like' notifications for push but keep for email. \n\nKey relationships: references discussionboard_users; unique per user. \nSpecial behaviors: settings are atomic per notification type and per user; updates only change preferences, not delivery history.",
+          "material": false,
+          "primaryField": {
+            "name": "id",
+            "type": "uuid",
+            "description": "Primary Key."
+          },
+          "foreignFields": [
+            {
+              "name": "discussionboard_user_id",
+              "type": "uuid",
+              "description": "The user's {@link discussionboard_users.id} who these preferences belong to.",
+              "relation": {
+                "name": "user",
+                "targetModel": "discussionboard_users",
+                "targetField": "id"
+              },
+              "unique": true,
+              "nullable": false
+            }
+          ],
+          "plainFields": [
+            {
+              "name": "allow_web",
+              "type": "boolean",
+              "description": "Whether to allow web/browser notifications for this user. Implements the requirement for per-channel notification preferences. Maintains normalization by storing the atomic user/channel opt-in. Example: true (enabled) or false (disabled).",
+              "nullable": false
+            },
+            {
+              "name": "allow_email",
+              "type": "boolean",
+              "description": "Whether the user allows email notifications. Atomic, maintains clear separation of each channel. Example: true or false.",
+              "nullable": false
+            },
+            {
+              "name": "allow_push",
+              "type": "boolean",
+              "description": "Whether to allow push (mobile/device) notifications. Atomic opt-in per user/channel. Maintains normalization.",
+              "nullable": false
+            },
+            {
+              "name": "mute_until",
+              "type": "datetime",
+              "description": "Datetime until which all notifications are silenced for this user (null if not muted). Implements mute/snooze feature. 3NF is preserved as this single value is used per user, not repeated or derived. Example: a user snoozes all notifications until 2025-07-27T20:09:30+09:00.",
+              "nullable": true
+            },
+            {
+              "name": "created_at",
+              "type": "datetime",
+              "description": "Timestamp when these preferences were created. Implements audit and history requirements. 3NF is maintained by only storing the atomic timestamp. Example: when user first set preferences.",
+              "nullable": false
+            },
+            {
+              "name": "updated_at",
+              "type": "datetime",
+              "description": "Timestamp when preferences were last changed. Atomic last-update field, essential for tracking configuration changes. 3NF compliant as no derived/calculated data is stored.",
+              "nullable": false
+            }
+          ],
+          "uniqueIndexes": [
+            {
+              "fieldNames": [
+                "discussionboard_user_id"
+              ],
+              "unique": true
+            },
+            {
+              "fieldNames": [
+                "id"
+              ],
+              "unique": true
+            }
+          ],
+          "plainIndexes": [
+            {
+              "fieldNames": [
+                "allow_web"
+              ]
+            },
+            {
+              "fieldNames": [
+                "allow_email"
+              ]
+            },
+            {
+              "fieldNames": [
+                "allow_push"
+              ]
+            }
+          ],
+          "ginIndexes": []
         }
       ]
     },
-    "completed": 4,
+    "completed": 2,
     "total": 27,
     "step": 0
   }

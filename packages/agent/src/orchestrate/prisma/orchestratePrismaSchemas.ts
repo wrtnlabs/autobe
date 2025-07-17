@@ -1,7 +1,7 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import { AutoBePrisma } from "@autobe/interface";
 import { AutoBePrismaSchemasEvent } from "@autobe/interface/src/events/AutoBePrismaSchemasEvent";
-import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
+import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 
@@ -103,66 +103,66 @@ function createApplication<Model extends ILlmSchema.Model>(
   const application: ILlmApplication<Model> = collection[
     ctx.model
   ] as unknown as ILlmApplication<Model>;
-  application.functions[0].validate = (
-    input: unknown,
-  ): IValidation<IMakePrismaSchemaFileProps> => {
-    const result: IValidation<IMakePrismaSchemaFileProps> =
-      typia.validate<IMakePrismaSchemaFileProps>(input);
-    if (result.success === false) return result;
+  // application.functions[0].validate = (
+  //   input: unknown,
+  // ): IValidation<IMakePrismaSchemaFileProps> => {
+  //   const result: IValidation<IMakePrismaSchemaFileProps> =
+  //     typia.validate<IMakePrismaSchemaFileProps>(input);
+  //   if (result.success === false) return result;
 
-    const everyModels: AutoBePrisma.IModel[] = result.data.models;
-    result.data.models = result.data.models.filter((m) =>
-      props.otherComponents.every((oc) => oc.tables.includes(m.name) === false),
-    );
-    const expected: string[] = props.targetComponent.tables;
-    const actual: string[] = result.data.models.map((m) => m.name);
-    const missed: string[] = expected.filter(
-      (x) => actual.includes(x) === false,
-    );
-    if (missed.length === 0) return result;
+  //   const everyModels: AutoBePrisma.IModel[] = result.data.models;
+  //   result.data.models = result.data.models.filter((m) =>
+  //     props.otherComponents.every((oc) => oc.tables.includes(m.name) === false),
+  //   );
+  //   const expected: string[] = props.targetComponent.tables;
+  //   const actual: string[] = result.data.models.map((m) => m.name);
+  //   const missed: string[] = expected.filter(
+  //     (x) => actual.includes(x) === false,
+  //   );
+  //   if (missed.length === 0) return result;
 
-    ctx.dispatch({
-      type: "prismaInsufficient",
-      created_at: new Date().toISOString(),
-      component: props.targetComponent,
-      actual: everyModels,
-      missed,
-      tablesToCreate: result.data.tablesToCreate,
-      validationReview: result.data.validationReview,
-      confirmedTables: result.data.confirmedTables,
-    });
-    return {
-      success: false,
-      data: result.data,
-      errors: [
-        {
-          path: "$input.file.models",
-          value: result.data.models,
-          expected: `Array<AutoBePrisma.IModel>`,
-          description: [
-            "You missed some tables from the current domain's component.",
-            "",
-            "Look at the following details to fix the schemas. Never forget to",
-            "compose the `missed` tables at the next function calling.",
-            "",
-            "- filename: current domain's filename",
-            "- namespace: current domain's namespace",
-            "- expected: expected tables in the current domain",
-            "- actual: actual tables you made",
-            "- missed: tables you have missed, and you have to compose again",
-            "",
-            JSON.stringify({
-              filename: props.targetComponent.filename,
-              namespace: props.targetComponent.namespace,
-              expected,
-              actual,
-              missed,
-            }),
-          ].join("\n"),
-        },
-      ],
-    };
-  };
+  //   ctx.dispatch({
+  //     type: "prismaInsufficient",
+  //     created_at: new Date().toISOString(),
+  //     component: props.targetComponent,
+  //     actual: everyModels,
+  //     missed,
+  //     tablesToCreate: result.data.tablesToCreate,
+  //     validationReview: result.data.validationReview,
+  //     confirmedTables: result.data.confirmedTables,
+  //   });
+  //   return {
+  //     success: false,
+  //     data: result.data,
+  //     errors: [
+  //       {
+  //         path: "$input.file.models",
+  //         value: result.data.models,
+  //         expected: `Array<AutoBePrisma.IModel>`,
+  //         description: [
+  //           "You missed some tables from the current domain's component.",
+  //           "",
+  //           "Look at the following details to fix the schemas. Never forget to",
+  //           "compose the `missed` tables at the next function calling.",
+  //           "",
+  //           "- filename: current domain's filename",
+  //           "- namespace: current domain's namespace",
+  //           "- expected: expected tables in the current domain",
+  //           "- actual: actual tables you made",
+  //           "- missed: tables you have missed, and you have to compose again",
+  //           "",
+  //           JSON.stringify({
+  //             filename: props.targetComponent.filename,
+  //             namespace: props.targetComponent.namespace,
+  //             expected,
+  //             actual,
+  //             missed,
+  //           }),
+  //         ].join("\n"),
+  //       },
+  //     ],
+  //   };
+  // };
   return {
     protocol: "class",
     name: "Prisma Generator",
