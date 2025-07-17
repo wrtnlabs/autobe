@@ -21,6 +21,13 @@ export const orchestrateRealize =
       throw new Error("Can't do realize agent because operations are nothing.");
     }
 
+    ctx.dispatch({
+      type: "realizeStart",
+      created_at: new Date().toISOString(),
+      reason: props.reason,
+      step: ctx.state().test?.step ?? 0,
+    });
+
     const decorators = await orchestrateRealizeDecorator(ctx);
     decorators;
 
