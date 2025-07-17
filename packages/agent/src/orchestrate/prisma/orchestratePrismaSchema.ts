@@ -112,7 +112,7 @@ async function process<Model extends ILlmSchema.Model>(
         ...file,
         models: [...(remained?.done ?? []), ...file.models],
       },
-      expected: component.entireTables,
+      expected: component.tables,
       missed: todo,
       created_at: new Date().toISOString(),
     });
