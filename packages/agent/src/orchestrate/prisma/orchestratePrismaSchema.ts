@@ -148,7 +148,7 @@ function createApplication<Model extends ILlmSchema.Model>(
             "- actual: actual tables you made",
             "- missed: tables you missed",
             "- invasions: other domain components you invaded",
-            "  - invasions[].tables[]: tables you invaded in the other domain components",
+            "  - invasions[].tables[]: they're already made, so you don't need to do that",
             "",
             JSON.stringify({
               filename: props.component.filename,

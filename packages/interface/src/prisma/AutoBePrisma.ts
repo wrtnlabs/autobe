@@ -169,7 +169,8 @@ export namespace AutoBePrisma {
      * ensuring logical grouping and proper organization of related data
      * structures.
      */
-    tables: Array<string & tags.Pattern<"^[a-z][a-z0-9_]*$">>;
+    tables: Array<string & tags.Pattern<"^[a-z][a-z0-9_]*$">> &
+      tags.MinItems<1>;
   }
 
   /**
@@ -204,7 +205,7 @@ export namespace AutoBePrisma {
      * Each model represents a business entity or concept within the namespace.
      * Models can reference each other through foreign key relationships.
      */
-    models: IModel[];
+    models: IModel[] & tags.MinItems<1>;
   }
 
   /**
