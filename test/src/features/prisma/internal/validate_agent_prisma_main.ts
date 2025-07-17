@@ -40,14 +40,14 @@ export const validate_agent_prisma_main = async (
   });
   agent.on("prismaSchemas", (event) => {
     console.log(
-      `  - prisma schemas (${event.completed} of ${event.total}):`,
+      `  - prisma schemas (${event.file.namespace}, ${event.completed} of ${event.total}):`,
       elapsed(),
     );
     schemas.push(event);
   });
   agent.on("prismaInsufficient", (event) => {
     console.log(
-      `  - prisma insufficient: (${event.completed.namespace}, ${JSON.stringify(event.missed)} of ${JSON.stringify(event.expected)})`,
+      `  - prisma insufficient: (${event.completed.namespace}, ${event.missed.length} of ${event.expected.length})`,
       elapsed(),
     );
   });
