@@ -110,23 +110,20 @@ function createApplication<Model extends ILlmSchema.Model>(
       typia.validate<IMakePrismaSchemaFileProps>(input);
     if (result.success === false) return result;
 
+    result.data.models = result.data.models.filter((m) =>
+      props.otherComponents.every(
+        (oc) => !oc.tables.includes(m.name) === false,
+      ),
+    );
     const expected: string[] = props.component.tables;
     const actual: string[] = result.data.models.map((m) => m.name);
     const missed: string[] = expected.filter((x) => !actual.includes(x));
-    const invasions: AutoBePrisma.IComponent[] = props.otherComponents
-      .map((oc) => ({
-        ...oc,
-        tables: oc.tables.filter((x) => actual.includes(x)),
-      }))
-      .filter((oc) => oc.tables.length !== 0);
-    if (missed.length === 0 && invasions.length === 0) return result;
 
     ctx.dispatch({
       type: "prismaInsufficient",
       component: props.component,
       actual: result.data.models,
       missed,
-      invasions,
       created_at: new Date().toISOString(),
     });
     return {
@@ -138,17 +135,16 @@ function createApplication<Model extends ILlmSchema.Model>(
           value: result.data.models,
           expected: `Array<AutoBePrisma.IModel>`,
           description: [
-            "You missed some tables, or invaded other domain components.",
+            "You missed some tables from the current domain's component.",
             "",
-            "Look at the following details to fix the schemas.",
+            "Look at the following details to fix the schemas. Never forget to",
+            "compose the `missed` tables at the next function calling.",
             "",
             "- filename: current domain's filename",
             "- namespace: current domain's namespace",
             "- expected: expected tables in the current domain",
             "- actual: actual tables you made",
-            "- missed: tables you missed",
-            "- invasions: other domain components you invaded",
-            "  - invasions[].tables[]: they're already made, so you don't need to do that",
+            "- missed: tables you have missed, and you have to compose again",
             "",
             JSON.stringify({
               filename: props.component.filename,
@@ -156,7 +152,6 @@ function createApplication<Model extends ILlmSchema.Model>(
               expected,
               actual,
               missed,
-              invasions,
             }),
           ].join("\n"),
         },
