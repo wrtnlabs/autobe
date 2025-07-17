@@ -22,39 +22,45 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
   const start: Date = new Date();
   let complete: number = 0;
 
-  return Promise.all(
+  const result = await Promise.all(
     /**
      * Generate test code for each scenario. Maps through plans array to create
      * individual test code implementations. Each scenario is processed to
      * generate corresponding test code and progress events.
      */
-    scenarios.map((scenario) =>
-      forceRetry(async () => {
-        const artifacts: IAutoBeTestScenarioArtifacts =
-          await getTestScenarioArtifacts(ctx, scenario);
-        const result: IAutoBeTestWriteApplication.IProps = await process(
-          ctx,
-          scenario,
-          artifacts,
-        );
-        const event: AutoBeTestWriteEvent = {
-          type: "testWrite",
-          created_at: start.toISOString(),
-          location: `test/features/api/${result.domain}/${scenario.functionName}.ts`,
-          ...result,
-          completed: ++complete,
-          total: scenarios.length,
-          step: ctx.state().interface?.step ?? 0,
-        };
-        ctx.dispatch(event);
-        return {
-          scenario,
-          artifacts,
-          event,
-        };
-      }),
-    ),
+    scenarios.map(async (scenario) => {
+      try {
+        const r = await forceRetry(async () => {
+          const artifacts: IAutoBeTestScenarioArtifacts =
+            await getTestScenarioArtifacts(ctx, scenario);
+          const result: IAutoBeTestWriteApplication.IProps = await process(
+            ctx,
+            scenario,
+            artifacts,
+          );
+          const event: AutoBeTestWriteEvent = {
+            type: "testWrite",
+            created_at: start.toISOString(),
+            location: `test/features/api/${result.domain}/${scenario.functionName}.ts`,
+            ...result,
+            completed: ++complete,
+            total: scenarios.length,
+            step: ctx.state().interface?.step ?? 0,
+          };
+          ctx.dispatch(event);
+          return {
+            scenario,
+            artifacts,
+            event,
+          };
+        });
+        return r;
+      } catch {
+        return null;
+      }
+    }),
   );
+  return result.filter((r) => r !== null);
 }
 
 /**
