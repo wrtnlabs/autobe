@@ -12,7 +12,6 @@ export const transformRealizeCoderHistories = (
   props: RealizePlannerOutput,
   artifacts: IAutoBeTestScenarioArtifacts,
   previous: string | null,
-  total: IAutoBeTypeScriptCompileResult.IDiagnostic[],
   diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[],
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
@@ -90,31 +89,7 @@ export const transformRealizeCoderHistories = (
       id: v4(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
-      text: AutoBeSystemPromptConstant.REALIZE_CODER,
-    },
-    {
-      id: v4(),
-      created_at: new Date().toISOString(),
-      type: "systemMessage",
-      text: AutoBeSystemPromptConstant.REALIZE_CODER_TYPESCRIPT,
-    },
-    {
-      id: v4(),
-      created_at: new Date().toISOString(),
-      type: "systemMessage",
-      text: AutoBeSystemPromptConstant.REALIZE_CODER_PRISMA,
-    },
-    {
-      id: v4(),
-      created_at: new Date().toISOString(),
-      type: "systemMessage",
-      text: AutoBeSystemPromptConstant.REALIZE_CODER_BROWSER,
-    },
-    {
-      id: v4(),
-      created_at: new Date().toISOString(),
-      type: "systemMessage",
-      text: AutoBeSystemPromptConstant.REALIZE_CODER_TYPIA,
+      text: AutoBeSystemPromptConstant.REALIZE_CODER_TOTAL,
     },
     {
       id: v4(),
@@ -125,8 +100,8 @@ export const transformRealizeCoderHistories = (
         JSON.stringify(state.prisma.schemas),
       )
         .replaceAll(`{artifacts_sdk}`, JSON.stringify(artifacts.sdk))
-        .replaceAll(`{artifacts_dto}`, JSON.stringify(artifacts.dto))
-        .replaceAll(`{artifacts_document}`, JSON.stringify(artifacts.document)),
+        .replaceAll(`{artifacts_dto}`, JSON.stringify(artifacts.dto)),
+      // .replaceAll(`{artifacts_document}`, JSON.stringify(artifacts.document)),
     },
     ...(previous !== null
       ? [
@@ -138,7 +113,7 @@ export const transformRealizeCoderHistories = (
               `{code}`,
               previous,
             )
-              .replaceAll("{total_diagnostics}", JSON.stringify(total))
+              // .replaceAll("{total_diagnostics}", JSON.stringify(total))
               .replaceAll("{current_diagnostics}", JSON.stringify(diagnostics)),
           } as const,
         ]
@@ -154,6 +129,24 @@ export const transformRealizeCoderHistories = (
         "```json",
         JSON.stringify(props),
         "```",
+      ].join("\n"),
+    },
+    {
+      id: v4(),
+      created_at: new Date().toISOString(),
+      type: "assistantMessage",
+      text: [
+        `I understand your request.`,
+        ``,
+        `To summarize:`,
+        `- I must **never use the native \`Date\` type** in any code or type definitions.`,
+        `- Instead, all date and datetime values must be handled as \`string & tags.Format<'date-time'>\`.`,
+        `- This rule is **strict** and applies everywhere, including domain types, API inputs/outputs, and Prisma models.`,
+        `- Even if a library or tool returns a \`Date\`, I must convert it to the correct string format before use.`,
+        ``,
+        `Especially regarding the \`Date\` type: I understand that using it can lead to type inconsistency and runtime issues, so I will completely avoid it in all circumstances.`,
+        ``,
+        `I'll make sure to follow all these rules strictly. Let’s proceed with this in mind.`,
       ].join("\n"),
     },
   ];
