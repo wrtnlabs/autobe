@@ -105,7 +105,7 @@ async function process<Model extends ILlmSchema.Model>(
   const todo: string[] = (remained?.todo ?? component.tables).filter((x) =>
     file.models.every((m) => m.name !== x),
   );
-  if (todo.length !== 0) {
+  if (todo.length !== 0 && retryCount++ < 3) {
     const fulfill: IMakePrismaSchemaFileProps = await forceRetry(() =>
       process(
         ctx,
@@ -119,7 +119,7 @@ async function process<Model extends ILlmSchema.Model>(
           todo,
           namespace: file.namespace,
         },
-        retryCount + 1,
+        retryCount,
       ),
     );
     pointer.value.file.models.push(...fulfill.file.models);
