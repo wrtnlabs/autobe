@@ -1,0 +1,376 @@
+[
+  {
+    "type": "prismaSchemas",
+    "created_at": "2025-07-17T10:40:40.058Z",
+    "file": {
+      "filename": "schema-01-systematic.prisma",
+      "namespace": "Systematic",
+      "models": [
+        {
+          "name": "discussionboard_channels",
+          "description": "Discussion Channel Registry - This implements the requirement to centralize channel-level configuration and indexing, as outlined in the \"Board & Topic Configuration\" in the requirements (02_discussionboard_functional_requirements.md) and the platform overview. \n\nProvides a normalized structure for registering all top-level discussion board channels (e.g., political, economic, etc.). Channels serve as containers that group sections and boards under logical topical umbrellas. Maintains 3NF by separating channel metadata from sections and board-specific configurations. For example, when a new \"World Politics\" or \"Domestic Economy\" channel is introduced, the system records core metadata here for reference and management.\n\nKey relationships: Each channel contains multiple sections ({@link discussionboard_sections}). Channels are referenced by board configuration, audit logs, and section mapping.\nSpecial behaviors: Disabling a channel logically (soft delete) disables all its sections/boards as well.",
+          "material": false,
+          "primaryField": {
+            "name": "id",
+            "type": "uuid",
+            "description": "Primary Key. Unique channel identifier."
+          },
+          "foreignFields": [],
+          "plainFields": [
+            {
+              "name": "code",
+              "type": "string",
+              "description": "Channel code - Implements the requirement to assign unique, short symbolic IDs for internal/external channel references. Used for routing and admin configuration. Example: 'POLITICS', 'ECON'.",
+              "nullable": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Channel display name - Human-readable name for the channel as shown in navigation and admin tools. Example: 'Political Forum'.",
+              "nullable": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "description": "Channel description - Optional longer format channel summary for users and admins. Enables enhanced navigation/search. Example: 'All discussions about domestic and world politics.'",
+              "nullable": true
+            },
+            {
+              "name": "is_enabled",
+              "type": "boolean",
+              "description": "Channel enabled flag - Whether the channel is active or frozen (soft delete flag, mapped to business workflow for disabling large content sections temporarily). Deprecated channels are not shown to users.",
+              "nullable": false
+            },
+            {
+              "name": "created_at",
+              "type": "datetime",
+              "description": "Created At - Timestamp when the channel entry was created to meet audit requirements. Maintains normalization; not calculated.",
+              "nullable": false
+            },
+            {
+              "name": "updated_at",
+              "type": "datetime",
+              "description": "Updated At - Timestamp of last channel info modification. Used for audit logs and admin reference.",
+              "nullable": false
+            }
+          ],
+          "uniqueIndexes": [
+            {
+              "fieldNames": [
+                "code"
+              ],
+              "unique": true
+            },
+            {
+              "fieldNames": [
+                "name"
+              ],
+              "unique": true
+            }
+          ],
+          "plainIndexes": [
+            {
+              "fieldNames": [
+                "is_enabled"
+              ]
+            },
+            {
+              "fieldNames": [
+                "created_at"
+              ]
+            }
+          ],
+          "ginIndexes": [
+            {
+              "fieldName": "name"
+            },
+            {
+              "fieldName": "description"
+            }
+          ]
+        },
+        {
+          "name": "discussionboard_sections",
+          "description": "Discussion Section Registry - Implements hierarchical nesting of sections under channels, as outlined in the \"Board & Topic Configuration\" and requirements for multi-tiered forum structure. \n\nEnables channels to be subdivided into multiple sections (e.g., 'International Affairs', 'Policy Debates') for categorized discussions. Maintains strict 3NF: each section is atomic, references its owning channel, and never duplicates data. For example, when configuring a new section under a channel, system stores its metadata here and ties it to a channel.\n\nKey relationships: Belongs to {@link discussionboard_channels}; referenced by board definitions in other components.\nSpecial behaviors: Disabling a section (soft delete flag) disables all boards within that section.",
+          "material": false,
+          "primaryField": {
+            "name": "id",
+            "type": "uuid",
+            "description": "Primary Key. Unique section identifier."
+          },
+          "foreignFields": [
+            {
+              "name": "discussionboard_channel_id",
+              "type": "uuid",
+              "description": "Belonged channel's {@link discussionboard_channels.id}. Section's parent channel.",
+              "relation": {
+                "name": "discussionboard_channel",
+                "targetModel": "discussionboard_channels",
+                "fields": [
+                  "discussionboard_channel_id"
+                ],
+                "references": [
+                  "id"
+                ]
+              },
+              "unique": false,
+              "nullable": false
+            }
+          ],
+          "plainFields": [
+            {
+              "name": "code",
+              "type": "string",
+              "description": "Section code - Implements business requirement for unique section codes for programmatic API access and quick config lookups. For example: 'INT_AFFAIRS'.",
+              "nullable": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Section display name - Human-friendly name for this section in navigation and admin consoles. Example: 'International Affairs'.",
+              "nullable": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "description": "Section description - Optional longer text for details and enhanced search. Example: 'Focus on global policy matters'.",
+              "nullable": true
+            },
+            {
+              "name": "is_enabled",
+              "type": "boolean",
+              "description": "Section enabled flag - Whether the section is visible and active. Used in admin processes, never calculated.",
+              "nullable": false
+            },
+            {
+              "name": "created_at",
+              "type": "datetime",
+              "description": "Created At - Timestamp for when the section record was created; satisfies traceability/auditability.",
+              "nullable": false
+            },
+            {
+              "name": "updated_at",
+              "type": "datetime",
+              "description": "Updated At - Last modification time for the section; supports admin workflows.",
+              "nullable": false
+            }
+          ],
+          "uniqueIndexes": [
+            {
+              "fieldNames": [
+                "discussionboard_channel_id",
+                "code"
+              ],
+              "unique": true
+            },
+            {
+              "fieldNames": [
+                "discussionboard_channel_id",
+                "name"
+              ],
+              "unique": true
+            }
+          ],
+          "plainIndexes": [
+            {
+              "fieldNames": [
+                "is_enabled"
+              ]
+            },
+            {
+              "fieldNames": [
+                "discussionboard_channel_id"
+              ]
+            }
+          ],
+          "ginIndexes": [
+            {
+              "fieldName": "name"
+            },
+            {
+              "fieldName": "description"
+            }
+          ]
+        },
+        {
+          "name": "discussionboard_configurations",
+          "description": "Global Board Configuration Key/Value Store - Implements platform-level configuration requirements for programmatic, dynamic behavior as referenced in admin features. \n\nThis registry provides a fully normalized, flexible settings store for system-wide toggles, limits, and configurable behaviors (e.g., max post lengths, file uploads enabled). Uses key/value pairing fully compliant with 3NF. For example, when an admin toggles the global 'ALLOW_IMAGE_UPLOADS', it's updated here; when the post length limit changes, this table records config history and values.\n\nKey relationships: Not directly linked to user or board entities. Accessed by admin tools and validated by application logic.\nSpecial behaviors: Only system admins (from otherComponents) may modify/update entries.",
+          "material": false,
+          "primaryField": {
+            "name": "id",
+            "type": "uuid",
+            "description": "Primary Key. Unique config row."
+          },
+          "foreignFields": [],
+          "plainFields": [
+            {
+              "name": "config_key",
+              "type": "string",
+              "description": "Config key - Implements requirement for human- and program-readable configuration keys (e.g., 'MAX_POST_LENGTH', 'ALLOW_IMAGE_UPLOADS'). Uniquely identifies each global setting.",
+              "nullable": false
+            },
+            {
+              "name": "config_value",
+              "type": "string",
+              "description": "Config value - Implements business need for storing arbitrary config values as normalized strings (could be parsed as int, bool, etc. by application). For example: '4096', 'true'. Maintains atomicity of data.",
+              "nullable": false
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "description": "Setting description - User/admin-facing description of what this config controls. Improves clarity for maintenance and auditing. Example: 'Maximum post length (in characters)'.",
+              "nullable": true
+            },
+            {
+              "name": "created_at",
+              "type": "datetime",
+              "description": "Created At - Timestamp when config was created. Enables config version tracking.",
+              "nullable": false
+            },
+            {
+              "name": "updated_at",
+              "type": "datetime",
+              "description": "Updated At - Last modified time for config row; ensures traceability.",
+              "nullable": false
+            }
+          ],
+          "uniqueIndexes": [
+            {
+              "fieldNames": [
+                "config_key"
+              ],
+              "unique": true
+            }
+          ],
+          "plainIndexes": [
+            {
+              "fieldNames": [
+                "created_at"
+              ]
+            }
+          ],
+          "ginIndexes": [
+            {
+              "fieldName": "description"
+            }
+          ]
+        },
+        {
+          "name": "discussionboard_audit_logs",
+          "description": "System Activity Audit Log - Implements the system-wide requirement for traceable audit logging of sensitive or important actions (see 'Audit Logging & Analytics', 'Security & Compliance', 'Moderation' requirements in the requirements analysis doc). \n\nProvides a fully normalized, immutable record of key events: account updates, critical admin/moderator tasks, role/permission changes, major platform settings changes, any flagged security events. Designed for admins to review a chronological, filterable system history.\n\nKey relationships: Optionally references associated channel ({@link discussionboard_channels}) or section ({@link discussionboard_sections}) for major area events, but logs may exist platform-wide (reference fields are nullable). Actor (user) information is stored via user_id, referencing the Actors component.\nSpecial behaviors: No deletions, only append. Ensures normalization by not storing derived aggregates, only atomic event data.",
+          "material": false,
+          "primaryField": {
+            "name": "id",
+            "type": "uuid",
+            "description": "Primary Key. Unique audit log row."
+          },
+          "foreignFields": [
+            {
+              "name": "discussionboard_channel_id",
+              "type": "uuid",
+              "description": "Optional channel ({@link discussionboard_channels.id}) affected by this event. Supports auditing channel/section area configuration or moderation. Nullable for global events.",
+              "relation": {
+                "name": "channel",
+                "targetModel": "discussionboard_channels",
+                "fields": [
+                  "discussionboard_channel_id"
+                ],
+                "references": [
+                  "id"
+                ]
+              },
+              "unique": false,
+              "nullable": true
+            },
+            {
+              "name": "discussionboard_section_id",
+              "type": "uuid",
+              "description": "Optional section ({@link discussionboard_sections.id}) affected by this event. Nullable; only filled for section-scoped events.",
+              "relation": {
+                "name": "section",
+                "targetModel": "discussionboard_sections",
+                "fields": [
+                  "discussionboard_section_id"
+                ],
+                "references": [
+                  "id"
+                ]
+              },
+              "unique": false,
+              "nullable": true
+            },
+            {
+              "name": "actor_id",
+              "type": "uuid",
+              "description": "Actor user id ({@link discussionboard_users.id} from Actors component) - who performed this event. Ensures actor accountability.",
+              "relation": {
+                "name": "actor_user",
+                "targetModel": "discussionboard_users",
+                "fields": [
+                  "actor_id"
+                ],
+                "references": [
+                  "id"
+                ]
+              },
+              "unique": false,
+              "nullable": false
+            }
+          ],
+          "plainFields": [
+            {
+              "name": "event_type",
+              "type": "string",
+              "description": "Event type - Implements requirement to track actionable event nature (e.g., 'CREATE_USER', 'DELETE_POST', 'UPDATE_ROLE'). Enables filtering in admin tools.",
+              "nullable": false
+            },
+            {
+              "name": "event_message",
+              "type": "string",
+              "description": "Event message - Detailed description of what happened, supporting traceability and internal reporting. E.g., 'User X changed config setting Y'.",
+              "nullable": false
+            },
+            {
+              "name": "created_at",
+              "type": "datetime",
+              "description": "Created at - Timestamp of when the event was logged. Immutable post-write; never calculated.",
+              "nullable": false
+            }
+          ],
+          "uniqueIndexes": [],
+          "plainIndexes": [
+            {
+              "fieldNames": [
+                "actor_id"
+              ]
+            },
+            {
+              "fieldNames": [
+                "event_type"
+              ]
+            },
+            {
+              "fieldNames": [
+                "discussionboard_channel_id",
+                "discussionboard_section_id"
+              ]
+            },
+            {
+              "fieldNames": [
+                "created_at"
+              ]
+            }
+          ],
+          "ginIndexes": [
+            {
+              "fieldName": "event_message"
+            }
+          ]
+        }
+      ]
+    },
+    "completed": 4,
+    "total": 27,
+    "step": 0
+  }
+]

@@ -20,25 +20,25 @@ export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
   const total: number = components
     .map((c) => c.tables.length)
     .reduce((x, y) => x + y, 0);
-  let i: number = 0;
+  let completed: number = 0;
   return await Promise.all(
-    components.map(async (c, x) => {
+    components.map(async (comp) => {
+      const targetComponent: AutoBePrisma.IComponent = comp;
+      const otherComponents: AutoBePrisma.IComponent[] = components.filter(
+        (y) => comp !== y,
+      );
       const result: IMakePrismaSchemaFileProps = await forceRetry(() =>
-        process(
-          ctx,
-          c, // mine
-          components.filter((_, y) => x !== y), // others
-        ),
+        process(ctx, targetComponent, otherComponents),
       );
       const event: AutoBePrismaSchemasEvent = {
         type: "prismaSchemas",
         created_at: start.toISOString(),
         file: {
-          filename: c.filename,
-          namespace: c.namespace,
+          filename: comp.filename,
+          namespace: comp.namespace,
           models: result.models,
         },
-        completed: (i += c.tables.length),
+        completed: (completed += comp.tables.length),
         total,
         step: ctx.state().analyze?.step ?? 0,
       };
@@ -50,7 +50,7 @@ export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
 
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  component: AutoBePrisma.IComponent,
+  targetComponent: AutoBePrisma.IComponent,
   otherComponents: AutoBePrisma.IComponent[],
 ): Promise<IMakePrismaSchemaFileProps> {
   const pointer: IPointer<IMakePrismaSchemaFileProps | null> = {
@@ -66,13 +66,13 @@ async function process<Model extends ILlmSchema.Model>(
       },
     },
     histories: transformPrismaSchemaHistories(
-      ctx.state().analyze!,
-      component,
+      ctx.state().analyze!.files,
+      targetComponent,
       otherComponents,
     ),
     controllers: [
       createApplication(ctx, {
-        component,
+        targetComponent,
         otherComponents,
         build: (next) => {
           pointer.value = next;
@@ -94,7 +94,7 @@ async function process<Model extends ILlmSchema.Model>(
 function createApplication<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
-    component: AutoBePrisma.IComponent;
+    targetComponent: AutoBePrisma.IComponent;
     otherComponents: AutoBePrisma.IComponent[];
     build: (next: IMakePrismaSchemaFileProps) => void;
   },
@@ -110,21 +110,26 @@ function createApplication<Model extends ILlmSchema.Model>(
       typia.validate<IMakePrismaSchemaFileProps>(input);
     if (result.success === false) return result;
 
+    const everyModels: AutoBePrisma.IModel[] = result.data.models;
     result.data.models = result.data.models.filter((m) =>
-      props.otherComponents.every(
-        (oc) => !oc.tables.includes(m.name) === false,
-      ),
+      props.otherComponents.every((oc) => oc.tables.includes(m.name) === false),
     );
-    const expected: string[] = props.component.tables;
+    const expected: string[] = props.targetComponent.tables;
     const actual: string[] = result.data.models.map((m) => m.name);
-    const missed: string[] = expected.filter((x) => !actual.includes(x));
+    const missed: string[] = expected.filter(
+      (x) => actual.includes(x) === false,
+    );
+    if (missed.length === 0) return result;
 
     ctx.dispatch({
       type: "prismaInsufficient",
-      component: props.component,
-      actual: result.data.models,
-      missed,
       created_at: new Date().toISOString(),
+      component: props.targetComponent,
+      actual: everyModels,
+      missed,
+      tablesToCreate: result.data.tablesToCreate,
+      validationReview: result.data.validationReview,
+      confirmedTables: result.data.confirmedTables,
     });
     return {
       success: false,
@@ -147,8 +152,8 @@ function createApplication<Model extends ILlmSchema.Model>(
             "- missed: tables you have missed, and you have to compose again",
             "",
             JSON.stringify({
-              filename: props.component.filename,
-              namespace: props.component.namespace,
+              filename: props.targetComponent.filename,
+              namespace: props.targetComponent.namespace,
               expected,
               actual,
               missed,
@@ -205,10 +210,56 @@ interface IApplication {
 
 interface IMakePrismaSchemaFileProps {
   /**
-   * Array of Prisma models (database tables) within the domain.
+   * STEP 1: First enumeration of tables that must be created
    *
-   * Each model represents a business entity or concept within the namespace.
-   * Models can reference each other through foreign key relationships.
+   * List all table names that need to be created based on the
+   * `targetComponent.tables`. This should be an exact copy of the
+   * `targetComponent.tables` array.
+   *
+   * Example: ["shopping_goods", "shopping_goods_options"]
+   */
+  tablesToCreate: string[];
+
+  /**
+   * STEP 2: Validation review of the first enumeration
+   *
+   * Compare `tablesToCreate` against `targetComponent.tables` and
+   * `otherComponents[].tables`. Write a review statement that validates:
+   *
+   * - All tables from `targetComponent.tables` are included
+   * - No tables from `otherComponents[].tables` are included
+   * - Additional tables (if any) are for M:N junction relationships or
+   *   domain-specific needs
+   * - No forbidden tables from other domains are included
+   *
+   * Example: "VALIDATION PASSED: All required tables from
+   * `targetComponent.tables` included: shopping_goods, shopping_goods_options.
+   * FORBIDDEN CHECK: No tables from `otherComponents` included
+   * (shopping_customers, shopping_sellers are correctly excluded). Additional
+   * tables: none needed for this domain."
+   */
+  validationReview: string;
+
+  /**
+   * STEP 3: Second enumeration of tables to create
+   *
+   * After validation, re-list the tables that will be created. This should be
+   * identical to `tablesToCreate` if validation passed. This serves as the
+   * final confirmed list before model creation.
+   *
+   * Example: ["shopping_goods", "shopping_goods_options"]
+   */
+  confirmedTables: string[];
+
+  /**
+   * STEP 4: Array of Prisma models (database tables) within the domain
+   *
+   * Create exactly one model for each table in `confirmedTables`. Each model
+   * represents a business entity or concept within the namespace. Models can
+   * reference each other through foreign key relationships.
+   *
+   * The `models` array length must equal `confirmedTables.length`. Each
+   * `model.name` must match an entry in `confirmedTables`.
    */
   models: AutoBePrisma.IModel[];
 }

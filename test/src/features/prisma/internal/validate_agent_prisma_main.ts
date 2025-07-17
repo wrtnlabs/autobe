@@ -55,10 +55,11 @@ export const validate_agent_prisma_main = async (
       `  - prisma insufficient: (${event.component.filename}, ${event.missed.length} of ${event.component.tables.length})`,
       elapsed(),
     );
-    console.log("    - expected");
-    for (const table of event.component.tables) console.log(`      - ${table}`);
-    console.log(`    - actual`);
-    for (const m of event.actual) console.log(`      - ${m.name}`);
+    console.log("    - expected:", event.component.tables.join(", "));
+    console.log("    - actual:", event.actual.map((m) => m.name).join(", "));
+    console.log(`    - tablesToCreate:`, event.tablesToCreate.join(", "));
+    console.log(`    - validationReview:`, event.validationReview);
+    console.log(`    - confirmedTables:`, event.confirmedTables.join(", "));
   });
 
   const validates: AutoBePrismaValidateEvent[] = [];

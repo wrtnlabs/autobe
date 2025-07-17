@@ -66,6 +66,10 @@ export interface AutoBePrismaInsufficientEvent
    */
   missed: string[];
 
+  tablesToCreate: string[];
+  validationReview: string;
+  confirmedTables: string[];
+
   // /**
   //  * Array of other components whose domain boundaries may have been violated by
   //  * the AI-generated schema.

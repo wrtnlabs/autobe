@@ -14,7 +14,7 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
 import { orchestratePrismaComponents } from "./orchestratePrismaComponent";
 import { orchestratePrismaCorrect } from "./orchestratePrismaCorrect";
-import { orchestratePrismaSchemas } from "./orchestratePrismaSchema";
+import { orchestratePrismaSchemas } from "./orchestratePrismaSchemas";
 
 export const orchestratePrisma =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>

@@ -1,0 +1,82 @@
+{
+  "type": "prismaComponents",
+  "created_at": "2025-07-17T10:34:24.302Z",
+  "components": [
+    {
+      "filename": "schema-01-systematic.prisma",
+      "namespace": "Systematic",
+      "tables": [
+        "discussionboard_channels",
+        "discussionboard_sections",
+        "discussionboard_configurations",
+        "discussionboard_audit_logs"
+      ]
+    },
+    {
+      "filename": "schema-02-actors.prisma",
+      "namespace": "Actors",
+      "tables": [
+        "discussionboard_users",
+        "discussionboard_moderators",
+        "discussionboard_admins",
+        "discussionboard_user_profiles"
+      ]
+    },
+    {
+      "filename": "schema-03-boards.prisma",
+      "namespace": "Boards",
+      "tables": [
+        "discussionboard_boards",
+        "discussionboard_board_settings",
+        "discussionboard_board_tags"
+      ]
+    },
+    {
+      "filename": "schema-04-posts.prisma",
+      "namespace": "Posts",
+      "tables": [
+        "discussionboard_posts",
+        "discussionboard_post_edits",
+        "discussionboard_post_attachments"
+      ]
+    },
+    {
+      "filename": "schema-05-comments.prisma",
+      "namespace": "Comments",
+      "tables": [
+        "discussionboard_comments",
+        "discussionboard_comment_edits",
+        "discussionboard_comment_attachments"
+      ]
+    },
+    {
+      "filename": "schema-06-engagements.prisma",
+      "namespace": "Engagements",
+      "tables": [
+        "discussionboard_likes",
+        "discussionboard_reports",
+        "discussionboard_bookmarks",
+        "discussionboard_follows"
+      ]
+    },
+    {
+      "filename": "schema-07-moderation.prisma",
+      "namespace": "Moderation",
+      "tables": [
+        "discussionboard_moderation_notes",
+        "discussionboard_bans",
+        "discussionboard_report_histories",
+        "discussionboard_action_logs"
+      ]
+    },
+    {
+      "filename": "schema-08-notifications.prisma",
+      "namespace": "Notifications",
+      "tables": [
+        "discussionboard_notifications",
+        "discussionboard_notification_preferences"
+      ]
+    }
+  ],
+  "step": 0
+}

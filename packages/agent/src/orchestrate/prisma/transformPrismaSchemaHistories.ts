@@ -5,7 +5,7 @@ import { v4 } from "uuid";
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 
 export const transformPrismaSchemaHistories = (
-  analyze: AutoBeAnalyzeHistory,
+  requirementAnalysisReport: Record<string, string>,
   targetComponent: AutoBePrisma.IComponent,
   otherComponents: AutoBePrisma.IComponent[],
 ): Array<
@@ -27,9 +27,9 @@ export const transformPrismaSchemaHistories = (
         "",
         "```",
         JSON.stringify({
-          requirementAnalysisReport: analyze.files,
-          targetComponent,
+          requirementAnalysisReport,
           otherComponents,
+          targetComponent,
         }),
         "```",
       ].join("\n"),
@@ -43,7 +43,12 @@ export const transformPrismaSchemaHistories = (
         "Never make models from the other components. The other components'",
         "models are already made. So never make them again.",
         "",
-        ...targetComponent.tables.map((t) => `- ${t}`),
+        "```json",
+        JSON.stringify({
+          otherComponents,
+          targetComponent,
+        }),
+        "```",
       ].join("\n"),
     },
   ];
