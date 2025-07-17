@@ -106,6 +106,16 @@ async function process<Model extends ILlmSchema.Model>(
     file.models.every((m) => m.name !== x),
   );
   if (todo.length !== 0 && retryCount++ < 3) {
+    ctx.dispatch({
+      type: "prismaInsufficient",
+      completed: {
+        ...file,
+        models: [...(remained?.done ?? []), ...file.models],
+      },
+      expected: component.entireTables,
+      missed: todo,
+      created_at: new Date().toISOString(),
+    });
     const fulfill: IMakePrismaSchemaFileProps = await forceRetry(() =>
       process(
         ctx,

@@ -45,6 +45,12 @@ export const validate_agent_prisma_main = async (
     );
     schemas.push(event);
   });
+  agent.on("prismaInsufficient", (event) => {
+    console.log(
+      `  - prisma insufficient: (${event.completed.namespace}, ${JSON.stringify(event.missed)} of ${JSON.stringify(event.expected)})`,
+      elapsed(),
+    );
+  });
 
   const validates: AutoBePrismaValidateEvent[] = [];
   agent.on("prismaCorrect", async (event) => {

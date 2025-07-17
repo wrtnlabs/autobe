@@ -13,6 +13,7 @@ import {
   AutoBePrismaCompleteEvent,
   AutoBePrismaComponentsEvent,
   AutoBePrismaCorrectEvent,
+  AutoBePrismaInsufficientEvent,
   AutoBePrismaSchemasEvent,
   AutoBePrismaStartEvent,
   AutoBePrismaValidateEvent,
@@ -143,6 +144,26 @@ export interface IAutoBeRpcListener {
    * areas have been fully designed.
    */
   prismaSchemas?(event: AutoBePrismaSchemasEvent): Promise<void>;
+
+  /**
+   * Optional handler for database schema insufficient model creation events.
+   *
+   * Called when the AI function calling process creates fewer models than
+   * expected for a specific business domain during database schema generation.
+   * This event indicates that the schema creation was incomplete and may
+   * require additional iterations or corrective actions to generate the missing
+   * models.
+   *
+   * Client applications can use this event to inform users about partial schema
+   * completion, display which models were successfully created versus which are
+   * still missing, and potentially trigger retry mechanisms or manual
+   * intervention workflows to complete the database design.
+   *
+   * The event provides detailed information about completed models and missing
+   * model names, enabling targeted recovery strategies to address the
+   * insufficient generation and ensure comprehensive database schema coverage.
+   */
+  prismaInsufficient?(event: AutoBePrismaInsufficientEvent): Promise<void>;
 
   /**
    * Optional handler for database schema validation events.
@@ -317,7 +338,7 @@ export interface IAutoBeRpcListener {
   realizeValidate?(event: AutoBeRealizeValidateEvent): Promise<void>;
 
   /**
-   * Mandatory handler for implementation completion events.
+   * Optional handler for implementation completion events.
    *
    * Called when the Realize phase completes successfully, providing the
    * complete working application implementation. Client applications must
@@ -326,12 +347,43 @@ export interface IAutoBeRpcListener {
    */
   realizeComplete?(event: AutoBeRealizeCompleteEvent): Promise<void>;
 
-  realizeTestStart?: (event: AutoBeRealizeTestStartEvent) => Promise<void>;
-  realizeTestReset?: (event: AutoBeRealizeTestResetEvent) => Promise<void>;
-  realizeTestOperation?: (
-    event: AutoBeRealizeTestOperationEvent,
-  ) => Promise<void>;
-  realizeTestComplete?: (
-    event: AutoBeRealizeTestCompleteEvent,
-  ) => Promise<void>;
+  /**
+   * Optional handler for implementation test start events.
+   *
+   * Called when the Realize agent begins running the test suite to validate the
+   * generated implementation, enabling client applications to show that
+   * comprehensive testing is beginning to ensure application quality and
+   * functionality.
+   */
+  realizeTestStart?(event: AutoBeRealizeTestStartEvent): Promise<void>;
+
+  /**
+   * Optional handler for implementation test reset events.
+   *
+   * Called when the test environment is reset between test runs, allowing
+   * client applications to show that clean testing conditions are being
+   * established to ensure reliable and isolated test execution.
+   */
+  realizeTestReset?(event: AutoBeRealizeTestResetEvent): Promise<void>;
+
+  /**
+   * Optional handler for implementation test operation events.
+   *
+   * Called during individual test operation execution, enabling client
+   * applications to provide detailed progress tracking and show which specific
+   * API endpoints and business logic components are being validated through the
+   * comprehensive test suite.
+   */
+  realizeTestOperation?(event: AutoBeRealizeTestOperationEvent): Promise<void>;
+
+  /**
+   * Optional handler for implementation test completion events.
+   *
+   * Called when the complete test suite execution finishes, providing test
+   * results and validation outcomes. Client applications can use this event to
+   * show final quality assurance results and confirm that the generated
+   * application meets all specified requirements and passes comprehensive
+   * validation.
+   */
+  realizeTestComplete?(event: AutoBeRealizeTestCompleteEvent): Promise<void>;
 }
