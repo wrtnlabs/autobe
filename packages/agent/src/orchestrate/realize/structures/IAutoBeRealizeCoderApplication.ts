@@ -1,6 +1,6 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 
-import { FAILED } from "./IAutoBeReailizeFailedSymbol";
+import { FAILED } from "./IAutoBeRealizeFailedSymbol";
 
 export interface IAutoBeRealizeCoderApplication {
   programming: (input: IAutoBeRealizeCoderApplication.IProps) => void;

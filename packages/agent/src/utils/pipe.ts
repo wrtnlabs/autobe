@@ -1,4 +1,4 @@
-import { FAILED } from "../orchestrate/realize/structures/IAutoBeReailizeFailedSymbol";
+import { FAILED } from "../orchestrate/realize/structures/IAutoBeRealizeFailedSymbol";
 
 export function pipe<A, B>(
   a: A,

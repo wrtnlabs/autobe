@@ -10,20 +10,16 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { pipe } from "./RealizePipe";
 import { orchestrateRealizeCoder } from "./orchestrateRealizeCoder";
 import { orchestrateRealizePlanner } from "./orchestrateRealizePlanner";
-import { FAILED } from "./structures/IAutoBeReailizeFailedSymbol";
 import { IAutoBeRealizeCoderApplication } from "./structures/IAutoBeRealizeCoderApplication";
-
-interface Diagnostic {
-  total: IAutoBeTypeScriptCompileResult.IDiagnostic[];
-  current: IAutoBeTypeScriptCompileResult.IDiagnostic[];
-}
+import { IAutoBeRealizeCompile } from "./structures/IAutoBeRealizeCompile";
+import { FAILED } from "./structures/IAutoBeRealizeFailedSymbol";
 
 export async function writeCodeUntilCompilePassed<
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
   ops: AutoBeOpenApi.IOperation[],
-  retry: number = 3,
+  retry: number = 5,
 ): Promise<
   Pick<
     IAutoBeRealizeCoderApplication.RealizeCoderOutput,
@@ -39,101 +35,24 @@ export async function writeCodeUntilCompilePassed<
       {},
     );
 
-  const entireCodes: Record<
-    string,
-    { content: string; result: "failed" | "success" }
-  > = {
-    "src/providers/jwtDecode.ts": {
-      content: await readFile(
-        path.join(
-          __dirname,
-          "../../../../../internals/template/realize/src/providers/jwtDecode.ts",
-        ),
-        {
-          encoding: "utf-8",
-        },
-      ),
-      result: "success",
-    },
-    "src/MyGlobal.ts": {
-      content: await readFile(
-        path.join(
-          __dirname,
-          "../../../../../internals/template/realize/src/MyGlobal.ts",
-        ),
-        {
-          encoding: "utf-8",
-        },
-      ),
-      result: "success",
-    },
+  const templateFiles = ["src/providers/jwtDecode.ts", "src/MyGlobal.ts"];
+  const entireCodes: IAutoBeRealizeCompile.FileContentMap = {
+    ...(await loadTemplateFiles(templateFiles)),
   };
 
-  let diagnostics: Diagnostic = { current: [], total: [] };
+  let diagnostics: IAutoBeRealizeCompile.CompileDiagnostics = {
+    current: [],
+    total: [],
+  };
 
   for (let i = 0; i < retry; i++) {
     const generatedCodes: (
-      | {
-          type: "success";
-          op: AutoBeOpenApi.IOperation;
-          result: Pick<
-            IAutoBeRealizeCoderApplication.RealizeCoderOutput,
-            "filename" | "implementationCode"
-          >;
-        }
-      | {
-          type: "failed";
-          op: AutoBeOpenApi.IOperation;
-          result: FAILED;
-        }
+      | IAutoBeRealizeCompile.Success
+      | IAutoBeRealizeCompile.Fail
     )[] = await Promise.all(
       ops
-        .filter((op) => {
-          if (diagnostics.current.length === 0) {
-            return true;
-          }
-
-          return diagnostics.current.some(
-            (el) =>
-              el.file ===
-              `src/providers/${op.method}_${op.path
-                .replaceAll("/", "_")
-                .replaceAll("-", "_")
-                .replaceAll("{", "$")
-                .replaceAll("}", "")}.ts`,
-          );
-        })
-        .map(async (op) => {
-          const result = await pipe(
-            op,
-            (op) => orchestrateRealizePlanner(ctx, op),
-            (p) => {
-              const filename = `src/providers/${p.functionName}.ts` as const;
-              const t = diagnostics.total.filter((el) => el.file === filename);
-
-              const d = diagnostics.current.filter(
-                (el) => el.file === filename,
-              );
-              const c = entireCodes[filename]?.content ?? null;
-
-              return orchestrateRealizeCoder(ctx, op, p, c, t, d);
-            },
-          );
-
-          if (result === FAILED) {
-            return {
-              type: "failed",
-              op,
-              result,
-            } as const;
-          }
-
-          return {
-            type: "success",
-            op,
-            result: result,
-          };
-        }),
+        .filter((op) => shouldProcessOperation(op, diagnostics.current))
+        .map((op) => process(ctx, op, diagnostics, entireCodes)),
     );
 
     for (const c of generatedCodes) {
@@ -184,4 +103,76 @@ export async function writeCodeUntilCompilePassed<
       implementationCode: content,
     };
   });
+}
+
+async function loadTemplateFiles(
+  templateFiles: string[],
+): Promise<Record<string, { content: string; result: "success" }>> {
+  const templateBasePath = path.join(
+    __dirname,
+    "../../../../../internals/template/realize",
+  );
+
+  const result: Record<string, { content: string; result: "success" }> = {};
+
+  for (const filePath of templateFiles) {
+    result[filePath] = {
+      content: await readFile(path.join(templateBasePath, filePath), {
+        encoding: "utf-8",
+      }),
+      result: "success",
+    };
+  }
+
+  return result;
+}
+
+async function process<Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  op: AutoBeOpenApi.IOperation,
+  diagnostics: IAutoBeRealizeCompile.CompileDiagnostics,
+  entireCodes: IAutoBeRealizeCompile.FileContentMap,
+) {
+  const result = await pipe(
+    op,
+    (op) => orchestrateRealizePlanner(ctx, op),
+    (p) => {
+      const filename = `src/providers/${p.functionName}.ts` as const;
+      const t = diagnostics.total.filter((el) => el.file === filename);
+
+      const d = diagnostics.current.filter((el) => el.file === filename);
+      const c = entireCodes[filename]?.content ?? null;
+
+      return orchestrateRealizeCoder(ctx, op, p, c, t, d);
+    },
+  );
+
+  if (result === FAILED) {
+    return { type: "failed", op, result } as const;
+  }
+
+  return { type: "success", op, result: result } as const;
+}
+
+function shouldProcessOperation(
+  op: AutoBeOpenApi.IOperation,
+  currentDiagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[],
+): boolean {
+  if (currentDiagnostics.length === 0) {
+    return true;
+  }
+
+  const operationFilename = generateProviderFilename(op);
+
+  return currentDiagnostics.some(
+    (diagnostic) => diagnostic.file === operationFilename,
+  );
+}
+
+function generateProviderFilename(op: AutoBeOpenApi.IOperation): string {
+  return `src/providers/${op.method}_${op.path
+    .replaceAll("/", "_")
+    .replaceAll("-", "_")
+    .replaceAll("{", "$")
+    .replaceAll("}", "")}.ts`;
 }

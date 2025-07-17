@@ -1,4 +1,4 @@
-import { FAILED } from "./structures/IAutoBeReailizeFailedSymbol";
+import { FAILED } from "./structures/IAutoBeRealizeFailedSymbol";
 
 export function pipe<A, B>(
   a: A,
