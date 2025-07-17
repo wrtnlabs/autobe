@@ -110,6 +110,76 @@ You will receive:
 - May reference tables from other components but don't recreate them
 - Additional tables should only be created within the same business domain/namespace as your target component
 
+### Component Processing Examples
+
+#### Example Input
+```typescript
+const targetComponent: AutoBePrisma.IComponent = {
+  filename: "schema-02-sales.prisma",
+  namespace: "Sales",
+  tables: ["shopping_goods", "shopping_goods_options"],
+};
+const otherComponents: AutoBePrisma.IComponent[] = [
+  {
+    filename: "schema-01-actors.prisma",
+    namespace: "Actors",
+    tables: ["shopping_customers", "shopping_sellers"],
+  },
+  {
+    filename: "schema-03-orders.prisma",
+    namespace: "Orders",
+    tables: ["shopping_orders", "shopping_order_goods", "shopping_deliveries"],
+  },
+];
+```
+
+#### ✅ Correct Processing
+```typescript
+models: [
+  { name: "shopping_goods" },
+  { name: "shopping_goods_options" }
+]
+```
+
+#### ❌ Common Mistakes
+
+**Mistake 1: Creating Other Components Tables**
+```typescript
+models: [
+  { name: "shopping_customers" }, // ❌ Actors component table
+  { name: "shopping_sellers" }, // ❌ Actors component table
+  { name: "shopping_orders" }, // ❌ Orders component table
+  { name: "shopping_goods" }, // ✅ Target component table
+  { name: "shopping_goods_options" } // ✅ Target component table
+]
+```
+
+**Mistake 2: Missing Target Component Tables**
+```typescript
+models: [
+  { name: "shopping_goods" } // ✅ Target component table
+  // ❌ shopping_goods_options missing!
+]
+```
+
+**Mistake 3: Mixed Errors**
+```typescript
+models: [
+  { name: "shopping_customers" }, // ❌ Other components table created
+  { name: "shopping_sellers" }, // ❌ Other components table created
+  { name: "shopping_goods" } // ✅ Target component table
+  // ❌ shopping_goods_options missing!
+]
+```
+
+**Mistake 4: Renaming Tables**
+```typescript
+models: [
+  { name: "goods" }, // ❌ shopping_goods → goods (renamed)
+  { name: "goods_options" } // ❌ shopping_goods_options → goods_options (renamed)
+]
+```
+
 ### Task: Generate Structured Prisma Schema Definition
 
 Transform user requirements into a complete AutoBePrisma.IApplication structure that represents the entire Prisma schema system.
@@ -305,24 +375,6 @@ Before finalizing, verify:
 - **Is every regular table properly normalized?**
 - **Are ALL calculated/aggregated fields in `mv_` tables only?**
 - **Does the output contain EXACTLY the tables from target component?**
-
-### Expected Output
-
-Generate a single function call using the AutoBePrisma.IApplication structure:
-
-```typescript
-// Function call format
-const application: AutoBePrisma.IApplication = {
-  files: [
-    {
-      filename: "schema-01-articles.prisma",
-      namespace: "Articles", 
-      models: [...]
-    },
-    // ... more files
-  ]
-};
-```
 
 ### Final Quality Checklist
 

@@ -119,13 +119,6 @@ function createApplication<Model extends ILlmSchema.Model>(
         tables: oc.tables.filter((x) => actual.includes(x)),
       }))
       .filter((oc) => oc.tables.length !== 0);
-
-    console.log({
-      title: "trace schemas",
-      component: props.component,
-      actual: result.data.models.map((m) => m.name),
-      valid: missed.length === 0 && invasions.length === 0,
-    });
     if (missed.length === 0 && invasions.length === 0) return result;
 
     ctx.dispatch({
@@ -144,14 +137,28 @@ function createApplication<Model extends ILlmSchema.Model>(
           path: "$input.file.models",
           value: result.data.models,
           expected: `Array<AutoBePrisma.IModel>`,
-          description: JSON.stringify({
-            filename: props.component.filename,
-            namespace: props.component.namespace,
-            expected,
-            actual,
-            missed,
-            invasions,
-          }),
+          description: [
+            "You missed some tables, or invaded other domain components.",
+            "",
+            "Look at the following details to fix the schemas.",
+            "",
+            "- filename: current domain's filename",
+            "- namespace: current domain's namespace",
+            "- expected: expected tables in the current domain",
+            "- actual: actual tables you made",
+            "- missed: tables you missed",
+            "- invasions: other domain components you invaded",
+            "  - invasions[].tables[]: tables you invaded in the other domain components",
+            "",
+            JSON.stringify({
+              filename: props.component.filename,
+              namespace: props.component.namespace,
+              expected,
+              actual,
+              missed,
+              invasions,
+            }),
+          ].join("\n"),
         },
       ],
     };
