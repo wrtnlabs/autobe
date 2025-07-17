@@ -16,11 +16,7 @@ export const transformPrismaSchemaHistories = (
       id: v4(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
-      text:
-        AutoBeSystemPromptConstant.PRISMA_SCHEMA +
-        "\n\n" +
-        "// This is fake value to avoid system prompt caching, so that ignore it please: " +
-        v4(),
+      text: AutoBeSystemPromptConstant.PRISMA_SCHEMA,
     },
     {
       id: v4(),
