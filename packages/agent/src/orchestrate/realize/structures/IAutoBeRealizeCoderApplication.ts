@@ -32,7 +32,7 @@ export namespace IAutoBeRealizeCoderApplication {
    *   logic.
    */
   export interface RealizeCoderOutput {
-    /** The name of the file to be generated (e.g., "user.create.ts") */
+    /** @ignore */
     filename: string;
 
     /**
@@ -68,9 +68,9 @@ export namespace IAutoBeRealizeCoderApplication {
      *
      * ⚠️ TypeScript-specific considerations:
      *
-     * - Do **not** use native `Date` objects directly; convert all dates with
-     *   `.toISOString()`
-     * - Use `string & tags.Format<'date-time'>` for all date/time typed fields
+     * - Do **not** use native `Date` objects directly; always convert all dates
+     *   to ISO strings with `.toISOString()` and brand as `string &
+     *   tags.Format<'date-time'>`. This rule applies throughout all phases.
      * - Prefer `satisfies` for DTO conformance instead of unsafe `as` casts
      * - Avoid weak typing such as `any`, `as any`, or `satisfies any`
      * - Use branded types (e.g., `tags.Format<'uuid'>`) and literal unions where
@@ -106,7 +106,7 @@ export namespace IAutoBeRealizeCoderApplication {
      *   - Using `?? undefined` to normalize nullable fields.
      *   - Applying correct relation handling (e.g., `connect` instead of direct
      *       foreign key assignment).
-     *   - Ensuring `Date` fields use `.toISOString()` and branded types.
+     *   - Ensuring all date fields use `.toISOString()` and proper branding.
      * - Include fallback or workaround plans if a direct fix is complex.
      * - If no error is present, simply omit this section.
      *
@@ -142,9 +142,10 @@ export namespace IAutoBeRealizeCoderApplication {
      *
      * - Avoid using the `any` type at all costs to ensure type safety.
      * - Do NOT assign native `Date` objects directly; always convert dates using
-     *   `.toISOString()` before assignment.
+     *   `.toISOString()` before assignment and apply proper branding.
      * - Maintain a single-function structure; avoid using classes.
      */
+    draft_without_date_type: string;
 
     /**
      * 🔍 Phase 2: Review code
@@ -172,9 +173,11 @@ export namespace IAutoBeRealizeCoderApplication {
      *
      * ✅ Must:
      *
-     * - Resolve all TypeScript errors without using `as any`
+     * - Only include this field if TypeScript errors are detected in the Review
+     *   phase.
+     * - Resolve all TypeScript errors without using `as any`.
      * - Provide safe brand casting only if required (e.g., `as string &
-     *   tags.Format<'uuid'>`)
+     *   tags.Format<'uuid'>`).
      */
     withCompilerFeedback?: string;
 
@@ -185,7 +188,7 @@ export namespace IAutoBeRealizeCoderApplication {
      *
      * - Passes strict type checking without errors.
      * - Uses only safe branding or literal type assertions.
-     * - Converts all Date values properly to ISO string format.
+     * - Converts all date values properly to ISO string format.
      * - Follows DTO structures using `satisfies`.
      * - Avoids any weak typing such as `any`, `as any`, or `satisfies any`.
      * - Uses only allowed imports (e.g., from `src/api/structures` and

@@ -28,6 +28,13 @@ export const validate_agent_realize_coder = async (
       map.set(event.type, true);
     }
 
+    if (event.type === "realizeProgress") {
+      console.log(
+        event.filename,
+        `${event.completed}/${event.total} completed.`,
+      );
+    }
+
     events.push(event);
   };
 
@@ -88,7 +95,7 @@ export const validate_agent_realize_coder = async (
       "src/providers/jwtDecode.ts": await readFile(
         path.join(
           __dirname,
-          "../../../../../internals/template/src/providers/jwtDecode.ts",
+          "../../../../../internals/template/realize/src/providers/jwtDecode.ts",
         ),
         {
           encoding: "utf-8",
@@ -97,7 +104,7 @@ export const validate_agent_realize_coder = async (
       "src/MyGlobal.ts": await readFile(
         path.join(
           __dirname,
-          "../../../../../internals/template/src/MyGlobal.ts",
+          "../../../../../internals/template/realize/src/MyGlobal.ts",
         ),
         {
           encoding: "utf-8",
