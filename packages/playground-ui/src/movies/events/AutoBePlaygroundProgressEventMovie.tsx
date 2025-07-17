@@ -87,7 +87,7 @@ function getDescription(
     case "testCorrect":
       return `Correcting Test Function`;
     case "realizeDecorator":
-      return `Generating Decorators: ${event.completed} of ${event.total}`;
+      return `Generated Decorators: ${event.completed} of ${event.total}`;
     case "realizeDecoratorValidate":
       return `Validating Decorator Function: ${event.result.type}`;
     case "realizeDecoratorCorrect":
