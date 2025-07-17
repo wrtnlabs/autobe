@@ -6,6 +6,7 @@ import {
   AutoBeTestHistory,
 } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
+import fs from "fs";
 import typia from "typia";
 
 import { TestFactory } from "../../../TestFactory";
@@ -54,9 +55,23 @@ export const validate_agent_test_main = async (
       ...(await agent.getFiles()),
       "logs/compiled.json": JSON.stringify(result.compiled, null, 2),
       "logs/events.json": JSON.stringify(events, null, 2),
-      "logs/result.json": typia.json.stringify(result),
+      "logs/result.json": JSON.stringify(
+        {
+          ...result,
+          files: undefined,
+        },
+        null,
+        2,
+      ),
       "logs/histories.json": typia.json.stringify(histories),
+      "pnpm-workspace.yaml": "",
     },
   });
   TestValidator.equals("result")(result.compiled.type)("success");
+  if (process.argv.includes("--archive"))
+    await fs.promises.writeFile(
+      `${TestGlobal.ROOT}/assets/histories/${project}.test.json`,
+      JSON.stringify(agent.getHistories(), null, 2),
+      "utf8",
+    );
 };

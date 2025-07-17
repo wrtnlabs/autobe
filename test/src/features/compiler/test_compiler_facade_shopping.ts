@@ -7,8 +7,12 @@ import {
 import { TestValidator } from "@nestia/e2e";
 import typia from "typia";
 
-export const test_compiler_facade_shopping = async (): Promise<void> => {
-  const compiler: AutoBeCompiler = new AutoBeCompiler();
+import { TestFactory } from "../../TestFactory";
+
+export const test_compiler_facade_shopping = async (
+  factory: TestFactory,
+): Promise<void> => {
+  const compiler: AutoBeCompiler = factory.createCompiler();
   const prisma: IAutoBePrismaCompileResult = await compiler.prisma.compile({
     files: await RepositoryFileSystem.prisma("samchon", "shopping-backend"),
   });

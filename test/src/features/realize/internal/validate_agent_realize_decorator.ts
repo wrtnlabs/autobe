@@ -1,6 +1,6 @@
 import { orchestrateRealizeDecorator } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeDecorator";
 import { FileSystemIterator } from "@autobe/filesystem";
-import { AutoBeEvent } from "@autobe/interface";
+import { AutoBeEvent, IAutoBeCompiler } from "@autobe/interface";
 import fs from "fs/promises";
 import path from "path";
 import typia from "typia";
@@ -37,19 +37,6 @@ export const validate_agent_realize_decorator = async (
 
   const ctx = agent.getContext();
 
-  ctx.state().interface?.document.operations.forEach((op, i) => {
-    if (!op.authorization?.role) {
-      op.authorization = {
-        role: [],
-        type: "Bearer",
-      };
-    }
-
-    if (i === 1) op.authorization.role.push("user");
-    if (i === 2) op.authorization.role.push("admin");
-    if (i === 3) op.authorization.role.push("moderator");
-  });
-
   const result = await orchestrateRealizeDecorator(ctx);
 
   const prisma = ctx.state().prisma?.compiled;
@@ -59,13 +46,16 @@ export const validate_agent_realize_decorator = async (
 
   const files: Record<string, string> = {
     "src/MyGlobal.ts": await fs.readFile(
-      path.join(__dirname, "../../../../../internals/template/src/MyGlobal.ts"),
+      path.join(
+        __dirname,
+        "../../../../../internals/template/realize/src/MyGlobal.ts",
+      ),
       "utf-8",
     ),
     "src/authentications/jwtAuthorize.ts": await fs.readFile(
       path.join(
         __dirname,
-        "../../../../../internals/template/src/providers/jwtAuthorize.ts",
+        "../../../../../internals/template/realize/src/providers/jwtAuthorize.ts",
       ),
       "utf-8",
     ),
@@ -94,7 +84,8 @@ export const validate_agent_realize_decorator = async (
     },
   });
 
-  const compiled = await ctx.compiler.typescript.compile({ files });
+  const compiler: IAutoBeCompiler = await ctx.compiler();
+  const compiled = await compiler.typescript.compile({ files });
 
   if (compiled.type !== "success") {
     throw new Error(JSON.stringify(compiled, null, 2));

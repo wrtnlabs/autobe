@@ -3,6 +3,7 @@ import {
   AutoBeEvent,
   AutoBeHistory,
   IAutoBeCompiler,
+  IAutoBeCompilerListener,
   IAutoBeGetFilesOptions,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
@@ -15,7 +16,8 @@ export interface AutoBeContext<Model extends ILlmSchema.Model> {
   model: Model;
   vendor: IAgenticaVendor;
   config: IAutoBeConfig | undefined;
-  compiler: IAutoBeCompiler;
+  compilerListener: IAutoBeCompilerListener;
+  compiler: () => Promise<IAutoBeCompiler>;
   files: (options: IAutoBeGetFilesOptions) => Promise<Record<string, string>>;
   histories: () => AutoBeHistory[];
   state: () => AutoBeState;

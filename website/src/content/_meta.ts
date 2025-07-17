@@ -16,11 +16,11 @@ const meta: MetaRecord = {
     items: {
       bbs: {
         title: "Bullet-in Board System",
-        href: "https://stackblitz.com/github/wrtnlabs/autobe-example-bbs",
+        href: "https://github.dev/wrtnlabs/autobe-example-bbs",
       },
       shopping: {
         title: "Shopping Mall",
-        href: "https://stackblitz.com/github/wrtnlabs/autobe-example-shopping",
+        href: "https://github.dev/wrtnlabs/autobe-example-shopping",
       },
     },
   },

@@ -4,7 +4,7 @@ import {
   IAutoBeTypeScriptCompiler,
 } from "@autobe/interface";
 import nestiaCoreTransform from "@nestia/core/lib/transform";
-import { EmbedTypeScript } from "embed-typescript";
+import { EmbedTypeScript, IEmbedTypeScriptResult } from "embed-typescript";
 import ts from "typescript";
 import typiaTransform from "typia/lib/transform";
 
@@ -77,10 +77,15 @@ export class AutoBeTypeScriptCompiler implements IAutoBeTypeScriptCompiler {
         ],
       }),
     });
-    return compiler.compile({
+    const result: IEmbedTypeScriptResult = await compiler.compile({
       ...props.files,
       ...(props.prisma ?? {}),
     });
+    return result.type === "success"
+      ? { type: "success" }
+      : result.type === "failure"
+        ? { type: "failure", diagnostics: result.diagnostics }
+        : { type: "exception", error: result.error };
   }
 
   public async getExternal(location: string): Promise<string | undefined> {

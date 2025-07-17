@@ -37,16 +37,9 @@ export const orchestrateRealize =
 
     decorators;
 
-    const files: Record<string, string> = {
-      ...ctx.state().interface?.files,
-      ...ctx.state().test?.files.reduce(
-        (acc, file) => {
-          acc[file.location] = file.content;
-          return acc;
-        },
-        {} as Record<string, string>,
-      ),
-    };
+    const files: Record<string, string> = await ctx.files({
+      dbms: "sqlite",
+    });
 
     const codes: IAutoBeRealizeCoderApplication.IPipeOutput[] =
       await Promise.all(

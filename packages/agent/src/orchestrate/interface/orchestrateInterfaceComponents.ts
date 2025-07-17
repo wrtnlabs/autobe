@@ -11,6 +11,7 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { enforceToolCall } from "../../utils/enforceToolCall";
+import { forceRetry } from "../../utils/forceRetry";
 import { transformInterfaceHistories } from "./transformInterfaceHistories";
 
 export async function orchestrateInterfaceComponents<
@@ -33,6 +34,7 @@ export async function orchestrateInterfaceComponents<
 
   const x: AutoBeOpenApi.IComponents = {
     schemas: {},
+    authorization: ctx.state().analyze?.roles,
   };
   for (const y of await Promise.all(
     matrix.map(async (it) => {
@@ -57,7 +59,6 @@ export async function orchestrateInterfaceComponents<
     }),
   )) {
     Object.assign(x.schemas, y.schemas);
-    if (y.authorization) x.authorization = y.authorization;
   }
   return x;
 }
@@ -76,11 +77,8 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
   for (let i: number = 0; i < retry; ++i) {
     if (remained.size === 0) break;
     const before: number = remained.size;
-    const newbie: AutoBeOpenApi.IComponents = await process(
-      ctx,
-      operations,
-      components,
-      remained,
+    const newbie: AutoBeOpenApi.IComponents = await forceRetry(() =>
+      process(ctx, operations, components, remained),
     );
     for (const key of Object.keys(newbie.schemas)) {
       components.schemas[key] = newbie.schemas[key];
@@ -134,7 +132,6 @@ async function process<Model extends ILlmSchema.Model>(
           pointer.value ??= {
             schemas: {},
           };
-          pointer.value.authorization ??= components.authorization;
           Object.assign(pointer.value.schemas, components.schemas);
         },
         pointer,
@@ -291,5 +288,5 @@ interface IMakeComponentsProps {
    * }
    * ```
    */
-  components: AutoBeOpenApi.IComponents;
+  components: Omit<AutoBeOpenApi.IComponents, "authorization">;
 }

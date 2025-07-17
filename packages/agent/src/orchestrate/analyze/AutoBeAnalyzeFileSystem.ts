@@ -39,10 +39,9 @@ export interface IAutoBeAnalyzeFileSystem {
    * overwrite it. Generate several markdown files at once. It is recommended
    * that you create multiple files at a time.
    */
-  createOrUpdateFiles(input: ICreateOrUpdateInput): Promise<void>;
-
-  /** Remove markdown file. */
-  removeFile(input: Pick<IFile, "filename">): Promise<void>;
+  createOrUpdateFiles(
+    input: ICreateOrUpdateInput,
+  ): Promise<Record<string, string>>;
 
   /**
    * If you decide that you no longer need any reviews, or if the reviewer
@@ -60,22 +59,15 @@ export class AutoBeAnalyzeFileSystem implements IAutoBeAnalyzeFileSystem {
   constructor(private readonly fileMap: Record<Filename, FileContent> = {}) {}
   async createOrUpdateFiles(input: {
     files: Array<IFile> & tags.MinItems<1>;
-  }): Promise<void> {
+  }): Promise<Record<string, string>> {
     input.files.forEach((file) => {
       this.fileMap[file.filename] = file.markdown;
     });
-  }
 
-  async removeFile(input: Pick<IFile, "filename">): Promise<void> {
-    delete this.fileMap[input.filename];
+    return this.fileMap;
   }
 
   abort(_input: { reason: string }): "OK" {
     return "OK";
-  }
-
-  /** @ignore */
-  allFiles(): Record<string, string> {
-    return this.fileMap;
   }
 }

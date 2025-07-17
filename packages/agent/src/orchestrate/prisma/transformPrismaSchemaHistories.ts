@@ -1,5 +1,5 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
-import { AutoBeAnalyzeHistory } from "@autobe/interface";
+import { AutoBeAnalyzeHistory, AutoBePrisma } from "@autobe/interface";
 import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
@@ -11,6 +11,11 @@ export const transformPrismaSchemaHistories = (
     tables: string[];
     entireTables: string[];
   },
+  remained?: {
+    done: AutoBePrisma.IModel[];
+    todo: string[];
+    namespace: string;
+  },
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
@@ -21,22 +26,22 @@ export const transformPrismaSchemaHistories = (
       type: "systemMessage",
       text: AutoBeSystemPromptConstant.PRISMA_SCHEMA,
     },
+    // {
+    //   id: v4(),
+    //   created_at: new Date().toISOString(),
+    //   type: "systemMessage",
+    //   text: [
+    //     "Before making prisma schema files,",
+    //     "learn about the prisma schema language",
+    //     "from the best practices and examples",
+    //     "",
+    //     AutoBeSystemPromptConstant.PRISMA_EXAMPLE,
+    //   ].join("\n"),
+    // },
     {
       id: v4(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
-      text: [
-        "Before making prisma schema files,",
-        "learn about the prisma schema language",
-        "from the best practices and examples",
-        "",
-        AutoBeSystemPromptConstant.PRISMA_EXAMPLE,
-      ].join("\n"),
-    },
-    {
-      id: v4(),
-      created_at: new Date().toISOString(),
-      type: "assistantMessage",
       text: [
         "Here is the requirement analysis report.",
         "",
@@ -59,15 +64,31 @@ export const transformPrismaSchemaHistories = (
         ...component.tables.map((table) => `    - ${table}`),
         `  - Entire tables you can reference:`,
         ...component.entireTables.map((table) => `    - ${table}`),
-        "",
-        "## User Role Rules",
-        "",
-        "**CRITICAL**: For User Role tables (User, Admin, Moderator, etc.):",
-        "1. **Separate tables** - Each role = independent table (User, Admin, Moderator tables)",
-        "2. **No `role` field** - Never include role enum fields in any table",
-        "",
-        "You can use TPT (Table Per Type) pattern with FK relationships if needed, or completely separate tables.",
       ].join("\n"),
     },
+    ...(remained
+      ? [
+          {
+            type: "assistantMessage",
+            id: v4(),
+            created_at: new Date().toISOString(),
+            text: [
+              "You made these prisma models before:",
+              "",
+              "```json",
+              JSON.stringify({
+                filename: component.filename,
+                namespace: remained.namespace,
+                models: remained.done,
+              }),
+              "```",
+              "",
+              "However, you have not made these prisma models yet:",
+              "",
+              ...remained.todo.map((s) => `- ${s}`),
+            ].join("\n"),
+          } satisfies IAgenticaHistoryJson.IAssistantMessage,
+        ]
+      : []),
   ];
 };

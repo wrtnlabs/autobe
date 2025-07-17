@@ -20,15 +20,19 @@ import {
   AutoBeRealizeDecoratorEvent,
   AutoBeRealizeProgressEvent,
   AutoBeRealizeStartEvent,
+  AutoBeRealizeTestCompleteEvent,
+  AutoBeRealizeTestOperationEvent,
+  AutoBeRealizeTestResetEvent,
+  AutoBeRealizeTestStartEvent,
   AutoBeRealizeValidateEvent,
   AutoBeTestCompleteEvent,
   AutoBeTestCorrectEvent,
+  AutoBeTestScenarioEvent,
   AutoBeTestStartEvent,
   AutoBeTestValidateEvent,
   AutoBeTestWriteEvent,
   AutoBeUserMessageEvent,
 } from "../events";
-import { AutoBeTestScenarioEvent } from "../events/AutoBeTestScenarioEvent";
 
 /**
  * Interface for WebSocket RPC event listener provided by client applications to
@@ -330,4 +334,13 @@ export interface IAutoBeRpcListener {
    * represent the culmination of the entire vibe coding pipeline.
    */
   realizeComplete?(event: AutoBeRealizeCompleteEvent): Promise<void>;
+
+  realizeTestStart?: (event: AutoBeRealizeTestStartEvent) => Promise<void>;
+  realizeTestReset?: (event: AutoBeRealizeTestResetEvent) => Promise<void>;
+  realizeTestOperation?: (
+    event: AutoBeRealizeTestOperationEvent,
+  ) => Promise<void>;
+  realizeTestComplete?: (
+    event: AutoBeRealizeTestCompleteEvent,
+  ) => Promise<void>;
 }

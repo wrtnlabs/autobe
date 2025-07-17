@@ -1,5 +1,9 @@
 import { AutoBeAgent } from "@autobe/agent";
-import { IAutoBeCompiler, IAutoBeRpcHeader } from "@autobe/interface";
+import {
+  IAutoBeCompiler,
+  IAutoBeCompilerListener,
+  IAutoBeRpcHeader,
+} from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 import OpenAI from "openai";
 import path from "path";
@@ -9,8 +13,20 @@ import typia from "typia";
 import { AutoBePlaygroundServer } from "../AutoBePlaygroundServer";
 
 const main = async () => {
-  const compiler: WorkerConnector<null, null, IAutoBeCompiler> =
-    new WorkerConnector(null, null, "process");
+  // @todo: must be separated to each acceptance
+  const listener: IAutoBeCompilerListener = {
+    realize: {
+      test: {
+        onOperation: async () => {},
+        onReset: async () => {},
+      },
+    },
+  };
+  const compiler: WorkerConnector<
+    null,
+    IAutoBeCompilerListener,
+    IAutoBeCompiler
+  > = new WorkerConnector(null, listener, "process");
   await compiler.connect(
     `${__dirname}/compiler.${path.extname(__filename).slice(1)}`,
   );
@@ -36,7 +52,7 @@ const main = async () => {
               locale: acceptor.header.locale,
               timezone: acceptor.header.timezone,
             },
-            compiler: compiler.getDriver(),
+            compiler: () => compiler.getDriver(),
           }),
         };
       },

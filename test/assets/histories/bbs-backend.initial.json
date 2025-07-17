@@ -1,0 +1,13 @@
+[
+  {
+    "id": "b51adde4-9e1e-4412-9641-df0869e3ab12",
+    "type": "userMessage",
+    "contents": [
+      {
+        "type": "text",
+        "text": "I want to create a political/economic discussion board. Since I'm not familiar with programming, please write a requirements analysis report as you see fit. The report should be approximately 5 pages long.\n"
+      }
+    ],
+    "created_at": "2025-06-09T05:49:50.474Z"
+  }
+]

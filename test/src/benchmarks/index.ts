@@ -44,7 +44,7 @@ async function main() {
         config: {
           locale: "en-US",
         },
-        compiler: new AutoBeCompiler(),
+        compiler: (listener) => new AutoBeCompiler(listener),
         tokenUsage: new AutoBeTokenUsage(),
       });
       const semaphore = autobe.getContext().vendor.semaphore as Semaphore;
@@ -327,30 +327,33 @@ async function registerAutobeEvents(
 
   autobe.on("interfaceComplete", async (event) => {
     const context = getAutobeContext();
+    const files = await (
+      await autobe.getContext().compiler()
+    ).interface.write(event.document);
     context.stages.interface.endTime = Date.now();
-    context.stages.interface.output = Object.keys(event.files || {}).join(", ");
+    context.stages.interface.output = Object.keys(files).join(", ");
     const duration =
       context.stages.interface.endTime - context.stages.interface.startTime;
     log(
-      `InterfaceComplete event contents: files=${Object.keys(event.files || {}).length} files, document=${!!event.document}`,
+      `InterfaceComplete event contents: files=${Object.keys(files).length} files, document=${!!event.document}`,
     );
     log(`Processing interfaceComplete event in correct stage`);
 
     // Save generated interface files
-    Object.entries(event.files || {}).forEach(([filename, content]) => {
+    Object.entries(files).forEach(([filename, content]) => {
       context.generatedFiles[`interface/${filename}`] = content;
     });
 
     // REPORT RESULT
     await FileSystemIterator.save({
       root: `${context.logsDir}/${context.runId}/interface`,
-      files: event.files,
+      files: files,
     });
 
     log(
       `Interface stage completed successfully in ${formatDurationSecondsFromMs(duration)}`,
     );
-    log(`Interface files: ${Object.keys(event.files || {}).join(", ")}`);
+    log(`Interface files: ${Object.keys(files || {}).join(", ")}`);
     console.log(
       `[${context.runId}] ✅ Interface stage completed in ${formatDurationSecondsFromMs(duration)}`,
     );

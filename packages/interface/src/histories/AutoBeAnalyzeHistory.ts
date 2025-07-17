@@ -1,5 +1,6 @@
 import { tags } from "typia";
 
+import { AutoBeAnalyzeRole } from "../../../agent/src/orchestrate/analyze/AutoBeAnalyzeRole";
 import { AutoBeAgentHistoryBase } from "./AutoBeHistoryBase";
 
 /**
@@ -85,4 +86,14 @@ export interface AutoBeAnalyzeHistory
    * changes.
    */
   completed_at: string & tags.Format<"date-time">;
+
+  /**
+   * List of roles identified during the requirements analysis process.
+   *
+   * Contains the various user roles, personas, or stakeholder types that were
+   * identified and analyzed during the requirements gathering phase. These
+   * roles help define different user perspectives, access levels, and
+   * functional requirements needed for the system being developed.
+   */
+  roles: AutoBeAnalyzeRole[];
 }

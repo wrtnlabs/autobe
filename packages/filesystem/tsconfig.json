@@ -1,0 +1,7 @@
+{
+  "extends": "../../internals/config/tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+  },
+  "include": ["src"],
+}

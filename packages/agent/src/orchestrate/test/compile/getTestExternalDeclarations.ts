@@ -4,10 +4,11 @@ import { Singleton } from "tstl";
 
 import { AutoBeContext } from "../../../context/AutoBeContext";
 
-export function getTestExternalDeclarations<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
-): Promise<Record<string, string>> {
-  return singleton.get(ctx.compiler.test);
+export async function getTestExternalDeclarations<
+  Model extends ILlmSchema.Model,
+>(ctx: AutoBeContext<Model>): Promise<Record<string, string>> {
+  const compiler = await ctx.compiler();
+  return singleton.get(compiler.test);
 }
 
 const singleton = new Singleton(async (compiler: IAutoBeTestCompiler) => {

@@ -39,9 +39,19 @@ export const validate_agent_realize = async (
   agent.on("realizeValidate", enroll);
   agent.on("realizeComplete", enroll);
 
+  const ctx = agent.getContext();
+
+  const roles =
+    ctx
+      .state()
+      .interface?.document.components.authorization?.map((auth) => auth.name) ??
+    [];
+
+  console.log("Roles", roles);
+
   // DO TEST GENERATION
   const go = (reason: string) =>
-    orchestrateRealize(agent.getContext())({
+    orchestrateRealize(ctx)({
       reason,
     });
   let result: AutoBeAssistantMessageHistory | AutoBeRealizeHistory = await go(

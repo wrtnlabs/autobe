@@ -37,22 +37,6 @@ export interface AutoBeInterfaceCompleteEvent
   document: AutoBeOpenApi.IDocument;
 
   /**
-   * Generated NestJS project files as key-value pairs.
-   *
-   * Contains the complete set of generated files including NestJS controllers,
-   * DTOs, client SDKs, and comprehensive testing frameworks. Each key
-   * represents the file path and each value contains the actual file content
-   * ready for deployment or further development.
-   *
-   * The generated code includes revolutionary enhancements such as keyworded
-   * parameter optimization for AI consumption, comprehensive JSDoc
-   * documentation derived from AST descriptions, intelligent test scaffolds,
-   * and end-to-end type safety assurance throughout the entire application
-   * stack.
-   */
-  files: Record<string, string>;
-
-  /**
    * Reason why the Interface agent was activated through function calling.
    *
    * Explains the specific circumstances that triggered the AI chatbot to invoke

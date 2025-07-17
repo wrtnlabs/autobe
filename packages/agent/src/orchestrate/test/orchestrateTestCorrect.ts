@@ -1,6 +1,7 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import {
   AutoBeTestValidateEvent,
+  IAutoBeCompiler,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
@@ -51,14 +52,14 @@ const compile = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   func: IAutoBeTestFunction,
 ): Promise<AutoBeTestValidateEvent> => {
-  const compiled: IAutoBeTypeScriptCompileResult =
-    await ctx.compiler.test.compile({
-      files: {
-        ...func.artifacts.dto,
-        ...func.artifacts.sdk,
-        [func.location]: func.script,
-      },
-    });
+  const compiler: IAutoBeCompiler = await ctx.compiler();
+  const result: IAutoBeTypeScriptCompileResult = await compiler.test.compile({
+    files: {
+      ...func.artifacts.dto,
+      ...func.artifacts.sdk,
+      [func.location]: func.script,
+    },
+  });
   return {
     type: "testValidate",
     file: {
@@ -66,7 +67,7 @@ const compile = async <Model extends ILlmSchema.Model>(
       location: func.location,
       content: func.script,
     },
-    result: compiled,
+    result,
     created_at: new Date().toISOString(),
     step: ctx.state().analyze?.step ?? 0,
   };

@@ -2,8 +2,10 @@ import { AutoBeCompiler } from "@autobe/compiler";
 import { AutoBeOpenApi, AutoBeTestScenario } from "@autobe/interface";
 import { OpenApi } from "@samchon/openapi";
 
-export const prepare_compiler_test = async () => {
-  const compiler: AutoBeCompiler = new AutoBeCompiler();
+import { TestFactory } from "../../../TestFactory";
+
+export const prepare_compiler_test = async (factory: TestFactory) => {
+  const compiler: AutoBeCompiler = factory.createCompiler();
   const document: AutoBeOpenApi.IDocument = await compiler.interface.invert(
     OpenApi.convert(
       await fetch(

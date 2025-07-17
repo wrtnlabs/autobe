@@ -1,5 +1,8 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
-import { AutoBeRealizeDecoratorEvent } from "@autobe/interface";
+import {
+  AutoBeRealizeDecoratorEvent,
+  IAutoBeCompiler,
+} from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import fs from "fs/promises";
 import path from "path";
@@ -29,17 +32,11 @@ export async function orchestrateRealizeDecorator<
   const prismaClients: Record<string, string> =
     compiled?.type === "success" ? compiled.nodeModules : {};
 
-  const roles = Array.from(
-    new Set(
-      ctx
-        .state()
-        .interface?.document.operations.map(
-          (operation) => operation.authorization?.role,
-        )
-        .flat()
-        .filter((role) => role !== undefined),
-    ),
-  );
+  const roles =
+    ctx
+      .state()
+      .interface?.document.components.authorization?.map((auth) => auth.name) ??
+    [];
 
   const files: Record<string, string> = {};
   const decorators: IAutoBeRealizeDecoratorApplication.IProps[] = [];
@@ -48,13 +45,16 @@ export async function orchestrateRealizeDecorator<
 
   const templateFiles = {
     "src/MyGlobal.ts": await fs.readFile(
-      path.join(__dirname, "../../../../../internals/template/src/MyGlobal.ts"),
+      path.join(
+        __dirname,
+        "../../../../../internals/template/realize/src/MyGlobal.ts",
+      ),
       "utf-8",
     ),
     "src/authentications/jwtAuthorize.ts": await fs.readFile(
       path.join(
         __dirname,
-        "../../../../../internals/template/src/providers/jwtAuthorize.ts",
+        "../../../../../internals/template/realize/src/providers/jwtAuthorize.ts",
       ),
       "utf-8",
     ),
@@ -155,7 +155,9 @@ async function correctDecorator<Model extends ILlmSchema.Model>(
     [`src/authentications/${result.provider.name}.ts`]: result.provider.code,
   };
 
-  const compiled = await ctx.compiler.typescript.compile({
+  const compiler: IAutoBeCompiler = await ctx.compiler();
+
+  const compiled = await compiler.typescript.compile({
     files,
   });
 

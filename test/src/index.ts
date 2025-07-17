@@ -1,5 +1,6 @@
 import { AutoBeAgent, AutoBeTokenUsage } from "@autobe/agent";
 import { AutoBeCompiler } from "@autobe/compiler";
+import { IAutoBeCompilerListener } from "@autobe/interface";
 import { DynamicExecutor } from "@nestia/e2e";
 import chalk from "chalk";
 import fs from "fs";
@@ -11,8 +12,11 @@ import { TestFactory } from "./TestFactory";
 import { TestGlobal } from "./TestGlobal";
 
 async function main(): Promise<void> {
+  console.log("---------------------------------------------------");
+  console.log("AutoBE Test Program");
+  console.log("---------------------------------------------------");
+
   // PREPARE ENVIRONMENT
-  const compiler: AutoBeCompiler = new AutoBeCompiler();
   const tokenUsage: AutoBeTokenUsage = new AutoBeTokenUsage();
   const factory: TestFactory = {
     createAgent: (histories) =>
@@ -29,10 +33,20 @@ async function main(): Promise<void> {
         config: {
           locale: "en-US",
         },
-        compiler,
+        compiler: (listener) => new AutoBeCompiler(listener),
         histories,
         tokenUsage,
       }),
+    createCompiler: (
+      listener: IAutoBeCompilerListener = {
+        realize: {
+          test: {
+            onOperation: async () => {},
+            onReset: async () => {},
+          },
+        },
+      },
+    ) => new AutoBeCompiler(listener),
   };
   const include: string[] = TestGlobal.getArguments("include");
   const exclude: string[] = TestGlobal.getArguments("exclude");

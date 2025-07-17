@@ -1,3 +1,5 @@
+import { tags } from "typia";
+
 /**
  * AST type system for programmatic OpenAPI specification generation through AI
  * function calling.
@@ -393,12 +395,15 @@ export namespace AutoBeOpenApi {
     responseBody: AutoBeOpenApi.IResponseBody | null;
 
     /**
-     * Authorization
+     * List of roles that are allowed to access the API operation.
      *
-     * Defines which user role is subject to strategies such as membership
-     * registration, login, token issuance, refresh token, etc.
+     * If the API operation is not restricted to any role, this field must be
+     * `null`.
+     *
+     * If the API operation is restricted to some roles, this field must be an
+     * array of role names.
      */
-    authorization?: IAuthorization | null;
+    authorizationRoles: (string[] & tags.UniqueItems) | null;
   }
 
   /**
@@ -447,15 +452,25 @@ export namespace AutoBeOpenApi {
      * Therefore, if a user type cannot be clearly and uniquely distinguished in
      * the database, It **cannot** be used as a valid `role` here.
      */
-    role: string[];
+    name: string;
 
     /**
-     * Authentication method type
+     * Detailed description of the authorization role
      *
-     * Currently only `"bearer"` is supported, which uses a Bearer token in the
-     * HTTP Authorization header.
+     * Provides a comprehensive explanation of:
+     *
+     * - The purpose and scope of this authorization role
+     * - Which types of users are granted this role
+     * - What capabilities and permissions this role enables
+     * - Any constraints or limitations associated with the role
+     * - How this role relates to the underlying database schema
+     * - Examples of typical use cases for this role
+     *
+     * This description should be detailed enough for both API consumers to
+     * understand the role's purpose and for the system to properly enforce
+     * access controls.
      */
-    type: "Bearer";
+    description: string;
   }
 
   /**
@@ -725,12 +740,7 @@ export namespace AutoBeOpenApi {
     schemas: Record<string, IJsonSchemaDescriptive>;
 
     /** Whether includes `Authorization` header or not. */
-    authorization?: {
-      roles: {
-        title: string;
-        description: string;
-      }[];
-    };
+    authorization?: IAuthorization[];
   }
 
   /**

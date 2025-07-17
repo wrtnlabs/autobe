@@ -27,6 +27,7 @@ export function AutoBePlaygroundEventMovie(
     case "interfaceStart":
     case "testStart":
     case "realizeStart":
+    case "realizeTestStart":
       return <AutoBePlaygroundStartEventMovie event={props.event} />;
     // PROGRESS EVENTS
     case "prismaComponents":
@@ -42,6 +43,8 @@ export function AutoBePlaygroundEventMovie(
     case "testValidate":
     case "realizeDecorator":
     case "realizeValidate":
+    case "realizeTestReset":
+    case "realizeTestOperation":
       return <AutoBePlaygroundProgressEventMovie event={props.event} />;
     // COMPLETE EVENTS
     case "analyzeComplete":
@@ -49,6 +52,7 @@ export function AutoBePlaygroundEventMovie(
     case "interfaceComplete":
     case "testComplete":
     case "realizeComplete":
+    case "realizeTestComplete":
       return (
         <AutoBePlaygroundCompleteEventMovie
           service={props.service}
