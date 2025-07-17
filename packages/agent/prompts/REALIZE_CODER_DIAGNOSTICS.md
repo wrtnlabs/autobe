@@ -1,14 +1,7 @@
-The code you previously wrote is as follows:
-```typescript
-{code}
-```
+# List of compilation errors in this file
 
-```json
-{total_diagnostics}
-```
-
-The list above shows all known errors.
 You are currently editing the code, and based on your changes, the errors from this attempt are as follows:
+
 ```json
 {current_diagnostics}
 ```
