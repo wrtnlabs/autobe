@@ -11,6 +11,7 @@ export * from "./AutoBeAnalyzeCompleteEvent";
 export * from "./AutoBePrismaStartEvent";
 export * from "./AutoBePrismaComponentsEvent";
 export * from "./AutoBePrismaSchemasEvent";
+export * from "./AutoBePrismaInsufficientEvent";
 export * from "./AutoBePrismaCompleteEvent";
 export * from "./AutoBePrismaValidateEvent";
 export * from "./AutoBePrismaCorrectEvent";

@@ -38,6 +38,9 @@ export class AutoBePlaygroundListener {
       prismaSchemas: async (event) => {
         this.callback?.(event);
       },
+      prismaInsufficient: async (event) => {
+        this.callback?.(event);
+      },
       prismaComplete: async (event) => {
         this.callback?.(event);
       },

@@ -6,6 +6,7 @@ import {
   AutoBeInterfaceEndpointsEvent,
   AutoBeInterfaceOperationsEvent,
   AutoBePrismaComponentsEvent,
+  AutoBePrismaInsufficientEvent,
   AutoBePrismaSchemasEvent,
   AutoBeRealizeDecoratorEvent,
   AutoBeRealizeProgressEvent,
@@ -34,6 +35,7 @@ export namespace AutoBePlaygroundProgressEventMovie {
       | AutoBeAnalyzeWriteEvent
       | AutoBePrismaComponentsEvent
       | AutoBePrismaSchemasEvent
+      | AutoBePrismaInsufficientEvent
       | AutoBeInterfaceEndpointsEvent
       | AutoBeInterfaceOperationsEvent
       | AutoBeInterfaceComponentsEvent
@@ -70,6 +72,8 @@ function getDescription(
       return `Composing Prisma Tables: ${tables} of ${tables}`;
     case "prismaSchemas":
       return `Generating Prisma Schemas: ${event.completed} of ${event.total}`;
+    case "prismaInsufficient":
+      return `Prisma Insufficient (${event.completed.namespace}): ${event.missed.length} of ${event.expected.length}`;
     case "testScenario":
       return `Generating Test Plan Completed: ${event.scenarios.length}`;
     case "testWrite":

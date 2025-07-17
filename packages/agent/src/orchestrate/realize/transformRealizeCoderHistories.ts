@@ -1,4 +1,5 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
+import { IAutoBeTypeScriptCompileResult } from "@autobe/interface";
 import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
@@ -10,6 +11,9 @@ export const transformRealizeCoderHistories = (
   state: AutoBeState,
   props: RealizePlannerOutput,
   artifacts: IAutoBeTestScenarioArtifacts,
+  previous: string | null,
+  total: IAutoBeTypeScriptCompileResult.IDiagnostic[],
+  diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[],
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
@@ -86,47 +90,67 @@ export const transformRealizeCoderHistories = (
       id: v4(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
-      text: [
-        AutoBeSystemPromptConstant.REALIZE_CODER,
-        "",
-        "# Prisma Schemas",
-        "```json",
-        JSON.stringify(state.prisma.schemas),
-        "```",
-        "",
-        // "# Prisma Types",
-        // "```json",
-        // JSON.stringify(state.prisma.compiled.nodeModules),
-        // "```",
-        "# SDK",
-        "",
-        "The following is the SDK for the API. Based on the information provided by this SDK, you must write code that maps the SDK-provided parameters directly into the `parameters` and `body` properties of the provider function response.",
-        "If there are no parameters, define `parameters` as `Record<string, never>`. Similarly, if there is no body, define `body` as `Record<string, never>`.",
-        "**Every function must be implemented to accept both `parameters` and `body`, without exception.**",
-        "If any required type information is referenced in the SDK, refer to the definitions in the DTO section.",
-        "",
-        "```json",
-        JSON.stringify(artifacts.sdk),
-        "```",
-        "",
-        "# DTO",
-        "if you want to import this files, write this: 'import { something } from '../api/structures/something';'",
-        "",
-        "```json",
-        JSON.stringify(artifacts.dto),
-        "```",
-        "# Document",
-        "```json",
-        JSON.stringify(artifacts.document),
-        "```",
-      ].join("\n"),
+      text: AutoBeSystemPromptConstant.REALIZE_CODER,
     },
     {
       id: v4(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
+      text: AutoBeSystemPromptConstant.REALIZE_CODER_TYPESCRIPT,
+    },
+    {
+      id: v4(),
+      created_at: new Date().toISOString(),
+      type: "systemMessage",
+      text: AutoBeSystemPromptConstant.REALIZE_CODER_PRISMA,
+    },
+    {
+      id: v4(),
+      created_at: new Date().toISOString(),
+      type: "systemMessage",
+      text: AutoBeSystemPromptConstant.REALIZE_CODER_BROWSER,
+    },
+    {
+      id: v4(),
+      created_at: new Date().toISOString(),
+      type: "systemMessage",
+      text: AutoBeSystemPromptConstant.REALIZE_CODER_TYPIA,
+    },
+    {
+      id: v4(),
+      created_at: new Date().toISOString(),
+      type: "systemMessage",
+      text: AutoBeSystemPromptConstant.REALIZE_CODER_ARTIFACT.replaceAll(
+        `{prisma_schemas}`,
+        JSON.stringify(state.prisma.schemas),
+      )
+        .replaceAll(`{artifacts_sdk}`, JSON.stringify(artifacts.sdk))
+        .replaceAll(`{artifacts_dto}`, JSON.stringify(artifacts.dto))
+        .replaceAll(`{artifacts_document}`, JSON.stringify(artifacts.document)),
+    },
+    ...(previous !== null
+      ? [
+          {
+            id: v4(),
+            created_at: new Date().toISOString(),
+            type: "assistantMessage",
+            text: AutoBeSystemPromptConstant.REALIZE_CODER_DIAGNOSTICS.replaceAll(
+              `{code}`,
+              previous,
+            )
+              .replaceAll("{total_diagnostics}", JSON.stringify(total))
+              .replaceAll("{current_diagnostics}", JSON.stringify(diagnostics)),
+          } as const,
+        ]
+      : []),
+    {
+      id: v4(),
+      created_at: new Date().toISOString(),
+      type: "systemMessage",
       text: [
-        "write code by following information of operation.",
+        previous
+          ? "Modify the previous code to reflect the following operation."
+          : "Write new code based on the following operation.",
         "```json",
         JSON.stringify(props),
         "```",

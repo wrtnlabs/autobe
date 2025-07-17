@@ -22,17 +22,39 @@ export const validate_agent_prisma_main = async (
   if (TestGlobal.env.CHATGPT_API_KEY === undefined) return false;
 
   const { agent } = await prepare_agent_prisma(factory, project);
-  const starts: AutoBePrismaStartEvent[] = [];
+  const time: Date = new Date();
+  const elapsed = () =>
+    (new Date().getTime() - time.getTime()).toLocaleString() + " ms";
+
+  let start: AutoBePrismaStartEvent | null = null;
   agent.on("prismaStart", (event) => {
-    console.log("started");
-    starts.push(event);
+    console.log("  - prisma started:", elapsed());
+    start = event;
+  });
+
+  const components: AutoBePrismaComponentsEvent[] = [];
+  const schemas: AutoBePrismaSchemasEvent[] = [];
+  agent.on("prismaComponents", (event) => {
+    console.log("  - prisma components:", elapsed());
+    components.push(event);
   });
   agent.on("prismaSchemas", (event) => {
-    console.log("progress", event.completed, "of", event.total);
+    console.log(
+      `  - prisma schemas (${event.file.namespace}, ${event.completed} of ${event.total}):`,
+      elapsed(),
+    );
+    schemas.push(event);
+  });
+  agent.on("prismaInsufficient", (event) => {
+    console.log(
+      `  - prisma insufficient: (${event.completed.namespace}, ${event.missed.length} of ${event.expected.length})`,
+      elapsed(),
+    );
   });
 
   const validates: AutoBePrismaValidateEvent[] = [];
   agent.on("prismaCorrect", async (event) => {
+    console.log("  - prisma corrected:", elapsed());
     await FileSystemIterator.save({
       root: `${TestGlobal.ROOT}/results/${project}/prisma-correct-${validates.length}`,
       files: Object.fromEntries([
@@ -43,6 +65,7 @@ export const validate_agent_prisma_main = async (
     });
   });
   agent.on("prismaValidate", async (event) => {
+    console.log("  - prisma validated:", elapsed());
     validates.push(event);
     await FileSystemIterator.save({
       root: `${TestGlobal.ROOT}/results/${project}/prisma-failure-${validates.length}`,
@@ -51,16 +74,6 @@ export const validate_agent_prisma_main = async (
         ...event.schemas,
       },
     });
-  });
-
-  const components: AutoBePrismaComponentsEvent[] = [];
-  agent.on("prismaComponents", (event) => {
-    components.push(event);
-  });
-
-  const schemas: AutoBePrismaSchemasEvent[] = [];
-  agent.on("prismaSchemas", (event) => {
-    schemas.push(event);
   });
 
   let history: AutoBePrismaHistory | AutoBeAssistantMessageHistory =
@@ -112,7 +125,7 @@ export const validate_agent_prisma_main = async (
       "logs/tokenUsage.json": JSON.stringify(agent.getTokenUsage(), null, 2),
       "logs/components.json": JSON.stringify(components, null, 2),
       "logs/schemas.json": JSON.stringify(schemas, null, 2),
-      "logs/starts.json": JSON.stringify(starts, null, 2),
+      "logs/start.json": JSON.stringify(start, null, 2),
     },
   });
   if (process.argv.includes("--archive"))

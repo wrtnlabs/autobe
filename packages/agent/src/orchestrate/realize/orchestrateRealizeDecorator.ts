@@ -38,7 +38,6 @@ export async function orchestrateRealizeDecorator<
       .interface?.document.components.authorization?.map((auth) => auth.name) ??
     [];
 
-  const files: Record<string, string> = {};
   const decorators: IAutoBeRealizeDecoratorApplication.IProps[] = [];
 
   let completed = 0;
@@ -58,6 +57,11 @@ export async function orchestrateRealizeDecorator<
       ),
       "utf-8",
     ),
+  };
+
+  const files: Record<string, string> = {
+    ...templateFiles,
+    ...prismaClients,
   };
 
   for (const role of roles) {

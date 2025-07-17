@@ -57,6 +57,7 @@ async function process<Model extends ILlmSchema.Model>(
     todo: string[];
     namespace: string;
   },
+  retryCount: number = 0,
 ): Promise<IMakePrismaSchemaFileProps> {
   const pointer: IPointer<IMakePrismaSchemaFileProps | null> = {
     value: null,
@@ -104,19 +105,32 @@ async function process<Model extends ILlmSchema.Model>(
   const todo: string[] = (remained?.todo ?? component.tables).filter((x) =>
     file.models.every((m) => m.name !== x),
   );
-  if (todo.length !== 0) {
-    const fulfill: IMakePrismaSchemaFileProps = await process(
-      ctx,
-      {
-        filename: component.filename,
-        tables: component.tables,
-        entireTables: component.entireTables,
+  if (todo.length !== 0 && retryCount++ < 3) {
+    ctx.dispatch({
+      type: "prismaInsufficient",
+      completed: {
+        ...file,
+        models: [...(remained?.done ?? []), ...file.models],
       },
-      {
-        done: [...(remained?.done ?? []), ...file.models],
-        todo,
-        namespace: file.namespace,
-      },
+      expected: component.tables,
+      missed: todo,
+      created_at: new Date().toISOString(),
+    });
+    const fulfill: IMakePrismaSchemaFileProps = await forceRetry(() =>
+      process(
+        ctx,
+        {
+          filename: component.filename,
+          tables: component.tables,
+          entireTables: component.entireTables,
+        },
+        {
+          done: [...(remained?.done ?? []), ...file.models],
+          todo,
+          namespace: file.namespace,
+        },
+        retryCount,
+      ),
     );
     pointer.value.file.models.push(...fulfill.file.models);
   }

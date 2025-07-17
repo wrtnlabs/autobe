@@ -11,7 +11,9 @@ export const test_compiler_interface_files = async (): Promise<void> => {
   const agent: AutoBeAgent<"chatgpt"> = new AutoBeAgent({
     model: "chatgpt",
     vendor: {
-      api: new OpenAI({ apiKey: "" }),
+      api: new OpenAI({
+        apiKey: "THIS IS JUST COMPILER TEST. SO WE DON'T NEED API KEY.",
+      }),
       model: "gpt-4.1",
     },
     histories: await TestHistory.getInterface("bbs-backend"),

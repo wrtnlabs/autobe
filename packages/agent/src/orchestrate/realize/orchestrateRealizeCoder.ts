@@ -1,5 +1,9 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
-import { AutoBeOpenApi, IAutoBeCompiler } from "@autobe/interface";
+import {
+  AutoBeOpenApi,
+  IAutoBeCompiler,
+  IAutoBeTypeScriptCompileResult,
+} from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -9,9 +13,9 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { enforceToolCall } from "../../utils/enforceToolCall";
 import { getTestScenarioArtifacts } from "../test/compile/getTestScenarioArtifacts";
 import { IAutoBeTestScenarioArtifacts } from "../test/structures/IAutoBeTestScenarioArtifacts";
-import { FAILED } from "./orchestrateRealize";
 import { RealizePlannerOutput } from "./orchestrateRealizePlanner";
 import { IAutoBeRealizeCoderApplication } from "./structures/IAutoBeRealizeCoderApplication";
+import { FAILED } from "./structures/IAutoBeRealizeFailedSymbol";
 import { transformRealizeCoderHistories } from "./transformRealizeCoderHistories";
 
 /**
@@ -36,8 +40,16 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   operation: AutoBeOpenApi.IOperation,
   props: RealizePlannerOutput,
-  files: Record<string, string>,
-): Promise<IAutoBeRealizeCoderApplication.RealizeCoderOutput | FAILED> => {
+  previous: string | null,
+  total: IAutoBeTypeScriptCompileResult.IDiagnostic[],
+  diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[],
+): Promise<
+  | Pick<
+      IAutoBeRealizeCoderApplication.RealizeCoderOutput,
+      "filename" | "implementationCode"
+    >
+  | FAILED
+> => {
   const artifacts: IAutoBeTestScenarioArtifacts =
     await getTestScenarioArtifacts(ctx, {
       endpoint: {
@@ -57,7 +69,7 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
   const controller = createApplication({
     model: ctx.model,
     build: (props) => {
-      pointer.value = props.result;
+      pointer.value = props.output;
     },
   });
 
@@ -71,7 +83,14 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
         describe: null,
       },
     },
-    histories: transformRealizeCoderHistories(ctx.state(), props, artifacts),
+    histories: transformRealizeCoderHistories(
+      ctx.state(),
+      props,
+      artifacts,
+      previous,
+      total,
+      diagnostics,
+    ),
   });
   enforceToolCall(agent);
 
@@ -83,29 +102,44 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
     return FAILED;
   }
 
-  const compiler: IAutoBeCompiler = await ctx.compiler();
-  pointer.value.implementationCode = await compiler.typescript.beautify(
+  pointer.value.implementationCode = await replaceImportStatements(ctx)(
     pointer.value.implementationCode,
   );
-  pointer.value.implementationCode = pointer.value.implementationCode
-    .replaceAll('import { MyGlobal } from "../MyGlobal";', "")
-    .replaceAll('import typia, { tags } from "typia";', "")
-    .replaceAll('import { Prisma } from "@prisma/client";', "")
-    .replaceAll('import { jwtDecode } from "./jwtDecode"', "");
-  pointer.value.implementationCode = [
-    'import { MyGlobal } from "../MyGlobal";',
-    'import typia, { tags } from "typia";',
-    'import { Prisma } from "@prisma/client";',
-    'import { jwtDecode } from "./jwtDecode"',
-    "",
-    pointer.value.implementationCode,
-  ].join("\n");
 
-  files[`src/providers/${props.functionName}.ts`] =
-    pointer.value.implementationCode;
-
-  return { ...pointer.value, functionName: props.functionName };
+  return {
+    ...pointer.value,
+    filename: `src/providers/${props.functionName}.ts`,
+  };
 };
+
+function replaceImportStatements<Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+) {
+  return async function (code: string) {
+    const compiler: IAutoBeCompiler = await ctx.compiler();
+    code = await compiler.typescript.beautify(code);
+    code = code
+      .replaceAll('import { MyGlobal } from "../MyGlobal";', "")
+      .replaceAll('import typia, { tags } from "typia";', "")
+      .replaceAll('import { tags } from "typia";', "")
+      .replaceAll('import { tags, typia } from "typia";', "")
+      .replaceAll('import typia from "typia";', "")
+      .replaceAll('import { Prisma } from "@prisma/client";', "")
+      .replaceAll('import { jwtDecode } from "./jwtDecode"', "")
+      .replaceAll('import { v4 } from "uuid"', "");
+    code = [
+      'import { MyGlobal } from "../MyGlobal";',
+      'import typia, { tags } from "typia";',
+      'import { Prisma } from "@prisma/client";',
+      'import { jwtDecode } from "./jwtDecode";',
+      'import { v4 } from "uuid";',
+      "",
+      code,
+    ].join("\n");
+
+    return code;
+  };
+}
 
 function createApplication<Model extends ILlmSchema.Model>(props: {
   model: Model;
@@ -122,7 +156,7 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
     name: "Write code",
     application,
     execute: {
-      programing: (next) => {
+      programming: (next) => {
         props.build(next);
       },
     } satisfies IAutoBeRealizeCoderApplication,
