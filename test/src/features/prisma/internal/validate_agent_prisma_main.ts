@@ -52,13 +52,13 @@ export const validate_agent_prisma_main = async (
   agent.on("prismaInsufficient", (event) => {
     insufficients.push(event);
     console.log(
-      `  - prisma insufficient: (${event.completed.filename}, ${event.missed.length} of ${event.expected.length})`,
+      `  - prisma insufficient: (${event.component.filename}, ${event.missed.length} of ${event.component.tables.length})`,
       elapsed(),
     );
     console.log("    - expected");
-    for (const table of event.expected) console.log(`      - ${table}`);
+    for (const table of event.component.tables) console.log(`      - ${table}`);
     console.log(`    - actual`);
-    for (const m of event.completed.models) console.log(`      - ${m.name}`);
+    for (const m of event.actual) console.log(`      - ${m.name}`);
   });
 
   const validates: AutoBePrismaValidateEvent[] = [];

@@ -192,7 +192,7 @@ gantt
   Documentation: done,    2025-06-16, 45d
   Articles:      active,  2025-07-02, 61d
   Review Agent:  planned, 2025-07-02, 45d
-  Maintenance:   planned, 2025-08-01, 30d
+  Maintenance:   active,  2025-08-01, 30d
 
   section Ecosystem
   Agentica Prerequisite:  active,  2025-06-18, 13d

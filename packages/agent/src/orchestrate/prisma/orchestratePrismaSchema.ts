@@ -5,7 +5,7 @@ import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 
-import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
+// import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { enforceToolCall } from "../../utils/enforceToolCall";
@@ -17,21 +17,27 @@ export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
   components: AutoBePrisma.IComponent[],
 ): Promise<AutoBePrismaSchemasEvent[]> {
   const start: Date = new Date();
-  const total: number = components.reduce((acc, c) => acc + c.tables.length, 0);
+  const total: number = components
+    .map((c) => c.tables.length)
+    .reduce((x, y) => x + y, 0);
   let i: number = 0;
   return await Promise.all(
     components.map(async (c, x) => {
       const result: IMakePrismaSchemaFileProps = await forceRetry(() =>
         process(
           ctx,
-          c,
-          components.filter((_, y) => x !== y),
+          c, // mine
+          components.filter((_, y) => x !== y), // others
         ),
       );
       const event: AutoBePrismaSchemasEvent = {
         type: "prismaSchemas",
         created_at: start.toISOString(),
-        file: result.file,
+        file: {
+          filename: c.filename,
+          namespace: c.namespace,
+          models: result.models,
+        },
         completed: (i += c.tables.length),
         total,
         step: ctx.state().analyze?.step ?? 0,
@@ -66,16 +72,10 @@ async function process<Model extends ILlmSchema.Model>(
     ),
     controllers: [
       createApplication(ctx, {
-        expected: component.tables,
+        component,
+        otherComponents,
         build: (next) => {
-          pointer.value ??= {
-            file: {
-              filename: component.filename,
-              namespace: component.namespace,
-              models: [],
-            },
-          };
-          pointer.value.file.models.push(...next.file.models);
+          pointer.value = next;
         },
       }),
     ],
@@ -94,7 +94,8 @@ async function process<Model extends ILlmSchema.Model>(
 function createApplication<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
-    expected: string[];
+    component: AutoBePrisma.IComponent;
+    otherComponents: AutoBePrisma.IComponent[];
     build: (next: IMakePrismaSchemaFileProps) => void;
   },
 ): IAgenticaController.IClass<Model> {
@@ -109,28 +110,30 @@ function createApplication<Model extends ILlmSchema.Model>(
       typia.validate<IMakePrismaSchemaFileProps>(input);
     if (result.success === false) return result;
 
-    const expected: string[] = props.expected;
-    const actual: string[] = result.data.file.models.map((m) => m.name);
+    const expected: string[] = props.component.tables;
+    const actual: string[] = result.data.models.map((m) => m.name);
     const missed: string[] = expected.filter((x) => !actual.includes(x));
-    if (expected.length === actual.length && missed.length === 0) return result;
+    const invasions: AutoBePrisma.IComponent[] = props.otherComponents
+      .map((oc) => ({
+        ...oc,
+        tables: oc.tables.filter((x) => actual.includes(x)),
+      }))
+      .filter((oc) => oc.tables.length !== 0);
 
-    const tables = (array: string[]) => array.map((x) => `- ${x}`).join("\n");
-    const description: string = AutoBeSystemPromptConstant.PRISMA_INSUFFICIENT
-      // COUNTS
-      .replaceAll("{{expectedCount}}", expected.length.toString())
-      .replaceAll("{{actualCount}}", actual.length.toString())
-      .replaceAll("{{missingCount}}", missed.length.toString())
-      // TABLE LISTS
-      .replaceAll("{{expectedTables}}", tables(expected))
-      .replaceAll("{{actualTables}}", tables(actual))
-      .replaceAll("{{missingTables}}", tables(missed))
-      // INLINE
-      .replaceAll("{{expectedInline}}", expected.join(", "));
+    console.log({
+      title: "trace schemas",
+      component: props.component,
+      actual: result.data.models.map((m) => m.name),
+      valid: missed.length === 0 && invasions.length === 0,
+    });
+    if (missed.length === 0 && invasions.length === 0) return result;
+
     ctx.dispatch({
       type: "prismaInsufficient",
-      completed: result.data.file,
-      expected,
+      component: props.component,
+      actual: result.data.models,
       missed,
+      invasions,
       created_at: new Date().toISOString(),
     });
     return {
@@ -139,9 +142,16 @@ function createApplication<Model extends ILlmSchema.Model>(
       errors: [
         {
           path: "$input.file.models",
-          value: result.data.file.models,
-          expected: `Array<AutoBePrisma.IModel> & tags.MinLength<${length}> & tags.MaxLength<${length}>`,
-          description,
+          value: result.data.models,
+          expected: `Array<AutoBePrisma.IModel>`,
+          description: JSON.stringify({
+            filename: props.component.filename,
+            namespace: props.component.namespace,
+            expected,
+            actual,
+            missed,
+            invasions,
+          }),
         },
       ],
     };
@@ -193,10 +203,10 @@ interface IApplication {
 
 interface IMakePrismaSchemaFileProps {
   /**
-   * Complete definition of a single Prisma schema file.
+   * Array of Prisma models (database tables) within the domain.
    *
-   * Represents one business domain containing related models, organized for
-   * modular schema management and following domain-driven design principles.
+   * Each model represents a business entity or concept within the namespace.
+   * Models can reference each other through foreign key relationships.
    */
-  file: AutoBePrisma.IFile;
+  models: AutoBePrisma.IModel[];
 }

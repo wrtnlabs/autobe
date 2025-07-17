@@ -22,34 +22,36 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
 export interface AutoBePrismaInsufficientEvent
   extends AutoBeEventBase<"prismaInsufficient"> {
   /**
-   * The completed schema file containing the successfully generated models.
+   * The target component specification that was assigned to the AI for schema
+   * generation.
    *
-   * Contains the {@link AutoBePrisma.IFile} structure representing a partial but
-   * valid schema file with the models that were actually created by the AI
-   * function calling process. The file includes the filename following the
-   * `schema-{number}-{domain}.prisma` convention, the business namespace, and
-   * all successfully created models with their fields, indexes, and
-   * relationships.
+   * Contains the {@link AutoBePrisma.IComponent} structure representing the
+   * complete component definition that the AI was supposed to implement. Most
+   * importantly, this includes the {@link AutoBePrisma.IComponent.tables} array
+   * containing all table names that should have been generated as models for
+   * this business domain.
    *
-   * This file represents what was successfully completed before the
-   * insufficient model generation was detected, providing a complete picture of
-   * the partial schema state and serving as the foundation for completing the
-   * missing models.
+   * This component specification serves as the reference point for determining
+   * which models are missing by comparing the expected tables list against the
+   * actual models created. The component also provides the business namespace
+   * and target filename context for the schema generation task.
    */
-  completed: AutoBePrisma.IFile;
+  component: AutoBePrisma.IComponent;
 
   /**
-   * Array of model names that should have been created for this domain.
+   * Array of models that were actually created by the AI function calling
+   * process.
    *
-   * Contains the names of all models that were identified in the requirements
-   * analysis and component organization for this specific business domain. This
-   * represents the complete set of models that the AI function calling process
-   * was supposed to generate based on the business requirements.
+   * Contains the {@link AutoBePrisma.IModel} objects representing the database
+   * tables that were successfully generated during the schema creation process.
+   * Each model includes complete field definitions, relationships, indexes, and
+   * other schema elements that were properly implemented by the AI.
    *
-   * This list serves as the reference point for determining which models are
-   * missing and provides context for the scope of the database design task.
+   * This array represents the partial but valid schema output that was achieved
+   * before the insufficient model generation was detected, providing the actual
+   * state of what was accomplished versus what was expected.
    */
-  expected: string[];
+  actual: AutoBePrisma.IModel[];
 
   /**
    * Array of model names that were not created by the AI function calling.
@@ -63,4 +65,30 @@ export interface AutoBePrismaInsufficientEvent
    * actually delivered by the AI function calling process.
    */
   missed: string[];
+
+  /**
+   * Array of other components whose domain boundaries may have been violated by
+   * the AI-generated schema.
+   *
+   * Contains {@link AutoBePrisma.IComponent} objects representing other business
+   * domains that may have been impacted by the AI function calling process
+   * creating models outside of its assigned domain. This occurs when the AI
+   * generates tables that belong to other components' business domains instead
+   * of staying within the boundaries of its assigned component.
+   *
+   * Each component in this array contains only the tables that were
+   * inappropriately created by the AI in its
+   * {@link AutoBePrisma.IComponent.tables} array, not the complete set of tables
+   * that belong to that component's domain. This filtered information helps
+   * identify specific boundary violations and enables targeted corrective
+   * actions.
+   *
+   * Domain invasions happen when AI creates tables that belong to other
+   * components' domains, violating the domain-driven design principles and
+   * potentially causing schema conflicts during deployment. This information
+   * helps identify which domains were inappropriately invaded and enables
+   * corrective actions to remove models that don't belong to the assigned
+   * domain.
+   */
+  invasions: AutoBePrisma.IComponent[];
 }
