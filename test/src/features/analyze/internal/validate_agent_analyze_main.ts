@@ -16,7 +16,7 @@ export const validate_agent_analyze_main = async (
   if (TestGlobal.env.CHATGPT_API_KEY === undefined) return false;
 
   // PREPARE ASSETS
-  const [history]: AutoBeHistory[] = await TestHistory.getAnalyze(project);
+  const [history]: AutoBeHistory[] = await TestHistory.getInitial(project);
   typia.assertGuard<AutoBeUserMessageHistory>(history);
   const content: string | null =
     history.contents[0].type === "text" ? history.contents[0].text : null;
@@ -31,8 +31,9 @@ export const validate_agent_analyze_main = async (
 
   if (results.every((el) => el.type !== "analyze")) {
     results = await go("Don't ask me to do that, and just do it right now.");
-    if (results.every((el) => el.type !== "analyze"))
+    if (results.every((el) => el.type !== "analyze")) {
       throw new Error("Some history type must be analyze.");
+    }
   }
 
   // REPORT RESULT

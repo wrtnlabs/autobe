@@ -34,6 +34,7 @@ export async function orchestrateInterfaceComponents<
 
   const x: AutoBeOpenApi.IComponents = {
     schemas: {},
+    authorization: ctx.state().analyze?.roles,
   };
   for (const y of await Promise.all(
     matrix.map(async (it) => {
@@ -58,7 +59,6 @@ export async function orchestrateInterfaceComponents<
     }),
   )) {
     Object.assign(x.schemas, y.schemas);
-    if (y.authorization) x.authorization = y.authorization;
   }
   return x;
 }
@@ -132,7 +132,6 @@ async function process<Model extends ILlmSchema.Model>(
           pointer.value ??= {
             schemas: {},
           };
-          pointer.value.authorization ??= components.authorization;
           Object.assign(pointer.value.schemas, components.schemas);
         },
         pointer,
@@ -289,5 +288,5 @@ interface IMakeComponentsProps {
    * }
    * ```
    */
-  components: AutoBeOpenApi.IComponents;
+  components: Omit<AutoBeOpenApi.IComponents, "authorization">;
 }

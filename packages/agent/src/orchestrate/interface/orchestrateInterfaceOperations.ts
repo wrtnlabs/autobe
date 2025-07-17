@@ -88,6 +88,7 @@ async function process<Model extends ILlmSchema.Model>(
   const pointer: IPointer<AutoBeOpenApi.IOperation[] | null> = {
     value: null,
   };
+
   const agentica: MicroAgentica<Model> = new MicroAgentica({
     model: ctx.model,
     vendor: ctx.vendor,
@@ -104,6 +105,7 @@ async function process<Model extends ILlmSchema.Model>(
     controllers: [
       createApplication({
         model: ctx.model,
+        roles: ctx.state().analyze?.roles.map((it) => it.name) ?? null,
         build: (endpoints) => {
           pointer.value ??= [];
           pointer.value.push(...endpoints);
@@ -132,6 +134,7 @@ async function process<Model extends ILlmSchema.Model>(
 
 function createApplication<Model extends ILlmSchema.Model>(props: {
   model: Model;
+  roles: string[] | null;
   build: (operations: AutoBeOpenApi.IOperation[]) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
@@ -153,6 +156,24 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
             "GET method should not have request body. Change method, or re-design the operation.",
           value: op.requestBody,
         });
+      op.authorizationRoles?.forEach((role, j) => {
+        if (props.roles === null) {
+          op.authorizationRoles = null;
+        }
+        if (props.roles?.find((it) => it === role) === undefined)
+          errors.push({
+            path: `operations[${i}].authorizationRoles[${j}]`,
+            expected: `undefined | ${props.roles?.join(" | ")}`,
+            description: [
+              `Role "${role}" is not defined in the roles list.`,
+              "",
+              "Please select one of them below, or do not define (undefined):  ",
+              "",
+              ...(props.roles ?? []).map((role) => `- ${role}`),
+            ].join("\n"),
+            value: role,
+          });
+      });
     });
     if (errors.length !== 0)
       return {

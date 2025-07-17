@@ -6,6 +6,12 @@ import { TestGlobal } from "../TestGlobal";
 import { TestProject } from "../structures/TestProject";
 
 export namespace TestHistory {
+  export const getInitial = (project: TestProject): Promise<AutoBeHistory[]> =>
+    getHistories({
+      project,
+      type: "initial",
+    });
+
   export const getAnalyze = (project: TestProject): Promise<AutoBeHistory[]> =>
     getHistories({
       project,
@@ -40,7 +46,7 @@ export namespace TestHistory {
 
   const getHistories = async (props: {
     project: TestProject;
-    type: "analyze" | "prisma" | "interface" | "test" | "realize";
+    type: "initial" | "analyze" | "prisma" | "interface" | "test" | "realize";
   }): Promise<AutoBeHistory[]> => {
     const location: string = `${TestGlobal.ROOT}/assets/histories/${props.project}.${props.type}.json`;
     const content: string = await fs.promises.readFile(location, "utf8");
