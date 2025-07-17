@@ -35,6 +35,5 @@ export const orchestrateAnalyzeReviewer = async <
     const tokenUsage = agent.getTokenUsage();
     ctx.usage().record(tokenUsage, ["analyze"]);
   });
-
   return histories.find((h) => h.type === "assistantMessage")?.text ?? null;
 };

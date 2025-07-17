@@ -19,8 +19,8 @@ export const orchestrateAnalyze =
   async (
     props: IAutoBeApplicationProps,
   ): Promise<AutoBeAssistantMessageHistory | AutoBeAnalyzeHistory> => {
-    const step = ctx.state().analyze?.step ?? 0;
-    const created_at = new Date().toISOString();
+    const step: number = ctx.state().analyze?.step ?? 0;
+    const created_at: string = new Date().toISOString();
     ctx.dispatch({
       type: "analyzeStart",
       reason: props.reason,
@@ -30,7 +30,6 @@ export const orchestrateAnalyze =
 
     const pointer: IPointer<IComposeInput | null> = { value: null };
     const agentica = orchestrateAnalyzeComposer(ctx, pointer);
-
     const determined = await agentica
       .conversate(
         [
@@ -43,7 +42,6 @@ export const orchestrateAnalyze =
         const tokenUsage = agentica.getTokenUsage();
         ctx.usage().record(tokenUsage, ["analyze"]);
       });
-
     if (pointer.value === null) {
       return {
         id: v4(),
