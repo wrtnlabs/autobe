@@ -10,6 +10,10 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import {
+  randomBackoffRetry,
+  randomBackoffStrategy,
+} from "../../utils/backoffRetry";
 import { enforceToolCall } from "../../utils/enforceToolCall";
 import { getTestScenarioArtifacts } from "../test/compile/getTestScenarioArtifacts";
 import { IAutoBeTestScenarioArtifacts } from "../test/structures/IAutoBeTestScenarioArtifacts";
@@ -50,6 +54,7 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
     >
   | FAILED
 > => {
+  total;
   const artifacts: IAutoBeTestScenarioArtifacts =
     await getTestScenarioArtifacts(ctx, {
       endpoint: {
@@ -79,6 +84,7 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
     vendor: ctx.vendor,
     config: {
       ...ctx.config,
+      backoffStrategy: randomBackoffStrategy,
       executor: {
         describe: null,
       },
@@ -88,15 +94,31 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
       props,
       artifacts,
       previous,
-      total,
       diagnostics,
     ),
   });
   enforceToolCall(agent);
 
-  await agent.conversate("Write code.");
-  const tokenUsage = agent.getTokenUsage();
-  ctx.usage().record(tokenUsage, ["realize"]);
+  await randomBackoffRetry(() =>
+    agent.conversate(
+      [
+        `Write complete, production-ready TypeScript code that strictly follows these rules:`,
+        "",
+        `1. Do **not** use the native \`Date\` type anywhere.`,
+        `2. All date or datetime values must be written as \`string & tags.Format<'date-time'>\`.`,
+        `3. UUIDs must be generated using \`v4()\` and typed as \`string & tags.Format<'uuid'>\`.`,
+        `4. Do not use \`as\` for type assertions — resolve types properly.`,
+        `5. All functions must be fully typed with clear parameter and return types.`,
+        `6. Do not skip validations or default values where necessary.`,
+        `7. Follow functional, immutable, and consistent code structure.`,
+        "",
+        `Use \`@nestia/e2e\` test structure if relevant.`,
+      ].join("\n"),
+    ),
+  ).finally(() => {
+    const tokenUsage = agent.getTokenUsage();
+    ctx.usage().record(tokenUsage, ["realize"]);
+  });
 
   if (pointer.value === null) {
     return FAILED;
