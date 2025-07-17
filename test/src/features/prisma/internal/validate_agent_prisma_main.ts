@@ -3,6 +3,7 @@ import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeAssistantMessageHistory,
   AutoBePrismaHistory,
+  AutoBePrismaInsufficientEvent,
   AutoBePrismaStartEvent,
   AutoBePrismaValidateEvent,
 } from "@autobe/interface";
@@ -27,29 +28,37 @@ export const validate_agent_prisma_main = async (
     (new Date().getTime() - time.getTime()).toLocaleString() + " ms";
 
   let start: AutoBePrismaStartEvent | null = null;
+  let components: AutoBePrismaComponentsEvent | null = null;
   agent.on("prismaStart", (event) => {
-    console.log("  - prisma started:", elapsed());
     start = event;
+    console.log("  - prisma started:", elapsed());
+  });
+  agent.on("prismaComponents", (event) => {
+    components = event;
+    console.log("  - prisma components:", elapsed());
+    for (const comp of event.components)
+      console.log(`    - ${comp.filename} (${comp.tables.join(", ")})`);
   });
 
-  const components: AutoBePrismaComponentsEvent[] = [];
   const schemas: AutoBePrismaSchemasEvent[] = [];
-  agent.on("prismaComponents", (event) => {
-    console.log("  - prisma components:", elapsed());
-    components.push(event);
-  });
+  const insufficients: AutoBePrismaInsufficientEvent[] = [];
   agent.on("prismaSchemas", (event) => {
     console.log(
-      `  - prisma schemas (${event.file.namespace}, ${event.completed} of ${event.total}):`,
+      `  - prisma schemas (${event.file.filename}, ${event.completed} of ${event.total}):`,
       elapsed(),
     );
     schemas.push(event);
   });
   agent.on("prismaInsufficient", (event) => {
+    insufficients.push(event);
     console.log(
-      `  - prisma insufficient: (${event.completed.namespace}, ${event.missed.length} of ${event.expected.length})`,
+      `  - prisma insufficient: (${event.completed.filename}, ${event.missed.length} of ${event.expected.length})`,
       elapsed(),
     );
+    console.log("    - expected");
+    for (const table of event.expected) console.log(`      - ${table}`);
+    console.log(`    - actual`);
+    for (const m of event.completed.models) console.log(`      - ${m.name}`);
   });
 
   const validates: AutoBePrismaValidateEvent[] = [];

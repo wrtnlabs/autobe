@@ -1,3 +1,4 @@
+import { AutoBePrisma } from "../prisma";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
 /**
@@ -33,27 +34,7 @@ export interface AutoBePrismaComponentsEvent
    * maintainable, with clear separation of concerns across different business
    * areas.
    */
-  components: {
-    /**
-     * Target filename for the Prisma schema file containing this component's
-     * tables.
-     *
-     * Follows the naming convention `schema-{number}-{domain}.prisma` where the
-     * number indicates dependency order and domain represents the business
-     * area.
-     */
-    filename: string;
-
-    /**
-     * Array of table names that will be included in this component's schema
-     * file.
-     *
-     * Contains all database table names that belong to this business domain,
-     * ensuring logical grouping and proper organization of related data
-     * structures.
-     */
-    tables: string[];
-  }[];
+  components: AutoBePrisma.IComponent[];
 
   /**
    * Iteration number of the requirements analysis this component organization

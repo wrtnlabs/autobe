@@ -4,11 +4,11 @@ import {
   MicroAgentica,
   MicroAgenticaHistory,
 } from "@agentica/core";
-import { AutoBeAssistantMessageHistory } from "@autobe/interface";
+import { AutoBeAssistantMessageHistory, AutoBePrisma } from "@autobe/interface";
 import { AutoBePrismaComponentsEvent } from "@autobe/interface/src/events/AutoBePrismaComponentsEvent";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
-import typia, { tags } from "typia";
+import typia from "typia";
 import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
@@ -25,8 +25,7 @@ export async function orchestratePrismaComponents<
   const pointer: IPointer<IExtractComponentsProps | null> = {
     value: null,
   };
-
-  const prefix = ctx.state().analyze?.prefix ?? null;
+  const prefix: string | null = ctx.state().analyze?.prefix ?? null;
 
   const agentica: MicroAgentica<Model> = new MicroAgentica({
     model: ctx.model,
@@ -178,13 +177,5 @@ interface IExtractComponentsProps {
    * - Keep mapping synchronized with actual schema files
    * - Use consistent naming convention for files
    */
-  components: IComponent[];
-}
-
-interface IComponent {
-  /** Filename of the Prisma schema file. */
-  filename: string & tags.Pattern<"^[a-zA-Z0-9._-]+\\.prisma$">;
-
-  /** List of table names that would be stored in the file. */
-  tables: Array<string & tags.Pattern<"^[a-z][a-z0-9_]*$">>;
+  components: AutoBePrisma.IComponent[];
 }

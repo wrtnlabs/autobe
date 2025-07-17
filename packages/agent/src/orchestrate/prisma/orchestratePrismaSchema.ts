@@ -1,10 +1,11 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import { AutoBePrisma } from "@autobe/interface";
 import { AutoBePrismaSchemasEvent } from "@autobe/interface/src/events/AutoBePrismaSchemasEvent";
-import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
+import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 
+import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { enforceToolCall } from "../../utils/enforceToolCall";
@@ -13,23 +14,19 @@ import { transformPrismaSchemaHistories } from "./transformPrismaSchemaHistories
 
 export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  components: { filename: string; tables: string[] }[],
+  components: AutoBePrisma.IComponent[],
 ): Promise<AutoBePrismaSchemasEvent[]> {
   const start: Date = new Date();
-  const entireTables: string[] = Array.from(
-    new Set(components.flatMap((c) => c.tables)),
-  );
-
   const total: number = components.reduce((acc, c) => acc + c.tables.length, 0);
   let i: number = 0;
   return await Promise.all(
-    components.map(async (c) => {
+    components.map(async (c, x) => {
       const result: IMakePrismaSchemaFileProps = await forceRetry(() =>
-        process(ctx, {
-          filename: c.filename,
-          tables: c.tables,
-          entireTables,
-        }),
+        process(
+          ctx,
+          c,
+          components.filter((_, y) => x !== y),
+        ),
       );
       const event: AutoBePrismaSchemasEvent = {
         type: "prismaSchemas",
@@ -47,17 +44,8 @@ export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
 
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  component: {
-    filename: string;
-    tables: string[];
-    entireTables: string[];
-  },
-  remained?: {
-    done: AutoBePrisma.IModel[];
-    todo: string[];
-    namespace: string;
-  },
-  retryCount: number = 0,
+  component: AutoBePrisma.IComponent,
+  otherComponents: AutoBePrisma.IComponent[],
 ): Promise<IMakePrismaSchemaFileProps> {
   const pointer: IPointer<IMakePrismaSchemaFileProps | null> = {
     value: null,
@@ -74,16 +62,16 @@ async function process<Model extends ILlmSchema.Model>(
     histories: transformPrismaSchemaHistories(
       ctx.state().analyze!,
       component,
-      remained,
+      otherComponents,
     ),
     controllers: [
-      createApplication({
-        model: ctx.model,
+      createApplication(ctx, {
+        expected: component.tables,
         build: (next) => {
           pointer.value ??= {
             file: {
               filename: component.filename,
-              namespace: next.file.namespace,
+              namespace: component.namespace,
               models: [],
             },
           };
@@ -100,51 +88,64 @@ async function process<Model extends ILlmSchema.Model>(
   });
   if (pointer.value === null)
     throw new Error("Unreachable code: Prisma Schema not generated");
-
-  const file: AutoBePrisma.IFile = pointer.value.file;
-  const todo: string[] = (remained?.todo ?? component.tables).filter((x) =>
-    file.models.every((m) => m.name !== x),
-  );
-  if (todo.length !== 0 && retryCount++ < 3) {
-    ctx.dispatch({
-      type: "prismaInsufficient",
-      completed: {
-        ...file,
-        models: [...(remained?.done ?? []), ...file.models],
-      },
-      expected: component.tables,
-      missed: todo,
-      created_at: new Date().toISOString(),
-    });
-    const fulfill: IMakePrismaSchemaFileProps = await forceRetry(() =>
-      process(
-        ctx,
-        {
-          filename: component.filename,
-          tables: component.tables,
-          entireTables: component.entireTables,
-        },
-        {
-          done: [...(remained?.done ?? []), ...file.models],
-          todo,
-          namespace: file.namespace,
-        },
-        retryCount,
-      ),
-    );
-    pointer.value.file.models.push(...fulfill.file.models);
-  }
   return pointer.value;
 }
 
-function createApplication<Model extends ILlmSchema.Model>(props: {
-  model: Model;
-  build: (next: IMakePrismaSchemaFileProps) => void;
-}): IAgenticaController.IClass<Model> {
-  assertSchemaModel(props.model);
+function createApplication<Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  props: {
+    expected: string[];
+    build: (next: IMakePrismaSchemaFileProps) => void;
+  },
+): IAgenticaController.IClass<Model> {
+  assertSchemaModel(ctx.model);
   const application: ILlmApplication<Model> = collection[
-    props.model
+    ctx.model
   ] as unknown as ILlmApplication<Model>;
+  application.functions[0].validate = (
+    input: unknown,
+  ): IValidation<IMakePrismaSchemaFileProps> => {
+    const result: IValidation<IMakePrismaSchemaFileProps> =
+      typia.validate<IMakePrismaSchemaFileProps>(input);
+    if (result.success === false) return result;
+
+    const expected: string[] = props.expected;
+    const actual: string[] = result.data.file.models.map((m) => m.name);
+    const missed: string[] = expected.filter((x) => !actual.includes(x));
+    if (expected.length === actual.length && missed.length === 0) return result;
+
+    const tables = (array: string[]) => array.map((x) => `- ${x}`).join("\n");
+    const description: string = AutoBeSystemPromptConstant.PRISMA_INSUFFICIENT
+      // COUNTS
+      .replaceAll("{{expectedCount}}", expected.length.toString())
+      .replaceAll("{{actualCount}}", actual.length.toString())
+      .replaceAll("{{missingCount}}", missed.length.toString())
+      // TABLE LISTS
+      .replaceAll("{{expectedTables}}", tables(expected))
+      .replaceAll("{{actualTables}}", tables(actual))
+      .replaceAll("{{missingTables}}", tables(missed))
+      // INLINE
+      .replaceAll("{{expectedInline}}", expected.join(", "));
+    ctx.dispatch({
+      type: "prismaInsufficient",
+      completed: result.data.file,
+      expected,
+      missed,
+      created_at: new Date().toISOString(),
+    });
+    return {
+      success: false,
+      data: result.data,
+      errors: [
+        {
+          path: "$input.file.models",
+          value: result.data.file.models,
+          expected: `Array<AutoBePrisma.IModel> & tags.MinLength<${length}> & tags.MaxLength<${length}>`,
+          description,
+        },
+      ],
+    };
+  };
   return {
     protocol: "class",
     name: "Prisma Generator",

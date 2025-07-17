@@ -1,4 +1,4 @@
-import { AutoBePrisma } from "../prisma";
+import { AutoBePrisma } from "../prisma/AutoBePrisma";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
 /**

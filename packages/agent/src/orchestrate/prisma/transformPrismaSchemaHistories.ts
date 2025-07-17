@@ -6,16 +6,8 @@ import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptCo
 
 export const transformPrismaSchemaHistories = (
   analyze: AutoBeAnalyzeHistory,
-  component: {
-    filename: string;
-    tables: string[];
-    entireTables: string[];
-  },
-  remained?: {
-    done: AutoBePrisma.IModel[];
-    todo: string[];
-    namespace: string;
-  },
+  component: AutoBePrisma.IComponent,
+  otherComponents: AutoBePrisma.IComponent[],
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
@@ -26,18 +18,6 @@ export const transformPrismaSchemaHistories = (
       type: "systemMessage",
       text: AutoBeSystemPromptConstant.PRISMA_SCHEMA,
     },
-    // {
-    //   id: v4(),
-    //   created_at: new Date().toISOString(),
-    //   type: "systemMessage",
-    //   text: [
-    //     "Before making prisma schema files,",
-    //     "learn about the prisma schema language",
-    //     "from the best practices and examples",
-    //     "",
-    //     AutoBeSystemPromptConstant.PRISMA_EXAMPLE,
-    //   ].join("\n"),
-    // },
     {
       id: v4(),
       created_at: new Date().toISOString(),
@@ -57,38 +37,56 @@ export const transformPrismaSchemaHistories = (
         JSON.stringify(analyze.files),
         "```",
         "",
-        "## Context",
+        "## Other Components to Reference",
         "",
-        `  - Target filename: ${component.filename}`,
-        `  - Tables what you have to make:`,
-        ...component.tables.map((table) => `    - ${table}`),
-        `  - Entire tables you can reference:`,
-        ...component.entireTables.map((table) => `    - ${table}`),
+        "**CRITICAL: DO NOT CREATE THESE TABLES**",
+        "",
+        "The following components contain tables that already exist in other schema files.",
+        "You must ONLY use these for foreign key references and relationships.",
+        "",
+        "❌ **NEVER DO:**",
+        "- Create models for any tables listed in other components",
+        "- Duplicate or recreate existing tables from other domains",
+        "- Add tables that belong to other business domains",
+        "",
+        "✅ **ALWAYS DO:**",
+        "- Reference these tables in foreign key relationships only",
+        "- Use exact table names when creating foreign key fields",
+        "- Respect domain boundaries and don't invade other domains",
+        "",
+        "```json",
+        JSON.stringify(otherComponents),
+        "```",
+        "",
+        "## Target Component to Make",
+        "",
+        "**MANDATORY: CREATE ALL THESE TABLES**",
+        "",
+        "You must create models for EVERY table listed in the target component.",
+        "This is your assigned domain - implement all tables completely.",
+        "",
+        "✅ **MUST DO:**",
+        "- Create models for ALL tables in the target component",
+        "- Use exact table names as specified (converted to plural snake_case)",
+        "- Implement all required fields, relationships, and indexes",
+        "- Stay within this domain's business scope",
+        "",
+        "❌ **NEVER DO:**",
+        "- Omit any required tables from the target component",
+        "- Rename tables or change their specified names",
+        "- Create tables that belong to other domains",
+        "",
+        "```json",
+        JSON.stringify(component),
+        "```",
+        "",
+        "**VALIDATION CHECKPOINT:**",
+        "Before submitting, verify:",
+        "- [ ] All tables from target component are included",
+        "- [ ] No tables from other components are created",
+        "- [ ] All foreign key references point to existing tables",
+        "- [ ] Domain boundaries are respected",
       ].join("\n"),
     },
-    ...(remained
-      ? [
-          {
-            type: "assistantMessage",
-            id: v4(),
-            created_at: new Date().toISOString(),
-            text: [
-              "You made these prisma models before:",
-              "",
-              "```json",
-              JSON.stringify({
-                filename: component.filename,
-                namespace: remained.namespace,
-                models: remained.done,
-              }),
-              "```",
-              "",
-              "However, you have not made these prisma models yet:",
-              "",
-              ...remained.todo.map((s) => `- ${s}`),
-            ].join("\n"),
-          } satisfies IAgenticaHistoryJson.IAssistantMessage,
-        ]
-      : []),
   ];
 };
