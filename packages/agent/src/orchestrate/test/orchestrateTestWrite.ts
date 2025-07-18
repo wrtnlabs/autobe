@@ -22,7 +22,7 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
   const start: Date = new Date();
   let complete: number = 0;
 
-  const result = await Promise.all(
+  const result: Array<IAutoBeTestWriteResult | null> = await Promise.all(
     /**
      * Generate test code for each scenario. Maps through plans array to create
      * individual test code implementations. Each scenario is processed to

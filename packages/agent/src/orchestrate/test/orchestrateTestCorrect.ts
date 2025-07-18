@@ -23,30 +23,36 @@ export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   writeResult: IAutoBeTestWriteResult[],
   life: number = 4,
-): Promise<AutoBeTestValidateEvent[]> =>
-  Promise.all(
-    writeResult.map((w) =>
-      forceRetry(async () => {
-        const event: AutoBeTestValidateEvent = await compile(ctx, {
-          artifacts: w.artifacts,
-          scenario: w.scenario,
-          location: w.event.location,
-          script: w.event.final,
-        });
-        return predicate(
-          ctx,
-          {
+): Promise<AutoBeTestValidateEvent[]> => {
+  const result: Array<AutoBeTestValidateEvent | null> = await Promise.all(
+    writeResult.map(async (w) => {
+      try {
+        return await forceRetry(async () => {
+          const event: AutoBeTestValidateEvent = await compile(ctx, {
             artifacts: w.artifacts,
             scenario: w.scenario,
             location: w.event.location,
             script: w.event.final,
-          },
-          event,
-          life,
-        );
-      }),
-    ),
+          });
+          return predicate(
+            ctx,
+            {
+              artifacts: w.artifacts,
+              scenario: w.scenario,
+              location: w.event.location,
+              script: w.event.final,
+            },
+            event,
+            life,
+          );
+        });
+      } catch {
+        return null;
+      }
+    }),
   );
+  return result.filter((r) => r !== null);
+};
 
 const compile = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
