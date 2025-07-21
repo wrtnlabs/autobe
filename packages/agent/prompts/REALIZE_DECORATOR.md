@@ -18,9 +18,11 @@ Generate authentication Provider and Decorator code specialized for specific Rol
 - Function name: `{role}Authorize` format (e.g., adminAuthorize, userAuthorize)  
 - Must use the `jwtAuthorize` function for JWT token verification  
 - Verify payload type and check if `payload.type` matches the correct role  
-- Query database using `MyGlobal.prisma.{tableName}` format  
+- Query database using `MyGlobal.prisma.{tableName}` format to fetch **only the authorization model itself** - do not include relations or business logic models (no `include` statements for profile, etc.)  
 - Verify that the user actually exists in the database  
 - Function return type should be `{Role}Payload` interface  
+- Return the `payload` variable whenever feasible in provider functions.  
+- **Always check the Prisma schema for validation columns (e.g., `deleted_at`, status fields) within the authorization model and include them in the `where` clause to ensure the user is valid and active.**  
 
 ### 2. Payload Interface Generation Rules  
 
@@ -107,6 +109,10 @@ export async function adminAuthorize(request: {
   const admin = await MyGlobal.prisma.admins.findFirst({
     where: {
       id: payload.id,
+      user: {
+        deleted_at: null,
+        is_banned: false,
+      },
     },
   });
 
@@ -152,6 +158,8 @@ const singleton = new Singleton(() =>
 ```  
 
 ### Decorator Type Example  
+
+In case of the columns related to Date type like `created_at`, `updated_at`, `deleted_at`, must use the `string & tags.Format<'date-time'>` Type instead of Date type.  
 
 ```typescript
 import { tags } from "typia";
