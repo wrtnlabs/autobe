@@ -111,8 +111,11 @@ Provide your corrected code in the following JSON format:
   },
   "decorator": {
     "name": "corrected_decorator_name", 
-    "typeName": "corrected_payload_type_name",
     "code": "corrected_decorator_code"
+  }
+  "decoratorType": {
+    "name": "corrected_payload_type_name",
+    "code": "corrected_payload_type_code"
   }
 }
 ```  

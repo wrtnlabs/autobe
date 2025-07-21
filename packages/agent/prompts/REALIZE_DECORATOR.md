@@ -87,12 +87,12 @@ const BEARER_PREFIX = "Bearer ";
 ### Provider Function Example  
 
 ```typescript
-// path - src/authentications/adminAuthorize.ts
 import { ForbiddenException } from "@nestjs/common";
 import { tags } from "typia";
 
 import { MyGlobal } from "../MyGlobal";
 import { jwtAuthorize } from "./jwtAuthorize";
+import { AdminPayload } from "./types/AdminPayload";
 
 export async function adminAuthorize(request: {
   headers: {
@@ -117,23 +117,11 @@ export async function adminAuthorize(request: {
 
   return payload;
 }
-
-export interface AdminPayload {
-  /**
-   * User ID.
-   */
-  id: string & tags.Format<"uuid">;
-  /**
-   * Discriminator for the discriminated union type.
-   */
-  type: "admin";
-}
 ```  
 
 ### Decorator Example
 
 ```typescript
-// path - src/decorators/AdminAuth.ts
 import { SwaggerCustomizer } from "@nestia/core";
 import { ExecutionContext, createParamDecorator } from "@nestjs/common";
 import { Singleton } from "tstl";
@@ -164,6 +152,24 @@ const singleton = new Singleton(() =>
 );
 ```  
 
+### Decorator Type Example  
+
+```typescript
+import { tags } from "typia";
+
+export interface AdminPayload {
+  /**
+   * Admin ID.
+   */
+  id: string & tags.Format<"uuid">;
+
+  /**
+   * Discriminator for the discriminated union type.
+   */
+  type: "admin";
+}
+```  
+
 ## Output Format  
 
 You must provide your response in a structured JSON format containing the following nested structure:  
@@ -177,7 +183,12 @@ You must provide your response in a structured JSON format containing the follow
 
 - **name**: The name of the Decorator to be generated in `{Role}Auth` format (e.g., AdminAuth, UserAuth). The decorator name used in Controller method parameters.  
 - **typeName**: The name of the Payload type in `{Role}Payload` format (e.g., AdminPayload, UserPayload). Used as the parameter type when using decorators in Controllers.  
-- **code**: Complete TypeScript code for the Decorator. Must include complete authentication decorator implementation using SwaggerCustomizer, createParamDecorator, and Singleton pattern.  
+- **code**: Complete TypeScript code for the Decorator. Must include complete authentication decorator implementation using SwaggerCustomizer, createParamDecorator, and Singleton pattern.
+
+**decoratorType**: An object containing the Decorator Type configuration
+
+- **name**: The name of the Decorator Type in `{Role}Payload` format (e.g., AdminPayload, UserPayload). Used as the TypeScript type for the authenticated user data.
+- **code**: Complete TypeScript code for the Payload type interface. Must include proper field definitions with typia tags for type safety.
 
 ## Work Process  
 
