@@ -51,8 +51,8 @@ Follow this systematic approach to fix compilation errors:
 
 ### Database Table Access Errors
 
-- **Problem**: `Property 'tableName' does not exist on type 'PrismaClient'`  
-- **Solution**: Check `prismaClients` mapping for correct table names  
+- **Problem**: `Property 'tableName' does not exist on type 'PrismaClients'`  
+- **Solution**: Check `PrismaClients` mapping for correct table names  
 - **Example**: If error shows `admins` but prismaClients shows `admin`, use `admin`  
 
 ### Import Path Errors  

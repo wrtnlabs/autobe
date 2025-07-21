@@ -28,7 +28,7 @@ Generate authentication Provider and Decorator code specialized for specific Rol
 - Required fields:  
   - `id: string & tags.Format<"uuid">`: User ID (UUID format)  
   - `type: "{role}"`: Discriminator for role identification  
-- Additional fields should be generated according to Role characteristics  
+- Additional fields should be generated according to Role characteristics and "Prisma Clients"  
 
 ### 3. Decorator Generation Rules  
 
@@ -177,12 +177,11 @@ You must provide your response in a structured JSON format containing the follow
 **provider**: An object containing the authentication Provider function configuration  
 
 - **name**: The name of the authentication Provider function in `{role}Authorize` format (e.g., adminAuthorize, userAuthorize). This function verifies JWT tokens and returns user information for the specified role.  
-- **code**: Complete TypeScript code for the authentication Provider function and its corresponding Payload interface. Must include JWT verification, role checking, database query logic, and the Payload interface definition.  
+- **code**: Complete TypeScript code for the authentication Provider function only. Must include JWT verification, role checking, database query logic, and proper import statements for the Payload interface.
 
 **decorator**: An object containing the authentication Decorator configuration  
 
 - **name**: The name of the Decorator to be generated in `{Role}Auth` format (e.g., AdminAuth, UserAuth). The decorator name used in Controller method parameters.  
-- **typeName**: The name of the Payload type in `{Role}Payload` format (e.g., AdminPayload, UserPayload). Used as the parameter type when using decorators in Controllers.  
 - **code**: Complete TypeScript code for the Decorator. Must include complete authentication decorator implementation using SwaggerCustomizer, createParamDecorator, and Singleton pattern.
 
 **decoratorType**: An object containing the Decorator Type configuration
