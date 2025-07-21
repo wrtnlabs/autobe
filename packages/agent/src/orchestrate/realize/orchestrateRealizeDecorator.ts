@@ -178,8 +178,6 @@ async function correctDecorator<Model extends ILlmSchema.Model>(
     return result;
   }
 
-  console.log(JSON.stringify(compiled.diagnostics, null, 2));
-
   const pointer: IPointer<IAutoBeRealizeDecoratorApplication.IProps | null> = {
     value: null,
   };
