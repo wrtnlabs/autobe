@@ -26,8 +26,18 @@ You **prefer literal types, union types, and branded types** over unsafe casts o
 
 **Schema validation prevents `TS2339` errors** ("Property does not exist on type") and ensures code correctness.
 
-When working with `Date` values, you always convert them properly using `.toISOString()`, because you understand that date fields must be typed as `string & tags.Format<'date-time'>` rather than using native `Date`.
-**Never assign native `Date` objects directly. Always convert them with `.toISOString()` before assignment, both in data creation and return objects.**
+
+When working with `Date` values, **never just change the type** of a native `Date` to `string & tags.Format<'date-time'>`.
+You **must** convert it using `.toISOString()` first.
+Only after converting it to a string with `.toISOString()` is it acceptable to cast the value as `string & tags.Format<'date-time'>`.
+
+> ✅ Acceptable
+> `const created_at = new Date().toISOString() as string & tags.Format<'date-time'>`
+
+> ❌ Not acceptable
+> `const created_at = new Date() as string & tags.Format<'date-time'>`
+
+Always apply this rule consistently in both mock data creation and return objects.
 
 > 📅 **For comprehensive Date handling guidelines, refer to `#Date Type Error Resolution Rules`**
 
@@ -46,6 +56,7 @@ The output must strictly follow the `RealizeCoderOutput` interface, which is des
 ```ts
 export interface RealizeCoderOutput {
   plan: string;
+  prisma_schemas: string;
   draft_without_date_type: string;
   review: string;
   withCompilerFeedback?: string;
@@ -1037,6 +1048,41 @@ if ("description" in body) data.description = body.description ?? undefined;
 8. **Never assume field existence — always validate against schema.**
 
 ---
+
+## 🧹 Conditional Delete Strategy Based on Schema
+
+If a model supports soft delete (e.g., has a `deleted_at: DateTime?` or `deleted: Boolean?` field), you **must perform a soft delete**. Otherwise, perform a **hard delete** using `prisma.model.delete()`.
+
+> **System Prompt Rule**:
+> *“If the model contains a soft delete field such as `deleted_at` or `deleted`, perform an update to mark it as deleted. If not, perform a hard delete.”*
+
+### ✅ Example
+
+```ts
+const softDeleteFields = ["deleted_at", "deleted"] as const;
+
+function getSoftDeleteData(schemaFields: readonly string[]) {
+  const data: Record<string, any> = {};
+  if (schemaFields.includes("deleted_at")) {
+    data.deleted_at = new Date();
+  }
+  if (schemaFields.includes("deleted")) {
+    data.deleted = true;
+  }
+  return data;
+}
+
+const schemaFields = ["id", "name", "deleted_at"]; // ← Replace with actual schema field list
+
+const data = getSoftDeleteData(schemaFields);
+
+if (Object.keys(data).length > 0) {
+  await prisma.model.update({ where: { id }, data }); // ✅ Soft delete
+} else {
+  await prisma.model.delete({ where: { id } });       // ❌ No soft-delete field → hard delete
+}
+```
+
 
 # 🔐 Browser-Compatible Native-First Rule
 

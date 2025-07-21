@@ -1,7 +1,6 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import {
   AutoBeOpenApi,
-  IAutoBeCompiler,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
@@ -17,6 +16,7 @@ import {
 import { enforceToolCall } from "../../utils/enforceToolCall";
 import { getTestScenarioArtifacts } from "../test/compile/getTestScenarioArtifacts";
 import { IAutoBeTestScenarioArtifacts } from "../test/structures/IAutoBeTestScenarioArtifacts";
+import { replaceImportStatements } from "./compile/IAutoBeRealizeBeautify";
 import { RealizePlannerOutput } from "./orchestrateRealizePlanner";
 import { IAutoBeRealizeCoderApplication } from "./structures/IAutoBeRealizeCoderApplication";
 import { FAILED } from "./structures/IAutoBeRealizeFailedSymbol";
@@ -133,35 +133,6 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
     filename: `src/providers/${props.functionName}.ts`,
   };
 };
-
-function replaceImportStatements<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
-) {
-  return async function (code: string) {
-    const compiler: IAutoBeCompiler = await ctx.compiler();
-    code = await compiler.typescript.beautify(code);
-    code = code
-      .replaceAll('import { MyGlobal } from "../MyGlobal";', "")
-      .replaceAll('import typia, { tags } from "typia";', "")
-      .replaceAll('import { tags } from "typia";', "")
-      .replaceAll('import { tags, typia } from "typia";', "")
-      .replaceAll('import typia from "typia";', "")
-      .replaceAll('import { Prisma } from "@prisma/client";', "")
-      .replaceAll('import { jwtDecode } from "./jwtDecode"', "")
-      .replaceAll('import { v4 } from "uuid"', "");
-    code = [
-      'import { MyGlobal } from "../MyGlobal";',
-      'import typia, { tags } from "typia";',
-      'import { Prisma } from "@prisma/client";',
-      'import { jwtDecode } from "./jwtDecode";',
-      'import { v4 } from "uuid";',
-      "",
-      code,
-    ].join("\n");
-
-    return code;
-  };
-}
 
 function createApplication<Model extends ILlmSchema.Model>(props: {
   model: Model;

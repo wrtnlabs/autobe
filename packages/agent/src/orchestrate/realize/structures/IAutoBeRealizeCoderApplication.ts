@@ -36,6 +36,8 @@ export namespace IAutoBeRealizeCoderApplication {
     filename: string;
 
     /**
+     * Step 1.
+     *
      * 🧠 Provider Function Implementation Plan
      *
      * This field outlines the strategic plan for implementing the provider
@@ -93,6 +95,18 @@ export namespace IAutoBeRealizeCoderApplication {
      * }
      * ```
      *
+     * 🔍 Feasibility Analysis Requirement:
+     *
+     * - Before generating any code, the agent **must analyze** whether the
+     *   requested implementation is **feasible based on the given Prisma schema
+     *   and DTO types**.
+     * - If required fields or relationships are **missing or incompatible**, the
+     *   plan should explicitly state that the implementation is **not
+     *   possible** with the current schema/DTO, and no code should be generated
+     *   in later stages.
+     * - In such cases, only a detailed **comment in the `implementationCode`**
+     *   should be returned explaining why the logic cannot be implemented.
+     *
      * 🔥 Error Handling Plan:
      *
      * If an error is expected or encountered during implementation:
@@ -118,7 +132,29 @@ export namespace IAutoBeRealizeCoderApplication {
     plan: string;
 
     /**
-     * ✏️ Phase 1: Draft code
+     * Step 2.
+     *
+     * The Prisma schema string that will be used to validate the implementation
+     * logic in this file.
+     *
+     * You must **explicitly specify only the relevant models and fields** from
+     * your full schema that are used in this implementation. This ensures that
+     * your logic is aligned with the expected database structure without
+     * accidentally introducing unrelated fields or models.
+     *
+     * ⚠️ Important: The value of this field must be a valid Prisma schema
+     * string containing only the models used in this code — not the entire
+     * schema.
+     *
+     * This acts as a safeguard against:
+     *
+     * - Forgetting required fields used in this implementation
+     * - Including fields or models that are not actually used
+     */
+    prisma_schemas: string;
+
+    /**
+     * Step 3.
      *
      * This is the initial drafting phase where you outline the basic skeleton
      * of the function.
@@ -148,7 +184,7 @@ export namespace IAutoBeRealizeCoderApplication {
     draft_without_date_type: string;
 
     /**
-     * 🔍 Phase 2: Review code
+     * Step 4.
      *
      * A refined version of the draft with improved completeness.
      *
@@ -166,7 +202,7 @@ export namespace IAutoBeRealizeCoderApplication {
     review: string;
 
     /**
-     * 🛠 Phase 3: With compiler feedback (optional)
+     * 🛠 Phase 4-2: With compiler feedback (optional)
      *
      * A correction pass that applies fixes for compile-time errors that arose
      * during the review stage (if any).
@@ -182,7 +218,7 @@ export namespace IAutoBeRealizeCoderApplication {
     withCompilerFeedback?: string;
 
     /**
-     * ✅ Phase 4: Final implementation
+     * Step 5.
      *
      * The complete and fully correct TypeScript function implementation.
      *
@@ -193,6 +229,25 @@ export namespace IAutoBeRealizeCoderApplication {
      * - Avoids any weak typing such as `any`, `as any`, or `satisfies any`.
      * - Uses only allowed imports (e.g., from `src/api/structures` and
      *   `MyGlobal.prisma`).
+     *
+     * ⚠️ Fallback Behavior:
+     *
+     * - If the `plan` phase explicitly determines that the requested logic is
+     *   **not feasible** due to mismatches or limitations in the provided
+     *   Prisma schema and DTO types:
+     *
+     *   - The implementation must still return a syntactically valid function.
+     *   - In such cases, return mock data using `typia.random<T>()` wrapped in the
+     *       correct structure, along with a comment explaining the limitation.
+     *
+     *   Example fallback:
+     *
+     * ```ts
+     *   // ⚠️ Cannot implement logic due to missing relation between A and B
+     *   export async function someFunction(...) {
+     *     return typia.random<IReturn>(); // mocked output
+     *   }
+     * ```
      *
      * ⚠️ Prohibited Practices:
      *
@@ -211,6 +266,9 @@ export namespace IAutoBeRealizeCoderApplication {
      *   static.
      * - Do NOT rely on DTO types for database update input; always use
      *   Prisma-generated input types.
+     * - Do NOT escape newlines or quotes in the implementation string (e.g., no
+     *   `\\n` or `\"`); use a properly formatted template literal with actual
+     *   line breaks instead.
      */
     implementationCode: string;
   }
