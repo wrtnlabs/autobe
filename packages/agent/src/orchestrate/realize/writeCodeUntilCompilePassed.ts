@@ -45,7 +45,6 @@ export async function writeCodeUntilCompilePassed<
     total: [],
   };
 
-  ops = ops.filter((_el, i) => i < 10);
   for (let i = 0; i < retry; i++) {
     const targets = ops.filter((op) =>
       shouldProcessOperation(op, diagnostics.current),
