@@ -21,9 +21,14 @@ export const transformRealizeDecoratorHistories = (
       created_at: new Date().toISOString(),
       type: "systemMessage",
       text: [
-        "Create Authorization Provider.",
-        "The role is " + role,
-        "The Prisma Clients are " + Object.keys(prismaClients).join(", "),
+        "## Role",
+        "",
+        role,
+        "",
+        "## Prisma Clients",
+        "",
+        JSON.stringify(prismaClients, null, 2),
+        "",
       ].join("\n"),
     },
   ];
