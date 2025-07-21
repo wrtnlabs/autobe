@@ -73,6 +73,8 @@ export async function orchestrateRealizeDecorator<
         decorator.decorator.code;
       files[`src/authentications/${decorator.provider.name}.ts`] =
         decorator.provider.code;
+      files[`src/authentications/types/${decorator.decoratorType.name}.ts`] =
+        decorator.decoratorType.code;
 
       decorators.push(decorator);
 
