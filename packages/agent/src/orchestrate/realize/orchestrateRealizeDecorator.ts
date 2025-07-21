@@ -157,8 +157,6 @@ async function correctDecorator<Model extends ILlmSchema.Model>(
     [`src/authentications/types/${result.decoratorType.name}.ts`]:
       result.decoratorType.code,
   };
-  console.log(life, "--------------------------------");
-  console.log(Object.keys(files));
 
   const compiler: IAutoBeCompiler = await ctx.compiler();
 
