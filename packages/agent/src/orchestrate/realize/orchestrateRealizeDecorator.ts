@@ -27,11 +27,6 @@ export async function orchestrateRealizeDecorator<
 >(
   ctx: AutoBeContext<Model>,
 ): Promise<IAutoBeRealizeDecoratorApplication.IProps[]> {
-  const compiled = ctx.state().prisma?.compiled;
-
-  const prismaClients: Record<string, string> =
-    compiled?.type === "success" ? compiled.nodeModules : {};
-
   const roles =
     ctx
       .state()
@@ -61,13 +56,12 @@ export async function orchestrateRealizeDecorator<
 
   const files: Record<string, string> = {
     ...templateFiles,
-    ...prismaClients,
   };
 
   await Promise.all(
     roles.map(async (role) => {
       const decorator: IAutoBeRealizeDecoratorApplication.IProps =
-        await process(ctx, role, templateFiles, prismaClients);
+        await process(ctx, role, templateFiles);
 
       files[`src/decorators/${decorator.decorator.name}.ts`] =
         decorator.decorator.code;
@@ -98,7 +92,6 @@ async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   role: string,
   templateFiles: Record<string, string>,
-  prismaClients: Record<string, string>,
 ): Promise<IAutoBeRealizeDecoratorApplication.IProps> {
   const pointer: IPointer<IAutoBeRealizeDecoratorApplication.IProps | null> = {
     value: null,
@@ -113,7 +106,7 @@ async function process<Model extends ILlmSchema.Model>(
         describe: null,
       },
     },
-    histories: transformRealizeDecoratorHistories(role, prismaClients),
+    histories: transformRealizeDecoratorHistories(ctx, role),
     controllers: [
       createApplication({
         model: ctx.model,
@@ -134,6 +127,11 @@ async function process<Model extends ILlmSchema.Model>(
     });
 
   if (pointer.value === null) throw new Error("Failed to create decorator.");
+
+  const compiled = ctx.state().prisma?.compiled;
+
+  const prismaClients: Record<string, string> =
+    compiled?.type === "success" ? compiled.nodeModules : {};
 
   return await correctDecorator(
     ctx,
@@ -156,7 +154,11 @@ async function correctDecorator<Model extends ILlmSchema.Model>(
     ...prismaClients,
     [`src/decorators/${result.decorator.name}.ts`]: result.decorator.code,
     [`src/authentications/${result.provider.name}.ts`]: result.provider.code,
+    [`src/authentications/types/${result.decoratorType.name}.ts`]:
+      result.decoratorType.code,
   };
+  console.log(life, "--------------------------------");
+  console.log(Object.keys(files));
 
   const compiler: IAutoBeCompiler = await ctx.compiler();
 
@@ -178,6 +180,8 @@ async function correctDecorator<Model extends ILlmSchema.Model>(
     return result;
   }
 
+  console.log(JSON.stringify(compiled.diagnostics, null, 2));
+
   const pointer: IPointer<IAutoBeRealizeDecoratorApplication.IProps | null> = {
     value: null,
   };
@@ -192,8 +196,8 @@ async function correctDecorator<Model extends ILlmSchema.Model>(
       },
     },
     histories: transformRealizeDecoratorCorrectHistories(
+      ctx,
       result,
-      prismaClients,
       templateFiles,
       compiled.diagnostics,
     ),
@@ -223,6 +227,8 @@ async function correctDecorator<Model extends ILlmSchema.Model>(
       pointer.value.decorator.code,
     [`src/authentications/${pointer.value.provider.name}.ts`]:
       pointer.value.provider.code,
+    [`src/authentications/types/${pointer.value.decoratorType.name}.ts`]:
+      pointer.value.decoratorType.code,
   };
 
   ctx.dispatch({
