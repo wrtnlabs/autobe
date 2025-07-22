@@ -12,7 +12,6 @@ import {
 import { AutoBePrismaComponentsEvent } from "@autobe/interface/src/events/AutoBePrismaComponentsEvent";
 import { AutoBePrismaSchemasEvent } from "@autobe/interface/src/events/AutoBePrismaSchemasEvent";
 import fs from "fs";
-import typia from "typia";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
@@ -157,12 +156,12 @@ export const validate_agent_prisma_main = async (
   if (process.argv.includes("--archive")) {
     await fs.promises.writeFile(
       `${TestGlobal.ROOT}/assets/histories/${project}.prisma.json`,
-      typia.json.stringify(agent.getHistories()),
+      JSON.stringify(agent.getHistories()),
       "utf8",
     );
     await fs.promises.writeFile(
       `${TestGlobal.ROOT}/assets/histories/${project}.prisma.snapshots.json`,
-      typia.json.stringify(snapshots),
+      JSON.stringify(snapshots),
       "utf8",
     );
   }

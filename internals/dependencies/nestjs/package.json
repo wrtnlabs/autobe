@@ -5,19 +5,19 @@
   "author": "Wrtn Technologies",
   "license": "MIT",
   "devDependencies": {
-    "@nestia/benchmark": "^7.1.1",
-    "@nestia/core": "^7.1.1",
-    "@nestia/e2e": "^7.1.1",
-    "@nestia/editor": "^7.1.1",
-    "@nestia/fetcher": "^7.1.1",
-    "@nestia/sdk": "^7.1.1",
+    "@nestia/benchmark": "^7.2.1",
+    "@nestia/core": "^7.2.1",
+    "@nestia/e2e": "^7.2.1",
+    "@nestia/editor": "^7.2.1",
+    "@nestia/fetcher": "^7.2.1",
+    "@nestia/sdk": "^7.2.1",
     "@nestjs/common": "^11.1.0",
     "@nestjs/core": "^11.1.0",
     "@nestjs/platform-express": "^11.1.0",
     "@nestjs/platform-fastify": "^11.1.0",
     "@nestjs/swagger": "^11.1.5",
     "@prisma/client": "^6.6.0",
-    "@samchon/openapi": "^4.5.0",
+    "@samchon/openapi": "^4.6.0",
     "@types/cli-progress": "^3.11.6",
     "@types/express": "^5.0.1",
     "@types/inquirer": "^9.0.7",
@@ -34,6 +34,6 @@
     "serialize-error": "^4.1.0",
     "tgrid": "^1.1.0",
     "typescript": "~5.8.3",
-    "typia": "^9.5.0"
+    "typia": "^9.6.0"
   }
 }

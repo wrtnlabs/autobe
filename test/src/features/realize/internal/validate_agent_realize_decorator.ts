@@ -3,7 +3,6 @@ import { FileSystemIterator } from "@autobe/filesystem";
 import { AutoBeEvent, IAutoBeCompiler } from "@autobe/interface";
 import fs from "fs";
 import path from "path";
-import typia from "typia";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
@@ -80,9 +79,9 @@ export const validate_agent_realize_decorator = async (
     files: {
       ...(await agent.getFiles()),
       ...files,
-      "logs/events.json": typia.json.stringify(events),
-      "logs/result.json": typia.json.stringify(result),
-      "logs/histories.json": typia.json.stringify(histories),
+      "logs/events.json": JSON.stringify(events),
+      "logs/result.json": JSON.stringify(result),
+      "logs/histories.json": JSON.stringify(histories),
     },
   });
 

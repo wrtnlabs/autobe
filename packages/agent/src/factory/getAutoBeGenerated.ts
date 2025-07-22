@@ -3,7 +3,6 @@ import {
   IAutoBeCompiler,
   IAutoBeGetFilesOptions,
 } from "@autobe/interface";
-import typia from "typia";
 
 import { AutoBeState } from "../context/AutoBeState";
 import { AutoBeTokenUsage } from "../context/AutoBeTokenUsage";
@@ -47,7 +46,7 @@ export async function getAutoBeGenerated(
         ]),
       ),
       {
-        "autobe/prisma.json": typia.json.stringify(state.prisma.result.data),
+        "autobe/prisma.json": JSON.stringify(state.prisma.result.data),
       },
     );
     if (state.prisma.compiled.type === "success")
@@ -75,7 +74,7 @@ export async function getAutoBeGenerated(
           )
         : files,
       {
-        "autobe/document.json": typia.json.stringify(state.interface.document),
+        "autobe/document.json": JSON.stringify(state.interface.document),
       },
     );
   }
@@ -102,8 +101,8 @@ export async function getAutoBeGenerated(
 
   // LOGGING
   Object.assign<Record<string, string>, Record<string, string>>(ret, {
-    "autobe/histories.json": typia.json.stringify(histories),
-    "autobe/tokenUsage.json": typia.json.stringify(tokenUsage),
+    "autobe/histories.json": JSON.stringify(histories),
+    "autobe/tokenUsage.json": JSON.stringify(tokenUsage),
   });
   return ret;
 }

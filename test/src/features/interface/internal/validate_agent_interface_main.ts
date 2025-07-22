@@ -7,7 +7,6 @@ import {
   AutoBeInterfaceHistory,
 } from "@autobe/interface";
 import fs from "fs";
-import typia from "typia";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
@@ -55,19 +54,19 @@ export const validate_agent_interface_main = async (
     root: `${TestGlobal.ROOT}/results/${project}/interface/main`,
     files: {
       ...(await agent.getFiles()),
-      "logs/snapshots.json": typia.json.stringify(snapshots),
-      "logs/result.json": typia.json.stringify(result),
+      "logs/snapshots.json": JSON.stringify(snapshots),
+      "logs/result.json": JSON.stringify(result),
     },
   });
   if (process.argv.includes("--archive")) {
     await fs.promises.writeFile(
       `${TestGlobal.ROOT}/assets/histories/${project}.interface.json`,
-      typia.json.stringify(agent.getHistories()),
+      JSON.stringify(agent.getHistories()),
       "utf8",
     );
     await fs.promises.writeFile(
       `${TestGlobal.ROOT}/assets/histories/${project}.interface.snapshots.json`,
-      typia.json.stringify(snapshots),
+      JSON.stringify(snapshots),
       "utf8",
     );
   }

@@ -59,12 +59,12 @@ export const validate_agent_analyze_main = async (
   if (process.argv.includes("--archive")) {
     await fs.promises.writeFile(
       `${TestGlobal.ROOT}/assets/histories/${project}.analyze.json`,
-      typia.json.stringify(agent.getHistories()),
+      JSON.stringify(agent.getHistories()),
       "utf8",
     );
     await fs.promises.writeFile(
       `${TestGlobal.ROOT}/assets/histories/${project}.analyze.snapshots.json`,
-      typia.json.stringify(snapshots),
+      JSON.stringify(snapshots),
       "utf8",
     );
   }

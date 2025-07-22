@@ -7,9 +7,6 @@ import {
 } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 import fs from "fs";
-import typia from "typia";
-
-// import typia from "typia";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
@@ -67,9 +64,9 @@ export const validate_agent_realize_main = async (
     root: `${TestGlobal.ROOT}/results/${project}/realize/main`,
     files: {
       ...(await agent.getFiles()),
-      // "logs/events.json": typia.json.stringify(events),
-      // "logs/result.json": typia.json.stringify(result),
-      // "logs/histories.json": typia.json.stringify(histories),
+      // "logs/events.json": JSON.stringify(events),
+      // "logs/result.json": JSON.stringify(result),
+      // "logs/histories.json": JSON.stringify(histories),
     },
   });
   TestValidator.equals("result")(result.compiled.type)("success");
@@ -77,7 +74,7 @@ export const validate_agent_realize_main = async (
   if (process.argv.includes("--archive"))
     await fs.promises.writeFile(
       `${TestGlobal.ROOT}/assets/histories/${project}.realize.json`,
-      typia.json.stringify(agent.getHistories()),
+      JSON.stringify(agent.getHistories()),
       "utf8",
     );
 };

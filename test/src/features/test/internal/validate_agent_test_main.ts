@@ -8,7 +8,6 @@ import {
 } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 import fs from "fs";
-import typia from "typia";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
@@ -57,13 +56,13 @@ export const validate_agent_test_main = async (
     root: `${TestGlobal.ROOT}/results/${project}/test/main`,
     files: {
       ...(await agent.getFiles()),
-      "logs/compiled.json": typia.json.stringify(result.compiled),
-      "logs/snapshots.json": typia.json.stringify(snapshots),
+      "logs/compiled.json": JSON.stringify(result.compiled),
+      "logs/snapshots.json": JSON.stringify(snapshots),
       "logs/result.json": JSON.stringify({
         ...result,
         files: undefined,
       }),
-      "logs/histories.json": typia.json.stringify(histories),
+      "logs/histories.json": JSON.stringify(histories),
       "pnpm-workspace.yaml": "",
     },
   });
@@ -71,12 +70,12 @@ export const validate_agent_test_main = async (
   if (process.argv.includes("--archive")) {
     await fs.promises.writeFile(
       `${TestGlobal.ROOT}/assets/histories/${project}.test.json`,
-      typia.json.stringify(agent.getHistories()),
+      JSON.stringify(agent.getHistories()),
       "utf8",
     );
     await fs.promises.writeFile(
       `${TestGlobal.ROOT}/assets/histories/${project}.test.snapshots.json`,
-      typia.json.stringify(snapshots),
+      JSON.stringify(snapshots),
       "utf8",
     );
   }
