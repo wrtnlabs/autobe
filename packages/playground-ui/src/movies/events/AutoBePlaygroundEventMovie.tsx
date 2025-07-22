@@ -3,20 +3,20 @@ import { AutoBeEvent, IAutoBeRpcService } from "@autobe/interface";
 import { AutoBePlaygroundAssistantMessageEventMovie } from "./AutoBePlaygroundAssistantMessageEventMovie";
 import { AutoBePlaygroundCompleteEventMovie } from "./AutoBePlaygroundCompleteEventMovie";
 import { AutoBePlaygroundProgressEventMovie } from "./AutoBePlaygroundProgressEventMovie";
-import { AutoBePlaygroundRoutineEventMovie } from "./AutoBePlaygroundRoutineEventMovie";
-import { AutoBePlaygroundStackEventMovie } from "./AutoBePlaygroundStackEventMovie";
+import { AutoBePlaygroundScenarioEventMovie } from "./AutoBePlaygroundScenarioEventMovie";
 import { AutoBePlaygroundStartEventMovie } from "./AutoBePlaygroundStartEventMovie";
 import { AutoBePlaygroundUserMessageEventMovie } from "./AutoBePlaygroundUserMessageEventMovie";
+import { AutoBePlaygroundValidateEventMovie } from "./AutoBePlaygroundValidateEventMovie";
 
 export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
   props: AutoBePlaygroundEventMovie.IProps<Event>,
 ) {
-  const last: Event = props.events[props.events.length - 1];
-  switch (last.type) {
+  const back: Event = props.events[props.events.length - 1];
+  switch (back.type) {
     case "userMessage":
-      return <AutoBePlaygroundUserMessageEventMovie prompt={last} />;
+      return <AutoBePlaygroundUserMessageEventMovie prompt={back} />;
     case "assistantMessage":
-      return <AutoBePlaygroundAssistantMessageEventMovie prompt={last} />;
+      return <AutoBePlaygroundAssistantMessageEventMovie prompt={back} />;
     // START EVENTS
     case "analyzeStart":
     case "prismaStart":
@@ -24,8 +24,8 @@ export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
     case "testStart":
     case "realizeStart":
     case "realizeTestStart":
-      return <AutoBePlaygroundStartEventMovie event={last} />;
-    // ROUTINE EVENTS
+      return <AutoBePlaygroundStartEventMovie event={back} />;
+    // SCENARIO EVENTS
     case "prismaComponents":
     case "interfaceEndpoints":
     case "testScenario":
@@ -33,17 +33,17 @@ export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
     case "realizeDecorator":
     case "realizeDecoratorCorrect":
     case "realizeDecoratorValidate":
-      return <AutoBePlaygroundRoutineEventMovie event={last} />;
+      return <AutoBePlaygroundScenarioEventMovie event={back} />;
     // PROGRESS EVENTS
+    case "analyzeWrite":
     case "prismaSchemas":
     case "interfaceOperations":
     case "interfaceComponents":
     case "testWrite":
     case "realizeProgress":
     case "realizeTestOperation":
-      return <AutoBePlaygroundProgressEventMovie event={last} />;
+      return <AutoBePlaygroundProgressEventMovie event={back} />;
     // STACKED EVENTS
-    case "analyzeWrite":
     case "analyzeReview":
     case "prismaInsufficient":
     case "prismaValidate":
@@ -52,10 +52,13 @@ export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
     case "testValidate":
     case "testCorrect":
     case "realizeValidate":
-      last satisfies AutoBePlaygroundStackEventMovie.Supported;
+      back satisfies AutoBePlaygroundValidateEventMovie.Supported;
       return (
-        <AutoBePlaygroundStackEventMovie
-          events={props.events as AutoBePlaygroundStackEventMovie.Supported[]}
+        <AutoBePlaygroundValidateEventMovie
+          events={
+            props.events as AutoBePlaygroundValidateEventMovie.Supported[]
+          }
+          last={props.last}
         />
       );
     // COMPLETE EVENTS
@@ -68,11 +71,11 @@ export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
       return (
         <AutoBePlaygroundCompleteEventMovie
           service={props.service}
-          event={last}
+          event={back}
         />
       );
     default:
-      last satisfies never;
+      back satisfies never;
       return null;
   }
 }
@@ -80,5 +83,6 @@ export namespace AutoBePlaygroundEventMovie {
   export interface IProps<Event extends AutoBeEvent> {
     service: IAutoBeRpcService;
     events: Event[];
+    last: boolean;
   }
 }

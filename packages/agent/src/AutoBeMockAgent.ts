@@ -102,7 +102,7 @@ export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
     if (state.analyze === null) await take("analyze", 500);
     else if (state.prisma === null) await take("prisma", 500);
     else if (state.interface === null) await take("interface", 500);
-    else if (state.test === null) await take("test", 100);
+    else if (state.test === null) await take("test", 50);
     return this.histories_;
   }
 

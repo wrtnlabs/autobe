@@ -7,11 +7,11 @@ import {
   AutoBeRealizeTestResetEvent,
   AutoBeTestScenarioEvent,
 } from "@autobe/interface";
-import DonutLargeIcon from "@mui/icons-material/DonutLarge";
+import ChecklistIcon from "@mui/icons-material/Checklist";
 import { Card, CardContent, Chip } from "@mui/material";
 
-export function AutoBePlaygroundRoutineEventMovie(
-  props: AutoBePlaygroundRoutineEventMovie.IProps,
+export function AutoBePlaygroundScenarioEventMovie(
+  props: AutoBePlaygroundScenarioEventMovie.IProps,
 ) {
   const state: IState = getState(props.event);
   return (
@@ -25,7 +25,7 @@ export function AutoBePlaygroundRoutineEventMovie(
     >
       <CardContent>
         <Chip
-          icon={<DonutLargeIcon />}
+          icon={<ChecklistIcon />}
           label={state.title}
           variant="outlined"
           color="success"
@@ -37,7 +37,7 @@ export function AutoBePlaygroundRoutineEventMovie(
     </Card>
   );
 }
-export namespace AutoBePlaygroundRoutineEventMovie {
+export namespace AutoBePlaygroundScenarioEventMovie {
   export interface IProps {
     event:
       | AutoBePrismaComponentsEvent
@@ -56,7 +56,7 @@ interface IState {
 }
 
 function getState(
-  event: AutoBePlaygroundRoutineEventMovie.IProps["event"],
+  event: AutoBePlaygroundScenarioEventMovie.IProps["event"],
 ): IState {
   switch (event.type) {
     case "prismaComponents":

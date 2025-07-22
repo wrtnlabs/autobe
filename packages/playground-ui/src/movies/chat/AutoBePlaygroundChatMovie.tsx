@@ -143,6 +143,7 @@ export function AutoBePlaygroundChatMovie(
             key={index}
             service={props.service}
             events={e.events}
+            last={index === eventGroups.length - 1}
           />
         ))}
       </Container>

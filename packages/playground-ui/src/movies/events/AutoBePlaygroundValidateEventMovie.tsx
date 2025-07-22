@@ -1,25 +1,20 @@
 import {
+  AutoBeAnalyzeReviewEvent,
+  AutoBeInterfaceComplementEvent,
+  AutoBePrismaCorrectEvent,
+  AutoBePrismaInsufficientEvent,
+  AutoBePrismaValidateEvent,
   AutoBeRealizeValidateEvent,
+  AutoBeTestCorrectEvent,
   AutoBeTestValidateEvent,
 } from "@autobe/interface";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import {
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  Chip,
-  Collapse,
-} from "@mui/material";
-import { useState } from "react";
+import { Card, CardContent, Chip, LinearProgress } from "@mui/material";
 
-import { MarkdownViewer } from "../../components/MarkdownViewer";
-
-export function AutoBePlaygroundValidateEventMovie(
-  props: AutoBePlaygroundValidateEventMovie.IProps,
-) {
-  const [expanded, setExpanded] = useState(false);
+export function AutoBePlaygroundValidateEventMovie<
+  Event extends AutoBePlaygroundValidateEventMovie.Supported,
+>(props: AutoBePlaygroundValidateEventMovie.IProps<Event>) {
+  const state: State = getState<Event>(props.events);
   return (
     <Card
       elevation={3}
@@ -32,59 +27,112 @@ export function AutoBePlaygroundValidateEventMovie(
       <CardContent>
         <Chip
           icon={<ErrorOutlineIcon />}
-          label={"TypeScript Compilation Error"}
+          label={state.title}
           variant="outlined"
           color="warning"
-        ></Chip>
+        />
         <br />
         <br />
-        AI wrote invalid TypeScript code so compilation error occurred.
+        {state.description}
         <br />
         <br />
-        Trying to recover the compile error by studying the AI agent.
-        <br />
-        <br />
-        Please wait for a while.
+        {props.last ? (
+          <LinearProgress variant="indeterminate" color="warning" />
+        ) : (
+          <LinearProgress variant="determinate" color="warning" value={100} />
+        )}
+        <sup>#{props.events.length}</sup>
       </CardContent>
-      <CardActions style={{ textAlign: "right" }}>
-        <Button
-          startIcon={
-            <ExpandMoreIcon
-              style={{
-                transform: `rotate(${expanded ? 180 : 0}deg)`,
-              }}
-            />
-          }
-          onClick={() => setExpanded(!expanded)}
-        >
-          {expanded ? "Hide Validation Details" : "Show Validation Details"}
-        </Button>
-      </CardActions>
-      <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <CardContent>
-          {props.event.result.type === "failure" ? (
-            <MarkdownViewer>
-              {props.event.result.diagnostics
-                .map(
-                  (diag) =>
-                    `- ${diag.file} (${diag.category}): ${diag.messageText}`,
-                )
-                .join("\n")}
-            </MarkdownViewer>
-          ) : props.event.result.type === "exception" ? (
-            <MarkdownViewer>
-              {JSON.stringify(props.event.result.error, null, 2)}
-            </MarkdownViewer>
-          ) : (
-            <></>
-          )}
-        </CardContent>
-      </Collapse>
     </Card>
   );
 }
 export namespace AutoBePlaygroundValidateEventMovie {
-  export interface IProps {
-    event: AutoBeTestValidateEvent | AutoBeRealizeValidateEvent;
+  export type Supported =
+    | AutoBeAnalyzeReviewEvent
+    | AutoBePrismaInsufficientEvent
+    | AutoBePrismaValidateEvent
+    | AutoBePrismaCorrectEvent
+    | AutoBeInterfaceComplementEvent
+    | AutoBeTestValidateEvent
+    | AutoBeTestCorrectEvent
+    | AutoBeRealizeValidateEvent;
+  export interface IProps<Event extends Supported> {
+    events: Event[];
+    last: boolean;
   }
+}
+
+function getState<Event extends AutoBePlaygroundValidateEventMovie.Supported>(
+  events: Event[],
+): State {
+  const first: Event = events[0];
+  switch (first.type) {
+    case "analyzeReview":
+      return {
+        title: "Analyze Review",
+        description: "Reviewing the analysis results",
+        files: null,
+      };
+    case "prismaCorrect":
+      return {
+        title: "Prisma Correct",
+        description: "Correcting the Prisma schemas",
+        files: null,
+      };
+    case "prismaInsufficient":
+      return {
+        title: "Prisma Insufficient",
+        description: "Insufficient Prisma schemas",
+        files: null,
+      };
+    case "prismaValidate":
+      return {
+        title: "Prisma Validate",
+        description: "Validating the Prisma schemas",
+        files: null,
+      };
+    case "interfaceComplement":
+      return {
+        title: "Interface Complement",
+        description: "Complementing the interface operations",
+        files: null,
+      };
+    case "testCorrect":
+      return {
+        title: "Test Correct",
+        description: "Correcting the test cases",
+        files: null,
+      };
+    case "testValidate":
+      return {
+        title: "Test Validate",
+        description: "Validating the test cases",
+        files: null,
+      };
+    case "realizeValidate":
+      return {
+        title: "Realize Validate",
+        description: "Validating the realization of the project",
+        files: null,
+      };
+    default:
+      first satisfies never;
+      return {
+        title: "Unknown Event",
+        description: "This event type is not recognized.",
+        files: null,
+      };
+  }
+}
+
+interface State {
+  title: string;
+  description: string;
+  files:
+    | null
+    | ((event: AutoBePlaygroundValidateEventMovie.Supported) => {
+        title: string;
+        description: string;
+        files: Record<string, string>;
+      });
 }

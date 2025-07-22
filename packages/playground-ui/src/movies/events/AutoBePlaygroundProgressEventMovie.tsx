@@ -1,4 +1,5 @@
 import {
+  AutoBeAnalyzeWriteEvent,
   AutoBeInterfaceComponentsEvent,
   AutoBeInterfaceOperationsEvent,
   AutoBePrismaSchemasEvent,
@@ -6,7 +7,7 @@ import {
   AutoBeRealizeTestOperationEvent,
   AutoBeTestWriteEvent,
 } from "@autobe/interface";
-import RotateRightIcon from "@mui/icons-material/RotateRight";
+import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 import { Card, CardContent, Chip, LinearProgress } from "@mui/material";
 
 export function AutoBePlaygroundProgressEventMovie(
@@ -24,7 +25,7 @@ export function AutoBePlaygroundProgressEventMovie(
     >
       <CardContent>
         <Chip
-          icon={<RotateRightIcon />}
+          icon={<HourglassEmptyIcon />}
           label={state.title}
           variant="outlined"
           color="success"
@@ -43,10 +44,9 @@ export function AutoBePlaygroundProgressEventMovie(
           }}
           value={(state.completed / state.total) * 100}
         />
-        <br />
-        <sup>
+        <sub>
           {state.completed} / {state.total} completed
-        </sup>
+        </sub>
       </CardContent>
     </Card>
   );
@@ -54,6 +54,7 @@ export function AutoBePlaygroundProgressEventMovie(
 export namespace AutoBePlaygroundProgressEventMovie {
   export interface IProps {
     event:
+      | AutoBeAnalyzeWriteEvent
       | AutoBePrismaSchemasEvent
       | AutoBeInterfaceOperationsEvent
       | AutoBeInterfaceComponentsEvent
@@ -75,6 +76,11 @@ function getState(
 ): IState {
   const content: Pick<IState, "title" | "description"> = (() => {
     switch (event.type) {
+      case "analyzeWrite":
+        return {
+          title: "Analyze Write",
+          description: "Analyzing requirements, and writing a report paper",
+        };
       case "prismaSchemas":
         return {
           title: "Prisma Schemas",
