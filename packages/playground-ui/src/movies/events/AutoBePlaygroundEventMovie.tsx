@@ -36,15 +36,17 @@ export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
       return <AutoBePlaygroundScenarioEventMovie event={back} />;
     // PROGRESS EVENTS
     case "analyzeWrite":
+    case "analyzeReview":
     case "prismaSchemas":
     case "interfaceOperations":
     case "interfaceComponents":
     case "testWrite":
     case "realizeProgress":
     case "realizeTestOperation":
-      return <AutoBePlaygroundProgressEventMovie event={back} />;
+      return (
+        <AutoBePlaygroundProgressEventMovie event={back} last={props.last} />
+      );
     // VALIDATE EVENTS
-    case "analyzeReview":
     case "prismaInsufficient":
     case "prismaValidate":
     case "interfaceComplement":

@@ -1,4 +1,5 @@
 import {
+  AutoBeAnalyzeReviewEvent,
   AutoBeAnalyzeWriteEvent,
   AutoBeInterfaceComponentsEvent,
   AutoBeInterfaceOperationsEvent,
@@ -14,6 +15,7 @@ export function AutoBePlaygroundProgressEventMovie(
   props: AutoBePlaygroundProgressEventMovie.IProps,
 ) {
   const state: IState = getState(props.event);
+  const color = state.validate ? "warning" : "success";
   return (
     <Card
       elevation={3}
@@ -28,7 +30,7 @@ export function AutoBePlaygroundProgressEventMovie(
           icon={<HourglassEmptyIcon />}
           label={state.title}
           variant="outlined"
-          color="success"
+          color={color}
         />
         <br />
         <br />
@@ -42,11 +44,12 @@ export function AutoBePlaygroundProgressEventMovie(
             borderRadius: 10,
             height: 10,
           }}
-          value={(state.completed / state.total) * 100}
+          value={props.last ? (state.completed / state.total) * 100 : 100}
         />
-        <sub>
-          {state.completed} / {state.total} completed
-        </sub>
+        <br />
+        <sup>
+          {props.last ? state.completed : state.total} / {state.total} completed
+        </sup>
       </CardContent>
     </Card>
   );
@@ -55,12 +58,14 @@ export namespace AutoBePlaygroundProgressEventMovie {
   export interface IProps {
     event:
       | AutoBeAnalyzeWriteEvent
+      | AutoBeAnalyzeReviewEvent
       | AutoBePrismaSchemasEvent
       | AutoBeInterfaceOperationsEvent
       | AutoBeInterfaceComponentsEvent
       | AutoBeTestWriteEvent
       | AutoBeRealizeProgressEvent
       | AutoBeRealizeTestOperationEvent;
+    last: boolean;
   }
 }
 
@@ -69,6 +74,7 @@ interface IState {
   description: string;
   completed: number;
   total: number;
+  validate?: boolean;
 }
 
 function getState(
@@ -80,6 +86,12 @@ function getState(
         return {
           title: "Analyze Write",
           description: "Analyzing requirements, and writing a report paper",
+        };
+      case "analyzeReview":
+        return {
+          title: "Analyze Review",
+          description: "Reviewing the report paper",
+          validate: true,
         };
       case "prismaSchemas":
         return {

@@ -94,6 +94,7 @@ export class AutoBePlaygroundListener {
       // TEST
       testStart: async (event) => {
         this.state_.delete("testWrite");
+        this.state_.delete("testValidate");
         this.state_.delete("testCorrect");
         this.insert(event);
       },
@@ -103,12 +104,15 @@ export class AutoBePlaygroundListener {
       testWrite: async (event) => {
         this.accumulate(event);
       },
-      testValidate: async (_event) => {},
+      testValidate: async (event) => {
+        this.accumulate(event);
+      },
       testCorrect: async (event) => {
         this.accumulate(event);
       },
       testComplete: async (event) => {
         this.state_.delete("testWrite");
+        this.state_.delete("testValidate");
         this.state_.delete("testCorrect");
         this.insert(event);
       },

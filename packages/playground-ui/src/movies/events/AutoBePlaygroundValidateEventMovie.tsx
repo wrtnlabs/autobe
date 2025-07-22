@@ -1,20 +1,19 @@
 import {
   AutoBeAnalyzeReviewEvent,
   AutoBeInterfaceComplementEvent,
-  AutoBePrismaCorrectEvent,
   AutoBePrismaInsufficientEvent,
   AutoBePrismaValidateEvent,
   AutoBeRealizeValidateEvent,
-  AutoBeTestCorrectEvent,
   AutoBeTestValidateEvent,
 } from "@autobe/interface";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { Card, CardContent, Chip, LinearProgress } from "@mui/material";
+import { JSX } from "react";
 
 export function AutoBePlaygroundValidateEventMovie<
   Event extends AutoBePlaygroundValidateEventMovie.Supported,
 >(props: AutoBePlaygroundValidateEventMovie.IProps<Event>) {
-  const state: State = getState<Event>(props.events);
+  const state: IState = getState<Event>(props.events);
   return (
     <Card
       elevation={3}
@@ -36,11 +35,16 @@ export function AutoBePlaygroundValidateEventMovie<
         {state.description}
         <br />
         <br />
-        {props.last ? (
-          <LinearProgress variant="indeterminate" color="warning" />
-        ) : (
-          <LinearProgress variant="determinate" color="warning" value={100} />
-        )}
+        <LinearProgress
+          variant={props.last ? "indeterminate" : "determinate"}
+          color="warning"
+          sx={{
+            borderRadius: 10,
+            height: 10,
+          }}
+          value={100}
+        />
+        <br />
         <sup>#{props.events.length}</sup>
       </CardContent>
     </Card>
@@ -51,10 +55,8 @@ export namespace AutoBePlaygroundValidateEventMovie {
     | AutoBeAnalyzeReviewEvent
     | AutoBePrismaInsufficientEvent
     | AutoBePrismaValidateEvent
-    | AutoBePrismaCorrectEvent
     | AutoBeInterfaceComplementEvent
     | AutoBeTestValidateEvent
-    | AutoBeTestCorrectEvent
     | AutoBeRealizeValidateEvent;
   export interface IProps<Event extends Supported> {
     events: Event[];
@@ -64,7 +66,7 @@ export namespace AutoBePlaygroundValidateEventMovie {
 
 function getState<Event extends AutoBePlaygroundValidateEventMovie.Supported>(
   events: Event[],
-): State {
+): IState {
   const first: Event = events[0];
   switch (first.type) {
     case "analyzeReview":
@@ -73,22 +75,31 @@ function getState<Event extends AutoBePlaygroundValidateEventMovie.Supported>(
         description: "Reviewing the analysis results",
         files: null,
       };
-    case "prismaCorrect":
-      return {
-        title: "Prisma Correct",
-        description: "Correcting the Prisma schemas",
-        files: null,
-      };
     case "prismaInsufficient":
       return {
         title: "Prisma Insufficient",
-        description: "Insufficient Prisma schemas",
+        description: (
+          <>
+            AI wrote insufficient Prisma schema.
+            <br />
+            <br />
+            Trying to fulfill the omitted tables, so that complete the DB
+            design.
+          </>
+        ),
         files: null,
       };
     case "prismaValidate":
       return {
         title: "Prisma Validate",
-        description: "Validating the Prisma schemas",
+        description: (
+          <>
+            AI wrote invalid Prisma schema, so compilation error occurred.
+            <br />
+            <br />
+            Trying to recover the compile error by studying the AI agent.
+          </>
+        ),
         files: null,
       };
     case "interfaceComplement":
@@ -97,16 +108,17 @@ function getState<Event extends AutoBePlaygroundValidateEventMovie.Supported>(
         description: "Complementing the interface operations",
         files: null,
       };
-    case "testCorrect":
-      return {
-        title: "Test Correct",
-        description: "Correcting the test cases",
-        files: null,
-      };
     case "testValidate":
       return {
         title: "Test Validate",
-        description: "Validating the test cases",
+        description: (
+          <>
+            AI wrote invalid E2E test function.
+            <br />
+            <br />
+            Trying to recover the test function by studying the AI agent.
+          </>
+        ),
         files: null,
       };
     case "realizeValidate":
@@ -125,9 +137,9 @@ function getState<Event extends AutoBePlaygroundValidateEventMovie.Supported>(
   }
 }
 
-interface State {
+interface IState {
   title: string;
-  description: string;
+  description: string | JSX.Element;
   files:
     | null
     | ((event: AutoBePlaygroundValidateEventMovie.Supported) => {
