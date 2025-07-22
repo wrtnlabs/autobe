@@ -1,13 +1,15 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
 import { IAutoBeTypeScriptCompileResult } from "@autobe/interface";
+import { ILlmSchema } from "@samchon/openapi";
 import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
+import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeRealizeDecoratorApplication } from "./structures/IAutoBeRealizeDecoratorApplication";
 
 export const transformRealizeDecoratorCorrectHistories = (
+  ctx: AutoBeContext<ILlmSchema.Model>,
   result: IAutoBeRealizeDecoratorApplication.IProps,
-  prismaClients: Record<string, string>,
   templateFiles: Record<string, string>,
   diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[],
 ): Array<
@@ -31,10 +33,10 @@ export const transformRealizeDecoratorCorrectHistories = (
         `${JSON.stringify(result, null, 2)}`,
         "```",
         "",
-        "## Prisma Clients",
+        "## Prisma Schema",
         "",
         "```json",
-        `${JSON.stringify(prismaClients, null, 2)}`,
+        `${JSON.stringify(ctx.state().prisma?.schemas, null, 2)}`,
         "```",
         "",
         "## File Paths",

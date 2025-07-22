@@ -1,11 +1,13 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
+import { ILlmSchema } from "@samchon/openapi";
 import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
+import { AutoBeContext } from "../../context/AutoBeContext";
 
 export const transformRealizeDecoratorHistories = (
+  ctx: AutoBeContext<ILlmSchema.Model>,
   role: string,
-  prismaClients: Record<string, string>,
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
@@ -21,9 +23,14 @@ export const transformRealizeDecoratorHistories = (
       created_at: new Date().toISOString(),
       type: "systemMessage",
       text: [
-        "Create Authorization Provider.",
-        "The role is " + role,
-        "The Prisma Clients are " + Object.keys(prismaClients).join(", "),
+        "## Role",
+        "",
+        role,
+        "",
+        "## Prisma Schema",
+        "",
+        JSON.stringify(ctx.state().prisma?.schemas, null, 2),
+        "",
       ].join("\n"),
     },
   ];

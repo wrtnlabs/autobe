@@ -13,12 +13,21 @@ export namespace IAutoBeRealizeDecoratorApplication {
     provider: IAutoBeRealizeDecoratorApplication.IProvider;
 
     /**
-     * Authentication Decorator configuration containing the decorator name,
-     * payload type, and implementation code. The Decorator integrates with
-     * NestJS parameter decorators to automatically inject authenticated user
-     * data into Controller methods.
+     * Authentication Decorator configuration containing the decorator name and
+     * implementation code. The Decorator integrates with NestJS parameter
+     * decorators to automatically inject authenticated user data into
+     * Controller methods.
      */
     decorator: IAutoBeRealizeDecoratorApplication.IDecorator;
+
+    /**
+     * Authentication Decorator Type configuration containing the decorator type
+     * name and implementation code. The Decorator Type is used to define the
+     * structure of the authenticated user data that will be injected into
+     * Controller methods when using the decorator. It serves as the TypeScript
+     * type for the parameter in Controller method signatures.
+     */
+    decoratorType: IAutoBeRealizeDecoratorApplication.IDecoratorType;
   }
 
   export interface IProvider {
@@ -53,21 +62,32 @@ export namespace IAutoBeRealizeDecoratorApplication {
     name: string;
 
     /**
-     * The name of the Payload type in {Role}Payload format (e.g., AdminPayload,
-     * UserPayload). This interface defines the structure of the authenticated
-     * user data that will be injected into Controller methods when using the
-     * decorator. It serves as the TypeScript type for the parameter in
-     * Controller method signatures.
-     */
-    typeName: string;
-
-    /**
      * Complete TypeScript code for the authentication Decorator implementation.
      * Must include: SwaggerCustomizer integration to add bearer token security
      * schema to API documentation, createParamDecorator implementation that
      * calls the corresponding Provider function for authentication, Singleton
      * pattern using tstl library for efficient decorator instance management,
      * and proper TypeScript typing for the ParameterDecorator interface.
+     */
+    code: string;
+  }
+
+  export interface IDecoratorType {
+    /**
+     * The name of the Decorator to be generated in {Role}Auth format (e.g.,
+     * AdminAuth, UserAuth). This decorator will be used as a parameter
+     * decorator in Controller methods to automatically authenticate and
+     * authorize users for the specific role, injecting the authenticated user
+     * payload as a method parameter.
+     */
+    name: string;
+
+    /**
+     * The TypeScript code for the Payload type in {Role}Payload format (e.g.,
+     * AdminPayload, UserPayload). This interface defines the structure of the
+     * authenticated user data that will be injected into Controller methods
+     * when using the decorator. It serves as the TypeScript type for the
+     * parameter in Controller method signatures.
      */
     code: string;
   }
