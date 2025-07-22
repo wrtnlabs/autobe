@@ -1,16 +1,70 @@
-import { AutoBeAgent } from "@autobe/agent";
+import { AutoBeAgent, AutoBeMockAgent } from "@autobe/agent";
 import {
+  IAutoBeAgent,
   IAutoBeCompiler,
   IAutoBeCompilerListener,
   IAutoBeRpcHeader,
+  IAutoBeRpcListener,
+  IAutoBeRpcService,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
+import fs from "fs";
 import OpenAI from "openai";
 import path from "path";
-import { WorkerConnector } from "tgrid";
+import { Driver, WebSocketAcceptor, WorkerConnector } from "tgrid";
 import typia from "typia";
 
 import { AutoBePlaygroundServer } from "../AutoBePlaygroundServer";
+
+const ROOT = `${__dirname}/../../../..`;
+
+const createRealAgent = (
+  compiler: Driver<IAutoBeCompiler>,
+  acceptor: WebSocketAcceptor<
+    IAutoBeRpcHeader<ILlmSchema.Model>,
+    IAutoBeRpcService,
+    IAutoBeRpcListener
+  >,
+): IAutoBeAgent => {
+  typia.assert(acceptor.header);
+  return new AutoBeAgent({
+    model: acceptor.header.model,
+    vendor: {
+      api: new OpenAI({
+        apiKey: acceptor.header.vendor.apiKey,
+        baseURL: acceptor.header.vendor.baseURL,
+      }),
+      model: acceptor.header.vendor.model,
+      semaphore: acceptor.header.vendor.semaphore,
+    },
+    config: {
+      locale: acceptor.header.locale,
+      timezone: acceptor.header.timezone,
+    },
+    compiler: () => compiler,
+  });
+};
+
+const createMockAgent = async (
+  compiler: Driver<IAutoBeCompiler>,
+): Promise<IAutoBeAgent> => {
+  const load = async <T>(title: string): Promise<T> => {
+    const location: string = `${ROOT}/test/assets/histories/bbs-backend.${title}.json`;
+    const content: string = await fs.promises.readFile(location, "utf-8");
+    return JSON.parse(content) as T;
+  };
+  const preset: AutoBeMockAgent.IPreset = {
+    histories: await load("test"),
+    analyze: await load("analyze.snapshots"),
+    prisma: await load("prisma.snapshots"),
+    interface: await load("interface.snapshots"),
+    test: await load("test.snapshots"),
+  };
+  return new AutoBeMockAgent({
+    compiler: () => compiler,
+    preset,
+  });
+};
 
 const main = async () => {
   // @todo: must be separated to each acceptance
@@ -33,29 +87,14 @@ const main = async () => {
 
   const server: AutoBePlaygroundServer<IAutoBeRpcHeader<ILlmSchema.Model>> =
     new AutoBePlaygroundServer({
-      predicate: async (acceptor) => {
-        typia.assert(acceptor.header);
-        return {
-          type: "accept",
-          cwd: `${__dirname}/../../../../playground-result`,
-          agent: new AutoBeAgent({
-            model: acceptor.header.model,
-            vendor: {
-              api: new OpenAI({
-                apiKey: acceptor.header.vendor.apiKey,
-                baseURL: acceptor.header.vendor.baseURL,
-              }),
-              model: acceptor.header.vendor.model,
-              semaphore: acceptor.header.vendor.semaphore,
-            },
-            config: {
-              locale: acceptor.header.locale,
-              timezone: acceptor.header.timezone,
-            },
-            compiler: () => compiler.getDriver(),
-          }),
-        };
-      },
+      predicate: async (acceptor) => ({
+        type: "accept",
+        cwd: `${ROOT}/playground-result`,
+        agent:
+          acceptor.path === "/mock"
+            ? await createMockAgent(compiler.getDriver())
+            : createRealAgent(compiler.getDriver(), acceptor),
+      }),
     });
   await server.open(5_890);
 };

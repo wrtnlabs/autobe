@@ -3,23 +3,19 @@ import {
   IAutoBeCompiler,
   IAutoBeGetFilesOptions,
 } from "@autobe/interface";
-import { ILlmSchema } from "@samchon/openapi";
-import typia from "typia";
 
-import { AutoBeContext } from "../context/AutoBeContext";
 import { AutoBeState } from "../context/AutoBeState";
 import { AutoBeTokenUsage } from "../context/AutoBeTokenUsage";
 
-export async function getAutoBeGenerated<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+export async function getAutoBeGenerated(
+  compiler: IAutoBeCompiler,
+  state: AutoBeState,
   histories: AutoBeHistory[],
   tokenUsage: AutoBeTokenUsage,
   options?: Partial<IAutoBeGetFilesOptions>,
 ): Promise<Record<string, string>> {
-  const state: AutoBeState = ctx.state();
-  const ret: Record<string, string> = {};
-
   // ANALYZE
+  const ret: Record<string, string> = {};
   if (state.analyze === null) return {};
   Object.assign<Record<string, string>, Record<string, string>>(
     ret,
@@ -32,7 +28,6 @@ export async function getAutoBeGenerated<Model extends ILlmSchema.Model>(
   );
 
   // PRISMA
-  const compiler: IAutoBeCompiler = await ctx.compiler();
   if (state.prisma?.step === state.analyze.step) {
     const schemaFiles: Record<string, string> =
       (options?.dbms ?? "postgres") === "postgres"
@@ -51,7 +46,7 @@ export async function getAutoBeGenerated<Model extends ILlmSchema.Model>(
         ]),
       ),
       {
-        "autobe/prisma.json": typia.json.stringify(state.prisma.result.data),
+        "autobe/prisma.json": JSON.stringify(state.prisma.result.data),
       },
     );
     if (state.prisma.compiled.type === "success")
@@ -79,7 +74,7 @@ export async function getAutoBeGenerated<Model extends ILlmSchema.Model>(
           )
         : files,
       {
-        "autobe/document.json": typia.json.stringify(state.interface.document),
+        "autobe/document.json": JSON.stringify(state.interface.document),
       },
     );
   }
@@ -106,8 +101,8 @@ export async function getAutoBeGenerated<Model extends ILlmSchema.Model>(
 
   // LOGGING
   Object.assign<Record<string, string>, Record<string, string>>(ret, {
-    "autobe/histories.json": typia.json.stringify(histories),
-    "autobe/tokenUsage.json": typia.json.stringify(tokenUsage),
+    "autobe/histories.json": JSON.stringify(histories),
+    "autobe/tokenUsage.json": JSON.stringify(tokenUsage),
   });
   return ret;
 }

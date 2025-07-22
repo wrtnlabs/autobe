@@ -20,6 +20,6 @@ export const validate_agent_prisma_components = async (
   if (process.argv.includes("--archive"))
     await fs.promises.writeFile(
       `${TestGlobal.ROOT}/assets/histories/${project}.prisma.components.json`,
-      JSON.stringify(result, null, 2),
+      JSON.stringify(result),
     );
 };

@@ -19,7 +19,7 @@ export async function writeCodeUntilCompilePassed<
 >(
   ctx: AutoBeContext<Model>,
   ops: AutoBeOpenApi.IOperation[],
-  retry: number = 5,
+  retry: number = 3,
 ): Promise<
   Pick<
     IAutoBeRealizeCoderApplication.RealizeCoderOutput,
@@ -45,14 +45,20 @@ export async function writeCodeUntilCompilePassed<
     total: [],
   };
 
+  ops = ops.filter((_el, i) => i < 10);
   for (let i = 0; i < retry; i++) {
+    const targets = ops.filter((op) =>
+      shouldProcessOperation(op, diagnostics.current),
+    );
+
+    const metadata = { total: targets.length, count: 0 };
     const generatedCodes: (
       | IAutoBeRealizeCompile.Success
       | IAutoBeRealizeCompile.Fail
     )[] = await Promise.all(
-      ops
-        .filter((op) => shouldProcessOperation(op, diagnostics.current))
-        .map((op) => process(ctx, op, diagnostics, entireCodes)),
+      targets.map((op) => {
+        return process(ctx, metadata, op, diagnostics, entireCodes);
+      }),
     );
 
     for (const c of generatedCodes) {
@@ -93,7 +99,11 @@ export async function writeCodeUntilCompilePassed<
       diagnostics.current = compiled.diagnostics;
       diagnostics.total = [...diagnostics.total, ...compiled.diagnostics];
 
-      console.log(JSON.stringify(diagnostics, null, 2), i);
+      console.log(
+        JSON.stringify(diagnostics.current, null, 2),
+        `현재 에러의 수: ${diagnostics.current.length}\n`,
+        `현재 시도 수: ${i}`,
+      );
     }
   }
 
@@ -129,6 +139,7 @@ async function loadTemplateFiles(
 
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
+  metadata: { total: number; count: number },
   op: AutoBeOpenApi.IOperation,
   diagnostics: IAutoBeRealizeCompile.CompileDiagnostics,
   entireCodes: IAutoBeRealizeCompile.FileContentMap,
@@ -136,22 +147,36 @@ async function process<Model extends ILlmSchema.Model>(
   const result = await pipe(
     op,
     (op) => orchestrateRealizePlanner(ctx, op),
-    (p) => {
+    async (p) => {
       const filename = `src/providers/${p.functionName}.ts` as const;
       const t = diagnostics.total.filter((el) => el.file === filename);
 
       const d = diagnostics.current.filter((el) => el.file === filename);
       const c = entireCodes[filename]?.content ?? null;
 
-      return orchestrateRealizeCoder(ctx, op, p, c, t, d);
+      return orchestrateRealizeCoder(ctx, op, p, c, t, d).then((res) => {
+        if (res === FAILED) {
+        } else {
+          ctx.dispatch({
+            type: "realizeProgress",
+            filename: res.filename,
+            content: res.implementationCode,
+            completed: ++metadata.count,
+            created_at: new Date().toISOString(),
+            step: ctx.state().analyze?.step ?? 0,
+            total: metadata.total,
+          });
+        }
+        return res;
+      });
     },
   );
 
   if (result === FAILED) {
-    return { type: "failed", op, result } as const;
+    return { type: "failed", op: op, result } as const;
   }
 
-  return { type: "success", op, result: result } as const;
+  return { type: "success", op: op, result: result } as const;
 }
 
 function shouldProcessOperation(

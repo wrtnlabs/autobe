@@ -32,7 +32,6 @@
     "typings": "lib/index.d.ts"
   },
   "dependencies": {
-    "@autobe/agent": "workspace:^",
     "@autobe/interface": "workspace:^",
     "@samchon/openapi": "catalog:samchon",
     "typia": "catalog:samchon"

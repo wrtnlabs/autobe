@@ -5,7 +5,6 @@ import { AutoBeEvent } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 import { readFile } from "fs/promises";
 import path from "path";
-import typia from "typia";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
@@ -26,6 +25,13 @@ export const validate_agent_realize_coder = async (
   const enroll = (event: AutoBeEvent) => {
     if (!map.has(event.type)) {
       map.set(event.type, true);
+    }
+
+    if (event.type === "realizeProgress") {
+      console.log(
+        event.filename,
+        `${event.completed}/${event.total} completed.`,
+      );
     }
 
     events.push(event);
@@ -65,9 +71,9 @@ export const validate_agent_realize_coder = async (
       ...(await agent.getFiles()),
       ...codes,
       ...nodeModules,
-      "logs/events.json": typia.json.stringify(events),
-      "logs/result.json": typia.json.stringify(result),
-      "logs/histories.json": typia.json.stringify(histories),
+      "logs/events.json": JSON.stringify(events),
+      "logs/result.json": JSON.stringify(result),
+      "logs/histories.json": JSON.stringify(histories),
     },
   });
 
@@ -88,7 +94,7 @@ export const validate_agent_realize_coder = async (
       "src/providers/jwtDecode.ts": await readFile(
         path.join(
           __dirname,
-          "../../../../../internals/template/src/providers/jwtDecode.ts",
+          "../../../../../internals/template/realize/src/providers/jwtDecode.ts",
         ),
         {
           encoding: "utf-8",
@@ -97,7 +103,7 @@ export const validate_agent_realize_coder = async (
       "src/MyGlobal.ts": await readFile(
         path.join(
           __dirname,
-          "../../../../../internals/template/src/MyGlobal.ts",
+          "../../../../../internals/template/realize/src/MyGlobal.ts",
         ),
         {
           encoding: "utf-8",
@@ -107,7 +113,7 @@ export const validate_agent_realize_coder = async (
   });
 
   console.log(
-    JSON.stringify(res.type === "failure" ? res.diagnostics : [], null, 2),
+    JSON.stringify(res.type === "failure" ? res.diagnostics : []),
     "diagnostics",
   );
   TestValidator.equals("compile success")(res.type)("success");

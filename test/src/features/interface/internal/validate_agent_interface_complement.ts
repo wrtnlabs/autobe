@@ -71,15 +71,15 @@ export const validate_agent_interface_complement = async (
     root: `${TestGlobal.ROOT}/results/${project}/interface/complement`,
     files: {
       ...(await agent.getFiles()),
-      "logs/operations.json": JSON.stringify(operations, null, 2),
-      "logs/components.json": JSON.stringify(components, null, 2),
-      "logs/complemented.json": JSON.stringify(complemented, null, 2),
+      "logs/operations.json": JSON.stringify(operations),
+      "logs/components.json": JSON.stringify(components),
+      "logs/complemented.json": JSON.stringify(complemented),
       "logs/prepared.json": JSON.stringify(
         Array.from(prepraed).sort(),
         null,
         2,
       ),
-      "logs/missed.json": JSON.stringify(Array.from(missed).sort(), null, 2),
+      "logs/missed.json": JSON.stringify(Array.from(missed).sort()),
     },
   });
   TestValidator.equals("missed")(Array.from(missed).sort())([]);

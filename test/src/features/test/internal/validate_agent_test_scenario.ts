@@ -53,12 +53,12 @@ export const validate_agent_test_scenario = async (
     root: `${TestGlobal.ROOT}/results/${project}/test/scenario`,
     files: {
       ...(await agent.getFiles()),
-      "logs/scenarios.json": JSON.stringify(result.scenarios, null, 2),
+      "logs/scenarios.json": JSON.stringify(result.scenarios),
     },
   });
   if (process.argv.includes("--archive"))
     await fs.promises.writeFile(
       `${TestGlobal.ROOT}/assets/histories/${project}.test.scenarios.json`,
-      JSON.stringify(result.scenarios, null, 2),
+      JSON.stringify(result.scenarios),
     );
 };

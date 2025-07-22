@@ -30,7 +30,7 @@ export const validate_agent_interface_endpoints = async (
     root: `${TestGlobal.ROOT}/results/${project}/interface/endpoints`,
     files: {
       ...(await agent.getFiles()),
-      "logs/endpoints.json": JSON.stringify(result.endpoints, null, 2),
+      "logs/endpoints.json": JSON.stringify(result.endpoints),
     },
   });
 };

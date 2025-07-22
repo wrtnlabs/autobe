@@ -15,6 +15,9 @@ export class MyGlobal {
 export namespace MyGlobal {
   export interface IEnvironments {
     API_PORT: `${number}`;
+
+    /** JWT Secret Key. */
+    JWT_SECRET_KEY: string;
   }
 }
 const environments = new Singleton(() => {

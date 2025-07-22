@@ -1,5 +1,4 @@
 export * from "./AutoBeAgent";
-
 export * from "./context/AutoBeTokenUsage";
 
 export * from "./structures/IAutoBeProps";
@@ -11,3 +10,6 @@ export * as factory from "./factory";
 
 /** @internal */
 export * as orchestrate from "./orchestrate";
+
+/** @internal */
+export * from "./AutoBeMockAgent";

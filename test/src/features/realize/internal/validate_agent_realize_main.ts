@@ -6,15 +6,14 @@ import {
   AutoBeRealizeHistory,
 } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
-
-// import typia from "typia";
+import fs from "fs";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
 import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_realize } from "./prepare_agent_realize";
 
-export const validate_agent_realize = async (
+export const validate_agent_realize_main = async (
   factory: TestFactory,
   project: TestProject,
 ) => {
@@ -37,11 +36,16 @@ export const validate_agent_realize = async (
   agent.on("realizeStart", enroll);
   agent.on("realizeProgress", enroll);
   agent.on("realizeValidate", enroll);
+  agent.on("realizeDecorator", enroll);
+  agent.on("realizeDecoratorValidate", enroll);
+  agent.on("realizeDecoratorCorrect", enroll);
   agent.on("realizeComplete", enroll);
+
+  const ctx = agent.getContext();
 
   // DO TEST GENERATION
   const go = (reason: string) =>
-    orchestrateRealize(agent.getContext())({
+    orchestrateRealize(ctx)({
       reason,
     });
   let result: AutoBeAssistantMessageHistory | AutoBeRealizeHistory = await go(
@@ -60,10 +64,17 @@ export const validate_agent_realize = async (
     root: `${TestGlobal.ROOT}/results/${project}/realize/main`,
     files: {
       ...(await agent.getFiles()),
-      // "logs/events.json": typia.json.stringify(events),
-      // "logs/result.json": typia.json.stringify(result),
-      // "logs/histories.json": typia.json.stringify(histories),
+      // "logs/events.json": JSON.stringify(events),
+      // "logs/result.json": JSON.stringify(result),
+      // "logs/histories.json": JSON.stringify(histories),
     },
   });
   TestValidator.equals("result")(result.compiled.type)("success");
+
+  if (process.argv.includes("--archive"))
+    await fs.promises.writeFile(
+      `${TestGlobal.ROOT}/assets/histories/${project}.realize.json`,
+      JSON.stringify(agent.getHistories()),
+      "utf8",
+    );
 };

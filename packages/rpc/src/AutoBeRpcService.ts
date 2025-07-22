@@ -1,13 +1,12 @@
-import { AutoBeAgent } from "@autobe/agent";
 import {
   AutoBeHistory,
   AutoBeUserMessageContent,
+  IAutoBeAgent,
   IAutoBeGetFilesOptions,
   IAutoBeRpcListener,
   IAutoBeRpcService,
   IAutoBeTokenUsageJson,
 } from "@autobe/interface";
-import { ILlmSchema } from "@samchon/openapi";
 import typia from "typia";
 
 /**
@@ -33,9 +32,7 @@ import typia from "typia";
  *
  * @author Samchon
  */
-export class AutoBeRpcService<Model extends ILlmSchema.Model>
-  implements IAutoBeRpcService
-{
+export class AutoBeRpcService implements IAutoBeRpcService {
   /**
    * Initializes the RPC service with an AutoBeAgent and client event listener.
    *
@@ -52,7 +49,7 @@ export class AutoBeRpcService<Model extends ILlmSchema.Model>
    * @param props Configuration containing the agent instance and client
    *   listener
    */
-  public constructor(private readonly props: AgenticaRpcService.IProps<Model>) {
+  public constructor(private readonly props: AgenticaRpcService.IProps) {
     const { agent, listener } = this.props;
     for (const key of typia.misc.literals<keyof IAutoBeRpcListener>())
       agent.on(key, (event) => {
@@ -77,7 +74,7 @@ export class AutoBeRpcService<Model extends ILlmSchema.Model>
   }
 
   public async getTokenUsage(): Promise<IAutoBeTokenUsageJson> {
-    return this.props.agent.getTokenUsage().toJSON();
+    return this.props.agent.getTokenUsage();
   }
 }
 
@@ -92,7 +89,7 @@ export namespace AgenticaRpcService {
    *
    * @author Samchon
    */
-  export interface IProps<Model extends ILlmSchema.Model> {
+  export interface IProps {
     /**
      * AutoBeAgent instance to expose through the RPC service.
      *
@@ -102,7 +99,7 @@ export namespace AgenticaRpcService {
      * clients through the RPC service interface while maintaining full feature
      * compatibility.
      */
-    agent: AutoBeAgent<Model>;
+    agent: IAutoBeAgent;
 
     /**
      * Client event listener for receiving agent events.

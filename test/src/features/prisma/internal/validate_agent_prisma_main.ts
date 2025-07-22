@@ -2,6 +2,8 @@ import { orchestrate } from "@autobe/agent";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeAssistantMessageHistory,
+  AutoBeEvent,
+  AutoBeEventSnapshot,
   AutoBePrismaHistory,
   AutoBePrismaInsufficientEvent,
   AutoBePrismaStartEvent,
@@ -23,6 +25,21 @@ export const validate_agent_prisma_main = async (
   if (TestGlobal.env.CHATGPT_API_KEY === undefined) return false;
 
   const { agent } = await prepare_agent_prisma(factory, project);
+  const snapshots: AutoBeEventSnapshot[] = [];
+  const listen = (event: AutoBeEvent) => {
+    snapshots.push({
+      event,
+      tokenUsage: agent.getTokenUsage().toJSON(),
+    });
+  };
+  agent.on("prismaStart", listen);
+  agent.on("prismaComponents", listen);
+  agent.on("prismaSchemas", listen);
+  agent.on("prismaInsufficient", listen);
+  agent.on("prismaCorrect", listen);
+  agent.on("prismaValidate", listen);
+  agent.on("prismaComplete", listen);
+
   const time: Date = new Date();
   const elapsed = () =>
     (new Date().getTime() - time.getTime()).toLocaleString() + " ms";
@@ -68,8 +85,8 @@ export const validate_agent_prisma_main = async (
     await FileSystemIterator.save({
       root: `${TestGlobal.ROOT}/results/${project}/prisma-correct-${validates.length}`,
       files: Object.fromEntries([
-        ["errors.json", JSON.stringify(event.failure.errors, null, 2)],
-        ["correction.json", JSON.stringify(event.correction, null, 2)],
+        ["errors.json", JSON.stringify(event.failure.errors)],
+        ["correction.json", JSON.stringify(event.correction)],
         ["planning.md", event.planning],
       ]),
     });
@@ -80,7 +97,7 @@ export const validate_agent_prisma_main = async (
     await FileSystemIterator.save({
       root: `${TestGlobal.ROOT}/results/${project}/prisma-failure-${validates.length}`,
       files: {
-        "errors.json": JSON.stringify(event.result.errors, null, 2),
+        "errors.json": JSON.stringify(event.result.errors),
         ...event.schemas,
       },
     });
@@ -102,14 +119,14 @@ export const validate_agent_prisma_main = async (
     await FileSystemIterator.save({
       root: `${TestGlobal.ROOT}/results/${project}/prisma-error`,
       files: {
-        "result.json": JSON.stringify(history.result, null, 2),
+        "result.json": JSON.stringify(history.result),
         ...history.schemas,
         ...(history.compiled.type === "failure"
           ? {
               "reason.log": history.compiled.reason,
             }
           : {
-              "error.json": JSON.stringify(history.compiled.error, null, 2),
+              "error.json": JSON.stringify(history.compiled.error),
             }),
       },
     });
@@ -121,27 +138,31 @@ export const validate_agent_prisma_main = async (
     root: `${TestGlobal.ROOT}/results/${project}/prisma`,
     files: {
       ...(await agent.getFiles()),
-      "logs/validates.json": JSON.stringify(validates, null, 2),
-      "logs/result.json": JSON.stringify(history, null, 2),
-      "logs/files.json": JSON.stringify(Object.keys(agent.getFiles()), null, 2),
+      "logs/validates.json": JSON.stringify(validates),
+      "logs/result.json": JSON.stringify(history),
+      "logs/files.json": JSON.stringify(Object.keys(agent.getFiles())),
       "logs/result-files.json": JSON.stringify(
         Object.keys({
           ...history.compiled.nodeModules,
           ...history.compiled.schemas,
         }),
-        null,
-        2,
       ),
-      "logs/tokenUsage.json": JSON.stringify(agent.getTokenUsage(), null, 2),
-      "logs/components.json": JSON.stringify(components, null, 2),
-      "logs/schemas.json": JSON.stringify(schemas, null, 2),
-      "logs/start.json": JSON.stringify(start, null, 2),
+      "logs/tokenUsage.json": JSON.stringify(agent.getTokenUsage()),
+      "logs/components.json": JSON.stringify(components),
+      "logs/schemas.json": JSON.stringify(schemas),
+      "logs/start.json": JSON.stringify(start),
     },
   });
-  if (process.argv.includes("--archive"))
+  if (process.argv.includes("--archive")) {
     await fs.promises.writeFile(
       `${TestGlobal.ROOT}/assets/histories/${project}.prisma.json`,
-      JSON.stringify(agent.getHistories(), null, 2),
+      JSON.stringify(agent.getHistories()),
       "utf8",
     );
+    await fs.promises.writeFile(
+      `${TestGlobal.ROOT}/assets/histories/${project}.prisma.snapshots.json`,
+      JSON.stringify(snapshots),
+      "utf8",
+    );
+  }
 };

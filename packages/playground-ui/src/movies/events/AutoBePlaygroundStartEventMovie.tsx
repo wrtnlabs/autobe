@@ -2,6 +2,7 @@ import {
   AutoBeAnalyzeStartEvent,
   AutoBeInterfaceStartEvent,
   AutoBePrismaStartEvent,
+  AutoBeRealizeDecoratorEvent,
   AutoBeRealizeStartEvent,
   AutoBeRealizeTestStartEvent,
   AutoBeTestStartEvent,
@@ -44,6 +45,7 @@ export namespace AutoBePlaygroundStartEventMovie {
       | AutoBeInterfaceStartEvent
       | AutoBeTestStartEvent
       | AutoBeRealizeStartEvent
+      | AutoBeRealizeDecoratorEvent
       | AutoBeRealizeTestStartEvent;
   }
 }
@@ -62,6 +64,8 @@ function getTitle(
       return "Test";
     case "realizeStart":
       return "Realize";
+    case "realizeDecorator":
+      return "Realize Decorator";
     case "realizeTestStart":
       return "Final E2E Test";
     default:

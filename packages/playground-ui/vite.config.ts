@@ -13,6 +13,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         index: path.resolve(__dirname, "index.html"),
+        mock: path.resolve(__dirname, "mock.html"),
         // "test/events.html": path.resolve(__dirname, "test/events.html"),
       },
     },
