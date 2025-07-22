@@ -51,7 +51,9 @@ export async function writeDocumentUntilReviewPassed<
 
     ctx.dispatch({
       type: "analyzeWrite",
-      files: pointer.value.files,
+      files: {
+        ...pointer.value.files,
+      },
       total: progress.total,
       completed: ++progress.completed,
       step: ctx.state().analyze?.step ?? 0,
@@ -63,6 +65,9 @@ export async function writeDocumentUntilReviewPassed<
     if (review !== null)
       ctx.dispatch({
         type: "analyzeReview",
+        files: {
+          ...pointer.value.files,
+        },
         review,
         total: progress.total,
         completed: progress.completed,

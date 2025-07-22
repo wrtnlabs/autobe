@@ -173,8 +173,7 @@ export class AutoBePlaygroundListener {
   private accumulate(event: AutoBeEvent) {
     const it: List.Iterator<IAutoBePlaygroundEventGroup> | undefined =
       this.state_.get(event.type);
-    if (it === undefined) {
-      console.log("accumulate", event.type);
+    if (it === undefined)
       this.state_.set(
         event.type,
         this.events_.insert(this.events_.end(), {
@@ -182,12 +181,11 @@ export class AutoBePlaygroundListener {
           events: [event],
         }),
       );
-    } else it.value.events.push(event);
+    else it.value.events.push(event);
     this.dispatch();
   }
 
   private insert(event: AutoBeEvent) {
-    console.log("insert", event.type);
     this.events_.push_back({
       type: event.type,
       events: [event],

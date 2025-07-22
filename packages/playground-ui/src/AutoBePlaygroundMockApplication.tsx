@@ -30,9 +30,7 @@ export function AutoBePlaygroundMockApplication() {
         IAutoBeRpcListener,
         IAutoBeRpcService
       > = new WebSocketConnector(header, listener.getListener());
-      console.log("go connection");
       await connector.connect("ws://localhost:5890/mock");
-      console.log("connected");
       setNext({
         header,
         listener,
