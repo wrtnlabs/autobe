@@ -3,23 +3,20 @@ import {
   IAutoBeCompiler,
   IAutoBeGetFilesOptions,
 } from "@autobe/interface";
-import { ILlmSchema } from "@samchon/openapi";
 import typia from "typia";
 
-import { AutoBeContext } from "../context/AutoBeContext";
 import { AutoBeState } from "../context/AutoBeState";
 import { AutoBeTokenUsage } from "../context/AutoBeTokenUsage";
 
-export async function getAutoBeGenerated<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
+export async function getAutoBeGenerated(
+  compiler: IAutoBeCompiler,
+  state: AutoBeState,
   histories: AutoBeHistory[],
   tokenUsage: AutoBeTokenUsage,
   options?: Partial<IAutoBeGetFilesOptions>,
 ): Promise<Record<string, string>> {
-  const state: AutoBeState = ctx.state();
-  const ret: Record<string, string> = {};
-
   // ANALYZE
+  const ret: Record<string, string> = {};
   if (state.analyze === null) return {};
   Object.assign<Record<string, string>, Record<string, string>>(
     ret,
@@ -32,7 +29,6 @@ export async function getAutoBeGenerated<Model extends ILlmSchema.Model>(
   );
 
   // PRISMA
-  const compiler: IAutoBeCompiler = await ctx.compiler();
   if (state.prisma?.step === state.analyze.step) {
     const schemaFiles: Record<string, string> =
       (options?.dbms ?? "postgres") === "postgres"

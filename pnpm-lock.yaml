@@ -302,6 +302,19 @@ importers:
         specifier: catalog:typescript
         version: 5.8.3
 
+  packages/mock:
+    dependencies:
+      '@autobe/interface':
+        specifier: workspace:^
+        version: link:../interface
+    devDependencies:
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      typescript:
+        specifier: catalog:typescript
+        version: 5.8.3
+
   packages/playground-server:
     dependencies:
       '@autobe/agent':

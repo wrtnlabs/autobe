@@ -51,16 +51,10 @@ export const validate_agent_analyze_main = async (
   }
 
   // REPORT RESULT
+  const files: Record<string, string> = await agent.getFiles();
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/${project}/analyze`,
-    files: {
-      ...(await agent.getFiles()),
-      "logs/result.json": JSON.stringify(
-        results.find((el) => el.type === "analyze"),
-        null,
-        2,
-      ),
-    },
+    files,
   });
   if (process.argv.includes("--archive")) {
     await fs.promises.writeFile(

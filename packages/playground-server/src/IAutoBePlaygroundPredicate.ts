@@ -1,5 +1,4 @@
-import { AutoBeAgent } from "@autobe/agent";
-import { ILlmSchema } from "@samchon/openapi";
+import { IAutoBeAgent } from "@autobe/interface";
 
 export type IAutoBePlaygroundPredicate =
   | IAutoBePlaygroundPredicate.IAccept
@@ -7,7 +6,7 @@ export type IAutoBePlaygroundPredicate =
 export namespace IAutoBePlaygroundPredicate {
   export interface IAccept {
     type: "accept";
-    agent: AutoBeAgent<ILlmSchema.Model>;
+    agent: IAutoBeAgent;
     cwd: string;
   }
   export interface IReject {
