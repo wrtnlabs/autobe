@@ -112,6 +112,7 @@ export function AutoBePlaygroundChatMovie(
       .catch(() => {});
   }, []);
   useEffect(() => {
+    if (eventGroups.length === 0) return;
     bodyContainerRef.current?.scrollIntoView({
       behavior: "smooth",
       block: "end",
