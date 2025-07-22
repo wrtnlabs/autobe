@@ -33,6 +33,12 @@ export async function orchestrateRealizeDecorator<
       .interface?.document.components.authorization?.map((auth) => auth.name) ??
     [];
 
+  const realize = ctx.state().realize;
+
+  if (realize) {
+    realize.files[".env.local"] = "API_PORT=37001\nJWT_SECRET_KEY=secret";
+  }
+
   const decorators: IAutoBeRealizeDecoratorApplication.IProps[] = [];
 
   let completed = 0;
