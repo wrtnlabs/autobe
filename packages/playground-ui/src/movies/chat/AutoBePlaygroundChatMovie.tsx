@@ -1,5 +1,4 @@
 import {
-  AutoBeEvent,
   IAutoBeRpcHeader,
   IAutoBeRpcService,
   IAutoBeTokenUsageJson,
@@ -23,6 +22,7 @@ import { ILlmSchema } from "@samchon/openapi";
 import { useEffect, useRef, useState } from "react";
 
 import { AutoBePlaygroundListener } from "../../structures/AutoBePlaygroundListener";
+import { IAutoBePlaygroundEventGroup } from "../../structures/IAutoBePlaygroundEventGroup";
 import { AutoBePlaygroundEventMovie } from "../events/AutoBePlaygroundEventMovie";
 import { AutoBePlaygroundChatSideMovie } from "./AutoBePlaygroundChatSideMovie";
 
@@ -42,7 +42,9 @@ export function AutoBePlaygroundChatMovie(
   // STATES
   const [error, setError] = useState<Error | null>(null);
   const [text, setText] = useState("");
-  const [events, setEvents] = useState<AutoBeEvent[]>(props?.events ?? []);
+  const [eventGroups, setEventGroups] = useState<IAutoBePlaygroundEventGroup[]>(
+    props?.eventGroups ?? [],
+  );
   const [tokenUsage, setTokenUsage] = useState<IAutoBeTokenUsageJson | null>(
     null,
   );
@@ -103,7 +105,7 @@ export function AutoBePlaygroundChatMovie(
         .getTokenUsage()
         .then(setTokenUsage)
         .catch(() => {});
-      setEvents((prev) => [...prev, e]);
+      setEventGroups(e);
     });
     props.service
       .getTokenUsage()
@@ -136,11 +138,11 @@ export function AutoBePlaygroundChatMovie(
         }}
         ref={bodyContainerRef}
       >
-        {events.map((e, index) => (
+        {eventGroups.map((e, index) => (
           <AutoBePlaygroundEventMovie
             key={index}
             service={props.service}
-            event={e}
+            events={e.events}
           />
         ))}
       </Container>
@@ -248,7 +250,7 @@ export namespace AutoBePlaygroundChatMovie {
     header: IAutoBeRpcHeader<ILlmSchema.Model>;
     service: IAutoBeRpcService;
     listener: AutoBePlaygroundListener;
-    events?: AutoBeEvent[];
+    eventGroups?: IAutoBePlaygroundEventGroup[];
   }
 }
 

@@ -128,7 +128,7 @@ export namespace AutoBeEvent {
    * event subscription systems, and generic event processing utilities that
    * maintain compile-time type safety across different event types.
    */
-  export interface Mapper {
+  export type Mapper = {
     assistantMessage: AutoBeAssistantMessageEvent;
     userMessage: AutoBeUserMessageEvent;
     // ANALYZE
@@ -167,5 +167,5 @@ export namespace AutoBeEvent {
     realizeTestReset: AutoBeRealizeTestResetEvent;
     realizeTestOperation: AutoBeRealizeTestOperationEvent;
     realizeTestComplete: AutoBeRealizeTestCompleteEvent;
-  }
+  };
 }

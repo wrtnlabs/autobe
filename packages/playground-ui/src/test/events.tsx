@@ -40,7 +40,7 @@ const main = async () => {
         header={header}
         listener={listener}
         service={connector.getDriver()}
-        events={events as any}
+        eventGroups={events as any}
       />
     </div>,
   );

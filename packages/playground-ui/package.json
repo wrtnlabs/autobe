@@ -46,8 +46,9 @@
     "rehype-raw": "^7.0.0",
     "rehype-stringify": "^10.0.1",
     "remark-mermaid-plugin": "^1.0.2",
+    "tgrid": "catalog:samchon",
     "tstl": "catalog:samchon",
-    "tgrid": "catalog:samchon"
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.27.0",
@@ -57,6 +58,7 @@
     "@types/node": "^22.15.21",
     "@types/react": "^19.1.5",
     "@types/react-dom": "^19.1.5",
+    "@types/uuid": "^10.0.0",
     "@vitejs/plugin-react": "^4.5.0",
     "rimraf": "^6.0.1",
     "rollup": "^4.40.1",

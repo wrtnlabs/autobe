@@ -1,26 +1,22 @@
 import { AutoBeEvent, IAutoBeRpcService } from "@autobe/interface";
 
-import { AutoBePlaygroundAnalyzeReviewMovie } from "./AutoBePlaygroundAnalyzeReviewMovie";
-import { AutoBePlaygroundAnalyzeWriteDocumentMovie } from "./AutoBePlaygroundAnalyzeWriteDocumentMovie";
 import { AutoBePlaygroundAssistantMessageEventMovie } from "./AutoBePlaygroundAssistantMessageEventMovie";
 import { AutoBePlaygroundCompleteEventMovie } from "./AutoBePlaygroundCompleteEventMovie";
-import { AutoBePlaygroundPrismaCorrectEventMovie } from "./AutoBePlaygroundPrismaCorrectEventMovie";
-import { AutoBePlaygroundPrismaValidateEventMovie } from "./AutoBePlaygroundPrismaValidateEventMovie";
 import { AutoBePlaygroundProgressEventMovie } from "./AutoBePlaygroundProgressEventMovie";
+import { AutoBePlaygroundRoutineEventMovie } from "./AutoBePlaygroundRoutineEventMovie";
+import { AutoBePlaygroundStackEventMovie } from "./AutoBePlaygroundStackEventMovie";
 import { AutoBePlaygroundStartEventMovie } from "./AutoBePlaygroundStartEventMovie";
 import { AutoBePlaygroundUserMessageEventMovie } from "./AutoBePlaygroundUserMessageEventMovie";
 
-export function AutoBePlaygroundEventMovie(
-  props: AutoBePlaygroundEventMovie.IProps,
+export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
+  props: AutoBePlaygroundEventMovie.IProps<Event>,
 ) {
-  switch (props.event.type) {
-    // MESSAGES
+  const last: Event = props.events[props.events.length - 1];
+  switch (last.type) {
     case "userMessage":
-      return <AutoBePlaygroundUserMessageEventMovie prompt={props.event} />;
+      return <AutoBePlaygroundUserMessageEventMovie prompt={last} />;
     case "assistantMessage":
-      return (
-        <AutoBePlaygroundAssistantMessageEventMovie prompt={props.event} />
-      );
+      return <AutoBePlaygroundAssistantMessageEventMovie prompt={last} />;
     // START EVENTS
     case "analyzeStart":
     case "prismaStart":
@@ -28,24 +24,37 @@ export function AutoBePlaygroundEventMovie(
     case "testStart":
     case "realizeStart":
     case "realizeTestStart":
-      return <AutoBePlaygroundStartEventMovie event={props.event} />;
-    // PROGRESS EVENTS
+      return <AutoBePlaygroundStartEventMovie event={last} />;
+    // ROUTINE EVENTS
     case "prismaComponents":
-    case "prismaSchemas":
-    case "prismaInsufficient":
     case "interfaceEndpoints":
+    case "testScenario":
+    case "realizeTestReset":
+      return <AutoBePlaygroundRoutineEventMovie event={last} />;
+    // PROGRESS EVENTS
+    case "prismaSchemas":
     case "interfaceOperations":
     case "interfaceComponents":
-    case "interfaceComplement":
     case "testWrite":
     case "realizeProgress":
-    case "testScenario":
-    case "testCorrect":
-    case "testValidate":
-    case "realizeValidate":
-    case "realizeTestReset":
     case "realizeTestOperation":
-      return <AutoBePlaygroundProgressEventMovie event={props.event} />;
+      return <AutoBePlaygroundProgressEventMovie event={last} />;
+    // STACKED EVENTS
+    case "analyzeWrite":
+    case "analyzeReview":
+    case "prismaInsufficient":
+    case "prismaValidate":
+    case "prismaCorrect":
+    case "interfaceComplement":
+    case "testValidate":
+    case "testCorrect":
+    case "realizeValidate":
+      last satisfies AutoBePlaygroundStackEventMovie.Supported;
+      return (
+        <AutoBePlaygroundStackEventMovie
+          events={props.events as AutoBePlaygroundStackEventMovie.Supported[]}
+        />
+      );
     // COMPLETE EVENTS
     case "analyzeComplete":
     case "prismaComplete":
@@ -56,26 +65,17 @@ export function AutoBePlaygroundEventMovie(
       return (
         <AutoBePlaygroundCompleteEventMovie
           service={props.service}
-          event={props.event}
+          event={last}
         />
       );
-    // SPECIALIZATIONS
-    case "analyzeWrite":
-      return <AutoBePlaygroundAnalyzeWriteDocumentMovie event={props.event} />;
-    case "analyzeReview":
-      return <AutoBePlaygroundAnalyzeReviewMovie event={props.event} />;
-    case "prismaValidate":
-      return <AutoBePlaygroundPrismaValidateEventMovie event={props.event} />;
-    case "prismaCorrect":
-      return <AutoBePlaygroundPrismaCorrectEventMovie event={props.event} />;
     default:
-      props.event satisfies never;
+      last satisfies never;
       return null;
   }
 }
 export namespace AutoBePlaygroundEventMovie {
-  export interface IProps {
+  export interface IProps<Event extends AutoBeEvent> {
     service: IAutoBeRpcService;
-    event: AutoBeEvent;
+    events: Event[];
   }
 }
