@@ -64,6 +64,8 @@ export async function writeDocumentUntilReviewPassed<
       ctx.dispatch({
         type: "analyzeReview",
         review,
+        total: progress.total,
+        completed: progress.completed,
         step: ctx.state().analyze?.step ?? 0,
         created_at: new Date().toISOString(),
       });

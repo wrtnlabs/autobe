@@ -47,4 +47,10 @@ export interface AutoBeAnalyzeReviewEvent
    * of refinement that has been applied to achieve the final analysis.
    */
   step: number;
+
+  /** Total number of documents to generate. */
+  total: number;
+
+  /** Number of documents generated so far. */
+  completed: number;
 }
