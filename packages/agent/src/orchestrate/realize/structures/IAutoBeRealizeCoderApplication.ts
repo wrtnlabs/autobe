@@ -181,7 +181,7 @@ export namespace IAutoBeRealizeCoderApplication {
      *   `.toISOString()` before assignment and apply proper branding.
      * - Maintain a single-function structure; avoid using classes.
      */
-    draft_without_date_type: string;
+    draft: string;
 
     /**
      * Step 4.

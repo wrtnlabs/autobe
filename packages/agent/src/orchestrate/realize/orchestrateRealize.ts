@@ -20,22 +20,48 @@ export const orchestrateRealize =
       throw new Error("Can't do realize agent because operations are nothing.");
     }
 
-    await writeCodeUntilCompilePassed(ctx, ops, 3);
+    const files = await writeCodeUntilCompilePassed(ctx, ops, 1);
+    const providers = files
+      .map((f) => ({ [f.filename]: f.implementationCode }))
+      .reduce((acc, cur) => Object.assign(acc, cur), {});
+
     const now = new Date().toISOString();
+    const realize = ctx.state().realize;
+    if (realize !== null) {
+      realize.files = providers;
+    } else {
+      ctx.state().realize = {
+        type: "realize",
+        compiled: {
+          type: "success",
+        },
+        files: providers,
+        completed_at: now,
+        created_at: now,
+        id: v4(),
+        reason: props.reason,
+        step: ctx.state().analyze?.step ?? 0,
+      } satisfies AutoBeRealizeHistory;
+    }
+
     ctx.dispatch({
       type: "assistantMessage",
       text: "Any codes can not be generated.",
       created_at: now,
     });
 
+    console.log(JSON.stringify(providers, null, 2), "providers");
+
     return {
       type: "realize",
-      compiled: 1 as any,
-      files: {},
+      compiled: {
+        type: "success",
+      },
+      files: providers,
       completed_at: now,
       created_at: now,
       id: v4(),
       reason: props.reason,
-      step: ctx.state().test?.step ?? 0,
+      step: ctx.state().analyze?.step ?? 0,
     };
   };

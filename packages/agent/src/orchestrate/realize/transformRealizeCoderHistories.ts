@@ -116,21 +116,31 @@ export const transformRealizeCoderHistories = (
               // .replaceAll("{total_diagnostics}", JSON.stringify(total))
               .replaceAll("{current_diagnostics}", JSON.stringify(diagnostics)),
           } as const,
+          {
+            id: v4(),
+            created_at: new Date().toISOString(),
+            type: "systemMessage",
+            text: [
+              "Modify the previous code to reflect the following operation.",
+              "```json",
+              JSON.stringify(props),
+              "```",
+            ].join("\n"),
+          } as const,
         ]
-      : []),
-    {
-      id: v4(),
-      created_at: new Date().toISOString(),
-      type: "systemMessage",
-      text: [
-        previous
-          ? "Modify the previous code to reflect the following operation."
-          : "Write new code based on the following operation.",
-        "```json",
-        JSON.stringify(props),
-        "```",
-      ].join("\n"),
-    },
+      : [
+          {
+            id: v4(),
+            created_at: new Date().toISOString(),
+            type: "systemMessage",
+            text: [
+              "Write new code based on the following operation.",
+              "```json",
+              JSON.stringify(props),
+              "```",
+            ].join("\n"),
+          } as const,
+        ]),
     {
       id: v4(),
       created_at: new Date().toISOString(),

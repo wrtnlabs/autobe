@@ -35,7 +35,11 @@ export async function writeCodeUntilCompilePassed<
       {},
     );
 
-  const templateFiles = ["src/providers/jwtDecode.ts", "src/MyGlobal.ts"];
+  const templateFiles = [
+    "src/providers/jwtDecode.ts",
+    "src/MyGlobal.ts",
+    "src/providers/toISOStringSafe.ts",
+  ];
   const entireCodes: IAutoBeRealizeCompile.FileContentMap = {
     ...(await loadTemplateFiles(templateFiles)),
   };
@@ -154,18 +158,16 @@ async function process<Model extends ILlmSchema.Model>(
       const c = entireCodes[filename]?.content ?? null;
 
       return orchestrateRealizeCoder(ctx, op, p, c, t, d).then((res) => {
-        if (res === FAILED) {
-        } else {
-          ctx.dispatch({
-            type: "realizeProgress",
-            filename: res.filename,
-            content: res.implementationCode,
-            completed: ++metadata.count,
-            created_at: new Date().toISOString(),
-            step: ctx.state().analyze?.step ?? 0,
-            total: metadata.total,
-          });
-        }
+        ctx.dispatch({
+          type: "realizeProgress",
+          filename: filename,
+          content: res === FAILED ? "FAILED" : res.implementationCode,
+          completed: ++metadata.count,
+          created_at: new Date().toISOString(),
+          step: ctx.state().analyze?.step ?? 0,
+          total: metadata.total,
+        });
+
         return res;
       });
     },
