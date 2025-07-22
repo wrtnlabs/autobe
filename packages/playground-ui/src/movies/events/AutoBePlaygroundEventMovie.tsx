@@ -43,14 +43,12 @@ export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
     case "realizeProgress":
     case "realizeTestOperation":
       return <AutoBePlaygroundProgressEventMovie event={back} />;
-    // STACKED EVENTS
+    // VALIDATE EVENTS
     case "analyzeReview":
     case "prismaInsufficient":
     case "prismaValidate":
-    case "prismaCorrect":
     case "interfaceComplement":
     case "testValidate":
-    case "testCorrect":
     case "realizeValidate":
       back satisfies AutoBePlaygroundValidateEventMovie.Supported;
       return (
@@ -74,6 +72,10 @@ export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
           event={back}
         />
       );
+    // DISCARD
+    case "prismaCorrect":
+    case "testCorrect":
+      return null;
     default:
       back satisfies never;
       return null;
