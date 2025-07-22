@@ -1,5 +1,4 @@
 import {
-  AutoBeAnalyzeReviewEvent,
   AutoBeAnalyzeWriteEvent,
   AutoBeInterfaceComponentsEvent,
   AutoBeInterfaceOperationsEvent,
@@ -15,7 +14,6 @@ export function AutoBePlaygroundProgressEventMovie(
   props: AutoBePlaygroundProgressEventMovie.IProps,
 ) {
   const state: IState = getState(props.event);
-  const color = state.validate ? "warning" : "success";
   return (
     <Card
       elevation={3}
@@ -30,7 +28,7 @@ export function AutoBePlaygroundProgressEventMovie(
           icon={<HourglassEmptyIcon />}
           label={state.title}
           variant="outlined"
-          color={color}
+          color="success"
         />
         <br />
         <br />
@@ -58,7 +56,6 @@ export namespace AutoBePlaygroundProgressEventMovie {
   export interface IProps {
     event:
       | AutoBeAnalyzeWriteEvent
-      | AutoBeAnalyzeReviewEvent
       | AutoBePrismaSchemasEvent
       | AutoBeInterfaceOperationsEvent
       | AutoBeInterfaceComponentsEvent
@@ -74,7 +71,6 @@ interface IState {
   description: string;
   completed: number;
   total: number;
-  validate?: boolean;
 }
 
 function getState(
@@ -86,12 +82,6 @@ function getState(
         return {
           title: "Analyze Write",
           description: "Analyzing requirements, and writing a report paper",
-        };
-      case "analyzeReview":
-        return {
-          title: "Analyze Review",
-          description: "Reviewing the report paper",
-          validate: true,
         };
       case "prismaSchemas":
         return {

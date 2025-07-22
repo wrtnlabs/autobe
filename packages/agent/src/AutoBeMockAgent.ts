@@ -1,5 +1,6 @@
 import {
   AutoBeAssistantMessageHistory,
+  AutoBeEvent,
   AutoBeEventSnapshot,
   AutoBeHistory,
   AutoBeUserMessageContent,
@@ -87,22 +88,21 @@ export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
     }
     const take = async (
       type: "analyze" | "prisma" | "interface" | "test",
-      interval: number,
     ): Promise<void> => {
       for (const s of this.getEventSnapshots(type)) {
-        await sleep_for(interval);
         void this.dispatch(s.event).catch(() => {});
         this.token_usage_ = new AutoBeTokenUsage(s.tokenUsage);
+        await sleep_for(sleepMap[s.event.type] ?? 500);
       }
       this.histories_.push(userMessage);
       this.histories_.push(
         this.props_.preset.histories.find((h) => h.type === type)!,
       );
     };
-    if (state.analyze === null) await take("analyze", 500);
-    else if (state.prisma === null) await take("prisma", 500);
-    else if (state.interface === null) await take("interface", 500);
-    else if (state.test === null) await take("test", 50);
+    if (state.analyze === null) await take("analyze");
+    else if (state.prisma === null) await take("prisma");
+    else if (state.interface === null) await take("interface");
+    else if (state.test === null) await take("test");
     return this.histories_;
   }
 
@@ -135,3 +135,29 @@ export namespace AutoBeMockAgent {
     test: AutoBeEventSnapshot[];
   }
 }
+
+const sleepMap: Partial<Record<AutoBeEvent.Type, number>> = {
+  analyzeStart: 1_000,
+  analyzeWrite: 500,
+  analyzeReview: 500,
+  analyzeComplete: 500,
+  prismaStart: 1_000,
+  prismaComponents: 1_000,
+  prismaSchemas: 500,
+  prismaValidate: 2_500,
+  prismaCorrect: 500,
+  prismaInsufficient: 1_000,
+  prismaComplete: 500,
+  interfaceStart: 1_000,
+  interfaceEndpoints: 1_000,
+  interfaceOperations: 500,
+  interfaceComponents: 500,
+  interfaceComplement: 2_500,
+  interfaceComplete: 500,
+  testStart: 1_000,
+  testScenario: 1_000,
+  testWrite: 50,
+  testValidate: 100,
+  testCorrect: 250,
+  testComplete: 500,
+};

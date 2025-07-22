@@ -9,6 +9,7 @@ import {
 } from "@autobe/interface";
 import ChecklistIcon from "@mui/icons-material/Checklist";
 import { Card, CardContent, Chip } from "@mui/material";
+import { JSX } from "react";
 
 export function AutoBePlaygroundScenarioEventMovie(
   props: AutoBePlaygroundScenarioEventMovie.IProps,
@@ -52,7 +53,7 @@ export namespace AutoBePlaygroundScenarioEventMovie {
 
 interface IState {
   title: string;
-  description: string;
+  description: string | JSX.Element;
 }
 
 function getState(
@@ -62,27 +63,58 @@ function getState(
     case "prismaComponents":
       return {
         title: "Prisma Components",
-        description: "Generating Prisma components",
+        description: (
+          <>
+            Generating Prisma components.
+            <br />
+            <br />
+            Number of Prisma schemas would be:
+            <br />
+            <ul>
+              <li>namespaces: #{event.components.length}</li>
+              <li>
+                tables: #
+                {event.components
+                  .map((c) => c.tables.length)
+                  .reduce((a, b) => a + b, 0)}
+              </li>
+            </ul>
+          </>
+        ),
       };
     case "interfaceEndpoints":
       return {
         title: "Interface Endpoints",
-        description: "Generating interface endpoints",
+        description: (
+          <>
+            Generating interface endpoints.
+            <br />
+            <br />
+            Number of API operations would be #{event.endpoints.length}
+          </>
+        ),
       };
     case "testScenario":
       return {
         title: "Test Scenario",
-        description: "Generating test scenarios",
+        description: (
+          <>
+            Generating E2E test functions.
+            <br />
+            <br />
+            Number of the test functions would be #{event.scenarios.length}
+          </>
+        ),
       };
     case "realizeTestReset":
       return {
         title: "Realize Test Reset",
-        description: "Resetting test environment",
+        description: "Resetting test environment.",
       };
     case "realizeDecorator":
       return {
         title: "Realize Decorator",
-        description: "Realizing decorator functions",
+        description: "Realizing decorator functions.",
       };
     case "realizeDecoratorCorrect":
       return {
@@ -92,7 +124,7 @@ function getState(
     case "realizeDecoratorValidate":
       return {
         title: "Realize Decorator Validate",
-        description: "Validating decorator functions",
+        description: "Validating decorator functions.",
       };
     default:
       throw new Error("Unknown event type");
