@@ -120,13 +120,13 @@ export class AutoBePlaygroundListener {
         this.insert(event);
       },
       realizeDecorator: async (event) => {
-        this.callback?.(event);
+        this.insert(event);
       },
       realizeDecoratorValidate: async (event) => {
-        this.callback?.(event);
+        this.insert(event);
       },
       realizeDecoratorCorrect: async (event) => {
-        this.callback?.(event);
+        this.insert(event);
       },
       realizeProgress: async (event) => {
         this.accumulate(event);

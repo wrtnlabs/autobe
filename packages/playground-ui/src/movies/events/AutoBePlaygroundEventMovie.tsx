@@ -30,6 +30,9 @@ export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
     case "interfaceEndpoints":
     case "testScenario":
     case "realizeTestReset":
+    case "realizeDecorator":
+    case "realizeDecoratorCorrect":
+    case "realizeDecoratorValidate":
       return <AutoBePlaygroundRoutineEventMovie event={last} />;
     // PROGRESS EVENTS
     case "prismaSchemas":

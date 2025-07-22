@@ -28,8 +28,8 @@ export function AutoBePlaygroundStartEventMovie(
           icon={<StartIcon />}
           label={<>{title + " Started"}</>}
           variant="outlined"
-          color="info"
-        ></Chip>
+          color="primary"
+        />
         <br />
         <br />
         {getTitle(props.event)} has started.

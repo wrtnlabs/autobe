@@ -6,41 +6,116 @@ import {
   AutoBeRealizeTestOperationEvent,
   AutoBeTestWriteEvent,
 } from "@autobe/interface";
-import { LinearProgress } from "@mui/material";
+import RotateRightIcon from "@mui/icons-material/RotateRight";
+import { Card, CardContent, Chip, LinearProgress } from "@mui/material";
 
 export function AutoBePlaygroundProgressEventMovie(
   props: AutoBePlaygroundProgressEventMovie.IProps,
 ) {
   const state: IState = getState(props.event);
   return (
-    <LinearProgress
-      variant="determinate"
-      value={state.completed / state.total}
-    />
+    <Card
+      elevation={3}
+      style={{
+        marginTop: 15,
+        marginBottom: 15,
+        marginRight: "15%",
+      }}
+    >
+      <CardContent>
+        <Chip
+          icon={<RotateRightIcon />}
+          label={state.title}
+          variant="outlined"
+          color="success"
+        />
+        <br />
+        <br />
+        {state.description}
+        <br />
+        <br />
+        <LinearProgress
+          variant="determinate"
+          color="success"
+          sx={{
+            borderRadius: 10,
+            height: 10,
+          }}
+          value={(state.completed / state.total) * 100}
+        />
+        <br />
+        <sup>
+          {state.completed} / {state.total} completed
+        </sup>
+      </CardContent>
+    </Card>
   );
 }
 export namespace AutoBePlaygroundProgressEventMovie {
-  export type Supported =
-    | AutoBePrismaSchemasEvent
-    | AutoBeInterfaceOperationsEvent
-    | AutoBeInterfaceComponentsEvent
-    | AutoBeTestWriteEvent
-    | AutoBeRealizeProgressEvent
-    | AutoBeRealizeTestOperationEvent;
   export interface IProps {
-    event: Supported;
+    event:
+      | AutoBePrismaSchemasEvent
+      | AutoBeInterfaceOperationsEvent
+      | AutoBeInterfaceComponentsEvent
+      | AutoBeTestWriteEvent
+      | AutoBeRealizeProgressEvent
+      | AutoBeRealizeTestOperationEvent;
   }
 }
 
 interface IState {
   title: string;
+  description: string;
   completed: number;
   total: number;
 }
 
-function getState(event: AutoBePlaygroundProgressEventMovie.Supported): IState {
+function getState(
+  event: AutoBePlaygroundProgressEventMovie.IProps["event"],
+): IState {
+  const content: Pick<IState, "title" | "description"> = (() => {
+    switch (event.type) {
+      case "prismaSchemas":
+        return {
+          title: "Prisma Schemas",
+          description: "Designing Database schemas",
+        };
+      case "interfaceOperations":
+        return {
+          title: "Interface Operations",
+          description: "Designing API operations",
+        };
+      case "interfaceComponents":
+        return {
+          title: "Interface Components",
+          description: "Designing API type components",
+        };
+      case "testWrite":
+        return {
+          title: "Test Write",
+          description: "Writing E2E test functions",
+        };
+      case "realizeProgress":
+        return {
+          title: "Realize Progress",
+          description: "Realizing the API functions",
+        };
+      case "realizeTestOperation":
+        return {
+          title: "Realize Test Operation",
+          description:
+            "Running the E2E test operations to validate the API functions",
+        };
+      default:
+        event satisfies never;
+        return {
+          title: "Unknown Event",
+          description: "This event type is not recognized.",
+        };
+    }
+  })();
   return {
-    title: "",
+    ...content,
     completed: event.completed,
     total: event.total,
   };
