@@ -96,7 +96,7 @@ function getState(
       case "interfaceComponents":
         return {
           title: "Interface Components",
-          description: "Designing API type components",
+          description: "Designing API type schemas",
         };
       case "testWrite":
         return {

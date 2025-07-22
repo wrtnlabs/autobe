@@ -69,6 +69,7 @@ export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
     // ALREADY REALIZED CASE
     const state: AutoBeState = createAutoBeState(this.histories_);
     if (state.test !== null) {
+      await sleep_for(2_000);
       const assistantMessage: AutoBeAssistantMessageHistory = {
         id: v4(),
         type: "assistantMessage",
@@ -90,9 +91,9 @@ export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
       type: "analyze" | "prisma" | "interface" | "test",
     ): Promise<void> => {
       for (const s of this.getEventSnapshots(type)) {
+        await sleep_for(sleepMap[s.event.type] ?? 500);
         void this.dispatch(s.event).catch(() => {});
         this.token_usage_ = new AutoBeTokenUsage(s.tokenUsage);
-        await sleep_for(sleepMap[s.event.type] ?? 500);
       }
       this.histories_.push(userMessage);
       this.histories_.push(
@@ -139,25 +140,25 @@ export namespace AutoBeMockAgent {
 const sleepMap: Partial<Record<AutoBeEvent.Type, number>> = {
   analyzeStart: 1_000,
   analyzeWrite: 500,
-  analyzeReview: 500,
-  analyzeComplete: 500,
+  analyzeReview: 300,
+  analyzeComplete: 1_000,
   prismaStart: 1_000,
   prismaComponents: 1_000,
   prismaSchemas: 500,
-  prismaValidate: 2_500,
+  prismaValidate: 2_000,
   prismaCorrect: 500,
   prismaInsufficient: 1_000,
-  prismaComplete: 500,
+  prismaComplete: 1_000,
   interfaceStart: 1_000,
   interfaceEndpoints: 1_000,
-  interfaceOperations: 500,
-  interfaceComponents: 500,
-  interfaceComplement: 2_500,
-  interfaceComplete: 500,
+  interfaceOperations: 400,
+  interfaceComponents: 400,
+  interfaceComplement: 2_000,
+  interfaceComplete: 1_000,
   testStart: 1_000,
   testScenario: 1_000,
-  testWrite: 50,
+  testWrite: 40,
   testValidate: 100,
-  testCorrect: 250,
-  testComplete: 500,
+  testCorrect: 100,
+  testComplete: 1_000,
 };
