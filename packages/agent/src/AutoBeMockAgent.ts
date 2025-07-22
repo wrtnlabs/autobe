@@ -74,7 +74,7 @@ export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
         text: [
           "You've reached to the test agent.",
           "",
-          "The realize agent would be developed untiol 2025-08-31.",
+          "The realize agent would be developed until 2025-08-31.",
           "",
           "Thanks for using AutoBE!",
         ].join("\n"),
