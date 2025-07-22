@@ -16,6 +16,7 @@ export async function writeDocumentUntilReviewPassed<
   totalFiles: Pick<IFile, "filename" | "reason">[],
   filename: string,
   roles: AutoBeAnalyzeRole[],
+  progress: { total: number; completed: number },
   retry = 3,
 ): Promise<AutoBeAnalyzePointer> {
   const isAborted: IPointer<boolean> = { value: false };
@@ -38,16 +39,21 @@ export async function writeDocumentUntilReviewPassed<
       pointer,
       isAborted,
     );
+
     await writer.conversate(review ?? write).finally(() => {
       const tokenUsage = writer.getTokenUsage();
       ctx.usage().record(tokenUsage, ["analyze"]);
     });
+
     if (pointer.value === null) {
       throw new Error("Failed to write document by unknown reason.");
     }
+
     ctx.dispatch({
       type: "analyzeWrite",
       files: pointer.value.files,
+      total: progress.total,
+      completed: ++progress.completed,
       step: ctx.state().analyze?.step ?? 0,
       created_at: new Date().toISOString(),
     });
