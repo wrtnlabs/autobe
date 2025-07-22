@@ -3,6 +3,7 @@ import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeAssistantMessageHistory,
   AutoBeEvent,
+  AutoBeEventSnapshot,
   AutoBeTestHistory,
 } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
@@ -22,9 +23,12 @@ export const validate_agent_test_main = async (
 
   // PREPARE AGENT
   const { agent } = await prepare_agent_test(factory, project);
-  const events: AutoBeEvent[] = [];
+  const snapshots: AutoBeEventSnapshot[] = [];
   const enroll = (event: AutoBeEvent) => {
-    events.push(event);
+    snapshots.push({
+      event,
+      tokenUsage: agent.getTokenUsage().toJSON(),
+    });
   };
   agent.on("testStart", enroll);
   agent.on("testScenario", enroll);
@@ -54,7 +58,7 @@ export const validate_agent_test_main = async (
     files: {
       ...(await agent.getFiles()),
       "logs/compiled.json": JSON.stringify(result.compiled, null, 2),
-      "logs/events.json": JSON.stringify(events, null, 2),
+      "logs/snapshots.json": JSON.stringify(snapshots, null, 2),
       "logs/result.json": JSON.stringify(
         {
           ...result,
@@ -68,10 +72,16 @@ export const validate_agent_test_main = async (
     },
   });
   TestValidator.equals("result")(result.compiled.type)("success");
-  if (process.argv.includes("--archive"))
+  if (process.argv.includes("--archive")) {
     await fs.promises.writeFile(
       `${TestGlobal.ROOT}/assets/histories/${project}.test.json`,
-      JSON.stringify(agent.getHistories(), null, 2),
+      typia.json.stringify(agent.getHistories()),
       "utf8",
     );
+    await fs.promises.writeFile(
+      `${TestGlobal.ROOT}/assets/histories/${project}.test.snapshots.json`,
+      typia.json.stringify(snapshots),
+      "utf8",
+    );
+  }
 };

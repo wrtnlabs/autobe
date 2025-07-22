@@ -41,3 +41,6 @@ export * from "./AutoBeRealizeTestStartEvent";
 export * from "./AutoBeRealizeTestResetEvent";
 export * from "./AutoBeRealizeTestOperationEvent";
 export * from "./AutoBeRealizeTestCompleteEvent";
+
+/** @internal */
+export * from "./AutoBeEventSnapshot";

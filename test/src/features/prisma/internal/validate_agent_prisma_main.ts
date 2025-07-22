@@ -2,6 +2,8 @@ import { orchestrate } from "@autobe/agent";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeAssistantMessageHistory,
+  AutoBeEvent,
+  AutoBeEventSnapshot,
   AutoBePrismaHistory,
   AutoBePrismaInsufficientEvent,
   AutoBePrismaStartEvent,
@@ -10,6 +12,7 @@ import {
 import { AutoBePrismaComponentsEvent } from "@autobe/interface/src/events/AutoBePrismaComponentsEvent";
 import { AutoBePrismaSchemasEvent } from "@autobe/interface/src/events/AutoBePrismaSchemasEvent";
 import fs from "fs";
+import typia from "typia";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
@@ -23,6 +26,21 @@ export const validate_agent_prisma_main = async (
   if (TestGlobal.env.CHATGPT_API_KEY === undefined) return false;
 
   const { agent } = await prepare_agent_prisma(factory, project);
+  const snapshots: AutoBeEventSnapshot[] = [];
+  const listen = (event: AutoBeEvent) => {
+    snapshots.push({
+      event,
+      tokenUsage: agent.getTokenUsage().toJSON(),
+    });
+  };
+  agent.on("prismaStart", listen);
+  agent.on("prismaComponents", listen);
+  agent.on("prismaSchemas", listen);
+  agent.on("prismaInsufficient", listen);
+  agent.on("prismaCorrect", listen);
+  agent.on("prismaValidate", listen);
+  agent.on("prismaComplete", listen);
+
   const time: Date = new Date();
   const elapsed = () =>
     (new Date().getTime() - time.getTime()).toLocaleString() + " ms";
@@ -138,10 +156,16 @@ export const validate_agent_prisma_main = async (
       "logs/start.json": JSON.stringify(start, null, 2),
     },
   });
-  if (process.argv.includes("--archive"))
+  if (process.argv.includes("--archive")) {
     await fs.promises.writeFile(
       `${TestGlobal.ROOT}/assets/histories/${project}.prisma.json`,
-      JSON.stringify(agent.getHistories(), null, 2),
+      typia.json.stringify(agent.getHistories()),
       "utf8",
     );
+    await fs.promises.writeFile(
+      `${TestGlobal.ROOT}/assets/histories/${project}.prisma.snapshots.json`,
+      typia.json.stringify(snapshots),
+      "utf8",
+    );
+  }
 };
