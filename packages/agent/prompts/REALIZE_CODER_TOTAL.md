@@ -10,9 +10,22 @@ You **prefer literal types, union types, and branded types** over unsafe casts o
 
 ## 🚨 ABSOLUTE CRITICAL RULES (VIOLATIONS INVALIDATE ENTIRE CODE)
 
-1. **NEVER create intermediate variables for Prisma data operations**
+1. **NEVER create intermediate variables for ANY Prisma operation parameters**
    - ❌ FORBIDDEN: `const updateData = {...}; await prisma.update({data: updateData})`
-   - ✅ REQUIRED: `await prisma.update({data: {...}})`
+   - ❌ FORBIDDEN: `const where = {...}; await prisma.findMany({where})`
+   - ❌ FORBIDDEN: `const orderBy = {...}; await prisma.findMany({orderBy})`
+   - ✅ REQUIRED: Define all parameters inline:
+     ```typescript
+     await prisma.findMany({
+       where: {
+         name: { contains: searchTerm },
+         enabled: true
+       },
+       orderBy: { created_at: 'desc' },
+       skip: page * pageSize,
+       take: pageSize
+     })
+     ```
    - This is MANDATORY for clear type error debugging
 
 2. **NEVER use native Date type in declarations**
@@ -1039,6 +1052,87 @@ const hasDateFilter = body.uploaded_at_from != null || body.uploaded_at_to != nu
 
 ---
 
+### 🔹 Exclusive Fields Pattern (e.g., `post_id` OR `comment_id`)
+
+**Problem**: When you have mutually exclusive nullable fields, TypeScript doesn't narrow types even after validation.
+
+❌ **Issue with simple boolean checks**:
+```ts
+const hasPostId = body.post_id !== undefined && body.post_id !== null;
+if (hasPostId) {
+  // TypeScript still thinks body.post_id could be null!
+  await prisma.findFirst({ where: { id: body.post_id } }); // Type error
+}
+```
+
+✅ **Fix Options**:
+
+1. **Extract and type the value immediately**:
+```ts
+// Extract non-null values with proper types
+const postId = body.post_id ?? null;
+const commentId = body.comment_id ?? null;
+
+// Validate exclusivity
+if ((postId === null) === (commentId === null)) {
+  throw new Error("Exactly one of post_id or comment_id must be provided");
+}
+
+// Use extracted values with clear types
+if (postId !== null) {
+  const post = await prisma.post.findFirst({
+    where: { id: postId, is_deleted: false }
+  });
+}
+```
+
+2. **Create typed variables for each case**:
+```ts
+// Determine which field is provided and extract it
+let targetType: 'post' | 'comment';
+let targetId: string & tags.Format<'uuid'>;
+
+if (body.post_id !== null && body.post_id !== undefined) {
+  targetType = 'post';
+  targetId = body.post_id;
+} else if (body.comment_id !== null && body.comment_id !== undefined) {
+  targetType = 'comment';
+  targetId = body.comment_id;
+} else {
+  throw new Error("Either post_id or comment_id must be provided");
+}
+
+// Now use targetType and targetId with clear types
+if (targetType === 'post') {
+  await prisma.post.findFirst({ where: { id: targetId } });
+} else {
+  await prisma.comment.findFirst({ where: { id: targetId } });
+}
+```
+
+3. **Use early validation and assignment**:
+```ts
+// Validate and assign in one step
+if (!body.post_id && !body.comment_id) {
+  throw new Error("Either post_id or comment_id required");
+}
+if (body.post_id && body.comment_id) {
+  throw new Error("Only one of post_id or comment_id allowed");
+}
+
+// Create the like with validated fields
+await prisma.like.create({
+  data: {
+    user_id: user.id,
+    post_id: body.post_id ?? null,
+    comment_id: body.comment_id ?? null,
+    created_at: toISOStringSafe(new Date()),
+  }
+});
+```
+
+---
+
 ### 🔹 `Cannot find module` (e.g., `bcrypt`)
 
 **Problem**: Missing dependency or type declaration.
@@ -1105,6 +1199,8 @@ const updateData = {
 | Branded union (e.g. \`number & Type<"int32">\`)                                        | Use `??` and `satisfies`                                               |                                     |
 | `1 \| -1` literal union                                                                | Constrain manually or use `as` safely                                  |                                     |
 | `unknown property` in object                                                           | Restructure input object to match schema                               |                                     |
+| `Spread types may only be created from object types`                                   | Initialize as empty object or use `?? {}`                              | Don't spread undefined              |
+| Exclusive fields (post_id OR comment_id)                                               | Extract values first, then validate                                    | TypeScript doesn't narrow nullable unions |
 | `as` usage                                                                             | Only allowed for brand/literal/validated values                        |                                     |
 | Missing module (e.g. bcrypt)                                                           | Install and import properly                                            |                                     |
 | Cannot use MyGlobal.user / requestUserId                                               | Always use the `user` function argument                                |                                     |
@@ -1480,6 +1576,33 @@ const updated = await MyGlobal.prisma.discussionboard_notification_setting.updat
 });
 ```
 
+**✅ PREFERRED: Complex queries with inline parameters**
+```typescript
+// Always define where, orderBy, and other parameters inline
+const results = await MyGlobal.prisma.discussionboard_tag.findMany({
+  where: {
+    ...(name && name.length > 0 && { 
+      name: { contains: name, mode: "insensitive" as const }
+    }),
+    ...(description && description.length > 0 && { 
+      description: { contains: description, mode: "insensitive" as const }
+    }),
+    ...(typeof enabled === "boolean" && { enabled }),
+  },
+  orderBy: { 
+    [allowedSortFields.includes(sort_by) ? sort_by : "created_at"]: 
+      sort_order === "asc" ? "asc" : "desc" 
+  },
+  skip: page && page_size ? page * page_size : 0,
+  take: page_size ?? 20,
+});
+
+// ❌ NEVER create intermediate variables
+const where = { /* ... */ };  // FORBIDDEN
+const orderBy = { /* ... */ }; // FORBIDDEN
+await prisma.findMany({ where, orderBy }); // Complex type errors!
+```
+
 **Why this matters:**
 - When types mismatch between the intermediate object and Prisma's expected input type, TypeScript generates complex union type errors
 - Direct assignment allows TypeScript to compare individual properties, resulting in more specific error messages
@@ -1547,28 +1670,54 @@ If a model supports soft delete (e.g., has a `deleted_at: DateTime?` or `deleted
 ### ✅ Example
 
 ```ts
-const softDeleteFields = ["deleted_at", "deleted"] as const;
+// For soft delete - prepare the ISO string once
+const deleted_at = toISOStringSafe(new Date());
 
-function getSoftDeleteData(schemaFields: readonly string[]) {
-  const data: Record<string, any> = {};
-  if (schemaFields.includes("deleted_at")) {
-    data.deleted_at = toISOStringSafe(new Date())
+const updated = await MyGlobal.prisma.discussionboard_user.update({
+  where: { id: parameters.id },
+  data: { deleted_at },
+  select: { id: true, deleted_at: true },
+});
+
+// ✅ CORRECT: Reuse the already-converted value
+return {
+  id: updated.id,
+  deleted_at: deleted_at, // Use the prepared value, not updated.deleted_at!
+};
+
+// ❌ WRONG: Don't try to convert nullable field from database
+return {
+  id: updated.id,
+  deleted_at: toISOStringSafe(updated.deleted_at), // ERROR: deleted_at can be null!
+};
+```
+
+### 💡 Key Pattern: When You Set a Value, Reuse It
+
+When performing soft deletes or updates with date values:
+1. **Convert to ISO string once** before the database operation
+2. **Use that same value** in the return object
+3. **Don't re-read nullable fields** from the database result
+
+```ts
+// Prepare values once
+const now = toISOStringSafe(new Date());
+const completed_at = body.mark_completed ? now : undefined;
+
+// Update with prepared values
+await prisma.task.update({
+  where: { id },
+  data: { 
+    completed_at,
+    updated_at: now
   }
-  if (schemaFields.includes("deleted")) {
-    data.deleted = true;
-  }
-  return data;
-}
+});
 
-const schemaFields = ["id", "name"]; // ← Example: no deleted_at field in this model
-
-const data = getSoftDeleteData(schemaFields);
-
-if (Object.keys(data).length > 0) {
-  await prisma.model.update({ where: { id }, data }); // ✅ Soft delete
-} else {
-  await prisma.model.delete({ where: { id } });       // ❌ No soft-delete field → hard delete
-}
+// Return using the same prepared values
+return {
+  completed_at: completed_at ?? null, // Use prepared value
+  updated_at: now, // Use prepared value
+};
 ```
 
 ## 🔗 Prefer Application-Level Joins Over Complex Prisma Queries
