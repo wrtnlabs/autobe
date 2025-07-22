@@ -52,7 +52,7 @@ export const validate_agent_prisma_schemas = async (
   if (process.argv.includes("--archive"))
     await fs.promises.writeFile(
       `${TestGlobal.ROOT}/assets/histories/${project}.prisma.schemas.json`,
-      JSON.stringify(result, null, 2),
+      JSON.stringify(result),
     );
 
   const expected: string[] = ce.components

@@ -57,16 +57,12 @@ export const validate_agent_test_main = async (
     root: `${TestGlobal.ROOT}/results/${project}/test/main`,
     files: {
       ...(await agent.getFiles()),
-      "logs/compiled.json": JSON.stringify(result.compiled, null, 2),
-      "logs/snapshots.json": JSON.stringify(snapshots, null, 2),
-      "logs/result.json": JSON.stringify(
-        {
-          ...result,
-          files: undefined,
-        },
-        null,
-        2,
-      ),
+      "logs/compiled.json": typia.json.stringify(result.compiled),
+      "logs/snapshots.json": typia.json.stringify(snapshots),
+      "logs/result.json": JSON.stringify({
+        ...result,
+        files: undefined,
+      }),
       "logs/histories.json": typia.json.stringify(histories),
       "pnpm-workspace.yaml": "",
     },

@@ -114,7 +114,7 @@ export const validate_agent_realize_coder = async (
   });
 
   console.log(
-    JSON.stringify(res.type === "failure" ? res.diagnostics : [], null, 2),
+    JSON.stringify(res.type === "failure" ? res.diagnostics : []),
     "diagnostics",
   );
   TestValidator.equals("compile success")(res.type)("success");

@@ -34,8 +34,8 @@ export const validate_agent_interface_operations = async (
     root: `${TestGlobal.ROOT}/results/${project}/interface/components`,
     files: {
       ...(await agent.getFiles()),
-      "logs/endpoints.json": JSON.stringify(endpoints, null, 2),
-      "logs/operations.json": JSON.stringify(operations, null, 2),
+      "logs/endpoints.json": JSON.stringify(endpoints),
+      "logs/operations.json": JSON.stringify(operations),
     },
   });
   typia.assert(operations);

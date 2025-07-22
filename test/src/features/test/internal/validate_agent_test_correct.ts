@@ -52,7 +52,7 @@ export const validate_agent_test_correct = async (
           .map((e) => [
             [
               e.file.location.replace(".ts", ".scenario"),
-              JSON.stringify(e.file.scenario, null, 2),
+              JSON.stringify(e.file.scenario),
             ],
             [
               e.file.location.replace(".ts", ".1.think"),
@@ -69,15 +69,13 @@ export const validate_agent_test_correct = async (
       ]),
       "test/tsconfig.json":
         AutoBeCompilerInterfaceTemplate["test/tsconfig.json"],
-      "logs/corrects.json": JSON.stringify(result, null, 2),
+      "logs/corrects.json": JSON.stringify(result),
       "logs/failures.json": JSON.stringify(
         result
           .map((c) => c.result)
           .filter((r) => r.type === "failure")
           .map((r) => r.diagnostics)
           .flat(),
-        null,
-        2,
       ),
     },
   });

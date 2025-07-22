@@ -71,12 +71,12 @@ export const validate_agent_test_write = async (
       "test/tsconfig.json":
         AutoBeCompilerInterfaceTemplate["test/tsconfig.json"],
       "logs/results.json": typia.json.stringify(writes),
-      "logs/compiled.json": JSON.stringify(result, null, 2),
+      "logs/compiled.json": typia.json.stringify(result),
     },
   });
   if (process.argv.includes("--archive"))
     await fs.promises.writeFile(
       `${TestGlobal.ROOT}/assets/histories/${project}.test.writes.json`,
-      JSON.stringify(writes, null, 2),
+      typia.json.stringify(writes),
     );
 };

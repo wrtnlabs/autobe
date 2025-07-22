@@ -73,7 +73,7 @@ async function main(): Promise<void> {
           fs.promises
             .writeFile(
               `${TestGlobal.ROOT}/tokenUsage.log`,
-              JSON.stringify(tokenUsage, null, 2),
+              JSON.stringify(tokenUsage),
               "utf8",
             )
             .catch(() => {});

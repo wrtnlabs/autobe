@@ -86,8 +86,8 @@ export const validate_agent_prisma_main = async (
     await FileSystemIterator.save({
       root: `${TestGlobal.ROOT}/results/${project}/prisma-correct-${validates.length}`,
       files: Object.fromEntries([
-        ["errors.json", JSON.stringify(event.failure.errors, null, 2)],
-        ["correction.json", JSON.stringify(event.correction, null, 2)],
+        ["errors.json", JSON.stringify(event.failure.errors)],
+        ["correction.json", JSON.stringify(event.correction)],
         ["planning.md", event.planning],
       ]),
     });
@@ -98,7 +98,7 @@ export const validate_agent_prisma_main = async (
     await FileSystemIterator.save({
       root: `${TestGlobal.ROOT}/results/${project}/prisma-failure-${validates.length}`,
       files: {
-        "errors.json": JSON.stringify(event.result.errors, null, 2),
+        "errors.json": JSON.stringify(event.result.errors),
         ...event.schemas,
       },
     });
@@ -120,14 +120,14 @@ export const validate_agent_prisma_main = async (
     await FileSystemIterator.save({
       root: `${TestGlobal.ROOT}/results/${project}/prisma-error`,
       files: {
-        "result.json": JSON.stringify(history.result, null, 2),
+        "result.json": JSON.stringify(history.result),
         ...history.schemas,
         ...(history.compiled.type === "failure"
           ? {
               "reason.log": history.compiled.reason,
             }
           : {
-              "error.json": JSON.stringify(history.compiled.error, null, 2),
+              "error.json": JSON.stringify(history.compiled.error),
             }),
       },
     });
@@ -139,21 +139,19 @@ export const validate_agent_prisma_main = async (
     root: `${TestGlobal.ROOT}/results/${project}/prisma`,
     files: {
       ...(await agent.getFiles()),
-      "logs/validates.json": JSON.stringify(validates, null, 2),
-      "logs/result.json": JSON.stringify(history, null, 2),
-      "logs/files.json": JSON.stringify(Object.keys(agent.getFiles()), null, 2),
+      "logs/validates.json": JSON.stringify(validates),
+      "logs/result.json": JSON.stringify(history),
+      "logs/files.json": JSON.stringify(Object.keys(agent.getFiles())),
       "logs/result-files.json": JSON.stringify(
         Object.keys({
           ...history.compiled.nodeModules,
           ...history.compiled.schemas,
         }),
-        null,
-        2,
       ),
-      "logs/tokenUsage.json": JSON.stringify(agent.getTokenUsage(), null, 2),
-      "logs/components.json": JSON.stringify(components, null, 2),
-      "logs/schemas.json": JSON.stringify(schemas, null, 2),
-      "logs/start.json": JSON.stringify(start, null, 2),
+      "logs/tokenUsage.json": JSON.stringify(agent.getTokenUsage()),
+      "logs/components.json": JSON.stringify(components),
+      "logs/schemas.json": JSON.stringify(schemas),
+      "logs/start.json": JSON.stringify(start),
     },
   });
   if (process.argv.includes("--archive")) {

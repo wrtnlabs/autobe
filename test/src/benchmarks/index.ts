@@ -125,7 +125,7 @@ async function runBenchmarks(props: {
                 fs.promises
                   .writeFile(
                     `${context.logsDir}/${context.runId}/report.json`,
-                    JSON.stringify(context, null, 2),
+                    JSON.stringify(context),
                     "utf8",
                   )
                   .catch(() => {});
@@ -175,7 +175,7 @@ async function runBenchmark(props: {
       fs.promises
         .writeFile(
           `${context.logsDir}/${context.runId}/histories.log`,
-          JSON.stringify(histories, null, 2),
+          JSON.stringify(histories),
           "utf8",
         )
         .catch(() => {});
@@ -212,7 +212,7 @@ async function runBenchmark(props: {
       }
 
       if (!res.content) {
-        console.error("No content in response", JSON.stringify(res, null, 2));
+        console.error("No content in response", JSON.stringify(res));
         throw new Error("No content in response");
       }
       histories.push(...(await autobe.conversate(res.content)));
@@ -232,12 +232,12 @@ async function registerAutobeEvents(
 ) {
   autobe.on("userMessage", (event) => {
     if (event.type === "userMessage") {
-      log(`userMessage: ${JSON.stringify(event.contents, null, 2)}`);
+      log(`userMessage: ${JSON.stringify(event.contents)}`);
     }
   });
   autobe.on("assistantMessage", (event) => {
     if (event.type === "assistantMessage") {
-      log(`assistantMessage: ${JSON.stringify(event.text, null, 2)}`);
+      log(`assistantMessage: ${JSON.stringify(event.text)}`);
     }
   });
   autobe.on("analyzeStart", () => {

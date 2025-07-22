@@ -90,6 +90,6 @@ export const validate_agent_realize_decorator = async (
   const compiled = await compiler.typescript.compile({ files });
 
   if (compiled.type !== "success") {
-    throw new Error(JSON.stringify(compiled, null, 2));
+    throw new Error(JSON.stringify(compiled));
   }
 };

@@ -55,8 +55,8 @@ export const validate_agent_interface_main = async (
     root: `${TestGlobal.ROOT}/results/${project}/interface/main`,
     files: {
       ...(await agent.getFiles()),
-      "logs/snapshots.json": JSON.stringify(snapshots, null, 2),
-      "logs/result.json": JSON.stringify(result, null, 2),
+      "logs/snapshots.json": typia.json.stringify(snapshots),
+      "logs/result.json": typia.json.stringify(result),
     },
   });
   if (process.argv.includes("--archive")) {
