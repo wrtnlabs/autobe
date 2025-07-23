@@ -47,7 +47,7 @@ export const validate_agent_realize_coder = async (
   const ops = ctx.state().interface?.document.operations ?? [];
 
   // DO TEST GENERATION
-  const go = async () => await writeCodeUntilCompilePassed(ctx, ops);
+  const go = async () => await writeCodeUntilCompilePassed(ctx, ops, 5);
 
   const result: Pick<
     IAutoBeRealizeCoderApplication.RealizeCoderOutput,

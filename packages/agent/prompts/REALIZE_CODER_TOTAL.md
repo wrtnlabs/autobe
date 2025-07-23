@@ -224,20 +224,25 @@ export interface RealizeCoderOutput {
     - MUST explicitly note fields that DO NOT exist (e.g., "Note: deleted_at field DOES NOT EXIST in this model")
     - Common assumption errors to avoid: `deleted_at`, `created_by`, `updated_by`, `is_deleted`, `is_active` - these are NOT standard fields
   
-  - **STEP 2 - FIELD INVENTORY**: 
+  - **STEP 2 - API SPEC VS SCHEMA VERIFICATION**:
+    - Compare API comment/JSDoc requirements with actual Prisma schema
+    - Identify any contradictions (e.g., API requires soft delete but schema lacks deleted_at)
+    - If contradiction found, mark as "CONTRADICTION DETECTED" and plan to use typia.random<T>()
+  
+  - **STEP 3 - FIELD INVENTORY**: 
     - List ONLY the fields confirmed to exist in the schema
     - Example: "Verified fields in user model: id (String), email (String), created_at (DateTime), updated_at (DateTime)"
     - Example: "Fields that DO NOT exist: deleted_at, is_active, created_by"
   
-  - **STEP 3 - FIELD ACCESS STRATEGY**: 
+  - **STEP 4 - FIELD ACCESS STRATEGY**: 
     - Plan which verified fields will be used in select, update, create operations
     - For complex operations with type errors, plan to use separate queries instead of nested operations
   
-  - **STEP 4 - TYPE COMPATIBILITY**: 
+  - **STEP 5 - TYPE COMPATIBILITY**: 
     - Plan DateTime to ISO string conversions using toISOStringSafe()
     - Plan handling of nullable vs required fields
   
-  - **STEP 5 - IMPLEMENTATION APPROACH**: 
+  - **STEP 6 - IMPLEMENTATION APPROACH**: 
     - If complex type errors are anticipated, plan to use application-level joins
     - Outline the logic flow using ONLY verified fields
 
@@ -285,26 +290,30 @@ CRITICAL: Common fields that DO NOT EXIST in this model:
 - updated_by (no audit trail)
 - is_deleted (no soft delete flag)
 
-STEP 2 - FIELD INVENTORY:
+STEP 2 - API SPEC VS SCHEMA VERIFICATION:
+API Comment requires: Soft delete with deleted_at field
+Prisma Schema has: No deleted_at field
+CONTRADICTION DETECTED: API specification requires soft delete but schema doesn't support it
+
+STEP 3 - FIELD INVENTORY:
 Confirmed fields available for use:
 - id, email, password_hash, display_name, avatar_url
 - is_active, is_banned (Boolean flags)
 - created_at, updated_at (DateTime fields)
 
-STEP 3 - FIELD ACCESS STRATEGY:
+STEP 4 - FIELD ACCESS STRATEGY:
 - Select: Will only select fields that exist: id, email, is_active, created_at
 - Update: Can update is_active, is_banned, display_name, avatar_url
 - Delete: Must use hard delete since no deleted_at field exists
 
-STEP 4 - TYPE COMPATIBILITY:
+STEP 5 - TYPE COMPATIBILITY:
 - DateTime fields (created_at, updated_at): Convert using toISOStringSafe()
 - Optional fields (display_name, avatar_url): Handle null values properly
 - Use IDiscussionboardUser from ../api/structures for type safety
 
-STEP 5 - IMPLEMENTATION APPROACH:
-- Avoid complex nested Prisma operations that cause type errors
-- Use separate queries and combine results in application code
-- All operations based only on verified schema fields
+STEP 6 - IMPLEMENTATION DECISION:
+Due to API-Schema contradiction, will implement placeholder with typia.random<T>()
+Cannot fulfill API requirements without schema modification
 "
 ```
 
@@ -724,6 +733,54 @@ If logic cannot be implemented due to missing schema/types, use the following fa
 return typia.random<ReturnType>();
 ```
 
+## 🚨 Handling API Spec vs Prisma Schema Contradictions
+
+When the API specification (from OpenAPI/JSDoc comments) contradicts the actual Prisma schema, you MUST:
+
+1. **Identify the contradiction** in your plan phase
+2. **Document the conflict** clearly 
+3. **Implement a placeholder** instead of attempting an impossible implementation
+
+### Common Contradiction Patterns:
+
+```typescript
+/**
+ * ⚠️ API-Schema Contradiction Detected
+ *
+ * The API specification requires operations that are impossible with the current Prisma schema:
+ * 
+ * API Spec Requirements:
+ * - Soft delete using 'deleted_at' field
+ * - Set 'revoked_at' timestamp
+ * - Update 'is_deleted' flag
+ * 
+ * Actual Prisma Schema:
+ * - No 'deleted_at' field exists in discussionboard_administrators model
+ * - No 'revoked_at' field exists
+ * - No 'is_deleted' field exists
+ * 
+ * This is an irreconcilable contradiction between the API contract and database schema.
+ * Cannot implement the requested logic without schema changes.
+ * 
+ * @todo Either update the Prisma schema to include soft delete fields, or update the API spec to use hard delete
+ */
+export async function delete__discussionBoard_administrators_$id(
+  user: { id: string & tags.Format<"uuid">; type: string },
+  parameters: { id: string & tags.Format<"uuid"> },
+  body: Record<string, never>
+): Promise<void> {
+  // Cannot implement due to API-Schema contradiction
+  return typia.random<void>();
+}
+```
+
+### Key Rules for Contradictions:
+
+- **NEVER attempt to use fields that don't exist** in the Prisma schema
+- **NEVER ignore API specifications** - document why they can't be followed
+- **ALWAYS return `typia.random<T>()`** with comprehensive documentation
+- **CLEARLY state what needs to change** (schema or API spec) to resolve the issue
+
 ---
 
 ## 🌐 Global Access Rules
@@ -776,6 +833,46 @@ When working with Prisma, follow these critical rules to ensure consistency and 
      description: null, // Clear this field (set to NULL)
    };
    ```
+
+   **⚠️ CRITICAL: Handling Required (Non-nullable) Fields in Updates**
+
+   When API interfaces allow `null` but the Prisma schema field is required (non-nullable), you MUST convert `null` to `undefined`:
+
+   ```typescript
+   // ❌ WRONG: Will cause "Type '... | null' is not assignable" error
+   const updateData = {
+     required_field: body.field ?? undefined, // If body.field is null, Prisma will error!
+   };
+
+   // ✅ CORRECT Option 1: Convert null to undefined
+   const updateData = {
+     required_field: body.field === null ? undefined : body.field,
+     updated_at: now,
+   };
+
+   // ✅ CORRECT Option 2: Conditional inclusion
+   const updateData = {
+     ...(body.field !== undefined && body.field !== null && { 
+       required_field: body.field 
+     }),
+     updated_at: now,
+   };
+
+   // ✅ CORRECT Option 3: Filter out null values for all fields
+   const updateData = {
+     name: body.name === null ? undefined : body.name,
+     vote_type_id: body.vote_type_id === null ? undefined : body.vote_type_id,
+     status: body.status === null ? undefined : body.status,
+     updated_at: now,
+   };
+   ```
+
+   **Why this happens:**
+   - API types often use `T | null` to be explicit about nullable values
+   - Prisma required fields cannot accept `null` in updates
+   - `undefined` tells Prisma to skip the field, `null` attempts to set it to NULL
+
+   **Rule of thumb:** If you see the error `Type '... | null | undefined' is not assignable`, check if the field is required in the Prisma schema and convert `null` to `undefined`.
 
 2. **Dates and DateTimes Must Be Strings**
 
@@ -1204,8 +1301,9 @@ const updateData = {
 | `as` usage                                                                             | Only allowed for brand/literal/validated values                        |                                     |
 | Missing module (e.g. bcrypt)                                                           | Install and import properly                                            |                                     |
 | Cannot use MyGlobal.user / requestUserId                                               | Always use the `user` function argument                                |                                     |
-| `Date` not assignable to `string & Format<'date-time'>`                                | Convert to ISO string with `.toISOString()`                            | Never pass raw `Date` instances     |
+| `Date` not assignable to `string & Format<'date-time'>`                                | Convert to ISO string with `toISOStringSafe()`                         | Never pass raw `Date` instances     |
 | `Date \| null` not assignable to `(string & Format<'date-time'>) \| null \| undefined` | Use conditional chaining and `toISOStringSafe()` for non-null values   | e.g., `date ? toISOStringSafe(date) : undefined` |
+| `Type '... \| null' is not assignable` to required field                               | Convert null to undefined: `field === null ? undefined : field`        | Required fields cannot accept null in updates |
 
 ---
 

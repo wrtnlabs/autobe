@@ -19,7 +19,7 @@ export async function writeCodeUntilCompilePassed<
 >(
   ctx: AutoBeContext<Model>,
   ops: AutoBeOpenApi.IOperation[],
-  retry: number = 3,
+  retry: number,
 ): Promise<
   Pick<
     IAutoBeRealizeCoderApplication.RealizeCoderOutput,
