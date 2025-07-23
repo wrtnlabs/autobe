@@ -9,8 +9,8 @@ import { WebSocketConnector } from "tgrid";
 import { AutoBePlaygroundChatMovie } from "./movies/chat/AutoBePlaygroundChatMovie";
 import { AutoBePlaygroundListener } from "./structures/AutoBePlaygroundListener";
 
-export function AutoBePlaygroundMockApplication() {
-  const [next, setNext] = useState<AutoBePlaygroundChatMovie.IProps | null>(
+export function AutoBePlaygroundReplayApplication() {
+  const [next, setNext] = useState<AutoBePlaygroundChatMovie.IContext | null>(
     null,
   );
   useEffect(() => {
@@ -50,7 +50,10 @@ export function AutoBePlaygroundMockApplication() {
       {next === null ? (
         <>Connecting...</>
       ) : (
-        <AutoBePlaygroundChatMovie {...next} />
+        <AutoBePlaygroundChatMovie
+          title="AutoBE Playground (Replay)"
+          {...next}
+        />
       )}
     </div>
   );

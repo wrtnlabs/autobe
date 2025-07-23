@@ -92,7 +92,7 @@ export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
     ): Promise<void> => {
       for (const s of this.getEventSnapshots(type)) {
         const time: number = sleepMap[s.event.type] ?? 500;
-        await sleep_for(randint(time * 0.7, time * 1.3));
+        await sleep_for(randint(time * 0.2, time * 1.8));
         void this.dispatch(s.event).catch(() => {});
         this.token_usage_ = new AutoBeTokenUsage(s.tokenUsage);
       }

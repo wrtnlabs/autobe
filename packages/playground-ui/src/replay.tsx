@@ -1,7 +1,7 @@
 import { createRoot } from "react-dom/client";
 
-import { AutoBePlaygroundMockApplication } from "./AutoBePlaygroundMockApplication";
+import { AutoBePlaygroundReplayApplication } from "./AutoBePlaygroundReplayApplication";
 
 createRoot(window.document.getElementById("root")!).render(
-  <AutoBePlaygroundMockApplication />,
+  <AutoBePlaygroundReplayApplication />,
 );

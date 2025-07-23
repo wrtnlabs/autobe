@@ -181,7 +181,7 @@ export function AutoBePlaygroundChatMovie(
       <AppBar position="relative" component="div">
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            AutoBE Playground
+            {props.title ?? "AutoBE Playground"}
           </Typography>
           {isMobile ? (
             <>
@@ -253,7 +253,10 @@ export function AutoBePlaygroundChatMovie(
   );
 }
 export namespace AutoBePlaygroundChatMovie {
-  export interface IProps {
+  export interface IProps extends IContext {
+    title?: string;
+  }
+  export interface IContext {
     header: IAutoBeRpcHeader<ILlmSchema.Model>;
     service: IAutoBeRpcService;
     listener: AutoBePlaygroundListener;
