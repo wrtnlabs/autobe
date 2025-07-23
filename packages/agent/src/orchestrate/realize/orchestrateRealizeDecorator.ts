@@ -24,16 +24,12 @@ import { transformRealizeDecoratorCorrectHistories } from "./transformRealizeDec
  */
 export async function orchestrateRealizeDecorator<
   Model extends ILlmSchema.Model,
->(
-  ctx: AutoBeContext<Model>,
-): Promise<IAutoBeRealizeDecoratorApplication.IProps[]> {
+>(ctx: AutoBeContext<Model>): Promise<AutoBeRealizeDecoratorEvent[]> {
   const roles =
     ctx
       .state()
       .interface?.document.components.authorization?.map((auth) => auth.name) ??
     [];
-
-  const decorators: IAutoBeRealizeDecoratorApplication.IProps[] = [];
 
   let completed = 0;
 
@@ -58,7 +54,7 @@ export async function orchestrateRealizeDecorator<
     ...templateFiles,
   };
 
-  await Promise.all(
+  const events: AutoBeRealizeDecoratorEvent[] = await Promise.all(
     roles.map(async (role) => {
       const decorator: IAutoBeRealizeDecoratorApplication.IProps =
         await process(ctx, role, templateFiles);
@@ -70,22 +66,25 @@ export async function orchestrateRealizeDecorator<
       files[`src/authentications/types/${decorator.decoratorType.name}.ts`] =
         decorator.decoratorType.code;
 
-      decorators.push(decorator);
-
-      const events: AutoBeRealizeDecoratorEvent = {
+      const event: AutoBeRealizeDecoratorEvent = {
         type: "realizeDecorator",
         created_at: new Date().toISOString(),
-        files,
+        role,
+        provider: decorator.provider,
+        decorator: decorator.decorator,
+        decoratorType: decorator.decoratorType,
         completed: ++completed,
         total: roles.length,
         step: ctx.state().test?.step ?? 0,
       };
 
-      ctx.dispatch(events);
+      ctx.dispatch(event);
+
+      return event;
     }),
   );
 
-  return decorators;
+  return events;
 }
 
 async function process<Model extends ILlmSchema.Model>(

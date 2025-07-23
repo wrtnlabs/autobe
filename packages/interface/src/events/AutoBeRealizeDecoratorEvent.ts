@@ -1,3 +1,4 @@
+import { AutoBeRealizeDecorator } from "../histories/contents";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
 /**
@@ -14,14 +15,37 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
 export interface AutoBeRealizeDecoratorEvent
   extends AutoBeEventBase<"realizeDecorator"> {
   /**
-   * Generated decorator and provider files as key-value pairs.
+   * Role of the decorator.
    *
-   * Contains the TypeScript implementation files that were generated for the
-   * decorator and provider. Each key represents the file path and each value
-   * contains the actual implementation code that makes the application
-   * functional.
+   * Indicates the role for which the decorator was generated. This role
+   * determines the type of authentication and authorization mechanism that will
+   * be implemented in the decorator.
    */
-  files: Record<string, string>;
+  role: string;
+
+  /**
+   * Authentication Provider function configuration containing the function name
+   * and implementation code. The Provider handles JWT token verification, role
+   * validation, and database queries to authenticate users.
+   */
+  provider: AutoBeRealizeDecorator.IProvider;
+
+  /**
+   * Authentication Decorator configuration containing the decorator name and
+   * implementation code. The Decorator integrates with NestJS parameter
+   * decorators to automatically inject authenticated user data into Controller
+   * methods.
+   */
+  decorator: AutoBeRealizeDecorator.IDecorator;
+
+  /**
+   * Authentication Decorator Type configuration containing the decorator type
+   * name and implementation code. The Decorator Type is used to define the
+   * structure of the authenticated user data that will be injected into
+   * Controller methods when using the decorator. It serves as the TypeScript
+   * type for the parameter in Controller method signatures.
+   */
+  decoratorType: AutoBeRealizeDecorator.IDecoratorType;
 
   /**
    * Number of implementation files that have been completed so far.
