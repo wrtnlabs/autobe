@@ -36,6 +36,45 @@ export namespace IAutoBeRealizeCoderApplication {
     filename: string;
 
     /**
+     * Error Analysis Phase (Optional)
+     *
+     * 🔍 Analyzes TypeScript compilation errors from previous attempts.
+     *
+     * This field should contain a detailed analysis of any TypeScript errors
+     * encountered, with root cause identification and resolution strategies:
+     *
+     * Common Error Patterns to Analyze:
+     *
+     * 1. **"Property does not exist" (TS2353)**:
+     *
+     *    - Root Cause: Using fields that don't exist in Prisma schema
+     *    - Example: Using `deleted_at` when the field doesn't exist in the model
+     *    - Resolution: Remove the non-existent field or use hard delete instead
+     * 2. **"Type 'void' is not assignable" (TS2322)**:
+     *
+     *    - Root Cause: Using `typia.assertGuard` instead of `typia.assert`
+     *    - `assertGuard` returns void, `assert` returns the validated value
+     *    - Resolution: Change `typia.assertGuard<T>()` to `typia.assert<T>()`
+     * 3. **"Type 'Date' is not assignable to type 'string &
+     *    Format<'date-time'>'"**:
+     *
+     *    - Root Cause: Assigning native Date objects to string fields
+     *    - Resolution: Use `toISOStringSafe(dateValue)` for all date conversions
+     * 4. **Complex Prisma Type Errors**:
+     *
+     *    - Root Cause: Nested operations with incompatible types
+     *    - Resolution: Use separate queries and application-level joins
+     *
+     * Analysis Format:
+     *
+     * - List each error with its TypeScript error code
+     * - Identify the root cause (schema mismatch, wrong function usage, etc.)
+     * - Provide specific resolution steps
+     * - Note any schema limitations discovered
+     */
+    errorAnalysis?: string;
+
+    /**
      * Step 1.
      *
      * 🧠 Provider Function Implementation Plan
@@ -44,12 +83,42 @@ export namespace IAutoBeRealizeCoderApplication {
      * function according to the Realize Coder Agent specification. Before
      * writing the actual code, think through the logic and structure.
      *
-     * The plan must consider:
+     * The plan MUST follow MANDATORY SCHEMA-FIRST APPROACH:
+     *
+     * 📋 STEP 1 - PRISMA SCHEMA VERIFICATION (MOST CRITICAL):
+     *
+     * - EXAMINE the actual Prisma schema model definition
+     * - LIST EVERY field that exists in the model with exact types
+     * - EXPLICITLY NOTE fields that DO NOT exist (e.g., "Note: deleted_at field
+     *   DOES NOT EXIST")
+     * - Common assumption errors to avoid: `deleted_at`, `created_by`,
+     *   `updated_by`, `is_deleted`, `is_active`
+     *
+     * 📋 STEP 2 - FIELD INVENTORY:
+     *
+     * - List ONLY fields confirmed to exist in schema
+     * - Example: "Verified fields in user model: id (String), email (String),
+     *   created_at (DateTime), updated_at (DateTime)"
+     * - Example: "Fields that DO NOT exist: deleted_at, is_active, created_by"
+     *
+     * 📋 STEP 3 - FIELD ACCESS STRATEGY:
+     *
+     * - Plan which verified fields will be used in select, update, create
+     *   operations
+     * - For complex operations with type errors, plan to use separate queries
+     *   instead of nested operations
+     *
+     * 📋 STEP 4 - TYPE COMPATIBILITY:
+     *
+     * - Plan DateTime to ISO string conversions using toISOStringSafe()
+     * - Plan handling of nullable vs required fields
+     *
+     * 📋 STEP 5 - IMPLEMENTATION APPROACH:
      *
      * - 🧩 Required business entities (e.g., users, posts, logs) and their
      *   relationships
      * - 🛠 Operations needed to fulfill the business scenario (e.g., fetch,
-     *   create, update)
+     *   create, update) using ONLY verified fields
      * - 🔄 Data dependencies between steps (e.g., use userId to fetch related
      *   data)
      * - ✅ Validation points (based on business rules, not field presence)
@@ -71,7 +140,7 @@ export namespace IAutoBeRealizeCoderApplication {
      * ⚠️ TypeScript-specific considerations:
      *
      * - Do **not** use native `Date` objects directly; always convert all dates
-     *   to ISO strings with `.toISOString()` and brand as `string &
+     *   using `toISOStringSafe()` and brand as `string &
      *   tags.Format<'date-time'>`. This rule applies throughout all phases.
      * - Prefer `satisfies` for DTO conformance instead of unsafe `as` casts
      * - Avoid weak typing such as `any`, `as any`, or `satisfies any`
@@ -156,8 +225,11 @@ export namespace IAutoBeRealizeCoderApplication {
     /**
      * Step 3.
      *
+     * Draft WITHOUT using native Date type.
+     *
      * This is the initial drafting phase where you outline the basic skeleton
-     * of the function.
+     * of the function. CRITICAL: This draft must NEVER use the native Date
+     * type.
      *
      * - The function signature must correctly include `user`, `parameters`, and
      *   `body` arguments.
@@ -177,11 +249,12 @@ export namespace IAutoBeRealizeCoderApplication {
      * ✅ Requirements:
      *
      * - Avoid using the `any` type at all costs to ensure type safety.
-     * - Do NOT assign native `Date` objects directly; always convert dates using
-     *   `.toISOString()` before assignment and apply proper branding.
+     * - NEVER declare variables with `: Date` type
+     * - ALWAYS use `string & tags.Format<'date-time'>` for date values
+     * - Use `toISOStringSafe(new Date())` for current timestamps
      * - Maintain a single-function structure; avoid using classes.
      */
-    draft: string;
+    draft_without_date_type: string;
 
     /**
      * Step 4.
@@ -196,7 +269,7 @@ export namespace IAutoBeRealizeCoderApplication {
      *
      * - Use `satisfies` to ensure DTO conformity.
      * - Avoid unsafe `as` casts unless only for branding or literal narrowing.
-     * - Include `.toISOString()` for all date fields.
+     * - Use `toISOStringSafe()` for all date conversions (NOT `.toISOString()`).
      * - Ensure all object keys strictly conform to the expected type definitions.
      */
     review: string;
@@ -224,11 +297,12 @@ export namespace IAutoBeRealizeCoderApplication {
      *
      * - Passes strict type checking without errors.
      * - Uses only safe branding or literal type assertions.
-     * - Converts all date values properly to ISO string format.
+     * - Converts all date values properly using `toISOStringSafe()`.
      * - Follows DTO structures using `satisfies`.
      * - Avoids any weak typing such as `any`, `as any`, or `satisfies any`.
-     * - Uses only allowed imports (e.g., from `src/api/structures` and
+     * - Uses only allowed imports (e.g., from `../api/structures` and
      *   `MyGlobal.prisma`).
+     * - NEVER creates intermediate variables for Prisma operations.
      *
      * ⚠️ Fallback Behavior:
      *
@@ -254,8 +328,8 @@ export namespace IAutoBeRealizeCoderApplication {
      * - Do NOT add or modify import statements manually. Imports are handled
      *   automatically by the system.
      * - Do NOT use `any`, `as any`, or `satisfies any` to bypass type checking.
-     * - Do NOT assign native `Date` objects directly; always convert them to ISO
-     *   strings with `.toISOString()`.
+     * - Do NOT assign native `Date` objects directly; always convert them using
+     *   `toISOStringSafe()`.
      * - Do NOT use unsafe type assertions except for safe branding or literal
      *   narrowing.
      * - Do NOT write code outside the single async function structure (e.g., no
@@ -264,8 +338,9 @@ export namespace IAutoBeRealizeCoderApplication {
      *   validated.
      * - Do NOT use dynamic import expressions (`import()`); all imports must be
      *   static.
-     * - Do NOT rely on DTO types for database update input; always use
-     *   Prisma-generated input types.
+     * - Do NOT use Prisma-generated input types; always use types from
+     *   `../api/structures`.
+     * - Do NOT use `Object.prototype.hasOwnProperty.call()` for field checks.
      * - Do NOT escape newlines or quotes in the implementation string (e.g., no
      *   `\\n` or `\"`); use a properly formatted template literal with actual
      *   line breaks instead.
