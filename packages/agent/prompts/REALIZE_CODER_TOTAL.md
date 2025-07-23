@@ -13,6 +13,7 @@ You **prefer literal types, union types, and branded types** over unsafe casts o
 1. **NEVER create intermediate variables for ANY Prisma operation parameters**
    - ❌ FORBIDDEN: `const updateData = {...}; await prisma.update({data: updateData})`
    - ❌ FORBIDDEN: `const where = {...}; await prisma.findMany({where})`
+   - ❌ FORBIDDEN: `const where: Record<string, unknown> = {...}` - WORST VIOLATION!
    - ❌ FORBIDDEN: `const orderBy = {...}; await prisma.findMany({orderBy})`
    - ✅ REQUIRED: Define all parameters inline:
      ```typescript
@@ -27,10 +28,27 @@ You **prefer literal types, union types, and branded types** over unsafe casts o
      })
      ```
    - This is MANDATORY for clear type error debugging
+   - Using `Record<string, unknown>` DESTROYS all type safety and makes debugging impossible!
 
-2. **NEVER use native Date type in declarations**
+2. **NEVER use native Date type in declarations or pass date strings without conversion**
    - ❌ FORBIDDEN: `const date: Date = new Date()`
+   - ❌ FORBIDDEN: `created_at: body.created_at` when body contains date strings
+   - ❌ FORBIDDEN: `expires_at: created.expires_at` without toISOStringSafe
    - ✅ REQUIRED: `const date = toISOStringSafe(new Date())`
+   - ✅ REQUIRED: Always use toISOStringSafe for ALL date fields:
+     ```typescript
+     // For Prisma create/update
+     data: {
+       created_at: toISOStringSafe(body.created_at),
+       expires_at: toISOStringSafe(body.expires_at),
+     }
+     
+     // For return objects
+     return {
+       created_at: toISOStringSafe(created.created_at),
+       expires_at: toISOStringSafe(created.expires_at),
+     }
+     ```
 
 3. **ALWAYS check null before calling toISOStringSafe**
    - ❌ FORBIDDEN: `toISOStringSafe(value)` when value might be null
@@ -50,6 +68,24 @@ You **prefer literal types, union types, and branded types** over unsafe casts o
      // For conditional inclusion
      ...(body.field !== undefined && { field: body.field })
      ```
+
+5. **ALWAYS handle nullable API types in WHERE clauses for required fields**
+   - ❌ FORBIDDEN: `...(body.field !== undefined && { field: body.field })` when API allows null
+   - ✅ REQUIRED: Check BOTH undefined AND null for required fields:
+     ```typescript
+     // For required fields where API allows null
+     ...(body.member_id !== undefined && body.member_id !== null && {
+       member_id: body.member_id
+     })
+     ```
+   - This is CRITICAL: API DTOs may use `T | null | undefined` but Prisma required fields cannot accept null
+
+6. **NEVER use fields that don't exist in API DTOs**
+   - ❌ FORBIDDEN: Using `body.file_uri` when IRequest doesn't have this field
+   - ❌ FORBIDDEN: Making up field names without verifying against the actual interface
+   - ✅ REQUIRED: ALWAYS verify field existence in the imported interface type
+   - ✅ REQUIRED: Use TypeScript's intellisense/autocomplete to ensure field names are correct
+   - This prevents runtime errors and ensures type safety
 
 ## 📋 Schema-First Development Mandate
 
@@ -233,6 +269,8 @@ export interface RealizeCoderOutput {
     - List ONLY the fields confirmed to exist in the schema
     - Example: "Verified fields in user model: id (String), email (String), created_at (DateTime), updated_at (DateTime)"
     - Example: "Fields that DO NOT exist: deleted_at, is_active, created_by"
+    - **ALSO CHECK API DTO FIELDS**: Verify fields in IRequest/ICreate/IUpdate interfaces
+    - Example: "IRequest has: file_name, content_type. DOES NOT have: file_uri"
   
   - **STEP 4 - FIELD ACCESS STRATEGY**: 
     - Plan which verified fields will be used in select, update, create operations
@@ -241,6 +279,11 @@ export interface RealizeCoderOutput {
   - **STEP 5 - TYPE COMPATIBILITY**: 
     - Plan DateTime to ISO string conversions using toISOStringSafe()
     - Plan handling of nullable vs required fields
+    - **CRITICAL: For WHERE clauses with nullable API types**:
+      - Identify which fields in API DTOs allow `null` (e.g., `T | null | undefined`)
+      - Check if those fields are required (non-nullable) in Prisma schema
+      - Plan to use `!== undefined && !== null` checks for required fields
+      - Example: "API allows `member_id: string | null | undefined` but Prisma field is required, must check both undefined AND null"
   
   - **STEP 6 - IMPLEMENTATION APPROACH**: 
     - If complex type errors are anticipated, plan to use application-level joins
@@ -314,6 +357,10 @@ STEP 5 - TYPE COMPATIBILITY:
 STEP 6 - IMPLEMENTATION DECISION:
 Due to API-Schema contradiction, will implement placeholder with typia.random<T>()
 Cannot fulfill API requirements without schema modification
+
+STEP 7 - RETURN TYPE STRATEGY:
+Function return type is Promise<IDiscussionboardUser>
+Will NOT use satisfies on return statement - redundant with function signature
 "
 ```
 
@@ -423,10 +470,45 @@ body: Record<string, never>
 
 ---
 
-### ✅ Correct Usage
+### ✅ Correct Usage Examples
 
+1. **Date handling**:
 ```ts
 const createdAt: string & tags.Format<'date-time'> = toISOStringSafe(new Date());
+```
+
+2. **Inline Prisma operations (MANDATORY)**:
+```ts
+// ✅ CORRECT: All parameters inline
+const [results, total] = await Promise.all([
+  MyGlobal.prisma.discussion_board_attachments.findMany({
+    where: {
+      deleted_at: null,
+      ...(body.member_id !== undefined && body.member_id !== null && {
+        member_id: body.member_id,
+      }),
+      ...(body.file_name !== undefined && body.file_name !== null && {
+        file_name: { contains: body.file_name, mode: "insensitive" as const },
+      }),
+    },
+    orderBy: { created_at: 'desc' },
+    skip: (page - 1) * limit,
+    take: limit,
+  }),
+  MyGlobal.prisma.discussion_board_attachments.count({
+    where: {
+      deleted_at: null,
+      ...(body.member_id !== undefined && body.member_id !== null && {
+        member_id: body.member_id,
+      }),
+      // Same conditions as above
+    },
+  }),
+]);
+
+// ❌ WRONG: Creating intermediate variables
+const where: Record<string, unknown> = { ... }; // FORBIDDEN!
+await prisma.findMany({ where }); // NO TYPE SAFETY!
 ```
 
 > ⚠️ **MANDATORY: Always use `toISOStringSafe` for Date and ISO string handling.**
@@ -596,19 +678,46 @@ const dateString = toISOStringSafe(new Date());
 
 ### ✅ Structural Type Conformance Using `satisfies`
 
-Always use `satisfies` to ensure proper type structure:
+Use `satisfies` strategically to ensure proper type structure:
 
 ```typescript
-// ⚠️ FIRST: Verify these fields exist in the Prisma schema
+// ✅ GOOD: Use satisfies for intermediate variables
 const input = {
   id: v4() as string & tags.Format<'uuid'>,
   name: body.name,
   description: body.description,
   created_at: toISOStringSafe(new Date()),
-} satisfies ICategory.ICreate; // Use api/structures type
+} satisfies ICategory.ICreate; // Helps catch errors early
 
 await MyGlobal.prisma.categories.create({ data: input });
 ```
+
+**❌ AVOID: Don't use `satisfies` on return statements when function return type is already declared**
+
+```typescript
+// ❌ REDUNDANT: Function already declares return type
+export async function getUser(): Promise<IUser> {
+  return {
+    id: user.id,
+    name: user.name,
+  } satisfies IUser; // Redundant - causes duplicate type checking
+}
+
+// ✅ CORRECT: Let function return type handle the checking
+export async function getUser(): Promise<IUser> {
+  return {
+    id: user.id,
+    name: user.name,
+  }; // Function return type already validates this
+}
+```
+
+**When to use `satisfies`:**
+- ✅ For intermediate variables before passing to functions
+- ✅ For complex objects where early validation helps
+- ✅ When the target type isn't already enforced by function signature
+- ❌ NOT on return statements of typed functions
+- ❌ NOT when it creates redundant type checking
 
 > ⚠️ **Exception: Error and Utility Types Only:**
 > You may use Prisma utility types (e.g., error types) but NEVER input/output types:
@@ -904,8 +1013,43 @@ When working with Prisma, follow these critical rules to ensure consistency and 
 
     * If you encounter a compile-time error related to the `id` field, please verify whether you are correctly assigning a `v4()`-generated UUID to it, as missing this step is a common cause of such errors.
 
+4. **ALWAYS Convert DateTime Fields with toISOStringSafe**
 
-4. **Handling Nullable Results from `findUnique` or `findFirst`**
+    **CRITICAL**: Every DateTime field MUST be converted using `toISOStringSafe()`:
+    
+    * **When reading from body/input**: Even if the input is already a date string, use toISOStringSafe
+    * **When passing to Prisma**: Convert before passing to create/update
+    * **When returning from Prisma**: Convert all DateTime fields from Prisma results
+    * **No exceptions**: This applies to ALL fields ending with `_at` or any DateTime field
+
+    ```typescript
+    // ❌ WRONG: Direct assignment without conversion
+    data: {
+      created_at: body.created_at,
+      expires_at: body.expires_at,
+    }
+    
+    // ✅ CORRECT: Always use toISOStringSafe
+    data: {
+      created_at: toISOStringSafe(body.created_at),
+      expires_at: toISOStringSafe(body.expires_at),
+    }
+    
+    // ❌ WRONG: Returning Prisma dates directly
+    return {
+      created_at: result.created_at,
+      expires_at: result.expires_at,
+    }
+    
+    // ✅ CORRECT: Convert all date fields
+    return {
+      created_at: toISOStringSafe(result.created_at),
+      expires_at: toISOStringSafe(result.expires_at),
+    }
+    ```
+
+
+5. **Handling Nullable Results from `findUnique` or `findFirst`**
 
     * Prisma's `findUnique` and `findFirst` methods return the matching record or `null` if no record is found.
     * If the record **must exist** for your logic to proceed, use `findUniqueOrThrow` or `findFirstOrThrow` instead. These methods will automatically throw an error if no record is found, eliminating the need for manual null checks.
@@ -1038,6 +1182,31 @@ Your mission is to write **high-quality, production-grade TypeScript code** that
 ## 🔧 Common Type Fix Patterns
 
 This document explains how to fix common TypeScript compiler errors when writing provider logic.
+
+### 🔹 WHERE Clause with Nullable API Types (MOST COMMON ERROR)
+
+**Problem**: API DTOs use `T | null | undefined` but Prisma required fields cannot accept null.
+
+❌ **Wrong pattern that causes errors**:
+```ts
+// ERROR: Type '... | null' is not assignable to required field
+where: {
+  ...(body.member_id !== undefined && {
+    member_id: body.member_id, // Can be null!
+  }),
+}
+```
+
+✅ **ALWAYS use this pattern for required fields**:
+```ts
+where: {
+  ...(body.member_id !== undefined && body.member_id !== null && {
+    member_id: body.member_id,
+  }),
+}
+```
+
+**Remember**: API designers choose to use `T | null | undefined` for clarity. RealizeAgent MUST handle this properly.
 
 ### 🔹 Union Types (e.g., `number | (number & tags.Type<"int32">)`)
 
@@ -1303,7 +1472,8 @@ const updateData = {
 | Cannot use MyGlobal.user / requestUserId                                               | Always use the `user` function argument                                |                                     |
 | `Date` not assignable to `string & Format<'date-time'>`                                | Convert to ISO string with `toISOStringSafe()`                         | Never pass raw `Date` instances     |
 | `Date \| null` not assignable to `(string & Format<'date-time'>) \| null \| undefined` | Use conditional chaining and `toISOStringSafe()` for non-null values   | e.g., `date ? toISOStringSafe(date) : undefined` |
-| `Type '... \| null' is not assignable` to required field                               | Convert null to undefined: `field === null ? undefined : field`        | Required fields cannot accept null in updates |
+| `Type '... \| null' is not assignable` to required field in data                       | Convert null to undefined: `field === null ? undefined : field`        | Required fields cannot accept null in updates |
+| `Type '... \| null' is not assignable` to required field in where                      | Check both: `field !== undefined && field !== null`                    | Required fields in where clauses need both checks |
 
 ---
 
@@ -1867,6 +2037,60 @@ if (body.post_id !== undefined) {
   where.post_id = body.post_id;
 }
 ```
+
+### ⚠️ CRITICAL: Required Fields with Nullable API Types in Where Clauses
+
+When the API interface allows `T | null` but the Prisma field is required (non-nullable), you MUST exclude null values:
+
+```typescript
+// ❌ WRONG: Type error if field is required but API allows null
+where: {
+  ...(body.member_id !== undefined && {
+    member_id: body.member_id, // Error: Type '... | null' not assignable!
+  }),
+}
+
+// ✅ CORRECT Option 1: Exclude both undefined AND null
+where: {
+  ...(body.member_id !== undefined && body.member_id !== null && {
+    member_id: body.member_id,
+  }),
+}
+
+// ✅ CORRECT Option 2: Nested check pattern
+where: {
+  ...(body.file_name !== undefined &&
+    body.file_name !== null && {
+      file_name: {
+        contains: body.file_name,
+        mode: "insensitive" as const,
+      },
+    }),
+}
+
+// ✅ CORRECT Option 3: For complex date range queries
+...((body.created_at_from !== undefined &&
+    body.created_at_from !== null) ||
+  (body.created_at_to !== undefined && body.created_at_to !== null)
+    ? {
+        created_at: {
+          ...(body.created_at_from !== undefined &&
+            body.created_at_from !== null && {
+              gte: body.created_at_from,
+            }),
+          ...(body.created_at_to !== undefined &&
+            body.created_at_to !== null && {
+              lte: body.created_at_to,
+            }),
+        },
+      }
+    : {}),
+```
+
+**Why this happens:**
+- API types use `T | null` for explicit nullable values
+- Prisma required fields cannot be filtered by null
+- Must check both `!== undefined` AND `!== null` before including in where clause
 
 ### 📌 Rule of Thumb
 

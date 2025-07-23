@@ -128,6 +128,12 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
     pointer.value.implementationCode,
   );
 
+  pointer.value.implementationCode =
+    pointer.value.implementationCode.replaceAll(
+      "typia.tags.assert",
+      "typia.assert",
+    );
+
   return {
     ...pointer.value,
     filename: `src/providers/${props.functionName}.ts`,
