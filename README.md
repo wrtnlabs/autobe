@@ -158,7 +158,7 @@ await agent.conversate("I wanna buy MacBook Pro");
 ```mermaid
 gantt
   dateFormat YYYY-MM-DD
-  title Three-Month Roadmap for Production
+  title AutoBE Roadmap for Beta Release
 
   section Analyze Agent
   Debate Enhancement: done,    2025-06-01,  7d
@@ -184,18 +184,18 @@ gantt
 
   section Realize Agent
   Planner Agent:      done,   2025-07-02, 30d
-  Coding Agent:       active, 2025-07-02, 30d
-  Compiler Feedback:  active, 2025-07-17, 15d
-  Function Calling:   active, 2025-07-17, 31d
+  Coding Agent:       done,   2025-07-02, 30d
+  Compiler Feedback:  done,   2025-07-17, 15d
+  Function Calling:   done,   2025-07-17, 31d
   Runtime Validation: active, 2025-08-01, 30d
 
   section Complementation
-  Benchmark:     done,    2025-06-12, 50d
-  Demonstration: done,    2025-06-16, 14d
-  Documentation: done,    2025-06-16, 45d
-  Articles:      active,  2025-07-02, 61d
-  Review Agent:  planned, 2025-07-02, 45d
-  Maintenance:   active,  2025-08-01, 30d
+  Benchmark:     done,   2025-06-12, 50d
+  Demonstration: done,   2025-06-16, 14d
+  Documentation: done,   2025-06-16, 45d
+  Articles:      active, 2025-07-02, 61d
+  Review Agent:  active, 2025-07-02, 45d
+  Maintenance:   active, 2025-08-01, 30d
 
   section Ecosystem
   Agentica Prerequisite:  active,  2025-06-18, 13d
