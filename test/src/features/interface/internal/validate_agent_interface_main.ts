@@ -3,6 +3,7 @@ import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeAssistantMessageHistory,
   AutoBeEvent,
+  AutoBeEventSnapshot,
   AutoBeInterfaceHistory,
 } from "@autobe/interface";
 import fs from "fs";
@@ -20,16 +21,19 @@ export const validate_agent_interface_main = async (
 
   // PREPARE AGENT
   const { agent } = await prepare_agent_interface(factory, project);
-  const events: AutoBeEvent[] = [];
-  const enroll = (event: AutoBeEvent) => {
-    events.push(event);
+  const snapshots: AutoBeEventSnapshot[] = [];
+  const listen = (event: AutoBeEvent) => {
+    snapshots.push({
+      event,
+      tokenUsage: agent.getTokenUsage().toJSON(),
+    });
   };
-  agent.on("interfaceStart", enroll);
-  agent.on("interfaceEndpoints", enroll);
-  agent.on("interfaceOperations", enroll);
-  agent.on("interfaceComponents", enroll);
-  agent.on("interfaceComplement", enroll);
-  agent.on("interfaceComplete", enroll);
+  agent.on("interfaceStart", listen);
+  agent.on("interfaceEndpoints", listen);
+  agent.on("interfaceOperations", listen);
+  agent.on("interfaceComponents", listen);
+  agent.on("interfaceComplement", listen);
+  agent.on("interfaceComplete", listen);
 
   // REQUEST INTERFACE GENERATION
   const go = (reason: string) =>
@@ -50,14 +54,20 @@ export const validate_agent_interface_main = async (
     root: `${TestGlobal.ROOT}/results/${project}/interface/main`,
     files: {
       ...(await agent.getFiles()),
-      "logs/events.json": JSON.stringify(events, null, 2),
-      "logs/result.json": JSON.stringify(result, null, 2),
+      "logs/snapshots.json": JSON.stringify(snapshots),
+      "logs/result.json": JSON.stringify(result),
     },
   });
-  if (process.argv.includes("--archive"))
+  if (process.argv.includes("--archive")) {
     await fs.promises.writeFile(
       `${TestGlobal.ROOT}/assets/histories/${project}.interface.json`,
-      JSON.stringify(agent.getHistories(), null, 2),
+      JSON.stringify(agent.getHistories()),
       "utf8",
     );
+    await fs.promises.writeFile(
+      `${TestGlobal.ROOT}/assets/histories/${project}.interface.snapshots.json`,
+      JSON.stringify(snapshots),
+      "utf8",
+    );
+  }
 };

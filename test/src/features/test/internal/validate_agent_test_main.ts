@@ -3,11 +3,11 @@ import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeAssistantMessageHistory,
   AutoBeEvent,
+  AutoBeEventSnapshot,
   AutoBeTestHistory,
 } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 import fs from "fs";
-import typia from "typia";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
@@ -22,9 +22,12 @@ export const validate_agent_test_main = async (
 
   // PREPARE AGENT
   const { agent } = await prepare_agent_test(factory, project);
-  const events: AutoBeEvent[] = [];
+  const snapshots: AutoBeEventSnapshot[] = [];
   const enroll = (event: AutoBeEvent) => {
-    events.push(event);
+    snapshots.push({
+      event,
+      tokenUsage: agent.getTokenUsage().toJSON(),
+    });
   };
   agent.on("testStart", enroll);
   agent.on("testScenario", enroll);
@@ -53,25 +56,27 @@ export const validate_agent_test_main = async (
     root: `${TestGlobal.ROOT}/results/${project}/test/main`,
     files: {
       ...(await agent.getFiles()),
-      "logs/compiled.json": JSON.stringify(result.compiled, null, 2),
-      "logs/events.json": JSON.stringify(events, null, 2),
-      "logs/result.json": JSON.stringify(
-        {
-          ...result,
-          files: undefined,
-        },
-        null,
-        2,
-      ),
-      "logs/histories.json": typia.json.stringify(histories),
+      "logs/compiled.json": JSON.stringify(result.compiled),
+      "logs/snapshots.json": JSON.stringify(snapshots),
+      "logs/result.json": JSON.stringify({
+        ...result,
+        files: undefined,
+      }),
+      "logs/histories.json": JSON.stringify(histories),
       "pnpm-workspace.yaml": "",
     },
   });
   TestValidator.equals("result")(result.compiled.type)("success");
-  if (process.argv.includes("--archive"))
+  if (process.argv.includes("--archive")) {
     await fs.promises.writeFile(
       `${TestGlobal.ROOT}/assets/histories/${project}.test.json`,
-      JSON.stringify(agent.getHistories(), null, 2),
+      JSON.stringify(agent.getHistories()),
       "utf8",
     );
+    await fs.promises.writeFile(
+      `${TestGlobal.ROOT}/assets/histories/${project}.test.snapshots.json`,
+      JSON.stringify(snapshots),
+      "utf8",
+    );
+  }
 };

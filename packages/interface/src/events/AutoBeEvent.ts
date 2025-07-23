@@ -17,6 +17,9 @@ import { AutoBePrismaSchemasEvent } from "./AutoBePrismaSchemasEvent";
 import { AutoBePrismaStartEvent } from "./AutoBePrismaStartEvent";
 import { AutoBePrismaValidateEvent } from "./AutoBePrismaValidateEvent";
 import { AutoBeRealizeCompleteEvent } from "./AutoBeRealizeCompleteEvent";
+import { AutoBeRealizeDecoratorCorrectEvent } from "./AutoBeRealizeDecoratorCorrectEvent";
+import { AutoBeRealizeDecoratorEvent } from "./AutoBeRealizeDecoratorEvent";
+import { AutoBeRealizeDecoratorValidateEvent } from "./AutoBeRealizeDecoratorValidateEvent";
 import { AutoBeRealizeProgressEvent } from "./AutoBeRealizeProgressEvent";
 import { AutoBeRealizeStartEvent } from "./AutoBeRealizeStartEvent";
 import { AutoBeRealizeTestCompleteEvent } from "./AutoBeRealizeTestCompleteEvent";
@@ -86,6 +89,9 @@ export type AutoBeEvent =
   | AutoBeTestCompleteEvent
   // REALIZE
   | AutoBeRealizeStartEvent
+  | AutoBeRealizeDecoratorEvent
+  | AutoBeRealizeDecoratorValidateEvent
+  | AutoBeRealizeDecoratorCorrectEvent
   | AutoBeRealizeProgressEvent
   | AutoBeRealizeValidateEvent
   | AutoBeRealizeCompleteEvent
@@ -128,7 +134,7 @@ export namespace AutoBeEvent {
    * event subscription systems, and generic event processing utilities that
    * maintain compile-time type safety across different event types.
    */
-  export interface Mapper {
+  export type Mapper = {
     assistantMessage: AutoBeAssistantMessageEvent;
     userMessage: AutoBeUserMessageEvent;
     // ANALYZE
@@ -160,6 +166,9 @@ export namespace AutoBeEvent {
     testComplete: AutoBeTestCompleteEvent;
     // REALIZE
     realizeStart: AutoBeRealizeStartEvent;
+    realizeDecorator: AutoBeRealizeDecoratorEvent;
+    realizeDecoratorValidate: AutoBeRealizeDecoratorValidateEvent;
+    realizeDecoratorCorrect: AutoBeRealizeDecoratorCorrectEvent;
     realizeProgress: AutoBeRealizeProgressEvent;
     realizeValidate: AutoBeRealizeValidateEvent;
     realizeComplete: AutoBeRealizeCompleteEvent;
@@ -167,5 +176,5 @@ export namespace AutoBeEvent {
     realizeTestReset: AutoBeRealizeTestResetEvent;
     realizeTestOperation: AutoBeRealizeTestOperationEvent;
     realizeTestComplete: AutoBeRealizeTestCompleteEvent;
-  }
+  };
 }

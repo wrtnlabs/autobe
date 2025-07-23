@@ -5,23 +5,23 @@ packages:
   - website
 catalogs:
   agentica:
-    "@agentica/core": ^0.30.4
-    "@agentica/rpc": ^0.30.4
+    "@agentica/core": ^0.30.5
+    "@agentica/rpc": ^0.30.5
   samchon:
-    "@nestia/benchmark": ^7.1.1
-    "@nestia/core": ^7.1.1
-    "@nestia/e2e": ^7.1.1
-    "@nestia/editor": ^7.1.1
-    "@nestia/fetcher": ^7.1.1
-    "@nestia/migrate": ^7.1.1
-    "@nestia/sdk": ^7.1.1
-    "@samchon/openapi": ^4.5.0
+    "@nestia/benchmark": ^7.2.1
+    "@nestia/core": ^7.2.1
+    "@nestia/e2e": ^7.2.1
+    "@nestia/editor": ^7.2.1
+    "@nestia/fetcher": ^7.2.1
+    "@nestia/migrate": ^7.2.1
+    "@nestia/sdk": ^7.2.1
+    "@samchon/openapi": ^4.6.0
     embed-prisma: ^1.1.0
     embed-typescript: ^1.0.1
     prisma-markdown: ^3.0.0
     tgrid: ^1.2.0
     tstl: ^3.0.0
-    typia: ^9.5.0
+    typia: ^9.6.0
   typescript:
     ts-node: ^10.9.2
     ts-patch: ^3.3.0

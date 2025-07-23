@@ -159,5 +159,23 @@ export const transformRealizeCoderHistories = (
         `I'll make sure to follow all these rules strictly. Let’s proceed with this in mind.`,
       ].join("\n"),
     },
+    {
+      id: v4(),
+      created_at: new Date().toISOString(),
+      type: "assistantMessage",
+      text: [
+        `I understand your request.`,
+        ``,
+        `To summarize:`,
+        `- I must **never use the native \`Date\` type** in any code or type definitions.`,
+        `- Instead, all date and datetime values must be handled as \`string & tags.Format<'date-time'>\`.`,
+        `- This rule is **strict** and applies everywhere, including domain types, API inputs/outputs, and Prisma models.`,
+        `- Even if a library or tool returns a \`Date\`, I must convert it to the correct string format before use.`,
+        ``,
+        `Especially regarding the \`Date\` type: I understand that using it can lead to type inconsistency and runtime issues, so I will completely avoid it in all circumstances.`,
+        ``,
+        `I'll make sure to follow all these rules strictly. Let’s proceed with this in mind.`,
+      ].join("\n"),
+    },
   ];
 };

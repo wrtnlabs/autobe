@@ -1,99 +1,130 @@
 import {
-  AutoBeAnalyzeReviewEvent,
   AutoBeAnalyzeWriteEvent,
-  AutoBeInterfaceComplementEvent,
   AutoBeInterfaceComponentsEvent,
-  AutoBeInterfaceEndpointsEvent,
   AutoBeInterfaceOperationsEvent,
-  AutoBePrismaComponentsEvent,
-  AutoBePrismaInsufficientEvent,
   AutoBePrismaSchemasEvent,
   AutoBeRealizeProgressEvent,
   AutoBeRealizeTestOperationEvent,
-  AutoBeRealizeTestResetEvent,
-  AutoBeRealizeValidateEvent,
-  AutoBeTestCorrectEvent,
-  AutoBeTestScenarioEvent,
-  AutoBeTestValidateEvent,
   AutoBeTestWriteEvent,
 } from "@autobe/interface";
+import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
+import { Card, CardContent, Chip, LinearProgress } from "@mui/material";
 
 export function AutoBePlaygroundProgressEventMovie(
   props: AutoBePlaygroundProgressEventMovie.IProps,
 ) {
+  const state: IState = getState(props.event);
   return (
-    <ul>
-      <li>{getDescription(props.event)}</li>
-    </ul>
+    <Card
+      elevation={3}
+      style={{
+        marginTop: 15,
+        marginBottom: 15,
+        marginRight: "15%",
+      }}
+    >
+      <CardContent>
+        <Chip
+          icon={<HourglassEmptyIcon />}
+          label={state.title}
+          variant="outlined"
+          color="success"
+        />
+        <br />
+        <br />
+        {state.description}
+        <br />
+        <br />
+        <LinearProgress
+          variant="determinate"
+          color="success"
+          sx={{
+            borderRadius: 10,
+            height: 10,
+          }}
+          value={props.last ? (state.completed / state.total) * 100 : 100}
+        />
+        <br />
+        <sup>
+          {props.last ? state.completed : state.total} / {state.total} completed
+        </sup>
+      </CardContent>
+    </Card>
   );
 }
 export namespace AutoBePlaygroundProgressEventMovie {
   export interface IProps {
     event:
-      | AutoBeAnalyzeReviewEvent
       | AutoBeAnalyzeWriteEvent
-      | AutoBePrismaComponentsEvent
       | AutoBePrismaSchemasEvent
-      | AutoBePrismaInsufficientEvent
-      | AutoBeInterfaceEndpointsEvent
       | AutoBeInterfaceOperationsEvent
       | AutoBeInterfaceComponentsEvent
-      | AutoBeInterfaceComplementEvent
-      | AutoBeTestScenarioEvent
       | AutoBeTestWriteEvent
-      | AutoBeTestValidateEvent
-      | AutoBeTestCorrectEvent
       | AutoBeRealizeProgressEvent
-      | AutoBeRealizeValidateEvent
-      | AutoBeRealizeTestResetEvent
       | AutoBeRealizeTestOperationEvent;
+    last: boolean;
   }
 }
 
-function getDescription(
+interface IState {
+  title: string;
+  description: string;
+  completed: number;
+  total: number;
+}
+
+function getState(
   event: AutoBePlaygroundProgressEventMovie.IProps["event"],
-): string {
-  switch (event.type) {
-    case "interfaceEndpoints":
-      const endpoints: number = event.endpoints.length;
-      return `Composing Endpoints: ${endpoints} of ${endpoints}`;
-    case "interfaceOperations":
-      return `Designing Operations: ${event.completed} of ${event.total}`;
-    case "interfaceComponents":
-      return `Defining Type Schemas: ${event.completed} of ${event.total}`;
-    case "interfaceComplement":
-      return "Filling missed type schemas";
-    case "prismaComponents":
-      const tables: number = event.components
-        .map((c) => c.tables.length)
-        .reduce((a, b) => a + b, 0);
-      return `Composing Prisma Tables: ${tables} of ${tables}`;
-    case "prismaSchemas":
-      return `Generating Prisma Schemas: ${event.completed} of ${event.total}`;
-    case "prismaInsufficient":
-      return `Prisma Insufficient (${event.component.namespace}): ${event.missed.length} of ${event.component.tables.length}`;
-    case "testScenario":
-      return `Generating Test Plan Completed: ${event.scenarios.length}`;
-    case "testWrite":
-      return `Writing Test Functions: ${event.completed} of ${event.total}`;
-    case "testValidate":
-      return `Validating Test Function: ${event.result.type}`;
-    case "testCorrect":
-      return `Correcting Test Function`;
-    case "realizeValidate":
-      return `Validating Realize Function: ${event.result.type}`;
-    case "realizeProgress":
-      return `Writing Main Controller: ${event.completed} of ${event.total}`;
-    case "analyzeWrite":
-      return `Analyze user requirements and write documents`;
-    case "analyzeReview":
-      return `Reviewing generated documents by Analyze in progress`;
-    case "realizeTestReset":
-      return `Reset DB for E2E Test`;
-    case "realizeTestOperation":
-      return `Operated E2E Test Function: ${event.name}`;
-    default:
-      event satisfies never;
-      throw new Error("Unknown event type"); // unreachable
-  }
+): IState {
+  const content: Pick<IState, "title" | "description"> = (() => {
+    switch (event.type) {
+      case "analyzeWrite":
+        return {
+          title: "Analyze Write",
+          description: "Analyzing requirements, and writing a report paper",
+        };
+      case "prismaSchemas":
+        return {
+          title: "Prisma Schemas",
+          description: "Designing Database schemas",
+        };
+      case "interfaceOperations":
+        return {
+          title: "Interface Operations",
+          description: "Designing API operations",
+        };
+      case "interfaceComponents":
+        return {
+          title: "Interface Components",
+          description: "Designing API type schemas",
+        };
+      case "testWrite":
+        return {
+          title: "Test Write",
+          description: "Writing E2E test functions",
+        };
+      case "realizeProgress":
+        return {
+          title: "Realize Progress",
+          description: "Realizing the API functions",
+        };
+      case "realizeTestOperation":
+        return {
+          title: "Realize Test Operation",
+          description:
+            "Running the E2E test operations to validate the API functions",
+        };
+      default:
+        event satisfies never;
+        return {
+          title: "Unknown Event",
+          description: "This event type is not recognized.",
+        };
+    }
+  })();
+  return {
+    ...content,
+    completed: event.completed,
+    total: event.total,
+  };
 }

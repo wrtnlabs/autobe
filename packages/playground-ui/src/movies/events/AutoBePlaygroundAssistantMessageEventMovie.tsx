@@ -28,7 +28,7 @@ export function AutoBePlaygroundAssistantMessageEventMovie({
             icon={<SmartToyIcon />}
             label="Assistant"
             variant="outlined"
-            color="success"
+            color="default"
           />
           <MarkdownViewer>{prompt.text}</MarkdownViewer>
         </CardContent>

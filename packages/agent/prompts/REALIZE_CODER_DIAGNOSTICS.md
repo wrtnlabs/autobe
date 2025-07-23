@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # List of Compilation Errors in This File
+=======
+# List of compilation errors in this file
+>>>>>>> main
 
 You are currently editing the code, and based on your changes, the errors from this attempt are as follows:
 

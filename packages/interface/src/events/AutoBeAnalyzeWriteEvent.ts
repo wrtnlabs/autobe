@@ -47,4 +47,10 @@ export interface AutoBeAnalyzeWriteEvent
    * process throughout the project lifecycle.
    */
   step: number;
+
+  /** Total number of documents to generate. */
+  total: number;
+
+  /** Number of documents generated so far. */
+  completed: number;
 }

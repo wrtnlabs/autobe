@@ -40,8 +40,8 @@ export const validate_agent_interface_components = async (
         null,
         2,
       ),
-      "logs/operations.json": JSON.stringify(operations, null, 2),
-      "logs/components.json": JSON.stringify(components, null, 2),
+      "logs/operations.json": JSON.stringify(operations),
+      "logs/components.json": JSON.stringify(components),
     },
   });
   typia.assert(components);

@@ -85,7 +85,7 @@ const predicate = async <Model extends ILlmSchema.Model>(
   event: AutoBeTestValidateEvent,
   life: number,
 ): Promise<AutoBeTestValidateEvent> => {
-  ctx.dispatch(event);
+  if (event.result.type === "failure") ctx.dispatch(event);
   return event.result.type === "failure"
     ? correct(ctx, content, event, life - 1)
     : event;
