@@ -29,13 +29,7 @@ export const orchestrateRealize =
     });
 
     const decorators = await orchestrateRealizeDecorator(ctx);
-<<<<<<< HEAD
     const files = await writeCodeUntilCompilePassed(ctx, ops, decorators, 2);
-=======
-    decorators;
-
-    const files = await writeCodeUntilCompilePassed(ctx, ops, 2);
->>>>>>> main
     const providers = files
       .map((f) => ({ [f.filename]: f.implementationCode }))
       .reduce((acc, cur) => Object.assign(acc, cur), {});
