@@ -62,6 +62,67 @@ Your specific tasks are:
   - All property types that are objects must use $ref to reference a named type
   - This applies to EVERY object in the schema, including nested objects and arrays of objects
 
+### 3.3. 🔴 CRITICAL Security Requirements
+
+#### Response Types - NEVER expose sensitive fields:
+- **Password fields**: NEVER include fields like `password`, `hashed_password`, `encrypted_password`, `salt`, etc. in ANY response type
+- **Security tokens**: NEVER expose `refresh_token`, `api_key`, `secret_key`, or similar security credentials
+- **Internal system fields**: Avoid exposing internal implementation details like `password_reset_token`, `email_verification_code`
+- **Sensitive personal data**: Be cautious with fields containing sensitive information based on your domain
+
+**Example of FORBIDDEN response properties**:
+```typescript
+// ❌ NEVER include these in response types
+interface IUser {
+  id: string;
+  email: string;
+  hashed_password: string;  // FORBIDDEN
+  salt: string;             // FORBIDDEN
+  refresh_token: string;    // FORBIDDEN
+  api_secret: string;       // FORBIDDEN
+}
+
+// ✅ Correct response type
+interface IUser {
+  id: string;
+  email: string;
+  name: string;
+  created_at: string;
+  // Password and security fields are intentionally omitted
+}
+```
+
+#### Request Types - NEVER accept actor IDs directly:
+- **Actor identification**: NEVER accept fields like `user_id`, `member_id`, `creator_id`, `author_id` in request bodies
+- **Authentication source**: The authenticated user's identity comes from the authentication decorator, NOT from request body
+- **Security principle**: Clients should NEVER be able to specify "who they are" - this must come from verified authentication
+
+**Example of FORBIDDEN request properties**:
+```typescript
+// ❌ NEVER accept actor IDs in request types
+interface IPostCreate {
+  title: string;
+  content: string;
+  author_id: string;      // FORBIDDEN - comes from authentication
+  created_by: string;     // FORBIDDEN - comes from authentication
+}
+
+// ✅ Correct request type
+interface IPostCreate {
+  title: string;
+  content: string;
+  category_id: string;    // OK - selecting a category
+  // author_id will be set by the server using authenticated user info
+}
+```
+
+**Why this matters**:
+1. **Security**: Prevents users from impersonating others or claiming false ownership
+2. **Data integrity**: Ensures the true actor is recorded for audit trails
+3. **Authorization**: Enables proper ownership verification in provider functions
+
+**Remember**: The authenticated user information is provided by the decorator at the controller level and passed to the provider function - it should NEVER come from client input.
+
 ### 3.3. Standard Type Definitions
 
 For paginated results, use the standard `IPage<T>` interface:
@@ -155,17 +216,32 @@ export namespace IPage {
    - Create all necessary variant types based on API operations
    - Ensure all properties are documented with descriptions from Prisma schema
    - Mark required fields based on Prisma schema constraints
+   - **CRITICAL**: Apply security filtering - remove sensitive fields from response types
 
 2. **For Relationship Handling**:
    - Identify all relationships from the ERD and Prisma schema
    - Define appropriate property types for relationships (IDs, nested objects, arrays)
    - Document relationship constraints and cardinality
+   - **IMPORTANT**: For "belongs to" relationships, never accept the owner ID in requests
 
 3. **For Variant Types**:
    - Create `.ICreate` types with appropriate required/optional fields for creation
+     - **NEVER include**: creator_id, author_id, user_id, created_by fields
+     - These fields will be populated from authenticated user context
    - Define `.IUpdate` types with all fields made optional for updates
+     - **NEVER include**: updater_id, modified_by, last_updated_by fields
+     - **NEVER allow**: changing ownership fields like author_id or creator_id
    - Build `.ISummary` types with essential fields for list views
+     - Include only safe, public-facing properties
    - Define `.IRequest` types with search/filter/sort parameters
+     - May include filters like "my_posts_only" but not "user_id" parameters
+
+4. **Security Checklist for Each Type**:
+   - ✓ No password or hash fields in any response type
+   - ✓ No security tokens or keys in any response type
+   - ✓ No actor ID fields in any request type
+   - ✓ No internal system fields exposed in responses
+   - ✓ Ownership fields are read-only (never in request types)
 
 ### 4.3. Schema Completeness Verification
 
@@ -213,13 +289,20 @@ const components: OpenApi.IComponents = {
           description: "Detailed property description referencing Prisma schema column comments.\n\nMultiple paragraphs where appropriate."
         }
         // ...more properties
+        // SECURITY: Never include password, hashed_password, salt, or other sensitive fields in response types
       },
       required: [...],
       description: "Extremely detailed explanation about IEntityName referencing Prisma schema table comments.\n\nMultiple paragraphs focusing on different aspects of the entity.",
     },
     // Variant types
-    "IEntityName.ICreate": { ... },
-    "IEntityName.IUpdate": { ... },
+    "IEntityName.ICreate": { 
+      // SECURITY: Never include author_id, creator_id, user_id - these come from authentication context
+      ... 
+    },
+    "IEntityName.IUpdate": { 
+      // SECURITY: Never allow updating ownership fields like author_id or creator_id
+      ... 
+    },
     "IEntityName.ISummary": { ... },
     "IEntityName.IRequest": { ... },
     
@@ -260,6 +343,8 @@ const components: OpenApi.IComponents = {
 - **No Simplification**: "Simplifying complex entities or relationships" is NOT ACCEPTABLE.
 - **Ignore Capacity Limitations**: Processing only some entities due to their quantity is a SERIOUS ERROR.
 - **Named Types Required**: Using inline/anonymous object definitions instead of named type references ($ref) is a CRITICAL ERROR. EVERY object type must be defined in the components.schemas section and referenced by name.
+- **Security Violations**: Including password fields in responses or actor IDs in requests is a CRITICAL SECURITY ERROR.
+- **Authentication Bypass**: Accepting user identity from request body instead of authentication context is a CRITICAL SECURITY ERROR.
 
 ## 8. Execution Process
 

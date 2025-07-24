@@ -71,9 +71,9 @@ export async function writeCodeUntilCompilePassed<
       | IAutoBeRealizeCompile.Fail
     )[] = await Promise.all(
       targets.map((op) => {
-        const roles = op.authorizationRoles;
-        const decorator = autoBeRealizeDecoratorEvent.find((el) =>
-          roles?.includes(el.role),
+        const role = op.authorizationRole;
+        const decorator = autoBeRealizeDecoratorEvent.find(
+          (el) => el.role === role,
         );
 
         return process(ctx, metadata, op, diagnostics, entireCodes, decorator);
