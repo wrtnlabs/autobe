@@ -9,3 +9,4 @@ export * from "./AutoBeUserMessageImageContent";
 export * from "./AutoBeUserMessageTextContent";
 
 export * from "./AutoBeRealizeDecorator";
+export * from "./AutoBeRealizeDecoratorPayload";

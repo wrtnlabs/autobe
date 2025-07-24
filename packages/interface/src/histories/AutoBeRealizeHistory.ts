@@ -2,6 +2,7 @@ import { tags } from "typia";
 
 import { IAutoBeTypeScriptCompileResult } from "../compiler/IAutoBeTypeScriptCompileResult";
 import { AutoBeAgentHistoryBase } from "./AutoBeHistoryBase";
+import { AutoBeRealizeDecorator } from "./contents";
 
 /**
  * History record generated when the Realize agent implements the actual
@@ -36,6 +37,23 @@ export interface AutoBeRealizeHistory
    * application functional and ready for deployment.
    */
   files: Record<string, string>;
+
+  /**
+   * Generated authentication and authorization decorators for role-based access
+   * control.
+   *
+   * Contains the complete set of NestJS parameter decorators that provide
+   * automatic authentication and authorization functionality for different user
+   * roles. Each decorator includes its implementation code, associated provider
+   * functions, and payload type definitions that enable seamless integration of
+   * role-based security into Controller methods.
+   *
+   * These decorators eliminate the need for manual authentication logic in
+   * Controllers by automatically validating JWT tokens, checking user roles, and
+   * injecting authenticated user data as typed parameters, ensuring both
+   * security and developer productivity.
+   */
+  decorators: AutoBeRealizeDecorator[];
 
   /**
    * Results of compiling the generated implementation code using the embedded
