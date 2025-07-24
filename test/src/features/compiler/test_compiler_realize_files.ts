@@ -20,7 +20,7 @@ export const test_compiler_realize_files = async (): Promise<void> => {
       ...(await TestHistory.getTest("bbs-backend")),
       {
         type: "realize",
-        files: {},
+        files: [],
         compiled: {
           type: "success",
         },
@@ -29,6 +29,7 @@ export const test_compiler_realize_files = async (): Promise<void> => {
         completed_at: new Date().toISOString(),
         reason: "Realize files for compiler",
         step: 0,
+        decorators: [],
       },
     ],
   });

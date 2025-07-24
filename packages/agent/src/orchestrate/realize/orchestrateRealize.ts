@@ -32,27 +32,30 @@ export const orchestrateRealize =
     decorators;
 
     const files = await writeCodeUntilCompilePassed(ctx, ops, 2);
-    const providers = files
-      .map((f) => ({ [f.filename]: f.implementationCode }))
-      .reduce((acc, cur) => Object.assign(acc, cur), {});
+    // const functions = files
+    //   .map((f) => ({ [f.filename]: f.implementationCode }))
+    //   .reduce((acc, cur) => Object.assign(acc, cur), {});
 
     const now = new Date().toISOString();
     const realize = ctx.state().realize;
     if (realize !== null) {
-      realize.files = providers;
+      realize.files = files;
     } else {
-      ctx.state().realize = {
+      const history = (ctx.state().realize = {
         type: "realize",
         compiled: {
           type: "success",
         },
-        files: providers,
+        files: files,
         completed_at: now,
         created_at: now,
         id: v4(),
         reason: props.reason,
         step: ctx.state().analyze?.step ?? 0,
-      } satisfies AutoBeRealizeHistory;
+        decorators: ctx.state().realize?.decorators ?? [],
+      } satisfies AutoBeRealizeHistory);
+
+      ctx.histories().push(history);
     }
 
     ctx.dispatch({
@@ -61,18 +64,17 @@ export const orchestrateRealize =
       created_at: now,
     });
 
-    console.log(JSON.stringify(providers, null, 2), "providers");
-
     return {
       type: "realize",
       compiled: {
         type: "success",
       },
-      files: providers,
+      files: files,
       completed_at: now,
       created_at: now,
       id: v4(),
       reason: props.reason,
       step: ctx.state().analyze?.step ?? 0,
+      decorators: ctx.state().realize?.decorators ?? [],
     };
   };

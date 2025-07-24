@@ -2,6 +2,7 @@ import {
   AutoBeOpenApi,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
+import { AutoBeRealizeFunction } from "@autobe/interface/src/histories/contents/AutoBeRealizeFile";
 import { ILlmSchema } from "@samchon/openapi";
 import { readFile } from "fs/promises";
 import path from "path";
@@ -10,7 +11,6 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { pipe } from "./RealizePipe";
 import { orchestrateRealizeCoder } from "./orchestrateRealizeCoder";
 import { orchestrateRealizePlanner } from "./orchestrateRealizePlanner";
-import { IAutoBeRealizeCoderApplication } from "./structures/IAutoBeRealizeCoderApplication";
 import { IAutoBeRealizeCompile } from "./structures/IAutoBeRealizeCompile";
 import { FAILED } from "./structures/IAutoBeRealizeFailedSymbol";
 
@@ -20,12 +20,7 @@ export async function writeCodeUntilCompilePassed<
   ctx: AutoBeContext<Model>,
   ops: AutoBeOpenApi.IOperation[],
   retry: number,
-): Promise<
-  Pick<
-    IAutoBeRealizeCoderApplication.RealizeCoderOutput,
-    "filename" | "implementationCode"
-  >[]
-> {
+): Promise<AutoBeRealizeFunction[]> {
   const files = Object.entries(await ctx.files({ dbms: "postgres" }))
     .filter(([key]) => {
       return key.startsWith("src");
@@ -35,11 +30,7 @@ export async function writeCodeUntilCompilePassed<
       {},
     );
 
-  const templateFiles = [
-    "src/providers/jwtDecode.ts",
-    "src/MyGlobal.ts",
-    "src/providers/toISOStringSafe.ts",
-  ];
+  const templateFiles = ["src/MyGlobal.ts", "src/util/toISOStringSafe.ts"];
   const entireCodes: IAutoBeRealizeCompile.FileContentMap = {
     ...(await loadTemplateFiles(templateFiles)),
   };
@@ -69,6 +60,12 @@ export async function writeCodeUntilCompilePassed<
         entireCodes[c.result.filename] = {
           content: c.result.implementationCode,
           result: "success",
+          endpoint: {
+            method: c.op.method,
+            path: c.op.path,
+          },
+          location: c.result.filename,
+          name: c.result.name,
         };
       }
     }
@@ -110,23 +107,29 @@ export async function writeCodeUntilCompilePassed<
     }
   }
 
-  return Object.entries(entireCodes).map(([filename, { content }]) => {
-    return {
-      filename,
-      implementationCode: content,
-    };
-  });
+  return Object.entries(entireCodes)
+    .filter(([filename]) => filename.startsWith("src/providers")) // filter only provider files
+    .map(([filename, value]) => {
+      return {
+        filename,
+        content: value.content,
+        endpoint: value.endpoint!,
+        location: value.location!,
+        name: value.name!,
+        role: value.role!,
+      };
+    });
 }
 
 async function loadTemplateFiles(
   templateFiles: string[],
-): Promise<Record<string, { content: string; result: "success" }>> {
+): Promise<IAutoBeRealizeCompile.FileContentMap> {
   const templateBasePath = path.join(
     __dirname,
     "../../../../../internals/template/realize",
   );
 
-  const result: Record<string, { content: string; result: "success" }> = {};
+  const result: IAutoBeRealizeCompile.FileContentMap = {};
 
   for (const filePath of templateFiles) {
     result[filePath] = {
@@ -134,6 +137,8 @@ async function loadTemplateFiles(
         encoding: "utf-8",
       }),
       result: "success",
+      location: filePath,
+      role: null,
     };
   }
 
@@ -168,7 +173,11 @@ async function process<Model extends ILlmSchema.Model>(
           total: metadata.total,
         });
 
-        return res;
+        if (res === FAILED) {
+          return res;
+        }
+
+        return { ...res, name: p.functionName };
       });
     },
   );
@@ -177,7 +186,7 @@ async function process<Model extends ILlmSchema.Model>(
     return { type: "failed", op: op, result } as const;
   }
 
-  return { type: "success", op: op, result: result } as const;
+  return { type: "success", op: op, result } as const;
 }
 
 function shouldProcessOperation(

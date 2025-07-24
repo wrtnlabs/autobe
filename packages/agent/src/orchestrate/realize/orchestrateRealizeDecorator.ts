@@ -1,5 +1,6 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import {
+  AutoBeRealizeDecorator,
   AutoBeRealizeDecoratorEvent,
   IAutoBeCompiler,
 } from "@autobe/interface";
@@ -8,6 +9,7 @@ import fs from "fs/promises";
 import path from "path";
 import { IPointer } from "tstl";
 import typia from "typia";
+import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
@@ -54,6 +56,8 @@ export async function orchestrateRealizeDecorator<
     ...templateFiles,
   };
 
+  const decorators: AutoBeRealizeDecorator[] = [];
+
   const events: AutoBeRealizeDecoratorEvent[] = await Promise.all(
     roles.map(async (role) => {
       const decorator: IAutoBeRealizeDecoratorApplication.IProps =
@@ -63,8 +67,15 @@ export async function orchestrateRealizeDecorator<
         decorator.decorator.code;
       files[`src/authentications/${decorator.provider.name}.ts`] =
         decorator.provider.code;
-      files[`src/authentications/types/${decorator.decoratorType.name}.ts`] =
-        decorator.decoratorType.code;
+      files[`src/authentications/types/${decorator.payload.name}.ts`] =
+        decorator.payload.code;
+
+      decorators.push({
+        name: decorator.decorator.name,
+        role,
+        payload: decorator.payload,
+        location: `src/decorators/${decorator.decorator.name}.ts`,
+      });
 
       const event: AutoBeRealizeDecoratorEvent = {
         type: "realizeDecorator",
@@ -72,7 +83,7 @@ export async function orchestrateRealizeDecorator<
         role,
         provider: decorator.provider,
         decorator: decorator.decorator,
-        decoratorType: decorator.decoratorType,
+        payload: decorator.payload,
         completed: ++completed,
         total: roles.length,
         step: ctx.state().test?.step ?? 0,
@@ -83,6 +94,24 @@ export async function orchestrateRealizeDecorator<
       return event;
     }),
   );
+
+  const realize = ctx.state().realize;
+
+  if (realize !== null) {
+    realize.decorators = decorators;
+  } else {
+    ctx.state().realize = {
+      type: "realize",
+      id: v4(),
+      created_at: new Date().toISOString(),
+      completed_at: new Date().toISOString(),
+      reason: ctx.state().analyze?.reason ?? "",
+      step: ctx.state().analyze?.step ?? 0,
+      files: [],
+      decorators,
+      compiled: { type: "success" },
+    };
+  }
 
   return events;
 }
@@ -153,8 +182,8 @@ async function correctDecorator<Model extends ILlmSchema.Model>(
     ...prismaClients,
     [`src/decorators/${result.decorator.name}.ts`]: result.decorator.code,
     [`src/authentications/${result.provider.name}.ts`]: result.provider.code,
-    [`src/authentications/types/${result.decoratorType.name}.ts`]:
-      result.decoratorType.code,
+    [`src/authentications/types/${result.payload.name}.ts`]:
+      result.payload.code,
   };
 
   const compiler: IAutoBeCompiler = await ctx.compiler();
@@ -222,8 +251,8 @@ async function correctDecorator<Model extends ILlmSchema.Model>(
       pointer.value.decorator.code,
     [`src/authentications/${pointer.value.provider.name}.ts`]:
       pointer.value.provider.code,
-    [`src/authentications/types/${pointer.value.decoratorType.name}.ts`]:
-      pointer.value.decoratorType.code,
+    [`src/authentications/types/${pointer.value.payload.name}.ts`]:
+      pointer.value.payload.code,
   };
 
   ctx.dispatch({
