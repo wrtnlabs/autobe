@@ -600,7 +600,6 @@ The following modules are **automatically injected** at the top of every generat
 - `import { MyGlobal } from "../MyGlobal";`
 - `import typia, { tags } from "typia";`
 - `import { Prisma } from "@prisma/client";`
-- `import { jwtDecode } from "./jwtDecode";`
 - `import { v4 } from "uuid";`
 - `import { toISOStringSafe } from "../util/toISOStringSafe";`
 

@@ -29,10 +29,6 @@ export function replaceImportStatements<Model extends ILlmSchema.Model>(
         /import\s*{\s*Prisma\s*}\s*from\s*["']@prisma\/client["']\s*;?\s*/gm,
         "",
       )
-      .replace(
-        /import\s*{\s*jwtDecode\s*}\s*from\s*["']\.\/jwtDecode["']\s*;?\s*/gm,
-        "",
-      )
       .replace(/import\s*{\s*v4\s*}\s*from\s*["']uuid["']\s*;?\s*/gm, "")
       .replace('import { toISOStringSafe } from "../util/toISOStringSafe"', "");
 
@@ -40,7 +36,6 @@ export function replaceImportStatements<Model extends ILlmSchema.Model>(
       'import { MyGlobal } from "../MyGlobal";',
       'import typia, { tags } from "typia";',
       'import { Prisma } from "@prisma/client";',
-      'import { jwtDecode } from "./jwtDecode";',
       'import { v4 } from "uuid";',
       'import { toISOStringSafe } from "../util/toISOStringSafe"',
       "",

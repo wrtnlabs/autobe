@@ -88,15 +88,6 @@ export const validate_agent_realize_coder = async (
         ),
       ...codes,
       ...nodeModules,
-      "src/providers/jwtDecode.ts": await readFile(
-        path.join(
-          __dirname,
-          "../../../../../internals/template/realize/src/providers/jwtDecode.ts",
-        ),
-        {
-          encoding: "utf-8",
-        },
-      ),
       "src/MyGlobal.ts": await readFile(
         path.join(
           __dirname,
