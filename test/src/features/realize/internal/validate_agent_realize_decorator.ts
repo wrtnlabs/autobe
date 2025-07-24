@@ -66,8 +66,8 @@ export const validate_agent_realize_decorator = async (
         acc[`src/decorators/${curr.decorator.name}.ts`] = curr.decorator.code;
         acc[`src/authentications/${curr.provider.name}.ts`] =
           curr.provider.code;
-        acc[`src/authentications/types/${curr.decoratorType.name}.ts`] =
-          curr.decoratorType.code;
+        acc[`src/authentications/types/${curr.payload.name}.ts`] =
+          curr.payload.code;
         return acc;
       },
       {} as Record<string, string>,
