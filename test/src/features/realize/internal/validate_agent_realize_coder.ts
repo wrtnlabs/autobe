@@ -1,3 +1,4 @@
+import { orchestrateRealizeDecorator } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeDecorator";
 import { IAutoBeRealizeCoderApplication } from "@autobe/agent/src/orchestrate/realize/structures/IAutoBeRealizeCoderApplication";
 import { writeCodeUntilCompilePassed } from "@autobe/agent/src/orchestrate/realize/writeCodeUntilCompilePassed";
 import { FileSystemIterator } from "@autobe/filesystem";
@@ -46,8 +47,11 @@ export const validate_agent_realize_coder = async (
 
   const ops = ctx.state().interface?.document.operations ?? [];
 
+  const decoratorEvents = await orchestrateRealizeDecorator(ctx);
+
   // DO TEST GENERATION
-  const go = async () => await writeCodeUntilCompilePassed(ctx, ops, 2);
+  const go = async () =>
+    await writeCodeUntilCompilePassed(ctx, ops, decoratorEvents, 2);
 
   const result: Pick<
     IAutoBeRealizeCoderApplication.RealizeCoderOutput,

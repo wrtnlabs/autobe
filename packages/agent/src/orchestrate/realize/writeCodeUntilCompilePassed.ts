@@ -1,5 +1,6 @@
 import {
   AutoBeOpenApi,
+  AutoBeRealizeDecoratorEvent,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
@@ -19,6 +20,7 @@ export async function writeCodeUntilCompilePassed<
 >(
   ctx: AutoBeContext<Model>,
   ops: AutoBeOpenApi.IOperation[],
+  autoBeRealizeDecoratorEvent: AutoBeRealizeDecoratorEvent[],
   retry: number,
 ): Promise<
   Pick<
@@ -26,6 +28,15 @@ export async function writeCodeUntilCompilePassed<
     "filename" | "implementationCode"
   >[]
 > {
+  const decoratorTypes = autoBeRealizeDecoratorEvent
+    .map((el) => {
+      return {
+        [`src/authentications/types/${el.decoratorType.name}.ts`]:
+          el.decoratorType.code,
+      };
+    })
+    .reduce<Record<string, string>>((acc, cur) => Object.assign(acc, cur), {});
+
   const files = Object.entries(await ctx.files({ dbms: "postgres" }))
     .filter(([key]) => {
       return key.startsWith("src");
@@ -60,7 +71,12 @@ export async function writeCodeUntilCompilePassed<
       | IAutoBeRealizeCompile.Fail
     )[] = await Promise.all(
       targets.map((op) => {
-        return process(ctx, metadata, op, diagnostics, entireCodes);
+        const roles = op.authorizationRoles;
+        const decorator = autoBeRealizeDecoratorEvent.find((el) =>
+          roles?.includes(el.role),
+        );
+
+        return process(ctx, metadata, op, diagnostics, entireCodes, decorator);
       }),
     );
 
@@ -78,6 +94,7 @@ export async function writeCodeUntilCompilePassed<
     const compiler = await ctx.compiler();
     const compiled = await compiler.typescript.compile({
       files: {
+        ...decoratorTypes,
         ...files,
         ...nodeModules,
         ...Object.entries(entireCodes)
@@ -110,12 +127,24 @@ export async function writeCodeUntilCompilePassed<
     }
   }
 
-  return Object.entries(entireCodes).map(([filename, { content }]) => {
-    return {
-      filename,
-      implementationCode: content,
-    };
-  });
+  const providers = Object.entries(entireCodes).map(
+    ([filename, { content }]) => {
+      return {
+        filename,
+        implementationCode: content,
+      };
+    },
+  );
+
+  return [
+    ...providers,
+    ...Object.entries(decoratorTypes).map(([filename, content]) => {
+      return {
+        filename,
+        implementationCode: content,
+      };
+    }),
+  ];
 }
 
 async function loadTemplateFiles(
@@ -146,10 +175,11 @@ async function process<Model extends ILlmSchema.Model>(
   op: AutoBeOpenApi.IOperation,
   diagnostics: IAutoBeRealizeCompile.CompileDiagnostics,
   entireCodes: IAutoBeRealizeCompile.FileContentMap,
+  decorator?: AutoBeRealizeDecoratorEvent,
 ) {
   const result = await pipe(
     op,
-    (op) => orchestrateRealizePlanner(ctx, op),
+    (op) => orchestrateRealizePlanner(ctx, op, decorator),
     async (p) => {
       const filename = `src/providers/${p.functionName}.ts` as const;
       const t = diagnostics.total.filter((el) => el.file === filename);

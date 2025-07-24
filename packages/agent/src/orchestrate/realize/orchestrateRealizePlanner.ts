@@ -1,4 +1,4 @@
-import { AutoBeOpenApi } from "@autobe/interface";
+import { AutoBeOpenApi, AutoBeRealizeDecoratorEvent } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
@@ -65,6 +65,16 @@ export interface RealizePlannerOutput {
    * conditions. Used as a basis for TDD-style automated test generation.
    */
   testScenarios: string[];
+
+  /**
+   * Optional decorator event for customizing code generation behavior.
+   *
+   * Provides additional metadata or instructions that can modify how the
+   * function implementation is generated. Can include custom annotations,
+   * middleware configurations, or special handling directives that affect the
+   * final code output.
+   */
+  decoratorEvent?: AutoBeRealizeDecoratorEvent;
 }
 
 /**
@@ -89,6 +99,7 @@ export interface RealizePlannerOutput {
 export const orchestrateRealizePlanner = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   operation: AutoBeOpenApi.IOperation,
+  autoBeRealizeDecoratorEvent?: AutoBeRealizeDecoratorEvent,
 ): Promise<RealizePlannerOutput> => {
   const testScenarios =
     ctx
@@ -111,5 +122,6 @@ export const orchestrateRealizePlanner = async <Model extends ILlmSchema.Model>(
       .replaceAll("-", "_")
       .replaceAll("{", "$")
       .replaceAll("}", "")}`,
+    decoratorEvent: autoBeRealizeDecoratorEvent,
   } satisfies RealizePlannerOutput;
 };
