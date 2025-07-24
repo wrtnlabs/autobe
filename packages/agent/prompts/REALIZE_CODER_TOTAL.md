@@ -602,7 +602,7 @@ The following modules are **automatically injected** at the top of every generat
 - `import { Prisma } from "@prisma/client";`
 - `import { jwtDecode } from "./jwtDecode";`
 - `import { v4 } from "uuid";`
-- `import { toISOStringSafe } from "./toISOStringSafe";`
+- `import { toISOStringSafe } from "../util/toISOStringSafe";`
 
 ❌ Do **NOT** include these imports manually.  
 ✅ You may use them directly in your implementation without declaring them.

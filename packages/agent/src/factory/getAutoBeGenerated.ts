@@ -97,7 +97,13 @@ export async function getAutoBeGenerated(
       Record<string, string>,
       Record<string, string>,
       Record<string, string>
-    >(ret, state.realize.files, await compiler.realize.getTemplate());
+    >(
+      ret,
+      state.realize.files
+        .map((f) => ({ [f.location]: f.content }))
+        .reduce((acc, cur) => Object.assign(acc, cur), {}),
+      await compiler.realize.getTemplate(),
+    );
 
   // LOGGING
   Object.assign<Record<string, string>, Record<string, string>>(ret, {

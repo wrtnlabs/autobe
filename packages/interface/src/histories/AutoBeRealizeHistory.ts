@@ -2,6 +2,7 @@ import { tags } from "typia";
 
 import { IAutoBeTypeScriptCompileResult } from "../compiler/IAutoBeTypeScriptCompileResult";
 import { AutoBeAgentHistoryBase } from "./AutoBeHistoryBase";
+import { AutoBeRealizeFunction } from "./contents/AutoBeRealizeFile";
 
 /**
  * History record generated when the Realize agent implements the actual
@@ -24,7 +25,7 @@ import { AutoBeAgentHistoryBase } from "./AutoBeHistoryBase";
 export interface AutoBeRealizeHistory
   extends AutoBeAgentHistoryBase<"realize"> {
   /**
-   * Generated implementation files as key-value pairs.
+   * Generated implementation files
    *
    * Contains the complete set of TypeScript implementation files including
    * service classes, business logic methods, data access objects, and
@@ -35,7 +36,7 @@ export interface AutoBeRealizeHistory
    * database schemas, providing the concrete business logic that makes the
    * application functional and ready for deployment.
    */
-  files: Record<string, string>;
+  files: AutoBeRealizeFunction[];
 
   /**
    * Results of compiling the generated implementation code using the embedded
