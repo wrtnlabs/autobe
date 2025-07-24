@@ -41,7 +41,7 @@ export const orchestrateRealize =
     if (realize !== null) {
       realize.files = providers;
     } else {
-      ctx.state().realize = {
+      const history = (ctx.state().realize = {
         type: "realize",
         compiled: {
           type: "success",
@@ -52,7 +52,10 @@ export const orchestrateRealize =
         id: v4(),
         reason: props.reason,
         step: ctx.state().analyze?.step ?? 0,
-      } satisfies AutoBeRealizeHistory;
+        decorators: ctx.state().realize?.decorators ?? [],
+      } satisfies AutoBeRealizeHistory);
+
+      ctx.histories().push(history);
     }
 
     ctx.dispatch({
@@ -60,8 +63,6 @@ export const orchestrateRealize =
       text: "Any codes can not be generated.",
       created_at: now,
     });
-
-    console.log(JSON.stringify(providers, null, 2), "providers");
 
     return {
       type: "realize",
@@ -74,5 +75,6 @@ export const orchestrateRealize =
       id: v4(),
       reason: props.reason,
       step: ctx.state().analyze?.step ?? 0,
+      decorators: ctx.state().realize?.decorators ?? [],
     };
   };
