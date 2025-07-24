@@ -1,6 +1,7 @@
 import {
   IAutoBeRealizeCompiler,
   IAutoBeRealizeCompilerListener,
+  IAutoBeRealizeControllerProps,
   IAutoBeRealizeTestProps,
   IAutoBeRealizeTestResult,
 } from "@autobe/interface";
@@ -9,11 +10,18 @@ import { AutoBeCompilerInterfaceTemplate } from "../raw/AutoBeCompilerInterfaceT
 import { AutoBeCompilerRealizeTemplate } from "../raw/AutoBeCompilerRealizeTemplate";
 import { AutoBeCompilerTestTemplate } from "../raw/AutoBeCompilerTestTemplate";
 import { testRealizeProject } from "./testRealizeProject";
+import { writeRealizeControllers } from "./writeRealizeControllers";
 
 export class AutoBeRealizeCompiler implements IAutoBeRealizeCompiler {
   public constructor(
     private readonly listener: IAutoBeRealizeCompilerListener,
   ) {}
+
+  public async controller(
+    props: IAutoBeRealizeControllerProps,
+  ): Promise<Record<string, string>> {
+    return writeRealizeControllers(props);
+  }
 
   public test(
     props: IAutoBeRealizeTestProps,

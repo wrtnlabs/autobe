@@ -10,3 +10,4 @@ export * from "./AutoBeUserMessageTextContent";
 
 export * from "./AutoBeRealizeDecorator";
 export * from "./AutoBeRealizeDecoratorPayload";
+export * from "./AutoBeRealizeFunction";

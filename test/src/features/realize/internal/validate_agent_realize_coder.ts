@@ -1,7 +1,6 @@
 import { writeCodeUntilCompilePassed } from "@autobe/agent/src/orchestrate/realize/writeCodeUntilCompilePassed";
 import { FileSystemIterator } from "@autobe/filesystem";
-import { AutoBeEvent } from "@autobe/interface";
-import { AutoBeRealizeFunction } from "@autobe/interface/src/histories/contents/AutoBeRealizeFile";
+import { AutoBeEvent, AutoBeRealizeFunction } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 import { readFile } from "fs/promises";
 import path from "path";

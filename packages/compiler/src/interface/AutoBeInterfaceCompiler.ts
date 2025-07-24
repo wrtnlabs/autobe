@@ -1,12 +1,11 @@
 import { AutoBeOpenApi, IAutoBeInterfaceCompiler } from "@autobe/interface";
-import { invertOpenApiDocument } from "@autobe/utils";
+import { invertOpenApiDocument, transformOpenApiDocument } from "@autobe/utils";
 import { NestiaMigrateApplication } from "@nestia/migrate";
 import { OpenApi } from "@samchon/openapi";
 
 import { AutoBeCompilerInterfaceTemplate } from "../raw/AutoBeCompilerInterfaceTemplate";
 import { ArrayUtil } from "../utils/ArrayUtil";
 import { FilePrinter } from "../utils/FilePrinter";
-import { transformOpenApiDocument } from "./transformOpenApi";
 
 /**
  * Custom Interface compiler that handles API specification and NestJS

@@ -107,7 +107,7 @@ export async function orchestrateRealizeDecorator<
       completed_at: new Date().toISOString(),
       reason: ctx.state().analyze?.reason ?? "",
       step: ctx.state().analyze?.step ?? 0,
-      files: [],
+      functions: [],
       decorators,
       compiled: { type: "success" },
     };

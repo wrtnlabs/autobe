@@ -1,8 +1,8 @@
 import {
   AutoBeOpenApi,
+  AutoBeRealizeFunction,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
-import { AutoBeRealizeFunction } from "@autobe/interface/src/histories/contents/AutoBeRealizeFile";
 import { ILlmSchema } from "@samchon/openapi";
 import { readFile } from "fs/promises";
 import path from "path";

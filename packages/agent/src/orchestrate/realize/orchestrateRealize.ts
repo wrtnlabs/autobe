@@ -39,14 +39,14 @@ export const orchestrateRealize =
     const now = new Date().toISOString();
     const realize = ctx.state().realize;
     if (realize !== null) {
-      realize.files = files;
+      realize.functions = files;
     } else {
       const history = (ctx.state().realize = {
         type: "realize",
         compiled: {
           type: "success",
         },
-        files: files,
+        functions: files,
         completed_at: now,
         created_at: now,
         id: v4(),
@@ -69,7 +69,7 @@ export const orchestrateRealize =
       compiled: {
         type: "success",
       },
-      files: files,
+      functions: files,
       completed_at: now,
       created_at: now,
       id: v4(),

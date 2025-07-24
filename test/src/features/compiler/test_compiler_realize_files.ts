@@ -20,7 +20,7 @@ export const test_compiler_realize_files = async (): Promise<void> => {
       ...(await TestHistory.getTest("bbs-backend")),
       {
         type: "realize",
-        files: [],
+        functions: [],
         compiled: {
           type: "success",
         },

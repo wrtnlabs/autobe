@@ -3,7 +3,7 @@ import { tags } from "typia";
 import { IAutoBeTypeScriptCompileResult } from "../compiler/IAutoBeTypeScriptCompileResult";
 import { AutoBeAgentHistoryBase } from "./AutoBeHistoryBase";
 import { AutoBeRealizeDecorator } from "./contents";
-import { AutoBeRealizeFunction } from "./contents/AutoBeRealizeFile";
+import { AutoBeRealizeFunction } from "./contents/AutoBeRealizeFunction";
 
 /**
  * History record generated when the Realize agent implements the actual
@@ -26,18 +26,19 @@ import { AutoBeRealizeFunction } from "./contents/AutoBeRealizeFile";
 export interface AutoBeRealizeHistory
   extends AutoBeAgentHistoryBase<"realize"> {
   /**
-   * Generated implementation files
+   * Generated implementation functions
    *
-   * Contains the complete set of TypeScript implementation files including
+   * Contains the complete set of TypeScript implementation functions including
    * service classes, business logic methods, data access objects, and
-   * integration code. Each key represents the file path and each value contains
-   * the actual implementation code that brings the designed system to life.
+   * integration code. Each key represents the function name and each value
+   * contains the actual implementation code that brings the designed system to
+   * life.
    *
-   * The implementation files bridge the gap between API specifications and
+   * The implementation functions bridge the gap between API specifications and
    * database schemas, providing the concrete business logic that makes the
    * application functional and ready for deployment.
    */
-  files: AutoBeRealizeFunction[];
+  functions: AutoBeRealizeFunction[];
 
   /**
    * Generated authentication and authorization decorators for role-based access

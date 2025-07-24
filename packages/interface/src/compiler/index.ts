@@ -20,6 +20,7 @@ export * from "./IAutoBeTestValidateProps";
 
 // REALIZE
 export * from "./IAutoBeRealizeCompiler";
+export * from "./IAutoBeRealizeControllerProps";
 export * from "./IAutoBeRealizeCompilerListener";
 export * from "./IAutoBeRealizeTestListener";
 export * from "./IAutoBeRealizeTestConfig";
