@@ -3,6 +3,7 @@ import { tags } from "typia";
 import { IAutoBeTypeScriptCompileResult } from "../compiler/IAutoBeTypeScriptCompileResult";
 import { AutoBeAgentHistoryBase } from "./AutoBeHistoryBase";
 import { AutoBeRealizeDecorator } from "./contents";
+import { AutoBeRealizeFunction } from "./contents/AutoBeRealizeFile";
 
 /**
  * History record generated when the Realize agent implements the actual
@@ -25,7 +26,7 @@ import { AutoBeRealizeDecorator } from "./contents";
 export interface AutoBeRealizeHistory
   extends AutoBeAgentHistoryBase<"realize"> {
   /**
-   * Generated implementation files as key-value pairs.
+   * Generated implementation files
    *
    * Contains the complete set of TypeScript implementation files including
    * service classes, business logic methods, data access objects, and
@@ -36,7 +37,7 @@ export interface AutoBeRealizeHistory
    * database schemas, providing the concrete business logic that makes the
    * application functional and ready for deployment.
    */
-  files: Record<string, string>;
+  files: AutoBeRealizeFunction[];
 
   /**
    * Generated authentication and authorization decorators for role-based access
@@ -49,8 +50,8 @@ export interface AutoBeRealizeHistory
    * role-based security into Controller methods.
    *
    * These decorators eliminate the need for manual authentication logic in
-   * Controllers by automatically validating JWT tokens, checking user roles, and
-   * injecting authenticated user data as typed parameters, ensuring both
+   * Controllers by automatically validating JWT tokens, checking user roles,
+   * and injecting authenticated user data as typed parameters, ensuring both
    * security and developer productivity.
    */
   decorators: AutoBeRealizeDecorator[];
