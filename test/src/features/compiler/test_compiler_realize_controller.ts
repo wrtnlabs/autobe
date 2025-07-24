@@ -48,10 +48,10 @@ export const test_compiler_realize_controller = async (
     () =>
       content !== undefined &&
       content.includes(
-        `import { createShoppingSale } from "../../../providers/createShoppingSale.ts"`,
+        `import { createShoppingSale } from "../../../providers/createShoppingSale"`,
       ) &&
       content.includes(
-        `import { CustomerAuth } from "../../../decorators/CustomerAuth.ts"`,
+        `import { CustomerAuth } from "../../../decorators/CustomerAuth"`,
       ) &&
       content.includes("@CustomerAuth()") &&
       content.includes("return createShoppingSale(customer, body)"),
