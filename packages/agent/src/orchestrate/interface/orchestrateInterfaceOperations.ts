@@ -167,8 +167,9 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
         });
       if (props.roles === null) {
         op.authorizationRole = null;
-      }
-      if (props.roles?.find((it) => it === op.authorizationRole) === undefined)
+      } else if (
+        props.roles?.find((it) => it === op.authorizationRole) === undefined
+      )
         errors.push({
           path: `operations[${i}].authorizationRole`,
           expected: `undefined | ${props.roles?.join(" | ")}`,
