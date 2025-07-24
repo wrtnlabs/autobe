@@ -1,6 +1,8 @@
 ## Preface
 {% youtube VFucHAttjxk %}
 
+> The video is sped up; it actually takes about 20-30 minutes
+
 - Github Repository: https://github.com/wrtnlabs/autobe
 - Generation Result: https://github.com/wrtnlabs/autobe-example-bbs
 
