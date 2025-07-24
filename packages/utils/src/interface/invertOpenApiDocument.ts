@@ -48,6 +48,7 @@ export function invertOpenApiDocument(
                   }
                 : null,
             authorizationRoles: null,
+            name: r.accessor.at(-1)!,
           }) satisfies AutoBeOpenApi.IOperation,
       ),
     components: {

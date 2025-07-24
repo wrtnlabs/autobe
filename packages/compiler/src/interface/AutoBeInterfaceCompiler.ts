@@ -39,6 +39,13 @@ export class AutoBeInterfaceCompiler implements IAutoBeInterfaceCompiler {
     const migrate: NestiaMigrateApplication = new NestiaMigrateApplication(
       swagger,
     );
+    migrate.getData().routes.forEach((r) => {
+      // @todo -> must be optimized
+      r.accessor[r.accessor.length - 1] = document.operations.find(
+        (o) => o.path === r.path && o.method === r.method,
+      )!.name;
+    });
+
     const files: Record<string, string> = migrate.nest({
       keyword: true,
       simulate: true,

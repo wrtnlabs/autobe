@@ -404,6 +404,72 @@ export namespace AutoBeOpenApi {
      * array of role names.
      */
     authorizationRoles: (string[] & tags.UniqueItems) | null;
+
+    /**
+     * Functional name of the API endpoint.
+     *
+     * This is a semantic identifier that represents the primary function or
+     * purpose of the API endpoint. It serves as a canonical name that can be
+     * used for code generation, SDK method names, and internal references.
+     *
+     * ## Standard Endpoint Names
+     *
+     * Use these conventional names based on the endpoint's primary function:
+     *
+     * - **`index`**: List/search operations that return multiple entities
+     *
+     *   - Typically used with PATCH method for complex queries
+     *   - Example: `PATCH /users` → `name: "index"`
+     * - **`at`**: Retrieve a specific entity by identifier
+     *
+     *   - Typically used with GET method on single resource
+     *   - Example: `GET /users/{userId}` → `name: "at"`
+     * - **`create`**: Create a new entity
+     *
+     *   - Typically used with POST method
+     *   - Example: `POST /users` → `name: "create"`
+     * - **`update`**: Update an existing entity
+     *
+     *   - Typically used with PUT method
+     *   - Example: `PUT /users/{userId}` → `name: "update"`
+     * - **`erase`**: Delete/remove an entity
+     *
+     *   - Typically used with DELETE method
+     *   - Example: `DELETE /users/{userId}` → `name: "erase"`
+     *
+     * ## Custom Endpoint Names
+     *
+     * For specialized operations beyond basic CRUD, use descriptive verbs:
+     *
+     * - **`activate`**: Enable or turn on a feature/entity
+     * - **`deactivate`**: Disable or turn off a feature/entity
+     * - **`approve`**: Approve a request or entity
+     * - **`reject`**: Reject a request or entity
+     * - **`publish`**: Make content publicly available
+     * - **`archive`**: Move to archived state
+     * - **`restore`**: Restore from archived/deleted state
+     * - **`duplicate`**: Create a copy of an entity
+     * - **`transfer`**: Move ownership or change assignment
+     * - **`validate`**: Validate data or state
+     * - **`process`**: Execute a business process or workflow
+     * - **`export`**: Generate downloadable data
+     * - **`import`**: Process uploaded data
+     *
+     * ## Naming Guidelines
+     *
+     * - Use lowercase, singular verb forms
+     * - Be concise but descriptive
+     * - Avoid abbreviations unless widely understood
+     * - Ensure the name clearly represents the endpoint's primary action
+     * - For nested resources, focus on the action rather than hierarchy
+     *
+     * Examples:
+     *
+     * - `GET /shopping/orders/{orderId}/items` → `name: "index"` (lists items)
+     * - `POST /shopping/orders/{orderId}/cancel` → `name: "cancel"`
+     * - `PUT /users/{userId}/password` → `name: "updatePassword"`
+     */
+    name: string;
   }
 
   /**
