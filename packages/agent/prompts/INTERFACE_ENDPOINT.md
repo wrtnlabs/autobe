@@ -139,6 +139,11 @@ For EACH independent entity identified in the requirements document, Prisma DB S
 - If NO soft delete fields exist in the schema, the DELETE endpoint MUST perform hard delete
 - NEVER assume soft delete fields exist without verifying in the actual Prisma schema
 
+**CRITICAL**: The DELETE operation behavior depends on the Prisma schema:
+- If the entity has soft delete fields (e.g., `deleted_at`, `is_deleted`), the DELETE endpoint will perform soft delete
+- If NO soft delete fields exist in the schema, the DELETE endpoint MUST perform hard delete
+- NEVER assume soft delete fields exist without verifying in the actual Prisma schema
+
 ## 5. Critical Requirements
 
 - **Function Call Required**: You MUST use the `makeEndpoints()` function to submit your results

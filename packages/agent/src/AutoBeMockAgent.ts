@@ -9,7 +9,7 @@ import {
   IAutoBeCompiler,
   IAutoBeCompilerListener,
 } from "@autobe/interface";
-import { Singleton, sleep_for } from "tstl";
+import { Singleton, randint, sleep_for } from "tstl";
 import { v4 } from "uuid";
 
 import { AutoBeAgentBase } from "./AutoBeAgentBase";
@@ -91,7 +91,8 @@ export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
       type: "analyze" | "prisma" | "interface" | "test",
     ): Promise<void> => {
       for (const s of this.getEventSnapshots(type)) {
-        await sleep_for(sleepMap[s.event.type] ?? 500);
+        const time: number = sleepMap[s.event.type] ?? 500;
+        await sleep_for(randint(time * 0.2, time * 1.8));
         void this.dispatch(s.event).catch(() => {});
         this.token_usage_ = new AutoBeTokenUsage(s.tokenUsage);
       }

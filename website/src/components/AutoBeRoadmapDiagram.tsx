@@ -8,6 +8,7 @@ export const AutoBeRoadmapDiagram = async () => {
   const content: string = [
     "```mermaid",
     (await getLocalSourceFile("README.md"))
+      .split("## Roadmap Schedule")[1]
       .split("```mermaid")[1]
       .split("```")[0]
       .trim(),
