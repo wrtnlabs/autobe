@@ -8,5 +8,11 @@ export const createMigrateApplication = (
   const migrate: NestiaMigrateApplication = new NestiaMigrateApplication(
     transformOpenApiDocument(document),
   );
+  migrate.getData().routes.forEach((r) => {
+    // @todo -> must be optimized
+    r.accessor[r.accessor.length - 1] = document.operations.find(
+      (o) => o.path === r.path && o.method === r.method,
+    )!.name;
+  });
   return migrate;
 };

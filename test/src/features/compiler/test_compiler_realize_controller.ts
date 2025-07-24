@@ -62,6 +62,7 @@ const document: AutoBeOpenApi.IDocument = {
   operations: [
     {
       ...typia.random<AutoBeOpenApi.IOperation>(),
+      name: "create",
       method: "post",
       path: "/shopping/sale",
       parameters: [],
