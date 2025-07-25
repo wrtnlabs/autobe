@@ -29,13 +29,9 @@ export function replaceImportStatements<Model extends ILlmSchema.Model>(
         /import\s*{\s*Prisma\s*}\s*from\s*["']@prisma\/client["']\s*;?\s*/gm,
         "",
       )
-      .replace(
-        /import\s*{\s*jwtDecode\s*}\s*from\s*["']\.\/jwtDecode["']\s*;?\s*/gm,
-        "",
-      )
       .replace(/import\s*{\s*v4\s*}\s*from\s*["']uuid["']\s*;?\s*/gm, "")
       .replace(
-        /import\s*{\s*toISOStringSafe\s*}\s*from\s*["']\.\/toISOStringSafe["']\s*;?\s*/gm,
+        /import\s*{\s*toISOStringSafe\s*}\s*from\s*["']\.\.\/util\/toISOStringSafe["']\s*;?\s*/gm,
         "",
       );
 
@@ -53,9 +49,8 @@ export function replaceImportStatements<Model extends ILlmSchema.Model>(
       'import { MyGlobal } from "../MyGlobal";',
       'import typia, { tags } from "typia";',
       'import { Prisma } from "@prisma/client";',
-      'import { jwtDecode } from "./jwtDecode";',
       'import { v4 } from "uuid";',
-      'import { toISOStringSafe } from "./toISOStringSafe"',
+      'import { toISOStringSafe } from "../util/toISOStringSafe"',
     ];
 
     // Only add decoratorType import if it exists

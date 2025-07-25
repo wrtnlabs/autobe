@@ -1,5 +1,6 @@
 import {
   AutoBeOpenApi,
+  AutoBeRealizeDecoratorEvent,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 
@@ -13,7 +14,10 @@ export namespace IAutoBeRealizeCompile {
     result: Pick<
       IAutoBeRealizeCoderApplication.RealizeCoderOutput,
       "filename" | "implementationCode"
-    >;
+    > & {
+      /** Function name */
+      name: string;
+    };
   }
 
   export interface Fail {
@@ -24,7 +28,14 @@ export namespace IAutoBeRealizeCompile {
 
   export type FileContentMap = Record<
     string,
-    { content: string; result: "failed" | "success" }
+    {
+      result: "failed" | "success";
+      content: string;
+      role?: AutoBeRealizeDecoratorEvent["role"] | null;
+      endpoint?: AutoBeOpenApi.IEndpoint;
+      location?: string;
+      name?: string;
+    }
   >;
 
   export interface CompileDiagnostics {

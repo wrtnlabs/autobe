@@ -127,7 +127,7 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
 
   pointer.value.implementationCode = await replaceImportStatements(ctx)(
     pointer.value.implementationCode,
-    props.decoratorEvent?.decoratorType.name,
+    props.decoratorEvent?.payload.name,
   );
 
   pointer.value.implementationCode =

@@ -1,3 +1,4 @@
+import { IAutoBeRealizeControllerProps } from "./IAutoBeRealizeControllerProps";
 import { IAutoBeRealizeTestProps } from "./IAutoBeRealizeTestProps";
 import { IAutoBeRealizeTestResult } from "./IAutoBeRealizeTestResult";
 
@@ -22,6 +23,10 @@ import { IAutoBeRealizeTestResult } from "./IAutoBeRealizeTestResult";
  * @author Samchon
  */
 export interface IAutoBeRealizeCompiler {
+  controller(
+    props: IAutoBeRealizeControllerProps,
+  ): Promise<Record<string, string>>;
+
   /**
    * Executes comprehensive E2E test suite validation against the fully
    * implemented backend application.

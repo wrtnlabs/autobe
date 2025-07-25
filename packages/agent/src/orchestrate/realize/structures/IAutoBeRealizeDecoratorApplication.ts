@@ -21,13 +21,13 @@ export namespace IAutoBeRealizeDecoratorApplication {
     decorator: IAutoBeRealizeDecoratorApplication.IDecorator;
 
     /**
-     * Authentication Decorator Type configuration containing the decorator type
-     * name and implementation code. The Decorator Type is used to define the
+     * Authentication Payload Type configuration containing the payload type
+     * name and implementation code. The Payload Type is used to define the
      * structure of the authenticated user data that will be injected into
      * Controller methods when using the decorator. It serves as the TypeScript
      * type for the parameter in Controller method signatures.
      */
-    decoratorType: IAutoBeRealizeDecoratorApplication.IDecoratorType;
+    payload: IAutoBeRealizeDecoratorApplication.IPayloadType;
   }
 
   export interface IProvider {
@@ -72,7 +72,7 @@ export namespace IAutoBeRealizeDecoratorApplication {
     code: string;
   }
 
-  export interface IDecoratorType {
+  export interface IPayloadType {
     /**
      * The name of the Decorator to be generated in {Role}Auth format (e.g.,
      * AdminAuth, UserAuth). This decorator will be used as a parameter

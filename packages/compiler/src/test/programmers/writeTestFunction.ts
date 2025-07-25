@@ -1,11 +1,13 @@
 import { AutoBeOpenApi, IAutoBeTestWriteProps } from "@autobe/interface";
-import { AutoBeEndpointComparator } from "@autobe/utils";
+import {
+  AutoBeEndpointComparator,
+  transformOpenApiDocument,
+} from "@autobe/utils";
 import { NestiaMigrateImportProgrammer } from "@nestia/migrate/lib/programmers/NestiaMigrateImportProgrammer";
 import { HttpMigration, IHttpMigrateApplication } from "@samchon/openapi";
 import { HashMap, Pair } from "tstl";
 import ts, { FunctionDeclaration } from "typescript";
 
-import { transformOpenApiDocument } from "../../interface/transformOpenApi";
 import { FilePrinter } from "../../utils/FilePrinter";
 import { AutoBeTestStatementProgrammer } from "./AutoBeTestStatementProgrammer";
 import { IAutoBeTestApiFunction } from "./IAutoBeTestApiFunction";

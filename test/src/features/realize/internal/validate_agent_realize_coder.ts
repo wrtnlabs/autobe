@@ -1,8 +1,7 @@
 import { orchestrateRealizeDecorator } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeDecorator";
-import { IAutoBeRealizeCoderApplication } from "@autobe/agent/src/orchestrate/realize/structures/IAutoBeRealizeCoderApplication";
 import { writeCodeUntilCompilePassed } from "@autobe/agent/src/orchestrate/realize/writeCodeUntilCompilePassed";
 import { FileSystemIterator } from "@autobe/filesystem";
-import { AutoBeEvent } from "@autobe/interface";
+import { AutoBeEvent, AutoBeRealizeFunction } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 import { readFile } from "fs/promises";
 import path from "path";
@@ -53,14 +52,11 @@ export const validate_agent_realize_coder = async (
   const go = async () =>
     await writeCodeUntilCompilePassed(ctx, ops, decoratorEvents, 2);
 
-  const result: Pick<
-    IAutoBeRealizeCoderApplication.RealizeCoderOutput,
-    "filename" | "implementationCode"
-  >[] = await go();
+  const result: AutoBeRealizeFunction[] = await go();
 
   const codes = result.reduce<Record<string, string>>((acc, cur) => {
     return Object.assign(acc, {
-      [cur.filename]: cur.implementationCode,
+      [cur.location]: cur.content,
     });
   }, {});
 
@@ -95,15 +91,6 @@ export const validate_agent_realize_coder = async (
         ),
       ...codes,
       ...nodeModules,
-      "src/providers/jwtDecode.ts": await readFile(
-        path.join(
-          __dirname,
-          "../../../../../internals/template/realize/src/providers/jwtDecode.ts",
-        ),
-        {
-          encoding: "utf-8",
-        },
-      ),
       "src/MyGlobal.ts": await readFile(
         path.join(
           __dirname,

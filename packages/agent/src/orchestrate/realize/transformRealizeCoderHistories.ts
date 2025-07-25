@@ -104,9 +104,9 @@ export const transformRealizeCoderHistories = (
             `- Authentication provider: authentications/${props.decoratorEvent.provider.name}.ts`,
             `  - Contains JWT validation, role checking, and authorization logic`,
             `  - When importing from providers folder, use: '../authentications/${props.decoratorEvent.provider.name}'`,
-            `- Type definition: authentications/types/${props.decoratorEvent.decoratorType.name}.ts`,
+            `- Type definition: authentications/types/${props.decoratorEvent.payload.name}.ts`,
             `  - TypeScript interface for authenticated user payload`,
-            `  - When importing from providers folder, use: '../authentications/types/${props.decoratorEvent.decoratorType.name}'`,
+            `  - When importing from providers folder, use: '../authentications/types/${props.decoratorEvent.payload.name}'`,
           ].join("\n")
         : "",
     },

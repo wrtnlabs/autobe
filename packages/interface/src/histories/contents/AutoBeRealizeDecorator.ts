@@ -1,3 +1,50 @@
+import { AutoBeRealizeDecoratorPayload } from "./AutoBeRealizeDecoratorPayload";
+
+export interface AutoBeRealizeDecorator {
+  /**
+   * The name of Decorator.
+   *
+   * The name of the Decorator to be generated in {Role}Auth format (e.g.,
+   * AdminAuth, UserAuth). This decorator will be used as a parameter decorator
+   * in Controller methods to automatically authenticate and authorize users for
+   * the specific role, injecting the authenticated user payload as a method
+   * parameter.
+   */
+  name: string;
+
+  /**
+   * The location of the Decorator.
+   *
+   * Specifies the file path or directory location where the decorator
+   * implementation will be generated and stored. This location ensures proper
+   * organization of authentication-related files within the project structure
+   * and enables correct import statements when the decorator is used in
+   * Controller classes.
+   */
+  location: string;
+
+  /**
+   * The role of Decorator.
+   *
+   * Indicates the specific role that this decorator will authenticate and
+   * authorize. This role determines the access level and permissions that will
+   * be validated when the decorator is applied to Controller methods, ensuring
+   * that only users with the appropriate role can access protected endpoints.
+   */
+  role: string;
+
+  /**
+   * The payload type of the Decorator.
+   *
+   * Configuration object that defines the TypeScript type structure for the
+   * authenticated user data that will be injected into Controller method
+   * parameters. This payload type ensures type safety and provides the
+   * necessary type information for the decorator to properly handle and
+   * validate the authenticated user data during request processing.
+   */
+  payload: AutoBeRealizeDecoratorPayload;
+}
+
 export namespace AutoBeRealizeDecorator {
   export interface IProvider {
     /**
@@ -37,26 +84,6 @@ export namespace AutoBeRealizeDecorator {
      * calls the corresponding Provider function for authentication, Singleton
      * pattern using tstl library for efficient decorator instance management,
      * and proper TypeScript typing for the ParameterDecorator interface.
-     */
-    code: string;
-  }
-
-  export interface IDecoratorType {
-    /**
-     * The name of the Decorator to be generated in {Role}Auth format (e.g.,
-     * AdminAuth, UserAuth). This decorator will be used as a parameter
-     * decorator in Controller methods to automatically authenticate and
-     * authorize users for the specific role, injecting the authenticated user
-     * payload as a method parameter.
-     */
-    name: string;
-
-    /**
-     * The TypeScript code for the Payload type in {Role}Payload format (e.g.,
-     * AdminPayload, UserPayload). This interface defines the structure of the
-     * authenticated user data that will be injected into Controller methods
-     * when using the decorator. It serves as the TypeScript type for the
-     * parameter in Controller method signatures.
      */
     code: string;
   }

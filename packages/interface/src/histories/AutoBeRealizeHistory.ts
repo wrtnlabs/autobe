@@ -2,6 +2,8 @@ import { tags } from "typia";
 
 import { IAutoBeTypeScriptCompileResult } from "../compiler/IAutoBeTypeScriptCompileResult";
 import { AutoBeAgentHistoryBase } from "./AutoBeHistoryBase";
+import { AutoBeRealizeDecorator } from "./contents";
+import { AutoBeRealizeFunction } from "./contents/AutoBeRealizeFunction";
 
 /**
  * History record generated when the Realize agent implements the actual
@@ -24,18 +26,36 @@ import { AutoBeAgentHistoryBase } from "./AutoBeHistoryBase";
 export interface AutoBeRealizeHistory
   extends AutoBeAgentHistoryBase<"realize"> {
   /**
-   * Generated implementation files as key-value pairs.
+   * Generated implementation functions
    *
-   * Contains the complete set of TypeScript implementation files including
+   * Contains the complete set of TypeScript implementation functions including
    * service classes, business logic methods, data access objects, and
-   * integration code. Each key represents the file path and each value contains
-   * the actual implementation code that brings the designed system to life.
+   * integration code. Each key represents the function name and each value
+   * contains the actual implementation code that brings the designed system to
+   * life.
    *
-   * The implementation files bridge the gap between API specifications and
+   * The implementation functions bridge the gap between API specifications and
    * database schemas, providing the concrete business logic that makes the
    * application functional and ready for deployment.
    */
-  files: Record<string, string>;
+  functions: AutoBeRealizeFunction[];
+
+  /**
+   * Generated authentication and authorization decorators for role-based access
+   * control.
+   *
+   * Contains the complete set of NestJS parameter decorators that provide
+   * automatic authentication and authorization functionality for different user
+   * roles. Each decorator includes its implementation code, associated provider
+   * functions, and payload type definitions that enable seamless integration of
+   * role-based security into Controller methods.
+   *
+   * These decorators eliminate the need for manual authentication logic in
+   * Controllers by automatically validating JWT tokens, checking user roles,
+   * and injecting authenticated user data as typed parameters, ensuring both
+   * security and developer productivity.
+   */
+  decorators: AutoBeRealizeDecorator[];
 
   /**
    * Results of compiling the generated implementation code using the embedded

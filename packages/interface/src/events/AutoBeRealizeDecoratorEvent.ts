@@ -1,4 +1,7 @@
-import { AutoBeRealizeDecorator } from "../histories/contents";
+import {
+  AutoBeRealizeDecorator,
+  AutoBeRealizeDecoratorPayload,
+} from "../histories/contents";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
 /**
@@ -45,7 +48,7 @@ export interface AutoBeRealizeDecoratorEvent
    * Controller methods when using the decorator. It serves as the TypeScript
    * type for the parameter in Controller method signatures.
    */
-  decoratorType: AutoBeRealizeDecorator.IDecoratorType;
+  payload: AutoBeRealizeDecoratorPayload;
 
   /**
    * Number of implementation files that have been completed so far.

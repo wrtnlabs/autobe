@@ -1,6 +1,7 @@
 import {
   AutoBeOpenApi,
   AutoBeRealizeDecoratorEvent,
+  AutoBeRealizeFunction,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
@@ -11,7 +12,6 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { pipe } from "./RealizePipe";
 import { orchestrateRealizeCoder } from "./orchestrateRealizeCoder";
 import { orchestrateRealizePlanner } from "./orchestrateRealizePlanner";
-import { IAutoBeRealizeCoderApplication } from "./structures/IAutoBeRealizeCoderApplication";
 import { IAutoBeRealizeCompile } from "./structures/IAutoBeRealizeCompile";
 import { FAILED } from "./structures/IAutoBeRealizeFailedSymbol";
 
@@ -22,17 +22,11 @@ export async function writeCodeUntilCompilePassed<
   ops: AutoBeOpenApi.IOperation[],
   autoBeRealizeDecoratorEvent: AutoBeRealizeDecoratorEvent[],
   retry: number,
-): Promise<
-  Pick<
-    IAutoBeRealizeCoderApplication.RealizeCoderOutput,
-    "filename" | "implementationCode"
-  >[]
-> {
-  const decoratorTypes = autoBeRealizeDecoratorEvent
+): Promise<AutoBeRealizeFunction[]> {
+  const payloads = autoBeRealizeDecoratorEvent
     .map((el) => {
       return {
-        [`src/authentications/types/${el.decoratorType.name}.ts`]:
-          el.decoratorType.code,
+        [`src/authentications/types/${el.payload.name}.ts`]: el.payload.code,
       };
     })
     .reduce<Record<string, string>>((acc, cur) => Object.assign(acc, cur), {});
@@ -46,11 +40,7 @@ export async function writeCodeUntilCompilePassed<
       {},
     );
 
-  const templateFiles = [
-    "src/providers/jwtDecode.ts",
-    "src/MyGlobal.ts",
-    "src/providers/toISOStringSafe.ts",
-  ];
+  const templateFiles = ["src/MyGlobal.ts", "src/util/toISOStringSafe.ts"];
   const entireCodes: IAutoBeRealizeCompile.FileContentMap = {
     ...(await loadTemplateFiles(templateFiles)),
   };
@@ -85,6 +75,12 @@ export async function writeCodeUntilCompilePassed<
         entireCodes[c.result.filename] = {
           content: c.result.implementationCode,
           result: "success",
+          endpoint: {
+            method: c.op.method,
+            path: c.op.path,
+          },
+          location: c.result.filename,
+          name: c.result.name,
         };
       }
     }
@@ -94,7 +90,7 @@ export async function writeCodeUntilCompilePassed<
     const compiler = await ctx.compiler();
     const compiled = await compiler.typescript.compile({
       files: {
-        ...decoratorTypes,
+        ...payloads,
         ...files,
         ...nodeModules,
         ...Object.entries(entireCodes)
@@ -127,35 +123,29 @@ export async function writeCodeUntilCompilePassed<
     }
   }
 
-  const providers = Object.entries(entireCodes).map(
-    ([filename, { content }]) => {
+  return Object.entries(entireCodes)
+    .filter(([filename]) => filename.startsWith("src/providers")) // filter only provider files
+    .map(([filename, value]) => {
       return {
         filename,
-        implementationCode: content,
+        content: value.content,
+        endpoint: value.endpoint!,
+        location: value.location!,
+        name: value.name!,
+        role: value.role!,
       };
-    },
-  );
-
-  return [
-    ...providers,
-    ...Object.entries(decoratorTypes).map(([filename, content]) => {
-      return {
-        filename,
-        implementationCode: content,
-      };
-    }),
-  ];
+    });
 }
 
 async function loadTemplateFiles(
   templateFiles: string[],
-): Promise<Record<string, { content: string; result: "success" }>> {
+): Promise<IAutoBeRealizeCompile.FileContentMap> {
   const templateBasePath = path.join(
     __dirname,
     "../../../../../internals/template/realize",
   );
 
-  const result: Record<string, { content: string; result: "success" }> = {};
+  const result: IAutoBeRealizeCompile.FileContentMap = {};
 
   for (const filePath of templateFiles) {
     result[filePath] = {
@@ -163,6 +153,8 @@ async function loadTemplateFiles(
         encoding: "utf-8",
       }),
       result: "success",
+      location: filePath,
+      role: null,
     };
   }
 
@@ -198,7 +190,11 @@ async function process<Model extends ILlmSchema.Model>(
           total: metadata.total,
         });
 
-        return res;
+        if (res === FAILED) {
+          return res;
+        }
+
+        return { ...res, name: p.functionName };
       });
     },
   );
@@ -207,7 +203,7 @@ async function process<Model extends ILlmSchema.Model>(
     return { type: "failed", op: op, result } as const;
   }
 
-  return { type: "success", op: op, result: result } as const;
+  return { type: "success", op: op, result } as const;
 }
 
 function shouldProcessOperation(
