@@ -1,9 +1,6 @@
 import {
   AutoBeInterfaceEndpointsEvent,
   AutoBePrismaComponentsEvent,
-  AutoBeRealizeDecoratorCorrectEvent,
-  AutoBeRealizeDecoratorEvent,
-  AutoBeRealizeDecoratorValidateEvent,
   AutoBeRealizeTestResetEvent,
   AutoBeTestScenarioEvent,
 } from "@autobe/interface";
@@ -44,10 +41,7 @@ export namespace AutoBePlaygroundScenarioEventMovie {
       | AutoBePrismaComponentsEvent
       | AutoBeInterfaceEndpointsEvent
       | AutoBeTestScenarioEvent
-      | AutoBeRealizeTestResetEvent
-      | AutoBeRealizeDecoratorEvent
-      | AutoBeRealizeDecoratorCorrectEvent
-      | AutoBeRealizeDecoratorValidateEvent;
+      | AutoBeRealizeTestResetEvent;
   }
 }
 
@@ -110,21 +104,6 @@ function getState(
       return {
         title: "Realize Test Reset",
         description: "Resetting test environment.",
-      };
-    case "realizeDecorator":
-      return {
-        title: "Realize Decorator",
-        description: "Realizing decorator functions.",
-      };
-    case "realizeDecoratorCorrect":
-      return {
-        title: "Realize Decorator Correct",
-        description: "Correcting decorator functions",
-      };
-    case "realizeDecoratorValidate":
-      return {
-        title: "Realize Decorator Validate",
-        description: "Validating decorator functions.",
       };
     default:
       throw new Error("Unknown event type");

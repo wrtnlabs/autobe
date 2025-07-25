@@ -9,7 +9,8 @@ export interface AutoBeRealizeFunction {
    * present in the JWT token to access this API endpoint.
    *
    * - Null: No role restriction, endpoint is accessible by any authenticated user
-   * - String: Specific role required (extracted from AutoBeRealizeDecoratorEvent)
+   * - String: Specific role required (extracted from
+   *   {@link AutoBeAuthorization.role})
    */
   role: string | null;
 
