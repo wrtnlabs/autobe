@@ -95,6 +95,25 @@ export const transformRealizeCoderHistories = (
       id: v4(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
+      text: props.decoratorEvent
+        ? [
+            "Decorator-related files are already generated at the following locations:",
+            `- Decorator implementation: decorators/${props.decoratorEvent.decorator.name}.ts`,
+            `  - NestJS parameter decorator`,
+            `  - When importing from providers folder, use: '../decorators/${props.decoratorEvent.decorator.name}'`,
+            `- Authentication provider: authentications/${props.decoratorEvent.provider.name}.ts`,
+            `  - Contains JWT validation, role checking, and authorization logic`,
+            `  - When importing from providers folder, use: '../authentications/${props.decoratorEvent.provider.name}'`,
+            `- Type definition: authentications/types/${props.decoratorEvent.payload.name}.ts`,
+            `  - TypeScript interface for authenticated user payload`,
+            `  - When importing from providers folder, use: '../authentications/types/${props.decoratorEvent.payload.name}'`,
+          ].join("\n")
+        : "",
+    },
+    {
+      id: v4(),
+      created_at: new Date().toISOString(),
+      type: "systemMessage",
       text: AutoBeSystemPromptConstant.REALIZE_CODER_ARTIFACT.replaceAll(
         `{prisma_schemas}`,
         JSON.stringify(state.prisma.schemas),

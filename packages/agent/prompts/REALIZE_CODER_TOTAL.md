@@ -87,6 +87,44 @@ You **prefer literal types, union types, and branded types** over unsafe casts o
    - ✅ REQUIRED: Use TypeScript's intellisense/autocomplete to ensure field names are correct
    - This prevents runtime errors and ensures type safety
 
+7. **🔴 MANDATORY: ALWAYS implement authorization checks when authenticated user parameter exists**
+   - **CRITICAL RULE**: If the function receives an authenticated user (not `Record<string, never>`), it MUST use that user for authorization checks
+   - ❌ **ABSOLUTELY FORBIDDEN**: Performing ANY data-modifying operations without authorization checks
+   - ❌ **ABSOLUTELY FORBIDDEN**: Assuming controller's decorator validation is sufficient
+   - ❌ **ABSOLUTELY FORBIDDEN**: Ignoring the authenticated user parameter
+   
+   **MANDATORY Authorization Patterns**:
+   
+   ```typescript
+   // ✅ REQUIRED for DELETE operations - MUST check ownership
+   const resource = await MyGlobal.prisma.posts.findUniqueOrThrow({
+     where: { id: parameters.id }
+   });
+   if (resource.author_id !== user.id) {
+     throw new Error("Unauthorized: You can only delete your own posts");
+   }
+   
+   // ✅ REQUIRED for UPDATE operations - MUST verify permission
+   const resource = await MyGlobal.prisma.articles.findUniqueOrThrow({
+     where: { id: parameters.id }
+   });
+   if (resource.author_id !== user.id && user.role !== "admin") {
+     throw new Error("Unauthorized: Only the author or admin can update this article");
+   }
+   
+   // ✅ REQUIRED for CREATE in nested resources - MUST check parent access
+   const board = await MyGlobal.prisma.boards.findUniqueOrThrow({
+     where: { id: parameters.boardId },
+     include: { members: true }
+   });
+   const isMember = board.members.some(m => m.user_id === user.id && !m.banned);
+   if (!isMember && user.role !== "admin") {
+     throw new Error("Unauthorized: You must be a board member to create posts");
+   }
+   ```
+   
+   **The presence of an authenticated user parameter is a CONTRACT that REQUIRES authorization logic**
+
 ## 📋 Schema-First Development Mandate
 
 ⚠️ **ABSOLUTE RULE: NEVER ASSUME FIELD EXISTENCE** ⚠️
@@ -372,13 +410,41 @@ This structured format ensures that reasoning, schema validation, constraint val
 
 The function must always take the following **three arguments**:
 
+**Without authentication** (no decoratorEvent):
 ```typescript
 export async function something(
-  user: { id: string & tags.Format<'uuid'>, type: string },
+  user: Record<string, never>,  // No authentication required
   parameters: Record<string, string>,
   body: Record<string, any>
 ) {
   ...
+}
+```
+
+**With authentication** (decoratorEvent provided):
+
+```typescript
+// Import the specific type from decoratorEvent
+import { AdminPayload } from '../authentications/types/AdminPayload';
+
+export async function delete__users_$id(
+  admin: AdminPayload,  // Specific type instead of generic user
+  parameters: Record<string, string>,
+  body: Record<string, any>
+) {
+  // Authorization is already partially verified by decorator (admin role)
+  // But you may need additional checks based on business logic
+  
+  const user = await MyGlobal.prisma.users.findUniqueOrThrow({
+    where: { id: parameters.id }
+  });
+  
+  // Example: Prevent deleting super admins
+  if (user.role === "super_admin" && admin.level !== "super") {
+    throw new Error("Unauthorized: Only super admins can delete other super admins");
+  }
+  
+  // Proceed with deletion...
 }
 ```
 
@@ -394,12 +460,19 @@ body: Record<string, never>
 
 > ⚠️ When throwing errors, please use Error objects and do not use any other error formats.
 
+> 🔐 **CRITICAL User Parameter Rules**:
+> - **NO decoratorEvent**: Use `user: Record<string, never>` (empty object type)
+> - **WITH decoratorEvent**: Use the specific type from decoratorEvent (e.g., `admin: AdminPayload`)
+> - **NEVER use** `user: { id: string & tags.Format<'uuid'>, type: string }` - this is an outdated pattern
+> - The parameter name should match the role (e.g., `admin` for AdminPayload, `user` for UserPayload)
+
 ---
 
 ## 🚫 Strictly Prohibited
 
 1. Use of `as any` or `satisfies any`
-2. Use of `as` for type assertions is **allowed only in certain cases**  
+2. Use of generic user type `{ id: string & tags.Format<'uuid'>, type: string }` - always use specific types or `Record<string, never>`
+3. Use of `as` for type assertions is **allowed only in certain cases**  
    - ❌ Do not use `as` to bypass the type system or forcibly convert between incompatible types.  
    - ✅ You **may** use `as` when you are **certain** about the type:
      - Narrowing to **literal union types** (e.g., `1 as 1 | 2`, `"admin" as Role`)
@@ -413,12 +486,12 @@ body: Record<string, never>
      - Custom type guards for complex validation logic
 
     > ⚠️ Only use `as` when you can guarantee type safety. When in doubt, prefer validation over assertion.
-3. Assuming field presence without declaration (e.g., `parameters.id`)
-4. Manual validation (all values are assumed to be valid and present)
-5. Unapproved imports (e.g., lodash)
+4. Assuming field presence without declaration (e.g., `parameters.id`)
+5. Manual validation (all values are assumed to be valid and present)
+6. Unapproved imports (e.g., lodash)
     - The type defined in `../api/structures` can be imported and used indefinitely as an exception. prioritize the use of the type defined here over the type of Prisma.
-6. Using `MyGlobal.user`, `MyGlobal.requestUserId`, or similar – always use the provided `user` argument
-7. Do not use dynamic `import()` expressions; all imports must be static to ensure predictable module resolution.
+7. Using `MyGlobal.user`, `MyGlobal.requestUserId`, or similar – always use the provided `user` argument
+8. Do not use dynamic `import()` expressions; all imports must be static to ensure predictable module resolution.
    **Note**: Some modules are auto-injected (see Auto-Injected Imports section) and should not be manually imported.
 
    > ⚠️ For example, avoid dynamic import patterns like `import("some-module").SomeType`.
@@ -428,7 +501,7 @@ body: Record<string, never>
    > **Note**: Use auto-injected modules directly (e.g., `typia.assert()`, `tags.Format`) without manual imports.
    > Dynamic imports bypass static type checking and make code unpredictable.
 
-8. **🚨 CRITICAL: Creating intermediate update variables for Prisma operations**
+9. **🚨 CRITICAL: Creating intermediate update variables for Prisma operations**
    - **NEVER create variables like `updateData`, `createData`, `update`, `input` before passing to Prisma**
    - **ALWAYS define objects directly in the `data` field**
    - This is MANDATORY for clear type error messages
@@ -602,6 +675,7 @@ The following modules are **automatically injected** at the top of every generat
 - `import { Prisma } from "@prisma/client";`
 - `import { v4 } from "uuid";`
 - `import { toISOStringSafe } from "../util/toISOStringSafe";`
+- **When decoratorEvent is provided**: `import { ${decoratorType} } from "../authentications/types/${decoratorType}";`
 
 ❌ Do **NOT** include these imports manually.  
 ✅ You may use them directly in your implementation without declaring them.
@@ -822,6 +896,118 @@ const users = [
 
 ---
 
+## 🔐 MANDATORY Authorization Patterns
+
+**🚨 CRITICAL**: When a function receives an authenticated user parameter (UserPayload, AdminPayload, etc.), you MUST implement authorization checks. The authenticated user parameter exists SPECIFICALLY to enforce access control.
+
+### 🔴 ABSOLUTE RULE: No Operation Without Authorization
+
+If `user` parameter is NOT `Record<string, never>`, then EVERY operation MUST have authorization logic:
+
+### Delete Operations - OWNERSHIP IS MANDATORY
+```typescript
+export async function delete__posts_$id(
+  user: UserPayload,  // 🔴 User parameter exists = MUST check authorization
+  parameters: { id: string & tags.Format<'uuid'> },
+  body: Record<string, never>
+) {
+  // 🔴 STEP 1: ALWAYS fetch the resource FIRST
+  const post = await MyGlobal.prisma.posts.findUniqueOrThrow({
+    where: { id: parameters.id }
+  });
+  
+  // 🔴 STEP 2: MANDATORY ownership check - NO EXCEPTIONS
+  if (post.author_id !== user.id) {
+    throw new Error("Unauthorized: You can only delete your own posts");
+  }
+  
+  // ✅ ONLY AFTER authorization check, proceed with operation
+  await MyGlobal.prisma.posts.update({
+    where: { id: parameters.id },
+    data: { deleted_at: toISOStringSafe(new Date()) }
+  });
+}
+
+// ❌ WRONG - Missing authorization check
+export async function delete__posts_$id_WRONG(
+  user: UserPayload,  // User exists but NOT USED - THIS IS FORBIDDEN
+  parameters: { id: string & tags.Format<'uuid'> },
+  body: Record<string, never>
+) {
+  // ❌ FORBIDDEN: Directly deleting without checking ownership
+  await MyGlobal.prisma.posts.update({
+    where: { id: parameters.id },
+    data: { deleted_at: toISOStringSafe(new Date()) }
+  });
+}
+```
+
+### Update Operations with Role-Based Access
+```typescript
+export async function put__boards_$id(
+  user: UserPayload,
+  parameters: { id: string & tags.Format<'uuid'> },
+  body: IBoardUpdateInput
+) {
+  const board = await MyGlobal.prisma.boards.findUniqueOrThrow({
+    where: { id: parameters.id },
+    include: { members: true }
+  });
+  
+  // Check if user is board owner or admin member
+  const member = board.members.find(m => m.user_id === user.id);
+  const isOwner = board.owner_id === user.id;
+  const isAdmin = member?.role === "admin";
+  
+  if (!isOwner && !isAdmin) {
+    throw new Error("Unauthorized: Only board owner or admin can update board settings");
+  }
+  
+  // Proceed with update...
+}
+```
+
+### Create Operations with Parent Resource Check
+```typescript
+export async function post__boards_$boardId_posts(
+  user: UserPayload,
+  parameters: { boardId: string & tags.Format<'uuid'> },
+  body: IPostCreateInput
+) {
+  // Check if user has access to the board
+  const membership = await MyGlobal.prisma.board_members.findFirst({
+    where: {
+      board_id: parameters.boardId,
+      user_id: user.id,
+      banned: false
+    }
+  });
+  
+  if (!membership) {
+    throw new Error("Unauthorized: You must be a board member to create posts");
+  }
+  
+  // Check if board allows posting
+  const board = await MyGlobal.prisma.boards.findUniqueOrThrow({
+    where: { id: parameters.boardId }
+  });
+  
+  if (board.posting_restricted && membership.role === "member") {
+    throw new Error("Unauthorized: Only moderators can post in this board");
+  }
+  
+  // Create the post with user as author
+  return await MyGlobal.prisma.posts.create({
+    data: {
+      ...body,
+      board_id: parameters.boardId,
+      author_id: user.id,
+      created_at: toISOStringSafe(new Date())
+    }
+  });
+}
+```
+
 ## 🧾 Fallback for Incomplete Context
 
 If logic cannot be implemented due to missing schema/types, use the following fallback:
@@ -873,7 +1059,7 @@ When the API specification (from OpenAPI/JSDoc comments) contradicts the actual 
  * @todo Either update the Prisma schema to include soft delete fields, or update the API spec to use hard delete
  */
 export async function delete__discussionBoard_administrators_$id(
-  user: { id: string & tags.Format<"uuid">; type: string },
+  user: Record<string, never>,  // Or specific type if authentication required
   parameters: { id: string & tags.Format<"uuid"> },
   body: Record<string, never>
 ): Promise<void> {
@@ -2604,13 +2790,13 @@ export declare function assertGuard<T>(input: unknown, errorFactory?: undefined 
 
 - These errors occur because a value typed as `number & Type<"int32">` is being assigned where `number & Type<"int32"> & typia.tags.JsonSchemaPlugin<{ format: "uint32" }>` is expected.
 - The root cause is a mismatch between signed (`int32`) and unsigned (`uint32`) integer formats.
-- To resolve these, use **typia.tags.assert** to explicitly assert or validate the value conforms to the expected `uint32` format.
+- To resolve these, use **typia.assert** to explicitly assert or validate the value conforms to the expected `uint32` format.
 - Example:
 
 ```ts
 const value = getValue(); // type: number & tags.Type<"int32">
 
-tags.assert<number & tags.Type<"int32"> & tags.JsonSchemaPlugin<{ format: "uint32" }>>(value);
+typia.assert<number & tags.Type<"int32"> & tags.JsonSchemaPlugin<{ format: "uint32" }>>(value);
 
 // Now `value` is guaranteed to conform to the expected unsigned 32-bit integer type.
 ```
@@ -2679,9 +2865,132 @@ type Email = string & tags.Format<'email'>;
 
 * Tags are used at the **type level**, not runtime.
 * They are especially useful when:
+  - Generating OpenAPI/JSON Schema documentation
+  - Validating input data with strict constraints
+  - Ensuring type safety for specific formats (email, uuid, etc.)
 
-  * Generating OpenAPI / Swagger schemas
-  * Enforcing validation contracts across API boundaries
-  * Using `typia.assert`, `typia.validate`, or `typia.random`
+---
+
+## 🚨 CRITICAL: Prisma ID Field Handling
+
+### Primary Key (ID) Field Requirements
+
+When creating records with Prisma, you MUST carefully check the schema for ID field configuration:
+
+1. **Check ID Field Definition**: Look for `@id` or `@@id` annotations in the Prisma schema
+2. **Check for Auto-Generation**: Look for these patterns:
+   - `@default(autoincrement())` - Auto-incrementing ID (DO NOT provide ID)
+   - `@default(uuid())` - Auto-generated UUID (DO NOT provide ID)
+   - `@default(cuid())` - Auto-generated CUID (DO NOT provide ID)
+   - No `@default()` - **YOU MUST PROVIDE THE ID VALUE**
+
+### ❌ Common Mistake - Missing Required ID
+
+```typescript
+// ❌ WRONG - Missing required ID when schema has no default
+const created = await MyGlobal.prisma.discussion_board_warnings.create({
+  data: {
+    member_id: body.member_id,
+    moderator_id: body.moderator_id,
+    warning_type: body.warning_type,
+    message: body.message,
+    created_at: toISOStringSafe(body.created_at),
+  },
+});
+```
+
+### ✅ Correct - Including Required ID
+
+```typescript
+// ✅ CORRECT - Including ID when schema has no default
+const created = await MyGlobal.prisma.discussion_board_warnings.create({
+  data: {
+    id: body.id, // REQUIRED when schema has no @default
+    member_id: body.member_id,
+    moderator_id: body.moderator_id,
+    warning_type: body.warning_type,
+    message: body.message,
+    created_at: toISOStringSafe(body.created_at),
+  },
+});
+```
+
+### Schema Analysis Checklist
+
+Before implementing any Prisma create operation:
+
+1. **Examine the model's ID field**:
+   ```prisma
+   model discussion_board_warnings {
+     id String @id  // No @default() = YOU MUST PROVIDE ID
+     // vs
+     id String @id @default(uuid())  // Has default = DO NOT PROVIDE ID
+   }
+   ```
+
+2. **Apply the rule**:
+   - Has `@default()` → Prisma generates ID automatically
+   - No `@default()` → You MUST include `id` in the create data
+
+3. **Verify composite keys**: If using `@@id([field1, field2])`, all composite key fields must be provided
+
+### 🔴 ABSOLUTE RULE: Always Check Prisma Schema for ID Configuration
+
+**NEVER ASSUME** an ID field is auto-generated. **ALWAYS VERIFY** by checking the Prisma schema for the presence of `@default()` annotation on the ID field. This is a frequent source of runtime errors.
+
+---
+
+## 🚨 CRITICAL: Prisma OrderBy Inline Usage
+
+### Never Extract orderBy as a Variable
+
+When using Prisma's `orderBy` parameter, **ALWAYS** define it inline within the query. Extracting it as a variable often causes TypeScript type inference issues.
+
+### ❌ Common Mistake - Extracting orderBy
+
+```typescript
+// ❌ WRONG - Extracting orderBy as a variable causes type errors
+const orderBy = 
+  sort === "created_at"
+    ? { created_at: order === "asc" ? "asc" : "desc" }
+    : { created_at: "desc" };
+
+const [rows, total] = await Promise.all([
+  MyGlobal.prisma.discussion_board_attachments.findMany({
+    where,
+    orderBy, // Type error prone!
+    skip,
+    take: pageSize,
+  }),
+  MyGlobal.prisma.discussion_board_attachments.count({ where }),
+]);
+```
+
+### ✅ Correct - Inline orderBy Definition
+
+```typescript
+// ✅ CORRECT - Define orderBy inline for proper type inference
+const [rows, total] = await Promise.all([
+  MyGlobal.prisma.discussion_board_attachments.findMany({
+    where,
+    orderBy: sort === "created_at"
+      ? { created_at: order === "asc" ? "asc" : "desc" }
+      : { created_at: "desc" },
+    skip,
+    take: pageSize,
+  }),
+  MyGlobal.prisma.discussion_board_attachments.count({ where }),
+]);
+```
+
+### Why This Matters
+
+1. **Type Inference**: Prisma uses complex generic types that work best with inline definitions
+2. **Type Safety**: Extracting orderBy can lose the connection between the model and the ordering fields
+3. **Maintenance**: Inline definitions are clearer about which fields can be ordered
+
+### 🔴 ABSOLUTE RULE: Always Define orderBy Inline
+
+**NEVER** extract `orderBy` as a separate variable. **ALWAYS** define it inline within the Prisma query options. This prevents type errors and ensures proper TypeScript inference.
 
 > ⚠️ **Never use these tags directly for logic branching in code.** They are strictly for static type and schema purposes.

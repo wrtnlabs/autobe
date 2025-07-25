@@ -1,5 +1,6 @@
 import {
   AutoBeOpenApi,
+  AutoBeRealizeAuthorization,
   AutoBeRealizeFunction,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
@@ -19,8 +20,17 @@ export async function writeCodeUntilCompilePassed<
 >(
   ctx: AutoBeContext<Model>,
   ops: AutoBeOpenApi.IOperation[],
+  authorizations: AutoBeRealizeAuthorization[],
   retry: number,
 ): Promise<AutoBeRealizeFunction[]> {
+  const payloads = authorizations
+    .map((el) => {
+      return {
+        [el.payload.location]: el.payload.content,
+      };
+    })
+    .reduce<Record<string, string>>((acc, cur) => Object.assign(acc, cur), {});
+
   const files = Object.entries(await ctx.files({ dbms: "postgres" }))
     .filter(([key]) => {
       return key.startsWith("src");
@@ -51,7 +61,10 @@ export async function writeCodeUntilCompilePassed<
       | IAutoBeRealizeCompile.Fail
     )[] = await Promise.all(
       targets.map((op) => {
-        return process(ctx, metadata, op, diagnostics, entireCodes);
+        const role = op.authorizationRole;
+        const decorator = authorizations.find((el) => el.role === role);
+
+        return process(ctx, metadata, op, diagnostics, entireCodes, decorator);
       }),
     );
 
@@ -75,6 +88,7 @@ export async function writeCodeUntilCompilePassed<
     const compiler = await ctx.compiler();
     const compiled = await compiler.typescript.compile({
       files: {
+        ...payloads,
         ...files,
         ...nodeModules,
         ...Object.entries(entireCodes)
@@ -151,10 +165,11 @@ async function process<Model extends ILlmSchema.Model>(
   op: AutoBeOpenApi.IOperation,
   diagnostics: IAutoBeRealizeCompile.CompileDiagnostics,
   entireCodes: IAutoBeRealizeCompile.FileContentMap,
+  decorator?: AutoBeRealizeAuthorization,
 ) {
   const result = await pipe(
     op,
-    (op) => orchestrateRealizePlanner(ctx, op),
+    (op) => orchestrateRealizePlanner(ctx, op, decorator),
     async (p) => {
       const filename = `src/providers/${p.functionName}.ts` as const;
       const t = diagnostics.total.filter((el) => el.file === filename);

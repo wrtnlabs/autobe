@@ -1,3 +1,4 @@
+import { orchestrateRealizeAuthorization } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeAuthorization";
 import { writeCodeUntilCompilePassed } from "@autobe/agent/src/orchestrate/realize/writeCodeUntilCompilePassed";
 import { FileSystemIterator } from "@autobe/filesystem";
 import { AutoBeEvent, AutoBeRealizeFunction } from "@autobe/interface";
@@ -45,8 +46,11 @@ export const validate_agent_realize_coder = async (
 
   const ops = ctx.state().interface?.document.operations ?? [];
 
+  const authorizations = await orchestrateRealizeAuthorization(ctx);
+
   // DO TEST GENERATION
-  const go = async () => await writeCodeUntilCompilePassed(ctx, ops, 2);
+  const go = async () =>
+    await writeCodeUntilCompilePassed(ctx, ops, authorizations, 2);
 
   const result: AutoBeRealizeFunction[] = await go();
 

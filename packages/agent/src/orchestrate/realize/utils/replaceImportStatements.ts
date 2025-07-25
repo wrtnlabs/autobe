@@ -6,7 +6,7 @@ import { AutoBeContext } from "../../../context/AutoBeContext";
 export function replaceImportStatements<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
 ) {
-  return async function (code: string) {
+  return async function (code: string, decoratorType?: string) {
     const compiler: IAutoBeCompiler = await ctx.compiler();
     code = await compiler.typescript.beautify(code);
     // Remove existing import statements using flexible regex patterns
@@ -30,17 +30,37 @@ export function replaceImportStatements<Model extends ILlmSchema.Model>(
         "",
       )
       .replace(/import\s*{\s*v4\s*}\s*from\s*["']uuid["']\s*;?\s*/gm, "")
-      .replace('import { toISOStringSafe } from "../util/toISOStringSafe"', "");
+      .replace(
+        /import\s*{\s*toISOStringSafe\s*}\s*from\s*["']\.\.\/util\/toISOStringSafe["']\s*;?\s*/gm,
+        "",
+      );
 
-    code = [
+    // Remove any existing decoratorType imports if LLM mistakenly added them
+    if (decoratorType) {
+      const decoratorTypeRegex = new RegExp(
+        `import\\s*{\\s*${decoratorType}\\s*}\\s*from\\s*["']\\.\\.\/authentications\/types\/${decoratorType}["']\\s*;?\\s*`,
+        "gm",
+      );
+      code = code.replace(decoratorTypeRegex, "");
+    }
+
+    // Build the standard imports
+    const imports = [
       'import { MyGlobal } from "../MyGlobal";',
       'import typia, { tags } from "typia";',
       'import { Prisma } from "@prisma/client";',
       'import { v4 } from "uuid";',
       'import { toISOStringSafe } from "../util/toISOStringSafe"',
-      "",
-      code,
-    ].join("\n");
+    ];
+
+    // Only add decoratorType import if it exists
+    if (decoratorType) {
+      imports.push(
+        `import { ${decoratorType} } from "../authentications/types/${decoratorType}"`,
+      );
+    }
+
+    code = [...imports, "", code].join("\n");
 
     // Clean up formatting issues
     code =

@@ -47,7 +47,7 @@ export function invertOpenApiDocument(
                     typeName: r.success.schema.$ref.split("/").pop()!,
                   }
                 : null,
-            authorizationRoles: null,
+            authorizationRole: null,
             name: r.accessor.at(-1)!,
           }) satisfies AutoBeOpenApi.IOperation,
       ),

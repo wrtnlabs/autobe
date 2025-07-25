@@ -165,24 +165,23 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
             "GET method should not have request body. Change method, or re-design the operation.",
           value: op.requestBody,
         });
-      op.authorizationRoles?.forEach((role, j) => {
-        if (props.roles === null) {
-          op.authorizationRoles = null;
-        }
-        if (props.roles?.find((it) => it === role) === undefined)
-          errors.push({
-            path: `operations[${i}].authorizationRoles[${j}]`,
-            expected: `undefined | ${props.roles?.join(" | ")}`,
-            description: [
-              `Role "${role}" is not defined in the roles list.`,
-              "",
-              "Please select one of them below, or do not define (undefined):  ",
-              "",
-              ...(props.roles ?? []).map((role) => `- ${role}`),
-            ].join("\n"),
-            value: role,
-          });
-      });
+      if (props.roles === null) {
+        op.authorizationRole = null;
+      } else if (
+        props.roles?.find((it) => it === op.authorizationRole) === undefined
+      )
+        errors.push({
+          path: `operations[${i}].authorizationRole`,
+          expected: `undefined | ${props.roles?.join(" | ")}`,
+          description: [
+            `Role "${op.authorizationRole}" is not defined in the roles list.`,
+            "",
+            "Please select one of them below, or do not define (undefined):  ",
+            "",
+            ...(props.roles ?? []).map((role) => `- ${role}`),
+          ].join("\n"),
+          value: op.authorizationRole,
+        });
     });
     if (errors.length !== 0)
       return {

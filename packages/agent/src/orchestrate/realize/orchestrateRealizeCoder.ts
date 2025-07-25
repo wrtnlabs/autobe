@@ -55,6 +55,7 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
   | FAILED
 > => {
   total;
+
   const artifacts: IAutoBeTestScenarioArtifacts =
     await getTestScenarioArtifacts(ctx, {
       endpoint: {
@@ -126,6 +127,7 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
 
   pointer.value.implementationCode = await replaceImportStatements(ctx)(
     pointer.value.implementationCode,
+    props.decoratorEvent?.payload.name,
   );
 
   pointer.value.implementationCode =

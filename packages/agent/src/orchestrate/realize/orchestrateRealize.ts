@@ -1,5 +1,6 @@
 import {
   AutoBeAssistantMessageHistory,
+  AutoBeRealizeAuthorization,
   AutoBeRealizeHistory,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
@@ -28,13 +29,9 @@ export const orchestrateRealize =
       step: ctx.state().test?.step ?? 0,
     });
 
-    const decorators = await orchestrateRealizeAuthorization(ctx);
-    decorators;
-
-    const files = await writeCodeUntilCompilePassed(ctx, ops, 2);
-    // const functions = files
-    //   .map((f) => ({ [f.filename]: f.implementationCode }))
-    //   .reduce((acc, cur) => Object.assign(acc, cur), {});
+    const decorators: AutoBeRealizeAuthorization[] =
+      await orchestrateRealizeAuthorization(ctx);
+    const files = await writeCodeUntilCompilePassed(ctx, ops, decorators, 2);
 
     const now = new Date().toISOString();
     const realize = ctx.state().realize;

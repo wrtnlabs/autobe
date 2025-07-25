@@ -395,15 +395,47 @@ export namespace AutoBeOpenApi {
     responseBody: AutoBeOpenApi.IResponseBody | null;
 
     /**
-     * List of roles that are allowed to access the API operation.
+     * Authorization role required to access this API operation.
      *
-     * If the API operation is not restricted to any role, this field must be
-     * `null`.
+     * This field specifies which user role is allowed to access this endpoint.
+     * The role name must correspond exactly to the actual roles defined in your
+     * system's Prisma schema (e.g., "admin", "administrator", "moderator",
+     * "seller", "buyer", etc.).
      *
-     * If the API operation is restricted to some roles, this field must be an
-     * array of role names.
+     * ## Role-Based Path Convention
+     *
+     * When authorizationRole is specified, it should align with the path
+     * structure:
+     *
+     * - If authorizationRole is "admin" → path might be "/admin/resources/{id}"
+     * - If authorizationRole is "seller" → path might be "/seller/products"
+     * - Special case: For user's own resources, use path prefix "/my/" regardless
+     *   of role
+     *
+     * ## Important Guidelines
+     *
+     * - Set to `null` for public endpoints that require no authentication
+     * - Set to specific role string for role-restricted endpoints
+     * - The role name MUST match exactly with the user type/role defined in the
+     *   database
+     * - This role will be used by the Realize Agent to generate appropriate
+     *   decorator and authorization logic in the provider functions
+     * - The controller will apply the corresponding authentication decorator
+     *   based on this role
+     *
+     * ## Examples
+     *
+     * - `null` - Public endpoint, no authentication required
+     * - `"user"` - Any authenticated user can access
+     * - `"admin"` - Only admin users can access
+     * - `"seller"` - Only seller users can access
+     * - `"moderator"` - Only moderator users can access
+     *
+     * Note: The actual authentication/authorization implementation will be
+     * handled by decorators at the controller level, and the provider function
+     * will receive the authenticated user object with the appropriate type.
      */
-    authorizationRoles: (string[] & tags.UniqueItems) | null;
+    authorizationRole: (string & tags.MinLength<1>) | null;
 
     /**
      * Functional name of the API endpoint.
