@@ -2,8 +2,25 @@ import { IAutoBeTypeScriptCompileResult } from "../compiler/IAutoBeTypeScriptCom
 import { AutoBeRealizeAuthorization } from "../histories/contents/AutoBeRealizeAuthorization";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
+/**
+ * Event fired during the correction phase of authorization implementation.
+ *
+ * This event occurs when the TypeScript compiler detects issues in the generated
+ * authorization code and the Realize agent attempts to correct these compilation
+ * errors. The correction process involves analyzing compiler feedback and
+ * regenerating the authorization components to resolve type errors, syntax issues,
+ * or other validation problems.
+ *
+ * @author Michael
+ */
 export interface AutoBeRealizeAuthorizationCorrectEvent
   extends AutoBeEventBase<"realizeAuthorizationCorrect"> {
+  /**
+   * Authorization configuration being corrected.
+   *
+   * Contains the authorization implementation details for a specific role
+   * that failed compilation and requires correction.
+   */
   authorization: AutoBeRealizeAuthorization;
 
   /**

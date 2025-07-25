@@ -23,6 +23,32 @@ import { IAutoBeRealizeTestResult } from "./IAutoBeRealizeTestResult";
  * @author Samchon
  */
 export interface IAutoBeRealizeCompiler {
+  /**
+   * Generates NestJS controller implementations that orchestrate business logic
+   * with proper authorization handling.
+   *
+   * Transforms function specifications and authorization configurations into
+   * fully-implemented NestJS controller classes that properly integrate
+   * business logic providers, apply authorization decorators, handle request
+   * payloads, and manage response structures according to OpenAPI
+   * specifications. The generated controllers serve as the entry points for
+   * API endpoints, bridging HTTP requests with backend business logic while
+   * ensuring proper authentication and authorization enforcement.
+   *
+   * The controller generation process creates production-ready implementations
+   * that include proper import statements for providers and decorators,
+   * authorization decorator applications based on role requirements, payload
+   * parameter injection for authenticated user contexts, and delegation to
+   * provider functions with appropriate parameter passing. This ensures that
+   * generated controllers follow NestJS best practices and maintain clean
+   * separation between HTTP handling and business logic execution.
+   *
+   * @param props Configuration including OpenAPI document for endpoint
+   *   specifications, function implementations with their provider locations,
+   *   and authorization configurations with decorator and payload definitions
+   * @returns Promise resolving to generated controller files mapped by their
+   *   file paths, ready for integration into the NestJS application structure
+   */
   controller(
     props: IAutoBeRealizeControllerProps,
   ): Promise<Record<string, string>>;

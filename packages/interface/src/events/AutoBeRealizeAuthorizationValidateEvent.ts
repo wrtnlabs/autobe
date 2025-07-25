@@ -2,8 +2,25 @@ import { IAutoBeTypeScriptCompileResult } from "../compiler/IAutoBeTypeScriptCom
 import { AutoBeRealizeAuthorization } from "../histories/contents/AutoBeRealizeAuthorization";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
+/**
+ * Event fired during the validation phase of authorization implementation.
+ *
+ * This event occurs when the generated authorization code is validated by the
+ * TypeScript compiler to ensure type safety, syntax correctness, and proper
+ * integration with the NestJS framework. The validation process provides
+ * immediate feedback on code quality, enabling rapid iteration and correction
+ * of any issues before proceeding with further implementation.
+ *
+ * @author Michael
+ */
 export interface AutoBeRealizeAuthorizationValidateEvent
   extends AutoBeEventBase<"realizeAuthorizationValidate"> {
+  /**
+   * Authorization configuration being validated.
+   *
+   * Contains the authorization implementation details for a specific role
+   * that is undergoing compilation validation.
+   */
   authorization: AutoBeRealizeAuthorization;
 
   /**
