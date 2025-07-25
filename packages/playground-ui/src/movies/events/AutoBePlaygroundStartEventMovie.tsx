@@ -2,11 +2,11 @@ import {
   AutoBeAnalyzeStartEvent,
   AutoBeInterfaceStartEvent,
   AutoBePrismaStartEvent,
-  AutoBeRealizeDecoratorEvent,
   AutoBeRealizeStartEvent,
   AutoBeRealizeTestStartEvent,
   AutoBeTestStartEvent,
 } from "@autobe/interface";
+import { AutoBeRealizeAuthorizationStartEvent } from "@autobe/interface/src/events/AutoBeRealizeAuthorizationStartEvent";
 import StartIcon from "@mui/icons-material/Start";
 import { Card, CardContent, Chip } from "@mui/material";
 
@@ -45,7 +45,7 @@ export namespace AutoBePlaygroundStartEventMovie {
       | AutoBeInterfaceStartEvent
       | AutoBeTestStartEvent
       | AutoBeRealizeStartEvent
-      | AutoBeRealizeDecoratorEvent
+      | AutoBeRealizeAuthorizationStartEvent
       | AutoBeRealizeTestStartEvent;
   }
 }
@@ -64,8 +64,8 @@ function getTitle(
       return "Test";
     case "realizeStart":
       return "Realize";
-    case "realizeDecorator":
-      return "Realize Decorator";
+    case "realizeAuthorizationStart":
+      return "Realize Authorization";
     case "realizeTestStart":
       return "Final E2E Test";
     default:

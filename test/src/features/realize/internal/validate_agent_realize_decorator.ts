@@ -1,6 +1,10 @@
-import { orchestrateRealizeDecorator } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeDecorator";
+import { orchestrateRealizeAuthorization } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeAuthorization";
 import { FileSystemIterator } from "@autobe/filesystem";
-import { AutoBeEvent, IAutoBeCompiler } from "@autobe/interface";
+import {
+  AutoBeEvent,
+  AutoBeRealizeAuthorization,
+  IAutoBeCompiler,
+} from "@autobe/interface";
 import fs from "fs";
 import path from "path";
 
@@ -29,19 +33,21 @@ export const validate_agent_realize_decorator = async (
   };
 
   agent.on("realizeStart", enroll);
-  agent.on("realizeDecorator", enroll);
-  agent.on("realizeDecoratorValidate", enroll);
-  agent.on("realizeDecoratorCorrect", enroll);
   agent.on("realizeProgress", enroll);
   agent.on("realizeValidate", enroll);
   agent.on("realizeComplete", enroll);
+  agent.on("realizeAuthorizationStart", enroll);
+  agent.on("realizeAuthorizationWrite", enroll);
+  agent.on("realizeAuthorizationValidate", enroll);
+  agent.on("realizeAuthorizationCorrect", enroll);
+  agent.on("realizeAuthorizationComplete", enroll);
 
   const ctx = agent.getContext();
 
-  const result = await orchestrateRealizeDecorator(ctx);
+  const authorizations: AutoBeRealizeAuthorization[] =
+    await orchestrateRealizeAuthorization(ctx);
 
   const prisma = ctx.state().prisma?.compiled;
-
   const prismaClients: Record<string, string> =
     prisma?.type === "success" ? prisma.nodeModules : {};
 
@@ -61,13 +67,11 @@ export const validate_agent_realize_decorator = async (
       "utf-8",
     ),
     ...prismaClients,
-    ...result.reduce(
+    ...authorizations.reduce(
       (acc, curr) => {
-        acc[`src/decorators/${curr.decorator.name}.ts`] = curr.decorator.code;
-        acc[`src/authentications/${curr.provider.name}.ts`] =
-          curr.provider.code;
-        acc[`src/authentications/types/${curr.payload.name}.ts`] =
-          curr.payload.code;
+        acc[curr.decorator.location] = curr.decorator.content;
+        acc[curr.payload.location] = curr.payload.content;
+        acc[curr.provider.location] = curr.provider.content;
         return acc;
       },
       {} as Record<string, string>,
@@ -82,7 +86,7 @@ export const validate_agent_realize_decorator = async (
       ...(await agent.getFiles()),
       ...files,
       "logs/events.json": JSON.stringify(events),
-      "logs/result.json": JSON.stringify(result),
+      "logs/result.json": JSON.stringify(authorizations),
       "logs/histories.json": JSON.stringify(histories),
     },
   });

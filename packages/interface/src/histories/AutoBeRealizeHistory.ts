@@ -2,7 +2,7 @@ import { tags } from "typia";
 
 import { IAutoBeTypeScriptCompileResult } from "../compiler/IAutoBeTypeScriptCompileResult";
 import { AutoBeAgentHistoryBase } from "./AutoBeHistoryBase";
-import { AutoBeRealizeDecorator } from "./contents";
+import { AutoBeRealizeAuthorization } from "./contents";
 import { AutoBeRealizeFunction } from "./contents/AutoBeRealizeFunction";
 
 /**
@@ -55,7 +55,7 @@ export interface AutoBeRealizeHistory
    * and injecting authenticated user data as typed parameters, ensuring both
    * security and developer productivity.
    */
-  decorators: AutoBeRealizeDecorator[];
+  authorizations: AutoBeRealizeAuthorization[];
 
   /**
    * Results of compiling the generated implementation code using the embedded

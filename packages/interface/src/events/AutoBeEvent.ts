@@ -16,10 +16,12 @@ import { AutoBePrismaInsufficientEvent } from "./AutoBePrismaInsufficientEvent";
 import { AutoBePrismaSchemasEvent } from "./AutoBePrismaSchemasEvent";
 import { AutoBePrismaStartEvent } from "./AutoBePrismaStartEvent";
 import { AutoBePrismaValidateEvent } from "./AutoBePrismaValidateEvent";
+import { AutoBeRealizeAuthorizationCompleteEvent } from "./AutoBeRealizeAuthorizationCompleteEvent";
+import { AutoBeRealizeAuthorizationCorrectEvent } from "./AutoBeRealizeAuthorizationCorrectEvent";
+import { AutoBeRealizeAuthorizationStartEvent } from "./AutoBeRealizeAuthorizationStartEvent";
+import { AutoBeRealizeAuthorizationValidateEvent } from "./AutoBeRealizeAuthorizationValidateEvent";
+import { AutoBeRealizeAuthorizationWriteEvent } from "./AutoBeRealizeAuthorizationWriteEvent";
 import { AutoBeRealizeCompleteEvent } from "./AutoBeRealizeCompleteEvent";
-import { AutoBeRealizeDecoratorCorrectEvent } from "./AutoBeRealizeDecoratorCorrectEvent";
-import { AutoBeRealizeDecoratorEvent } from "./AutoBeRealizeDecoratorEvent";
-import { AutoBeRealizeDecoratorValidateEvent } from "./AutoBeRealizeDecoratorValidateEvent";
 import { AutoBeRealizeProgressEvent } from "./AutoBeRealizeProgressEvent";
 import { AutoBeRealizeStartEvent } from "./AutoBeRealizeStartEvent";
 import { AutoBeRealizeTestCompleteEvent } from "./AutoBeRealizeTestCompleteEvent";
@@ -89,12 +91,14 @@ export type AutoBeEvent =
   | AutoBeTestCompleteEvent
   // REALIZE
   | AutoBeRealizeStartEvent
-  | AutoBeRealizeDecoratorEvent
-  | AutoBeRealizeDecoratorValidateEvent
-  | AutoBeRealizeDecoratorCorrectEvent
   | AutoBeRealizeProgressEvent
   | AutoBeRealizeValidateEvent
   | AutoBeRealizeCompleteEvent
+  | AutoBeRealizeAuthorizationStartEvent
+  | AutoBeRealizeAuthorizationWriteEvent
+  | AutoBeRealizeAuthorizationValidateEvent
+  | AutoBeRealizeAuthorizationCorrectEvent
+  | AutoBeRealizeAuthorizationCompleteEvent
   | AutoBeRealizeTestStartEvent
   | AutoBeRealizeTestResetEvent
   | AutoBeRealizeTestOperationEvent
@@ -166,12 +170,14 @@ export namespace AutoBeEvent {
     testComplete: AutoBeTestCompleteEvent;
     // REALIZE
     realizeStart: AutoBeRealizeStartEvent;
-    realizeDecorator: AutoBeRealizeDecoratorEvent;
-    realizeDecoratorValidate: AutoBeRealizeDecoratorValidateEvent;
-    realizeDecoratorCorrect: AutoBeRealizeDecoratorCorrectEvent;
     realizeProgress: AutoBeRealizeProgressEvent;
     realizeValidate: AutoBeRealizeValidateEvent;
     realizeComplete: AutoBeRealizeCompleteEvent;
+    realizeAuthorizationStart: AutoBeRealizeAuthorizationStartEvent;
+    realizeAuthorizationWrite: AutoBeRealizeAuthorizationWriteEvent;
+    realizeAuthorizationValidate: AutoBeRealizeAuthorizationValidateEvent;
+    realizeAuthorizationCorrect: AutoBeRealizeAuthorizationCorrectEvent;
+    realizeAuthorizationComplete: AutoBeRealizeAuthorizationCompleteEvent;
     realizeTestStart: AutoBeRealizeTestStartEvent;
     realizeTestReset: AutoBeRealizeTestResetEvent;
     realizeTestOperation: AutoBeRealizeTestOperationEvent;

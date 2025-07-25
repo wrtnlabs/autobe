@@ -3,6 +3,7 @@ import {
   AutoBeInterfaceComponentsEvent,
   AutoBeInterfaceOperationsEvent,
   AutoBePrismaSchemasEvent,
+  AutoBeRealizeAuthorizationWriteEvent,
   AutoBeRealizeProgressEvent,
   AutoBeRealizeTestOperationEvent,
   AutoBeTestWriteEvent,
@@ -61,6 +62,7 @@ export namespace AutoBePlaygroundProgressEventMovie {
       | AutoBeInterfaceComponentsEvent
       | AutoBeTestWriteEvent
       | AutoBeRealizeProgressEvent
+      | AutoBeRealizeAuthorizationWriteEvent
       | AutoBeRealizeTestOperationEvent;
     last: boolean;
   }
@@ -107,6 +109,11 @@ function getState(
         return {
           title: "Realize Progress",
           description: "Realizing the API functions",
+        };
+      case "realizeAuthorizationWrite":
+        return {
+          title: "Authorization Write",
+          description: "Writing authorization decorators and functions",
         };
       case "realizeTestOperation":
         return {

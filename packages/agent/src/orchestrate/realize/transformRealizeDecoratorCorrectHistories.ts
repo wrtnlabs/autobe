@@ -1,5 +1,8 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
-import { IAutoBeTypeScriptCompileResult } from "@autobe/interface";
+import {
+  AutoBeRealizeAuthorization,
+  IAutoBeTypeScriptCompileResult,
+} from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 import { v4 } from "uuid";
 
@@ -9,7 +12,7 @@ import { IAutoBeRealizeDecoratorApplication } from "./structures/IAutoBeRealizeD
 
 export const transformRealizeDecoratorCorrectHistories = (
   ctx: AutoBeContext<ILlmSchema.Model>,
-  result: IAutoBeRealizeDecoratorApplication.IProps,
+  auth: AutoBeRealizeAuthorization,
   templateFiles: Record<string, string>,
   diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[],
 ): Array<
@@ -30,7 +33,24 @@ export const transformRealizeDecoratorCorrectHistories = (
         "## Generated TypeScript Code",
         "",
         "```json",
-        `${JSON.stringify(result, null, 2)}`,
+        `${JSON.stringify(
+          {
+            provider: {
+              name: auth.provider.name,
+              code: auth.provider.content,
+            },
+            decorator: {
+              name: auth.decorator.name,
+              code: auth.decorator.content,
+            },
+            payload: {
+              name: auth.payload.name,
+              code: auth.payload.content,
+            },
+          } satisfies IAutoBeRealizeDecoratorApplication.IProps,
+          null,
+          2,
+        )}`,
         "```",
         "",
         "## Prisma Schema",

@@ -1,15 +1,14 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import {
-  AutoBeRealizeDecorator,
-  AutoBeRealizeDecoratorEvent,
+  AutoBeRealizeAuthorization,
   IAutoBeCompiler,
+  IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import fs from "fs/promises";
 import path from "path";
 import { IPointer } from "tstl";
 import typia from "typia";
-import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
@@ -17,6 +16,7 @@ import { enforceToolCall } from "../../utils/enforceToolCall";
 import { IAutoBeRealizeDecoratorApplication } from "./structures/IAutoBeRealizeDecoratorApplication";
 import { transformRealizeDecoratorHistories } from "./transformRealizeDecorator";
 import { transformRealizeDecoratorCorrectHistories } from "./transformRealizeDecoratorCorrectHistories";
+import { AuthorizationFileSystem } from "./utils/AuthorizationFileSystem";
 
 /**
  * 1. Create decorator and its parameters. and design the Authorization Provider.
@@ -24,9 +24,9 @@ import { transformRealizeDecoratorCorrectHistories } from "./transformRealizeDec
  *
  * @param ctx
  */
-export async function orchestrateRealizeDecorator<
+export async function orchestrateRealizeAuthorization<
   Model extends ILlmSchema.Model,
->(ctx: AutoBeContext<Model>): Promise<AutoBeRealizeDecoratorEvent[]> {
+>(ctx: AutoBeContext<Model>): Promise<AutoBeRealizeAuthorization[]> {
   const roles =
     ctx
       .state()
@@ -52,79 +52,45 @@ export async function orchestrateRealizeDecorator<
     ),
   };
 
-  const files: Record<string, string> = {
-    ...templateFiles,
-  };
-
-  const decorators: AutoBeRealizeDecorator[] = [];
-
-  const events: AutoBeRealizeDecoratorEvent[] = await Promise.all(
+  ctx.dispatch({
+    type: "realizeAuthorizationStart",
+    step: ctx.state().test?.step ?? 0,
+    created_at: new Date().toISOString(),
+  });
+  const authorizations: AutoBeRealizeAuthorization[] = await Promise.all(
     roles.map(async (role) => {
-      const decorator: IAutoBeRealizeDecoratorApplication.IProps =
-        await process(ctx, role, templateFiles);
-
-      files[`src/decorators/${decorator.decorator.name}.ts`] =
-        decorator.decorator.code;
-      files[`src/authentications/${decorator.provider.name}.ts`] =
-        decorator.provider.code;
-      files[`src/authentications/types/${decorator.payload.name}.ts`] =
-        decorator.payload.code;
-
-      decorators.push({
-        name: decorator.decorator.name,
+      const authorization: AutoBeRealizeAuthorization = await process(
+        ctx,
         role,
-        payload: decorator.payload,
-        location: `src/decorators/${decorator.decorator.name}.ts`,
-      });
-
-      const event: AutoBeRealizeDecoratorEvent = {
-        type: "realizeDecorator",
+        templateFiles,
+      );
+      ctx.dispatch({
+        type: "realizeAuthorizationWrite",
         created_at: new Date().toISOString(),
-        role,
-        provider: decorator.provider,
-        decorator: decorator.decorator,
-        payload: decorator.payload,
+        authorization: authorization,
         completed: ++completed,
         total: roles.length,
         step: ctx.state().test?.step ?? 0,
-      };
-
-      ctx.dispatch(event);
-
-      return event;
+      });
+      return authorization;
     }),
   );
-
-  const realize = ctx.state().realize;
-
-  if (realize !== null) {
-    realize.decorators = decorators;
-  } else {
-    ctx.state().realize = {
-      type: "realize",
-      id: v4(),
-      created_at: new Date().toISOString(),
-      completed_at: new Date().toISOString(),
-      reason: ctx.state().analyze?.reason ?? "",
-      step: ctx.state().analyze?.step ?? 0,
-      functions: [],
-      decorators,
-      compiled: { type: "success" },
-    };
-  }
-
-  return events;
+  ctx.dispatch({
+    type: "realizeAuthorizationComplete",
+    created_at: new Date().toISOString(),
+    step: ctx.state().test?.step ?? 0,
+  });
+  return authorizations;
 }
 
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   role: string,
   templateFiles: Record<string, string>,
-): Promise<IAutoBeRealizeDecoratorApplication.IProps> {
+): Promise<AutoBeRealizeAuthorization> {
   const pointer: IPointer<IAutoBeRealizeDecoratorApplication.IProps | null> = {
     value: null,
   };
-
   const agentica: MicroAgentica<Model> = new MicroAgentica({
     model: ctx.model,
     vendor: ctx.vendor,
@@ -144,7 +110,6 @@ async function process<Model extends ILlmSchema.Model>(
       }),
     ],
   });
-
   enforceToolCall(agentica);
 
   await agentica
@@ -153,63 +118,73 @@ async function process<Model extends ILlmSchema.Model>(
       const tokenUsage = agentica.getTokenUsage();
       ctx.usage().record(tokenUsage, ["realize"]);
     });
-
   if (pointer.value === null) throw new Error("Failed to create decorator.");
 
+  const authorization: AutoBeRealizeAuthorization = {
+    role,
+    decorator: {
+      location: AuthorizationFileSystem.decoratorPath(
+        pointer.value.decorator.name,
+      ),
+      name: pointer.value.decorator.name,
+      content: pointer.value.decorator.code,
+    },
+    payload: {
+      location: AuthorizationFileSystem.payloadPath(pointer.value.payload.name),
+      name: pointer.value.payload.name,
+      content: pointer.value.payload.code,
+    },
+    provider: {
+      location: AuthorizationFileSystem.providerPath(
+        pointer.value.provider.name,
+      ),
+      name: pointer.value.provider.name,
+      content: pointer.value.provider.code,
+    },
+  };
   const compiled = ctx.state().prisma?.compiled;
-
   const prismaClients: Record<string, string> =
     compiled?.type === "success" ? compiled.nodeModules : {};
-
-  return await correctDecorator(
-    ctx,
-    pointer.value,
-    prismaClients,
-    templateFiles,
-  );
+  return correctDecorator(ctx, authorization, prismaClients, templateFiles);
 }
 
 async function correctDecorator<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  result: IAutoBeRealizeDecoratorApplication.IProps,
+  auth: AutoBeRealizeAuthorization,
   prismaClients: Record<string, string>,
   templateFiles: Record<string, string>,
   life: number = 4,
-): Promise<IAutoBeRealizeDecoratorApplication.IProps> {
+): Promise<AutoBeRealizeAuthorization> {
   // Check Compile
   const files = {
     ...templateFiles,
     ...prismaClients,
-    [`src/decorators/${result.decorator.name}.ts`]: result.decorator.code,
-    [`src/authentications/${result.provider.name}.ts`]: result.provider.code,
-    [`src/authentications/types/${result.payload.name}.ts`]:
-      result.payload.code,
+    [auth.decorator.location]: auth.decorator.content,
+    [auth.payload.location]: auth.payload.content,
+    [auth.provider.location]: auth.provider.content,
   };
 
   const compiler: IAutoBeCompiler = await ctx.compiler();
-
-  const compiled = await compiler.typescript.compile({
-    files,
-  });
-
+  const result: IAutoBeTypeScriptCompileResult =
+    await compiler.typescript.compile({
+      files,
+    });
   ctx.dispatch({
-    type: "realizeDecoratorValidate",
+    type: "realizeAuthorizationValidate",
     created_at: new Date().toISOString(),
-    result: compiled,
-    files,
+    result,
+    authorization: auth,
     step: ctx.state().test?.step ?? 0,
   });
-
-  if (compiled.type === "success") {
-    return result;
-  } else if (compiled.type === "exception" || life === 0) {
-    return result;
+  if (result.type === "success") {
+    return auth;
+  } else if (result.type === "exception" || life === 0) {
+    return auth;
   }
 
   const pointer: IPointer<IAutoBeRealizeDecoratorApplication.IProps | null> = {
     value: null,
   };
-
   const agentica: MicroAgentica<Model> = new MicroAgentica({
     model: ctx.model,
     vendor: ctx.vendor,
@@ -221,9 +196,9 @@ async function correctDecorator<Model extends ILlmSchema.Model>(
     },
     histories: transformRealizeDecoratorCorrectHistories(
       ctx,
-      result,
+      auth,
       templateFiles,
-      compiled.diagnostics,
+      result.diagnostics,
     ),
     controllers: [
       createApplication({
@@ -245,27 +220,34 @@ async function correctDecorator<Model extends ILlmSchema.Model>(
 
   if (pointer.value === null) throw new Error("Failed to correct decorator.");
 
-  const correctedFiles: Record<string, string> = {
-    ...files,
-    [`src/decorators/${pointer.value.decorator.name}.ts`]:
-      pointer.value.decorator.code,
-    [`src/authentications/${pointer.value.provider.name}.ts`]:
-      pointer.value.provider.code,
-    [`src/authentications/types/${pointer.value.payload.name}.ts`]:
-      pointer.value.payload.code,
+  const corrected: AutoBeRealizeAuthorization = {
+    role: auth.role,
+    decorator: {
+      location: auth.decorator.location,
+      name: pointer.value.decorator.name,
+      content: pointer.value.decorator.code,
+    },
+    payload: {
+      location: auth.payload.location,
+      name: pointer.value.payload.name,
+      content: pointer.value.payload.code,
+    },
+    provider: {
+      location: auth.provider.location,
+      name: pointer.value.provider.name,
+      content: pointer.value.provider.code,
+    },
   };
-
   ctx.dispatch({
-    type: "realizeDecoratorCorrect",
+    type: "realizeAuthorizationCorrect",
     created_at: new Date().toISOString(),
-    files: correctedFiles,
-    result: compiled,
+    authorization: corrected,
+    result: result,
     step: ctx.state().test?.step ?? 0,
   });
-
   return await correctDecorator(
     ctx,
-    pointer.value,
+    corrected,
     prismaClients,
     templateFiles,
     life - 1,

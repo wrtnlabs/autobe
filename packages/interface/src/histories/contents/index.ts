@@ -8,6 +8,8 @@ export * from "./AutoBeUserMessageFileContent";
 export * from "./AutoBeUserMessageImageContent";
 export * from "./AutoBeUserMessageTextContent";
 
-export * from "./AutoBeRealizeDecorator";
-export * from "./AutoBeRealizeDecoratorPayload";
 export * from "./AutoBeRealizeFunction";
+export * from "./AutoBeRealizeAuthorization";
+export * from "./AutoBeRealizeAuthorizationDecorator";
+export * from "./AutoBeRealizeAuthorizationPayload";
+export * from "./AutoBeRealizeAuthorizationProvider";

@@ -17,10 +17,10 @@ import {
   AutoBePrismaSchemasEvent,
   AutoBePrismaStartEvent,
   AutoBePrismaValidateEvent,
+  AutoBeRealizeAuthorizationCorrectEvent,
+  AutoBeRealizeAuthorizationValidateEvent,
+  AutoBeRealizeAuthorizationWriteEvent,
   AutoBeRealizeCompleteEvent,
-  AutoBeRealizeDecoratorCorrectEvent,
-  AutoBeRealizeDecoratorEvent,
-  AutoBeRealizeDecoratorValidateEvent,
   AutoBeRealizeProgressEvent,
   AutoBeRealizeStartEvent,
   AutoBeRealizeTestCompleteEvent,
@@ -36,6 +36,8 @@ import {
   AutoBeTestWriteEvent,
   AutoBeUserMessageEvent,
 } from "../events";
+import { AutoBeRealizeAuthorizationCompleteEvent } from "../events/AutoBeRealizeAuthorizationCompleteEvent";
+import { AutoBeRealizeAuthorizationStartEvent } from "../events/AutoBeRealizeAuthorizationStartEvent";
 
 /**
  * Interface for WebSocket RPC event listener provided by client applications to
@@ -322,13 +324,19 @@ export interface IAutoBeRpcListener {
    */
   realizeStart?(event: AutoBeRealizeStartEvent): Promise<void>;
 
+  realizeAuthorizationStart?(
+    event: AutoBeRealizeAuthorizationStartEvent,
+  ): Promise<void>;
+
   /**
    * Optional handler for decorator generation events.
    *
    * Called when the Realize agent begins generating decorators, enabling client
    * applications to indicate the start of the decorator generation phase.
    */
-  realizeDecorator?(event: AutoBeRealizeDecoratorEvent): Promise<void>;
+  realizeAuthorizationWrite?(
+    event: AutoBeRealizeAuthorizationWriteEvent,
+  ): Promise<void>;
 
   /**
    * Optional handler for decorator validation events.
@@ -337,8 +345,8 @@ export interface IAutoBeRpcListener {
    * client applications to show quality assurance processes and potential
    * correction activities for the decorator.
    */
-  realizeDecoratorValidate?(
-    event: AutoBeRealizeDecoratorValidateEvent,
+  realizeAuthorizationValidate?(
+    event: AutoBeRealizeAuthorizationValidateEvent,
   ): Promise<void>;
 
   /**
@@ -349,8 +357,12 @@ export interface IAutoBeRpcListener {
    * show that issues are being resolved automatically through iterative
    * improvement.
    */
-  realizeDecoratorCorrect?(
-    event: AutoBeRealizeDecoratorCorrectEvent,
+  realizeAuthorizationCorrect?(
+    event: AutoBeRealizeAuthorizationCorrectEvent,
+  ): Promise<void>;
+
+  realizeAuthorizationComplete?(
+    event: AutoBeRealizeAuthorizationCompleteEvent,
   ): Promise<void>;
 
   /**

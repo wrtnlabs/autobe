@@ -1,5 +1,5 @@
 import {
-  AutoBeRealizeDecorator,
+  AutoBeRealizeAuthorization,
   AutoBeRealizeFunction,
   IAutoBeRealizeControllerProps,
 } from "@autobe/interface";
@@ -29,10 +29,10 @@ export const writeRealizeControllers = (
         );
         if (func === undefined) return method; // unreachable
 
-        const decorator: AutoBeRealizeDecorator | undefined = func.role
-          ? props.decorators.find((d) => d.role === func.role)
+        const auth: AutoBeRealizeAuthorization | undefined = func.role
+          ? props.authorizations.find((d) => d.role === func.role)
           : undefined;
-        if (func.role && decorator === undefined) return method; // unreachable
+        if (func.role && auth === undefined) return method; // unreachable
 
         ctx.importer.external({
           type: "instance",
@@ -42,15 +42,6 @@ export const writeRealizeControllers = (
             .split(".ts")[0],
           name: func.name,
         });
-        if (decorator)
-          ctx.importer.external({
-            type: "instance",
-            library: path
-              .relative(ctx.controller.location, decorator.location)
-              .replaceAll(path.sep, "/")
-              .split(".ts")[0],
-            name: decorator.name,
-          });
 
         const call: ts.Expression = ts.factory.createCallExpression(
           ts.factory.createIdentifier(func.name),
@@ -69,22 +60,46 @@ export const writeRealizeControllers = (
           method.name,
           method.questionToken,
           method.typeParameters,
-          decorator
+          auth
             ? [
                 ts.factory.createParameterDeclaration(
                   [
                     ts.factory.createDecorator(
                       ts.factory.createCallExpression(
-                        ts.factory.createIdentifier(decorator.name),
+                        ts.factory.createIdentifier(
+                          ctx.importer.external({
+                            type: "instance",
+                            library: path
+                              .relative(
+                                ctx.controller.location,
+                                auth.decorator.location,
+                              )
+                              .replaceAll(path.sep, "/")
+                              .split(".ts")[0],
+                            name: auth.decorator.name,
+                          }),
+                        ),
                         undefined,
                         [],
                       ),
                     ),
                   ],
                   undefined,
-                  decorator.role,
+                  auth.role,
                   undefined,
-                  ts.factory.createTypeReferenceNode("any"),
+                  ts.factory.createTypeReferenceNode(
+                    ctx.importer.external({
+                      type: "instance",
+                      library: path
+                        .relative(
+                          ctx.controller.location,
+                          auth.payload.location,
+                        )
+                        .replaceAll(path.sep, "/")
+                        .split(".ts")[0],
+                      name: auth.payload.name,
+                    }),
+                  ),
                   undefined,
                 ),
                 ...method.parameters,

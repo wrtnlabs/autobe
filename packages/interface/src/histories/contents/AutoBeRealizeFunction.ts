@@ -1,5 +1,4 @@
-import { AutoBeRealizeDecoratorEvent } from "../../events";
-import { AutoBeOpenApi } from "../../openapi";
+import { AutoBeOpenApi } from "../../openapi/AutoBeOpenApi";
 
 /** @author Kakasoo */
 export interface AutoBeRealizeFunction {
@@ -12,7 +11,7 @@ export interface AutoBeRealizeFunction {
    * - Null: No role restriction, endpoint is accessible by any authenticated user
    * - String: Specific role required (extracted from AutoBeRealizeDecoratorEvent)
    */
-  role: AutoBeRealizeDecoratorEvent["role"] | null;
+  role: string | null;
 
   /**
    * OpenAPI endpoint specification

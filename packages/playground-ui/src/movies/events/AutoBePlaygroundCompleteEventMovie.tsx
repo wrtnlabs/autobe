@@ -7,6 +7,7 @@ import {
   AutoBeTestCompleteEvent,
   IAutoBeRpcService,
 } from "@autobe/interface";
+import { AutoBeRealizeAuthorizationCompleteEvent } from "@autobe/interface/src/events/AutoBeRealizeAuthorizationCompleteEvent";
 import DownloadIcon from "@mui/icons-material/Download";
 import GradingIcon from "@mui/icons-material/Grading";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
@@ -137,6 +138,7 @@ export namespace AutoBePlaygroundCompleteEventMovie {
       | AutoBeInterfaceCompleteEvent
       | AutoBeTestCompleteEvent
       | AutoBeRealizeCompleteEvent
+      | AutoBeRealizeAuthorizationCompleteEvent
       | AutoBeRealizeTestCompleteEvent;
   }
 }
@@ -156,6 +158,8 @@ function getTitle(
       return "Test";
     case "realizeComplete":
       return "Realize";
+    case "realizeAuthorizationComplete":
+      return "Authorization";
     case "realizeTestComplete":
       return "Final E2E Test";
     default:

@@ -117,19 +117,13 @@ export class AutoBePlaygroundListener {
         this.insert(event);
       },
 
+      //----
       // REALIZE
+      //----
+      // REALIZE-MAIN
       realizeStart: async (event) => {
         this.state_.delete("realizeProgress");
         this.state_.delete("realizeValidate");
-        this.insert(event);
-      },
-      realizeDecorator: async (event) => {
-        this.insert(event);
-      },
-      realizeDecoratorValidate: async (event) => {
-        this.insert(event);
-      },
-      realizeDecoratorCorrect: async (event) => {
         this.insert(event);
       },
       realizeProgress: async (event) => {
@@ -143,6 +137,25 @@ export class AutoBePlaygroundListener {
         this.state_.delete("realizeValidate");
         this.insert(event);
       },
+      // REALIZE-AUTHORIZATION
+      realizeAuthorizationStart: async (event) => {
+        this.state_.delete("realizeAuthorizationWrite");
+        this.insert(event);
+      },
+      realizeAuthorizationWrite: async (event) => {
+        this.accumulate(event);
+      },
+      realizeAuthorizationValidate: async (event) => {
+        this.accumulate(event);
+      },
+      realizeAuthorizationCorrect: async (event) => {
+        this.insert(event);
+      },
+      realizeAuthorizationComplete: async (event) => {
+        this.state_.delete("realizeAuthorizationWrite");
+        this.insert(event);
+      },
+      // REALILZE-TEST
       realizeTestStart: async (event) => {
         this.state_.delete("realizeTestOperation");
         this.insert(event);

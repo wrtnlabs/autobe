@@ -1,8 +1,8 @@
 import {
   AutoBeOpenApi,
-  AutoBeRealizeDecoratorEvent,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
+import { tags } from "typia";
 
 import { IAutoBeRealizeCoderApplication } from "./IAutoBeRealizeCoderApplication";
 import { FAILED } from "./IAutoBeRealizeFailedSymbol";
@@ -31,7 +31,7 @@ export namespace IAutoBeRealizeCompile {
     {
       result: "failed" | "success";
       content: string;
-      role?: AutoBeRealizeDecoratorEvent["role"] | null;
+      role?: (string & tags.MinLength<1>) | null;
       endpoint?: AutoBeOpenApi.IEndpoint;
       location?: string;
       name?: string;

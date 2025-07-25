@@ -7,7 +7,7 @@ import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
-import { orchestrateRealizeDecorator } from "./orchestrateRealizeDecorator";
+import { orchestrateRealizeAuthorization } from "./orchestrateRealizeAuthorization";
 import { writeCodeUntilCompilePassed } from "./writeCodeUntilCompilePassed";
 
 export const orchestrateRealize =
@@ -28,7 +28,7 @@ export const orchestrateRealize =
       step: ctx.state().test?.step ?? 0,
     });
 
-    const decorators = await orchestrateRealizeDecorator(ctx);
+    const decorators = await orchestrateRealizeAuthorization(ctx);
     decorators;
 
     const files = await writeCodeUntilCompilePassed(ctx, ops, 2);
@@ -52,7 +52,7 @@ export const orchestrateRealize =
         id: v4(),
         reason: props.reason,
         step: ctx.state().analyze?.step ?? 0,
-        decorators: ctx.state().realize?.decorators ?? [],
+        authorizations: ctx.state().realize?.authorizations ?? [],
       } satisfies AutoBeRealizeHistory);
 
       ctx.histories().push(history);
@@ -75,6 +75,6 @@ export const orchestrateRealize =
       id: v4(),
       reason: props.reason,
       step: ctx.state().analyze?.step ?? 0,
-      decorators: ctx.state().realize?.decorators ?? [],
+      authorizations: ctx.state().realize?.authorizations ?? [],
     };
   };

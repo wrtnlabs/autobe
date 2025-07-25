@@ -3,6 +3,7 @@ import {
   AutoBeInterfaceComplementEvent,
   AutoBePrismaInsufficientEvent,
   AutoBePrismaValidateEvent,
+  AutoBeRealizeAuthorizationValidateEvent,
   AutoBeRealizeValidateEvent,
   AutoBeTestValidateEvent,
 } from "@autobe/interface";
@@ -106,7 +107,8 @@ export namespace AutoBePlaygroundValidateEventMovie {
     | AutoBePrismaValidateEvent
     | AutoBeInterfaceComplementEvent
     | AutoBeTestValidateEvent
-    | AutoBeRealizeValidateEvent;
+    | AutoBeRealizeValidateEvent
+    | AutoBeRealizeAuthorizationValidateEvent;
   export interface IProps<Event extends Supported> {
     events: Event[];
     last: boolean;
@@ -208,6 +210,13 @@ function getState<Event extends AutoBePlaygroundValidateEventMovie.Supported>(
       return {
         title: "Realize Validate",
         description: "Validating the realization of the project",
+        progress: null,
+        project: null,
+      };
+    case "realizeAuthorizationValidate":
+      return {
+        title: "Authorization Validate",
+        description: "Validating the authorization decorators and functions",
         progress: null,
         project: null,
       };

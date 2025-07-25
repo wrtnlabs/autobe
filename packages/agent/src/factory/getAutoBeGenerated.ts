@@ -98,13 +98,19 @@ export async function getAutoBeGenerated(
         state.realize.functions.map((f) => [f.location, f.content]),
       ),
       ...Object.fromEntries(
-        state.realize.decorators.map((f) => [f.location, f.payload.code]),
+        state.realize.authorizations
+          .map((auth) => [
+            [auth.decorator.location, auth.decorator.content],
+            [auth.provider.location, auth.provider.content],
+            [auth.payload.location, auth.payload.content],
+          ])
+          .flat(),
       ),
       ...(await compiler.realize.getTemplate()),
       ...(await compiler.realize.controller({
         document: state.interface!.document,
         functions: state.realize.functions,
-        decorators: state.realize.decorators,
+        authorizations: state.realize.authorizations,
       })),
     });
 

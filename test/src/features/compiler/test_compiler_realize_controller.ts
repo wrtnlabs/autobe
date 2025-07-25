@@ -1,7 +1,7 @@
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeOpenApi,
-  AutoBeRealizeDecoratorPayload,
+  AutoBeRealizeAuthorization,
   IAutoBeCompiler,
 } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
@@ -28,13 +28,25 @@ export const test_compiler_realize_controller = async (
         },
       },
     ],
-    decorators: [
+    authorizations: [
       {
-        name: "CustomerAuth",
-        location: "src/decorators/CustomerAuth.ts",
         role: "customer",
-        payload: typia.random<AutoBeRealizeDecoratorPayload>(),
-      },
+        decorator: {
+          name: "CustomerAuth",
+          location: "src/decorators/CustomerAuth.ts",
+          content: "",
+        },
+        payload: {
+          name: "ICustomerPayload",
+          location: "src/decorators/payload/ICustomerPayload.ts",
+          content: "",
+        },
+        provider: {
+          name: "customerAuthorize",
+          location: "src/providers/customerAuthorize.ts",
+          content: "",
+        },
+      } satisfies AutoBeRealizeAuthorization,
     ],
   });
   await FileSystemIterator.save({
@@ -53,7 +65,11 @@ export const test_compiler_realize_controller = async (
       content.includes(
         `import { CustomerAuth } from "../../../decorators/CustomerAuth"`,
       ) &&
+      content.includes(
+        `import { ICustomerPayload } from "../../../decorators/payload/ICustomerPayload"`,
+      ) &&
       content.includes("@CustomerAuth()") &&
+      content.includes("customer: ICustomerPayload") &&
       content.includes("return createShoppingSale(customer, body)"),
   );
 };
@@ -78,6 +94,14 @@ const document: AutoBeOpenApi.IDocument = {
   ],
   components: {
     schemas: {
+      IShoppingCustomer: {
+        type: "object",
+        properties: {},
+        required: [],
+        ...{
+          description: "Information of shopping customer.",
+        },
+      } satisfies AutoBeOpenApi.IJsonSchema.IObject as AutoBeOpenApi.IJsonSchemaDescriptive<AutoBeOpenApi.IJsonSchema.IObject>,
       "IShoppingSale.ICreate": {
         type: "object",
         properties: {},

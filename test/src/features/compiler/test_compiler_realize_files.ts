@@ -29,7 +29,7 @@ export const test_compiler_realize_files = async (): Promise<void> => {
         completed_at: new Date().toISOString(),
         reason: "Realize files for compiler",
         step: 0,
-        decorators: [],
+        authorizations: [],
       },
     ],
   });

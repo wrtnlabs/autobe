@@ -24,15 +24,13 @@ export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
     case "testStart":
     case "realizeStart":
     case "realizeTestStart":
+    case "realizeAuthorizationStart":
       return <AutoBePlaygroundStartEventMovie event={back} />;
     // SCENARIO EVENTS
     case "prismaComponents":
     case "interfaceEndpoints":
     case "testScenario":
     case "realizeTestReset":
-    case "realizeDecorator":
-    case "realizeDecoratorCorrect":
-    case "realizeDecoratorValidate":
       return <AutoBePlaygroundScenarioEventMovie event={back} />;
     // PROGRESS EVENTS
     case "analyzeWrite":
@@ -41,6 +39,7 @@ export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
     case "interfaceComponents":
     case "testWrite":
     case "realizeProgress":
+    case "realizeAuthorizationWrite":
     case "realizeTestOperation":
       return (
         <AutoBePlaygroundProgressEventMovie event={back} last={props.last} />
@@ -52,6 +51,7 @@ export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
     case "interfaceComplement":
     case "testValidate":
     case "realizeValidate":
+    case "realizeAuthorizationValidate":
       back satisfies AutoBePlaygroundValidateEventMovie.Supported;
       return (
         <AutoBePlaygroundValidateEventMovie
@@ -68,6 +68,7 @@ export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
     case "testComplete":
     case "realizeComplete":
     case "realizeTestComplete":
+    case "realizeAuthorizationComplete":
       return (
         <AutoBePlaygroundCompleteEventMovie
           service={props.service}
@@ -77,6 +78,7 @@ export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
     // DISCARD
     case "prismaCorrect":
     case "testCorrect":
+    case "realizeAuthorizationCorrect":
       return null;
     default:
       back satisfies never;

@@ -36,10 +36,13 @@ export const validate_agent_realize_main = async (
   agent.on("realizeStart", enroll);
   agent.on("realizeProgress", enroll);
   agent.on("realizeValidate", enroll);
-  agent.on("realizeDecorator", enroll);
-  agent.on("realizeDecoratorValidate", enroll);
-  agent.on("realizeDecoratorCorrect", enroll);
   agent.on("realizeComplete", enroll);
+
+  agent.on("realizeAuthorizationStart", enroll);
+  agent.on("realizeAuthorizationWrite", enroll);
+  agent.on("realizeAuthorizationValidate", enroll);
+  agent.on("realizeAuthorizationCorrect", enroll);
+  agent.on("realizeAuthorizationComplete", enroll);
 
   const ctx = agent.getContext();
 
