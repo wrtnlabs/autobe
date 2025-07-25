@@ -1,4 +1,5 @@
 import { orchestrateRealizeAuthorization } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeAuthorization";
+import { AuthorizationFileSystem } from "@autobe/agent/src/orchestrate/realize/utils/AuthorizationFileSystem";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeEvent,
@@ -59,13 +60,14 @@ export const validate_agent_realize_decorator = async (
       ),
       "utf-8",
     ),
-    "src/authentications/jwtAuthorize.ts": await fs.promises.readFile(
-      path.join(
-        __dirname,
-        "../../../../../internals/template/realize/src/providers/jwtAuthorize.ts",
+    [AuthorizationFileSystem.providerPath("jwtAuthorize")]:
+      await fs.promises.readFile(
+        path.join(
+          __dirname,
+          "../../../../../internals/template/realize/src/providers/jwtAuthorize.ts",
+        ),
+        "utf-8",
       ),
-      "utf-8",
-    ),
     ...prismaClients,
     ...authorizations.reduce(
       (acc, curr) => {
