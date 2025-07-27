@@ -39,6 +39,7 @@
   },
   "devDependencies": {
     "@autobe/compiler": "workspace:^",
+    "@autobe/filesystem": "workspace:^",
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^12.1.2",

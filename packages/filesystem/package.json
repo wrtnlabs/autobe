@@ -1,11 +1,11 @@
 {
-  "private": true,
   "name": "@autobe/filesystem",
   "version": "0.13.0",
   "description": "Internal FileSystem for AutoBE Project, not distributed to public",
   "main": "src/index.ts",
   "scripts": {
-    "build": "rimraf lib && tsc"
+    "build": "rimraf lib && tsc",
+    "prepack": "pnpm run build"
   },
   "author": "Wrtn Technologies",
   "license": "MIT",

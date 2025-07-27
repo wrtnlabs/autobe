@@ -14,9 +14,33 @@ catalogs:
       specifier: ^5.2.0
       version: 5.2.0
   samchon:
+    '@nestia/core':
+      specifier: ^7.3.0
+      version: 7.3.0
+    '@nestia/e2e':
+      specifier: ^7.3.0
+      version: 7.3.0
+    '@nestia/fetcher':
+      specifier: ^7.3.0
+      version: 7.3.0
+    '@nestia/migrate':
+      specifier: ^7.3.0
+      version: 7.3.0
     '@samchon/openapi':
       specifier: ^4.6.0
       version: 4.6.0
+    embed-prisma:
+      specifier: ^1.1.0
+      version: 1.1.0
+    embed-typescript:
+      specifier: ^1.0.1
+      version: 1.0.1
+    prisma-markdown:
+      specifier: ^3.0.0
+      version: 3.0.1
+    tgrid:
+      specifier: ^1.2.0
+      version: 1.2.0
     tstl:
       specifier: ^3.0.0
       version: 3.0.0
@@ -145,6 +169,9 @@ importers:
       '@autobe/compiler':
         specifier: workspace:^
         version: link:../compiler
+      '@autobe/filesystem':
+        specifier: workspace:^
+        version: link:../filesystem
       '@rollup/plugin-json':
         specifier: ^6.1.0
         version: 6.1.0(rollup@4.41.0)
