@@ -1,15 +1,21 @@
 {
   "name": "@autobe/filesystem",
   "version": "0.14.1",
-  "description": "Internal FileSystem for AutoBE Project, not distributed to public",
+  "description": "AI backend server code generator",
   "main": "src/index.ts",
+  "author": "Wrtn Technologies",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wrtnlabs/autobe"
+  },
+  "bugs": {
+    "url": "https://github.com/wrtnlabs/autobe/issues"
+  },
   "scripts": {
     "build": "rimraf lib && tsc",
     "prepack": "pnpm run build"
   },
-  "author": "Wrtn Technologies",
-  "license": "MIT",
-  "packageManager": "pnpm@10.6.4",
   "dependencies": {
     "@samchon/openapi": "catalog:samchon",
     "tstl": "catalog:samchon"
@@ -25,6 +31,35 @@
     "package.json",
     "LICENSE",
     "README.md"
+  ],
+  "keywords": [
+    "ai",
+    "api",
+    "api-design",
+    "auto-generation",
+    "autobe",
+    "automation",
+    "backend",
+    "backend-development",
+    "code-generation",
+    "documentation",
+    "e2e-testing",
+    "erd",
+    "nestjs",
+    "openapi",
+    "orm",
+    "postgres",
+    "postgresql",
+    "prisma",
+    "requirements-analysis",
+    "rest",
+    "server",
+    "spiral-model",
+    "swagger",
+    "testing",
+    "typescript",
+    "vibe-coding",
+    "waterfall"
   ],
   "publishConfig": {
     "access": "public",
