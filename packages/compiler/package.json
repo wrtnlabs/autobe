@@ -38,7 +38,6 @@
     "typia": "catalog:samchon"
   },
   "devDependencies": {
-    "@autobe/filesystem": "workspace:^",
     "@types/node": "^22.15.3",
     "rimraf": "^6.0.1",
     "sync-request": "^6.1.0",
