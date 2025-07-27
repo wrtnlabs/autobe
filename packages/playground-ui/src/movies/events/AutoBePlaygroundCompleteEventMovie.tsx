@@ -9,38 +9,53 @@ import {
 } from "@autobe/interface";
 import { AutoBeRealizeAuthorizationCompleteEvent } from "@autobe/interface/src/events/AutoBeRealizeAuthorizationCompleteEvent";
 import DownloadIcon from "@mui/icons-material/Download";
+import DownloadingIcon from "@mui/icons-material/Downloading";
 import GradingIcon from "@mui/icons-material/Grading";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Button, Card, CardActions, CardContent, Chip } from "@mui/material";
 import StackBlitzSDK from "@stackblitz/sdk";
 import JsZip from "jszip";
-import { useEffect, useState } from "react";
-import { VariadicSingleton } from "tstl";
+import { useState } from "react";
+import { Singleton, VariadicSingleton } from "tstl";
 
 export function AutoBePlaygroundCompleteEventMovie(
   props: AutoBePlaygroundCompleteEventMovie.IProps,
 ) {
-  const [postgresFiles, setPostgresFiles] = useState<Record<string, string>>(
-    {},
+  const [postgres] = useState(
+    new Singleton(async () => {
+      setDownloading(true);
+      try {
+        const result: Record<string, string> = await props.service.getFiles();
+        return result;
+      } catch (error) {
+        throw error;
+      } finally {
+        setDownloading(false);
+      }
+    }),
   );
-  const [sqliteFiles, setSqliteFiles] = useState<Record<string, string>>({});
-
-  useEffect(() => {
-    (async () => {
-      setPostgresFiles(await props.service.getFiles());
-      setSqliteFiles(
-        await props.service.getFiles({
+  const [sqlite] = useState(
+    new Singleton(async () => {
+      setDownloading(true);
+      try {
+        const result: Record<string, string> = await props.service.getFiles({
           dbms: "sqlite",
-        }),
-      );
-    })().catch(() => {});
-  }, []);
+        });
+        return result;
+      } catch (error) {
+        throw error;
+      } finally {
+        setDownloading(false);
+      }
+    }),
+  );
+  const [downloading, setDownloading] = useState(false);
 
-  const openStackBlitz = () => {
+  const openStackBlitz = async () => {
     StackBlitzSDK.openProject(
       {
         files: Object.fromEntries(
-          Object.entries(sqliteFiles).filter(
+          Object.entries(await sqlite.get()).filter(
             ([_, value]) =>
               new TextEncoder().encode(value).length < 2 * 1024 * 1024, // 2MB
           ),
@@ -62,7 +77,7 @@ export function AutoBePlaygroundCompleteEventMovie(
       const parent: JsZip = directory.get(separated.slice(0, -1).join("/"));
       return parent.folder(separated.at(-1)!)!;
     });
-    for (const [file, content] of Object.entries(postgresFiles)) {
+    for (const [file, content] of Object.entries(await postgres.get())) {
       const separated: string[] = file.split("/");
       if (separated.length === 1) zip.file(file, content);
       else {
@@ -114,17 +129,26 @@ export function AutoBePlaygroundCompleteEventMovie(
           justifyContent: "flex-end",
         }}
       >
-        <Button
-          startIcon={<DownloadIcon />}
-          onClick={() => {
-            download().catch(console.error);
-          }}
-        >
-          Download
-        </Button>
-        <Button startIcon={<OpenInNewIcon />} onClick={() => openStackBlitz()}>
-          Open in StackBlitz
-        </Button>
+        {downloading === true ? (
+          <Button startIcon={<DownloadingIcon />} disabled={true}>
+            Downloading Source Codes...
+          </Button>
+        ) : (
+          <>
+            <Button
+              startIcon={<DownloadIcon />}
+              onClick={() => download().catch(console.error)}
+            >
+              Download
+            </Button>
+            <Button
+              startIcon={<OpenInNewIcon />}
+              onClick={() => openStackBlitz().catch(console.error)}
+            >
+              Open in StackBlitz
+            </Button>
+          </>
+        )}
       </CardActions>
     </Card>
   );
