@@ -1,10 +1,10 @@
+import { AutoBeAnalyzeRole } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IFile } from "./AutoBeAnalyzeFileSystem";
 import { AutoBeAnalyzePointer } from "./AutoBeAnalyzePointer";
-import { AutoBeAnalyzeRole } from "./AutoBeAnalyzeRole";
 import { orchestrateAnalyzeReviewer } from "./orchestrateAnalyzeReviewer";
 import { orchestrateAnalyzeWrite } from "./orchestrateAnalyzeWrite";
 

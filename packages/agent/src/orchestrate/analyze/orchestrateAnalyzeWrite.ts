@@ -1,4 +1,5 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
+import { AutoBeAnalyzeRole } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -16,7 +17,6 @@ import {
   AutoBEAnalyzeFileMap,
   AutoBeAnalyzePointer,
 } from "./AutoBeAnalyzePointer";
-import { AutoBeAnalyzeRole } from "./AutoBeAnalyzeRole";
 import { transformAnalyzeWriteHistories } from "./transformAnalyzeWriteHistories";
 
 export const orchestrateAnalyzeWrite = <Model extends ILlmSchema.Model>(

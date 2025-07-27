@@ -1,5 +1,6 @@
+import { AutoBeAnalyzeRole } from "@autobe/interface";
+
 import { IFile } from "../AutoBeAnalyzeFileSystem";
-import { AutoBeAnalyzeRole } from "../AutoBeAnalyzeRole";
 
 export interface IComposeInput {
   /** Reason for the analysis and composition of the project structure. */

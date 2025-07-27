@@ -1,7 +1,7 @@
 import { tags } from "typia";
 
-import { AutoBeAnalyzeRole } from "../../../agent/src/orchestrate/analyze/AutoBeAnalyzeRole";
 import { AutoBeAgentHistoryBase } from "./AutoBeHistoryBase";
+import { AutoBeAnalyzeRole } from "./contents/AutoBeAnalyzeRole";
 
 /**
  * History record generated when the Analyze agent and user have completed all

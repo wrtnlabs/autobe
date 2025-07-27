@@ -1,11 +1,11 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
+import { AutoBeAnalyzeRole } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IFile } from "./AutoBeAnalyzeFileSystem";
-import { AutoBeAnalyzeRole } from "./AutoBeAnalyzeRole";
 
 export const transformAnalyzeWriteHistories = <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
