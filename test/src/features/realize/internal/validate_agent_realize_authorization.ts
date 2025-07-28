@@ -14,7 +14,7 @@ import { TestGlobal } from "../../../TestGlobal";
 import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_realize } from "./prepare_agent_realize";
 
-export const validate_agent_realize_decorator = async (
+export const validate_agent_realize_authorization = async (
   factory: TestFactory,
   project: TestProject,
 ) => {
