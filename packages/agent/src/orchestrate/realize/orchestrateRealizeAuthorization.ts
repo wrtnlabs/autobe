@@ -5,8 +5,6 @@ import {
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
-import fs from "fs/promises";
-import path from "path";
 import { IPointer } from "tstl";
 import typia from "typia";
 
@@ -36,21 +34,12 @@ export async function orchestrateRealizeAuthorization<
 
   let completed = 0;
 
+  const allTemplateFiles = await (await ctx.compiler()).realize.getTemplate();
+
   const templateFiles = {
-    "src/MyGlobal.ts": await fs.readFile(
-      path.join(
-        __dirname,
-        "../../../../../internals/template/realize/src/MyGlobal.ts",
-      ),
-      "utf-8",
-    ),
-    [AuthorizationFileSystem.providerPath("jwtAuthorize")]: await fs.readFile(
-      path.join(
-        __dirname,
-        "../../../../../internals/template/realize/src/providers/jwtAuthorize.ts",
-      ),
-      "utf-8",
-    ),
+    "src/MyGlobal.ts": allTemplateFiles["src/MyGlobal.ts"],
+    "src/providers/authorize/jwtAuthorize.ts":
+      allTemplateFiles["src/providers/authorize/jwtAuthorize.ts"],
   };
 
   ctx.dispatch({

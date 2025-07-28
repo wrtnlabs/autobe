@@ -31,6 +31,24 @@ export const orchestrateRealize =
 
     const authorizations: AutoBeRealizeAuthorization[] =
       await orchestrateRealizeAuthorization(ctx);
+
+    if (ctx.state().realize === null) {
+      ctx.state().realize = {
+        authorizations: [],
+        compiled: {
+          type: "exception",
+          error: {},
+        },
+        functions: [],
+        reason: props.reason,
+        type: "realize",
+        step: ctx.state().analyze?.step ?? 0,
+        completed_at: new Date().toISOString(),
+        created_at: new Date().toISOString(),
+        id: v4(),
+      };
+    }
+
     const files = await writeCodeUntilCompilePassed(
       ctx,
       ops,

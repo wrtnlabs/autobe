@@ -64,7 +64,7 @@ export const validate_agent_realize_authorization = async (
       await fs.promises.readFile(
         path.join(
           __dirname,
-          "../../../../../internals/template/realize/src/providers/jwtAuthorize.ts",
+          "../../../../../internals/template/realize/src/providers/authorize/jwtAuthorize.ts",
         ),
         "utf-8",
       ),
