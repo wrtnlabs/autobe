@@ -49,7 +49,7 @@ export const validate_agent_realize_coder = async (
 
   // DO TEST GENERATION
   const go = async () =>
-    await writeCodeUntilCompilePassed(ctx, ops.slice(0, 1), authorizations, 3);
+    await writeCodeUntilCompilePassed(ctx, ops, authorizations, 10);
 
   const result: AutoBeRealizeFunction[] = await go();
 
@@ -78,6 +78,8 @@ export const validate_agent_realize_coder = async (
     })
     .reduce((acc, cur) => Object.assign(acc, cur));
 
+  const templateFiles = await (await ctx.compiler()).realize.getTemplate();
+
   // REPORT RESULT
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/${project}/realize/main`,
@@ -95,7 +97,6 @@ export const validate_agent_realize_coder = async (
     },
   });
 
-  const templateFiles = await (await ctx.compiler()).realize.getTemplate();
   const compiler = await ctx.compiler();
   const res = await compiler.typescript.compile({
     files: {
