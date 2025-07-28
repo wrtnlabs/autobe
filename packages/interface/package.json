@@ -5,6 +5,7 @@
   "main": "src/index.ts",
   "scripts": {
     "build": "rimraf lib && tsc",
+    "postbuild": "node ../../internals/config/assertBuild.js",
     "prepack": "pnpm run build"
   },
   "keywords": [],

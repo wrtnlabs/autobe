@@ -16,6 +16,7 @@
     "prepare": "ts-patch install && pnpm run prebuild",
     "build": "pnpm run prebuild && rimraf lib && tsc",
     "prebuild": "ts-node build/template.ts && ts-node build/external.ts",
+    "postbuild": "node ../../internals/config/assertBuild.js",
     "dev": "pnpm run build --watch",
     "prepack": "pnpm run build"
   },

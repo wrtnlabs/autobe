@@ -9,6 +9,7 @@
     "build": "pnpm --aggregate-output /^build:/",
     "build:static": "rimraf dist && tsc -b && vite build",
     "build:lib": "rimraf lib && rollup -c",
+    "postbuild": "node ../../internals/config/assertBuild.js",
     "dev": "vite",
     "prepack": "pnpm run build"
   },

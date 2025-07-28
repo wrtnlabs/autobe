@@ -23,6 +23,7 @@
     "prepare": "ts-patch install && pnpm run build:prompt",
     "build": "rimraf lib && pnpm run build:prompt && rollup -c && tsc",
     "build:prompt": "ts-node build/prompt.ts",
+    "postbuild": "node ../../internals/config/assertBuild.js",
     "dev": "rimraf lib && pnpm run build:prompt && tsc --watch",
     "prepack": "pnpm run build"
   },
