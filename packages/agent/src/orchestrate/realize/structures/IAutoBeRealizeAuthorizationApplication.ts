@@ -1,8 +1,10 @@
-export interface IAutoBeRealizeDecoratorApplication {
-  createDecorator: (next: IAutoBeRealizeDecoratorApplication.IProps) => void;
+export interface IAutoBeRealizeAuthorizationApplication {
+  createDecorator: (
+    next: IAutoBeRealizeAuthorizationApplication.IProps,
+  ) => void;
 }
 
-export namespace IAutoBeRealizeDecoratorApplication {
+export namespace IAutoBeRealizeAuthorizationApplication {
   export interface IProps {
     /**
      * Authentication Provider function configuration containing the function
@@ -10,7 +12,7 @@ export namespace IAutoBeRealizeDecoratorApplication {
      * verification, role validation, and database queries to authenticate
      * users.
      */
-    provider: IAutoBeRealizeDecoratorApplication.IProvider;
+    provider: IAutoBeRealizeAuthorizationApplication.IProvider;
 
     /**
      * Authentication Decorator configuration containing the decorator name and
@@ -18,7 +20,7 @@ export namespace IAutoBeRealizeDecoratorApplication {
      * decorators to automatically inject authenticated user data into
      * Controller methods.
      */
-    decorator: IAutoBeRealizeDecoratorApplication.IDecorator;
+    decorator: IAutoBeRealizeAuthorizationApplication.IDecorator;
 
     /**
      * Authentication Payload Type configuration containing the payload type
@@ -27,7 +29,7 @@ export namespace IAutoBeRealizeDecoratorApplication {
      * Controller methods when using the decorator. It serves as the TypeScript
      * type for the parameter in Controller method signatures.
      */
-    payload: IAutoBeRealizeDecoratorApplication.IPayloadType;
+    payload: IAutoBeRealizeAuthorizationApplication.IPayloadType;
   }
 
   export interface IProvider {
@@ -48,7 +50,7 @@ export namespace IAutoBeRealizeDecoratorApplication {
      * UnauthorizedException, and the Payload interface definition with id (UUID
      * format) and type (role discriminator) fields using typia tags.
      */
-    code: string;
+    content: string;
   }
 
   export interface IDecorator {
@@ -69,7 +71,7 @@ export namespace IAutoBeRealizeDecoratorApplication {
      * pattern using tstl library for efficient decorator instance management,
      * and proper TypeScript typing for the ParameterDecorator interface.
      */
-    code: string;
+    content: string;
   }
 
   export interface IPayloadType {
@@ -89,6 +91,6 @@ export namespace IAutoBeRealizeDecoratorApplication {
      * when using the decorator. It serves as the TypeScript type for the
      * parameter in Controller method signatures.
      */
-    code: string;
+    content: string;
   }
 }

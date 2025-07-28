@@ -8,9 +8,8 @@ import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { IAutoBeRealizeDecoratorApplication } from "./structures/IAutoBeRealizeDecoratorApplication";
 
-export const transformRealizeDecoratorCorrectHistories = (
+export const transformRealizeAuthorizationCorrectHistories = (
   ctx: AutoBeContext<ILlmSchema.Model>,
   auth: AutoBeRealizeAuthorization,
   templateFiles: Record<string, string>,
@@ -23,7 +22,13 @@ export const transformRealizeDecoratorCorrectHistories = (
       id: v4(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
-      text: AutoBeSystemPromptConstant.REALIZE_DECORATOR_CORRECT,
+      text: AutoBeSystemPromptConstant.REALIZE_AUTHORIZATION,
+    },
+    {
+      id: v4(),
+      created_at: new Date().toISOString(),
+      type: "systemMessage",
+      text: AutoBeSystemPromptConstant.REALIZE_AUTHORIZATION_CORRECT,
     },
     {
       id: v4(),
@@ -36,18 +41,21 @@ export const transformRealizeDecoratorCorrectHistories = (
         `${JSON.stringify(
           {
             provider: {
+              location: auth.provider.location,
               name: auth.provider.name,
-              code: auth.provider.content,
+              content: auth.provider.content,
             },
             decorator: {
+              location: auth.decorator.location,
               name: auth.decorator.name,
-              code: auth.decorator.content,
+              content: auth.decorator.content,
             },
             payload: {
+              location: auth.payload.location,
               name: auth.payload.name,
-              code: auth.payload.content,
+              content: auth.payload.content,
             },
-          } satisfies IAutoBeRealizeDecoratorApplication.IProps,
+          } satisfies Omit<AutoBeRealizeAuthorization, "role">,
           null,
           2,
         )}`,

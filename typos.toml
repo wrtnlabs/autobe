@@ -1,7 +1,8 @@
 [default]
 locale = 'en-us'
 extend-ignore-re = [
-  "(?Rm)^.*(<!--|#|//)\\s*spellchecker:disable-line(-->|\n)?$",
+  ".*(?:#|--|//|/*).*(?:spellchecker|typos):\\s?ignore[^\\n]*\\n",
+  ".*(?:spellchecker|typos):\\s?ignore-next-line[^\\n]*\\n[^\\n]*",
   "(?s)(<!--|#|//)\\s*spellchecker:off\\s*(-->|\n).*?(<!--|#|//)\\s*spellchecker:on",
 ]
 

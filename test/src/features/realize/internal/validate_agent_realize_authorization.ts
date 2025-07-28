@@ -5,15 +5,13 @@ import {
   AutoBeRealizeAuthorization,
   IAutoBeCompiler,
 } from "@autobe/interface";
-import fs from "fs";
-import path from "path";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
 import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_realize } from "./prepare_agent_realize";
 
-export const validate_agent_realize_decorator = async (
+export const validate_agent_realize_authorization = async (
   factory: TestFactory,
   project: TestProject,
 ) => {
@@ -51,21 +49,17 @@ export const validate_agent_realize_decorator = async (
   const prismaClients: Record<string, string> =
     prisma?.type === "success" ? prisma.nodeModules : {};
 
+  const targets = [
+    "src/MyGlobal.ts",
+    "src/providers/authorize/jwtAuthorize.ts",
+    "src/util/toISOStringSafe.ts",
+  ];
+  const templateFiles = await (await ctx.compiler()).realize.getTemplate();
   const files: Record<string, string> = {
-    "src/MyGlobal.ts": await fs.promises.readFile(
-      path.join(
-        __dirname,
-        "../../../../../internals/template/realize/src/MyGlobal.ts",
-      ),
-      "utf-8",
-    ),
-    "src/providers/jwtAuthorize.ts": await fs.promises.readFile(
-      path.join(
-        __dirname,
-        "../../../../../internals/template/realize/src/providers/jwtAuthorize.ts",
-      ),
-      "utf-8",
-    ),
+    ...targets
+      .map((key) => ({ [key]: templateFiles[key] }))
+      .reduce((acc, cur) => Object.assign(acc, cur), {}),
+
     ...prismaClients,
     ...authorizations.reduce(
       (acc, curr) => {

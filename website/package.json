@@ -1,6 +1,6 @@
 {
   "name": "@autobe/website",
-  "version": "0.14.4",
+  "version": "0.14.5",
   "description": "AutoBE Guide Documents",
   "private": true,
   "scripts": {

@@ -5,7 +5,6 @@ import {
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
-import { readFile } from "fs/promises";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { pipe } from "./RealizePipe";
@@ -13,7 +12,6 @@ import { orchestrateRealizeCoder } from "./orchestrateRealizeCoder";
 import { orchestrateRealizePlanner } from "./orchestrateRealizePlanner";
 import { IAutoBeRealizeCompile } from "./structures/IAutoBeRealizeCompile";
 import { FAILED } from "./structures/IAutoBeRealizeFailedSymbol";
-import { InternalFileSystem } from "./utils/InternalFileSystem";
 import { RealizeFileSystem } from "./utils/ProivderFileSystem";
 
 export async function writeCodeUntilCompilePassed<
@@ -42,7 +40,7 @@ export async function writeCodeUntilCompilePassed<
     );
 
   const entireCodes: IAutoBeRealizeCompile.FileContentMap = {
-    ...(await loadTemplateFiles()),
+    ...(await loadTemplateFiles(ctx)),
   };
 
   let diagnostics: IAutoBeRealizeCompile.CompileDiagnostics = {
@@ -137,16 +135,17 @@ export async function writeCodeUntilCompilePassed<
   );
 }
 
-async function loadTemplateFiles(): Promise<IAutoBeRealizeCompile.FileContentMap> {
-  const templateFiles = ["src/MyGlobal.ts", "src/util/toISOStringSafe.ts"];
+async function loadTemplateFiles<Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+): Promise<IAutoBeRealizeCompile.FileContentMap> {
+  const templateFiles = await (await ctx.compiler()).realize.getTemplate();
+  const targets = ["src/MyGlobal.ts", "src/util/toISOStringSafe.ts"];
 
   const result: IAutoBeRealizeCompile.FileContentMap = {};
 
-  for (const filePath of templateFiles) {
+  for (const filePath of targets) {
     result[filePath] = {
-      content: await readFile(InternalFileSystem.templatePath(filePath), {
-        encoding: "utf-8",
-      }),
+      content: templateFiles[filePath],
       result: "success",
       location: filePath,
       role: null,

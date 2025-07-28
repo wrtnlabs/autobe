@@ -11,9 +11,10 @@ import typia from "typia";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { enforceToolCall } from "../../utils/enforceToolCall";
-import { IAutoBeRealizeDecoratorApplication } from "./structures/IAutoBeRealizeDecoratorApplication";
-import { transformRealizeDecoratorHistories } from "./transformRealizeDecorator";
-import { transformRealizeDecoratorCorrectHistories } from "./transformRealizeDecoratorCorrectHistories";
+import { orchestrateRealizeAuthorizationCorrect } from "./orchestrateRealizeAuthorizationCorrect";
+import { IAutoBeRealizeAuthorizationApplication } from "./structures/IAutoBeRealizeAuthorizationApplication";
+import { transformRealizeAuthorizationHistories } from "./transformRealizeAuthorization";
+import { transformRealizeAuthorizationCorrectHistories } from "./transformRealizeAuthorizationCorrectHistories";
 import { AuthorizationFileSystem } from "./utils/AuthorizationFileSystem";
 
 /**
@@ -46,7 +47,9 @@ export async function orchestrateRealizeAuthorization<
       const authorization: AutoBeRealizeAuthorization = await process(
         ctx,
         role,
-        templateFiles,
+        ["src/providers/authorize/jwtAuthorize.ts", "src/MyGlobal.ts"]
+          .map((el) => ({ [el]: templateFiles[el] }))
+          .reduce((acc, cur) => Object.assign(acc, cur), {}),
       );
       ctx.dispatch({
         type: "realizeAuthorizationWrite",
@@ -72,9 +75,10 @@ async function process<Model extends ILlmSchema.Model>(
   role: string,
   templateFiles: Record<string, string>,
 ): Promise<AutoBeRealizeAuthorization> {
-  const pointer: IPointer<IAutoBeRealizeDecoratorApplication.IProps | null> = {
-    value: null,
-  };
+  const pointer: IPointer<IAutoBeRealizeAuthorizationApplication.IProps | null> =
+    {
+      value: null,
+    };
   const agentica: MicroAgentica<Model> = new MicroAgentica({
     model: ctx.model,
     vendor: ctx.vendor,
@@ -84,7 +88,7 @@ async function process<Model extends ILlmSchema.Model>(
         describe: null,
       },
     },
-    histories: transformRealizeDecoratorHistories(ctx, role),
+    histories: transformRealizeAuthorizationHistories(ctx, role),
     controllers: [
       createApplication({
         model: ctx.model,
@@ -111,24 +115,25 @@ async function process<Model extends ILlmSchema.Model>(
         pointer.value.decorator.name,
       ),
       name: pointer.value.decorator.name,
-      content: pointer.value.decorator.code,
+      content: pointer.value.decorator.content,
     },
     payload: {
       location: AuthorizationFileSystem.payloadPath(pointer.value.payload.name),
       name: pointer.value.payload.name,
-      content: pointer.value.payload.code,
+      content: pointer.value.payload.content,
     },
     provider: {
       location: AuthorizationFileSystem.providerPath(
         pointer.value.provider.name,
       ),
       name: pointer.value.provider.name,
-      content: pointer.value.provider.code,
+      content: pointer.value.provider.content,
     },
   };
   const compiled = ctx.state().prisma?.compiled;
   const prismaClients: Record<string, string> =
     compiled?.type === "success" ? compiled.nodeModules : {};
+
   return correctDecorator(ctx, authorization, prismaClients, templateFiles);
 }
 
@@ -166,9 +171,10 @@ async function correctDecorator<Model extends ILlmSchema.Model>(
     return auth;
   }
 
-  const pointer: IPointer<IAutoBeRealizeDecoratorApplication.IProps | null> = {
-    value: null,
-  };
+  const pointer: IPointer<IAutoBeRealizeAuthorizationApplication.IProps | null> =
+    {
+      value: null,
+    };
   const agentica: MicroAgentica<Model> = new MicroAgentica({
     model: ctx.model,
     vendor: ctx.vendor,
@@ -178,7 +184,7 @@ async function correctDecorator<Model extends ILlmSchema.Model>(
         describe: null,
       },
     },
-    histories: transformRealizeDecoratorCorrectHistories(
+    histories: transformRealizeAuthorizationCorrectHistories(
       ctx,
       auth,
       templateFiles,
@@ -209,38 +215,38 @@ async function correctDecorator<Model extends ILlmSchema.Model>(
     decorator: {
       location: auth.decorator.location,
       name: pointer.value.decorator.name,
-      content: pointer.value.decorator.code,
+      content: pointer.value.decorator.content,
     },
     payload: {
       location: auth.payload.location,
       name: pointer.value.payload.name,
-      content: pointer.value.payload.code,
+      content: pointer.value.payload.content,
     },
     provider: {
       location: auth.provider.location,
       name: pointer.value.provider.name,
-      content: pointer.value.provider.code,
+      content: pointer.value.provider.content,
     },
   };
-  ctx.dispatch({
-    type: "realizeAuthorizationCorrect",
-    created_at: new Date().toISOString(),
-    authorization: corrected,
-    result: result,
-    step: ctx.state().test?.step ?? 0,
-  });
-  return await correctDecorator(
-    ctx,
-    corrected,
-    prismaClients,
-    templateFiles,
-    life - 1,
-  );
+
+  const res: AutoBeRealizeAuthorization =
+    await orchestrateRealizeAuthorizationCorrect(
+      ctx,
+      corrected,
+      prismaClients,
+      templateFiles,
+      life - 1,
+    );
+
+  return {
+    ...res,
+    role: auth.role,
+  };
 }
 
 function createApplication<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  build: (next: IAutoBeRealizeDecoratorApplication.IProps) => void;
+  build: (next: IAutoBeRealizeAuthorizationApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
@@ -256,12 +262,12 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
       createDecorator: (next) => {
         props.build(next);
       },
-    } satisfies IAutoBeRealizeDecoratorApplication,
+    } satisfies IAutoBeRealizeAuthorizationApplication,
   };
 }
 
 const claude = typia.llm.application<
-  IAutoBeRealizeDecoratorApplication,
+  IAutoBeRealizeAuthorizationApplication,
   "claude",
   {
     reference: true;
@@ -269,7 +275,7 @@ const claude = typia.llm.application<
 >();
 const collection = {
   chatgpt: typia.llm.application<
-    IAutoBeRealizeDecoratorApplication,
+    IAutoBeRealizeAuthorizationApplication,
     "chatgpt",
     { reference: true }
   >(),

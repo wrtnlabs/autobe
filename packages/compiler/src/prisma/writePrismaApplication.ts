@@ -1,5 +1,6 @@
 import { AutoBePrisma } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
+import crypto from "crypto";
 
 import { ArrayUtil } from "../utils/ArrayUtil";
 import { MapUtil } from "../utils/MapUtil";
@@ -74,9 +75,8 @@ function fillMappingName(model: AutoBePrisma.IModel): void {
   }
   for (const array of group.values())
     if (array.length !== 1)
-      for (const ff of array) {
-        ff.relation.mappingName = `${model.name}_of_${ff.name}`;
-      }
+      for (const ff of array)
+        ff.relation.mappingName = shortName(`${model.name}_of_${ff.name}`);
 }
 
 /* -----------------------------------------------------------
@@ -189,7 +189,13 @@ function writeRelations(props: {
       );
     });
   const contents: string[][] = [
-    props.model.foreignFields.map(writeConstraint),
+    props.model.foreignFields.map((foreign) =>
+      writeConstraint({
+        dbms: props.dbms,
+        model: props.model,
+        foreign,
+      }),
+    ),
     hasRelationships.map((r) =>
       [
         r.mappingName ?? r.modelName,
@@ -197,12 +203,32 @@ function writeRelations(props: {
         ...(r.mappingName ? [`@relation("${r.mappingName}")`] : []),
       ].join(" "),
     ),
-    foreignIndexes.map(writeForeignIndex),
+    foreignIndexes.map((field) =>
+      writeForeignIndex({
+        model: props.model,
+        field,
+      }),
+    ),
     [
-      ...props.model.uniqueIndexes.map(writeUniqueIndex),
-      ...props.model.plainIndexes.map(writePlainIndex),
+      ...props.model.uniqueIndexes.map((unique) =>
+        writeUniqueIndex({
+          model: props.model,
+          unique,
+        }),
+      ),
+      ...props.model.plainIndexes.map((plain) =>
+        writePlainIndex({
+          model: props.model,
+          plain,
+        }),
+      ),
       ...(props.dbms === "postgres"
-        ? props.model.ginIndexes.map(writeGinIndex)
+        ? props.model.ginIndexes.map((gin) =>
+            writeGinIndex({
+              model: props.model,
+              gin,
+            }),
+          )
         : []),
     ],
   ];
@@ -216,35 +242,68 @@ function writeRelations(props: {
   ];
 }
 
-function writeConstraint(field: AutoBePrisma.IForeignField): string {
+function writeConstraint(props: {
+  dbms: "postgres" | "sqlite";
+  model: AutoBePrisma.IModel;
+  foreign: AutoBePrisma.IForeignField;
+}): string {
+  // spellchecker:ignore-next-line
+  const name: string = `${props.model.name}_${props.foreign.name}_rela`;
   return [
-    field.relation.name,
-    `${field.relation.targetModel}${field.nullable ? "?" : ""}`,
+    props.foreign.relation.name,
+    `${props.foreign.relation.targetModel}${props.foreign.nullable ? "?" : ""}`,
     `@relation(${[
-      ...(field.relation.mappingName
-        ? [`"${field.relation.mappingName}"`]
+      ...(props.foreign.relation.mappingName
+        ? [`"${props.foreign.relation.mappingName}"`]
         : []),
-      `fields: [${field.name}]`,
+      `fields: [${props.foreign.name}]`,
       `references: [id]`,
       `onDelete: Cascade`,
+      ...(props.dbms === "sqlite" || name.length <= MAX_IDENTIFIER_LENGTH
+        ? []
+        : [`map: "${shortName(name)}"`]),
     ].join(", ")})`,
   ].join(" ");
 }
 
-function writeForeignIndex(field: AutoBePrisma.IForeignField): string {
-  return `@@${field.unique === true ? "unique" : "index"}([${field.name}])`;
+function writeForeignIndex(props: {
+  model: AutoBePrisma.IModel;
+  field: AutoBePrisma.IForeignField;
+}): string {
+  const name: string = `${props.model.name}_${props.field.name}_fkey`;
+  const prefix: string = `@@${props.field.unique === true ? "unique" : "index"}([${props.field.name}]`;
+  if (name.length <= MAX_IDENTIFIER_LENGTH) return `${prefix})`;
+  return `${prefix}, map: "${shortName(name)}")`;
 }
 
-function writeUniqueIndex(field: AutoBePrisma.IUniqueIndex): string {
-  return `@@unique([${field.fieldNames.join(", ")}])`;
+function writeUniqueIndex(props: {
+  model: AutoBePrisma.IModel;
+  unique: AutoBePrisma.IUniqueIndex;
+}): string {
+  const name: string = `${props.model.name}_${props.unique.fieldNames.join("_")}_key`;
+  const prefix: string = `@@unique([${props.unique.fieldNames.join(", ")}]`;
+  if (name.length <= MAX_IDENTIFIER_LENGTH) return `${prefix})`;
+  return `${prefix}, map: "${shortName(name)}")`;
 }
 
-function writePlainIndex(field: AutoBePrisma.IPlainIndex): string {
-  return `@@index([${field.fieldNames.join(", ")}])`;
+function writePlainIndex(props: {
+  model: AutoBePrisma.IModel;
+  plain: AutoBePrisma.IPlainIndex;
+}): string {
+  const name: string = `${props.model.name}_${props.plain.fieldNames.join("_")}_idx`;
+  const prefix: string = `@@index([${props.plain.fieldNames.join(", ")}]`;
+  if (name.length <= MAX_IDENTIFIER_LENGTH) return `${prefix})`;
+  return `${prefix}, map: "${shortName(name)}")`;
 }
 
-function writeGinIndex(field: AutoBePrisma.IGinIndex): string {
-  return `@@index([${field.fieldName}(ops: raw("gin_trgm_ops"))], type: Gin)`;
+function writeGinIndex(props: {
+  model: AutoBePrisma.IModel;
+  gin: AutoBePrisma.IGinIndex;
+}): string {
+  const name: string = `${props.model.name}_${props.gin.fieldName}_idx`;
+  const prefix: string = `@@index([${props.gin.fieldName}(ops: raw("gin_trgm_ops"))], type: Gin`;
+  if (name.length <= MAX_IDENTIFIER_LENGTH) return `${prefix})`;
+  return `${prefix}, map: "${shortName(name)}")`;
 }
 
 /* -----------------------------------------------------------
@@ -267,6 +326,16 @@ function indent(content: string): string {
     .split("\n")
     .map((str) => `  ${str}`)
     .join("\n");
+}
+
+function shortName(name: string): string {
+  if (name.length <= MAX_IDENTIFIER_LENGTH) return name;
+  const hash: string = crypto
+    .createHash("md5")
+    .update(name)
+    .digest("hex")
+    .substring(0, HASH_TRUNCATION_LENGTH);
+  return `${name.substring(0, MAX_IDENTIFIER_LENGTH - HASH_TRUNCATION_LENGTH - 1)}_${hash}`;
 }
 
 const LOGICAL_TYPES = {
@@ -317,3 +386,5 @@ const SQLITE_MAIN_FILE = StringUtil.trim`
     output   = "../docs/ERD.md"
   }
 `;
+const MAX_IDENTIFIER_LENGTH = 63;
+const HASH_TRUNCATION_LENGTH = 8;

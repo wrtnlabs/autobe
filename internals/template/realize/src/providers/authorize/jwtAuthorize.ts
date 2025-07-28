@@ -1,7 +1,7 @@
 import { ForbiddenException, UnauthorizedException } from "@nestjs/common";
 import jwt from "jsonwebtoken";
 
-import { MyGlobal } from "../MyGlobal";
+import { MyGlobal } from "../../MyGlobal";
 
 export function jwtAuthorize(props: {
   request: {

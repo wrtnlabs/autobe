@@ -29,9 +29,14 @@ export const orchestrateRealize =
       step: ctx.state().test?.step ?? 0,
     });
 
-    const decorators: AutoBeRealizeAuthorization[] =
+    const authorizations: AutoBeRealizeAuthorization[] =
       await orchestrateRealizeAuthorization(ctx);
-    const files = await writeCodeUntilCompilePassed(ctx, ops, decorators, 3);
+    const files = await writeCodeUntilCompilePassed(
+      ctx,
+      ops,
+      authorizations,
+      3,
+    );
 
     const now = new Date().toISOString();
     const realize = ctx.state().realize;
@@ -45,7 +50,7 @@ export const orchestrateRealize =
         },
         functions: {
           ...files,
-          ...decorators
+          ...authorizations
             .flatMap((el) => {
               return [
                 {

@@ -3,8 +3,6 @@ import { writeCodeUntilCompilePassed } from "@autobe/agent/src/orchestrate/reali
 import { FileSystemIterator } from "@autobe/filesystem";
 import { AutoBeEvent, AutoBeRealizeFunction } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
-import { readFile } from "fs/promises";
-import path from "path";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
@@ -93,6 +91,12 @@ export const validate_agent_realize_coder = async (
     },
   });
 
+  const targets = [
+    "src/MyGlobal.ts",
+    "src/providers/authorize/jwtAuthorize.ts",
+    "src/util/toISOStringSafe.ts",
+  ];
+  const templateFiles = await (await ctx.compiler()).realize.getTemplate();
   const compiler = await ctx.compiler();
   const res = await compiler.typescript.compile({
     files: {
@@ -108,15 +112,9 @@ export const validate_agent_realize_coder = async (
       ...codes,
       ...nodeModules,
       ...authentications,
-      "src/MyGlobal.ts": await readFile(
-        path.join(
-          __dirname,
-          "../../../../../internals/template/realize/src/MyGlobal.ts",
-        ),
-        {
-          encoding: "utf-8",
-        },
-      ),
+      ...targets
+        .map((key) => ({ [key]: templateFiles[key] }))
+        .reduce((acc, cur) => Object.assign(acc, cur), {}),
     },
   });
 
