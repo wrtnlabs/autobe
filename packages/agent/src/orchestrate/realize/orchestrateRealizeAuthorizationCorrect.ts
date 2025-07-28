@@ -39,7 +39,6 @@ export async function orchestrateRealizeAuthorizationCorrect<
 
   const compiler: IAutoBeCompiler = await ctx.compiler();
 
-  console.log(files, "files");
   const compiled: IAutoBeTypeScriptCompileResult =
     await compiler.typescript.compile({
       files,

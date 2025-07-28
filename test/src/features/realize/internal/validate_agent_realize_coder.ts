@@ -1,4 +1,5 @@
 import { orchestrateRealizeAuthorization } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeAuthorization";
+import { InternalFileSystem } from "@autobe/agent/src/orchestrate/realize/utils/InternalFileSystem";
 import { writeCodeUntilCompilePassed } from "@autobe/agent/src/orchestrate/realize/writeCodeUntilCompilePassed";
 import { FileSystemIterator } from "@autobe/filesystem";
 import { AutoBeEvent, AutoBeRealizeFunction } from "@autobe/interface";
@@ -85,17 +86,15 @@ export const validate_agent_realize_coder = async (
       ...codes,
       ...nodeModules,
       ...authentications,
+      ...InternalFileSystem.DEFAULT.map((key) => ({
+        [key]: templateFiles[key],
+      })).reduce((acc, cur) => Object.assign(acc, cur), {}),
       "logs/events.json": JSON.stringify(events),
       "logs/result.json": JSON.stringify(result),
       "logs/histories.json": JSON.stringify(histories),
     },
   });
 
-  const targets = [
-    "src/MyGlobal.ts",
-    "src/providers/authorize/jwtAuthorize.ts",
-    "src/util/toISOStringSafe.ts",
-  ];
   const templateFiles = await (await ctx.compiler()).realize.getTemplate();
   const compiler = await ctx.compiler();
   const res = await compiler.typescript.compile({
@@ -112,9 +111,9 @@ export const validate_agent_realize_coder = async (
       ...codes,
       ...nodeModules,
       ...authentications,
-      ...targets
-        .map((key) => ({ [key]: templateFiles[key] }))
-        .reduce((acc, cur) => Object.assign(acc, cur), {}),
+      ...InternalFileSystem.DEFAULT.map((key) => ({
+        [key]: templateFiles[key],
+      })).reduce((acc, cur) => Object.assign(acc, cur), {}),
     },
   });
 

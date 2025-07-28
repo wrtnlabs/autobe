@@ -16,6 +16,7 @@ import { IAutoBeRealizeAuthorizationApplication } from "./structures/IAutoBeReal
 import { transformRealizeAuthorizationHistories } from "./transformRealizeAuthorization";
 import { transformRealizeAuthorizationCorrectHistories } from "./transformRealizeAuthorizationCorrectHistories";
 import { AuthorizationFileSystem } from "./utils/AuthorizationFileSystem";
+import { InternalFileSystem } from "./utils/InternalFileSystem";
 
 /**
  * 1. Create decorator and its parameters. and design the Authorization Provider.
@@ -47,9 +48,9 @@ export async function orchestrateRealizeAuthorization<
       const authorization: AutoBeRealizeAuthorization = await process(
         ctx,
         role,
-        ["src/providers/authorize/jwtAuthorize.ts", "src/MyGlobal.ts"]
-          .map((el) => ({ [el]: templateFiles[el] }))
-          .reduce((acc, cur) => Object.assign(acc, cur), {}),
+        InternalFileSystem.DEFAULT.map((el) => ({
+          [el]: templateFiles[el],
+        })).reduce((acc, cur) => Object.assign(acc, cur), {}),
       );
       ctx.dispatch({
         type: "realizeAuthorizationWrite",
