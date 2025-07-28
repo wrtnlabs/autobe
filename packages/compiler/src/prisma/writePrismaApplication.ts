@@ -247,6 +247,7 @@ function writeConstraint(props: {
   model: AutoBePrisma.IModel;
   foreign: AutoBePrisma.IForeignField;
 }): string {
+  // spellchecker:ignore-next-line
   const name: string = `${props.model.name}_${props.foreign.name}_rela`;
   return [
     props.foreign.relation.name,
