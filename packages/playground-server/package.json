@@ -5,6 +5,7 @@
   "main": "src/index.ts",
   "scripts": {
     "build": "rimraf lib && tsc",
+    "postbuild": "node ../../internals/config/assertBuild.js",
     "dev": "rimraf lib && tsc --watch",
     "prepack": "pnpm run build",
     "prepare": "ts-patch install",
