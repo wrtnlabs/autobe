@@ -20,7 +20,7 @@ import { RealizePlannerOutput } from "./orchestrateRealizePlanner";
 import { IAutoBeRealizeCoderApplication } from "./structures/IAutoBeRealizeCoderApplication";
 import { FAILED } from "./structures/IAutoBeRealizeFailedSymbol";
 import { transformRealizeCoderHistories } from "./transformRealizeCoderHistories";
-import { RealizeFileSystem } from "./utils/ProivderFileSystem";
+import { RealizeFileSystem } from "./utils/ProviderFileSystem";
 import { replaceImportStatements } from "./utils/replaceImportStatements";
 
 /**

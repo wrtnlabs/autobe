@@ -12,7 +12,7 @@ import { orchestrateRealizeCoder } from "./orchestrateRealizeCoder";
 import { orchestrateRealizePlanner } from "./orchestrateRealizePlanner";
 import { IAutoBeRealizeCompile } from "./structures/IAutoBeRealizeCompile";
 import { FAILED } from "./structures/IAutoBeRealizeFailedSymbol";
-import { RealizeFileSystem } from "./utils/ProivderFileSystem";
+import { RealizeFileSystem } from "./utils/ProviderFileSystem";
 
 export async function writeCodeUntilCompilePassed<
   Model extends ILlmSchema.Model,
