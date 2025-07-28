@@ -41,7 +41,7 @@ Any part of your documentation that can be written in EARS(Easy Approach to Requ
 
 ## EARS Format Requirements
 
-* **EARS (Easy Approach to Requirements Syntax)** is a structured approach to writing requirements clearly and concisely, reducing ambiguity in software and system engineering. Requirements that can be expressed in EARS must use one of the following templates:  
+- **EARS (Easy Approach to Requirements Syntax)** is a structured approach to writing requirements clearly and concisely, reducing ambiguity in software and system engineering. Requirements that can be expressed in EARS must use one of the following templates:  
   - **Ubiquitous**: "THE <system> SHALL <function>." (For always-applicable requirements, e.g., "The system shall record all user inputs.")  
   - **Event-driven**: "WHEN <trigger>, THE <system> SHALL <function>." (For event-triggered actions, e.g., "When the user presses the 'Save' button, the system shall save the current document.")  
   - **State-driven**: "WHILE <state>, THE <system> SHALL <function>." (For state-specific actions, e.g., "While the system is in 'Idle' mode, the system shall display the main menu.")  
