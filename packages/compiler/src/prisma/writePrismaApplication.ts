@@ -258,7 +258,7 @@ function writeConstraint(props: {
       `fields: [${props.foreign.name}]`,
       `references: [id]`,
       `onDelete: Cascade`,
-      ...(props.dbms === "sqlite" || name.length <= 63
+      ...(props.dbms === "sqlite" || name.length <= MAX_IDENTIFIER_LENGTH
         ? []
         : [`map: "${shortName(name)}"`]),
     ].join(", ")})`,
@@ -271,7 +271,7 @@ function writeForeignIndex(props: {
 }): string {
   const name: string = `${props.model.name}_${props.field.name}_fkey`;
   const prefix: string = `@@${props.field.unique === true ? "unique" : "index"}([${props.field.name}]`;
-  if (name.length <= 63) return `${prefix})`;
+  if (name.length <= MAX_IDENTIFIER_LENGTH) return `${prefix})`;
   return `${prefix}, map: "${shortName(name)}")`;
 }
 
@@ -281,7 +281,7 @@ function writeUniqueIndex(props: {
 }): string {
   const name: string = `${props.model.name}_${props.unique.fieldNames.join("_")}_key`;
   const prefix: string = `@@unique([${props.unique.fieldNames.join(", ")}]`;
-  if (name.length <= 63) return `${prefix})`;
+  if (name.length <= MAX_IDENTIFIER_LENGTH) return `${prefix})`;
   return `${prefix}, map: "${shortName(name)}")`;
 }
 
@@ -291,7 +291,7 @@ function writePlainIndex(props: {
 }): string {
   const name: string = `${props.model.name}_${props.plain.fieldNames.join("_")}_idx`;
   const prefix: string = `@@index([${props.plain.fieldNames.join(", ")}]`;
-  if (name.length <= 63) return `${prefix})`;
+  if (name.length <= MAX_IDENTIFIER_LENGTH) return `${prefix})`;
   return `${prefix}, map: "${shortName(name)}")`;
 }
 
@@ -301,7 +301,7 @@ function writeGinIndex(props: {
 }): string {
   const name: string = `${props.model.name}_${props.gin.fieldName}_idx`;
   const prefix: string = `@@index([${props.gin.fieldName}(ops: raw("gin_trgm_ops"))], type: Gin`;
-  if (name.length <= 63) return `${prefix})`;
+  if (name.length <= MAX_IDENTIFIER_LENGTH) return `${prefix})`;
   return `${prefix}, map: "${shortName(name)}")`;
 }
 
@@ -385,3 +385,4 @@ const SQLITE_MAIN_FILE = StringUtil.trim`
     output   = "../docs/ERD.md"
   }
 `;
+const MAX_IDENTIFIER_LENGTH = 63;
