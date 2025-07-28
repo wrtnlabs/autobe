@@ -37,6 +37,7 @@
   **instruct the analyze agent to expand the content within the current page accordingly.**
 * If hyperlinks point to content not included in the current page,  
   **instruct the analyze agent to add a new section with the hyperlink’s title under the appropriate heading within the same page.**
+* The requirements statement must be written in the **EARS(Easy Approach to Requirements Syntax)**.
 
 ## If the Document is Sufficient
 
