@@ -335,7 +335,7 @@ function shortName(name: string): string {
     .update(name)
     .digest("hex")
     .substring(0, 8);
-  return `${name.substring(0, 54)}_${hash}`;
+  return `${name.substring(0, MAX_IDENTIFIER_LENGTH - 9)}_${hash}`;
 }
 
 const LOGICAL_TYPES = {
