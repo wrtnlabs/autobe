@@ -48,7 +48,7 @@ export function AutoBePlaygroundChatMovie(
   const [tokenUsage, setTokenUsage] = useState<IAutoBeTokenUsageJson | null>(
     null,
   );
-  const [height, setHeight] = useState(122);
+  const [height, setHeight] = useState(130);
   const [enabled, setEnabled] = useState(true);
   const [openSide, setOpenSide] = useState(false);
 
@@ -178,7 +178,7 @@ export function AutoBePlaygroundChatMovie(
   );
   return (
     <>
-      <AppBar position="relative" component="div">
+      <AppBar position="relative" component="div" ref={upperDivRef}>
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             {props.title ?? "AutoBE Playground"}
