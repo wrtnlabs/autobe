@@ -40,48 +40,26 @@ export const validate_agent_prisma_main = async (
   agent.on("prismaValidate", listen);
   agent.on("prismaComplete", listen);
 
-  const time: Date = new Date();
-  const elapsed = () =>
-    (new Date().getTime() - time.getTime()).toLocaleString() + " ms";
-
   let start: AutoBePrismaStartEvent | null = null;
   let components: AutoBePrismaComponentsEvent | null = null;
   agent.on("prismaStart", (event) => {
     start = event;
-    console.log("  - prisma started:", elapsed());
   });
   agent.on("prismaComponents", (event) => {
     components = event;
-    console.log("  - prisma components:", elapsed());
-    for (const comp of event.components)
-      console.log(`    - ${comp.filename} (${comp.tables.join(", ")})`);
   });
 
   const schemas: AutoBePrismaSchemasEvent[] = [];
   const insufficients: AutoBePrismaInsufficientEvent[] = [];
   agent.on("prismaSchemas", (event) => {
-    console.log(
-      `  - prisma schemas (${event.file.filename}, ${event.completed} of ${event.total}):`,
-      elapsed(),
-    );
     schemas.push(event);
   });
   agent.on("prismaInsufficient", (event) => {
     insufficients.push(event);
-    console.log(
-      `  - prisma insufficient: (${event.component.filename}, ${event.missed.length} of ${event.component.tables.length})`,
-      elapsed(),
-    );
-    console.log("    - expected:", event.component.tables.join(", "));
-    console.log("    - actual:", event.actual.map((m) => m.name).join(", "));
-    console.log(`    - tablesToCreate:`, event.tablesToCreate.join(", "));
-    console.log(`    - validationReview:`, event.validationReview);
-    console.log(`    - confirmedTables:`, event.confirmedTables.join(", "));
   });
 
   const validates: AutoBePrismaValidateEvent[] = [];
   agent.on("prismaCorrect", async (event) => {
-    console.log("  - prisma corrected:", elapsed());
     await FileSystemIterator.save({
       root: `${TestGlobal.ROOT}/results/${project}/prisma-correct-${validates.length}`,
       files: Object.fromEntries([
@@ -92,7 +70,6 @@ export const validate_agent_prisma_main = async (
     });
   });
   agent.on("prismaValidate", async (event) => {
-    console.log("  - prisma validated:", elapsed());
     validates.push(event);
     await FileSystemIterator.save({
       root: `${TestGlobal.ROOT}/results/${project}/prisma-failure-${validates.length}`,

@@ -136,6 +136,9 @@ const correct = async <Model extends ILlmSchema.Model>(
     });
   if (pointer.value === null) throw new Error("Failed to modify test code.");
 
+  const compiler: IAutoBeCompiler = await ctx.compiler();
+  pointer.value.final = await compiler.typescript.beautify(pointer.value.final);
+
   ctx.dispatch({
     type: "testCorrect",
     created_at: new Date().toISOString(),

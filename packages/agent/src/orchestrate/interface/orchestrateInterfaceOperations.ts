@@ -156,27 +156,29 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
       typia.validate<IMakeOperationProps>(next);
     if (result.success === false) return result;
 
+    const operations: AutoBeOpenApi.IOperation[] = result.data.operations;
     const errors: IValidation.IError[] = [];
-    result.data.operations.forEach((op, i) => {
+    operations.forEach((op, i) => {
       if (op.method === "get" && op.requestBody !== null)
         errors.push({
-          path: `operations[${i}].requestBody`,
+          path: `$input.operations[${i}].requestBody`,
           expected:
             "GET method should not have request body. Change method, or re-design the operation.",
           value: op.requestBody,
         });
-      if (props.roles === null) {
-        op.authorizationRole = null;
-      } else if (
-        props.roles?.find((it) => it === op.authorizationRole) === undefined
+      if (props.roles === null) op.authorizationRole = null;
+      else if (
+        op.authorizationRole !== null &&
+        !!props.roles?.length &&
+        props.roles.find((it) => it === op.authorizationRole) === undefined
       )
         errors.push({
-          path: `operations[${i}].authorizationRole`,
-          expected: `undefined | ${props.roles?.join(" | ")}`,
+          path: `$input.operations[${i}].authorizationRole`,
+          expected: `null | ${props.roles.map((str) => JSON.stringify(str)).join(" | ")}`,
           description: [
             `Role "${op.authorizationRole}" is not defined in the roles list.`,
             "",
-            "Please select one of them below, or do not define (undefined):  ",
+            "Please select one of them below, or do not define (`null`):  ",
             "",
             ...(props.roles ?? []).map((role) => `- ${role}`),
           ].join("\n"),
