@@ -334,7 +334,7 @@ function shortName(name: string): string {
     .createHash("md5")
     .update(name)
     .digest("hex")
-    .substring(0, 8);
+    .substring(0, HASH_TRUNCATION_LENGTH);
   return `${name.substring(0, MAX_IDENTIFIER_LENGTH - 9)}_${hash}`;
 }
 
