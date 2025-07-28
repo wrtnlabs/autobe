@@ -58,10 +58,6 @@ export async function orchestrateRealizeAuthorizationCorrect<
     return authorization;
   }
 
-  console.log("------------diagnostics--------------");
-  console.log(JSON.stringify(compiled.diagnostics, null, 2));
-  console.log("--------------------------------\n\n");
-
   const pointer: IPointer<IAutoBeRealizeAuthorizationCorrectApplication.IProps | null> =
     {
       value: null,
@@ -122,10 +118,6 @@ export async function orchestrateRealizeAuthorizationCorrect<
     },
     role: authorization.role,
   };
-
-  console.log("------------result--------------");
-  console.log(JSON.stringify(result, null, 2));
-  console.log("--------------------------------\n\n");
 
   ctx.dispatch({
     ...pointer.value,
