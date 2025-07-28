@@ -13,6 +13,7 @@ import typia from "typia";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { enforceToolCall } from "../../utils/enforceToolCall";
+import { orchestrateRealizeAuthorizationCorrect } from "./orchestrateRealizeAuthorizationCorrect";
 import { IAutoBeRealizeAuthorizationApplication } from "./structures/IAutoBeRealizeAuthorizationApplication";
 import { transformRealizeAuthorizationHistories } from "./transformRealizeAuthorization";
 import { transformRealizeAuthorizationCorrectHistories } from "./transformRealizeAuthorizationCorrectHistories";
@@ -128,19 +129,19 @@ async function process<Model extends ILlmSchema.Model>(
         pointer.value.decorator.name,
       ),
       name: pointer.value.decorator.name,
-      content: pointer.value.decorator.code,
+      content: pointer.value.decorator.content,
     },
     payload: {
       location: AuthorizationFileSystem.payloadPath(pointer.value.payload.name),
       name: pointer.value.payload.name,
-      content: pointer.value.payload.code,
+      content: pointer.value.payload.content,
     },
     provider: {
       location: AuthorizationFileSystem.providerPath(
         pointer.value.provider.name,
       ),
       name: pointer.value.provider.name,
-      content: pointer.value.provider.code,
+      content: pointer.value.provider.content,
     },
   };
   const compiled = ctx.state().prisma?.compiled;
@@ -228,33 +229,33 @@ async function correctDecorator<Model extends ILlmSchema.Model>(
     decorator: {
       location: auth.decorator.location,
       name: pointer.value.decorator.name,
-      content: pointer.value.decorator.code,
+      content: pointer.value.decorator.content,
     },
     payload: {
       location: auth.payload.location,
       name: pointer.value.payload.name,
-      content: pointer.value.payload.code,
+      content: pointer.value.payload.content,
     },
     provider: {
       location: auth.provider.location,
       name: pointer.value.provider.name,
-      content: pointer.value.provider.code,
+      content: pointer.value.provider.content,
     },
   };
-  ctx.dispatch({
-    type: "realizeAuthorizationCorrect",
-    created_at: new Date().toISOString(),
-    authorization: corrected,
-    result: result,
-    step: ctx.state().test?.step ?? 0,
-  });
-  return await correctDecorator(
-    ctx,
-    corrected,
-    prismaClients,
-    templateFiles,
-    life - 1,
-  );
+
+  const res: AutoBeRealizeAuthorization =
+    await orchestrateRealizeAuthorizationCorrect(
+      ctx,
+      corrected,
+      prismaClients,
+      templateFiles,
+      life - 1,
+    );
+
+  return {
+    ...res,
+    role: auth.role,
+  };
 }
 
 function createApplication<Model extends ILlmSchema.Model>(props: {

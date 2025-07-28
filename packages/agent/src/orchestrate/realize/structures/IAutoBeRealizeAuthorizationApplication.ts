@@ -50,7 +50,7 @@ export namespace IAutoBeRealizeAuthorizationApplication {
      * UnauthorizedException, and the Payload interface definition with id (UUID
      * format) and type (role discriminator) fields using typia tags.
      */
-    code: string;
+    content: string;
   }
 
   export interface IDecorator {
@@ -71,7 +71,7 @@ export namespace IAutoBeRealizeAuthorizationApplication {
      * pattern using tstl library for efficient decorator instance management,
      * and proper TypeScript typing for the ParameterDecorator interface.
      */
-    code: string;
+    content: string;
   }
 
   export interface IPayloadType {
@@ -91,6 +91,6 @@ export namespace IAutoBeRealizeAuthorizationApplication {
      * when using the decorator. It serves as the TypeScript type for the
      * parameter in Controller method signatures.
      */
-    code: string;
+    content: string;
   }
 }

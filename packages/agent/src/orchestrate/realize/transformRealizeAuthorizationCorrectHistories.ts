@@ -37,15 +37,15 @@ export const transformRealizeAuthorizationCorrectHistories = (
           {
             provider: {
               name: auth.provider.name,
-              code: auth.provider.content,
+              content: auth.provider.content,
             },
             decorator: {
               name: auth.decorator.name,
-              code: auth.decorator.content,
+              content: auth.decorator.content,
             },
             payload: {
               name: auth.payload.name,
-              code: auth.payload.content,
+              content: auth.payload.content,
             },
           } satisfies IAutoBeRealizeAuthorizationApplication.IProps,
           null,
