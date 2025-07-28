@@ -335,7 +335,7 @@ function shortName(name: string): string {
     .update(name)
     .digest("hex")
     .substring(0, HASH_TRUNCATION_LENGTH);
-  return `${name.substring(0, MAX_IDENTIFIER_LENGTH - 9)}_${hash}`;
+  return `${name.substring(0, MAX_IDENTIFIER_LENGTH - HASH_TRUNCATION_LENGTH - 1)}_${hash}`;
 }
 
 const LOGICAL_TYPES = {
@@ -387,3 +387,4 @@ const SQLITE_MAIN_FILE = StringUtil.trim`
   }
 `;
 const MAX_IDENTIFIER_LENGTH = 63;
+const HASH_TRUNCATION_LENGTH = 8;
