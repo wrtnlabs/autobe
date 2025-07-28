@@ -50,7 +50,7 @@ export const validate_agent_realize_coder = async (
 
   // DO TEST GENERATION
   const go = async () =>
-    await writeCodeUntilCompilePassed(ctx, ops, authorizations, 2);
+    await writeCodeUntilCompilePassed(ctx, ops.slice(0, 1), authorizations, 3);
 
   const result: AutoBeRealizeFunction[] = await go();
 
@@ -63,6 +63,21 @@ export const validate_agent_realize_coder = async (
   const histories = agent.getHistories();
   const prisma = agent.getContext().state().prisma?.compiled;
   const nodeModules = prisma?.type === "success" ? prisma.nodeModules : {};
+  const authentications = authorizations
+    .flatMap((el) => {
+      return [
+        {
+          [el.decorator.location]: el.decorator.content,
+        },
+        {
+          [el.payload.location]: el.payload.content,
+        },
+        {
+          [el.provider.location]: el.provider.content,
+        },
+      ];
+    })
+    .reduce((acc, cur) => Object.assign(acc, cur));
 
   // REPORT RESULT
   await FileSystemIterator.save({
@@ -71,6 +86,7 @@ export const validate_agent_realize_coder = async (
       ...(await agent.getFiles()),
       ...codes,
       ...nodeModules,
+      ...authentications,
       "logs/events.json": JSON.stringify(events),
       "logs/result.json": JSON.stringify(result),
       "logs/histories.json": JSON.stringify(histories),
@@ -91,6 +107,7 @@ export const validate_agent_realize_coder = async (
         ),
       ...codes,
       ...nodeModules,
+      ...authentications,
       "src/MyGlobal.ts": await readFile(
         path.join(
           __dirname,

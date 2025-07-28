@@ -5,8 +5,6 @@ import {
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
-import fs from "fs/promises";
-import path from "path";
 import { IPointer } from "tstl";
 import typia from "typia";
 
@@ -35,28 +33,14 @@ export async function orchestrateRealizeAuthorization<
 
   let completed = 0;
 
-  const templateFiles = {
-    "src/MyGlobal.ts": await fs.readFile(
-      path.join(
-        __dirname,
-        "../../../../../internals/template/realize/src/MyGlobal.ts",
-      ),
-      "utf-8",
-    ),
-    "src/authentications/jwtAuthorize.ts": await fs.readFile(
-      path.join(
-        __dirname,
-        "../../../../../internals/template/realize/src/providers/jwtAuthorize.ts",
-      ),
-      "utf-8",
-    ),
-  };
+  const templateFiles = await (await ctx.compiler()).realize.getTemplate();
 
   ctx.dispatch({
     type: "realizeAuthorizationStart",
     step: ctx.state().test?.step ?? 0,
     created_at: new Date().toISOString(),
   });
+
   const authorizations: AutoBeRealizeAuthorization[] = await Promise.all(
     roles.map(async (role) => {
       const authorization: AutoBeRealizeAuthorization = await process(

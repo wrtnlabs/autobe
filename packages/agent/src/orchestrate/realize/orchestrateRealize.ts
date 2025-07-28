@@ -31,7 +31,7 @@ export const orchestrateRealize =
 
     const decorators: AutoBeRealizeAuthorization[] =
       await orchestrateRealizeAuthorization(ctx);
-    const files = await writeCodeUntilCompilePassed(ctx, ops, decorators, 2);
+    const files = await writeCodeUntilCompilePassed(ctx, ops, decorators, 3);
 
     const now = new Date().toISOString();
     const realize = ctx.state().realize;
@@ -43,7 +43,24 @@ export const orchestrateRealize =
         compiled: {
           type: "success",
         },
-        functions: files,
+        functions: {
+          ...files,
+          ...decorators
+            .flatMap((el) => {
+              return [
+                {
+                  [el.decorator.location]: el.decorator.content,
+                },
+                {
+                  [el.payload.location]: el.payload.content,
+                },
+                {
+                  [el.payload.location]: el.payload.content,
+                },
+              ];
+            })
+            .reduce((acc, cur) => Object.assign(acc, cur)),
+        },
         completed_at: now,
         created_at: now,
         id: v4(),

@@ -51,7 +51,7 @@ Generate authentication Provider and Decorator code specialized for specific Rol
 ### JWT Authentication Function  
 
 ```typescript
-// path - src/authentications/jwtAuthorize.ts
+// path - src/decorators/jwtAuthorize.ts
 import { ForbiddenException, UnauthorizedException } from "@nestjs/common";
 import jwt from "jsonwebtoken";
 
@@ -93,7 +93,7 @@ import { ForbiddenException } from "@nestjs/common";
 
 import { MyGlobal } from "../MyGlobal";
 import { jwtAuthorize } from "./jwtAuthorize";
-import { AdminPayload } from "./types/AdminPayload";
+import { AdminPayload } from "../../decorators/payload/AdminPayload";
 
 export async function adminAuthorize(request: {
   headers: {
@@ -131,7 +131,7 @@ import { SwaggerCustomizer } from "@nestia/core";
 import { ExecutionContext, createParamDecorator } from "@nestjs/common";
 import { Singleton } from "tstl";
 
-import { adminAuthorize } from "../authentications/adminAuthorize";
+import { adminAuthorize } from "../providers/authorize/adminAuthorize";
 
 export const AdminAuth =
   (): ParameterDecorator =>

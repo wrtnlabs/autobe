@@ -425,7 +425,7 @@ export async function something(
 
 ```typescript
 // Import the specific type from decoratorEvent
-import { AdminPayload } from '../authentications/types/AdminPayload';
+import { AdminPayload } from '../decorators/payload/AdminPayload';
 
 export async function delete__users_$id(
   admin: AdminPayload,  // Specific type instead of generic user
@@ -675,7 +675,7 @@ The following modules are **automatically injected** at the top of every generat
 - `import { Prisma } from "@prisma/client";`
 - `import { v4 } from "uuid";`
 - `import { toISOStringSafe } from "../util/toISOStringSafe";`
-- **When decoratorEvent is provided**: `import { ${decoratorType} } from "../authentications/types/${decoratorType}";`
+- **When decoratorEvent is provided**: `import { ${decoratorType} } from "../decorators/payload/${decoratorType}";`
 
 ❌ Do **NOT** include these imports manually.  
 ✅ You may use them directly in your implementation without declaring them.

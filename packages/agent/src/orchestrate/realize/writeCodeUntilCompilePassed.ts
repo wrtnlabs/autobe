@@ -6,7 +6,6 @@ import {
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 import { readFile } from "fs/promises";
-import path from "path";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { pipe } from "./RealizePipe";
@@ -14,6 +13,8 @@ import { orchestrateRealizeCoder } from "./orchestrateRealizeCoder";
 import { orchestrateRealizePlanner } from "./orchestrateRealizePlanner";
 import { IAutoBeRealizeCompile } from "./structures/IAutoBeRealizeCompile";
 import { FAILED } from "./structures/IAutoBeRealizeFailedSymbol";
+import { InternalFileSystem } from "./utils/InternalFileSystem";
+import { RealizeFileSystem } from "./utils/ProivderFileSystem";
 
 export async function writeCodeUntilCompilePassed<
   Model extends ILlmSchema.Model,
@@ -40,9 +41,8 @@ export async function writeCodeUntilCompilePassed<
       {},
     );
 
-  const templateFiles = ["src/MyGlobal.ts", "src/util/toISOStringSafe.ts"];
   const entireCodes: IAutoBeRealizeCompile.FileContentMap = {
-    ...(await loadTemplateFiles(templateFiles)),
+    ...(await loadTemplateFiles()),
   };
 
   let diagnostics: IAutoBeRealizeCompile.CompileDiagnostics = {
@@ -121,33 +121,30 @@ export async function writeCodeUntilCompilePassed<
     }
   }
 
-  return Object.entries(entireCodes)
-    .filter(([filename]) => filename.startsWith("src/providers")) // filter only provider files
-    .map(([filename, value]) => {
-      return {
-        filename,
-        content: value.content,
-        endpoint: value.endpoint!,
-        location: value.location!,
-        name: value.name!,
-        role: value.role!,
-      };
-    });
+  return (
+    Object.entries(entireCodes)
+      // .filter(([filename]) => filename.startsWith("src/providers")) // filter only provider files
+      .map(([filename, value]) => {
+        return {
+          filename,
+          content: value.content,
+          endpoint: value.endpoint!,
+          location: value.location!,
+          name: value.name!,
+          role: value.role!,
+        };
+      })
+  );
 }
 
-async function loadTemplateFiles(
-  templateFiles: string[],
-): Promise<IAutoBeRealizeCompile.FileContentMap> {
-  const templateBasePath = path.join(
-    __dirname,
-    "../../../../../internals/template/realize",
-  );
+async function loadTemplateFiles(): Promise<IAutoBeRealizeCompile.FileContentMap> {
+  const templateFiles = ["src/MyGlobal.ts", "src/util/toISOStringSafe.ts"];
 
   const result: IAutoBeRealizeCompile.FileContentMap = {};
 
   for (const filePath of templateFiles) {
     result[filePath] = {
-      content: await readFile(path.join(templateBasePath, filePath), {
+      content: await readFile(InternalFileSystem.templatePath(filePath), {
         encoding: "utf-8",
       }),
       result: "success",
@@ -171,7 +168,7 @@ async function process<Model extends ILlmSchema.Model>(
     op,
     (op) => orchestrateRealizePlanner(ctx, op, decorator),
     async (p) => {
-      const filename = `src/providers/${p.functionName}.ts` as const;
+      const filename = RealizeFileSystem.providerPath(p.functionName);
       const t = diagnostics.total.filter((el) => el.file === filename);
 
       const d = diagnostics.current.filter((el) => el.file === filename);
