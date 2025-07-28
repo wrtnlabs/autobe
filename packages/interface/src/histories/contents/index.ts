@@ -10,6 +10,7 @@ export * from "./AutoBeUserMessageTextContent";
 
 export * from "./AutoBeRealizeFunction";
 export * from "./AutoBeRealizeAuthorization";
+export * from "./AutoBeRealizeAuthorizationCorrect";
 export * from "./AutoBeRealizeAuthorizationDecorator";
 export * from "./AutoBeRealizeAuthorizationPayload";
 export * from "./AutoBeRealizeAuthorizationProvider";

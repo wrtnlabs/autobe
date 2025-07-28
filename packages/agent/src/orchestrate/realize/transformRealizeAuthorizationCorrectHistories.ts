@@ -8,7 +8,6 @@ import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { IAutoBeRealizeAuthorizationApplication } from "./structures/IAutoBeRealizeAuthorizationApplication";
 
 export const transformRealizeAuthorizationCorrectHistories = (
   ctx: AutoBeContext<ILlmSchema.Model>,
@@ -19,6 +18,12 @@ export const transformRealizeAuthorizationCorrectHistories = (
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
   return [
+    {
+      id: v4(),
+      created_at: new Date().toISOString(),
+      type: "systemMessage",
+      text: AutoBeSystemPromptConstant.REALIZE_AUTHORIZATION,
+    },
     {
       id: v4(),
       created_at: new Date().toISOString(),
@@ -36,18 +41,21 @@ export const transformRealizeAuthorizationCorrectHistories = (
         `${JSON.stringify(
           {
             provider: {
+              location: auth.provider.location,
               name: auth.provider.name,
               content: auth.provider.content,
             },
             decorator: {
+              location: auth.decorator.location,
               name: auth.decorator.name,
               content: auth.decorator.content,
             },
             payload: {
+              location: auth.payload.location,
               name: auth.payload.name,
               content: auth.payload.content,
             },
-          } satisfies IAutoBeRealizeAuthorizationApplication.IProps,
+          } satisfies Omit<AutoBeRealizeAuthorization, "role">,
           null,
           2,
         )}`,
