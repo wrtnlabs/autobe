@@ -46,10 +46,15 @@ const createRealAgent = (
 };
 
 const createMockAgent = async (
+  path: string,
   compiler: Driver<IAutoBeCompiler>,
 ): Promise<IAutoBeAgent> => {
+  const type: string =
+    new URLSearchParams(path.indexOf("?") !== -1 ? path.split("?")[1] : "").get(
+      "type",
+    ) ?? "bbs-backend";
   const load = async <T>(title: string): Promise<T> => {
-    const location: string = `${ROOT}/test/assets/histories/bbs-backend.${title}.json`;
+    const location: string = `${ROOT}/test/assets/histories/${type}.${title}.json`;
     const content: string = await fs.promises.readFile(location, "utf-8");
     return JSON.parse(content) as T;
   };
@@ -90,10 +95,9 @@ const main = async () => {
       predicate: async (acceptor) => ({
         type: "accept",
         cwd: `${ROOT}/playground-result`,
-        agent:
-          acceptor.path === "/mock"
-            ? await createMockAgent(compiler.getDriver())
-            : createRealAgent(compiler.getDriver(), acceptor),
+        agent: acceptor.path.startsWith("/mock")
+          ? await createMockAgent(acceptor.path, compiler.getDriver())
+          : createRealAgent(compiler.getDriver(), acceptor),
       }),
     });
   await server.open(5_890);

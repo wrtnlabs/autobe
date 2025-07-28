@@ -4,6 +4,60 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+catalogs:
+  agentica:
+    '@agentica/core':
+      specifier: ^0.30.5
+      version: 0.30.5
+  libs:
+    openai:
+      specifier: ^5.2.0
+      version: 5.2.0
+  samchon:
+    '@nestia/core':
+      specifier: ^7.3.0
+      version: 7.3.0
+    '@nestia/e2e':
+      specifier: ^7.3.0
+      version: 7.3.0
+    '@nestia/fetcher':
+      specifier: ^7.3.0
+      version: 7.3.0
+    '@nestia/migrate':
+      specifier: ^7.3.0
+      version: 7.3.0
+    '@samchon/openapi':
+      specifier: ^4.6.0
+      version: 4.6.0
+    embed-prisma:
+      specifier: ^1.1.0
+      version: 1.1.0
+    embed-typescript:
+      specifier: ^1.0.1
+      version: 1.0.1
+    prisma-markdown:
+      specifier: ^3.0.0
+      version: 3.0.1
+    tgrid:
+      specifier: ^1.2.0
+      version: 1.2.0
+    tstl:
+      specifier: ^3.0.0
+      version: 3.0.0
+    typia:
+      specifier: ^9.6.0
+      version: 9.6.0
+  typescript:
+    ts-node:
+      specifier: ^10.9.2
+      version: 10.9.2
+    ts-patch:
+      specifier: ^3.3.0
+      version: 3.3.0
+    typescript:
+      specifier: ~5.8.3
+      version: 5.8.3
+
 importers:
 
   .:
@@ -14,6 +68,9 @@ importers:
       bumpp:
         specifier: ^10.1.1
         version: 10.1.1
+      js-yaml:
+        specifier: ^4.1.0
+        version: 4.1.0
       prettier:
         specifier: ^3.5.3
         version: 3.5.3
@@ -3203,6 +3260,10 @@ packages:
 
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
+
+  js-yaml@4.1.0:
+    resolution: {integrity: sha512-wpxZs9NoxZaJESJGIZTyDEaYpl0FKSA+FB9aJiyemKhMwkxQg63h4T1KJgUGHpTqPDNRcmmYLugrRjJlBtWvRA==}
+    hasBin: true
 
   jsesc@3.1.0:
     resolution: {integrity: sha512-/sM3dO2FOzXjKQhJuo0Q173wf2KOo8t4I8vHy6lF9poUp7bKT0/NHE8fPX23PwfhnykfqnC2xRxOnVw5XuGIaA==}
@@ -7721,6 +7782,10 @@ snapshots:
   jiti@2.4.2: {}
 
   js-tokens@4.0.0: {}
+
+  js-yaml@4.1.0:
+    dependencies:
+      argparse: 2.0.1
 
   jsesc@3.1.0: {}
 

@@ -30,7 +30,13 @@ export function AutoBePlaygroundReplayApplication() {
         IAutoBeRpcListener,
         IAutoBeRpcService
       > = new WebSocketConnector(header, listener.getListener());
-      await connector.connect("ws://localhost:5890/mock");
+
+      const query: URLSearchParams = new URLSearchParams(
+        window.location.search,
+      );
+      await connector.connect(
+        `ws://localhost:5890/mock/?type=${query.get("type") ?? "bbs-backend"}`,
+      );
       setNext({
         header,
         listener,

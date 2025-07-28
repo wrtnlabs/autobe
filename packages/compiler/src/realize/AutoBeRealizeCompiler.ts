@@ -17,7 +17,7 @@ export class AutoBeRealizeCompiler implements IAutoBeRealizeCompiler {
     private readonly listener: IAutoBeRealizeCompilerListener,
   ) {}
 
-  public async controller(
+  public controller(
     props: IAutoBeRealizeControllerProps,
   ): Promise<Record<string, string>> {
     return writeRealizeControllers(props);

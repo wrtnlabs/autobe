@@ -1,5 +1,9 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
-import { AutoBeTestScenario, AutoBeTestWriteEvent } from "@autobe/interface";
+import {
+  AutoBeTestScenario,
+  AutoBeTestWriteEvent,
+  IAutoBeCompiler,
+} from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -106,6 +110,9 @@ async function process<Model extends ILlmSchema.Model>(
     ctx.usage().record(tokenUsage, ["test"]);
   });
   if (pointer.value === null) throw new Error("Failed to create test code.");
+
+  const compiler: IAutoBeCompiler = await ctx.compiler();
+  pointer.value.final = await compiler.typescript.beautify(pointer.value.final);
   return pointer.value;
 }
 

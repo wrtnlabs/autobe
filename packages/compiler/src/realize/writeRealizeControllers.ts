@@ -9,10 +9,12 @@ import path from "path";
 import ts from "typescript";
 
 import { createMigrateApplication } from "../interface/createMigrateApplication";
+import { ArrayUtil } from "../utils/ArrayUtil";
+import { FilePrinter } from "../utils/FilePrinter";
 
-export const writeRealizeControllers = (
+export const writeRealizeControllers = async (
   props: IAutoBeRealizeControllerProps,
-): Record<string, string> => {
+): Promise<Record<string, string>> => {
   const app: NestiaMigrateApplication = createMigrateApplication(
     props.document,
   );
@@ -111,9 +113,12 @@ export const writeRealizeControllers = (
       },
     },
   });
-  return Object.fromEntries(
+
+  const entries: [string, string][] = await ArrayUtil.asyncMap(
     Object.entries(result).filter(([key]) =>
       key.startsWith("src/controllers/"),
     ),
+    async ([key, value]) => [key, await FilePrinter.beautify(value)],
   );
+  return Object.fromEntries(entries);
 };
