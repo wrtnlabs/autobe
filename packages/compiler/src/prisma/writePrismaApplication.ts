@@ -328,7 +328,7 @@ function indent(content: string): string {
 }
 
 function shortName(name: string): string {
-  if (name.length <= 63) return name;
+  if (name.length <= MAX_IDENTIFIER_LENGTH) return name;
   const hash: string = crypto
     .createHash("md5")
     .update(name)
