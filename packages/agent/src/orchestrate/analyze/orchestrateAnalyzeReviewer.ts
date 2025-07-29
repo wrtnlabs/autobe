@@ -2,7 +2,6 @@ import { MicroAgentica } from "@agentica/core";
 import { ILlmSchema } from "@samchon/openapi";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { randomBackoffStrategy } from "../../utils/backoffRetry";
 import { enforceToolCall } from "../../utils/enforceToolCall";
 import { transformAnalyzeReviewerHistories } from "./transformAnalyzeReviewerHistories";
 
@@ -20,8 +19,7 @@ export const orchestrateAnalyzeReviewer = async <
     vendor: ctx.vendor,
     controllers: [],
     config: {
-      locale: ctx.config?.locale,
-      backoffStrategy: randomBackoffStrategy,
+      ...ctx.config,
       executor: {
         describe: null,
       },

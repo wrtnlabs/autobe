@@ -9,10 +9,7 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import {
-  randomBackoffRetry,
-  randomBackoffStrategy,
-} from "../../utils/backoffRetry";
+import { randomBackoffRetry } from "../../utils/backoffRetry";
 import { enforceToolCall } from "../../utils/enforceToolCall";
 import { getTestScenarioArtifacts } from "../test/compile/getTestScenarioArtifacts";
 import { IAutoBeTestScenarioArtifacts } from "../test/structures/IAutoBeTestScenarioArtifacts";
@@ -86,7 +83,6 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
     vendor: ctx.vendor,
     config: {
       ...ctx.config,
-      backoffStrategy: randomBackoffStrategy,
       executor: {
         describe: null,
       },
