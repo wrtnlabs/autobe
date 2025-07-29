@@ -57,7 +57,6 @@ export function randomBackoffStrategy(props: {
   count: number;
   error: unknown;
 }): number {
-  console.log("randomBackoffStrategy");
   const { count, error } = props;
   if (count > 5) {
     throw error;

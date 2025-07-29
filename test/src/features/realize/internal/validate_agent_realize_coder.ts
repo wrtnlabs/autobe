@@ -1,10 +1,10 @@
 import { orchestrateRealizeAuthorization } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeAuthorization";
+import { InternalFileSystem } from "@autobe/agent/src/orchestrate/realize/utils/InternalFileSystem";
 import { writeCodeUntilCompilePassed } from "@autobe/agent/src/orchestrate/realize/writeCodeUntilCompilePassed";
+import { arrayToRecord } from "@autobe/agent/src/utils/arrayToRecord";
 import { FileSystemIterator } from "@autobe/filesystem";
 import { AutoBeEvent, AutoBeRealizeFunction } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
-import { readFile } from "fs/promises";
-import path from "path";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
@@ -50,19 +50,32 @@ export const validate_agent_realize_coder = async (
 
   // DO TEST GENERATION
   const go = async () =>
-    await writeCodeUntilCompilePassed(ctx, ops, authorizations, 2);
+    await writeCodeUntilCompilePassed(ctx, ops, authorizations, 10);
 
   const result: AutoBeRealizeFunction[] = await go();
 
-  const codes = result.reduce<Record<string, string>>((acc, cur) => {
-    return Object.assign(acc, {
-      [cur.location]: cur.content,
-    });
-  }, {});
+  const codes = arrayToRecord(result, "location", "content");
 
   const histories = agent.getHistories();
   const prisma = agent.getContext().state().prisma?.compiled;
   const nodeModules = prisma?.type === "success" ? prisma.nodeModules : {};
+  const authentications = authorizations
+    .flatMap((el) => {
+      return [
+        {
+          [el.decorator.location]: el.decorator.content,
+        },
+        {
+          [el.payload.location]: el.payload.content,
+        },
+        {
+          [el.provider.location]: el.provider.content,
+        },
+      ];
+    })
+    .reduce((acc, cur) => Object.assign(acc, cur));
+
+  const templateFiles = await (await ctx.compiler()).realize.getTemplate();
 
   // REPORT RESULT
   await FileSystemIterator.save({
@@ -71,6 +84,10 @@ export const validate_agent_realize_coder = async (
       ...(await agent.getFiles()),
       ...codes,
       ...nodeModules,
+      ...authentications,
+      ...InternalFileSystem.DEFAULT.map((key) => ({
+        [key]: templateFiles[key],
+      })).reduce((acc, cur) => Object.assign(acc, cur), {}),
       "logs/events.json": JSON.stringify(events),
       "logs/result.json": JSON.stringify(result),
       "logs/histories.json": JSON.stringify(histories),
@@ -91,15 +108,10 @@ export const validate_agent_realize_coder = async (
         ),
       ...codes,
       ...nodeModules,
-      "src/MyGlobal.ts": await readFile(
-        path.join(
-          __dirname,
-          "../../../../../internals/template/realize/src/MyGlobal.ts",
-        ),
-        {
-          encoding: "utf-8",
-        },
-      ),
+      ...authentications,
+      ...InternalFileSystem.DEFAULT.map((key) => ({
+        [key]: templateFiles[key],
+      })).reduce((acc, cur) => Object.assign(acc, cur), {}),
     },
   });
 

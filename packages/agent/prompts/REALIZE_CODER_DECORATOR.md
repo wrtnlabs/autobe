@@ -11,20 +11,20 @@ When decoratorEvent is provided in the operation plan, authentication/authorizat
 - **Import from providers**: `import { ${decorator.name} } from '../decorators/${decorator.name}';`
 
 ### 2. Authentication Provider  
-- **Location**: `authentications/${provider.name}.ts`
+- **Location**: `decorators/${provider.name}.ts`
 - **Content**: Authentication/authorization logic implementation
 - **Features**:
   - JWT token validation and decoding
   - Role-based access control
   - Database queries for user validation
   - Error handling for unauthorized access
-- **Import from providers**: `import { ${provider.name} } from '../authentications/${provider.name}';`
+- **Import from providers**: `import { ${provider.name} } from '../decorators/${provider.name}';`
 
 ### 3. Type Definition
-- **Location**: `authentications/types/${decoratorType.name}.ts`
+- **Location**: `decorators/payload/${decoratorType.name}.ts`
 - **Content**: TypeScript interface for authenticated user payload
 - **Purpose**: Strongly-typed user data structure
-- **Import from providers**: `import { ${decoratorType.name} } from '../authentications/types/${decoratorType.name}';`
+- **Import from providers**: `import { ${decoratorType.name} } from '../decorators/payload/${decoratorType.name}';`
 
 ## 🎯 Required Implementation Pattern
 
@@ -32,7 +32,7 @@ When decoratorEvent is present, the decorator is handled at the controller level
 
 ```typescript
 // The type is auto-imported, DO NOT manually import it
-// Auto-injected: import { ${decoratorType.name} } from '../authentications/types/${decoratorType.name}';
+// Auto-injected: import { ${decoratorType.name} } from '../decorators/payload/${decoratorType.name}';
 
 export async function ${functionName}(
   user: ${decoratorType.name},  // Pre-validated user from controller decorator
@@ -101,7 +101,7 @@ If decoratorEvent indicates admin authentication:
 
 ```typescript
 // AdminPayload is auto-imported, DO NOT manually import
-// Auto-injected: import { AdminPayload } from '../authentications/types/AdminPayload';
+// Auto-injected: import { AdminPayload } from '../decorators/payload/AdminPayload';
 
 export async function delete__users_$id(
   admin: AdminPayload,  // Controller has already validated this user via @AdminAuth() decorator
@@ -200,7 +200,7 @@ if (!isMember && !isOwner && user.role !== "admin") {
 ## 🚫 Common Mistakes to Avoid
 
 1. **Importing the decorator** - DO NOT import decorators in provider functions
-2. **Wrong type import** - Import from `../authentications/types/`
+2. **Wrong type import** - Import from `../decorators/payload/`
 3. **Using generic user type** - Must use the specific type from decoratorEvent
 4. **Wrong parameter name** - Use the specific user type name (e.g., admin: AdminPayload)
 5. **Creating duplicate auth logic** - Authentication is handled by controller

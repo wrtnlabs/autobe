@@ -5,15 +5,15 @@ import {
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
-import { readFile } from "fs/promises";
-import path from "path";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
+import { arrayToRecord } from "../../utils/arrayToRecord";
 import { pipe } from "./RealizePipe";
 import { orchestrateRealizeCoder } from "./orchestrateRealizeCoder";
 import { orchestrateRealizePlanner } from "./orchestrateRealizePlanner";
 import { IAutoBeRealizeCompile } from "./structures/IAutoBeRealizeCompile";
 import { FAILED } from "./structures/IAutoBeRealizeFailedSymbol";
+import { RealizeFileSystem } from "./utils/ProviderFileSystem";
 
 export async function writeCodeUntilCompilePassed<
   Model extends ILlmSchema.Model,
@@ -23,26 +23,20 @@ export async function writeCodeUntilCompilePassed<
   authorizations: AutoBeRealizeAuthorization[],
   retry: number,
 ): Promise<AutoBeRealizeFunction[]> {
-  const payloads = authorizations
-    .map((el) => {
-      return {
-        [el.payload.location]: el.payload.content,
-      };
-    })
-    .reduce<Record<string, string>>((acc, cur) => Object.assign(acc, cur), {});
+  const payloads = arrayToRecord(
+    authorizations.map((el) => el.payload),
+    "location",
+    "content",
+  );
 
-  const files = Object.entries(await ctx.files({ dbms: "postgres" }))
-    .filter(([key]) => {
-      return key.startsWith("src");
-    })
-    .reduce(
-      (acc, [filename, content]) => Object.assign(acc, { [filename]: content }),
-      {},
-    );
+  const files = arrayToRecord(
+    Object.entries(await ctx.files({ dbms: "postgres" })).filter(([key]) =>
+      key.startsWith("src"),
+    ),
+  );
 
-  const templateFiles = ["src/MyGlobal.ts", "src/util/toISOStringSafe.ts"];
   const entireCodes: IAutoBeRealizeCompile.FileContentMap = {
-    ...(await loadTemplateFiles(templateFiles)),
+    ...(await loadTemplateFiles(ctx)),
   };
 
   let diagnostics: IAutoBeRealizeCompile.CompileDiagnostics = {
@@ -91,16 +85,12 @@ export async function writeCodeUntilCompilePassed<
         ...payloads,
         ...files,
         ...nodeModules,
-        ...Object.entries(entireCodes)
-          .map(([filename, { content }]) => {
-            return {
-              [filename]: content,
-            };
-          })
-          .reduce<Record<string, string>>(
-            (acc, cur) => Object.assign(acc, cur),
-            {},
-          ),
+        ...arrayToRecord(
+          Object.entries(entireCodes).map(([filename, { content }]) => [
+            filename,
+            content,
+          ]),
+        ),
       },
     });
 
@@ -121,35 +111,33 @@ export async function writeCodeUntilCompilePassed<
     }
   }
 
-  return Object.entries(entireCodes)
-    .filter(([filename]) => filename.startsWith("src/providers")) // filter only provider files
-    .map(([filename, value]) => {
-      return {
-        filename,
-        content: value.content,
-        endpoint: value.endpoint!,
-        location: value.location!,
-        name: value.name!,
-        role: value.role!,
-      };
-    });
+  return (
+    Object.entries(entireCodes)
+      // .filter(([filename]) => filename.startsWith("src/providers")) // filter only provider files
+      .map(([filename, value]) => {
+        return {
+          filename,
+          content: value.content,
+          endpoint: value.endpoint!,
+          location: value.location!,
+          name: value.name!,
+          role: value.role!,
+        };
+      })
+  );
 }
 
-async function loadTemplateFiles(
-  templateFiles: string[],
+async function loadTemplateFiles<Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
 ): Promise<IAutoBeRealizeCompile.FileContentMap> {
-  const templateBasePath = path.join(
-    __dirname,
-    "../../../../../internals/template/realize",
-  );
+  const templateFiles = await (await ctx.compiler()).realize.getTemplate();
+  const targets = ["src/MyGlobal.ts", "src/util/toISOStringSafe.ts"];
 
   const result: IAutoBeRealizeCompile.FileContentMap = {};
 
-  for (const filePath of templateFiles) {
+  for (const filePath of targets) {
     result[filePath] = {
-      content: await readFile(path.join(templateBasePath, filePath), {
-        encoding: "utf-8",
-      }),
+      content: templateFiles[filePath],
       result: "success",
       location: filePath,
       role: null,
@@ -171,7 +159,7 @@ async function process<Model extends ILlmSchema.Model>(
     op,
     (op) => orchestrateRealizePlanner(ctx, op, decorator),
     async (p) => {
-      const filename = `src/providers/${p.functionName}.ts` as const;
+      const filename = RealizeFileSystem.providerPath(p.functionName);
       const t = diagnostics.total.filter((el) => el.file === filename);
 
       const d = diagnostics.current.filter((el) => el.file === filename);
@@ -204,6 +192,16 @@ async function process<Model extends ILlmSchema.Model>(
   return { type: "success", op: op, result } as const;
 }
 
+/**
+ * Determines whether an operation should be processed in the current iteration.
+ * In the initial case (no errors), all operations are processed. When errors
+ * exist, only operations with compilation errors are targeted for reprocessing
+ * in the next iteration.
+ *
+ * @param op - The operation to check
+ * @param currentDiagnostics - Current compilation errors
+ * @returns True if the operation should be processed
+ */
 function shouldProcessOperation(
   op: AutoBeOpenApi.IOperation,
   currentDiagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[],
@@ -219,6 +217,14 @@ function shouldProcessOperation(
   );
 }
 
+/**
+ * Generates a provider filename for an operation. Converts the operation's HTTP
+ * method and path into a valid TypeScript filename. The filename serves as both
+ * the function name and the file identifier.
+ *
+ * @param op - The operation to generate a filename for
+ * @returns The generated provider filename with path
+ */
 function generateProviderFilename(op: AutoBeOpenApi.IOperation): string {
   return `src/providers/${op.method}_${op.path
     .replaceAll("/", "_")

@@ -6,7 +6,6 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { randomBackoffStrategy } from "../../utils/backoffRetry";
 import { enforceToolCall } from "../../utils/enforceToolCall";
 import {
   AutoBeAnalyzeFileSystem,
@@ -46,8 +45,7 @@ export const orchestrateAnalyzeWrite = <Model extends ILlmSchema.Model>(
     model: ctx.model,
     vendor: ctx.vendor,
     config: {
-      locale: ctx.config?.locale,
-      backoffStrategy: randomBackoffStrategy,
+      ...ctx.config,
       executor: {
         describe: null,
       },

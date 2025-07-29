@@ -9,10 +9,7 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import {
-  randomBackoffRetry,
-  randomBackoffStrategy,
-} from "../../utils/backoffRetry";
+import { randomBackoffRetry } from "../../utils/backoffRetry";
 import { enforceToolCall } from "../../utils/enforceToolCall";
 import { getTestScenarioArtifacts } from "../test/compile/getTestScenarioArtifacts";
 import { IAutoBeTestScenarioArtifacts } from "../test/structures/IAutoBeTestScenarioArtifacts";
@@ -20,6 +17,7 @@ import { RealizePlannerOutput } from "./orchestrateRealizePlanner";
 import { IAutoBeRealizeCoderApplication } from "./structures/IAutoBeRealizeCoderApplication";
 import { FAILED } from "./structures/IAutoBeRealizeFailedSymbol";
 import { transformRealizeCoderHistories } from "./transformRealizeCoderHistories";
+import { RealizeFileSystem } from "./utils/ProviderFileSystem";
 import { replaceImportStatements } from "./utils/replaceImportStatements";
 
 /**
@@ -85,7 +83,6 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
     vendor: ctx.vendor,
     config: {
       ...ctx.config,
-      backoffStrategy: randomBackoffStrategy,
       executor: {
         describe: null,
       },
@@ -138,7 +135,7 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
 
   return {
     ...pointer.value,
-    filename: `src/providers/${props.functionName}.ts`,
+    filename: RealizeFileSystem.providerPath(props.functionName),
   };
 };
 
