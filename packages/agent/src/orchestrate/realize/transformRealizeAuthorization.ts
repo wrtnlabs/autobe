@@ -4,7 +4,6 @@ import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { AuthorizationFileSystem } from "./utils/AuthorizationFileSystem";
 
 export const transformRealizeAuthorizationHistories = (
   ctx: AutoBeContext<ILlmSchema.Model>,
@@ -32,16 +31,13 @@ export const transformRealizeAuthorizationHistories = (
         "",
         JSON.stringify(ctx.state().prisma?.schemas, null, 2),
         "",
-        "## File Structure Example",
+        "## Component Naming Convention",
         "",
-        "Please refer to the following file structure to construct appropriate import paths:",
+        "Please follow this naming convention for the authorization components:",
         "",
-        "File locations:",
-        "",
-        `- Decorator Path : ${AuthorizationFileSystem.decoratorPath("AdminAuth.ts")}`,
-        `- Payload Path : ${AuthorizationFileSystem.payloadPath("AdminPayload.ts")}`,
-        `- Provider Path : ${AuthorizationFileSystem.providerPath("adminAuthorize.ts")}`,
-        "",
+        `- Provider Name: ${role}Authorize (e.g. ${role}Authorize)`,
+        `- Decorator Name: ${role.charAt(0).toUpperCase() + role.slice(1)}Auth (e.g. ${role.charAt(0).toUpperCase() + role.slice(1)}Auth)`,
+        `- Payload Name: ${role.charAt(0).toUpperCase() + role.slice(1)}Payload (e.g. ${role.charAt(0).toUpperCase() + role.slice(1)}Payload)`,
       ].join("\n"),
     },
   ];

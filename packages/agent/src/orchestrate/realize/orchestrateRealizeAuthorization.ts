@@ -1,9 +1,5 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
-import {
-  AutoBeRealizeAuthorization,
-  IAutoBeCompiler,
-  IAutoBeTypeScriptCompileResult,
-} from "@autobe/interface";
+import { AutoBeRealizeAuthorization } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -14,7 +10,6 @@ import { enforceToolCall } from "../../utils/enforceToolCall";
 import { orchestrateRealizeAuthorizationCorrect } from "./orchestrateRealizeAuthorizationCorrect";
 import { IAutoBeRealizeAuthorizationApplication } from "./structures/IAutoBeRealizeAuthorizationApplication";
 import { transformRealizeAuthorizationHistories } from "./transformRealizeAuthorization";
-import { transformRealizeAuthorizationCorrectHistories } from "./transformRealizeAuthorizationCorrectHistories";
 import { AuthorizationFileSystem } from "./utils/AuthorizationFileSystem";
 import { InternalFileSystem } from "./utils/InternalFileSystem";
 
@@ -27,11 +22,7 @@ import { InternalFileSystem } from "./utils/InternalFileSystem";
 export async function orchestrateRealizeAuthorization<
   Model extends ILlmSchema.Model,
 >(ctx: AutoBeContext<Model>): Promise<AutoBeRealizeAuthorization[]> {
-  const roles =
-    ctx
-      .state()
-      .interface?.document.components.authorization?.map((auth) => auth.name) ??
-    [];
+  const roles = ctx.state().analyze?.roles.map((role) => role.name) ?? [];
 
   let completed = 0;
 
@@ -135,114 +126,12 @@ async function process<Model extends ILlmSchema.Model>(
   const prismaClients: Record<string, string> =
     compiled?.type === "success" ? compiled.nodeModules : {};
 
-  return correctDecorator(ctx, authorization, prismaClients, templateFiles);
-}
-
-async function correctDecorator<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
-  auth: AutoBeRealizeAuthorization,
-  prismaClients: Record<string, string>,
-  templateFiles: Record<string, string>,
-  life: number = 4,
-): Promise<AutoBeRealizeAuthorization> {
-  // Check Compile
-  const files = {
-    ...templateFiles,
-    ...prismaClients,
-    [auth.decorator.location]: auth.decorator.content,
-    [auth.payload.location]: auth.payload.content,
-    [auth.provider.location]: auth.provider.content,
-  };
-
-  const compiler: IAutoBeCompiler = await ctx.compiler();
-  const result: IAutoBeTypeScriptCompileResult =
-    await compiler.typescript.compile({
-      files,
-    });
-  ctx.dispatch({
-    type: "realizeAuthorizationValidate",
-    created_at: new Date().toISOString(),
-    result,
-    authorization: auth,
-    step: ctx.state().test?.step ?? 0,
-  });
-  if (result.type === "success") {
-    return auth;
-  } else if (result.type === "exception" || life === 0) {
-    return auth;
-  }
-
-  const pointer: IPointer<IAutoBeRealizeAuthorizationApplication.IProps | null> =
-    {
-      value: null,
-    };
-  const agentica: MicroAgentica<Model> = new MicroAgentica({
-    model: ctx.model,
-    vendor: ctx.vendor,
-    config: {
-      ...(ctx.config ?? {}),
-      executor: {
-        describe: null,
-      },
-    },
-    histories: transformRealizeAuthorizationCorrectHistories(
-      ctx,
-      auth,
-      templateFiles,
-      result.diagnostics,
-    ),
-    controllers: [
-      createApplication({
-        model: ctx.model,
-        build: (next) => {
-          pointer.value = next;
-        },
-      }),
-    ],
-  });
-  enforceToolCall(agentica);
-
-  await agentica
-    .conversate("Please correct the decorator and the provider.")
-    .finally(() => {
-      const tokenUsage = agentica.getTokenUsage();
-      ctx.usage().record(tokenUsage, ["realize"]);
-    });
-
-  if (pointer.value === null) throw new Error("Failed to correct decorator.");
-
-  const corrected: AutoBeRealizeAuthorization = {
-    role: auth.role,
-    decorator: {
-      location: auth.decorator.location,
-      name: pointer.value.decorator.name,
-      content: pointer.value.decorator.content,
-    },
-    payload: {
-      location: auth.payload.location,
-      name: pointer.value.payload.name,
-      content: pointer.value.payload.content,
-    },
-    provider: {
-      location: auth.provider.location,
-      name: pointer.value.provider.name,
-      content: pointer.value.provider.content,
-    },
-  };
-
-  const res: AutoBeRealizeAuthorization =
-    await orchestrateRealizeAuthorizationCorrect(
-      ctx,
-      corrected,
-      prismaClients,
-      templateFiles,
-      life - 1,
-    );
-
-  return {
-    ...res,
-    role: auth.role,
-  };
+  return orchestrateRealizeAuthorizationCorrect(
+    ctx,
+    authorization,
+    prismaClients,
+    templateFiles,
+  );
 }
 
 function createApplication<Model extends ILlmSchema.Model>(props: {
