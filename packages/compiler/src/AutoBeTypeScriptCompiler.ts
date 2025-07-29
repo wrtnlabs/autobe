@@ -57,6 +57,7 @@ export class AutoBeTypeScriptCompiler implements IAutoBeTypeScriptCompiler {
         esModuleInterop: true,
         experimentalDecorators: true,
         emitDecoratorMetadata: true,
+        noErrorTruncation: true,
       },
       transformers: (program, diagnostics) => ({
         before: [

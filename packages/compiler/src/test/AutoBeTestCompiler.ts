@@ -40,6 +40,7 @@ export class AutoBeTestCompiler implements IAutoBeTestCompiler {
         esModuleInterop: true,
         experimentalDecorators: true,
         emitDecoratorMetadata: true,
+        noErrorTruncation: true,
       },
       transformers: (program, diagnostics) => ({
         before: [
