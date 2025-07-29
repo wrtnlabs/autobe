@@ -40,12 +40,12 @@ export async function writeDocumentUntilReviewPassed<
     totalFiles: props.totalFiles,
     roles: props.roles,
     targetFile: props.filename,
-    review: null,
+    review: props.prevReview ?? "",
     setDocument: (v) => {
       pointer.value = { files: { ...pointer.value?.files, ...v } };
     },
   });
-  await writer.conversate(props.prevReview ?? "Write Document.").finally(() => {
+  await writer.conversate("Write Document.").finally(() => {
     const tokenUsage = writer.getTokenUsage();
     ctx.usage().record(tokenUsage, ["analyze"]);
   });
