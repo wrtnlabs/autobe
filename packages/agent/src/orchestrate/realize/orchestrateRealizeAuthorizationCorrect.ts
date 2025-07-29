@@ -5,6 +5,7 @@ import {
   IAutoBeCompiler,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
+import { AutoBeRealizeAuthorizationReplaceImport } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -25,14 +26,26 @@ export async function orchestrateRealizeAuthorizationCorrect<
   templateFiles: Record<string, string>,
   life: number = 4,
 ): Promise<AutoBeRealizeAuthorization> {
+  const providerContent =
+    AutoBeRealizeAuthorizationReplaceImport.replaceProviderImport(
+      authorization.role,
+      authorization.provider.content,
+    );
+
+  const decoratorContent =
+    AutoBeRealizeAuthorizationReplaceImport.replaceDecoratorImport(
+      authorization.role,
+      authorization.decorator.content,
+    );
+
   // Check Compile
   const files: Record<string, string> = {
     ...templateFiles,
     ...prismaClients,
     [AuthorizationFileSystem.decoratorPath(authorization.decorator.name)]:
-      authorization.decorator.content,
+      decoratorContent,
     [AuthorizationFileSystem.providerPath(authorization.provider.name)]:
-      authorization.provider.content,
+      providerContent,
     [AuthorizationFileSystem.payloadPath(authorization.payload.name)]:
       authorization.payload.content,
   };
