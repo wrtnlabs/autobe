@@ -8,7 +8,6 @@ import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
-import { AutoBeAnalyzePointer } from "./AutoBeAnalyzePointer";
 import { orchestrateAnalyzeComposer } from "./orchestrateAnalyzeComposer";
 import { IComposeInput } from "./structures/IAutoBeAnalyzeComposerApplication";
 import { writeDocumentUntilReviewPassed } from "./writeDocumentUntilReviewPassed";
@@ -82,17 +81,13 @@ export const orchestrateAnalyze =
     };
     const pointers = await Promise.all(
       tableOfContents.map(async ({ filename }) => {
-        const pointer: AutoBeAnalyzePointer = { value: { files: {} } };
-        await writeDocumentUntilReviewPassed(
-          ctx,
-          pointer,
-          tableOfContents,
+        return await writeDocumentUntilReviewPassed(ctx, {
+          totalFiles: tableOfContents,
           filename,
           roles,
           progress,
-          retryCount,
-        );
-        return pointer;
+          retry: retryCount,
+        });
       }),
     );
 

@@ -1,9 +1,22 @@
-import { MicroAgentica } from "@agentica/core";
-import { ILlmSchema } from "@samchon/openapi";
+import { IAgenticaController, MicroAgentica } from "@agentica/core";
+import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
+import { IPointer } from "tstl";
+import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
+import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { enforceToolCall } from "../../utils/enforceToolCall";
+import { AutoBeAnalyzeFileSystem } from "./AutoBeAnalyzeFileSystem";
 import { transformAnalyzeReviewerHistories } from "./transformAnalyzeReviewerHistories";
+
+export type IOrchestrateAnalyzeReviewerResult =
+  | {
+      type: "reject";
+      value: string;
+    }
+  | {
+      type: "accept";
+    };
 
 export const orchestrateAnalyzeReviewer = async <
   Model extends ILlmSchema.Model,
@@ -13,11 +26,24 @@ export const orchestrateAnalyzeReviewer = async <
     /** Total file names */
     files: Record<string, string>;
   },
-): Promise<string | null> => {
+): Promise<IOrchestrateAnalyzeReviewerResult> => {
+  const fnCalled: IPointer<IOrchestrateAnalyzeReviewerResult> = {
+    value: {
+      type: "reject",
+      value: "reviewer is not working because of unknown reason.",
+    },
+  };
+
+  const controller = createController({
+    model: ctx.model,
+    setResult: (result: IOrchestrateAnalyzeReviewerResult) => {
+      fnCalled.value = result;
+    },
+  });
   const agent = new MicroAgentica({
     model: ctx.model,
     vendor: ctx.vendor,
-    controllers: [],
+    controllers: [controller],
     config: {
       ...ctx.config,
       executor: {
@@ -29,9 +55,96 @@ export const orchestrateAnalyzeReviewer = async <
   enforceToolCall(agent);
 
   const command = `proceed with the review of these files only.` as const;
-  const histories = await agent.conversate(command).finally(() => {
+  await agent.conversate(command).finally(() => {
     const tokenUsage = agent.getTokenUsage();
     ctx.usage().record(tokenUsage, ["analyze"]);
   });
-  return histories.find((h) => h.type === "assistantMessage")?.text ?? null;
+
+  return fnCalled.value;
+};
+
+/**
+ * If you decide that you no longer need any reviews, or if the reviewer refuses
+ * to do so, call abort. This is a function to end document creation and review,
+ * and to respond to users.
+ *
+ * When there is content you are unsure about and need to ask the user a
+ * question, abort the process and ask the user directly. The reason for
+ * aborting should be included as the content of the question.
+ */
+// abort(input: { reason: string }): "OK";
+
+// abort(_input: { reason: string }): "OK" {
+//   return "OK";
+// }
+
+interface IAutoBeAnalyzerReviewerSystem {
+  /**
+   * If you decide that you no longer need any reviews, or if the reviewer
+   * refuses to do so, call abort. This is a function to end document creation
+   * and review, and to respond to users.
+   *
+   * When there is content you are unsure about and need to ask the user a
+   * question, accept the process and ask the user directly. The reason for
+   * accepting should be included as the content of the question.
+   */
+  accept(): "OK" | Promise<"OK">;
+
+  /**
+   * If you decide that you no longer need any reviews, or if the reviewer
+   * refuses to do so, call abort. This is a function to end document creation
+   * and review, and to respond to users.
+   *
+   * When there is content you are unsure about and need to ask the user a
+   * question, abort the process and ask the user directly. The reason for
+   * aborting should be included as the content of the question.
+   */
+  reject(input: { reason: string }): "OK" | Promise<"OK">;
+}
+
+function createController<Model extends ILlmSchema.Model>(props: {
+  model: Model;
+  setResult: (result: IOrchestrateAnalyzeReviewerResult) => void;
+}): IAgenticaController.IClass<Model> {
+  assertSchemaModel(props.model);
+  const application: ILlmApplication<Model> = collection[
+    props.model
+  ] as unknown as ILlmApplication<Model>;
+  return {
+    protocol: "class",
+    name: "Planning",
+    application,
+    execute: {
+      accept: async () => {
+        props.setResult({
+          type: "accept",
+        });
+        return "OK" as const;
+      },
+      reject: async (input) => {
+        props.setResult({
+          type: "reject",
+          value: input.reason,
+        });
+        return "OK" as const;
+      },
+    } satisfies IAutoBeAnalyzerReviewerSystem,
+  };
+}
+
+const claude = typia.llm.application<
+  AutoBeAnalyzeFileSystem,
+  "claude",
+  { reference: true }
+>();
+const collection = {
+  chatgpt: typia.llm.application<
+    AutoBeAnalyzeFileSystem,
+    "chatgpt",
+    { reference: true }
+  >(),
+  claude,
+  llama: claude,
+  deepseek: claude,
+  "3.1": claude,
 };

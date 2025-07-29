@@ -1,7 +1,6 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import { AutoBeAnalyzeRole } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
-import { IPointer } from "tstl";
 import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
@@ -12,10 +11,7 @@ import {
   IAutoBeAnalyzeFileSystem,
   IFile,
 } from "./AutoBeAnalyzeFileSystem";
-import {
-  AutoBEAnalyzeFileMap,
-  AutoBeAnalyzePointer,
-} from "./AutoBeAnalyzePointer";
+import { AutoBEAnalyzeFileMap } from "./AutoBeAnalyzePointer";
 import { transformAnalyzeWriteHistories } from "./transformAnalyzeWriteHistories";
 
 export const orchestrateAnalyzeWrite = <Model extends ILlmSchema.Model>(
@@ -26,18 +22,13 @@ export const orchestrateAnalyzeWrite = <Model extends ILlmSchema.Model>(
     targetFile: string;
     roles: AutoBeAnalyzeRole[];
     review: string | null;
+    setDocument: (v: AutoBEAnalyzeFileMap) => void;
   },
-  pointer: AutoBeAnalyzePointer,
-  isAborted: IPointer<boolean>,
 ): MicroAgentica<Model> => {
   const controller = createController<Model>({
     model: ctx.model,
     execute: new AutoBeAnalyzeFileSystem({ [input.targetFile]: "" as const }),
-    build: async (files: AutoBEAnalyzeFileMap) => {
-      pointer.value ??= { files: {} };
-      Object.assign(pointer.value.files, files);
-    },
-    abort: () => (isAborted.value = true),
+    setDocument: input.setDocument,
   });
 
   const agent = new MicroAgentica({
@@ -59,8 +50,7 @@ export const orchestrateAnalyzeWrite = <Model extends ILlmSchema.Model>(
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   execute: AutoBeAnalyzeFileSystem;
-  build: (input: AutoBEAnalyzeFileMap) => void;
-  abort: () => void;
+  setDocument: (v: AutoBEAnalyzeFileMap) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
   const application: ILlmApplication<Model> = collection[
@@ -71,15 +61,9 @@ function createController<Model extends ILlmSchema.Model>(props: {
     name: "Planning",
     application,
     execute: {
-      abort: (input) => {
-        const response = props.execute.abort(input);
-        props.abort();
-
-        return response;
-      },
       createOrUpdateFiles: async (input) => {
         const fileMap = await props.execute.createOrUpdateFiles(input);
-        props.build(fileMap);
+        props.setDocument(fileMap);
         return fileMap;
       },
     } satisfies IAutoBeAnalyzeFileSystem,
