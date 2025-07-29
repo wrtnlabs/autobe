@@ -6,27 +6,21 @@ export interface AutoBeRealizeAuthorizationCorrect
   /**
    * Step 1: TypeScript compilation error analysis and diagnosis.
    *
-   * AI identifies all compilation errors (type mismatches, imports, syntax) and
-   * categorizes them by component (providers/decorator/payload). Analyzes error
-   * dependencies and determines fix priorities for systematic resolution.
+   * AI identifies and categorizes all compilation errors (type mismatches,
+   * import issues, syntax errors) by component (providers/decorator/payload).
+   * Lists specific error messages with their locations and types for
+   * systematic troubleshooting.
    */
   error_analysis: string;
 
   /**
-   * Step 2: Corrected implementation with all compilation errors resolved.
+   * Step 2: Solution guidance and fix recommendations.
    *
-   * AI generates fixed versions of provider, decorator, and payload code.
-   * Maintains original functionality while ensuring TypeScript compilation
-   * success and proper NestJS/Prisma framework integration.
+   * AI provides clear, actionable instructions on how to resolve each
+   * identified error. Includes specific steps like "add property X to
+   * interface Y", "update import path from A to B", or "change type from C to
+   * D". Focus on guidance rather than generating complete code
+   * implementations.
    */
-  corrected_implementation: string;
-
-  /**
-   * Step 3: Final validation and comprehensive fix summary.
-   *
-   * AI validates corrected code compiles successfully and documents all changes
-   * made. Provides production-ready code with detailed change log for
-   * maintenance reference.
-   */
-  validation_summary: string;
+  solution_guidance: string;
 }
