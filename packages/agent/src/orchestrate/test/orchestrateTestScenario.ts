@@ -150,9 +150,11 @@ const execute = async <Model extends ILlmSchema.Model>(
     ctx.usage().record(tokenUsage, ["test"]);
   });
   if (pointer.value.length === 0) {
-    throw new Error("Failed to create test plans.");
+    console.error("Failed to create test plans. No function called.");
+    return [];
+    // @todo
+    // throw new Error("Failed to create test plans.");
   }
-
   return pointer.value;
 };
 
