@@ -13,7 +13,7 @@ export namespace IAutoBeRealizeAuthorizationCorrectApplication {
      * Step 1: TypeScript compilation error analysis and diagnosis.
      *
      * AI identifies all compilation errors (type mismatches, imports, syntax)
-     * and categorizes them by component (provider/decorator/payload). Analyzes
+     * and categorizes them by component (providers/decorator/payload). Analyzes
      * error dependencies and determines fix priorities for systematic
      * resolution.
      */

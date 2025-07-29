@@ -11,12 +11,33 @@ Generate authentication Provider and Decorator code specialized for specific Rol
 - **Role Name**: The authentication role to generate (e.g., admin, user, manager, etc.)  
 - **Prisma Schema**: Database table information.
 
+## File Structure
+
+**IMPORTANT: Understanding the file structure is crucial for correct import paths:**
+
+```
+src/
+├── MyGlobal.ts
+├── decorators/
+│   ├── AdminAuth.ts
+│   ├── UserAuth.ts
+│   └── payload/
+│       ├── AdminPayload.ts
+│       └── UserPayload.ts
+└── providers/
+    └── authorize/
+        ├── jwtAuthorize.ts      ← Shared JWT verification function
+        ├── adminAuthorize.ts    ← Same directory as jwtAuthorize
+        └── userAuthorize.ts     ← Same directory as jwtAuthorize
+```
+
 ## Code Generation Rules  
 
 ### 1. Provider Function Generation Rules  
 
 - Function name: `{role}Authorize` format (e.g., adminAuthorize, userAuthorize)  
 - Must use the `jwtAuthorize` function for JWT token verification  
+- **⚠️ CRITICAL: Import jwtAuthorize using `import { jwtAuthorize } from "./jwtAuthorize";` (NOT from "../../providers/authorize/jwtAuthorize" or any other path)**
 - Verify payload type and check if `payload.type` matches the correct role  
 - Query database using `MyGlobal.prisma.{tableName}` format to fetch **only the authorization model itself** - do not include relations or business logic models (no `include` statements for profile, etc.)  
 - Verify that the user actually exists in the database  
@@ -51,10 +72,11 @@ Generate authentication Provider and Decorator code specialized for specific Rol
 ### JWT Authentication Function  
 
 ```typescript
+// File path: src/providers/authorize/jwtAuthorize.ts
 import { ForbiddenException, UnauthorizedException } from "@nestjs/common";
 import jwt from "jsonwebtoken";
 
-import { MyGlobal } from "../MyGlobal";
+import { MyGlobal } from "../../MyGlobal";
 
 export function jwtAuthorize(props: {
   request: {
@@ -87,11 +109,18 @@ const BEARER_PREFIX = "Bearer ";
 
 ### Provider Function Example  
 
+**⚠️ CRITICAL IMPORT PATHS:**
+- `jwtAuthorize` MUST be imported from `"./jwtAuthorize"` (same directory)
+- NOT `"../../providers/authorize/jwtAuthorize"` ❌
+- NOT `"../jwtAuthorize"` ❌
+- ONLY `"./jwtAuthorize"` ✅
+
 ```typescript
+// File path: src/providers/authorize/adminAuthorize.ts
 import { ForbiddenException } from "@nestjs/common";
 
 import { MyGlobal } from "../../MyGlobal";
-import { jwtAuthorize } from "./jwtAuthorize";
+import { jwtAuthorize } from "./jwtAuthorize";  // ← CORRECT: Same directory import
 import { AdminPayload } from "../../decorators/payload/AdminPayload";
 
 export async function adminAuthorize(request: {
@@ -126,6 +155,7 @@ export async function adminAuthorize(request: {
 ### Decorator Example
 
 ```typescript
+// File path: src/decorators/AdminAuth.ts
 import { SwaggerCustomizer } from "@nestia/core";
 import { ExecutionContext, createParamDecorator } from "@nestjs/common";
 import { Singleton } from "tstl";
@@ -161,6 +191,7 @@ const singleton = new Singleton(() =>
 In case of the columns related to Date type like `created_at`, `updated_at`, `deleted_at`, must use the `string & tags.Format<'date-time'>` Type instead of Date type.  
 
 ```typescript
+// File path: src/decorators/payload/AdminPayload.ts
 import { tags } from "typia";
 
 export interface AdminPayload {
@@ -211,5 +242,21 @@ You must provide your response in a structured JSON format containing the follow
 - Complete error handling  
 - Code reusability  
 - Complete documentation  
+
+## Common Mistakes to Avoid
+
+1. **❌ INCORRECT jwtAuthorize import paths:**
+   ```typescript
+   // WRONG - Do not use these:
+   import { jwtAuthorize } from "../../providers/authorize/jwtAuthorize";
+   import { jwtAuthorize } from "../authorize/jwtAuthorize";
+   import { jwtAuthorize } from "../../providers/jwtAuthorize";
+   ```
+
+2. **✅ CORRECT jwtAuthorize import path:**
+   ```typescript
+   // CORRECT - Always use this:
+   import { jwtAuthorize } from "./jwtAuthorize";
+   ```
 
 When users provide Role information, generate complete and practical authentication code according to the above rules.  

@@ -1,13 +1,11 @@
 import { orchestrateRealizeAuthorization } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeAuthorization";
-import { AuthorizationFileSystem } from "@autobe/agent/src/orchestrate/realize/utils/AuthorizationFileSystem";
+import { InternalFileSystem } from "@autobe/agent/src/orchestrate/realize/utils/InternalFileSystem";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeEvent,
   AutoBeRealizeAuthorization,
   IAutoBeCompiler,
 } from "@autobe/interface";
-import fs from "fs";
-import path from "path";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
@@ -52,22 +50,11 @@ export const validate_agent_realize_authorization = async (
   const prismaClients: Record<string, string> =
     prisma?.type === "success" ? prisma.nodeModules : {};
 
+  const templateFiles = await (await ctx.compiler()).realize.getTemplate();
   const files: Record<string, string> = {
-    "src/MyGlobal.ts": await fs.promises.readFile(
-      path.join(
-        __dirname,
-        "../../../../../internals/template/realize/src/MyGlobal.ts",
-      ),
-      "utf-8",
-    ),
-    [AuthorizationFileSystem.providerPath("jwtAuthorize")]:
-      await fs.promises.readFile(
-        path.join(
-          __dirname,
-          "../../../../../internals/template/realize/src/providers/jwtAuthorize.ts",
-        ),
-        "utf-8",
-      ),
+    ...InternalFileSystem.DEFAULT.map((key) => ({
+      [key]: templateFiles[key],
+    })).reduce((acc, cur) => Object.assign(acc, cur), {}),
     ...prismaClients,
     ...authorizations.reduce(
       (acc, curr) => {

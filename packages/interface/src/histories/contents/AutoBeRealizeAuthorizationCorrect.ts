@@ -6,10 +6,9 @@ export interface AutoBeRealizeAuthorizationCorrect
   /**
    * Step 1: TypeScript compilation error analysis and diagnosis.
    *
-   * AI identifies all compilation errors (type mismatches, imports, syntax)
-   * and categorizes them by component (provider/decorator/payload). Analyzes
-   * error dependencies and determines fix priorities for systematic
-   * resolution.
+   * AI identifies all compilation errors (type mismatches, imports, syntax) and
+   * categorizes them by component (providers/decorator/payload). Analyzes error
+   * dependencies and determines fix priorities for systematic resolution.
    */
   error_analysis: string;
 
@@ -25,8 +24,8 @@ export interface AutoBeRealizeAuthorizationCorrect
   /**
    * Step 3: Final validation and comprehensive fix summary.
    *
-   * AI validates corrected code compiles successfully and documents all
-   * changes made. Provides production-ready code with detailed change log for
+   * AI validates corrected code compiles successfully and documents all changes
+   * made. Provides production-ready code with detailed change log for
    * maintenance reference.
    */
   validation_summary: string;
