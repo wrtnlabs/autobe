@@ -197,7 +197,7 @@ The `step` property indicates which requirements analysis report iteration the d
         "packages/interface/src/events/AutoBeInterfaceStartEvent.ts",
         "packages/interface/src/events/AutoBeInterfaceEndpointsEvent.ts",
         "packages/interface/src/events/AutoBeInterfaceOperationsEvent.ts",
-        "packages/interface/src/events/AutoBeInterfaceComponentsEvent.ts",
+        "packages/interface/src/events/AutoBeInterfaceSchemasEvent.ts",
         "packages/interface/src/events/AutoBeInterfaceComplementEvent.ts",
         "packages/interface/src/events/AutoBeInterfaceCompleteEvent.ts"
       ]} 
@@ -221,7 +221,7 @@ The `step` property indicates which requirements analysis report iteration the d
 flowchart LR
   start[<a href="/autobe/api/interfaces/_autobe_interface.AutoBeInterfaceStartEvent.html" target="_blank"><u>Start</u></a>] --"lists"--> endpoints[<a href="/autobe/api/interfaces/_autobe_interface.AutoBeInterfaceEndpointsEvent.html" target="_blank"><u>Endpoints</u></a>]
   endpoints --"designs"--> operations[<a href="/autobe/api/interfaces/_autobe_interface.AutoBeInterfaceOperationsEvent.html" target="_blank"><u>Operations</u></a>]
-  endpoints --"schemas"--> components[<a href="/autobe/api/interfaces/_autobe_interface.AutoBeInterfaceComponentsEvent.html" target="_blank"><u>Components</u></a>]
+  endpoints --"schemas"--> components[<a href="/autobe/api/interfaces/_autobe_interface.AutoBeInterfaceSchemasEvent.html" target="_blank"><u>Components</u></a>]
   endpoints --"fills"--> complement[<a href="/autobe/api/interfaces/_autobe_interface.AutoBeInterfaceComplementEvent.html" target="_blank"><u>Complement</u></a>]
   endpoints --"compiles"--> complete[<a href="/autobe/api/interfaces/_autobe_interface.AutoBeInterfaceCompleteEvent.html" target="_blank"><u>Complete</u></a>]
   complete --"composes"--> document(<a href="/autobe/api/interfaces/_autobe_interface.AutoBeOpenApi.IDocument.html" target="_blank"><u>OpenAPI</u></a>)
@@ -230,7 +230,7 @@ flowchart LR
 
 Interface events track the RESTful API design process. 
 
-When `@autobe` designs RESTful APIs, it first fires the [`AutoBeInterfaceStartEvent`](/api/interfaces/_autobe_interface.AutoBeInterfaceStartEvent.html) event to signal the start of the interface agent. Then it triggers the [`AutoBeInterfaceEndpointsEvent`](/api/interfaces/_autobe_interface.AutoBeInterfaceEndpointsEvent.html) event to create the API endpoint list, followed by [`AutoBeInterfaceOperationsEvent`](/api/interfaces/_autobe_interface.AutoBeInterfaceOperationsEvent.html) which defines the role of each API function and [`AutoBeInterfaceComponentsEvent`](/api/interfaces/_autobe_interface.AutoBeInterfaceComponentsEvent.html) which defines the types they use. Additionally, the [`AutoBeInterfaceComplementEvent`](/api/interfaces/_autobe_interface.AutoBeInterfaceComplementEvent.html) event may be fired to supplement any missing types used in API operations or to provide necessary types as nested objects.
+When `@autobe` designs RESTful APIs, it first fires the [`AutoBeInterfaceStartEvent`](/api/interfaces/_autobe_interface.AutoBeInterfaceStartEvent.html) event to signal the start of the interface agent. Then it triggers the [`AutoBeInterfaceEndpointsEvent`](/api/interfaces/_autobe_interface.AutoBeInterfaceEndpointsEvent.html) event to create the API endpoint list, followed by [`AutoBeInterfaceOperationsEvent`](/api/interfaces/_autobe_interface.AutoBeInterfaceOperationsEvent.html) which defines the role of each API function and [`AutoBeInterfaceSchemasEvent`](/api/interfaces/_autobe_interface.AutoBeInterfaceSchemasEvent.html) which defines the types they use. Additionally, the [`AutoBeInterfaceComplementEvent`](/api/interfaces/_autobe_interface.AutoBeInterfaceComplementEvent.html) event may be fired to supplement any missing types used in API operations or to provide necessary types as nested objects.
 
 Finally, when all API design is complete, the [`AutoBeInterfaceCompleteEvent`](/api/interfaces/_autobe_interface.AutoBeInterfaceCompleteEvent.html) event is fired.
 

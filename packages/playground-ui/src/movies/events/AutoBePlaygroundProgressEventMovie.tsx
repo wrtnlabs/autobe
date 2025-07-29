@@ -1,8 +1,8 @@
 import {
   AutoBeAnalyzeWriteEvent,
-  AutoBeInterfaceComponentsEvent,
   AutoBeInterfaceEndpointsEvent,
   AutoBeInterfaceOperationsEvent,
+  AutoBeInterfaceSchemasEvent,
   AutoBePrismaSchemasEvent,
   AutoBeRealizeAuthorizationWriteEvent,
   AutoBeRealizeProgressEvent,
@@ -61,7 +61,7 @@ export namespace AutoBePlaygroundProgressEventMovie {
       | AutoBePrismaSchemasEvent
       | AutoBeInterfaceEndpointsEvent
       | AutoBeInterfaceOperationsEvent
-      | AutoBeInterfaceComponentsEvent
+      | AutoBeInterfaceSchemasEvent
       | AutoBeTestWriteEvent
       | AutoBeRealizeProgressEvent
       | AutoBeRealizeAuthorizationWriteEvent
