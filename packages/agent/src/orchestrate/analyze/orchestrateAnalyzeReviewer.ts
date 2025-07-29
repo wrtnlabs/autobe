@@ -54,7 +54,7 @@ export const orchestrateAnalyzeReviewer = async <
   enforceToolCall(agent);
 
   const command = `proceed with the review of these files only.` as const;
-  const res = await agent.conversate(command).finally(() => {
+  await agent.conversate(command).finally(() => {
     const tokenUsage = agent.getTokenUsage();
     ctx.usage().record(tokenUsage, ["analyze"]);
   });
@@ -62,34 +62,25 @@ export const orchestrateAnalyzeReviewer = async <
   return fnCalled.value;
 };
 
-/**
- * If you decide that you no longer need any reviews, or if the reviewer refuses
- * to do so, call abort. This is a function to end document creation and review,
- * and to respond to users.
- *
- * When there is content you are unsure about and need to ask the user a
- * question, abort the process and ask the user directly. The reason for
- * aborting should be included as the content of the question.
- */
-// abort(input: { reason: string }): "OK";
-
-// abort(_input: { reason: string }): "OK" {
-//   return "OK";
-// }
-
 interface IAutoBeAnalyzerReviewerSystem {
   /**
-   * If you decide that you no longer need any reviews, or if the reviewer
-   * refuses to do so, call accept. This is a function to end document creation
-   * and review, and to respond to users.
+   * If there is anything that needs to be modified, you can call it, This
+   * function is to reject the document for to try rewriting document with your
+   * advice or suggestion.
    */
-  accept(): "OK" | Promise<"OK">;
+  reject(input: {
+    /**
+     * The reason why you reject the document and the suggestion for the
+     * modification. You can write the reason in detail.
+     */
+    reason: string;
+  }): "OK" | Promise<"OK">;
 
   /**
-   * If you have any objection about the files, call reject. This is a function
-   * to reject the document for to try rewriting document.
+   * If you decide that you no longer need any reviews, call accept. This is a
+   * function to end document creation and review, and to respond to users.
    */
-  reject(input: { reason: string }): "OK" | Promise<"OK">;
+  accept(): "OK" | Promise<"OK">;
 }
 
 function createController<Model extends ILlmSchema.Model>(props: {
