@@ -28,8 +28,11 @@ export const orchestrateAnalyze =
       created_at,
     });
 
-    const pointer: IPointer<IComposeInput | null> = { value: null };
-    const agentica = orchestrateAnalyzeComposer(ctx, pointer);
+    const composeInputPointer: IPointer<IComposeInput | null> = { value: null };
+    const agentica = orchestrateAnalyzeComposer(ctx, (v) => {
+      composeInputPointer.value = v;
+    });
+
     const determined = await agentica
       .conversate(
         [
@@ -42,7 +45,9 @@ export const orchestrateAnalyze =
         const tokenUsage = agentica.getTokenUsage();
         ctx.usage().record(tokenUsage, ["analyze"]);
       });
-    if (pointer.value === null) {
+
+    const composeInput = composeInputPointer.value;
+    if (composeInput === null) {
       return {
         id: v4(),
         text: "Failed to analyze your request. please request again.",
@@ -52,7 +57,7 @@ export const orchestrateAnalyze =
       };
     }
 
-    const { files: tableOfContents, prefix, roles } = pointer.value;
+    const { files: tableOfContents, prefix, roles } = composeInput;
 
     if (tableOfContents.length === 0) {
       const history: AutoBeAssistantMessageHistory = {
@@ -72,7 +77,7 @@ export const orchestrateAnalyze =
 
     const retryCount = 3 as const;
     const progress = {
-      total: tableOfContents.length * retryCount,
+      total: tableOfContents.length,
       completed: 0,
     };
     const pointers = await Promise.all(
@@ -114,7 +119,7 @@ export const orchestrateAnalyze =
       ctx.dispatch({
         type: "analyzeComplete",
         prefix,
-        files: files,
+        files,
         step,
         created_at,
       });
@@ -129,9 +134,9 @@ export const orchestrateAnalyze =
       completed_at: new Date().toISOString(),
     };
     ctx.dispatch({
-      type: "assistantMessage",
-      text: determined.find((el) => el.type === "assistantMessage")?.text ?? "",
-      created_at,
+      type: history.type,
+      text: history.text,
+      created_at: history.created_at,
     });
     return history;
   };

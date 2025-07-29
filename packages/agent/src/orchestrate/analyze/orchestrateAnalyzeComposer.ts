@@ -1,6 +1,5 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
-import { IPointer } from "tstl";
 import typia from "typia";
 import { v4 } from "uuid";
 
@@ -15,14 +14,12 @@ import {
 
 export const orchestrateAnalyzeComposer = <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  pointer: IPointer<IComposeInput | null>,
+  setComposeInput: (value: IComposeInput) => void,
 ) => {
   const controller = createController<Model>({
     model: ctx.model,
     execute: new AutoBeAnalyzeComposerApplication(),
-    build: (value: IComposeInput) => {
-      pointer.value = value;
-    },
+    preExecute: setComposeInput,
   });
 
   const agent = new MicroAgentica({
@@ -78,7 +75,7 @@ class AutoBeAnalyzeComposerApplication
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   execute: AutoBeAnalyzeComposerApplication;
-  build: (input: IComposeInput) => void;
+  preExecute: (input: IComposeInput) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
   const application: ILlmApplication<Model> = collection[
@@ -90,7 +87,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
     application,
     execute: {
       compose: (input) => {
-        props.build(input);
+        props.preExecute(input);
         return props.execute.compose(input);
       },
     } satisfies IAutoBeAnalyzeComposerApplication,
