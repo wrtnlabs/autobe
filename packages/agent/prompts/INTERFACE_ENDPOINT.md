@@ -57,20 +57,29 @@ makeEndpoints({
 
 ### 5.2. Path Formatting Rules
 
-1. **Use camelCase for all resource names in paths**
+**CRITICAL PATH VALIDATION REQUIREMENTS:**
+
+1. **Path Format Validation**
+   - Paths MUST start with a forward slash `/`
+   - Paths MUST contain ONLY the following characters: `a-z`, `A-Z`, `0-9`, `/`, `{`, `}`, `-`, `_`
+   - NO single quotes (`'`), double quotes (`"`), spaces, or special characters
+   - Parameter placeholders MUST use curly braces: `{paramName}`
+   - NO malformed brackets like `[paramName]` or `(paramName)`
+
+2. **Use camelCase for all resource names in paths**
    - Example: Use `/attachmentFiles` instead of `/attachment-files`
 
-2. **NO prefixes in paths**
+3. **NO prefixes in paths**
    - Use `/channels` instead of `/shopping/channels`
    - Use `/articles` instead of `/bbs/articles`
    - Keep paths clean and simple without domain or service prefixes
 
-3. **NO role-based prefixes**
+4. **NO role-based prefixes**
    - Use `/users/{userId}` instead of `/admin/users/{userId}`
    - Use `/posts/{postId}` instead of `/my/posts/{postId}`
    - Authorization and access control will be handled separately, not in the path structure
 
-4. **Structure hierarchical relationships with nested paths**
+5. **Structure hierarchical relationships with nested paths**
    - Example: For child entities, use `/sales/{saleId}/snapshots` for sale snapshots
    - Use parent-child relationship in URL structure when appropriate
 
@@ -113,9 +122,35 @@ For EACH independent entity identified in the requirements document, Prisma DB S
 - If NO soft delete fields exist in the schema, the DELETE endpoint MUST perform hard delete
 - NEVER assume soft delete fields exist without verifying in the actual Prisma schema
 
-## 6. Critical Requirements
+## 6. Path Validation Rules
+
+**MANDATORY PATH VALIDATION**: Every path you generate MUST pass these validation rules:
+
+1. **Basic Format**: Must start with `/` and contain only valid characters
+2. **No Malformed Characters**: NO quotes, spaces, or invalid special characters
+3. **Parameter Format**: Parameters must use `{paramName}` format only
+4. **camelCase Resources**: All resource names in camelCase
+5. **Clean Structure**: No domain or role prefixes
+
+**INVALID PATH EXAMPLES** (DO NOT GENERATE):
+- `'/users'` (contains quotes)
+- `/user profile` (contains space)
+- `/users/[userId]` (wrong bracket format)
+- `/admin/users` (role prefix)
+- `/api/v1/users` (API prefix)
+- `/users/{user-id}` (kebab-case parameter)
+
+**VALID PATH EXAMPLES**:
+- `/users`
+- `/users/{userId}`
+- `/articles/{articleId}/comments`
+- `/attachmentFiles`
+- `/orders/{orderId}/items/{itemId}`
+
+## 7. Critical Requirements
 
 - **Function Call Required**: You MUST use the `makeEndpoints()` function to submit your results
+- **Path Validation**: EVERY path MUST pass the validation rules above
 - **Complete Coverage**: EVERY independent entity in the Prisma schema MUST have corresponding endpoints
 - **No Omissions**: Process ALL independent entities regardless of quantity
 - **Strict Output Format**: ONLY include objects with `path` and `method` properties in your function call
@@ -123,7 +158,7 @@ For EACH independent entity identified in the requirements document, Prisma DB S
 - **Clean Paths**: Paths should be clean without prefixes or role indicators
 - **Group Alignment**: Consider the API endpoint groups when organizing related endpoints
 
-## 7. Implementation Strategy
+## 8. Implementation Strategy
 
 1. **Analyze Input Information**:
    - Review the requirements analysis document for functional needs
@@ -141,16 +176,21 @@ For EACH independent entity identified in the requirements document, Prisma DB S
    - Create nested resource endpoints for related entities
    - Ensure paths are clean without prefixes or role indicators
 
-4. **Verification**:
+4. **Path Validation**:
+   - Verify EVERY path follows the validation rules
+   - Ensure no malformed paths with quotes, spaces, or invalid characters
+   - Check parameter format uses `{paramName}` only
+
+5. **Verification**:
    - Verify ALL independent entities and requirements are covered
    - Ensure all endpoints align with the provided API endpoint groups
    - Check that no entity or functional requirement is missed
 
-5. **Function Call**: Call the `makeEndpoints()` function with your complete array
+6. **Function Call**: Call the `makeEndpoints()` function with your complete array
 
 Your implementation MUST be COMPLETE and EXHAUSTIVE, ensuring NO independent entity or requirement is missed, while strictly adhering to the `AutoBeOpenApi.IEndpoint` interface format. Calling the `makeEndpoints()` function is MANDATORY.
 
-## 8. Path Transformation Examples
+## 9. Path Transformation Examples
 
 | Original Format | Improved Format | Explanation |
 |-----------------|-----------------|-------------|
@@ -161,11 +201,11 @@ Your implementation MUST be COMPLETE and EXHAUSTIVE, ensuring NO independent ent
 | `/shopping/sales/snapshots` | `/sales/{saleId}/snapshots` | Remove prefix, add hierarchy |
 | `/bbs/articles/{id}/comments` | `/articles/{articleId}/comments` | Clean nested structure |
 
-## 9. Example Cases
+## 10. Example Cases
 
 Below are example projects that demonstrate the proper endpoint formatting.
 
-### 9.1. BBS (Bulletin Board System)
+### 10.1. BBS (Bulletin Board System)
 
 ```json
 [
@@ -198,7 +238,7 @@ Below are example projects that demonstrate the proper endpoint formatting.
 - Both simple GET and complex PATCH endpoints for collections
 - Standard CRUD pattern: GET (simple list), PATCH (search), GET (single), POST (create), PUT (update), DELETE (delete)
 
-### 9.2. Shopping Mall
+### 10.2. Shopping Mall
 
 ```json
 [

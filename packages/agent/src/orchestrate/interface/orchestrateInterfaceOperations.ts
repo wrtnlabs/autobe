@@ -110,13 +110,21 @@ async function process<Model extends ILlmSchema.Model>(
               return [
                 {
                   ...op,
-                  path: `${prefix}/${op.path}`,
+                  path:
+                    "/" +
+                    [prefix, ...op.path.split("/")]
+                      .filter((it) => it !== "")
+                      .join("/"),
                   authorizationRole: null,
                 },
               ];
             return op.authorizationRoles.map((role) => ({
               ...op,
-              path: `${prefix}/${role}/${op.path}`,
+              path:
+                "/" +
+                [prefix, role, ...op.path.split("/")]
+                  .filter((it) => it !== "")
+                  .join("/"),
               authorizationRole: role,
             }));
           });
