@@ -28,12 +28,13 @@ export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
       return <AutoBePlaygroundStartEventMovie event={back} />;
     // SCENARIO EVENTS
     case "prismaComponents":
-    case "interfaceEndpoints":
+    case "interfaceGroups":
     case "testScenario":
     case "realizeTestReset":
       return <AutoBePlaygroundScenarioEventMovie event={back} />;
     // PROGRESS EVENTS
     case "analyzeWrite":
+    case "interfaceEndpoints":
     case "prismaSchemas":
     case "interfaceOperations":
     case "interfaceComponents":

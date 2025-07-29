@@ -1,7 +1,7 @@
 import {
   AutoBeAssistantMessageHistory,
   AutoBeInterfaceCompleteEvent,
-  AutoBeInterfaceEndpointsEvent,
+  AutoBeInterfaceGroupsEvent,
   AutoBeInterfaceHistory,
   AutoBeOpenApi,
 } from "@autobe/interface";
@@ -13,6 +13,7 @@ import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
 import { orchestrateInterfaceComplement } from "./orchestrateInterfaceComplement";
 import { orchestrateInterfaceComponents } from "./orchestrateInterfaceComponents";
 import { orchestrateInterfaceEndpoints } from "./orchestrateInterfaceEndpoints";
+import { orchestrateInterfaceGroups } from "./orchestrateInterfaceGroups";
 import { orchestrateInterfaceOperations } from "./orchestrateInterfaceOperations";
 
 export const orchestrateInterface =
@@ -29,17 +30,19 @@ export const orchestrateInterface =
       step: ctx.state().analyze?.step ?? 0,
     });
 
-    const init: AutoBeAssistantMessageHistory | AutoBeInterfaceEndpointsEvent =
-      await orchestrateInterfaceEndpoints(ctx);
+    const init: AutoBeAssistantMessageHistory | AutoBeInterfaceGroupsEvent =
+      await orchestrateInterfaceGroups(ctx);
     if (init.type === "assistantMessage") {
       ctx.dispatch(init);
       ctx.histories().push(init);
       return init;
     } else ctx.dispatch(init);
 
-    // OPERATIONS
+    // ENDPOINTS & OPERATIONS
+    const endpoints: AutoBeOpenApi.IEndpoint[] =
+      await orchestrateInterfaceEndpoints(ctx, init.groups);
     const operations: AutoBeOpenApi.IOperation[] =
-      await orchestrateInterfaceOperations(ctx, init.endpoints);
+      await orchestrateInterfaceOperations(ctx, endpoints);
 
     // TYPE SCHEMAS
     const document: AutoBeOpenApi.IDocument = {
