@@ -83,7 +83,7 @@ export const validate_agent_realize_authorization = async (
   const histories = agent.getHistories();
 
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${project}/realize/decorator`,
+    root: `${TestGlobal.ROOT}/results/${project}/realize/authorization`,
     files: {
       ...(await agent.getFiles()),
       ...files,
