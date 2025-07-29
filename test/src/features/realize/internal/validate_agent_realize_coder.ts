@@ -1,6 +1,7 @@
 import { orchestrateRealizeAuthorization } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeAuthorization";
 import { InternalFileSystem } from "@autobe/agent/src/orchestrate/realize/utils/InternalFileSystem";
 import { writeCodeUntilCompilePassed } from "@autobe/agent/src/orchestrate/realize/writeCodeUntilCompilePassed";
+import { arrayToRecord } from "@autobe/agent/src/utils/arrayToRecord";
 import { FileSystemIterator } from "@autobe/filesystem";
 import { AutoBeEvent, AutoBeRealizeFunction } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
@@ -53,11 +54,7 @@ export const validate_agent_realize_coder = async (
 
   const result: AutoBeRealizeFunction[] = await go();
 
-  const codes = result.reduce<Record<string, string>>((acc, cur) => {
-    return Object.assign(acc, {
-      [cur.location]: cur.content,
-    });
-  }, {});
+  const codes = arrayToRecord(result, "location", "content");
 
   const histories = agent.getHistories();
   const prisma = agent.getContext().state().prisma?.compiled;

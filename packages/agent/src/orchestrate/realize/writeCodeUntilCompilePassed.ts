@@ -7,6 +7,7 @@ import {
 import { ILlmSchema } from "@samchon/openapi";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
+import { arrayToRecord } from "../../utils/arrayToRecord";
 import { pipe } from "./RealizePipe";
 import { orchestrateRealizeCoder } from "./orchestrateRealizeCoder";
 import { orchestrateRealizePlanner } from "./orchestrateRealizePlanner";
@@ -22,22 +23,17 @@ export async function writeCodeUntilCompilePassed<
   authorizations: AutoBeRealizeAuthorization[],
   retry: number,
 ): Promise<AutoBeRealizeFunction[]> {
-  const payloads = authorizations
-    .map((el) => {
-      return {
-        [el.payload.location]: el.payload.content,
-      };
-    })
-    .reduce<Record<string, string>>((acc, cur) => Object.assign(acc, cur), {});
+  const payloads = arrayToRecord(
+    authorizations.map((el) => el.payload),
+    "location",
+    "content",
+  );
 
-  const files = Object.entries(await ctx.files({ dbms: "postgres" }))
-    .filter(([key]) => {
-      return key.startsWith("src");
-    })
-    .reduce(
-      (acc, [filename, content]) => Object.assign(acc, { [filename]: content }),
-      {},
-    );
+  const files = arrayToRecord(
+    Object.entries(await ctx.files({ dbms: "postgres" })).filter(([key]) =>
+      key.startsWith("src"),
+    ),
+  );
 
   const entireCodes: IAutoBeRealizeCompile.FileContentMap = {
     ...(await loadTemplateFiles(ctx)),
@@ -89,16 +85,12 @@ export async function writeCodeUntilCompilePassed<
         ...payloads,
         ...files,
         ...nodeModules,
-        ...Object.entries(entireCodes)
-          .map(([filename, { content }]) => {
-            return {
-              [filename]: content,
-            };
-          })
-          .reduce<Record<string, string>>(
-            (acc, cur) => Object.assign(acc, cur),
-            {},
-          ),
+        ...arrayToRecord(
+          Object.entries(entireCodes).map(([filename, { content }]) => [
+            filename,
+            content,
+          ]),
+        ),
       },
     });
 
@@ -200,6 +192,16 @@ async function process<Model extends ILlmSchema.Model>(
   return { type: "success", op: op, result } as const;
 }
 
+/**
+ * Determines whether an operation should be processed in the current iteration.
+ * In the initial case (no errors), all operations are processed. When errors
+ * exist, only operations with compilation errors are targeted for reprocessing
+ * in the next iteration.
+ *
+ * @param op - The operation to check
+ * @param currentDiagnostics - Current compilation errors
+ * @returns True if the operation should be processed
+ */
 function shouldProcessOperation(
   op: AutoBeOpenApi.IOperation,
   currentDiagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[],
@@ -215,6 +217,14 @@ function shouldProcessOperation(
   );
 }
 
+/**
+ * Generates a provider filename for an operation. Converts the operation's HTTP
+ * method and path into a valid TypeScript filename. The filename serves as both
+ * the function name and the file identifier.
+ *
+ * @param op - The operation to generate a filename for
+ * @returns The generated provider filename with path
+ */
 function generateProviderFilename(op: AutoBeOpenApi.IOperation): string {
   return `src/providers/${op.method}_${op.path
     .replaceAll("/", "_")
