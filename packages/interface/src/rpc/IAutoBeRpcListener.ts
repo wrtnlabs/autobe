@@ -6,9 +6,9 @@ import {
   AutoBeAssistantMessageEvent,
   AutoBeInterfaceComplementEvent,
   AutoBeInterfaceCompleteEvent,
-  AutoBeInterfaceComponentsEvent,
   AutoBeInterfaceEndpointsEvent,
   AutoBeInterfaceOperationsEvent,
+  AutoBeInterfaceSchemasEvent,
   AutoBeInterfaceStartEvent,
   AutoBePrismaCompleteEvent,
   AutoBePrismaComponentsEvent,
@@ -247,7 +247,7 @@ export interface IAutoBeRpcListener {
    * applications to show progress in type definition and data structure
    * development for the API specification.
    */
-  interfaceComponents?(event: AutoBeInterfaceComponentsEvent): Promise<void>;
+  interfaceSchemas?(event: AutoBeInterfaceSchemasEvent): Promise<void>;
 
   /**
    * Optional handler for API schema complement events.

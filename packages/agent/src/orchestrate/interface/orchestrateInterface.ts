@@ -11,10 +11,10 @@ import { v4 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
 import { orchestrateInterfaceComplement } from "./orchestrateInterfaceComplement";
-import { orchestrateInterfaceComponents } from "./orchestrateInterfaceComponents";
 import { orchestrateInterfaceEndpoints } from "./orchestrateInterfaceEndpoints";
 import { orchestrateInterfaceGroups } from "./orchestrateInterfaceGroups";
 import { orchestrateInterfaceOperations } from "./orchestrateInterfaceOperations";
+import { orchestrateInterfaceSchemas } from "./orchestrateInterfaceSchemas";
 
 export const orchestrateInterface =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
@@ -47,9 +47,15 @@ export const orchestrateInterface =
     // TYPE SCHEMAS
     const document: AutoBeOpenApi.IDocument = {
       operations,
-      components: await orchestrateInterfaceComponents(ctx, operations),
+      components: {
+        authorization: ctx.state().analyze?.roles ?? [],
+        schemas: await orchestrateInterfaceSchemas(ctx, operations),
+      },
     };
-    document.components = await orchestrateInterfaceComplement(ctx, document);
+    document.components.schemas = await orchestrateInterfaceComplement(
+      ctx,
+      document,
+    );
 
     // DO COMPILE
     const result: AutoBeInterfaceHistory = {

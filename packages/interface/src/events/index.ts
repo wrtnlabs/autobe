@@ -26,7 +26,7 @@ export * from "./AutoBeInterfaceStartEvent";
 export * from "./AutoBeInterfaceGroupsEvent";
 export * from "./AutoBeInterfaceEndpointsEvent";
 export * from "./AutoBeInterfaceOperationsEvent";
-export * from "./AutoBeInterfaceComponentsEvent";
+export * from "./AutoBeInterfaceSchemasEvent";
 export * from "./AutoBeInterfaceComplementEvent";
 export * from "./AutoBeInterfaceCompleteEvent";
 

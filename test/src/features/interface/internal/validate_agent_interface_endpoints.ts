@@ -25,15 +25,19 @@ export const validate_agent_interface_endpoints = async (
       "utf8",
     ),
   );
-  const result: AutoBeOpenApi.IEndpoint[] = await orchestrateInterfaceEndpoints(
-    agent.getContext(),
-    groups,
-  );
+  const endpoints: AutoBeOpenApi.IEndpoint[] =
+    await orchestrateInterfaceEndpoints(agent.getContext(), groups);
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/${project}/interface/endpoints`,
     files: {
       ...(await agent.getFiles()),
-      "logs/endpoints.json": JSON.stringify(result, null, 2),
+      "logs/endpoints.json": JSON.stringify(endpoints, null, 2),
     },
   });
+  if (process.argv.includes("--archive"))
+    await fs.promises.writeFile(
+      `${TestGlobal.ROOT}/assets/histories/${project}.interface.endpoints.json`,
+      JSON.stringify(endpoints),
+      "utf8",
+    );
 };

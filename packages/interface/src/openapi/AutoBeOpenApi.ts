@@ -838,7 +838,7 @@ export namespace AutoBeOpenApi {
     schemas: Record<string, IJsonSchemaDescriptive>;
 
     /** Whether includes `Authorization` header or not. */
-    authorization?: IAuthorization[];
+    authorization: IAuthorization[];
   }
 
   /**
@@ -1250,15 +1250,16 @@ export namespace AutoBeOpenApi {
     /**
      * HTTP method of the API operation.
      *
-     * Note that, if the API operation has {@link requestBody}, method must not be
-     * `get`.
+     * Note that, if the API operation has {@link requestBody}, method must not
+     * be `get`.
      *
      * Also, even though the API operation has been designed to only get
      * information, but it needs complicated request information, it must be
      * defined as `patch` method with {@link requestBody} data specification.
      *
      * - `get`: get information
-     * - `patch`: get information with complicated request data ({@link requestBody})
+     * - `patch`: get information with complicated request data
+     *   ({@link requestBody})
      * - `post`: create new record
      * - `put`: update existing record
      * - `delete`: remove record

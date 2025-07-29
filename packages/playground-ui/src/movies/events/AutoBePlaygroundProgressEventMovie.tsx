@@ -102,9 +102,9 @@ function getState(
           title: "Interface Operations",
           description: "Designing API operations",
         };
-      case "interfaceComponents":
+      case "interfaceSchemas":
         return {
-          title: "Interface Components",
+          title: "Interface Schemas",
           description: "Designing API type schemas",
         };
       case "testWrite":

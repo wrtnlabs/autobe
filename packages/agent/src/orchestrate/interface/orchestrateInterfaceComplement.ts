@@ -20,7 +20,7 @@ export function orchestrateInterfaceComplement<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   document: AutoBeOpenApi.IDocument,
   life: number = 8,
-): Promise<AutoBeOpenApi.IComponents> {
+): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   return forceRetry(() => step(ctx, document, life));
 }
 
@@ -28,9 +28,11 @@ async function step<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   document: AutoBeOpenApi.IDocument,
   retry: number,
-): Promise<AutoBeOpenApi.IComponents> {
+): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   const missed: string[] = getMissed(document);
-  if (missed.length === 0 || retry <= 0) return document.components;
+  if (missed.length === 0 || retry <= 0) {
+    return document.components.schemas;
+  }
 
   const pointer: IPointer<Record<
     string,
@@ -90,18 +92,18 @@ async function step<Model extends ILlmSchema.Model>(
     created_at: new Date().toISOString(),
   });
 
-  const newComponents: AutoBeOpenApi.IComponents = {
-    schemas: {
-      ...pointer.value,
-      ...document.components.schemas,
-    },
-    authorization: document.components.authorization,
+  const newSchemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
+    ...pointer.value,
+    ...document.components.schemas,
   };
   return step(
     ctx,
     {
       ...document,
-      components: newComponents,
+      components: {
+        ...document.components,
+        schemas: newSchemas,
+      },
     },
     retry - 1,
   );

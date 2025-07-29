@@ -13,13 +13,13 @@ import { forceRetry } from "../../utils/forceRetry";
 import { transformInterfaceSchemaHistories } from "./histories/transformInterfaceSchemaHistories";
 import { IAutoBeInterfaceSchemaApplication } from "./structures/IAutoBeInterfaceSchemaApplication";
 
-export async function orchestrateInterfaceComponents<
+export async function orchestrateInterfaceSchemas<
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
   operations: AutoBeOpenApi.IOperation[],
   capacity: number = 12,
-): Promise<AutoBeOpenApi.IComponents> {
+): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   const typeNames: Set<string> = new Set();
   for (const op of operations) {
     if (op.requestBody !== null) typeNames.add(op.requestBody.typeName);
@@ -31,24 +31,16 @@ export async function orchestrateInterfaceComponents<
   });
   let progress: number = 0;
 
-  const x: AutoBeOpenApi.IComponents = {
-    schemas: {},
-    authorization: ctx.state().analyze?.roles,
-  };
+  const x: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
   for (const y of await Promise.all(
     matrix.map(async (it) => {
-      const row: AutoBeOpenApi.IComponents = await divideAndConquer(
-        ctx,
-        operations,
-        it,
-        3,
-        (count) => {
+      const row: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
+        await divideAndConquer(ctx, operations, it, 3, (count) => {
           progress += count;
-        },
-      );
+        });
       ctx.dispatch({
-        type: "interfaceComponents",
-        components: row,
+        type: "interfaceSchemas",
+        schemas: row,
         completed: progress,
         total: typeNames.size,
         step: ctx.state().analyze?.step ?? 0,
@@ -57,7 +49,7 @@ export async function orchestrateInterfaceComponents<
       return row;
     }),
   )) {
-    Object.assign(x.schemas, y.schemas);
+    Object.assign(x, y);
   }
   return x;
 }
@@ -68,33 +60,33 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
   typeNames: string[],
   retry: number,
   progress: (completed: number) => void,
-): Promise<AutoBeOpenApi.IComponents> {
+): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   const remained: Set<string> = new Set(typeNames);
-  const components: AutoBeOpenApi.IComponents = {
-    schemas: {},
-  };
+  const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
   for (let i: number = 0; i < retry; ++i) {
     if (remained.size === 0) break;
     const before: number = remained.size;
-    const newbie: AutoBeOpenApi.IComponents = await forceRetry(() =>
-      process(ctx, operations, components, remained),
-    );
-    for (const key of Object.keys(newbie.schemas)) {
-      components.schemas[key] = newbie.schemas[key];
+    const newbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
+      await forceRetry(() => process(ctx, operations, schemas, remained));
+    for (const key of Object.keys(newbie)) {
+      schemas[key] = newbie[key];
       remained.delete(key);
     }
     if (before - remained.size !== 0) progress(before - remained.size);
   }
-  return components;
+  return schemas;
 }
 
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   operations: AutoBeOpenApi.IOperation[],
-  oldbie: AutoBeOpenApi.IComponents,
+  oldbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
   remained: Set<string>,
-): Promise<AutoBeOpenApi.IComponents> {
-  const pointer: IPointer<AutoBeOpenApi.IComponents | null> = {
+): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
+  const pointer: IPointer<Record<
+    string,
+    AutoBeOpenApi.IJsonSchemaDescriptive
+  > | null> = {
     value: null,
   };
   const agentica: MicroAgentica<Model> = new MicroAgentica({
@@ -110,11 +102,9 @@ async function process<Model extends ILlmSchema.Model>(
     controllers: [
       createApplication({
         model: ctx.model,
-        build: async (components) => {
-          pointer.value ??= {
-            schemas: {},
-          };
-          Object.assign(pointer.value.schemas, components.schemas);
+        build: async (next) => {
+          pointer.value ??= {};
+          Object.assign(pointer.value, next);
         },
         pointer,
       }),
@@ -122,7 +112,7 @@ async function process<Model extends ILlmSchema.Model>(
   });
   enforceToolCall(agentica);
 
-  const already: string[] = Object.keys(oldbie.schemas);
+  const already: string[] = Object.keys(oldbie);
   await agentica
     .conversate(
       [
@@ -153,15 +143,24 @@ async function process<Model extends ILlmSchema.Model>(
     // never be happened
     throw new Error("Failed to create components.");
   }
-  return OpenApiV3_1Emender.convertComponents(
-    pointer.value,
-  ) as AutoBeOpenApi.IComponents;
+  return (
+    (
+      OpenApiV3_1Emender.convertComponents({
+        schemas: pointer.value,
+      }) as AutoBeOpenApi.IComponents
+    ).schemas ?? {}
+  );
 }
 
 function createApplication<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  build: (components: AutoBeOpenApi.IComponents) => Promise<void>;
-  pointer: IPointer<AutoBeOpenApi.IComponents | null>;
+  build: (
+    next: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
+  ) => Promise<void>;
+  pointer: IPointer<Record<
+    string,
+    AutoBeOpenApi.IJsonSchemaDescriptive
+  > | null>;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
@@ -174,7 +173,7 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
     application,
     execute: {
       makeComponents: async (next) => {
-        await props.build(next.components);
+        await props.build(next.schemas);
       },
     } satisfies IAutoBeInterfaceSchemaApplication,
   };

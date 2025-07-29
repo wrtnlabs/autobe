@@ -54,25 +54,23 @@ export namespace IAutoBeInterfaceSchemaApplication {
      *
      * ```typescript
      * {
-     *   components: {
-     *     schemas: {
-     *       IUser: {
-     *         type: "object",
-     *         properties: {
-     *           id: { type: "string", format: "uuid" },
-     *           email: { type: "string", format: "email" },
-     *           profile: { "$ref": "#/components/schemas/IUserProfile" }
-     *         },
-     *         required: ["id", "email"],
-     *         description: "User entity representing system account holders..."
+     *   schemas: {
+     *     IUser: {
+     *       type: "object",
+     *       properties: {
+     *         id: { type: "string", format: "uuid" },
+     *         email: { type: "string", format: "email" },
+     *         profile: { "$ref": "#/components/schemas/IUserProfile" }
      *       },
-     *       "IUser.ICreate": { ... },
-     *       // Additional schemas
-     *     }
+     *       required: ["id", "email"],
+     *       description: "User entity representing system account holders..."
+     *     },
+     *     "IUser.ICreate": { ... },
+     *     // Additional schemas
      *   }
      * }
      * ```
      */
-    components: Omit<AutoBeOpenApi.IComponents, "authorization">;
+    schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
   }
 }

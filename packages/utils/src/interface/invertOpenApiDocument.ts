@@ -56,6 +56,7 @@ export function invertOpenApiDocument(
         string,
         AutoBeOpenApi.IJsonSchemaDescriptive
       >,
+      authorization: [],
     },
   };
 }
