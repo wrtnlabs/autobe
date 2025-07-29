@@ -28,7 +28,11 @@ export async function writeDocumentUntilReviewPassed<
     value: { files: {} },
   };
 
-  if (retry === 0) {
+  /**
+   * `retry` means the number of times to retry the review. so if `retry` is -1,
+   * it means not execute this logic.
+   */
+  if (retry === -1) {
     return pointer;
   }
 
