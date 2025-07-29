@@ -6,7 +6,6 @@ import typia from "typia";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { enforceToolCall } from "../../utils/enforceToolCall";
-import { AutoBeAnalyzeFileSystem } from "./AutoBeAnalyzeFileSystem";
 import { transformAnalyzeReviewerHistories } from "./transformAnalyzeReviewerHistories";
 
 export type IOrchestrateAnalyzeReviewerResult =
@@ -55,7 +54,7 @@ export const orchestrateAnalyzeReviewer = async <
   enforceToolCall(agent);
 
   const command = `proceed with the review of these files only.` as const;
-  await agent.conversate(command).finally(() => {
+  const res = await agent.conversate(command).finally(() => {
     const tokenUsage = agent.getTokenUsage();
     ctx.usage().record(tokenUsage, ["analyze"]);
   });
@@ -81,23 +80,14 @@ export const orchestrateAnalyzeReviewer = async <
 interface IAutoBeAnalyzerReviewerSystem {
   /**
    * If you decide that you no longer need any reviews, or if the reviewer
-   * refuses to do so, call abort. This is a function to end document creation
+   * refuses to do so, call accept. This is a function to end document creation
    * and review, and to respond to users.
-   *
-   * When there is content you are unsure about and need to ask the user a
-   * question, accept the process and ask the user directly. The reason for
-   * accepting should be included as the content of the question.
    */
   accept(): "OK" | Promise<"OK">;
 
   /**
-   * If you decide that you no longer need any reviews, or if the reviewer
-   * refuses to do so, call abort. This is a function to end document creation
-   * and review, and to respond to users.
-   *
-   * When there is content you are unsure about and need to ask the user a
-   * question, abort the process and ask the user directly. The reason for
-   * aborting should be included as the content of the question.
+   * If you have any objection about the files, call reject. This is a function
+   * to reject the document for to try rewriting document.
    */
   reject(input: { reason: string }): "OK" | Promise<"OK">;
 }
@@ -112,7 +102,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
   ] as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
-    name: "Planning",
+    name: "Reviewer",
     application,
     execute: {
       accept: async () => {
@@ -133,13 +123,13 @@ function createController<Model extends ILlmSchema.Model>(props: {
 }
 
 const claude = typia.llm.application<
-  AutoBeAnalyzeFileSystem,
+  IAutoBeAnalyzerReviewerSystem,
   "claude",
   { reference: true }
 >();
 const collection = {
   chatgpt: typia.llm.application<
-    AutoBeAnalyzeFileSystem,
+    IAutoBeAnalyzerReviewerSystem,
     "chatgpt",
     { reference: true }
   >(),

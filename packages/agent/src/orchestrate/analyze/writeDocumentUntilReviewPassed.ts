@@ -57,8 +57,8 @@ export async function writeDocumentUntilReviewPassed<
     created_at: new Date().toISOString(),
   });
 
-  // TODO Implement Abort
   const reviewResult = await orchestrateAnalyzeReviewer(ctx, pointer.value);
+
   if (reviewResult.type === "accept") {
     props.progress.completed++;
     return pointer;
