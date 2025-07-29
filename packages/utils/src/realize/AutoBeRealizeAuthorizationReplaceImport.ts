@@ -2,12 +2,6 @@ export namespace AutoBeRealizeAuthorizationReplaceImport {
   export function replaceProviderImport(role: string, content: string): string {
     let updatedContent = content;
 
-    console.log(`Role: ${role}`);
-
-    console.log("-------------before replaceProviderImport-------------");
-    console.log(content);
-    console.log("-------------------------------------");
-
     const roleCapitalized =
       role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
 
@@ -42,10 +36,6 @@ export namespace AutoBeRealizeAuthorizationReplaceImport {
     );
     updatedContent = updatedContent.replace(payloadPattern, payloadReplacement);
 
-    console.log("-------------after replaceProviderImport-------------");
-    console.log(updatedContent);
-    console.log("-------------------------------------");
-
     return updatedContent;
   }
 
@@ -54,12 +44,6 @@ export namespace AutoBeRealizeAuthorizationReplaceImport {
     content: string,
   ): string {
     let updatedContent = content;
-
-    console.log(`Role: ${role}`);
-
-    console.log("-------------before replaceDecoratorImport-------------");
-    console.log(content);
-    console.log("-------------------------------------");
 
     const roleLowercase = role.toLowerCase();
 
@@ -74,10 +58,6 @@ export namespace AutoBeRealizeAuthorizationReplaceImport {
       authorizePattern,
       authorizeReplacement,
     );
-
-    console.log("-------------after replaceDecoratorImport-------------");
-    console.log(updatedContent);
-    console.log("-------------------------------------");
 
     return updatedContent;
   }
