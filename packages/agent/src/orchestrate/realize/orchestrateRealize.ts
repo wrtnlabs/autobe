@@ -35,7 +35,7 @@ export const orchestrateRealize =
       ctx,
       ops,
       authorizations,
-      2,
+      3,
     );
 
     const now = new Date().toISOString();
@@ -48,7 +48,24 @@ export const orchestrateRealize =
         compiled: {
           type: "success",
         },
-        functions: files,
+        functions: {
+          ...files,
+          ...authorizations
+            .flatMap((el) => {
+              return [
+                {
+                  [el.decorator.location]: el.decorator.content,
+                },
+                {
+                  [el.payload.location]: el.payload.content,
+                },
+                {
+                  [el.payload.location]: el.payload.content,
+                },
+              ];
+            })
+            .reduce((acc, cur) => Object.assign(acc, cur)),
+        },
         completed_at: now,
         created_at: now,
         id: v4(),

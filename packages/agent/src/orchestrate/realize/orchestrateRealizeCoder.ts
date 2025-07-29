@@ -20,6 +20,7 @@ import { RealizePlannerOutput } from "./orchestrateRealizePlanner";
 import { IAutoBeRealizeCoderApplication } from "./structures/IAutoBeRealizeCoderApplication";
 import { FAILED } from "./structures/IAutoBeRealizeFailedSymbol";
 import { transformRealizeCoderHistories } from "./transformRealizeCoderHistories";
+import { RealizeFileSystem } from "./utils/ProviderFileSystem";
 import { replaceImportStatements } from "./utils/replaceImportStatements";
 
 /**
@@ -138,7 +139,7 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
 
   return {
     ...pointer.value,
-    filename: `src/providers/${props.functionName}.ts`,
+    filename: RealizeFileSystem.providerPath(props.functionName),
   };
 };
 
