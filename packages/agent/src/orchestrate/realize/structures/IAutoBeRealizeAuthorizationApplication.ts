@@ -42,13 +42,12 @@ export namespace IAutoBeRealizeAuthorizationApplication {
     name: string;
 
     /**
-     * Complete TypeScript code for the authentication Provider function and its
-     * corresponding Payload interface. Must include: JWT token verification
-     * using jwtAuthorize function, role type checking against payload.type,
-     * database query using MyGlobal.prisma.{tableName} pattern to verify user
-     * existence, proper error handling with ForbiddenException and
-     * UnauthorizedException, and the Payload interface definition with id (UUID
-     * format) and type (role discriminator) fields using typia tags.
+     * Complete TypeScript code for the authentication Provider function. Must
+     * include: JWT token verification using jwtAuthorize function, role type
+     * checking against payload.type, database query using
+     * MyGlobal.prisma.{tableName} pattern to verify user existence, and proper
+     * error handling with ForbiddenException and UnauthorizedException. The
+     * function should return the authenticated user payload data.
      */
     content: string;
   }
@@ -76,19 +75,20 @@ export namespace IAutoBeRealizeAuthorizationApplication {
 
   export interface IPayloadType {
     /**
-     * The name of the Decorator to be generated in {Role}Auth format (e.g.,
-     * AdminAuth, UserAuth). This decorator will be used as a parameter
-     * decorator in Controller methods to automatically authenticate and
-     * authorize users for the specific role, injecting the authenticated user
-     * payload as a method parameter.
+     * The name of the Payload type to be generated in {Role}Payload format
+     * (e.g., AdminPayload, UserPayload). This type defines the structure of the
+     * authenticated user data that will be injected into Controller methods
+     * when using the decorator.
      */
     name: string;
 
     /**
-     * The TypeScript code for the Payload type in {Role}Payload format (e.g.,
-     * AdminPayload, UserPayload). This interface defines the structure of the
+     * Complete TypeScript code for the Payload type interface in {Role}Payload
+     * format (e.g., AdminPayload, UserPayload). Must include: id field with
+     * UUID format validation, type field as role discriminator, and proper
+     * typia tags for validation. This interface defines the structure of the
      * authenticated user data that will be injected into Controller methods
-     * when using the decorator. It serves as the TypeScript type for the
+     * when using the decorator and serves as the TypeScript type for the
      * parameter in Controller method signatures.
      */
     content: string;
