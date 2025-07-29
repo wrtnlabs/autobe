@@ -4,35 +4,38 @@ import {
 } from "@autobe/interface";
 import { tags } from "typia";
 
+import { IAutoBeRealizeCoderApplication } from "./IAutoBeRealizeCoderApplication";
 import { FAILED } from "./IAutoBeRealizeFailedSymbol";
 
 export namespace IAutoBeRealizeCompile {
   type IBase<T extends "success" | "failed"> = {
+    /**
+     * Indicates whether code generation was attempted. "success" means code was
+     * generated, but compilation may still fail. "failed" means code generation
+     * was not possible (e.g., invalid input).
+     */
     type: T;
   };
 
-  interface IOperation {
+  export interface Success extends IBase<"success"> {
     /**
      * Operation: An object containing the function specification including the
      * endpoint
      */
     op: AutoBeOpenApi.IOperation;
+
+    /** Result */
+    result: IAutoBeRealizeCoderApplication.RealizeCoderOutput;
   }
 
-  interface SuccessResult {
-    /** The name of the file where the implementation will be written */
-    filename: string;
-    /** The generated implementation code for the function */
-    implementationCode: string;
-    /** Function name */
-    name: string;
-  }
+  export interface Fail extends IBase<"failed"> {
+    /**
+     * Operation: An object containing the function specification including the
+     * endpoint
+     */
+    op: AutoBeOpenApi.IOperation;
 
-  export interface Success extends IBase<"success">, IOperation {
-    result: SuccessResult;
-  }
-
-  export interface Fail extends IBase<"failed">, IOperation {
+    /** Result */
     result: FAILED;
   }
 

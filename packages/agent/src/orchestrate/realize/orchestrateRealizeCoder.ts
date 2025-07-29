@@ -18,6 +18,7 @@ import { getTestScenarioArtifacts } from "../test/compile/getTestScenarioArtifac
 import { IAutoBeTestScenarioArtifacts } from "../test/structures/IAutoBeTestScenarioArtifacts";
 import { RealizePlannerOutput } from "./orchestrateRealizePlanner";
 import { IAutoBeRealizeCoderApplication } from "./structures/IAutoBeRealizeCoderApplication";
+import { IAutoBeRealizeCompile } from "./structures/IAutoBeRealizeCompile";
 import { FAILED } from "./structures/IAutoBeRealizeFailedSymbol";
 import { transformRealizeCoderHistories } from "./transformRealizeCoderHistories";
 import { RealizeFileSystem } from "./utils/ProviderFileSystem";
@@ -44,17 +45,12 @@ import { replaceImportStatements } from "./utils/replaceImportStatements";
 export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   operation: AutoBeOpenApi.IOperation,
+  previousCodes: IAutoBeRealizeCompile.Success[],
   props: RealizePlannerOutput,
   previous: string | null,
   total: IAutoBeTypeScriptCompileResult.IDiagnostic[],
   diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[],
-): Promise<
-  | Pick<
-      IAutoBeRealizeCoderApplication.RealizeCoderOutput,
-      "filename" | "implementationCode"
-    >
-  | FAILED
-> => {
+): Promise<IAutoBeRealizeCoderApplication.RealizeCoderOutput | FAILED> => {
   total;
 
   const artifacts: IAutoBeTestScenarioArtifacts =
@@ -66,12 +62,10 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
       dependencies: [],
     });
 
-  const pointer: IPointer<Pick<
-    IAutoBeRealizeCoderApplication.RealizeCoderOutput,
-    "implementationCode"
-  > | null> = {
-    value: null,
-  };
+  const pointer: IPointer<IAutoBeRealizeCoderApplication.RealizeCoderOutput | null> =
+    {
+      value: null,
+    };
 
   const controller = createApplication({
     model: ctx.model,
@@ -93,6 +87,7 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
     },
     histories: transformRealizeCoderHistories(
       ctx.state(),
+      previousCodes,
       props,
       artifacts,
       previous,
@@ -127,6 +122,7 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
   }
 
   pointer.value.implementationCode = await replaceImportStatements(ctx)(
+    artifacts,
     pointer.value.implementationCode,
     props.decoratorEvent?.payload.name,
   );

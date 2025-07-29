@@ -6,9 +6,11 @@ import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptCo
 import { AutoBeState } from "../../context/AutoBeState";
 import { IAutoBeTestScenarioArtifacts } from "../test/structures/IAutoBeTestScenarioArtifacts";
 import { RealizePlannerOutput } from "./orchestrateRealizePlanner";
+import { IAutoBeRealizeCompile } from "./structures/IAutoBeRealizeCompile";
 
 export const transformRealizeCoderHistories = (
   state: AutoBeState,
+  previousCodes: IAutoBeRealizeCompile.Success[],
   props: RealizePlannerOutput,
   artifacts: IAutoBeTestScenarioArtifacts,
   previous: string | null,
@@ -128,12 +130,26 @@ export const transformRealizeCoderHistories = (
             id: v4(),
             created_at: new Date().toISOString(),
             type: "assistantMessage",
+            text: [
+              "These values contain previously generated code and thought flow.",
+              "All of these codes are failed compilation values.",
+              "Please refer to the code for writing a new code.",
+              "",
+              "```json",
+              JSON.stringify(
+                previousCodes.map((c) => c.result.implementationCode),
+              ),
+              "```",
+            ].join("\n"),
+          } as const,
+          {
+            id: v4(),
+            created_at: new Date().toISOString(),
+            type: "assistantMessage",
             text: AutoBeSystemPromptConstant.REALIZE_CODER_DIAGNOSTICS.replaceAll(
               `{code}`,
               previous,
-            )
-              // .replaceAll("{total_diagnostics}", JSON.stringify(total))
-              .replaceAll("{current_diagnostics}", JSON.stringify(diagnostics)),
+            ).replaceAll("{current_diagnostics}", JSON.stringify(diagnostics)),
           } as const,
           {
             id: v4(),
