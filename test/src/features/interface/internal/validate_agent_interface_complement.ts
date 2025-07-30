@@ -35,19 +35,21 @@ export const validate_agent_interface_complement = async (
   typia.assert(components);
 
   // COMPLEMENT DOCUMENT
-  const complemented: AutoBeOpenApi.IComponents =
+  const complemented: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
     await orchestrateInterfaceComplement(agent.getContext(), {
       operations,
       components,
     });
 
   // VALIDATE COMPLEMENT
-  const prepraed: Set<string> = new Set(Object.keys(complemented.schemas));
+  const prepraed: Set<string> = new Set(Object.keys(complemented));
   const missed: Set<string> = new Set();
   const visit = (schema: AutoBeOpenApi.IJsonSchema) =>
     OpenApiTypeChecker.visit({
       schema,
-      components: complemented,
+      components: {
+        schemas: complemented,
+      },
       closure: (next) => {
         if (OpenApiTypeChecker.isReference(next)) {
           const key: string = next.$ref.split("/").pop()!;

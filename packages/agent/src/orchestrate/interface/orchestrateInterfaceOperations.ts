@@ -3,15 +3,16 @@ import { AutoBeOpenApi } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { HashMap, HashSet, IPointer } from "tstl";
 import typia from "typia";
+import { NamingConvention } from "typia/lib/utils/NamingConvention";
 
-import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { enforceToolCall } from "../../utils/enforceToolCall";
 import { forceRetry } from "../../utils/forceRetry";
-import { OpenApiEndpointComparator } from "./OpenApiEndpointComparator";
-import { transformInterfaceHistories } from "./transformInterfaceHistories";
+import { transformInterfaceOperationHistories } from "./histories/transformInterfaceOperationHistories";
+import { IAutoBeInterfaceOperationApplication } from "./structures/IAutoBeInterfaceOperationApplication";
+import { OpenApiEndpointComparator } from "./utils/OpenApiEndpointComparator";
 
 export async function orchestrateInterfaceOperations<
   Model extends ILlmSchema.Model,
@@ -24,22 +25,22 @@ export async function orchestrateInterfaceOperations<
     array: endpoints,
     capacity,
   });
-  let completed: number = 0;
+  const progress: IProgress = {
+    total: endpoints.length,
+    completed: 0,
+  };
   const operations: AutoBeOpenApi.IOperation[][] = await Promise.all(
     matrix.map(async (it) => {
       const row: AutoBeOpenApi.IOperation[] = await divideAndConquer(
         ctx,
         it,
         3,
-        (count) => {
-          completed += count;
-        },
+        progress,
       );
       ctx.dispatch({
         type: "interfaceOperations",
         operations: row,
-        completed,
-        total: endpoints.length,
+        ...progress,
         step: ctx.state().analyze?.step ?? 0,
         created_at: new Date().toISOString(),
       });
@@ -53,7 +54,7 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   endpoints: AutoBeOpenApi.IEndpoint[],
   retry: number,
-  progress: (completed: number) => void,
+  progress: IProgress,
 ): Promise<AutoBeOpenApi.IOperation[]> {
   const remained: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(
     endpoints,
@@ -68,15 +69,13 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
   for (let i: number = 0; i < retry; ++i) {
     if (remained.empty() === true || operations.size() >= endpoints.length)
       break;
-    const before: number = operations.size();
     const newbie: AutoBeOpenApi.IOperation[] = await forceRetry(() =>
-      process(ctx, Array.from(remained)),
+      process(ctx, Array.from(remained), progress),
     );
     for (const item of newbie) {
       operations.set(item, item);
       remained.erase(item);
     }
-    if (operations.size() - before !== 0) progress(operations.size() - before);
   }
   return operations.toJSON().map((it) => it.second);
 }
@@ -84,11 +83,12 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   endpoints: AutoBeOpenApi.IEndpoint[],
+  progress: IProgress,
 ): Promise<AutoBeOpenApi.IOperation[]> {
+  const prefix: string = NamingConvention.camel(ctx.state().analyze!.prefix);
   const pointer: IPointer<AutoBeOpenApi.IOperation[] | null> = {
     value: null,
   };
-
   const agentica: MicroAgentica<Model> = new MicroAgentica({
     model: ctx.model,
     vendor: ctx.vendor,
@@ -98,65 +98,74 @@ async function process<Model extends ILlmSchema.Model>(
         describe: null,
       },
     },
-    histories: transformInterfaceHistories(
-      ctx.state(),
-      AutoBeSystemPromptConstant.INTERFACE_ENDPOINT,
-    ),
+    histories: transformInterfaceOperationHistories(ctx.state(), endpoints),
     controllers: [
       createApplication({
         model: ctx.model,
-        roles: ctx.state().analyze?.roles.map((it) => it.name) ?? null,
-        build: (endpoints) => {
+        roles: ctx.state().analyze?.roles.map((it) => it.name) ?? [],
+        build: (operations) => {
           pointer.value ??= [];
-          pointer.value.push(...endpoints);
+          const matrix: AutoBeOpenApi.IOperation[][] = operations.map((op) => {
+            if (op.authorizationRoles.length === 0)
+              return [
+                {
+                  ...op,
+                  path:
+                    "/" +
+                    [prefix, ...op.path.split("/")]
+                      .filter((it) => it !== "")
+                      .join("/"),
+                  authorizationRole: null,
+                },
+              ];
+            return op.authorizationRoles.map((role) => ({
+              ...op,
+              path:
+                "/" +
+                [prefix, role, ...op.path.split("/")]
+                  .filter((it) => it !== "")
+                  .join("/"),
+              authorizationRole: role,
+            }));
+          });
+          progress.completed += matrix.flat().length;
+          progress.total += matrix
+            .filter((it) => it.length > 1)
+            .map((it) => it.length - 1)
+            .reduce((a, b) => a + b, 0);
+          pointer.value.push(...matrix.flat());
         },
       }),
     ],
   });
   enforceToolCall(agentica);
-  await agentica
-    .conversate(
-      [
-        "Make API operations for below endpoints:",
-        "",
-        "**CRITICAL INSTRUCTIONS**:",
-        "1. Base ALL operation descriptions on ACTUAL fields in the Prisma schema",
-        "2. NEVER reference fields that don't exist (e.g., deleted_at, created_by, updated_by)",
-        "3. For DELETE operations:",
-        "   - Check if the entity has soft delete fields in the schema",
-        "   - If YES: Describe soft delete behavior using those fields",
-        "   - If NO: Describe hard delete behavior (permanent removal)",
-        "4. Every field mentioned in descriptions MUST exist in the Prisma schema",
-        "",
-        "```json",
-        JSON.stringify(Array.from(endpoints), null, 2),
-        "```",
-      ].join("\n"),
-    )
-    .finally(() => {
-      const tokenUsage = agentica.getTokenUsage();
-      ctx.usage().record(tokenUsage, ["interface"]);
-    });
+  await agentica.conversate("Make API operations").finally(() => {
+    const tokenUsage = agentica.getTokenUsage();
+    ctx.usage().record(tokenUsage, ["interface"]);
+  });
   if (pointer.value === null) throw new Error("Failed to create operations."); // never be happened
   return pointer.value;
 }
 
 function createApplication<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  roles: string[] | null;
-  build: (operations: AutoBeOpenApi.IOperation[]) => void;
+  roles: string[];
+  build: (
+    operations: IAutoBeInterfaceOperationApplication.IOperation[],
+  ) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
   const application: ILlmApplication<Model> = collection[
     props.model
   ] as unknown as ILlmApplication<Model>;
-  application.functions[0].validate = (next: unknown): IValidation => {
-    const result: IValidation<IMakeOperationProps> =
-      typia.validate<IMakeOperationProps>(next);
+  application.functions[0].validate = (next: unknown) => {
+    const result: IValidation<IAutoBeInterfaceOperationApplication.IProps> =
+      typia.validate<IAutoBeInterfaceOperationApplication.IProps>(next);
     if (result.success === false) return result;
 
-    const operations: AutoBeOpenApi.IOperation[] = result.data.operations;
+    const operations: IAutoBeInterfaceOperationApplication.IOperation[] =
+      result.data.operations;
     const errors: IValidation.IError[] = [];
     operations.forEach((op, i) => {
       if (op.method === "get" && op.requestBody !== null)
@@ -166,23 +175,22 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
             "GET method should not have request body. Change method, or re-design the operation.",
           value: op.requestBody,
         });
-      if (props.roles === null) op.authorizationRole = null;
-      else if (
-        op.authorizationRole !== null &&
-        !!props.roles?.length &&
-        props.roles.find((it) => it === op.authorizationRole) === undefined
-      )
-        errors.push({
-          path: `$input.operations[${i}].authorizationRole`,
-          expected: `null | ${props.roles.map((str) => JSON.stringify(str)).join(" | ")}`,
-          description: [
-            `Role "${op.authorizationRole}" is not defined in the roles list.`,
-            "",
-            "Please select one of them below, or do not define (`null`):  ",
-            "",
-            ...(props.roles ?? []).map((role) => `- ${role}`),
-          ].join("\n"),
-          value: op.authorizationRole,
+      if (props.roles.length === 0) op.authorizationRoles = [];
+      else if (op.authorizationRoles.length !== 0 && props.roles.length !== 0)
+        op.authorizationRoles.forEach((role, j) => {
+          if (props.roles.includes(role) === true) return;
+          errors.push({
+            path: `$input.operations[${i}].authorizationRoles[${j}]`,
+            expected: `null | ${props.roles.map((str) => JSON.stringify(str)).join(" | ")}`,
+            description: [
+              `Role "${role}" is not defined in the roles list.`,
+              "",
+              "Please select one of them below, or do not define (`null`):  ",
+              "",
+              ...props.roles.map((role) => `- ${role}`),
+            ].join("\n"),
+            value: role,
+          });
         });
     });
     if (errors.length !== 0)
@@ -201,18 +209,18 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
       makeOperations: (next) => {
         props.build(next.operations);
       },
-    } satisfies IApplication,
+    } satisfies IAutoBeInterfaceOperationApplication,
   };
 }
 
 const claude = typia.llm.application<
-  IApplication,
+  IAutoBeInterfaceOperationApplication,
   "claude",
   { reference: true }
 >();
 const collection = {
   chatgpt: typia.llm.application<
-    IApplication,
+    IAutoBeInterfaceOperationApplication,
     "chatgpt",
     { reference: true }
   >(),
@@ -222,54 +230,7 @@ const collection = {
   "3.1": claude,
 };
 
-interface IApplication {
-  /**
-   * Generate detailed API operations from path/method combinations.
-   *
-   * This function creates complete API operations following REST principles and
-   * quality standards. Each generated operation includes specification, path,
-   * method, detailed multi-paragraph description, concise summary, parameters,
-   * and appropriate request/response bodies.
-   *
-   * The function processes as many operations as possible in a single call,
-   * with progress tracking to ensure iterative completion of all required
-   * endpoints.
-   *
-   * @param props Properties containing the operations to generate.
-   */
-  makeOperations(props: IMakeOperationProps): void;
-}
-
-interface IMakeOperationProps {
-  /**
-   * Array of API operations to generate.
-   *
-   * Each operation in this array must include:
-   *
-   * - Specification: Detailed API specification with clear purpose and
-   *   functionality
-   * - Path: Resource-centric URL path (e.g., "/resources/{resourceId}")
-   * - Method: HTTP method (get, post, put, delete, patch)
-   * - Description: Extremely detailed multi-paragraph description referencing
-   *   Prisma schema comments
-   * - Summary: Concise one-sentence summary of the endpoint
-   * - Parameters: Array of all necessary parameters with descriptions and schema
-   *   definitions
-   * - RequestBody: For POST/PUT/PATCH methods, with typeName referencing
-   *   components.schemas
-   * - ResponseBody: With typeName referencing appropriate response type
-   *
-   * All operations must follow strict quality standards:
-   *
-   * 1. Detailed descriptions referencing Prisma schema comments
-   * 2. Accurate parameter definitions matching path parameters
-   * 3. Appropriate request/response body type references
-   * 4. Consistent patterns for CRUD operations
-   *
-   * For list retrievals (typically PATCH), include pagination, search, and
-   * sorting. For detail retrieval (GET), return a single resource. For creation
-   * (POST), use .ICreate request body. For modification (PUT), use .IUpdate
-   * request body.
-   */
-  operations: AutoBeOpenApi.IOperation[];
+interface IProgress {
+  completed: number;
+  total: number;
 }

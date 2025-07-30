@@ -1,5 +1,5 @@
 import {
-  AutoBeInterfaceEndpointsEvent,
+  AutoBeInterfaceGroupsEvent,
   AutoBePrismaComponentsEvent,
   AutoBeRealizeTestResetEvent,
   AutoBeTestScenarioEvent,
@@ -39,7 +39,7 @@ export namespace AutoBePlaygroundScenarioEventMovie {
   export interface IProps {
     event:
       | AutoBePrismaComponentsEvent
-      | AutoBeInterfaceEndpointsEvent
+      | AutoBeInterfaceGroupsEvent
       | AutoBeTestScenarioEvent
       | AutoBeRealizeTestResetEvent;
   }
@@ -76,15 +76,15 @@ function getState(
           </>
         ),
       };
-    case "interfaceEndpoints":
+    case "interfaceGroups":
       return {
-        title: "Interface Endpoints",
+        title: "Interface Endpoint Groups",
         description: (
           <>
-            Generating interface endpoints.
+            Generating interface endpoint groups.
             <br />
             <br />
-            Number of API operations would be #{event.endpoints.length}
+            Number of API operation groups would be #{event.groups.length}
           </>
         ),
       };

@@ -8,20 +8,19 @@ import {
 import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
 import { IPointer } from "tstl";
 import typia from "typia";
-import { v4 } from "uuid";
 
-import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { enforceToolCall } from "../../utils/enforceToolCall";
 import { forceRetry } from "../../utils/forceRetry";
-import { transformInterfaceHistories } from "./transformInterfaceHistories";
+import { transformInterfaceComplementHistories } from "./histories/transformInterfaceComplementHistories";
+import { IAutoBeInterfaceComplementApplication } from "./structures/IAutoBeInterfaceComplementApplication";
 
 export function orchestrateInterfaceComplement<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   document: AutoBeOpenApi.IDocument,
   life: number = 8,
-): Promise<AutoBeOpenApi.IComponents> {
+): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   return forceRetry(() => step(ctx, document, life));
 }
 
@@ -29,9 +28,11 @@ async function step<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   document: AutoBeOpenApi.IDocument,
   retry: number,
-): Promise<AutoBeOpenApi.IComponents> {
+): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   const missed: string[] = getMissed(document);
-  if (missed.length === 0 || retry <= 0) return document.components;
+  if (missed.length === 0 || retry <= 0) {
+    return document.components.schemas;
+  }
 
   const pointer: IPointer<Record<
     string,
@@ -48,34 +49,11 @@ async function step<Model extends ILlmSchema.Model>(
         describe: null,
       },
     },
-    histories: [
-      ...transformInterfaceHistories(
-        ctx.state(),
-        AutoBeSystemPromptConstant.INTERFACE_COMPLEMENT,
-      ),
-      {
-        id: v4(),
-        created_at: new Date().toISOString(),
-        type: "assistantMessage",
-        text: [
-          "Here is the OpenAPI document what you've made:",
-          "",
-          "```json",
-          JSON.stringify(document),
-          "```",
-        ].join("\n"),
-      },
-      {
-        id: v4(),
-        created_at: new Date().toISOString(),
-        type: "assistantMessage",
-        text: [
-          "You have missed below schema types in the document.components.schemas:",
-          "",
-          ...missed.map((s) => `- ${s}`),
-        ].join("\n"),
-      },
-    ],
+    histories: transformInterfaceComplementHistories(
+      ctx.state(),
+      document,
+      missed,
+    ),
     controllers: [
       createApplication({
         model: ctx.model,
@@ -114,18 +92,18 @@ async function step<Model extends ILlmSchema.Model>(
     created_at: new Date().toISOString(),
   });
 
-  const newComponents: AutoBeOpenApi.IComponents = {
-    schemas: {
-      ...pointer.value,
-      ...document.components.schemas,
-    },
-    authorization: document.components.authorization,
+  const newSchemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
+    ...pointer.value,
+    ...document.components.schemas,
   };
   return step(
     ctx,
     {
       ...document,
-      components: newComponents,
+      components: {
+        ...document.components,
+        schemas: newSchemas,
+      },
     },
     retry - 1,
   );
@@ -170,18 +148,18 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
       complementComponents: (next) => {
         props.build(next.schemas);
       },
-    } satisfies IApplication,
+    } satisfies IAutoBeInterfaceComplementApplication,
   };
 }
 
 const claude = typia.llm.application<
-  IApplication,
+  IAutoBeInterfaceComplementApplication,
   "claude",
   { reference: true }
 >();
 const collection = {
   chatgpt: typia.llm.application<
-    IApplication,
+    IAutoBeInterfaceComplementApplication,
     "chatgpt",
     { reference: true }
   >(),
@@ -190,56 +168,3 @@ const collection = {
   deepseek: claude,
   "3.1": claude,
 };
-
-interface IApplication {
-  /**
-   * Complements missing schema types
-   *
-   * This method fills in schema definitions that are referenced via $ref but
-   * not yet defined in the `components.schemas` section. For example, if an API
-   * operation references `{ "$ref": "#/components/schemas/UserProfile" }` but
-   * `UserProfile` type is not defined in `components.schemas`, this method will
-   * add the missing schema definition.
-   *
-   * This function is designed to be called via AI function calling mechanism to
-   * ensure the OpenAPI document is complete and all referenced schemas are
-   * properly defined.
-   */
-  complementComponents(props: IComplementComponentsProps): void;
-}
-interface IComplementComponentsProps {
-  /**
-   * A collection of missing schema definitions that need to be added to the
-   * OpenAPI document's `components.schemas` section.
-   *
-   * This object contains schema definitions for types that are referenced but
-   * not yet defined:
-   *
-   * - Key: Schema name (`string`): The name of the schema type that will be
-   *   referenced in $ref statements
-   * - Value: `AutoBeOpenApi.IJsonSchema` - The complete JSON Schema definition
-   *   for that type
-   *
-   * Example structure:
-   *
-   * ```typescript
-   * {
-   *   "UserProfile": {
-   *     "type": "object",
-   *     "properties": {
-   *       "id": { "type": "string" },
-   *       "name": { "type": "string" },
-   *       "email": { "type": "string", "format": "email" }
-   *     },
-   *     "required": ["id", "name", "email"]
-   *   }
-   * }
-   * ```
-   *
-   * Each schema definition follows the JSON Schema specification and will be
-   * directly inserted into the OpenAPI document's components.schemas section,
-   * making them available for $ref references throughout the API
-   * specification.
-   */
-  schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
-}

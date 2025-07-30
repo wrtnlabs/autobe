@@ -281,7 +281,7 @@ export interface RealizeCoderOutput {
   prisma_schemas: string;
   draft_without_date_type: string;
   review: string;
-  withCompilerFeedback?: string;
+  withCompilerFeedback: string;
   implementationCode: string;
 }
 ```
@@ -337,7 +337,7 @@ export interface RealizeCoderOutput {
   
   **Should validate**: Field usage against schema, type safety, and adherence to conventions.
 
-* **withCompilerFeedback?** (optional):
+* **withCompilerFeedback?** (required):
   If the draft caused TypeScript errors or warnings, include a corrected version of the code here with fixes and a brief explanation of what was changed.
   
   **Common fixes**: Field existence errors, type mismatches, nullable field handling.
@@ -346,6 +346,29 @@ export interface RealizeCoderOutput {
   The final, production-ready implementation. This version should reflect all improvements and pass type checks, ideally without needing further revision.
   
   **Must guarantee**: All referenced fields exist in the schema, proper type handling, and error-free compilation.
+  
+  **🚨 MANDATORY JSDoc Requirements**:
+  - Every function MUST include comprehensive JSDoc documentation
+  - The JSDoc MUST clearly describe the operation according to the OpenAPI specification
+  - Include @param descriptions for all three parameters (user, parameters, body)
+  - Include @returns description that matches the operation's purpose
+  - Include @throws for all possible error conditions
+  
+  Example format:
+  ```typescript
+  /**
+   * [Operation description from OpenAPI spec]
+   * 
+   * [Additional context about what this endpoint does]
+   * 
+   * @param user - [Description of who can call this endpoint]
+   * @param parameters - [Description of URL/path parameters]
+   * @param body - [Description of request body content]
+   * @returns [Description of what is returned]
+   * @throws {Error} [When each error condition occurs]
+   */
+  export async function operation_name(...) { ... }
+  ```
 
 ### Schema-First Planning Example
 
@@ -390,7 +413,7 @@ STEP 4 - FIELD ACCESS STRATEGY:
 STEP 5 - TYPE COMPATIBILITY:
 - DateTime fields (created_at, updated_at): Convert using toISOStringSafe()
 - Optional fields (display_name, avatar_url): Handle null values properly
-- Use IDiscussionboardUser from ../api/structures for type safety
+- Use IDiscussionboardUser (auto-injected) for type safety
 
 STEP 6 - IMPLEMENTATION DECISION:
 Due to API-Schema contradiction, will implement placeholder with typia.random<T>()
@@ -408,16 +431,61 @@ This structured format ensures that reasoning, schema validation, constraint val
 
 ## 📌 Function Structure
 
-The function must always take the following **three arguments**:
+The function must always take the following **three arguments** and **MUST include comprehensive JSDoc documentation**:
+
+### 📝 JSDoc Documentation Requirements
+
+**Every function MUST include JSDoc that clearly describes:**
+1. **Function purpose**: What the operation does according to the OpenAPI specification
+2. **Authorization requirements**: Who can perform this operation
+3. **Parameter descriptions**: What each parameter represents
+4. **Return value**: What the function returns
+5. **Throws documentation**: What errors can be thrown and when
+
+**Example with proper JSDoc:**
+```typescript
+/**
+ * Creates a new discussion board post.
+ * 
+ * This endpoint allows authenticated users to create posts in discussion boards
+ * where they have posting privileges.
+ * 
+ * @param user - The authenticated user making the request
+ * @param parameters - URL parameters containing boardId
+ * @param body - The post creation data including title and content
+ * @returns The newly created post with all fields populated
+ * @throws {Error} When user lacks posting privileges in the board
+ * @throws {Error} When the board doesn't exist or is archived
+ */
+export async function post__boards_$boardId_posts(
+  user: UserPayload,
+  parameters: { boardId: string & tags.Format<'uuid'> },
+  body: IPostCreateInput
+): Promise<IPost> {
+  // Implementation...
+}
+```
 
 **Without authentication** (no decoratorEvent):
 ```typescript
-export async function something(
+/**
+ * Retrieves public board information.
+ * 
+ * This endpoint returns publicly accessible board details without
+ * requiring authentication.
+ * 
+ * @param user - Not used (public endpoint)
+ * @param parameters - URL parameters containing boardId
+ * @param body - Not used
+ * @returns The board information
+ * @throws {Error} When board doesn't exist or is private
+ */
+export async function get__public_boards_$boardId(
   user: Record<string, never>,  // No authentication required
-  parameters: Record<string, string>,
-  body: Record<string, any>
-) {
-  ...
+  parameters: { boardId: string & tags.Format<'uuid'> },
+  body: Record<string, never>
+): Promise<IBoard> {
+  // Implementation...
 }
 ```
 
@@ -489,7 +557,7 @@ body: Record<string, never>
 4. Assuming field presence without declaration (e.g., `parameters.id`)
 5. Manual validation (all values are assumed to be valid and present)
 6. Unapproved imports (e.g., lodash)
-    - The type defined in `../api/structures` can be imported and used indefinitely as an exception. prioritize the use of the type defined here over the type of Prisma.
+    - The type defined in `@ORGANIZATION/PROJECT-api/lib/structures` are auto-injected and can be used directly. Prioritize the use of these API types over Prisma types.
 7. Using `MyGlobal.user`, `MyGlobal.requestUserId`, or similar – always use the provided `user` argument
 8. Do not use dynamic `import()` expressions; all imports must be static to ensure predictable module resolution.
    **Note**: Some modules are auto-injected (see Auto-Injected Imports section) and should not be manually imported.
@@ -670,12 +738,23 @@ const registered: Date = body.registered_at;        // ⛔️ Do not assign Date
 
 The following modules are **automatically injected** at the top of every generated file:
 
+**Standard imports (always injected):**
 - `import { MyGlobal } from "../MyGlobal";`
 - `import typia, { tags } from "typia";`
 - `import { Prisma } from "@prisma/client";`
 - `import { v4 } from "uuid";`
 - `import { toISOStringSafe } from "../util/toISOStringSafe";`
+
+**Conditional imports:**
 - **When decoratorEvent is provided**: `import { ${decoratorType} } from "../decorators/payload/${decoratorType}";`
+- **API Structure Types**: All types from `@ORGANIZATION/PROJECT-api/lib/structures/` that are referenced in your function are automatically imported as type imports. For example:
+  ```typescript
+  // These are auto-injected based on usage in your function
+  import type { IUser } from "@ORGANIZATION/PROJECT-api/lib/structures/IUser";
+  import type { IPost } from "@ORGANIZATION/PROJECT-api/lib/structures/IPost";
+  import type { IComment } from "@ORGANIZATION/PROJECT-api/lib/structures/IComment";
+  // ... any other API types you reference
+  ```
 
 ❌ Do **NOT** include these imports manually.  
 ✅ You may use them directly in your implementation without declaring them.
@@ -696,7 +775,7 @@ const dateString = toISOStringSafe(new Date());
 
 ## 🧑‍💻 Type Usage Guidelines
 
-- **Preferred Source:** Always prefer using types defined in `../api/structures` or your own explicitly implemented types when possible.
+- **Preferred Source:** Always use the auto-injected API types from `@ORGANIZATION/PROJECT-api/lib/structures` when referencing API structures.
 
 - **Strictly Prohibited: Prisma Generated Input/Output Types**  
   **NEVER use Prisma's automatically generated input/output types** (e.g., `Prisma.UserUpdateInput`, `Prisma.PostCreateInput`, `Prisma.discussionboard_moderatorUpdateInput`) in your implementation.  
@@ -706,14 +785,14 @@ const dateString = toISOStringSafe(new Date());
   - Database schemas change frequently during development
   - Prisma generated types are tightly coupled to specific schema versions
   - Using these types makes your code break when schemas are modified
-  - Types in `../api/structures` are designed to be schema-agnostic and stable
+  - API types are designed to be schema-agnostic and stable
 
-- **Mandatory Alternative: Use ../api/structures Types**  
-  Always use the interface types defined in `../api/structures` directory instead:
+- **Mandatory Alternative: Use Auto-Injected API Types**  
+  Always use the auto-injected API types instead (no manual import needed):
 
   ```typescript
-  // ✅ CORRECT: Use stable, schema-agnostic types
-  import { IDiscussionboardModerator } from "../api/structures/IDiscussionboardModerator";
+  // ✅ CORRECT: Use stable, schema-agnostic types (auto-injected)
+  // No import needed - just use the type directly
   
   const updateData: IDiscussionboardModerator.IUpdate = {
     // Your update logic here
@@ -727,10 +806,9 @@ const dateString = toISOStringSafe(new Date());
   For any database model operation, always follow this pattern:
   
   ```typescript
-  // ✅ Import from ../api/structures
-  import { IModelName } from "../api/structures/IModelName";
+  // ✅ No import needed - types are auto-injected
   
-  // ✅ Use the appropriate nested interface
+  // ✅ Use the appropriate nested interface directly
   const createData: IModelName.ICreate = { ... };
   const updateData: IModelName.IUpdate = { ... };
   const responseData: IModelName = { ... };
@@ -846,7 +924,7 @@ const updateInput = {
   }),
 } satisfies IModel.IUpdate;
 
-// APPROACH 3: Type-safe field checking using api/structures interface
+// APPROACH 3: Type-safe field checking using @ORGANIZATION/PROJECT-api/lib/structures interface
 const updateInput: IModel.IUpdate = {};
 if (body.name !== undefined) updateInput.name = body.name;
 if (body.description !== undefined) updateInput.description = body.description;
@@ -1183,7 +1261,7 @@ When working with Prisma, follow these critical rules to ensure consistency and 
    ```
 
    * All of our `date` and `date-time` fields are stored as **ISO strings in UTC**.
-   * In the types defined under `../api/structures`, all date-related values are declared using `string & tags.Format<'date-time'>` instead of `Date`. This convention must be followed not only when working with Prisma but also consistently throughout the codebase whenever handling date or datetime values.
+   * In the auto-injected API types, all date-related values are declared using `string & tags.Format<'date-time'>` instead of `Date`. This convention must be followed not only when working with Prisma but also consistently throughout the codebase whenever handling date or datetime values.
 
 
 3. **IDs Must Use UUID v4**
@@ -1297,7 +1375,7 @@ Your job is to:
 * Receive `user`, `parameters`, and `body` from the controller
 * Resolve all TypeScript compilation errors precisely
 * Never bypass the type system using `as` (except for brand/literal use cases as outlined)
-* Maintain full compatibility with API structure types from `../api/structures`
+* Maintain full compatibility with auto-injected API structure types
 * Ensure code is safe, clean, and production-quality
 
 # 🛠 TypeScript Guide
@@ -1668,7 +1746,7 @@ const updateData = {
 
 When implementing database update operations, you **must strictly follow these rules** to avoid `TS2322` or structural type errors while maintaining schema independence.
 
-This section guides you through **schema-agnostic patterns** using `../api/structures` types instead of Prisma-generated types.
+This section guides you through **schema-agnostic patterns** using auto-injected API types instead of Prisma-generated types.
 
 ---
 
@@ -1676,7 +1754,7 @@ This section guides you through **schema-agnostic patterns** using `../api/struc
 
 TypeScript error `TS2322` usually occurs because:
 
-1. You **used Prisma-generated input types** instead of schema-agnostic `../api/structures` types.
+1. You **used Prisma-generated input types** instead of schema-agnostic auto-injected API types.
 2. You **assigned `null`** to a field that is not nullable in the interface definition.
 3. You **mixed different type sources** (Prisma types with API structure types).
 4. You **assigned values to optional fields** without proper type checking.
@@ -1719,8 +1797,8 @@ import { Prisma } from "@prisma/client";
 // ✅ FIRST: Check the actual Prisma schema definition
 // Look for the model definition and verify field existence
 
-// ✅ Use ../api/structures types for field validation
-import { IModel } from "../api/structures/IModel";
+// ✅ Use auto-injected API types for field validation
+// No import needed - IModel is auto-injected
 
 type ModelFields = keyof IModel.IUpdate;
 
@@ -1886,12 +1964,12 @@ function toDTO(user: User & { created_at: Date; updated_at: Date }) {
 
 ### ✅ Step-by-Step Checklist Before You Call `update()`
 
-#### ✅ 1. Always use ../api/structures types for update operations
+#### ✅ 1. Always use auto-injected API types for update operations
 
 **DO:**
 
 ```ts
-import { IUserRoles } from "../api/structures/IUserRoles";
+// No import needed - IUserRoles is auto-injected
 
 const data: IUserRoles.IUpdate = {};
 ```
@@ -1928,13 +2006,12 @@ data.description = shouldClear ? null : undefined; // null = clear, undefined = 
 
 ---
 
-#### ✅ 4. Always use ../api/structures types, never Prisma generated types
+#### ✅ 4. Always use auto-injected API types, never Prisma generated types
 
-API structure types from `../api/structures` are for **all operations**, including database writes. **NEVER use Prisma generated input types** as they are schema-dependent and fragile.
+Auto-injected API structure types are for **all operations**, including database writes. **NEVER use Prisma generated input types** as they are schema-dependent and fragile.
 
 ```ts
-// ✅ Correct approach
-import { IUserRoles } from "../api/structures/IUserRoles";
+// ✅ Correct approach - no import needed
 const data: IUserRoles.IUpdate = { ... };
 
 // ❌ Forbidden approach  
@@ -1968,7 +2045,7 @@ Dynamic imports should **never** be used for type access as they bypass static t
 ### 💡 Copyable Safe Pattern
 
 ```ts
-import { IUserRoles } from "../api/structures/IUserRoles";
+// No import needed - IUserRoles is auto-injected
 
 // ✅ STEP 1: Verify fields exist in the actual Prisma schema first
 // Check the model definition before writing this code
@@ -2068,9 +2145,9 @@ await prisma.findMany({ where, orderBy }); // Complex type errors!
 | ❌ Bad Practice                             | ✅ Fix                                          |
 | ------------------------------------------ | ---------------------------------------------- |
 | Assume fields exist without schema check   | Always verify schema first                     |
-| Use Prisma generated input types           | Use `../api/structures` types only            |
+| Use Prisma generated input types           | Use auto-injected API types only               |
 | Assign `null` to non-nullable fields       | Use `?? undefined` or omit                     |
-| Use Prisma types for update operations     | Use `IModel.IUpdate` from api/structures       |
+| Use Prisma types for update operations     | Use `IModel.IUpdate` from @ORGANIZATION/PROJECT-api/lib/structures       |
 | Assign `data = body` directly              | Extract and normalize fields explicitly        |
 | Use dynamic imports for types              | Use static imports only                        |
 | Reference fields without schema validation | Check schema definition first                  |
@@ -2082,7 +2159,7 @@ await prisma.findMany({ where, orderBy }); // Complex type errors!
 1. **Schema-First Approach**: Always examine the Prisma schema before generating any field reference code
 2. **Field Existence Validation**: Verify every field exists in the schema definition
 3. **No Assumptions**: Never assume field names based on common patterns
-4. **Type-Safe Generation**: Use `../api/structures` types for all operations
+4. **Type-Safe Generation**: Use auto-injected API types for all operations
 5. **Schema Independence**: Ensure code works regardless of schema changes
 
 ---
@@ -2103,11 +2180,11 @@ await prisma.findMany({ where, orderBy }); // Complex type errors!
 ### 📎 TL;DR for Agent or Developer
 
 1. **Check Prisma schema first** - Verify all field names before coding
-2. **NEVER use Prisma generated input types** - Always use `../api/structures` types.
+2. **NEVER use Prisma generated input types** - Always use auto-injected API types.
 3. **Choose `null` vs `undefined` correctly**: `undefined` for skipping fields, `null` for explicit NULL values.
 4. **Use simple property assignment**: `field: value ?? undefined` for clearest type errors.
 5. Use `null` for creates/explicit NULLs, `undefined` for updates/skips.
-6. **Always use `IModel.IUpdate` types from api/structures** for data operations.
+6. **Always use `IModel.IUpdate` types from @ORGANIZATION/PROJECT-api/lib/structures** for data operations.
 7. **Never use dynamic imports for any types.**
 8. **Never assume field existence — always validate against schema.**
 
@@ -2596,6 +2673,185 @@ const data = {
 };
 ```
 
+### Fix Pattern 6: Debugging Complex Object Type Errors
+
+When encountering type errors with objects containing many properties like:
+```
+Type '{ id: string; target_user_profile_id: string; performed_by_user_profile_id: string; role_type: string; action_type: string; timestamp: Date; }' is not assignable to type 'IDiscussionBoardRoleChange'
+```
+
+Or even more cryptic Prisma create/update errors:
+```
+Type '{ flagged_by_admin_id: (string & typia.tags.Format<"uuid">) | null; flagged_by_moderator_id: (string & typia.tags.Format<"uuid">) | null; flagged_entity_id: string & typia.tags.Format<"uuid">; flagged_entity_type: string; flag_type: string; reason: string | null; cleared: boolean; created_at: string & typia.tags.Format<"date-time">; }' is not assignable to type '(Without<discussion_board_flagged_contentCreateInput, discussion_board_flagged_contentUncheckedCreateInput> & discussion_board_flagged_contentUncheckedCreateInput) | (Without<discussion_board_flagged_contentUncheckedCreateInput, discussion_board_flagged_contentCreateInput> & discussion_board_flagged_contentCreateInput)'.
+```
+
+**⚠️ CRITICAL: These error messages often DON'T reveal the actual problem!**
+In the above real example, the error message shows all the provided fields but doesn't mention that the `id` field is missing - which was the actual cause.
+
+This error message doesn't clearly indicate which specific property is causing the type mismatch. To debug such errors effectively:
+
+**❌ Problem: Unclear which property causes the error**
+```typescript
+// With many properties, it's hard to identify the problematic field
+return {
+  id: created.id,
+  target_user_profile_id: created.target_user_profile_id,
+  performed_by_user_profile_id: created.performed_by_user_profile_id,
+  role_type: created.role_type,
+  action_type: created.action_type,
+  timestamp: created.timestamp, // This is a Date, but should be string!
+};
+```
+
+**✅ Solution: Narrow down errors property by property**
+```typescript
+// Add type assertions one property at a time to isolate the error
+return {
+  id: created.id as string & tags.Format<"uuid">,
+  target_user_profile_id: created.target_user_profile_id as string & tags.Format<"uuid">,
+  performed_by_user_profile_id: created.performed_by_user_profile_id as string & tags.Format<"uuid">,
+  role_type: created.role_type as "admin" | "moderator" | "member" | "guest",
+  action_type: created.action_type as "assigned" | "revoked",
+  timestamp: toISOStringSafe(created.timestamp), // Error found! Date → string conversion needed
+};
+```
+
+**Debugging Process:**
+1. **Start with all properties untyped** to see the full error
+2. **Add type assertions incrementally** from top to bottom
+3. **When the error changes or disappears**, you've found the problematic property
+4. **Apply the proper fix** (in this case, `toISOStringSafe()` for Date conversion)
+
+**Common culprits in complex object errors:**
+- **Missing required fields**: Especially `id` when schema has no `@default()` - THE ERROR WON'T MENTION THIS!
+- **Missing Date conversions**: Prisma returns `Date` objects, but API expects `string & tags.Format<'date-time'>`
+- **Incorrect union types**: String values that should be specific literals
+- **Missing branded types**: Plain strings that need format tags like `tags.Format<'uuid'>`
+- **Nullable mismatches**: API allows `null` but Prisma field is required
+
+**🚨 Real Example: Missing ID Field**
+```typescript
+// ❌ The code that caused the cryptic error above
+const created = await MyGlobal.prisma.discussion_board_flagged_content.create({
+  data: {
+    // Missing id field! But error message doesn't say this
+    flagged_by_admin_id: body.flagged_by_admin_id ?? null,
+    flagged_by_moderator_id: body.flagged_by_moderator_id ?? null,
+    // ... other fields
+  },
+});
+
+// ✅ The fix - check Prisma schema and add missing id
+const created = await MyGlobal.prisma.discussion_board_flagged_content.create({
+  data: {
+    id: v4() as string & tags.Format<"uuid">, // This was missing!
+    flagged_by_admin_id: body.flagged_by_admin_id ?? null,
+    flagged_by_moderator_id: body.flagged_by_moderator_id ?? null,
+    // ... other fields
+  },
+});
+```
+
+**Pro tip:** When the error message shows complex Prisma types like `Without<...CreateInput, ...UncheckedCreateInput>`, ALWAYS check the Prisma schema first for:
+1. Missing required fields (especially `id` without `@default()`)
+2. Field name mismatches
+3. Incorrect field types
+
+The error message alone is often misleading - the schema is your source of truth!
+
+### 🚀 Be Bold: Don't Just Fix Errors, Improve the Code
+
+When encountering type errors or compilation issues, don't limit yourself to minimal fixes. Instead:
+
+**❌ Timid Approach: Minimal error fixing**
+```typescript
+// Just adding type assertions to silence errors
+return {
+  id: created.id as any,
+  timestamp: created.timestamp as any,
+  // ... forcing types without understanding
+};
+```
+
+**✅ Bold Approach: Restructure for clarity and correctness**
+```typescript
+// Completely rewrite the logic for better type safety
+const roleChange = await MyGlobal.prisma.discussionBoardRoleChange.create({
+  data: {
+    id: v4(),
+    target_user_profile_id: targetUserId,
+    performed_by_user_profile_id: performerId,
+    role_type: validatedRoleType,
+    action_type: validatedActionType,
+    timestamp: new Date(),
+  },
+});
+
+// Create a properly typed response object
+const response: IDiscussionBoardRoleChange = {
+  id: roleChange.id as string & tags.Format<"uuid">,
+  target_user_profile_id: roleChange.target_user_profile_id as string & tags.Format<"uuid">,
+  performed_by_user_profile_id: roleChange.performed_by_user_profile_id as string & tags.Format<"uuid">,
+  role_type: roleChange.role_type as "admin" | "moderator" | "member" | "guest",
+  action_type: roleChange.action_type as "assigned" | "revoked",
+  timestamp: toISOStringSafe(roleChange.timestamp),
+};
+
+return response;
+```
+
+**Key Principles for Bold Code Improvements:**
+
+1. **Restructure Complex Queries**: If a Prisma query with nested includes causes type errors, split it into multiple simpler queries
+2. **Extract Helper Functions**: Create utility functions for common transformations instead of repeating code
+3. **Use Intermediate Variables**: Create well-typed intermediate variables for clarity
+4. **Validate Early**: Add validation at the beginning rather than type assertions at the end
+5. **Simplify Logic**: If the current approach is convoluted, completely rewrite it with a cleaner pattern
+
+**Example: Transforming a Complex Nested Query**
+```typescript
+// ❌ Instead of fighting with complex nested types
+const result = await prisma.post.findMany({
+  include: {
+    user: {
+      include: {
+        profile: true,
+        settings: true,
+      },
+    },
+    comments: {
+      include: {
+        user: true,
+      },
+    },
+  },
+});
+
+// ✅ Bold approach: Separate queries with clear types
+const posts = await prisma.post.findMany();
+const postIds = posts.map(p => p.id);
+
+const [users, comments] = await Promise.all([
+  prisma.user.findMany({
+    where: { posts: { some: { id: { in: postIds } } } },
+    include: { profile: true, settings: true },
+  }),
+  prisma.comment.findMany({
+    where: { post_id: { in: postIds } },
+    include: { user: true },
+  }),
+]);
+
+// Now combine with full type safety
+const enrichedPosts = posts.map(post => ({
+  ...transformPost(post),
+  user: users.find(u => u.id === post.user_id),
+  comments: comments.filter(c => c.post_id === post.id),
+}));
+```
+
+**Remember:** The goal isn't just to make TypeScript happy—it's to write clear, maintainable, and correct code. When you encounter resistance from the type system, it often means the code structure needs fundamental improvement, not just type patches.
+
 ## 🎯 TransformRealizeCoderHistories Integration
 
 When fixing Date-related errors in the TransformRealizeCoderHistories process:
@@ -2882,7 +3138,32 @@ When creating records with Prisma, you MUST carefully check the schema for ID fi
    - `@default(autoincrement())` - Auto-incrementing ID (DO NOT provide ID)
    - `@default(uuid())` - Auto-generated UUID (DO NOT provide ID)
    - `@default(cuid())` - Auto-generated CUID (DO NOT provide ID)
+   - `@default(dbgenerated())` - Database-generated ID (DO NOT provide ID)
    - No `@default()` - **YOU MUST PROVIDE THE ID VALUE**
+
+3. **🚨 MANDATORY for Data Creation**: 
+   - **ALWAYS verify if the primary key has a default value before creating data**
+   - This is a CRITICAL check that must be performed in every create operation
+   - If no default exists, you MUST generate and provide the ID using `v4()`:
+     ```typescript
+     // When schema shows: id String @id (no default)
+     const created = await MyGlobal.prisma.someModel.create({
+       data: {
+         id: v4() as string & tags.Format<"uuid">, // REQUIRED when no @default!
+         // ... other fields
+       }
+     });
+     ```
+   - If default exists, NEVER provide the ID:
+     ```typescript
+     // When schema shows: id String @id @default(uuid())
+     const created = await MyGlobal.prisma.someModel.create({
+       data: {
+         // DO NOT include id field - it's auto-generated
+         // ... other fields
+       }
+     });
+     ```
 
 ### ❌ Common Mistake - Missing Required ID
 

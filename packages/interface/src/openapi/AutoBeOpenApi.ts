@@ -838,7 +838,7 @@ export namespace AutoBeOpenApi {
     schemas: Record<string, IJsonSchemaDescriptive>;
 
     /** Whether includes `Authorization` header or not. */
-    authorization?: IAuthorization[];
+    authorization: IAuthorization[];
   }
 
   /**
@@ -1217,8 +1217,35 @@ export namespace AutoBeOpenApi {
      * The path structure should clearly indicate which database entity this
      * operation is manipulating, helping to ensure all entities have
      * appropriate API coverage.
+     *
+     * Path validation rules:
+     *
+     * - Must start with a forward slash (/)
+     * - Can contain only: letters (a-z, A-Z), numbers (0-9), forward slashes (/),
+     *   curly braces for parameters ({paramName}), hyphens (-), and underscores
+     *   (_)
+     * - Parameters must be enclosed in curly braces: {paramName}
+     * - Resource names should be in camelCase
+     * - No quotes, spaces, or invalid special characters allowed
+     * - No domain or role-based prefixes
+     *
+     * Valid examples:
+     *
+     * - "/users"
+     * - "/users/{userId}"
+     * - "/articles/{articleId}/comments"
+     * - "/attachmentFiles"
+     * - "/orders/{orderId}/items/{itemId}"
+     *
+     * Invalid examples:
+     *
+     * - "'/users'" (contains quotes)
+     * - "/user profile" (contains space)
+     * - "/users/[userId]" (wrong bracket format)
+     * - "/admin/users" (role prefix)
+     * - "/api/v1/users" (API prefix)
      */
-    path: string;
+    path: string & tags.Pattern<"^\\/[a-zA-Z0-9\\/_{}.-]*$">;
 
     /**
      * HTTP method of the API operation.

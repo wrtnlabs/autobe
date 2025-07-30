@@ -287,8 +287,10 @@ export namespace IAutoBeRealizeCoderApplication {
      * - Resolve all TypeScript errors without using `as any`.
      * - Provide safe brand casting only if required (e.g., `as string &
      *   tags.Format<'uuid'>`).
+     * - If no TypeScript errors exist, this field MUST contain the text:
+     *   "No TypeScript errors detected - skipping this phase"
      */
-    withCompilerFeedback?: string;
+    withCompilerFeedback: string;
 
     /**
      * Step 5.

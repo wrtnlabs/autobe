@@ -1,4 +1,4 @@
-import { orchestrateInterfaceComponents } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceComponents";
+import { orchestrateInterfaceSchemas } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceSchemas";
 import { FileSystemIterator } from "@autobe/filesystem";
 import { AutoBeOpenApi } from "@autobe/interface";
 import fs from "fs";
@@ -9,7 +9,7 @@ import { TestGlobal } from "../../../TestGlobal";
 import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_interface } from "./prepare_agent_interface";
 
-export const validate_agent_interface_components = async (
+export const validate_agent_interface_schemas = async (
   factory: TestFactory,
   project: TestProject,
 ) => {
@@ -26,10 +26,11 @@ export const validate_agent_interface_components = async (
   typia.assert(operations);
 
   // GENERATE COMPONENTS
-  const components: AutoBeOpenApi.IComponents =
-    await orchestrateInterfaceComponents(agent.getContext(), operations);
+  const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
+    await orchestrateInterfaceSchemas(agent.getContext(), operations);
+  typia.assert(schemas);
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${project}/interface/components`,
+    root: `${TestGlobal.ROOT}/results/${project}/interface/schemas`,
     files: {
       ...(await agent.getFiles()),
       "logs/endpoints.json": JSON.stringify(
@@ -41,8 +42,13 @@ export const validate_agent_interface_components = async (
         2,
       ),
       "logs/operations.json": JSON.stringify(operations),
-      "logs/components.json": JSON.stringify(components),
+      "logs/schemas.json": JSON.stringify(schemas),
     },
   });
-  typia.assert(components);
+  if (process.argv.includes("--archive"))
+    await fs.promises.writeFile(
+      `${TestGlobal.ROOT}/assets/histories/${project}.interface.schemas.json`,
+      JSON.stringify(schemas),
+      "utf8",
+    );
 };

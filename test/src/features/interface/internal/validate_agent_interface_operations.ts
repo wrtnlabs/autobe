@@ -28,15 +28,33 @@ export const validate_agent_interface_operations = async (
   // GENERATE OPERATIONS
   const operations: AutoBeOpenApi.IOperation[] =
     await orchestrateInterfaceOperations(agent.getContext(), endpoints);
+  typia.assert(operations);
 
   // REPORT RESULT
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${project}/interface/components`,
+    root: `${TestGlobal.ROOT}/results/${project}/interface/operations`,
     files: {
       ...(await agent.getFiles()),
-      "logs/endpoints.json": JSON.stringify(endpoints),
+      "logs/endpoints.json": JSON.stringify(
+        operations.map((op) => ({
+          path: op.path,
+          method: op.method,
+        })),
+        null,
+        2,
+      ),
+      "logs/paths.json": JSON.stringify(
+        Array.from(new Set(operations.map((op) => op.path))),
+        null,
+        2,
+      ),
       "logs/operations.json": JSON.stringify(operations),
     },
   });
-  typia.assert(operations);
+  if (process.argv.includes("--archive"))
+    await fs.promises.writeFile(
+      `${TestGlobal.ROOT}/assets/histories/${project}.interface.operations.json`,
+      JSON.stringify(operations),
+      "utf8",
+    );
 };

@@ -2,11 +2,24 @@ import { IAutoBeCompiler } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 
 import { AutoBeContext } from "../../../context/AutoBeContext";
+import { IAutoBeTestScenarioArtifacts } from "../../test/structures/IAutoBeTestScenarioArtifacts";
 
 export function replaceImportStatements<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
 ) {
-  return async function (code: string, decoratorType?: string) {
+  return async function (
+    artifacts: IAutoBeTestScenarioArtifacts,
+    code: string,
+    decoratorType?: string,
+  ) {
+    const typeReferences: string[] = Array.from(
+      new Set(
+        Object.keys(artifacts.document.components.schemas).map(
+          (key) => key.split(".")[0]!,
+        ),
+      ),
+    );
+
     const compiler: IAutoBeCompiler = await ctx.compiler();
     code = await compiler.typescript.beautify(code);
     // Remove existing import statements using flexible regex patterns
@@ -35,6 +48,28 @@ export function replaceImportStatements<Model extends ILlmSchema.Model>(
         "",
       );
 
+    // Remove any existing API structure imports
+    // Pattern 1: ../api/structures path
+    code = code.replace(
+      /import\s*(?:type\s*)?{\s*[^}]+\s*}\s*from\s*["']\.\.\/api\/structures\/[^"']+["']\s*;?\s*/gm,
+      "",
+    );
+    // Pattern 2: @ORGANIZATION/PROJECT-api/lib/structures path
+    code = code.replace(
+      /import\s*(?:type\s*)?{\s*[^}]+\s*}\s*from\s*["']@ORGANIZATION\/PROJECT-api\/lib\/structures\/[^"']+["']\s*;?\s*/gm,
+      "",
+    );
+    
+    // Remove specific type imports that match our typeReferences
+    for (const ref of typeReferences) {
+      // Remove any import of this specific type from any path
+      const typeImportRegex = new RegExp(
+        `import\\s*(?:type\\s*)?{\\s*${ref}\\s*}\\s*from\\s*["'][^"']+["']\\s*;?\\s*`,
+        "gm",
+      );
+      code = code.replace(typeImportRegex, "");
+    }
+
     // Remove any existing decoratorType imports if LLM mistakenly added them
     if (decoratorType) {
       const decoratorTypeRegex = new RegExp(
@@ -51,6 +86,10 @@ export function replaceImportStatements<Model extends ILlmSchema.Model>(
       'import { Prisma } from "@prisma/client";',
       'import { v4 } from "uuid";',
       'import { toISOStringSafe } from "../util/toISOStringSafe"',
+      ...typeReferences.map(
+        (ref) =>
+          `import { ${ref} } from "@ORGANIZATION/PROJECT-api/lib/structures/${ref}";`,
+      ),
     ];
 
     // Only add decoratorType import if it exists

@@ -69,25 +69,30 @@ export class AutoBePlaygroundListener {
 
       // INTERFACE
       interfaceStart: async (event) => {
+        this.state_.delete("interfaceEndpoints");
         this.state_.delete("interfaceOperations");
-        this.state_.delete("interfaceComponents");
+        this.state_.delete("interfaceSchemas");
+        this.insert(event);
+      },
+      interfaceGroups: async (event) => {
         this.insert(event);
       },
       interfaceEndpoints: async (event) => {
-        this.insert(event);
+        this.accumulate(event);
       },
       interfaceOperations: async (event) => {
         this.accumulate(event);
       },
-      interfaceComponents: async (event) => {
+      interfaceSchemas: async (event) => {
         this.accumulate(event);
       },
       interfaceComplement: async (event) => {
         this.insert(event);
       },
       interfaceComplete: async (event) => {
+        this.state_.delete("interfaceEndpoints");
         this.state_.delete("interfaceOperations");
-        this.state_.delete("interfaceComponents");
+        this.state_.delete("interfaceSchemas");
         this.insert(event);
       },
 

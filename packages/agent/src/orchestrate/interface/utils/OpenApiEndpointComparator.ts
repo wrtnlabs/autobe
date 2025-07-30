@@ -12,4 +12,12 @@ export namespace OpenApiEndpointComparator {
   ): boolean {
     return x.path === y.path && x.method === y.method;
   }
+
+  export function compare(
+    x: AutoBeOpenApi.IEndpoint,
+    y: AutoBeOpenApi.IEndpoint,
+  ): number {
+    if (x.path !== y.path) return x.path.localeCompare(y.path);
+    return x.method.localeCompare(y.method);
+  }
 }

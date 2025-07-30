@@ -57,6 +57,7 @@ export class AutoBeTypeScriptCompiler implements IAutoBeTypeScriptCompiler {
         esModuleInterop: true,
         experimentalDecorators: true,
         emitDecoratorMetadata: true,
+        noErrorTruncation: true,
       },
       transformers: (program, diagnostics) => ({
         before: [
@@ -77,10 +78,12 @@ export class AutoBeTypeScriptCompiler implements IAutoBeTypeScriptCompiler {
         ],
       }),
     });
+
     const result: IEmbedTypeScriptResult = await compiler.compile({
       ...props.files,
       ...(props.prisma ?? {}),
     });
+
     return result.type === "success"
       ? { type: "success" }
       : result.type === "failure"

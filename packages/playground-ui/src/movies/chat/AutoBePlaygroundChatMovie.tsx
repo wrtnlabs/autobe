@@ -42,6 +42,7 @@ export function AutoBePlaygroundChatMovie(
   // STATES
   const [error, setError] = useState<Error | null>(null);
   const [text, setText] = useState("");
+  const [emptyText, setEmptyText] = useState(false);
   const [eventGroups, setEventGroups] = useState<IAutoBePlaygroundEventGroup[]>(
     props?.eventGroups ?? [],
   );
@@ -81,6 +82,11 @@ export function AutoBePlaygroundChatMovie(
 
   const conversate = async () => {
     setText("");
+    if (text.trim().length === 0) {
+      setEmptyText(true);
+      return;
+    }
+    setEmptyText(false);
     setEnabled(false);
     handleResize();
     try {
@@ -229,7 +235,11 @@ export function AutoBePlaygroundChatMovie(
           <Input
             inputRef={inputRef}
             fullWidth
-            placeholder="Conversate with AI Chatbot"
+            placeholder={
+              emptyText
+                ? "Cannot send empty message"
+                : "Conversate with AI Chatbot"
+            }
             value={text}
             multiline={true}
             onKeyUp={(e) => void handleKeyUp(e).catch(() => {})}
@@ -237,6 +247,7 @@ export function AutoBePlaygroundChatMovie(
               setText(e.target.value);
               handleResize();
             }}
+            error={emptyText}
           />
           <Button
             variant="contained"

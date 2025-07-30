@@ -1,7 +1,8 @@
 import {
   AutoBeAnalyzeWriteEvent,
-  AutoBeInterfaceComponentsEvent,
+  AutoBeInterfaceEndpointsEvent,
   AutoBeInterfaceOperationsEvent,
+  AutoBeInterfaceSchemasEvent,
   AutoBePrismaSchemasEvent,
   AutoBeRealizeAuthorizationWriteEvent,
   AutoBeRealizeProgressEvent,
@@ -58,8 +59,9 @@ export namespace AutoBePlaygroundProgressEventMovie {
     event:
       | AutoBeAnalyzeWriteEvent
       | AutoBePrismaSchemasEvent
+      | AutoBeInterfaceEndpointsEvent
       | AutoBeInterfaceOperationsEvent
-      | AutoBeInterfaceComponentsEvent
+      | AutoBeInterfaceSchemasEvent
       | AutoBeTestWriteEvent
       | AutoBeRealizeProgressEvent
       | AutoBeRealizeAuthorizationWriteEvent
@@ -90,14 +92,19 @@ function getState(
           title: "Prisma Schemas",
           description: "Designing Database schemas",
         };
+      case "interfaceEndpoints":
+        return {
+          title: "Interface Endpoints",
+          description: "Designing API endpoints",
+        };
       case "interfaceOperations":
         return {
           title: "Interface Operations",
           description: "Designing API operations",
         };
-      case "interfaceComponents":
+      case "interfaceSchemas":
         return {
-          title: "Interface Components",
+          title: "Interface Schemas",
           description: "Designing API type schemas",
         };
       case "testWrite":

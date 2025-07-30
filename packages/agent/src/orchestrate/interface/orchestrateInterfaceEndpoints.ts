@@ -1,31 +1,47 @@
+import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import {
-  AgenticaAssistantMessageHistory,
-  IAgenticaController,
-  MicroAgentica,
-  MicroAgenticaHistory,
-} from "@agentica/core";
-import {
-  AutoBeAssistantMessageHistory,
   AutoBeInterfaceEndpointsEvent,
   AutoBeOpenApi,
 } from "@autobe/interface";
+import { AutoBeInterfaceGroup } from "@autobe/interface/src/histories/contents/AutoBeInterfaceGroup";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { HashSet, IPointer } from "tstl";
 import typia from "typia";
-import { v4 } from "uuid";
 
-import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { OpenApiEndpointComparator } from "./OpenApiEndpointComparator";
-import { transformInterfaceHistories } from "./transformInterfaceHistories";
+import { enforceToolCall } from "../../utils/enforceToolCall";
+import { transformInterfaceEndpointHistories } from "./histories/transformInterfaceEndpointHistories";
+import { IAutoBeInterfaceEndpointApplication } from "./structures/IAutoBeInterfaceEndpointApplication";
+import { OpenApiEndpointComparator } from "./utils/OpenApiEndpointComparator";
 
 export async function orchestrateInterfaceEndpoints<
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
-  content: string = "Make API endpoints for the given assets.",
-): Promise<AutoBeInterfaceEndpointsEvent | AutoBeAssistantMessageHistory> {
+  groups: AutoBeInterfaceGroup[],
+  content: string = `Make endpoints for the given assets`,
+): Promise<AutoBeOpenApi.IEndpoint[]> {
+  const progress: IProgress = {
+    total: groups.length,
+    completed: 0,
+  };
+  const endpoints: AutoBeOpenApi.IEndpoint[] = (
+    await Promise.all(groups.map((g) => process(ctx, g, content, progress)))
+  ).flat();
+  return new HashSet(
+    endpoints,
+    OpenApiEndpointComparator.hashCode,
+    OpenApiEndpointComparator.equals,
+  ).toJSON();
+}
+
+async function process<Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  group: AutoBeInterfaceGroup,
+  content: string,
+  progress: IProgress,
+): Promise<AutoBeOpenApi.IEndpoint[]> {
   const start: Date = new Date();
   const pointer: IPointer<AutoBeOpenApi.IEndpoint[] | null> = {
     value: null,
@@ -39,10 +55,7 @@ export async function orchestrateInterfaceEndpoints<
         describe: null,
       },
     },
-    histories: transformInterfaceHistories(
-      ctx.state(),
-      AutoBeSystemPromptConstant.INTERFACE_ENDPOINT,
-    ),
+    histories: transformInterfaceEndpointHistories(ctx.state(), group),
     controllers: [
       createApplication({
         model: ctx.model,
@@ -53,23 +66,14 @@ export async function orchestrateInterfaceEndpoints<
       }),
     ],
   });
+  enforceToolCall(agentica);
 
-  const histories: MicroAgenticaHistory<Model>[] = await agentica
-    .conversate(content)
-    .finally(() => {
-      const tokenUsage = agentica.getTokenUsage();
-      ctx.usage().record(tokenUsage, ["interface"]);
-    });
-  if (histories.at(-1)?.type === "assistantMessage")
-    return {
-      ...(histories.at(-1)! as AgenticaAssistantMessageHistory),
-      created_at: start.toISOString(),
-      completed_at: new Date().toISOString(),
-      id: v4(),
-    } satisfies AutoBeAssistantMessageHistory;
-  else if (pointer.value === null)
-    throw new Error("Failed to generate endpoints."); // unreachable
-  return {
+  await agentica.conversate(content).finally(() => {
+    const tokenUsage = agentica.getTokenUsage();
+    ctx.usage().record(tokenUsage, ["interface"]);
+  });
+  if (pointer.value === null) throw new Error("Failed to generate endpoints."); // unreachable
+  const event: AutoBeInterfaceEndpointsEvent = {
     type: "interfaceEndpoints",
     endpoints: new HashSet(
       pointer.value,
@@ -78,7 +82,11 @@ export async function orchestrateInterfaceEndpoints<
     ).toJSON(),
     created_at: start.toISOString(),
     step: ctx.state().analyze?.step ?? 0,
-  } satisfies AutoBeInterfaceEndpointsEvent;
+    completed: ++progress.completed,
+    total: progress.total,
+  };
+  ctx.dispatch(event);
+  return pointer.value;
 }
 
 function createApplication<Model extends ILlmSchema.Model>(props: {
@@ -98,18 +106,18 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
       makeEndpoints: (next) => {
         props.build(next.endpoints);
       },
-    } satisfies IApplication,
+    } satisfies IAutoBeInterfaceEndpointApplication,
   };
 }
 
 const claude = typia.llm.application<
-  IApplication,
+  IAutoBeInterfaceEndpointApplication,
   "claude",
   { reference: true }
 >();
 const collection = {
   chatgpt: typia.llm.application<
-    IApplication,
+    IAutoBeInterfaceEndpointApplication,
     "chatgpt",
     { reference: true }
   >(),
@@ -119,22 +127,7 @@ const collection = {
   "3.1": claude,
 };
 
-interface IApplication {
-  /**
-   * Create Restful API endpoints.
-   *
-   * Create Restful API endpoints referencing the given documents; requirement
-   * analysis documents, and Prisma schema files with ERD descriptions. The API
-   * endpoints must cover every requirements and every entities in the ERD.
-   *
-   * Also, each combination of {@link AutoBeOpenApi.IEndpoint.path} and
-   * {@link AutoBeOpenApi.IEndpoint.method} must be unique to avoid duplicates.
-   * Please don't make any duplicates.
-   *
-   * @param props Properties containing the endpoints
-   */
-  makeEndpoints(props: {
-    /** List of endpoints to generate. */
-    endpoints: AutoBeOpenApi.IEndpoint[];
-  }): void;
+interface IProgress {
+  total: number;
+  completed: number;
 }

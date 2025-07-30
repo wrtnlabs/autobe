@@ -38,6 +38,26 @@ export interface AutoBeInterfaceEndpointsEvent
   endpoints: AutoBeOpenApi.IEndpoint[];
 
   /**
+   * Number of API endpoints that have been created so far.
+   *
+   * Indicates the current progress in the endpoint creation process, showing
+   * how many API endpoints have been successfully defined. This progress
+   * tracking helps stakeholders monitor the advancement of the API design and
+   * understand completion timing.
+   */
+  completed: number;
+
+  /**
+   * Total number of API endpoints that are planned to be created.
+   *
+   * This value represents the overall scope of the API design effort,
+   * indicating how many endpoints are expected to be defined in total. It
+   * serves as a benchmark for measuring progress and completion against the
+   * initial design goals.
+   */
+  total: number;
+
+  /**
    * Iteration number of the requirements analysis this endpoint creation was
    * performed for.
    *

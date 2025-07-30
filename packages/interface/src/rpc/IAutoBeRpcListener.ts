@@ -6,9 +6,9 @@ import {
   AutoBeAssistantMessageEvent,
   AutoBeInterfaceComplementEvent,
   AutoBeInterfaceCompleteEvent,
-  AutoBeInterfaceComponentsEvent,
   AutoBeInterfaceEndpointsEvent,
   AutoBeInterfaceOperationsEvent,
+  AutoBeInterfaceSchemasEvent,
   AutoBeInterfaceStartEvent,
   AutoBePrismaCompleteEvent,
   AutoBePrismaComponentsEvent,
@@ -36,6 +36,7 @@ import {
   AutoBeTestWriteEvent,
   AutoBeUserMessageEvent,
 } from "../events";
+import { AutoBeInterfaceGroupsEvent } from "../events/AutoBeInterfaceGroupsEvent";
 import { AutoBeRealizeAuthorizationCompleteEvent } from "../events/AutoBeRealizeAuthorizationCompleteEvent";
 import { AutoBeRealizeAuthorizationStartEvent } from "../events/AutoBeRealizeAuthorizationStartEvent";
 
@@ -210,6 +211,18 @@ export interface IAutoBeRpcListener {
   interfaceStart?(event: AutoBeInterfaceStartEvent): Promise<void>;
 
   /**
+   * Optional handler for API interface group creation events.
+   *
+   * Called when the Interface agent generates groups of API endpoints based on
+   * the organized database schemas, enabling client applications to show the
+   * initial scope of API surface area being designed and track progress in the
+   * interface design phase.
+   *
+   * @param event The event containing the created interface groups.
+   */
+  interfaceGroups?(event: AutoBeInterfaceGroupsEvent): Promise<void>;
+
+  /**
    * Optional handler for API endpoint creation events.
    *
    * Called when the complete list of API endpoints is established, allowing
@@ -234,7 +247,7 @@ export interface IAutoBeRpcListener {
    * applications to show progress in type definition and data structure
    * development for the API specification.
    */
-  interfaceComponents?(event: AutoBeInterfaceComponentsEvent): Promise<void>;
+  interfaceSchemas?(event: AutoBeInterfaceSchemasEvent): Promise<void>;
 
   /**
    * Optional handler for API schema complement events.
@@ -328,8 +341,8 @@ export interface IAutoBeRpcListener {
    * Optional handler for authorization implementation start events.
    *
    * Called when the Realize agent begins implementing authentication and
-   * authorization components, including providers, payloads, and decorators
-   * for role-based access control.
+   * authorization components, including providers, payloads, and decorators for
+   * role-based access control.
    */
   realizeAuthorizationStart?(
     event: AutoBeRealizeAuthorizationStartEvent,
@@ -338,9 +351,9 @@ export interface IAutoBeRpcListener {
   /**
    * Optional handler for authorization implementation progress events.
    *
-   * Called when the Realize agent generates authorization components (providers,
-   * payloads, decorators) for each user role, enabling client applications to
-   * track the progress of authorization system implementation.
+   * Called when the Realize agent generates authorization components
+   * (providers, payloads, decorators) for each user role, enabling client
+   * applications to track the progress of authorization system implementation.
    */
   realizeAuthorizationWrite?(
     event: AutoBeRealizeAuthorizationWriteEvent,
@@ -351,8 +364,8 @@ export interface IAutoBeRpcListener {
    *
    * Called when the Realize agent validates the generated authorization
    * components (providers, payloads, decorators), enabling client applications
-   * to show quality assurance processes and potential correction activities
-   * for the authentication and authorization system.
+   * to show quality assurance processes and potential correction activities for
+   * the authentication and authorization system.
    */
   realizeAuthorizationValidate?(
     event: AutoBeRealizeAuthorizationValidateEvent,
@@ -362,9 +375,9 @@ export interface IAutoBeRpcListener {
    * Optional handler for authorization correction events.
    *
    * Called when the Realize agent corrects compilation failures in the
-   * generated authorization implementation code (providers, payloads, decorators),
-   * enabling client applications to show that issues are being resolved
-   * automatically through iterative improvement.
+   * generated authorization implementation code (providers, payloads,
+   * decorators), enabling client applications to show that issues are being
+   * resolved automatically through iterative improvement.
    */
   realizeAuthorizationCorrect?(
     event: AutoBeRealizeAuthorizationCorrectEvent,

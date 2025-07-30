@@ -5,9 +5,11 @@ import {
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
+import { HashMap } from "tstl";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { arrayToRecord } from "../../utils/arrayToRecord";
+import { ProviderCodeComparator } from "./ProviderCodeComparator";
 import { pipe } from "./RealizePipe";
 import { orchestrateRealizeCoder } from "./orchestrateRealizeCoder";
 import { orchestrateRealizePlanner } from "./orchestrateRealizePlanner";
@@ -44,6 +46,18 @@ export async function writeCodeUntilCompilePassed<
     total: [],
   };
 
+  const histories: HashMap<
+    AutoBeOpenApi.IEndpoint,
+    IAutoBeRealizeCompile.Success[]
+  > = new HashMap(
+    ProviderCodeComparator.hashCode,
+    ProviderCodeComparator.equals,
+  );
+
+  for (const op of ops) {
+    histories.set(op, []);
+  }
+
   for (let i = 0; i < retry; i++) {
     const targets = ops.filter((op) =>
       shouldProcessOperation(op, diagnostics.current),
@@ -58,21 +72,33 @@ export async function writeCodeUntilCompilePassed<
         const role = op.authorizationRole;
         const decorator = authorizations.find((el) => el.role === role);
 
-        return process(ctx, metadata, op, diagnostics, entireCodes, decorator);
+        return process(
+          ctx,
+          metadata,
+          op,
+          histories.get(op),
+          diagnostics,
+          entireCodes,
+          decorator,
+        );
       }),
     );
 
-    for (const c of generatedCodes) {
-      if (c.type === "success") {
-        entireCodes[c.result.filename] = {
-          content: c.result.implementationCode,
+    for (const code of generatedCodes) {
+      if (code.type === "success") {
+        const response = histories.get(code.op);
+        response.push(code);
+        histories.set(code.op, response);
+
+        entireCodes[code.result.filename] = {
+          content: code.result.implementationCode,
           result: "success",
           endpoint: {
-            method: c.op.method,
-            path: c.op.path,
+            method: code.op.method,
+            path: code.op.path,
           },
-          location: c.result.filename,
-          name: c.result.name,
+          location: code.result.filename,
+          name: code.result.filename,
         };
       }
     }
@@ -151,6 +177,7 @@ async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   metadata: { total: number; count: number },
   op: AutoBeOpenApi.IOperation,
+  previousCodes: IAutoBeRealizeCompile.Success[],
   diagnostics: IAutoBeRealizeCompile.CompileDiagnostics,
   entireCodes: IAutoBeRealizeCompile.FileContentMap,
   decorator?: AutoBeRealizeAuthorization,
@@ -165,23 +192,25 @@ async function process<Model extends ILlmSchema.Model>(
       const d = diagnostics.current.filter((el) => el.file === filename);
       const c = entireCodes[filename]?.content ?? null;
 
-      return orchestrateRealizeCoder(ctx, op, p, c, t, d).then((res) => {
-        ctx.dispatch({
-          type: "realizeProgress",
-          filename: filename,
-          content: res === FAILED ? "FAILED" : res.implementationCode,
-          completed: ++metadata.count,
-          created_at: new Date().toISOString(),
-          step: ctx.state().analyze?.step ?? 0,
-          total: metadata.total,
-        });
+      return orchestrateRealizeCoder(ctx, op, previousCodes, p, c, t, d).then(
+        (res) => {
+          ctx.dispatch({
+            type: "realizeProgress",
+            filename: filename,
+            content: res === FAILED ? "FAILED" : res.implementationCode,
+            completed: ++metadata.count,
+            created_at: new Date().toISOString(),
+            step: ctx.state().analyze?.step ?? 0,
+            total: metadata.total,
+          });
 
-        if (res === FAILED) {
-          return res;
-        }
+          if (res === FAILED) {
+            return res;
+          }
 
-        return { ...res, name: p.functionName };
-      });
+          return { ...res, name: p.functionName };
+        },
+      );
     },
   );
 
