@@ -137,20 +137,18 @@ export async function writeCodeUntilCompilePassed<
     }
   }
 
-  return (
-    Object.entries(entireCodes)
-      // .filter(([filename]) => filename.startsWith("src/providers")) // filter only provider files
-      .map(([filename, value]) => {
-        return {
-          filename,
-          content: value.content,
-          endpoint: value.endpoint!,
-          location: value.location!,
-          name: value.name!,
-          role: value.role!,
-        };
-      })
-  );
+  return Object.entries(entireCodes)
+    .filter(([filename]) => filename.startsWith("src/providers")) // filter only provider files
+    .map(([filename, value]) => {
+      return {
+        filename,
+        content: value.content,
+        endpoint: value.endpoint!,
+        location: value.location!,
+        name: value.name!,
+        role: value.role!,
+      };
+    });
 }
 
 async function loadTemplateFiles<Model extends ILlmSchema.Model>(
