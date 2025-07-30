@@ -86,9 +86,9 @@ export const transformRealizeAuthorizationCorrectHistories = (
         "",
         "Please follow this naming convention for the authorization components:",
         "",
-        `- Provider Name: ${auth.role}Authorize (e.g. ${auth.role}Authorize)`,
-        `- Decorator Name: ${auth.role.charAt(0).toUpperCase() + auth.role.slice(1)}Auth (e.g. ${auth.role.charAt(0).toUpperCase() + auth.role.slice(1)}Auth)`,
-        `- Payload Name: ${auth.role.charAt(0).toUpperCase() + auth.role.slice(1)}Payload (e.g. ${auth.role.charAt(0).toUpperCase() + auth.role.slice(1)}Payload)`,
+        `- Provider Name: ${auth.role.toLowerCase()}Authorize (e.g. ${auth.role.toLowerCase()}Authorize)`,
+        `- Decorator Name: ${auth.role.charAt(0).toUpperCase() + auth.role.slice(1).toLowerCase()}Auth (e.g. ${auth.role.charAt(0).toUpperCase() + auth.role.slice(1).toLowerCase()}Auth)`,
+        `- Payload Name: ${auth.role.charAt(0).toUpperCase() + auth.role.slice(1).toLowerCase()}Payload (e.g. ${auth.role.charAt(0).toUpperCase() + auth.role.slice(1).toLowerCase()}Payload)`,
       ].join("\n"),
     },
   ];
