@@ -56,6 +56,7 @@ export const validate_agent_test_main = async (
     root: `${TestGlobal.ROOT}/results/${project}/test/main`,
     files: {
       ...(await agent.getFiles()),
+      "pnpm-workspace.yaml": "",
       "logs/compiled.json": JSON.stringify(result.compiled),
       "logs/snapshots.json": JSON.stringify(snapshots),
       "logs/result.json": JSON.stringify({
@@ -63,10 +64,8 @@ export const validate_agent_test_main = async (
         files: undefined,
       }),
       "logs/histories.json": JSON.stringify(histories),
-      "pnpm-workspace.yaml": "",
     },
   });
-  TestValidator.equals("result")(result.compiled.type)("success");
   if (process.argv.includes("--archive")) {
     await fs.promises.writeFile(
       `${TestGlobal.ROOT}/assets/histories/${project}.test.json`,
@@ -79,4 +78,5 @@ export const validate_agent_test_main = async (
       "utf8",
     );
   }
+  TestValidator.equals("result")(result.compiled.type)("success");
 };

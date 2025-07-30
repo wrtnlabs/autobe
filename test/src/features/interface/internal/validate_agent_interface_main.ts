@@ -58,6 +58,7 @@ export const validate_agent_interface_main = async (
     root: `${TestGlobal.ROOT}/results/${project}/interface/main`,
     files: {
       ...(await agent.getFiles()),
+      "pnpm-workspace.yaml": "",
       "logs/snapshots.json": JSON.stringify(snapshots),
       "logs/result.json": JSON.stringify(result),
       "logs/endpoints.json": JSON.stringify(

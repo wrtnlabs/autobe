@@ -209,7 +209,7 @@ gantt
   section Ecosystem
   Agentica Prerequisite:  active,  2025-06-18, 13d
   WebSocket Streaming:    planned, 2025-07-02, 14d
-  History Manipulation:   planned, 2025-07-16, 30d
+  History Manipulation:   done,    2025-07-16, 30d
   AI Chatbot Development: planned, 2025-07-16, 30d
   Data Seeder Agent:      planned, 2025-08-01, 30d
 ```

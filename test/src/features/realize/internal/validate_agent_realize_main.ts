@@ -1,8 +1,10 @@
+import { AutoBeContext } from "@autobe/agent/src/context/AutoBeContext";
 import { orchestrateRealize } from "@autobe/agent/src/orchestrate/realize/orchestrateRealize";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeAssistantMessageHistory,
   AutoBeEvent,
+  AutoBeEventSnapshot,
   AutoBeRealizeHistory,
 } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
@@ -21,10 +23,12 @@ export const validate_agent_realize_main = async (
 
   // PREPARE AGENT
   const { agent } = await prepare_agent_realize(factory, project);
-
-  const events: AutoBeEvent[] = [];
+  const snapshots: AutoBeEventSnapshot[] = [];
   const enroll = (event: AutoBeEvent) => {
-    events.push(event);
+    snapshots.push({
+      event,
+      tokenUsage: agent.getTokenUsage().toJSON(),
+    });
   };
 
   agent.on("realizeStart", enroll);
@@ -38,7 +42,12 @@ export const validate_agent_realize_main = async (
   agent.on("realizeAuthorizationCorrect", enroll);
   agent.on("realizeAuthorizationComplete", enroll);
 
-  const ctx = agent.getContext();
+  agent.on("realizeTestStart", enroll);
+  agent.on("realizeTestReset", enroll);
+  agent.on("realizeTestOperation", enroll);
+  agent.on("realizeTestComplete", enroll);
+
+  const ctx: AutoBeContext<"chatgpt"> = agent.getContext();
 
   // DO TEST GENERATION
   const go = (reason: string) =>
@@ -54,24 +63,25 @@ export const validate_agent_realize_main = async (
       throw new Error("Failed to generate realize.");
   }
 
-  // const histories = agent.getHistories();
-
   // REPORT RESULT
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/${project}/realize/main`,
     files: {
       ...(await agent.getFiles()),
-      // "logs/events.json": JSON.stringify(events),
-      // "logs/result.json": JSON.stringify(result),
-      // "logs/histories.json": JSON.stringify(histories),
+      "pnpm-workspace.yaml": "",
     },
   });
-  TestValidator.equals("result")(result.compiled.type)("success");
-
-  if (process.argv.includes("--archive"))
+  if (process.argv.includes("--archive")) {
     await fs.promises.writeFile(
       `${TestGlobal.ROOT}/assets/histories/${project}.realize.json`,
       JSON.stringify(agent.getHistories()),
       "utf8",
     );
+    await fs.promises.writeFile(
+      `${TestGlobal.ROOT}/assets/histories/${project}.realize.snapshots.json`,
+      JSON.stringify(snapshots),
+      "utf8",
+    );
+  }
+  TestValidator.equals("result")(result.compiled.type)("success");
 };
