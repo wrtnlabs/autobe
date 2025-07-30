@@ -21,9 +21,9 @@ export const orchestrateRealize =
     props: IAutoBeApplicationProps,
   ): Promise<AutoBeAssistantMessageHistory | AutoBeRealizeHistory> => {
     props;
-    const ops: AutoBeOpenApi.IOperation[] | undefined =
+    const operations: AutoBeOpenApi.IOperation[] | undefined =
       ctx.state().interface?.document.operations;
-    if (!ops) {
+    if (!operations) {
       throw new Error("Can't do realize agent because operations are nothing.");
     }
 
@@ -39,7 +39,11 @@ export const orchestrateRealize =
     const authorizations: AutoBeRealizeAuthorization[] =
       await orchestrateRealizeAuthorization(ctx);
     const functions: AutoBeRealizeFunction[] =
-      await writeCodeUntilCompilePassed(ctx, ops, authorizations, 4);
+      await writeCodeUntilCompilePassed(ctx)({
+        operations,
+        authorizations,
+        retry: 4,
+      });
 
     // compile controllers
     const compiler: IAutoBeCompiler = await ctx.compiler();
