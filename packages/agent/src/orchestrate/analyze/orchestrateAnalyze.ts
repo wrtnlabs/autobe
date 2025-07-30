@@ -76,7 +76,7 @@ export const orchestrateAnalyze =
 
     const retryCount = 3 as const;
     const progress = {
-      total: tableOfContents.length,
+      total: tableOfContents.length * retryCount,
       completed: 0,
     };
     const pointers = await Promise.all(

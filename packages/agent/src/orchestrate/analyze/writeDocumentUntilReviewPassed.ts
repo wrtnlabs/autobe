@@ -64,7 +64,6 @@ export async function writeDocumentUntilReviewPassed<
   const reviewResult = await orchestrateAnalyzeReviewer(ctx, pointer.value);
 
   if (reviewResult.type === "accept") {
-    props.progress.completed++;
     return pointer;
   }
 
