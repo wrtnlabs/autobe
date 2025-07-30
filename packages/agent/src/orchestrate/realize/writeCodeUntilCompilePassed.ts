@@ -66,7 +66,7 @@ export function writeCodeUntilCompilePassed<Model extends ILlmSchema.Model>(
       );
 
       const metadata = { total: targets.length, count: 0 } as const;
-      const generatedCodes: IAutoBeRealizeCompile.Result[] = await Promise.all(
+      const generatedCodes = await Promise.all(
         targets.map((operation) => {
           const role: string | null = operation.authorizationRole;
           const authorization: AutoBeRealizeAuthorization | undefined =
@@ -97,7 +97,7 @@ export function writeCodeUntilCompilePassed<Model extends ILlmSchema.Model>(
               path: code.operation.path,
             },
             location: code.result.filename,
-            name: code.result.filename,
+            name: code.result.name,
           };
         }
       }
@@ -180,7 +180,7 @@ function process<Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) {
     diagnostics: IAutoBeRealizeCompile.CompileDiagnostics;
     entireCodes: IAutoBeRealizeCompile.FileContentMap;
     authorization?: AutoBeRealizeAuthorization;
-  }): Promise<IAutoBeRealizeCompile.Result> {
+  }) {
     const result = await pipe(
       props.operation,
       (operation: AutoBeOpenApi.IOperation) =>
