@@ -42,17 +42,6 @@ export interface IAutoBeAnalyzeFileSystem {
   createOrUpdateFiles(
     input: ICreateOrUpdateInput,
   ): Promise<Record<string, string>>;
-
-  /**
-   * If you decide that you no longer need any reviews, or if the reviewer
-   * refuses to do so, call abort. This is a function to end document creation
-   * and review, and to respond to users.
-   *
-   * When there is content you are unsure about and need to ask the user a
-   * question, abort the process and ask the user directly. The reason for
-   * aborting should be included as the content of the question.
-   */
-  abort(input: { reason: string }): "OK";
 }
 
 export class AutoBeAnalyzeFileSystem implements IAutoBeAnalyzeFileSystem {
@@ -65,9 +54,5 @@ export class AutoBeAnalyzeFileSystem implements IAutoBeAnalyzeFileSystem {
     });
 
     return this.fileMap;
-  }
-
-  abort(_input: { reason: string }): "OK" {
-    return "OK";
   }
 }

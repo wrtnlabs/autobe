@@ -8,7 +8,6 @@ import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
-import { AutoBeAnalyzePointer } from "./AutoBeAnalyzePointer";
 import { orchestrateAnalyzeComposer } from "./orchestrateAnalyzeComposer";
 import { IComposeInput } from "./structures/IAutoBeAnalyzeComposerApplication";
 import { writeDocumentUntilReviewPassed } from "./writeDocumentUntilReviewPassed";
@@ -28,8 +27,11 @@ export const orchestrateAnalyze =
       created_at,
     });
 
-    const pointer: IPointer<IComposeInput | null> = { value: null };
-    const agentica = orchestrateAnalyzeComposer(ctx, pointer);
+    const composeInputPointer: IPointer<IComposeInput | null> = { value: null };
+    const agentica = orchestrateAnalyzeComposer(ctx, (v) => {
+      composeInputPointer.value = v;
+    });
+
     const determined = await agentica
       .conversate(
         [
@@ -42,7 +44,9 @@ export const orchestrateAnalyze =
         const tokenUsage = agentica.getTokenUsage();
         ctx.usage().record(tokenUsage, ["analyze"]);
       });
-    if (pointer.value === null) {
+
+    const composeInput = composeInputPointer.value;
+    if (composeInput === null) {
       return {
         id: v4(),
         text: "Failed to analyze your request. please request again.",
@@ -52,7 +56,7 @@ export const orchestrateAnalyze =
       };
     }
 
-    const { files: tableOfContents, prefix, roles } = pointer.value;
+    const { files: tableOfContents, prefix, roles } = composeInput;
 
     if (tableOfContents.length === 0) {
       const history: AutoBeAssistantMessageHistory = {
@@ -77,17 +81,13 @@ export const orchestrateAnalyze =
     };
     const pointers = await Promise.all(
       tableOfContents.map(async ({ filename }) => {
-        const pointer: AutoBeAnalyzePointer = { value: { files: {} } };
-        await writeDocumentUntilReviewPassed(
-          ctx,
-          pointer,
-          tableOfContents,
+        return await writeDocumentUntilReviewPassed(ctx, {
+          totalFiles: tableOfContents,
           filename,
           roles,
           progress,
-          retryCount,
-        );
-        return pointer;
+          retry: retryCount,
+        });
       }),
     );
 
@@ -114,7 +114,7 @@ export const orchestrateAnalyze =
       ctx.dispatch({
         type: "analyzeComplete",
         prefix,
-        files: files,
+        files,
         step,
         created_at,
       });
@@ -129,9 +129,9 @@ export const orchestrateAnalyze =
       completed_at: new Date().toISOString(),
     };
     ctx.dispatch({
-      type: "assistantMessage",
-      text: determined.find((el) => el.type === "assistantMessage")?.text ?? "",
-      created_at,
+      type: history.type,
+      text: history.text,
+      created_at: history.created_at,
     });
     return history;
   };

@@ -1,10 +1,12 @@
 import { AutoBeAnalyzeRole } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
-import { IPointer } from "tstl";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IFile } from "./AutoBeAnalyzeFileSystem";
-import { AutoBeAnalyzePointer } from "./AutoBeAnalyzePointer";
+import {
+  AutoBEAnalyzeFileMap,
+  AutoBeAnalyzePointer,
+} from "./AutoBeAnalyzePointer";
 import { orchestrateAnalyzeReviewer } from "./orchestrateAnalyzeReviewer";
 import { orchestrateAnalyzeWrite } from "./orchestrateAnalyzeWrite";
 
@@ -12,68 +14,77 @@ export async function writeDocumentUntilReviewPassed<
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
-  pointer: AutoBeAnalyzePointer,
-  totalFiles: Pick<IFile, "filename" | "reason">[],
-  filename: string,
-  roles: AutoBeAnalyzeRole[],
-  progress: { total: number; completed: number },
-  retry = 3,
+  props: {
+    totalFiles: Pick<IFile, "filename" | "reason">[];
+    filename: string;
+    roles: AutoBeAnalyzeRole[];
+    progress: { total: number; completed: number };
+    retry?: number;
+    prevReview?: string;
+  },
 ): Promise<AutoBeAnalyzePointer> {
-  const isAborted: IPointer<boolean> = { value: false };
-  let review: string | null = null;
-  for (let i = 0; i < retry; i++) {
-    if (isAborted.value === true) {
-      return pointer;
-    }
+  const retry = props.retry ?? 3;
+  const pointer: { value: { files: AutoBEAnalyzeFileMap } } = {
+    value: { files: {} },
+  };
 
-    // Write the document until the review is passed.
-    const write = "Write Document OR Abort." as const;
-    const writer = orchestrateAnalyzeWrite(
-      ctx,
-      {
-        totalFiles: totalFiles,
-        roles: roles,
-        targetFile: filename,
-        review,
-      },
-      pointer,
-      isAborted,
-    );
-
-    await writer.conversate(review ?? write).finally(() => {
-      const tokenUsage = writer.getTokenUsage();
-      ctx.usage().record(tokenUsage, ["analyze"]);
-    });
-
-    if (pointer.value === null) {
-      throw new Error("Failed to write document by unknown reason.");
-    }
-
-    ctx.dispatch({
-      type: "analyzeWrite",
-      files: {
-        ...pointer.value.files,
-      },
-      total: progress.total,
-      completed: ++progress.completed,
-      step: ctx.state().analyze?.step ?? 0,
-      created_at: new Date().toISOString(),
-    });
-
-    // Do review
-    review = await orchestrateAnalyzeReviewer(ctx, pointer.value);
-    if (review !== null)
-      ctx.dispatch({
-        type: "analyzeReview",
-        files: {
-          ...pointer.value.files,
-        },
-        review,
-        total: progress.total,
-        completed: progress.completed,
-        step: ctx.state().analyze?.step ?? 0,
-        created_at: new Date().toISOString(),
-      });
+  /**
+   * `retry` means the number of times to retry the review. so if `retry` is -1,
+   * it means not execute this logic.
+   */
+  if (retry === -1) {
+    return pointer;
   }
-  return pointer;
+
+  const writer = orchestrateAnalyzeWrite(ctx, {
+    totalFiles: props.totalFiles,
+    roles: props.roles,
+    targetFile: props.filename,
+    review: props.prevReview ?? "",
+    setDocument: (v) => {
+      pointer.value = { files: { ...pointer.value?.files, ...v } };
+    },
+  });
+  await writer.conversate("Write Document.").finally(() => {
+    const tokenUsage = writer.getTokenUsage();
+    ctx.usage().record(tokenUsage, ["analyze"]);
+  });
+
+  ctx.dispatch({
+    type: "analyzeWrite",
+    files: {
+      ...pointer.value?.files,
+    },
+    total: props.progress.total,
+    completed: ++props.progress.completed,
+    step: ctx.state().analyze?.step ?? 0,
+    created_at: new Date().toISOString(),
+  });
+
+  const reviewResult = await orchestrateAnalyzeReviewer(ctx, pointer.value);
+
+  if (reviewResult.type === "accept") {
+    return pointer;
+  }
+
+  ctx.dispatch({
+    type: "analyzeReview",
+    files: {
+      ...pointer.value.files,
+    },
+    review: reviewResult.value,
+    total: props.progress.total,
+    completed: props.progress.completed,
+    step: ctx.state().analyze?.step ?? 0,
+    created_at: new Date().toISOString(),
+  });
+
+  return await writeDocumentUntilReviewPassed(ctx, {
+    totalFiles: props.totalFiles,
+    filename: props.filename,
+    roles: props.roles,
+    progress: props.progress,
+    retry: retry - 1,
+    prevReview: reviewResult.value,
+  });
 }
