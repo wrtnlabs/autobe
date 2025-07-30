@@ -125,12 +125,6 @@ export async function writeCodeUntilCompilePassed<
     } else if (compiled.type === "failure") {
       diagnostics.current = compiled.diagnostics;
       diagnostics.total = [...diagnostics.total, ...compiled.diagnostics];
-
-      console.log(
-        JSON.stringify(diagnostics.current, null, 2),
-        `현재 에러의 수: ${diagnostics.current.length}\n`,
-        `현재 시도 수: ${i + 1}`,
-      );
     }
   }
 
