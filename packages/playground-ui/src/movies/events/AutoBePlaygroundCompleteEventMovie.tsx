@@ -8,6 +8,7 @@ import {
   IAutoBeRpcService,
 } from "@autobe/interface";
 import { AutoBeRealizeAuthorizationCompleteEvent } from "@autobe/interface/src/events/AutoBeRealizeAuthorizationCompleteEvent";
+import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import DownloadIcon from "@mui/icons-material/Download";
 import DownloadingIcon from "@mui/icons-material/Downloading";
 import GradingIcon from "@mui/icons-material/Grading";
@@ -69,7 +70,7 @@ export function AutoBePlaygroundCompleteEventMovie(
     );
   };
 
-  const download = async () => {
+  const download = async (dbms: "postgres" | "sqlite") => {
     const zip: JsZip = new JsZip();
     const directory = new VariadicSingleton((location: string): JsZip => {
       const separated: string[] = location.split("/");
@@ -77,7 +78,9 @@ export function AutoBePlaygroundCompleteEventMovie(
       const parent: JsZip = directory.get(separated.slice(0, -1).join("/"));
       return parent.folder(separated.at(-1)!)!;
     });
-    for (const [file, content] of Object.entries(await postgres.get())) {
+    for (const [file, content] of Object.entries(
+      dbms === "postgres" ? await postgres.get() : await sqlite.get(),
+    )) {
       const separated: string[] = file.split("/");
       if (separated.length === 1) zip.file(file, content);
       else {
@@ -133,11 +136,11 @@ export function AutoBePlaygroundCompleteEventMovie(
           <Button startIcon={<DownloadingIcon />} disabled={true}>
             Downloading Source Codes...
           </Button>
-        ) : (
+        ) : props.event.type === "analyzeComplete" ? (
           <>
             <Button
               startIcon={<DownloadIcon />}
-              onClick={() => download().catch(console.error)}
+              onClick={() => download("sqlite").catch(console.error)}
             >
               Download
             </Button>
@@ -145,7 +148,28 @@ export function AutoBePlaygroundCompleteEventMovie(
               startIcon={<OpenInNewIcon />}
               onClick={() => openStackBlitz().catch(console.error)}
             >
-              Open in StackBlitz
+              StackBlitz
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button
+              startIcon={<CloudDownloadIcon />}
+              onClick={() => download("postgres").catch(console.error)}
+            >
+              Zip (Postgres)
+            </Button>
+            <Button
+              startIcon={<DownloadIcon />}
+              onClick={() => download("sqlite").catch(console.error)}
+            >
+              Zip (SQLite)
+            </Button>
+            <Button
+              startIcon={<OpenInNewIcon />}
+              onClick={() => openStackBlitz().catch(console.error)}
+            >
+              StackBlitz
             </Button>
           </>
         )}
