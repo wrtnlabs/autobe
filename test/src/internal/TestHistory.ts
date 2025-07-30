@@ -7,6 +7,7 @@ import {
 } from "@autobe/interface";
 import fs from "fs";
 import typia from "typia";
+import { v4 } from "uuid";
 
 import { TestGlobal } from "../TestGlobal";
 import { TestProject } from "../structures/TestProject";
@@ -20,11 +21,27 @@ export namespace TestHistory {
     });
   };
 
-  export const getInitial = (project: TestProject): Promise<AutoBeHistory[]> =>
-    getHistories({
-      project,
-      type: "initial",
-    });
+  export const getInitial = async (
+    project: TestProject,
+  ): Promise<AutoBeHistory[]> => {
+    const text: string = await fs.promises.readFile(
+      `${TestGlobal.ROOT}/scripts/${project}.md`,
+      "utf8",
+    );
+    return [
+      {
+        type: "userMessage",
+        id: v4(),
+        created_at: new Date().toISOString(),
+        contents: [
+          {
+            type: "text",
+            text,
+          },
+        ],
+      },
+    ];
+  };
 
   export const getAnalyze = (project: TestProject): Promise<AutoBeHistory[]> =>
     getHistories({

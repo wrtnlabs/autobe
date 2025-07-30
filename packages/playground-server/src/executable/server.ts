@@ -49,12 +49,13 @@ const createMockAgent = async (
   path: string,
   compiler: Driver<IAutoBeCompiler>,
 ): Promise<IAutoBeAgent> => {
-  const type: string =
-    new URLSearchParams(path.indexOf("?") !== -1 ? path.split("?")[1] : "").get(
-      "type",
-    ) ?? "bbs-backend";
+  const params: URLSearchParams = new URLSearchParams(
+    path.indexOf("?") !== -1 ? path.split("?")[1] : "",
+  );
   const load = async <T>(title: string): Promise<T> => {
-    const location: string = `${ROOT}/test/assets/histories/${type}.${title}.json`;
+    const vendor: string = params.get("vendor") ?? "openai/gpt-4.1";
+    const type: string = params.get("type") ?? "bbs-backend";
+    const location: string = `${ROOT}/test/assets/histories/${vendor}/${type}.${title}.json`;
     const content: string = await fs.promises.readFile(location, "utf-8");
     return JSON.parse(content) as T;
   };

@@ -69,7 +69,7 @@ export const validate_agent_test_main = async (
   });
   if (process.argv.includes("--archive"))
     await TestHistory.save({
-      [`${model}/${project}.test.json`]: JSON.stringify(histories),
+      [`${project}.test.json`]: JSON.stringify(histories),
       [`${project}.test.snapshots.json`]: JSON.stringify(snapshots),
     });
   TestValidator.equals("result")(result.compiled.type)("success");

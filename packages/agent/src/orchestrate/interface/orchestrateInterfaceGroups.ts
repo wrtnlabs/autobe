@@ -61,8 +61,10 @@ export async function orchestrateInterfaceGroups<
       completed_at: new Date().toISOString(),
       id: v4(),
     } satisfies AutoBeAssistantMessageHistory;
-  else if (pointer.value === null)
+  else if (pointer.value === null) {
+    console.log(last);
     throw new Error("Failed to generate groups."); // unreachable
+  }
   return {
     type: "interfaceGroups",
     created_at: start.toISOString(),

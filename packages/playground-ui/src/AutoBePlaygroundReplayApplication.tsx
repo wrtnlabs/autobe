@@ -31,12 +31,7 @@ export function AutoBePlaygroundReplayApplication() {
         IAutoBeRpcService
       > = new WebSocketConnector(header, listener.getListener());
 
-      const query: URLSearchParams = new URLSearchParams(
-        window.location.search,
-      );
-      await connector.connect(
-        `ws://localhost:5890/mock/?type=${query.get("type") ?? "bbs-backend"}`,
-      );
+      await connector.connect(getURL());
       setNext({
         header,
         listener,
@@ -64,3 +59,12 @@ export function AutoBePlaygroundReplayApplication() {
     </div>
   );
 }
+
+const getURL = (): string => {
+  const query: URLSearchParams = new URLSearchParams(window.location.search);
+  const url: URL = new URL("ws://localhost:5890/mock");
+  url.searchParams.set("vendor", query.get("vendor") ?? "openai/gpt-4.1");
+  url.searchParams.set("schema", query.get("schema") ?? "chatgpt");
+  url.searchParams.set("type", query.get("type") ?? "bbs-backend");
+  return url.toString();
+};
