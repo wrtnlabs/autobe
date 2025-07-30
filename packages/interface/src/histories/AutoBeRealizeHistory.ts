@@ -26,21 +26,6 @@ import { AutoBeRealizeFunction } from "./contents/AutoBeRealizeFunction";
 export interface AutoBeRealizeHistory
   extends AutoBeAgentHistoryBase<"realize"> {
   /**
-   * Generated implementation functions
-   *
-   * Contains the complete set of TypeScript implementation functions including
-   * service classes, business logic methods, data access objects, and
-   * integration code. Each key represents the function name and each value
-   * contains the actual implementation code that brings the designed system to
-   * life.
-   *
-   * The implementation functions bridge the gap between API specifications and
-   * database schemas, providing the concrete business logic that makes the
-   * application functional and ready for deployment.
-   */
-  functions: AutoBeRealizeFunction[];
-
-  /**
    * Generated authentication and authorization decorators for role-based access
    * control.
    *
@@ -56,6 +41,23 @@ export interface AutoBeRealizeHistory
    * security and developer productivity.
    */
   authorizations: AutoBeRealizeAuthorization[];
+
+  /**
+   * Generated implementation functions
+   *
+   * Contains the complete set of TypeScript implementation functions including
+   * service classes, business logic methods, data access objects, and
+   * integration code. Each key represents the function name and each value
+   * contains the actual implementation code that brings the designed system to
+   * life.
+   *
+   * The implementation functions bridge the gap between API specifications and
+   * database schemas, providing the concrete business logic that makes the
+   * application functional and ready for deployment.
+   */
+  functions: AutoBeRealizeFunction[];
+
+  controllers: Record<string, string>;
 
   /**
    * Results of compiling the generated implementation code using the embedded

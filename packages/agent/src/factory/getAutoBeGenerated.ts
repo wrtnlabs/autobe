@@ -92,7 +92,7 @@ export async function getAutoBeGenerated(
     );
 
   // REALIZE
-  if (state.realize?.step === state.analyze.step)
+  if (state.realize?.step === state.analyze.step) {
     Object.assign<Record<string, string>, Record<string, string>>(ret, {
       ...Object.fromEntries(
         state.realize.functions.map((f) => [f.location, f.content]),
@@ -113,6 +113,7 @@ export async function getAutoBeGenerated(
         authorizations: state.realize.authorizations,
       })),
     });
+  }
 
   // LOGGING
   Object.assign<Record<string, string>, Record<string, string>>(ret, {

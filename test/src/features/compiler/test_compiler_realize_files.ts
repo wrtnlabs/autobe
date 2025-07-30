@@ -21,6 +21,8 @@ export const test_compiler_realize_files = async (): Promise<void> => {
       {
         type: "realize",
         functions: [],
+        authorizations: [],
+        controllers: {},
         compiled: {
           type: "success",
         },
@@ -29,7 +31,6 @@ export const test_compiler_realize_files = async (): Promise<void> => {
         completed_at: new Date().toISOString(),
         reason: "Realize files for compiler",
         step: 0,
-        authorizations: [],
       },
     ],
   });

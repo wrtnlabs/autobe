@@ -21,7 +21,6 @@ export const test_compiler_realize_controller = async (
         name: "createShoppingSale",
         location: "src/providers/createShoppingSale.ts",
         content: "",
-        role: "customer",
         endpoint: {
           method: "post",
           path: "/shopping/sale",
@@ -90,6 +89,7 @@ const document: AutoBeOpenApi.IDocument = {
         typeName: "IShoppingSale",
         description: "Created shopping sale.",
       },
+      authorizationRole: "customer",
     },
   ],
   components: {

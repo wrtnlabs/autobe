@@ -1,4 +1,8 @@
 import { IAutoBeTypeScriptCompileResult } from "../compiler/IAutoBeTypeScriptCompileResult";
+import {
+  AutoBeRealizeAuthorization,
+  AutoBeRealizeFunction,
+} from "../histories";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
 /**
@@ -21,22 +25,38 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
 export interface AutoBeRealizeCompleteEvent
   extends AutoBeEventBase<"realizeComplete"> {
   /**
-   * Generated implementation files as key-value pairs representing the complete
-   * application.
+   * Generated authentication and authorization decorators for role-based access
+   * control.
    *
-   * Contains the final set of TypeScript implementation files including service
-   * classes, business logic methods, data access objects, integration code, and
-   * all supporting implementation that brings the designed system to life. Each
-   * key represents the file path and each value contains the actual
-   * implementation code that makes the application functional.
+   * Contains the complete set of NestJS parameter decorators that provide
+   * automatic authentication and authorization functionality for different user
+   * roles. Each decorator includes its implementation code, associated provider
+   * functions, and payload type definitions that enable seamless integration of
+   * role-based security into Controller methods.
    *
-   * The implementation files represent the culmination of the entire vibe
-   * coding pipeline, bridging the gap between API specifications and database
-   * schemas while providing concrete business logic that fulfills all
-   * requirements. These files are ready for immediate deployment or further
-   * customization.
+   * These decorators eliminate the need for manual authentication logic in
+   * Controllers by automatically validating JWT tokens, checking user roles,
+   * and injecting authenticated user data as typed parameters, ensuring both
+   * security and developer productivity.
    */
-  files: Record<string, string>;
+  authorizations: AutoBeRealizeAuthorization[];
+
+  /**
+   * Generated implementation functions
+   *
+   * Contains the complete set of TypeScript implementation functions including
+   * service classes, business logic methods, data access objects, and
+   * integration code. Each key represents the function name and each value
+   * contains the actual implementation code that brings the designed system to
+   * life.
+   *
+   * The implementation functions bridge the gap between API specifications and
+   * database schemas, providing the concrete business logic that makes the
+   * application functional and ready for deployment.
+   */
+  functions: AutoBeRealizeFunction[];
+
+  controllers: Record<string, string>;
 
   /**
    * Results of compiling the generated implementation TypeScript files through

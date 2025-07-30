@@ -1,13 +1,17 @@
 import {
   AutoBeAssistantMessageHistory,
+  AutoBeOpenApi,
   AutoBeRealizeAuthorization,
+  AutoBeRealizeFunction,
   AutoBeRealizeHistory,
+  IAutoBeCompiler,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
+import { getAutoBeGenerated } from "../../factory/getAutoBeGenerated";
 import { orchestrateRealizeAuthorization } from "./orchestrateRealizeAuthorization";
 import { writeCodeUntilCompilePassed } from "./writeCodeUntilCompilePassed";
 
@@ -17,11 +21,13 @@ export const orchestrateRealize =
     props: IAutoBeApplicationProps,
   ): Promise<AutoBeAssistantMessageHistory | AutoBeRealizeHistory> => {
     props;
-    const ops = ctx.state().interface?.document.operations;
+    const ops: AutoBeOpenApi.IOperation[] | undefined =
+      ctx.state().interface?.document.operations;
     if (!ops) {
       throw new Error("Can't do realize agent because operations are nothing.");
     }
 
+    const start: Date = new Date();
     ctx.dispatch({
       type: "realizeStart",
       created_at: new Date().toISOString(),
@@ -29,71 +35,58 @@ export const orchestrateRealize =
       step: ctx.state().test?.step ?? 0,
     });
 
+    // generate authorizations and functions
     const authorizations: AutoBeRealizeAuthorization[] =
       await orchestrateRealizeAuthorization(ctx);
-    const files = await writeCodeUntilCompilePassed(
-      ctx,
-      ops,
-      authorizations,
-      3,
-    );
+    const functions: AutoBeRealizeFunction[] =
+      await writeCodeUntilCompilePassed(ctx, ops, authorizations, 4);
 
-    const now = new Date().toISOString();
-    const realize = ctx.state().realize;
-    if (realize !== null) {
-      realize.functions = files;
-    } else {
-      const history = (ctx.state().realize = {
-        type: "realize",
-        compiled: {
-          type: "success",
-        },
-        functions: {
-          ...files,
-          ...authorizations
-            .flatMap((el) => {
-              return [
-                {
-                  [el.decorator.location]: el.decorator.content,
-                },
-                {
-                  [el.payload.location]: el.payload.content,
-                },
-                {
-                  [el.payload.location]: el.payload.content,
-                },
-              ];
-            })
-            .reduce((acc, cur) => Object.assign(acc, cur)),
-        },
-        completed_at: now,
-        created_at: now,
-        id: v4(),
-        reason: props.reason,
-        step: ctx.state().analyze?.step ?? 0,
-        authorizations: ctx.state().realize?.authorizations ?? [],
-      } satisfies AutoBeRealizeHistory);
+    // compile controllers
+    const compiler: IAutoBeCompiler = await ctx.compiler();
+    const controllers: Record<string, string> =
+      await compiler.realize.controller({
+        document: ctx.state().interface!.document,
+        functions,
+        authorizations,
+      });
 
-      ctx.histories().push(history);
-    }
-
-    ctx.dispatch({
-      type: "assistantMessage",
-      text: "Any codes can not be generated.",
-      created_at: now,
-    });
-
-    return {
+    // report
+    const history: AutoBeRealizeHistory = (ctx.state().realize = {
       type: "realize",
       compiled: {
         type: "success",
       },
-      functions: files,
-      completed_at: now,
-      created_at: now,
+      authorizations,
+      functions,
+      controllers,
+      completed_at: new Date().toISOString(),
+      created_at: start.toISOString(),
       id: v4(),
       reason: props.reason,
       step: ctx.state().analyze?.step ?? 0,
-      authorizations: ctx.state().realize?.authorizations ?? [],
-    };
+    } satisfies AutoBeRealizeHistory);
+
+    ctx.dispatch({
+      type: "realizeComplete",
+      created_at: new Date().toISOString(),
+      functions: history.functions,
+      authorizations: history.authorizations,
+      controllers: history.controllers,
+      compiled: await compiler.typescript.compile({
+        files: await getAutoBeGenerated(
+          compiler,
+          {
+            ...ctx.state(),
+            realize: history,
+          },
+          [...ctx.histories(), history],
+          ctx.usage(),
+        ),
+      }),
+      step: ctx.state().analyze?.step ?? 0,
+    });
+    ctx.state().realize = history;
+    ctx.histories().push(history);
+
+    return history;
   };

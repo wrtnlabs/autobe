@@ -1,4 +1,5 @@
 import {
+  AutoBeOpenApi,
   AutoBeRealizeAuthorization,
   AutoBeRealizeFunction,
   IAutoBeRealizeControllerProps,
@@ -24,17 +25,24 @@ export const writeRealizeControllers = async (
     programmer: {
       controllerMethod: (ctx) => {
         const method = NestiaMigrateNestMethodProgrammer.write(ctx);
+        const operate: AutoBeOpenApi.IOperation | undefined =
+          props.document.operations.find(
+            (o) => o.method === ctx.route.method && o.path === ctx.route.path,
+          );
         const func: AutoBeRealizeFunction | undefined = props.functions.find(
           (f) =>
             f.endpoint.method === ctx.route.method &&
             f.endpoint.path === ctx.route.path,
         );
-        if (func === undefined) return method; // unreachable
+        if (func === undefined || operate === undefined) return method; // unreachable
 
-        const auth: AutoBeRealizeAuthorization | undefined = func.role
-          ? props.authorizations.find((d) => d.role === func.role)
-          : undefined;
-        if (func.role && auth === undefined) return method; // unreachable
+        const auth: AutoBeRealizeAuthorization | undefined =
+          operate.authorizationRole
+            ? props.authorizations.find(
+                (d) => d.role === operate.authorizationRole,
+              )
+            : undefined;
+        if (operate.authorizationRole && auth === undefined) return method; // unreachable
 
         ctx.importer.external({
           type: "instance",
@@ -49,7 +57,7 @@ export const writeRealizeControllers = async (
           ts.factory.createIdentifier(func.name),
           undefined,
           [
-            ...(func.role ? [func.role] : []),
+            ...(operate.authorizationRole ? [operate.authorizationRole] : []),
             ...ctx.route.parameters.map((p) => p.name),
             ...(ctx.route.query ? [ctx.route.query.name] : []),
             ...(ctx.route.body ? [ctx.route.body.name] : []),

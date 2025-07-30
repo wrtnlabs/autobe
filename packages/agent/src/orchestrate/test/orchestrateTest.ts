@@ -95,7 +95,7 @@ export const orchestrateTest =
     ctx.dispatch({
       type: "testComplete",
       created_at: start.toISOString(),
-      files: Object.fromEntries(result.map((f) => [f.location, f.content])),
+      files: result,
       compiled,
       step: ctx.state().interface?.step ?? 0,
     });

@@ -5,11 +5,12 @@ import { AutoBeOpenApi } from "../openapi";
 /**
  * Configuration properties for generating NestJS controller implementations.
  *
- * This interface defines the essential inputs required for the Realize compiler's
- * controller generation process, providing specifications for API endpoints,
- * business logic functions, and authorization mechanisms. The properties enable
- * the compiler to create fully-integrated controller classes that properly
- * orchestrate business logic execution with appropriate security controls.
+ * This interface defines the essential inputs required for the Realize
+ * compiler's controller generation process, providing specifications for API
+ * endpoints, business logic functions, and authorization mechanisms. The
+ * properties enable the compiler to create fully-integrated controller classes
+ * that properly orchestrate business logic execution with appropriate security
+ * controls.
  *
  * @author Samchon
  */
@@ -26,17 +27,6 @@ export interface IAutoBeRealizeControllerProps {
   document: AutoBeOpenApi.IDocument;
 
   /**
-   * Array of business logic function implementations to be integrated.
-   *
-   * Contains function specifications including their names, file locations,
-   * implementation content, role requirements, and endpoint mappings. These
-   * functions represent the core business logic that controllers will delegate
-   * to, ensuring proper separation of concerns between HTTP handling and
-   * business logic execution.
-   */
-  functions: AutoBeRealizeFunction[];
-
-  /**
    * Authorization configurations for role-based access control.
    *
    * Defines authorization mechanisms including decorator implementations,
@@ -46,4 +36,15 @@ export interface IAutoBeRealizeControllerProps {
    * endpoint role specifications.
    */
   authorizations: AutoBeRealizeAuthorization[];
+
+  /**
+   * Array of business logic function implementations to be integrated.
+   *
+   * Contains function specifications including their names, file locations,
+   * implementation content, role requirements, and endpoint mappings. These
+   * functions represent the core business logic that controllers will delegate
+   * to, ensuring proper separation of concerns between HTTP handling and
+   * business logic execution.
+   */
+  functions: AutoBeRealizeFunction[];
 }

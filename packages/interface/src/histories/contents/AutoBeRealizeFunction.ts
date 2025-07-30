@@ -3,18 +3,6 @@ import { AutoBeOpenApi } from "../../openapi/AutoBeOpenApi";
 /** @author Kakasoo */
 export interface AutoBeRealizeFunction {
   /**
-   * User role required to access this endpoint
-   *
-   * Represents the authorization role (e.g., "admin", "member") that must be
-   * present in the JWT token to access this API endpoint.
-   *
-   * - Null: No role restriction, endpoint is accessible by any authenticated user
-   * - String: Specific role required (extracted from
-   *   {@link AutoBeAuthorization.role})
-   */
-  role: string | null;
-
-  /**
    * OpenAPI endpoint specification
    *
    * Contains the complete OpenAPI specification for this endpoint including
