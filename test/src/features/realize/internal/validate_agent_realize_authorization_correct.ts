@@ -16,7 +16,7 @@ export const validate_agent_realize_authorization_correct = async (
   factory: TestFactory,
   project: TestProject,
 ) => {
-  if (TestGlobal.env.CHATGPT_API_KEY === undefined) return false;
+  if (TestGlobal.env.API_KEY === undefined) return false;
 
   // PREPARE AGENT
   const { agent } = await prepare_agent_realize(factory, project);
@@ -169,8 +169,9 @@ export const validate_agent_realize_authorization_correct = async (
     ),
   };
 
+  const model: string = TestGlobal.getModel();
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${project}/realize/authorization-correct`,
+    root: `${TestGlobal.ROOT}/results/${model}/${project}/realize/authorization-correct`,
     files: {
       ...(await agent.getFiles()),
       ...files,

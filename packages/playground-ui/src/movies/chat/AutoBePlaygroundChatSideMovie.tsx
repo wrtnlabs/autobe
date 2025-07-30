@@ -25,7 +25,8 @@ export function AutoBePlaygroundChatSideMovie(
       <Typography variant="h5">Agent Information</Typography>
       <hr />
       <ul>
-        <li>Model: {props.header.model}</li>
+        <li>AI Model: {props.header.vendor.model}</li>
+        <li>Schema Model: {props.header.model}</li>
         <li>Locale: {props.header.locale}</li>
         <li>Timezone: {props.header.timezone}</li>
         <li>Semaphore: {props.header.vendor.semaphore ?? 16}</li>

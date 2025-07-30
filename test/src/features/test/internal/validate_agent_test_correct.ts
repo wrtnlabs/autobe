@@ -18,13 +18,14 @@ export const validate_agent_test_correct = async (
   factory: TestFactory,
   project: TestProject,
 ) => {
-  if (TestGlobal.env.CHATGPT_API_KEY === undefined) return false;
+  if (TestGlobal.env.API_KEY === undefined) return false;
 
   // PREPARE ASSETS
   const { agent } = await prepare_agent_test(factory, project);
+  const model: string = TestGlobal.getModel();
   const writes: IAutoBeTestWriteResult[] = JSON.parse(
     await fs.promises.readFile(
-      `${TestGlobal.ROOT}/assets/histories/${project}.test.writes.json`,
+      `${TestGlobal.ROOT}/assets/histories/${model}/${project}.test.writes.json`,
       "utf8",
     ),
   );
@@ -41,7 +42,7 @@ export const validate_agent_test_correct = async (
 
   // ARCHIVE RESULT
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${project}/test/correct`,
+    root: `${TestGlobal.ROOT}/results/${model}/${project}/test/correct`,
     files: {
       ...Object.fromEntries([
         ...Object.entries(await agent.getFiles()).filter(

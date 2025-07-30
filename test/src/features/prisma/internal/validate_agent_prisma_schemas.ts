@@ -7,6 +7,7 @@ import fs from "fs";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
+import { TestHistory } from "../../../internal/TestHistory";
 import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_prisma } from "./prepare_agent_prisma";
 
@@ -14,12 +15,13 @@ export const validate_agent_prisma_schemas = async (
   factory: TestFactory,
   project: TestProject,
 ) => {
-  if (TestGlobal.env.CHATGPT_API_KEY === undefined) return false;
+  if (TestGlobal.env.API_KEY === undefined) return false;
 
   const { agent } = await prepare_agent_prisma(factory, project);
+  const model: string = TestGlobal.getModel();
   const ce: AutoBePrismaComponentsEvent = JSON.parse(
     await fs.promises.readFile(
-      `${TestGlobal.ROOT}/assets/histories/${project}.prisma.components.json`,
+      `${TestGlobal.ROOT}/assets/histories/${model}/${project}.prisma.components.json`,
       "utf8",
     ),
   );
@@ -50,10 +52,9 @@ export const validate_agent_prisma_schemas = async (
     ce.components,
   );
   if (process.argv.includes("--archive"))
-    await fs.promises.writeFile(
-      `${TestGlobal.ROOT}/assets/histories/${project}.prisma.schemas.json`,
-      JSON.stringify(result),
-    );
+    await TestHistory.save({
+      [`${project}.prisma.schemas.json`]: JSON.stringify(result),
+    });
 
   const expected: string[] = ce.components
     .map((c) => c.tables)

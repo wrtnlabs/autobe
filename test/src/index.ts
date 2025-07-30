@@ -24,10 +24,10 @@ async function main(): Promise<void> {
         model: "chatgpt",
         vendor: {
           api: new OpenAI({
-            apiKey: TestGlobal.env.CHATGPT_API_KEY,
-            baseURL: TestGlobal.env.CHATGPT_BASE_URL,
+            apiKey: TestGlobal.env.API_KEY,
+            baseURL: TestGlobal.env.BASE_URL,
           }),
-          model: "gpt-4.1",
+          model: TestGlobal.env.VENDOR_MODEL ?? "gpt-4.1",
           semaphore: Number(TestGlobal.getArguments("semaphore")?.[0] ?? "16"),
         },
         config: {

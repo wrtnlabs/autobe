@@ -26,8 +26,8 @@ export const getClientAgent = (
   semaphore: Semaphore,
 ): ClientAgent => {
   const llm = new OpenAI({
-    apiKey: TestGlobal.env.CHATGPT_API_KEY,
-    baseURL: TestGlobal.env.CHATGPT_BASE_URL,
+    apiKey: TestGlobal.env.API_KEY,
+    baseURL: TestGlobal.env.BASE_URL,
   });
   const baseHistories = [
     {

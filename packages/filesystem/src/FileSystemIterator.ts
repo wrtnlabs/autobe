@@ -32,8 +32,9 @@ export namespace FileSystemIterator {
   export const save = async (props: {
     root: string;
     files: Record<string, string>;
+    overwrite?: boolean;
   }): Promise<void> => {
-    if (fs.existsSync(props.root))
+    if (props.overwrite !== true && fs.existsSync(props.root))
       await fs.promises.rm(props.root, {
         recursive: true,
       });

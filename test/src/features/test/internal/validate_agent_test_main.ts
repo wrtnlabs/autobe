@@ -4,13 +4,14 @@ import {
   AutoBeAssistantMessageHistory,
   AutoBeEvent,
   AutoBeEventSnapshot,
+  AutoBeHistory,
   AutoBeTestHistory,
 } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
-import fs from "fs";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
+import { TestHistory } from "../../../internal/TestHistory";
 import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_test } from "./prepare_agent_test";
 
@@ -18,7 +19,7 @@ export const validate_agent_test_main = async (
   factory: TestFactory,
   project: TestProject,
 ) => {
-  if (TestGlobal.env.CHATGPT_API_KEY === undefined) return false;
+  if (TestGlobal.env.API_KEY === undefined) return false;
 
   // PREPARE AGENT
   const { agent } = await prepare_agent_test(factory, project);
@@ -49,11 +50,11 @@ export const validate_agent_test_main = async (
     if (result.type !== "test") throw new Error("Failed to generate test.");
   }
 
-  const histories = agent.getHistories();
-
   // REPORT RESULT
+  const histories: AutoBeHistory[] = agent.getHistories();
+  const model: string = TestGlobal.getModel();
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${project}/test/main`,
+    root: `${TestGlobal.ROOT}/results/${model}/${project}/test/main`,
     files: {
       ...(await agent.getFiles()),
       "pnpm-workspace.yaml": "",
@@ -66,17 +67,10 @@ export const validate_agent_test_main = async (
       "logs/histories.json": JSON.stringify(histories),
     },
   });
-  if (process.argv.includes("--archive")) {
-    await fs.promises.writeFile(
-      `${TestGlobal.ROOT}/assets/histories/${project}.test.json`,
-      JSON.stringify(agent.getHistories()),
-      "utf8",
-    );
-    await fs.promises.writeFile(
-      `${TestGlobal.ROOT}/assets/histories/${project}.test.snapshots.json`,
-      JSON.stringify(snapshots),
-      "utf8",
-    );
-  }
+  if (process.argv.includes("--archive"))
+    await TestHistory.save({
+      [`${model}/${project}.test.json`]: JSON.stringify(histories),
+      [`${project}.test.snapshots.json`]: JSON.stringify(snapshots),
+    });
   TestValidator.equals("result")(result.compiled.type)("success");
 };

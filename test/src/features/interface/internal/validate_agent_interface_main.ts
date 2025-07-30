@@ -8,11 +8,11 @@ import {
   AutoBeInterfaceHistory,
 } from "@autobe/interface";
 import { AutoBeInterfaceGroup } from "@autobe/interface/src/histories/contents/AutoBeInterfaceGroup";
-import fs from "fs";
 import { HashSet } from "tstl";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
+import { TestHistory } from "../../../internal/TestHistory";
 import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_interface } from "./prepare_agent_interface";
 
@@ -20,7 +20,7 @@ export const validate_agent_interface_main = async (
   factory: TestFactory,
   project: TestProject,
 ) => {
-  if (TestGlobal.env.CHATGPT_API_KEY === undefined) return false;
+  if (TestGlobal.env.API_KEY === undefined) return false;
 
   // PREPARE AGENT
   const { agent } = await prepare_agent_interface(factory, project);
@@ -54,8 +54,9 @@ export const validate_agent_interface_main = async (
   }
 
   // REPORT RESULT
+  const model: string = TestGlobal.getModel();
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${project}/interface/main`,
+    root: `${TestGlobal.ROOT}/results/${model}/${project}/interface/main`,
     files: {
       ...(await agent.getFiles()),
       "pnpm-workspace.yaml": "",
@@ -81,29 +82,17 @@ export const validate_agent_interface_main = async (
     },
   });
   if (process.argv.includes("--archive")) {
-    await fs.promises.writeFile(
-      `${TestGlobal.ROOT}/assets/histories/${project}.interface.json`,
-      JSON.stringify(agent.getHistories()),
-      "utf8",
-    );
-    await fs.promises.writeFile(
-      `${TestGlobal.ROOT}/assets/histories/${project}.interface.snapshots.json`,
-      JSON.stringify(snapshots),
-      "utf8",
-    );
-    await fs.promises.writeFile(
-      `${TestGlobal.ROOT}/assets/histories/${project}.interface.groups.json`,
-      JSON.stringify(
+    await TestHistory.save({
+      [`${project}.interface.json`]: JSON.stringify(agent.getHistories()),
+      [`${project}.interface.snapshots.json`]: JSON.stringify(snapshots),
+      [`${project}.interface.groups.json`]: JSON.stringify(
         snapshots
           .map((s) => s.event)
           .filter((e) => e.type === "interfaceGroups")
           .map((e) => e.groups)
           .flat() satisfies AutoBeInterfaceGroup[],
       ),
-    );
-    await fs.promises.writeFile(
-      `${TestGlobal.ROOT}/assets/histories/${project}.interface.endpoints.json`,
-      JSON.stringify(
+      [`${project}.interface.endpoints.json`]: JSON.stringify(
         new HashSet(
           snapshots
             .map((s) => s.event)
@@ -114,16 +103,10 @@ export const validate_agent_interface_main = async (
           OpenApiEndpointComparator.equals,
         ).toJSON(),
       ),
-      "utf8",
-    );
-    await fs.promises.writeFile(
-      `${TestGlobal.ROOT}/assets/histories/${project}.interface.operations.json`,
-      JSON.stringify(result.document.operations),
-      "utf8",
-    );
-    await fs.promises.writeFile(
-      `${TestGlobal.ROOT}/assets/histories/${project}.interface.schemas.json`,
-      JSON.stringify(
+      [`${project}.interface.operations.json`]: JSON.stringify(
+        result.document.operations,
+      ),
+      [`${project}.interface.schemas.json`]: JSON.stringify(
         Object.fromEntries(
           snapshots
             .map((s) => s.event)
@@ -131,7 +114,6 @@ export const validate_agent_interface_main = async (
             .map((e) => Object.entries(e.schemas)),
         ),
       ),
-      "utf8",
-    );
+    });
   }
 };

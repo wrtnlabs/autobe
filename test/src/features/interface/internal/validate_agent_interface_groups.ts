@@ -4,10 +4,10 @@ import {
   AutoBeAssistantMessageHistory,
   AutoBeInterfaceGroupsEvent,
 } from "@autobe/interface";
-import fs from "fs";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
+import { TestHistory } from "../../../internal/TestHistory";
 import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_interface } from "./prepare_agent_interface";
 
@@ -15,7 +15,7 @@ export const validate_agent_interface_groups = async (
   factory: TestFactory,
   project: TestProject,
 ) => {
-  if (TestGlobal.env.CHATGPT_API_KEY === undefined) return false;
+  if (TestGlobal.env.API_KEY === undefined) return false;
 
   const { agent } = await prepare_agent_interface(factory, project);
   const go = (message?: string) =>
@@ -35,9 +35,7 @@ export const validate_agent_interface_groups = async (
     },
   });
   if (process.argv.includes("--archive"))
-    await fs.promises.writeFile(
-      `${TestGlobal.ROOT}/assets/histories/${project}.interface.groups.json`,
-      JSON.stringify(result.groups),
-      "utf8",
-    );
+    await TestHistory.save({
+      [`${project}.interface.groups.json`]: JSON.stringify(result.groups),
+    });
 };

@@ -15,7 +15,7 @@ export const validate_agent_realize_coder = async (
   factory: TestFactory,
   project: TestProject,
 ) => {
-  if (TestGlobal.env.CHATGPT_API_KEY === undefined) return false;
+  if (TestGlobal.env.API_KEY === undefined) return false;
 
   // PREPARE AGENT
   const { agent } = await prepare_agent_realize_coder(factory, project);
@@ -78,8 +78,9 @@ export const validate_agent_realize_coder = async (
   const templateFiles = await (await ctx.compiler()).realize.getTemplate();
 
   // REPORT RESULT
+  const model: string = TestGlobal.getModel();
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${project}/realize/main`,
+    root: `${TestGlobal.ROOT}/results/${model}/${project}/realize/main`,
     files: {
       ...(await agent.getFiles()),
       ...codes,

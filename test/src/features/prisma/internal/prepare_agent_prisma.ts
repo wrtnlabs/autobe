@@ -11,7 +11,7 @@ export const prepare_agent_prisma = async (
   factory: TestFactory,
   project: TestProject,
 ) => {
-  if (TestGlobal.env.CHATGPT_API_KEY === undefined)
+  if (TestGlobal.env.API_KEY === undefined)
     throw new Error("No OpenAI API key provided");
 
   const histories: AutoBeHistory[] = await TestHistory.getAnalyze(project);

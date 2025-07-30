@@ -34,11 +34,11 @@ async function main() {
         model: "chatgpt",
         vendor: {
           api: new OpenAI({
-            apiKey: TestGlobal.env.CHATGPT_API_KEY,
-            baseURL: TestGlobal.env.CHATGPT_BASE_URL,
+            apiKey: TestGlobal.env.API_KEY,
+            baseURL: TestGlobal.env.BASE_URL,
             maxRetries: 30,
           }),
-          semaphore: Number(TestGlobal.env.OPENAI_SEMAPHORE ?? "32"),
+          semaphore: Number(TestGlobal.env.SEMAPHORE ?? "32"),
           model: "gpt-4.1",
         },
         config: {

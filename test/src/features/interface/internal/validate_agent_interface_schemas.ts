@@ -6,6 +6,7 @@ import typia from "typia";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
+import { TestHistory } from "../../../internal/TestHistory";
 import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_interface } from "./prepare_agent_interface";
 
@@ -13,13 +14,14 @@ export const validate_agent_interface_schemas = async (
   factory: TestFactory,
   project: TestProject,
 ) => {
-  if (TestGlobal.env.CHATGPT_API_KEY === undefined) return false;
+  if (TestGlobal.env.API_KEY === undefined) return false;
 
   // PREPARE ASSETS
   const { agent } = await prepare_agent_interface(factory, project);
+  const model: string = TestGlobal.getModel();
   const operations: AutoBeOpenApi.IOperation[] = JSON.parse(
     await fs.promises.readFile(
-      `${TestGlobal.ROOT}/assets/histories/${project}.interface.operations.json`,
+      `${TestGlobal.ROOT}/assets/histories/${model}/${project}.interface.operations.json`,
       "utf8",
     ),
   );
@@ -30,7 +32,7 @@ export const validate_agent_interface_schemas = async (
     await orchestrateInterfaceSchemas(agent.getContext(), operations);
   typia.assert(schemas);
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${project}/interface/schemas`,
+    root: `${TestGlobal.ROOT}/results/${model}/${project}/interface/schemas`,
     files: {
       ...(await agent.getFiles()),
       "logs/endpoints.json": JSON.stringify(
@@ -46,9 +48,7 @@ export const validate_agent_interface_schemas = async (
     },
   });
   if (process.argv.includes("--archive"))
-    await fs.promises.writeFile(
-      `${TestGlobal.ROOT}/assets/histories/${project}.interface.schemas.json`,
-      JSON.stringify(schemas),
-      "utf8",
-    );
+    await TestHistory.save({
+      [`${project}.interface.schemas.json`]: JSON.stringify(schemas),
+    });
 };

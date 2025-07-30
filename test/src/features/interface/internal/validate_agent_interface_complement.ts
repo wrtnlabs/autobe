@@ -15,19 +15,20 @@ export const validate_agent_interface_complement = async (
   factory: TestFactory,
   project: TestProject,
 ) => {
-  if (TestGlobal.env.CHATGPT_API_KEY === undefined) return false;
+  if (TestGlobal.env.API_KEY === undefined) return false;
 
   // PREPARE ASSETS
   const { agent } = await prepare_agent_interface(factory, project);
+  const model: string = TestGlobal.getModel();
   const operations: AutoBeOpenApi.IOperation[] = JSON.parse(
     await fs.promises.readFile(
-      `${TestGlobal.ROOT}/assets/histories/${project}.interface.operations.json`,
+      `${TestGlobal.ROOT}/assets/histories/${model}/${project}.interface.operations.json`,
       "utf8",
     ),
   );
   const components: AutoBeOpenApi.IComponents = JSON.parse(
     await fs.promises.readFile(
-      `${TestGlobal.ROOT}/assets/histories/${project}.interface.components.json`,
+      `${TestGlobal.ROOT}/assets/histories/${model}/${project}.interface.components.json`,
       "utf8",
     ),
   );
@@ -70,7 +71,7 @@ export const validate_agent_interface_complement = async (
 
   // REPORT RESULT
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${project}/interface/complement`,
+    root: `${TestGlobal.ROOT}/results/${model}/${project}/interface/complement`,
     files: {
       ...(await agent.getFiles()),
       "logs/operations.json": JSON.stringify(operations),

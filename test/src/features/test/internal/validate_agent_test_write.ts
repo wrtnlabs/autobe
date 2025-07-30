@@ -12,6 +12,7 @@ import typia from "typia";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
+import { TestHistory } from "../../../internal/TestHistory";
 import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_test } from "./prepare_agent_test";
 
@@ -19,13 +20,14 @@ export const validate_agent_test_write = async (
   factory: TestFactory,
   project: TestProject,
 ) => {
-  if (TestGlobal.env.CHATGPT_API_KEY === undefined) return false;
+  if (TestGlobal.env.API_KEY === undefined) return false;
 
   // PREPARE ASSETS
   const { agent } = await prepare_agent_test(factory, project);
+  const model: string = TestGlobal.getModel();
   const scenarios: AutoBeTestScenario[] = JSON.parse(
     await fs.promises.readFile(
-      `${TestGlobal.ROOT}/assets/histories/${project}.test.scenarios.json`,
+      `${TestGlobal.ROOT}/assets/histories/${model}/${project}.test.scenarios.json`,
       "utf8",
     ),
   );
@@ -65,7 +67,7 @@ export const validate_agent_test_write = async (
       ),
     });
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${project}/test/write`,
+    root: `${TestGlobal.ROOT}/results/${model}/${project}/test/write`,
     files: {
       ...files,
       "test/tsconfig.json":
@@ -75,8 +77,7 @@ export const validate_agent_test_write = async (
     },
   });
   if (process.argv.includes("--archive"))
-    await fs.promises.writeFile(
-      `${TestGlobal.ROOT}/assets/histories/${project}.test.writes.json`,
-      JSON.stringify(writes),
-    );
+    await TestHistory.save({
+      [`${project}.test.writes.json`]: JSON.stringify(writes),
+    });
 };

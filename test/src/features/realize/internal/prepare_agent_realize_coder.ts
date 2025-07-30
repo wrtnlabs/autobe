@@ -10,7 +10,7 @@ export const prepare_agent_realize_coder = async (
   factory: TestFactory,
   project: "bbs-backend" | "shopping-backend",
 ) => {
-  if (TestGlobal.env.CHATGPT_API_KEY === undefined)
+  if (TestGlobal.env.API_KEY === undefined)
     throw new Error("No OpenAI API key provided");
 
   const histories: AutoBeHistory[] = await TestHistory.getInterface(project);

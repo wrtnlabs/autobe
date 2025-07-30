@@ -28,13 +28,18 @@ export class TestGlobal {
       to === -1 ? process.argv.length : to + from,
     );
   }
+
+  public static getModel(): string {
+    return TestGlobal.env.VENDOR_MODEL ?? "openai/gpt-4.1";
+  }
 }
 
 interface IEnvironments {
-  CHATGPT_API_KEY?: string;
-  CHATGPT_BASE_URL?: string;
-  CHATGPT_OPTIONS?: string;
-  OPENAI_SEMAPHORE?: string;
+  API_KEY?: string;
+  BASE_URL?: string;
+  SCHEMA_MODEL?: string;
+  VENDOR_MODEL?: string;
+  SEMAPHORE?: string;
   BENCHMARK_RUNS_PER_SCENARIO?: string;
 }
 

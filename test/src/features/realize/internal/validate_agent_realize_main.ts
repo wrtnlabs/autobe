@@ -8,10 +8,10 @@ import {
   AutoBeRealizeHistory,
 } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
-import fs from "fs";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
+import { TestHistory } from "../../../internal/TestHistory";
 import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_realize } from "./prepare_agent_realize";
 
@@ -19,7 +19,7 @@ export const validate_agent_realize_main = async (
   factory: TestFactory,
   project: TestProject,
 ) => {
-  if (TestGlobal.env.CHATGPT_API_KEY === undefined) return false;
+  if (TestGlobal.env.API_KEY === undefined) return false;
 
   // PREPARE AGENT
   const { agent } = await prepare_agent_realize(factory, project);
@@ -64,24 +64,18 @@ export const validate_agent_realize_main = async (
   }
 
   // REPORT RESULT
+  const model: string = TestGlobal.getModel();
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${project}/realize/main`,
+    root: `${TestGlobal.ROOT}/results/${model}/${project}/realize/main`,
     files: {
       ...(await agent.getFiles()),
       "pnpm-workspace.yaml": "",
     },
   });
-  if (process.argv.includes("--archive")) {
-    await fs.promises.writeFile(
-      `${TestGlobal.ROOT}/assets/histories/${project}.realize.json`,
-      JSON.stringify(agent.getHistories()),
-      "utf8",
-    );
-    await fs.promises.writeFile(
-      `${TestGlobal.ROOT}/assets/histories/${project}.realize.snapshots.json`,
-      JSON.stringify(snapshots),
-      "utf8",
-    );
-  }
+  if (process.argv.includes("--archive"))
+    await TestHistory.save({
+      [`${project}.realize.json`]: JSON.stringify(agent.getHistories()),
+      [`${project}.realize.snapshots.json`]: JSON.stringify(snapshots),
+    });
   TestValidator.equals("result")(result.compiled.type)("success");
 };

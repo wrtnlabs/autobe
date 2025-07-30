@@ -6,7 +6,6 @@ import {
   AutoBeHistory,
   AutoBeUserMessageHistory,
 } from "@autobe/interface";
-import fs from "fs";
 import typia from "typia";
 
 import { TestFactory } from "../../../TestFactory";
@@ -18,7 +17,7 @@ export const validate_agent_analyze_main = async (
   factory: TestFactory,
   project: TestProject,
 ) => {
-  if (TestGlobal.env.CHATGPT_API_KEY === undefined) return false;
+  if (TestGlobal.env.API_KEY === undefined) return false;
 
   // PREPARE ASSETS
   const [history]: AutoBeHistory[] = await TestHistory.getInitial(project);
@@ -51,21 +50,15 @@ export const validate_agent_analyze_main = async (
   }
 
   // REPORT RESULT
+  const model: string = TestGlobal.getModel();
   const files: Record<string, string> = await agent.getFiles();
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${project}/analyze`,
+    root: `${TestGlobal.ROOT}/results/${model}/${project}/analyze`,
     files,
   });
-  if (process.argv.includes("--archive")) {
-    await fs.promises.writeFile(
-      `${TestGlobal.ROOT}/assets/histories/${project}.analyze.json`,
-      JSON.stringify(agent.getHistories()),
-      "utf8",
-    );
-    await fs.promises.writeFile(
-      `${TestGlobal.ROOT}/assets/histories/${project}.analyze.snapshots.json`,
-      JSON.stringify(snapshots),
-      "utf8",
-    );
-  }
+  if (process.argv.includes("--archive"))
+    await TestHistory.save({
+      [`${project}.analyze.json`]: JSON.stringify(agent.getHistories()),
+      [`${project}.analyze.snapshots.json`]: JSON.stringify(snapshots),
+    });
 };
