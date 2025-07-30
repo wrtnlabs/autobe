@@ -64,10 +64,7 @@ export async function writeCodeUntilCompilePassed<
     );
 
     const metadata = { total: targets.length, count: 0 };
-    const generatedCodes: (
-      | IAutoBeRealizeCompile.Success
-      | IAutoBeRealizeCompile.Fail
-    )[] = await Promise.all(
+    const generatedCodes = await Promise.all(
       targets.map((op) => {
         const role = op.authorizationRole;
         const decorator = authorizations.find((el) => el.role === role);
@@ -98,7 +95,7 @@ export async function writeCodeUntilCompilePassed<
             path: code.op.path,
           },
           location: code.result.filename,
-          name: code.result.filename,
+          name: code.result.name,
         };
       }
     }
