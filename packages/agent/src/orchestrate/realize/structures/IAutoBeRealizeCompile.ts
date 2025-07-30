@@ -44,7 +44,7 @@ export namespace IAutoBeRealizeCompile {
     content: string;
     role?: (string & tags.MinLength<1>) | null;
     endpoint?: AutoBeOpenApi.IEndpoint;
-    location?: string;
+    location: string;
     name?: string;
   }
 
