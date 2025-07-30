@@ -1,4 +1,9 @@
-import { AutoBeHistory } from "@autobe/interface";
+import { AutoBeTokenUsage } from "@autobe/agent";
+import {
+  AutoBeEventSnapshot,
+  AutoBeHistory,
+  IAutoBeTokenUsageJson,
+} from "@autobe/interface";
 import fs from "fs";
 import typia from "typia";
 
@@ -43,6 +48,19 @@ export namespace TestHistory {
       project,
       type: "realize",
     });
+
+  export const getTokenUsage = async (props: {
+    project: TestProject;
+    type: "analyze" | "prisma" | "interface" | "test" | "realize";
+  }): Promise<IAutoBeTokenUsageJson> => {
+    const snapshots: AutoBeEventSnapshot[] = JSON.parse(
+      await fs.promises.readFile(
+        `${TestGlobal.ROOT}/assets/histories/${props.project}.${props.type}.json`,
+        "utf8",
+      ),
+    );
+    return snapshots.at(-1)?.tokenUsage ?? new AutoBeTokenUsage().toJSON();
+  };
 
   const getHistories = async (props: {
     project: TestProject;

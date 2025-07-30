@@ -15,7 +15,15 @@ export const prepare_agent_prisma = async (
     throw new Error("No OpenAI API key provided");
 
   const histories: AutoBeHistory[] = await TestHistory.getAnalyze(project);
-  const agent: AutoBeAgent<"chatgpt"> = factory.createAgent(histories);
+  const agent: AutoBeAgent<"chatgpt"> = factory.createAgent(
+    histories,
+    process.argv.includes("--archive")
+      ? await TestHistory.getTokenUsage({
+          project,
+          type: "analyze",
+        })
+      : undefined,
+  );
   const state: AutoBeState = agent.getContext().state();
   return {
     agent,

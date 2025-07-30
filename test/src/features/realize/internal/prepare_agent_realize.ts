@@ -14,7 +14,15 @@ export const prepare_agent_realize = async (
     throw new Error("No OpenAI API key provided");
 
   const histories: AutoBeHistory[] = await TestHistory.getTest(project);
-  const agent: AutoBeAgent<"chatgpt"> = factory.createAgent(histories);
+  const agent: AutoBeAgent<"chatgpt"> = factory.createAgent(
+    histories,
+    process.argv.includes("--archive")
+      ? await TestHistory.getTokenUsage({
+          project,
+          type: "test",
+        })
+      : undefined,
+  );
   const state: AutoBeState = agent.getContext().state();
 
   return {
