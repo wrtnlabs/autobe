@@ -68,15 +68,15 @@ export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
 
     // ALREADY REALIZED CASE
     const state: AutoBeState = createAutoBeState(this.histories_);
-    if (state.realize !== null) {
+    if (state.test !== null) {
       await sleep_for(2_000);
       const assistantMessage: AutoBeAssistantMessageHistory = {
         id: v4(),
         type: "assistantMessage",
         text: [
-          "You've completed the backend application generation.",
+          "You've reached to the test agent.",
           "",
-          "Congratulations! You've successfully generated the backend application with AutoBE.",
+          "The realize agent would be developed until 2025-08-31.",
           "",
           "Thanks for using AutoBE!",
         ].join("\n"),
@@ -88,7 +88,7 @@ export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
       return this.histories_;
     }
     const take = async (
-      type: "analyze" | "prisma" | "interface" | "test" | "realize",
+      type: "analyze" | "prisma" | "interface" | "test",
     ): Promise<void> => {
       for (const s of this.getEventSnapshots(type)) {
         const time: number = sleepMap[s.event.type] ?? 500;
@@ -105,7 +105,6 @@ export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
     else if (state.prisma === null) await take("prisma");
     else if (state.interface === null) await take("interface");
     else if (state.test === null) await take("test");
-    else if (state.realize === null) await take("realize");
     return this.histories_;
   }
 
@@ -118,7 +117,7 @@ export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
   }
 
   private getEventSnapshots(
-    state: "analyze" | "prisma" | "interface" | "test" | "realize",
+    state: "analyze" | "prisma" | "interface" | "test",
   ): AutoBeEventSnapshot[] {
     return this.props_.preset[state];
   }
@@ -136,7 +135,6 @@ export namespace AutoBeMockAgent {
     prisma: AutoBeEventSnapshot[];
     interface: AutoBeEventSnapshot[];
     test: AutoBeEventSnapshot[];
-    realize: AutoBeEventSnapshot[];
   }
 }
 
