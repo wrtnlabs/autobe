@@ -40,9 +40,6 @@ export const transformPrismaComponentsHistories = (
         "Call the provided tool function to generate Prisma DB schema",
         "referencing below requirement analysis report.",
         "",
-        "## User Request",
-        state.analyze.reason,
-        "",
         `## Requirement Analysis Report`,
         "",
         "```json",
@@ -69,14 +66,24 @@ export const transformPrismaComponentsHistories = (
         "",
         "* `mv_shopping_daily_stats`",
         "",
-        "## User Role Handling",
         "",
-        "If the Requirement Analysis Report contains User Role information, **do not normalize** user roles into a single table.",
-        "Instead, create separate tables for each distinct role mentioned in the requirements.",
-        "",
-        "For example, if the requirements mention User, Admin, and Moderator roles:",
-        "",
-        "* Create separate tables: `User`, `Admin`, `Moderator` (or with prefix: `shopping_user`, `shopping_admin`, `shopping_moderator`)",
+        state.analyze.roles.length > 0
+          ? [
+              "## User Role Handling",
+              "",
+              `The Requirement Analysis Report contains the following user roles: ${state.analyze.roles.join(", ")}.`,
+              "",
+              "**Do not normalize** user roles into a single table.",
+              "Instead, create separate tables for each distinct role mentioned in the requirements.",
+              "",
+              "Create separate tables for each role:",
+              "",
+              state.analyze.roles
+                .map((role) => `* ${prefix}_${role.name.toLowerCase()}`)
+                .join("\n"),
+              "",
+            ].join("\n")
+          : "",
       ].join("\n"),
     },
   ];
