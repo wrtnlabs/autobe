@@ -69,7 +69,7 @@ export const validate_agent_realize_authorization = async (
   };
 
   const histories: AutoBeHistory[] = agent.getHistories();
-  const model: string = TestGlobal.getModel();
+  const model: string = TestGlobal.getVendorModel();
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/${model}/${project}/realize/authorization`,
     files: {

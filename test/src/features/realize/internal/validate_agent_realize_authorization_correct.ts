@@ -169,7 +169,7 @@ export const validate_agent_realize_authorization_correct = async (
     ),
   };
 
-  const model: string = TestGlobal.getModel();
+  const model: string = TestGlobal.getVendorModel();
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/${model}/${project}/realize/authorization-correct`,
     files: {

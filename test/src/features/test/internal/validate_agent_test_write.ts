@@ -24,7 +24,7 @@ export const validate_agent_test_write = async (
 
   // PREPARE ASSETS
   const { agent } = await prepare_agent_test(factory, project);
-  const model: string = TestGlobal.getModel();
+  const model: string = TestGlobal.getVendorModel();
   const scenarios: AutoBeTestScenario[] = JSON.parse(
     await fs.promises.readFile(
       `${TestGlobal.ROOT}/assets/histories/${model}/${project}.test.scenarios.json`,

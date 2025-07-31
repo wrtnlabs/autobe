@@ -18,7 +18,7 @@ export const validate_agent_interface_operations = async (
 
   // PREPARE ASSETS
   const { agent } = await prepare_agent_interface(factory, project);
-  const model: string = TestGlobal.getModel();
+  const model: string = TestGlobal.getVendorModel();
   const endpoints: AutoBeOpenApi.IEndpoint[] = JSON.parse(
     await fs.promises.readFile(
       `${TestGlobal.ROOT}/assets/histories/${model}/${project}.interface.endpoints.json`,

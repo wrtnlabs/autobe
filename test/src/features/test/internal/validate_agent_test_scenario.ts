@@ -49,7 +49,7 @@ export const validate_agent_test_scenario = async (
   }
 
   // REPORT RESULT
-  const model: string = TestGlobal.getModel();
+  const model: string = TestGlobal.getVendorModel();
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/${model}/${project}/test/scenario`,
     files: {

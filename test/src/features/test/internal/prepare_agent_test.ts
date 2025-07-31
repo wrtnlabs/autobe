@@ -1,5 +1,7 @@
+import { AutoBeAgent } from "@autobe/agent";
 import { AutoBeState } from "@autobe/agent/src/context/AutoBeState";
 import { AutoBeHistory } from "@autobe/interface";
+import { ILlmSchema } from "@samchon/openapi";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
@@ -13,7 +15,7 @@ export const prepare_agent_test = async (
     throw new Error("No OpenAI API key provided");
 
   const histories: AutoBeHistory[] = await TestHistory.getInterface(project);
-  const agent = factory.createAgent(
+  const agent: AutoBeAgent<ILlmSchema.Model> = factory.createAgent(
     histories,
     process.argv.includes("--archive")
       ? await TestHistory.getTokenUsage({

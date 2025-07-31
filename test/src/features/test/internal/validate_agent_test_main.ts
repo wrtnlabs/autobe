@@ -52,7 +52,7 @@ export const validate_agent_test_main = async (
 
   // REPORT RESULT
   const histories: AutoBeHistory[] = agent.getHistories();
-  const model: string = TestGlobal.getModel();
+  const model: string = TestGlobal.getVendorModel();
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/${model}/${project}/test/main`,
     files: {

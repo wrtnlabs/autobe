@@ -54,7 +54,7 @@ export const validate_agent_interface_main = async (
   }
 
   // REPORT RESULT
-  const model: string = TestGlobal.getModel();
+  const model: string = TestGlobal.getVendorModel();
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/${model}/${project}/interface/main`,
     files: {

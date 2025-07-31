@@ -25,7 +25,7 @@ export const validate_agent_prisma_main = async (
   if (TestGlobal.env.API_KEY === undefined) return false;
 
   const { agent } = await prepare_agent_prisma(factory, project);
-  const model: string = TestGlobal.getModel();
+  const model: string = TestGlobal.getVendorModel();
   const snapshots: AutoBeEventSnapshot[] = [];
   const listen = (event: AutoBeEvent) => {
     snapshots.push({

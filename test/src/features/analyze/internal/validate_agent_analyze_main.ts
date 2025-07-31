@@ -1,3 +1,4 @@
+import { AutoBeAgent } from "@autobe/agent";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeEvent,
@@ -5,6 +6,7 @@ import {
   AutoBeHistory,
   AutoBeUserMessageHistory,
 } from "@autobe/interface";
+import { ILlmSchema } from "@samchon/openapi";
 import typia from "typia";
 
 import { TestFactory } from "../../../TestFactory";
@@ -25,8 +27,8 @@ export const validate_agent_analyze_main = async (
     history.contents[0].type === "text" ? history.contents[0].text : null;
   if (content === null) throw new Error("History must have a text content.");
 
-  const agent = factory.createAgent([history]);
-  const model: string = TestGlobal.getModel();
+  const agent: AutoBeAgent<ILlmSchema.Model> = factory.createAgent([history]);
+  const model: string = TestGlobal.getVendorModel();
   const snapshots: AutoBeEventSnapshot[] = [];
   const listen = (event: AutoBeEvent) => {
     snapshots.push({

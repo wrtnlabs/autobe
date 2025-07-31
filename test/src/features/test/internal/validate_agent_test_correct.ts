@@ -22,7 +22,7 @@ export const validate_agent_test_correct = async (
 
   // PREPARE ASSETS
   const { agent } = await prepare_agent_test(factory, project);
-  const model: string = TestGlobal.getModel();
+  const model: string = TestGlobal.getVendorModel();
   const writes: IAutoBeTestWriteResult[] = JSON.parse(
     await fs.promises.readFile(
       `${TestGlobal.ROOT}/assets/histories/${model}/${project}.test.writes.json`,

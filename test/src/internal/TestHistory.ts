@@ -15,7 +15,7 @@ import { TestProject } from "../structures/TestProject";
 export namespace TestHistory {
   export const save = async (files: Record<string, string>): Promise<void> => {
     await FileSystemIterator.save({
-      root: `${TestGlobal.ROOT}/assets/histories/${TestGlobal.getModel()}`,
+      root: `${TestGlobal.ROOT}/assets/histories/${TestGlobal.getVendorModel()}`,
       overwrite: true,
       files,
     });
@@ -81,7 +81,7 @@ export namespace TestHistory {
   }): Promise<IAutoBeTokenUsageJson> => {
     const snapshots: AutoBeEventSnapshot[] = JSON.parse(
       await fs.promises.readFile(
-        `${TestGlobal.ROOT}/assets/histories/${TestGlobal.getModel()}/${props.project}.${props.type}.json`,
+        `${TestGlobal.ROOT}/assets/histories/${TestGlobal.getVendorModel()}/${props.project}.${props.type}.json`,
         "utf8",
       ),
     );
@@ -92,7 +92,7 @@ export namespace TestHistory {
     project: TestProject;
     type: "initial" | "analyze" | "prisma" | "interface" | "test" | "realize";
   }): Promise<AutoBeHistory[]> => {
-    const location: string = `${TestGlobal.ROOT}/assets/histories/${TestGlobal.getModel()}/${props.project}.${props.type}.json`;
+    const location: string = `${TestGlobal.ROOT}/assets/histories/${TestGlobal.getVendorModel()}/${props.project}.${props.type}.json`;
     const content: string = await fs.promises.readFile(location, "utf8");
     const histories: AutoBeHistory[] = JSON.parse(content);
 
