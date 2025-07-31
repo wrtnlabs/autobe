@@ -37,12 +37,13 @@ export const orchestrateRealize =
     // generate authorizations and functions
     const authorizations: AutoBeRealizeAuthorization[] =
       await orchestrateRealizeAuthorization(ctx);
-    const functions: AutoBeRealizeFunction[] =
-      await writeCodeUntilCompilePassed(ctx)({
-        operations,
-        authorizations,
-        retry: 4,
-      });
+    const result = await writeCodeUntilCompilePassed(ctx)({
+      operations,
+      authorizations,
+      retry: 4,
+    });
+
+    const functions: AutoBeRealizeFunction[] = result.functions;
 
     // compile controllers
     const compiler: IAutoBeCompiler = await ctx.compiler();
@@ -53,12 +54,9 @@ export const orchestrateRealize =
         authorizations,
       });
 
-    // report
-    const history: AutoBeRealizeHistory = (ctx.state().realize = {
+    const history: AutoBeRealizeHistory = {
       type: "realize",
-      compiled: {
-        type: "success",
-      },
+      compiled: result.compiled,
       authorizations,
       functions,
       controllers,
@@ -67,8 +65,9 @@ export const orchestrateRealize =
       id: v4(),
       reason: props.reason,
       step: ctx.state().analyze?.step ?? 0,
-    } satisfies AutoBeRealizeHistory);
+    };
 
+    // report
     ctx.dispatch({
       type: "realizeComplete",
       created_at: new Date().toISOString(),

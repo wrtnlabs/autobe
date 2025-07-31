@@ -73,7 +73,7 @@ export function replaceImportStatements<Model extends ILlmSchema.Model>(
     // Remove any existing decoratorType imports if LLM mistakenly added them
     if (decoratorType) {
       const decoratorTypeRegex = new RegExp(
-        `import\\s*{\\s*${decoratorType}\\s*}\\s*from\\s*["']\\.\\.\/decorators\/payload\/${decoratorType}["']\\s*;?\\s*`,
+        `import\\s*(?:type\\s*)?{\\s*${decoratorType}\\s*}\\s*from\\s*["']\\.\\.\/decorators\/payload\/${decoratorType}["']\\s*;?\\s*`,
         "gm",
       );
       code = code.replace(decoratorTypeRegex, "");

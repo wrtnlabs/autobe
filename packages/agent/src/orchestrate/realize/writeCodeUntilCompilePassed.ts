@@ -26,7 +26,10 @@ export function writeCodeUntilCompilePassed<Model extends ILlmSchema.Model>(
     operations: AutoBeOpenApi.IOperation[];
     authorizations: AutoBeRealizeAuthorization[];
     retry: number;
-  }): Promise<AutoBeRealizeFunction[]> {
+  }): Promise<{
+    compiled: IAutoBeTypeScriptCompileResult;
+    functions: AutoBeRealizeFunction[];
+  }> {
     const payloads: Record<string, string> = Object.fromEntries(
       props.authorizations.map((el) => [
         el.payload.location,
@@ -59,6 +62,7 @@ export function writeCodeUntilCompilePassed<Model extends ILlmSchema.Model>(
       histories.set(operation, []);
     }
 
+    let compiled: IAutoBeTypeScriptCompileResult | null = null;
     const entireCodes: IAutoBeRealizeCompile.FileContentMap = {};
     for (let i = 0; i < props.retry; i++) {
       const targets = props.operations.filter((op) =>
@@ -105,7 +109,7 @@ export function writeCodeUntilCompilePassed<Model extends ILlmSchema.Model>(
       const prisma = ctx.state().prisma?.compiled;
       const nodeModules = prisma?.type === "success" ? prisma.nodeModules : {};
       const compiler = await ctx.compiler();
-      const compiled = await compiler.typescript.compile({
+      compiled = await compiler.typescript.compile({
         files: {
           ...payloads,
           ...files,
@@ -122,6 +126,24 @@ export function writeCodeUntilCompilePassed<Model extends ILlmSchema.Model>(
         },
       });
 
+      if (compiled && compiled.type !== "success") {
+        ctx.dispatch({
+          type: "realizeValidate",
+          created_at: new Date().toISOString(),
+          files:
+            compiled.type === "failure"
+              ? Object.fromEntries(
+                  compiled.diagnostics.map((diagnostic) => [
+                    diagnostic.file,
+                    diagnostic.code,
+                  ]),
+                )
+              : {},
+          result: compiled,
+          step: ctx.state().analyze?.step ?? 0,
+        });
+      }
+
       if (
         compiled.type === "success" &&
         generatedCodes.every((c) => c.type === "success")
@@ -133,7 +155,7 @@ export function writeCodeUntilCompilePassed<Model extends ILlmSchema.Model>(
       }
     }
 
-    return Object.entries(entireCodes)
+    const functions = Object.entries(entireCodes)
       .filter(([filename]) => filename.startsWith("src/providers")) // filter only provider files
       .map(([filename, value]) => {
         return {
@@ -145,6 +167,8 @@ export function writeCodeUntilCompilePassed<Model extends ILlmSchema.Model>(
           role: value.role ?? null,
         };
       });
+
+    return { functions, compiled: compiled ? compiled : { type: "success" } };
   };
 }
 
@@ -203,15 +227,27 @@ function process<Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) {
           currentDiagnostics,
           props.authorization,
         ).then((res) => {
-          ctx.dispatch({
-            type: "realizeProgress",
-            filename: filename,
-            content: res === FAILED ? "FAILED" : res.implementationCode,
-            completed: ++props.metadata.count,
-            created_at: new Date().toISOString(),
-            step: ctx.state().analyze?.step ?? 0,
-            total: props.metadata.total,
-          });
+          if (props.previousCodes.length === 0) {
+            ctx.dispatch({
+              type: "realizeWrite",
+              filename: filename,
+              content: res === FAILED ? "FAILED" : res.implementationCode,
+              completed: ++props.metadata.count,
+              created_at: new Date().toISOString(),
+              step: ctx.state().analyze?.step ?? 0,
+              total: props.metadata.total,
+            });
+          } else {
+            ctx.dispatch({
+              type: "realizeCorrect",
+              filename: filename,
+              content: res === FAILED ? "FAILED" : res.implementationCode,
+              completed: ++props.metadata.count,
+              created_at: new Date().toISOString(),
+              step: ctx.state().analyze?.step ?? 0,
+              total: props.metadata.total,
+            });
+          }
 
           if (res === FAILED) {
             return res;

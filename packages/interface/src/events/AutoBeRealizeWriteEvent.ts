@@ -17,8 +17,8 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
  *
  * @author Samchon
  */
-export interface AutoBeRealizeProgressEvent
-  extends AutoBeEventBase<"realizeProgress"> {
+export interface AutoBeRealizeWriteEvent
+  extends AutoBeEventBase<"realizeWrite"> {
   /**
    * Name of the implementation file that has been completed.
    *

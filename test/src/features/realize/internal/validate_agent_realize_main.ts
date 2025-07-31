@@ -28,10 +28,18 @@ export const validate_agent_realize_main = async (
       event,
       tokenUsage: agent.getTokenUsage().toJSON(),
     });
+
+    if (event.type === "realizeWrite") {
+      console.log(
+        event.filename,
+        `${event.completed}/${event.total} completed.`,
+      );
+    }
   };
 
   agent.on("realizeStart", enroll);
-  agent.on("realizeProgress", enroll);
+  agent.on("realizeWrite", enroll);
+  agent.on("realizeCorrect", enroll);
   agent.on("realizeValidate", enroll);
   agent.on("realizeComplete", enroll);
 

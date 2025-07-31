@@ -21,13 +21,13 @@ import {
   AutoBeRealizeAuthorizationValidateEvent,
   AutoBeRealizeAuthorizationWriteEvent,
   AutoBeRealizeCompleteEvent,
-  AutoBeRealizeProgressEvent,
   AutoBeRealizeStartEvent,
   AutoBeRealizeTestCompleteEvent,
   AutoBeRealizeTestOperationEvent,
   AutoBeRealizeTestResetEvent,
   AutoBeRealizeTestStartEvent,
   AutoBeRealizeValidateEvent,
+  AutoBeRealizeWriteEvent,
   AutoBeTestCompleteEvent,
   AutoBeTestCorrectEvent,
   AutoBeTestScenarioEvent,
@@ -401,7 +401,7 @@ export interface IAutoBeRpcListener {
    * applications to track incremental progress and show how the complete
    * application functionality is being assembled.
    */
-  realizeProgress?(event: AutoBeRealizeProgressEvent): Promise<void>;
+  realizeProgress?(event: AutoBeRealizeWriteEvent): Promise<void>;
 
   /**
    * Optional handler for implementation validation events.

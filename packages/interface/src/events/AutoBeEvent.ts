@@ -23,13 +23,14 @@ import { AutoBeRealizeAuthorizationStartEvent } from "./AutoBeRealizeAuthorizati
 import { AutoBeRealizeAuthorizationValidateEvent } from "./AutoBeRealizeAuthorizationValidateEvent";
 import { AutoBeRealizeAuthorizationWriteEvent } from "./AutoBeRealizeAuthorizationWriteEvent";
 import { AutoBeRealizeCompleteEvent } from "./AutoBeRealizeCompleteEvent";
-import { AutoBeRealizeProgressEvent } from "./AutoBeRealizeProgressEvent";
+import { AutoBeRealizeCorrectEvent } from "./AutoBeRealizeCorrectEvent";
 import { AutoBeRealizeStartEvent } from "./AutoBeRealizeStartEvent";
 import { AutoBeRealizeTestCompleteEvent } from "./AutoBeRealizeTestCompleteEvent";
 import { AutoBeRealizeTestOperationEvent } from "./AutoBeRealizeTestOperationEvent";
 import { AutoBeRealizeTestResetEvent } from "./AutoBeRealizeTestResetEvent";
 import { AutoBeRealizeTestStartEvent } from "./AutoBeRealizeTestStartEvent";
 import { AutoBeRealizeValidateEvent } from "./AutoBeRealizeValidateEvent";
+import { AutoBeRealizeWriteEvent } from "./AutoBeRealizeWriteEvent";
 import { AutoBeTestCompleteEvent } from "./AutoBeTestCompleteEvent";
 import { AutoBeTestCorrectEvent } from "./AutoBeTestCorrectEvent";
 import { AutoBeTestScenarioEvent } from "./AutoBeTestScenarioEvent";
@@ -93,7 +94,8 @@ export type AutoBeEvent =
   | AutoBeTestCompleteEvent
   // REALIZE
   | AutoBeRealizeStartEvent
-  | AutoBeRealizeProgressEvent
+  | AutoBeRealizeWriteEvent
+  | AutoBeRealizeCorrectEvent
   | AutoBeRealizeValidateEvent
   | AutoBeRealizeCompleteEvent
   | AutoBeRealizeAuthorizationStartEvent
@@ -173,7 +175,8 @@ export namespace AutoBeEvent {
     testComplete: AutoBeTestCompleteEvent;
     // REALIZE
     realizeStart: AutoBeRealizeStartEvent;
-    realizeProgress: AutoBeRealizeProgressEvent;
+    realizeWrite: AutoBeRealizeWriteEvent;
+    realizeCorrect: AutoBeRealizeCorrectEvent;
     realizeValidate: AutoBeRealizeValidateEvent;
     realizeComplete: AutoBeRealizeCompleteEvent;
     realizeAuthorizationStart: AutoBeRealizeAuthorizationStartEvent;
