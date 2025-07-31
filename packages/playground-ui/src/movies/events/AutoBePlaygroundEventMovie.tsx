@@ -39,7 +39,7 @@ export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
     case "interfaceOperations":
     case "interfaceSchemas":
     case "testWrite":
-    case "realizeProgress":
+    case "realizeWrite":
     case "realizeAuthorizationWrite":
     case "realizeTestOperation":
       return (
@@ -80,6 +80,7 @@ export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
     case "prismaCorrect":
     case "testCorrect":
     case "realizeAuthorizationCorrect":
+    case "realizeCorrect":
       return null;
     default:
       back satisfies never;

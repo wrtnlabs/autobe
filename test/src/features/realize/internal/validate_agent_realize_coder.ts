@@ -27,7 +27,7 @@ export const validate_agent_realize_coder = async (
       map.set(event.type, true);
     }
 
-    if (event.type === "realizeWrite") {
+    if (event.type === "realizeWrite" || event.type === "realizeCorrect") {
       console.log(
         event.filename,
         `${event.completed}/${event.total} completed.`,

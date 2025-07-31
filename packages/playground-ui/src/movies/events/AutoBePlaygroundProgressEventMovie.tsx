@@ -5,8 +5,8 @@ import {
   AutoBeInterfaceSchemasEvent,
   AutoBePrismaSchemasEvent,
   AutoBeRealizeAuthorizationWriteEvent,
-  AutoBeRealizeProgressEvent,
   AutoBeRealizeTestOperationEvent,
+  AutoBeRealizeWriteEvent,
   AutoBeTestWriteEvent,
 } from "@autobe/interface";
 import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
@@ -63,7 +63,7 @@ export namespace AutoBePlaygroundProgressEventMovie {
       | AutoBeInterfaceOperationsEvent
       | AutoBeInterfaceSchemasEvent
       | AutoBeTestWriteEvent
-      | AutoBeRealizeProgressEvent
+      | AutoBeRealizeWriteEvent
       | AutoBeRealizeAuthorizationWriteEvent
       | AutoBeRealizeTestOperationEvent;
     last: boolean;
@@ -112,9 +112,9 @@ function getState(
           title: "Test Write",
           description: "Writing E2E test functions",
         };
-      case "realizeProgress":
+      case "realizeWrite":
         return {
-          title: "Realize Progress",
+          title: "Realize Write",
           description: "Realizing the API functions",
         };
       case "realizeAuthorizationWrite":

@@ -29,7 +29,7 @@ export const validate_agent_realize_main = async (
       tokenUsage: agent.getTokenUsage().toJSON(),
     });
 
-    if (event.type === "realizeWrite") {
+    if (event.type === "realizeWrite" || event.type === "realizeCorrect") {
       console.log(
         event.filename,
         `${event.completed}/${event.total} completed.`,
