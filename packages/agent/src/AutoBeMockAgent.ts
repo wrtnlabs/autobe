@@ -169,7 +169,8 @@ const sleepMap: Partial<Record<AutoBeEvent.Type, number>> = {
   // REALIZE
   realizeStart: 1_000,
   realizeComplete: 1_000,
-  realizeProgress: 80,
+  realizeWrite: 80,
+  realizeCorrect: 80,
   realizeValidate: 200,
   realizeAuthorizationStart: 1_000,
   realizeAuthorizationWrite: 200,

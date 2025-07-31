@@ -134,6 +134,10 @@ export class AutoBePlaygroundListener {
       realizeWrite: async (event) => {
         this.accumulate(event);
       },
+      realizeCorrect: async (event) => {
+        this.accumulate(event);
+      },
+
       realizeValidate: async (event) => {
         this.accumulate(event);
       },
