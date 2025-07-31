@@ -5,7 +5,6 @@ import {
   IAutoBeCompiler,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
-import { AutoBeRealizeAuthorizationReplaceImport } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -16,6 +15,7 @@ import { enforceToolCall } from "../../utils/enforceToolCall";
 import { IAutoBeRealizeAuthorizationCorrectApplication } from "./structures/IAutoBeRealizeAuthorizationCorrectApplication";
 import { transformRealizeAuthorizationCorrectHistories } from "./transformRealizeAuthorizationCorrectHistories";
 import { AuthorizationFileSystem } from "./utils/AuthorizationFileSystem";
+import { AutoBeRealizeAuthorizationReplaceImport } from "./utils/AutoBeRealizeAuthorizationReplaceImport";
 
 export async function orchestrateRealizeAuthorizationCorrect<
   Model extends ILlmSchema.Model,
@@ -26,17 +26,19 @@ export async function orchestrateRealizeAuthorizationCorrect<
   templateFiles: Record<string, string>,
   life: number = 4,
 ): Promise<AutoBeRealizeAuthorization> {
-  const providerContent =
+  const compiler: IAutoBeCompiler = await ctx.compiler();
+  const providerContent: string = await compiler.typescript.beautify(
     AutoBeRealizeAuthorizationReplaceImport.replaceProviderImport(
       authorization.role,
       authorization.provider.content,
-    );
-
-  const decoratorContent =
+    ),
+  );
+  const decoratorContent: string = await compiler.typescript.beautify(
     AutoBeRealizeAuthorizationReplaceImport.replaceDecoratorImport(
       authorization.role,
       authorization.decorator.content,
-    );
+    ),
+  );
 
   // Check Compile
   const files: Record<string, string> = {
@@ -49,8 +51,6 @@ export async function orchestrateRealizeAuthorizationCorrect<
     [AuthorizationFileSystem.payloadPath(authorization.payload.name)]:
       authorization.payload.content,
   };
-
-  const compiler: IAutoBeCompiler = await ctx.compiler();
 
   const compiled: IAutoBeTypeScriptCompileResult =
     await compiler.typescript.compile({
@@ -126,8 +126,11 @@ export async function orchestrateRealizeAuthorizationCorrect<
       ),
     },
     payload: {
-      ...pointer.value.payload,
+      name: pointer.value.payload.name,
       location: AuthorizationFileSystem.payloadPath(pointer.value.payload.name),
+      content: await compiler.typescript.beautify(
+        pointer.value.payload.content,
+      ),
     },
     role: authorization.role,
   };

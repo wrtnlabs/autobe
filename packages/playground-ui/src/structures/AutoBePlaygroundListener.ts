@@ -145,6 +145,8 @@ export class AutoBePlaygroundListener {
       // REALIZE-AUTHORIZATION
       realizeAuthorizationStart: async (event) => {
         this.state_.delete("realizeAuthorizationWrite");
+        this.state_.delete("realizeAuthorizationCorrect");
+        this.state_.delete("realizeAuthorizationValidate");
         this.insert(event);
       },
       realizeAuthorizationWrite: async (event) => {
@@ -158,6 +160,8 @@ export class AutoBePlaygroundListener {
       },
       realizeAuthorizationComplete: async (event) => {
         this.state_.delete("realizeAuthorizationWrite");
+        this.state_.delete("realizeAuthorizationCorrect");
+        this.state_.delete("realizeAuthorizationValidate");
         this.insert(event);
       },
       // REALILZE-TEST

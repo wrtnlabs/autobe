@@ -1,5 +1,5 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
-import { AutoBeRealizeAuthorization } from "@autobe/interface";
+import { AutoBeRealizeAuthorization, IAutoBeCompiler } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -100,6 +100,7 @@ async function process<Model extends ILlmSchema.Model>(
     });
   if (pointer.value === null) throw new Error("Failed to create decorator.");
 
+  const compiler: IAutoBeCompiler = await ctx.compiler();
   const authorization: AutoBeRealizeAuthorization = {
     role,
     decorator: {
@@ -112,7 +113,9 @@ async function process<Model extends ILlmSchema.Model>(
     payload: {
       location: AuthorizationFileSystem.payloadPath(pointer.value.payload.name),
       name: pointer.value.payload.name,
-      content: pointer.value.payload.content,
+      content: await compiler.typescript.beautify(
+        pointer.value.payload.content,
+      ),
     },
     provider: {
       location: AuthorizationFileSystem.providerPath(

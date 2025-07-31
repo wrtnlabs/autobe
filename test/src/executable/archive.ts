@@ -2,7 +2,7 @@ import cp from "child_process";
 
 import { TestGlobal } from "../TestGlobal";
 
-const STEPS = ["analyze", "prisma", "interface", "test"];
+const STEPS = ["analyze", "prisma", "interface", "test", "realize"];
 
 const main = async () => {
   const project: string | undefined = TestGlobal.getArguments("project")[0];

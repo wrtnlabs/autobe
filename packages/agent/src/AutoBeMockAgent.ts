@@ -68,15 +68,13 @@ export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
 
     // ALREADY REALIZED CASE
     const state: AutoBeState = createAutoBeState(this.histories_);
-    if (state.test !== null) {
+    if (state.realize !== null) {
       await sleep_for(2_000);
       const assistantMessage: AutoBeAssistantMessageHistory = {
         id: v4(),
         type: "assistantMessage",
         text: [
-          "You've reached to the test agent.",
-          "",
-          "The realize agent would be developed until 2025-08-31.",
+          "AutoBE has successfully realized the application.",
           "",
           "Thanks for using AutoBE!",
         ].join("\n"),
@@ -88,7 +86,7 @@ export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
       return this.histories_;
     }
     const take = async (
-      type: "analyze" | "prisma" | "interface" | "test",
+      type: "analyze" | "prisma" | "interface" | "test" | "realize",
     ): Promise<void> => {
       for (const s of this.getEventSnapshots(type)) {
         const time: number = sleepMap[s.event.type] ?? 500;
@@ -105,6 +103,7 @@ export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
     else if (state.prisma === null) await take("prisma");
     else if (state.interface === null) await take("interface");
     else if (state.test === null) await take("test");
+    else if (state.realize === null) await take("realize");
     return this.histories_;
   }
 
@@ -117,7 +116,7 @@ export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
   }
 
   private getEventSnapshots(
-    state: "analyze" | "prisma" | "interface" | "test",
+    state: "analyze" | "prisma" | "interface" | "test" | "realize",
   ): AutoBeEventSnapshot[] {
     return this.props_.preset[state];
   }
@@ -135,14 +134,17 @@ export namespace AutoBeMockAgent {
     prisma: AutoBeEventSnapshot[];
     interface: AutoBeEventSnapshot[];
     test: AutoBeEventSnapshot[];
+    realize: AutoBeEventSnapshot[];
   }
 }
 
 const sleepMap: Partial<Record<AutoBeEvent.Type, number>> = {
+  // ANALYZE
   analyzeStart: 1_000,
   analyzeWrite: 500,
   analyzeReview: 300,
   analyzeComplete: 1_000,
+  // PRISMA
   prismaStart: 1_000,
   prismaComponents: 1_000,
   prismaSchemas: 500,
@@ -150,16 +152,27 @@ const sleepMap: Partial<Record<AutoBeEvent.Type, number>> = {
   prismaCorrect: 500,
   prismaInsufficient: 1_000,
   prismaComplete: 1_000,
+  // INTERFACE
   interfaceStart: 1_000,
   interfaceEndpoints: 1_000,
   interfaceOperations: 400,
   interfaceSchemas: 400,
   interfaceComplement: 2_000,
   interfaceComplete: 1_000,
+  // TEST
   testStart: 1_000,
   testScenario: 1_000,
   testWrite: 40,
   testValidate: 100,
   testCorrect: 100,
   testComplete: 1_000,
+  // REALIZE
+  realizeStart: 1_000,
+  realizeComplete: 1_000,
+  realizeProgress: 80,
+  realizeValidate: 200,
+  realizeAuthorizationStart: 1_000,
+  realizeAuthorizationWrite: 200,
+  realizeAuthorizationValidate: 200,
+  realizeAuthorizationComplete: 1_000,
 };
