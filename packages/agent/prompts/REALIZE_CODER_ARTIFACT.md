@@ -53,21 +53,28 @@ The following shows the expected props structure for this function:
 ```
 
 **IMPORTANT**: The provider function you will implement must:
-- Accept a **single object parameter** that matches this props structure **exactly**
+- **If props are defined above**: Accept a **single object parameter** that matches this props structure **exactly**
+- **If no props are shown above**: Accept **no parameters** at all
 - The parameter type must be **identical** to what is shown above - no additions, no modifications
 - This is a mapped type containing only the fields that are actually needed for this specific endpoint
 
 The props structure is carefully constructed based on:
-- Authentication requirements (payload field)
+- Authentication requirements (role-specific fields like admin, user, member)
 - URL path parameters (e.g., id, boardId, postId)
 - Request body (if applicable)
 
-Your function signature must match this pattern:
+Your function signature must match one of these patterns:
 ```typescript
+// If props are defined above
 export async function your_function_name(
   props: { /* exactly as shown above */ }
 ): Promise<ReturnType> {
   // Implementation
+}
+
+// If no props are shown above (empty)
+export async function your_function_name(): Promise<ReturnType> {
+  // Implementation - no props parameter
 }
 ```
 

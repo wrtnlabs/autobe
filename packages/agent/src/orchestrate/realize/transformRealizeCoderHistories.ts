@@ -50,7 +50,7 @@ export const transformRealizeCoderHistories = (
   const input =
     propsFields.length > 0
       ? `props: {\n${propsFields.map((field) => `  ${field}`).join("\n")}\n}`
-      : `props: {}`;
+      : `// No props parameter needed - function should have no parameters`;
 
   if (state.analyze === null)
     return [
