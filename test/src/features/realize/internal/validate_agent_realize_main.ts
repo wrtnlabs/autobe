@@ -1,4 +1,3 @@
-import { AutoBeContext } from "@autobe/agent/src/context/AutoBeContext";
 import { orchestrateRealize } from "@autobe/agent/src/orchestrate/realize/orchestrateRealize";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
@@ -47,7 +46,7 @@ export const validate_agent_realize_main = async (
   agent.on("realizeTestOperation", enroll);
   agent.on("realizeTestComplete", enroll);
 
-  const ctx: AutoBeContext<"chatgpt"> = agent.getContext();
+  const ctx = agent.getContext();
 
   // DO TEST GENERATION
   const go = (reason: string) =>

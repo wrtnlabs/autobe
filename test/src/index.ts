@@ -21,7 +21,7 @@ async function main(): Promise<void> {
   const factory: TestFactory = {
     createAgent: (histories, tu) =>
       new AutoBeAgent({
-        model: "chatgpt",
+        model: TestGlobal.env.SCHEMA_MODEL ?? "chatgpt",
         vendor: {
           api: new OpenAI({
             apiKey: TestGlobal.env.API_KEY,

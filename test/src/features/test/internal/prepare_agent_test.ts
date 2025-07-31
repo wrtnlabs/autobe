@@ -1,4 +1,3 @@
-import { AutoBeAgent } from "@autobe/agent";
 import { AutoBeState } from "@autobe/agent/src/context/AutoBeState";
 import { AutoBeHistory } from "@autobe/interface";
 
@@ -14,7 +13,7 @@ export const prepare_agent_test = async (
     throw new Error("No OpenAI API key provided");
 
   const histories: AutoBeHistory[] = await TestHistory.getInterface(project);
-  const agent: AutoBeAgent<"chatgpt"> = factory.createAgent(
+  const agent = factory.createAgent(
     histories,
     process.argv.includes("--archive")
       ? await TestHistory.getTokenUsage({

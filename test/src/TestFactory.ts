@@ -5,11 +5,12 @@ import {
   IAutoBeCompilerListener,
   IAutoBeTokenUsageJson,
 } from "@autobe/interface";
+import { ILlmSchema } from "@samchon/openapi";
 
 export interface TestFactory {
   createAgent: (
     histories: AutoBeHistory[],
     tokenUsage?: IAutoBeTokenUsageJson,
-  ) => AutoBeAgent<"chatgpt">;
+  ) => AutoBeAgent<ILlmSchema.Model>;
   createCompiler: (listener?: IAutoBeCompilerListener) => AutoBeCompiler;
 }

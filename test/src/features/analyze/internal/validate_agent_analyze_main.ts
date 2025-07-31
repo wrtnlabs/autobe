@@ -1,4 +1,3 @@
-import { AutoBeAgent } from "@autobe/agent";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeEvent,
@@ -26,7 +25,7 @@ export const validate_agent_analyze_main = async (
     history.contents[0].type === "text" ? history.contents[0].text : null;
   if (content === null) throw new Error("History must have a text content.");
 
-  const agent: AutoBeAgent<"chatgpt"> = factory.createAgent([history]);
+  const agent = factory.createAgent([history]);
   const model: string = TestGlobal.getModel();
   const snapshots: AutoBeEventSnapshot[] = [];
   const listen = (event: AutoBeEvent) => {
