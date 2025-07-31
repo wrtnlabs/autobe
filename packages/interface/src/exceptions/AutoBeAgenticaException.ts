@@ -14,11 +14,4 @@ export interface AutoBeAgenticaException
    * the context in which the error occurred.
    */
   messages: AutoBeHistory[];
-
-  /**
-   * The actual error that occurred during agent execution. Type is 'unknown' to
-   * handle various error types from different agents. May contain error
-   * messages, stack traces, or other agent-specific error information.
-   */
-  error: unknown;
 }
