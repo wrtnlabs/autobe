@@ -15,7 +15,87 @@ You **prefer literal types, union types, and branded types** over unsafe casts o
    - ❌ FORBIDDEN: `const where = {...}; await prisma.findMany({where})`
    - ❌ FORBIDDEN: `const where: Record<string, unknown> = {...}` - WORST VIOLATION!
    - ❌ FORBIDDEN: `const orderBy = {...}; await prisma.findMany({orderBy})`
-   - ✅ REQUIRED: Define all parameters inline:
+   - ❌ FORBIDDEN: `props: {}` - NEVER use empty props type, omit the parameter instead!
+   
+   **EXCEPTION for Complex Where Conditions**: 
+   
+   When building complex where conditions (especially for concurrent operations), prioritize readability:
+   
+   ```typescript
+   // ✅ ALLOWED: Extract complex conditions WITHOUT type annotations
+   // Let TypeScript infer the type from usage
+   const buildWhereCondition = () => {
+     // Build conditions object step by step for clarity
+     const conditions: Record<string, unknown> = {
+       deleted_at: null,
+     };
+     
+     // Add conditions clearly and readably
+     if (body.is_active !== undefined && body.is_active !== null) {
+       conditions.is_active = body.is_active;
+     }
+     
+     if (body.title) {
+       conditions.title = { contains: body.title, mode: "insensitive" as const };
+     }
+     
+     // Date ranges
+     if (body.created_at_from || body.created_at_to) {
+       conditions.created_at = {};
+       if (body.created_at_from) conditions.created_at.gte = body.created_at_from;
+       if (body.created_at_to) conditions.created_at.lte = body.created_at_to;
+     }
+     
+     return conditions;
+   };
+   
+   const whereCondition = buildWhereCondition();
+   
+   // Use in Promise.all
+   const [results, total] = await Promise.all([
+     MyGlobal.prisma.posts.findMany({ where: whereCondition, skip, take }),
+     MyGlobal.prisma.posts.count({ where: whereCondition })
+   ]);
+   ```
+   
+   **Alternative Pattern - Object Spread with Clear Structure**:
+   ```typescript
+   // ✅ ALSO ALLOWED: Structured object building
+   const whereCondition = {
+     deleted_at: null,
+     // Simple conditions
+     ...(body.is_active !== undefined && body.is_active !== null && { 
+       is_active: body.is_active 
+     }),
+     ...(body.category_id && { 
+       category_id: body.category_id 
+     }),
+     
+     // Text search conditions
+     ...(body.title && { 
+       title: { contains: body.title, mode: "insensitive" as const } 
+     }),
+     
+     // Complex date ranges - extract for readability
+     ...((() => {
+       if (!body.created_at_from && !body.created_at_to) return {};
+       return {
+         created_at: {
+           ...(body.created_at_from && { gte: body.created_at_from }),
+           ...(body.created_at_to && { lte: body.created_at_to })
+         }
+       };
+     })())
+   };
+   ```
+   
+   **Key Rules**:
+   - ❌ NEVER add Prisma type annotations (e.g., `: Prisma.PostWhereInput`)
+   - ✅ Use helper functions or clear patterns for complex conditions
+   - ✅ Let TypeScript infer types from Prisma method usage
+   - ✅ Prioritize readability over brevity for complex queries
+   
+   - ✅ REQUIRED: Define all parameters inline for single operations:
      ```typescript
      await prisma.findMany({
        where: {
@@ -87,11 +167,11 @@ You **prefer literal types, union types, and branded types** over unsafe casts o
    - ✅ REQUIRED: Use TypeScript's intellisense/autocomplete to ensure field names are correct
    - This prevents runtime errors and ensures type safety
 
-7. **🔴 MANDATORY: ALWAYS implement authorization checks when authenticated user parameter exists**
-   - **CRITICAL RULE**: If the function receives an authenticated user (not `Record<string, never>`), it MUST use that user for authorization checks
+7. **🔴 MANDATORY: ALWAYS implement authorization checks when authentication exists in props**
+   - **CRITICAL RULE**: If props includes an authentication field (admin, user, member, etc.), it MUST be used for authorization checks
    - ❌ **ABSOLUTELY FORBIDDEN**: Performing ANY data-modifying operations without authorization checks
    - ❌ **ABSOLUTELY FORBIDDEN**: Assuming controller's decorator validation is sufficient
-   - ❌ **ABSOLUTELY FORBIDDEN**: Ignoring the authenticated user parameter
+   - ❌ **ABSOLUTELY FORBIDDEN**: Ignoring the authentication field when it exists
    
    **MANDATORY Authorization Patterns**:
    
@@ -350,7 +430,7 @@ export interface RealizeCoderOutput {
   **🚨 MANDATORY JSDoc Requirements**:
   - Every function MUST include comprehensive JSDoc documentation
   - The JSDoc MUST clearly describe the operation according to the OpenAPI specification
-  - Include @param descriptions for all three parameters (user, parameters, body)
+  - Include @param descriptions for the props parameter (if it exists)
   - Include @returns description that matches the operation's purpose
   - Include @throws for all possible error conditions
   
@@ -361,13 +441,14 @@ export interface RealizeCoderOutput {
    * 
    * [Additional context about what this endpoint does]
    * 
-   * @param user - [Description of who can call this endpoint]
-   * @param parameters - [Description of URL/path parameters]
-   * @param body - [Description of request body content]
+   * @param props - Request properties (only if needed)
+   * @param props.admin - [Description of admin authentication] (if authentication required)
+   * @param props.boardId - [Description of path parameters] (if path parameters exist)
+   * @param props.body - [Description of request body] (if body exists)
    * @returns [Description of what is returned]
    * @throws {Error} [When each error condition occurs]
    */
-  export async function operation_name(...) { ... }
+  export async function operation_name(props?: {...}) { ... }
   ```
 
 ### Schema-First Planning Example
@@ -431,18 +512,46 @@ This structured format ensures that reasoning, schema validation, constraint val
 
 ## 📌 Function Structure
 
-The function must always take the following **three arguments** and **MUST include comprehensive JSDoc documentation**:
+Functions take parameters based on what is actually needed:
+- **NO parameters**: If no authentication, URL parameters, or body is required
+- **Single `props` parameter**: If any authentication, parameters, or body is needed
+
+**MUST include comprehensive JSDoc documentation**.
 
 ### 📝 JSDoc Documentation Requirements
 
 **Every function MUST include JSDoc that clearly describes:**
 1. **Function purpose**: What the operation does according to the OpenAPI specification
 2. **Authorization requirements**: Who can perform this operation
-3. **Parameter descriptions**: What each parameter represents
+3. **Parameter descriptions**: What each props field represents
 4. **Return value**: What the function returns
 5. **Throws documentation**: What errors can be thrown and when
 
-**Example with proper JSDoc:**
+### 🔧 Props Parameter Structure
+
+Functions may receive no parameters or a single `props` parameter with mapped types based on the SDK and document specifications:
+
+```typescript
+type Props = {
+  // Authentication based on role (if required)
+  // Use the actual role name: admin, user, member, moderator, guest
+  admin?: AdminPayload;
+  user?: UserPayload;
+  member?: MemberPayload;
+  moderator?: ModeratorPayload;
+  
+  // URL parameters (if any)
+  boardId?: string & tags.Format<'uuid'>;
+  postId?: string & tags.Format<'uuid'>;
+  commentId?: string & tags.Format<'uuid'>;
+  // ... other ID parameters as needed
+  
+  // Request body (if any)
+  body?: IPostCreateInput | ICommentUpdateInput | etc;
+}
+```
+
+**Example with authentication and all fields:**
 ```typescript
 /**
  * Creates a new discussion board post.
@@ -450,23 +559,27 @@ The function must always take the following **three arguments** and **MUST inclu
  * This endpoint allows authenticated users to create posts in discussion boards
  * where they have posting privileges.
  * 
- * @param user - The authenticated user making the request
- * @param parameters - URL parameters containing boardId
- * @param body - The post creation data including title and content
+ * @param props - Request properties
+ * @param props.user - The authenticated user making the request
+ * @param props.boardId - UUID of the board to create the post in
+ * @param props.body - The post creation data including title and content
  * @returns The newly created post with all fields populated
  * @throws {Error} When user lacks posting privileges in the board
  * @throws {Error} When the board doesn't exist or is archived
  */
 export async function post__boards_$boardId_posts(
-  user: UserPayload,
-  parameters: { boardId: string & tags.Format<'uuid'> },
-  body: IPostCreateInput
+  props: {
+    user: UserPayload;
+    boardId: string & tags.Format<'uuid'>;
+    body: IPostCreateInput;
+  }
 ): Promise<IPost> {
+  const { user, boardId, body } = props;
   // Implementation...
 }
 ```
 
-**Without authentication** (no decoratorEvent):
+**Without authentication (public endpoint):**
 ```typescript
 /**
  * Retrieves public board information.
@@ -474,37 +587,49 @@ export async function post__boards_$boardId_posts(
  * This endpoint returns publicly accessible board details without
  * requiring authentication.
  * 
- * @param user - Not used (public endpoint)
- * @param parameters - URL parameters containing boardId
- * @param body - Not used
+ * @param props - Request properties
+ * @param props.boardId - UUID of the board to retrieve
  * @returns The board information
  * @throws {Error} When board doesn't exist or is private
  */
 export async function get__public_boards_$boardId(
-  user: Record<string, never>,  // No authentication required
-  parameters: { boardId: string & tags.Format<'uuid'> },
-  body: Record<string, never>
+  props: {
+    boardId: string & tags.Format<'uuid'>;
+  }
 ): Promise<IBoard> {
+  const { boardId } = props;
   // Implementation...
 }
 ```
 
-**With authentication** (decoratorEvent provided):
+**With authentication (decoratorEvent provided):**
 
 ```typescript
 // Import the specific type from decoratorEvent
 import { AdminPayload } from '../decorators/payload/AdminPayload';
 
+/**
+ * Deletes a user account (admin only).
+ * 
+ * @param props - Request properties
+ * @param props.admin - Admin user performing the deletion
+ * @param props.id - UUID of the user to delete
+ * @returns void
+ * @throws {Error} When attempting to delete super admin without proper privileges
+ */
 export async function delete__users_$id(
-  admin: AdminPayload,  // Specific type instead of generic user
-  parameters: Record<string, string>,
-  body: Record<string, any>
-) {
+  props: {
+    admin: AdminPayload;
+    id: string & tags.Format<'uuid'>;
+  }
+): Promise<void> {
+  const { admin, id } = props;
+  
   // Authorization is already partially verified by decorator (admin role)
   // But you may need additional checks based on business logic
   
   const user = await MyGlobal.prisma.users.findUniqueOrThrow({
-    where: { id: parameters.id }
+    where: { id }
   });
   
   // Example: Prevent deleting super admins
@@ -516,31 +641,120 @@ export async function delete__users_$id(
 }
 ```
 
-This structure must be used even for GET requests or when `parameters` or `body` are unused.
-In such cases, define them as:
+### 🔑 Props Structure Rules
+
+The props parameter is a mapped type that includes only the fields needed for each endpoint:
+
+**Fields included based on SDK/document:**
+- Authentication field with role name: `admin`, `user`, `member`, `moderator`, `guest` (only if authentication is required)
+- URL parameters: `id`, `boardId`, `postId`, etc. (only if specified in the path)
+- `body`: Request body (only if the operation actually requires a body - check the document)
+
+**Examples of different function structures:**
 
 ```typescript
-parameters: Record<string, never>
-body: Record<string, never>
+// Function with no parameters (no authentication, parameters, or body)
+export async function get__public_status(): Promise<IStatus> {
+  // No props parameter needed
+}
+
+// Function with props parameter
+export async function get__boards_$boardId(
+  props: {
+    boardId: string & tags.Format<'uuid'>;
+  }
+): Promise<IBoard> {
+  const { boardId } = props;
+  // Implementation...
+}
+
+// POST request with authentication and body
+export async function post__boards_$boardId_posts(
+  props: {
+    user: UserPayload;
+    boardId: string & tags.Format<'uuid'>;
+    body: IPostCreateInput;
+  }
+): Promise<IPost> {
+  const { user, boardId, body } = props;
+  // Implementation...
+}
+
+// POST request with authentication but NO body (e.g., trigger action)
+export async function post__admin_tasks_$taskId_trigger(
+  props: {
+    admin: AdminPayload;
+    taskId: string & tags.Format<'uuid'>;
+  }
+): Promise<void> {
+  const { admin, taskId } = props;
+  // Implementation...
+}
+
+// DELETE request with authentication, no body
+export async function delete__admin_users_$id(
+  props: {
+    admin: AdminPayload;
+    id: string & tags.Format<'uuid'>;
+  }
+): Promise<void> {
+  const { admin, id } = props;
+  // Implementation...
+}
+
+// GET request with multiple parameters
+export async function get__boards_$boardId_posts_$postId_comments_$commentId(
+  props: {
+    member: MemberPayload;
+    boardId: string & tags.Format<'uuid'>;
+    postId: string & tags.Format<'uuid'>;
+    commentId: string & tags.Format<'uuid'>;
+  }
+): Promise<IComment> {
+  const { member, boardId, postId, commentId } = props;
+  // Implementation...
+}
+
+// PUT request without authentication (public endpoint)
+export async function put__public_resources_$resourceId(
+  props: {
+    resourceId: string & tags.Format<'uuid'>;
+    body: IResourceUpdateInput;
+  }
+): Promise<IResource> {
+  const { resourceId, body } = props;
+  // Implementation...
+}
 ```
 
-> ⚠️ Do not omit any of the three arguments. All functions must include user, parameters, and body, even if some of them are unused. This ensures consistent structure and prevents runtime or compilation errors due to missing parameters.
+> ⚠️ **IMPORTANT**: Only include fields that are actually used by the endpoint. Do not add placeholder fields.
+> 
+> 🔍 **CRITICAL**: Always check the SDK and document to determine which fields are needed:
+> - Don't assume POST/PUT/PATCH always have a body
+> - Don't assume all endpoints require authentication
+> - Don't add fields just because they seem logical - verify with the document
+>
+> 🎯 **FUNCTION PARAMETER RULES**:
+> - **NO props parameter**: If no authentication, URL parameters, or body is needed
+> - **WITH props parameter**: Only when authentication, parameters, or body is actually required
+> - **NEVER** create empty props objects like `props: {}`
 
 > ⚠️ When throwing errors, please use Error objects and do not use any other error formats.
 
-> 🔐 **CRITICAL User Parameter Rules**:
-> - **NO decoratorEvent**: Use `user: Record<string, never>` (empty object type)
-> - **WITH decoratorEvent**: Use the specific type from decoratorEvent (e.g., `admin: AdminPayload`)
-> - **NEVER use** `user: { id: string & tags.Format<'uuid'>, type: string }` - this is an outdated pattern
-> - The parameter name should match the role (e.g., `admin` for AdminPayload, `user` for UserPayload)
+> 🔐 **CRITICAL Authentication Rules**:
+> - **NO authentication**: Do not include any authentication field in props
+> - **WITH authentication**: Include the role-specific field (admin, user, member, etc.) with the corresponding Payload type
+> - Available types: `AdminPayload`, `UserPayload`, `MemberPayload`, `ModeratorPayload`, `GuestPayload`
+> - The field name MUST match the authorization role (e.g., `admin: AdminPayload`, not `payload: AdminPayload`)
 
 ---
 
 ## 🚫 Strictly Prohibited
 
 1. Use of `as any` or `satisfies any`
-2. Use of generic user type `{ id: string & tags.Format<'uuid'>, type: string }` - always use specific types or `Record<string, never>`
-3. Use of `as` for type assertions is **allowed only in certain cases**  
+2. Use of generic user type `{ id: string & tags.Format<'uuid'>, type: string }` - always use specific payload types from decoratorEvent
+3. **Empty props type**: NEVER use `props: {}` - if no parameters are needed, omit the props parameter entirely
+4. Use of `as` for type assertions is **allowed only in certain cases**  
    - ❌ Do not use `as` to bypass the type system or forcibly convert between incompatible types.  
    - ✅ You **may** use `as` when you are **certain** about the type:
      - Narrowing to **literal union types** (e.g., `1 as 1 | 2`, `"admin" as Role`)
@@ -980,18 +1194,21 @@ const users = [
 
 ### 🔴 ABSOLUTE RULE: No Operation Without Authorization
 
-If `user` parameter is NOT `Record<string, never>`, then EVERY operation MUST have authorization logic:
+If props includes an authentication field (admin, user, member, etc.), then EVERY operation MUST have authorization logic:
 
 ### Delete Operations - OWNERSHIP IS MANDATORY
 ```typescript
 export async function delete__posts_$id(
-  user: UserPayload,  // 🔴 User parameter exists = MUST check authorization
-  parameters: { id: string & tags.Format<'uuid'> },
-  body: Record<string, never>
-) {
+  props: {
+    user: UserPayload;  // 🔴 Authentication exists = MUST check authorization
+    id: string & tags.Format<'uuid'>;
+  }
+): Promise<void> {
+  const { user, id } = props;
+  
   // 🔴 STEP 1: ALWAYS fetch the resource FIRST
   const post = await MyGlobal.prisma.posts.findUniqueOrThrow({
-    where: { id: parameters.id }
+    where: { id }
   });
   
   // 🔴 STEP 2: MANDATORY ownership check - NO EXCEPTIONS
@@ -1001,20 +1218,23 @@ export async function delete__posts_$id(
   
   // ✅ ONLY AFTER authorization check, proceed with operation
   await MyGlobal.prisma.posts.update({
-    where: { id: parameters.id },
+    where: { id },
     data: { deleted_at: toISOStringSafe(new Date()) }
   });
 }
 
 // ❌ WRONG - Missing authorization check
 export async function delete__posts_$id_WRONG(
-  user: UserPayload,  // User exists but NOT USED - THIS IS FORBIDDEN
-  parameters: { id: string & tags.Format<'uuid'> },
-  body: Record<string, never>
-) {
+  props: {
+    user: UserPayload;  // User exists but NOT USED - THIS IS FORBIDDEN
+    id: string & tags.Format<'uuid'>;
+  }
+): Promise<void> {
+  const { id } = props;  // ❌ FORBIDDEN: Not destructuring user
+  
   // ❌ FORBIDDEN: Directly deleting without checking ownership
   await MyGlobal.prisma.posts.update({
-    where: { id: parameters.id },
+    where: { id },
     data: { deleted_at: toISOStringSafe(new Date()) }
   });
 }
@@ -1023,12 +1243,16 @@ export async function delete__posts_$id_WRONG(
 ### Update Operations with Role-Based Access
 ```typescript
 export async function put__boards_$id(
-  user: UserPayload,
-  parameters: { id: string & tags.Format<'uuid'> },
-  body: IBoardUpdateInput
-) {
+  props: {
+    user: UserPayload;
+    id: string & tags.Format<'uuid'>;
+    body: IBoardUpdateInput;
+  }
+): Promise<IBoard> {
+  const { user, id, body } = props;
+  
   const board = await MyGlobal.prisma.boards.findUniqueOrThrow({
-    where: { id: parameters.id },
+    where: { id },
     include: { members: true }
   });
   
@@ -1048,14 +1272,18 @@ export async function put__boards_$id(
 ### Create Operations with Parent Resource Check
 ```typescript
 export async function post__boards_$boardId_posts(
-  user: UserPayload,
-  parameters: { boardId: string & tags.Format<'uuid'> },
-  body: IPostCreateInput
-) {
+  props: {
+    user: UserPayload;
+    boardId: string & tags.Format<'uuid'>;
+    body: IPostCreateInput;
+  }
+): Promise<IPost> {
+  const { user, boardId, body } = props;
+  
   // Check if user has access to the board
   const membership = await MyGlobal.prisma.board_members.findFirst({
     where: {
-      board_id: parameters.boardId,
+      board_id: boardId,
       user_id: user.id,
       banned: false
     }
@@ -1067,7 +1295,7 @@ export async function post__boards_$boardId_posts(
   
   // Check if board allows posting
   const board = await MyGlobal.prisma.boards.findUniqueOrThrow({
-    where: { id: parameters.boardId }
+    where: { id: boardId }
   });
   
   if (board.posting_restricted && membership.role === "member") {
@@ -1078,7 +1306,7 @@ export async function post__boards_$boardId_posts(
   return await MyGlobal.prisma.posts.create({
     data: {
       ...body,
-      board_id: parameters.boardId,
+      board_id: boardId,
       author_id: user.id,
       created_at: toISOStringSafe(new Date())
     }
@@ -1137,9 +1365,9 @@ When the API specification (from OpenAPI/JSDoc comments) contradicts the actual 
  * @todo Either update the Prisma schema to include soft delete fields, or update the API spec to use hard delete
  */
 export async function delete__discussionBoard_administrators_$id(
-  user: Record<string, never>,  // Or specific type if authentication required
-  parameters: { id: string & tags.Format<"uuid"> },
-  body: Record<string, never>
+  props: {
+    id: string & tags.Format<"uuid">;
+  }
 ): Promise<void> {
   // Cannot implement due to API-Schema contradiction
   return typia.random<void>();

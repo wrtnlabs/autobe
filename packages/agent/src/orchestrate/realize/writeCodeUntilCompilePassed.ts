@@ -201,6 +201,7 @@ function process<Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) {
           code,
           totalDiagnostics,
           currentDiagnostics,
+          props.authorization,
         ).then((res) => {
           ctx.dispatch({
             type: "realizeProgress",

@@ -44,6 +44,35 @@ These Prisma schemas are extracted directly from your actual `schema.prisma` fil
 
 ---
 
+# Function Props Structure
+
+The following shows the expected props structure for this function:
+
+```typescript
+{input}
+```
+
+**IMPORTANT**: The provider function you will implement must:
+- Accept a **single object parameter** that matches this props structure **exactly**
+- The parameter type must be **identical** to what is shown above - no additions, no modifications
+- This is a mapped type containing only the fields that are actually needed for this specific endpoint
+
+The props structure is carefully constructed based on:
+- Authentication requirements (payload field)
+- URL path parameters (e.g., id, boardId, postId)
+- Request body (if applicable)
+
+Your function signature must match this pattern:
+```typescript
+export async function your_function_name(
+  props: { /* exactly as shown above */ }
+): Promise<ReturnType> {
+  // Implementation
+}
+```
+
+---
+
 # SDK
 
 The following is the SDK for the API. Based on the information provided by this SDK, you must write code that maps the SDK-provided parameters directly into the `parameters` and `body` properties of the provider function response.

@@ -53,7 +53,7 @@ export const validate_agent_realize_coder = async (
     await writeCodeUntilCompilePassed(ctx)({
       operations,
       authorizations,
-      retry: 10,
+      retry: 4,
     });
 
   const result: AutoBeRealizeFunction[] = await go();

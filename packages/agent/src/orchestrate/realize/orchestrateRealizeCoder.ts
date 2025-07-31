@@ -1,6 +1,7 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import {
   AutoBeOpenApi,
+  AutoBeRealizeAuthorization,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
@@ -47,6 +48,7 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
   previous: string | null,
   total: IAutoBeTypeScriptCompileResult.IDiagnostic[],
   diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[],
+  authorization?: AutoBeRealizeAuthorization,
 ): Promise<IAutoBeRealizeCoderApplication.RealizeCoderOutput | FAILED> => {
   total;
 
@@ -59,10 +61,12 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
       dependencies: [],
     });
 
-  const pointer: IPointer<IAutoBeRealizeCoderApplication.RealizeCoderOutput | null> =
-    {
-      value: null,
-    };
+  const pointer: IPointer<Omit<
+    IAutoBeRealizeCoderApplication.RealizeCoderOutput,
+    "filename"
+  > | null> = {
+    value: null,
+  };
 
   const controller = createApplication({
     model: ctx.model,
@@ -88,6 +92,7 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
       artifacts,
       previous,
       diagnostics,
+      authorization,
     ),
   });
   enforceToolCall(agent);

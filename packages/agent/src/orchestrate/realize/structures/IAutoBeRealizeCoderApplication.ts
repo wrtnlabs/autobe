@@ -16,7 +16,7 @@ export namespace IAutoBeRealizeCoderApplication {
      * The detailed output of the code generation process, containing all phases
      * from planning to final implementation of a TypeScript provider function.
      */
-    output: RealizeCoderOutput;
+    output: Omit<IAutoBeRealizeCoderApplication.RealizeCoderOutput, "filename">;
   }
 
   /**
@@ -287,8 +287,8 @@ export namespace IAutoBeRealizeCoderApplication {
      * - Resolve all TypeScript errors without using `as any`.
      * - Provide safe brand casting only if required (e.g., `as string &
      *   tags.Format<'uuid'>`).
-     * - If no TypeScript errors exist, this field MUST contain the text:
-     *   "No TypeScript errors detected - skipping this phase"
+     * - If no TypeScript errors exist, this field MUST contain the text: "No
+     *   TypeScript errors detected - skipping this phase"
      */
     withCompilerFeedback: string;
 
