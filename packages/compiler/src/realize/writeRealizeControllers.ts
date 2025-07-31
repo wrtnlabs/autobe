@@ -53,15 +53,25 @@ export const writeRealizeControllers = async (
           name: func.name,
         });
 
+        const inputArguments: string[] = [
+          ...(operate.authorizationRole ? [operate.authorizationRole] : []),
+          ...ctx.route.parameters.map((p) => p.name),
+          ...(ctx.route.query ? [ctx.route.query.name] : []),
+          ...(ctx.route.body ? [ctx.route.body.name] : []),
+        ];
         const call: ts.Expression = ts.factory.createCallExpression(
           ts.factory.createIdentifier(func.name),
           undefined,
-          [
-            ...(operate.authorizationRole ? [operate.authorizationRole] : []),
-            ...ctx.route.parameters.map((p) => p.name),
-            ...(ctx.route.query ? [ctx.route.query.name] : []),
-            ...(ctx.route.body ? [ctx.route.body.name] : []),
-          ].map((name) => ts.factory.createIdentifier(name)),
+          inputArguments.length === 0
+            ? undefined
+            : [
+                ts.factory.createObjectLiteralExpression(
+                  inputArguments.map((name) =>
+                    ts.factory.createShorthandPropertyAssignment(name),
+                  ),
+                  true,
+                ),
+              ],
         );
         return ts.factory.updateMethodDeclaration(
           method,

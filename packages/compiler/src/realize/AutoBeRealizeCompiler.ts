@@ -9,6 +9,7 @@ import {
 import { AutoBeCompilerInterfaceTemplate } from "../raw/AutoBeCompilerInterfaceTemplate";
 import { AutoBeCompilerRealizeTemplate } from "../raw/AutoBeCompilerRealizeTemplate";
 import { AutoBeCompilerTestTemplate } from "../raw/AutoBeCompilerTestTemplate";
+import { FilePrinter } from "../utils/FilePrinter";
 import { testRealizeProject } from "./testRealizeProject";
 import { writeRealizeControllers } from "./writeRealizeControllers";
 
@@ -17,10 +18,13 @@ export class AutoBeRealizeCompiler implements IAutoBeRealizeCompiler {
     private readonly listener: IAutoBeRealizeCompilerListener,
   ) {}
 
-  public controller(
+  public async controller(
     props: IAutoBeRealizeControllerProps,
   ): Promise<Record<string, string>> {
-    return writeRealizeControllers(props);
+    const result: Record<string, string> = await writeRealizeControllers(props);
+    for (const [key, value] of Object.entries(result))
+      result[key] = await FilePrinter.beautify(value);
+    return result;
   }
 
   public test(

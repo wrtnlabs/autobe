@@ -69,7 +69,9 @@ export const test_compiler_realize_controller = async (
       ) &&
       content.includes("@CustomerAuth()") &&
       content.includes("customer: ICustomerPayload") &&
-      content.includes("return createShoppingSale(customer, body)"),
+      content.includes("return createShoppingSale({") &&
+      content.includes("customer,") &&
+      content.includes("body,"),
   );
 };
 

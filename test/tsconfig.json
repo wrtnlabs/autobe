@@ -5,6 +5,8 @@
     "plugins": [
       { "transform": "typia/lib/transform" },
     ],
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true
   },
   "include": ["src"],
 }
