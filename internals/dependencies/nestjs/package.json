@@ -3,7 +3,7 @@
   "name": "@autobe/nestjs-dependencies",
   "version": "0.0.0",
   "author": "Wrtn Technologies",
-  "license": "MIT",
+  "license": "AGPL-3.0",
   "devDependencies": {
     "@nestia/benchmark": "^7.2.1",
     "@nestia/core": "^7.2.1",

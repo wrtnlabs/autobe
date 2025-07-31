@@ -3,7 +3,7 @@
   "name": "@autobe/test-dependencies",
   "version": "0.0.0",
   "author": "Wrtn Technologies",
-  "license": "MIT",
+  "license": "AGPL-3.0",
   "devDependencies": {
     "@nestia/e2e": "^7.2.1",
     "@nestia/fetcher": "^7.2.1",

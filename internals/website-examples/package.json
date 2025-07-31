@@ -6,7 +6,7 @@
     "build": "tsc"
   },
   "author": "Wrtn Technologies",
-  "license": "MIT",
+  "license": "AGPL-3.0",
   "dependencies": {
     "@autobe/agent": "workspace:^",
     "@autobe/compiler": "workspace:^",
