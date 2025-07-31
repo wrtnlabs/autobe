@@ -3,6 +3,7 @@ import {
   IAutoBeRpcListener,
   IAutoBeRpcService,
 } from "@autobe/interface";
+import { ILlmSchema } from "@samchon/openapi";
 import { useEffect, useState } from "react";
 import { WebSocketConnector } from "tgrid";
 
@@ -15,10 +16,11 @@ export function AutoBePlaygroundReplayApplication() {
   );
   useEffect(() => {
     const connect = async () => {
+      const config: IConfig = getConfig();
       const header: IAutoBeRpcHeader<"chatgpt"> = {
-        model: "chatgpt",
+        model: config.schema as "chatgpt",
         vendor: {
-          model: "fake-model",
+          model: config.vendor,
           apiKey: "*********",
         },
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -31,7 +33,7 @@ export function AutoBePlaygroundReplayApplication() {
         IAutoBeRpcService
       > = new WebSocketConnector(header, listener.getListener());
 
-      await connector.connect(getURL());
+      await connector.connect(getURL(config));
       setNext({
         header,
         listener,
@@ -60,11 +62,25 @@ export function AutoBePlaygroundReplayApplication() {
   );
 }
 
-const getURL = (): string => {
+interface IConfig {
+  vendor: string;
+  schema: ILlmSchema.Model;
+  type: string;
+}
+
+const getConfig = (): IConfig => {
   const query: URLSearchParams = new URLSearchParams(window.location.search);
+  return {
+    vendor: query.get("vendor") ?? "openai/gpt-4.1",
+    schema: (query.get("schema") ?? "chatgpt") as ILlmSchema.Model,
+    type: query.get("type") ?? "bbs-backend",
+  };
+};
+
+const getURL = (config: IConfig): string => {
   const url: URL = new URL("ws://localhost:5890/mock");
-  url.searchParams.set("vendor", query.get("vendor") ?? "openai/gpt-4.1");
-  url.searchParams.set("schema", query.get("schema") ?? "chatgpt");
-  url.searchParams.set("type", query.get("type") ?? "bbs-backend");
+  url.searchParams.set("vendor", config.vendor);
+  url.searchParams.set("schema", config.schema);
+  url.searchParams.set("type", config.type);
   return url.toString();
 };
