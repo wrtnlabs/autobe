@@ -44,13 +44,17 @@ export const validate_agent_realize_coder = async (
 
   const ctx = agent.getContext();
 
-  const ops = ctx.state().interface?.document.operations ?? [];
+  const operations = ctx.state().interface?.document.operations ?? [];
 
   const authorizations = await orchestrateRealizeAuthorization(ctx);
 
   // DO TEST GENERATION
   const go = async () =>
-    await writeCodeUntilCompilePassed(ctx, ops, authorizations, 10);
+    await writeCodeUntilCompilePassed(ctx)({
+      operations,
+      authorizations,
+      retry: 4,
+    });
 
   const result: AutoBeRealizeFunction[] = await go();
 

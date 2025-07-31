@@ -1,5 +1,8 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
-import { IAutoBeTypeScriptCompileResult } from "@autobe/interface";
+import {
+  AutoBeRealizeAuthorization,
+  IAutoBeTypeScriptCompileResult,
+} from "@autobe/interface";
 import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
@@ -15,9 +18,40 @@ export const transformRealizeCoderHistories = (
   artifacts: IAutoBeTestScenarioArtifacts,
   previous: string | null,
   diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[],
+  authorization?: AutoBeRealizeAuthorization,
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
+  const [operation] = artifacts.document.operations;
+
+  const propsFields: string[] = [];
+
+  // payload 추가
+  if (authorization && operation.authorizationRole) {
+    propsFields.push(
+      `${operation.authorizationRole}: ${authorization.payload.name};`,
+    );
+  }
+
+  // parameters 추가
+  operation.parameters.forEach((parameter) => {
+    const format =
+      "format" in parameter.schema
+        ? ` & tags.Format<'${parameter.schema.format}'>`
+        : "";
+    propsFields.push(`${parameter.name}: ${parameter.schema.type}${format};`);
+  });
+
+  // body 추가
+  if (operation.requestBody?.typeName) {
+    propsFields.push(`body: ${operation.requestBody.typeName};`);
+  }
+
+  const input =
+    propsFields.length > 0
+      ? `props: {\n${propsFields.map((field) => `  ${field}`).join("\n")}\n}`
+      : `// No props parameter needed - function should have no parameters`;
+
   if (state.analyze === null)
     return [
       {
@@ -97,32 +131,13 @@ export const transformRealizeCoderHistories = (
       id: v4(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
-      text: props.decoratorEvent
-        ? [
-            "Decorator-related files are already generated at the following locations:",
-            `- Decorator implementation: decorators/${props.decoratorEvent.decorator.name}.ts`,
-            `  - NestJS parameter decorator`,
-            `  - When importing from providers folder, use: '../decorators/${props.decoratorEvent.decorator.name}'`,
-            `- Authentication provider: decorators/${props.decoratorEvent.provider.name}.ts`,
-            `  - Contains JWT validation, role checking, and authorization logic`,
-            `  - When importing from providers folder, use: '../decorators/${props.decoratorEvent.provider.name}'`,
-            `- Type definition: decorators/payload/${props.decoratorEvent.payload.name}.ts`,
-            `  - TypeScript interface for authenticated user payload`,
-            `  - When importing from providers folder, use: '../decorators/payload/${props.decoratorEvent.payload.name}'`,
-          ].join("\n")
-        : "",
-    },
-    {
-      id: v4(),
-      created_at: new Date().toISOString(),
-      type: "systemMessage",
       text: AutoBeSystemPromptConstant.REALIZE_CODER_ARTIFACT.replaceAll(
         `{prisma_schemas}`,
         JSON.stringify(state.prisma.schemas),
       )
         .replaceAll(`{artifacts_sdk}`, JSON.stringify(artifacts.sdk))
-        .replaceAll(`{artifacts_dto}`, JSON.stringify(artifacts.dto)),
-      // .replaceAll(`{artifacts_document}`, JSON.stringify(artifacts.document)),
+        .replaceAll(`{artifacts_dto}`, JSON.stringify(artifacts.dto))
+        .replaceAll(`{input}`, input),
     },
     ...(previous !== null
       ? [
@@ -133,14 +148,31 @@ export const transformRealizeCoderHistories = (
             text: [
               "These values contain previously generated code and thought flow.",
               "All of these codes are failed compilation values.",
-              "Please refer to the code for writing a new code.",
+              previousCodes.length >= 2
+                ? "🚨 CRITICAL: You have already failed " +
+                  previousCodes.length +
+                  " times. The current approach is FUNDAMENTALLY WRONG!"
+                : "Please refer to the code for writing a new code.",
+              previousCodes.length >= 2
+                ? [
+                    "",
+                    "After multiple failures, you MUST make AGGRESSIVE changes:",
+                    "1. COMPLETELY REWRITE the problematic parts - don't just tweak",
+                    "2. Try a DIFFERENT algorithm or approach entirely",
+                    "3. Question ALL your assumptions about the requirements",
+                    "4. Consider alternative Prisma patterns or query structures",
+                    "5. The error might be in your fundamental understanding - rethink everything",
+                  ].join("\n")
+                : "",
               "",
               "```json",
               JSON.stringify(
                 previousCodes.map((c) => c.result.implementationCode),
               ),
               "```",
-            ].join("\n"),
+            ]
+              .filter(Boolean)
+              .join("\n"),
           } as const,
           {
             id: v4(),

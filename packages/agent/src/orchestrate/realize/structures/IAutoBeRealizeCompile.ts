@@ -8,6 +8,10 @@ import { IAutoBeRealizeCoderApplication } from "./IAutoBeRealizeCoderApplication
 import { FAILED } from "./IAutoBeRealizeFailedSymbol";
 
 export namespace IAutoBeRealizeCompile {
+  export type Result =
+    | IAutoBeRealizeCompile.Success
+    | IAutoBeRealizeCompile.Fail;
+
   type IBase<T extends "success" | "failed"> = {
     /**
      * Indicates whether code generation was attempted. "success" means code was
@@ -22,7 +26,7 @@ export namespace IAutoBeRealizeCompile {
      * Operation: An object containing the function specification including the
      * endpoint
      */
-    op: AutoBeOpenApi.IOperation;
+    operation: AutoBeOpenApi.IOperation;
 
     /** Result */
     result: IAutoBeRealizeCoderApplication.RealizeCoderOutput;
@@ -33,22 +37,22 @@ export namespace IAutoBeRealizeCompile {
      * Operation: An object containing the function specification including the
      * endpoint
      */
-    op: AutoBeOpenApi.IOperation;
+    operation: AutoBeOpenApi.IOperation;
 
     /** Result */
     result: FAILED;
   }
 
-  export interface FileContentMapEntry {
+  export interface CodeArtifact {
     result: "failed" | "success";
     content: string;
     role?: (string & tags.MinLength<1>) | null;
     endpoint?: AutoBeOpenApi.IEndpoint;
-    location?: string;
+    location: string;
     name?: string;
   }
 
-  export type FileContentMap = Record<string, FileContentMapEntry>;
+  export type FileContentMap = Record<string, CodeArtifact>;
 
   export interface CompileDiagnostics {
     /**

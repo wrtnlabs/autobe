@@ -8,212 +8,226 @@ import { ILlmSchema } from "@samchon/openapi";
 import { HashMap } from "tstl";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { arrayToRecord } from "../../utils/arrayToRecord";
 import { ProviderCodeComparator } from "./ProviderCodeComparator";
 import { pipe } from "./RealizePipe";
 import { orchestrateRealizeCoder } from "./orchestrateRealizeCoder";
-import { orchestrateRealizePlanner } from "./orchestrateRealizePlanner";
+import {
+  RealizePlannerOutput,
+  orchestrateRealizePlanner,
+} from "./orchestrateRealizePlanner";
 import { IAutoBeRealizeCompile } from "./structures/IAutoBeRealizeCompile";
 import { FAILED } from "./structures/IAutoBeRealizeFailedSymbol";
 import { RealizeFileSystem } from "./utils/ProviderFileSystem";
 
-export async function writeCodeUntilCompilePassed<
-  Model extends ILlmSchema.Model,
->(
+export function writeCodeUntilCompilePassed<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  ops: AutoBeOpenApi.IOperation[],
-  authorizations: AutoBeRealizeAuthorization[],
-  retry: number,
-): Promise<AutoBeRealizeFunction[]> {
-  const payloads = arrayToRecord(
-    authorizations.map((el) => el.payload),
-    "location",
-    "content",
-  );
-
-  const files = arrayToRecord(
-    Object.entries(await ctx.files({ dbms: "postgres" })).filter(([key]) =>
-      key.startsWith("src"),
-    ),
-  );
-
-  const entireCodes: IAutoBeRealizeCompile.FileContentMap = {
-    ...(await loadTemplateFiles(ctx)),
-  };
-
-  let diagnostics: IAutoBeRealizeCompile.CompileDiagnostics = {
-    current: [],
-    total: [],
-  };
-
-  const histories: HashMap<
-    AutoBeOpenApi.IEndpoint,
-    IAutoBeRealizeCompile.Success[]
-  > = new HashMap(
-    ProviderCodeComparator.hashCode,
-    ProviderCodeComparator.equals,
-  );
-
-  for (const op of ops) {
-    histories.set(op, []);
-  }
-
-  for (let i = 0; i < retry; i++) {
-    const targets = ops.filter((op) =>
-      shouldProcessOperation(op, diagnostics.current),
+) {
+  return async function (props: {
+    operations: AutoBeOpenApi.IOperation[];
+    authorizations: AutoBeRealizeAuthorization[];
+    retry: number;
+  }): Promise<AutoBeRealizeFunction[]> {
+    const payloads: Record<string, string> = Object.fromEntries(
+      props.authorizations.map((el) => [
+        el.payload.location,
+        el.payload.content,
+      ]),
     );
 
-    const metadata = { total: targets.length, count: 0 };
-    const generatedCodes = await Promise.all(
-      targets.map((op) => {
-        const role = op.authorizationRole;
-        const decorator = authorizations.find((el) => el.role === role);
-
-        return process(
-          ctx,
-          metadata,
-          op,
-          histories.get(op),
-          diagnostics,
-          entireCodes,
-          decorator,
-        );
-      }),
+    const files: Record<string, string> = Object.fromEntries(
+      Object.entries(await ctx.files({ dbms: "postgres" })).filter(([key]) =>
+        key.startsWith("src"),
+      ),
     );
 
-    for (const code of generatedCodes) {
-      if (code.type === "success") {
-        const response = histories.get(code.op);
-        response.push(code);
-        histories.set(code.op, response);
+    const templateFiles = await getTemplates(ctx);
 
-        entireCodes[code.result.filename] = {
-          content: code.result.implementationCode,
-          result: "success",
-          endpoint: {
-            method: code.op.method,
-            path: code.op.path,
-          },
-          location: code.result.filename,
-          name: code.result.name,
-        };
+    let diagnostics: IAutoBeRealizeCompile.CompileDiagnostics = {
+      current: [],
+      total: [],
+    };
+
+    const histories: HashMap<
+      AutoBeOpenApi.IEndpoint,
+      IAutoBeRealizeCompile.Success[]
+    > = new HashMap(
+      ProviderCodeComparator.hashCode,
+      ProviderCodeComparator.equals,
+    );
+
+    for (const operation of props.operations) {
+      histories.set(operation, []);
+    }
+
+    const entireCodes: IAutoBeRealizeCompile.FileContentMap = {};
+    for (let i = 0; i < props.retry; i++) {
+      const targets = props.operations.filter((op) =>
+        shouldProcessOperation(op, diagnostics.current),
+      );
+
+      const metadata = { total: targets.length, count: 0 } as const;
+      const generatedCodes = await Promise.all(
+        targets.map((operation) => {
+          const role: string | null = operation.authorizationRole;
+          const authorization: AutoBeRealizeAuthorization | undefined =
+            props.authorizations.find((el) => el.role === role);
+
+          return process(ctx)({
+            metadata,
+            operation,
+            previousCodes: histories.get(operation),
+            diagnostics,
+            entireCodes,
+            authorization,
+          });
+        }),
+      );
+
+      for (const code of generatedCodes) {
+        if (code.type === "success") {
+          const response = histories.get(code.operation);
+          response.push(code);
+          histories.set(code.operation, response);
+
+          entireCodes[code.result.filename] = {
+            content: code.result.implementationCode,
+            result: "success",
+            endpoint: {
+              method: code.operation.method,
+              path: code.operation.path,
+            },
+            location: code.result.filename,
+            name: code.result.name,
+          };
+        }
+      }
+
+      const prisma = ctx.state().prisma?.compiled;
+      const nodeModules = prisma?.type === "success" ? prisma.nodeModules : {};
+      const compiler = await ctx.compiler();
+      const compiled = await compiler.typescript.compile({
+        files: {
+          ...payloads,
+          ...files,
+          ...nodeModules,
+          ...Object.fromEntries(
+            templateFiles.map((file) => [file.location, file.content]),
+          ),
+          ...Object.fromEntries(
+            Object.entries(entireCodes).map(([filename, { content }]) => [
+              filename,
+              content,
+            ]),
+          ),
+        },
+      });
+
+      if (
+        compiled.type === "success" &&
+        generatedCodes.every((c) => c.type === "success")
+      ) {
+        break;
+      } else if (compiled.type === "failure") {
+        diagnostics.current = compiled.diagnostics;
+        diagnostics.total = [...diagnostics.total, ...compiled.diagnostics];
       }
     }
 
-    const prisma = ctx.state().prisma?.compiled;
-    const nodeModules = prisma?.type === "success" ? prisma.nodeModules : {};
-    const compiler = await ctx.compiler();
-    const compiled = await compiler.typescript.compile({
-      files: {
-        ...payloads,
-        ...files,
-        ...nodeModules,
-        ...arrayToRecord(
-          Object.entries(entireCodes).map(([filename, { content }]) => [
-            filename,
-            content,
-          ]),
-        ),
-      },
-    });
-
-    if (
-      compiled.type === "success" &&
-      generatedCodes.every((c) => c.type === "success")
-    ) {
-      break;
-    } else if (compiled.type === "failure") {
-      diagnostics.current = compiled.diagnostics;
-      diagnostics.total = [...diagnostics.total, ...compiled.diagnostics];
-
-      console.log(
-        JSON.stringify(diagnostics.current, null, 2),
-        `현재 에러의 수: ${diagnostics.current.length}\n`,
-        `현재 시도 수: ${i + 1}`,
-      );
-    }
-  }
-
-  return Object.entries(entireCodes)
-    .filter(([filename]) => filename.startsWith("src/providers")) // filter only provider files
-    .map(([filename, value]) => {
-      return {
-        filename,
-        content: value.content,
-        endpoint: value.endpoint!,
-        location: value.location!,
-        name: value.name!,
-        role: value.role!,
-      };
-    });
+    return Object.entries(entireCodes)
+      .filter(([filename]) => filename.startsWith("src/providers")) // filter only provider files
+      .map(([filename, value]) => {
+        return {
+          filename,
+          content: value.content,
+          endpoint: value.endpoint!,
+          location: value.location!,
+          name: value.name!,
+          role: value.role ?? null,
+        };
+      });
+  };
 }
 
-async function loadTemplateFiles<Model extends ILlmSchema.Model>(
+/**
+ * Loads template files for the realize agent These files are essential for the
+ * realize coder to pass compilation
+ *
+ * @param ctx Context of agent
+ * @returns Template file infomations
+ */
+async function getTemplates<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-): Promise<IAutoBeRealizeCompile.FileContentMap> {
-  const templateFiles = await (await ctx.compiler()).realize.getTemplate();
-  const targets = ["src/MyGlobal.ts", "src/util/toISOStringSafe.ts"];
+): Promise<IAutoBeRealizeCompile.CodeArtifact[]> {
+  const compiler = await ctx.compiler();
+  const templateFiles = await compiler.realize.getTemplate();
+  const pathnames = ["src/MyGlobal.ts", "src/util/toISOStringSafe.ts"] as const;
 
-  const result: IAutoBeRealizeCompile.FileContentMap = {};
-
-  for (const filePath of targets) {
-    result[filePath] = {
-      content: templateFiles[filePath],
+  return pathnames.map((pathname): IAutoBeRealizeCompile.CodeArtifact => {
+    return {
+      content: templateFiles[pathname],
       result: "success",
-      location: filePath,
-      role: null,
-    };
-  }
-
-  return result;
+      location: pathname,
+      role: null, // template files doesn't have role.
+    } as const;
+  });
 }
 
-async function process<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
-  metadata: { total: number; count: number },
-  op: AutoBeOpenApi.IOperation,
-  previousCodes: IAutoBeRealizeCompile.Success[],
-  diagnostics: IAutoBeRealizeCompile.CompileDiagnostics,
-  entireCodes: IAutoBeRealizeCompile.FileContentMap,
-  decorator?: AutoBeRealizeAuthorization,
-) {
-  const result = await pipe(
-    op,
-    (op) => orchestrateRealizePlanner(ctx, op, decorator),
-    async (p) => {
-      const filename = RealizeFileSystem.providerPath(p.functionName);
-      const t = diagnostics.total.filter((el) => el.file === filename);
+function process<Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) {
+  return async function (props: {
+    metadata: { total: number; count: number };
+    operation: AutoBeOpenApi.IOperation;
+    previousCodes: IAutoBeRealizeCompile.Success[];
+    diagnostics: IAutoBeRealizeCompile.CompileDiagnostics;
+    entireCodes: IAutoBeRealizeCompile.FileContentMap;
+    authorization?: AutoBeRealizeAuthorization;
+  }) {
+    const result = await pipe(
+      props.operation,
+      (operation: AutoBeOpenApi.IOperation) =>
+        orchestrateRealizePlanner(ctx, operation, props.authorization),
+      async (plan: RealizePlannerOutput) => {
+        const filename = RealizeFileSystem.providerPath(plan.functionName);
+        const totalDiagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[] =
+          props.diagnostics.total.filter((el) => el.file === filename);
+        const currentDiagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[] =
+          props.diagnostics.current.filter((el) => el.file === filename);
+        const code = props.entireCodes[filename]?.content ?? null;
 
-      const d = diagnostics.current.filter((el) => el.file === filename);
-      const c = entireCodes[filename]?.content ?? null;
-
-      return orchestrateRealizeCoder(ctx, op, previousCodes, p, c, t, d).then(
-        (res) => {
+        return orchestrateRealizeCoder(
+          ctx,
+          props.operation,
+          props.previousCodes,
+          plan,
+          code,
+          totalDiagnostics,
+          currentDiagnostics,
+          props.authorization,
+        ).then((res) => {
           ctx.dispatch({
             type: "realizeProgress",
             filename: filename,
             content: res === FAILED ? "FAILED" : res.implementationCode,
-            completed: ++metadata.count,
+            completed: ++props.metadata.count,
             created_at: new Date().toISOString(),
             step: ctx.state().analyze?.step ?? 0,
-            total: metadata.total,
+            total: props.metadata.total,
           });
 
           if (res === FAILED) {
             return res;
           }
 
-          return { ...res, name: p.functionName };
-        },
-      );
-    },
-  );
+          return { ...res, name: plan.functionName };
+        });
+      },
+    );
 
-  if (result === FAILED) {
-    return { type: "failed", op: op, result } as const;
-  }
+    if (result === FAILED) {
+      return { type: "failed", operation: props.operation, result } as const;
+    }
 
-  return { type: "success", op: op, result } as const;
+    return { type: "success", operation: props.operation, result } as const;
+  };
 }
 
 /**
