@@ -21,6 +21,7 @@ import {
   AutoBeRealizeAuthorizationValidateEvent,
   AutoBeRealizeAuthorizationWriteEvent,
   AutoBeRealizeCompleteEvent,
+  AutoBeRealizeCorrectEvent,
   AutoBeRealizeStartEvent,
   AutoBeRealizeTestCompleteEvent,
   AutoBeRealizeTestOperationEvent,
@@ -401,7 +402,19 @@ export interface IAutoBeRpcListener {
    * applications to track incremental progress and show how the complete
    * application functionality is being assembled.
    */
-  realizeProgress?(event: AutoBeRealizeWriteEvent): Promise<void>;
+  realizeWrite?(event: AutoBeRealizeWriteEvent): Promise<void>;
+
+  /**
+   * Optional handler for implementation correction events.
+   *
+   * Called when the AI self-correction process addresses compilation or logic
+   * errors in implementation code, allowing client applications to reflect that
+   * backend logic is being automatically improved through iterative fixes.
+   *
+   * This enables real-time visibility into how faulty implementation files are
+   * revised and finalized by the Realize agent to meet project standards.
+   */
+  realizeCorrect?(event: AutoBeRealizeCorrectEvent): Promise<void>;
 
   /**
    * Optional handler for implementation validation events.

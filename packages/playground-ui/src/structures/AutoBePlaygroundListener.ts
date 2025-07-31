@@ -127,18 +127,18 @@ export class AutoBePlaygroundListener {
       //----
       // REALIZE-MAIN
       realizeStart: async (event) => {
-        this.state_.delete("realizeProgress");
+        this.state_.delete("realizeWrite");
         this.state_.delete("realizeValidate");
         this.insert(event);
       },
-      realizeProgress: async (event) => {
+      realizeWrite: async (event) => {
         this.accumulate(event);
       },
       realizeValidate: async (event) => {
         this.accumulate(event);
       },
       realizeComplete: async (event) => {
-        this.state_.delete("realizeProgress");
+        this.state_.delete("realizeWrite");
         this.state_.delete("realizeValidate");
         this.insert(event);
       },

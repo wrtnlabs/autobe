@@ -57,9 +57,10 @@ export const validate_agent_realize_coder = async (
       retry: 4,
     });
 
-  const result: AutoBeRealizeFunction[] = await go();
+  const result = await go();
+  const functions: AutoBeRealizeFunction[] = result.functions;
 
-  const codes = arrayToRecord(result, "location", "content");
+  const codes = arrayToRecord(functions, "location", "content");
 
   const histories = agent.getHistories();
   const prisma = agent.getContext().state().prisma?.compiled;
