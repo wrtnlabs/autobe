@@ -64,3 +64,9 @@ When you've created a new backend project through this template project, you can
 | PROJECT      | Your own project name
 | AUTHOR       | Author name
 | https://github.com/samchon/nestia-start | Your repository URL
+
+## License
+
+This project is licensed under the GNU Affero General Public License v3.0. See the [LICENSE](LICENSE) file for details.
+
+For commercial use of `@autobe` generated backend applications, please purchase a commercial license (coming soon).
