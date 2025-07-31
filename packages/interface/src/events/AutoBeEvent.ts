@@ -186,7 +186,5 @@ export namespace AutoBeEvent {
     realizeTestReset: AutoBeRealizeTestResetEvent;
     realizeTestOperation: AutoBeRealizeTestOperationEvent;
     realizeTestComplete: AutoBeRealizeTestCompleteEvent;
-    // EXCEPTION
-    exception: AutoBeExceptionEvent;
   };
 }
