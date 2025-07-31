@@ -1,36 +1,45 @@
-import { AutoBeException } from "../exceptions";
-import { AutoBeHistory } from "../histories";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
 /**
- * Event interface emitted when an exception occurs during AutoBE execution.
- * This event is triggered when an error occurs during AutoBE's waterfall
- * development process.
+ * Event fired when an exception occurs during AutoBE process.
+ *
+ * This event is triggered when any of the AutoBE agents (Analyze, Prisma,
+ * Interface, Test, Realize) encounters an error during their process. The
+ * exception event captures the error details, including the type of exception,
+ * the source of the error, and any relevant context that helps diagnose and
+ * resolve the issue.
+ *
+ * The event provides comprehensive error tracking across the waterfall
+ * development pipeline, enabling proper error handling, recovery strategies,
+ * and debugging capabilities for both developers and end users.
+ *
+ * @author Michael
  */
 export interface AutoBeExceptionEvent extends AutoBeEventBase<"exception"> {
   /**
-   * Detailed information about the exception that occurred. Contains the cause,
-   * message, stack trace, etc. as AutoBeException type.
+   * The exception that occurred during the AutoBE process.
+   *
+   * Contains the specific exception details that occurred during the execution
+   * of any AutoBE agent or compilation process. The exception data includes
+   * error messages, stack traces, and any relevant context information that
+   * helps diagnose and resolve the issue.
    */
-  exception: AutoBeException;
+  exception: unknown;
 
   /**
-   * Map of all files created before the exception occurred. Key: file path,
-   * Value: file content Preserves the state of generated files for debugging
-   * and recovery purposes.
+   * The source event type where the exception occurred.
+   *
+   * Identifies the specific AutoBE event that was being processed when the
+   * error happened. This helps to quickly locate and understand the context of
+   * the failure within the waterfall pipeline.
+   *
+   * Examples:
+   *
+   * - "analyze.write": Exception during requirements document writing
+   * - "prisma.validate": Exception during Prisma schema validation
+   * - "test.validate": Exception during test code compilation
+   * - "realize.authorization.write": Exception during authorization decorator
+   *   generation
    */
-  files: Record<string, string>;
-
-  /**
-   * Array of AutoBE execution history up to the point of exception. Includes
-   * execution records from each agent (Analyze, Prisma, Interface, Test,
-   * Realize). Used for problem tracking and debugging.
-   */
-  histories: AutoBeHistory[];
-
-  /**
-   * The execution step number where the exception occurred. Identifies which
-   * stage in AutoBE's waterfall process encountered the problem.
-   */
-  step: number;
+  source: string;
 }
