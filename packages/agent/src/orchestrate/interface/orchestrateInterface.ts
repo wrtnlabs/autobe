@@ -14,7 +14,9 @@ import { orchestrateInterfaceComplement } from "./orchestrateInterfaceComplement
 import { orchestrateInterfaceEndpoints } from "./orchestrateInterfaceEndpoints";
 import { orchestrateInterfaceGroups } from "./orchestrateInterfaceGroups";
 import { orchestrateInterfaceOperations } from "./orchestrateInterfaceOperations";
+import { orchestrateInterfaceOperationReviewer } from "./orchestrateInterfaceOperationReviewer";
 import { orchestrateInterfaceSchemas } from "./orchestrateInterfaceSchemas";
+import { orchestrateInterfaceSchemaReviewer } from "./orchestrateInterfaceSchemaReviewer";
 
 export const orchestrateInterface =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
@@ -44,6 +46,28 @@ export const orchestrateInterface =
     const operations: AutoBeOpenApi.IOperation[] =
       await orchestrateInterfaceOperations(ctx, endpoints);
 
+    // REVIEW OPERATIONS
+    const operationReview = await orchestrateInterfaceOperationReviewer(ctx, operations);
+    if (operationReview.type === "reject") {
+      // Return assistant message with rejection reason
+      const assistantMessage: AutoBeAssistantMessageHistory = {
+        type: "assistantMessage",
+        id: v4(),
+        text: [
+          "The generated API operations require revision based on the following issues:",
+          "",
+          operationReview.value,
+          "",
+          "Please address these concerns and regenerate the interface operations."
+        ].join("\n"),
+        created_at: new Date().toISOString(),
+        completed_at: new Date().toISOString(),
+      };
+      ctx.dispatch(assistantMessage);
+      ctx.histories().push(assistantMessage);
+      return assistantMessage;
+    }
+
     // TYPE SCHEMAS
     const document: AutoBeOpenApi.IDocument = {
       operations,
@@ -56,6 +80,32 @@ export const orchestrateInterface =
       ctx,
       document,
     );
+
+    // REVIEW SCHEMAS
+    const schemaReview = await orchestrateInterfaceSchemaReviewer(
+      ctx, 
+      document.components.schemas, 
+      operations
+    );
+    if (schemaReview.type === "reject") {
+      // Return assistant message with rejection reason
+      const assistantMessage: AutoBeAssistantMessageHistory = {
+        type: "assistantMessage",
+        id: v4(),
+        text: [
+          "The generated schema components require revision based on the following issues:",
+          "",
+          schemaReview.value,
+          "",
+          "Please address these concerns and regenerate the interface schemas."
+        ].join("\n"),
+        created_at: new Date().toISOString(),
+        completed_at: new Date().toISOString(),
+      };
+      ctx.dispatch(assistantMessage);
+      ctx.histories().push(assistantMessage);
+      return assistantMessage;
+    }
 
     // DO COMPILE
     const result: AutoBeInterfaceHistory = {
