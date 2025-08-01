@@ -4,6 +4,7 @@ import { IAutoBeTokenUsageJson } from "@autobe/interface";
 import { IAutoBeApplication } from "./IAutoBeApplication";
 
 export class AutoBeTokenUsage {
+  public readonly total: AgenticaTokenUsage;
   public readonly facade: AgenticaTokenUsage;
   public readonly analyze: AgenticaTokenUsage;
   public readonly prisma: AgenticaTokenUsage;
@@ -13,6 +14,7 @@ export class AutoBeTokenUsage {
 
   public constructor(props?: IAutoBeTokenUsageJson) {
     if (props === undefined) {
+      this.total = new AgenticaTokenUsage();
       this.facade = new AgenticaTokenUsage();
       this.analyze = new AgenticaTokenUsage();
       this.prisma = new AgenticaTokenUsage();
@@ -22,6 +24,7 @@ export class AutoBeTokenUsage {
       return;
     }
 
+    this.total = new AgenticaTokenUsage(props.total);
     this.facade = new AgenticaTokenUsage(props.facade);
     this.analyze = new AgenticaTokenUsage(props.analyze);
     this.prisma = new AgenticaTokenUsage(props.prisma);
@@ -34,7 +37,7 @@ export class AutoBeTokenUsage {
     usage: AgenticaTokenUsage,
     additionalStages: (keyof IAutoBeApplication)[] = [],
   ) {
-    this.facade.increment(usage);
+    this.total.increment(usage);
     additionalStages.forEach((stage) => {
       this[stage].increment(usage);
     });
@@ -49,6 +52,7 @@ export class AutoBeTokenUsage {
 
   public static plus(usageA: AutoBeTokenUsage, usageB: AutoBeTokenUsage) {
     return new AutoBeTokenUsage({
+      total: AgenticaTokenUsage.plus(usageA.total, usageB.total),
       facade: AgenticaTokenUsage.plus(usageA.facade, usageB.facade),
       analyze: AgenticaTokenUsage.plus(usageA.analyze, usageB.analyze),
       prisma: AgenticaTokenUsage.plus(usageA.prisma, usageB.prisma),
@@ -60,6 +64,7 @@ export class AutoBeTokenUsage {
 
   public toJSON(): IAutoBeTokenUsageJson {
     return {
+      total: this.total.toJSON(),
       facade: this.facade.toJSON(),
       analyze: this.analyze.toJSON(),
       prisma: this.prisma.toJSON(),
@@ -70,8 +75,16 @@ export class AutoBeTokenUsage {
   }
 
   /** @internal */
-  private static keys(): ("facade" | keyof IAutoBeApplication)[] {
-    return ["facade", "analyze", "prisma", "interface", "test", "realize"];
+  private static keys(): ("total" | "facade" | keyof IAutoBeApplication)[] {
+    return [
+      "total",
+      "facade",
+      "analyze",
+      "prisma",
+      "interface",
+      "test",
+      "realize",
+    ];
   }
 }
 

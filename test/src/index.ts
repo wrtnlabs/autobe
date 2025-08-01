@@ -134,9 +134,10 @@ async function main(): Promise<void> {
 
   console.log("Token Usage");
   console.table({
-    Total: tokenUsage.facade.aggregate.total.toLocaleString("en-US"),
-    Input: tokenUsage.facade.aggregate.input.total.toLocaleString("en-US"),
-    Output: tokenUsage.facade.aggregate.output.total.toLocaleString("en-US"),
+    Total: tokenUsage.total.aggregate.total.toLocaleString("en-US"),
+    Input: tokenUsage.total.aggregate.input.total.toLocaleString("en-US"),
+    Output: tokenUsage.total.aggregate.output.total.toLocaleString("en-US"),
+    Facade: tokenUsage.facade.aggregate.total.toLocaleString("en-US"),
     Analyze: tokenUsage.analyze.aggregate.total.toLocaleString("en-US"),
     Prisma: tokenUsage.prisma.aggregate.total.toLocaleString("en-US"),
     Interface: tokenUsage.interface.aggregate.total.toLocaleString("en-US"),
