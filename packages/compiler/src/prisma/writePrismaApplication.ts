@@ -366,7 +366,7 @@ const POSTGRES_MAIN_FILE = StringUtil.trim`
   datasource db {
     provider   = "postgresql"
     url        = env("DATABASE_URL")
-    extensions = []
+    extensions = [pg_trgm]
   }
   generator markdown {
     provider = "prisma-markdown"
