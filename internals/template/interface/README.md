@@ -46,7 +46,7 @@ Design          | Prisma       | [Entity Relationship Diagram](docs/ERD.md) / [P
 Design          | Interface    | [API Controllers](src/controllers) / [DTO Structures](src/api/structures)
 Development     | Realize      | [API Provider Functions](src/providers)
 Testing         | Test         | [E2E Test Functions](test/features/api)
-Maintenance     | -            | Use Claude Coder like agent please
+Maintenance     | -            | Use Claude Code like agent please
 
 ## Project Structure
 
