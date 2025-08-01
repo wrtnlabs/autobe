@@ -9,10 +9,35 @@ import { Logger } from "./Logger";
 export function activate(context: vscode.ExtensionContext) {
   Logger.initialize(vscode.window.createOutputChannel("AutoBe"));
   Logger.info("AutoBe VSCode Extension start activated");
-  const treeDataProvider = new MyTreeDataProvider();
-  vscode.window.registerTreeDataProvider(
-    "autobe-vscode-extension-views",
-    treeDataProvider,
+
+  // 웹뷰 제공자 등록
+  context.subscriptions.push(
+    vscode.window.registerWebviewViewProvider("autobe-vscode-extension-views", {
+      resolveWebviewView(webviewView: vscode.WebviewView) {
+        webviewView.webview.options = { enableScripts: true };
+        webviewView.webview.html = `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>My Webview</title>
+          <style>
+            body { padding: 10px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; }
+            h1 { font-size: 18px; margin-bottom: 10px; }
+            button { padding: 8px 16px; cursor: pointer; background: #0078d4; color: white; border: none; border-radius: 4px; }
+            button:hover { background: #005a9e; }
+          </style>
+        </head>
+        <body>
+          <h1>My Sidebar Webview</h1>
+          <p>Welcome to my custom webview!</p>
+          <button onclick="alert('Button clicked!')">Click Me</button>
+        </body>
+        </html>
+      `;
+      },
+    }),
   );
   Logger.info("AutoBe VSCode Extension end activated");
 }

@@ -13,7 +13,6 @@
     "type": "git",
     "url": "https://github.com/autobe-io/autobe.git"
   },
-  "activationEvents": [],
   "main": "./dist/extension.js",
   "scripts": {
     "vscode:prepack": "node build/copy_license.js",
@@ -25,12 +24,12 @@
     "build": "tsc -p ./"
   },
   "devDependencies": {
-    "@types/node": "20.x",
+    "@types/node": "22.x",
+    "@types/vscode": "^1.99.0",
     "@vscode/test-cli": "^0.0.11",
     "@vscode/test-electron": "^2.5.2",
     "@vscode/vsce": "^3.6.0",
-    "typescript": "^5.8.3",
-    "vscode": "^1.1.37"
+    "typescript": "catalog:typescript"
   },
   "contributes": {
     "viewsContainers": {
@@ -46,7 +45,8 @@
       "autobe-vscode-extension": [
         {
           "id": "autobe-vscode-extension-views",
-          "name": "AutoBe/views"
+          "name": "AutoBe/views",
+          "type": "webview"
         }
       ]
     }
