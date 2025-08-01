@@ -136,7 +136,7 @@ async function process<Model extends ILlmSchema.Model>(
       ].join("\n"),
     )
     .finally(() => {
-      const tokenUsage = agentica.getTokenUsage();
+      const tokenUsage = agentica.getTokenUsage().aggregate;
       ctx.usage().record(tokenUsage, ["interface"]);
     });
   if (pointer.value === null) {

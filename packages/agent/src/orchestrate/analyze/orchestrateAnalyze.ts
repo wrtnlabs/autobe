@@ -41,7 +41,7 @@ export const orchestrateAnalyze =
         ].join("\n"),
       )
       .finally(() => {
-        const tokenUsage = agentica.getTokenUsage();
+        const tokenUsage = agentica.getTokenUsage().aggregate;
         ctx.usage().record(tokenUsage, ["analyze"]);
       });
 

@@ -50,7 +50,7 @@ export async function orchestrateInterfaceGroups<
   const histories: MicroAgenticaHistory<Model>[] = await agentica
     .conversate(content)
     .finally(() => {
-      const tokenUsage = agentica.getTokenUsage();
+      const tokenUsage = agentica.getTokenUsage().aggregate;
       ctx.usage().record(tokenUsage, ["interface"]);
     });
   const last: MicroAgenticaHistory<Model> = histories.at(-1)!;

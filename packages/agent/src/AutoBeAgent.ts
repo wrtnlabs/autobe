@@ -147,7 +147,6 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
           execute: () => transformFacadeStateMessage(this.state_),
         },
       },
-      tokenUsage: this.usage_.facade,
       controllers: [
         createAutoBeController({
           model: props.model,
@@ -223,6 +222,8 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
     this.dispatch(userMessageHistory).catch(() => {});
 
     await this.agentica_.conversate(content);
+
+    this.usage_.facade.increment(this.agentica_.getTokenUsage().aggregate);
     return this.histories_.slice(index);
   }
 

@@ -83,7 +83,7 @@ async function process<Model extends ILlmSchema.Model>(
   enforceToolCall(agentica);
 
   await agentica.conversate("Make prisma schema file please").finally(() => {
-    const tokenUsage = agentica.getTokenUsage();
+    const tokenUsage = agentica.getTokenUsage().aggregate;
     ctx.usage().record(tokenUsage, ["prisma"]);
   });
   if (pointer.value === null)

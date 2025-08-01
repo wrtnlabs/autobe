@@ -48,7 +48,7 @@ export async function writeDocumentUntilReviewPassed<
     },
   });
   await writer.conversate("Write Document.").finally(() => {
-    const tokenUsage = writer.getTokenUsage();
+    const tokenUsage = writer.getTokenUsage().aggregate;
     ctx.usage().record(tokenUsage, ["analyze"]);
   });
 

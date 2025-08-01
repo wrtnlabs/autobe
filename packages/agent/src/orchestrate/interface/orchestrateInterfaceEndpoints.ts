@@ -69,7 +69,7 @@ async function process<Model extends ILlmSchema.Model>(
   enforceToolCall(agentica);
 
   await agentica.conversate(content).finally(() => {
-    const tokenUsage = agentica.getTokenUsage();
+    const tokenUsage = agentica.getTokenUsage().aggregate;
     ctx.usage().record(tokenUsage, ["interface"]);
   });
   if (pointer.value === null) throw new Error("Failed to generate endpoints."); // unreachable

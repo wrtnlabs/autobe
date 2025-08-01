@@ -114,7 +114,7 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
       ].join("\n"),
     ),
   ).finally(() => {
-    const tokenUsage = agent.getTokenUsage();
+    const tokenUsage = agent.getTokenUsage().aggregate;
     ctx.usage().record(tokenUsage, ["realize"]);
   });
 

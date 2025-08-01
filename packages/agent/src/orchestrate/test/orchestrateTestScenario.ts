@@ -146,7 +146,7 @@ const execute = async <Model extends ILlmSchema.Model>(
   enforceToolCall(agentica);
 
   await agentica.conversate(`create test scenarios.`).finally(() => {
-    const tokenUsage = agentica.getTokenUsage();
+    const tokenUsage = agentica.getTokenUsage().aggregate;
     ctx.usage().record(tokenUsage, ["test"]);
   });
   if (pointer.value.length === 0) {

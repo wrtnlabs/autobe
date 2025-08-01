@@ -105,7 +105,7 @@ export async function orchestrateRealizeAuthorizationCorrect<
   await agentica
     .conversate("Please correct the decorator and the provider.")
     .finally(() => {
-      const tokenUsage = agentica.getTokenUsage();
+      const tokenUsage = agentica.getTokenUsage().aggregate;
       ctx.usage().record(tokenUsage, ["realize"]);
     });
 

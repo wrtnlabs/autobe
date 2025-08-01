@@ -131,7 +131,7 @@ const correct = async <Model extends ILlmSchema.Model>(
       "Fix the `AutoBeTest.IFunction` data to resolve the compilation error.",
     )
     .finally(() => {
-      const tokenUsage = agentica.getTokenUsage();
+      const tokenUsage = agentica.getTokenUsage().aggregate;
       ctx.usage().record(tokenUsage, ["test"]);
     });
   if (pointer.value === null) throw new Error("Failed to modify test code.");

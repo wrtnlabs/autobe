@@ -55,7 +55,7 @@ export const orchestrateAnalyzeReviewer = async <
 
   const command = `proceed with the review of these files only.` as const;
   await agent.conversate(command).finally(() => {
-    const tokenUsage = agent.getTokenUsage();
+    const tokenUsage = agent.getTokenUsage().aggregate;
     ctx.usage().record(tokenUsage, ["analyze"]);
   });
 

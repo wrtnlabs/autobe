@@ -19,17 +19,17 @@
  */
 export interface IAutoBeTokenUsageJson {
   /** Token usage for the facade agent */
-  facade: IAutoBeInternalTokenUsageJson;
+  facade: IAutoBeTokenUsageJson.IComponent;
   /** Token usage for the analysis phase */
-  analyze: IAutoBeInternalTokenUsageJson;
+  analyze: IAutoBeTokenUsageJson.IComponent;
   /** Token usage for the Prisma schema generation phase */
-  prisma: IAutoBeInternalTokenUsageJson;
+  prisma: IAutoBeTokenUsageJson.IComponent;
   /** Token usage for the interface generation phase */
-  interface: IAutoBeInternalTokenUsageJson;
+  interface: IAutoBeTokenUsageJson.IComponent;
   /** Token usage for the test generation phase */
-  test: IAutoBeInternalTokenUsageJson;
+  test: IAutoBeTokenUsageJson.IComponent;
   /** Token usage for the implementation phase */
-  realize: IAutoBeInternalTokenUsageJson;
+  realize: IAutoBeTokenUsageJson.IComponent;
 }
 
 /**

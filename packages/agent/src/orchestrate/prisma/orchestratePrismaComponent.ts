@@ -53,7 +53,7 @@ export async function orchestratePrismaComponents<
   const histories: MicroAgenticaHistory<Model>[] = await agentica
     .conversate(content)
     .finally(() => {
-      const tokenUsage = agentica.getTokenUsage();
+      const tokenUsage = agentica.getTokenUsage().aggregate;
       ctx.usage().record(tokenUsage, ["prisma"]);
     });
   if (histories.at(-1)?.type === "assistantMessage")

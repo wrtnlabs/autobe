@@ -95,7 +95,7 @@ async function process<Model extends ILlmSchema.Model>(
   await agentica
     .conversate("Create Authorization Provider and Decorator.")
     .finally(() => {
-      const tokenUsage = agentica.getTokenUsage();
+      const tokenUsage = agentica.getTokenUsage().aggregate;
       ctx.usage().record(tokenUsage, ["realize"]);
     });
   if (pointer.value === null) throw new Error("Failed to create decorator.");

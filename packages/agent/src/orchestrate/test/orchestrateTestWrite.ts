@@ -106,7 +106,7 @@ async function process<Model extends ILlmSchema.Model>(
   enforceToolCall(agentica);
 
   await agentica.conversate("Create e2e test functions.").finally(() => {
-    const tokenUsage = agentica.getTokenUsage();
+    const tokenUsage = agentica.getTokenUsage().aggregate;
     ctx.usage().record(tokenUsage, ["test"]);
   });
   if (pointer.value === null) throw new Error("Failed to create test code.");

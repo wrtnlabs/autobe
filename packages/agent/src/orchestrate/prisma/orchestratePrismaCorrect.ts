@@ -87,7 +87,7 @@ async function step<Model extends ILlmSchema.Model>(
       "Resolve the compilation errors in the provided Prisma schema files.",
     )
     .finally(() => {
-      const tokenUsage = agentica.getTokenUsage();
+      const tokenUsage = agentica.getTokenUsage().aggregate;
       ctx.usage().record(tokenUsage, ["prisma"]);
     });
   if (pointer.value === null) {
