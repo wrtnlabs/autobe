@@ -1,7 +1,14 @@
 import { IAgenticaVendor } from "@agentica/core";
 import {
+  AutoBeAnalyzeHistory,
+  AutoBeAssistantMessageEvent,
+  AutoBeAssistantMessageHistory,
   AutoBeEvent,
   AutoBeHistory,
+  AutoBeInterfaceHistory,
+  AutoBePrismaHistory,
+  AutoBeRealizeHistory,
+  AutoBeTestHistory,
   IAutoBeCompiler,
   IAutoBeCompilerListener,
   IAutoBeGetFilesOptions,
@@ -19,8 +26,28 @@ export interface AutoBeContext<Model extends ILlmSchema.Model> {
   compilerListener: IAutoBeCompilerListener;
   compiler: () => Promise<IAutoBeCompiler>;
   files: (options: IAutoBeGetFilesOptions) => Promise<Record<string, string>>;
-  histories: () => AutoBeHistory[];
-  state: () => AutoBeState;
+  histories: () => Readonly<AutoBeHistory[]>;
+  state: () => Readonly<AutoBeState>;
   usage: () => AutoBeTokenUsage;
-  dispatch: (event: AutoBeEvent) => void;
+  dispatch: <Event extends Exclude<AutoBeEvent, AutoBeAssistantMessageEvent>>(
+    event: Event,
+  ) => AutoBeContext.DispatchHistory<Event>;
+  assistantMessage: (
+    message: AutoBeAssistantMessageHistory,
+  ) => AutoBeAssistantMessageHistory;
+}
+export namespace AutoBeContext {
+  export type DispatchHistory<
+    Event extends Exclude<AutoBeEvent, AutoBeAssistantMessageEvent>,
+  > = Event["type"] extends keyof DispatchHistoryMap
+    ? DispatchHistoryMap[Event["type"]]
+    : null;
+  export type DispatchHistoryMap = {
+    assistantMessage: AutoBeAssistantMessageHistory;
+    analyzeComplete: AutoBeAnalyzeHistory;
+    prismaComplete: AutoBePrismaHistory;
+    interfaceComplete: AutoBeInterfaceHistory;
+    testComplete: AutoBeTestHistory;
+    realizeComplete: AutoBeRealizeHistory;
+  };
 }

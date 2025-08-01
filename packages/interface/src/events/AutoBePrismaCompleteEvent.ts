@@ -1,5 +1,5 @@
 import { IAutoBePrismaCompileResult } from "../compiler";
-import { AutoBePrisma } from "../prisma";
+import { AutoBePrisma, IAutoBePrismaValidation } from "../prisma";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
 /**
@@ -35,7 +35,7 @@ export interface AutoBePrismaCompleteEvent
    * design that has been verified for semantic correctness and business
    * alignment before code generation.
    */
-  application: AutoBePrisma.IApplication;
+  result: IAutoBePrismaValidation;
 
   /**
    * Generated Prisma schema files as key-value pairs.

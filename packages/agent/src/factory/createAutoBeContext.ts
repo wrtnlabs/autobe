@@ -1,0 +1,193 @@
+import {
+  AutoBeAnalyzeCompleteEvent,
+  AutoBeAnalyzeHistory,
+  AutoBeAnalyzeStartEvent,
+  AutoBeAssistantMessageEvent,
+  AutoBeEvent,
+  AutoBeHistory,
+  AutoBeInterfaceCompleteEvent,
+  AutoBeInterfaceHistory,
+  AutoBeInterfaceStartEvent,
+  AutoBePrismaCompleteEvent,
+  AutoBePrismaHistory,
+  AutoBePrismaStartEvent,
+  AutoBeRealizeCompleteEvent,
+  AutoBeRealizeHistory,
+  AutoBeRealizeStartEvent,
+  AutoBeTestCompleteEvent,
+  AutoBeTestHistory,
+  AutoBeTestStartEvent,
+  IAutoBeCompiler,
+  IAutoBeCompilerListener,
+  IAutoBeGetFilesOptions,
+} from "@autobe/interface";
+import { ILlmSchema } from "@samchon/openapi";
+import { v4 } from "uuid";
+
+import { AutoBeContext } from "../context/AutoBeContext";
+import { AutoBeState } from "../context/AutoBeState";
+import { AutoBeTokenUsage } from "../context/AutoBeTokenUsage";
+import { IAutoBeConfig } from "../structures/IAutoBeConfig";
+import { IAutoBeVendor } from "../structures/IAutoBeVendor";
+
+export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
+  model: Model;
+  vendor: IAutoBeVendor;
+  compiler: () => Promise<IAutoBeCompiler>;
+  compilerListener: IAutoBeCompilerListener;
+  config: IAutoBeConfig;
+  state: () => AutoBeState;
+  files: (options: IAutoBeGetFilesOptions) => Promise<Record<string, string>>;
+  histories: () => AutoBeHistory[];
+  usage: () => AutoBeTokenUsage;
+  dispatch: (event: AutoBeEvent) => Promise<void>;
+}): AutoBeContext<Model> => ({
+  model: props.model,
+  vendor: props.vendor,
+  config: props.config,
+  compilerListener: props.compilerListener,
+  compiler: props.compiler,
+  files: props.files,
+  histories: props.histories,
+  state: props.state,
+  usage: props.usage,
+  dispatch: createDispatch(props),
+  assistantMessage: (message) => {
+    props.histories().push(message);
+    setTimeout(() => props.dispatch(message).catch(() => {}));
+    return message;
+  },
+});
+
+const createDispatch = (props: {
+  state: () => AutoBeState;
+  histories: () => AutoBeHistory[];
+  dispatch: (event: AutoBeEvent) => Promise<void>;
+}) => {
+  let analyzeStart: AutoBeAnalyzeStartEvent | null = null;
+  let prismaStart: AutoBePrismaStartEvent | null = null;
+  let interfaceStart: AutoBeInterfaceStartEvent | null = null;
+  let testStart: AutoBeTestStartEvent | null = null;
+  let realizeStart: AutoBeRealizeStartEvent | null = null;
+  return <Event extends Exclude<AutoBeEvent, AutoBeAssistantMessageEvent>>(
+    event: Event,
+  ): AutoBeContext.DispatchHistory<Event> => {
+    // starts
+    if (event.type === "analyzeStart") analyzeStart = event;
+    else if (event.type === "prismaStart") prismaStart = event;
+    else if (event.type === "interfaceStart") interfaceStart = event;
+    else if (event.type === "testStart") testStart = event;
+    else if (event.type === "realizeStart") realizeStart = event;
+    // completes
+    else if (event.type === "analyzeComplete")
+      return transformAndDispatch<AutoBeAnalyzeCompleteEvent>({
+        dispatch: props.dispatch,
+        histories: props.histories,
+        state: props.state,
+        event,
+        history: {
+          type: "analyze",
+          id: v4(),
+          reason: analyzeStart?.reason ?? "",
+          prefix: event.prefix,
+          roles: event.roles,
+          files: event.files,
+          created_at: analyzeStart?.created_at ?? new Date().toISOString(),
+          completed_at: event.created_at,
+          step: event.step,
+        } satisfies AutoBeAnalyzeHistory,
+      }) as AutoBeContext.DispatchHistory<Event>;
+    else if (event.type === "prismaComplete")
+      return transformAndDispatch<AutoBePrismaCompleteEvent>({
+        dispatch: props.dispatch,
+        histories: props.histories,
+        state: props.state,
+        event,
+        history: {
+          type: "prisma",
+          id: v4(),
+          reason: prismaStart?.reason ?? "",
+          schemas: event.schemas,
+          result: event.result,
+          compiled: event.compiled,
+          created_at: prismaStart?.created_at ?? new Date().toISOString(),
+          completed_at: event.created_at,
+          step: event.step,
+        } satisfies AutoBePrismaHistory,
+      }) as AutoBeContext.DispatchHistory<Event>;
+    else if (event.type === "interfaceComplete")
+      return transformAndDispatch({
+        dispatch: props.dispatch,
+        histories: props.histories,
+        state: props.state,
+        event,
+        history: {
+          type: "interface",
+          id: v4(),
+          reason: interfaceStart?.reason ?? "",
+          document: event.document,
+          created_at: interfaceStart?.created_at ?? new Date().toISOString(),
+          completed_at: new Date().toISOString(),
+          step: event.step,
+        } satisfies AutoBeInterfaceHistory,
+      }) as AutoBeContext.DispatchHistory<Event>;
+    else if (event.type === "testComplete")
+      return transformAndDispatch<AutoBeTestCompleteEvent>({
+        dispatch: props.dispatch,
+        histories: props.histories,
+        state: props.state,
+        event,
+        history: {
+          type: "test",
+          id: v4(),
+          reason: testStart?.reason ?? "",
+          files: event.files,
+          compiled: event.compiled,
+          created_at: testStart?.created_at ?? new Date().toISOString(),
+          completed_at: new Date().toISOString(),
+          step: event.step,
+        } satisfies AutoBeTestHistory,
+      }) as AutoBeContext.DispatchHistory<Event>;
+    else if (event.type === "realizeComplete")
+      return transformAndDispatch<AutoBeRealizeCompleteEvent>({
+        dispatch: props.dispatch,
+        histories: props.histories,
+        state: props.state,
+        event,
+        history: {
+          type: "realize",
+          id: v4(),
+          reason: realizeStart?.reason ?? "",
+          authorizations: event.authorizations,
+          functions: event.functions,
+          controllers: event.controllers,
+          compiled: event.compiled,
+          created_at: realizeStart?.created_at ?? new Date().toISOString(),
+          completed_at: new Date().toISOString(),
+          step: event.step,
+        } satisfies AutoBeRealizeHistory,
+      }) as AutoBeContext.DispatchHistory<Event>;
+    props.dispatch(event).catch(() => {});
+    return null as AutoBeContext.DispatchHistory<Event>;
+  };
+};
+
+const transformAndDispatch = <
+  Event extends
+    | AutoBeAnalyzeCompleteEvent
+    | AutoBePrismaCompleteEvent
+    | AutoBeInterfaceCompleteEvent
+    | AutoBeTestCompleteEvent
+    | AutoBeRealizeCompleteEvent,
+>(props: {
+  dispatch: (event: Event) => Promise<void>;
+  histories: () => AutoBeHistory[];
+  state: () => AutoBeState;
+  event: Event;
+  history: NonNullable<AutoBeContext.DispatchHistory<Event>>;
+}): NonNullable<AutoBeContext.DispatchHistory<Event>> => {
+  props.histories().push(props.history);
+  props.state()[props.history.type] = props.history as any;
+  props.dispatch(props.event).catch(() => {});
+  return props.history;
+};

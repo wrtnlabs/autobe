@@ -6,11 +6,12 @@ import {
 
 import { AutoBeState } from "../context/AutoBeState";
 import { AutoBeTokenUsage } from "../context/AutoBeTokenUsage";
+import { getAutoBeRealizeGenerated } from "./getAutoBeRealizeGenerated";
 
 export async function getAutoBeGenerated(
   compiler: IAutoBeCompiler,
   state: AutoBeState,
-  histories: AutoBeHistory[],
+  histories: Readonly<AutoBeHistory[]>,
   tokenUsage: AutoBeTokenUsage,
   options?: Partial<IAutoBeGetFilesOptions>,
 ): Promise<Record<string, string>> {
@@ -26,6 +27,7 @@ export async function getAutoBeGenerated(
       ]),
     ),
   );
+  if (options?.stage === "analyze") return ret;
 
   // PRISMA
   if (state.prisma?.step === state.analyze.step) {
@@ -54,6 +56,7 @@ export async function getAutoBeGenerated(
     else if (state.prisma.compiled.type === "failure")
       ret["prisma/compile-error-reason.log"] = state.prisma.compiled.reason;
   }
+  if (options?.stage === "prisma") return ret;
 
   // INTERFACE
   if (state.interface?.step === state.analyze.step) {
@@ -78,6 +81,7 @@ export async function getAutoBeGenerated(
       },
     );
   }
+  if (options?.stage === "interface") return ret;
 
   // TEST
   if (state.test?.step === state.analyze.step)
@@ -92,28 +96,17 @@ export async function getAutoBeGenerated(
     );
 
   // REALIZE
-  if (state.realize?.step === state.analyze.step) {
-    Object.assign<Record<string, string>, Record<string, string>>(ret, {
-      ...Object.fromEntries(
-        state.realize.functions.map((f) => [f.location, f.content]),
-      ),
-      ...Object.fromEntries(
-        state.realize.authorizations
-          .map((auth) => [
-            [auth.decorator.location, auth.decorator.content],
-            [auth.provider.location, auth.provider.content],
-            [auth.payload.location, auth.payload.content],
-          ])
-          .flat(),
-      ),
-      ...(await compiler.realize.getTemplate()),
-      ...(await compiler.realize.controller({
+  if (state.realize?.step === state.analyze.step)
+    Object.assign<Record<string, string>, Record<string, string>>(
+      ret,
+      await getAutoBeRealizeGenerated({
+        compiler,
         document: state.interface!.document,
-        functions: state.realize.functions,
         authorizations: state.realize.authorizations,
-      })),
-    });
-  }
+        functions: state.realize.functions,
+      }),
+    );
+  if (options?.stage === "test") return ret;
 
   // LOGGING
   Object.assign<Record<string, string>, Record<string, string>>(ret, {
