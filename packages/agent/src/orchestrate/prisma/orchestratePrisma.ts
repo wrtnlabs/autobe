@@ -8,7 +8,6 @@ import {
 } from "@autobe/interface";
 import { AutoBePrismaSchemasEvent } from "@autobe/interface/src/events/AutoBePrismaSchemasEvent";
 import { ILlmSchema } from "@samchon/openapi";
-import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
@@ -33,11 +32,9 @@ export const orchestratePrisma =
     const components:
       | AutoBeAssistantMessageHistory
       | AutoBePrismaComponentsEvent = await orchestratePrismaComponents(ctx);
-    if (components.type === "assistantMessage") {
-      ctx.histories().push(components);
-      ctx.dispatch(components);
-      return components;
-    } else ctx.dispatch(components);
+    if (components.type === "assistantMessage")
+      return ctx.assistantMessage(components);
+    else ctx.dispatch(components);
 
     // CONSTRUCT AST DATA
     const events: AutoBePrismaSchemasEvent[] = await orchestratePrismaSchemas(
@@ -61,30 +58,14 @@ export const orchestratePrisma =
     );
 
     // PROPAGATE
-    const history: AutoBePrismaHistory = {
-      type: "prisma",
-      id: v4(),
-      created_at: start.toISOString(),
-      completed_at: new Date().toISOString(),
-      reason: props.reason,
-      description: "",
-      result: result,
+    return ctx.dispatch({
+      type: "prismaComplete",
+      result,
       schemas,
       compiled: await compiler.prisma.compile({
         files: schemas,
       }),
       step: ctx.state().analyze?.step ?? 0,
-    };
-    ctx.state().prisma = history;
-    ctx.histories().push(history);
-    if (history.result.success === true)
-      ctx.dispatch({
-        type: "prismaComplete",
-        application: history.result.data,
-        schemas: history.schemas,
-        compiled: history.compiled,
-        step: ctx.state().analyze?.step ?? 0,
-        created_at: new Date().toISOString(),
-      } satisfies AutoBePrismaCompleteEvent);
-    return history;
+      created_at: new Date().toISOString(),
+    } satisfies AutoBePrismaCompleteEvent);
   };

@@ -37,21 +37,6 @@ export interface AutoBeInterfaceCompleteEvent
   document: AutoBeOpenApi.IDocument;
 
   /**
-   * Reason why the Interface agent was activated through function calling.
-   *
-   * Explains the specific circumstances that triggered the AI chatbot to invoke
-   * the Interface agent via function calling. This could include reasons such
-   * as completing initial API design after database schema creation, updating
-   * API specifications due to requirement changes, or regenerating interfaces
-   * to reflect modified data models.
-   *
-   * Understanding the activation reason provides context for the API design
-   * scope and helps stakeholders understand whether this represents new
-   * development or refinement of existing API specifications.
-   */
-  reason: string;
-
-  /**
    * Iteration number of the requirements analysis this API design was completed
    * for.
    *

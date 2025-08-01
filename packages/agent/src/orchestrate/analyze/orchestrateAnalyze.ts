@@ -46,33 +46,24 @@ export const orchestrateAnalyze =
       });
 
     const composeInput = composeInputPointer.value;
-    if (composeInput === null) {
-      return {
+    if (composeInput === null)
+      return ctx.assistantMessage({
         id: v4(),
         text: "Failed to analyze your request. please request again.",
         type: "assistantMessage",
         completed_at: new Date().toISOString(),
         created_at: new Date().toISOString(),
-      };
-    }
+      });
 
     const { files: tableOfContents, prefix, roles } = composeInput;
-
-    if (tableOfContents.length === 0) {
-      const history: AutoBeAssistantMessageHistory = {
+    if (tableOfContents.length === 0)
+      return ctx.assistantMessage({
         id: v4(),
         type: "assistantMessage",
         text: "The current requirements are insufficient, so file generation will be suspended. It would be better to continue the conversation.",
         created_at,
         completed_at: new Date().toISOString(),
-      };
-      ctx.dispatch({
-        type: "assistantMessage",
-        text: "The current requirements are insufficient, so file generation will be suspended. It would be better to continue the conversation.",
-        created_at,
       });
-      return history;
-    }
 
     const retryCount = 3 as const;
     const progress = {
@@ -98,40 +89,20 @@ export const orchestrateAnalyze =
       .reduce((acc, cur) => Object.assign(acc, cur));
 
     if (Object.keys(files).length) {
-      const history: AutoBeAnalyzeHistory = {
-        id: v4(),
-        type: "analyze",
-        reason: props.reason,
-        prefix,
-        roles: roles,
-        files: files,
-        step,
-        created_at,
-        completed_at: new Date().toISOString(),
-      };
-      ctx.state().analyze = history;
-      ctx.histories().push(history);
-      ctx.dispatch({
+      return ctx.dispatch({
         type: "analyzeComplete",
         prefix,
         files,
         step,
+        roles,
         created_at,
       });
-      return history;
     }
-
-    const history: AutoBeAssistantMessageHistory = {
+    return ctx.assistantMessage({
       id: v4(),
       type: "assistantMessage",
       text: determined.find((el) => el.type === "assistantMessage")?.text ?? "",
       created_at,
       completed_at: new Date().toISOString(),
-    };
-    ctx.dispatch({
-      type: history.type,
-      text: history.text,
-      created_at: history.created_at,
     });
-    return history;
   };

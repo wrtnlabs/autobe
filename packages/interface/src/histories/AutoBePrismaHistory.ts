@@ -79,19 +79,6 @@ export interface AutoBePrismaHistory extends AutoBeAgentHistoryBase<"prisma"> {
    * from the user conversation.
    */
   reason: string;
-
-  /**
-   * Detailed description of the database design and its components.
-   *
-   * Comprehensive explanation of the generated database schema, including:
-   *
-   * - Overview of the business domains and their relationships
-   * - Key entities and their purposes within the system
-   * - Important design patterns and architectural decisions
-   * - Performance considerations and optimization strategies
-   */
-  description: string;
-
   /**
    * Iteration number of the requirements analysis report this database design
    * was performed for.

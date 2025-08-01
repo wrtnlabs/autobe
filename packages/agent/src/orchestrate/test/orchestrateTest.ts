@@ -1,7 +1,6 @@
 import {
   AutoBeAssistantMessageHistory,
   AutoBeOpenApi,
-  AutoBeTestFile,
   AutoBeTestHistory,
   AutoBeTestScenarioEvent,
   AutoBeTestValidateEvent,
@@ -33,8 +32,8 @@ export const orchestrateTest =
 
     const operations: AutoBeOpenApi.IOperation[] =
       ctx.state().interface?.document.operations ?? [];
-    if (operations.length === 0) {
-      const history: AutoBeAssistantMessageHistory = {
+    if (operations.length === 0)
+      return ctx.assistantMessage({
         id: v4(),
         type: "assistantMessage",
         created_at: start.toISOString(),
@@ -42,11 +41,7 @@ export const orchestrateTest =
         text:
           "Unable to write test code because there are no Operations, " +
           "please check if the Interface agent is called.",
-      };
-      ctx.histories().push(history);
-      ctx.dispatch(history);
-      return history;
-    }
+      });
 
     // PLAN
     const scenarioEvent: AutoBeTestScenarioEvent =
@@ -69,7 +64,6 @@ export const orchestrateTest =
 
     // DO COMPILE
     const compiler: IAutoBeCompiler = await ctx.compiler();
-    const result: AutoBeTestFile[] = success.map((c) => c.file);
     const compiled: IAutoBeTypeScriptCompileResult =
       await compiler.typescript.compile({
         files: Object.fromEntries([
@@ -78,28 +72,14 @@ export const orchestrateTest =
               dbms: "sqlite",
             }),
           ).filter(([key]) => key.endsWith(".ts")),
-          ...result.map((f) => [f.location, f.content]),
+          ...success.map((s) => [s.file.location, s.file.content]),
         ]),
       });
-
-    const history: AutoBeTestHistory = {
-      type: "test",
-      id: v4(),
-      completed_at: new Date().toISOString(),
-      created_at: start.toISOString(),
-      files: result,
-      compiled,
-      reason: "Step to the test generation referencing the interface",
-      step: ctx.state().interface?.step ?? 0,
-    };
-    ctx.dispatch({
+    return ctx.dispatch({
       type: "testComplete",
       created_at: start.toISOString(),
-      files: result,
+      files: success.map((s) => s.file),
       compiled,
       step: ctx.state().interface?.step ?? 0,
     });
-    ctx.state().test = history;
-    ctx.histories().push(history);
-    return history;
   };

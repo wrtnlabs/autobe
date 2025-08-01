@@ -6,7 +6,6 @@ import {
   AutoBeOpenApi,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
-import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
@@ -32,11 +31,8 @@ export const orchestrateInterface =
 
     const init: AutoBeAssistantMessageHistory | AutoBeInterfaceGroupsEvent =
       await orchestrateInterfaceGroups(ctx);
-    if (init.type === "assistantMessage") {
-      ctx.dispatch(init);
-      ctx.histories().push(init);
-      return init;
-    } else ctx.dispatch(init);
+    if (init.type === "assistantMessage") return ctx.assistantMessage(init);
+    else ctx.dispatch(init);
 
     // ENDPOINTS & OPERATIONS
     const endpoints: AutoBeOpenApi.IEndpoint[] =
@@ -58,23 +54,10 @@ export const orchestrateInterface =
     );
 
     // DO COMPILE
-    const result: AutoBeInterfaceHistory = {
-      type: "interface",
-      id: v4(),
-      document,
-      reason: props.reason,
-      step: ctx.state().analyze?.step ?? 0,
-      created_at: start.toISOString(),
-      completed_at: new Date().toISOString(),
-    };
-    ctx.state().interface = result;
-    ctx.histories().push(result);
-    ctx.dispatch({
+    return ctx.dispatch({
       type: "interfaceComplete",
-      document: result.document,
+      document,
       created_at: start.toISOString(),
-      reason: props.reason,
       step: ctx.state().analyze?.step ?? 0,
     } satisfies AutoBeInterfaceCompleteEvent);
-    return result;
   };

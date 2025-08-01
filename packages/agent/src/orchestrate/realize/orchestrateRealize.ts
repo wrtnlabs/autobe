@@ -7,11 +7,11 @@ import {
   IAutoBeCompiler,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
-import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
 import { getAutoBeGenerated } from "../../factory/getAutoBeGenerated";
+import { getAutoBeRealizeGenerated } from "../../factory/getAutoBeRealizeGenerated";
 import { orchestrateRealizeAuthorization } from "./orchestrateRealizeAuthorization";
 import { writeCodeUntilCompilePassed } from "./writeCodeUntilCompilePassed";
 
@@ -26,7 +26,6 @@ export const orchestrateRealize =
       throw new Error("Can't do realize agent because operations are nothing.");
     }
 
-    const start: Date = new Date();
     ctx.dispatch({
       type: "realizeStart",
       created_at: new Date().toISOString(),
@@ -54,41 +53,29 @@ export const orchestrateRealize =
         authorizations,
       });
 
-    const history: AutoBeRealizeHistory = {
-      type: "realize",
-      compiled: result.compiled,
-      authorizations,
-      functions,
-      controllers,
-      completed_at: new Date().toISOString(),
-      created_at: start.toISOString(),
-      id: v4(),
-      reason: props.reason,
-      step: ctx.state().analyze?.step ?? 0,
-    };
-
     // report
-    ctx.dispatch({
+    return ctx.dispatch({
       type: "realizeComplete",
       created_at: new Date().toISOString(),
-      functions: history.functions,
-      authorizations: history.authorizations,
-      controllers: history.controllers,
+      functions,
+      authorizations,
+      controllers,
       compiled: await compiler.typescript.compile({
-        files: await getAutoBeGenerated(
-          compiler,
-          {
-            ...ctx.state(),
-            realize: history,
-          },
-          [...ctx.histories(), history],
-          ctx.usage(),
-        ),
+        files: {
+          ...(await getAutoBeGenerated(
+            compiler,
+            ctx.state(),
+            ctx.histories(),
+            ctx.usage(),
+          )),
+          ...(await getAutoBeRealizeGenerated({
+            document: ctx.state().interface!.document,
+            authorizations,
+            functions,
+            compiler,
+          })),
+        },
       }),
       step: ctx.state().analyze?.step ?? 0,
     });
-    ctx.state().realize = history;
-    ctx.histories().push(history);
-
-    return history;
   };

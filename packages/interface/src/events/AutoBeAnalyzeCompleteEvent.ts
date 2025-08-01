@@ -1,3 +1,4 @@
+import { AutoBeAnalyzeRole } from "../histories/contents/AutoBeAnalyzeRole";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
 /**
@@ -46,6 +47,16 @@ export interface AutoBeAnalyzeCompleteEvent
    * pipeline including database design, API specification, and implementation.
    */
   files: Record<string, string>;
+
+  /**
+   * List of roles identified during the requirements analysis process.
+   *
+   * Contains the various user roles, personas, or stakeholder types that were
+   * identified and analyzed during the requirements gathering phase. These
+   * roles help define different user perspectives, access levels, and
+   * functional requirements needed for the system being developed.
+   */
+  roles: AutoBeAnalyzeRole[];
 
   /**
    * Final iteration number of the completed requirements analysis report.

@@ -17,6 +17,7 @@ import { AutoBeState } from "./context/AutoBeState";
 import { AutoBeTokenUsage } from "./context/AutoBeTokenUsage";
 import { createAgenticaHistory } from "./factory/createAgenticaHistory";
 import { createAutoBeController } from "./factory/createAutoBeApplication";
+import { createAutoBeContext } from "./factory/createAutoBeContext";
 import { createAutoBeState } from "./factory/createAutoBeState";
 import { transformFacadeStateMessage } from "./orchestrate/facade/transformFacadeStateMessage";
 import { IAutoBeProps } from "./structures/IAutoBeProps";
@@ -118,23 +119,21 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
     const compiler = new Singleton(async () =>
       props.compiler(compilerListener),
     );
-    this.context_ = {
-      vendor,
+    this.context_ = createAutoBeContext({
       model: props.model,
+      vendor: props.vendor,
       config: {
         backoffStrategy: randomBackoffStrategy,
         ...props.config,
       },
       compiler: () => compiler.get(),
       compilerListener,
-      histories: () => this.histories_,
       state: () => this.state_,
-      usage: () => this.getTokenUsage(),
       files: (options) => this.getFiles(options),
-      dispatch: (event) => {
-        this.dispatch(event).catch(() => {});
-      },
-    } satisfies AutoBeContext<Model>;
+      histories: () => this.histories_,
+      usage: () => this.usage_,
+      dispatch: (event) => this.dispatch(event),
+    });
     this.agentica_ = new MicroAgentica({
       vendor,
       model: props.model,
@@ -156,6 +155,7 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
       ],
     });
 
+    // HISTORIES MANIPULATION
     this.agentica_.getHistories().push(
       ...this.histories_
         .map((history) =>
