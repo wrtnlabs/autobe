@@ -89,9 +89,9 @@ ${(
   ] as const
 ).map(
   ([name, key]) => `  - ${name}:
-    - Sum: ${tokenUsage[key].aggregate.total.toLocaleString("en-US")}
-    - Input: ${tokenUsage[key].aggregate.input.total.toLocaleString("en-US")}
-    - Output: ${tokenUsage[key].aggregate.output.total.toLocaleString("en-US")}
+    - Sum: ${tokenUsage[key].total.toLocaleString("en-US")}
+    - Input: ${tokenUsage[key].input.total.toLocaleString("en-US")}
+    - Output: ${tokenUsage[key].output.total.toLocaleString("en-US")}
   `,
 )}
 `;

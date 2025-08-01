@@ -25,12 +25,12 @@ const accumulate = async (
   const top: IAutoBeTokenUsageJson | undefined = snapshots[0]?.tokenUsage;
   if (top === undefined) return;
   else if (
-    top.analyze.aggregate.total +
-      top.facade.aggregate.total +
-      top.interface.aggregate.total +
-      top.prisma.aggregate.total +
-      top.realize.aggregate.total +
-      top.test.aggregate.total !==
+    top.analyze.total +
+      top.facade.total +
+      top.interface.total +
+      top.prisma.total +
+      top.realize.total +
+      top.test.total !==
     0
   )
     return;
