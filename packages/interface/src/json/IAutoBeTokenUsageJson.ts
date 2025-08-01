@@ -18,19 +18,8 @@
  * @author sunrabbit123
  */
 export interface IAutoBeTokenUsageJson {
-  /**
-   * Aggregated token usage across all AI agents and processing phases.
-   *
-   * Provides the total token consumption for the entire vibe coding session,
-   * combining all input and output tokens used by every agent throughout the
-   * development pipeline. This aggregate view enables overall cost assessment
-   * and resource utilization analysis for complete project automation.
-   */
-  total: IAutoBeInternalTokenUsageJson;
-
   /** Token usage for the facade agent */
   facade: IAutoBeInternalTokenUsageJson;
-
   /** Token usage for the analysis phase */
   analyze: IAutoBeInternalTokenUsageJson;
   /** Token usage for the Prisma schema generation phase */
