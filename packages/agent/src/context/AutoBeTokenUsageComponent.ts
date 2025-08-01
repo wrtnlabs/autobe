@@ -1,4 +1,3 @@
-import { IAgenticaTokenUsageJson } from "@agentica/core";
 import { IAutoBeTokenUsageJson } from "@autobe/interface";
 
 /**
@@ -23,7 +22,7 @@ export class AutoBeTokenUsageComponent
   input: IAutoBeTokenUsageJson.IInput;
   output: IAutoBeTokenUsageJson.IOutput;
 
-  constructor(props?: IAgenticaTokenUsageJson.IComponent) {
+  constructor(props?: IAutoBeTokenUsageJson.IComponent) {
     if (props === undefined) {
       this.total = 0;
       this.input = { total: 0, cached: 0 };
@@ -40,7 +39,19 @@ export class AutoBeTokenUsageComponent
     this.output = props.output;
   }
 
-  increment(props: IAgenticaTokenUsageJson.IComponent) {
+  /**
+   * Increment the token usage by the given component.
+   *
+   * @author @sunrabbit123
+   * @example
+   *   ```ts
+   *   const component = new AutoBeTokenUsageComponent();
+   *   component.increment({ total: 100, input: { total: 100, cached: 0 }, output: { total: 100, reasoning: 0, accepted_prediction: 0, rejected_prediction: 0 } });
+   *   ```;
+   *
+   * @param props - The component to increment the token usage by.
+   */
+  increment(props: IAutoBeTokenUsageJson.IComponent) {
     this.total += props.total;
     this.input.total += props.input.total;
     this.input.cached += props.input.cached;
@@ -49,6 +60,18 @@ export class AutoBeTokenUsageComponent
     this.output.accepted_prediction += props.output.accepted_prediction;
   }
 
+  /**
+   * Add the token usage of two components.
+   *
+   * @author @sunrabbit123
+   * @example
+   *   ```ts
+   *   const component = AutoBeTokenUsageComponent.plus(componentA, componentB);
+   *   ```;
+   *
+   * @param a - The first component to add.
+   * @param b - The second component to add.
+   */
   public static plus(
     a: AutoBeTokenUsageComponent,
     b: AutoBeTokenUsageComponent,
@@ -70,6 +93,15 @@ export class AutoBeTokenUsageComponent
     });
   }
 
+  /**
+   * Convert the component to a JSON object.
+   *
+   * @author @sunrabbit123
+   * @example
+   *   ```ts
+   *   const json = component.toJSON();
+   *   ```;
+   */
   public toJSON(): IAutoBeTokenUsageJson.IComponent {
     return {
       total: this.total,

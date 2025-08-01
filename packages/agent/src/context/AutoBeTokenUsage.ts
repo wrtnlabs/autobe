@@ -3,6 +3,15 @@ import { IAutoBeTokenUsageJson } from "@autobe/interface";
 import { AutoBeTokenUsageComponent } from "./AutoBeTokenUsageComponent";
 import { IAutoBeApplication } from "./IAutoBeApplication";
 
+/**
+ * A class that represents the token usage of the AutoBe agent.
+ *
+ * @author @sunrabbit123
+ * @example
+ *   ```ts
+ *   const tokenUsage = new AutoBeTokenUsage();
+ *   ```;
+ */
 export class AutoBeTokenUsage {
   public readonly facade: AutoBeTokenUsageComponent;
   public readonly analyze: AutoBeTokenUsageComponent;
@@ -47,6 +56,20 @@ export class AutoBeTokenUsage {
     );
   }
 
+  /**
+   * Record the token usage of the AutoBe agent.
+   *
+   * @author @sunrabbit123
+   * @example
+   *   ```ts
+   *   const tokenUsage = new AutoBeTokenUsage();
+   *   tokenUsage.record({ total: 100, input: { total: 100, cached: 0 }, output: { total: 100, reasoning: 0, accepted_prediction: 0, rejected_prediction: 0 } });
+   *   ```;
+   *
+   * @param usage - The token usage to record.
+   * @param additionalStages - The additional stages to record the token usage
+   *   for.
+   */
   public record(
     usage: IAutoBeTokenUsageJson.IComponent,
     additionalStages: (keyof IAutoBeApplication)[] = [],
@@ -56,6 +79,18 @@ export class AutoBeTokenUsage {
     });
   }
 
+  /**
+   * Increment the token usage of the AutoBe agent.
+   *
+   * @author @sunrabbit123
+   * @example
+   *   ```ts
+   *   const tokenUsage = new AutoBeTokenUsage();
+   *   tokenUsage.increment({ total: 100, input: { total: 100, cached: 0 }, output: { total: 100, reasoning: 0, accepted_prediction: 0, rejected_prediction: 0 } });
+   *   ```;
+   *
+   * @param usage - The token usage to increment.
+   */
   public increment(usage: AutoBeTokenUsage) {
     AutoBeTokenUsage.keys().forEach((key) => {
       this[key].increment(usage[key]);
@@ -63,6 +98,18 @@ export class AutoBeTokenUsage {
     return this;
   }
 
+  /**
+   * Add the token usage of two AutoBe agents.
+   *
+   * @author @sunrabbit123
+   * @example
+   *   ```ts
+   *   const tokenUsage = AutoBeTokenUsage.plus(tokenUsageA, tokenUsageB);
+   *   ```;
+   *
+   * @param usageA - The first token usage to add.
+   * @param usageB - The second token usage to add.
+   */
   public static plus(usageA: AutoBeTokenUsage, usageB: AutoBeTokenUsage) {
     return new AutoBeTokenUsage({
       facade: AutoBeTokenUsageComponent.plus(usageA.facade, usageB.facade),
@@ -77,6 +124,15 @@ export class AutoBeTokenUsage {
     });
   }
 
+  /**
+   * Convert the token usage to a JSON object.
+   *
+   * @author @sunrabbit123
+   * @example
+   *   ```ts
+   *   const json = tokenUsage.toJSON();
+   *   ```;
+   */
   public toJSON(): IAutoBeTokenUsageJson {
     return {
       facade: this.facade.toJSON(),
@@ -88,7 +144,17 @@ export class AutoBeTokenUsage {
     };
   }
 
-  /** @internal */
+  /**
+   * Get the keys of the token usage.
+   *
+   * @author @sunrabbit123
+   * @example
+   *   ```ts
+   *   const keys = AutoBeTokenUsage.keys();
+   *   ```;
+   *
+   * @internal
+   */
   private static keys() {
     return [
       "facade",
@@ -100,14 +166,3 @@ export class AutoBeTokenUsage {
     ] as const;
   }
 }
-
-// /** Type check statements */
-// 1 as unknown as AutoBeTokenUsage satisfies {
-//   [key in "facade" | keyof IAutoBeApplication]: AgenticaTokenUsage;
-// };
-
-// 1 as unknown as IAutoBeTokenUsageJson satisfies {
-//   [key in "facade" | keyof IAutoBeApplication]: IAutoBeInternalTokenUsageJson;
-// };
-
-// 1 as unknown as IAutoBeInternalTokenUsageJson satisfies IAgenticaTokenUsageJson;
