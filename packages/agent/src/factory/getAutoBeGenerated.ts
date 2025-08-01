@@ -27,6 +27,7 @@ export async function getAutoBeGenerated(
       ]),
     ),
   );
+  if (options?.stage === "analyze") return ret;
 
   // PRISMA
   if (state.prisma?.step === state.analyze.step) {
@@ -55,6 +56,7 @@ export async function getAutoBeGenerated(
     else if (state.prisma.compiled.type === "failure")
       ret["prisma/compile-error-reason.log"] = state.prisma.compiled.reason;
   }
+  if (options?.stage === "prisma") return ret;
 
   // INTERFACE
   if (state.interface?.step === state.analyze.step) {
@@ -79,6 +81,7 @@ export async function getAutoBeGenerated(
       },
     );
   }
+  if (options?.stage === "interface") return ret;
 
   // TEST
   if (state.test?.step === state.analyze.step)
@@ -103,6 +106,7 @@ export async function getAutoBeGenerated(
         functions: state.realize.functions,
       }),
     );
+  if (options?.stage === "test") return ret;
 
   // LOGGING
   Object.assign<Record<string, string>, Record<string, string>>(ret, {

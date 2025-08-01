@@ -46,4 +46,20 @@ export interface IAutoBeGetFilesOptions {
    * without manual configuration adjustments or compatibility fixes.
    */
   dbms: "postgres" | "sqlite";
+
+  /**
+   * Limitation stage.
+   *
+   * Limitation of the generated files to a specific stage in the AutoBE
+   * development process.
+   *
+   * If you configure this option, the generated files will only include the
+   * artifacts up to the specified stage, excluding any subsequent development
+   * stages.
+   *
+   * For example, if AutoBE is currently in the "realize" stage, setting `stage:
+   * "interface"` will generate files only up to the interface development
+   * stage, omitting any code of the "test" or "realize" steps.
+   */
+  stage?: "analyze" | "prisma" | "interface" | "test" | "realize";
 }

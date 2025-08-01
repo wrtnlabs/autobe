@@ -22,11 +22,14 @@ import { Singleton, VariadicSingleton } from "tstl";
 export function AutoBePlaygroundCompleteEventMovie(
   props: AutoBePlaygroundCompleteEventMovie.IProps,
 ) {
+  const stage = getStage(props.event);
   const [postgres] = useState(
     new Singleton(async () => {
       setDownloading(true);
       try {
-        const result: Record<string, string> = await props.service.getFiles();
+        const result: Record<string, string> = await props.service.getFiles({
+          stage,
+        });
         return result;
       } catch (error) {
         throw error;
@@ -41,6 +44,7 @@ export function AutoBePlaygroundCompleteEventMovie(
       try {
         const result: Record<string, string> = await props.service.getFiles({
           dbms: "sqlite",
+          stage,
         });
         return result;
       } catch (error) {
@@ -261,4 +265,20 @@ const getMessage = (
       </>
     );
   return null;
+};
+
+const getStage = (
+  event: AutoBePlaygroundCompleteEventMovie.IProps["event"],
+) => {
+  if (event.type === "analyzeComplete") return "analyze";
+  else if (event.type === "prismaComplete") return "prisma";
+  else if (event.type === "interfaceComplete") return "interface";
+  else if (event.type === "testComplete") return "test";
+  else if (event.type === "realizeComplete") return "realize";
+  else if (event.type === "realizeAuthorizationComplete") return "test";
+  else if (event.type === "realizeTestComplete") return "test";
+  else {
+    event satisfies never;
+    return undefined;
+  }
 };
