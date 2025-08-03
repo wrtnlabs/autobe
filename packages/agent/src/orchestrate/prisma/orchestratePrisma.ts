@@ -8,11 +8,13 @@ import {
 } from "@autobe/interface";
 import { AutoBePrismaSchemasEvent } from "@autobe/interface/src/events/AutoBePrismaSchemasEvent";
 import { ILlmSchema } from "@samchon/openapi";
+import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
 import { orchestratePrismaComponents } from "./orchestratePrismaComponent";
 import { orchestratePrismaCorrect } from "./orchestratePrismaCorrect";
+import { orchestratePrismaReviewer, IPrismaReviewerResult } from "./orchestratePrismaReviewer";
 import { orchestratePrismaSchemas } from "./orchestratePrismaSchemas";
 
 export const orchestratePrisma =
@@ -42,12 +44,39 @@ export const orchestratePrisma =
       components.components,
     );
 
+    // REVIEW - Database design quality assessment
+    const application = {
+      files: events.map((e) => e.file),
+    };
+    const reviewResult: IPrismaReviewerResult = await orchestratePrismaReviewer(
+      ctx,
+      { application },
+    );
+    
+    // Dispatch review event
+    ctx.dispatch({
+      type: "prismaReview",
+      application,
+      review: reviewResult.type === "reject" ? reviewResult.value : "Database design approved",
+      step: ctx.state().analyze?.step ?? 0,
+      created_at: new Date().toISOString(),
+    });
+
+    // If review rejected, return for revision
+    if (reviewResult.type === "reject") {
+      return ctx.assistantMessage({
+        id: v4(),
+        type: "assistantMessage",
+        text: `Database design needs improvement: ${reviewResult.value}`,
+        created_at: new Date().toISOString(),
+        completed_at: new Date().toISOString(),
+      });
+    }
+
     // VALIDATE
     const result: IAutoBePrismaValidation = await orchestratePrismaCorrect(
       ctx,
-      {
-        files: events.map((e) => e.file),
-      },
+      application,
     );
 
     // COMPILE

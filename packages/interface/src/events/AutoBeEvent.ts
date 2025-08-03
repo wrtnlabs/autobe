@@ -14,6 +14,7 @@ import { AutoBePrismaCompleteEvent } from "./AutoBePrismaCompleteEvent";
 import { AutoBePrismaComponentsEvent } from "./AutoBePrismaComponentsEvent";
 import { AutoBePrismaCorrectEvent } from "./AutoBePrismaCorrectEvent";
 import { AutoBePrismaInsufficientEvent } from "./AutoBePrismaInsufficientEvent";
+import { AutoBePrismaReviewEvent } from "./AutoBePrismaReviewEvent";
 import { AutoBePrismaSchemasEvent } from "./AutoBePrismaSchemasEvent";
 import { AutoBePrismaStartEvent } from "./AutoBePrismaStartEvent";
 import { AutoBePrismaValidateEvent } from "./AutoBePrismaValidateEvent";
@@ -81,6 +82,7 @@ export type AutoBeEvent =
   | AutoBePrismaStartEvent
   | AutoBePrismaComponentsEvent
   | AutoBePrismaSchemasEvent
+  | AutoBePrismaReviewEvent
   | AutoBePrismaInsufficientEvent
   | AutoBePrismaCompleteEvent
   | AutoBePrismaValidateEvent
@@ -154,6 +156,7 @@ export namespace AutoBeEvent {
     prismaStart: AutoBePrismaStartEvent;
     prismaComponents: AutoBePrismaComponentsEvent;
     prismaSchemas: AutoBePrismaSchemasEvent;
+    prismaReview: AutoBePrismaReviewEvent;
     prismaInsufficient: AutoBePrismaInsufficientEvent;
     prismaComplete: AutoBePrismaCompleteEvent;
     prismaValidate: AutoBePrismaValidateEvent;
