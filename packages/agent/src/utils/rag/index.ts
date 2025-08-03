@@ -8,3 +8,5 @@
 
 export * from "./SemanticSimilarity";
 export * from "./ContextOptimizer";
+export * from "./RagConfig";
+export * from "./ContextCache";

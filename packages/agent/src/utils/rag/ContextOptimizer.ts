@@ -8,6 +8,7 @@
 
 import { AutoBeOpenApi, AutoBeTestScenario } from "@autobe/interface";
 import { SemanticSimilarity } from "./SemanticSimilarity";
+import { IRagConfig, DEFAULT_RAG_CONFIG } from "./RagConfig";
 
 export interface IOptimizedContext {
   /**
@@ -64,14 +65,14 @@ export interface IContextOptimizationOptions {
   includeRelatedSchemas?: boolean;
   
   /**
-   * Whether to prioritize dependencies
-   */
-  prioritizeDependencies?: boolean;
-  
-  /**
    * Whether to enable aggressive optimization
    */
   aggressiveMode?: boolean;
+  
+  /**
+   * RAG configuration to use (overrides individual options)
+   */
+  ragConfig?: IRagConfig;
 }
 
 /**
@@ -88,12 +89,15 @@ export namespace ContextOptimizer {
     fullE2eExamples: Record<string, any>,
     options: IContextOptimizationOptions = {}
   ): IOptimizedContext {
+    // Use RAG config if provided, otherwise use individual options or defaults
+    const config = options.ragConfig || DEFAULT_RAG_CONFIG;
+    
     const {
-      maxOperations = 20,
-      maxSchemas = 50,
-      minOperationScore = 0.1,
-      includeRelatedSchemas = true,
-      aggressiveMode = false
+      maxOperations = options.maxOperations || config.maxOperationsPerScenario,
+      maxSchemas = options.maxSchemas || config.maxSchemas,
+      minOperationScore = options.minOperationScore || config.minSimilarityScore,
+      includeRelatedSchemas = options.includeRelatedSchemas ?? true,
+      aggressiveMode = options.aggressiveMode ?? config.aggressiveMode
     } = options;
 
     // Convert operations for semantic scoring

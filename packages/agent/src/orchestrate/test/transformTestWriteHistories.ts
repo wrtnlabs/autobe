@@ -9,26 +9,39 @@ import {
 import typia from "typia";
 import { v4 } from "uuid";
 
-import { ContextOptimizer } from "../../utils/rag";
+import { ContextOptimizer, globalContextCache } from "../../utils/rag";
 import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
 
 export function transformTestWriteHistories(
   scenario: AutoBeTestScenario,
   artifacts: IAutoBeTestScenarioArtifacts,
 ): Array<IAgenticaHistoryJson.ISystemMessage> {
-  // Optimize context using RAG to reduce token consumption
-  const optimizedContext = ContextOptimizer.optimizeForScenario(
-    scenario,
-    artifacts.document,
-    artifacts.sdk,
-    artifacts.e2e,
-    {
-      maxOperations: 10, // Reduced from including all operations
-      maxSchemas: 25,    // Reduced from including all schemas
-      minOperationScore: 0.2,
-      aggressiveMode: true
-    }
-  );
+  // Try to get cached context first
+  const cachedContext = globalContextCache.get(scenario);
+  
+  let optimizedContext;
+  if (cachedContext) {
+    optimizedContext = cachedContext;
+    console.log(`✅ Using cached context for ${scenario.functionName} (${(globalContextCache.getStats().hitRatio * 100).toFixed(1)}% hit ratio)`);
+  } else {
+    // Optimize context using RAG to reduce token consumption
+    optimizedContext = ContextOptimizer.optimizeForScenario(
+      scenario,
+      artifacts.document,
+      artifacts.sdk,
+      artifacts.e2e,
+      {
+        maxOperations: 10, // Reduced from including all operations
+        maxSchemas: 25,    // Reduced from including all schemas
+        minOperationScore: 0.2,
+        aggressiveMode: true
+      }
+    );
+    
+    // Cache for future use
+    globalContextCache.set(scenario, optimizedContext);
+    console.log(`💾 Cached new context for ${scenario.functionName} (estimated ${optimizedContext.stats.estimatedTokenReduction}% token reduction)`);
+  }
 
   return [
     {
