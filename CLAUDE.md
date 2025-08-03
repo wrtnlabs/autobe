@@ -260,7 +260,7 @@ What improvements this brings
 - Check `/test/scripts/` for specific testing scenarios
 
 ### Repository Information
-- **License**: MIT
+- **License**: AGPL 3.0
 - **Maintainer**: Wrtn Technologies
 - **Repository**: https://github.com/wrtnlabs/autobe
 - **Documentation**: https://wrtnlabs.io/autobe/docs/
