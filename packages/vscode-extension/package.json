@@ -2,7 +2,7 @@
   "name": "autobe-vscode-extension",
   "displayName": "AutoBe - Auto generate backend system",
   "description": "AutoBe VSCode Extension",
-  "author": "sunrabbit123 <qudwls185@naver.com>",
+  "author": "Wrtn Technologies",
   "publisher": "wrtnlabs",
   "icon": "assets/icons/icon.png",
   "version": "0.0.1",
