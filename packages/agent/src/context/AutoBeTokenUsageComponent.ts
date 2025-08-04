@@ -18,13 +18,14 @@ import { IAutoBeTokenUsageJson } from "@autobe/interface";
 export class AutoBeTokenUsageComponent
   implements IAutoBeTokenUsageJson.IComponent
 {
-  total: number;
-  input: IAutoBeTokenUsageJson.IInput;
-  output: IAutoBeTokenUsageJson.IOutput;
+  public readonly input: IAutoBeTokenUsageJson.IInput;
+  public readonly output: IAutoBeTokenUsageJson.IOutput;
+  public get total(): number {
+    return this.input.total + this.output.total;
+  }
 
   constructor(props?: IAutoBeTokenUsageJson.IComponent) {
     if (props === undefined) {
-      this.total = 0;
       this.input = { total: 0, cached: 0 };
       this.output = {
         total: 0,
@@ -34,7 +35,6 @@ export class AutoBeTokenUsageComponent
       };
       return;
     }
-    this.total = props.total;
     this.input = props.input;
     this.output = props.output;
   }
@@ -51,8 +51,7 @@ export class AutoBeTokenUsageComponent
    *
    * @param props - The component to increment the token usage by.
    */
-  increment(props: IAutoBeTokenUsageJson.IComponent) {
-    this.total += props.total;
+  public increment(props: IAutoBeTokenUsageJson.IComponent) {
     this.input.total += props.input.total;
     this.input.cached += props.input.cached;
     this.output.total += props.output.total;
