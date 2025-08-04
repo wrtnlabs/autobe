@@ -1,10 +1,20 @@
-.vscode/**
-.vscode-test/**
-src/**
-.gitignore
-vsc-extension-quickstart.md
-**/tsconfig.json
-**/eslint.config.mjs
-**/*.map
-**/*.ts
-**/.vscode-test.*
+# default, ignore all
+**
+
+# include documents
+!README.md
+!LICENSE
+
+# include package.json
+!package.json
+
+# include build files
+!dist
+
+# include webview build files
+!webview-ui/build
+!webview-ui/build/assets/*.js
+!webview-ui/build/assets/*.css
+
+# include icons and image
+!assets/icons/**

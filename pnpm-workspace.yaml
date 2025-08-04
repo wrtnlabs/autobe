@@ -1,6 +1,7 @@
 packages:
   - internals/website-examples
   - packages/*
+  - packages/vscode-extension/webview-ui
   - test
   - website
 catalogs:

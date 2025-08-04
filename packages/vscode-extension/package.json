@@ -21,7 +21,8 @@
     "vscode:apply-cursor": "pnpm vscode:pack -o autobe-vscode-extension.vsix && cursor --install-extension autobe-vscode-extension.vsix",
     "vscode:apply-code": "pnpm vscode:pack -o autobe-vscode-extension.vsix && code --install-extension autobe-vscode-extension.vsix",
     "test": "vscode-test",
-    "build": "tsc -p ./"
+    "webview:build": "cd webview-ui && pnpm build && cd ..",
+    "build": "pnpm webview:build && tsc -p ./"
   },
   "devDependencies": {
     "@types/node": "22.x",
