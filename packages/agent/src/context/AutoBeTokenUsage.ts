@@ -132,7 +132,7 @@ export class AutoBeTokenUsage implements IAutoBeTokenUsageJson {
    *
    * @param props Token usage data in JSON format
    */
-  public constructor(props?: IAutoBeTokenUsageJson);
+  public constructor(props?: Omit<IAutoBeTokenUsageJson, "aggregate">);
 
   public constructor(
     props?: AutoBeTokenUsage | IAutoBeTokenUsageJson | undefined,
@@ -174,6 +174,7 @@ export class AutoBeTokenUsage implements IAutoBeTokenUsageJson {
    */
   public toJSON(): IAutoBeTokenUsageJson {
     return {
+      aggregate: this.aggregate,
       facade: this.facade.toJSON(),
       analyze: this.analyze.toJSON(),
       prisma: this.prisma.toJSON(),

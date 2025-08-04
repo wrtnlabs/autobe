@@ -17,17 +17,72 @@
  * @author SunRabbit123
  */
 export interface IAutoBeTokenUsageJson {
-  /** Token usage for the facade agent */
+  /**
+   * Aggregated token usage statistics across all agents.
+   *
+   * Provides a unified view of token consumption by combining data from all
+   * processing phases in the vibe coding pipeline. This computed property
+   * dynamically calculates the sum of all agent components (facade, analyze,
+   * prisma, interface, test, realize) whenever accessed, ensuring the aggregate
+   * always reflects the current state of token usage.
+   *
+   * The aggregation performs element-wise addition across all token metrics,
+   * including total counts, input breakdowns with cache statistics, and output
+   * categorizations by generation type. This comprehensive view enables overall
+   * cost assessment and resource utilization analysis for the entire automated
+   * development session.
+   */
+  aggregate: IAutoBeTokenUsageJson.IComponent;
+  
+  /**
+   * Token usage for the facade agent orchestrating the entire pipeline.
+   *
+   * Tracks tokens consumed by the initial agent that coordinates and manages
+   * the overall vibe coding process, including request parsing and response
+   * orchestration.
+   */
   facade: IAutoBeTokenUsageJson.IComponent;
-  /** Token usage for the analysis phase */
+  
+  /**
+   * Token usage for the requirements analysis agent.
+   *
+   * Captures tokens used during the analysis phase where user requirements are
+   * processed, understood, and transformed into structured specifications for
+   * subsequent development phases.
+   */
   analyze: IAutoBeTokenUsageJson.IComponent;
-  /** Token usage for the Prisma schema generation phase */
+  
+  /**
+   * Token usage for the Prisma database schema generation agent.
+   *
+   * Records tokens consumed while designing and generating database schemas,
+   * including entity relationships, field definitions, and database-specific
+   * optimizations.
+   */
   prisma: IAutoBeTokenUsageJson.IComponent;
-  /** Token usage for the interface generation phase */
+  
+  /**
+   * Token usage for the API interface specification agent.
+   *
+   * Tracks tokens used in creating OpenAPI/Swagger specifications, defining
+   * endpoints, request/response structures, and API documentation.
+   */
   interface: IAutoBeTokenUsageJson.IComponent;
-  /** Token usage for the test generation phase */
+  
+  /**
+   * Token usage for the test code generation agent.
+   *
+   * Monitors tokens consumed during automated test creation, including scenario
+   * planning, test case generation, and end-to-end test implementation.
+   */
   test: IAutoBeTokenUsageJson.IComponent;
-  /** Token usage for the implementation phase */
+  
+  /**
+   * Token usage for the implementation realization agent.
+   *
+   * Captures tokens used in the final implementation phase where actual
+   * business logic, controllers, services, and integration code are generated.
+   */
   realize: IAutoBeTokenUsageJson.IComponent;
 }
 
