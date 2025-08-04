@@ -23,16 +23,6 @@ export class AutoBeTokenUsageComponent
   implements IAutoBeTokenUsageJson.IComponent
 {
   /**
-   * Total token count combining all input and output tokens.
-   *
-   * Represents the complete token consumption for this component, providing a
-   * single metric for overall resource utilization. This value is critical for
-   * cost calculations and comparing efficiency across different agents or
-   * processing phases.
-   */
-  public total: number;
-
-  /**
    * Detailed breakdown of input token consumption.
    *
    * Tracks how many tokens were processed as input to the AI agent, including:
@@ -60,6 +50,21 @@ export class AutoBeTokenUsageComponent
    */
   public readonly output: IAutoBeTokenUsageJson.IOutput;
 
+  /**
+   * Total token count combining all input and output tokens.
+   *
+   * Represents the complete token consumption for this component, providing a
+   * single metric for overall resource utilization. This value is critical for
+   * cost calculations and comparing efficiency across different agents or
+   * processing phases.
+   */
+  public get total(): number {
+    return this.input.total + this.output.total;
+  }
+
+  /* -----------------------------------------------------------
+    CONSTRUCTORS
+  ----------------------------------------------------------- */
   /**
    * Default Constructor.
    *
@@ -96,6 +101,27 @@ export class AutoBeTokenUsageComponent
     this.output = props.output;
   }
 
+  /**
+   * Export token usage data as JSON.
+   *
+   * Converts the component's token usage statistics to the standardized
+   * IAutoBeTokenUsageJson.IComponent format. This serialization maintains the
+   * complete structure including total counts and detailed breakdowns for both
+   * input and output tokens.
+   *
+   * @returns JSON representation of the token usage component
+   */
+  public toJSON(): IAutoBeTokenUsageJson.IComponent {
+    return {
+      total: this.total,
+      input: this.input,
+      output: this.output,
+    };
+  }
+
+  /* -----------------------------------------------------------
+    OPERATORS
+  ----------------------------------------------------------- */
   /**
    * Add token usage data to current statistics.
    *
@@ -151,23 +177,5 @@ export class AutoBeTokenUsageComponent
           a.output.rejected_prediction + b.output.rejected_prediction,
       },
     });
-  }
-
-  /**
-   * Export token usage data as JSON.
-   *
-   * Converts the component's token usage statistics to the standardized
-   * IAutoBeTokenUsageJson.IComponent format. This serialization maintains the
-   * complete structure including total counts and detailed breakdowns for both
-   * input and output tokens.
-   *
-   * @returns JSON representation of the token usage component
-   */
-  public toJSON(): IAutoBeTokenUsageJson.IComponent {
-    return {
-      total: this.total,
-      input: this.input,
-      output: this.output,
-    };
   }
 }
