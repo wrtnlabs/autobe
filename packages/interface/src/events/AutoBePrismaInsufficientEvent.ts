@@ -66,33 +66,18 @@ export interface AutoBePrismaInsufficientEvent
    */
   missed: string[];
 
+  /**
+   * Array of table names that the AI function calling process should create to
+   * fulfill the component's requirements.
+   */
   tablesToCreate: string[];
-  validationReview: string;
-  confirmedTables: string[];
 
-  // /**
-  //  * Array of other components whose domain boundaries may have been violated by
-  //  * the AI-generated schema.
-  //  *
-  //  * Contains {@link AutoBePrisma.IComponent} objects representing other business
-  //  * domains that may have been impacted by the AI function calling process
-  //  * creating models outside of its assigned domain. This occurs when the AI
-  //  * generates tables that belong to other components' business domains instead
-  //  * of staying within the boundaries of its assigned component.
-  //  *
-  //  * Each component in this array contains only the tables that were
-  //  * inappropriately created by the AI in its
-  //  * {@link AutoBePrisma.IComponent.tables} array, not the complete set of tables
-  //  * that belong to that component's domain. This filtered information helps
-  //  * identify specific boundary violations and enables targeted corrective
-  //  * actions.
-  //  *
-  //  * Domain invasions happen when AI creates tables that belong to other
-  //  * components' domains, violating the domain-driven design principles and
-  //  * potentially causing schema conflicts during deployment. This information
-  //  * helps identify which domains were inappropriately invaded and enables
-  //  * corrective actions to remove models that don't belong to the assigned
-  //  * domain.
-  //  */
-  // invasions: AutoBePrisma.IComponent[];
+  /** Review of the AI function calling process that generated this event. */
+  validationReview: string;
+
+  /**
+   * Array of table names that were confirmed by the AI function calling process
+   * as part of the schema generation.
+   */
+  confirmedTables: string[];
 }

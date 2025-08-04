@@ -19,7 +19,7 @@ export const validate_agent_prisma_schemas = async (
 
   const { agent } = await prepare_agent_prisma(factory, project);
   const model: string = TestGlobal.getVendorModel();
-  const ce: AutoBePrismaComponentsEvent = JSON.parse(
+  const components: AutoBePrismaComponentsEvent = JSON.parse(
     await fs.promises.readFile(
       `${TestGlobal.ROOT}/assets/histories/${model}/${project}.prisma.components.json`,
       "utf8",
@@ -49,24 +49,25 @@ export const validate_agent_prisma_schemas = async (
 
   const result: AutoBePrismaSchemasEvent[] = await orchestratePrismaSchemas(
     agent.getContext(),
-    ce.components,
+    components.components,
   );
   if (process.argv.includes("--archive"))
     await TestHistory.save({
       [`${project}.prisma.schemas.json`]: JSON.stringify(result),
     });
 
-  const expected: string[] = ce.components
+  const expected: string[] = components.components
     .map((c) => c.tables)
     .flat()
     .sort();
   const actual: string[] = Array.from(
     new Set(result.map((e) => e.file.models.map((m) => m.name)).flat()),
   ).sort();
-  console.log(
-    expected,
-    actual,
-    expected.length === actual.length &&
+  console.log({
+    expected: expected.length,
+    actual: actual.length,
+    matched:
+      expected.length === actual.length &&
       expected.every((v, i) => v === actual[i]),
-  );
+  });
 };

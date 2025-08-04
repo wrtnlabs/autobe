@@ -15,57 +15,53 @@ import { orchestratePrismaComponents } from "./orchestratePrismaComponent";
 import { orchestratePrismaCorrect } from "./orchestratePrismaCorrect";
 import { orchestratePrismaSchemas } from "./orchestratePrismaSchemas";
 
-export const orchestratePrisma =
-  <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
-  async (
-    props: IAutoBeApplicationProps,
-  ): Promise<AutoBePrismaHistory | AutoBeAssistantMessageHistory> => {
-    const start: Date = new Date();
-    ctx.dispatch({
-      type: "prismaStart",
-      created_at: start.toISOString(),
-      reason: props.reason,
-      step: ctx.state().analyze?.step ?? 0,
-    });
+export const orchestratePrisma = async <Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  props: IAutoBeApplicationProps,
+): Promise<AutoBePrismaHistory | AutoBeAssistantMessageHistory> => {
+  const start: Date = new Date();
+  ctx.dispatch({
+    type: "prismaStart",
+    created_at: start.toISOString(),
+    reason: props.reason,
+    step: ctx.state().analyze?.step ?? 0,
+  });
 
-    // COMPONENTS
-    const components:
-      | AutoBeAssistantMessageHistory
-      | AutoBePrismaComponentsEvent = await orchestratePrismaComponents(ctx);
-    if (components.type === "assistantMessage")
-      return ctx.assistantMessage(components);
-    else ctx.dispatch(components);
+  // COMPONENTS
+  const components:
+    | AutoBeAssistantMessageHistory
+    | AutoBePrismaComponentsEvent = await orchestratePrismaComponents(ctx);
+  if (components.type === "assistantMessage")
+    return ctx.assistantMessage(components);
+  else ctx.dispatch(components);
 
-    // CONSTRUCT AST DATA
-    const events: AutoBePrismaSchemasEvent[] = await orchestratePrismaSchemas(
-      ctx,
-      components.components,
-    );
+  // CONSTRUCT AST DATA
+  const events: AutoBePrismaSchemasEvent[] = await orchestratePrismaSchemas(
+    ctx,
+    components.components,
+  );
 
-    // VALIDATE
-    const result: IAutoBePrismaValidation = await orchestratePrismaCorrect(
-      ctx,
-      {
-        files: events.map((e) => e.file),
-      },
-    );
+  // VALIDATE
+  const result: IAutoBePrismaValidation = await orchestratePrismaCorrect(ctx, {
+    files: events.map((e) => e.file),
+  });
 
-    // COMPILE
-    const compiler: IAutoBeCompiler = await ctx.compiler();
-    const schemas: Record<string, string> = await compiler.prisma.write(
-      result.data,
-      "postgres",
-    );
+  // COMPILE
+  const compiler: IAutoBeCompiler = await ctx.compiler();
+  const schemas: Record<string, string> = await compiler.prisma.write(
+    result.data,
+    "postgres",
+  );
 
-    // PROPAGATE
-    return ctx.dispatch({
-      type: "prismaComplete",
-      result,
-      schemas,
-      compiled: await compiler.prisma.compile({
-        files: schemas,
-      }),
-      step: ctx.state().analyze?.step ?? 0,
-      created_at: new Date().toISOString(),
-    } satisfies AutoBePrismaCompleteEvent);
-  };
+  // PROPAGATE
+  return ctx.dispatch({
+    type: "prismaComplete",
+    result,
+    schemas,
+    compiled: await compiler.prisma.compile({
+      files: schemas,
+    }),
+    step: ctx.state().analyze?.step ?? 0,
+    created_at: new Date().toISOString(),
+  } satisfies AutoBePrismaCompleteEvent);
+};

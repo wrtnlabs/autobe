@@ -10,6 +10,7 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { enforceToolCall } from "../../utils/enforceToolCall";
 import { forceRetry } from "../../utils/forceRetry";
+import { IAutoBePrismaSchemaApplication } from "./structures/IAutoBePrismaSchemaApplication";
 import { transformPrismaSchemaHistories } from "./transformPrismaSchemaHistories";
 
 export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
@@ -27,12 +28,16 @@ export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
       const otherComponents: AutoBePrisma.IComponent[] = components.filter(
         (y) => comp !== y,
       );
-      const result: IMakePrismaSchemaFileProps = await forceRetry(() =>
-        process(ctx, targetComponent, otherComponents),
+      const result: IAutoBePrismaSchemaApplication.IProps = await forceRetry(
+        () => process(ctx, targetComponent, otherComponents),
       );
       const event: AutoBePrismaSchemasEvent = {
         type: "prismaSchemas",
         created_at: start.toISOString(),
+        thinking: result.thinking,
+        draft: result.draft,
+        review: result.review,
+        final: result.final,
         file: {
           filename: comp.filename,
           namespace: comp.namespace,
@@ -52,8 +57,8 @@ async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   targetComponent: AutoBePrisma.IComponent,
   otherComponents: AutoBePrisma.IComponent[],
-): Promise<IMakePrismaSchemaFileProps> {
-  const pointer: IPointer<IMakePrismaSchemaFileProps | null> = {
+): Promise<IAutoBePrismaSchemaApplication.IProps> {
+  const pointer: IPointer<IAutoBePrismaSchemaApplication.IProps | null> = {
     value: null,
   };
   const agentica: MicroAgentica<Model> = new MicroAgentica({
@@ -96,7 +101,7 @@ function createApplication<Model extends ILlmSchema.Model>(
   props: {
     targetComponent: AutoBePrisma.IComponent;
     otherComponents: AutoBePrisma.IComponent[];
-    build: (next: IMakePrismaSchemaFileProps) => void;
+    build: (next: IAutoBePrismaSchemaApplication.IProps) => void;
   },
 ): IAgenticaController.IClass<Model> {
   assertSchemaModel(ctx.model);
@@ -171,18 +176,18 @@ function createApplication<Model extends ILlmSchema.Model>(
       makePrismaSchemaFile: (next) => {
         props.build(next);
       },
-    } satisfies IApplication,
+    } satisfies IAutoBePrismaSchemaApplication,
   };
 }
 
 const claude = typia.llm.application<
-  IApplication,
+  IAutoBePrismaSchemaApplication,
   "claude",
   { reference: true }
 >();
 const collection = {
   chatgpt: typia.llm.application<
-    IApplication,
+    IAutoBePrismaSchemaApplication,
     "chatgpt",
     { reference: true }
   >(),
@@ -191,75 +196,3 @@ const collection = {
   deepseek: claude,
   "3.1": claude,
 };
-
-interface IApplication {
-  /**
-   * Generates comprehensive Prisma schema files based on detailed requirements
-   * analysis.
-   *
-   * Creates multiple organized schema files following enterprise patterns
-   * including proper domain separation, relationship modeling, snapshot
-   * patterns, inheritance, materialized views, and comprehensive documentation.
-   * The generated schemas implement best practices for scalability,
-   * maintainability, and data integrity.
-   *
-   * @param props Properties containing the file
-   */
-  makePrismaSchemaFile(props: IMakePrismaSchemaFileProps): void;
-}
-
-interface IMakePrismaSchemaFileProps {
-  /**
-   * STEP 1: First enumeration of tables that must be created
-   *
-   * List all table names that need to be created based on the
-   * `targetComponent.tables`. This should be an exact copy of the
-   * `targetComponent.tables` array.
-   *
-   * Example: ["shopping_goods", "shopping_goods_options"]
-   */
-  tablesToCreate: string[];
-
-  /**
-   * STEP 2: Validation review of the first enumeration
-   *
-   * Compare `tablesToCreate` against `targetComponent.tables` and
-   * `otherComponents[].tables`. Write a review statement that validates:
-   *
-   * - All tables from `targetComponent.tables` are included
-   * - No tables from `otherComponents[].tables` are included
-   * - Additional tables (if any) are for M:N junction relationships or
-   *   domain-specific needs
-   * - No forbidden tables from other domains are included
-   *
-   * Example: "VALIDATION PASSED: All required tables from
-   * `targetComponent.tables` included: shopping_goods, shopping_goods_options.
-   * FORBIDDEN CHECK: No tables from `otherComponents` included
-   * (shopping_customers, shopping_sellers are correctly excluded). Additional
-   * tables: none needed for this domain."
-   */
-  validationReview: string;
-
-  /**
-   * STEP 3: Second enumeration of tables to create
-   *
-   * After validation, re-list the tables that will be created. This should be
-   * identical to `tablesToCreate` if validation passed. This serves as the
-   * final confirmed list before model creation.
-   *
-   * Example: ["shopping_goods", "shopping_goods_options"]
-   */
-  confirmedTables: string[];
-
-  /**
-   * STEP 4: Array of Prisma models (database tables) within the domain
-   *
-   * Create exactly one model for each table in `confirmedTables`. Each model
-   * represents a business entity or concept within the namespace. Models can
-   * reference each other through foreign key relationships.
-   *
-   * The `models` array length must equal `confirmedTables.length`. Each
-   * `model.name` must match an entry in `confirmedTables`.
-   */
-  models: AutoBePrisma.IModel[];
-}

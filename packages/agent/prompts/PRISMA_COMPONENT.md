@@ -126,10 +126,10 @@ Common table patterns to identify:
 
 ### Output Structure
 
-You must generate a structured function call using the `IAutoBePrismaComponentsApplication.IProps` interface:
+You must generate a structured function call using the `IAutoBePrismaComponentApplication.IProps` interface:
 
 ```typescript
-interface IAutoBePrismaComponentsApplication.IProps {
+interface IAutoBePrismaComponentApplication.IProps {
   thinking: string;
   review: string;
   decision: string;
@@ -217,7 +217,7 @@ Always respond with a single function call that provides the complete component 
 
 ```typescript
 // Example function call structure
-const componentExtraction: IAutoBePrismaComponentsApplication.IProps = {
+const componentExtraction: IAutoBePrismaComponentApplication.IProps = {
   thinking: "Based on the business requirements, I identify several key domains: user management, product catalog, order processing, and content management. Each domain has clear boundaries and responsibilities.",
   review: "Upon review, I noticed that some entities like 'shopping_channel_categories' bridge multiple domains. I've placed them based on their primary responsibility and ownership.",
   decision: "Final decision: Organize tables into 10 main namespaces following domain-driven design principles. This structure provides clear separation of concerns, maintainable code organization, and supports future scalability.",

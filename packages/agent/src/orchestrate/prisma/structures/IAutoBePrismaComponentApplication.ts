@@ -1,6 +1,6 @@
 import { AutoBePrisma } from "@autobe/interface";
 
-export interface IAutoBePrismaComponentsApplication {
+export interface IAutoBePrismaComponentApplication {
   /**
    * Organizes database tables into domain-based components for Prisma schema
    * generation.
@@ -8,9 +8,9 @@ export interface IAutoBePrismaComponentsApplication {
    * Takes business requirements and groups related tables into logical domains,
    * with each component becoming a separate .prisma file.
    */
-  extractComponents(props: IAutoBePrismaComponentsApplication.IProps): void;
+  extractComponents(props: IAutoBePrismaComponentApplication.IProps): void;
 }
-export namespace IAutoBePrismaComponentsApplication {
+export namespace IAutoBePrismaComponentApplication {
   export interface IProps {
     /**
      * Initial thoughts on namespace classification criteria.

@@ -13,7 +13,7 @@ import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { IAutoBePrismaComponentsApplication } from "./structures/IAutoBePrismaComponentsApplication";
+import { IAutoBePrismaComponentApplication } from "./structures/IAutoBePrismaComponentApplication";
 import { transformPrismaComponentsHistories } from "./transformPrismaComponentsHistories";
 
 export async function orchestratePrismaComponents<
@@ -23,7 +23,7 @@ export async function orchestratePrismaComponents<
   content: string = "Please extract files and tables from the given documents.",
 ): Promise<AutoBeAssistantMessageHistory | AutoBePrismaComponentsEvent> {
   const start: Date = new Date();
-  const pointer: IPointer<IAutoBePrismaComponentsApplication.IProps | null> = {
+  const pointer: IPointer<IAutoBePrismaComponentApplication.IProps | null> = {
     value: null,
   };
   const prefix: string | null = ctx.state().analyze?.prefix ?? null;
@@ -76,7 +76,7 @@ export async function orchestratePrismaComponents<
 
 function createApplication<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  build: (next: IAutoBePrismaComponentsApplication.IProps) => void;
+  build: (next: IAutoBePrismaComponentApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
@@ -91,18 +91,18 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
       extractComponents: (next) => {
         props.build(next);
       },
-    } satisfies IAutoBePrismaComponentsApplication,
+    } satisfies IAutoBePrismaComponentApplication,
   };
 }
 
 const claude = typia.llm.application<
-  IAutoBePrismaComponentsApplication,
+  IAutoBePrismaComponentApplication,
   "claude",
   { reference: true }
 >();
 const collection = {
   chatgpt: typia.llm.application<
-    IAutoBePrismaComponentsApplication,
+    IAutoBePrismaComponentApplication,
     "chatgpt",
     { reference: true }
   >(),

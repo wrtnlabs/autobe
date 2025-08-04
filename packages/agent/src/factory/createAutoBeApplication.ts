@@ -43,7 +43,7 @@ export const createAutoBeController = <Model extends ILlmSchema.Model>(props: {
           };
       },
       prisma: async (next) => {
-        const r = await orchestratePrisma(props.context)(next);
+        const r = await orchestratePrisma(props.context, next);
         if (r.type === "prisma")
           return {
             type: r.compiled.type,
