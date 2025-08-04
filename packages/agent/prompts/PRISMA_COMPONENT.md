@@ -126,10 +126,13 @@ Common table patterns to identify:
 
 ### Output Structure
 
-You must generate a structured function call using the `IExtractComponentsProps` interface:
+You must generate a structured function call using the `IAutoBePrismaComponentsApplication.IProps` interface:
 
 ```typescript
-interface IExtractComponentsProps {
+interface IAutoBePrismaComponentsApplication.IProps {
+  thinking: string;
+  review: string;
+  decision: string;
   components: AutoBePrisma.IComponent[];
 }
 ```
@@ -142,6 +145,9 @@ Each component must follow the `AutoBePrisma.IComponent` structure:
 interface IComponent {
   filename: string & tags.Pattern<"^[a-zA-Z0-9._-]+\\.prisma$">;
   namespace: string;
+  thinking: string;
+  review: string;
+  rationale: string;
   tables: Array<string & tags.Pattern<"^[a-z][a-z0-9_]*$">>;
 }
 ```
@@ -152,6 +158,14 @@ interface IComponent {
 - **Namespace Clarity**: Use PascalCase for namespace names that clearly represent the domain
 - **Table Completeness**: Include ALL tables required by the business requirements
 - **Pattern Compliance**: All table names must match the regex pattern `^[a-z][a-z0-9_]*$`
+- **Top-Level Thought Process**:
+  - `thinking`: Initial thoughts on namespace classification criteria across all domains
+  - `review`: Review and refinement of the overall namespace classification
+  - `decision`: Final decision on the complete namespace organization
+- **Component-Level Thought Process**: 
+  - `thinking`: Initial thoughts on why these specific tables belong together
+  - `review`: Review considerations for this component grouping
+  - `rationale`: Final rationale for this component's composition
 
 ## Analysis Process
 
@@ -203,16 +217,25 @@ Always respond with a single function call that provides the complete component 
 
 ```typescript
 // Example function call structure
-const componentExtraction: IExtractComponentsProps = {
+const componentExtraction: IAutoBePrismaComponentsApplication.IProps = {
+  thinking: "Based on the business requirements, I identify several key domains: user management, product catalog, order processing, and content management. Each domain has clear boundaries and responsibilities.",
+  review: "Upon review, I noticed that some entities like 'shopping_channel_categories' bridge multiple domains. I've placed them based on their primary responsibility and ownership.",
+  decision: "Final decision: Organize tables into 10 main namespaces following domain-driven design principles. This structure provides clear separation of concerns, maintainable code organization, and supports future scalability.",
   components: [
     {
       filename: "schema-01-systematic.prisma",
       namespace: "Systematic",
+      thinking: "These tables all relate to system configuration and channel management. They form the foundation of the platform.",
+      review: "Considering the relationships, configurations table has connections to multiple domains but fundamentally defines system behavior.",
+      rationale: "Grouping all system configuration tables together provides a clear foundation layer that other domains can reference.",
       tables: ["channels", "sections", "configurations"]
     },
     {
       filename: "schema-02-actors.prisma", 
       namespace: "Actors",
+      thinking: "All user-related entities should be grouped together as they share authentication and identity patterns.",
+      review: "While customers interact with orders and sales, the customer entity itself is about identity, not transactions.",
+      rationale: "This component groups all actor-related tables to maintain separation between identity management and business transactions.",
       tables: ["users", "customers", "administrators"]
     }
     // ... more components
@@ -233,5 +256,7 @@ Before generating the function call, ensure:
 - [ ] No duplicate table names across all components
 - [ ] Each component contains 3-15 tables for maintainability
 - [ ] All patterns match the required regex constraints
+- [ ] Top-level thinking, review, and decision fields are comprehensive
+- [ ] Each component has detailed thinking, review, and rationale fields
 
 Your output will serve as the foundation for the complete Prisma schema generation, so accuracy and completeness are critical.

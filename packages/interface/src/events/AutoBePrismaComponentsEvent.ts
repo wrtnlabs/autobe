@@ -20,6 +20,52 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
 export interface AutoBePrismaComponentsEvent
   extends AutoBeEventBase<"prismaComponents"> {
   /**
+   * Initial thoughts on namespace classification criteria.
+   *
+   * Contains the AI agent's initial analysis and reasoning about how to
+   * organize tables into different business domains/namespaces.
+   *
+   * **Example:**
+   *
+   *     "Based on the business requirements, I identify several key domains:
+   *     - User-related entities should be grouped under 'Actors' namespace
+   *     - Product and sales information under 'Sales' namespace
+   *     - System configuration under 'Systematic' namespace"
+   */
+  thinking: string;
+
+  /**
+   * Review and refinement of the namespace classification.
+   *
+   * Contains the AI agent's review process, considering relationships between
+   * tables and potential improvements to the initial classification.
+   *
+   * **Example:**
+   *
+   *     "Upon review, I noticed that 'shopping_channel_categories' has strong
+   *     relationships with both channels and sales. However, since it primarily
+   *     defines the channel structure, it should remain in 'Systematic' namespace."
+   */
+  review: string;
+
+  /**
+   * Final decision on namespace classification.
+   *
+   * Contains the AI agent's final reasoning and rationale for the chosen
+   * namespace organization, explaining why this structure best serves the
+   * business requirements.
+   *
+   * **Example:**
+   *
+   *     "Final decision: Organize tables into 3 main namespaces:
+   *     1. Systematic - for channel and system configuration
+   *     2. Actors - for all user types (customers, citizens, administrators)
+   *     3. Sales - for product sales and related transactional data
+   *     This structure provides clear separation of concerns and follows DDD principles."
+   */
+  decision: string;
+
+  /**
    * Array of component groups organizing tables by business domain and
    * functional relationships.
    *

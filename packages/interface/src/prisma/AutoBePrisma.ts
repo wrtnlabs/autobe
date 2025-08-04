@@ -162,6 +162,36 @@ export namespace AutoBePrisma {
     namespace: string;
 
     /**
+     * Initial thoughts on why these tables belong together.
+     *
+     * **Example:**
+     *
+     *     "These tables all relate to user management and authentication.
+     *     They share common patterns like user identification and access control."
+     */
+    thinking: string;
+
+    /**
+     * Review considerations for this component grouping.
+     *
+     * **Example:**
+     *
+     *     "Reviewed relationships with other domains. While customers create orders,
+     *     the customer entity itself is fundamentally about user identity, not sales."
+     */
+    review: string;
+
+    /**
+     * Final rationale for this component's composition.
+     *
+     * **Example:**
+     *
+     *     "This component groups all actor-related tables to maintain a clear
+     *     separation between identity management and business transactions."
+     */
+    rationale: string;
+
+    /**
      * Array of table names that will be included in this component's schema
      * file.
      *

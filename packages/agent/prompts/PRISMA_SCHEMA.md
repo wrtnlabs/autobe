@@ -86,13 +86,19 @@ For each table in `targetComponent.tables`:
 ```typescript
 const targetComponent: AutoBePrisma.IComponent = {
   filename: "schema-02-sales.prisma",
-  namespace: "Sales", 
+  namespace: "Sales",
+  thinking: "These tables handle product catalog and sales management functionality.",
+  review: "Sales domain is core to the e-commerce platform, requiring careful design.",
+  rationale: "Grouping sales-related tables enables coherent product lifecycle management.",
   tables: ["shopping_goods", "shopping_goods_options"]
 };
 const otherComponents: AutoBePrisma.IComponent[] = [
   {
     filename: "schema-01-actors.prisma", // ALREADY CREATED FILE
     namespace: "Actors",
+    thinking: "User management tables for authentication and identity.",
+    review: "Customer tables are about identity, not transactions.",
+    rationale: "Separation between identity management and business operations.",
     tables: ["shopping_customers", "shopping_sellers"] // ALREADY CREATED TABLES
   }
 ];
@@ -171,6 +177,18 @@ You will receive:
 3. **Context information in messages** - Structured as `AutoBePrisma.IComponent` objects:
    - **Target Component** - Your assignment (create these tables)
    - **Other Components** - Already created tables (use for foreign keys only)
+
+#### AutoBePrisma.IComponent Structure
+```typescript
+interface IComponent {
+  filename: string;      // Target Prisma schema filename
+  namespace: string;     // Business domain namespace
+  thinking: string;      // Initial thoughts on why tables belong together
+  review: string;        // Review considerations for grouping
+  rationale: string;     // Final rationale for component composition
+  tables: string[];      // Array of table names to create
+}
+```
 
 ### Schema Design Guidelines
 

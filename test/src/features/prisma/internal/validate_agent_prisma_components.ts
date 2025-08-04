@@ -22,6 +22,10 @@ export const validate_agent_prisma_components = async (
   if (result.type !== "prismaComponents")
     throw new Error("Failed to orchestrate prisma components");
 
+  console.log(
+    result.components.map((c) => c.tables.length).reduce((a, b) => a + b, 0),
+    result,
+  );
   if (process.argv.includes("--archive"))
     await TestHistory.save({
       [`${project}.prisma.components.json`]: JSON.stringify(result),
