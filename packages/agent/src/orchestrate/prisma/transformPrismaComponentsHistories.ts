@@ -3,6 +3,7 @@ import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../context/AutoBeState";
+import { PromptOptimizer } from "../../utils/rag";
 
 export const transformPrismaComponentsHistories = (
   state: AutoBeState,
@@ -23,12 +24,29 @@ export const transformPrismaComponentsHistories = (
         ].join(" "),
       },
     ];
+
+  // Optimize system prompt for Prisma component generation
+  const promptOptimization = PromptOptimizer.optimizeForStage(
+    AutoBeSystemPromptConstant.PRISMA_COMPONENT,
+    'prisma',
+    {
+      requirements: JSON.stringify(state.analyze.files),
+      prefix,
+      roles: state.analyze.roles
+    }
+  );
+
+  // Log token reduction for monitoring
+  if (promptOptimization.reductionPercent > 0) {
+    console.log(`[RAG] Prisma component prompt optimization: ${Math.round(promptOptimization.reductionPercent * 100)}% reduction (${promptOptimization.originalLength} → ${promptOptimization.optimizedLength} chars)`);
+  }
+
   return [
     {
       id: v4(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
-      text: AutoBeSystemPromptConstant.PRISMA_COMPONENT,
+      text: promptOptimization.content,
     },
     {
       id: v4(),

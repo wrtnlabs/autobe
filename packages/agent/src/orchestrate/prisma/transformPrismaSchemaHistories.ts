@@ -3,6 +3,7 @@ import { AutoBePrisma } from "@autobe/interface";
 import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
+import { PromptOptimizer } from "../../utils/rag";
 
 export const transformPrismaSchemaHistories = (
   requirementAnalysisReport: Record<string, string>,
@@ -11,12 +12,28 @@ export const transformPrismaSchemaHistories = (
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
+  // Optimize system prompt for Prisma schema generation
+  const promptOptimization = PromptOptimizer.optimizeForStage(
+    AutoBeSystemPromptConstant.PRISMA_SCHEMA,
+    'prisma',
+    {
+      targetComponent,
+      otherComponents,
+      requirementAnalysisReport
+    }
+  );
+
+  // Log token reduction for monitoring
+  if (promptOptimization.reductionPercent > 0) {
+    console.log(`[RAG] Prisma schema prompt optimization: ${Math.round(promptOptimization.reductionPercent * 100)}% reduction (${promptOptimization.originalLength} → ${promptOptimization.optimizedLength} chars)`);
+  }
+
   return [
     {
       id: v4(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
-      text: AutoBeSystemPromptConstant.PRISMA_SCHEMA,
+      text: promptOptimization.content,
     },
     {
       id: v4(),

@@ -7,6 +7,7 @@ import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../context/AutoBeState";
+import { PromptOptimizer, ContextOptimizer } from "../../utils/rag";
 import { IAutoBeTestScenarioArtifacts } from "../test/structures/IAutoBeTestScenarioArtifacts";
 import { RealizePlannerOutput } from "./orchestrateRealizePlanner";
 import { IAutoBeRealizeCompile } from "./structures/IAutoBeRealizeCompile";
@@ -120,12 +121,67 @@ export const transformRealizeCoderHistories = (
       },
     ];
 
+  const [targetOperation] = artifacts.document.operations;
+
+  // Optimize the massive REALIZE_CODER_TOTAL prompt (3504 lines!)
+  const promptOptimization = PromptOptimizer.optimizeForStage(
+    AutoBeSystemPromptConstant.REALIZE_CODER_TOTAL,
+    'realize',
+    {
+      operation: targetOperation,
+      authorization,
+      previousCodes,
+      diagnostics
+    }
+  );
+
+  // Optimize context by filtering relevant operations and schemas
+  const optimizedContext = ContextOptimizer.optimizeForStage({
+    stage: 'realize',
+    currentOperation: targetOperation,
+    requirements: JSON.stringify(state.analyze?.files || {}),
+    maxItems: {
+      operations: 30, // Comprehensive context for implementation
+      schemas: 60,
+      history: 30
+    },
+    thresholds: {
+      operations: 0.2,
+      schemas: 0.1,
+      history: 0.3
+    }
+  }, artifacts.document);
+
+  // Log significant token reductions
+  if (promptOptimization.reductionPercent > 0) {
+    console.log(`[RAG] Realize coder prompt optimization: ${Math.round(promptOptimization.reductionPercent * 100)}% reduction (${promptOptimization.originalLength} → ${promptOptimization.optimizedLength} chars)`);
+  }
+  if (optimizedContext.stats.estimatedTokenReduction > 0) {
+    console.log(`[RAG] Realize context optimization: ${optimizedContext.stats.estimatedTokenReduction}% reduction (${optimizedContext.stats.originalOperations} → ${optimizedContext.stats.filteredOperations} ops, ${optimizedContext.stats.originalSchemas} → ${optimizedContext.stats.filteredSchemas} schemas)`);
+  }
+
+  // Filter artifacts to only include relevant operations and schemas
+  const optimizedArtifacts: IAutoBeTestScenarioArtifacts = {
+    ...artifacts,
+    document: {
+      ...artifacts.document,
+      operations: optimizedContext.operations.length > 0 ? optimizedContext.operations : artifacts.document.operations,
+      components: {
+        ...artifacts.document.components,
+        schemas: Object.keys(optimizedContext.schemas).length > 0 ? optimizedContext.schemas : artifacts.document.components.schemas
+      }
+    },
+    sdk: optimizedContext.sdkFunctions && Object.keys(optimizedContext.sdkFunctions).length > 0 
+      ? optimizedContext.sdkFunctions 
+      : artifacts.sdk
+  };
+
   return [
     {
       id: v4(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
-      text: AutoBeSystemPromptConstant.REALIZE_CODER_TOTAL,
+      text: promptOptimization.content,
     },
     {
       id: v4(),
@@ -135,8 +191,8 @@ export const transformRealizeCoderHistories = (
         `{prisma_schemas}`,
         JSON.stringify(state.prisma.schemas),
       )
-        .replaceAll(`{artifacts_sdk}`, JSON.stringify(artifacts.sdk))
-        .replaceAll(`{artifacts_dto}`, JSON.stringify(artifacts.dto))
+        .replaceAll(`{artifacts_sdk}`, JSON.stringify(optimizedArtifacts.sdk))
+        .replaceAll(`{artifacts_dto}`, JSON.stringify(optimizedArtifacts.dto))
         .replaceAll(`{input}`, input),
     },
     ...(previous !== null
