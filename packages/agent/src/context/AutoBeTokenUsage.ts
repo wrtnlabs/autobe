@@ -87,10 +87,12 @@ export class AutoBeTokenUsage implements IAutoBeTokenUsageJson {
    * development session.
    */
   public get aggregate(): IAutoBeTokenUsageJson.IComponent {
-    return AutoBeTokenUsage.keys().reduce(
-      (acc, cur) => AutoBeTokenUsageComponent.plus(acc, this[cur]),
-      new AutoBeTokenUsageComponent(),
-    );
+    return AutoBeTokenUsage.keys()
+      .reduce(
+        (acc, cur) => AutoBeTokenUsageComponent.plus(acc, this[cur]),
+        new AutoBeTokenUsageComponent(),
+      )
+      .toJSON();
   }
 
   /* -----------------------------------------------------------
