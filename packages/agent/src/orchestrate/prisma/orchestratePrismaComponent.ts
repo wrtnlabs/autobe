@@ -114,68 +114,99 @@ const collection = {
 
 interface IApplication {
   /**
-   * Extracts and organizes database schema files with their corresponding table
-   * definitions.
+   * Organizes database tables into domain-based components for Prisma schema
+   * generation.
    *
-   * Processes Prisma schema files and maps each file to its contained database
-   * tables, enabling structured organization of schemas across multiple files
-   * for large projects.
+   * Takes business requirements and groups related tables into logical domains,
+   * with each component becoming a separate .prisma file.
    *
-   * @example
-   *   ```typescript
-   *   application.extractFilesAndTables({
-   *     components: [
-   *       {
-   *         filename: "schema-01-users.prisma",
-   *         tables: ["user", "user_profile"]
-   *       },
-   *       {
-   *         filename: "schema-02-articles.prisma",
-   *         tables: ["article", "attachment_file"]
-   *       }
-   *     ]
-   *   });
-   *   ```;
+   * **Example:**
    *
-   * @param props - Configuration object containing the file-to-table mapping
-   *   structure
+   * ```typescript
+   * application.extractComponents({
+   *   components: [
+   *     {
+   *       filename: "schema-02-systematic.prisma",
+   *       namespace: "Systematic",
+   *       tables: ["shopping_channels", "shopping_sections"],
+   *     },
+   *     {
+   *       filename: "schema-03-actors.prisma",
+   *       namespace: "Actors",
+   *       tables: [
+   *         "shopping_customers",
+   *         "shopping_citizens",
+   *         "shopping_administrators",
+   *       ],
+   *     },
+   *     {
+   *       filename: "schema-04-sales.prisma",
+   *       namespace: "Sales",
+   *       tables: [
+   *         "shopping_sales",
+   *         "shopping_sale_snapshots",
+   *         "shopping_sale_units",
+   *       ],
+   *     },
+   *   ],
+   * });
+   * ```
    */
   extractComponents(props: IExtractComponentsProps): void;
 }
 
 interface IExtractComponentsProps {
   /**
-   * Maps Prisma schema filenames to their contained database tables.
+   * Array of domain components that group related database tables.
    *
-   * **Structure:**
-   *
-   * - Key: Prisma schema filename with .prisma extension
-   * - Value: Array of table names defined in that file
+   * Each component represents a business domain and becomes one Prisma schema
+   * file. Common domains include: Actors (users), Sales (products), Orders,
+   * Carts, etc.
    *
    * **Example:**
    *
    * ```typescript
    * {
-   *   {
-   *     filename: "schema-01-users.prisma",
-   *     tables: ["user", "admin", "moderator", "user_profile", "user_settings"]
-   *   },
-   *   {
-   *     filename: "schema-02-articles.prisma",
-   *     tables: ["article", "article_snapshot"]
-   *   },
-   *   {
-   *     filename: "schema-03-comments.prisma",
-   *     tables: ["comment", "comment_like"]
-   *   }
+   *   "components": [
+   *     {
+   *       "filename": "schema-02-systematic.prisma",
+   *       "namespace": "Systematic",
+   *       "tables": [
+   *         "shopping_channels",
+   *         "shopping_sections",
+   *         "shopping_channel_categories"
+   *       ]
+   *     },
+   *     {
+   *       "filename": "schema-03-actors.prisma",
+   *       "namespace": "Actors",
+   *       "tables": [
+   *         "shopping_customers",
+   *         "shopping_citizens",
+   *         "shopping_administrators"
+   *       ]
+   *     },
+   *     {
+   *       "filename": "schema-04-sales.prisma",
+   *       "namespace": "Sales",
+   *       "tables": [
+   *         "shopping_sales",
+   *         "shopping_sale_snapshots",
+   *         "shopping_sale_units",
+   *         "shopping_sale_unit_options"
+   *       ]
+   *     }
+   *   ]
    * }
    * ```
    *
    * **Notes:**
    *
-   * - Table names must match exact Prisma model names (case-sensitive)
-   * - Keep mapping synchronized with actual schema files
-   * - Use consistent naming convention for files
+   * - Table names must follow snake_case convention with domain prefix (e.g.,
+   *   `shopping_customers`)
+   * - Each component becomes one `.prisma` file containing related models
+   * - Filename numbering indicates dependency order for schema generation
+   * - Namespace is used for documentation organization and domain grouping
    */
   components: AutoBePrisma.IComponent[];
 }
