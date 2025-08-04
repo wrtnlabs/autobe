@@ -1,8 +1,8 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
 import { v4 } from "uuid";
 
-import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
-import { AutoBeState } from "../../context/AutoBeState";
+import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
+import { AutoBeState } from "../../../context/AutoBeState";
 
 export const transformPrismaHistories = (
   state: AutoBeState,

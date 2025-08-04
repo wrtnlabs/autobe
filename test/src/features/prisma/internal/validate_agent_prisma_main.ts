@@ -82,12 +82,12 @@ export const validate_agent_prisma_main = async (
   });
 
   let history: AutoBePrismaHistory | AutoBeAssistantMessageHistory =
-    await orchestrate.prisma(agent.getContext())({
+    await orchestrate.prisma(agent.getContext(), {
       reason:
         "Step to the Prisma DB schema generation after requirements analysis",
     });
   if (history.type !== "prisma") {
-    history = await orchestrate.prisma(agent.getContext())({
+    history = await orchestrate.prisma(agent.getContext(), {
       reason: "Don't ask me to do that, and just do it right now.",
     });
     if (history.type !== "prisma")

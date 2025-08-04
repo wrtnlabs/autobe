@@ -2,7 +2,7 @@ import { IAgenticaHistoryJson } from "@agentica/core";
 import { AutoBePrisma } from "@autobe/interface";
 import { v4 } from "uuid";
 
-import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
+import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 
 export const transformPrismaSchemaHistories = (
   requirementAnalysisReport: Record<string, string>,

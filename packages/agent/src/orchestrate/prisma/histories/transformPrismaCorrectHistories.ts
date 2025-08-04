@@ -2,7 +2,7 @@ import { IAgenticaHistoryJson } from "@agentica/core";
 import { IAutoBePrismaValidation } from "@autobe/interface";
 import { v4 } from "uuid";
 
-import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
+import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 
 export const transformPrismaCorrectHistories = (
   result: IAutoBePrismaValidation.IFailure,
