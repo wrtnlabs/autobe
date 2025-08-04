@@ -1,5 +1,6 @@
 export * from "./AutoBeAgent";
 export * from "./context/AutoBeTokenUsage";
+export * from "./context/AutoBeTokenUsageComponent";
 
 export * from "./structures/IAutoBeProps";
 export * from "./structures/IAutoBeConfig";

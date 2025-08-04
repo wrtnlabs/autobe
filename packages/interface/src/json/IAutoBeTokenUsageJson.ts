@@ -13,9 +13,8 @@
  * maintaining high-quality output across requirements analysis, database
  * design, API specification, testing, and implementation phases.
  *
- * This comment written by @Samchon
- *
- * @author sunrabbit123
+ * @author Samchon
+ * @author SunRabbit123
  */
 export interface IAutoBeTokenUsageJson {
   /** Token usage for the facade agent */
@@ -32,88 +31,6 @@ export interface IAutoBeTokenUsageJson {
   realize: IAutoBeTokenUsageJson.IComponent;
 }
 
-/**
- * Interface representing comprehensive token usage statistics across all AI
- * agents in the vibe coding system.
- *
- * This interface provides detailed tracking of token consumption throughout the
- * entire automated development pipeline, enabling cost monitoring, performance
- * analysis, and optimization of AI resource utilization. The token usage data
- * captures both aggregate statistics and component-specific breakdowns across
- * different agent types and processing phases.
- *
- * Token usage tracking is essential for understanding the computational costs
- * of the vibe coding process and optimizing AI agent efficiency while
- * maintaining high-quality output across requirements analysis, database
- * design, API specification, testing, and implementation phases.
- *
- * @author Samchon
- */
-export interface IAutoBeInternalTokenUsageJson {
-  /**
-   * Total sum of token usage for each stage in the internal agent.
-   *
-   * Represents the total token consumption across all internal agent stages
-   * including initialization, selection, cancellation, calling, and
-   * description. This enables monitoring and analysis of resource usage at each
-   * stage of the process.
-   */
-  aggregate: IAutoBeTokenUsageJson.IComponent;
-
-  /**
-   * Token usage of the initializer agent responsible for session setup.
-   *
-   * Tracks token consumption during the initialization phase where the system
-   * prepares for the vibe coding session, sets up context, and establishes the
-   * foundation for subsequent agent operations. This includes initial
-   * conversation processing and system preparation activities.
-   */
-  initialize: IAutoBeTokenUsageJson.IComponent;
-
-  /**
-   * Token usage of the function selector agent that determines appropriate
-   * actions.
-   *
-   * Monitors token consumption during the decision-making process where the
-   * system analyzes user input and determines which specific agent functions
-   * should be called to address the user's needs. This includes conversation
-   * analysis and agent selection logic processing.
-   */
-  select: IAutoBeTokenUsageJson.IComponent;
-
-  /**
-   * Token usage of the function canceler agent that handles operation
-   * termination.
-   *
-   * Tracks token consumption when operations need to be cancelled or
-   * terminated, including the analysis required to safely stop ongoing
-   * processes and communicate cancellation status to users. This includes
-   * cleanup and state management activities.
-   */
-  cancel: IAutoBeTokenUsageJson.IComponent;
-
-  /**
-   * Token usage of the function caller agent that executes selected operations.
-   *
-   * Monitors token consumption during the actual execution of agent functions,
-   * including the processing required to invoke specific development agents
-   * (Analyze, Prisma, Interface, Test, Realize) and coordinate their activities
-   * throughout the vibe coding pipeline.
-   */
-  call: IAutoBeTokenUsageJson.IComponent;
-
-  /**
-   * Token usage of the function calling describer agent that explains
-   * operations.
-   *
-   * Tracks token consumption when generating descriptions and explanations of
-   * function calling activities, helping users understand what operations are
-   * being performed and providing transparency into the automated development
-   * process through clear communication.
-   */
-  describe: IAutoBeTokenUsageJson.IComponent;
-}
-
 export namespace IAutoBeTokenUsageJson {
   /**
    * Detailed token usage component with comprehensive input and output
@@ -124,8 +41,6 @@ export namespace IAutoBeTokenUsageJson {
    * considerations) and output tokens (with different generation types). This
    * detailed breakdown enables precise cost analysis and performance
    * optimization.
-   *
-   * @author Samchon
    */
   export interface IComponent {
     /**
@@ -166,8 +81,6 @@ export namespace IAutoBeTokenUsageJson {
    * between fresh token processing and cached token reuse. This analysis is
    * crucial for understanding the efficiency of context caching and optimizing
    * input processing strategies to reduce computational costs.
-   *
-   * @author Samchon
    */
   export interface IInput {
     /**
@@ -197,8 +110,6 @@ export namespace IAutoBeTokenUsageJson {
    * tokens by their generation type and purpose. This analysis helps understand
    * the AI's reasoning process, prediction accuracy, and overall efficiency in
    * generating high-quality responses and development artifacts.
-   *
-   * @author Samchon
    */
   export interface IOutput {
     /**
