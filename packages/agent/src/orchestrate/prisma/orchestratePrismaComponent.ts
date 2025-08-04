@@ -13,8 +13,8 @@ import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { transformPrismaComponentsHistories } from "./histories/transformPrismaComponentsHistories";
 import { IAutoBePrismaComponentApplication } from "./structures/IAutoBePrismaComponentApplication";
-import { transformPrismaComponentsHistories } from "./transformPrismaComponentsHistories";
 
 export async function orchestratePrismaComponents<
   Model extends ILlmSchema.Model,

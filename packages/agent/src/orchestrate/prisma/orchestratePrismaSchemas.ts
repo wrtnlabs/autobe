@@ -10,8 +10,8 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { enforceToolCall } from "../../utils/enforceToolCall";
 import { forceRetry } from "../../utils/forceRetry";
+import { transformPrismaSchemaHistories } from "./histories/transformPrismaSchemaHistories";
 import { IAutoBePrismaSchemaApplication } from "./structures/IAutoBePrismaSchemaApplication";
-import { transformPrismaSchemaHistories } from "./transformPrismaSchemaHistories";
 
 export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
