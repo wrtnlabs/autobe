@@ -1,9 +1,11 @@
 /**
- * Semantic similarity utilities for RAG-based context retrieval.
+ * Semantic similarity utilities for RAG-based context retrieval across all AutoBE workflow stages.
  * 
- * This module provides functions to calculate semantic similarity between
- * test scenarios and API operations/schemas to reduce token consumption
- * by including only relevant context in LLM requests.
+ * This module provides functions to calculate semantic similarity for different workflow contexts:
+ * - Prisma: Database schema and component relevance
+ * - Interface: API operations and schema relevance  
+ * - Test: Test scenario and operation relevance
+ * - Realize: Implementation and operation relevance
  */
 
 export interface ISemanticScore {
@@ -24,12 +26,53 @@ export interface ISemanticScore {
 }
 
 /**
- * Calculate semantic similarity between a test scenario and API operations.
- * Uses keyword matching, path similarity, and business domain matching.
+ * Workflow stage identifiers for stage-aware context optimization
+ */
+export type WorkflowStage = 'analyze' | 'prisma' | 'interface' | 'test' | 'realize';
+
+/**
+ * Context for different workflow stages
+ */
+export interface IWorkflowContext {
+  stage: WorkflowStage;
+  currentOperation?: any;
+  requirements?: string;
+  schemas?: Record<string, any>;
+  operations?: any[];
+  dependencies?: any[];
+}
+
+/**
+ * Stage-aware semantic similarity calculation for AutoBE workflow optimization.
  */
 export namespace SemanticSimilarity {
   /**
-   * Score operations based on relevance to a test scenario
+   * Score items based on relevance to current workflow context
+   */
+  export function scoreForWorkflow(
+    context: IWorkflowContext,
+    items: any[],
+    options: {
+      maxResults?: number;
+      minScore?: number;
+    } = {}
+  ): ISemanticScore[] {
+    switch (context.stage) {
+      case 'prisma':
+        return scorePrismaRelevance(context, items, options);
+      case 'interface':
+        return scoreInterfaceRelevance(context, items, options);
+      case 'test':
+        return scoreTestRelevance(context, items, options);
+      case 'realize':
+        return scoreRealizeRelevance(context, items, options);
+      default:
+        return scoreGenericRelevance(context, items, options);
+    }
+  }
+
+  /**
+   * Score operations based on relevance to a test scenario (backward compatibility)
    */
   export function scoreOperations(
     scenario: {
@@ -49,66 +92,17 @@ export namespace SemanticSimilarity {
       minScore?: number;
     } = {}
   ): ISemanticScore[] {
-    const { maxResults = 20, minScore = 0.1 } = options;
-    
-    const targetPath = scenario.endpoint.path;
-    const targetMethod = scenario.endpoint.method;
-    const scenarioText = `${scenario.draft} ${scenario.functionName}`.toLowerCase();
-    const dependencyPaths = new Set(
-      scenario.dependencies?.map(d => d.endpoint.path) ?? []
-    );
-    
-    const scores = operations.map(op => {
-      let score = 0;
-      const reasons: string[] = [];
-      
-      // Exact match for target endpoint
-      if (op.method === targetMethod && op.path === targetPath) {
-        score += 1.0;
-        reasons.push("exact endpoint match");
-      }
-      
-      // Dependency match
-      if (dependencyPaths.has(op.path)) {
-        score += 0.8;
-        reasons.push("dependency match");
-      }
-      
-      // Path similarity (shared segments)
-      const pathSimilarity = calculatePathSimilarity(targetPath, op.path);
-      if (pathSimilarity > 0.3) {
-        score += pathSimilarity * 0.6;
-        reasons.push(`path similarity: ${pathSimilarity.toFixed(2)}`);
-      }
-      
-      // Business domain keywords
-      const domainScore = calculateDomainSimilarity(scenarioText, op);
-      if (domainScore > 0) {
-        score += domainScore * 0.4;
-        reasons.push(`domain similarity: ${domainScore.toFixed(2)}`);
-      }
-      
-      // Method family bonus (CRUD operations)
-      if (isSameMethodFamily(targetMethod, op.method)) {
-        score += 0.2;
-        reasons.push("same method family");
-      }
-      
-      return {
-        score: Math.min(score, 1.0),
-        item: op,
-        reason: reasons.join(", ")
-      };
-    });
-    
-    return scores
-      .filter(s => s.score >= minScore)
-      .sort((a, b) => b.score - a.score)
-      .slice(0, maxResults);
+    // Use test workflow context for backward compatibility
+    const context: IWorkflowContext = {
+      stage: 'test',
+      currentOperation: scenario,
+      operations
+    };
+    return scoreTestRelevance(context, operations, options);
   }
-  
+
   /**
-   * Score DTO schemas based on relevance to selected operations
+   * Score DTO schemas based on relevance to selected operations (backward compatibility)
    */
   export function scoreSchemas(
     selectedOperations: Array<{
@@ -162,6 +156,279 @@ export namespace SemanticSimilarity {
       .sort((a, b) => b.score - a.score)
       .slice(0, maxResults);
   }
+}
+
+/**
+ * Score database components and schemas for Prisma workflow
+ */
+function scorePrismaRelevance(
+  context: IWorkflowContext,
+  items: any[],
+  options: { maxResults?: number; minScore?: number } = {}
+): ISemanticScore[] {
+  const { maxResults = 20, minScore = 0.2 } = options;
+  const requirements = context.requirements?.toLowerCase() || '';
+  
+  const scores = items.map(item => {
+    let score = 0;
+    const reasons: string[] = [];
+    
+    // Check for database keywords
+    const dbKeywords = ['user', 'product', 'order', 'category', 'review', 'payment', 'address'];
+    const itemText = JSON.stringify(item).toLowerCase();
+    
+    dbKeywords.forEach(keyword => {
+      if (requirements.includes(keyword) && itemText.includes(keyword)) {
+        score += 0.3;
+        reasons.push(`db keyword match: ${keyword}`);
+      }
+    });
+    
+    // Entity relationship scoring
+    if (item.relations || item.fields) {
+      score += 0.2;
+      reasons.push('entity with relations');
+    }
+    
+    return {
+      score: Math.min(score, 1.0),
+      item,
+      reason: reasons.join(", ") || "general relevance"
+    };
+  });
+  
+  return scores
+    .filter(s => s.score >= minScore)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, maxResults);
+}
+
+/**
+ * Score API operations and schemas for Interface workflow
+ */
+function scoreInterfaceRelevance(
+  context: IWorkflowContext,
+  items: any[],
+  options: { maxResults?: number; minScore?: number } = {}
+): ISemanticScore[] {
+  const { maxResults = 20, minScore = 0.1 } = options;
+  const requirements = context.requirements?.toLowerCase() || '';
+  
+  const scores = items.map(item => {
+    let score = 0;
+    const reasons: string[] = [];
+    
+    // API operation scoring
+    if (item.method && item.path) {
+      const pathSegments = item.path.split('/').filter(Boolean);
+      
+      // Check for business domain alignment
+      const businessTerms = extractBusinessTerms(requirements);
+      pathSegments.forEach((segment: string) => {
+        if (businessTerms.some(term => segment.includes(term))) {
+          score += 0.4;
+          reasons.push(`business domain match: ${segment}`);
+        }
+      });
+      
+      // HTTP method relevance
+      if (item.method?.toUpperCase() === 'GET' && requirements.includes('read')) score += 0.2;
+      if (item.method?.toUpperCase() === 'POST' && requirements.includes('create')) score += 0.2;
+      if (item.method?.toUpperCase() === 'PUT' && requirements.includes('update')) score += 0.2;
+      if (item.method?.toUpperCase() === 'DELETE' && requirements.includes('delete')) score += 0.2;
+    }
+    
+    return {
+      score: Math.min(score, 1.0),
+      item,
+      reason: reasons.join(", ") || "general API relevance"
+    };
+  });
+  
+  return scores
+    .filter(s => s.score >= minScore)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, maxResults);
+}
+
+/**
+ * Score operations for Test workflow (enhanced version of original logic)
+ */
+function scoreTestRelevance(
+  context: IWorkflowContext,
+  items: any[],
+  options: { maxResults?: number; minScore?: number } = {}
+): ISemanticScore[] {
+  const { maxResults = 20, minScore = 0.1 } = options;
+  const scenario = context.currentOperation;
+  
+  if (!scenario) {
+    return scoreGenericRelevance(context, items, options);
+  }
+  
+  // Use existing test scoring logic
+  const targetPath = scenario.endpoint?.path || '';
+  const targetMethod = scenario.endpoint?.method || '';
+  const scenarioText = `${scenario.draft || ''} ${scenario.functionName || ''}`.toLowerCase();
+  const dependencyPaths = new Set(
+    scenario.dependencies?.map((d: any) => d.endpoint?.path) ?? []
+  );
+  
+  const scores = items.map(op => {
+    let score = 0;
+    const reasons: string[] = [];
+    
+    // Exact match for target endpoint
+    if (op.method === targetMethod && op.path === targetPath) {
+      score += 1.0;
+      reasons.push("exact endpoint match");
+    }
+    
+    // Dependency match
+    if (dependencyPaths.has(op.path)) {
+      score += 0.8;
+      reasons.push("dependency match");
+    }
+    
+    // Path similarity (shared segments)
+    const pathSimilarity = calculatePathSimilarity(targetPath, op.path);
+    if (pathSimilarity > 0.3) {
+      score += pathSimilarity * 0.6;
+      reasons.push(`path similarity: ${pathSimilarity.toFixed(2)}`);
+    }
+    
+    // Business domain keywords
+    const domainScore = calculateDomainSimilarity(scenarioText, op);
+    if (domainScore > 0) {
+      score += domainScore * 0.4;
+      reasons.push(`domain similarity: ${domainScore.toFixed(2)}`);
+    }
+    
+    // Method family bonus (CRUD operations)
+    if (isSameMethodFamily(targetMethod, op.method)) {
+      score += 0.2;
+      reasons.push("same method family");
+    }
+    
+    return {
+      score: Math.min(score, 1.0),
+      item: op,
+      reason: reasons.join(", ")
+    };
+  });
+  
+  return scores
+    .filter(s => s.score >= minScore)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, maxResults);
+}
+
+/**
+ * Score operations and schemas for Realize workflow
+ */
+function scoreRealizeRelevance(
+  _context: IWorkflowContext,
+  items: any[],
+  options: { maxResults?: number; minScore?: number } = {}
+): ISemanticScore[] {
+  const { maxResults = 20, minScore = 0.2 } = options;
+  
+  const scores = items.map(item => {
+    let score = 0;
+    const reasons: string[] = [];
+    
+    // Implementation complexity scoring
+    if (item.method && item.path) {
+      // Higher score for complex operations that need implementation
+      const complexity = calculateImplementationComplexity(item);
+      score += complexity * 0.5;
+      reasons.push(`implementation complexity: ${complexity.toFixed(2)}`);
+      
+      // Authorization requirements
+      if (item.security || item.authorization) {
+        score += 0.3;
+        reasons.push("requires authorization");
+      }
+    }
+    
+    // Function/controller relevance
+    if (item.operationId || item.functionName) {
+      score += 0.2;
+      reasons.push("has implementation name");
+    }
+    
+    return {
+      score: Math.min(score, 1.0),
+      item,
+      reason: reasons.join(", ") || "implementation relevance"
+    };
+  });
+  
+  return scores
+    .filter(s => s.score >= minScore)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, maxResults);
+}
+
+/**
+ * Generic scoring for unknown stages
+ */
+function scoreGenericRelevance(
+  _context: IWorkflowContext,
+  items: any[],
+  options: { maxResults?: number; minScore?: number } = {}
+): ISemanticScore[] {
+  const { maxResults = 20 } = options;
+  
+  // Simple relevance scoring based on string similarity
+  const scores = items.map((item) => ({
+    score: 0.5, // Default moderate relevance
+    item,
+    reason: "generic relevance"
+  }));
+  
+  return scores.slice(0, maxResults);
+}
+
+/**
+ * Extract business terms from requirements text
+ */
+function extractBusinessTerms(text: string): string[] {
+  const businessKeywords = [
+    'user', 'customer', 'product', 'order', 'payment', 'cart', 'sale',
+    'review', 'category', 'inventory', 'shipping', 'address', 'auth',
+    'login', 'register', 'search', 'filter', 'list', 'account', 'profile'
+  ];
+  
+  return businessKeywords.filter(keyword => text.includes(keyword));
+}
+
+/**
+ * Calculate implementation complexity for realize workflow
+ */
+function calculateImplementationComplexity(operation: any): number {
+  let complexity = 0;
+  
+  // Method complexity
+  const methodComplexity: Record<string, number> = {
+    'GET': 0.2,
+    'POST': 0.6,
+    'PUT': 0.7,
+    'PATCH': 0.8,
+    'DELETE': 0.5
+  };
+  complexity += methodComplexity[operation.method?.toUpperCase()] || 0.3;
+  
+  // Path complexity (more segments = more complex)
+  const pathSegments = operation.path?.split('/').filter(Boolean) || [];
+  complexity += Math.min(pathSegments.length * 0.1, 0.3);
+  
+  // Request body complexity
+  if (operation.requestBody) {
+    complexity += 0.2;
+  }
+  
+  return Math.min(complexity, 1.0);
 }
 
 /**
