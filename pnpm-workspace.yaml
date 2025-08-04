@@ -8,24 +8,24 @@ catalogs:
     "@agentica/core": ^0.30.8
     "@agentica/rpc": ^0.30.8
   samchon:
-    "@nestia/benchmark": ^7.3.0
-    "@nestia/core": ^7.3.0
-    "@nestia/e2e": ^7.3.0
-    "@nestia/editor": ^7.3.0
-    "@nestia/fetcher": ^7.3.0
-    "@nestia/migrate": ^7.3.0
-    "@nestia/sdk": ^7.3.0
+    "@nestia/benchmark": ^7.3.2
+    "@nestia/core": ^7.3.2
+    "@nestia/e2e": ^7.3.2
+    "@nestia/editor": ^7.3.2
+    "@nestia/fetcher": ^7.3.2
+    "@nestia/migrate": ^7.3.2
+    "@nestia/sdk": ^7.3.2
     "@samchon/openapi": ^4.6.0
     embed-prisma: ^1.1.0
     embed-typescript: ^1.0.1
     prisma-markdown: ^3.0.0
     tgrid: ^1.2.0
     tstl: ^3.0.0
-    typia: ^9.6.0
+    typia: ^9.6.1
   typescript:
     ts-node: ^10.9.2
     ts-patch: ^3.3.0
-    typescript: ~5.8.3
+    typescript: ~5.9.2
   libs:
     openai: ^5.2.0
 

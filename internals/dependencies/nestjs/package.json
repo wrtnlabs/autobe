@@ -5,12 +5,12 @@
   "author": "Wrtn Technologies",
   "license": "AGPL-3.0",
   "devDependencies": {
-    "@nestia/benchmark": "^7.2.1",
-    "@nestia/core": "^7.2.1",
-    "@nestia/e2e": "^7.2.1",
-    "@nestia/editor": "^7.2.1",
-    "@nestia/fetcher": "^7.2.1",
-    "@nestia/sdk": "^7.2.1",
+    "@nestia/benchmark": "^7.3.2",
+    "@nestia/core": "^7.3.2",
+    "@nestia/e2e": "^7.3.2",
+    "@nestia/editor": "^7.3.2",
+    "@nestia/fetcher": "^7.3.2",
+    "@nestia/sdk": "^7.3.2",
     "@nestjs/common": "^11.1.0",
     "@nestjs/core": "^11.1.0",
     "@nestjs/platform-express": "^11.1.0",
@@ -33,7 +33,7 @@
     "git-last-commit": "^1.0.1",
     "serialize-error": "^4.1.0",
     "tgrid": "^1.1.0",
-    "typescript": "~5.8.3",
-    "typia": "^9.6.0"
+    "typescript": "~5.9.2",
+    "typia": "^9.6.1"
   }
 }
