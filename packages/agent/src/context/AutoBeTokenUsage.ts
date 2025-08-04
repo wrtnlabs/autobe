@@ -130,11 +130,13 @@ export class AutoBeTokenUsage implements IAutoBeTokenUsageJson {
    * restoration of token usage state from persisted data or transmission
    * between different parts of the system.
    *
-   * @param propsSerialized Token usage data in JSON format
+   * @param props Token usage data in JSON format
    */
-  public constructor(props: IAutoBeTokenUsageJson);
+  public constructor(props?: IAutoBeTokenUsageJson);
 
-  public constructor(props?: AutoBeTokenUsage | IAutoBeTokenUsageJson) {
+  public constructor(
+    props?: AutoBeTokenUsage | IAutoBeTokenUsageJson | undefined,
+  ) {
     if (props === undefined) {
       this.facade = new AutoBeTokenUsageComponent();
       this.analyze = new AutoBeTokenUsageComponent();
