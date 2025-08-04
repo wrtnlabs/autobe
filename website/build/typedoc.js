@@ -17,7 +17,9 @@ const main = async () => {
     "utf8",
   );
 
-  for (const pack of ["agent", "compiler", "interface", "rpc"]) {
+  const packages = ["agent", "compiler", "interface", "rpc"];
+
+  for (const pack of packages) {
     const location = `${__dirname}/../../packages/${pack}`;
     if (fs.existsSync(`${location}/node_modules`) === false)
       cp.execSync("pnpm install", { cwd: location, stdio: "ignore" });
@@ -34,8 +36,12 @@ const main = async () => {
     );
   }
 
+  const jsonFiles = packages
+    .map((pack) => `typedoc-json/${pack}.json`)
+    .join(" ");
+
   cp.execSync(
-    `npx typedoc --entryPointStrategy merge "typedoc-json/*.json" --out public/api`,
+    `npx typedoc --entryPointStrategy merge ${jsonFiles} --out public/api`,
     {
       cwd: `${__dirname}/..`,
       stdio: "inherit",
