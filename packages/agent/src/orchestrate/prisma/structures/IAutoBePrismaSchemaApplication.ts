@@ -47,37 +47,13 @@ export namespace IAutoBePrismaSchemaApplication {
     plan: string;
 
     /**
-     * Step 2: Review and quality assessment of the database design plan.
+     * Step 2: Draft Prisma schema models based on the strategic plan.
      *
-     * AI performs a thorough review of the strategic plan to ensure it meets
-     * all requirements and best practices before implementation. This review
-     * process validates the design decisions, identifies potential issues,
-     * and confirms the approach will result in a robust schema.
-     *
-     * **Review Dimensions:**
-     *
-     * - **Requirement Coverage**: Verify all targetComponent.tables are planned
-     * - **Normalization Validation**: Confirm 3NF compliance strategy
-     * - **Relationship Integrity**: Validate foreign key references to existing tables
-     * - **Performance Considerations**: Review index strategy and query patterns
-     * - **Snapshot Architecture**: Ensure proper temporal data handling
-     * - **Materialized View Strategy**: Validate denormalization approach
-     * - **Naming Consistency**: Verify adherence to conventions
-     * - **Business Logic Alignment**: Confirm design supports all use cases
-     *
-     * Workflow: Plan analysis → Issue identification → Design validation
-     */
-    review: string;
-
-    /**
-     * Step 3: Production-ready Prisma schema models.
-     *
-     * AI generates the complete Prisma schema models based on the strategic plan.
+     * AI generates the initial Prisma schema models following the strategic plan.
      * This must be a structured Abstract Syntax Tree (AST) representation using
      * the AutoBePrisma.IModel interface that implements all planned tables,
-     * relationships, and constraints. The models should follow Prisma conventions
-     * while incorporating enterprise patterns like snapshot tables and
-     * materialized views.
+     * relationships, and constraints. The draft models will be reviewed before
+     * finalizing.
      *
      * **Implementation Requirements:**
      *
@@ -94,6 +70,42 @@ export namespace IAutoBePrismaSchemaApplication {
      *   - GinIndexes: Full-text search on string fields
      * - **Material Flag**: true only for mv_ prefixed tables
      * - **Descriptions**: Follow format with requirements mapping and business purpose
+     *
+     * Workflow: Strategic plan → AST implementation → Draft models
+     */
+    draft: AutoBePrisma.IModel[];
+
+    /**
+     * Step 3: Review and quality assessment of the draft models.
+     *
+     * AI performs a thorough review of the draft models to ensure they meet
+     * all requirements and best practices before finalization. This review
+     * process validates the implementation, identifies potential issues,
+     * and confirms the models follow all specifications.
+     *
+     * **Review Dimensions:**
+     *
+     * - **Requirement Coverage**: Verify all targetComponent.tables are implemented
+     * - **Normalization Validation**: Confirm 3NF compliance in the models
+     * - **Relationship Integrity**: Validate foreign key references and relationships
+     * - **Performance Considerations**: Review index strategy implementation
+     * - **Snapshot Architecture**: Ensure proper temporal field handling
+     * - **Materialized View Strategy**: Validate denormalization in mv_ tables
+     * - **Naming Consistency**: Verify adherence to conventions
+     * - **Business Logic Alignment**: Confirm models support all use cases
+     * - **AST Structure**: Validate proper IModel interface implementation
+     *
+     * Workflow: Draft analysis → Issue identification → Model validation
+     */
+    review: string;
+
+    /**
+     * Step 4: Production-ready Prisma schema models.
+     *
+     * AI generates the final Prisma schema models by applying the review feedback
+     * to the draft models. This must be a refined Abstract Syntax Tree (AST)
+     * representation using the AutoBePrisma.IModel interface that addresses all
+     * review points and produces error-free, production-ready schemas.
      *
      * **Quality Requirements:**
      *
@@ -122,11 +134,11 @@ export namespace IAutoBePrismaSchemaApplication {
      * - 1:N: Foreign field with unique: false
      * - M:N: Separate junction table model with composite indexes
      *
-     * Workflow: Strategic plan → Direct AST implementation → Production-ready models
+     * Workflow: Review feedback → Model refinement → Production-ready models
      *
      * This structured representation serves as the ultimate deliverable for
      * programmatic schema generation and manipulation.
      */
-    models: AutoBePrisma.IModel[];
+    final: AutoBePrisma.IModel[];
   }
 }

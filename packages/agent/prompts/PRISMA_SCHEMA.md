@@ -11,16 +11,17 @@ Your File: targetComponent.filename = "..."
 Your Domain: targetComponent.namespace = "..."
 ```
 
-**YOUR 3-STEP PROCESS:**
+**YOUR 4-STEP PROCESS:**
 1. **plan**: Analyze and plan database design for targetComponent.tables
-2. **review**: Review the plan for quality and completeness
-3. **models**: Produce production-ready AST models based on reviewed plan
+2. **draft**: Generate initial AST models based on the strategic plan
+3. **review**: Review the draft models for quality and completeness
+4. **final**: Produce refined production-ready AST models based on review feedback
 
 **SUCCESS CRITERIA:**
 ✅ Every table from `targetComponent.tables` exists in your output
 ✅ Total model count = `targetComponent.tables.length` (plus junction tables if needed)
 ✅ All model names match `targetComponent.tables` entries exactly
-✅ Complete IAutoBePrismaSchemaApplication.IProps structure with 3 fields (plan, review, models)
+✅ Complete IAutoBePrismaSchemaApplication.IProps structure with 4 fields (plan, draft, review, final)
 ✅ AST models include proper field classification and type normalization
 
 ---
@@ -70,15 +71,25 @@ DESIGN PLANNING:
 ✅ I will ensure strict 3NF normalization for regular tables
 ```
 
-### Step 2: Plan Review and Quality Assessment (review)
-Analyze and validate the strategic plan to ensure:
-- All targetComponent.tables are covered
-- Normalization principles are followed
-- Relationships are properly designed
-- Performance considerations are addressed
-- Naming conventions are consistent
+### Step 2: Draft Model Generation (draft)
+Generate AutoBePrisma.IModel[] array based on the strategic plan:
+- Create model objects for each table with exact names from targetComponent.tables
+- Include all fields, relationships, and indexes
+- Follow AST structure requirements
+- Implement normalization principles
 
-### Step 3: Final Production Models (models)
+### Step 3: Draft Model Review and Quality Assessment (review)
+Analyze and validate the draft models to ensure:
+- All targetComponent.tables are implemented correctly
+- Normalization principles are followed (1NF, 2NF, 3NF)
+- Relationships and foreign keys are properly configured
+- Index strategy is optimized
+- AST structure is valid
+- No prohibited fields (calculated values in regular tables)
+- Naming conventions are consistent
+- Business logic alignment is verified
+
+### Step 4: Final Production Models (final)
 Generate AutoBePrisma.IModel[] array with:
 1. Model objects for each table with exact names from targetComponent.tables
 2. Primary field "id" with type "uuid"
@@ -122,9 +133,7 @@ const otherTables: string[] = [
 {
   plan: "Analyzing Sales domain requirements: need to create shopping_goods and shopping_goods_options tables. These will reference shopping_sellers from Actors domain. Will implement proper normalization and indexing for performance.",
   
-  review: "Plan validation complete: All required tables (shopping_goods, shopping_goods_options) are included. Foreign key to shopping_sellers properly identified. Normalization strategy confirmed - no calculated fields in regular tables. Index strategy optimized for query patterns. All descriptions will be in English.",
-  
-  models: [
+  draft: [
     {
       name: "shopping_goods",
       // Complete model with comprehensive descriptions following Summary\n\nBody format
@@ -137,6 +146,23 @@ const otherTables: string[] = [
       // Complete descriptions explaining business purpose and constraints
       // Foreign key to shopping_goods and option-specific fields
     }
+  ],
+  
+  review: "Draft validation complete: All required tables (shopping_goods, shopping_goods_options) are correctly implemented. Foreign key relationships properly configured. AST structure validated. Normalization verified - no calculated fields in regular tables. Index strategy optimized. All descriptions are in English and follow the required format.",
+  
+  final: [
+    {
+      name: "shopping_goods",
+      // Refined model based on review feedback
+      // Complete model with comprehensive descriptions following Summary\n\nBody format
+      // Includes proper relationships, normalization compliance, and business context
+    },
+    {
+      name: "shopping_goods_options",
+      // Refined model with improvements from review
+      // Complete model with unique constraint on (goods_id, name)
+      // All review points addressed
+    }
   ]
 }
 ```
@@ -146,7 +172,7 @@ const otherTables: string[] = [
 - ✅ Created `shopping_goods_options` (from targetComponent.tables)  
 - ✅ Total: 2 models = targetComponent.tables.length
 - ✅ Can reference `shopping_sellers` via foreign key (ALREADY EXISTS in otherTables)
-- ✅ Complete 2-step process with direct AST model creation
+- ✅ Complete 4-step process with plan, draft, review, and final models
 - ✅ Proper field classification and relationship structures
 - ✅ All validations performed in final step
 

@@ -40,11 +40,12 @@ export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
         type: "prismaSchemas",
         created_at: start.toISOString(),
         plan: result.plan,
+        draft: result.draft,
         review: result.review,
         file: {
           filename: comp.filename,
           namespace: comp.namespace,
-          models: result.models,
+          models: result.final,
         },
         completed: (completed += comp.tables.length),
         total,

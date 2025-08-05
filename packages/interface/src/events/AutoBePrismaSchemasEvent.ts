@@ -7,10 +7,10 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
  *
  * This event occurs when the Prisma agent has successfully designed and
  * validated all database tables for a particular business domain (e.g., Sales,
- * Orders, Users). The agent follows a systematic 3-step process: strategic
- * planning (plan), design review (review), and final schema file generation
- * (file), ensuring production-ready database schemas that maintain data
- * integrity and business logic accuracy.
+ * Orders, Users). The agent follows a systematic 4-step process: strategic
+ * planning (plan), draft model generation (draft), design review (review), and
+ * final schema file generation (file), ensuring production-ready database
+ * schemas that maintain data integrity and business logic accuracy.
  *
  * Each schema file represents a cohesive unit of database design focused on a
  * specific business area, following domain-driven design principles. The
@@ -39,35 +39,52 @@ export interface AutoBePrismaSchemasEvent
   plan: string;
 
   /**
-   * Step 2: Review and quality assessment of the database design plan.
+   * Step 2: Draft Prisma schema models based on the strategic plan.
    *
-   * AI performs a thorough review of the strategic plan to ensure it meets
-   * all requirements and best practices before implementation. This review
-   * process validates the design decisions, identifies potential issues,
-   * and confirms the approach will result in a robust schema.
+   * Contains the initial AST representation of Prisma schema models generated
+   * following the strategic plan. These draft models implement all planned
+   * tables, relationships, and constraints using the AutoBePrisma.IModel
+   * interface. The draft serves as the basis for review before finalization.
+   *
+   * The draft models include exact table names from requirements, proper UUID
+   * primary fields, foreign key relationships, business fields with appropriate
+   * types, strategic indexes, and comprehensive English-only descriptions.
+   */
+  draft: AutoBePrisma.IModel[];
+
+  /**
+   * Step 3: Review and quality assessment of the draft models.
+   *
+   * AI performs a thorough review of the draft models to ensure they meet
+   * all requirements and best practices before finalization. This review
+   * process validates the implementation, identifies potential issues,
+   * and confirms the models follow all specifications.
    *
    * The review covers requirement coverage, normalization validation,
    * relationship integrity, performance considerations, snapshot architecture,
-   * materialized view strategy, naming consistency, and business logic
-   * alignment.
+   * materialized view strategy, naming consistency, business logic alignment,
+   * and AST structure validation.
    */
   review: string;
 
   /**
-   * Generated Prisma schema file information for a specific business domain.
+   * Step 4: Generated Prisma schema file information for a specific business domain.
    *
    * This field contains the complete schema file data including the filename,
    * namespace, and the production-ready Prisma schema models. The AI agent has
-   * analyzed the requirements, designed the tables, and produced models that
-   * include all necessary relationships, indexes, and constraints.
+   * analyzed the requirements, designed the tables, reviewed the draft, and
+   * produced final models that include all necessary relationships, indexes,
+   * and constraints.
    *
    * The generated file follows the naming convention `schema-{number}-{domain}.prisma`
    * where the number indicates dependency order and the domain represents the
-   * business area. The models within the file follow Prisma conventions while
-   * incorporating enterprise patterns like snapshot tables and materialized views.
+   * business area. The final models within the file follow Prisma conventions
+   * while incorporating enterprise patterns like snapshot tables and materialized
+   * views.
    *
    * Each model in the file.models array represents a table in the database with
-   * proper field definitions, relationships, indexes, and comprehensive documentation.
+   * proper field definitions, relationships, indexes, and comprehensive documentation,
+   * refined through the review process to ensure production readiness.
    */
   file: AutoBePrisma.IFile;
 
