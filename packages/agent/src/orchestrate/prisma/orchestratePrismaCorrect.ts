@@ -94,18 +94,27 @@ async function process<Model extends ILlmSchema.Model>(
   failure: IAutoBePrismaValidation.IFailure,
   capacity: number = 8,
 ): Promise<IAutoBePrismaCorrectApplication.IProps> {
-  if (failure.errors.length <= capacity)
-    return forceRetry(() => execute(ctx, failure));
+  const count: number = getTableCount(failure);
+  if (count <= capacity) return forceRetry(() => execute(ctx, failure));
 
   const plannings: string[] = [];
   const models: Record<string, AutoBePrisma.IModel> = {};
   let i: number = 0;
-  const volume: number = Math.ceil(failure.errors.length / capacity);
+  const volume: number = Math.ceil(count / capacity);
   while (i++ < volume && failure.errors.length !== 0) {
     const next: IAutoBePrismaCorrectApplication.IProps = await forceRetry(() =>
       execute(ctx, {
         ...failure,
-        errors: failure.errors.slice(0, capacity),
+        errors: (() => {
+          const unique: Set<string | null> = new Set();
+          const errors: IAutoBePrismaValidation.IError[] = [];
+          for (const err of failure.errors) {
+            unique.add(err.table ?? null);
+            if (unique.size > capacity) break;
+            else errors.push(err);
+          }
+          return errors;
+        })(),
       }),
     );
     plannings.push(next.planning);
@@ -194,6 +203,13 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
     } satisfies IAutoBePrismaCorrectApplication,
   };
 }
+
+const getTableCount = (failure: IAutoBePrismaValidation.IFailure): number => {
+  const unique: Set<string | null> = new Set(
+    failure.errors.map((error) => error.table ?? null),
+  );
+  return unique.size;
+};
 
 const claude = typia.llm.application<
   IAutoBePrismaCorrectApplication,
