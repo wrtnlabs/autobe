@@ -10,7 +10,6 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { divideArray } from "../../utils/divideArray";
 import { enforceToolCall } from "../../utils/enforceToolCall";
 import { forceRetry } from "../../utils/forceRetry";
 import { transformPrismaCorrectHistories } from "./histories/transformPrismaCorrectHistories";
@@ -97,29 +96,33 @@ async function process<Model extends ILlmSchema.Model>(
 ): Promise<IAutoBePrismaCorrectApplication.IProps> {
   if (failure.errors.length <= capacity)
     return forceRetry(() => execute(ctx, failure));
-  const divided: IAutoBePrismaValidation.IError[][] = divideArray({
-    array: failure.errors,
-    capacity,
-  });
 
   const plannings: string[] = [];
   const models: Record<string, AutoBePrisma.IModel> = {};
-  for (const errors of divided) {
+  let i: number = 0;
+  const volume: number = Math.ceil(failure.errors.length / capacity);
+  while (i++ < volume && failure.errors.length !== 0) {
     const next: IAutoBePrismaCorrectApplication.IProps = await forceRetry(() =>
       execute(ctx, {
-        success: false,
-        data: {
-          ...failure.data,
-          files: failure.data.files.map((file) => ({
-            ...file,
-            models: file.models.map((m) => models[m.name] ?? m),
-          })),
-        },
-        errors,
+        ...failure,
+        errors: failure.errors.slice(0, capacity),
       }),
     );
     plannings.push(next.planning);
     for (const m of next.models) models[m.name] = m;
+
+    const compiler: IAutoBeCompiler = await ctx.compiler();
+    const application: AutoBePrisma.IApplication = {
+      ...failure.data,
+      files: failure.data.files.map((file) => ({
+        ...file,
+        models: file.models.map((m) => models[m.name] ?? m),
+      })),
+    };
+    const result: IAutoBePrismaValidation =
+      await compiler.prisma.validate(application);
+    if (result.success === true) break;
+    else failure = result;
   }
   return {
     planning: plannings.join("\n\n"),
