@@ -62,36 +62,35 @@ export namespace IAutoBeTestScenarioApplication {
      *
      * ## Naming Convention
      *
-     * - Must start with `test_` prefix (mandatory requirement)
+     * - Must start with `test_api_` prefix (mandatory requirement)
      * - Use snake_case formatting throughout
-     * - Include the primary user action (create, get, update, delete, list, etc.)
-     * - Specify the target resource (user, product, order, profile, etc.)
-     * - Add scenario-specific context (valid_data, invalid_email, not_found,
-     *   etc.)
+     * - ALWAYS start with business feature, NOT action verbs
+     * - Business feature comes first, followed by scenario context
+     * - Embed action verbs within the scenario description, not at the beginning
      *
      * ## Content Structure
      *
      * Function names should follow this pattern:
-     * `test_[user_action]_[resource]_[scenario_context]`
+     * `test_api_[core_feature]_[specific_scenario]`
      *
      * Where:
      *
-     * - `user_action`: What the user is trying to do
-     * - `resource`: What the user is interacting with
-     * - `scenario_context`: The specific situation or condition
+     * - `core_feature`: The main business feature or entity being tested
+     *   (customer, seller, cart, push_message, etc.)
+     * - `specific_scenario`: The specific operation or scenario context
+     *   (join_verification_not_found, login_success,
+     *   moderator_assignment_update, discountable_ticket_duplicated,
+     *   csv_export, etc.)
      *
-     * ## User-Focused Examples
+     * ## Business Feature-Based Examples
      *
-     * - `test_create_user_profile_with_complete_information` - User providing all
-     *   available profile data
-     * - `test_retrieve_user_profile_when_profile_exists` - User accessing their
-     *   existing profile
-     * - `test_update_user_email_with_valid_new_address` - User changing their
-     *   email to a valid new one
-     * - `test_delete_user_account_when_user_lacks_permission` - User attempting
-     *   account deletion without authorization
-     * - `test_search_user_profiles_with_pagination_preferences` - User browsing
-     *   profiles with specific pagination
+     * - `test_api_customer_join_verification_not_found` - Customer join
+     *   verification when verification code not found
+     * - `test_api_seller_login` - Seller login operation
+     * - `test_api_cart_discountable_ticket_duplicated` - Cart discountable ticket
+     *   with duplication scenario
+     * - `test_api_push_message_csv` - Push message functionality with CSV format
+     * - `test_api_product_review_update` - Product review update operation
      *
      * ## Clarity Guidelines
      *
