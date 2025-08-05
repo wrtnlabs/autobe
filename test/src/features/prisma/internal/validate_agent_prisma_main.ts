@@ -61,6 +61,8 @@ export const validate_agent_prisma_main = async (
     console.log(
       "schemas",
       event.file.models.length,
+      event.draft.map((m) => m.name),
+      event.modifications.map((m) => m.name),
       event.file.models.map((m) => m.name),
     );
     schemas.push(event);
