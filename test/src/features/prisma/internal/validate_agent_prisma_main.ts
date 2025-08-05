@@ -47,12 +47,17 @@ export const validate_agent_prisma_main = async (
     start = event;
   });
   agent.on("prismaComponents", (event) => {
+    console.log(event.components);
     components = event;
   });
 
   const schemas: AutoBePrismaSchemasEvent[] = [];
   const insufficients: AutoBePrismaInsufficientEvent[] = [];
   agent.on("prismaSchemas", (event) => {
+    console.log(
+      "schemas",
+      event.file.models.map((m) => m.name),
+    );
     schemas.push(event);
   });
   agent.on("prismaInsufficient", (event) => {
