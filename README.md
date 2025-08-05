@@ -192,36 +192,36 @@ gantt
   Compiler Development: done, 2025-06-01, 14d
   Prohibition Rule:     done, 2025-06-08,  7d
   SQLite Support:       done, 2025-06-16,  7d
-  Review Agent:       active, 2025-08-04, 13d
+  Review Agent:         done, 2025-08-04, 13d
 
   section Interface Agent
-  Keyworded SDK:     done, 2025-06-01, 10d
-  Authorization:     done, 2025-06-19, 18d
-  Snapshot Logic: planned, 2025-06-23, 14d
-  Review Agent:    active, 2025-08-04, 13d
+  Keyworded SDK:     done,    2025-06-01, 10d
+  Authorization:     done,    2025-06-19, 18d
+  Snapshot Logic:    planned, 2025-06-23, 14d
+  Review Agent:      active,  2025-08-04, 13d
 
   section Test Agent
-  Scenario Agent:       done, 2025-06-01, 10d        
-  Coding Agent:         done, 2025-06-12, 14d
-  Compiler Feedback:    done, 2025-06-12, 14d
-  Function Calling:     done, 2025-06-18, 14d
-  Compiler Development: done, 2025-07-02, 60d
-  Authorization:      active, 2025-08-04, 13d
+  Scenario Agent:         done, 2025-06-01, 10d        
+  Coding Agent:           done, 2025-06-12, 14d
+  Compiler Feedback:      done, 2025-06-12, 14d
+  Function Calling:       done, 2025-06-18, 14d
+  Compiler Development:   done, 2025-07-02, 60d
+  Authorization:        active, 2025-08-04, 13d
 
   section Realize Agent
-  Planner Agent:        done, 2025-07-02, 30d
-  Coding Agent:         done, 2025-07-02, 30d
-  Compiler Feedback:    done, 2025-07-17, 15d
-  Function Calling:     done, 2025-07-17, 31d
-  Runtime Validation: active, 2025-08-01, 30d
+  Planner Agent:          done, 2025-07-02, 30d
+  Coding Agent:           done, 2025-07-02, 30d
+  Compiler Feedback:      done, 2025-07-17, 15d
+  Function Calling:       done, 2025-07-17, 31d
+  Runtime Validation:   active, 2025-08-01, 30d
 
-  section vscode extensions
-  Interlocking vscode:                      done, 2025-08-01, 1d
-  Interlocking react for webview:           done, 2025-08-04, 2d
+  section VSCode Extensions
+  Interlocking VSCode:                      done, 2025-08-01, 1d
+  Interlocking React for WebView:           done, 2025-08-04, 2d
   Connect autobe without event listener: planned, 2025-08-06, 2d
   File System:                           planned, 2025-08-11, 5d
   Connect personal LLM:                  planned, 2025-08-18, 4d
-  Apply a lot of autobe events:          planned, 2025-08-25, 5d 
+  Apply a lot of AutoBE events:          planned, 2025-08-25, 5d 
 
   section Complementation
   Benchmark:     done,   2025-06-12, 50d
