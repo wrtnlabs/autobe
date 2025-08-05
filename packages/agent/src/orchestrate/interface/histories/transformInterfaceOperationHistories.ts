@@ -8,7 +8,7 @@ import { transformInterfaceAssetHistories } from "./transformInterfaceAssetHisto
 
 export const transformInterfaceOperationHistories = (
   state: AutoBeState,
-  endpoints: AutoBeOpenApi.IEndpoint[],
+  endpoints: (AutoBeOpenApi.IEndpoint & { failure: string | null })[],
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => [
@@ -29,6 +29,9 @@ export const transformInterfaceOperationHistories = (
       "```json",
       JSON.stringify(endpoints),
       "```",
+      "",
+      "If there is a content in the failure, it is to explain why it failed before.",
+      "Please supplement or modify the Operation accordingly.",
     ].join("\n"),
   },
 ];
