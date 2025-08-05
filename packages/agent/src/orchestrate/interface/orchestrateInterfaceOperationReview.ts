@@ -52,6 +52,7 @@ export async function orchestrateInterfaceOperationReview<
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
+  endpoints: AutoBeOpenApi.IEndpoint[], // total endpoints
   operations: IAutoBeInterfaceOperationApplication.IOperation[],
 ): Promise<IAutoBeInterfaceOperationReview> {
   const pointer: IPointer<IAutoBeInterfaceOperationReview | null> = {
@@ -97,6 +98,7 @@ export async function orchestrateInterfaceOperationReview<
     controllers: [
       createReviewController({
         model: ctx.model,
+        endpoints,
         operations,
         build: (reviews) => {
           const passed: IAutoBeInterfaceOperationReview.Success[] = [];
@@ -132,19 +134,23 @@ export async function orchestrateInterfaceOperationReview<
 
   enforceToolCall(agentica);
 
-  await randomBackoffRetry(async () => {
-    await agentica.conversate("Review the operations").finally(() => {
+  const res = await randomBackoffRetry(async () => {
+    return await agentica.conversate("Review the operations").finally(() => {
       const tokenUsage = agentica.getTokenUsage();
       ctx.usage().record(tokenUsage, ["interface"]);
     });
   });
 
-  if (pointer.value === null) throw new Error("Failed to review operations.");
+  if (pointer.value === null) {
+    console.log(JSON.stringify(res, null, 2));
+    throw new Error("Failed to review operations.");
+  }
   return pointer.value;
 }
 
 function createReviewController<Model extends ILlmSchema.Model>(props: {
   model: Model;
+  endpoints: AutoBeOpenApi.IEndpoint[]; // total endpoints
   operations: IAutoBeInterfaceOperationApplication.IOperation[];
   build: (
     reviews: IAutoBeInterfaceOperationReviewApplication.IReview[],
@@ -165,7 +171,7 @@ function createReviewController<Model extends ILlmSchema.Model>(props: {
     const errors: IValidation.IError[] = [];
 
     reviews.forEach((review, i) => {
-      const operation = props.operations.find(
+      const operation = props.endpoints.find(
         (op) => op.method === review.method && op.path === review.path,
       );
       if (!operation) {
@@ -174,14 +180,6 @@ function createReviewController<Model extends ILlmSchema.Model>(props: {
           expected: "Valid operation method and path",
           value: review,
           description: `Operation with method "${review.method}" and path "${review.path}" not found in the operations list.`,
-        });
-      }
-
-      if (!review.passed && (!review.reason || review.reason.length < 10)) {
-        errors.push({
-          path: `$input.reviews[${i}].reason`,
-          expected: "string with minimum 10 characters when passed is false",
-          value: review.reason,
         });
       }
     });

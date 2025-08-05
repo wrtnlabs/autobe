@@ -2,7 +2,7 @@ import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import { AutoBeOpenApi } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { HashMap, HashSet, IPointer } from "tstl";
-import typia, { tags } from "typia";
+import typia from "typia";
 import { NamingConvention } from "typia/lib/utils/NamingConvention";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
@@ -20,7 +20,7 @@ export async function orchestrateInterfaceOperations<
 >(
   ctx: AutoBeContext<Model>,
   endpoints: AutoBeOpenApi.IEndpoint[],
-  capacity: number = 6,
+  capacity: number = 12,
 ): Promise<AutoBeOpenApi.IOperation[]> {
   const matrix: AutoBeOpenApi.IEndpoint[][] = divideArray({
     array: endpoints,
@@ -30,10 +30,12 @@ export async function orchestrateInterfaceOperations<
     total: endpoints.length,
     completed: 0,
   };
+
   const operations: AutoBeOpenApi.IOperation[][] = await Promise.all(
     matrix.map(async (it) => {
       const row: AutoBeOpenApi.IOperation[] = await divideAndConquer(
         ctx,
+        endpoints,
         it,
         3,
         progress,
@@ -53,6 +55,7 @@ export async function orchestrateInterfaceOperations<
 
 async function divideAndConquer<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
+  total: AutoBeOpenApi.IEndpoint[],
   endpoints: AutoBeOpenApi.IEndpoint[],
   retry: number,
   progress: IProgress,
@@ -73,12 +76,7 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
     OpenApiEndpointComparator.equals,
   );
 
-  const hashCode = typia.random<
-    string & tags.MinLength<5> & tags.MaxLength<5>
-  >();
-
   for (let i: number = 0; i < retry; ++i) {
-    console.log(`${hashCode}: ${remained.size()}`);
     if (remained.empty() === true || operations.size() >= endpoints.length)
       break;
 
@@ -92,7 +90,11 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
         }));
 
         const ops = await process(ctx, targets, progress);
-        const reviews = await orchestrateInterfaceOperationReview(ctx, ops);
+        const reviews = await orchestrateInterfaceOperationReview(
+          ctx,
+          total,
+          ops,
+        );
 
         if (reviews.passed.length) {
           const endpoints = reviews.passed.map((p) => p.endpoint);
