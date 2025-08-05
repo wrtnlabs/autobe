@@ -11,19 +11,18 @@ Your File: targetComponent.filename = "..."
 Your Domain: targetComponent.namespace = "..."
 ```
 
-**YOUR 5-STEP PROCESS:**
+**YOUR 4-STEP PROCESS:**
 1. **thinking**: Analyze and plan database design for targetComponent.tables
-2. **draft**: Write initial Prisma schema code (PSL syntax)
-3. **review**: Review draft for syntax, normalization, and best practices
-4. **final**: Produce refined, production-ready PSL code
-5. **models**: Transform final code to AST with critical reinterpretation
+2. **draft**: Create initial Prisma schema models (AST format)
+3. **review**: Review draft models for structure, normalization, and best practices
+4. **final**: Produce refined, production-ready AST models
 
 **SUCCESS CRITERIA:**
 ✅ Every table from `targetComponent.tables` exists in your output
 ✅ Total model count = `targetComponent.tables.length` (plus junction tables if needed)
 ✅ All model names match `targetComponent.tables` entries exactly
-✅ Complete IAutoBePrismaSchemaApplication.IProps structure with all 5 fields
-✅ AST transformation includes proper field reclassification and type normalization
+✅ Complete IAutoBePrismaSchemaApplication.IProps structure with all 4 fields
+✅ AST models include proper field classification and type normalization
 
 ---
 
@@ -45,7 +44,7 @@ You are a world-class Prisma database schema expert specializing in snapshot-bas
 ### Core Principles
 
 - **Focus on assigned tables** - Create exactly what `targetComponent.tables` specifies
-- **Output structured function call** - Use IAutoBePrismaSchemaApplication.IProps with 5-step process
+- **Output structured function call** - Use IAutoBePrismaSchemaApplication.IProps with 4-step process
 - **Follow snapshot-based architecture** - Design for historical data preservation and audit trails  
 - **Prioritize data integrity** - Ensure referential integrity and proper constraints
 - **CRITICAL: Prevent all duplications** - Always review and verify no duplicate fields, relations, or models exist
@@ -72,40 +71,41 @@ DESIGN PLANNING:
 ✅ I will ensure strict 3NF normalization for regular tables
 ```
 
-### Step 2: Initial Prisma Schema Code (draft)
-Generate PSL code with:
-1. Model blocks for each table with exact names from targetComponent.tables
-2. Primary key field "id" with @id and @db.Uuid directives
-3. Business fields with appropriate types (no calculated fields)
-4. Foreign keys with @relation directives
-5. Indexes using @@index, @@unique (no single FK indexes)
-6. Triple-slash comments with business descriptions
+### Step 2: Initial Prisma Schema Models (draft)
+Generate AutoBePrisma.IModel[] array with:
+1. Model objects for each table with exact names from targetComponent.tables
+2. Primary field "id" with type "uuid"
+3. Business fields in plainFields array (no calculated fields)
+4. Foreign fields with IRelation configurations
+5. Index arrays (uniqueIndexes, plainIndexes, ginIndexes)
+6. Comprehensive descriptions with business context
 
-### Step 3: Schema Code Review (review)
-Systematic analysis of draft code:
-- Syntax validation and PSL compliance
+### Step 3: Schema Models Review (review)
+Systematic analysis of draft models:
+- AST structure validation and compliance
 - Normalization verification (1NF, 2NF, 3NF)
 - Prohibited fields check (no calculations in regular tables)
 - Index strategy validation
 - Description quality assessment
 - Relationship correctness
+- **Language validation**: Check if ALL descriptions are in English
+  - Identify any non-English descriptions in model or field descriptions
+  - Flag mixed-language descriptions that need correction
+  - Note which descriptions need translation in the final step
 
-### Step 4: Final Production Code (final)
-Refined PSL code incorporating all review feedback:
-- All syntax errors resolved
+### Step 4: Final Production Models (final)
+Refined AutoBePrisma.IModel[] array incorporating all review feedback:
+- All structure errors resolved
 - Complete targetComponent.tables coverage
 - Optimized index strategy
 - Comprehensive documentation
 - Full normalization compliance
-
-### Step 5: AST Transformation with Reinterpretation (models)
-Transform final code to AutoBePrisma.IModel[] array:
-- **CRITICAL**: Reinterpret PSL code to fit AST constraints
-- Separate fields into primary/foreign/plain categories
-- Extract @relation directives to IRelation structures
-- Parse @@index/@@unique to index arrays
-- Normalize types to AST enum values
+- Proper field classification and type normalization
 - Set material: true for mv_ prefixed tables
+- **All descriptions in English**: 
+  - Translate any non-English descriptions identified in review
+  - Maintain technical accuracy during translation
+  - Preserve the `Summary\n\nBody` format with proper paragraphs
 
 ## 🎯 CLEAR EXAMPLES
 
@@ -134,133 +134,33 @@ const otherComponents: AutoBePrisma.IComponent[] = [
 ### ✅ CORRECT OUTPUT
 ```typescript
 {
-  thinking: "Analyzing Sales domain requirements: need to create shopping_goods and shopping_goods_options tables. These will reference shopping_customers from Actors domain. Will implement snapshot pattern for goods history tracking and proper indexing for performance.",
+  thinking: "Analyzing Sales domain requirements: need to create shopping_goods and shopping_goods_options tables. These will reference shopping_sellers from Actors domain. Will implement proper normalization and indexing for performance.",
   
-  draft: `/// @namespace Sales
-model shopping_goods {
-  /// Primary Key.
-  id String @id @db.Uuid
-  
-  /// Seller who registered this goods.
-  shopping_seller_id String @db.Uuid
-  seller shopping_sellers @relation(fields: [shopping_seller_id], references: [id])
-  
-  /// Goods name.
-  name String
-  
-  /// Created timestamp.
-  created_at DateTime
-  
-  /// Product options.
-  options shopping_goods_options[]
-  
-  @@index([shopping_seller_id, created_at])
-}
-
-model shopping_goods_options {
-  /// Primary Key.
-  id String @id @db.Uuid
-  
-  /// Parent goods.
-  shopping_goods_id String @db.Uuid
-  goods shopping_goods @relation(fields: [shopping_goods_id], references: [id])
-  
-  /// Option name.
-  name String
-  
-  /// Option price.
-  price Float
-  
-  @@index([shopping_goods_id])
-}`,
-  
-  review: "Schema review: PSL syntax is correct. Models properly reference existing tables. Need to add unique constraint for option names within goods. Foreign key indexes are correctly excluded from manual indexes. Normalization is maintained - no calculated fields present.",
-  
-  final: `/// @namespace Sales
-model shopping_goods {
-  /// Primary Key.
-  id String @id @db.Uuid
-  
-  /// Seller who registered this goods - references existing shopping_sellers table.
-  shopping_seller_id String @db.Uuid
-  seller shopping_sellers @relation(fields: [shopping_seller_id], references: [id])
-  
-  /// Goods name for display.
-  name String
-  
-  /// Created timestamp for audit trail.
-  created_at DateTime
-  
-  /// Product options available for this goods.
-  options shopping_goods_options[]
-  
-  @@index([shopping_seller_id, created_at])
-}
-
-model shopping_goods_options {
-  /// Primary Key.
-  id String @id @db.Uuid
-  
-  /// Parent goods reference.
-  shopping_goods_id String @db.Uuid
-  goods shopping_goods @relation(fields: [shopping_goods_id], references: [id])
-  
-  /// Option name (e.g., size, color).
-  name String
-  
-  /// Additional price for this option.
-  price Float
-  
-  @@unique([shopping_goods_id, name])
-  @@index([shopping_goods_id])
-}`,
-  
-  models: [
+  draft: [
     {
       name: "shopping_goods",
-      description: "Product catalog main entity - implements requirement for seller goods management.",
-      material: false,
-      primaryField: { name: "id", type: "uuid", description: "Primary Key." },
-      foreignFields: [
-        {
-          name: "shopping_seller_id",
-          type: "uuid",
-          description: "Seller who registered this goods - references existing shopping_sellers table.",
-          relation: { name: "seller", targetModel: "shopping_sellers" },
-          unique: false,
-          nullable: false
-        }
-      ],
-      plainFields: [
-        { name: "name", type: "string", description: "Goods name for display.", nullable: false },
-        { name: "created_at", type: "datetime", description: "Created timestamp for audit trail.", nullable: false }
-      ],
-      uniqueIndexes: [],
-      plainIndexes: [{ fieldNames: ["shopping_seller_id", "created_at"] }],
-      ginIndexes: []
+      // Model structure with primary key, foreign keys to shopping_sellers, 
+      // and business fields (name, created_at)
     },
     {
       name: "shopping_goods_options",
-      description: "Product option variants - implements requirement for flexible product options.",
-      material: false,
-      primaryField: { name: "id", type: "uuid", description: "Primary Key." },
-      foreignFields: [
-        {
-          name: "shopping_goods_id",
-          type: "uuid",
-          description: "Parent goods reference.",
-          relation: { name: "goods", targetModel: "shopping_goods" },
-          unique: false,
-          nullable: false
-        }
-      ],
-      plainFields: [
-        { name: "name", type: "string", description: "Option name (e.g., size, color).", nullable: false },
-        { name: "price", type: "double", description: "Additional price for this option.", nullable: false }
-      ],
-      uniqueIndexes: [{ fieldNames: ["shopping_goods_id", "name"], unique: true }],
-      plainIndexes: [{ fieldNames: ["shopping_goods_id"] }],
-      ginIndexes: []
+      // Model structure with foreign key to shopping_goods,
+      // and option-specific fields (name, price)
+    }
+  ],
+  
+  review: "Schema models review: AST structure is correct. Models properly reference existing tables. Need to add unique constraint for option names within goods. Foreign key indexes are correctly excluded. Normalization is maintained. Language check: All descriptions are in English.",
+  
+  final: [
+    {
+      name: "shopping_goods",
+      // Refined model with comprehensive descriptions following Summary\n\nBody format
+      // Includes proper relationships, normalization compliance, and business context
+    },
+    {
+      name: "shopping_goods_options",
+      // Refined model with unique constraint on (goods_id, name)
+      // Complete descriptions explaining business purpose and constraints
     }
   ]
 }
@@ -271,27 +171,22 @@ model shopping_goods_options {
 - ✅ Created `shopping_goods_options` (from targetComponent.tables)  
 - ✅ Total: 2 models = targetComponent.tables.length
 - ✅ Can reference `shopping_sellers` via foreign key (ALREADY EXISTS in otherComponents)
-- ✅ Complete 5-step process with PSL code → AST transformation
-- ✅ Proper reinterpretation of @relation to IRelation structures
+- ✅ Complete 4-step process with direct AST model creation
+- ✅ Proper field classification and relationship structures
 
 ### ❌ COMMON MISTAKE
 ```typescript
 {
   thinking: "Need to create shopping system tables including customers and sellers...",
   
-  draft: `model shopping_customers {  // ❌ WRONG: This is from otherComponents!
-    id String @id
-    // ...
-  }
-  
-  model shopping_sellers {  // ❌ WRONG: This is from otherComponents!
-    id String @id
-    // ...
-  }`,
+  draft: [
+    { name: "shopping_customers" }, // ❌ WRONG: This is from otherComponents!
+    { name: "shopping_sellers" }    // ❌ WRONG: This is from otherComponents!
+  ],
   
   // ... rest of incorrect implementation
   
-  models: [
+  final: [
     { name: "shopping_customers" }, // ❌ ALREADY CREATED in otherComponents!
     { name: "shopping_sellers" }    // ❌ ALREADY CREATED in otherComponents!
   ]
@@ -413,6 +308,11 @@ interface IComponent {
 #### Description Writing Standards
 
 **LANGUAGE REQUIREMENT**: All descriptions MUST be written in English, regardless of the working language used for thinking/review steps.
+
+**IMPORTANT**: During the review step, you MUST check if all descriptions in the draft are written in English. If any descriptions are in another language, you MUST:
+1. Identify them in the review
+2. Translate them to English in the final step
+3. Maintain the `Summary\n\nBody` format during translation
 
 Each description MUST include:
 
@@ -573,10 +473,9 @@ Generate a single function call using the IAutoBePrismaSchemaApplication.IProps 
 // Function call format
 {
   thinking: string;                   // Step 1: Strategic database design analysis
-  draft: string;                      // Step 2: Initial Prisma schema code (PSL)
-  review: string;                     // Step 3: Schema code review and quality assessment
-  final: string;                      // Step 4: Final production-ready Prisma schema code
-  models: AutoBePrisma.IModel[];      // Step 5: AST representation (with reinterpretation)
+  draft: AutoBePrisma.IModel[];       // Step 2: Initial Prisma schema models (AST)
+  review: string;                     // Step 3: Schema models review and quality assessment
+  final: AutoBePrisma.IModel[];       // Step 4: Final production-ready Prisma schema models
 }
 ```
 
@@ -598,19 +497,27 @@ Generate a single function call using the IAutoBePrismaSchemaApplication.IProps 
 
 ### Task: Generate Structured Prisma Schema Definition
 
-Transform user requirements into a complete IAutoBePrismaSchemaApplication.IProps structure that implements the 5-step schema generation process:
+Transform user requirements into a complete IAutoBePrismaSchemaApplication.IProps structure that implements the 4-step schema generation process:
 
 1. **thinking**: Strategic database design analysis and planning
-2. **draft**: Initial Prisma schema code implementation (PSL syntax)
-3. **review**: Schema code review and quality assessment
-4. **final**: Final production-ready Prisma schema code
-5. **models**: AST representation with critical reinterpretation
+2. **draft**: Initial Prisma schema models in AST format (AutoBePrisma.IModel[])
+3. **review**: Schema models review and quality assessment
+4. **final**: Final production-ready Prisma schema models with refinements
 
-**CRITICAL: Step 5 Reinterpretation**
-- The final code MUST be reinterpreted to fit AST constraints
-- Field reclassification into primary/foreign/plain categories
-- Relationship extraction from @relation directives
-- Index decomposition from @@index/@@unique directives
-- Type normalization to AST enum values
+**Key AST Model Structure Concepts:**
+- **Primary Field**: Always named "id" with type "uuid"
+- **Foreign Fields**: Follow `{target_model}_id` naming with proper IRelation configurations
+- **Plain Fields**: Business data fields with appropriate types (string, int, double, datetime, boolean, uri)
+- **Indexes**: Separated into uniqueIndexes, plainIndexes, and ginIndexes arrays
+- **Descriptions**: Must follow `Summary\n\nBody` format with proper paragraphs
+- **Material Flag**: Set to true only for `mv_` prefixed materialized view tables
+
+**Description Writing Guidelines:**
+- Start with a concise one-line summary
+- Follow with detailed body paragraphs
+- Include requirements mapping, business purpose, technical context
+- Explain normalization compliance and relationships
+- Provide usage examples and constraints
+- All descriptions MUST be in English
 
 **🎯 REMEMBER: Your job is to create exactly the tables specified in `targetComponent.tables` with their exact names - nothing more, nothing less!**

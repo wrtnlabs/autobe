@@ -39,51 +39,52 @@ export interface AutoBePrismaSchemasEvent
   thinking: string;
 
   /**
-   * Initial Prisma schema code implementation.
+   * Initial Prisma schema models implementation.
    *
-   * Contains the first working version of the Prisma Schema Language (PSL) code
-   * for the target business domain. This draft implements all required tables
-   * with their fields, relationships, indexes, and constraints following Prisma
-   * conventions and enterprise database patterns.
+   * Contains the first working version of the Prisma schema models in structured
+   * AST format for the target business domain. This draft implements all required
+   * tables with their fields, relationships, indexes, and constraints following
+   * Prisma conventions and enterprise database patterns using the
+   * AutoBePrisma.IModel interface.
    *
    * The draft serves as the foundation for iterative refinement, demonstrating
    * the AI agent's understanding of the business requirements and its ability to
-   * translate them into syntactically correct database schema definitions that
-   * maintain data integrity and support efficient querying patterns.
+   * translate them into properly structured database schema models that maintain
+   * data integrity and support efficient querying patterns.
    */
-  draft: string;
+  draft: AutoBePrisma.IModel[];
 
   /**
-   * Schema code review and quality assessment.
+   * Schema models review and quality assessment.
    *
-   * Provides a comprehensive analysis of the draft schema implementation,
+   * Provides a comprehensive analysis of the draft schema models implementation,
    * identifying potential issues, areas for improvement, and validation of best
-   * practices compliance. The review examines syntax correctness, normalization
-   * adherence, relationship accuracy, index optimization, and documentation
-   * completeness.
+   * practices compliance. The review examines AST structure correctness,
+   * normalization adherence, relationship accuracy, index optimization, and
+   * documentation completeness.
    *
-   * This critical review phase ensures that the generated schema meets
-   * enterprise-grade quality standards, maintains data integrity, supports
-   * efficient query patterns, and aligns with both business requirements and
+   * This critical review phase ensures that the generated schema models meet
+   * enterprise-grade quality standards, maintain data integrity, support
+   * efficient query patterns, and align with both business requirements and
    * technical best practices before final implementation.
    */
   review: string;
 
   /**
-   * Final production-ready Prisma schema code.
+   * Final production-ready Prisma schema models.
    *
-   * Contains the refined and polished version of the Prisma schema that
-   * incorporates all review feedback and optimizations. This production-ready
-   * code has zero syntax errors, complete business entity coverage, optimized
-   * indexes, comprehensive documentation, and full compliance with database
-   * normalization principles.
+   * Contains the refined and polished version of the Prisma schema models that
+   * incorporate all review feedback and optimizations. This production-ready
+   * AST structure has zero validation errors, complete business entity coverage,
+   * optimized indexes, comprehensive documentation, and full compliance with
+   * database normalization principles.
    *
-   * The final schema represents the culmination of the iterative design process,
-   * ready for direct use in database migrations and production deployment. It
-   * ensures consistent data modeling, maintainable architecture, and optimal
-   * performance characteristics for the target business domain.
+   * The final schema models represent the culmination of the iterative design
+   * process, ready for direct use in database migrations and production
+   * deployment. They ensure consistent data modeling, maintainable architecture,
+   * and optimal performance characteristics for the target business domain.
    */
-  final: string;
+  final: AutoBePrisma.IModel[];
 
   /**
    * Generated Prisma schema file for a specific business domain.

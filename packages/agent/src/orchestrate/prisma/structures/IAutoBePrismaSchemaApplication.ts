@@ -47,52 +47,57 @@ export namespace IAutoBePrismaSchemaApplication {
     thinking: string;
 
     /**
-     * Step 2: Initial Prisma schema code implementation.
+     * Step 2: Initial Prisma schema models implementation.
      *
-     * AI generates the first working version of the Prisma schema based on the
-     * strategic plan. This draft must be syntactically correct Prisma Schema
-     * Language (PSL) code that implements all planned tables, relationships,
-     * and constraints. The schema should follow Prisma conventions while
-     * incorporating enterprise patterns like snapshot tables and materialized
-     * views.
+     * AI generates the first working version of the Prisma schema models based on the
+     * strategic plan. This draft must be a structured Abstract Syntax Tree (AST)
+     * representation using the AutoBePrisma.IModel interface that implements all
+     * planned tables, relationships, and constraints. The models should follow
+     * Prisma conventions while incorporating enterprise patterns like snapshot
+     * tables and materialized views.
      *
      * **Implementation Requirements:**
      *
-     * - **Exact Table Names**: Use EXACT names from targetComponent.tables (NO
-     *   CHANGES)
-     * - **Valid PSL Syntax**: Proper model blocks, field definitions, and
-     *   directives
-     * - **Primary Keys**: Always UUID type with `@id` directive
-     * - **Foreign Keys**: UUID type following {target_model}_id naming pattern
-     * - **Data Types**: uuid, string, int, double, datetime, boolean, uri (no
-     *   pre-calculated fields)
-     * - **Relationships**: Proper `@relation` directives for 1:1, 1:N, M:N
-     *   patterns
-     * - **Descriptions**: Follow format with requirements mapping and business
-     *   purpose
-     * - **NO Prohibited Fields**: No totals, cached values, aggregates in regular
-     *   tables
+     * - **Model Array**: Each table from targetComponent.tables as IModel
+     * - **Exact Table Names**: Use EXACT names from targetComponent.tables (NO CHANGES)
+     * - **Primary Field**: Always UUID type with name "id"
+     * - **Foreign Fields**: Proper IRelation configurations for all relationships
+     * - **Plain Fields**: Business fields with correct types (no calculated fields)
+     * - **Data Types**: uuid, string, int, double, datetime, boolean, uri
+     * - **Relationships**: Proper relationship patterns for 1:1, 1:N, M:N
+     * - **Indexes**:
+     *   - UniqueIndexes: Business constraints and composite unique keys
+     *   - PlainIndexes: Query optimization (no single foreign key indexes)
+     *   - GinIndexes: Full-text search on string fields
+     * - **Material Flag**: true only for mv_ prefixed tables
+     * - **Descriptions**: Follow format with requirements mapping and business purpose
      *
-     * Workflow: Strategic plan → PSL implementation → Functional schema code
+     * **Relationship Patterns in AST:**
+     *
+     * - 1:1: Foreign field with unique: true
+     * - 1:N: Foreign field with unique: false
+     * - M:N: Separate junction table model with composite indexes
+     *
+     * Workflow: Strategic plan → AST implementation → Structured models
      */
-    draft: string;
+    draft: AutoBePrisma.IModel[];
 
     /**
-     * Step 3: Schema code review and quality assessment.
+     * Step 3: Schema models review and quality assessment.
      *
-     * AI performs a thorough review of the draft schema implementation,
+     * AI performs a thorough review of the draft schema models implementation,
      * examining multiple quality dimensions to ensure production readiness.
      * This review process identifies issues, suggests improvements, and
      * validates compliance with best practices.
      *
      * **Review Dimensions:**
      *
-     * **Syntax & Compilation:**
+     * **AST Structure Validation:**
      *
-     * - Prisma schema syntax errors and invalid directives
+     * - Model array completeness (all targetComponent.tables present)
      * - Model naming matches targetComponent.tables EXACTLY
      * - Field type appropriateness (uuid for keys, no calculated fields)
-     * - Relationship definition correctness (`@relation` syntax)
+     * - Relationship configurations correctness
      *
      * **Database Design Quality:**
      *
@@ -108,7 +113,7 @@ export namespace IAutoBePrismaSchemaApplication {
      *
      * **Index Strategy Validation:**
      *
-     * - NO single foreign key indexes (Prisma auto-creates these)
+     * - NO single foreign key indexes in PlainIndexes
      * - Composite indexes for query patterns
      * - Unique indexes for business constraints
      * - GIN indexes for full-text search fields
@@ -120,24 +125,31 @@ export namespace IAutoBePrismaSchemaApplication {
      * - Fields include: requirement aspect, business meaning, normalization
      *   rationale
      *
-     * Workflow: Draft schema → Systematic analysis → Specific improvements
+     * **Language Validation:**
+     *
+     * - ALL descriptions MUST be in English
+     * - Check if any model or field descriptions are written in non-English languages
+     * - Identify descriptions that need translation in the final step
+     * - Flag any mixed-language descriptions that combine English with other languages
+     *
+     * Workflow: Draft models → Systematic analysis → Specific improvements
      */
     review: string;
 
     /**
-     * Step 4: Final production-ready Prisma schema code.
+     * Step 4: Final production-ready Prisma schema models.
      *
-     * AI produces the final, polished version of the Prisma schema
-     * incorporating all review feedback. This code represents the completed
-     * schema implementation, ready for database migration and production
-     * deployment. All identified issues must be resolved, and the schema must
-     * meet enterprise-grade quality standards.
+     * AI produces the final, polished version of the Prisma schema models
+     * incorporating all review feedback. This structured AST representation
+     * represents the completed schema implementation, ready for database
+     * migration and production deployment. All identified issues must be
+     * resolved, and the schema must meet enterprise-grade quality standards.
      *
-     * **Final Schema Characteristics:**
+     * **Final Schema Model Characteristics:**
      *
      * - **Complete Coverage**: All targetComponent.tables implemented with exact
      *   names
-     * - **Zero Errors**: Valid PSL syntax, no compilation warnings
+     * - **Zero Errors**: Valid AST structure, no validation warnings
      * - **Proper Relationships**: All foreign keys reference existing tables
      *   correctly
      * - **Optimized Indexes**: Strategic indexes without redundant foreign key
@@ -145,43 +157,11 @@ export namespace IAutoBePrismaSchemaApplication {
      * - **Full Normalization**: Strict 3NF compliance, denormalization only in
      *   mv_ tables
      * - **Enterprise Documentation**: Complete descriptions with business context
+     * - **English-Only Descriptions**: All descriptions translated to English if needed
      * - **Audit Support**: Proper snapshot patterns and temporal fields
      *   (created_at, updated_at, deleted_at)
      * - **Type Safety**: Consistent use of UUID for all keys, appropriate field
      *   types
-     *
-     * Workflow: Review feedback → Schema refinement → Production-ready PSL code
-     */
-    final: string;
-
-    /**
-     * Step 5: Structured AST representation of the Prisma schema models.
-     *
-     * AI transforms the final Prisma schema code into a structured Abstract
-     * Syntax Tree (AST) representation using the AutoBePrisma.IModel interface.
-     * This involves critical reinterpretation and reclassification of the final
-     * code to conform to AST constraints.
-     *
-     * **CRITICAL: Reinterpretation & Post-Processing Required**
-     *
-     * The AI-generated final code may not directly map to valid AST structures
-     * due to:
-     *
-     * - Complex Prisma directives that need decomposition
-     * - Field attributes that require reclassification
-     * - Implicit relationships that need explicit AST representation
-     * - Schema-level constructs that must be distributed to models
-     *
-     * **Required Post-Processing Steps:**
-     *
-     * 1. **Field Reclassification**: Separate fields into primary, foreign, and
-     *    plain categories
-     * 2. **Relationship Extraction**: Convert `@relation` directives to IRelation
-     *    structures
-     * 3. **Index Decomposition**: Parse `@@index`, `@@unique` into appropriate
-     *    index arrays
-     * 4. **Type Normalization**: Map Prisma types to AST type enum values
-     * 5. **Constraint Resolution**: Convert schema constraints to AST properties
      *
      * **AST Structure Requirements:**
      *
@@ -191,7 +171,6 @@ export namespace IAutoBePrismaSchemaApplication {
      * - **Plain Fields**: Business fields with correct types (no calculated
      *   fields)
      * - **Indexes**:
-     *
      *   - UniqueIndexes: Business constraints and composite unique keys
      *   - PlainIndexes: Query optimization (no single foreign key indexes)
      *   - GinIndexes: Full-text search on string fields
@@ -203,12 +182,18 @@ export namespace IAutoBePrismaSchemaApplication {
      * - 1:N: Foreign field with unique: false
      * - M:N: Separate junction table model with composite indexes
      *
-     * Workflow: Final PSL code → Reinterpretation → AST transformation →
-     * Structured models
+     * **Language Translation Requirements:**
+     *
+     * - If review identified non-English descriptions in draft, translate them to English
+     * - Preserve the technical accuracy and business meaning during translation
+     * - Maintain the `Summary\n\nBody` format with proper paragraph breaks
+     * - Ensure all model descriptions, field descriptions, and other text are in English
+     *
+     * Workflow: Review feedback → Model refinement → Language translation → Production-ready structured models
      *
      * This structured representation serves as the ultimate deliverable for
      * programmatic schema generation and manipulation.
      */
-    models: AutoBePrisma.IModel[];
+    final: AutoBePrisma.IModel[];
   }
 }
