@@ -155,7 +155,7 @@ function createReviewController<Model extends ILlmSchema.Model>(props: {
     props.model
   ] as unknown as ILlmApplication<Model>;
 
-  application.functions[0].validate = (next: unknown) => {
+  const validate = (next: unknown) => {
     const result: IValidation<IAutoBeInterfaceOperationReviewApplication.IProps> =
       typia.validate<IAutoBeInterfaceOperationReviewApplication.IProps>(next);
     if (result.success === false) return result;
@@ -189,7 +189,15 @@ function createReviewController<Model extends ILlmSchema.Model>(props: {
   return {
     protocol: "class",
     name: "review",
-    application,
+    application: {
+      ...application,
+      functions: [
+        {
+          ...application.functions[0],
+          validate,
+        },
+      ],
+    },
     execute: {
       reviewOperations: (next) => {
         props.build(next.reviews);
