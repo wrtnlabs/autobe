@@ -7,9 +7,9 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
  *
  * This event occurs when the Prisma agent has successfully designed and
  * validated all database tables for a particular business domain (e.g., Sales,
- * Orders, Users). The agent follows a systematic 5-step process: strategic
- * planning, initial implementation, code review, refinement, and AST
- * transformation, ensuring production-ready database schemas that maintain data
+ * Orders, Users). The agent follows a systematic 3-step process: strategic
+ * planning (plan), design review (review), and final schema file generation
+ * (file), ensuring production-ready database schemas that maintain data
  * integrity and business logic accuracy.
  *
  * Each schema file represents a cohesive unit of database design focused on a
@@ -23,88 +23,51 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
 export interface AutoBePrismaSchemasEvent
   extends AutoBeEventBase<"prismaSchemas"> {
   /**
-   * Strategic database design analysis and planning phase.
+   * Step 1: Strategic database design analysis and planning phase.
    *
-   * Contains the AI agent's comprehensive analysis of the target business domain
-   * and its database design strategy. The agent evaluates the required tables,
-   * their relationships, normalization requirements, and performance
-   * considerations to create a well-architected database schema that aligns with
-   * business objectives and technical best practices.
+   * Contains the AI agent's comprehensive analysis of the target business
+   * domain and its database design strategy. The agent evaluates the required
+   * tables, their relationships, normalization requirements, and performance
+   * considerations to create a well-architected database schema that aligns
+   * with business objectives and technical best practices.
    *
-   * This planning phase establishes the foundation for the entire schema design,
-   * ensuring proper table organization, relationship mapping, and adherence to
-   * database normalization principles while considering future scalability and
-   * maintainability requirements.
+   * This planning phase establishes the foundation for the entire schema
+   * design, ensuring proper table organization, relationship mapping, and
+   * adherence to database normalization principles while considering future
+   * scalability and maintainability requirements.
    */
-  thinking: string;
+  plan: string;
 
   /**
-   * Initial Prisma schema models implementation.
+   * Step 2: Review and quality assessment of the database design plan.
    *
-   * Contains the first working version of the Prisma schema models in structured
-   * AST format for the target business domain. This draft implements all required
-   * tables with their fields, relationships, indexes, and constraints following
-   * Prisma conventions and enterprise database patterns using the
-   * AutoBePrisma.IModel interface.
+   * AI performs a thorough review of the strategic plan to ensure it meets
+   * all requirements and best practices before implementation. This review
+   * process validates the design decisions, identifies potential issues,
+   * and confirms the approach will result in a robust schema.
    *
-   * The draft serves as the foundation for iterative refinement, demonstrating
-   * the AI agent's understanding of the business requirements and its ability to
-   * translate them into properly structured database schema models that maintain
-   * data integrity and support efficient querying patterns.
-   */
-  draft: AutoBePrisma.IModel[];
-
-  /**
-   * Schema models review and quality assessment.
-   *
-   * Provides a comprehensive analysis of the draft schema models implementation,
-   * identifying potential issues, areas for improvement, and validation of best
-   * practices compliance. The review examines AST structure correctness,
-   * normalization adherence, relationship accuracy, index optimization, and
-   * documentation completeness.
-   *
-   * This critical review phase ensures that the generated schema models meet
-   * enterprise-grade quality standards, maintain data integrity, support
-   * efficient query patterns, and align with both business requirements and
-   * technical best practices before final implementation.
+   * The review covers requirement coverage, normalization validation,
+   * relationship integrity, performance considerations, snapshot architecture,
+   * materialized view strategy, naming consistency, and business logic
+   * alignment.
    */
   review: string;
 
   /**
-   * Final production-ready Prisma schema models.
+   * Generated Prisma schema file information for a specific business domain.
    *
-   * Contains the refined and polished version of the Prisma schema models that
-   * incorporate all review feedback and optimizations. This production-ready
-   * AST structure has zero validation errors, complete business entity coverage,
-   * optimized indexes, comprehensive documentation, and full compliance with
-   * database normalization principles.
+   * This field contains the complete schema file data including the filename,
+   * namespace, and the production-ready Prisma schema models. The AI agent has
+   * analyzed the requirements, designed the tables, and produced models that
+   * include all necessary relationships, indexes, and constraints.
    *
-   * The final schema models represent the culmination of the iterative design
-   * process, ready for direct use in database migrations and production
-   * deployment. They ensure consistent data modeling, maintainable architecture,
-   * and optimal performance characteristics for the target business domain.
-   */
-  final: AutoBePrisma.IModel[];
-
-  /**
-   * Generated Prisma schema file for a specific business domain.
+   * The generated file follows the naming convention `schema-{number}-{domain}.prisma`
+   * where the number indicates dependency order and the domain represents the
+   * business area. The models within the file follow Prisma conventions while
+   * incorporating enterprise patterns like snapshot tables and materialized views.
    *
-   * This field contains the complete database schema design for one business
-   * domain (e.g., Sales, Orders, Users) in a structured format. The AI agent
-   * has analyzed the requirements, designed the tables, and produced a
-   * production-ready schema file that includes all necessary models,
-   * relationships, indexes, and constraints.
-   *
-   * The generated file follows the naming convention
-   * `schema-{number}-{domain}.prisma` where the number indicates dependency
-   * order and the domain represents the business area. For example,
-   * `schema-02-actors.prisma` would contain all user-related tables like
-   * customers, administrators, and citizens.
-   *
-   * This structured representation enables the system to generate actual Prisma
-   * schema files that can be directly used for database migrations, ensuring
-   * consistent and maintainable database architecture across the entire
-   * application.
+   * Each model in the file.models array represents a table in the database with
+   * proper field definitions, relationships, indexes, and comprehensive documentation.
    */
   file: AutoBePrisma.IFile;
 
@@ -130,7 +93,8 @@ export interface AutoBePrismaSchemasEvent
   total: number;
 
   /**
-   * Iteration number of the requirements analysis this schema was generated for.
+   * Iteration number of the requirements analysis this schema was generated
+   * for.
    *
    * Tracks which version of the business requirements this database schema
    * reflects, ensuring alignment between the evolving requirements and the

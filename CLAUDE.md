@@ -8,7 +8,7 @@ The system consists of specialized agents working in sequence:
 
 ### Functional Agents
 - **Analyze Agent**: Requirements analysis and specifications
-- **Prisma Agent**: Database schema design (ERD) with Postgres/SQLite support
+- **Prisma Agent**: Database schema design (ERD) with Postgres/SQLite support - structured 3-step process (plan → review → models)
 - **Interface Agent**: API design and OpenAPI specification generation
 - **Test Agent**: End-to-end test code generation with scenario planning
 - **Realize Agent**: Main program implementation and integration

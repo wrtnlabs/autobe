@@ -44,17 +44,40 @@ export namespace IAutoBePrismaSchemaApplication {
      *
      * Workflow: Component analysis → Strategic planning → Design rationale
      */
-    thinking: string;
+    plan: string;
 
     /**
-     * Step 2: Initial Prisma schema models implementation.
+     * Step 2: Review and quality assessment of the database design plan.
      *
-     * AI generates the first working version of the Prisma schema models based on the
-     * strategic plan. This draft must be a structured Abstract Syntax Tree (AST)
-     * representation using the AutoBePrisma.IModel interface that implements all
-     * planned tables, relationships, and constraints. The models should follow
-     * Prisma conventions while incorporating enterprise patterns like snapshot
-     * tables and materialized views.
+     * AI performs a thorough review of the strategic plan to ensure it meets
+     * all requirements and best practices before implementation. This review
+     * process validates the design decisions, identifies potential issues,
+     * and confirms the approach will result in a robust schema.
+     *
+     * **Review Dimensions:**
+     *
+     * - **Requirement Coverage**: Verify all targetComponent.tables are planned
+     * - **Normalization Validation**: Confirm 3NF compliance strategy
+     * - **Relationship Integrity**: Validate foreign key references to existing tables
+     * - **Performance Considerations**: Review index strategy and query patterns
+     * - **Snapshot Architecture**: Ensure proper temporal data handling
+     * - **Materialized View Strategy**: Validate denormalization approach
+     * - **Naming Consistency**: Verify adherence to conventions
+     * - **Business Logic Alignment**: Confirm design supports all use cases
+     *
+     * Workflow: Plan analysis → Issue identification → Design validation
+     */
+    review: string;
+
+    /**
+     * Step 3: Production-ready Prisma schema models.
+     *
+     * AI generates the complete Prisma schema models based on the strategic plan.
+     * This must be a structured Abstract Syntax Tree (AST) representation using
+     * the AutoBePrisma.IModel interface that implements all planned tables,
+     * relationships, and constraints. The models should follow Prisma conventions
+     * while incorporating enterprise patterns like snapshot tables and
+     * materialized views.
      *
      * **Implementation Requirements:**
      *
@@ -72,109 +95,26 @@ export namespace IAutoBePrismaSchemaApplication {
      * - **Material Flag**: true only for mv_ prefixed tables
      * - **Descriptions**: Follow format with requirements mapping and business purpose
      *
-     * **Relationship Patterns in AST:**
+     * **Quality Requirements:**
      *
-     * - 1:1: Foreign field with unique: true
-     * - 1:N: Foreign field with unique: false
-     * - M:N: Separate junction table model with composite indexes
-     *
-     * Workflow: Strategic plan → AST implementation → Structured models
-     */
-    draft: AutoBePrisma.IModel[];
-
-    /**
-     * Step 3: Schema models review and quality assessment.
-     *
-     * AI performs a thorough review of the draft schema models implementation,
-     * examining multiple quality dimensions to ensure production readiness.
-     * This review process identifies issues, suggests improvements, and
-     * validates compliance with best practices.
-     *
-     * **Review Dimensions:**
-     *
-     * **AST Structure Validation:**
-     *
-     * - Model array completeness (all targetComponent.tables present)
-     * - Model naming matches targetComponent.tables EXACTLY
-     * - Field type appropriateness (uuid for keys, no calculated fields)
-     * - Relationship configurations correctness
-     *
-     * **Database Design Quality:**
-     *
-     * - **Normalization Compliance**:
-     *
-     *   - 1NF: Atomic values, no repeating groups
-     *   - 2NF: No partial dependencies on composite keys
-     *   - 3NF: No transitive dependencies
-     * - **Prohibited Fields Check**: No pre-calculated totals, cached values, or
-     *   aggregates in regular tables
-     * - **Snapshot Pattern**: Proper implementation for audit trails
-     * - **Junction Tables**: Correct naming ({table1}_{table2}) and structure
-     *
-     * **Index Strategy Validation:**
-     *
-     * - NO single foreign key indexes in PlainIndexes
-     * - Composite indexes for query patterns
-     * - Unique indexes for business constraints
-     * - GIN indexes for full-text search fields
-     *
-     * **Description Quality:**
-     *
-     * - Models include: requirement mapping, business purpose, relationships,
-     *   behaviors
-     * - Fields include: requirement aspect, business meaning, normalization
-     *   rationale
-     *
-     * **Language Validation:**
-     *
-     * - ALL descriptions MUST be in English
-     * - Check if any model or field descriptions are written in non-English languages
-     * - Identify descriptions that need translation in the final step
-     * - Flag any mixed-language descriptions that combine English with other languages
-     *
-     * Workflow: Draft models → Systematic analysis → Specific improvements
-     */
-    review: string;
-
-    /**
-     * Step 4: Final production-ready Prisma schema models.
-     *
-     * AI produces the final, polished version of the Prisma schema models
-     * incorporating all review feedback. This structured AST representation
-     * represents the completed schema implementation, ready for database
-     * migration and production deployment. All identified issues must be
-     * resolved, and the schema must meet enterprise-grade quality standards.
-     *
-     * **Final Schema Model Characteristics:**
-     *
-     * - **Complete Coverage**: All targetComponent.tables implemented with exact
-     *   names
+     * - **Complete Coverage**: All targetComponent.tables implemented with exact names
      * - **Zero Errors**: Valid AST structure, no validation warnings
-     * - **Proper Relationships**: All foreign keys reference existing tables
-     *   correctly
-     * - **Optimized Indexes**: Strategic indexes without redundant foreign key
-     *   indexes
-     * - **Full Normalization**: Strict 3NF compliance, denormalization only in
-     *   mv_ tables
+     * - **Proper Relationships**: All foreign keys reference existing tables correctly
+     * - **Optimized Indexes**: Strategic indexes without redundant foreign key indexes
+     * - **Full Normalization**: Strict 3NF compliance, denormalization only in mv_ tables
      * - **Enterprise Documentation**: Complete descriptions with business context
-     * - **English-Only Descriptions**: All descriptions translated to English if needed
+     * - **English-Only Descriptions**: All descriptions must be in English
      * - **Audit Support**: Proper snapshot patterns and temporal fields
      *   (created_at, updated_at, deleted_at)
-     * - **Type Safety**: Consistent use of UUID for all keys, appropriate field
-     *   types
+     * - **Type Safety**: Consistent use of UUID for all keys, appropriate field types
      *
-     * **AST Structure Requirements:**
+     * **Normalization Compliance:**
      *
-     * - **Model Array**: Each table from targetComponent.tables as IModel
-     * - **Primary Field**: Always UUID type with name "id"
-     * - **Foreign Fields**: Proper IRelation configurations for all relationships
-     * - **Plain Fields**: Business fields with correct types (no calculated
-     *   fields)
-     * - **Indexes**:
-     *   - UniqueIndexes: Business constraints and composite unique keys
-     *   - PlainIndexes: Query optimization (no single foreign key indexes)
-     *   - GinIndexes: Full-text search on string fields
-     * - **Material Flag**: true only for mv_ prefixed tables
+     * - 1NF: Atomic values, no repeating groups
+     * - 2NF: No partial dependencies on composite keys
+     * - 3NF: No transitive dependencies
+     * - **Prohibited Fields**: No pre-calculated totals, cached values, or
+     *   aggregates in regular tables
      *
      * **Relationship Patterns in AST:**
      *
@@ -182,18 +122,11 @@ export namespace IAutoBePrismaSchemaApplication {
      * - 1:N: Foreign field with unique: false
      * - M:N: Separate junction table model with composite indexes
      *
-     * **Language Translation Requirements:**
-     *
-     * - If review identified non-English descriptions in draft, translate them to English
-     * - Preserve the technical accuracy and business meaning during translation
-     * - Maintain the `Summary\n\nBody` format with proper paragraph breaks
-     * - Ensure all model descriptions, field descriptions, and other text are in English
-     *
-     * Workflow: Review feedback → Model refinement → Language translation → Production-ready structured models
+     * Workflow: Strategic plan → Direct AST implementation → Production-ready models
      *
      * This structured representation serves as the ultimate deliverable for
      * programmatic schema generation and manipulation.
      */
-    final: AutoBePrisma.IModel[];
+    models: AutoBePrisma.IModel[];
   }
 }

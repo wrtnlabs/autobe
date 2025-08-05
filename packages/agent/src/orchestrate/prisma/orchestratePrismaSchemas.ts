@@ -34,14 +34,12 @@ export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
       const event: AutoBePrismaSchemasEvent = {
         type: "prismaSchemas",
         created_at: start.toISOString(),
-        thinking: result.thinking,
-        draft: result.draft,
+        plan: result.plan,
         review: result.review,
-        final: result.final,
         file: {
           filename: comp.filename,
           namespace: comp.namespace,
-          models: result.final,
+          models: result.models,
         },
         completed: (completed += comp.tables.length),
         total,
