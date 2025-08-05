@@ -1,7 +1,7 @@
 import { AutoBeAgent } from "@autobe/agent";
-import { AutoBeCompiler } from "@autobe/compiler";
 import {
   AutoBeHistory,
+  IAutoBeCompiler,
   IAutoBeCompilerListener,
   IAutoBeTokenUsageJson,
 } from "@autobe/interface";
@@ -12,5 +12,5 @@ export interface TestFactory {
     histories: AutoBeHistory[],
     tokenUsage?: IAutoBeTokenUsageJson,
   ) => AutoBeAgent<ILlmSchema.Model>;
-  createCompiler: (listener?: IAutoBeCompilerListener) => AutoBeCompiler;
+  createCompiler: (listener?: IAutoBeCompilerListener) => IAutoBeCompiler;
 }

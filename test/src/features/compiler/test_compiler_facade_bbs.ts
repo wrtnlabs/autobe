@@ -1,6 +1,6 @@
-import { AutoBeCompiler } from "@autobe/compiler";
 import { RepositoryFileSystem } from "@autobe/filesystem";
 import {
+  IAutoBeCompiler,
   IAutoBePrismaCompileResult,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
@@ -12,7 +12,7 @@ import { TestFactory } from "../../TestFactory";
 export const test_compiler_facade_bbs = async (
   factory: TestFactory,
 ): Promise<void> => {
-  const compiler: AutoBeCompiler = factory.createCompiler();
+  const compiler: IAutoBeCompiler = factory.createCompiler();
   const prisma: IAutoBePrismaCompileResult = await compiler.prisma.compile({
     files: await RepositoryFileSystem.prisma("samchon", "bbs-backend"),
   });

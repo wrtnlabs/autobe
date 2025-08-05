@@ -1,5 +1,4 @@
-import { AutoBeCompiler } from "@autobe/compiler";
-import { AutoBeOpenApi } from "@autobe/interface";
+import { AutoBeOpenApi, IAutoBeCompiler } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 import typia from "typia";
 
@@ -8,7 +7,7 @@ import { TestFactory } from "../../TestFactory";
 export const test_compiler_interface_name = async (
   factory: TestFactory,
 ): Promise<void> => {
-  const compiler: AutoBeCompiler = factory.createCompiler();
+  const compiler: IAutoBeCompiler = factory.createCompiler();
   const result: Record<string, string> =
     await compiler.interface.write(DOCUMENT);
   const content: string =

@@ -57,9 +57,10 @@ function writeModel(props: {
         ...(props.model.material ? [] : [`@namespace ${props.file.namespace}`]),
         "@author AutoBE - https://github.com/wrtnlabs/autobe",
       ].join("\n"),
+      80,
     ),
     `model ${props.model.name} {`,
-    indent(
+    addIndent(
       ArrayUtil.paddle([writeColumns(props), writeRelations(props)]).join("\n"),
     ),
     "}",
@@ -122,7 +123,7 @@ function writePrimary(props: {
   const type: string | undefined =
     props.dbms === "postgres" ? POSTGRES_PHYSICAL_TYPES.uuid : undefined;
   return [
-    writeComment(props.field.description),
+    writeComment(props.field.description, 78),
     `${props.field.name} String @id${type ? ` ${type}` : ""}`,
   ].join("\n");
 }
@@ -139,7 +140,7 @@ function writeField(props: {
         ]
       : undefined;
   return [
-    writeComment(props.field.description),
+    writeComment(props.field.description, 78),
     [
       props.field.name,
       `${logical}${props.field.nullable ? "?" : ""}`,
@@ -309,17 +310,39 @@ function writeGinIndex(props: {
 /* -----------------------------------------------------------
   BACKGROUND
 ----------------------------------------------------------- */
-function writeComment(content: string): string {
+function writeComment(content: string, length: number): string {
   return content
     .split("\r\n")
     .join("\n")
     .split("\n")
+    .map((line) => line.trim())
+    .map((line) => {
+      // 77자에서 "/// " 4자를 뺀 73자가 실제 컨텐츠 최대 길이
+      if (line.length <= length - 4) return [line];
+      const words: string[] = line.split(" ");
+      const result: string[] = [];
+      let currentLine = "";
+
+      for (const word of words) {
+        const potentialLine = currentLine ? `${currentLine} ${word}` : word;
+        if (potentialLine.length <= 73) {
+          currentLine = potentialLine;
+        } else {
+          if (currentLine) result.push(currentLine);
+          currentLine = word;
+        }
+      }
+
+      if (currentLine) result.push(currentLine);
+      return result;
+    })
+    .flat()
     .map((str) => `///${str.length ? ` ${str}` : ""}`)
     .join("\n")
     .trim();
 }
 
-function indent(content: string): string {
+function addIndent(content: string): string {
   return content
     .split("\r\n")
     .join("\n")

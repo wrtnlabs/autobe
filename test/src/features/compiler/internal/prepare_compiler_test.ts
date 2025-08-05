@@ -1,11 +1,14 @@
-import { AutoBeCompiler } from "@autobe/compiler";
-import { AutoBeOpenApi, AutoBeTestScenario } from "@autobe/interface";
+import {
+  AutoBeOpenApi,
+  AutoBeTestScenario,
+  IAutoBeCompiler,
+} from "@autobe/interface";
 import { OpenApi } from "@samchon/openapi";
 
 import { TestFactory } from "../../../TestFactory";
 
 export const prepare_compiler_test = async (factory: TestFactory) => {
-  const compiler: AutoBeCompiler = factory.createCompiler();
+  const compiler: IAutoBeCompiler = factory.createCompiler();
   const document: AutoBeOpenApi.IDocument = await compiler.interface.invert(
     OpenApi.convert(
       await fetch(
