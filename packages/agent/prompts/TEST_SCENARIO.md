@@ -185,7 +185,7 @@ Example:
 ```yaml
   dependencies:
     - endpoint: { method: "post", path: "/posts" }
-      functionName: "test_create_post_with_valid_data"
+      functionName: "test_api_post_creation_valid_data"
       purpose: "Create a post and extract postId for use in voting scenario"
 ```
 
@@ -217,7 +217,7 @@ Test scenarios must cover not only successful business flows but also various er
 // scenarioGroups.scenarios[*]
 {
   draft: "Test product creation failure caused by attempting to create a product with a duplicate SKU. First, create a seller account authorized to create products. Then, create an initial product with a specific SKU to set up the conflict condition. Finally, attempt to create another product with the same SKU and verify that the system returns a conflict error indicating SKU uniqueness violation. Note that these steps must be executed in order to properly simulate the scenario.",
-  functionName: "test_create_product_with_duplicate_sku",
+  functionName: "test_api_product_creation_duplicate_sku_error",
   dependencies: [
     {
       endpoint: { method: "post", path: "/shopping/sellers/auth/join" },
