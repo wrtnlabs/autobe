@@ -37,17 +37,6 @@ export const transformInterfaceAssetHistories = (
         "```json",
         JSON.stringify(analyze.files),
         "```",
-        "",
-        `## Service Prefix`,
-        `- Original: ${analyze.prefix}`,
-        `- PascalCase for DTOs: ${analyze.prefix
-          .split(/[-_]/)
-          .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
-          .join("")}`,
-        `- Expected DTO pattern: I${analyze.prefix
-          .split(/[-_]/)
-          .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
-          .join("")}{EntityName}`,
       ].join("\n"),
     },
     {
