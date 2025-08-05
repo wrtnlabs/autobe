@@ -47,7 +47,10 @@ export const validate_agent_prisma_main = async (
     start = event;
   });
   agent.on("prismaComponents", (event) => {
-    console.log(event.components);
+    console.log(
+      event.components.map((c) => c.tables.length).reduce((a, b) => a + b, 0),
+      event.components,
+    );
     components = event;
   });
 
@@ -56,6 +59,7 @@ export const validate_agent_prisma_main = async (
   agent.on("prismaSchemas", (event) => {
     console.log(
       "schemas",
+      event.file.models.length,
       event.file.models.map((m) => m.name),
     );
     schemas.push(event);
