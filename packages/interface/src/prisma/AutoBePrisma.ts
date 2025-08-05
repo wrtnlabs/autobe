@@ -269,8 +269,10 @@ export namespace AutoBePrisma {
      * - Business context and purpose
      * - Key relationships with other models
      * - Important behavioral notes or constraints
-     * - References to related entities using "{@\link ModelName}" syntax Example:
-     *   "Customer information, but not a person but a **connection** basis..."
+     * - References to related entities using "{@\link ModelName}" syntax
+     * 
+     * **IMPORTANT**: Description must be written in English.
+     * Example: "Customer information, but not a person but a **connection** basis..."
      */
     description: string;
 
@@ -377,6 +379,8 @@ export namespace AutoBePrisma {
      *
      * Standard description is "Primary Key." across all models. Serves as the
      * unique identifier for the model instance.
+     * 
+     * **IMPORTANT**: Description must be written in English.
      */
     description: string;
   }
@@ -412,9 +416,11 @@ export namespace AutoBePrisma {
      * relationship.
      *
      * Should reference the target model using format: "Target model's {@\link
-     * ModelName.id}" Examples: "Belonged customer's {@\link
-     * shopping_customers.id}" May include additional context about the
-     * relationship's business meaning.
+     * ModelName.id}"
+     * Examples: "Belonged customer's {@\link shopping_customers.id}"
+     * May include additional context about the relationship's business meaning.
+     * 
+     * **IMPORTANT**: Description must be written in English.
      */
     description: string;
 
@@ -572,8 +578,10 @@ export namespace AutoBePrisma {
      * - What business concept this field represents
      * - Valid values or constraints if applicable
      * - How it relates to business processes
-     * - Any special behavioral notes Example: "Amount of cash payment." or
-     *   "Whether the unit is required or not."
+     * - Any special behavioral notes
+     * 
+     * **IMPORTANT**: Description must be written in English.
+     * Example: "Amount of cash payment." or "Whether the unit is required or not."
      */
     description: string;
 

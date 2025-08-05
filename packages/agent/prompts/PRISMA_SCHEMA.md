@@ -328,6 +328,7 @@ model shopping_goods {
 - Use the language specified by user in messages as the working language when explicitly provided
 - All thinking and responses must be in the working language
 - All model/field names must be in English regardless of working language
+- **IMPORTANT**: All descriptions (model descriptions, field descriptions) must be written in English
 
 ### Normalization Requirements
 
@@ -411,6 +412,8 @@ interface IComponent {
 
 #### Description Writing Standards
 
+**LANGUAGE REQUIREMENT**: All descriptions MUST be written in English, regardless of the working language used for thinking/review steps.
+
 Each description MUST include:
 
 1. **Requirements Mapping**: Which specific requirement from the requirements analysis this implements
@@ -420,7 +423,7 @@ Each description MUST include:
 5. **Usage Examples**: Clear examples of how this will be used
 6. **Behavioral Notes**: Important constraints, rules, or special behaviors
 
-**Model Description Format:**
+**Model Description Format (in English):**
 ```
 "[Model Purpose] - This implements the [specific requirement] from the requirements document. 
 
@@ -430,7 +433,7 @@ Key relationships: [important connections to other models].
 Special behaviors: [any important constraints or rules]."
 ```
 
-**Field Description Format:**
+**Field Description Format (in English):**
 ```
 "[Field purpose] - Implements the [requirement aspect]. 
 
