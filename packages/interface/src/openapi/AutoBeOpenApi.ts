@@ -10,6 +10,12 @@ import { tags } from "typia";
  * constructs, allowing precise control over generated API documentation while
  * maintaining type safety and business logic accuracy.
  *
+ * LANGUAGE REQUIREMENT: All description fields throughout this type system
+ * (including operation descriptions, summaries, parameter descriptions, schema
+ * descriptions, etc.) MUST be written exclusively in English. This is a strict
+ * requirement for API documentation consistency and international
+ * compatibility.
+ *
  * ## Core Purpose
  *
  * The system is designed for systematic generation where AI function calls
@@ -567,6 +573,8 @@ export namespace AutoBeOpenApi {
      * This description should be detailed enough for both API consumers to
      * understand the role's purpose and for the system to properly enforce
      * access controls.
+     *
+     * > MUST be written in English. Never use other languages.
      */
     description: string;
   }
