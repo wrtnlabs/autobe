@@ -153,7 +153,7 @@ const otherTables: string[] = [
   modifications: [
     {
       name: "shopping_goods_options",
-      // Re-define only the neccessary model based on review feedback
+      // Re-define only the necessary model based on review feedback
     }
   ]
 }
