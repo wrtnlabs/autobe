@@ -2,25 +2,26 @@ import { AutoBeAnalyzeRole } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { IFile } from "./AutoBeAnalyzeFileSystem";
 import {
   AutoBEAnalyzeFileMap,
   AutoBeAnalyzePointer,
 } from "./AutoBeAnalyzePointer";
 import { orchestrateAnalyzeReviewer } from "./orchestrateAnalyzeReviewer";
 import { orchestrateAnalyzeWrite } from "./orchestrateAnalyzeWrite";
+import { AutoBeAnalyzeFile } from "./structures/AutoBeAnalyzeFile";
 
 export async function writeDocumentUntilReviewPassed<
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
   props: {
-    totalFiles: Pick<IFile, "filename" | "reason">[];
-    filename: string;
+    totalFiles: Pick<AutoBeAnalyzeFile, "filename" | "reason">[];
+    file: AutoBeAnalyzeFile;
     roles: AutoBeAnalyzeRole[];
     progress: { total: number; completed: number };
     retry?: number;
     prevReview?: string;
+    language?: string;
   },
 ): Promise<AutoBeAnalyzePointer> {
   const retry = props.retry ?? 3;
@@ -40,12 +41,13 @@ export async function writeDocumentUntilReviewPassed<
   const writer = orchestrateAnalyzeWrite(ctx, {
     totalFiles: props.totalFiles,
     roles: props.roles,
-    targetFile: props.filename,
+    file: props.file,
     review: props.prevReview ?? "",
     setDocument: (v) => {
       isToolCalled = true;
       pointer.value = { files: { ...pointer.value?.files, ...v } };
     },
+    language: props.language,
   });
   await writer.conversate("Write Document.").finally(() => {
     const tokenUsage = writer.getTokenUsage().aggregate;
@@ -87,7 +89,7 @@ export async function writeDocumentUntilReviewPassed<
 
   return await writeDocumentUntilReviewPassed(ctx, {
     totalFiles: props.totalFiles,
-    filename: props.filename,
+    file: props.file,
     roles: props.roles,
     progress: props.progress,
     retry: retry - 1,

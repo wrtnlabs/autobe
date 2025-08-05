@@ -9,25 +9,28 @@ import { enforceToolCall } from "../../utils/enforceToolCall";
 import {
   AutoBeAnalyzeFileSystem,
   IAutoBeAnalyzeFileSystem,
-  IFile,
 } from "./AutoBeAnalyzeFileSystem";
 import { AutoBEAnalyzeFileMap } from "./AutoBeAnalyzePointer";
+import { AutoBeAnalyzeFile } from "./structures/AutoBeAnalyzeFile";
 import { transformAnalyzeWriteHistories } from "./transformAnalyzeWriteHistories";
 
 export const orchestrateAnalyzeWrite = <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   input: {
     /** Total file names */
-    totalFiles: Pick<IFile, "filename" | "reason">[];
-    targetFile: string;
+    totalFiles: Pick<AutoBeAnalyzeFile, "filename" | "reason">[];
+    file: Omit<AutoBeAnalyzeFile, "markdown">;
     roles: AutoBeAnalyzeRole[];
     review: string | null;
     setDocument: (v: AutoBEAnalyzeFileMap) => void;
+    language?: string;
   },
 ): MicroAgentica<Model> => {
   const controller = createController<Model>({
     model: ctx.model,
-    execute: new AutoBeAnalyzeFileSystem({ [input.targetFile]: "" as const }),
+    execute: new AutoBeAnalyzeFileSystem({
+      [input.file.filename]: "" as const,
+    }),
     setDocument: input.setDocument,
   });
 
@@ -41,7 +44,7 @@ export const orchestrateAnalyzeWrite = <Model extends ILlmSchema.Model>(
         describe: null,
       },
     },
-    histories: [...transformAnalyzeWriteHistories(ctx, input)],
+    histories: transformAnalyzeWriteHistories(ctx, input),
   });
   enforceToolCall(agent);
   return agent;

@@ -1,24 +1,6 @@
 import { tags } from "typia";
 
-export interface IFile {
-  /**
-   * Describe briefly why you made this document, and if you have any plans for
-   * the next one.
-   */
-  reason: string;
-
-  /** Filename to generate or overwrite. */
-  filename: `${string}.md`;
-
-  /**
-   * Markdown file content. Only write the content of the file. Do not include
-   * any questions. This should contain only the contents of the file. Do not
-   * write down any questions or appreciation. For example, remove a sentence
-   * such as "Is it okay if we proceed with the table of contents? Please let me
-   * know if there is anything to add or exclude from the table of contents!"
-   */
-  markdown: string;
-}
+import { AutoBeAnalyzeFile } from "./structures/AutoBeAnalyzeFile";
 
 export interface ICreateOrUpdateInput {
   /**
@@ -27,7 +9,7 @@ export interface ICreateOrUpdateInput {
    *
    * @title files to create or update
    */
-  files: Array<IFile> & tags.MinItems<1>;
+  files: Array<AutoBeAnalyzeFile> & tags.MinItems<1>;
 }
 
 type Filename = string;
@@ -47,7 +29,7 @@ export interface IAutoBeAnalyzeFileSystem {
 export class AutoBeAnalyzeFileSystem implements IAutoBeAnalyzeFileSystem {
   constructor(private readonly fileMap: Record<Filename, FileContent> = {}) {}
   async createOrUpdateFiles(input: {
-    files: Array<IFile> & tags.MinItems<1>;
+    files: Array<AutoBeAnalyzeFile> & tags.MinItems<1>;
   }): Promise<Record<string, string>> {
     input.files.forEach((file) => {
       this.fileMap[file.filename] = file.markdown;

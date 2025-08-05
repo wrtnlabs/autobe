@@ -27,12 +27,12 @@ export const orchestrateAnalyze =
       created_at,
     });
 
-    const composeInputPointer: IPointer<IComposeInput | null> = { value: null };
+    const pointer: IPointer<IComposeInput | null> = { value: null };
     const agentica = orchestrateAnalyzeComposer(ctx, (v) => {
-      composeInputPointer.value = v;
+      pointer.value = v;
     });
 
-    const determined = await agentica
+    const histories = await agentica
       .conversate(
         [
           `Design a complete list of documents and user roles for this project.`,
@@ -45,7 +45,7 @@ export const orchestrateAnalyze =
         ctx.usage().record(tokenUsage, ["analyze"]);
       });
 
-    const composeInput = composeInputPointer.value;
+    const composeInput = pointer.value;
     if (composeInput === null)
       return ctx.assistantMessage({
         id: v4(),
@@ -55,8 +55,8 @@ export const orchestrateAnalyze =
         created_at: new Date().toISOString(),
       });
 
-    const { files: tableOfContents, prefix, roles } = composeInput;
-    if (tableOfContents.length === 0)
+    const { files: autoBeAnalyzeFiles, prefix, roles, language } = composeInput;
+    if (autoBeAnalyzeFiles.length === 0)
       return ctx.assistantMessage({
         id: v4(),
         type: "assistantMessage",
@@ -67,17 +67,18 @@ export const orchestrateAnalyze =
 
     const retryCount = 3 as const;
     const progress = {
-      total: tableOfContents.length * retryCount,
+      total: autoBeAnalyzeFiles.length * retryCount,
       completed: 0,
     };
     const pointers = await Promise.all(
-      tableOfContents.map(async ({ filename }) => {
+      autoBeAnalyzeFiles.map(async (file) => {
         return await writeDocumentUntilReviewPassed(ctx, {
-          totalFiles: tableOfContents,
-          filename,
+          totalFiles: autoBeAnalyzeFiles,
+          file: file,
           roles,
           progress,
           retry: retryCount,
+          language,
         });
       }),
     );
@@ -101,7 +102,7 @@ export const orchestrateAnalyze =
     return ctx.assistantMessage({
       id: v4(),
       type: "assistantMessage",
-      text: determined.find((el) => el.type === "assistantMessage")?.text ?? "",
+      text: histories.find((el) => el.type === "assistantMessage")?.text ?? "",
       created_at,
       completed_at: new Date().toISOString(),
     });

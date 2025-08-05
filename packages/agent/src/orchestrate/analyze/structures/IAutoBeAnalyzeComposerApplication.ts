@@ -1,6 +1,6 @@
 import { AutoBeAnalyzeRole } from "@autobe/interface";
 
-import { IFile } from "../AutoBeAnalyzeFileSystem";
+import { AutoBeAnalyzeFile } from "./AutoBeAnalyzeFile";
 
 export interface IComposeInput {
   /** Reason for the analysis and composition of the project structure. */
@@ -14,6 +14,14 @@ export interface IComposeInput {
 
   /** Roles to be assigned for the project */
   roles: AutoBeAnalyzeRole[];
+
+  /**
+   * Language for document content. When specified by the user, this takes
+   * precedence over the locale setting for determining document language.
+   * Examples: "ko" (Korean), "en" (English), "ja" (Japanese)
+   * If not specified, falls back to the locale setting.
+   */
+  language?: string;
 
   /**
    * If the user has requested a specific number of pages, enter that number.
@@ -53,7 +61,7 @@ export interface IComposeInput {
    * does not specify a number, generate a sufficient number of documents to
    * adequately support the service.
    */
-  files: Array<Pick<IFile, "filename" | "reason">>;
+  files: Array<AutoBeAnalyzeFile>;
 }
 
 export interface IAutoBeAnalyzeComposerApplication {

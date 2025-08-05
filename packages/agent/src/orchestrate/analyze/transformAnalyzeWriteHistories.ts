@@ -5,90 +5,96 @@ import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { IFile } from "./AutoBeAnalyzeFileSystem";
+import { AutoBeAnalyzeFile } from "./structures/AutoBeAnalyzeFile";
+
+const preparePrompt = (
+  template: string,
+  locale: string,
+  totalFiles: Pick<AutoBeAnalyzeFile, "filename" | "reason">[],
+  file: Omit<AutoBeAnalyzeFile, "markdown">,
+  roles: AutoBeAnalyzeRole[],
+  language?: string,
+): string => {
+  // Prepare replacements
+  const userRoles = roles
+    .map((role) => `- ${role.name}: ${role.description}`)
+    .join("\n");
+  const totalFilesList = totalFiles.map((f) => f.filename).join(",");
+  const outline =
+    file.outline?.map((item, index) => `${index + 1}. ${item}`).join("\n") ||
+    "";
+  const keyQuestions = file.keyQuestions?.map((q) => `- ${q}`).join("\n") || "";
+  const relatedDocs =
+    file.relatedDocuments?.map((doc) => `- ${doc}`).join("\n") || "";
+  const constraints = file.constraints?.map((c) => `- ${c}`).join("\n") || "";
+
+  return template
+    .replace(/{% User Locale %}/g, locale)
+    .replace(/{% Document Language %}/g, language || "")
+    .replace(/{% Total Files %}/g, totalFilesList)
+    .replace(/{% Current File %}/g, file.filename)
+    .replace(/{% User Roles %}/g, userRoles)
+    .replace(/{% Document Reason %}/g, file.reason)
+    .replace(/{% Document Type %}/g, file.type || "")
+    .replace(/{% Document Outline %}/g, outline)
+    .replace(/{% Document Audience %}/g, file.audience || "")
+    .replace(/{% Document Key Questions %}/g, keyQuestions)
+    .replace(/{% Document Detail Level %}/g, file.detailLevel || "")
+    .replace(/{% Document Related Documents %}/g, relatedDocs)
+    .replace(/{% Document Constraints %}/g, constraints);
+};
 
 export const transformAnalyzeWriteHistories = <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   input: {
     /** Total file names */
-    totalFiles: Pick<IFile, "filename" | "reason">[];
-    targetFile: string;
+    totalFiles: Pick<AutoBeAnalyzeFile, "filename" | "reason">[];
+    file: Omit<AutoBeAnalyzeFile, "markdown">;
     roles: AutoBeAnalyzeRole[];
     review: string | null;
+    language?: string;
   },
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
+  const reviewMessages: IAgenticaHistoryJson.IAssistantMessage[] = input.review
+    ? [
+        {
+          id: v4(),
+          created_at: new Date().toISOString(),
+          type: "assistantMessage",
+          text: JSON.stringify(
+            input.totalFiles.find((el) => el.filename === input.file.filename),
+          ),
+        },
+        {
+          id: v4(),
+          created_at: new Date().toISOString(),
+          type: "assistantMessage",
+          text: [
+            `You previously wrote a piece of content.`,
+            `The following review has been received regarding your writing:`,
+            input.review,
+            `You must revise your content to reflect the feedback in this review.`,
+          ].join("\n"),
+        },
+      ]
+    : [];
+
   return [
-    ...(input.review !== null
-      ? ([
-          {
-            id: v4(),
-            created_at: new Date().toISOString(),
-            type: "assistantMessage",
-            text: [
-              input.totalFiles.find((el) => el.filename === input.targetFile),
-            ].join("\n"),
-          },
-          {
-            id: v4(),
-            created_at: new Date().toISOString(),
-            type: "assistantMessage",
-            text: [
-              `You previously wrote a piece of content.`,
-              `The following review has been received regarding your writing:`,
-              input.review,
-              `You must revise your content to reflect the feedback in this review.`,
-            ].join(),
-          },
-        ] as const)
-      : []),
+    ...reviewMessages,
     {
       id: v4(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
-      text: AutoBeSystemPromptConstant.ANALYZE.replace(
-        "{% User Locale %}",
+      text: preparePrompt(
+        AutoBeSystemPromptConstant.ANALYZE,
         ctx.config?.locale ?? "en-US",
+        input.totalFiles,
+        input.file,
+        input.roles,
+        input.language,
       ),
-    },
-    {
-      id: v4(),
-      created_at: new Date().toISOString(),
-      type: "systemMessage",
-      text: [
-        "# Guidelines",
-        "If the user specifies the exact number of pages, please follow it precisely.",
-        AutoBeSystemPromptConstant.ANALYZE_GUIDELINE,
-      ].join("\n"),
-    },
-    {
-      id: v4(),
-      created_at: new Date().toISOString(),
-      type: "systemMessage",
-      text: [
-        `# Instruction`,
-        `The names of all the files are as follows: ${input.totalFiles
-          .map((f) => f.filename)
-          .join(",")}`,
-        "Assume that all files are in the same folder. Also, when pointing to the location of a file, go to the relative path.",
-        "",
-        `The following user roles have been defined for this system:`,
-        ...input.roles.map((role) => `- ${role.name}: ${role.description}`),
-        "These roles will be used for API authentication and should be considered when creating documentation.",
-        "",
-        `Document Length Specification:`,
-        `- You are responsible for writing ONLY ONE document: ${input.targetFile}`,
-        `- Each page should contain approximately 2,000 characters`,
-        `- DO NOT write content for other documents - focus only on ${input.targetFile}`,
-        "",
-        `Among the various documents, the part you decided to take care of is as follows.: ${input.targetFile}`,
-        `Only write this document named '${input.targetFile}'.`,
-        "Never write other documents.",
-        "",
-        "# Reason to write this document",
-        `- ${input.totalFiles.find((el) => el.filename === input.targetFile)?.reason}`,
-      ].join("\n"),
     },
   ];
 };
