@@ -24,7 +24,7 @@ export function transformTestWriteHistories(
       text: AutoBeSystemPromptConstant.TEST_WRITE.replace(
         "{{AutoBeTestScenario}}",
         JSON.stringify(typia.llm.parameters<AutoBeTestScenario, "llama">()),
-      ),
+      ).replaceAll("{{FUNCTION_NAME}}", scenario.functionName),
     },
     {
       id: v4(),
