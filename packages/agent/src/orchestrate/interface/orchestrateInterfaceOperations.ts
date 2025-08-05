@@ -159,47 +159,50 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
   const application: ILlmApplication<Model> = collection[
     props.model
   ] as unknown as ILlmApplication<Model>;
-  application.functions[0].validate = (next: unknown) => {
-    const result: IValidation<IAutoBeInterfaceOperationApplication.IProps> =
-      typia.validate<IAutoBeInterfaceOperationApplication.IProps>(next);
-    if (result.success === false) return result;
+  application.functions[0] = {
+    ...application.functions[0],
+    validate: (next: unknown) => {
+      const result: IValidation<IAutoBeInterfaceOperationApplication.IProps> =
+        typia.validate<IAutoBeInterfaceOperationApplication.IProps>(next);
+      if (result.success === false) return result;
 
-    const operations: IAutoBeInterfaceOperationApplication.IOperation[] =
-      result.data.operations;
-    const errors: IValidation.IError[] = [];
-    operations.forEach((op, i) => {
-      if (op.method === "get" && op.requestBody !== null)
-        errors.push({
-          path: `$input.operations[${i}].requestBody`,
-          expected:
-            "GET method should not have request body. Change method, or re-design the operation.",
-          value: op.requestBody,
-        });
-      if (props.roles.length === 0) op.authorizationRoles = [];
-      else if (op.authorizationRoles.length !== 0 && props.roles.length !== 0)
-        op.authorizationRoles.forEach((role, j) => {
-          if (props.roles.includes(role) === true) return;
+      const operations: IAutoBeInterfaceOperationApplication.IOperation[] =
+        result.data.operations;
+      const errors: IValidation.IError[] = [];
+      operations.forEach((op, i) => {
+        if (op.method === "get" && op.requestBody !== null)
           errors.push({
-            path: `$input.operations[${i}].authorizationRoles[${j}]`,
-            expected: `null | ${props.roles.map((str) => JSON.stringify(str)).join(" | ")}`,
-            description: [
-              `Role "${role}" is not defined in the roles list.`,
-              "",
-              "Please select one of them below, or do not define (`null`):  ",
-              "",
-              ...props.roles.map((role) => `- ${role}`),
-            ].join("\n"),
-            value: role,
+            path: `$input.operations[${i}].requestBody`,
+            expected:
+              "GET method should not have request body. Change method, or re-design the operation.",
+            value: op.requestBody,
           });
-        });
-    });
-    if (errors.length !== 0)
-      return {
-        success: false,
-        errors,
-        data: next,
-      };
-    return result;
+        if (props.roles.length === 0) op.authorizationRoles = [];
+        else if (op.authorizationRoles.length !== 0 && props.roles.length !== 0)
+          op.authorizationRoles.forEach((role, j) => {
+            if (props.roles.includes(role) === true) return;
+            errors.push({
+              path: `$input.operations[${i}].authorizationRoles[${j}]`,
+              expected: `null | ${props.roles.map((str) => JSON.stringify(str)).join(" | ")}`,
+              description: [
+                `Role "${role}" is not defined in the roles list.`,
+                "",
+                "Please select one of them below, or do not define (`null`):  ",
+                "",
+                ...props.roles.map((role) => `- ${role}`),
+              ].join("\n"),
+              value: role,
+            });
+          });
+      });
+      if (errors.length !== 0)
+        return {
+          success: false,
+          errors,
+          data: next,
+        };
+      return result;
+    },
   };
   return {
     protocol: "class",

@@ -232,58 +232,62 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
     props.model
   ] as unknown as ILlmApplication<Model>;
 
-  application.functions[0].validate = (next: unknown): IValidation => {
-    const result: IValidation<IAutoBeTestScenarioApplication.IProps> =
-      typia.validate<IAutoBeTestScenarioApplication.IProps>(next);
-    if (result.success === false) return result;
+  application.functions[0] = {
+    ...application.functions[0],
+    validate: (next: unknown): IValidation => {
+      const result: IValidation<IAutoBeTestScenarioApplication.IProps> =
+        typia.validate<IAutoBeTestScenarioApplication.IProps>(next);
+      if (result.success === false) return result;
 
-    // merge to unique scenario groups
-    const scenarioGroups: IAutoBeTestScenarioApplication.IScenarioGroup[] = [];
-    result.data.scenarioGroups.forEach((sg) => {
-      const created = scenarioGroups.find(
-        (el) =>
-          el.endpoint.method === sg.endpoint.method &&
-          el.endpoint.path === sg.endpoint.path,
-      );
-      if (created) {
-        created.scenarios.push(...sg.scenarios);
-      } else {
-        scenarioGroups.push(sg);
-      }
-    });
+      // merge to unique scenario groups
+      const scenarioGroups: IAutoBeTestScenarioApplication.IScenarioGroup[] =
+        [];
+      result.data.scenarioGroups.forEach((sg) => {
+        const created = scenarioGroups.find(
+          (el) =>
+            el.endpoint.method === sg.endpoint.method &&
+            el.endpoint.path === sg.endpoint.path,
+        );
+        if (created) {
+          created.scenarios.push(...sg.scenarios);
+        } else {
+          scenarioGroups.push(sg);
+        }
+      });
 
-    // validate endpoints
-    const errors: IValidation.IError[] = [];
-    scenarioGroups.forEach((group, i) => {
-      if (props.dict.has(group.endpoint) === false)
-        errors.push({
-          value: group.endpoint,
-          path: `$input.scenarioGroups[${i}].endpoint`,
-          expected: "AutoBeOpenApi.IEndpoint",
-          description: props.endpointNotFound,
-        });
-      group.scenarios.forEach((s, j) => {
-        s.dependencies.forEach((dep, k) => {
-          if (props.dict.has(dep.endpoint) === false)
-            errors.push({
-              value: dep.endpoint,
-              path: `$input.scenarioGroups[${i}].scenarios[${j}].dependencies[${k}].endpoint`,
-              expected: "AutoBeOpenApi.IEndpoint",
-              description: props.endpointNotFound,
-            });
+      // validate endpoints
+      const errors: IValidation.IError[] = [];
+      scenarioGroups.forEach((group, i) => {
+        if (props.dict.has(group.endpoint) === false)
+          errors.push({
+            value: group.endpoint,
+            path: `$input.scenarioGroups[${i}].endpoint`,
+            expected: "AutoBeOpenApi.IEndpoint",
+            description: props.endpointNotFound,
+          });
+        group.scenarios.forEach((s, j) => {
+          s.dependencies.forEach((dep, k) => {
+            if (props.dict.has(dep.endpoint) === false)
+              errors.push({
+                value: dep.endpoint,
+                path: `$input.scenarioGroups[${i}].scenarios[${j}].dependencies[${k}].endpoint`,
+                expected: "AutoBeOpenApi.IEndpoint",
+                description: props.endpointNotFound,
+              });
+          });
         });
       });
-    });
-    return errors.length === 0
-      ? {
-          success: true,
-          data: scenarioGroups,
-        }
-      : {
-          success: false,
-          data: scenarioGroups,
-          errors,
-        };
+      return errors.length === 0
+        ? {
+            success: true,
+            data: scenarioGroups,
+          }
+        : {
+            success: false,
+            data: scenarioGroups,
+            errors,
+          };
+    },
   };
   return {
     protocol: "class",

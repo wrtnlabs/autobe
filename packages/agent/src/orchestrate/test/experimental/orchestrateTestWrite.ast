@@ -228,29 +228,29 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
   const application: ILlmApplication<Model> = collection[
     props.model
   ] as unknown as ILlmApplication<Model>;
-  application.functions[0].validate = (
-    input: unknown,
-  ): IValidation<unknown> => {
-    const result: IValidation<ICreateTestCodeProps> =
-      typia.validate<ICreateTestCodeProps>(input);
-    if (result.success === false) return result;
+  application.functions[0] = {
+    ...application.functions[0],
+    validate: (input: unknown): IValidation<unknown> => {
+      const result: IValidation<ICreateTestCodeProps> =
+        typia.validate<ICreateTestCodeProps>(input);
+      if (result.success === false) return result;
 
-    const context: IAutoBeTextValidateContext = {
-      function: result.data.function,
-      document: props.document,
-      endpoints,
-      errors: [],
-    };
-    validateTestFunction(context);
-    return context.errors.length === 0
-      ? result
-      : {
-          success: false,
-          data: result.data,
-          errors: context.errors,
-        };
+      const context: IAutoBeTextValidateContext = {
+        function: result.data.function,
+        document: props.document,
+        endpoints,
+        errors: [],
+      };
+      validateTestFunction(context);
+      return context.errors.length === 0
+        ? result
+        : {
+            success: false,
+            data: result.data,
+            errors: context.errors,
+          };
+    },
   };
-
   return {
     protocol: "class",
     name: "Create Test Code",
