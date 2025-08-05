@@ -8,7 +8,6 @@ import { v4 } from "uuid";
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { randomBackoffRetry } from "../../utils/backoffRetry";
 import { enforceToolCall } from "../../utils/enforceToolCall";
 import { transformInterfaceAssetHistories } from "./histories/transformInterfaceAssetHistories";
 import { IAutoBeInterfaceOperationApplication } from "./structures/IAutoBeInterfaceOperationApplication";
@@ -134,17 +133,11 @@ export async function orchestrateInterfaceOperationReview<
 
   enforceToolCall(agentica);
 
-  const res = await randomBackoffRetry(async () => {
-    return await agentica.conversate("Review the operations").finally(() => {
-      const tokenUsage = agentica.getTokenUsage();
-      ctx.usage().record(tokenUsage, ["interface"]);
-    });
+  await agentica.conversate("Review the operations").finally(() => {
+    const tokenUsage = agentica.getTokenUsage();
+    ctx.usage().record(tokenUsage, ["interface"]);
   });
-
-  if (pointer.value === null) {
-    console.log(JSON.stringify(res, null, 2));
-    throw new Error("Failed to review operations.");
-  }
+  if (pointer.value === null) throw new Error("Failed to review operations.");
   return pointer.value;
 }
 
