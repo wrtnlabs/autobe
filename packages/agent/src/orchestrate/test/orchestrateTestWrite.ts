@@ -91,6 +91,9 @@ async function process<Model extends ILlmSchema.Model>(
     vendor: ctx.vendor,
     config: {
       ...(ctx.config ?? {}),
+      executor: {
+        describe: null,
+      },
     },
     histories: transformTestWriteHistories(scenario, artifacts),
     controllers: [
