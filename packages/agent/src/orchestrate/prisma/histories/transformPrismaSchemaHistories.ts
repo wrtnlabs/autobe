@@ -7,7 +7,7 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 export const transformPrismaSchemaHistories = (
   requirementAnalysisReport: Record<string, string>,
   targetComponent: AutoBePrisma.IComponent,
-  otherComponents: AutoBePrisma.IComponent[],
+  otherTables: string[],
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
@@ -28,8 +28,8 @@ export const transformPrismaSchemaHistories = (
         "```",
         JSON.stringify({
           requirementAnalysisReport,
-          otherComponents,
           targetComponent,
+          otherTables,
         }),
         "```",
       ].join("\n"),

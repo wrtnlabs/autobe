@@ -29,7 +29,12 @@ export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
         (y) => comp !== y,
       );
       const result: IAutoBePrismaSchemaApplication.IProps = await forceRetry(
-        () => process(ctx, targetComponent, otherComponents),
+        () =>
+          process(
+            ctx,
+            targetComponent,
+            otherComponents.map((c) => c.tables).flat(),
+          ),
       );
       const event: AutoBePrismaSchemasEvent = {
         type: "prismaSchemas",
@@ -54,7 +59,7 @@ export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   targetComponent: AutoBePrisma.IComponent,
-  otherComponents: AutoBePrisma.IComponent[],
+  otherTables: string[],
 ): Promise<IAutoBePrismaSchemaApplication.IProps> {
   const pointer: IPointer<IAutoBePrismaSchemaApplication.IProps | null> = {
     value: null,
@@ -71,12 +76,12 @@ async function process<Model extends ILlmSchema.Model>(
     histories: transformPrismaSchemaHistories(
       ctx.state().analyze!.files,
       targetComponent,
-      otherComponents,
+      otherTables,
     ),
     controllers: [
       createApplication(ctx, {
         targetComponent,
-        otherComponents,
+        otherTables,
         build: (next) => {
           pointer.value = next;
         },
@@ -98,7 +103,7 @@ function createApplication<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
     targetComponent: AutoBePrisma.IComponent;
-    otherComponents: AutoBePrisma.IComponent[];
+    otherTables: string[];
     build: (next: IAutoBePrismaSchemaApplication.IProps) => void;
   },
 ): IAgenticaController.IClass<Model> {

@@ -1,4 +1,4 @@
-import { orchestrate } from "@autobe/agent";
+import { AutoBeTokenUsage, orchestrate } from "@autobe/agent";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeAssistantMessageHistory,
@@ -24,7 +24,7 @@ export const validate_agent_prisma_main = async (
 ) => {
   if (TestGlobal.env.API_KEY === undefined) return false;
 
-  const { agent } = await prepare_agent_prisma(factory, project);
+  const { agent, zero } = await prepare_agent_prisma(factory, project);
   const model: string = TestGlobal.getVendorModel();
   const snapshots: AutoBeEventSnapshot[] = [];
   const listen = (event: AutoBeEvent) => {
@@ -49,6 +49,7 @@ export const validate_agent_prisma_main = async (
   agent.on("prismaComponents", (event) => {
     console.log(
       event.components.map((c) => c.tables.length).reduce((a, b) => a + b, 0),
+      event.components.map((c) => c.tables.length),
       event.components,
     );
     components = event;
@@ -143,6 +144,13 @@ export const validate_agent_prisma_main = async (
   if (process.argv.includes("--archive"))
     await TestHistory.save({
       [`${project}.prisma.json`]: JSON.stringify(agent.getHistories()),
-      [`${project}.prisma.snapshots.json`]: JSON.stringify(snapshots),
+      [`${project}.prisma.snapshots.json`]: JSON.stringify(
+        snapshots.map((s) => ({
+          event: s.event,
+          tokenUsage: new AutoBeTokenUsage(s.tokenUsage)
+            .decrement(zero)
+            .toJSON(),
+        })),
+      ),
     });
 };

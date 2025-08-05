@@ -1,4 +1,4 @@
-import { AutoBeAgent } from "@autobe/agent";
+import { AutoBeAgent, AutoBeTokenUsage } from "@autobe/agent";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeEvent,
@@ -42,6 +42,9 @@ export const validate_agent_analyze_main = async (
   agent.on("analyzeComplete", listen);
 
   // GENERATE REPORT
+  const zero: AutoBeTokenUsage = new AutoBeTokenUsage(
+    factory.getTokenUsage().toJSON(),
+  );
   const go = (message: string) =>
     agent.conversate(
       [
@@ -75,6 +78,13 @@ export const validate_agent_analyze_main = async (
   if (process.argv.includes("--archive"))
     await TestHistory.save({
       [`${project}.analyze.json`]: JSON.stringify(agent.getHistories()),
-      [`${project}.analyze.snapshots.json`]: JSON.stringify(snapshots),
+      [`${project}.analyze.snapshots.json`]: JSON.stringify(
+        snapshots.map((s) => ({
+          event: s.event,
+          tokenUsage: new AutoBeTokenUsage(s.tokenUsage)
+            .decrement(zero)
+            .toJSON(),
+        })),
+      ),
     });
 };

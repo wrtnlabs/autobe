@@ -146,6 +146,16 @@ export class AutoBeTokenUsageComponent
     this.output.rejected_prediction += props.output.rejected_prediction;
   }
 
+  /** @internal */
+  public decrement(props: IAutoBeTokenUsageJson.IComponent) {
+    this.input.total -= props.input.total;
+    this.input.cached -= props.input.cached;
+    this.output.total -= props.output.total;
+    this.output.reasoning -= props.output.reasoning;
+    this.output.accepted_prediction -= props.output.accepted_prediction;
+    this.output.rejected_prediction -= props.output.rejected_prediction;
+  }
+
   /**
    * Create new component combining two token usage statistics.
    *

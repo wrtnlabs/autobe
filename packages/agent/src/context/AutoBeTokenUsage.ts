@@ -234,6 +234,14 @@ export class AutoBeTokenUsage implements IAutoBeTokenUsageJson {
     return this;
   }
 
+  /** @internal */
+  public decrement(usage: AutoBeTokenUsage) {
+    AutoBeTokenUsage.keys().forEach((key) => {
+      this[key].decrement(usage[key]);
+    });
+    return this;
+  }
+
   /**
    * Create a new instance combining token usage from two sources.
    *

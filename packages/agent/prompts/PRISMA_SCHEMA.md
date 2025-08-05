@@ -28,7 +28,7 @@ Your Domain: targetComponent.namespace = "..."
 ## 🚧 REFERENCE INFORMATION (FOR RELATIONSHIPS ONLY)
 
 ### Other Existing Tables (ALREADY CREATED - DO NOT CREATE)
-- `otherComponents[]` lists tables that are **ALREADY CREATED** in other files
+- `otherTables[]` is an array of table names that are **ALREADY CREATED** in other files
 - These tables are **ALREADY IMPLEMENTED** by other developers/processes
 - These tables **ALREADY EXIST** in the database system
 - Use these ONLY for foreign key relationships
@@ -59,12 +59,12 @@ ASSIGNMENT VALIDATION:
 My Target Component: [targetComponent.namespace] - [targetComponent.filename]
 Tables I Must Create: [list each table from targetComponent.tables with EXACT names]
 Required Count: [targetComponent.tables.length]
-Already Created Tables (Reference Only): [list otherComponents tables - these ALREADY EXIST]
+Already Created Tables (Reference Only): [list otherTables - these ALREADY EXIST]
 
 DESIGN PLANNING:
 ✅ I will create exactly [count] models from targetComponent.tables
 ✅ I will use EXACT table names as provided (NO CHANGES)
-✅ I will use otherComponents tables only for foreign key relationships (they ALREADY EXIST)
+✅ I will use otherTables only for foreign key relationships (they ALREADY EXIST)
 ✅ I will add junction tables if needed for M:N relationships
 ✅ I will identify materialized views (mv_) for denormalized data
 ✅ I will ensure strict 3NF normalization for regular tables
@@ -111,15 +111,9 @@ const targetComponent: AutoBePrisma.IComponent = {
   rationale: "Grouping sales-related tables enables coherent product lifecycle management.",
   tables: ["shopping_goods", "shopping_goods_options"]
 };
-const otherComponents: AutoBePrisma.IComponent[] = [
-  {
-    filename: "schema-01-actors.prisma", // ALREADY CREATED FILE
-    namespace: "Actors",
-    thinking: "User management tables for authentication and identity.",
-    review: "Customer tables are about identity, not transactions.",
-    rationale: "Separation between identity management and business operations.",
-    tables: ["shopping_customers", "shopping_sellers"] // ALREADY CREATED TABLES
-  }
+const otherTables: string[] = [
+  "shopping_customers", // ALREADY CREATED TABLE
+  "shopping_sellers"    // ALREADY CREATED TABLE
 ];
 ```
 
@@ -151,7 +145,7 @@ const otherComponents: AutoBePrisma.IComponent[] = [
 - ✅ Created `shopping_goods` (from targetComponent.tables)
 - ✅ Created `shopping_goods_options` (from targetComponent.tables)  
 - ✅ Total: 2 models = targetComponent.tables.length
-- ✅ Can reference `shopping_sellers` via foreign key (ALREADY EXISTS in otherComponents)
+- ✅ Can reference `shopping_sellers` via foreign key (ALREADY EXISTS in otherTables)
 - ✅ Complete 2-step process with direct AST model creation
 - ✅ Proper field classification and relationship structures
 - ✅ All validations performed in final step
@@ -161,17 +155,17 @@ const otherComponents: AutoBePrisma.IComponent[] = [
 {
   plan: "Need to create shopping system tables including customers and sellers...",
   
-  review: "Critical error identified: Plan attempts to create tables that already exist in otherComponents.",
+  review: "Critical error identified: Plan attempts to create tables that already exist in otherTables.",
   
   models: [
-    { name: "shopping_customers" }, // ❌ ALREADY CREATED in otherComponents!
-    { name: "shopping_sellers" }    // ❌ ALREADY CREATED in otherComponents!
+    { name: "shopping_customers" }, // ❌ ALREADY CREATED in otherTables!
+    { name: "shopping_sellers" }    // ❌ ALREADY CREATED in otherTables!
   ]
 }
 ```
 
 **Why this is wrong:**
-- ❌ Created tables from otherComponents that are ALREADY CREATED
+- ❌ Created tables from otherTables that are ALREADY CREATED
 - ❌ Missing required tables from targetComponent.tables (shopping_goods, shopping_goods_options)
 - ❌ Completely ignored the actual assignment
 - ❌ Duplicated already existing tables
@@ -353,7 +347,7 @@ Special behaviors: [any important constraints or rules]."
 - Extract `targetComponent.tables` - This is your complete specification
 - Count required tables: `targetComponent.tables.length`
 - Identify domain: `targetComponent.namespace`
-- Note already created tables from `otherComponents[]` for foreign keys
+- Note already created tables from `otherTables[]` for foreign keys
 
 #### 2. Domain Understanding
 - Understand the business domain from `targetComponent.namespace`
@@ -393,7 +387,7 @@ Special behaviors: [any important constraints or rules]."
 
 1. **Component Compliance Validation**
    - All models from `targetComponent.tables` are included
-   - No models from `otherComponents[].tables` are created
+   - No models from `otherTables[]` are created
    - Additional tables are only for M:N relationships within domain
    - All model names are exact matches to `targetComponent.tables`
 
@@ -418,7 +412,7 @@ Special behaviors: [any important constraints or rules]."
 
 5. **Relationship Validation**
    - All foreign fields have corresponding relation definitions
-   - Target models exist in the schema structure or `otherComponents`
+   - Target models exist in the schema structure or `otherTables`
    - No duplicate relation names within any model
    - Cardinality correctly reflected in `unique` property
 
@@ -440,7 +434,7 @@ Before finalizing, verify:
 - **Is every regular table properly normalized?**
 - **Are ALL calculated/aggregated fields in `mv_` tables only?**
 - **Are ALL required tables from `targetComponent.tables` created?**
-- **Are ZERO tables from `otherComponents[].tables` created?**
+- **Are ZERO tables from `otherTables[]` created?**
 
 ### Expected Output
 
@@ -468,7 +462,7 @@ Generate a single function call using the IAutoBePrismaSchemaApplication.IProps 
 - ✅ **ALL REGULAR TABLES FULLY NORMALIZED (3NF minimum)**
 - ✅ **NO PRE-CALCULATED FIELDS IN REGULAR TABLES**
 - ✅ **ALL DENORMALIZATION IN `mv_` TABLES ONLY**
-- ✅ **NO TABLES FROM `otherComponents[].tables` CREATED**
+- ✅ **NO TABLES FROM `otherTables[]` CREATED**
 - ✅ **COMPREHENSIVE VALIDATION COMPLETED**
 
 ### Task: Generate Structured Prisma Schema Definition

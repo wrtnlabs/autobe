@@ -1,4 +1,4 @@
-import { AutoBeAgent } from "@autobe/agent";
+import { AutoBeAgent, AutoBeTokenUsage } from "@autobe/agent";
 import { AutoBeState } from "@autobe/agent/src/context/AutoBeState";
 import { AutoBeHistory } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
@@ -16,19 +16,26 @@ export const prepare_agent_interface = async (
     throw new Error("No OpenAI API key provided");
 
   const histories: AutoBeHistory[] = await TestHistory.getPrisma(project);
-  const agent: AutoBeAgent<ILlmSchema.Model> = factory.createAgent(
-    histories,
-    process.argv.includes("--archive")
-      ? await TestHistory.getTokenUsage({
-          project,
-          type: "prisma",
-        })
-      : undefined,
-  );
+  const agent: AutoBeAgent<ILlmSchema.Model> = factory.createAgent(histories);
   const state: AutoBeState = agent.getContext().state();
   return {
     agent,
     analyze: state.analyze!,
     prisma: state.prisma!,
+    zero: await getZeroTokenUsage(factory, project),
   };
+};
+
+const getZeroTokenUsage = async (
+  factory: TestFactory,
+  project: TestProject,
+): Promise<AutoBeTokenUsage> => {
+  const zero: AutoBeTokenUsage = new AutoBeTokenUsage(
+    await TestHistory.getTokenUsage({
+      project,
+      type: "prisma",
+    }),
+  );
+  zero.decrement(factory.getTokenUsage());
+  return zero;
 };

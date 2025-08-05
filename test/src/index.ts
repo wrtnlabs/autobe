@@ -19,7 +19,8 @@ async function main(): Promise<void> {
   // PREPARE ENVIRONMENT
   const tokenUsage: AutoBeTokenUsage = new AutoBeTokenUsage();
   const factory: TestFactory = {
-    createAgent: (histories, tu) =>
+    getTokenUsage: () => tokenUsage,
+    createAgent: (histories) =>
       new AutoBeAgent({
         model: TestGlobal.env.SCHEMA_MODEL ?? "chatgpt",
         vendor: {
@@ -35,7 +36,7 @@ async function main(): Promise<void> {
         },
         compiler: (listener) => new AutoBeCompiler(listener),
         histories,
-        tokenUsage: tu ?? tokenUsage,
+        tokenUsage,
       }),
     createCompiler: (
       listener: IAutoBeCompilerListener = {

@@ -1,4 +1,4 @@
-import { orchestrate } from "@autobe/agent";
+import { AutoBeTokenUsage, orchestrate } from "@autobe/agent";
 import { OpenApiEndpointComparator } from "@autobe/agent/src/orchestrate/interface/utils/OpenApiEndpointComparator";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
@@ -23,8 +23,9 @@ export const validate_agent_interface_main = async (
   if (TestGlobal.env.API_KEY === undefined) return false;
 
   // PREPARE AGENT
-  const { agent } = await prepare_agent_interface(factory, project);
+  const { agent, zero } = await prepare_agent_interface(factory, project);
   const snapshots: AutoBeEventSnapshot[] = [];
+
   const listen = (event: AutoBeEvent) => {
     snapshots.push({
       event,
@@ -84,7 +85,14 @@ export const validate_agent_interface_main = async (
   if (process.argv.includes("--archive")) {
     await TestHistory.save({
       [`${project}.interface.json`]: JSON.stringify(agent.getHistories()),
-      [`${project}.interface.snapshots.json`]: JSON.stringify(snapshots),
+      [`${project}.interface.snapshots.json`]: JSON.stringify(
+        snapshots.map((s) => ({
+          event: s.event,
+          tokenUsage: new AutoBeTokenUsage(s.tokenUsage)
+            .decrement(zero)
+            .toJSON(),
+        })),
+      ),
       [`${project}.interface.groups.json`]: JSON.stringify(
         snapshots
           .map((s) => s.event)
