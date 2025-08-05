@@ -41,7 +41,7 @@ export const orchestrateAnalyzeComposer = <Model extends ILlmSchema.Model>(
       {
         id: v4(),
         type: "systemMessage",
-        text: AutoBeSystemPromptConstant.ANALYZE_PLANNER,
+        text: AutoBeSystemPromptConstant.ANALYZE_COMPOSER,
         created_at: new Date().toISOString(),
       },
     ],
