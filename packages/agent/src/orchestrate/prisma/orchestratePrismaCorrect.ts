@@ -11,6 +11,7 @@ import typia from "typia";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { enforceToolCall } from "../../utils/enforceToolCall";
+import { forceRetry } from "../../utils/forceRetry";
 import { transformPrismaCorrectHistories } from "./histories/transformPrismaCorrectHistories";
 import { IAutoBePrismaCorrectApplication } from "./structures/IAutoBePrismaCorrectApplication";
 
@@ -57,7 +58,41 @@ async function step<Model extends ILlmSchema.Model>(
     step: ctx.state().analyze?.step ?? 0,
     created_at: new Date().toISOString(),
   });
+  const next: IAutoBePrismaCorrectApplication.IProps = await forceRetry(() =>
+    process(ctx, result),
+  );
+  const correction: AutoBePrisma.IApplication = {
+    files: application.files.map((file) => ({
+      filename: file.filename,
+      namespace: file.namespace,
+      models: file.models.map((model) => {
+        const newbie = next.models.find((m) => m.name === model.name);
+        return newbie ?? model;
+      }),
+    })),
+  };
+  ctx.dispatch({
+    type: "prismaCorrect",
+    failure: result,
+    correction,
+    planning: next.planning,
+    step: ctx.state().analyze?.step ?? 0,
+    created_at: new Date().toISOString(),
+  });
+  return step(
+    ctx,
+    {
+      files: correction.files,
+    },
+    life - 1,
+  );
+}
 
+async function process<Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  failure: IAutoBePrismaValidation.IFailure,
+): Promise<IAutoBePrismaCorrectApplication.IProps> {
+  // PREPARE AGENTICA
   const pointer: IPointer<IAutoBePrismaCorrectApplication.IProps | null> = {
     value: null,
   };
@@ -70,7 +105,7 @@ async function step<Model extends ILlmSchema.Model>(
         describe: null,
       },
     },
-    histories: transformPrismaCorrectHistories(result),
+    histories: transformPrismaCorrectHistories(failure),
     controllers: [
       createApplication({
         model: ctx.model,
@@ -91,38 +126,11 @@ async function step<Model extends ILlmSchema.Model>(
       const tokenUsage = agentica.getTokenUsage().aggregate;
       ctx.usage().record(tokenUsage, ["prisma"]);
     });
-  if (pointer.value === null) {
-    console.error(
+  if (pointer.value === null)
+    throw new Error(
       "Unreachable error: PrismaCompilerAgent.pointer.value is null",
     );
-    return result; // unreachable
-  }
-
-  const correction: AutoBePrisma.IApplication = {
-    files: application.files.map((file) => ({
-      filename: file.filename,
-      namespace: file.namespace,
-      models: file.models.map((model) => {
-        const newbie = pointer.value!.models.find((m) => m.name === model.name);
-        return newbie ?? model;
-      }),
-    })),
-  };
-  ctx.dispatch({
-    type: "prismaCorrect",
-    failure: result,
-    correction,
-    planning: pointer.value.planning,
-    step: ctx.state().analyze?.step ?? 0,
-    created_at: new Date().toISOString(),
-  });
-  return step(
-    ctx,
-    {
-      files: correction.files,
-    },
-    life - 1,
-  );
+  return pointer.value;
 }
 
 function createApplication<Model extends ILlmSchema.Model>(props: {
