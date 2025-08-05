@@ -84,9 +84,9 @@ export class AutoBeTokenUsageComponent
    *
    * @param props - Token usage data to initialize the component
    */
-  public constructor(props: IAutoBeTokenUsageJson.IComponent);
+  public constructor(props: Omit<IAutoBeTokenUsageJson.IComponent, "total">);
 
-  public constructor(props?: IAutoBeTokenUsageJson.IComponent) {
+  public constructor(props?: Omit<IAutoBeTokenUsageJson.IComponent, "total">) {
     if (props === undefined) {
       this.input = { total: 0, cached: 0 };
       this.output = {
@@ -163,7 +163,6 @@ export class AutoBeTokenUsageComponent
     b: AutoBeTokenUsageComponent,
   ) {
     return new AutoBeTokenUsageComponent({
-      total: a.total + b.total,
       input: {
         total: a.input.total + b.input.total,
         cached: a.input.cached + b.input.cached,
