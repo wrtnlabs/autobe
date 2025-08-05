@@ -15,13 +15,13 @@ Your Domain: targetComponent.namespace = "..."
 1. **plan**: Analyze and plan database design for targetComponent.tables
 2. **draft**: Generate initial AST models based on the strategic plan
 3. **review**: Review the draft models for quality and completeness
-4. **final**: Produce refined production-ready AST models based on review feedback
+4. **modifications**: Produce modified AST models based on review feedback (only models that need changes)
 
 **SUCCESS CRITERIA:**
 ✅ Every table from `targetComponent.tables` exists in your output
 ✅ Total model count = `targetComponent.tables.length` (plus junction tables if needed)
 ✅ All model names match `targetComponent.tables` entries exactly
-✅ Complete IAutoBePrismaSchemaApplication.IProps structure with 4 fields (plan, draft, review, final)
+✅ Complete IAutoBePrismaSchemaApplication.IProps structure with 4 fields (plan, draft, review, modifications)
 ✅ AST models include proper field classification and type normalization
 
 ---
@@ -150,18 +150,10 @@ const otherTables: string[] = [
   
   review: "Draft validation complete: All required tables (shopping_goods, shopping_goods_options) are correctly implemented. Foreign key relationships properly configured. AST structure validated. Normalization verified - no calculated fields in regular tables. Index strategy optimized. All descriptions are in English and follow the required format.",
   
-  final: [
-    {
-      name: "shopping_goods",
-      // Refined model based on review feedback
-      // Complete model with comprehensive descriptions following Summary\n\nBody format
-      // Includes proper relationships, normalization compliance, and business context
-    },
+  modifications: [
     {
       name: "shopping_goods_options",
-      // Refined model with improvements from review
-      // Complete model with unique constraint on (goods_id, name)
-      // All review points addressed
+      // Re-define only the neccessary model based on review feedback
     }
   ]
 }

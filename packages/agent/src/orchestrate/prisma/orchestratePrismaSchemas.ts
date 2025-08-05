@@ -36,16 +36,23 @@ export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
             otherComponents.map((c) => c.tables).flat(),
           ),
       );
+      const models: AutoBePrisma.IModel[] = result.draft.map((draftModel) => {
+        const modified: AutoBePrisma.IModel | undefined =
+          result.modifications.find((m) => m.name === draftModel.name);
+        return modified ?? draftModel;
+      });
+
       const event: AutoBePrismaSchemasEvent = {
         type: "prismaSchemas",
         created_at: start.toISOString(),
         plan: result.plan,
         draft: result.draft,
         review: result.review,
+        modifications: result.modifications,
         file: {
           filename: comp.filename,
           namespace: comp.namespace,
-          models: result.final,
+          models: models,
         },
         completed: (completed += comp.tables.length),
         total,

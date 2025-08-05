@@ -68,7 +68,21 @@ export interface AutoBePrismaSchemasEvent
   review: string;
 
   /**
-   * Step 4: Generated Prisma schema file information for a specific business domain.
+   * Step 4: Model modifications based on review feedback.
+   *
+   * Contains only the Prisma schema models that need changes based on the
+   * review feedback. This partial list includes complete model definitions
+   * for tables that require modifications, not the entire schema. The final
+   * schema is constructed by applying these modifications to the draft models.
+   *
+   * Each model in this array represents a complete replacement for the
+   * corresponding model in the draft, incorporating all necessary corrections
+   * and improvements identified during the review process.
+   */
+  modifications: AutoBePrisma.IModel[];
+
+  /**
+   * Step 5: Generated Prisma schema file information for a specific business domain.
    *
    * This field contains the complete schema file data including the filename,
    * namespace, and the production-ready Prisma schema models. The AI agent has

@@ -100,16 +100,22 @@ export namespace IAutoBePrismaSchemaApplication {
     review: string;
 
     /**
-     * Step 4: Production-ready Prisma schema models.
+     * Step 4: Model modifications based on review feedback.
      *
-     * AI generates the final Prisma schema models by applying the review feedback
-     * to the draft models. This must be a refined Abstract Syntax Tree (AST)
-     * representation using the AutoBePrisma.IModel interface that addresses all
-     * review points and produces error-free, production-ready schemas.
+     * AI generates only the modified Prisma schema models based on the review
+     * feedback. This contains ONLY the models that need changes, not the entire
+     * schema. The modifications will be applied to the draft models to produce
+     * the final production-ready schemas.
      *
-     * **Quality Requirements:**
+     * **Modification Structure:**
      *
-     * - **Complete Coverage**: All targetComponent.tables implemented with exact names
+     * - **Partial Updates**: Include only models that require changes
+     * - **Complete Model**: Each modified model must be complete (not partial fields)
+     * - **Model Identity**: Use exact model names from draft for matching
+     * - **Applied Changes**: Incorporate all review feedback for each model
+     *
+     * **Quality Requirements for Modified Models:**
+     *
      * - **Zero Errors**: Valid AST structure, no validation warnings
      * - **Proper Relationships**: All foreign keys reference existing tables correctly
      * - **Optimized Indexes**: Strategic indexes without redundant foreign key indexes
@@ -120,25 +126,18 @@ export namespace IAutoBePrismaSchemaApplication {
      *   (created_at, updated_at, deleted_at)
      * - **Type Safety**: Consistent use of UUID for all keys, appropriate field types
      *
-     * **Normalization Compliance:**
+     * **Application Process:**
      *
-     * - 1NF: Atomic values, no repeating groups
-     * - 2NF: No partial dependencies on composite keys
-     * - 3NF: No transitive dependencies
-     * - **Prohibited Fields**: No pre-calculated totals, cached values, or
-     *   aggregates in regular tables
+     * The final schema is constructed by:
+     * 1. Starting with the draft models
+     * 2. Replacing models that exist in modifications
+     * 3. Keeping unmodified models from draft as-is
      *
-     * **Relationship Patterns in AST:**
+     * Workflow: Review feedback → Identify changes → Generate modified models only
      *
-     * - 1:1: Foreign field with unique: true
-     * - 1:N: Foreign field with unique: false
-     * - M:N: Separate junction table model with composite indexes
-     *
-     * Workflow: Review feedback → Model refinement → Production-ready models
-     *
-     * This structured representation serves as the ultimate deliverable for
-     * programmatic schema generation and manipulation.
+     * This approach minimizes context usage while ensuring all necessary
+     * corrections are applied to produce production-ready schemas.
      */
-    final: AutoBePrisma.IModel[];
+    modifications: AutoBePrisma.IModel[];
   }
 }
