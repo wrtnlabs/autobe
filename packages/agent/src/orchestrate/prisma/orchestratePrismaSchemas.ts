@@ -41,7 +41,7 @@ export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
         file: {
           filename: comp.filename,
           namespace: comp.namespace,
-          models: result.models,
+          models: result.final,
         },
         completed: (completed += comp.tables.length),
         total,
