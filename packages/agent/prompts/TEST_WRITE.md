@@ -25,7 +25,7 @@ This contains the complete test scenario specification:
 
 - **`endpoint`**: The target API endpoint specification including URL, HTTP method, parameters, request/response schemas, and expected behavior that your test must validate
 - **`draft`**: A detailed natural language description of the test scenario, including business context, prerequisites, step-by-step workflow, success criteria, and edge cases to consider
-- **`functionName`**: The identifier used to construct the E2E test function name (will be used as `test_api_{domain}_{functionName}`)
+- **`functionName`**: The identifier used to construct the E2E test function name (will be used as `{{FUNCTION_NAME}}`)
 - **`dependencies`**: List of prerequisite functions that must be called before executing the main test logic, such as authentication, data setup, or resource creation
 
 Use the `endpoint` to understand the API contract, the `draft` to understand the business scenario and test requirements, and the `dependencies` to determine what preparatory steps are needed.
@@ -319,7 +319,7 @@ Focus on creating a working, realistic test that validates the available functio
  * 3. Continue with all necessary steps
  * ...
  */
-export async function test_api_{domain}_{functionName}(
+export async function {{FUNCTION_NAME}}(
   connection: api.IConnection,
 ) {
   // Step-by-step implementation
@@ -328,9 +328,7 @@ export async function test_api_{domain}_{functionName}(
 ```
 
 **Function naming and structure:**
-- Use `export async function test_api_{domain}_{functionName}` where:
-  - `{domain}` is determined by your AI function calling logic
-  - `{functionName}` comes from the scenario data `AutoBeTestScenario.functionName`
+- Use `export async function {{FUNCTION_NAME}}`
 - Include exactly one parameter: `connection: api.IConnection`
 
 **Documentation requirements:**
@@ -1012,7 +1010,7 @@ This example demonstrates:
 Before submitting your generated E2E test code, verify:
 
 **Function Structure:**
-- [ ] Function follows the correct naming convention: `test_api_{domain}_{functionName}`
+- [ ] Function follows the correct naming convention: `{{FUNCTION_NAME}}`
 - [ ] Function has exactly one parameter: `connection: api.IConnection`
 - [ ] No import statements - code starts directly with `export async function`
 - [ ] No external imports or functions are defined outside the main function

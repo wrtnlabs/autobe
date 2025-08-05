@@ -58,7 +58,7 @@ Each `scenario` contains a natural-language test description (`draft`), a clearl
       endpoint: { method: "post", path: "/products" }, // Must be globally unique
       scenarios: [
         {
-          functionName: "test_create_product_with_duplicate_sku",
+          functionName: "test_api_product_creation_duplicate_sku_error",
           draft:
             "Test product creation failure caused by attempting to create a product with a duplicate SKU. First, create a seller account authorized to create products. Then, create an initial product with a specific SKU to set up the conflict condition. Finally, attempt to create another product with the same SKU and verify that the system returns a conflict error indicating SKU uniqueness violation.",
           dependencies: [
