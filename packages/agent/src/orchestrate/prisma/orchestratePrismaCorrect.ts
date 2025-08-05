@@ -10,6 +10,7 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { divideArray } from "../../utils/divideArray";
 import { enforceToolCall } from "../../utils/enforceToolCall";
 import { forceRetry } from "../../utils/forceRetry";
 import { transformPrismaCorrectHistories } from "./histories/transformPrismaCorrectHistories";
@@ -28,10 +29,10 @@ export function orchestratePrismaCorrect<Model extends ILlmSchema.Model>(
       return true;
     });
   application.files = application.files.filter((f) => f.models.length !== 0);
-  return step(ctx, application, life);
+  return iterate(ctx, application, life);
 }
 
-async function step<Model extends ILlmSchema.Model>(
+async function iterate<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   application: AutoBePrisma.IApplication,
   life: number,
@@ -58,8 +59,9 @@ async function step<Model extends ILlmSchema.Model>(
     step: ctx.state().analyze?.step ?? 0,
     created_at: new Date().toISOString(),
   });
-  const next: IAutoBePrismaCorrectApplication.IProps = await forceRetry(() =>
-    process(ctx, result),
+  const next: IAutoBePrismaCorrectApplication.IProps = await process(
+    ctx,
+    result,
   );
   const correction: AutoBePrisma.IApplication = {
     files: application.files.map((file) => ({
@@ -79,7 +81,7 @@ async function step<Model extends ILlmSchema.Model>(
     step: ctx.state().analyze?.step ?? 0,
     created_at: new Date().toISOString(),
   });
-  return step(
+  return iterate(
     ctx,
     {
       files: correction.files,
@@ -89,6 +91,43 @@ async function step<Model extends ILlmSchema.Model>(
 }
 
 async function process<Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  failure: IAutoBePrismaValidation.IFailure,
+  capacity: number = 8,
+): Promise<IAutoBePrismaCorrectApplication.IProps> {
+  if (failure.errors.length <= capacity)
+    return forceRetry(() => execute(ctx, failure));
+  const divided: IAutoBePrismaValidation.IError[][] = divideArray({
+    array: failure.errors,
+    capacity,
+  });
+
+  const plannings: string[] = [];
+  const models: Record<string, AutoBePrisma.IModel> = {};
+  for (const errors of divided) {
+    const next: IAutoBePrismaCorrectApplication.IProps = await forceRetry(() =>
+      execute(ctx, {
+        success: false,
+        data: {
+          ...failure.data,
+          files: failure.data.files.map((file) => ({
+            ...file,
+            models: file.models.map((m) => models[m.name] ?? m),
+          })),
+        },
+        errors,
+      }),
+    );
+    plannings.push(next.planning);
+    for (const m of next.models) models[m.name] = m;
+  }
+  return {
+    planning: plannings.join("\n\n"),
+    models: Object.values(models),
+  };
+}
+
+async function execute<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   failure: IAutoBePrismaValidation.IFailure,
 ): Promise<IAutoBePrismaCorrectApplication.IProps> {
