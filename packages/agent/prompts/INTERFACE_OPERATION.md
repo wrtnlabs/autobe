@@ -28,16 +28,36 @@ You will receive five types of information:
 
 ## 4. Output Method
 
-You MUST call the `makeOperations()` function with your results.
+You MUST call the `makeOperations()` function with your results following the thinking-draft-review-final pattern.
 
 ```typescript
 makeOperations({
-  operations: [
+  thinking: "Strategic analysis of all endpoints and their purposes...",
+  draft: [
     {
-      specification: "Detailed specification of what this API does...",
+      specification: "Initial specification...",
       path: "/resources",
       method: "get",
-      description: "Multi-paragraph detailed description...",
+      description: "Initial description...",
+      summary: "Initial summary",
+      parameters: [],
+      requestBody: null,
+      responseBody: {
+        description: "Response description",
+        typeName: "IPageIResource"
+      },
+      authorizationRoles: ["user"],
+      name: "index"
+    },
+    // more draft operations...
+  ],
+  review: "Comprehensive review of draft operations identifying issues...",
+  final: [
+    {
+      specification: "Polished specification of what this API does...",
+      path: "/resources",
+      method: "get",
+      description: "Multi-paragraph detailed description incorporating review feedback...",
       summary: "Concise summary of the operation",
       parameters: [],
       requestBody: null,
@@ -48,7 +68,7 @@ makeOperations({
       authorizationRoles: ["user"],
       name: "index"
     },
-    // more operations...
+    // more final operations...
   ],
 });
 ```
@@ -218,32 +238,39 @@ Use actual role names from the Prisma schema. Common patterns:
 
 ## 7. Implementation Strategy
 
-1. **Analyze Input Information**:
-   - Review the requirements analysis document for business context
-   - Study the Prisma schema to understand entities, relationships, and field definitions
-   - Examine the API endpoint groups for organizational context
-   - Process the endpoint list to understand the scope of operations needed
+1. **Thinking Phase**:
+   - Analyze all endpoints to understand their purposes
+   - Map endpoints to Prisma schema entities
+   - Plan RESTful patterns and authorization strategies
+   - Design request/response patterns based on use cases
+   - Document your strategic analysis
 
-2. **Categorize Endpoints**:
-   - Group endpoints by entity type
-   - Identify CRUD patterns and special operations
-   - Understand parent-child relationships for nested resources
+2. **Draft Phase**:
+   - Create initial operations for ALL endpoints
+   - Apply appropriate operation patterns (GET, POST, PUT, PATCH, DELETE)
+   - Write initial specifications and descriptions
+   - Define parameters and request/response bodies
+   - Set preliminary authorization roles
 
-3. **Generate Operations**:
-   - For each endpoint, determine the appropriate operation pattern
-   - Create detailed specifications referencing Prisma schema entities
-   - Write comprehensive multi-paragraph descriptions incorporating schema comments
-   - Define accurate parameters matching path structure
-   - Assign appropriate request/response body types using service prefix naming
-   - Set realistic authorization roles
+3. **Review Phase**:
+   - Check operation completeness (all endpoints covered)
+   - Validate REST compliance and naming conventions
+   - Assess description quality and multi-paragraph structure
+   - Verify type naming with service prefix
+   - Check authorization role appropriateness
+   - Identify any non-English content
+   - Document all issues and improvements needed
 
-4. **Validation**:
-   - Ensure all path parameters are defined
-   - Verify all type references are valid
-   - Check that authorization roles are realistic
-   - Confirm descriptions are detailed and informative
+4. **Final Phase**:
+   - Incorporate all review feedback
+   - Polish specifications and descriptions
+   - Ensure multi-paragraph descriptions with Prisma schema references
+   - Correct any type naming issues
+   - Adjust authorization roles as needed
+   - Translate any non-English content to English
+   - Produce production-ready operations
 
-5. **Function Call**: Call the `makeOperations()` function with the complete array
+5. **Function Call**: Call the `makeOperations()` function with all four phases
 
 ## 8. Quality Standards
 
@@ -302,4 +329,4 @@ This operation integrates with the Customer table as defined in the Prisma schem
 }
 ```
 
-Your implementation MUST be COMPLETE and EXHAUSTIVE, ensuring NO endpoint is missed and every operation provides comprehensive, production-ready API documentation. Calling the `makeOperations()` function is MANDATORY.
+Your implementation MUST be COMPLETE and EXHAUSTIVE, ensuring NO endpoint is missed and every operation provides comprehensive, production-ready API documentation. You MUST provide all four phases (thinking, draft, review, final) when calling the `makeOperations()` function.

@@ -62,7 +62,7 @@ async function step<Model extends ILlmSchema.Model>(
           Object.assign(
             pointer.value,
             (OpenApiV3_1Emender.convertComponents({
-              schemas: next,
+              schemas: next.final,
             }).schemas ?? {}) as Record<
               string,
               AutoBeOpenApi.IJsonSchemaDescriptive
@@ -132,9 +132,7 @@ const getMissed = (document: AutoBeOpenApi.IDocument): string[] => {
 
 function createApplication<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  build: (
-    schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
-  ) => void;
+  build: (next: IAutoBeInterfaceComplementApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
   const application: ILlmApplication<Model> = collection[
@@ -146,7 +144,7 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
     application,
     execute: {
       complementComponents: (next) => {
-        props.build(next.schemas);
+        props.build(next);
       },
     } satisfies IAutoBeInterfaceComplementApplication,
   };

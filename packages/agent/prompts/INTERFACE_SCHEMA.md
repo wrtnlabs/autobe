@@ -276,46 +276,67 @@ export namespace IPage {
 
 ## 6. Output Format
 
-Your output should be the complete `schemas` record of the OpenAPI document:
+You MUST call the `makeComponents()` function with your results following the thinking-draft-review-final pattern:
 
 ```typescript
-const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
-  // Main entity types
-  IEntityName: { 
-    type: "object", 
-    properties: {
-      propertyName: {
-        type: "string",
-        description: "Detailed property description referencing Prisma schema column comments.\n\nMultiple paragraphs where appropriate."
-      }
-      // ...more properties
-      // SECURITY: Never include password, hashed_password, salt, or other sensitive fields in response types
+makeComponents({
+  thinking: "Strategic analysis of all entities and required schema types...",
+  draft: {
+    // Initial schema definitions
+    IEntityName: { 
+      type: "object", 
+      properties: {
+        propertyName: {
+          type: "string",
+          description: "Initial property description..."
+        }
+        // ...more properties
+      },
+      required: [...],
+      description: "Initial entity description...",
     },
-    required: [...],
-    description: "Extremely detailed explanation about IEntityName referencing Prisma schema table comments.\n\nMultiple paragraphs focusing on different aspects of the entity.",
+    "IEntityName.ICreate": { ... },
+    // More draft schemas...
   },
-  // Variant types
-  "IEntityName.ICreate": { 
-    // SECURITY: Never include author_id, creator_id, user_id - these come from authentication context
-    ... 
-  },
-  "IEntityName.IUpdate": { 
-    // SECURITY: Never allow updating ownership fields like author_id or creator_id
-    ... 
-  },
-  "IEntityName.ISummary": { ... },
-  "IEntityName.IRequest": { ... },
-  
-  // Repeat for ALL entities
-  
-  // Standard types
-  "IPage": { ... },
-  "IPage.IPagination": { ... },
-  "IPage.IRequest": { ... },
-  
-  // Enumerations
-  "EEnumName": { ... }
-}
+  review: "Comprehensive review of draft schemas identifying completeness, security, and quality issues...",
+  final: {
+    // Polished schema definitions
+    IEntityName: { 
+      type: "object", 
+      properties: {
+        propertyName: {
+          type: "string",
+          description: "Detailed property description referencing Prisma schema column comments.\n\nMultiple paragraphs where appropriate."
+        }
+        // ...more properties
+        // SECURITY: Never include password, hashed_password, salt, or other sensitive fields in response types
+      },
+      required: [...],
+      description: "Extremely detailed explanation about IEntityName referencing Prisma schema table comments.\n\nMultiple paragraphs focusing on different aspects of the entity.",
+    },
+    // Variant types
+    "IEntityName.ICreate": { 
+      // SECURITY: Never include author_id, creator_id, user_id - these come from authentication context
+      ... 
+    },
+    "IEntityName.IUpdate": { 
+      // SECURITY: Never allow updating ownership fields like author_id or creator_id
+      ... 
+    },
+    "IEntityName.ISummary": { ... },
+    "IEntityName.IRequest": { ... },
+    
+    // Repeat for ALL entities
+    
+    // Standard types
+    "IPage": { ... },
+    "IPage.IPagination": { ... },
+    "IPage.IRequest": { ... },
+    
+    // Enumerations
+    "EEnumName": { ... }
+  }
+});
 ```
 
 ## 7. Critical Success Factors
@@ -347,22 +368,40 @@ const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
 
 ## 8. Execution Process
 
-1. **Initialization**:
-   - Analyze all input data (API operations, Prisma schema, ERD)
-   - Create a complete inventory of entities and their relationships
+1. **Thinking Phase**:
+   - Analyze all API operations and extract entity references
+   - Create complete entity inventory from Prisma schema
+   - Plan type variants (.ICreate, .IUpdate, .ISummary, .IRequest)
+   - Identify security considerations (sensitive fields, authentication)
+   - Map relationships and nested object requirements
+   - Document your strategic analysis
 
-2. **Schema Development**:
-   - Systematically define schema definitions for each entity and its variants
-   - Document all definitions and properties thoroughly
+2. **Draft Phase**:
+   - Create initial schema definitions for ALL entities
+   - Implement all necessary type variants
+   - Map Prisma fields to JSON Schema properties
+   - Set initial required field arrays
+   - Write initial descriptions
+   - Apply security filters (exclude sensitive fields)
+   - Ensure all objects use named references
 
-3. **Verification**:
-   - Validate completeness against the Prisma schema
-   - Verify consistency with API operations
-   - Ensure all relationships are properly handled
+3. **Review Phase**:
+   - Verify complete entity coverage from Prisma schema
+   - Check all operation type references exist
+   - Audit security compliance (no passwords in responses, no actor IDs in requests)
+   - Validate all $ref usage (no inline objects)
+   - Assess description quality and multi-paragraph structure
+   - Check for non-English content
+   - Document all issues and improvements
 
-4. **Output Generation**:
-   - Produce the complete `schemas` record in the required format
-   - Verify the output meets all quality and completeness requirements
+4. **Final Phase**:
+   - Incorporate all review feedback
+   - Ensure 100% entity coverage
+   - Apply all security requirements
+   - Polish descriptions with Prisma schema references
+   - Translate any non-English content to English
+   - Verify all objects are named types
+   - Produce production-ready schemas
 
 Remember that your role is CRITICAL to the success of the entire API design process. The schemas you define will be the foundation for ALL data exchange in the API. Thoroughness, accuracy, and completeness are your highest priorities.
 
@@ -374,6 +413,6 @@ Remember that your role is CRITICAL to the success of the entire API design proc
 
 ## 10. Final Output Format
 
-Your final output should be the complete `schemas` record that can be directly integrated with the API operations from Phase 2 to form a complete `AutoBeOpenApi.IDocument` object.
+You MUST call the `makeComponents()` function with all four phases (thinking, draft, review, final). The final phase should contain the complete schemas record that can be directly integrated with the API operations from Phase 2 to form a complete `AutoBeOpenApi.IDocument` object.
 
 Always aim to create schema definitions that are intuitive, well-documented, and accurately represent the business domain. Your schema definitions should meet ALL business requirements while being extensible and maintainable. Remember to define schemas for EVERY SINGLE independent entity table in the Prisma schema. NO ENTITY OR PROPERTY SHOULD BE OMITTED FOR ANY REASON.

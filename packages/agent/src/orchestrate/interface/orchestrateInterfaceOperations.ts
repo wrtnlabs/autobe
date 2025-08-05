@@ -103,9 +103,9 @@ async function process<Model extends ILlmSchema.Model>(
       createApplication({
         model: ctx.model,
         roles: ctx.state().analyze?.roles.map((it) => it.name) ?? [],
-        build: (operations) => {
+        build: (next) => {
           pointer.value ??= [];
-          const matrix: AutoBeOpenApi.IOperation[][] = operations.map((op) => {
+          const matrix: AutoBeOpenApi.IOperation[][] = next.final.map((op) => {
             if (op.authorizationRoles.length === 0)
               return [
                 {
@@ -150,9 +150,7 @@ async function process<Model extends ILlmSchema.Model>(
 function createApplication<Model extends ILlmSchema.Model>(props: {
   model: Model;
   roles: string[];
-  build: (
-    operations: IAutoBeInterfaceOperationApplication.IOperation[],
-  ) => void;
+  build: (next: IAutoBeInterfaceOperationApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
@@ -165,7 +163,7 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
     if (result.success === false) return result;
 
     const operations: IAutoBeInterfaceOperationApplication.IOperation[] =
-      result.data.operations;
+      result.data.final;
     const errors: IValidation.IError[] = [];
     operations.forEach((op, i) => {
       if (op.method === "get" && op.requestBody !== null)
@@ -207,7 +205,7 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
     application,
     execute: {
       makeOperations: (next) => {
-        props.build(next.operations);
+        props.build(next);
       },
     } satisfies IAutoBeInterfaceOperationApplication,
   };

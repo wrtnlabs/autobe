@@ -104,7 +104,7 @@ async function process<Model extends ILlmSchema.Model>(
         model: ctx.model,
         build: async (next) => {
           pointer.value ??= {};
-          Object.assign(pointer.value, next);
+          Object.assign(pointer.value, next.final);
         },
         pointer,
       }),
@@ -155,7 +155,7 @@ async function process<Model extends ILlmSchema.Model>(
 function createApplication<Model extends ILlmSchema.Model>(props: {
   model: Model;
   build: (
-    next: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
+    next: IAutoBeInterfaceSchemaApplication.IProps,
   ) => Promise<void>;
   pointer: IPointer<Record<
     string,
@@ -173,7 +173,7 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
     application,
     execute: {
       makeComponents: async (next) => {
-        await props.build(next.schemas);
+        await props.build(next);
       },
     } satisfies IAutoBeInterfaceSchemaApplication,
   };

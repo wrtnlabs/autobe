@@ -21,36 +21,158 @@ export interface IAutoBeInterfaceOperationApplication {
 export namespace IAutoBeInterfaceOperationApplication {
   export interface IProps {
     /**
-     * Array of API operations to generate.
+     * Step 1: Strategic API operation design analysis and planning.
      *
-     * Each operation in this array must include:
+     * AI analyzes the provided endpoint list, requirements documents, and Prisma
+     * schemas to formulate a comprehensive API operation design strategy. This
+     * planning phase is crucial for creating well-structured, RESTful operations
+     * that align with business objectives and database design. The AI must
+     * understand the purpose of each endpoint, its relationship to the database
+     * entities, and appropriate request/response patterns before implementation.
      *
-     * - Specification: Detailed API specification with clear purpose and
-     *   functionality
-     * - Path: Resource-centric URL path (e.g., "/resources/{resourceId}")
-     * - Method: HTTP method (get, post, put, delete, patch)
-     * - Description: Extremely detailed multi-paragraph description referencing
-     *   Prisma schema comments
-     * - Summary: Concise one-sentence summary of the endpoint
-     * - Parameters: Array of all necessary parameters with descriptions and
-     *   schema definitions
-     * - RequestBody: For POST/PUT/PATCH methods, with typeName referencing
-     *   components.schemas
-     * - ResponseBody: With typeName referencing appropriate response type
+     * **Key Considerations:**
      *
-     * All operations must follow strict quality standards:
+     * - **Endpoint Analysis**: Understand each path/method combination purpose
+     * - **Entity Mapping**: Connect operations to Prisma schema tables
+     * - **RESTful Patterns**: Apply appropriate GET, POST, PUT, PATCH, DELETE patterns
+     * - **Authorization Strategy**: Plan role-based access for each operation
+     * - **Data Flow**: Design request/response bodies based on use cases
+     * - **Naming Conventions**: Plan consistent DTO naming with service prefix
      *
-     * 1. Detailed descriptions referencing Prisma schema comments
-     * 2. Accurate parameter definitions matching path parameters
-     * 3. Appropriate request/response body type references
-     * 4. Consistent patterns for CRUD operations
-     *
-     * For list retrievals (typically PATCH), include pagination, search, and
-     * sorting. For detail retrieval (GET), return a single resource. For
-     * creation (POST), use .ICreate request body. For modification (PUT), use
-     * .IUpdate request body.
+     * Workflow: Endpoint analysis → Entity mapping → Operation pattern planning
      */
-    operations: IOperation[];
+    thinking: string;
+
+    /**
+     * Step 2: Initial API operations implementation.
+     *
+     * AI generates the first working version of API operations based on the
+     * strategic plan. This draft must be a complete array of IOperation objects
+     * that implements all planned endpoints with specifications, descriptions,
+     * parameters, and request/response body definitions. Each operation should
+     * follow REST conventions while incorporating detailed business context from
+     * Prisma schema comments.
+     *
+     * **Implementation Requirements:**
+     *
+     * - **Complete Coverage**: Every endpoint from the list as IOperation
+     * - **Specification**: Clear business purpose and functionality
+     * - **Description**: Multi-paragraph details referencing Prisma schemas
+     * - **Parameters**: Accurate path parameter definitions
+     * - **Request Bodies**: Appropriate DTO types for POST/PUT/PATCH
+     * - **Response Bodies**: Correct response types with service prefix
+     * - **Authorization**: Realistic role arrays for access control
+     * - **Operation Names**: Consistent naming (index, at, search, create, update, erase)
+     *
+     * **Pattern Application:**
+     *
+     * - GET /entities: List operation with pagination response
+     * - GET /entities/{id}: Detail retrieval with single entity response
+     * - PATCH /entities: Complex search with request/response bodies
+     * - POST /entities: Creation with .ICreate request type
+     * - PUT /entities/{id}: Update with .IUpdate request type
+     * - DELETE /entities/{id}: Deletion with no request/response body
+     *
+     * Workflow: Strategic plan → Operation implementation → Complete operations array
+     */
+    draft: IOperation[];
+
+    /**
+     * Step 3: API operations review and quality assessment.
+     *
+     * AI performs a thorough review of the draft operations implementation,
+     * examining multiple quality dimensions to ensure production readiness.
+     * This review process identifies issues, suggests improvements, and
+     * validates compliance with REST standards and business requirements.
+     *
+     * **Review Dimensions:**
+     *
+     * **Operation Completeness:**
+     *
+     * - All endpoints from the list are implemented
+     * - No missing or duplicate operations
+     * - Consistent operation naming patterns
+     *
+     * **REST Compliance:**
+     *
+     * - Appropriate HTTP methods for operations
+     * - Resource-centric URL patterns
+     * - Proper use of path parameters vs request bodies
+     * - Consistent response patterns (single vs paginated)
+     *
+     * **Description Quality (Per INTERFACE_OPERATION.md):**
+     *
+     * - Multi-paragraph descriptions with proper structure
+     * - References to Prisma schema entity descriptions
+     * - Security and authorization context included
+     * - Business logic and validation rules explained
+     * - Error scenarios and edge cases covered
+     *
+     * **Type Naming Validation:**
+     *
+     * - Service prefix correctly applied to all DTOs
+     * - Consistent naming patterns (.ICreate, .IUpdate, .IRequest)
+     * - Response types match operation patterns
+     * - Pagination types for list operations
+     *
+     * **Authorization Assessment:**
+     *
+     * - Realistic role assignments based on operation type
+     * - Public endpoints have empty role arrays
+     * - Sensitive operations have appropriate restrictions
+     * - Role names match database user types
+     *
+     * **Language Validation:**
+     *
+     * - ALL descriptions and summaries MUST be in English
+     * - Check for any non-English text in specifications
+     * - Identify any mixed-language content
+     *
+     * Workflow: Draft operations → Systematic review → Improvement recommendations
+     */
+    review: string;
+
+    /**
+     * Step 4: Final production-ready API operations.
+     *
+     * AI produces the final, polished version of API operations incorporating
+     * all review feedback. This array of IOperation objects represents the
+     * completed API specification, ready for schema generation and implementation.
+     * All identified issues must be resolved, and operations must meet
+     * enterprise-grade quality standards.
+     *
+     * **Final Operation Characteristics:**
+     *
+     * - **Complete Implementation**: All endpoints with no omissions
+     * - **REST Best Practices**: Proper HTTP semantics and patterns
+     * - **Detailed Documentation**: Comprehensive multi-paragraph descriptions
+     * - **Accurate Parameters**: Path parameters match endpoint paths exactly
+     * - **Consistent Types**: All DTOs follow service prefix naming convention
+     * - **Appropriate Security**: Authorization roles reflect business requirements
+     * - **English-Only Content**: All text fields in English
+     * - **Business Alignment**: Operations match requirements and Prisma schemas
+     *
+     * **Quality Standards (Per INTERFACE_OPERATION.md):**
+     *
+     * - Specifications clearly explain business purpose
+     * - Descriptions include multiple informative paragraphs
+     * - Parameters have accurate names and descriptions
+     * - Request/response bodies use correct type references
+     * - Authorization roles are realistic and appropriate
+     * - Operation names follow standard patterns
+     *
+     * **Language Requirements:**
+     *
+     * - If review identified non-English content, translate to English
+     * - Maintain technical accuracy during translation
+     * - Preserve detailed explanations and context
+     *
+     * Workflow: Review feedback → Issue resolution → Language correction → Production-ready operations
+     *
+     * This array serves as the definitive API operation specification for
+     * the Interface Agent's schema generation process.
+     */
+    final: IOperation[];
   }
 
   /**
