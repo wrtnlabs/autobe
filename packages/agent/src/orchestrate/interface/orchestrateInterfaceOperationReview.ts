@@ -134,7 +134,7 @@ export async function orchestrateInterfaceOperationReview<
   enforceToolCall(agentica);
 
   await agentica.conversate("Review the operations").finally(() => {
-    const tokenUsage = agentica.getTokenUsage();
+    const tokenUsage = agentica.getTokenUsage().aggregate;
     ctx.usage().record(tokenUsage, ["interface"]);
   });
   if (pointer.value === null) throw new Error("Failed to review operations.");
