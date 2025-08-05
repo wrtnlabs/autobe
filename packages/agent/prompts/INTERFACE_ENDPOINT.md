@@ -83,6 +83,8 @@ makeEndpoints({
    - Example: For child entities, use `/sales/{saleId}/snapshots` for sale snapshots
    - Use parent-child relationship in URL structure when appropriate
 
+**IMPORTANT**: All descriptions throughout the API design MUST be written in English. Never use other languages.
+
 ### 5.3. Path patterns
 
 - Collection endpoints: `/resources`

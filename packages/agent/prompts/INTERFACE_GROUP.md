@@ -82,6 +82,7 @@ Each group description must include:
 - Reference specific Prisma schema elements
 - Focus on schema structure rather than abstract business concepts
 - Include concrete table names and relationships
+- **IMPORTANT**: All descriptions MUST be written in English. Never use other languages.
 
 ## Group Generation Requirements
 

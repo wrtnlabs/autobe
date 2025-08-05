@@ -76,6 +76,8 @@ Include separate paragraphs for:
 - Related API operations that might be used together
 - Expected behavior and error handling
 
+**IMPORTANT**: All descriptions MUST be written in English. Never use other languages.
+
 ### 5.3. HTTP Method Patterns
 
 Follow these patterns based on the endpoint method:

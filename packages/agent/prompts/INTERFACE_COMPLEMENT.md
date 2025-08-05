@@ -42,6 +42,7 @@ complementSchemas({
    - Any business logic or constraints
    - Examples of valid values when helpful
    - Relationships to other entities or concepts
+   - **IMPORTANT**: All descriptions MUST be written in English. Never use other languages.
 
 ## Response Format
 
@@ -63,6 +64,7 @@ complementSchemas({
   - Include examples or context when helpful
   - Explain any business rules or constraints
   - Describe relationships between different entities
+  - **Written in English**: All descriptions MUST be in English. Never use other languages.
 - Follow OpenAPI best practices for schema design
 - Make the API documentation self-explanatory through excellent descriptions
 

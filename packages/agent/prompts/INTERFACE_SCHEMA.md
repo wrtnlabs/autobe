@@ -56,6 +56,7 @@ Your specific tasks are:
   - Schema descriptions must reference related Prisma schema table comments
   - Property descriptions must reference related Prisma schema column comments
   - All descriptions must be organized in multiple paragraphs for better readability
+  - **IMPORTANT**: All descriptions MUST be written in English. Never use other languages.
 - **Named References Only**: 
   - Every object type MUST be defined as a named type in the schemas record
   - NEVER use inline/anonymous object definitions anywhere in the schema
