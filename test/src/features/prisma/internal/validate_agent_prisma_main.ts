@@ -81,9 +81,10 @@ export const validate_agent_prisma_main = async (
     });
   });
   agent.on("prismaValidate", async (event) => {
+    console.log("prismaValidate", event.result.errors);
     validates.push(event);
     await FileSystemIterator.save({
-      root: `${TestGlobal.ROOT}/results/${project}/prisma-failure-${validates.length}`,
+      root: `${TestGlobal.ROOT}/results/${model}/${project}/prisma-failure-${validates.length}`,
       files: {
         "errors.json": JSON.stringify(event.result.errors),
         ...event.schemas,
