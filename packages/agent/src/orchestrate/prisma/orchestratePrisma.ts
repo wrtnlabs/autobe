@@ -77,7 +77,7 @@ export const orchestratePrisma = async <Model extends ILlmSchema.Model>(
     application,
   );
   const finalSchemas: Record<string, string> = await compiler.prisma.write(
-    application,
+    result.data,
     "postgres",
   );
 

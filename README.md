@@ -199,6 +199,7 @@ gantt
   Authorization:     done,    2025-06-19, 18d
   Snapshot Logic:    planned, 2025-06-23, 14d
   Review Agent:      active,  2025-08-04, 13d
+  Authorization:     active,  2025-08-04, 27d
 
   section Test Agent
   Scenario Agent:         done, 2025-06-01, 10d        
@@ -206,7 +207,7 @@ gantt
   Compiler Feedback:      done, 2025-06-12, 14d
   Function Calling:       done, 2025-06-18, 14d
   Compiler Development:   done, 2025-07-02, 60d
-  Authorization:        active, 2025-08-04, 13d
+  Authorization:        active, 2025-08-04, 27d
 
   section Realize Agent
   Planner Agent:          done, 2025-07-02, 30d

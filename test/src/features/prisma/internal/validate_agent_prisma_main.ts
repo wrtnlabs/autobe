@@ -48,28 +48,19 @@ export const validate_agent_prisma_main = async (
     start = event;
   });
   agent.on("prismaComponents", (event) => {
-    console.log(
-      event.components.map((c) => c.tables.length).reduce((a, b) => a + b, 0),
-      event.components.map((c) => c.tables.length),
-      event.components,
-    );
     components = event;
   });
 
   const schemas: AutoBePrismaSchemasEvent[] = [];
   const insufficients: AutoBePrismaInsufficientEvent[] = [];
   agent.on("prismaSchemas", (event) => {
-    console.log(
-      "schemas",
-      event.file.models.length,
-      event.draft.map((m) => m.name),
-      event.modifications.map((m) => m.name),
-      event.file.models.map((m) => m.name),
-    );
     schemas.push(event);
   });
   agent.on("prismaInsufficient", (event) => {
     insufficients.push(event);
+  });
+  agent.on("prismaReview", (event) => {
+    console.log(event);
   });
 
   const validates: AutoBePrismaValidateEvent[] = [];
@@ -84,11 +75,6 @@ export const validate_agent_prisma_main = async (
     });
   });
   agent.on("prismaValidate", async (event) => {
-    console.log(
-      "prismaValidate",
-      event.result.errors.length,
-      event.result.errors,
-    );
     validates.push(event);
     await FileSystemIterator.save({
       root: `${TestGlobal.ROOT}/results/${model}/${project}/prisma-failure-${validates.length}`,
