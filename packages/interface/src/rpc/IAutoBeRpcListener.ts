@@ -14,6 +14,7 @@ import {
   AutoBePrismaComponentsEvent,
   AutoBePrismaCorrectEvent,
   AutoBePrismaInsufficientEvent,
+  AutoBePrismaReviewEvent,
   AutoBePrismaSchemasEvent,
   AutoBePrismaStartEvent,
   AutoBePrismaValidateEvent,
@@ -171,6 +172,24 @@ export interface IAutoBeRpcListener {
    * insufficient generation and ensure comprehensive database schema coverage.
    */
   prismaInsufficient?(event: AutoBePrismaInsufficientEvent): Promise<void>;
+
+  /**
+   * Optional handler for database schema review events.
+   *
+   * Called when the Prisma agent reviews and validates schema modifications,
+   * enabling client applications to show that the database design is being
+   * thoroughly evaluated against best practices and business requirements.
+   *
+   * Client applications can use this event to display the review findings,
+   * highlight any necessary modifications, and confirm that the schema adheres
+   * to normalization principles, relationship integrity, and performance
+   * optimization.
+   *
+   * The review process ensures that the database design is robust, maintains
+   * data integrity, and aligns with the overall project goals and
+   * requirements.
+   */
+  prismaReview?(event: AutoBePrismaReviewEvent): Promise<void>;
 
   /**
    * Optional handler for database schema validation events.

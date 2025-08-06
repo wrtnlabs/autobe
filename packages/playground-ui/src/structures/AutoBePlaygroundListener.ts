@@ -45,6 +45,7 @@ export class AutoBePlaygroundListener {
       // PRISMA
       prismaStart: async (event) => {
         this.state_.delete("prismaSchemas");
+        this.state_.delete("prismaReview");
         this.insert(event);
       },
       prismaComponents: async (event) => {
@@ -56,6 +57,9 @@ export class AutoBePlaygroundListener {
       prismaInsufficient: async (event) => {
         this.insert(event);
       },
+      prismaReview: async (event) => {
+        this.accumulate(event);
+      },
       prismaValidate: async (event) => {
         this.insert(event);
       },
@@ -64,6 +68,7 @@ export class AutoBePlaygroundListener {
       },
       prismaComplete: async (event) => {
         this.state_.delete("prismaSchemas");
+        this.state_.delete("prismaReview");
         this.insert(event);
       },
 
