@@ -37,6 +37,7 @@ export const validate_agent_prisma_main = async (
   agent.on("prismaComponents", listen);
   agent.on("prismaSchemas", listen);
   agent.on("prismaInsufficient", listen);
+  agent.on("prismaReview", listen);
   agent.on("prismaCorrect", listen);
   agent.on("prismaValidate", listen);
   agent.on("prismaComplete", listen);
