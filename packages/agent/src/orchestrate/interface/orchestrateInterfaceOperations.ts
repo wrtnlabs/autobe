@@ -219,10 +219,9 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
-  const application: ILlmApplication<Model> = collection[
-    props.model
-  ] as unknown as ILlmApplication<Model>;
-  const validate = (next: unknown) => {
+  const validate = (
+    next: unknown,
+  ): IValidation<IAutoBeInterfaceOperationApplication.IProps> => {
     const result: IValidation<IAutoBeInterfaceOperationApplication.IProps> =
       typia.validate<IAutoBeInterfaceOperationApplication.IProps>(next);
     if (result.success === false) return result;
@@ -264,18 +263,16 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
       };
     return result;
   };
+  const application = collection[
+    props.model === "chatgpt" ? "chatgpt" : "claude"
+  ](
+    validate,
+  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+
   return {
     protocol: "class",
     name: "interface",
-    application: {
-      ...application,
-      functions: [
-        {
-          ...application.functions[0],
-          validate,
-        },
-      ],
-    },
+    application,
     execute: {
       makeOperations: (next) => {
         props.build(next.operations);
@@ -284,21 +281,19 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
   };
 }
 
-const claude = typia.llm.application<
-  IAutoBeInterfaceOperationApplication,
-  "claude",
-  { reference: true }
->();
 const collection = {
-  chatgpt: typia.llm.application<
-    IAutoBeInterfaceOperationApplication,
-    "chatgpt",
-    { reference: true }
-  >(),
-  claude,
-  llama: claude,
-  deepseek: claude,
-  "3.1": claude,
+  chatgpt: (validate: Validator) =>
+    typia.llm.application<IAutoBeInterfaceOperationApplication, "chatgpt">({
+      validate: {
+        makeOperations: validate,
+      },
+    }),
+  claude: (validate: Validator) =>
+    typia.llm.application<IAutoBeInterfaceOperationApplication, "claude">({
+      validate: {
+        makeOperations: validate,
+      },
+    }),
 };
 
 interface IProgress {
@@ -306,7 +301,11 @@ interface IProgress {
   total: number;
 }
 
-export const getPathname = (props: {
+type Validator = (
+  input: unknown,
+) => IValidation<IAutoBeInterfaceOperationApplication.IProps>;
+
+const getPathname = (props: {
   prefix: string;
   role?: string | null;
   path: string;

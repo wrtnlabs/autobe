@@ -2,7 +2,7 @@ import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import { AutoBeOpenApi } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
-import typia, { tags } from "typia";
+import typia from "typia";
 import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
@@ -11,6 +11,7 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { enforceToolCall } from "../../utils/enforceToolCall";
 import { transformInterfaceAssetHistories } from "./histories/transformInterfaceAssetHistories";
 import { IAutoBeInterfaceOperationApplication } from "./structures/IAutoBeInterfaceOperationApplication";
+import { IAutoBeInterfaceOperationReviewApplication } from "./structures/IAutoBeInterfaceOperationReviewApplication";
 
 export namespace IAutoBeInterfaceOperationReview {
   export interface Success {
@@ -27,24 +28,6 @@ export namespace IAutoBeInterfaceOperationReview {
 export interface IAutoBeInterfaceOperationReview {
   passed: IAutoBeInterfaceOperationReview.Success[];
   failure: IAutoBeInterfaceOperationReview.Failure[];
-}
-
-interface IAutoBeInterfaceOperationReviewApplication {
-  reviewOperations(
-    input: IAutoBeInterfaceOperationReviewApplication.IProps,
-  ): void;
-}
-namespace IAutoBeInterfaceOperationReviewApplication {
-  export interface IProps {
-    reviews: IReview[];
-  }
-
-  export interface IReview {
-    method: string;
-    path: string;
-    passed: boolean;
-    reason: (string & tags.MinLength<10>) | null;
-  }
 }
 
 export async function orchestrateInterfaceOperationReview<
@@ -151,22 +134,22 @@ function createReviewController<Model extends ILlmSchema.Model>(props: {
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
-  const application: ILlmApplication<Model> = collection[
-    props.model
-  ] as unknown as ILlmApplication<Model>;
-
-  const validate = (next: unknown) => {
+  const validate = (
+    next: unknown,
+  ): IValidation<IAutoBeInterfaceOperationReviewApplication.IProps> => {
     const result: IValidation<IAutoBeInterfaceOperationReviewApplication.IProps> =
       typia.validate<IAutoBeInterfaceOperationReviewApplication.IProps>(next);
     if (result.success === false) return result;
 
-    const reviews = result.data.reviews;
+    const reviews: IAutoBeInterfaceOperationReviewApplication.IReview[] =
+      result.data.reviews;
     const errors: IValidation.IError[] = [];
 
     reviews.forEach((review, i) => {
-      const operation = props.endpoints.find(
-        (op) => op.method === review.method && op.path === review.path,
-      );
+      const operation: AutoBeOpenApi.IEndpoint | undefined =
+        props.endpoints.find(
+          (op) => op.method === review.method && op.path === review.path,
+        );
       if (!operation) {
         errors.push({
           path: `$input.reviews[${i}]`,
@@ -176,7 +159,6 @@ function createReviewController<Model extends ILlmSchema.Model>(props: {
         });
       }
     });
-
     if (errors.length !== 0)
       return {
         success: false,
@@ -185,19 +167,16 @@ function createReviewController<Model extends ILlmSchema.Model>(props: {
       };
     return result;
   };
+  const application: ILlmApplication<Model> = collection[
+    props.model === "chatgpt" ? "chatgpt" : "claude"
+  ](
+    validate,
+  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
 
   return {
     protocol: "class",
     name: "review",
-    application: {
-      ...application,
-      functions: [
-        {
-          ...application.functions[0],
-          validate,
-        },
-      ],
-    },
+    application,
     execute: {
       reviewOperations: (next) => {
         props.build(next.reviews);
@@ -206,19 +185,26 @@ function createReviewController<Model extends ILlmSchema.Model>(props: {
   };
 }
 
-const claude = typia.llm.application<
-  IAutoBeInterfaceOperationReviewApplication,
-  "claude",
-  { reference: true }
->();
 const collection = {
-  chatgpt: typia.llm.application<
-    IAutoBeInterfaceOperationReviewApplication,
-    "chatgpt",
-    { reference: true }
-  >(),
-  claude,
-  llama: claude,
-  deepseek: claude,
-  "3.1": claude,
+  chatgpt: (validator: Validator) =>
+    typia.llm.application<
+      IAutoBeInterfaceOperationReviewApplication,
+      "chatgpt"
+    >({
+      validate: {
+        reviewOperations: validator,
+      },
+    }),
+  claude: (validator: Validator) =>
+    typia.llm.application<IAutoBeInterfaceOperationReviewApplication, "claude">(
+      {
+        validate: {
+          reviewOperations: validator,
+        },
+      },
+    ),
 };
+
+type Validator = (
+  input: unknown,
+) => IValidation<IAutoBeInterfaceOperationReviewApplication.IProps>;

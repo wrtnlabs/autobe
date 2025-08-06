@@ -2,8 +2,8 @@ import { IAgenticaHistoryJson } from "@agentica/core";
 import { ILlmSchema } from "@samchon/openapi";
 import { v4 } from "uuid";
 
-import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
-import { AutoBeContext } from "../../context/AutoBeContext";
+import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
+import { AutoBeContext } from "../../../context/AutoBeContext";
 
 export const transformRealizeAuthorizationHistories = (
   ctx: AutoBeContext<ILlmSchema.Model>,

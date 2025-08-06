@@ -12,8 +12,8 @@ import typia from "typia";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { enforceToolCall } from "../../utils/enforceToolCall";
+import { transformRealizeAuthorizationCorrectHistories } from "./histories/transformRealizeAuthorizationCorrectHistories";
 import { IAutoBeRealizeAuthorizationCorrectApplication } from "./structures/IAutoBeRealizeAuthorizationCorrectApplication";
-import { transformRealizeAuthorizationCorrectHistories } from "./transformRealizeAuthorizationCorrectHistories";
 import { AuthorizationFileSystem } from "./utils/AuthorizationFileSystem";
 import { AutoBeRealizeAuthorizationReplaceImport } from "./utils/AutoBeRealizeAuthorizationReplaceImport";
 
@@ -161,8 +161,7 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
 
   const application: ILlmApplication<Model> = collection[
     props.model
-  ] as unknown as ILlmApplication<Model>;
-
+  ] satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
     name: "Correct Authorization",

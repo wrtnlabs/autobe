@@ -2,8 +2,8 @@ import { IAgenticaHistoryJson } from "@agentica/core";
 import { IAutoBeTypeScriptCompileResult } from "@autobe/interface";
 import { v4 } from "uuid";
 
-import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
-import { IAutoBeTestFunction } from "./structures/IAutoBeTestFunction";
+import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
+import { IAutoBeTestFunction } from "../structures/IAutoBeTestFunction";
 import { transformTestWriteHistories } from "./transformTestWriteHistories";
 
 export const transformTestCorrectHistories = (

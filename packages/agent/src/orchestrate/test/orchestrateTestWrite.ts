@@ -14,10 +14,10 @@ import { enforceToolCall } from "../../utils/enforceToolCall";
 import { forceRetry } from "../../utils/forceRetry";
 import { completeTestCode } from "./compile/completeTestCode";
 import { getTestScenarioArtifacts } from "./compile/getTestScenarioArtifacts";
+import { transformTestWriteHistories } from "./histories/transformTestWriteHistories";
 import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
 import { IAutoBeTestWriteApplication } from "./structures/IAutoBeTestWriteApplication";
 import { IAutoBeTestWriteResult } from "./structures/IAutoBeTestWriteResult";
-import { transformTestWriteHistories } from "./transformTestWriteHistories";
 
 export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
@@ -128,7 +128,7 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
 
   const application: ILlmApplication<Model> = collection[
     props.model
-  ] as unknown as ILlmApplication<Model>;
+  ] satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
     name: "Create Test Code",

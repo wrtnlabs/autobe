@@ -6,8 +6,8 @@ import {
 import { ILlmSchema } from "@samchon/openapi";
 import { v4 } from "uuid";
 
-import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
-import { AutoBeContext } from "../../context/AutoBeContext";
+import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
+import { AutoBeContext } from "../../../context/AutoBeContext";
 
 export const transformRealizeAuthorizationCorrectHistories = (
   ctx: AutoBeContext<ILlmSchema.Model>,

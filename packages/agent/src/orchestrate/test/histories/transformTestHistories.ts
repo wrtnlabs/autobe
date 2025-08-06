@@ -1,7 +1,7 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
 import { v4 } from "uuid";
 
-import { AutoBeState } from "../../context/AutoBeState";
+import { AutoBeState } from "../../../context/AutoBeState";
 
 export const transformTestHistories = (
   state: AutoBeState,

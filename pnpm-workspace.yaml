@@ -16,13 +16,13 @@ catalogs:
     "@nestia/fetcher": ^7.3.2
     "@nestia/migrate": ^7.3.2
     "@nestia/sdk": ^7.3.2
-    "@samchon/openapi": ^4.6.0
+    "@samchon/openapi": ^4.7.1
     embed-prisma: ^1.1.0
     embed-typescript: ^1.0.1
     prisma-markdown: ^3.0.0
     tgrid: ^1.2.0
     tstl: ^3.0.0
-    typia: ^9.6.1
+    typia: ^9.7.0
   typescript:
     ts-node: ^10.9.2
     ts-patch: ^3.3.0

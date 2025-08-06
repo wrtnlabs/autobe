@@ -9,8 +9,8 @@ import {
 import typia from "typia";
 import { v4 } from "uuid";
 
-import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
-import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
+import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
+import { IAutoBeTestScenarioArtifacts } from "../structures/IAutoBeTestScenarioArtifacts";
 
 export function transformTestWriteHistories(
   scenario: AutoBeTestScenario,

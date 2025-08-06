@@ -42,9 +42,6 @@ export const validate_agent_prisma_schemas = async (
     );
     console.log("    - expected:", event.component.tables.join(", "));
     console.log("    - actual:", event.actual.map((m) => m.name).join(", "));
-    console.log(`    - tablesToCreate:`, event.tablesToCreate.join(", "));
-    console.log(`    - validationReview:`, event.validationReview);
-    console.log(`    - confirmedTables:`, event.confirmedTables.join(", "));
   });
 
   const result: AutoBePrismaSchemasEvent[] = await orchestratePrismaSchemas(

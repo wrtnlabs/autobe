@@ -108,7 +108,7 @@
     "serialize-error": "^4.1.0",
     "tgrid": "^1.1.0",
     "tstl": "^3.0.0",
-    "typia": "^9.6.1",
+    "typia": "^9.7.0",
     "uuid": "^9.0.0"
   },
   "stackblitz": {

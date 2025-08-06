@@ -65,19 +65,4 @@ export interface AutoBePrismaInsufficientEvent
    * actually delivered by the AI function calling process.
    */
   missed: string[];
-
-  /**
-   * Array of table names that the AI function calling process should create to
-   * fulfill the component's requirements.
-   */
-  tablesToCreate: string[];
-
-  /** Review of the AI function calling process that generated this event. */
-  validationReview: string;
-
-  /**
-   * Array of table names that were confirmed by the AI function calling process
-   * as part of the schema generation.
-   */
-  confirmedTables: string[];
 }

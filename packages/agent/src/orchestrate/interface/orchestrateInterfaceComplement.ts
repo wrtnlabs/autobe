@@ -139,7 +139,7 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
   assertSchemaModel(props.model);
   const application: ILlmApplication<Model> = collection[
     props.model
-  ] as unknown as ILlmApplication<Model>;
+  ] satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
     name: "interface",

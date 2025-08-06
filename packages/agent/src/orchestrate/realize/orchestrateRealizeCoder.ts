@@ -14,11 +14,11 @@ import { randomBackoffRetry } from "../../utils/backoffRetry";
 import { enforceToolCall } from "../../utils/enforceToolCall";
 import { getTestScenarioArtifacts } from "../test/compile/getTestScenarioArtifacts";
 import { IAutoBeTestScenarioArtifacts } from "../test/structures/IAutoBeTestScenarioArtifacts";
+import { transformRealizeCoderHistories } from "./histories/transformRealizeCoderHistories";
 import { RealizePlannerOutput } from "./orchestrateRealizePlanner";
 import { IAutoBeRealizeCoderApplication } from "./structures/IAutoBeRealizeCoderApplication";
 import { IAutoBeRealizeCompile } from "./structures/IAutoBeRealizeCompile";
 import { FAILED } from "./structures/IAutoBeRealizeFailedSymbol";
-import { transformRealizeCoderHistories } from "./transformRealizeCoderHistories";
 import { RealizeFileSystem } from "./utils/ProviderFileSystem";
 import { replaceImportStatements } from "./utils/replaceImportStatements";
 
@@ -148,8 +148,7 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
 
   const application: ILlmApplication<Model> = collection[
     props.model
-  ] as unknown as ILlmApplication<Model>;
-
+  ] satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
     name: "Write code",

@@ -225,10 +225,8 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
       AutoBeEndpointComparator.hashCode,
       AutoBeEndpointComparator.equals,
     );
-  const application: ILlmApplication<Model> = collection[
-    props.model
-  ] as unknown as ILlmApplication<Model>;
-  const validate = (input: unknown): IValidation<unknown> => {
+
+  const validate = (input: unknown): IValidation<ICreateTestCodeProps> => {
     const result: IValidation<ICreateTestCodeProps> =
       typia.validate<ICreateTestCodeProps>(input);
     if (result.success === false) return result;
@@ -248,18 +246,16 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
           errors: context.errors,
         };
   };
+  const application: ILlmApplication<Model> = collection[
+    props.model === "chatgpt" ? "chatgpt" : "claude"
+  ](
+    validate,
+  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+
   return {
     protocol: "class",
     name: "Create Test Code",
-    application: {
-      ...application,
-      functions: [
-        {
-          ...application.functions[0],
-          validate,
-        },
-      ],
-    },
+    application,
     execute: {
       createTestCode: (next) => {
         props.build(next);
@@ -268,22 +264,22 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
   };
 }
 
-const claude = typia.llm.application<
-  IApplication,
-  "claude",
-  { reference: true }
->();
 const collection = {
-  chatgpt: typia.llm.application<
-    IApplication,
-    "chatgpt",
-    { reference: true }
-  >(),
-  claude,
-  llama: claude,
-  deepseek: claude,
-  "3.1": claude,
+  chatgpt: (validate: Validator) =>
+    typia.llm.application<IApplication, "chatgpt">({
+      validate: {
+        createTestCode: validate,
+      },
+    }),
+  claude: (validate: Validator) =>
+    typia.llm.application<IApplication, "claude">({
+      validate: {
+        createTestCode: validate,
+      },
+    }),
 };
+
+type Validator = (input: unknown) => IValidation<ICreateTestCodeProps>;
 
 interface IApplication {
   createTestCode(props: ICreateTestCodeProps): void;

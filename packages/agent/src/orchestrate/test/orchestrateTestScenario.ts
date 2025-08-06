@@ -228,10 +228,9 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
-  const application: ILlmApplication<Model> = collection[
-    props.model
-  ] as unknown as ILlmApplication<Model>;
-  const validate = (next: unknown): IValidation => {
+  const validate = (
+    next: unknown,
+  ): IValidation<IAutoBeTestScenarioApplication.IProps> => {
     const result: IValidation<IAutoBeTestScenarioApplication.IProps> =
       typia.validate<IAutoBeTestScenarioApplication.IProps>(next);
     if (result.success === false) return result;
@@ -276,26 +275,27 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
     return errors.length === 0
       ? {
           success: true,
-          data: scenarioGroups,
+          data: {
+            scenarioGroups,
+          },
         }
       : {
           success: false,
-          data: scenarioGroups,
+          data: {
+            scenarioGroups,
+          },
           errors,
         };
   };
+  const application: ILlmApplication<Model> = collection[
+    props.model === "chatgpt" ? "chatgpt" : "claude"
+  ](
+    validate,
+  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
     name: "Make test plans",
-    application: {
-      ...application,
-      functions: [
-        {
-          ...application.functions[0],
-          validate,
-        },
-      ],
-    },
+    application,
     execute: {
       makeScenario: (next) => {
         props.build(next);
@@ -304,21 +304,21 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
   };
 }
 
-const claude = typia.llm.application<
-  IAutoBeTestScenarioApplication,
-  "claude",
-  {
-    reference: true;
-  }
->();
 const collection = {
-  chatgpt: typia.llm.application<
-    IAutoBeTestScenarioApplication,
-    "chatgpt",
-    { reference: true }
-  >(),
-  claude,
-  llama: claude,
-  deepseek: claude,
-  "3.1": claude,
+  chatgpt: (validate: Validator) =>
+    typia.llm.application<IAutoBeTestScenarioApplication, "chatgpt">({
+      validate: {
+        makeScenario: validate,
+      },
+    }),
+  claude: (validate: Validator) =>
+    typia.llm.application<IAutoBeTestScenarioApplication, "claude">({
+      validate: {
+        makeScenario: validate,
+      },
+    }),
 };
+
+type Validator = (
+  input: unknown,
+) => IValidation<IAutoBeTestScenarioApplication.IProps>;

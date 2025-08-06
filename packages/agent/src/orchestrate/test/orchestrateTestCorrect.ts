@@ -13,11 +13,11 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { enforceToolCall } from "../../utils/enforceToolCall";
 import { forceRetry } from "../../utils/forceRetry";
 import { completeTestCode } from "./compile/completeTestCode";
+import { transformTestCorrectHistories } from "./histories/transformTestCorrectHistories";
 import { IAutoBeTestCorrectApplication } from "./structures/IAutoBeTestCorrectApplication";
 import { IAutoBeTestFunction } from "./structures/IAutoBeTestFunction";
 import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
 import { IAutoBeTestWriteResult } from "./structures/IAutoBeTestWriteResult";
-import { transformTestCorrectHistories } from "./transformTestCorrectHistories";
 
 export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
@@ -164,7 +164,7 @@ const createApplication = <Model extends ILlmSchema.Model>(props: {
 
   const application: ILlmApplication<Model> = collection[
     props.model
-  ] as unknown as ILlmApplication<Model>;
+  ] satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
     name: "Modify Test Code",

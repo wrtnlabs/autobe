@@ -7,9 +7,9 @@ import typia from "typia";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { enforceToolCall } from "../../utils/enforceToolCall";
+import { transformRealizeAuthorizationHistories } from "./histories/transformRealizeAuthorization";
 import { orchestrateRealizeAuthorizationCorrect } from "./orchestrateRealizeAuthorizationCorrect";
 import { IAutoBeRealizeAuthorizationApplication } from "./structures/IAutoBeRealizeAuthorizationApplication";
-import { transformRealizeAuthorizationHistories } from "./transformRealizeAuthorization";
 import { AuthorizationFileSystem } from "./utils/AuthorizationFileSystem";
 import { InternalFileSystem } from "./utils/InternalFileSystem";
 
@@ -145,7 +145,7 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
 
   const application: ILlmApplication<Model> = collection[
     props.model
-  ] as unknown as ILlmApplication<Model>;
+  ] satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
 
   return {
     protocol: "class",
