@@ -11,9 +11,6 @@ export const transformPrismaReviewHistories = (
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
-  // Combine all schema files into a single Prisma code string
-  const prismaCode = Object.values(schemas).join("\n\n");
-
   return [
     {
       id: v4(),
@@ -35,7 +32,7 @@ export const transformPrismaReviewHistories = (
         "And here are the Prisma schema files generated from the above AST:",
         "",
         "```prisma",
-        prismaCode,
+        JSON.stringify(schemas),
         "```",
       ].join("\n"),
     },
@@ -52,8 +49,7 @@ export const transformPrismaReviewHistories = (
       text: [
         `Now, please review the tables in the "${component.namespace}" namespace.`,
         "",
-        "Focus your review exclusively on these tables, but do consider their relationships",
-        "with tables in other namespaces for referential integrity validation.",
+        "Focus your review exclusively on these tables.",
         "",
         "**Tables in this namespace:**",
         ...component.tables.map((table) => `- ${table}`),
