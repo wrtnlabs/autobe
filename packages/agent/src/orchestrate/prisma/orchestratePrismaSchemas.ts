@@ -36,12 +36,7 @@ export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
             otherComponents.map((c) => c.tables).flat(),
           ),
       );
-      const models: AutoBePrisma.IModel[] = result.draft.map((draftModel) => {
-        const modified: AutoBePrisma.IModel | undefined =
-          result.modifications.find((m) => m.name === draftModel.name);
-        return modified ?? draftModel;
-      });
-
+      const models: AutoBePrisma.IModel[] = mergeModels(result);
       const event: AutoBePrismaSchemasEvent = {
         type: "prismaSchemas",
         created_at: start.toISOString(),
@@ -52,7 +47,7 @@ export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
         file: {
           filename: comp.filename,
           namespace: comp.namespace,
-          models: models,
+          models,
         },
         completed: (completed += comp.tables.length),
         total,
@@ -107,6 +102,21 @@ async function process<Model extends ILlmSchema.Model>(
   return pointer.value;
 }
 
+const mergeModels = (props: {
+  draft: AutoBePrisma.IModel[];
+  modifications: AutoBePrisma.IModel[];
+}): AutoBePrisma.IModel[] =>
+  Array.from(
+    new Map([
+      ...props.draft.map(
+        (draft) => [draft.name, draft] satisfies [string, AutoBePrisma.IModel],
+      ),
+      ...props.modifications.map(
+        (mod) => [mod.name, mod] satisfies [string, AutoBePrisma.IModel],
+      ),
+    ]).values(),
+  );
+
 function createApplication<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
@@ -124,14 +134,10 @@ function createApplication<Model extends ILlmSchema.Model>(
       typia.validate<IAutoBePrismaSchemaApplication.IProps>(input);
     if (result.success === false) return result;
 
-    const everyModels: AutoBePrisma.IModel[] = result.data.draft.map(
-      (draft) =>
-        result.data.modifications.find((m) => m.name === draft.name) ?? draft,
-    );
+    const actual: AutoBePrisma.IModel[] = mergeModels(result.data);
     const expected: string[] = props.targetComponent.tables;
-    const actual: string[] = everyModels.map((m) => m.name);
     const missed: string[] = expected.filter(
-      (x) => actual.includes(x) === false,
+      (x) => actual.some((a) => a.name === x) === false,
     );
     if (missed.length === 0) return result;
 
@@ -139,7 +145,7 @@ function createApplication<Model extends ILlmSchema.Model>(
       type: "prismaInsufficient",
       created_at: new Date().toISOString(),
       component: props.targetComponent,
-      actual: everyModels,
+      actual,
       missed,
     });
     return {
