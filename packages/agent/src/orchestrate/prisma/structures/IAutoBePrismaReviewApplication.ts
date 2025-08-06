@@ -86,7 +86,7 @@ export namespace IAutoBePrismaReviewApplication {
      * Contains ONLY the models that required changes, not the entire schema.
      * Each model represents a complete table definition with all fields,
      * relationships, indexes, and documentation. These modifications will be
-     * applied to the draft schema to produce the final implementation.
+     * applied to the models to produce the final implementation.
      *
      * **Model Requirements:**
      *
@@ -99,8 +99,8 @@ export namespace IAutoBePrismaReviewApplication {
      *
      * **Notes:**
      *
-     * - Models not included in this array remain unchanged from the draft
-     * - The final schema merges these modifications with the original draft
+     * - Models not included in this array remain unchanged from the models
+     * - The final schema merges these modifications with the original models
      * - All modifications must resolve issues identified in the review
      */
     modifications: AutoBePrisma.IModel[];

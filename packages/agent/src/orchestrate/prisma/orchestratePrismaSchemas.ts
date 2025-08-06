@@ -36,18 +36,15 @@ export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
             otherComponents.map((c) => c.tables).flat(),
           ),
       );
-      const models: AutoBePrisma.IModel[] = mergeModels(result);
       const event: AutoBePrismaSchemasEvent = {
         type: "prismaSchemas",
         created_at: start.toISOString(),
         plan: result.plan,
-        draft: result.draft,
-        review: result.review,
-        modifications: result.modifications,
+        models: result.models,
         file: {
           filename: comp.filename,
           namespace: comp.namespace,
-          models,
+          models: result.models,
         },
         completed: (completed += comp.tables.length),
         total,
@@ -102,21 +99,6 @@ async function process<Model extends ILlmSchema.Model>(
   return pointer.value;
 }
 
-const mergeModels = (props: {
-  draft: AutoBePrisma.IModel[];
-  modifications: AutoBePrisma.IModel[];
-}): AutoBePrisma.IModel[] =>
-  Array.from(
-    new Map([
-      ...props.draft.map(
-        (draft) => [draft.name, draft] satisfies [string, AutoBePrisma.IModel],
-      ),
-      ...props.modifications.map(
-        (mod) => [mod.name, mod] satisfies [string, AutoBePrisma.IModel],
-      ),
-    ]).values(),
-  );
-
 function createApplication<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
@@ -134,7 +116,7 @@ function createApplication<Model extends ILlmSchema.Model>(
       typia.validate<IAutoBePrismaSchemaApplication.IProps>(input);
     if (result.success === false) return result;
 
-    const actual: AutoBePrisma.IModel[] = mergeModels(result.data);
+    const actual: AutoBePrisma.IModel[] = result.data.models;
     const expected: string[] = props.targetComponent.tables;
     const missed: string[] = expected.filter(
       (x) => actual.some((a) => a.name === x) === false,
@@ -153,8 +135,8 @@ function createApplication<Model extends ILlmSchema.Model>(
       data: result.data,
       errors: [
         {
-          path: "$input.file.draft",
-          value: result.data.draft,
+          path: "$input.models",
+          value: result.data.models,
           expected: `Array<AutoBePrisma.IModel>`,
           description: [
             "You missed some tables from the current domain's component.",
