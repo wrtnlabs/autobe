@@ -3,7 +3,7 @@ import { Typography } from "@mui/material";
 import { ILlmSchema } from "@samchon/openapi";
 
 import { AutoBePlaygroundState } from "../../structures/AutoBePlaygroundState";
-import { AutoBePlaygroundChatSideConfigMovie } from "./AutoBePlaygroundChatSideConfigMovie";
+import { AutoBePlaygroundChatSideHeaderMovie } from "./AutoBePlaygroundChatSideHeaderMovie";
 import { AutoBePlaygroundChatSideStateMovie } from "./AutoBePlaygroundChatSideStateMovie";
 import { AutoBePlaygroundChatTokenUsageMovie } from "./AutoBePlaygroundChatTokenUsageMovie";
 
@@ -25,7 +25,7 @@ export function AutoBePlaygroundChatSideMovie(
           {props.error.message}
         </>
       ) : null}
-      <AutoBePlaygroundChatSideConfigMovie header={props.header} />
+      <AutoBePlaygroundChatSideHeaderMovie header={props.header} />
       <br />
       {props.tokenUsage !== null ? (
         <AutoBePlaygroundChatTokenUsageMovie tokenUsage={props.tokenUsage} />

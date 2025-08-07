@@ -100,6 +100,7 @@ export function AutoBePlaygroundConfigureMovie(
       <br />
       <TextField
         label="Server URL"
+        size="small"
         defaultValue={serverURL}
         onChange={(e) => setServerURL(e.target.value)}
         fullWidth
@@ -110,6 +111,7 @@ export function AutoBePlaygroundConfigureMovie(
       <br />
       <TextField
         label="Locale"
+        size="small"
         defaultValue={locale}
         onChange={(e) => setLocale(e.target.value)}
         fullWidth
@@ -124,7 +126,7 @@ export function AutoBePlaygroundConfigureMovie(
       >
         {SCHEMA_MODELS.map((model) => (
           <FormControlLabel
-            control={<Radio />}
+            control={<Radio size="small" />}
             label={model.label}
             value={model.value}
           />

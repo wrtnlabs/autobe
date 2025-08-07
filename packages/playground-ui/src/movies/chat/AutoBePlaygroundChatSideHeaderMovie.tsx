@@ -8,8 +8,8 @@ import {
 } from "@mui/material";
 import { ILlmSchema } from "@samchon/openapi";
 
-export const AutoBePlaygroundChatSideConfigMovie = (
-  props: AutoBePlaygroundChatSideConfigMovie.IProps,
+export const AutoBePlaygroundChatSideHeaderMovie = (
+  props: AutoBePlaygroundChatSideHeaderMovie.IProps,
 ) => {
   return (
     <>
@@ -46,7 +46,7 @@ export const AutoBePlaygroundChatSideConfigMovie = (
     </>
   );
 };
-export namespace AutoBePlaygroundChatSideConfigMovie {
+export namespace AutoBePlaygroundChatSideHeaderMovie {
   export interface IProps {
     header: IAutoBeRpcHeader<ILlmSchema.Model>;
   }
