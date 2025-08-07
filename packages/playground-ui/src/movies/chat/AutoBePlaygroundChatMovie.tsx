@@ -16,11 +16,11 @@ import {
   useTheme,
 } from "@mui/material";
 import { ILlmSchema } from "@samchon/openapi";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { AutoBePlaygroundListener } from "../../structures/AutoBePlaygroundListener";
 import { IAutoBePlaygroundEventGroup } from "../../structures/IAutoBePlaygroundEventGroup";
-import { AutoBePlaygroundEventMovie } from "../events/AutoBePlaygroundEventMovie";
+import { AutoBePlaygroundChatBodyMovie } from "./AutoBePlaygroundChatBodyMovie";
 import { AutoBePlaygroundChatPromptMovie } from "./AutoBePlaygroundChatPromptMovie";
 import { AutoBePlaygroundChatSideMovie } from "./AutoBePlaygroundChatSideMovie";
 
@@ -30,9 +30,6 @@ export function AutoBePlaygroundChatMovie(
   //----
   // VARIABLES
   //----
-  // REFERENCES
-  const bodyContainerRef = useRef<HTMLDivElement>(null);
-
   // STATES
   const [error, setError] = useState<Error | null>(null);
   const [eventGroups, setEventGroups] = useState<IAutoBePlaygroundEventGroup[]>(
@@ -59,13 +56,6 @@ export function AutoBePlaygroundChatMovie(
       .then(setTokenUsage)
       .catch(() => {});
   }, []);
-  useEffect(() => {
-    if (eventGroups.length === 0) return;
-    bodyContainerRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "end",
-    });
-  }, [eventGroups.length]);
 
   //----
   // RENDERERS
@@ -73,35 +63,11 @@ export function AutoBePlaygroundChatMovie(
   const theme: Theme = useTheme();
   const isMobile: boolean = useMediaQuery(theme.breakpoints.down("lg"));
   const bodyMovie = () => (
-    <div
-      style={{
-        overflowY: "auto",
-        height: "100%",
-        width: isMobile ? "100%" : `calc(100% - ${SIDE_WIDTH}px)`,
-        margin: 0,
-        backgroundColor: "lightblue",
-      }}
-    >
-      <Container
-        style={{
-          paddingBottom: 120,
-          width: "100%",
-          minHeight: "100%",
-          backgroundColor: "lightblue",
-          margin: 0,
-        }}
-        ref={bodyContainerRef}
-      >
-        {eventGroups.map((e, index) => (
-          <AutoBePlaygroundEventMovie
-            key={index}
-            service={props.service}
-            events={e.events}
-            last={index === eventGroups.length - 1}
-          />
-        ))}
-      </Container>
-    </div>
+    <AutoBePlaygroundChatBodyMovie
+      isMobile={isMobile}
+      eventGroups={eventGroups}
+      service={props.service}
+    />
   );
   const sideMovie = () => (
     <div
