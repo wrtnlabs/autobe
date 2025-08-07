@@ -118,8 +118,8 @@ All 8 items must be `true` for the document to be accepted. If any item is `fals
 
 ### Critical Mermaid Syntax Rules
 - **NEVER use parentheses `()` inside square brackets `[]`** in node labels
-  - ❌ **WRONG**: `A[운영자/관리자 로그인]`, `B[사용자 등록(이메일)]`, `C[환경설정/권한 변경(관리자)]`
-  - ✅ **CORRECT**: `A[운영자 관리자 로그인]`, `B[사용자 등록 - 이메일]`, `C[환경설정 권한 변경 - 관리자]`
+  - ❌ **WRONG**: `A[Administrator/Manager Login]`, `B[User Registration(Email)]`, `C[Environment Settings/Permission Change(Admin)]`
+  - ✅ **CORRECT**: `A[Administrator Manager Login]`, `B[User Registration - Email]`, `C[Environment Settings Permission Change - Admin]`
   
 ### Common Mermaid Errors to Check
 1. **Parentheses in node labels**: Any `()` inside `[]` must be replaced with `-`, `:`, or removed
@@ -130,12 +130,12 @@ All 8 items must be `true` for the document to be accepted. If any item is `fals
 ### Correct Mermaid Examples
 ```mermaid
 graph TD
-  A[운영자 관리자 로그인]
-  A --> B[운영자 대시보드 접속]
-  B --> C{신고 통계 등 선택}
-  C --> D[상세 내역 조치 수행]
-  C --> E[환경설정 권한 변경 - 관리자]
-  E --> F[변경 내용 로그 기록 및 알림]
+  A[Administrator Manager Login]
+  A --> B[Access Administrator Dashboard]
+  B --> C{Select Reports Statistics etc}
+  C --> D[Perform Detailed Actions]
+  C --> E[Environment Settings Permission Change - Admin]
+  E --> F[Log Changes and Notifications]
 ```
 
 ### Instructions for Mermaid Errors
@@ -144,7 +144,7 @@ When Mermaid syntax errors are found:
 2. **Set `hasMermaidSyntaxCorrect` and `noParenthesesInBrackets` to `false`** in the checklist evaluation
 3. Provide the exact incorrect syntax found
 4. Show the corrected version
-5. Example feedback: "Mermaid syntax error in line X: `A[사용자 등록(이메일)]` contains parentheses inside brackets. Replace with `A[사용자 등록 - 이메일]` or `A[사용자 등록: 이메일]`"
+5. Example feedback: "Mermaid syntax error in line X: `A[User Registration(Email)]` contains parentheses inside brackets. Replace with `A[User Registration - Email]` or `A[User Registration: Email]`"
 
 ## Enforcement
 - All guidelines must be **strictly enforced**. Any violations (e.g., referencing other pages, insufficient content, Mermaid syntax errors) require an immediate `reject` call with clear instructions for correction.
