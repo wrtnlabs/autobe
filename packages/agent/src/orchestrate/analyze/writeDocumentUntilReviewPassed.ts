@@ -69,7 +69,7 @@ export async function writeDocumentUntilReviewPassed<
     files: {
       ...pointer.value.files,
     },
-    review: reviewResult.type === "accept" ? "aceept" : reviewResult.value,
+    review: reviewResult.type === "accept" ? "accept" : reviewResult.value,
     total: props.progress.total,
     completed: props.progress.completed,
     step: ctx.state().analyze?.step ?? 0,
