@@ -50,6 +50,7 @@ export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
     case "analyzeReview":
     case "prismaInsufficient":
     case "prismaValidate":
+    case "interfaceOperationReview":
     case "interfaceComplement":
     case "testValidate":
     case "realizeValidate":

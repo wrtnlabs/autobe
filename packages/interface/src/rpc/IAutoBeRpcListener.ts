@@ -7,6 +7,7 @@ import {
   AutoBeInterfaceComplementEvent,
   AutoBeInterfaceCompleteEvent,
   AutoBeInterfaceEndpointsEvent,
+  AutoBeInterfaceOperationReviewEvent,
   AutoBeInterfaceOperationsEvent,
   AutoBeInterfaceSchemasEvent,
   AutoBeInterfaceStartEvent,
@@ -250,6 +251,19 @@ export interface IAutoBeRpcListener {
    * foundation being built.
    */
   interfaceEndpoints?(event: AutoBeInterfaceEndpointsEvent): Promise<void>;
+
+  /**
+   * Optional handler for API operation review and validation events.
+   *
+   * Called during the systematic review of generated API operations to track
+   * validation progress and identify operations requiring revision. This
+   * handler provides real-time feedback on the quality assurance process,
+   * showing which operations pass validation and which need additional
+   * refinement to meet enterprise standards.
+   */
+  interfaceOperationReview?(
+    event: AutoBeInterfaceOperationReviewEvent,
+  ): Promise<void>;
 
   /**
    * Optional handler for API operation definition progress events.

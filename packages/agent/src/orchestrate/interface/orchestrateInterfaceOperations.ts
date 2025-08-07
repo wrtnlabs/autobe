@@ -31,6 +31,11 @@ export async function orchestrateInterfaceOperations<
     completed: 0,
   };
 
+  const state = {
+    total: endpoints.length,
+    completed: 0,
+  } as const;
+
   const operations: AutoBeOpenApi.IOperation[][] = await Promise.all(
     matrix.map(async (it) => {
       const row: AutoBeOpenApi.IOperation[] = await divideAndConquer(
@@ -39,6 +44,7 @@ export async function orchestrateInterfaceOperations<
         it,
         3,
         progress,
+        state,
       );
       ctx.dispatch({
         type: "interfaceOperations",
@@ -59,6 +65,7 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
   endpoints: AutoBeOpenApi.IEndpoint[],
   retry: number,
   progress: IProgress,
+  state: { total: number; completed: number },
 ): Promise<AutoBeOpenApi.IOperation[]> {
   const remained: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(
     endpoints,
@@ -95,6 +102,17 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
           total,
           ops,
         );
+
+        const completed = state.completed + reviews.passed.length;
+        state.completed = completed;
+
+        ctx.dispatch({
+          type: "interfaceOperationReview",
+          completed: completed,
+          total: total.length,
+          step: ctx.state().analyze?.step ?? 0,
+          created_at: new Date().toISOString(),
+        });
 
         if (reviews.passed.length) {
           const endpoints = reviews.passed.map((p) => p.endpoint);

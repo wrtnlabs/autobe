@@ -1,6 +1,7 @@
 import {
   AutoBeAnalyzeReviewEvent,
   AutoBeInterfaceComplementEvent,
+  AutoBeInterfaceOperationReviewEvent,
   AutoBePrismaInsufficientEvent,
   AutoBePrismaValidateEvent,
   AutoBeRealizeAuthorizationValidateEvent,
@@ -105,6 +106,7 @@ export namespace AutoBePlaygroundValidateEventMovie {
     | AutoBeAnalyzeReviewEvent
     | AutoBePrismaInsufficientEvent
     | AutoBePrismaValidateEvent
+    | AutoBeInterfaceOperationReviewEvent
     | AutoBeInterfaceComplementEvent
     | AutoBeTestValidateEvent
     | AutoBeRealizeValidateEvent
