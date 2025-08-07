@@ -4,14 +4,11 @@ import {
   IAutoBeTokenUsageJson,
 } from "@autobe/interface";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
-import SendIcon from "@mui/icons-material/Send";
 import {
   AppBar,
-  Button,
   Container,
   Drawer,
   IconButton,
-  Input,
   Theme,
   Toolbar,
   Typography,
@@ -24,6 +21,7 @@ import { useEffect, useRef, useState } from "react";
 import { AutoBePlaygroundListener } from "../../structures/AutoBePlaygroundListener";
 import { IAutoBePlaygroundEventGroup } from "../../structures/IAutoBePlaygroundEventGroup";
 import { AutoBePlaygroundEventMovie } from "../events/AutoBePlaygroundEventMovie";
+import { AutoBePlaygroundChatPromptMovie } from "./AutoBePlaygroundChatPromptMovie";
 import { AutoBePlaygroundChatSideMovie } from "./AutoBePlaygroundChatSideMovie";
 
 export function AutoBePlaygroundChatMovie(
@@ -37,12 +35,9 @@ export function AutoBePlaygroundChatMovie(
   const middleDivRef = useRef<HTMLDivElement>(null);
   const bottomDivRef = useRef<HTMLDivElement>(null);
   const bodyContainerRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   // STATES
   const [error, setError] = useState<Error | null>(null);
-  const [text, setText] = useState("");
-  const [emptyText, setEmptyText] = useState(false);
   const [eventGroups, setEventGroups] = useState<IAutoBePlaygroundEventGroup[]>(
     props?.eventGroups ?? [],
   );
@@ -50,22 +45,11 @@ export function AutoBePlaygroundChatMovie(
     null,
   );
   const [height, setHeight] = useState(130);
-  const [enabled, setEnabled] = useState(true);
   const [openSide, setOpenSide] = useState(false);
 
   //----
   // EVENT INTERACTIONS
   //----
-  const handleKeyUp = async (event: React.KeyboardEvent<HTMLElement>) => {
-    if (event.key === "Enter" && event.shiftKey === false) {
-      if (enabled === false) {
-        event.preventDefault();
-      } else {
-        await conversate();
-      }
-    }
-  };
-
   const handleResize = () => {
     setTimeout(() => {
       if (
@@ -78,30 +62,6 @@ export function AutoBePlaygroundChatMovie(
         upperDivRef.current.clientHeight + bottomDivRef.current.clientHeight;
       if (newHeight !== height) setHeight(newHeight);
     });
-  };
-
-  const conversate = async () => {
-    setText("");
-    if (text.trim().length === 0) {
-      setEmptyText(true);
-      return;
-    }
-    setEmptyText(false);
-    setEnabled(false);
-    handleResize();
-    try {
-      await props.service.conversate(text);
-    } catch (error) {
-      if (error instanceof Error) {
-        alert(error.message);
-        setError(error);
-      } else {
-        setError(new Error("Unknown error"));
-      }
-      return;
-    }
-    setTokenUsage(await props.service.getTokenUsage());
-    setEnabled(true);
   };
 
   useEffect(() => {
@@ -231,34 +191,13 @@ export function AutoBePlaygroundChatMovie(
         component="div"
         color="inherit"
       >
-        <Toolbar>
-          <Input
-            inputRef={inputRef}
-            fullWidth
-            placeholder={
-              emptyText
-                ? "Cannot send empty message"
-                : "Conversate with AI Chatbot"
-            }
-            value={text}
-            multiline={true}
-            onKeyUp={(e) => void handleKeyUp(e).catch(() => {})}
-            onChange={(e) => {
-              setText(e.target.value);
-              handleResize();
-            }}
-            error={emptyText}
-          />
-          <Button
-            variant="contained"
-            style={{ marginLeft: 10 }}
-            startIcon={<SendIcon />}
-            disabled={!enabled}
-            onClick={() => void conversate().catch(() => {})}
-          >
-            Send
-          </Button>
-        </Toolbar>
+        <AutoBePlaygroundChatPromptMovie
+          conversate={async (contents) => {
+            props.service.conversate(contents);
+          }}
+          handleResize={handleResize}
+          setError={setError}
+        />
       </AppBar>
     </>
   );

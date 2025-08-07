@@ -392,6 +392,9 @@ importers:
       tstl:
         specifier: catalog:samchon
         version: 3.0.0
+      typia:
+        specifier: catalog:samchon
+        version: 9.7.0(typescript@5.9.2)
       uuid:
         specifier: ^11.1.0
         version: 11.1.0
