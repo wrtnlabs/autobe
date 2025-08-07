@@ -17,7 +17,7 @@ export function AutoBePlaygroundChatTokenUsageMovie(
     <React.Fragment>
       <Typography variant="h5"> Token Usage </Typography>
       <hr />
-      <Table>
+      <Table size="small">
         <TableHead>
           <TableRow>
             <TableCell>Type</TableCell>

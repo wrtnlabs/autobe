@@ -81,4 +81,19 @@ export interface AutoBePrismaCompleteEvent
    * work with the most current and relevant database foundation.
    */
   step: number;
+
+  /**
+   * Elapsed time in milliseconds for the entire Prisma completion process.
+   *
+   * Indicates the total time taken from the start of the Prisma design phase
+   * until its completion. This metric helps in understanding the efficiency of
+   * the database design and validation process, providing insights into the
+   * time investment required for thorough design, validation, and code
+   * generation.
+   *
+   * This elapsed time is same with the difference between the timestamps
+   * recorded in the `created_at` field of the `AutoBePrismaStartEvent` and this
+   * event.
+   */
+  elapsed: number;
 }

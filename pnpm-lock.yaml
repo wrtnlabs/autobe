@@ -5,8 +5,22 @@ settings:
   excludeLinksFromLockfile: false
 
 catalogs:
+  agentica:
+    '@agentica/core':
+      specifier: ^0.31.0
+      version: 0.31.0
+  libs:
+    openai:
+      specifier: ^5.12.0
+      version: 5.12.1
   samchon:
     '@nestia/core':
+      specifier: ^7.3.2
+      version: 7.3.2
+    '@nestia/e2e':
+      specifier: ^7.3.2
+      version: 7.3.2
+    '@nestia/fetcher':
       specifier: ^7.3.2
       version: 7.3.2
     '@nestia/migrate':
@@ -123,7 +137,7 @@ importers:
     dependencies:
       '@agentica/core':
         specifier: catalog:agentica
-        version: 0.30.8(@samchon/openapi@4.7.1)(openai@5.12.1(ws@8.18.3))(typia@9.7.0(typescript@5.9.2))
+        version: 0.31.0(@samchon/openapi@4.7.1)(openai@5.12.1(ws@8.18.3))(typia@9.7.0(typescript@5.9.2))
       '@autobe/interface':
         specifier: workspace:^
         version: link:../interface
@@ -375,6 +389,9 @@ importers:
       tstl:
         specifier: catalog:samchon
         version: 3.0.0
+      typia:
+        specifier: catalog:samchon
+        version: 9.7.0(typescript@5.9.2)
       uuid:
         specifier: ^11.1.0
         version: 11.1.0
@@ -707,12 +724,12 @@ importers:
 
 packages:
 
-  '@agentica/core@0.30.8':
-    resolution: {integrity: sha512-/nJ2BLXFNQ5IPEacusVJb8KyZEgZV1cCBwYrKpblgkPvlEjQyBZHpIqTsn27+t11tCHvdrCv3IBwabuxCeiSwg==}
+  '@agentica/core@0.31.0':
+    resolution: {integrity: sha512-taoBQAXW3yatiy/z2Y5EoNmCd3zZCZheBb3+7OeLNMEW70QqaBY6eeFVLc+CEd370geQEIsf6qz9cWSSnFTCiA==}
     peerDependencies:
-      '@samchon/openapi': ^4.6.0
+      '@samchon/openapi': ^4.7.1
       openai: ^5.2.0
-      typia: ^9.6.0
+      typia: ^9.7.0
 
   '@ampproject/remapping@2.3.0':
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
@@ -7311,7 +7328,7 @@ packages:
 
 snapshots:
 
-  '@agentica/core@0.30.8(@samchon/openapi@4.7.1)(openai@5.12.1(ws@8.18.3))(typia@9.7.0(typescript@5.9.2))':
+  '@agentica/core@0.31.0(@samchon/openapi@4.7.1)(openai@5.12.1(ws@8.18.3))(typia@9.7.0(typescript@5.9.2))':
     dependencies:
       '@samchon/openapi': 4.7.1
       openai: 5.12.1(ws@8.18.3)
@@ -7756,7 +7773,7 @@ snapshots:
   '@eslint/config-array@0.21.0':
     dependencies:
       '@eslint/object-schema': 2.1.6
-      debug: 4.4.1
+      debug: 4.4.1(supports-color@8.1.1)
       minimatch: 3.1.2
     transitivePeerDependencies:
       - supports-color
@@ -7770,7 +7787,7 @@ snapshots:
   '@eslint/eslintrc@3.3.1':
     dependencies:
       ajv: 6.12.6
-      debug: 4.4.1
+      debug: 4.4.1(supports-color@8.1.1)
       espree: 10.4.0
       globals: 14.0.0
       ignore: 5.3.2
@@ -9038,7 +9055,7 @@ snapshots:
 
   '@tokenizer/inflate@0.2.7':
     dependencies:
-      debug: 4.4.1
+      debug: 4.4.1(supports-color@8.1.1)
       fflate: 0.8.2
       token-types: 6.0.4
     transitivePeerDependencies:
@@ -9414,7 +9431,7 @@ snapshots:
     dependencies:
       '@typescript-eslint/tsconfig-utils': 8.39.0(typescript@5.9.2)
       '@typescript-eslint/types': 8.39.0
-      debug: 4.4.1
+      debug: 4.4.1(supports-color@8.1.1)
       typescript: 5.9.2
     transitivePeerDependencies:
       - supports-color
@@ -9436,7 +9453,7 @@ snapshots:
       '@typescript-eslint/tsconfig-utils': 8.39.0(typescript@5.9.2)
       '@typescript-eslint/types': 8.39.0
       '@typescript-eslint/visitor-keys': 8.39.0
-      debug: 4.4.1
+      debug: 4.4.1(supports-color@8.1.1)
       fast-glob: 3.3.3
       is-glob: 4.0.3
       minimatch: 9.0.5
@@ -10451,10 +10468,6 @@ snapshots:
     dependencies:
       ms: 2.0.0
 
-  debug@4.4.1:
-    dependencies:
-      ms: 2.1.3
-
   debug@4.4.1(supports-color@8.1.1):
     dependencies:
       ms: 2.1.3
@@ -10770,7 +10783,7 @@ snapshots:
       ajv: 6.12.6
       chalk: 4.1.2
       cross-spawn: 7.0.6
-      debug: 4.4.1
+      debug: 4.4.1(supports-color@8.1.1)
       escape-string-regexp: 4.0.0
       eslint-scope: 8.4.0
       eslint-visitor-keys: 4.2.1
@@ -12557,7 +12570,7 @@ snapshots:
   micromark@4.0.2:
     dependencies:
       '@types/debug': 4.1.12
-      debug: 4.4.1
+      debug: 4.4.1(supports-color@8.1.1)
       decode-named-character-reference: 1.2.0
       devlop: 1.1.0
       micromark-core-commonmark: 2.0.3

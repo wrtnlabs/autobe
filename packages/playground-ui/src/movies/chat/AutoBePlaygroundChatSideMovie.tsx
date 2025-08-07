@@ -2,6 +2,9 @@ import { IAutoBeRpcHeader, IAutoBeTokenUsageJson } from "@autobe/interface";
 import { Typography } from "@mui/material";
 import { ILlmSchema } from "@samchon/openapi";
 
+import { AutoBePlaygroundState } from "../../structures/AutoBePlaygroundState";
+import { AutoBePlaygroundChatSideHeaderMovie } from "./AutoBePlaygroundChatSideHeaderMovie";
+import { AutoBePlaygroundChatSideStateMovie } from "./AutoBePlaygroundChatSideStateMovie";
 import { AutoBePlaygroundChatTokenUsageMovie } from "./AutoBePlaygroundChatTokenUsageMovie";
 
 export function AutoBePlaygroundChatSideMovie(
@@ -22,26 +25,20 @@ export function AutoBePlaygroundChatSideMovie(
           {props.error.message}
         </>
       ) : null}
-      <Typography variant="h5">Agent Information</Typography>
-      <hr />
-      <ul>
-        <li>AI Model: {props.header.vendor.model}</li>
-        <li>Schema Model: {props.header.model}</li>
-        <li>Locale: {props.header.locale}</li>
-        <li>Timezone: {props.header.timezone}</li>
-        <li>Semaphore: {props.header.vendor.semaphore ?? 16}</li>
-      </ul>
-      <br />
+      <AutoBePlaygroundChatSideHeaderMovie header={props.header} />
       <br />
       {props.tokenUsage !== null ? (
         <AutoBePlaygroundChatTokenUsageMovie tokenUsage={props.tokenUsage} />
       ) : null}
+      <br />
+      <AutoBePlaygroundChatSideStateMovie state={props.state} />
     </div>
   );
 }
 export namespace AutoBePlaygroundChatSideMovie {
   export interface IProps {
     header: IAutoBeRpcHeader<ILlmSchema.Model>;
+    state: AutoBePlaygroundState;
     tokenUsage: IAutoBeTokenUsageJson | null;
     error: Error | null;
   }

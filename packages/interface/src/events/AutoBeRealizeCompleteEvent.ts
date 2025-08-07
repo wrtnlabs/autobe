@@ -98,4 +98,24 @@ export interface AutoBeRealizeCompleteEvent
    * version has been fully implemented and delivered as working software.
    */
   step: number;
+
+  /**
+   * Elapsed time in milliseconds for the entire Realize completion process.
+   *
+   * Indicates the total time taken from the start of the Realize phase until
+   * its completion. This metric helps in understanding the efficiency of the
+   * implementation phase and can be used for process improvement analysis.
+   *
+   * This elapsed time provides insights into the complexity of the
+   * implementation, the number of business logic functions generated, and the
+   * thoroughness of the integration with API specifications and database
+   * schemas. It serves as a performance metric for the Realize agent's code
+   * generation capabilities and the overall efficiency of the implementation
+   * workflow.
+   *
+   * This elapsed time is same with the difference between the timestamps
+   * recorded in the `created_at` field of the `AutoBeRealizeStartEvent` and
+   * this event.
+   */
+  elapsed: number;
 }

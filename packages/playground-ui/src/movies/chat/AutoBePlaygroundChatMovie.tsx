@@ -4,14 +4,11 @@ import {
   IAutoBeTokenUsageJson,
 } from "@autobe/interface";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
-import SendIcon from "@mui/icons-material/Send";
 import {
   AppBar,
-  Button,
   Container,
   Drawer,
   IconButton,
-  Input,
   Theme,
   Toolbar,
   Typography,
@@ -19,11 +16,11 @@ import {
   useTheme,
 } from "@mui/material";
 import { ILlmSchema } from "@samchon/openapi";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { AutoBePlaygroundListener } from "../../structures/AutoBePlaygroundListener";
 import { IAutoBePlaygroundEventGroup } from "../../structures/IAutoBePlaygroundEventGroup";
-import { AutoBePlaygroundEventMovie } from "../events/AutoBePlaygroundEventMovie";
+import { AutoBePlaygroundChatBodyMovie } from "./AutoBePlaygroundChatBodyMovie";
 import { AutoBePlaygroundChatSideMovie } from "./AutoBePlaygroundChatSideMovie";
 
 export function AutoBePlaygroundChatMovie(
@@ -32,78 +29,19 @@ export function AutoBePlaygroundChatMovie(
   //----
   // VARIABLES
   //----
-  // REFERENCES
-  const upperDivRef = useRef<HTMLDivElement>(null);
-  const middleDivRef = useRef<HTMLDivElement>(null);
-  const bottomDivRef = useRef<HTMLDivElement>(null);
-  const bodyContainerRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-
   // STATES
   const [error, setError] = useState<Error | null>(null);
-  const [text, setText] = useState("");
-  const [emptyText, setEmptyText] = useState(false);
   const [eventGroups, setEventGroups] = useState<IAutoBePlaygroundEventGroup[]>(
     props?.eventGroups ?? [],
   );
   const [tokenUsage, setTokenUsage] = useState<IAutoBeTokenUsageJson | null>(
     null,
   );
-  const [height, setHeight] = useState(130);
-  const [enabled, setEnabled] = useState(true);
   const [openSide, setOpenSide] = useState(false);
 
   //----
   // EVENT INTERACTIONS
   //----
-  const handleKeyUp = async (event: React.KeyboardEvent<HTMLElement>) => {
-    if (event.key === "Enter" && event.shiftKey === false) {
-      if (enabled === false) {
-        event.preventDefault();
-      } else {
-        await conversate();
-      }
-    }
-  };
-
-  const handleResize = () => {
-    setTimeout(() => {
-      if (
-        upperDivRef.current === null ||
-        middleDivRef.current === null ||
-        bottomDivRef.current === null
-      )
-        return;
-      const newHeight: number =
-        upperDivRef.current.clientHeight + bottomDivRef.current.clientHeight;
-      if (newHeight !== height) setHeight(newHeight);
-    });
-  };
-
-  const conversate = async () => {
-    setText("");
-    if (text.trim().length === 0) {
-      setEmptyText(true);
-      return;
-    }
-    setEmptyText(false);
-    setEnabled(false);
-    handleResize();
-    try {
-      await props.service.conversate(text);
-    } catch (error) {
-      if (error instanceof Error) {
-        alert(error.message);
-        setError(error);
-      } else {
-        setError(new Error("Unknown error"));
-      }
-      return;
-    }
-    setTokenUsage(await props.service.getTokenUsage());
-    setEnabled(true);
-  };
-
   useEffect(() => {
     props.listener.on(async (e) => {
       props.service
@@ -117,13 +55,6 @@ export function AutoBePlaygroundChatMovie(
       .then(setTokenUsage)
       .catch(() => {});
   }, []);
-  useEffect(() => {
-    if (eventGroups.length === 0) return;
-    bodyContainerRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "end",
-    });
-  }, [eventGroups.length]);
 
   //----
   // RENDERERS
@@ -131,35 +62,16 @@ export function AutoBePlaygroundChatMovie(
   const theme: Theme = useTheme();
   const isMobile: boolean = useMediaQuery(theme.breakpoints.down("lg"));
   const bodyMovie = () => (
-    <div
-      style={{
-        overflowY: "auto",
-        height: "100%",
-        width: isMobile ? "100%" : `calc(100% - ${SIDE_WIDTH}px)`,
-        margin: 0,
-        backgroundColor: "lightblue",
+    <AutoBePlaygroundChatBodyMovie
+      isMobile={isMobile}
+      eventGroups={eventGroups}
+      service={props.service}
+      conversate={async (contents) => {
+        props.service.conversate(contents);
       }}
-    >
-      <Container
-        style={{
-          paddingBottom: 50,
-          width: "100%",
-          minHeight: "100%",
-          backgroundColor: "lightblue",
-          margin: 0,
-        }}
-        ref={bodyContainerRef}
-      >
-        {eventGroups.map((e, index) => (
-          <AutoBePlaygroundEventMovie
-            key={index}
-            service={props.service}
-            events={e.events}
-            last={index === eventGroups.length - 1}
-          />
-        ))}
-      </Container>
-    </div>
+      setError={setError}
+      supportAudio={props.supportAudio}
+    />
   );
   const sideMovie = () => (
     <div
@@ -178,13 +90,22 @@ export function AutoBePlaygroundChatMovie(
           header={props.header}
           tokenUsage={tokenUsage}
           error={error}
+          state={props.listener.getState()}
         />
       </Container>
     </div>
   );
   return (
-    <>
-      <AppBar position="relative" component="div" ref={upperDivRef}>
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        position: "relative",
+      }}
+    >
+      <AppBar position="relative" component="div">
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             {props.title ?? "AutoBE Playground"}
@@ -199,12 +120,13 @@ export function AutoBePlaygroundChatMovie(
         </Toolbar>
       </AppBar>
       <div
-        ref={middleDivRef}
         style={{
           width: "100%",
-          height: `calc(100% - ${height}px)`,
+          flex: 1,
           display: "flex",
           flexDirection: "row",
+          position: "relative",
+          overflow: "hidden",
         }}
       >
         {isMobile ? (
@@ -220,47 +142,12 @@ export function AutoBePlaygroundChatMovie(
           </>
         ) : (
           <>
-            {bodyMovie()}
             {sideMovie()}
+            {bodyMovie()}
           </>
         )}
       </div>
-      <AppBar
-        ref={bottomDivRef}
-        position="static"
-        component="div"
-        color="inherit"
-      >
-        <Toolbar>
-          <Input
-            inputRef={inputRef}
-            fullWidth
-            placeholder={
-              emptyText
-                ? "Cannot send empty message"
-                : "Conversate with AI Chatbot"
-            }
-            value={text}
-            multiline={true}
-            onKeyUp={(e) => void handleKeyUp(e).catch(() => {})}
-            onChange={(e) => {
-              setText(e.target.value);
-              handleResize();
-            }}
-            error={emptyText}
-          />
-          <Button
-            variant="contained"
-            style={{ marginLeft: 10 }}
-            startIcon={<SendIcon />}
-            disabled={!enabled}
-            onClick={() => void conversate().catch(() => {})}
-          >
-            Send
-          </Button>
-        </Toolbar>
-      </AppBar>
-    </>
+    </div>
   );
 }
 export namespace AutoBePlaygroundChatMovie {
@@ -272,6 +159,7 @@ export namespace AutoBePlaygroundChatMovie {
     service: IAutoBeRpcService;
     listener: AutoBePlaygroundListener;
     eventGroups?: IAutoBePlaygroundEventGroup[];
+    supportAudio: boolean;
   }
 }
 

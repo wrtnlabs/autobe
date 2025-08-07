@@ -26,9 +26,10 @@ export const orchestrateRealize =
       throw new Error("Can't do realize agent because operations are nothing.");
     }
 
+    const start: Date = new Date();
     ctx.dispatch({
       type: "realizeStart",
-      created_at: new Date().toISOString(),
+      created_at: start.toISOString(),
       reason: props.reason,
       step: ctx.state().test?.step ?? 0,
     });
@@ -77,5 +78,6 @@ export const orchestrateRealize =
         },
       }),
       step: ctx.state().analyze?.step ?? 0,
+      elapsed: new Date().getTime() - start.getTime(),
     });
   };

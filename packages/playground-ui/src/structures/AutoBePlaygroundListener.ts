@@ -1,6 +1,7 @@
 import { AutoBeEvent, IAutoBeRpcListener } from "@autobe/interface";
 import { List } from "tstl";
 
+import { AutoBePlaygroundState } from "./AutoBePlaygroundState";
 import { IAutoBePlaygroundEventGroup } from "./IAutoBePlaygroundEventGroup";
 
 export class AutoBePlaygroundListener {
@@ -9,13 +10,16 @@ export class AutoBePlaygroundListener {
     | null;
   private listener_: Required<IAutoBeRpcListener>;
   private events_: List<IAutoBePlaygroundEventGroup> = new List();
-  private state_: Map<
+  private dict_: Map<
     AutoBeEvent.Type,
     List.Iterator<IAutoBePlaygroundEventGroup>
   > = new Map();
+  private readonly state_: AutoBePlaygroundState;
 
   public constructor() {
     this.callback_ = null;
+
+    this.state_ = new AutoBePlaygroundState();
     this.listener_ = {
       assistantMessage: async (event) => {
         this.insert(event);
@@ -26,8 +30,8 @@ export class AutoBePlaygroundListener {
 
       // ANALYZE
       analyzeStart: async (event) => {
-        this.state_.delete("analyzeWrite");
-        this.state_.delete("analyzeReview");
+        this.dict_.delete("analyzeWrite");
+        this.dict_.delete("analyzeReview");
         this.insert(event);
       },
       analyzeWrite: async (event) => {
@@ -37,15 +41,16 @@ export class AutoBePlaygroundListener {
         this.accumulate(event);
       },
       analyzeComplete: async (event) => {
-        this.state_.delete("analyzeWrite");
-        this.state_.delete("analyzeReview");
+        this.dict_.delete("analyzeWrite");
+        this.dict_.delete("analyzeReview");
+        this.state_.setAnalyze(event);
         this.insert(event);
       },
 
       // PRISMA
       prismaStart: async (event) => {
-        this.state_.delete("prismaSchemas");
-        this.state_.delete("prismaReview");
+        this.dict_.delete("prismaSchemas");
+        this.dict_.delete("prismaReview");
         this.insert(event);
       },
       prismaComponents: async (event) => {
@@ -67,16 +72,17 @@ export class AutoBePlaygroundListener {
         this.insert(event);
       },
       prismaComplete: async (event) => {
-        this.state_.delete("prismaSchemas");
-        this.state_.delete("prismaReview");
+        this.dict_.delete("prismaSchemas");
+        this.dict_.delete("prismaReview");
+        this.state_.setPrisma(event);
         this.insert(event);
       },
 
       // INTERFACE
       interfaceStart: async (event) => {
-        this.state_.delete("interfaceEndpoints");
-        this.state_.delete("interfaceOperations");
-        this.state_.delete("interfaceSchemas");
+        this.dict_.delete("interfaceEndpoints");
+        this.dict_.delete("interfaceOperations");
+        this.dict_.delete("interfaceSchemas");
         this.insert(event);
       },
       interfaceGroups: async (event) => {
@@ -95,17 +101,18 @@ export class AutoBePlaygroundListener {
         this.insert(event);
       },
       interfaceComplete: async (event) => {
-        this.state_.delete("interfaceEndpoints");
-        this.state_.delete("interfaceOperations");
-        this.state_.delete("interfaceSchemas");
+        this.dict_.delete("interfaceEndpoints");
+        this.dict_.delete("interfaceOperations");
+        this.dict_.delete("interfaceSchemas");
+        this.state_.setInterface(event);
         this.insert(event);
       },
 
       // TEST
       testStart: async (event) => {
-        this.state_.delete("testWrite");
-        this.state_.delete("testValidate");
-        this.state_.delete("testCorrect");
+        this.dict_.delete("testWrite");
+        this.dict_.delete("testValidate");
+        this.dict_.delete("testCorrect");
         this.insert(event);
       },
       testScenario: async (event) => {
@@ -121,9 +128,10 @@ export class AutoBePlaygroundListener {
         this.accumulate(event);
       },
       testComplete: async (event) => {
-        this.state_.delete("testWrite");
-        this.state_.delete("testValidate");
-        this.state_.delete("testCorrect");
+        this.dict_.delete("testWrite");
+        this.dict_.delete("testValidate");
+        this.dict_.delete("testCorrect");
+        this.state_.setTest(event);
         this.insert(event);
       },
 
@@ -132,8 +140,8 @@ export class AutoBePlaygroundListener {
       //----
       // REALIZE-MAIN
       realizeStart: async (event) => {
-        this.state_.delete("realizeWrite");
-        this.state_.delete("realizeValidate");
+        this.dict_.delete("realizeWrite");
+        this.dict_.delete("realizeValidate");
         this.insert(event);
       },
       realizeWrite: async (event) => {
@@ -147,15 +155,16 @@ export class AutoBePlaygroundListener {
         this.accumulate(event);
       },
       realizeComplete: async (event) => {
-        this.state_.delete("realizeWrite");
-        this.state_.delete("realizeValidate");
+        this.dict_.delete("realizeWrite");
+        this.dict_.delete("realizeValidate");
+        this.state_.setRealize(event);
         this.insert(event);
       },
       // REALIZE-AUTHORIZATION
       realizeAuthorizationStart: async (event) => {
-        this.state_.delete("realizeAuthorizationWrite");
-        this.state_.delete("realizeAuthorizationCorrect");
-        this.state_.delete("realizeAuthorizationValidate");
+        this.dict_.delete("realizeAuthorizationWrite");
+        this.dict_.delete("realizeAuthorizationCorrect");
+        this.dict_.delete("realizeAuthorizationValidate");
         this.insert(event);
       },
       realizeAuthorizationWrite: async (event) => {
@@ -168,14 +177,14 @@ export class AutoBePlaygroundListener {
         this.insert(event);
       },
       realizeAuthorizationComplete: async (event) => {
-        this.state_.delete("realizeAuthorizationWrite");
-        this.state_.delete("realizeAuthorizationCorrect");
-        this.state_.delete("realizeAuthorizationValidate");
+        this.dict_.delete("realizeAuthorizationWrite");
+        this.dict_.delete("realizeAuthorizationCorrect");
+        this.dict_.delete("realizeAuthorizationValidate");
         this.insert(event);
       },
       // REALILZE-TEST
       realizeTestStart: async (event) => {
-        this.state_.delete("realizeTestOperation");
+        this.dict_.delete("realizeTestOperation");
         this.insert(event);
       },
       realizeTestReset: async (event) => {
@@ -185,7 +194,7 @@ export class AutoBePlaygroundListener {
         this.accumulate(event);
       },
       realizeTestComplete: async (event) => {
-        this.state_.delete("realizeTestOperation");
+        this.dict_.delete("realizeTestOperation");
         this.insert(event);
       },
     };
@@ -201,11 +210,15 @@ export class AutoBePlaygroundListener {
     return this.listener_;
   }
 
+  public getState(): AutoBePlaygroundState {
+    return this.state_;
+  }
+
   private accumulate(event: AutoBeEvent) {
     const it: List.Iterator<IAutoBePlaygroundEventGroup> | undefined =
-      this.state_.get(event.type);
+      this.dict_.get(event.type);
     if (it === undefined)
-      this.state_.set(
+      this.dict_.set(
         event.type,
         this.events_.insert(this.events_.end(), {
           type: event.type,

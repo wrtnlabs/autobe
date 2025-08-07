@@ -55,6 +55,7 @@ export function AutoBePlaygroundConfigureVendorMovie(
       <br />
       <TextField
         label="AI Model"
+        size="small"
         defaultValue={model}
         onChange={(e) => handleModel(e.target.value)}
         fullWidth
@@ -63,6 +64,7 @@ export function AutoBePlaygroundConfigureVendorMovie(
       <br />
       <TextField
         label="Your OpenAI (or other vendor) API Key"
+        size="small"
         defaultValue={apiKey}
         onChange={(e) => handleApiKey(e.target.value)}
         fullWidth
@@ -71,6 +73,7 @@ export function AutoBePlaygroundConfigureVendorMovie(
       <br />
       <TextField
         label="Base URL (empty: OpenAI)"
+        size="small"
         defaultValue={baseURL}
         onChange={(e) => handleBaseURL(e.target.value)}
         fullWidth
@@ -83,6 +86,7 @@ export function AutoBePlaygroundConfigureVendorMovie(
       <br />
       <TextField
         type="number"
+        size="small"
         label="Semaphore"
         defaultValue={semaphore}
         fullWidth
