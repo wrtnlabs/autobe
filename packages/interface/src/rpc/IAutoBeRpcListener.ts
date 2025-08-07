@@ -38,6 +38,7 @@ import {
   AutoBeTestWriteEvent,
   AutoBeUserMessageEvent,
 } from "../events";
+import { AutoBeInterfaceAuthorizationEvent } from "../events/AutoBeInterfaceAuthorizationEvent";
 import { AutoBeInterfaceGroupsEvent } from "../events/AutoBeInterfaceGroupsEvent";
 import { AutoBeRealizeAuthorizationCompleteEvent } from "../events/AutoBeRealizeAuthorizationCompleteEvent";
 import { AutoBeRealizeAuthorizationStartEvent } from "../events/AutoBeRealizeAuthorizationStartEvent";
@@ -259,6 +260,18 @@ export interface IAutoBeRpcListener {
    * functionality is being systematically developed.
    */
   interfaceOperations?(event: AutoBeInterfaceOperationsEvent): Promise<void>;
+
+  /**
+   * Optional handler for API authorization operation definition progress
+   * events.
+   *
+   * Called as detailed authorization operation specifications are created for
+   * each endpoint, enabling client applications to track progress and show how
+   * API authorization is being systematically developed.
+   */
+  interfaceAuthorization?(
+    event: AutoBeInterfaceAuthorizationEvent,
+  ): Promise<void>;
 
   /**
    * Optional handler for API component schema creation events.
