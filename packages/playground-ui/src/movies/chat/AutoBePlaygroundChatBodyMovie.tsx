@@ -1,4 +1,5 @@
 import {
+  AutoBeUserMessageAudioContent,
   AutoBeUserMessageContent,
   AutoBeUserMessageFileContent,
   AutoBeUserMessageImageContent,
@@ -54,8 +55,19 @@ export const AutoBePlaygroundChatBodyMovie = (
         const file: File = fileList[i];
         const content:
           | AutoBeUserMessageFileContent
-          | AutoBeUserMessageImageContent = await (async () => {
+          | AutoBeUserMessageImageContent
+          | AutoBeUserMessageAudioContent = await (async () => {
           const isImage = file.type.startsWith("image/");
+          // Check for common audio MIME types (wav and mp3)
+          const isAudio =
+            file.type.startsWith("audio/") ||
+            file.type === "audio/mpeg" ||
+            file.type === "audio/mp3" ||
+            file.type === "audio/wav" ||
+            file.type === "audio/x-wav" ||
+            file.type === "audio/wave" ||
+            file.type === "audio/x-wave";
+
           if (isImage)
             return {
               type: "image",
@@ -69,6 +81,13 @@ export const AutoBePlaygroundChatBodyMovie = (
                     data: await fileToBase64(file),
                   },
             };
+          else if (isAudio)
+            return {
+              type: "audio",
+              data: await fileToBase64(file),
+              format: file.type.includes("wav") ? "wav" : "mp3",
+            };
+
           return {
             type: "file",
             file: props.uploadFile
@@ -111,9 +130,6 @@ export const AutoBePlaygroundChatBodyMovie = (
     try {
       const messages: AutoBeUserMessageContent[] = [];
 
-      // Add attached files as file messages
-      for (const { content } of attachedFiles) messages.push(content);
-
       // Add text message if present
       if (text.trim().length > 0) {
         messages.push({
@@ -121,6 +137,9 @@ export const AutoBePlaygroundChatBodyMovie = (
           text,
         });
       }
+
+      // Add attached files as file messages
+      for (const { content } of attachedFiles) messages.push(content);
 
       await props.conversate(messages);
       setAttachedFiles([]); // Clear attached files after sending
@@ -410,5 +429,8 @@ export namespace AutoBePlaygroundChatBodyMovie {
 
 interface IFileContent {
   file: File;
-  content: AutoBeUserMessageFileContent | AutoBeUserMessageImageContent;
+  content:
+    | AutoBeUserMessageAudioContent
+    | AutoBeUserMessageFileContent
+    | AutoBeUserMessageImageContent;
 }
