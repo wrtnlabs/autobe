@@ -28,7 +28,7 @@ export function AutoBePlaygroundValidateEventMovie<
   const state: IState = getState<Event>(props.events);
   return (
     <Card
-      elevation={3}
+      elevation={1}
       style={{
         marginTop: 15,
         marginBottom: 15,

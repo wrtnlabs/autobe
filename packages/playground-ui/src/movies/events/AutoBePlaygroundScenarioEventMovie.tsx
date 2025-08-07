@@ -14,7 +14,7 @@ export function AutoBePlaygroundScenarioEventMovie(
   const state: IState = getState(props.event);
   return (
     <Card
-      elevation={3}
+      elevation={1}
       style={{
         marginTop: 15,
         marginBottom: 15,

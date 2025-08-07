@@ -18,7 +18,7 @@ export function AutoBePlaygroundUserMessageEventMovie({
         content.type === "text" ? (
           <Card
             key={index}
-            elevation={3}
+            elevation={1}
             style={{
               marginTop: 15,
               marginBottom: 15,

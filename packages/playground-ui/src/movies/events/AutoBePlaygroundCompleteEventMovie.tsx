@@ -108,7 +108,7 @@ export function AutoBePlaygroundCompleteEventMovie(
   if (title === null) return null;
   return (
     <Card
-      elevation={3}
+      elevation={1}
       style={{
         marginTop: 15,
         marginBottom: 15,

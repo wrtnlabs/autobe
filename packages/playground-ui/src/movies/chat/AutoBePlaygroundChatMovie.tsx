@@ -31,9 +31,6 @@ export function AutoBePlaygroundChatMovie(
   // VARIABLES
   //----
   // REFERENCES
-  const upperDivRef = useRef<HTMLDivElement>(null);
-  const middleDivRef = useRef<HTMLDivElement>(null);
-  const bottomDivRef = useRef<HTMLDivElement>(null);
   const bodyContainerRef = useRef<HTMLDivElement>(null);
 
   // STATES
@@ -44,26 +41,11 @@ export function AutoBePlaygroundChatMovie(
   const [tokenUsage, setTokenUsage] = useState<IAutoBeTokenUsageJson | null>(
     null,
   );
-  const [height, setHeight] = useState(130);
   const [openSide, setOpenSide] = useState(false);
 
   //----
   // EVENT INTERACTIONS
   //----
-  const handleResize = () => {
-    setTimeout(() => {
-      if (
-        upperDivRef.current === null ||
-        middleDivRef.current === null ||
-        bottomDivRef.current === null
-      )
-        return;
-      const newHeight: number =
-        upperDivRef.current.clientHeight + bottomDivRef.current.clientHeight;
-      if (newHeight !== height) setHeight(newHeight);
-    });
-  };
-
   useEffect(() => {
     props.listener.on(async (e) => {
       props.service
@@ -102,7 +84,7 @@ export function AutoBePlaygroundChatMovie(
     >
       <Container
         style={{
-          paddingBottom: 50,
+          paddingBottom: 120,
           width: "100%",
           minHeight: "100%",
           backgroundColor: "lightblue",
@@ -143,8 +125,16 @@ export function AutoBePlaygroundChatMovie(
     </div>
   );
   return (
-    <>
-      <AppBar position="relative" component="div" ref={upperDivRef}>
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        position: "relative",
+      }}
+    >
+      <AppBar position="relative" component="div">
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             {props.title ?? "AutoBE Playground"}
@@ -159,12 +149,13 @@ export function AutoBePlaygroundChatMovie(
         </Toolbar>
       </AppBar>
       <div
-        ref={middleDivRef}
         style={{
           width: "100%",
-          height: `calc(100% - ${height}px)`,
+          flex: 1,
           display: "flex",
           flexDirection: "row",
+          position: "relative",
+          overflow: "hidden",
         }}
       >
         {isMobile ? (
@@ -180,26 +171,20 @@ export function AutoBePlaygroundChatMovie(
           </>
         ) : (
           <>
-            {bodyMovie()}
             {sideMovie()}
+            {bodyMovie()}
           </>
         )}
-      </div>
-      <AppBar
-        ref={bottomDivRef}
-        position="static"
-        component="div"
-        color="inherit"
-      >
         <AutoBePlaygroundChatPromptMovie
           conversate={async (contents) => {
             props.service.conversate(contents);
           }}
-          handleResize={handleResize}
           setError={setError}
+          isMobile={isMobile}
+          sideWidth={SIDE_WIDTH}
         />
-      </AppBar>
-    </>
+      </div>
+    </div>
   );
 }
 export namespace AutoBePlaygroundChatMovie {

@@ -2,6 +2,7 @@ import { IAutoBeRpcHeader, IAutoBeTokenUsageJson } from "@autobe/interface";
 import { Typography } from "@mui/material";
 import { ILlmSchema } from "@samchon/openapi";
 
+import { AutoBePlaygroundChatSideConfigMovie } from "./AutoBePlaygroundChatSideConfigMovie";
 import { AutoBePlaygroundChatTokenUsageMovie } from "./AutoBePlaygroundChatTokenUsageMovie";
 
 export function AutoBePlaygroundChatSideMovie(
@@ -22,15 +23,7 @@ export function AutoBePlaygroundChatSideMovie(
           {props.error.message}
         </>
       ) : null}
-      <Typography variant="h5">Agent Information</Typography>
-      <hr />
-      <ul>
-        <li>AI Model: {props.header.vendor.model}</li>
-        <li>Schema Model: {props.header.model}</li>
-        <li>Locale: {props.header.locale}</li>
-        <li>Timezone: {props.header.timezone}</li>
-        <li>Semaphore: {props.header.vendor.semaphore ?? 16}</li>
-      </ul>
+      <AutoBePlaygroundChatSideConfigMovie header={props.header} />
       <br />
       <br />
       {props.tokenUsage !== null ? (

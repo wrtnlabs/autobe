@@ -2,10 +2,17 @@ import {
   AutoBeUserMessageContent,
   AutoBeUserMessageFileContent,
 } from "@autobe/interface";
-import AttachFileIcon from "@mui/icons-material/AttachFile";
+import AddIcon from "@mui/icons-material/Add";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import CloseIcon from "@mui/icons-material/Close";
-import SendIcon from "@mui/icons-material/Send";
-import { Box, Button, Chip, IconButton, Input, Toolbar } from "@mui/material";
+import {
+  Box,
+  Chip,
+  IconButton,
+  Paper,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useRef, useState } from "react";
 
 export const AutoBePlaygroundChatPromptMovie = (
@@ -26,13 +33,6 @@ export const AutoBePlaygroundChatPromptMovie = (
         | AutoBeUserMessageFileContent.IData;
     }>
   >([]);
-
-  const handleKeyUp = async (event: React.KeyboardEvent<HTMLElement>) => {
-    if (event.key === "Enter" && event.shiftKey === false) {
-      if (enabled === false) event.preventDefault();
-      else await conversate();
-    }
-  };
 
   const handleFileSelect = async (files: FileList | null) => {
     if (!files) return;
@@ -77,12 +77,10 @@ export const AutoBePlaygroundChatPromptMovie = (
       );
     }
     setEnabled(true);
-    props.handleResize();
   };
 
   const removeFile = (index: number) => {
     setAttachedFiles(attachedFiles.filter((_, i) => i !== index));
-    props.handleResize();
   };
 
   const conversate = async () => {
@@ -96,7 +94,6 @@ export const AutoBePlaygroundChatPromptMovie = (
 
     setEmptyText(false);
     setEnabled(false);
-    props.handleResize();
 
     try {
       const messages: AutoBeUserMessageContent[] = [];
@@ -155,99 +152,204 @@ export const AutoBePlaygroundChatPromptMovie = (
   };
 
   return (
-    <Box
-      onDragEnter={handleDragEnter}
-      onDragLeave={handleDragLeave}
-      onDragOver={handleDragOver}
-      onDrop={handleDrop}
-      sx={{
-        border: isDragging ? "2px dashed #1976d2" : "none",
-        borderRadius: 1,
-        transition: "border 0.2s",
-      }}
-    >
-      <Toolbar>
-        <input
-          ref={fileInputRef}
-          type="file"
-          multiple
-          style={{ display: "none" }}
-          onChange={(e) => void handleFileSelect(e.target.files)}
-        />
-        <IconButton
-          color="primary"
-          onClick={() => fileInputRef.current?.click()}
-          disabled={!enabled}
-          sx={{ mr: 1 }}
-        >
-          <AttachFileIcon />
-        </IconButton>
-        <Input
-          inputRef={inputRef}
-          fullWidth
-          placeholder={
-            emptyText
-              ? "Cannot send empty message"
-              : isDragging
-                ? "Drop files here..."
-                : "Conversate with AI Chatbot"
-          }
-          value={text}
-          multiline={true}
-          onKeyUp={(e) => void handleKeyUp(e).catch(() => {})}
-          onChange={(e) => {
-            setText(e.target.value);
-            props.handleResize();
-          }}
-          error={emptyText}
+    <>
+      {/* Full screen drag overlay */}
+      {isDragging && (
+        <Box
           sx={{
-            "& .MuiInputBase-input": {
-              color: isDragging ? "#1976d2" : "inherit",
-            },
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(25, 118, 210, 0.1)",
+            backdropFilter: "blur(2px)",
+            zIndex: 1300,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            pointerEvents: "none",
           }}
-        />
-        <Button
-          variant="contained"
-          style={{ marginLeft: 10 }}
-          startIcon={<SendIcon />}
-          disabled={!enabled}
-          onClick={() => void conversate().catch(() => {})}
         >
-          Send
-        </Button>
-      </Toolbar>
-      {attachedFiles.length > 0 && (
-        <Box sx={{ px: 2, pb: 1 }}>
-          {attachedFiles.map(({ file }, index) => (
-            <Chip
-              key={index}
-              label={file.name}
+          <Typography
+            variant="h4"
+            sx={{
+              color: "primary.main",
+              fontWeight: "bold",
+              textAlign: "center",
+            }}
+          >
+            Drop files here to upload
+          </Typography>
+        </Box>
+      )}
+
+      {/* Prompt input area */}
+      <Box
+        sx={{
+          position: "fixed",
+          bottom: 0,
+          left: props.isMobile ? 0 : (props.sideWidth ?? 450),
+          right: 0,
+          px: 2,
+          pb: 2,
+        }}
+      >
+        <Paper
+          elevation={20}
+          sx={{
+            maxWidth: 768,
+            mx: "auto",
+            p: 1.5,
+            borderRadius: 2,
+            border: isDragging ? "3px solid #1976d2" : "2px solid",
+            borderColor: isDragging ? "#1976d2" : "divider",
+            backgroundColor: isDragging
+              ? "rgba(25, 118, 210, 0.04)"
+              : "rgba(255, 255, 255, 0.95)",
+            backdropFilter: "blur(10px)",
+            transition: "all 0.2s",
+          }}
+          onDragEnter={handleDragEnter}
+          onDragLeave={handleDragLeave}
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+        >
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+            {attachedFiles.length > 0 && (
+              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                {attachedFiles.map(({ file }, index) => (
+                  <Chip
+                    key={index}
+                    label={file.name}
+                    size="small"
+                    onDelete={() => removeFile(index)}
+                    deleteIcon={<CloseIcon />}
+                    sx={{
+                      maxWidth: 200,
+                      "& .MuiChip-label": {
+                        display: "block",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      },
+                    }}
+                  />
+                ))}
+              </Box>
+            )}
+            <TextField
+              inputRef={inputRef}
+              fullWidth
+              multiline
               size="small"
-              onDelete={() => removeFile(index)}
-              deleteIcon={<CloseIcon />}
+              maxRows={8}
+              placeholder={
+                emptyText
+                  ? "Cannot send empty message"
+                  : isDragging
+                    ? "Drop files here..."
+                    : "Conversate with AI Chatbot"
+              }
+              value={text}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  if (enabled) void conversate();
+                }
+              }}
+              onChange={(e) => setText(e.target.value)}
+              error={emptyText}
+              disabled={!enabled}
               sx={{
-                mr: 1,
-                mb: 0.5,
-                maxWidth: 200,
-                "& .MuiChip-label": {
-                  display: "block",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: 2,
+                  "& fieldset": {
+                    borderColor: isDragging ? "#1976d2" : undefined,
+                    borderWidth: 2,
+                  },
+                  "&:hover fieldset": {
+                    borderWidth: 2,
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderWidth: 2,
+                  },
+                },
+                "& .MuiInputBase-input": {
+                  // py: 1,
+                  // px: 1.5,
+                  fontSize: "0.95rem",
+                  color: isDragging ? "#1976d2" : "inherit",
                 },
               }}
             />
-          ))}
-        </Box>
-      )}
-    </Box>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                style={{ display: "none" }}
+                onChange={(e) => void handleFileSelect(e.target.files)}
+              />
+              <IconButton
+                size="small"
+                color="primary"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={!enabled}
+                sx={{
+                  p: 0.75,
+                  border: "1px solid",
+                  borderColor: "divider",
+                  "&:hover": {
+                    backgroundColor: "action.hover",
+                    borderColor: "primary.main",
+                  },
+                }}
+              >
+                <AddIcon fontSize="small" />
+              </IconButton>
+              <IconButton
+                size="small"
+                color="primary"
+                onClick={() => void conversate()}
+                disabled={
+                  !enabled ||
+                  (text.trim().length === 0 && attachedFiles.length === 0)
+                }
+                sx={{
+                  p: 0.75,
+                  backgroundColor: "primary.main",
+                  color: "primary.contrastText",
+                  "&:hover": {
+                    backgroundColor: "primary.dark",
+                  },
+                  "&.Mui-disabled": {
+                    backgroundColor: "action.disabledBackground",
+                    color: "action.disabled",
+                  },
+                }}
+              >
+                <ArrowUpwardIcon fontSize="small" />
+              </IconButton>
+            </Box>
+          </Box>
+        </Paper>
+      </Box>
+    </>
   );
 };
 export namespace AutoBePlaygroundChatPromptMovie {
   export interface IProps {
     conversate: (messages: AutoBeUserMessageContent[]) => Promise<void>;
-    handleResize: () => void;
     setError: (error: Error) => void;
     upload?: (file: File) => Promise<string>;
+    isMobile?: boolean;
+    sideWidth?: number;
   }
 }
 
@@ -255,10 +357,10 @@ const fileToBase64 = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => {
-      const base64String = reader.result as string;
+      const entire: string = reader.result as string;
       // Remove data URL prefix (e.g., "data:image/png;base64,")
-      const base64Data = base64String.split(",")[1];
-      resolve(base64Data);
+      const data = entire.split(",")[1];
+      resolve(data);
     };
     reader.onerror = reject;
     reader.readAsDataURL(file);
