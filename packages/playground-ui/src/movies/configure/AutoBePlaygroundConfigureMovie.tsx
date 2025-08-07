@@ -31,6 +31,7 @@ export function AutoBePlaygroundConfigureMovie(
   const [locale, setLocale] = useState(window.navigator.language);
   const [model, setModel] =
     useState<Exclude<ILlmSchema.Model, "gemini" | "3.0">>("chatgpt");
+  const [supportAudio, setSupportAudio] = useState<boolean>(false);
   const [vendorConfig, setVendorConfig] = useState<IAutoBeRpcVendor>({
     model: "gpt-4.1",
     apiKey: "",
@@ -66,6 +67,7 @@ export function AutoBePlaygroundConfigureMovie(
         header,
         listener,
         service: connector.getDriver(),
+        supportAudio,
       });
     } catch (error) {
       alert((error as Error)?.message);
@@ -131,6 +133,23 @@ export function AutoBePlaygroundConfigureMovie(
             value={model.value}
           />
         ))}
+      </RadioGroup>
+      <FormLabel>Support Audio</FormLabel>
+      <RadioGroup
+        value={supportAudio ? "true" : "false"}
+        onChange={(_, value) => setSupportAudio(value === "true")}
+        style={{ paddingLeft: 15 }}
+      >
+        <FormControlLabel
+          control={<Radio size="small" />}
+          label="Support Audio Prompt"
+          value="true"
+        />
+        <FormControlLabel
+          control={<Radio size="small" />}
+          label="No Audio Prompt"
+          value="false"
+        />
       </RadioGroup>
       <br />
       <AutoBePlaygroundConfigureVendorMovie

@@ -70,7 +70,7 @@ export function AutoBePlaygroundChatMovie(
         props.service.conversate(contents);
       }}
       setError={setError}
-      sideWidth={SIDE_WIDTH}
+      supportAudio={props.supportAudio}
     />
   );
   const sideMovie = () => (
@@ -159,6 +159,7 @@ export namespace AutoBePlaygroundChatMovie {
     service: IAutoBeRpcService;
     listener: AutoBePlaygroundListener;
     eventGroups?: IAutoBePlaygroundEventGroup[];
+    supportAudio: boolean;
   }
 }
 

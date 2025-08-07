@@ -8,6 +8,8 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import CloseIcon from "@mui/icons-material/Close";
+import MicIcon from "@mui/icons-material/Mic";
+import StopIcon from "@mui/icons-material/Stop";
 import {
   Box,
   Chip,
@@ -35,6 +37,11 @@ export const AutoBePlaygroundChatBodyMovie = (
   const [enabled, setEnabled] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
   const [attachedFiles, setAttachedFiles] = useState<IFileContent[]>([]);
+  const [isRecording, setIsRecording] = useState(false);
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
+    null,
+  );
+  const [_audioChunks, setAudioChunks] = useState<Blob[]>([]);
 
   useEffect(() => {
     if (props.eventGroups.length === 0) return;
@@ -60,13 +67,14 @@ export const AutoBePlaygroundChatBodyMovie = (
           const isImage = file.type.startsWith("image/");
           // Check for common audio MIME types (wav and mp3)
           const isAudio =
-            file.type.startsWith("audio/") ||
-            file.type === "audio/mpeg" ||
-            file.type === "audio/mp3" ||
-            file.type === "audio/wav" ||
-            file.type === "audio/x-wav" ||
-            file.type === "audio/wave" ||
-            file.type === "audio/x-wave";
+            props.supportAudio &&
+            file.type.startsWith("audio/") &&
+            (file.type === "audio/mpeg" ||
+              file.type === "audio/mp3" ||
+              file.type === "audio/wav" ||
+              file.type === "audio/x-wav" ||
+              file.type === "audio/wave" ||
+              file.type === "audio/x-wave");
 
           if (isImage)
             return {
@@ -149,6 +157,69 @@ export const AutoBePlaygroundChatBodyMovie = (
       );
     }
     setEnabled(true);
+  };
+
+  // Audio recording handlers
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      const chunks: Blob[] = [];
+
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          chunks.push(event.data);
+        }
+      };
+
+      recorder.onstop = async () => {
+        try {
+          const audioBlob = new Blob(chunks, { type: "audio/webm" });
+          // Convert to WAV format
+          const wavBlob = await convertToWav(audioBlob);
+          const audioFile = new File([wavBlob], `recording-${Date.now()}.wav`, {
+            type: "audio/wav",
+          });
+
+          // Add to attached files
+          const base64 = await fileToBase64(audioFile);
+          const audioContent: AutoBeUserMessageAudioContent = {
+            type: "audio",
+            data: base64,
+            format: "wav",
+          };
+
+          setAttachedFiles([
+            ...attachedFiles,
+            { file: audioFile, content: audioContent },
+          ]);
+        } catch (error) {
+          props.setError(
+            error instanceof Error
+              ? error
+              : new Error("Failed to process audio recording"),
+          );
+        } finally {
+          stream.getTracks().forEach((track) => track.stop());
+        }
+      };
+
+      setMediaRecorder(recorder);
+      setAudioChunks(chunks);
+      recorder.start();
+      setIsRecording(true);
+    } catch (error) {
+      props.setError(
+        error instanceof Error ? error : new Error("Failed to start recording"),
+      );
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorder && mediaRecorder.state !== "inactive") {
+      mediaRecorder.stop();
+      setIsRecording(false);
+    }
   };
 
   // Drag and drop handlers
@@ -373,6 +444,37 @@ export const AutoBePlaygroundChatBodyMovie = (
                 </IconButton>
                 <IconButton
                   size="small"
+                  color={isRecording ? "error" : "primary"}
+                  onClick={
+                    isRecording ? stopRecording : () => void startRecording()
+                  }
+                  disabled={!enabled}
+                  sx={{
+                    p: 0.75,
+                    border: "1px solid",
+                    borderColor: isRecording ? "error.main" : "divider",
+                    backgroundColor: isRecording
+                      ? "error.light"
+                      : "transparent",
+                    "&:hover": {
+                      backgroundColor: isRecording
+                        ? "error.main"
+                        : "action.hover",
+                      borderColor: isRecording ? "error.dark" : "primary.main",
+                      color: isRecording ? "error.contrastText" : "inherit",
+                    },
+                  }}
+                >
+                  {props.supportAudio ? (
+                    isRecording ? (
+                      <StopIcon fontSize="small" />
+                    ) : (
+                      <MicIcon fontSize="small" />
+                    )
+                  ) : null}
+                </IconButton>
+                <IconButton
+                  size="small"
                   color="primary"
                   onClick={() => void conversate()}
                   disabled={
@@ -407,12 +509,65 @@ const fileToBase64 = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => {
-      const data: string = reader.result as string;
-      resolve(data);
+      const dataUrl = reader.result as string;
+      // Remove the data URL prefix to get pure base64
+      const base64 = dataUrl.split(",")[1];
+      resolve(base64);
     };
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
+};
+
+// Convert audio blob to WAV format
+const convertToWav = async (audioBlob: Blob): Promise<Blob> => {
+  const audioContext = new AudioContext();
+  const arrayBuffer = await audioBlob.arrayBuffer();
+  const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+  // Create WAV file
+  const length = audioBuffer.length;
+  const sampleRate = audioBuffer.sampleRate;
+  const numberOfChannels = audioBuffer.numberOfChannels;
+
+  // Calculate WAV file size
+  const wavLength = 44 + length * numberOfChannels * 2;
+  const buffer = new ArrayBuffer(wavLength);
+  const view = new DataView(buffer);
+
+  // WAV file header
+  const writeString = (offset: number, string: string) => {
+    for (let i = 0; i < string.length; i++) {
+      view.setUint8(offset + i, string.charCodeAt(i));
+    }
+  };
+
+  writeString(0, "RIFF");
+  view.setUint32(4, wavLength - 8, true);
+  writeString(8, "WAVE");
+  writeString(12, "fmt ");
+  view.setUint32(16, 16, true); // fmt chunk size
+  view.setUint16(20, 1, true); // PCM format
+  view.setUint16(22, numberOfChannels, true);
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, sampleRate * numberOfChannels * 2, true); // byte rate
+  view.setUint16(32, numberOfChannels * 2, true); // block align
+  view.setUint16(34, 16, true); // bits per sample
+  writeString(36, "data");
+  view.setUint32(40, length * numberOfChannels * 2, true);
+
+  // Write audio data
+  let offset = 44;
+  for (let i = 0; i < length; i++) {
+    for (let channel = 0; channel < numberOfChannels; channel++) {
+      const sample = audioBuffer.getChannelData(channel)[i];
+      const value = Math.max(-1, Math.min(1, sample));
+      view.setInt16(offset, value * 0x7fff, true);
+      offset += 2;
+    }
+  }
+
+  return new Blob([buffer], { type: "audio/wav" });
 };
 export namespace AutoBePlaygroundChatBodyMovie {
   export interface IProps {
@@ -423,6 +578,7 @@ export namespace AutoBePlaygroundChatBodyMovie {
     setError: (error: Error) => void;
     uploadFile?: (file: File) => Promise<{ id: string }>;
     uploadImage?: (file: File) => Promise<{ url: string }>;
+    supportAudio: boolean;
     sideWidth?: number;
   }
 }

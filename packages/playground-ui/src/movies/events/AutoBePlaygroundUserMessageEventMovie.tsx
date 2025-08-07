@@ -60,7 +60,7 @@ export function AutoBePlaygroundUserMessageEventMovie({
                   ) : null,
                 )}
               </div>
-              <br />
+              {texts.length ? <br /> : null}
             </>
           ) : null}
           {texts.map((content) => (
