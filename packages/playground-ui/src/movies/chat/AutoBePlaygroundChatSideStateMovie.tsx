@@ -37,7 +37,7 @@ export const AutoBePlaygroundChatSideStateMovie = (
   const { analyze, prisma, interface: api, test, realize } = props.state;
   return (
     <>
-      <Typography variant="h5"> Token Usage </Typography>
+      <Typography variant="h5"> Development State </Typography>
       <hr />
       <Table size="small">
         <TableHead>
