@@ -1,21 +1,16 @@
 import { AutoBeAgent, IAutoBeProps } from "@autobe/agent";
 import { AutoBeCompiler } from "@autobe/compiler";
-import {
-  AutoBeEvent,
-  AutoBeHistory,
-  IAutoBeTokenUsageJson,
-} from "@autobe/interface";
+import { AutoBeHistory, IAutoBeTokenUsageJson } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 import OpenAI from "openai";
-import typia from "typia";
 import * as vscode from "vscode";
 import { Uri } from "vscode";
 
-import { Logger } from "../Logger";
 import {
   AUTOBE_API_KEY,
   AUTOBE_CHAT_SESSION_MAP,
   AUTOBE_CONFIG,
+  AUTOBE_EVENT_TYPES,
 } from "../constant/key";
 import {
   IAutoBeWebviewMessage,
@@ -31,14 +26,8 @@ export const getAutoBeWebviewProvider = (context: vscode.ExtensionContext) => {
 
       panel.webview.options = { enableScripts: true };
       panel.webview.html = getHtmlContent(context)(panel.webview);
-      panel.webview.onDidReceiveMessage((message) => {
-        const isMessageValid = typia.is<IAutoBeWebviewMessage>(message);
-        if (!isMessageValid) {
-          Logger.warn(
-            `AutoBe VsCode Extension Webview emit wrong message: ${message}`,
-          );
-          return;
-        }
+      panel.webview.onDidReceiveMessage(async (message) => {
+        await instance.handlePostMessage(message);
       });
     },
   };
@@ -96,23 +85,19 @@ class AutoBeWrapper {
     const chatSessionMap = await this.context.globalState.get(
       AUTOBE_CHAT_SESSION_MAP,
     );
-    if (
-      typia.is<
-        Array<
-          [
-            string,
-            {
-              history: AutoBeHistory[];
-              tokenUsage: IAutoBeTokenUsageJson;
-            },
-          ]
-        >
-      >(chatSessionMap)
-    ) {
-      chatSessionMap.forEach(([sessionId, session]) => {
-        this.chatSessionMap.set(sessionId, session);
-      });
-    }
+    (
+      chatSessionMap as Array<
+        [
+          string,
+          {
+            history: AutoBeHistory[];
+            tokenUsage: IAutoBeTokenUsageJson;
+          },
+        ]
+      >
+    ).forEach(([sessionId, session]) => {
+      this.chatSessionMap.set(sessionId, session);
+    });
   }
 
   public async dispose() {
@@ -205,7 +190,7 @@ class AutoBeWrapper {
   }
 
   private registerAutoBeEventHandler(agent: AutoBeAgent<ILlmSchema.Model>) {
-    typia.misc.literals<AutoBeEvent.Type>().forEach((key) => {
+    AUTOBE_EVENT_TYPES.forEach((key) => {
       agent.on(key, (ev) => {
         this.webview.postMessage({
           type: "on_event_auto_be",

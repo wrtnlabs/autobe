@@ -16,7 +16,6 @@
   },
   "main": "./dist/extension.js",
   "scripts": {
-    "prepare": "ts-patch install",
     "vscode:prepack": "node build/copy_license.js",
     "vscode:prepublish": "pnpm run build",
     "vscode:pack": "pnpm vscode:prepack && vsce pack",
@@ -30,7 +29,6 @@
     "@autobe/agent": "workspace:^",
     "@autobe/compiler": "workspace:^",
     "@autobe/interface": "workspace:^",
-    "typia": "catalog:samchon",
     "openai": "catalog:libs"
   },
   "devDependencies": {
@@ -40,7 +38,6 @@
     "@vscode/test-cli": "^0.0.11",
     "@vscode/test-electron": "^2.5.2",
     "@vscode/vsce": "^3.6.0",
-    "ts-patch": "catalog:typescript",
     "typescript": "catalog:typescript"
   },
   "contributes": {
