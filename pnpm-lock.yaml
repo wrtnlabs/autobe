@@ -484,7 +484,26 @@ importers:
         version: 5.9.2
 
   packages/vscode-extension:
+    dependencies:
+      '@autobe/agent':
+        specifier: workspace:^
+        version: link:../agent
+      '@autobe/compiler':
+        specifier: workspace:^
+        version: link:../compiler
+      '@autobe/interface':
+        specifier: workspace:^
+        version: link:../interface
+      openai:
+        specifier: catalog:libs
+        version: 5.11.0
+      typia:
+        specifier: catalog:samchon
+        version: 9.6.1(typescript@5.9.2)
     devDependencies:
+      '@samchon/openapi':
+        specifier: ^4.7.1
+        version: 4.7.1
       '@types/node':
         specifier: 22.x
         version: 22.17.0
@@ -500,6 +519,9 @@ importers:
       '@vscode/vsce':
         specifier: ^3.6.0
         version: 3.6.0
+      ts-patch:
+        specifier: catalog:typescript
+        version: 3.3.0
       typescript:
         specifier: catalog:typescript
         version: 5.9.2
@@ -515,6 +537,9 @@ importers:
       '@types/react-dom':
         specifier: ^19.1.5
         version: 19.1.7(@types/react@19.1.9)
+      '@types/vscode-webview':
+        specifier: ^1.57.5
+        version: 1.57.5
       react:
         specifier: ^19.1.1
         version: 19.1.1
@@ -1863,6 +1888,9 @@ packages:
   '@samchon/openapi@4.7.1':
     resolution: {integrity: sha512-+rkMlSKMt7l3KGWJVWUle1CXEm0vA8FIF2rufHl+T1gN/gGrTEhL1gDK3FHYf8Nl5XReK0r1vL6Q2QTMwQN7xQ==}
 
+  '@samchon/openapi@4.7.1':
+    resolution: {integrity: sha512-+rkMlSKMt7l3KGWJVWUle1CXEm0vA8FIF2rufHl+T1gN/gGrTEhL1gDK3FHYf8Nl5XReK0r1vL6Q2QTMwQN7xQ==}
+
   '@secretlint/config-creator@10.2.1':
     resolution: {integrity: sha512-nyuRy8uo2+mXPIRLJ93wizD1HbcdDIsVfgCT01p/zGVFrtvmiL7wqsl4KgZH0QFBM/KRLDLeog3/eaM5ASjtvw==}
     engines: {node: '>=20.0.0'}
@@ -2318,6 +2346,9 @@ packages:
 
   '@types/uuid@10.0.0':
     resolution: {integrity: sha512-7gqG38EyHgyP1S+7+xomFtL+ZNHcKv6DwNaCZmJmo1vgMugyF3TCnXVg4t1uk89mLNwnLtnY3TpOpCOyp1/xHQ==}
+
+  '@types/vscode-webview@1.57.5':
+    resolution: {integrity: sha512-iBAUYNYkz+uk1kdsq05fEcoh8gJmwT3lqqFPN7MGyjQ3HVloViMdo7ZJ8DFIP8WOK74PjOEilosqAyxV2iUFUw==}
 
   '@types/vscode@1.102.0':
     resolution: {integrity: sha512-V9sFXmcXz03FtYTSUsYsu5K0Q9wH9w9V25slddcxrh5JgORD14LpnOA7ov0L9ALi+6HrTjskLJ/tY5zeRF3TFA==}
@@ -7121,6 +7152,8 @@ snapshots:
 
   '@samchon/openapi@4.7.1': {}
 
+  '@samchon/openapi@4.7.1': {}
+
   '@secretlint/config-creator@10.2.1':
     dependencies:
       '@secretlint/types': 10.2.1
@@ -7643,6 +7676,8 @@ snapshots:
   '@types/unist@3.0.3': {}
 
   '@types/uuid@10.0.0': {}
+
+  '@types/vscode-webview@1.57.5': {}
 
   '@types/vscode@1.102.0': {}
 

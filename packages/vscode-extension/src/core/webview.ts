@@ -1,8 +1,48 @@
+import { AutoBeAgent, IAutoBeProps } from "@autobe/agent";
+import { AutoBeCompiler } from "@autobe/compiler";
+import {
+  AutoBeEvent,
+  AutoBeHistory,
+  IAutoBeTokenUsageJson,
+} from "@autobe/interface";
+import { ILlmSchema } from "@samchon/openapi";
+import OpenAI from "openai";
+import typia from "typia";
 import * as vscode from "vscode";
 import { Uri } from "vscode";
 
+import { Logger } from "../Logger";
+import {
+  AUTOBE_API_KEY,
+  AUTOBE_CHAT_SESSION_MAP,
+  AUTOBE_CONFIG,
+} from "../constant/key";
+import {
+  IAutoBeWebviewMessage,
+  IResponseGetConfig,
+} from "../constant/message.dto";
 import { getNonce } from "../util/crypto";
 
+export const getAutoBeWebviewProvider = (context: vscode.ExtensionContext) => {
+  return {
+    async resolveWebviewView(panel: vscode.WebviewView) {
+      const instance = new AutoBeWrapper(panel.webview, context);
+      await instance.initialize();
+
+      panel.webview.options = { enableScripts: true };
+      panel.webview.html = getHtmlContent(context)(panel.webview);
+      panel.webview.onDidReceiveMessage((message) => {
+        const isMessageValid = typia.is<IAutoBeWebviewMessage>(message);
+        if (!isMessageValid) {
+          Logger.warn(
+            `AutoBe VsCode Extension Webview emit wrong message: ${message}`,
+          );
+          return;
+        }
+      });
+    },
+  };
+};
 export const getHtmlContent =
   (context: vscode.ExtensionContext) =>
   (webview: vscode.Webview): string => {
@@ -33,3 +73,146 @@ export const getHtmlContent =
 </html>
   `;
   };
+
+class AutoBeWrapper {
+  private readonly webview: vscode.Webview;
+  private readonly context: vscode.ExtensionContext;
+  public config: IResponseGetConfig["data"] | undefined;
+
+  private readonly chatSessionMap: Map<
+    string,
+    {
+      history: Array<AutoBeHistory>;
+      tokenUsage: IAutoBeTokenUsageJson;
+    }
+  > = new Map();
+
+  constructor(webview: vscode.Webview, context: vscode.ExtensionContext) {
+    this.webview = webview;
+    this.context = context;
+  }
+
+  public async initialize() {
+    const chatSessionMap = await this.context.globalState.get(
+      AUTOBE_CHAT_SESSION_MAP,
+    );
+    if (
+      typia.is<
+        Array<
+          [
+            string,
+            {
+              history: AutoBeHistory[];
+              tokenUsage: IAutoBeTokenUsageJson;
+            },
+          ]
+        >
+      >(chatSessionMap)
+    ) {
+      chatSessionMap.forEach(([sessionId, session]) => {
+        this.chatSessionMap.set(sessionId, session);
+      });
+    }
+  }
+
+  public async dispose() {
+    await this.context.globalState.update(
+      AUTOBE_CHAT_SESSION_MAP,
+      Array.from(this.chatSessionMap.entries()),
+    );
+  }
+
+  public async handlePostMessage(message: IAutoBeWebviewMessage) {
+    switch (message.type) {
+      case "req_get_api_key": {
+        const apiKey = await this.context.secrets.get(AUTOBE_API_KEY);
+        await this.webview.postMessage({
+          type: "res_get_api_key",
+          data: apiKey,
+        });
+        break;
+      }
+      case "req_set_config": {
+        const { apiKey, ...restConfig } = message.data;
+
+        if (apiKey !== undefined) {
+          await this.context.secrets.store(AUTOBE_API_KEY, apiKey);
+        }
+        const existingConfig = (await this.context.globalState.get(
+          AUTOBE_CONFIG,
+        )) as Partial<IResponseGetConfig["data"]> | undefined;
+        await this.context.globalState.update(AUTOBE_CONFIG, {
+          ...existingConfig,
+          ...restConfig,
+        });
+        break;
+      }
+      case "req_create_chat_session":
+        const sessionId = await this.createChatSession();
+        await this.webview.postMessage({
+          type: "res_create_chat_session",
+          data: sessionId,
+        });
+        await this.conversate(sessionId, message.data.message);
+        break;
+    }
+  }
+
+  private async createChatSession() {
+    const sessionId = "123123123";
+    return sessionId;
+  }
+
+  private async conversate(sessionId: string, message: string) {
+    const session = this.chatSessionMap.get(sessionId);
+
+    const config = this.config;
+    if (config?.apiKey === undefined) {
+      throw new Error("Config is not initialized");
+    }
+
+    const agent = (() => {
+      const defaultConfig = {
+        model: this.config?.model ?? "chatgpt",
+        vendor: {
+          api: new OpenAI({
+            apiKey: this.config?.apiKey ?? "",
+            baseURL: this.config?.baseUrl ?? "",
+          }),
+          model: this.config?.model ?? "gpt-4.1",
+          semaphore: Number(this.config?.concurrencyRequest ?? "16"),
+        },
+        compiler: (listener) => new AutoBeCompiler(listener),
+      } satisfies IAutoBeProps<ILlmSchema.Model>;
+      if (session !== undefined) {
+        return new AutoBeAgent({
+          ...defaultConfig,
+          histories: session.history,
+          tokenUsage: session.tokenUsage,
+        });
+      }
+      return new AutoBeAgent(defaultConfig);
+    })();
+    this.registerAutoBeEventHandler(agent);
+    const result = await agent.conversate(message);
+
+    this.chatSessionMap.set(sessionId, {
+      history: agent.getHistories(),
+      tokenUsage: agent.getTokenUsage(),
+    });
+
+    return result;
+  }
+
+  private registerAutoBeEventHandler(agent: AutoBeAgent<ILlmSchema.Model>) {
+    typia.misc.literals<AutoBeEvent.Type>().forEach((key) => {
+      agent.on(key, (ev) => {
+        this.webview.postMessage({
+          type: "on_event_auto_be",
+          data: ev,
+        });
+      });
+    });
+    return agent;
+  }
+}
