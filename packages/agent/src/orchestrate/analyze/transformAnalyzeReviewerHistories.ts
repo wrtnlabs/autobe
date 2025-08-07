@@ -2,11 +2,15 @@ import { IAgenticaHistoryJson } from "@agentica/core";
 import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
+import { AutoBeAnalyzeWriteProps } from "./structures/AutoBeAnalyzeWriteProps";
 
-export const transformAnalyzeReviewerHistories = (input: {
-  /** Total file names */
-  files: Record<string, string>;
-}): Array<
+export const transformAnalyzeReviewerHistories = (
+  props: AutoBeAnalyzeWriteProps,
+  input: {
+    /** Total file names */
+    files: Record<string, string>;
+  },
+): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
   return [
@@ -18,6 +22,12 @@ export const transformAnalyzeReviewerHistories = (input: {
         "Below are all of the files.",
         "```json",
         JSON.stringify(input.files),
+        "```",
+        "",
+        "These files are written under the following conditions.",
+        "You should refer to these contents and make a review.",
+        "```json",
+        JSON.stringify(props),
         "```",
       ].join("\n"),
     },

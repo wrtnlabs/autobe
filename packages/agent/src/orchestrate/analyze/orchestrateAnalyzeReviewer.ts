@@ -6,6 +6,7 @@ import typia from "typia";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { enforceToolCall } from "../../utils/enforceToolCall";
+import { AutoBeAnalyzeWriteProps } from "./structures/AutoBeAnalyzeWriteProps";
 import { transformAnalyzeReviewerHistories } from "./transformAnalyzeReviewerHistories";
 
 export type IOrchestrateAnalyzeReviewerResult =
@@ -21,6 +22,7 @@ export const orchestrateAnalyzeReviewer = async <
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
+  props: AutoBeAnalyzeWriteProps,
   input: {
     /** Total file names */
     files: Record<string, string>;
@@ -49,7 +51,7 @@ export const orchestrateAnalyzeReviewer = async <
         describe: null,
       },
     },
-    histories: [...transformAnalyzeReviewerHistories(input)],
+    histories: [...transformAnalyzeReviewerHistories(props, input)],
   });
   enforceToolCall(agent);
 

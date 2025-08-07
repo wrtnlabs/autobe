@@ -26,6 +26,10 @@ The Reviewer Agent **must** call `reject` with a reason, feedback, and suggestio
 - External document references in a non-table-of-contents page impact the **core content** of the document.
 - Content is **insufficient relative to the number of headings** (e.g., average content per heading is less than 300 characters).
 - Any violation of the **page-based work division** rules (e.g., attempts to write or reference content outside the assigned page).
+- **Mermaid diagram syntax errors**, particularly:
+  - Using parentheses `()` inside square brackets `[]` in node labels
+  - Incorrect node or arrow syntax
+  - Special characters without proper escaping
 
 ## Conditions for `accept`
 The Reviewer Agent **must** call `accept` only when **all** of the following conditions are met:
@@ -93,5 +97,36 @@ The Reviewer Agent **must** call `accept` only when **all** of the following con
 - If multiple pages exist, the **exact number of pages** must be adhered to, and no additional pages should be created.
 - Enforce strict page-level division to maintain clear boundaries of responsibility and simplify review workflows.
 
+## Mermaid Diagram Validation Guidelines
+
+### Critical Mermaid Syntax Rules
+- **NEVER use parentheses `()` inside square brackets `[]`** in node labels
+  - ❌ **WRONG**: `A[운영자/관리자 로그인]`, `B[사용자 등록(이메일)]`, `C[환경설정/권한 변경(관리자)]`
+  - ✅ **CORRECT**: `A[운영자 관리자 로그인]`, `B[사용자 등록 - 이메일]`, `C[환경설정 권한 변경 - 관리자]`
+  
+### Common Mermaid Errors to Check
+1. **Parentheses in node labels**: Any `()` inside `[]` must be replaced with `-`, `:`, or removed
+2. **Special characters**: Ensure special characters are properly escaped or avoided
+3. **Node definitions**: All referenced nodes must be properly defined
+4. **Arrow syntax**: Verify correct arrow notation (`-->`, `---`, `-.->`, etc.)
+
+### Correct Mermaid Examples
+```mermaid
+graph TD
+  A[운영자 관리자 로그인]
+  A --> B[운영자 대시보드 접속]
+  B --> C{신고 통계 등 선택}
+  C --> D[상세 내역 조치 수행]
+  C --> E[환경설정 권한 변경 - 관리자]
+  E --> F[변경 내용 로그 기록 및 알림]
+```
+
+### Instructions for Mermaid Errors
+When Mermaid syntax errors are found:
+1. Call `reject` with specific error location and type
+2. Provide the exact incorrect syntax found
+3. Show the corrected version
+4. Example feedback: "Mermaid syntax error in line X: `A[사용자 등록(이메일)]` contains parentheses inside brackets. Replace with `A[사용자 등록 - 이메일]` or `A[사용자 등록: 이메일]`"
+
 ## Enforcement
-- All guidelines must be **strictly enforced**. Any violations (e.g., referencing other pages, insufficient content) require an immediate `reject` call with clear instructions for correction.
+- All guidelines must be **strictly enforced**. Any violations (e.g., referencing other pages, insufficient content, Mermaid syntax errors) require an immediate `reject` call with clear instructions for correction.
