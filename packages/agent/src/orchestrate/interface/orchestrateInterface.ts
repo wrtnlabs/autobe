@@ -57,7 +57,8 @@ export const orchestrateInterface =
     return ctx.dispatch({
       type: "interfaceComplete",
       document,
-      created_at: start.toISOString(),
+      created_at: new Date().toISOString(),
+      elapsed: new Date().getTime() - start.getTime(),
       step: ctx.state().analyze?.step ?? 0,
     } satisfies AutoBeInterfaceCompleteEvent);
   };

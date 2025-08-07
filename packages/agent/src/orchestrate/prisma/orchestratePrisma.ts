@@ -90,6 +90,7 @@ export const orchestratePrisma = async <Model extends ILlmSchema.Model>(
       files: finalSchemas,
     }),
     step: ctx.state().analyze?.step ?? 0,
+    elapsed: new Date().getTime() - start.getTime(),
     created_at: new Date().toISOString(),
   } satisfies AutoBePrismaCompleteEvent);
 };
