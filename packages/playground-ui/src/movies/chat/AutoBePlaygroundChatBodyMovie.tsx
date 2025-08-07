@@ -92,10 +92,9 @@ export const AutoBePlaygroundChatBodyMovie = (
           else if (isAudio)
             return {
               type: "audio",
-              data: await fileToBase64(file),
+              data: (await fileToBase64(file)).split(",")[1],
               format: file.type.includes("wav") ? "wav" : "mp3",
             };
-
           return {
             type: "file",
             file: props.uploadFile
@@ -509,10 +508,8 @@ const fileToBase64 = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => {
-      const dataUrl = reader.result as string;
-      // Remove the data URL prefix to get pure base64
-      const base64 = dataUrl.split(",")[1];
-      resolve(base64);
+      const data: string = reader.result as string;
+      resolve(data);
     };
     reader.onerror = reject;
     reader.readAsDataURL(file);
