@@ -5,12 +5,10 @@ import {
   AutoBEAnalyzeFileMap,
   AutoBeAnalyzePointer,
 } from "./AutoBeAnalyzePointer";
-import {
-  IOrchestrateAnalyzeReviewerResult,
-  orchestrateAnalyzeReviewer,
-} from "./orchestrateAnalyzeReviewer";
+import { orchestrateAnalyzeReviewer } from "./orchestrateAnalyzeReviewer";
 import { orchestrateAnalyzeWrite } from "./orchestrateAnalyzeWrite";
 import { AutoBeAnalyzeWriteProps } from "./structures/AutoBeAnalyzeWriteProps";
+import { IOrchestrateAnalyzeReviewerResult } from "./structures/IAutoBeAnalyzeReviewApplication";
 
 export async function writeDocumentUntilReviewPassed<
   Model extends ILlmSchema.Model,
