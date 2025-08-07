@@ -2,7 +2,9 @@ import { IAutoBeRpcHeader, IAutoBeTokenUsageJson } from "@autobe/interface";
 import { Typography } from "@mui/material";
 import { ILlmSchema } from "@samchon/openapi";
 
+import { AutoBePlaygroundState } from "../../structures/AutoBePlaygroundState";
 import { AutoBePlaygroundChatSideConfigMovie } from "./AutoBePlaygroundChatSideConfigMovie";
+import { AutoBePlaygroundChatSideStateMovie } from "./AutoBePlaygroundChatSideStateMovie";
 import { AutoBePlaygroundChatTokenUsageMovie } from "./AutoBePlaygroundChatTokenUsageMovie";
 
 export function AutoBePlaygroundChatSideMovie(
@@ -25,16 +27,18 @@ export function AutoBePlaygroundChatSideMovie(
       ) : null}
       <AutoBePlaygroundChatSideConfigMovie header={props.header} />
       <br />
-      <br />
       {props.tokenUsage !== null ? (
         <AutoBePlaygroundChatTokenUsageMovie tokenUsage={props.tokenUsage} />
       ) : null}
+      <br />
+      <AutoBePlaygroundChatSideStateMovie state={props.state} />
     </div>
   );
 }
 export namespace AutoBePlaygroundChatSideMovie {
   export interface IProps {
     header: IAutoBeRpcHeader<ILlmSchema.Model>;
+    state: AutoBePlaygroundState;
     tokenUsage: IAutoBeTokenUsageJson | null;
     error: Error | null;
   }

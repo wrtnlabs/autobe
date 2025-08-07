@@ -21,7 +21,6 @@ import { useEffect, useState } from "react";
 import { AutoBePlaygroundListener } from "../../structures/AutoBePlaygroundListener";
 import { IAutoBePlaygroundEventGroup } from "../../structures/IAutoBePlaygroundEventGroup";
 import { AutoBePlaygroundChatBodyMovie } from "./AutoBePlaygroundChatBodyMovie";
-import { AutoBePlaygroundChatPromptMovie } from "./AutoBePlaygroundChatPromptMovie";
 import { AutoBePlaygroundChatSideMovie } from "./AutoBePlaygroundChatSideMovie";
 
 export function AutoBePlaygroundChatMovie(
@@ -67,6 +66,11 @@ export function AutoBePlaygroundChatMovie(
       isMobile={isMobile}
       eventGroups={eventGroups}
       service={props.service}
+      conversate={async (contents) => {
+        props.service.conversate(contents);
+      }}
+      setError={setError}
+      sideWidth={SIDE_WIDTH}
     />
   );
   const sideMovie = () => (
@@ -86,6 +90,7 @@ export function AutoBePlaygroundChatMovie(
           header={props.header}
           tokenUsage={tokenUsage}
           error={error}
+          state={props.listener.getState()}
         />
       </Container>
     </div>
@@ -141,14 +146,6 @@ export function AutoBePlaygroundChatMovie(
             {bodyMovie()}
           </>
         )}
-        <AutoBePlaygroundChatPromptMovie
-          conversate={async (contents) => {
-            props.service.conversate(contents);
-          }}
-          setError={setError}
-          isMobile={isMobile}
-          sideWidth={SIDE_WIDTH}
-        />
       </div>
     </div>
   );
