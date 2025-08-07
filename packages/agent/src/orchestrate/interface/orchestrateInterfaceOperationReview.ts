@@ -11,31 +11,16 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { enforceToolCall } from "../../utils/enforceToolCall";
 import { transformInterfaceAssetHistories } from "./histories/transformInterfaceAssetHistories";
 import { IAutoBeInterfaceOperationApplication } from "./structures/IAutoBeInterfaceOperationApplication";
-import { IAutoBeInterfaceOperationReviewApplication } from "./structures/IAutoBeInterfaceOperationReviewApplication";
-
-export namespace IAutoBeInterfaceOperationReview {
-  export interface Success {
-    type: "success";
-    endpoint: AutoBeOpenApi.IEndpoint;
-  }
-
-  export interface Failure {
-    type: "failure";
-    endpoint: AutoBeOpenApi.IEndpoint;
-    reason: string;
-  }
-}
-export interface IAutoBeInterfaceOperationReview {
-  passed: IAutoBeInterfaceOperationReview.Success[];
-  failure: IAutoBeInterfaceOperationReview.Failure[];
-}
+import {
+  IAutoBeInterfaceOperationReview,
+  IAutoBeInterfaceOperationReviewApplication,
+} from "./structures/IAutoBeInterfaceOperationReviewApplication";
 
 export async function orchestrateInterfaceOperationReview<
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
-  endpoints: AutoBeOpenApi.IEndpoint[], // total endpoints
-  operations: IAutoBeInterfaceOperationApplication.IOperation[],
+  props: IAutoBeInterfaceOperationReview.IInput,
 ): Promise<IAutoBeInterfaceOperationReview> {
   const pointer: IPointer<IAutoBeInterfaceOperationReview | null> = {
     value: null,
@@ -72,7 +57,7 @@ export async function orchestrateInterfaceOperationReview<
           "Review the following API operations:",
           "",
           "```json",
-          JSON.stringify(operations, null, 2),
+          JSON.stringify(props.operations, null, 2),
           "```",
         ].join("\n"),
       },
@@ -80,14 +65,14 @@ export async function orchestrateInterfaceOperationReview<
     controllers: [
       createReviewController({
         model: ctx.model,
-        endpoints,
-        operations,
+        endpoints: props.endpoints,
+        operations: props.operations,
         build: (reviews) => {
           const passed: IAutoBeInterfaceOperationReview.Success[] = [];
           const failure: IAutoBeInterfaceOperationReview.Failure[] = [];
 
           reviews.forEach((review) => {
-            const operation = operations.find(
+            const operation = props.operations.find(
               (op) => op.method === review.method && op.path === review.path,
             );
             if (!operation) {
@@ -120,6 +105,7 @@ export async function orchestrateInterfaceOperationReview<
     const tokenUsage = agentica.getTokenUsage().aggregate;
     ctx.usage().record(tokenUsage, ["interface"]);
   });
+
   if (pointer.value === null) throw new Error("Failed to review operations.");
   return pointer.value;
 }
@@ -127,7 +113,8 @@ export async function orchestrateInterfaceOperationReview<
 function createReviewController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   endpoints: AutoBeOpenApi.IEndpoint[]; // total endpoints
-  operations: IAutoBeInterfaceOperationApplication.IOperation[];
+  operations: IAutoBeInterfaceOperationApplication.IOperation[]; // review
+
   build: (
     reviews: IAutoBeInterfaceOperationReviewApplication.IReview[],
   ) => void;
@@ -147,7 +134,7 @@ function createReviewController<Model extends ILlmSchema.Model>(props: {
 
     reviews.forEach((review, i) => {
       const operation: AutoBeOpenApi.IEndpoint | undefined =
-        props.endpoints.find(
+        props.operations.find(
           (op) => op.method === review.method && op.path === review.path,
         );
       if (!operation) {

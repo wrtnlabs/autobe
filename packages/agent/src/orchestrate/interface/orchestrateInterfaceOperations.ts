@@ -36,27 +36,31 @@ export async function orchestrateInterfaceOperations<
     completed: 0,
   } as const;
 
-  const operations: AutoBeOpenApi.IOperation[][] = await Promise.all(
-    matrix.map(async (it) => {
-      const row: AutoBeOpenApi.IOperation[] = await divideAndConquer(
-        ctx,
-        endpoints,
-        it,
-        3,
-        progress,
-        state,
-      );
-      ctx.dispatch({
-        type: "interfaceOperations",
-        operations: row,
-        ...progress,
-        step: ctx.state().analyze?.step ?? 0,
-        created_at: new Date().toISOString(),
-      });
-      return row;
-    }),
-  );
-  return operations.flat();
+  const operations: AutoBeOpenApi.IOperation[] = (
+    await Promise.all(
+      matrix.map(async (it) => {
+        const row: AutoBeOpenApi.IOperation[] = await divideAndConquer(
+          ctx,
+          endpoints,
+          it,
+          3,
+          progress,
+          state,
+        );
+
+        ctx.dispatch({
+          type: "interfaceOperations",
+          operations: row,
+          ...progress,
+          step: ctx.state().analyze?.step ?? 0,
+          created_at: new Date().toISOString(),
+        });
+        return row;
+      }),
+    )
+  ).flat();
+
+  return operations;
 }
 
 async function divideAndConquer<Model extends ILlmSchema.Model>(
@@ -96,12 +100,11 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
           failure: failure.has(target) ? failure.get(target) : null,
         }));
 
-        const ops = await process(ctx, targets, progress);
-        const reviews = await orchestrateInterfaceOperationReview(
-          ctx,
-          total,
-          ops,
-        );
+        const operations = await process(ctx, targets, progress);
+        const reviews = await orchestrateInterfaceOperationReview(ctx, {
+          endpoints: total,
+          operations: operations,
+        });
 
         const completed = state.completed + reviews.passed.length;
         state.completed = completed;
@@ -116,7 +119,7 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
 
         if (reviews.passed.length) {
           const endpoints = reviews.passed.map((p) => p.endpoint);
-          const passedOperations = ops
+          const passedOperations = operations
             .filter((op) =>
               endpoints.some(
                 (endpoint) =>
