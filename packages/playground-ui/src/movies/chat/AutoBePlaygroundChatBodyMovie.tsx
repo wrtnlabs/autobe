@@ -1,6 +1,7 @@
 import {
   AutoBeUserMessageContent,
   AutoBeUserMessageFileContent,
+  AutoBeUserMessageImageContent,
   IAutoBeRpcService,
 } from "@autobe/interface";
 import AddIcon from "@mui/icons-material/Add";
@@ -32,14 +33,7 @@ export const AutoBePlaygroundChatBodyMovie = (
   const [emptyText, setEmptyText] = useState(false);
   const [enabled, setEnabled] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
-  const [attachedFiles, setAttachedFiles] = useState<
-    Array<{
-      file: File;
-      content:
-        | AutoBeUserMessageFileContent.IReference
-        | AutoBeUserMessageFileContent.IData;
-    }>
-  >([]);
+  const [attachedFiles, setAttachedFiles] = useState<IFileContent[]>([]);
 
   useEffect(() => {
     if (props.eventGroups.length === 0) return;
@@ -49,48 +43,52 @@ export const AutoBePlaygroundChatBodyMovie = (
     });
   }, [props.eventGroups.length]);
 
-  const handleFileSelect = async (files: FileList | null) => {
-    if (!files) return;
+  const handleFileSelect = async (fileList: FileList | null) => {
+    if (!fileList) return;
 
     setEnabled(false);
-    try {
-      const newFiles: Array<{
-        file: File;
-        content:
-          | AutoBeUserMessageFileContent.IReference
-          | AutoBeUserMessageFileContent.IData;
-      }> = [];
+    const newFiles: IFileContent[] = [];
 
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        let fileContent:
-          | AutoBeUserMessageFileContent.IReference
-          | AutoBeUserMessageFileContent.IData;
-
-        if (props.upload) {
-          // Use provided upload function - returns ID
-          const id = await props.upload(file);
-          fileContent = {
-            type: "reference",
-            id,
+    for (let i = 0; i < fileList.length; i++) {
+      try {
+        const file: File = fileList[i];
+        const content:
+          | AutoBeUserMessageFileContent
+          | AutoBeUserMessageImageContent = await (async () => {
+          const isImage = file.type.startsWith("image/");
+          if (isImage)
+            return {
+              type: "image",
+              image: props.uploadImage
+                ? {
+                    type: "url",
+                    url: await props.uploadImage(file).then((res) => res.url),
+                  }
+                : {
+                    type: "base64",
+                    data: await fileToBase64(file),
+                  },
+            };
+          return {
+            type: "file",
+            file: props.uploadFile
+              ? {
+                  type: "id",
+                  id: await props.uploadFile(file).then((res) => res.id),
+                }
+              : {
+                  type: "base64",
+                  name: file.name,
+                  data: await fileToBase64(file),
+                },
           };
-        } else {
-          // Convert to base64 data
-          const base64 = await fileToBase64(file);
-          fileContent = {
-            type: "data",
-            name: file.name,
-            data: base64,
-          };
-        }
-        newFiles.push({ file, content: fileContent });
+        })();
+        newFiles.push({ file, content });
+      } catch {
+        continue;
       }
-      setAttachedFiles([...attachedFiles, ...newFiles]);
-    } catch (error) {
-      props.setError(
-        error instanceof Error ? error : new Error("File processing failed"),
-      );
     }
+    setAttachedFiles([...attachedFiles, ...newFiles]);
     setEnabled(true);
   };
 
@@ -114,12 +112,7 @@ export const AutoBePlaygroundChatBodyMovie = (
       const messages: AutoBeUserMessageContent[] = [];
 
       // Add attached files as file messages
-      for (const { content } of attachedFiles) {
-        messages.push({
-          type: "file",
-          file: content,
-        });
-      }
+      for (const { content } of attachedFiles) messages.push(content);
 
       // Add text message if present
       if (text.trim().length > 0) {
@@ -409,7 +402,13 @@ export namespace AutoBePlaygroundChatBodyMovie {
     service: IAutoBeRpcService;
     conversate: (messages: AutoBeUserMessageContent[]) => Promise<void>;
     setError: (error: Error) => void;
-    upload?: (file: File) => Promise<string>;
+    uploadFile?: (file: File) => Promise<{ id: string }>;
+    uploadImage?: (file: File) => Promise<{ url: string }>;
     sideWidth?: number;
   }
+}
+
+interface IFileContent {
+  file: File;
+  content: AutoBeUserMessageFileContent | AutoBeUserMessageImageContent;
 }

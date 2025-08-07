@@ -184,9 +184,9 @@ gantt
   title AutoBE Roadmap for Beta Release
 
   section Analyze Agent
-  Debate Enhancement: done,    2025-06-01,  7d
-  Prefix Rule:        done,    2025-06-12,  7d
-  Multimodal:         planned, 2025-07-02, 31d
+  Debate Enhancement: done, 2025-06-01,  7d
+  Prefix Rule:        done, 2025-06-12,  7d
+  Multimodal:         done, 2025-07-02, 31d
 
   section Prisma Agent
   Compiler Development: done, 2025-06-01, 14d
