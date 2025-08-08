@@ -67,7 +67,9 @@ export function AutoBePlaygroundConfigureMovie(
         header,
         listener,
         service: connector.getDriver(),
-        supportAudio,
+        uploadConfig: {
+          supportAudio,
+        },
       });
     } catch (error) {
       alert((error as Error)?.message);
