@@ -20,11 +20,11 @@ export async function orchestratePrismaReview<Model extends ILlmSchema.Model>(
 ): Promise<AutoBePrismaReviewEvent[]> {
   const total = components.length;
   let completed = 0;
-  
+
   return await Promise.all(
     components.map(async (component) => {
-      const event = await forceRetry(
-        () => step(ctx, application, schemas, component, ++completed, total),
+      const event = await forceRetry(() =>
+        step(ctx, application, schemas, component, ++completed, total),
       );
       return event;
     }),
@@ -53,7 +53,12 @@ async function step<Model extends ILlmSchema.Model>(
         describe: null,
       },
     },
-    histories: transformPrismaReviewHistories(application, schemas, component),
+    histories: transformPrismaReviewHistories({
+      analysis: ctx.state().analyze?.files ?? {},
+      application,
+      schemas,
+      component,
+    }),
     controllers: [
       createApplication(ctx, {
         build: (next) => {
@@ -84,7 +89,6 @@ async function step<Model extends ILlmSchema.Model>(
     total,
     step: ctx.state().analyze?.step ?? 0,
   };
-
   ctx.dispatch(event);
   return event;
 }
