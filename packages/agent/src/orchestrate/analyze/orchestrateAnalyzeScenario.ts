@@ -43,7 +43,7 @@ export const orchestrateAnalyzeScenario = async <
       {
         id: v4(),
         type: "systemMessage",
-        text: AutoBeSystemPromptConstant.ANALYZE_COMPOSER,
+        text: AutoBeSystemPromptConstant.ANALYZE_SCENARIO,
         created_at: new Date().toISOString(),
       },
     ],
