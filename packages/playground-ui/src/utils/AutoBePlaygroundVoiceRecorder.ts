@@ -1,11 +1,11 @@
 import { AutoBeUserMessageAudioContent } from "@autobe/interface";
 
-import { IAutoBePlaygroundFileContent } from "../structures/IAutoBePlaygroundFileContent";
+import { IAutoBePlaygroundBucket } from "../structures/IAutoBePlaygroundBucket";
 import { AutoBePlaygroundFileUploader } from "./AutoBePlaygroundFileUploader";
 
 export namespace AutoBePlaygroundVoiceRecorder {
   export const start = async (
-    complete: (content: IAutoBePlaygroundFileContent) => void,
+    complete: (content: IAutoBePlaygroundBucket) => void,
   ): Promise<MediaRecorder> => {
     const stream: MediaStream = await navigator.mediaDevices.getUserMedia({
       audio: true,

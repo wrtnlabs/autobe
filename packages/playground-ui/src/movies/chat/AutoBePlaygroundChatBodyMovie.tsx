@@ -1,15 +1,7 @@
-import {
-  AutoBeUserMessageAudioContent,
-  AutoBeUserMessageContent,
-  AutoBeUserMessageFileContent,
-  AutoBeUserMessageImageContent,
-  IAutoBeRpcService,
-} from "@autobe/interface";
+import { AutoBeUserMessageContent, IAutoBeRpcService } from "@autobe/interface";
 import AddIcon from "@mui/icons-material/Add";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import CloseIcon from "@mui/icons-material/Close";
-import MicIcon from "@mui/icons-material/Mic";
-import StopIcon from "@mui/icons-material/Stop";
 import {
   Box,
   Chip,
@@ -22,10 +14,11 @@ import {
 import { useEffect, useRef, useState } from "react";
 
 import { AutoBePlaygroundGlobal } from "../../AutoBePlaygroundGlobal";
+import { IAutoBePlaygroundBucket } from "../../structures/IAutoBePlaygroundBucket";
 import { IAutoBePlaygroundEventGroup } from "../../structures/IAutoBePlaygroundEventGroup";
 import { AutoBePlaygroundFileUploader } from "../../utils/AutoBePlaygroundFileUploader";
-import { AutoBePlaygroundVoiceRecorder } from "../../utils/AutoBePlaygroundVoiceRecorder";
 import { AutoBePlaygroundEventMovie } from "../events/AutoBePlaygroundEventMovie";
+import { AutoBePlaygroundChatVoiceMovie } from "./AutoBePlaygroundChatVoiceMovie";
 
 export const AutoBePlaygroundChatBodyMovie = (
   props: AutoBePlaygroundChatBodyMovie.IProps,
@@ -38,11 +31,7 @@ export const AutoBePlaygroundChatBodyMovie = (
   const [emptyText, setEmptyText] = useState(false);
   const [enabled, setEnabled] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
-  const [attachedFiles, setAttachedFiles] = useState<IFileContent[]>([]);
-  const [isRecording, setIsRecording] = useState(false);
-  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
-    null,
-  );
+  const [buckets, setBuckets] = useState<IAutoBePlaygroundBucket[]>([]);
 
   useEffect(() => {
     if (props.eventGroups.length === 0) return;
@@ -56,7 +45,7 @@ export const AutoBePlaygroundChatBodyMovie = (
     if (!fileList) return;
 
     setEnabled(false);
-    const newFiles: IFileContent[] = [];
+    const newFiles: IAutoBePlaygroundBucket[] = [];
     for (const file of fileList) {
       try {
         newFiles.push(await AutoBePlaygroundFileUploader.compose(props, file));
@@ -64,17 +53,17 @@ export const AutoBePlaygroundChatBodyMovie = (
         continue;
       }
     }
-    setAttachedFiles([...attachedFiles, ...newFiles]);
+    setBuckets([...buckets, ...newFiles]);
     setEnabled(true);
   };
 
   const removeFile = (index: number) => {
-    setAttachedFiles(attachedFiles.filter((_, i) => i !== index));
+    setBuckets(buckets.filter((_, i) => i !== index));
   };
 
   const conversate = async () => {
     setText("");
-    const hasContent = text.trim().length > 0 || attachedFiles.length > 0;
+    const hasContent = text.trim().length > 0 || buckets.length > 0;
 
     if (!hasContent) {
       setEmptyText(true);
@@ -96,32 +85,16 @@ export const AutoBePlaygroundChatBodyMovie = (
       }
 
       // Add attached files as file messages
-      for (const { content } of attachedFiles) messages.push(content);
+      for (const { content } of buckets) messages.push(content);
 
       await props.conversate(messages);
-      setAttachedFiles([]); // Clear attached files after sending
+      setBuckets([]); // Clear attached files after sending
     } catch (error) {
       props.setError(
         error instanceof Error ? error : new Error("Unknown error"),
       );
     }
     setEnabled(true);
-  };
-
-  // Audio recording handlers
-  const startRecording = async () => {
-    const record = await AutoBePlaygroundVoiceRecorder.start((file) => {
-      setAttachedFiles((prev) => [...prev, file]);
-    });
-    setMediaRecorder(record);
-    setIsRecording(true);
-  };
-
-  const stopRecording = () => {
-    if (mediaRecorder && mediaRecorder.state !== "inactive") {
-      mediaRecorder.stop();
-      setIsRecording(false);
-    }
   };
 
   // Drag and drop handlers
@@ -199,9 +172,7 @@ export const AutoBePlaygroundChatBodyMovie = (
         sx={{
           position: "fixed",
           bottom: 0,
-          left: props.isMobile
-            ? 0
-            : (props.sideWidth ?? AutoBePlaygroundGlobal.SIDE_WIDTH),
+          left: props.isMobile ? 0 : AutoBePlaygroundGlobal.SIDE_WIDTH,
           right: 0,
           px: 2,
           pb: 2,
@@ -247,9 +218,9 @@ export const AutoBePlaygroundChatBodyMovie = (
             </Box>
           ) : (
             <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-              {attachedFiles.length > 0 && (
+              {buckets.length > 0 && (
                 <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                  {attachedFiles.map(({ file }, index) => (
+                  {buckets.map(({ file }, index) => (
                     <Chip
                       key={index}
                       label={file.name}
@@ -344,44 +315,19 @@ export const AutoBePlaygroundChatBodyMovie = (
                 >
                   <AddIcon fontSize="small" />
                 </IconButton>
-                <IconButton
-                  size="small"
-                  color={isRecording ? "error" : "primary"}
-                  onClick={
-                    isRecording ? stopRecording : () => void startRecording()
-                  }
-                  disabled={!enabled}
-                  sx={{
-                    p: 0.75,
-                    border: "1px solid",
-                    borderColor: isRecording ? "error.main" : "divider",
-                    backgroundColor: isRecording
-                      ? "error.light"
-                      : "transparent",
-                    "&:hover": {
-                      backgroundColor: isRecording
-                        ? "error.main"
-                        : "action.hover",
-                      borderColor: isRecording ? "error.dark" : "primary.main",
-                      color: isRecording ? "error.contrastText" : "inherit",
-                    },
-                  }}
-                >
-                  {props.supportAudio ? (
-                    isRecording ? (
-                      <StopIcon fontSize="small" />
-                    ) : (
-                      <MicIcon fontSize="small" />
-                    )
-                  ) : null}
-                </IconButton>
+                {props.supportAudio ? (
+                  <AutoBePlaygroundChatVoiceMovie
+                    enabled={enabled}
+                    complete={(v) => setBuckets([...buckets, v])}
+                  />
+                ) : null}
                 <IconButton
                   size="small"
                   color="primary"
                   onClick={() => void conversate()}
                   disabled={
                     !enabled ||
-                    (text.trim().length === 0 && attachedFiles.length === 0)
+                    (text.trim().length === 0 && buckets.length === 0)
                   }
                   sx={{
                     p: 0.75,
@@ -416,14 +362,5 @@ export namespace AutoBePlaygroundChatBodyMovie {
     uploadFile?: (file: File) => Promise<{ id: string }>;
     uploadImage?: (file: File) => Promise<{ url: string }>;
     supportAudio: boolean;
-    sideWidth?: number;
   }
-}
-
-interface IFileContent {
-  file: File;
-  content:
-    | AutoBeUserMessageAudioContent
-    | AutoBeUserMessageFileContent
-    | AutoBeUserMessageImageContent;
 }

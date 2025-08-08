@@ -4,7 +4,7 @@ import {
   AutoBeUserMessageImageContent,
 } from "@autobe/interface";
 
-import { IAutoBePlaygroundFileContent } from "../structures/IAutoBePlaygroundFileContent";
+import { IAutoBePlaygroundBucket } from "../structures/IAutoBePlaygroundBucket";
 
 export namespace AutoBePlaygroundFileUploader {
   export interface IConfig {
@@ -16,7 +16,7 @@ export namespace AutoBePlaygroundFileUploader {
   export const compose = async (
     config: IConfig,
     file: File,
-  ): Promise<IAutoBePlaygroundFileContent> => {
+  ): Promise<IAutoBePlaygroundBucket> => {
     if (file.type.startsWith("image/"))
       return {
         file,

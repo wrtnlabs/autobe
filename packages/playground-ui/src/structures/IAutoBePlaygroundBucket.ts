@@ -4,7 +4,7 @@ import {
   AutoBeUserMessageImageContent,
 } from "@autobe/interface";
 
-export interface IAutoBePlaygroundFileContent {
+export interface IAutoBePlaygroundBucket {
   file: File;
   content:
     | AutoBeUserMessageAudioContent
