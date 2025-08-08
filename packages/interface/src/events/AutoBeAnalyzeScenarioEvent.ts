@@ -7,8 +7,8 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
  *
  * @author Kakasoo
  */
-export interface AutoBeAnalyzeComposeEvent
-  extends AutoBeEventBase<"analyzeCompose"> {
+export interface AutoBeAnalyzeScenarioEvent
+  extends AutoBeEventBase<"analyzeScenario"> {
   /** Current page number in the analysis process */
   page: number;
   /** List of filenames being analyzed */

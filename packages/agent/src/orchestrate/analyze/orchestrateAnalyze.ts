@@ -8,8 +8,8 @@ import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
-import { orchestrateAnalyzeComposer } from "./orchestrateAnalyzeComposer";
-import { IComposeInput } from "./structures/IAutoBeAnalyzeComposerApplication";
+import { orchestrateAnalyzeScenario } from "./orchestrateAnalyzeScenario";
+import { IAutoBeanalyzeScenarioInput } from "./structures/IAutoBeAnalyzeScenarioApplication";
 import { writeDocumentUntilReviewPassed } from "./writeDocumentUntilReviewPassed";
 
 /** @todo Kakasoo */
@@ -27,12 +27,14 @@ export const orchestrateAnalyze =
       created_at: start.toISOString(),
     });
 
-    const pointer: IPointer<IComposeInput | null> = { value: null };
-    await orchestrateAnalyzeComposer(ctx, (v) => (pointer.value = v));
+    const pointer: IPointer<IAutoBeanalyzeScenarioInput | null> = {
+      value: null,
+    };
+    await orchestrateAnalyzeScenario(ctx, (v) => (pointer.value = v));
     pointer.value?.files.map((el) => el.filename);
 
-    const composeInput = pointer.value;
-    if (composeInput === null)
+    const scenarioInput = pointer.value;
+    if (scenarioInput === null)
       return ctx.assistantMessage({
         id: v4(),
         text: "Failed to analyze your request. please request again.",
@@ -42,16 +44,21 @@ export const orchestrateAnalyze =
       });
 
     ctx.dispatch({
-      type: "analyzeCompose",
-      page: composeInput.page,
-      prefix: composeInput.prefix,
-      roles: composeInput.roles,
-      filenames: composeInput.files.map((el) => el.filename),
+      type: "analyzeScenario",
+      page: scenarioInput.page,
+      prefix: scenarioInput.prefix,
+      roles: scenarioInput.roles,
+      filenames: scenarioInput.files.map((el) => el.filename),
       step: step,
       created_at: new Date().toISOString(),
     });
 
-    const { files: autoBeAnalyzeFiles, prefix, roles, language } = composeInput;
+    const {
+      files: autoBeAnalyzeFiles,
+      prefix,
+      roles,
+      language,
+    } = scenarioInput;
     if (autoBeAnalyzeFiles.length === 0)
       return ctx.assistantMessage({
         id: v4(),

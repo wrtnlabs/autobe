@@ -30,7 +30,7 @@ export async function writeDocumentUntilReviewPassed<
   }
 
   let isToolCalled = false;
-  const writer = orchestrateAnalyzeWrite(ctx, {
+  await orchestrateAnalyzeWrite(ctx, {
     totalFiles: props.totalFiles,
     roles: props.roles,
     file: props.file,
@@ -40,10 +40,6 @@ export async function writeDocumentUntilReviewPassed<
       pointer.value = { files: { ...pointer.value?.files, ...v } };
     },
     language: props.language,
-  });
-  await writer.conversate("Write Document.").finally(() => {
-    const tokenUsage = writer.getTokenUsage().aggregate;
-    ctx.usage().record(tokenUsage, ["analyze"]);
   });
 
   if (isToolCalled === false) {

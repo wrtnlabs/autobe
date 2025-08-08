@@ -1,7 +1,7 @@
 import {
   AutoBeAnalyzeCompleteEvent,
-  AutoBeAnalyzeComposeEvent,
   AutoBeAnalyzeReviewEvent,
+  AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeStartEvent,
   AutoBeAnalyzeWriteEvent,
   AutoBeAssistantMessageEvent,
@@ -103,7 +103,7 @@ export interface IAutoBeRpcListener {
    * Occurs when an agent is called that generates metadata for the analysis,
    * such as the table of contents, role, number of pages, and so on.
    */
-  analyzeCompose?(event: AutoBeAnalyzeComposeEvent): Promise<void>;
+  analyzeScenario?(event: AutoBeAnalyzeScenarioEvent): Promise<void>;
 
   /**
    * Optional handler for requirements analysis writing progress events.
