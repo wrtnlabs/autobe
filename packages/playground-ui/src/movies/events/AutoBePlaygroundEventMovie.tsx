@@ -66,6 +66,7 @@ export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
       );
     // COMPLETE EVENTS
     case "analyzeComplete":
+    case "analyzeCompose":
     case "prismaComplete":
     case "interfaceComplete":
     case "testComplete":
