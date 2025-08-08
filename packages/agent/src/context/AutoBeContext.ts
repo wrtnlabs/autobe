@@ -27,6 +27,7 @@ export interface AutoBeContext<Model extends ILlmSchema.Model> {
   // configuration
   model: Model;
   vendor: IAgenticaVendor;
+  locale: string;
 
   // accessors
   compilerListener: IAutoBeCompilerListener;

@@ -48,7 +48,7 @@ async function process<Model extends ILlmSchema.Model>(
   const agentica: MicroAgentica<Model> = ctx.createAgent({
     source: "interfaceEndpoints",
     histories: transformInterfaceEndpointHistories(ctx.state(), group),
-    controller: createApplication({
+    controller: createController({
       model: ctx.model,
       build: (endpoints) => {
         pointer.value ??= endpoints;
@@ -79,7 +79,7 @@ async function process<Model extends ILlmSchema.Model>(
   return pointer.value;
 }
 
-function createApplication<Model extends ILlmSchema.Model>(props: {
+function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   build: (endpoints: AutoBeOpenApi.IEndpoint[]) => void;
 }): IAgenticaController.IClass<Model> {

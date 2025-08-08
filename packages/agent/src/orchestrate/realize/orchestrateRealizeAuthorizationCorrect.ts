@@ -82,7 +82,7 @@ export async function orchestrateRealizeAuthorizationCorrect<
       templateFiles,
       compiled.diagnostics,
     ),
-    controller: createApplication({
+    controller: createController({
       model: ctx.model,
       build: (next) => {
         pointer.value = next;
@@ -140,7 +140,7 @@ export async function orchestrateRealizeAuthorizationCorrect<
   );
 }
 
-function createApplication<Model extends ILlmSchema.Model>(props: {
+function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   build: (next: IAutoBeRealizeAuthorizationCorrectApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {

@@ -91,7 +91,7 @@ async function process<Model extends ILlmSchema.Model>(
   const agentica: MicroAgentica<Model> = ctx.createAgent({
     source: "interfaceSchemas",
     histories: transformInterfaceSchemaHistories(ctx.state(), operations),
-    controller: createApplication({
+    controller: createController({
       model: ctx.model,
       build: async (next) => {
         pointer.value ??= {};
@@ -142,7 +142,7 @@ async function process<Model extends ILlmSchema.Model>(
   );
 }
 
-function createApplication<Model extends ILlmSchema.Model>(props: {
+function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   build: (
     next: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,

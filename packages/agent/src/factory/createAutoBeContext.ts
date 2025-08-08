@@ -45,6 +45,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
 }): AutoBeContext<Model> => ({
   model: props.model,
   vendor: props.vendor,
+  locale: props.config.locale ?? "en-US",
   compilerListener: props.compilerListener,
   compiler: props.compiler,
   files: props.files,

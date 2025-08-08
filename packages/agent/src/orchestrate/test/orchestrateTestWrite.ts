@@ -88,7 +88,7 @@ async function process<Model extends ILlmSchema.Model>(
   const agentica: MicroAgentica<Model> = ctx.createAgent({
     source: "testWrite",
     histories: transformTestWriteHistories(scenario, artifacts),
-    controller: createApplication({
+    controller: createController({
       model: ctx.model,
       artifacts,
       build: (next) => {
@@ -108,7 +108,7 @@ async function process<Model extends ILlmSchema.Model>(
   return pointer.value;
 }
 
-function createApplication<Model extends ILlmSchema.Model>(props: {
+function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   artifacts: IAutoBeTestScenarioArtifacts;
   build: (next: IAutoBeTestWriteApplication.IProps) => void;

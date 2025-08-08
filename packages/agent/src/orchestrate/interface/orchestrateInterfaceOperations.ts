@@ -167,7 +167,7 @@ async function process<Model extends ILlmSchema.Model>(
   const agentica: MicroAgentica<Model> = ctx.createAgent({
     source: "interfaceOperations",
     histories: transformInterfaceOperationHistories(ctx.state(), endpoints),
-    controller: createApplication({
+    controller: createController({
       model: ctx.model,
       roles: ctx.state().analyze?.roles.map((it) => it.name) ?? [],
       build: (operations) => {
@@ -200,7 +200,7 @@ async function process<Model extends ILlmSchema.Model>(
   return pointer.value;
 }
 
-function createApplication<Model extends ILlmSchema.Model>(props: {
+function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   roles: string[];
   build: (

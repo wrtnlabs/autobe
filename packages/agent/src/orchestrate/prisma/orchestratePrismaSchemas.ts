@@ -70,7 +70,7 @@ async function process<Model extends ILlmSchema.Model>(
       targetComponent,
       otherTables,
     ),
-    controller: createApplication(ctx, {
+    controller: createController(ctx, {
       targetComponent,
       otherTables,
       build: (next) => {
@@ -89,7 +89,7 @@ async function process<Model extends ILlmSchema.Model>(
   return pointer.value;
 }
 
-function createApplication<Model extends ILlmSchema.Model>(
+function createController<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
     targetComponent: AutoBePrisma.IComponent;

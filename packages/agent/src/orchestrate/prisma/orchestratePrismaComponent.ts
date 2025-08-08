@@ -35,7 +35,7 @@ async function orchestrate<Model extends ILlmSchema.Model>(
   const agentica: MicroAgentica<Model> = ctx.createAgent({
     source: "prismaComponents",
     histories: transformPrismaComponentsHistories(ctx.state(), prefix),
-    controller: createApplication({
+    controller: createController({
       model: ctx.model,
       build: (next) => {
         pointer.value = next;
@@ -71,7 +71,7 @@ async function orchestrate<Model extends ILlmSchema.Model>(
   };
 }
 
-function createApplication<Model extends ILlmSchema.Model>(props: {
+function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   build: (next: IAutoBePrismaComponentApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {

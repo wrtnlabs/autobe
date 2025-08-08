@@ -68,7 +68,7 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
   };
   const agent: MicroAgentica<Model> = ctx.createAgent({
     source: "realizeWrite",
-    controller: createApplication({
+    controller: createController({
       model: ctx.model,
       build: (props) => {
         pointer.value = props.output;
@@ -129,7 +129,7 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
   };
 };
 
-function createApplication<Model extends ILlmSchema.Model>(props: {
+function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   build: (next: IAutoBeRealizeCoderApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {

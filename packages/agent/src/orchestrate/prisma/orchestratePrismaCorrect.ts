@@ -149,7 +149,7 @@ async function execute<Model extends ILlmSchema.Model>(
   const agentica: MicroAgentica<Model> = ctx.createAgent({
     source: "prismaCorrect",
     histories: transformPrismaCorrectHistories(failure),
-    controller: createApplication({
+    controller: createController({
       model: ctx.model,
       build: (next) => {
         pointer.value = next;
@@ -174,7 +174,7 @@ async function execute<Model extends ILlmSchema.Model>(
   return pointer.value;
 }
 
-function createApplication<Model extends ILlmSchema.Model>(props: {
+function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   build: (next: IAutoBePrismaCorrectApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {

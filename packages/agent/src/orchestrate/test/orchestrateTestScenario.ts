@@ -123,7 +123,7 @@ const execute = async <Model extends ILlmSchema.Model>(
   const agentica: MicroAgentica<Model> = ctx.createAgent({
     source: "testScenario",
     histories: createHistoryProperties(entire, include, exclude),
-    controller: createApplication({
+    controller: createController({
       model: ctx.model,
       endpointNotFound,
       dict,
@@ -210,7 +210,7 @@ const createHistoryProperties = (
   } satisfies IAgenticaHistoryJson.ISystemMessage,
 ];
 
-function createApplication<Model extends ILlmSchema.Model>(props: {
+function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   endpointNotFound: string;
   dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>;

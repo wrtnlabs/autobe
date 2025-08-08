@@ -105,7 +105,7 @@ const correct = async <Model extends ILlmSchema.Model>(
   const agentica: MicroAgentica<Model> = ctx.createAgent({
     source: "testCorrect",
     histories: transformTestCorrectHistories(content, validate.result),
-    controller: createApplication({
+    controller: createController({
       model: ctx.model,
       artifacts: content.artifacts,
       build: (next) => {
@@ -143,7 +143,7 @@ const correct = async <Model extends ILlmSchema.Model>(
   return predicate(ctx, newContent, newValidate, life);
 };
 
-const createApplication = <Model extends ILlmSchema.Model>(props: {
+const createController = <Model extends ILlmSchema.Model>(props: {
   model: Model;
   artifacts: IAutoBeTestScenarioArtifacts;
   build: (next: IAutoBeTestCorrectApplication.IProps) => void;

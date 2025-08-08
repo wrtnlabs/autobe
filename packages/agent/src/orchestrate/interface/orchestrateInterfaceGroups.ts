@@ -30,7 +30,7 @@ export async function orchestrateInterfaceGroups<
   const agentica: MicroAgentica<Model> = ctx.createAgent({
     source: "interfaceOperations",
     histories: transformInterfaceGroupHistories(ctx.state()),
-    controller: createApplication({
+    controller: createController({
       model: ctx.model,
       build: (next) => {
         pointer.value = next;
@@ -63,7 +63,7 @@ export async function orchestrateInterfaceGroups<
   } satisfies AutoBeInterfaceGroupsEvent;
 }
 
-function createApplication<Model extends ILlmSchema.Model>(props: {
+function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   build: (next: IAutoBeInterfaceGroupApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {

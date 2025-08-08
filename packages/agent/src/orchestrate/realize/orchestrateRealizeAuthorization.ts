@@ -73,7 +73,7 @@ async function process<Model extends ILlmSchema.Model>(
   const agentica: MicroAgentica<Model> = ctx.createAgent({
     source: "realizeAuthorizationWrite",
     histories: transformRealizeAuthorizationHistories(ctx, role),
-    controller: createApplication({
+    controller: createController({
       model: ctx.model,
       build: (next) => {
         pointer.value = next;
@@ -126,7 +126,7 @@ async function process<Model extends ILlmSchema.Model>(
   );
 }
 
-function createApplication<Model extends ILlmSchema.Model>(props: {
+function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   build: (next: IAutoBeRealizeAuthorizationApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {

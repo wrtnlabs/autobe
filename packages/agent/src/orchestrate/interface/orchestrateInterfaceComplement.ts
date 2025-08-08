@@ -46,7 +46,7 @@ async function step<Model extends ILlmSchema.Model>(
       document,
       missed,
     ),
-    controller: createApplication({
+    controller: createController({
       model: ctx.model,
       build: (next) => {
         pointer.value ??= {};
@@ -120,7 +120,7 @@ const getMissed = (document: AutoBeOpenApi.IDocument): string[] => {
   return Array.from(missed);
 };
 
-function createApplication<Model extends ILlmSchema.Model>(props: {
+function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   build: (
     schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,

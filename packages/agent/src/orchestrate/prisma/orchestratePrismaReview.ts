@@ -50,7 +50,7 @@ async function step<Model extends ILlmSchema.Model>(
       schemas,
       component,
     }),
-    controller: createApplication(ctx, {
+    controller: createController(ctx, {
       build: (next) => {
         pointer.value = next;
       },
@@ -81,7 +81,7 @@ async function step<Model extends ILlmSchema.Model>(
   return event;
 }
 
-function createApplication<Model extends ILlmSchema.Model>(
+function createController<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
     build: (next: IAutoBePrismaReviewApplication.IProps) => void;

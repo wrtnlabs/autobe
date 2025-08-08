@@ -89,7 +89,7 @@ export const transformAnalyzeWriteHistories = <Model extends ILlmSchema.Model>(
       type: "systemMessage",
       text: preparePrompt(
         AutoBeSystemPromptConstant.ANALYZE,
-        ctx.config?.locale ?? "en-US",
+        ctx.locale,
         input.totalFiles,
         input.file,
         input.roles,
