@@ -61,18 +61,6 @@ export function AutoBePlaygroundChatMovie(
   //----
   const theme: Theme = useTheme();
   const isMobile: boolean = useMediaQuery(theme.breakpoints.down("lg"));
-  const bodyMovie = () => (
-    <AutoBePlaygroundChatBodyMovie
-      isMobile={isMobile}
-      eventGroups={eventGroups}
-      service={props.service}
-      conversate={async (contents) => {
-        props.service.conversate(contents);
-      }}
-      setError={setError}
-      supportAudio={!!props.supportAudio}
-    />
-  );
   const sideMovie = () => (
     <div
       style={{
@@ -130,22 +118,26 @@ export function AutoBePlaygroundChatMovie(
         }}
       >
         {isMobile ? (
-          <>
-            {bodyMovie()}
-            <Drawer
-              anchor="right"
-              open={openSide}
-              onClose={() => setOpenSide(false)}
-            >
-              {sideMovie()}
-            </Drawer>
-          </>
-        ) : (
-          <>
+          <Drawer
+            anchor="right"
+            open={openSide}
+            onClose={() => setOpenSide(false)}
+          >
             {sideMovie()}
-            {bodyMovie()}
-          </>
+          </Drawer>
+        ) : (
+          sideMovie()
         )}
+        <AutoBePlaygroundChatBodyMovie
+          isMobile={isMobile}
+          eventGroups={eventGroups}
+          service={props.service}
+          conversate={async (contents) => {
+            props.service.conversate(contents);
+          }}
+          setError={setError}
+          supportAudio={!!props.supportAudio}
+        />
       </div>
     </div>
   );
