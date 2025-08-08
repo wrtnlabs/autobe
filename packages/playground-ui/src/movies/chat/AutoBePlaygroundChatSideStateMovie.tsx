@@ -24,7 +24,9 @@ export const AutoBePlaygroundChatSideStateMovie = (
           .map(([key, value]) => `${key[0]} ${value.toLocaleString()}`)
           .join(" / ")}
       </TableCell>
-      <TableCell>{(elapsed / 60_000).toLocaleString()} mins</TableCell>
+      <TableCell>
+        {(Math.floor((elapsed / 60_000) * 100) / 100).toLocaleString()} mins
+      </TableCell>
     </TableRow>
   );
   const empty = (step: string) => (

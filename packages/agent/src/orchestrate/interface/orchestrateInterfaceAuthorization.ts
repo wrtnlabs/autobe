@@ -6,7 +6,6 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { enforceToolCall } from "../../utils/enforceToolCall";
 import { transformInterfaceAuthorizationHistories } from "./histories/transformInterfaceAuthorization";
 import { IAutoBeInterfaceAuthorizationApplication } from "./structures/IAutoBeInterfaceAuthorizationApplication";
 
@@ -50,29 +49,17 @@ async function process<Model extends ILlmSchema.Model>(
     {
       value: null,
     };
-
-  const agentica: MicroAgentica<Model> = new MicroAgentica({
-    model: ctx.model,
-    vendor: ctx.vendor,
-    config: {
-      ...(ctx.config ?? {}),
-      executor: {
-        describe: null,
-      },
-    },
+  const agentica: MicroAgentica<Model> = ctx.createAgent({
+    source: "interfaceAuthorization",
     histories: transformInterfaceAuthorizationHistories(ctx.state(), role),
-    controllers: [
-      createApplication({
-        model: ctx.model,
-        build: (next) => {
-          pointer.value = next;
-        },
-      }),
-    ],
+    controller: createController({
+      model: ctx.model,
+      build: (next) => {
+        pointer.value = next;
+      },
+    }),
+    enforceFunctionCall: true,
   });
-
-  enforceToolCall(agentica);
-
   await agentica.conversate(
     "Create Authorization Operation for the given roles",
   );
@@ -83,7 +70,7 @@ async function process<Model extends ILlmSchema.Model>(
   return pointer.value;
 }
 
-function createApplication<Model extends ILlmSchema.Model>(props: {
+function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   build: (next: IAutoBeInterfaceAuthorizationApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {

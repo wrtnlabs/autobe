@@ -1,7 +1,8 @@
 // FACADE
-export * from "./AutoBeAssistantMessageEvent";
 export * from "./AutoBeEvent";
+export * from "./AutoBeAssistantMessageEvent";
 export * from "./AutoBeUserMessageEvent";
+export * from "./AutoBeEventSource";
 
 /** @internal */
 export * from "./AutoBeEventSnapshot";

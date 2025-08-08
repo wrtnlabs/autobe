@@ -27,24 +27,16 @@ export async function orchestrateInterfaceGroups<
   const pointer: IPointer<IAutoBeInterfaceGroupApplication.IProps | null> = {
     value: null,
   };
-  const agentica: MicroAgentica<Model> = new MicroAgentica({
-    model: ctx.model,
-    vendor: ctx.vendor,
-    config: {
-      ...(ctx.config ?? {}),
-      executor: {
-        describe: null,
-      },
-    },
+  const agentica: MicroAgentica<Model> = ctx.createAgent({
+    source: "interfaceOperations",
     histories: transformInterfaceGroupHistories(ctx.state()),
-    controllers: [
-      createApplication({
-        model: ctx.model,
-        build: (next) => {
-          pointer.value = next;
-        },
-      }),
-    ],
+    controller: createApplication({
+      model: ctx.model,
+      build: (next) => {
+        pointer.value = next;
+      },
+    }),
+    enforceFunctionCall: false,
   });
 
   const histories: MicroAgenticaHistory<Model>[] = await agentica
