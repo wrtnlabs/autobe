@@ -10,7 +10,7 @@ import { enforceToolCall } from "../../utils/enforceToolCall";
 import { transformInterfaceAuthorizationHistories } from "./histories/transformInterfaceAuthorization";
 import { IAutoBeInterfaceAuthorizationApplication } from "./structures/IAutoBeInterfaceAuthorizationApplication";
 
-export async function orchestrateInterfaceAuthorization<
+export async function orchestrateInterfaceAuthorizations<
   Model extends ILlmSchema.Model,
 >(ctx: AutoBeContext<Model>): Promise<AutoBeOpenApi.IOperation[]> {
   // const start: Date = new Date();
