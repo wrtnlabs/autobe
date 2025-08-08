@@ -23,7 +23,7 @@ export const orchestrateAnalyzeReviewer = async <
     files: Record<string, string>;
   },
 ): Promise<IOrchestrateAnalyzeReviewerResult> => {
-  const fnCalled: IPointer<IOrchestrateAnalyzeReviewerResult> = {
+  const pointer: IPointer<IOrchestrateAnalyzeReviewerResult> = {
     value: {
       type: "reject",
       value: "reviewer is not working because of unknown reason.",
@@ -33,7 +33,7 @@ export const orchestrateAnalyzeReviewer = async <
   const controller = createController({
     model: ctx.model,
     setResult: (result: IOrchestrateAnalyzeReviewerResult) => {
-      fnCalled.value = result;
+      pointer.value = result;
     },
   });
   const agent = new MicroAgentica({
@@ -56,7 +56,17 @@ export const orchestrateAnalyzeReviewer = async <
     ctx.usage().record(tokenUsage, ["analyze"]);
   });
 
-  return fnCalled.value;
+  ctx.dispatch({
+    type: "analyzeReview",
+    filename: props.file.filename,
+    review: pointer.value.type === "accept" ? "accept" : pointer.value.value,
+    total: props.progress.total,
+    completed: props.progress.completed,
+    step: ctx.state().analyze?.step ?? 0,
+    created_at: new Date().toISOString(),
+  });
+
+  return pointer.value;
 };
 
 function createController<Model extends ILlmSchema.Model>(props: {
