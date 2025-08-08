@@ -24,24 +24,15 @@
     "vscode:apply-code": "pnpm vscode:pack -o autobe-vscode-extension.vsix && code --install-extension autobe-vscode-extension.vsix",
     "test": "vscode-test",
     "webview:build": "cd ./webview-ui && pnpm build && cd ..",
-    "build": "pnpm webview:build && pnpm rollup",
-    "tsc": "tsc --noEmit",
-    "rollup": "rollup -c",
-    "webpack": "webpack",
+    "build": "pnpm webview:build && pnpm rspack",
+    "_postbuild": "node build/postbuild.js",
     "rspack": "rspack build",
-    "watch": "pnpm webview:build && pnpm rollup --watch"
+    "watch": "pnpm webview:build && pnpm rspack --watch"
   },
   "devDependencies": {
     "@autobe/agent": "workspace:^",
     "@autobe/compiler": "workspace:^",
     "@autobe/interface": "workspace:^",
-    "@modelcontextprotocol/sdk": "^1.17.2",
-    "@rollup/plugin-alias": "^5.1.1",
-    "@rollup/plugin-commonjs": "^28.0.6",
-    "@rollup/plugin-json": "^6.1.0",
-    "@rollup/plugin-node-resolve": "^16.0.1",
-    "@rollup/plugin-typescript": "^12.1.2",
-    "@rollup/plugin-wasm": "^6.2.2",
     "@rspack/cli": "^1.4.11",
     "@rspack/core": "^1.4.11",
     "@ryoppippi/unplugin-typia": "^2.6.5",
@@ -52,16 +43,9 @@
     "@vscode/test-electron": "^2.5.2",
     "@vscode/vsce": "^3.6.0",
     "openai": "catalog:libs",
-    "rollup": "^4.40.1",
-    "rollup-plugin-typescript2": "^0.36.0",
     "ts-loader": "^9.5.2",
-    "ts-patch": "^3.3.0",
-    "tslib": "^2.8.1",
-    "tsup": "^8.5.0",
     "typescript": "catalog:typescript",
-    "typia": "^9.7.0",
-    "webpack": "^5.101.0",
-    "webpack-cli": "^6.0.1"
+    "typia": "^9.7.0"
   },
   "contributes": {
     "viewsContainers": {

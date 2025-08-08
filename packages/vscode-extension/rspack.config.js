@@ -1,6 +1,7 @@
 // rspack.config.js
 const path = require("path");
 const { builtinModules } = require("module");
+const { default: unpluginTypia } = require("@ryoppippi/unplugin-typia/rspack");
 
 /** @type {import("@rspack/core").Configuration} */
 module.exports = {
@@ -8,6 +9,9 @@ module.exports = {
   target: "node", // VS Code Extension Host 환경
   entry: {
     extension: "./src/extension.ts",
+  },
+  experiments: {
+    asyncWebAssembly: true, // ← WASM import 활성화
   },
   output: {
     path: path.resolve(__dirname, "dist"),
@@ -18,7 +22,13 @@ module.exports = {
   devtool: "source-map",
   externals: [
     "vscode", // Host가 주입하는 vscode 모듈
-    ...builtinModules, // fs, path 등 Node 내장 모듈은 외부 처리
+    ...builtinModules, // fs, path 등 Node 내장 모듈은 외부 처리,
+    "path",
+    /** Ignore */
+    "@vue/compiler-sfc",
+    "svelte/compiler",
+    "prettier-plugin-svelte",
+    "@modelcontextprotocol/sdk",
   ],
   resolve: {
     extensions: [".ts", ".js", ".json"],
@@ -44,8 +54,15 @@ module.exports = {
         // Dependency packages may import files without extensions
         test: /\.m?js$/,
         resolve: {
-          fullySpecified: false
-        }
+          fullySpecified: false,
+        },
+      },
+      {
+        test: /\.wasm$/,
+        type: "asset/resource", // ← 파일로 방출
+        generator: {
+          filename: "chunks/[name][ext]", // dist/chunks/xxx.wasm
+        },
       },
     ],
   },
@@ -54,4 +71,5 @@ module.exports = {
     __filename: false,
   },
   ignoreWarnings: [{ module: /bufferutil/ }, { module: /utf-8-validate/ }],
+  plugins: [unpluginTypia()],
 };
