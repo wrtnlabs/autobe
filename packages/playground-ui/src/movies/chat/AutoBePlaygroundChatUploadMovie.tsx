@@ -1,7 +1,7 @@
 import AddIcon from "@mui/icons-material/Add";
 import ErrorIcon from "@mui/icons-material/Error";
 import { IconButton, Tooltip } from "@mui/material";
-import { RefObject, useEffect, useRef, useState } from "react";
+import { ReactNode, RefObject, useEffect, useRef, useState } from "react";
 
 import { IAutoBePlaygroundBucket } from "../../structures/IAutoBePlaygroundBucket";
 import { IAutoBePlaygroundUploadConfig } from "../../structures/IAutoBePlaygroundUploadConfig";
@@ -12,7 +12,7 @@ export const AutoBePlaygroundChatUploadMovie = (
   props: AutoBePlaygroundChatUploadMovie.IProps,
 ) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [extensionError, setExtensionError] = useState<string | null>(null);
+  const [extensionError, setExtensionError] = useState<ReactNode | null>(null);
 
   const handleFileSelect = async (fileList: FileList | null) => {
     if (!fileList) return;
@@ -21,7 +21,7 @@ export const AutoBePlaygroundChatUploadMovie = (
     setExtensionError(null);
 
     const newFiles: IAutoBePlaygroundBucket[] = [];
-    const errorExtensions: Set<string> = new Set();
+    const errorFileNames: string[] = [];
 
     for (const file of fileList) {
       try {
@@ -32,15 +32,27 @@ export const AutoBePlaygroundChatUploadMovie = (
           ),
         );
       } catch (error) {
-        errorExtensions.add(file.name.split(".").pop() ?? "unknown");
+        errorFileNames.push(file.name);
       }
     }
-    if (errorExtensions.size > 0) {
+    if (errorFileNames.length > 0) {
+      const extensions: string[] = Array.from(
+        new Set(errorFileNames.map((n) => n.split(".").pop() ?? "unknown")),
+      ).sort();
       setExtensionError(
-        `Unsupported extensions: ${Array.from(errorExtensions).sort().join(", ")}`,
+        <>
+          <h2>
+            Unsupported extension{extensions.length > 1 ? "s" : ""}: (
+            {extensions.join(", ")})
+          </h2>
+          <ul>
+            {errorFileNames.map((name) => (
+              <li key={name}>{name}</li>
+            ))}
+          </ul>
+        </>,
       );
-      // Clear error after 3 seconds
-      setTimeout(() => setExtensionError(null), 3_000);
+      setTimeout(() => setExtensionError(null), 5_000);
     }
     props.complete(newFiles);
     props.setEnabled(true);
