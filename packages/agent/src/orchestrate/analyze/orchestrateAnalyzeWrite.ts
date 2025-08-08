@@ -14,7 +14,7 @@ import { AutoBEAnalyzeFileMap } from "./AutoBeAnalyzePointer";
 import { AutoBeAnalyzeFile } from "./structures/AutoBeAnalyzeFile";
 import { transformAnalyzeWriteHistories } from "./transformAnalyzeWriteHistories";
 
-export const orchestrateAnalyzeWrite = <Model extends ILlmSchema.Model>(
+export const orchestrateAnalyzeWrite = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   input: {
     /** Total file names */
@@ -25,7 +25,7 @@ export const orchestrateAnalyzeWrite = <Model extends ILlmSchema.Model>(
     setDocument: (v: AutoBEAnalyzeFileMap) => void;
     language?: string;
   },
-): MicroAgentica<Model> => {
+): Promise<void> => {
   const controller = createController<Model>({
     model: ctx.model,
     execute: new AutoBeAnalyzeFileSystem({
@@ -34,7 +34,7 @@ export const orchestrateAnalyzeWrite = <Model extends ILlmSchema.Model>(
     setDocument: input.setDocument,
   });
 
-  const agent = new MicroAgentica({
+  const agentica = new MicroAgentica({
     controllers: [controller],
     model: ctx.model,
     vendor: ctx.vendor,
@@ -46,8 +46,12 @@ export const orchestrateAnalyzeWrite = <Model extends ILlmSchema.Model>(
     },
     histories: transformAnalyzeWriteHistories(ctx, input),
   });
-  enforceToolCall(agent);
-  return agent;
+  enforceToolCall(agentica);
+
+  await agentica.conversate("Write Document.").finally(() => {
+    const tokenUsage = agentica.getTokenUsage().aggregate;
+    ctx.usage().record(tokenUsage, ["analyze"]);
+  });
 };
 
 function createController<Model extends ILlmSchema.Model>(props: {

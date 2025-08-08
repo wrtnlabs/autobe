@@ -143,6 +143,7 @@ const sleepMap: Record<AutoBeEvent.Type, number> = {
   assistantMessage: 1_000,
   // ANALYZE
   analyzeStart: 1_000,
+  analyzeScenario: 1_000,
   analyzeWrite: 500,
   analyzeReview: 300,
   analyzeComplete: 1_000,

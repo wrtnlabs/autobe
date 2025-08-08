@@ -8,21 +8,23 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { enforceToolCall } from "../../utils/enforceToolCall";
 import {
-  IAutoBeAnalyzeComposerApplication,
-  IComposeInput,
-} from "./structures/IAutoBeAnalyzeComposerApplication";
+  IAutoBeAnalyzeScenarioApplication,
+  IAutoBeanalyzeScenarioInput,
+} from "./structures/IAutoBeAnalyzeScenarioApplication";
 
-export const orchestrateAnalyzeComposer = <Model extends ILlmSchema.Model>(
+export const orchestrateAnalyzeScenario = async <
+  Model extends ILlmSchema.Model,
+>(
   ctx: AutoBeContext<Model>,
-  setComposeInput: (value: IComposeInput) => void,
-) => {
+  setComposeInput: (value: IAutoBeanalyzeScenarioInput) => void,
+): Promise<void> => {
   const controller = createController<Model>({
     model: ctx.model,
-    execute: new AutoBeAnalyzeComposerApplication(),
+    execute: new AutoBeAnalyzeScenarioApplication(),
     preExecute: setComposeInput,
   });
 
-  const agent = new MicroAgentica({
+  const agentica = new MicroAgentica({
     model: ctx.model,
     vendor: ctx.vendor,
     controllers: [controller],
@@ -46,12 +48,24 @@ export const orchestrateAnalyzeComposer = <Model extends ILlmSchema.Model>(
       },
     ],
   });
-  enforceToolCall(agent);
-  return agent;
+  enforceToolCall(agentica);
+
+  await agentica
+    .conversate(
+      [
+        `Design a complete list of documents and user roles for this project.`,
+        `Define user roles that can authenticate via API and create appropriate documentation files.`,
+        `You must respect the number of documents specified by the user.`,
+      ].join("\n"),
+    )
+    .finally(() => {
+      const tokenUsage = agentica.getTokenUsage().aggregate;
+      ctx.usage().record(tokenUsage, ["analyze"]);
+    });
 };
 
-class AutoBeAnalyzeComposerApplication
-  implements IAutoBeAnalyzeComposerApplication
+class AutoBeAnalyzeScenarioApplication
+  implements IAutoBeAnalyzeScenarioApplication
 {
   /**
    * Compose project structure with roles and files.
@@ -67,15 +81,15 @@ class AutoBeAnalyzeComposerApplication
    * @param input Prefix, roles, and files
    * @returns
    */
-  compose(input: IComposeInput): IComposeInput {
+  compose(input: IAutoBeanalyzeScenarioInput): IAutoBeanalyzeScenarioInput {
     return input;
   }
 }
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  execute: AutoBeAnalyzeComposerApplication;
-  preExecute: (input: IComposeInput) => void;
+  execute: AutoBeAnalyzeScenarioApplication;
+  preExecute: (input: IAutoBeanalyzeScenarioInput) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
   const application: ILlmApplication<Model> = collection[
@@ -90,18 +104,18 @@ function createController<Model extends ILlmSchema.Model>(props: {
         props.preExecute(input);
         return props.execute.compose(input);
       },
-    } satisfies IAutoBeAnalyzeComposerApplication,
+    } satisfies IAutoBeAnalyzeScenarioApplication,
   };
 }
 
 const claude = typia.llm.application<
-  AutoBeAnalyzeComposerApplication,
+  AutoBeAnalyzeScenarioApplication,
   "claude",
   { reference: true }
 >();
 const collection = {
   chatgpt: typia.llm.application<
-    AutoBeAnalyzeComposerApplication,
+    AutoBeAnalyzeScenarioApplication,
     "chatgpt",
     { reference: true }
   >(),
