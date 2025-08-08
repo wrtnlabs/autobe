@@ -35,6 +35,7 @@
     "@autobe/agent": "workspace:^",
     "@autobe/compiler": "workspace:^",
     "@autobe/interface": "workspace:^",
+    "@modelcontextprotocol/sdk": "^1.17.2",
     "@rollup/plugin-alias": "^5.1.1",
     "@rollup/plugin-commonjs": "^28.0.6",
     "@rollup/plugin-json": "^6.1.0",
