@@ -7,8 +7,8 @@ import typia from "typia";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { enforceToolCall } from "../../utils/enforceToolCall";
-import { transformInterfaceAuthorizationHistories } from "./histories/transformInterfaceAuthorization";
-import { IAutoBeInterfaceAuthorizationApplication } from "./structures/IAutoBeInterfaceAuthorizationApplication";
+import { transformInterfaceAuthorizationsHistories } from "./histories/transformInterfaceAuthorizationsHistories";
+import { IAutoBeInterfaceAuthorizationsApplication } from "./structures/IAutoBeInterfaceAuthorizationApplication";
 
 export async function orchestrateInterfaceAuthorizations<
   Model extends ILlmSchema.Model,
@@ -23,13 +23,13 @@ export async function orchestrateInterfaceAuthorizations<
 
   await Promise.all(
     roles.map(async (role) => {
-      const authorization: IAutoBeInterfaceAuthorizationApplication.IProps =
+      const authorization: IAutoBeInterfaceAuthorizationsApplication.IProps =
         await process(ctx, role);
 
       operations.push(...authorization.operations);
 
       ctx.dispatch({
-        type: "interfaceAuthorization",
+        type: "interfaceAuthorizations",
         operations: authorization.operations,
         completed: ++completed,
         created_at: new Date().toISOString(),
@@ -45,8 +45,8 @@ export async function orchestrateInterfaceAuthorizations<
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   role: AutoBeAnalyzeRole,
-): Promise<IAutoBeInterfaceAuthorizationApplication.IProps> {
-  const pointer: IPointer<IAutoBeInterfaceAuthorizationApplication.IProps | null> =
+): Promise<IAutoBeInterfaceAuthorizationsApplication.IProps> {
+  const pointer: IPointer<IAutoBeInterfaceAuthorizationsApplication.IProps | null> =
     {
       value: null,
     };
@@ -60,7 +60,7 @@ async function process<Model extends ILlmSchema.Model>(
         describe: null,
       },
     },
-    histories: transformInterfaceAuthorizationHistories(ctx.state(), role),
+    histories: transformInterfaceAuthorizationsHistories(ctx.state(), role),
     controllers: [
       createApplication({
         model: ctx.model,
@@ -85,7 +85,7 @@ async function process<Model extends ILlmSchema.Model>(
 
 function createApplication<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  build: (next: IAutoBeInterfaceAuthorizationApplication.IProps) => void;
+  build: (next: IAutoBeInterfaceAuthorizationsApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
@@ -101,18 +101,18 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
       makeOperations: (next) => {
         props.build(next);
       },
-    } satisfies IAutoBeInterfaceAuthorizationApplication,
+    } satisfies IAutoBeInterfaceAuthorizationsApplication,
   };
 }
 
 const claude = typia.llm.application<
-  IAutoBeInterfaceAuthorizationApplication,
+  IAutoBeInterfaceAuthorizationsApplication,
   "claude",
   { reference: true }
 >();
 const collection = {
   chatgpt: typia.llm.application<
-    IAutoBeInterfaceAuthorizationApplication,
+    IAutoBeInterfaceAuthorizationsApplication,
     "chatgpt",
     { reference: true }
   >(),

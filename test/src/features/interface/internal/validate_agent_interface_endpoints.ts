@@ -27,6 +27,7 @@ export const validate_agent_interface_endpoints = async (
       "utf8",
     ),
   );
+
   const endpoints: AutoBeOpenApi.IEndpoint[] =
     await orchestrateInterfaceEndpoints(agent.getContext(), groups);
   await FileSystemIterator.save({

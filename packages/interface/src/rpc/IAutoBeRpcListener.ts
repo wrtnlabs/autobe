@@ -38,7 +38,7 @@ import {
   AutoBeTestWriteEvent,
   AutoBeUserMessageEvent,
 } from "../events";
-import { AutoBeInterfaceAuthorizationEvent } from "../events/AutoBeInterfaceAuthorizationEvent";
+import { AutoBeInterfaceAuthorizationsEvent } from "../events/AutoBeInterfaceAuthorizationEvent";
 import { AutoBeInterfaceGroupsEvent } from "../events/AutoBeInterfaceGroupsEvent";
 import { AutoBeRealizeAuthorizationCompleteEvent } from "../events/AutoBeRealizeAuthorizationCompleteEvent";
 import { AutoBeRealizeAuthorizationStartEvent } from "../events/AutoBeRealizeAuthorizationStartEvent";
@@ -269,8 +269,8 @@ export interface IAutoBeRpcListener {
    * each endpoint, enabling client applications to track progress and show how
    * API authorization is being systematically developed.
    */
-  interfaceAuthorization?(
-    event: AutoBeInterfaceAuthorizationEvent,
+  interfaceAuthorizations?(
+    event: AutoBeInterfaceAuthorizationsEvent,
   ): Promise<void>;
 
   /**

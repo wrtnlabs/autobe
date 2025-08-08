@@ -1,4 +1,4 @@
-import { orchestrateInterfaceAuthorization } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceAuthorization";
+import { orchestrateInterfaceAuthorizations } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceAuthorizations";
 import { FileSystemIterator } from "@autobe/filesystem";
 import { AutoBeAnalyzeRole, AutoBeOpenApi } from "@autobe/interface";
 
@@ -21,7 +21,7 @@ export const validate_agent_interface_authorizations = async (
     agent.getContext().state().analyze?.roles ?? [];
 
   const authorizations: AutoBeOpenApi.IOperation[] =
-    await orchestrateInterfaceAuthorization(agent.getContext());
+    await orchestrateInterfaceAuthorizations(agent.getContext());
 
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/${model}/${project}/interface/authorizations`,
