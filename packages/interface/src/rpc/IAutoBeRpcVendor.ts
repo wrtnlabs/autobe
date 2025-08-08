@@ -78,4 +78,7 @@ export interface IAutoBeRpcVendor {
    * @default 16
    */
   semaphore?: number | undefined;
+
+  /** Whether support for audio input/output is enabled. */
+  supportAudio?: boolean;
 }

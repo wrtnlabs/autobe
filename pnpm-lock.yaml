@@ -7,12 +7,12 @@ settings:
 catalogs:
   agentica:
     '@agentica/core':
-      specifier: ^0.30.8
-      version: 0.30.8
+      specifier: ^0.31.0
+      version: 0.31.0
   libs:
     openai:
-      specifier: ^5.2.0
-      version: 5.11.0
+      specifier: ^5.12.0
+      version: 5.12.0
   samchon:
     '@nestia/core':
       specifier: ^7.3.2
@@ -115,7 +115,7 @@ importers:
         version: 4.7.1
       openai:
         specifier: catalog:libs
-        version: 5.11.0
+        version: 5.12.0
       tgrid:
         specifier: catalog:samchon
         version: 1.2.0
@@ -137,7 +137,7 @@ importers:
     dependencies:
       '@agentica/core':
         specifier: catalog:agentica
-        version: 0.30.8(@samchon/openapi@4.7.1)(openai@5.11.0)(typia@9.7.0(typescript@5.9.2))
+        version: 0.31.0(@samchon/openapi@4.7.1)(openai@5.12.0)(typia@9.7.0(typescript@5.9.2))
       '@autobe/interface':
         specifier: workspace:^
         version: link:../interface
@@ -152,7 +152,7 @@ importers:
         version: 4.7.1
       openai:
         specifier: catalog:libs
-        version: 5.11.0
+        version: 5.12.0
       tstl:
         specifier: catalog:samchon
         version: 3.0.0
@@ -321,7 +321,7 @@ importers:
         version: 4.7.1
       openai:
         specifier: catalog:libs
-        version: 5.11.0
+        version: 5.12.0
       tgrid:
         specifier: catalog:samchon
         version: 1.2.0
@@ -392,6 +392,9 @@ importers:
       tstl:
         specifier: catalog:samchon
         version: 3.0.0
+      typia:
+        specifier: catalog:samchon
+        version: 9.7.0(typescript@5.9.2)
       uuid:
         specifier: ^11.1.0
         version: 11.1.0
@@ -571,7 +574,7 @@ importers:
         version: 12.0.2
       openai:
         specifier: catalog:libs
-        version: 5.11.0
+        version: 5.12.0
       tgrid:
         specifier: catalog:samchon
         version: 1.2.0
@@ -655,12 +658,12 @@ importers:
 
 packages:
 
-  '@agentica/core@0.30.8':
-    resolution: {integrity: sha512-/nJ2BLXFNQ5IPEacusVJb8KyZEgZV1cCBwYrKpblgkPvlEjQyBZHpIqTsn27+t11tCHvdrCv3IBwabuxCeiSwg==}
+  '@agentica/core@0.31.0':
+    resolution: {integrity: sha512-taoBQAXW3yatiy/z2Y5EoNmCd3zZCZheBb3+7OeLNMEW70QqaBY6eeFVLc+CEd370geQEIsf6qz9cWSSnFTCiA==}
     peerDependencies:
-      '@samchon/openapi': ^4.6.0
+      '@samchon/openapi': ^4.7.1
       openai: ^5.2.0
-      typia: ^9.6.0
+      typia: ^9.7.0
 
   '@ampproject/remapping@2.3.0':
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
@@ -4548,8 +4551,8 @@ packages:
     resolution: {integrity: sha512-YgBpdJHPyQ2UE5x+hlSXcnejzAvD0b22U2OuAP+8OnlJT+PjWPxtgmGqKKc+RgTM63U9gN0YzrYc71R2WT/hTA==}
     engines: {node: '>=18'}
 
-  openai@5.11.0:
-    resolution: {integrity: sha512-+AuTc5pVjlnTuA9zvn8rA/k+1RluPIx9AD4eDcnutv6JNwHHZxIhkFy+tmMKCvmMFDQzfA/r1ujvPWB19DQkYg==}
+  openai@5.12.0:
+    resolution: {integrity: sha512-vUdt02xiWgOHiYUmW0Hj1Qu9OKAiVQu5Bd547ktVCiMKC1BkB5L3ImeEnCyq3WpRKR6ZTaPgekzqdozwdPs7Lg==}
     hasBin: true
     peerDependencies:
       ws: ^8.18.0
@@ -5930,10 +5933,10 @@ packages:
 
 snapshots:
 
-  '@agentica/core@0.30.8(@samchon/openapi@4.7.1)(openai@5.11.0)(typia@9.7.0(typescript@5.9.2))':
+  '@agentica/core@0.31.0(@samchon/openapi@4.7.1)(openai@5.12.0)(typia@9.7.0(typescript@5.9.2))':
     dependencies:
       '@samchon/openapi': 4.7.1
-      openai: 5.11.0
+      openai: 5.12.0
       tstl: 3.0.0
       typia: 9.7.0(typescript@5.9.2)
       uuid: 11.1.0
@@ -10469,7 +10472,7 @@ snapshots:
       is-inside-container: 1.0.0
       wsl-utils: 0.1.0
 
-  openai@5.11.0: {}
+  openai@5.12.0: {}
 
   ora@5.4.1:
     dependencies:

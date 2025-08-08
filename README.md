@@ -184,9 +184,9 @@ gantt
   title AutoBE Roadmap for Beta Release
 
   section Analyze Agent
-  Debate Enhancement: done,    2025-06-01,  7d
-  Prefix Rule:        done,    2025-06-12,  7d
-  Multimodal:         planned, 2025-07-02, 31d
+  Debate Enhancement: done, 2025-06-01,  7d
+  Prefix Rule:        done, 2025-06-12,  7d
+  Multimodal:         done, 2025-07-02, 31d
 
   section Prisma Agent
   Compiler Development: done, 2025-06-01, 14d
@@ -233,11 +233,11 @@ gantt
   Maintenance:   active, 2025-08-01, 30d
 
   section Ecosystem
-  Agentica Prerequisite:  active,  2025-06-18, 13d
-  WebSocket Streaming:    planned, 2025-07-02, 14d
-  History Manipulation:   done,    2025-07-16, 30d
-  AI Chatbot Development: planned, 2025-07-16, 30d
-  Data Seeder Agent:      planned, 2025-08-01, 30d
+  Agentica Prerequisite:            done,    2025-06-18, 13d
+  WebSocket Streaming (Deprecated): crit,    2025-07-02, 14d
+  History Manipulation:             done,    2025-07-16, 30d
+  AI Chatbot Development:           planned, 2025-07-16, 30d
+  Data Seeder Agent:                planned, 2025-08-01, 30d
 ```
 
 `@autobe`'s comprehensive three-month beta development roadmap spans from 2025-06-01 through 2025-08-31, marking a critical phase in our journey toward production readiness.

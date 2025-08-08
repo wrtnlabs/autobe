@@ -72,4 +72,19 @@ export interface AutoBeAnalyzeCompleteEvent
    * reflect the completed analysis.
    */
   step: number;
+
+  /**
+   * Elapsed time in milliseconds for the entire requirements analysis process.
+   *
+   * Indicates the total time taken from the start of the requirements analysis
+   * process until its completion. This metric helps in understanding the
+   * efficiency of the requirements gathering and analysis phase, providing
+   * insights into the time investment required for thorough analysis and
+   * documentation of business requirements.
+   *
+   * This elapsed time is same with the difference between the timestamps
+   * recorded in the `created_at` field of the `AutoBeAnalyzeStartEvent` and
+   * this event.
+   */
+  elapsed: number;
 }

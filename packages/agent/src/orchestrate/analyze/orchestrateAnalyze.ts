@@ -19,12 +19,12 @@ export const orchestrateAnalyze =
     props: IAutoBeApplicationProps,
   ): Promise<AutoBeAssistantMessageHistory | AutoBeAnalyzeHistory> => {
     const step: number = ctx.state().analyze?.step ?? 0;
-    const created_at: string = new Date().toISOString();
+    const start: Date = new Date();
     ctx.dispatch({
       type: "analyzeStart",
       reason: props.reason,
       step,
-      created_at,
+      created_at: start.toISOString(),
     });
 
     const pointer: IPointer<IComposeInput | null> = { value: null };
@@ -61,7 +61,7 @@ export const orchestrateAnalyze =
         id: v4(),
         type: "assistantMessage",
         text: "The current requirements are insufficient, so file generation will be suspended. It would be better to continue the conversation.",
-        created_at,
+        created_at: start.toISOString(),
         completed_at: new Date().toISOString(),
       });
 
@@ -96,14 +96,15 @@ export const orchestrateAnalyze =
         files,
         step,
         roles,
-        created_at,
+        elapsed: new Date().getTime() - start.getTime(),
+        created_at: new Date().toISOString(),
       });
     }
     return ctx.assistantMessage({
       id: v4(),
       type: "assistantMessage",
       text: histories.find((el) => el.type === "assistantMessage")?.text ?? "",
-      created_at,
+      created_at: start.toISOString(),
       completed_at: new Date().toISOString(),
     });
   };

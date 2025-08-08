@@ -50,4 +50,20 @@ export interface AutoBeInterfaceCompleteEvent
    * currency of the API design relative to evolving project requirements.
    */
   step: number;
+
+  /**
+   * Elapsed time in milliseconds for the entire API design process.
+   *
+   * Indicates the total time taken to complete the API design process from the
+   * start of requirements analysis through to the final API specification
+   * generation. This metric helps in understanding the efficiency of the API
+   * design phase and can be used for process improvement analysis.
+   *
+   * This elapsed time includes all stages of the API design process, from
+   * initial requirements gathering, through business logic integration, to the
+   * final generation of the OpenAPI document. It serves as a performance
+   * indicator for the Interface agent's design capabilities and the overall
+   * efficiency of the API design workflow.
+   */
+  elapsed: number;
 }
