@@ -6,6 +6,7 @@ import { AutoBeInterfaceComplementEvent } from "./AutoBeInterfaceComplementEvent
 import { AutoBeInterfaceEndpointsEvent } from "./AutoBeInterfaceEndpointsEvent";
 import { AutoBeInterfaceGroupsEvent } from "./AutoBeInterfaceGroupsEvent";
 import { AutoBeInterfaceOperationsEvent } from "./AutoBeInterfaceOperationsEvent";
+import { AutoBeInterfaceOperationsReviewEvent } from "./AutoBeInterfaceOperationsReviewEvent";
 import { AutoBeInterfaceSchemasEvent } from "./AutoBeInterfaceSchemasEvent";
 import { AutoBePrismaComponentsEvent } from "./AutoBePrismaComponentsEvent";
 import { AutoBePrismaCorrectEvent } from "./AutoBePrismaCorrectEvent";
@@ -35,6 +36,7 @@ export type AutoBeEventSource =
   | AutoBeInterfaceGroupsEvent["type"]
   | AutoBeInterfaceEndpointsEvent["type"]
   | AutoBeInterfaceOperationsEvent["type"]
+  | AutoBeInterfaceOperationsReviewEvent["type"]
   | AutoBeInterfaceSchemasEvent["type"]
   | AutoBeInterfaceComplementEvent["type"]
   // test

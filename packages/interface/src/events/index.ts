@@ -30,6 +30,7 @@ export * from "./AutoBeInterfaceCompleteEvent";
 export * from "./AutoBeInterfaceEndpointsEvent";
 export * from "./AutoBeInterfaceGroupsEvent";
 export * from "./AutoBeInterfaceOperationsEvent";
+export * from "./AutoBeInterfaceOperationsReviewEvent";
 export * from "./AutoBeInterfaceSchemasEvent";
 export * from "./AutoBeInterfaceStartEvent";
 

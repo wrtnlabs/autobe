@@ -2,6 +2,7 @@ import {
   AutoBeAnalyzeWriteEvent,
   AutoBeInterfaceEndpointsEvent,
   AutoBeInterfaceOperationsEvent,
+  AutoBeInterfaceOperationsReviewEvent,
   AutoBeInterfaceSchemasEvent,
   AutoBePrismaReviewEvent,
   AutoBePrismaSchemasEvent,
@@ -64,6 +65,7 @@ export namespace AutoBePlaygroundProgressEventMovie {
       | AutoBePrismaReviewEvent
       | AutoBeInterfaceEndpointsEvent
       | AutoBeInterfaceOperationsEvent
+      | AutoBeInterfaceOperationsReviewEvent
       | AutoBeInterfaceAuthorizationEvent
       | AutoBeInterfaceSchemasEvent
       | AutoBeTestWriteEvent
@@ -110,6 +112,11 @@ function getState(
         return {
           title: "Interface Operations",
           description: "Designing API operations",
+        };
+      case "interfaceOperationsReview":
+        return {
+          title: "Interface Operations Review",
+          description: "Reviewing API operations",
         };
       case "interfaceAuthorization":
         return {
