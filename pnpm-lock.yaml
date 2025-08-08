@@ -291,6 +291,9 @@ importers:
       '@samchon/openapi':
         specifier: catalog:samchon
         version: 4.7.1
+      openai:
+        specifier: catalog:libs
+        version: 5.12.0
       typia:
         specifier: catalog:samchon
         version: 9.7.0(typescript@5.9.2)

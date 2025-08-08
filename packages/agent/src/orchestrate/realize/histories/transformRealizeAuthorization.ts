@@ -5,8 +5,10 @@ import { v4 } from "uuid";
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../../context/AutoBeContext";
 
-export const transformRealizeAuthorizationHistories = (
-  ctx: AutoBeContext<ILlmSchema.Model>,
+export const transformRealizeAuthorizationHistories = <
+  Model extends ILlmSchema.Model,
+>(
+  ctx: AutoBeContext<Model>,
   role: string,
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage

@@ -10,7 +10,6 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { enforceToolCall } from "../../utils/enforceToolCall";
 import { forceRetry } from "../../utils/forceRetry";
 import { completeTestCode } from "./compile/completeTestCode";
 import { transformTestCorrectHistories } from "./histories/transformTestCorrectHistories";
@@ -103,29 +102,18 @@ const correct = async <Model extends ILlmSchema.Model>(
   const pointer: IPointer<IAutoBeTestCorrectApplication.IProps | null> = {
     value: null,
   };
-  const agentica = new MicroAgentica({
-    model: ctx.model,
-    vendor: ctx.vendor,
-    config: {
-      ...(ctx.config ?? {}),
-      executor: {
-        describe: null,
-      },
-      retry: 4,
-    },
+  const agentica: MicroAgentica<Model> = ctx.createAgent({
+    source: "testCorrect",
     histories: transformTestCorrectHistories(content, validate.result),
-    controllers: [
-      createApplication({
-        model: ctx.model,
-        artifacts: content.artifacts,
-        build: (next) => {
-          pointer.value = next;
-        },
-      }),
-    ],
+    controller: createController({
+      model: ctx.model,
+      artifacts: content.artifacts,
+      build: (next) => {
+        pointer.value = next;
+      },
+    }),
+    enforceFunctionCall: true,
   });
-  enforceToolCall(agentica);
-
   await agentica
     .conversate(
       "Fix the `AutoBeTest.IFunction` data to resolve the compilation error.",
@@ -155,7 +143,7 @@ const correct = async <Model extends ILlmSchema.Model>(
   return predicate(ctx, newContent, newValidate, life);
 };
 
-const createApplication = <Model extends ILlmSchema.Model>(props: {
+const createController = <Model extends ILlmSchema.Model>(props: {
   model: Model;
   artifacts: IAutoBeTestScenarioArtifacts;
   build: (next: IAutoBeTestCorrectApplication.IProps) => void;

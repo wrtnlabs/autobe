@@ -5,7 +5,6 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { enforceToolCall } from "../../utils/enforceToolCall";
 import {
   AutoBeAnalyzeFileSystem,
   IAutoBeAnalyzeFileSystem,
@@ -26,28 +25,18 @@ export const orchestrateAnalyzeWrite = async <Model extends ILlmSchema.Model>(
     language?: string;
   },
 ): Promise<void> => {
-  const controller = createController<Model>({
-    model: ctx.model,
-    execute: new AutoBeAnalyzeFileSystem({
-      [input.file.filename]: "" as const,
+  const agentica: MicroAgentica<Model> = ctx.createAgent({
+    source: "analyzeWrite",
+    controller: createController<Model>({
+      model: ctx.model,
+      execute: new AutoBeAnalyzeFileSystem({
+        [input.file.filename]: "" as const,
+      }),
+      setDocument: input.setDocument,
     }),
-    setDocument: input.setDocument,
-  });
-
-  const agentica = new MicroAgentica({
-    controllers: [controller],
-    model: ctx.model,
-    vendor: ctx.vendor,
-    config: {
-      ...ctx.config,
-      executor: {
-        describe: null,
-      },
-    },
     histories: transformAnalyzeWriteHistories(ctx, input),
+    enforceFunctionCall: true,
   });
-  enforceToolCall(agentica);
-
   await agentica.conversate("Write Document.").finally(() => {
     const tokenUsage = agentica.getTokenUsage().aggregate;
     ctx.usage().record(tokenUsage, ["analyze"]);

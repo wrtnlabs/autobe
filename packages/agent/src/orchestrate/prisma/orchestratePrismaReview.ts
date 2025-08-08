@@ -7,7 +7,6 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { enforceToolCall } from "../../utils/enforceToolCall";
 import { forceRetry } from "../../utils/forceRetry";
 import { transformPrismaReviewHistories } from "./histories/transformPrismaReviewHistories";
 import { IAutoBePrismaReviewApplication } from "./structures/IAutoBePrismaReviewApplication";
@@ -43,32 +42,21 @@ async function step<Model extends ILlmSchema.Model>(
   const pointer: IPointer<IAutoBePrismaReviewApplication.IProps | null> = {
     value: null,
   };
-
-  const agentica: MicroAgentica<Model> = new MicroAgentica({
-    model: ctx.model,
-    vendor: ctx.vendor,
-    config: {
-      ...(ctx.config ?? {}),
-      executor: {
-        describe: null,
-      },
-    },
+  const agentica: MicroAgentica<Model> = ctx.createAgent({
+    source: "prismaReview",
     histories: transformPrismaReviewHistories({
       analysis: ctx.state().analyze?.files ?? {},
       application,
       schemas,
       component,
     }),
-    controllers: [
-      createApplication(ctx, {
-        build: (next) => {
-          pointer.value = next;
-        },
-      }),
-    ],
+    controller: createController(ctx, {
+      build: (next) => {
+        pointer.value = next;
+      },
+    }),
+    enforceFunctionCall: true,
   });
-  enforceToolCall(agentica);
-
   await agentica
     .conversate("Please review the Prisma schema file.")
     .finally(() => {
@@ -93,7 +81,7 @@ async function step<Model extends ILlmSchema.Model>(
   return event;
 }
 
-function createApplication<Model extends ILlmSchema.Model>(
+function createController<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
     build: (next: IAutoBePrismaReviewApplication.IProps) => void;
