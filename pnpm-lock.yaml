@@ -290,7 +290,7 @@ importers:
         version: 4.7.1
       openai:
         specifier: catalog:libs
-        version: 5.12.0
+        version: 5.12.1(ws@8.18.3)
       typia:
         specifier: catalog:samchon
         version: 9.7.0(typescript@5.9.2)
@@ -512,6 +512,9 @@ importers:
       '@rollup/plugin-typescript':
         specifier: ^12.1.2
         version: 12.1.4(rollup@4.46.2)(tslib@2.8.1)(typescript@5.9.2)
+      '@rollup/plugin-wasm':
+        specifier: ^6.2.2
+        version: 6.2.2(rollup@4.46.2)
       '@rspack/cli':
         specifier: ^1.4.11
         version: 1.4.11(@rspack/core@1.4.11(@swc/helpers@0.5.17))(@types/express@4.17.23)(webpack-cli@6.0.1)(webpack@5.101.0)
@@ -1979,6 +1982,15 @@ packages:
       rollup:
         optional: true
       tslib:
+        optional: true
+
+  '@rollup/plugin-wasm@6.2.2':
+    resolution: {integrity: sha512-gpC4R1G9Ni92ZIRTexqbhX7U+9estZrbhP+9SRb0DW9xpB9g7j34r+J2hqrcW/lRI7dJaU84MxZM0Rt82tqYPQ==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      rollup: ^1.20.0||^2.0.0||^3.0.0||^4.0.0
+    peerDependenciesMeta:
+      rollup:
         optional: true
 
   '@rollup/pluginutils@4.2.1':
@@ -8617,6 +8629,12 @@ snapshots:
     optionalDependencies:
       rollup: 4.46.2
       tslib: 2.8.1
+
+  '@rollup/plugin-wasm@6.2.2(rollup@4.46.2)':
+    dependencies:
+      '@rollup/pluginutils': 5.2.0(rollup@4.46.2)
+    optionalDependencies:
+      rollup: 4.46.2
 
   '@rollup/pluginutils@4.2.1':
     dependencies:

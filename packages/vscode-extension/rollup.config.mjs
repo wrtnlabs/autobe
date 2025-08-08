@@ -3,6 +3,7 @@ import commonjs from "@rollup/plugin-commonjs";
 import json from "@rollup/plugin-json";
 import resolve from "@rollup/plugin-node-resolve";
 import typescript from "@rollup/plugin-typescript";
+import wasm from "@rollup/plugin-wasm";
 import { builtinModules } from "module";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -40,9 +41,13 @@ export default {
     }),
     resolve({ preferBuiltins: true }),
     commonjs({
-      transformMixedEsModules: true, // CJS/ESM 혼합 파일 변환 허용
       requireReturnsDefault: "preferred", // default interop 유연하게
+      ignore: ["prettier", "@trivago/prettier-plugin-sort-imports"],
       ignoreDynamicRequires: true,
+    }),
+    wasm({
+      maxFileSize: 1_000_000_000, // 1GB
+      fileName: "chunks/[name][extname]",
     }),
     typescript({ tsconfig: "./tsconfig.json" }),
   ],
