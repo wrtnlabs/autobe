@@ -50,5 +50,7 @@ export const AUTOBE_EVENT_TYPES = [
 ] as const;
 
 type _Test = [
-  IsTrue<AllUnionMembersIncluded<AutoBeEvent.Type, typeof AUTOBE_EVENT_TYPES>>,
+  IsTrue<
+    AllUnionMembersIncluded<AutoBeEvent["type"], typeof AUTOBE_EVENT_TYPES>
+  >,
 ];

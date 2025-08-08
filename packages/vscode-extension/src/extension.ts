@@ -1,14 +1,14 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import * as vscode from "vscode";
+import { ExtensionContext, window } from "vscode";
 
 import { Logger } from "./Logger";
 import { getAutoBeWebviewProvider } from "./core/webview";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
-export async function activate(context: vscode.ExtensionContext) {
-  Logger.initialize(vscode.window.createOutputChannel("AutoBe"));
+export async function activate(context: ExtensionContext) {
+  Logger.initialize(window.createOutputChannel("AutoBe"));
   Logger.info("AutoBe VSCode Extension start activated");
 
   Logger.info(
@@ -16,7 +16,7 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(
-    vscode.window.registerWebviewViewProvider(
+    window.registerWebviewViewProvider(
       "autobe-vscode-extension-views",
       getAutoBeWebviewProvider(context),
     ),

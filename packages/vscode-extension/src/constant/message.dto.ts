@@ -1,4 +1,3 @@
-import { AutoBeEvent } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 
 export type IAutoBeWebviewMessage =
@@ -56,5 +55,5 @@ export interface IResponseCreateChatSession {
 
 export interface IOnEventAutoBe {
   type: "on_event_auto_be";
-  data: AutoBeEvent;
+  data: "";
 }

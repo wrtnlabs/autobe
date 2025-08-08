@@ -3,8 +3,7 @@ import { AutoBeCompiler } from "@autobe/compiler";
 import { AutoBeHistory, IAutoBeTokenUsageJson } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 import OpenAI from "openai";
-import * as vscode from "vscode";
-import { Uri } from "vscode";
+import { ExtensionContext, Uri, Webview, WebviewView } from "vscode";
 
 import {
   AUTOBE_API_KEY,
@@ -18,9 +17,9 @@ import {
 } from "../constant/message.dto";
 import { getNonce } from "../util/crypto";
 
-export const getAutoBeWebviewProvider = (context: vscode.ExtensionContext) => {
+export const getAutoBeWebviewProvider = (context: ExtensionContext) => {
   return {
-    async resolveWebviewView(panel: vscode.WebviewView) {
+    async resolveWebviewView(panel: WebviewView) {
       const instance = new AutoBeWrapper(panel.webview, context);
       await instance.initialize();
 
@@ -32,9 +31,10 @@ export const getAutoBeWebviewProvider = (context: vscode.ExtensionContext) => {
     },
   };
 };
+
 export const getHtmlContent =
-  (context: vscode.ExtensionContext) =>
-  (webview: vscode.Webview): string => {
+  (context: ExtensionContext) =>
+  (webview: Webview): string => {
     const getUri = (...pathList: string[]) =>
       webview.asWebviewUri(Uri.joinPath(context.extensionUri, ...pathList));
 
@@ -64,8 +64,8 @@ export const getHtmlContent =
   };
 
 class AutoBeWrapper {
-  private readonly webview: vscode.Webview;
-  private readonly context: vscode.ExtensionContext;
+  private readonly webview: Webview;
+  private readonly context: ExtensionContext;
   public config: IResponseGetConfig["data"] | undefined;
 
   private readonly chatSessionMap: Map<
@@ -76,7 +76,7 @@ class AutoBeWrapper {
     }
   > = new Map();
 
-  constructor(webview: vscode.Webview, context: vscode.ExtensionContext) {
+  constructor(webview: Webview, context: ExtensionContext) {
     this.webview = webview;
     this.context = context;
   }
@@ -86,16 +86,18 @@ class AutoBeWrapper {
       AUTOBE_CHAT_SESSION_MAP,
     );
     (
-      chatSessionMap as Array<
-        [
-          string,
-          {
-            history: AutoBeHistory[];
-            tokenUsage: IAutoBeTokenUsageJson;
-          },
-        ]
-      >
-    ).forEach(([sessionId, session]) => {
+      chatSessionMap as
+        | Array<
+            [
+              string,
+              {
+                history: AutoBeHistory[];
+                tokenUsage: IAutoBeTokenUsageJson;
+              },
+            ]
+          >
+        | undefined
+    )?.forEach(([sessionId, session]) => {
       this.chatSessionMap.set(sessionId, session);
     });
   }
@@ -138,6 +140,7 @@ class AutoBeWrapper {
           type: "res_create_chat_session",
           data: sessionId,
         });
+
         await this.conversate(sessionId, message.data.message);
         break;
     }
@@ -178,7 +181,7 @@ class AutoBeWrapper {
       }
       return new AutoBeAgent(defaultConfig);
     })();
-    this.registerAutoBeEventHandler(agent);
+    // this.registerAutoBeEventHandler(agent);
     const result = await agent.conversate(message);
 
     this.chatSessionMap.set(sessionId, {
@@ -189,15 +192,15 @@ class AutoBeWrapper {
     return result;
   }
 
-  private registerAutoBeEventHandler(agent: AutoBeAgent<ILlmSchema.Model>) {
-    AUTOBE_EVENT_TYPES.forEach((key) => {
-      agent.on(key, (ev) => {
-        this.webview.postMessage({
-          type: "on_event_auto_be",
-          data: ev,
-        });
-      });
-    });
-    return agent;
-  }
+  // private registerAutoBeEventHandler(agent: AutoBeAgent<ILlmSchema.Model>) {
+  //   AUTOBE_EVENT_TYPES.forEach((key) => {
+  //     agent.on(key, (ev) => {
+  //       this.webview.postMessage({
+  //         type: "on_event_auto_be",
+  //         data: ev,
+  //       });
+  //     });
+  //   });
+  //   return agent;
+  // }
 }
