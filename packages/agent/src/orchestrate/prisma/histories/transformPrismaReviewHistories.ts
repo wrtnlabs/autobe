@@ -4,11 +4,12 @@ import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 
-export const transformPrismaReviewHistories = (
-  application: AutoBePrisma.IApplication,
-  schemas: Record<string, string>,
-  component: AutoBePrisma.IComponent,
-): Array<
+export const transformPrismaReviewHistories = (props: {
+  analysis: Record<string, string>;
+  application: AutoBePrisma.IApplication;
+  schemas: Record<string, string>;
+  component: AutoBePrisma.IComponent;
+}): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
   return [
@@ -23,16 +24,22 @@ export const transformPrismaReviewHistories = (
       created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: [
-        "Here is the complete AST definition for the database schema:",
+        "Here is the requirement analysis report given by the user:",
         "",
         "```json",
-        JSON.stringify(application, null, 2),
+        JSON.stringify(props.analysis),
         "```",
         "",
-        "And here are the Prisma schema files generated from the above AST:",
+        "Reading the requirement analysis report, you AI made below AST definition for the database design:",
+        "",
+        "```json",
+        JSON.stringify(props.application),
+        "```",
+        "",
+        "And here are the Prisma schema files generated (compiled) from the above AST:",
         "",
         "```prisma",
-        JSON.stringify(schemas),
+        JSON.stringify(props.schemas),
         "```",
       ].join("\n"),
     },
@@ -47,12 +54,12 @@ export const transformPrismaReviewHistories = (
       created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: [
-        `Now, please review the tables in the "${component.namespace}" namespace.`,
+        `Now, please review the tables in the "${props.component.namespace}" namespace.`,
         "",
         "Focus your review exclusively on these tables.",
         "",
         "**Tables in this namespace:**",
-        ...component.tables.map((table) => `- ${table}`),
+        ...props.component.tables.map((table) => `- ${table}`),
       ].join("\n"),
     },
   ];
