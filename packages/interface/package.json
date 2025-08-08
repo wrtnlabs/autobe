@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@samchon/openapi": "catalog:samchon",
+    "openai": "catalog:libs",
     "typia": "catalog:samchon"
   },
   "devDependencies": {

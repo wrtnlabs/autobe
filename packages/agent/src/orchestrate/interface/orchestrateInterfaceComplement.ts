@@ -11,7 +11,6 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { enforceToolCall } from "../../utils/enforceToolCall";
 import { forceRetry } from "../../utils/forceRetry";
 import { transformInterfaceComplementHistories } from "./histories/transformInterfaceComplementHistories";
 import { IAutoBeInterfaceComplementApplication } from "./structures/IAutoBeInterfaceComplementApplication";
@@ -40,39 +39,30 @@ async function step<Model extends ILlmSchema.Model>(
   > | null> = {
     value: null,
   };
-  const agentica: MicroAgentica<Model> = new MicroAgentica({
-    model: ctx.model,
-    vendor: ctx.vendor,
-    config: {
-      ...(ctx.config ?? {}),
-      executor: {
-        describe: null,
-      },
-    },
+  const agentica: MicroAgentica<Model> = ctx.createAgent({
+    source: "interfaceComplement",
     histories: transformInterfaceComplementHistories(
       ctx.state(),
       document,
       missed,
     ),
-    controllers: [
-      createApplication({
-        model: ctx.model,
-        build: (next) => {
-          pointer.value ??= {};
-          Object.assign(
-            pointer.value,
-            (OpenApiV3_1Emender.convertComponents({
-              schemas: next,
-            }).schemas ?? {}) as Record<
-              string,
-              AutoBeOpenApi.IJsonSchemaDescriptive
-            >,
-          );
-        },
-      }),
-    ],
+    controller: createController({
+      model: ctx.model,
+      build: (next) => {
+        pointer.value ??= {};
+        Object.assign(
+          pointer.value,
+          (OpenApiV3_1Emender.convertComponents({
+            schemas: next,
+          }).schemas ?? {}) as Record<
+            string,
+            AutoBeOpenApi.IJsonSchemaDescriptive
+          >,
+        );
+      },
+    }),
+    enforceFunctionCall: true,
   });
-  enforceToolCall(agentica);
 
   await agentica.conversate("Fill missing schema types please").finally(() => {
     const tokenUsage = agentica.getTokenUsage().aggregate;
@@ -130,7 +120,7 @@ const getMissed = (document: AutoBeOpenApi.IDocument): string[] => {
   return Array.from(missed);
 };
 
-function createApplication<Model extends ILlmSchema.Model>(props: {
+function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   build: (
     schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,

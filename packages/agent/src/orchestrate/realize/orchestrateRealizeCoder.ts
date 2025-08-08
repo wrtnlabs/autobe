@@ -11,7 +11,6 @@ import typia from "typia";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { randomBackoffRetry } from "../../utils/backoffRetry";
-import { enforceToolCall } from "../../utils/enforceToolCall";
 import { getTestScenarioArtifacts } from "../test/compile/getTestScenarioArtifacts";
 import { IAutoBeTestScenarioArtifacts } from "../test/structures/IAutoBeTestScenarioArtifacts";
 import { transformRealizeCoderHistories } from "./histories/transformRealizeCoderHistories";
@@ -67,24 +66,14 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
   > | null> = {
     value: null,
   };
-
-  const controller = createApplication({
-    model: ctx.model,
-    build: (props) => {
-      pointer.value = props.output;
-    },
-  });
-
-  const agent = new MicroAgentica({
-    controllers: [controller],
-    model: ctx.model,
-    vendor: ctx.vendor,
-    config: {
-      ...ctx.config,
-      executor: {
-        describe: null,
+  const agent: MicroAgentica<Model> = ctx.createAgent({
+    source: "realizeWrite",
+    controller: createController({
+      model: ctx.model,
+      build: (props) => {
+        pointer.value = props.output;
       },
-    },
+    }),
     histories: transformRealizeCoderHistories(
       ctx.state(),
       previousCodes,
@@ -94,8 +83,8 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
       diagnostics,
       authorization,
     ),
+    enforceFunctionCall: true,
   });
-  enforceToolCall(agent);
 
   await randomBackoffRetry(() =>
     agent.conversate(
@@ -140,7 +129,7 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
   };
 };
 
-function createApplication<Model extends ILlmSchema.Model>(props: {
+function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   build: (next: IAutoBeRealizeCoderApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {

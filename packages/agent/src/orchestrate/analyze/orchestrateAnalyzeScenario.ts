@@ -6,7 +6,6 @@ import { v4 } from "uuid";
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { enforceToolCall } from "../../utils/enforceToolCall";
 import {
   IAutoBeAnalyzeScenarioApplication,
   IAutoBeanalyzeScenarioInput,
@@ -18,22 +17,13 @@ export const orchestrateAnalyzeScenario = async <
   ctx: AutoBeContext<Model>,
   setComposeInput: (value: IAutoBeanalyzeScenarioInput) => void,
 ): Promise<void> => {
-  const controller = createController<Model>({
-    model: ctx.model,
-    execute: new AutoBeAnalyzeScenarioApplication(),
-    preExecute: setComposeInput,
-  });
-
-  const agentica = new MicroAgentica({
-    model: ctx.model,
-    vendor: ctx.vendor,
-    controllers: [controller],
-    config: {
-      locale: ctx.config?.locale,
-      executor: {
-        describe: null,
-      },
-    },
+  const agentica: MicroAgentica<Model> = ctx.createAgent({
+    source: "analyzeScenario",
+    controller: createController<Model>({
+      model: ctx.model,
+      execute: new AutoBeAnalyzeScenarioApplication(),
+      preExecute: setComposeInput,
+    }),
     histories: [
       ...ctx
         .histories()
@@ -47,9 +37,8 @@ export const orchestrateAnalyzeScenario = async <
         created_at: new Date().toISOString(),
       },
     ],
+    enforceFunctionCall: true,
   });
-  enforceToolCall(agentica);
-
   await agentica
     .conversate(
       [

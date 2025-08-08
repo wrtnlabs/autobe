@@ -9,6 +9,7 @@ import {
   AutoBeInterfaceCompleteEvent,
   AutoBeInterfaceEndpointsEvent,
   AutoBeInterfaceOperationsEvent,
+  AutoBeInterfaceOperationsReviewEvent,
   AutoBeInterfaceSchemasEvent,
   AutoBeInterfaceStartEvent,
   AutoBePrismaCompleteEvent,
@@ -269,6 +270,16 @@ export interface IAutoBeRpcListener {
    * functionality is being systematically developed.
    */
   interfaceOperations?(event: AutoBeInterfaceOperationsEvent): Promise<void>;
+
+  /**
+   * Optional handler for API operation review events.
+   *
+   * Called when the Interface agent reviews API operations, enabling client
+   * applications to show the review process and any identified issues.
+   */
+  interfaceOperationsReview?(
+    event: AutoBeInterfaceOperationsReviewEvent,
+  ): Promise<void>;
 
   /**
    * Optional handler for API authorization operation definition progress

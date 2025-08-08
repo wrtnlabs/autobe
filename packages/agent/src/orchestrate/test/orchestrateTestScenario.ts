@@ -18,7 +18,6 @@ import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptCo
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
-import { enforceToolCall } from "../../utils/enforceToolCall";
 import { forceRetry } from "../../utils/forceRetry";
 import { IAutoBeTestScenarioApplication } from "./structures/IAutoBeTestScenarioApplication";
 
@@ -121,29 +120,20 @@ const execute = async <Model extends ILlmSchema.Model>(
   const pointer: IPointer<IAutoBeTestScenarioApplication.IScenarioGroup[]> = {
     value: [],
   };
-  const agentica: MicroAgentica<Model> = new MicroAgentica({
-    model: ctx.model,
-    vendor: ctx.vendor,
-    config: {
-      ...(ctx.config ?? {}),
-      executor: {
-        describe: null,
-      },
-    },
+  const agentica: MicroAgentica<Model> = ctx.createAgent({
+    source: "testScenario",
     histories: createHistoryProperties(entire, include, exclude),
-    controllers: [
-      createApplication({
-        model: ctx.model,
-        endpointNotFound,
-        dict,
-        build: (next) => {
-          pointer.value ??= [];
-          pointer.value.push(...next.scenarioGroups);
-        },
-      }),
-    ],
+    controller: createController({
+      model: ctx.model,
+      endpointNotFound,
+      dict,
+      build: (next) => {
+        pointer.value ??= [];
+        pointer.value.push(...next.scenarioGroups);
+      },
+    }),
+    enforceFunctionCall: true,
   });
-  enforceToolCall(agentica);
 
   await agentica.conversate(`create test scenarios.`).finally(() => {
     const tokenUsage = agentica.getTokenUsage().aggregate;
@@ -220,7 +210,7 @@ const createHistoryProperties = (
   } satisfies IAgenticaHistoryJson.ISystemMessage,
 ];
 
-function createApplication<Model extends ILlmSchema.Model>(props: {
+function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   endpointNotFound: string;
   dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>;

@@ -6,7 +6,6 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { enforceToolCall } from "../../utils/enforceToolCall";
 import { transformRealizeAuthorizationHistories } from "./histories/transformRealizeAuthorization";
 import { orchestrateRealizeAuthorizationCorrect } from "./orchestrateRealizeAuthorizationCorrect";
 import { IAutoBeRealizeAuthorizationApplication } from "./structures/IAutoBeRealizeAuthorizationApplication";
@@ -71,27 +70,17 @@ async function process<Model extends ILlmSchema.Model>(
     {
       value: null,
     };
-  const agentica: MicroAgentica<Model> = new MicroAgentica({
-    model: ctx.model,
-    vendor: ctx.vendor,
-    config: {
-      ...(ctx.config ?? {}),
-      executor: {
-        describe: null,
-      },
-    },
+  const agentica: MicroAgentica<Model> = ctx.createAgent({
+    source: "realizeAuthorizationWrite",
     histories: transformRealizeAuthorizationHistories(ctx, role),
-    controllers: [
-      createApplication({
-        model: ctx.model,
-        build: (next) => {
-          pointer.value = next;
-        },
-      }),
-    ],
+    controller: createController({
+      model: ctx.model,
+      build: (next) => {
+        pointer.value = next;
+      },
+    }),
+    enforceFunctionCall: true,
   });
-  enforceToolCall(agentica);
-
   await agentica
     .conversate("Create Authorization Provider and Decorator.")
     .finally(() => {
@@ -137,7 +126,7 @@ async function process<Model extends ILlmSchema.Model>(
   );
 }
 
-function createApplication<Model extends ILlmSchema.Model>(props: {
+function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   build: (next: IAutoBeRealizeAuthorizationApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {

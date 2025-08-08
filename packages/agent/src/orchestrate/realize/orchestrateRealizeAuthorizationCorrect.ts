@@ -11,7 +11,6 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { enforceToolCall } from "../../utils/enforceToolCall";
 import { transformRealizeAuthorizationCorrectHistories } from "./histories/transformRealizeAuthorizationCorrectHistories";
 import { IAutoBeRealizeAuthorizationCorrectApplication } from "./structures/IAutoBeRealizeAuthorizationCorrectApplication";
 import { AuthorizationFileSystem } from "./utils/AuthorizationFileSystem";
@@ -75,40 +74,28 @@ export async function orchestrateRealizeAuthorizationCorrect<
     {
       value: null,
     };
-
-  const agentica: MicroAgentica<Model> = new MicroAgentica({
-    model: ctx.model,
-    vendor: ctx.vendor,
-    config: {
-      ...(ctx.config ?? {}),
-      executor: {
-        describe: null,
-      },
-    },
+  const agentica: MicroAgentica<Model> = ctx.createAgent({
+    source: "realizeAuthorizationCorrect",
     histories: transformRealizeAuthorizationCorrectHistories(
       ctx,
       authorization,
       templateFiles,
       compiled.diagnostics,
     ),
-    controllers: [
-      createApplication({
-        model: ctx.model,
-        build: (next) => {
-          pointer.value = next;
-        },
-      }),
-    ],
+    controller: createController({
+      model: ctx.model,
+      build: (next) => {
+        pointer.value = next;
+      },
+    }),
+    enforceFunctionCall: true,
   });
-  enforceToolCall(agentica);
-
   await agentica
     .conversate("Please correct the decorator and the provider.")
     .finally(() => {
       const tokenUsage = agentica.getTokenUsage().aggregate;
       ctx.usage().record(tokenUsage, ["realize"]);
     });
-
   if (pointer.value === null) throw new Error("Failed to correct decorator.");
 
   const result: AutoBeRealizeAuthorizationCorrect = {
@@ -153,7 +140,7 @@ export async function orchestrateRealizeAuthorizationCorrect<
   );
 }
 
-function createApplication<Model extends ILlmSchema.Model>(props: {
+function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   build: (next: IAutoBeRealizeAuthorizationCorrectApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {
