@@ -1,4 +1,5 @@
 import { AutoBeAnalyzeCompleteEvent } from "./AutoBeAnalyzeCompleteEvent";
+import { AutoBeAnalyzeComposeEvent } from "./AutoBeAnalyzeComposeEvent";
 import { AutoBeAnalyzeReviewEvent } from "./AutoBeAnalyzeReviewEvent";
 import { AutoBeAnalyzeStartEvent } from "./AutoBeAnalyzeStartEvent";
 import { AutoBeAnalyzeWriteEvent } from "./AutoBeAnalyzeWriteEvent";
@@ -68,6 +69,7 @@ export type AutoBeEvent =
   | AutoBeUserMessageEvent
   // ANALYZE
   | AutoBeAnalyzeStartEvent
+  | AutoBeAnalyzeComposeEvent
   | AutoBeAnalyzeWriteEvent
   | AutoBeAnalyzeReviewEvent
   | AutoBeAnalyzeCompleteEvent
@@ -151,6 +153,7 @@ export namespace AutoBeEvent {
     userMessage: AutoBeUserMessageEvent;
     // ANALYZE
     analyzeStart: AutoBeAnalyzeStartEvent;
+    analyzeCompose: AutoBeAnalyzeComposeEvent;
     analyzeWrite: AutoBeAnalyzeWriteEvent;
     analyzeReview: AutoBeAnalyzeReviewEvent;
     analyzeComplete: AutoBeAnalyzeCompleteEvent;

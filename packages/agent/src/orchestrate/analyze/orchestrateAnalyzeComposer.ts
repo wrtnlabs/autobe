@@ -12,17 +12,19 @@ import {
   IComposeInput,
 } from "./structures/IAutoBeAnalyzeComposerApplication";
 
-export const orchestrateAnalyzeComposer = <Model extends ILlmSchema.Model>(
+export const orchestrateAnalyzeComposer = async <
+  Model extends ILlmSchema.Model,
+>(
   ctx: AutoBeContext<Model>,
   setComposeInput: (value: IComposeInput) => void,
-) => {
+): Promise<void> => {
   const controller = createController<Model>({
     model: ctx.model,
     execute: new AutoBeAnalyzeComposerApplication(),
     preExecute: setComposeInput,
   });
 
-  const agent = new MicroAgentica({
+  const agentica = new MicroAgentica({
     model: ctx.model,
     vendor: ctx.vendor,
     controllers: [controller],
@@ -46,8 +48,20 @@ export const orchestrateAnalyzeComposer = <Model extends ILlmSchema.Model>(
       },
     ],
   });
-  enforceToolCall(agent);
-  return agent;
+  enforceToolCall(agentica);
+
+  await agentica
+    .conversate(
+      [
+        `Design a complete list of documents and user roles for this project.`,
+        `Define user roles that can authenticate via API and create appropriate documentation files.`,
+        `You must respect the number of documents specified by the user.`,
+      ].join("\n"),
+    )
+    .finally(() => {
+      const tokenUsage = agentica.getTokenUsage().aggregate;
+      ctx.usage().record(tokenUsage, ["analyze"]);
+    });
 };
 
 class AutoBeAnalyzeComposerApplication

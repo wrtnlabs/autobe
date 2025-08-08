@@ -28,22 +28,8 @@ export const orchestrateAnalyze =
     });
 
     const pointer: IPointer<IComposeInput | null> = { value: null };
-    const agentica = orchestrateAnalyzeComposer(ctx, (v) => {
-      pointer.value = v;
-    });
-
-    const histories = await agentica
-      .conversate(
-        [
-          `Design a complete list of documents and user roles for this project.`,
-          `Define user roles that can authenticate via API and create appropriate documentation files.`,
-          `You must respect the number of documents specified by the user.`,
-        ].join("\n"),
-      )
-      .finally(() => {
-        const tokenUsage = agentica.getTokenUsage().aggregate;
-        ctx.usage().record(tokenUsage, ["analyze"]);
-      });
+    await orchestrateAnalyzeComposer(ctx, (v) => (pointer.value = v));
+    pointer.value?.files.map((el) => el.filename);
 
     const composeInput = pointer.value;
     if (composeInput === null)
@@ -54,6 +40,16 @@ export const orchestrateAnalyze =
         completed_at: new Date().toISOString(),
         created_at: new Date().toISOString(),
       });
+
+    ctx.dispatch({
+      type: "analyzeCompose",
+      page: composeInput.page,
+      prefix: composeInput.prefix,
+      roles: composeInput.roles,
+      filenames: composeInput.files.map((el) => el.filename),
+      step: step,
+      created_at: new Date().toISOString(),
+    });
 
     const { files: autoBeAnalyzeFiles, prefix, roles, language } = composeInput;
     if (autoBeAnalyzeFiles.length === 0)
@@ -69,7 +65,8 @@ export const orchestrateAnalyze =
     const progress = {
       total: autoBeAnalyzeFiles.length * retryCount,
       completed: 0,
-    };
+    } as const;
+
     const pointers = await Promise.all(
       autoBeAnalyzeFiles.map(async (file) => {
         return await writeDocumentUntilReviewPassed(ctx, {
@@ -89,22 +86,13 @@ export const orchestrateAnalyze =
       })
       .reduce((acc, cur) => Object.assign(acc, cur));
 
-    if (Object.keys(files).length) {
-      return ctx.dispatch({
-        type: "analyzeComplete",
-        prefix,
-        files,
-        step,
-        roles,
-        elapsed: new Date().getTime() - start.getTime(),
-        created_at: new Date().toISOString(),
-      });
-    }
-    return ctx.assistantMessage({
-      id: v4(),
-      type: "assistantMessage",
-      text: histories.find((el) => el.type === "assistantMessage")?.text ?? "",
-      created_at: start.toISOString(),
-      completed_at: new Date().toISOString(),
+    return ctx.dispatch({
+      type: "analyzeComplete",
+      prefix,
+      files,
+      step,
+      roles,
+      elapsed: new Date().getTime() - start.getTime(),
+      created_at: new Date().toISOString(),
     });
   };

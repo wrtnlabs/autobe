@@ -8,6 +8,7 @@ export * from "./AutoBeEventSnapshot";
 
 // ANALYZE
 export * from "./AutoBeAnalyzeCompleteEvent";
+export * from "./AutoBeAnalyzeComposeEvent";
 export * from "./AutoBeAnalyzeReviewEvent";
 export * from "./AutoBeAnalyzeStartEvent";
 export * from "./AutoBeAnalyzeWriteEvent";
