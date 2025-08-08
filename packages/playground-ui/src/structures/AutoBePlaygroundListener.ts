@@ -76,6 +76,7 @@ export class AutoBePlaygroundListener {
       interfaceStart: async (event) => {
         this.state_.delete("interfaceEndpoints");
         this.state_.delete("interfaceOperations");
+        this.state_.delete("interfaceAuthorization");
         this.state_.delete("interfaceSchemas");
         this.insert(event);
       },
