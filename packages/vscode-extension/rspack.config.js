@@ -21,7 +21,7 @@ module.exports = {
     ...builtinModules, // fs, path 등 Node 내장 모듈은 외부 처리
   ],
   resolve: {
-    extensions: [".ts", ".js"],
+    extensions: [".ts", ".js", ".json"],
     extensionAlias: {
       ".js": [".ts", ".js"],
     },
