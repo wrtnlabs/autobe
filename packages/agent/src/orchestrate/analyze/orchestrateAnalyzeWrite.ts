@@ -66,17 +66,9 @@ function createController<Model extends ILlmSchema.Model>(props: {
   };
 }
 
-const claude = typia.llm.application<
-  AutoBeAnalyzeFileSystem,
-  "claude",
-  { reference: true }
->();
+const claude = typia.llm.application<AutoBeAnalyzeFileSystem, "claude">();
 const collection = {
-  chatgpt: typia.llm.application<
-    AutoBeAnalyzeFileSystem,
-    "chatgpt",
-    { reference: true }
-  >(),
+  chatgpt: typia.llm.application<AutoBeAnalyzeFileSystem, "chatgpt">(),
   claude,
   llama: claude,
   deepseek: claude,
