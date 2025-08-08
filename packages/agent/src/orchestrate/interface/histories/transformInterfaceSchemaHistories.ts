@@ -4,11 +4,13 @@ import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
+import { IAutoBeInterfaceSchemaReviewApplication } from "../structures/IAutoBeInterfaceSchemaReviewApplication";
 import { transformInterfaceAssetHistories } from "./transformInterfaceAssetHistories";
 
 export const transformInterfaceSchemaHistories = (
   state: AutoBeState,
   operations: AutoBeOpenApi.IOperation[],
+  reviews: IAutoBeInterfaceSchemaReviewApplication.IReview[],
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => [
@@ -29,6 +31,14 @@ export const transformInterfaceSchemaHistories = (
       "```json",
       JSON.stringify(operations),
       "```",
+      reviews.length > 0
+        ? [
+            "This is the result of a review from a previous attempt. This attempt should reflect this review further.",
+            "```json",
+            JSON.stringify(reviews),
+            "```",
+          ]
+        : [],
     ].join("\n"),
   },
 ];

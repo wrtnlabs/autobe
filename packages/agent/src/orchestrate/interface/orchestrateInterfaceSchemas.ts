@@ -11,7 +11,9 @@ import { divideArray } from "../../utils/divideArray";
 import { enforceToolCall } from "../../utils/enforceToolCall";
 import { forceRetry } from "../../utils/forceRetry";
 import { transformInterfaceSchemaHistories } from "./histories/transformInterfaceSchemaHistories";
+import { orchestrateInterfaceSChemaReviews } from "./orchestrateInterfaceSchemaReviews";
 import { IAutoBeInterfaceSchemaApplication } from "./structures/IAutoBeInterfaceSchemaApplication";
+import { IAutoBeInterfaceSchemaReviewApplication } from "./structures/IAutoBeInterfaceSchemaReviewApplication";
 
 export async function orchestrateInterfaceSchemas<
   Model extends ILlmSchema.Model,
@@ -67,7 +69,52 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
     if (remained.size === 0) break;
     const before: number = remained.size;
     const newbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-      await forceRetry(() => process(ctx, operations, schemas, remained));
+      await forceRetry(async () => {
+        const passedSchemaNames: string[] = [];
+        const passed: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
+        let previous: IAutoBeInterfaceSchemaReviewApplication.IReview[] = [];
+        let count = 10;
+        while (count--) {
+          // not yet passed
+          const notYetPassed = Array.from(remained).filter(
+            (el) => !passedSchemaNames.includes(el),
+          );
+          const targets = new Set(notYetPassed);
+          const descriptive = await process(
+            ctx,
+            operations,
+            schemas,
+            targets,
+            previous.filter((el) => notYetPassed.includes(el.name)), // only reviews not yet passed schemas
+          );
+
+          const reviews = await orchestrateInterfaceSChemaReviews(
+            ctx,
+            descriptive,
+          );
+
+          for (const review of reviews) {
+            if (descriptive[review.name]) {
+              passed[review.name] = descriptive[review.name];
+              if (review.passed === true) {
+                passedSchemaNames.push(review.name);
+              } else {
+                previous.push(review);
+              }
+            }
+          }
+
+          const failures = reviews
+            .filter((el) => el.passed === false)
+            .map((el) => el.name);
+
+          if (failures.length === 0) {
+            break;
+          }
+        }
+
+        return passed;
+      });
     for (const key of Object.keys(newbie)) {
       schemas[key] = newbie[key];
       remained.delete(key);
@@ -82,6 +129,7 @@ async function process<Model extends ILlmSchema.Model>(
   operations: AutoBeOpenApi.IOperation[],
   oldbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
   remained: Set<string>,
+  reviews: IAutoBeInterfaceSchemaReviewApplication.IReview[],
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   const pointer: IPointer<Record<
     string,
@@ -98,7 +146,11 @@ async function process<Model extends ILlmSchema.Model>(
         describe: null,
       },
     },
-    histories: transformInterfaceSchemaHistories(ctx.state(), operations),
+    histories: transformInterfaceSchemaHistories(
+      ctx.state(),
+      operations,
+      reviews,
+    ),
     controllers: [
       createApplication({
         model: ctx.model,
