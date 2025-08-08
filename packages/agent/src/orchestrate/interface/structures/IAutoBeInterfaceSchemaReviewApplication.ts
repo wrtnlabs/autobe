@@ -22,22 +22,22 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
      *       "id": {
      *         "type": "string",
      *         "format": "uuid",
-     *         "description": "<descritpion>"
+     *         "description": "<description>"
      *       },
      *       "discussion_board_category_id": {
      *         "type": "string",
      *         "format": "uuid",
-     *         "description": "<descritpion>"
+     *         "description": "<description>"
      *       },
      *       "discussion_board_tag_id": {
      *         "type": "string",
      *         "format": "uuid",
-     *         "description": "<descritpion>"
+     *         "description": "<description>"
      *       },
      *       "created_at": {
      *         "type": "string",
      *         "format": "date-time",
-     *         "description": "<descritpion>"
+     *         "description": "<description>"
      *       }
      *     },
      *     "required": [
@@ -46,7 +46,7 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
      *       "discussion_board_tag_id",
      *       "created_at"
      *     ],
-     *     "description": "<descritpion>"
+     *     "description": "<description>"
      *   }
      * }
      * ```
@@ -66,22 +66,22 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
      *       "id": {
      *         "type": "string",
      *         "format": "uuid",
-     *         "description": "<descritpion>"
+     *         "description": "<description>"
      *       },
      *       "discussion_board_category_id": {
      *         "type": "string",
      *         "format": "uuid",
-     *         "description": "<descritpion>"
+     *         "description": "<description>"
      *       },
      *       "discussion_board_tag_id": {
      *         "type": "string",
      *         "format": "uuid",
-     *         "description": "<descritpion>"
+     *         "description": "<description>"
      *       },
      *       "created_at": {
      *         "type": "string",
      *         "format": "date-time",
-     *         "description": "<descritpion>"
+     *         "description": "<description>"
      *       }
      *     },
      *     "required": [
@@ -90,7 +90,7 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
      *       "discussion_board_tag_id",
      *       "created_at"
      *     ],
-     *     "description": "<descritpion>"
+     *     "description": "<description>"
      *   }
      * }
      * ```
