@@ -13,7 +13,6 @@ import {
 } from "./structures/IAutoBeAnalyzeReviewApplication";
 import { transformAnalyzeReviewerHistories } from "./transformAnalyzeReviewerHistories";
 
-
 export const orchestrateAnalyzeReviewer = async <
   Model extends ILlmSchema.Model,
 >(
@@ -59,7 +58,6 @@ export const orchestrateAnalyzeReviewer = async <
 
   return fnCalled.value;
 };
-
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;

@@ -1,6 +1,7 @@
 import {
   AutoBeAnalyzeCompleteEvent,
   AutoBeAnalyzeReviewEvent,
+  AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeStartEvent,
   AutoBeAnalyzeWriteEvent,
   AutoBeAssistantMessageEvent,
@@ -95,6 +96,14 @@ export interface IAutoBeRpcListener {
    * progress indicators for the requirements documentation process.
    */
   analyzeStart?(event: AutoBeAnalyzeStartEvent): Promise<void>;
+
+  /**
+   * Optional handler for requirements analysis compose events.
+   *
+   * Occurs when an agent is called that generates metadata for the analysis,
+   * such as the table of contents, role, number of pages, and so on.
+   */
+  analyzeScenario?(event: AutoBeAnalyzeScenarioEvent): Promise<void>;
 
   /**
    * Optional handler for requirements analysis writing progress events.

@@ -34,6 +34,9 @@ export class AutoBePlaygroundListener {
         this.dict_.delete("analyzeReview");
         this.insert(event);
       },
+      analyzeScenario: async (event) => {
+        this.accumulate(event);
+      },
       analyzeWrite: async (event) => {
         this.accumulate(event);
       },
