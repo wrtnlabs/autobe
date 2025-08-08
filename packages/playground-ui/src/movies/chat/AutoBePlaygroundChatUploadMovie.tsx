@@ -79,6 +79,10 @@ export const AutoBePlaygroundChatUploadMovie = (
         ref={fileInputRef}
         type="file"
         multiple
+        accept={AutoBePlaygroundFileUploader.getAcceptAttribute(
+          props.uploadConfig?.supportAudio ?? false,
+          !!props.uploadConfig?.file
+        )}
         style={{ display: "none" }}
         onChange={(e) => void handleFileSelect(e.target.files)}
       />
