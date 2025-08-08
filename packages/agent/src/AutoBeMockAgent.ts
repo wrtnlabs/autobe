@@ -138,7 +138,9 @@ export namespace AutoBeMockAgent {
   }
 }
 
-const sleepMap: Partial<Record<AutoBeEvent.Type, number>> = {
+const sleepMap: Record<AutoBeEvent.Type, number> = {
+  userMessage: 1_000,
+  assistantMessage: 1_000,
   // ANALYZE
   analyzeStart: 1_000,
   analyzeWrite: 500,
@@ -148,12 +150,14 @@ const sleepMap: Partial<Record<AutoBeEvent.Type, number>> = {
   prismaStart: 1_000,
   prismaComponents: 1_000,
   prismaSchemas: 500,
+  prismaInsufficient: 1_000,
+  prismaReview: 500,
   prismaValidate: 2_000,
   prismaCorrect: 500,
-  prismaInsufficient: 1_000,
   prismaComplete: 1_000,
   // INTERFACE
   interfaceStart: 1_000,
+  interfaceGroups: 1_000,
   interfaceEndpoints: 1_000,
   interfaceOperations: 400,
   interfaceSchemas: 400,
@@ -175,5 +179,10 @@ const sleepMap: Partial<Record<AutoBeEvent.Type, number>> = {
   realizeAuthorizationStart: 1_000,
   realizeAuthorizationWrite: 200,
   realizeAuthorizationValidate: 200,
+  realizeAuthorizationCorrect: 200,
   realizeAuthorizationComplete: 1_000,
+  realizeTestStart: 1_000,
+  realizeTestReset: 2_500,
+  realizeTestOperation: 400,
+  realizeTestComplete: 1_000,
 };
