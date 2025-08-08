@@ -28,7 +28,7 @@ export async function orchestrateInterfaceGroups<
     value: null,
   };
   const agentica: MicroAgentica<Model> = ctx.createAgent({
-    source: "interfaceOperations",
+    source: "interfaceGroups",
     histories: transformInterfaceGroupHistories(ctx.state()),
     controller: createController({
       model: ctx.model,
