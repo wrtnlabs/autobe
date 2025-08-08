@@ -203,15 +203,10 @@ const getTableCount = (failure: IAutoBePrismaValidation.IFailure): number => {
 
 const claude = typia.llm.application<
   IAutoBePrismaCorrectApplication,
-  "claude",
-  { reference: true }
+  "claude"
 >();
 const collection = {
-  chatgpt: typia.llm.application<
-    IAutoBePrismaCorrectApplication,
-    "chatgpt",
-    { reference: true }
-  >(),
+  chatgpt: typia.llm.application<IAutoBePrismaCorrectApplication, "chatgpt">(),
   claude,
   llama: claude,
   deepseek: claude,
