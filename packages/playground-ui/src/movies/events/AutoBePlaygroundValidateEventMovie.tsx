@@ -187,6 +187,14 @@ function getState<Event extends AutoBePlaygroundValidateEventMovie.Supported>(
           },
         }),
       } satisfies IState<AutoBePrismaValidateEvent> as IState;
+    case "interfaceOperationReview":
+      return {
+        title: "Interface Operation Validate",
+        description: "Validating operation designs",
+        progress: null,
+        project: null,
+      };
+
     case "interfaceComplement":
       return {
         title: "Interface Complement",
