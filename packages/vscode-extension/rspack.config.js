@@ -41,6 +41,7 @@ module.exports = {
         exclude: /node_modules/,
       },
       {
+        // Dependency packages may import files without extensions
         test: /\.m?js$/,
         resolve: {
           fullySpecified: false
