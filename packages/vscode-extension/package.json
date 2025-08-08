@@ -23,12 +23,13 @@
     "vscode:apply-cursor": "pnpm vscode:pack -o autobe-vscode-extension.vsix && cursor --install-extension autobe-vscode-extension.vsix",
     "vscode:apply-code": "pnpm vscode:pack -o autobe-vscode-extension.vsix && code --install-extension autobe-vscode-extension.vsix",
     "test": "vscode-test",
-    "webview:build": "cd webview-ui && pnpm build && cd ..",
+    "webview:build": "cd ./webview-ui && pnpm build && cd ..",
     "build": "pnpm webview:build && pnpm rollup",
     "tsc": "tsc --noEmit",
     "rollup": "rollup -c",
     "webpack": "webpack",
-    "rspack": "rspack build"
+    "rspack": "rspack build",
+    "watch": "pnpm webview:build && pnpm rollup --watch"
   },
   "devDependencies": {
     "@autobe/agent": "workspace:^",
