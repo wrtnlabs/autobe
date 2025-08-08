@@ -52,6 +52,16 @@ export const orchestrateAnalyzeWrite = async <Model extends ILlmSchema.Model>(
     const tokenUsage = agentica.getTokenUsage().aggregate;
     ctx.usage().record(tokenUsage, ["analyze"]);
   });
+
+  ctx.dispatch({
+    type: "analyzeWrite",
+    filename: props.file.filename,
+    content: pointer.value.files[props.file.filename],
+    total: props.progress.total,
+    completed: ++props.progress.completed,
+    step: ctx.state().analyze?.step ?? 0,
+    created_at: new Date().toISOString(),
+  });
 };
 
 function createController<Model extends ILlmSchema.Model>(props: {
