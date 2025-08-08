@@ -17,6 +17,12 @@ export const transformAnalyzeReviewerHistories = (
     {
       id: v4(),
       created_at: new Date().toISOString(),
+      type: "systemMessage",
+      text: AutoBeSystemPromptConstant.ANALYZE,
+    },
+    {
+      id: v4(),
+      created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: [
         "Below are all of the files.",

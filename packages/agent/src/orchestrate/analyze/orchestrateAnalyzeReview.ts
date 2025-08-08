@@ -12,11 +12,9 @@ import {
 } from "./structures/IAutoBeAnalyzeReviewApplication";
 import { transformAnalyzeReviewerHistories } from "./transformAnalyzeReviewerHistories";
 
-export const orchestrateAnalyzeReviewer = async <
-  Model extends ILlmSchema.Model,
->(
+export const orchestrateAnalyzeReview = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  props: AutoBeAnalyzeWriteProps,
+  props: Omit<AutoBeAnalyzeWriteProps, "prevReview" | "review">,
   input: {
     /** Total file names */
     files: Record<string, string>;
@@ -82,7 +80,6 @@ function createController<Model extends ILlmSchema.Model>(props: {
         props.setResult({
           type: "reject",
           value: input.reason,
-          checklist: input.checklist,
         });
         return "OK" as const;
       },
