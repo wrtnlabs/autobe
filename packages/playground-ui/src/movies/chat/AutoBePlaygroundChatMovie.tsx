@@ -20,6 +20,7 @@ import { useEffect, useState } from "react";
 
 import { AutoBePlaygroundListener } from "../../structures/AutoBePlaygroundListener";
 import { IAutoBePlaygroundEventGroup } from "../../structures/IAutoBePlaygroundEventGroup";
+import { IAutoBePlaygroundUploadConfig } from "../../structures/IAutoBePlaygroundUploadConfig";
 import { AutoBePlaygroundChatBodyMovie } from "./AutoBePlaygroundChatBodyMovie";
 import { AutoBePlaygroundChatSideMovie } from "./AutoBePlaygroundChatSideMovie";
 
@@ -136,7 +137,7 @@ export function AutoBePlaygroundChatMovie(
             props.service.conversate(contents);
           }}
           setError={setError}
-          supportAudio={!!props.supportAudio}
+          uploadConfig={props.uploadConfig}
         />
       </div>
     </div>
@@ -151,7 +152,7 @@ export namespace AutoBePlaygroundChatMovie {
     service: IAutoBeRpcService;
     listener: AutoBePlaygroundListener;
     eventGroups?: IAutoBePlaygroundEventGroup[];
-    supportAudio?: boolean;
+    uploadConfig?: IAutoBePlaygroundUploadConfig;
   }
 }
 

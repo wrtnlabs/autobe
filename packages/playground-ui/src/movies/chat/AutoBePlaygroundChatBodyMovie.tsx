@@ -4,6 +4,7 @@ import { RefObject, useEffect, useRef } from "react";
 
 import { AutoBePlaygroundGlobal } from "../../AutoBePlaygroundGlobal";
 import { IAutoBePlaygroundEventGroup } from "../../structures/IAutoBePlaygroundEventGroup";
+import { IAutoBePlaygroundUploadConfig } from "../../structures/IAutoBePlaygroundUploadConfig";
 import { AutoBePlaygroundEventMovie } from "../events/AutoBePlaygroundEventMovie";
 import { AutoBePlaygroundChatPromptMovie } from "./AutoBePlaygroundChatPromptMovie";
 
@@ -77,8 +78,6 @@ export namespace AutoBePlaygroundChatBodyMovie {
     service: IAutoBeRpcService;
     conversate: (messages: AutoBeUserMessageContent[]) => Promise<void>;
     setError: (error: Error) => void;
-    uploadFile?: (file: File) => Promise<{ id: string }>;
-    uploadImage?: (file: File) => Promise<{ url: string }>;
-    supportAudio: boolean;
+    uploadConfig?: IAutoBePlaygroundUploadConfig;
   }
 }

@@ -5,16 +5,11 @@ import {
 } from "@autobe/interface";
 
 import { IAutoBePlaygroundBucket } from "../structures/IAutoBePlaygroundBucket";
+import { IAutoBePlaygroundUploadConfig } from "../structures/IAutoBePlaygroundUploadConfig";
 
 export namespace AutoBePlaygroundFileUploader {
-  export interface IConfig {
-    supportAudio?: boolean;
-    uploadImage?: (file: File) => Promise<{ url: string }>;
-    uploadFile?: (file: File) => Promise<{ id: string }>;
-  }
-
   export const compose = async (
-    config: IConfig,
+    config: IAutoBePlaygroundUploadConfig,
     file: File,
   ): Promise<IAutoBePlaygroundBucket> => {
     if (file.type.startsWith("image/"))
@@ -54,14 +49,14 @@ export namespace AutoBePlaygroundFileUploader {
     });
 
   const composeImageContent = async (
-    config: IConfig,
+    config: IAutoBePlaygroundUploadConfig,
     file: File,
   ): Promise<AutoBeUserMessageImageContent> => ({
     type: "image",
-    image: config.uploadImage
+    image: config.image
       ? {
           type: "url",
-          url: await config.uploadImage(file).then((res) => res.url),
+          url: await config.image(file).then((res) => res.url),
         }
       : {
           type: "base64",
@@ -78,14 +73,14 @@ export namespace AutoBePlaygroundFileUploader {
   });
 
   const composeFileContent = async (
-    config: IConfig,
+    config: IAutoBePlaygroundUploadConfig,
     file: File,
   ): Promise<AutoBeUserMessageFileContent> => ({
     type: "file",
-    file: config.uploadFile
+    file: config.file
       ? ({
           type: "id",
-          id: await config.uploadFile(file).then((res) => res.id),
+          id: await config.file(file).then((res) => res.id),
         } satisfies AutoBeUserMessageFileContent.IId)
       : ({
           type: "base64",
