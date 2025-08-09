@@ -45,7 +45,7 @@
     "openai": "catalog:libs",
     "ts-loader": "^9.5.2",
     "typescript": "catalog:typescript",
-    "typia": "^9.7.0"
+    "typia": "catalog:samchon"
   },
   "contributes": {
     "viewsContainers": {

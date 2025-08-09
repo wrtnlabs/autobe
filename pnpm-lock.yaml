@@ -534,7 +534,7 @@ importers:
         specifier: catalog:typescript
         version: 5.9.2
       typia:
-        specifier: ^9.7.0
+        specifier: catalog:samchon
         version: 9.7.0(typescript@5.9.2)
 
   packages/vscode-extension/webview-ui:
