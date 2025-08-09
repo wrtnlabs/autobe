@@ -22,13 +22,10 @@ module.exports = {
   devtool: "source-map",
   externals: [
     "vscode", // Host가 주입하는 vscode 모듈
-    ...builtinModules, // fs, path 등 Node 내장 모듈은 외부 처리,
-    "path",
+    ...builtinModules,
     /** Ignore */
-    "@vue/compiler-sfc",
-    "svelte/compiler",
-    "prettier-plugin-svelte",
     "@modelcontextprotocol/sdk",
+    /^execa($|\/)/,
   ],
   resolve: {
     extensions: [".ts", ".js", ".json"],
