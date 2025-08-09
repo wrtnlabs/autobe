@@ -506,6 +506,9 @@ importers:
       '@vscode/vsce':
         specifier: ^3.6.0
         version: 3.6.0
+      rollup:
+        specifier: ^4.40.1
+        version: 4.46.2
       typescript:
         specifier: catalog:typescript
         version: 5.9.2
