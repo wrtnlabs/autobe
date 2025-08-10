@@ -2,7 +2,7 @@ import { AutoBeAnalyzeRole } from "@autobe/interface";
 
 import { AutoBeAnalyzeFile } from "./AutoBeAnalyzeFile";
 
-export interface IComposeInput {
+export interface IAutoBeanalyzeScenarioInput {
   /** Reason for the analysis and composition of the project structure. */
   reason: string;
 
@@ -18,8 +18,8 @@ export interface IComposeInput {
   /**
    * Language for document content. When specified by the user, this takes
    * precedence over the locale setting for determining document language.
-   * Examples: "ko" (Korean), "en" (English), "ja" (Japanese)
-   * If not specified, falls back to the locale setting.
+   * Examples: "ko" (Korean), "en" (English), "ja" (Japanese) If not specified,
+   * falls back to the locale setting.
    */
   language?: string;
 
@@ -64,7 +64,7 @@ export interface IComposeInput {
   files: Array<AutoBeAnalyzeFile>;
 }
 
-export interface IAutoBeAnalyzeComposerApplication {
+export interface IAutoBeAnalyzeScenarioApplication {
   /**
    * Compose project structure with roles and files.
    *
@@ -79,5 +79,5 @@ export interface IAutoBeAnalyzeComposerApplication {
    * @param input Prefix, roles, and files
    * @returns
    */
-  compose(input: IComposeInput): IComposeInput;
+  compose(input: IAutoBeanalyzeScenarioInput): IAutoBeanalyzeScenarioInput;
 }

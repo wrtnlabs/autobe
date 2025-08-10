@@ -6,8 +6,8 @@ packages:
   - website
 catalogs:
   agentica:
-    "@agentica/core": ^0.31.0
-    "@agentica/rpc": ^0.31.0
+    "@agentica/core": ^0.31.1
+    "@agentica/rpc": ^0.31.1
   samchon:
     "@nestia/benchmark": ^7.3.2
     "@nestia/core": ^7.3.2

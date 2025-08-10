@@ -1,3 +1,4 @@
+import { MicroAgentica } from "@agentica/core";
 import {
   AutoBeAnalyzeCompleteEvent,
   AutoBeAnalyzeHistory,
@@ -44,7 +45,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
 }): AutoBeContext<Model> => ({
   model: props.model,
   vendor: props.vendor,
-  config: props.config,
+  locale: props.config.locale ?? "en-US",
   compilerListener: props.compilerListener,
   compiler: props.compiler,
   files: props.files,
@@ -56,6 +57,27 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
     props.histories().push(message);
     setTimeout(() => props.dispatch(message).catch(() => {}));
     return message;
+  },
+  createAgent: (next) => {
+    const agent: MicroAgentica<Model> = new MicroAgentica<Model>({
+      model: props.model,
+      vendor: props.vendor,
+      config: {
+        ...(props.config ?? {}),
+        executor: {
+          describe: null,
+        },
+      },
+      histories: next.histories,
+      controllers: [next.controller],
+    });
+    if (next.enforceFunctionCall === true)
+      agent.on("request", (event) => {
+        if (event.body.tools) event.body.tool_choice = "required";
+        if (event.body.parallel_tool_calls !== undefined)
+          delete event.body.parallel_tool_calls;
+      });
+    return agent;
   },
 });
 

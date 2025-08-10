@@ -5,14 +5,12 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { enforceToolCall } from "../../utils/enforceToolCall";
 import { AutoBeAnalyzeWriteProps } from "./structures/AutoBeAnalyzeWriteProps";
 import {
   IAutoBeAnalyzeReviewApplication,
   IOrchestrateAnalyzeReviewerResult,
 } from "./structures/IAutoBeAnalyzeReviewApplication";
 import { transformAnalyzeReviewerHistories } from "./transformAnalyzeReviewerHistories";
-
 
 export const orchestrateAnalyzeReviewer = async <
   Model extends ILlmSchema.Model,
@@ -30,27 +28,17 @@ export const orchestrateAnalyzeReviewer = async <
       value: "reviewer is not working because of unknown reason.",
     },
   };
-
-  const controller = createController({
-    model: ctx.model,
-    setResult: (result: IOrchestrateAnalyzeReviewerResult) => {
-      fnCalled.value = result;
-    },
-  });
-  const agent = new MicroAgentica({
-    model: ctx.model,
-    vendor: ctx.vendor,
-    controllers: [controller],
-    config: {
-      ...ctx.config,
-      executor: {
-        describe: null,
+  const agent: MicroAgentica<Model> = ctx.createAgent({
+    source: "analyzeReview",
+    controller: createController({
+      model: ctx.model,
+      setResult: (result: IOrchestrateAnalyzeReviewerResult) => {
+        fnCalled.value = result;
       },
-    },
+    }),
     histories: [...transformAnalyzeReviewerHistories(props, input)],
+    enforceFunctionCall: true,
   });
-  enforceToolCall(agent);
-
   const command = `proceed with the review of these files only.` as const;
   await agent.conversate(command).finally(() => {
     const tokenUsage = agent.getTokenUsage().aggregate;
@@ -59,7 +47,6 @@ export const orchestrateAnalyzeReviewer = async <
 
   return fnCalled.value;
 };
-
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
@@ -95,15 +82,10 @@ function createController<Model extends ILlmSchema.Model>(props: {
 
 const claude = typia.llm.application<
   IAutoBeAnalyzeReviewApplication,
-  "claude",
-  { reference: true }
+  "claude"
 >();
 const collection = {
-  chatgpt: typia.llm.application<
-    IAutoBeAnalyzeReviewApplication,
-    "chatgpt",
-    { reference: true }
-  >(),
+  chatgpt: typia.llm.application<IAutoBeAnalyzeReviewApplication, "chatgpt">(),
   claude,
   llama: claude,
   deepseek: claude,

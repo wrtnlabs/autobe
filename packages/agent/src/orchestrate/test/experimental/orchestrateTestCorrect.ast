@@ -89,7 +89,7 @@ async function correct<Model extends ILlmSchema.Model>(
     },
     histories: transformTestCorrectHistories(written, event.result),
     controllers: [
-      createApplication({
+      createController({
         model: ctx.model,
         build: (next) => {
           pointer.value = next;
@@ -153,7 +153,7 @@ function getUnionTypeName(unit: IJsonSchemaUnit): string {
     .join(" | ");
 }
 
-function createApplication<Model extends ILlmSchema.Model>(props: {
+function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   build: (next: ICorrectTestFunctionProps) => void;
 }): IAgenticaController.IClass<Model> {
@@ -176,16 +176,12 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
 
 const claude = typia.llm.application<
   IApplication,
-  "claude",
-  {
-    reference: true;
-  }
+  "claude"
 >();
 const collection = {
   chatgpt: typia.llm.application<
     IApplication,
-    "chatgpt",
-    { reference: true }
+    "chatgpt"
   >(),
   claude,
   llama: claude,

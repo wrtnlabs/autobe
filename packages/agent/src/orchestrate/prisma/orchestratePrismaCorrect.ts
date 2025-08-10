@@ -10,7 +10,6 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { enforceToolCall } from "../../utils/enforceToolCall";
 import { forceRetry } from "../../utils/forceRetry";
 import { transformPrismaCorrectHistories } from "./histories/transformPrismaCorrectHistories";
 import { IAutoBePrismaCorrectApplication } from "./structures/IAutoBePrismaCorrectApplication";
@@ -147,26 +146,17 @@ async function execute<Model extends ILlmSchema.Model>(
   const pointer: IPointer<IAutoBePrismaCorrectApplication.IProps | null> = {
     value: null,
   };
-  const agentica: MicroAgentica<Model> = new MicroAgentica({
-    model: ctx.model,
-    vendor: ctx.vendor,
-    config: {
-      ...(ctx.config ?? {}),
-      executor: {
-        describe: null,
-      },
-    },
+  const agentica: MicroAgentica<Model> = ctx.createAgent({
+    source: "prismaCorrect",
     histories: transformPrismaCorrectHistories(failure),
-    controllers: [
-      createApplication({
-        model: ctx.model,
-        build: (next) => {
-          pointer.value = next;
-        },
-      }),
-    ],
+    controller: createController({
+      model: ctx.model,
+      build: (next) => {
+        pointer.value = next;
+      },
+    }),
+    enforceFunctionCall: true,
   });
-  enforceToolCall(agentica);
 
   // REQUEST CORRECTION
   await agentica
@@ -184,7 +174,7 @@ async function execute<Model extends ILlmSchema.Model>(
   return pointer.value;
 }
 
-function createApplication<Model extends ILlmSchema.Model>(props: {
+function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   build: (next: IAutoBePrismaCorrectApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {
@@ -213,15 +203,10 @@ const getTableCount = (failure: IAutoBePrismaValidation.IFailure): number => {
 
 const claude = typia.llm.application<
   IAutoBePrismaCorrectApplication,
-  "claude",
-  { reference: true }
+  "claude"
 >();
 const collection = {
-  chatgpt: typia.llm.application<
-    IAutoBePrismaCorrectApplication,
-    "chatgpt",
-    { reference: true }
-  >(),
+  chatgpt: typia.llm.application<IAutoBePrismaCorrectApplication, "chatgpt">(),
   claude,
   llama: claude,
   deepseek: claude,

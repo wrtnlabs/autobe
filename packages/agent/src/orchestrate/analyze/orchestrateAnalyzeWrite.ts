@@ -5,7 +5,6 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { enforceToolCall } from "../../utils/enforceToolCall";
 import {
   AutoBeAnalyzeFileSystem,
   IAutoBeAnalyzeFileSystem,
@@ -14,7 +13,7 @@ import { AutoBEAnalyzeFileMap } from "./AutoBeAnalyzePointer";
 import { AutoBeAnalyzeFile } from "./structures/AutoBeAnalyzeFile";
 import { transformAnalyzeWriteHistories } from "./transformAnalyzeWriteHistories";
 
-export const orchestrateAnalyzeWrite = <Model extends ILlmSchema.Model>(
+export const orchestrateAnalyzeWrite = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   input: {
     /** Total file names */
@@ -25,29 +24,23 @@ export const orchestrateAnalyzeWrite = <Model extends ILlmSchema.Model>(
     setDocument: (v: AutoBEAnalyzeFileMap) => void;
     language?: string;
   },
-): MicroAgentica<Model> => {
-  const controller = createController<Model>({
-    model: ctx.model,
-    execute: new AutoBeAnalyzeFileSystem({
-      [input.file.filename]: "" as const,
+): Promise<void> => {
+  const agentica: MicroAgentica<Model> = ctx.createAgent({
+    source: "analyzeWrite",
+    controller: createController<Model>({
+      model: ctx.model,
+      execute: new AutoBeAnalyzeFileSystem({
+        [input.file.filename]: "" as const,
+      }),
+      setDocument: input.setDocument,
     }),
-    setDocument: input.setDocument,
-  });
-
-  const agent = new MicroAgentica({
-    controllers: [controller],
-    model: ctx.model,
-    vendor: ctx.vendor,
-    config: {
-      ...ctx.config,
-      executor: {
-        describe: null,
-      },
-    },
     histories: transformAnalyzeWriteHistories(ctx, input),
+    enforceFunctionCall: true,
   });
-  enforceToolCall(agent);
-  return agent;
+  await agentica.conversate("Write Document.").finally(() => {
+    const tokenUsage = agentica.getTokenUsage().aggregate;
+    ctx.usage().record(tokenUsage, ["analyze"]);
+  });
 };
 
 function createController<Model extends ILlmSchema.Model>(props: {
@@ -73,17 +66,9 @@ function createController<Model extends ILlmSchema.Model>(props: {
   };
 }
 
-const claude = typia.llm.application<
-  AutoBeAnalyzeFileSystem,
-  "claude",
-  { reference: true }
->();
+const claude = typia.llm.application<AutoBeAnalyzeFileSystem, "claude">();
 const collection = {
-  chatgpt: typia.llm.application<
-    AutoBeAnalyzeFileSystem,
-    "chatgpt",
-    { reference: true }
-  >(),
+  chatgpt: typia.llm.application<AutoBeAnalyzeFileSystem, "chatgpt">(),
   claude,
   llama: claude,
   deepseek: claude,

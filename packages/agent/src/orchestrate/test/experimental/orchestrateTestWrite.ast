@@ -145,7 +145,7 @@ async function process<Model extends ILlmSchema.Model>(
       failure,
     }),
     controllers: [
-      createApplication({
+      createController({
         model: ctx.model,
         document: ctx.state().interface!.document,
         build: (next) => {
@@ -203,7 +203,7 @@ function getUnionTypeName(unit: IJsonSchemaUnit): string {
     .join(" | ");
 }
 
-function createApplication<Model extends ILlmSchema.Model>(props: {
+function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   document: AutoBeOpenApi.IDocument;
   build: (next: ICreateTestCodeProps) => void;

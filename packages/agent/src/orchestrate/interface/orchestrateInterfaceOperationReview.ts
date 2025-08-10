@@ -8,7 +8,6 @@ import { v4 } from "uuid";
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { enforceToolCall } from "../../utils/enforceToolCall";
 import { transformInterfaceAssetHistories } from "./histories/transformInterfaceAssetHistories";
 import { IAutoBeInterfaceOperationApplication } from "./structures/IAutoBeInterfaceOperationApplication";
 import { IAutoBeInterfaceOperationReviewApplication } from "./structures/IAutoBeInterfaceOperationReviewApplication";
@@ -40,16 +39,8 @@ export async function orchestrateInterfaceOperationReview<
   const pointer: IPointer<IAutoBeInterfaceOperationReview | null> = {
     value: null,
   };
-
-  const agentica: MicroAgentica<Model> = new MicroAgentica({
-    model: ctx.model,
-    vendor: ctx.vendor,
-    config: {
-      ...(ctx.config ?? {}),
-      executor: {
-        describe: null,
-      },
-    },
+  const agentica: MicroAgentica<Model> = ctx.createAgent({
+    source: "interfaceOperationsReview",
     histories: [
       {
         type: "systemMessage",
@@ -77,45 +68,41 @@ export async function orchestrateInterfaceOperationReview<
         ].join("\n"),
       },
     ],
-    controllers: [
-      createReviewController({
-        model: ctx.model,
-        endpoints,
-        operations,
-        build: (reviews) => {
-          const passed: IAutoBeInterfaceOperationReview.Success[] = [];
-          const failure: IAutoBeInterfaceOperationReview.Failure[] = [];
+    controller: createReviewController({
+      model: ctx.model,
+      endpoints,
+      operations,
+      build: (reviews) => {
+        const passed: IAutoBeInterfaceOperationReview.Success[] = [];
+        const failure: IAutoBeInterfaceOperationReview.Failure[] = [];
 
-          reviews.forEach((review) => {
-            const operation = operations.find(
-              (op) => op.method === review.method && op.path === review.path,
-            );
-            if (!operation) {
-              return;
-            }
+        reviews.forEach((review) => {
+          const operation = operations.find(
+            (op) => op.method === review.method && op.path === review.path,
+          );
+          if (!operation) {
+            return;
+          }
 
-            if (review.passed) {
-              passed.push({
-                type: "success",
-                endpoint: operation,
-              });
-            } else {
-              failure.push({
-                type: "failure",
-                endpoint: operation,
-                reason: review.reason || "Unknown reason",
-              });
-            }
-          });
+          if (review.passed) {
+            passed.push({
+              type: "success",
+              endpoint: operation,
+            });
+          } else {
+            failure.push({
+              type: "failure",
+              endpoint: operation,
+              reason: review.reason || "Unknown reason",
+            });
+          }
+        });
 
-          pointer.value = { passed, failure };
-        },
-      }),
-    ],
+        pointer.value = { passed, failure };
+      },
+    }),
+    enforceFunctionCall: false,
   });
-
-  enforceToolCall(agentica);
-
   await agentica.conversate("Review the operations").finally(() => {
     const tokenUsage = agentica.getTokenUsage().aggregate;
     ctx.usage().record(tokenUsage, ["interface"]);

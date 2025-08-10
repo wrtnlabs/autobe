@@ -20,6 +20,7 @@ import { useEffect, useState } from "react";
 
 import { AutoBePlaygroundListener } from "../../structures/AutoBePlaygroundListener";
 import { IAutoBePlaygroundEventGroup } from "../../structures/IAutoBePlaygroundEventGroup";
+import { IAutoBePlaygroundUploadConfig } from "../../structures/IAutoBePlaygroundUploadConfig";
 import { AutoBePlaygroundChatBodyMovie } from "./AutoBePlaygroundChatBodyMovie";
 import { AutoBePlaygroundChatSideMovie } from "./AutoBePlaygroundChatSideMovie";
 
@@ -61,18 +62,6 @@ export function AutoBePlaygroundChatMovie(
   //----
   const theme: Theme = useTheme();
   const isMobile: boolean = useMediaQuery(theme.breakpoints.down("lg"));
-  const bodyMovie = () => (
-    <AutoBePlaygroundChatBodyMovie
-      isMobile={isMobile}
-      eventGroups={eventGroups}
-      service={props.service}
-      conversate={async (contents) => {
-        props.service.conversate(contents);
-      }}
-      setError={setError}
-      supportAudio={!!props.supportAudio}
-    />
-  );
   const sideMovie = () => (
     <div
       style={{
@@ -130,22 +119,26 @@ export function AutoBePlaygroundChatMovie(
         }}
       >
         {isMobile ? (
-          <>
-            {bodyMovie()}
-            <Drawer
-              anchor="right"
-              open={openSide}
-              onClose={() => setOpenSide(false)}
-            >
-              {sideMovie()}
-            </Drawer>
-          </>
-        ) : (
-          <>
+          <Drawer
+            anchor="right"
+            open={openSide}
+            onClose={() => setOpenSide(false)}
+          >
             {sideMovie()}
-            {bodyMovie()}
-          </>
+          </Drawer>
+        ) : (
+          sideMovie()
         )}
+        <AutoBePlaygroundChatBodyMovie
+          isMobile={isMobile}
+          eventGroups={eventGroups}
+          service={props.service}
+          conversate={async (contents) => {
+            props.service.conversate(contents);
+          }}
+          setError={setError}
+          uploadConfig={props.uploadConfig}
+        />
       </div>
     </div>
   );
@@ -159,7 +152,7 @@ export namespace AutoBePlaygroundChatMovie {
     service: IAutoBeRpcService;
     listener: AutoBePlaygroundListener;
     eventGroups?: IAutoBePlaygroundEventGroup[];
-    supportAudio?: boolean;
+    uploadConfig?: IAutoBePlaygroundUploadConfig;
   }
 }
 

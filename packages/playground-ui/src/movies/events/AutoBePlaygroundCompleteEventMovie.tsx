@@ -1,5 +1,6 @@
 import {
   AutoBeAnalyzeCompleteEvent,
+  AutoBeAnalyzeScenarioEvent,
   AutoBeInterfaceCompleteEvent,
   AutoBePrismaCompleteEvent,
   AutoBeRealizeCompleteEvent,
@@ -186,6 +187,7 @@ export namespace AutoBePlaygroundCompleteEventMovie {
     service: IAutoBeRpcService;
     event:
       | AutoBeAnalyzeCompleteEvent
+      | AutoBeAnalyzeScenarioEvent
       | AutoBePrismaCompleteEvent
       | AutoBeInterfaceCompleteEvent
       | AutoBeTestCompleteEvent
@@ -199,6 +201,8 @@ function getTitle(
   event: AutoBePlaygroundCompleteEventMovie.IProps["event"],
 ): string | null {
   switch (event.type) {
+    case "analyzeScenario":
+      return "Analyze Scenario";
     case "analyzeComplete":
       return "Analyze";
     case "prismaComplete":
@@ -270,7 +274,8 @@ const getMessage = (
 const getStage = (
   event: AutoBePlaygroundCompleteEventMovie.IProps["event"],
 ) => {
-  if (event.type === "analyzeComplete") return "analyze";
+  if (event.type === "analyzeScenario") return "analyze";
+  else if (event.type === "analyzeComplete") return "analyze";
   else if (event.type === "prismaComplete") return "prisma";
   else if (event.type === "interfaceComplete") return "interface";
   else if (event.type === "testComplete") return "test";
