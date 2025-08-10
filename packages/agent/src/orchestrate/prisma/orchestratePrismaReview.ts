@@ -107,16 +107,11 @@ function createController<Model extends ILlmSchema.Model>(
 
 const claude = typia.llm.application<
   IAutoBePrismaReviewApplication,
-  "claude",
-  { reference: true }
+  "claude"
 >();
 
 const collection = {
-  chatgpt: typia.llm.application<
-    IAutoBePrismaReviewApplication,
-    "chatgpt",
-    { reference: true }
-  >(),
+  chatgpt: typia.llm.application<IAutoBePrismaReviewApplication, "chatgpt">(),
   claude,
   llama: claude,
   deepseek: claude,

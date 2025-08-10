@@ -171,14 +171,12 @@ function createController<Model extends ILlmSchema.Model>(props: {
 
 const claude = typia.llm.application<
   IAutoBeInterfaceSchemaApplication,
-  "claude",
-  { reference: true }
+  "claude"
 >();
 const collection = {
   chatgpt: typia.llm.application<
     IAutoBeInterfaceSchemaApplication,
-    "chatgpt",
-    { reference: true }
+    "chatgpt"
   >(),
   claude,
   llama: claude,
