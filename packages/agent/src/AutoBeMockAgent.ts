@@ -143,6 +143,7 @@ const sleepMap: Record<AutoBeEvent.Type, number> = {
   assistantMessage: 1_000,
   // ANALYZE
   analyzeStart: 1_000,
+  analyzeScenario: 1_000,
   analyzeWrite: 500,
   analyzeReview: 300,
   analyzeComplete: 1_000,
@@ -160,6 +161,7 @@ const sleepMap: Record<AutoBeEvent.Type, number> = {
   interfaceGroups: 1_000,
   interfaceEndpoints: 1_000,
   interfaceOperations: 400,
+  interfaceOperationsReview: 400,
   interfaceAuthorizations: 400,
   interfaceSchemas: 400,
   interfaceComplement: 2_000,

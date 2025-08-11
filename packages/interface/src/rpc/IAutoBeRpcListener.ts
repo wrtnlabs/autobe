@@ -1,6 +1,7 @@
 import {
   AutoBeAnalyzeCompleteEvent,
   AutoBeAnalyzeReviewEvent,
+  AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeStartEvent,
   AutoBeAnalyzeWriteEvent,
   AutoBeAssistantMessageEvent,
@@ -8,6 +9,7 @@ import {
   AutoBeInterfaceCompleteEvent,
   AutoBeInterfaceEndpointsEvent,
   AutoBeInterfaceOperationsEvent,
+  AutoBeInterfaceOperationsReviewEvent,
   AutoBeInterfaceSchemasEvent,
   AutoBeInterfaceStartEvent,
   AutoBePrismaCompleteEvent,
@@ -38,7 +40,7 @@ import {
   AutoBeTestWriteEvent,
   AutoBeUserMessageEvent,
 } from "../events";
-import { AutoBeInterfaceAuthorizationsEvent } from "../events/AutoBeInterfaceAuthorizationEvent";
+import { AutoBeInterfaceAuthorizationsEvent } from "../events/AutoBeInterfaceAuthorizationsEvent";
 import { AutoBeInterfaceGroupsEvent } from "../events/AutoBeInterfaceGroupsEvent";
 import { AutoBeRealizeAuthorizationCompleteEvent } from "../events/AutoBeRealizeAuthorizationCompleteEvent";
 import { AutoBeRealizeAuthorizationStartEvent } from "../events/AutoBeRealizeAuthorizationStartEvent";
@@ -95,6 +97,14 @@ export interface IAutoBeRpcListener {
    * progress indicators for the requirements documentation process.
    */
   analyzeStart?(event: AutoBeAnalyzeStartEvent): Promise<void>;
+
+  /**
+   * Optional handler for requirements analysis compose events.
+   *
+   * Occurs when an agent is called that generates metadata for the analysis,
+   * such as the table of contents, role, number of pages, and so on.
+   */
+  analyzeScenario?(event: AutoBeAnalyzeScenarioEvent): Promise<void>;
 
   /**
    * Optional handler for requirements analysis writing progress events.
@@ -260,6 +270,16 @@ export interface IAutoBeRpcListener {
    * functionality is being systematically developed.
    */
   interfaceOperations?(event: AutoBeInterfaceOperationsEvent): Promise<void>;
+
+  /**
+   * Optional handler for API operation review events.
+   *
+   * Called when the Interface agent reviews API operations, enabling client
+   * applications to show the review process and any identified issues.
+   */
+  interfaceOperationsReview?(
+    event: AutoBeInterfaceOperationsReviewEvent,
+  ): Promise<void>;
 
   /**
    * Optional handler for API authorization operation definition progress

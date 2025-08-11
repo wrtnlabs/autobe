@@ -1,6 +1,5 @@
-import sortImport from "@trivago/prettier-plugin-sort-imports";
-import import2 from "import2";
-import { format } from "prettier";
+import { ESLint } from "eslint";
+import ImportOrderPlugin from "eslint-plugin-perfectionist";
 import ts from "typescript";
 
 export namespace FilePrinter {
@@ -41,14 +40,14 @@ export namespace FilePrinter {
 
   export const beautify = async (script: string): Promise<string> => {
     try {
-      return await format(script, {
-        parser: "typescript",
-        plugins: [sortImport, await import2("prettier-plugin-jsdoc")],
-        importOrder: ["<THIRD_PARTY_MODULES>", "^[./]"],
-        importOrderSeparation: true,
-        importOrderSortSpecifiers: true,
-        importOrderParserPlugins: ["decorators-legacy", "typescript", "jsx"],
+      const lint = new ESLint({
+        fix: true,
+        plugins: {
+          ImportOrderPlugin,
+        },
       });
+      const results = await lint.lintText(script).then((v) => v.at(0));
+      return results?.output ?? script;
     } catch {
       return script;
     }

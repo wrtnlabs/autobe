@@ -10,7 +10,6 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { enforceToolCall } from "../../utils/enforceToolCall";
 import { transformInterfaceEndpointHistories } from "./histories/transformInterfaceEndpointHistories";
 import { IAutoBeInterfaceEndpointApplication } from "./structures/IAutoBeInterfaceEndpointApplication";
 import { OpenApiEndpointComparator } from "./utils/OpenApiEndpointComparator";
@@ -50,31 +49,22 @@ async function process<Model extends ILlmSchema.Model>(
   const pointer: IPointer<AutoBeOpenApi.IEndpoint[] | null> = {
     value: null,
   };
-  const agentica: MicroAgentica<Model> = new MicroAgentica({
-    model: ctx.model,
-    vendor: ctx.vendor,
-    config: {
-      ...(ctx.config ?? {}),
-      executor: {
-        describe: null,
-      },
-    },
+  const agentica: MicroAgentica<Model> = ctx.createAgent({
+    source: "interfaceEndpoints",
     histories: transformInterfaceEndpointHistories(
       ctx.state(),
       group,
       authorizations,
     ),
-    controllers: [
-      createApplication({
-        model: ctx.model,
-        build: (endpoints) => {
-          pointer.value ??= endpoints;
-          pointer.value.push(...endpoints);
-        },
-      }),
-    ],
+    controller: createController({
+      model: ctx.model,
+      build: (endpoints) => {
+        pointer.value ??= endpoints;
+        pointer.value.push(...endpoints);
+      },
+    }),
+    enforceFunctionCall: true,
   });
-  enforceToolCall(agentica);
 
   await agentica.conversate(content).finally(() => {
     const tokenUsage = agentica.getTokenUsage().aggregate;
@@ -97,7 +87,7 @@ async function process<Model extends ILlmSchema.Model>(
   return pointer.value;
 }
 
-function createApplication<Model extends ILlmSchema.Model>(props: {
+function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   build: (endpoints: AutoBeOpenApi.IEndpoint[]) => void;
 }): IAgenticaController.IClass<Model> {
@@ -120,14 +110,12 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
 
 const claude = typia.llm.application<
   IAutoBeInterfaceEndpointApplication,
-  "claude",
-  { reference: true }
+  "claude"
 >();
 const collection = {
   chatgpt: typia.llm.application<
     IAutoBeInterfaceEndpointApplication,
-    "chatgpt",
-    { reference: true }
+    "chatgpt"
   >(),
   claude,
   llama: claude,

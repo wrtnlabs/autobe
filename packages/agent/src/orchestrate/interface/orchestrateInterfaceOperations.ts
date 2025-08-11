@@ -8,7 +8,6 @@ import { NamingConvention } from "typia/lib/utils/NamingConvention";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
-import { enforceToolCall } from "../../utils/enforceToolCall";
 import { forceRetry } from "../../utils/forceRetry";
 import { transformInterfaceOperationHistories } from "./histories/transformInterfaceOperationHistories";
 import { orchestrateInterfaceOperationReview } from "./orchestrateInterfaceOperationReview";
@@ -165,43 +164,34 @@ async function process<Model extends ILlmSchema.Model>(
   > = {
     value: null,
   };
-  const agentica: MicroAgentica<Model> = new MicroAgentica({
-    model: ctx.model,
-    vendor: ctx.vendor,
-    config: {
-      ...(ctx.config ?? {}),
-      executor: {
-        describe: null,
-      },
-    },
+  const agentica: MicroAgentica<Model> = ctx.createAgent({
+    source: "interfaceOperations",
     histories: transformInterfaceOperationHistories(ctx.state(), endpoints),
-    controllers: [
-      createApplication({
-        model: ctx.model,
-        roles: ctx.state().analyze?.roles.map((it) => it.name) ?? [],
-        build: (operations) => {
-          pointer.value ??= [];
-          const matrix: IAutoBeInterfaceOperationApplication.IOperation[][] =
-            operations.map((op) => {
-              return [
-                {
-                  ...op,
-                  path: op.path,
-                  authorizationRole: null,
-                },
-              ];
-            });
-          progress.completed += matrix.flat().length;
-          progress.total += matrix
-            .filter((it) => it.length > 1)
-            .map((it) => it.length - 1)
-            .reduce((a, b) => a + b, 0);
-          pointer.value.push(...matrix.flat());
-        },
-      }),
-    ],
+    controller: createController({
+      model: ctx.model,
+      roles: ctx.state().analyze?.roles.map((it) => it.name) ?? [],
+      build: (operations) => {
+        pointer.value ??= [];
+        const matrix: IAutoBeInterfaceOperationApplication.IOperation[][] =
+          operations.map((op) => {
+            return [
+              {
+                ...op,
+                path: op.path,
+                authorizationRole: null,
+              },
+            ];
+          });
+        progress.completed += matrix.flat().length;
+        progress.total += matrix
+          .filter((it) => it.length > 1)
+          .map((it) => it.length - 1)
+          .reduce((a, b) => a + b, 0);
+        pointer.value.push(...matrix.flat());
+      },
+    }),
+    enforceFunctionCall: true,
   });
-  enforceToolCall(agentica);
   await agentica.conversate("Make API operations").finally(() => {
     const tokenUsage = agentica.getTokenUsage().aggregate;
     ctx.usage().record(tokenUsage, ["interface"]);
@@ -210,7 +200,7 @@ async function process<Model extends ILlmSchema.Model>(
   return pointer.value;
 }
 
-function createApplication<Model extends ILlmSchema.Model>(props: {
+function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   roles: string[];
   build: (

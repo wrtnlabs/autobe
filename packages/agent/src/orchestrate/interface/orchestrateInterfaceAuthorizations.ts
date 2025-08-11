@@ -6,9 +6,14 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+<<<<<<< HEAD:packages/agent/src/orchestrate/interface/orchestrateInterfaceAuthorizations.ts
 import { enforceToolCall } from "../../utils/enforceToolCall";
 import { transformInterfaceAuthorizationsHistories } from "./histories/transformInterfaceAuthorizationsHistories";
 import { IAutoBeInterfaceAuthorizationsApplication } from "./structures/IAutoBeInterfaceAuthorizationApplication";
+=======
+import { transformInterfaceAuthorizationHistories } from "./histories/transformInterfaceAuthorization";
+import { IAutoBeInterfaceAuthorizationApplication } from "./structures/IAutoBeInterfaceAuthorizationApplication";
+>>>>>>> main:packages/agent/src/orchestrate/interface/orchestrateInterfaceAuthorization.ts
 
 export async function orchestrateInterfaceAuthorizations<
   Model extends ILlmSchema.Model,
@@ -50,29 +55,17 @@ async function process<Model extends ILlmSchema.Model>(
     {
       value: null,
     };
-
-  const agentica: MicroAgentica<Model> = new MicroAgentica({
-    model: ctx.model,
-    vendor: ctx.vendor,
-    config: {
-      ...(ctx.config ?? {}),
-      executor: {
-        describe: null,
-      },
-    },
+  const agentica: MicroAgentica<Model> = ctx.createAgent({
+    source: "interfaceAuthorizations",
     histories: transformInterfaceAuthorizationsHistories(ctx.state(), role),
-    controllers: [
-      createApplication({
-        model: ctx.model,
-        build: (next) => {
-          pointer.value = next;
-        },
-      }),
-    ],
+    controller: createController({
+      model: ctx.model,
+      build: (next) => {
+        pointer.value = next;
+      },
+    }),
+    enforceFunctionCall: true,
   });
-
-  enforceToolCall(agentica);
-
   await agentica.conversate(
     "Create Authorization Operation for the given roles",
   );
@@ -83,7 +76,7 @@ async function process<Model extends ILlmSchema.Model>(
   return pointer.value;
 }
 
-function createApplication<Model extends ILlmSchema.Model>(props: {
+function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   build: (next: IAutoBeInterfaceAuthorizationsApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {
@@ -106,6 +99,7 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
 }
 
 const claude = typia.llm.application<
+<<<<<<< HEAD:packages/agent/src/orchestrate/interface/orchestrateInterfaceAuthorizations.ts
   IAutoBeInterfaceAuthorizationsApplication,
   "claude",
   { reference: true }
@@ -115,6 +109,15 @@ const collection = {
     IAutoBeInterfaceAuthorizationsApplication,
     "chatgpt",
     { reference: true }
+=======
+  IAutoBeInterfaceAuthorizationApplication,
+  "claude"
+>();
+const collection = {
+  chatgpt: typia.llm.application<
+    IAutoBeInterfaceAuthorizationApplication,
+    "chatgpt"
+>>>>>>> main:packages/agent/src/orchestrate/interface/orchestrateInterfaceAuthorization.ts
   >(),
   claude,
   llama: claude,
