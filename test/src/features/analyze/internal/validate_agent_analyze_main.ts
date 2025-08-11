@@ -51,7 +51,7 @@ export const validate_agent_analyze_main = async (
       [
         message,
         "",
-        "Make every determinant by yourself, and just show me the analysis report.",
+        "Make every determinant by yourself, and just show me the analysis report. call analyze function.",
       ].join("\n"),
     );
   let results: AutoBeHistory[] = await go(content);
@@ -66,6 +66,8 @@ export const validate_agent_analyze_main = async (
           "histories.json": JSON.stringify(agent.getHistories(), null, 2),
         },
       });
+
+      console.debug(JSON.stringify(results, null, 2));
       throw new Error("Some history type must be analyze.");
     }
   }

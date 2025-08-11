@@ -1,24 +1,23 @@
 export interface IAutoBeAnalyzeReviewApplication {
   /**
-   * Reviews planning documentation to ensure it meets all quality standards and
-   * requirements.
+   * Enhances planning documentation to meet all quality standards and requirements.
    *
-   * This function performs a comprehensive review of the documentation,
-   * checking for:
+   * This function receives a document and outputs an improved version directly.
+   * The output IS the enhanced document itself, NOT review comments or feedback.
    *
-   * - Document length requirements (2,000-6,000 characters for standard docs,
-   *   more for technical)
-   * - Completeness of all sections listed in the table of contents
-   * - Proper internal linking and anchor references
-   * - Correct Mermaid diagram syntax (mandatory double quotes)
-   * - Specific, actionable requirements (no vague statements)
-   * - Proper EARS format usage
+   * The enhancement process includes:
+   * - Expanding sections that are too brief
+   * - Converting vague statements to specific EARS format requirements
+   * - Fixing Mermaid diagram syntax errors
+   * - Adding missing business processes and workflows
+   * - Ensuring proper document structure and completeness
    *
-   * The review process either accepts the document or rejects it with specific
-   * feedback for improvement.
+   * CRITICAL: The function outputs the actual document content that will be saved,
+   * not a review or analysis of the document. Any text output becomes part of
+   * the final document.
    *
-   * @param props - The properties containing review criteria, plan, and content
-   *   to review
+   * @param props - The properties containing the document to enhance along with
+   *   plan and review criteria for guidance
    */
   review(props: IAutoBeAnalyzeReviewApplication.IProps): void;
 }
@@ -26,7 +25,7 @@ export interface IAutoBeAnalyzeReviewApplication {
 export namespace IAutoBeAnalyzeReviewApplication {
   export interface IProps {
     /**
-     * The review criteria and guidelines that the agent must follow.
+     * The enhancement criteria and guidelines that the agent must follow.
      *
      * This includes:
      *
@@ -63,17 +62,26 @@ export namespace IAutoBeAnalyzeReviewApplication {
      * - The target audience and purpose
      * - Expected level of detail
      *
-     * The reviewer uses this to ensure the written content aligns with the
+     * The enhancer uses this to ensure the improved content aligns with the
      * original plan and covers all required topics comprehensively.
      */
     plan: string;
 
     /**
-     * The actual document content to be reviewed.
+     * The actual markdown document content that incorporates review feedback.
      *
-     * This is the complete documentation written by the Analyze Write Agent
-     * that needs validation. The reviewer will check this content against
-     * multiple criteria:
+     * ⚠️ CRITICAL: This field contains a COMPLETE MARKDOWN DOCUMENT that has 
+     * already incorporated the review criteria and plan requirements. This is 
+     * NOT raw input to be reviewed - it is the FINAL, PRODUCTION-READY DOCUMENT
+     * that reflects all review feedback and is immediately usable.
+     * 
+     * This content represents:
+     * - A fully-formed markdown document (.md file)
+     * - The result of applying review criteria to the original plan
+     * - A production-ready document for immediate deployment
+     * - Complete business requirements ready for developers
+     * 
+     * The enhancer should treat this as the actual document content:
      *
      * - Length and completeness (minimum 2,000 characters, more for technical
      *   docs)
@@ -84,12 +92,16 @@ export namespace IAutoBeAnalyzeReviewApplication {
      * - Appropriate level of detail for backend implementation
      * - Proper document linking (descriptive text, not raw filenames)
      *
-     * If issues are found, the reviewer will reject with specific feedback:
+     * IMPORTANT: The enhancer's output IS this document, not comments about it:
      *
-     * - Exact character count if too short
-     * - Specific sections that need expansion
-     * - Mermaid syntax errors with corrections
-     * - Vague statements that need clarification
+     * - If content is provided, it represents the actual document
+     * - The enhancer outputs the enhanced version AS the document itself
+     * - No meta-commentary or review feedback should be in the output
+     * - The output becomes the saved .md file directly
+     * 
+     * Example of what this field contains:
+     * "# Service Overview\n## Vision\nThe service provides..." (actual document)
+     * NOT: "This document should cover service overview..." (review comment)
      */
     content: string;
   }
