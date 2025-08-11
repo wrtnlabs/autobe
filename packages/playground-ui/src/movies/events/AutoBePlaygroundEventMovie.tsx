@@ -27,6 +27,7 @@ export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
     case "realizeAuthorizationStart":
       return <AutoBePlaygroundStartEventMovie event={back} />;
     // SCENARIO EVENTS
+    case "analyzeScenario":
     case "prismaComponents":
     case "interfaceGroups":
     case "testScenario":
@@ -67,7 +68,6 @@ export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
       );
     // COMPLETE EVENTS
     case "analyzeComplete":
-    case "analyzeScenario":
     case "prismaComplete":
     case "interfaceComplete":
     case "testComplete":
