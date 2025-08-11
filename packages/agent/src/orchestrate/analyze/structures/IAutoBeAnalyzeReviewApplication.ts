@@ -44,10 +44,12 @@ export namespace IAutoBeAnalyzeReviewApplication {
      *
      * - Mermaid diagrams MUST use double quotes for ALL labels
      * - No spaces allowed between brackets and quotes in Mermaid
-     * - Requirements must be specific and measurable
-     * - API specifications should be comprehensive (40-50+ endpoints for complex
-     *   systems)
-     * - Business model and authentication must be included where applicable
+     * - Requirements must be specific and measurable in natural language
+     * - Focus on business requirements and user scenarios
+     * - STRICTLY PROHIBITED: Reject if document contains database schemas or API
+     *   specifications
+     * - Business model and authentication requirements must be described in
+     *   natural language
      */
     review: string;
 

@@ -34,8 +34,8 @@ export namespace IAutoBeAnalyzeWriteApplication {
      * - User roles and authentication requirements
      * - Functional requirements with EARS format
      * - Non-functional requirements
-     * - Database schema and ERD
-     * - API specifications (as reference, not enforcement)
+     * - Business requirements in natural language
+     * - User scenarios and use cases
      */
     plan: string;
 
@@ -58,10 +58,10 @@ export namespace IAutoBeAnalyzeWriteApplication {
      * that:
      *
      * - Removes all ambiguity for backend developers
-     * - Provides specific, measurable requirements
-     * - Includes detailed API specifications (40-50+ endpoints for complex
-     *   systems)
-     * - Documents complete database schemas
+     * - Provides specific, measurable requirements in natural language
+     * - Focuses on business logic and requirements, NOT technical implementation
+     * - STRICTLY PROHIBITED: Do NOT write database schemas, ERD, or API
+     *   specifications
      * - Uses EARS format for all applicable requirements
      * - Follows proper document linking conventions
      * - Includes Mermaid diagrams with proper syntax (double quotes mandatory)

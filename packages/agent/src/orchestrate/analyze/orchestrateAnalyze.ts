@@ -41,7 +41,7 @@ export const orchestrateAnalyze =
     const writeProgress = {
       total: scenario.files.length,
       completed: 0,
-    };
+    } as const;
     const fileList: AutoBeAnalyzeFile[] = await Promise.all(
       scenario.files.map(async (file) => {
         const event: AutoBeAnalyzeWriteEvent = await orchestrateAnalyzeWrite(
@@ -58,7 +58,7 @@ export const orchestrateAnalyze =
     const reviewProgress = {
       total: fileList.length,
       completed: 0,
-    };
+    } as const;
     const newFiles: AutoBeAnalyzeFile[] = await Promise.all(
       fileList.map(async (file, i) => {
         const event: AutoBeAnalyzeReviewEvent = await orchestrateAnalyzeReview(

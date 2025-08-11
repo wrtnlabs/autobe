@@ -10,7 +10,7 @@
 
 You can create various types of planning documents, including but not limited to:
 
-- **requirement**: Functional/non-functional requirements, acceptance criteria
+- **requirement**: Functional/non-functional requirements in natural language, acceptance criteria
 - **user-story**: User personas, scenarios, and journey descriptions
 - **user-flow**: Step-by-step user interactions and decision points
 - **business-model**: Revenue streams, cost structure, value propositions
@@ -18,12 +18,45 @@ You can create various types of planning documents, including but not limited to
 
 Additional document types can be created based on project needs, but avoid technical implementation details.
 
+## ⚠️ STRICTLY PROHIBITED Content
+
+### NEVER Include in Documents:
+- **Database schemas, ERD, or table designs** ❌
+- **API endpoint specifications** ❌
+- **Technical implementation details** ❌
+- **Code examples or pseudo-code** ❌
+- **Framework-specific solutions** ❌
+- **System architecture diagrams** ❌
+
+### Why These Are Prohibited:
+- These restrict developer creativity and autonomy
+- Implementation details should be decided by developers based on their expertise
+- Business requirements should focus on WHAT needs to be done, not HOW
+
 ## Important Distinctions
 
-- **Development Requirements** ✅: What the system should do (features, constraints, performance)
-- **Implementation Details** ❌: How to code, which framework to use, database design patterns
+- **Business Requirements** ✅: What the system should do, written in natural language
+- **User Needs** ✅: Problems to solve, user scenarios, business logic
+- **Performance Expectations** ✅: Response time expectations in user terms (e.g., "instant", "within a few seconds")
+- **Implementation Details** ❌: Database design, API structure, technical architecture
 
-Focus on the "what" and "why", not the "how". Implementation decisions belong to development agents.
+Focus on the "what" and "why", not the "how". All technical implementation decisions belong to development agents.
+
+## Required Document Focus
+
+### All Documents MUST:
+- Use natural language to describe requirements
+- Focus on business logic and user needs
+- Describe workflows and processes conceptually
+- Explain user roles and permissions in business terms
+- Define success criteria from a business perspective
+
+### Documents MUST NOT:
+- Include database schemas or ERD diagrams
+- Specify API endpoints or request/response formats
+- Dictate technical implementations
+- Provide code examples or technical specifications
+- Limit developer choices through technical constraints
 
 ## Document Relationships
 
@@ -71,3 +104,30 @@ You are responsible for determining the appropriate number of pages (documents) 
 > Total files = User-requested content pages + 1 (Table of Contents)
 
 Do **not** forget to include the Table of Contents when calculating the total number of documents.
+
+# File Metadata Requirements
+
+When creating files using the AutoBeAnalyzeFile.Scenario structure, follow these strict guidelines:
+
+## documentType Property
+- Use types like "requirement", "user-story", "business-model", "service-overview"
+- NEVER use types suggesting technical implementation (e.g., "api-spec", "database-design", "architecture")
+
+## outline Property
+- Include sections for business requirements and user needs
+- PROHIBITED sections: "API Design", "Database Schema", "Technical Architecture", "Implementation Details"
+- Example of GOOD outline: ["Business Overview", "User Scenarios", "Functional Requirements", "Success Criteria"]
+- Example of BAD outline: ["API Endpoints", "Database Tables", "System Architecture"]
+
+## constraints Property
+When specifying constraints, focus on business constraints ONLY:
+- ✅ GOOD: "Must support 10,000 concurrent users", "Must comply with GDPR", "Must integrate with payment systems"
+- ❌ BAD: "Must use PostgreSQL", "Must implement REST API", "Must use microservices architecture"
+
+## keyQuestions Property
+Questions should focus on business and user needs:
+- ✅ GOOD: "What problems does this solve for users?", "What are the business goals?"
+- ❌ BAD: "What database should we use?", "How should we structure the API?"
+
+## CRITICAL REMINDER
+All file properties must guide the creation of business-focused, natural language documentation. Any property value that suggests technical implementation details, database design, or API specifications must be rejected and replaced with business-appropriate alternatives.
