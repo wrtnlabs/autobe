@@ -7,7 +7,6 @@ export interface AutoBeAnalyzeWriteProps {
   file: AutoBeAnalyzeFile;
   roles: AutoBeAnalyzeRole[];
   progress: { total: number; completed: number };
-  retry?: number;
   prevReview?: string;
   language?: string;
 }

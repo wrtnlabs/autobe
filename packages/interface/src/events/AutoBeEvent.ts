@@ -78,8 +78,8 @@ export type AutoBeEvent =
   | AutoBeInterfaceStartEvent
   | AutoBeInterfaceGroupsEvent
   | AutoBeInterfaceEndpointsEvent
-  | AutoBeInterfaceOperationsEvent
   | AutoBeInterfaceOperationsReviewEvent
+  | AutoBeInterfaceOperationsEvent
   | AutoBeInterfaceAuthorizationEvent
   | AutoBeInterfaceSchemasEvent
   | AutoBeInterfaceComplementEvent
