@@ -46,17 +46,6 @@ export const orchestrateAnalyze =
       });
     }
 
-    // Publish scenario event
-    ctx.dispatch({
-      type: "analyzeScenario",
-      page: scenario.page,
-      prefix: scenario.prefix,
-      roles: scenario.roles,
-      filenames: scenario.files.map((file) => file.filename),
-      step,
-      created_at: new Date().toISOString(),
-    });
-
     // Check if requirements are sufficient
     if (scenario.files.length === 0) {
       return ctx.assistantMessage({

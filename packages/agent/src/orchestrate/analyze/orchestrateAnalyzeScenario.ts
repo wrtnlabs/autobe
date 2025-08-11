@@ -72,10 +72,9 @@ export const orchestrateAnalyzeScenario = async <
 
   ctx.dispatch({
     type: "analyzeScenario",
-    page: pointer.value.page,
     prefix: pointer.value.prefix,
     roles: pointer.value.roles,
-    filenames: pointer.value.files.map((el) => el.filename),
+    files: pointer.value.files,
     step: ctx.state().analyze?.step ?? 0,
     created_at: new Date().toISOString(),
   });
