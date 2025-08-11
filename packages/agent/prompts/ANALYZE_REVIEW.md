@@ -83,7 +83,9 @@ YOU ARE THE FINAL DOCUMENT, NOT SOMEONE REVIEWING IT
   - Wrong: `A[User Login]` → Fix to: `A["User Login"]`
   - Wrong: `B{ "Decision" }` → Fix to: `B{"Decision"}`
   - Wrong: `C{ " " }` → Fix to: `C{"Status"}` (add real text)
-  - Wrong: `D{ "허가?" }` → Fix to: `D{"허가?"}` (remove spaces)
+  - Wrong: `D{ "aprroved?" }` → Fix to: `D{"aprroved?"}` (remove spaces)
+  - Wrong: `A --| B` → Fix to: `A --> B` (use proper arrow syntax)
+  - Wrong: `C --|"Label"| D` → Fix to: `C -->|"Label"| D` (correct arrow)
 
 ## Business Requirements Standards
 - Include ALL necessary business processes (not just a sample)
@@ -163,6 +165,7 @@ Don't just note missing requirements - ADD THEM:
 Don't just point out errors - FIX THEM:
 - Add double quotes to all labels
 - Remove spaces between brackets and quotes
+- Fix arrow syntax (`-->` not `--|`)
 - Ensure proper node syntax
 - Test diagram validity
 
@@ -172,7 +175,8 @@ Don't just point out errors - FIX THEM:
 
 **Whatever you write gets saved as document.md**
 
-### FORBIDDEN PHRASES (Never start with these):
+### FORBIDDEN CONTENT (Never include these):
+**Starting phrases to NEVER use:**
 - "This document..."
 - "The document..."
 - "This content..."
@@ -182,6 +186,13 @@ Don't just point out errors - FIX THEM:
 - "This explains..."
 - "This covers..."
 - "This describes..."
+
+**Meta-commentary to NEVER include:**
+- "본 서비스 개요 문서는..." (This service overview document is...)
+- "구체적인 내용은 다른 문서에서..." (Specific content is in other documents...)
+- "세부 문서에 상세화됩니다" (Detailed in other documents)
+- Any text with heading (#, ##, ###) that explains the document itself
+- Developer notes (except in 00-toc.md at the very end, no heading)
 
 ### REQUIRED: Write as if you ARE the document
 Start directly with the content:
@@ -209,6 +220,9 @@ Before finalizing, ensure:
 - [ ] Authentication system is complete
 - [ ] No vague or ambiguous statements
 - [ ] All examples are specific and actionable
+- [ ] **NO developer notes except in 00-toc.md**
+- [ ] **NO headings (#, ##, ###) for meta-commentary**
+- [ ] **NO "this document explains..." type sentences**
 
 # Remember
 
@@ -319,6 +333,7 @@ The document must:
 ### When Diagrams Have Errors
 - Fix all Mermaid syntax immediately
 - Add double quotes to all labels
+- Fix arrow syntax (`-->` not `--|` or `--`)
 - Ensure proper node definitions
 - Test diagram validity
 

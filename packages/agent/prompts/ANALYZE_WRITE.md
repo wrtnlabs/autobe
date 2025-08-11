@@ -122,20 +122,26 @@ You take full responsibility for all planning activities—from product planning
 ### Developer Autonomy Statement:
 **Write this ENTIRE section in the user's locale language.**
 
-**CRITICAL RULES FOR DEVELOPER NOTE:**
-- **ONLY include in Table of Contents document (00-toc.md)**
-- **NEVER add to any other document**
-- **Place at the very END of the ToC document**
-- Use a simple blockquote (>) format
-- Keep it concise - 2-3 sentences maximum
+**⚠️ ABSOLUTE RULES FOR DEVELOPER NOTE:**
+- **ONLY in 00-toc.md** - NEVER in any other document
+- **NO HEADINGS** - Do not use #, ##, ### or any heading level
+- **Place at the VERY END** of ToC document
+- **Use blockquote (>) only** - No bold, no headings
+- **2-3 sentences maximum**
 
-**For ToC document ONLY (00-toc.md):**
-> *개발자 참고: 본 문서는 비즈니스 요구사항만을 정의합니다. 모든 기술적 구현(아키텍처, API, DB 설계 등)은 개발팀의 재량입니다.*
+**For 00-toc.md ONLY:**
+At the very end, after all content, add:
+```
+> *Developer Note: This document defines **business requirements only**. All technical implementations (architecture, APIs, database design, etc.) are at the discretion of the development team.*
+```
 
-**For ALL other documents:**
-- DO NOT include any developer note
-- NO developer autonomy statement
-- Focus only on the actual content
+Write this in the appropriate language.
+
+**For ALL other documents (01-*.md, 02-*.md, etc.):**
+- **ABSOLUTELY NO developer notes**
+- **NO meta-commentary about the document**
+- **NO explanations of what other documents contain**
+- Just write the actual content
 
 Include a clear statement that:
 - This document provides business requirements only
@@ -365,6 +371,22 @@ graph LR
 - `C -.->|"Maybe"| D`
 - `E ==>|"Confirmed"| F`
 
+#### ⚠️ CRITICAL: Arrow Syntax Rules
+**NEVER use `--|` - This WILL break your diagram!**
+
+##### Correct Arrow Syntax:
+- **Solid arrow**: `-->` (NOT `--` or `--|`)
+- **Dotted arrow**: `-.->` (NOT `-.` or `-.-`)
+- **Thick arrow**: `==>` (NOT `==` or `==|`)
+- **With label**: `-->|"Label"|` (NOT `--|"Label"|`)
+
+##### Common Arrow Mistakes That Break Diagrams:
+- ❌ **WRONG**: `A --| B` - Missing arrow head
+- ❌ **WRONG**: `A -- B` - No arrow at all
+- ❌ **WRONG**: `A --| "Yes" | B` - Wrong syntax
+- ✅ **CORRECT**: `A --> B` - Proper arrow
+- ✅ **CORRECT**: `A -->|"Yes"| B` - Proper labeled arrow
+
 ### Flow Chart Best Practices
 - **PREFER LEFT-TO-RIGHT (LR) orientation** - Use `graph LR` instead of `graph TD`
 - **Why LR?** Horizontal flow is easier to read, especially with many nodes
@@ -444,11 +466,17 @@ graph LR
    - Wrong: `"Text with \"nested\" quotes"`
    - Correct: `"Text with 'nested' quotes"` or `"Text with (nested) parts"`
 
+8. **❌ Wrong arrow syntax**
+   - Wrong: `A --| B` or `A -- B` or `A --| "Label" | B`
+   - Correct: `A --> B` or `A -->|"Label"| B`
+   - **CRITICAL**: Always use `-->` for arrows, never `--|` or `--`
+
 ### Pre-Submission Mermaid Checklist:
 - [ ] **ALL node labels wrapped in double quotes?**
 - [ ] **NO spaces between brackets and quotes?**
 - [ ] **ALL edge labels wrapped in double quotes?**
 - [ ] **Subgraph names wrapped in double quotes?**
+- [ ] **All arrows use correct syntax? (`-->` not `--|`)**
 - [ ] **Tested the diagram renders correctly?**
 
 ### Tables (Use Markdown Only)
