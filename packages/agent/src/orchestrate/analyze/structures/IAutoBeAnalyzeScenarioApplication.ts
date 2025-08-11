@@ -1,6 +1,5 @@
 import { AutoBeAnalyzeRole } from "@autobe/interface";
-
-import { AutoBeAnalyzeFile } from "./AutoBeAnalyzeFile";
+import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
 
 export namespace IAutoBeAnalyzeScenarioApplication {
   export interface IProps {

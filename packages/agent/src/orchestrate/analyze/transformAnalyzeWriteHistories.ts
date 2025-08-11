@@ -1,11 +1,11 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
 import { AutoBeAnalyzeRole } from "@autobe/interface";
+import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
 import { ILlmSchema } from "@samchon/openapi";
 import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { AutoBeAnalyzeFile } from "./structures/AutoBeAnalyzeFile";
 
 const preparePrompt = (
   template: string,
@@ -35,7 +35,7 @@ const preparePrompt = (
     .replace(/{% Current File %}/g, file.filename)
     .replace(/{% User Roles %}/g, userRoles)
     .replace(/{% Document Reason %}/g, file.reason)
-    .replace(/{% Document Type %}/g, file.type || "")
+    .replace(/{% Document Type %}/g, file.documentType || "")
     .replace(/{% Document Outline %}/g, outline)
     .replace(/{% Document Audience %}/g, file.audience || "")
     .replace(/{% Document Key Questions %}/g, keyQuestions)

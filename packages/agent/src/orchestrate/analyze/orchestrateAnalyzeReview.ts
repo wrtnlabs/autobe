@@ -44,6 +44,7 @@ export const orchestrateAnalyzeReview = async <Model extends ILlmSchema.Model>(
   });
 
   ctx.dispatch({
+    ...props.file,
     type: "analyzeReview",
     filename: props.file.filename,
     review: pointer.value.type === "accept" ? "accept" : pointer.value.value,
