@@ -16,7 +16,8 @@ import { IAutoBeAnalyzeReviewApplication } from "./structures/IAutoBeAnalyzeRevi
 export const orchestrateAnalyzeReview = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   scenario: AutoBeAnalyzeScenarioEvent,
-  file: AutoBeAnalyzeFile,
+  otherFiles: AutoBeAnalyzeFile[],
+  myFile: AutoBeAnalyzeFile,
   progress: {
     total: number;
     completed: number;
@@ -31,7 +32,9 @@ export const orchestrateAnalyzeReview = async <Model extends ILlmSchema.Model>(
       model: ctx.model,
       pointer,
     }),
-    histories: [...transformAnalyzeReviewerHistories(scenario, file)],
+    histories: [
+      ...transformAnalyzeReviewerHistories(scenario, otherFiles, myFile),
+    ],
     enforceFunctionCall: true,
   });
   const command = `proceed with the review of these files only.` as const;
@@ -44,7 +47,7 @@ export const orchestrateAnalyzeReview = async <Model extends ILlmSchema.Model>(
 
   const event: AutoBeAnalyzeReviewEvent = {
     type: "analyzeReview",
-    file,
+    file: myFile,
     plan: pointer.value.plan,
     review: pointer.value.review,
     content: pointer.value.content,

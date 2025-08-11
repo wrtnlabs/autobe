@@ -59,6 +59,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
     return message;
   },
   createAgent: (next) => {
+    console.log("config", props.config);
     const agent: MicroAgentica<Model> = new MicroAgentica<Model>({
       model: props.model,
       vendor: props.vendor,

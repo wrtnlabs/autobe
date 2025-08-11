@@ -60,10 +60,11 @@ export const orchestrateAnalyze =
       completed: 0,
     };
     const newFiles: AutoBeAnalyzeFile[] = await Promise.all(
-      fileList.map(async (file) => {
+      fileList.map(async (file, i) => {
         const event: AutoBeAnalyzeReviewEvent = await orchestrateAnalyzeReview(
           ctx,
           scenario,
+          fileList.filter((_, j) => j !== i), // other files
           file,
           reviewProgress,
         );

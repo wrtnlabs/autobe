@@ -8,23 +8,29 @@ import { transformAnalyzeWriteHistories } from "./transformAnalyzeWriteHistories
 
 export const transformAnalyzeReviewerHistories = (
   scenario: AutoBeAnalyzeScenarioEvent,
-  file: AutoBeAnalyzeFile,
+  otherFiles: AutoBeAnalyzeFile[],
+  myFile: AutoBeAnalyzeFile,
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
   return [
-    ...transformAnalyzeWriteHistories(scenario, file),
+    ...transformAnalyzeWriteHistories(scenario, myFile),
     {
       id: v4(),
       created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: [
-        "Here is the document what you have written:",
+        "Here are the other documents written in other agents:",
         "",
         "```json",
-        JSON.stringify(file),
+        JSON.stringify(otherFiles),
         "```",
         "",
+        "And here is the target document to review what you have written:",
+        "",
+        "```json",
+        JSON.stringify(myFile),
+        "```",
       ].join("\n"),
     },
     {
@@ -37,7 +43,11 @@ export const transformAnalyzeReviewerHistories = (
       id: v4(),
       created_at: new Date().toISOString(),
       type: "assistantMessage",
-      text: `You have to review the ${file.filename} document. Don't review others.`,
+      text: [
+        `You have to review the ${myFile.filename} document.`,
+        "",
+        "Note that, never review others.",
+      ].join("\n"),
     },
   ];
 };
