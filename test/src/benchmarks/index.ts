@@ -267,14 +267,16 @@ async function registerAutobeEvents(
     context.stages.analyze.output = Object.keys(event.files || {}).join(", ");
 
     // Save generated files
-    Object.entries(event.files || {}).forEach(([filename, content]) => {
-      context.generatedFiles[`analyze/${filename}`] = content;
+    event.files.forEach((file) => {
+      context.generatedFiles[`analyze/${file.filename}`] = file.content;
     });
 
     // REPORT RESULT
     await FileSystemIterator.save({
       root: `${context.logsDir}/${context.runId}/analyze`,
-      files: event.files,
+      files: Object.fromEntries(
+        event.files.map((file) => [file.filename, file.content]),
+      ),
     });
 
     const duration =
