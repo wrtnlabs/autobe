@@ -1,110 +1,88 @@
 import {
   AutoBeAnalyzeHistory,
+  AutoBeAnalyzeReviewEvent,
+  AutoBeAnalyzeScenarioEvent,
+  AutoBeAnalyzeWriteEvent,
   AutoBeAssistantMessageHistory,
 } from "@autobe/interface";
+import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
 import { ILlmSchema } from "@samchon/openapi";
-import { IPointer } from "tstl";
-import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
-import { orchestrateAnalyzeComposer } from "./orchestrateAnalyzeComposer";
-import { IComposeInput } from "./structures/IAutoBeAnalyzeComposerApplication";
-import { writeDocumentUntilReviewPassed } from "./writeDocumentUntilReviewPassed";
+import { orchestrateAnalyzeReview } from "./orchestrateAnalyzeReview";
+import { orchestrateAnalyzeScenario } from "./orchestrateAnalyzeScenario";
+import { orchestrateAnalyzeWrite } from "./orchestrateAnalyzeWrite";
 
-/** @todo Kakasoo */
 export const orchestrateAnalyze =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
   async (
     props: IAutoBeApplicationProps,
   ): Promise<AutoBeAssistantMessageHistory | AutoBeAnalyzeHistory> => {
-    const step: number = ctx.state().analyze?.step ?? 0;
-    const start: Date = new Date();
+    // Initialize analysis state
+    const step: number = (ctx.state().analyze?.step ?? -1) + 1;
+    const startTime: Date = new Date();
+
     ctx.dispatch({
       type: "analyzeStart",
       reason: props.reason,
       step,
-      created_at: start.toISOString(),
+      created_at: startTime.toISOString(),
     });
 
-    const pointer: IPointer<IComposeInput | null> = { value: null };
-    const agentica = orchestrateAnalyzeComposer(ctx, (v) => {
-      pointer.value = v;
-    });
+    // Generate analysis scenario
+    const scenario: AutoBeAnalyzeScenarioEvent | AutoBeAssistantMessageHistory =
+      await orchestrateAnalyzeScenario(ctx);
+    if (scenario.type === "assistantMessage")
+      return ctx.assistantMessage(scenario);
+    else ctx.dispatch(scenario);
 
-    const histories = await agentica
-      .conversate(
-        [
-          `Design a complete list of documents and user roles for this project.`,
-          `Define user roles that can authenticate via API and create appropriate documentation files.`,
-          `You must respect the number of documents specified by the user.`,
-        ].join("\n"),
-      )
-      .finally(() => {
-        const tokenUsage = agentica.getTokenUsage().aggregate;
-        ctx.usage().record(tokenUsage, ["analyze"]);
-      });
-
-    const composeInput = pointer.value;
-    if (composeInput === null)
-      return ctx.assistantMessage({
-        id: v4(),
-        text: "Failed to analyze your request. please request again.",
-        type: "assistantMessage",
-        completed_at: new Date().toISOString(),
-        created_at: new Date().toISOString(),
-      });
-
-    const { files: autoBeAnalyzeFiles, prefix, roles, language } = composeInput;
-    if (autoBeAnalyzeFiles.length === 0)
-      return ctx.assistantMessage({
-        id: v4(),
-        type: "assistantMessage",
-        text: "The current requirements are insufficient, so file generation will be suspended. It would be better to continue the conversation.",
-        created_at: start.toISOString(),
-        completed_at: new Date().toISOString(),
-      });
-
-    const retryCount = 3 as const;
-    const progress = {
-      total: autoBeAnalyzeFiles.length * retryCount,
+    // write documents
+    const writeProgress = {
+      total: scenario.files.length,
       completed: 0,
     };
-    const pointers = await Promise.all(
-      autoBeAnalyzeFiles.map(async (file) => {
-        return await writeDocumentUntilReviewPassed(ctx, {
-          totalFiles: autoBeAnalyzeFiles,
-          file: file,
-          roles,
-          progress,
-          retry: retryCount,
-          language,
-        });
+    const fileList: AutoBeAnalyzeFile[] = await Promise.all(
+      scenario.files.map(async (file) => {
+        const event: AutoBeAnalyzeWriteEvent = await orchestrateAnalyzeWrite(
+          ctx,
+          scenario,
+          file,
+          writeProgress,
+        );
+        return event.file;
       }),
     );
 
-    const files = pointers
-      .map((pointer) => {
-        return pointer.value?.files ?? {};
-      })
-      .reduce((acc, cur) => Object.assign(acc, cur));
+    // review documents
+    const reviewProgress = {
+      total: fileList.length,
+      completed: 0,
+    };
+    const newFiles: AutoBeAnalyzeFile[] = await Promise.all(
+      fileList.map(async (file, i) => {
+        const event: AutoBeAnalyzeReviewEvent = await orchestrateAnalyzeReview(
+          ctx,
+          scenario,
+          fileList.filter((_, j) => j !== i), // other files
+          file,
+          reviewProgress,
+        );
+        return {
+          ...event.file,
+          content: event.content,
+        };
+      }),
+    );
 
-    if (Object.keys(files).length) {
-      return ctx.dispatch({
-        type: "analyzeComplete",
-        prefix,
-        files,
-        step,
-        roles,
-        elapsed: new Date().getTime() - start.getTime(),
-        created_at: new Date().toISOString(),
-      });
-    }
-    return ctx.assistantMessage({
-      id: v4(),
-      type: "assistantMessage",
-      text: histories.find((el) => el.type === "assistantMessage")?.text ?? "",
-      created_at: start.toISOString(),
-      completed_at: new Date().toISOString(),
-    });
+    // Complete the analysis
+    return ctx.dispatch({
+      type: "analyzeComplete",
+      roles: scenario.roles,
+      prefix: scenario.prefix,
+      files: newFiles,
+      step,
+      elapsed: new Date().getTime() - startTime.getTime(),
+      created_at: new Date().toISOString(),
+    }) satisfies AutoBeAnalyzeHistory;
   };

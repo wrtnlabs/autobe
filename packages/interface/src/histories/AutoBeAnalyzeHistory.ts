@@ -1,6 +1,7 @@
 import { tags } from "typia";
 
 import { AutoBeAgentHistoryBase } from "./AutoBeHistoryBase";
+import { AutoBeAnalyzeFile } from "./contents/AutoBeAnalyzeFile";
 import { AutoBeAnalyzeRole } from "./contents/AutoBeAnalyzeRole";
 
 /**
@@ -74,7 +75,7 @@ export interface AutoBeAnalyzeHistory
    * requirements and guide all subsequent development phases in the vibe coding
    * pipeline.
    */
-  files: Record<string, string>;
+  files: AutoBeAnalyzeFile[];
 
   /**
    * ISO 8601 timestamp indicating when the requirements analysis was completed.

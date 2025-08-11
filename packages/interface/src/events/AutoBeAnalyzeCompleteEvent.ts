@@ -1,3 +1,4 @@
+import { AutoBeAnalyzeFile } from "../histories/contents/AutoBeAnalyzeFile";
 import { AutoBeAnalyzeRole } from "../histories/contents/AutoBeAnalyzeRole";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
@@ -46,7 +47,7 @@ export interface AutoBeAnalyzeCompleteEvent
    * requirements and guide all subsequent development phases in the vibe coding
    * pipeline including database design, API specification, and implementation.
    */
-  files: Record<string, string>;
+  files: AutoBeAnalyzeFile[];
 
   /**
    * List of roles identified during the requirements analysis process.

@@ -10,7 +10,6 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { enforceToolCall } from "../../utils/enforceToolCall";
 import { transformInterfaceEndpointHistories } from "./histories/transformInterfaceEndpointHistories";
 import { IAutoBeInterfaceEndpointApplication } from "./structures/IAutoBeInterfaceEndpointApplication";
 import { OpenApiEndpointComparator } from "./utils/OpenApiEndpointComparator";
@@ -20,6 +19,7 @@ export async function orchestrateInterfaceEndpoints<
 >(
   ctx: AutoBeContext<Model>,
   groups: AutoBeInterfaceGroup[],
+  authorizations: AutoBeOpenApi.IOperation[],
   content: string = `Make endpoints for the given assets`,
 ): Promise<AutoBeOpenApi.IEndpoint[]> {
   const progress: IProgress = {
@@ -27,7 +27,9 @@ export async function orchestrateInterfaceEndpoints<
     completed: 0,
   };
   const endpoints: AutoBeOpenApi.IEndpoint[] = (
-    await Promise.all(groups.map((g) => process(ctx, g, content, progress)))
+    await Promise.all(
+      groups.map((g) => process(ctx, g, content, progress, authorizations)),
+    )
   ).flat();
   return new HashSet(
     endpoints,
@@ -41,32 +43,28 @@ async function process<Model extends ILlmSchema.Model>(
   group: AutoBeInterfaceGroup,
   content: string,
   progress: IProgress,
+  authorizations: AutoBeOpenApi.IOperation[],
 ): Promise<AutoBeOpenApi.IEndpoint[]> {
   const start: Date = new Date();
   const pointer: IPointer<AutoBeOpenApi.IEndpoint[] | null> = {
     value: null,
   };
-  const agentica: MicroAgentica<Model> = new MicroAgentica({
-    model: ctx.model,
-    vendor: ctx.vendor,
-    config: {
-      ...(ctx.config ?? {}),
-      executor: {
-        describe: null,
+  const agentica: MicroAgentica<Model> = ctx.createAgent({
+    source: "interfaceEndpoints",
+    histories: transformInterfaceEndpointHistories(
+      ctx.state(),
+      group,
+      authorizations,
+    ),
+    controller: createController({
+      model: ctx.model,
+      build: (endpoints) => {
+        pointer.value ??= endpoints;
+        pointer.value.push(...endpoints);
       },
-    },
-    histories: transformInterfaceEndpointHistories(ctx.state(), group),
-    controllers: [
-      createApplication({
-        model: ctx.model,
-        build: (endpoints) => {
-          pointer.value ??= endpoints;
-          pointer.value.push(...endpoints);
-        },
-      }),
-    ],
+    }),
+    enforceFunctionCall: true,
   });
-  enforceToolCall(agentica);
 
   await agentica.conversate(content).finally(() => {
     const tokenUsage = agentica.getTokenUsage().aggregate;
@@ -89,7 +87,7 @@ async function process<Model extends ILlmSchema.Model>(
   return pointer.value;
 }
 
-function createApplication<Model extends ILlmSchema.Model>(props: {
+function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   build: (endpoints: AutoBeOpenApi.IEndpoint[]) => void;
 }): IAgenticaController.IClass<Model> {
@@ -112,14 +110,12 @@ function createApplication<Model extends ILlmSchema.Model>(props: {
 
 const claude = typia.llm.application<
   IAutoBeInterfaceEndpointApplication,
-  "claude",
-  { reference: true }
+  "claude"
 >();
 const collection = {
   chatgpt: typia.llm.application<
     IAutoBeInterfaceEndpointApplication,
-    "chatgpt",
-    { reference: true }
+    "chatgpt"
   >(),
   claude,
   llama: claude,

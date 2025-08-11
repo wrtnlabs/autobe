@@ -60,7 +60,7 @@ const createMockAgent = async (
     return JSON.parse(content) as T;
   };
   const preset: AutoBeMockAgent.IPreset = {
-    histories: await load("realize"),
+    histories: await load(params.get("step") ?? "realize"),
     analyze: await load("analyze.snapshots"),
     prisma: await load("prisma.snapshots"),
     interface: await load("interface.snapshots"),

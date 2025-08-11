@@ -34,6 +34,9 @@ export class AutoBePlaygroundListener {
         this.dict_.delete("analyzeReview");
         this.insert(event);
       },
+      analyzeScenario: async (event) => {
+        this.accumulate(event);
+      },
       analyzeWrite: async (event) => {
         this.accumulate(event);
       },
@@ -82,7 +85,8 @@ export class AutoBePlaygroundListener {
       interfaceStart: async (event) => {
         this.dict_.delete("interfaceEndpoints");
         this.dict_.delete("interfaceOperations");
-        this.dict_.delete("interfaceAuthorization");
+        this.dict_.delete("interfaceOperationsReview");
+        this.dict_.delete("interfaceAuthorizations");
         this.dict_.delete("interfaceSchemas");
         this.insert(event);
       },
@@ -95,7 +99,10 @@ export class AutoBePlaygroundListener {
       interfaceOperations: async (event) => {
         this.accumulate(event);
       },
-      interfaceAuthorization: async (event) => {
+      interfaceOperationsReview: async (event) => {
+        this.accumulate(event);
+      },
+      interfaceAuthorizations: async (event) => {
         this.accumulate(event);
       },
       interfaceSchemas: async (event) => {
@@ -107,7 +114,8 @@ export class AutoBePlaygroundListener {
       interfaceComplete: async (event) => {
         this.dict_.delete("interfaceEndpoints");
         this.dict_.delete("interfaceOperations");
-        this.dict_.delete("interfaceAuthorization");
+        this.dict_.delete("interfaceOperationsReview");
+        this.dict_.delete("interfaceAuthorizations");
         this.dict_.delete("interfaceSchemas");
         this.state_.setInterface(event);
         this.insert(event);

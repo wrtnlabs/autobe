@@ -8,10 +8,9 @@ import { NamingConvention } from "typia/lib/utils/NamingConvention";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
-import { enforceToolCall } from "../../utils/enforceToolCall";
 import { forceRetry } from "../../utils/forceRetry";
 import { transformInterfaceOperationHistories } from "./histories/transformInterfaceOperationHistories";
-import { orchestrateInterfaceOperationReview } from "./orchestrateInterfaceOperationReview";
+import { orchestrateInterfaceOperationsReview } from "./orchestrateInterfaceOperationsReview";
 import { IAutoBeInterfaceOperationApplication } from "./structures/IAutoBeInterfaceOperationApplication";
 import { OpenApiEndpointComparator } from "./utils/OpenApiEndpointComparator";
 
@@ -31,26 +30,36 @@ export async function orchestrateInterfaceOperations<
     completed: 0,
   };
 
-  const operations: AutoBeOpenApi.IOperation[][] = await Promise.all(
-    matrix.map(async (it) => {
-      const row: AutoBeOpenApi.IOperation[] = await divideAndConquer(
-        ctx,
-        endpoints,
-        it,
-        3,
-        progress,
-      );
-      ctx.dispatch({
-        type: "interfaceOperations",
-        operations: row,
-        ...progress,
-        step: ctx.state().analyze?.step ?? 0,
-        created_at: new Date().toISOString(),
-      });
-      return row;
-    }),
-  );
-  return operations.flat();
+  const state = {
+    total: endpoints.length,
+    completed: 0,
+  } as const;
+
+  const operations: AutoBeOpenApi.IOperation[] = (
+    await Promise.all(
+      matrix.map(async (it) => {
+        const row: AutoBeOpenApi.IOperation[] = await divideAndConquer(
+          ctx,
+          endpoints,
+          it,
+          3,
+          progress,
+          state,
+        );
+
+        ctx.dispatch({
+          type: "interfaceOperations",
+          operations: row,
+          ...progress,
+          step: ctx.state().analyze?.step ?? 0,
+          created_at: new Date().toISOString(),
+        });
+        return row;
+      }),
+    )
+  ).flat();
+
+  return operations;
 }
 
 async function divideAndConquer<Model extends ILlmSchema.Model>(
@@ -59,6 +68,7 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
   endpoints: AutoBeOpenApi.IEndpoint[],
   retry: number,
   progress: IProgress,
+  state: { total: number; completed: number },
 ): Promise<AutoBeOpenApi.IOperation[]> {
   const remained: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(
     endpoints,
@@ -89,16 +99,26 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
           failure: failure.has(target) ? failure.get(target) : null,
         }));
 
-        const ops = await process(ctx, targets, progress);
-        const reviews = await orchestrateInterfaceOperationReview(
-          ctx,
-          total,
-          ops,
-        );
+        const operations = await process(ctx, targets, progress);
+        const reviews = await orchestrateInterfaceOperationsReview(ctx, {
+          endpoints: total,
+          operations: operations,
+        });
+
+        const completed = state.completed + reviews.passed.length;
+        state.completed = completed;
+
+        ctx.dispatch({
+          type: "interfaceOperationsReview",
+          completed: completed,
+          total: total.length,
+          step: ctx.state().analyze?.step ?? 0,
+          created_at: new Date().toISOString(),
+        });
 
         if (reviews.passed.length) {
           const endpoints = reviews.passed.map((p) => p.endpoint);
-          const passedOperations = ops
+          const passedOperations = operations
             .filter((op) =>
               endpoints.some(
                 (endpoint) =>
@@ -165,43 +185,34 @@ async function process<Model extends ILlmSchema.Model>(
   > = {
     value: null,
   };
-  const agentica: MicroAgentica<Model> = new MicroAgentica({
-    model: ctx.model,
-    vendor: ctx.vendor,
-    config: {
-      ...(ctx.config ?? {}),
-      executor: {
-        describe: null,
-      },
-    },
+  const agentica: MicroAgentica<Model> = ctx.createAgent({
+    source: "interfaceOperations",
     histories: transformInterfaceOperationHistories(ctx.state(), endpoints),
-    controllers: [
-      createApplication({
-        model: ctx.model,
-        roles: ctx.state().analyze?.roles.map((it) => it.name) ?? [],
-        build: (operations) => {
-          pointer.value ??= [];
-          const matrix: IAutoBeInterfaceOperationApplication.IOperation[][] =
-            operations.map((op) => {
-              return [
-                {
-                  ...op,
-                  path: op.path,
-                  authorizationRole: null,
-                },
-              ];
-            });
-          progress.completed += matrix.flat().length;
-          progress.total += matrix
-            .filter((it) => it.length > 1)
-            .map((it) => it.length - 1)
-            .reduce((a, b) => a + b, 0);
-          pointer.value.push(...matrix.flat());
-        },
-      }),
-    ],
+    controller: createController({
+      model: ctx.model,
+      roles: ctx.state().analyze?.roles.map((it) => it.name) ?? [],
+      build: (operations) => {
+        pointer.value ??= [];
+        const matrix: IAutoBeInterfaceOperationApplication.IOperation[][] =
+          operations.map((op) => {
+            return [
+              {
+                ...op,
+                path: op.path,
+                authorizationRole: null,
+              },
+            ];
+          });
+        progress.completed += matrix.flat().length;
+        progress.total += matrix
+          .filter((it) => it.length > 1)
+          .map((it) => it.length - 1)
+          .reduce((a, b) => a + b, 0);
+        pointer.value.push(...matrix.flat());
+      },
+    }),
+    enforceFunctionCall: true,
   });
-  enforceToolCall(agentica);
   await agentica.conversate("Make API operations").finally(() => {
     const tokenUsage = agentica.getTokenUsage().aggregate;
     ctx.usage().record(tokenUsage, ["interface"]);
@@ -210,7 +221,7 @@ async function process<Model extends ILlmSchema.Model>(
   return pointer.value;
 }
 
-function createApplication<Model extends ILlmSchema.Model>(props: {
+function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   roles: string[];
   build: (

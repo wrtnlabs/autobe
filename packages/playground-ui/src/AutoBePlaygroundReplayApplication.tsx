@@ -33,7 +33,7 @@ export function AutoBePlaygroundReplayApplication() {
         IAutoBeRpcService
       > = new WebSocketConnector(header, listener.getListener());
 
-      await connector.connect(getURL(config));
+      await connector.connect(getURL());
       setNext({
         header,
         listener,
@@ -77,10 +77,8 @@ const getConfig = (): IConfig => {
   };
 };
 
-const getURL = (config: IConfig): string => {
+const getURL = (): string => {
   const url: URL = new URL("ws://localhost:5890/mock");
-  url.searchParams.set("vendor", config.vendor);
-  url.searchParams.set("schema", config.schema);
-  url.searchParams.set("type", config.type);
-  return url.toString();
+  const query: URLSearchParams = new URLSearchParams(window.location.search);
+  return `${url.toString()}?${query.toString()}`;
 };

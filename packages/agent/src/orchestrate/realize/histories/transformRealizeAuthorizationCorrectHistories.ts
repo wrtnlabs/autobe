@@ -9,8 +9,10 @@ import { v4 } from "uuid";
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../../context/AutoBeContext";
 
-export const transformRealizeAuthorizationCorrectHistories = (
-  ctx: AutoBeContext<ILlmSchema.Model>,
+export const transformRealizeAuthorizationCorrectHistories = <
+  Model extends ILlmSchema.Model,
+>(
+  ctx: AutoBeContext<Model>,
   auth: AutoBeRealizeAuthorization,
   templateFiles: Record<string, string>,
   diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[],

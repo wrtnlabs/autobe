@@ -1,7 +1,9 @@
 import {
+  AutoBeAnalyzeReviewEvent,
   AutoBeAnalyzeWriteEvent,
   AutoBeInterfaceEndpointsEvent,
   AutoBeInterfaceOperationsEvent,
+  AutoBeInterfaceOperationsReviewEvent,
   AutoBeInterfaceSchemasEvent,
   AutoBePrismaReviewEvent,
   AutoBePrismaSchemasEvent,
@@ -10,7 +12,7 @@ import {
   AutoBeRealizeWriteEvent,
   AutoBeTestWriteEvent,
 } from "@autobe/interface";
-import { AutoBeInterfaceAuthorizationEvent } from "@autobe/interface/src/events/AutoBeInterfaceAuthorizationEvent";
+import { AutoBeInterfaceAuthorizationsEvent } from "@autobe/interface/src/events/AutoBeInterfaceAuthorizationsEvent";
 import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 import { Card, CardContent, Chip, LinearProgress } from "@mui/material";
 
@@ -60,11 +62,13 @@ export namespace AutoBePlaygroundProgressEventMovie {
   export interface IProps {
     event:
       | AutoBeAnalyzeWriteEvent
+      | AutoBeAnalyzeReviewEvent
       | AutoBePrismaSchemasEvent
       | AutoBePrismaReviewEvent
       | AutoBeInterfaceEndpointsEvent
       | AutoBeInterfaceOperationsEvent
-      | AutoBeInterfaceAuthorizationEvent
+      | AutoBeInterfaceOperationsReviewEvent
+      | AutoBeInterfaceAuthorizationsEvent
       | AutoBeInterfaceSchemasEvent
       | AutoBeTestWriteEvent
       | AutoBeRealizeWriteEvent
@@ -91,6 +95,11 @@ function getState(
           title: "Analyze Write",
           description: "Analyzing requirements, and writing a report paper",
         };
+      case "analyzeReview":
+        return {
+          title: "Analyze Review",
+          description: "Reviewing the analysis results",
+        };
       case "prismaSchemas":
         return {
           title: "Prisma Schemas",
@@ -111,9 +120,14 @@ function getState(
           title: "Interface Operations",
           description: "Designing API operations",
         };
-      case "interfaceAuthorization":
+      case "interfaceOperationsReview":
         return {
-          title: "Interface Authorization",
+          title: "Interface Operations Review",
+          description: "Reviewing API operations",
+        };
+      case "interfaceAuthorizations":
+        return {
+          title: "Interface Authorizations",
           description: "Designing API authorization operations",
         };
       case "interfaceSchemas":

@@ -37,6 +37,7 @@ export const validate_agent_analyze_main = async (
     });
   };
   agent.on("analyzeStart", listen);
+  agent.on("analyzeScenario", listen);
   agent.on("analyzeWrite", listen);
   agent.on("analyzeReview", listen);
   agent.on("analyzeComplete", listen);

@@ -1,4 +1,5 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
+import { AutoBeOpenApi } from "@autobe/interface";
 import { AutoBeInterfaceGroup } from "@autobe/interface/src/histories/contents/AutoBeInterfaceGroup";
 import { v4 } from "uuid";
 
@@ -9,6 +10,7 @@ import { transformInterfaceAssetHistories } from "./transformInterfaceAssetHisto
 export const transformInterfaceEndpointHistories = (
   state: AutoBeState,
   group: AutoBeInterfaceGroup,
+  authorizations: AutoBeOpenApi.IOperation[],
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => [
@@ -29,6 +31,31 @@ export const transformInterfaceEndpointHistories = (
       "```json",
       JSON.stringify(group),
       "```",
+      "",
+      "**IMPORTANT: DO NOT DUPLICATE EXISTING OPERATIONS**",
+      "",
+      "These operations already exist. Do NOT create similar endpoints:",
+      "",
+      "```json",
+      JSON.stringify(
+        authorizations.map((op) => ({
+          path: op.path,
+          method: op.method,
+          name: op.name,
+          summary: op.summary,
+        })),
+        null,
+        2,
+      ),
+      "```",
+      "",
+      "**DO NOT CREATE:**",
+      "- User creation endpoints (POST /users, POST /admins)",
+      "- Authentication endpoints (handled separately)",
+      "- Focus only on business data operations",
+      "",
+      "Create operations for DIFFERENT paths and DIFFERENT purposes only.",
+      "",
     ].join("\n"),
   },
 ];

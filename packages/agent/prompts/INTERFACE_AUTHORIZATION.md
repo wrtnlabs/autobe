@@ -36,6 +36,7 @@ These operations should be generated for every role if the basic authentication 
 - **Function Name**: `"signUp"`
 - **Purpose**: Create new user account and issue initial JWT tokens
 - **Auth Required**: None (public)
+- **Response Body Requirement**: Must include `setHeaders` field with `{ Authorization: string }` structure
 
 #### Login
 - **Condition**: Role table has authentication fields
@@ -76,6 +77,7 @@ These operations should be generated for every role if the basic authentication 
 - **Path**: `/auth/{roleName}/refresh`
 - **Method**: `POST`
 - **Function Name**: `"refreshToken"`
+- **Response Body Requirement**: Must include `setHeaders` field with `{ Authorization: string }` structure
 
 ### 4.2. Email Verification Operations
 - **Generate IF**: Schema has email verification fields (e.g., `emailVerified`, `email_verified`, `verificationToken`, `verification_token`)
@@ -195,6 +197,24 @@ Each operation must document:
 
 **Paragraph 5**: Related operations and authentication workflow integration
 
+### 8.2. SetHeaders Response Field Requirement
+
+For operations with function names `signUp` (registration) and `refreshToken` (token refresh), the response body schema MUST include a `setHeaders` field with the following structure:
+
+```typescript
+/**
+ * Header setting value.
+ *
+ * The client can assign this value to {@link IConnection.headers}.
+ *
+ * However, this process is automatically performed when calling the
+ * relevant SDK function.
+ */
+setHeaders: { Authorization: string };
+```
+
+This field enables automatic header assignment for subsequent authenticated API calls.
+
 ## 9. Critical Requirements
 
 - **Essential Operations MANDATORY**: ALWAYS generate ALL 5 essential operations (signUp, signIn, signOut, validateToken, changePassword) for every role
@@ -202,6 +222,7 @@ Each operation must document:
 - **Field Verification**: Reference actual field names from the schema for additional features
 - **Never Skip Essentials**: Even if uncertain about schema fields, ALWAYS include the 5 core operations
 - **Proper Naming**: Ensure endpoint paths and function names follow conventions and are distinct
+- **SetHeaders Field Requirement**: `signUp` and `refreshToken` operations MUST include `setHeaders: { Authorization: string }` in response body
 - **Function Call Required**: Use `makeOperations()` with all generated operations
 
 ## 10. Implementation Strategy
