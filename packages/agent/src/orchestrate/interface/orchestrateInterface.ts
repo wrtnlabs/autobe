@@ -9,7 +9,7 @@ import { ILlmSchema } from "@samchon/openapi";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
-import { orchestrateInterfaceAuthorization } from "./orchestrateInterfaceAuthorization";
+import { orchestrateInterfaceAuthorizations } from "./orchestrateInterfaceAuthorizations";
 import { orchestrateInterfaceComplement } from "./orchestrateInterfaceComplement";
 import { orchestrateInterfaceEndpoints } from "./orchestrateInterfaceEndpoints";
 import { orchestrateInterfaceGroups } from "./orchestrateInterfaceGroups";
@@ -36,15 +36,16 @@ export const orchestrateInterface =
     else ctx.dispatch(init);
 
     // AUTHORIZATION
+    const authorizations: AutoBeOpenApi.IOperation[] =
+      await orchestrateInterfaceAuthorizations(ctx);
+
     // ENDPOINTS & OPERATIONS
     const endpoints: AutoBeOpenApi.IEndpoint[] =
-      await orchestrateInterfaceEndpoints(ctx, init.groups);
-    const operations: AutoBeOpenApi.IOperation[] = (
-      await Promise.all([
-        orchestrateInterfaceOperations(ctx, endpoints),
-        orchestrateInterfaceAuthorization(ctx),
-      ])
-    ).flat();
+      await orchestrateInterfaceEndpoints(ctx, init.groups, authorizations);
+    const operations: AutoBeOpenApi.IOperation[] =
+      await orchestrateInterfaceOperations(ctx, endpoints);
+
+    operations.push(...authorizations);
 
     // TYPE SCHEMAS
     const document: AutoBeOpenApi.IDocument = {
