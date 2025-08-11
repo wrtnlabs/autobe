@@ -120,7 +120,7 @@ function getState(
         description: "Resetting test environment.",
       };
     default:
-      event.type satisfies never;
+      event satisfies never;
       throw new Error("Unknown event type");
   }
 }
