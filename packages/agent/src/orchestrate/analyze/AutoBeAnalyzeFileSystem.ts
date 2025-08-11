@@ -1,6 +1,5 @@
+import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
 import { tags } from "typia";
-
-import { AutoBeAnalyzeFile } from "./structures/AutoBeAnalyzeFile";
 
 export interface ICreateOrUpdateInput {
   /**
