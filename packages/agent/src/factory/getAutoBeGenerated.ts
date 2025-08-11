@@ -21,9 +21,9 @@ export async function getAutoBeGenerated(
   Object.assign<Record<string, string>, Record<string, string>>(
     ret,
     Object.fromEntries(
-      Object.entries(state.analyze.files).map(([key, value]) => [
-        `docs/analysis/${key.split("/").at(-1)}`,
-        value,
+      state.analyze.files.map((file) => [
+        `docs/analysis/${file.filename.split("/").at(-1)}`,
+        file.content,
       ]),
     ),
   );

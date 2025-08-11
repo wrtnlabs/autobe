@@ -2,6 +2,7 @@ import {
   AutoBeAnalyzeHistory,
   AutoBeAssistantMessageHistory,
 } from "@autobe/interface";
+import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
 import { ILlmSchema } from "@samchon/openapi";
 import { v4 } from "uuid";
 
@@ -73,11 +74,11 @@ export const orchestrateAnalyze =
       completed: 0,
     };
 
-    const files: Record<string, string> = {};
+    const files: AutoBeAnalyzeFile[] = [];
 
     await Promise.all(
       scenario.files.map(async (file) => {
-        let markdown: string | null = null;
+        let content: string | null = null;
         let reviewFeedback: string | null = null;
 
         // Iterate through write-review cycle
@@ -87,7 +88,7 @@ export const orchestrateAnalyze =
           iteration++
         ) {
           // Write markdown document
-          markdown = await orchestrateAnalyzeWrite(ctx, {
+          content = await orchestrateAnalyzeWrite(ctx, {
             totalFiles: scenario.files,
             language: scenario.language,
             roles: scenario.roles,
@@ -107,7 +108,7 @@ export const orchestrateAnalyze =
                 language: scenario.language,
               },
               {
-                files: { [file.filename]: markdown },
+                files: { [file.filename]: content },
               },
             );
 
@@ -122,8 +123,8 @@ export const orchestrateAnalyze =
         }
 
         // Store the final markdown content
-        if (markdown !== null) {
-          files[file.filename] = markdown;
+        if (content !== null) {
+          files.push({ ...file, content });
         }
       }),
     );
@@ -137,5 +138,5 @@ export const orchestrateAnalyze =
       roles: scenario.roles,
       elapsed: new Date().getTime() - startTime.getTime(),
       created_at: new Date().toISOString(),
-    });
+    }) satisfies AutoBeAnalyzeHistory;
   };

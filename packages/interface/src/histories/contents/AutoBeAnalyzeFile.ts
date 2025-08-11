@@ -26,7 +26,7 @@ export interface AutoBeAnalyzeFile {
    * - "business-model": Revenue streams, cost structure, value propositions
    * - "service-overview": High-level service description, goals, and scope
    */
-  type?: string;
+  documentType?: string;
 
   /**
    * Outline or table of contents that guides the document structure. Each item
@@ -106,16 +106,17 @@ export interface AutoBeAnalyzeFile {
    * write down any questions or appreciation. For example, remove a sentence
    * such as "Is it okay if we proceed with the table of contents? Please let me
    * know if there is anything to add or exclude from the table of contents!"
-   * 
+   *
    * PROHIBITED content in markdown:
+   *
    * - Questions to the reader (e.g., "Is there anything else to refine?")
    * - Feedback requests (e.g., "Please review and let me know")
    * - Interactive elements expecting responses
    * - Meta-commentary about the document writing process
-   * 
+   *
    * The markdown must be a complete, standalone deliverable without any
-   * conversational elements. If clarification is needed, it should be
-   * requested outside the document content.
+   * conversational elements. If clarification is needed, it should be requested
+   * outside the document content.
    */
-  markdown: string;
+  content: string;
 }

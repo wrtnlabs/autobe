@@ -31,7 +31,7 @@ export class AutoBeAnalyzeFileSystem implements IAutoBeAnalyzeFileSystem {
     files: Array<AutoBeAnalyzeFile> & tags.MinItems<1>;
   }): Promise<Record<string, string>> {
     input.files.forEach((file) => {
-      this.fileMap[file.filename] = file.markdown;
+      this.fileMap[file.filename] = file.content;
     });
 
     return this.fileMap;

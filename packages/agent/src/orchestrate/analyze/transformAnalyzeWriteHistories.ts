@@ -35,7 +35,7 @@ const preparePrompt = (
     .replace(/{% Current File %}/g, file.filename)
     .replace(/{% User Roles %}/g, userRoles)
     .replace(/{% Document Reason %}/g, file.reason)
-    .replace(/{% Document Type %}/g, file.type || "")
+    .replace(/{% Document Type %}/g, file.documentType || "")
     .replace(/{% Document Outline %}/g, outline)
     .replace(/{% Document Audience %}/g, file.audience || "")
     .replace(/{% Document Key Questions %}/g, keyQuestions)

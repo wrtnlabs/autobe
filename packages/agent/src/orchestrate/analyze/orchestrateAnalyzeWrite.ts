@@ -31,7 +31,7 @@ export const orchestrateAnalyzeWrite = async <Model extends ILlmSchema.Model>(
     controller: createController<Model>({
       model: ctx.model,
       execute: new AutoBeAnalyzeFileSystem({
-        [input.file.filename]: input.file.markdown,
+        [input.file.filename]: input.file.content,
       }),
       build: (next: AutoBEAnalyzeFileMap) => (pointer.value = next),
     }),
@@ -47,7 +47,8 @@ export const orchestrateAnalyzeWrite = async <Model extends ILlmSchema.Model>(
     throw new Error("The Analyze Agent failed to create the document.");
   }
 
-  return pointer.value[input.file.filename];
+  input.file.content = pointer.value[input.file.filename];
+  return input.file.content;
 };
 
 function createController<Model extends ILlmSchema.Model>(props: {
