@@ -49,6 +49,7 @@
     "remark-mermaid-plugin": "^1.0.2",
     "tgrid": "catalog:samchon",
     "tstl": "catalog:samchon",
+    "typia": "catalog:samchon",
     "uuid": "^11.1.0"
   },
   "devDependencies": {

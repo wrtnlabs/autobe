@@ -1,16 +1,18 @@
 // FACADE
-export * from "./AutoBeAssistantMessageEvent";
 export * from "./AutoBeEvent";
+export * from "./AutoBeAssistantMessageEvent";
 export * from "./AutoBeUserMessageEvent";
+export * from "./AutoBeEventSource";
 
 /** @internal */
 export * from "./AutoBeEventSnapshot";
 
 // ANALYZE
-export * from "./AutoBeAnalyzeCompleteEvent";
-export * from "./AutoBeAnalyzeReviewEvent";
 export * from "./AutoBeAnalyzeStartEvent";
+export * from "./AutoBeAnalyzeScenarioEvent";
 export * from "./AutoBeAnalyzeWriteEvent";
+export * from "./AutoBeAnalyzeReviewEvent";
+export * from "./AutoBeAnalyzeCompleteEvent";
 
 // PRISMA
 export * from "./AutoBePrismaCompleteEvent";
@@ -29,6 +31,7 @@ export * from "./AutoBeInterfaceEndpointsEvent";
 export * from "./AutoBeInterfaceGroupsEvent";
 export * from "./AutoBeInterfaceOperationReviewEvent";
 export * from "./AutoBeInterfaceOperationsEvent";
+export * from "./AutoBeInterfaceOperationsReviewEvent";
 export * from "./AutoBeInterfaceSchemasEvent";
 export * from "./AutoBeInterfaceStartEvent";
 

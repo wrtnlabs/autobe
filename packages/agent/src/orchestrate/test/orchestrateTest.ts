@@ -77,9 +77,10 @@ export const orchestrateTest =
       });
     return ctx.dispatch({
       type: "testComplete",
-      created_at: start.toISOString(),
+      created_at: new Date().toISOString(),
       files: success.map((s) => s.file),
       compiled,
       step: ctx.state().interface?.step ?? 0,
+      elapsed: new Date().getTime() - start.getTime(),
     });
   };

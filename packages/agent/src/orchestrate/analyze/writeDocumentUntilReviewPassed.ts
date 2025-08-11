@@ -1,4 +1,3 @@
-import { AutoBeAnalyzeRole } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
@@ -8,21 +7,14 @@ import {
 } from "./AutoBeAnalyzePointer";
 import { orchestrateAnalyzeReviewer } from "./orchestrateAnalyzeReviewer";
 import { orchestrateAnalyzeWrite } from "./orchestrateAnalyzeWrite";
-import { AutoBeAnalyzeFile } from "./structures/AutoBeAnalyzeFile";
+import { AutoBeAnalyzeWriteProps } from "./structures/AutoBeAnalyzeWriteProps";
+import { IOrchestrateAnalyzeReviewerResult } from "./structures/IAutoBeAnalyzeReviewApplication";
 
 export async function writeDocumentUntilReviewPassed<
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
-  props: {
-    totalFiles: Pick<AutoBeAnalyzeFile, "filename" | "reason">[];
-    file: AutoBeAnalyzeFile;
-    roles: AutoBeAnalyzeRole[];
-    progress: { total: number; completed: number };
-    retry?: number;
-    prevReview?: string;
-    language?: string;
-  },
+  props: AutoBeAnalyzeWriteProps,
 ): Promise<AutoBeAnalyzePointer> {
   const retry = props.retry ?? 3;
   const pointer: { value: { files: AutoBEAnalyzeFileMap } } = {
@@ -38,7 +30,7 @@ export async function writeDocumentUntilReviewPassed<
   }
 
   let isToolCalled = false;
-  const writer = orchestrateAnalyzeWrite(ctx, {
+  await orchestrateAnalyzeWrite(ctx, {
     totalFiles: props.totalFiles,
     roles: props.roles,
     file: props.file,
@@ -48,10 +40,6 @@ export async function writeDocumentUntilReviewPassed<
       pointer.value = { files: { ...pointer.value?.files, ...v } };
     },
     language: props.language,
-  });
-  await writer.conversate("Write Document.").finally(() => {
-    const tokenUsage = writer.getTokenUsage().aggregate;
-    ctx.usage().record(tokenUsage, ["analyze"]);
   });
 
   if (isToolCalled === false) {
@@ -69,23 +57,24 @@ export async function writeDocumentUntilReviewPassed<
     created_at: new Date().toISOString(),
   });
 
-  const reviewResult = await orchestrateAnalyzeReviewer(ctx, pointer.value);
-
-  if (reviewResult.type === "accept") {
-    return pointer;
-  }
+  const reviewResult: IOrchestrateAnalyzeReviewerResult =
+    await orchestrateAnalyzeReviewer(ctx, props, pointer.value);
 
   ctx.dispatch({
     type: "analyzeReview",
     files: {
       ...pointer.value.files,
     },
-    review: reviewResult.value,
+    review: reviewResult.type === "accept" ? "accept" : reviewResult.value,
     total: props.progress.total,
     completed: props.progress.completed,
     step: ctx.state().analyze?.step ?? 0,
     created_at: new Date().toISOString(),
   });
+
+  if (reviewResult.type === "accept") {
+    return pointer;
+  }
 
   return await writeDocumentUntilReviewPassed(ctx, {
     totalFiles: props.totalFiles,

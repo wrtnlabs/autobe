@@ -37,19 +37,17 @@ import { AutoBeTestCompiler } from "./test/AutoBeTestCompiler";
  * @author Samchon
  */
 export class AutoBeCompiler implements IAutoBeCompiler {
-  public constructor(private readonly listener: IAutoBeCompilerListener) {}
+  public prisma: IAutoBePrismaCompiler;
+  public interface: IAutoBeInterfaceCompiler;
+  public typescript: IAutoBeTypeScriptCompiler;
+  public test: IAutoBeTestCompiler;
+  public realize: IAutoBeRealizeCompiler;
 
-  public readonly prisma: IAutoBePrismaCompiler = new AutoBePrismaCompiler();
-
-  public readonly interface: IAutoBeInterfaceCompiler =
-    new AutoBeInterfaceCompiler();
-
-  public readonly typescript: IAutoBeTypeScriptCompiler =
-    new AutoBeTypeScriptCompiler();
-
-  public readonly test: IAutoBeTestCompiler = new AutoBeTestCompiler();
-
-  public readonly realize: IAutoBeRealizeCompiler = new AutoBeRealizeCompiler(
-    this.listener.realize,
-  );
+  public constructor(private readonly listener: IAutoBeCompilerListener) {
+    this.prisma = new AutoBePrismaCompiler();
+    this.interface = new AutoBeInterfaceCompiler();
+    this.typescript = new AutoBeTypeScriptCompiler();
+    this.test = new AutoBeTestCompiler();
+    this.realize = new AutoBeRealizeCompiler(this.listener.realize);
+  }
 }

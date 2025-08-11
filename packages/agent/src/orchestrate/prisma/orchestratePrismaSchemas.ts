@@ -8,7 +8,6 @@ import typia from "typia";
 // import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { enforceToolCall } from "../../utils/enforceToolCall";
 import { forceRetry } from "../../utils/forceRetry";
 import { transformPrismaSchemaHistories } from "./histories/transformPrismaSchemaHistories";
 import { IAutoBePrismaSchemaApplication } from "./structures/IAutoBePrismaSchemaApplication";
@@ -64,31 +63,22 @@ async function process<Model extends ILlmSchema.Model>(
   const pointer: IPointer<IAutoBePrismaSchemaApplication.IProps | null> = {
     value: null,
   };
-  const agentica: MicroAgentica<Model> = new MicroAgentica({
-    model: ctx.model,
-    vendor: ctx.vendor,
-    config: {
-      ...(ctx.config ?? {}),
-      executor: {
-        describe: null,
-      },
-    },
+  const agentica: MicroAgentica<Model> = ctx.createAgent({
+    source: "prismaSchemas",
     histories: transformPrismaSchemaHistories(
       ctx.state().analyze!.files,
       targetComponent,
       otherTables,
     ),
-    controllers: [
-      createApplication(ctx, {
-        targetComponent,
-        otherTables,
-        build: (next) => {
-          pointer.value = next;
-        },
-      }),
-    ],
+    controller: createController(ctx, {
+      targetComponent,
+      otherTables,
+      build: (next) => {
+        pointer.value = next;
+      },
+    }),
+    enforceFunctionCall: true,
   });
-  enforceToolCall(agentica);
 
   await agentica.conversate("Make prisma schema file please").finally(() => {
     const tokenUsage = agentica.getTokenUsage().aggregate;
@@ -99,7 +89,7 @@ async function process<Model extends ILlmSchema.Model>(
   return pointer.value;
 }
 
-function createApplication<Model extends ILlmSchema.Model>(
+function createController<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
     targetComponent: AutoBePrisma.IComponent;

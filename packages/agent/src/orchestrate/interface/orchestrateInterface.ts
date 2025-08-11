@@ -9,6 +9,7 @@ import { ILlmSchema } from "@samchon/openapi";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
+import { orchestrateInterfaceAuthorization } from "./orchestrateInterfaceAuthorization";
 import { orchestrateInterfaceComplement } from "./orchestrateInterfaceComplement";
 import { orchestrateInterfaceEndpoints } from "./orchestrateInterfaceEndpoints";
 import { orchestrateInterfaceGroups } from "./orchestrateInterfaceGroups";
@@ -34,11 +35,16 @@ export const orchestrateInterface =
     if (init.type === "assistantMessage") return ctx.assistantMessage(init);
     else ctx.dispatch(init);
 
+    // AUTHORIZATION
     // ENDPOINTS & OPERATIONS
     const endpoints: AutoBeOpenApi.IEndpoint[] =
       await orchestrateInterfaceEndpoints(ctx, init.groups);
-    const operations: AutoBeOpenApi.IOperation[] =
-      await orchestrateInterfaceOperations(ctx, endpoints);
+    const operations: AutoBeOpenApi.IOperation[] = (
+      await Promise.all([
+        orchestrateInterfaceOperations(ctx, endpoints),
+        orchestrateInterfaceAuthorization(ctx),
+      ])
+    ).flat();
 
     // TYPE SCHEMAS
     const document: AutoBeOpenApi.IDocument = {
@@ -57,7 +63,8 @@ export const orchestrateInterface =
     return ctx.dispatch({
       type: "interfaceComplete",
       document,
-      created_at: start.toISOString(),
+      created_at: new Date().toISOString(),
+      elapsed: new Date().getTime() - start.getTime(),
       step: ctx.state().analyze?.step ?? 0,
     } satisfies AutoBeInterfaceCompleteEvent);
   };

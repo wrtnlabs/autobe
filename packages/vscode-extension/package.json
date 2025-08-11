@@ -7,6 +7,7 @@
   "publisher": "wrtnlabs",
   "icon": "assets/icons/icon.png",
   "version": "0.17.1",
+  "license": "AGPL-3.0",
   "engines": {
     "vscode": "^1.99.0"
   },
@@ -22,16 +23,29 @@
     "vscode:apply-cursor": "pnpm vscode:pack -o autobe-vscode-extension.vsix && cursor --install-extension autobe-vscode-extension.vsix",
     "vscode:apply-code": "pnpm vscode:pack -o autobe-vscode-extension.vsix && code --install-extension autobe-vscode-extension.vsix",
     "test": "vscode-test",
-    "webview:build": "cd webview-ui && pnpm build && cd ..",
-    "build": "pnpm webview:build && tsc -p ./"
+    "webview:build": "cd ./webview-ui && pnpm build && cd ..",
+    "build": "pnpm webview:build && pnpm rspack",
+    "_postbuild": "node build/postbuild.js",
+    "rspack": "rspack build",
+    "watch": "pnpm webview:build && pnpm rspack --watch"
   },
   "devDependencies": {
+    "@autobe/agent": "workspace:^",
+    "@autobe/compiler": "workspace:^",
+    "@autobe/interface": "workspace:^",
+    "@rspack/cli": "^1.4.11",
+    "@rspack/core": "^1.4.11",
+    "@ryoppippi/unplugin-typia": "^2.6.5",
+    "@samchon/openapi": "catalog:samchon",
     "@types/node": "22.x",
     "@types/vscode": "^1.99.0",
     "@vscode/test-cli": "^0.0.11",
     "@vscode/test-electron": "^2.5.2",
     "@vscode/vsce": "^3.6.0",
-    "typescript": "catalog:typescript"
+    "openai": "catalog:libs",
+    "ts-loader": "^9.5.2",
+    "typescript": "catalog:typescript",
+    "typia": "catalog:samchon"
   },
   "contributes": {
     "viewsContainers": {
