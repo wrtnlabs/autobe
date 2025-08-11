@@ -13,9 +13,9 @@ import { IPointer } from "tstl";
 import typia from "typia";
 import { v4 } from "uuid";
 
-import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { transformAnalyzeSceHistories } from "./histories/transformAnalyzeScenarioHistories";
 import { IAutoBeAnalyzeScenarioApplication } from "./structures/IAutoBeAnalyzeScenarioApplication";
 
 export const orchestrateAnalyzeScenario = async <
@@ -35,31 +35,7 @@ export const orchestrateAnalyzeScenario = async <
       preExecute: (props: IAutoBeAnalyzeScenarioApplication.IProps) =>
         (pointer.value = props),
     }),
-    histories: [
-      ...ctx
-        .histories()
-        .filter(
-          (h) => h.type === "userMessage" || h.type === "assistantMessage",
-        ),
-      {
-        id: v4(),
-        type: "systemMessage",
-        text: AutoBeSystemPromptConstant.ANALYZE_SCENARIO,
-        created_at: new Date().toISOString(),
-      },
-      {
-        id: v4(),
-        type: "systemMessage",
-        text: [
-          "One agent per page of the document you specify will write according to the instructions below.",
-          "You should also refer to the content to define the document list.",
-          "```",
-          AutoBeSystemPromptConstant.ANALYZE_WRITE,
-          "```",
-        ].join("\n"),
-        created_at: new Date().toISOString(),
-      },
-    ],
+    histories: transformAnalyzeSceHistories(ctx),
     enforceFunctionCall: false,
   });
   const histories: MicroAgenticaHistory<Model>[] = await agentica
@@ -112,10 +88,9 @@ class AutoBeAnalyzeScenarioApplication
    * @param input Prefix, roles, and files
    * @returns
    */
-  compose(
-    input: IAutoBeAnalyzeScenarioApplication.IProps,
-  ): IAutoBeAnalyzeScenarioApplication.IProps {
-    return input;
+  compose(input: IAutoBeAnalyzeScenarioApplication.IProps): void {
+    input;
+    return;
   }
 }
 

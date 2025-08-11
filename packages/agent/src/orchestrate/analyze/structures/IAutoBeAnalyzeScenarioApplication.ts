@@ -16,10 +16,9 @@ export interface IAutoBeAnalyzeScenarioApplication {
    * @param input Prefix, roles, and files
    * @returns
    */
-  compose(
-    input: IAutoBeAnalyzeScenarioApplication.IProps,
-  ): IAutoBeAnalyzeScenarioApplication.IProps;
+  compose(input: IAutoBeAnalyzeScenarioApplication.IProps): void;
 }
+
 export namespace IAutoBeAnalyzeScenarioApplication {
   export interface IProps {
     /** Reason for the analysis and composition of the project structure. */
