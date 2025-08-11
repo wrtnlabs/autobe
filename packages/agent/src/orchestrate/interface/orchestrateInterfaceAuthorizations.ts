@@ -6,14 +6,8 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-<<<<<<< HEAD:packages/agent/src/orchestrate/interface/orchestrateInterfaceAuthorizations.ts
-import { enforceToolCall } from "../../utils/enforceToolCall";
 import { transformInterfaceAuthorizationsHistories } from "./histories/transformInterfaceAuthorizationsHistories";
-import { IAutoBeInterfaceAuthorizationsApplication } from "./structures/IAutoBeInterfaceAuthorizationApplication";
-=======
-import { transformInterfaceAuthorizationHistories } from "./histories/transformInterfaceAuthorization";
-import { IAutoBeInterfaceAuthorizationApplication } from "./structures/IAutoBeInterfaceAuthorizationApplication";
->>>>>>> main:packages/agent/src/orchestrate/interface/orchestrateInterfaceAuthorization.ts
+import { IAutoBeInterfaceAuthorizationsApplication } from "./structures/IAutoBeInterfaceAuthorizationsApplication";
 
 export async function orchestrateInterfaceAuthorizations<
   Model extends ILlmSchema.Model,
@@ -99,25 +93,13 @@ function createController<Model extends ILlmSchema.Model>(props: {
 }
 
 const claude = typia.llm.application<
-<<<<<<< HEAD:packages/agent/src/orchestrate/interface/orchestrateInterfaceAuthorizations.ts
   IAutoBeInterfaceAuthorizationsApplication,
-  "claude",
-  { reference: true }
->();
-const collection = {
-  chatgpt: typia.llm.application<
-    IAutoBeInterfaceAuthorizationsApplication,
-    "chatgpt",
-    { reference: true }
-=======
-  IAutoBeInterfaceAuthorizationApplication,
   "claude"
 >();
 const collection = {
   chatgpt: typia.llm.application<
-    IAutoBeInterfaceAuthorizationApplication,
+    IAutoBeInterfaceAuthorizationsApplication,
     "chatgpt"
->>>>>>> main:packages/agent/src/orchestrate/interface/orchestrateInterfaceAuthorization.ts
   >(),
   claude,
   llama: claude,
