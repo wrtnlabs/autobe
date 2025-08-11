@@ -1,4 +1,5 @@
 import {
+  AutoBeAnalyzeReviewEvent,
   AutoBeAnalyzeWriteEvent,
   AutoBeInterfaceEndpointsEvent,
   AutoBeInterfaceOperationsEvent,
@@ -61,6 +62,7 @@ export namespace AutoBePlaygroundProgressEventMovie {
   export interface IProps {
     event:
       | AutoBeAnalyzeWriteEvent
+      | AutoBeAnalyzeReviewEvent
       | AutoBePrismaSchemasEvent
       | AutoBePrismaReviewEvent
       | AutoBeInterfaceEndpointsEvent
@@ -92,6 +94,11 @@ function getState(
         return {
           title: "Analyze Write",
           description: "Analyzing requirements, and writing a report paper",
+        };
+      case "analyzeReview":
+        return {
+          title: "Analyze Review",
+          description: "Reviewing the analysis results",
         };
       case "prismaSchemas":
         return {

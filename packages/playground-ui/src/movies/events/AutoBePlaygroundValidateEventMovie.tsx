@@ -1,5 +1,4 @@
 import {
-  AutoBeAnalyzeReviewEvent,
   AutoBeInterfaceComplementEvent,
   AutoBeInterfaceOperationsReviewEvent,
   AutoBePrismaInsufficientEvent,
@@ -103,7 +102,6 @@ export function AutoBePlaygroundValidateEventMovie<
 }
 export namespace AutoBePlaygroundValidateEventMovie {
   export type Supported =
-    | AutoBeAnalyzeReviewEvent
     | AutoBePrismaInsufficientEvent
     | AutoBePrismaValidateEvent
     | AutoBeInterfaceOperationsReviewEvent
@@ -122,22 +120,6 @@ function getState<Event extends AutoBePlaygroundValidateEventMovie.Supported>(
 ): IState {
   const last: Event = events[events.length - 1];
   switch (last.type) {
-    case "analyzeReview":
-      return {
-        title: "Analyze Review",
-        description: "Reviewing the analysis results",
-        progress: {
-          completed: last.completed,
-          total: last.total,
-        },
-        project: (event: AutoBeAnalyzeReviewEvent, i: number) => ({
-          title: `Analyze Review Report (${i + 1})`,
-          description: "Report of Analyze Review Event",
-          files: {
-            "review.md": event.review,
-          },
-        }),
-      } satisfies IState<AutoBeAnalyzeReviewEvent> as IState;
     case "prismaInsufficient":
       return {
         title: "Prisma Insufficient",

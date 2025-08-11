@@ -34,6 +34,7 @@ export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
       return <AutoBePlaygroundScenarioEventMovie event={back} />;
     // PROGRESS EVENTS
     case "analyzeWrite":
+    case "analyzeReview":
     case "interfaceEndpoints":
     case "prismaSchemas":
     case "prismaReview":
@@ -49,7 +50,6 @@ export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
         <AutoBePlaygroundProgressEventMovie event={back} last={props.last} />
       );
     // VALIDATE EVENTS
-    case "analyzeReview":
     case "prismaInsufficient":
     case "prismaValidate":
     case "interfaceComplement":
