@@ -10,7 +10,7 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { forceRetry } from "../../utils/forceRetry";
 import { transformInterfaceOperationHistories } from "./histories/transformInterfaceOperationHistories";
-import { orchestrateInterfaceOperationReview } from "./orchestrateInterfaceOperationReview";
+import { orchestrateInterfaceOperationsReview } from "./orchestrateInterfaceOperationsReview";
 import { IAutoBeInterfaceOperationApplication } from "./structures/IAutoBeInterfaceOperationApplication";
 import { OpenApiEndpointComparator } from "./utils/OpenApiEndpointComparator";
 
@@ -100,7 +100,7 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
         }));
 
         const operations = await process(ctx, targets, progress);
-        const reviews = await orchestrateInterfaceOperationReview(ctx, {
+        const reviews = await orchestrateInterfaceOperationsReview(ctx, {
           endpoints: total,
           operations: operations,
         });
@@ -109,7 +109,7 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
         state.completed = completed;
 
         ctx.dispatch({
-          type: "interfaceOperationReview",
+          type: "interfaceOperationsReview",
           completed: completed,
           total: total.length,
           step: ctx.state().analyze?.step ?? 0,

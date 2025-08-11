@@ -11,17 +11,17 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { transformInterfaceAssetHistories } from "./histories/transformInterfaceAssetHistories";
 import { IAutoBeInterfaceOperationApplication } from "./structures/IAutoBeInterfaceOperationApplication";
 import {
-  IAutoBeInterfaceOperationReview,
-  IAutoBeInterfaceOperationReviewApplication,
-} from "./structures/IAutoBeInterfaceOperationReviewApplication";
+  IAutoBeInterfaceOperationsReview,
+  IAutoBeInterfaceOperationsReviewApplication,
+} from "./structures/IAutoBeInterfaceOperationsReviewApplication";
 
-export async function orchestrateInterfaceOperationReview<
+export async function orchestrateInterfaceOperationsReview<
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
-  props: IAutoBeInterfaceOperationReview.IInput,
-): Promise<IAutoBeInterfaceOperationReview> {
-  const pointer: IPointer<IAutoBeInterfaceOperationReview | null> = {
+  props: IAutoBeInterfaceOperationsReview.IInput,
+): Promise<IAutoBeInterfaceOperationsReview> {
+  const pointer: IPointer<IAutoBeInterfaceOperationsReview | null> = {
     value: null,
   };
   const agentica: MicroAgentica<Model> = ctx.createAgent({
@@ -58,8 +58,8 @@ export async function orchestrateInterfaceOperationReview<
       endpoints: props.endpoints,
       operations: props.operations,
       build: (reviews) => {
-        const passed: IAutoBeInterfaceOperationReview.Success[] = [];
-        const failure: IAutoBeInterfaceOperationReview.Failure[] = [];
+        const passed: IAutoBeInterfaceOperationsReview.Success[] = [];
+        const failure: IAutoBeInterfaceOperationsReview.Failure[] = [];
 
         reviews.forEach((review) => {
           const operation = props.operations.find(
@@ -103,19 +103,19 @@ function createReviewController<Model extends ILlmSchema.Model>(props: {
   operations: IAutoBeInterfaceOperationApplication.IOperation[]; // review
 
   build: (
-    reviews: IAutoBeInterfaceOperationReviewApplication.IReview[],
+    reviews: IAutoBeInterfaceOperationsReviewApplication.IReview[],
   ) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
   const validate = (
     next: unknown,
-  ): IValidation<IAutoBeInterfaceOperationReviewApplication.IProps> => {
-    const result: IValidation<IAutoBeInterfaceOperationReviewApplication.IProps> =
-      typia.validate<IAutoBeInterfaceOperationReviewApplication.IProps>(next);
+  ): IValidation<IAutoBeInterfaceOperationsReviewApplication.IProps> => {
+    const result: IValidation<IAutoBeInterfaceOperationsReviewApplication.IProps> =
+      typia.validate<IAutoBeInterfaceOperationsReviewApplication.IProps>(next);
     if (result.success === false) return result;
 
-    const reviews: IAutoBeInterfaceOperationReviewApplication.IReview[] =
+    const reviews: IAutoBeInterfaceOperationsReviewApplication.IReview[] =
       result.data.reviews;
     const errors: IValidation.IError[] = [];
 
@@ -155,14 +155,14 @@ function createReviewController<Model extends ILlmSchema.Model>(props: {
       reviewOperations: (next) => {
         props.build(next.reviews);
       },
-    } satisfies IAutoBeInterfaceOperationReviewApplication,
+    } satisfies IAutoBeInterfaceOperationsReviewApplication,
   };
 }
 
 const collection = {
   chatgpt: (validator: Validator) =>
     typia.llm.application<
-      IAutoBeInterfaceOperationReviewApplication,
+      IAutoBeInterfaceOperationsReviewApplication,
       "chatgpt"
     >({
       validate: {
@@ -170,15 +170,16 @@ const collection = {
       },
     }),
   claude: (validator: Validator) =>
-    typia.llm.application<IAutoBeInterfaceOperationReviewApplication, "claude">(
-      {
-        validate: {
-          reviewOperations: validator,
-        },
+    typia.llm.application<
+      IAutoBeInterfaceOperationsReviewApplication,
+      "claude"
+    >({
+      validate: {
+        reviewOperations: validator,
       },
-    ),
+    }),
 };
 
 type Validator = (
   input: unknown,
-) => IValidation<IAutoBeInterfaceOperationReviewApplication.IProps>;
+) => IValidation<IAutoBeInterfaceOperationsReviewApplication.IProps>;

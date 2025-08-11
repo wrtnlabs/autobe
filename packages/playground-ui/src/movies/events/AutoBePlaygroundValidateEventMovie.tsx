@@ -1,7 +1,7 @@
 import {
   AutoBeAnalyzeReviewEvent,
   AutoBeInterfaceComplementEvent,
-  AutoBeInterfaceOperationReviewEvent,
+  AutoBeInterfaceOperationsReviewEvent,
   AutoBePrismaInsufficientEvent,
   AutoBePrismaValidateEvent,
   AutoBeRealizeAuthorizationValidateEvent,
@@ -106,7 +106,7 @@ export namespace AutoBePlaygroundValidateEventMovie {
     | AutoBeAnalyzeReviewEvent
     | AutoBePrismaInsufficientEvent
     | AutoBePrismaValidateEvent
-    | AutoBeInterfaceOperationReviewEvent
+    | AutoBeInterfaceOperationsReviewEvent
     | AutoBeInterfaceComplementEvent
     | AutoBeTestValidateEvent
     | AutoBeRealizeValidateEvent
@@ -186,7 +186,7 @@ function getState<Event extends AutoBePlaygroundValidateEventMovie.Supported>(
           },
         }),
       } satisfies IState<AutoBePrismaValidateEvent> as IState;
-    case "interfaceOperationReview":
+    case "interfaceOperationsReview":
       return {
         title: "Interface Operation Validate",
         description: "Validating operation designs",

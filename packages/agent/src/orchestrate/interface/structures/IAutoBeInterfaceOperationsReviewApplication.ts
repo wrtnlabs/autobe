@@ -11,7 +11,7 @@ import { IAutoBeInterfaceOperationApplication } from "./IAutoBeInterfaceOperatio
  * standards. The review process ensures each operation meets quality criteria
  * before proceeding to implementation.
  */
-export interface IAutoBeInterfaceOperationReviewApplication {
+export interface IAutoBeInterfaceOperationsReviewApplication {
   /**
    * Reviews a batch of API operations for quality and correctness.
    *
@@ -23,11 +23,11 @@ export interface IAutoBeInterfaceOperationReviewApplication {
    *   results
    */
   reviewOperations(
-    input: IAutoBeInterfaceOperationReviewApplication.IProps,
+    input: IAutoBeInterfaceOperationsReviewApplication.IProps,
   ): void;
 }
 
-export namespace IAutoBeInterfaceOperationReviewApplication {
+export namespace IAutoBeInterfaceOperationsReviewApplication {
   /**
    * Input properties for the operation review process.
    *
@@ -87,7 +87,7 @@ export namespace IAutoBeInterfaceOperationReviewApplication {
   }
 }
 
-export namespace IAutoBeInterfaceOperationReview {
+export namespace IAutoBeInterfaceOperationsReview {
   /**
    * Input parameters for the operation review process.
    *
@@ -168,14 +168,14 @@ export namespace IAutoBeInterfaceOperationReview {
  * outcomes, separating those ready for implementation from those requiring
  * additional work.
  */
-export interface IAutoBeInterfaceOperationReview {
+export interface IAutoBeInterfaceOperationsReview {
   /**
    * Operations that successfully passed validation.
    *
    * These operations meet all quality criteria and are ready to proceed to the
    * implementation phase without modifications.
    */
-  passed: IAutoBeInterfaceOperationReview.Success[];
+  passed: IAutoBeInterfaceOperationsReview.Success[];
 
   /**
    * Operations that failed validation and require revision.
@@ -183,5 +183,5 @@ export interface IAutoBeInterfaceOperationReview {
    * These operations have identified issues that must be addressed before they
    * can be approved for implementation.
    */
-  failure: IAutoBeInterfaceOperationReview.Failure[];
+  failure: IAutoBeInterfaceOperationsReview.Failure[];
 }
