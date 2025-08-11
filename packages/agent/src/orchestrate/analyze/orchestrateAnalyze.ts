@@ -20,8 +20,8 @@ export const orchestrateAnalyze =
     props: IAutoBeApplicationProps,
   ): Promise<AutoBeAssistantMessageHistory | AutoBeAnalyzeHistory> => {
     // Initialize analysis state
-    const step = ctx.state().analyze?.step ?? 0;
-    const startTime = new Date();
+    const step: number = (ctx.state().analyze?.step ?? -1) + 1;
+    const startTime: Date = new Date();
 
     ctx.dispatch({
       type: "analyzeStart",

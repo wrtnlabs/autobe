@@ -53,7 +53,7 @@ export const orchestrateAnalyzeReview = async <Model extends ILlmSchema.Model>(
     content: pointer.value.content,
     total: progress.total,
     completed: progress.completed,
-    step: ctx.state().analyze?.step ?? 0,
+    step: (ctx.state().analyze?.step ?? -1) + 1,
     created_at: new Date().toISOString(),
   };
   ctx.dispatch(event);
