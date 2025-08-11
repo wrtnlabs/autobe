@@ -5,7 +5,7 @@ import {
   AutoBEAnalyzeFileMap,
   AutoBeAnalyzePointer,
 } from "./AutoBeAnalyzePointer";
-import { orchestrateAnalyzeReviewer } from "./orchestrateAnalyzeReviewer";
+import { orchestrateAnalyzeReview } from "./orchestrateAnalyzeReview";
 import { orchestrateAnalyzeWrite } from "./orchestrateAnalyzeWrite";
 import { AutoBeAnalyzeWriteProps } from "./structures/AutoBeAnalyzeWriteProps";
 import { IOrchestrateAnalyzeReviewerResult } from "./structures/IAutoBeAnalyzeReviewApplication";
@@ -16,18 +16,9 @@ export async function writeDocumentUntilReviewPassed<
   ctx: AutoBeContext<Model>,
   props: AutoBeAnalyzeWriteProps,
 ): Promise<AutoBeAnalyzePointer> {
-  const retry = props.retry ?? 3;
   const pointer: { value: { files: AutoBEAnalyzeFileMap } } = {
     value: { files: {} },
   };
-
-  /**
-   * `retry` means the number of times to retry the review. so if `retry` is -1,
-   * it means not execute this logic.
-   */
-  if (retry === -1) {
-    return pointer;
-  }
 
   let isToolCalled = false;
   await orchestrateAnalyzeWrite(ctx, {
@@ -35,10 +26,6 @@ export async function writeDocumentUntilReviewPassed<
     roles: props.roles,
     file: props.file,
     review: props.prevReview ?? "",
-    setDocument: (v) => {
-      isToolCalled = true;
-      pointer.value = { files: { ...pointer.value?.files, ...v } };
-    },
     language: props.language,
   });
 
@@ -48,9 +35,8 @@ export async function writeDocumentUntilReviewPassed<
 
   ctx.dispatch({
     type: "analyzeWrite",
-    files: {
-      ...pointer.value?.files,
-    },
+    filename: props.file.filename,
+    content: pointer.value.files[props.file.filename],
     total: props.progress.total,
     completed: ++props.progress.completed,
     step: ctx.state().analyze?.step ?? 0,
@@ -58,19 +44,7 @@ export async function writeDocumentUntilReviewPassed<
   });
 
   const reviewResult: IOrchestrateAnalyzeReviewerResult =
-    await orchestrateAnalyzeReviewer(ctx, props, pointer.value);
-
-  ctx.dispatch({
-    type: "analyzeReview",
-    files: {
-      ...pointer.value.files,
-    },
-    review: reviewResult.type === "accept" ? "accept" : reviewResult.value,
-    total: props.progress.total,
-    completed: props.progress.completed,
-    step: ctx.state().analyze?.step ?? 0,
-    created_at: new Date().toISOString(),
-  });
+    await orchestrateAnalyzeReview(ctx, props, pointer.value);
 
   if (reviewResult.type === "accept") {
     return pointer;
@@ -81,7 +55,6 @@ export async function writeDocumentUntilReviewPassed<
     file: props.file,
     roles: props.roles,
     progress: props.progress,
-    retry: retry - 1,
     prevReview: reviewResult.value,
   });
 }

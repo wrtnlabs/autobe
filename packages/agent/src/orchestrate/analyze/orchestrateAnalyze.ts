@@ -3,38 +3,39 @@ import {
   AutoBeAssistantMessageHistory,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
-import { IPointer } from "tstl";
 import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
+import { orchestrateAnalyzeReview } from "./orchestrateAnalyzeReview";
 import { orchestrateAnalyzeScenario } from "./orchestrateAnalyzeScenario";
-import { IAutoBeanalyzeScenarioInput } from "./structures/IAutoBeAnalyzeScenarioApplication";
-import { writeDocumentUntilReviewPassed } from "./writeDocumentUntilReviewPassed";
+import { orchestrateAnalyzeWrite } from "./orchestrateAnalyzeWrite";
+import { IOrchestrateAnalyzeReviewerResult } from "./structures/IAutoBeAnalyzeReviewApplication";
+import { IAutoBeAnalyzeScenarioApplication } from "./structures/IAutoBeAnalyzeScenarioApplication";
 
-/** @todo Kakasoo */
+const MAX_REVIEW_ITERATIONS = 3;
+
 export const orchestrateAnalyze =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
   async (
     props: IAutoBeApplicationProps,
   ): Promise<AutoBeAssistantMessageHistory | AutoBeAnalyzeHistory> => {
-    const step: number = ctx.state().analyze?.step ?? 0;
-    const start: Date = new Date();
+    // Initialize analysis state
+    const step = ctx.state().analyze?.step ?? 0;
+    const startTime = new Date();
+
     ctx.dispatch({
       type: "analyzeStart",
       reason: props.reason,
       step,
-      created_at: start.toISOString(),
+      created_at: startTime.toISOString(),
     });
 
-    const pointer: IPointer<IAutoBeanalyzeScenarioInput | null> = {
-      value: null,
-    };
-    await orchestrateAnalyzeScenario(ctx, (v) => (pointer.value = v));
-    pointer.value?.files.map((el) => el.filename);
+    // Generate analysis scenario
+    const scenario: IAutoBeAnalyzeScenarioApplication.IProps | null =
+      await orchestrateAnalyzeScenario(ctx);
 
-    const scenarioInput = pointer.value;
-    if (scenarioInput === null)
+    if (scenario === null) {
       return ctx.assistantMessage({
         id: v4(),
         text: "Failed to analyze your request. please request again.",
@@ -42,64 +43,99 @@ export const orchestrateAnalyze =
         completed_at: new Date().toISOString(),
         created_at: new Date().toISOString(),
       });
+    }
 
+    // Publish scenario event
     ctx.dispatch({
       type: "analyzeScenario",
-      page: scenarioInput.page,
-      prefix: scenarioInput.prefix,
-      roles: scenarioInput.roles,
-      filenames: scenarioInput.files.map((el) => el.filename),
-      step: step,
+      page: scenario.page,
+      prefix: scenario.prefix,
+      roles: scenario.roles,
+      filenames: scenario.files.map((file) => file.filename),
+      step,
       created_at: new Date().toISOString(),
     });
 
-    const {
-      files: autoBeAnalyzeFiles,
-      prefix,
-      roles,
-      language,
-    } = scenarioInput;
-    if (autoBeAnalyzeFiles.length === 0)
+    // Check if requirements are sufficient
+    if (scenario.files.length === 0) {
       return ctx.assistantMessage({
         id: v4(),
         type: "assistantMessage",
         text: "The current requirements are insufficient, so file generation will be suspended. It would be better to continue the conversation.",
-        created_at: start.toISOString(),
+        created_at: new Date().toISOString(),
         completed_at: new Date().toISOString(),
       });
+    }
 
-    const retryCount = 3 as const;
+    // Process all files in parallel
     const progress = {
-      total: autoBeAnalyzeFiles.length * retryCount,
+      total: scenario.files.length * MAX_REVIEW_ITERATIONS,
       completed: 0,
-    } as const;
+    };
 
-    const pointers = await Promise.all(
-      autoBeAnalyzeFiles.map(async (file) => {
-        return await writeDocumentUntilReviewPassed(ctx, {
-          totalFiles: autoBeAnalyzeFiles,
-          file: file,
-          roles,
-          progress,
-          retry: retryCount,
-          language,
-        });
+    const files: Record<string, string> = {};
+
+    await Promise.all(
+      scenario.files.map(async (file) => {
+        let markdown: string | null = null;
+        let reviewFeedback: string | null = null;
+
+        // Iterate through write-review cycle
+        for (
+          let iteration = 0;
+          iteration < MAX_REVIEW_ITERATIONS;
+          iteration++
+        ) {
+          // Write markdown document
+          markdown = await orchestrateAnalyzeWrite(ctx, {
+            totalFiles: scenario.files,
+            language: scenario.language,
+            roles: scenario.roles,
+            file,
+            review: reviewFeedback,
+          });
+
+          // Review the written document
+          const reviewResult: IOrchestrateAnalyzeReviewerResult =
+            await orchestrateAnalyzeReview(
+              ctx,
+              {
+                totalFiles: scenario.files,
+                file,
+                progress,
+                roles: scenario.roles,
+                language: scenario.language,
+              },
+              {
+                files: { [file.filename]: markdown },
+              },
+            );
+
+          // Exit loop if document is accepted
+          if (reviewResult.type === "accept") {
+            break;
+          }
+
+          // Store feedback for next iteration
+          reviewFeedback =
+            reviewResult.type === "reject" ? reviewResult.value : null;
+        }
+
+        // Store the final markdown content
+        if (markdown !== null) {
+          files[file.filename] = markdown;
+        }
       }),
     );
 
-    const files = pointers
-      .map((pointer) => {
-        return pointer.value?.files ?? {};
-      })
-      .reduce((acc, cur) => Object.assign(acc, cur));
-
+    // Complete the analysis
     return ctx.dispatch({
       type: "analyzeComplete",
-      prefix,
+      prefix: scenario.prefix,
       files,
       step,
-      roles,
-      elapsed: new Date().getTime() - start.getTime(),
+      roles: scenario.roles,
+      elapsed: new Date().getTime() - startTime.getTime(),
       created_at: new Date().toISOString(),
     });
   };

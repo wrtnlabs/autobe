@@ -19,20 +19,26 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
 export interface AutoBeAnalyzeWriteEvent
   extends AutoBeEventBase<"analyzeWrite"> {
   /**
-   * Requirements analysis files being generated during the writing phase.
+   * The filename of the requirements analysis document being generated.
    *
-   * Contains the current state of markdown documents being created as part of
-   * the requirements analysis. Each key represents the filename and each value
-   * contains the markdown content being written. These files capture business
-   * context, functional requirements, technical specifications, architectural
-   * decisions, and implementation guidelines.
-   *
-   * The files represent work-in-progress documentation that will undergo review
-   * and refinement before being finalized. This intermediate state provides
-   * transparency into the analysis generation process and allows for early
-   * feedback on the documentation structure and content.
+   * Represents the name of the markdown document being created as part of the
+   * requirements analysis process.
    */
-  files: Record<string, string>;
+  filename: string;
+
+  /**
+   * The content of the requirements analysis document being generated.
+   *
+   * Contains the markdown content being written for the requirements analysis.
+   * This content captures business context, functional requirements, technical
+   * specifications, architectural decisions, and implementation guidelines.
+   *
+   * The content represents work-in-progress documentation that will undergo
+   * review and refinement before being finalized. This intermediate state
+   * provides transparency into the analysis generation process and allows for
+   * early feedback on the documentation structure and content.
+   */
+  content: string;
 
   /**
    * Current iteration number of the requirements analysis being written.

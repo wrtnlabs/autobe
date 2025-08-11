@@ -1,28 +1,30 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
+import { IPointer } from "tstl";
 import typia from "typia";
 import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import {
-  IAutoBeAnalyzeScenarioApplication,
-  IAutoBeanalyzeScenarioInput,
-} from "./structures/IAutoBeAnalyzeScenarioApplication";
+import { IAutoBeAnalyzeScenarioApplication } from "./structures/IAutoBeAnalyzeScenarioApplication";
 
 export const orchestrateAnalyzeScenario = async <
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
-  setComposeInput: (value: IAutoBeanalyzeScenarioInput) => void,
-): Promise<void> => {
+): Promise<IAutoBeAnalyzeScenarioApplication.IProps> => {
+  const pointer: IPointer<IAutoBeAnalyzeScenarioApplication.IProps | null> = {
+    value: null,
+  };
+
   const agentica: MicroAgentica<Model> = ctx.createAgent({
     source: "analyzeScenario",
     controller: createController<Model>({
       model: ctx.model,
       execute: new AutoBeAnalyzeScenarioApplication(),
-      preExecute: setComposeInput,
+      preExecute: (props: IAutoBeAnalyzeScenarioApplication.IProps) =>
+        (pointer.value = props),
     }),
     histories: [
       ...ctx
@@ -33,7 +35,19 @@ export const orchestrateAnalyzeScenario = async <
       {
         id: v4(),
         type: "systemMessage",
-        text: AutoBeSystemPromptConstant.ANALYZE_COMPOSER,
+        text: AutoBeSystemPromptConstant.ANALYZE_SCENARIO,
+        created_at: new Date().toISOString(),
+      },
+      {
+        id: v4(),
+        type: "systemMessage",
+        text: [
+          "One agent per page of the document you specify will write according to the instructions below.",
+          "You should also refer to the content to define the document list.",
+          "```",
+          AutoBeSystemPromptConstant.ANALYZE,
+          "```",
+        ].join("\n"),
         created_at: new Date().toISOString(),
       },
     ],
@@ -51,6 +65,22 @@ export const orchestrateAnalyzeScenario = async <
       const tokenUsage = agentica.getTokenUsage().aggregate;
       ctx.usage().record(tokenUsage, ["analyze"]);
     });
+
+  if (pointer.value === null) {
+    throw new Error("Failed to configure document creation plan.");
+  }
+
+  ctx.dispatch({
+    type: "analyzeScenario",
+    page: pointer.value.page,
+    prefix: pointer.value.prefix,
+    roles: pointer.value.roles,
+    filenames: pointer.value.files.map((el) => el.filename),
+    step: ctx.state().analyze?.step ?? 0,
+    created_at: new Date().toISOString(),
+  });
+
+  return pointer.value;
 };
 
 class AutoBeAnalyzeScenarioApplication
@@ -70,7 +100,9 @@ class AutoBeAnalyzeScenarioApplication
    * @param input Prefix, roles, and files
    * @returns
    */
-  compose(input: IAutoBeanalyzeScenarioInput): IAutoBeanalyzeScenarioInput {
+  compose(
+    input: IAutoBeAnalyzeScenarioApplication.IProps,
+  ): IAutoBeAnalyzeScenarioApplication.IProps {
     return input;
   }
 }
@@ -78,7 +110,7 @@ class AutoBeAnalyzeScenarioApplication
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   execute: AutoBeAnalyzeScenarioApplication;
-  preExecute: (input: IAutoBeanalyzeScenarioInput) => void;
+  preExecute: (input: IAutoBeAnalyzeScenarioApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
   const application: ILlmApplication<Model> = collection[

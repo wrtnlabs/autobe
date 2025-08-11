@@ -1,6 +1,7 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import { AutoBeAnalyzeRole } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
+import { IPointer } from "tstl";
 import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
@@ -18,21 +19,21 @@ export const orchestrateAnalyzeWrite = async <Model extends ILlmSchema.Model>(
   input: {
     /** Total file names */
     totalFiles: Pick<AutoBeAnalyzeFile, "filename" | "reason">[];
-    file: Omit<AutoBeAnalyzeFile, "markdown">;
+    file: AutoBeAnalyzeFile;
     roles: AutoBeAnalyzeRole[];
     review: string | null;
-    setDocument: (v: AutoBEAnalyzeFileMap) => void;
     language?: string;
   },
-): Promise<void> => {
+): Promise<string> => {
+  const pointer: IPointer<Record<string, string> | null> = { value: null };
   const agentica: MicroAgentica<Model> = ctx.createAgent({
     source: "analyzeWrite",
     controller: createController<Model>({
       model: ctx.model,
       execute: new AutoBeAnalyzeFileSystem({
-        [input.file.filename]: "" as const,
+        [input.file.filename]: input.file.markdown,
       }),
-      setDocument: input.setDocument,
+      build: (next: AutoBEAnalyzeFileMap) => (pointer.value = next),
     }),
     histories: transformAnalyzeWriteHistories(ctx, input),
     enforceFunctionCall: true,
@@ -41,12 +42,18 @@ export const orchestrateAnalyzeWrite = async <Model extends ILlmSchema.Model>(
     const tokenUsage = agentica.getTokenUsage().aggregate;
     ctx.usage().record(tokenUsage, ["analyze"]);
   });
+
+  if (pointer.value === null) {
+    throw new Error("The Analyze Agent failed to create the document.");
+  }
+
+  return pointer.value[input.file.filename];
 };
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   execute: AutoBeAnalyzeFileSystem;
-  setDocument: (v: AutoBEAnalyzeFileMap) => void;
+  build: (v: AutoBEAnalyzeFileMap) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
   const application: ILlmApplication<Model> = collection[
@@ -59,7 +66,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
     execute: {
       createOrUpdateFiles: async (input) => {
         const fileMap = await props.execute.createOrUpdateFiles(input);
-        props.setDocument(fileMap);
+        props.build(fileMap);
         return fileMap;
       },
     } satisfies IAutoBeAnalyzeFileSystem,
