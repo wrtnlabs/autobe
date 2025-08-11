@@ -11,6 +11,7 @@ import {
   AutoBeInterfaceOperationsEvent,
   AutoBeInterfaceOperationsReviewEvent,
   AutoBeInterfaceSchemasEvent,
+  AutoBeInterfaceSchemasReviewEvent,
   AutoBeInterfaceStartEvent,
   AutoBePrismaCompleteEvent,
   AutoBePrismaComponentsEvent,
@@ -301,6 +302,15 @@ export interface IAutoBeRpcListener {
    * development for the API specification.
    */
   interfaceSchemas?(event: AutoBeInterfaceSchemasEvent): Promise<void>;
+
+  /**
+   * Optional handler for schemas review events
+   *
+   * Called with the interface agent reviews operation schemas.
+   */
+  interfaceSchemasReview?(
+    event: AutoBeInterfaceSchemasReviewEvent,
+  ): Promise<void>;
 
   /**
    * Optional handler for API schema complement events.

@@ -108,6 +108,9 @@ export class AutoBePlaygroundListener {
       interfaceSchemas: async (event) => {
         this.accumulate(event);
       },
+      interfaceSchemasReview: async (event) => {
+        this.accumulate(event);
+      },
       interfaceComplement: async (event) => {
         this.insert(event);
       },

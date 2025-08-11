@@ -6,7 +6,6 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { enforceToolCall } from "../../utils/enforceToolCall";
 import { transformInterfaceSchemaReviewHistories } from "./histories/transformInterfaceSchemaReviewHistories";
 import { IAutoBeInterfaceSchemaReviewApplication } from "./structures/IAutoBeInterfaceSchemaReviewApplication";
 
@@ -36,29 +35,20 @@ async function process<Model extends ILlmSchema.Model>(
     value: null,
   };
 
-  const agentica: MicroAgentica<Model> = new MicroAgentica({
-    model: ctx.model,
-    vendor: ctx.vendor,
-    config: {
-      ...(ctx.config ?? {}),
-      executor: {
-        describe: null,
+  const agentica: MicroAgentica<Model> = ctx.createAgent({
+    source: "interfaceSchemasReview",
+    controller: createApplication({
+      model: ctx.model,
+      build: async (next) => {
+        pointer.value = next;
       },
-    },
+    }),
     histories: transformInterfaceSchemaReviewHistories(
       ctx.state(),
       schemaDescriptive,
     ),
-    controllers: [
-      createApplication({
-        model: ctx.model,
-        build: async (next) => {
-          pointer.value = next;
-        },
-      }),
-    ],
+    enforceFunctionCall: true,
   });
-  enforceToolCall(agentica);
 
   await agentica.conversate("Review about given schemas.").finally(() => {
     const tokenUsage = agentica.getTokenUsage().aggregate;

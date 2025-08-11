@@ -12,6 +12,7 @@ import { AutoBeInterfaceGroupsEvent } from "./AutoBeInterfaceGroupsEvent";
 import { AutoBeInterfaceOperationsEvent } from "./AutoBeInterfaceOperationsEvent";
 import { AutoBeInterfaceOperationsReviewEvent } from "./AutoBeInterfaceOperationsReviewEvent";
 import { AutoBeInterfaceSchemasEvent } from "./AutoBeInterfaceSchemasEvent";
+import { AutoBeInterfaceSchemasReviewEvent } from "./AutoBeInterfaceSchemasReviewEvent";
 import { AutoBeInterfaceStartEvent } from "./AutoBeInterfaceStartEvent";
 import { AutoBePrismaCompleteEvent } from "./AutoBePrismaCompleteEvent";
 import { AutoBePrismaComponentsEvent } from "./AutoBePrismaComponentsEvent";
@@ -81,6 +82,7 @@ export type AutoBeEvent =
   | AutoBeInterfaceOperationsReviewEvent
   | AutoBeInterfaceOperationsEvent
   | AutoBeInterfaceAuthorizationEvent
+  | AutoBeInterfaceSchemasReviewEvent
   | AutoBeInterfaceSchemasEvent
   | AutoBeInterfaceComplementEvent
   | AutoBeInterfaceCompleteEvent
@@ -176,6 +178,7 @@ export namespace AutoBeEvent {
     interfaceOperationsReview: AutoBeInterfaceOperationsReviewEvent;
     interfaceAuthorization: AutoBeInterfaceAuthorizationEvent;
     interfaceSchemas: AutoBeInterfaceSchemasEvent;
+    interfaceSchemasReview: AutoBeInterfaceSchemasReviewEvent;
     interfaceComplement: AutoBeInterfaceComplementEvent;
     interfaceComplete: AutoBeInterfaceCompleteEvent;
     // TEST
