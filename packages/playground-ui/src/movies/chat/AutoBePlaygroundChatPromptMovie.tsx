@@ -33,6 +33,8 @@ export const AutoBePlaygroundChatPromptMovie = (
   };
 
   const conversate = async () => {
+    if (enabled === false) return;
+
     const sendText: string = text.trim();
     const sendBuckets: IAutoBePlaygroundBucket[] = buckets;
     if (sendText.length === 0 && sendBuckets.length === 0) {
@@ -40,9 +42,9 @@ export const AutoBePlaygroundChatPromptMovie = (
       return;
     }
 
-    setText("");
-    setEmptyText(false);
     setEnabled(false);
+    setEmptyText(false);
+    setText("");
     setBuckets([]);
 
     try {
@@ -163,7 +165,6 @@ export const AutoBePlaygroundChatPromptMovie = (
             }}
             onChange={(e) => setText(e.target.value)}
             error={emptyText}
-            disabled={!enabled}
             sx={{
               "& .MuiOutlinedInput-root": {
                 borderRadius: 2,
