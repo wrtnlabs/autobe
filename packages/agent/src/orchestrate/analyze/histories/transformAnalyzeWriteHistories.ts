@@ -1,11 +1,14 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
-import { AutoBeAnalyzeRole } from "@autobe/interface";
+import {
+  AutoBeAnalyzeRole,
+  AutoBeAnalyzeScenarioEvent,
+} from "@autobe/interface";
 import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
 import { ILlmSchema } from "@samchon/openapi";
 import { v4 } from "uuid";
 
-import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
-import { AutoBeContext } from "../../context/AutoBeContext";
+import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
+import { AutoBeContext } from "../../../context/AutoBeContext";
 
 const preparePrompt = (
   template: string,
@@ -46,49 +49,18 @@ const preparePrompt = (
 
 export const transformAnalyzeWriteHistories = <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  input: {
-    /** Total file names */
-    totalFiles: Pick<AutoBeAnalyzeFile, "filename" | "reason">[];
-    file: Omit<AutoBeAnalyzeFile, "markdown">;
-    roles: AutoBeAnalyzeRole[];
-    review: string | null;
-    language?: string;
-  },
+  scenario: AutoBeAnalyzeScenarioEvent,
+  file: Omit<AutoBeAnalyzeFile, "content">,
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
-  const reviewMessages: IAgenticaHistoryJson.IAssistantMessage[] = input.review
-    ? [
-        {
-          id: v4(),
-          created_at: new Date().toISOString(),
-          type: "assistantMessage",
-          text: JSON.stringify(
-            input.totalFiles.find((el) => el.filename === input.file.filename),
-          ),
-        },
-        {
-          id: v4(),
-          created_at: new Date().toISOString(),
-          type: "assistantMessage",
-          text: [
-            `You previously wrote a piece of content.`,
-            `The following review has been received regarding your writing:`,
-            input.review,
-            `You must revise your content to reflect the feedback in this review.`,
-          ].join("\n"),
-        },
-      ]
-    : [];
-
   return [
-    ...reviewMessages,
     {
       id: v4(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
       text: preparePrompt(
-        AutoBeSystemPromptConstant.ANALYZE,
+        AutoBeSystemPromptConstant.ANALYZE_WRITE,
         ctx.locale,
         input.totalFiles,
         input.file,

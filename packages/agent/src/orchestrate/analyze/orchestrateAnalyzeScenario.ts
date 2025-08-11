@@ -1,4 +1,13 @@
-import { IAgenticaController, MicroAgentica } from "@agentica/core";
+import {
+  AgenticaAssistantMessageHistory,
+  IAgenticaController,
+  MicroAgentica,
+  MicroAgenticaHistory,
+} from "@agentica/core";
+import {
+  AutoBeAnalyzeScenarioEvent,
+  AutoBeAssistantMessageHistory,
+} from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -13,11 +22,11 @@ export const orchestrateAnalyzeScenario = async <
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
-): Promise<IAutoBeAnalyzeScenarioApplication.IProps> => {
+): Promise<AutoBeAnalyzeScenarioEvent | AutoBeAssistantMessageHistory> => {
+  const start: Date = new Date();
   const pointer: IPointer<IAutoBeAnalyzeScenarioApplication.IProps | null> = {
     value: null,
   };
-
   const agentica: MicroAgentica<Model> = ctx.createAgent({
     source: "analyzeScenario",
     controller: createController<Model>({
@@ -45,15 +54,15 @@ export const orchestrateAnalyzeScenario = async <
           "One agent per page of the document you specify will write according to the instructions below.",
           "You should also refer to the content to define the document list.",
           "```",
-          AutoBeSystemPromptConstant.ANALYZE,
+          AutoBeSystemPromptConstant.ANALYZE_WRITE,
           "```",
         ].join("\n"),
         created_at: new Date().toISOString(),
       },
     ],
-    enforceFunctionCall: true,
+    enforceFunctionCall: false,
   });
-  await agentica
+  const histories: MicroAgenticaHistory<Model>[] = await agentica
     .conversate(
       [
         `Design a complete list of documents and user roles for this project.`,
@@ -65,21 +74,25 @@ export const orchestrateAnalyzeScenario = async <
       const tokenUsage = agentica.getTokenUsage().aggregate;
       ctx.usage().record(tokenUsage, ["analyze"]);
     });
-
-  if (pointer.value === null) {
-    throw new Error("Failed to configure document creation plan.");
+  if (histories.at(-1)?.type === "assistantMessage")
+    return {
+      ...(histories.at(-1)! as AgenticaAssistantMessageHistory),
+      created_at: start.toISOString(),
+      completed_at: new Date().toISOString(),
+      id: v4(),
+    } satisfies AutoBeAssistantMessageHistory;
+  else if (pointer.value === null) {
+    // unreachable
+    throw new Error("Failed to extract files and tables.");
   }
-
-  ctx.dispatch({
+  return {
     type: "analyzeScenario",
     prefix: pointer.value.prefix,
     roles: pointer.value.roles,
     files: pointer.value.files,
-    step: ctx.state().analyze?.step ?? 0,
-    created_at: new Date().toISOString(),
-  });
-
-  return pointer.value;
+    step: (ctx.state().analyze?.step ?? -1) + 1,
+    created_at: start.toISOString(),
+  };
 };
 
 class AutoBeAnalyzeScenarioApplication

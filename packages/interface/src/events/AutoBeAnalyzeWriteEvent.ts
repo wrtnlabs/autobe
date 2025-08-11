@@ -4,21 +4,44 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
 /**
  * Event fired during the writing phase of the requirements analysis process.
  *
- * This event occurs when the Analyze agent is actively drafting the
- * requirements analysis documents, transforming user conversations and business
- * needs into structured markdown documentation. The writing phase represents
- * the core content creation stage where business requirements, technical
- * specifications, and architectural decisions are being documented.
+ * This event represents the core activity of the Analyze Writer Agent (PlannerAgent),
+ * which serves as AutoBE's requirements analysis specialist. The agent transforms
+ * user requirements and business objectives into comprehensive, developer-ready
+ * documentation following the WHY → WHAT → HOW framework.
  *
- * The write event provides visibility into the document creation process,
- * allowing stakeholders to monitor progress and understand what documentation
- * is being generated as part of the comprehensive requirements analysis that
- * will guide the entire development pipeline.
+ * The Analyze Writer Agent operates as the first critical step in AutoBE's waterfall
+ * development model, producing structured markdown documents that include:
+ * - Business models and user roles
+ * - Functional requirements in EARS (Easy Approach to Requirements Syntax) format
+ * - API endpoint specifications (as guidance, not prescriptive)
+ * - Entity relationship diagrams (ERD)
+ * - Security and business logic requirements
+ *
+ * Key characteristics of the writing process:
+ * - Focuses exclusively on backend requirements (no frontend/UI specifications)
+ * - Produces documents ranging from 2,000 to 30,000+ characters
+ * - Avoids ambiguous terms and maintains clear, measurable requirements
+ * - Excludes implementation details to preserve developer autonomy
+ *
+ * The generated documents serve as the foundation for subsequent AutoBE agents:
+ * Prisma Agent (database design), Interface Agent (API design), Test Agent
+ * (test generation), and Realize Agent (implementation).
+ *
+ * For detailed information about the Analyze Writer Agent's behavior and
+ * requirements, refer to packages/agent/prompts/ANALYZE_WRITE.md
  *
  * @author Kakasoo
  */
 export interface AutoBeAnalyzeWriteEvent
   extends AutoBeEventBase<"analyzeWrite"> {
+  /**
+   * File structure and content being written by the Analyze Writer Agent.
+   * 
+   * Contains the markdown document being generated, including all sections
+   * such as overview, business model, functional requirements, API specifications,
+   * and ERD diagrams. This file will be validated by the Analyze Review Agent
+   * before proceeding to the next development phase.
+   */
   file: AutoBeAnalyzeFile;
 
   /**
@@ -35,9 +58,21 @@ export interface AutoBeAnalyzeWriteEvent
    */
   step: number;
 
-  /** Total number of documents to generate. */
+  /**
+   * Total number of documents to generate in the current analysis session.
+   * 
+   * Typically represents the number of separate requirement documents or
+   * modules being analyzed. For most projects, this is 1, but complex
+   * projects may be split into multiple analysis documents.
+   */
   total: number;
 
-  /** Number of documents generated so far. */
+  /**
+   * Number of documents generated so far in the current session.
+   * 
+   * Tracks progress through multiple document generation when analyzing
+   * complex projects that require separate requirement documents for
+   * different modules or subsystems.
+   */
   completed: number;
 }

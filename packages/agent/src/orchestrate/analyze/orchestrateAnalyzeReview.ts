@@ -1,40 +1,37 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
+import {
+  AutoBeAnalyzeReviewEvent,
+  AutoBeAnalyzeScenarioEvent,
+} from "@autobe/interface";
+import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { AutoBeAnalyzeWriteProps } from "./structures/AutoBeAnalyzeWriteProps";
-import {
-  IAutoBeAnalyzeReviewApplication,
-  IOrchestrateAnalyzeReviewerResult,
-} from "./structures/IAutoBeAnalyzeReviewApplication";
-import { transformAnalyzeReviewerHistories } from "./transformAnalyzeReviewerHistories";
+import { transformAnalyzeReviewerHistories } from "./histories/transformAnalyzeReviewerHistories";
+import { IAutoBeAnalyzeReviewApplication } from "./structures/IAutoBeAnalyzeReviewApplication";
 
 export const orchestrateAnalyzeReview = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  props: Omit<AutoBeAnalyzeWriteProps, "prevReview" | "review">,
-  input: {
-    /** Total file names */
-    files: Record<string, string>;
+  scenario: AutoBeAnalyzeScenarioEvent,
+  file: AutoBeAnalyzeFile,
+  progress: {
+    total: number;
+    completed: number;
   },
-): Promise<IOrchestrateAnalyzeReviewerResult> => {
-  const pointer: IPointer<IOrchestrateAnalyzeReviewerResult> = {
-    value: {
-      type: "reject",
-      value: "reviewer is not working because of unknown reason.",
-    },
+): Promise<AutoBeAnalyzeReviewEvent> => {
+  const pointer: IPointer<IAutoBeAnalyzeReviewApplication.IProps | null> = {
+    value: null,
   };
   const agent: MicroAgentica<Model> = ctx.createAgent({
     source: "analyzeReview",
     controller: createController({
       model: ctx.model,
-      setResult: (result: IOrchestrateAnalyzeReviewerResult) => {
-        pointer.value = result;
-      },
+      pointer,
     }),
-    histories: [...transformAnalyzeReviewerHistories(props, input)],
+    histories: [...transformAnalyzeReviewerHistories(scenario, file)],
     enforceFunctionCall: true,
   });
   const command = `proceed with the review of these files only.` as const;
@@ -42,24 +39,27 @@ export const orchestrateAnalyzeReview = async <Model extends ILlmSchema.Model>(
     const tokenUsage = agent.getTokenUsage().aggregate;
     ctx.usage().record(tokenUsage, ["analyze"]);
   });
+  if (pointer.value === null)
+    throw new Error("Failed to extract review information.");
 
-  ctx.dispatch({
-    ...props.file,
+  const event: AutoBeAnalyzeReviewEvent = {
     type: "analyzeReview",
-    filename: props.file.filename,
-    review: pointer.value.type === "accept" ? "accept" : pointer.value.value,
-    total: props.progress.total,
-    completed: props.progress.completed,
+    file,
+    plan: pointer.value.plan,
+    review: pointer.value.review,
+    content: pointer.value.content,
+    total: progress.total,
+    completed: progress.completed,
     step: ctx.state().analyze?.step ?? 0,
     created_at: new Date().toISOString(),
-  });
-
-  return pointer.value;
+  };
+  ctx.dispatch(event);
+  return event;
 };
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  setResult: (result: IOrchestrateAnalyzeReviewerResult) => void;
+  pointer: IPointer<IAutoBeAnalyzeReviewApplication.IProps | null>;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
@@ -71,18 +71,8 @@ function createController<Model extends ILlmSchema.Model>(props: {
     name: "Reviewer",
     application,
     execute: {
-      accept: async () => {
-        props.setResult({
-          type: "accept",
-        });
-        return "OK" as const;
-      },
-      reject: async (input) => {
-        props.setResult({
-          type: "reject",
-          value: input.reason,
-        });
-        return "OK" as const;
+      review: (input) => {
+        props.pointer.value = input;
       },
     } satisfies IAutoBeAnalyzeReviewApplication,
   };

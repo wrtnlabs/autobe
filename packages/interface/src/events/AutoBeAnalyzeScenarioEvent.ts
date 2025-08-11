@@ -1,3 +1,5 @@
+import { tags } from "typia";
+
 import { AutoBeAnalyzeFile } from "../histories/contents/AutoBeAnalyzeFile";
 import { AutoBeAnalyzeRole } from "../histories/contents/AutoBeAnalyzeRole";
 import { AutoBeEventBase } from "./AutoBeEventBase";
@@ -10,7 +12,7 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
  */
 export interface AutoBeAnalyzeScenarioEvent
   extends AutoBeEventBase<"analyzeScenario"> {
-  files: Array<Omit<AutoBeAnalyzeFile, "content">>;
+  files: Array<Omit<AutoBeAnalyzeFile, "content">> & tags.MinItems<1>;
   roles: AutoBeAnalyzeRole[];
   /** Current step in the analysis workflow */
   step: number;

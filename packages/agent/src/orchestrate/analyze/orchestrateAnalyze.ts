@@ -1,20 +1,18 @@
 import {
   AutoBeAnalyzeHistory,
+  AutoBeAnalyzeReviewEvent,
+  AutoBeAnalyzeScenarioEvent,
+  AutoBeAnalyzeWriteEvent,
   AutoBeAssistantMessageHistory,
 } from "@autobe/interface";
 import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
 import { ILlmSchema } from "@samchon/openapi";
-import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
 import { orchestrateAnalyzeReview } from "./orchestrateAnalyzeReview";
 import { orchestrateAnalyzeScenario } from "./orchestrateAnalyzeScenario";
 import { orchestrateAnalyzeWrite } from "./orchestrateAnalyzeWrite";
-import { IOrchestrateAnalyzeReviewerResult } from "./structures/IAutoBeAnalyzeReviewApplication";
-import { IAutoBeAnalyzeScenarioApplication } from "./structures/IAutoBeAnalyzeScenarioApplication";
-
-const MAX_REVIEW_ITERATIONS = 3;
 
 export const orchestrateAnalyze =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
@@ -33,98 +31,56 @@ export const orchestrateAnalyze =
     });
 
     // Generate analysis scenario
-    const scenario: IAutoBeAnalyzeScenarioApplication.IProps | null =
+    const scenario: AutoBeAnalyzeScenarioEvent | AutoBeAssistantMessageHistory =
       await orchestrateAnalyzeScenario(ctx);
+    if (scenario.type === "assistantMessage")
+      return ctx.assistantMessage(scenario);
+    else ctx.dispatch(scenario);
 
-    if (scenario === null) {
-      return ctx.assistantMessage({
-        id: v4(),
-        text: "Failed to analyze your request. please request again.",
-        type: "assistantMessage",
-        completed_at: new Date().toISOString(),
-        created_at: new Date().toISOString(),
-      });
-    }
-
-    // Check if requirements are sufficient
-    if (scenario.files.length === 0) {
-      return ctx.assistantMessage({
-        id: v4(),
-        type: "assistantMessage",
-        text: "The current requirements are insufficient, so file generation will be suspended. It would be better to continue the conversation.",
-        created_at: new Date().toISOString(),
-        completed_at: new Date().toISOString(),
-      });
-    }
-
-    // Process all files in parallel
-    const progress = {
-      total: scenario.files.length * MAX_REVIEW_ITERATIONS,
+    // write documents
+    const writeProgress = {
+      total: scenario.files.length,
       completed: 0,
     };
-
-    const files: AutoBeAnalyzeFile[] = [];
-
-    await Promise.all(
+    const fileList: AutoBeAnalyzeFile[] = await Promise.all(
       scenario.files.map(async (file) => {
-        let content: string | null = null;
-        let reviewFeedback: string | null = null;
+        const event: AutoBeAnalyzeWriteEvent = await orchestrateAnalyzeWrite(
+          ctx,
+          scenario,
+          file,
+          writeProgress,
+        );
+        return event.file;
+      }),
+    );
 
-        // Iterate through write-review cycle
-        for (
-          let iteration = 0;
-          iteration < MAX_REVIEW_ITERATIONS;
-          iteration++
-        ) {
-          // Write markdown document
-          content = await orchestrateAnalyzeWrite(ctx, {
-            totalFiles: scenario.files,
-            language: scenario.language,
-            roles: scenario.roles,
-            file,
-            review: reviewFeedback,
-          });
-
-          // Review the written document
-          const reviewResult: IOrchestrateAnalyzeReviewerResult =
-            await orchestrateAnalyzeReview(
-              ctx,
-              {
-                totalFiles: scenario.files,
-                file,
-                progress,
-                roles: scenario.roles,
-                language: scenario.language,
-              },
-              {
-                files: { [file.filename]: content },
-              },
-            );
-
-          // Exit loop if document is accepted
-          if (reviewResult.type === "accept") {
-            break;
-          }
-
-          // Store feedback for next iteration
-          reviewFeedback =
-            reviewResult.type === "reject" ? reviewResult.value : null;
-        }
-
-        // Store the final markdown content
-        if (content !== null) {
-          files.push({ ...file, content });
-        }
+    // review documents
+    const reviewProgress = {
+      total: fileList.length,
+      completed: 0,
+    };
+    const newFiles: AutoBeAnalyzeFile[] = await Promise.all(
+      fileList.map(async (file) => {
+        const event: AutoBeAnalyzeReviewEvent = await orchestrateAnalyzeReview(
+          ctx,
+          scenario,
+          file,
+          reviewProgress,
+        );
+        return {
+          ...event.file,
+          content: event.content,
+        };
       }),
     );
 
     // Complete the analysis
     return ctx.dispatch({
       type: "analyzeComplete",
-      prefix: scenario.prefix,
-      files,
-      step,
       roles: scenario.roles,
+      prefix: scenario.prefix,
+      files: newFiles,
+      step,
       elapsed: new Date().getTime() - startTime.getTime(),
       created_at: new Date().toISOString(),
     }) satisfies AutoBeAnalyzeHistory;

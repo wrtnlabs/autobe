@@ -1,6 +1,25 @@
 import { AutoBeAnalyzeRole } from "@autobe/interface";
 import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
 
+export interface IAutoBeAnalyzeScenarioApplication {
+  /**
+   * Compose project structure with roles and files.
+   *
+   * Design a list of roles and initial documents that you need to create for
+   * that requirement. Roles define team member responsibilities, while files
+   * define the documentation structure. These are managed separately. If you
+   * determine from the conversation that the user's requirements have not been
+   * fully gathered, you must stop the analysis and continue collecting the
+   * remaining requirements. In this case, you do not need to generate any files
+   * or roles. Simply pass an empty array to `input.files` and `input.roles`.
+   *
+   * @param input Prefix, roles, and files
+   * @returns
+   */
+  compose(
+    input: IAutoBeAnalyzeScenarioApplication.IProps,
+  ): IAutoBeAnalyzeScenarioApplication.IProps;
+}
 export namespace IAutoBeAnalyzeScenarioApplication {
   export interface IProps {
     /** Reason for the analysis and composition of the project structure. */
@@ -63,24 +82,4 @@ export namespace IAutoBeAnalyzeScenarioApplication {
      */
     files: Array<AutoBeAnalyzeFile>;
   }
-}
-
-export interface IAutoBeAnalyzeScenarioApplication {
-  /**
-   * Compose project structure with roles and files.
-   *
-   * Design a list of roles and initial documents that you need to create for
-   * that requirement. Roles define team member responsibilities, while files
-   * define the documentation structure. These are managed separately. If you
-   * determine from the conversation that the user's requirements have not been
-   * fully gathered, you must stop the analysis and continue collecting the
-   * remaining requirements. In this case, you do not need to generate any files
-   * or roles. Simply pass an empty array to `input.files` and `input.roles`.
-   *
-   * @param input Prefix, roles, and files
-   * @returns
-   */
-  compose(
-    input: IAutoBeAnalyzeScenarioApplication.IProps,
-  ): IAutoBeAnalyzeScenarioApplication.IProps;
 }

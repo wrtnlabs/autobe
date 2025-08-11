@@ -1,5 +1,8 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
-import { AutoBeAnalyzeRole } from "@autobe/interface";
+import {
+  AutoBeAnalyzeScenarioEvent,
+  AutoBeAnalyzeWriteEvent,
+} from "@autobe/interface";
 import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
@@ -7,35 +10,28 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import {
-  AutoBeAnalyzeFileSystem,
-  IAutoBeAnalyzeFileSystem,
-} from "./AutoBeAnalyzeFileSystem";
-import { AutoBEAnalyzeFileMap } from "./AutoBeAnalyzePointer";
-import { transformAnalyzeWriteHistories } from "./transformAnalyzeWriteHistories";
+import { transformAnalyzeWriteHistories } from "./histories/transformAnalyzeWriteHistories";
+import { IAutoBeAnalyzeWriteApplication } from "./structures/IAutoBeAnalyzeWriteApplication";
 
 export const orchestrateAnalyzeWrite = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  input: {
-    /** Total file names */
-    totalFiles: Pick<AutoBeAnalyzeFile, "filename" | "reason">[];
-    file: AutoBeAnalyzeFile;
-    roles: AutoBeAnalyzeRole[];
-    review: string | null;
-    language?: string;
+  scenario: AutoBeAnalyzeScenarioEvent,
+  file: Omit<AutoBeAnalyzeFile, "content">,
+  progress: {
+    total: number;
+    completed: number;
   },
-): Promise<string> => {
-  const pointer: IPointer<Record<string, string> | null> = { value: null };
+): Promise<AutoBeAnalyzeWriteEvent> => {
+  const pointer: IPointer<IAutoBeAnalyzeWriteApplication.IProps | null> = {
+    value: null,
+  };
   const agentica: MicroAgentica<Model> = ctx.createAgent({
     source: "analyzeWrite",
     controller: createController<Model>({
       model: ctx.model,
-      execute: new AutoBeAnalyzeFileSystem({
-        [input.file.filename]: input.file.content,
-      }),
-      build: (next: AutoBEAnalyzeFileMap) => (pointer.value = next),
+      pointer,
     }),
-    histories: transformAnalyzeWriteHistories(ctx, input),
+    histories: transformAnalyzeWriteHistories(ctx, scenario, file),
     enforceFunctionCall: true,
   });
   await agentica.conversate("Write Document.").finally(() => {
@@ -46,15 +42,24 @@ export const orchestrateAnalyzeWrite = async <Model extends ILlmSchema.Model>(
   if (pointer.value === null) {
     throw new Error("The Analyze Agent failed to create the document.");
   }
-
-  input.file.content = pointer.value[input.file.filename];
-  return input.file.content;
+  const event: AutoBeAnalyzeWriteEvent = {
+    type: "analyzeWrite",
+    file: {
+      ...file,
+      content: pointer.value.content,
+    },
+    step: (ctx.state().analyze?.step ?? -1) + 1,
+    total: progress.total,
+    completed: ++progress.completed,
+    created_at: new Date().toISOString(),
+  };
+  ctx.dispatch(event);
+  return event;
 };
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  execute: AutoBeAnalyzeFileSystem;
-  build: (v: AutoBEAnalyzeFileMap) => void;
+  pointer: IPointer<IAutoBeAnalyzeWriteApplication.IProps | null>;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
   const application: ILlmApplication<Model> = collection[
@@ -65,18 +70,19 @@ function createController<Model extends ILlmSchema.Model>(props: {
     name: "Planning",
     application,
     execute: {
-      createOrUpdateFiles: async (input) => {
-        const fileMap = await props.execute.createOrUpdateFiles(input);
-        props.build(fileMap);
-        return fileMap;
+      write: async (input) => {
+        props.pointer.value = input;
       },
-    } satisfies IAutoBeAnalyzeFileSystem,
+    } satisfies IAutoBeAnalyzeWriteApplication,
   };
 }
 
-const claude = typia.llm.application<AutoBeAnalyzeFileSystem, "claude">();
+const claude = typia.llm.application<
+  IAutoBeAnalyzeWriteApplication,
+  "claude"
+>();
 const collection = {
-  chatgpt: typia.llm.application<AutoBeAnalyzeFileSystem, "chatgpt">(),
+  chatgpt: typia.llm.application<IAutoBeAnalyzeWriteApplication, "chatgpt">(),
   claude,
   llama: claude,
   deepseek: claude,
