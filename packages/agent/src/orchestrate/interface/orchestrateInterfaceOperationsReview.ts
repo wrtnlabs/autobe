@@ -10,33 +10,18 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { transformInterfaceAssetHistories } from "./histories/transformInterfaceAssetHistories";
 import { IAutoBeInterfaceOperationApplication } from "./structures/IAutoBeInterfaceOperationApplication";
-import { IAutoBeInterfaceOperationReviewApplication } from "./structures/IAutoBeInterfaceOperationReviewApplication";
+import {
+  IAutoBeInterfaceOperationsReview,
+  IAutoBeInterfaceOperationsReviewApplication,
+} from "./structures/IAutoBeInterfaceOperationsReviewApplication";
 
-export namespace IAutoBeInterfaceOperationReview {
-  export interface Success {
-    type: "success";
-    endpoint: AutoBeOpenApi.IEndpoint;
-  }
-
-  export interface Failure {
-    type: "failure";
-    endpoint: AutoBeOpenApi.IEndpoint;
-    reason: string;
-  }
-}
-export interface IAutoBeInterfaceOperationReview {
-  passed: IAutoBeInterfaceOperationReview.Success[];
-  failure: IAutoBeInterfaceOperationReview.Failure[];
-}
-
-export async function orchestrateInterfaceOperationReview<
+export async function orchestrateInterfaceOperationsReview<
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
-  endpoints: AutoBeOpenApi.IEndpoint[], // total endpoints
-  operations: IAutoBeInterfaceOperationApplication.IOperation[],
-): Promise<IAutoBeInterfaceOperationReview> {
-  const pointer: IPointer<IAutoBeInterfaceOperationReview | null> = {
+  props: IAutoBeInterfaceOperationsReview.IInput,
+): Promise<IAutoBeInterfaceOperationsReview> {
+  const pointer: IPointer<IAutoBeInterfaceOperationsReview | null> = {
     value: null,
   };
   const agentica: MicroAgentica<Model> = ctx.createAgent({
@@ -63,21 +48,21 @@ export async function orchestrateInterfaceOperationReview<
           "Review the following API operations:",
           "",
           "```json",
-          JSON.stringify(operations, null, 2),
+          JSON.stringify(props.operations, null, 2),
           "```",
         ].join("\n"),
       },
     ],
     controller: createReviewController({
       model: ctx.model,
-      endpoints,
-      operations,
+      endpoints: props.endpoints,
+      operations: props.operations,
       build: (reviews) => {
-        const passed: IAutoBeInterfaceOperationReview.Success[] = [];
-        const failure: IAutoBeInterfaceOperationReview.Failure[] = [];
+        const passed: IAutoBeInterfaceOperationsReview.Success[] = [];
+        const failure: IAutoBeInterfaceOperationsReview.Failure[] = [];
 
         reviews.forEach((review) => {
-          const operation = operations.find(
+          const operation = props.operations.find(
             (op) => op.method === review.method && op.path === review.path,
           );
           if (!operation) {
@@ -107,6 +92,7 @@ export async function orchestrateInterfaceOperationReview<
     const tokenUsage = agentica.getTokenUsage().aggregate;
     ctx.usage().record(tokenUsage, ["interface"]);
   });
+
   if (pointer.value === null) throw new Error("Failed to review operations.");
   return pointer.value;
 }
@@ -114,27 +100,28 @@ export async function orchestrateInterfaceOperationReview<
 function createReviewController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   endpoints: AutoBeOpenApi.IEndpoint[]; // total endpoints
-  operations: IAutoBeInterfaceOperationApplication.IOperation[];
+  operations: IAutoBeInterfaceOperationApplication.IOperation[]; // review
+
   build: (
-    reviews: IAutoBeInterfaceOperationReviewApplication.IReview[],
+    reviews: IAutoBeInterfaceOperationsReviewApplication.IReview[],
   ) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
   const validate = (
     next: unknown,
-  ): IValidation<IAutoBeInterfaceOperationReviewApplication.IProps> => {
-    const result: IValidation<IAutoBeInterfaceOperationReviewApplication.IProps> =
-      typia.validate<IAutoBeInterfaceOperationReviewApplication.IProps>(next);
+  ): IValidation<IAutoBeInterfaceOperationsReviewApplication.IProps> => {
+    const result: IValidation<IAutoBeInterfaceOperationsReviewApplication.IProps> =
+      typia.validate<IAutoBeInterfaceOperationsReviewApplication.IProps>(next);
     if (result.success === false) return result;
 
-    const reviews: IAutoBeInterfaceOperationReviewApplication.IReview[] =
+    const reviews: IAutoBeInterfaceOperationsReviewApplication.IReview[] =
       result.data.reviews;
     const errors: IValidation.IError[] = [];
 
     reviews.forEach((review, i) => {
       const operation: AutoBeOpenApi.IEndpoint | undefined =
-        props.endpoints.find(
+        props.operations.find(
           (op) => op.method === review.method && op.path === review.path,
         );
       if (!operation) {
@@ -168,14 +155,14 @@ function createReviewController<Model extends ILlmSchema.Model>(props: {
       reviewOperations: (next) => {
         props.build(next.reviews);
       },
-    } satisfies IAutoBeInterfaceOperationReviewApplication,
+    } satisfies IAutoBeInterfaceOperationsReviewApplication,
   };
 }
 
 const collection = {
   chatgpt: (validator: Validator) =>
     typia.llm.application<
-      IAutoBeInterfaceOperationReviewApplication,
+      IAutoBeInterfaceOperationsReviewApplication,
       "chatgpt"
     >({
       validate: {
@@ -183,15 +170,16 @@ const collection = {
       },
     }),
   claude: (validator: Validator) =>
-    typia.llm.application<IAutoBeInterfaceOperationReviewApplication, "claude">(
-      {
-        validate: {
-          reviewOperations: validator,
-        },
+    typia.llm.application<
+      IAutoBeInterfaceOperationsReviewApplication,
+      "claude"
+    >({
+      validate: {
+        reviewOperations: validator,
       },
-    ),
+    }),
 };
 
 type Validator = (
   input: unknown,
-) => IValidation<IAutoBeInterfaceOperationReviewApplication.IProps>;
+) => IValidation<IAutoBeInterfaceOperationsReviewApplication.IProps>;

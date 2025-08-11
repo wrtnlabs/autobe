@@ -66,7 +66,12 @@ async function process<Model extends ILlmSchema.Model>(
   const agentica: MicroAgentica<Model> = ctx.createAgent({
     source: "prismaSchemas",
     histories: transformPrismaSchemaHistories(
-      ctx.state().analyze!.files,
+      ctx
+        .state()
+        .analyze?.files.map((file) => ({ [file.filename]: file.content }))
+        .reduce((acc, cur) => {
+          return Object.assign(acc, cur);
+        }, {}) ?? {},
       targetComponent,
       otherTables,
     ),

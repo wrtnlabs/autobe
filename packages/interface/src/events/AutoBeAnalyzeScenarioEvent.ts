@@ -1,3 +1,4 @@
+import { AutoBeAnalyzeFile } from "../histories/contents/AutoBeAnalyzeFile";
 import { AutoBeAnalyzeRole } from "../histories/contents/AutoBeAnalyzeRole";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
@@ -9,11 +10,7 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
  */
 export interface AutoBeAnalyzeScenarioEvent
   extends AutoBeEventBase<"analyzeScenario"> {
-  /** Current page number in the analysis process */
-  page: number;
-  /** List of filenames being analyzed */
-  filenames: string[];
-  /** Array of roles involved in the analysis */
+  files: Array<Omit<AutoBeAnalyzeFile, "content">>;
   roles: AutoBeAnalyzeRole[];
   /** Current step in the analysis workflow */
   step: number;

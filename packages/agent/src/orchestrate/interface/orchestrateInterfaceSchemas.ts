@@ -66,7 +66,10 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
     if (remained.size === 0) break;
     const before: number = remained.size;
     const newbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-      await forceRetry(() => process(ctx, operations, schemas, remained));
+      await forceRetry(() => {
+        const schemaDescriptive = process(ctx, operations, schemas, remained);
+        return schemaDescriptive;
+      });
     for (const key of Object.keys(newbie)) {
       schemas[key] = newbie[key];
       remained.delete(key);
