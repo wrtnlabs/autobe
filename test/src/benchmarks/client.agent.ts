@@ -59,6 +59,11 @@ export const getClientAgent = (
               } as const;
             }
 
+            if (toolCalls[0].type === "custom") {
+              // From GPT-5, custom tool is supported, but is currently unnecessary for our logic.
+              throw new Error("not yet supported.");
+            }
+
             const toolCall = JSON.parse(
               toolCalls[0].function.arguments ?? "{}",
             );

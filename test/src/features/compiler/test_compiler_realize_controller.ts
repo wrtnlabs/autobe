@@ -55,23 +55,45 @@ export const test_compiler_realize_controller = async (
 
   const content: string | undefined =
     files["src/controllers/shopping/sale/ShoppingSaleController.ts"];
-  TestValidator.predicate("content")(
-    () =>
-      content !== undefined &&
-      content.includes(
-        `import { createShoppingSale } from "../../../providers/createShoppingSale"`,
-      ) &&
-      content.includes(
-        `import { CustomerAuth } from "../../../decorators/CustomerAuth"`,
-      ) &&
-      content.includes(
-        `import { ICustomerPayload } from "../../../decorators/payload/ICustomerPayload"`,
-      ) &&
-      content.includes("@CustomerAuth()") &&
-      content.includes("customer: ICustomerPayload") &&
-      content.includes("return createShoppingSale({") &&
-      content.includes("customer,") &&
-      content.includes("body,"),
+
+  TestValidator.predicate("content is defined")(() => content !== undefined);
+
+  TestValidator.predicate("content import shoppingSale")(() =>
+    content.includes(
+      `import { createShoppingSale } from "../../../providers/createShoppingSale"`,
+    ),
+  );
+
+  TestValidator.predicate("content import Authentication")(() =>
+    content.includes(
+      `import { CustomerAuth } from "../../../decorators/CustomerAuth"`,
+    ),
+  );
+
+  TestValidator.predicate("content import payload")(() =>
+    content.includes(
+      `import { ICustomerPayload } from "../../../decorators/payload/ICustomerPayload"`,
+    ),
+  );
+
+  TestValidator.predicate("content includes customer auth")(() =>
+    content.includes("@CustomerAuth()"),
+  );
+
+  TestValidator.predicate("content includes custom payload")(() =>
+    content.includes("customer: ICustomerPayload"),
+  );
+
+  TestValidator.predicate("content includes createShoppingSale")(() =>
+    content.includes("return createShoppingSale({"),
+  );
+
+  TestValidator.predicate("content includes customer")(() =>
+    content.includes("customer,"),
+  );
+
+  TestValidator.predicate("content includes body")(() =>
+    content.includes("body\n"),
   );
 };
 
