@@ -4,6 +4,7 @@ import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/Auto
 import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
+import { transformAnalyzeWriteHistories } from "./transformAnalyzeWriteHistories";
 
 export const transformAnalyzeReviewerHistories = (
   scenario: AutoBeAnalyzeScenarioEvent,
@@ -12,30 +13,18 @@ export const transformAnalyzeReviewerHistories = (
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
   return [
-    {
-      id: v4(),
-      created_at: new Date().toISOString(),
-      type: "systemMessage",
-      text: AutoBeSystemPromptConstant.ANALYZE_WRITE,
-    },
+    ...transformAnalyzeWriteHistories(scenario, file),
     {
       id: v4(),
       created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: [
-        "Below are all of the files.",
+        "Here is the document what you have written:",
+        "",
         "```json",
         JSON.stringify(file),
         "```",
         "",
-        "These files are written under the following conditions.",
-        "You should refer to these contents and make a review.",
-        "```json",
-        JSON.stringify({
-          prefix: scenario.prefix,
-          roles: scenario.roles,
-        }),
-        "```",
       ].join("\n"),
     },
     {
@@ -43,6 +32,12 @@ export const transformAnalyzeReviewerHistories = (
       created_at: new Date().toISOString(),
       type: "systemMessage",
       text: AutoBeSystemPromptConstant.ANALYZE_REVIEW,
+    },
+    {
+      id: v4(),
+      created_at: new Date().toISOString(),
+      type: "assistantMessage",
+      text: `You have to review the ${file.filename} document. Don't review others.`,
     },
   ];
 };

@@ -16,7 +16,7 @@ import { IAutoBeAnalyzeWriteApplication } from "./structures/IAutoBeAnalyzeWrite
 export const orchestrateAnalyzeWrite = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   scenario: AutoBeAnalyzeScenarioEvent,
-  file: Omit<AutoBeAnalyzeFile, "content">,
+  file: AutoBeAnalyzeFile.Scenario,
   progress: {
     total: number;
     completed: number;
@@ -31,7 +31,7 @@ export const orchestrateAnalyzeWrite = async <Model extends ILlmSchema.Model>(
       model: ctx.model,
       pointer,
     }),
-    histories: transformAnalyzeWriteHistories(ctx, scenario, file),
+    histories: transformAnalyzeWriteHistories(scenario, file),
     enforceFunctionCall: true,
   });
   await agentica.conversate("Write Document.").finally(() => {

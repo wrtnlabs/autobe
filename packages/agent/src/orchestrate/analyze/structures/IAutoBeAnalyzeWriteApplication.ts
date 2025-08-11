@@ -9,8 +9,6 @@ export interface IAutoBeAnalyzeWriteApplication {
    *
    * @param props - The properties containing the document plan and initial
    *   content
-   * @returns Void - The function writes the document and does not return a
-   *   value
    */
   write(props: IAutoBeAnalyzeWriteApplication.IProps): void;
 }

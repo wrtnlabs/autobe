@@ -19,8 +19,6 @@ export interface IAutoBeAnalyzeReviewApplication {
    *
    * @param props - The properties containing review criteria, plan, and content
    *   to review
-   * @returns Void - The function performs the review and calls either accept()
-   *   or reject()
    */
   review(props: IAutoBeAnalyzeReviewApplication.IProps): void;
 }
