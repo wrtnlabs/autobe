@@ -64,6 +64,7 @@ export const orchestrateAnalyzeScenario = async <
   return {
     type: "analyzeScenario",
     prefix: pointer.value.prefix,
+    language: pointer.value.language,
     roles: pointer.value.roles,
     files: pointer.value.files,
     step: (ctx.state().analyze?.step ?? -1) + 1,

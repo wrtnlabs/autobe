@@ -46,6 +46,10 @@ export const transformAnalyzeWriteHistories = (
         "```json",
         JSON.stringify(file),
         "```",
+        "",
+        "## Language",
+        "",
+        `The language of the document is ${scenario.language ?? "en-US"}.`,
       ].join("\n"),
     },
   ];
