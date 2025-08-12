@@ -3,7 +3,7 @@ import {
   AutoBeInterfaceSchemasReviewEvent,
   AutoBeOpenApi,
 } from "@autobe/interface";
-import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
+import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 
@@ -15,6 +15,7 @@ export async function orchestrateInterfaceSchemasReview<
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
+  operations: AutoBeOpenApi.IOperation[],
   schemas: Record<
     string,
     AutoBeOpenApi.IJsonSchemaDescriptive<AutoBeOpenApi.IJsonSchema>
@@ -31,8 +32,13 @@ export async function orchestrateInterfaceSchemasReview<
     controller: createController({
       model: ctx.model,
       pointer,
+      schemas,
     }),
-    histories: transformInterfaceSchemasReviewHistories(ctx.state(), schemas),
+    histories: transformInterfaceSchemasReviewHistories(
+      ctx.state(),
+      operations,
+      schemas,
+    ),
     enforceFunctionCall: true,
   });
 
@@ -48,14 +54,15 @@ export async function orchestrateInterfaceSchemasReview<
   const event: AutoBeInterfaceSchemasReviewEvent = {
     type: "interfaceSchemasReview",
     schemas: schemas,
-    plan: pointer.value.plan,
     review: pointer.value.review,
+    plan: pointer.value.plan,
     content: pointer.value.content,
     created_at: new Date().toISOString(),
     step: ctx.state().analyze?.step ?? 0,
     total: progress.total,
     completed: ++progress.completed,
   };
+
   ctx.dispatch(event);
 
   return pointer.value.content;
@@ -64,10 +71,49 @@ export async function orchestrateInterfaceSchemasReview<
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   pointer: IPointer<IAutoBeInterfaceSchemasReviewApplication.IProps | null>;
+  schemas: Record<
+    string,
+    AutoBeOpenApi.IJsonSchemaDescriptive<AutoBeOpenApi.IJsonSchema>
+  >;
 }): IAgenticaController.IClass<Model> {
+  const validate = (
+    next: unknown,
+  ): IValidation<IAutoBeInterfaceSchemasReviewApplication.IProps> => {
+    const result: IValidation<IAutoBeInterfaceSchemasReviewApplication.IProps> =
+      typia.validate<IAutoBeInterfaceSchemasReviewApplication.IProps>(next);
+    if (result.success === false) return result;
+
+    const errors: IValidation.IError[] = [];
+    if (Object.keys(result.data.content).length === 0) {
+      console.log();
+      console.log();
+      console.log();
+      console.log(
+        JSON.stringify({ schemas: props.schemas, ...result.data }, null, 2),
+      );
+      errors.push({
+        path: `$input.content`,
+        expected: `Content must not be empty. If it's at a level that can't be fixed, please create a schema instead to meet the requirements.`,
+        value: result.data.content,
+      });
+    }
+
+    if (errors.length > 0) {
+      return {
+        success: false,
+        errors,
+        data: result.data,
+      };
+    }
+
+    return result;
+  };
+
   const application: ILlmApplication<Model> = collection[
     props.model === "chatgpt" ? "chatgpt" : "claude"
-  ] satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+  ](
+    validate,
+  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
 
   return {
     protocol: "class",
@@ -80,18 +126,26 @@ function createController<Model extends ILlmSchema.Model>(props: {
     } satisfies IAutoBeInterfaceSchemasReviewApplication,
   };
 }
+const claude = (validate: Validator) =>
+  typia.llm.application<IAutoBeInterfaceSchemasReviewApplication, "claude">({
+    validate: {
+      review: validate,
+    },
+  });
 
-const claude = typia.llm.application<
-  IAutoBeInterfaceSchemasReviewApplication,
-  "claude"
->();
 const collection = {
-  chatgpt: typia.llm.application<
-    IAutoBeInterfaceSchemasReviewApplication,
-    "chatgpt"
-  >(),
+  chatgpt: (validate: Validator) =>
+    typia.llm.application<IAutoBeInterfaceSchemasReviewApplication, "chatgpt">({
+      validate: {
+        review: validate,
+      },
+    }),
   claude,
   llama: claude,
   deepseek: claude,
   "3.1": claude,
 };
+
+type Validator = (
+  input: unknown,
+) => IValidation<IAutoBeInterfaceSchemasReviewApplication.IProps>;

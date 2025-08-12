@@ -300,7 +300,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
       };
     return result;
   };
-  const application = collection[
+  const application: ILlmApplication<Model> = collection[
     props.model === "chatgpt" ? "chatgpt" : "claude"
   ](
     validate,

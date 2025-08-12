@@ -30,7 +30,6 @@ export const orchestrateAnalyze =
       created_at: startTime.toISOString(),
     });
 
-    console.time("scenario");
     // Generate analysis scenario
     const scenario: AutoBeAnalyzeScenarioEvent | AutoBeAssistantMessageHistory =
       await orchestrateAnalyzeScenario(ctx);
@@ -38,9 +37,6 @@ export const orchestrateAnalyze =
       return ctx.assistantMessage(scenario);
     else ctx.dispatch(scenario);
 
-    console.timeEnd("scenario");
-
-    console.time("write");
     // write documents
     const writeProgress = {
       total: scenario.files.length,
@@ -57,9 +53,7 @@ export const orchestrateAnalyze =
         return event.file;
       }),
     );
-    console.timeEnd("write");
 
-    console.time("review");
     // review documents
     const reviewProgress = {
       total: fileList.length,
@@ -81,7 +75,6 @@ export const orchestrateAnalyze =
         };
       }),
     );
-    console.timeEnd("review");
 
     // Complete the analysis
     return ctx.dispatch({

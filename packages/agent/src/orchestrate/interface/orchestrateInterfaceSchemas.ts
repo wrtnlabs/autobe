@@ -51,7 +51,12 @@ export async function orchestrateInterfaceSchemas<
         created_at: new Date().toISOString(),
       });
 
-      return orchestrateInterfaceSchemasReview(ctx, row, reviewProgress);
+      return orchestrateInterfaceSchemasReview(
+        ctx,
+        operations,
+        row,
+        reviewProgress,
+      );
     }),
   )) {
     Object.assign(x, y);
