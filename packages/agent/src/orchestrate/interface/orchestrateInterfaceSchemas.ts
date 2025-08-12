@@ -10,6 +10,7 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { forceRetry } from "../../utils/forceRetry";
 import { transformInterfaceSchemaHistories } from "./histories/transformInterfaceSchemaHistories";
+import { orchestrateInterfaceSchemasReview } from "./orchestrateInterfaceSchemasReview";
 import { IAutoBeInterfaceSchemaApplication } from "./structures/IAutoBeInterfaceSchemaApplication";
 
 export async function orchestrateInterfaceSchemas<
@@ -30,6 +31,10 @@ export async function orchestrateInterfaceSchemas<
   });
   let progress: number = 0;
 
+  const reviewProgress: { total: number; completed: number } = {
+    total: matrix.length,
+    completed: 0,
+  };
   const x: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
   for (const y of await Promise.all(
     matrix.map(async (it) => {
@@ -45,7 +50,8 @@ export async function orchestrateInterfaceSchemas<
         step: ctx.state().analyze?.step ?? 0,
         created_at: new Date().toISOString(),
       });
-      return row;
+
+      return orchestrateInterfaceSchemasReview(ctx, row, reviewProgress);
     }),
   )) {
     Object.assign(x, y);

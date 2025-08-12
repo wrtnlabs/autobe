@@ -32,6 +32,7 @@ export * from "./AutoBeInterfaceGroupsEvent";
 export * from "./AutoBeInterfaceOperationsEvent";
 export * from "./AutoBeInterfaceOperationsReviewEvent";
 export * from "./AutoBeInterfaceSchemasEvent";
+export * from "./AutoBeInterfaceSchemasReviewEvent";
 export * from "./AutoBeInterfaceStartEvent";
 
 // TEST
