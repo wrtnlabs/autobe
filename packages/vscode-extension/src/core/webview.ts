@@ -14,6 +14,7 @@ import { WorkerConnector } from "tgrid";
 import typia from "typia";
 import { ExtensionContext, Uri, Webview, WebviewView } from "vscode";
 
+import { Logger } from "../Logger";
 import {
   AUTOBE_API_KEY,
   AUTOBE_CHAT_SESSION_MAP,
@@ -30,6 +31,9 @@ export const getAutoBeWebviewProvider = (context: ExtensionContext) => {
       panel.webview.options = { enableScripts: true };
       panel.webview.html = getHtmlContent(context)(panel.webview);
       panel.webview.onDidReceiveMessage(async (message) => {
+        Logger.debug(
+          `[AutoBe] onDidReceiveMessage: ${JSON.stringify(message)}`,
+        );
         await instance.handlePostMessage(message);
       });
     },

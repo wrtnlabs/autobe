@@ -1,20 +1,20 @@
-import { IAutoBeTokenUsageJson } from "@autobe/interface";
+import {
+  AutoBeEvent,
+  AutoBeHistory,
+  IAutoBeTokenUsageJson,
+} from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 
 export type IAutoBeWebviewMessage =
-  | IRequestInitWebview
   | IRequestGetConfig
   | IResponseGetConfig
   | IRequestSetConfig
   | IRequestCreateChatSession
-  | IResponseCreateChatSession;
-
-export interface IRequestInitWebview {
-  type: "req_init_webview";
-  data: {
-    apiKey: string;
-  };
-}
+  | IResponseCreateChatSession
+  | IOnHistoryAutoBe
+  | IOnEventAutoBe
+  | IOnEventUpdateTokenUsage
+  | IRequestConversateChatSession;
 
 export interface IRequestGetConfig {
   type: "req_get_api_key";
@@ -54,12 +54,27 @@ export interface IResponseCreateChatSession {
   };
 }
 
+export interface IRequestConversateChatSession {
+  type: "req_conversate_chat_session";
+  data: {
+    sessionId: string;
+    message: string;
+  };
+}
+
+export interface IOnHistoryAutoBe {
+  type: "on_history_auto_be";
+  sessionId: string;
+  data: AutoBeHistory;
+}
 export interface IOnEventAutoBe {
   type: "on_event_auto_be";
-  data: "";
+  sessionId: string;
+  data: AutoBeEvent;
 }
 
 export interface IOnEventUpdateTokenUsage {
   type: "on_event_update_token_usage";
+  sessionId: string;
   data: IAutoBeTokenUsageJson;
 }
