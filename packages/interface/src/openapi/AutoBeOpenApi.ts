@@ -1,5 +1,7 @@
 import { tags } from "typia";
 
+import { CamelPattern } from "../typings/CamelPattern";
+
 /**
  * AST type system for programmatic OpenAPI specification generation through AI
  * function calling.
@@ -405,8 +407,11 @@ export namespace AutoBeOpenApi {
      *
      * This field specifies which user role is allowed to access this endpoint.
      * The role name must correspond exactly to the actual roles defined in your
-     * system's Prisma schema (e.g., "admin", "administrator", "moderator",
-     * "seller", "buyer", etc.).
+     * system's Prisma schema.
+     *
+     * ## Naming Convention
+     *
+     * Role names MUST use camelCase.
      *
      * ## Role-Based Path Convention
      *
@@ -441,7 +446,7 @@ export namespace AutoBeOpenApi {
      * handled by decorators at the controller level, and the provider function
      * will receive the authenticated user object with the appropriate type.
      */
-    authorizationRole: (string & tags.MinLength<1>) | null;
+    authorizationRole: (string & CamelPattern & tags.MinLength<1>) | null;
 
     /**
      * Functional name of the API endpoint.
@@ -452,8 +457,9 @@ export namespace AutoBeOpenApi {
      *
      * ## Reserved Word Restrictions
      *
-     * CRITICAL: The name MUST NOT be a TypeScript/JavaScript reserved word, as it 
-     * will be used as a class method name in generated code. Avoid names like:
+     * CRITICAL: The name MUST NOT be a TypeScript/JavaScript reserved word, as
+     * it will be used as a class method name in generated code. Avoid names
+     * like:
      *
      * - `delete`, `for`, `if`, `else`, `while`, `do`, `switch`, `case`, `break`
      * - `continue`, `function`, `return`, `with`, `in`, `of`, `instanceof`
@@ -464,6 +470,7 @@ export namespace AutoBeOpenApi {
      * - `interface`, `package`, `enum`, `debugger`
      *
      * Instead, use alternative names for these operations:
+     *
      * - Use `erase` instead of `delete`
      * - Use `iterate` instead of `for`
      * - Use `when` instead of `if`
@@ -514,14 +521,27 @@ export namespace AutoBeOpenApi {
      *
      * ## Naming Guidelines
      *
-     * - Use lowercase, singular verb forms
+     * - MUST use camelCase naming convention
+     * - Use singular verb forms
      * - Be concise but descriptive
      * - Avoid abbreviations unless widely understood
      * - Ensure the name clearly represents the endpoint's primary action
      * - For nested resources, focus on the action rather than hierarchy
      * - NEVER use JavaScript/TypeScript reserved words
      *
-     * Examples:
+     * Valid Examples:
+     *
+     * - `index`, `create`, `update`, `erase` (single word)
+     * - `updatePassword`, `cancelOrder`, `publishArticle` (camelCase)
+     * - `validateEmail`, `generateReport`, `exportData` (camelCase)
+     *
+     * Invalid Examples:
+     *
+     * - `update_password` (snake_case not allowed)
+     * - `UpdatePassword` (PascalCase not allowed)
+     * - `update-password` (kebab-case not allowed)
+     *
+     * Path to Name Examples:
      *
      * - `GET /shopping/orders/{orderId}/items` → `name: "index"` (lists items)
      * - `POST /shopping/orders/{orderId}/cancel` → `name: "cancel"`
@@ -551,7 +571,7 @@ export namespace AutoBeOpenApi {
      * operations can be uniquely identified in generated SDKs and prevents
      * naming conflicts.
      */
-    name: string & tags.Pattern<"^[a-zA-Z_][a-zA-Z0-9_]*$">;
+    name: string & CamelPattern;
   }
 
   /**
@@ -580,11 +600,7 @@ export namespace AutoBeOpenApi {
      * model. It must correspond 1:1 with how the user is represented in the
      * database.
      *
-     * Examples:
-     *
-     * - "buyer": a customer who makes purchases
-     * - "seller": a vendor who offers products
-     * - "moderator": a content reviewer or manager
+     * MUST use camelCase naming convention.
      *
      * ⚠️ Important: Each `role` must **exactly match a table name defined in
      * the database schema**. This is not merely a convention or example — it is
@@ -600,7 +616,7 @@ export namespace AutoBeOpenApi {
      * Therefore, if a user type cannot be clearly and uniquely distinguished in
      * the database, It **cannot** be used as a valid `role` here.
      */
-    name: string;
+    name: string & CamelPattern;
 
     /**
      * Detailed description of the authorization role
@@ -669,8 +685,10 @@ export namespace AutoBeOpenApi {
      * This name must match exactly with the parameter name in the route path.
      * It must be corresponded to the
      * {@link AutoBeOpenApi.IOperation.path API operation path}.
+     *
+     * MUST use camelCase naming convention.
      */
-    name: string;
+    name: string & CamelPattern;
 
     /**
      * Description about the path parameter.

@@ -1,3 +1,5 @@
+import { CamelPattern } from "../../typings/CamelPattern";
+
 /**
  * Interface representing a user role definition in the requirements analysis
  * phase.
@@ -23,10 +25,11 @@ export interface AutoBeAnalyzeRole {
    *
    * This name will be used as a reference throughout the generated codebase,
    * including Prisma schema model names, authorization decorator parameters,
-   * and API documentation. Examples: "customer", "admin", "seller",
-   * "moderator".
+   * and API documentation.
+   *
+   * MUST use camelCase naming convention.
    */
-  name: string;
+  name: string & CamelPattern;
 
   /**
    * Human-readable description of the role's permissions and capabilities.

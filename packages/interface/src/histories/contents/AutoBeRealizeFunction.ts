@@ -1,4 +1,5 @@
 import { AutoBeOpenApi } from "../../openapi/AutoBeOpenApi";
+import { CamelPattern } from "../../typings/CamelPattern";
 
 /** @author Kakasoo */
 export interface AutoBeRealizeFunction {
@@ -26,12 +27,21 @@ export interface AutoBeRealizeFunction {
    * Provider function name
    *
    * The TypeScript function name generated from the OpenAPI path. Follows
-   * naming convention: HTTP method + path segments joined by double
+   * special naming convention: HTTP method + path segments joined by double
    * underscores. Path parameters are prefixed with $.
    *
-   * Example: "delete__discussionBoard_administrators_$id"
+   * NOTE: This does NOT follow camelCase convention due to its special format.
+   * Instead, it uses a specific pattern for provider function naming:
+   *
+   * - HTTP method in lowercase
+   * - Double underscores (__) as segment separator
+   * - Path segments separated by single underscores (_)
+   * - Path parameters prefixed with dollar sign ($)
+   *
+   * Pattern: method__segment1_segment2_$param Example:
+   * "delete__discussionBoard_administrators_$id"
    */
-  name: string;
+  name: string & CamelPattern;
 
   /**
    * Generated TypeScript implementation code

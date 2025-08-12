@@ -1,4 +1,4 @@
-import { AutoBeAnalyzeRole } from "@autobe/interface";
+import { AutoBeAnalyzeRole, CamelPattern } from "@autobe/interface";
 import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
 
 export interface IAutoBeAnalyzeScenarioApplication {
@@ -27,8 +27,10 @@ export namespace IAutoBeAnalyzeScenarioApplication {
     /**
      * Prefix for file names and variable names. This will be used for
      * organizing documentation files.
+     *
+     * MUST use camelCase naming convention.
      */
-    prefix: string;
+    prefix: string & CamelPattern;
 
     /** Roles to be assigned for the project */
     roles: AutoBeAnalyzeRole[];

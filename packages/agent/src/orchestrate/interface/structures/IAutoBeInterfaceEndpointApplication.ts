@@ -1,4 +1,5 @@
 import { AutoBeOpenApi } from "@autobe/interface";
+import { tags } from "typia";
 
 export interface IAutoBeInterfaceEndpointApplication {
   /**
@@ -19,6 +20,6 @@ export interface IAutoBeInterfaceEndpointApplication {
 export namespace IAutoBeInterfaceEndpointApplication {
   export interface IProps {
     /** The endpoints to generate. */
-    endpoints: AutoBeOpenApi.IEndpoint[];
+    endpoints: AutoBeOpenApi.IEndpoint[] & tags.MinItems<1>;
   }
 }

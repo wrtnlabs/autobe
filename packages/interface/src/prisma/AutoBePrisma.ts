@@ -1,5 +1,7 @@
 import { tags } from "typia";
 
+import { SnakePattern } from "../typings/SnakePattern";
+
 /**
  * AST type system for programmatic Prisma ORM schema generation through AI
  * function calling.
@@ -199,8 +201,7 @@ export namespace AutoBePrisma {
      * ensuring logical grouping and proper organization of related data
      * structures.
      */
-    tables: Array<string & tags.Pattern<"^[a-z][a-z0-9_]*$">> &
-      tags.MinItems<1>;
+    tables: Array<string & SnakePattern> & tags.MinItems<1>;
   }
 
   /**
@@ -254,11 +255,11 @@ export namespace AutoBePrisma {
     /**
      * Name of the Prisma model (database table name).
      *
-     * Should follow snake_case convention with domain prefix. Examples:
-     * "shopping_customers", "shopping_sale_snapshots", "bbs_articles"
-     * Materialized views use "mv_" prefix: "mv_shopping_sale_last_snapshots"
+     * MUST use snake_case naming convention. Examples: "shopping_customers",
+     * "shopping_sale_snapshots", "bbs_articles" Materialized views use "mv_"
+     * prefix: "mv_shopping_sale_last_snapshots"
      */
-    name: string & tags.Pattern<"^[a-z][a-z0-9_]*$">;
+    name: string & SnakePattern;
 
     /**
      * Detailed description explaining the business purpose and usage of the
@@ -270,9 +271,9 @@ export namespace AutoBePrisma {
      * - Key relationships with other models
      * - Important behavioral notes or constraints
      * - References to related entities using "{@\link ModelName}" syntax
-     * 
-     * **IMPORTANT**: Description must be written in English.
-     * Example: "Customer information, but not a person but a **connection** basis..."
+     *
+     * **IMPORTANT**: Description must be written in English. Example: "Customer
+     * information, but not a person but a **connection** basis..."
      */
     description: string;
 
@@ -360,10 +361,11 @@ export namespace AutoBePrisma {
     /**
      * Name of the primary key field.
      *
-     * Consistently named "id" across all models in the uploaded schemas.
-     * Represents the unique identifier for each record in the table.
+     * MUST use snake_case naming convention. Consistently named "id" across all
+     * models in the uploaded schemas. Represents the unique identifier for each
+     * record in the table.
      */
-    name: string & tags.Pattern<"^[a-z][a-z0-9_]*$">;
+    name: string & SnakePattern;
 
     /**
      * Data type of the primary key field.
@@ -379,7 +381,7 @@ export namespace AutoBePrisma {
      *
      * Standard description is "Primary Key." across all models. Serves as the
      * unique identifier for the model instance.
-     * 
+     *
      * **IMPORTANT**: Description must be written in English.
      */
     description: string;
@@ -397,11 +399,12 @@ export namespace AutoBePrisma {
     /**
      * Name of the foreign key field.
      *
-     * Follows convention: "{target_model_name_without_prefix}_id" Examples:
-     * "shopping_customer_id", "bbs_article_id", "attachment_file_id" For
-     * self-references: "parent_id" (e.g., in hierarchical structures)
+     * MUST use snake_case naming convention. Follows convention:
+     * "{target_model_name_without_prefix}_id" Examples: "shopping_customer_id",
+     * "bbs_article_id", "attachment_file_id" For self-references: "parent_id"
+     * (e.g., in hierarchical structures)
      */
-    name: string & tags.Pattern<"^[a-z][a-z0-9_]*$">;
+    name: string & SnakePattern;
 
     /**
      * Data type of the foreign key field.
@@ -416,10 +419,10 @@ export namespace AutoBePrisma {
      * relationship.
      *
      * Should reference the target model using format: "Target model's {@\link
-     * ModelName.id}"
-     * Examples: "Belonged customer's {@\link shopping_customers.id}"
-     * May include additional context about the relationship's business meaning.
-     * 
+     * ModelName.id}" Examples: "Belonged customer's {@\link
+     * shopping_customers.id}" May include additional context about the
+     * relationship's business meaning.
+     *
      * **IMPORTANT**: Description must be written in English.
      */
     description: string;
@@ -487,7 +490,7 @@ export namespace AutoBePrisma {
      * Naming convention: camelCase, descriptive of the relationship's business
      * meaning
      */
-    name: string & tags.Pattern<"^[a-zA-Z_][a-zA-Z0-9_]*$">;
+    name: string & SnakePattern;
 
     /**
      * Name of the target model being referenced by this relation.
@@ -546,14 +549,15 @@ export namespace AutoBePrisma {
     /**
      * Name of the field in the database table.
      *
-     * Should use snake_case convention. Common patterns from uploaded schemas:
+     * MUST use snake_case naming convention. Common patterns from uploaded
+     * schemas:
      *
      * - Timestamps: created_at, updated_at, deleted_at, opened_at, closed_at
      * - Identifiers: code, name, nickname, title
      * - Business data: value, quantity, price, volume, balance
      * - Flags: primary, required, exclusive, secret, multiplicative
      */
-    name: string & tags.Pattern<"^[a-z][a-z0-9_]*$">;
+    name: string & SnakePattern;
 
     /**
      * Data type of the field for Prisma schema generation.
@@ -579,9 +583,9 @@ export namespace AutoBePrisma {
      * - Valid values or constraints if applicable
      * - How it relates to business processes
      * - Any special behavioral notes
-     * 
-     * **IMPORTANT**: Description must be written in English.
-     * Example: "Amount of cash payment." or "Whether the unit is required or not."
+     *
+     * **IMPORTANT**: Description must be written in English. Example: "Amount
+     * of cash payment." or "Whether the unit is required or not."
      */
     description: string;
 

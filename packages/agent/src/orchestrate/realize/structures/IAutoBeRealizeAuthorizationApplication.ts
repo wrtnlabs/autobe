@@ -1,3 +1,5 @@
+import { CamelPattern, PascalPattern } from "@autobe/interface";
+
 export interface IAutoBeRealizeAuthorizationApplication {
   createDecorator: (
     next: IAutoBeRealizeAuthorizationApplication.IProps,
@@ -38,8 +40,10 @@ export namespace IAutoBeRealizeAuthorizationApplication {
      * format (e.g., adminAuthorize, userAuthorize). This function will be
      * called by the decorator to verify JWT tokens and return authenticated
      * user information for the specified role.
+     *
+     * MUST use camelCase naming convention.
      */
-    name: string;
+    name: string & CamelPattern;
 
     /**
      * Complete TypeScript code for the authentication Provider function. Must
@@ -59,8 +63,10 @@ export namespace IAutoBeRealizeAuthorizationApplication {
      * decorator in Controller methods to automatically authenticate and
      * authorize users for the specific role, injecting the authenticated user
      * payload as a method parameter.
+     *
+     * MUST use PascalCase naming convention.
      */
-    name: string;
+    name: string & PascalPattern;
 
     /**
      * Complete TypeScript code for the authentication Decorator implementation.
@@ -79,8 +85,10 @@ export namespace IAutoBeRealizeAuthorizationApplication {
      * (e.g., AdminPayload, UserPayload). This type defines the structure of the
      * authenticated user data that will be injected into Controller methods
      * when using the decorator.
+     *
+     * MUST use PascalCase naming convention.
      */
-    name: string;
+    name: string & PascalPattern;
 
     /**
      * Complete TypeScript code for the Payload type interface in {Role}Payload

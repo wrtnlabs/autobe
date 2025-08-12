@@ -1,4 +1,5 @@
-import { AutoBeOpenApi } from "@autobe/interface";
+import { AutoBeOpenApi, SnakePattern } from "@autobe/interface";
+import { tags } from "typia";
 
 export interface IAutoBeTestScenarioApplication {
   /**
@@ -32,7 +33,7 @@ export namespace IAutoBeTestScenarioApplication {
      * Each scenario represents a specific test case for the same `path` and
      * `method`.
      */
-    scenarios: IScenario[];
+    scenarios: IScenario[] & tags.MinItems<1>;
   }
 
   /**
@@ -62,8 +63,9 @@ export namespace IAutoBeTestScenarioApplication {
      *
      * ## Naming Convention
      *
+     * MUST use snake_case naming convention.
+     *
      * - Must start with `test_api_` prefix (mandatory requirement)
-     * - Use snake_case formatting throughout
      * - ALWAYS start with business feature, NOT action verbs
      * - Business feature comes first, followed by scenario context
      * - Embed action verbs within the scenario description, not at the beginning
@@ -109,7 +111,7 @@ export namespace IAutoBeTestScenarioApplication {
      * - Don't imply dependency on other API operations
      * - Represent complete user interactions
      */
-    functionName: string;
+    functionName: string & SnakePattern;
 
     /**
      * A list of other API endpoints that this scenario logically depends on.

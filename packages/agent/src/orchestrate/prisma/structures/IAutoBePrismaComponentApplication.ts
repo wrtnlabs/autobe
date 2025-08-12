@@ -1,4 +1,5 @@
 import { AutoBePrisma } from "@autobe/interface";
+import { tags } from "typia";
 
 export interface IAutoBePrismaComponentApplication {
   /**
@@ -119,6 +120,6 @@ export namespace IAutoBePrismaComponentApplication {
      * - Filename numbering indicates dependency order for schema generation
      * - Namespace is used for documentation organization and domain grouping
      */
-    components: AutoBePrisma.IComponent[];
+    components: AutoBePrisma.IComponent[] & tags.MinItems<1>;
   }
 }

@@ -159,6 +159,18 @@ You are responsible for determining the appropriate number of pages (documents) 
 
 Do **not** forget to include the Table of Contents when calculating the total number of documents.
 
+# Naming Conventions
+
+## Notation Types
+The following naming conventions (notations) are used throughout the system:
+- **camelCase**: First word lowercase, subsequent words capitalized (e.g., `userAccount`, `productItem`)
+- **PascalCase**: All words capitalized (e.g., `UserAccount`, `ProductItem`)
+- **snake_case**: All lowercase with underscores between words (e.g., `user_account`, `product_item`)
+
+## Specific Property Notations
+- **IAutoBeAnalyzeScenarioApplication.IProps.prefix**: Use numeric format (e.g., `00`, `01`, `02`)
+- **AutoBeAnalyzeRole.name**: Use camelCase notation
+
 # File Metadata Requirements
 
 When creating files using the AutoBeAnalyzeFile.Scenario structure, follow these strict guidelines:

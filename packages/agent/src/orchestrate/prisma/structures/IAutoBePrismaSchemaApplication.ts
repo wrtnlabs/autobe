@@ -1,4 +1,5 @@
 import { AutoBePrisma } from "@autobe/interface";
+import { tags } from "typia";
 
 export interface IAutoBePrismaSchemaApplication {
   /**
@@ -47,42 +48,54 @@ export namespace IAutoBePrismaSchemaApplication {
     plan: string;
 
     /**
-     * Production-ready Prisma schema models generated based on the strategic plan.
+     * Production-ready Prisma schema models generated based on the strategic
+     * plan.
      *
-     * Contains a structured Abstract Syntax Tree (AST) representation of all database
-     * tables for the target component. Each model implements the planned table structure,
-     * relationships, indexes, and constraints using the AutoBePrisma.IModel interface.
-     * These models are designed to be production-ready from the initial generation,
-     * following all best practices and normalization principles.
+     * Contains a structured Abstract Syntax Tree (AST) representation of all
+     * database tables for the target component. Each model implements the
+     * planned table structure, relationships, indexes, and constraints using
+     * the AutoBePrisma.IModel interface. These models are designed to be
+     * production-ready from the initial generation, following all best
+     * practices and normalization principles.
      *
      * **Implementation Requirements:**
      *
-     * - **Model Count**: Exactly matches targetComponent.tables.length (plus any junction tables)
-     * - **Table Names**: EXACT names from targetComponent.tables - no modifications allowed
+     * - **Model Count**: Exactly matches targetComponent.tables.length (plus any
+     *   junction tables)
+     * - **Table Names**: EXACT names from targetComponent.tables - no
+     *   modifications allowed
      * - **Primary Keys**: Always UUID type with field name "id"
      * - **Foreign Keys**: Proper IRelation configurations for all relationships
-     * - **Business Fields**: Only raw data fields - no calculated or derived values
-     * - **Data Types**: Limited to: uuid, string, int, double, datetime, boolean, uri
+     * - **Business Fields**: Only raw data fields - no calculated or derived
+     *   values
+     * - **Data Types**: Limited to: uuid, string, int, double, datetime, boolean,
+     *   uri
      * - **Relationships**: Correct patterns for 1:1, 1:N, and M:N relationships
      * - **Indexes**:
+     *
      *   - UniqueIndexes: Business constraints and composite unique keys
      *   - PlainIndexes: Multi-column query optimization (never single FK indexes)
      *   - GinIndexes: Full-text search on appropriate string fields
-     * - **Materialized Views**: Tables prefixed with "mv_" have material flag set to true
-     * - **Documentation**: Comprehensive English descriptions with business context
+     * - **Materialized Views**: Tables prefixed with "mv_" have material flag set
+     *   to true
+     * - **Documentation**: Comprehensive English descriptions with business
+     *   context
      *
      * **Quality Standards:**
      *
      * - **Normalization**: Strict adherence to 3NF (Third Normal Form)
      * - **No Denormalization**: Except in materialized views (mv_ tables)
-     * - **Referential Integrity**: All foreign keys reference valid existing tables
-     * - **Temporal Fields**: Consistent created_at, updated_at, deleted_at patterns
+     * - **Referential Integrity**: All foreign keys reference valid existing
+     *   tables
+     * - **Temporal Fields**: Consistent created_at, updated_at, deleted_at
+     *   patterns
      * - **Snapshot Support**: Proper historical data preservation where needed
-     * - **Performance Ready**: Optimized index strategy for expected query patterns
+     * - **Performance Ready**: Optimized index strategy for expected query
+     *   patterns
      *
-     * The generated models will undergo review by a separate specialized agent to ensure
-     * compliance with all requirements and best practices.
+     * The generated models will undergo review by a separate specialized agent
+     * to ensure compliance with all requirements and best practices.
      */
-    models: AutoBePrisma.IModel[];
+    models: AutoBePrisma.IModel[] & tags.MinItems<1>;
   }
 }

@@ -1,4 +1,4 @@
-import { AutoBeOpenApi } from "@autobe/interface";
+import { AutoBeOpenApi, CamelPattern } from "@autobe/interface";
 import { tags } from "typia";
 
 export interface IAutoBeInterfaceOperationApplication {
@@ -96,6 +96,10 @@ export namespace IAutoBeInterfaceOperationApplication {
      * endpoint. Multiple roles can be specified to allow different types of
      * users to access the same endpoint.
      *
+     * ## Naming Convention
+     *
+     * All role names MUST use camelCase.
+     *
      * ## Important Guidelines
      *
      * - Set to empty array `[]` for public endpoints that require no
@@ -120,6 +124,6 @@ export namespace IAutoBeInterfaceOperationApplication {
      * handled by decorators at the controller level, and the provider function
      * will receive the authenticated user object with the appropriate type.
      */
-    authorizationRoles: Array<string & tags.MinLength<1>>;
+    authorizationRoles: Array<string & CamelPattern & tags.MinLength<1>>;
   }
 }
