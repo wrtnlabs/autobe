@@ -1,4 +1,8 @@
-import { IAgenticaVendor, MicroAgentica } from "@agentica/core";
+import {
+  IAgenticaTokenUsageJson,
+  IAgenticaVendor,
+  MicroAgentica,
+} from "@agentica/core";
 import {
   AutoBeAssistantMessageHistory,
   AutoBeHistory,
@@ -165,6 +169,34 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
         )
         .filter((h) => h !== null),
     );
+
+    // TRACE FACADE TOKEN USAGE
+    let previous: IAgenticaTokenUsageJson.IComponent = this.agentica_
+      .getTokenUsage()
+      .toJSON().aggregate;
+    const increment = () => {
+      const current: IAgenticaTokenUsageJson.IComponent = this.agentica_
+        .getTokenUsage()
+        .toJSON().aggregate;
+      this.usage_.facade.increment({
+        total: current.total - previous.total,
+        input: {
+          total: current.input.total - previous.input.total,
+          cached: current.input.cached - previous.input.cached,
+        },
+        output: {
+          total: current.output.total - previous.output.total,
+          reasoning: current.output.reasoning - previous.output.reasoning,
+          accepted_prediction:
+            current.output.accepted_prediction -
+            previous.output.accepted_prediction,
+          rejected_prediction:
+            current.output.rejected_prediction -
+            previous.output.rejected_prediction,
+        },
+      });
+      previous = current;
+    };
     this.agentica_.on("assistantMessage", async (message) => {
       const start = new Date();
       const history: AutoBeAssistantMessageHistory = {
@@ -174,12 +206,16 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
         created_at: start.toISOString(),
         completed_at: new Date().toISOString(),
       };
+      increment();
       this.histories_.push(history);
       this.dispatch({
         type: "assistantMessage",
         text: history.text,
         created_at: history.created_at,
       }).catch(() => {});
+    });
+    this.agentica_.on("call", async () => {
+      increment();
     });
     this.agentica_.on("request", (e) => {
       if (e.body.parallel_tool_calls !== undefined)
@@ -222,8 +258,6 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
     this.dispatch(userMessageHistory).catch(() => {});
 
     await this.agentica_.conversate(content);
-
-    this.usage_.facade.increment(this.agentica_.getTokenUsage().aggregate);
     return this.histories_.slice(index);
   }
 

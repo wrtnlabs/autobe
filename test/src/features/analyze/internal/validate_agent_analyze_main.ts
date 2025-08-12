@@ -35,7 +35,13 @@ export const validate_agent_analyze_main = async (
       event,
       tokenUsage: agent.getTokenUsage().toJSON(),
     });
+    console.log(
+      event.type,
+      agent.getTokenUsage().aggregate.total.toLocaleString(),
+      agent.getTokenUsage().toJSON().aggregate.total.toLocaleString(),
+    );
   };
+  agent.on("assistantMessage", listen);
   agent.on("analyzeStart", listen);
   agent.on("analyzeScenario", listen);
   agent.on("analyzeWrite", listen);
