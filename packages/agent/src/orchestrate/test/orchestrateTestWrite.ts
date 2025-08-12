@@ -22,7 +22,6 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   scenarios: AutoBeTestScenario[],
 ): Promise<IAutoBeTestWriteResult[]> {
-  const start: Date = new Date();
   let complete: number = 0;
 
   const result: Array<IAutoBeTestWriteResult | null> = await Promise.all(
@@ -43,7 +42,7 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
           );
           const event: AutoBeTestWriteEvent = {
             type: "testWrite",
-            created_at: start.toISOString(),
+            created_at: new Date().toISOString(),
             location: `test/features/api/${result.domain}/${scenario.functionName}.ts`,
             ...result,
             completed: ++complete,
