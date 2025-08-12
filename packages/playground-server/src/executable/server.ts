@@ -52,7 +52,7 @@ const createMockAgent = async (
   const params: URLSearchParams = new URLSearchParams(
     path.indexOf("?") !== -1 ? path.split("?")[1] : "",
   );
-  console.log(params);
+  
   const load = async <T>(title: string): Promise<T | null> => {
     const vendor: string = params.get("vendor") ?? "openai/gpt-4.1";
     const type: string = params.get("type") ?? "bbs-backend";
