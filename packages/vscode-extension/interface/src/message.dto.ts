@@ -14,7 +14,8 @@ export type IAutoBeWebviewMessage =
   | IOnHistoryAutoBe
   | IOnEventAutoBe
   | IOnEventUpdateTokenUsage
-  | IRequestConversateChatSession;
+  | IRequestConversateChatSession
+  | IActionToConfig;
 
 export interface IRequestGetConfig {
   type: "req_get_api_key";
@@ -24,7 +25,7 @@ export interface IResponseGetConfig {
   type: "res_get_api_key";
   data: {
     apiKey: string;
-    model: ILlmSchema.Model;
+    model: string;
     baseUrl: string;
     concurrencyRequest: number;
   };
@@ -77,4 +78,8 @@ export interface IOnEventUpdateTokenUsage {
   type: "on_event_update_token_usage";
   sessionId: string;
   data: IAutoBeTokenUsageJson;
+}
+
+export interface IActionToConfig {
+  type: "action_to_config";
 }

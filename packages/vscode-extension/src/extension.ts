@@ -3,11 +3,13 @@
 import { ExtensionContext, window } from "vscode";
 
 import { Logger } from "./Logger";
+import { registerCommands } from "./commands";
 import { getAutoBeWebviewProvider } from "./core/webview";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export async function activate(context: ExtensionContext) {
+  registerCommands({ context });
   Logger.initialize(window.createOutputChannel("AutoBe"));
   Logger.info("AutoBe VSCode Extension start activated");
 

@@ -16,6 +16,7 @@ async function main() {
     {
       apiKey: string;
       model: string;
+      schemaModel: string;
       baseUrl: string;
       concurrencyRequest: number;
     },
@@ -25,7 +26,7 @@ async function main() {
 
   const header = await worker.getHeader();
   const agent = new AutoBeAgent({
-    model: header.model as ILlmSchema.Model,
+    model: header.schemaModel as ILlmSchema.Model,
     vendor: {
       api: new OpenAI({
         apiKey: header.apiKey,

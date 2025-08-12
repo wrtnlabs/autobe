@@ -19,5 +19,10 @@
 !webview-ui/build/assets/*.mjs.map
 !webview-ui/build/assets/*.css
 
+# include worker build files
+!worker/dist
+!worker/dist/*.mjs
+!worker/dist/*.mjs.map
+
 # include icons and image
 !assets/icons/**

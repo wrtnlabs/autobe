@@ -10,6 +10,7 @@ import {
   IAutoBeWebviewMessage,
   IResponseGetConfig,
 } from "@autobe/vscode-extension/interface";
+import { execSync } from "child_process";
 import { WorkerConnector } from "tgrid";
 import typia from "typia";
 import { ExtensionContext, Uri, Webview, WebviewView } from "vscode";
@@ -22,9 +23,19 @@ import {
 } from "../constant/key";
 import { getNonce } from "../util/crypto";
 
+const WebviewPointer = {
+  v: undefined as WebviewView | undefined,
+};
+
+export const getWebviewView = () => WebviewPointer.v;
+const setWebviewView = (v: WebviewView) => {
+  WebviewPointer.v = v;
+};
+
 export const getAutoBeWebviewProvider = (context: ExtensionContext) => {
   return {
     async resolveWebviewView(panel: WebviewView) {
+      setWebviewView(panel);
       const instance = new AutoBeWrapper(panel.webview, context);
       await instance.initialize();
 
@@ -40,14 +51,28 @@ export const getAutoBeWebviewProvider = (context: ExtensionContext) => {
   };
 };
 
+const getUri =
+  (webview: Webview, context: ExtensionContext) =>
+  (...pathList: string[]) =>
+    webview.asWebviewUri(Uri.joinPath(context.extensionUri, ...pathList));
+
 export const getHtmlContent =
   (context: ExtensionContext) =>
   (webview: Webview): string => {
-    const getUri = (...pathList: string[]) =>
-      webview.asWebviewUri(Uri.joinPath(context.extensionUri, ...pathList));
-
-    const stylesUri = getUri("webview-ui", "build", "assets", "index.css");
-    const scriptUri = getUri("webview-ui", "build", "assets", "index.js");
+    const a = execSync("ls -la");
+    console.log(a);
+    const stylesUri = getUri(webview, context)(
+      "webview-ui",
+      "build",
+      "assets",
+      "index.css",
+    );
+    const scriptUri = getUri(webview, context)(
+      "webview-ui",
+      "build",
+      "assets",
+      "index.js",
+    );
 
     const nonce = getNonce();
     return `
@@ -94,7 +119,7 @@ type Session = {
 class AutoBeWrapper {
   private readonly webview: Webview;
   private readonly context: ExtensionContext;
-  public config: IResponseGetConfig["data"] | undefined;
+  public config: Partial<IResponseGetConfig["data"]> = {};
 
   private readonly chatSessionMap: Map<string, Session> = new Map();
 
@@ -112,6 +137,7 @@ class AutoBeWrapper {
         this.chatSessionMap.set(sessionId, session);
       },
     );
+    await this.updateConfig(undefined, {});
   }
 
   public async dispose() {
@@ -121,6 +147,26 @@ class AutoBeWrapper {
     );
   }
 
+  private async updateConfig(
+    apiKey: string | undefined,
+    restConfig: Partial<IResponseGetConfig["data"]>,
+  ) {
+    if (apiKey !== undefined) {
+      await this.context.secrets.store(AUTOBE_API_KEY, apiKey);
+      this.config.apiKey = apiKey;
+    }
+    const existingConfig = (await this.context.globalState.get(
+      AUTOBE_CONFIG,
+    )) as Partial<IResponseGetConfig["data"]> | undefined;
+
+    const mergedConfig = {
+      ...existingConfig,
+      ...restConfig,
+      apiKey: await this.context.secrets.get(AUTOBE_API_KEY),
+    };
+    await this.context.globalState.update(AUTOBE_CONFIG, mergedConfig);
+    this.config = mergedConfig;
+  }
   public async handlePostMessage(message: IAutoBeWebviewMessage) {
     switch (message.type) {
       case "req_get_api_key": {
@@ -133,17 +179,7 @@ class AutoBeWrapper {
       }
       case "req_set_config": {
         const { apiKey, ...restConfig } = message.data;
-
-        if (apiKey !== undefined) {
-          await this.context.secrets.store(AUTOBE_API_KEY, apiKey);
-        }
-        const existingConfig = (await this.context.globalState.get(
-          AUTOBE_CONFIG,
-        )) as Partial<IResponseGetConfig["data"]> | undefined;
-        await this.context.globalState.update(AUTOBE_CONFIG, {
-          ...existingConfig,
-          ...restConfig,
-        });
+        await this.updateConfig(apiKey, restConfig);
         break;
       }
       case "req_create_chat_session":
@@ -171,8 +207,8 @@ class AutoBeWrapper {
   }
 
   private async conversate(props: { session: Session; message: string }) {
-    const config = this.config;
-    if (config?.apiKey === undefined) {
+    if (this.config?.apiKey === undefined) {
+      Logger.debug(JSON.stringify(this.config));
       throw new Error("Config is not initialized");
     }
 
@@ -187,7 +223,11 @@ class AutoBeWrapper {
     props.session.agent = new WorkerConnector(
       {
         apiKey: this.config?.apiKey ?? "",
-        model: this.config?.model ?? "chatgpt",
+        model:
+          this.config?.model == null || this.config.model === ""
+            ? "gpt-4.1"
+            : this.config.model,
+        schemaModel: "chatgpt",
         baseUrl: this.config?.baseUrl ?? "",
         concurrencyRequest: Number(this.config?.concurrencyRequest ?? "16"),
       },
@@ -199,6 +239,7 @@ class AutoBeWrapper {
               type: "on_event_auto_be",
               data: message,
             });
+            Logger.debug(`on_event_auto_be: ${JSON.stringify(message)}`);
             props.session.tokenUsage = await props.session
               .agent!.getDriver()
               .getTokenUsage();
@@ -210,9 +251,11 @@ class AutoBeWrapper {
         }),
         {} as IAutoBeRpcListener,
       ),
-      "process",
     );
 
+    await props.session.agent.connect(
+      `${this.context.extensionUri}/worker/dist/index.mjs`.slice(7),
+    );
     const history = await props.session.agent
       .getDriver()
       .conversate(props.message);

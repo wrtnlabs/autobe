@@ -2,15 +2,18 @@ import { IAutoBeWebviewMessage } from "@autobe/vscode-extension/interface";
 import { useEffect, useRef, useState } from "react";
 import type { WebviewApi } from "vscode-webview";
 
+const vscodePointer: { v: null | WebviewApi<unknown> } = { v: null };
 const useVsCode = () => {
-  const [vscode, setVsCode] = useState<WebviewApi<unknown> | null>(null);
   const handlerRef = useRef<((message: IAutoBeWebviewMessage) => void) | null>(
     null,
   );
 
-  useEffect(() => {
-    setVsCode(acquireVsCodeApi());
+  if (vscodePointer.v === null) {
+    vscodePointer.v = acquireVsCodeApi();
+  }
+  const vscode = vscodePointer.v;
 
+  useEffect(() => {
     const onMessage = (event: MessageEvent) => {
       const message = event.data as IAutoBeWebviewMessage;
       handlerRef.current?.(message);

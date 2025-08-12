@@ -15,7 +15,7 @@
     "type": "git",
     "url": "https://github.com/autobe-io/autobe.git"
   },
-  "main": "./dist/extension.js",
+  "main": "./dist/extension.mjs",
   "scripts": {
     "vscode:prepack": "node build/copy_license.js",
     "vscode:prepublish": "pnpm run build",
@@ -25,17 +25,16 @@
     "test": "vscode-test",
     "webview:build": "cd ./webview-ui && pnpm build && cd ..",
     "worker:build": "cd ./worker && pnpm build && cd ..",
-    "build": "pnpm webview:build && pnpm worker:build && pnpm rspack",
-    "rspack": "rspack build",
-    "watch": "pnpm webview:build && pnpm rspack --watch"
+    "build": "pnpm webview:build && pnpm worker:build && pnpm tsdown",
+    "tsdown": "tsdown",
+    "watch": "pnpm webview:build && pnpm tsdown --watch"
   },
   "devDependencies": {
     "@autobe/agent": "workspace:^",
     "@autobe/compiler": "workspace:^",
     "@autobe/interface": "workspace:^",
+    "@autobe/rpc": "workspace:^",
     "@autobe/vscode-extension/interface": "workspace:^",
-    "@rspack/cli": "^1.4.11",
-    "@rspack/core": "^1.4.11",
     "@ryoppippi/unplugin-typia": "^2.6.5",
     "@samchon/openapi": "catalog:samchon",
     "@types/node": "22.x",
@@ -43,16 +42,30 @@
     "@vscode/test-cli": "^0.0.11",
     "@vscode/test-electron": "^2.5.2",
     "@vscode/vsce": "^3.6.0",
-    "node-polyfill-webpack-plugin": "^4.1.0",
-    "@autobe/rpc": "workspace:^",
     "openai": "catalog:libs",
-    "swc-loader": "^0.2.6",
+    "tgrid": "catalog:samchon",
     "ts-loader": "^9.5.2",
+    "tsdown": "^0.14.0",
     "typescript": "catalog:typescript",
-    "typia": "catalog:samchon",
-    "tgrid": "catalog:samchon"
+    "typia": "catalog:samchon"
   },
   "contributes": {
+    "commands": [
+      {
+        "command": "autobe.configButtonClicked",
+        "title": "AutoBe Config",
+        "icon": "$(gear)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "autobe.configButtonClicked",
+          "when": "view == autobe-vscode-extension-views",
+          "group": "navigation@1"
+        }
+      ]
+    },
     "viewsContainers": {
       "activitybar": [
         {
