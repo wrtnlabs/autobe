@@ -78,67 +78,49 @@ Include separate paragraphs for:
 
 **IMPORTANT**: All descriptions MUST be written in English. Never use other languages.
 
-### 5.3. HTTP Method Patterns and Name Rules
+### 5.3. HTTP Method Patterns
 
-**CRITICAL**: Each HTTP method MUST use its designated name pattern. NO EXCEPTIONS allowed.
-
-#### Mandatory Method-Name Mapping
-
-| HTTP Method | Required Name | Forbidden Names |
-|-------------|---------------|-----------------|
-| **GET** | `at`, `index` | `search`, `create`, `update`, `erase` |
-| **PATCH** | `search` | `index`, `at`, `create`, `update`, `erase` |
-| **POST** | `create` | `index`, `at`, `search`, `update`, `erase` |
-| **PUT** | `update` | `index`, `at`, `search`, `create`, `erase` |
-| **DELETE** | `erase` | `index`, `at`, `search`, `create`, `update` |
+Follow these patterns based on the endpoint method:
 
 #### GET Operations
 - **Simple Resource Retrieval**: `GET /entities/{id}`
   - Returns single entity
   - Response: Main entity type (e.g., `IUser`)
-  - **Name: `"at"`** (MANDATORY)
+  - Name: `"at"`
 
 - **Simple Collection Listing**: `GET /entities`
   - Returns basic list without complex filtering
   - Response: Simple array or paginated results (e.g., `IPageIUser.ISummary`)
-  - **Name: `"index"`** (MANDATORY)
+  - Name: `"index"`
 
 #### PATCH Operations
 - **Complex Collection Search**: `PATCH /entities`
   - Supports complex search, filtering, sorting, pagination
   - Request: Search parameters (e.g., `IUser.IRequest`)
   - Response: Paginated results (e.g., `IPageIUser`)
-  - **Name: `"search"`** (MANDATORY)
+  - Name: `"search"`
 
 #### POST Operations
 - **Entity Creation**: `POST /entities`
   - Creates new entity
   - Request: Creation data (e.g., `IUser.ICreate`)
   - Response: Created entity (e.g., `IUser`)
-  - **Name: `"create"`** (MANDATORY)
+  - Name: `"create"`
 
 #### PUT Operations
 - **Entity Update**: `PUT /entities/{id}`
   - Updates existing entity
   - Request: Update data (e.g., `IUser.IUpdate`)
   - Response: Updated entity (e.g., `IUser`)
-  - **Name: `"update"`** (MANDATORY)
+  - Name: `"update"`
 
 #### DELETE Operations
 - **Entity Deletion**: `DELETE /entities/{id}`
   - Deletes entity (hard or soft based on schema)
   - No request body
   - No response body or confirmation message
-  - **Name: `"erase"`** (MANDATORY)
-
-#### Error Prevention Examples
-
-**NEVER assign these incorrect combinations:**
-- ❌ `PATCH /users` with `name: "index"` (MUST be `"search"`)
-- ❌ `PATCH /users` with `name: "update"` (MUST be `"search"`)
-- ❌ `PUT /users/{id}` with `name: "search"` (MUST be `"update"`)
-- ❌ `GET /users` with `name: "search"` (MUST be `"index"`)
-
+  - Name: `"erase"`
+  
 ### 5.4. Parameter Definition
 
 For each path parameter in the endpoint path:
@@ -231,13 +213,15 @@ Use actual role names from the Prisma schema. Common patterns:
 - **No Omissions**: Do not skip any endpoints regardless of complexity
 - **Prisma Schema Alignment**: All operations must accurately reflect the underlying database schema
 
-### 6.2. Name Uniqueness Validation
+### 6.2. Operation Name Uniqueness
 
-**MANDATORY**: Before generating operations, you MUST:
-1. **Verify each operation name follows the mandatory method-name mapping**
-2. **Confirm no duplicate names exist within the same entity scope**
-3. **Check that custom operation names don't conflict with standard CRUD names**
-4. **Ensure method-name combinations are correct per the mapping table**
+**ABSOLUTELY CRITICAL**: You MUST ensure NO duplicate operation names exist within the same entity.
+
+**Name Uniqueness Rules:**
+1. **Each operation name MUST be unique within its entity scope**
+2. **Different entities CAN use the same operation names** (e.g., User.index and Product.index are allowed)
+3. **If standard names conflict, use descriptive alternatives** (e.g., `"createDraft"`, `"createPublished"`)
+4. **For custom operations, use clear, descriptive verbs** (e.g., `"activate"`, `"approve"`, `"publish"`)
 
 ### 6.3. Quality Requirements
 - **Detailed Descriptions**: Every operation must have comprehensive, multi-paragraph descriptions
@@ -260,7 +244,6 @@ Use actual role names from the Prisma schema. Common patterns:
 
 3. **Generate Operations**:
    - For each endpoint, determine the appropriate operation pattern
-   - **VERIFY method-name mapping compliance before proceeding**
    - Create detailed specifications referencing Prisma schema entities
    - Write comprehensive multi-paragraph descriptions incorporating schema comments
    - Define accurate parameters matching path structure
@@ -268,12 +251,11 @@ Use actual role names from the Prisma schema. Common patterns:
    - Set realistic authorization roles
 
 4. **Validation**:
-   - **Check all operation names follow mandatory mapping rules**
+   - **VERIFY no duplicate operation names exist within each entity scope**
    - Ensure all path parameters are defined
    - Verify all type references are valid
    - Check that authorization roles are realistic
    - Confirm descriptions are detailed and informative
-   - **Verify no duplicate names within entity scopes**
 
 5. **Function Call**: Call the `makeOperations()` function with the complete array
 
@@ -293,7 +275,7 @@ Use actual role names from the Prisma schema. Common patterns:
 - Covers error scenarios and edge cases
 
 ### 8.3. Technical Accuracy
-- **Operation names MUST follow mandatory method-name mapping**
+- **Operation names MUST be unique within each entity scope**
 - Path parameters match endpoint path exactly
 - Request/response types follow naming conventions
 - Authorization roles reflect realistic access patterns
@@ -331,7 +313,7 @@ This operation integrates with the Customer table as defined in the Prisma schem
   },
   
   authorizationRoles: ["admin"],
-  name: "search"  // CORRECT: PATCH method uses "search"
+  name: "search"
 }
 ```
 
