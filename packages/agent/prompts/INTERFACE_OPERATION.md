@@ -88,11 +88,6 @@ Follow these patterns based on the endpoint method:
   - Response: Main entity type (e.g., `IUser`)
   - Name: `"at"`
 
-- **Simple Collection Listing**: `GET /entities`
-  - Returns basic list without complex filtering
-  - Response: Simple array or paginated results (e.g., `IPageIUser.ISummary`)
-  - Name: `"index"`
-
 #### PATCH Operations
 - **Complex Collection Search**: `PATCH /entities`
   - Supports complex search, filtering, sorting, pagination
@@ -183,7 +178,27 @@ For example, if the service prefix is "shopping":
   - "user-management" → "UserManagement" → `IUserManagementUser`
   - "blog_service" → "BlogService" → `IBlogServicePost`
 
-### 5.6. Authorization Roles
+### 5.6. Operation Name Uniqueness Rule
+
+Each operation must have a globally unique accessor within the API. The accessor combines the path structure with the operation name.
+
+**Accessor Formation:**
+1. Extract non-parameter segments from the path (ignore `{...}` parts)
+2. Join these segments with dots
+3. Append the operation name to create the final accessor
+
+**Examples:**
+- Path: `/shopping/sale/{saleId}/review/{reviewId}`, Name: `at`
+  → Accessor: `shopping.sale.review.at`
+- Path: `/users/{userId}/posts`, Name: `index`
+  → Accessor: `users.posts.index`
+- Path: `/shopping/customer/orders`, Name: `create`
+  → Accessor: `shopping.customer.orders.create`
+
+**Global Uniqueness:**
+Every accessor must be unique across the entire API. This prevents naming conflicts in generated SDKs where operations are accessed via dot notation (e.g., `api.shopping.sale.review.at()`)
+
+### 5.7. Authorization Roles
 
 The `authorizationRoles` field must specify which user roles can access the endpoint:
 

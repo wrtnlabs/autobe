@@ -506,8 +506,31 @@ export namespace AutoBeOpenApi {
      * - `GET /shopping/orders/{orderId}/items` → `name: "index"` (lists items)
      * - `POST /shopping/orders/{orderId}/cancel` → `name: "cancel"`
      * - `PUT /users/{userId}/password` → `name: "updatePassword"`
+     *
+     * ## Uniqueness Rule
+     *
+     * The `name` must be unique within the API's accessor namespace. The
+     * accessor is formed by combining the path segments (excluding parameters)
+     * with the operation name.
+     *
+     * Accessor formation:
+     * 1. Extract non-parameter segments from the path (remove `{...}` parts)
+     * 2. Join segments with dots
+     * 3. Append the operation name
+     *
+     * Examples:
+     * - Path: `/shopping/sale/{saleId}/review/{reviewId}`, Name: `at`
+     *   → Accessor: `shopping.sale.review.at`
+     * - Path: `/users/{userId}/posts`, Name: `index`
+     *   → Accessor: `users.posts.index`
+     * - Path: `/auth/login`, Name: `signIn`
+     *   → Accessor: `auth.login.signIn`
+     *
+     * Each accessor must be globally unique across the entire API. This ensures
+     * operations can be uniquely identified in generated SDKs and prevents
+     * naming conflicts.
      */
-    name: string;
+    name: string & tags.MinLength<1>;
   }
 
   /**

@@ -104,20 +104,18 @@ Examples:
 For EACH independent entity identified in the requirements document, Prisma DB Schema, and API endpoint groups, you MUST include these standard endpoints:
 
 #### Standard CRUD operations:
-1. `GET /entity-plural` - Simple collection listing
-2. `PATCH /entity-plural` - Collection listing with searching/filtering (with requestBody)
-3. `GET /entity-plural/{id}` - Get specific entity by ID
-4. `POST /entity-plural` - Create new entity
-5. `PUT /entity-plural/{id}` - Update existing entity
-6. `DELETE /entity-plural/{id}` - Delete entity
+1. `PATCH /entity-plural` - Collection listing with searching/filtering (with requestBody)
+2. `GET /entity-plural/{id}` - Get specific entity by ID
+3. `POST /entity-plural` - Create new entity
+4. `PUT /entity-plural/{id}` - Update existing entity
+5. `DELETE /entity-plural/{id}` - Delete entity
 
 #### Nested resource operations (when applicable):
-7. `GET /parent-entities/{parentId}/child-entities` - Simple list of child entities under parent
-8. `PATCH /parent-entities/{parentId}/child-entities` - List child entities with search/filtering
-9. `GET /parent-entities/{parentId}/child-entities/{childId}` - Get specific child entity
-10. `POST /parent-entities/{parentId}/child-entities` - Create child entity under parent
-11. `PUT /parent-entities/{parentId}/child-entities/{childId}` - Update child entity
-12. `DELETE /parent-entities/{parentId}/child-entities/{childId}` - Delete child entity
+6. `PATCH /parent-entities/{parentId}/child-entities` - List child entities with search/filtering
+7. `GET /parent-entities/{parentId}/child-entities/{childId}` - Get specific child entity
+8.  `POST /parent-entities/{parentId}/child-entities` - Create child entity under parent
+9.  `PUT /parent-entities/{parentId}/child-entities/{childId}` - Update child entity
+10.  `DELETE /parent-entities/{parentId}/child-entities/{childId}` - Delete child entity
 
 **CRITICAL**: The DELETE operation behavior depends on the Prisma schema:
 - If the entity has soft delete fields (e.g., `deleted_at`, `is_deleted`), the DELETE endpoint will perform soft delete
@@ -270,7 +268,7 @@ Below are example projects that demonstrate the proper endpoint formatting.
 - Clean camelCase entity names
 - Hierarchical relationships preserved in nested paths
 - Both simple GET and complex PATCH endpoints for collections
-- Standard CRUD pattern: GET (simple list), PATCH (search), GET (single), POST (create), PUT (update), DELETE (delete)
+- Standard CRUD pattern: PATCH (search), GET (single), POST (create), PUT (update), DELETE (delete)
 
 ### 10.2. Shopping Mall
 
