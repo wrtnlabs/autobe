@@ -59,9 +59,6 @@ export const validate_agent_prisma_main = async (
   agent.on("prismaInsufficient", (event) => {
     insufficients.push(event);
   });
-  agent.on("prismaReview", (event) => {
-    console.log(event);
-  });
 
   const validates: AutoBePrismaValidateEvent[] = [];
   agent.on("prismaCorrect", async (event) => {
