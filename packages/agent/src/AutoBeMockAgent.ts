@@ -88,7 +88,24 @@ export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
     const take = async (
       type: "analyze" | "prisma" | "interface" | "test" | "realize",
     ): Promise<void> => {
-      for (const s of this.getEventSnapshots(type)) {
+      const snapshots: AutoBeEventSnapshot[] | null =
+        this.getEventSnapshots(type);
+      if (snapshots === null) {
+        this.histories_.push(userMessage);
+        this.histories_.push({
+          id: v4(),
+          type: "assistantMessage",
+          text: [
+            "The histories are prepared until current state.",
+            "",
+            "Thanks for using AutoBE!",
+          ].join("\n"),
+          created_at: new Date().toISOString(),
+          completed_at: new Date().toISOString(),
+        });
+        return;
+      }
+      for (const s of snapshots) {
         const time: number = sleepMap[s.event.type] ?? 500;
         await sleep_for(randint(time * 0.2, time * 1.8));
         void this.dispatch(s.event).catch(() => {});
@@ -117,8 +134,8 @@ export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
 
   private getEventSnapshots(
     state: "analyze" | "prisma" | "interface" | "test" | "realize",
-  ): AutoBeEventSnapshot[] {
-    return this.props_.preset[state];
+  ): AutoBeEventSnapshot[] | null {
+    return this.props_.preset[state] ?? null;
   }
 }
 export namespace AutoBeMockAgent {
@@ -130,11 +147,11 @@ export namespace AutoBeMockAgent {
   }
   export interface IPreset {
     histories: AutoBeHistory[];
-    analyze: AutoBeEventSnapshot[];
-    prisma: AutoBeEventSnapshot[];
-    interface: AutoBeEventSnapshot[];
-    test: AutoBeEventSnapshot[];
-    realize: AutoBeEventSnapshot[];
+    analyze?: AutoBeEventSnapshot[] | null;
+    prisma?: AutoBeEventSnapshot[] | null;
+    interface?: AutoBeEventSnapshot[] | null;
+    test?: AutoBeEventSnapshot[] | null;
+    realize?: AutoBeEventSnapshot[] | null;
   }
 }
 
