@@ -43,6 +43,7 @@ export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
     case "interfaceOperationsReview":
     case "interfaceAuthorizations":
     case "interfaceSchemas":
+    case "interfaceSchemasReview":
     case "testWrite":
     case "realizeWrite":
     case "realizeAuthorizationWrite":
