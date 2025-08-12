@@ -95,20 +95,6 @@ export namespace TestHistory {
     const location: string = `${TestGlobal.ROOT}/assets/histories/${TestGlobal.getVendorModel()}/${props.project}.${props.type}.json`;
     const content: string = await fs.promises.readFile(location, "utf8");
     const histories: AutoBeHistory[] = JSON.parse(content);
-
-    if (props.type === "test") {
-      return typia.assert(
-        histories.map((h) => {
-          if (h.type === "test") {
-            const files = h.files.filter((f) => f.scenario);
-
-            return { ...h, files };
-          }
-          return h;
-        }),
-      );
-    }
-
     return typia.assert(histories);
   };
 }
