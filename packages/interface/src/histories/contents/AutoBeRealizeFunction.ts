@@ -1,5 +1,4 @@
 import { AutoBeOpenApi } from "../../openapi/AutoBeOpenApi";
-import { CamelPattern } from "../../typings/CamelPattern";
 
 /** @author Kakasoo */
 export interface AutoBeRealizeFunction {
@@ -41,7 +40,7 @@ export interface AutoBeRealizeFunction {
    * Pattern: method__segment1_segment2_$param Example:
    * "delete__discussionBoard_administrators_$id"
    */
-  name: string & CamelPattern;
+  name: string;
 
   /**
    * Generated TypeScript implementation code

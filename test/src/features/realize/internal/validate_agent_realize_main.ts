@@ -32,8 +32,9 @@ export const validate_agent_realize_main = async (
 
     if (event.type === "realizeWrite" || event.type === "realizeCorrect") {
       console.log(
+        event.type,
         event.filename,
-        `${event.completed}/${event.total} completed.`,
+        `${event.completed} / ${event.total} completed.`,
       );
     }
   };
