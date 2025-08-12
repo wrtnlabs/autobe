@@ -327,9 +327,8 @@ function createController<Model extends ILlmSchema.Model>(props: {
             "Here is the list of elements of duplicated operation names.",
             "Check them, and consider which operation name would be proper to modify.",
             "",
-            ...Array.from(indexes.keys())
             ...indexes
-              .map(idx => `- ${operations[idx].name} (accessor: ${key})`)
+              .map((idx) => `- ${operations[idx].name} (accessor: ${key})`)
               .join("\n"),
           ].join("\n"),
         });
