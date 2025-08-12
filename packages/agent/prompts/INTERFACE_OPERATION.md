@@ -178,7 +178,30 @@ For example, if the service prefix is "shopping":
   - "user-management" → "UserManagement" → `IUserManagementUser`
   - "blog_service" → "BlogService" → `IBlogServicePost`
 
-### 5.6. Operation Name Uniqueness Rule
+### 5.6. Operation Name Requirements
+
+#### Reserved Word Restrictions
+
+**CRITICAL**: The operation `name` field MUST NOT be a TypeScript/JavaScript reserved word, as it will be used as a class method name in generated code.
+
+**Prohibited Names** (DO NOT USE):
+- `delete`, `for`, `if`, `else`, `while`, `do`, `switch`, `case`, `break`
+- `continue`, `function`, `return`, `with`, `in`, `of`, `instanceof`
+- `typeof`, `void`, `var`, `let`, `const`, `class`, `extends`, `import`
+- `export`, `default`, `try`, `catch`, `finally`, `throw`, `new`
+- `super`, `this`, `null`, `true`, `false`, `async`, `await`
+- `yield`, `static`, `private`, `protected`, `public`, `implements`
+- `interface`, `package`, `enum`, `debugger`
+
+**Alternative Names to Use**:
+- Use `erase` instead of `delete`
+- Use `iterate` instead of `for`
+- Use `when` instead of `if`
+- Use `cls` instead of `class`
+- Use `retrieve` instead of `return`
+- Use `attempt` instead of `try`
+
+#### Operation Name Uniqueness Rule
 
 Each operation must have a globally unique accessor within the API. The accessor combines the path structure with the operation name.
 

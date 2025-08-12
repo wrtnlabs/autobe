@@ -450,6 +450,25 @@ export namespace AutoBeOpenApi {
      * purpose of the API endpoint. It serves as a canonical name that can be
      * used for code generation, SDK method names, and internal references.
      *
+     * ## Reserved Word Restrictions
+     *
+     * CRITICAL: The name MUST NOT be a TypeScript/JavaScript reserved word, as it 
+     * will be used as a class method name in generated code. Avoid names like:
+     *
+     * - `delete`, `for`, `if`, `else`, `while`, `do`, `switch`, `case`, `break`
+     * - `continue`, `function`, `return`, `with`, `in`, `of`, `instanceof`
+     * - `typeof`, `void`, `var`, `let`, `const`, `class`, `extends`, `import`
+     * - `export`, `default`, `try`, `catch`, `finally`, `throw`, `new`
+     * - `super`, `this`, `null`, `true`, `false`, `async`, `await`
+     * - `yield`, `static`, `private`, `protected`, `public`, `implements`
+     * - `interface`, `package`, `enum`, `debugger`
+     *
+     * Instead, use alternative names for these operations:
+     * - Use `erase` instead of `delete`
+     * - Use `iterate` instead of `for`
+     * - Use `when` instead of `if`
+     * - Use `cls` instead of `class`
+     *
      * ## Standard Endpoint Names
      *
      * Use these conventional names based on the endpoint's primary function:
@@ -470,7 +489,7 @@ export namespace AutoBeOpenApi {
      *
      *   - Typically used with PUT method
      *   - Example: `PUT /users/{userId}` → `name: "update"`
-     * - **`erase`**: Delete/remove an entity
+     * - **`erase`**: Delete/remove an entity (NOT `delete` - reserved word!)
      *
      *   - Typically used with DELETE method
      *   - Example: `DELETE /users/{userId}` → `name: "erase"`
@@ -500,6 +519,7 @@ export namespace AutoBeOpenApi {
      * - Avoid abbreviations unless widely understood
      * - Ensure the name clearly represents the endpoint's primary action
      * - For nested resources, focus on the action rather than hierarchy
+     * - NEVER use JavaScript/TypeScript reserved words
      *
      * Examples:
      *
@@ -514,23 +534,24 @@ export namespace AutoBeOpenApi {
      * with the operation name.
      *
      * Accessor formation:
+     *
      * 1. Extract non-parameter segments from the path (remove `{...}` parts)
      * 2. Join segments with dots
      * 3. Append the operation name
      *
      * Examples:
-     * - Path: `/shopping/sale/{saleId}/review/{reviewId}`, Name: `at`
-     *   → Accessor: `shopping.sale.review.at`
-     * - Path: `/users/{userId}/posts`, Name: `index`
-     *   → Accessor: `users.posts.index`
-     * - Path: `/auth/login`, Name: `signIn`
-     *   → Accessor: `auth.login.signIn`
+     *
+     * - Path: `/shopping/sale/{saleId}/review/{reviewId}`, Name: `at` → Accessor:
+     *   `shopping.sale.review.at`
+     * - Path: `/users/{userId}/posts`, Name: `index` → Accessor:
+     *   `users.posts.index`
+     * - Path: `/auth/login`, Name: `signIn` → Accessor: `auth.login.signIn`
      *
      * Each accessor must be globally unique across the entire API. This ensures
      * operations can be uniquely identified in generated SDKs and prevents
      * naming conflicts.
      */
-    name: string & tags.MinLength<1>;
+    name: string & tags.Pattern<"^[a-zA-Z_][a-zA-Z0-9_]*$">;
   }
 
   /**

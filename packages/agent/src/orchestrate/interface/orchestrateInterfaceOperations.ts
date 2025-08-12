@@ -1,9 +1,10 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import { AutoBeOpenApi } from "@autobe/interface";
-import { AutoBeEndpointComparator } from "@autobe/utils";
+import { AutoBeEndpointComparator, StringUtil } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { HashMap, HashSet, IPointer } from "tstl";
 import typia from "typia";
+import { Escaper } from "typia/lib/utils/Escaper";
 import { NamingConvention } from "typia/lib/utils/NamingConvention";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
@@ -250,6 +251,22 @@ function createController<Model extends ILlmSchema.Model>(props: {
           expected:
             "GET method should not have request body. Change method, or re-design the operation.",
           value: op.requestBody,
+        });
+      // operation name
+      if (Escaper.variable(op.name) === false)
+        errors.push({
+          path: `$input.operations[${i}].name`,
+          expected: "<valid_variable_name>",
+          value: op.name,
+          description: StringUtil.trim`
+            The operation name will be converted to the API controller method
+            (function) name, so the operation.name must be a valid JavaScript 
+            variable/function name.
+
+            However, what you've configured value ${JSON.stringify(op.name)}
+            is not a valid JavaScript for variable/function name. Please change
+            it to a valid variable/function name.
+          `,
         });
       // validate roles
       if (props.roles.length === 0) op.authorizationRoles = [];
