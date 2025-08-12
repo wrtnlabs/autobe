@@ -27,10 +27,16 @@ export async function orchestrateInterfaceOperations<
     array: endpoints,
     capacity,
   });
-  const progress: IProgress = {
+  const operationsProgress: IProgress = {
     total: endpoints.length,
     completed: 0,
   };
+
+  const operationsReviewProgress: IProgress = {
+    total: endpoints.length,
+    completed: 0,
+  };
+
   const operations: AutoBeOpenApi.IOperation[] = (
     await Promise.all(
       matrix.map(async (it) => {
@@ -38,13 +44,14 @@ export async function orchestrateInterfaceOperations<
           ctx,
           it,
           3,
-          progress,
+          operationsProgress,
+          operationsReviewProgress,
         );
 
         ctx.dispatch({
           type: "interfaceOperations",
           operations: row,
-          ...progress,
+          ...operationsProgress,
           step: ctx.state().analyze?.step ?? 0,
           created_at: new Date().toISOString(),
         });
@@ -60,7 +67,8 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   endpoints: AutoBeOpenApi.IEndpoint[],
   retry: number,
-  progress: IProgress,
+  operationsProgress: IProgress,
+  operationsReviewProgress: IProgress,
 ): Promise<AutoBeOpenApi.IOperation[]> {
   const remained: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(
     endpoints,
@@ -76,8 +84,16 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
     if (remained.empty() === true || operations.size() >= endpoints.length)
       break;
     const newbie: AutoBeOpenApi.IOperation[] = await forceRetry(async () => {
-      const operations = await process(ctx, Array.from(remained), progress);
-      return orchestrateInterfaceOperationsReview(ctx, operations);
+      const operations = await process(
+        ctx,
+        Array.from(remained),
+        operationsProgress,
+      );
+      return orchestrateInterfaceOperationsReview(
+        ctx,
+        operations,
+        operationsReviewProgress,
+      );
     });
     for (const item of newbie) {
       operations.set(item, item);

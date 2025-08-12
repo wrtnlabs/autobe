@@ -1,5 +1,8 @@
 import { IAgenticaController, MicroAgentica } from "@agentica/core";
-import { AutoBeOpenApi } from "@autobe/interface";
+import {
+  AutoBeInterfaceOperationsReviewEvent,
+  AutoBeOpenApi,
+} from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -13,6 +16,7 @@ export async function orchestrateInterfaceOperationsReview<
 >(
   ctx: AutoBeContext<Model>,
   operations: AutoBeOpenApi.IOperation[],
+  progress: IProgress,
 ): Promise<AutoBeOpenApi.IOperation[]> {
   const pointer: IPointer<IAutoBeInterfaceOperationsReviewApplication.IProps | null> =
     {
@@ -35,6 +39,20 @@ export async function orchestrateInterfaceOperationsReview<
   });
 
   if (pointer.value === null) throw new Error("Failed to review operations.");
+
+  const event: AutoBeInterfaceOperationsReviewEvent = {
+    type: "interfaceOperationsReview",
+    operations: pointer.value.content,
+    review: pointer.value.review,
+    plan: pointer.value.plan,
+    content: pointer.value.content,
+    created_at: new Date().toISOString(),
+    step: ctx.state().analyze?.step ?? 0,
+    total: progress.total,
+    completed: ++progress.completed,
+  };
+  ctx.dispatch(event);
+
   return pointer.value.content;
 }
 
@@ -68,3 +86,8 @@ const collection = {
     "claude"
   >(),
 };
+
+interface IProgress {
+  completed: number;
+  total: number;
+}
