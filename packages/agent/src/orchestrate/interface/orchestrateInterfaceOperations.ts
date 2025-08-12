@@ -240,7 +240,24 @@ function createController<Model extends ILlmSchema.Model>(props: {
     const operations: IAutoBeInterfaceOperationApplication.IOperation[] =
       result.data.operations;
     const errors: IValidation.IError[] = [];
+    const nameMap = new Map<string, number>();
+
     operations.forEach((op, i) => {
+      if (nameMap.has(op.name)) {
+        errors.push({
+          path: `$input.operations[${i}].name`,
+          expected: "Unique operation name",
+          description: [
+            "The operation name must be unique within the same entity.",
+            "",
+            "Please change the operation name to a unique one.",
+          ].join("\n"),
+          value: op.name,
+        });
+      } else {
+        nameMap.set(op.name, i);
+      }
+
       if (op.method === "get" && op.requestBody !== null)
         errors.push({
           path: `$input.operations[${i}].requestBody`,
