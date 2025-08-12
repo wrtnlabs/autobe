@@ -8,7 +8,7 @@ import { transformInterfaceAssetHistories } from "./transformInterfaceAssetHisto
 
 export const transformInterfaceOperationHistories = (
   state: AutoBeState,
-  endpoints: (AutoBeOpenApi.IEndpoint & { failure: string | null })[],
+  endpoints: AutoBeOpenApi.IEndpoint[],
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {

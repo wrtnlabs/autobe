@@ -14,6 +14,7 @@ import { TestGlobal } from "./TestGlobal";
 async function main(): Promise<void> {
   console.log("---------------------------------------------------");
   console.log("AutoBE Test Program");
+  console.log("Test Start Time", new Date().toLocaleString("en-US"));
   console.log("---------------------------------------------------");
 
   // PREPARE ENVIRONMENT
