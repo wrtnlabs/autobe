@@ -328,7 +328,8 @@ function createController<Model extends ILlmSchema.Model>(props: {
             "Check them, and consider which operation name would be proper to modify.",
             "",
             ...Array.from(indexes.keys())
-              .map((name) => `- ${name}`)
+            ...indexes
+              .map(idx => `- ${operations[idx].name} (accessor: ${key})`)
               .join("\n"),
           ].join("\n"),
         });
