@@ -264,7 +264,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
             variable/function name.
 
             However, what you've configured value ${JSON.stringify(op.name)}
-            is not a valid JavaScript for variable/function name. Please change
+            is not a valid JavaScript variable/function name. Please change
             it to a valid variable/function name.
           `,
         });
