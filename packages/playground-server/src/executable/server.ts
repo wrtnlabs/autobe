@@ -72,7 +72,6 @@ const createMockAgent = async (
     test: await load("test.snapshots"),
     realize: await load("realize.snapshots"),
   };
-  console.log(preset);
   return new AutoBeMockAgent({
     compiler: () => compiler,
     preset,
