@@ -10,6 +10,7 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { forceRetry } from "../../utils/forceRetry";
 import { transformInterfaceOperationHistories } from "./histories/transformInterfaceOperationHistories";
+import { orchestrateInterfaceOperationsReview } from "./orchestrateInterfaceOperationsReview";
 import { IAutoBeInterfaceOperationApplication } from "./structures/IAutoBeInterfaceOperationApplication";
 import { OpenApiEndpointComparator } from "./utils/OpenApiEndpointComparator";
 
@@ -74,7 +75,7 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
       break;
     const newbie: AutoBeOpenApi.IOperation[] = await forceRetry(async () => {
       const operations = await process(ctx, Array.from(remained), progress);
-      return operations;
+      return orchestrateInterfaceOperationsReview(ctx, operations);
     });
     for (const item of newbie) {
       operations.set(item, item);
