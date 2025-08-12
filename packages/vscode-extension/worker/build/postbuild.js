@@ -3,16 +3,15 @@ const {
   existsSync,
   mkdirSync,
   readdirSync,
-  statSync,
 } = require("fs");
-const { join, dirname } = require("path");
+const { join } = require("path");
 
 // 상수 정의
 const PRISMA_SCHEMA_BUILD_WASM = "prisma_schema_build_bg.wasm";
 const PRISMA_SCHEMA_WASM_PACKAGE = "prisma-schema-wasm";
 const PNPM_DIRECTORY = ".pnpm";
-const NODE_MODULES_PATH = "../../../node_modules";
-const DIST_CHUNKS_PATH = "../dist/chunks";
+const NODE_MODULES_PATH = "../../../../node_modules";
+const DIST_CHUNKS_PATH = "../dist";
 
 // .pnpm 디렉토리에서 prisma-schema-wasm이 포함된 디렉토리를 찾는 함수
 function findPrismaSchemaWasmInPnpm(pnpmPath) {
@@ -30,8 +29,7 @@ function findPrismaSchemaWasmInPnpm(pnpmPath) {
 
     const packagePath = join(pnpmPath, prismaSchemaDir);
     const wasmPath = join(packagePath, "./node_modules/@prisma",PRISMA_SCHEMA_WASM_PACKAGE, "src", PRISMA_SCHEMA_BUILD_WASM);
-    console.log(wasmPath);
-    console.log(existsSync(wasmPath));
+    
     return existsSync(wasmPath) ? wasmPath : null;
   } catch (error) {
     console.error(`❌ .pnpm 디렉토리 읽기 오류:`, error.message);

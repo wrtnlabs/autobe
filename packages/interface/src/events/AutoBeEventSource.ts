@@ -1,7 +1,7 @@
 import { AutoBeAnalyzeReviewEvent } from "./AutoBeAnalyzeReviewEvent";
 import { AutoBeAnalyzeScenarioEvent } from "./AutoBeAnalyzeScenarioEvent";
 import { AutoBeAnalyzeWriteEvent } from "./AutoBeAnalyzeWriteEvent";
-import { AutoBeInterfaceAuthorizationEvent } from "./AutoBeInterfaceAuthorizationEvent";
+import { AutoBeInterfaceAuthorizationsEvent } from "./AutoBeInterfaceAuthorizationsEvent";
 import { AutoBeInterfaceComplementEvent } from "./AutoBeInterfaceComplementEvent";
 import { AutoBeInterfaceEndpointsEvent } from "./AutoBeInterfaceEndpointsEvent";
 import { AutoBeInterfaceGroupsEvent } from "./AutoBeInterfaceGroupsEvent";
@@ -33,7 +33,7 @@ export type AutoBeEventSource =
   | AutoBePrismaReviewEvent["type"]
   | AutoBePrismaCorrectEvent["type"]
   // interface
-  | AutoBeInterfaceAuthorizationEvent["type"]
+  | AutoBeInterfaceAuthorizationsEvent["type"]
   | AutoBeInterfaceGroupsEvent["type"]
   | AutoBeInterfaceEndpointsEvent["type"]
   | AutoBeInterfaceOperationsEvent["type"]

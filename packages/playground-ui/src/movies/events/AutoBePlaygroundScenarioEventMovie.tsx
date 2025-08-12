@@ -1,4 +1,5 @@
 import {
+  AutoBeAnalyzeScenarioEvent,
   AutoBeInterfaceGroupsEvent,
   AutoBePrismaComponentsEvent,
   AutoBeRealizeTestResetEvent,
@@ -38,6 +39,7 @@ export function AutoBePlaygroundScenarioEventMovie(
 export namespace AutoBePlaygroundScenarioEventMovie {
   export interface IProps {
     event:
+      | AutoBeAnalyzeScenarioEvent
       | AutoBePrismaComponentsEvent
       | AutoBeInterfaceGroupsEvent
       | AutoBeTestScenarioEvent
@@ -54,6 +56,18 @@ function getState(
   event: AutoBePlaygroundScenarioEventMovie.IProps["event"],
 ): IState {
   switch (event.type) {
+    case "analyzeScenario":
+      return {
+        title: "Analyze Scenario",
+        description: (
+          <>
+            Generating analysis report.
+            <br />
+            <br />
+            Number of documents to write: #{event.files.length}
+          </>
+        ),
+      };
     case "prismaComponents":
       return {
         title: "Prisma Components",
@@ -106,6 +120,7 @@ function getState(
         description: "Resetting test environment.",
       };
     default:
+      event satisfies never;
       throw new Error("Unknown event type");
   }
 }

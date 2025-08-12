@@ -134,7 +134,7 @@ export function AutoBePlaygroundChatMovie(
           eventGroups={eventGroups}
           service={props.service}
           conversate={async (contents) => {
-            props.service.conversate(contents);
+            await props.service.conversate(contents);
           }}
           setError={setError}
           uploadConfig={props.uploadConfig}

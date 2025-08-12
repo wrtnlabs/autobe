@@ -45,7 +45,13 @@ async function step<Model extends ILlmSchema.Model>(
   const agentica: MicroAgentica<Model> = ctx.createAgent({
     source: "prismaReview",
     histories: transformPrismaReviewHistories({
-      analysis: ctx.state().analyze?.files ?? {},
+      analysis:
+        ctx
+          .state()
+          .analyze?.files.map((file) => ({ [file.filename]: file.content }))
+          .reduce((acc, cur) => {
+            return Object.assign(acc, cur);
+          }, {}) ?? {},
       application,
       schemas,
       component,

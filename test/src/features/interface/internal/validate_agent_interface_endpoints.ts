@@ -27,8 +27,21 @@ export const validate_agent_interface_endpoints = async (
       "utf8",
     ),
   );
+  const authorizations: AutoBeOpenApi.IOperation[] = typia.json.assertParse<
+    AutoBeOpenApi.IOperation[]
+  >(
+    await fs.promises.readFile(
+      `${TestGlobal.ROOT}/assets/histories/${model}/${project}.interface.authorizations.json`,
+      "utf8",
+    ),
+  );
+
   const endpoints: AutoBeOpenApi.IEndpoint[] =
-    await orchestrateInterfaceEndpoints(agent.getContext(), groups);
+    await orchestrateInterfaceEndpoints(
+      agent.getContext(),
+      groups,
+      authorizations,
+    );
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/${model}/${project}/interface/endpoints`,
     files: {

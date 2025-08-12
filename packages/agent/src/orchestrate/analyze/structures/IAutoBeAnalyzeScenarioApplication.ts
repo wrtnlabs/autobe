@@ -1,6 +1,23 @@
 import { AutoBeAnalyzeRole } from "@autobe/interface";
+import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
 
-import { AutoBeAnalyzeFile } from "./AutoBeAnalyzeFile";
+export interface IAutoBeAnalyzeScenarioApplication {
+  /**
+   * Compose project structure with roles and files.
+   *
+   * Design a list of roles and initial documents that you need to create for
+   * that requirement. Roles define team member responsibilities, while files
+   * define the documentation structure. These are managed separately. If you
+   * determine from the conversation that the user's requirements have not been
+   * fully gathered, you must stop the analysis and continue collecting the
+   * remaining requirements. In this case, you do not need to generate any files
+   * or roles. Simply pass an empty array to `input.files` and `input.roles`.
+   *
+   * @param input Prefix, roles, and files
+   * @returns
+   */
+  compose(input: IAutoBeAnalyzeScenarioApplication.IProps): void;
+}
 
 export namespace IAutoBeAnalyzeScenarioApplication {
   export interface IProps {
@@ -8,8 +25,8 @@ export namespace IAutoBeAnalyzeScenarioApplication {
     reason: string;
 
     /**
-     * Prefix for file names and all prisma schema files, table, interface, and
-     * variable names.
+     * Prefix for file names and variable names. This will be used for
+     * organizing documentation files.
      */
     prefix: string;
 
@@ -41,14 +58,15 @@ export namespace IAutoBeAnalyzeScenarioApplication {
      *
      * These files represent business documentation that may include:
      *
-     * - Business requirements and functional specifications
+     * - Business requirements and functional specifications in natural language
      * - User journey mapping and use case scenarios
      * - Business rules and workflow definitions
-     * - Service architecture and system design overview
-     * - Data flow and integration requirements
-     * - User roles and permission matrix
-     * - API endpoint specifications and contracts
+     * - Service overview and business model description
+     * - User roles and permission requirements (described in natural language)
      * - Business logic and validation rules
+     * - STRICTLY PROHIBITED: Do NOT include database schemas, ERD, or API
+     *   specifications
+     * - All requirements must be written in natural language for clarity
      *
      * Generate files based on actual requirements gathered from conversation.
      * Do not create unnecessary documentation - only generate what is needed to
@@ -62,26 +80,6 @@ export namespace IAutoBeAnalyzeScenarioApplication {
      * user does not specify a number, generate a sufficient number of documents
      * to adequately support the service.
      */
-    files: Array<AutoBeAnalyzeFile>;
+    files: Array<AutoBeAnalyzeFile.Scenario>;
   }
-}
-
-export interface IAutoBeAnalyzeScenarioApplication {
-  /**
-   * Compose project structure with roles and files.
-   *
-   * Design a list of roles and initial documents that you need to create for
-   * that requirement. Roles define team member responsibilities, while files
-   * define the documentation structure. These are managed separately. If you
-   * determine from the conversation that the user's requirements have not been
-   * fully gathered, you must stop the analysis and continue collecting the
-   * remaining requirements. In this case, you do not need to generate any files
-   * or roles. Simply pass an empty array to `input.files` and `input.roles`.
-   *
-   * @param input Prefix, roles, and files
-   * @returns
-   */
-  compose(
-    input: IAutoBeAnalyzeScenarioApplication.IProps,
-  ): IAutoBeAnalyzeScenarioApplication.IProps;
 }

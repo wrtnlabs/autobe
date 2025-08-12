@@ -1,7 +1,7 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 import { tags } from "typia";
 
-export interface IAutoBeInterfaceAuthorizationApplication {
+export interface IAutoBeInterfaceAuthorizationsApplication {
   /**
    * Creates an authorization Operations for the given roles
    *
@@ -9,10 +9,10 @@ export interface IAutoBeInterfaceAuthorizationApplication {
    * requirements for the given roles. It ensures that the interface reflects
    * the correct permissions and access levels for each role.
    */
-  makeOperations(props: IAutoBeInterfaceAuthorizationApplication.IProps): void;
+  makeOperations(props: IAutoBeInterfaceAuthorizationsApplication.IProps): void;
 }
 
-export namespace IAutoBeInterfaceAuthorizationApplication {
+export namespace IAutoBeInterfaceAuthorizationsApplication {
   export interface IProps {
     /**
      * Array of API operations to generate authorization operation for.

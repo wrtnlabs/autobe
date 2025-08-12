@@ -124,6 +124,38 @@ For EACH independent entity identified in the requirements document, Prisma DB S
 - If NO soft delete fields exist in the schema, the DELETE endpoint MUST perform hard delete
 - NEVER assume soft delete fields exist without verifying in the actual Prisma schema
 
+### 5.5. Entity-Specific Restrictions
+
+**IMPORTANT**: Some entities have special handling requirements and should NOT follow standard CRUD patterns:
+
+#### User/Authentication Entities (DO NOT CREATE):
+
+- **NO user creation endpoints**: `POST /users`, `POST /admins`, `POST /members`
+- **NO authentication endpoints**: Login, signup, registration are handled separately
+- **Reason**: User management and authentication are handled by dedicated systems
+
+#### Focus on Business Logic Only:
+
+- Create endpoints for business data operations
+- Create endpoints for domain-specific functionality  
+- Skip system/infrastructure entities like users, roles, permissions
+
+**Examples of what NOT to create:**
+
+```json
+{"path": "/users", "method": "post"}          // Don't create
+{"path": "/admins", "method": "post"}         // Don't create  
+{"path": "/auth/login", "method": "post"}     // Don't create
+```
+
+**Examples of what TO create:**
+
+```json
+{"path": "/products", "method": "post"}       // Business entity
+{"path": "/orders", "method": "post"}         // Business entity
+{"path": "/users/{userId}", "method": "get"}  // Profile retrieval OK
+```
+
 ## 6. Path Validation Rules
 
 **MANDATORY PATH VALIDATION**: Every path you generate MUST pass these validation rules:

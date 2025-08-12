@@ -1,15 +1,16 @@
-import { AutoBeAgent, IAutoBeProps } from "@autobe/agent";
-import { AutoBeCompiler } from "@autobe/compiler";
-import { AutoBeHistory, IAutoBeTokenUsageJson } from "@autobe/interface";
-import { ILlmSchema } from "@samchon/openapi";
-import OpenAI from "openai";
+import {
+  AutoBeHistory,
+  IAutoBeRpcListener,
+  IAutoBeRpcService,
+  IAutoBeTokenUsageJson,
+} from "@autobe/interface";
+import { WorkerConnector } from "tgrid";
 import { ExtensionContext, Uri, Webview, WebviewView } from "vscode";
 
 import {
   AUTOBE_API_KEY,
   AUTOBE_CHAT_SESSION_MAP,
   AUTOBE_CONFIG,
-  AUTOBE_EVENT_TYPES,
 } from "../constant/key";
 import {
   IAutoBeWebviewMessage,
@@ -63,6 +64,18 @@ export const getHtmlContent =
   `;
   };
 
+type RpcHeader = {
+  apiKey: string;
+  model: string;
+  baseUrl: string;
+  concurrencyRequest: number;
+};
+
+type AutoBeWorkerConnector = WorkerConnector<
+  RpcHeader,
+  IAutoBeRpcService,
+  IAutoBeRpcListener
+>;
 class AutoBeWrapper {
   private readonly webview: Webview;
   private readonly context: ExtensionContext;
@@ -73,6 +86,7 @@ class AutoBeWrapper {
     {
       history: Array<AutoBeHistory>;
       tokenUsage: IAutoBeTokenUsageJson;
+      agent?: WorkerConnector<RpcHeader, IAutoBeRpcService, IAutoBeRpcListener>;
     }
   > = new Map();
 
@@ -141,7 +155,7 @@ class AutoBeWrapper {
           data: sessionId,
         });
 
-        await this.conversate(sessionId, message.data.message);
+        // await this.conversate(sessionId, message.data.message);
         break;
     }
   }
@@ -151,46 +165,57 @@ class AutoBeWrapper {
     return sessionId;
   }
 
-  private async conversate(sessionId: string, message: string) {
-    const session = this.chatSessionMap.get(sessionId);
+  // private async conversate(sessionId: string, message: string) {
+  //   const session = this.chatSessionMap.get(sessionId);
 
-    const config = this.config;
-    if (config?.apiKey === undefined) {
-      throw new Error("Config is not initialized");
-    }
+  //   const config = this.config;
+  //   if (config?.apiKey === undefined) {
+  //     throw new Error("Config is not initialized");
+  //   }
 
-    const agent = (() => {
-      const defaultConfig = {
-        model: this.config?.model ?? "chatgpt",
-        vendor: {
-          api: new OpenAI({
-            apiKey: this.config?.apiKey ?? "",
-            baseURL: this.config?.baseUrl ?? "",
-          }),
-          model: this.config?.model ?? "gpt-4.1",
-          semaphore: Number(this.config?.concurrencyRequest ?? "16"),
-        },
-        compiler: (listener) => new AutoBeCompiler(listener),
-      } satisfies IAutoBeProps<ILlmSchema.Model>;
-      if (session !== undefined) {
-        return new AutoBeAgent({
-          ...defaultConfig,
-          histories: session.history,
-          tokenUsage: session.tokenUsage,
-        });
-      }
-      return new AutoBeAgent(defaultConfig);
-    })();
-    // this.registerAutoBeEventHandler(agent);
-    const result = await agent.conversate(message);
+  //   const connector = new WorkerConnector(
+  //     {
+  //       apiKey: this.config?.apiKey ?? "",
+  //       model: this.config?.model ?? "chatgpt",
+  //       baseUrl: this.config?.baseUrl ?? "",
+  //       concurrencyRequest: Number(this.config?.concurrencyRequest ?? "16"),
+  //     },
+  //     {},
+  //     "process",
+  //   );
 
-    this.chatSessionMap.set(sessionId, {
-      history: agent.getHistories(),
-      tokenUsage: agent.getTokenUsage(),
-    });
+  //   (() => {
+  //     const defaultConfig = {
+  //       model: this.config?.model ?? "chatgpt",
+  //       vendor: {
+  //         api: new OpenAI({
+  //           apiKey: this.config?.apiKey ?? "",
+  //           baseURL: this.config?.baseUrl ?? "",
+  //         }),
+  //         model: this.config?.model ?? "gpt-4.1",
+  //         semaphore: Number(this.config?.concurrencyRequest ?? "16"),
+  //       },
+  //       compiler: (listener) => new AutoBeCompiler(listener),
+  //     } satisfies IAutoBeProps<ILlmSchema.Model>;
+  //     if (session !== undefined) {
+  //       return new AutoBeAgent({
+  //         ...defaultConfig,
+  //         histories: session.history,
+  //         tokenUsage: session.tokenUsage,
+  //       });
+  //     }
+  //     return new AutoBeAgent(defaultConfig);
+  //   })();
+  //   // this.registerAutoBeEventHandler(agent);
+  //   const result = await agent.conversate(message);
 
-    return result;
-  }
+  //   this.chatSessionMap.set(sessionId, {
+  //     history: agent.getHistories(),
+  //     tokenUsage: agent.getTokenUsage(),
+  //   });
+
+  //   return result;
+  // }
 
   // private registerAutoBeEventHandler(agent: AutoBeAgent<ILlmSchema.Model>) {
   //   AUTOBE_EVENT_TYPES.forEach((key) => {

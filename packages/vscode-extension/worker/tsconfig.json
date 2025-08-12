@@ -1,0 +1,10 @@
+{
+  "extends": "../../../internals/config/tsconfig.json",
+  "compilerOptions": {
+    "plugins": [
+    {
+      "transform": "typia/lib/transform"
+    }
+    ]
+  }
+}

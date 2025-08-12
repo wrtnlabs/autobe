@@ -4,7 +4,7 @@ import { AutoBeAnalyzeScenarioEvent } from "./AutoBeAnalyzeScenarioEvent";
 import { AutoBeAnalyzeStartEvent } from "./AutoBeAnalyzeStartEvent";
 import { AutoBeAnalyzeWriteEvent } from "./AutoBeAnalyzeWriteEvent";
 import { AutoBeAssistantMessageEvent } from "./AutoBeAssistantMessageEvent";
-import { AutoBeInterfaceAuthorizationEvent } from "./AutoBeInterfaceAuthorizationEvent";
+import { AutoBeInterfaceAuthorizationsEvent } from "./AutoBeInterfaceAuthorizationsEvent";
 import { AutoBeInterfaceComplementEvent } from "./AutoBeInterfaceComplementEvent";
 import { AutoBeInterfaceCompleteEvent } from "./AutoBeInterfaceCompleteEvent";
 import { AutoBeInterfaceEndpointsEvent } from "./AutoBeInterfaceEndpointsEvent";
@@ -81,8 +81,8 @@ export type AutoBeEvent =
   | AutoBeInterfaceEndpointsEvent
   | AutoBeInterfaceOperationsReviewEvent
   | AutoBeInterfaceOperationsEvent
-  | AutoBeInterfaceAuthorizationEvent
   | AutoBeInterfaceSchemasReviewEvent
+  | AutoBeInterfaceAuthorizationsEvent
   | AutoBeInterfaceSchemasEvent
   | AutoBeInterfaceComplementEvent
   | AutoBeInterfaceCompleteEvent
@@ -176,7 +176,7 @@ export namespace AutoBeEvent {
     interfaceEndpoints: AutoBeInterfaceEndpointsEvent;
     interfaceOperations: AutoBeInterfaceOperationsEvent;
     interfaceOperationsReview: AutoBeInterfaceOperationsReviewEvent;
-    interfaceAuthorization: AutoBeInterfaceAuthorizationEvent;
+    interfaceAuthorizations: AutoBeInterfaceAuthorizationsEvent;
     interfaceSchemas: AutoBeInterfaceSchemasEvent;
     interfaceSchemasReview: AutoBeInterfaceSchemasReviewEvent;
     interfaceComplement: AutoBeInterfaceComplementEvent;

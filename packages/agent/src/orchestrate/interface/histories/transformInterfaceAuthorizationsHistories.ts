@@ -6,7 +6,7 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { AutoBeState } from "../../../context/AutoBeState";
 import { transformInterfaceAssetHistories } from "./transformInterfaceAssetHistories";
 
-export const transformInterfaceAuthorizationHistories = (
+export const transformInterfaceAuthorizationsHistories = (
   state: AutoBeState,
   role: AutoBeAnalyzeRole,
 ): Array<

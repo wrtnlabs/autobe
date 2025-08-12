@@ -1,19 +1,18 @@
 import {
   AutoBeAnalyzeHistory,
+  AutoBeAnalyzeReviewEvent,
+  AutoBeAnalyzeScenarioEvent,
+  AutoBeAnalyzeWriteEvent,
   AutoBeAssistantMessageHistory,
 } from "@autobe/interface";
+import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
 import { ILlmSchema } from "@samchon/openapi";
-import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
 import { orchestrateAnalyzeReview } from "./orchestrateAnalyzeReview";
 import { orchestrateAnalyzeScenario } from "./orchestrateAnalyzeScenario";
 import { orchestrateAnalyzeWrite } from "./orchestrateAnalyzeWrite";
-import { IOrchestrateAnalyzeReviewerResult } from "./structures/IAutoBeAnalyzeReviewApplication";
-import { IAutoBeAnalyzeScenarioApplication } from "./structures/IAutoBeAnalyzeScenarioApplication";
-
-const MAX_REVIEW_ITERATIONS = 3;
 
 export const orchestrateAnalyze =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
@@ -21,8 +20,8 @@ export const orchestrateAnalyze =
     props: IAutoBeApplicationProps,
   ): Promise<AutoBeAssistantMessageHistory | AutoBeAnalyzeHistory> => {
     // Initialize analysis state
-    const step = ctx.state().analyze?.step ?? 0;
-    const startTime = new Date();
+    const step: number = (ctx.state().analyze?.step ?? -1) + 1;
+    const startTime: Date = new Date();
 
     ctx.dispatch({
       type: "analyzeStart",
@@ -31,111 +30,67 @@ export const orchestrateAnalyze =
       created_at: startTime.toISOString(),
     });
 
+    console.time("scenario");
     // Generate analysis scenario
-    const scenario: IAutoBeAnalyzeScenarioApplication.IProps | null =
+    const scenario: AutoBeAnalyzeScenarioEvent | AutoBeAssistantMessageHistory =
       await orchestrateAnalyzeScenario(ctx);
+    if (scenario.type === "assistantMessage")
+      return ctx.assistantMessage(scenario);
+    else ctx.dispatch(scenario);
 
-    if (scenario === null) {
-      return ctx.assistantMessage({
-        id: v4(),
-        text: "Failed to analyze your request. please request again.",
-        type: "assistantMessage",
-        completed_at: new Date().toISOString(),
-        created_at: new Date().toISOString(),
-      });
-    }
+    console.timeEnd("scenario");
 
-    // Publish scenario event
-    ctx.dispatch({
-      type: "analyzeScenario",
-      page: scenario.page,
-      prefix: scenario.prefix,
-      roles: scenario.roles,
-      filenames: scenario.files.map((file) => file.filename),
-      step,
-      created_at: new Date().toISOString(),
-    });
-
-    // Check if requirements are sufficient
-    if (scenario.files.length === 0) {
-      return ctx.assistantMessage({
-        id: v4(),
-        type: "assistantMessage",
-        text: "The current requirements are insufficient, so file generation will be suspended. It would be better to continue the conversation.",
-        created_at: new Date().toISOString(),
-        completed_at: new Date().toISOString(),
-      });
-    }
-
-    // Process all files in parallel
-    const progress = {
-      total: scenario.files.length * MAX_REVIEW_ITERATIONS,
+    console.time("write");
+    // write documents
+    const writeProgress = {
+      total: scenario.files.length,
       completed: 0,
-    };
-
-    const files: Record<string, string> = {};
-
-    await Promise.all(
+    } as const;
+    const fileList: AutoBeAnalyzeFile[] = await Promise.all(
       scenario.files.map(async (file) => {
-        let markdown: string | null = null;
-        let reviewFeedback: string | null = null;
-
-        // Iterate through write-review cycle
-        for (
-          let iteration = 0;
-          iteration < MAX_REVIEW_ITERATIONS;
-          iteration++
-        ) {
-          // Write markdown document
-          markdown = await orchestrateAnalyzeWrite(ctx, {
-            totalFiles: scenario.files,
-            language: scenario.language,
-            roles: scenario.roles,
-            file,
-            review: reviewFeedback,
-          });
-
-          // Review the written document
-          const reviewResult: IOrchestrateAnalyzeReviewerResult =
-            await orchestrateAnalyzeReview(
-              ctx,
-              {
-                totalFiles: scenario.files,
-                file,
-                progress,
-                roles: scenario.roles,
-                language: scenario.language,
-              },
-              {
-                files: { [file.filename]: markdown },
-              },
-            );
-
-          // Exit loop if document is accepted
-          if (reviewResult.type === "accept") {
-            break;
-          }
-
-          // Store feedback for next iteration
-          reviewFeedback =
-            reviewResult.type === "reject" ? reviewResult.value : null;
-        }
-
-        // Store the final markdown content
-        if (markdown !== null) {
-          files[file.filename] = markdown;
-        }
+        const event: AutoBeAnalyzeWriteEvent = await orchestrateAnalyzeWrite(
+          ctx,
+          scenario,
+          file,
+          writeProgress,
+        );
+        return event.file;
       }),
     );
+    console.timeEnd("write");
+
+    console.time("review");
+    // review documents
+    const reviewProgress = {
+      total: fileList.length,
+      completed: 0,
+    } as const;
+    const newFiles: AutoBeAnalyzeFile[] = await Promise.all(
+      fileList.map(async (file, i) => {
+        const event: AutoBeAnalyzeReviewEvent = await orchestrateAnalyzeReview(
+          ctx,
+          scenario,
+          fileList.filter((_, j) => j !== i), // other files
+          file,
+          reviewProgress,
+        );
+
+        return {
+          ...event.file,
+          content: event.content,
+        };
+      }),
+    );
+    console.timeEnd("review");
 
     // Complete the analysis
     return ctx.dispatch({
       type: "analyzeComplete",
-      prefix: scenario.prefix,
-      files,
-      step,
       roles: scenario.roles,
+      prefix: scenario.prefix,
+      files: newFiles,
+      step,
       elapsed: new Date().getTime() - startTime.getTime(),
       created_at: new Date().toISOString(),
-    });
+    }) satisfies AutoBeAnalyzeHistory;
   };

@@ -19,6 +19,7 @@ export async function orchestrateInterfaceEndpoints<
 >(
   ctx: AutoBeContext<Model>,
   groups: AutoBeInterfaceGroup[],
+  authorizations: AutoBeOpenApi.IOperation[],
   content: string = `Make endpoints for the given assets`,
 ): Promise<AutoBeOpenApi.IEndpoint[]> {
   const progress: IProgress = {
@@ -26,7 +27,9 @@ export async function orchestrateInterfaceEndpoints<
     completed: 0,
   };
   const endpoints: AutoBeOpenApi.IEndpoint[] = (
-    await Promise.all(groups.map((g) => process(ctx, g, content, progress)))
+    await Promise.all(
+      groups.map((g) => process(ctx, g, content, progress, authorizations)),
+    )
   ).flat();
   return new HashSet(
     endpoints,
@@ -40,6 +43,7 @@ async function process<Model extends ILlmSchema.Model>(
   group: AutoBeInterfaceGroup,
   content: string,
   progress: IProgress,
+  authorizations: AutoBeOpenApi.IOperation[],
 ): Promise<AutoBeOpenApi.IEndpoint[]> {
   const start: Date = new Date();
   const pointer: IPointer<AutoBeOpenApi.IEndpoint[] | null> = {
@@ -47,7 +51,11 @@ async function process<Model extends ILlmSchema.Model>(
   };
   const agentica: MicroAgentica<Model> = ctx.createAgent({
     source: "interfaceEndpoints",
-    histories: transformInterfaceEndpointHistories(ctx.state(), group),
+    histories: transformInterfaceEndpointHistories(
+      ctx.state(),
+      group,
+      authorizations,
+    ),
     controller: createController({
       model: ctx.model,
       build: (endpoints) => {

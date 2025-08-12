@@ -1,0 +1,28 @@
+{
+  "name": "worker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "prepare": "ts-patch install",
+    "build": "tsdown && node build/postbuild.js",
+    "dev": "tsdown --watch"
+  },
+  "packageManager": "pnpm@10.6.4",
+  "dependencies": {
+    "@autobe/agent": "workspace:^",
+    "@autobe/compiler": "workspace:^",
+    "@autobe/interface": "workspace:^",
+    "@autobe/rpc": "workspace:^",
+    "@samchon/openapi": "catalog:samchon",
+    "openai": "catalog:libs",
+    "tgrid": "catalog:samchon"
+  },
+  "devDependencies": {
+    "@ryoppippi/unplugin-typia": "^2.6.5",
+    "ts-patch": "^3.3.0",
+    "tsdown": "^0.14.0",
+    "typia": "^9.7.1"
+  }
+}

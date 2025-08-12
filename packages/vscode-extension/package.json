@@ -24,8 +24,8 @@
     "vscode:apply-code": "pnpm vscode:pack -o autobe-vscode-extension.vsix && code --install-extension autobe-vscode-extension.vsix",
     "test": "vscode-test",
     "webview:build": "cd ./webview-ui && pnpm build && cd ..",
-    "build": "pnpm webview:build && pnpm rspack",
-    "_postbuild": "node build/postbuild.js",
+    "worker:build": "cd ./worker && pnpm build && cd ..",
+    "build": "pnpm webview:build && pnpm worker:build && pnpm rspack",
     "rspack": "rspack build",
     "watch": "pnpm webview:build && pnpm rspack --watch"
   },
@@ -42,10 +42,14 @@
     "@vscode/test-cli": "^0.0.11",
     "@vscode/test-electron": "^2.5.2",
     "@vscode/vsce": "^3.6.0",
+    "node-polyfill-webpack-plugin": "^4.1.0",
+    "@autobe/rpc": "workspace:^",
     "openai": "catalog:libs",
+    "swc-loader": "^0.2.6",
     "ts-loader": "^9.5.2",
     "typescript": "catalog:typescript",
-    "typia": "catalog:samchon"
+    "typia": "catalog:samchon",
+    "tgrid": "catalog:samchon"
   },
   "contributes": {
     "viewsContainers": {

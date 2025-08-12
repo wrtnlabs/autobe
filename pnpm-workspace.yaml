@@ -2,6 +2,7 @@ packages:
   - internals/website-examples
   - packages/*
   - packages/vscode-extension/webview-ui
+  - packages/vscode-extension/worker
   - test
   - website
 catalogs:
