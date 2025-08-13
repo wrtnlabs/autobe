@@ -39,7 +39,7 @@ const Chat = () => {
   const [tokenUsage, setTokenUsage] = useState<IAutoBeTokenUsageJson | null>(
     null,
   );
-  const chatBodyRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
   vscode.onMessage((message) => {
     switch (message.type) {
@@ -60,31 +60,32 @@ const Chat = () => {
     }
   });
 
-  // 스크롤 최하단으로 이동
+  // 새 메시지가 추가될 때 자동으로 스크롤을 하단으로 이동
   useEffect(() => {
-    if (chatBodyRef.current) {
-      chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
     }
-  }, [histories]);
+  }, [histories, event]);
 
   return (
-    <div className="flex items-center h-full flex-col">
-      {/* Movie */}
-      <div className="h-full w-full">
-        <div className="h-full w-full">
-          {histories.length === 0 && event.length === 0 ? (
-            <WelcomeMessage className="flex h-full justify-center items-center" />
-          ) : (
-            <ChatMovie
-              histories={histories}
-              events={event}
-              tokenUsage={tokenUsage}
-            />
-          )}
-        </div>
+    <div className="flex flex-col h-full">
+      {/* 채팅 영역 */}
+      <div className="flex-1 overflow-hidden">
+        {histories.length === 0 && event.length === 0 ? (
+          <WelcomeMessage className="flex h-full justify-center items-center" />
+        ) : (
+          <ChatMovie
+            ref={chatContainerRef}
+            histories={histories}
+            events={event}
+            tokenUsage={tokenUsage}
+          />
+        )}
       </div>
-      {/* 입력창 */}
-      <div className="p-4 flex relative">
+
+      {/* 입력창 - 하단 고정 */}
+      <div className="flex-shrink-0 p-4">
         <TextInput
           defaultValue={input}
           setInput={setInput}

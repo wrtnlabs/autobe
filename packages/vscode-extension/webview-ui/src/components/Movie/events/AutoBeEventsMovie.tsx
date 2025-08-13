@@ -3,6 +3,7 @@ import { AutoBeEvent, AutoBeUserMessageHistory } from "@autobe/interface";
 import AssistantMessage from "../AutoBeAssistantMessage";
 import AutoBeUserMessage from "../AutoBeUserMessage";
 import AutoBeStartEvent from "./AutoBeStartEvent";
+import ProgressEventsMovie from "./ProgressEventsMovie";
 import AnalyzeScenario from "./analyze/AnalyzeScenario";
 
 interface IAutoBeEventsMovieProps {
@@ -30,12 +31,21 @@ const AutoBeEventsMovie = (props: IAutoBeEventsMovieProps) => {
     }
 
     case "analyzeScenario":
+      // case "prismaComponents":
+      // case "interfaceGroups":
+      // case "testScenario":
       return <AnalyzeScenario event={event} />;
     case "analyzeWrite":
-    case "analyzeReview": {
-      /** @todo Add batch processing */
-      return null;
+    case "analyzeReview":
+    case "prismaSchemas":
+    case "prismaReview":
+    case "interfaceEndpoints":
+    case "interfaceOperationsReview":
+    case "interfaceSchemas":
+    case "interfaceSchemasReview": {
+      return <ProgressEventsMovie event={event} />;
     }
+
     case "analyzeComplete":
     case "interfaceGroups":
     case "interfaceEndpoints":

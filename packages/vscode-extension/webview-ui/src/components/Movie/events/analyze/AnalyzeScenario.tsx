@@ -1,4 +1,5 @@
 import { AutoBeAnalyzeScenarioEvent } from "@autobe/interface";
+import React, { useState } from "react";
 
 interface IAnalyzeScenarioProps {
   /**
@@ -12,6 +13,8 @@ interface IAnalyzeScenarioProps {
 
 const AnalyzeScenario = (props: IAnalyzeScenarioProps) => {
   const { event } = props;
+  const [isRolesExpanded, setIsRolesExpanded] = useState(false);
+  const [isFilesExpanded, setIsFilesExpanded] = useState(false);
 
   return (
     <div className="flex justify-start mb-4">
@@ -53,24 +56,31 @@ const AnalyzeScenario = (props: IAnalyzeScenarioProps) => {
                 <span className="font-medium text-blue-600">사용자 역할:</span>
               </div>
               <div className="space-y-2">
-                {event.roles.slice(0, 3).map((role, index) => (
-                  <div key={index} className="flex items-start space-x-2">
-                    <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
-                    <div className="text-xs">
-                      <span className="font-medium text-gray-800">
-                        {role.name}:
-                      </span>
-                      <span className="text-gray-600 ml-1">
-                        {role.description.length > 80
-                          ? role.description.substring(0, 80) + "..."
-                          : role.description}
-                      </span>
+                {(isRolesExpanded ? event.roles : event.roles.slice(0, 3)).map(
+                  (role, index) => (
+                    <div key={index} className="flex items-start space-x-2">
+                      <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
+                      <div className="text-xs">
+                        <span className="font-medium text-gray-800">
+                          {role.name}:
+                        </span>
+                        <span className="text-gray-600 ml-1">
+                          {role.description.length > 80
+                            ? role.description.substring(0, 80) + "..."
+                            : role.description}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ),
+                )}
                 {event.roles.length > 3 && (
-                  <div className="text-xs text-gray-500 italic">
-                    +{event.roles.length - 3}개 더...
+                  <div
+                    className="text-xs text-blue-500 italic cursor-pointer hover:text-blue-700 hover:underline"
+                    onClick={() => setIsRolesExpanded(!isRolesExpanded)}
+                  >
+                    {isRolesExpanded
+                      ? "접기"
+                      : `+${event.roles.length - 3}개 더...`}
                   </div>
                 )}
               </div>
@@ -83,15 +93,25 @@ const AnalyzeScenario = (props: IAnalyzeScenarioProps) => {
                 {event.files.length}개
               </div>
               <div className="text-xs text-gray-600">
-                {event.files.slice(0, 3).map((file, index) => (
-                  <div key={index} className="flex items-center space-x-2 mb-1">
-                    <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
-                    <span>{file.filename}</span>
-                  </div>
-                ))}
+                {(isFilesExpanded ? event.files : event.files.slice(0, 3)).map(
+                  (file, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center space-x-2 mb-1"
+                    >
+                      <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+                      <span>{file.filename}</span>
+                    </div>
+                  ),
+                )}
                 {event.files.length > 3 && (
-                  <div className="text-gray-500 italic">
-                    +{event.files.length - 3}개 더...
+                  <div
+                    className="text-blue-500 italic cursor-pointer hover:text-blue-700 hover:underline"
+                    onClick={() => setIsFilesExpanded(!isFilesExpanded)}
+                  >
+                    {isFilesExpanded
+                      ? "접기"
+                      : `+${event.files.length - 3}개 더...`}
                   </div>
                 )}
               </div>
