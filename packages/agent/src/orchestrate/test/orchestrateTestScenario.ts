@@ -114,7 +114,7 @@ const execute = async <Model extends ILlmSchema.Model>(
   dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>,
   endpointNotFound: string,
   entire: AutoBeOpenApi.IOperation[],
-  include: AutoBeOpenApi.IEndpoint[],
+  include: AutoBeOpenApi.IOperation[],
   exclude: AutoBeOpenApi.IEndpoint[],
 ) => {
   const pointer: IPointer<IAutoBeTestScenarioApplication.IScenarioGroup[]> = {
@@ -150,8 +150,8 @@ const execute = async <Model extends ILlmSchema.Model>(
 
 const createHistoryProperties = (
   entire: AutoBeOpenApi.IOperation[],
-  include: Pick<AutoBeOpenApi.IOperation, "method" | "path">[],
-  exclude: Pick<AutoBeOpenApi.IOperation, "method" | "path">[],
+  include: AutoBeOpenApi.IOperation[],
+  exclude: AutoBeOpenApi.IEndpoint[],
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => [
@@ -196,7 +196,10 @@ const createHistoryProperties = (
     text: [
       "# Included in Test Plan",
       include
-        .map((el) => `- ${el.method.toUpperCase()}: ${el.path}`)
+        .map(
+          (el) =>
+            `- ${el.method.toUpperCase()}: ${el.path} ${el.authorizationRole ? `(Role: ${el.authorizationRole})` : ""}`,
+        )
         .join("\n"),
       "",
       "# Excluded from Test Plan",
