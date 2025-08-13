@@ -72,6 +72,7 @@ async function orhcestrate<Model extends ILlmSchema.Model>(
   pointer.value.implementationCode = await replaceImportStatements(ctx)(
     artifacts,
     pointer.value.implementationCode,
+    authorization?.payload.name,
   );
 
   const event: AutoBeRealizeWriteEvent = {
