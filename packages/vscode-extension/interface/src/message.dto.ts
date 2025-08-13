@@ -3,7 +3,6 @@ import {
   AutoBeHistory,
   IAutoBeTokenUsageJson,
 } from "@autobe/interface";
-import { ILlmSchema } from "@samchon/openapi";
 
 export type IAutoBeWebviewMessage =
   | IRequestGetConfig
