@@ -2,6 +2,7 @@ import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import {
   AutoBeAnalyzeReviewEvent,
   AutoBeAnalyzeScenarioEvent,
+  IAutoBeTokenUsageJson,
 } from "@autobe/interface";
 import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
@@ -37,11 +38,12 @@ export const orchestrateAnalyzeReview = async <Model extends ILlmSchema.Model>(
     ],
     enforceFunctionCall: true,
   });
-  const command = `proceed with the review of these files only.` as const;
-  await agent.conversate(command).finally(() => {
-    const tokenUsage = agent.getTokenUsage().aggregate;
-    ctx.usage().record(tokenUsage, ["analyze"]);
-  });
+  await agent.conversate("Review the file");
+
+  const tokenUsage: IAutoBeTokenUsageJson.IComponent =
+    agent.getTokenUsage().aggregate;
+  ctx.usage().record(tokenUsage, ["analyze"]);
+
   if (pointer.value === null)
     throw new Error("Failed to extract review information.");
 
@@ -51,6 +53,7 @@ export const orchestrateAnalyzeReview = async <Model extends ILlmSchema.Model>(
     plan: pointer.value.plan,
     review: pointer.value.review,
     content: pointer.value.content,
+    tokenUsage,
     total: progress.total,
     completed: progress.completed,
     step: (ctx.state().analyze?.step ?? -1) + 1,

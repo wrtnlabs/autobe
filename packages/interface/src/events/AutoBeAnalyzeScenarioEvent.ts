@@ -2,6 +2,7 @@ import { tags } from "typia";
 
 import { AutoBeAnalyzeFile } from "../histories/contents/AutoBeAnalyzeFile";
 import { AutoBeAnalyzeRole } from "../histories/contents/AutoBeAnalyzeRole";
+import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
 /**
@@ -138,4 +139,20 @@ export interface AutoBeAnalyzeScenarioEvent
    * and agents use this to understand the current phase of analysis.
    */
   step: number;
+
+  /**
+   * Token usage metrics for the Analyze Scenario operation.
+   *
+   * Records the amount of tokens consumed during the scenario-based requirements
+   * analysis. This includes tokens used for:
+   * - Orchestrating multiple document generation strategies
+   * - Creating comprehensive analysis plans across document series
+   * - Maintaining context between related documents
+   * - Generating role-based requirements and permissions
+   * - Coordinating the overall analysis workflow
+   *
+   * The token usage is particularly important for scenario events as they often
+   * involve complex multi-document generation requiring substantial AI resources.
+   */
+  tokenUsage: IAutoBeTokenUsageJson.IComponent;
 }

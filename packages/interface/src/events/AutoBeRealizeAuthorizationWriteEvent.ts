@@ -1,4 +1,5 @@
 import { AutoBeRealizeAuthorization } from "../histories/contents/AutoBeRealizeAuthorization";
+import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
 /**
@@ -66,4 +67,6 @@ export interface AutoBeRealizeAuthorizationWriteEvent
    * project scope and security requirements.
    */
   step: number;
+
+  tokenUsage: IAutoBeTokenUsageJson.IComponent;
 }

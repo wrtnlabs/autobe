@@ -1,4 +1,5 @@
 import { AutoBeTestScenario } from "../histories";
+import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
 /**
@@ -36,4 +37,15 @@ export interface AutoBeTestScenarioEvent
    * requirements iteration.
    */
   step: number;
+
+  /**
+   * Token usage metrics for test scenario generation.
+   *
+   * Records the AI token consumption during the test scenario planning phase,
+   * where the Test agent analyzes API endpoints and generates comprehensive
+   * test scenarios with dependency chains. This includes tokens used for
+   * understanding endpoint functionality, creating test case structures, and
+   * drafting initial test code implementations.
+   */
+  tokenUsage: IAutoBeTokenUsageJson.IComponent;
 }

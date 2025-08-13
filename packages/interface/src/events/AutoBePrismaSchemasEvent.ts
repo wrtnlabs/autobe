@@ -1,3 +1,4 @@
+import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
 import { AutoBePrisma } from "../prisma";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
@@ -46,9 +47,9 @@ export interface AutoBePrismaSchemasEvent
    * tables, relationships, and constraints using the AutoBePrisma.IModel
    * interface. The models are designed to be production-ready from the start.
    *
-   * The models include exact table names from requirements, proper UUID
-   * primary fields, foreign key relationships, business fields with appropriate
-   * types, strategic indexes, and comprehensive English-only descriptions.
+   * The models include exact table names from requirements, proper UUID primary
+   * fields, foreign key relationships, business fields with appropriate types,
+   * strategic indexes, and comprehensive English-only descriptions.
    */
   models: AutoBePrisma.IModel[];
 
@@ -60,15 +61,16 @@ export interface AutoBePrismaSchemasEvent
    * analyzed the requirements, designed the tables, and produced models that
    * include all necessary relationships, indexes, and constraints.
    *
-   * The generated file follows the naming convention `schema-{number}-{domain}.prisma`
-   * where the number indicates dependency order and the domain represents the
-   * business area. The final models within the file follow Prisma conventions
-   * while incorporating enterprise patterns like snapshot tables and materialized
-   * views.
+   * The generated file follows the naming convention
+   * `schema-{number}-{domain}.prisma` where the number indicates dependency
+   * order and the domain represents the business area. The final models within
+   * the file follow Prisma conventions while incorporating enterprise patterns
+   * like snapshot tables and materialized views.
    *
    * Each model in the file.models array represents a table in the database with
-   * proper field definitions, relationships, indexes, and comprehensive documentation,
-   * designed to ensure production readiness from the initial generation.
+   * proper field definitions, relationships, indexes, and comprehensive
+   * documentation, designed to ensure production readiness from the initial
+   * generation.
    */
   file: AutoBePrisma.IFile;
 
@@ -104,4 +106,19 @@ export interface AutoBePrismaSchemasEvent
    * database architecture development process.
    */
   step: number;
+
+  /**
+   * Token usage statistics for this schema generation operation.
+   *
+   * Tracks the computational resources consumed by the AI model when generating
+   * the database schema for a specific business domain. This includes tokens
+   * used during the strategic planning phase where the agent analyzes domain
+   * requirements and designs the database architecture, as well as the model
+   * generation phase where production-ready Prisma schemas are created.
+   *
+   * The metrics provide insight into the AI's resource utilization for
+   * domain-specific schema generation, helping optimize the efficiency of the
+   * database design process while maintaining high-quality output.
+   */
+  tokenUsage: IAutoBeTokenUsageJson.IComponent;
 }

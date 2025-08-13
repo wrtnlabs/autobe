@@ -1,4 +1,5 @@
 import { AutoBeInterfaceGroup } from "../histories/contents/AutoBeInterfaceGroup";
+import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
 /**
@@ -53,4 +54,19 @@ export interface AutoBeInterfaceGroupsEvent
    * the project requirements and data model are refined through iterations.
    */
   step: number;
+
+  /**
+   * Token usage statistics for the API grouping generation process.
+   *
+   * Records the computational resources consumed by the Interface agent when
+   * analyzing the Prisma schema structure and creating logical API groups.
+   * This metric helps track the complexity of group organization tasks,
+   * particularly for large-scale projects with extensive database schemas
+   * that require sophisticated partitioning strategies.
+   *
+   * The token usage reflects the effort required to analyze entity
+   * relationships, identify optimal grouping boundaries, and ensure
+   * comprehensive yet non-overlapping API organization.
+   */
+  tokenUsage: IAutoBeTokenUsageJson.IComponent;
 }

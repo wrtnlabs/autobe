@@ -4,7 +4,10 @@ import {
   MicroAgentica,
   MicroAgenticaHistory,
 } from "@agentica/core";
-import { AutoBeAssistantMessageHistory } from "@autobe/interface";
+import {
+  AutoBeAssistantMessageHistory,
+  IAutoBeTokenUsageJson,
+} from "@autobe/interface";
 import { AutoBePrismaComponentsEvent } from "@autobe/interface/src/events/AutoBePrismaComponentsEvent";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
@@ -43,13 +46,12 @@ async function orchestrate<Model extends ILlmSchema.Model>(
     }),
     enforceFunctionCall: false,
   });
+  const histories: MicroAgenticaHistory<Model>[] =
+    await agentica.conversate(content);
+  const tokenUsage: IAutoBeTokenUsageJson.IComponent =
+    agentica.getTokenUsage().aggregate;
+  ctx.usage().record(tokenUsage, ["prisma"]);
 
-  const histories: MicroAgenticaHistory<Model>[] = await agentica
-    .conversate(content)
-    .finally(() => {
-      const tokenUsage = agentica.getTokenUsage().aggregate;
-      ctx.usage().record(tokenUsage, ["prisma"]);
-    });
   if (histories.at(-1)?.type === "assistantMessage")
     return {
       ...(histories.at(-1)! as AgenticaAssistantMessageHistory),
@@ -67,6 +69,7 @@ async function orchestrate<Model extends ILlmSchema.Model>(
     review: pointer.value.review,
     decision: pointer.value.decision,
     components: pointer.value.components,
+    tokenUsage,
     step: ctx.state().analyze?.step ?? 0,
   };
 }

@@ -11,8 +11,8 @@ catalogs:
       version: 0.31.1
   libs:
     openai:
-      specifier: ^5.12.0
-      version: 5.12.1
+      specifier: ^5.12.2
+      version: 5.12.2
   samchon:
     '@nestia/core':
       specifier: ^7.3.3
@@ -115,7 +115,7 @@ importers:
         version: 4.7.1
       openai:
         specifier: catalog:libs
-        version: 5.12.1(ws@8.18.3)(zod@3.25.76)
+        version: 5.12.2(ws@8.18.3)(zod@3.25.76)
       tgrid:
         specifier: catalog:samchon
         version: 1.2.0
@@ -137,7 +137,7 @@ importers:
     dependencies:
       '@agentica/core':
         specifier: catalog:agentica
-        version: 0.31.1(@modelcontextprotocol/sdk@1.17.2)(@samchon/openapi@4.7.1)(openai@5.12.1(ws@8.18.3)(zod@3.25.76))(typia@9.7.1(typescript@5.9.2))
+        version: 0.31.1(@modelcontextprotocol/sdk@1.17.2)(@samchon/openapi@4.7.1)(openai@5.12.2(ws@8.18.3)(zod@3.25.76))(typia@9.7.1(typescript@5.9.2))
       '@autobe/interface':
         specifier: workspace:^
         version: link:../interface
@@ -152,7 +152,7 @@ importers:
         version: 4.7.1
       openai:
         specifier: catalog:libs
-        version: 5.12.1(ws@8.18.3)(zod@3.25.76)
+        version: 5.12.2(ws@8.18.3)(zod@3.25.76)
       tstl:
         specifier: catalog:samchon
         version: 3.0.0
@@ -290,7 +290,7 @@ importers:
         version: 4.7.1
       openai:
         specifier: catalog:libs
-        version: 5.12.1(ws@8.18.3)(zod@3.25.76)
+        version: 5.12.2(ws@8.18.3)(zod@3.25.76)
       typia:
         specifier: catalog:samchon
         version: 9.7.1(typescript@5.9.2)
@@ -321,7 +321,7 @@ importers:
         version: 4.7.1
       openai:
         specifier: catalog:libs
-        version: 5.12.1(ws@8.18.3)(zod@3.25.76)
+        version: 5.12.2(ws@8.18.3)(zod@3.25.76)
       tgrid:
         specifier: catalog:samchon
         version: 1.2.0
@@ -526,7 +526,7 @@ importers:
         version: 3.6.0
       openai:
         specifier: catalog:libs
-        version: 5.12.1(ws@8.18.3)(zod@3.25.76)
+        version: 5.12.2(ws@8.18.3)(zod@3.25.76)
       tgrid:
         specifier: catalog:samchon
         version: 1.2.0
@@ -613,7 +613,7 @@ importers:
         version: 4.7.1
       openai:
         specifier: catalog:libs
-        version: 5.12.1(ws@8.18.3)(zod@3.25.76)
+        version: 5.12.2(ws@8.18.3)(zod@3.25.76)
       tgrid:
         specifier: catalog:samchon
         version: 1.2.0
@@ -671,7 +671,7 @@ importers:
         version: 12.0.2
       openai:
         specifier: catalog:libs
-        version: 5.12.1(ws@8.18.3)(zod@3.25.76)
+        version: 5.12.2(ws@8.18.3)(zod@3.25.76)
       tgrid:
         specifier: catalog:samchon
         version: 1.2.0
@@ -5353,8 +5353,8 @@ packages:
     resolution: {integrity: sha512-YgBpdJHPyQ2UE5x+hlSXcnejzAvD0b22U2OuAP+8OnlJT+PjWPxtgmGqKKc+RgTM63U9gN0YzrYc71R2WT/hTA==}
     engines: {node: '>=18'}
 
-  openai@5.12.1:
-    resolution: {integrity: sha512-26s536j4Fi7P3iUma1S9H33WRrw0Qu8pJ2nYJHffrlKHPU0JK4d0r3NcMgqEcAeTdNLGYNyoFsqN4g4YE9vutg==}
+  openai@5.12.2:
+    resolution: {integrity: sha512-xqzHHQch5Tws5PcKR2xsZGX9xtch+JQFz5zb14dGqlshmmDAFBFEWmeIpf7wVqWV+w7Emj7jRgkNJakyKE0tYQ==}
     hasBin: true
     peerDependencies:
       ws: ^8.18.0
@@ -6961,10 +6961,10 @@ packages:
 
 snapshots:
 
-  '@agentica/core@0.31.1(@modelcontextprotocol/sdk@1.17.2)(@samchon/openapi@4.7.1)(openai@5.12.1(ws@8.18.3)(zod@3.25.76))(typia@9.7.1(typescript@5.9.2))':
+  '@agentica/core@0.31.1(@modelcontextprotocol/sdk@1.17.2)(@samchon/openapi@4.7.1)(openai@5.12.2(ws@8.18.3)(zod@3.25.76))(typia@9.7.1(typescript@5.9.2))':
     dependencies:
       '@samchon/openapi': 4.7.1
-      openai: 5.12.1(ws@8.18.3)(zod@3.25.76)
+      openai: 5.12.2(ws@8.18.3)(zod@3.25.76)
       tstl: 3.0.0
       typia: 9.7.1(typescript@5.9.2)
       uuid: 11.1.0
@@ -12302,7 +12302,7 @@ snapshots:
       is-inside-container: 1.0.0
       wsl-utils: 0.1.0
 
-  openai@5.12.1(ws@8.18.3)(zod@3.25.76):
+  openai@5.12.2(ws@8.18.3)(zod@3.25.76):
     optionalDependencies:
       ws: 8.18.3
       zod: 3.25.76

@@ -1,3 +1,4 @@
+import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
 import { AutoBeOpenApi } from "../openapi/AutoBeOpenApi";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
@@ -69,4 +70,19 @@ export interface AutoBeInterfaceSchemasEvent
    * relevant to the current project scope and business objectives.
    */
   step: number;
+
+  /**
+   * Token usage statistics for the schema definition creation process.
+   *
+   * Quantifies the computational resources consumed by the Interface agent when
+   * generating reusable schema definitions for the API specification. This
+   * metric reflects the complexity of creating comprehensive data transfer
+   * objects, request/response schemas, and type definitions that maintain
+   * alignment with the database schema while providing appropriate abstraction.
+   *
+   * The token usage correlates with schema complexity, including nested object
+   * structures, validation rules, descriptive documentation, and the number
+   * of interconnected type definitions required for type-safe API operations.
+   */
+  tokenUsage: IAutoBeTokenUsageJson.IComponent;
 }

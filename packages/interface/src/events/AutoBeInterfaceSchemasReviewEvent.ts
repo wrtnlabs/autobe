@@ -1,3 +1,4 @@
+import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
 import { AutoBeOpenApi } from "../openapi";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
@@ -121,4 +122,20 @@ export interface AutoBeInterfaceSchemasReviewEvent
    * need validation. Each set must pass review before the count increments.
    */
   completed: number;
+
+  /**
+   * Token usage statistics for the schema review and enhancement process.
+   *
+   * Measures the computational resources consumed during the comprehensive
+   * validation and improvement of OpenAPI schemas. This metric reflects the
+   * complexity of analyzing schema completeness, type correctness, naming
+   * conventions, validation rules, and relationship integrity across the
+   * entire schema collection.
+   *
+   * The token usage increases with the depth of analysis required and the
+   * number of improvements identified, as the review agent must evaluate
+   * schemas holistically, formulate enhancement strategies, and generate
+   * revised schemas that meet AutoBE's enterprise-level standards.
+   */
+  tokenUsage: IAutoBeTokenUsageJson.IComponent;
 }

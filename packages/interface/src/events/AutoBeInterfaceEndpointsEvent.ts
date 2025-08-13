@@ -1,3 +1,4 @@
+import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
 import { AutoBeOpenApi } from "../openapi/AutoBeOpenApi";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
@@ -71,4 +72,19 @@ export interface AutoBeInterfaceEndpointsEvent
    * relevant to the current project scope and business objectives.
    */
   step: number;
+
+  /**
+   * Token usage statistics for the API endpoint creation process.
+   *
+   * Tracks the computational resources consumed by the Interface agent when
+   * establishing the API surface area through endpoint definitions. This
+   * metric provides insight into the complexity of translating business
+   * requirements and database schemas into a comprehensive set of RESTful
+   * API endpoints.
+   *
+   * The token usage correlates with the number and complexity of endpoints
+   * being created, helping stakeholders understand the resource requirements
+   * for different scales of API design efforts.
+   */
+  tokenUsage: IAutoBeTokenUsageJson.IComponent;
 }

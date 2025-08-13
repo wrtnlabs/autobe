@@ -7,6 +7,7 @@ import {
 import {
   AutoBeAnalyzeScenarioEvent,
   AutoBeAssistantMessageHistory,
+  IAutoBeTokenUsageJson,
 } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
@@ -38,18 +39,17 @@ export const orchestrateAnalyzeScenario = async <
     histories: transformAnalyzeSceHistories(ctx),
     enforceFunctionCall: false,
   });
-  const histories: MicroAgenticaHistory<Model>[] = await agentica
-    .conversate(
-      [
-        `Design a complete list of documents and user roles for this project.`,
-        `Define user roles that can authenticate via API and create appropriate documentation files.`,
-        `You must respect the number of documents specified by the user.`,
-      ].join("\n"),
-    )
-    .finally(() => {
-      const tokenUsage = agentica.getTokenUsage().aggregate;
-      ctx.usage().record(tokenUsage, ["analyze"]);
-    });
+  const histories: MicroAgenticaHistory<Model>[] = await agentica.conversate(
+    [
+      `Design a complete list of documents and user roles for this project.`,
+      `Define user roles that can authenticate via API and create appropriate documentation files.`,
+      `You must respect the number of documents specified by the user.`,
+    ].join("\n"),
+  );
+  const tokenUsage: IAutoBeTokenUsageJson.IComponent =
+    agentica.getTokenUsage().aggregate;
+  ctx.usage().record(tokenUsage, ["analyze"]);
+
   if (histories.at(-1)?.type === "assistantMessage")
     return {
       ...(histories.at(-1)! as AgenticaAssistantMessageHistory),
@@ -66,6 +66,7 @@ export const orchestrateAnalyzeScenario = async <
     prefix: pointer.value.prefix,
     roles: pointer.value.roles,
     files: pointer.value.files,
+    tokenUsage,
     step: (ctx.state().analyze?.step ?? -1) + 1,
     created_at: start.toISOString(),
   };

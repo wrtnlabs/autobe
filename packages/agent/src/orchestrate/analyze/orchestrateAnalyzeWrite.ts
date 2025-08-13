@@ -2,6 +2,7 @@ import { IAgenticaController, MicroAgentica } from "@agentica/core";
 import {
   AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeWriteEvent,
+  IAutoBeTokenUsageJson,
 } from "@autobe/interface";
 import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
@@ -34,10 +35,11 @@ export const orchestrateAnalyzeWrite = async <Model extends ILlmSchema.Model>(
     histories: transformAnalyzeWriteHistories(scenario, file),
     enforceFunctionCall: true,
   });
-  await agentica.conversate("Write Document.").finally(() => {
-    const tokenUsage = agentica.getTokenUsage().aggregate;
-    ctx.usage().record(tokenUsage, ["analyze"]);
-  });
+  await agentica.conversate("Write Document.");
+
+  const tokenUsage: IAutoBeTokenUsageJson.IComponent =
+    agentica.getTokenUsage().aggregate;
+  ctx.usage().record(tokenUsage, ["analyze"]);
 
   if (pointer.value === null) {
     throw new Error("The Analyze Agent failed to create the document.");
@@ -48,6 +50,7 @@ export const orchestrateAnalyzeWrite = async <Model extends ILlmSchema.Model>(
       ...file,
       content: pointer.value.content,
     },
+    tokenUsage: tokenUsage,
     step: (ctx.state().analyze?.step ?? -1) + 1,
     total: progress.total,
     completed: ++progress.completed,

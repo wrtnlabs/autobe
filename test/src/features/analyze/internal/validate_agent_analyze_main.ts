@@ -12,6 +12,7 @@ import typia from "typia";
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
 import { TestHistory } from "../../../internal/TestHistory";
+import { TestLogger } from "../../../internal/TestLogger";
 import { TestProject } from "../../../structures/TestProject";
 
 export const validate_agent_analyze_main = async (
@@ -31,6 +32,7 @@ export const validate_agent_analyze_main = async (
   const model: string = TestGlobal.getVendorModel();
   const snapshots: AutoBeEventSnapshot[] = [];
   const listen = (event: AutoBeEvent) => {
+    TestLogger.event(event);
     snapshots.push({
       event,
       tokenUsage: agent.getTokenUsage().toJSON(),

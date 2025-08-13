@@ -1,3 +1,4 @@
+import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
 /**
@@ -63,4 +64,6 @@ export interface AutoBeRealizeCorrectEvent
    * objectives.
    */
   step: number;
+
+  tokenUsage: IAutoBeTokenUsageJson.IComponent;
 }

@@ -1,3 +1,4 @@
+import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
 /**
@@ -105,4 +106,15 @@ export interface AutoBeTestWriteEvent extends AutoBeEventBase<"testWrite"> {
    * remains relevant to the current project scope and validation objectives.
    */
   step: number;
+
+  /**
+   * Token usage metrics for test file writing.
+   *
+   * Tracks the AI token consumption during the comprehensive test code
+   * generation process, covering the initial draft creation, code review
+   * analysis, and final polished implementation. This metric encompasses all
+   * tokens used for transforming test scenarios into executable TypeScript
+   * code that validates API functionality and business logic.
+   */
+  tokenUsage: IAutoBeTokenUsageJson.IComponent;
 }

@@ -1,3 +1,4 @@
+import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
 import { AutoBePrisma, IAutoBePrismaValidation } from "../prisma";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
@@ -79,4 +80,19 @@ export interface AutoBePrismaCorrectEvent
    * relevant to the current project scope and business objectives.
    */
   step: number;
+
+  /**
+   * Token usage statistics for this correction operation.
+   *
+   * Tracks the computational resources consumed by the AI model when correcting
+   * validation failures in the database design. This includes tokens used to
+   * analyze the validation failure details, formulate the correction strategy,
+   * and generate the revised AST structure that addresses the identified issues.
+   *
+   * The token metrics help monitor the efficiency of the AI's self-correction
+   * mechanism, which is crucial for the iterative refinement process that
+   * ensures database designs meet all validation requirements and business
+   * constraints before proceeding to final generation.
+   */
+  tokenUsage: IAutoBeTokenUsageJson.IComponent;
 }

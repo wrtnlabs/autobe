@@ -1,3 +1,4 @@
+import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
 /**
@@ -81,4 +82,20 @@ export interface AutoBeRealizeWriteEvent
    * objectives.
    */
   step: number;
+
+  /**
+   * Token consumption metrics for generating this implementation file.
+   *
+   * Tracks the AI model's token usage (input and output) during the generation
+   * of this specific implementation file. This granular tracking enables precise
+   * cost analysis and optimization of the Realize agent's implementation
+   * process, helping identify which types of implementation files require more
+   * AI processing resources.
+   *
+   * The metrics include tokens consumed for understanding the API specifications
+   * and database schemas, as well as tokens generated for producing the complete
+   * implementation code including service methods, business logic, and
+   * integration patterns.
+   */
+  tokenUsage: IAutoBeTokenUsageJson.IComponent;
 }

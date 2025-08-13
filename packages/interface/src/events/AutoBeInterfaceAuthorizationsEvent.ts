@@ -1,3 +1,4 @@
+import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
 import { AutoBeOpenApi } from "../openapi";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
@@ -53,4 +54,19 @@ export interface AutoBeInterfaceAuthorizationsEvent
    * relevant to the current project scope and business objectives.
    */
   step: number;
+
+  /**
+   * Token usage statistics for the authorization definition process.
+   *
+   * Tracks the computational resources consumed by the Interface agent when
+   * defining security requirements and authorization rules for API operations.
+   * This metric reflects the complexity of establishing comprehensive access
+   * control policies, including role-based permissions, authentication
+   * requirements, and operation-specific security constraints.
+   *
+   * The token usage increases with the sophistication of authorization logic,
+   * including multi-level permission hierarchies, conditional access rules,
+   * and integration with various authentication mechanisms across the API.
+   */
+  tokenUsage: IAutoBeTokenUsageJson.IComponent;
 }

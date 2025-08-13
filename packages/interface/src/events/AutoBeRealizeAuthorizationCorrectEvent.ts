@@ -1,5 +1,6 @@
 import { IAutoBeTypeScriptCompileResult } from "../compiler/IAutoBeTypeScriptCompileResult";
 import { AutoBeRealizeAuthorizationCorrect } from "../histories";
+import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
 /**
@@ -44,4 +45,6 @@ export interface AutoBeRealizeAuthorizationCorrectEvent
    * quality as validation feedback is incorporated.
    */
   step: number;
+
+  tokenUsage: IAutoBeTokenUsageJson.IComponent;
 }

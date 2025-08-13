@@ -1,3 +1,4 @@
+import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
 import { AutoBeOpenApi } from "../openapi/AutoBeOpenApi";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
@@ -70,4 +71,19 @@ export interface AutoBeInterfaceOperationsEvent
    * relevant to the current project scope and business objectives.
    */
   step: number;
+
+  /**
+   * Token usage statistics for the API operation definition process.
+   *
+   * Measures the computational resources consumed by the Interface agent when
+   * creating detailed operation specifications. This metric reflects the
+   * complexity of translating endpoint definitions into comprehensive API
+   * contracts with business logic, parameter specifications, response schemas,
+   * error handling, and security requirements.
+   *
+   * The token usage increases with operation complexity, including the depth
+   * of business logic documentation, number of parameters, response variations,
+   * and security configuration requirements for each API function.
+   */
+  tokenUsage: IAutoBeTokenUsageJson.IComponent;
 }
