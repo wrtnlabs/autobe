@@ -30,15 +30,6 @@ export interface AutoBeTestScenarioEvent
   scenarios: AutoBeTestScenario[];
 
   /**
-   * Current step in the test generation workflow.
-   *
-   * Tracks progress through the test creation process, helping coordinate with
-   * other pipeline stages and maintain synchronization with the current
-   * requirements iteration.
-   */
-  step: number;
-
-  /**
    * Token usage metrics for test scenario generation.
    *
    * Records the AI token consumption during the test scenario planning phase,
@@ -48,4 +39,13 @@ export interface AutoBeTestScenarioEvent
    * drafting initial test code implementations.
    */
   tokenUsage: IAutoBeTokenUsageJson.IComponent;
+
+  /**
+   * Current step in the test generation workflow.
+   *
+   * Tracks progress through the test creation process, helping coordinate with
+   * other pipeline stages and maintain synchronization with the current
+   * requirements iteration.
+   */
+  step: number;
 }

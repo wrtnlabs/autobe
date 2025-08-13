@@ -1,4 +1,4 @@
-import { IAgenticaController, MicroAgentica } from "@agentica/core";
+import { IAgenticaController } from "@agentica/core";
 import { AutoBePrisma } from "@autobe/interface";
 import { AutoBePrismaReviewEvent } from "@autobe/interface/src/events/AutoBePrismaReviewEvent";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
@@ -42,7 +42,7 @@ async function step<Model extends ILlmSchema.Model>(
   const pointer: IPointer<IAutoBePrismaReviewApplication.IProps | null> = {
     value: null,
   };
-  const agentica: MicroAgentica<Model> = ctx.createAgent({
+  const { tokenUsage } = await ctx.conversate({
     source: "prismaReview",
     histories: transformPrismaReviewHistories({
       analysis:
@@ -62,13 +62,8 @@ async function step<Model extends ILlmSchema.Model>(
       },
     }),
     enforceFunctionCall: true,
+    message: "Please review the Prisma schema file.",
   });
-  await agentica
-    .conversate("Please review the Prisma schema file.")
-    .finally(() => {
-      const tokenUsage = agentica.getTokenUsage().aggregate;
-      ctx.usage().record(tokenUsage, ["prisma"]);
-    });
   if (pointer.value === null)
     throw new Error("Failed to review the Prisma schema.");
 
@@ -79,6 +74,7 @@ async function step<Model extends ILlmSchema.Model>(
     review: pointer.value.review,
     plan: pointer.value.plan,
     modifications: pointer.value.modifications,
+    tokenUsage,
     completed,
     total,
     step: ctx.state().analyze?.step ?? 0,

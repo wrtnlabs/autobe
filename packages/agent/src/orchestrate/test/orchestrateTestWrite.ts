@@ -1,4 +1,4 @@
-import { IAgenticaController, MicroAgentica } from "@agentica/core";
+import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeTestScenario,
   AutoBeTestWriteEvent,
@@ -11,6 +11,7 @@ import typia from "typia";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { forceRetry } from "../../utils/forceRetry";
+import { IProgress } from "../internal/IProgress";
 import { completeTestCode } from "./compile/completeTestCode";
 import { getTestScenarioArtifacts } from "./compile/getTestScenarioArtifacts";
 import { transformTestWriteHistories } from "./histories/transformTestWriteHistories";
@@ -22,9 +23,10 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   scenarios: AutoBeTestScenario[],
 ): Promise<IAutoBeTestWriteResult[]> {
-  const start: Date = new Date();
-  let complete: number = 0;
-
+  const progress: IProgress = {
+    total: scenarios.length,
+    completed: 0,
+  };
   const result: Array<IAutoBeTestWriteResult | null> = await Promise.all(
     /**
      * Generate test code for each scenario. Maps through plans array to create
@@ -36,20 +38,12 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
         const r = await forceRetry(async () => {
           const artifacts: IAutoBeTestScenarioArtifacts =
             await getTestScenarioArtifacts(ctx, scenario);
-          const result: IAutoBeTestWriteApplication.IProps = await process(
+          const event: AutoBeTestWriteEvent = await process(
             ctx,
             scenario,
             artifacts,
+            progress,
           );
-          const event: AutoBeTestWriteEvent = {
-            type: "testWrite",
-            created_at: start.toISOString(),
-            location: `test/features/api/${result.domain}/${scenario.functionName}.ts`,
-            ...result,
-            completed: ++complete,
-            total: scenarios.length,
-            step: ctx.state().interface?.step ?? 0,
-          };
           ctx.dispatch(event);
           return {
             scenario,
@@ -74,18 +68,17 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
  * @param ctx - The AutoBeContext containing model, vendor and configuration
  * @param scenario - The test scenario information to generate code for
  * @param artifacts - The artifacts containing the reference files and schemas
- * @returns Promise resolving to IAutoBeTestWriteApplication.IProps containing
- *   the generated test code
  */
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   scenario: AutoBeTestScenario,
   artifacts: IAutoBeTestScenarioArtifacts,
-): Promise<IAutoBeTestWriteApplication.IProps> {
+  progress: IProgress,
+): Promise<AutoBeTestWriteEvent> {
   const pointer: IPointer<IAutoBeTestWriteApplication.IProps | null> = {
     value: null,
   };
-  const agentica: MicroAgentica<Model> = ctx.createAgent({
+  const { tokenUsage } = await ctx.conversate({
     source: "testWrite",
     histories: transformTestWriteHistories(scenario, artifacts),
     controller: createController({
@@ -96,16 +89,22 @@ async function process<Model extends ILlmSchema.Model>(
       },
     }),
     enforceFunctionCall: true,
-  });
-  await agentica.conversate("Create e2e test functions.").finally(() => {
-    const tokenUsage = agentica.getTokenUsage().aggregate;
-    ctx.usage().record(tokenUsage, ["test"]);
+    message: "Create e2e test functions.",
   });
   if (pointer.value === null) throw new Error("Failed to create test code.");
 
   const compiler: IAutoBeCompiler = await ctx.compiler();
   pointer.value.final = await compiler.typescript.beautify(pointer.value.final);
-  return pointer.value;
+  return {
+    type: "testWrite",
+    created_at: new Date().toISOString(),
+    location: `test/features/api/${pointer.value.domain}/${scenario.functionName}.ts`,
+    ...pointer.value,
+    tokenUsage,
+    completed: ++progress.completed,
+    total: progress.total,
+    step: ctx.state().interface?.step ?? 0,
+  } satisfies AutoBeTestWriteEvent;
 }
 
 function createController<Model extends ILlmSchema.Model>(props: {

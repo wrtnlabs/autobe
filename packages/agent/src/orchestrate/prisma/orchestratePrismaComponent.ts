@@ -1,13 +1,8 @@
 import {
   AgenticaAssistantMessageHistory,
   IAgenticaController,
-  MicroAgentica,
-  MicroAgenticaHistory,
 } from "@agentica/core";
-import {
-  AutoBeAssistantMessageHistory,
-  IAutoBeTokenUsageJson,
-} from "@autobe/interface";
+import { AutoBeAssistantMessageHistory } from "@autobe/interface";
 import { AutoBePrismaComponentsEvent } from "@autobe/interface/src/events/AutoBePrismaComponentsEvent";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
@@ -22,20 +17,20 @@ import { IAutoBePrismaComponentApplication } from "./structures/IAutoBePrismaCom
 
 export const orchestratePrismaComponents = <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  content: string = "Please extract files and tables from the given documents.",
+  message: string = "Please extract files and tables from the given documents.",
 ): Promise<AutoBeAssistantMessageHistory | AutoBePrismaComponentsEvent> =>
-  forceRetry(() => orchestrate(ctx, content));
+  forceRetry(() => orchestrate(ctx, message));
 
 async function orchestrate<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  content: string,
+  message: string,
 ): Promise<AutoBeAssistantMessageHistory | AutoBePrismaComponentsEvent> {
   const start: Date = new Date();
   const pointer: IPointer<IAutoBePrismaComponentApplication.IProps | null> = {
     value: null,
   };
   const prefix: string | null = ctx.state().analyze?.prefix ?? null;
-  const agentica: MicroAgentica<Model> = ctx.createAgent({
+  const { histories, tokenUsage } = await ctx.conversate({
     source: "prismaComponents",
     histories: transformPrismaComponentsHistories(ctx.state(), prefix),
     controller: createController({
@@ -45,13 +40,8 @@ async function orchestrate<Model extends ILlmSchema.Model>(
       },
     }),
     enforceFunctionCall: false,
+    message,
   });
-  const histories: MicroAgenticaHistory<Model>[] =
-    await agentica.conversate(content);
-  const tokenUsage: IAutoBeTokenUsageJson.IComponent =
-    agentica.getTokenUsage().aggregate;
-  ctx.usage().record(tokenUsage, ["prisma"]);
-
   if (histories.at(-1)?.type === "assistantMessage")
     return {
       ...(histories.at(-1)! as AgenticaAssistantMessageHistory),

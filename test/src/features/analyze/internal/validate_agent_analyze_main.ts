@@ -28,11 +28,13 @@ export const validate_agent_analyze_main = async (
     history.contents[0].type === "text" ? history.contents[0].text : null;
   if (content === null) throw new Error("History must have a text content.");
 
-  const agent: AutoBeAgent<ILlmSchema.Model> = factory.createAgent([history]);
+  const start: Date = new Date();
   const model: string = TestGlobal.getVendorModel();
   const snapshots: AutoBeEventSnapshot[] = [];
+
+  const agent: AutoBeAgent<ILlmSchema.Model> = factory.createAgent([history]);
   const listen = (event: AutoBeEvent) => {
-    TestLogger.event(event);
+    if (TestGlobal.trace) TestLogger.event(start, event);
     snapshots.push({
       event,
       tokenUsage: agent.getTokenUsage().toJSON(),
@@ -78,7 +80,7 @@ export const validate_agent_analyze_main = async (
     root: `${TestGlobal.ROOT}/results/${model}/${project}/analyze`,
     files,
   });
-  if (process.argv.includes("--archive"))
+  if (TestGlobal.archive)
     await TestHistory.save({
       [`${project}.analyze.json`]: JSON.stringify(agent.getHistories()),
       [`${project}.analyze.snapshots.json`]: JSON.stringify(

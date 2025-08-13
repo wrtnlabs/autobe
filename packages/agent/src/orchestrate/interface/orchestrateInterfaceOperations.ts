@@ -1,5 +1,8 @@
-import { IAgenticaController, MicroAgentica } from "@agentica/core";
-import { AutoBeOpenApi } from "@autobe/interface";
+import { IAgenticaController } from "@agentica/core";
+import {
+  AutoBeInterfaceOperationsEvent,
+  AutoBeOpenApi,
+} from "@autobe/interface";
 import { AutoBeEndpointComparator, StringUtil } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { HashMap, HashSet, IPointer } from "tstl";
@@ -48,14 +51,6 @@ export async function orchestrateInterfaceOperations<
           operationsProgress,
           operationsReviewProgress,
         );
-
-        ctx.dispatch({
-          type: "interfaceOperations",
-          operations: row,
-          ...operationsProgress,
-          step: ctx.state().analyze?.step ?? 0,
-          created_at: new Date().toISOString(),
-        });
         return row;
       }),
     )
@@ -113,7 +108,7 @@ async function process<Model extends ILlmSchema.Model>(
   const pointer: IPointer<AutoBeOpenApi.IOperation[] | null> = {
     value: null,
   };
-  const agentica: MicroAgentica<Model> = ctx.createAgent({
+  const { tokenUsage } = await ctx.conversate({
     source: "interfaceOperations",
     histories: transformInterfaceOperationHistories(ctx.state(), endpoints),
     controller: createController({
@@ -154,12 +149,17 @@ async function process<Model extends ILlmSchema.Model>(
       },
     }),
     enforceFunctionCall: true,
-  });
-  await agentica.conversate("Make API operations").finally(() => {
-    const tokenUsage = agentica.getTokenUsage().aggregate;
-    ctx.usage().record(tokenUsage, ["interface"]);
+    message: "Make API operations",
   });
   if (pointer.value === null) throw new Error("Failed to create operations."); // never be happened
+  ctx.dispatch({
+    type: "interfaceOperations",
+    operations: pointer.value,
+    tokenUsage,
+    ...progress,
+    step: ctx.state().analyze?.step ?? 0,
+    created_at: new Date().toISOString(),
+  } satisfies AutoBeInterfaceOperationsEvent);
   return pointer.value;
 }
 

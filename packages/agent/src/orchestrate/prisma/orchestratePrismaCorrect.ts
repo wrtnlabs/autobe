@@ -1,4 +1,4 @@
-import { IAgenticaController, MicroAgentica } from "@agentica/core";
+import { IAgenticaController } from "@agentica/core";
 import {
   AutoBePrisma,
   IAutoBeCompiler,
@@ -118,13 +118,7 @@ async function process<Model extends ILlmSchema.Model>(
         })(),
       }),
     );
-    tokenUsage.increment(
-      (() => {
-        const temp: AutoBeTokenUsage = new AutoBeTokenUsage();
-        Object.assign(temp.prisma, next.tokenUsage);
-        return temp;
-      })(),
-    );
+    tokenUsage.record(next.tokenUsage, ["prisma"]);
     plannings.push(next.planning);
     for (const m of next.models) models[m.name] = m;
 
@@ -144,7 +138,7 @@ async function process<Model extends ILlmSchema.Model>(
   return {
     planning: plannings.join("\n\n"),
     models: Object.values(models),
-    tokenUsage: tokenUsage.aggregate,
+    tokenUsage: tokenUsage.toJSON().aggregate,
   };
 }
 
@@ -156,7 +150,7 @@ async function execute<Model extends ILlmSchema.Model>(
   const pointer: IPointer<IAutoBePrismaCorrectApplication.IProps | null> = {
     value: null,
   };
-  const agentica: MicroAgentica<Model> = ctx.createAgent({
+  const { tokenUsage } = await ctx.conversate({
     source: "prismaCorrect",
     histories: transformPrismaCorrectHistories(failure),
     controller: createController({
@@ -166,15 +160,9 @@ async function execute<Model extends ILlmSchema.Model>(
       },
     }),
     enforceFunctionCall: true,
+    message:
+      "Resolve the compilation errors in the provided Prisma schema files.",
   });
-
-  // REQUEST CORRECTION
-  await agentica.conversate(
-    "Resolve the compilation errors in the provided Prisma schema files.",
-  );
-  const tokenUsage: IAutoBeTokenUsageJson.IComponent =
-    agentica.getTokenUsage().aggregate;
-  ctx.usage().record(tokenUsage, ["prisma"]);
   if (pointer.value === null)
     throw new Error(
       "Unreachable error: PrismaCompilerAgent.pointer.value is null",

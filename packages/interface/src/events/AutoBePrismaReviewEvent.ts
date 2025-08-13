@@ -1,4 +1,5 @@
-import { AutoBePrisma } from "../prisma";
+import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
+import { AutoBePrisma } from "../prisma/AutoBePrisma";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
 /**
@@ -21,9 +22,7 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
  */
 export interface AutoBePrismaReviewEvent
   extends AutoBeEventBase<"prismaReview"> {
-  /**
-   * Name of the Prisma schema file being reviewed.
-   */
+  /** Name of the Prisma schema file being reviewed. */
   filename: string;
 
   /**
@@ -114,6 +113,23 @@ export interface AutoBePrismaReviewEvent
    * - All modifications must resolve issues identified in the review
    */
   modifications: AutoBePrisma.IModel[];
+
+  /**
+   * Token usage metrics for the Prisma Review operation.
+   *
+   * Records the amount of tokens consumed during the schema review and
+   * modification process. This includes tokens used for:
+   * - Analyzing the proposed schema against best practices
+   * - Validating normalization compliance and relationship integrity
+   * - Reviewing indexing strategies and performance optimizations
+   * - Generating detailed review feedback and recommendations
+   * - Creating targeted model modifications to address identified issues
+   *
+   * The token usage helps monitor the AI resource consumption during the
+   * iterative schema refinement process, enabling optimization of the review
+   * workflow.
+   */
+  tokenUsage: IAutoBeTokenUsageJson.IComponent;
 
   /**
    * Number of components that have been reviewed so far.

@@ -1,4 +1,4 @@
-import { IAgenticaController, MicroAgentica } from "@agentica/core";
+import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeTestValidateEvent,
   IAutoBeCompiler,
@@ -102,7 +102,7 @@ const correct = async <Model extends ILlmSchema.Model>(
   const pointer: IPointer<IAutoBeTestCorrectApplication.IProps | null> = {
     value: null,
   };
-  const agentica: MicroAgentica<Model> = ctx.createAgent({
+  const { tokenUsage } = await ctx.conversate({
     source: "testCorrect",
     histories: transformTestCorrectHistories(content, validate.result),
     controller: createController({
@@ -113,15 +113,9 @@ const correct = async <Model extends ILlmSchema.Model>(
       },
     }),
     enforceFunctionCall: true,
-  });
-  await agentica
-    .conversate(
+    message:
       "Fix the `AutoBeTest.IFunction` data to resolve the compilation error.",
-    )
-    .finally(() => {
-      const tokenUsage = agentica.getTokenUsage().aggregate;
-      ctx.usage().record(tokenUsage, ["test"]);
-    });
+  });
   if (pointer.value === null) throw new Error("Failed to modify test code.");
 
   const compiler: IAutoBeCompiler = await ctx.compiler();
@@ -132,6 +126,7 @@ const correct = async <Model extends ILlmSchema.Model>(
     created_at: new Date().toISOString(),
     file: validate.file,
     result: validate.result,
+    tokenUsage,
     step: ctx.state().analyze?.step ?? 0,
     ...pointer.value,
   });

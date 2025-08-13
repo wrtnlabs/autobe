@@ -1,4 +1,4 @@
-import { IAgenticaController, MicroAgentica } from "@agentica/core";
+import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeInterfaceOperationsReviewEvent,
   AutoBeOpenApi,
@@ -8,6 +8,7 @@ import { IPointer } from "tstl";
 import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
+import { IProgress } from "../internal/IProgress";
 import { transformInterfaceOperationsReviewHistories } from "./histories/transformInterfaceOperationsReviewHistories";
 import { IAutoBeInterfaceOperationsReviewApplication } from "./structures/IAutoBeInterfaceOperationsReviewApplication";
 
@@ -22,7 +23,7 @@ export async function orchestrateInterfaceOperationsReview<
     {
       value: null,
     };
-  const agentica: MicroAgentica<Model> = ctx.createAgent({
+  const { tokenUsage } = await ctx.conversate({
     source: "interfaceOperationsReview",
     histories: transformInterfaceOperationsReviewHistories(ctx, operations),
     controller: createReviewController({
@@ -32,27 +33,22 @@ export async function orchestrateInterfaceOperationsReview<
       },
     }),
     enforceFunctionCall: false,
+    message: "Review the operations",
   });
-  await agentica.conversate("Review the operations").finally(() => {
-    const tokenUsage = agentica.getTokenUsage().aggregate;
-    ctx.usage().record(tokenUsage, ["interface"]);
-  });
-
   if (pointer.value === null) throw new Error("Failed to review operations.");
 
-  const event: AutoBeInterfaceOperationsReviewEvent = {
+  ctx.dispatch({
     type: "interfaceOperationsReview",
     operations: pointer.value.content,
     review: pointer.value.review,
     plan: pointer.value.plan,
     content: pointer.value.content,
+    tokenUsage,
     created_at: new Date().toISOString(),
     step: ctx.state().analyze?.step ?? 0,
     total: progress.total,
     completed: ++progress.completed,
-  };
-  ctx.dispatch(event);
-
+  } satisfies AutoBeInterfaceOperationsReviewEvent);
   return pointer.value.content;
 }
 
@@ -86,8 +82,3 @@ const collection = {
     "claude"
   >(),
 };
-
-interface IProgress {
-  completed: number;
-  total: number;
-}

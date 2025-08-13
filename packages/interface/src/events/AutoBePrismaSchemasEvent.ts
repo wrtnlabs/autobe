@@ -75,6 +75,21 @@ export interface AutoBePrismaSchemasEvent
   file: AutoBePrisma.IFile;
 
   /**
+   * Token usage statistics for this schema generation operation.
+   *
+   * Tracks the computational resources consumed by the AI model when generating
+   * the database schema for a specific business domain. This includes tokens
+   * used during the strategic planning phase where the agent analyzes domain
+   * requirements and designs the database architecture, as well as the model
+   * generation phase where production-ready Prisma schemas are created.
+   *
+   * The metrics provide insight into the AI's resource utilization for
+   * domain-specific schema generation, helping optimize the efficiency of the
+   * database design process while maintaining high-quality output.
+   */
+  tokenUsage: IAutoBeTokenUsageJson.IComponent;
+
+  /**
    * Number of schema files that have been completed so far.
    *
    * Indicates the current progress in the schema design process, showing how
@@ -106,19 +121,4 @@ export interface AutoBePrismaSchemasEvent
    * database architecture development process.
    */
   step: number;
-
-  /**
-   * Token usage statistics for this schema generation operation.
-   *
-   * Tracks the computational resources consumed by the AI model when generating
-   * the database schema for a specific business domain. This includes tokens
-   * used during the strategic planning phase where the agent analyzes domain
-   * requirements and designs the database architecture, as well as the model
-   * generation phase where production-ready Prisma schemas are created.
-   *
-   * The metrics provide insight into the AI's resource utilization for
-   * domain-specific schema generation, helping optimize the efficiency of the
-   * database design process while maintaining high-quality output.
-   */
-  tokenUsage: IAutoBeTokenUsageJson.IComponent;
 }

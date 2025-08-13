@@ -1,5 +1,5 @@
-import { IAgenticaController, MicroAgentica } from "@agentica/core";
-import { AutoBePrisma, IAutoBeTokenUsageJson } from "@autobe/interface";
+import { IAgenticaController } from "@agentica/core";
+import { AutoBePrisma } from "@autobe/interface";
 import { AutoBePrismaSchemasEvent } from "@autobe/interface/src/events/AutoBePrismaSchemasEvent";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
@@ -55,7 +55,7 @@ async function process<Model extends ILlmSchema.Model>(
   const pointer: IPointer<IAutoBePrismaSchemaApplication.IProps | null> = {
     value: null,
   };
-  const agentica: MicroAgentica<Model> = ctx.createAgent({
+  const { tokenUsage } = await ctx.conversate({
     source: "prismaSchemas",
     histories: transformPrismaSchemaHistories(
       ctx
@@ -75,13 +75,8 @@ async function process<Model extends ILlmSchema.Model>(
       },
     }),
     enforceFunctionCall: true,
+    message: "Make prisma schema file please",
   });
-
-  await agentica.conversate("Make prisma schema file please");
-
-  const tokenUsage: IAutoBeTokenUsageJson.IComponent =
-    agentica.getTokenUsage().aggregate;
-  ctx.usage().record(tokenUsage, ["prisma"]);
   if (pointer.value === null)
     throw new Error("Unreachable code: Prisma Schema not generated");
   return {
