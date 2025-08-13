@@ -128,13 +128,14 @@ export class AutoBePlaygroundListener {
 
       // TEST
       testStart: async (event) => {
+        this.dict_.delete("testScenarios");
         this.dict_.delete("testWrite");
         this.dict_.delete("testValidate");
         this.dict_.delete("testCorrect");
         this.insert(event);
       },
       testScenarios: async (event) => {
-        this.insert(event);
+        this.accumulate(event);
       },
       testWrite: async (event) => {
         this.accumulate(event);
@@ -146,6 +147,7 @@ export class AutoBePlaygroundListener {
         this.accumulate(event);
       },
       testComplete: async (event) => {
+        this.dict_.delete("testScenarios");
         this.dict_.delete("testWrite");
         this.dict_.delete("testValidate");
         this.dict_.delete("testCorrect");

@@ -7,6 +7,7 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { IProgress } from "../internal/IProgress";
 import { transformPrismaReviewHistories } from "./histories/transformPrismaReviewHistories";
 import { IAutoBePrismaReviewApplication } from "./structures/IAutoBePrismaReviewApplication";
 
@@ -16,12 +17,13 @@ export async function orchestratePrismaReview<Model extends ILlmSchema.Model>(
   schemas: Record<string, string>,
   componentList: AutoBePrisma.IComponent[],
 ): Promise<AutoBePrismaReviewEvent[]> {
-  const total = componentList.length;
-  let completed = 0;
-
+  const progress: IProgress = {
+    completed: 0,
+    total: componentList.length,
+  };
   return await Promise.all(
     componentList.map((component) =>
-      step(ctx, application, schemas, component, ++completed, total),
+      step(ctx, application, schemas, component, progress),
     ),
   );
 }
@@ -31,8 +33,7 @@ async function step<Model extends ILlmSchema.Model>(
   application: AutoBePrisma.IApplication,
   schemas: Record<string, string>,
   component: AutoBePrisma.IComponent,
-  completed: number,
-  total: number,
+  progress: IProgress,
 ): Promise<AutoBePrismaReviewEvent> {
   const start: Date = new Date();
   const pointer: IPointer<IAutoBePrismaReviewApplication.IProps | null> = {
@@ -71,8 +72,8 @@ async function step<Model extends ILlmSchema.Model>(
     plan: pointer.value.plan,
     modifications: pointer.value.modifications,
     tokenUsage,
-    completed,
-    total,
+    completed: ++progress.completed,
+    total: progress.total,
     step: ctx.state().analyze?.step ?? 0,
   };
   ctx.dispatch(event);

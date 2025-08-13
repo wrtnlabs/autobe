@@ -117,7 +117,7 @@ function getState(
       case "interfaceEndpoints":
         return {
           title: "Interface Endpoints",
-          description: "Designing API endpoints",
+          description: "Collecting API endpoints",
         };
       case "interfaceOperations":
         return {
@@ -131,7 +131,7 @@ function getState(
         };
       case "interfaceAuthorization":
         return {
-          title: "Interface Authorizations",
+          title: "Interface Authorization",
           description: "Designing API authorization operations",
         };
       case "interfaceSchemas":
