@@ -13,6 +13,7 @@ import typia from "typia";
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
 import { TestHistory } from "../../../internal/TestHistory";
+import { TestLogger } from "../../../internal/TestLogger";
 import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_realize } from "./prepare_agent_realize";
 
@@ -24,24 +25,14 @@ export const validate_agent_realize_main = async (
 
   // PREPARE AGENT
   const { agent, zero } = await prepare_agent_realize(factory, project);
+  const start: Date = new Date();
   const snapshots: AutoBeEventSnapshot[] = [];
   const listen = (event: AutoBeEvent) => {
+    if (TestGlobal.trace) TestLogger.event(start, event);
     snapshots.push({
       event,
       tokenUsage: agent.getTokenUsage().toJSON(),
     });
-
-    if (event.type === "realizeWrite" || event.type === "realizeCorrect") {
-      console.log(
-        event.type,
-        event.location,
-        `${event.completed} / ${event.total} completed.`,
-      );
-    }
-
-    if (event.type === "realizeComplete") {
-      console.log("Realize completed.: ", event.compiled.type);
-    }
   };
 
   agent.on("assistantMessage", listen);

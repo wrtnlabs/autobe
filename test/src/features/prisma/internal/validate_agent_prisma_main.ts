@@ -16,6 +16,7 @@ import typia from "typia";
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
 import { TestHistory } from "../../../internal/TestHistory";
+import { TestLogger } from "../../../internal/TestLogger";
 import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_prisma } from "./prepare_agent_prisma";
 
@@ -26,9 +27,11 @@ export const validate_agent_prisma_main = async (
   if (TestGlobal.env.API_KEY === undefined) return false;
 
   const { agent, zero } = await prepare_agent_prisma(factory, project);
+  const start: Date = new Date();
   const model: string = TestGlobal.getVendorModel();
   const snapshots: AutoBeEventSnapshot[] = [];
   const listen = (event: AutoBeEvent) => {
+    if (TestGlobal.trace) TestLogger.event(start, event);
     snapshots.push({
       event,
       tokenUsage: agent.getTokenUsage().toJSON(),
@@ -38,10 +41,10 @@ export const validate_agent_prisma_main = async (
   for (const type of typia.misc.literals<AutoBeEvent.Type>())
     if (type.startsWith("prisma")) agent.on(type, listen);
 
-  let start: AutoBePrismaStartEvent | null = null;
+  let startEvent: AutoBePrismaStartEvent | null = null;
   let components: AutoBePrismaComponentsEvent | null = null;
   agent.on("prismaStart", (event) => {
-    start = event;
+    startEvent = event;
   });
   agent.on("prismaComponents", (event) => {
     components = event;
@@ -125,7 +128,7 @@ export const validate_agent_prisma_main = async (
       "logs/tokenUsage.json": JSON.stringify(agent.getTokenUsage()),
       "logs/components.json": JSON.stringify(components),
       "logs/schemas.json": JSON.stringify(schemas),
-      "logs/start.json": JSON.stringify(start),
+      "logs/start.json": JSON.stringify(startEvent),
     },
   });
   if (process.argv.includes("--archive"))

@@ -13,10 +13,13 @@ const main = async () => {
   const start: number = STEPS.indexOf(from);
   const end: number = to ? STEPS.indexOf(to) : STEPS.length;
   const execute = (step: string) =>
-    cp.execSync(`pnpm start --include ${step}_main${postfix} --archive`, {
-      stdio: "inherit",
-      cwd: TestGlobal.ROOT,
-    });
+    cp.execSync(
+      `pnpm start --include ${step}_main${postfix} --archive --trace`,
+      {
+        stdio: "inherit",
+        cwd: TestGlobal.ROOT,
+      },
+    );
   STEPS.forEach((step, i) => {
     if (i < start) return;
     if (i > end) return;
