@@ -88,8 +88,6 @@ export interface AutoBeAnalyzeScenarioEvent
   /**
    * Language for document content. When specified by the user, this takes
    * precedence over the locale setting for determining document language.
-   * Examples: "en" (English), "ko" (Korean), "ja" (Japanese) If not
-   * specified, falls back to the locale setting.
    */
   language?: string;
 

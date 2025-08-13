@@ -212,7 +212,7 @@ All file properties must guide the creation of business-focused, natural languag
   - ✅ GOOD: `A["User Login - Email"]`
 
 ### 3. Reading and Writing "Mermaid"
-- **Korean documents**: Write as "Mermaid" (English) or "머메이드" (Korean transliteration)
+- **documents**: Write down Mermaid in English when writing it down.
 - **Never write**: "mermaid", "MERMAID", or other variations
 - **In diagram code blocks**: Use ` ```mermaid ` (lowercase for code block identifier only)
 
