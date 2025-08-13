@@ -11,7 +11,6 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { forceRetry } from "../../utils/forceRetry";
 import { transformPrismaCorrectHistories } from "./histories/transformPrismaCorrectHistories";
 import { IAutoBePrismaCorrectApplication } from "./structures/IAutoBePrismaCorrectApplication";
 
@@ -68,7 +67,7 @@ async function process<Model extends ILlmSchema.Model>(
   capacity: number = 8,
 ): Promise<IExecutionResult> {
   const count: number = getTableCount(failure);
-  if (count <= capacity) return forceRetry(() => execute(ctx, failure));
+  if (count <= capacity) return execute(ctx, failure);
 
   let correction: AutoBePrisma.IApplication = failure.data;
   const volume: number = Math.ceil(count / capacity);
@@ -77,21 +76,19 @@ async function process<Model extends ILlmSchema.Model>(
   let i: number = 0;
 
   while (i++ < volume && failure.errors.length !== 0) {
-    const next: IExecutionResult = await forceRetry(() =>
-      execute(ctx, {
-        ...failure,
-        errors: (() => {
-          const unique: Set<string | null> = new Set();
-          const errors: IAutoBePrismaValidation.IError[] = [];
-          for (const err of failure.errors) {
-            unique.add(err.table ?? null);
-            if (unique.size > capacity) break;
-            else errors.push(err);
-          }
-          return errors;
-        })(),
-      }),
-    );
+    const next: IExecutionResult = await execute(ctx, {
+      ...failure,
+      errors: (() => {
+        const unique: Set<string | null> = new Set();
+        const errors: IAutoBePrismaValidation.IError[] = [];
+        for (const err of failure.errors) {
+          unique.add(err.table ?? null);
+          if (unique.size > capacity) break;
+          else errors.push(err);
+        }
+        return errors;
+      })(),
+    });
     plannings.push(next.planning);
     for (const m of next.models) models[m.name] = m;
 

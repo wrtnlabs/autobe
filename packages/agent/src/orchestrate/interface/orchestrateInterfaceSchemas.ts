@@ -8,7 +8,6 @@ import typia from "typia";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
-import { forceRetry } from "../../utils/forceRetry";
 import { IProgress } from "../internal/IProgress";
 import { transformInterfaceSchemaHistories } from "./histories/transformInterfaceSchemaHistories";
 import { orchestrateInterfaceSchemasReview } from "./orchestrateInterfaceSchemasReview";
@@ -68,9 +67,7 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
   for (let i: number = 0; i < retry; ++i) {
     if (remained.size === 0) break;
     const newbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-      await forceRetry(() =>
-        process(ctx, operations, schemas, remained, progress),
-      );
+      await process(ctx, operations, schemas, remained, progress);
     for (const key of Object.keys(newbie)) {
       schemas[key] = newbie[key];
       remained.delete(key);

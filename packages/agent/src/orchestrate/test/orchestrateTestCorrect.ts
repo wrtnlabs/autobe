@@ -10,7 +10,6 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { forceRetry } from "../../utils/forceRetry";
 import { completeTestCode } from "./compile/completeTestCode";
 import { transformTestCorrectHistories } from "./histories/transformTestCorrectHistories";
 import { IAutoBeTestCorrectApplication } from "./structures/IAutoBeTestCorrectApplication";
@@ -26,25 +25,23 @@ export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
   const result: Array<AutoBeTestValidateEvent | null> = await Promise.all(
     writeResult.map(async (w) => {
       try {
-        return await forceRetry(async () => {
-          const event: AutoBeTestValidateEvent = await compile(ctx, {
+        const event: AutoBeTestValidateEvent = await compile(ctx, {
+          artifacts: w.artifacts,
+          scenario: w.scenario,
+          location: w.event.location,
+          script: w.event.final,
+        });
+        return predicate(
+          ctx,
+          {
             artifacts: w.artifacts,
             scenario: w.scenario,
             location: w.event.location,
             script: w.event.final,
-          });
-          return predicate(
-            ctx,
-            {
-              artifacts: w.artifacts,
-              scenario: w.scenario,
-              location: w.event.location,
-              script: w.event.final,
-            },
-            event,
-            life,
-          );
-        });
+          },
+          event,
+          life,
+        );
       } catch {
         return null;
       }

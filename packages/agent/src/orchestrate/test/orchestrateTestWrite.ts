@@ -10,7 +10,6 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { forceRetry } from "../../utils/forceRetry";
 import { IProgress } from "../internal/IProgress";
 import { completeTestCode } from "./compile/completeTestCode";
 import { getTestScenarioArtifacts } from "./compile/getTestScenarioArtifacts";
@@ -35,23 +34,20 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
      */
     scenarios.map(async (scenario) => {
       try {
-        const r = await forceRetry(async () => {
-          const artifacts: IAutoBeTestScenarioArtifacts =
-            await getTestScenarioArtifacts(ctx, scenario);
-          const event: AutoBeTestWriteEvent = await process(
-            ctx,
-            scenario,
-            artifacts,
-            progress,
-          );
-          ctx.dispatch(event);
-          return {
-            scenario,
-            artifacts,
-            event,
-          };
-        });
-        return r;
+        const artifacts: IAutoBeTestScenarioArtifacts =
+          await getTestScenarioArtifacts(ctx, scenario);
+        const event: AutoBeTestWriteEvent = await process(
+          ctx,
+          scenario,
+          artifacts,
+          progress,
+        );
+        ctx.dispatch(event);
+        return {
+          scenario,
+          artifacts,
+          event,
+        };
       } catch {
         return null;
       }

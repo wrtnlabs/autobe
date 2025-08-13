@@ -8,7 +8,6 @@ import typia from "typia";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
-import { forceRetry } from "../../utils/forceRetry";
 import { IProgress } from "../internal/IProgress";
 import { transformTestScenarioHistories } from "./histories/transformTestScenarioHistories";
 import { IAutoBeTestScenarioApplication } from "./structures/IAutoBeTestScenarioApplication";
@@ -62,16 +61,14 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
     await Promise.all(
       matrix.map(async (include) => {
         exclude.push(
-          ...(await forceRetry(() =>
-            divideAndConquer(
-              ctx,
-              dict,
-              endpointNotFound,
-              operations,
-              include,
-              exclude.map((x) => x.endpoint),
-              progress,
-            ),
+          ...(await divideAndConquer(
+            ctx,
+            dict,
+            endpointNotFound,
+            operations,
+            include,
+            exclude.map((x) => x.endpoint),
+            progress,
           )),
         );
       }),

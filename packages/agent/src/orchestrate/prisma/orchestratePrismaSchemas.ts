@@ -5,10 +5,8 @@ import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 
-// import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { forceRetry } from "../../utils/forceRetry";
 import { transformPrismaSchemaHistories } from "./histories/transformPrismaSchemaHistories";
 import { IAutoBePrismaSchemaApplication } from "./structures/IAutoBePrismaSchemaApplication";
 
@@ -27,15 +25,13 @@ export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
         .filter((y) => component !== y)
         .map((c) => c.tables)
         .flat();
-      const event: AutoBePrismaSchemasEvent = await forceRetry(() =>
-        process(ctx, {
-          component,
-          otherTables,
-          start,
-          total,
-          completed,
-        }),
-      );
+      const event: AutoBePrismaSchemasEvent = await process(ctx, {
+        component,
+        otherTables,
+        start,
+        total,
+        completed,
+      });
       ctx.dispatch(event);
       return event;
     }),

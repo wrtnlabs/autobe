@@ -11,19 +11,14 @@ import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { forceRetry } from "../../utils/forceRetry";
 import { transformPrismaComponentsHistories } from "./histories/transformPrismaComponentsHistories";
 import { IAutoBePrismaComponentApplication } from "./structures/IAutoBePrismaComponentApplication";
 
-export const orchestratePrismaComponents = <Model extends ILlmSchema.Model>(
+export async function orchestratePrismaComponents<
+  Model extends ILlmSchema.Model,
+>(
   ctx: AutoBeContext<Model>,
   message: string = "Please extract files and tables from the given documents.",
-): Promise<AutoBeAssistantMessageHistory | AutoBePrismaComponentsEvent> =>
-  forceRetry(() => orchestrate(ctx, message));
-
-async function orchestrate<Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
-  message: string,
 ): Promise<AutoBeAssistantMessageHistory | AutoBePrismaComponentsEvent> {
   const start: Date = new Date();
   const pointer: IPointer<IAutoBePrismaComponentApplication.IProps | null> = {

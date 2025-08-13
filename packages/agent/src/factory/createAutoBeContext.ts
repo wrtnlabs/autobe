@@ -62,36 +62,47 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
     return message;
   },
   conversate: async (next) => {
-    const agent: MicroAgentica<Model> = new MicroAgentica<Model>({
-      model: props.model,
-      vendor: props.vendor,
-      config: {
-        ...(props.config ?? {}),
-        executor: {
-          describe: null,
+    const execute = async (): Promise<AutoBeContext.IResult<Model>> => {
+      const agent: MicroAgentica<Model> = new MicroAgentica<Model>({
+        model: props.model,
+        vendor: props.vendor,
+        config: {
+          ...(props.config ?? {}),
+          executor: {
+            describe: null,
+          },
         },
-      },
-      histories: next.histories,
-      controllers: [next.controller],
-    });
-    if (next.enforceFunctionCall === true)
-      agent.on("request", (event) => {
-        if (event.body.tools) event.body.tool_choice = "required";
-        if (event.body.parallel_tool_calls !== undefined)
-          delete event.body.parallel_tool_calls;
+        histories: next.histories,
+        controllers: [next.controller],
       });
-    const histories: MicroAgenticaHistory<Model>[] = await agent.conversate(
-      next.message,
-    );
-    const tokenUsage: IAutoBeTokenUsageJson.IComponent = agent
-      .getTokenUsage()
-      .toJSON().aggregate;
-    props
-      .usage()
-      .record(tokenUsage, [
-        STAGES.find((stage) => next.source.startsWith(stage)) ?? "analyze",
-      ]);
-    return { histories, tokenUsage };
+      if (next.enforceFunctionCall === true)
+        agent.on("request", (event) => {
+          if (event.body.tools) event.body.tool_choice = "required";
+          if (event.body.parallel_tool_calls !== undefined)
+            delete event.body.parallel_tool_calls;
+        });
+      const histories: MicroAgenticaHistory<Model>[] = await agent.conversate(
+        next.message,
+      );
+      const tokenUsage: IAutoBeTokenUsageJson.IComponent = agent
+        .getTokenUsage()
+        .toJSON().aggregate;
+      props
+        .usage()
+        .record(tokenUsage, [
+          STAGES.find((stage) => next.source.startsWith(stage)) ?? "analyze",
+        ]);
+      if (
+        next.enforceFunctionCall === true &&
+        histories.every((h) => h.type !== "execute")
+      )
+        throw new Error(
+          `Failed to function calling in the ${next.source} step`,
+        );
+      return { histories, tokenUsage };
+    };
+    if (next.enforceFunctionCall === true) return forceRetry(() => execute());
+    else return execute();
   },
 });
 
@@ -226,6 +237,20 @@ const transformAndDispatch = <
   props.state()[props.history.type] = props.history as any;
   props.dispatch(props.event).catch(() => {});
   return props.history;
+};
+
+const forceRetry = async <T>(
+  task: () => Promise<T>,
+  count: number = 2,
+): Promise<T> => {
+  let error: unknown = undefined;
+  for (let i: number = 0; i <= count; ++i)
+    try {
+      return await task();
+    } catch (e) {
+      error = e;
+    }
+  throw error;
 };
 
 const STAGES = typia.misc.literals<keyof IAutoBeApplication>();

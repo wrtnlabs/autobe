@@ -9,7 +9,6 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { forceRetry } from "../../utils/forceRetry";
 import { getTestScenarioArtifacts } from "../test/compile/getTestScenarioArtifacts";
 import { IAutoBeTestScenarioArtifacts } from "../test/structures/IAutoBeTestScenarioArtifacts";
 import { transformRealizeCorrectHistories } from "./histories/transformRealizeCorrectHistories";
@@ -17,19 +16,7 @@ import { IAutoBeRealizeCorrectApplication } from "./structures/IAutoBeRealizeRev
 import { IAutoBeRealizeScenarioApplication } from "./structures/IAutoBeRealizeScenarioApplication";
 import { replaceImportStatements } from "./utils/replaceImportStatements";
 
-export const orchestrateRealizeCorrect = <Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
-  authorization: AutoBeRealizeAuthorization | null,
-  scenario: IAutoBeRealizeScenarioApplication.IProps,
-  code: string,
-  diagnostic: IAutoBeTypeScriptCompileResult.IDiagnostic,
-  progress: IProgress,
-): Promise<AutoBeRealizeCorrectEvent> =>
-  forceRetry(() =>
-    orchestrate(ctx, authorization, scenario, code, diagnostic, progress),
-  );
-
-async function orchestrate<Model extends ILlmSchema.Model>(
+export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   authorization: AutoBeRealizeAuthorization | null,
   scenario: IAutoBeRealizeScenarioApplication.IProps,

@@ -7,7 +7,6 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { forceRetry } from "../../utils/forceRetry";
 import { transformPrismaReviewHistories } from "./histories/transformPrismaReviewHistories";
 import { IAutoBePrismaReviewApplication } from "./structures/IAutoBePrismaReviewApplication";
 
@@ -15,18 +14,15 @@ export async function orchestratePrismaReview<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   application: AutoBePrisma.IApplication,
   schemas: Record<string, string>,
-  components: AutoBePrisma.IComponent[],
+  componentList: AutoBePrisma.IComponent[],
 ): Promise<AutoBePrismaReviewEvent[]> {
-  const total = components.length;
+  const total = componentList.length;
   let completed = 0;
 
   return await Promise.all(
-    components.map(async (component) => {
-      const event = await forceRetry(() =>
-        step(ctx, application, schemas, component, ++completed, total),
-      );
-      return event;
-    }),
+    componentList.map((component) =>
+      step(ctx, application, schemas, component, ++completed, total),
+    ),
   );
 }
 

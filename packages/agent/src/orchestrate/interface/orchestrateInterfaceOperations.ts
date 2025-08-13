@@ -14,7 +14,6 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { emplaceMap } from "../../utils/emplaceMap";
-import { forceRetry } from "../../utils/forceRetry";
 import { transformInterfaceOperationHistories } from "./histories/transformInterfaceOperationHistories";
 import { orchestrateInterfaceOperationsReview } from "./orchestrateInterfaceOperationsReview";
 import { IAutoBeInterfaceOperationApplication } from "./structures/IAutoBeInterfaceOperationApplication";
@@ -71,32 +70,30 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
     OpenApiEndpointComparator.hashCode,
     OpenApiEndpointComparator.equals,
   );
-  const operations: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation> =
+  const unique: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation> =
     new HashMap(
       OpenApiEndpointComparator.hashCode,
       OpenApiEndpointComparator.equals,
     );
   for (let i: number = 0; i < retry; ++i) {
-    if (remained.empty() === true || operations.size() >= endpoints.length)
-      break;
-    const newbie: AutoBeOpenApi.IOperation[] = await forceRetry(async () => {
-      const operations = await process(
-        ctx,
-        Array.from(remained),
-        operationsProgress,
-      );
-      return orchestrateInterfaceOperationsReview(
+    if (remained.empty() === true || unique.size() >= endpoints.length) break;
+    const operations: AutoBeOpenApi.IOperation[] = await process(
+      ctx,
+      Array.from(remained),
+      operationsProgress,
+    );
+    const newbie: AutoBeOpenApi.IOperation[] =
+      await orchestrateInterfaceOperationsReview(
         ctx,
         operations,
         operationsReviewProgress,
       );
-    });
     for (const item of newbie) {
-      operations.set(item, item);
+      unique.set(item, item);
       remained.erase(item);
     }
   }
-  return operations.toJSON().map((it) => it.second);
+  return unique.toJSON().map((it) => it.second);
 }
 
 async function process<Model extends ILlmSchema.Model>(
