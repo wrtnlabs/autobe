@@ -15,6 +15,7 @@ import { IAutoBeTestScenarioArtifacts } from "../test/structures/IAutoBeTestScen
 import { transformRealizeCorrectHistories } from "./histories/transformRealizeCorrectHistories";
 import { IAutoBeRealizeCorrectApplication } from "./structures/IAutoBeRealizeReviewApplication";
 import { IAutoBeRealizeScenarioApplication } from "./structures/IAutoBeRealizeScenarioApplication";
+import { replaceImportStatements } from "./utils/replaceImportStatements";
 
 export const orchestrateRealizeCorrect = <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
@@ -67,8 +68,14 @@ async function orchestrate<Model extends ILlmSchema.Model>(
       `1. Ensure that the code is production-ready and follows best practices.`,
     ].join("\n"),
   });
+
   if (pointer.value === null)
     throw new Error("Failed to correct implementation code.");
+
+  pointer.value.implementationCode = await replaceImportStatements(ctx)(
+    artifacts,
+    pointer.value.implementationCode,
+  );
 
   const event: AutoBeRealizeCorrectEvent = {
     type: "realizeCorrect",

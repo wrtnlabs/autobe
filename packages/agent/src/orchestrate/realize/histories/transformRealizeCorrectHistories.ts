@@ -37,5 +37,11 @@ export function transformRealizeCorrectHistories(props: {
       ].join("\n"),
       created_at: new Date().toISOString(),
     },
+    {
+      id: v4(),
+      type: "systemMessage",
+      text: `You are an expert TypeScript developer. You will review the code and correct`,
+      created_at: new Date().toISOString(),
+    },
   ];
 }

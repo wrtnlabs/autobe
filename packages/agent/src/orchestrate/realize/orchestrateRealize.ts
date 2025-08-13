@@ -40,15 +40,13 @@ export const orchestrateRealize =
       step: ctx.state().test?.step ?? 0,
     });
 
-    // generate authorizations and functions
-
     const authorizations: AutoBeRealizeAuthorization[] =
       await orchestrateRealizeAuthorization(ctx);
 
     const scenarios: IAutoBeRealizeScenarioApplication.IProps[] =
       operations.map((operation) => orchestrateRealizeScenario(ctx, operation));
 
-    const writeProgress = { total: scenarios.length, completed: 0 } as const;
+    const writeProgress = { total: scenarios.length, completed: 0 };
     const writeEvents: AutoBeRealizeWriteEvent[] = await Promise.all(
       scenarios.map(async (scenario) => {
         const code = orchestrateRealizeWrite(
@@ -61,59 +59,65 @@ export const orchestrateRealize =
       }),
     );
 
-    const reviewProgress = { total: writeEvents.length, completed: 0 };
-
-    // Initialize providers from write events
     let providers = Object.fromEntries(
       writeEvents.map((event) => [event.location, event.content]),
     );
 
-    // Compilation result holder
+    let finalCompilationResult = await compile(ctx, {
+      authorizations,
+      providers,
+    });
 
-    // Retry compilation with review on failures
-    for (let attempt = 0; attempt < 3; attempt++) {
-      const compilation = await compile(ctx, {
-        authorizations,
-        providers,
-      });
+    if (finalCompilationResult.type !== "success") {
+      const MAX_CORRECTION_ATTEMPTS = 3 as const;
 
-      // Success case - exit the loop
-      if (compilation.type === "success") {
-        break;
-      }
+      const reviewProgress = {
+        total: writeEvents.length,
+        completed: writeEvents.length,
+      };
 
-      // Failure case - prepare for review
-      if (compilation.result.type === "failure") {
-        const failedFiles = compilation.files;
+      for (let attempt = 0; attempt < MAX_CORRECTION_ATTEMPTS; attempt++) {
+        if (finalCompilationResult.result.type === "failure") {
+          const failedFiles: Record<string, string> =
+            finalCompilationResult.files;
 
-        const compilationResult: IAutoBeTypeScriptCompileResult.IFailure =
-          compilation.result;
+          reviewProgress.total += Object.keys(failedFiles).length;
+          const compilationResult: IAutoBeTypeScriptCompileResult.IFailure =
+            finalCompilationResult.result;
 
-        await Promise.all(
-          Object.entries(failedFiles).map(async ([location, content]) => {
-            ++reviewProgress.total;
-
-            const diagnostic:
-              | IAutoBeTypeScriptCompileResult.IDiagnostic
-              | undefined = compilationResult.diagnostics.find(
-              (el) => el.file === location,
-            );
-
-            const scenario = scenarios.find((el) => el.location === location);
-            if (diagnostic && scenario) {
-              const correctEvent = await orchestrateRealizeCorrect(
-                ctx,
-                scenario.decoratorEvent ?? null,
-                scenario,
-                content,
-                diagnostic,
-                reviewProgress,
+          await Promise.all(
+            Object.entries(failedFiles).map(async ([location, content]) => {
+              const diagnostic:
+                | IAutoBeTypeScriptCompileResult.IDiagnostic
+                | undefined = compilationResult.diagnostics.find(
+                (el) => el.file === location,
               );
 
-              providers[correctEvent.location] = correctEvent.content;
-            }
-          }),
-        );
+              const scenario = scenarios.find((el) => el.location === location);
+              if (diagnostic && scenario) {
+                const correctEvent = await orchestrateRealizeCorrect(
+                  ctx,
+                  scenario.decoratorEvent ?? null,
+                  scenario,
+                  content,
+                  diagnostic,
+                  reviewProgress,
+                );
+
+                providers[correctEvent.location] = correctEvent.content;
+              }
+            }),
+          );
+
+          finalCompilationResult = await compile(ctx, {
+            authorizations,
+            providers,
+          });
+
+          if (finalCompilationResult.type === "success") {
+            break;
+          }
+        }
       }
     }
 
@@ -132,7 +136,6 @@ export const orchestrateRealize =
       },
     );
 
-    // compile controllers
     const compiler: IAutoBeCompiler = await ctx.compiler();
     const controllers: Record<string, string> =
       await compiler.realize.controller({
@@ -141,7 +144,6 @@ export const orchestrateRealize =
         authorizations,
       });
 
-    // report
     return ctx.dispatch({
       type: "realizeComplete",
       created_at: new Date().toISOString(),
