@@ -1,4 +1,4 @@
-import { IAgenticaController, MicroAgentica } from "@agentica/core";
+import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeInterfaceSchemasReviewEvent,
   AutoBeOpenApi,
@@ -27,7 +27,7 @@ export async function orchestrateInterfaceSchemasReview<
       value: null,
     };
 
-  const agent: MicroAgentica<Model> = ctx.createAgent({
+  const { tokenUsage } = await ctx.conversate({
     source: "interfaceSchemasReview",
     controller: createController({
       model: ctx.model,
@@ -40,31 +40,23 @@ export async function orchestrateInterfaceSchemasReview<
       schemas,
     ),
     enforceFunctionCall: true,
+    message: "Review type schemas.",
   });
-
-  const command = `review about given schemas.` as const;
-  await agent.conversate(command).finally(() => {
-    const tokenUsage = agent.getTokenUsage().aggregate;
-    ctx.usage().record(tokenUsage, ["interface"]);
-  });
-
   if (pointer.value === null)
     throw new Error("Failed to extract review information.");
 
-  const event: AutoBeInterfaceSchemasReviewEvent = {
+  ctx.dispatch({
     type: "interfaceSchemasReview",
     schemas: schemas,
     review: pointer.value.review,
     plan: pointer.value.plan,
     content: pointer.value.content,
-    created_at: new Date().toISOString(),
+    tokenUsage,
     step: ctx.state().analyze?.step ?? 0,
     total: progress.total,
     completed: ++progress.completed,
-  };
-
-  ctx.dispatch(event);
-
+    created_at: new Date().toISOString(),
+  } satisfies AutoBeInterfaceSchemasReviewEvent);
   return pointer.value.content;
 }
 

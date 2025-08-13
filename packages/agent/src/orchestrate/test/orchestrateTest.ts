@@ -2,7 +2,7 @@ import {
   AutoBeAssistantMessageHistory,
   AutoBeOpenApi,
   AutoBeTestHistory,
-  AutoBeTestScenarioEvent,
+  AutoBeTestScenario,
   AutoBeTestValidateEvent,
   IAutoBeCompiler,
   IAutoBeTypeScriptCompileResult,
@@ -44,14 +44,12 @@ export const orchestrateTest =
       });
 
     // PLAN
-    const scenarioEvent: AutoBeTestScenarioEvent =
-      await orchestrateTestScenario(ctx);
-    ctx.dispatch(scenarioEvent);
+    const scenarios: AutoBeTestScenario[] = await orchestrateTestScenario(ctx);
 
     // TEST CODE
     const written: IAutoBeTestWriteResult[] = await orchestrateTestWrite(
       ctx,
-      scenarioEvent.scenarios,
+      scenarios,
     );
 
     const corrects: AutoBeTestValidateEvent[] = await orchestrateTestCorrect(

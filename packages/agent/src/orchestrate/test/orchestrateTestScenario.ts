@@ -1,29 +1,21 @@
-import {
-  IAgenticaController,
-  IAgenticaHistoryJson,
-  MicroAgentica,
-} from "@agentica/core";
-import {
-  AutoBeOpenApi,
-  AutoBeTestScenario,
-  AutoBeTestScenarioEvent,
-} from "@autobe/interface";
+import { IAgenticaController } from "@agentica/core";
+import { AutoBeOpenApi, AutoBeTestScenario } from "@autobe/interface";
 import { AutoBeEndpointComparator } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { HashMap, IPointer, Pair } from "tstl";
 import typia from "typia";
-import { v4 } from "uuid";
 
-import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { forceRetry } from "../../utils/forceRetry";
+import { IProgress } from "../internal/IProgress";
+import { transformTestScenarioHistories } from "./histories/transformTestScenarioHistories";
 import { IAutoBeTestScenarioApplication } from "./structures/IAutoBeTestScenarioApplication";
 
 export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-): Promise<AutoBeTestScenarioEvent> {
+): Promise<AutoBeTestScenario[]> {
   const operations: AutoBeOpenApi.IOperation[] =
     ctx.state().interface?.document.operations ?? [];
   if (operations.length === 0) {
@@ -55,6 +47,10 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
     ...operations.map((op) => `\`${op.method}\` | \`${op.path}\``).join("\n"),
   ].join("\n");
 
+  const progress: IProgress = {
+    total: operations.length,
+    completed: 0,
+  };
   const exclude: IAutoBeTestScenarioApplication.IScenarioGroup[] = [];
   let include: AutoBeOpenApi.IOperation[] = Array.from(operations);
 
@@ -67,13 +63,14 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
       matrix.map(async (include) => {
         exclude.push(
           ...(await forceRetry(() =>
-            execute(
+            divideAndConquer(
               ctx,
               dict,
               endpointNotFound,
               operations,
               include,
               exclude.map((x) => x.endpoint),
+              progress,
             ),
           )),
         );
@@ -92,37 +89,33 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
     });
   } while (include.length > 0);
 
-  return {
-    type: "testScenario",
-    step: ctx.state().analyze?.step ?? 0,
-    scenarios: exclude.flatMap((pg) => {
-      return pg.scenarios.map((plan) => {
-        return {
-          endpoint: pg.endpoint,
-          draft: plan.draft,
-          functionName: plan.functionName,
-          dependencies: plan.dependencies,
-        } satisfies AutoBeTestScenario;
-      });
-    }),
-    created_at: new Date().toISOString(),
-  } as AutoBeTestScenarioEvent;
+  return exclude.flatMap((pg) => {
+    return pg.scenarios.map((plan) => {
+      return {
+        endpoint: pg.endpoint,
+        draft: plan.draft,
+        functionName: plan.functionName,
+        dependencies: plan.dependencies,
+      } satisfies AutoBeTestScenario;
+    });
+  });
 }
 
-const execute = async <Model extends ILlmSchema.Model>(
+const divideAndConquer = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>,
   endpointNotFound: string,
   entire: AutoBeOpenApi.IOperation[],
   include: AutoBeOpenApi.IEndpoint[],
   exclude: AutoBeOpenApi.IEndpoint[],
+  progress: IProgress,
 ) => {
   const pointer: IPointer<IAutoBeTestScenarioApplication.IScenarioGroup[]> = {
     value: [],
   };
-  const agentica: MicroAgentica<Model> = ctx.createAgent({
+  const { tokenUsage } = await ctx.conversate({
     source: "testScenario",
-    histories: createHistoryProperties(entire, include, exclude),
+    histories: transformTestScenarioHistories(entire, include, exclude),
     controller: createController({
       model: ctx.model,
       endpointNotFound,
@@ -133,82 +126,32 @@ const execute = async <Model extends ILlmSchema.Model>(
       },
     }),
     enforceFunctionCall: true,
+    message: `Create e2e test scenarios.`,
   });
-
-  await agentica.conversate(`create test scenarios.`).finally(() => {
-    const tokenUsage = agentica.getTokenUsage().aggregate;
-    ctx.usage().record(tokenUsage, ["test"]);
+  if (pointer.value.length === 0) return [];
+  ctx.dispatch({
+    type: "testScenario",
+    tokenUsage,
+    scenarios: pointer.value
+      .map((v) =>
+        v.scenarios.map(
+          (s) =>
+            ({
+              endpoint: v.endpoint,
+              draft: s.draft,
+              functionName: s.functionName,
+              dependencies: s.dependencies,
+            }) satisfies AutoBeTestScenario,
+        ),
+      )
+      .flat(),
+    completed: ++progress.completed,
+    total: progress.total,
+    step: ctx.state().interface?.step ?? 0,
+    created_at: new Date().toISOString(),
   });
-  if (pointer.value.length === 0) {
-    console.error("Failed to create test plans. No function called.");
-    return [];
-    // @todo
-    // throw new Error("Failed to create test plans.");
-  }
   return pointer.value;
 };
-
-const createHistoryProperties = (
-  entire: AutoBeOpenApi.IOperation[],
-  include: Pick<AutoBeOpenApi.IOperation, "method" | "path">[],
-  exclude: Pick<AutoBeOpenApi.IOperation, "method" | "path">[],
-): Array<
-  IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
-> => [
-  {
-    id: v4(),
-    created_at: new Date().toISOString(),
-    type: "systemMessage",
-    text: AutoBeSystemPromptConstant.TEST_SCENARIO,
-  } satisfies IAgenticaHistoryJson.ISystemMessage,
-  {
-    id: v4(),
-    created_at: new Date().toISOString(),
-    type: "systemMessage",
-    text: [
-      "# Operations",
-      "Below are the full operations. Please refer to this.",
-      "Your role is to draft all test cases for each given Operation.",
-      "It is also permissible to write multiple test codes on a single endpoint.",
-      "However, rather than meaningless tests, business logic tests should be written and an E2E test situation should be assumed.",
-      "",
-      "Please carefully analyze each operation to identify all dependencies required for testing.",
-      "For example, if you want to test liking and then deleting a post,",
-      "you might think to test post creation, liking, and unlike operations.",
-      "However, even if not explicitly mentioned, user registration and login are essential prerequisites.",
-      "Pay close attention to IDs and related values in the API,",
-      "and ensure you identify all dependencies between endpoints.",
-      "",
-      "```json",
-      JSON.stringify(
-        entire.map((el) => ({
-          ...el,
-          specification: undefined,
-        })),
-      ),
-      "```",
-    ].join("\n"),
-  } satisfies IAgenticaHistoryJson.ISystemMessage,
-  {
-    id: v4(),
-    created_at: new Date().toISOString(),
-    type: "systemMessage",
-    text: [
-      "# Included in Test Plan",
-      include
-        .map((el) => `- ${el.method.toUpperCase()}: ${el.path}`)
-        .join("\n"),
-      "",
-      "# Excluded from Test Plan",
-      "These are the endpoints that have already been used in test codes generated as part of a plan group.",
-      "These endpoints do not need to be tested again.",
-      "However, it is allowed to reference or depend on these endpoints when writing test codes for other purposes.",
-      exclude
-        .map((el) => `- ${el.method.toUpperCase()}: ${el.path}`)
-        .join("\n"),
-    ].join("\n"),
-  } satisfies IAgenticaHistoryJson.ISystemMessage,
-];
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;

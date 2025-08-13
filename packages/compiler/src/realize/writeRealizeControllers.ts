@@ -39,7 +39,7 @@ export const writeRealizeControllers = async (
         const auth: AutoBeRealizeAuthorization | undefined =
           operate.authorizationRole
             ? props.authorizations.find(
-                (d) => d.role === operate.authorizationRole,
+                (d) => d.role.name === operate.authorizationRole,
               )
             : undefined;
         if (operate.authorizationRole && auth === undefined) return method; // unreachable
@@ -105,7 +105,7 @@ export const writeRealizeControllers = async (
                     ),
                   ],
                   undefined,
-                  auth.role,
+                  auth.role.name,
                   undefined,
                   ts.factory.createTypeReferenceNode(
                     ctx.importer.external({

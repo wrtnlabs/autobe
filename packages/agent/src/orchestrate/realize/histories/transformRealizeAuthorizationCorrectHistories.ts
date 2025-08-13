@@ -88,9 +88,9 @@ export const transformRealizeAuthorizationCorrectHistories = <
         "",
         "Please follow this naming convention for the authorization components:",
         "",
-        `- Provider Name: ${auth.role.toLowerCase()}Authorize (e.g. ${auth.role.toLowerCase()}Authorize)`,
-        `- Decorator Name: ${auth.role.charAt(0).toUpperCase() + auth.role.slice(1).toLowerCase()}Auth (e.g. ${auth.role.charAt(0).toUpperCase() + auth.role.slice(1).toLowerCase()}Auth)`,
-        `- Payload Name: ${auth.role.charAt(0).toUpperCase() + auth.role.slice(1).toLowerCase()}Payload (e.g. ${auth.role.charAt(0).toUpperCase() + auth.role.slice(1).toLowerCase()}Payload)`,
+        `- Provider Name: ${auth.role.name.toLowerCase()}Authorize (e.g. ${auth.role.name.toLowerCase()}Authorize)`,
+        `- Decorator Name: ${auth.role.name.charAt(0).toUpperCase() + auth.role.name.slice(1).toLowerCase()}Auth (e.g. ${auth.role.name.charAt(0).toUpperCase() + auth.role.name.slice(1).toLowerCase()}Auth)`,
+        `- Payload Name: ${auth.role.name.charAt(0).toUpperCase() + auth.role.name.slice(1).toLowerCase()}Payload (e.g. ${auth.role.name.charAt(0).toUpperCase() + auth.role.name.slice(1).toLowerCase()}Payload)`,
       ].join("\n"),
     },
   ];

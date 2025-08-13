@@ -54,6 +54,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
   files: props.files,
   histories: props.histories,
   state: props.state,
+  usage: props.usage,
   dispatch: createDispatch(props),
   assistantMessage: (message) => {
     props.histories().push(message);

@@ -56,7 +56,10 @@ export const validate_agent_realize_authorization_correct = async (
 
   const authorizations: AutoBeRealizeAuthorization[] = [
     {
-      role: "moderator",
+      role: {
+        name: "moderator",
+        description: "Authorized moderator role",
+      },
       decorator: {
         location: "src/decorators/ModeratorAuth.ts",
         name: "ModeratorAuth",
@@ -77,7 +80,10 @@ export const validate_agent_realize_authorization_correct = async (
       },
     },
     {
-      role: "admin",
+      role: {
+        name: "admin",
+        description: "Authorized admin role",
+      },
       decorator: {
         location: "src/decorators/AdminAuth.ts",
         name: "AdminAuth",
@@ -98,7 +104,10 @@ export const validate_agent_realize_authorization_correct = async (
       },
     },
     {
-      role: "guest",
+      role: {
+        name: "guest",
+        description: "Authorized guest role",
+      },
       decorator: {
         location: "src/decorators/GuestAuth.ts",
         name: "GuestAuth",
@@ -119,7 +128,10 @@ export const validate_agent_realize_authorization_correct = async (
       },
     },
     {
-      role: "member",
+      role: {
+        name: "member",
+        description: "Authorized member role",
+      },
       decorator: {
         location: "src/decorators/MemberAuth.ts",
         name: "MemberAuth",

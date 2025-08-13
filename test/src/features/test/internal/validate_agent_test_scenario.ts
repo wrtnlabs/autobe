@@ -1,6 +1,6 @@
 import { orchestrateTestScenario } from "@autobe/agent/src/orchestrate/test/orchestrateTestScenario";
 import { FileSystemIterator } from "@autobe/filesystem";
-import { AutoBeOpenApi, AutoBeTestScenarioEvent } from "@autobe/interface";
+import { AutoBeOpenApi, AutoBeTestScenario } from "@autobe/interface";
 import { AutoBeEndpointComparator } from "@autobe/utils";
 import { HashMap, Pair } from "tstl";
 import typia from "typia";
@@ -21,7 +21,7 @@ export const validate_agent_test_scenario = async (
   const { agent } = await prepare_agent_test(factory, project);
 
   // GENERATE TEST SCENARIOS
-  const result: AutoBeTestScenarioEvent = await orchestrateTestScenario(
+  const result: AutoBeTestScenario[] = await orchestrateTestScenario(
     agent.getContext(),
   );
   typia.assert(result);
@@ -43,7 +43,7 @@ export const validate_agent_test_scenario = async (
       AutoBeEndpointComparator.hashCode,
       AutoBeEndpointComparator.equals,
     );
-  for (const group of result.scenarios) {
+  for (const group of result) {
     endpoints.get(group.endpoint);
     for (const scenario of group.dependencies) endpoints.get(scenario.endpoint);
   }
@@ -54,11 +54,11 @@ export const validate_agent_test_scenario = async (
     root: `${TestGlobal.ROOT}/results/${model}/${project}/test/scenario`,
     files: {
       ...(await agent.getFiles()),
-      "logs/scenarios.json": JSON.stringify(result.scenarios),
+      "logs/scenarios.json": JSON.stringify(result),
     },
   });
   if (process.argv.includes("--archive"))
     await TestHistory.save({
-      [`${project}.test.scenarios.json`]: JSON.stringify(result.scenarios),
+      [`${project}.test.scenarios.json`]: JSON.stringify(result),
     });
 };

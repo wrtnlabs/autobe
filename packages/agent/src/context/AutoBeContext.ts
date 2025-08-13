@@ -22,6 +22,7 @@ import {
 import { ILlmController, ILlmSchema } from "@samchon/openapi";
 
 import { AutoBeState } from "./AutoBeState";
+import { AutoBeTokenUsage } from "./AutoBeTokenUsage";
 
 export interface AutoBeContext<Model extends ILlmSchema.Model> {
   // configuration
@@ -35,6 +36,7 @@ export interface AutoBeContext<Model extends ILlmSchema.Model> {
   files: (options: IAutoBeGetFilesOptions) => Promise<Record<string, string>>;
   histories: () => Readonly<AutoBeHistory[]>;
   state: () => Readonly<AutoBeState>;
+  usage: () => AutoBeTokenUsage;
 
   // events
   dispatch: <Event extends Exclude<AutoBeEvent, AutoBeAssistantMessageEvent>>(

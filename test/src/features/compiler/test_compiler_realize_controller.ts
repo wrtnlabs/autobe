@@ -29,7 +29,10 @@ export const test_compiler_realize_controller = async (
     ],
     authorizations: [
       {
-        role: "customer",
+        role: {
+          name: "customer",
+          description: "Authorized customer role",
+        },
         decorator: {
           name: "CustomerAuth",
           location: "src/decorators/CustomerAuth.ts",

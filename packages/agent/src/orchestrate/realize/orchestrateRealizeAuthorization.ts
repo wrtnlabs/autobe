@@ -1,11 +1,17 @@
-import { IAgenticaController, MicroAgentica } from "@agentica/core";
-import { AutoBeRealizeAuthorization, IAutoBeCompiler } from "@autobe/interface";
+import { IAgenticaController } from "@agentica/core";
+import {
+  AutoBeAnalyzeRole,
+  AutoBeRealizeAuthorization,
+  AutoBeRealizeAuthorizationWriteEvent,
+  IAutoBeCompiler,
+} from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { IProgress } from "../internal/IProgress";
 import { transformRealizeAuthorizationHistories } from "./histories/transformRealizeAuthorization";
 import { orchestrateRealizeAuthorizationCorrect } from "./orchestrateRealizeAuthorizationCorrect";
 import { IAutoBeRealizeAuthorizationApplication } from "./structures/IAutoBeRealizeAuthorizationApplication";
@@ -21,37 +27,29 @@ import { InternalFileSystem } from "./utils/InternalFileSystem";
 export async function orchestrateRealizeAuthorization<
   Model extends ILlmSchema.Model,
 >(ctx: AutoBeContext<Model>): Promise<AutoBeRealizeAuthorization[]> {
-  const roles = ctx.state().analyze?.roles.map((role) => role.name) ?? [];
-
-  let completed = 0;
-
-  const templateFiles = await (await ctx.compiler()).realize.getTemplate();
-
   ctx.dispatch({
     type: "realizeAuthorizationStart",
     step: ctx.state().test?.step ?? 0,
     created_at: new Date().toISOString(),
   });
 
+  const roles: AutoBeAnalyzeRole[] = ctx.state().analyze?.roles ?? [];
+  const progress: IProgress = {
+    total: roles.length,
+    completed: 0,
+  };
+  const templateFiles = await (await ctx.compiler()).realize.getTemplate();
   const authorizations: AutoBeRealizeAuthorization[] = await Promise.all(
-    roles.map(async (role) => {
-      const authorization: AutoBeRealizeAuthorization = await process(
+    roles.map((role) =>
+      process(
         ctx,
         role,
         InternalFileSystem.DEFAULT.map((el) => ({
           [el]: templateFiles[el],
         })).reduce((acc, cur) => Object.assign(acc, cur), {}),
-      );
-      ctx.dispatch({
-        type: "realizeAuthorizationWrite",
-        created_at: new Date().toISOString(),
-        authorization: authorization,
-        completed: ++completed,
-        total: roles.length,
-        step: ctx.state().test?.step ?? 0,
-      });
-      return authorization;
-    }),
+        progress,
+      ),
+    ),
   );
   ctx.dispatch({
     type: "realizeAuthorizationComplete",
@@ -63,14 +61,15 @@ export async function orchestrateRealizeAuthorization<
 
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  role: string,
+  role: AutoBeAnalyzeRole,
   templateFiles: Record<string, string>,
+  progress: IProgress,
 ): Promise<AutoBeRealizeAuthorization> {
   const pointer: IPointer<IAutoBeRealizeAuthorizationApplication.IProps | null> =
     {
       value: null,
     };
-  const agentica: MicroAgentica<Model> = ctx.createAgent({
+  const { tokenUsage } = await ctx.conversate({
     source: "realizeAuthorizationWrite",
     histories: transformRealizeAuthorizationHistories(ctx, role),
     controller: createController({
@@ -80,13 +79,8 @@ async function process<Model extends ILlmSchema.Model>(
       },
     }),
     enforceFunctionCall: true,
+    message: "Create Authorization Provider and Decorator.",
   });
-  await agentica
-    .conversate("Create Authorization Provider and Decorator.")
-    .finally(() => {
-      const tokenUsage = agentica.getTokenUsage().aggregate;
-      ctx.usage().record(tokenUsage, ["realize"]);
-    });
   if (pointer.value === null) throw new Error("Failed to create decorator.");
 
   const compiler: IAutoBeCompiler = await ctx.compiler();
@@ -118,6 +112,15 @@ async function process<Model extends ILlmSchema.Model>(
   const prismaClients: Record<string, string> =
     compiled?.type === "success" ? compiled.nodeModules : {};
 
+  ctx.dispatch({
+    type: "realizeAuthorizationWrite",
+    created_at: new Date().toISOString(),
+    authorization: authorization,
+    tokenUsage,
+    completed: ++progress.completed,
+    total: progress.total,
+    step: ctx.state().test?.step ?? 0,
+  } satisfies AutoBeRealizeAuthorizationWriteEvent);
   return orchestrateRealizeAuthorizationCorrect(
     ctx,
     authorization,

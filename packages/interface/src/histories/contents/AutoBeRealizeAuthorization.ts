@@ -1,3 +1,4 @@
+import { AutoBeAnalyzeRole } from "./AutoBeAnalyzeRole";
 import { AutoBeRealizeAuthorizationDecorator } from "./AutoBeRealizeAuthorizationDecorator";
 import { AutoBeRealizeAuthorizationPayload } from "./AutoBeRealizeAuthorizationPayload";
 import { AutoBeRealizeAuthorizationProvider } from "./AutoBeRealizeAuthorizationProvider";
@@ -19,14 +20,15 @@ import { AutoBeRealizeAuthorizationProvider } from "./AutoBeRealizeAuthorization
  */
 export interface AutoBeRealizeAuthorization {
   /**
-   * The user role identifier (e.g., 'admin', 'user', 'guest').
+   * The user role configuration from requirements analysis.
    *
-   * This string uniquely identifies a user role within the system. The role
-   * name is used throughout the authorization infrastructure to determine
-   * access permissions, apply appropriate guards, and validate user actions. It
-   * should match the roles defined in the requirements analysis.
+   * This object contains the complete role definition including the role name,
+   * permissions, and authentication requirements as analyzed from the project
+   * requirements. The role configuration is used throughout the authorization
+   * infrastructure to determine access permissions, apply appropriate guards,
+   * and validate user actions.
    */
-  role: string;
+  role: AutoBeAnalyzeRole;
 
   /**
    * Decorator implementation for role-based authorization.

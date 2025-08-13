@@ -41,6 +41,24 @@ export interface AutoBeTestScenarioEvent
   tokenUsage: IAutoBeTokenUsageJson.IComponent;
 
   /**
+   * Number of test scenarios completed.
+   *
+   * Tracks how many test scenarios have been successfully generated so far.
+   * This provides real-time progress indication during the test generation
+   * process, allowing monitoring of completion status.
+   */
+  completed: number;
+
+  /**
+   * Total number of test scenarios to generate.
+   *
+   * Represents the total count of API endpoints that require test scenario
+   * generation. Used together with the completed field to calculate progress
+   * percentage and estimate remaining work.
+   */
+  total: number;
+
+  /**
    * Current step in the test generation workflow.
    *
    * Tracks progress through the test creation process, helping coordinate with

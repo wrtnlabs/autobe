@@ -1,4 +1,4 @@
-import { IAgenticaController, MicroAgentica } from "@agentica/core";
+import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeRealizeAuthorization,
   AutoBeRealizeAuthorizationCorrect,
@@ -28,13 +28,13 @@ export async function orchestrateRealizeAuthorizationCorrect<
   const compiler: IAutoBeCompiler = await ctx.compiler();
   const providerContent: string = await compiler.typescript.beautify(
     AutoBeRealizeAuthorizationReplaceImport.replaceProviderImport(
-      authorization.role,
+      authorization.role.name,
       authorization.provider.content,
     ),
   );
   const decoratorContent: string = await compiler.typescript.beautify(
     AutoBeRealizeAuthorizationReplaceImport.replaceDecoratorImport(
-      authorization.role,
+      authorization.role.name,
       authorization.decorator.content,
     ),
   );
@@ -74,7 +74,7 @@ export async function orchestrateRealizeAuthorizationCorrect<
     {
       value: null,
     };
-  const agentica: MicroAgentica<Model> = ctx.createAgent({
+  const { tokenUsage } = await ctx.conversate({
     source: "realizeAuthorizationCorrect",
     histories: transformRealizeAuthorizationCorrectHistories(
       ctx,
@@ -89,13 +89,8 @@ export async function orchestrateRealizeAuthorizationCorrect<
       },
     }),
     enforceFunctionCall: true,
+    message: "Please correct the decorator and the provider.",
   });
-  await agentica
-    .conversate("Please correct the decorator and the provider.")
-    .finally(() => {
-      const tokenUsage = agentica.getTokenUsage().aggregate;
-      ctx.usage().record(tokenUsage, ["realize"]);
-    });
   if (pointer.value === null) throw new Error("Failed to correct decorator.");
 
   const result: AutoBeRealizeAuthorizationCorrect = {
@@ -128,6 +123,7 @@ export async function orchestrateRealizeAuthorizationCorrect<
     created_at: new Date().toISOString(),
     authorization: result,
     result: compiled,
+    tokenUsage,
     step: ctx.state().test?.step ?? 0,
   });
 
