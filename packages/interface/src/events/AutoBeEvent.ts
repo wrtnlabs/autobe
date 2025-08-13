@@ -67,6 +67,7 @@ import { AutoBeUserMessageEvent } from "./AutoBeUserMessageEvent";
  * @author Samchon
  */
 export type AutoBeEvent =
+  // MESSAGES
   | AutoBeAssistantMessageEvent
   | AutoBeUserMessageEvent
   // ANALYZE

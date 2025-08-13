@@ -1,4 +1,3 @@
-import { MicroAgentica } from "@agentica/core";
 import {
   AutoBeRealizeAuthorization,
   AutoBeRealizeCorrectEvent,
@@ -17,14 +16,26 @@ import { transformRealizeCorrectHistories } from "./histories/transformRealizeCo
 import { IAutoBeRealizeCorrectApplication } from "./structures/IAutoBeRealizeReviewApplication";
 import { IAutoBeRealizeScenarioApplication } from "./structures/IAutoBeRealizeScenarioApplication";
 
-export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
+export const orchestrateRealizeCorrect = <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   authorization: AutoBeRealizeAuthorization | null,
   scenario: IAutoBeRealizeScenarioApplication.IProps,
   code: string,
   diagnostic: IAutoBeTypeScriptCompileResult.IDiagnostic,
   progress: IProgress,
-) {
+): Promise<AutoBeRealizeCorrectEvent> =>
+  forceRetry(() =>
+    orchestrate(ctx, authorization, scenario, code, diagnostic, progress),
+  );
+
+async function orchestrate<Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  authorization: AutoBeRealizeAuthorization | null,
+  scenario: IAutoBeRealizeScenarioApplication.IProps,
+  code: string,
+  diagnostic: IAutoBeTypeScriptCompileResult.IDiagnostic,
+  progress: IProgress,
+): Promise<AutoBeRealizeCorrectEvent> {
   const artifacts: IAutoBeTestScenarioArtifacts =
     await getTestScenarioArtifacts(ctx, {
       endpoint: scenario.operation,
@@ -34,7 +45,7 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
   const pointer: IPointer<IAutoBeRealizeCorrectApplication.IProps | null> = {
     value: null,
   };
-  const agentica: MicroAgentica<Model> = ctx.createAgent({
+  const { tokenUsage } = await ctx.conversate({
     source: "realizeCorrect",
     controller: createController({
       model: ctx.model,
@@ -51,41 +62,29 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
       diagnostic,
     }),
     enforceFunctionCall: true,
+    message: [
+      `Correct the TypeScript code implementation to strictly follow these rules:`,
+      `1. Ensure that the code is production-ready and follows best practices.`,
+    ].join("\n"),
   });
-
-  await forceRetry(async () => {
-    return agentica
-      .conversate(
-        [
-          `Correct the TypeScript code implementation to strictly follow these rules:`,
-          `1. Ensure that the code is production-ready and follows best practices.`,
-        ].join("\n"),
-      )
-      .finally(() => {
-        const tokenUsage = agentica.getTokenUsage().aggregate;
-        ctx.usage().record(tokenUsage, ["realize"]);
-      });
-  });
-
-  if (pointer.value === null) {
+  if (pointer.value === null)
     throw new Error("Failed to correct implementation code.");
-  }
 
   const event: AutoBeRealizeCorrectEvent = {
     type: "realizeCorrect",
     location: scenario.location,
+    content: pointer.value.implementationCode,
+    tokenUsage,
     completed: ++progress.completed,
     total: progress.total,
-    content: pointer.value.implementationCode,
     step: ctx.state().analyze?.step ?? 0,
     created_at: new Date().toISOString(),
   };
   ctx.dispatch(event);
-
   return event;
 }
 
-export function createController<Model extends ILlmSchema.Model>(props: {
+function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   build: (next: IAutoBeRealizeCorrectApplication.IProps) => void;
 }): ILlmController<Model> {
