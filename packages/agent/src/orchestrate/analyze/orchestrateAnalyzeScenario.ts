@@ -39,6 +39,7 @@ export const orchestrateAnalyzeScenario = async <
       `Design a complete list of documents and user roles for this project.`,
       `Define user roles that can authenticate via API and create appropriate documentation files.`,
       `You must respect the number of documents specified by the user.`,
+      `Note that the user's locale is in ${ctx.locale}.`,
     ].join("\n"),
   });
   if (histories.at(-1)?.type === "assistantMessage")
@@ -55,6 +56,7 @@ export const orchestrateAnalyzeScenario = async <
   return {
     type: "analyzeScenario",
     prefix: pointer.value.prefix,
+    language: pointer.value.language,
     roles: pointer.value.roles,
     files: pointer.value.files,
     tokenUsage,

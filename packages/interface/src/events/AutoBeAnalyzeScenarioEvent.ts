@@ -87,6 +87,12 @@ export interface AutoBeAnalyzeScenarioEvent
   roles: AutoBeAnalyzeRole[];
 
   /**
+   * Language for document content. When specified by the user, this takes
+   * precedence over the locale setting for determining document language.
+   */
+  language?: string;
+
+  /**
    * Array of document specifications to be generated in this scenario.
    *
    * This array defines the planning documents that the Analyze Agent will
