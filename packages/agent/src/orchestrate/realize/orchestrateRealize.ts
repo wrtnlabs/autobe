@@ -41,15 +41,13 @@ export const orchestrateRealize =
     });
 
     // generate authorizations and functions
-    console.log(1);
+
     const authorizations: AutoBeRealizeAuthorization[] =
       await orchestrateRealizeAuthorization(ctx);
 
-    console.log(2);
     const scenarios: IAutoBeRealizeScenarioApplication.IProps[] =
       operations.map((operation) => orchestrateRealizeScenario(ctx, operation));
 
-    console.log(3);
     const writeProgress = { total: scenarios.length, completed: 0 } as const;
     const writeEvents: AutoBeRealizeWriteEvent[] = await Promise.all(
       scenarios.map(async (scenario) => {
@@ -62,7 +60,6 @@ export const orchestrateRealize =
         return code;
       }),
     );
-    console.log(4);
 
     const reviewProgress = { total: writeEvents.length, completed: 0 };
 
@@ -75,8 +72,6 @@ export const orchestrateRealize =
 
     // Retry compilation with review on failures
     for (let attempt = 0; attempt < 3; attempt++) {
-      console.log(5, attempt);
-
       const compilation = await compile(ctx, {
         authorizations,
         providers,
