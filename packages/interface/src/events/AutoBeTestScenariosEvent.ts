@@ -17,8 +17,8 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
  *
  * @author Kakasoo
  */
-export interface AutoBeTestScenarioEvent
-  extends AutoBeEventBase<"testScenario"> {
+export interface AutoBeTestScenariosEvent
+  extends AutoBeEventBase<"testScenarios"> {
   /**
    * List of test scenarios generated for the target endpoints.
    *

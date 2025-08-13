@@ -11,9 +11,10 @@ import {
   AutoBeRealizeAuthorizationWriteEvent,
   AutoBeRealizeTestOperationEvent,
   AutoBeRealizeWriteEvent,
+  AutoBeTestScenariosEvent,
   AutoBeTestWriteEvent,
 } from "@autobe/interface";
-import { AutoBeInterfaceAuthorizationsEvent } from "@autobe/interface/src/events/AutoBeInterfaceAuthorizationsEvent";
+import { AutoBeInterfaceAuthorizationEvent } from "@autobe/interface/src/events/AutoBeInterfaceAuthorizationEvent";
 import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 import { Card, CardContent, Chip, LinearProgress } from "@mui/material";
 
@@ -69,9 +70,10 @@ export namespace AutoBePlaygroundProgressEventMovie {
       | AutoBeInterfaceEndpointsEvent
       | AutoBeInterfaceOperationsEvent
       | AutoBeInterfaceOperationsReviewEvent
-      | AutoBeInterfaceAuthorizationsEvent
+      | AutoBeInterfaceAuthorizationEvent
       | AutoBeInterfaceSchemasEvent
       | AutoBeInterfaceSchemasReviewEvent
+      | AutoBeTestScenariosEvent
       | AutoBeTestWriteEvent
       | AutoBeRealizeWriteEvent
       | AutoBeRealizeAuthorizationWriteEvent
@@ -127,7 +129,7 @@ function getState(
           title: "Interface Operations Review",
           description: "Reviewing API operations",
         };
-      case "interfaceAuthorizations":
+      case "interfaceAuthorization":
         return {
           title: "Interface Authorizations",
           description: "Designing API authorization operations",
@@ -141,6 +143,11 @@ function getState(
         return {
           title: "Interface Schemas Review",
           description: "Reviewing API type schemas",
+        };
+      case "testScenarios":
+        return {
+          title: "Test Scenarios",
+          description: "Planning E2E test scenarios",
         };
       case "testWrite":
         return {

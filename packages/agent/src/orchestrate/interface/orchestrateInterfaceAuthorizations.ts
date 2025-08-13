@@ -1,6 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import { AutoBeAnalyzeRole, AutoBeOpenApi } from "@autobe/interface";
-import { AutoBeInterfaceAuthorizationsEvent } from "@autobe/interface/src/events/AutoBeInterfaceAuthorizationsEvent";
+import { AutoBeInterfaceAuthorizationEvent } from "@autobe/interface/src/events/AutoBeInterfaceAuthorizationEvent";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -21,7 +21,7 @@ export async function orchestrateInterfaceAuthorizations<
   };
   const operations: AutoBeOpenApi.IOperation[][] = await Promise.all(
     roles.map(async (role) => {
-      const event: AutoBeInterfaceAuthorizationsEvent = await process(
+      const event: AutoBeInterfaceAuthorizationEvent = await process(
         ctx,
         role,
         progress,
@@ -37,13 +37,13 @@ async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   role: AutoBeAnalyzeRole,
   progress: IProgress,
-): Promise<AutoBeInterfaceAuthorizationsEvent> {
+): Promise<AutoBeInterfaceAuthorizationEvent> {
   const pointer: IPointer<IAutoBeInterfaceAuthorizationsApplication.IProps | null> =
     {
       value: null,
     };
   const { tokenUsage } = await ctx.conversate({
-    source: "interfaceAuthorizations",
+    source: "interfaceAuthorization",
     histories: transformInterfaceAuthorizationsHistories(ctx.state(), role),
     controller: createController({
       model: ctx.model,
@@ -58,14 +58,14 @@ async function process<Model extends ILlmSchema.Model>(
     throw new Error("Failed to generate authorization operation.");
 
   return {
-    type: "interfaceAuthorizations",
+    type: "interfaceAuthorization",
     operations: pointer.value.operations,
     completed: ++progress.completed,
     tokenUsage,
     created_at: new Date().toISOString(),
     step: ctx.state().analyze?.step ?? 0,
     total: progress.total,
-  } satisfies AutoBeInterfaceAuthorizationsEvent;
+  } satisfies AutoBeInterfaceAuthorizationEvent;
 }
 
 function createController<Model extends ILlmSchema.Model>(props: {

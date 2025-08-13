@@ -114,7 +114,7 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
     value: [],
   };
   const { tokenUsage } = await ctx.conversate({
-    source: "testScenario",
+    source: "testScenarios",
     histories: transformTestScenarioHistories(entire, include, exclude),
     controller: createController({
       model: ctx.model,
@@ -130,7 +130,7 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
   });
   if (pointer.value.length === 0) return [];
   ctx.dispatch({
-    type: "testScenario",
+    type: "testScenarios",
     tokenUsage,
     scenarios: pointer.value
       .map((v) =>

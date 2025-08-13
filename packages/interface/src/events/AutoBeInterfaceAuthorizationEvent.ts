@@ -2,8 +2,8 @@ import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
 import { AutoBeOpenApi } from "../openapi";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
-export interface AutoBeInterfaceAuthorizationsEvent
-  extends AutoBeEventBase<"interfaceAuthorizations"> {
+export interface AutoBeInterfaceAuthorizationEvent
+  extends AutoBeEventBase<"interfaceAuthorization"> {
   /**
    * Array of API operations being defined for the endpoints.
    *

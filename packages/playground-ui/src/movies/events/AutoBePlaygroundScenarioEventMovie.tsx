@@ -3,7 +3,6 @@ import {
   AutoBeInterfaceGroupsEvent,
   AutoBePrismaComponentsEvent,
   AutoBeRealizeTestResetEvent,
-  AutoBeTestScenarioEvent,
 } from "@autobe/interface";
 import ChecklistIcon from "@mui/icons-material/Checklist";
 import { Card, CardContent, Chip } from "@mui/material";
@@ -42,7 +41,6 @@ export namespace AutoBePlaygroundScenarioEventMovie {
       | AutoBeAnalyzeScenarioEvent
       | AutoBePrismaComponentsEvent
       | AutoBeInterfaceGroupsEvent
-      | AutoBeTestScenarioEvent
       | AutoBeRealizeTestResetEvent;
   }
 }
@@ -99,18 +97,6 @@ function getState(
             <br />
             <br />
             Number of API operation groups would be #{event.groups.length}
-          </>
-        ),
-      };
-    case "testScenario":
-      return {
-        title: "Test Scenario",
-        description: (
-          <>
-            Generating E2E test functions.
-            <br />
-            <br />
-            Number of the test functions would be #{event.scenarios.length}
           </>
         ),
       };

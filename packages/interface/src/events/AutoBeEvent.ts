@@ -4,7 +4,7 @@ import { AutoBeAnalyzeScenarioEvent } from "./AutoBeAnalyzeScenarioEvent";
 import { AutoBeAnalyzeStartEvent } from "./AutoBeAnalyzeStartEvent";
 import { AutoBeAnalyzeWriteEvent } from "./AutoBeAnalyzeWriteEvent";
 import { AutoBeAssistantMessageEvent } from "./AutoBeAssistantMessageEvent";
-import { AutoBeInterfaceAuthorizationsEvent } from "./AutoBeInterfaceAuthorizationsEvent";
+import { AutoBeInterfaceAuthorizationEvent } from "./AutoBeInterfaceAuthorizationEvent";
 import { AutoBeInterfaceComplementEvent } from "./AutoBeInterfaceComplementEvent";
 import { AutoBeInterfaceCompleteEvent } from "./AutoBeInterfaceCompleteEvent";
 import { AutoBeInterfaceEndpointsEvent } from "./AutoBeInterfaceEndpointsEvent";
@@ -38,7 +38,7 @@ import { AutoBeRealizeValidateEvent } from "./AutoBeRealizeValidateEvent";
 import { AutoBeRealizeWriteEvent } from "./AutoBeRealizeWriteEvent";
 import { AutoBeTestCompleteEvent } from "./AutoBeTestCompleteEvent";
 import { AutoBeTestCorrectEvent } from "./AutoBeTestCorrectEvent";
-import { AutoBeTestScenarioEvent } from "./AutoBeTestScenarioEvent";
+import { AutoBeTestScenariosEvent } from "./AutoBeTestScenariosEvent";
 import { AutoBeTestStartEvent } from "./AutoBeTestStartEvent";
 import { AutoBeTestValidateEvent } from "./AutoBeTestValidateEvent";
 import { AutoBeTestWriteEvent } from "./AutoBeTestWriteEvent";
@@ -81,7 +81,7 @@ export type AutoBeEvent =
   | AutoBeInterfaceEndpointsEvent
   | AutoBeInterfaceOperationsReviewEvent
   | AutoBeInterfaceOperationsEvent
-  | AutoBeInterfaceAuthorizationsEvent
+  | AutoBeInterfaceAuthorizationEvent
   | AutoBeInterfaceSchemasEvent
   | AutoBeInterfaceSchemasReviewEvent
   | AutoBeInterfaceComplementEvent
@@ -97,7 +97,7 @@ export type AutoBeEvent =
   | AutoBePrismaCompleteEvent
   // TEST
   | AutoBeTestStartEvent
-  | AutoBeTestScenarioEvent
+  | AutoBeTestScenariosEvent
   | AutoBeTestWriteEvent
   | AutoBeTestValidateEvent
   | AutoBeTestCorrectEvent
@@ -173,17 +173,17 @@ export namespace AutoBeEvent {
     // INTERFACE
     interfaceStart: AutoBeInterfaceStartEvent;
     interfaceGroups: AutoBeInterfaceGroupsEvent;
+    interfaceAuthorization: AutoBeInterfaceAuthorizationEvent;
     interfaceEndpoints: AutoBeInterfaceEndpointsEvent;
     interfaceOperations: AutoBeInterfaceOperationsEvent;
     interfaceOperationsReview: AutoBeInterfaceOperationsReviewEvent;
-    interfaceAuthorizations: AutoBeInterfaceAuthorizationsEvent;
     interfaceSchemas: AutoBeInterfaceSchemasEvent;
     interfaceSchemasReview: AutoBeInterfaceSchemasReviewEvent;
     interfaceComplement: AutoBeInterfaceComplementEvent;
     interfaceComplete: AutoBeInterfaceCompleteEvent;
     // TEST
     testStart: AutoBeTestStartEvent;
-    testScenario: AutoBeTestScenarioEvent;
+    testScenarios: AutoBeTestScenariosEvent;
     testWrite: AutoBeTestWriteEvent;
     testValidate: AutoBeTestValidateEvent;
     testCorrect: AutoBeTestCorrectEvent;

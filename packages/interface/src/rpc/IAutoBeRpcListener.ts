@@ -35,13 +35,13 @@ import {
   AutoBeRealizeWriteEvent,
   AutoBeTestCompleteEvent,
   AutoBeTestCorrectEvent,
-  AutoBeTestScenarioEvent,
+  AutoBeTestScenariosEvent,
   AutoBeTestStartEvent,
   AutoBeTestValidateEvent,
   AutoBeTestWriteEvent,
   AutoBeUserMessageEvent,
 } from "../events";
-import { AutoBeInterfaceAuthorizationsEvent } from "../events/AutoBeInterfaceAuthorizationsEvent";
+import { AutoBeInterfaceAuthorizationEvent } from "../events/AutoBeInterfaceAuthorizationEvent";
 import { AutoBeInterfaceGroupsEvent } from "../events/AutoBeInterfaceGroupsEvent";
 import { AutoBeRealizeAuthorizationCompleteEvent } from "../events/AutoBeRealizeAuthorizationCompleteEvent";
 import { AutoBeRealizeAuthorizationStartEvent } from "../events/AutoBeRealizeAuthorizationStartEvent";
@@ -290,8 +290,8 @@ export interface IAutoBeRpcListener {
    * each endpoint, enabling client applications to track progress and show how
    * API authorization is being systematically developed.
    */
-  interfaceAuthorizations?(
-    event: AutoBeInterfaceAuthorizationsEvent,
+  interfaceAuthorization?(
+    event: AutoBeInterfaceAuthorizationEvent,
   ): Promise<void>;
 
   /**
@@ -353,7 +353,7 @@ export interface IAutoBeRpcListener {
    * applications to show the scope of validation coverage being designed for
    * the application.
    */
-  testScenario?(event: AutoBeTestScenarioEvent): Promise<void>;
+  testScenarios?(event: AutoBeTestScenariosEvent): Promise<void>;
 
   /**
    * Optional handler for test code generation progress events.
