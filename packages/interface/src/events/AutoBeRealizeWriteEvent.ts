@@ -28,7 +28,7 @@ export interface AutoBeRealizeWriteEvent
    * filename provides context about which part of the application functionality
    * has been implemented.
    */
-  filename: string;
+  location: string;
 
   /**
    * Content of the completed implementation file.

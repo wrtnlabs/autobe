@@ -1,35 +1,28 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
-import {
-  AutoBeRealizeAuthorization,
-  IAutoBeTypeScriptCompileResult,
-} from "@autobe/interface";
+import { AutoBeRealizeAuthorization } from "@autobe/interface";
 import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeTestScenarioArtifacts } from "../../test/structures/IAutoBeTestScenarioArtifacts";
-import { IAutoBeRealizeScenario } from "../orchestrateRealizeScenario";
-import { IAutoBeRealizeCompile } from "../structures/IAutoBeRealizeCompile";
+import { IAutoBeRealizeScenarioApplication } from "../structures/IAutoBeRealizeScenarioApplication";
 
-export const transformRealizeCoderHistories = (
-  state: AutoBeState,
-  previousCodes: IAutoBeRealizeCompile.Success[],
-  props: IAutoBeRealizeScenario,
-  artifacts: IAutoBeTestScenarioArtifacts,
-  previous: string | null,
-  diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[],
-  authorization?: AutoBeRealizeAuthorization,
-): Array<
+export const transformRealizeWriteHistories = (props: {
+  state: AutoBeState;
+  scenario: IAutoBeRealizeScenarioApplication.IProps;
+  artifacts: IAutoBeTestScenarioArtifacts;
+  authorization: AutoBeRealizeAuthorization | null;
+}): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
-  const [operation] = artifacts.document.operations;
+  const [operation] = props.artifacts.document.operations;
 
   const propsFields: string[] = [];
 
   // payload 추가
-  if (authorization && operation.authorizationRole) {
+  if (props.authorization && operation.authorizationRole) {
     propsFields.push(
-      `${operation.authorizationRole}: ${authorization.payload.name};`,
+      `${operation.authorizationRole}: ${props.authorization.payload.name};`,
     );
   }
 
@@ -52,7 +45,7 @@ export const transformRealizeCoderHistories = (
       ? `props: {\n${propsFields.map((field) => `  ${field}`).join("\n")}\n}`
       : `// No props parameter needed - function should have no parameters`;
 
-  if (state.analyze === null)
+  if (props.state.analyze === null)
     return [
       {
         id: v4(),
@@ -65,7 +58,7 @@ export const transformRealizeCoderHistories = (
         ].join(" "),
       },
     ];
-  else if (state.prisma === null)
+  else if (props.state.prisma === null)
     return [
       {
         id: v4(),
@@ -78,7 +71,7 @@ export const transformRealizeCoderHistories = (
         ].join(" "),
       },
     ];
-  else if (state.analyze.step !== state.prisma.step)
+  else if (props.state.analyze.step !== props.state.prisma.step)
     return [
       {
         id: v4(),
@@ -92,7 +85,7 @@ export const transformRealizeCoderHistories = (
         ].join(" "),
       },
     ];
-  else if (state.prisma.compiled.type !== "success")
+  else if (props.state.prisma.compiled.type !== "success")
     return [
       {
         id: v4(),
@@ -106,7 +99,7 @@ export const transformRealizeCoderHistories = (
         ].join(" "),
       },
     ];
-  else if (state.interface === null)
+  else if (props.state.interface === null)
     return [
       {
         id: v4(),
@@ -133,81 +126,24 @@ export const transformRealizeCoderHistories = (
       type: "systemMessage",
       text: AutoBeSystemPromptConstant.REALIZE_CODER_ARTIFACT.replaceAll(
         `{prisma_schemas}`,
-        JSON.stringify(state.prisma.schemas),
+        JSON.stringify(props.state.prisma.schemas),
       )
-        .replaceAll(`{artifacts_sdk}`, JSON.stringify(artifacts.sdk))
-        .replaceAll(`{artifacts_dto}`, JSON.stringify(artifacts.dto))
+        .replaceAll(`{artifacts_sdk}`, JSON.stringify(props.artifacts.sdk))
+        .replaceAll(`{artifacts_dto}`, JSON.stringify(props.artifacts.dto))
         .replaceAll(`{input}`, input),
     },
-    ...(previous !== null
-      ? [
-          {
-            id: v4(),
-            created_at: new Date().toISOString(),
-            type: "assistantMessage",
-            text: [
-              "These values contain previously generated code and thought flow.",
-              "All of these codes are failed compilation values.",
-              previousCodes.length >= 2
-                ? "🚨 CRITICAL: You have already failed " +
-                  previousCodes.length +
-                  " times. The current approach is FUNDAMENTALLY WRONG!"
-                : "Please refer to the code for writing a new code.",
-              previousCodes.length >= 2
-                ? [
-                    "",
-                    "After multiple failures, you MUST make AGGRESSIVE changes:",
-                    "1. COMPLETELY REWRITE the problematic parts - don't just tweak",
-                    "2. Try a DIFFERENT algorithm or approach entirely",
-                    "3. Question ALL your assumptions about the requirements",
-                    "4. Consider alternative Prisma patterns or query structures",
-                    "5. The error might be in your fundamental understanding - rethink everything",
-                  ].join("\n")
-                : "",
-              "",
-              "```json",
-              JSON.stringify(
-                previousCodes.map((c) => c.result.implementationCode),
-              ),
-              "```",
-            ]
-              .filter(Boolean)
-              .join("\n"),
-          } as const,
-          {
-            id: v4(),
-            created_at: new Date().toISOString(),
-            type: "assistantMessage",
-            text: AutoBeSystemPromptConstant.REALIZE_CODER_DIAGNOSTICS.replaceAll(
-              `{code}`,
-              previous,
-            ).replaceAll("{current_diagnostics}", JSON.stringify(diagnostics)),
-          } as const,
-          {
-            id: v4(),
-            created_at: new Date().toISOString(),
-            type: "systemMessage",
-            text: [
-              "Modify the previous code to reflect the following operation.",
-              "```json",
-              JSON.stringify(props),
-              "```",
-            ].join("\n"),
-          } as const,
-        ]
-      : [
-          {
-            id: v4(),
-            created_at: new Date().toISOString(),
-            type: "systemMessage",
-            text: [
-              "Write new code based on the following operation.",
-              "```json",
-              JSON.stringify(props),
-              "```",
-            ].join("\n"),
-          } as const,
-        ]),
+
+    {
+      id: v4(),
+      created_at: new Date().toISOString(),
+      type: "systemMessage",
+      text: [
+        "Write new code based on the following operation.",
+        "```json",
+        JSON.stringify(props.scenario),
+        "```",
+      ].join("\n"),
+    },
     {
       id: v4(),
       created_at: new Date().toISOString(),

@@ -14,7 +14,7 @@ import { randomBackoffRetry } from "../../utils/backoffRetry";
 import { getTestScenarioArtifacts } from "../test/compile/getTestScenarioArtifacts";
 import { IAutoBeTestScenarioArtifacts } from "../test/structures/IAutoBeTestScenarioArtifacts";
 import { transformRealizeCoderHistories } from "./histories/transformRealizeCoderHistories";
-import { RealizePlannerOutput } from "./orchestrateRealizePlanner";
+import { IAutoBeRealizeScenario } from "./orchestrateRealizeScenario";
 import { IAutoBeRealizeCoderApplication } from "./structures/IAutoBeRealizeCoderApplication";
 import { IAutoBeRealizeCompile } from "./structures/IAutoBeRealizeCompile";
 import { FAILED } from "./structures/IAutoBeRealizeFailedSymbol";
@@ -43,14 +43,11 @@ export const orchestrateRealizeCoder = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   operation: AutoBeOpenApi.IOperation,
   previousCodes: IAutoBeRealizeCompile.Success[],
-  props: RealizePlannerOutput,
+  props: IAutoBeRealizeScenario,
   previous: string | null,
-  total: IAutoBeTypeScriptCompileResult.IDiagnostic[],
   diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[],
   authorization?: AutoBeRealizeAuthorization,
 ): Promise<IAutoBeRealizeCoderApplication.RealizeCoderOutput | FAILED> => {
-  total;
-
   const artifacts: IAutoBeTestScenarioArtifacts =
     await getTestScenarioArtifacts(ctx, {
       endpoint: {

@@ -25,7 +25,7 @@ export interface AutoBeRealizeCorrectEvent
    * DAOs, or integration handlers that initially failed validation and have now
    * been successfully revised.
    */
-  filename: string;
+  location: string;
 
   /**
    * Corrected content of the implementation file.
