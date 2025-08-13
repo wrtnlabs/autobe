@@ -1,0 +1,700 @@
+
+> @autobe/test@0.17.1 archive /workspaces/autobe/test
+> ts-node src/executable/archive.ts --project shopping
+
+
+> @autobe/test@0.17.1 start /workspaces/autobe/test
+> node build/prompt.js && ts-node src --include analyze_main_shopping --archive --trace
+
+Build system prompts
+15.312s
+---------------------------------------------------
+AutoBE Test Program
+Test Start Time 8/13/2025, 12:22:59 PM
+---------------------------------------------------
+analyzeStart: 0.036 mins
+analyzeScenario: 0.923 mins
+  - token usage: (input: 24,110, output: 2,161)
+analyzeWrite: 1.028 mins
+  - progress: (1 of 16)
+  - token usage: (input: 14,514, output: 357)
+analyzeWrite: 1.161 mins
+  - progress: (2 of 16)
+  - token usage: (input: 14,514, output: 827)
+analyzeWrite: 1.177 mins
+  - progress: (3 of 16)
+  - token usage: (input: 14,514, output: 728)
+analyzeWrite: 1.271 mins
+  - progress: (4 of 16)
+  - token usage: (input: 14,514, output: 1,036)
+analyzeWrite: 1.398 mins
+  - progress: (5 of 16)
+  - token usage: (input: 14,514, output: 2,171)
+analyzeWrite: 1.55 mins
+  - progress: (6 of 16)
+  - token usage: (input: 14,514, output: 2,845)
+analyzeWrite: 1.595 mins
+  - progress: (7 of 16)
+  - token usage: (input: 14,514, output: 1,598)
+analyzeWrite: 1.608 mins
+  - progress: (8 of 16)
+  - token usage: (input: 14,514, output: 2,111)
+analyzeWrite: 1.674 mins
+  - progress: (9 of 16)
+  - token usage: (input: 14,514, output: 2,281)
+analyzeWrite: 1.727 mins
+  - progress: (10 of 16)
+  - token usage: (input: 14,514, output: 1,593)
+analyzeWrite: 1.785 mins
+  - progress: (11 of 16)
+  - token usage: (input: 14,514, output: 3,067)
+analyzeWrite: 1.846 mins
+  - progress: (12 of 16)
+  - token usage: (input: 14,514, output: 3,223)
+analyzeWrite: 1.883 mins
+  - progress: (13 of 16)
+  - token usage: (input: 14,514, output: 2,475)
+analyzeWrite: 1.912 mins
+  - progress: (14 of 16)
+  - token usage: (input: 14,514, output: 2,555)
+analyzeWrite: 1.926 mins
+  - progress: (15 of 16)
+  - token usage: (input: 14,514, output: 2,600)
+analyzeWrite: 2.116 mins
+  - progress: (16 of 16)
+  - token usage: (input: 14,514, output: 2,908)
+analyzeReview: 2.455 mins
+  - progress: (1 of 16)
+  - token usage: (input: 45,925, output: 866)
+analyzeReview: 2.855 mins
+  - progress: (2 of 16)
+  - token usage: (input: 46,733, output: 1,638)
+analyzeReview: 3.297 mins
+  - progress: (3 of 16)
+  - token usage: (input: 47,875, output: 3,045)
+analyzeReview: 3.438 mins
+  - progress: (4 of 16)
+  - token usage: (input: 46,796, output: 2,861)
+analyzeReview: 3.538 mins
+  - progress: (5 of 16)
+  - token usage: (input: 48,142, output: 4,038)
+analyzeReview: 3.609 mins
+  - progress: (6 of 16)
+  - token usage: (input: 48,216, output: 3,909)
+analyzeReview: 3.673 mins
+  - progress: (7 of 16)
+  - token usage: (input: 47,511, output: 3,952)
+analyzeReview: 3.683 mins
+  - progress: (8 of 16)
+  - token usage: (input: 47,791, output: 4,244)
+analyzeReview: 3.74 mins
+  - progress: (9 of 16)
+  - token usage: (input: 47,603, output: 3,977)
+analyzeReview: 3.761 mins
+  - progress: (10 of 16)
+  - token usage: (input: 47,463, output: 2,982)
+analyzeReview: 3.808 mins
+  - progress: (11 of 16)
+  - token usage: (input: 47,926, output: 4,751)
+analyzeReview: 3.884 mins
+  - progress: (12 of 16)
+  - token usage: (input: 45,885, output: 4,741)
+analyzeReview: 3.892 mins
+  - progress: (13 of 16)
+  - token usage: (input: 47,401, output: 4,315)
+analyzeReview: 3.994 mins
+  - progress: (14 of 16)
+  - token usage: (input: 45,671, output: 3,676)
+analyzeReview: 4.066 mins
+  - progress: (15 of 16)
+  - token usage: (input: 47,945, output: 3,856)
+analyzeReview: 4.947 mins
+  - progress: (16 of 16)
+  - token usage: (input: 46,361, output: 2,847)
+analyzeComplete: 4.947 mins
+  - test_agent_analyze_main_shopping(1/1): 296,832 ms
+Success
+Elapsed time 311,078 ms
+Token Usage
+┌───────────┬─────────────┐
+│ (index)   │ Values      │
+├───────────┼─────────────┤
+│ Total     │ '1,112,101' │
+│ Input     │ '1,021,814' │
+│ Output    │ '90,287'    │
+│ Facade    │ '10,289'    │
+│ Analyze   │ '1,101,812' │
+│ Prisma    │ '0'         │
+│ Interface │ '0'         │
+│ Test      │ '0'         │
+│ Realize   │ '0'         │
+└───────────┴─────────────┘
+
+> @autobe/test@0.17.1 start /workspaces/autobe/test
+> node build/prompt.js && ts-node src --include prisma_main_shopping --archive --trace
+
+Build system prompts
+12.569s
+---------------------------------------------------
+AutoBE Test Program
+Test Start Time 8/13/2025, 12:28:35 PM
+---------------------------------------------------
+prismaStart: 0 mins
+prismaComponents: 4.456 mins
+  - token usage: (input: 194,804, output: 6,980)
+prismaSchemas: 5.935 mins
+  - progress: (8 of 87)
+  - token usage: (input: 55,910, output: 3,569)
+prismaSchemas: 5.973 mins
+  - progress: (16 of 87)
+  - token usage: (input: 55,916, output: 3,861)
+prismaSchemas: 5.993 mins
+  - progress: (22 of 87)
+  - token usage: (input: 55,911, output: 2,948)
+prismaSchemas: 6.015 mins
+  - progress: (30 of 87)
+  - token usage: (input: 55,893, output: 3,503)
+prismaSchemas: 6.426 mins
+  - progress: (39 of 87)
+  - token usage: (input: 55,900, output: 4,552)
+prismaSchemas: 6.531 mins
+  - progress: (50 of 87)
+  - token usage: (input: 55,917, output: 4,950)
+prismaSchemas: 7.368 mins
+  - progress: (55 of 87)
+  - token usage: (input: 55,878, output: 2,495)
+prismaSchemas: 7.397 mins
+  - progress: (66 of 87)
+  - token usage: (input: 55,923, output: 5,769)
+prismaSchemas: 8.264 mins
+  - progress: (77 of 87)
+  - token usage: (input: 55,921, output: 6,685)
+prismaSchemas: 14.093 mins
+  - progress: (87 of 87)
+  - token usage: (input: 55,944, output: 4,322)
+prismaReview: 14.276 mins
+  - progress: (6 of 10)
+  - token usage: (input: 140,996, output: 546)
+prismaReview: 14.301 mins
+  - progress: (1 of 10)
+  - token usage: (input: 140,963, output: 792)
+prismaReview: 14.311 mins
+  - progress: (9 of 10)
+  - token usage: (input: 140,982, output: 825)
+prismaReview: 14.363 mins
+  - progress: (2 of 10)
+  - token usage: (input: 140,979, output: 1,118)
+prismaReview: 14.372 mins
+  - progress: (3 of 10)
+  - token usage: (input: 140,993, output: 940)
+prismaReview: 14.417 mins
+  - progress: (7 of 10)
+  - token usage: (input: 140,995, output: 1,392)
+prismaReview: 14.427 mins
+  - progress: (8 of 10)
+  - token usage: (input: 140,985, output: 1,328)
+prismaReview: 14.46 mins
+  - progress: (10 of 10)
+  - token usage: (input: 141,000, output: 1,417)
+prismaReview: 14.601 mins
+  - progress: (5 of 10)
+  - token usage: (input: 140,999, output: 1,719)
+prismaReview: 15.219 mins
+  - progress: (4 of 10)
+  - token usage: (input: 442,999, output: 4,914)
+prismaValidate: 15.224 mins
+prismaCorrect: 16.846 mins
+  - token usage: (input: 51,133, output: 4,262)
+prismaComplete: 16.874 mins
+  - test_agent_prisma_main_shopping(1/1): 1,013,127 ms
+Success
+Elapsed time 1,025,973 ms
+Token Usage
+┌───────────┬─────────────┐
+│ (index)   │ Values      │
+├───────────┼─────────────┤
+│ Total     │ '2,794,527' │
+│ Input     │ '2,710,865' │
+│ Output    │ '83,662'    │
+│ Facade    │ '0'         │
+│ Analyze   │ '0'         │
+│ Prisma    │ '2,794,527' │
+│ Interface │ '0'         │
+│ Test      │ '0'         │
+│ Realize   │ '0'         │
+└───────────┴─────────────┘
+
+> @autobe/test@0.17.1 start /workspaces/autobe/test
+> node build/prompt.js && ts-node src --include interface_main_shopping --archive --trace
+
+Build system prompts
+12.737s
+---------------------------------------------------
+AutoBE Test Program
+Test Start Time 8/13/2025, 12:46:07 PM
+---------------------------------------------------
+interfaceStart: 0 mins
+interfaceGroups: 1.282 mins
+  - token usage: (input: 110,387, output: 2,476)
+interfaceAuthorization: 2.707 mins
+  - progress: (1 of 3)
+  - token usage: (input: 112,537, output: 2,162)
+interfaceAuthorization: 3 mins
+  - progress: (2 of 3)
+  - token usage: (input: 112,541, output: 2,923)
+interfaceAuthorization: 3.638 mins
+  - progress: (3 of 3)
+  - token usage: (input: 112,548, output: 2,778)
+interfaceEndpoints: 3.842 mins
+  - progress: (1 of 10)
+  - token usage: (input: 110,816, output: 72)
+interfaceEndpoints: 3.965 mins
+  - progress: (2 of 10)
+  - token usage: (input: 110,761, output: 72)
+interfaceEndpoints: 4.001 mins
+  - progress: (3 of 10)
+  - token usage: (input: 110,792, output: 389)
+interfaceEndpoints: 4.017 mins
+  - progress: (4 of 10)
+  - token usage: (input: 110,771, output: 399)
+interfaceEndpoints: 4.027 mins
+  - progress: (5 of 10)
+  - token usage: (input: 110,779, output: 451)
+interfaceEndpoints: 4.124 mins
+  - progress: (6 of 10)
+  - token usage: (input: 110,816, output: 694)
+interfaceEndpoints: 4.237 mins
+  - progress: (7 of 10)
+  - token usage: (input: 110,813, output: 1,046)
+interfaceEndpoints: 4.239 mins
+  - progress: (8 of 10)
+  - token usage: (input: 110,787, output: 568)
+interfaceEndpoints: 4.257 mins
+  - progress: (9 of 10)
+  - token usage: (input: 110,783, output: 710)
+interfaceEndpoints: 4.265 mins
+  - progress: (10 of 10)
+  - token usage: (input: 110,794, output: 778)
+interfaceOperations: 5.149 mins
+  - progress: (5 of 341)
+  - token usage: (input: 113,844, output: 1,661)
+interfaceOperationsReview: 5.854 mins
+  - progress: (1 of 341)
+  - token usage: (input: 118,239, output: 2,259)
+interfaceOperations: 6.187 mins
+  - progress: (13 of 345)
+  - token usage: (input: 240,054, output: 5,410)
+interfaceOperations: 6.231 mins
+  - progress: (25 of 345)
+  - token usage: (input: 113,949, output: 3,936)
+interfaceOperations: 6.254 mins
+  - progress: (44 of 352)
+  - token usage: (input: 113,930, output: 3,759)
+interfaceOperations: 6.31 mins
+  - progress: (68 of 364)
+  - token usage: (input: 113,979, output: 3,520)
+interfaceOperations: 6.332 mins
+  - progress: (74 of 368)
+  - token usage: (input: 239,643, output: 4,481)
+interfaceOperations: 6.365 mins
+  - progress: (102 of 384)
+  - token usage: (input: 113,935, output: 3,407)
+interfaceOperations: 6.434 mins
+  - progress: (126 of 396)
+  - token usage: (input: 113,977, output: 4,238)
+interfaceOperations: 6.502 mins
+  - progress: (138 of 396)
+  - token usage: (input: 113,934, output: 3,279)
+interfaceOperations: 6.515 mins
+  - progress: (150 of 396)
+  - token usage: (input: 113,950, output: 4,614)
+interfaceOperations: 6.565 mins
+  - progress: (163 of 397)
+  - token usage: (input: 239,140, output: 6,636)
+interfaceOperations: 6.662 mins
+  - progress: (175 of 397)
+  - token usage: (input: 113,951, output: 4,363)
+interfaceOperations: 6.667 mins
+  - progress: (190 of 400)
+  - token usage: (input: 239,202, output: 6,734)
+interfaceOperations: 6.675 mins
+  - progress: (202 of 400)
+  - token usage: (input: 113,947, output: 3,817)
+interfaceOperationsReview: 6.794 mins
+  - progress: (2 of 341)
+  - token usage: (input: 120,880, output: 363)
+interfaceOperations: 6.81 mins
+  - progress: (214 of 400)
+  - token usage: (input: 113,918, output: 4,171)
+interfaceOperations: 6.822 mins
+  - progress: (238 of 412)
+  - token usage: (input: 114,012, output: 4,429)
+interfaceOperations: 6.836 mins
+  - progress: (265 of 427)
+  - token usage: (input: 240,413, output: 7,910)
+interfaceOperations: 6.902 mins
+  - progress: (277 of 427)
+  - token usage: (input: 113,935, output: 3,185)
+interfaceOperations: 6.944 mins
+  - progress: (313 of 451)
+  - token usage: (input: 240,116, output: 6,852)
+interfaceOperations: 6.992 mins
+  - progress: (327 of 453)
+  - token usage: (input: 240,384, output: 8,764)
+interfaceOperationsReview: 6.992 mins
+  - progress: (3 of 341)
+  - token usage: (input: 119,792, output: 3,976)
+interfaceOperationsReview: 7.051 mins
+  - progress: (4 of 341)
+  - token usage: (input: 118,767, output: 2,439)
+interfaceOperations: 7.099 mins
+  - progress: (344 of 458)
+  - token usage: (input: 113,964, output: 4,070)
+interfaceOperationsReview: 7.112 mins
+  - progress: (5 of 341)
+  - token usage: (input: 120,999, output: 4,445)
+interfaceOperationsReview: 7.197 mins
+  - progress: (6 of 341)
+  - token usage: (input: 120,338, output: 3,732)
+interfaceOperations: 7.206 mins
+  - progress: (376 of 478)
+  - token usage: (input: 240,133, output: 7,402)
+interfaceOperations: 7.219 mins
+  - progress: (400 of 490)
+  - token usage: (input: 240,247, output: 6,942)
+interfaceOperations: 7.245 mins
+  - progress: (425 of 503)
+  - token usage: (input: 240,614, output: 8,261)
+interfaceOperations: 7.377 mins
+  - progress: (454 of 520)
+  - token usage: (input: 113,948, output: 4,079)
+interfaceOperationsReview: 7.448 mins
+  - progress: (7 of 341)
+  - token usage: (input: 129,625, output: 1,802)
+interfaceOperationsReview: 7.557 mins
+  - progress: (8 of 341)
+  - token usage: (input: 121,665, output: 5,088)
+interfaceOperations: 7.558 mins
+  - progress: (486 of 540)
+  - token usage: (input: 240,328, output: 7,584)
+interfaceOperations: 7.633 mins
+  - progress: (510 of 552)
+  - token usage: (input: 113,992, output: 3,872)
+interfaceOperationsReview: 7.636 mins
+  - progress: (9 of 341)
+  - token usage: (input: 128,354, output: 1,109)
+interfaceOperationsReview: 7.642 mins
+  - progress: (10 of 341)
+  - token usage: (input: 121,658, output: 4,625)
+interfaceOperationsReview: 7.657 mins
+  - progress: (11 of 341)
+  - token usage: (input: 120,239, output: 3,545)
+interfaceOperationsReview: 7.821 mins
+  - progress: (12 of 341)
+  - token usage: (input: 125,414, output: 7,204)
+interfaceOperationsReview: 7.86 mins
+  - progress: (13 of 341)
+  - token usage: (input: 121,432, output: 4,891)
+interfaceOperations: 7.876 mins
+  - progress: (534 of 564)
+  - token usage: (input: 241,128, output: 8,048)
+interfaceOperationsReview: 8.035 mins
+  - progress: (14 of 341)
+  - token usage: (input: 121,232, output: 4,624)
+interfaceOperationsReview: 8.109 mins
+  - progress: (15 of 341)
+  - token usage: (input: 126,228, output: 8,585)
+interfaceOperationsReview: 8.157 mins
+  - progress: (16 of 341)
+  - token usage: (input: 123,521, output: 8,875)
+interfaceOperationsReview: 8.258 mins
+  - progress: (17 of 341)
+  - token usage: (input: 128,657, output: 5,116)
+interfaceOperationsReview: 8.347 mins
+  - progress: (18 of 341)
+  - token usage: (input: 383,955, output: 6,271)
+interfaceOperations: 8.393 mins
+  - progress: (546 of 564)
+  - token usage: (input: 113,947, output: 3,303)
+interfaceOperationsReview: 8.425 mins
+  - progress: (19 of 341)
+  - token usage: (input: 123,702, output: 6,698)
+interfaceOperationsReview: 8.558 mins
+  - progress: (20 of 341)
+  - token usage: (input: 261,781, output: 3,061)
+interfaceOperations: 8.727 mins
+  - progress: (563 of 569)
+  - token usage: (input: 240,173, output: 7,165)
+interfaceOperationsReview: 8.759 mins
+  - progress: (21 of 341)
+  - token usage: (input: 127,164, output: 9,473)
+interfaceOperationsReview: 8.763 mins
+  - progress: (22 of 341)
+  - token usage: (input: 126,910, output: 9,172)
+interfaceOperationsReview: 8.839 mins
+  - progress: (23 of 341)
+  - token usage: (input: 125,348, output: 7,382)
+interfaceOperations: 9.13 mins
+  - progress: (575 of 569)
+  - token usage: (input: 113,925, output: 4,300)
+interfaceOperationsReview: 9.222 mins
+  - progress: (24 of 341)
+  - token usage: (input: 127,231, output: 9,570)
+interfaceOperationsReview: 9.412 mins
+  - progress: (25 of 341)
+  - token usage: (input: 126,136, output: 9,033)
+interfaceOperationsReview: 9.454 mins
+  - progress: (26 of 341)
+  - token usage: (input: 126,849, output: 9,337)
+interfaceOperationsReview: 9.465 mins
+  - progress: (27 of 341)
+  - token usage: (input: 377,904, output: 4,195)
+interfaceOperationsReview: 9.701 mins
+  - progress: (28 of 341)
+  - token usage: (input: 122,457, output: 5,348)
+interfaceOperationsReview: 9.788 mins
+  - progress: (29 of 341)
+  - token usage: (input: 128,522, output: 10,315)
+interfaceOperations: 10.311 mins
+  - progress: (602 of 587)
+  - token usage: (input: 241,096, output: 8,259)
+interfaceOperationsReview: 10.457 mins
+  - progress: (30 of 341)
+  - token usage: (input: 121,339, output: 4,632)
+interfaceOperations: 10.664 mins
+  - progress: (638 of 611)
+  - token usage: (input: 240,416, output: 7,443)
+interfaceOperationsReview: 11.012 mins
+  - progress: (31 of 341)
+  - token usage: (input: 406,356, output: 2,357)
+interfaceOperations: 11.845 mins
+  - progress: (667 of 628)
+  - token usage: (input: 240,878, output: 9,144)
+interfaceOperations: 11.859 mins
+  - progress: (679 of 628)
+  - token usage: (input: 113,933, output: 3,235)
+interfaceOperations: 12.027 mins
+  - progress: (702 of 639)
+  - token usage: (input: 241,228, output: 10,056)
+interfaceOperationsReview: 12.717 mins
+  - progress: (32 of 341)
+  - token usage: (input: 265,636, output: 2,321)
+interfaceOperationsReview: 12.993 mins
+  - progress: (33 of 341)
+  - token usage: (input: 120,293, output: 3,853)
+interfaceOperations: 13.342 mins
+  - progress: (714 of 639)
+  - token usage: (input: 239,121, output: 6,182)
+interfaceOperationsReview: 13.637 mins
+  - progress: (34 of 341)
+  - token usage: (input: 130,498, output: 11,879)
+interfaceOperationsReview: 14.183 mins
+  - progress: (35 of 341)
+  - token usage: (input: 120,283, output: 3,450)
+interfaceOperationsReview: 14.553 mins
+  - progress: (36 of 341)
+  - token usage: (input: 129,324, output: 11,077)
+interfaceOperations: 16.854 mins
+  - progress: (735 of 648)
+  - token usage: (input: 239,737, output: 7,074)
+interfaceOperationsReview: 19.397 mins
+  - progress: (37 of 341)
+  - token usage: (input: 123,946, output: 6,700)
+interfaceSchemas: 19.67 mins
+  - progress: (3 of 375)
+  - token usage: (input: 298,576, output: 429)
+interfaceSchemas: 19.958 mins
+  - progress: (15 of 375)
+  - token usage: (input: 298,663, output: 1,605)
+interfaceSchemas: 19.991 mins
+  - progress: (27 of 375)
+  - token usage: (input: 298,655, output: 1,336)
+interfaceSchemas: 20.026 mins
+  - progress: (39 of 375)
+  - token usage: (input: 298,655, output: 1,884)
+interfaceSchemas: 20.075 mins
+  - progress: (51 of 375)
+  - token usage: (input: 298,644, output: 2,021)
+interfaceSchemas: 20.079 mins
+  - progress: (63 of 375)
+  - token usage: (input: 298,664, output: 2,125)
+interfaceSchemas: 20.114 mins
+  - progress: (76 of 375)
+  - token usage: (input: 298,654, output: 2,106)
+interfaceSchemas: 20.128 mins
+  - progress: (89 of 375)
+  - token usage: (input: 298,654, output: 2,362)
+interfaceSchemas: 20.137 mins
+  - progress: (103 of 375)
+  - token usage: (input: 298,657, output: 2,207)
+interfaceSchemas: 20.181 mins
+  - progress: (116 of 375)
+  - token usage: (input: 298,661, output: 2,204)
+interfaceSchemas: 20.195 mins
+  - progress: (129 of 375)
+  - token usage: (input: 298,658, output: 2,473)
+interfaceSchemas: 20.197 mins
+  - progress: (142 of 375)
+  - token usage: (input: 298,658, output: 2,354)
+interfaceSchemas: 20.2 mins
+  - progress: (154 of 375)
+  - token usage: (input: 298,655, output: 2,516)
+interfaceSchemas: 20.2 mins
+  - progress: (166 of 375)
+  - token usage: (input: 298,664, output: 2,809)
+interfaceSchemas: 20.267 mins
+  - progress: (179 of 375)
+  - token usage: (input: 298,657, output: 2,802)
+interfaceSchemasReview: 20.297 mins
+  - progress: (1 of 32)
+  - token usage: (input: 337,530, output: 1,947)
+interfaceSchemas: 20.319 mins
+  - progress: (193 of 375)
+  - token usage: (input: 298,660, output: 2,551)
+interfaceSchemas: 20.327 mins
+  - progress: (206 of 375)
+  - token usage: (input: 298,663, output: 2,605)
+interfaceSchemas: 20.329 mins
+  - progress: (221 of 375)
+  - token usage: (input: 298,658, output: 3,489)
+interfaceSchemas: 20.335 mins
+  - progress: (236 of 375)
+  - token usage: (input: 298,659, output: 3,287)
+interfaceSchemas: 20.357 mins
+  - progress: (251 of 375)
+  - token usage: (input: 298,650, output: 3,193)
+interfaceSchemas: 20.374 mins
+  - progress: (265 of 375)
+  - token usage: (input: 298,667, output: 3,343)
+interfaceSchemas: 20.392 mins
+  - progress: (277 of 375)
+  - token usage: (input: 298,661, output: 2,223)
+interfaceSchemas: 20.412 mins
+  - progress: (290 of 375)
+  - token usage: (input: 298,658, output: 2,342)
+interfaceSchemas: 20.425 mins
+  - progress: (302 of 375)
+  - token usage: (input: 298,661, output: 2,713)
+interfaceSchemas: 20.438 mins
+  - progress: (314 of 375)
+  - token usage: (input: 298,653, output: 3,980)
+interfaceSchemas: 20.445 mins
+  - progress: (326 of 375)
+  - token usage: (input: 298,665, output: 3,025)
+interfaceSchemas: 20.466 mins
+  - progress: (338 of 375)
+  - token usage: (input: 298,662, output: 3,559)
+interfaceSchemas: 20.484 mins
+  - progress: (352 of 375)
+  - token usage: (input: 298,665, output: 3,170)
+interfaceSchemasReview: 20.842 mins
+  - progress: (2 of 32)
+  - token usage: (input: 341,545, output: 1,792)
+interfaceSchemasReview: 20.858 mins
+  - progress: (3 of 32)
+  - token usage: (input: 339,116, output: 2,413)
+interfaceSchemasReview: 20.954 mins
+  - progress: (4 of 32)
+  - token usage: (input: 340,036, output: 2,903)
+interfaceSchemas: 20.956 mins
+  - progress: (364 of 375)
+  - token usage: (input: 298,671, output: 3,477)
+interfaceSchemasReview: 21.002 mins
+  - progress: (5 of 32)
+  - token usage: (input: 338,850, output: 2,898)
+interfaceSchemasReview: 21.134 mins
+  - progress: (6 of 32)
+  - token usage: (input: 340,152, output: 3,160)
+interfaceSchemasReview: 21.141 mins
+  - progress: (7 of 32)
+  - token usage: (input: 340,736, output: 1,678)
+interfaceSchemasReview: 21.17 mins
+  - progress: (8 of 32)
+  - token usage: (input: 341,825, output: 2,590)
+interfaceSchemasReview: 21.233 mins
+  - progress: (9 of 32)
+  - token usage: (input: 340,207, output: 3,259)
+interfaceSchemasReview: 21.248 mins
+  - progress: (10 of 32)
+  - token usage: (input: 340,463, output: 3,079)
+interfaceSchemasReview: 21.251 mins
+  - progress: (11 of 32)
+  - token usage: (input: 340,623, output: 3,840)
+interfaceSchemasReview: 21.357 mins
+  - progress: (12 of 32)
+  - token usage: (input: 342,247, output: 4,093)
+interfaceSchemasReview: 21.376 mins
+  - progress: (13 of 32)
+  - token usage: (input: 341,773, output: 3,420)
+interfaceSchemasReview: 21.415 mins
+  - progress: (14 of 32)
+  - token usage: (input: 341,729, output: 3,602)
+interfaceSchemasReview: 21.449 mins
+  - progress: (15 of 32)
+  - token usage: (input: 341,837, output: 4,743)
+interfaceSchemasReview: 21.465 mins
+  - progress: (16 of 32)
+  - token usage: (input: 341,444, output: 3,575)
+interfaceSchemas: 21.476 mins
+  - progress: (380 of 375)
+  - token usage: (input: 608,122, output: 5,808)
+interfaceSchemasReview: 21.482 mins
+  - progress: (17 of 32)
+  - token usage: (input: 343,468, output: 4,504)
+interfaceSchemasReview: 21.682 mins
+  - progress: (18 of 32)
+  - token usage: (input: 343,316, output: 4,736)
+interfaceSchemas: 21.685 mins
+  - progress: (395 of 375)
+  - token usage: (input: 298,656, output: 4,484)
+interfaceSchemasReview: 21.741 mins
+  - progress: (19 of 32)
+  - token usage: (input: 342,085, output: 4,299)
+interfaceSchemasReview: 21.746 mins
+  - progress: (20 of 32)
+  - token usage: (input: 343,457, output: 5,264)
+interfaceSchemasReview: 21.798 mins
+  - progress: (21 of 32)
+  - token usage: (input: 343,565, output: 5,209)
+interfaceSchemasReview: 21.909 mins
+  - progress: (22 of 32)
+  - token usage: (input: 343,319, output: 4,775)
+interfaceSchemasReview: 21.938 mins
+  - progress: (23 of 32)
+  - token usage: (input: 341,407, output: 3,477)
+interfaceSchemasReview: 21.951 mins
+  - progress: (24 of 32)
+  - token usage: (input: 343,365, output: 5,062)
+interfaceSchemasReview: 22.153 mins
+  - progress: (25 of 32)
+  - token usage: (input: 343,602, output: 3,775)
+interfaceSchemasReview: 22.402 mins
+  - progress: (26 of 32)
+  - token usage: (input: 341,936, output: 4,643)
+interfaceSchemasReview: 22.516 mins
+  - progress: (27 of 32)
+  - token usage: (input: 341,729, output: 3,622)
+  - test_agent_interface_main_shopping(0/1): Error
+Error: Failed to extract review information.
+    at /workspaces/autobe/packages/agent/src/orchestrate/interface/orchestrateInterfaceSchemasReview.ts:46:11
+    at Generator.next (<anonymous>)
+    at fulfilled (/workspaces/autobe/packages/agent/src/orchestrate/interface/orchestrateInterfaceSchemasReview.ts:38:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+Failed
+Elapsed time 1,376,792 ms
+Token Usage
+┌───────────┬──────────────┐
+│ (index)   │ Values       │
+├───────────┼──────────────┤
+│ Total     │ '34,818,939' │
+│ Input     │ '34,181,916' │
+│ Output    │ '637,023'    │
+│ Facade    │ '0'          │
+│ Analyze   │ '0'          │
+│ Prisma    │ '0'          │
+│ Interface │ '34,818,939' │
+│ Test      │ '0'          │
+│ Realize   │ '0'          │
+└───────────┴──────────────┘
+ ELIFECYCLE  Command failed with exit code 255.
+ ELIFECYCLE  Command failed with exit code 255.

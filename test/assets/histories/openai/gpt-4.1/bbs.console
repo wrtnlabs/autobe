@@ -1,0 +1,4175 @@
+
+> @autobe/test@0.17.1 archive /workspaces/autobe/test
+> ts-node src/executable/archive.ts --project bbs
+
+
+> @autobe/test@0.17.1 start /workspaces/autobe/test
+> node build/prompt.js && ts-node src --include analyze_main_bbs --archive --trace
+
+Build system prompts
+12.706s
+---------------------------------------------------
+AutoBE Test Program
+Test Start Time 8/13/2025, 10:07:06 AM
+---------------------------------------------------
+analyzeStart: 0.034 mins
+analyzeScenario: 0.668 mins
+  - token usage: (input: 16,094, output: 1,487)
+analyzeWrite: 1.041 mins
+  - progress: (1 of 11)
+  - token usage: (input: 13,864, output: 979)
+analyzeWrite: 1.182 mins
+  - progress: (2 of 11)
+  - token usage: (input: 13,864, output: 1,396)
+analyzeWrite: 1.247 mins
+  - progress: (3 of 11)
+  - token usage: (input: 13,864, output: 1,552)
+analyzeWrite: 1.377 mins
+  - progress: (4 of 11)
+  - token usage: (input: 13,863, output: 2,039)
+analyzeWrite: 1.438 mins
+  - progress: (5 of 11)
+  - token usage: (input: 13,863, output: 2,119)
+analyzeWrite: 1.551 mins
+  - progress: (6 of 11)
+  - token usage: (input: 13,864, output: 2,458)
+analyzeWrite: 1.616 mins
+  - progress: (7 of 11)
+  - token usage: (input: 13,864, output: 2,553)
+analyzeWrite: 1.637 mins
+  - progress: (8 of 11)
+  - token usage: (input: 13,864, output: 2,397)
+analyzeWrite: 1.663 mins
+  - progress: (9 of 11)
+  - token usage: (input: 13,864, output: 2,338)
+analyzeWrite: 1.874 mins
+  - progress: (10 of 11)
+  - token usage: (input: 13,864, output: 3,427)
+analyzeWrite: 2.197 mins
+  - progress: (11 of 11)
+  - token usage: (input: 13,864, output: 3,680)
+analyzeReview: 2.68 mins
+  - progress: (1 of 11)
+  - token usage: (input: 39,930, output: 1,138)
+analyzeReview: 3.321 mins
+  - progress: (2 of 11)
+  - token usage: (input: 40,103, output: 2,576)
+analyzeReview: 3.367 mins
+  - progress: (3 of 11)
+  - token usage: (input: 41,285, output: 4,256)
+analyzeReview: 3.472 mins
+  - progress: (4 of 11)
+  - token usage: (input: 41,966, output: 3,441)
+analyzeReview: 3.617 mins
+  - progress: (5 of 11)
+  - token usage: (input: 40,980, output: 3,102)
+analyzeReview: 3.78 mins
+  - progress: (6 of 11)
+  - token usage: (input: 40,173, output: 3,591)
+analyzeReview: 3.826 mins
+  - progress: (7 of 11)
+  - token usage: (input: 40,730, output: 3,516)
+analyzeReview: 3.85 mins
+  - progress: (8 of 11)
+  - token usage: (input: 40,938, output: 3,901)
+analyzeReview: 4.104 mins
+  - progress: (9 of 11)
+  - token usage: (input: 41,262, output: 4,797)
+analyzeReview: 4.606 mins
+  - progress: (10 of 11)
+  - token usage: (input: 40,782, output: 4,557)
+analyzeReview: 4.982 mins
+  - progress: (11 of 11)
+  - token usage: (input: 42,230, output: 4,467)
+analyzeComplete: 4.982 mins
+  - test_agent_analyze_main_bbs(1/1): 298,925 ms
+Success
+Elapsed time 312,455 ms
+Token Usage
+┌───────────┬───────────┐
+│ (index)   │ Values    │
+├───────────┼───────────┤
+│ Total     │ '687,049' │
+│ Input     │ '621,195' │
+│ Output    │ '65,854'  │
+│ Facade    │ '2,307'   │
+│ Analyze   │ '684,742' │
+│ Prisma    │ '0'       │
+│ Interface │ '0'       │
+│ Test      │ '0'       │
+│ Realize   │ '0'       │
+└───────────┴───────────┘
+
+> @autobe/test@0.17.1 start /workspaces/autobe/test
+> node build/prompt.js && ts-node src --include prisma_main_bbs --archive --trace
+
+Build system prompts
+12.695s
+---------------------------------------------------
+AutoBE Test Program
+Test Start Time 8/13/2025, 10:12:44 AM
+---------------------------------------------------
+prismaStart: 0 mins
+prismaComponents: 4.527 mins
+  - token usage: (input: 137,627, output: 5,314)
+prismaSchemas: 5.276 mins
+  - progress: (3 of 42)
+  - token usage: (input: 39,036, output: 2,024)
+prismaSchemas: 5.312 mins
+  - progress: (6 of 42)
+  - token usage: (input: 39,003, output: 2,199)
+prismaSchemas: 5.601 mins
+  - progress: (12 of 42)
+  - token usage: (input: 39,087, output: 2,990)
+prismaSchemas: 5.853 mins
+  - progress: (21 of 42)
+  - token usage: (input: 39,104, output: 4,336)
+prismaSchemas: 5.902 mins
+  - progress: (27 of 42)
+  - token usage: (input: 39,106, output: 3,143)
+prismaSchemas: 5.951 mins
+  - progress: (32 of 42)
+  - token usage: (input: 39,074, output: 3,210)
+prismaSchemas: 6.352 mins
+  - progress: (35 of 42)
+  - token usage: (input: 88,357, output: 4,849)
+prismaSchemas: 8.54 mins
+  - progress: (42 of 42)
+  - token usage: (input: 139,656, output: 9,414)
+prismaReview: 9.041 mins
+  - progress: (5 of 8)
+  - token usage: (input: 84,070, output: 958)
+prismaReview: 9.066 mins
+  - progress: (1 of 8)
+  - token usage: (input: 84,044, output: 904)
+prismaReview: 9.103 mins
+  - progress: (4 of 8)
+  - token usage: (input: 84,089, output: 1,158)
+prismaReview: 9.107 mins
+  - progress: (7 of 8)
+  - token usage: (input: 84,082, output: 1,173)
+prismaReview: 9.165 mins
+  - progress: (8 of 8)
+  - token usage: (input: 84,072, output: 1,155)
+prismaReview: 9.19 mins
+  - progress: (6 of 8)
+  - token usage: (input: 84,044, output: 944)
+prismaReview: 9.463 mins
+  - progress: (2 of 8)
+  - token usage: (input: 84,079, output: 1,255)
+prismaReview: 9.626 mins
+  - progress: (3 of 8)
+  - token usage: (input: 84,050, output: 1,048)
+prismaValidate: 9.628 mins
+prismaCorrect: 10.892 mins
+  - token usage: (input: 33,066, output: 3,039)
+prismaComplete: 10.908 mins
+  - test_agent_prisma_main_bbs(1/1): 654,675 ms
+Success
+Elapsed time 667,745 ms
+Token Usage
+┌───────────┬─────────────┐
+│ (index)   │ Values      │
+├───────────┼─────────────┤
+│ Total     │ '1,496,117' │
+│ Input     │ '1,442,203' │
+│ Output    │ '53,914'    │
+│ Facade    │ '0'         │
+│ Analyze   │ '0'         │
+│ Prisma    │ '1,496,117' │
+│ Interface │ '0'         │
+│ Test      │ '0'         │
+│ Realize   │ '0'         │
+└───────────┴─────────────┘
+
+> @autobe/test@0.17.1 start /workspaces/autobe/test
+> node build/prompt.js && ts-node src --include interface_main_bbs --archive --trace
+
+Build system prompts
+12.596s
+---------------------------------------------------
+AutoBE Test Program
+Test Start Time 8/13/2025, 10:24:16 AM
+---------------------------------------------------
+interfaceStart: 0 mins
+interfaceGroups: 0.921 mins
+  - token usage: (input: 66,107, output: 1,318)
+interfaceAuthorization: 1.218 mins
+  - progress: (1 of 4)
+  - token usage: (input: 68,223, output: 453)
+interfaceAuthorization: 1.813 mins
+  - progress: (2 of 4)
+  - token usage: (input: 68,236, output: 1,928)
+interfaceAuthorization: 2.007 mins
+  - progress: (3 of 4)
+  - token usage: (input: 68,236, output: 2,932)
+interfaceAuthorization: 2.383 mins
+  - progress: (4 of 4)
+  - token usage: (input: 68,231, output: 2,608)
+interfaceEndpoints: 2.545 mins
+  - progress: (1 of 8)
+  - token usage: (input: 66,535, output: 159)
+interfaceEndpoints: 2.549 mins
+  - progress: (2 of 8)
+  - token usage: (input: 66,472, output: 202)
+interfaceEndpoints: 2.591 mins
+  - progress: (3 of 8)
+  - token usage: (input: 66,487, output: 231)
+interfaceEndpoints: 2.64 mins
+  - progress: (4 of 8)
+  - token usage: (input: 66,506, output: 415)
+interfaceEndpoints: 2.671 mins
+  - progress: (5 of 8)
+  - token usage: (input: 66,515, output: 445)
+interfaceEndpoints: 2.811 mins
+  - progress: (6 of 8)
+  - token usage: (input: 66,504, output: 398)
+interfaceEndpoints: 2.836 mins
+  - progress: (7 of 8)
+  - token usage: (input: 66,527, output: 437)
+interfaceEndpoints: 3.116 mins
+  - progress: (8 of 8)
+  - token usage: (input: 66,534, output: 926)
+interfaceOperations: 4.44 mins
+  - progress: (12 of 216)
+  - token usage: (input: 69,641, output: 3,798)
+interfaceOperations: 4.503 mins
+  - progress: (24 of 216)
+  - token usage: (input: 69,668, output: 3,594)
+interfaceOperations: 4.616 mins
+  - progress: (36 of 216)
+  - token usage: (input: 69,636, output: 3,440)
+interfaceOperations: 4.799 mins
+  - progress: (66 of 234)
+  - token usage: (input: 69,710, output: 3,645)
+interfaceOperations: 4.835 mins
+  - progress: (88 of 244)
+  - token usage: (input: 69,674, output: 3,635)
+interfaceOperations: 4.846 mins
+  - progress: (102 of 246)
+  - token usage: (input: 69,671, output: 3,693)
+interfaceOperations: 4.879 mins
+  - progress: (114 of 246)
+  - token usage: (input: 69,681, output: 4,090)
+interfaceOperations: 4.896 mins
+  - progress: (147 of 267)
+  - token usage: (input: 69,736, output: 4,547)
+interfaceOperations: 4.909 mins
+  - progress: (174 of 282)
+  - token usage: (input: 69,658, output: 3,516)
+interfaceOperations: 4.96 mins
+  - progress: (186 of 282)
+  - token usage: (input: 69,662, output: 3,531)
+interfaceOperations: 4.972 mins
+  - progress: (208 of 292)
+  - token usage: (input: 69,660, output: 4,026)
+interfaceOperations: 4.972 mins
+  - progress: (227 of 299)
+  - token usage: (input: 69,690, output: 4,008)
+interfaceOperations: 5.079 mins
+  - progress: (247 of 307)
+  - token usage: (input: 69,702, output: 4,329)
+interfaceOperations: 5.111 mins
+  - progress: (261 of 309)
+  - token usage: (input: 69,662, output: 3,779)
+interfaceOperations: 5.141 mins
+  - progress: (274 of 310)
+  - token usage: (input: 69,660, output: 3,847)
+interfaceOperations: 5.389 mins
+  - progress: (286 of 310)
+  - token usage: (input: 69,658, output: 3,490)
+interfaceOperations: 5.631 mins
+  - progress: (306 of 318)
+  - token usage: (input: 69,673, output: 3,474)
+interfaceOperations: 5.812 mins
+  - progress: (337 of 337)
+  - token usage: (input: 69,687, output: 4,251)
+interfaceOperationsReview: 6.527 mins
+  - progress: (1 of 216)
+  - token usage: (input: 76,567, output: 4,112)
+interfaceOperationsReview: 6.591 mins
+  - progress: (2 of 216)
+  - token usage: (input: 76,368, output: 3,887)
+interfaceOperationsReview: 6.637 mins
+  - progress: (3 of 216)
+  - token usage: (input: 76,207, output: 3,807)
+interfaceOperationsReview: 6.981 mins
+  - progress: (4 of 216)
+  - token usage: (input: 76,328, output: 4,071)
+interfaceOperationsReview: 7.103 mins
+  - progress: (5 of 216)
+  - token usage: (input: 77,248, output: 4,768)
+interfaceOperationsReview: 7.372 mins
+  - progress: (6 of 216)
+  - token usage: (input: 77,138, output: 4,626)
+interfaceOperationsReview: 7.528 mins
+  - progress: (7 of 216)
+  - token usage: (input: 77,383, output: 4,915)
+interfaceOperationsReview: 7.771 mins
+  - progress: (8 of 216)
+  - token usage: (input: 76,280, output: 3,900)
+interfaceOperationsReview: 7.787 mins
+  - progress: (9 of 216)
+  - token usage: (input: 76,885, output: 4,626)
+interfaceOperationsReview: 8.198 mins
+  - progress: (10 of 216)
+  - token usage: (input: 79,730, output: 6,516)
+interfaceOperationsReview: 8.664 mins
+  - progress: (11 of 216)
+  - token usage: (input: 80,912, output: 7,722)
+interfaceOperationsReview: 8.814 mins
+  - progress: (12 of 216)
+  - token usage: (input: 81,997, output: 8,591)
+interfaceOperationsReview: 9.028 mins
+  - progress: (13 of 216)
+  - token usage: (input: 80,874, output: 7,996)
+interfaceOperationsReview: 9.289 mins
+  - progress: (14 of 216)
+  - token usage: (input: 80,216, output: 7,261)
+interfaceOperationsReview: 9.433 mins
+  - progress: (15 of 216)
+  - token usage: (input: 79,832, output: 6,694)
+interfaceOperationsReview: 9.653 mins
+  - progress: (16 of 216)
+  - token usage: (input: 83,791, output: 9,687)
+interfaceOperationsReview: 11.185 mins
+  - progress: (17 of 216)
+  - token usage: (input: 85,504, output: 11,443)
+interfaceOperationsReview: 12.418 mins
+  - progress: (18 of 216)
+  - token usage: (input: 280,789, output: 14,002)
+interfaceSchemas: 12.73 mins
+  - progress: (4 of 244)
+  - token usage: (input: 185,531, output: 907)
+interfaceSchemas: 12.944 mins
+  - progress: (16 of 244)
+  - token usage: (input: 185,606, output: 2,212)
+interfaceSchemas: 12.944 mins
+  - progress: (29 of 244)
+  - token usage: (input: 185,620, output: 2,099)
+interfaceSchemas: 12.971 mins
+  - progress: (42 of 244)
+  - token usage: (input: 185,597, output: 2,421)
+interfaceSchemas: 12.975 mins
+  - progress: (56 of 244)
+  - token usage: (input: 185,599, output: 2,440)
+interfaceSchemas: 12.991 mins
+  - progress: (69 of 244)
+  - token usage: (input: 185,599, output: 2,402)
+interfaceSchemas: 13.004 mins
+  - progress: (82 of 244)
+  - token usage: (input: 185,607, output: 2,619)
+interfaceSchemas: 13.006 mins
+  - progress: (94 of 244)
+  - token usage: (input: 185,621, output: 2,496)
+interfaceSchemas: 13.074 mins
+  - progress: (106 of 244)
+  - token usage: (input: 185,622, output: 2,649)
+interfaceSchemas: 13.1 mins
+  - progress: (119 of 244)
+  - token usage: (input: 185,604, output: 2,733)
+interfaceSchemas: 13.108 mins
+  - progress: (132 of 244)
+  - token usage: (input: 185,600, output: 3,019)
+interfaceSchemas: 13.112 mins
+  - progress: (146 of 244)
+  - token usage: (input: 185,613, output: 3,220)
+interfaceSchemas: 13.149 mins
+  - progress: (159 of 244)
+  - token usage: (input: 185,613, output: 2,916)
+interfaceSchemas: 13.191 mins
+  - progress: (173 of 244)
+  - token usage: (input: 185,620, output: 3,507)
+interfaceSchemas: 13.193 mins
+  - progress: (187 of 244)
+  - token usage: (input: 185,603, output: 3,027)
+interfaceSchemasReview: 13.227 mins
+  - progress: (1 of 21)
+  - token usage: (input: 209,105, output: 2,201)
+interfaceSchemas: 13.236 mins
+  - progress: (202 of 244)
+  - token usage: (input: 185,604, output: 3,559)
+interfaceSchemas: 13.252 mins
+  - progress: (219 of 244)
+  - token usage: (input: 185,616, output: 3,737)
+interfaceSchemas: 13.279 mins
+  - progress: (232 of 244)
+  - token usage: (input: 185,612, output: 3,500)
+interfaceSchemas: 13.281 mins
+  - progress: (233 of 244)
+  - token usage: (input: 382,172, output: 3,349)
+interfaceSchemas: 13.287 mins
+  - progress: (246 of 244)
+  - token usage: (input: 185,601, output: 2,016)
+interfaceSchemasReview: 13.389 mins
+  - progress: (2 of 21)
+  - token usage: (input: 213,336, output: 1,395)
+interfaceSchemas: 13.403 mins
+  - progress: (262 of 244)
+  - token usage: (input: 185,608, output: 4,370)
+interfaceSchemasReview: 13.569 mins
+  - progress: (3 of 21)
+  - token usage: (input: 210,586, output: 2,716)
+interfaceSchemasReview: 13.72 mins
+  - progress: (4 of 21)
+  - token usage: (input: 211,922, output: 3,281)
+interfaceSchemasReview: 13.721 mins
+  - progress: (5 of 21)
+  - token usage: (input: 212,019, output: 3,284)
+interfaceSchemasReview: 13.738 mins
+  - progress: (6 of 21)
+  - token usage: (input: 432,787, output: 2,646)
+interfaceSchemasReview: 13.781 mins
+  - progress: (7 of 21)
+  - token usage: (input: 213,720, output: 2,762)
+interfaceSchemasReview: 13.795 mins
+  - progress: (8 of 21)
+  - token usage: (input: 211,109, output: 3,479)
+interfaceSchemasReview: 13.882 mins
+  - progress: (9 of 21)
+  - token usage: (input: 215,825, output: 2,813)
+interfaceSchemasReview: 13.9 mins
+  - progress: (10 of 21)
+  - token usage: (input: 212,133, output: 3,872)
+interfaceSchemasReview: 13.91 mins
+  - progress: (11 of 21)
+  - token usage: (input: 212,226, output: 3,205)
+interfaceSchemasReview: 13.968 mins
+  - progress: (12 of 21)
+  - token usage: (input: 215,781, output: 3,796)
+interfaceSchemas: 14.046 mins
+  - progress: (275 of 244)
+  - token usage: (input: 185,643, output: 2,893)
+interfaceSchemasReview: 14.075 mins
+  - progress: (13 of 21)
+  - token usage: (input: 212,247, output: 4,522)
+interfaceSchemasReview: 14.082 mins
+  - progress: (14 of 21)
+  - token usage: (input: 211,313, output: 3,393)
+interfaceSchemasReview: 14.143 mins
+  - progress: (15 of 21)
+  - token usage: (input: 212,866, output: 4,785)
+interfaceSchemasReview: 14.285 mins
+  - progress: (16 of 21)
+  - token usage: (input: 213,094, output: 4,481)
+interfaceSchemasReview: 14.324 mins
+  - progress: (17 of 21)
+  - token usage: (input: 213,342, output: 4,510)
+interfaceSchemasReview: 14.5 mins
+  - progress: (18 of 21)
+  - token usage: (input: 214,995, output: 5,500)
+interfaceSchemasReview: 14.936 mins
+  - progress: (19 of 21)
+  - token usage: (input: 214,883, output: 5,714)
+interfaceSchemasReview: 14.966 mins
+  - progress: (20 of 21)
+  - token usage: (input: 217,044, output: 7,347)
+interfaceSchemasReview: 15.78 mins
+  - progress: (21 of 21)
+  - token usage: (input: 215,566, output: 5,620)
+interfaceComplement: 17.05 mins
+  - token usage: (input: 250,483, output: 5,360)
+interfaceComplete: 17.05 mins
+  - test_agent_interface_main_bbs(1/1): 1,025,291 ms
+Success
+Elapsed time 1,038,531 ms
+Token Usage
+┌───────────┬──────────────┐
+│ (index)   │ Values       │
+├───────────┼──────────────┤
+│ Total     │ '13,324,126' │
+│ Input     │ '12,975,584' │
+│ Output    │ '348,542'    │
+│ Facade    │ '0'          │
+│ Analyze   │ '0'          │
+│ Prisma    │ '0'          │
+│ Interface │ '13,324,126' │
+│ Test      │ '0'          │
+│ Realize   │ '0'          │
+└───────────┴──────────────┘
+
+> @autobe/test@0.17.1 start /workspaces/autobe/test
+> node build/prompt.js && ts-node src --include test_main_bbs --archive --trace
+
+Build system prompts
+12.584s
+---------------------------------------------------
+AutoBE Test Program
+Test Start Time 8/13/2025, 10:42:00 AM
+---------------------------------------------------
+testStart: 0 mins
+testScenarios: 0.244 mins
+  - progress: (1 of 359)
+  - token usage: (input: 95,470, output: 239)
+testScenarios: 0.531 mins
+  - progress: (2 of 359)
+  - token usage: (input: 95,477, output: 1,273)
+testScenarios: 0.557 mins
+  - progress: (3 of 359)
+  - token usage: (input: 95,488, output: 1,534)
+testScenarios: 0.564 mins
+  - progress: (4 of 359)
+  - token usage: (input: 95,445, output: 915)
+testScenarios: 0.582 mins
+  - progress: (5 of 359)
+  - token usage: (input: 95,437, output: 1,063)
+testScenarios: 0.608 mins
+  - progress: (6 of 359)
+  - token usage: (input: 95,528, output: 1,341)
+testScenarios: 0.62 mins
+  - progress: (7 of 359)
+  - token usage: (input: 95,487, output: 1,357)
+testScenarios: 0.624 mins
+  - progress: (8 of 359)
+  - token usage: (input: 95,488, output: 1,124)
+testScenarios: 0.63 mins
+  - progress: (9 of 359)
+  - token usage: (input: 95,470, output: 1,006)
+testScenarios: 0.631 mins
+  - progress: (10 of 359)
+  - token usage: (input: 95,482, output: 1,456)
+testScenarios: 0.637 mins
+  - progress: (11 of 359)
+  - token usage: (input: 95,484, output: 1,449)
+testScenarios: 0.661 mins
+  - progress: (12 of 359)
+  - token usage: (input: 95,496, output: 1,774)
+testScenarios: 0.667 mins
+  - progress: (13 of 359)
+  - token usage: (input: 95,498, output: 1,684)
+testScenarios: 0.674 mins
+  - progress: (14 of 359)
+  - token usage: (input: 95,494, output: 1,697)
+testScenarios: 0.683 mins
+  - progress: (15 of 359)
+  - token usage: (input: 95,492, output: 1,934)
+testScenarios: 0.684 mins
+  - progress: (16 of 359)
+  - token usage: (input: 95,507, output: 1,905)
+testScenarios: 0.702 mins
+  - progress: (17 of 359)
+  - token usage: (input: 95,476, output: 1,201)
+testScenarios: 0.718 mins
+  - progress: (18 of 359)
+  - token usage: (input: 95,489, output: 1,827)
+testScenarios: 0.735 mins
+  - progress: (19 of 359)
+  - token usage: (input: 95,483, output: 1,278)
+testScenarios: 0.739 mins
+  - progress: (20 of 359)
+  - token usage: (input: 95,486, output: 1,288)
+testScenarios: 0.751 mins
+  - progress: (21 of 359)
+  - token usage: (input: 95,477, output: 1,176)
+testScenarios: 0.764 mins
+  - progress: (22 of 359)
+  - token usage: (input: 95,472, output: 1,384)
+testScenarios: 0.767 mins
+  - progress: (23 of 359)
+  - token usage: (input: 95,480, output: 1,268)
+testScenarios: 0.771 mins
+  - progress: (24 of 359)
+  - token usage: (input: 95,482, output: 1,752)
+testScenarios: 0.772 mins
+  - progress: (25 of 359)
+  - token usage: (input: 95,440, output: 1,243)
+testScenarios: 0.78 mins
+  - progress: (26 of 359)
+  - token usage: (input: 95,484, output: 2,088)
+testScenarios: 0.788 mins
+  - progress: (27 of 359)
+  - token usage: (input: 95,473, output: 1,712)
+testScenarios: 0.795 mins
+  - progress: (28 of 359)
+  - token usage: (input: 95,478, output: 1,383)
+testScenarios: 0.819 mins
+  - progress: (29 of 359)
+  - token usage: (input: 95,519, output: 1,976)
+testScenarios: 0.826 mins
+  - progress: (30 of 359)
+  - token usage: (input: 95,492, output: 1,531)
+testScenarios: 0.828 mins
+  - progress: (31 of 359)
+  - token usage: (input: 95,480, output: 1,590)
+testScenarios: 0.84 mins
+  - progress: (32 of 359)
+  - token usage: (input: 95,475, output: 1,481)
+testScenarios: 0.842 mins
+  - progress: (33 of 359)
+  - token usage: (input: 95,480, output: 1,403)
+testScenarios: 0.848 mins
+  - progress: (34 of 359)
+  - token usage: (input: 95,472, output: 1,710)
+testScenarios: 0.852 mins
+  - progress: (35 of 359)
+  - token usage: (input: 95,536, output: 1,709)
+testScenarios: 0.862 mins
+  - progress: (36 of 359)
+  - token usage: (input: 95,480, output: 1,253)
+testScenarios: 0.871 mins
+  - progress: (37 of 359)
+  - token usage: (input: 95,450, output: 1,190)
+testScenarios: 0.872 mins
+  - progress: (38 of 359)
+  - token usage: (input: 95,478, output: 2,623)
+testScenarios: 0.888 mins
+  - progress: (39 of 359)
+  - token usage: (input: 95,512, output: 2,515)
+testScenarios: 0.888 mins
+  - progress: (40 of 359)
+  - token usage: (input: 95,511, output: 1,975)
+testScenarios: 0.9 mins
+  - progress: (41 of 359)
+  - token usage: (input: 95,476, output: 2,094)
+testScenarios: 0.94 mins
+  - progress: (42 of 359)
+  - token usage: (input: 95,486, output: 1,251)
+testScenarios: 0.949 mins
+  - progress: (43 of 359)
+  - token usage: (input: 95,492, output: 1,517)
+testScenarios: 0.952 mins
+  - progress: (44 of 359)
+  - token usage: (input: 359,469, output: 1,808)
+testScenarios: 0.962 mins
+  - progress: (45 of 359)
+  - token usage: (input: 95,496, output: 1,112)
+testScenarios: 0.966 mins
+  - progress: (46 of 359)
+  - token usage: (input: 95,478, output: 1,990)
+testScenarios: 0.976 mins
+  - progress: (47 of 359)
+  - token usage: (input: 95,494, output: 1,772)
+testScenarios: 0.997 mins
+  - progress: (48 of 359)
+  - token usage: (input: 95,434, output: 908)
+testScenarios: 1.009 mins
+  - progress: (49 of 359)
+  - token usage: (input: 95,466, output: 1,830)
+testScenarios: 1.036 mins
+  - progress: (50 of 359)
+  - token usage: (input: 95,467, output: 2,109)
+testScenarios: 1.039 mins
+  - progress: (51 of 359)
+  - token usage: (input: 95,505, output: 1,924)
+testScenarios: 1.089 mins
+  - progress: (52 of 359)
+  - token usage: (input: 95,496, output: 1,877)
+testScenarios: 1.104 mins
+  - progress: (53 of 359)
+  - token usage: (input: 95,473, output: 1,666)
+testScenarios: 1.116 mins
+  - progress: (54 of 359)
+  - token usage: (input: 95,490, output: 1,848)
+testScenarios: 1.131 mins
+  - progress: (55 of 359)
+  - token usage: (input: 95,486, output: 1,502)
+testScenarios: 1.165 mins
+  - progress: (56 of 359)
+  - token usage: (input: 95,494, output: 1,341)
+testScenarios: 1.165 mins
+  - progress: (57 of 359)
+  - token usage: (input: 95,489, output: 2,275)
+testScenarios: 1.197 mins
+  - progress: (58 of 359)
+  - token usage: (input: 95,485, output: 1,870)
+testScenarios: 1.268 mins
+  - progress: (59 of 359)
+  - token usage: (input: 95,487, output: 1,814)
+testScenarios: 1.29 mins
+  - progress: (60 of 359)
+  - token usage: (input: 95,485, output: 2,539)
+testScenarios: 1.295 mins
+  - progress: (61 of 359)
+  - token usage: (input: 95,477, output: 2,502)
+testScenarios: 1.382 mins
+  - progress: (62 of 359)
+  - token usage: (input: 95,492, output: 1,435)
+testScenarios: 1.411 mins
+  - progress: (63 of 359)
+  - token usage: (input: 95,498, output: 2,158)
+testScenarios: 1.413 mins
+  - progress: (64 of 359)
+  - token usage: (input: 95,482, output: 2,446)
+testScenarios: 1.703 mins
+  - progress: (65 of 359)
+  - token usage: (input: 95,507, output: 2,445)
+testScenarios: 1.867 mins
+  - progress: (66 of 359)
+  - token usage: (input: 95,496, output: 3,011)
+testScenarios: 1.971 mins
+  - progress: (67 of 359)
+  - token usage: (input: 95,484, output: 2,098)
+testScenarios: 2.018 mins
+  - progress: (68 of 359)
+  - token usage: (input: 95,493, output: 3,439)
+testScenarios: 2.362 mins
+  - progress: (69 of 359)
+  - token usage: (input: 545,428, output: 6,431)
+testScenarios: 3.556 mins
+  - progress: (70 of 359)
+  - token usage: (input: 100,692, output: 938)
+testScenarios: 3.871 mins
+  - progress: (71 of 359)
+  - token usage: (input: 100,717, output: 1,678)
+testScenarios: 4.11 mins
+  - progress: (72 of 359)
+  - token usage: (input: 100,727, output: 1,431)
+testScenarios: 4.179 mins
+  - progress: (73 of 359)
+  - token usage: (input: 100,746, output: 2,328)
+testScenarios: 7.026 mins
+  - progress: (74 of 359)
+  - token usage: (input: 101,054, output: 2,332)
+testWrite: 8.051 mins
+  - progress: (1 of 571)
+  - token usage: (input: 17,019, output: 1,161)
+testWrite: 8.094 mins
+  - progress: (2 of 571)
+  - token usage: (input: 18,720, output: 1,208)
+testWrite: 8.18 mins
+  - progress: (3 of 571)
+  - token usage: (input: 20,252, output: 1,508)
+testWrite: 8.229 mins
+  - progress: (4 of 571)
+  - token usage: (input: 16,592, output: 1,390)
+testWrite: 8.229 mins
+  - progress: (5 of 571)
+  - token usage: (input: 19,736, output: 1,093)
+testWrite: 8.229 mins
+  - progress: (6 of 571)
+  - token usage: (input: 18,051, output: 1,217)
+testWrite: 8.229 mins
+  - progress: (7 of 571)
+  - token usage: (input: 16,693, output: 1,267)
+testWrite: 8.229 mins
+  - progress: (8 of 571)
+  - token usage: (input: 17,176, output: 1,599)
+testWrite: 8.272 mins
+  - progress: (9 of 571)
+  - token usage: (input: 16,695, output: 1,245)
+testWrite: 8.312 mins
+  - progress: (10 of 571)
+  - token usage: (input: 17,152, output: 1,672)
+testWrite: 8.312 mins
+  - progress: (11 of 571)
+  - token usage: (input: 18,840, output: 1,287)
+testWrite: 8.374 mins
+  - progress: (12 of 571)
+  - token usage: (input: 19,726, output: 1,586)
+testWrite: 8.374 mins
+  - progress: (13 of 571)
+  - token usage: (input: 21,193, output: 1,760)
+testWrite: 8.402 mins
+  - progress: (14 of 571)
+  - token usage: (input: 16,737, output: 1,613)
+testWrite: 8.402 mins
+  - progress: (15 of 571)
+  - token usage: (input: 44,257, output: 1,677)
+testWrite: 8.543 mins
+  - progress: (16 of 571)
+  - token usage: (input: 19,585, output: 2,262)
+testWrite: 8.543 mins
+  - progress: (17 of 571)
+  - token usage: (input: 19,849, output: 2,069)
+testWrite: 8.587 mins
+  - progress: (18 of 571)
+  - token usage: (input: 20,417, output: 1,995)
+testWrite: 8.587 mins
+  - progress: (19 of 571)
+  - token usage: (input: 19,183, output: 1,549)
+testWrite: 8.624 mins
+  - progress: (20 of 571)
+  - token usage: (input: 16,725, output: 2,317)
+testWrite: 8.705 mins
+  - progress: (21 of 571)
+  - token usage: (input: 19,710, output: 2,195)
+testWrite: 8.705 mins
+  - progress: (22 of 571)
+  - token usage: (input: 19,828, output: 2,256)
+testWrite: 8.705 mins
+  - progress: (23 of 571)
+  - token usage: (input: 20,465, output: 2,138)
+testWrite: 8.705 mins
+  - progress: (24 of 571)
+  - token usage: (input: 25,529, output: 2,392)
+testWrite: 8.705 mins
+  - progress: (25 of 571)
+  - token usage: (input: 42,242, output: 2,137)
+testWrite: 8.751 mins
+  - progress: (26 of 571)
+  - token usage: (input: 19,704, output: 1,752)
+testWrite: 8.751 mins
+  - progress: (27 of 571)
+  - token usage: (input: 20,275, output: 1,717)
+testWrite: 8.751 mins
+  - progress: (28 of 571)
+  - token usage: (input: 20,637, output: 1,701)
+testWrite: 8.751 mins
+  - progress: (29 of 571)
+  - token usage: (input: 22,083, output: 2,425)
+testWrite: 8.788 mins
+  - progress: (30 of 571)
+  - token usage: (input: 19,430, output: 2,617)
+testWrite: 8.788 mins
+  - progress: (31 of 571)
+  - token usage: (input: 20,255, output: 2,178)
+testWrite: 8.788 mins
+  - progress: (32 of 571)
+  - token usage: (input: 18,401, output: 1,609)
+testWrite: 8.788 mins
+  - progress: (33 of 571)
+  - token usage: (input: 24,219, output: 2,382)
+testWrite: 8.817 mins
+  - progress: (34 of 571)
+  - token usage: (input: 48,749, output: 2,423)
+testWrite: 8.837 mins
+  - progress: (35 of 571)
+  - token usage: (input: 21,765, output: 2,539)
+testWrite: 8.837 mins
+  - progress: (36 of 571)
+  - token usage: (input: 50,434, output: 2,901)
+testWrite: 8.837 mins
+  - progress: (37 of 571)
+  - token usage: (input: 45,102, output: 2,462)
+testWrite: 8.855 mins
+  - progress: (38 of 571)
+  - token usage: (input: 20,681, output: 2,456)
+testWrite: 8.855 mins
+  - progress: (39 of 571)
+  - token usage: (input: 24,219, output: 2,598)
+testWrite: 8.855 mins
+  - progress: (40 of 571)
+  - token usage: (input: 45,754, output: 2,370)
+testWrite: 8.855 mins
+  - progress: (41 of 571)
+  - token usage: (input: 47,943, output: 2,530)
+testWrite: 8.855 mins
+  - progress: (42 of 571)
+  - token usage: (input: 47,986, output: 2,626)
+testWrite: 8.855 mins
+  - progress: (43 of 571)
+  - token usage: (input: 47,926, output: 2,204)
+testWrite: 8.869 mins
+  - progress: (44 of 571)
+  - token usage: (input: 49,308, output: 2,696)
+testWrite: 8.869 mins
+  - progress: (45 of 571)
+  - token usage: (input: 48,970, output: 2,680)
+testWrite: 8.869 mins
+  - progress: (46 of 571)
+  - token usage: (input: 53,494, output: 2,865)
+testWrite: 8.869 mins
+  - progress: (47 of 571)
+  - token usage: (input: 45,911, output: 1,886)
+testWrite: 8.883 mins
+  - progress: (48 of 571)
+  - token usage: (input: 48,950, output: 2,233)
+testWrite: 8.883 mins
+  - progress: (49 of 571)
+  - token usage: (input: 47,294, output: 2,754)
+testWrite: 8.883 mins
+  - progress: (50 of 571)
+  - token usage: (input: 48,992, output: 2,435)
+testWrite: 8.894 mins
+  - progress: (51 of 571)
+  - token usage: (input: 50,044, output: 2,589)
+testWrite: 8.894 mins
+  - progress: (52 of 571)
+  - token usage: (input: 47,771, output: 2,227)
+testWrite: 8.894 mins
+  - progress: (53 of 571)
+  - token usage: (input: 48,798, output: 2,125)
+testWrite: 8.902 mins
+  - progress: (54 of 571)
+  - token usage: (input: 20,054, output: 2,505)
+testWrite: 8.902 mins
+  - progress: (55 of 571)
+  - token usage: (input: 49,556, output: 2,781)
+testWrite: 8.911 mins
+  - progress: (56 of 571)
+  - token usage: (input: 48,973, output: 2,303)
+testWrite: 8.911 mins
+  - progress: (57 of 571)
+  - token usage: (input: 48,176, output: 2,477)
+testWrite: 8.911 mins
+  - progress: (58 of 571)
+  - token usage: (input: 49,847, output: 2,669)
+testWrite: 8.92 mins
+  - progress: (59 of 571)
+  - token usage: (input: 48,951, output: 2,916)
+testWrite: 8.976 mins
+  - progress: (60 of 571)
+  - token usage: (input: 25,531, output: 3,096)
+testWrite: 9.003 mins
+  - progress: (61 of 571)
+  - token usage: (input: 49,875, output: 2,867)
+testWrite: 9.051 mins
+  - progress: (62 of 571)
+  - token usage: (input: 45,108, output: 2,458)
+testWrite: 9.051 mins
+  - progress: (63 of 571)
+  - token usage: (input: 49,708, output: 2,557)
+testWrite: 9.051 mins
+  - progress: (64 of 571)
+  - token usage: (input: 50,056, output: 2,874)
+testWrite: 9.051 mins
+  - progress: (65 of 571)
+  - token usage: (input: 48,038, output: 2,889)
+testWrite: 9.071 mins
+  - progress: (66 of 571)
+  - token usage: (input: 52,410, output: 3,063)
+testWrite: 9.071 mins
+  - progress: (67 of 571)
+  - token usage: (input: 48,118, output: 2,609)
+testWrite: 9.071 mins
+  - progress: (68 of 571)
+  - token usage: (input: 47,960, output: 2,620)
+testWrite: 9.071 mins
+  - progress: (69 of 571)
+  - token usage: (input: 49,806, output: 2,525)
+testWrite: 9.071 mins
+  - progress: (70 of 571)
+  - token usage: (input: 45,182, output: 2,247)
+testWrite: 9.09 mins
+  - progress: (71 of 571)
+  - token usage: (input: 49,699, output: 2,430)
+testWrite: 9.09 mins
+  - progress: (72 of 571)
+  - token usage: (input: 42,851, output: 1,940)
+testWrite: 9.09 mins
+  - progress: (73 of 571)
+  - token usage: (input: 49,797, output: 2,823)
+testWrite: 9.09 mins
+  - progress: (74 of 571)
+  - token usage: (input: 51,864, output: 3,197)
+testWrite: 9.09 mins
+  - progress: (75 of 571)
+  - token usage: (input: 50,401, output: 3,011)
+testWrite: 9.11 mins
+  - progress: (76 of 571)
+  - token usage: (input: 47,804, output: 2,261)
+testWrite: 9.126 mins
+  - progress: (77 of 571)
+  - token usage: (input: 51,802, output: 3,098)
+testWrite: 9.126 mins
+  - progress: (78 of 571)
+  - token usage: (input: 47,995, output: 2,655)
+testWrite: 9.126 mins
+  - progress: (79 of 571)
+  - token usage: (input: 49,995, output: 2,855)
+testWrite: 9.126 mins
+  - progress: (80 of 571)
+  - token usage: (input: 49,863, output: 2,439)
+testWrite: 9.143 mins
+  - progress: (81 of 571)
+  - token usage: (input: 50,798, output: 2,778)
+testWrite: 9.143 mins
+  - progress: (82 of 571)
+  - token usage: (input: 50,413, output: 3,027)
+testWrite: 9.143 mins
+  - progress: (83 of 571)
+  - token usage: (input: 49,097, output: 2,734)
+testWrite: 9.143 mins
+  - progress: (84 of 571)
+  - token usage: (input: 49,376, output: 2,603)
+testWrite: 9.143 mins
+  - progress: (85 of 571)
+  - token usage: (input: 20,007, output: 3,004)
+testWrite: 9.158 mins
+  - progress: (86 of 571)
+  - token usage: (input: 25,555, output: 2,616)
+testWrite: 9.158 mins
+  - progress: (87 of 571)
+  - token usage: (input: 50,037, output: 2,879)
+testWrite: 9.158 mins
+  - progress: (88 of 571)
+  - token usage: (input: 48,510, output: 2,926)
+testWrite: 9.158 mins
+  - progress: (89 of 571)
+  - token usage: (input: 48,625, output: 2,895)
+testWrite: 9.158 mins
+  - progress: (90 of 571)
+  - token usage: (input: 49,312, output: 2,473)
+testWrite: 9.17 mins
+  - progress: (91 of 571)
+  - token usage: (input: 49,647, output: 2,355)
+testWrite: 9.17 mins
+  - progress: (92 of 571)
+  - token usage: (input: 49,940, output: 2,766)
+testWrite: 9.17 mins
+  - progress: (93 of 571)
+  - token usage: (input: 51,410, output: 3,126)
+testWrite: 9.17 mins
+  - progress: (94 of 571)
+  - token usage: (input: 51,836, output: 2,821)
+testWrite: 9.232 mins
+  - progress: (95 of 571)
+  - token usage: (input: 50,949, output: 3,082)
+testWrite: 9.232 mins
+  - progress: (96 of 571)
+  - token usage: (input: 51,385, output: 3,451)
+testWrite: 9.232 mins
+  - progress: (97 of 571)
+  - token usage: (input: 82,635, output: 3,954)
+testWrite: 9.276 mins
+  - progress: (98 of 571)
+  - token usage: (input: 51,789, output: 3,338)
+testWrite: 9.276 mins
+  - progress: (99 of 571)
+  - token usage: (input: 51,298, output: 3,320)
+testWrite: 9.276 mins
+  - progress: (100 of 571)
+  - token usage: (input: 67,469, output: 2,821)
+testWrite: 9.313 mins
+  - progress: (101 of 571)
+  - token usage: (input: 51,327, output: 2,811)
+testWrite: 9.313 mins
+  - progress: (102 of 571)
+  - token usage: (input: 49,793, output: 3,427)
+testWrite: 9.313 mins
+  - progress: (103 of 571)
+  - token usage: (input: 55,069, output: 3,310)
+testWrite: 9.313 mins
+  - progress: (104 of 571)
+  - token usage: (input: 51,607, output: 3,469)
+testWrite: 9.346 mins
+  - progress: (105 of 571)
+  - token usage: (input: 49,924, output: 2,691)
+testWrite: 9.346 mins
+  - progress: (106 of 571)
+  - token usage: (input: 51,510, output: 3,781)
+testWrite: 9.346 mins
+  - progress: (107 of 571)
+  - token usage: (input: 50,826, output: 3,607)
+testWrite: 9.346 mins
+  - progress: (108 of 571)
+  - token usage: (input: 48,007, output: 2,323)
+testWrite: 9.346 mins
+  - progress: (109 of 571)
+  - token usage: (input: 51,015, output: 3,247)
+testWrite: 9.346 mins
+  - progress: (110 of 571)
+  - token usage: (input: 49,201, output: 3,708)
+testWrite: 9.346 mins
+  - progress: (111 of 571)
+  - token usage: (input: 20,328, output: 2,679)
+testWrite: 9.346 mins
+  - progress: (112 of 571)
+  - token usage: (input: 50,185, output: 3,603)
+testWrite: 9.373 mins
+  - progress: (113 of 571)
+  - token usage: (input: 50,593, output: 3,637)
+testWrite: 9.373 mins
+  - progress: (114 of 571)
+  - token usage: (input: 69,952, output: 3,297)
+testWrite: 9.373 mins
+  - progress: (115 of 571)
+  - token usage: (input: 48,875, output: 3,636)
+testWrite: 9.391 mins
+  - progress: (116 of 571)
+  - token usage: (input: 48,072, output: 3,025)
+testWrite: 9.391 mins
+  - progress: (117 of 571)
+  - token usage: (input: 50,949, output: 3,672)
+testWrite: 9.391 mins
+  - progress: (118 of 571)
+  - token usage: (input: 47,830, output: 2,491)
+testWrite: 9.391 mins
+  - progress: (119 of 571)
+  - token usage: (input: 49,461, output: 3,426)
+testWrite: 9.391 mins
+  - progress: (120 of 571)
+  - token usage: (input: 52,418, output: 3,401)
+testWrite: 9.391 mins
+  - progress: (121 of 571)
+  - token usage: (input: 55,648, output: 2,901)
+testWrite: 9.391 mins
+  - progress: (122 of 571)
+  - token usage: (input: 23,342, output: 2,787)
+testWrite: 9.411 mins
+  - progress: (123 of 571)
+  - token usage: (input: 53,037, output: 3,824)
+testWrite: 9.411 mins
+  - progress: (124 of 571)
+  - token usage: (input: 54,455, output: 4,195)
+testWrite: 9.411 mins
+  - progress: (125 of 571)
+  - token usage: (input: 53,249, output: 4,825)
+testWrite: 9.411 mins
+  - progress: (126 of 571)
+  - token usage: (input: 74,472, output: 2,637)
+testWrite: 9.411 mins
+  - progress: (127 of 571)
+  - token usage: (input: 49,077, output: 3,519)
+testWrite: 9.429 mins
+  - progress: (128 of 571)
+  - token usage: (input: 50,619, output: 3,693)
+testWrite: 9.429 mins
+  - progress: (129 of 571)
+  - token usage: (input: 50,255, output: 3,576)
+testWrite: 9.429 mins
+  - progress: (130 of 571)
+  - token usage: (input: 49,298, output: 3,610)
+testWrite: 9.429 mins
+  - progress: (131 of 571)
+  - token usage: (input: 23,011, output: 1,882)
+testWrite: 9.429 mins
+  - progress: (132 of 571)
+  - token usage: (input: 51,250, output: 3,239)
+testWrite: 9.47 mins
+  - progress: (133 of 571)
+  - token usage: (input: 52,739, output: 3,965)
+testWrite: 9.515 mins
+  - progress: (134 of 571)
+  - token usage: (input: 50,478, output: 2,953)
+testWrite: 9.515 mins
+  - progress: (135 of 571)
+  - token usage: (input: 50,831, output: 3,573)
+testWrite: 9.515 mins
+  - progress: (136 of 571)
+  - token usage: (input: 51,758, output: 3,109)
+testWrite: 9.515 mins
+  - progress: (137 of 571)
+  - token usage: (input: 55,285, output: 4,327)
+testWrite: 9.515 mins
+  - progress: (138 of 571)
+  - token usage: (input: 50,132, output: 3,481)
+testWrite: 9.515 mins
+  - progress: (139 of 571)
+  - token usage: (input: 52,460, output: 3,361)
+testWrite: 9.515 mins
+  - progress: (140 of 571)
+  - token usage: (input: 55,998, output: 3,371)
+testWrite: 9.515 mins
+  - progress: (141 of 571)
+  - token usage: (input: 49,416, output: 2,897)
+testWrite: 9.556 mins
+  - progress: (142 of 571)
+  - token usage: (input: 51,716, output: 3,621)
+testWrite: 9.556 mins
+  - progress: (143 of 571)
+  - token usage: (input: 52,437, output: 3,169)
+testWrite: 9.556 mins
+  - progress: (144 of 571)
+  - token usage: (input: 57,312, output: 3,392)
+testWrite: 9.556 mins
+  - progress: (145 of 571)
+  - token usage: (input: 52,951, output: 4,450)
+testWrite: 9.556 mins
+  - progress: (146 of 571)
+  - token usage: (input: 80,329, output: 3,805)
+testWrite: 9.589 mins
+  - progress: (147 of 571)
+  - token usage: (input: 50,536, output: 3,943)
+testWrite: 9.614 mins
+  - progress: (148 of 571)
+  - token usage: (input: 49,017, output: 3,095)
+testWrite: 9.614 mins
+  - progress: (149 of 571)
+  - token usage: (input: 50,968, output: 2,174)
+testWrite: 9.614 mins
+  - progress: (150 of 571)
+  - token usage: (input: 53,068, output: 3,964)
+testWrite: 9.614 mins
+  - progress: (151 of 571)
+  - token usage: (input: 53,213, output: 3,936)
+testWrite: 9.614 mins
+  - progress: (152 of 571)
+  - token usage: (input: 50,686, output: 3,266)
+testWrite: 9.614 mins
+  - progress: (153 of 571)
+  - token usage: (input: 51,640, output: 3,822)
+testWrite: 9.614 mins
+  - progress: (154 of 571)
+  - token usage: (input: 50,004, output: 3,934)
+testWrite: 9.63 mins
+  - progress: (155 of 571)
+  - token usage: (input: 53,129, output: 3,827)
+testWrite: 9.63 mins
+  - progress: (156 of 571)
+  - token usage: (input: 51,907, output: 3,599)
+testWrite: 9.63 mins
+  - progress: (157 of 571)
+  - token usage: (input: 53,139, output: 4,188)
+testWrite: 9.63 mins
+  - progress: (158 of 571)
+  - token usage: (input: 52,232, output: 3,711)
+testWrite: 9.63 mins
+  - progress: (159 of 571)
+  - token usage: (input: 78,575, output: 4,384)
+testWrite: 9.63 mins
+  - progress: (160 of 571)
+  - token usage: (input: 56,285, output: 4,251)
+testWrite: 9.63 mins
+  - progress: (161 of 571)
+  - token usage: (input: 51,742, output: 2,909)
+testWrite: 9.64 mins
+  - progress: (162 of 571)
+  - token usage: (input: 52,684, output: 4,137)
+testWrite: 9.64 mins
+  - progress: (163 of 571)
+  - token usage: (input: 52,802, output: 4,525)
+testWrite: 9.64 mins
+  - progress: (164 of 571)
+  - token usage: (input: 52,222, output: 4,071)
+testWrite: 9.64 mins
+  - progress: (165 of 571)
+  - token usage: (input: 55,688, output: 4,643)
+testWrite: 9.64 mins
+  - progress: (166 of 571)
+  - token usage: (input: 51,935, output: 3,849)
+testWrite: 9.64 mins
+  - progress: (167 of 571)
+  - token usage: (input: 50,662, output: 3,480)
+testWrite: 9.64 mins
+  - progress: (168 of 571)
+  - token usage: (input: 52,989, output: 4,211)
+testWrite: 9.64 mins
+  - progress: (169 of 571)
+  - token usage: (input: 60,821, output: 5,103)
+testWrite: 9.64 mins
+  - progress: (170 of 571)
+  - token usage: (input: 56,058, output: 4,149)
+testWrite: 9.64 mins
+  - progress: (171 of 571)
+  - token usage: (input: 53,671, output: 4,502)
+testWrite: 9.64 mins
+  - progress: (172 of 571)
+  - token usage: (input: 57,022, output: 3,869)
+testWrite: 9.64 mins
+  - progress: (173 of 571)
+  - token usage: (input: 52,750, output: 4,284)
+testWrite: 9.64 mins
+  - progress: (174 of 571)
+  - token usage: (input: 54,111, output: 4,389)
+testWrite: 9.646 mins
+  - progress: (175 of 571)
+  - token usage: (input: 48,424, output: 3,031)
+testWrite: 9.646 mins
+  - progress: (176 of 571)
+  - token usage: (input: 52,179, output: 4,517)
+testWrite: 9.646 mins
+  - progress: (177 of 571)
+  - token usage: (input: 50,509, output: 4,818)
+testWrite: 9.646 mins
+  - progress: (178 of 571)
+  - token usage: (input: 50,968, output: 3,941)
+testWrite: 9.646 mins
+  - progress: (179 of 571)
+  - token usage: (input: 55,138, output: 4,247)
+testWrite: 9.646 mins
+  - progress: (180 of 571)
+  - token usage: (input: 79,651, output: 3,805)
+testWrite: 9.646 mins
+  - progress: (181 of 571)
+  - token usage: (input: 49,735, output: 3,683)
+testWrite: 9.651 mins
+  - progress: (182 of 571)
+  - token usage: (input: 48,796, output: 2,791)
+testWrite: 9.651 mins
+  - progress: (183 of 571)
+  - token usage: (input: 52,415, output: 4,144)
+testWrite: 9.651 mins
+  - progress: (184 of 571)
+  - token usage: (input: 51,961, output: 3,861)
+testWrite: 9.651 mins
+  - progress: (185 of 571)
+  - token usage: (input: 52,727, output: 3,963)
+testWrite: 9.651 mins
+  - progress: (186 of 571)
+  - token usage: (input: 58,981, output: 4,653)
+testWrite: 9.651 mins
+  - progress: (187 of 571)
+  - token usage: (input: 55,034, output: 3,960)
+testWrite: 9.656 mins
+  - progress: (188 of 571)
+  - token usage: (input: 53,642, output: 4,271)
+testWrite: 9.659 mins
+  - progress: (189 of 571)
+  - token usage: (input: 55,972, output: 4,061)
+testWrite: 9.659 mins
+  - progress: (190 of 571)
+  - token usage: (input: 50,622, output: 3,333)
+testWrite: 9.661 mins
+  - progress: (191 of 571)
+  - token usage: (input: 52,510, output: 3,056)
+testWrite: 9.663 mins
+  - progress: (192 of 571)
+  - token usage: (input: 50,243, output: 3,011)
+testWrite: 9.663 mins
+  - progress: (193 of 571)
+  - token usage: (input: 51,659, output: 3,428)
+testWrite: 9.663 mins
+  - progress: (194 of 571)
+  - token usage: (input: 52,244, output: 3,593)
+testWrite: 9.665 mins
+  - progress: (195 of 571)
+  - token usage: (input: 51,489, output: 3,784)
+testWrite: 9.673 mins
+  - progress: (196 of 571)
+  - token usage: (input: 90,319, output: 4,273)
+testWrite: 9.675 mins
+  - progress: (197 of 571)
+  - token usage: (input: 56,569, output: 3,539)
+testWrite: 9.729 mins
+  - progress: (198 of 571)
+  - token usage: (input: 49,783, output: 3,805)
+testWrite: 9.777 mins
+  - progress: (199 of 571)
+  - token usage: (input: 53,618, output: 5,014)
+testWrite: 9.777 mins
+  - progress: (200 of 571)
+  - token usage: (input: 61,834, output: 4,573)
+testWrite: 9.777 mins
+  - progress: (201 of 571)
+  - token usage: (input: 78,626, output: 3,937)
+testWrite: 9.79 mins
+  - progress: (202 of 571)
+  - token usage: (input: 50,514, output: 3,998)
+testWrite: 9.79 mins
+  - progress: (203 of 571)
+  - token usage: (input: 50,740, output: 4,495)
+testWrite: 9.79 mins
+  - progress: (204 of 571)
+  - token usage: (input: 52,447, output: 3,967)
+testWrite: 9.79 mins
+  - progress: (205 of 571)
+  - token usage: (input: 69,082, output: 3,849)
+testWrite: 9.79 mins
+  - progress: (206 of 571)
+  - token usage: (input: 21,247, output: 2,583)
+testWrite: 9.79 mins
+  - progress: (207 of 571)
+  - token usage: (input: 60,417, output: 3,887)
+testWrite: 9.79 mins
+  - progress: (208 of 571)
+  - token usage: (input: 48,490, output: 3,640)
+testWrite: 9.798 mins
+  - progress: (209 of 571)
+  - token usage: (input: 50,195, output: 3,297)
+testWrite: 9.798 mins
+  - progress: (210 of 571)
+  - token usage: (input: 57,576, output: 4,683)
+testWrite: 9.804 mins
+  - progress: (211 of 571)
+  - token usage: (input: 57,621, output: 4,137)
+testWrite: 9.804 mins
+  - progress: (212 of 571)
+  - token usage: (input: 53,843, output: 3,888)
+testWrite: 9.81 mins
+  - progress: (213 of 571)
+  - token usage: (input: 50,467, output: 3,915)
+testWrite: 9.81 mins
+  - progress: (214 of 571)
+  - token usage: (input: 79,954, output: 3,771)
+testWrite: 9.81 mins
+  - progress: (215 of 571)
+  - token usage: (input: 51,635, output: 3,328)
+testWrite: 9.81 mins
+  - progress: (216 of 571)
+  - token usage: (input: 58,929, output: 3,787)
+testWrite: 9.81 mins
+  - progress: (217 of 571)
+  - token usage: (input: 53,148, output: 4,896)
+testWrite: 9.813 mins
+  - progress: (218 of 571)
+  - token usage: (input: 50,423, output: 4,179)
+testWrite: 9.816 mins
+  - progress: (219 of 571)
+  - token usage: (input: 54,661, output: 4,149)
+testWrite: 9.819 mins
+  - progress: (220 of 571)
+  - token usage: (input: 51,737, output: 4,115)
+testWrite: 9.826 mins
+  - progress: (221 of 571)
+  - token usage: (input: 78,948, output: 4,069)
+testWrite: 9.831 mins
+  - progress: (222 of 571)
+  - token usage: (input: 51,130, output: 5,114)
+testWrite: 9.835 mins
+  - progress: (223 of 571)
+  - token usage: (input: 53,371, output: 4,279)
+testWrite: 9.835 mins
+  - progress: (224 of 571)
+  - token usage: (input: 61,368, output: 4,886)
+testWrite: 9.837 mins
+  - progress: (225 of 571)
+  - token usage: (input: 56,941, output: 4,334)
+testWrite: 9.851 mins
+  - progress: (226 of 571)
+  - token usage: (input: 52,686, output: 4,582)
+testWrite: 9.864 mins
+  - progress: (227 of 571)
+  - token usage: (input: 56,161, output: 4,206)
+testWrite: 9.873 mins
+  - progress: (228 of 571)
+  - token usage: (input: 68,299, output: 2,644)
+testWrite: 9.875 mins
+  - progress: (229 of 571)
+  - token usage: (input: 52,472, output: 4,725)
+testWrite: 9.882 mins
+  - progress: (230 of 571)
+  - token usage: (input: 51,134, output: 3,517)
+testWrite: 9.973 mins
+  - progress: (231 of 571)
+  - token usage: (input: 50,805, output: 4,106)
+testWrite: 9.979 mins
+  - progress: (232 of 571)
+  - token usage: (input: 55,362, output: 4,668)
+testWrite: 9.979 mins
+  - progress: (233 of 571)
+  - token usage: (input: 50,143, output: 3,127)
+testWrite: 9.979 mins
+  - progress: (234 of 571)
+  - token usage: (input: 24,305, output: 5,660)
+testWrite: 9.979 mins
+  - progress: (235 of 571)
+  - token usage: (input: 57,262, output: 4,217)
+testWrite: 9.979 mins
+  - progress: (236 of 571)
+  - token usage: (input: 51,166, output: 4,112)
+testWrite: 9.979 mins
+  - progress: (237 of 571)
+  - token usage: (input: 52,839, output: 3,813)
+testWrite: 9.983 mins
+  - progress: (238 of 571)
+  - token usage: (input: 69,845, output: 4,895)
+testWrite: 9.983 mins
+  - progress: (239 of 571)
+  - token usage: (input: 50,873, output: 3,441)
+testWrite: 9.986 mins
+  - progress: (240 of 571)
+  - token usage: (input: 78,695, output: 5,314)
+testWrite: 9.986 mins
+  - progress: (241 of 571)
+  - token usage: (input: 78,789, output: 4,124)
+testWrite: 9.986 mins
+  - progress: (242 of 571)
+  - token usage: (input: 55,169, output: 4,783)
+testWrite: 9.986 mins
+  - progress: (243 of 571)
+  - token usage: (input: 79,927, output: 4,624)
+testWrite: 9.988 mins
+  - progress: (244 of 571)
+  - token usage: (input: 57,212, output: 5,181)
+testWrite: 9.989 mins
+  - progress: (245 of 571)
+  - token usage: (input: 60,444, output: 5,125)
+testWrite: 9.989 mins
+  - progress: (246 of 571)
+  - token usage: (input: 79,718, output: 4,604)
+testWrite: 9.989 mins
+  - progress: (247 of 571)
+  - token usage: (input: 52,468, output: 4,121)
+testWrite: 9.991 mins
+  - progress: (248 of 571)
+  - token usage: (input: 48,598, output: 2,424)
+testWrite: 9.993 mins
+  - progress: (249 of 571)
+  - token usage: (input: 52,980, output: 4,176)
+testWrite: 9.994 mins
+  - progress: (250 of 571)
+  - token usage: (input: 57,573, output: 3,868)
+testWrite: 9.995 mins
+  - progress: (251 of 571)
+  - token usage: (input: 84,486, output: 5,023)
+testWrite: 9.995 mins
+  - progress: (252 of 571)
+  - token usage: (input: 47,605, output: 4,303)
+testWrite: 10.003 mins
+  - progress: (253 of 571)
+  - token usage: (input: 79,611, output: 4,117)
+testWrite: 10.008 mins
+  - progress: (254 of 571)
+  - token usage: (input: 61,996, output: 5,986)
+testWrite: 10.014 mins
+  - progress: (255 of 571)
+  - token usage: (input: 78,329, output: 4,315)
+testWrite: 10.023 mins
+  - progress: (256 of 571)
+  - token usage: (input: 53,867, output: 4,923)
+testWrite: 10.024 mins
+  - progress: (257 of 571)
+  - token usage: (input: 78,965, output: 4,683)
+testWrite: 10.024 mins
+  - progress: (258 of 571)
+  - token usage: (input: 60,636, output: 6,067)
+testWrite: 10.029 mins
+  - progress: (259 of 571)
+  - token usage: (input: 51,661, output: 5,211)
+testWrite: 10.033 mins
+  - progress: (260 of 571)
+  - token usage: (input: 52,785, output: 4,916)
+testWrite: 10.037 mins
+  - progress: (261 of 571)
+  - token usage: (input: 54,444, output: 3,813)
+testWrite: 10.037 mins
+  - progress: (262 of 571)
+  - token usage: (input: 51,482, output: 3,957)
+testWrite: 10.037 mins
+  - progress: (263 of 571)
+  - token usage: (input: 59,290, output: 2,937)
+testWrite: 10.04 mins
+  - progress: (264 of 571)
+  - token usage: (input: 84,658, output: 5,458)
+testWrite: 10.045 mins
+  - progress: (265 of 571)
+  - token usage: (input: 57,210, output: 4,340)
+testWrite: 10.046 mins
+  - progress: (266 of 571)
+  - token usage: (input: 77,064, output: 3,979)
+testWrite: 10.047 mins
+  - progress: (267 of 571)
+  - token usage: (input: 59,689, output: 4,550)
+testWrite: 10.048 mins
+  - progress: (268 of 571)
+  - token usage: (input: 83,029, output: 5,232)
+testWrite: 10.049 mins
+  - progress: (269 of 571)
+  - token usage: (input: 52,808, output: 5,177)
+testWrite: 10.053 mins
+  - progress: (270 of 571)
+  - token usage: (input: 50,771, output: 4,655)
+testWrite: 10.062 mins
+  - progress: (271 of 571)
+  - token usage: (input: 50,533, output: 3,106)
+testWrite: 10.076 mins
+  - progress: (272 of 571)
+  - token usage: (input: 54,723, output: 4,192)
+testWrite: 10.078 mins
+  - progress: (273 of 571)
+  - token usage: (input: 83,892, output: 4,627)
+testWrite: 10.08 mins
+  - progress: (274 of 571)
+  - token usage: (input: 56,003, output: 4,146)
+testWrite: 10.087 mins
+  - progress: (275 of 571)
+  - token usage: (input: 78,993, output: 5,306)
+testWrite: 10.089 mins
+  - progress: (276 of 571)
+  - token usage: (input: 57,962, output: 3,736)
+testWrite: 10.09 mins
+  - progress: (277 of 571)
+  - token usage: (input: 52,080, output: 3,949)
+testWrite: 10.105 mins
+  - progress: (278 of 571)
+  - token usage: (input: 51,596, output: 3,944)
+testWrite: 10.127 mins
+  - progress: (279 of 571)
+  - token usage: (input: 56,922, output: 3,621)
+testWrite: 10.135 mins
+  - progress: (280 of 571)
+  - token usage: (input: 52,036, output: 4,110)
+testWrite: 10.143 mins
+  - progress: (281 of 571)
+  - token usage: (input: 58,168, output: 5,661)
+testWrite: 10.143 mins
+  - progress: (282 of 571)
+  - token usage: (input: 80,831, output: 3,961)
+testWrite: 10.144 mins
+  - progress: (283 of 571)
+  - token usage: (input: 82,096, output: 5,141)
+testWrite: 10.229 mins
+  - progress: (284 of 571)
+  - token usage: (input: 54,253, output: 5,947)
+testWrite: 10.229 mins
+  - progress: (285 of 571)
+  - token usage: (input: 61,717, output: 5,190)
+testWrite: 10.229 mins
+  - progress: (286 of 571)
+  - token usage: (input: 51,542, output: 6,024)
+testWrite: 10.229 mins
+  - progress: (287 of 571)
+  - token usage: (input: 57,486, output: 4,341)
+testWrite: 10.236 mins
+  - progress: (288 of 571)
+  - token usage: (input: 54,733, output: 5,135)
+testWrite: 10.236 mins
+  - progress: (289 of 571)
+  - token usage: (input: 50,185, output: 5,236)
+testWrite: 10.236 mins
+  - progress: (290 of 571)
+  - token usage: (input: 51,018, output: 5,489)
+testWrite: 10.236 mins
+  - progress: (291 of 571)
+  - token usage: (input: 59,151, output: 3,640)
+testWrite: 10.236 mins
+  - progress: (292 of 571)
+  - token usage: (input: 58,020, output: 4,506)
+testWrite: 10.238 mins
+  - progress: (293 of 571)
+  - token usage: (input: 50,559, output: 4,887)
+testWrite: 10.239 mins
+  - progress: (294 of 571)
+  - token usage: (input: 53,916, output: 4,593)
+testWrite: 10.24 mins
+  - progress: (295 of 571)
+  - token usage: (input: 25,631, output: 4,789)
+testWrite: 10.247 mins
+  - progress: (296 of 571)
+  - token usage: (input: 56,204, output: 6,777)
+testWrite: 10.247 mins
+  - progress: (297 of 571)
+  - token usage: (input: 80,151, output: 5,850)
+testWrite: 10.247 mins
+  - progress: (298 of 571)
+  - token usage: (input: 64,579, output: 5,581)
+testWrite: 10.257 mins
+  - progress: (299 of 571)
+  - token usage: (input: 52,924, output: 5,158)
+testWrite: 10.257 mins
+  - progress: (300 of 571)
+  - token usage: (input: 57,469, output: 5,583)
+testWrite: 10.257 mins
+  - progress: (301 of 571)
+  - token usage: (input: 56,059, output: 5,191)
+testWrite: 10.263 mins
+  - progress: (302 of 571)
+  - token usage: (input: 64,140, output: 5,977)
+testWrite: 10.325 mins
+  - progress: (303 of 571)
+  - token usage: (input: 61,798, output: 4,501)
+testWrite: 10.325 mins
+  - progress: (304 of 571)
+  - token usage: (input: 61,777, output: 3,967)
+testWrite: 10.328 mins
+  - progress: (305 of 571)
+  - token usage: (input: 58,395, output: 4,440)
+testWrite: 10.333 mins
+  - progress: (306 of 571)
+  - token usage: (input: 55,402, output: 4,501)
+testWrite: 10.335 mins
+  - progress: (307 of 571)
+  - token usage: (input: 93,076, output: 5,667)
+testWrite: 10.352 mins
+  - progress: (308 of 571)
+  - token usage: (input: 81,316, output: 4,164)
+testWrite: 10.352 mins
+  - progress: (309 of 571)
+  - token usage: (input: 84,422, output: 6,519)
+testWrite: 10.364 mins
+  - progress: (310 of 571)
+  - token usage: (input: 55,156, output: 5,824)
+testWrite: 10.37 mins
+  - progress: (311 of 571)
+  - token usage: (input: 61,074, output: 6,568)
+testWrite: 10.374 mins
+  - progress: (312 of 571)
+  - token usage: (input: 56,863, output: 5,250)
+testWrite: 10.38 mins
+  - progress: (313 of 571)
+  - token usage: (input: 59,103, output: 5,131)
+testWrite: 10.384 mins
+  - progress: (314 of 571)
+  - token usage: (input: 53,642, output: 6,021)
+testWrite: 10.385 mins
+  - progress: (315 of 571)
+  - token usage: (input: 56,153, output: 5,915)
+testWrite: 10.386 mins
+  - progress: (316 of 571)
+  - token usage: (input: 79,868, output: 3,946)
+testWrite: 10.387 mins
+  - progress: (317 of 571)
+  - token usage: (input: 58,583, output: 6,069)
+testWrite: 10.388 mins
+  - progress: (318 of 571)
+  - token usage: (input: 89,095, output: 4,993)
+testWrite: 10.406 mins
+  - progress: (319 of 571)
+  - token usage: (input: 85,511, output: 5,566)
+testWrite: 10.411 mins
+  - progress: (320 of 571)
+  - token usage: (input: 59,565, output: 5,908)
+testWrite: 10.429 mins
+  - progress: (321 of 571)
+  - token usage: (input: 85,213, output: 4,993)
+testWrite: 10.449 mins
+  - progress: (322 of 571)
+  - token usage: (input: 82,983, output: 5,176)
+testWrite: 10.453 mins
+  - progress: (323 of 571)
+  - token usage: (input: 61,222, output: 5,474)
+testWrite: 10.487 mins
+  - progress: (324 of 571)
+  - token usage: (input: 80,936, output: 4,594)
+testWrite: 10.492 mins
+  - progress: (325 of 571)
+  - token usage: (input: 61,743, output: 4,375)
+testWrite: 10.503 mins
+  - progress: (326 of 571)
+  - token usage: (input: 53,484, output: 5,187)
+testWrite: 10.509 mins
+  - progress: (327 of 571)
+  - token usage: (input: 64,341, output: 4,031)
+testWrite: 10.51 mins
+  - progress: (328 of 571)
+  - token usage: (input: 86,712, output: 4,447)
+testWrite: 10.531 mins
+  - progress: (329 of 571)
+  - token usage: (input: 58,764, output: 5,997)
+testWrite: 10.535 mins
+  - progress: (330 of 571)
+  - token usage: (input: 53,875, output: 5,207)
+testWrite: 10.551 mins
+  - progress: (331 of 571)
+  - token usage: (input: 64,373, output: 5,071)
+testWrite: 10.58 mins
+  - progress: (332 of 571)
+  - token usage: (input: 60,212, output: 5,186)
+testWrite: 10.581 mins
+  - progress: (333 of 571)
+  - token usage: (input: 65,279, output: 5,055)
+testWrite: 10.583 mins
+  - progress: (334 of 571)
+  - token usage: (input: 84,690, output: 5,229)
+testWrite: 10.591 mins
+  - progress: (335 of 571)
+  - token usage: (input: 87,737, output: 5,247)
+testWrite: 10.595 mins
+  - progress: (336 of 571)
+  - token usage: (input: 52,446, output: 4,224)
+testWrite: 10.6 mins
+  - progress: (337 of 571)
+  - token usage: (input: 59,847, output: 4,839)
+testWrite: 10.604 mins
+  - progress: (338 of 571)
+  - token usage: (input: 52,681, output: 4,811)
+testWrite: 10.604 mins
+  - progress: (339 of 571)
+  - token usage: (input: 81,693, output: 6,039)
+testWrite: 10.609 mins
+  - progress: (340 of 571)
+  - token usage: (input: 60,409, output: 6,054)
+testWrite: 10.619 mins
+  - progress: (341 of 571)
+  - token usage: (input: 82,851, output: 5,950)
+testWrite: 10.62 mins
+  - progress: (342 of 571)
+  - token usage: (input: 59,338, output: 5,912)
+testWrite: 10.621 mins
+  - progress: (343 of 571)
+  - token usage: (input: 53,885, output: 4,966)
+testWrite: 10.632 mins
+  - progress: (344 of 571)
+  - token usage: (input: 79,673, output: 5,584)
+testWrite: 10.632 mins
+  - progress: (345 of 571)
+  - token usage: (input: 84,461, output: 4,840)
+testWrite: 10.637 mins
+  - progress: (346 of 571)
+  - token usage: (input: 86,177, output: 5,778)
+testWrite: 10.648 mins
+  - progress: (347 of 571)
+  - token usage: (input: 53,201, output: 5,481)
+testWrite: 10.652 mins
+  - progress: (348 of 571)
+  - token usage: (input: 60,188, output: 5,845)
+testWrite: 10.657 mins
+  - progress: (349 of 571)
+  - token usage: (input: 83,649, output: 6,385)
+testWrite: 10.659 mins
+  - progress: (350 of 571)
+  - token usage: (input: 87,212, output: 7,042)
+testWrite: 10.659 mins
+  - progress: (351 of 571)
+  - token usage: (input: 59,525, output: 7,023)
+testWrite: 10.662 mins
+  - progress: (352 of 571)
+  - token usage: (input: 78,827, output: 5,556)
+testWrite: 10.663 mins
+  - progress: (353 of 571)
+  - token usage: (input: 60,064, output: 4,374)
+testWrite: 10.686 mins
+  - progress: (354 of 571)
+  - token usage: (input: 54,063, output: 5,439)
+testWrite: 10.698 mins
+  - progress: (355 of 571)
+  - token usage: (input: 56,717, output: 4,937)
+testWrite: 10.699 mins
+  - progress: (356 of 571)
+  - token usage: (input: 54,229, output: 6,081)
+testWrite: 10.713 mins
+  - progress: (357 of 571)
+  - token usage: (input: 81,836, output: 5,574)
+testWrite: 10.757 mins
+  - progress: (358 of 571)
+  - token usage: (input: 79,803, output: 6,429)
+testWrite: 10.757 mins
+  - progress: (359 of 571)
+  - token usage: (input: 83,470, output: 5,704)
+testWrite: 10.757 mins
+  - progress: (360 of 571)
+  - token usage: (input: 56,863, output: 6,683)
+testWrite: 10.757 mins
+  - progress: (361 of 571)
+  - token usage: (input: 56,201, output: 5,787)
+testWrite: 10.757 mins
+  - progress: (362 of 571)
+  - token usage: (input: 83,056, output: 5,631)
+testWrite: 10.758 mins
+  - progress: (363 of 571)
+  - token usage: (input: 81,694, output: 6,352)
+testWrite: 10.758 mins
+  - progress: (364 of 571)
+  - token usage: (input: 58,406, output: 4,372)
+testWrite: 10.758 mins
+  - progress: (365 of 571)
+  - token usage: (input: 82,833, output: 5,400)
+testWrite: 10.758 mins
+  - progress: (366 of 571)
+  - token usage: (input: 79,259, output: 5,593)
+testWrite: 10.758 mins
+  - progress: (367 of 571)
+  - token usage: (input: 81,036, output: 5,806)
+testWrite: 10.772 mins
+  - progress: (368 of 571)
+  - token usage: (input: 62,007, output: 5,315)
+testWrite: 10.774 mins
+  - progress: (369 of 571)
+  - token usage: (input: 65,464, output: 5,041)
+testWrite: 10.79 mins
+  - progress: (370 of 571)
+  - token usage: (input: 89,708, output: 6,817)
+testWrite: 10.79 mins
+  - progress: (371 of 571)
+  - token usage: (input: 61,453, output: 5,735)
+testWrite: 10.805 mins
+  - progress: (372 of 571)
+  - token usage: (input: 86,184, output: 5,861)
+testWrite: 10.809 mins
+  - progress: (373 of 571)
+  - token usage: (input: 53,826, output: 7,111)
+testWrite: 10.809 mins
+  - progress: (374 of 571)
+  - token usage: (input: 83,026, output: 6,199)
+testWrite: 10.818 mins
+  - progress: (375 of 571)
+  - token usage: (input: 51,406, output: 5,778)
+testWrite: 10.818 mins
+  - progress: (376 of 571)
+  - token usage: (input: 61,848, output: 4,301)
+testWrite: 10.823 mins
+  - progress: (377 of 571)
+  - token usage: (input: 82,376, output: 5,818)
+testWrite: 10.831 mins
+  - progress: (378 of 571)
+  - token usage: (input: 51,381, output: 5,463)
+testWrite: 10.854 mins
+  - progress: (379 of 571)
+  - token usage: (input: 72,191, output: 6,583)
+testWrite: 10.866 mins
+  - progress: (380 of 571)
+  - token usage: (input: 58,332, output: 5,495)
+testWrite: 10.883 mins
+  - progress: (381 of 571)
+  - token usage: (input: 98,650, output: 5,024)
+testWrite: 10.895 mins
+  - progress: (382 of 571)
+  - token usage: (input: 59,004, output: 6,293)
+testWrite: 10.904 mins
+  - progress: (383 of 571)
+  - token usage: (input: 62,064, output: 4,325)
+testWrite: 10.914 mins
+  - progress: (384 of 571)
+  - token usage: (input: 78,112, output: 5,888)
+testWrite: 10.934 mins
+  - progress: (385 of 571)
+  - token usage: (input: 94,837, output: 6,271)
+testWrite: 10.942 mins
+  - progress: (386 of 571)
+  - token usage: (input: 63,992, output: 6,533)
+testWrite: 10.959 mins
+  - progress: (387 of 571)
+  - token usage: (input: 51,317, output: 5,864)
+testWrite: 10.96 mins
+  - progress: (388 of 571)
+  - token usage: (input: 82,553, output: 7,042)
+testWrite: 10.97 mins
+  - progress: (389 of 571)
+  - token usage: (input: 59,018, output: 7,005)
+testWrite: 10.997 mins
+  - progress: (390 of 571)
+  - token usage: (input: 86,306, output: 6,750)
+testWrite: 11 mins
+  - progress: (391 of 571)
+  - token usage: (input: 100,983, output: 5,581)
+testWrite: 11 mins
+  - progress: (392 of 571)
+  - token usage: (input: 81,610, output: 6,793)
+testWrite: 11.019 mins
+  - progress: (393 of 571)
+  - token usage: (input: 87,313, output: 7,522)
+testWrite: 11.047 mins
+  - progress: (394 of 571)
+  - token usage: (input: 65,644, output: 5,405)
+testWrite: 11.057 mins
+  - progress: (395 of 571)
+  - token usage: (input: 67,251, output: 5,075)
+testWrite: 11.062 mins
+  - progress: (396 of 571)
+  - token usage: (input: 87,014, output: 7,716)
+testWrite: 11.071 mins
+  - progress: (397 of 571)
+  - token usage: (input: 88,789, output: 5,075)
+testWrite: 11.086 mins
+  - progress: (398 of 571)
+  - token usage: (input: 83,330, output: 6,511)
+testWrite: 11.096 mins
+  - progress: (399 of 571)
+  - token usage: (input: 97,672, output: 6,150)
+testWrite: 11.106 mins
+  - progress: (400 of 571)
+  - token usage: (input: 62,277, output: 5,759)
+testWrite: 11.129 mins
+  - progress: (401 of 571)
+  - token usage: (input: 90,557, output: 7,389)
+testWrite: 11.131 mins
+  - progress: (402 of 571)
+  - token usage: (input: 82,545, output: 4,808)
+testWrite: 11.147 mins
+  - progress: (403 of 571)
+  - token usage: (input: 54,176, output: 6,265)
+testWrite: 11.151 mins
+  - progress: (404 of 571)
+  - token usage: (input: 78,337, output: 7,144)
+testWrite: 11.185 mins
+  - progress: (405 of 571)
+  - token usage: (input: 93,153, output: 6,840)
+testWrite: 11.191 mins
+  - progress: (406 of 571)
+  - token usage: (input: 53,251, output: 5,663)
+testWrite: 11.195 mins
+  - progress: (407 of 571)
+  - token usage: (input: 95,164, output: 6,928)
+testWrite: 11.197 mins
+  - progress: (408 of 571)
+  - token usage: (input: 89,233, output: 7,552)
+testWrite: 11.209 mins
+  - progress: (409 of 571)
+  - token usage: (input: 68,355, output: 5,419)
+testWrite: 11.225 mins
+  - progress: (410 of 571)
+  - token usage: (input: 63,920, output: 5,957)
+testWrite: 11.251 mins
+  - progress: (411 of 571)
+  - token usage: (input: 83,317, output: 7,774)
+testWrite: 11.252 mins
+  - progress: (412 of 571)
+  - token usage: (input: 92,923, output: 7,976)
+testWrite: 11.257 mins
+  - progress: (413 of 571)
+  - token usage: (input: 64,932, output: 6,459)
+testWrite: 11.286 mins
+  - progress: (414 of 571)
+  - token usage: (input: 101,059, output: 7,027)
+testWrite: 11.325 mins
+  - progress: (415 of 571)
+  - token usage: (input: 56,541, output: 7,732)
+testWrite: 11.325 mins
+  - progress: (416 of 571)
+  - token usage: (input: 90,492, output: 8,705)
+testWrite: 11.333 mins
+  - progress: (417 of 571)
+  - token usage: (input: 87,113, output: 7,165)
+testWrite: 11.35 mins
+  - progress: (418 of 571)
+  - token usage: (input: 58,405, output: 8,046)
+testWrite: 11.358 mins
+  - progress: (419 of 571)
+  - token usage: (input: 56,216, output: 7,490)
+testWrite: 11.379 mins
+  - progress: (420 of 571)
+  - token usage: (input: 78,692, output: 5,161)
+testWrite: 11.384 mins
+  - progress: (421 of 571)
+  - token usage: (input: 90,822, output: 6,760)
+testWrite: 11.386 mins
+  - progress: (422 of 571)
+  - token usage: (input: 93,868, output: 5,875)
+testWrite: 11.387 mins
+  - progress: (423 of 571)
+  - token usage: (input: 49,042, output: 2,373)
+testWrite: 11.392 mins
+  - progress: (424 of 571)
+  - token usage: (input: 86,384, output: 7,546)
+testWrite: 11.396 mins
+  - progress: (425 of 571)
+  - token usage: (input: 66,719, output: 3,949)
+testWrite: 11.413 mins
+  - progress: (426 of 571)
+  - token usage: (input: 70,550, output: 6,609)
+testWrite: 11.424 mins
+  - progress: (427 of 571)
+  - token usage: (input: 80,649, output: 5,760)
+testWrite: 11.43 mins
+  - progress: (428 of 571)
+  - token usage: (input: 89,600, output: 9,293)
+testWrite: 11.431 mins
+  - progress: (429 of 571)
+  - token usage: (input: 86,302, output: 8,371)
+testWrite: 11.433 mins
+  - progress: (430 of 571)
+  - token usage: (input: 99,557, output: 6,070)
+testWrite: 11.441 mins
+  - progress: (431 of 571)
+  - token usage: (input: 93,382, output: 7,414)
+testWrite: 11.45 mins
+  - progress: (432 of 571)
+  - token usage: (input: 62,094, output: 5,777)
+testWrite: 11.468 mins
+  - progress: (433 of 571)
+  - token usage: (input: 97,570, output: 6,325)
+testWrite: 11.474 mins
+  - progress: (434 of 571)
+  - token usage: (input: 62,250, output: 6,793)
+testWrite: 11.476 mins
+  - progress: (435 of 571)
+  - token usage: (input: 58,821, output: 6,759)
+testWrite: 11.532 mins
+  - progress: (436 of 571)
+  - token usage: (input: 64,953, output: 4,283)
+testWrite: 11.536 mins
+  - progress: (437 of 571)
+  - token usage: (input: 55,024, output: 7,676)
+testWrite: 11.567 mins
+  - progress: (438 of 571)
+  - token usage: (input: 61,997, output: 6,780)
+testWrite: 11.567 mins
+  - progress: (439 of 571)
+  - token usage: (input: 67,853, output: 5,235)
+testWrite: 11.599 mins
+  - progress: (440 of 571)
+  - token usage: (input: 84,583, output: 8,012)
+testWrite: 11.599 mins
+  - progress: (441 of 571)
+  - token usage: (input: 88,131, output: 8,470)
+testWrite: 11.599 mins
+  - progress: (442 of 571)
+  - token usage: (input: 92,854, output: 7,901)
+testWrite: 11.611 mins
+  - progress: (443 of 571)
+  - token usage: (input: 68,079, output: 6,219)
+testWrite: 11.626 mins
+  - progress: (444 of 571)
+  - token usage: (input: 69,668, output: 5,089)
+testWrite: 11.628 mins
+  - progress: (445 of 571)
+  - token usage: (input: 97,056, output: 6,901)
+testWrite: 11.63 mins
+  - progress: (446 of 571)
+  - token usage: (input: 68,024, output: 5,294)
+testWrite: 11.632 mins
+  - progress: (447 of 571)
+  - token usage: (input: 67,151, output: 5,351)
+testWrite: 11.641 mins
+  - progress: (448 of 571)
+  - token usage: (input: 65,914, output: 5,797)
+testWrite: 11.66 mins
+  - progress: (449 of 571)
+  - token usage: (input: 66,021, output: 5,931)
+testWrite: 11.66 mins
+  - progress: (450 of 571)
+  - token usage: (input: 71,954, output: 5,881)
+testWrite: 11.684 mins
+  - progress: (451 of 571)
+  - token usage: (input: 62,297, output: 5,691)
+testWrite: 11.688 mins
+  - progress: (452 of 571)
+  - token usage: (input: 101,957, output: 7,762)
+testWrite: 11.713 mins
+  - progress: (453 of 571)
+  - token usage: (input: 82,913, output: 7,861)
+testWrite: 11.736 mins
+  - progress: (454 of 571)
+  - token usage: (input: 65,393, output: 6,031)
+testWrite: 11.741 mins
+  - progress: (455 of 571)
+  - token usage: (input: 60,088, output: 6,478)
+testWrite: 11.767 mins
+  - progress: (456 of 571)
+  - token usage: (input: 107,768, output: 8,614)
+testWrite: 11.779 mins
+  - progress: (457 of 571)
+  - token usage: (input: 69,056, output: 5,777)
+testWrite: 11.779 mins
+  - progress: (458 of 571)
+  - token usage: (input: 102,720, output: 6,354)
+testWrite: 11.805 mins
+  - progress: (459 of 571)
+  - token usage: (input: 50,582, output: 3,840)
+testWrite: 11.806 mins
+  - progress: (460 of 571)
+  - token usage: (input: 60,117, output: 9,747)
+testWrite: 11.823 mins
+  - progress: (461 of 571)
+  - token usage: (input: 101,400, output: 8,073)
+testWrite: 11.826 mins
+  - progress: (462 of 571)
+  - token usage: (input: 88,454, output: 8,464)
+testWrite: 11.864 mins
+  - progress: (463 of 571)
+  - token usage: (input: 67,834, output: 5,436)
+testWrite: 11.864 mins
+  - progress: (464 of 571)
+  - token usage: (input: 88,127, output: 6,673)
+testWrite: 11.876 mins
+  - progress: (465 of 571)
+  - token usage: (input: 103,318, output: 7,945)
+testWrite: 11.887 mins
+  - progress: (466 of 571)
+  - token usage: (input: 85,284, output: 8,849)
+testWrite: 11.925 mins
+  - progress: (467 of 571)
+  - token usage: (input: 68,316, output: 6,062)
+testWrite: 11.931 mins
+  - progress: (468 of 571)
+  - token usage: (input: 98,734, output: 7,348)
+testWrite: 11.95 mins
+  - progress: (469 of 571)
+  - token usage: (input: 95,745, output: 7,788)
+testWrite: 11.953 mins
+  - progress: (470 of 571)
+  - token usage: (input: 93,192, output: 7,008)
+testWrite: 11.957 mins
+  - progress: (471 of 571)
+  - token usage: (input: 96,759, output: 7,363)
+testWrite: 11.981 mins
+  - progress: (472 of 571)
+  - token usage: (input: 106,358, output: 7,321)
+testWrite: 11.987 mins
+  - progress: (473 of 571)
+  - token usage: (input: 101,659, output: 8,934)
+testWrite: 11.991 mins
+  - progress: (474 of 571)
+  - token usage: (input: 58,197, output: 7,151)
+testWrite: 11.997 mins
+  - progress: (475 of 571)
+  - token usage: (input: 80,970, output: 9,033)
+testWrite: 11.999 mins
+  - progress: (476 of 571)
+  - token usage: (input: 64,331, output: 5,095)
+testWrite: 12.047 mins
+  - progress: (477 of 571)
+  - token usage: (input: 68,357, output: 6,155)
+testWrite: 12.049 mins
+  - progress: (478 of 571)
+  - token usage: (input: 84,585, output: 7,596)
+testWrite: 12.052 mins
+  - progress: (479 of 571)
+  - token usage: (input: 95,527, output: 10,069)
+testWrite: 12.091 mins
+  - progress: (480 of 571)
+  - token usage: (input: 104,274, output: 7,925)
+testWrite: 12.097 mins
+  - progress: (481 of 571)
+  - token usage: (input: 88,966, output: 9,142)
+testWrite: 12.129 mins
+  - progress: (482 of 571)
+  - token usage: (input: 82,904, output: 8,393)
+testWrite: 12.144 mins
+  - progress: (483 of 571)
+  - token usage: (input: 106,718, output: 5,881)
+testWrite: 12.145 mins
+  - progress: (484 of 571)
+  - token usage: (input: 62,730, output: 9,256)
+testWrite: 12.186 mins
+  - progress: (485 of 571)
+  - token usage: (input: 65,809, output: 8,320)
+testWrite: 12.196 mins
+  - progress: (486 of 571)
+  - token usage: (input: 98,774, output: 6,984)
+testWrite: 12.207 mins
+  - progress: (487 of 571)
+  - token usage: (input: 62,285, output: 7,227)
+testWrite: 12.209 mins
+  - progress: (488 of 571)
+  - token usage: (input: 83,911, output: 7,570)
+testWrite: 12.229 mins
+  - progress: (489 of 571)
+  - token usage: (input: 52,165, output: 4,272)
+testWrite: 12.304 mins
+  - progress: (490 of 571)
+  - token usage: (input: 71,005, output: 7,594)
+testWrite: 12.317 mins
+  - progress: (491 of 571)
+  - token usage: (input: 69,527, output: 6,140)
+testWrite: 12.327 mins
+  - progress: (492 of 571)
+  - token usage: (input: 65,435, output: 5,838)
+testWrite: 12.335 mins
+  - progress: (493 of 571)
+  - token usage: (input: 100,580, output: 8,411)
+testWrite: 12.337 mins
+  - progress: (494 of 571)
+  - token usage: (input: 98,039, output: 8,698)
+testWrite: 12.34 mins
+  - progress: (495 of 571)
+  - token usage: (input: 68,301, output: 6,764)
+testWrite: 12.376 mins
+  - progress: (496 of 571)
+  - token usage: (input: 106,081, output: 8,017)
+testWrite: 12.411 mins
+  - progress: (497 of 571)
+  - token usage: (input: 99,874, output: 6,369)
+testWrite: 12.411 mins
+  - progress: (498 of 571)
+  - token usage: (input: 69,719, output: 6,099)
+testWrite: 12.444 mins
+  - progress: (499 of 571)
+  - token usage: (input: 67,363, output: 9,203)
+testWrite: 12.458 mins
+  - progress: (500 of 571)
+  - token usage: (input: 66,533, output: 8,443)
+testWrite: 12.467 mins
+  - progress: (501 of 571)
+  - token usage: (input: 101,921, output: 7,879)
+testWrite: 12.491 mins
+  - progress: (502 of 571)
+  - token usage: (input: 101,872, output: 7,594)
+testWrite: 12.513 mins
+  - progress: (503 of 571)
+  - token usage: (input: 102,072, output: 7,939)
+testWrite: 12.514 mins
+  - progress: (504 of 571)
+  - token usage: (input: 87,966, output: 10,242)
+testWrite: 12.538 mins
+  - progress: (505 of 571)
+  - token usage: (input: 56,819, output: 10,927)
+testWrite: 12.569 mins
+  - progress: (506 of 571)
+  - token usage: (input: 55,183, output: 5,348)
+testWrite: 12.586 mins
+  - progress: (507 of 571)
+  - token usage: (input: 86,317, output: 5,470)
+testWrite: 12.668 mins
+  - progress: (508 of 571)
+  - token usage: (input: 58,167, output: 9,565)
+testWrite: 12.679 mins
+  - progress: (509 of 571)
+  - token usage: (input: 70,905, output: 6,038)
+testWrite: 12.696 mins
+  - progress: (510 of 571)
+  - token usage: (input: 66,034, output: 6,939)
+testWrite: 12.699 mins
+  - progress: (511 of 571)
+  - token usage: (input: 89,885, output: 9,622)
+testWrite: 12.7 mins
+  - progress: (512 of 571)
+  - token usage: (input: 63,304, output: 8,217)
+testWrite: 12.711 mins
+  - progress: (513 of 571)
+  - token usage: (input: 82,540, output: 7,333)
+testWrite: 12.718 mins
+  - progress: (514 of 571)
+  - token usage: (input: 105,725, output: 9,112)
+testWrite: 12.72 mins
+  - progress: (515 of 571)
+  - token usage: (input: 99,907, output: 7,896)
+testWrite: 12.722 mins
+  - progress: (516 of 571)
+  - token usage: (input: 98,153, output: 10,165)
+testWrite: 12.747 mins
+  - progress: (517 of 571)
+  - token usage: (input: 52,407, output: 4,671)
+testWrite: 12.771 mins
+  - progress: (518 of 571)
+  - token usage: (input: 103,063, output: 7,360)
+testWrite: 12.825 mins
+  - progress: (519 of 571)
+  - token usage: (input: 101,308, output: 7,954)
+testWrite: 12.853 mins
+  - progress: (520 of 571)
+  - token usage: (input: 105,999, output: 7,957)
+testWrite: 12.865 mins
+  - progress: (521 of 571)
+  - token usage: (input: 104,799, output: 7,156)
+testWrite: 12.892 mins
+  - progress: (522 of 571)
+  - token usage: (input: 93,444, output: 10,253)
+testWrite: 12.911 mins
+  - progress: (523 of 571)
+  - token usage: (input: 89,916, output: 12,107)
+testWrite: 12.926 mins
+  - progress: (524 of 571)
+  - token usage: (input: 98,060, output: 7,930)
+testWrite: 12.991 mins
+  - progress: (525 of 571)
+  - token usage: (input: 60,436, output: 6,073)
+testWrite: 13.016 mins
+  - progress: (526 of 571)
+  - token usage: (input: 112,781, output: 8,587)
+testWrite: 13.039 mins
+  - progress: (527 of 571)
+  - token usage: (input: 100,323, output: 10,776)
+testWrite: 13.046 mins
+  - progress: (528 of 571)
+  - token usage: (input: 108,459, output: 10,898)
+testWrite: 13.056 mins
+  - progress: (529 of 571)
+  - token usage: (input: 114,511, output: 7,666)
+testWrite: 13.096 mins
+  - progress: (530 of 571)
+  - token usage: (input: 102,425, output: 8,048)
+testWrite: 13.126 mins
+  - progress: (531 of 571)
+  - token usage: (input: 91,062, output: 12,898)
+testWrite: 13.201 mins
+  - progress: (532 of 571)
+  - token usage: (input: 57,018, output: 12,610)
+testWrite: 13.218 mins
+  - progress: (533 of 571)
+  - token usage: (input: 106,225, output: 9,772)
+testWrite: 13.261 mins
+  - progress: (534 of 571)
+  - token usage: (input: 70,958, output: 9,253)
+testWrite: 13.269 mins
+  - progress: (535 of 571)
+  - token usage: (input: 73,699, output: 6,374)
+testWrite: 13.288 mins
+  - progress: (536 of 571)
+  - token usage: (input: 109,852, output: 10,564)
+testWrite: 13.296 mins
+  - progress: (537 of 571)
+  - token usage: (input: 85,018, output: 6,154)
+testWrite: 13.405 mins
+  - progress: (538 of 571)
+  - token usage: (input: 73,169, output: 6,363)
+testWrite: 13.439 mins
+  - progress: (539 of 571)
+  - token usage: (input: 71,428, output: 8,973)
+testWrite: 13.468 mins
+  - progress: (540 of 571)
+  - token usage: (input: 113,769, output: 9,289)
+testWrite: 13.524 mins
+  - progress: (541 of 571)
+  - token usage: (input: 108,290, output: 8,276)
+testWrite: 13.592 mins
+  - progress: (542 of 571)
+  - token usage: (input: 65,564, output: 12,811)
+testWrite: 13.593 mins
+  - progress: (543 of 571)
+  - token usage: (input: 114,233, output: 11,280)
+testWrite: 13.609 mins
+  - progress: (544 of 571)
+  - token usage: (input: 91,430, output: 11,479)
+testWrite: 13.67 mins
+  - progress: (545 of 571)
+  - token usage: (input: 98,870, output: 10,426)
+testWrite: 13.724 mins
+  - progress: (546 of 571)
+  - token usage: (input: 101,558, output: 8,150)
+testWrite: 13.78 mins
+  - progress: (547 of 571)
+  - token usage: (input: 71,317, output: 8,188)
+testWrite: 13.802 mins
+  - progress: (548 of 571)
+  - token usage: (input: 66,404, output: 8,831)
+testWrite: 13.874 mins
+  - progress: (549 of 571)
+  - token usage: (input: 89,140, output: 10,859)
+testWrite: 13.948 mins
+  - progress: (550 of 571)
+  - token usage: (input: 71,422, output: 9,077)
+testWrite: 13.967 mins
+  - progress: (551 of 571)
+  - token usage: (input: 114,425, output: 9,381)
+testWrite: 13.992 mins
+  - progress: (552 of 571)
+  - token usage: (input: 52,318, output: 4,577)
+testWrite: 14.028 mins
+  - progress: (553 of 571)
+  - token usage: (input: 100,175, output: 7,561)
+testWrite: 14.068 mins
+  - progress: (554 of 571)
+  - token usage: (input: 89,808, output: 8,508)
+testWrite: 14.121 mins
+  - progress: (555 of 571)
+  - token usage: (input: 100,287, output: 10,886)
+testWrite: 14.177 mins
+  - progress: (556 of 571)
+  - token usage: (input: 66,245, output: 6,024)
+testWrite: 14.222 mins
+  - progress: (557 of 571)
+  - token usage: (input: 100,180, output: 11,348)
+testWrite: 14.303 mins
+  - progress: (558 of 571)
+  - token usage: (input: 102,399, output: 9,081)
+testWrite: 14.314 mins
+  - progress: (559 of 571)
+  - token usage: (input: 112,910, output: 10,696)
+testWrite: 14.394 mins
+  - progress: (560 of 571)
+  - token usage: (input: 55,544, output: 6,509)
+testWrite: 14.454 mins
+  - progress: (561 of 571)
+  - token usage: (input: 98,319, output: 12,214)
+testWrite: 14.458 mins
+  - progress: (562 of 571)
+  - token usage: (input: 116,849, output: 10,372)
+testWrite: 14.786 mins
+  - progress: (563 of 571)
+  - token usage: (input: 80,462, output: 6,942)
+testWrite: 14.885 mins
+  - progress: (564 of 571)
+  - token usage: (input: 98,647, output: 15,380)
+testWrite: 15.081 mins
+  - progress: (565 of 571)
+  - token usage: (input: 115,965, output: 11,594)
+testWrite: 15.281 mins
+  - progress: (566 of 571)
+  - token usage: (input: 97,379, output: 15,655)
+testWrite: 15.349 mins
+  - progress: (567 of 571)
+  - token usage: (input: 102,469, output: 9,313)
+testWrite: 15.6 mins
+  - progress: (568 of 571)
+  - token usage: (input: 107,963, output: 13,467)
+testWrite: 15.67 mins
+  - progress: (569 of 571)
+  - token usage: (input: 118,146, output: 10,721)
+testWrite: 16.802 mins
+  - progress: (570 of 571)
+  - token usage: (input: 107,876, output: 12,862)
+testWrite: 23.989 mins
+  - progress: (571 of 571)
+  - token usage: (input: 50,400, output: 2,366)
+testValidate: 39.398 mins
+testValidate: 39.398 mins
+testValidate: 39.398 mins
+testValidate: 39.398 mins
+testValidate: 39.398 mins
+testValidate: 39.399 mins
+testValidate: 39.399 mins
+testValidate: 39.399 mins
+testValidate: 39.399 mins
+testValidate: 39.399 mins
+testValidate: 39.399 mins
+testValidate: 39.399 mins
+testValidate: 39.399 mins
+testValidate: 39.399 mins
+testValidate: 39.399 mins
+testValidate: 39.399 mins
+testValidate: 39.399 mins
+testValidate: 39.399 mins
+testValidate: 39.399 mins
+testValidate: 39.399 mins
+testValidate: 39.4 mins
+testValidate: 39.4 mins
+testValidate: 39.4 mins
+testValidate: 39.4 mins
+testValidate: 39.4 mins
+testValidate: 39.4 mins
+testValidate: 39.4 mins
+testValidate: 39.4 mins
+testValidate: 39.4 mins
+testValidate: 39.4 mins
+testValidate: 39.4 mins
+testValidate: 39.4 mins
+testValidate: 39.4 mins
+testValidate: 39.4 mins
+testValidate: 39.4 mins
+testValidate: 39.4 mins
+testValidate: 39.4 mins
+testValidate: 39.4 mins
+testValidate: 39.4 mins
+testValidate: 39.4 mins
+testValidate: 39.4 mins
+testValidate: 39.4 mins
+testValidate: 39.4 mins
+testValidate: 39.4 mins
+testValidate: 39.4 mins
+testValidate: 39.4 mins
+testValidate: 39.4 mins
+testValidate: 39.4 mins
+testValidate: 39.401 mins
+testValidate: 39.401 mins
+testValidate: 39.401 mins
+testValidate: 39.401 mins
+testValidate: 39.401 mins
+testValidate: 39.401 mins
+testValidate: 39.401 mins
+testValidate: 39.401 mins
+testValidate: 39.401 mins
+testValidate: 39.401 mins
+testValidate: 39.401 mins
+testValidate: 39.401 mins
+testValidate: 39.401 mins
+testValidate: 39.401 mins
+testValidate: 39.401 mins
+testValidate: 39.401 mins
+testValidate: 39.401 mins
+testValidate: 39.401 mins
+testValidate: 39.401 mins
+testValidate: 39.401 mins
+testValidate: 39.401 mins
+testValidate: 39.401 mins
+testValidate: 39.401 mins
+testValidate: 39.401 mins
+testValidate: 39.401 mins
+testValidate: 39.401 mins
+testValidate: 39.402 mins
+testValidate: 39.402 mins
+testValidate: 39.402 mins
+testValidate: 39.402 mins
+testValidate: 39.402 mins
+testValidate: 39.402 mins
+testValidate: 39.402 mins
+testValidate: 39.402 mins
+testValidate: 39.402 mins
+testValidate: 39.402 mins
+testValidate: 39.938 mins
+testCorrect: 39.946 mins
+  - token usage: (input: 37,880, output: 3,525)
+testValidate: 39.966 mins
+testCorrect: 39.97 mins
+  - token usage: (input: 44,090, output: 2,766)
+testCorrect: 40.023 mins
+  - token usage: (input: 45,701, output: 3,145)
+testValidate: 40.058 mins
+testCorrect: 40.064 mins
+  - token usage: (input: 30,794, output: 1,678)
+testCorrect: 40.088 mins
+  - token usage: (input: 31,013, output: 1,864)
+testCorrect: 40.12 mins
+  - token usage: (input: 51,590, output: 3,436)
+testCorrect: 40.171 mins
+  - token usage: (input: 36,240, output: 2,180)
+testCorrect: 40.238 mins
+  - token usage: (input: 34,148, output: 2,481)
+testCorrect: 40.278 mins
+  - token usage: (input: 37,708, output: 2,485)
+testCorrect: 40.324 mins
+  - token usage: (input: 34,240, output: 2,452)
+testValidate: 40.346 mins
+testCorrect: 40.35 mins
+  - token usage: (input: 42,327, output: 3,907)
+testValidate: 40.384 mins
+testCorrect: 40.398 mins
+  - token usage: (input: 31,080, output: 2,057)
+testCorrect: 40.429 mins
+  - token usage: (input: 31,807, output: 2,056)
+testCorrect: 40.449 mins
+  - token usage: (input: 31,095, output: 2,203)
+testCorrect: 40.479 mins
+  - token usage: (input: 32,740, output: 2,483)
+testCorrect: 40.502 mins
+  - token usage: (input: 32,094, output: 2,309)
+testCorrect: 40.545 mins
+  - token usage: (input: 35,804, output: 2,576)
+testCorrect: 40.568 mins
+  - token usage: (input: 42,307, output: 2,609)
+testValidate: 40.602 mins
+testCorrect: 40.602 mins
+  - token usage: (input: 28,602, output: 1,629)
+testCorrect: 40.623 mins
+  - token usage: (input: 30,502, output: 2,095)
+testCorrect: 40.653 mins
+  - token usage: (input: 36,245, output: 2,233)
+testValidate: 40.68 mins
+testCorrect: 40.68 mins
+  - token usage: (input: 43,662, output: 2,394)
+testValidate: 40.716 mins
+testCorrect: 40.716 mins
+  - token usage: (input: 29,578, output: 1,903)
+testCorrect: 40.757 mins
+  - token usage: (input: 40,455, output: 2,515)
+testCorrect: 40.794 mins
+  - token usage: (input: 32,517, output: 2,681)
+testCorrect: 40.814 mins
+  - token usage: (input: 44,840, output: 2,417)
+testCorrect: 40.852 mins
+  - token usage: (input: 39,845, output: 2,484)
+testValidate: 40.883 mins
+testCorrect: 40.883 mins
+  - token usage: (input: 36,372, output: 2,886)
+testCorrect: 40.905 mins
+  - token usage: (input: 33,260, output: 2,786)
+testCorrect: 40.938 mins
+  - token usage: (input: 40,926, output: 2,642)
+testValidate: 40.961 mins
+testCorrect: 40.961 mins
+  - token usage: (input: 35,929, output: 2,652)
+testCorrect: 40.992 mins
+  - token usage: (input: 33,196, output: 2,959)
+testCorrect: 41.015 mins
+  - token usage: (input: 37,750, output: 2,627)
+testCorrect: 41.046 mins
+  - token usage: (input: 33,467, output: 3,143)
+testCorrect: 41.075 mins
+  - token usage: (input: 35,733, output: 3,098)
+testValidate: 41.099 mins
+testCorrect: 41.099 mins
+  - token usage: (input: 24,412, output: 2,592)
+testCorrect: 41.128 mins
+  - token usage: (input: 44,782, output: 2,952)
+testValidate: 41.154 mins
+testCorrect: 41.154 mins
+  - token usage: (input: 45,057, output: 3,590)
+testValidate: 41.187 mins
+testCorrect: 41.213 mins
+  - token usage: (input: 43,418, output: 2,871)
+testValidate: 41.246 mins
+testCorrect: 41.246 mins
+  - token usage: (input: 34,864, output: 3,670)
+testCorrect: 41.268 mins
+  - token usage: (input: 43,325, output: 2,823)
+testCorrect: 41.289 mins
+  - token usage: (input: 47,172, output: 4,285)
+testCorrect: 41.325 mins
+  - token usage: (input: 45,325, output: 2,663)
+testCorrect: 41.358 mins
+  - token usage: (input: 33,697, output: 3,149)
+testCorrect: 41.378 mins
+  - token usage: (input: 35,637, output: 4,961)
+testCorrect: 41.412 mins
+  - token usage: (input: 42,069, output: 2,981)
+testValidate: 41.434 mins
+testCorrect: 41.434 mins
+  - token usage: (input: 32,677, output: 2,764)
+testCorrect: 41.461 mins
+  - token usage: (input: 43,973, output: 2,658)
+testCorrect: 41.494 mins
+  - token usage: (input: 36,007, output: 3,815)
+testCorrect: 41.513 mins
+  - token usage: (input: 47,755, output: 3,135)
+testCorrect: 41.549 mins
+  - token usage: (input: 45,211, output: 3,276)
+testValidate: 41.571 mins
+testCorrect: 41.571 mins
+  - token usage: (input: 40,162, output: 3,094)
+testValidate: 41.603 mins
+testCorrect: 41.603 mins
+  - token usage: (input: 42,074, output: 3,700)
+testCorrect: 41.634 mins
+  - token usage: (input: 32,921, output: 2,744)
+testCorrect: 41.654 mins
+  - token usage: (input: 36,866, output: 2,787)
+testCorrect: 41.683 mins
+  - token usage: (input: 31,291, output: 2,927)
+testCorrect: 41.706 mins
+  - token usage: (input: 39,534, output: 2,982)
+testCorrect: 41.736 mins
+  - token usage: (input: 33,940, output: 2,844)
+testCorrect: 41.765 mins
+  - token usage: (input: 52,684, output: 3,347)
+testValidate: 41.792 mins
+testCorrect: 41.792 mins
+  - token usage: (input: 41,841, output: 3,079)
+testValidate: 41.825 mins
+testCorrect: 41.825 mins
+  - token usage: (input: 34,459, output: 2,716)
+testValidate: 41.854 mins
+testCorrect: 41.854 mins
+  - token usage: (input: 34,817, output: 2,675)
+testCorrect: 41.892 mins
+  - token usage: (input: 40,365, output: 4,039)
+testCorrect: 41.922 mins
+  - token usage: (input: 45,858, output: 4,267)
+testCorrect: 41.947 mins
+  - token usage: (input: 35,017, output: 3,452)
+testCorrect: 41.974 mins
+  - token usage: (input: 41,443, output: 3,948)
+testCorrect: 42.008 mins
+  - token usage: (input: 45,086, output: 3,885)
+testCorrect: 42.032 mins
+  - token usage: (input: 41,744, output: 4,045)
+testCorrect: 42.065 mins
+  - token usage: (input: 51,171, output: 6,446)
+testCorrect: 42.088 mins
+  - token usage: (input: 47,820, output: 5,577)
+testCorrect: 42.119 mins
+  - token usage: (input: 49,981, output: 4,018)
+testValidate: 42.154 mins
+testCorrect: 42.154 mins
+  - token usage: (input: 42,722, output: 4,248)
+testValidate: 42.176 mins
+testCorrect: 42.176 mins
+  - token usage: (input: 37,006, output: 5,047)
+testCorrect: 42.21 mins
+  - token usage: (input: 38,706, output: 5,309)
+testCorrect: 42.243 mins
+  - token usage: (input: 35,274, output: 3,930)
+testCorrect: 42.264 mins
+  - token usage: (input: 43,774, output: 3,356)
+testValidate: 42.292 mins
+testCorrect: 42.292 mins
+  - token usage: (input: 35,672, output: 4,451)
+testCorrect: 42.325 mins
+  - token usage: (input: 33,802, output: 4,152)
+testValidate: 42.346 mins
+testCorrect: 42.346 mins
+  - token usage: (input: 47,165, output: 3,081)
+testValidate: 42.379 mins
+testCorrect: 42.379 mins
+  - token usage: (input: 30,388, output: 3,100)
+testCorrect: 42.411 mins
+  - token usage: (input: 42,303, output: 5,009)
+testCorrect: 42.435 mins
+  - token usage: (input: 39,055, output: 4,417)
+testCorrect: 42.465 mins
+  - token usage: (input: 46,350, output: 5,368)
+testValidate: 42.499 mins
+testCorrect: 42.499 mins
+  - token usage: (input: 35,679, output: 3,233)
+testValidate: 42.519 mins
+testComplete: 43.059 mins
+  - test_agent_test_main_bbs(1/1): 2,585,901 ms
+Success
+Elapsed time 2,598,724 ms
+Token Usage
+┌───────────┬──────────────┐
+│ (index)   │ Values       │
+├───────────┼──────────────┤
+│ Total     │ '54,029,640' │
+│ Input     │ '50,638,718' │
+│ Output    │ '3,390,922'  │
+│ Facade    │ '0'          │
+│ Analyze   │ '0'          │
+│ Prisma    │ '0'          │
+│ Interface │ '0'          │
+│ Test      │ '54,029,640' │
+│ Realize   │ '0'          │
+└───────────┴──────────────┘
+
+> @autobe/test@0.17.1 start /workspaces/autobe/test
+> node build/prompt.js && ts-node src --include realize_main_bbs --archive --trace
+
+Build system prompts
+12.434s
+---------------------------------------------------
+AutoBE Test Program
+Test Start Time 8/13/2025, 11:25:44 AM
+---------------------------------------------------
+realizeStart: 0 mins
+realizeAuthorizationStart: 0 mins
+realizeAuthorizationWrite: 0.242 mins
+  - progress: (1 of 4)
+  - token usage: (input: 30,667, output: 700)
+realizeAuthorizationValidate: 0.323 mins
+realizeAuthorizationWrite: 0.325 mins
+  - progress: (2 of 4)
+  - token usage: (input: 30,662, output: 736)
+realizeAuthorizationWrite: 0.325 mins
+  - progress: (3 of 4)
+  - token usage: (input: 30,654, output: 757)
+realizeAuthorizationValidate: 0.402 mins
+realizeAuthorizationValidate: 0.476 mins
+realizeAuthorizationWrite: 0.477 mins
+  - progress: (4 of 4)
+  - token usage: (input: 30,667, output: 869)
+realizeAuthorizationValidate: 0.543 mins
+realizeAuthorizationCorrect: 0.966 mins
+  - token usage: (input: 32,849, output: 881)
+realizeAuthorizationValidate: 1.057 mins
+realizeAuthorizationComplete: 1.058 mins
+realizeWrite: 1.651 mins
+  - progress: (1 of 359)
+  - token usage: (input: 63,486, output: 1,403)
+realizeWrite: 1.752 mins
+  - progress: (2 of 359)
+  - token usage: (input: 62,914, output: 1,205)
+realizeWrite: 1.756 mins
+  - progress: (3 of 359)
+  - token usage: (input: 63,447, output: 869)
+realizeWrite: 1.756 mins
+  - progress: (4 of 359)
+  - token usage: (input: 63,723, output: 1,757)
+realizeWrite: 1.756 mins
+  - progress: (5 of 359)
+  - token usage: (input: 63,914, output: 1,328)
+realizeWrite: 1.756 mins
+  - progress: (6 of 359)
+  - token usage: (input: 63,830, output: 1,953)
+realizeWrite: 1.761 mins
+  - progress: (7 of 359)
+  - token usage: (input: 63,043, output: 2,050)
+realizeWrite: 1.761 mins
+  - progress: (8 of 359)
+  - token usage: (input: 63,782, output: 1,754)
+realizeWrite: 1.768 mins
+  - progress: (9 of 359)
+  - token usage: (input: 63,407, output: 2,186)
+realizeWrite: 1.77 mins
+  - progress: (10 of 359)
+  - token usage: (input: 63,530, output: 1,494)
+realizeWrite: 1.772 mins
+  - progress: (11 of 359)
+  - token usage: (input: 63,530, output: 1,483)
+realizeWrite: 1.772 mins
+  - progress: (12 of 359)
+  - token usage: (input: 63,491, output: 2,168)
+realizeWrite: 1.781 mins
+  - progress: (13 of 359)
+  - token usage: (input: 63,486, output: 2,343)
+realizeWrite: 1.785 mins
+  - progress: (14 of 359)
+  - token usage: (input: 63,267, output: 1,752)
+realizeWrite: 1.786 mins
+  - progress: (15 of 359)
+  - token usage: (input: 63,473, output: 1,835)
+realizeWrite: 1.788 mins
+  - progress: (16 of 359)
+  - token usage: (input: 62,843, output: 1,026)
+realizeWrite: 1.794 mins
+  - progress: (17 of 359)
+  - token usage: (input: 62,945, output: 1,327)
+realizeWrite: 1.808 mins
+  - progress: (18 of 359)
+  - token usage: (input: 64,054, output: 2,228)
+realizeWrite: 1.81 mins
+  - progress: (19 of 359)
+  - token usage: (input: 63,580, output: 1,929)
+realizeWrite: 1.847 mins
+  - progress: (20 of 359)
+  - token usage: (input: 63,804, output: 1,840)
+realizeWrite: 1.863 mins
+  - progress: (21 of 359)
+  - token usage: (input: 63,599, output: 1,548)
+realizeWrite: 1.867 mins
+  - progress: (22 of 359)
+  - token usage: (input: 64,473, output: 857)
+realizeWrite: 1.872 mins
+  - progress: (23 of 359)
+  - token usage: (input: 63,764, output: 1,324)
+realizeWrite: 1.874 mins
+  - progress: (24 of 359)
+  - token usage: (input: 63,860, output: 1,985)
+realizeWrite: 1.874 mins
+  - progress: (25 of 359)
+  - token usage: (input: 62,943, output: 1,500)
+realizeWrite: 1.881 mins
+  - progress: (26 of 359)
+  - token usage: (input: 63,672, output: 1,292)
+realizeWrite: 1.883 mins
+  - progress: (27 of 359)
+  - token usage: (input: 62,835, output: 1,239)
+realizeWrite: 1.884 mins
+  - progress: (28 of 359)
+  - token usage: (input: 64,292, output: 2,153)
+realizeWrite: 1.894 mins
+  - progress: (29 of 359)
+  - token usage: (input: 65,025, output: 2,766)
+realizeWrite: 1.914 mins
+  - progress: (30 of 359)
+  - token usage: (input: 63,818, output: 2,028)
+realizeWrite: 1.915 mins
+  - progress: (31 of 359)
+  - token usage: (input: 64,010, output: 2,372)
+realizeWrite: 1.916 mins
+  - progress: (32 of 359)
+  - token usage: (input: 62,960, output: 1,318)
+realizeWrite: 1.916 mins
+  - progress: (33 of 359)
+  - token usage: (input: 63,098, output: 1,166)
+realizeWrite: 1.918 mins
+  - progress: (34 of 359)
+  - token usage: (input: 63,917, output: 1,899)
+realizeWrite: 1.931 mins
+  - progress: (35 of 359)
+  - token usage: (input: 63,127, output: 1,079)
+realizeWrite: 1.933 mins
+  - progress: (36 of 359)
+  - token usage: (input: 62,633, output: 1,259)
+realizeWrite: 1.936 mins
+  - progress: (37 of 359)
+  - token usage: (input: 63,512, output: 2,440)
+realizeWrite: 1.941 mins
+  - progress: (38 of 359)
+  - token usage: (input: 63,714, output: 1,403)
+realizeWrite: 1.942 mins
+  - progress: (39 of 359)
+  - token usage: (input: 63,585, output: 1,935)
+realizeWrite: 1.943 mins
+  - progress: (40 of 359)
+  - token usage: (input: 63,604, output: 1,461)
+realizeWrite: 1.946 mins
+  - progress: (41 of 359)
+  - token usage: (input: 62,998, output: 1,370)
+realizeWrite: 1.957 mins
+  - progress: (42 of 359)
+  - token usage: (input: 62,952, output: 1,158)
+realizeWrite: 1.958 mins
+  - progress: (43 of 359)
+  - token usage: (input: 63,800, output: 1,394)
+realizeWrite: 1.959 mins
+  - progress: (44 of 359)
+  - token usage: (input: 62,906, output: 1,791)
+realizeWrite: 1.962 mins
+  - progress: (45 of 359)
+  - token usage: (input: 63,375, output: 1,798)
+realizeWrite: 1.97 mins
+  - progress: (46 of 359)
+  - token usage: (input: 63,110, output: 1,076)
+realizeWrite: 1.971 mins
+  - progress: (47 of 359)
+  - token usage: (input: 63,441, output: 1,445)
+realizeWrite: 1.975 mins
+  - progress: (48 of 359)
+  - token usage: (input: 63,404, output: 1,389)
+realizeWrite: 1.981 mins
+  - progress: (49 of 359)
+  - token usage: (input: 62,909, output: 2,069)
+realizeWrite: 1.987 mins
+  - progress: (50 of 359)
+  - token usage: (input: 62,824, output: 1,285)
+realizeWrite: 1.992 mins
+  - progress: (51 of 359)
+  - token usage: (input: 63,349, output: 1,454)
+realizeWrite: 1.996 mins
+  - progress: (52 of 359)
+  - token usage: (input: 63,430, output: 1,340)
+realizeWrite: 1.998 mins
+  - progress: (53 of 359)
+  - token usage: (input: 63,137, output: 1,297)
+realizeWrite: 2 mins
+  - progress: (54 of 359)
+  - token usage: (input: 63,723, output: 1,490)
+realizeWrite: 2 mins
+  - progress: (55 of 359)
+  - token usage: (input: 63,568, output: 1,776)
+realizeWrite: 2.001 mins
+  - progress: (56 of 359)
+  - token usage: (input: 62,928, output: 1,165)
+realizeWrite: 2.004 mins
+  - progress: (57 of 359)
+  - token usage: (input: 63,620, output: 1,355)
+realizeWrite: 2.004 mins
+  - progress: (58 of 359)
+  - token usage: (input: 63,287, output: 1,953)
+realizeWrite: 2.009 mins
+  - progress: (59 of 359)
+  - token usage: (input: 63,845, output: 1,766)
+realizeWrite: 2.052 mins
+  - progress: (60 of 359)
+  - token usage: (input: 63,659, output: 1,522)
+realizeWrite: 2.052 mins
+  - progress: (61 of 359)
+  - token usage: (input: 64,151, output: 1,641)
+realizeWrite: 2.052 mins
+  - progress: (62 of 359)
+  - token usage: (input: 62,923, output: 1,353)
+realizeWrite: 2.053 mins
+  - progress: (63 of 359)
+  - token usage: (input: 63,518, output: 1,783)
+realizeWrite: 2.053 mins
+  - progress: (64 of 359)
+  - token usage: (input: 63,021, output: 1,326)
+realizeWrite: 2.054 mins
+  - progress: (65 of 359)
+  - token usage: (input: 62,921, output: 1,285)
+realizeWrite: 2.054 mins
+  - progress: (66 of 359)
+  - token usage: (input: 63,741, output: 2,872)
+realizeWrite: 2.055 mins
+  - progress: (67 of 359)
+  - token usage: (input: 63,406, output: 2,113)
+realizeWrite: 2.056 mins
+  - progress: (68 of 359)
+  - token usage: (input: 63,950, output: 1,774)
+realizeWrite: 2.058 mins
+  - progress: (69 of 359)
+  - token usage: (input: 63,720, output: 1,756)
+realizeWrite: 2.061 mins
+  - progress: (70 of 359)
+  - token usage: (input: 64,234, output: 2,643)
+realizeWrite: 2.067 mins
+  - progress: (71 of 359)
+  - token usage: (input: 62,783, output: 1,353)
+realizeWrite: 2.069 mins
+  - progress: (72 of 359)
+  - token usage: (input: 63,786, output: 1,464)
+realizeWrite: 2.071 mins
+  - progress: (73 of 359)
+  - token usage: (input: 63,448, output: 1,653)
+realizeWrite: 2.08 mins
+  - progress: (74 of 359)
+  - token usage: (input: 63,435, output: 1,419)
+realizeWrite: 2.08 mins
+  - progress: (75 of 359)
+  - token usage: (input: 63,399, output: 1,642)
+realizeWrite: 2.084 mins
+  - progress: (76 of 359)
+  - token usage: (input: 63,039, output: 1,919)
+realizeWrite: 2.084 mins
+  - progress: (77 of 359)
+  - token usage: (input: 62,994, output: 1,762)
+realizeWrite: 2.085 mins
+  - progress: (78 of 359)
+  - token usage: (input: 62,888, output: 1,304)
+realizeWrite: 2.088 mins
+  - progress: (79 of 359)
+  - token usage: (input: 63,646, output: 1,885)
+realizeWrite: 2.088 mins
+  - progress: (80 of 359)
+  - token usage: (input: 63,544, output: 1,763)
+realizeWrite: 2.089 mins
+  - progress: (81 of 359)
+  - token usage: (input: 63,902, output: 1,568)
+realizeWrite: 2.091 mins
+  - progress: (82 of 359)
+  - token usage: (input: 63,074, output: 1,177)
+realizeWrite: 2.095 mins
+  - progress: (83 of 359)
+  - token usage: (input: 63,898, output: 1,859)
+realizeWrite: 2.099 mins
+  - progress: (84 of 359)
+  - token usage: (input: 63,691, output: 1,632)
+realizeWrite: 2.1 mins
+  - progress: (85 of 359)
+  - token usage: (input: 63,503, output: 1,630)
+realizeWrite: 2.103 mins
+  - progress: (86 of 359)
+  - token usage: (input: 63,665, output: 1,530)
+realizeWrite: 2.105 mins
+  - progress: (87 of 359)
+  - token usage: (input: 63,663, output: 1,628)
+realizeWrite: 2.107 mins
+  - progress: (88 of 359)
+  - token usage: (input: 62,943, output: 1,380)
+realizeWrite: 2.109 mins
+  - progress: (89 of 359)
+  - token usage: (input: 64,007, output: 2,387)
+realizeWrite: 2.109 mins
+  - progress: (90 of 359)
+  - token usage: (input: 64,086, output: 1,684)
+realizeWrite: 2.109 mins
+  - progress: (91 of 359)
+  - token usage: (input: 64,115, output: 2,430)
+realizeWrite: 2.116 mins
+  - progress: (92 of 359)
+  - token usage: (input: 63,699, output: 1,406)
+realizeWrite: 2.116 mins
+  - progress: (93 of 359)
+  - token usage: (input: 63,958, output: 1,673)
+realizeWrite: 2.118 mins
+  - progress: (94 of 359)
+  - token usage: (input: 63,489, output: 1,628)
+realizeWrite: 2.121 mins
+  - progress: (95 of 359)
+  - token usage: (input: 63,812, output: 1,635)
+realizeWrite: 2.124 mins
+  - progress: (96 of 359)
+  - token usage: (input: 63,499, output: 1,253)
+realizeWrite: 2.124 mins
+  - progress: (97 of 359)
+  - token usage: (input: 63,810, output: 1,615)
+realizeWrite: 2.131 mins
+  - progress: (98 of 359)
+  - token usage: (input: 62,970, output: 1,457)
+realizeWrite: 2.133 mins
+  - progress: (99 of 359)
+  - token usage: (input: 62,885, output: 1,455)
+realizeWrite: 2.139 mins
+  - progress: (100 of 359)
+  - token usage: (input: 63,328, output: 1,499)
+realizeWrite: 2.14 mins
+  - progress: (101 of 359)
+  - token usage: (input: 63,664, output: 1,468)
+realizeWrite: 2.141 mins
+  - progress: (102 of 359)
+  - token usage: (input: 63,161, output: 1,474)
+realizeWrite: 2.141 mins
+  - progress: (103 of 359)
+  - token usage: (input: 62,907, output: 2,108)
+realizeWrite: 2.142 mins
+  - progress: (104 of 359)
+  - token usage: (input: 62,992, output: 2,020)
+realizeWrite: 2.143 mins
+  - progress: (105 of 359)
+  - token usage: (input: 63,892, output: 1,741)
+realizeWrite: 2.144 mins
+  - progress: (106 of 359)
+  - token usage: (input: 64,204, output: 2,097)
+realizeWrite: 2.148 mins
+  - progress: (107 of 359)
+  - token usage: (input: 63,503, output: 1,472)
+realizeWrite: 2.149 mins
+  - progress: (108 of 359)
+  - token usage: (input: 63,842, output: 1,671)
+realizeWrite: 2.157 mins
+  - progress: (109 of 359)
+  - token usage: (input: 63,999, output: 1,828)
+realizeWrite: 2.158 mins
+  - progress: (110 of 359)
+  - token usage: (input: 63,861, output: 1,640)
+realizeWrite: 2.16 mins
+  - progress: (111 of 359)
+  - token usage: (input: 63,036, output: 1,790)
+realizeWrite: 2.164 mins
+  - progress: (112 of 359)
+  - token usage: (input: 63,279, output: 1,488)
+realizeWrite: 2.165 mins
+  - progress: (113 of 359)
+  - token usage: (input: 62,920, output: 1,345)
+realizeWrite: 2.168 mins
+  - progress: (114 of 359)
+  - token usage: (input: 63,711, output: 1,836)
+realizeWrite: 2.172 mins
+  - progress: (115 of 359)
+  - token usage: (input: 64,023, output: 1,521)
+realizeWrite: 2.174 mins
+  - progress: (116 of 359)
+  - token usage: (input: 63,572, output: 1,916)
+realizeWrite: 2.18 mins
+  - progress: (117 of 359)
+  - token usage: (input: 64,531, output: 2,747)
+realizeWrite: 2.183 mins
+  - progress: (118 of 359)
+  - token usage: (input: 63,202, output: 1,552)
+realizeWrite: 2.184 mins
+  - progress: (119 of 359)
+  - token usage: (input: 63,580, output: 1,893)
+realizeWrite: 2.186 mins
+  - progress: (120 of 359)
+  - token usage: (input: 63,943, output: 1,598)
+realizeWrite: 2.186 mins
+  - progress: (121 of 359)
+  - token usage: (input: 64,201, output: 2,006)
+realizeWrite: 2.191 mins
+  - progress: (122 of 359)
+  - token usage: (input: 63,721, output: 1,961)
+realizeWrite: 2.197 mins
+  - progress: (123 of 359)
+  - token usage: (input: 63,793, output: 1,708)
+realizeWrite: 2.198 mins
+  - progress: (124 of 359)
+  - token usage: (input: 62,854, output: 1,608)
+realizeWrite: 2.199 mins
+  - progress: (125 of 359)
+  - token usage: (input: 63,765, output: 1,586)
+realizeWrite: 2.204 mins
+  - progress: (126 of 359)
+  - token usage: (input: 63,573, output: 1,711)
+realizeWrite: 2.205 mins
+  - progress: (127 of 359)
+  - token usage: (input: 64,518, output: 3,032)
+realizeWrite: 2.208 mins
+  - progress: (128 of 359)
+  - token usage: (input: 63,544, output: 2,328)
+realizeWrite: 2.209 mins
+  - progress: (129 of 359)
+  - token usage: (input: 63,605, output: 1,734)
+realizeWrite: 2.211 mins
+  - progress: (130 of 359)
+  - token usage: (input: 63,423, output: 1,627)
+realizeWrite: 2.211 mins
+  - progress: (131 of 359)
+  - token usage: (input: 63,480, output: 1,855)
+realizeWrite: 2.214 mins
+  - progress: (132 of 359)
+  - token usage: (input: 63,475, output: 1,839)
+realizeWrite: 2.214 mins
+  - progress: (133 of 359)
+  - token usage: (input: 64,579, output: 2,321)
+realizeWrite: 2.217 mins
+  - progress: (134 of 359)
+  - token usage: (input: 63,557, output: 1,742)
+realizeWrite: 2.221 mins
+  - progress: (135 of 359)
+  - token usage: (input: 63,524, output: 1,918)
+realizeWrite: 2.221 mins
+  - progress: (136 of 359)
+  - token usage: (input: 63,223, output: 1,371)
+realizeWrite: 2.222 mins
+  - progress: (137 of 359)
+  - token usage: (input: 63,775, output: 2,258)
+realizeWrite: 2.223 mins
+  - progress: (138 of 359)
+  - token usage: (input: 63,561, output: 1,805)
+realizeWrite: 2.226 mins
+  - progress: (139 of 359)
+  - token usage: (input: 64,187, output: 1,564)
+realizeWrite: 2.238 mins
+  - progress: (140 of 359)
+  - token usage: (input: 63,636, output: 1,464)
+realizeWrite: 2.238 mins
+  - progress: (141 of 359)
+  - token usage: (input: 63,843, output: 2,007)
+realizeWrite: 2.239 mins
+  - progress: (142 of 359)
+  - token usage: (input: 63,584, output: 1,627)
+realizeWrite: 2.241 mins
+  - progress: (143 of 359)
+  - token usage: (input: 64,141, output: 2,391)
+realizeWrite: 2.243 mins
+  - progress: (144 of 359)
+  - token usage: (input: 62,983, output: 1,505)
+realizeWrite: 2.245 mins
+  - progress: (145 of 359)
+  - token usage: (input: 63,844, output: 2,914)
+realizeWrite: 2.248 mins
+  - progress: (146 of 359)
+  - token usage: (input: 63,616, output: 2,151)
+realizeWrite: 2.248 mins
+  - progress: (147 of 359)
+  - token usage: (input: 63,418, output: 1,603)
+realizeWrite: 2.252 mins
+  - progress: (148 of 359)
+  - token usage: (input: 63,573, output: 1,643)
+realizeWrite: 2.254 mins
+  - progress: (149 of 359)
+  - token usage: (input: 62,942, output: 1,309)
+realizeWrite: 2.256 mins
+  - progress: (150 of 359)
+  - token usage: (input: 63,015, output: 1,211)
+realizeWrite: 2.257 mins
+  - progress: (151 of 359)
+  - token usage: (input: 63,414, output: 1,695)
+realizeWrite: 2.26 mins
+  - progress: (152 of 359)
+  - token usage: (input: 63,734, output: 1,563)
+realizeWrite: 2.266 mins
+  - progress: (153 of 359)
+  - token usage: (input: 63,697, output: 1,551)
+realizeWrite: 2.267 mins
+  - progress: (154 of 359)
+  - token usage: (input: 64,124, output: 2,653)
+realizeWrite: 2.271 mins
+  - progress: (155 of 359)
+  - token usage: (input: 63,852, output: 1,809)
+realizeWrite: 2.275 mins
+  - progress: (156 of 359)
+  - token usage: (input: 63,049, output: 1,556)
+realizeWrite: 2.278 mins
+  - progress: (157 of 359)
+  - token usage: (input: 64,271, output: 2,107)
+realizeWrite: 2.279 mins
+  - progress: (158 of 359)
+  - token usage: (input: 63,740, output: 1,644)
+realizeWrite: 2.282 mins
+  - progress: (159 of 359)
+  - token usage: (input: 63,357, output: 1,222)
+realizeWrite: 2.284 mins
+  - progress: (160 of 359)
+  - token usage: (input: 63,800, output: 1,696)
+realizeWrite: 2.287 mins
+  - progress: (161 of 359)
+  - token usage: (input: 64,034, output: 1,725)
+realizeWrite: 2.287 mins
+  - progress: (162 of 359)
+  - token usage: (input: 64,654, output: 2,447)
+realizeWrite: 2.291 mins
+  - progress: (163 of 359)
+  - token usage: (input: 62,908, output: 1,273)
+realizeWrite: 2.3 mins
+  - progress: (164 of 359)
+  - token usage: (input: 63,886, output: 1,867)
+realizeWrite: 2.304 mins
+  - progress: (165 of 359)
+  - token usage: (input: 63,579, output: 1,737)
+realizeWrite: 2.307 mins
+  - progress: (166 of 359)
+  - token usage: (input: 63,294, output: 1,491)
+realizeWrite: 2.307 mins
+  - progress: (167 of 359)
+  - token usage: (input: 63,983, output: 1,878)
+realizeWrite: 2.311 mins
+  - progress: (168 of 359)
+  - token usage: (input: 62,990, output: 1,295)
+realizeWrite: 2.313 mins
+  - progress: (169 of 359)
+  - token usage: (input: 63,098, output: 1,735)
+realizeWrite: 2.313 mins
+  - progress: (170 of 359)
+  - token usage: (input: 64,668, output: 2,468)
+realizeWrite: 2.315 mins
+  - progress: (171 of 359)
+  - token usage: (input: 63,979, output: 2,083)
+realizeWrite: 2.316 mins
+  - progress: (172 of 359)
+  - token usage: (input: 63,917, output: 1,847)
+realizeWrite: 2.318 mins
+  - progress: (173 of 359)
+  - token usage: (input: 62,903, output: 1,549)
+realizeWrite: 2.319 mins
+  - progress: (174 of 359)
+  - token usage: (input: 64,008, output: 1,698)
+realizeWrite: 2.321 mins
+  - progress: (175 of 359)
+  - token usage: (input: 63,838, output: 1,927)
+realizeWrite: 2.327 mins
+  - progress: (176 of 359)
+  - token usage: (input: 63,764, output: 2,315)
+realizeWrite: 2.328 mins
+  - progress: (177 of 359)
+  - token usage: (input: 63,710, output: 1,768)
+realizeWrite: 2.328 mins
+  - progress: (178 of 359)
+  - token usage: (input: 63,929, output: 2,289)
+realizeWrite: 2.332 mins
+  - progress: (179 of 359)
+  - token usage: (input: 63,440, output: 1,973)
+realizeWrite: 2.333 mins
+  - progress: (180 of 359)
+  - token usage: (input: 62,884, output: 1,654)
+realizeWrite: 2.336 mins
+  - progress: (181 of 359)
+  - token usage: (input: 63,511, output: 1,609)
+realizeWrite: 2.338 mins
+  - progress: (182 of 359)
+  - token usage: (input: 63,042, output: 1,614)
+realizeWrite: 2.339 mins
+  - progress: (183 of 359)
+  - token usage: (input: 62,972, output: 2,534)
+realizeWrite: 2.339 mins
+  - progress: (184 of 359)
+  - token usage: (input: 64,015, output: 1,890)
+realizeWrite: 2.341 mins
+  - progress: (185 of 359)
+  - token usage: (input: 64,898, output: 3,490)
+realizeWrite: 2.346 mins
+  - progress: (186 of 359)
+  - token usage: (input: 63,854, output: 2,118)
+realizeWrite: 2.35 mins
+  - progress: (187 of 359)
+  - token usage: (input: 64,235, output: 2,287)
+realizeWrite: 2.352 mins
+  - progress: (188 of 359)
+  - token usage: (input: 64,127, output: 2,396)
+realizeWrite: 2.353 mins
+  - progress: (189 of 359)
+  - token usage: (input: 64,605, output: 2,070)
+realizeWrite: 2.353 mins
+  - progress: (190 of 359)
+  - token usage: (input: 63,615, output: 2,042)
+realizeWrite: 2.358 mins
+  - progress: (191 of 359)
+  - token usage: (input: 64,273, output: 2,697)
+realizeWrite: 2.36 mins
+  - progress: (192 of 359)
+  - token usage: (input: 64,036, output: 1,988)
+realizeWrite: 2.36 mins
+  - progress: (193 of 359)
+  - token usage: (input: 63,617, output: 1,842)
+realizeWrite: 2.365 mins
+  - progress: (194 of 359)
+  - token usage: (input: 63,871, output: 1,806)
+realizeWrite: 2.366 mins
+  - progress: (195 of 359)
+  - token usage: (input: 63,409, output: 1,695)
+realizeWrite: 2.366 mins
+  - progress: (196 of 359)
+  - token usage: (input: 64,286, output: 2,150)
+realizeWrite: 2.366 mins
+  - progress: (197 of 359)
+  - token usage: (input: 64,309, output: 2,163)
+realizeWrite: 2.369 mins
+  - progress: (198 of 359)
+  - token usage: (input: 64,107, output: 2,480)
+realizeWrite: 2.371 mins
+  - progress: (199 of 359)
+  - token usage: (input: 63,527, output: 2,184)
+realizeWrite: 2.372 mins
+  - progress: (200 of 359)
+  - token usage: (input: 62,961, output: 1,515)
+realizeWrite: 2.376 mins
+  - progress: (201 of 359)
+  - token usage: (input: 64,018, output: 2,111)
+realizeWrite: 2.38 mins
+  - progress: (202 of 359)
+  - token usage: (input: 64,322, output: 1,953)
+realizeWrite: 2.383 mins
+  - progress: (203 of 359)
+  - token usage: (input: 63,403, output: 1,334)
+realizeWrite: 2.386 mins
+  - progress: (204 of 359)
+  - token usage: (input: 63,546, output: 2,168)
+realizeWrite: 2.394 mins
+  - progress: (205 of 359)
+  - token usage: (input: 63,818, output: 2,337)
+realizeWrite: 2.396 mins
+  - progress: (206 of 359)
+  - token usage: (input: 63,576, output: 1,730)
+realizeWrite: 2.41 mins
+  - progress: (207 of 359)
+  - token usage: (input: 63,483, output: 1,807)
+realizeWrite: 2.41 mins
+  - progress: (208 of 359)
+  - token usage: (input: 62,984, output: 1,483)
+realizeWrite: 2.42 mins
+  - progress: (209 of 359)
+  - token usage: (input: 64,084, output: 2,313)
+realizeWrite: 2.422 mins
+  - progress: (210 of 359)
+  - token usage: (input: 64,153, output: 2,543)
+realizeWrite: 2.422 mins
+  - progress: (211 of 359)
+  - token usage: (input: 63,472, output: 1,548)
+realizeWrite: 2.426 mins
+  - progress: (212 of 359)
+  - token usage: (input: 63,485, output: 1,713)
+realizeWrite: 2.429 mins
+  - progress: (213 of 359)
+  - token usage: (input: 63,867, output: 2,378)
+realizeWrite: 2.43 mins
+  - progress: (214 of 359)
+  - token usage: (input: 64,184, output: 2,842)
+realizeWrite: 2.43 mins
+  - progress: (215 of 359)
+  - token usage: (input: 64,018, output: 3,024)
+realizeWrite: 2.43 mins
+  - progress: (216 of 359)
+  - token usage: (input: 63,046, output: 1,507)
+realizeWrite: 2.436 mins
+  - progress: (217 of 359)
+  - token usage: (input: 63,567, output: 1,472)
+realizeWrite: 2.439 mins
+  - progress: (218 of 359)
+  - token usage: (input: 64,089, output: 2,416)
+realizeWrite: 2.439 mins
+  - progress: (219 of 359)
+  - token usage: (input: 64,290, output: 2,550)
+realizeWrite: 2.441 mins
+  - progress: (220 of 359)
+  - token usage: (input: 63,419, output: 2,149)
+realizeWrite: 2.448 mins
+  - progress: (221 of 359)
+  - token usage: (input: 63,200, output: 2,060)
+realizeWrite: 2.45 mins
+  - progress: (222 of 359)
+  - token usage: (input: 63,226, output: 1,402)
+realizeWrite: 2.45 mins
+  - progress: (223 of 359)
+  - token usage: (input: 64,142, output: 2,115)
+realizeWrite: 2.45 mins
+  - progress: (224 of 359)
+  - token usage: (input: 63,154, output: 1,799)
+realizeWrite: 2.451 mins
+  - progress: (225 of 359)
+  - token usage: (input: 63,510, output: 2,073)
+realizeWrite: 2.454 mins
+  - progress: (226 of 359)
+  - token usage: (input: 64,223, output: 2,315)
+realizeWrite: 2.454 mins
+  - progress: (227 of 359)
+  - token usage: (input: 64,299, output: 2,529)
+realizeWrite: 2.456 mins
+  - progress: (228 of 359)
+  - token usage: (input: 64,267, output: 2,334)
+realizeWrite: 2.457 mins
+  - progress: (229 of 359)
+  - token usage: (input: 63,928, output: 1,719)
+realizeWrite: 2.458 mins
+  - progress: (230 of 359)
+  - token usage: (input: 64,173, output: 2,184)
+realizeWrite: 2.459 mins
+  - progress: (231 of 359)
+  - token usage: (input: 63,236, output: 1,559)
+realizeWrite: 2.461 mins
+  - progress: (232 of 359)
+  - token usage: (input: 63,992, output: 2,548)
+realizeWrite: 2.461 mins
+  - progress: (233 of 359)
+  - token usage: (input: 64,889, output: 2,541)
+realizeWrite: 2.462 mins
+  - progress: (234 of 359)
+  - token usage: (input: 63,537, output: 1,779)
+realizeWrite: 2.469 mins
+  - progress: (235 of 359)
+  - token usage: (input: 64,020, output: 2,171)
+realizeWrite: 2.473 mins
+  - progress: (236 of 359)
+  - token usage: (input: 63,724, output: 2,211)
+realizeWrite: 2.477 mins
+  - progress: (237 of 359)
+  - token usage: (input: 63,665, output: 1,761)
+realizeWrite: 2.478 mins
+  - progress: (238 of 359)
+  - token usage: (input: 63,708, output: 2,383)
+realizeWrite: 2.482 mins
+  - progress: (239 of 359)
+  - token usage: (input: 63,830, output: 1,891)
+realizeWrite: 2.484 mins
+  - progress: (240 of 359)
+  - token usage: (input: 64,024, output: 1,984)
+realizeWrite: 2.486 mins
+  - progress: (241 of 359)
+  - token usage: (input: 64,132, output: 2,196)
+realizeWrite: 2.49 mins
+  - progress: (242 of 359)
+  - token usage: (input: 64,371, output: 2,084)
+realizeWrite: 2.493 mins
+  - progress: (243 of 359)
+  - token usage: (input: 63,526, output: 2,218)
+realizeWrite: 2.498 mins
+  - progress: (244 of 359)
+  - token usage: (input: 64,045, output: 2,410)
+realizeWrite: 2.501 mins
+  - progress: (245 of 359)
+  - token usage: (input: 63,873, output: 2,200)
+realizeWrite: 2.502 mins
+  - progress: (246 of 359)
+  - token usage: (input: 64,007, output: 2,189)
+realizeWrite: 2.503 mins
+  - progress: (247 of 359)
+  - token usage: (input: 63,556, output: 1,803)
+realizeWrite: 2.507 mins
+  - progress: (248 of 359)
+  - token usage: (input: 64,480, output: 2,366)
+realizeWrite: 2.513 mins
+  - progress: (249 of 359)
+  - token usage: (input: 63,616, output: 1,739)
+realizeWrite: 2.516 mins
+  - progress: (250 of 359)
+  - token usage: (input: 63,690, output: 2,181)
+realizeWrite: 2.523 mins
+  - progress: (251 of 359)
+  - token usage: (input: 63,812, output: 1,824)
+realizeWrite: 2.528 mins
+  - progress: (252 of 359)
+  - token usage: (input: 64,260, output: 2,607)
+realizeWrite: 2.529 mins
+  - progress: (253 of 359)
+  - token usage: (input: 62,977, output: 1,394)
+realizeWrite: 2.53 mins
+  - progress: (254 of 359)
+  - token usage: (input: 63,542, output: 2,100)
+realizeWrite: 2.532 mins
+  - progress: (255 of 359)
+  - token usage: (input: 64,284, output: 2,349)
+realizeWrite: 2.533 mins
+  - progress: (256 of 359)
+  - token usage: (input: 63,193, output: 1,581)
+realizeWrite: 2.535 mins
+  - progress: (257 of 359)
+  - token usage: (input: 63,492, output: 3,174)
+realizeWrite: 2.537 mins
+  - progress: (258 of 359)
+  - token usage: (input: 64,163, output: 2,575)
+realizeWrite: 2.537 mins
+  - progress: (259 of 359)
+  - token usage: (input: 64,548, output: 1,527)
+realizeWrite: 2.538 mins
+  - progress: (260 of 359)
+  - token usage: (input: 63,223, output: 1,569)
+realizeWrite: 2.541 mins
+  - progress: (261 of 359)
+  - token usage: (input: 63,536, output: 1,958)
+realizeWrite: 2.546 mins
+  - progress: (262 of 359)
+  - token usage: (input: 63,496, output: 1,991)
+realizeWrite: 2.546 mins
+  - progress: (263 of 359)
+  - token usage: (input: 64,169, output: 3,002)
+realizeWrite: 2.552 mins
+  - progress: (264 of 359)
+  - token usage: (input: 63,920, output: 1,913)
+realizeWrite: 2.558 mins
+  - progress: (265 of 359)
+  - token usage: (input: 64,589, output: 2,520)
+realizeWrite: 2.56 mins
+  - progress: (266 of 359)
+  - token usage: (input: 64,688, output: 1,974)
+realizeWrite: 2.562 mins
+  - progress: (267 of 359)
+  - token usage: (input: 63,543, output: 2,029)
+realizeWrite: 2.565 mins
+  - progress: (268 of 359)
+  - token usage: (input: 63,742, output: 2,266)
+realizeWrite: 2.576 mins
+  - progress: (269 of 359)
+  - token usage: (input: 63,907, output: 1,917)
+realizeWrite: 2.576 mins
+  - progress: (270 of 359)
+  - token usage: (input: 63,698, output: 2,726)
+realizeWrite: 2.584 mins
+  - progress: (271 of 359)
+  - token usage: (input: 63,624, output: 1,518)
+realizeWrite: 2.589 mins
+  - progress: (272 of 359)
+  - token usage: (input: 63,529, output: 2,161)
+realizeWrite: 2.59 mins
+  - progress: (273 of 359)
+  - token usage: (input: 64,059, output: 2,989)
+realizeWrite: 2.59 mins
+  - progress: (274 of 359)
+  - token usage: (input: 64,061, output: 1,923)
+realizeWrite: 2.592 mins
+  - progress: (275 of 359)
+  - token usage: (input: 63,612, output: 2,064)
+realizeWrite: 2.596 mins
+  - progress: (276 of 359)
+  - token usage: (input: 64,265, output: 2,300)
+realizeWrite: 2.597 mins
+  - progress: (277 of 359)
+  - token usage: (input: 64,295, output: 1,873)
+realizeWrite: 2.604 mins
+  - progress: (278 of 359)
+  - token usage: (input: 63,593, output: 2,403)
+realizeWrite: 2.605 mins
+  - progress: (279 of 359)
+  - token usage: (input: 64,066, output: 2,289)
+realizeWrite: 2.611 mins
+  - progress: (280 of 359)
+  - token usage: (input: 64,159, output: 2,208)
+realizeWrite: 2.613 mins
+  - progress: (281 of 359)
+  - token usage: (input: 63,957, output: 1,956)
+realizeWrite: 2.613 mins
+  - progress: (282 of 359)
+  - token usage: (input: 63,832, output: 1,993)
+realizeWrite: 2.618 mins
+  - progress: (283 of 359)
+  - token usage: (input: 64,305, output: 2,553)
+realizeWrite: 2.62 mins
+  - progress: (284 of 359)
+  - token usage: (input: 63,916, output: 1,557)
+realizeWrite: 2.62 mins
+  - progress: (285 of 359)
+  - token usage: (input: 62,883, output: 1,838)
+realizeWrite: 2.622 mins
+  - progress: (286 of 359)
+  - token usage: (input: 62,747, output: 2,007)
+realizeWrite: 2.622 mins
+  - progress: (287 of 359)
+  - token usage: (input: 63,301, output: 2,236)
+realizeWrite: 2.622 mins
+  - progress: (288 of 359)
+  - token usage: (input: 64,565, output: 2,323)
+realizeWrite: 2.624 mins
+  - progress: (289 of 359)
+  - token usage: (input: 64,141, output: 2,901)
+realizeWrite: 2.636 mins
+  - progress: (290 of 359)
+  - token usage: (input: 64,604, output: 2,206)
+realizeWrite: 2.642 mins
+  - progress: (291 of 359)
+  - token usage: (input: 64,523, output: 2,154)
+realizeWrite: 2.643 mins
+  - progress: (292 of 359)
+  - token usage: (input: 64,012, output: 2,297)
+realizeWrite: 2.65 mins
+  - progress: (293 of 359)
+  - token usage: (input: 63,582, output: 1,676)
+realizeWrite: 2.652 mins
+  - progress: (294 of 359)
+  - token usage: (input: 63,417, output: 1,418)
+realizeWrite: 2.662 mins
+  - progress: (295 of 359)
+  - token usage: (input: 63,839, output: 1,962)
+realizeWrite: 2.69 mins
+  - progress: (296 of 359)
+  - token usage: (input: 63,965, output: 2,641)
+realizeWrite: 2.697 mins
+  - progress: (297 of 359)
+  - token usage: (input: 64,194, output: 2,519)
+realizeWrite: 2.707 mins
+  - progress: (298 of 359)
+  - token usage: (input: 64,606, output: 2,302)
+realizeWrite: 2.713 mins
+  - progress: (299 of 359)
+  - token usage: (input: 64,012, output: 2,142)
+realizeWrite: 2.714 mins
+  - progress: (300 of 359)
+  - token usage: (input: 64,504, output: 2,551)
+realizeWrite: 2.714 mins
+  - progress: (301 of 359)
+  - token usage: (input: 63,937, output: 2,011)
+realizeWrite: 2.717 mins
+  - progress: (302 of 359)
+  - token usage: (input: 64,255, output: 2,559)
+realizeWrite: 2.72 mins
+  - progress: (303 of 359)
+  - token usage: (input: 63,655, output: 1,716)
+realizeWrite: 2.721 mins
+  - progress: (304 of 359)
+  - token usage: (input: 63,902, output: 2,480)
+realizeWrite: 2.723 mins
+  - progress: (305 of 359)
+  - token usage: (input: 63,841, output: 2,456)
+realizeWrite: 2.736 mins
+  - progress: (306 of 359)
+  - token usage: (input: 64,215, output: 2,221)
+realizeWrite: 2.754 mins
+  - progress: (307 of 359)
+  - token usage: (input: 63,979, output: 2,784)
+realizeWrite: 2.768 mins
+  - progress: (308 of 359)
+  - token usage: (input: 64,204, output: 2,976)
+realizeWrite: 2.768 mins
+  - progress: (309 of 359)
+  - token usage: (input: 64,010, output: 2,429)
+realizeWrite: 2.785 mins
+  - progress: (310 of 359)
+  - token usage: (input: 64,143, output: 1,392)
+realizeWrite: 2.799 mins
+  - progress: (311 of 359)
+  - token usage: (input: 64,591, output: 2,941)
+realizeWrite: 2.812 mins
+  - progress: (312 of 359)
+  - token usage: (input: 64,170, output: 2,670)
+realizeWrite: 2.814 mins
+  - progress: (313 of 359)
+  - token usage: (input: 63,108, output: 2,473)
+realizeWrite: 2.828 mins
+  - progress: (314 of 359)
+  - token usage: (input: 64,282, output: 2,460)
+realizeWrite: 2.837 mins
+  - progress: (315 of 359)
+  - token usage: (input: 64,864, output: 3,379)
+realizeWrite: 2.852 mins
+  - progress: (316 of 359)
+  - token usage: (input: 63,325, output: 1,385)
+realizeWrite: 2.852 mins
+  - progress: (317 of 359)
+  - token usage: (input: 63,465, output: 2,570)
+realizeWrite: 2.869 mins
+  - progress: (318 of 359)
+  - token usage: (input: 64,599, output: 3,103)
+realizeWrite: 2.883 mins
+  - progress: (319 of 359)
+  - token usage: (input: 136,546, output: 3,166)
+realizeWrite: 2.896 mins
+  - progress: (320 of 359)
+  - token usage: (input: 64,064, output: 2,326)
+realizeWrite: 2.902 mins
+  - progress: (321 of 359)
+  - token usage: (input: 64,500, output: 2,997)
+realizeWrite: 2.922 mins
+  - progress: (322 of 359)
+  - token usage: (input: 64,943, output: 3,189)
+realizeWrite: 2.926 mins
+  - progress: (323 of 359)
+  - token usage: (input: 64,859, output: 3,816)
+realizeWrite: 2.928 mins
+  - progress: (324 of 359)
+  - token usage: (input: 63,501, output: 2,141)
+realizeWrite: 2.976 mins
+  - progress: (325 of 359)
+  - token usage: (input: 64,240, output: 2,217)
+realizeWrite: 2.987 mins
+  - progress: (326 of 359)
+  - token usage: (input: 64,418, output: 2,957)
+realizeWrite: 2.994 mins
+  - progress: (327 of 359)
+  - token usage: (input: 64,611, output: 1,756)
+realizeWrite: 2.996 mins
+  - progress: (328 of 359)
+  - token usage: (input: 63,799, output: 2,652)
+realizeWrite: 2.997 mins
+  - progress: (329 of 359)
+  - token usage: (input: 64,492, output: 2,728)
+realizeWrite: 3.008 mins
+  - progress: (330 of 359)
+  - token usage: (input: 64,402, output: 2,819)
+realizeWrite: 3.011 mins
+  - progress: (331 of 359)
+  - token usage: (input: 64,384, output: 2,766)
+realizeWrite: 3.014 mins
+  - progress: (332 of 359)
+  - token usage: (input: 62,886, output: 2,082)
+realizeWrite: 3.016 mins
+  - progress: (333 of 359)
+  - token usage: (input: 63,618, output: 2,974)
+realizeWrite: 3.022 mins
+  - progress: (334 of 359)
+  - token usage: (input: 64,004, output: 1,965)
+realizeWrite: 3.029 mins
+  - progress: (335 of 359)
+  - token usage: (input: 64,356, output: 2,871)
+realizeWrite: 3.062 mins
+  - progress: (336 of 359)
+  - token usage: (input: 64,650, output: 2,530)
+realizeWrite: 3.072 mins
+  - progress: (337 of 359)
+  - token usage: (input: 64,518, output: 2,874)
+realizeWrite: 3.088 mins
+  - progress: (338 of 359)
+  - token usage: (input: 64,396, output: 2,678)
+realizeWrite: 3.102 mins
+  - progress: (339 of 359)
+  - token usage: (input: 64,066, output: 2,922)
+realizeWrite: 3.102 mins
+  - progress: (340 of 359)
+  - token usage: (input: 64,535, output: 3,252)
+realizeWrite: 3.108 mins
+  - progress: (341 of 359)
+  - token usage: (input: 64,422, output: 2,934)
+realizeWrite: 3.114 mins
+  - progress: (342 of 359)
+  - token usage: (input: 63,318, output: 2,722)
+realizeWrite: 3.179 mins
+  - progress: (343 of 359)
+  - token usage: (input: 63,813, output: 3,753)
+realizeWrite: 3.188 mins
+  - progress: (344 of 359)
+  - token usage: (input: 64,105, output: 2,277)
+realizeWrite: 3.218 mins
+  - progress: (345 of 359)
+  - token usage: (input: 63,373, output: 3,526)
+realizeWrite: 3.267 mins
+  - progress: (346 of 359)
+  - token usage: (input: 64,104, output: 2,349)
+realizeWrite: 3.276 mins
+  - progress: (347 of 359)
+  - token usage: (input: 63,577, output: 3,884)
+realizeWrite: 3.296 mins
+  - progress: (348 of 359)
+  - token usage: (input: 63,557, output: 3,482)
+realizeWrite: 3.419 mins
+  - progress: (349 of 359)
+  - token usage: (input: 64,429, output: 2,929)
+realizeWrite: 3.494 mins
+  - progress: (350 of 359)
+  - token usage: (input: 64,159, output: 2,755)
+realizeWrite: 3.502 mins
+  - progress: (351 of 359)
+  - token usage: (input: 63,485, output: 1,750)
+realizeWrite: 3.508 mins
+  - progress: (352 of 359)
+  - token usage: (input: 63,460, output: 3,594)
+realizeWrite: 3.574 mins
+  - progress: (353 of 359)
+  - token usage: (input: 63,413, output: 1,885)
+realizeWrite: 3.617 mins
+  - progress: (354 of 359)
+  - token usage: (input: 63,858, output: 2,045)
+realizeWrite: 3.636 mins
+  - progress: (355 of 359)
+  - token usage: (input: 64,514, output: 2,648)
+realizeWrite: 3.794 mins
+  - progress: (356 of 359)
+  - token usage: (input: 62,976, output: 2,101)
+realizeWrite: 4.292 mins
+  - progress: (357 of 359)
+  - token usage: (input: 64,452, output: 3,225)
+realizeWrite: 4.812 mins
+  - progress: (358 of 359)
+  - token usage: (input: 62,855, output: 1,633)
+realizeWrite: 10.229 mins
+  - progress: (359 of 359)
+  - token usage: (input: 154,813, output: 20,902)
+realizeCorrect: 11.121 mins
+  - progress: (360 of 416)
+  - token usage: (input: 63,502, output: 1,884)
+realizeCorrect: 11.228 mins
+  - progress: (361 of 416)
+  - token usage: (input: 63,675, output: 1,582)
+realizeCorrect: 11.285 mins
+  - progress: (362 of 416)
+  - token usage: (input: 63,813, output: 1,739)
+realizeCorrect: 11.285 mins
+  - progress: (363 of 416)
+  - token usage: (input: 63,862, output: 1,642)
+realizeCorrect: 11.344 mins
+  - progress: (364 of 416)
+  - token usage: (input: 63,431, output: 1,556)
+realizeCorrect: 11.361 mins
+  - progress: (365 of 416)
+  - token usage: (input: 64,300, output: 2,293)
+realizeCorrect: 11.371 mins
+  - progress: (366 of 416)
+  - token usage: (input: 64,235, output: 1,673)
+realizeCorrect: 11.377 mins
+  - progress: (367 of 416)
+  - token usage: (input: 64,290, output: 3,155)
+realizeCorrect: 11.411 mins
+  - progress: (368 of 416)
+  - token usage: (input: 64,060, output: 1,877)
+realizeCorrect: 11.418 mins
+  - progress: (369 of 416)
+  - token usage: (input: 64,087, output: 3,021)
+realizeCorrect: 11.445 mins
+  - progress: (370 of 416)
+  - token usage: (input: 64,684, output: 3,051)
+realizeCorrect: 11.466 mins
+  - progress: (371 of 416)
+  - token usage: (input: 64,180, output: 2,031)
+realizeCorrect: 11.47 mins
+  - progress: (372 of 416)
+  - token usage: (input: 64,456, output: 1,884)
+realizeCorrect: 11.473 mins
+  - progress: (373 of 416)
+  - token usage: (input: 63,992, output: 2,104)
+realizeCorrect: 11.544 mins
+  - progress: (374 of 416)
+  - token usage: (input: 63,694, output: 1,920)
+realizeCorrect: 11.556 mins
+  - progress: (375 of 416)
+  - token usage: (input: 64,322, output: 1,985)
+realizeCorrect: 11.557 mins
+  - progress: (376 of 416)
+  - token usage: (input: 64,027, output: 2,648)
+realizeCorrect: 11.572 mins
+  - progress: (377 of 416)
+  - token usage: (input: 64,056, output: 2,453)
+realizeCorrect: 11.576 mins
+  - progress: (378 of 416)
+  - token usage: (input: 64,654, output: 2,356)
+realizeCorrect: 11.597 mins
+  - progress: (379 of 416)
+  - token usage: (input: 65,027, output: 2,939)
+realizeCorrect: 11.613 mins
+  - progress: (380 of 416)
+  - token usage: (input: 63,493, output: 2,165)
+realizeCorrect: 11.625 mins
+  - progress: (381 of 416)
+  - token usage: (input: 64,648, output: 2,804)
+realizeCorrect: 11.629 mins
+  - progress: (382 of 416)
+  - token usage: (input: 63,518, output: 1,926)
+realizeCorrect: 11.643 mins
+  - progress: (383 of 416)
+  - token usage: (input: 63,917, output: 2,059)
+realizeCorrect: 11.661 mins
+  - progress: (384 of 416)
+  - token usage: (input: 63,506, output: 1,968)
+realizeCorrect: 11.7 mins
+  - progress: (385 of 416)
+  - token usage: (input: 63,409, output: 1,953)
+realizeCorrect: 11.726 mins
+  - progress: (386 of 416)
+  - token usage: (input: 64,314, output: 2,027)
+realizeCorrect: 11.738 mins
+  - progress: (387 of 416)
+  - token usage: (input: 65,089, output: 2,488)
+realizeCorrect: 11.761 mins
+  - progress: (388 of 416)
+  - token usage: (input: 63,298, output: 1,804)
+realizeCorrect: 11.793 mins
+  - progress: (389 of 416)
+  - token usage: (input: 64,231, output: 2,780)
+realizeCorrect: 11.798 mins
+  - progress: (390 of 416)
+  - token usage: (input: 63,616, output: 2,202)
+realizeCorrect: 11.807 mins
+  - progress: (391 of 416)
+  - token usage: (input: 64,097, output: 2,346)
+realizeCorrect: 11.838 mins
+  - progress: (392 of 416)
+  - token usage: (input: 63,766, output: 1,718)
+realizeCorrect: 11.84 mins
+  - progress: (393 of 416)
+  - token usage: (input: 63,936, output: 2,292)
+realizeCorrect: 11.869 mins
+  - progress: (394 of 416)
+  - token usage: (input: 64,185, output: 1,828)
+realizeCorrect: 11.896 mins
+  - progress: (395 of 416)
+  - token usage: (input: 64,001, output: 2,748)
+realizeCorrect: 11.91 mins
+  - progress: (396 of 416)
+  - token usage: (input: 63,572, output: 2,891)
+realizeCorrect: 11.912 mins
+  - progress: (397 of 416)
+  - token usage: (input: 64,524, output: 3,280)
+realizeCorrect: 11.951 mins
+  - progress: (398 of 416)
+  - token usage: (input: 64,966, output: 3,652)
+realizeCorrect: 11.958 mins
+  - progress: (399 of 416)
+  - token usage: (input: 64,021, output: 2,191)
+realizeCorrect: 11.962 mins
+  - progress: (400 of 416)
+  - token usage: (input: 64,686, output: 3,177)
+realizeCorrect: 11.973 mins
+  - progress: (401 of 416)
+  - token usage: (input: 64,615, output: 2,558)
+realizeCorrect: 11.992 mins
+  - progress: (402 of 416)
+  - token usage: (input: 64,585, output: 2,898)
+realizeCorrect: 12.017 mins
+  - progress: (403 of 416)
+  - token usage: (input: 64,550, output: 2,980)
+realizeCorrect: 12.063 mins
+  - progress: (404 of 416)
+  - token usage: (input: 63,520, output: 2,531)
+realizeCorrect: 12.067 mins
+  - progress: (405 of 416)
+  - token usage: (input: 64,677, output: 3,257)
+realizeCorrect: 12.082 mins
+  - progress: (406 of 416)
+  - token usage: (input: 64,775, output: 3,176)
+realizeCorrect: 12.082 mins
+  - progress: (407 of 416)
+  - token usage: (input: 64,522, output: 2,775)
+realizeCorrect: 12.095 mins
+  - progress: (408 of 416)
+  - token usage: (input: 64,102, output: 2,838)
+realizeCorrect: 12.103 mins
+  - progress: (409 of 416)
+  - token usage: (input: 65,049, output: 3,357)
+realizeCorrect: 12.103 mins
+  - progress: (410 of 416)
+  - token usage: (input: 64,226, output: 2,799)
+realizeCorrect: 12.187 mins
+  - progress: (411 of 416)
+  - token usage: (input: 65,300, output: 3,529)
+realizeCorrect: 12.198 mins
+  - progress: (412 of 416)
+  - token usage: (input: 64,595, output: 3,178)
+realizeCorrect: 12.284 mins
+  - progress: (413 of 416)
+  - token usage: (input: 65,129, output: 3,197)
+realizeCorrect: 12.458 mins
+  - progress: (414 of 416)
+  - token usage: (input: 64,414, output: 2,346)
+realizeCorrect: 12.749 mins
+  - progress: (415 of 416)
+  - token usage: (input: 63,623, output: 2,075)
+realizeCorrect: 12.848 mins
+  - progress: (416 of 416)
+  - token usage: (input: 64,670, output: 4,236)
+realizeCorrect: 13.56 mins
+  - progress: (417 of 445)
+  - token usage: (input: 64,283, output: 1,950)
+realizeCorrect: 13.816 mins
+  - progress: (418 of 445)
+  - token usage: (input: 63,431, output: 1,821)
+realizeCorrect: 13.861 mins
+  - progress: (419 of 445)
+  - token usage: (input: 63,974, output: 2,325)
+realizeCorrect: 13.977 mins
+  - progress: (420 of 445)
+  - token usage: (input: 64,211, output: 3,132)
+realizeCorrect: 14.006 mins
+  - progress: (421 of 445)
+  - token usage: (input: 63,917, output: 1,904)
+realizeCorrect: 14.037 mins
+  - progress: (422 of 445)
+  - token usage: (input: 64,536, output: 2,099)
+realizeCorrect: 14.122 mins
+  - progress: (423 of 445)
+  - token usage: (input: 63,506, output: 2,238)
+realizeCorrect: 14.127 mins
+  - progress: (424 of 445)
+  - token usage: (input: 63,493, output: 1,912)
+realizeCorrect: 14.14 mins
+  - progress: (425 of 445)
+  - token usage: (input: 64,021, output: 2,102)
+realizeCorrect: 14.177 mins
+  - progress: (426 of 445)
+  - token usage: (input: 63,616, output: 2,158)
+realizeCorrect: 14.206 mins
+  - progress: (427 of 445)
+  - token usage: (input: 63,992, output: 1,969)
+realizeCorrect: 14.244 mins
+  - progress: (428 of 445)
+  - token usage: (input: 64,493, output: 2,676)
+realizeCorrect: 14.249 mins
+  - progress: (429 of 445)
+  - token usage: (input: 63,491, output: 2,072)
+realizeCorrect: 14.308 mins
+  - progress: (430 of 445)
+  - token usage: (input: 63,766, output: 2,144)
+realizeCorrect: 14.326 mins
+  - progress: (431 of 445)
+  - token usage: (input: 64,522, output: 2,488)
+realizeCorrect: 14.355 mins
+  - progress: (432 of 445)
+  - token usage: (input: 63,393, output: 2,521)
+realizeCorrect: 14.392 mins
+  - progress: (433 of 445)
+  - token usage: (input: 64,456, output: 2,177)
+realizeCorrect: 14.421 mins
+  - progress: (434 of 445)
+  - token usage: (input: 64,300, output: 2,696)
+realizeCorrect: 14.497 mins
+  - progress: (435 of 445)
+  - token usage: (input: 63,702, output: 2,225)
+realizeCorrect: 14.656 mins
+  - progress: (436 of 445)
+  - token usage: (input: 65,027, output: 2,626)
+realizeCorrect: 14.672 mins
+  - progress: (437 of 445)
+  - token usage: (input: 63,746, output: 1,963)
+realizeCorrect: 14.678 mins
+  - progress: (438 of 445)
+  - token usage: (input: 64,550, output: 3,195)
+realizeCorrect: 14.718 mins
+  - progress: (439 of 445)
+  - token usage: (input: 64,102, output: 2,085)
+realizeCorrect: 14.732 mins
+  - progress: (440 of 445)
+  - token usage: (input: 64,654, output: 2,840)
+realizeCorrect: 14.872 mins
+  - progress: (441 of 445)
+  - token usage: (input: 64,686, output: 3,088)
+realizeCorrect: 14.963 mins
+  - progress: (442 of 445)
+  - token usage: (input: 64,707, output: 3,407)
+realizeCorrect: 15.204 mins
+  - progress: (443 of 445)
+  - token usage: (input: 64,096, output: 3,615)
+realizeCorrect: 15.472 mins
+  - progress: (444 of 445)
+  - token usage: (input: 64,966, output: 3,754)
+realizeCorrect: 15.49 mins
+  - progress: (445 of 445)
+  - token usage: (input: 64,068, output: 3,375)
+realizeCorrect: 16.284 mins
+  - progress: (446 of 460)
+  - token usage: (input: 63,506, output: 2,050)
+realizeCorrect: 16.537 mins
+  - progress: (447 of 460)
+  - token usage: (input: 64,221, output: 2,985)
+realizeCorrect: 16.699 mins
+  - progress: (448 of 460)
+  - token usage: (input: 63,746, output: 2,027)
+realizeCorrect: 16.705 mins
+  - progress: (449 of 460)
+  - token usage: (input: 64,686, output: 1,691)
+realizeCorrect: 16.884 mins
+  - progress: (450 of 460)
+  - token usage: (input: 63,782, output: 2,074)
+realizeCorrect: 16.909 mins
+  - progress: (451 of 460)
+  - token usage: (input: 63,675, output: 2,034)
+realizeCorrect: 16.947 mins
+  - progress: (452 of 460)
+  - token usage: (input: 64,524, output: 2,964)
+realizeCorrect: 16.965 mins
+  - progress: (453 of 460)
+  - token usage: (input: 63,409, output: 2,191)
+realizeCorrect: 17.141 mins
+  - progress: (454 of 460)
+  - token usage: (input: 63,491, output: 1,933)
+realizeCorrect: 17.206 mins
+  - progress: (455 of 460)
+  - token usage: (input: 63,616, output: 2,512)
+realizeCorrect: 17.394 mins
+  - progress: (456 of 460)
+  - token usage: (input: 63,938, output: 2,221)
+realizeCorrect: 17.431 mins
+  - progress: (457 of 460)
+  - token usage: (input: 64,522, output: 2,619)
+realizeCorrect: 17.685 mins
+  - progress: (458 of 460)
+  - token usage: (input: 64,226, output: 3,065)
+realizeCorrect: 18.213 mins
+  - progress: (459 of 460)
+  - token usage: (input: 64,966, output: 3,419)
+realizeCorrect: 18.966 mins
+  - progress: (460 of 460)
+  - token usage: (input: 64,709, output: 3,265)
+realizeComplete: 19.855 mins
+  - test_agent_realize_main_bbs(0/1): Error
+Error: Bug on result: found different values - []:
+
+
+{
+  "actual": "failure",
+  "expected": "success"
+}
+    at /workspaces/autobe/node_modules/.pnpm/@nestia+e2e@7.3.3/node_modules/@nestia/e2e/src/TestValidator.ts:143:15
+    at /workspaces/autobe/test/src/features/realize/internal/validate_agent_realize_main.ts:78:55
+    at Generator.next (<anonymous>)
+    at fulfilled (/workspaces/autobe/test/src/features/realize/internal/validate_agent_realize_main.ts:5:58)
+Failed
+Elapsed time 1,206,114 ms
+Token Usage
+┌───────────┬──────────────┐
+│ (index)   │ Values       │
+├───────────┼──────────────┤
+│ Total     │ '30,885,217' │
+│ Input     │ '29,887,698' │
+│ Output    │ '997,519'    │
+│ Facade    │ '0'          │
+│ Analyze   │ '0'          │
+│ Prisma    │ '0'          │
+│ Interface │ '0'          │
+│ Test      │ '0'          │
+│ Realize   │ '30,885,217' │
+└───────────┴──────────────┘
+ ELIFECYCLE  Command failed with exit code 255.
+ ELIFECYCLE  Command failed with exit code 255.
