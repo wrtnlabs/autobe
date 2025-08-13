@@ -82,7 +82,7 @@ export async function orchestrateRealizeWrite<Model extends ILlmSchema.Model>(
     pointer.value.implementationCode,
   );
 
-  return {
+  const event: AutoBeRealizeWriteEvent = {
     type: "realizeWrite",
     location: scenario.location,
     completed: ++progress.completed,
@@ -91,6 +91,8 @@ export async function orchestrateRealizeWrite<Model extends ILlmSchema.Model>(
     step: ctx.state().analyze?.step ?? 0,
     created_at: new Date().toISOString(),
   };
+  ctx.dispatch(event);
+  return event;
 }
 
 export function createController<Model extends ILlmSchema.Model>(props: {

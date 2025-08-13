@@ -45,17 +45,6 @@ export const validate_agent_realize_main = async (
   };
 
   agent.on("assistantMessage", listen);
-  agent.on("realizeStart", listen);
-  agent.on("realizeAuthorizationStart", listen);
-  agent.on("realizeAuthorizationWrite", listen);
-  agent.on("realizeAuthorizationCorrect", listen);
-  agent.on("realizeAuthorizationValidate", listen);
-  agent.on("realizeAuthorizationComplete", listen);
-  agent.on("realizeWrite", listen);
-  agent.on("realizeCorrect", listen);
-  agent.on("realizeValidate", listen);
-  agent.on("realizeComplete", listen);
-
   for (const type of typia.misc.literals<AutoBeEvent.Type>())
     if (type.startsWith("realize")) agent.on(type, listen);
 
