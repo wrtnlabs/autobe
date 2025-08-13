@@ -1,4 +1,4 @@
-import { IAgenticaController, MicroAgentica } from "@agentica/core";
+import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeInterfaceEndpointsEvent,
   AutoBeOpenApi,
@@ -41,7 +41,7 @@ export async function orchestrateInterfaceEndpoints<
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   group: AutoBeInterfaceGroup,
-  content: string,
+  message: string,
   progress: IProgress,
   authorizations: AutoBeOpenApi.IOperation[],
 ): Promise<AutoBeOpenApi.IEndpoint[]> {
@@ -49,7 +49,7 @@ async function process<Model extends ILlmSchema.Model>(
   const pointer: IPointer<AutoBeOpenApi.IEndpoint[] | null> = {
     value: null,
   };
-  const agentica: MicroAgentica<Model> = ctx.createAgent({
+  const { tokenUsage } = await ctx.conversate({
     source: "interfaceEndpoints",
     histories: transformInterfaceEndpointHistories(
       ctx.state(),
@@ -64,13 +64,10 @@ async function process<Model extends ILlmSchema.Model>(
       },
     }),
     enforceFunctionCall: true,
-  });
-
-  await agentica.conversate(content).finally(() => {
-    const tokenUsage = agentica.getTokenUsage().aggregate;
-    ctx.usage().record(tokenUsage, ["interface"]);
+    message,
   });
   if (pointer.value === null) throw new Error("Failed to generate endpoints."); // unreachable
+
   const event: AutoBeInterfaceEndpointsEvent = {
     type: "interfaceEndpoints",
     endpoints: new HashSet(
@@ -78,6 +75,7 @@ async function process<Model extends ILlmSchema.Model>(
       OpenApiEndpointComparator.hashCode,
       OpenApiEndpointComparator.equals,
     ).toJSON(),
+    tokenUsage,
     created_at: start.toISOString(),
     step: ctx.state().analyze?.step ?? 0,
     completed: ++progress.completed,

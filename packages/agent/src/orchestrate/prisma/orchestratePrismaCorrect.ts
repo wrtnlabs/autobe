@@ -3,12 +3,14 @@ import {
   AutoBePrisma,
   IAutoBeCompiler,
   IAutoBePrismaValidation,
+  IAutoBeTokenUsageJson,
 } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
+import { AutoBeTokenUsage } from "../../context/AutoBeTokenUsage";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { forceRetry } from "../../utils/forceRetry";
 import { transformPrismaCorrectHistories } from "./histories/transformPrismaCorrectHistories";
@@ -57,10 +59,7 @@ async function iterate<Model extends ILlmSchema.Model>(
     step: ctx.state().analyze?.step ?? 0,
     created_at: new Date().toISOString(),
   });
-  const next: IAutoBePrismaCorrectApplication.IProps = await process(
-    ctx,
-    result,
-  );
+  const next: IExecutionResult = await process(ctx, result);
   const correction: AutoBePrisma.IApplication = {
     files: application.files.map((file) => ({
       filename: file.filename,
@@ -76,6 +75,7 @@ async function iterate<Model extends ILlmSchema.Model>(
     failure: result,
     correction,
     planning: next.planning,
+    tokenUsage: next.tokenUsage,
     step: ctx.state().analyze?.step ?? 0,
     created_at: new Date().toISOString(),
   });
@@ -92,16 +92,18 @@ async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   failure: IAutoBePrismaValidation.IFailure,
   capacity: number = 8,
-): Promise<IAutoBePrismaCorrectApplication.IProps> {
+): Promise<IExecutionResult> {
   const count: number = getTableCount(failure);
   if (count <= capacity) return forceRetry(() => execute(ctx, failure));
 
+  const volume: number = Math.ceil(count / capacity);
   const plannings: string[] = [];
   const models: Record<string, AutoBePrisma.IModel> = {};
+  const tokenUsage: AutoBeTokenUsage = new AutoBeTokenUsage();
   let i: number = 0;
-  const volume: number = Math.ceil(count / capacity);
+
   while (i++ < volume && failure.errors.length !== 0) {
-    const next: IAutoBePrismaCorrectApplication.IProps = await forceRetry(() =>
+    const next: IExecutionResult = await forceRetry(() =>
       execute(ctx, {
         ...failure,
         errors: (() => {
@@ -115,6 +117,13 @@ async function process<Model extends ILlmSchema.Model>(
           return errors;
         })(),
       }),
+    );
+    tokenUsage.increment(
+      (() => {
+        const temp: AutoBeTokenUsage = new AutoBeTokenUsage();
+        Object.assign(temp.prisma, next.tokenUsage);
+        return temp;
+      })(),
     );
     plannings.push(next.planning);
     for (const m of next.models) models[m.name] = m;
@@ -135,13 +144,14 @@ async function process<Model extends ILlmSchema.Model>(
   return {
     planning: plannings.join("\n\n"),
     models: Object.values(models),
+    tokenUsage: tokenUsage.aggregate,
   };
 }
 
 async function execute<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   failure: IAutoBePrismaValidation.IFailure,
-): Promise<IAutoBePrismaCorrectApplication.IProps> {
+): Promise<IExecutionResult> {
   // PREPARE AGENTICA
   const pointer: IPointer<IAutoBePrismaCorrectApplication.IProps | null> = {
     value: null,
@@ -159,19 +169,24 @@ async function execute<Model extends ILlmSchema.Model>(
   });
 
   // REQUEST CORRECTION
-  await agentica
-    .conversate(
-      "Resolve the compilation errors in the provided Prisma schema files.",
-    )
-    .finally(() => {
-      const tokenUsage = agentica.getTokenUsage().aggregate;
-      ctx.usage().record(tokenUsage, ["prisma"]);
-    });
+  await agentica.conversate(
+    "Resolve the compilation errors in the provided Prisma schema files.",
+  );
+  const tokenUsage: IAutoBeTokenUsageJson.IComponent =
+    agentica.getTokenUsage().aggregate;
+  ctx.usage().record(tokenUsage, ["prisma"]);
   if (pointer.value === null)
     throw new Error(
       "Unreachable error: PrismaCompilerAgent.pointer.value is null",
     );
-  return pointer.value;
+  return {
+    ...pointer.value,
+    tokenUsage,
+  };
+}
+
+interface IExecutionResult extends IAutoBePrismaCorrectApplication.IProps {
+  tokenUsage: IAutoBeTokenUsageJson.IComponent;
 }
 
 function createController<Model extends ILlmSchema.Model>(props: {

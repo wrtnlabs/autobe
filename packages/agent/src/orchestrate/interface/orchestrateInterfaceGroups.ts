@@ -1,8 +1,4 @@
-import {
-  IAgenticaController,
-  MicroAgentica,
-  MicroAgenticaHistory,
-} from "@agentica/core";
+import { IAgenticaController, MicroAgenticaHistory } from "@agentica/core";
 import {
   AutoBeAssistantMessageHistory,
   AutoBeInterfaceGroupsEvent,
@@ -21,13 +17,13 @@ export async function orchestrateInterfaceGroups<
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
-  content: string = "Design API operations for the given assets.",
+  message: string = "Design API operations for the given assets.",
 ): Promise<AutoBeAssistantMessageHistory | AutoBeInterfaceGroupsEvent> {
   const start: Date = new Date();
   const pointer: IPointer<IAutoBeInterfaceGroupApplication.IProps | null> = {
     value: null,
   };
-  const agentica: MicroAgentica<Model> = ctx.createAgent({
+  const { histories, tokenUsage } = await ctx.conversate({
     source: "interfaceGroups",
     histories: transformInterfaceGroupHistories(ctx.state()),
     controller: createController({
@@ -37,14 +33,8 @@ export async function orchestrateInterfaceGroups<
       },
     }),
     enforceFunctionCall: false,
+    message,
   });
-
-  const histories: MicroAgenticaHistory<Model>[] = await agentica
-    .conversate(content)
-    .finally(() => {
-      const tokenUsage = agentica.getTokenUsage().aggregate;
-      ctx.usage().record(tokenUsage, ["interface"]);
-    });
   const last: MicroAgenticaHistory<Model> = histories.at(-1)!;
   if (last.type === "assistantMessage")
     return {
@@ -59,6 +49,7 @@ export async function orchestrateInterfaceGroups<
     type: "interfaceGroups",
     created_at: start.toISOString(),
     groups: pointer.value.groups,
+    tokenUsage,
     step: ctx.state().analyze?.step ?? 0,
   } satisfies AutoBeInterfaceGroupsEvent;
 }

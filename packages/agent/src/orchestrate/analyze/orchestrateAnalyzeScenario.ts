@@ -1,13 +1,10 @@
 import {
   AgenticaAssistantMessageHistory,
   IAgenticaController,
-  MicroAgentica,
-  MicroAgenticaHistory,
 } from "@agentica/core";
 import {
   AutoBeAnalyzeScenarioEvent,
   AutoBeAssistantMessageHistory,
-  IAutoBeTokenUsageJson,
 } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
@@ -28,7 +25,7 @@ export const orchestrateAnalyzeScenario = async <
   const pointer: IPointer<IAutoBeAnalyzeScenarioApplication.IProps | null> = {
     value: null,
   };
-  const agentica: MicroAgentica<Model> = ctx.createAgent({
+  const { histories, tokenUsage } = await ctx.conversate({
     source: "analyzeScenario",
     controller: createController<Model>({
       model: ctx.model,
@@ -38,18 +35,12 @@ export const orchestrateAnalyzeScenario = async <
     }),
     histories: transformAnalyzeSceHistories(ctx),
     enforceFunctionCall: false,
-  });
-  const histories: MicroAgenticaHistory<Model>[] = await agentica.conversate(
-    [
+    message: [
       `Design a complete list of documents and user roles for this project.`,
       `Define user roles that can authenticate via API and create appropriate documentation files.`,
       `You must respect the number of documents specified by the user.`,
     ].join("\n"),
-  );
-  const tokenUsage: IAutoBeTokenUsageJson.IComponent =
-    agentica.getTokenUsage().aggregate;
-  ctx.usage().record(tokenUsage, ["analyze"]);
-
+  });
   if (histories.at(-1)?.type === "assistantMessage")
     return {
       ...(histories.at(-1)! as AgenticaAssistantMessageHistory),

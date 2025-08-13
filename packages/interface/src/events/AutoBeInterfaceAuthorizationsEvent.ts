@@ -65,8 +65,8 @@ export interface AutoBeInterfaceAuthorizationsEvent
    * requirements, and operation-specific security constraints.
    *
    * The token usage increases with the sophistication of authorization logic,
-   * including multi-level permission hierarchies, conditional access rules,
-   * and integration with various authentication mechanisms across the API.
+   * including multi-level permission hierarchies, conditional access rules, and
+   * integration with various authentication mechanisms across the API.
    */
   tokenUsage: IAutoBeTokenUsageJson.IComponent;
 }

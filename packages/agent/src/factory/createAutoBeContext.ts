@@ -1,4 +1,4 @@
-import { MicroAgentica } from "@agentica/core";
+import { MicroAgentica, MicroAgenticaHistory } from "@agentica/core";
 import {
   AutoBeAnalyzeCompleteEvent,
   AutoBeAnalyzeHistory,
@@ -21,13 +21,16 @@ import {
   IAutoBeCompiler,
   IAutoBeCompilerListener,
   IAutoBeGetFilesOptions,
+  IAutoBeTokenUsageJson,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
+import typia from "typia";
 import { v4 } from "uuid";
 
 import { AutoBeContext } from "../context/AutoBeContext";
 import { AutoBeState } from "../context/AutoBeState";
 import { AutoBeTokenUsage } from "../context/AutoBeTokenUsage";
+import { IAutoBeApplication } from "../context/IAutoBeApplication";
 import { IAutoBeConfig } from "../structures/IAutoBeConfig";
 import { IAutoBeVendor } from "../structures/IAutoBeVendor";
 
@@ -51,14 +54,13 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
   files: props.files,
   histories: props.histories,
   state: props.state,
-  usage: props.usage,
   dispatch: createDispatch(props),
   assistantMessage: (message) => {
     props.histories().push(message);
     setTimeout(() => props.dispatch(message).catch(() => {}));
     return message;
   },
-  createAgent: (next) => {
+  conversate: async (next) => {
     const agent: MicroAgentica<Model> = new MicroAgentica<Model>({
       model: props.model,
       vendor: props.vendor,
@@ -77,7 +79,18 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
         if (event.body.parallel_tool_calls !== undefined)
           delete event.body.parallel_tool_calls;
       });
-    return agent;
+    const histories: MicroAgenticaHistory<Model>[] = await agent.conversate(
+      next.message,
+    );
+    const tokenUsage: IAutoBeTokenUsageJson.IComponent = agent
+      .getTokenUsage()
+      .toJSON().aggregate;
+    props
+      .usage()
+      .record(tokenUsage, [
+        STAGES.find((stage) => next.source.startsWith(stage)) ?? "analyze",
+      ]);
+    return { histories, tokenUsage };
   },
 });
 
@@ -213,3 +226,5 @@ const transformAndDispatch = <
   props.dispatch(props.event).catch(() => {});
   return props.history;
 };
+
+const STAGES = typia.misc.literals<keyof IAutoBeApplication>();

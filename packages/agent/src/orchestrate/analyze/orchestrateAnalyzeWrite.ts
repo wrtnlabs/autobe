@@ -1,8 +1,7 @@
-import { IAgenticaController, MicroAgentica } from "@agentica/core";
+import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeWriteEvent,
-  IAutoBeTokenUsageJson,
 } from "@autobe/interface";
 import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
@@ -26,7 +25,7 @@ export const orchestrateAnalyzeWrite = async <Model extends ILlmSchema.Model>(
   const pointer: IPointer<IAutoBeAnalyzeWriteApplication.IProps | null> = {
     value: null,
   };
-  const agentica: MicroAgentica<Model> = ctx.createAgent({
+  const { tokenUsage } = await ctx.conversate({
     source: "analyzeWrite",
     controller: createController<Model>({
       model: ctx.model,
@@ -34,16 +33,11 @@ export const orchestrateAnalyzeWrite = async <Model extends ILlmSchema.Model>(
     }),
     histories: transformAnalyzeWriteHistories(scenario, file),
     enforceFunctionCall: true,
+    message: "Write requirement analysis report.",
   });
-  await agentica.conversate("Write Document.");
-
-  const tokenUsage: IAutoBeTokenUsageJson.IComponent =
-    agentica.getTokenUsage().aggregate;
-  ctx.usage().record(tokenUsage, ["analyze"]);
-
-  if (pointer.value === null) {
+  if (pointer.value === null)
     throw new Error("The Analyze Agent failed to create the document.");
-  }
+
   const event: AutoBeAnalyzeWriteEvent = {
     type: "analyzeWrite",
     file: {

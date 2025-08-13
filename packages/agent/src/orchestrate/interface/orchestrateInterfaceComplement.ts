@@ -1,4 +1,4 @@
-import { IAgenticaController, MicroAgentica } from "@agentica/core";
+import { IAgenticaController } from "@agentica/core";
 import { AutoBeOpenApi } from "@autobe/interface";
 import {
   ILlmApplication,
@@ -39,7 +39,7 @@ async function step<Model extends ILlmSchema.Model>(
   > | null> = {
     value: null,
   };
-  const agentica: MicroAgentica<Model> = ctx.createAgent({
+  const { tokenUsage } = await ctx.conversate({
     source: "interfaceComplement",
     histories: transformInterfaceComplementHistories(
       ctx.state(),
@@ -62,22 +62,18 @@ async function step<Model extends ILlmSchema.Model>(
       },
     }),
     enforceFunctionCall: true,
+    message: "Fill missing schema types please",
   });
-
-  await agentica.conversate("Fill missing schema types please").finally(() => {
-    const tokenUsage = agentica.getTokenUsage().aggregate;
-    ctx.usage().record(tokenUsage, ["interface"]);
-  });
-  if (pointer.value === null) {
+  if (pointer.value === null)
     // unreachable
     throw new Error(
       "Failed to fill missing schema types. No response from agentica.",
     );
-  }
   ctx.dispatch({
     type: "interfaceComplement",
     missed,
     schemas: pointer.value,
+    tokenUsage,
     step: ctx.state().analyze?.step ?? 0,
     created_at: new Date().toISOString(),
   });

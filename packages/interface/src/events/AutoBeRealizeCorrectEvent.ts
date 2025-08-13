@@ -65,5 +65,18 @@ export interface AutoBeRealizeCorrectEvent
    */
   step: number;
 
+  /**
+   * Token consumption metrics for correcting this implementation file.
+   *
+   * Tracks the AI model's token usage during the correction phase when fixing
+   * compilation errors or logic flaws in the implementation. This metric
+   * captures the additional AI processing required beyond the initial generation,
+   * providing insights into the complexity of error correction and the
+   * effectiveness of the self-improving feedback loop.
+   *
+   * The token usage includes both analyzing the compiler error messages and
+   * regenerating the corrected implementation code, helping optimize the
+   * iterative refinement process of the Realize agent.
+   */
   tokenUsage: IAutoBeTokenUsageJson.IComponent;
 }
