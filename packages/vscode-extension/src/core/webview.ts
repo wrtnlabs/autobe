@@ -10,7 +10,6 @@ import {
   IAutoBeWebviewMessage,
   IResponseGetConfig,
 } from "@autobe/vscode-extension/interface";
-import { execSync } from "child_process";
 import { WorkerConnector } from "tgrid";
 import typia from "typia";
 import { ExtensionContext, Uri, Webview, WebviewView } from "vscode";
@@ -59,8 +58,6 @@ const getUri =
 export const getHtmlContent =
   (context: ExtensionContext) =>
   (webview: Webview): string => {
-    const a = execSync("ls -la");
-    console.log(a);
     const stylesUri = getUri(webview, context)(
       "webview-ui",
       "build",
@@ -147,6 +144,11 @@ class AutoBeWrapper {
     );
   }
 
+  private async postMessage(message: IAutoBeWebviewMessage) {
+    Logger.debug(`[AutoBe] postMessage: ${JSON.stringify(message)}`);
+    await this.webview.postMessage(message);
+  }
+
   private async updateConfig(
     apiKey: string | undefined,
     restConfig: Partial<IResponseGetConfig["data"]>,
@@ -167,13 +169,13 @@ class AutoBeWrapper {
     await this.context.globalState.update(AUTOBE_CONFIG, mergedConfig);
     this.config = mergedConfig;
   }
+
   public async handlePostMessage(message: IAutoBeWebviewMessage) {
     switch (message.type) {
-      case "req_get_api_key": {
-        const apiKey = await this.context.secrets.get(AUTOBE_API_KEY);
-        await this.webview.postMessage({
-          type: "res_get_api_key",
-          data: apiKey,
+      case "req_get_config": {
+        await this.postMessage({
+          type: "res_get_config",
+          data: this.config,
         });
         break;
       }
@@ -182,11 +184,13 @@ class AutoBeWrapper {
         await this.updateConfig(apiKey, restConfig);
         break;
       }
-      case "req_create_chat_session":
+      case "req_create_chat_session": {
         const session = await this.createChatSession();
-        await this.webview.postMessage({
+        await this.postMessage({
           type: "res_create_chat_session",
-          data: session.sessionId,
+          data: {
+            sessionId: session.sessionId,
+          },
         });
 
         await this.conversate({
@@ -194,16 +198,29 @@ class AutoBeWrapper {
           message: message.data.message,
         });
         break;
+      }
+      case "req_conversate_chat_session": {
+        const session = this.chatSessionMap.get(message.data.sessionId);
+        if (session === undefined) {
+          throw new Error("Session not found");
+        }
+        await this.conversate({
+          session,
+          message: message.data.message,
+        });
+        break;
+      }
     }
   }
 
   private async createChatSession() {
-    const sessionId = "123123123";
-    return {
-      sessionId,
+    const session = {
+      sessionId: crypto.randomUUID(),
       history: [],
       tokenUsage: new AutoBeTokenUsage().toJSON(),
-    };
+    } satisfies Session;
+    this.chatSessionMap.set(session.sessionId, session);
+    return session;
   }
 
   private async conversate(props: { session: Session; message: string }) {
@@ -235,16 +252,19 @@ class AutoBeWrapper {
         (acc, cur) => ({
           ...acc,
           [cur]: async (message: AutoBeEvent) => {
-            await this.webview.postMessage({
+            await this.postMessage({
               type: "on_event_auto_be",
+              sessionId: props.session.sessionId,
               data: message,
             });
-            Logger.debug(`on_event_auto_be: ${JSON.stringify(message)}`);
+
             props.session.tokenUsage = await props.session
               .agent!.getDriver()
               .getTokenUsage();
-            await this.webview.postMessage({
+
+            await this.postMessage({
               type: "on_event_update_token_usage",
+              sessionId: props.session.sessionId,
               data: props.session.tokenUsage,
             });
           },

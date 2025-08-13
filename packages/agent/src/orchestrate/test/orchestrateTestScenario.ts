@@ -106,7 +106,7 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
   dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>,
   endpointNotFound: string,
   entire: AutoBeOpenApi.IOperation[],
-  include: AutoBeOpenApi.IEndpoint[],
+  include: AutoBeOpenApi.IOperation[],
   exclude: AutoBeOpenApi.IEndpoint[],
   progress: IProgress,
 ) => {

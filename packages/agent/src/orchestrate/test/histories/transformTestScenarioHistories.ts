@@ -6,7 +6,7 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 
 export const transformTestScenarioHistories = (
   entire: AutoBeOpenApi.IOperation[],
-  include: Pick<AutoBeOpenApi.IOperation, "method" | "path">[],
+  include: AutoBeOpenApi.IOperation[],
   exclude: Pick<AutoBeOpenApi.IOperation, "method" | "path">[],
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
@@ -52,7 +52,10 @@ export const transformTestScenarioHistories = (
     text: [
       "# Included in Test Plan",
       include
-        .map((el) => `- ${el.method.toUpperCase()}: ${el.path}`)
+        .map(
+          (el) =>
+            `- ${el.method.toUpperCase()}: ${el.path} ${el.authorizationRole ? `(Role: ${el.authorizationRole})` : ""}`,
+        )
         .join("\n"),
       "",
       "# Excluded from Test Plan",

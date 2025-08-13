@@ -8,23 +8,23 @@ interface IConfigProps {
 
 const Config = (props: IConfigProps) => {
   const { onDone } = props;
-  const [apiKey, setApiKey] = useState("");
-  const [model, setModel] = useState("");
-  const [baseUrl, setBaseUrl] = useState("");
+  const [apiKey, setApiKey] = useState<string | null>(null);
+  const [model, setModel] = useState<string | null>(null);
+  const [baseUrl, setBaseUrl] = useState<string | null>(null);
   const [concurrencyRequest, setConcurrencyRequest] = useState(16);
 
   const vscode = useVsCode();
 
   vscode.onMessage(async (message) => {
-    if (message.type !== "res_get_api_key") {
+    if (message.type !== "res_get_config") {
       return;
     }
     const { apiKey, model, baseUrl, concurrencyRequest } = message.data;
 
-    setApiKey(apiKey);
-    setModel(model);
-    setBaseUrl(baseUrl);
-    setConcurrencyRequest(concurrencyRequest);
+    setApiKey(apiKey ?? null);
+    setModel(model ?? null);
+    setBaseUrl(baseUrl ?? null);
+    setConcurrencyRequest(concurrencyRequest ?? 16);
   });
 
   return (
@@ -34,7 +34,7 @@ const Config = (props: IConfigProps) => {
         <input
           type="password"
           placeholder="API Key is required!"
-          value={apiKey}
+          value={apiKey ?? ""}
           onChange={(e) => setApiKey(e.target.value)}
         />
       </div>
@@ -43,7 +43,7 @@ const Config = (props: IConfigProps) => {
         <input
           type="text"
           placeholder="Model is optional!"
-          value={model}
+          value={model ?? ""}
           onChange={(e) => setModel(e.target.value)}
         />
       </div>
@@ -52,7 +52,7 @@ const Config = (props: IConfigProps) => {
         <input
           type="text"
           placeholder="Base URL is optional"
-          value={baseUrl}
+          value={baseUrl ?? ""}
           onChange={(e) => setBaseUrl(e.target.value)}
         />
       </div>
@@ -70,7 +70,12 @@ const Config = (props: IConfigProps) => {
         onClick={() => {
           vscode.postMessage({
             type: "req_set_config",
-            data: { apiKey, model, baseUrl, concurrencyRequest },
+            data: {
+              apiKey: apiKey ?? undefined,
+              model: model ?? undefined,
+              baseUrl: baseUrl ?? undefined,
+              concurrencyRequest,
+            },
           });
           onDone();
         }}

@@ -1,31 +1,46 @@
 interface ITextInputProps {
   defaultValue: string;
   setInput: (value: string) => void;
-  onEnterKey: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  onEnterKey: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
 }
+
 const TextInput = (props: ITextInputProps) => {
   const { defaultValue, setInput, onEnterKey } = props;
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      onEnterKey(e);
+    }
+  };
+
+  const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInput(e.target.value);
+
+    // 자동 높이 조절
+    const textarea = e.target;
+    textarea.style.height = "auto";
+    textarea.style.height = Math.min(textarea.scrollHeight, 120) + "px"; // 최대 120px
+  };
+
   return (
-    <>
-      <input
-        type="text"
+    <div className="relative w-full max-w-4xl mx-auto">
+      <textarea
         value={defaultValue}
-        onChange={(e) => setInput(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            onEnterKey(e);
-          }
-        }}
-        placeholder="메시지를 입력하세요..."
-        className="w-full p-2 pr-12 border border-gray-300 rounded-md outline-none focus:ring-2 focus:ring-blue-500"
+        onChange={handleInput}
+        onKeyDown={handleKeyDown}
+        placeholder="메시지를 입력하세요... (Shift + Enter로 줄바꿈)"
+        className="w-full p-3 pr-12 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 resize-none min-h-[60px] max-h-[120px] leading-relaxed"
+        rows={2}
+        style={{ height: "60px" }}
       />
       <button
         onClick={() => {}}
-        className="absolute right-6 bottom-6 text-blue-500 hover:text-blue-600"
+        className="absolute right-3 bottom-3 text-blue-500 hover:text-blue-600 transition-colors duration-200"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className="h-6 w-6 transform rotate-90"
+          className="h-5 w-5 transform rotate-90"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -38,7 +53,7 @@ const TextInput = (props: ITextInputProps) => {
           />
         </svg>
       </button>
-    </>
+    </div>
   );
 };
 

@@ -17,17 +17,17 @@ export type IAutoBeWebviewMessage =
   | IActionToConfig;
 
 export interface IRequestGetConfig {
-  type: "req_get_api_key";
+  type: "req_get_config";
 }
 
 export interface IResponseGetConfig {
-  type: "res_get_api_key";
-  data: {
+  type: "res_get_config";
+  data: Partial<{
     apiKey: string;
     model: string;
     baseUrl: string;
     concurrencyRequest: number;
-  };
+  }>;
 }
 
 export interface IRequestSetConfig {

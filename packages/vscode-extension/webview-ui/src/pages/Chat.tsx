@@ -1,7 +1,11 @@
-import { AutoBeEvent, AutoBeHistory } from "@autobe/interface";
+import {
+  AutoBeEvent,
+  AutoBeHistory,
+  IAutoBeTokenUsageJson,
+} from "@autobe/interface";
 import { useEffect, useRef, useState } from "react";
 
-import ChatMovie from "../components/ChatMovie";
+import ChatMovie from "../components/Movie/ChatMovie";
 import TextInput from "../components/TextInput";
 import useVsCode from "../hooks/use-vscode";
 
@@ -32,6 +36,9 @@ const Chat = () => {
   const [event, setEvent] = useState<Array<AutoBeEvent>>([]);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [input, setInput] = useState("");
+  const [tokenUsage, setTokenUsage] = useState<IAutoBeTokenUsageJson | null>(
+    null,
+  );
   const chatBodyRef = useRef<HTMLDivElement>(null);
 
   vscode.onMessage((message) => {
@@ -44,6 +51,9 @@ const Chat = () => {
         break;
       case "res_create_chat_session":
         setSessionId(message.data.sessionId);
+        break;
+      case "on_event_update_token_usage":
+        setTokenUsage(message.data);
         break;
       default:
         break;
@@ -62,10 +72,14 @@ const Chat = () => {
       {/* Movie */}
       <div className="h-full w-full">
         <div className="h-full w-full">
-          {histories.length === 0 ? (
+          {histories.length === 0 && event.length === 0 ? (
             <WelcomeMessage className="flex h-full justify-center items-center" />
           ) : (
-            <ChatMovie histories={histories} events={event} />
+            <ChatMovie
+              histories={histories}
+              events={event}
+              tokenUsage={tokenUsage}
+            />
           )}
         </div>
       </div>

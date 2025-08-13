@@ -1,6 +1,7 @@
 import { AutoBeHistory } from "@autobe/interface";
 
-import AutoBeUserMessageHistoryMovie from "./AutoBeUserMessageHistoryMovie";
+import AutoBeAssistantMessage from "../AutoBeAssistantMessage";
+import AutoBeUserMessage from "../AutoBeUserMessage";
 
 interface IAutoBeHistoryMovieProps {
   history: AutoBeHistory;
@@ -13,6 +14,12 @@ const AutoBeHistoryMovie = (props: IAutoBeHistoryMovieProps) => {
     case "analyze":
       break;
     case "assistantMessage":
+      return (
+        <AutoBeAssistantMessage
+          text={history.text}
+          timestamp={history.created_at}
+        />
+      );
       break;
     case "interface":
       break;
@@ -23,7 +30,7 @@ const AutoBeHistoryMovie = (props: IAutoBeHistoryMovieProps) => {
     case "test":
       break;
     case "userMessage":
-      return <AutoBeUserMessageHistoryMovie history={history} />;
+      return <AutoBeUserMessage message={history.contents} />;
   }
   return <div>AutoBeHistoryMovie</div>;
 };
