@@ -197,7 +197,9 @@ The `step` property indicates which requirements analysis report iteration the d
         "packages/interface/src/events/AutoBeInterfaceStartEvent.ts",
         "packages/interface/src/events/AutoBeInterfaceEndpointsEvent.ts",
         "packages/interface/src/events/AutoBeInterfaceOperationsEvent.ts",
+        "packages/interface/src/events/AutoBeInterfaceOperationsReviewEvent.ts",
         "packages/interface/src/events/AutoBeInterfaceSchemasEvent.ts",
+        "packages/interface/src/events/AutoBeInterfaceSchemasReviewEvent.ts",
         "packages/interface/src/events/AutoBeInterfaceComplementEvent.ts",
         "packages/interface/src/events/AutoBeInterfaceCompleteEvent.ts"
       ]} 
@@ -251,7 +253,7 @@ The `step` property indicates which requirements analysis report iteration the A
       showLineNumbers
       paths={[
         "packages/interface/src/events/AutoBeTestStartEvent.ts",
-        "packages/interface/src/events/AutoBeTestScenarioEvent.ts",
+        "packages/interface/src/events/AutoBeTestScenariosEvent.ts",
         "packages/interface/src/events/AutoBeTestWriteEvent.ts",
         "packages/interface/src/events/AutoBeTestValidateEvent.ts",
         "packages/interface/src/events/AutoBeTestCorrectEvent.ts",
@@ -269,7 +271,7 @@ The `step` property indicates which requirements analysis report iteration the A
 
 ```mermaid
 flowchart LR
-  start[<a href="/autobe/api/interfaces/_autobe_interface.AutoBeTestStartEvent.html" target="_blank"><u>Start</u></a>] --"plans"--> scenarios[<a href="/autobe/api/interfaces/_autobe_interface.AutoBeTestScenarioEvent.html" target="_blank"><u>Scenarios</u></a>]
+  start[<a href="/autobe/api/interfaces/_autobe_interface.AutoBeTestStartEvent.html" target="_blank"><u>Start</u></a>] --"plans"--> scenarios[<a href="/autobe/api/interfaces/_autobe_interface.AutoBeTestScenariosEvent.html" target="_blank"><u>Scenarios</u></a>]
   scenarios --"coding"--> progress[<a href="/autobe/api/interfaces/_autobe_interface.AutoBeTestWriteEvent.html" target="_blank"><u>Progress</u></a>]
   scenarios --"compiles"--> validate[<a href="/autobe/api/interfaces/_autobe_interface.AutoBeTestValidateEvent.html" target="_blank"><u>Validate</u></a>]
   validate --"failure"--> correct[<a href="/autobe/api/interfaces/_autobe_interface.AutoBeTestCorrectEvent.html" target="_blank"><u>Correct</u></a>]
@@ -278,7 +280,7 @@ flowchart LR
 
 Test events monitor the e2e test code generation process.
 
-When `@autobe` writes e2e test code, it first fires the [`AutoBeTestStartEvent`](/api/interfaces/_autobe_interface.AutoBeTestStartEvent.html) event to signal the start of the test agent. Then it triggers the [`AutoBeTestScenarioEvent`](/api/interfaces/_autobe_interface.AutoBeTestScenarioEvent.html) event to create test scenarios. Subsequently, it writes each scenario in TypeScript code and fires [`AutoBeTestWriteEvent`](/api/interfaces/_autobe_interface.AutoBeTestWriteEvent.html) events to report the progress of test code writing.
+When `@autobe` writes e2e test code, it first fires the [`AutoBeTestStartEvent`](/api/interfaces/_autobe_interface.AutoBeTestStartEvent.html) event to signal the start of the test agent. Then it triggers the [`AutoBeTestScenariosEvent`](/api/interfaces/_autobe_interface.AutoBeTestScenariosEvent.html) event to create test scenarios. Subsequently, it writes each scenario in TypeScript code and fires [`AutoBeTestWriteEvent`](/api/interfaces/_autobe_interface.AutoBeTestWriteEvent.html) events to report the progress of test code writing.
 
 Next, the [`AutoBeTestValidateEvent`](/api/interfaces/_autobe_interface.AutoBeTestValidateEvent.html) event is triggered to validate the written test code using the TypeScript compiler. If compilation fails, the [`AutoBeTestCorrectEvent`](/api/interfaces/_autobe_interface.AutoBeTestCorrectEvent.html) event is fired to provide feedback to the AI for fixing compilation errors. The [`AutoBeTestValidateEvent`](/api/interfaces/_autobe_interface.AutoBeTestValidateEvent.html) event is then triggered again, repeating this cycle.
 
