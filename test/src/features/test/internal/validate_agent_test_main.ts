@@ -8,6 +8,7 @@ import {
   AutoBeTestHistory,
 } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
+import typia from "typia";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
@@ -24,18 +25,15 @@ export const validate_agent_test_main = async (
   // PREPARE AGENT
   const { agent } = await prepare_agent_test(factory, project);
   const snapshots: AutoBeEventSnapshot[] = [];
-  const enroll = (event: AutoBeEvent) => {
+  const listen = (event: AutoBeEvent) => {
     snapshots.push({
       event,
       tokenUsage: agent.getTokenUsage().toJSON(),
     });
   };
-  agent.on("testStart", enroll);
-  agent.on("testScenario", enroll);
-  agent.on("testWrite", enroll);
-  agent.on("testValidate", enroll);
-  agent.on("testCorrect", enroll);
-  agent.on("testComplete", enroll);
+  agent.on("assistantMessage", listen);
+  for (const type of typia.misc.literals<AutoBeEvent.Type>())
+    if (type.startsWith("test")) agent.on(type, listen);
 
   // DO TEST GENERATION
   const go = (reason: string) =>

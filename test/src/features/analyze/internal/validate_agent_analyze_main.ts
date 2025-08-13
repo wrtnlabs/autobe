@@ -37,11 +37,8 @@ export const validate_agent_analyze_main = async (
     });
   };
   agent.on("assistantMessage", listen);
-  agent.on("analyzeStart", listen);
-  agent.on("analyzeScenario", listen);
-  agent.on("analyzeWrite", listen);
-  agent.on("analyzeReview", listen);
-  agent.on("analyzeComplete", listen);
+  for (const type of typia.misc.literals<AutoBeEvent.Type>())
+    if (type.startsWith("analyze")) agent.on(type, listen);
 
   // GENERATE REPORT
   const zero: AutoBeTokenUsage = new AutoBeTokenUsage(

@@ -1,5 +1,4 @@
 import { AutoBeTokenUsage, orchestrate } from "@autobe/agent";
-import { OpenApiEndpointComparator } from "@autobe/agent/src/orchestrate/interface/utils/OpenApiEndpointComparator";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeAssistantMessageHistory,
@@ -8,7 +7,7 @@ import {
   AutoBeInterfaceHistory,
 } from "@autobe/interface";
 import { AutoBeInterfaceGroup } from "@autobe/interface/src/histories/contents/AutoBeInterfaceGroup";
-import { HashSet } from "tstl";
+import typia from "typia";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
@@ -32,16 +31,9 @@ export const validate_agent_interface_main = async (
       tokenUsage: agent.getTokenUsage().toJSON(),
     });
   };
-  agent.on("interfaceStart", listen);
-  agent.on("interfaceGroups", listen);
-  agent.on("interfaceEndpoints", listen);
-  agent.on("interfaceOperations", listen);
-  agent.on("interfaceOperationsReview", listen);
-  agent.on("interfaceAuthorizations", listen);
-  agent.on("interfaceSchemas", listen);
-  agent.on("interfaceSchemasReview", listen);
-  agent.on("interfaceComplement", listen);
-  agent.on("interfaceComplete", listen);
+  agent.on("assistantMessage", listen);
+  for (const type of typia.misc.literals<AutoBeEvent.Type>())
+    if (type.startsWith("interface")) agent.on(type, listen);
 
   // REQUEST INTERFACE GENERATION
   const go = (reason: string) =>
@@ -104,15 +96,11 @@ export const validate_agent_interface_main = async (
           .flat() satisfies AutoBeInterfaceGroup[],
       ),
       [`${project}.interface.endpoints.json`]: JSON.stringify(
-        new HashSet(
-          snapshots
-            .map((s) => s.event)
-            .filter((e) => e.type === "interfaceEndpoints")
-            .map((e) => e.endpoints)
-            .flat(),
-          OpenApiEndpointComparator.hashCode,
-          OpenApiEndpointComparator.equals,
-        ).toJSON(),
+        snapshots
+          .map((s) => s.event)
+          .filter((e) => e.type === "interfaceEndpoints")
+          .map((e) => e.endpoints)
+          .flat(),
       ),
       [`${project}.interface.operations.json`]: JSON.stringify(
         result.document.operations,

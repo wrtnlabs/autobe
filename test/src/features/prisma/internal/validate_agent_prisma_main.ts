@@ -11,6 +11,7 @@ import {
 } from "@autobe/interface";
 import { AutoBePrismaComponentsEvent } from "@autobe/interface/src/events/AutoBePrismaComponentsEvent";
 import { AutoBePrismaSchemasEvent } from "@autobe/interface/src/events/AutoBePrismaSchemasEvent";
+import typia from "typia";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
@@ -33,14 +34,9 @@ export const validate_agent_prisma_main = async (
       tokenUsage: agent.getTokenUsage().toJSON(),
     });
   };
-  agent.on("prismaStart", listen);
-  agent.on("prismaComponents", listen);
-  agent.on("prismaSchemas", listen);
-  agent.on("prismaInsufficient", listen);
-  agent.on("prismaReview", listen);
-  agent.on("prismaCorrect", listen);
-  agent.on("prismaValidate", listen);
-  agent.on("prismaComplete", listen);
+  agent.on("assistantMessage", listen);
+  for (const type of typia.misc.literals<AutoBeEvent.Type>())
+    if (type.startsWith("prisma")) agent.on(type, listen);
 
   let start: AutoBePrismaStartEvent | null = null;
   let components: AutoBePrismaComponentsEvent | null = null;

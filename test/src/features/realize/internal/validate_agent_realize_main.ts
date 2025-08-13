@@ -8,6 +8,7 @@ import {
   AutoBeRealizeHistory,
 } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
+import typia from "typia";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
@@ -24,7 +25,7 @@ export const validate_agent_realize_main = async (
   // PREPARE AGENT
   const { agent, zero } = await prepare_agent_realize(factory, project);
   const snapshots: AutoBeEventSnapshot[] = [];
-  const enroll = (event: AutoBeEvent) => {
+  const listen = (event: AutoBeEvent) => {
     snapshots.push({
       event,
       tokenUsage: agent.getTokenUsage().toJSON(),
@@ -38,27 +39,12 @@ export const validate_agent_realize_main = async (
       );
     }
   };
-
-  agent.on("realizeStart", enroll);
-  agent.on("realizeWrite", enroll);
-  agent.on("realizeCorrect", enroll);
-  agent.on("realizeValidate", enroll);
-  agent.on("realizeComplete", enroll);
-
-  agent.on("realizeAuthorizationStart", enroll);
-  agent.on("realizeAuthorizationWrite", enroll);
-  agent.on("realizeAuthorizationValidate", enroll);
-  agent.on("realizeAuthorizationCorrect", enroll);
-  agent.on("realizeAuthorizationComplete", enroll);
-
-  agent.on("realizeTestStart", enroll);
-  agent.on("realizeTestReset", enroll);
-  agent.on("realizeTestOperation", enroll);
-  agent.on("realizeTestComplete", enroll);
-
-  const ctx = agent.getContext();
+  agent.on("assistantMessage", listen);
+  for (const type of typia.misc.literals<AutoBeEvent.Type>())
+    if (type.startsWith("realize")) agent.on(type, listen);
 
   // DO TEST GENERATION
+  const ctx = agent.getContext();
   const go = (reason: string) =>
     orchestrateRealize(ctx)({
       reason,
