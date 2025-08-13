@@ -59,7 +59,7 @@ export function replaceImportStatements<Model extends ILlmSchema.Model>(
       /import\s*(?:type\s*)?{\s*[^}]+\s*}\s*from\s*["']@ORGANIZATION\/PROJECT-api\/lib\/structures\/[^"']+["']\s*;?\s*/gm,
       "",
     );
-    
+
     // Remove specific type imports that match our typeReferences
     for (const ref of typeReferences) {
       // Remove any import of this specific type from any path
@@ -118,6 +118,8 @@ export function replaceImportStatements<Model extends ILlmSchema.Model>(
 
     // Apply final beautification
     code = await compiler.typescript.beautify(code);
+
+    code = code.replaceAll("typia.tags.assert", "typia.assert");
 
     return code;
   };

@@ -2,8 +2,9 @@ import { AutoBeOpenApi, AutoBeRealizeAuthorization } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
+import { IAutoBeRealizeScenarioApplication } from "./structures/IAutoBeRealizeScenarioApplication";
 
-export interface RealizePlannerOutput {
+export interface IAutoBeRealizeScenario {
   /**
    * The name of the function to be generated.
    *
@@ -56,7 +57,7 @@ export interface RealizePlannerOutput {
    * Extracted from the Swagger operation method. Used to define the request
    * type during code and test generation.
    */
-  operationType: "get" | "post" | "put" | "delete" | "patch";
+  method: "get" | "post" | "put" | "delete" | "patch";
 
   /**
    * List of scenario descriptions for test code generation.
@@ -91,16 +92,17 @@ export interface RealizePlannerOutput {
  * next step in the AutoBE pipeline, which is responsible for generating the
  * actual implementation code.
  *
+ * @author Kakasoo
  * @param ctx - AutoBE context including model and configuration
  * @param operation - A single OpenAPI operation object to analyze and plan
  * @returns A planning object containing all structural information needed to
  *   generate the function
  */
-export const orchestrateRealizePlanner = async <Model extends ILlmSchema.Model>(
+export const orchestrateRealizeScenario = <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   operation: AutoBeOpenApi.IOperation,
   authorization?: AutoBeRealizeAuthorization,
-): Promise<RealizePlannerOutput> => {
+): IAutoBeRealizeScenarioApplication.IProps => {
   const testScenarios =
     ctx
       .state()
@@ -110,18 +112,16 @@ export const orchestrateRealizePlanner = async <Model extends ILlmSchema.Model>(
           el.scenario.endpoint.path === operation.path,
       ) ?? [];
 
+  const functionName = `${operation.method}_${operation.path
+    .replaceAll("/", "_")
+    .replaceAll("-", "_")
+    .replaceAll("{", "$")
+    .replaceAll("}", "")}`;
   return {
-    description: operation.description,
-    parameters: operation.parameters,
-    inputSchema: operation.requestBody,
-    outputSchema: operation.responseBody,
-    operationType: operation.method,
+    operation: operation,
+    functionName: functionName,
+    location: `src/providers/${functionName}.ts`,
     testScenarios: testScenarios.map((el) => el.scenario.draft),
-    functionName: `${operation.method}_${operation.path
-      .replaceAll("/", "_")
-      .replaceAll("-", "_")
-      .replaceAll("{", "$")
-      .replaceAll("}", "")}`,
     decoratorEvent: authorization,
-  } satisfies RealizePlannerOutput;
+  };
 };

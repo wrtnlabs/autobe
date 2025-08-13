@@ -34,11 +34,16 @@ export const validate_agent_realize_main = async (
     if (event.type === "realizeWrite" || event.type === "realizeCorrect") {
       console.log(
         event.type,
-        event.filename,
+        event.location,
         `${event.completed} / ${event.total} completed.`,
       );
     }
+
+    if (event.type === "realizeComplete") {
+      console.log("Realize completed.: ", event.compiled.type);
+    }
   };
+
   agent.on("assistantMessage", listen);
   for (const type of typia.misc.literals<AutoBeEvent.Type>())
     if (type.startsWith("realize")) agent.on(type, listen);
