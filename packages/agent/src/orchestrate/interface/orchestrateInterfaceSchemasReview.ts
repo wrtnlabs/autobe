@@ -8,12 +8,24 @@ import { IPointer } from "tstl";
 import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
+import { forceRetry } from "../../utils/forceRetry";
 import { transformInterfaceSchemasReviewHistories } from "./histories/transformInterfaceSchemasReviewHistories";
 import { IAutoBeInterfaceSchemasReviewApplication } from "./structures/IAutobeInterfaceSchemasReviewApplication";
 
-export async function orchestrateInterfaceSchemasReview<
+export const orchestrateInterfaceSchemasReview = <
   Model extends ILlmSchema.Model,
 >(
+  ctx: AutoBeContext<Model>,
+  operations: AutoBeOpenApi.IOperation[],
+  schemas: Record<
+    string,
+    AutoBeOpenApi.IJsonSchemaDescriptive<AutoBeOpenApi.IJsonSchema>
+  >,
+  progress: { total: number; completed: number },
+): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> =>
+  forceRetry(() => orchestrate(ctx, operations, schemas, progress));
+
+async function orchestrate<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   operations: AutoBeOpenApi.IOperation[],
   schemas: Record<

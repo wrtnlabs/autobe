@@ -8,13 +8,21 @@ import { IPointer } from "tstl";
 import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
+import { forceRetry } from "../../utils/forceRetry";
 import { IProgress } from "../internal/IProgress";
 import { transformInterfaceOperationsReviewHistories } from "./histories/transformInterfaceOperationsReviewHistories";
 import { IAutoBeInterfaceOperationsReviewApplication } from "./structures/IAutoBeInterfaceOperationsReviewApplication";
 
-export async function orchestrateInterfaceOperationsReview<
+export const orchestrateInterfaceOperationsReview = <
   Model extends ILlmSchema.Model,
 >(
+  ctx: AutoBeContext<Model>,
+  operations: AutoBeOpenApi.IOperation[],
+  progress: IProgress,
+): Promise<AutoBeOpenApi.IOperation[]> =>
+  forceRetry(() => orchestrate(ctx, operations, progress));
+
+async function orchestrate<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   operations: AutoBeOpenApi.IOperation[],
   progress: IProgress,
