@@ -6,15 +6,19 @@ type StepName = "analyze" | "prisma" | "interface" | "test" | "realize";
 
 export const predicateStateMessage = (
   state: AutoBeState,
-  future: "analyze" | "prisma" | "interface" | "test" | "realize",
+  future: StepName,
 ): string | null => {
   if (future === "analyze") return null;
-  else if (future === "prisma") return predicatePrisma(state);
-  else if (future === "interface") return predicateInterface(state);
-  else if (future === "test") return predicateTest(state);
-  else if (future === "realize") return predicateRealize(state);
-  future satisfies never;
-  throw new Error("Unknown current state");
+  if (future === "prisma") return predicatePrisma(state);
+
+  const futureIndex: number = STEP_ORDER.indexOf(future);
+  for (const key of STEP_ORDER.slice(0, futureIndex))
+    if (state[key] === null) return buildMissingStepsMessage(future, key);
+
+  const prevStepName: StepName = STEP_ORDER[futureIndex - 1];
+  if (state.analyze!.step !== state[prevStepName]!.step)
+    return buildOutdatedMessage(prevStepName, "analyze", state);
+  return null;
 };
 
 const buildMissingStepsMessage = (
@@ -78,42 +82,6 @@ const predicatePrisma = (state: AutoBeState): string | null => {
     Designing database can be resumed after the requirement analysis 
     is completed.
   `;
-};
-
-const predicateInterface = (state: AutoBeState): string | null => {
-  if (state.analyze === null)
-    return buildMissingStepsMessage("interface", "analyze");
-  else if (state.prisma === null)
-    return buildMissingStepsMessage("interface", "prisma");
-  else if (state.analyze.step !== state.prisma.step)
-    return buildOutdatedMessage("prisma", "analyze", state);
-  return null;
-};
-
-const predicateTest = (state: AutoBeState): string | null => {
-  if (state.analyze === null)
-    return buildMissingStepsMessage("test", "analyze");
-  else if (state.prisma === null)
-    return buildMissingStepsMessage("test", "prisma");
-  else if (state.interface === null)
-    return buildMissingStepsMessage("test", "interface");
-  else if (state.analyze.step !== state.interface.step)
-    return buildOutdatedMessage("interface", "analyze", state);
-  return null;
-};
-
-const predicateRealize = (state: AutoBeState): string | null => {
-  if (state.analyze === null)
-    return buildMissingStepsMessage("realize", "analyze");
-  else if (state.prisma === null)
-    return buildMissingStepsMessage("realize", "prisma");
-  else if (state.interface === null)
-    return buildMissingStepsMessage("realize", "interface");
-  else if (state.test === null)
-    return buildMissingStepsMessage("realize", "test");
-  else if (state.analyze.step !== state.test.step)
-    return buildOutdatedMessage("test", "analyze", state);
-  return null;
 };
 
 const STEP_DESCRIPTIONS: Record<StepName, string> = {
