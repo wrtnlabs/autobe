@@ -28,6 +28,9 @@ export const getAutoBeWebviewProvider = (context: ExtensionContext) => {
         );
         await instance.handlePostMessage(message);
       });
+      panel.onDidDispose(async () => {
+        await instance.dispose();
+      });
     },
   };
 };

@@ -12,7 +12,7 @@ import {
 } from "@autobe/vscode-extension/interface";
 import { WorkerConnector } from "tgrid";
 import typia from "typia";
-import { ExtensionContext, Uri, Webview, window, workspace } from "vscode";
+import { ExtensionContext, Uri, Webview, workspace } from "vscode";
 
 import { Logger } from "../Logger";
 import {
@@ -54,22 +54,39 @@ export class AutoBeWrapper {
   }
 
   public async initialize() {
-    const chatSessionMap = await this.context.globalState.get(
-      AUTOBE_CHAT_SESSION_MAP,
-    );
-    (chatSessionMap as Array<[string, Session]> | undefined)?.forEach(
-      ([sessionId, session]) => {
-        this.chatSessionMap.set(sessionId, session);
-      },
+    const chatSessionMap = typia.json.assertParse<
+      Array<{
+        sessionId: string;
+        history: AutoBeHistory[];
+        tokenUsage: IAutoBeTokenUsageJson;
+      }>
+    >((await this.context.globalState.get(AUTOBE_CHAT_SESSION_MAP)) ?? "[]");
+    chatSessionMap.forEach((session) => {
+      this.chatSessionMap.set(session.sessionId, session);
+    });
+    Logger.debug(
+      `AutoBeWrapper initialize: ${(chatSessionMap as any)?.length}`,
     );
     await this.updateConfig(undefined, {});
   }
 
-  public async dispose() {
+  private async save() {
     await this.context.globalState.update(
       AUTOBE_CHAT_SESSION_MAP,
-      Array.from(this.chatSessionMap.entries()),
+      typia.json.assertStringify(
+        Array.from(this.chatSessionMap.entries()).map(
+          ([sessionId, session]) => ({
+            sessionId,
+            history: session.history,
+            tokenUsage: session.tokenUsage,
+          }),
+        ),
+      ),
     );
+  }
+
+  public async dispose() {
+    await this.save();
     this.chatSessionMap.forEach((session) => {
       session.agent?.close();
     });
@@ -184,6 +201,52 @@ export class AutoBeWrapper {
         });
         return;
       }
+      case "req_remove_session": {
+        this.chatSessionMap.delete(message.data.sessionId);
+        await this.save();
+        return;
+      }
+      case "req_get_session_list": {
+        const sessionList = Array.from(this.chatSessionMap.entries()).map(
+          ([sessionId, session]) => ({
+            lastConversation:
+              session.history.find((v) => "text" in v)?.text ?? "",
+            updatedAt: new Date(
+              session.history[session.history.length - 1].created_at,
+            ).valueOf(),
+            sessionId,
+            tokenUsage: {
+              inputTokens: session.tokenUsage.aggregate.input.total,
+              outputTokens: session.tokenUsage.aggregate.output.total,
+              totalTokens: session.tokenUsage.aggregate.total,
+            },
+          }),
+        );
+        sessionList.sort((a, b) => b.updatedAt - a.updatedAt);
+        await this.postMessage({
+          type: "res_get_session_list",
+          data: {
+            sessionList,
+          },
+        });
+        return;
+      }
+
+      case "req_get_session_detail": {
+        const session = this.chatSessionMap.get(message.data.sessionId);
+        if (session === undefined) {
+          throw new Error("Session not found");
+        }
+        await this.postMessage({
+          type: "res_get_session_detail",
+          data: {
+            sessionId: session.sessionId,
+            history: session.history,
+            tokenUsage: session.tokenUsage,
+          },
+        });
+        return;
+      }
     }
   }
 
@@ -241,6 +304,7 @@ export class AutoBeWrapper {
               sessionId: props.session.sessionId,
               data: props.session.tokenUsage,
             });
+            await this.save();
           },
         }),
         {} as IAutoBeRpcListener,
