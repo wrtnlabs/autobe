@@ -52,10 +52,6 @@ const AutoBePrismaHistoryComponent = (props: IAutoBePrismaHistoryProps) => {
           }
         />
       </HistoryInfoCard>
-
-      <HistoryInfoCard title="요구사항 분석 단계" theme="green">
-        {history.step}단계
-      </HistoryInfoCard>
     </HistoryBubble>
   );
 };
