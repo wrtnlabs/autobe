@@ -87,7 +87,7 @@ export const validate_agent_interface_main = async (
         snapshots.map((s) => ({
           event: s.event,
           tokenUsage: new AutoBeTokenUsage(s.tokenUsage)
-            .decrement(zero)
+            .increment(zero)
             .toJSON(),
         })),
       ),
