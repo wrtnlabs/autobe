@@ -1,11 +1,33 @@
-import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
 import { AutoBeOpenApi } from "../openapi";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./AutoBeProgressEventBase";
+import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
 
+/**
+ * Event emitted during the API authorization and security design phase.
+ *
+ * This event is triggered when the Interface Agent is defining authorization
+ * and security configurations for API operations. It represents the process of
+ * establishing access control, authentication requirements, and security
+ * policies for each API endpoint, ensuring that the generated backend
+ * application implements proper security measures.
+ *
+ * The authorization phase transforms basic API endpoints into secure,
+ * production-ready operations by adding authentication schemes, authorization
+ * rules, and security headers. This critical step ensures that sensitive
+ * business operations are properly protected and that the API adheres to
+ * security best practices and compliance requirements.
+ *
+ * By extending multiple base interfaces, this event provides comprehensive
+ * tracking capabilities including progress monitoring for batch operation
+ * processing and token usage analytics for cost optimization.
+ *
+ * @author Michael
+ */
 export interface AutoBeInterfaceAuthorizationEvent
   extends AutoBeEventBase<"interfaceAuthorization">,
-    AutoBeProgressEventBase {
+    AutoBeProgressEventBase,
+    AutoBeTokenUsageEventBase {
   /**
    * Array of API operations being defined for the endpoints.
    *
@@ -36,19 +58,4 @@ export interface AutoBeInterfaceAuthorizationEvent
    * relevant to the current project scope and business objectives.
    */
   step: number;
-
-  /**
-   * Token usage statistics for the authorization definition process.
-   *
-   * Tracks the computational resources consumed by the Interface agent when
-   * defining security requirements and authorization rules for API operations.
-   * This metric reflects the complexity of establishing comprehensive access
-   * control policies, including role-based permissions, authentication
-   * requirements, and operation-specific security constraints.
-   *
-   * The token usage increases with the sophistication of authorization logic,
-   * including multi-level permission hierarchies, conditional access rules, and
-   * integration with various authentication mechanisms across the API.
-   */
-  tokenUsage: IAutoBeTokenUsageJson.IComponent;
 }
