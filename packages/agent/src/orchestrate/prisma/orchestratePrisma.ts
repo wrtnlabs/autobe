@@ -9,7 +9,9 @@ import {
   IAutoBePrismaValidation,
 } from "@autobe/interface";
 import { AutoBePrismaSchemasEvent } from "@autobe/interface/src/events/AutoBePrismaSchemasEvent";
+import { StringUtil } from "@autobe/utils";
 import { ILlmSchema } from "@samchon/openapi";
+import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
@@ -22,7 +24,24 @@ export const orchestratePrisma = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: IAutoBeApplicationProps,
 ): Promise<AutoBePrismaHistory | AutoBeAssistantMessageHistory> => {
+  // PREDICATION
   const start: Date = new Date();
+  if (ctx.state().analyze === null)
+    return ctx.assistantMessage({
+      type: "assistantMessage",
+      id: v4(),
+      created_at: start.toISOString(),
+      text: StringUtil.trim`
+        Requirement analysis has not been proceeded yet.
+
+        Debate what you want to make with AI, so let the AI to write 
+        the requirement analysis report about the subject.
+
+        Designing database can be resumed after the requirement analysis 
+        is completed.
+      `,
+      completed_at: new Date().toISOString(),
+    });
   ctx.dispatch({
     type: "prismaStart",
     created_at: start.toISOString(),
@@ -31,12 +50,9 @@ export const orchestratePrisma = async <Model extends ILlmSchema.Model>(
   });
 
   // COMPONENTS
-  const componentEvent:
-    | AutoBeAssistantMessageHistory
-    | AutoBePrismaComponentsEvent = await orchestratePrismaComponents(ctx);
-  if (componentEvent.type === "assistantMessage")
-    return ctx.assistantMessage(componentEvent);
-  else ctx.dispatch(componentEvent);
+  const componentEvent: AutoBePrismaComponentsEvent =
+    await orchestratePrismaComponents(ctx);
+  ctx.dispatch(componentEvent);
 
   // CONSTRUCT AST DATA
   const schemaEvents: AutoBePrismaSchemasEvent[] =

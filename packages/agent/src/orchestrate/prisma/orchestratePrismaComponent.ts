@@ -1,13 +1,8 @@
-import {
-  AgenticaAssistantMessageHistory,
-  IAgenticaController,
-} from "@agentica/core";
-import { AutoBeAssistantMessageHistory } from "@autobe/interface";
+import { IAgenticaController } from "@agentica/core";
 import { AutoBePrismaComponentsEvent } from "@autobe/interface/src/events/AutoBePrismaComponentsEvent";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
-import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
@@ -18,14 +13,14 @@ export async function orchestratePrismaComponents<
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
-  message: string = "Please extract files and tables from the given documents.",
-): Promise<AutoBeAssistantMessageHistory | AutoBePrismaComponentsEvent> {
+  message: string = "Design database from the given requirement analysis documents.",
+): Promise<AutoBePrismaComponentsEvent> {
   const start: Date = new Date();
   const pointer: IPointer<IAutoBePrismaComponentApplication.IProps | null> = {
     value: null,
   };
   const prefix: string | null = ctx.state().analyze?.prefix ?? null;
-  const { histories, tokenUsage } = await ctx.conversate({
+  const { tokenUsage } = await ctx.conversate({
     source: "prismaComponents",
     histories: transformPrismaComponentsHistories(ctx.state(), prefix),
     controller: createController({
@@ -34,19 +29,11 @@ export async function orchestratePrismaComponents<
         pointer.value = next;
       },
     }),
-    enforceFunctionCall: false,
+    enforceFunctionCall: true,
     message,
   });
-  if (histories.at(-1)?.type === "assistantMessage")
-    return {
-      ...(histories.at(-1)! as AgenticaAssistantMessageHistory),
-      created_at: start.toISOString(),
-      completed_at: new Date().toISOString(),
-      id: v4(),
-    } satisfies AutoBeAssistantMessageHistory;
-  else if (pointer.value === null) {
+  if (pointer.value === null)
     throw new Error("Failed to extract files and tables."); // unreachable
-  }
   return {
     type: "prismaComponents",
     created_at: start.toISOString(),

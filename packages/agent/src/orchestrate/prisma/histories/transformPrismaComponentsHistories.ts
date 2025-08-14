@@ -11,18 +11,8 @@ export const transformPrismaComponentsHistories = (
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
   if (state.analyze === null)
-    return [
-      {
-        id: v4(),
-        created_at: new Date().toISOString(),
-        type: "systemMessage",
-        text: [
-          "Requirement analysis is not yet completed.",
-          "Don't call any tool function,",
-          "but say to process the requirement analysis.",
-        ].join(" "),
-      },
-    ];
+    // unreachable
+    throw new Error("Analyze state is not set.");
   return [
     {
       id: v4(),

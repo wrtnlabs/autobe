@@ -21,8 +21,12 @@ export const orchestrateInterface =
   async (
     props: IAutoBeApplicationProps,
   ): Promise<AutoBeAssistantMessageHistory | AutoBeInterfaceHistory> => {
-    // ENDPOINTS
+    // PREDICATION
     const start: Date = new Date();
+    if (ctx.state().analyze === null) {
+    } else if (ctx.state().prisma === null) {
+    }
+
     ctx.dispatch({
       type: "interfaceStart",
       created_at: start.toISOString(),
@@ -30,6 +34,7 @@ export const orchestrateInterface =
       step: ctx.state().analyze?.step ?? 0,
     });
 
+    // ENDPOINTS
     const init: AutoBeAssistantMessageHistory | AutoBeInterfaceGroupsEvent =
       await orchestrateInterfaceGroups(ctx);
     if (init.type === "assistantMessage") return ctx.assistantMessage(init);
