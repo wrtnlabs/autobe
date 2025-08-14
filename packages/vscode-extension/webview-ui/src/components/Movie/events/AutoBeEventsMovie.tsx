@@ -1,9 +1,15 @@
-import { AutoBeEvent, AutoBeUserMessageHistory } from "@autobe/interface";
+import {
+  AutoBeEvent,
+  AutoBeProgressEventBase,
+  AutoBeUserMessageHistory,
+} from "@autobe/interface";
 
 import AssistantMessage from "../AutoBeAssistantMessage";
 import AutoBeUserMessage from "../AutoBeUserMessage";
 import AutoBeStartEvent from "./AutoBeStartEvent";
-import ProgressEventsMovie from "./ProgressEventsMovie";
+import ProgressEventsMovie, {
+  IProgressEventsMovieProps,
+} from "./ProgressEventsMovie";
 import AnalyzeComplete from "./analyze/AnalyzeComplete";
 import AnalyzeScenario from "./analyze/AnalyzeScenario";
 import PrismaComponents from "./prisma/PrismaComponents";
@@ -12,8 +18,23 @@ interface IAutoBeEventsMovieProps {
   event: AutoBeEvent;
 }
 
+const isAutoBeProgressEventBase = (
+  event: AutoBeEvent,
+): event is IProgressEventsMovieProps["event"] => {
+  return (
+    "total" in event &&
+    "completed" in event &&
+    typeof event.total === "number" &&
+    typeof event.completed === "number"
+  );
+};
 const AutoBeEventsMovie = (props: IAutoBeEventsMovieProps) => {
   const { event } = props;
+
+  if (isAutoBeProgressEventBase(event)) {
+    return <ProgressEventsMovie event={event} />;
+  }
+
   switch (event.type) {
     case "assistantMessage":
       return (
@@ -38,44 +59,24 @@ const AutoBeEventsMovie = (props: IAutoBeEventsMovieProps) => {
     case "prismaComponents": {
       return <PrismaComponents event={event} />;
     }
-
-    case "analyzeWrite":
-    case "analyzeReview":
-    case "prismaSchemas":
-    case "prismaReview":
-    case "interfaceEndpoints":
-    case "interfaceOperationsReview":
-    case "interfaceSchemas":
-    case "interfaceSchemasReview": {
-      return <ProgressEventsMovie event={event} />;
-    }
-
     case "analyzeComplete":
       return <AnalyzeComplete event={event} />;
     case "interfaceGroups":
-    case "interfaceOperations":
-    case "interfaceAuthorization":
     case "interfaceComplement":
     case "interfaceComplete":
     case "prismaInsufficient":
     case "prismaValidate":
     case "prismaCorrect":
     case "prismaComplete":
-    case "testScenarios":
-    case "testWrite":
     case "testValidate":
     case "testCorrect":
     case "testComplete":
-    case "realizeWrite":
-    case "realizeCorrect":
     case "realizeValidate":
     case "realizeComplete":
-    case "realizeAuthorizationWrite":
     case "realizeAuthorizationValidate":
     case "realizeAuthorizationCorrect":
     case "realizeAuthorizationComplete":
     case "realizeTestReset":
-    case "realizeTestOperation":
     case "realizeTestComplete":
       return <div>{event.type}</div>;
     default:

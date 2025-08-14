@@ -1,29 +1,12 @@
-import {
-  AutoBeAnalyzeReviewEvent,
-  AutoBeAnalyzeWriteEvent,
-  AutoBeInterfaceEndpointsEvent,
-  AutoBeInterfaceOperationsReviewEvent,
-  AutoBeInterfaceSchemasEvent,
-  AutoBeInterfaceSchemasReviewEvent,
-  AutoBePrismaReviewEvent,
-  AutoBePrismaSchemasEvent,
-} from "@autobe/interface";
+import { AutoBeEvent, AutoBeProgressEventBase } from "@autobe/interface";
 
 import ChatBubble from "../../ChatBubble";
 
-interface IProgressEventsMovieProps {
-  event: /** Analyze */
-  | AutoBeAnalyzeWriteEvent
-    | AutoBeAnalyzeReviewEvent
-    /** Prisma */
-    | AutoBePrismaSchemasEvent
-    | AutoBePrismaReviewEvent
-
-    /** Interface */
-    | AutoBeInterfaceEndpointsEvent
-    | AutoBeInterfaceOperationsReviewEvent
-    | AutoBeInterfaceSchemasEvent
-    | AutoBeInterfaceSchemasReviewEvent;
+type ExtractTarget<T extends AutoBeEvent> = T extends AutoBeProgressEventBase
+  ? T
+  : never;
+export interface IProgressEventsMovieProps {
+  event: ExtractTarget<AutoBeEvent>;
 }
 
 const ProgressEventsMovie = (props: IProgressEventsMovieProps) => {
@@ -60,28 +43,27 @@ const generateProgressBar = (percent: number): string => {
   return `[${filled}${empty}]`;
 };
 
+const TITLE_MAP = {
+  analyzeWrite: "분석 초안 작성",
+  analyzeReview: "분석안 퇴고",
+  prismaSchemas: "데이터베이스 스키마 (Prisma)",
+  prismaReview: "데이터베이스 스키마 (Prisma) 퇴고",
+  interfaceEndpoints: "API 인터페이스 (Interface)",
+  interfaceOperationsReview: "API 인터페이스 (Interface) 퇴고",
+  interfaceSchemas: "API 인터페이스 (Interface) 스키마",
+  interfaceSchemasReview: "API 인터페이스 (Interface) 스키마 퇴고",
+  interfaceAuthorization: "API 인터페이스 (Interface) 권한 설정",
+  interfaceOperations: "API 인터페이스 (Interface) 작업",
+  testScenarios: "테스트 시나리오",
+  testWrite: "테스트 초안 작성",
+  realizeWrite: "코드 구현 초안 작성",
+  realizeCorrect: "코드 구현 퇴고",
+  realizeAuthorizationWrite: "권한 코드 구현",
+  realizeTestOperation: "테스트 코드 구현",
+} satisfies Record<ExtractTarget<AutoBeEvent>["type"], string>;
+
 const getTitle = (event: IProgressEventsMovieProps["event"]) => {
-  switch (event.type) {
-    case "analyzeWrite": {
-      return "분석 초안 작성";
-    }
-    case "analyzeReview": {
-      return "분석안 퇴고";
-    }
-    case "prismaSchemas":
-    case "prismaReview": {
-      return "데이터베이스 스키마 (Prisma)";
-    }
-    case "interfaceEndpoints":
-    case "interfaceOperationsReview":
-    case "interfaceSchemas":
-    case "interfaceSchemasReview": {
-      return "API 인터페이스 (Interface)";
-    }
-    default: {
-      return "알 수 없음";
-    }
-  }
+  return TITLE_MAP[event.type] ?? "아무튼 무언가 작업 중";
 };
 
 export default ProgressEventsMovie;
