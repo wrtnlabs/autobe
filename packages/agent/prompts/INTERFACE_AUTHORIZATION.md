@@ -24,7 +24,7 @@ Generate JWT authentication operations in two categories:
 - Non-security related account settings
 
 ## 3. Essential Operations (Generate If Basic Fields Exist)
-I
+
 These operations should be generated for every role if the basic authentication fields exist in the schema:
 
 ### 3.1. Core Authentication Flow
