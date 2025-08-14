@@ -21,6 +21,11 @@ export async function activate(context: ExtensionContext) {
     window.registerWebviewViewProvider(
       "autobe-vscode-extension-views",
       getAutoBeWebviewProvider(context),
+      {
+        webviewOptions: {
+          retainContextWhenHidden: true,
+        },
+      },
     ),
   );
   Logger.info("AutoBe VSCode Extension end activated");
