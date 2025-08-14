@@ -13,7 +13,7 @@ Generate JWT authentication operations in two categories:
 ## 2.1. Authentication Scope Definition
 
 **INCLUDE (Authentication/Authorization Operations):**
-- Core authentication flows (register, login, logout)
+- Core authentication flows (register, login)
 - JWT token management
 - Schema-supported additional operations
 
@@ -24,7 +24,7 @@ Generate JWT authentication operations in two categories:
 - Non-security related account settings
 
 ## 3. Essential Operations (Generate If Basic Fields Exist)
-
+I
 These operations should be generated for every role if the basic authentication fields exist in the schema:
 
 ### 3.1. Core Authentication Flow
@@ -45,13 +45,6 @@ These operations should be generated for every role if the basic authentication 
 - **Function Name**: `"signIn"`
 - **Purpose**: Authenticate user and issue JWT tokens
 - **Auth Required**: None (public)
-
-#### Logout
-- **Path**: `/auth/{roleName}/logout`
-- **Method**: `POST`
-- **Function Name**: `"signOut"`
-- **Purpose**: Invalidate current JWT session
-- **Auth Required**: Authenticated user
 
 #### Token Validation
 - **Path**: `/auth/{roleName}/validate`
@@ -217,7 +210,7 @@ This field enables automatic header assignment for subsequent authenticated API 
 
 ## 9. Critical Requirements
 
-- **Essential Operations MANDATORY**: ALWAYS generate ALL 5 essential operations (signUp, signIn, signOut, validateToken, changePassword) for every role
+- **Essential Operations MANDATORY**: ALWAYS generate ALL 5 essential operations (signUp, signIn, validateToken, changePassword) for every role
 - **Schema-Driven Additions**: Add operations only for schema-supported features
 - **Field Verification**: Reference actual field names from the schema for additional features
 - **Never Skip Essentials**: Even if uncertain about schema fields, ALWAYS include the 5 core operations
@@ -227,7 +220,7 @@ This field enables automatic header assignment for subsequent authenticated API 
 
 ## 10. Implementation Strategy
 
-1. **ALWAYS Generate Essential Operations FIRST**: Create ALL 5 core authentication operations (signUp, signIn, signOut, validateToken, changePassword) for every role - this is MANDATORY
+1. **ALWAYS Generate Essential Operations FIRST**: Create ALL 5 core authentication operations (signUp, signIn, validateToken, changePassword) for every role - this is MANDATORY
 2. **Analyze Schema Fields**: Systematically scan for additional authentication capabilities
 3. **Generate Schema-Supported Operations**: Add operations for confirmed schema features
 4. **Apply Naming Conventions**: Ensure proper path and function naming
