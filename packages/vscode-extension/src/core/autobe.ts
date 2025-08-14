@@ -10,6 +10,8 @@ import {
   IAutoBeWebviewMessage,
   IResponseGetConfig,
 } from "@autobe/vscode-extension/interface";
+import { access, mkdir, readFile, writeFile } from "fs/promises";
+import { join } from "path";
 import { WorkerConnector } from "tgrid";
 import typia from "typia";
 import { ExtensionContext, Uri, Webview, workspace } from "vscode";
@@ -17,8 +19,8 @@ import { ExtensionContext, Uri, Webview, workspace } from "vscode";
 import { Logger } from "../Logger";
 import {
   AUTOBE_API_KEY,
-  AUTOBE_CHAT_SESSION_MAP,
   AUTOBE_CONFIG,
+  AUTOBE_SESSION_STORAGE_FILE_NAME,
 } from "../constant/key";
 
 type RpcHeader = {
@@ -55,9 +57,22 @@ export class AutoBeWrapper {
   }
 
   public async initialize() {
-    const chatSessionMap = JSON.parse(
-      (await this.context.globalState.get(AUTOBE_CHAT_SESSION_MAP)) ?? "[]",
-    ) as Array<{
+    const storagePath = join(
+      this.context.globalStorageUri.fsPath,
+      AUTOBE_SESSION_STORAGE_FILE_NAME,
+    );
+    await mkdir(this.context.globalStorageUri.fsPath, { recursive: true });
+
+    if (
+      (await access(storagePath)
+        .then((v) => true)
+        .catch((v) => false)) === false
+    ) {
+      return;
+    }
+
+    const storage = await readFile(storagePath, "utf-8");
+    const chatSessionMap = JSON.parse(storage) as Array<{
       sessionId: string;
       history: AutoBeHistory[];
       tokenUsage: IAutoBeTokenUsageJson;
@@ -73,8 +88,12 @@ export class AutoBeWrapper {
   }
 
   private async save() {
-    await this.context.globalState.update(
-      AUTOBE_CHAT_SESSION_MAP,
+    const storagePath = join(
+      this.context.globalStorageUri.fsPath,
+      AUTOBE_SESSION_STORAGE_FILE_NAME,
+    );
+    await writeFile(
+      storagePath,
       JSON.stringify(
         Array.from(this.chatSessionMap.entries()).map(
           ([sessionId, session]) => ({
