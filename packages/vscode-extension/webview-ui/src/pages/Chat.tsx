@@ -133,6 +133,14 @@ const Chat = () => {
   );
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
+  // 뒤로 가기 함수
+  const handleGoBack = () => {
+    setHistories([]);
+    setEvent([]);
+    setSessionId(null);
+    setTokenUsage(null);
+  };
+
   vscode.onMessage((message) => {
     switch (message.type) {
       case "on_event_auto_be":
@@ -188,6 +196,7 @@ const Chat = () => {
             histories={histories}
             events={event}
             tokenUsage={tokenUsage}
+            onGoBack={handleGoBack}
           />
         )}
       </div>

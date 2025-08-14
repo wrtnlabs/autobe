@@ -11,8 +11,6 @@ const AutoBeHistoryMovie = (props: IAutoBeHistoryMovieProps) => {
   const { history } = props;
 
   switch (history.type) {
-    case "analyze":
-      break;
     case "assistantMessage": {
       return (
         <AutoBeAssistantMessage
@@ -21,18 +19,15 @@ const AutoBeHistoryMovie = (props: IAutoBeHistoryMovieProps) => {
         />
       );
     }
-    case "interface":
-      break;
-    case "prisma":
-      break;
-    case "realize":
-      break;
-    case "test":
-      break;
     case "userMessage":
       return <AutoBeUserMessage message={history.contents} />;
+    case "analyze":
+    case "prisma":
+    case "interface":
+    case "realize":
+    case "test":
+      return <div>{history.type}</div>;
   }
-  return <div>AutoBeHistoryMovie</div>;
 };
 
 export default AutoBeHistoryMovie;
