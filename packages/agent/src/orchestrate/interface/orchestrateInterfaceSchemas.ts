@@ -1,5 +1,9 @@
 import { IAgenticaController } from "@agentica/core";
-import { AutoBeInterfaceSchemasEvent, AutoBeOpenApi } from "@autobe/interface";
+import {
+  AutoBeInterfaceSchemasEvent,
+  AutoBeOpenApi,
+  AutoBeProgressEventBase,
+} from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
 import { IPointer } from "tstl";
@@ -8,7 +12,6 @@ import typia from "typia";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
-import { IProgress } from "../internal/IProgress";
 import { transformInterfaceSchemaHistories } from "./histories/transformInterfaceSchemaHistories";
 import { orchestrateInterfaceSchemasReview } from "./orchestrateInterfaceSchemasReview";
 import { IAutoBeInterfaceSchemaApplication } from "./structures/IAutoBeInterfaceSchemaApplication";
@@ -29,11 +32,11 @@ export async function orchestrateInterfaceSchemas<
     array: Array.from(typeNames),
     capacity,
   });
-  const progress: IProgress = {
+  const progress: AutoBeProgressEventBase = {
     total: typeNames.size,
     completed: 0,
   };
-  const reviewProgress: IProgress = {
+  const reviewProgress: AutoBeProgressEventBase = {
     total: matrix.length,
     completed: 0,
   };
@@ -60,7 +63,7 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
   operations: AutoBeOpenApi.IOperation[],
   typeNames: string[],
   retry: number,
-  progress: IProgress,
+  progress: AutoBeProgressEventBase,
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   const remained: Set<string> = new Set(typeNames);
   const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
@@ -81,7 +84,7 @@ async function process<Model extends ILlmSchema.Model>(
   operations: AutoBeOpenApi.IOperation[],
   oldbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
   remained: Set<string>,
-  progress: IProgress,
+  progress: AutoBeProgressEventBase,
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   const already: string[] = Object.keys(oldbie);
   const pointer: IPointer<Record<

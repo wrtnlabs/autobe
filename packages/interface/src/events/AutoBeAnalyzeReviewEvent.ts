@@ -1,6 +1,7 @@
 import { AutoBeAnalyzeFile } from "../histories/contents/AutoBeAnalyzeFile";
-import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
 import { AutoBeEventBase } from "./AutoBeEventBase";
+import { AutoBeProgressEventBase } from "./AutoBeProgressEventBase";
+import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
 
 /**
  * Event fired during the review and amendment phase of the requirements
@@ -41,7 +42,9 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
  * @author Kakasoo
  */
 export interface AutoBeAnalyzeReviewEvent
-  extends AutoBeEventBase<"analyzeReview"> {
+  extends AutoBeEventBase<"analyzeReview">,
+    AutoBeProgressEventBase,
+    AutoBeTokenUsageEventBase {
   /**
    * Original file content submitted for review.
    *
@@ -102,38 +105,4 @@ export interface AutoBeAnalyzeReviewEvent
    * of refinement that has been applied to achieve the final analysis.
    */
   step: number;
-
-  /**
-   * Token usage metrics for the Analyze Review operation.
-   *
-   * Records the amount of tokens consumed during the requirements review and
-   * amendment process. This includes tokens used for:
-   * - Validating document structure and completeness
-   * - Checking Mermaid diagram syntax and anchor links
-   * - Verifying EARS format compliance
-   * - Generating review feedback and amendment plans
-   * - Creating revised content based on feedback
-   *
-   * The token usage helps track AI resource consumption during the quality
-   * assurance phase of requirements analysis.
-   */
-  tokenUsage: IAutoBeTokenUsageJson.IComponent;
-
-  /**
-   * Total number of documents to review in the current session.
-   *
-   * Represents the complete set of requirement documents that need validation.
-   * Complex projects may have multiple documents requiring individual review
-   * cycles.
-   */
-  total: number;
-
-  /**
-   * Number of documents reviewed and finalized so far.
-   *
-   * Tracks progress through the review process when multiple requirement
-   * documents need validation. Each document must pass review before the count
-   * increments.
-   */
-  completed: number;
 }

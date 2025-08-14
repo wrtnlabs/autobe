@@ -6,6 +6,8 @@ export * from "./AutoBeUserMessageEvent";
 
 /** @internal */
 export * from "./AutoBeEventSnapshot";
+export * from "./AutoBeProgressEventBase";
+export * from "./AutoBeTokenUsageEventBase";
 
 // ANALYZE
 export * from "./AutoBeAnalyzeCompleteEvent";

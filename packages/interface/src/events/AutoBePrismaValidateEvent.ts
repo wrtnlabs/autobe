@@ -1,4 +1,4 @@
-import { IAutoBePrismaCompileResult } from "../compiler";
+import { IAutoBePrismaCompileResult } from "../compiler/IAutoBePrismaCompileResult";
 import { IAutoBePrismaValidation } from "../prisma/IAutoBePrismaValidation";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 

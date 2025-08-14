@@ -2,13 +2,13 @@ import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeInterfaceOperationsReviewEvent,
   AutoBeOpenApi,
+  AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { IProgress } from "../internal/IProgress";
 import { transformInterfaceOperationsReviewHistories } from "./histories/transformInterfaceOperationsReviewHistories";
 import { IAutoBeInterfaceOperationsReviewApplication } from "./structures/IAutoBeInterfaceOperationsReviewApplication";
 
@@ -17,7 +17,7 @@ export async function orchestrateInterfaceOperationsReview<
 >(
   ctx: AutoBeContext<Model>,
   operations: AutoBeOpenApi.IOperation[],
-  progress: IProgress,
+  progress: AutoBeProgressEventBase,
 ): Promise<AutoBeOpenApi.IOperation[]> {
   const pointer: IPointer<IAutoBeInterfaceOperationsReviewApplication.IProps | null> =
     {

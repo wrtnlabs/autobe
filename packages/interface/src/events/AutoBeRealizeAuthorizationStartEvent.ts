@@ -17,8 +17,8 @@ export interface AutoBeRealizeAuthorizationStartEvent
    * Iteration number of the requirements analysis being implemented.
    *
    * Indicates which version of the requirements analysis this authorization
-   * implementation is based on. This helps track the alignment between
-   * security implementation and business requirements across iterations.
+   * implementation is based on. This helps track the alignment between security
+   * implementation and business requirements across iterations.
    */
   step: number;
 }

@@ -1,5 +1,5 @@
 import { IAgenticaController } from "@agentica/core";
-import { AutoBePrisma } from "@autobe/interface";
+import { AutoBePrisma, AutoBeProgressEventBase } from "@autobe/interface";
 import { AutoBePrismaReviewEvent } from "@autobe/interface/src/events/AutoBePrismaReviewEvent";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
@@ -7,7 +7,6 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { IProgress } from "../internal/IProgress";
 import { transformPrismaReviewHistories } from "./histories/transformPrismaReviewHistories";
 import { IAutoBePrismaReviewApplication } from "./structures/IAutoBePrismaReviewApplication";
 
@@ -17,7 +16,7 @@ export async function orchestratePrismaReview<Model extends ILlmSchema.Model>(
   schemas: Record<string, string>,
   componentList: AutoBePrisma.IComponent[],
 ): Promise<AutoBePrismaReviewEvent[]> {
-  const progress: IProgress = {
+  const progress: AutoBeProgressEventBase = {
     completed: 0,
     total: componentList.length,
   };
@@ -33,7 +32,7 @@ async function step<Model extends ILlmSchema.Model>(
   application: AutoBePrisma.IApplication,
   schemas: Record<string, string>,
   component: AutoBePrisma.IComponent,
-  progress: IProgress,
+  progress: AutoBeProgressEventBase,
 ): Promise<AutoBePrismaReviewEvent> {
   const start: Date = new Date();
   const pointer: IPointer<IAutoBePrismaReviewApplication.IProps | null> = {

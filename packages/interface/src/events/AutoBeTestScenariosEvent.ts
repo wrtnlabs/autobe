@@ -1,6 +1,7 @@
 import { AutoBeTestScenario } from "../histories";
-import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
 import { AutoBeEventBase } from "./AutoBeEventBase";
+import { AutoBeProgressEventBase } from "./AutoBeProgressEventBase";
+import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
 
 /**
  * Event fired when the Test agent generates e2e test scenarios for specific API
@@ -18,7 +19,9 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
  * @author Kakasoo
  */
 export interface AutoBeTestScenariosEvent
-  extends AutoBeEventBase<"testScenarios"> {
+  extends AutoBeEventBase<"testScenarios">,
+    AutoBeProgressEventBase,
+    AutoBeTokenUsageEventBase {
   /**
    * List of test scenarios generated for the target endpoints.
    *
@@ -28,35 +31,6 @@ export interface AutoBeTestScenariosEvent
    * execution.
    */
   scenarios: AutoBeTestScenario[];
-
-  /**
-   * Token usage metrics for test scenario generation.
-   *
-   * Records the AI token consumption during the test scenario planning phase,
-   * where the Test agent analyzes API endpoints and generates comprehensive
-   * test scenarios with dependency chains. This includes tokens used for
-   * understanding endpoint functionality, creating test case structures, and
-   * drafting initial test code implementations.
-   */
-  tokenUsage: IAutoBeTokenUsageJson.IComponent;
-
-  /**
-   * Number of test scenarios completed.
-   *
-   * Tracks how many test scenarios have been successfully generated so far.
-   * This provides real-time progress indication during the test generation
-   * process, allowing monitoring of completion status.
-   */
-  completed: number;
-
-  /**
-   * Total number of test scenarios to generate.
-   *
-   * Represents the total count of API endpoints that require test scenario
-   * generation. Used together with the completed field to calculate progress
-   * percentage and estimate remaining work.
-   */
-  total: number;
 
   /**
    * Current step in the test generation workflow.

@@ -2,6 +2,7 @@ import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeAnalyzeReviewEvent,
   AutoBeAnalyzeScenarioEvent,
+  AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
@@ -10,7 +11,6 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { IProgress } from "../internal/IProgress";
 import { transformAnalyzeReviewerHistories } from "./histories/transformAnalyzeReviewerHistories";
 import { IAutoBeAnalyzeReviewApplication } from "./structures/IAutoBeAnalyzeReviewApplication";
 
@@ -19,7 +19,7 @@ export const orchestrateAnalyzeReview = async <Model extends ILlmSchema.Model>(
   scenario: AutoBeAnalyzeScenarioEvent,
   otherFiles: AutoBeAnalyzeFile[],
   myFile: AutoBeAnalyzeFile,
-  progress: IProgress,
+  progress: AutoBeProgressEventBase,
 ): Promise<AutoBeAnalyzeReviewEvent> => {
   const pointer: IPointer<IAutoBeAnalyzeReviewApplication.IProps | null> = {
     value: null,

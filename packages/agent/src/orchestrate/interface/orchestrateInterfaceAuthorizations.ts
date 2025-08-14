@@ -1,5 +1,9 @@
 import { IAgenticaController } from "@agentica/core";
-import { AutoBeAnalyzeRole, AutoBeOpenApi } from "@autobe/interface";
+import {
+  AutoBeAnalyzeRole,
+  AutoBeOpenApi,
+  AutoBeProgressEventBase,
+} from "@autobe/interface";
 import { AutoBeInterfaceAuthorizationEvent } from "@autobe/interface/src/events/AutoBeInterfaceAuthorizationEvent";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
@@ -7,7 +11,6 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { IProgress } from "../internal/IProgress";
 import { transformInterfaceAuthorizationsHistories } from "./histories/transformInterfaceAuthorizationsHistories";
 import { IAutoBeInterfaceAuthorizationsApplication } from "./structures/IAutoBeInterfaceAuthorizationsApplication";
 
@@ -15,7 +18,7 @@ export async function orchestrateInterfaceAuthorizations<
   Model extends ILlmSchema.Model,
 >(ctx: AutoBeContext<Model>): Promise<AutoBeOpenApi.IOperation[]> {
   const roles: AutoBeAnalyzeRole[] = ctx.state().analyze?.roles ?? [];
-  const progress: IProgress = {
+  const progress: AutoBeProgressEventBase = {
     total: roles.length,
     completed: 0,
   };
@@ -36,7 +39,7 @@ export async function orchestrateInterfaceAuthorizations<
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   role: AutoBeAnalyzeRole,
-  progress: IProgress,
+  progress: AutoBeProgressEventBase,
 ): Promise<AutoBeInterfaceAuthorizationEvent> {
   const pointer: IPointer<IAutoBeInterfaceAuthorizationsApplication.IProps | null> =
     {

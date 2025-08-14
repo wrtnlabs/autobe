@@ -18,18 +18,18 @@ export interface AutoBeRealizeAuthorizationValidateEvent
   /**
    * Authorization configuration being validated.
    *
-   * Contains the authorization implementation details for a specific role
-   * that is undergoing compilation validation.
+   * Contains the authorization implementation details for a specific role that
+   * is undergoing compilation validation.
    */
   authorization: AutoBeRealizeAuthorization;
 
   /**
    * The validation result from the TypeScript compiler.
    *
-   * Contains detailed information about whether the authorization implementation
-   * code (providers, payloads, decorators) successfully passed compilation
-   * validation, including any errors or warnings that were detected during
-   * the validation process.
+   * Contains detailed information about whether the authorization
+   * implementation code (providers, payloads, decorators) successfully passed
+   * compilation validation, including any errors or warnings that were detected
+   * during the validation process.
    */
   result: IAutoBeTypeScriptCompileResult;
 

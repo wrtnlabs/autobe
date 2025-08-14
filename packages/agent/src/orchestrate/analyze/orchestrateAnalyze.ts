@@ -4,13 +4,13 @@ import {
   AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeWriteEvent,
   AutoBeAssistantMessageHistory,
+  AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
 import { ILlmSchema } from "@samchon/openapi";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
-import { IProgress } from "../internal/IProgress";
 import { orchestrateAnalyzeReview } from "./orchestrateAnalyzeReview";
 import { orchestrateAnalyzeScenario } from "./orchestrateAnalyzeScenario";
 import { orchestrateAnalyzeWrite } from "./orchestrateAnalyzeWrite";
@@ -39,7 +39,7 @@ export const orchestrateAnalyze =
     else ctx.dispatch(scenario);
 
     // write documents
-    const writeProgress: IProgress = {
+    const writeProgress: AutoBeProgressEventBase = {
       total: scenario.files.length,
       completed: 0,
     };
@@ -56,7 +56,7 @@ export const orchestrateAnalyze =
     );
 
     // review documents
-    const reviewProgress: IProgress = {
+    const reviewProgress: AutoBeProgressEventBase = {
       total: fileList.length,
       completed: 0,
     };

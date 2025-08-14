@@ -1,7 +1,7 @@
 import { IAutoBeTypeScriptCompileResult } from "../compiler/IAutoBeTypeScriptCompileResult";
-import { AutoBeRealizeAuthorizationCorrect } from "../histories";
-import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
+import { AutoBeRealizeAuthorizationCorrect } from "../histories/contents/AutoBeRealizeAuthorizationCorrect";
 import { AutoBeEventBase } from "./AutoBeEventBase";
+import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
 
 /**
  * Event fired during the correction phase of authorization implementation.
@@ -15,7 +15,8 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
  * @author Michael
  */
 export interface AutoBeRealizeAuthorizationCorrectEvent
-  extends AutoBeEventBase<"realizeAuthorizationCorrect"> {
+  extends AutoBeEventBase<"realizeAuthorizationCorrect">,
+    AutoBeTokenUsageEventBase {
   /**
    * Authorization configuration being corrected.
    *
@@ -45,6 +46,4 @@ export interface AutoBeRealizeAuthorizationCorrectEvent
    * quality as validation feedback is incorporated.
    */
   step: number;
-
-  tokenUsage: IAutoBeTokenUsageJson.IComponent;
 }

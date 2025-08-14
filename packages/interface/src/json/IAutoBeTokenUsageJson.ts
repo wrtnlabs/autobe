@@ -33,7 +33,7 @@ export interface IAutoBeTokenUsageJson {
    * development session.
    */
   aggregate: IAutoBeTokenUsageJson.IComponent;
-  
+
   /**
    * Token usage for the facade agent orchestrating the entire pipeline.
    *
@@ -42,7 +42,7 @@ export interface IAutoBeTokenUsageJson {
    * orchestration.
    */
   facade: IAutoBeTokenUsageJson.IComponent;
-  
+
   /**
    * Token usage for the requirements analysis agent.
    *
@@ -51,7 +51,7 @@ export interface IAutoBeTokenUsageJson {
    * subsequent development phases.
    */
   analyze: IAutoBeTokenUsageJson.IComponent;
-  
+
   /**
    * Token usage for the Prisma database schema generation agent.
    *
@@ -60,7 +60,7 @@ export interface IAutoBeTokenUsageJson {
    * optimizations.
    */
   prisma: IAutoBeTokenUsageJson.IComponent;
-  
+
   /**
    * Token usage for the API interface specification agent.
    *
@@ -68,7 +68,7 @@ export interface IAutoBeTokenUsageJson {
    * endpoints, request/response structures, and API documentation.
    */
   interface: IAutoBeTokenUsageJson.IComponent;
-  
+
   /**
    * Token usage for the test code generation agent.
    *
@@ -76,7 +76,7 @@ export interface IAutoBeTokenUsageJson {
    * planning, test case generation, and end-to-end test implementation.
    */
   test: IAutoBeTokenUsageJson.IComponent;
-  
+
   /**
    * Token usage for the implementation realization agent.
    *

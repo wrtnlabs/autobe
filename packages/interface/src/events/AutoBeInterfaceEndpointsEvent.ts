@@ -1,6 +1,7 @@
-import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
 import { AutoBeOpenApi } from "../openapi/AutoBeOpenApi";
 import { AutoBeEventBase } from "./AutoBeEventBase";
+import { AutoBeProgressEventBase } from "./AutoBeProgressEventBase";
+import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
 
 /**
  * Event fired when the Interface agent creates the complete list of API
@@ -20,7 +21,9 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
  * @author Samchon
  */
 export interface AutoBeInterfaceEndpointsEvent
-  extends AutoBeEventBase<"interfaceEndpoints"> {
+  extends AutoBeEventBase<"interfaceEndpoints">,
+    AutoBeProgressEventBase,
+    AutoBeTokenUsageEventBase {
   /**
    * Array of API endpoints that have been defined for the application.
    *
@@ -39,26 +42,6 @@ export interface AutoBeInterfaceEndpointsEvent
   endpoints: AutoBeOpenApi.IEndpoint[];
 
   /**
-   * Number of API endpoints that have been created so far.
-   *
-   * Indicates the current progress in the endpoint creation process, showing
-   * how many API endpoints have been successfully defined. This progress
-   * tracking helps stakeholders monitor the advancement of the API design and
-   * understand completion timing.
-   */
-  completed: number;
-
-  /**
-   * Total number of API endpoints that are planned to be created.
-   *
-   * This value represents the overall scope of the API design effort,
-   * indicating how many endpoints are expected to be defined in total. It
-   * serves as a benchmark for measuring progress and completion against the
-   * initial design goals.
-   */
-  total: number;
-
-  /**
    * Iteration number of the requirements analysis this endpoint creation was
    * performed for.
    *
@@ -72,19 +55,4 @@ export interface AutoBeInterfaceEndpointsEvent
    * relevant to the current project scope and business objectives.
    */
   step: number;
-
-  /**
-   * Token usage statistics for the API endpoint creation process.
-   *
-   * Tracks the computational resources consumed by the Interface agent when
-   * establishing the API surface area through endpoint definitions. This
-   * metric provides insight into the complexity of translating business
-   * requirements and database schemas into a comprehensive set of RESTful
-   * API endpoints.
-   *
-   * The token usage correlates with the number and complexity of endpoints
-   * being created, helping stakeholders understand the resource requirements
-   * for different scales of API design efforts.
-   */
-  tokenUsage: IAutoBeTokenUsageJson.IComponent;
 }
