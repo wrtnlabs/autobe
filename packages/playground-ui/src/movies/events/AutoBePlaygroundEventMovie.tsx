@@ -86,6 +86,8 @@ export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
     case "testCorrect":
     case "realizeAuthorizationCorrect":
     case "realizeCorrect":
+    case "vendorRequest":
+    case "vendorResponse":
       return null;
     default:
       back satisfies never;
