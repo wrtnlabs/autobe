@@ -43,10 +43,6 @@ const AutoBeTestHistoryComponent = (props: IAutoBeTestHistoryProps) => {
           }
         />
       </HistoryInfoCard>
-
-      <HistoryInfoCard title="요구사항 분석 단계" theme="orange">
-        {history.step}단계
-      </HistoryInfoCard>
     </HistoryBubble>
   );
 };

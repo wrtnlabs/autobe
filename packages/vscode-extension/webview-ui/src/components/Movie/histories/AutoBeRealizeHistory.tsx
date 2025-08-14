@@ -24,10 +24,6 @@ const AutoBeRealizeHistoryComponent = (props: IAutoBeRealizeHistoryProps) => {
       <HistoryInfoCard title="인증/인가 데코레이터 수" theme="purple">
         {history.authorizations?.length || 0}개
       </HistoryInfoCard>
-
-      <HistoryInfoCard title="요구사항 분석 단계" theme="purple">
-        {history.step}단계
-      </HistoryInfoCard>
     </HistoryBubble>
   );
 };

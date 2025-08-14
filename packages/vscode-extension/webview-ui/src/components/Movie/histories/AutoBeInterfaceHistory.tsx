@@ -27,10 +27,6 @@ const AutoBeInterfaceHistoryComponent = (
         {history.document.operations ? history.document.operations.length : 0}개
       </HistoryInfoCard>
 
-      <HistoryInfoCard title="요구사항 분석 단계" theme="purple">
-        {history.step}단계
-      </HistoryInfoCard>
-
       <HistoryInfoCard title="완료 시간" theme="purple">
         {new Date(history.completed_at).toLocaleString("ko-KR", {
           year: "numeric",
