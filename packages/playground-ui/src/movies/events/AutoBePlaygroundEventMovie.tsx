@@ -73,8 +73,6 @@ export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
     case "interfaceComplete":
     case "testComplete":
     case "realizeComplete":
-    case "realizeTestComplete":
-    case "realizeAuthorizationComplete":
       return (
         <AutoBePlaygroundCompleteEventMovie
           service={props.service}
@@ -86,6 +84,8 @@ export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
     case "testCorrect":
     case "realizeAuthorizationCorrect":
     case "realizeCorrect":
+    case "realizeTestComplete":
+    case "realizeAuthorizationComplete":
     case "vendorRequest":
     case "vendorResponse":
       return null;
