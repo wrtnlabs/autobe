@@ -30,21 +30,26 @@ import { AutoBeTestWriteEvent } from "./AutoBeTestWriteEvent";
  * code, reviewing schemas, correcting errors, or generating specifications.
  *
  * The event sources are organized by agent and operation type:
+ *
  * - **facade**: The initial orchestration layer that coordinates all agents
  * - **analyze**: Scenario planning, requirement writing, and review operations
- * - **prisma**: Database component design, schema generation, review, and correction
- * - **interface**: API authorization, grouping, endpoint design, operation definition,
- *   schema specification, reviews, and complementary generation
+ * - **prisma**: Database component design, schema generation, review, and
+ *   correction
+ * - **interface**: API authorization, grouping, endpoint design, operation
+ *   definition, schema specification, reviews, and complementary generation
  * - **test**: Test scenario planning, test code writing, and error correction
- * - **realize**: Implementation code writing, corrections, and authorization logic
+ * - **realize**: Implementation code writing, corrections, and authorization
+ *   logic
  *
- * These event sources represent the actual work items that consume AI tokens
- * and generate tangible outputs. They serve as tracking points for monitoring
- * which operations are actively using AI resources, enabling cost analysis,
- * performance optimization, and progress tracking throughout the automated
- * development workflow.
+ * These event sources are specifically used in {@link AutoBeVendorRequestEvent}
+ * and {@link AutoBeVendorResponseEvent} to track which agent operation triggered
+ * each AI interaction. This enables precise attribution of AI usage, token
+ * consumption tracking, and performance monitoring for each distinct operation
+ * in the backend generation workflow.
  *
  * @author Samchon
+ * @see AutoBeVendorRequestEvent
+ * @see AutoBeVendorResponseEvent
  */
 export type AutoBeEventSource =
   | "facade"

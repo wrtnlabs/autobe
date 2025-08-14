@@ -158,6 +158,8 @@ export namespace AutoBeMockAgent {
 const sleepMap: Record<AutoBeEvent.Type, number> = {
   userMessage: 1_000,
   assistantMessage: 1_000,
+  vendorRequest: 0,
+  vendorResponse: 0,
   // ANALYZE
   analyzeStart: 1_000,
   analyzeScenario: 1_000,

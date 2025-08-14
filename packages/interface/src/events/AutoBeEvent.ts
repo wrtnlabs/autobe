@@ -43,6 +43,8 @@ import { AutoBeTestStartEvent } from "./AutoBeTestStartEvent";
 import { AutoBeTestValidateEvent } from "./AutoBeTestValidateEvent";
 import { AutoBeTestWriteEvent } from "./AutoBeTestWriteEvent";
 import { AutoBeUserMessageEvent } from "./AutoBeUserMessageEvent";
+import { AutoBeVendorRequestEvent } from "./AutoBeVendorRequestEvent";
+import { AutoBeVendorResponseEvent } from "./AutoBeVendorResponseEvent";
 
 /**
  * Union type representing all possible events that can occur during the AutoBe
@@ -70,6 +72,8 @@ export type AutoBeEvent =
   // MESSAGES
   | AutoBeAssistantMessageEvent
   | AutoBeUserMessageEvent
+  | AutoBeVendorRequestEvent
+  | AutoBeVendorResponseEvent
   // ANALYZE
   | AutoBeAnalyzeStartEvent
   | AutoBeAnalyzeScenarioEvent
@@ -156,6 +160,8 @@ export namespace AutoBeEvent {
   export type Mapper = {
     assistantMessage: AutoBeAssistantMessageEvent;
     userMessage: AutoBeUserMessageEvent;
+    vendorRequest: AutoBeVendorRequestEvent;
+    vendorResponse: AutoBeVendorResponseEvent;
     // ANALYZE
     analyzeStart: AutoBeAnalyzeStartEvent;
     analyzeScenario: AutoBeAnalyzeScenarioEvent;

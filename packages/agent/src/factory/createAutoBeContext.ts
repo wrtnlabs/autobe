@@ -75,12 +75,29 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
         histories: next.histories,
         controllers: [next.controller],
       });
-      if (next.enforceFunctionCall === true)
-        agent.on("request", (event) => {
-          if (event.body.tools) event.body.tool_choice = "required";
-          if (event.body.parallel_tool_calls !== undefined)
-            delete event.body.parallel_tool_calls;
-        });
+      agent.on("request", (event) => {
+        if (next.enforceFunctionCall === true && event.body.tools)
+          event.body.tool_choice = "required";
+        if (event.body.parallel_tool_calls !== undefined)
+          delete event.body.parallel_tool_calls;
+        void props
+          .dispatch({
+            ...event,
+            type: "vendorRequest",
+            source: next.source,
+          })
+          .catch(() => {});
+      });
+      agent.on("response", (event) => {
+        void props
+          .dispatch({
+            ...event,
+            type: "vendorResponse",
+            source: next.source,
+          })
+          .catch(() => {});
+      });
+
       const histories: MicroAgenticaHistory<Model>[] = await agent.conversate(
         next.message,
       );

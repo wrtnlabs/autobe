@@ -197,6 +197,8 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
       });
       previous = current;
     };
+
+    // SHIFT EVENTS
     this.agentica_.on("assistantMessage", async (message) => {
       const start = new Date();
       const history: AutoBeAssistantMessageHistory = {
@@ -220,6 +222,18 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
     this.agentica_.on("request", (e) => {
       if (e.body.parallel_tool_calls !== undefined)
         delete e.body.parallel_tool_calls;
+      void this.dispatch({
+        ...e,
+        type: "vendorRequest",
+        source: "facade",
+      }).catch(() => {});
+    });
+    this.agentica_.on("response", (e) => {
+      void this.dispatch({
+        ...e,
+        type: "vendorResponse",
+        source: "facade",
+      }).catch(() => {});
     });
   }
 
