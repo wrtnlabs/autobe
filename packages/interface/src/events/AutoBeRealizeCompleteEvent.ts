@@ -1,8 +1,6 @@
 import { IAutoBeTypeScriptCompileResult } from "../compiler/IAutoBeTypeScriptCompileResult";
-import {
-  AutoBeRealizeAuthorization,
-  AutoBeRealizeFunction,
-} from "../histories";
+import { AutoBeRealizeAuthorization } from "../histories/contents/AutoBeRealizeAuthorization";
+import { AutoBeRealizeFunction } from "../histories/contents/AutoBeRealizeFunction";
 import { AutoBeEventBase } from "./AutoBeEventBase";
 
 /**
@@ -56,6 +54,25 @@ export interface AutoBeRealizeCompleteEvent
    */
   functions: AutoBeRealizeFunction[];
 
+  /**
+   * Generated NestJS controller implementations mapped by controller name.
+   *
+   * Contains the complete set of controller classes that handle HTTP requests
+   * and responses for the REST API. Each key represents the controller name
+   * (e.g., "BbsArticlesController", "ShoppingOrdersController") and each value
+   * contains the full TypeScript source code for that controller.
+   *
+   * These controllers implement all the API endpoints defined in the Interface
+   * phase, with proper request/response handling, validation, authentication
+   * checks, and service layer integration. They serve as the entry points for
+   * the application's business logic, delegating actual processing to the
+   * corresponding service classes while maintaining clean separation of
+   * concerns.
+   *
+   * The generated controllers follow NestJS best practices including decorator
+   * usage, dependency injection, and proper error handling, ensuring the API
+   * layer is both robust and maintainable.
+   */
   controllers: Record<string, string>;
 
   /**

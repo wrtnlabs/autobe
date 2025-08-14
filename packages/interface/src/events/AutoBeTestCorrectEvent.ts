@@ -1,7 +1,7 @@
 import { IAutoBeTypeScriptCompileResult } from "../compiler";
 import { AutoBeTestFile } from "../histories";
-import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
 import { AutoBeEventBase } from "./AutoBeEventBase";
+import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
 
 /**
  * Event fired when the Test agent corrects compilation failures in the
@@ -19,7 +19,9 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
  *
  * @author Samchon
  */
-export interface AutoBeTestCorrectEvent extends AutoBeEventBase<"testCorrect"> {
+export interface AutoBeTestCorrectEvent
+  extends AutoBeEventBase<"testCorrect">,
+    AutoBeTokenUsageEventBase {
   /**
    * The test file that contained compilation errors with its detailed scenario
    * metadata.
@@ -133,15 +135,4 @@ export interface AutoBeTestCorrectEvent extends AutoBeEventBase<"testCorrect"> {
    * remain relevant to the current project scope and validation objectives.
    */
   step: number;
-
-  /**
-   * Token usage metrics for test code error correction.
-   *
-   * Captures the AI token consumption during the iterative correction process,
-   * including initial error analysis, revised thinking with compiler feedback,
-   * draft correction generation, and final review refinement. This metric
-   * reflects the computational cost of the self-correction feedback loop that
-   * enables AI to learn from compilation errors and produce working test code.
-   */
-  tokenUsage: IAutoBeTokenUsageJson.IComponent;
 }

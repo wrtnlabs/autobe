@@ -1,5 +1,6 @@
-import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
 import { AutoBeEventBase } from "./AutoBeEventBase";
+import { AutoBeProgressEventBase } from "./AutoBeProgressEventBase";
+import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
 
 /**
  * Event fired when the Test agent writes and completes individual test scenario
@@ -18,7 +19,10 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
  *
  * @author Michael
  */
-export interface AutoBeTestWriteEvent extends AutoBeEventBase<"testWrite"> {
+export interface AutoBeTestWriteEvent
+  extends AutoBeEventBase<"testWrite">,
+    AutoBeProgressEventBase,
+    AutoBeTokenUsageEventBase {
   /**
    * File system path where the test file should be located.
    *
@@ -72,27 +76,6 @@ export interface AutoBeTestWriteEvent extends AutoBeEventBase<"testWrite"> {
   final: string;
 
   /**
-   * Number of test files that have been written and completed so far.
-   *
-   * Indicates the current progress in the test file creation process, showing
-   * how many test scenario files have been successfully written and
-   * implemented. This progress tracking helps stakeholders monitor the
-   * advancement of test suite development and estimate completion timing.
-   */
-  completed: number;
-
-  /**
-   * Total number of test files that need to be written.
-   *
-   * Represents the complete scope of test files required to provide
-   * comprehensive validation coverage for all API endpoints and business
-   * scenarios. This total count provides context for the completion progress
-   * and helps stakeholders understand the overall complexity and scope of the
-   * test suite being generated.
-   */
-  total: number;
-
-  /**
    * Iteration number of the requirements analysis this test writing reflects.
    *
    * Indicates which version of the requirements analysis this test file
@@ -106,15 +89,4 @@ export interface AutoBeTestWriteEvent extends AutoBeEventBase<"testWrite"> {
    * remains relevant to the current project scope and validation objectives.
    */
   step: number;
-
-  /**
-   * Token usage metrics for test file writing.
-   *
-   * Tracks the AI token consumption during the comprehensive test code
-   * generation process, covering the initial draft creation, code review
-   * analysis, and final polished implementation. This metric encompasses all
-   * tokens used for transforming test scenarios into executable TypeScript
-   * code that validates API functionality and business logic.
-   */
-  tokenUsage: IAutoBeTokenUsageJson.IComponent;
 }

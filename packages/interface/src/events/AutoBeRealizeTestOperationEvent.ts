@@ -1,6 +1,7 @@
 import { tags } from "typia";
 
 import { AutoBeEventBase } from "./AutoBeEventBase";
+import { AutoBeProgressEventBase } from "./AutoBeProgressEventBase";
 
 /**
  * Event fired when the Realize agent completes the execution of an individual
@@ -21,7 +22,8 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
  * @author Samchon
  */
 export interface AutoBeRealizeTestOperationEvent
-  extends AutoBeEventBase<"realizeTestOperation"> {
+  extends AutoBeEventBase<"realizeTestOperation">,
+    AutoBeProgressEventBase {
   /**
    * Name of the E2E test function that was executed.
    *
@@ -99,34 +101,6 @@ export interface AutoBeRealizeTestOperationEvent
    * process.
    */
   completed_at: string & tags.Format<"date-time">;
-
-  /**
-   * Total number of test operations planned for execution in this test suite.
-   *
-   * Represents the complete scope of E2E test functions that need to be
-   * executed to fully validate the backend implementation. This total count
-   * provides context for understanding the overall test coverage and the
-   * comprehensive nature of the validation process.
-   *
-   * The total count enables stakeholders to assess the thoroughness of the
-   * validation process and understand the scope of functionality being tested
-   * across the entire backend application.
-   */
-  total: number;
-
-  /**
-   * Number of test operations that have been completed so far.
-   *
-   * Indicates the current progress in the test execution process, showing how
-   * many test operations have finished execution (both successful and failed).
-   * This progress tracking helps stakeholders monitor the advancement of test
-   * validation and estimate completion timing.
-   *
-   * The completion count provides real-time visibility into test execution
-   * progress, enabling stakeholders to understand how much of the validation
-   * process has been completed and how much remains.
-   */
-  completed: number;
 
   /**
    * Iteration number of the requirements analysis this test operation

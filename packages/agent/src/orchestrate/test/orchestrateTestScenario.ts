@@ -1,5 +1,9 @@
 import { IAgenticaController } from "@agentica/core";
-import { AutoBeOpenApi, AutoBeTestScenario } from "@autobe/interface";
+import {
+  AutoBeOpenApi,
+  AutoBeProgressEventBase,
+  AutoBeTestScenario,
+} from "@autobe/interface";
 import { AutoBeEndpointComparator } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { HashMap, IPointer, Pair } from "tstl";
@@ -8,7 +12,6 @@ import typia from "typia";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
-import { IProgress } from "../internal/IProgress";
 import { transformTestScenarioHistories } from "./histories/transformTestScenarioHistories";
 import { IAutoBeTestScenarioApplication } from "./structures/IAutoBeTestScenarioApplication";
 
@@ -46,7 +49,7 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
     ...operations.map((op) => `\`${op.method}\` | \`${op.path}\``).join("\n"),
   ].join("\n");
 
-  const progress: IProgress = {
+  const progress: AutoBeProgressEventBase = {
     total: operations.length,
     completed: 0,
   };
@@ -105,7 +108,7 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
   entire: AutoBeOpenApi.IOperation[],
   include: AutoBeOpenApi.IOperation[],
   exclude: AutoBeOpenApi.IEndpoint[],
-  progress: IProgress,
+  progress: AutoBeProgressEventBase,
 ) => {
   const pointer: IPointer<IAutoBeTestScenarioApplication.IScenarioGroup[]> = {
     value: [],

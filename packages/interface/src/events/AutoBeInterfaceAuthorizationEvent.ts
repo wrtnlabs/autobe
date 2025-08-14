@@ -1,9 +1,11 @@
 import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
 import { AutoBeOpenApi } from "../openapi";
 import { AutoBeEventBase } from "./AutoBeEventBase";
+import { AutoBeProgressEventBase } from "./AutoBeProgressEventBase";
 
 export interface AutoBeInterfaceAuthorizationEvent
-  extends AutoBeEventBase<"interfaceAuthorization"> {
+  extends AutoBeEventBase<"interfaceAuthorization">,
+    AutoBeProgressEventBase {
   /**
    * Array of API operations being defined for the endpoints.
    *
@@ -19,26 +21,6 @@ export interface AutoBeInterfaceAuthorizationEvent
    * the application ecosystem.
    */
   operations: AutoBeOpenApi.IOperation[];
-
-  /**
-   * Number of API operations that have been completed so far.
-   *
-   * Indicates the current progress in the operation definition process, showing
-   * how many API operations have been successfully designed and documented.
-   * This progress tracking helps stakeholders monitor the advancement of the
-   * API specification development and understand completion timing.
-   */
-  completed: number;
-
-  /**
-   * Total number of API operations that need to be defined.
-   *
-   * Represents the complete scope of operation definitions required for the API
-   * specification. This total count provides context for the completion
-   * progress and helps stakeholders understand the overall complexity and
-   * functional scope of the API being designed.
-   */
-  total: number;
 
   /**
    * Iteration number of the requirements analysis this operation definition was

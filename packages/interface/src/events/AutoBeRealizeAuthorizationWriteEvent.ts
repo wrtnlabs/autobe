@@ -1,6 +1,7 @@
 import { AutoBeRealizeAuthorization } from "../histories/contents/AutoBeRealizeAuthorization";
-import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
 import { AutoBeEventBase } from "./AutoBeEventBase";
+import { AutoBeProgressEventBase } from "./AutoBeProgressEventBase";
+import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
 
 /**
  * Event fired when the Realize Authorization agent writes authorization-related
@@ -19,7 +20,9 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
  * @author Michael
  */
 export interface AutoBeRealizeAuthorizationWriteEvent
-  extends AutoBeEventBase<"realizeAuthorizationWrite"> {
+  extends AutoBeEventBase<"realizeAuthorizationWrite">,
+    AutoBeProgressEventBase,
+    AutoBeTokenUsageEventBase {
   /**
    * Authorization implementation details being written.
    *
@@ -29,27 +32,6 @@ export interface AutoBeRealizeAuthorizationWriteEvent
    * be generated for a specific user role in the system.
    */
   authorization: AutoBeRealizeAuthorization;
-
-  /**
-   * Number of authorization components that have been completed so far.
-   *
-   * Indicates the current progress in the authorization implementation process,
-   * showing how many authorization components (providers, payloads, decorators)
-   * have been successfully generated for different user roles. This progress
-   * tracking helps stakeholders monitor the advancement of the authentication
-   * and authorization system implementation.
-   */
-  completed: number;
-
-  /**
-   * Total number of authorization components that need to be created.
-   *
-   * Represents the complete scope of authorization components required for all
-   * user roles defined in the system. This total count provides context for the
-   * completion progress and helps stakeholders understand the complexity of the
-   * role-based access control system being implemented.
-   */
-  total: number;
 
   /**
    * Iteration number of the requirements analysis this authorization
@@ -67,20 +49,4 @@ export interface AutoBeRealizeAuthorizationWriteEvent
    * project scope and security requirements.
    */
   step: number;
-
-  /**
-   * Token consumption metrics for generating authorization components.
-   *
-   * Tracks the AI model's token usage during the creation of authorization
-   * infrastructure including decorators, providers, and payload interfaces.
-   * This metric provides visibility into the AI resources required for
-   * implementing role-based access control, helping optimize the generation
-   * of security-critical components.
-   *
-   * The token usage encompasses understanding security requirements from the
-   * API specification and generating comprehensive authorization code that
-   * enforces access policies while maintaining type safety and runtime
-   * validation.
-   */
-  tokenUsage: IAutoBeTokenUsageJson.IComponent;
 }

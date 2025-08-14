@@ -1,6 +1,7 @@
-import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
 import { AutoBeOpenApi } from "../openapi";
 import { AutoBeEventBase } from "./AutoBeEventBase";
+import { AutoBeProgressEventBase } from "./AutoBeProgressEventBase";
+import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
 
 /**
  * Event fired during the review and validation phase of API operation
@@ -21,7 +22,9 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
  * @author Kakasoo
  */
 export interface AutoBeInterfaceOperationsReviewEvent
-  extends AutoBeEventBase<"interfaceOperationsReview"> {
+  extends AutoBeEventBase<"interfaceOperationsReview">,
+    AutoBeProgressEventBase,
+    AutoBeTokenUsageEventBase {
   /**
    * Original API operations submitted for review.
    *
@@ -81,39 +84,4 @@ export interface AutoBeInterfaceOperationsReviewEvent
    * understand the validation rigor applied to the interface design.
    */
   step: number;
-
-  /**
-   * Total number of API operations to be reviewed and validated.
-   *
-   * Represents the complete count of operations that need to undergo the review
-   * process. This includes all endpoints across different API paths and HTTP
-   * methods that were generated based on the requirements analysis and need
-   * validation against business logic and technical specifications.
-   */
-  total: number;
-
-  /**
-   * Number of API operations that have successfully passed review validation.
-   *
-   * Contains the count of operations that have been reviewed and approved as
-   * meeting all quality criteria including correct request/response schemas,
-   * proper authentication handling, comprehensive error responses, and complete
-   * documentation. These operations are ready for implementation.
-   */
-  completed: number;
-
-  /**
-   * Token usage statistics for the operation review and validation process.
-   *
-   * Captures the computational resources consumed during the comprehensive
-   * review of API operations. This metric encompasses the effort required for
-   * security vulnerability analysis, schema compliance validation, logical
-   * consistency verification, and standard adherence evaluation.
-   *
-   * The token usage typically increases with the number of issues identified
-   * and the complexity of amendments required, as the review agent must
-   * analyze problems, formulate improvement plans, and generate corrected
-   * operations that meet enterprise-level quality standards.
-   */
-  tokenUsage: IAutoBeTokenUsageJson.IComponent;
 }

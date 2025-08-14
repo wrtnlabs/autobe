@@ -1,6 +1,7 @@
-import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
 import { AutoBeOpenApi } from "../openapi";
 import { AutoBeEventBase } from "./AutoBeEventBase";
+import { AutoBeProgressEventBase } from "./AutoBeProgressEventBase";
+import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
 
 /**
  * Event fired during the review and improvement phase of OpenAPI schema
@@ -42,7 +43,9 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
  * @author Kakasoo
  */
 export interface AutoBeInterfaceSchemasReviewEvent
-  extends AutoBeEventBase<"interfaceSchemasReview"> {
+  extends AutoBeEventBase<"interfaceSchemasReview">,
+    AutoBeProgressEventBase,
+    AutoBeTokenUsageEventBase {
   /**
    * Original schemas submitted for review.
    *
@@ -105,37 +108,4 @@ export interface AutoBeInterfaceSchemasReviewEvent
    * completed.
    */
   step: number;
-
-  /**
-   * Total number of schema sets to review in the current session.
-   *
-   * Represents the complete collection of schema groups that need validation.
-   * Complex APIs may have multiple schema sets requiring individual review
-   * cycles.
-   */
-  total: number;
-
-  /**
-   * Number of schema sets reviewed and finalized so far.
-   *
-   * Tracks progress through the review process when multiple schema collections
-   * need validation. Each set must pass review before the count increments.
-   */
-  completed: number;
-
-  /**
-   * Token usage statistics for the schema review and enhancement process.
-   *
-   * Measures the computational resources consumed during the comprehensive
-   * validation and improvement of OpenAPI schemas. This metric reflects the
-   * complexity of analyzing schema completeness, type correctness, naming
-   * conventions, validation rules, and relationship integrity across the
-   * entire schema collection.
-   *
-   * The token usage increases with the depth of analysis required and the
-   * number of improvements identified, as the review agent must evaluate
-   * schemas holistically, formulate enhancement strategies, and generate
-   * revised schemas that meet AutoBE's enterprise-level standards.
-   */
-  tokenUsage: IAutoBeTokenUsageJson.IComponent;
 }

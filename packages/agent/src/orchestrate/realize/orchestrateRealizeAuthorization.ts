@@ -1,6 +1,7 @@
 import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeAnalyzeRole,
+  AutoBeProgressEventBase,
   AutoBeRealizeAuthorization,
   AutoBeRealizeAuthorizationWriteEvent,
   IAutoBeCompiler,
@@ -11,7 +12,6 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { IProgress } from "../internal/IProgress";
 import { transformRealizeAuthorizationHistories } from "./histories/transformRealizeAuthorization";
 import { orchestrateRealizeAuthorizationCorrect } from "./orchestrateRealizeAuthorizationCorrect";
 import { IAutoBeRealizeAuthorizationApplication } from "./structures/IAutoBeRealizeAuthorizationApplication";
@@ -34,7 +34,7 @@ export async function orchestrateRealizeAuthorization<
   });
 
   const roles: AutoBeAnalyzeRole[] = ctx.state().analyze?.roles ?? [];
-  const progress: IProgress = {
+  const progress: AutoBeProgressEventBase = {
     total: roles.length,
     completed: 0,
   };
@@ -63,7 +63,7 @@ async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   role: AutoBeAnalyzeRole,
   templateFiles: Record<string, string>,
-  progress: IProgress,
+  progress: AutoBeProgressEventBase,
 ): Promise<AutoBeRealizeAuthorization> {
   const pointer: IPointer<IAutoBeRealizeAuthorizationApplication.IProps | null> =
     {

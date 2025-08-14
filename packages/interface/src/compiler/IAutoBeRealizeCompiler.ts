@@ -31,8 +31,8 @@ export interface IAutoBeRealizeCompiler {
    * fully-implemented NestJS controller classes that properly integrate
    * business logic providers, apply authorization decorators, handle request
    * payloads, and manage response structures according to OpenAPI
-   * specifications. The generated controllers serve as the entry points for
-   * API endpoints, bridging HTTP requests with backend business logic while
+   * specifications. The generated controllers serve as the entry points for API
+   * endpoints, bridging HTTP requests with backend business logic while
    * ensuring proper authentication and authorization enforcement.
    *
    * The controller generation process creates production-ready implementations

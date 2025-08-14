@@ -1,6 +1,6 @@
-import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
 import { AutoBeOpenApi } from "../openapi/AutoBeOpenApi";
 import { AutoBeEventBase } from "./AutoBeEventBase";
+import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
 
 /**
  * Event fired when the Interface agent supplements missing types and schemas
@@ -19,7 +19,8 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
  * @author Samchon
  */
 export interface AutoBeInterfaceComplementEvent
-  extends AutoBeEventBase<"interfaceComplement"> {
+  extends AutoBeEventBase<"interfaceComplement">,
+    AutoBeTokenUsageEventBase {
   /**
    * Array of missing schema names that were identified and need to be defined.
    *
@@ -65,20 +66,4 @@ export interface AutoBeInterfaceComplementEvent
    * to the current project scope and objectives.
    */
   step: number;
-
-  /**
-   * Token usage statistics for the schema complement identification and
-   * generation process.
-   *
-   * Captures the computational resources consumed by the Interface agent when
-   * analyzing the API specification to identify missing type definitions and
-   * generating the necessary complementary schemas. This metric reflects the
-   * effort required to ensure API completeness by discovering dependency gaps
-   * and creating appropriate type definitions.
-   *
-   * The token usage varies with the number of missing schemas identified and
-   * their complexity, including nested structures, utility types, enumerations,
-   * and supporting data structures needed for a self-contained specification.
-   */
-  tokenUsage: IAutoBeTokenUsageJson.IComponent;
 }

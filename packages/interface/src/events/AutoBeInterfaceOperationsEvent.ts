@@ -1,6 +1,7 @@
-import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
 import { AutoBeOpenApi } from "../openapi/AutoBeOpenApi";
 import { AutoBeEventBase } from "./AutoBeEventBase";
+import { AutoBeProgressEventBase } from "./AutoBeProgressEventBase";
+import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
 
 /**
  * Event fired when the Interface agent defines API operations during the
@@ -20,7 +21,9 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
  * @author Samchon
  */
 export interface AutoBeInterfaceOperationsEvent
-  extends AutoBeEventBase<"interfaceOperations"> {
+  extends AutoBeEventBase<"interfaceOperations">,
+    AutoBeProgressEventBase,
+    AutoBeTokenUsageEventBase {
   /**
    * Array of API operations being defined for the endpoints.
    *
@@ -38,26 +41,6 @@ export interface AutoBeInterfaceOperationsEvent
   operations: AutoBeOpenApi.IOperation[];
 
   /**
-   * Number of API operations that have been completed so far.
-   *
-   * Indicates the current progress in the operation definition process, showing
-   * how many API operations have been successfully designed and documented.
-   * This progress tracking helps stakeholders monitor the advancement of the
-   * API specification development and understand completion timing.
-   */
-  completed: number;
-
-  /**
-   * Total number of API operations that need to be defined.
-   *
-   * Represents the complete scope of operation definitions required for the API
-   * specification. This total count provides context for the completion
-   * progress and helps stakeholders understand the overall complexity and
-   * functional scope of the API being designed.
-   */
-  total: number;
-
-  /**
    * Iteration number of the requirements analysis this operation definition was
    * performed for.
    *
@@ -71,19 +54,4 @@ export interface AutoBeInterfaceOperationsEvent
    * relevant to the current project scope and business objectives.
    */
   step: number;
-
-  /**
-   * Token usage statistics for the API operation definition process.
-   *
-   * Measures the computational resources consumed by the Interface agent when
-   * creating detailed operation specifications. This metric reflects the
-   * complexity of translating endpoint definitions into comprehensive API
-   * contracts with business logic, parameter specifications, response schemas,
-   * error handling, and security requirements.
-   *
-   * The token usage increases with operation complexity, including the depth
-   * of business logic documentation, number of parameters, response variations,
-   * and security configuration requirements for each API function.
-   */
-  tokenUsage: IAutoBeTokenUsageJson.IComponent;
 }

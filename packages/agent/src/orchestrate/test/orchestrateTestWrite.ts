@@ -1,5 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import {
+  AutoBeProgressEventBase,
   AutoBeTestScenario,
   AutoBeTestWriteEvent,
   IAutoBeCompiler,
@@ -10,7 +11,6 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { IProgress } from "../internal/IProgress";
 import { completeTestCode } from "./compile/completeTestCode";
 import { getTestScenarioArtifacts } from "./compile/getTestScenarioArtifacts";
 import { transformTestWriteHistories } from "./histories/transformTestWriteHistories";
@@ -22,7 +22,7 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   scenarios: AutoBeTestScenario[],
 ): Promise<IAutoBeTestWriteResult[]> {
-  const progress: IProgress = {
+  const progress: AutoBeProgressEventBase = {
     total: scenarios.length,
     completed: 0,
   };
@@ -69,7 +69,7 @@ async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   scenario: AutoBeTestScenario,
   artifacts: IAutoBeTestScenarioArtifacts,
-  progress: IProgress,
+  progress: AutoBeProgressEventBase,
 ): Promise<AutoBeTestWriteEvent> {
   const pointer: IPointer<IAutoBeTestWriteApplication.IProps | null> = {
     value: null,

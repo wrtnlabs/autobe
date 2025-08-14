@@ -1,5 +1,6 @@
-import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
 import { AutoBeEventBase } from "./AutoBeEventBase";
+import { AutoBeProgressEventBase } from "./AutoBeProgressEventBase";
+import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
 
 /**
  * Event fired when the Realize agent corrects and finalizes a faulty
@@ -17,7 +18,9 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
  * @author Samchon
  */
 export interface AutoBeRealizeCorrectEvent
-  extends AutoBeEventBase<"realizeCorrect"> {
+  extends AutoBeEventBase<"realizeCorrect">,
+    AutoBeProgressEventBase,
+    AutoBeTokenUsageEventBase {
   /**
    * Name of the implementation file that has been corrected and finalized.
    *
@@ -39,23 +42,6 @@ export interface AutoBeRealizeCorrectEvent
   content: string;
 
   /**
-   * Number of corrected implementation files so far.
-   *
-   * Indicates how many implementation files have been successfully revised as
-   * part of the correction phase. Useful for tracking iterative progress in the
-   * post-generation validation cycle.
-   */
-  completed: number;
-
-  /**
-   * Total number of implementation files that require correction.
-   *
-   * Represents the total scope of files identified for revision, providing a
-   * clear view of correction workload and completeness.
-   */
-  total: number;
-
-  /**
    * Iteration number of the requirements analysis this corrected file
    * corresponds to.
    *
@@ -64,19 +50,4 @@ export interface AutoBeRealizeCorrectEvent
    * objectives.
    */
   step: number;
-
-  /**
-   * Token consumption metrics for correcting this implementation file.
-   *
-   * Tracks the AI model's token usage during the correction phase when fixing
-   * compilation errors or logic flaws in the implementation. This metric
-   * captures the additional AI processing required beyond the initial generation,
-   * providing insights into the complexity of error correction and the
-   * effectiveness of the self-improving feedback loop.
-   *
-   * The token usage includes both analyzing the compiler error messages and
-   * regenerating the corrected implementation code, helping optimize the
-   * iterative refinement process of the Realize agent.
-   */
-  tokenUsage: IAutoBeTokenUsageJson.IComponent;
 }

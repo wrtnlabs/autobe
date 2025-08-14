@@ -1,6 +1,7 @@
 import { AutoBeAnalyzeFile } from "../histories/contents/AutoBeAnalyzeFile";
-import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
 import { AutoBeEventBase } from "./AutoBeEventBase";
+import { AutoBeProgressEventBase } from "./AutoBeProgressEventBase";
+import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
 
 /**
  * Event fired during the writing phase of the requirements analysis process.
@@ -38,7 +39,9 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
  * @author Kakasoo
  */
 export interface AutoBeAnalyzeWriteEvent
-  extends AutoBeEventBase<"analyzeWrite"> {
+  extends AutoBeEventBase<"analyzeWrite">,
+    AutoBeProgressEventBase,
+    AutoBeTokenUsageEventBase {
   /**
    * File structure and content being written by the Analyze Writer Agent.
    *
@@ -62,38 +65,4 @@ export interface AutoBeAnalyzeWriteEvent
    * process throughout the project lifecycle.
    */
   step: number;
-
-  /**
-   * Token usage metrics for the Analyze Write operation.
-   *
-   * Records the amount of tokens consumed during the requirements analysis
-   * writing process. This includes tokens used for:
-   * - Generating business models and user roles
-   * - Creating functional requirements in EARS format
-   * - Designing API endpoint specifications
-   * - Producing entity relationship diagrams (ERD)
-   * - Formulating security and business logic requirements
-   *
-   * The token usage helps track AI resource consumption and optimize the
-   * requirements analysis process for cost efficiency.
-   */
-  tokenUsage: IAutoBeTokenUsageJson.IComponent;
-
-  /**
-   * Total number of documents to generate in the current analysis session.
-   *
-   * Typically represents the number of separate requirement documents or
-   * modules being analyzed. For most projects, this is 1, but complex projects
-   * may be split into multiple analysis documents.
-   */
-  total: number;
-
-  /**
-   * Number of documents generated so far in the current session.
-   *
-   * Tracks progress through multiple document generation when analyzing complex
-   * projects that require separate requirement documents for different modules
-   * or subsystems.
-   */
-  completed: number;
 }

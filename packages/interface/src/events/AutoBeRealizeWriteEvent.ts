@@ -1,5 +1,6 @@
-import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
 import { AutoBeEventBase } from "./AutoBeEventBase";
+import { AutoBeProgressEventBase } from "./AutoBeProgressEventBase";
+import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
 
 /**
  * Event fired during the implementation process as the Realize agent creates
@@ -19,7 +20,9 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
  * @author Samchon
  */
 export interface AutoBeRealizeWriteEvent
-  extends AutoBeEventBase<"realizeWrite"> {
+  extends AutoBeEventBase<"realizeWrite">,
+    AutoBeProgressEventBase,
+    AutoBeTokenUsageEventBase {
   /**
    * Name of the implementation file that has been completed.
    *
@@ -47,27 +50,6 @@ export interface AutoBeRealizeWriteEvent
   content: string;
 
   /**
-   * Number of implementation files that have been completed so far.
-   *
-   * Indicates the current progress in the implementation process, showing how
-   * many implementation files have been successfully generated and integrated
-   * into the application. This progress tracking helps stakeholders monitor the
-   * advancement of the final development phase and estimate completion timing.
-   */
-  completed: number;
-
-  /**
-   * Total number of implementation files that need to be created.
-   *
-   * Represents the complete scope of implementation files required to fulfill
-   * all business requirements and complete the application functionality. This
-   * total count provides context for the completion progress and helps
-   * stakeholders understand the overall complexity and scope of the
-   * implementation work.
-   */
-  total: number;
-
-  /**
    * Iteration number of the requirements analysis this implementation progress
    * reflects.
    *
@@ -82,20 +64,4 @@ export interface AutoBeRealizeWriteEvent
    * objectives.
    */
   step: number;
-
-  /**
-   * Token consumption metrics for generating this implementation file.
-   *
-   * Tracks the AI model's token usage (input and output) during the generation
-   * of this specific implementation file. This granular tracking enables precise
-   * cost analysis and optimization of the Realize agent's implementation
-   * process, helping identify which types of implementation files require more
-   * AI processing resources.
-   *
-   * The metrics include tokens consumed for understanding the API specifications
-   * and database schemas, as well as tokens generated for producing the complete
-   * implementation code including service methods, business logic, and
-   * integration patterns.
-   */
-  tokenUsage: IAutoBeTokenUsageJson.IComponent;
 }

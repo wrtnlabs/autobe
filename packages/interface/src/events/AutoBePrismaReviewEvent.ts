@@ -1,6 +1,7 @@
-import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
 import { AutoBePrisma } from "../prisma/AutoBePrisma";
 import { AutoBeEventBase } from "./AutoBeEventBase";
+import { AutoBeProgressEventBase } from "./AutoBeProgressEventBase";
+import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
 
 /**
  * Event fired when the Prisma agent reviews and validates schema modifications
@@ -21,7 +22,9 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
  * @author Samchon
  */
 export interface AutoBePrismaReviewEvent
-  extends AutoBeEventBase<"prismaReview"> {
+  extends AutoBeEventBase<"prismaReview">,
+    AutoBeProgressEventBase,
+    AutoBeTokenUsageEventBase {
   /** Name of the Prisma schema file being reviewed. */
   filename: string;
 
@@ -113,49 +116,6 @@ export interface AutoBePrismaReviewEvent
    * - All modifications must resolve issues identified in the review
    */
   modifications: AutoBePrisma.IModel[];
-
-  /**
-   * Token usage metrics for the Prisma Review operation.
-   *
-   * Records the amount of tokens consumed during the schema review and
-   * modification process. This includes tokens used for:
-   * - Analyzing the proposed schema against best practices
-   * - Validating normalization compliance and relationship integrity
-   * - Reviewing indexing strategies and performance optimizations
-   * - Generating detailed review feedback and recommendations
-   * - Creating targeted model modifications to address identified issues
-   *
-   * The token usage helps monitor the AI resource consumption during the
-   * iterative schema refinement process, enabling optimization of the review
-   * workflow.
-   */
-  tokenUsage: IAutoBeTokenUsageJson.IComponent;
-
-  /**
-   * Number of components that have been reviewed so far.
-   *
-   * Tracks the progress of the review process by indicating how many components
-   * (namespaces) have completed their schema review. This value incrementally
-   * increases as each component's tables are reviewed and validated against
-   * best practices and business requirements.
-   *
-   * Used in conjunction with `total` to display progress information to users,
-   * helping them understand how much of the review process has been completed.
-   */
-  completed: number;
-
-  /**
-   * Total number of components that need to be reviewed.
-   *
-   * Represents the complete count of components (namespaces) in the application
-   * that require schema review. Each component groups related tables by
-   * business domain, and this value indicates how many such components exist in
-   * the current schema design.
-   *
-   * Used to calculate review progress as a percentage (completed/total) and
-   * provide users with visibility into the overall review workflow status.
-   */
-  total: number;
 
   /**
    * Iteration number of the requirements analysis this review was performed

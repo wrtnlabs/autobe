@@ -1,6 +1,6 @@
-import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
 import { AutoBePrisma } from "../prisma";
 import { AutoBeEventBase } from "./AutoBeEventBase";
+import { AutoBeTokenUsageEventBase } from "./AutoBeTokenUsageEventBase";
 
 /**
  * Event fired when the Prisma agent organizes database tables into categorized
@@ -19,7 +19,8 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
  * @author Samchon
  */
 export interface AutoBePrismaComponentsEvent
-  extends AutoBeEventBase<"prismaComponents"> {
+  extends AutoBeEventBase<"prismaComponents">,
+    AutoBeTokenUsageEventBase {
   /**
    * Initial thoughts on namespace classification criteria.
    *
@@ -97,19 +98,4 @@ export interface AutoBePrismaComponentsEvent
    * relevant to the current project scope and business objectives.
    */
   step: number;
-
-  /**
-   * Token usage statistics for this component organization operation.
-   *
-   * Tracks the computational resources consumed by the AI model when organizing
-   * database tables into business domain components. This includes the tokens
-   * used during the initial thinking phase for analyzing domain boundaries, the
-   * review phase for refining namespace classifications, and the final decision
-   * phase for determining the component structure.
-   *
-   * The token metrics help monitor and optimize the AI's efficiency in
-   * performing strategic database organization tasks, which form the foundation
-   * for subsequent schema generation phases.
-   */
-  tokenUsage: IAutoBeTokenUsageJson.IComponent;
 }
