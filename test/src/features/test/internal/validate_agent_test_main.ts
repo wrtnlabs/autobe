@@ -1,3 +1,4 @@
+import { AutoBeTokenUsage } from "@autobe/agent";
 import { orchestrateTest } from "@autobe/agent/src/orchestrate/test/orchestrateTest";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
@@ -24,7 +25,7 @@ export const validate_agent_test_main = async (
   if (TestGlobal.env.API_KEY === undefined) return false;
 
   // PREPARE AGENT
-  const { agent } = await prepare_agent_test(factory, project);
+  const { agent, zero } = await prepare_agent_test(factory, project);
   const snapshots: AutoBeEventSnapshot[] = [];
   const start: Date = new Date();
   const listen = (event: AutoBeEvent) => {
@@ -71,7 +72,14 @@ export const validate_agent_test_main = async (
   if (process.argv.includes("--archive"))
     await TestHistory.save({
       [`${project}.test.json`]: JSON.stringify(histories),
-      [`${project}.test.snapshots.json`]: JSON.stringify(snapshots),
+      [`${project}.test.snapshots.json`]: JSON.stringify(
+        snapshots.map((s) => ({
+          event: s.event,
+          tokenUsage: new AutoBeTokenUsage(s.tokenUsage)
+            .increment(zero)
+            .toJSON(),
+        })),
+      ),
     });
   TestValidator.equals("result")(result.compiled.type)("success");
 };

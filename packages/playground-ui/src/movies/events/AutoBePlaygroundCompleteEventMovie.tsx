@@ -3,17 +3,22 @@ import {
   AutoBeInterfaceCompleteEvent,
   AutoBePrismaCompleteEvent,
   AutoBeRealizeCompleteEvent,
-  AutoBeRealizeTestCompleteEvent,
   AutoBeTestCompleteEvent,
   IAutoBeRpcService,
 } from "@autobe/interface";
-import { AutoBeRealizeAuthorizationCompleteEvent } from "@autobe/interface/src/events/AutoBeRealizeAuthorizationCompleteEvent";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import DownloadIcon from "@mui/icons-material/Download";
 import DownloadingIcon from "@mui/icons-material/Downloading";
 import GradingIcon from "@mui/icons-material/Grading";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
-import { Button, Card, CardActions, CardContent, Chip } from "@mui/material";
+import {
+  Alert,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  Chip,
+} from "@mui/material";
 import StackBlitzSDK from "@stackblitz/sdk";
 import JsZip from "jszip";
 import { useState } from "react";
@@ -23,6 +28,8 @@ export function AutoBePlaygroundCompleteEventMovie(
   props: AutoBePlaygroundCompleteEventMovie.IProps,
 ) {
   const stage = getStage(props.event);
+  const [size, setSize] = useState<number | null>(null);
+
   const [postgres] = useState(
     new Singleton(async () => {
       setDownloading(true);
@@ -57,16 +64,22 @@ export function AutoBePlaygroundCompleteEventMovie(
   const [downloading, setDownloading] = useState(false);
 
   const openStackBlitz = async () => {
+    const files: Record<string, string> = Object.fromEntries(
+      Object.entries(await sqlite.get()).filter(
+        ([key, value]) =>
+          key.startsWith("autobe/") === false &&
+          new TextEncoder().encode(value).length < 512 * 1024, // 512 KB
+      ),
+    );
+    const size: number = Object.values(files)
+      .map((str) => new TextEncoder().encode(str).length)
+      .reduce((a, b) => a + b, 0);
+    setSize(size);
     StackBlitzSDK.openProject(
       {
-        files: Object.fromEntries(
-          Object.entries(await sqlite.get()).filter(
-            ([_, value]) =>
-              new TextEncoder().encode(value).length < 2 * 1024 * 1024, // 2MB
-          ),
-        ),
         title: `AutoBE Generated Backend Server (${props.event.type})`,
         template: "node",
+        files,
       },
       {
         newWindow: true,
@@ -106,6 +119,30 @@ export function AutoBePlaygroundCompleteEventMovie(
 
   const title: string | null = getTitle(props.event);
   if (title === null) return null;
+
+  const sqliteButtons = () => (
+    <>
+      <Button
+        startIcon={<DownloadIcon />}
+        onClick={() => download("sqlite").catch(console.error)}
+        title={
+          stage !== "analyze"
+            ? "Download SQLite-based backend application (ideal for local development and testing)"
+            : "Download requirement analysis report"
+        }
+      >
+        Download
+      </Button>
+      <Button
+        startIcon={<OpenInNewIcon />}
+        onClick={() => openStackBlitz().catch(console.error)}
+        color={size !== null && size >= LIMIT ? "warning" : undefined}
+        title="Open project in StackBlitz for instant online development and testing"
+      >
+        StackBlitz
+      </Button>
+    </>
+  );
   return (
     <Card
       elevation={1}
@@ -129,6 +166,16 @@ export function AutoBePlaygroundCompleteEventMovie(
         <br />
         <br />
         Please check the result in the file explorer.
+        {size !== null && size >= LIMIT ? (
+          <>
+            <Alert severity="warning" sx={{ mt: 2 }}>
+              This project is too large ({(size / 1024 / 1024).toFixed(1)} MB)
+              for StackBlitz. <br />
+              <br />
+              Try downloading it directly instead!
+            </Alert>
+          </>
+        ) : null}
       </CardContent>
       <CardActions
         style={{
@@ -141,40 +188,17 @@ export function AutoBePlaygroundCompleteEventMovie(
             Downloading Source Codes...
           </Button>
         ) : props.event.type === "analyzeComplete" ? (
-          <>
-            <Button
-              startIcon={<DownloadIcon />}
-              onClick={() => download("sqlite").catch(console.error)}
-            >
-              Download
-            </Button>
-            <Button
-              startIcon={<OpenInNewIcon />}
-              onClick={() => openStackBlitz().catch(console.error)}
-            >
-              StackBlitz
-            </Button>
-          </>
+          sqliteButtons()
         ) : (
           <>
             <Button
               startIcon={<CloudDownloadIcon />}
               onClick={() => download("postgres").catch(console.error)}
+              title="Download PostgreSQL-based backend application (optimized for production deployment)"
             >
               Zip (Postgres)
             </Button>
-            <Button
-              startIcon={<DownloadIcon />}
-              onClick={() => download("sqlite").catch(console.error)}
-            >
-              Zip (SQLite)
-            </Button>
-            <Button
-              startIcon={<OpenInNewIcon />}
-              onClick={() => openStackBlitz().catch(console.error)}
-            >
-              StackBlitz
-            </Button>
+            {sqliteButtons()}
           </>
         )}
       </CardActions>
@@ -189,9 +213,7 @@ export namespace AutoBePlaygroundCompleteEventMovie {
       | AutoBePrismaCompleteEvent
       | AutoBeInterfaceCompleteEvent
       | AutoBeTestCompleteEvent
-      | AutoBeRealizeCompleteEvent
-      | AutoBeRealizeAuthorizationCompleteEvent
-      | AutoBeRealizeTestCompleteEvent;
+      | AutoBeRealizeCompleteEvent;
   }
 }
 
@@ -210,10 +232,6 @@ function getTitle(
       return "Test";
     case "realizeComplete":
       return "Realize";
-    case "realizeAuthorizationComplete":
-      return "Authorization";
-    case "realizeTestComplete":
-      return "Final E2E Test";
     default:
       event satisfies never;
       throw new Error("Unknown event type"); // unreachable
@@ -275,10 +293,10 @@ const getStage = (
   else if (event.type === "interfaceComplete") return "interface";
   else if (event.type === "testComplete") return "test";
   else if (event.type === "realizeComplete") return "realize";
-  else if (event.type === "realizeAuthorizationComplete") return "test";
-  else if (event.type === "realizeTestComplete") return "test";
   else {
     event satisfies never;
     return undefined;
   }
 };
+
+const LIMIT = 3 * 1024 * 1024;

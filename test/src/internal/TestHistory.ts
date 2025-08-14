@@ -81,7 +81,7 @@ export namespace TestHistory {
   }): Promise<IAutoBeTokenUsageJson> => {
     const snapshots: AutoBeEventSnapshot[] = JSON.parse(
       await fs.promises.readFile(
-        `${TestGlobal.ROOT}/assets/histories/${TestGlobal.getVendorModel()}/${props.project}.${props.type}.json`,
+        `${TestGlobal.ROOT}/assets/histories/${TestGlobal.getVendorModel()}/${props.project}.${props.type}.snapshots.json`,
         "utf8",
       ),
     );
