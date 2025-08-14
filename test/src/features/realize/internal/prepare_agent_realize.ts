@@ -10,7 +10,7 @@ import { TestProject } from "../../../structures/TestProject";
 
 export const prepare_agent_realize = async (
   factory: TestFactory,
-  project: "bbs-backend" | "shopping-backend",
+  project: TestProject,
 ) => {
   if (TestGlobal.env.API_KEY === undefined)
     throw new Error("No OpenAI API key provided");
