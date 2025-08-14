@@ -83,20 +83,17 @@ const WelcomeMessage = (props: {
               <button
                 className="absolute top-3 right-3 w-7 h-7 bg-white hover:bg-red-50 text-gray-400 hover:text-red-500 border border-gray-200 hover:border-red-300 rounded-full flex items-center justify-center transition-all duration-200 shadow-sm hover:shadow-md"
                 onClick={(e) => {
-                  e.stopPropagation();
-                  if (confirm("이 세션을 삭제하시겠습니까?")) {
-                    vscode.postMessage({
-                      type: "req_remove_session",
-                      data: {
-                        sessionId: session.sessionId,
-                      },
-                    });
+                  vscode.postMessage({
+                    type: "req_remove_session",
+                    data: {
+                      sessionId: session.sessionId,
+                    },
+                  });
 
-                    setSessionList((prev) =>
-                      prev.filter((s) => s.sessionId !== session.sessionId),
-                    );
-                    props.onDeleteSession?.(session.sessionId);
-                  }
+                  setSessionList((prev) =>
+                    prev.filter((s) => s.sessionId !== session.sessionId),
+                  );
+                  props.onDeleteSession?.(session.sessionId);
                 }}
                 title="세션 삭제"
               >
