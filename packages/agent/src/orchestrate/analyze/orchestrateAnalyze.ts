@@ -62,17 +62,22 @@ export const orchestrateAnalyze =
     };
     const newFiles: AutoBeAnalyzeFile[] = await Promise.all(
       fileList.map(async (file, i) => {
-        const event: AutoBeAnalyzeReviewEvent = await orchestrateAnalyzeReview(
-          ctx,
-          scenario,
-          fileList.filter((_, j) => j !== i), // other files
-          file,
-          reviewProgress,
-        );
-        return {
-          ...event.file,
-          content: event.content,
-        };
+        try {
+          const event: AutoBeAnalyzeReviewEvent =
+            await orchestrateAnalyzeReview(
+              ctx,
+              scenario,
+              fileList.filter((_, j) => j !== i), // other files
+              file,
+              reviewProgress,
+            );
+          return {
+            ...event.file,
+            content: event.content,
+          };
+        } catch {
+          return file;
+        }
       }),
     );
 

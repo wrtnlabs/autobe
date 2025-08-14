@@ -26,7 +26,6 @@ export async function orchestrateInterfaceSchemasReview<
     {
       value: null,
     };
-
   const { tokenUsage } = await ctx.conversate({
     source: "interfaceSchemasReview",
     controller: createController({
@@ -42,8 +41,11 @@ export async function orchestrateInterfaceSchemasReview<
     enforceFunctionCall: true,
     message: "Review type schemas.",
   });
-  if (pointer.value === null)
-    throw new Error("Failed to extract review information.");
+  if (pointer.value === null) {
+    console.error("Failed to extract review information.");
+    ++progress.completed;
+    return {};
+  }
 
   ctx.dispatch({
     type: "interfaceSchemasReview",

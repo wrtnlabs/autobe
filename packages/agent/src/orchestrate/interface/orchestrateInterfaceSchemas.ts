@@ -45,12 +45,14 @@ export async function orchestrateInterfaceSchemas<
     matrix.map(async (it) => {
       const row: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
         await divideAndConquer(ctx, operations, it, 3, progress);
-      return orchestrateInterfaceSchemasReview(
-        ctx,
-        operations,
-        row,
-        reviewProgress,
-      );
+      const newbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
+        await orchestrateInterfaceSchemasReview(
+          ctx,
+          operations,
+          row,
+          reviewProgress,
+        );
+      return { ...row, ...newbie };
     }),
   )) {
     Object.assign(x, y);
