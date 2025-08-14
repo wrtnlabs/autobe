@@ -2,6 +2,11 @@ import { AutoBeHistory } from "@autobe/interface";
 
 import AutoBeAssistantMessage from "../AutoBeAssistantMessage";
 import AutoBeUserMessage from "../AutoBeUserMessage";
+import AutoBeAnalyzeHistoryComponent from "./AutoBeAnalyzeHistory";
+import AutoBeInterfaceHistoryComponent from "./AutoBeInterfaceHistory";
+import AutoBePrismaHistoryComponent from "./AutoBePrismaHistory";
+import AutoBeRealizeHistoryComponent from "./AutoBeRealizeHistory";
+import AutoBeTestHistoryComponent from "./AutoBeTestHistory";
 
 interface IAutoBeHistoryMovieProps {
   history: AutoBeHistory;
@@ -22,11 +27,20 @@ const AutoBeHistoryMovie = (props: IAutoBeHistoryMovieProps) => {
     case "userMessage":
       return <AutoBeUserMessage message={history.contents} />;
     case "analyze":
+      return <AutoBeAnalyzeHistoryComponent history={history} />;
     case "prisma":
+      return <AutoBePrismaHistoryComponent history={history} />;
     case "interface":
-    case "realize":
+      return <AutoBeInterfaceHistoryComponent history={history} />;
     case "test":
-      return <div>{history.type}</div>;
+      return <AutoBeTestHistoryComponent history={history} />;
+    case "realize":
+      return <AutoBeRealizeHistoryComponent history={history} />;
+    default:
+      history satisfies never;
+      return (
+        <div>Unknown history type: {(history as { type: string }).type}</div>
+      );
   }
 };
 
