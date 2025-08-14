@@ -12,6 +12,7 @@ import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
+import { predicateStateMessage } from "../../utils/predicateStateMessage";
 import { orchestrateTestCorrect } from "./orchestrateTestCorrect";
 import { orchestrateTestScenario } from "./orchestrateTestScenario";
 import { orchestrateTestWrite } from "./orchestrateTestWrite";
@@ -22,7 +23,17 @@ export const orchestrateTest =
   async (
     props: IAutoBeApplicationProps,
   ): Promise<AutoBeAssistantMessageHistory | AutoBeTestHistory> => {
+    // PREDICATION
     const start: Date = new Date();
+    const predicate: string | null = predicateStateMessage(ctx.state(), "test");
+    if (predicate !== null)
+      return ctx.assistantMessage({
+        type: "assistantMessage",
+        id: v4(),
+        created_at: start.toISOString(),
+        text: predicate,
+        completed_at: new Date().toISOString(),
+      });
     ctx.dispatch({
       type: "testStart",
       created_at: start.toISOString(),
@@ -30,6 +41,7 @@ export const orchestrateTest =
       step: ctx.state().analyze?.step ?? 0,
     });
 
+    // CHECK OPERATIONS
     const operations: AutoBeOpenApi.IOperation[] =
       ctx.state().interface?.document.operations ?? [];
     if (operations.length === 0)

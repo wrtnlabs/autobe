@@ -9,11 +9,13 @@ import {
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
+import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
 import { getAutoBeGenerated } from "../../factory/getAutoBeGenerated";
 import { getAutoBeRealizeGenerated } from "../../factory/getAutoBeRealizeGenerated";
+import { predicateStateMessage } from "../../utils/predicateStateMessage";
 import { compile } from "./internal/compile";
 import { orchestrateRealizeAuthorization } from "./orchestrateRealizeAuthorization";
 import { orchestrateRealizeCorrect } from "./orchestrateRealizeCorrect";
@@ -26,13 +28,25 @@ export const orchestrateRealize =
   async (
     props: IAutoBeApplicationProps,
   ): Promise<AutoBeAssistantMessageHistory | AutoBeRealizeHistory> => {
+    // PREDICATION
     const operations: AutoBeOpenApi.IOperation[] | undefined =
       ctx.state().interface?.document.operations;
-    if (!operations) {
+    if (!operations)
       throw new Error("Can't do realize agent because operations are nothing.");
-    }
 
     const start: Date = new Date();
+    const predicate: string | null = predicateStateMessage(
+      ctx.state(),
+      "realize",
+    );
+    if (predicate !== null)
+      return ctx.assistantMessage({
+        type: "assistantMessage",
+        id: v4(),
+        created_at: start.toISOString(),
+        text: predicate,
+        completed_at: new Date().toISOString(),
+      });
     ctx.dispatch({
       type: "realizeStart",
       created_at: start.toISOString(),
@@ -40,9 +54,11 @@ export const orchestrateRealize =
       step: ctx.state().test?.step ?? 0,
     });
 
+    // AUTHORIZATIONS
     const authorizations: AutoBeRealizeAuthorization[] =
       await orchestrateRealizeAuthorization(ctx);
 
+    // SCENARIOS
     const scenarios: IAutoBeRealizeScenarioApplication.IProps[] =
       operations.map((operation) => orchestrateRealizeScenario(ctx, operation));
 

@@ -1,12 +1,8 @@
-import { IAgenticaController, MicroAgenticaHistory } from "@agentica/core";
-import {
-  AutoBeAssistantMessageHistory,
-  AutoBeInterfaceGroupsEvent,
-} from "@autobe/interface";
+import { IAgenticaController } from "@agentica/core";
+import { AutoBeInterfaceGroupsEvent } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
-import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
@@ -18,12 +14,12 @@ export async function orchestrateInterfaceGroups<
 >(
   ctx: AutoBeContext<Model>,
   message: string = "Design API operations for the given assets.",
-): Promise<AutoBeAssistantMessageHistory | AutoBeInterfaceGroupsEvent> {
+): Promise<AutoBeInterfaceGroupsEvent> {
   const start: Date = new Date();
   const pointer: IPointer<IAutoBeInterfaceGroupApplication.IProps | null> = {
     value: null,
   };
-  const { histories, tokenUsage } = await ctx.conversate({
+  const { tokenUsage } = await ctx.conversate({
     source: "interfaceGroups",
     histories: transformInterfaceGroupHistories(ctx.state()),
     controller: createController({
@@ -32,19 +28,10 @@ export async function orchestrateInterfaceGroups<
         pointer.value = next;
       },
     }),
-    enforceFunctionCall: false,
+    enforceFunctionCall: true,
     message,
   });
-  const last: MicroAgenticaHistory<Model> = histories.at(-1)!;
-  if (last.type === "assistantMessage")
-    return {
-      ...last,
-      created_at: start.toISOString(),
-      completed_at: new Date().toISOString(),
-      id: v4(),
-    } satisfies AutoBeAssistantMessageHistory;
-  else if (pointer.value === null)
-    throw new Error("Failed to generate groups."); // unreachable
+  if (pointer.value === null) throw new Error("Failed to generate groups."); // unreachable
   return {
     type: "interfaceGroups",
     created_at: start.toISOString(),

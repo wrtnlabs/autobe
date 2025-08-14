@@ -9,12 +9,12 @@ import {
   IAutoBePrismaValidation,
 } from "@autobe/interface";
 import { AutoBePrismaSchemasEvent } from "@autobe/interface/src/events/AutoBePrismaSchemasEvent";
-import { StringUtil } from "@autobe/utils";
 import { ILlmSchema } from "@samchon/openapi";
 import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
+import { predicateStateMessage } from "../../utils/predicateStateMessage";
 import { orchestratePrismaComponents } from "./orchestratePrismaComponent";
 import { orchestratePrismaCorrect } from "./orchestratePrismaCorrect";
 import { orchestratePrismaReview } from "./orchestratePrismaReview";
@@ -26,20 +26,13 @@ export const orchestratePrisma = async <Model extends ILlmSchema.Model>(
 ): Promise<AutoBePrismaHistory | AutoBeAssistantMessageHistory> => {
   // PREDICATION
   const start: Date = new Date();
-  if (ctx.state().analyze === null)
+  const predicate: string | null = predicateStateMessage(ctx.state(), "prisma");
+  if (predicate !== null)
     return ctx.assistantMessage({
       type: "assistantMessage",
       id: v4(),
       created_at: start.toISOString(),
-      text: StringUtil.trim`
-        Requirement analysis has not been proceeded yet.
-
-        Debate what you want to make with AI, so let the AI to write 
-        the requirement analysis report about the subject.
-
-        Designing database can be resumed after the requirement analysis 
-        is completed.
-      `,
+      text: predicate,
       completed_at: new Date().toISOString(),
     });
   ctx.dispatch({
