@@ -4,7 +4,9 @@ import AssistantMessage from "../AutoBeAssistantMessage";
 import AutoBeUserMessage from "../AutoBeUserMessage";
 import AutoBeStartEvent from "./AutoBeStartEvent";
 import ProgressEventsMovie from "./ProgressEventsMovie";
+import AnalyzeComplete from "./analyze/AnalyzeComplete";
 import AnalyzeScenario from "./analyze/AnalyzeScenario";
+import PrismaComponents from "./prisma/PrismaComponents";
 
 interface IAutoBeEventsMovieProps {
   event: AutoBeEvent;
@@ -30,11 +32,13 @@ const AutoBeEventsMovie = (props: IAutoBeEventsMovieProps) => {
       return <AutoBeStartEvent event={event} />;
     }
 
-    case "analyzeScenario":
-      // case "prismaComponents":
-      // case "interfaceGroups":
-      // case "testScenario":
+    case "analyzeScenario": {
       return <AnalyzeScenario event={event} />;
+    }
+    case "prismaComponents": {
+      return <PrismaComponents event={event} />;
+    }
+
     case "analyzeWrite":
     case "analyzeReview":
     case "prismaSchemas":
@@ -47,23 +51,17 @@ const AutoBeEventsMovie = (props: IAutoBeEventsMovieProps) => {
     }
 
     case "analyzeComplete":
+      return <AnalyzeComplete event={event} />;
     case "interfaceGroups":
-    case "interfaceEndpoints":
-    case "interfaceOperationsReview":
     case "interfaceOperations":
-    case "interfaceAuthorizations":
-    case "interfaceSchemas":
-    case "interfaceSchemasReview":
+    case "interfaceAuthorization":
     case "interfaceComplement":
     case "interfaceComplete":
-    case "prismaComponents":
-    case "prismaSchemas":
     case "prismaInsufficient":
-    case "prismaReview":
     case "prismaValidate":
     case "prismaCorrect":
     case "prismaComplete":
-    case "testScenario":
+    case "testScenarios":
     case "testWrite":
     case "testValidate":
     case "testCorrect":

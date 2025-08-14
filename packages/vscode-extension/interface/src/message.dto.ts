@@ -14,7 +14,9 @@ export type IAutoBeWebviewMessage =
   | IOnEventAutoBe
   | IOnEventUpdateTokenUsage
   | IRequestConversateChatSession
-  | IActionToConfig;
+  | IActionToConfig
+  | IRequestSaveFiles
+  | IResponseSaveFiles;
 
 export interface IRequestGetConfig {
   type: "req_get_config";
@@ -73,6 +75,25 @@ export interface IOnEventAutoBe {
   data: AutoBeEvent;
 }
 
+export interface IRequestSaveFiles {
+  type: "req_save_files";
+  data: {
+    files: Record<string, string>;
+    directory: string;
+  };
+}
+
+export interface IResponseSaveFiles {
+  type: "res_save_files";
+  data:
+    | {
+        success: true;
+      }
+    | {
+        success: false;
+        error: string;
+      };
+}
 export interface IOnEventUpdateTokenUsage {
   type: "on_event_update_token_usage";
   sessionId: string;

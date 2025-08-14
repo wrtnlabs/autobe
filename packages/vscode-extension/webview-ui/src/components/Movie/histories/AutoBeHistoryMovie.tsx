@@ -13,14 +13,14 @@ const AutoBeHistoryMovie = (props: IAutoBeHistoryMovieProps) => {
   switch (history.type) {
     case "analyze":
       break;
-    case "assistantMessage":
+    case "assistantMessage": {
       return (
         <AutoBeAssistantMessage
           text={history.text}
           timestamp={history.created_at}
         />
       );
-      break;
+    }
     case "interface":
       break;
     case "prisma":
