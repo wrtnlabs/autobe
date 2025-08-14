@@ -112,10 +112,13 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
       if (
         next.enforceFunctionCall === true &&
         histories.every((h) => h.type !== "execute")
-      )
+      ) {
+        if (histories.at(-1)?.type === "assistantMessage")
+          console.log(histories.at(-1)); // @todo - temporary way
         throw new Error(
           `Failed to function calling in the ${next.source} step`,
         );
+      }
       return { histories, tokenUsage };
     };
     if (next.enforceFunctionCall === true) return forceRetry(() => execute());

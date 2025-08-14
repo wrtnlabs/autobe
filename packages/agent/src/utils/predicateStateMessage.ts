@@ -23,33 +23,27 @@ export const predicateStateMessage = (
 
 const buildMissingStepsMessage = (
   current: StepName,
-  future: StepName,
+  missing: StepName,
 ): string => {
   const currentIndex: number = STEP_ORDER.indexOf(current);
-  const missingIndex: number = STEP_ORDER.indexOf(future);
+  const missingIndex: number = STEP_ORDER.indexOf(missing);
   const remainingSteps: string = STEP_ORDER.slice(
     missingIndex,
     currentIndex + 1,
   )
     .map((step, index) => `${index + 1}. ${STEP_DESCRIPTIONS[step]}`)
-    .map((str) => `    ${str}`)
-    .join("\n");
-  const actionName: string =
-    current === "realize"
-      ? "implement the main program"
-      : current === "test"
-        ? "create test functions"
-        : current === "interface"
-          ? "create API interface design"
-          : "continue";
+    .join("\n    ");
+
+  const currentAction = ACTION_NAMES[current];
+
   return StringUtil.trim`
-    ${STEP_DESCRIPTIONS[future].replace(/^[A-Z]/, (c) => c.toLowerCase())} has not been proceeded yet.
+    ${STEP_DESCRIPTIONS[missing]} not completed yet.
 
-    To ${actionName}, you need to complete these ${missingIndex === 0 ? "steps" : "remaining steps"} in order:
+    To ${currentAction}, complete these steps:
     
-    ${remainingSteps.trimStart()}
+    ${remainingSteps}
 
-    Please ${missingIndex === 0 ? "start with the requirement analysis first" : "continue with the " + future + " step"}.
+    Start with step ${missingIndex + 1}.
   `;
 };
 
@@ -62,35 +56,46 @@ const buildOutdatedMessage = (
   const currentVersion = state[currentStep]?.step;
 
   return StringUtil.trim`
-    ${STEP_DESCRIPTIONS[outdatedStep]} is outdated compared to ${STEP_DESCRIPTIONS[currentStep].toLowerCase()}.
-
-    The ${outdatedStep} (step ${outdatedVersion}) is behind the 
-    ${currentStep} (step ${currentVersion}).
-
-    Please update the ${outdatedStep} to match the latest requirements.
+    ${STEP_NAMES[outdatedStep]} is outdated (step ${outdatedVersion}).
+    
+    Requirements are now at step ${currentVersion}.
+    
+    Please update ${outdatedStep} to match current requirements.
   `;
 };
 
 const predicatePrisma = (state: AutoBeState): string | null => {
   if (state.analyze !== null) return null;
   return StringUtil.trim`
-    Requirement analysis has not been proceeded yet.
-
-    Debate what you want to make with AI, so let the AI to write 
-    the requirement analysis report about the subject.
-
-    Designing database can be resumed after the requirement analysis 
-    is completed.
+    Requirements analysis not started.
+    
+    Discuss your project with AI to generate requirements analysis.
+    Database design will follow after requirements are ready.
   `;
 };
 
 const STEP_DESCRIPTIONS: Record<StepName, string> = {
-  analyze:
-    "Debate what you want to make with AI and write requirement analysis report",
-  prisma: "Design database schema (Prisma) based on the requirements",
-  interface: "Create API interface specification",
-  test: "Create e2e test functions",
-  realize: "Implement the main program",
+  analyze: "Requirements analysis",
+  prisma: "Database design",
+  interface: "API interface design",
+  test: "E2E test creation",
+  realize: "Implementation",
+};
+
+const STEP_NAMES: Record<StepName, string> = {
+  analyze: "Requirements analysis",
+  prisma: "Database schema",
+  interface: "API interface",
+  test: "Test functions",
+  realize: "Implementation",
+};
+
+const ACTION_NAMES: Record<StepName, string> = {
+  analyze: "analyze requirements",
+  prisma: "design database",
+  interface: "design API interface",
+  test: "create tests",
+  realize: "implement the program",
 };
 
 const STEP_ORDER: StepName[] = [
