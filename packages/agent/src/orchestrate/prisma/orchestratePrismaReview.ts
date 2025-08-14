@@ -20,11 +20,18 @@ export async function orchestratePrismaReview<Model extends ILlmSchema.Model>(
     completed: 0,
     total: componentList.length,
   };
-  return await Promise.all(
-    componentList.map((component) =>
-      step(ctx, application, schemas, component, progress),
-    ),
-  );
+  return (
+    await Promise.all(
+      componentList.map(async (component) => {
+        try {
+          return await step(ctx, application, schemas, component, progress);
+        } catch {
+          ++progress.completed;
+          return null;
+        }
+      }),
+    )
+  ).filter((v) => v !== null);
 }
 
 async function step<Model extends ILlmSchema.Model>(

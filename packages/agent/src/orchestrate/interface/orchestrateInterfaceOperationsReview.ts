@@ -35,7 +35,11 @@ export async function orchestrateInterfaceOperationsReview<
     enforceFunctionCall: false,
     message: "Review the operations",
   });
-  if (pointer.value === null) throw new Error("Failed to review operations.");
+  if (pointer.value === null) {
+    progress.completed += operations.length;
+    console.error("Failed to review operations.");
+    return [];
+  }
 
   ctx.dispatch({
     type: "interfaceOperationsReview",
@@ -47,7 +51,7 @@ export async function orchestrateInterfaceOperationsReview<
     created_at: new Date().toISOString(),
     step: ctx.state().analyze?.step ?? 0,
     total: progress.total,
-    completed: ++progress.completed,
+    completed: (progress.completed += operations.length),
   } satisfies AutoBeInterfaceOperationsReviewEvent);
   return pointer.value.content;
 }
