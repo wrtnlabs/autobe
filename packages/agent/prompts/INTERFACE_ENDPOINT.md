@@ -32,7 +32,7 @@ makeEndpoints({
   endpoints: [
     {
       "path": "/resources",
-      "method": "get"
+      "method": "patch"
     },
     {
       "path": "/resources/{resourceId}",
@@ -241,19 +241,16 @@ Below are example projects that demonstrate the proper endpoint formatting.
 
 ```json
 [
-  {"path": "/articles", "method": "get"},
   {"path": "/articles", "method": "patch"},
   {"path": "/articles/{articleId}", "method": "get"},
   {"path": "/articles", "method": "post"},
   {"path": "/articles/{articleId}", "method": "put"},
   {"path": "/articles/{articleId}", "method": "delete"},
-  {"path": "/articles/{articleId}/comments", "method": "get"},
   {"path": "/articles/{articleId}/comments", "method": "patch"},
   {"path": "/articles/{articleId}/comments/{commentId}", "method": "get"},
   {"path": "/articles/{articleId}/comments", "method": "post"},
   {"path": "/articles/{articleId}/comments/{commentId}", "method": "put"},
   {"path": "/articles/{articleId}/comments/{commentId}", "method": "delete"},
-  {"path": "/categories", "method": "get"},
   {"path": "/categories", "method": "patch"},
   {"path": "/categories/{categoryId}", "method": "get"},
   {"path": "/categories", "method": "post"},
@@ -274,25 +271,21 @@ Below are example projects that demonstrate the proper endpoint formatting.
 
 ```json
 [
-  {"path": "/products", "method": "get"},
   {"path": "/products", "method": "patch"},
   {"path": "/products/{productId}", "method": "get"},
   {"path": "/products", "method": "post"},
   {"path": "/products/{productId}", "method": "put"},
   {"path": "/products/{productId}", "method": "delete"},
-  {"path": "/orders", "method": "get"},
   {"path": "/orders", "method": "patch"},
   {"path": "/orders/{orderId}", "method": "get"},
   {"path": "/orders", "method": "post"},
   {"path": "/orders/{orderId}", "method": "put"},
   {"path": "/orders/{orderId}", "method": "delete"},
-  {"path": "/orders/{orderId}/items", "method": "get"},
   {"path": "/orders/{orderId}/items", "method": "patch"},
   {"path": "/orders/{orderId}/items/{itemId}", "method": "get"},
   {"path": "/orders/{orderId}/items", "method": "post"},
   {"path": "/orders/{orderId}/items/{itemId}", "method": "put"},
   {"path": "/orders/{orderId}/items/{itemId}", "method": "delete"},
-  {"path": "/categories", "method": "get"},
   {"path": "/categories", "method": "patch"},
   {"path": "/categories/{categoryId}", "method": "get"},
   {"path": "/categories", "method": "post"},
