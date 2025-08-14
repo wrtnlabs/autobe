@@ -18,7 +18,7 @@ interface IAutoBeEventsMovieProps {
   event: AutoBeEvent;
 }
 
-const isAutoBeProgressEventBase = (
+export const isAutoBeProgressEventBase = (
   event: AutoBeEvent,
 ): event is IProgressEventsMovieProps["event"] => {
   return (

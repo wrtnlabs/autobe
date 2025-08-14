@@ -6,7 +6,9 @@ import {
 import { forwardRef } from "react";
 
 import TokenUsageCard from "../TokenUsageCard";
-import AutoBeEventsMovie from "./events/AutoBeEventsMovie";
+import AutoBeEventsMovie, {
+  isAutoBeProgressEventBase,
+} from "./events/AutoBeEventsMovie";
 import AutoBeHistoryMovie from "./histories/AutoBeHistoryMovie";
 
 interface IChatMovieProps {
@@ -18,9 +20,21 @@ interface IChatMovieProps {
 
 const ChatMovie = forwardRef<HTMLDivElement, IChatMovieProps>((props, ref) => {
   const { histories, events } = props;
+  const compactEvents = events.filter((v, idx) => {
+    if (idx === events.length - 1) {
+      return true;
+    }
+    const nextEvent = events[idx + 1];
+    if (isAutoBeProgressEventBase(v) && v.type === nextEvent.type) {
+      return false;
+    }
+
+    return true;
+  });
+
   const logList = [
     ...histories.map((v) => ({ ...v, _type: "history" }) as const),
-    ...events.map((v) => ({ ...v, _type: "event" }) as const),
+    ...compactEvents.map((v) => ({ ...v, _type: "event" }) as const),
   ].sort(
     (a, b) =>
       new Date(a.created_at).valueOf() - new Date(b.created_at).valueOf(),
