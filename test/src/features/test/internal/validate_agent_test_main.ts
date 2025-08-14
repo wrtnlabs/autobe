@@ -40,17 +40,11 @@ export const validate_agent_test_main = async (
     if (type.startsWith("test")) agent.on(type, listen);
 
   // DO TEST GENERATION
-  const go = (reason: string) =>
-    orchestrateTest(agent.getContext())({
-      reason,
+  const result: AutoBeAssistantMessageHistory | AutoBeTestHistory =
+    await orchestrateTest(agent.getContext())({
+      reason: "Validate agent test",
     });
-  let result: AutoBeAssistantMessageHistory | AutoBeTestHistory = await go(
-    "Validate agent test",
-  );
-  if (result.type !== "test") {
-    result = await go("Don't ask me to do that, and just do it right now.");
-    if (result.type !== "test") throw new Error("Failed to generate test.");
-  }
+  if (result.type !== "test") throw new Error("Failed to generate test.");
 
   // REPORT RESULT
   const histories: AutoBeHistory[] = agent.getHistories();

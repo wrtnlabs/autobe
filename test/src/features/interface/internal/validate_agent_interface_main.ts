@@ -39,18 +39,12 @@ export const validate_agent_interface_main = async (
     if (type.startsWith("interface")) agent.on(type, listen);
 
   // REQUEST INTERFACE GENERATION
-  const go = (reason: string) =>
-    orchestrate.interface(agent.getContext())({
-      reason,
+  const result: AutoBeInterfaceHistory | AutoBeAssistantMessageHistory =
+    await orchestrate.interface(agent.getContext())({
+      reason: "Step to the interface designing after DB schema generation",
     });
-  let result: AutoBeInterfaceHistory | AutoBeAssistantMessageHistory = await go(
-    "Step to the interface designing after DB schema generation",
-  );
-  if (result.type !== "interface") {
-    result = await go("Don't ask me to do that, and just do it right now.");
-    if (result.type !== "interface")
-      throw new Error("History type must be interface.");
-  }
+  if (result.type !== "interface")
+    throw new Error("History type must be interface.");
 
   // REPORT RESULT
   const model: string = TestGlobal.getVendorModel();

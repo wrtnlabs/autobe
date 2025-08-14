@@ -41,18 +41,11 @@ export const validate_agent_realize_main = async (
 
   // DO TEST GENERATION
   const ctx = agent.getContext();
-  const go = (reason: string) =>
-    orchestrateRealize(ctx)({
-      reason,
+  const result: AutoBeAssistantMessageHistory | AutoBeRealizeHistory =
+    await orchestrateRealize(ctx)({
+      reason: "Validate agent realize",
     });
-  let result: AutoBeAssistantMessageHistory | AutoBeRealizeHistory = await go(
-    "Validate agent realize",
-  );
-  if (result.type !== "realize") {
-    result = await go("Don't ask me to do that, and just do it right now.");
-    if (result.type !== "realize")
-      throw new Error("Failed to generate realize.");
-  }
+  if (result.type !== "realize") throw new Error("Failed to generate realize.");
 
   // REPORT RESULT
   const model: string = TestGlobal.getVendorModel();
