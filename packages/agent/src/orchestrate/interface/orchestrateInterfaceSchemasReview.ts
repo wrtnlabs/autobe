@@ -62,7 +62,7 @@ export async function orchestrateInterfaceSchemasReview<
     } satisfies AutoBeInterfaceSchemasReviewEvent);
     return pointer.value.content;
   } catch (error) {
-    console.error("Error occured during interface schemas review:", error);
+    console.error("Error occurred during interface schemas review:", error);
     ++progress.completed;
     return {};
   }

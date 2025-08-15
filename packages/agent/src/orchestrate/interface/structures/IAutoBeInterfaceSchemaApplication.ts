@@ -14,10 +14,9 @@ export interface IAutoBeInterfaceSchemaApplication {
    * creation. This ensures that the final OpenAPI document has complete type
    * coverage for all operations.
    *
-   * CRITICAL: All schema definitions must follow the established naming
-   * conventions (IEntityName, IEntityName.ICreate, etc.) and must be thoroughly
-   * documented with descriptions that reference the original Prisma schema
-   * comments.
+   * DO: Follow established naming conventions (IEntityName, IEntityName.ICreate, etc.)
+   * DO: Document thoroughly with descriptions that reference the original Prisma
+   * schema comments.
    *
    * @param props Properties containing components to generate.
    */
@@ -32,23 +31,23 @@ export namespace IAutoBeInterfaceSchemaApplication {
      * the system. It is the central repository of all named schema types that
      * will be used throughout the API specification.
      *
-     * CRITICAL REQUIREMENT: All object types MUST be defined as named types in
-     * the components.schemas section. Inline anonymous object definitions are
-     * strictly prohibited.
+     * DO: Define all object types as named types in the components.schemas section.
+     * DO NOT: Use inline anonymous object definitions.
      *
-     * This components object should include:
+     * This components object includes:
      *
      * - Main entity types (IEntityName)
      * - Operation-specific variants (.ICreate, .IUpdate, .ISummary, etc.)
      * - Container types (IPage<T> for pagination)
      * - Enumeration types
      *
-     * All schema definitions must include detailed descriptions that reference
-     * the original Prisma schema comments and thoroughly document each
-     * property. Every property that references an object must use a $ref to a
-     * named type in the components.schemas section. This applies to all objects
-     * in request bodies, response bodies, and properties that are objects or
-     * arrays of objects.
+     * DO: Include detailed descriptions that reference the original Prisma schema
+     * comments and thoroughly document each property.
+     * DO: Use a $ref to a named type in the components.schemas section for every
+     * property that references an object.
+     * 
+     * This applies to all objects in request bodies, response bodies, and
+     * properties that are objects or arrays of objects.
      *
      * Example structure:
      *

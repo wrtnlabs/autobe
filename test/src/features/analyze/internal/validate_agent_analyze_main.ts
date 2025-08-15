@@ -1,6 +1,9 @@
 import { AutoBeAgent, AutoBeTokenUsage } from "@autobe/agent";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
+  AutoBeAnalyzeReviewEvent,
+  AutoBeAnalyzeScenarioEvent,
+  AutoBeAnalyzeWriteEvent,
   AutoBeEvent,
   AutoBeEventSnapshot,
   AutoBeHistory,
@@ -43,6 +46,21 @@ export const validate_agent_analyze_main = async (
   agent.on("assistantMessage", listen);
   for (const type of typia.misc.literals<AutoBeEvent.Type>())
     if (type.startsWith("analyze")) agent.on(type, listen);
+
+  // FOR NEXT TESTING ASSETS
+  let scenario: AutoBeAnalyzeScenarioEvent | null = null;
+  const writes: AutoBeAnalyzeWriteEvent[] = [];
+  const reviews: AutoBeAnalyzeReviewEvent[] = [];
+
+  agent.on("analyzeScenario", (e) => {
+    scenario = e;
+  });
+  agent.on("analyzeWrite", (e) => {
+    writes.push(e);
+  });
+  agent.on("analyzeReview", (e) => {
+    reviews.push(e);
+  });
 
   // GENERATE REPORT
   const zero: AutoBeTokenUsage = new AutoBeTokenUsage(
@@ -91,5 +109,8 @@ export const validate_agent_analyze_main = async (
             .toJSON(),
         })),
       ),
+      [`${project}.analyze.writes.json`]: JSON.stringify(writes),
+      [`${project}.analyze.reviews.json`]: JSON.stringify(reviews),
+      [`${project}.analyze.scenario.json`]: JSON.stringify(scenario),
     });
 };

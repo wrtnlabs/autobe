@@ -12,9 +12,10 @@ export interface IAutoBeAnalyzeReviewApplication {
    * - Adding missing business processes and workflows
    * - Ensuring proper document structure and completeness
    *
-   * CRITICAL: The function outputs the actual document content that will be saved,
-   * not a review or analysis of the document. Any text output becomes part of
-   * the final document.
+   * DO: Output the actual document content that will be saved.
+   * DO NOT: Output review comments or analysis of the document.
+   * 
+   * Note: Any text output becomes part of the final document.
    *
    * @param props - The properties containing the document to enhance along with
    *   plan and review criteria for guidance
@@ -41,14 +42,12 @@ export namespace IAutoBeAnalyzeReviewApplication {
      *
      * Critical review points:
      *
-     * - Mermaid diagrams MUST use double quotes for ALL labels
-     * - No spaces allowed between brackets and quotes in Mermaid
-     * - Requirements must be specific and measurable in natural language
-     * - Focus on business requirements and user scenarios
-     * - STRICTLY PROHIBITED: Reject if document contains database schemas or API
-     *   specifications
-     * - Business model and authentication requirements must be described in
-     *   natural language
+     * - DO: Use double quotes for ALL labels in Mermaid diagrams
+     * - DO NOT: Use spaces between brackets and quotes in Mermaid
+     * - DO: Make requirements specific and measurable in natural language
+     * - DO: Focus on business requirements and user scenarios
+     * - DO NOT: Accept documents containing database schemas or API specifications
+     * - DO: Describe business model and authentication requirements in natural language
      */
     review: string;
 
@@ -70,10 +69,11 @@ export namespace IAutoBeAnalyzeReviewApplication {
     /**
      * The actual markdown document content that incorporates review feedback.
      *
-     * ⚠️ CRITICAL: This field contains a COMPLETE MARKDOWN DOCUMENT that has 
-     * already incorporated the review criteria and plan requirements. This is 
-     * NOT raw input to be reviewed - it is the FINAL, PRODUCTION-READY DOCUMENT
-     * that reflects all review feedback and is immediately usable.
+     * This field contains a COMPLETE MARKDOWN DOCUMENT that has already 
+     * incorporated the review criteria and plan requirements.
+     * 
+     * DO: Treat this as the final, production-ready document.
+     * DO NOT: Treat this as raw input to be reviewed.
      * 
      * This content represents:
      * - A fully-formed markdown document (.md file)
@@ -92,7 +92,7 @@ export namespace IAutoBeAnalyzeReviewApplication {
      * - Appropriate level of detail for backend implementation
      * - Proper document linking (descriptive text, not raw filenames)
      *
-     * IMPORTANT: The enhancer's output IS this document, not comments about it:
+     * The enhancer outputs the document itself:
      *
      * - If content is provided, it represents the actual document
      * - The enhancer outputs the enhanced version AS the document itself

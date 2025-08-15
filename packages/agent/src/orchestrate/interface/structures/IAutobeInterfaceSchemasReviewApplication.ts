@@ -32,19 +32,16 @@ export namespace IAutoBeInterfaceSchemasReviewApplication {
     /**
      * Issues and problems found during schema analysis.
      *
-     * IMPORTANT: Only document problems that need fixing. Do NOT include:
-     *
-     * - Positive feedback about what's already correct
-     * - Compliments about well-structured schemas
-     * - Confirmation that certain aspects meet standards
+     * DO: Document only problems that need fixing.
+     * DO NOT: Include positive feedback, compliments, or confirmations
      *
      * Focus exclusively on issues organized by severity:
      *
-     * - CRITICAL: Security vulnerabilities (exposed passwords, missing auth
-     *   boundaries)
-     * - HIGH: Missing required variants, incorrect type mappings
-     * - MEDIUM: Missing format specifications, incomplete relationships
-     * - LOW: Documentation improvements, style consistency
+     * Severity levels:
+     * - Security vulnerabilities (exposed passwords, missing auth boundaries)
+     * - Missing required variants, incorrect type mappings
+     * - Missing format specifications, incomplete relationships
+     * - Documentation improvements, style consistency
      *
      * Each issue must include the specific schema name and what needs to be
      * fixed. If there are no issues at all, simply state: "No issues found."
@@ -70,21 +67,18 @@ export namespace IAutoBeInterfaceSchemasReviewApplication {
     /**
      * Final validated and enhanced schemas ready for production use.
      *
-     * CRITICAL REQUIREMENTS:
+     * DO:
+     * - Include valid OpenAPI schema definitions
+     * - Include all entities that were in the original input
+     * - Provide fixed versions if original schemas have issues
+     * - Rename entities correctly if names are wrong
+     * - Include created variants if schemas are missing them
      *
-     * - MUST NEVER be an empty object {}
-     * - MUST contain valid OpenAPI schema definitions
-     * - MUST include all entities that were in the original input
-     * - If original schemas have critical issues, MUST contain fixed versions
-     * - If entity names are wrong, MUST contain renamed correct versions
-     * - If schemas are missing variants, MUST include the created variants
-     *
-     * FORBIDDEN:
-     *
-     * - Empty object {} will cause all schemas to be deleted
-     * - Returning undefined or null
-     * - Including explanations or excuses in schema descriptions
-     * - Leaving broken schemas unfixed
+     * DO NOT:
+     * - Return an empty object {} (this will delete all schemas)
+     * - Return undefined or null
+     * - Include explanations or excuses in schema descriptions
+     * - Leave broken schemas unfixed
      *
      * When original schemas are beyond repair, recreate them properly based on
      * entity names and context. This field becomes the final schemas used by

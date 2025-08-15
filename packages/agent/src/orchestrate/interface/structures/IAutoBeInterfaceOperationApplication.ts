@@ -23,7 +23,7 @@ export namespace IAutoBeInterfaceOperationApplication {
     /**
      * Array of API operations to generate.
      *
-     * Each operation in this array must include:
+     * Each operation in this array includes:
      *
      * - Specification: Detailed API specification with clear purpose and
      *   functionality
@@ -38,7 +38,7 @@ export namespace IAutoBeInterfaceOperationApplication {
      *   components.schemas
      * - ResponseBody: With typeName referencing appropriate response type
      *
-     * All operations must follow strict quality standards:
+     * All operations follow strict quality standards:
      *
      * 1. Detailed descriptions referencing Prisma schema comments
      * 2. Accurate parameter definitions matching path parameters
@@ -66,11 +66,11 @@ export namespace IAutoBeInterfaceOperationApplication {
    * reason and description fields, making it clear why the API was designed and
    * how it should be used.
    *
-   * All request bodies and responses for this operation must be object types
-   * and must reference named types defined in the components section. The
-   * content-type is always `application/json`. For file upload/download
-   * operations, use `string & tags.Format<"uri">` in the appropriate schema
-   * instead of binary data formats.
+   * DO: Use object types for all request bodies and responses.
+   * DO: Reference named types defined in the components section.
+   * DO: Use `application/json` as the content-type.
+   * DO: Use `string & tags.Format<"uri">` in the schema for file upload/download
+   * operations instead of binary data formats.
    *
    * In OpenAPI, this might represent:
    *
@@ -98,15 +98,14 @@ export namespace IAutoBeInterfaceOperationApplication {
      *
      * ## Naming Convention
      *
-     * All role names MUST use camelCase.
+     * DO: Use camelCase for all role names.
      *
      * ## Important Guidelines
      *
      * - Set to empty array `[]` for public endpoints that require no
      *   authentication
      * - Set to array with role strings for role-restricted endpoints
-     * - The role names MUST match exactly with the user type/role defined in the
-     *   database
+     * - The role names match exactly with the user type/role defined in the database
      * - This will be used by the Realize Agent to generate appropriate decorator
      *   and authorization logic in the provider functions
      * - The controller will apply the corresponding authentication decorator

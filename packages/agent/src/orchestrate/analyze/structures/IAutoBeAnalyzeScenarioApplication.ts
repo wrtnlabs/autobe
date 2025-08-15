@@ -1,5 +1,6 @@
 import { AutoBeAnalyzeRole, CamelPattern } from "@autobe/interface";
 import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
+import { tags } from "typia";
 
 export interface IAutoBeAnalyzeScenarioApplication {
   /**
@@ -28,7 +29,7 @@ export namespace IAutoBeAnalyzeScenarioApplication {
      * Prefix for file names and variable names. This will be used for
      * organizing documentation files.
      *
-     * MUST use camelCase naming convention.
+     * DO: Use camelCase naming convention.
      */
     prefix: string & CamelPattern;
 
@@ -64,9 +65,8 @@ export namespace IAutoBeAnalyzeScenarioApplication {
      * - Service overview and business model description
      * - User roles and permission requirements (described in natural language)
      * - Business logic and validation rules
-     * - STRICTLY PROHIBITED: Do NOT include database schemas, ERD, or API
-     *   specifications
-     * - All requirements must be written in natural language for clarity
+     * - DO NOT: Include database schemas, ERD, or API specifications
+     * - DO: Write all requirements in natural language for clarity
      *
      * Generate files based on actual requirements gathered from conversation.
      * Do not create unnecessary documentation - only generate what is needed to
@@ -80,6 +80,6 @@ export namespace IAutoBeAnalyzeScenarioApplication {
      * user does not specify a number, generate a sufficient number of documents
      * to adequately support the service.
      */
-    files: Array<AutoBeAnalyzeFile.Scenario>;
+    files: Array<AutoBeAnalyzeFile.Scenario> & tags.MinItems<1>;
   }
 }

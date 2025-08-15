@@ -5,10 +5,10 @@ export interface IAutoBeInterfaceGroupApplication {
    * Generate logical groups for organizing API endpoint creation based on
    * Prisma schema structure.
    *
-   * Groups MUST be derived from Prisma schema organization (namespaces, file
-   * structure, table prefixes) rather than arbitrary business domains. Only
-   * create new groups when existing schema structure cannot adequately cover
-   * all requirements.
+   * DO: Derive groups from Prisma schema organization (namespaces, file
+   * structure, table prefixes) rather than arbitrary business domains.
+   * DO: Create new groups only when existing schema structure cannot adequately
+   * cover all requirements.
    *
    * @param props Properties containing the groups to be created for API
    *   organization
@@ -21,8 +21,8 @@ export namespace IAutoBeInterfaceGroupApplication {
     /**
      * Array of API endpoint groups for organizing development.
      *
-     * Groups MUST be organized around existing Prisma schema structure and
-     * provide complete coverage of all entities and requirements without
+     * DO: Organize groups around existing Prisma schema structure.
+     * DO: Provide complete coverage of all entities and requirements without
      * overlap.
      */
     groups: IGroup[] & tags.MinItems<1>;
@@ -34,10 +34,11 @@ export namespace IAutoBeInterfaceGroupApplication {
    *
    * **SCHEMA-BASED GROUP REQUIREMENTS:**
    *
-   * Groups MUST be derived from the Prisma schema structure rather than
-   * arbitrary business domain names. This ensures consistency with the
-   * underlying data model and prevents misalignment between API organization
-   * and database structure.
+   * DO: Derive groups from the Prisma schema structure rather than arbitrary
+   * business domain names.
+   * 
+   * This ensures consistency with the underlying data model and prevents
+   * misalignment between API organization and database structure.
    *
    * **Primary Group Sources (in order of priority):**
    *
@@ -51,12 +52,11 @@ export namespace IAutoBeInterfaceGroupApplication {
    *
    * **Group Creation Guidelines:**
    *
-   * - Each group must cover specific Prisma schema entities without overlap
+   * - Each group covers specific Prisma schema entities without overlap
    * - Size groups appropriately for manageable endpoint generation cycles
    * - Maintain clear boundaries based on schema organization
    * - Ensure complete coverage of all database entities and requirements
-   * - Related database tables within the same schema area should be grouped
-   *   together
+   * - Related database tables within the same schema area are grouped together
    *
    * **When to Create Schema-Independent Groups:**
    *
@@ -71,14 +71,14 @@ export namespace IAutoBeInterfaceGroupApplication {
    * **Naming Standards:**
    *
    * - Use PascalCase format (e.g., "Shopping", "BBS", "UserManagement")
-   * - Names MUST directly reflect Prisma schema structure
+   * - Names directly reflect Prisma schema structure
    * - Keep names concise and schema-derived
    * - Avoid arbitrary business domain names
    * - Maintain consistency with schema organization
    *
    * **Quality Requirements:**
    *
-   * - Groups collectively must cover ALL entities and requirements
+   * - Groups collectively cover ALL entities and requirements
    * - Each database entity belongs to exactly one group
    * - Clear mapping to specific Prisma schema elements
    * - Balance group sizes within schema constraints
@@ -88,7 +88,7 @@ export namespace IAutoBeInterfaceGroupApplication {
     /**
      * Unique identifier name derived from Prisma schema structure.
      *
-     * Must correspond to schema namespaces, file names, table prefixes, or
+     * DO: Correspond to schema namespaces, file names, table prefixes, or
      * organizational annotations rather than arbitrary business domain names.
      */
     name: string & tags.MinLength<1>;

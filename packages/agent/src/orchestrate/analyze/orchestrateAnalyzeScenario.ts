@@ -29,9 +29,7 @@ export const orchestrateAnalyzeScenario = async <
     source: "analyzeScenario",
     controller: createController<Model>({
       model: ctx.model,
-      execute: new AutoBeAnalyzeScenarioApplication(),
-      preExecute: (props: IAutoBeAnalyzeScenarioApplication.IProps) =>
-        (pointer.value = props),
+      pointer,
     }),
     histories: transformAnalyzeSceHistories(ctx),
     enforceFunctionCall: false,
@@ -65,33 +63,9 @@ export const orchestrateAnalyzeScenario = async <
   };
 };
 
-class AutoBeAnalyzeScenarioApplication
-  implements IAutoBeAnalyzeScenarioApplication
-{
-  /**
-   * Compose project structure with roles and files.
-   *
-   * Design a list of roles and initial documents that you need to create for
-   * that requirement. Roles define team member responsibilities, while files
-   * define the documentation structure. These are managed separately. If you
-   * determine from the conversation that the user's requirements have not been
-   * fully gathered, you must stop the analysis and continue collecting the
-   * remaining requirements. In this case, you do not need to generate any files
-   * or roles. Simply pass an empty array to `input.files` and `input.roles`.
-   *
-   * @param input Prefix, roles, and files
-   * @returns
-   */
-  compose(input: IAutoBeAnalyzeScenarioApplication.IProps): void {
-    input;
-    return;
-  }
-}
-
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  execute: AutoBeAnalyzeScenarioApplication;
-  preExecute: (input: IAutoBeAnalyzeScenarioApplication.IProps) => void;
+  pointer: IPointer<IAutoBeAnalyzeScenarioApplication.IProps | null>;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
   const application: ILlmApplication<Model> = collection[
@@ -103,19 +77,21 @@ function createController<Model extends ILlmSchema.Model>(props: {
     application,
     execute: {
       compose: (input) => {
-        props.preExecute(input);
-        return props.execute.compose(input);
+        props.pointer.value = input;
       },
     } satisfies IAutoBeAnalyzeScenarioApplication,
   };
 }
 
 const claude = typia.llm.application<
-  AutoBeAnalyzeScenarioApplication,
+  IAutoBeAnalyzeScenarioApplication,
   "claude"
 >();
 const collection = {
-  chatgpt: typia.llm.application<AutoBeAnalyzeScenarioApplication, "chatgpt">(),
+  chatgpt: typia.llm.application<
+    IAutoBeAnalyzeScenarioApplication,
+    "chatgpt"
+  >(),
   claude,
   llama: claude,
   deepseek: claude,

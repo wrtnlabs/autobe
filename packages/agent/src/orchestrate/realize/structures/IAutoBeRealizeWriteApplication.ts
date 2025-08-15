@@ -13,16 +13,18 @@ export namespace IAutoBeRealizeWriteApplication {
      * function according to the Realize Coder Agent specification. Before
      * writing the actual code, think through the logic and structure.
      *
-     * The plan MUST follow MANDATORY SCHEMA-FIRST APPROACH:
+     * The plan follows a SCHEMA-FIRST APPROACH:
      *
-     * 📋 STEP 1 - PRISMA SCHEMA VERIFICATION (MOST CRITICAL):
+     * 📋 STEP 1 - PRISMA SCHEMA VERIFICATION:
      *
-     * - EXAMINE the actual Prisma schema model definition
-     * - LIST EVERY field that exists in the model with exact types
-     * - EXPLICITLY NOTE fields that DO NOT exist (e.g., "Note: deleted_at field
-     *   DOES NOT EXIST")
-     * - Common assumption errors to avoid: `deleted_at`, `created_by`,
-     *   `updated_by`, `is_deleted`, `is_active`
+     * DO:
+     * - Examine the actual Prisma schema model definition
+     * - List EVERY field that exists in the model with exact types
+     * - Explicitly note fields that DO NOT exist
+     * 
+     * DO NOT:
+     * - Assume common fields exist without verification
+     * - Use fields like deleted_at, created_by, updated_by, is_deleted, is_active without checking
      *
      * 📋 STEP 2 - FIELD INVENTORY:
      *
@@ -158,8 +160,9 @@ export namespace IAutoBeRealizeWriteApplication {
      * Draft WITHOUT using native Date type.
      *
      * This is the initial drafting phase where you outline the basic skeleton
-     * of the function. CRITICAL: This draft must NEVER use the native Date
-     * type.
+     * of the function.
+     * 
+     * DO NOT: Use the native Date type.
      *
      * - The function signature must correctly include `user`, `parameters`, and
      *   `body` arguments.
@@ -168,13 +171,13 @@ export namespace IAutoBeRealizeWriteApplication {
      * - Mark any incomplete or missing parts clearly with placeholders (e.g.,
      *   comments or temporary values).
      *
-     * ⚠️ Import rules:
+     * Import rules:
      *
-     * - Do NOT add any new import statements manually.
-     * - All necessary imports are provided globally or by the system
-     *   automatically.
-     * - Writing import statements directly is prohibited and may cause compile
-     *   errors. If import errors occur, check your environment configuration.
+     * DO NOT:
+     * - Add any new import statements manually
+     * - Write import statements directly (this causes compile errors)
+     * 
+     * Note: All necessary imports are provided globally or by the system automatically.
      *
      * ✅ Requirements:
      *

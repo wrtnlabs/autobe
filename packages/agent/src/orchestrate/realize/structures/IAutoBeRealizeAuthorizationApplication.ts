@@ -41,7 +41,7 @@ export namespace IAutoBeRealizeAuthorizationApplication {
      * called by the decorator to verify JWT tokens and return authenticated
      * user information for the specified role.
      *
-     * MUST use camelCase naming convention.
+     * DO: Use camelCase naming convention.
      */
     name: string & CamelPattern;
 
@@ -64,7 +64,7 @@ export namespace IAutoBeRealizeAuthorizationApplication {
      * authorize users for the specific role, injecting the authenticated user
      * payload as a method parameter.
      *
-     * MUST use PascalCase naming convention.
+     * DO: Use PascalCase naming convention.
      */
     name: string & PascalPattern;
 
@@ -86,7 +86,7 @@ export namespace IAutoBeRealizeAuthorizationApplication {
      * authenticated user data that will be injected into Controller methods
      * when using the decorator.
      *
-     * MUST use PascalCase naming convention.
+     * DO: Use PascalCase naming convention.
      */
     name: string & PascalPattern;
 

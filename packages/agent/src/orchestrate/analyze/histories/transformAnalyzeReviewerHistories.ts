@@ -44,7 +44,7 @@ export const transformAnalyzeReviewerHistories = (
       created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: [
-        `You have to review the ${myFile.filename} document.`,
+        `Review the ${myFile.filename} document.`,
         "",
         "Note that, never review others.",
       ].join("\n"),

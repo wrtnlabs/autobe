@@ -63,7 +63,7 @@ export namespace IAutoBeTestScenarioApplication {
      *
      * ## Naming Convention
      *
-     * MUST use snake_case naming convention.
+     * DO: Use snake_case naming convention.
      *
      * - Must start with `test_api_` prefix (mandatory requirement)
      * - ALWAYS start with business feature, NOT action verbs

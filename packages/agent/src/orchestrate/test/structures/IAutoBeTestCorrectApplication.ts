@@ -31,7 +31,7 @@ export namespace IAutoBeTestCorrectApplication {
      * AI analyzes the original test scenario, business requirements, and
      * intended functionality without being influenced by compilation errors.
      * This clean analysis establishes a clear understanding of what the test
-     * should accomplish, the expected business workflow, and the correct API
+     * accomplishes, the expected business workflow, and the correct API
      * integration patterns.
      *
      * This step ensures that error correction doesn't lose sight of the
@@ -70,17 +70,18 @@ export namespace IAutoBeTestCorrectApplication {
      * AI generates the first corrected version of the test code based on error
      * analysis and correction strategies. This draft addresses all identified
      * compilation errors while preserving the original business logic and test
-     * workflow. The code must be compilation-error-free and follow all
+     * workflow. The code is compilation-error-free and follows all
      * established conventions.
      *
      * The implementation incorporates lessons learned from error analysis to
      * produce properly typed, syntactically correct code that maintains the
      * intended test functionality. All type safety requirements and framework
-     * conventions must be followed in this corrected implementation.
+     * conventions are followed in this corrected implementation.
      *
      * Workflow: Error correction → TypeScript implementation → Functional
-     * preservation Critical: Must resolve all compilation errors while
-     * maintaining original test intent
+     * preservation
+     * 
+     * DO: Resolve all compilation errors while maintaining original test intent
      */
     draft: string;
 
