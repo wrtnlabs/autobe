@@ -19,41 +19,47 @@ export async function orchestrateInterfaceOperationsReview<
   operations: AutoBeOpenApi.IOperation[],
   progress: AutoBeProgressEventBase,
 ): Promise<AutoBeOpenApi.IOperation[]> {
-  const pointer: IPointer<IAutoBeInterfaceOperationsReviewApplication.IProps | null> =
-    {
-      value: null,
-    };
-  const { tokenUsage } = await ctx.conversate({
-    source: "interfaceOperationsReview",
-    histories: transformInterfaceOperationsReviewHistories(ctx, operations),
-    controller: createReviewController({
-      model: ctx.model,
-      build: (next: IAutoBeInterfaceOperationsReviewApplication.IProps) => {
-        pointer.value = next;
-      },
-    }),
-    enforceFunctionCall: false,
-    message: "Review the operations",
-  });
-  if (pointer.value === null) {
+  try {
+    const pointer: IPointer<IAutoBeInterfaceOperationsReviewApplication.IProps | null> =
+      {
+        value: null,
+      };
+    const { tokenUsage } = await ctx.conversate({
+      source: "interfaceOperationsReview",
+      histories: transformInterfaceOperationsReviewHistories(ctx, operations),
+      controller: createReviewController({
+        model: ctx.model,
+        build: (next: IAutoBeInterfaceOperationsReviewApplication.IProps) => {
+          pointer.value = next;
+        },
+      }),
+      enforceFunctionCall: false,
+      message: "Review the operations",
+    });
+    if (pointer.value === null) {
+      console.error("Failed to review operations.");
+      progress.completed += operations.length;
+      return [];
+    }
+
+    ctx.dispatch({
+      type: "interfaceOperationsReview",
+      operations: pointer.value.content,
+      review: pointer.value.review,
+      plan: pointer.value.plan,
+      content: pointer.value.content,
+      tokenUsage,
+      created_at: new Date().toISOString(),
+      step: ctx.state().analyze?.step ?? 0,
+      total: progress.total,
+      completed: (progress.completed += operations.length),
+    } satisfies AutoBeInterfaceOperationsReviewEvent);
+    return pointer.value.content;
+  } catch (error) {
+    console.error("Error occurred during interface operations review:", error);
     progress.completed += operations.length;
-    console.error("Failed to review operations.");
     return [];
   }
-
-  ctx.dispatch({
-    type: "interfaceOperationsReview",
-    operations: pointer.value.content,
-    review: pointer.value.review,
-    plan: pointer.value.plan,
-    content: pointer.value.content,
-    tokenUsage,
-    created_at: new Date().toISOString(),
-    step: ctx.state().analyze?.step ?? 0,
-    total: progress.total,
-    completed: (progress.completed += operations.length),
-  } satisfies AutoBeInterfaceOperationsReviewEvent);
-  return pointer.value.content;
 }
 
 function createReviewController<Model extends ILlmSchema.Model>(props: {

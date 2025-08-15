@@ -22,44 +22,50 @@ export async function orchestrateInterfaceSchemasReview<
   >,
   progress: { total: number; completed: number },
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
-  const pointer: IPointer<IAutoBeInterfaceSchemasReviewApplication.IProps | null> =
-    {
-      value: null,
-    };
-  const { tokenUsage } = await ctx.conversate({
-    source: "interfaceSchemasReview",
-    controller: createController({
-      model: ctx.model,
-      pointer,
-      schemas,
-    }),
-    histories: transformInterfaceSchemasReviewHistories(
-      ctx.state(),
-      operations,
-      schemas,
-    ),
-    enforceFunctionCall: true,
-    message: "Review type schemas.",
-  });
-  if (pointer.value === null) {
-    console.error("Failed to extract review information.");
+  try {
+    const pointer: IPointer<IAutoBeInterfaceSchemasReviewApplication.IProps | null> =
+      {
+        value: null,
+      };
+    const { tokenUsage } = await ctx.conversate({
+      source: "interfaceSchemasReview",
+      controller: createController({
+        model: ctx.model,
+        pointer,
+        schemas,
+      }),
+      histories: transformInterfaceSchemasReviewHistories(
+        ctx.state(),
+        operations,
+        schemas,
+      ),
+      enforceFunctionCall: true,
+      message: "Review type schemas.",
+    });
+    if (pointer.value === null) {
+      console.error("Failed to extract review information.");
+      ++progress.completed;
+      return {};
+    }
+
+    ctx.dispatch({
+      type: "interfaceSchemasReview",
+      schemas: schemas,
+      review: pointer.value.review,
+      plan: pointer.value.plan,
+      content: pointer.value.content,
+      tokenUsage,
+      step: ctx.state().analyze?.step ?? 0,
+      total: progress.total,
+      completed: ++progress.completed,
+      created_at: new Date().toISOString(),
+    } satisfies AutoBeInterfaceSchemasReviewEvent);
+    return pointer.value.content;
+  } catch (error) {
+    console.error("Error occured during interface schemas review:", error);
     ++progress.completed;
     return {};
   }
-
-  ctx.dispatch({
-    type: "interfaceSchemasReview",
-    schemas: schemas,
-    review: pointer.value.review,
-    plan: pointer.value.plan,
-    content: pointer.value.content,
-    tokenUsage,
-    step: ctx.state().analyze?.step ?? 0,
-    total: progress.total,
-    completed: ++progress.completed,
-    created_at: new Date().toISOString(),
-  } satisfies AutoBeInterfaceSchemasReviewEvent);
-  return pointer.value.content;
 }
 
 function createController<Model extends ILlmSchema.Model>(props: {

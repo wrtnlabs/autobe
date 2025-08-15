@@ -1,0 +1,674 @@
+
+> @autobe/test@0.18.0 archive D:\github\wrtnlabs\autobe\test
+> ts-node src/executable/archive.ts "--project" "shopping"
+
+
+> @autobe/test@0.18.0 start D:\github\wrtnlabs\autobe\test
+> node build/prompt.js && ts-node src "--include" "analyze_main_shopping" "--archive" "--trace"
+
+Build system prompts
+11.494s
+---------------------------------------------------
+AutoBE Test Program
+Test Start Time 8/15/2025, 2:10:30 PM
+---------------------------------------------------
+analyzeStart: 0.062 mins
+analyzeScenario: 0.913 mins
+  - token usage: (input: 24,495, output: 2,052)
+analyzeWrite: 1.404 mins
+  - progress: (1 of 15)
+  - token usage: (input: 14,826, output: 1,131)
+analyzeWrite: 1.627 mins
+  - progress: (2 of 15)
+  - token usage: (input: 14,826, output: 1,608)
+analyzeWrite: 1.689 mins
+  - progress: (3 of 15)
+  - token usage: (input: 14,826, output: 2,435)
+analyzeWrite: 1.794 mins
+  - progress: (4 of 15)
+  - token usage: (input: 14,826, output: 2,778)
+analyzeWrite: 1.807 mins
+  - progress: (5 of 15)
+  - token usage: (input: 14,826, output: 1,661)
+analyzeWrite: 1.807 mins
+  - progress: (6 of 15)
+  - token usage: (input: 14,826, output: 2,452)
+analyzeWrite: 1.828 mins
+  - progress: (7 of 15)
+  - token usage: (input: 14,826, output: 2,140)
+analyzeWrite: 1.953 mins
+  - progress: (8 of 15)
+  - token usage: (input: 14,826, output: 2,725)
+analyzeWrite: 1.955 mins
+  - progress: (9 of 15)
+  - token usage: (input: 14,826, output: 2,730)
+analyzeWrite: 2.003 mins
+  - progress: (10 of 15)
+  - token usage: (input: 14,826, output: 2,582)
+analyzeWrite: 2.038 mins
+  - progress: (11 of 15)
+  - token usage: (input: 14,826, output: 2,465)
+analyzeWrite: 2.142 mins
+  - progress: (12 of 15)
+  - token usage: (input: 14,826, output: 2,290)
+analyzeWrite: 2.185 mins
+  - progress: (13 of 15)
+  - token usage: (input: 14,826, output: 2,481)
+analyzeWrite: 2.217 mins
+  - progress: (14 of 15)
+  - token usage: (input: 14,826, output: 2,563)
+analyzeWrite: 2.233 mins
+  - progress: (15 of 15)
+  - token usage: (input: 14,826, output: 2,504)
+analyzeReview: 3.114 mins
+  - progress: (1 of 15)
+  - token usage: (input: 45,926, output: 2,075)
+analyzeReview: 3.167 mins
+  - progress: (2 of 15)
+  - token usage: (input: 46,411, output: 2,150)
+analyzeReview: 3.274 mins
+  - progress: (3 of 15)
+  - token usage: (input: 46,129, output: 2,503)
+analyzeReview: 3.508 mins
+  - progress: (4 of 15)
+  - token usage: (input: 46,925, output: 2,646)
+analyzeReview: 3.53 mins
+  - progress: (5 of 15)
+  - token usage: (input: 47,347, output: 2,780)
+analyzeReview: 3.699 mins
+  - progress: (6 of 15)
+  - token usage: (input: 45,369, output: 3,905)
+analyzeReview: 3.78 mins
+  - progress: (7 of 15)
+  - token usage: (input: 45,313, output: 2,992)
+analyzeReview: 3.876 mins
+  - progress: (8 of 15)
+  - token usage: (input: 47,318, output: 4,459)
+analyzeReview: 3.916 mins
+  - progress: (9 of 15)
+  - token usage: (input: 47,079, output: 3,788)
+analyzeReview: 4.01 mins
+  - progress: (10 of 15)
+  - token usage: (input: 46,777, output: 4,612)
+analyzeReview: 4.048 mins
+  - progress: (11 of 15)
+  - token usage: (input: 46,780, output: 4,016)
+analyzeReview: 4.053 mins
+  - progress: (12 of 15)
+  - token usage: (input: 46,993, output: 4,968)
+analyzeReview: 4.06 mins
+  - progress: (13 of 15)
+  - token usage: (input: 47,002, output: 4,327)
+analyzeReview: 4.426 mins
+  - progress: (14 of 15)
+  - token usage: (input: 46,970, output: 4,553)
+analyzeReview: 5.64 mins
+  - progress: (15 of 15)
+  - token usage: (input: 47,276, output: 6,268)
+analyzeComplete: 5.64 mins
+  - test_agent_analyze_main_shopping(1/1): 338,450 ms
+Success
+Elapsed time 350,790 ms
+Token Usage
+┌───────────┬─────────────┐
+│ (index)   │ Values      │
+├───────────┼─────────────┤
+│ Total     │ '1,049,487' │
+│ Input     │ '956,742'   │
+│ Output    │ '92,745'    │
+│ Facade    │ '10,348'    │
+│ Analyze   │ '1,039,139' │
+│ Prisma    │ '0'         │
+│ Interface │ '0'         │
+│ Test      │ '0'         │
+│ Realize   │ '0'         │
+└───────────┴─────────────┘
+
+> @autobe/test@0.18.0 start D:\github\wrtnlabs\autobe\test
+> node build/prompt.js && ts-node src "--include" "prisma_main_shopping" "--archive" "--trace"
+
+Build system prompts
+12.468s
+---------------------------------------------------
+AutoBE Test Program
+Test Start Time 8/15/2025, 2:16:48 PM
+---------------------------------------------------
+prismaStart: 0 mins
+prismaComponents: 3.307 mins
+  - token usage: (input: 175,896, output: 7,225)
+prismaSchemas: 4.346 mins
+  - progress: (3 of 55)
+  - token usage: (input: 50,610, output: 1,864)
+prismaSchemas: 4.477 mins
+  - progress: (6 of 55)
+  - token usage: (input: 50,708, output: 2,291)
+prismaSchemas: 4.68 mins
+  - progress: (11 of 55)
+  - token usage: (input: 50,762, output: 2,785)
+prismaSchemas: 4.704 mins
+  - progress: (14 of 55)
+  - token usage: (input: 50,624, output: 2,595)
+prismaSchemas: 4.754 mins
+  - progress: (19 of 55)
+  - token usage: (input: 50,608, output: 3,152)
+prismaSchemas: 4.912 mins
+  - progress: (26 of 55)
+  - token usage: (input: 50,623, output: 4,321)
+prismaSchemas: 5.135 mins
+  - progress: (31 of 55)
+  - token usage: (input: 50,592, output: 3,903)
+prismaSchemas: 5.509 mins
+  - progress: (40 of 55)
+  - token usage: (input: 50,730, output: 4,452)
+prismaSchemas: 5.549 mins
+  - progress: (47 of 55)
+  - token usage: (input: 50,638, output: 4,403)
+prismaSchemas: 5.736 mins
+  - progress: (55 of 55)
+  - token usage: (input: 50,659, output: 5,185)
+prismaReview: 5.968 mins
+  - progress: (1 of 10)
+  - token usage: (input: 120,107, output: 1,162)
+prismaReview: 5.972 mins
+  - progress: (2 of 10)
+  - token usage: (input: 120,056, output: 1,020)
+prismaReview: 5.974 mins
+  - progress: (3 of 10)
+  - token usage: (input: 120,071, output: 1,056)
+prismaReview: 5.975 mins
+  - progress: (4 of 10)
+  - token usage: (input: 120,079, output: 1,048)
+prismaReview: 5.982 mins
+  - progress: (5 of 10)
+  - token usage: (input: 120,056, output: 1,062)
+prismaReview: 5.985 mins
+  - progress: (6 of 10)
+  - token usage: (input: 120,108, output: 1,198)
+prismaReview: 5.994 mins
+  - progress: (7 of 10)
+  - token usage: (input: 120,078, output: 1,187)
+prismaReview: 6.022 mins
+  - progress: (8 of 10)
+  - token usage: (input: 120,057, output: 1,409)
+prismaReview: 6.047 mins
+  - progress: (9 of 10)
+  - token usage: (input: 120,091, output: 1,097)
+prismaReview: 6.051 mins
+  - progress: (10 of 10)
+  - token usage: (input: 120,096, output: 1,157)
+prismaValidate: 6.052 mins
+prismaCorrect: 11.237 mins
+  - token usage: (input: 153,194, output: 12,757)
+prismaComplete: 11.253 mins
+  - test_agent_prisma_main_shopping(1/1): 675,454 ms
+Success
+Elapsed time 689,482 ms
+Token Usage
+┌───────────┬─────────────┐
+│ (index)   │ Values      │
+├───────────┼─────────────┤
+│ Total     │ '2,102,772' │
+│ Input     │ '2,036,443' │
+│ Output    │ '66,329'    │
+│ Facade    │ '0'         │
+│ Analyze   │ '0'         │
+│ Prisma    │ '2,102,772' │
+│ Interface │ '0'         │
+│ Test      │ '0'         │
+│ Realize   │ '0'         │
+└───────────┴─────────────┘
+
+> @autobe/test@0.18.0 start D:\github\wrtnlabs\autobe\test
+> node build/prompt.js && ts-node src "--include" "interface_main_shopping" "--archive" "--trace"
+
+Build system prompts
+13.596s
+---------------------------------------------------
+AutoBE Test Program
+Test Start Time 8/15/2025, 2:28:44 PM
+---------------------------------------------------
+interfaceStart: 0 mins
+interfaceGroups: 0.37 mins
+  - token usage: (input: 95,660, output: 390)
+interfaceAuthorization: 0.965 mins
+  - progress: (1 of 3)
+  - token usage: (input: 97,633, output: 1,283)
+interfaceAuthorization: 1.473 mins
+  - progress: (2 of 3)
+  - token usage: (input: 97,643, output: 1,466)
+interfaceAuthorization: 1.476 mins
+  - progress: (3 of 3)
+  - token usage: (input: 97,642, output: 1,571)
+interfaceEndpoints: 1.69 mins
+  - progress: (1 of 1)
+  - token usage: (input: 95,419, output: 260)
+interfaceOperations: 2.814 mins
+  - progress: (7 of 15)
+  - token usage: (input: 99,102, output: 2,610)
+interfaceOperations: 3.033 mins
+  - progress: (16 of 16)
+  - token usage: (input: 99,071, output: 3,720)
+interfaceOperationsReview: 4.273 mins
+  - progress: (7 of 15)
+  - token usage: (input: 104,869, output: 2,953)
+interfaceOperationsReview: 4.984 mins
+  - progress: (16 of 15)
+  - token usage: (input: 106,505, output: 4,819)
+interfaceSchemas: 5.617 mins
+  - progress: (7 of 37)
+  - token usage: (input: 107,100, output: 1,177)
+interfaceSchemas: 5.75 mins
+  - progress: (17 of 37)
+  - token usage: (input: 107,134, output: 1,448)
+interfaceSchemas: 5.914 mins
+  - progress: (28 of 37)
+  - token usage: (input: 107,151, output: 1,848)
+interfaceSchemasReview: 6.553 mins
+  - progress: (1 of 4)
+  - token usage: (input: 109,696, output: 1,449)
+interfaceSchemasReview: 6.694 mins
+  - progress: (2 of 4)
+  - token usage: (input: 110,208, output: 1,803)
+interfaceSchemas: 6.828 mins
+  - progress: (36 of 37)
+  - token usage: (input: 107,149, output: 3,241)
+interfaceSchemasReview: 7.417 mins
+  - progress: (3 of 4)
+  - token usage: (input: 111,489, output: 2,705)
+interfaceSchemas: 7.597 mins
+  - progress: (41 of 37)
+  - token usage: (input: 107,187, output: 1,557)
+interfaceSchemasReview: 8.893 mins
+  - progress: (4 of 4)
+  - token usage: (input: 116,529, output: 7,444)
+interfaceComplete: 8.894 mins
+  - test_agent_interface_main_shopping(1/1): 534,388 ms
+Success
+Elapsed time 547,468 ms
+Token Usage
+┌───────────┬─────────────┐
+│ (index)   │ Values      │
+├───────────┼─────────────┤
+│ Total     │ '1,918,931' │
+│ Input     │ '1,877,187' │
+│ Output    │ '41,744'    │
+│ Facade    │ '0'         │
+│ Analyze   │ '0'         │
+│ Prisma    │ '0'         │
+│ Interface │ '1,918,931' │
+│ Test      │ '0'         │
+│ Realize   │ '0'         │
+└───────────┴─────────────┘
+
+> @autobe/test@0.18.0 start D:\github\wrtnlabs\autobe\test
+> node build/prompt.js && ts-node src "--include" "test_main_shopping" "--archive" "--trace"
+
+Build system prompts
+11.614s
+---------------------------------------------------
+AutoBE Test Program
+Test Start Time 8/15/2025, 2:38:15 PM
+---------------------------------------------------
+testStart: 0 mins
+testScenarios: 0.374 mins
+  - progress: (1 of 28)
+  - token usage: (input: 17,151, output: 947)
+testScenarios: 0.396 mins
+  - progress: (2 of 28)
+  - token usage: (input: 17,133, output: 1,017)
+testScenarios: 0.397 mins
+  - progress: (3 of 28)
+  - token usage: (input: 17,167, output: 1,001)
+testScenarios: 0.681 mins
+  - progress: (4 of 28)
+  - token usage: (input: 17,189, output: 1,488)
+testScenarios: 0.83 mins
+  - progress: (5 of 28)
+  - token usage: (input: 17,219, output: 1,945)
+testScenarios: 0.892 mins
+  - progress: (6 of 28)
+  - token usage: (input: 17,232, output: 2,569)
+testWrite: 1.232 mins
+  - progress: (1 of 51)
+  - token usage: (input: 16,996, output: 892)
+testWrite: 1.3 mins
+  - progress: (2 of 51)
+  - token usage: (input: 17,071, output: 904)
+testWrite: 1.346 mins
+  - progress: (3 of 51)
+  - token usage: (input: 17,475, output: 1,128)
+testWrite: 1.388 mins
+  - progress: (4 of 51)
+  - token usage: (input: 19,486, output: 1,208)
+testWrite: 1.482 mins
+  - progress: (5 of 51)
+  - token usage: (input: 18,467, output: 1,426)
+testWrite: 1.506 mins
+  - progress: (6 of 51)
+  - token usage: (input: 19,632, output: 1,569)
+testWrite: 1.508 mins
+  - progress: (7 of 51)
+  - token usage: (input: 17,506, output: 1,708)
+testWrite: 1.516 mins
+  - progress: (8 of 51)
+  - token usage: (input: 18,439, output: 1,410)
+testWrite: 1.518 mins
+  - progress: (9 of 51)
+  - token usage: (input: 18,939, output: 1,701)
+testWrite: 1.519 mins
+  - progress: (10 of 51)
+  - token usage: (input: 20,400, output: 1,932)
+testWrite: 1.52 mins
+  - progress: (11 of 51)
+  - token usage: (input: 18,445, output: 1,469)
+testWrite: 1.526 mins
+  - progress: (12 of 51)
+  - token usage: (input: 22,793, output: 1,856)
+testWrite: 1.543 mins
+  - progress: (13 of 51)
+  - token usage: (input: 17,471, output: 1,591)
+testWrite: 1.558 mins
+  - progress: (14 of 51)
+  - token usage: (input: 19,377, output: 1,807)
+testWrite: 1.56 mins
+  - progress: (15 of 51)
+  - token usage: (input: 18,457, output: 1,583)
+testWrite: 1.582 mins
+  - progress: (16 of 51)
+  - token usage: (input: 17,411, output: 1,811)
+testWrite: 1.624 mins
+  - progress: (17 of 51)
+  - token usage: (input: 22,790, output: 2,150)
+testWrite: 1.631 mins
+  - progress: (18 of 51)
+  - token usage: (input: 19,768, output: 1,897)
+testWrite: 1.683 mins
+  - progress: (19 of 51)
+  - token usage: (input: 19,304, output: 1,632)
+testWrite: 1.745 mins
+  - progress: (20 of 51)
+  - token usage: (input: 19,785, output: 1,742)
+testWrite: 1.758 mins
+  - progress: (21 of 51)
+  - token usage: (input: 20,403, output: 1,878)
+testWrite: 1.899 mins
+  - progress: (22 of 51)
+  - token usage: (input: 23,882, output: 2,844)
+testWrite: 1.903 mins
+  - progress: (23 of 51)
+  - token usage: (input: 19,795, output: 2,276)
+testWrite: 1.916 mins
+  - progress: (24 of 51)
+  - token usage: (input: 17,353, output: 1,565)
+testWrite: 1.931 mins
+  - progress: (25 of 51)
+  - token usage: (input: 24,261, output: 2,854)
+testWrite: 2.003 mins
+  - progress: (26 of 51)
+  - token usage: (input: 23,358, output: 2,330)
+testWrite: 2.091 mins
+  - progress: (27 of 51)
+  - token usage: (input: 24,202, output: 2,665)
+testWrite: 2.092 mins
+  - progress: (28 of 51)
+  - token usage: (input: 19,768, output: 2,471)
+testWrite: 2.106 mins
+  - progress: (29 of 51)
+  - token usage: (input: 23,958, output: 2,551)
+testWrite: 2.17 mins
+  - progress: (30 of 51)
+  - token usage: (input: 55,177, output: 3,290)
+testWrite: 2.196 mins
+  - progress: (31 of 51)
+  - token usage: (input: 52,758, output: 3,689)
+testWrite: 2.217 mins
+  - progress: (32 of 51)
+  - token usage: (input: 54,066, output: 3,031)
+testWrite: 2.28 mins
+  - progress: (33 of 51)
+  - token usage: (input: 24,247, output: 3,745)
+testWrite: 2.309 mins
+  - progress: (34 of 51)
+  - token usage: (input: 58,781, output: 3,635)
+testWrite: 2.352 mins
+  - progress: (35 of 51)
+  - token usage: (input: 24,083, output: 1,952)
+testWrite: 2.51 mins
+  - progress: (36 of 51)
+  - token usage: (input: 24,671, output: 3,452)
+testWrite: 2.545 mins
+  - progress: (37 of 51)
+  - token usage: (input: 53,838, output: 4,688)
+testWrite: 2.561 mins
+  - progress: (38 of 51)
+  - token usage: (input: 52,275, output: 4,635)
+testWrite: 2.643 mins
+  - progress: (39 of 51)
+  - token usage: (input: 53,991, output: 4,291)
+testWrite: 2.649 mins
+  - progress: (40 of 51)
+  - token usage: (input: 52,332, output: 4,490)
+testWrite: 2.657 mins
+  - progress: (41 of 51)
+  - token usage: (input: 58,569, output: 4,405)
+testWrite: 2.968 mins
+  - progress: (42 of 51)
+  - token usage: (input: 53,677, output: 5,474)
+testWrite: 3.02 mins
+  - progress: (43 of 51)
+  - token usage: (input: 58,362, output: 5,224)
+testWrite: 3.14 mins
+  - progress: (44 of 51)
+  - token usage: (input: 57,156, output: 5,805)
+testWrite: 3.206 mins
+  - progress: (45 of 51)
+  - token usage: (input: 53,748, output: 3,889)
+testWrite: 3.54 mins
+  - progress: (46 of 51)
+  - token usage: (input: 92,967, output: 6,674)
+testWrite: 3.606 mins
+  - progress: (47 of 51)
+  - token usage: (input: 65,093, output: 6,292)
+testWrite: 3.64 mins
+  - progress: (48 of 51)
+  - token usage: (input: 60,854, output: 5,453)
+testWrite: 4.621 mins
+  - progress: (49 of 51)
+  - token usage: (input: 100,410, output: 9,766)
+testWrite: 5.008 mins
+  - progress: (50 of 51)
+  - token usage: (input: 90,876, output: 10,622)
+testValidate: 5.7 mins
+testValidate: 5.7 mins
+testValidate: 5.7 mins
+testValidate: 5.7 mins
+testValidate: 5.7 mins
+testCorrect: 6.065 mins
+  - token usage: (input: 25,587, output: 1,117)
+testCorrect: 6.575 mins
+  - token usage: (input: 39,187, output: 2,033)
+testCorrect: 6.693 mins
+  - token usage: (input: 32,751, output: 2,765)
+testCorrect: 6.998 mins
+  - token usage: (input: 35,670, output: 3,380)
+testCorrect: 7.079 mins
+  - token usage: (input: 34,080, output: 2,750)
+testComplete: 7.179 mins
+  - test_agent_test_main_shopping(1/1): 431,384 ms
+Success
+Elapsed time 443,672 ms
+Token Usage
+┌───────────┬─────────────┐
+│ (index)   │ Values      │
+├───────────┼─────────────┤
+│ Total     │ '2,321,291' │
+│ Input     │ '2,133,344' │
+│ Output    │ '187,947'   │
+│ Facade    │ '0'         │
+│ Analyze   │ '0'         │
+│ Prisma    │ '0'         │
+│ Interface │ '0'         │
+│ Test      │ '2,321,291' │
+│ Realize   │ '0'         │
+└───────────┴─────────────┘
+
+> @autobe/test@0.18.0 start D:\github\wrtnlabs\autobe\test
+> node build/prompt.js && ts-node src "--include" "realize_main_shopping" "--archive" "--trace"
+
+Build system prompts
+12.632s
+---------------------------------------------------
+AutoBE Test Program
+Test Start Time 8/15/2025, 2:46:04 PM
+---------------------------------------------------
+realizeStart: 0 mins
+realizeAuthorizationStart: 0 mins
+realizeAuthorizationWrite: 0.301 mins
+  - progress: (1 of 3)
+  - token usage: (input: 46,092, output: 699)
+realizeAuthorizationValidate: 0.366 mins
+realizeAuthorizationWrite: 0.366 mins
+  - progress: (2 of 3)
+  - token usage: (input: 46,083, output: 686)
+realizeAuthorizationValidate: 0.42 mins
+realizeAuthorizationWrite: 0.42 mins
+  - progress: (3 of 3)
+  - token usage: (input: 46,093, output: 951)
+realizeAuthorizationValidate: 0.471 mins
+realizeAuthorizationComplete: 0.471 mins
+realizeWrite: 1.04 mins
+  - progress: (1 of 28)
+  - token usage: (input: 78,592, output: 1,326)
+realizeWrite: 1.044 mins
+  - progress: (2 of 28)
+  - token usage: (input: 78,135, output: 1,355)
+realizeWrite: 1.174 mins
+  - progress: (3 of 28)
+  - token usage: (input: 79,320, output: 1,897)
+realizeWrite: 1.207 mins
+  - progress: (4 of 28)
+  - token usage: (input: 79,183, output: 1,704)
+realizeWrite: 1.242 mins
+  - progress: (5 of 28)
+  - token usage: (input: 79,058, output: 1,723)
+realizeWrite: 1.263 mins
+  - progress: (6 of 28)
+  - token usage: (input: 79,931, output: 1,984)
+realizeWrite: 1.276 mins
+  - progress: (7 of 28)
+  - token usage: (input: 78,375, output: 1,584)
+realizeWrite: 1.293 mins
+  - progress: (8 of 28)
+  - token usage: (input: 78,469, output: 1,135)
+realizeWrite: 1.295 mins
+  - progress: (9 of 28)
+  - token usage: (input: 78,555, output: 2,360)
+realizeWrite: 1.362 mins
+  - progress: (10 of 28)
+  - token usage: (input: 79,043, output: 1,787)
+realizeWrite: 1.382 mins
+  - progress: (11 of 28)
+  - token usage: (input: 79,127, output: 1,674)
+realizeWrite: 1.408 mins
+  - progress: (12 of 28)
+  - token usage: (input: 78,678, output: 2,174)
+realizeWrite: 1.415 mins
+  - progress: (13 of 28)
+  - token usage: (input: 79,239, output: 1,880)
+realizeWrite: 1.442 mins
+  - progress: (14 of 28)
+  - token usage: (input: 78,608, output: 2,292)
+realizeWrite: 1.453 mins
+  - progress: (15 of 28)
+  - token usage: (input: 78,856, output: 1,546)
+realizeWrite: 1.467 mins
+  - progress: (16 of 28)
+  - token usage: (input: 78,530, output: 1,743)
+realizeWrite: 1.468 mins
+  - progress: (17 of 28)
+  - token usage: (input: 79,616, output: 2,080)
+realizeWrite: 1.503 mins
+  - progress: (18 of 28)
+  - token usage: (input: 79,215, output: 2,688)
+realizeWrite: 1.578 mins
+  - progress: (19 of 28)
+  - token usage: (input: 79,916, output: 2,361)
+realizeWrite: 1.58 mins
+  - progress: (20 of 28)
+  - token usage: (input: 78,646, output: 2,370)
+realizeWrite: 1.727 mins
+  - progress: (21 of 28)
+  - token usage: (input: 78,579, output: 2,231)
+realizeWrite: 1.777 mins
+  - progress: (22 of 28)
+  - token usage: (input: 78,630, output: 1,864)
+realizeWrite: 1.88 mins
+  - progress: (23 of 28)
+  - token usage: (input: 80,201, output: 2,674)
+realizeWrite: 1.904 mins
+  - progress: (24 of 28)
+  - token usage: (input: 78,581, output: 3,012)
+realizeWrite: 1.922 mins
+  - progress: (25 of 28)
+  - token usage: (input: 78,996, output: 3,092)
+realizeWrite: 1.938 mins
+  - progress: (26 of 28)
+  - token usage: (input: 79,913, output: 2,325)
+realizeWrite: 2.027 mins
+  - progress: (27 of 28)
+  - token usage: (input: 79,559, output: 2,709)
+realizeWrite: 2.178 mins
+  - progress: (28 of 28)
+  - token usage: (input: 80,793, output: 3,346)
+realizeCorrect: 3.149 mins
+  - progress: (29 of 35)
+  - token usage: (input: 79,083, output: 2,277)
+realizeCorrect: 3.161 mins
+  - progress: (30 of 35)
+  - token usage: (input: 79,569, output: 2,229)
+realizeCorrect: 3.245 mins
+  - progress: (31 of 35)
+  - token usage: (input: 79,187, output: 2,113)
+realizeCorrect: 3.264 mins
+  - progress: (32 of 35)
+  - token usage: (input: 79,067, output: 1,704)
+realizeCorrect: 3.326 mins
+  - progress: (33 of 35)
+  - token usage: (input: 79,926, output: 2,464)
+realizeCorrect: 3.373 mins
+  - progress: (34 of 35)
+  - token usage: (input: 79,102, output: 2,447)
+realizeCorrect: 3.852 mins
+  - progress: (35 of 35)
+  - token usage: (input: 80,444, output: 2,561)
+realizeComplete: 4.015 mins
+  - test_agent_realize_main_shopping(0/1): Error
+Error: Bug on result: found different values - []:
+
+
+{
+  "actual": "failure",
+  "expected": "success"
+}
+    at D:\github\wrtnlabs\autobe\node_modules\.pnpm\@nestia+e2e@7.3.3\node_modules\@nestia\e2e\src\TestValidator.ts:143:15
+    at D:\github\wrtnlabs\autobe\test\src\features\realize\internal\validate_agent_realize_main.ts:71:55
+    at Generator.next (<anonymous>)
+    at fulfilled (D:\github\wrtnlabs\autobe\test\src\features\realize\internal\validate_agent_realize_main.ts:5:58)
+Failed
+Elapsed time 255,028 ms
+Token Usage
+┌───────────┬─────────────┐
+│ (index)   │ Values      │
+├───────────┼─────────────┤
+│ Total     │ '2,986,037' │
+│ Input     │ '2,908,990' │
+│ Output    │ '77,047'    │
+│ Facade    │ '0'         │
+│ Analyze   │ '0'         │
+│ Prisma    │ '0'         │
+│ Interface │ '0'         │
+│ Test      │ '0'         │
+│ Realize   │ '2,986,037' │
+└───────────┴─────────────┘
+ ELIFECYCLE  Command failed with exit code 4294967295.
+ ELIFECYCLE  Command failed with exit code 4294967295.
