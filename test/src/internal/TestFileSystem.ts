@@ -24,7 +24,7 @@ export namespace TestFileSystem {
           output[
             `${props.prefix ?? ""}${next.substring(
               props.root.length + 1,
-              props.root.length - 3,
+              next.length - 3,
             )}`
           ] = await TestZipper.decompress(await fs.promises.readFile(next));
       }
