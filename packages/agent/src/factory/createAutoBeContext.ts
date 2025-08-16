@@ -108,6 +108,9 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
       agent.on("validate", (event) => {
         validates.push(event);
       });
+      agent.on("jsonParseError", (event) => {
+        parseErrors.push(event);
+      });
 
       const histories: MicroAgenticaHistory<Model>[] = await agent.conversate(
         next.message,
