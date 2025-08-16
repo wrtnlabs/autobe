@@ -1,4 +1,5 @@
 import {
+  AgenticaJsonParseErrorEvent,
   AgenticaValidateEvent,
   MicroAgentica,
   MicroAgenticaHistory,
@@ -80,6 +81,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
         controllers: [next.controller],
       });
       const validates: AgenticaValidateEvent<Model>[] = [];
+      const parseErrors: AgenticaJsonParseErrorEvent<Model>[] = [];
 
       agent.on("request", (event) => {
         if (next.enforceFunctionCall === true && event.body.tools)
@@ -122,15 +124,16 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
         next.enforceFunctionCall === true &&
         histories.every((h) => h.type !== "execute")
       ) {
-        console.log(
-          histories.map((h) => h.type),
-          histories.at(-1)?.type === "assistantMessage"
-            ? histories.at(-1)
-            : null,
-          validates.at(-1),
-        );
-        if (histories.at(-1)?.type === "assistantMessage")
-          console.log(histories.at(-1)); // @todo - temporary way
+        console.log({
+          title: "function calling failed",
+          types: histories.map((h) => h.type),
+          assistantMessage:
+            histories.at(-1)?.type === "assistantMessage"
+              ? histories.at(-1)
+              : null,
+          validate: validates.at(-1),
+          parse: parseErrors.at(-1),
+        });
         throw new Error(
           `Failed to function calling in the ${next.source} step`,
         );

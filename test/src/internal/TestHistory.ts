@@ -81,9 +81,10 @@ export namespace TestHistory {
     type: "analyze" | "prisma" | "interface" | "test" | "realize";
   }): Promise<IAutoBeTokenUsageJson> => {
     const snapshots: AutoBeEventSnapshot[] = JSON.parse(
-      await fs.promises.readFile(
-        `${TestGlobal.ROOT}/assets/histories/${TestGlobal.getVendorModel()}/${props.project}.${props.type}.snapshots.json`,
-        "utf8",
+      await TestZipper.decompress(
+        await fs.promises.readFile(
+          `${TestGlobal.ROOT}/assets/histories/${TestGlobal.getVendorModel()}/${props.project}.${props.type}.snapshots.json.gz`,
+        ),
       ),
     );
     return snapshots.at(-1)?.tokenUsage ?? new AutoBeTokenUsage().toJSON();
