@@ -1,5 +1,4 @@
 import { AutoBeTokenUsage } from "@autobe/agent";
-import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeEventSnapshot,
   AutoBeHistory,
@@ -11,10 +10,12 @@ import { v4 } from "uuid";
 
 import { TestGlobal } from "../TestGlobal";
 import { TestProject } from "../structures/TestProject";
+import { TestFileSystem } from "./TestFileSystem";
+import { TestZipper } from "./TestZipper";
 
 export namespace TestHistory {
   export const save = async (files: Record<string, string>): Promise<void> => {
-    await FileSystemIterator.save({
+    await TestFileSystem.save({
       root: `${TestGlobal.ROOT}/assets/histories/${TestGlobal.getVendorModel()}`,
       overwrite: true,
       files,
@@ -92,8 +93,10 @@ export namespace TestHistory {
     project: TestProject;
     type: "initial" | "analyze" | "prisma" | "interface" | "test" | "realize";
   }): Promise<AutoBeHistory[]> => {
-    const location: string = `${TestGlobal.ROOT}/assets/histories/${TestGlobal.getVendorModel()}/${props.project}.${props.type}.json`;
-    const content: string = await fs.promises.readFile(location, "utf8");
+    const location: string = `${TestGlobal.ROOT}/assets/histories/${TestGlobal.getVendorModel()}/${props.project}.${props.type}.json.gz`;
+    const content: string = await TestZipper.decompress(
+      await fs.promises.readFile(location),
+    );
     const histories: AutoBeHistory[] = JSON.parse(content);
     return typia.assert(histories);
   };
