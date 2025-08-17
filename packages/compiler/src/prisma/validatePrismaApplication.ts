@@ -152,11 +152,14 @@ function validateDuplicatedFields(
   MapUtil.take(group, model.primaryField.name, () => []).push(
     `${accessor}.primaryField.name`,
   );
-  model.foreignFields.forEach((field, i) =>
+  model.foreignFields.forEach((field, i) => {
     MapUtil.take(group, field.name, () => []).push(
       `${accessor}.foreignFields[${i}].name`,
-    ),
-  );
+    );
+    MapUtil.take(group, field.relation.name, () => []).push(
+      `${accessor}.foreignFields[${i}].relation.name`,
+    );
+  });
   model.plainFields.forEach((field, i) =>
     MapUtil.take(group, field.name, () => []).push(
       `${accessor}.plainFields[${i}].name`,
@@ -441,6 +444,8 @@ function validateReferences(
   const errors: IAutoBePrismaValidation.IError[] = [];
 
   model.foreignFields.forEach((field, i) => {
+    // DUPLICATED NAME
+
     const target = dict.get(field.relation.targetModel);
     if (target === undefined) {
       // CHECK EXISTENCE
