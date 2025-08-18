@@ -17,6 +17,9 @@ import PrismaComplete from "./prisma/PrismaComplete";
 import PrismaComponents from "./prisma/PrismaComponents";
 import PrismaCorrect from "./prisma/PrismaCorrect";
 import PrismaValidate from "./prisma/PrismaValidate";
+import { TestComplete } from "./test/TestComplete";
+import { TestCorrect } from "./test/TestCorrect";
+import { TestValidate } from "./test/TestValidate";
 
 interface IAutoBeEventsMovieProps {
   event: AutoBeEvent;
@@ -83,10 +86,13 @@ const AutoBeEventsMovie = (props: IAutoBeEventsMovieProps) => {
     case "interfaceComplete": {
       return <InterfaceComplete event={event} />;
     }
-    case "prismaInsufficient":
     case "testValidate":
+      return <TestValidate event={event} />;
     case "testCorrect":
+      return <TestCorrect event={event} />;
     case "testComplete":
+      return <TestComplete event={event} />;
+    case "prismaInsufficient":
     case "realizeValidate":
     case "realizeComplete":
     case "realizeAuthorizationValidate":
