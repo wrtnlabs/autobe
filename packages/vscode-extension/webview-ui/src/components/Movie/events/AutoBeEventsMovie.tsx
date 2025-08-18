@@ -116,27 +116,17 @@ const AutoBeEventsMovie = (props: IAutoBeEventsMovieProps) => {
     case "realizeAuthorizationValidate": {
       return <RealizeAuthorizationValidate event={event} />;
     }
-    // case "realizeAuthorizationCorrect": {
-    //   return <RealizeAuthorizationCorrect event={event} />;
-    // }
-    // case "realizeAuthorizationComplete": {
-    //   return <RealizeAuthorizationComplete event={event} />;
-    // }
-    // case "realizeTestReset": {
-    //   return <RealizeTestReset event={event} />;
-    // }
-    // case "realizeTestComplete": {
-    //   return <RealizeTestComplete event={event} />;
-    // }
-    case "realizeComplete":
-    case "realizeAuthorizationValidate": {
-      return null;
+    case "realizeAuthorizationCorrect": {
+      return <RealizeAuthorizationCorrect event={event} />;
     }
-    case "realizeAuthorizationCorrect":
-    case "realizeAuthorizationComplete":
-    case "realizeTestReset":
+    case "realizeAuthorizationComplete": {
+      return <RealizeAuthorizationComplete event={event} />;
+    }
+    case "realizeTestReset": {
+      return <RealizeTestReset event={event} />;
+    }
     case "realizeTestComplete": {
-      return null;
+      return <RealizeTestComplete event={event} />;
     }
     case "vendorRequest":
     case "vendorResponse": {
