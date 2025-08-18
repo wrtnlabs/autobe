@@ -81,9 +81,17 @@ async function filterMatchingFiles(
     const files = await fs.readdir(directoryPath);
 
     // Filter .json.gz files
-    const jsonGzFiles = files.filter((filename) =>
-      filename.endsWith(".json.gz"),
-    );
+    const jsonGzFiles = files
+      .filter(
+        (filename) =>
+          filename.endsWith(".json.gz") ||
+          filename.endsWith(".snapshots.json.gz"),
+      )
+      .filter(
+        (filename) =>
+          filename.replace(".json.gz", "").replace(".snapshots", "").split(".")
+            .length === 2,
+      );
 
     // Apply additional filename filter if provided
     if (filenameFilter) {

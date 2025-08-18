@@ -13,8 +13,13 @@ const ProgressEventsMovie = (props: IProgressEventsMovieProps) => {
   const { event } = props;
 
   const title = getTitle(event);
-  const progressPercent =
-    event.total > 0 ? Math.round((event.completed / event.total) * 100) : 0;
+  const progressPercent = (() => {
+    if (event.total === 0) return 100;
+    if (event.completed === 0) return 0;
+    if (event.completed >= event.total) return 100;
+
+    return Math.round((event.completed / event.total) * 100);
+  })();
 
   const content =
     `🔄 ${title} 진행 중...\n\n` +
@@ -36,6 +41,8 @@ const generateProgressBar = (percent: number): string => {
   const barLength = 20;
   const filledLength = Math.round((percent / 100) * barLength);
   const emptyLength = barLength - filledLength;
+
+  console.log(percent, filledLength, emptyLength);
 
   const filled = "█".repeat(filledLength);
   const empty = "░".repeat(emptyLength);
