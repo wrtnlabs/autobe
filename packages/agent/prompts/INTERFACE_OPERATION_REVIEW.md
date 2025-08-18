@@ -66,7 +66,33 @@ You will receive:
 - [ ] **Parameter Usage**: Path parameters are actually used in the operation
 - [ ] **Search vs Single**: Search operations return collections, single retrieval returns one item
 
-### 4.4. Common Logical Errors to Detect
+### 4.4. Delete Operation Review (CRITICAL)
+
+**⚠️ CRITICAL WARNING**: The most common and dangerous error is attempting soft delete when the schema doesn't support it!
+
+- [ ] **FIRST PRIORITY - Schema Analysis**: 
+  - **MUST** analyze Prisma schema BEFORE reviewing delete operations
+  - Look for ANY field that could support soft delete (deleted, deleted_at, is_deleted, is_active, archived, removed_at, etc.)
+  - If NO such fields exist → The schema ONLY supports hard delete
+  
+- [ ] **Delete Pattern Verification**:
+  - **❌ CRITICAL ERROR**: Operation uses soft delete (updating a field) when schema has NO soft delete fields
+  - **❌ CRITICAL ERROR**: Operation description mentions "soft delete" when schema only supports hard delete
+  - **✅ CORRECT**: Hard delete (actual row removal) when no soft delete fields exist
+  - **✅ CORRECT**: Soft delete (field update) when soft delete fields exist
+
+- [ ] **Delete Behavior Rules**: 
+  - If soft delete fields exist → DELETE operations MUST use soft delete pattern
+  - If NO soft delete fields → DELETE operations MUST use hard delete (actual row removal)
+  - ALL delete operations across the API must follow the SAME pattern
+
+- [ ] **Common Delete Failures to Catch**:
+  - Operation tries to set `deleted_at = now()` when `deleted_at` field doesn't exist
+  - Operation tries to set `is_deleted = true` when `is_deleted` field doesn't exist
+  - Operation description says "marks as deleted" when schema requires hard delete
+  - Operation filters by deletion fields in GET/LIST when those fields don't exist
+
+### 4.5. Common Logical Errors to Detect
 1. **List Operations Returning Single Items**:
    - GET /items should return array or paginated result
    - PATCH /items (search) should return paginated result
@@ -81,6 +107,13 @@ You will receive:
    - Public endpoints returning private user data
    - User endpoints exposing other users' data without filters
 
+4. **Delete Operation Mismatches**:
+   - Using soft delete pattern when schema has no soft delete fields
+   - Performing hard delete when schema has soft delete indicators
+   - Inconsistent delete patterns across different entities
+   - Filtering by deletion fields that don't exist in schema
+   - Not filtering soft-deleted records in list operations when soft delete is used
+
 ## 5. Review Checklist
 
 ### 5.1. Security Checklist
@@ -93,6 +126,7 @@ You will receive:
 ### 5.2. Schema Compliance Checklist
 - [ ] All operation fields reference ONLY actual Prisma schema fields
 - [ ] No assumptions about fields not in schema (deleted_at, created_by, etc.)
+- [ ] Delete operations align with actual schema capabilities (soft vs hard delete)
 - [ ] Required fields handled in create operations
 - [ ] Unique constraints respected in operations
 - [ ] Foreign key relationships valid
@@ -134,6 +168,8 @@ You will receive:
 - Single retrieval returning array
 - Operations contradicting their stated purpose
 - Missing required fields in create operations
+- Delete operation pattern mismatching schema capabilities
+- Referencing non-existent soft delete fields in operations
 
 ### 6.3. Major Issues (Should Fix)
 - Inappropriate authorization levels
@@ -157,9 +193,14 @@ You will receive:
 - Security Issues: [number] (Critical: [n], Major: [n])
 - Logic Issues: [number] (Critical: [n], Major: [n])
 - Schema Issues: [number]
+- Delete Pattern Issues: [number] (e.g., soft delete attempted without supporting fields)
 - Overall Risk Assessment: [HIGH/MEDIUM/LOW]
 
 ## CRITICAL ISSUES REQUIRING IMMEDIATE FIX
+
+### Delete Pattern Violations (HIGHEST PRIORITY)
+[List any cases where operations attempt soft delete without schema support]
+Example: "DELETE /users operation tries to set deleted_at field, but User model has no deleted_at field"
 
 ### Security Vulnerabilities
 [List each critical security issue]
@@ -185,6 +226,7 @@ You will receive:
 **Schema Compliance**:
 - [ ] Field References: [PASS/FAIL - details]
 - [ ] Type Accuracy: [PASS/FAIL - details]
+- [ ] Delete Pattern: [PASS/FAIL - details]
 
 **Issues Found**:
 1. [CRITICAL/MAJOR/MINOR] - [Issue description]
