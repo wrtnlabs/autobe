@@ -59,6 +59,7 @@ export * from "./AutoBeRealizeWriteEvent";
 export * from "./AutoBeRealizeAuthorizationCorrectEvent";
 export * from "./AutoBeRealizeAuthorizationValidateEvent";
 export * from "./AutoBeRealizeAuthorizationWriteEvent";
+export * from "./AutoBeRealizeAuthorizationCompleteEvent";
 
 // REALIZE-TEST
 export * from "./AutoBeRealizeTestCompleteEvent";

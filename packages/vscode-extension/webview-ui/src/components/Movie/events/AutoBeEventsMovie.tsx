@@ -18,6 +18,13 @@ import PrismaComponents from "./prisma/PrismaComponents";
 import PrismaCorrect from "./prisma/PrismaCorrect";
 import { PrismaInsufficient } from "./prisma/PrismaInsufficient";
 import PrismaValidate from "./prisma/PrismaValidate";
+import RealizeAuthorizationComplete from "./realize/RealizeAuthorizationComplete";
+import RealizeAuthorizationCorrect from "./realize/RealizeAuthorizationCorrect";
+import RealizeAuthorizationValidate from "./realize/RealizeAuthorizationValidate";
+import RealizeComplete from "./realize/RealizeComplete";
+import RealizeTestComplete from "./realize/RealizeTestComplete";
+import RealizeTestReset from "./realize/RealizeTestReset";
+import RealizeValidate from "./realize/RealizeValidate";
 import { TestComplete } from "./test/TestComplete";
 import { TestCorrect } from "./test/TestCorrect";
 import { TestValidate } from "./test/TestValidate";
@@ -44,13 +51,14 @@ const AutoBeEventsMovie = (props: IAutoBeEventsMovieProps) => {
   }
 
   switch (event.type) {
-    case "assistantMessage":
+    case "assistantMessage": {
       return (
         <AssistantMessage text={event.text} timestamp={event.created_at} />
       );
-    case "userMessage":
+    }
+    case "userMessage": {
       return <AutoBeUserMessage message={event.contents} />;
-
+    }
     case "analyzeStart":
     case "interfaceStart":
     case "prismaStart":
@@ -60,9 +68,11 @@ const AutoBeEventsMovie = (props: IAutoBeEventsMovieProps) => {
     case "realizeStart": {
       return <AutoBeStartEvent event={event} />;
     }
-
     case "analyzeScenario": {
       return <AnalyzeScenario event={event} />;
+    }
+    case "analyzeComplete": {
+      return <AnalyzeComplete event={event} />;
     }
     case "prismaComponents": {
       return <PrismaComponents event={event} />;
@@ -76,10 +86,9 @@ const AutoBeEventsMovie = (props: IAutoBeEventsMovieProps) => {
     case "prismaComplete": {
       return <PrismaComplete event={event} />;
     }
-    case "prismaInsufficient":
+    case "prismaInsufficient": {
       return <PrismaInsufficient event={event} />;
-    case "analyzeComplete":
-      return <AnalyzeComplete event={event} />;
+    }
     case "interfaceGroups": {
       return <InterfaceGroups event={event} />;
     }
@@ -89,22 +98,50 @@ const AutoBeEventsMovie = (props: IAutoBeEventsMovieProps) => {
     case "interfaceComplete": {
       return <InterfaceComplete event={event} />;
     }
-    case "testValidate":
+    case "testValidate": {
       return <TestValidate event={event} />;
-    case "testCorrect":
+    }
+    case "testCorrect": {
       return <TestCorrect event={event} />;
-    case "testComplete":
+    }
+    case "testComplete": {
       return <TestComplete event={event} />;
-    case "realizeValidate":
+    }
+    case "realizeValidate": {
+      return <RealizeValidate event={event} />;
+    }
+    case "realizeComplete": {
+      return <RealizeComplete event={event} />;
+    }
+    case "realizeAuthorizationValidate": {
+      return <RealizeAuthorizationValidate event={event} />;
+    }
+    // case "realizeAuthorizationCorrect": {
+    //   return <RealizeAuthorizationCorrect event={event} />;
+    // }
+    // case "realizeAuthorizationComplete": {
+    //   return <RealizeAuthorizationComplete event={event} />;
+    // }
+    // case "realizeTestReset": {
+    //   return <RealizeTestReset event={event} />;
+    // }
+    // case "realizeTestComplete": {
+    //   return <RealizeTestComplete event={event} />;
+    // }
     case "realizeComplete":
-    case "realizeAuthorizationValidate":
+    case "realizeAuthorizationValidate": {
+      return null;
+    }
     case "realizeAuthorizationCorrect":
     case "realizeAuthorizationComplete":
     case "realizeTestReset":
-    case "realizeTestComplete":
+    case "realizeTestComplete": {
+      return null;
+    }
     case "vendorRequest":
-    case "vendorResponse":
-      return <div>{event.type}</div>;
+    case "vendorResponse": {
+      return null;
+    }
     default:
       event satisfies never;
       return <div>Unknown Event</div>;
