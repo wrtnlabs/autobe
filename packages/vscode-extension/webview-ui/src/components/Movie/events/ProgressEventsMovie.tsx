@@ -42,8 +42,6 @@ const generateProgressBar = (percent: number): string => {
   const filledLength = Math.round((percent / 100) * barLength);
   const emptyLength = barLength - filledLength;
 
-  console.log(percent, filledLength, emptyLength);
-
   const filled = "█".repeat(filledLength);
   const empty = "░".repeat(emptyLength);
 
