@@ -13,8 +13,6 @@ import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
-import { getAutoBeGenerated } from "../../factory/getAutoBeGenerated";
-import { getAutoBeRealizeGenerated } from "../../factory/getAutoBeRealizeGenerated";
 import { predicateStateMessage } from "../../utils/predicateStateMessage";
 import { compile } from "./internal/compile";
 import { orchestrateRealizeAuthorization } from "./orchestrateRealizeAuthorization";
@@ -60,31 +58,46 @@ export const orchestrateRealize =
 
     // SCENARIOS
     const scenarios: IAutoBeRealizeScenarioApplication.IProps[] =
-      operations.map((operation) => orchestrateRealizeScenario(ctx, operation));
+      operations.map((operation) => {
+        const authorization = authorizations.find(
+          (el) => el.role.name === operation.authorizationRole,
+        );
+
+        return orchestrateRealizeScenario(ctx, operation, authorization);
+      });
 
     const writeProgress = { total: scenarios.length, completed: 0 };
     const writeEvents: AutoBeRealizeWriteEvent[] = await Promise.all(
       scenarios.map(async (scenario) => {
-        const code = orchestrateRealizeWrite(
-          ctx,
-          scenario.decoratorEvent ?? null,
+        const code = orchestrateRealizeWrite(ctx, {
+          authorization: scenario.decoratorEvent ?? null,
           scenario,
-          writeProgress,
-        );
+          progress: writeProgress,
+        });
         return code;
       }),
     );
 
-    let providers = Object.fromEntries(
-      writeEvents.map((event) => [event.location, event.content]),
-    );
-
-    let finalCompilationResult = await compile(ctx, {
-      authorizations,
-      providers,
+    const functions: AutoBeRealizeFunction[] = Object.entries(
+      Object.fromEntries(
+        writeEvents.map((event) => [event.location, event.content]),
+      ),
+    ).map(([location, content]) => {
+      const scenario = scenarios.find((el) => el.location === location)!;
+      return {
+        location,
+        content,
+        endpoint: {
+          method: scenario.operation.method,
+          path: scenario.operation.path,
+        },
+        name: scenario.functionName,
+      };
     });
 
-    if (finalCompilationResult.type !== "success") {
+    let compilation = await compile(ctx, { authorizations, functions });
+
+    if (compilation.type !== "success") {
       const MAX_CORRECTION_ATTEMPTS = 3 as const;
 
       const reviewProgress = {
@@ -93,64 +106,52 @@ export const orchestrateRealize =
       };
 
       for (let attempt = 0; attempt < MAX_CORRECTION_ATTEMPTS; attempt++) {
-        if (finalCompilationResult.result.type === "failure") {
-          const failedFiles: Record<string, string> =
-            finalCompilationResult.files;
+        if (compilation.type === "failure") {
+          const failedFiles: Record<string, string> = Object.fromEntries(
+            compilation.type === "failure"
+              ? compilation.diagnostics.map((d) => [d.file, d.code])
+              : [],
+          );
 
           reviewProgress.total += Object.keys(failedFiles).length;
-          const compilationResult: IAutoBeTypeScriptCompileResult.IFailure =
-            finalCompilationResult.result;
+          const failure: IAutoBeTypeScriptCompileResult.IFailure = compilation;
 
           await Promise.all(
             Object.entries(failedFiles).map(async ([location, content]) => {
               const diagnostic:
                 | IAutoBeTypeScriptCompileResult.IDiagnostic
-                | undefined = compilationResult.diagnostics.find(
+                | undefined = failure.diagnostics.find(
                 (el) => el.file === location,
               );
 
               const scenario = scenarios.find((el) => el.location === location);
               if (diagnostic && scenario) {
-                const correctEvent = await orchestrateRealizeCorrect(
-                  ctx,
-                  scenario.decoratorEvent ?? null,
+                const correctEvent = await orchestrateRealizeCorrect(ctx, {
+                  authorization: scenario.decoratorEvent ?? null,
                   scenario,
-                  content,
+                  code: content,
                   diagnostic,
-                  reviewProgress,
+                  progress: reviewProgress,
+                });
+
+                const corrected = functions.find(
+                  (el) => el.location === correctEvent.location,
                 );
 
-                providers[correctEvent.location] = correctEvent.content;
+                if (corrected) {
+                  corrected.content = correctEvent.content;
+                }
               }
             }),
           );
 
-          finalCompilationResult = await compile(ctx, {
-            authorizations,
-            providers,
-          });
-
-          if (finalCompilationResult.type === "success") {
+          compilation = await compile(ctx, { authorizations, functions });
+          if (compilation.type === "success") {
             break;
           }
         }
       }
     }
-
-    const functions: AutoBeRealizeFunction[] = Object.entries(providers).map(
-      ([location, content]) => {
-        const scenario = scenarios.find((el) => el.location === location)!;
-        return {
-          location,
-          content,
-          endpoint: {
-            method: scenario.operation.method,
-            path: scenario.operation.path,
-          },
-          name: scenario.functionName,
-        };
-      },
-    );
 
     const compiler: IAutoBeCompiler = await ctx.compiler();
     const controllers: Record<string, string> =
@@ -166,22 +167,7 @@ export const orchestrateRealize =
       functions,
       authorizations,
       controllers,
-      compiled: await compiler.typescript.compile({
-        files: {
-          ...(await getAutoBeGenerated(
-            compiler,
-            ctx.state(),
-            ctx.histories(),
-            ctx.usage(),
-          )),
-          ...(await getAutoBeRealizeGenerated({
-            document: ctx.state().interface!.document,
-            authorizations,
-            functions,
-            compiler,
-          })),
-        },
-      }),
+      compiled: await compile(ctx, { authorizations, functions }),
       step: ctx.state().analyze?.step ?? 0,
       elapsed: new Date().getTime() - start.getTime(),
     });

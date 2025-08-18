@@ -118,13 +118,13 @@ export const transformRealizeWriteHistories = (props: {
       id: v4(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
-      text: AutoBeSystemPromptConstant.REALIZE_CODER_TOTAL,
+      text: AutoBeSystemPromptConstant.REALIZE_WRITE_TOTAL,
     },
     {
       id: v4(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
-      text: AutoBeSystemPromptConstant.REALIZE_CODER_ARTIFACT.replaceAll(
+      text: AutoBeSystemPromptConstant.REALIZE_WRITE_ARTIFACT.replaceAll(
         `{prisma_schemas}`,
         JSON.stringify(props.state.prisma.schemas),
       )

@@ -47,12 +47,30 @@ export const archive_realize = async (
     });
   if (result.type !== "realize") throw new Error("Failed to generate realize.");
 
+  const filterTsFiles = (location: string) => location.endsWith(".ts");
+
+  const templateFiles = await (await ctx.compiler()).realize.getTemplate();
   // REPORT RESULT
   const model: string = TestGlobal.getVendorModel();
+  const prisma = ctx.state().prisma?.compiled;
+
+  const payloads = Object.fromEntries(
+    result.authorizations.map((authorization) => [
+      authorization.payload.location,
+      authorization.payload.content,
+    ]),
+  );
+
+  const nodeModules = prisma?.type === "success" ? prisma.nodeModules : {};
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/${model}/${project}/realize/main`,
     files: {
+      ...nodeModules,
+      ...payloads,
       ...(await agent.getFiles()),
+      ...Object.fromEntries(
+        Object.entries(templateFiles).filter(([key]) => filterTsFiles(key)),
+      ),
       "pnpm-workspace.yaml": "",
     },
   });
@@ -68,5 +86,6 @@ export const archive_realize = async (
         })),
       ),
     });
+
   TestValidator.equals("result")(result.compiled.type)("success");
 };

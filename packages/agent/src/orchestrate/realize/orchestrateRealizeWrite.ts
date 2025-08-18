@@ -17,13 +17,15 @@ import { replaceImportStatements } from "./utils/replaceImportStatements";
 
 export async function orchestrateRealizeWrite<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  authorization: AutoBeRealizeAuthorization | null,
-  scenario: IAutoBeRealizeScenarioApplication.IProps,
-  progress: IProgress,
+  props: {
+    authorization: AutoBeRealizeAuthorization | null;
+    scenario: IAutoBeRealizeScenarioApplication.IProps;
+    progress: IProgress;
+  },
 ): Promise<AutoBeRealizeWriteEvent> {
   const artifacts: IAutoBeTestScenarioArtifacts =
     await getTestScenarioArtifacts(ctx, {
-      endpoint: scenario.operation,
+      endpoint: props.scenario.operation,
       dependencies: [],
     });
   const pointer: IPointer<IAutoBeRealizeWriteApplication.IProps | null> = {
@@ -33,9 +35,9 @@ export async function orchestrateRealizeWrite<Model extends ILlmSchema.Model>(
     source: "realizeWrite",
     histories: transformRealizeWriteHistories({
       state: ctx.state(),
-      scenario,
+      scenario: props.scenario,
       artifacts,
-      authorization,
+      authorization: props.authorization,
     }),
     controller: createController({
       model: ctx.model,
@@ -67,16 +69,16 @@ export async function orchestrateRealizeWrite<Model extends ILlmSchema.Model>(
   pointer.value.implementationCode = await replaceImportStatements(ctx)(
     artifacts,
     pointer.value.implementationCode,
-    authorization?.payload.name,
+    props.authorization?.payload.name,
   );
 
   const event: AutoBeRealizeWriteEvent = {
     type: "realizeWrite",
-    location: scenario.location,
+    location: props.scenario.location,
     content: pointer.value.implementationCode,
     tokenUsage,
-    completed: ++progress.completed,
-    total: progress.total,
+    completed: ++props.progress.completed,
+    total: props.progress.total,
     step: ctx.state().analyze?.step ?? 0,
     created_at: new Date().toISOString(),
   };

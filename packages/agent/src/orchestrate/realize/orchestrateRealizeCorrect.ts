@@ -12,21 +12,23 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { getTestScenarioArtifacts } from "../test/compile/getTestScenarioArtifacts";
 import { IAutoBeTestScenarioArtifacts } from "../test/structures/IAutoBeTestScenarioArtifacts";
 import { transformRealizeCorrectHistories } from "./histories/transformRealizeCorrectHistories";
-import { IAutoBeRealizeCorrectApplication } from "./structures/IAutoBeRealizeReviewApplication";
+import { IAutoBeRealizeCorrectApplication } from "./structures/IAutoBeRealizeCorrectApplication";
 import { IAutoBeRealizeScenarioApplication } from "./structures/IAutoBeRealizeScenarioApplication";
 import { replaceImportStatements } from "./utils/replaceImportStatements";
 
 export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  authorization: AutoBeRealizeAuthorization | null,
-  scenario: IAutoBeRealizeScenarioApplication.IProps,
-  code: string,
-  diagnostic: IAutoBeTypeScriptCompileResult.IDiagnostic,
-  progress: IProgress,
+  props: {
+    authorization: AutoBeRealizeAuthorization | null;
+    scenario: IAutoBeRealizeScenarioApplication.IProps;
+    code: string;
+    diagnostic: IAutoBeTypeScriptCompileResult.IDiagnostic;
+    progress: IProgress;
+  },
 ): Promise<AutoBeRealizeCorrectEvent> {
   const artifacts: IAutoBeTestScenarioArtifacts =
     await getTestScenarioArtifacts(ctx, {
-      endpoint: scenario.operation,
+      endpoint: props.scenario.operation,
       dependencies: [],
     });
 
@@ -43,11 +45,11 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
     }),
     histories: transformRealizeCorrectHistories({
       state: ctx.state(),
-      scenario,
+      scenario: props.scenario,
       artifacts,
-      authorization,
-      code,
-      diagnostic,
+      authorization: props.authorization,
+      code: props.code,
+      diagnostic: props.diagnostic,
     }),
     enforceFunctionCall: true,
     message: [
@@ -62,16 +64,16 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
   pointer.value.implementationCode = await replaceImportStatements(ctx)(
     artifacts,
     pointer.value.implementationCode,
-    authorization?.payload.name,
+    props.authorization?.payload.name,
   );
 
   const event: AutoBeRealizeCorrectEvent = {
     type: "realizeCorrect",
-    location: scenario.location,
+    location: props.scenario.location,
     content: pointer.value.implementationCode,
     tokenUsage,
-    completed: ++progress.completed,
-    total: progress.total,
+    completed: ++props.progress.completed,
+    total: props.progress.total,
     step: ctx.state().analyze?.step ?? 0,
     created_at: new Date().toISOString(),
   };
