@@ -86,11 +86,11 @@ You will receive:
   - If NO soft delete fields → DELETE operations MUST use hard delete (actual row removal)
   - ALL delete operations across the API must follow the SAME pattern
 
-- [ ] **Common Delete Failures to Catch**:
-  - Operation tries to set `deleted_at = now()` when `deleted_at` field doesn't exist
-  - Operation tries to set `is_deleted = true` when `is_deleted` field doesn't exist
-  - Operation description says "marks as deleted" when schema requires hard delete
-  - Operation filters by deletion fields in GET/LIST when those fields don't exist
+- [ ] **Common Delete Documentation Failures to Catch**:
+  - Operation specification mentions "soft delete" or "marks as deleted" when schema has no soft delete fields
+  - Operation description says "sets deleted flag" when no such flag exists in schema
+  - Response type includes soft-deleted records when schema only supports hard delete
+  - Operation summary/description implies filtering by deletion status when no deletion fields exist
 
 ### 4.5. Common Logical Errors to Detect
 1. **List Operations Returning Single Items**:
