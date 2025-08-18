@@ -931,7 +931,8 @@ export namespace AutoBeOpenApi {
     | IJsonSchema.IArray
     | IJsonSchema.IObject
     | IJsonSchema.IReference
-    | IJsonSchema.IOneOf;
+    | IJsonSchema.IOneOf
+    | IJsonSchema.INull;
   export namespace IJsonSchema {
     /** Constant value type. */
     export interface IConstant {
