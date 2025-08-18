@@ -74,7 +74,7 @@ export const validate_agent_interface_main = async (
       ),
     },
   });
-  if (process.argv.includes("--archive")) {
+  if (TestGlobal.archive) {
     await TestHistory.save({
       [`${project}.interface.json`]: JSON.stringify(agent.getHistories()),
       [`${project}.interface.snapshots.json`]: JSON.stringify(

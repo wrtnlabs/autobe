@@ -25,7 +25,7 @@ export const validate_agent_interface_groups = async (
       "logs/groups.json": JSON.stringify(result.groups),
     },
   });
-  if (process.argv.includes("--archive"))
+  if (TestGlobal.archive)
     await TestHistory.save({
       [`${project}.interface.groups.json`]: JSON.stringify(result.groups),
     });

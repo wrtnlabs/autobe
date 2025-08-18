@@ -131,7 +131,7 @@ export const validate_agent_prisma_main = async (
       "logs/start.json": JSON.stringify(startEvent),
     },
   });
-  if (process.argv.includes("--archive"))
+  if (TestGlobal.archive)
     await TestHistory.save({
       [`${project}.prisma.json`]: JSON.stringify(agent.getHistories()),
       [`${project}.prisma.snapshots.json`]: JSON.stringify(

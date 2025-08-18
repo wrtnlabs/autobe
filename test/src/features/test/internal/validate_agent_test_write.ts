@@ -76,7 +76,7 @@ export const validate_agent_test_write = async (
       "logs/compiled.json": JSON.stringify(result),
     },
   });
-  if (process.argv.includes("--archive"))
+  if (TestGlobal.archive)
     await TestHistory.save({
       [`${project}.test.writes.json`]: JSON.stringify(writes),
     });

@@ -53,7 +53,7 @@ export const validate_agent_interface_operations = async (
       "logs/operations.json": JSON.stringify(operations),
     },
   });
-  if (process.argv.includes("--archive"))
+  if (TestGlobal.archive)
     await TestHistory.save({
       [`${project}.interface.operations.json`]: JSON.stringify(operations),
     });

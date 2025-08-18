@@ -57,7 +57,7 @@ export const validate_agent_test_scenario = async (
       "logs/scenarios.json": JSON.stringify(result),
     },
   });
-  if (process.argv.includes("--archive"))
+  if (TestGlobal.archive)
     await TestHistory.save({
       [`${project}.test.scenarios.json`]: JSON.stringify(result),
     });

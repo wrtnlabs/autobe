@@ -56,7 +56,7 @@ export const validate_agent_realize_main = async (
       "pnpm-workspace.yaml": "",
     },
   });
-  if (process.argv.includes("--archive"))
+  if (TestGlobal.archive)
     await TestHistory.save({
       [`${project}.realize.json`]: JSON.stringify(agent.getHistories()),
       [`${project}.realize.snapshots.json`]: JSON.stringify(

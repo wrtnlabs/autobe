@@ -49,7 +49,7 @@ export const validate_agent_interface_endpoints = async (
       "logs/endpoints.json": JSON.stringify(endpoints),
     },
   });
-  if (process.argv.includes("--archive"))
+  if (TestGlobal.archive)
     await TestHistory.save({
       [`${project}.interface.endpoints.json`]: JSON.stringify(endpoints),
     });

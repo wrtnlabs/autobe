@@ -30,7 +30,7 @@ export const validate_agent_interface_authorizations = async (
       "logs/authorizations.json": JSON.stringify(authorizations),
     },
   });
-  if (process.argv.includes("--archive"))
+  if (TestGlobal.archive)
     await TestHistory.save({
       [`${project}.interface.authorizations.json`]:
         JSON.stringify(authorizations),

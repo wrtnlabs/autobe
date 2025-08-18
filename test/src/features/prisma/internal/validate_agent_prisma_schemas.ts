@@ -48,7 +48,7 @@ export const validate_agent_prisma_schemas = async (
     agent.getContext(),
     components.components,
   );
-  if (process.argv.includes("--archive"))
+  if (TestGlobal.archive)
     await TestHistory.save({
       [`${project}.prisma.schemas.json`]: JSON.stringify(result),
     });

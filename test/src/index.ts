@@ -50,8 +50,8 @@ async function main(): Promise<void> {
       },
     ) => new AutoBeCompiler(listener),
   };
-  const include: string[] = TestGlobal.getArguments("include");
-  const exclude: string[] = TestGlobal.getArguments("exclude");
+  const include: string[] = TestGlobal.getArguments("include") ?? [];
+  const exclude: string[] = TestGlobal.getArguments("exclude") ?? [];
   const runsPerScenario: number = Number(
     TestGlobal.env.BENCHMARK_RUNS_PER_SCENARIO ?? "1",
   );

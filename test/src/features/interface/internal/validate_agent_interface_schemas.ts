@@ -47,7 +47,7 @@ export const validate_agent_interface_schemas = async (
       "logs/schemas.json": JSON.stringify(schemas),
     },
   });
-  if (process.argv.includes("--archive"))
+  if (TestGlobal.archive)
     await TestHistory.save({
       [`${project}.interface.schemas.json`]: JSON.stringify(schemas),
     });

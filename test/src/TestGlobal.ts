@@ -16,10 +16,10 @@ export class TestGlobal {
     return environments.get();
   }
 
-  public static getArguments(type: string): string[] {
+  public static getArguments(type: string): string[] | null {
     const from: number = process.argv.indexOf(`--${type}`) + 1;
     if (from === 0) {
-      return [];
+      return null;
     }
     const to: number = process.argv
       .slice(from)
@@ -37,9 +37,7 @@ export class TestGlobal {
     return TestGlobal.env.VENDOR_MODEL;
   }
 
-  public static get archive(): boolean {
-    return process.argv.includes("--archive");
-  }
+  public static archive: boolean = process.argv.includes("--archive");
 }
 
 interface IEnvironments {

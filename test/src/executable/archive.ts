@@ -1,32 +1,173 @@
-import cp from "child_process";
+import { AutoBeAgent, AutoBeTokenUsage } from "@autobe/agent";
+import { AutoBeState } from "@autobe/agent/src/context/AutoBeState";
+import { AutoBeCompiler } from "@autobe/compiler";
+import { IAutoBeCompilerListener } from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
+import fs from "fs";
+import OpenAI from "openai";
+import typia from "typia";
 
+import { TestFactory } from "../TestFactory";
 import { TestGlobal } from "../TestGlobal";
+import { TestProject } from "../structures/TestProject";
 
-const STEPS = ["analyze", "prisma", "interface", "test", "realize"];
+type Step = keyof AutoBeState;
+interface ITestFunction {
+  name: string;
+  step: Step;
+  project: TestProject;
+  execute: (factory: TestFactory) => Promise<void>;
+}
 
-const main = async () => {
-  const project: string | undefined = TestGlobal.getArguments("project")[0];
-  const from: string | undefined = TestGlobal.getArguments("from")[0];
-  const to: string | undefined = TestGlobal.getArguments("to")[0];
+const PROJECT_INDEXES: Record<TestProject, number> = {
+  "todo-backend": 0,
+  "bbs-backend": 1,
+  "shopping-backend": 2,
+};
 
-  const postfix: string = project ? `_${project}` : "";
-  const start: number = STEPS.indexOf(from);
-  const end: number = to ? STEPS.indexOf(to) : STEPS.length;
-  const execute = (step: string) =>
-    cp.execSync(
-      `pnpm start --include ${step}_main${postfix} --archive --trace`,
-      {
-        stdio: "inherit",
-        cwd: TestGlobal.ROOT,
+const STEP_INDEXES: Record<Step, number> = {
+  analyze: 0,
+  prisma: 1,
+  interface: 2,
+  test: 3,
+  realize: 4,
+};
+
+const collect = async (): Promise<ITestFunction[]> => {
+  const container: ITestFunction[] = [];
+  const iterate = async (directory: string): Promise<void> => {
+    for (const file of await fs.promises.readdir(directory)) {
+      const next: string = `${directory}/${file}`;
+      const stat: fs.Stats = await fs.promises.stat(next);
+      if (stat.isDirectory() === true) {
+        await iterate(next);
+        continue;
+      } else if (file.endsWith(".ts") === false) continue;
+      const modulo: any = await import(next);
+      for (const [key, value] of Object.entries(modulo)) {
+        if (
+          key.startsWith("test_agent_") === false ||
+          key.includes("_main_") === false ||
+          typeof value !== "function"
+        )
+          continue;
+        const project: string = `${key.split(`_main_`)[1]}-backend`;
+        const step: string =
+          key.split(`_agent_`)[1]?.split("_main_")?.[0] ?? "";
+        if (
+          typia.is<TestProject>(project) === false ||
+          typia.is<Step>(step) === false
+        )
+          continue;
+        container.push({
+          name: key,
+          execute: value as ITestFunction["execute"],
+          project,
+          step,
+        });
+      }
+    }
+  };
+  await iterate(`${TestGlobal.ROOT}/src/features`);
+  container.sort((a, b) => {
+    const x: number = PROJECT_INDEXES[a.project] * 100 + STEP_INDEXES[a.step];
+    const y: number = PROJECT_INDEXES[b.project] * 100 + STEP_INDEXES[b.step];
+    return x - y;
+  });
+
+  const projects: string[] =
+    TestGlobal.getArguments("project") ?? typia.misc.literals<TestProject>();
+  const from: string = TestGlobal.getArguments("from")?.[0] ?? "analyze";
+  return container.filter(
+    (func) =>
+      projects.includes(func.project) &&
+      STEP_INDEXES[func.step] >= (STEP_INDEXES[from as "analyze"] ?? 0),
+  );
+};
+
+const main = async (): Promise<void> => {
+  // PREPARE AGENT FACTORY
+  const tokenUsage: AutoBeTokenUsage = new AutoBeTokenUsage();
+  const factory: TestFactory = {
+    getTokenUsage: () => tokenUsage,
+    createAgent: (histories) =>
+      new AutoBeAgent({
+        model: TestGlobal.env.SCHEMA_MODEL ?? "chatgpt",
+        vendor: {
+          api: new OpenAI({
+            apiKey: TestGlobal.env.API_KEY,
+            baseURL: TestGlobal.env.BASE_URL,
+          }),
+          model: TestGlobal.env.VENDOR_MODEL ?? "gpt-4.1",
+          semaphore: Number(
+            TestGlobal.env.SEMAPHORE ??
+              TestGlobal.getArguments("semaphore")?.[0] ??
+              "16",
+          ),
+        },
+        config: {
+          locale: "en-US",
+        },
+        compiler: (listener) => new AutoBeCompiler(listener),
+        histories,
+        tokenUsage,
+      }),
+    createCompiler: (
+      listener: IAutoBeCompilerListener = {
+        realize: {
+          test: {
+            onOperation: async () => {},
+            onReset: async () => {},
+          },
+        },
       },
-    );
-  STEPS.forEach((step, i) => {
-    if (i < start) return;
-    if (i > end) return;
-    execute(step);
+    ) => new AutoBeCompiler(listener),
+  };
+  factory;
+
+  // LIST UP TEST FUNCTIONS TO ARCHIVE
+  const testFunctions: ITestFunction[] = await collect();
+  console.log(StringUtil.trim`
+    -----------------------------------------------------------
+      ARCHIVE PROGRAM
+    -----------------------------------------------------------
+    List of functions to archive
+  `);
+  console.log("");
+  for (const tf of testFunctions) console.log(`- (${(tf.project, tf.step)})`);
+  console.log("");
+
+  // DO ARCHIVE
+  TestGlobal.archive = true;
+  console.log("Start archiving...");
+  console.log("");
+  for (const tf of testFunctions) {
+    console.log(`- (${tf.project}, ${tf.step})`);
+    const start: Date = new Date();
+    try {
+      await tf.execute(factory);
+      console.log(
+        `  - Success: ${(Date.now() - start.getTime()).toLocaleString()} ms`,
+      );
+    } catch (error) {
+      console.log("  - Error");
+      throw error;
+    }
+  }
+
+  console.log("Token Usage");
+  console.table({
+    Total: tokenUsage.aggregate.total.toLocaleString("en-US"),
+    Input: tokenUsage.aggregate.input.total.toLocaleString("en-US"),
+    Output: tokenUsage.aggregate.output.total.toLocaleString("en-US"),
+    Facade: tokenUsage.facade.total.toLocaleString("en-US"),
+    Analyze: tokenUsage.analyze.total.toLocaleString("en-US"),
+    Prisma: tokenUsage.prisma.total.toLocaleString("en-US"),
+    Interface: tokenUsage.interface.total.toLocaleString("en-US"),
+    Test: tokenUsage.test.total.toLocaleString("en-US"),
+    Realize: tokenUsage.realize.total.toLocaleString("en-US"),
   });
 };
 main().catch((error) => {
-  console.error(error);
-  process.exit(-1);
+  console.log(error);
 });
