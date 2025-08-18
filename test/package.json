@@ -9,7 +9,7 @@
     "build": "tsc --noEmit",
     "dev": "tsc --watch --noEmit",
     "start": "node build/prompt.js && ts-node src",
-    "archive": "ts-node src/executable/archive.ts",
+    "archive": "node build/prompt.js && ts-node src/archive",
     "bench": "ts-node src/benchmarks"
   },
   "author": "Wrtn Technologies",

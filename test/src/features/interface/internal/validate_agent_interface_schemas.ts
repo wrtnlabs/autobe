@@ -1,5 +1,5 @@
 import { orchestrateInterfaceSchemas } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceSchemas";
-import { FileSystemIterator } from "@autobe/filesystem";
+import { CompressUtil, FileSystemIterator } from "@autobe/filesystem";
 import { AutoBeOpenApi } from "@autobe/interface";
 import fs from "fs";
 import typia from "typia";
@@ -7,6 +7,7 @@ import typia from "typia";
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
 import { TestHistory } from "../../../internal/TestHistory";
+import { TestLogger } from "../../../internal/TestLogger";
 import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_interface } from "./prepare_agent_interface";
 
@@ -20,12 +21,18 @@ export const validate_agent_interface_schemas = async (
   const { agent } = await prepare_agent_interface(factory, project);
   const model: string = TestGlobal.getVendorModel();
   const operations: AutoBeOpenApi.IOperation[] = JSON.parse(
-    await fs.promises.readFile(
-      `${TestGlobal.ROOT}/assets/histories/${model}/${project}.interface.operations.json`,
-      "utf8",
+    await CompressUtil.gunzip(
+      await fs.promises.readFile(
+        `${TestGlobal.ROOT}/assets/histories/${model}/${project}.interface.operations.json.gz`,
+      ),
     ),
   );
   typia.assert(operations);
+
+  const start: Date = new Date();
+  agent.on("interfaceSchemas", (event) => {
+    if (TestGlobal.archive) TestLogger.event(start, event);
+  });
 
   // GENERATE COMPONENTS
   const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
@@ -47,7 +54,7 @@ export const validate_agent_interface_schemas = async (
       "logs/schemas.json": JSON.stringify(schemas),
     },
   });
-  if (TestGlobal.archive)
+  if (process.argv.includes("--archive"))
     await TestHistory.save({
       [`${project}.interface.schemas.json`]: JSON.stringify(schemas),
     });

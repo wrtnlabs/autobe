@@ -13,14 +13,14 @@ import { AutoBePrismaComponentsEvent } from "@autobe/interface/src/events/AutoBe
 import { AutoBePrismaSchemasEvent } from "@autobe/interface/src/events/AutoBePrismaSchemasEvent";
 import typia from "typia";
 
-import { TestFactory } from "../../../TestFactory";
-import { TestGlobal } from "../../../TestGlobal";
-import { TestHistory } from "../../../internal/TestHistory";
-import { TestLogger } from "../../../internal/TestLogger";
-import { TestProject } from "../../../structures/TestProject";
-import { prepare_agent_prisma } from "./prepare_agent_prisma";
+import { TestFactory } from "../../TestFactory";
+import { TestGlobal } from "../../TestGlobal";
+import { prepare_agent_prisma } from "../../features/prisma/internal/prepare_agent_prisma";
+import { TestHistory } from "../../internal/TestHistory";
+import { TestLogger } from "../../internal/TestLogger";
+import { TestProject } from "../../structures/TestProject";
 
-export const validate_agent_prisma_main = async (
+export const archive_prisma = async (
   factory: TestFactory,
   project: TestProject,
 ) => {

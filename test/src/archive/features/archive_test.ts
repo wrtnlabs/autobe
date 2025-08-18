@@ -11,14 +11,14 @@ import {
 import { TestValidator } from "@nestia/e2e";
 import typia from "typia";
 
-import { TestFactory } from "../../../TestFactory";
-import { TestGlobal } from "../../../TestGlobal";
-import { TestHistory } from "../../../internal/TestHistory";
-import { TestLogger } from "../../../internal/TestLogger";
-import { TestProject } from "../../../structures/TestProject";
-import { prepare_agent_test } from "./prepare_agent_test";
+import { TestFactory } from "../../TestFactory";
+import { TestGlobal } from "../../TestGlobal";
+import { prepare_agent_test } from "../../features/test/internal/prepare_agent_test";
+import { TestHistory } from "../../internal/TestHistory";
+import { TestLogger } from "../../internal/TestLogger";
+import { TestProject } from "../../structures/TestProject";
 
-export const validate_agent_test_main = async (
+export const archive_test = async (
   factory: TestFactory,
   project: TestProject,
 ) => {

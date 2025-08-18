@@ -9,14 +9,14 @@ import {
 import { AutoBeInterfaceGroup } from "@autobe/interface/src/histories/contents/AutoBeInterfaceGroup";
 import typia from "typia";
 
-import { TestFactory } from "../../../TestFactory";
-import { TestGlobal } from "../../../TestGlobal";
-import { TestHistory } from "../../../internal/TestHistory";
-import { TestLogger } from "../../../internal/TestLogger";
-import { TestProject } from "../../../structures/TestProject";
-import { prepare_agent_interface } from "./prepare_agent_interface";
+import { TestFactory } from "../../TestFactory";
+import { TestGlobal } from "../../TestGlobal";
+import { prepare_agent_interface } from "../../features/interface/internal/prepare_agent_interface";
+import { TestHistory } from "../../internal/TestHistory";
+import { TestLogger } from "../../internal/TestLogger";
+import { TestProject } from "../../structures/TestProject";
 
-export const validate_agent_interface_main = async (
+export const archive_interface = async (
   factory: TestFactory,
   project: TestProject,
 ) => {

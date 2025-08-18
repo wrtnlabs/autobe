@@ -38,37 +38,29 @@ const collect = async (): Promise<ITestFunction[]> => {
   const iterate = async (directory: string): Promise<void> => {
     for (const file of await fs.promises.readdir(directory)) {
       const next: string = `${directory}/${file}`;
-      const stat: fs.Stats = await fs.promises.stat(next);
-      if (stat.isDirectory() === true) {
-        await iterate(next);
+      if (
+        file.startsWith("archive_") === false ||
+        file.endsWith(".ts") === false
+      )
         continue;
-      } else if (file.endsWith(".ts") === false) continue;
       const modulo: any = await import(next);
       for (const [key, value] of Object.entries(modulo)) {
-        if (
-          key.startsWith("test_agent_") === false ||
-          key.includes("_main_") === false ||
-          typeof value !== "function"
-        )
+        if (key.startsWith("archive_") === false || typeof value !== "function")
           continue;
-        const project: string = `${key.split(`_main_`)[1]}-backend`;
-        const step: string =
-          key.split(`_agent_`)[1]?.split("_main_")?.[0] ?? "";
-        if (
-          typia.is<TestProject>(project) === false ||
-          typia.is<Step>(step) === false
-        )
-          continue;
-        container.push({
-          name: key,
-          execute: value as ITestFunction["execute"],
-          project,
-          step,
+        const step: string = key.split("archive_")?.[1] ?? "";
+        if (typia.is<Step>(step) === false) continue;
+        typia.misc.literals<TestProject>().forEach((project) => {
+          container.push({
+            name: key,
+            execute: (factory: TestFactory) => value(factory, project),
+            project,
+            step,
+          });
         });
       }
     }
   };
-  await iterate(`${TestGlobal.ROOT}/src/features`);
+  await iterate(`${TestGlobal.ROOT}/src/archive/features`);
   container.sort((a, b) => {
     const x: number = PROJECT_INDEXES[a.project] * 100 + STEP_INDEXES[a.step];
     const y: number = PROJECT_INDEXES[b.project] * 100 + STEP_INDEXES[b.step];
@@ -123,7 +115,6 @@ const main = async (): Promise<void> => {
       },
     ) => new AutoBeCompiler(listener),
   };
-  factory;
 
   // LIST UP TEST FUNCTIONS TO ARCHIVE
   const testFunctions: ITestFunction[] = await collect();
@@ -145,6 +136,7 @@ const main = async (): Promise<void> => {
     console.log(`- (${tf.project}, ${tf.step})`);
     const start: Date = new Date();
     try {
+      factory;
       await tf.execute(factory);
       console.log(
         `  - Success: ${(Date.now() - start.getTime()).toLocaleString()} ms`,

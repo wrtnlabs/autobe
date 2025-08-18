@@ -12,13 +12,13 @@ import {
 import { ILlmSchema } from "@samchon/openapi";
 import typia from "typia";
 
-import { TestFactory } from "../../../TestFactory";
-import { TestGlobal } from "../../../TestGlobal";
-import { TestHistory } from "../../../internal/TestHistory";
-import { TestLogger } from "../../../internal/TestLogger";
-import { TestProject } from "../../../structures/TestProject";
+import { TestFactory } from "../../TestFactory";
+import { TestGlobal } from "../../TestGlobal";
+import { TestHistory } from "../../internal/TestHistory";
+import { TestLogger } from "../../internal/TestLogger";
+import { TestProject } from "../../structures/TestProject";
 
-export const validate_agent_analyze_main = async (
+export const validate_analyze = async (
   factory: TestFactory,
   project: TestProject,
 ) => {
