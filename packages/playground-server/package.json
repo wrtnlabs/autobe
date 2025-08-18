@@ -36,6 +36,7 @@
   "dependencies": {
     "@autobe/agent": "workspace:^",
     "@autobe/compiler": "workspace:^",
+    "@autobe/filesystem": "workspace:^",
     "@autobe/interface": "workspace:^",
     "@autobe/rpc": "workspace:^",
     "@samchon/openapi": "catalog:samchon",

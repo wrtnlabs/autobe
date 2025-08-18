@@ -310,6 +310,9 @@ importers:
       '@autobe/compiler':
         specifier: workspace:^
         version: link:../compiler
+      '@autobe/filesystem':
+        specifier: workspace:^
+        version: link:../filesystem
       '@autobe/interface':
         specifier: workspace:^
         version: link:../interface

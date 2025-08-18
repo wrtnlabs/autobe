@@ -1,8 +1,7 @@
+import { CompressUtil } from "@autobe/filesystem";
 import fs from "fs";
 import path from "path";
 import { VariadicSingleton } from "tstl";
-
-import { TestZipper } from "./TestZipper";
 
 export namespace TestFileSystem {
   export const read = async (props: {
@@ -26,7 +25,7 @@ export namespace TestFileSystem {
               props.root.length + 1,
               next.length - 3,
             )}`
-          ] = await TestZipper.decompress(await fs.promises.readFile(next));
+          ] = await CompressUtil.gunzip(await fs.promises.readFile(next));
       }
     };
     await iterate(props.root);
@@ -52,7 +51,7 @@ export namespace TestFileSystem {
     for (const [key, value] of Object.entries(props.files)) {
       const file: string = path.resolve(`${props.root}/${key}.gz`);
       await directory.get(path.dirname(file));
-      await fs.promises.writeFile(file, await TestZipper.compress(value ?? ""));
+      await fs.promises.writeFile(file, await CompressUtil.gzip(value ?? ""));
     }
   };
 }

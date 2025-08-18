@@ -1,4 +1,5 @@
 import { AutoBeTokenUsage } from "@autobe/agent";
+import { CompressUtil } from "@autobe/filesystem";
 import {
   AutoBeEventSnapshot,
   AutoBeHistory,
@@ -11,7 +12,6 @@ import { v4 } from "uuid";
 import { TestGlobal } from "../TestGlobal";
 import { TestProject } from "../structures/TestProject";
 import { TestFileSystem } from "./TestFileSystem";
-import { TestZipper } from "./TestZipper";
 
 export namespace TestHistory {
   export const save = async (files: Record<string, string>): Promise<void> => {
@@ -81,7 +81,7 @@ export namespace TestHistory {
     type: "analyze" | "prisma" | "interface" | "test" | "realize";
   }): Promise<IAutoBeTokenUsageJson> => {
     const snapshots: AutoBeEventSnapshot[] = JSON.parse(
-      await TestZipper.decompress(
+      await CompressUtil.gunzip(
         await fs.promises.readFile(
           `${TestGlobal.ROOT}/assets/histories/${TestGlobal.getVendorModel()}/${props.project}.${props.type}.snapshots.json.gz`,
         ),
@@ -95,7 +95,7 @@ export namespace TestHistory {
     type: "initial" | "analyze" | "prisma" | "interface" | "test" | "realize";
   }): Promise<AutoBeHistory[]> => {
     const location: string = `${TestGlobal.ROOT}/assets/histories/${TestGlobal.getVendorModel()}/${props.project}.${props.type}.json.gz`;
-    const content: string = await TestZipper.decompress(
+    const content: string = await CompressUtil.gunzip(
       await fs.promises.readFile(location),
     );
     const histories: AutoBeHistory[] = JSON.parse(content);

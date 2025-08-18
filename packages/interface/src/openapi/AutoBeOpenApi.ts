@@ -930,7 +930,8 @@ export namespace AutoBeOpenApi {
     | IJsonSchema.IString
     | IJsonSchema.IArray
     | IJsonSchema.IObject
-    | IJsonSchema.IReference;
+    | IJsonSchema.IReference
+    | IJsonSchema.IOneOf;
   export namespace IJsonSchema {
     /** Constant value type. */
     export interface IConstant {

@@ -128,6 +128,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
         histories.every((h) => h.type !== "execute")
       ) {
         console.log({
+          source: next.source,
           title: "function calling failed",
           types: histories.map((h) => h.type),
           assistantMessage:
@@ -283,7 +284,7 @@ const transformAndDispatch = <
 
 const forceRetry = async <T>(
   task: () => Promise<T>,
-  count: number = 5,
+  count: number = 3,
 ): Promise<T> => {
   let error: unknown = undefined;
   for (let i: number = 0; i < count; ++i)

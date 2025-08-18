@@ -127,7 +127,10 @@ async function process<Model extends ILlmSchema.Model>(
         : []),
     ].join("\n"),
   });
-  if (pointer.value === null) throw new Error("Failed to create components.");
+  if (pointer.value === null) {
+    throw new Error("Failed to create components.");
+    // return {};
+  }
 
   const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
     (

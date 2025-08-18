@@ -21,6 +21,45 @@ export interface IAutoBeInterfaceComplementApplication {
 export namespace IAutoBeInterfaceComplementApplication {
   export interface IProps {
     /**
+     * TypeScript draft code for complement schema definitions.
+     *
+     * This property contains TypeScript interface definitions for missing schema
+     * types that were referenced but not defined in the initial schema generation.
+     * Similar to the main schema draft, this serves as a preliminary TypeScript
+     * representation before converting to JSON Schema format.
+     *
+     * The draft helps ensure that complementary schemas maintain consistency with
+     * the existing type system and follow the same conventions as the primary schemas.
+     * 
+     * This draft typically includes:
+     * - Missing entity interfaces referenced via $ref
+     * - Nested object types used within other schemas
+     * - Shared utility types or enumerations
+     * - Any transitively referenced types
+     *
+     * The final schemas in the `schemas` property should be validated against and
+     * derived from this TypeScript draft to ensure type safety and consistency
+     * across the entire API specification.
+     *
+     * Example complement draft:
+     * ```typescript
+     * interface IUserProfile {
+     *   id: string;
+     *   userId: string;
+     *   displayName: string;
+     *   avatarUrl?: string;
+     * }
+     * 
+     * interface IAddress {
+     *   street: string;
+     *   city: string;
+     *   postalCode: string;
+     * }
+     * ```
+     */
+    draft: string;
+
+    /**
      * A collection of missing schema definitions that need to be added to the
      * OpenAPI document's `components.schemas` section.
      *

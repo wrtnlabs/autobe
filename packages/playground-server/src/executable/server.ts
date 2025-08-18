@@ -1,4 +1,5 @@
 import { AutoBeAgent, AutoBeMockAgent } from "@autobe/agent";
+import { CompressUtil } from "@autobe/filesystem";
 import {
   IAutoBeAgent,
   IAutoBeCompiler,
@@ -52,13 +53,14 @@ const createMockAgent = async (
   const params: URLSearchParams = new URLSearchParams(
     path.indexOf("?") !== -1 ? path.split("?")[1] : "",
   );
-  
+
   const load = async <T>(title: string): Promise<T | null> => {
     const vendor: string = params.get("vendor") ?? "openai/gpt-4.1";
     const type: string = params.get("type") ?? "bbs-backend";
-    const location: string = `${ROOT}/test/assets/histories/${vendor}/${type}.${title}.json`;
+    const location: string = `${ROOT}/test/assets/histories/${vendor}/${type}.${title}.json.gz`;
     try {
-      const content: string = await fs.promises.readFile(location, "utf-8");
+      const compressed: Buffer = await fs.promises.readFile(location);
+      const content: string = await CompressUtil.gunzip(compressed);
       return JSON.parse(content) as T;
     } catch {
       return null;
@@ -72,6 +74,7 @@ const createMockAgent = async (
     test: await load("test.snapshots"),
     realize: await load("realize.snapshots"),
   };
+  console.log(preset.histories.find((h) => h.type === "analyze"));
   return new AutoBeMockAgent({
     compiler: () => compiler,
     preset,
