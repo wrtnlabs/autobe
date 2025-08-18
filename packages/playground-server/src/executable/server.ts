@@ -74,7 +74,7 @@ const createMockAgent = async (
     test: await load("test.snapshots"),
     realize: await load("realize.snapshots"),
   };
-  console.log(preset.histories.find((h) => h.type === "analyze"));
+  
   return new AutoBeMockAgent({
     compiler: () => compiler,
     preset,
