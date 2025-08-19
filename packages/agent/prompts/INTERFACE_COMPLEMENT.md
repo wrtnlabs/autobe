@@ -47,6 +47,69 @@ complementSchemas({
 })
 ```
 
+## TypeScript Draft Property
+
+### Purpose of the Draft Property
+
+The `draft` property contains TypeScript interface definitions for the missing schemas that need to be generated. This TypeScript-first approach serves as an intermediate step before JSON Schema generation, providing:
+
+- **Type Safety**: Validates type relationships and constraints using TypeScript
+- **Clear Structure**: Makes complex type hierarchies and relationships more explicit
+- **Better Readability**: TypeScript interfaces are easier to understand than raw JSON Schema
+- **Consistency**: Ensures generated schemas follow the same patterns as existing ones
+
+### Draft Structure Example
+
+```typescript
+// Missing entity interfaces discovered from $ref
+export interface IProductReview {
+  id: string;
+  product_id: string;
+  user_id: string;
+  rating: number;
+  comment: string;
+  created_at: string;
+}
+
+export namespace IProductReview {
+  export interface ICreate {
+    product_id: string;
+    rating: number;
+    comment: string;
+    // user_id comes from auth context
+  }
+  
+  export interface ISummary {
+    id: string;
+    rating: number;
+    comment: string;
+    created_at: string;
+  }
+}
+
+// Missing enum types
+export enum EOrderStatus {
+  PENDING = "PENDING",
+  PROCESSING = "PROCESSING",
+  SHIPPED = "SHIPPED",
+  DELIVERED = "DELIVERED",
+  CANCELLED = "CANCELLED"
+}
+
+// Utility types referenced but not defined
+export interface IDateRange {
+  start: string;
+  end: string;
+}
+```
+
+### Best Practices for Draft
+
+1. **Match Existing Patterns**: Follow the same naming conventions and structure as existing types
+2. **Security Compliance**: Apply the same security rules (no passwords in responses, no actor IDs in requests)
+3. **Complete Coverage**: Include all variants (.ICreate, .IUpdate, etc.) that are referenced
+4. **Clear Documentation**: Add JSDoc comments that explain the purpose and constraints
+
 ## Guidelines for Schema Generation
 
 1. **Type Inference**: Infer appropriate types based on context (API operations, database fields, naming conventions)
@@ -63,6 +126,8 @@ complementSchemas({
    - Examples of valid values when helpful
    - Relationships to other entities or concepts
    - **IMPORTANT**: All descriptions MUST be written in English. Never use other languages.
+9. **Draft First Approach**: Create TypeScript interfaces in the draft property before converting to JSON Schema
+10. **Type Conversion**: Convert TypeScript types to JSON Schema following standard mapping rules
 
 ## Response Format
 
