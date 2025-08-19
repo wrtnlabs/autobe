@@ -136,7 +136,7 @@ const main = async (): Promise<void> => {
     -----------------------------------------------------------
     Configurations
     
-    - Vendor Model: ${vendorModoel}
+    - Vendor Model: ${vendorModel}
     - Schema Model: ${TestGlobal.env.SCHEMA_MODEL ?? "chatgpt"}
     - Semaphore: ${semaphore}
 
