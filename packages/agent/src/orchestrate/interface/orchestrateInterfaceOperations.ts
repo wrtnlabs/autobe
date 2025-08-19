@@ -24,7 +24,7 @@ export async function orchestrateInterfaceOperations<
 >(
   ctx: AutoBeContext<Model>,
   endpoints: AutoBeOpenApi.IEndpoint[],
-  capacity: number = 12,
+  capacity: number = 8,
 ): Promise<AutoBeOpenApi.IOperation[]> {
   const matrix: AutoBeOpenApi.IEndpoint[][] = divideArray({
     array: endpoints,

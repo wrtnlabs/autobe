@@ -31,7 +31,9 @@ export class TestGlobal {
   }
 
   public static getVendorModel(): string {
-    if (TestGlobal.env.VENDOR_MODEL === undefined) return "openai/gpt-4.1";
+    const specified = this.getArguments("vendor")?.[0];
+    if (!!specified?.length) return specified;
+    else if (TestGlobal.env.VENDOR_MODEL === undefined) return "openai/gpt-4.1";
     else if (TestGlobal.env.BASE_URL === undefined)
       return `openai/${TestGlobal.env.VENDOR_MODEL}`;
     return TestGlobal.env.VENDOR_MODEL;
