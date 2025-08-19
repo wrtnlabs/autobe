@@ -1,8 +1,10 @@
 import { AutoBeEvent } from "@autobe/interface";
-import { AutoBeStartEventMovie } from "@autobe/ui";
+import {
+  AutoBeAssistantMessageMovie,
+  AutoBeStartEventMovie,
+  AutoBeUserMessageMovie,
+} from "@autobe/ui";
 
-import AssistantMessage from "../AutoBeAssistantMessage";
-import AutoBeUserMessage from "../AutoBeUserMessage";
 import ProgressEventsMovie, {
   IProgressEventsMovieProps,
 } from "./ProgressEventsMovie";
@@ -53,11 +55,14 @@ const AutoBeEventsMovie = (props: IAutoBeEventsMovieProps) => {
   switch (event.type) {
     case "assistantMessage": {
       return (
-        <AssistantMessage text={event.text} timestamp={event.created_at} />
+        <AutoBeAssistantMessageMovie
+          text={event.text}
+          isoTimestamp={event.created_at}
+        />
       );
     }
     case "userMessage": {
-      return <AutoBeUserMessage message={event.contents} />;
+      return <AutoBeUserMessageMovie message={event.contents} />;
     }
     case "analyzeStart":
     case "interfaceStart":

@@ -1,11 +1,13 @@
 import { AutoBeEvent, IAutoBeRpcService } from "@autobe/interface";
 import { AutoBeStartEventMovie } from "@autobe/ui";
+import {
+  AutoBeAssistantMessageMovie,
+  AutoBeUserMessageMovie,
+} from "@autobe/ui";
 
-import { AutoBePlaygroundAssistantMessageEventMovie } from "./AutoBePlaygroundAssistantMessageEventMovie";
 import { AutoBePlaygroundCompleteEventMovie } from "./AutoBePlaygroundCompleteEventMovie";
 import { AutoBePlaygroundProgressEventMovie } from "./AutoBePlaygroundProgressEventMovie";
 import { AutoBePlaygroundScenarioEventMovie } from "./AutoBePlaygroundScenarioEventMovie";
-import { AutoBePlaygroundUserMessageEventMovie } from "./AutoBePlaygroundUserMessageEventMovie";
 import { AutoBePlaygroundValidateEventMovie } from "./AutoBePlaygroundValidateEventMovie";
 
 export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
@@ -14,9 +16,14 @@ export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
   const back: Event = props.events[props.events.length - 1];
   switch (back.type) {
     case "userMessage":
-      return <AutoBePlaygroundUserMessageEventMovie prompt={back} />;
+      return <AutoBeUserMessageMovie message={back.contents} />;
     case "assistantMessage":
-      return <AutoBePlaygroundAssistantMessageEventMovie prompt={back} />;
+      return (
+        <AutoBeAssistantMessageMovie
+          text={back.text}
+          isoTimestamp={back.created_at}
+        />
+      );
     // START EVENTS
     case "analyzeStart":
     case "prismaStart":
