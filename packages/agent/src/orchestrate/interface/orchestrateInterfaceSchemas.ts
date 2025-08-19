@@ -127,10 +127,7 @@ async function process<Model extends ILlmSchema.Model>(
         : []),
     ].join("\n"),
   });
-  if (pointer.value === null) {
-    throw new Error("Failed to create components.");
-    // return {};
-  }
+  if (pointer.value === null) throw new Error("Failed to create components.");
 
   const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
     (
@@ -142,10 +139,10 @@ async function process<Model extends ILlmSchema.Model>(
     type: "interfaceSchemas",
     schemas,
     tokenUsage,
-    completed: (progress.completed += Object.keys(schemas).filter(
-      (k) => oldbie[k] === undefined,
+    completed: (progress.completed += Object.keys(schemas).length),
+    total: (progress.total += Object.keys(schemas).filter(
+      (k) => remained.has(k) === false,
     ).length),
-    total: progress.total,
     step: ctx.state().prisma?.step ?? 0,
     created_at: new Date().toISOString(),
   } satisfies AutoBeInterfaceSchemasEvent);
