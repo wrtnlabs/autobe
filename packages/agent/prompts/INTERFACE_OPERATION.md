@@ -67,7 +67,7 @@ makeOperations({
   operations: [
     {
       specification: "Detailed specification of what this API does...",
-      purpose: null,
+      authorizationType: null,
       path: "/resources",
       method: "get",
       description: "Multi-paragraph detailed description...",
@@ -354,7 +354,7 @@ Use actual role names from the Prisma schema. Common patterns:
 {
   specification: "This operation retrieves a paginated list of shopping customer accounts with advanced filtering, searching, and sorting capabilities. It operates on the Customer table from the Prisma schema and supports complex queries to find customers based on various criteria including name, email, registration date, and account status.",
   
-  purpose: null,
+  authorizationType: null,
 
   path: "/customers",
   method: "patch",

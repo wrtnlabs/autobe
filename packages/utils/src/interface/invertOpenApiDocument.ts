@@ -17,7 +17,7 @@ export function invertOpenApiDocument(
         (r) =>
           ({
             specification: empty("specification"),
-            purpose: null,
+            authorizationType: null,
             method: r.method as "post",
             path: r.path,
             summary: r.operation().summary ?? empty("summary"),
