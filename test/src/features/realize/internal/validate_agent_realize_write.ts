@@ -40,7 +40,7 @@ export const validate_agent_realize_write = async (
     if (type.startsWith("realize")) agent.on(type, listen);
 
   const model: string = TestGlobal.getVendorModel();
-  const autohrizations: AutoBeRealizeAuthorization[] = JSON.parse(
+  const authorizations: AutoBeRealizeAuthorization[] = JSON.parse(
     await CompressUtil.gunzip(
       await fs.promises.readFile(
         `${TestGlobal.ROOT}/assets/histories/${model}/${project}.realize.authorizations.json.gz`,
@@ -59,7 +59,7 @@ export const validate_agent_realize_write = async (
   const progress = { total: scenarios.length, completed: 0 };
   const writes: (AutoBeRealizeWriteEvent | null)[] = await Promise.all(
     scenarios.map(async (scenario) => {
-      const authorization = autohrizations.find(
+      const authorization = authorizations.find(
         (a) => a.role.name === scenario.decoratorEvent?.role.name,
       );
 
@@ -83,9 +83,9 @@ export const validate_agent_realize_write = async (
   const locations = writes.filter((w) => w !== null).map((el) => el.location);
   const rejected = scenarios.filter((s) => !locations.includes(s.location));
 
-  const retried = await Promise.allSettled(
+  const retried = await Promise.all(
     rejected.map(async (scenario) => {
-      const authorization = autohrizations.find(
+      const authorization = authorizations.find(
         (a) => a.role.name === scenario.decoratorEvent?.role.name,
       );
 

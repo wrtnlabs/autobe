@@ -48,7 +48,7 @@ export const validate_agent_realize_scenario = async (
     ),
   );
 
-  const autohrizations: AutoBeRealizeAuthorization[] = JSON.parse(
+  const authorizations: AutoBeRealizeAuthorization[] = JSON.parse(
     await CompressUtil.gunzip(
       await fs.promises.readFile(
         `${TestGlobal.ROOT}/assets/histories/${model}/${project}.realize.authorizations.json.gz`,
@@ -58,7 +58,7 @@ export const validate_agent_realize_scenario = async (
 
   const scenarios: IAutoBeRealizeScenarioApplication.IProps[] = operations.map(
     (operation) => {
-      const autohrization = autohrizations.find(
+      const autohrization = authorizations.find(
         (el) => el.role.name === operation.authorizationRole,
       );
 
