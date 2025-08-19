@@ -1,10 +1,10 @@
 import { AutoBeEvent, IAutoBeRpcService } from "@autobe/interface";
+import { AutoBeStartEventMovie } from "@autobe/ui";
 
 import { AutoBePlaygroundAssistantMessageEventMovie } from "./AutoBePlaygroundAssistantMessageEventMovie";
 import { AutoBePlaygroundCompleteEventMovie } from "./AutoBePlaygroundCompleteEventMovie";
 import { AutoBePlaygroundProgressEventMovie } from "./AutoBePlaygroundProgressEventMovie";
 import { AutoBePlaygroundScenarioEventMovie } from "./AutoBePlaygroundScenarioEventMovie";
-import { AutoBePlaygroundStartEventMovie } from "./AutoBePlaygroundStartEventMovie";
 import { AutoBePlaygroundUserMessageEventMovie } from "./AutoBePlaygroundUserMessageEventMovie";
 import { AutoBePlaygroundValidateEventMovie } from "./AutoBePlaygroundValidateEventMovie";
 
@@ -25,7 +25,7 @@ export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
     case "realizeStart":
     case "realizeTestStart":
     case "realizeAuthorizationStart":
-      return <AutoBePlaygroundStartEventMovie event={back} />;
+      return <AutoBeStartEventMovie event={back} />;
     // SCENARIO EVENTS
     case "analyzeScenario":
     case "prismaComponents":

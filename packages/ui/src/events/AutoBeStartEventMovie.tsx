@@ -2,11 +2,11 @@ import {
   AutoBeAnalyzeStartEvent,
   AutoBeInterfaceStartEvent,
   AutoBePrismaStartEvent,
+  AutoBeRealizeAuthorizationStartEvent,
   AutoBeRealizeStartEvent,
   AutoBeRealizeTestStartEvent,
   AutoBeTestStartEvent,
 } from "@autobe/interface";
-import { AutoBeRealizeAuthorizationStartEvent } from "@autobe/interface/src/events/AutoBeRealizeAuthorizationStartEvent";
 
 interface IAutoBeStartEventProps {
   event:
@@ -17,16 +17,39 @@ interface IAutoBeStartEventProps {
     | AutoBeRealizeStartEvent
     | AutoBeRealizeAuthorizationStartEvent
     | AutoBeRealizeTestStartEvent;
+  style?: React.CSSProperties;
+  className?: string;
 }
 
-const AutoBeStartEvent = (props: IAutoBeStartEventProps) => {
+const AutoBeStartEventMovie = (props: IAutoBeStartEventProps) => {
   const { event } = props;
   const title = getTitle(event);
 
   return (
-    <div className="flex justify-center mb-4">
-      <div className="bg-gray-100 border border-gray-200 rounded-full px-4 py-2 shadow-sm">
-        <div className="text-sm text-gray-600 font-medium">
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        marginBottom: "1rem",
+      }}
+    >
+      <div
+        className={props.className}
+        style={{
+          backgroundColor: "#f0f0f0",
+          border: "1px solid #e0e0e0",
+          borderRadius: "0.5rem",
+          padding: "0.5rem 1rem",
+          ...props.style,
+        }}
+      >
+        <div
+          style={{
+            fontSize: "0.875rem",
+            color: "#666",
+            fontWeight: "medium",
+          }}
+        >
           🚀 {title} has started.
         </div>
       </div>
@@ -56,4 +79,4 @@ function getTitle(event: IAutoBeStartEventProps["event"]): string {
   }
 }
 
-export default AutoBeStartEvent;
+export default AutoBeStartEventMovie;

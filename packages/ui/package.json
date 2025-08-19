@@ -1,0 +1,21 @@
+{
+  "name": "@autobe/ui",
+  "version": "0.18.0",
+  "description": "AutoBE UI",
+  "main": "src/index.ts",
+  "publishConfig": {
+    "main": "lib/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:ui",
+    "@types/react-dom": "catalog:ui",
+    "react": "catalog:ui",
+    "react-dom": "catalog:ui",
+    "typescript": "catalog:typescript",
+    "@autobe/interface": "workspace:*"
+  }
+}

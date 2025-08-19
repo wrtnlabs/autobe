@@ -30,6 +30,12 @@ catalogs:
     ts-node: ^10.9.2
     ts-patch: ^3.3.0
     typescript: ~5.9.2
+  ui:
+    react: ^19.1.1
+    react-dom: ^19.1.1
+    '@types/react': ^19.1.10
+    '@types/react-dom': ^19.1.5
+    vite: ^6.3.5
   libs:
     openai: ^5.12.2
 useNodeVersion: 22.15.0
