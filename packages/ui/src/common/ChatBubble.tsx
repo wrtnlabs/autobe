@@ -1,6 +1,12 @@
-interface IChatBubbleProps {
-  /** Message content */
-  content: string;
+import { AutoBeUserMessageContent } from "@autobe/interface";
+
+import { formatTime } from "../utils/time";
+import { OpenAIContent } from "./openai";
+
+/** Props interface for ChatBubble component */
+export interface IChatBubbleProps {
+  /** Message content - supports text, audio, file, and image types */
+  content: Array<AutoBeUserMessageContent | string>;
 
   /** Direction of the chat bubble - left or right */
   direction: "left" | "right";
@@ -10,17 +16,14 @@ interface IChatBubbleProps {
   assistantName?: string;
 }
 
+/** Props interface for content renderer functions */
+export interface IContentRendererProps {
+  /** Whether the bubble is positioned on the right side */
+  isRight: boolean;
+}
+
 const ChatBubble = (props: IChatBubbleProps) => {
   const { content, direction, timestamp, assistantName = "Assistant" } = props;
-
-  const formatTime = (isoString: string) => {
-    const date = new Date(isoString);
-    return date.toLocaleTimeString("ko-KR", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    });
-  };
 
   const isRight = direction === "right";
 
@@ -106,17 +109,7 @@ const ChatBubble = (props: IChatBubbleProps) => {
           />
 
           {/* Message content */}
-          <div
-            style={{
-              position: "relative",
-              zIndex: 10,
-              fontSize: "0.875rem",
-              lineHeight: "1.625",
-              whiteSpace: "pre-wrap",
-            }}
-          >
-            {content}
-          </div>
+          <OpenAIContent content={content} />
         </div>
       </div>
     </div>

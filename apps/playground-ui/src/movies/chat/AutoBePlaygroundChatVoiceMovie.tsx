@@ -20,6 +20,7 @@ export const AutoBePlaygroundChatVoiceMovie = (
         props.complete(file);
       },
     );
+    recorder.start();
     setMediaRecorder(recorder);
     setIsRecording(true);
   };

@@ -1,7 +1,4 @@
-import {
-  AutoBeUserMessageContent,
-  AutoBeUserMessageTextContent,
-} from "@autobe/interface";
+import { AutoBeUserMessageContent } from "@autobe/interface";
 
 import ChatBubble from "./common/ChatBubble";
 
@@ -12,10 +9,6 @@ interface IAutoBeUserMessageHistoryMovieProps {
 const AutoBeUserMessageMovie = (props: IAutoBeUserMessageHistoryMovieProps) => {
   const { message } = props;
 
-  const textContent = message.filter(
-    (v) => v.type === "text",
-  ) as AutoBeUserMessageTextContent[];
-
   return (
     <div
       style={{
@@ -24,14 +17,7 @@ const AutoBeUserMessageMovie = (props: IAutoBeUserMessageHistoryMovieProps) => {
         gap: 8,
       }}
     >
-      {textContent.map((content, index) => (
-        <ChatBubble
-          key={index}
-          content={content.text}
-          direction="right"
-          assistantName="You"
-        />
-      ))}
+      <ChatBubble content={message} direction="right" assistantName="You" />
     </div>
   );
 };

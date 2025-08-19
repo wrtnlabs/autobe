@@ -11,7 +11,7 @@ const AutoBeAssistantMessageMovie = (props: IAssistantMessageProps) => {
 
   return (
     <ChatBubble
-      content={text}
+      content={[text]}
       direction="left"
       timestamp={isoTimestamp}
       assistantName={assistantName}
