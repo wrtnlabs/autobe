@@ -6,7 +6,6 @@ import { OpenApi } from "@samchon/openapi";
 import { AutoBeCompilerInterfaceTemplate } from "../raw/AutoBeCompilerInterfaceTemplate";
 import { ArrayUtil } from "../utils/ArrayUtil";
 import { FilePrinter } from "../utils/FilePrinter";
-import { createMigrateApplication } from "./createMigrateApplication";
 
 /**
  * Custom Interface compiler that handles API specification and NestJS
@@ -35,8 +34,9 @@ export class AutoBeInterfaceCompiler implements IAutoBeInterfaceCompiler {
   public async write(
     document: AutoBeOpenApi.IDocument,
   ): Promise<Record<string, string>> {
-    const migrate: NestiaMigrateApplication =
-      createMigrateApplication(document);
+    const migrate: NestiaMigrateApplication = new NestiaMigrateApplication(
+      transformOpenApiDocument(document),
+    );
     const files: Record<string, string> = migrate.nest({
       keyword: true,
       simulate: true,

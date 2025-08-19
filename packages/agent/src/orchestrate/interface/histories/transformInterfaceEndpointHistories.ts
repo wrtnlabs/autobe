@@ -44,8 +44,6 @@ export const transformInterfaceEndpointHistories = (
           name: op.name,
           summary: op.summary,
         })),
-        null,
-        2,
       ),
       "```",
       "",
