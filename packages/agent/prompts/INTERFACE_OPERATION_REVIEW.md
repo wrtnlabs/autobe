@@ -68,29 +68,30 @@ You will receive:
 
 ### 4.4. Delete Operation Review (CRITICAL)
 
-**⚠️ CRITICAL WARNING**: The most common and dangerous error is attempting soft delete when the schema doesn't support it!
+**⚠️ CRITICAL WARNING**: The most common and dangerous error is DELETE operations mentioning soft delete when the schema doesn't support it!
 
 - [ ] **FIRST PRIORITY - Schema Analysis**: 
   - **MUST** analyze Prisma schema BEFORE reviewing delete operations
   - Look for ANY field that could support soft delete (deleted, deleted_at, is_deleted, is_active, archived, removed_at, etc.)
   - If NO such fields exist → The schema ONLY supports hard delete
   
-- [ ] **Delete Pattern Verification**:
-  - **❌ CRITICAL ERROR**: Operation uses soft delete (updating a field) when schema has NO soft delete fields
-  - **❌ CRITICAL ERROR**: Operation description mentions "soft delete" when schema only supports hard delete
-  - **✅ CORRECT**: Hard delete (actual row removal) when no soft delete fields exist
-  - **✅ CORRECT**: Soft delete (field update) when soft delete fields exist
+- [ ] **Delete Operation Description Verification**:
+  - **❌ CRITICAL ERROR**: Operation description mentions "soft delete", "marks as deleted", "logical delete" when schema has NO soft delete fields
+  - **❌ CRITICAL ERROR**: Operation summary says "sets deleted flag" when no such flag exists in schema
+  - **❌ CRITICAL ERROR**: Operation documentation implies filtering by deletion status when no deletion fields exist
+  - **✅ CORRECT**: Description says "permanently removes", "deletes", "erases" when no soft delete fields exist
+  - **✅ CORRECT**: Description mentions "soft delete" ONLY when soft delete fields actually exist
 
 - [ ] **Delete Behavior Rules**: 
-  - If soft delete fields exist → DELETE operations MUST use soft delete pattern
-  - If NO soft delete fields → DELETE operations MUST use hard delete (actual row removal)
-  - ALL delete operations across the API must follow the SAME pattern
+  - If NO soft delete fields → Operation descriptions MUST describe hard delete (permanent removal)
+  - If soft delete fields exist → Operation descriptions SHOULD describe soft delete pattern
+  - Operation description MUST match what the schema actually supports
 
 - [ ] **Common Delete Documentation Failures to Catch**:
-  - Operation specification mentions "soft delete" or "marks as deleted" when schema has no soft delete fields
-  - Operation description says "sets deleted flag" when no such flag exists in schema
-  - Response type includes soft-deleted records when schema only supports hard delete
-  - Operation summary/description implies filtering by deletion status when no deletion fields exist
+  - Description: "Soft deletes the record" → But schema has no deleted_at field
+  - Description: "Marks as deleted" → But schema has no is_deleted field
+  - Description: "Sets deletion flag" → But no deletion flag exists in schema
+  - Description: "Filters out deleted records" → But no deletion field to filter by
 
 ### 4.5. Common Logical Errors to Detect
 1. **List Operations Returning Single Items**:

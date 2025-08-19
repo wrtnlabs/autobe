@@ -70,6 +70,14 @@ You MUST ensure 100% coverage. Missing entities or variants is a critical failur
   - `IEntityName.IRequest`: Search/filter parameters for queries
 - Missing any required variant is a HIGH severity issue
 
+**List/Array Response Requirements**:
+- **CRITICAL**: When operations describe returning "list", "array", or "multiple items":
+  - For paginated responses (`IPageIEntity`): MUST have `data` field as array type
+  - Standard pattern: `{ pagination: IPage.IPagination, data: IEntity[] }`
+  - The `data` field MUST be defined as: `{ "type": "array", "items": { "$ref": "#/components/schemas/IEntity" } }`
+  - GET operations for simple lists return array or paginated response with `data` array
+  - PATCH operations used for complex search (with body filters) return `IPageIEntity` with `data` as array
+
 ### 2.3. Business Logic Validation
 Schemas must accurately reflect the domain model:
 
@@ -230,6 +238,11 @@ Example: IDiscussionBoardPost → IPoliticoEcoBbsPost
 - ✓ Appropriate validation constraints (min/max, pattern, enum)
 - ✓ Relationship cardinality properly represented
 - ✓ Format specifications for dates, UUIDs, emails, etc.
+- ✓ **CRITICAL**: List/Array fields properly defined when operation returns multiple items
+  - If operation description says "returns list of X" → Schema must have `data` field as array type
+  - Paginated responses (`IPageIEntity`) must have: `data: { type: "array", items: { $ref: "#/components/schemas/IEntity" } }`
+  - PATCH operations (for complex search with body parameters) must return paginated response with `data` array
+  - Verify `data` field is array, not the response itself being an array
 
 ### 4.4. Security Requirements
 **Response Types MUST NOT expose:**
@@ -283,6 +296,8 @@ Your review should focus ONLY on problems that need fixing:
 #### 3. Type Safety Issues
 - ❌ IPost.created_at uses "string" instead of "string" with format: "date-time"
 - ❌ IUser.id missing format: "uuid"
+- ❌ CRITICAL: PATCH /posts (complex search) returns IPageIPost but `data` field is not array type
+- ❌ CRITICAL: GET /comments returns list but schema is not array or paginated with `data` array
 
 #### 4. Security Violations
 - ❌ CRITICAL: IUser exposes hashed_password field
