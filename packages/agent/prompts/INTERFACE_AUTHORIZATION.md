@@ -53,7 +53,7 @@ These operations should be generated for every role if the basic authentication 
 - **Condition**: Role table has identity field + authentication field
 - **Path**: `/auth/{roleName}/join`
 - **Method**: `POST`
-- **Function Name**: `"signUp"`
+- **Function Name**: `"join"`
 - **Purpose**: Create new user account and issue initial JWT tokens
 - **Auth Required**: None (public)
 - **Response Body Requirement**: Must include `setHeaders` field with `{ Authorization: string }` structure
@@ -62,14 +62,14 @@ These operations should be generated for every role if the basic authentication 
 - **Condition**: Role table has authentication fields
 - **Path**: `/auth/{roleName}/login`
 - **Method**: `POST`
-- **Function Name**: `"signIn"`
+- **Function Name**: `"login"`
 - **Purpose**: Authenticate user and issue JWT tokens
 - **Auth Required**: None (public)
 
 #### Token Validation
 - **Path**: `/auth/{roleName}/validate`
 - **Method**: `POST`
-- **Function Name**: `"validateToken"`
+- **Function Name**: `"validate"`
 - **Purpose**: Validate JWT token and return authentication status
 - **Auth Required**: None (validates provided token)
 
@@ -89,7 +89,7 @@ These operations should be generated for every role if the basic authentication 
 - **Generate IF**: Schema has refresh token storage fields (e.g., `refreshToken`, `refresh_token`, `refreshTokenHash`)
 - **Path**: `/auth/{roleName}/refresh`
 - **Method**: `POST`
-- **Function Name**: `"refreshToken"`
+- **Function Name**: `"refresh"`
 - **Response Body Requirement**: Must include `setHeaders` field with `{ Authorization: string }` structure
 
 ### 4.2. Email Verification Operations
@@ -124,11 +124,11 @@ These operations should be generated for every role if the basic authentication 
 - Start with action verbs that clearly describe the operation
 - Make function names self-explanatory and business-oriented
 - Examples:
-  - `signUp` (not `register`)
-  - `signIn` (not `login`) 
-  - `refreshToken` (not `issue`)
-  - `requestPasswordReset` (not `resetPassword`)
-  - `confirmEmailVerification` (not `verifyEmail`)
+  - `join`
+  - `login`
+  - `refresh`
+  - `requestPasswordReset`
+  - `confirmEmailVerification`
 
 ### 5.3. Path vs Function Name Relationship
 - **Path**: Describes the HTTP resource and REST endpoint
@@ -141,9 +141,9 @@ These operations should be generated for every role if the basic authentication 
 
 | Endpoint Path | Function Name | Purpose |
 |---------------|---------------|---------|
-| `/auth/user/register` | `signUp` | User registration |
-| `/auth/user/login` | `signIn` | User authentication |  
-| `/auth/user/refresh` | `refreshToken` | Token refresh |
+| `/auth/user/register` | `join` | User registration |
+| `/auth/user/login` | `login` | User authentication |  
+| `/auth/user/refresh` | `refresh` | Token refresh |
 | `/auth/user/verify/email` | `requestEmailVerification` | Request email verification |
 | `/auth/user/verify/email/confirm` | `confirmEmailVerification` | Confirm email verification |
 | `/auth/user/password/reset` | `requestPasswordReset` | Request password reset |
@@ -212,7 +212,7 @@ Each operation must document:
 
 ### 8.2. SetHeaders Response Field Requirement
 
-For operations with function names `signIn` (login), `signUp` (registration) and `refreshToken` (token refresh), the response body schema MUST include a `setHeaders` field with the following structure:
+For operations with function names `login`, `join` and `refresh`, the response body schema MUST include a `setHeaders` field with the following structure:
 
 ```typescript
 /**
@@ -230,17 +230,17 @@ This field enables automatic header assignment for subsequent authenticated API 
 
 ## 9. Critical Requirements
 
-- **Essential Operations MANDATORY**: ALWAYS generate ALL 4 essential operations (signUp, signIn, validateToken, changePassword) for every role
+- **Essential Operations MANDATORY**: ALWAYS generate ALL 4 essential operations (join, login, validate, changePassword) for every role
 - **Schema-Driven Additions**: Add operations only for schema-supported features
 - **Field Verification**: Reference actual field names from the schema for additional features
 - **Never Skip Essentials**: Even if uncertain about schema fields, ALWAYS include the 4 core operations
 - **Proper Naming**: Ensure endpoint paths and function names follow conventions and are distinct
-- **SetHeaders Field Requirement**: `signUp` and `refreshToken` operations MUST include `setHeaders: { Authorization: string }` in response body
+- **SetHeaders Field Requirement**: `join` and `refresh` operations MUST include `setHeaders: { Authorization: string }` in response body
 - **Function Call Required**: Use `makeOperations()` with all generated operations
 
 ## 10. Implementation Strategy
 
-1. **ALWAYS Generate Essential Operations FIRST**: Create ALL 4 core authentication operations (signUp, signIn, validateToken, changePassword) for every role - this is MANDATORY
+1. **ALWAYS Generate Essential Operations FIRST**: Create ALL 4 core authentication operations (join, login, validate, changePassword) for every role - this is MANDATORY
 2. **Analyze Schema Fields**: Systematically scan for additional authentication capabilities
 3. **Generate Schema-Supported Operations**: Add operations for confirmed schema features
 4. **Apply Naming Conventions**: Ensure proper path and function naming
