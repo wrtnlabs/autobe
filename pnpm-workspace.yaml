@@ -1,24 +1,25 @@
 packages:
   - internals/website-examples
   - packages/*
-  - packages/vscode-extension/webview-ui
-  - packages/vscode-extension/worker
-  - packages/vscode-extension/interface
+  - apps/*
+  - apps/vscode-extension/webview-ui
+  - apps/vscode-extension/worker
+  - apps/vscode-extension/interface
   - test
   - website
 catalogs:
   agentica:
-    "@agentica/core": ^0.31.2
-    "@agentica/rpc": ^0.31.2
+    '@agentica/core': ^0.31.2
+    '@agentica/rpc': ^0.31.2
   samchon:
-    "@nestia/benchmark": ^7.3.3
-    "@nestia/core": ^7.3.3
-    "@nestia/e2e": ^7.3.3
-    "@nestia/editor": ^7.3.3
-    "@nestia/fetcher": ^7.3.3
-    "@nestia/migrate": ^7.3.3
-    "@nestia/sdk": ^7.3.3
-    "@samchon/openapi": ^4.7.1
+    '@nestia/benchmark': ^7.3.3
+    '@nestia/core': ^7.3.3
+    '@nestia/e2e': ^7.3.3
+    '@nestia/editor': ^7.3.3
+    '@nestia/fetcher': ^7.3.3
+    '@nestia/migrate': ^7.3.3
+    '@nestia/sdk': ^7.3.3
+    '@samchon/openapi': ^4.7.1
     embed-prisma: ^1.1.0
     embed-typescript: ^1.0.1
     prisma-markdown: ^3.0.0
@@ -31,5 +32,9 @@ catalogs:
     typescript: ~5.9.2
   libs:
     openai: ^5.12.2
-
 useNodeVersion: 22.15.0
+onlyBuiltDependencies:
+  - '@tailwindcss/oxide'
+  - '@vscode/vsce-sign'
+  - esbuild
+  - keytar
