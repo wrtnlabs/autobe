@@ -921,6 +921,37 @@ export namespace AutoBeOpenApi {
    * of OpenAPI v3.1, but a little bit shrunk to remove ambiguous and duplicated
    * expressions of OpenAPI v3.1 for the convenience, clarity, and AI
    * generation.
+   *
+   * ## CRITICAL: Union Type Expression
+   *
+   * In this type system, union types (including nullable types) MUST be
+   * expressed using the `IOneOf` structure. NEVER use array notation in the
+   * `type` field.
+   *
+   * ❌ **FORBIDDEN** - Array notation in type field:
+   *
+   * ```typescript
+   * {
+   *   "type": ["string", "null"] // NEVER DO THIS!
+   * }
+   * ```
+   *
+   * ✅ **CORRECT** - Using IOneOf for unions:
+   *
+   * ```typescript
+   * // For nullable string:
+   * {
+   *   oneOf: [{ type: "string" }, { type: "null" }];
+   * }
+   *
+   * // For string | number union:
+   * {
+   *   oneOf: [{ type: "string" }, { type: "number" }];
+   * }
+   * ```
+   *
+   * The `type` field in any schema object is a discriminator that identifies
+   * the schema type and MUST contain exactly one string value.
    */
   export type IJsonSchema =
     | IJsonSchema.IConstant
@@ -1207,7 +1238,29 @@ export namespace AutoBeOpenApi {
     export interface INull extends ISignificant<"null"> {}
 
     interface ISignificant<Type extends string> {
-      /** Discriminator value of the type. */
+      /**
+       * Discriminator value of the type.
+       *
+       * CRITICAL: This MUST be a SINGLE string value, NOT an array. The type
+       * field identifies the JSON Schema type and must be exactly one of:
+       * "boolean", "integer", "number", "string", "array", "object", or
+       * "null".
+       *
+       * ❌ INCORRECT: type: ["string", "null"] // This is WRONG! ✅ CORRECT:
+       * type: "string" // For nullable string, use oneOf instead
+       *
+       * If you need to express a nullable type (e.g., string | null), you MUST
+       * use the `IOneOf` structure:
+       *
+       * ```typescript
+       * {
+       *   "oneOf": [{ "type": "string" }, { "type": "null" }]
+       * }
+       * ```
+       *
+       * NEVER use array notation in the type field. The type field is a
+       * discriminator that accepts only a single string value.
+       */
       type: Type;
     }
   }

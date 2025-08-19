@@ -4,6 +4,7 @@ import {
   AutoBeOpenApi,
 } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
+import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
 import { IPointer } from "tstl";
 import typia from "typia";
 
@@ -48,19 +49,25 @@ export async function orchestrateInterfaceSchemasReview<
       return {};
     }
 
+    const content: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
+      (
+        OpenApiV3_1Emender.convertComponents({
+          schemas: pointer.value.content,
+        }) as AutoBeOpenApi.IComponents
+      ).schemas ?? {};
     ctx.dispatch({
       type: "interfaceSchemasReview",
       schemas: schemas,
       review: pointer.value.review,
       plan: pointer.value.plan,
-      content: pointer.value.content,
+      content,
       tokenUsage,
       step: ctx.state().analyze?.step ?? 0,
       total: progress.total,
       completed: ++progress.completed,
       created_at: new Date().toISOString(),
     } satisfies AutoBeInterfaceSchemasReviewEvent);
-    return pointer.value.content;
+    return content;
   } catch (error) {
     console.error("Error occurred during interface schemas review:", error);
     ++progress.completed;
