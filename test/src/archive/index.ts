@@ -104,7 +104,7 @@ const main = async (): Promise<void> => {
             apiKey: TestGlobal.env.API_KEY,
             baseURL: TestGlobal.env.BASE_URL,
           }),
-          model: vendorModoel,
+          model: vendorModel,
           semaphore,
         },
         config: {
