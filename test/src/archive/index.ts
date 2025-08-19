@@ -82,7 +82,7 @@ const main = async (): Promise<void> => {
   // PRELIMINARIES
   //----
   // CONFIGURATION
-  const vendorModoel: string =
+  const vendorModel: string =
     TestGlobal.getArguments("vendor")?.[0] ??
     TestGlobal.env.VENDOR_MODEL ??
     "gpt-4.1";
