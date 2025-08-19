@@ -9,6 +9,7 @@ import {
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
+import { TestHistory } from "../../../internal/TestHistory";
 import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_realize } from "./prepare_agent_realize";
 
@@ -193,6 +194,12 @@ export const validate_agent_realize_authorization_correct = async (
       "logs/histories.json": JSON.stringify(histories),
     },
   });
+
+  if (TestGlobal.archive)
+    await TestHistory.save({
+      [`${project}.realize.authorizations.json`]:
+        JSON.stringify(authorizations),
+    });
 
   const compiler: IAutoBeCompiler = await ctx.compiler();
   const compiled = await compiler.typescript.compile({ files });
