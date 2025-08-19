@@ -199,7 +199,8 @@ export const validate_agent_realize_authorization_correct = async (
 
   if (TestGlobal.archive)
     await TestHistory.save({
-      [`${project}.realize.authorizations.json`]: JSON.stringify(results),
+      [`${project}.realize.authorization-correct.json`]:
+        JSON.stringify(results),
     });
 
   const compiler: IAutoBeCompiler = await ctx.compiler();

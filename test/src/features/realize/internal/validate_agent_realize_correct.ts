@@ -47,7 +47,7 @@ export const validate_agent_realize_correct = async (
   const authorizations: AutoBeRealizeAuthorization[] = JSON.parse(
     await CompressUtil.gunzip(
       await fs.promises.readFile(
-        `${TestGlobal.ROOT}/assets/histories/${model}/${project}.realize.authorizations.json.gz`,
+        `${TestGlobal.ROOT}/assets/histories/${model}/${project}.realize.authorization-correct.json.gz`,
       ),
     ),
   );
