@@ -118,6 +118,7 @@ async function process<Model extends ILlmSchema.Model>(
             return [
               {
                 ...op,
+                // purpose: null,
                 path:
                   "/" +
                   [prefix, ...op.path.split("/")]
@@ -129,6 +130,7 @@ async function process<Model extends ILlmSchema.Model>(
 
           return op.authorizationRoles.map((role) => ({
             ...op,
+            // purpose: null,
             path:
               "/" +
               [prefix, role, ...op.path.split("/")]

@@ -33,6 +33,7 @@ export async function orchestrateInterfaceAuthorizations<
       return event.operations;
     }),
   );
+
   return operations.flat();
 }
 

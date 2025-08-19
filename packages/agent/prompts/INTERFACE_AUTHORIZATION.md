@@ -51,7 +51,7 @@ These operations should be generated for every role if the basic authentication 
 
 #### Registration
 - **Condition**: Role table has identity field + authentication field
-- **Path**: `/auth/{roleName}/register`
+- **Path**: `/auth/{roleName}/join`
 - **Method**: `POST`
 - **Function Name**: `"signUp"`
 - **Purpose**: Create new user account and issue initial JWT tokens
@@ -212,7 +212,7 @@ Each operation must document:
 
 ### 8.2. SetHeaders Response Field Requirement
 
-For operations with function names `signUp` (registration) and `refreshToken` (token refresh), the response body schema MUST include a `setHeaders` field with the following structure:
+For operations with function names `signIn` (login), `signUp` (registration) and `refreshToken` (token refresh), the response body schema MUST include a `setHeaders` field with the following structure:
 
 ```typescript
 /**
