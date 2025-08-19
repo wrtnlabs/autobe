@@ -5,6 +5,7 @@ import {
 } from "@autobe/interface";
 import { v4 } from "uuid";
 
+import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeTestScenarioArtifacts } from "../../test/structures/IAutoBeTestScenarioArtifacts";
 import { IAutoBeRealizeScenarioApplication } from "../structures/IAutoBeRealizeScenarioApplication";
@@ -40,7 +41,7 @@ export function transformRealizeCorrectHistories(props: {
     {
       id: v4(),
       type: "systemMessage",
-      text: `You are an expert TypeScript developer. You will review the code and correct`,
+      text: AutoBeSystemPromptConstant.REALIZE_CORRECT,
       created_at: new Date().toISOString(),
     },
   ];
