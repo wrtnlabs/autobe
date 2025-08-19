@@ -1,8 +1,8 @@
 import { AutoBeEvent } from "@autobe/interface";
+import { AutoBeStartEventMovie } from "@autobe/ui";
 
 import AssistantMessage from "../AutoBeAssistantMessage";
 import AutoBeUserMessage from "../AutoBeUserMessage";
-import AutoBeStartEvent from "./AutoBeStartEvent";
 import ProgressEventsMovie, {
   IProgressEventsMovieProps,
 } from "./ProgressEventsMovie";
@@ -66,7 +66,7 @@ const AutoBeEventsMovie = (props: IAutoBeEventsMovieProps) => {
     case "realizeAuthorizationStart":
     case "realizeTestStart":
     case "realizeStart": {
-      return <AutoBeStartEvent event={event} />;
+      return <AutoBeStartEventMovie event={event} />;
     }
     case "analyzeScenario": {
       return <AnalyzeScenario event={event} />;
