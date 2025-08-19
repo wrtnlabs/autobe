@@ -8,6 +8,7 @@ import {
   AutoBeRealizeAuthorization,
   AutoBeRealizeFunction,
   AutoBeRealizeWriteEvent,
+  IAutoBeCompiler,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
@@ -105,7 +106,7 @@ export const validate_agent_realize_correct = async (
     return;
   }
 
-  console.log(StringUtil.trim`
+  console.debug(StringUtil.trim`
     -----------------BEFORE CORRECTION-----------------
     Total Functions: ${functions.length}
     Error Functions: ${new Set(compilation.diagnostics.map((el) => el.file)).size}
@@ -156,10 +157,25 @@ export const validate_agent_realize_correct = async (
     }),
   );
 
+  const compiler: IAutoBeCompiler = await agent.getContext().compiler();
+  const controllers: Record<string, string> = await compiler.realize.controller(
+    {
+      document: agent.getContext().state().interface!.document,
+      functions,
+      authorizations,
+    },
+  );
+
+  const templateFiles = await compiler.realize.getTemplate();
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/${model}/${project}/realize/correct`,
     files: {
       ...(await agent.getFiles()),
+      ...Object.fromEntries(
+        functions.map((func) => [func.location, func.content]),
+      ),
+      ...controllers,
+      ...templateFiles,
       "logs/authorizations.json": JSON.stringify(authorizations),
       "logs/scenarios.json": JSON.stringify(scenarios),
     },
@@ -173,7 +189,15 @@ export const validate_agent_realize_correct = async (
     },
   );
 
-  console.log(StringUtil.trim`
+  console.debug(
+    JSON.stringify(
+      afterCorrection.type === "failure" ? afterCorrection.diagnostics : [],
+      null,
+      2,
+    ),
+  );
+
+  console.debug(StringUtil.trim`
     ------------------AFTER CORRECTION-----------------
     Total Functions: ${functions.length}
     Error Functions: ${afterCorrection.type === "failure" ? new Set(afterCorrection.diagnostics.map((el) => el.file)).size : 0}
