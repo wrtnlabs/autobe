@@ -1,0 +1,32 @@
+{
+  "name": "@autobe/ui",
+  "type": "commonjs",
+  "version": "0.18.0",
+  "description": "AutoBE UI",
+  "author": "Wrtn Technologies",
+  "homepage": "https://wrtnlabs.io/autobe",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wrtnlabs/autobe.git"
+  },
+  "bugs": {
+    "url": "https://github.com/wrtnlabs/autobe/issues"
+  },
+  "main": "src/index.ts",
+  "publishConfig": {
+    "main": "lib/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "prepack": "publint && pnpm build"
+  },
+  "devDependencies": {
+    "@autobe/interface": "workspace:*",
+    "@types/react": "catalog:ui",
+    "@types/react-dom": "catalog:ui",
+    "react": "catalog:ui",
+    "react-dom": "catalog:ui",
+    "typescript": "catalog:typescript"
+  }
+}

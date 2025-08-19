@@ -1,0 +1,9 @@
+{
+  "extends": "../../internals/config/tsconfig.json",
+  "compilerOptions": {
+    "outDir": "lib",
+    "rootDir": "src",
+    "jsx": "react-jsx"
+  },
+  "include": ["src/**/*"]
+}

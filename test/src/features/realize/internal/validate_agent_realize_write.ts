@@ -1,0 +1,120 @@
+import { orchestrateRealizeWrite } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeWrite";
+import { IAutoBeRealizeScenarioApplication } from "@autobe/agent/src/orchestrate/realize/structures/IAutoBeRealizeScenarioApplication";
+import { CompressUtil } from "@autobe/filesystem";
+import {
+  AutoBeEvent,
+  AutoBeEventSnapshot,
+  AutoBeRealizeAuthorization,
+  AutoBeRealizeWriteEvent,
+} from "@autobe/interface";
+import fs from "fs";
+import typia from "typia";
+
+import { TestFactory } from "../../../TestFactory";
+import { TestGlobal } from "../../../TestGlobal";
+import { TestHistory } from "../../../internal/TestHistory";
+import { TestLogger } from "../../../internal/TestLogger";
+import { TestProject } from "../../../structures/TestProject";
+import { prepare_agent_realize } from "./prepare_agent_realize";
+
+export const validate_agent_realize_write = async (
+  factory: TestFactory,
+  project: TestProject,
+) => {
+  if (TestGlobal.env.API_KEY === undefined) return false;
+
+  // PREPARE AGENT
+  const { agent } = await prepare_agent_realize(factory, project);
+  const start: Date = new Date();
+  const snapshots: AutoBeEventSnapshot[] = [];
+  const listen = (event: AutoBeEvent) => {
+    if (TestGlobal.archive) TestLogger.event(start, event);
+    snapshots.push({
+      event,
+      tokenUsage: agent.getTokenUsage().toJSON(),
+    });
+  };
+
+  agent.on("assistantMessage", listen);
+  for (const type of typia.misc.literals<AutoBeEvent.Type>())
+    if (type.startsWith("realize")) agent.on(type, listen);
+
+  const model: string = TestGlobal.getVendorModel();
+  const authorizations: AutoBeRealizeAuthorization[] = JSON.parse(
+    await CompressUtil.gunzip(
+      await fs.promises.readFile(
+        `${TestGlobal.ROOT}/assets/histories/${model}/${project}.realize.authorization-correct.json.gz`,
+      ),
+    ),
+  );
+
+  const scenarios: IAutoBeRealizeScenarioApplication.IProps[] = JSON.parse(
+    await CompressUtil.gunzip(
+      await fs.promises.readFile(
+        `${TestGlobal.ROOT}/assets/histories/${model}/${project}.realize.scenarios.json.gz`,
+      ),
+    ),
+  );
+
+  const progress = { total: scenarios.length, completed: 0 };
+  const writes: (AutoBeRealizeWriteEvent | null)[] = await Promise.all(
+    scenarios.map(async (scenario) => {
+      const authorization = authorizations.find(
+        (a) => a.role.name === scenario.decoratorEvent?.role.name,
+      );
+
+      try {
+        const write: AutoBeRealizeWriteEvent = await orchestrateRealizeWrite(
+          agent.getContext(),
+          {
+            authorization: authorization ?? null,
+            progress,
+            scenario,
+          },
+        );
+
+        return write;
+      } catch (err) {
+        return null;
+      }
+    }),
+  );
+
+  const locations = writes.filter((w) => w !== null).map((el) => el.location);
+  const rejected = scenarios.filter((s) => !locations.includes(s.location));
+
+  const retried = await Promise.all(
+    rejected.map(async (scenario) => {
+      const authorization = authorizations.find(
+        (a) => a.role.name === scenario.decoratorEvent?.role.name,
+      );
+
+      try {
+        const write: AutoBeRealizeWriteEvent = await orchestrateRealizeWrite(
+          agent.getContext(),
+          {
+            authorization: authorization ?? null,
+            progress,
+            scenario,
+          },
+        );
+
+        return write;
+      } catch (err) {
+        return null;
+      }
+    }),
+  );
+
+  if (TestGlobal.archive)
+    await TestHistory.save({
+      [`${project}.realize.writes.json`]: JSON.stringify(
+        [...writes, ...retried].filter((w) => w !== null),
+      ),
+    });
+};
+
+export interface IProgress {
+  total: number;
+  completed: number;
+}

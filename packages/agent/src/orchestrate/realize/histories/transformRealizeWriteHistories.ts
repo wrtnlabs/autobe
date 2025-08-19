@@ -132,7 +132,6 @@ export const transformRealizeWriteHistories = (props: {
         .replaceAll(`{artifacts_dto}`, JSON.stringify(props.artifacts.dto))
         .replaceAll(`{input}`, input),
     },
-
     {
       id: v4(),
       created_at: new Date().toISOString(),

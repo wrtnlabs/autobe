@@ -1,0 +1,26 @@
+{
+  "name": "@autobe/vscode-extension/webview-ui",
+  "private": true,
+  "version": "0.18.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "packageManager": "pnpm@10.6.4",
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.11",
+    "@types/react": "catalog:ui",
+    "@types/react-dom": "catalog:ui",
+    "@types/vscode-webview": "^1.57.5",
+    "@autobe/vscode-extension/interface": "workspace:*",
+    "@autobe/interface": "workspace:*",
+    "react": "catalog:ui",
+    "react-dom": "catalog:ui",
+    "tailwindcss": "^4.1.11",
+    "typescript": "catalog:typescript",
+    "@autobe/ui": "workspace:^",
+    "vite": "catalog:ui"
+  }
+}

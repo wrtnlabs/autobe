@@ -78,7 +78,21 @@ const collect = async (): Promise<ITestFunction[]> => {
 };
 
 const main = async (): Promise<void> => {
-  // PREPARE AGENT FACTORY
+  //----
+  // PRELIMINARIES
+  //----
+  // CONFIGURATION
+  const vendorModel: string =
+    TestGlobal.getArguments("vendor")?.[0] ??
+    TestGlobal.env.VENDOR_MODEL ??
+    "gpt-4.1";
+  const semaphore: number = Number(
+    TestGlobal.env.SEMAPHORE ??
+      TestGlobal.getArguments("semaphore")?.[0] ??
+      "16",
+  );
+
+  // AGENT
   const tokenUsage: AutoBeTokenUsage = new AutoBeTokenUsage();
   const factory: TestFactory = {
     getTokenUsage: () => tokenUsage,
@@ -90,12 +104,8 @@ const main = async (): Promise<void> => {
             apiKey: TestGlobal.env.API_KEY,
             baseURL: TestGlobal.env.BASE_URL,
           }),
-          model: TestGlobal.env.VENDOR_MODEL ?? "gpt-4.1",
-          semaphore: Number(
-            TestGlobal.env.SEMAPHORE ??
-              TestGlobal.getArguments("semaphore")?.[0] ??
-              "16",
-          ),
+          model: vendorModel,
+          semaphore,
         },
         config: {
           locale: "en-US",
@@ -116,30 +126,43 @@ const main = async (): Promise<void> => {
     ) => new AutoBeCompiler(listener),
   };
 
+  //----
   // LIST UP TEST FUNCTIONS TO ARCHIVE
+  //----
   const testFunctions: ITestFunction[] = await collect();
   console.log(StringUtil.trim`
     -----------------------------------------------------------
       ARCHIVE PROGRAM
     -----------------------------------------------------------
+    Configurations
+    
+    - Vendor Model: ${vendorModel}
+    - Schema Model: ${TestGlobal.env.SCHEMA_MODEL ?? "chatgpt"}
+    - Semaphore: ${semaphore}
+
     List of functions to archive
   `);
   console.log("");
-  for (const tf of testFunctions) console.log(`- (${(tf.project, tf.step)})`);
+  for (const tf of testFunctions) console.log(`- (${tf.project}, ${tf.step})`);
   console.log("");
 
+  //----
   // DO ARCHIVE
+  //----
   TestGlobal.archive = true;
   console.log("Start archiving...");
   console.log("");
   for (const tf of testFunctions) {
-    console.log(`- (${tf.project}, ${tf.step})`);
+    console.log(StringUtil.trim`
+      -----------------------------------------------------------
+        ${tf.project}, ${tf.step}
+      -----------------------------------------------------------
+    `);
     const start: Date = new Date();
     try {
-      factory;
       await tf.execute(factory);
       console.log(
-        `  - Success: ${(Date.now() - start.getTime()).toLocaleString()} ms`,
+        `- Success: ${(Date.now() - start.getTime()).toLocaleString()} ms`,
       );
     } catch (error) {
       console.log("  - Error");
@@ -162,4 +185,5 @@ const main = async (): Promise<void> => {
 };
 main().catch((error) => {
   console.log(error);
+  process.exit(-1);
 });
