@@ -254,9 +254,6 @@ importers:
       '@autobe/rpc':
         specifier: workspace:^
         version: link:../../packages/rpc
-      '@autobe/ui':
-        specifier: workspace:^
-        version: link:../../packages/ui
       '@autobe/vscode-extension/interface':
         specifier: workspace:^
         version: link:interface
@@ -292,7 +289,7 @@ importers:
         version: 9.5.2(typescript@5.9.2)(webpack@5.101.0)
       tsdown:
         specifier: ^0.14.0
-        version: 0.14.0(typescript@5.9.2)
+        version: 0.14.0(publint@0.3.12)(typescript@5.9.2)
       typescript:
         specifier: catalog:typescript
         version: 5.9.2
@@ -320,6 +317,9 @@ importers:
       '@autobe/interface':
         specifier: workspace:*
         version: link:../../../packages/interface
+      '@autobe/ui':
+        specifier: workspace:^
+        version: link:../../../packages/ui
       '@autobe/vscode-extension/interface':
         specifier: workspace:*
         version: link:../interface
@@ -383,7 +383,7 @@ importers:
         version: 3.3.0
       tsdown:
         specifier: ^0.14.0
-        version: 0.14.0(typescript@5.9.2)
+        version: 0.14.0(publint@0.3.12)(typescript@5.9.2)
       typia:
         specifier: ^9.7.1
         version: 9.7.1(typescript@5.9.2)
@@ -1903,6 +1903,10 @@ packages:
 
   '@prisma/ts-builders@6.13.0':
     resolution: {integrity: sha512-/8AiAvzzTxZI1PKM7dFb8kO6f4BB6eW5HI2e854ZzGS0hCiz8/ksQ6KhNWXv+isF0jsqqh1ChVdhsJSj1Odk1g==}
+
+  '@publint/pack@0.1.2':
+    resolution: {integrity: sha512-S+9ANAvUmjutrshV4jZjaiG8XQyuJIZ8a4utWmN/vW1sgQ9IfBnPndwkmQYw53QmouOIytT874u65HEmu6H5jw==}
+    engines: {node: '>=18'}
 
   '@quansync/fs@0.1.4':
     resolution: {integrity: sha512-vy/41FCdnIalPTQCb2Wl0ic1caMdzGus4ktDp+gpZesQNydXcx8nhh8qB3qMPbGkictOTaXgXEUUfQEm8DQYoA==}
@@ -5234,6 +5238,10 @@ packages:
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
     hasBin: true
 
+  mri@1.2.0:
+    resolution: {integrity: sha512-tzzskb3bG8LvYGFF/mDTpq3jpI6Q9wc3LEmBaghu+DdCssd1FakN7Bc0hVNmEyGq1bq3RgfkCb3cmQLpNPOroA==}
+    engines: {node: '>=4'}
+
   ms@2.1.3:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
 
@@ -5716,6 +5724,11 @@ packages:
     resolution: {integrity: sha512-llQsMLSUDUPT44jdrU/O37qlnifitDP+ZwrmmZcoSKyLKvtZxpyV0n2/bD/N4tBAAZ/gJEdZU7KMraoK1+XYAg==}
     engines: {node: '>= 0.10'}
 
+  publint@0.3.12:
+    resolution: {integrity: sha512-1w3MMtL9iotBjm1mmXtG3Nk06wnq9UhGNRpQ2j6n1Zq7YAD6gnxMMZMIxlRPAydVjVbjSm+n0lhwqsD1m4LD5w==}
+    engines: {node: '>=18'}
+    hasBin: true
+
   pump@3.0.3:
     resolution: {integrity: sha512-todwxLMY7/heScKmntwQG8CXVkWUOdYxIvY2s0VWAAMh/nd8SoYiRaKjlr7+iCs984f2P8zvrfWcDDYVb73NfA==}
 
@@ -6040,6 +6053,10 @@ packages:
 
   rxjs@7.8.2:
     resolution: {integrity: sha512-dhKf903U/PQZY6boNNtAGdWbG85WAbjT/1xYoZIC7FAY0yWapOBQVsVrDl58W86//e1VpMNBtRV4MaXfdMySFA==}
+
+  sade@1.8.1:
+    resolution: {integrity: sha512-xal3CZX1Xlo/k4ApwCFrHVACi9fBqJ7V+mwhBsuf/1IOKbBy098Fex+Wa/5QMubw09pSZ/u8EY8PWgevJsXp1A==}
+    engines: {node: '>=6'}
 
   safe-buffer@5.1.2:
     resolution: {integrity: sha512-Gd2UZBJDkXlY7GbJxfsE8/nvKkUEU1G38c1siN6QP6a9PT9MmHB8GnpscSmMJSoF8LOIrt8ud/wPtojys4G6+g==}
@@ -8150,6 +8167,9 @@ snapshots:
     transitivePeerDependencies:
       - magicast
       - typescript
+
+  '@publint/pack@0.1.2':
+    optional: true
 
   '@quansync/fs@0.1.4':
     dependencies:
@@ -12137,6 +12157,9 @@ snapshots:
       yargs-parser: 21.1.1
       yargs-unparser: 2.0.0
 
+  mri@1.2.0:
+    optional: true
+
   ms@2.1.3: {}
 
   mute-stream@0.0.8: {}
@@ -12684,6 +12707,14 @@ snapshots:
       ipaddr.js: 1.9.1
     optional: true
 
+  publint@0.3.12:
+    dependencies:
+      '@publint/pack': 0.1.2
+      package-manager-detector: 1.3.0
+      picocolors: 1.1.1
+      sade: 1.8.1
+    optional: true
+
   pump@3.0.3:
     dependencies:
       end-of-stream: 1.4.5
@@ -13183,6 +13214,11 @@ snapshots:
   rxjs@7.8.2:
     dependencies:
       tslib: 2.8.1
+
+  sade@1.8.1:
+    dependencies:
+      mri: 1.2.0
+    optional: true
 
   safe-buffer@5.1.2: {}
 
@@ -13728,7 +13764,7 @@ snapshots:
 
   ts-pattern@5.6.2: {}
 
-  tsdown@0.14.0(typescript@5.9.2):
+  tsdown@0.14.0(publint@0.3.12)(typescript@5.9.2):
     dependencies:
       ansis: 4.1.0
       cac: 6.7.14
@@ -13745,6 +13781,7 @@ snapshots:
       tree-kill: 1.2.2
       unconfig: 7.3.2
     optionalDependencies:
+      publint: 0.3.12
       typescript: 5.9.2
     transitivePeerDependencies:
       - '@typescript/native-preview'
