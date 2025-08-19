@@ -34,13 +34,11 @@ export async function orchestrateInterfaceOperations<
     total: endpoints.length,
     completed: 0,
   };
-
   const operationsReviewProgress: IProgress = {
-    total: endpoints.length,
+    total: matrix.length,
     completed: 0,
   };
-
-  const operations: AutoBeOpenApi.IOperation[] = (
+  return (
     await Promise.all(
       matrix.map(async (it) => {
         const row: AutoBeOpenApi.IOperation[] = await divideAndConquer(
@@ -54,8 +52,6 @@ export async function orchestrateInterfaceOperations<
       }),
     )
   ).flat();
-
-  return operations;
 }
 
 async function divideAndConquer<Model extends ILlmSchema.Model>(
@@ -79,26 +75,27 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
     if (remained.empty() === true || unique.size() >= endpoints.length) break;
     const operations: AutoBeOpenApi.IOperation[] = await process(
       ctx,
-      Array.from(remained),
+      remained,
       operationsProgress,
     );
-    const newbie: AutoBeOpenApi.IOperation[] =
-      await orchestrateInterfaceOperationsReview(
-        ctx,
-        operations,
-        operationsReviewProgress,
-      );
-    for (const item of newbie) {
+    for (const item of operations) {
       unique.set(item, item);
       remained.erase(item);
     }
   }
+  const newbie: AutoBeOpenApi.IOperation[] =
+    await orchestrateInterfaceOperationsReview(
+      ctx,
+      unique.toJSON().map((it) => it.second),
+      operationsReviewProgress,
+    );
+  for (const item of newbie) unique.set(item, item);
   return unique.toJSON().map((it) => it.second);
 }
 
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  endpoints: AutoBeOpenApi.IEndpoint[],
+  endpoints: HashSet<AutoBeOpenApi.IEndpoint>,
   progress: IProgress,
 ): Promise<AutoBeOpenApi.IOperation[]> {
   const prefix: string = NamingConvention.camel(ctx.state().analyze!.prefix);
@@ -107,7 +104,10 @@ async function process<Model extends ILlmSchema.Model>(
   };
   const { tokenUsage } = await ctx.conversate({
     source: "interfaceOperations",
-    histories: transformInterfaceOperationHistories(ctx.state(), endpoints),
+    histories: transformInterfaceOperationHistories(
+      ctx.state(),
+      endpoints.toJSON(),
+    ),
     controller: createController({
       model: ctx.model,
       roles: ctx.state().analyze?.roles.map((it) => it.name) ?? [],
@@ -126,7 +126,6 @@ async function process<Model extends ILlmSchema.Model>(
                 authorizationRole: null,
               },
             ];
-
           return op.authorizationRoles.map((role) => ({
             ...op,
             path:
@@ -137,12 +136,17 @@ async function process<Model extends ILlmSchema.Model>(
             authorizationRole: role,
           }));
         });
-        progress.completed += matrix.flat().length;
-        progress.total += matrix
-          .filter((it) => it.length > 1)
-          .map((it) => it.length - 1)
-          .reduce((a, b) => a + b, 0);
         pointer.value.push(...matrix.flat());
+        progress.completed += matrix.flat().length;
+        progress.total += operations
+          .map((op) =>
+            endpoints.has(op)
+              ? op.authorizationRoles.length === 0
+                ? 0
+                : op.authorizationRoles.length - 1
+              : op.authorizationRoles.length,
+          )
+          .reduce((a, b) => a + b, 0);
       },
     }),
     enforceFunctionCall: true,
@@ -288,7 +292,6 @@ function createController<Model extends ILlmSchema.Model>(props: {
       }
       indexes.push(i);
     });
-
     if (errors.length !== 0)
       return {
         success: false,
