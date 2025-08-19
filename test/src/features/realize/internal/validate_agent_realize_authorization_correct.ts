@@ -156,12 +156,14 @@ export const validate_agent_realize_authorization_correct = async (
 
   const results: AutoBeRealizeAuthorization[] = await Promise.all(
     authorizations.map(async (authorization) => {
-      return await orchestrateRealizeAuthorizationCorrect(
+      const auth = await orchestrateRealizeAuthorizationCorrect(
         ctx,
         authorization,
         prismaClients,
         templateFiles,
       );
+
+      return auth;
     }),
   );
 
@@ -190,15 +192,14 @@ export const validate_agent_realize_authorization_correct = async (
       ...(await agent.getFiles()),
       ...files,
       "logs/events.json": JSON.stringify(events),
-      "logs/result.json": JSON.stringify(authorizations),
+      "logs/result.json": JSON.stringify(results),
       "logs/histories.json": JSON.stringify(histories),
     },
   });
 
   if (TestGlobal.archive)
     await TestHistory.save({
-      [`${project}.realize.authorizations.json`]:
-        JSON.stringify(authorizations),
+      [`${project}.realize.authorizations.json`]: JSON.stringify(results),
     });
 
   const compiler: IAutoBeCompiler = await ctx.compiler();
