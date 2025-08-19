@@ -167,15 +167,26 @@ export const validate_agent_realize_correct = async (
   );
 
   const templateFiles = await compiler.realize.getTemplate();
+  const files = await agent.getFiles();
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/${model}/${project}/realize/correct`,
     files: {
-      ...(await agent.getFiles()),
+      ...files,
+      ...Object.fromEntries(
+        authorizations.flatMap((authorization) => {
+          return [
+            [authorization.decorator.location, authorization.decorator.content],
+            [authorization.payload.location, authorization.payload.content],
+            [authorization.provider.location, authorization.provider.content],
+          ];
+        }),
+      ),
       ...Object.fromEntries(
         functions.map((func) => [func.location, func.content]),
       ),
       ...controllers,
       ...templateFiles,
+      "pnpm-workspace.yaml": "",
       "logs/authorizations.json": JSON.stringify(authorizations),
       "logs/scenarios.json": JSON.stringify(scenarios),
     },
