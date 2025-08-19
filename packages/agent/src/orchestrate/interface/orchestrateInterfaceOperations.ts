@@ -140,7 +140,7 @@ async function process<Model extends ILlmSchema.Model>(
         progress.completed += matrix.flat().length;
         progress.total += operations
           .map((op) =>
-            endpoints.has(op)
+            endpoints.has({ path: op.path, method: op.method })
               ? op.authorizationRoles.length === 0
                 ? 0
                 : op.authorizationRoles.length - 1
