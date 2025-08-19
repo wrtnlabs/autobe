@@ -483,6 +483,13 @@ Your plan should be specific and actionable:
 - Never accept actor IDs in requests
 - Validate authentication boundaries
 
+### 8.2. Ensure Implementation Compatibility
+- **CRITICAL**: Schemas must enable implementation of what operations describe
+- If operation description says "returns list of X" → Create schema with array type field (e.g., IPageIEntity with data: array)
+- If operation description mentions pagination → Create paginated response schema
+- If operation is PATCH for search → Create IPageIEntity response with data array
+- If operation is DELETE → Verify schema has fields to support described behavior (soft vs hard delete)
+
 ### 8.2. Maintain Completeness
 - Never omit entities or properties
 - Always include all necessary variant types
