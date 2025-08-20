@@ -15,6 +15,12 @@ export namespace TestLogger {
       content.push(
         `  - consent: ${event.assistantMessage} -> ${event.result?.type === "consent" ? event.result.message : "null"} `,
       );
+    if (event.type === "vendorValidate")
+      content.push(
+        `  - typia.validate<T>(): ${event.result.errors.map((e) => `(${e.expected}, ${e.path})`).join(", ")}`,
+      );
+    if (event.type === "vendorJsonParseError")
+      content.push(`  - invalid json: ${event.errorMessage}`);
     console.log(content.join("\n"));
   };
 }

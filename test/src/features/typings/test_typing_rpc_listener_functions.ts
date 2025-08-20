@@ -4,7 +4,11 @@ export const test_typing_rpc_listener_functions = () => {
   let x: keyof IAutoBeRpcListener = "analyzeComplete" as any;
   let y: Exclude<
     AutoBeEvent.Type,
-    "vendorRequest" | "vendorResponse" | "consentFunctionCall"
+    | "vendorRequest"
+    | "vendorResponse"
+    | "vendorValidate"
+    | "vendorJsonParseError"
+    | "consentFunctionCall"
   > = "interfaceSchemas" as any;
   x = y;
   y = x;

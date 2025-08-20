@@ -36,6 +36,8 @@ export const archive_realize = async (
   };
 
   agent.on("assistantMessage", listen);
+  agent.on("vendorJsonParseError", listen);
+  agent.on("vendorValidate", listen);
   for (const type of typia.misc.literals<AutoBeEvent.Type>())
     if (type.startsWith("realize")) agent.on(type, listen);
 

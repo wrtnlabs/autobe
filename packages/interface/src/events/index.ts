@@ -4,6 +4,10 @@ export * from "./AutoBeEvent";
 export * from "./AutoBeEventSource";
 export * from "./AutoBeUserMessageEvent";
 export * from "./AutoBeConsentFunctionCallEvent";
+export * from "./AutoBeVendorRequestEvent";
+export * from "./AutoBeVendorResponseEvent";
+export * from "./AutoBeVendorValidateEvent";
+export * from "./AutoBeVendorJsonParseError";
 
 /** @internal */
 export * from "./AutoBeEventSnapshot";

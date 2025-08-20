@@ -38,6 +38,8 @@ export const archive_prisma = async (
     });
   };
   agent.on("assistantMessage", listen);
+  agent.on("vendorJsonParseError", listen);
+  agent.on("vendorValidate", listen);
   for (const type of typia.misc.literals<AutoBeEvent.Type>())
     if (type.startsWith("prisma")) agent.on(type, listen);
 
