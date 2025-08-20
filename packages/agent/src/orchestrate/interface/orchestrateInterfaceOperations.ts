@@ -82,12 +82,15 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
       Array.from(remained),
       operationsProgress,
     );
-    const newbie: AutoBeOpenApi.IOperation[] =
-      await orchestrateInterfaceOperationsReview(
-        ctx,
-        operations,
-        operationsReviewProgress,
-      );
+    const newbie: AutoBeOpenApi.IOperation[] = operations.length
+      ? await orchestrateInterfaceOperationsReview(
+          ctx,
+          operations,
+          operationsReviewProgress,
+        )
+      : [];
+
+    console.log(JSON.stringify({ endpoints, operations, newbie }, null, 2));
     for (const item of newbie) {
       unique.set(item, item);
       remained.erase(item);
@@ -117,7 +120,12 @@ async function process<Model extends ILlmSchema.Model>(
           if (op.authorizationRoles.length === 0)
             return [
               {
-                ...op,
+                ...typia.assertEquals<
+                  Omit<
+                    IAutoBeInterfaceOperationApplication.IOperation,
+                    "authorizationRoles"
+                  >
+                >(op),
                 path:
                   "/" +
                   [prefix, ...op.path.split("/")]
@@ -128,7 +136,12 @@ async function process<Model extends ILlmSchema.Model>(
             ];
 
           return op.authorizationRoles.map((role) => ({
-            ...op,
+            ...typia.assertEquals<
+              Omit<
+                IAutoBeInterfaceOperationApplication.IOperation,
+                "authorizationRoles"
+              >
+            >(op),
             path:
               "/" +
               [prefix, role, ...op.path.split("/")]

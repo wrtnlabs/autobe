@@ -96,7 +96,99 @@ You will receive:
 - Redundant operations that duplicate functionality
 - Operations that serve no clear business purpose
 
-**Principle**: Approve only operations that serve actual business needs, not comprehensive CRUD for every database table.
+### 4.4.1. System-Generated Data Detection (HIGHEST PRIORITY)
+
+**🔴 CRITICAL**: Operations that try to manually create/modify/delete system-generated data indicate a fundamental misunderstanding of the system architecture.
+
+**System-Generated Data Characteristics**:
+- Created automatically as side effects of other operations
+- Managed by internal service logic, not direct API calls
+- Examples: audit logs, metrics, analytics events
+
+**How to Identify System-Generated Data**:
+
+1. **Requirements Language Analysis**:
+   - "THE system SHALL automatically [record/log/track]..." → System-generated
+   - "THE system SHALL capture..." → System-generated
+   - "When [user action], THE system SHALL log..." → System-generated
+   - "[Role] SHALL create/manage [entity]..." → User-managed (needs API)
+
+2. **Table Name Patterns** (indicators, not absolute rules):
+   - `*_audit_logs`, `*_audit_trails` → Usually system-generated
+   - `*_system_metrics`, `*_analytics_events` → Usually system-generated
+   - `*_logs` (without user context) → Usually system-generated
+   - BUT: Check context! `user_activity_logs` might be viewable by users
+
+3. **Data Flow Analysis**:
+   - If data is created as a result of other operations → System-generated
+   - If users never directly create/edit this data → System-generated
+   - If data is for compliance/audit only → System-generated
+
+**Common Anti-Patterns to Flag**:
+
+**🔴 SEVERE VIOLATIONS** (Indicates fundamental misunderstanding):
+- `POST /audit_trails` - Creating audit logs manually
+  - **Why Wrong**: Audit logs are created automatically when actions occur
+  - **Impact**: Breaks audit integrity, allows fake audit trails
+  
+- `PUT /system_metrics/{id}` - Editing system metrics
+  - **Why Wrong**: Metrics are collected automatically by monitoring
+  - **Impact**: Corrupts performance data, misleads operations team
+
+- `DELETE /analytics_events/{id}` - Deleting analytics data
+  - **Why Wrong**: Analytics are immutable historical records
+  - **Impact**: Destroys business intelligence data
+
+- `POST /user/{id}/login_history` - Manually creating login records
+  - **Why Wrong**: Login history is created automatically during authentication
+  - **Impact**: Allows fake login records, security vulnerability
+
+**🟡 ACCEPTABLE PATTERNS**:
+- `GET /audit_logs` - Viewing audit logs ✅
+- `PATCH /audit_logs` - Searching/filtering audit logs ✅
+- `GET /metrics/dashboard` - Viewing metrics dashboard ✅
+- `GET /analytics/reports` - Generating analytics reports ✅
+
+**Implementation Reality Check**:
+```typescript
+// This is how system-generated data actually works:
+class UserService {
+  async updateProfile(userId: string, data: UpdateProfileDto) {
+    // Update the user profile
+    const user = await this.prisma.user.update({ where: { id: userId }, data });
+    
+    // System AUTOMATICALLY creates audit log (no API needed!)
+    await this.auditService.log({
+      action: 'PROFILE_UPDATED',
+      userId,
+      changes: data,
+      timestamp: new Date()
+    });
+    
+    // System AUTOMATICALLY tracks metrics (no API needed!)
+    this.metricsService.increment('user.profile.updates');
+    
+    return user;
+  }
+}
+
+// There is NO API endpoint like:
+// POST /audit_logs { action: "PROFILE_UPDATED", ... } ❌ WRONG!
+```
+
+**Review Criteria**:
+- [ ] **No Manual Creation**: System-generated data should NEVER have POST endpoints
+- [ ] **No Manual Modification**: System-generated data should NEVER have PUT endpoints
+- [ ] **No Manual Deletion**: System-generated data should NEVER have DELETE endpoints
+- [ ] **Read-Only Access**: System-generated data MAY have GET/PATCH for viewing/searching
+- [ ] **Business Logic**: All system data generation happens in service/provider logic
+
+**How to Report These Issues**:
+When you find system-generated data manipulation:
+1. Mark as **CRITICAL ARCHITECTURAL VIOLATION**
+2. Explain that this data is generated automatically in service logic
+3. Recommend removing the operation entirely
+4. If viewing is needed, suggest keeping only GET/PATCH operations
 
 ### 4.5. Delete Operation Review (CRITICAL)
 
@@ -253,7 +345,17 @@ You will receive:
 
 ### Over-Engineering Detection (HIGHEST PRIORITY)
 [List operations that serve no clear business purpose or are for system-managed tables]
-Example: "Full CRUD operations for audit_log table - logs should be system-managed, not user-manipulated"
+
+#### System-Generated Data Violations
+**These operations indicate fundamental architectural misunderstanding:**
+
+Examples of CRITICAL violations:
+- "POST /admin/audit_trails - **WRONG**: Audit logs are created automatically when actions occur, not through manual APIs"
+- "PUT /admin/analytics_events/{id} - **WRONG**: Analytics are tracked automatically by the system during user interactions"
+- "DELETE /admin/service_metrics/{id} - **WRONG**: Metrics are collected by monitoring libraries, not managed via APIs"
+- "POST /login_history - **WRONG**: Login records are created automatically during authentication flow"
+
+**Why these are critical**: These operations show the Interface Agent doesn't understand that such data is generated internally by the application as side effects of other operations, NOT through direct API calls.
 
 ### Delete Pattern Violations (HIGH PRIORITY)
 [List any cases where operations attempt soft delete without schema support]

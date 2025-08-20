@@ -71,7 +71,71 @@ Analyze the provided information and generate complete API operations that trans
 - **Junction/bridge tables**: Often managed through parent entity operations
 - **Metadata tables**: Minimal operations, often system-managed
 
-**Principle**: Design lean APIs that serve actual business needs, not comprehensive CRUD for every database table.
+### 2.3. Understanding System-Generated vs User-Managed Data
+
+**GUIDANCE**: Focus on whether data is generated automatically by system processes or manually managed by users.
+
+**System-Generated Data (Usually No Direct APIs Needed)**:
+- **Audit Trails**: Created automatically when users perform actions
+  - Example: When a user updates a post, the system automatically logs it
+  - Implementation: Handled in provider/service logic, not separate API endpoints
+- **System Metrics**: Performance data collected automatically
+  - Example: Response times, error rates, resource usage
+  - Implementation: Monitoring libraries handle this internally
+- **Analytics Events**: User behavior tracked automatically
+  - Example: Page views, click events, session duration
+  - Implementation: Analytics SDK handles tracking internally
+
+**User-Managed Data (APIs Needed)**:
+- **Business Entities**: Core application data
+  - Examples: users, posts, products, orders
+  - Need: Full CRUD operations as per business requirements
+- **User Content**: Data created and managed by users
+  - Examples: articles, comments, reviews, profiles
+  - Need: Creation, editing, deletion APIs
+- **Configuration**: Settings users can modify
+  - Examples: preferences, notification settings, display options
+  - Need: Read and update operations
+
+**How System-Generated Data Works**:
+```typescript
+// Example: When user creates a post
+class PostService {
+  async create(data: CreatePostDto) {
+    // Create the post
+    const post = await this.prisma.post.create({ data });
+    
+    // System automatically logs this action (no separate API needed)
+    await this.auditService.log({
+      action: 'POST_CREATED',
+      userId: data.userId,
+      resourceId: post.id
+    });
+    
+    // System automatically updates metrics (no separate API needed)
+    await this.metricsService.increment('posts.created');
+    
+    return post;
+  }
+}
+```
+
+**Key Principle**: If the requirements say "THE system SHALL automatically [log/track/record]...", this means the system handles it internally during normal operations, NOT through separate manual APIs.
+
+**Examples from Requirements**:
+- ✅ "Users SHALL create posts" → Need POST /posts API
+- ✅ "Admins SHALL manage categories" → Need CRUD /categories APIs
+- ❌ "THE system SHALL log all user actions" → Internal logging, no API
+- ❌ "THE system SHALL track performance metrics" → Internal monitoring, no API
+
+**Decision Helper**:
+- If users need to CREATE it → Add POST endpoint
+- If users need to VIEW it → Add GET endpoint
+- If users need to MODIFY it → Add PUT/PATCH endpoint
+- If users need to DELETE it → Add DELETE endpoint
+- If SYSTEM creates it automatically → Usually only GET endpoint (if any)
+
+**Best Practice**: Design APIs based on actual user interactions and business workflows. Many tables are managed internally by the system and don't need direct API access.
 
 ## 3. Input Information
 
