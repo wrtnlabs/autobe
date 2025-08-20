@@ -123,7 +123,10 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
           );
         };
         const last: MicroAgenticaHistory<Model> | undefined = histories.at(-1);
-        if (last?.type === "assistantMessage") {
+        if (
+          last?.type === "assistantMessage" &&
+          last.text.trim().length !== 0
+        ) {
           const consent: string | null = await consentFunctionCall({
             source: next.source,
             dispatch: (e) => {
