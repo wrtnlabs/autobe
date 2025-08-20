@@ -183,13 +183,9 @@ function createController<Model extends ILlmSchema.Model>(props: {
       typia.validate<IAutoBeInterfaceSchemaApplication.IProps>(next);
     if (result.success === false) return result;
 
-    const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-      result.data.schemas;
-
     // Check all IAuthorized types
     const errors: IValidation.IError[] = [];
-
-    for (const [typeName, schema] of Object.entries(schemas)) {
+    for (const [typeName, schema] of Object.entries(result.data.schemas)) {
       if (!typeName.endsWith(".IAuthorized")) continue;
 
       // Check if it's an object type
@@ -223,7 +219,6 @@ function createController<Model extends ILlmSchema.Model>(props: {
         data: next,
       };
     }
-
     return result;
   };
 
