@@ -1,17 +1,12 @@
 import { orchestrateInterfaceOperations } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceOperations";
-import { CompressUtil, FileSystemIterator } from "@autobe/filesystem";
-import {
-  AutoBeEvent,
-  AutoBeEventSnapshot,
-  AutoBeOpenApi,
-} from "@autobe/interface";
+import { FileSystemIterator } from "@autobe/filesystem";
+import { AutoBeOpenApi } from "@autobe/interface";
 import fs from "fs";
 import typia from "typia";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
 import { TestHistory } from "../../../internal/TestHistory";
-import { TestLogger } from "../../../internal/TestLogger";
 import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_interface } from "./prepare_agent_interface";
 
@@ -23,26 +18,11 @@ export const validate_agent_interface_operations = async (
 
   // PREPARE ASSETS
   const { agent } = await prepare_agent_interface(factory, project);
-  const start: Date = new Date();
-  const snapshots: AutoBeEventSnapshot[] = [];
-  const listen = (event: AutoBeEvent) => {
-    if (TestGlobal.archive) TestLogger.event(start, event);
-    snapshots.push({
-      event,
-      tokenUsage: agent.getTokenUsage().toJSON(),
-    });
-  };
-
-  agent.on("assistantMessage", listen);
-  for (const type of typia.misc.literals<AutoBeEvent.Type>())
-    if (type.startsWith("interface")) agent.on(type, listen);
-
   const model: string = TestGlobal.getVendorModel();
   const endpoints: AutoBeOpenApi.IEndpoint[] = JSON.parse(
-    await CompressUtil.gunzip(
-      await fs.promises.readFile(
-        `${TestGlobal.ROOT}/assets/histories/${model}/${project}.interface.endpoints.json.gz`,
-      ),
+    await fs.promises.readFile(
+      `${TestGlobal.ROOT}/assets/histories/${model}/${project}.interface.endpoints.json`,
+      "utf8",
     ),
   );
   typia.assert(endpoints);

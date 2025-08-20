@@ -7,7 +7,6 @@ import typia from "typia";
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
 import { TestHistory } from "../../../internal/TestHistory";
-import { TestLogger } from "../../../internal/TestLogger";
 import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_interface } from "./prepare_agent_interface";
 
@@ -28,11 +27,6 @@ export const validate_agent_interface_schemas = async (
     ),
   );
   typia.assert(operations);
-
-  const start: Date = new Date();
-  agent.on("interfaceSchemas", (event) => {
-    if (TestGlobal.archive) TestLogger.event(start, event);
-  });
 
   // GENERATE COMPONENTS
   const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
