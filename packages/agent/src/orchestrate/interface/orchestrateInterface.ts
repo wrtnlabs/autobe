@@ -53,23 +53,11 @@ export const orchestrateInterface =
     const authorizations: AutoBeOpenApi.IOperation[] =
       await orchestrateInterfaceAuthorizations(ctx);
 
-    console.log(JSON.stringify(authorizations, null, 2));
-    console.log("----------------Authorizations----------------");
-
     // ENDPOINTS & OPERATIONS
     const endpoints: AutoBeOpenApi.IEndpoint[] =
       await orchestrateInterfaceEndpoints(ctx, init.groups, authorizations);
     const operations: AutoBeOpenApi.IOperation[] =
       await orchestrateInterfaceOperations(ctx, endpoints);
-
-    console.log(
-      JSON.stringify(
-        operations.filter((el) => el.authorizationType !== null),
-        null,
-        2,
-      ),
-    );
-    console.log("----------------Operations----------------");
 
     operations.push(...authorizations);
 
