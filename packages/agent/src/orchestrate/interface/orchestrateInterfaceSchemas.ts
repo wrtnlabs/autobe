@@ -15,6 +15,7 @@ import { divideArray } from "../../utils/divideArray";
 import { transformInterfaceSchemaHistories } from "./histories/transformInterfaceSchemaHistories";
 import { orchestrateInterfaceSchemasReview } from "./orchestrateInterfaceSchemasReview";
 import { IAutoBeInterfaceSchemaApplication } from "./structures/IAutoBeInterfaceSchemaApplication";
+import { validateAuthorizationSchema } from "./utils/validateAuthorizationSchema";
 
 export async function orchestrateInterfaceSchemas<
   Model extends ILlmSchema.Model,
@@ -170,12 +171,6 @@ function createController<Model extends ILlmSchema.Model>(props: {
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
-  const isObjectSchema = (
-    schema: AutoBeOpenApi.IJsonSchemaDescriptive,
-  ): schema is AutoBeOpenApi.IJsonSchemaDescriptive<AutoBeOpenApi.IJsonSchema.IObject> => {
-    return "type" in schema && schema.type === "object";
-  };
-
   const validate = (
     next: unknown,
   ): IValidation<IAutoBeInterfaceSchemaApplication.IProps> => {
@@ -185,40 +180,17 @@ function createController<Model extends ILlmSchema.Model>(props: {
 
     // Check all IAuthorized types
     const errors: IValidation.IError[] = [];
-    for (const [typeName, schema] of Object.entries(result.data.schemas)) {
-      if (!typeName.endsWith(".IAuthorized")) continue;
-
-      // Check if it's an object type
-      if (!isObjectSchema(schema)) {
-        errors.push({
-          path: `$input.schemas.${typeName}`,
-          expected: `AutoBeOpenApi.IJsonSchemaDescriptive<AutoBeOpenApi.IJsonSchema.IObject>`,
-          value: schema,
-          description: `${typeName} must be an object type for authorization responses`,
-        });
-        continue;
-      }
-
-      // Check if token property exists
-      schema.properties ??= {};
-      schema.properties["token"] = {
-        $ref: "#/components/schemas/IAuthorizationToken",
-        description: "JWT token information for authentication",
-      } as AutoBeOpenApi.IJsonSchemaDescriptive<AutoBeOpenApi.IJsonSchema.IReference>;
-
-      schema.required ??= [];
-      if (schema.required.includes("token") === false) {
-        schema.required.push("token");
-      }
-    }
-
-    if (errors.length !== 0) {
+    validateAuthorizationSchema({
+      errors,
+      schemas: result.data.schemas,
+      path: "$input.schemas",
+    });
+    if (errors.length !== 0)
       return {
         success: false,
         errors,
         data: next,
       };
-    }
     return result;
   };
 
