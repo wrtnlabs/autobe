@@ -165,26 +165,33 @@ For API operations where `authorizationType` is NOT null (`"login"`, `"join"`, o
   properties: {
     id: { type: "string", format: "uuid" },
     email: { type: "string", format: "email" },
-    access: {
-      type: "string",
-      description: "JWT access token for authenticated requests.\n\nThis token should be included in the Authorization header for subsequent authenticated API requests as \"Bearer {token}\"."
-    },
-    refresh: {
-      type: "string", 
-      description: "Refresh token for obtaining new access tokens.\n\nThis token can be used to request new access tokens when the current access token expires, extending the user's session."
-    },
-    expired_at: {
-      type: "string",
-      format: "date-time",
-      description: "Access token expiration timestamp.\n\nISO 8601 date-time string indicating when the access token will expire and can no longer be used for authentication."
-    },
-    refreshable_until: {
-      type: "string", 
-      format: "date-time",
-      description: "Refresh token expiration timestamp.\n\nISO 8601 date-time string indicating the latest time until which the refresh token can be used to obtain new access tokens."
+    token: {
+      type: "object",
+      properties: {
+        access: {
+          type: "string",
+          description: "JWT access token for authenticated requests.\n\nThis token should be included in the Authorization header for subsequent authenticated API requests as \"Bearer {token}\"."
+        },
+        refresh: {
+          type: "string", 
+          description: "Refresh token for obtaining new access tokens.\n\nThis token can be used to request new access tokens when the current access token expires, extending the user's session."
+        },
+        expired_at: {
+          type: "string",
+          format: "date-time",
+          description: "Access token expiration timestamp.\n\nISO 8601 date-time string indicating when the access token will expire and can no longer be used for authentication."
+        },
+        refreshable_until: {
+          type: "string", 
+          format: "date-time",
+          description: "Refresh token expiration timestamp.\n\nISO 8601 date-time string indicating the latest time until which the refresh token can be used to obtain new access tokens."
+        }
+      },
+      required: ["access", "refresh", "expired_at", "refreshable_until"],
+      description: "Authentication token information.\n\nContains access and refresh tokens along with their expiration timestamps for managing JWT-based authentication sessions."
     }
   },
-  required: ["id", "email", "access", "refresh", "expired_at", "refreshable_until"]
+  required: ["id", "email", "token"]
 }
 ```
 

@@ -474,7 +474,6 @@ Your plan should be specific and actionable:
     "properties": {
       "id": { "type": "string", "format": "uuid" },
       "email": { "type": "string", "format": "email" },
-      "name": { "type": "string" }
     },
     "required": ["id", "email", "name"]
   }
@@ -487,7 +486,6 @@ Your plan should be specific and actionable:
     "properties": {
       "id": { "type": "string", "format": "uuid" },
       "email": { "type": "string", "format": "email" },
-      "name": { "type": "string" },
       "token": {
         "type": "object",
         "properties": {
@@ -514,7 +512,7 @@ Your plan should be specific and actionable:
         "description": "Authentication token information.\n\nContains access and refresh tokens along with their expiration timestamps for managing JWT-based authentication sessions."
       }
     },
-    "required": ["id", "email", "name", "token"]
+    "required": ["id", "email", "token"]
   }
 }
 ```
