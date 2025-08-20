@@ -97,7 +97,27 @@ function createController<Model extends ILlmSchema.Model>(props: {
         return;
       }
 
-      if (op.responseBody?.typeName.split(".").at(1) !== "IAuthorized") {
+      op.responseBody?.description;
+      op.responseBody?.typeName;
+      if (op.responseBody === null) {
+        errors.push({
+          path: `$input.operations.${i}.responseBody`,
+          expected:
+            "Response body with I{RoleName(PascalCase)}.IAuthorized type is required",
+          value: op.responseBody,
+          description: [
+            "Response body is required for authentication operations.",
+            "",
+            "The responseBody must contain description and typeName fields.",
+            "typeName must be I{RoleName(PascalCase)}.IAuthorized",
+            "description must be a detailed description of the response body.",
+          ].join("\n"),
+        });
+
+        return;
+      }
+
+      if (!op.responseBody.typeName.endsWith(".IAuthorized")) {
         errors.push({
           path: `$input.operations.${i}.responseBody.typeName`,
           expected: `Type name must be I{RoleName(PascalCase)}.IAuthorized`,
