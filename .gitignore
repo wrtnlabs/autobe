@@ -20,3 +20,5 @@ internals/*/LICENSE
 .envrc
 .idea
 .DS_Store
+
+.claude
