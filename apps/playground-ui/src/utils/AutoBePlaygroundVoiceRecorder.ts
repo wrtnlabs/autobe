@@ -83,7 +83,7 @@ const convertToWav = async (audioBlob: Blob): Promise<Blob> => {
   let offset = 44;
   for (let i = 0; i < length; i++) {
     for (let channel = 0; channel < numberOfChannels; channel++) {
-      const sample = audioBuffer.getChannelData(channel)[i];
+      const sample = audioBuffer.getChannelData(channel)[i]!;
       const value = Math.max(-1, Math.min(1, sample));
       view.setInt16(offset, value * 0x7fff, true);
       offset += 2;

@@ -1,7 +1,9 @@
 import { AutoBeHistory } from "@autobe/interface";
+import {
+  AutoBeAssistantMessageMovie,
+  AutoBeUserMessageMovie,
+} from "@autobe/ui";
 
-import AutoBeAssistantMessage from "../AutoBeAssistantMessage";
-import AutoBeUserMessage from "../AutoBeUserMessage";
 import AutoBeAnalyzeHistoryComponent from "./AutoBeAnalyzeHistory";
 import AutoBeInterfaceHistoryComponent from "./AutoBeInterfaceHistory";
 import AutoBePrismaHistoryComponent from "./AutoBePrismaHistory";
@@ -18,14 +20,14 @@ const AutoBeHistoryMovie = (props: IAutoBeHistoryMovieProps) => {
   switch (history.type) {
     case "assistantMessage": {
       return (
-        <AutoBeAssistantMessage
+        <AutoBeAssistantMessageMovie
           text={history.text}
-          timestamp={history.created_at}
+          isoTimestamp={history.created_at}
         />
       );
     }
     case "userMessage":
-      return <AutoBeUserMessage message={history.contents} />;
+      return <AutoBeUserMessageMovie message={history.contents} />;
     case "analyze":
       return <AutoBeAnalyzeHistoryComponent history={history} />;
     case "prisma":
