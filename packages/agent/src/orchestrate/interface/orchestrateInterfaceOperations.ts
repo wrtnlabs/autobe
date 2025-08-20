@@ -48,7 +48,10 @@ export async function orchestrateInterfaceOperations<
           operationsProgress,
           operationsReviewProgress,
         );
-        return row;
+        return row.map((el) => ({
+          ...el,
+          authorizationType: null,
+        }));
       }),
     )
   ).flat();
