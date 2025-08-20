@@ -56,7 +56,7 @@ These operations should be generated for every role if the basic authentication 
 - **Function Name**: `"join"`
 - **Purpose**: Create new user account and issue initial JWT tokens
 - **Auth Required**: None (public)
-- **Response Body Requirement**: Must include `setHeaders` field with `{ Authorization: string }` structure
+- **Response Body Requirement**: Must include access token, refresh token, access token expiration, and refresh token expiration
 
 #### Login
 - **Condition**: Role table has authentication fields
@@ -65,6 +65,7 @@ These operations should be generated for every role if the basic authentication 
 - **Function Name**: `"login"`
 - **Purpose**: Authenticate user and issue JWT tokens
 - **Auth Required**: None (public)
+- **Response Body Requirement**: Must include access token, refresh token, access token expiration, and refresh token expiration
 
 #### Token Validation
 - **Path**: `/auth/{roleName}/validate`
@@ -81,30 +82,31 @@ These operations should be generated for every role if the basic authentication 
 - **Purpose**: Change user password with current password verification
 - **Auth Required**: Authenticated user
 
+#### Token Refresh
+- **Path**: `/auth/{roleName}/refresh`
+- **Method**: `POST`
+- **Function Name**: `"refresh"`
+- **Purpose**: Refresh JWT tokens using a valid refresh token
+- **Auth Required**: Valid refresh token
+- **Response Body Requirement**: Must include access token, refresh token, access token expiration, and refresh token expiration
+
 ## 4. Schema-Driven Operations (Generate Based on Available Fields)
 
 **Analyze the Prisma schema for the role's table and generate additional operations ONLY for features that are clearly supported by the schema fields:**
 
-### 4.1. Token Refresh Operations
-- **Generate IF**: Schema has refresh token storage fields (e.g., `refreshToken`, `refresh_token`, `refreshTokenHash`)
-- **Path**: `/auth/{roleName}/refresh`
-- **Method**: `POST`
-- **Function Name**: `"refresh"`
-- **Response Body Requirement**: Must include `setHeaders` field with `{ Authorization: string }` structure
-
-### 4.2. Email Verification Operations
+### 4.1. Email Verification Operations
 - **Generate IF**: Schema has email verification fields (e.g., `emailVerified`, `email_verified`, `verificationToken`, `verification_token`)
 - **Paths & Functions**: 
   - `/auth/{roleName}/verify/email` → `"requestEmailVerification"`
   - `/auth/{roleName}/verify/email/confirm` → `"confirmEmailVerification"`
 
-### 4.3. Password Reset Operations
+### 4.2. Password Reset Operations
 - **Generate IF**: Schema has password reset fields (e.g., `resetToken`, `reset_token`, `passwordResetToken`, `password_reset_token`)
 - **Paths & Functions**:
   - `/auth/{roleName}/password/reset` → `"requestPasswordReset"`
   - `/auth/{roleName}/password/reset/confirm` → `"confirmPasswordReset"`
 
-### 4.4. Advanced Token Management
+### 4.3. Advanced Token Management
 - **Generate IF**: Schema has advanced token tracking fields
 - **Possible Operations**:
   - `/auth/{roleName}/tokens/revoke-all` → `"revokeAllTokens"`
@@ -210,43 +212,36 @@ Each operation must document:
 
 **Paragraph 5**: Related operations and authentication workflow integration
 
-### 8.2. SetHeaders Response Field Requirement
+### 8.2. Token Response Requirements
 
-For operations with function names `login`, `join` and `refresh`, the response body schema MUST include a `setHeaders` field with the following structure:
+For operations with function names `login`, `join` and `refresh`, the response body must include the following token information:
 
-```typescript
-/**
- * Header setting value.
- *
- * The client can assign this value to {@link IConnection.headers}.
- *
- * However, this process is automatically performed when calling the
- * relevant SDK function.
- */
-setHeaders: { Authorization: string };
-```
+- **Access Token**: The JWT access token for authenticated requests
+- **Refresh Token**: The refresh token for obtaining new access tokens
+- **Access Token Expiration**: The expiration timestamp of the access token
+- **Refresh Token Expiration**: The expiration timestamp until which the refresh token can be used
 
-This field enables automatic header assignment for subsequent authenticated API calls.
+These fields enable complete JWT token lifecycle management for the client application.
 
 ## 9. Critical Requirements
 
-- **Essential Operations MANDATORY**: ALWAYS generate ALL 4 essential operations (join, login, validate, changePassword) for every role
+- **Essential Operations MANDATORY**: ALWAYS generate ALL 5 essential operations (join, login, validate, changePassword, refresh) for every role
 - **Schema-Driven Additions**: Add operations only for schema-supported features
 - **Field Verification**: Reference actual field names from the schema for additional features
 - **Never Skip Essentials**: Even if uncertain about schema fields, ALWAYS include the 4 core operations
 - **Proper Naming**: Ensure endpoint paths and function names follow conventions and are distinct
-- **SetHeaders Field Requirement**: `join` and `refresh` operations MUST include `setHeaders: { Authorization: string }` in response body
+- **Token Response Requirements**: `login`, `join`, and `refresh` operations MUST include access token, refresh token, and their respective expiration timestamps in response body
 - **Function Call Required**: Use `makeOperations()` with all generated operations
 
 ## 10. Implementation Strategy
 
-1. **ALWAYS Generate Essential Operations FIRST**: Create ALL 4 core authentication operations (join, login, validate, changePassword) for every role - this is MANDATORY
+1. **ALWAYS Generate Essential Operations FIRST**: Create ALL 5 core authentication operations (join, login, validate, changePassword, refresh) for every role - this is MANDATORY
 2. **Analyze Schema Fields**: Systematically scan for additional authentication capabilities
 3. **Generate Schema-Supported Operations**: Add operations for confirmed schema features
 4. **Apply Naming Conventions**: Ensure proper path and function naming
 5. **Document Rationale**: Explain which schema fields enable each operation
 6. **Function Call**: Submit complete authentication API
 
-**CRITICAL RULE**: Even if you're unsure about the schema or can only confirm basic authentication, you MUST still generate all 4 essential operations. Never generate only some of them.
+**CRITICAL RULE**: Even if you're unsure about the schema or can only confirm basic authentication, you MUST still generate all 5 essential operations. Never generate only some of them.
 
 Your implementation should provide a complete authentication system with essential operations plus all additional operations that the Prisma schema clearly supports, ensuring every operation can be fully implemented with the available database structure, with clear and consistent naming conventions that distinguish between REST endpoints and business function names.

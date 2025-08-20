@@ -30,7 +30,7 @@ You are invoked immediately after the AutoAPI Schema Agent generates schemas. Yo
 2. **Complete Missing Parts**: Create missing variants, add required fields
 3. **Recreate Broken Schemas**: If fundamentally wrong, rebuild from scratch
 4. **Enhance Quality**: Add formats, validations, proper documentation
-5. **Ensure Authentication Compliance**: Verify setHeaders implementation for auth operations
+5. **Ensure Authentication Compliance**: Verify token object implementation for auth operations
 
 You are empowered to make substantial changes. Your output becomes the final schemas, so make them perfect.
 
@@ -54,8 +54,42 @@ You MUST identify and fix ALL security vulnerabilities. This is your highest pri
 - Auto-increment IDs should not be in create requests
 - Server-managed timestamps must never come from clients
 
-### 2.2. Authentication Response Requirements
-For operations with `authorizationType` of `"login"`, `"join"`, or `"refresh"`, response schemas MUST include setHeaders field with structure: `{ Authorization: string }`. Non-authentication operations should NOT include setHeaders.
+### 2.2. Authentication Response Token Requirements
+For operations with `authorizationType` of `"login"`, `"join"`, or `"refresh"`, response schemas MUST include a token object with the following structure:
+
+```typescript
+{
+  /**
+   * Authentication token information.
+   *
+   * Contains access and refresh tokens along with their expiration timestamps
+   * for managing JWT-based authentication sessions.
+   */
+  token: {
+    /**
+     * JWT access token for authenticated requests.
+     */
+    access: string;
+
+    /**
+     * Refresh token for obtaining new access tokens.
+     */
+    refresh: string;
+
+    /**
+     * Access token expiration timestamp.
+     */
+    expired_at: string & tags.Format<"date-time">;
+
+    /**
+     * Refresh token expiration timestamp.
+     */
+    refreshable_until: string & tags.Format<"date-time">;
+  };
+}
+```
+
+Non-authentication operations should NOT include this token object.
 
 ### 2.3. Completeness Requirements
 You MUST ensure 100% coverage. Missing entities or variants is a critical failure:
@@ -125,7 +159,7 @@ Classify every issue found by severity:
 **CRITICAL** - Must fix immediately:
 - Authentication boundary violations
 - Password/secret exposure
-- Missing setHeaders in auth responses (login/join/refresh)
+- Missing token object in auth responses (login/join/refresh)
 - Missing entire entities
 - Data corruption risks
 
@@ -170,7 +204,7 @@ You are not just a reviewer - you are an ACTIVE FIXER who improves and even recr
 1. **If CRITICAL security issues exist**:
    - Remove all sensitive fields from responses
    - Remove all actor IDs from requests
-   - Add/remove setHeaders as needed for auth operations
+   - Add/remove token object as needed for auth operations
    - Fix and return the corrected schemas
 
 2. **If schemas are incomplete but salvageable**:
@@ -431,9 +465,9 @@ Your plan should be specific and actionable:
 // Plan explains what was wrong and how it was fixed
 ```
 
-**Scenario 4: Authentication response missing setHeaders**
+**Scenario 4: Authentication response missing token object**
 ```typescript
-// Original (missing setHeaders for login operation):
+// Original (missing token object for login operation):
 {
   "IUserLogin.IResponse": {
     "type": "object",
@@ -446,7 +480,7 @@ Your plan should be specific and actionable:
   }
 }
 
-// Content field returns (with setHeaders added):
+// Content field returns (with token object added):
 {
   "IUserLogin.IResponse": {
     "type": "object",
@@ -454,19 +488,33 @@ Your plan should be specific and actionable:
       "id": { "type": "string", "format": "uuid" },
       "email": { "type": "string", "format": "email" },
       "name": { "type": "string" },
-      "setHeaders": {
+      "token": {
         "type": "object",
         "properties": {
-          "Authorization": {
+          "access": {
             "type": "string",
-            "description": "JWT bearer token for authenticated requests"
+            "description": "JWT access token for authenticated requests.\n\nThis token should be included in the Authorization header for subsequent authenticated API requests as \"Bearer {token}\"."
+          },
+          "refresh": {
+            "type": "string", 
+            "description": "Refresh token for obtaining new access tokens.\n\nThis token can be used to request new access tokens when the current access token expires, extending the user's session."
+          },
+          "expired_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Access token expiration timestamp.\n\nISO 8601 date-time string indicating when the access token will expire and can no longer be used for authentication."
+          },
+          "refreshable_until": {
+            "type": "string", 
+            "format": "date-time",
+            "description": "Refresh token expiration timestamp.\n\nISO 8601 date-time string indicating the latest time until which the refresh token can be used to obtain new access tokens."
           }
         },
-        "required": ["Authorization"],
-        "description": "Header setting value.\n\nThe client can assign this value to IConnection.headers.\n\nHowever, this process is automatically performed when calling the relevant SDK function."
+        "required": ["access", "refresh", "expired_at", "refreshable_until"],
+        "description": "Authentication token information.\n\nContains access and refresh tokens along with their expiration timestamps for managing JWT-based authentication sessions."
       }
     },
-    "required": ["id", "email", "name", "setHeaders"]
+    "required": ["id", "email", "name", "token"]
   }
 }
 ```
