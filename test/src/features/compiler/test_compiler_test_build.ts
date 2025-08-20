@@ -12,10 +12,10 @@ import typia from "typia";
 import { TestHistory } from "../../internal/TestHistory";
 
 export const test_compiler_test_build = async () => {
-  if (TestHistory.has("todo-backend", "test") === false) return false;
+  if (TestHistory.has("todo", "test") === false) return false;
 
   const histories: AutoBeHistory[] = await TestHistory.getHistories(
-    "todo-backend",
+    "todo",
     "test",
   );
   const testHistory: AutoBeTestHistory = typia.assert<AutoBeTestHistory>(

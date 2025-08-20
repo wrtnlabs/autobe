@@ -17,7 +17,8 @@ export namespace TestLogger {
       );
     if (event.type === "jsonValidateError")
       content.push(
-        `  - typia.validate<T>(): ${event.result.errors.map((e) => `(${e.expected}, ${e.path})`).join(", ")}`,
+        "  - typia.validate<T>()",
+        ...event.result.errors.map((v) => `    - ${v.path}: ${v.expected}`),
       );
     if (event.type === "jsonParseError")
       content.push(`  - invalid json: ${event.errorMessage}`);

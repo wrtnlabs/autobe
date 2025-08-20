@@ -56,7 +56,7 @@ const createMockAgent = async (
 
   const load = async <T>(title: string): Promise<T | null> => {
     const vendor: string = params.get("vendor") ?? "openai/gpt-4.1";
-    const type: string = params.get("type") ?? "bbs-backend";
+    const type: string = params.get("type") ?? "bbs";
     const location: string = `${ROOT}/test/assets/histories/${vendor}/${type}.${title}.json.gz`;
     try {
       const compressed: Buffer = await fs.promises.readFile(location);
@@ -74,7 +74,7 @@ const createMockAgent = async (
     test: await load("test.snapshots"),
     realize: await load("realize.snapshots"),
   };
-  
+
   return new AutoBeMockAgent({
     compiler: () => compiler,
     preset,

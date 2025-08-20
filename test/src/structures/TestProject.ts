@@ -1,1 +1,1 @@
-export type TestProject = "bbs-backend" | "shopping-backend" | "todo-backend";
+export type TestProject = "todo" | "bbs" | "shopping";

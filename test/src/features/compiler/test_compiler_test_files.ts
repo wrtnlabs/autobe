@@ -8,7 +8,7 @@ import { TestGlobal } from "../../TestGlobal";
 import { TestHistory } from "../../internal/TestHistory";
 
 export const test_compiler_test_files = async () => {
-  if (TestHistory.has("todo-backend", "test") === false) return false;
+  if (TestHistory.has("todo", "test") === false) return false;
 
   const agent: AutoBeAgent<"chatgpt"> = new AutoBeAgent({
     model: "chatgpt",
@@ -17,7 +17,7 @@ export const test_compiler_test_files = async () => {
       model: "gpt-4.1",
     },
     compiler: (listener) => new AutoBeCompiler(listener),
-    histories: await TestHistory.getHistories("todo-backend", "test"),
+    histories: await TestHistory.getHistories("todo", "test"),
   });
   const files: Record<string, string> = await agent.getFiles();
   const root: string = `${TestGlobal.ROOT}/results/compiler.test.files`;

@@ -47,8 +47,7 @@ export async function orchestrateInterfaceSchemas<
   const x: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
     roles.length > 0
       ? {
-          IAuthorizationToken:
-            authTokenSchema.schema as AutoBeOpenApi.IJsonSchemaDescriptive,
+          IAuthorizationToken: authTokenSchema,
         }
       : {};
   for (const y of await Promise.all(
@@ -67,6 +66,7 @@ export async function orchestrateInterfaceSchemas<
   )) {
     Object.assign(x, y);
   }
+  if (x.IAuthorizationToken) x.IAuthorizationToken = authTokenSchema;
   return x;
 }
 
@@ -230,7 +230,19 @@ type Validator = (
   input: unknown,
 ) => IValidation<IAutoBeInterfaceSchemaApplication.IProps>;
 
-const authTokenSchema = typia.json.schema<{
+/**
+ * Authorization token response structure.
+ *
+ * This interface defines the structure of the authorization token response
+ * returned after successful user authentication. It contains both access and
+ * refresh tokens along with their expiration information.
+ *
+ * This token structure is automatically included in API schemas when the system
+ * detects authorization roles in the requirements analysis phase. It provides a
+ * standard format for JWT-based authentication across the generated backend
+ * applications.
+ */
+interface IAuthorizationToken {
   /**
    * JWT access token for authenticated requests.
    *
@@ -262,4 +274,8 @@ const authTokenSchema = typia.json.schema<{
    * refresh token can be used to obtain new access tokens.
    */
   refreshable_until: string & tags.Format<"date-time">;
-}>();
+}
+
+const authTokenSchema: AutoBeOpenApi.IJsonSchemaDescriptive =
+  typia.json.schema<IAuthorizationToken>().components.schemas!
+    .IAuthorizationToken as AutoBeOpenApi.IJsonSchemaDescriptive;

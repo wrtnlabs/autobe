@@ -4,5 +4,5 @@ import { validate_agent_realize_authorization_correct } from "./internal/validat
 export const test_agent_realize_authorization_correct = async (
   factory: TestFactory,
 ) => {
-  await validate_agent_realize_authorization_correct(factory, "bbs-backend");
+  await validate_agent_realize_authorization_correct(factory, "bbs");
 };

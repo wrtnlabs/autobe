@@ -11,10 +11,10 @@ import { TestGlobal } from "../../TestGlobal";
 import { TestHistory } from "../../internal/TestHistory";
 
 export const test_compiler_prisma_sqlite = async () => {
-  if (TestHistory.has("todo-backend", "prisma") === false) return false;
+  if (TestHistory.has("todo", "prisma") === false) return false;
 
   const histories: AutoBeHistory[] = await TestHistory.getHistories(
-    "todo-backend",
+    "todo",
     "prisma",
   );
   const prisma: AutoBePrismaHistory | undefined = histories.find(
