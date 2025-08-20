@@ -7,7 +7,7 @@ import {
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
 import { IPointer } from "tstl";
-import typia from "typia";
+import typia, { tags } from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
@@ -40,7 +40,10 @@ export async function orchestrateInterfaceSchemas<
     total: matrix.length,
     completed: 0,
   };
-  const x: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
+  const x: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
+    IAuthorizationToken:
+      authTokenSchema as unknown as AutoBeOpenApi.IJsonSchemaDescriptive,
+  };
   for (const y of await Promise.all(
     matrix.map(async (it) => {
       const row: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
@@ -190,3 +193,10 @@ const collection = {
   deepseek: claude,
   "3.1": claude,
 };
+
+const authTokenSchema = typia.json.schema<{
+  access: string;
+  refresh: string;
+  expired_at: string & tags.Format<"date-time">;
+  refreshable_until: string & tags.Format<"date-time">;
+}>();

@@ -1,0 +1,1 @@
+{"version":3,"file":"jsonc-CE_RJIao.mjs","names":[],"sources":["../../../../node_modules/.pnpm/confbox@0.2.2/node_modules/confbox/dist/jsonc.mjs"],"sourcesContent":["import\"./shared/confbox.DA7CpUDY.mjs\";export{p as parseJSONC,s as stringifyJSONC}from\"./shared/confbox.DnMsyigM.mjs\";\n"],"x_google_ignoreList":[0],"mappings":";;;;;;wBAAqH"}
