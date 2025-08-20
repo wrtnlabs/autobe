@@ -101,7 +101,6 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
         void props
           .dispatch({
             ...event,
-            type: "jsonParseError",
             source: next.source,
           })
           .catch(() => {});
