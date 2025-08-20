@@ -11,6 +11,10 @@ export namespace TestLogger {
       content.push(
         `  - token usage: (input: ${event.tokenUsage.input.total.toLocaleString()}, output: ${event.tokenUsage.output.total.toLocaleString()})`,
       );
+    if (event.type === "consentFunctionCall")
+      content.push(
+        `  - consent: ${event.assistantMessage} -> ${event.result?.type === "consent" ? event.result.message : "null"} `,
+      );
     console.log(content.join("\n"));
   };
 }

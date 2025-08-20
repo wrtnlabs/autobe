@@ -3,6 +3,7 @@ export * from "./AutoBeAssistantMessageEvent";
 export * from "./AutoBeEvent";
 export * from "./AutoBeEventSource";
 export * from "./AutoBeUserMessageEvent";
+export * from "./AutoBeConsentFunctionCallEvent";
 
 /** @internal */
 export * from "./AutoBeEventSnapshot";

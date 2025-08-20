@@ -35,9 +35,11 @@ import { v4 } from "uuid";
 import { AutoBeContext } from "../context/AutoBeContext";
 import { AutoBeState } from "../context/AutoBeState";
 import { AutoBeTokenUsage } from "../context/AutoBeTokenUsage";
+import { AutoBeTokenUsageComponent } from "../context/AutoBeTokenUsageComponent";
 import { IAutoBeApplication } from "../context/IAutoBeApplication";
 import { IAutoBeConfig } from "../structures/IAutoBeConfig";
 import { IAutoBeVendor } from "../structures/IAutoBeVendor";
+import { consentFunctionCall } from "./consentFunctionCall";
 
 export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
   model: Model;
@@ -123,28 +125,74 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
         .record(tokenUsage, [
           STAGES.find((stage) => next.source.startsWith(stage)) ?? "analyze",
         ]);
+
       if (
-        next.enforceFunctionCall === true &&
-        histories.every((h) => h.type !== "execute")
+        true === next.enforceFunctionCall &&
+        false ===
+          histories.some((h) => h.type === "execute" && h.success === true)
       ) {
-        console.log({
-          source: next.source,
-          title: "function calling failed",
-          types: histories.map((h) => h.type),
-          assistantMessage:
-            histories.at(-1)?.type === "assistantMessage"
-              ? histories.at(-1)
-              : null,
-          validate: validates.at(-1),
-          parse: parseErrors.at(-1),
-        });
-        throw new Error(
-          `Failed to function calling in the ${next.source} step`,
-        );
+        const failure = () => {
+          console.log({
+            source: next.source,
+            title: "function calling failed",
+            types: histories.map((h) => h.type),
+            assistantMessage:
+              histories.at(-1)?.type === "assistantMessage"
+                ? histories.at(-1)
+                : null,
+            validate: validates.at(-1),
+            parse: parseErrors.at(-1),
+          });
+          throw new Error(
+            `Failed to function calling in the ${next.source} step`,
+          );
+        };
+
+        const last: MicroAgenticaHistory<Model> | undefined = histories.at(-1);
+        if (last?.type === "assistantMessage") {
+          const consent: string | null = await consentFunctionCall({
+            source: next.source,
+            dispatch: (e) => {
+              props.dispatch(e).catch(() => {});
+            },
+            config: props.config,
+            vendor: props.vendor,
+            assistantMessage: last.text,
+          });
+          if (consent !== null) {
+            const newHistories: MicroAgenticaHistory<Model>[] =
+              await agent.conversate(consent);
+            const newTokenUsage: IAutoBeTokenUsageJson.IComponent = agent
+              .getTokenUsage()
+              .toJSON().aggregate;
+            props
+              .usage()
+              .record(
+                AutoBeTokenUsageComponent.minus(
+                  new AutoBeTokenUsageComponent(newTokenUsage),
+                  new AutoBeTokenUsageComponent(tokenUsage),
+                ),
+                [
+                  STAGES.find((stage) => next.source.startsWith(stage)) ??
+                    "analyze",
+                ],
+              );
+            if (
+              newHistories.some(
+                (h) => h.type === "execute" && h.success === true,
+              )
+            )
+              return {
+                histories: newHistories,
+                tokenUsage: newTokenUsage,
+              };
+          }
+        }
+        failure();
       }
       return { histories, tokenUsage };
     };
-    if (next.enforceFunctionCall === true) return forceRetry(() => execute());
+    if (next.enforceFunctionCall === true) return forceRetry(execute);
     else return execute();
   },
 });
