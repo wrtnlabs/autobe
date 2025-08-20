@@ -71,7 +71,7 @@ export const consentFunctionCall = async (props: {
   if (pointer.value === null) {
     const last: MicroAgenticaHistory<"chatgpt"> | undefined =
       histories[histories.length - 1];
-    if (last.type === "assistantMessage")
+    if (last?.type === "assistantMessage")
       pointer.value = {
         type: "assistantMessage",
         message: last.text,
@@ -84,7 +84,6 @@ export const consentFunctionCall = async (props: {
     result: pointer.value,
     created_at: new Date().toISOString(),
   });
-  console.log("consent", props.assistantMessage, pointer.value);
   return pointer.value?.type === "consent" ? pointer.value.message : null;
 };
 
