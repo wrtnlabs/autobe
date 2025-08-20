@@ -66,7 +66,39 @@ You will receive:
 - [ ] **Parameter Usage**: Path parameters are actually used in the operation
 - [ ] **Search vs Single**: Search operations return collections, single retrieval returns one item
 
-### 4.4. Delete Operation Review (CRITICAL)
+### 4.4. Operation Volume Assessment (CRITICAL)
+
+**⚠️ CRITICAL WARNING**: Excessive operation generation can severely impact system performance and complexity!
+
+**Volume Calculation Check**:
+- Calculate total generated operations = (Number of operations) × (Average authorizationRoles.length)
+- Flag if total exceeds reasonable business needs
+- Example: 105 operations with 3 roles each = 315 actual generated operations
+
+**Over-Engineering Detection**:
+- [ ] **Unnecessary CRUD**: NOT every table requires full CRUD operations
+- [ ] **Auxiliary Tables**: Operations for tables that are managed automatically (snapshots, logs, audit trails)
+- [ ] **Metadata Operations**: Direct manipulation of system-managed metadata tables
+- [ ] **Junction Tables**: Full CRUD for tables that should be managed through parent entities
+- [ ] **Business Relevance**: Operations that don't align with real user workflows
+
+**Table Operation Assessment Guidelines**:
+- **Core business entities**: Full CRUD typically justified
+- **Snapshot/audit tables**: Usually no direct operations needed (managed by main table operations)
+- **Log/history tables**: Read-only operations at most, often none needed
+- **Junction/bridge tables**: Often managed through parent entity operations
+- **Metadata tables**: Minimal operations, often system-managed
+
+**Red Flags for Over-Engineering**:
+- Every single database table has full CRUD operations
+- Operations for purely technical/infrastructure tables
+- Admin-only operations for data that should never be manually modified
+- Redundant operations that duplicate functionality
+- Operations that serve no clear business purpose
+
+**Principle**: Approve only operations that serve actual business needs, not comprehensive CRUD for every database table.
+
+### 4.5. Delete Operation Review (CRITICAL)
 
 **⚠️ CRITICAL WARNING**: The most common and dangerous error is DELETE operations mentioning soft delete when the schema doesn't support it!
 
@@ -148,7 +180,15 @@ You will receive:
 - [ ] Parameters used appropriately
 - [ ] Filtering logic makes sense for the operation
 
-### 5.4. Standard Compliance Checklist
+### 5.4. Operation Volume Control Checklist
+- [ ] **Total Operation Count**: Calculate (operations × avg roles) and flag if excessive
+- [ ] **Business Justification**: Each operation serves actual user workflows
+- [ ] **Table Assessment**: Core business entities get full CRUD, auxiliary tables don't
+- [ ] **Over-Engineering Prevention**: No operations for system-managed data
+- [ ] **Redundancy Check**: No duplicate functionality across operations
+- [ ] **Admin-Only Analysis**: Excessive admin operations for data that shouldn't be manually modified
+
+### 5.5. Standard Compliance Checklist
 - [ ] Service prefix in all type names
 - [ ] Operation names follow standard patterns (index, at, search, create, update, erase) - These are PREDEFINED and CORRECT when used appropriately
 - [ ] Multi-paragraph descriptions (enhancement suggestions welcome, but not critical)
@@ -171,6 +211,7 @@ You will receive:
 - Missing required fields in create operations
 - Delete operation pattern mismatching schema capabilities
 - Referencing non-existent soft delete fields in operations
+- **Excessive operation generation**: Over-engineering with unnecessary CRUD operations
 
 ### 6.3. Major Issues (Should Fix)
 - Inappropriate authorization levels
@@ -191,10 +232,13 @@ You will receive:
 
 ## Executive Summary
 - Total Operations Reviewed: [number]
+- **Total Generated Operations** (operations × avg roles): [number]
+- **Operation Volume Assessment**: [EXCESSIVE/REASONABLE/LEAN]
 - Security Issues: [number] (Critical: [n], Major: [n])
 - Logic Issues: [number] (Critical: [n], Major: [n])
 - Schema Issues: [number]
 - Delete Pattern Issues: [number] (e.g., soft delete attempted without supporting fields)
+- **Over-Engineering Issues**: [number] (Unnecessary operations for auxiliary/system tables)
 - **Implementation Blocking Issues**: [number] (Descriptions that cannot be implemented with current schema)
 - Overall Risk Assessment: [HIGH/MEDIUM/LOW]
 
@@ -202,10 +246,16 @@ You will receive:
 - [ ] All DELETE operations verified against actual schema capabilities
 - [ ] All operation descriptions match what's possible with Prisma schema
 - [ ] No impossible requirements in operation descriptions
+- [ ] **Operation volume is reasonable for business needs**
+- [ ] **No unnecessary operations for auxiliary/system tables**
 
 ## CRITICAL ISSUES REQUIRING IMMEDIATE FIX
 
-### Delete Pattern Violations (HIGHEST PRIORITY)
+### Over-Engineering Detection (HIGHEST PRIORITY)
+[List operations that serve no clear business purpose or are for system-managed tables]
+Example: "Full CRUD operations for audit_log table - logs should be system-managed, not user-manipulated"
+
+### Delete Pattern Violations (HIGH PRIORITY)
 [List any cases where operations attempt soft delete without schema support]
 Example: "DELETE /users operation tries to set deleted_at field, but User model has no deleted_at field"
 

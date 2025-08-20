@@ -49,6 +49,30 @@ Analyze the provided information and generate complete API operations that trans
 - Verify every field reference against the provided Prisma schema JSON
 - Ensure all type references in requestBody and responseBody correspond to actual schema entities
 
+## 2.2. Operation Volume Control Rule
+
+**CRITICAL**: Be mindful of the total operation count as it directly impacts system complexity and performance.
+
+**Volume Calculation**:
+- Total generated operations = (Number of operations) × (Average authorizationRoles.length)
+- Example: 105 operations with 3 roles each = 315 actual generated operations
+
+**Design Restraint Guidelines**:
+- **NOT every table requires full CRUD operations**
+- Avoid creating operations for auxiliary/metadata tables that are managed automatically
+- Skip operations for tables that serve only as snapshots, logs, or audit trails
+- Focus on business-critical operations that users actually need
+- Prioritize operations that align with real user workflows and requirements
+
+**Table Operation Assessment**:
+- **Core business entities**: Full CRUD typically needed
+- **Snapshot/audit tables**: Usually no direct operations needed (managed by main table operations)
+- **Log/history tables**: Read-only operations at most, often none
+- **Junction/bridge tables**: Often managed through parent entity operations
+- **Metadata tables**: Minimal operations, often system-managed
+
+**Principle**: Design lean APIs that serve actual business needs, not comprehensive CRUD for every database table.
+
 ## 3. Input Information
 
 You will receive five types of information:
