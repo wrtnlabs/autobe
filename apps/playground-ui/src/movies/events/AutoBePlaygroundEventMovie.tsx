@@ -1,19 +1,19 @@
 import { AutoBeEvent, IAutoBeRpcService } from "@autobe/interface";
-import { AutoBeStartEventMovie } from "@autobe/ui";
 import {
   AutoBeAssistantMessageMovie,
+  AutoBeScenarioEventMovie,
+  AutoBeStartEventMovie,
   AutoBeUserMessageMovie,
 } from "@autobe/ui";
 
 import { AutoBePlaygroundCompleteEventMovie } from "./AutoBePlaygroundCompleteEventMovie";
 import { AutoBePlaygroundProgressEventMovie } from "./AutoBePlaygroundProgressEventMovie";
-import { AutoBePlaygroundScenarioEventMovie } from "./AutoBePlaygroundScenarioEventMovie";
 import { AutoBePlaygroundValidateEventMovie } from "./AutoBePlaygroundValidateEventMovie";
 
 export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
   props: AutoBePlaygroundEventMovie.IProps<Event>,
 ) {
-  const back: Event = props.events[props.events.length - 1];
+  const back: Event = props.events[props.events.length - 1]!;
   switch (back.type) {
     case "userMessage":
       return <AutoBeUserMessageMovie message={back.contents} />;
@@ -38,7 +38,7 @@ export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
     case "prismaComponents":
     case "interfaceGroups":
     case "realizeTestReset":
-      return <AutoBePlaygroundScenarioEventMovie event={back} />;
+      return <AutoBeScenarioEventMovie event={back} />;
     // PROGRESS EVENTS
     case "analyzeWrite":
     case "analyzeReview":
@@ -87,6 +87,7 @@ export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
         />
       );
     // DISCARD
+    case "consentFunctionCall":
     case "prismaCorrect":
     case "testCorrect":
     case "realizeAuthorizationCorrect":
@@ -95,6 +96,9 @@ export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
     case "realizeAuthorizationComplete":
     case "vendorRequest":
     case "vendorResponse":
+    case "jsonParseError":
+    case "jsonValidateError":
+    case "consentFunctionCall":
       return null;
     default:
       back satisfies never;

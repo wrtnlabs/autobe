@@ -4,6 +4,7 @@ import { AutoBeAnalyzeScenarioEvent } from "./AutoBeAnalyzeScenarioEvent";
 import { AutoBeAnalyzeStartEvent } from "./AutoBeAnalyzeStartEvent";
 import { AutoBeAnalyzeWriteEvent } from "./AutoBeAnalyzeWriteEvent";
 import { AutoBeAssistantMessageEvent } from "./AutoBeAssistantMessageEvent";
+import { AutoBeConsentFunctionCallEvent } from "./AutoBeConsentFunctionCallEvent";
 import { AutoBeInterfaceAuthorizationEvent } from "./AutoBeInterfaceAuthorizationEvent";
 import { AutoBeInterfaceComplementEvent } from "./AutoBeInterfaceComplementEvent";
 import { AutoBeInterfaceCompleteEvent } from "./AutoBeInterfaceCompleteEvent";
@@ -14,6 +15,8 @@ import { AutoBeInterfaceOperationsReviewEvent } from "./AutoBeInterfaceOperation
 import { AutoBeInterfaceSchemasEvent } from "./AutoBeInterfaceSchemasEvent";
 import { AutoBeInterfaceSchemasReviewEvent } from "./AutoBeInterfaceSchemasReviewEvent";
 import { AutoBeInterfaceStartEvent } from "./AutoBeInterfaceStartEvent";
+import { AutoBeJsonParseErrorEvent } from "./AutoBeJsonParseErrorEvent";
+import { AutoBeJsonValidateErrorEvent } from "./AutoBeJsonValidateErrorEvent";
 import { AutoBePrismaCompleteEvent } from "./AutoBePrismaCompleteEvent";
 import { AutoBePrismaComponentsEvent } from "./AutoBePrismaComponentsEvent";
 import { AutoBePrismaCorrectEvent } from "./AutoBePrismaCorrectEvent";
@@ -74,6 +77,9 @@ export type AutoBeEvent =
   | AutoBeUserMessageEvent
   | AutoBeVendorRequestEvent
   | AutoBeVendorResponseEvent
+  | AutoBeJsonValidateErrorEvent
+  | AutoBeJsonParseErrorEvent
+  | AutoBeConsentFunctionCallEvent
   // ANALYZE
   | AutoBeAnalyzeStartEvent
   | AutoBeAnalyzeScenarioEvent
@@ -162,6 +168,9 @@ export namespace AutoBeEvent {
     userMessage: AutoBeUserMessageEvent;
     vendorRequest: AutoBeVendorRequestEvent;
     vendorResponse: AutoBeVendorResponseEvent;
+    jsonValidateError: AutoBeJsonValidateErrorEvent;
+    jsonParseError: AutoBeJsonParseErrorEvent;
+    consentFunctionCall: AutoBeConsentFunctionCallEvent;
     // ANALYZE
     analyzeStart: AutoBeAnalyzeStartEvent;
     analyzeScenario: AutoBeAnalyzeScenarioEvent;

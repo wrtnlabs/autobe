@@ -118,7 +118,7 @@ export namespace AutoBePlaygroundValidateEventMovie {
 function getState<Event extends AutoBePlaygroundValidateEventMovie.Supported>(
   events: Event[],
 ): IState {
-  const last: Event = events[events.length - 1];
+  const last: Event = events[events.length - 1]!;
   switch (last.type) {
     case "prismaInsufficient":
       return {

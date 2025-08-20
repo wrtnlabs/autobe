@@ -52,6 +52,7 @@ export const AutoBePlaygroundChatBodyMovie = (
           width: "100%",
           minHeight: "100%",
           backgroundColor: "lightblue",
+          maxWidth: "100%",
           margin: 0,
         }}
         ref={bodyContainerRef}

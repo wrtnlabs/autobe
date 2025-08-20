@@ -195,4 +195,24 @@ export class AutoBeTokenUsageComponent
       },
     });
   }
+
+  public static minus(
+    a: AutoBeTokenUsageComponent,
+    b: AutoBeTokenUsageComponent,
+  ) {
+    return new AutoBeTokenUsageComponent({
+      input: {
+        total: a.input.total - b.input.total,
+        cached: a.input.cached - b.input.cached,
+      },
+      output: {
+        total: a.output.total - b.output.total,
+        reasoning: a.output.reasoning - b.output.reasoning,
+        accepted_prediction:
+          a.output.accepted_prediction - b.output.accepted_prediction,
+        rejected_prediction:
+          a.output.rejected_prediction - b.output.rejected_prediction,
+      },
+    });
+  }
 }

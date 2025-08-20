@@ -1,9 +1,4 @@
-import {
-  AgenticaJsonParseErrorEvent,
-  AgenticaValidateEvent,
-  MicroAgentica,
-  MicroAgenticaHistory,
-} from "@agentica/core";
+import { MicroAgentica, MicroAgenticaHistory } from "@agentica/core";
 import {
   AutoBeAnalyzeCompleteEvent,
   AutoBeAnalyzeHistory,
@@ -35,9 +30,11 @@ import { v4 } from "uuid";
 import { AutoBeContext } from "../context/AutoBeContext";
 import { AutoBeState } from "../context/AutoBeState";
 import { AutoBeTokenUsage } from "../context/AutoBeTokenUsage";
+import { AutoBeTokenUsageComponent } from "../context/AutoBeTokenUsageComponent";
 import { IAutoBeApplication } from "../context/IAutoBeApplication";
 import { IAutoBeConfig } from "../structures/IAutoBeConfig";
 import { IAutoBeVendor } from "../structures/IAutoBeVendor";
+import { consentFunctionCall } from "./consentFunctionCall";
 
 export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
   model: Model;
@@ -80,21 +77,16 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
         histories: next.histories,
         controllers: [next.controller],
       });
-      const validates: AgenticaValidateEvent<Model>[] = [];
-      const parseErrors: AgenticaJsonParseErrorEvent<Model>[] = [];
-
-      agent.on("request", (event) => {
+      agent.on("request", async (event) => {
         if (next.enforceFunctionCall === true && event.body.tools)
           event.body.tool_choice = "required";
         if (event.body.parallel_tool_calls !== undefined)
           delete event.body.parallel_tool_calls;
-        void props
-          .dispatch({
-            ...event,
-            type: "vendorRequest",
-            source: next.source,
-          })
-          .catch(() => {});
+        await props.dispatch({
+          ...event,
+          type: "vendorRequest",
+          source: next.source,
+        });
       });
       agent.on("response", (event) => {
         void props
@@ -105,11 +97,23 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
           })
           .catch(() => {});
       });
-      agent.on("validate", (event) => {
-        validates.push(event);
-      });
       agent.on("jsonParseError", (event) => {
-        parseErrors.push(event);
+        void props
+          .dispatch({
+            ...event,
+            source: next.source,
+          })
+          .catch(() => {});
+      });
+      agent.on("validate", (event) => {
+        void props
+          .dispatch({
+            type: "jsonValidateError",
+            source: next.source,
+            result: event.result,
+            created_at: event.created_at,
+          })
+          .catch(() => {});
       });
 
       const histories: MicroAgenticaHistory<Model>[] = await agent.conversate(
@@ -123,28 +127,65 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
         .record(tokenUsage, [
           STAGES.find((stage) => next.source.startsWith(stage)) ?? "analyze",
         ]);
+
       if (
-        next.enforceFunctionCall === true &&
-        histories.every((h) => h.type !== "execute")
+        true === next.enforceFunctionCall &&
+        false ===
+          histories.some((h) => h.type === "execute" && h.success === true)
       ) {
-        console.log({
-          source: next.source,
-          title: "function calling failed",
-          types: histories.map((h) => h.type),
-          assistantMessage:
-            histories.at(-1)?.type === "assistantMessage"
-              ? histories.at(-1)
-              : null,
-          validate: validates.at(-1),
-          parse: parseErrors.at(-1),
-        });
-        throw new Error(
-          `Failed to function calling in the ${next.source} step`,
-        );
+        const failure = () => {
+          throw new Error(
+            `Failed to function calling in the ${next.source} step`,
+          );
+        };
+        const last: MicroAgenticaHistory<Model> | undefined = histories.at(-1);
+        if (
+          last?.type === "assistantMessage" &&
+          last.text.trim().length !== 0
+        ) {
+          const consent: string | null = await consentFunctionCall({
+            source: next.source,
+            dispatch: (e) => {
+              props.dispatch(e).catch(() => {});
+            },
+            config: props.config,
+            vendor: props.vendor,
+            assistantMessage: last.text,
+          });
+          if (consent !== null) {
+            const newHistories: MicroAgenticaHistory<Model>[] =
+              await agent.conversate(consent);
+            const newTokenUsage: IAutoBeTokenUsageJson.IComponent = agent
+              .getTokenUsage()
+              .toJSON().aggregate;
+            props
+              .usage()
+              .record(
+                AutoBeTokenUsageComponent.minus(
+                  new AutoBeTokenUsageComponent(newTokenUsage),
+                  new AutoBeTokenUsageComponent(tokenUsage),
+                ),
+                [
+                  STAGES.find((stage) => next.source.startsWith(stage)) ??
+                    "analyze",
+                ],
+              );
+            if (
+              newHistories.some(
+                (h) => h.type === "execute" && h.success === true,
+              )
+            )
+              return {
+                histories: newHistories,
+                tokenUsage: newTokenUsage,
+              };
+          }
+        }
+        failure();
       }
       return { histories, tokenUsage };
     };
-    if (next.enforceFunctionCall === true) return forceRetry(() => execute());
+    if (next.enforceFunctionCall === true) return forceRetry(execute);
     else return execute();
   },
 });

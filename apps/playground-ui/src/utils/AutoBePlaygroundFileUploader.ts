@@ -158,7 +158,7 @@ export namespace AutoBePlaygroundFileUploader {
     file: File,
   ): Promise<AutoBeUserMessageAudioContent> => ({
     type: "audio",
-    data: (await convertToBase64(file)).split(",")[1],
+    data: (await convertToBase64(file)).split(",")[1]!,
     format: file.type.includes("wav") ? "wav" : "mp3",
   });
 

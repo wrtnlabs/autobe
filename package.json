@@ -5,7 +5,7 @@
   "description": "AutoBE Station",
   "packageManager": "pnpm@10.6.4",
   "scripts": {
-    "build": "pnpm --filter=./packages/** --filter=./test -r build",
+    "build": "pnpm --filter=./packages/** --filter=./apps/** --filter=./test -r build",
     "package:latest": "pnpm --filter=./packages/** -r publish --tag latest",
     "package:next": "pnpm --filter=./packages/** -r publish --tag next",
     "playground": "rimraf playground-result && node playground/index.js",

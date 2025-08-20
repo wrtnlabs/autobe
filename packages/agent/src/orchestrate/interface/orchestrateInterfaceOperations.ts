@@ -155,6 +155,7 @@ async function process<Model extends ILlmSchema.Model>(
     message: "Make API operations",
   });
   if (pointer.value === null) throw new Error("Failed to create operations."); // never be happened
+
   ctx.dispatch({
     type: "interfaceOperations",
     operations: pointer.value,

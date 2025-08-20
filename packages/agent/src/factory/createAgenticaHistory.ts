@@ -38,6 +38,7 @@ export function createAgenticaHistory<Model extends ILlmSchema.Model>(props: {
           ? true
           : props.history.compiled.type === "success",
     },
+    success: true,
   };
   return {
     ...partial,
