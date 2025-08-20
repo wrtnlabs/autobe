@@ -90,7 +90,6 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
         )
       : [];
 
-    console.log(JSON.stringify({ endpoints, operations, newbie }, null, 2));
     for (const item of newbie) {
       unique.set(item, item);
       remained.erase(item);
@@ -120,12 +119,7 @@ async function process<Model extends ILlmSchema.Model>(
           if (op.authorizationRoles.length === 0)
             return [
               {
-                ...typia.assertEquals<
-                  Omit<
-                    IAutoBeInterfaceOperationApplication.IOperation,
-                    "authorizationRoles"
-                  >
-                >(op),
+                ...op,
                 path:
                   "/" +
                   [prefix, ...op.path.split("/")]
@@ -136,12 +130,7 @@ async function process<Model extends ILlmSchema.Model>(
             ];
 
           return op.authorizationRoles.map((role) => ({
-            ...typia.assertEquals<
-              Omit<
-                IAutoBeInterfaceOperationApplication.IOperation,
-                "authorizationRoles"
-              >
-            >(op),
+            ...op,
             path:
               "/" +
               [prefix, role, ...op.path.split("/")]

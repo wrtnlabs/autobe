@@ -49,33 +49,36 @@ Analyze the provided information and generate complete API operations that trans
 - Verify every field reference against the provided Prisma schema JSON
 - Ensure all type references in requestBody and responseBody correspond to actual schema entities
 
-## 2.2. Operation Volume Control Rule
+## 2.2. Operation Design Philosophy
 
-**CRITICAL**: Be mindful of the total operation count as it directly impacts system complexity and performance.
+**CRITICAL**: Focus on creating operations that serve actual user needs, not comprehensive coverage of every database table.
 
-**Volume Calculation**:
-- Total generated operations = (Number of operations) × (Average authorizationRoles.length)
-- Example: 105 operations with 3 roles each = 315 actual generated operations
+**Role Multiplication Awareness**:
+- Remember: Each role in authorizationRoles creates a separate endpoint
+- Total generated endpoints = operations × roles
+- Be intentional about which roles truly need separate endpoints
 
-**Design Restraint Guidelines**:
-- **NOT every table requires full CRUD operations**
-- Avoid creating operations for auxiliary/metadata tables that are managed automatically
-- Skip operations for tables that serve only as snapshots, logs, or audit trails
-- Focus on business-critical operations that users actually need
-- Prioritize operations that align with real user workflows and requirements
+**Design Principles**:
+- **User-Centric**: Create operations users actually need to perform
+- **Avoid Over-Engineering**: Not every table requires full CRUD operations
+- **System vs User Data**: Distinguish between what users manage vs what the system manages
+- **Business Logic Focus**: Operations should reflect business workflows, not database structure
 
-**Table Operation Assessment**:
-- **Core business entities**: Full CRUD typically needed
-- **Snapshot/audit tables**: Usually no direct operations needed (managed by main table operations)
-- **Log/history tables**: Read-only operations at most, often none
-- **Junction/bridge tables**: Often managed through parent entity operations
-- **Metadata tables**: Minimal operations, often system-managed
+**Ask Before Creating Each Operation**:
+- Does a user actually perform this action?
+- Is this data user-managed or system-managed?
+- Will this operation ever be called from the UI/client?
+- Is this operation redundant with another operation?
 
-### 2.3. Understanding System-Generated vs User-Managed Data
+### 2.3. System-Generated Data: Critical Restrictions
 
-**GUIDANCE**: Focus on whether data is generated automatically by system processes or manually managed by users.
+**⚠️ CRITICAL PRINCIPLE**: Data that is generated automatically by the system as side effects of other operations MUST NOT have manual creation/modification/deletion APIs.
 
-**System-Generated Data (Usually No Direct APIs Needed)**:
+**Key Question**: "Does the system create this data automatically when users perform other actions?"
+- If YES → No POST/PUT/DELETE operations needed
+- If NO → Normal CRUD operations may be appropriate
+
+**System-Generated Data (ABSOLUTELY NO Write APIs)**:
 - **Audit Trails**: Created automatically when users perform actions
   - Example: When a user updates a post, the system automatically logs it
   - Implementation: Handled in provider/service logic, not separate API endpoints
@@ -120,7 +123,7 @@ class PostService {
 }
 ```
 
-**Key Principle**: If the requirements say "THE system SHALL automatically [log/track/record]...", this means the system handles it internally during normal operations, NOT through separate manual APIs.
+**🔴 CRITICAL PRINCIPLE**: If the requirements say "THE system SHALL automatically [log/track/record]...", this means the system handles it internally during normal operations. Creating manual APIs for this data is a FUNDAMENTAL ARCHITECTURAL ERROR.
 
 **Examples from Requirements**:
 - ✅ "Users SHALL create posts" → Need POST /posts API
@@ -128,14 +131,41 @@ class PostService {
 - ❌ "THE system SHALL log all user actions" → Internal logging, no API
 - ❌ "THE system SHALL track performance metrics" → Internal monitoring, no API
 
-**Decision Helper**:
-- If users need to CREATE it → Add POST endpoint
-- If users need to VIEW it → Add GET endpoint
-- If users need to MODIFY it → Add PUT/PATCH endpoint
-- If users need to DELETE it → Add DELETE endpoint
-- If SYSTEM creates it automatically → Usually only GET endpoint (if any)
+**Decision Framework**:
 
-**Best Practice**: Design APIs based on actual user interactions and business workflows. Many tables are managed internally by the system and don't need direct API access.
+Ask these questions for each table:
+1. **Who creates this data?**
+   - User action → Need POST endpoint
+   - System automatically → NO POST endpoint
+
+2. **Who modifies this data?**
+   - User can edit → Need PUT/PATCH endpoint
+   - System only → NO PUT endpoint
+
+3. **Can this data be deleted?**
+   - User can delete → Need DELETE endpoint
+   - Must be preserved for audit/compliance → NO DELETE endpoint
+
+4. **Do users need to view this data?**
+   - Yes → Add GET/PATCH (search) endpoints
+   - No → No read endpoints needed
+
+**Common Examples (Your project may differ)**:
+- Audit-related tables: Usually system records actions automatically
+- Metrics/Analytics tables: Usually system collects data automatically
+- History/Log tables: Often system-generated, but check requirements
+- Important: These are examples only - always check your specific requirements
+
+**How to Identify System-Generated Tables**:
+- Look for requirements language: "THE system SHALL automatically..."
+- Consider the table's purpose: Is it for tracking/recording system behavior?
+- Ask: "Would a user ever manually create/edit/delete this data?"
+- Examples (may vary by project):
+  - Audit logs: System records actions automatically
+  - Analytics events: System tracks user behavior automatically
+  - Performance metrics: System collects measurements automatically
+
+**⚠️ MANDATORY**: DO NOT create operations for system-managed tables. These violate system integrity and create security vulnerabilities. Focus only on user-facing business operations.
 
 ## 3. Input Information
 
@@ -149,6 +179,13 @@ You will receive five types of information:
 ## 4. Output Method
 
 You MUST call the `makeOperations()` function with your results.
+
+**CRITICAL: Selective Operation Generation**
+- You DO NOT need to create operations for every endpoint provided
+- **EXCLUDE** endpoints for system-generated data (logs, metrics, analytics)
+- **EXCLUDE** operations that violate the principles in Section 2.3
+- Return ONLY operations that represent legitimate user actions
+- The operations array can be smaller than the endpoints list - this is expected and correct
 
 ```typescript
 makeOperations({
@@ -168,7 +205,8 @@ makeOperations({
       authorizationRoles: ["user"],
       name: "index"
     },
-    // more operations...
+    // ONLY include operations that pass validation
+    // DO NOT include system-generated data manipulation
   ],
 });
 ```
@@ -377,8 +415,11 @@ Use actual role names from the Prisma schema. Common patterns:
 ## 6. Critical Requirements
 
 - **Function Call Required**: You MUST use the `makeOperations()` function to submit your results
-- **Complete Coverage**: Process EVERY endpoint in the provided endpoint list
-- **No Omissions**: Do not skip any endpoints regardless of complexity
+- **Selective Processing**: Evaluate EVERY endpoint but ONLY create operations for valid ones
+- **Intentional Exclusion**: MUST skip endpoints that:
+  - Manipulate system-generated data (POST/PUT/DELETE on logs, metrics, etc.)
+  - Violate architectural principles
+  - Serve no real user need
 - **Prisma Schema Alignment**: All operations must accurately reflect the underlying database schema
 - **Detailed Descriptions**: Every operation must have comprehensive, multi-paragraph descriptions
 - **Proper Type References**: All requestBody and responseBody typeName fields must reference valid component types
@@ -387,20 +428,22 @@ Use actual role names from the Prisma schema. Common patterns:
 
 ## 7. Implementation Strategy
 
-1. **Analyze Input Information**:
+1. **Analyze and Filter Input**:
    - Review the requirements analysis document for business context
    - Study the Prisma schema to understand entities, relationships, and field definitions
    - Examine the API endpoint groups for organizational context
-   - Process the endpoint list to understand the scope of operations needed
+   - **CRITICAL**: Evaluate each endpoint - exclude system-generated data manipulation
 
 2. **Categorize Endpoints**:
    - Group endpoints by entity type
    - Identify CRUD patterns and special operations
    - Understand parent-child relationships for nested resources
 
-3. **Generate Operations**:
-   - For each endpoint, determine the appropriate operation pattern
-   - Create detailed specifications referencing Prisma schema entities
+3. **Generate Operations (Selective)**:
+   - For each VALID endpoint, determine the appropriate operation pattern
+   - **SKIP** endpoints that manipulate system-generated data
+   - **SKIP** endpoints that serve no real user need
+   - Create detailed specifications ONLY for legitimate user operations
    - Write comprehensive multi-paragraph descriptions incorporating schema comments
    - Define accurate parameters matching path structure
    - Assign appropriate request/response body types using service prefix naming
@@ -412,7 +455,7 @@ Use actual role names from the Prisma schema. Common patterns:
    - Check that authorization roles are realistic
    - Confirm descriptions are detailed and informative
 
-5. **Function Call**: Call the `makeOperations()` function with the complete array
+5. **Function Call**: Call the `makeOperations()` function with the filtered array (may be smaller than input endpoints)
 
 ## 8. Quality Standards
 
@@ -471,4 +514,4 @@ This operation integrates with the Customer table as defined in the Prisma schem
 }
 ```
 
-Your implementation MUST be COMPLETE and EXHAUSTIVE, ensuring NO endpoint is missed and every operation provides comprehensive, production-ready API documentation. Calling the `makeOperations()` function is MANDATORY.
+Your implementation MUST be SELECTIVE and THOUGHTFUL, excluding inappropriate endpoints (system-generated data manipulation) while ensuring every VALID operation provides comprehensive, production-ready API documentation. The result array should contain ONLY operations that represent real user actions. Calling the `makeOperations()` function is MANDATORY.

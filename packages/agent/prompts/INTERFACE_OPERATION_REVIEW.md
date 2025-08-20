@@ -103,7 +103,8 @@ You will receive:
 **System-Generated Data Characteristics**:
 - Created automatically as side effects of other operations
 - Managed by internal service logic, not direct API calls
-- Examples: audit logs, metrics, analytics events
+- Data that exists to track/monitor the system itself
+- Data that users never directly create or manage
 
 **How to Identify System-Generated Data**:
 
@@ -113,35 +114,32 @@ You will receive:
    - "When [user action], THE system SHALL log..." → System-generated
    - "[Role] SHALL create/manage [entity]..." → User-managed (needs API)
 
-2. **Table Name Patterns** (indicators, not absolute rules):
-   - `*_audit_logs`, `*_audit_trails` → Usually system-generated
-   - `*_system_metrics`, `*_analytics_events` → Usually system-generated
-   - `*_logs` (without user context) → Usually system-generated
-   - BUT: Check context! `user_activity_logs` might be viewable by users
+2. **Context-Based Analysis** (not pattern matching):
+   - Don't rely on table names alone
+   - Check the requirements document
+   - Understand the business purpose
+   - Ask: "Would a user ever manually create this record?"
 
 3. **Data Flow Analysis**:
    - If data is created as a result of other operations → System-generated
    - If users never directly create/edit this data → System-generated
    - If data is for compliance/audit only → System-generated
 
-**Common Anti-Patterns to Flag**:
+**How to Identify Violations**:
 
-**🔴 SEVERE VIOLATIONS** (Indicates fundamental misunderstanding):
-- `POST /audit_trails` - Creating audit logs manually
-  - **Why Wrong**: Audit logs are created automatically when actions occur
-  - **Impact**: Breaks audit integrity, allows fake audit trails
-  
-- `PUT /system_metrics/{id}` - Editing system metrics
-  - **Why Wrong**: Metrics are collected automatically by monitoring
-  - **Impact**: Corrupts performance data, misleads operations team
+**🔴 RED FLAGS - System data being manually manipulated**:
 
-- `DELETE /analytics_events/{id}` - Deleting analytics data
-  - **Why Wrong**: Analytics are immutable historical records
-  - **Impact**: Destroys business intelligence data
+When you see operations that allow manual creation/modification/deletion of:
+- Data that tracks system behavior
+- Data that monitors performance
+- Data that records user actions automatically
+- Data that serves as an audit trail
 
-- `POST /user/{id}/login_history` - Manually creating login records
-  - **Why Wrong**: Login history is created automatically during authentication
-  - **Impact**: Allows fake login records, security vulnerability
+**Why These Are Critical Issues**:
+1. **Integrity**: Manual manipulation breaks data trustworthiness
+2. **Security**: Allows falsification of system records
+3. **Compliance**: Violates audit and regulatory requirements
+4. **Architecture**: Shows misunderstanding of system design
 
 **🟡 ACCEPTABLE PATTERNS**:
 - `GET /audit_logs` - Viewing audit logs ✅
@@ -324,6 +322,8 @@ When you find system-generated data manipulation:
 
 ## Executive Summary
 - Total Operations Reviewed: [number]
+- **Operations Removed**: [number] (System-generated data manipulation, architectural violations)
+- **Final Operation Count**: [number] (After removal of invalid operations)
 - **Total Generated Operations** (operations × avg roles): [number]
 - **Operation Volume Assessment**: [EXCESSIVE/REASONABLE/LEAN]
 - Security Issues: [number] (Critical: [n], Major: [n])
@@ -465,11 +465,69 @@ Verify these patterns:
 - **Focus on Operation Quality**: Review should focus on improving the operation definitions within the given endpoint constraints
 - **Work Within Boundaries**: All suggestions must work with the existing endpoint structure
 
-Your review must be thorough, focusing primarily on security vulnerabilities and logical consistency issues that could cause implementation problems or create security risks in production. 
+## 11. Operation Removal Guidelines
+
+### 11.1. When to Remove Operations Entirely
+
+**🔴 CRITICAL**: When an operation violates fundamental architectural principles or creates security vulnerabilities, you MUST remove it from the operations array entirely.
+
+**Operations to REMOVE (not modify, REMOVE from array)**:
+- System-generated data manipulation (POST/PUT/DELETE on audit logs, metrics, analytics)
+- Operations that violate system integrity
+- Operations for tables that should be managed internally
+- Operations that create security vulnerabilities that cannot be fixed
+
+**How to Remove Operations**:
+```typescript
+// Original operations array
+const operations = [
+  { path: "/posts", method: "post", ... },  // ✅ Keep: User-created content
+  { path: "/audit_logs", method: "post", ... },  // ❌ REMOVE: System-generated
+  { path: "/users", method: "get", ... },  // ✅ Keep: User data read
+];
+
+// After review - REMOVE the problematic operation entirely
+const reviewedOperations = [
+  { path: "/posts", method: "post", ... },  // Kept
+  // audit_logs POST operation REMOVED from array
+  { path: "/users", method: "get", ... },  // Kept
+];
+```
+
+**DO NOT**:
+- Set operation to empty string or null
+- Leave placeholder operations
+- Modify to empty object
+
+**DO**:
+- Remove the entire operation from the array
+- Return a smaller array with only valid operations
+- Document in the review why operations were removed
+
+### 11.2. Operations That MUST Be Removed
+
+1. **System Data Manipulation** (Principles, not patterns):
+   - Operations that create data the system should generate automatically
+   - Operations that modify immutable system records
+   - Operations that delete audit/compliance data
+   - Operations that allow manual manipulation of automatic tracking
+
+2. **Security Violations That Cannot Be Fixed**:
+   - Operations exposing system internals
+   - Operations allowing privilege escalation
+   - Operations bypassing audit requirements
+
+3. **Architectural Violations**:
+   - Manual creation of automatic data
+   - Direct manipulation of derived data
+   - Operations that break data integrity
+
+Your review must be thorough, focusing primarily on security vulnerabilities and logical consistency issues that could cause implementation problems or create security risks in production.
 
 **⚠️ CRITICAL: These issues make implementation impossible:**
 1. Operations describing soft delete when schema lacks deletion fields
 2. Operations mentioning fields that don't exist in Prisma schema
 3. Operations requiring functionality the schema cannot support
+4. **Operations for system-generated data (REMOVE these entirely from the array)**
 
-Remember that the endpoint list is predetermined and cannot be changed - your role is to ensure the operations are correctly defined for the given endpoints AND that they describe only what's possible with the current schema.
+Remember that the endpoint list is predetermined and cannot be changed - but you CAN and SHOULD remove operations that violate system architecture or create security vulnerabilities. The returned operations array should only contain valid, implementable operations.
