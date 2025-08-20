@@ -214,20 +214,6 @@ function createController<Model extends ILlmSchema.Model>(props: {
       if (schema.required.includes("token") === false) {
         schema.required.push("token");
       }
-
-      if (!schema.properties?.token) {
-        // Add token property if missing
-        schema.properties = schema.properties || {};
-        schema.properties["token"] =
-          authTokenSchema.schema as AutoBeOpenApi.IJsonSchemaDescriptive;
-
-        // Add token to required fields if not already present
-        if (schema.required && !schema.required.includes("token")) {
-          schema.required.push("token");
-        } else if (!schema.required) {
-          schema.required = ["token"];
-        }
-      }
     }
 
     if (errors.length !== 0) {
