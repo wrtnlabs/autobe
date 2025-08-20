@@ -4,10 +4,10 @@ import {
   AutoBeOpenApi,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
-import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
+import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
 import { IPointer } from "tstl";
-import typia from "typia";
+import typia, { tags } from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
@@ -15,6 +15,7 @@ import { divideArray } from "../../utils/divideArray";
 import { transformInterfaceSchemaHistories } from "./histories/transformInterfaceSchemaHistories";
 import { orchestrateInterfaceSchemasReview } from "./orchestrateInterfaceSchemasReview";
 import { IAutoBeInterfaceSchemaApplication } from "./structures/IAutoBeInterfaceSchemaApplication";
+import { validateAuthorizationSchema } from "./utils/validateAuthorizationSchema";
 
 export async function orchestrateInterfaceSchemas<
   Model extends ILlmSchema.Model,
@@ -40,7 +41,15 @@ export async function orchestrateInterfaceSchemas<
     total: matrix.length,
     completed: 0,
   };
-  const x: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
+  const roles: string[] =
+    ctx.state().analyze?.roles.map((role) => role.name) ?? [];
+
+  const x: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
+    roles.length > 0
+      ? {
+          IAuthorizationToken: authTokenSchema,
+        }
+      : {};
   for (const y of await Promise.all(
     matrix.map(async (it) => {
       const row: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
@@ -57,6 +66,7 @@ export async function orchestrateInterfaceSchemas<
   )) {
     Object.assign(x, y);
   }
+  if (x.IAuthorizationToken) x.IAuthorizationToken = authTokenSchema;
   return x;
 }
 
@@ -161,9 +171,34 @@ function createController<Model extends ILlmSchema.Model>(props: {
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
+  const validate = (
+    next: unknown,
+  ): IValidation<IAutoBeInterfaceSchemaApplication.IProps> => {
+    const result: IValidation<IAutoBeInterfaceSchemaApplication.IProps> =
+      typia.validate<IAutoBeInterfaceSchemaApplication.IProps>(next);
+    if (result.success === false) return result;
+
+    // Check all IAuthorized types
+    const errors: IValidation.IError[] = [];
+    validateAuthorizationSchema({
+      errors,
+      schemas: result.data.schemas,
+      path: "$input.schemas",
+    });
+    if (errors.length !== 0)
+      return {
+        success: false,
+        errors,
+        data: next,
+      };
+    return result;
+  };
+
   const application: ILlmApplication<Model> = collection[
-    props.model
-  ] satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+    props.model === "chatgpt" ? "chatgpt" : "claude"
+  ](
+    validate,
+  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
     name: "interface",
@@ -176,17 +211,71 @@ function createController<Model extends ILlmSchema.Model>(props: {
   };
 }
 
-const claude = typia.llm.application<
-  IAutoBeInterfaceSchemaApplication,
-  "claude"
->();
 const collection = {
-  chatgpt: typia.llm.application<
-    IAutoBeInterfaceSchemaApplication,
-    "chatgpt"
-  >(),
-  claude,
-  llama: claude,
-  deepseek: claude,
-  "3.1": claude,
+  chatgpt: (validate: Validator) =>
+    typia.llm.application<IAutoBeInterfaceSchemaApplication, "chatgpt">({
+      validate: {
+        makeComponents: validate,
+      },
+    }),
+  claude: (validate: Validator) =>
+    typia.llm.application<IAutoBeInterfaceSchemaApplication, "claude">({
+      validate: {
+        makeComponents: validate,
+      },
+    }),
 };
+
+type Validator = (
+  input: unknown,
+) => IValidation<IAutoBeInterfaceSchemaApplication.IProps>;
+
+/**
+ * Authorization token response structure.
+ *
+ * This interface defines the structure of the authorization token response
+ * returned after successful user authentication. It contains both access and
+ * refresh tokens along with their expiration information.
+ *
+ * This token structure is automatically included in API schemas when the system
+ * detects authorization roles in the requirements analysis phase. It provides a
+ * standard format for JWT-based authentication across the generated backend
+ * applications.
+ */
+interface IAuthorizationToken {
+  /**
+   * JWT access token for authenticated requests.
+   *
+   * This token should be included in the Authorization header for subsequent
+   * authenticated API requests as `Bearer {token}`.
+   */
+  access: string;
+
+  /**
+   * Refresh token for obtaining new access tokens.
+   *
+   * This token can be used to request new access tokens when the current access
+   * token expires, extending the user's session.
+   */
+  refresh: string;
+
+  /**
+   * Access token expiration timestamp.
+   *
+   * ISO 8601 date-time string indicating when the access token will expire and
+   * can no longer be used for authentication.
+   */
+  expired_at: string & tags.Format<"date-time">;
+
+  /**
+   * Refresh token expiration timestamp.
+   *
+   * ISO 8601 date-time string indicating the latest time until which the
+   * refresh token can be used to obtain new access tokens.
+   */
+  refreshable_until: string & tags.Format<"date-time">;
+}
+
+const authTokenSchema: AutoBeOpenApi.IJsonSchemaDescriptive =
+  typia.json.schema<IAuthorizationToken>().components.schemas!
+    .IAuthorizationToken as AutoBeOpenApi.IJsonSchemaDescriptive;

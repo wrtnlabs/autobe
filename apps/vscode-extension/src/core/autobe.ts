@@ -83,10 +83,10 @@ export class AutoBeWrapper {
       this.chatSessionMap.set(session.sessionId, session);
     });
 
-    /** @todo remove this codes this codes is for development purposes */
-    await loadReplayData(this.chatSessionMap, "bbs-backend.interface");
-    await loadReplayData(this.chatSessionMap, "bbs-backend.test");
-    await loadReplayData(this.chatSessionMap, "bbs-backend.realize");
+    /** @todo Remove this codes this codes is for development purposes */
+    await loadReplayData(this.chatSessionMap, "bbs.interface");
+    await loadReplayData(this.chatSessionMap, "bbs.test");
+    await loadReplayData(this.chatSessionMap, "bbs.realize");
 
     Logger.debug(
       `AutoBeWrapper initialize: ${(chatSessionMap as any)?.length}`,

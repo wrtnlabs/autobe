@@ -20,9 +20,9 @@ interface ITestFunction {
 }
 
 const PROJECT_INDEXES: Record<TestProject, number> = {
-  "todo-backend": 0,
-  "bbs-backend": 1,
-  "shopping-backend": 2,
+  todo: 0,
+  bbs: 1,
+  shopping: 2,
 };
 
 const STEP_INDEXES: Record<Step, number> = {

@@ -77,18 +77,16 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
         histories: next.histories,
         controllers: [next.controller],
       });
-      agent.on("request", (event) => {
+      agent.on("request", async (event) => {
         if (next.enforceFunctionCall === true && event.body.tools)
           event.body.tool_choice = "required";
         if (event.body.parallel_tool_calls !== undefined)
           delete event.body.parallel_tool_calls;
-        void props
-          .dispatch({
-            ...event,
-            type: "vendorRequest",
-            source: next.source,
-          })
-          .catch(() => {});
+        await props.dispatch({
+          ...event,
+          type: "vendorRequest",
+          source: next.source,
+        });
       });
       agent.on("response", (event) => {
         void props
@@ -96,6 +94,24 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
             ...event,
             type: "vendorResponse",
             source: next.source,
+          })
+          .catch(() => {});
+      });
+      agent.on("jsonParseError", (event) => {
+        void props
+          .dispatch({
+            ...event,
+            source: next.source,
+          })
+          .catch(() => {});
+      });
+      agent.on("validate", (event) => {
+        void props
+          .dispatch({
+            type: "jsonValidateError",
+            source: next.source,
+            result: event.result,
+            created_at: event.created_at,
           })
           .catch(() => {});
       });

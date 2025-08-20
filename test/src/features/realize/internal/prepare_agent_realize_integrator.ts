@@ -6,15 +6,19 @@ import { ILlmSchema } from "@samchon/openapi";
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
 import { TestHistory } from "../../../internal/TestHistory";
+import { TestProject } from "../../../structures/TestProject";
 
 export const prepare_agent_realize_integrator = async (
   factory: TestFactory,
-  project: "bbs-backend" | "shopping-backend",
+  project: TestProject,
 ) => {
   if (TestGlobal.env.API_KEY === undefined)
     throw new Error("No OpenAI API key provided");
 
-  const histories: AutoBeHistory[] = await TestHistory.getTest(project);
+  const histories: AutoBeHistory[] = await TestHistory.getHistories(
+    project,
+    "test",
+  );
   const agent: AutoBeAgent<ILlmSchema.Model> = factory.createAgent(histories);
   const state: AutoBeState = agent.getContext().state();
 

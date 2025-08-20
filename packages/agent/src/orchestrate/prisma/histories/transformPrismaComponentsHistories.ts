@@ -1,4 +1,5 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
+import { NamingConvention } from "typia/lib/utils/NamingConvention";
 import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
@@ -13,6 +14,7 @@ export const transformPrismaComponentsHistories = (
   if (state.analyze === null)
     // unreachable
     throw new Error("Analyze state is not set.");
+  if (prefix) prefix = NamingConvention.snake(prefix);
   return [
     {
       id: v4(),

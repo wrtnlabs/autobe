@@ -195,11 +195,11 @@ gantt
   Review Agent:         done, 2025-08-04, 13d
 
   section Interface Agent
-  Keyworded SDK:     done,    2025-06-01, 10d
-  Authorization:     done,    2025-06-19, 18d
-  Snapshot Logic:    planned, 2025-06-23, 14d
-  Review Agent:      active,  2025-08-04, 13d
-  Authorization:     active,  2025-08-04, 27d
+  Keyworded SDK:     done,   2025-06-01, 10d
+  Authorization:     done,   2025-06-19, 18d
+  Snapshot Logic:    done,   2025-06-23, 14d
+  Review Agent:      active, 2025-08-04, 13d
+  Authorization:     done,   2025-08-04, 27d
 
   section Test Agent
   Scenario Agent:         done, 2025-06-01, 10d        
@@ -217,12 +217,12 @@ gantt
   Runtime Validation:   active, 2025-08-01, 30d
 
   section VSCode Extensions
-  Interlocking VSCode:                      done, 2025-08-01, 1d
-  Interlocking React for WebView:           done, 2025-08-04, 2d
+  Interlocking VSCode:                   done, 2025-08-01, 1d
+  Interlocking React for WebView:        done, 2025-08-04, 2d
   Connect autobe without event listener: planned, 2025-08-06, 2d
-  File System:                           planned, 2025-08-11, 5d
-  Connect personal LLM:                  planned, 2025-08-18, 4d
-  Apply a lot of AutoBE events:          planned, 2025-08-25, 5d 
+  File System:                           done, 2025-08-11, 5d
+  Connect personal LLM:                  done, 2025-08-18, 4d
+  Apply a lot of AutoBE events:          done, 2025-08-25, 5d 
 
   section Complementation
   Benchmark:     done,   2025-06-12, 50d
@@ -233,11 +233,11 @@ gantt
   Maintenance:   active, 2025-08-01, 30d
 
   section Ecosystem
-  Agentica Prerequisite:            done,    2025-06-18, 13d
-  WebSocket Streaming (Deprecated): crit,    2025-07-02, 14d
-  History Manipulation:             done,    2025-07-16, 30d
-  AI Chatbot Development:           planned, 2025-07-16, 30d
-  Data Seeder Agent:                planned, 2025-08-01, 30d
+  Agentica Prerequisite:               done,    2025-06-18, 13d
+  WebSocket Streaming (Deprecated):    crit,    2025-07-02, 14d
+  History Manipulation:                done,    2025-07-16, 30d
+  AI Chatbot Development (Deprecated): crit, 2025-07-16, 30d
+  Data Seeder Agent (Deprecated):      crit, 2025-08-01, 30d
 ```
 
 `@autobe`'s comprehensive three-month beta development roadmap spans from 2025-06-01 through 2025-08-31, marking a critical phase in our journey toward production readiness.

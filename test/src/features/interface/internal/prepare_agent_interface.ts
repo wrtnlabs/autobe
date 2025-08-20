@@ -15,7 +15,10 @@ export const prepare_agent_interface = async (
   if (TestGlobal.env.API_KEY === undefined)
     throw new Error("No OpenAI API key provided");
 
-  const histories: AutoBeHistory[] = await TestHistory.getPrisma(project);
+  const histories: AutoBeHistory[] = await TestHistory.getHistories(
+    project,
+    "prisma",
+  );
   const agent: AutoBeAgent<ILlmSchema.Model> = factory.createAgent(histories);
   const state: AutoBeState = agent.getContext().state();
   return {
@@ -31,10 +34,7 @@ const getZeroTokenUsage = async (
   project: TestProject,
 ): Promise<AutoBeTokenUsage> => {
   const zero: AutoBeTokenUsage = new AutoBeTokenUsage(
-    await TestHistory.getTokenUsage({
-      project,
-      type: "prisma",
-    }),
+    await TestHistory.getTokenUsage(project, "prisma"),
   );
   zero.decrement(factory.getTokenUsage());
   return zero;

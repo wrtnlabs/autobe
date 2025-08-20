@@ -7,7 +7,9 @@ import OpenAI from "openai";
 import { TestGlobal } from "../../TestGlobal";
 import { TestHistory } from "../../internal/TestHistory";
 
-export const test_compiler_interface_files = async (): Promise<void> => {
+export const test_compiler_interface_files = async () => {
+  if (TestHistory.has("todo", "interface") === false) return false;
+
   const agent: AutoBeAgent<"chatgpt"> = new AutoBeAgent({
     model: "chatgpt",
     vendor: {
@@ -16,7 +18,7 @@ export const test_compiler_interface_files = async (): Promise<void> => {
       }),
       model: "gpt-4.1",
     },
-    histories: await TestHistory.getInterface("bbs-backend"),
+    histories: await TestHistory.getHistories("todo", "interface"),
     compiler: (listener) => new AutoBeCompiler(listener),
   });
 

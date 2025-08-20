@@ -96,6 +96,9 @@ export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
     case "realizeAuthorizationComplete":
     case "vendorRequest":
     case "vendorResponse":
+    case "jsonParseError":
+    case "jsonValidateError":
+    case "consentFunctionCall":
       return null;
     default:
       back satisfies never;

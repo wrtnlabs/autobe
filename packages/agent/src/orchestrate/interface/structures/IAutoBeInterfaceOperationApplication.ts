@@ -87,7 +87,10 @@ export namespace IAutoBeInterfaceOperationApplication {
    * ```
    */
   export interface IOperation
-    extends Omit<AutoBeOpenApi.IOperation, "authorizationRole"> {
+    extends Omit<
+      AutoBeOpenApi.IOperation,
+      "authorizationRole" | "authorizationType"
+    > {
     /**
      * Authorization roles required to access this API operation.
      *

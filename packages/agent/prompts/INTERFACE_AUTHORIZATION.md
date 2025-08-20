@@ -51,26 +51,25 @@ These operations should be generated for every role if the basic authentication 
 
 #### Registration
 - **Condition**: Role table has identity field + authentication field
-- **Path**: `/auth/{roleName}/register`
+- **Path**: `/auth/{roleName}/join`
 - **Method**: `POST`
-- **Function Name**: `"signUp"`
+- **Function Name**: `"join"`
 - **Purpose**: Create new user account and issue initial JWT tokens
 - **Auth Required**: None (public)
-- **Response Body Requirement**: Must include `setHeaders` field with `{ Authorization: string }` structure
 
 #### Login
 - **Condition**: Role table has authentication fields
 - **Path**: `/auth/{roleName}/login`
 - **Method**: `POST`
-- **Function Name**: `"signIn"`
-- **Purpose**: Authenticate user and issue JWT tokens
+- **Function Name**: `"login"`
+- **Purpose**: Authenticate user and issue Access tokens
 - **Auth Required**: None (public)
 
 #### Token Validation
 - **Path**: `/auth/{roleName}/validate`
 - **Method**: `POST`
-- **Function Name**: `"validateToken"`
-- **Purpose**: Validate JWT token and return authentication status
+- **Function Name**: `"validate"`
+- **Purpose**: Validate Access token and return authentication status
 - **Auth Required**: None (validates provided token)
 
 #### Change Password
@@ -81,33 +80,33 @@ These operations should be generated for every role if the basic authentication 
 - **Purpose**: Change user password with current password verification
 - **Auth Required**: Authenticated user
 
+#### Token Refresh
+- **Path**: `/auth/{roleName}/refresh`
+- **Method**: `POST`
+- **Function Name**: `"refresh"`
+- **Purpose**: Refresh Access tokens using a valid refresh token
+- **Auth Required**: None (Valid refresh token)
+
 ## 4. Schema-Driven Operations (Generate Based on Available Fields)
 
 **Analyze the Prisma schema for the role's table and generate additional operations ONLY for features that are clearly supported by the schema fields:**
 
-### 4.1. Token Refresh Operations
-- **Generate IF**: Schema has refresh token storage fields (e.g., `refreshToken`, `refresh_token`, `refreshTokenHash`)
-- **Path**: `/auth/{roleName}/refresh`
-- **Method**: `POST`
-- **Function Name**: `"refreshToken"`
-- **Response Body Requirement**: Must include `setHeaders` field with `{ Authorization: string }` structure
-
-### 4.2. Email Verification Operations
+### 4.1. Email Verification Operations
 - **Generate IF**: Schema has email verification fields (e.g., `emailVerified`, `email_verified`, `verificationToken`, `verification_token`)
 - **Paths & Functions**: 
   - `/auth/{roleName}/verify/email` → `"requestEmailVerification"`
   - `/auth/{roleName}/verify/email/confirm` → `"confirmEmailVerification"`
 
-### 4.3. Password Reset Operations
+### 4.2. Password Reset Operations
 - **Generate IF**: Schema has password reset fields (e.g., `resetToken`, `reset_token`, `passwordResetToken`, `password_reset_token`)
 - **Paths & Functions**:
   - `/auth/{roleName}/password/reset` → `"requestPasswordReset"`
   - `/auth/{roleName}/password/reset/confirm` → `"confirmPasswordReset"`
 
-### 4.4. Advanced Token Management
+### 4.3. Advanced Token Management
 - **Generate IF**: Schema has advanced token tracking fields
 - **Possible Operations**:
-  - `/auth/{roleName}/tokens/revoke-all` → `"revokeAllTokens"`
+  - `/auth/{roleName}/tokens/revokeAll` → `"revokeAllTokens"`
   - `/auth/{roleName}/sessions` → `"listActiveSessions"`
   - `/auth/{roleName}/sessions/{sessionId}` → `"revokeSession"`
 
@@ -124,11 +123,11 @@ These operations should be generated for every role if the basic authentication 
 - Start with action verbs that clearly describe the operation
 - Make function names self-explanatory and business-oriented
 - Examples:
-  - `signUp` (not `register`)
-  - `signIn` (not `login`) 
-  - `refreshToken` (not `issue`)
-  - `requestPasswordReset` (not `resetPassword`)
-  - `confirmEmailVerification` (not `verifyEmail`)
+  - `join`
+  - `login`
+  - `refresh`
+  - `requestPasswordReset`
+  - `confirmEmailVerification`
 
 ### 5.3. Path vs Function Name Relationship
 - **Path**: Describes the HTTP resource and REST endpoint
@@ -141,14 +140,14 @@ These operations should be generated for every role if the basic authentication 
 
 | Endpoint Path | Function Name | Purpose |
 |---------------|---------------|---------|
-| `/auth/user/register` | `signUp` | User registration |
-| `/auth/user/login` | `signIn` | User authentication |  
-| `/auth/user/refresh` | `refreshToken` | Token refresh |
+| `/auth/user/join` | `join` | User registration |
+| `/auth/user/login` | `login` | User authentication |  
+| `/auth/user/refresh` | `refresh` | Token refresh |
 | `/auth/user/verify/email` | `requestEmailVerification` | Request email verification |
 | `/auth/user/verify/email/confirm` | `confirmEmailVerification` | Confirm email verification |
 | `/auth/user/password/reset` | `requestPasswordReset` | Request password reset |
 | `/auth/user/password/reset/confirm` | `confirmPasswordReset` | Confirm password reset |
-| `/auth/user/tokens/revoke-all` | `revokeAllTokens` | Revoke all user tokens |
+| `/auth/user/tokens/revokeAll` | `revokeAllTokens` | Revoke all user tokens |
 
 ## 6. Schema Analysis Process
 
@@ -202,7 +201,7 @@ Each operation must document:
 
 **Paragraph 1**: Purpose and functionality referencing specific schema fields
 
-**Paragraph 2**: JWT implementation details using confirmed available fields
+**Paragraph 2**: implementation details using confirmed available fields
 
 **Paragraph 3**: Role-specific integration and business context
 
@@ -210,43 +209,67 @@ Each operation must document:
 
 **Paragraph 5**: Related operations and authentication workflow integration
 
-### 8.2. SetHeaders Response Field Requirement
+## 9. Response Body Type Naming Rules
 
-For operations with function names `signUp` (registration) and `refreshToken` (token refresh), the response body schema MUST include a `setHeaders` field with the following structure:
+### 9.1. Authentication Operation Response Types
 
-```typescript
-/**
- * Header setting value.
- *
- * The client can assign this value to {@link IConnection.headers}.
- *
- * However, this process is automatically performed when calling the
- * relevant SDK function.
- */
-setHeaders: { Authorization: string };
-```
+For operations with function names `login`, `join` and `refresh` (where `authorizationType` is NOT null), the response body `typeName` MUST follow this specific pattern:
 
-This field enables automatic header assignment for subsequent authenticated API calls.
+**Pattern**: `I{Prefix}{RoleName}.IAuthorized`
 
-## 9. Critical Requirements
+Where:
+- `{RoleName}` is the capitalized role name (e.g., "User", "Admin", "Seller")
+- The format must be exactly `I{Prefix}{RoleName}.IAuthorized`
 
-- **Essential Operations MANDATORY**: ALWAYS generate ALL 4 essential operations (signUp, signIn, validateToken, changePassword) for every role
+**Examples:**
+- For role "user" → `typeName: "IPrefixUser.IAuthorized"`
+- For role "admin" → `typeName: "IPrefixAdmin.IAuthorized"`
+- For role "seller" → `typeName: "IPrefixSeller.IAuthorized"`
+- For role "moderator" → `typeName: "IPrefixModerator.IAuthorized"`
+
+**Non-Authentication Operations:**
+For operations with `authorizationType: null`, use standard response type naming conventions as defined in the general API documentation (e.g., `IEntityName`, `IEntityName.ISummary`, etc.).
+
+### 9.2. Role Name Capitalization
+
+When creating the `I{Prefix}{RoleName}.IAuthorized` pattern:
+1. Take the role name from the operation path or context
+2. Capitalize the first letter
+3. Keep the rest of the role name in its original case
+4. Apply the pattern: `I{PascalPrefixName}{CapitalizedRoleName}.IAuthorized`
+
+**Examples:**
+- `user` → `IPrefixUser.IAuthorized`
+- `admin` → `IPrefixAdmin.IAuthorized`
+- `seller` → `IPrefixSeller.IAuthorized`
+
+This ensures consistent type naming across all authentication operations while clearly distinguishing them from regular business operation responses.
+
+## 10. Critical Requirements
+
+- **Essential Operations MANDATORY**: ALWAYS generate ALL 5 essential operations (join, login, validate, changePassword, refresh) for every role
+- **Operation Uniqueness**: Each authentication operation (join, login, refresh) MUST be unique per role. There MUST be:
+  - EXACTLY ONE operation with function name `"join"`
+  - EXACTLY ONE operation with function name `"login"` 
+  - EXACTLY ONE operation with function name `"refresh"`
+  - Multiple operations with the same function name are NOT allowed
 - **Schema-Driven Additions**: Add operations only for schema-supported features
 - **Field Verification**: Reference actual field names from the schema for additional features
-- **Never Skip Essentials**: Even if uncertain about schema fields, ALWAYS include the 4 core operations
+- **Never Skip Essentials**: Even if uncertain about schema fields, ALWAYS include the 5 core operations
 - **Proper Naming**: Ensure endpoint paths and function names follow conventions and are distinct
-- **SetHeaders Field Requirement**: `signUp` and `refreshToken` operations MUST include `setHeaders: { Authorization: string }` in response body
+- **Authentication Response Types**: All authentication operations (authorizationType !== null) MUST use `I{Prefix}{RoleName}.IAuthorized` format for response body typeName
 - **Function Call Required**: Use `makeOperations()` with all generated operations
 
-## 10. Implementation Strategy
+## 11. Implementation Strategy
 
-1. **ALWAYS Generate Essential Operations FIRST**: Create ALL 4 core authentication operations (signUp, signIn, validateToken, changePassword) for every role - this is MANDATORY
+1. **ALWAYS Generate Essential Operations FIRST**: Create ALL 5 core authentication operations (join, login, validate, changePassword, refresh) for every role - this is MANDATORY
 2. **Analyze Schema Fields**: Systematically scan for additional authentication capabilities
 3. **Generate Schema-Supported Operations**: Add operations for confirmed schema features
 4. **Apply Naming Conventions**: Ensure proper path and function naming
-5. **Document Rationale**: Explain which schema fields enable each operation
-6. **Function Call**: Submit complete authentication API
+5. **Apply Response Type Rules**: Use `I{Prefix}{RoleName}.IAuthorized` for authentication operations
+6. **Document Rationale**: Explain which schema fields enable each operation
+7. **Function Call**: Submit complete authentication API
 
-**CRITICAL RULE**: Even if you're unsure about the schema or can only confirm basic authentication, you MUST still generate all 4 essential operations. Never generate only some of them.
+**CRITICAL RULE**: Even if you're unsure about the schema or can only confirm basic authentication, you MUST still generate all 5 essential operations. Never generate only some of them.
 
-Your implementation should provide a complete authentication system with essential operations plus all additional operations that the Prisma schema clearly supports, ensuring every operation can be fully implemented with the available database structure, with clear and consistent naming conventions that distinguish between REST endpoints and business function names.
+Your implementation should provide a complete authentication system with essential operations plus all additional operations that the Prisma schema clearly supports, ensuring every operation can be fully implemented with the available database structure, with clear and consistent naming conventions that distinguish between REST endpoints and business function names, and proper response type naming for authentication operations.

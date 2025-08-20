@@ -8,7 +8,9 @@ import { v4 } from "uuid";
 import { TestGlobal } from "../../TestGlobal";
 import { TestHistory } from "../../internal/TestHistory";
 
-export const test_compiler_realize_files = async (): Promise<void> => {
+export const test_compiler_realize_files = async () => {
+  if (TestHistory.has("todo", "test") === false) return false;
+
   const agent: AutoBeAgent<"chatgpt"> = new AutoBeAgent({
     model: "chatgpt",
     vendor: {
@@ -17,7 +19,7 @@ export const test_compiler_realize_files = async (): Promise<void> => {
     },
     compiler: (listener) => new AutoBeCompiler(listener),
     histories: [
-      ...(await TestHistory.getTest("bbs-backend")),
+      ...(await TestHistory.getHistories("todo", "test")),
       {
         type: "realize",
         functions: [],

@@ -22,7 +22,7 @@ export namespace TestHistory {
     });
   };
 
-  export const getInitial = async (
+  export const initial = async (
     project: TestProject,
   ): Promise<AutoBeHistory[]> => {
     const text: string = await fs.promises.readFile(
@@ -44,61 +44,37 @@ export namespace TestHistory {
     ];
   };
 
-  export const getAnalyze = (project: TestProject): Promise<AutoBeHistory[]> =>
-    getHistories({
-      project,
-      type: "analyze",
-    });
-
-  export const getPrisma = (project: TestProject): Promise<AutoBeHistory[]> =>
-    getHistories({
-      project,
-      type: "prisma",
-    });
-
-  export const getInterface = (
+  export const getHistories = async (
     project: TestProject,
-  ): Promise<AutoBeHistory[]> =>
-    getHistories({
-      project,
-      type: "interface",
-    });
-
-  export const getTest = (project: TestProject) =>
-    getHistories({
-      project,
-      type: "test",
-    });
-
-  export const getRealize = (project: TestProject) =>
-    getHistories({
-      project,
-      type: "realize",
-    });
-
-  export const getTokenUsage = async (props: {
-    project: TestProject;
-    type: "analyze" | "prisma" | "interface" | "test" | "realize";
-  }): Promise<IAutoBeTokenUsageJson> => {
-    const snapshots: AutoBeEventSnapshot[] = JSON.parse(
-      await CompressUtil.gunzip(
-        await fs.promises.readFile(
-          `${TestGlobal.ROOT}/assets/histories/${TestGlobal.getVendorModel()}/${props.project}.${props.type}.snapshots.json.gz`,
-        ),
-      ),
-    );
-    return snapshots.at(-1)?.tokenUsage ?? new AutoBeTokenUsage().toJSON();
-  };
-
-  const getHistories = async (props: {
-    project: TestProject;
-    type: "initial" | "analyze" | "prisma" | "interface" | "test" | "realize";
-  }): Promise<AutoBeHistory[]> => {
-    const location: string = `${TestGlobal.ROOT}/assets/histories/${TestGlobal.getVendorModel()}/${props.project}.${props.type}.json.gz`;
+    type: "analyze" | "prisma" | "interface" | "test" | "realize",
+  ): Promise<AutoBeHistory[]> => {
+    const location: string = `${TestGlobal.ROOT}/assets/histories/${TestGlobal.getVendorModel()}/${project}.${type}.json.gz`;
     const content: string = await CompressUtil.gunzip(
       await fs.promises.readFile(location),
     );
     const histories: AutoBeHistory[] = JSON.parse(content);
     return typia.assert(histories);
   };
+
+  export const getTokenUsage = async (
+    project: TestProject,
+    type: "analyze" | "prisma" | "interface" | "test" | "realize",
+  ): Promise<IAutoBeTokenUsageJson> => {
+    const snapshots: AutoBeEventSnapshot[] = JSON.parse(
+      await CompressUtil.gunzip(
+        await fs.promises.readFile(
+          `${TestGlobal.ROOT}/assets/histories/${TestGlobal.getVendorModel()}/${project}.${type}.snapshots.json.gz`,
+        ),
+      ),
+    );
+    return snapshots.at(-1)?.tokenUsage ?? new AutoBeTokenUsage().toJSON();
+  };
+
+  export const has = (
+    project: TestProject,
+    type: "analyze" | "prisma" | "interface" | "test" | "realize",
+  ): boolean =>
+    fs.existsSync(
+      `${TestGlobal.ROOT}/assets/histories/${TestGlobal.getVendorModel()}/${project}.${type}.json.gz`,
+    );
 }

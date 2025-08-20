@@ -3,14 +3,16 @@ import {
   AutoBeInterfaceSchemasReviewEvent,
   AutoBeOpenApi,
 } from "@autobe/interface";
-import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
+import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
 import { IPointer } from "tstl";
 import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
+import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { transformInterfaceSchemasReviewHistories } from "./histories/transformInterfaceSchemasReviewHistories";
 import { IAutoBeInterfaceSchemasReviewApplication } from "./structures/IAutobeInterfaceSchemasReviewApplication";
+import { validateAuthorizationSchema } from "./utils/validateAuthorizationSchema";
 
 export async function orchestrateInterfaceSchemasReview<
   Model extends ILlmSchema.Model,
@@ -83,9 +85,34 @@ function createController<Model extends ILlmSchema.Model>(props: {
     AutoBeOpenApi.IJsonSchemaDescriptive<AutoBeOpenApi.IJsonSchema>
   >;
 }): IAgenticaController.IClass<Model> {
+  assertSchemaModel(props.model);
+
+  const validate = (
+    next: unknown,
+  ): IValidation<IAutoBeInterfaceSchemasReviewApplication.IProps> => {
+    const result: IValidation<IAutoBeInterfaceSchemasReviewApplication.IProps> =
+      typia.validate<IAutoBeInterfaceSchemasReviewApplication.IProps>(next);
+    if (result.success === false) return result;
+
+    const errors: IValidation.IError[] = [];
+    validateAuthorizationSchema({
+      errors,
+      schemas: result.data.content,
+      path: "$input.content",
+    });
+    if (errors.length !== 0)
+      return {
+        success: false,
+        errors,
+        data: next,
+      };
+    return result;
+  };
   const application: ILlmApplication<Model> = collection[
     props.model === "chatgpt" ? "chatgpt" : "claude"
-  ] satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+  ](
+    validate,
+  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
     name: "Reviewer",
@@ -97,17 +124,22 @@ function createController<Model extends ILlmSchema.Model>(props: {
     } satisfies IAutoBeInterfaceSchemasReviewApplication,
   };
 }
-const claude = typia.llm.application<
-  IAutoBeInterfaceSchemasReviewApplication,
-  "claude"
->();
+
 const collection = {
-  chatgpt: typia.llm.application<
-    IAutoBeInterfaceSchemasReviewApplication,
-    "chatgpt"
-  >(),
-  claude,
-  llama: claude,
-  deepseek: claude,
-  "3.1": claude,
+  chatgpt: (validate: Validator) =>
+    typia.llm.application<IAutoBeInterfaceSchemasReviewApplication, "chatgpt">({
+      validate: {
+        review: validate,
+      },
+    }),
+  claude: (validate: Validator) =>
+    typia.llm.application<IAutoBeInterfaceSchemasReviewApplication, "claude">({
+      validate: {
+        review: validate,
+      },
+    }),
 };
+
+type Validator = (
+  input: unknown,
+) => IValidation<IAutoBeInterfaceSchemasReviewApplication.IProps>;

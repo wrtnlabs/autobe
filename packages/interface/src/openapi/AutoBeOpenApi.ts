@@ -312,6 +312,28 @@ export namespace AutoBeOpenApi {
     specification: string;
 
     /**
+     * Authorization type of the API operation.
+     *
+     * - `"login"`: User login operations that validate credentials
+     * - `"join"`: User registration operations that create accounts
+     * - `"refresh"`: Token refresh operations that renew access tokens
+     * - `null`: All other operations (CRUD, business logic, etc.)
+     *
+     * Use authentication values only for credential validation, user
+     * registration, or token refresh operations. Use `null` for all other
+     * business operations.
+     *
+     * Examples:
+     *
+     * - `/auth/login` → `"login"`
+     * - `/auth/register` → `"join"`
+     * - `/auth/refresh` → `"refresh"`
+     * - `/auth/validate` → `null`
+     * - `/users/{id}`, `/shoppings/customers/sales/cancel`, → `null`
+     */
+    authorizationType: "login" | "join" | "refresh" | null;
+
+    /**
      * Detailed description about the API operation.
      *
      * IMPORTANT: This field MUST be extensively detailed and MUST reference the

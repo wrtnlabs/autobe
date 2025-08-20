@@ -50,8 +50,8 @@
 // };
 // const main = async () => {
 //   const json: Record<string, IProjectExample> = {
-//     bbs: await example("samchon", "bbs-backend"),
-//     shopping: await example("samchon", "shopping-backend"),
+//     bbs: await example("samchon", "bbs"),
+//     shopping: await example("samchon", "shopping"),
 //   };
 //   await fs.promises.writeFile(
 //     `${__dirname}/../src/constants/examples.json`,

@@ -123,6 +123,7 @@ async function process<Model extends ILlmSchema.Model>(
                     .filter((it) => it !== "")
                     .join("/"),
                 authorizationRole: null,
+                authorizationType: null,
               },
             ];
           return op.authorizationRoles.map((role) => ({
@@ -133,6 +134,7 @@ async function process<Model extends ILlmSchema.Model>(
                 .filter((it) => it !== "")
                 .join("/"),
             authorizationRole: role,
+            authorizationType: null,
           }));
         });
         pointer.value.push(...matrix.flat());

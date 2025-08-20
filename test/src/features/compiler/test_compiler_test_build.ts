@@ -11,8 +11,13 @@ import typia from "typia";
 
 import { TestHistory } from "../../internal/TestHistory";
 
-export async function test_compiler_test_build(): Promise<void> {
-  const histories: AutoBeHistory[] = await TestHistory.getTest("bbs-backend");
+export const test_compiler_test_build = async () => {
+  if (TestHistory.has("todo", "test") === false) return false;
+
+  const histories: AutoBeHistory[] = await TestHistory.getHistories(
+    "todo",
+    "test",
+  );
   const testHistory: AutoBeTestHistory = typia.assert<AutoBeTestHistory>(
     histories.at(-1),
   );
@@ -40,4 +45,4 @@ export async function test_compiler_test_build(): Promise<void> {
     ),
   });
   TestValidator.equals("result")(result.type)("success");
-}
+};

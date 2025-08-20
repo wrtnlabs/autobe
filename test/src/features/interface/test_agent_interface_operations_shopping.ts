@@ -3,4 +3,4 @@ import { validate_agent_interface_operations } from "./internal/validate_agent_i
 
 export const test_agent_interface_operations_shopping = (
   factory: TestFactory,
-) => validate_agent_interface_operations(factory, "shopping-backend");
+) => validate_agent_interface_operations(factory, "shopping");

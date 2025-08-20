@@ -11,14 +11,12 @@ import { TestGlobal } from "../../TestGlobal";
 import { TestHistory } from "../../internal/TestHistory";
 
 export const test_compiler_prisma_sqlite = async () => {
-  await validate("bbs-backend");
-  await validate("shopping-backend");
-};
+  if (TestHistory.has("todo", "prisma") === false) return false;
 
-const validate = async (
-  type: Parameters<typeof TestHistory.getPrisma>[0],
-): Promise<void> => {
-  const histories: AutoBeHistory[] = await TestHistory.getPrisma(type);
+  const histories: AutoBeHistory[] = await TestHistory.getHistories(
+    "todo",
+    "prisma",
+  );
   const prisma: AutoBePrismaHistory | undefined = histories.find(
     (h) => h.type === "prisma",
   );
@@ -30,7 +28,7 @@ const validate = async (
     "sqlite",
   );
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/compiler/prisma/sqlite/${type}`,
+    root: `${TestGlobal.ROOT}/results/compiler/prisma/sqlite/todo-backend`,
     files: Object.fromEntries(
       Object.entries(files).map(([key, value]) => [key, value]),
     ),

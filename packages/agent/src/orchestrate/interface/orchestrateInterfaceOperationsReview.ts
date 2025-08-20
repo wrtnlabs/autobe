@@ -42,19 +42,26 @@ export async function orchestrateInterfaceOperationsReview<
       return [];
     }
 
+    const content: AutoBeOpenApi.IOperation[] = pointer.value.content.map(
+      (op) => ({
+        ...op,
+        authorizationType: null,
+      }),
+    );
+
     ctx.dispatch({
       type: "interfaceOperationsReview",
-      operations: pointer.value.content,
+      operations: content,
       review: pointer.value.review,
       plan: pointer.value.plan,
-      content: pointer.value.content,
+      content,
       tokenUsage,
       created_at: new Date().toISOString(),
       step: ctx.state().analyze?.step ?? 0,
       total: progress.total,
       completed: ++progress.completed,
     } satisfies AutoBeInterfaceOperationsReviewEvent);
-    return pointer.value.content;
+    return content;
   } catch (error) {
     console.error("Error occurred during interface operations review:", error);
     ++progress.completed;
