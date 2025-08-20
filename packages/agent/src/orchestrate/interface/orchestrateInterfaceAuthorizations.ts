@@ -5,6 +5,7 @@ import {
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { AutoBeInterfaceAuthorizationEvent } from "@autobe/interface/src/events/AutoBeInterfaceAuthorizationEvent";
+import { StringUtil } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -51,7 +52,7 @@ async function process<Model extends ILlmSchema.Model>(
     histories: transformInterfaceAuthorizationsHistories(ctx.state(), role),
     controller: createController({
       model: ctx.model,
-      roles: ctx.state().analyze?.roles.map((it) => it.name) ?? [],
+      role: role.name,
       build: (next) => {
         pointer.value = next;
       },
@@ -75,7 +76,7 @@ async function process<Model extends ILlmSchema.Model>(
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  roles: string[];
+  role: string;
   build: (next: IAutoBeInterfaceAuthorizationsApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
@@ -86,20 +87,11 @@ function createController<Model extends ILlmSchema.Model>(props: {
     const result: IValidation<IAutoBeInterfaceAuthorizationsApplication.IProps> =
       typia.validate<IAutoBeInterfaceAuthorizationsApplication.IProps>(next);
     if (result.success === false) return result;
-
-    const authorization: IAutoBeInterfaceAuthorizationsApplication.IProps =
-      result.data;
-
     const errors: IValidation.IError[] = [];
-
-    authorization.operations.forEach((op, i) => {
-      if (op.authorizationType === null) {
-        return;
-      }
-
-      op.responseBody?.description;
-      op.responseBody?.typeName;
-      if (op.responseBody === null) {
+    result.data.operations.forEach((op, i) => {
+      // validate responseBody.typeName -> must be ~.IAuthorized
+      if (op.authorizationType === null) return;
+      else if (op.responseBody === null)
         errors.push({
           path: `$input.operations.${i}.responseBody`,
           expected:
@@ -109,15 +101,11 @@ function createController<Model extends ILlmSchema.Model>(props: {
             "Response body is required for authentication operations.",
             "",
             "The responseBody must contain description and typeName fields.",
-            "typeName must be I{RoleName(PascalCase)}.IAuthorized",
+            "typeName must be I{Prefix(PascalCase)}{RoleName(PascalCase)}.IAuthorized",
             "description must be a detailed description of the response body.",
           ].join("\n"),
         });
-
-        return;
-      }
-
-      if (!op.responseBody.typeName.endsWith(".IAuthorized")) {
+      else if (!op.responseBody.typeName.endsWith(".IAuthorized"))
         errors.push({
           path: `$input.operations.${i}.responseBody.typeName`,
           expected: `Type name must be I{RoleName(PascalCase)}.IAuthorized`,
@@ -131,9 +119,36 @@ function createController<Model extends ILlmSchema.Model>(props: {
             `The Role name should be in PascalCase format (e.g., IUser.IAuthorized, IAdmin.IAuthorized, ISeller.IAuthorized).`,
           ].join("\n"),
         });
-      }
     });
 
+    // validate authorization types' existence
+    type AuthorizationType = NonNullable<
+      AutoBeOpenApi.IOperation["authorizationType"]
+    >;
+    const authorizationTypes: Set<AuthorizationType> = new Set(
+      result.data.operations
+        .map((o) => o.authorizationType)
+        .filter((v) => v !== null),
+    );
+    for (const type of typia.misc.literals<AuthorizationType>())
+      if (authorizationTypes.has(type) === false)
+        errors.push({
+          path: "$input.operations[].authorizationType",
+          expected: StringUtil.trim`{
+          ...(AutoBeOpenApi.IOperation data),
+          authorizationType: "${type}"
+        }`,
+          value: `No authorizationType "${type}" found in any operation`,
+          description: StringUtil.trim`
+          There must be an operation that has defined AutoBeOpenApi.IOperation.authorizationType := "${type}"
+          for the "${props.role}" role's authorization activity; "${type}".
+
+          However, none of the operations have the AutoBeOpenApi.IOperation.authorizationType := "${type}" 
+          value, so that the "${props.role}" cannot perform the authorization ${type} activity.
+
+          Please make that operation at the next function calling. You have to do it.
+        `,
+        });
     if (errors.length !== 0) {
       return {
         success: false,
