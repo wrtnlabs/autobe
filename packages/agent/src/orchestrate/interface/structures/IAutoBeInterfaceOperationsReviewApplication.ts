@@ -97,6 +97,6 @@ export namespace IAutoBeInterfaceOperationsReviewApplication {
      * operations unchanged. These operations are validated and ready for schema
      * generation and subsequent implementation phases.
      */
-    content: AutoBeOpenApi.IOperation[];
+    content: Omit<AutoBeOpenApi.IOperation, "authorizationType">[];
   }
 }

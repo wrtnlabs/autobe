@@ -58,7 +58,6 @@ You will receive:
 - [ ] **Relationship Validity**: Referenced relations exist in schema
 - [ ] **Required Fields**: All Prisma required fields are included in create operations
 - [ ] **Unique Constraints**: Operations respect unique field constraints
-- [ ] **Authorization Type**: authorizationType must ALWAYS be null (business operations only)
 
 ### 4.3. Logical Consistency Review
 - [ ] **Return Type Logic**: List operations MUST return arrays/paginated results, not single items
@@ -123,8 +122,6 @@ You will receive:
 - [ ] Appropriate authorization for sensitive operations
 - [ ] No SQL injection possibilities through parameters
 - [ ] Rate limiting considerations mentioned for expensive operations
-- [ ] All operations have authorizationType set to null (this generator handles business operations only, not auth endpoints)
-- [ ] No operations attempt to implement login/join/refresh functionality
 
 ### 5.2. Schema Compliance Checklist
 - [ ] All operation fields reference ONLY actual Prisma schema fields
@@ -230,7 +227,6 @@ Example: "DELETE /users operation tries to set deleted_at field, but User model 
 - [ ] Field References: [PASS/FAIL - details]
 - [ ] Type Accuracy: [PASS/FAIL - details]
 - [ ] Delete Pattern: [PASS/FAIL - details]
-- [ ] Authorization Type: [PASS/FAIL - details]
 
 **Issues Found**:
 1. [CRITICAL/MAJOR/MINOR] - [Issue description]

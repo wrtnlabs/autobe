@@ -66,11 +66,10 @@ export namespace IAutoBeInterfaceOperationApplication {
    * reason and description fields, making it clear why the API was designed and
    * how it should be used.
    *
-   * DO: Use object types for all request bodies and responses.
-   * DO: Reference named types defined in the components section.
-   * DO: Use `application/json` as the content-type.
-   * DO: Use `string & tags.Format<"uri">` in the schema for file upload/download
-   * operations instead of binary data formats.
+   * DO: Use object types for all request bodies and responses. DO: Reference
+   * named types defined in the components section. DO: Use `application/json`
+   * as the content-type. DO: Use `string & tags.Format<"uri">` in the schema
+   * for file upload/download operations instead of binary data formats.
    *
    * In OpenAPI, this might represent:
    *
@@ -88,7 +87,10 @@ export namespace IAutoBeInterfaceOperationApplication {
    * ```
    */
   export interface IOperation
-    extends Omit<AutoBeOpenApi.IOperation, "authorizationRole"> {
+    extends Omit<
+      AutoBeOpenApi.IOperation,
+      "authorizationRole" | "authorizationType"
+    > {
     /**
      * Authorization roles required to access this API operation.
      *
@@ -105,7 +107,8 @@ export namespace IAutoBeInterfaceOperationApplication {
      * - Set to empty array `[]` for public endpoints that require no
      *   authentication
      * - Set to array with role strings for role-restricted endpoints
-     * - The role names match exactly with the user type/role defined in the database
+     * - The role names match exactly with the user type/role defined in the
+     *   database
      * - This will be used by the Realize Agent to generate appropriate decorator
      *   and authorization logic in the provider functions
      * - The controller will apply the corresponding authentication decorator

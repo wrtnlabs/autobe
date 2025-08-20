@@ -48,10 +48,7 @@ export async function orchestrateInterfaceOperations<
           operationsProgress,
           operationsReviewProgress,
         );
-        return row.map((el) => ({
-          ...el,
-          authorizationType: null,
-        }));
+        return row;
       }),
     )
   ).flat();
@@ -121,24 +118,24 @@ async function process<Model extends ILlmSchema.Model>(
             return [
               {
                 ...op,
-                authorizationType: null,
                 path:
                   "/" +
                   [prefix, ...op.path.split("/")]
                     .filter((it) => it !== "")
                     .join("/"),
                 authorizationRole: null,
+                authorizationType: null,
               },
             ];
           return op.authorizationRoles.map((role) => ({
             ...op,
-            authorizationType: null,
             path:
               "/" +
               [prefix, role, ...op.path.split("/")]
                 .filter((it) => it !== "")
                 .join("/"),
             authorizationRole: role,
+            authorizationType: null,
           }));
         });
         pointer.value.push(...matrix.flat());
