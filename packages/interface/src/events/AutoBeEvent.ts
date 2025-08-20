@@ -4,6 +4,7 @@ import { AutoBeAnalyzeScenarioEvent } from "./AutoBeAnalyzeScenarioEvent";
 import { AutoBeAnalyzeStartEvent } from "./AutoBeAnalyzeStartEvent";
 import { AutoBeAnalyzeWriteEvent } from "./AutoBeAnalyzeWriteEvent";
 import { AutoBeAssistantMessageEvent } from "./AutoBeAssistantMessageEvent";
+import { AutoBeConsentFunctionCallEvent } from "./AutoBeConsentFunctionCallEvent";
 import { AutoBeInterfaceAuthorizationEvent } from "./AutoBeInterfaceAuthorizationEvent";
 import { AutoBeInterfaceComplementEvent } from "./AutoBeInterfaceComplementEvent";
 import { AutoBeInterfaceCompleteEvent } from "./AutoBeInterfaceCompleteEvent";
@@ -74,6 +75,7 @@ export type AutoBeEvent =
   | AutoBeUserMessageEvent
   | AutoBeVendorRequestEvent
   | AutoBeVendorResponseEvent
+  | AutoBeConsentFunctionCallEvent
   // ANALYZE
   | AutoBeAnalyzeStartEvent
   | AutoBeAnalyzeScenarioEvent
@@ -162,6 +164,7 @@ export namespace AutoBeEvent {
     userMessage: AutoBeUserMessageEvent;
     vendorRequest: AutoBeVendorRequestEvent;
     vendorResponse: AutoBeVendorResponseEvent;
+    consentFunctionCall: AutoBeConsentFunctionCallEvent;
     // ANALYZE
     analyzeStart: AutoBeAnalyzeStartEvent;
     analyzeScenario: AutoBeAnalyzeScenarioEvent;

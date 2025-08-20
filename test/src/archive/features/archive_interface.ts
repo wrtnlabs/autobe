@@ -35,6 +35,7 @@ export const archive_interface = async (
     });
   };
   agent.on("assistantMessage", listen);
+  agent.on("consentFunctionCall", listen);
   for (const type of typia.misc.literals<AutoBeEvent.Type>())
     if (type.startsWith("interface")) agent.on(type, listen);
 

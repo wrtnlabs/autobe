@@ -4,20 +4,20 @@ import {
   AutoBeRealizeFunction,
   IAutoBeRealizeControllerProps,
 } from "@autobe/interface";
+import { transformOpenApiDocument } from "@autobe/utils";
 import { NestiaMigrateApplication } from "@nestia/migrate";
 import { NestiaMigrateNestMethodProgrammer } from "@nestia/migrate/lib/programmers/NestiaMigrateNestMethodProgrammer";
 import path from "path";
 import ts from "typescript";
 
-import { createMigrateApplication } from "../interface/createMigrateApplication";
 import { ArrayUtil } from "../utils/ArrayUtil";
 import { FilePrinter } from "../utils/FilePrinter";
 
 export const writeRealizeControllers = async (
   props: IAutoBeRealizeControllerProps,
 ): Promise<Record<string, string>> => {
-  const app: NestiaMigrateApplication = createMigrateApplication(
-    props.document,
+  const app: NestiaMigrateApplication = new NestiaMigrateApplication(
+    transformOpenApiDocument(props.document),
   );
   const result: Record<string, string> = app.nest({
     simulate: false,

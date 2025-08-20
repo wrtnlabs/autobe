@@ -1,11 +1,25 @@
 import { AutoBeOpenApi } from "@autobe/interface";
-import { OpenApi, OpenApiV3_1 } from "@samchon/openapi";
+import {
+  HttpMigration,
+  IHttpMigrateApplication,
+  OpenApi,
+  OpenApiV3_1,
+} from "@samchon/openapi";
+import { HashMap } from "tstl";
+
+import { AutoBeEndpointComparator } from "./AutoBeEndpointComparator";
 
 export function transformOpenApiDocument(
   document: AutoBeOpenApi.IDocument,
 ): OpenApi.IDocument {
+  const dict: HashMap<AutoBeOpenApi.IEndpoint, string> = new HashMap(
+    AutoBeEndpointComparator.hashCode,
+    AutoBeEndpointComparator.equals,
+  );
   const paths: Record<string, OpenApi.IPath> = {};
+
   for (const op of document.operations) {
+    dict.set(op, op.name);
     paths[op.path] ??= {};
     paths[op.path][op.method] = {
       summary: op.summary,
@@ -46,9 +60,22 @@ export function transformOpenApiDocument(
         : undefined,
     };
   }
-  return OpenApi.convert({
+
+  const result: OpenApi.IDocument = OpenApi.convert({
     openapi: "3.1.0",
     paths,
     components: document.components,
   } as OpenApiV3_1.IDocument);
+  const migrate: IHttpMigrateApplication = HttpMigration.application(result);
+  migrate.routes.forEach((r) => {
+    if (r.method === "head") return;
+    const name: string = dict.get({
+      method: r.method,
+      path: r.path,
+    });
+    if (r.accessor.length >= 2 && r.accessor.at(-2) === name) r.accessor.pop();
+    r.accessor[r.accessor.length - 1] = name;
+    r.operation()["x-samchon-accessor"] = r.accessor;
+  });
+  return result;
 }

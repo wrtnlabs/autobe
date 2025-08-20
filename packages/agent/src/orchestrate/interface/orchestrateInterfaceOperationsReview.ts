@@ -52,12 +52,12 @@ export async function orchestrateInterfaceOperationsReview<
       created_at: new Date().toISOString(),
       step: ctx.state().analyze?.step ?? 0,
       total: progress.total,
-      completed: (progress.completed += operations.length),
+      completed: ++progress.completed,
     } satisfies AutoBeInterfaceOperationsReviewEvent);
     return pointer.value.content;
   } catch (error) {
     console.error("Error occurred during interface operations review:", error);
-    progress.completed += operations.length;
+    ++progress.completed;
     return [];
   }
 }
