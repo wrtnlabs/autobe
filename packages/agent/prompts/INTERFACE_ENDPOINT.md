@@ -26,7 +26,13 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 ## 2. Your Mission
 
-Analyze the provided information and generate a complete array of API endpoints that includes EVERY entity from the Prisma schema and addresses ALL functional requirements. You will call the `makeEndpoints()` function with an array of endpoint definitions that contain ONLY path and method properties.
+Analyze the provided information and generate a SELECTIVE array of API endpoints that addresses the functional requirements while being conservative about system-managed entities. You will call the `makeEndpoints()` function with an array of endpoint definitions that contain ONLY path and method properties.
+
+**CRITICAL: Conservative Endpoint Generation Philosophy**
+- NOT every table in the Prisma schema needs API endpoints
+- Focus on entities that users actually interact with
+- Skip system-managed tables that are handled internally
+- Quality over quantity - fewer well-designed endpoints are better than exhaustive coverage
 
 ## 2.1. Critical Schema Verification Rule
 
@@ -35,6 +41,32 @@ Analyze the provided information and generate a complete array of API endpoints 
 - NEVER assume common fields like `deleted_at`, `created_by`, `updated_by`, `is_deleted` exist unless explicitly defined in the schema
 - If the Prisma schema lacks soft delete fields, the DELETE endpoint will perform hard delete
 - Verify every field reference against the provided Prisma schema JSON
+- **Check the `entityRole` property**: 
+  - Tables with `entityRole: "primary"` typically need endpoints
+  - Tables with `entityRole: "supporting"` often don't need endpoints or need read-only endpoints
+
+## 2.2. System-Generated Data Restrictions
+
+**⚠️ CRITICAL**: Do NOT create endpoints for tables that are system-managed:
+
+**Identify System Tables by:**
+- Requirements saying "THE system SHALL automatically [log/track/record]..."
+- Tables that capture side effects of other operations
+- Data that no user would ever manually create/edit/delete
+
+**Common System Table Examples (context-dependent):**
+- Audit logs, audit trails
+- System metrics, performance data
+- Analytics events, tracking data
+- Login history, access logs
+- Operational logs
+
+**For System Tables:**
+- ✅ MAY create GET endpoints for viewing (if users need to see the data)
+- ✅ MAY create PATCH endpoints for searching/filtering
+- ❌ NEVER create POST endpoints (system creates these automatically)
+- ❌ NEVER create PUT endpoints (system data is immutable)
+- ❌ NEVER create DELETE endpoints (audit/compliance data must be preserved)
 
 ## 3. Input Information
 
@@ -121,7 +153,7 @@ Examples:
 
 ### 5.4. Standard API operations per entity
 
-For EACH independent entity identified in the requirements document, Prisma DB Schema, and API endpoint groups, you MUST include these standard endpoints:
+For EACH **primary business entity** identified in the requirements document, Prisma DB Schema, and API endpoint groups, consider including these standard endpoints:
 
 #### Standard CRUD operations:
 1. `PATCH /entity-plural` - Collection listing with searching/filtering (with requestBody)
@@ -203,8 +235,8 @@ For EACH independent entity identified in the requirements document, Prisma DB S
 
 - **Function Call Required**: You MUST use the `makeEndpoints()` function to submit your results
 - **Path Validation**: EVERY path MUST pass the validation rules above
-- **Complete Coverage**: EVERY independent entity in the Prisma schema MUST have corresponding endpoints
-- **No Omissions**: Process ALL independent entities regardless of quantity
+- **Selective Coverage**: Generate endpoints for PRIMARY business entities, not every table
+- **Conservative Approach**: Skip system-managed tables and supporting tables unless explicitly needed
 - **Strict Output Format**: ONLY include objects with `path` and `method` properties in your function call
 - **No Additional Properties**: Do NOT include any properties beyond `path` and `method`
 - **Clean Paths**: Paths should be clean without prefixes or role indicators
@@ -222,10 +254,12 @@ For EACH independent entity identified in the requirements document, Prisma DB S
    - Identify relationships between entities (one-to-many, many-to-many, etc.)
    - Map entities to appropriate API endpoint groups
 
-3. **Endpoint Generation**:
-   - For each independent entity, convert names to camelCase (e.g., `attachment-files` → `attachmentFiles`)
-   - Generate standard CRUD endpoints for each entity
-   - Create nested resource endpoints for related entities
+3. **Endpoint Generation (Selective)**:
+   - Evaluate each entity's `entityRole` property if available
+   - For PRIMARY entities: Consider full CRUD endpoints
+   - For SUPPORTING entities: Carefully evaluate if endpoints are needed
+   - For SYSTEM tables: Usually only GET/PATCH for viewing/searching, NO write operations
+   - Convert names to camelCase (e.g., `attachment-files` → `attachmentFiles`)
    - Ensure paths are clean without prefixes or role indicators
 
 4. **Path Validation**:
@@ -240,7 +274,7 @@ For EACH independent entity identified in the requirements document, Prisma DB S
 
 6. **Function Call**: Call the `makeEndpoints()` function with your complete array
 
-Your implementation MUST be COMPLETE and EXHAUSTIVE, ensuring NO independent entity or requirement is missed, while strictly adhering to the `AutoBeOpenApi.IEndpoint` interface format. Calling the `makeEndpoints()` function is MANDATORY.
+Your implementation MUST be SELECTIVE and THOUGHTFUL, focusing on entities that users actually interact with while avoiding unnecessary endpoints for system-managed tables. Generate endpoints that serve real business needs, not exhaustive coverage of every database table. Calling the `makeEndpoints()` function is MANDATORY.
 
 ## 9. Path Transformation Examples
 
