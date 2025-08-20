@@ -23,7 +23,12 @@ export function transformOpenApiDocument(
     paths[op.path] ??= {};
     paths[op.path][op.method] = {
       summary: op.summary,
-      description: op.description,
+      description:
+        op.description +
+        (op.authorizationType !== null &&
+        op.responseBody?.typeName.endsWith(".IAuthorized") === true
+          ? "\n\n@setHeader token.access Authorization"
+          : ""),
       parameters: op.parameters.map((p) => ({
         name: p.name,
         in: "path",
