@@ -56,22 +56,20 @@ These operations should be generated for every role if the basic authentication 
 - **Function Name**: `"join"`
 - **Purpose**: Create new user account and issue initial JWT tokens
 - **Auth Required**: None (public)
-- **Response Body Requirement**: Must include access token, refresh token, access token expiration, and refresh token expiration
 
 #### Login
 - **Condition**: Role table has authentication fields
 - **Path**: `/auth/{roleName}/login`
 - **Method**: `POST`
 - **Function Name**: `"login"`
-- **Purpose**: Authenticate user and issue JWT tokens
+- **Purpose**: Authenticate user and issue Access tokens
 - **Auth Required**: None (public)
-- **Response Body Requirement**: Must include access token, refresh token, access token expiration, and refresh token expiration
 
 #### Token Validation
 - **Path**: `/auth/{roleName}/validate`
 - **Method**: `POST`
 - **Function Name**: `"validate"`
-- **Purpose**: Validate JWT token and return authentication status
+- **Purpose**: Validate Access token and return authentication status
 - **Auth Required**: None (validates provided token)
 
 #### Change Password
@@ -86,9 +84,8 @@ These operations should be generated for every role if the basic authentication 
 - **Path**: `/auth/{roleName}/refresh`
 - **Method**: `POST`
 - **Function Name**: `"refresh"`
-- **Purpose**: Refresh JWT tokens using a valid refresh token
-- **Auth Required**: Valid refresh token
-- **Response Body Requirement**: Must include access token, refresh token, access token expiration, and refresh token expiration
+- **Purpose**: Refresh Access tokens using a valid refresh token
+- **Auth Required**: None (Valid refresh token)
 
 ## 4. Schema-Driven Operations (Generate Based on Available Fields)
 
@@ -204,24 +201,13 @@ Each operation must document:
 
 **Paragraph 1**: Purpose and functionality referencing specific schema fields
 
-**Paragraph 2**: JWT implementation details using confirmed available fields
+**Paragraph 2**: implementation details using confirmed available fields
 
 **Paragraph 3**: Role-specific integration and business context
 
 **Paragraph 4**: Security considerations within schema constraints
 
 **Paragraph 5**: Related operations and authentication workflow integration
-
-### 8.2. Token Response Requirements
-
-For operations with function names `login`, `join` and `refresh`, the response body must include the following token information:
-
-- **Access Token**: The JWT access token for authenticated requests
-- **Refresh Token**: The refresh token for obtaining new access tokens
-- **Access Token Expiration**: The expiration timestamp of the access token
-- **Refresh Token Expiration**: The expiration timestamp until which the refresh token can be used
-
-These fields enable complete JWT token lifecycle management for the client application.
 
 ## 9. Response Body Type Naming Rules
 
@@ -267,7 +253,6 @@ This ensures consistent type naming across all authentication operations while c
 - **Field Verification**: Reference actual field names from the schema for additional features
 - **Never Skip Essentials**: Even if uncertain about schema fields, ALWAYS include the 5 core operations
 - **Proper Naming**: Ensure endpoint paths and function names follow conventions and are distinct
-- **Token Response Requirements**: `login`, `join`, and `refresh` operations MUST include access token, refresh token, and their respective expiration timestamps in response body
 - **Authentication Response Types**: All authentication operations (authorizationType !== null) MUST use `I{RoleName}.IAuthorized` format for response body typeName
 - **Function Call Required**: Use `makeOperations()` with all generated operations
 
