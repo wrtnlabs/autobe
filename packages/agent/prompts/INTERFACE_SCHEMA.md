@@ -351,11 +351,6 @@ For authentication operations (login, join, refresh), the response type MUST fol
 - Common additional properties include: authenticated entity data (user, admin, seller), permissions, roles, or other authorization-related information
 - These additional properties should be relevant to the authentication context
 
-**Refresh Operation Guidelines**:
-- For refresh operations, keep the response minimal - include only the `token` property
-- Do NOT add additional fields like user data or permissions to refresh responses
-- The refresh operation should focus solely on token renewal
-
 **Important Notes**:
 - This structure enables complete JWT token lifecycle management
 - The token property is REQUIRED for all authorization response types
