@@ -367,7 +367,7 @@ export namespace AutoBePrisma {
      *   }
      *   ```;
      */
-    entityRole: "primary" | "supporting";
+    entityRole?: "primary" | "supporting";
 
     //----
     // FIELDS
