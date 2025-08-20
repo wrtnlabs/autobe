@@ -1,9 +1,4 @@
-import {
-  AgenticaJsonParseErrorEvent,
-  AgenticaValidateEvent,
-  MicroAgentica,
-  MicroAgenticaHistory,
-} from "@agentica/core";
+import { MicroAgentica, MicroAgenticaHistory } from "@agentica/core";
 import {
   AutoBeAnalyzeCompleteEvent,
   AutoBeAnalyzeHistory,
@@ -82,9 +77,6 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
         histories: next.histories,
         controllers: [next.controller],
       });
-      const validates: AgenticaValidateEvent<Model>[] = [];
-      const parseErrors: AgenticaJsonParseErrorEvent<Model>[] = [];
-
       agent.on("request", (event) => {
         if (next.enforceFunctionCall === true && event.body.tools)
           event.body.tool_choice = "required";
@@ -107,12 +99,6 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
           })
           .catch(() => {});
       });
-      agent.on("validate", (event) => {
-        validates.push(event);
-      });
-      agent.on("jsonParseError", (event) => {
-        parseErrors.push(event);
-      });
 
       const histories: MicroAgenticaHistory<Model>[] = await agent.conversate(
         next.message,
@@ -132,22 +118,10 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
           histories.some((h) => h.type === "execute" && h.success === true)
       ) {
         const failure = () => {
-          console.log({
-            source: next.source,
-            title: "function calling failed",
-            types: histories.map((h) => h.type),
-            assistantMessage:
-              histories.at(-1)?.type === "assistantMessage"
-                ? histories.at(-1)
-                : null,
-            validate: validates.at(-1),
-            parse: parseErrors.at(-1),
-          });
           throw new Error(
             `Failed to function calling in the ${next.source} step`,
           );
         };
-
         const last: MicroAgenticaHistory<Model> | undefined = histories.at(-1);
         if (last?.type === "assistantMessage") {
           const consent: string | null = await consentFunctionCall({

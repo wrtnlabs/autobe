@@ -153,7 +153,6 @@ async function process<Model extends ILlmSchema.Model>(
     message: "Make API operations",
   });
   if (pointer.value === null) {
-    console.log(JSON.stringify(histories, null, 2));
     throw new Error("Failed to create operations."); // never be happened
   }
   ctx.dispatch({
