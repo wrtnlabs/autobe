@@ -289,6 +289,86 @@ export namespace AutoBePrisma {
      */
     material: boolean;
 
+    /**
+     * Specifies the operational role of this model in the system architecture.
+     *
+     * This property distinguishes between tables that users directly manage
+     * versus those that exist for supporting, system, or infrastructure
+     * purposes.
+     *
+     * ## Values:
+     *
+     * ### `"primary"` - User-Managed Business Entity
+     *
+     * Tables that represent core business concepts which users directly
+     * interact with. These are the main subjects of business operations and
+     * typically require full CRUD APIs.
+     *
+     * **Characteristics:**
+     *
+     * - Users can create, read, update, and delete these records
+     * - Represents tangible business concepts
+     * - Forms the core of the application's functionality
+     *
+     * **Examples:**
+     *
+     * - `users` - User accounts that people manage
+     * - `posts` - Content that users create and edit
+     * - `products` - Items in an e-commerce catalog
+     * - `orders` - Purchase transactions users make
+     *
+     * ### `"supporting"` - Auxiliary or System-Managed Table
+     *
+     * Tables that support primary entities but are not directly managed by
+     * users. These may be automatically maintained by the system or managed
+     * indirectly.
+     *
+     * **Characteristics:**
+     *
+     * - Often system-generated or auto-maintained
+     * - May have limited or read-only API operations
+     * - Exists to support primary entities or system functions
+     *
+     * **Examples:**
+     *
+     * - Junction tables: `user_roles`, `product_categories`
+     * - System logs: `audit_trails`, `operation_logs`, `error_logs`
+     * - History/Snapshots: `order_snapshots`, `price_history`
+     * - Analytics: `page_views`, `click_events`, `metrics`
+     * - Cache tables: `search_cache`, `computed_aggregates`
+     *
+     * ## API Generation Guidelines:
+     *
+     * The Interface Agent should use this classification to guide operation
+     * generation:
+     *
+     * - **`"primary"`** → Evaluate for full CRUD operations based on requirements
+     * - **`"supporting"`** → Carefully consider if operations are needed:
+     *
+     *   - System logs/audit: Usually read-only (GET/PATCH for search)
+     *   - Junction tables: Often managed through parent entities
+     *   - Snapshots/History: Typically read-only
+     *   - Analytics/Metrics: Read-only, never manual creation
+     *
+     * @example
+     *   ```typescript
+     *   // Primary business entity
+     *   {
+     *     name: "shopping_orders",
+     *     entityRole: "primary",
+     *     description: "Customer orders that users create and manage"
+     *   }
+     *
+     *   // Supporting system table
+     *   {
+     *     name: "audit_trails",
+     *     entityRole: "supporting",
+     *     description: "System-generated audit logs for compliance"
+     *   }
+     *   ```;
+     */
+    entityRole: "primary" | "supporting";
+
     //----
     // FIELDS
     //----
