@@ -102,7 +102,7 @@ async function process<Model extends ILlmSchema.Model>(
   const pointer: IPointer<AutoBeOpenApi.IOperation[] | null> = {
     value: null,
   };
-  const { histories, tokenUsage } = await ctx.conversate({
+  const { tokenUsage } = await ctx.conversate({
     source: "interfaceOperations",
     histories: transformInterfaceOperationHistories(
       ctx.state(),
