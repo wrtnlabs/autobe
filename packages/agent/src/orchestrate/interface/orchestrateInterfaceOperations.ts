@@ -102,7 +102,7 @@ async function process<Model extends ILlmSchema.Model>(
   const pointer: IPointer<AutoBeOpenApi.IOperation[] | null> = {
     value: null,
   };
-  const { tokenUsage } = await ctx.conversate({
+  const { histories, tokenUsage } = await ctx.conversate({
     source: "interfaceOperations",
     histories: transformInterfaceOperationHistories(
       ctx.state(),
@@ -152,9 +152,9 @@ async function process<Model extends ILlmSchema.Model>(
     enforceFunctionCall: true,
     message: "Make API operations",
   });
-  if (pointer.value === null) {
+  if (pointer.value === null)
     throw new Error("Failed to create operations."); // never be happened
-  }
+ 
   ctx.dispatch({
     type: "interfaceOperations",
     operations: pointer.value,
