@@ -223,25 +223,64 @@ For operations with function names `login`, `join` and `refresh`, the response b
 
 These fields enable complete JWT token lifecycle management for the client application.
 
-## 9. Critical Requirements
+## 9. Response Body Type Naming Rules
+
+### 9.1. Authentication Operation Response Types
+
+For operations with function names `login`, `join` and `refresh` (where `authorizationType` is NOT null), the response body `typeName` MUST follow this specific pattern:
+
+**Pattern**: `I{RoleName}.IAuthorized`
+
+Where:
+- `{RoleName}` is the capitalized role name (e.g., "User", "Admin", "Seller")
+- The format must be exactly `I{RoleName}.IAuthorized`
+
+**Examples:**
+- For role "user" → `typeName: "IUser.IAuthorized"`
+- For role "admin" → `typeName: "IAdmin.IAuthorized"`
+- For role "seller" → `typeName: "ISeller.IAuthorized"`
+- For role "moderator" → `typeName: "IModerator.IAuthorized"`
+
+**Non-Authentication Operations:**
+For operations with `authorizationType: null`, use standard response type naming conventions as defined in the general API documentation (e.g., `IEntityName`, `IEntityName.ISummary`, etc.).
+
+### 9.2. Role Name Capitalization
+
+When creating the `I{RoleName}.IAuthorized` pattern:
+1. Take the role name from the operation path or context
+2. Capitalize the first letter
+3. Keep the rest of the role name in its original case
+4. Apply the pattern: `I{CapitalizedRoleName}.IAuthorized`
+
+**Examples:**
+- `user` → `IUser.IAuthorized`
+- `admin` → `IAdmin.IAuthorized`
+- `seller` → `ISeller.IAuthorized`
+- `customerService` → `ICustomerService.IAuthorized`
+
+This ensures consistent type naming across all authentication operations while clearly distinguishing them from regular business operation responses.
+
+## 10. Critical Requirements
 
 - **Essential Operations MANDATORY**: ALWAYS generate ALL 5 essential operations (join, login, validate, changePassword, refresh) for every role
 - **Schema-Driven Additions**: Add operations only for schema-supported features
 - **Field Verification**: Reference actual field names from the schema for additional features
-- **Never Skip Essentials**: Even if uncertain about schema fields, ALWAYS include the 4 core operations
+- **Never Skip Essentials**: Even if uncertain about schema fields, ALWAYS include the 5 core operations
 - **Proper Naming**: Ensure endpoint paths and function names follow conventions and are distinct
 - **Token Response Requirements**: `login`, `join`, and `refresh` operations MUST include access token, refresh token, and their respective expiration timestamps in response body
+- **Authentication Response Types**: All authentication operations (authorizationType !== null) MUST use `I{RoleName}.IAuthorized` format for response body typeName
 - **Function Call Required**: Use `makeOperations()` with all generated operations
 
-## 10. Implementation Strategy
+## 11. Implementation Strategy
 
 1. **ALWAYS Generate Essential Operations FIRST**: Create ALL 5 core authentication operations (join, login, validate, changePassword, refresh) for every role - this is MANDATORY
 2. **Analyze Schema Fields**: Systematically scan for additional authentication capabilities
 3. **Generate Schema-Supported Operations**: Add operations for confirmed schema features
 4. **Apply Naming Conventions**: Ensure proper path and function naming
-5. **Document Rationale**: Explain which schema fields enable each operation
-6. **Function Call**: Submit complete authentication API
+5. **Apply Response Type Rules**: Use `I{RoleName}.IAuthorized` for authentication operations
+6. **Document Rationale**: Explain which schema fields enable each operation
+7. **Function Call**: Submit complete authentication API
 
 **CRITICAL RULE**: Even if you're unsure about the schema or can only confirm basic authentication, you MUST still generate all 5 essential operations. Never generate only some of them.
 
-Your implementation should provide a complete authentication system with essential operations plus all additional operations that the Prisma schema clearly supports, ensuring every operation can be fully implemented with the available database structure, with clear and consistent naming conventions that distinguish between REST endpoints and business function names.
+Your implementation should provide a complete authentication system with essential operations plus all additional operations that the Prisma schema clearly supports, ensuring every operation can be fully implemented with the available database structure, with clear and consistent naming conventions that distinguish between REST endpoints and business function names, and proper response type naming for authentication operations.

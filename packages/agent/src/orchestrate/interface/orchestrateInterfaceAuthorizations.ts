@@ -5,7 +5,7 @@ import {
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { AutoBeInterfaceAuthorizationEvent } from "@autobe/interface/src/events/AutoBeInterfaceAuthorizationEvent";
-import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
+import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 
@@ -51,6 +51,7 @@ async function process<Model extends ILlmSchema.Model>(
     histories: transformInterfaceAuthorizationsHistories(ctx.state(), role),
     controller: createController({
       model: ctx.model,
+      roles: ctx.state().analyze?.roles.map((it) => it.name) ?? [],
       build: (next) => {
         pointer.value = next;
       },
@@ -74,13 +75,60 @@ async function process<Model extends ILlmSchema.Model>(
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
+  roles: string[];
   build: (next: IAutoBeInterfaceAuthorizationsApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
+  const validate = (
+    next: unknown,
+  ): IValidation<IAutoBeInterfaceAuthorizationsApplication.IProps> => {
+    const result: IValidation<IAutoBeInterfaceAuthorizationsApplication.IProps> =
+      typia.validate<IAutoBeInterfaceAuthorizationsApplication.IProps>(next);
+    if (result.success === false) return result;
+
+    const authorization: IAutoBeInterfaceAuthorizationsApplication.IProps =
+      result.data;
+
+    const errors: IValidation.IError[] = [];
+
+    authorization.operations.forEach((op, i) => {
+      if (op.authorizationType === null) {
+        return;
+      }
+
+      if (op.responseBody?.typeName.split(".").at(1) !== "IAuthorized") {
+        errors.push({
+          path: `$input.operations.${i}.responseBody.typeName`,
+          expected: `Type name must be I{RoleName(PascalCase)}.IAuthorized`,
+          value: op.responseBody?.typeName,
+          description: [
+            `Wrong response body type name: ${op.responseBody?.typeName}`,
+            "",
+            `For authentication operations (login, join, refresh), the response body type name must follow the convention "I{RoleName}.IAuthorized".`,
+            ``,
+            `This standardized naming convention ensures consistency across all authentication endpoints and clearly identifies authorization response types.`,
+            `The Role name should be in PascalCase format (e.g., IUser.IAuthorized, IAdmin.IAuthorized, ISeller.IAuthorized).`,
+          ].join("\n"),
+        });
+      }
+    });
+
+    if (errors.length !== 0) {
+      return {
+        success: false,
+        errors,
+        data: next,
+      };
+    }
+    return result;
+  };
+
   const application: ILlmApplication<Model> = collection[
-    props.model
-  ] as unknown as ILlmApplication<Model>;
+    props.model === "chatgpt" ? "chatgpt" : "claude"
+  ](
+    validate,
+  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
 
   return {
     protocol: "class",
@@ -94,17 +142,23 @@ function createController<Model extends ILlmSchema.Model>(props: {
   };
 }
 
-const claude = typia.llm.application<
-  IAutoBeInterfaceAuthorizationsApplication,
-  "claude"
->();
 const collection = {
-  chatgpt: typia.llm.application<
-    IAutoBeInterfaceAuthorizationsApplication,
-    "chatgpt"
-  >(),
-  claude,
-  llama: claude,
-  deepseek: claude,
-  "3.1": claude,
+  chatgpt: (validate: Validator) =>
+    typia.llm.application<IAutoBeInterfaceAuthorizationsApplication, "chatgpt">(
+      {
+        validate: {
+          makeOperations: validate,
+        },
+      },
+    ),
+  claude: (validate: Validator) =>
+    typia.llm.application<IAutoBeInterfaceAuthorizationsApplication, "claude">({
+      validate: {
+        makeOperations: validate,
+      },
+    }),
 };
+
+type Validator = (
+  input: unknown,
+) => IValidation<IAutoBeInterfaceAuthorizationsApplication.IProps>;
