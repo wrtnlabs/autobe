@@ -195,15 +195,26 @@ function createController<Model extends ILlmSchema.Model>(props: {
       // Check if it's an object type
       if (!isObjectSchema(schema)) {
         errors.push({
-          path: `$input.schemas.${typeName}.type`,
-          expected: "object",
-          value: "type" in schema ? schema.type : "unknown",
+          path: `$input.schemas.${typeName}`,
+          expected: `AutoBeOpenApi.IJsonSchemaDescriptive<AutoBeOpenApi.IJsonSchema.IObject>`,
+          value: schema,
           description: `${typeName} must be an object type for authorization responses`,
         });
         continue;
       }
 
       // Check if token property exists
+      schema.properties ??= {};
+      schema.properties["token"] = {
+        $ref: "#/components/schemas/IAuthorizationToken",
+        description: "JWT token information for authentication",
+      } as AutoBeOpenApi.IJsonSchemaDescriptive<AutoBeOpenApi.IJsonSchema.IReference>;
+
+      schema.required ??= [];
+      if (schema.required.includes("token") === false) {
+        schema.required.push("token");
+      }
+
       if (!schema.properties?.token) {
         // Add token property if missing
         schema.properties = schema.properties || {};
