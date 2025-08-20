@@ -87,8 +87,14 @@ function createController<Model extends ILlmSchema.Model>(props: {
     const result: IValidation<IAutoBeInterfaceAuthorizationsApplication.IProps> =
       typia.validate<IAutoBeInterfaceAuthorizationsApplication.IProps>(next);
     if (result.success === false) return result;
+
     const errors: IValidation.IError[] = [];
     result.data.operations.forEach((op, i) => {
+      // validate authorizationRole
+      if (op.authorizationRole !== null) {
+        op.authorizationRole = props.role;
+      }
+
       // validate responseBody.typeName -> must be ~.IAuthorized
       if (op.authorizationType === null) return;
       else if (op.responseBody === null)
