@@ -6,8 +6,8 @@ export const test_typing_rpc_listener_functions = () => {
     AutoBeEvent.Type,
     | "vendorRequest"
     | "vendorResponse"
-    | "vendorValidate"
-    | "vendorJsonParseError"
+    | "jsonValidateError"
+    | "jsonParseError"
     | "consentFunctionCall"
   > = "interfaceSchemas" as any;
   x = y;

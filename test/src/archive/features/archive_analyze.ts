@@ -44,8 +44,8 @@ export const archive_analyze = async (
     });
   };
   agent.on("assistantMessage", listen);
-  agent.on("vendorJsonParseError", listen);
-  agent.on("vendorValidate", listen);
+  agent.on("jsonParseError", listen);
+  agent.on("jsonValidateError", listen);
   for (const type of typia.misc.literals<AutoBeEvent.Type>())
     if (type.startsWith("analyze")) agent.on(type, listen);
 

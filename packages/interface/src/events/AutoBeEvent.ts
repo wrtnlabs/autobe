@@ -15,6 +15,8 @@ import { AutoBeInterfaceOperationsReviewEvent } from "./AutoBeInterfaceOperation
 import { AutoBeInterfaceSchemasEvent } from "./AutoBeInterfaceSchemasEvent";
 import { AutoBeInterfaceSchemasReviewEvent } from "./AutoBeInterfaceSchemasReviewEvent";
 import { AutoBeInterfaceStartEvent } from "./AutoBeInterfaceStartEvent";
+import { AutoBeJsonParseErrorEvent } from "./AutoBeJsonParseErrorEvent";
+import { AutoBeJsonValidateErrorEvent } from "./AutoBeJsonValidateErrorEvent";
 import { AutoBePrismaCompleteEvent } from "./AutoBePrismaCompleteEvent";
 import { AutoBePrismaComponentsEvent } from "./AutoBePrismaComponentsEvent";
 import { AutoBePrismaCorrectEvent } from "./AutoBePrismaCorrectEvent";
@@ -44,10 +46,8 @@ import { AutoBeTestStartEvent } from "./AutoBeTestStartEvent";
 import { AutoBeTestValidateEvent } from "./AutoBeTestValidateEvent";
 import { AutoBeTestWriteEvent } from "./AutoBeTestWriteEvent";
 import { AutoBeUserMessageEvent } from "./AutoBeUserMessageEvent";
-import { AutoBeVendorJsonParseError } from "./AutoBeVendorJsonParseError";
 import { AutoBeVendorRequestEvent } from "./AutoBeVendorRequestEvent";
 import { AutoBeVendorResponseEvent } from "./AutoBeVendorResponseEvent";
-import { AutoBeVendorValidateEvent } from "./AutoBeVendorValidateEvent";
 
 /**
  * Union type representing all possible events that can occur during the AutoBe
@@ -77,8 +77,8 @@ export type AutoBeEvent =
   | AutoBeUserMessageEvent
   | AutoBeVendorRequestEvent
   | AutoBeVendorResponseEvent
-  | AutoBeVendorValidateEvent
-  | AutoBeVendorJsonParseError
+  | AutoBeJsonValidateErrorEvent
+  | AutoBeJsonParseErrorEvent
   | AutoBeConsentFunctionCallEvent
   // ANALYZE
   | AutoBeAnalyzeStartEvent
@@ -168,8 +168,8 @@ export namespace AutoBeEvent {
     userMessage: AutoBeUserMessageEvent;
     vendorRequest: AutoBeVendorRequestEvent;
     vendorResponse: AutoBeVendorResponseEvent;
-    vendorValidate: AutoBeVendorValidateEvent;
-    vendorJsonParseError: AutoBeVendorJsonParseError;
+    jsonValidateError: AutoBeJsonValidateErrorEvent;
+    jsonParseError: AutoBeJsonParseErrorEvent;
     consentFunctionCall: AutoBeConsentFunctionCallEvent;
     // ANALYZE
     analyzeStart: AutoBeAnalyzeStartEvent;

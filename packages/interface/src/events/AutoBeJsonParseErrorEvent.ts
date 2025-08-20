@@ -1,8 +1,8 @@
 import { AutoBeEventBase } from "./AutoBeEventBase";
 import { AutoBeEventSource } from "./AutoBeEventSource";
 
-export interface AutoBeVendorJsonParseError
-  extends AutoBeEventBase<"vendorJsonParseError"> {
+export interface AutoBeJsonParseErrorEvent
+  extends AutoBeEventBase<"jsonParseError"> {
   source: AutoBeEventSource;
   arguments: string;
   errorMessage: string;

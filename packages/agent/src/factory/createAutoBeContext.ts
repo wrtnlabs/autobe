@@ -101,7 +101,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
         void props
           .dispatch({
             ...event,
-            type: "vendorJsonParseError",
+            type: "jsonParseError",
             source: next.source,
           })
           .catch(() => {});
@@ -109,7 +109,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
       agent.on("validate", (event) => {
         void props
           .dispatch({
-            type: "vendorValidate",
+            type: "jsonValidateError",
             source: next.source,
             result: event.result,
             created_at: event.created_at,
