@@ -4,7 +4,7 @@ import {
   AutoBeOpenApi,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
-import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
+import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
 import { IPointer } from "tstl";
 import typia, { tags } from "typia";
@@ -40,10 +40,16 @@ export async function orchestrateInterfaceSchemas<
     total: matrix.length,
     completed: 0,
   };
-  const x: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
-    IAuthorizationToken:
-      authTokenSchema as unknown as AutoBeOpenApi.IJsonSchemaDescriptive,
-  };
+  const roles: string[] =
+    ctx.state().analyze?.roles.map((role) => role.name) ?? [];
+
+  const x: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
+    roles.length > 0
+      ? {
+          IAuthorizationToken:
+            authTokenSchema.schema as AutoBeOpenApi.IJsonSchemaDescriptive,
+        }
+      : {};
   for (const y of await Promise.all(
     matrix.map(async (it) => {
       const row: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
@@ -164,9 +170,71 @@ function createController<Model extends ILlmSchema.Model>(props: {
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
+  const isObjectSchema = (
+    schema: AutoBeOpenApi.IJsonSchemaDescriptive,
+  ): schema is AutoBeOpenApi.IJsonSchemaDescriptive<AutoBeOpenApi.IJsonSchema.IObject> => {
+    return "type" in schema && schema.type === "object";
+  };
+
+  const validate = (
+    next: unknown,
+  ): IValidation<IAutoBeInterfaceSchemaApplication.IProps> => {
+    const result: IValidation<IAutoBeInterfaceSchemaApplication.IProps> =
+      typia.validate<IAutoBeInterfaceSchemaApplication.IProps>(next);
+    if (result.success === false) return result;
+
+    const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
+      result.data.schemas;
+
+    // Check all IAuthorized types
+    const errors: IValidation.IError[] = [];
+
+    for (const [typeName, schema] of Object.entries(schemas)) {
+      if (!typeName.endsWith(".IAuthorized")) continue;
+
+      // Check if it's an object type
+      if (!isObjectSchema(schema)) {
+        errors.push({
+          path: `$input.schemas.${typeName}.type`,
+          expected: "object",
+          value: "type" in schema ? schema.type : "unknown",
+          description: `${typeName} must be an object type for authorization responses`,
+        });
+        continue;
+      }
+
+      // Check if token property exists
+      if (!schema.properties?.token) {
+        // Add token property if missing
+        schema.properties = schema.properties || {};
+        schema.properties["token"] =
+          authTokenSchema.schema as AutoBeOpenApi.IJsonSchemaDescriptive;
+
+        // Add token to required fields if not already present
+        if (schema.required && !schema.required.includes("token")) {
+          schema.required.push("token");
+        } else if (!schema.required) {
+          schema.required = ["token"];
+        }
+      }
+    }
+
+    if (errors.length !== 0) {
+      return {
+        success: false,
+        errors,
+        data: next,
+      };
+    }
+
+    return result;
+  };
+
   const application: ILlmApplication<Model> = collection[
-    props.model
-  ] satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+    props.model === "chatgpt" ? "chatgpt" : "claude"
+  ](
+    validate,
+  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
     name: "interface",
@@ -179,24 +247,55 @@ function createController<Model extends ILlmSchema.Model>(props: {
   };
 }
 
-const claude = typia.llm.application<
-  IAutoBeInterfaceSchemaApplication,
-  "claude"
->();
 const collection = {
-  chatgpt: typia.llm.application<
-    IAutoBeInterfaceSchemaApplication,
-    "chatgpt"
-  >(),
-  claude,
-  llama: claude,
-  deepseek: claude,
-  "3.1": claude,
+  chatgpt: (validate: Validator) =>
+    typia.llm.application<IAutoBeInterfaceSchemaApplication, "chatgpt">({
+      validate: {
+        makeComponents: validate,
+      },
+    }),
+  claude: (validate: Validator) =>
+    typia.llm.application<IAutoBeInterfaceSchemaApplication, "claude">({
+      validate: {
+        makeComponents: validate,
+      },
+    }),
 };
 
+type Validator = (
+  input: unknown,
+) => IValidation<IAutoBeInterfaceSchemaApplication.IProps>;
+
 const authTokenSchema = typia.json.schema<{
+  /**
+   * JWT access token for authenticated requests.
+   *
+   * This token should be included in the Authorization header for subsequent
+   * authenticated API requests as `Bearer {token}`.
+   */
   access: string;
+
+  /**
+   * Refresh token for obtaining new access tokens.
+   *
+   * This token can be used to request new access tokens when the current access
+   * token expires, extending the user's session.
+   */
   refresh: string;
+
+  /**
+   * Access token expiration timestamp.
+   *
+   * ISO 8601 date-time string indicating when the access token will expire and
+   * can no longer be used for authentication.
+   */
   expired_at: string & tags.Format<"date-time">;
+
+  /**
+   * Refresh token expiration timestamp.
+   *
+   * ISO 8601 date-time string indicating the latest time until which the
+   * refresh token can be used to obtain new access tokens.
+   */
   refreshable_until: string & tags.Format<"date-time">;
 }>();
