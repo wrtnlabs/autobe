@@ -87,6 +87,7 @@ export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
         />
       );
     // DISCARD
+    case "consentFunctionCall":
     case "prismaCorrect":
     case "testCorrect":
     case "realizeAuthorizationCorrect":

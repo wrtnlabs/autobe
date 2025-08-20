@@ -1,6 +1,7 @@
 import { AutoBeEvent } from "@autobe/interface";
 import {
   AutoBeAssistantMessageMovie,
+  AutoBeScenarioEventMovie,
   AutoBeStartEventMovie,
   AutoBeUserMessageMovie,
 } from "@autobe/ui";
@@ -9,14 +10,8 @@ import ProgressEventsMovie, {
   IProgressEventsMovieProps,
 } from "./ProgressEventsMovie";
 import AnalyzeComplete from "./analyze/AnalyzeComplete";
-import AnalyzeScenario from "./analyze/AnalyzeScenario";
-import {
-  InterfaceComplement,
-  InterfaceComplete,
-  InterfaceGroups,
-} from "./interface";
+import { InterfaceComplement, InterfaceComplete } from "./interface";
 import PrismaComplete from "./prisma/PrismaComplete";
-import PrismaComponents from "./prisma/PrismaComponents";
 import PrismaCorrect from "./prisma/PrismaCorrect";
 import { PrismaInsufficient } from "./prisma/PrismaInsufficient";
 import PrismaValidate from "./prisma/PrismaValidate";
@@ -25,7 +20,6 @@ import RealizeAuthorizationCorrect from "./realize/RealizeAuthorizationCorrect";
 import RealizeAuthorizationValidate from "./realize/RealizeAuthorizationValidate";
 import RealizeComplete from "./realize/RealizeComplete";
 import RealizeTestComplete from "./realize/RealizeTestComplete";
-import RealizeTestReset from "./realize/RealizeTestReset";
 import RealizeValidate from "./realize/RealizeValidate";
 import { TestComplete } from "./test/TestComplete";
 import { TestCorrect } from "./test/TestCorrect";
@@ -73,14 +67,15 @@ const AutoBeEventsMovie = (props: IAutoBeEventsMovieProps) => {
     case "realizeStart": {
       return <AutoBeStartEventMovie event={event} />;
     }
-    case "analyzeScenario": {
-      return <AnalyzeScenario event={event} />;
+
+    case "analyzeScenario":
+    case "prismaComponents":
+    case "interfaceGroups":
+    case "realizeTestReset": {
+      return <AutoBeScenarioEventMovie event={event} />;
     }
     case "analyzeComplete": {
       return <AnalyzeComplete event={event} />;
-    }
-    case "prismaComponents": {
-      return <PrismaComponents event={event} />;
     }
     case "prismaValidate": {
       return <PrismaValidate event={event} />;
@@ -93,9 +88,6 @@ const AutoBeEventsMovie = (props: IAutoBeEventsMovieProps) => {
     }
     case "prismaInsufficient": {
       return <PrismaInsufficient event={event} />;
-    }
-    case "interfaceGroups": {
-      return <InterfaceGroups event={event} />;
     }
     case "interfaceComplement": {
       return <InterfaceComplement event={event} />;
@@ -127,12 +119,10 @@ const AutoBeEventsMovie = (props: IAutoBeEventsMovieProps) => {
     case "realizeAuthorizationComplete": {
       return <RealizeAuthorizationComplete event={event} />;
     }
-    case "realizeTestReset": {
-      return <RealizeTestReset event={event} />;
-    }
     case "realizeTestComplete": {
       return <RealizeTestComplete event={event} />;
     }
+    case "consentFunctionCall":
     case "vendorRequest":
     case "vendorResponse": {
       return null;
