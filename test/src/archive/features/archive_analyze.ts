@@ -25,7 +25,7 @@ export const archive_analyze = async (
   if (TestGlobal.env.API_KEY === undefined) return false;
 
   // PREPARE ASSETS
-  const [history]: AutoBeHistory[] = await TestHistory.getInitial(project);
+  const [history]: AutoBeHistory[] = await TestHistory.initial(project);
   typia.assertGuard<AutoBeUserMessageHistory>(history);
   const content: string | null =
     history.contents[0].type === "text" ? history.contents[0].text : null;
