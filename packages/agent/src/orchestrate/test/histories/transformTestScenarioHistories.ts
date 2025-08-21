@@ -1,5 +1,6 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
 import { AutoBeOpenApi } from "@autobe/interface";
+import { MapUtil } from "@autobe/utils";
 import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
@@ -11,28 +12,26 @@ export const transformTestScenarioHistories = (
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
-  // Extract authentication endpoints and roles
-  const { joinOperations, loginOperations, roles } = entire.reduce(
-    (acc, op) => {
-      if (op.authorizationType === "join") {
-        acc.joinOperations.push(op);
-      } else if (op.authorizationType === "login") {
-        acc.loginOperations.push(op);
-      }
-      if (op.authorizationRole) {
-        acc.roles.push(op.authorizationRole);
-      }
-      return acc;
-    },
-    {
-      joinOperations: [] as AutoBeOpenApi.IOperation[],
-      loginOperations: [] as AutoBeOpenApi.IOperation[],
-      roles: [] as string[],
-    },
-  );
-
-  const availableRoles = [...new Set(roles)];
-
+  interface IAuthorizationRole {
+    role: string;
+    join: AutoBeOpenApi.IOperation | null;
+    login: AutoBeOpenApi.IOperation | null;
+  }
+  const authorizationRoles: Map<string, IAuthorizationRole> = new Map();
+  for (const op of entire) {
+    if (op.authorizationRole === null) continue;
+    const value: IAuthorizationRole = MapUtil.take(
+      authorizationRoles,
+      op.authorizationRole,
+      () => ({
+        role: op.authorizationRole!,
+        join: null,
+        login: null,
+      }),
+    );
+    if (op.authorizationType === "join") value.join = op;
+    else if (op.authorizationType === "login") value.login = op;
+  }
   return [
     {
       id: v4(),
@@ -69,7 +68,7 @@ export const transformTestScenarioHistories = (
         "```",
       ].join("\n"),
     } satisfies IAgenticaHistoryJson.ISystemMessage,
-    ...(availableRoles.length > 0
+    ...(authorizationRoles.size > 0
       ? [
           {
             id: v4(),
