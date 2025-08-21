@@ -66,8 +66,7 @@ export namespace FilePrinter {
       const formatted = await biome.formatContent(projectKey, script, {
         filePath: "index.js",
       });
-
-      return script;
+      return formatted.content;
     } catch {
       return script;
     }
