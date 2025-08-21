@@ -53,7 +53,7 @@ Even though there are some things unclear, don't ask me anything. Since I'm not 
 - **Composition rules**
     - **Selecting a target sub-community is required.**
     - **Title**: 5–120 characters.
-    - **Body**: 10–10,000 characters. Plain text and line breaks only (scripts/code prohibited).
+    - **Body**: 10-10,000 characters. Plain text and line breaks only (scripts/code prohibited).
     - **Author display name**: Optional (if empty, use a default like “Anonymous”).
 - **Card display fields**: Community name (e.g., /c/ai), title, author, created time, comment count, score (upvotes − downvotes).
 - **Permissions**: **Only the author** can edit/delete their post. **Posting does not require membership** in the target community.
