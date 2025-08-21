@@ -5,26 +5,39 @@ settings:
   excludeLinksFromLockfile: false
 
 catalogs:
+  agentica:
+    '@agentica/core':
+      specifier: ^0.32.1
+      version: 0.32.1
   libs:
     openai:
       specifier: ^5.12.2
       version: 5.12.2
   samchon:
     '@nestia/core':
-      specifier: ^7.3.3
-      version: 7.3.3
+      specifier: ^7.4.0
+      version: 7.4.0
     '@nestia/e2e':
-      specifier: ^7.3.3
-      version: 7.3.3
+      specifier: ^7.4.0
+      version: 7.4.0
     '@nestia/fetcher':
-      specifier: ^7.3.3
-      version: 7.3.3
+      specifier: ^7.4.0
+      version: 7.4.0
     '@nestia/migrate':
-      specifier: ^7.3.3
-      version: 7.3.3
+      specifier: ^7.4.0
+      version: 7.4.0
     '@samchon/openapi':
       specifier: ^4.7.1
       version: 4.7.1
+    embed-prisma:
+      specifier: ^1.1.0
+      version: 1.1.1
+    embed-typescript:
+      specifier: ^1.0.1
+      version: 1.1.0
+    prisma-markdown:
+      specifier: ^3.0.0
+      version: 3.0.1
     tgrid:
       specifier: ^1.2.0
       version: 1.2.0
@@ -44,6 +57,22 @@ catalogs:
     typescript:
       specifier: ~5.9.2
       version: 5.9.2
+  ui:
+    '@types/react':
+      specifier: ^19.1.10
+      version: 19.1.10
+    '@types/react-dom':
+      specifier: ^19.1.5
+      version: 19.1.7
+    react:
+      specifier: ^19.1.1
+      version: 19.1.1
+    react-dom:
+      specifier: ^19.1.1
+      version: 19.1.1
+    vite:
+      specifier: ^6.3.5
+      version: 6.3.5
 
 importers:
 
@@ -375,13 +404,13 @@ importers:
         version: link:../../packages/rpc
       '@nestia/core':
         specifier: catalog:samchon
-        version: 7.3.3(@nestia/fetcher@7.3.3)(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2))(@samchon/openapi@4.7.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@9.7.1(typescript@5.9.2))
+        version: 7.4.0(@nestia/fetcher@7.4.0)(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2))(@samchon/openapi@4.7.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@9.7.1(typescript@5.9.2))
       '@nestia/e2e':
         specifier: catalog:samchon
-        version: 7.3.3
+        version: 7.4.0
       '@nestia/migrate':
         specifier: catalog:samchon
-        version: 7.3.3
+        version: 7.4.0
       '@nestjs/common':
         specifier: ^11.1.3
         version: 11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2)
@@ -488,10 +517,10 @@ importers:
         version: link:../utils
       '@nestia/core':
         specifier: catalog:samchon
-        version: 7.3.3(@nestia/fetcher@7.3.3)(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2))(@samchon/openapi@4.7.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@9.7.1(typescript@5.9.2))
+        version: 7.4.0(@nestia/fetcher@7.4.0)(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2))(@samchon/openapi@4.7.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@9.7.1(typescript@5.9.2))
       '@nestia/migrate':
         specifier: catalog:samchon
-        version: 7.3.3
+        version: 7.4.0
       '@samchon/openapi':
         specifier: catalog:samchon
         version: 4.7.1
@@ -670,16 +699,16 @@ importers:
         version: link:../packages/utils
       '@nestia/core':
         specifier: catalog:samchon
-        version: 7.3.3(@nestia/fetcher@7.3.3)(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2))(@samchon/openapi@4.7.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@9.7.1(typescript@5.9.2))
+        version: 7.4.0(@nestia/fetcher@7.4.0)(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2))(@samchon/openapi@4.7.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@9.7.1(typescript@5.9.2))
       '@nestia/e2e':
         specifier: catalog:samchon
-        version: 7.3.3
+        version: 7.4.0
       '@nestia/fetcher':
         specifier: catalog:samchon
-        version: 7.3.3
+        version: 7.4.0
       '@nestia/migrate':
         specifier: catalog:samchon
-        version: 7.3.3
+        version: 7.4.0
       '@samchon/openapi':
         specifier: catalog:samchon
         version: 4.7.1
@@ -1594,10 +1623,10 @@ packages:
   '@napi-rs/wasm-runtime@1.0.3':
     resolution: {integrity: sha512-rZxtMsLwjdXkMUGC3WwsPwLNVqVqnTJT6MNIB6e+5fhMcSCPP0AOsNWuMQ5mdCq6HNjs/ZeWAEchpqeprqBD2Q==}
 
-  '@nestia/core@7.3.3':
-    resolution: {integrity: sha512-EtI5zCFI0yD18NoDl+mz0purLR/vEvHQYoN1yME2ymk8/TSaqF0WKYVlrJI4riAnXZW57ExJSwLfcKWE3EYGyg==}
+  '@nestia/core@7.4.0':
+    resolution: {integrity: sha512-nAGSiFvcoFJEWHls34Qx/lXywLqoNdMtPbz7yFAD7maDOADJRzTkiFl7pwUGpgZ3WFgy3WdRszajpOn3MxMF0w==}
     peerDependencies:
-      '@nestia/fetcher': '>=7.3.3'
+      '@nestia/fetcher': '>=7.4.0'
       '@nestjs/common': '>=7.0.1'
       '@nestjs/core': '>=7.0.1'
       '@samchon/openapi': '>=4.5.0 <5.0.0'
@@ -1605,14 +1634,14 @@ packages:
       rxjs: '>=6.0.3'
       typia: ^9.6.1
 
-  '@nestia/e2e@7.3.3':
-    resolution: {integrity: sha512-tLFzN/Dua0KGCvZ1DCrZOoC7kadYLZ+GYTLKgHEwJFXnJD9olyUM1RpXJ+I4m9p4f/mjjVJrH4C6rPGjfVZQ2A==}
+  '@nestia/e2e@7.4.0':
+    resolution: {integrity: sha512-13EOkH+0F8LdQ/tQ/WYtKYPV1HyxdqSgX1NYlS8gB5wAK+aox3ohX/AjUJy6guuA54u7ykunRLMlxtnyZxJ+ug==}
 
-  '@nestia/fetcher@7.3.3':
-    resolution: {integrity: sha512-wWRVRY9De5KlfB1sOvccEv/L9NEFDQQDyfyOUZfBRcjcK52CLzjoeUzDSPGYRwNsKaPjCXKRIq2+ica8oIkj2Q==}
+  '@nestia/fetcher@7.4.0':
+    resolution: {integrity: sha512-dbLpMuW6VGrmxicwaNelir13RPlq4yJk87nepjWxDnNjsuRBdYrBxCUJ7rmgvxYtMQCVrXeJrMcLvE+Pn496Jw==}
 
-  '@nestia/migrate@7.3.3':
-    resolution: {integrity: sha512-aaQvQsfOYxap9+CmX0V+qWVbR7X6398iQCMy3UDGxx48lo66jYKV7MdCEBqp1xMvfUcJZQxGnuiyAOMIJOz4QA==}
+  '@nestia/migrate@7.4.0':
+    resolution: {integrity: sha512-vDcjcMRncJqg1SBK69o/OGmMZma9XjBQAixiTv88z+3cJB9L1CufJSgIdjg5rDDUB6KTNo6UI3wGUdum1RCS9g==}
     hasBin: true
 
   '@nestjs/common@11.1.6':
@@ -7628,9 +7657,9 @@ snapshots:
       '@tybys/wasm-util': 0.10.0
     optional: true
 
-  '@nestia/core@7.3.3(@nestia/fetcher@7.3.3)(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2))(@samchon/openapi@4.7.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@9.7.1(typescript@5.9.2))':
+  '@nestia/core@7.4.0(@nestia/fetcher@7.4.0)(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2))(@samchon/openapi@4.7.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@9.7.1(typescript@5.9.2))':
     dependencies:
-      '@nestia/fetcher': 7.3.3
+      '@nestia/fetcher': 7.4.0
       '@nestjs/common': 11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2)
       '@nestjs/core': 11.1.6(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2)
       '@samchon/openapi': 4.7.1
@@ -7648,13 +7677,13 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@nestia/e2e@7.3.3': {}
+  '@nestia/e2e@7.4.0': {}
 
-  '@nestia/fetcher@7.3.3':
+  '@nestia/fetcher@7.4.0':
     dependencies:
       '@samchon/openapi': 4.7.1
 
-  '@nestia/migrate@7.3.3':
+  '@nestia/migrate@7.4.0':
     dependencies:
       '@samchon/openapi': 4.7.1
       commander: 10.0.0
@@ -8410,7 +8439,7 @@ snapshots:
 
   '@tokenizer/inflate@0.2.7':
     dependencies:
-      debug: 4.4.1
+      debug: 4.4.1(supports-color@8.1.1)
       fflate: 0.8.2
       token-types: 6.0.4
     transitivePeerDependencies:
@@ -9694,10 +9723,6 @@ snapshots:
       lodash-es: 4.17.21
 
   dayjs@1.11.13: {}
-
-  debug@4.4.1:
-    dependencies:
-      ms: 2.1.3
 
   debug@4.4.1(supports-color@8.1.1):
     dependencies:
@@ -11603,7 +11628,7 @@ snapshots:
   micromark@4.0.2:
     dependencies:
       '@types/debug': 4.1.12
-      debug: 4.4.1
+      debug: 4.4.1(supports-color@8.1.1)
       decode-named-character-reference: 1.2.0
       devlop: 1.1.0
       micromark-core-commonmark: 2.0.3
