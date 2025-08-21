@@ -46,6 +46,12 @@ export function replaceImportStatements<Model extends ILlmSchema.Model>(
       .replace(
         /import\s*{\s*toISOStringSafe\s*}\s*from\s*["']\.\.\/util\/toISOStringSafe["']\s*;?\s*/gm,
         "",
+      )
+      // Remove JWT import if it exists (to prevent duplication)
+      .replace(/import\s+jwt\s+from\s*["']jsonwebtoken["']\s*;?\s*/gm, "")
+      .replace(
+        /import\s*\*\s*as\s+jwt\s+from\s*["']jsonwebtoken["']\s*;?\s*/gm,
+        "",
       );
 
     // Remove any existing API structure imports
@@ -81,6 +87,7 @@ export function replaceImportStatements<Model extends ILlmSchema.Model>(
 
     // Build the standard imports
     const imports = [
+      'import jwt from "jsonwebtoken";',
       'import { MyGlobal } from "../MyGlobal";',
       'import typia, { tags } from "typia";',
       'import { Prisma } from "@prisma/client";',
