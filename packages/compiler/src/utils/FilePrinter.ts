@@ -1,6 +1,4 @@
-import sortImport from "@trivago/prettier-plugin-sort-imports";
-import import2 from "import2";
-import { format } from "prettier";
+import { Biome, Distribution } from "@biomejs/js-api";
 import ts from "typescript";
 
 export namespace FilePrinter {
@@ -41,14 +39,35 @@ export namespace FilePrinter {
 
   export const beautify = async (script: string): Promise<string> => {
     try {
-      return await format(script, {
-        parser: "typescript",
-        plugins: [sortImport, await import2("prettier-plugin-jsdoc")],
-        importOrder: ["<THIRD_PARTY_MODULES>", "^[./]"],
-        importOrderSeparation: true,
-        importOrderSortSpecifiers: true,
-        importOrderParserPlugins: ["decorators-legacy", "typescript", "jsx"],
+      const biome = await Biome.create({ distribution: Distribution.BUNDLER });
+      const { projectKey } = biome.openProject();
+      biome.applyConfiguration(projectKey, {
+        assist: {
+          enabled: true,
+          actions: {
+            source: {
+              organizeImports: {
+                level: "on",
+                options: {
+                  identifierOrder: "natural",
+                  groups: [
+                    [":SIDE_EFFECT:", ":URL:"],
+                    [":NODE:", ":BUN:", ":PACKAGE_WITH_PROTOCOL:", ":PACKAGE:"],
+                    "../**",
+                    "./**",
+                    ["./", "./index", "./index.*"],
+                  ],
+                },
+              },
+            },
+          },
+        },
       });
+      const formatted = await biome.formatContent(projectKey, script, {
+        filePath: "index.js",
+      });
+
+      return script;
     } catch {
       return script;
     }

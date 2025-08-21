@@ -19,7 +19,7 @@
   "scripts": {
     "vscode:prepack": "node build/copy_license.js",
     "vscode:prepublish": "pnpm run build",
-    "vscode:pack": "pnpm vscode:prepack && vsce pack",
+    "vscode:pack": "pnpm vscode:prepack && vsce pack --no-dependencies ",
     "vscode:apply-cursor": "pnpm vscode:pack -o autobe-vscode-extension.vsix && cursor --install-extension autobe-vscode-extension.vsix",
     "vscode:apply-code": "pnpm vscode:pack -o autobe-vscode-extension.vsix && code --install-extension autobe-vscode-extension.vsix",
     "cp:replay": "node build/copy_replay.js",
