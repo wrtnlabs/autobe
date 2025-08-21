@@ -31,7 +31,7 @@ export const orchestrateAnalyzeWrite = async <Model extends ILlmSchema.Model>(
       model: ctx.model,
       pointer,
     }),
-    histories: transformAnalyzeWriteHistories(scenario, file),
+    histories: transformAnalyzeWriteHistories(ctx, scenario, file),
     enforceFunctionCall: true,
     message: "Write requirement analysis report.",
   });

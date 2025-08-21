@@ -31,7 +31,7 @@ export const orchestrateAnalyzeReview = async <Model extends ILlmSchema.Model>(
       pointer,
     }),
     histories: [
-      ...transformAnalyzeReviewerHistories(scenario, otherFiles, myFile),
+      ...transformAnalyzeReviewerHistories(ctx, scenario, otherFiles, myFile),
     ],
     enforceFunctionCall: true,
     message: "Review the requirement document",

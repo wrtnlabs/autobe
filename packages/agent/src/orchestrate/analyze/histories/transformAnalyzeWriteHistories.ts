@@ -1,17 +1,39 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
 import { AutoBeAnalyzeScenarioEvent } from "@autobe/interface";
 import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
+import { ILlmSchema } from "@samchon/openapi";
 import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
+import { AutoBeContext } from "../../../context/AutoBeContext";
 
-export const transformAnalyzeWriteHistories = (
+export const transformAnalyzeWriteHistories = <Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
   scenario: AutoBeAnalyzeScenarioEvent,
   file: AutoBeAnalyzeFile.Scenario,
 ): Array<
-  IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
+  | IAgenticaHistoryJson.IUserMessage
+  | IAgenticaHistoryJson.IAssistantMessage
+  | IAgenticaHistoryJson.ISystemMessage
 > => {
   return [
+    ...ctx
+      .histories()
+      .filter((h) => h.type === "userMessage" || h.type === "assistantMessage")
+      .map((h) => {
+        const text =
+          h.type === "userMessage"
+            ? h.contents
+                .filter((el) => el.type === "text")
+                .map((el) => el.text)
+                .join("\n")
+            : h.text;
+
+        return {
+          ...h,
+          text: text,
+        };
+      }),
     {
       id: v4(),
       created_at: new Date().toISOString(),
