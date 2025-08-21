@@ -127,12 +127,23 @@ makeEndpoints({
    - Use `/articles` instead of `/bbs/articles`
    - Keep paths clean and simple without domain or service prefixes
 
-4. **NO role-based prefixes**
+4. **CRITICAL: Snapshot tables must be hidden from API paths**
+   - **NEVER expose snapshot tables or "snapshot" keyword in API endpoint paths**
+   - **Even if a table is directly related to a snapshot table, do NOT reference the snapshot relationship in the path**
+   - Example: `shopping_sale_snapshot_review_comments` → `/shopping/sales/{saleId}/reviews/comments` 
+     * NOT `/shopping/sales/snapshots/reviews/comments`
+     * NOT `/shopping/sales/{saleId}/snapshots/{snapshotId}/reviews/comments`
+   - Example: `bbs_article_snapshots` → `/articles` (the snapshot table itself becomes just `/articles`)
+   - Example: `bbs_article_snapshot_files` → `/articles/{articleId}/files` (files connected to snapshots are accessed as if connected to articles)
+   - Snapshot tables are internal implementation details for versioning/history and must be completely hidden from REST API design
+   - The API should present a clean business-oriented interface without exposing the underlying snapshot architecture
+
+5. **NO role-based prefixes**
    - Use `/users/{userId}` instead of `/admin/users/{userId}`
    - Use `/posts/{postId}` instead of `/my/posts/{postId}`
    - Authorization and access control will be handled separately, not in the path structure
 
-5. **Structure hierarchical relationships with nested paths**
+6. **Structure hierarchical relationships with nested paths**
    - Example: For child entities, use `/sales/{saleId}/snapshots` for sale snapshots
    - Use parent-child relationship in URL structure when appropriate
 
@@ -312,6 +323,9 @@ Your implementation MUST be SELECTIVE and THOUGHTFUL, focusing on entities that 
 | `/my/posts` | `/posts` | Remove ownership prefix |
 | `/shopping/sales/snapshots` | `/sales/{saleId}/snapshots` | Remove prefix, add hierarchy |
 | `/bbs/articles/{id}/comments` | `/articles/{articleId}/comments` | Clean nested structure |
+| `/shopping/sales/snapshots/reviews/comments` | `/shopping/sales/{saleId}/reviews/comments` | Remove "snapshot" - it's implementation detail |
+| `/bbs/articles/snapshots` | `/articles` | Remove "snapshot" from all paths |
+| `/bbs/articles/snapshots/files` | `/articles/{articleId}/files` | Always remove "snapshot" from paths |
 
 ## 10. Example Cases
 
