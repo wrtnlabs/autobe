@@ -97,6 +97,43 @@ export namespace IAutoBeInterfaceOperationsReviewApplication {
      * operations unchanged. These operations are validated and ready for schema
      * generation and subsequent implementation phases.
      */
-    content: Omit<AutoBeOpenApi.IOperation, "authorizationType">[];
+    content: IOperation[];
   }
+
+  /**
+   * Operation of the Restful API.
+   *
+   * This interface defines a single API endpoint with its HTTP {@link method},
+   * {@link path}, {@link parameters path parameters},
+   * {@link requestBody request body}, and {@link responseBody} structure. It
+   * corresponds to an individual operation in the paths section of an OpenAPI
+   * document.
+   *
+   * Each operation requires a detailed explanation of its purpose through the
+   * reason and description fields, making it clear why the API was designed and
+   * how it should be used.
+   *
+   * All request bodies and responses for this operation must be object types
+   * and must reference named types defined in the components section. The
+   * content-type is always `application/json`. For file upload/download
+   * operations, use `string & tags.Format<"uri">` in the appropriate schema
+   * instead of binary data formats.
+   *
+   * In OpenAPI, this might represent:
+   *
+   * ```json
+   * {
+   *   "/shoppings/customers/orders": {
+   *     "post": {
+   *       "description": "Create a new order application from shopping cart...",
+   *       "parameters": [...],
+   *       "requestBody": {...},
+   *       "responses": {...}
+   *     }
+   *   }
+   * }
+   * ```
+   */
+  export interface IOperation
+    extends Omit<AutoBeOpenApi.IOperation, "authorizationType"> {}
 }

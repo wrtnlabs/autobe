@@ -22,7 +22,8 @@ interface ITestFunction {
 const PROJECT_INDEXES: Record<TestProject, number> = {
   todo: 0,
   bbs: 1,
-  shopping: 2,
+  reddit: 2,
+  shopping: 3,
 };
 
 const STEP_INDEXES: Record<Step, number> = {
