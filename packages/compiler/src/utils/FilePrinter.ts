@@ -42,6 +42,12 @@ export namespace FilePrinter {
       const biome = await Biome.create({ distribution: Distribution.BUNDLER });
       const { projectKey } = biome.openProject();
       biome.applyConfiguration(projectKey, {
+        formatter: {
+          trailingCommas: "all", // "none" | "es5" | "all"
+          lineWidth: 80,
+          indentWidth: 2,
+          semicolons: "always"
+        },
         assist: {
           enabled: true,
           actions: {
