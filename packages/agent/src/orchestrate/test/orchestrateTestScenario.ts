@@ -41,6 +41,7 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
       AutoBeEndpointComparator.hashCode,
       AutoBeEndpointComparator.equals,
     );
+
   const endpointNotFound: string = [
     `You have to select one of the endpoints below`,
     "",
@@ -113,6 +114,11 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
   const pointer: IPointer<IAutoBeTestScenarioApplication.IScenarioGroup[]> = {
     value: [],
   };
+
+  const authOperations: AutoBeOpenApi.IOperation[] = entire.filter(
+    (op) => op.authorizationType === "join" || op.authorizationType === "login",
+  );
+
   const { tokenUsage } = await ctx.conversate({
     source: "testScenarios",
     histories: transformTestScenarioHistories(entire, include, exclude),
@@ -120,6 +126,7 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
       model: ctx.model,
       endpointNotFound,
       dict,
+      authOperations,
       build: (next) => {
         pointer.value ??= [];
         pointer.value.push(...next.scenarioGroups);
@@ -157,6 +164,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   endpointNotFound: string;
   dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>;
+  authOperations: AutoBeOpenApi.IOperation[];
   build: (next: IAutoBeTestScenarioApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
@@ -185,6 +193,88 @@ function createController<Model extends ILlmSchema.Model>(props: {
 
     // validate endpoints
     const errors: IValidation.IError[] = [];
+
+    // Authentication Validation
+    scenarioGroups.forEach((group) => {
+      // 1. Extract roleSet from endpoint and dependencies
+      const roleSet = new Set<string>();
+      const operation = props.dict.get(group.endpoint);
+      if (operation.authorizationRole) {
+        roleSet.add(operation.authorizationRole);
+      }
+
+      group.scenarios.forEach((scenario) => {
+        scenario.dependencies.forEach((d) => {
+          const depOperation = props.dict.get(d.endpoint);
+          if (depOperation?.authorizationRole) {
+            roleSet.add(depOperation.authorizationRole);
+          }
+        });
+
+        // Single role case - add join operation
+        if (roleSet.size === 1) {
+          const role = Array.from(roleSet)[0];
+          const joinOperation = props.authOperations.find(
+            (op) =>
+              op.authorizationRole &&
+              roleSet.has(op.authorizationRole) &&
+              op.authorizationType === "join",
+          );
+          if (joinOperation) {
+            if (
+              !scenario.dependencies.some(
+                (d) =>
+                  d.endpoint.method === joinOperation.method &&
+                  d.endpoint.path === joinOperation.path,
+              )
+            ) {
+              scenario.dependencies.push({
+                endpoint: {
+                  method: joinOperation.method,
+                  path: joinOperation.path,
+                },
+                purpose: `Join operation required for ${role} role authentication`,
+              });
+            }
+          }
+        }
+
+        // Multiple roles case - add both join and login operations
+        if (roleSet.size > 1) {
+          const roles = Array.from(roleSet);
+          const operations = props.authOperations.filter(
+            (op) => op.authorizationRole && roleSet.has(op.authorizationRole),
+          );
+          operations.forEach((op) => {
+            if (
+              !scenario.dependencies.some(
+                (d) =>
+                  d.endpoint.method === op.method &&
+                  d.endpoint.path === op.path,
+              )
+            ) {
+              let purpose = "";
+              if (op.authorizationType === "join") {
+                purpose = `Join operation required for ${op.authorizationRole} role authentication`;
+              } else if (op.authorizationType === "login") {
+                purpose = `Login operation required for user role swapping between multiple actors (${roles.join(", ")})`;
+              } else {
+                purpose = `Authentication operation for ${op.authorizationRole} role`;
+              }
+
+              scenario.dependencies.push({
+                endpoint: {
+                  method: op.method,
+                  path: op.path,
+                },
+                purpose: purpose,
+              });
+            }
+          });
+        }
+      });
+    });
+
     scenarioGroups.forEach((group, i) => {
       if (props.dict.has(group.endpoint) === false)
         errors.push({
