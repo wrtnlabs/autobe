@@ -70,6 +70,7 @@ export const orchestrateRealize =
     const writeEvents: AutoBeRealizeWriteEvent[] = await Promise.all(
       scenarios.map(async (scenario) => {
         const code = orchestrateRealizeWrite(ctx, {
+          totalAuthorizations: authorizations,
           authorization: scenario.decoratorEvent ?? null,
           scenario,
           progress: writeProgress,
@@ -127,6 +128,7 @@ export const orchestrateRealize =
               const scenario = scenarios.find((el) => el.location === location);
               if (diagnostic && scenario) {
                 const correctEvent = await orchestrateRealizeCorrect(ctx, {
+                  totalAuthorizations: authorizations,
                   authorization: scenario.decoratorEvent ?? null,
                   scenario,
                   code: content,

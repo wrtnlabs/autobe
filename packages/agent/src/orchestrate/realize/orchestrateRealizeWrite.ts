@@ -18,6 +18,7 @@ import { replaceImportStatements } from "./utils/replaceImportStatements";
 export async function orchestrateRealizeWrite<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
+    totalAuthorizations: AutoBeRealizeAuthorization[];
     authorization: AutoBeRealizeAuthorization | null;
     scenario: IAutoBeRealizeScenarioApplication.IProps;
     progress: IProgress;
@@ -38,6 +39,7 @@ export async function orchestrateRealizeWrite<Model extends ILlmSchema.Model>(
       scenario: props.scenario,
       artifacts,
       authorization: props.authorization,
+      totalAuthorizations: props.totalAuthorizations,
     }),
     controller: createController({
       model: ctx.model,

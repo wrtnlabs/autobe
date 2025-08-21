@@ -16,6 +16,7 @@ export function transformRealizeCorrectHistories(props: {
   scenario: IAutoBeRealizeScenarioApplication.IProps;
   artifacts: IAutoBeTestScenarioArtifacts;
   authorization: AutoBeRealizeAuthorization | null;
+  totalAuthorizations: AutoBeRealizeAuthorization[];
   code: string;
   diagnostic: IAutoBeTypeScriptCompileResult.IDiagnostic;
 }): Array<

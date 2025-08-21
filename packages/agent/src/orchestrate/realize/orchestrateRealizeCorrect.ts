@@ -20,6 +20,7 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
     authorization: AutoBeRealizeAuthorization | null;
+    totalAuthorizations: AutoBeRealizeAuthorization[];
     scenario: IAutoBeRealizeScenarioApplication.IProps;
     code: string;
     diagnostic: IAutoBeTypeScriptCompileResult.IDiagnostic;
@@ -50,6 +51,7 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
       authorization: props.authorization,
       code: props.code,
       diagnostic: props.diagnostic,
+      totalAuthorizations: props.totalAuthorizations,
     }),
     enforceFunctionCall: true,
     message: [

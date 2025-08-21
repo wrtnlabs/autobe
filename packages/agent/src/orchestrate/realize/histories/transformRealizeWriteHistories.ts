@@ -6,15 +6,20 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeTestScenarioArtifacts } from "../../test/structures/IAutoBeTestScenarioArtifacts";
 import { IAutoBeRealizeScenarioApplication } from "../structures/IAutoBeRealizeScenarioApplication";
+import { transformRealizeWriteAuthorizationsHistories } from "./transformRealizeWriteAuthorizationsHistories";
 
-export const transformRealizeWriteHistories = (props: {
-  state: AutoBeState;
-  scenario: IAutoBeRealizeScenarioApplication.IProps;
-  artifacts: IAutoBeTestScenarioArtifacts;
-  authorization: AutoBeRealizeAuthorization | null;
-}): Array<
+export const transformRealizeWriteHistories = (
+  props: IProps,
+): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
+  const payloads = Object.fromEntries(
+    props.totalAuthorizations.map((el) => [
+      el.payload.location,
+      el.payload.content,
+    ]),
+  );
+
   const [operation] = props.artifacts.document.operations;
 
   const propsFields: string[] = [];
@@ -113,6 +118,11 @@ export const transformRealizeWriteHistories = (props: {
       },
     ];
 
+  // Get authorization-specific histories if authorizationType is set
+  const authorizationHistories = operation.authorizationType
+    ? transformRealizeWriteAuthorizationsHistories(operation, payloads)
+    : [];
+
   return [
     {
       id: v4(),
@@ -120,6 +130,7 @@ export const transformRealizeWriteHistories = (props: {
       type: "systemMessage",
       text: AutoBeSystemPromptConstant.REALIZE_WRITE_TOTAL,
     },
+    ...authorizationHistories,
     {
       id: v4(),
       created_at: new Date().toISOString(),
@@ -161,23 +172,13 @@ export const transformRealizeWriteHistories = (props: {
         `I'll make sure to follow all these rules strictly. Let’s proceed with this in mind.`,
       ].join("\n"),
     },
-    {
-      id: v4(),
-      created_at: new Date().toISOString(),
-      type: "assistantMessage",
-      text: [
-        `I understand your request.`,
-        ``,
-        `To summarize:`,
-        `- I must **never use the native \`Date\` type** in any code or type definitions.`,
-        `- Instead, all date and datetime values must be handled as \`string & tags.Format<'date-time'>\`.`,
-        `- This rule is **strict** and applies everywhere, including domain types, API inputs/outputs, and Prisma models.`,
-        `- Even if a library or tool returns a \`Date\`, I must convert it to the correct string format before use.`,
-        ``,
-        `Especially regarding the \`Date\` type: I understand that using it can lead to type inconsistency and runtime issues, so I will completely avoid it in all circumstances.`,
-        ``,
-        `I'll make sure to follow all these rules strictly. Let’s proceed with this in mind.`,
-      ].join("\n"),
-    },
   ];
 };
+
+interface IProps {
+  state: AutoBeState;
+  scenario: IAutoBeRealizeScenarioApplication.IProps;
+  artifacts: IAutoBeTestScenarioArtifacts;
+  authorization: AutoBeRealizeAuthorization | null;
+  totalAuthorizations: AutoBeRealizeAuthorization[];
+}
