@@ -9,7 +9,7 @@ The following naming conventions (notations) are used throughout the system:
 - **snake_case**: All lowercase with underscores between words (e.g., `user_account`, `product_item`)
 
 ### Specific Property Notations
-- **IAutoBeTestScenarioApplication.IScenario.functionName**: Use snake_case notation with `test_` prefix (format: `test_{action}_{resource}_{context}`)
+- **IAutoBeTestScenarioApplication.IScenario.functionName**: Use snake_case notation with `test_api_` prefix (format: `test_api_{core_feature}_{specific_scenario}`)
 
 ## 1. Overview
 
@@ -69,16 +69,22 @@ The final deliverable must be a structured output containing scenario groups wit
 
 ## 2.3. Authentication Rules
 
-**CRITICAL**: Each endpoint in the Include List shows its authorizationRole value. Follow these rules:
+**CRITICAL AUTHENTICATION REQUIREMENTS**: Each endpoint shows its `authorizationRole` and corresponding authentication operations. Follow these mandatory rules:
 
-* **If authorizationRole exists (not null)**: MUST include user registration → login APIs before testing the endpoint
-* **If authorizationRole is null**: No authentication required unless the scenario logically needs it
-* **Authentication Sequence**: When authentication is needed, always follow: registration → login → target API
+* **Single Role Scenarios**: When testing an operation with `authorizationRole` (not null), you MUST include the corresponding `join` operation in dependencies to create the user first
+* **Multiple Role Scenarios**: If your test scenario involves multiple actors with different roles, you MUST include both `join` and `login` operations for proper role switching
+* **Public Endpoints**: If `authorizationRole` is null, no authentication is required unless the scenario logically needs it
+* **Authentication Flow Order**: Always establish authentication context before testing protected endpoints
 
-Example:
-- `POST /users/register` → No authentication required
-- `POST /admin/products (Role: admin)` → Must include admin registration + login
-- `GET /my/orders (Role: user)` → Must include user registration + login
+**Authentication Pattern Examples:**
+- Single role testing: `join` → target API
+- Multi-role testing: `join` (role A) → `login` (role A) → operation → `login` (role B) → operation
+- Public endpoint: No authentication required
+
+**Example:**
+- `POST /users/join` → No authentication required (public endpoint)
+- `POST /admin/products (Role: admin)` → Must include admin `join` operation in dependencies
+- Multi-actor scenario → Must include both `join` and `login` operations for role switching
 
 ## 3. Output: `IAutoBeTestScenarioApplication.IProps` Structure
 
@@ -182,19 +188,20 @@ Each scenario draft should include:
 
 ### 5.3. Function Naming Guidelines
 
-Follow the user-centric naming convention:
+Follow the business feature-centric naming convention:
 
-* **Prefix**: Must start with `test_`
-* **User Action**: Primary action the user is performing (create, get, update, delete, search, etc.)
-* **Target Resource**: What the user is interacting with (user, product, order, review, etc.)
-* **Scenario Context**: Specific situation or condition (valid\_data, invalid\_email, not\_found, permission\_denied, etc.)
+* **Prefix**: Must start with `test_api_`
+* **Core Feature**: Primary business feature or entity being tested (customer, seller, cart, push_message, etc.)
+* **Specific Scenario**: Specific operation or scenario context (join_verification_not_found, login_success, etc.)
+
+**Pattern**: `test_api_[core_feature]_[specific_scenario]`
 
 **Examples:**
 
-* `test_create_product_with_valid_data`
-* `test_update_product_price_without_permission`
-* `test_search_products_with_empty_results`
-* `test_delete_product_that_does_not_exist`
+* `test_api_customer_join_verification_not_found`
+* `test_api_seller_login_success`
+* `test_api_cart_discountable_ticket_duplicated`
+* `test_api_product_review_update`
 
 ### 5.4. Dependency Identification Process
 
@@ -224,7 +231,6 @@ Example:
 ```yaml
   dependencies:
     - endpoint: { method: "post", path: "/posts" }
-      functionName: "test_api_post_creation_valid_data"
       purpose: "Create a post and extract postId for use in voting scenario"
 ```
 
@@ -249,7 +255,6 @@ Test scenarios must cover not only successful business flows but also various er
 * **Realistic Error Situations**: Model error conditions that actually occur in real usage
 * **Recovery Scenarios**: Consider how users might recover from or handle error conditions
 
-
 ### 7.4. Error Scenario Example
 
 ```ts
@@ -270,7 +275,6 @@ Test scenarios must cover not only successful business flows but also various er
 }
 ```
 
-
 **Additional Notes:**
 
 * It is critical to explicitly declare *all* prerequisite API calls necessary to prepare the test context within the `dependencies` array.
@@ -287,7 +291,7 @@ By following these guidelines, generated test scenarios will be comprehensive, a
 
 * [ ] Are all included endpoints covered with appropriate scenarios?
 * [ ] Do scenarios reflect realistic business workflows and user journeys?
-* [ ] Are function names descriptive and follow the user-centric naming convention?
+* [ ] Are function names descriptive and follow the business feature-centric naming convention?
 * [ ] Are all necessary dependencies identified and properly ordered?
 * [ ] Do dependency purposes clearly explain why each prerequisite is needed?
 * [ ] Are both success and failure scenarios included for complex operations?
@@ -312,6 +316,8 @@ By following these guidelines, generated test scenarios will be comprehensive, a
 
 ### 8.4. Authentication Verification
 
-* [ ] For endpoints with authorizationRole: Are registration → login dependencies included?
-* [ ] For public endpoints: Is authentication skipped unless scenario requires it?
-* [ ] Are authentication sequences properly ordered in dependencies?
+* [ ] For endpoints with authorizationRole: Are appropriate "join" operations included in dependencies for single-role scenarios?
+* [ ] For multi-role scenarios: Are both "join" and "login" operations included for proper role switching?
+* [ ] For public endpoints: Is authentication skipped unless scenario logically requires it?
+* [ ] Are authentication sequences properly described in dependency purposes?
+* [ ] Is authentication context established before testing protected endpoints?
