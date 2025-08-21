@@ -5,7 +5,9 @@ import {
   AutoBeInterfaceHistory,
   AutoBeOpenApi,
 } from "@autobe/interface";
+import { AutoBeEndpointComparator } from "@autobe/utils";
 import { ILlmSchema } from "@samchon/openapi";
+import { HashMap, Pair } from "tstl";
 import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
@@ -56,10 +58,27 @@ export const orchestrateInterface =
     // ENDPOINTS & OPERATIONS
     const endpoints: AutoBeOpenApi.IEndpoint[] =
       await orchestrateInterfaceEndpoints(ctx, init.groups, authorizations);
-    const operations: AutoBeOpenApi.IOperation[] =
+    const firstOperations: AutoBeOpenApi.IOperation[] =
       await orchestrateInterfaceOperations(ctx, endpoints);
-
-    operations.push(...authorizations);
+    const operations: AutoBeOpenApi.IOperation[] = new HashMap<
+      AutoBeOpenApi.IEndpoint,
+      AutoBeOpenApi.IOperation
+    >(
+      [...authorizations, ...firstOperations].map(
+        (o) =>
+          new Pair(
+            {
+              path: o.path,
+              method: o.method,
+            },
+            o, // early inserted be kept
+          ),
+      ),
+      AutoBeEndpointComparator.hashCode,
+      AutoBeEndpointComparator.equals,
+    )
+      .toJSON()
+      .map((it) => it.second);
 
     // TYPE SCHEMAS
     const document: AutoBeOpenApi.IDocument = {
@@ -69,9 +88,9 @@ export const orchestrateInterface =
         schemas: await orchestrateInterfaceSchemas(ctx, operations),
       },
     };
-    document.components.schemas = await orchestrateInterfaceComplement(
-      ctx,
-      document,
+    Object.assign(
+      document.components.schemas,
+      await orchestrateInterfaceComplement(ctx, document),
     );
 
     // DO COMPILE
