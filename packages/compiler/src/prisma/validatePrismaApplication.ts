@@ -177,7 +177,7 @@ function validateDuplicatedFields(
           message: StringUtil.trim`
             Field ${field} is duplicated.
             
-            Accessors of the other duplicated fields are:,
+            Accessors of the other duplicated fields are:
             
             ${array
               .filter((_oppo, j) => i !== j)
