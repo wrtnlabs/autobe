@@ -1,34 +1,44 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
-import { AutoBeOpenApi } from "@autobe/interface";
+import { AutoBeInterfaceAuthorization, AutoBeOpenApi } from "@autobe/interface";
 import { MapUtil } from "@autobe/utils";
 import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
+import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeTestScenarioAuthorizationRole } from "../structures/IAutoBeTestScenarioAuthorizationRole";
 
 export const transformTestScenarioHistories = (
+  state: AutoBeState,
   entire: AutoBeOpenApi.IOperation[],
   include: AutoBeOpenApi.IOperation[],
   exclude: Pick<AutoBeOpenApi.IOperation, "method" | "path">[],
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
+  const authorizations: AutoBeInterfaceAuthorization[] =
+    state.interface?.authorizations ?? [];
+
   const authorizationRoles: Map<string, IAutoBeTestScenarioAuthorizationRole> =
     new Map();
-  for (const op of entire) {
-    if (op.authorizationRole === null) continue;
-    const value: IAutoBeTestScenarioAuthorizationRole = MapUtil.take(
-      authorizationRoles,
-      op.authorizationRole,
-      () => ({
-        name: op.authorizationRole!,
-        join: null,
-        login: null,
-      }),
-    );
-    if (op.authorizationType === "join") value.join = op;
-    else if (op.authorizationType === "login") value.login = op;
+
+  for (const authorization of authorizations) {
+    for (const op of authorization.operations) {
+      if (op.authorizationType === null) continue;
+
+      const value: IAutoBeTestScenarioAuthorizationRole = MapUtil.take(
+        authorizationRoles,
+        op.authorizationRole,
+        () => ({
+          name: op.authorizationRole!,
+          join: null,
+          login: null,
+        }),
+      );
+      if (op.authorizationType === "join") value.join = op;
+      else if (op.authorizationType === "login") value.login = op;
+    }
   }
+
   return [
     {
       id: v4(),
@@ -86,12 +96,14 @@ export const transformTestScenarioHistories = (
               "",
               "Related Authentication APIs:",
               "",
-              roles.map((role) => {
-                return [
-                  `- ${role.join?.method.toUpperCase()}: ${role.join?.path}`,
-                  `- ${role.login?.method.toUpperCase()}: ${role.login?.path}`,
-                ].join("\n");
-              }),
+              roles.length > 0
+                ? roles.map((role) => {
+                    return [
+                      `- ${role.join?.method.toUpperCase()}: ${role.join?.path}`,
+                      `- ${role.login?.method.toUpperCase()}: ${role.login?.path}`,
+                    ].join("\n");
+                  })
+                : "- None",
             ];
           })
           .join("\n"),
