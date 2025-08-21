@@ -31,7 +31,7 @@ export const transformAnalyzeWriteHistories = <Model extends ILlmSchema.Model>(
 
         return {
           ...h,
-          text: text,
+          text,
         };
       }),
     {
