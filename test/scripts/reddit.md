@@ -61,7 +61,7 @@ Even though there are some things unclear, don't ask me anything. Since I'm not 
 ### **3.3 Comments**
 
 - **Create/Edit/Delete** require login, and **only the author** may edit/delete their comments.
-- **Length**: 2–2,000 characters.
+- **Length**: 2-2,000 characters.
 - **Structure**: Supports reply threads (nested replies).
 
 ### **3.4 Voting**
