@@ -1,6 +1,6 @@
 Please make a service following the requirements below.
 
-Even though there're something unclear, don't ask me anything. Since I'm not familiar with programming, I can't cleary answer to your any question. Just make every determinant by yourself about that, filling the gaps by your best, and just show me the final analysis report.
+Even though there are some things unclear, don't ask me anything. Since I'm not familiar with programming, I can't clearly answer any of your questions. Just make every determination by yourself about that, filling the gaps as best you can, and just show me the final analysis report.
 
 -------------
 
