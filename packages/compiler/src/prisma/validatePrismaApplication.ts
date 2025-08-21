@@ -370,12 +370,42 @@ function validateDuplicatedIndexes(
           table: model.name,
           field: null,
           message: StringUtil.trim`
-            Superset plain index found (${y.fieldNames.join(", ")}).
-            
-            You have defined a plain index with multiple fields,
-            but its superset is already defined as another plain index.
-            
-            As subset index is vulnerable, drop this plain index please.
+            Inefficient subset index detected - superset index exists.
+
+            **What is a subset/superset index problem?**
+            In database indexing, when you have an index on (A, B, C), it can efficiently serve queries 
+            that filter by A, or by (A, B), or by (A, B, C). This is called index prefix matching.
+
+            **Current situation:**
+            - You have a plain index on: (${x.fieldNames.join(", ")})
+            - But there's already a plain index on its superset: (${y.fieldNames.join(", ")})
+            - The subset index is redundant because the superset can handle the same queries
+
+            **Why is this a problem?**
+            1. **Query efficiency**: The superset index can handle all queries the subset can
+            2. **Storage waste**: You're maintaining two indexes where one would suffice
+            3. **Write performance**: Each index slows down INSERT, UPDATE, and DELETE operations
+            4. **Maintenance overhead**: More indexes mean more work for the database
+
+            **How indexes work (example):**
+            If you have an index on (country, city, street):
+            - ✅ Can efficiently find by country
+            - ✅ Can efficiently find by country + city
+            - ✅ Can efficiently find by country + city + street
+            - ❌ Cannot efficiently find by city alone
+            - ❌ Cannot efficiently find by street alone
+
+            **How to fix:**
+            Remove the subset index (${x.fieldNames.join(", ")}) because:
+            - The superset index (${y.fieldNames.join(", ")}) already covers these queries
+            - You'll save storage space and improve write performance
+            - Query performance will remain the same
+
+            **When to keep both indexes:**
+            Only if the subset index is UNIQUE (which it isn't in this case), as unique 
+            constraints serve a different purpose than performance optimization.
+
+            Please remove the redundant subset index.
           `,
         });
     });
