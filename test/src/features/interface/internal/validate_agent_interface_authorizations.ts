@@ -1,6 +1,9 @@
 import { orchestrateInterfaceAuthorizations } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceAuthorizations";
 import { FileSystemIterator } from "@autobe/filesystem";
-import { AutoBeAnalyzeRole, AutoBeOpenApi } from "@autobe/interface";
+import {
+  AutoBeAnalyzeRole,
+  AutoBeInterfaceAuthorization,
+} from "@autobe/interface";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
@@ -20,7 +23,7 @@ export const validate_agent_interface_authorizations = async (
   const roles: AutoBeAnalyzeRole[] =
     agent.getContext().state().analyze?.roles ?? [];
 
-  const authorizations: AutoBeOpenApi.IOperation[] =
+  const authorizations: AutoBeInterfaceAuthorization[] =
     await orchestrateInterfaceAuthorizations(agent.getContext());
 
   await FileSystemIterator.save({
