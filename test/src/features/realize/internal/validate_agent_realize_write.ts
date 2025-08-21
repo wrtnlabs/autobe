@@ -1,6 +1,6 @@
 import { orchestrateRealizeWrite } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeWrite";
 import { IAutoBeRealizeScenarioApplication } from "@autobe/agent/src/orchestrate/realize/structures/IAutoBeRealizeScenarioApplication";
-import { CompressUtil } from "@autobe/filesystem";
+import { CompressUtil, FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeEvent,
   AutoBeEventSnapshot,
@@ -67,6 +67,7 @@ export const validate_agent_realize_write = async (
         const write: AutoBeRealizeWriteEvent = await orchestrateRealizeWrite(
           agent.getContext(),
           {
+            totalAuthorizations: authorizations,
             authorization: authorization ?? null,
             progress,
             scenario,
@@ -93,6 +94,7 @@ export const validate_agent_realize_write = async (
         const write: AutoBeRealizeWriteEvent = await orchestrateRealizeWrite(
           agent.getContext(),
           {
+            totalAuthorizations: authorizations,
             authorization: authorization ?? null,
             progress,
             scenario,
@@ -105,6 +107,14 @@ export const validate_agent_realize_write = async (
       }
     }),
   );
+
+  await FileSystemIterator.save({
+    root: `${TestGlobal.ROOT}/results/${model}/${project}/realize/authorization-correct`,
+    files: {
+      ...(await agent.getFiles()),
+      ...Object.fromEntries(retried.map((el) => [el?.location, el?.content])),
+    },
+  });
 
   if (TestGlobal.archive)
     await TestHistory.save({

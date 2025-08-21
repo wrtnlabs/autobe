@@ -138,6 +138,7 @@ export const validate_agent_realize_correct = async (
         const correctEvent = await orchestrateRealizeCorrect(
           agent.getContext(),
           {
+            totalAuthorizations: authorizations,
             authorization: scenario.decoratorEvent ?? null,
             scenario,
             code: content,

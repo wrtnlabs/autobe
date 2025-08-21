@@ -40,6 +40,10 @@ export const validate_agent_test_correct = async (
     writes,
   );
 
+  const templateFiles = await (
+    await agent.getContext().compiler()
+  ).realize.getTemplate();
+
   // ARCHIVE RESULT
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/${model}/${project}/test/correct`,
@@ -68,6 +72,7 @@ export const validate_agent_test_correct = async (
           ])
           .flat(),
       ]),
+      ...templateFiles,
       "test/tsconfig.json":
         AutoBeCompilerInterfaceTemplate["test/tsconfig.json"],
       "logs/corrects.json": JSON.stringify(result),
