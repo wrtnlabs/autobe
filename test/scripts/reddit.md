@@ -309,7 +309,7 @@ Even though there are some things unclear, don't ask me anything. Since I'm not 
 - **Title**: 5–120 chars
 - **Body**: 10-10,000 chars (plain text, line breaks allowed; scripts/code not allowed)
 - **Author display name**: 0–32 chars (if empty, use default)
-- **Comment**: 2–2,000 chars
+- **Comment**: 2-2,000 chars
 
 ---
 
