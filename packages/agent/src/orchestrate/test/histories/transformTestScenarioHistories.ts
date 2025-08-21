@@ -29,7 +29,7 @@ export const transformTestScenarioHistories = (
         authorizationRoles,
         op.authorizationRole,
         () => ({
-          name: op.authorizationRole!,
+          name: authorization.role,
           join: null,
           login: null,
         }),

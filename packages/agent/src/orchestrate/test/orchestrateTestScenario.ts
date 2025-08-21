@@ -219,7 +219,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
           entireRoles,
           op.authorizationRole,
           () => ({
-            name: op.authorizationRole!,
+            name: authorization.role,
             join: null,
             login: null,
           }),
