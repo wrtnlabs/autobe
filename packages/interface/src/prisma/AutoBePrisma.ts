@@ -290,84 +290,142 @@ export namespace AutoBePrisma {
     material: boolean;
 
     /**
-     * Specifies the operational role of this model in the system architecture.
+     * Specifies the architectural stance of this model within the database
+     * system.
      *
-     * This property distinguishes between tables that users directly manage
-     * versus those that exist for supporting, system, or infrastructure
-     * purposes.
+     * This property defines how the table positions itself in relation to other
+     * tables and what role it plays in the overall data architecture,
+     * particularly for API endpoint generation and business logic
+     * organization.
      *
      * ## Values:
      *
-     * ### `"primary"` - User-Managed Business Entity
+     * ### `"primary"` - Main Business Entity
      *
-     * Tables that represent core business concepts which users directly
-     * interact with. These are the main subjects of business operations and
-     * typically require full CRUD APIs.
+     * Tables that represent core business concepts and serve as the primary
+     * subjects of user operations. These tables typically warrant independent
+     * CRUD API endpoints since users directly interact with these entities.
+     *
+     * **Key principle**: If users need to independently create, search, filter,
+     * or manage entities regardless of their parent context, the table should
+     * be primary stance.
+     *
+     * **API Requirements:**
+     *
+     * - Independent creation endpoints (POST /articles, POST /comments)
+     * - Search and filtering capabilities across all instances
+     * - Direct update and delete operations
+     * - List/pagination endpoints for browsing
+     *
+     * **Why `bbs_article_comments` is primary, not subsidiary:**
+     *
+     * Although comments belong to articles, they require independent
+     * management:
+     *
+     * - **Search across articles**: "Find all comments by user X across all
+     *   articles"
+     * - **Moderation workflows**: "List all pending comments for review"
+     * - **User activity**: "Show all comments made by this user"
+     * - **Independent operations**: Users edit/delete their comments directly
+     * - **Notification systems**: "Alert when any comment is posted"
+     *
+     * If comments were subsidiary, these operations would be impossible or
+     * require inefficient nested queries through parent articles.
      *
      * **Characteristics:**
      *
-     * - Users can create, read, update, and delete these records
-     * - Represents tangible business concepts
-     * - Forms the core of the application's functionality
+     * - Represents tangible business concepts that users manage
+     * - Serves as reference points for other tables
+     * - Requires comprehensive API operations (CREATE, READ, UPDATE, DELETE)
+     * - Forms the backbone of the application's business logic
      *
      * **Examples:**
      *
-     * - `users` - User accounts that people manage
-     * - `posts` - Content that users create and edit
-     * - `products` - Items in an e-commerce catalog
-     * - `orders` - Purchase transactions users make
+     * - `bbs_articles` - Forum posts that users create, edit, and manage
+     * - `bbs_article_comments` - User comments that require independent
+     *   management
      *
-     * ### `"supporting"` - Auxiliary or System-Managed Table
+     * ### `"subsidiary"` - Supporting/Dependent Entity
      *
-     * Tables that support primary entities but are not directly managed by
-     * users. These may be automatically maintained by the system or managed
-     * indirectly.
+     * Tables that exist to support primary entities but are not independently
+     * managed by users. These tables are typically managed through their parent
+     * entities and may not need standalone API endpoints.
      *
      * **Characteristics:**
      *
-     * - Often system-generated or auto-maintained
-     * - May have limited or read-only API operations
-     * - Exists to support primary entities or system functions
+     * - Depends on primary or snapshot entities for context
+     * - Often managed indirectly through parent entity operations
+     * - May have limited or no independent API operations
+     * - Provides supporting data or relationships
      *
      * **Examples:**
      *
-     * - Junction tables: `user_roles`, `product_categories`
-     * - System logs: `audit_trails`, `operation_logs`, `error_logs`
-     * - History/Snapshots: `order_snapshots`, `price_history`
-     * - Analytics: `page_views`, `click_events`, `metrics`
-     * - Cache tables: `search_cache`, `computed_aggregates`
+     * - `bbs_article_snapshot_files` - Files attached to article snapshots
+     * - `bbs_article_snapshot_tags` - Tags associated with article snapshots
+     * - `bbs_article_comment_snapshot_files` - Files attached to comment
+     *   snapshots
+     *
+     * ### `"snapshot"` - Historical/Versioning Entity
+     *
+     * Tables that capture point-in-time states of primary entities for audit
+     * trails, version control, or historical tracking. These tables record
+     * changes but are rarely modified directly by users.
+     *
+     * **Characteristics:**
+     *
+     * - Captures historical states of primary entities
+     * - Typically append-only (rarely updated or deleted)
+     * - Referenced for audit trails and change tracking
+     * - Usually read-only from user perspective
+     *
+     * **Examples:**
+     *
+     * - `bbs_article_snapshots` - Historical states of articles
+     * - `bbs_article_comment_snapshots` - Comment modification history
      *
      * ## API Generation Guidelines:
      *
-     * The Interface Agent should use this classification to guide operation
-     * generation:
+     * The stance property guides automatic API endpoint generation:
      *
-     * - **`"primary"`** → Evaluate for full CRUD operations based on requirements
-     * - **`"supporting"`** → Carefully consider if operations are needed:
-     *
-     *   - System logs/audit: Usually read-only (GET/PATCH for search)
-     *   - Junction tables: Often managed through parent entities
-     *   - Snapshots/History: Typically read-only
-     *   - Analytics/Metrics: Read-only, never manual creation
+     * - **`"primary"`** → Generate full CRUD endpoints based on business
+     *   requirements
+     * - **`"subsidiary"`** → Evaluate carefully; often managed through parent
+     *   entities
+     * - **`"snapshot"`** → Typically read-only endpoints for historical data
+     *   access
      *
      * @example
      *   ```typescript
-     *   // Primary business entity
+     *   // Primary business entity - needs full CRUD API
      *   {
-     *     name: "shopping_orders",
-     *     entityRole: "primary",
-     *     description: "Customer orders that users create and manage"
+     *     name: "bbs_articles",
+     *     stance: "primary",
+     *     description: "Forum articles that users create and manage independently"
      *   }
      *
-     *   // Supporting system table
+     *   // Another primary entity - despite being "child" of articles
      *   {
-     *     name: "audit_trails",
-     *     entityRole: "supporting",
-     *     description: "System-generated audit logs for compliance"
+     *     name: "bbs_article_comments",
+     *     stance: "primary",
+     *     description: "User comments requiring independent search and management"
+     *   }
+     *
+     *   // Subsidiary entity - managed through snapshot operations
+     *   {
+     *     name: "bbs_article_snapshot_files",
+     *     stance: "subsidiary",
+     *     description: "Files attached to article snapshots, managed via snapshot APIs"
+     *   }
+     *
+     *   // Snapshot entity - read-only historical data
+     *   {
+     *     name: "bbs_article_snapshots",
+     *     stance: "snapshot",
+     *     description: "Historical states of articles for audit and versioning"
      *   }
      *   ```;
      */
-    entityRole?: "primary" | "supporting";
+    stance: "primary" | "subsidiary" | "snapshot";
 
     //----
     // FIELDS
