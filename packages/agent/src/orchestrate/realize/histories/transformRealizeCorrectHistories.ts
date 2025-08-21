@@ -34,7 +34,7 @@ export function transformRealizeCorrectHistories(props: {
         "```",
         `The code has a compilation error:`,
         "```json",
-        JSON.stringify(props.diagnostic, null, 2),
+        JSON.stringify(props.diagnostic),
         "",
       ].join("\n"),
       created_at: new Date().toISOString(),

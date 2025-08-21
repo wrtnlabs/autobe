@@ -35,7 +35,7 @@ export function transformInterfaceOperationsReviewHistories<
         "Review the following API operations:",
         "",
         "```json",
-        JSON.stringify(operations, null, 2),
+        JSON.stringify(operations),
         "```",
       ].join("\n"),
     },

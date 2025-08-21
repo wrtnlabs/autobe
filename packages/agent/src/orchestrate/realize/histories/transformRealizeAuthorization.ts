@@ -33,7 +33,7 @@ export const transformRealizeAuthorizationHistories = <
         "",
         "## Prisma Schema",
         "",
-        JSON.stringify(ctx.state().prisma?.schemas, null, 2),
+        JSON.stringify(ctx.state().prisma?.schemas),
         "",
         "## Component Naming Convention",
         "",
