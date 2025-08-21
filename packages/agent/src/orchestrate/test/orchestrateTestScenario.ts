@@ -217,7 +217,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
         if (op.authorizationType === null) continue;
         const value: IAutoBeTestScenarioAuthorizationRole = MapUtil.take(
           entireRoles,
-          op.authorizationRole,
+          authorization.role,
           () => ({
             name: authorization.role,
             join: null,

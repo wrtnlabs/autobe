@@ -24,10 +24,9 @@ export const transformTestScenarioHistories = (
   for (const authorization of authorizations) {
     for (const op of authorization.operations) {
       if (op.authorizationType === null) continue;
-
       const value: IAutoBeTestScenarioAuthorizationRole = MapUtil.take(
         authorizationRoles,
-        op.authorizationRole,
+        authorization.role,
         () => ({
           name: authorization.role,
           join: null,
