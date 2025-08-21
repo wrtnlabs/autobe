@@ -85,15 +85,16 @@ function validateDuplicatedFiles(
           path: `application.files[${container.index}]`,
           table: null,
           field: null,
-          message: [
-            `File ${container.file.filename} is duplicated.`,
-            "",
-            "Accessors of the other duplicated files are:",
-            "",
-            ...array
+          message: StringUtil.trim`
+            File ${container.file.filename} is duplicated.
+
+            Accessors of the other duplicated files are:
+
+            ${array
               .filter((_oppo, j) => i !== j)
-              .map((oppo) => `- application.files[${oppo.index}]`),
-          ].join("\n"),
+              .map((oppo) => `- application.files[${oppo.index}]`)
+              .join("\n")},
+          `,
         });
       });
   return errors;
@@ -123,18 +124,19 @@ function validateDuplicatedModels(
           path: `application.files[${container.fileIndex}].models[${container.modelIndex}]`,
           table: container.model.name,
           field: null,
-          message: [
-            `Model ${container.model.name} is duplicated.`,
-            "",
-            "Accessors of the other duplicated models are:",
-            "",
-            ...array
+          message: StringUtil.trim`
+            Model ${container.model.name} is duplicated.
+            
+            Accessors of the other duplicated models are:
+            
+            ${array
               .filter((_oppo, j) => i !== j)
               .map(
                 (oppo) =>
                   `- application.files[${oppo.fileIndex}].models[${oppo.modelIndex}]`,
-              ),
-          ].join("\n"),
+              )
+              .join("\n")},
+          `,
         });
       });
   return errors;
@@ -172,13 +174,16 @@ function validateDuplicatedFields(
           path,
           table: model.name,
           field,
-          message: [
-            `Field ${field} is duplicated.`,
-            "",
-            "Accessors of the other duplicated fields are:",
-            "",
-            ...array.filter((_oppo, j) => i !== j).map((a) => `- ${a}`),
-          ].join("\n"),
+          message: StringUtil.trim`
+            Field ${field} is duplicated.
+            
+            Accessors of the other duplicated fields are:,
+            
+            ${array
+              .filter((_oppo, j) => i !== j)
+              .map((a) => `- ${a}`)
+              .join("\n")},
+          `,
         });
       });
 
@@ -235,13 +240,16 @@ function validateDuplicatedIndexes(
           path,
           table: model.name,
           field: null,
-          message: [
-            `Duplicated index found (${fieldNames.join(", ")}).`,
-            "",
-            "Accessors of the other duplicated indexes are:",
-            "",
-            ...array.filter((_oppo, j) => i !== j).map((a) => `- ${a}`),
-          ].join("\n"),
+          message: StringUtil.trim`
+            Duplicated index found (${fieldNames.join(", ")}).
+            
+            Accessors of the other duplicated indexes are:
+            
+            ${array
+              .filter((_oppo, j) => i !== j)
+              .map((a) => `- ${a}`)
+              .join("\n")},
+          `,
         });
       });
 
