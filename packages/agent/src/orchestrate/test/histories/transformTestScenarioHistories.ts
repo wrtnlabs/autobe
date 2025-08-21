@@ -65,49 +65,6 @@ export const transformTestScenarioHistories = (
         "```",
       ].join("\n"),
     } satisfies IAgenticaHistoryJson.ISystemMessage,
-    ...(authorizationRoles.size > 0
-      ? [
-          {
-            id: v4(),
-            created_at: new Date().toISOString(),
-            type: "systemMessage",
-            text: [
-              "# Authentication Information",
-              "",
-              "## Authentication Operations",
-              "",
-              "Below are the authentication-related operations available in the system:",
-              "",
-              "### Join Operations (User Registration)",
-              "",
-              joinOperations
-                .map(
-                  (op) =>
-                    `- ${op.method.toUpperCase()}: ${op.path} ${op.authorizationRole ? `(Role: ${op.authorizationRole})` : ""}`,
-                )
-                .join("\n") || "- No join operations available",
-              "",
-              "### Login Operations (User Authentication)",
-              "",
-              loginOperations
-                .map(
-                  (op) =>
-                    `- ${op.method.toUpperCase()}: ${op.path} ${op.authorizationRole ? `(Role: ${op.authorizationRole})` : ""}`,
-                )
-                .join("\n") || "- No login operations available",
-              "",
-              "## Important Notes",
-              "",
-              "1. When testing operations that require authentication (authorizationRole is set), you MUST include the corresponding 'join' operation in the test scenario to create the user first.",
-              "2. If your test scenario involves multiple actors with different roles, include both 'join' and 'login' operations for role switching.",
-              "3. Always establish the authentication context before testing protected endpoints.",
-              "4. Consider the authentication flow: ",
-              "- If the scenario includes actions for a **single role**, use only `join`. ",
-              "- If the scenario includes **multiple roles**, use both `join` and `login` for proper role switching. ",
-            ].join("\n"),
-          } satisfies IAgenticaHistoryJson.ISystemMessage,
-        ]
-      : []),
     {
       id: v4(),
       created_at: new Date().toISOString(),
@@ -121,13 +78,21 @@ export const transformTestScenarioHistories = (
         "",
         include
           .map((el, i) => {
-            const authOperations = joinOperations.filter(
-              (op) => el.authorizationRole === op.authorizationRole,
+            const roles = Array.from(authorizationRoles.values()).filter(
+              (role) => role.name === el.authorizationRole,
             );
             return [
-              `${i + 1}. ${el.method.toUpperCase()}: ${el.path}:`,
-              `- Related Authentication API (Role: ${el.authorizationRole})${el.authorizationRole ? `: ${authOperations.map((op) => `${op.method.toUpperCase()}: ${op.path}`).join(", ")}` : ": None"}`,
-            ].join("\n");
+              `## ${i + 1}. ${el.method.toUpperCase()} ${el.path}`,
+              "",
+              "Related Authentication APIs:",
+              "",
+              roles.map((role) => {
+                return [
+                  `- ${role.join?.method.toUpperCase()}: ${role.join?.path}`,
+                  `- ${role.login?.method.toUpperCase()}: ${role.login?.path}`,
+                ].join("\n");
+              }),
+            ];
           })
           .join("\n"),
         "",
