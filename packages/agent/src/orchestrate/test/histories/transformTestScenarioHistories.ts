@@ -4,6 +4,7 @@ import { MapUtil } from "@autobe/utils";
 import { v4 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
+import { IAutoBeTestScenarioAuthorizationRole } from "../structures/IAutoBeTestScenarioAuthorizationRole";
 
 export const transformTestScenarioHistories = (
   entire: AutoBeOpenApi.IOperation[],
@@ -12,19 +13,15 @@ export const transformTestScenarioHistories = (
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
-  interface IAuthorizationRole {
-    role: string;
-    join: AutoBeOpenApi.IOperation | null;
-    login: AutoBeOpenApi.IOperation | null;
-  }
-  const authorizationRoles: Map<string, IAuthorizationRole> = new Map();
+  const authorizationRoles: Map<string, IAutoBeTestScenarioAuthorizationRole> =
+    new Map();
   for (const op of entire) {
     if (op.authorizationRole === null) continue;
-    const value: IAuthorizationRole = MapUtil.take(
+    const value: IAutoBeTestScenarioAuthorizationRole = MapUtil.take(
       authorizationRoles,
       op.authorizationRole,
       () => ({
-        role: op.authorizationRole!,
+        name: op.authorizationRole!,
         join: null,
         login: null,
       }),

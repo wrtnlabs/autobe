@@ -4,7 +4,7 @@ import {
   AutoBeProgressEventBase,
   AutoBeTestScenario,
 } from "@autobe/interface";
-import { AutoBeEndpointComparator } from "@autobe/utils";
+import { AutoBeEndpointComparator, MapUtil } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { HashMap, IPointer, Pair } from "tstl";
 import typia from "typia";
@@ -14,6 +14,7 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { transformTestScenarioHistories } from "./histories/transformTestScenarioHistories";
 import { IAutoBeTestScenarioApplication } from "./structures/IAutoBeTestScenarioApplication";
+import { IAutoBeTestScenarioAuthorizationRole } from "./structures/IAutoBeTestScenarioAuthorizationRole";
 
 export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
@@ -177,104 +178,11 @@ function createController<Model extends ILlmSchema.Model>(props: {
     if (result.success === false) return result;
 
     // merge to unique scenario groups
-    const scenarioGroups: IAutoBeTestScenarioApplication.IScenarioGroup[] = [];
-    result.data.scenarioGroups.forEach((sg) => {
-      const created = scenarioGroups.find(
-        (el) =>
-          el.endpoint.method === sg.endpoint.method &&
-          el.endpoint.path === sg.endpoint.path,
-      );
-      if (created) {
-        created.scenarios.push(...sg.scenarios);
-      } else {
-        scenarioGroups.push(sg);
-      }
-    });
+    const scenarioGroups: IAutoBeTestScenarioApplication.IScenarioGroup[] =
+      uniqueScenarioGroups(result.data.scenarioGroups);
 
     // validate endpoints
     const errors: IValidation.IError[] = [];
-
-    // Authentication Validation
-    scenarioGroups.forEach((group) => {
-      // 1. Extract roleSet from endpoint and dependencies
-      const roleSet = new Set<string>();
-      const operation = props.dict.get(group.endpoint);
-      if (operation.authorizationRole) {
-        roleSet.add(operation.authorizationRole);
-      }
-
-      group.scenarios.forEach((scenario) => {
-        scenario.dependencies.forEach((d) => {
-          const depOperation = props.dict.get(d.endpoint);
-          if (depOperation?.authorizationRole) {
-            roleSet.add(depOperation.authorizationRole);
-          }
-        });
-
-        // Single role case - add join operation
-        if (roleSet.size === 1) {
-          const role = Array.from(roleSet)[0];
-          const joinOperation = props.authOperations.find(
-            (op) =>
-              op.authorizationRole &&
-              roleSet.has(op.authorizationRole) &&
-              op.authorizationType === "join",
-          );
-          if (joinOperation) {
-            if (
-              !scenario.dependencies.some(
-                (d) =>
-                  d.endpoint.method === joinOperation.method &&
-                  d.endpoint.path === joinOperation.path,
-              )
-            ) {
-              scenario.dependencies.push({
-                endpoint: {
-                  method: joinOperation.method,
-                  path: joinOperation.path,
-                },
-                purpose: `Join operation required for ${role} role authentication`,
-              });
-            }
-          }
-        }
-
-        // Multiple roles case - add both join and login operations
-        if (roleSet.size > 1) {
-          const roles = Array.from(roleSet);
-          const operations = props.authOperations.filter(
-            (op) => op.authorizationRole && roleSet.has(op.authorizationRole),
-          );
-          operations.forEach((op) => {
-            if (
-              !scenario.dependencies.some(
-                (d) =>
-                  d.endpoint.method === op.method &&
-                  d.endpoint.path === op.path,
-              )
-            ) {
-              let purpose = "";
-              if (op.authorizationType === "join") {
-                purpose = `Join operation required for ${op.authorizationRole} role authentication`;
-              } else if (op.authorizationType === "login") {
-                purpose = `Login operation required for user role swapping between multiple actors (${roles.join(", ")})`;
-              } else {
-                purpose = `Authentication operation for ${op.authorizationRole} role`;
-              }
-
-              scenario.dependencies.push({
-                endpoint: {
-                  method: op.method,
-                  path: op.path,
-                },
-                purpose: purpose,
-              });
-            }
-          });
-        }
-      });
-    });
-
     scenarioGroups.forEach((group, i) => {
       if (props.dict.has(group.endpoint) === false)
         errors.push({
@@ -293,6 +201,105 @@ function createController<Model extends ILlmSchema.Model>(props: {
               description: props.endpointNotFound,
             });
         });
+      });
+    });
+
+    // Authentication Correction
+    const entireRoles: Map<string, IAutoBeTestScenarioAuthorizationRole> =
+      new Map();
+    for (const op of props.authOperations) {
+      if (op.authorizationRole === null || op.authorizationType === null)
+        continue;
+      const value: IAutoBeTestScenarioAuthorizationRole = MapUtil.take(
+        entireRoles,
+        op.authorizationRole,
+        () => ({
+          name: op.authorizationRole!,
+          join: null,
+          login: null,
+        }),
+      );
+      if (op.authorizationType === "join") value.join = op;
+      else if (op.authorizationType === "login") value.login = op;
+    }
+
+    scenarioGroups.forEach((group) => {
+      if (props.dict.has(group.endpoint) === false) return;
+
+      const operation: AutoBeOpenApi.IOperation = props.dict.get(
+        group.endpoint,
+      );
+      group.scenarios.forEach((scenario) => {
+        // gathere authorization roles
+        const localRoles: Map<string, IAutoBeTestScenarioAuthorizationRole> =
+          new Map();
+        const add = (operation: AutoBeOpenApi.IOperation) => {
+          const role: string | null = operation.authorizationRole;
+          if (role === null) return;
+          MapUtil.take(localRoles, role, () => ({
+            name: role,
+            join: null,
+            login: null,
+          }));
+        };
+        add(operation);
+        scenario.dependencies.forEach((d) => {
+          if (props.dict.has(d.endpoint) === false) return;
+          const depOperation: AutoBeOpenApi.IOperation = props.dict.get(
+            d.endpoint,
+          );
+          add(depOperation);
+        });
+
+        // Single role case - add join operation
+        if (localRoles.size === 1) {
+          const role: IAutoBeTestScenarioAuthorizationRole = localRoles
+            .values()
+            .next().value!;
+          if (role.join === null) {
+            const theJoin: AutoBeOpenApi.IOperation | null =
+              entireRoles.get(role.name)?.join ?? null;
+            if (theJoin === null) throw new Error("Unreachable code");
+            scenario.dependencies.push({
+              endpoint: {
+                method: theJoin.method,
+                path: theJoin.path,
+              },
+              purpose: `Join operation required for ${role} role authentication`,
+              // @todo -> much detailed, get helped by Claude Code
+            });
+          }
+        }
+
+        // Multiple roles case - add both join and login operations
+        if (localRoles.size > 1) {
+          for (const role of localRoles.values()) {
+            if (role.join === null) {
+              const theJoin: AutoBeOpenApi.IOperation | null =
+                entireRoles.get(role.name)?.join ?? null;
+              if (theJoin === null) throw new Error("Unreachable code");
+              scenario.dependencies.push({
+                endpoint: {
+                  path: theJoin.path,
+                  method: theJoin.method,
+                },
+                purpose: `Join operation required for ${role.name} role authentication.`,
+              });
+            }
+            if (role.login === null) {
+              const theLogin: AutoBeOpenApi.IOperation | null =
+                entireRoles.get(role.name)?.login ?? null;
+              if (theLogin === null) throw new Error("Unreachable code");
+              scenario.dependencies.push({
+                endpoint: {
+                  path: theLogin.path,
+                  method: theLogin.method,
+                },
+                purpose: `Login operation may required for user role swapping between multiple actors.`,
+              });
+            }
+          }
+        }
       });
     });
     return errors.length === 0
@@ -326,6 +333,17 @@ function createController<Model extends ILlmSchema.Model>(props: {
     } satisfies IAutoBeTestScenarioApplication,
   };
 }
+
+const uniqueScenarioGroups = (
+  groups: IAutoBeTestScenarioApplication.IScenarioGroup[],
+): IAutoBeTestScenarioApplication.IScenarioGroup[] =>
+  new HashMap(
+    groups.map((g) => new Pair(g.endpoint, g)),
+    AutoBeEndpointComparator.hashCode,
+    AutoBeEndpointComparator.equals,
+  )
+    .toJSON()
+    .map((it) => it.second);
 
 const collection = {
   chatgpt: (validate: Validator) =>
