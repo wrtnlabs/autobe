@@ -1,5 +1,6 @@
 import {
   AutoBeAssistantMessageHistory,
+  AutoBeInterfaceAuthorization,
   AutoBeInterfaceCompleteEvent,
   AutoBeInterfaceGroupsEvent,
   AutoBeInterfaceHistory,
@@ -52,19 +53,23 @@ export const orchestrateInterface =
     ctx.dispatch(init);
 
     // AUTHORIZATION
-    const authorizations: AutoBeOpenApi.IOperation[] =
+    const authorizations: AutoBeInterfaceAuthorization[] =
       await orchestrateInterfaceAuthorizations(ctx);
+
+    const authOperations = authorizations
+      .map((authorization) => authorization.operations)
+      .flat();
 
     // ENDPOINTS & OPERATIONS
     const endpoints: AutoBeOpenApi.IEndpoint[] =
-      await orchestrateInterfaceEndpoints(ctx, init.groups, authorizations);
+      await orchestrateInterfaceEndpoints(ctx, init.groups, authOperations);
     const firstOperations: AutoBeOpenApi.IOperation[] =
       await orchestrateInterfaceOperations(ctx, endpoints);
     const operations: AutoBeOpenApi.IOperation[] = new HashMap<
       AutoBeOpenApi.IEndpoint,
       AutoBeOpenApi.IOperation
     >(
-      [...authorizations, ...firstOperations].map(
+      [...authOperations, ...firstOperations].map(
         (o) =>
           new Pair(
             {
@@ -97,6 +102,7 @@ export const orchestrateInterface =
     return ctx.dispatch({
       type: "interfaceComplete",
       document,
+      authorizations,
       created_at: new Date().toISOString(),
       elapsed: new Date().getTime() - start.getTime(),
       step: ctx.state().analyze?.step ?? 0,

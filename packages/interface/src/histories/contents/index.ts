@@ -6,6 +6,8 @@ export * from "./AutoBeUserMessageTextContent";
 
 export * from "./AutoBeAnalyzeRole";
 
+export * from "./AutoBeInterfaceAuthorization";
+
 export * from "./AutoBeTestFile";
 export * from "./AutoBeTestScenario";
 export * from "./AutoBeTestScenarioDependency";

@@ -1,6 +1,7 @@
 import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeAnalyzeRole,
+  AutoBeInterfaceAuthorization,
   AutoBeOpenApi,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
@@ -17,13 +18,13 @@ import { IAutoBeInterfaceAuthorizationsApplication } from "./structures/IAutoBeI
 
 export async function orchestrateInterfaceAuthorizations<
   Model extends ILlmSchema.Model,
->(ctx: AutoBeContext<Model>): Promise<AutoBeOpenApi.IOperation[]> {
+>(ctx: AutoBeContext<Model>): Promise<AutoBeInterfaceAuthorization[]> {
   const roles: AutoBeAnalyzeRole[] = ctx.state().analyze?.roles ?? [];
   const progress: AutoBeProgressEventBase = {
     total: roles.length,
     completed: 0,
   };
-  const operations: AutoBeOpenApi.IOperation[][] = await Promise.all(
+  const operations: AutoBeInterfaceAuthorization[] = await Promise.all(
     roles.map(async (role) => {
       const event: AutoBeInterfaceAuthorizationEvent = await process(
         ctx,
@@ -31,11 +32,14 @@ export async function orchestrateInterfaceAuthorizations<
         progress,
       );
       ctx.dispatch(event);
-      return event.operations;
+      return {
+        role: role.name,
+        operations: event.operations,
+      };
     }),
   );
 
-  return operations.flat();
+  return operations;
 }
 
 async function process<Model extends ILlmSchema.Model>(
