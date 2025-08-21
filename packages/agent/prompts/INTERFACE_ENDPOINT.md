@@ -188,6 +188,13 @@ For EACH **primary business entity** identified in the requirements document, Pr
 
 ### 5.5. Entity-Specific Restrictions
 
+**DO NOT CREATE:**
+- User creation endpoints (POST /users, POST /admins)
+- Authentication endpoints (handled separately)
+- Focus only on business data operations
+
+Create operations for DIFFERENT paths and DIFFERENT purposes only.
+
 **IMPORTANT**: Some entities have special handling requirements and should NOT follow standard CRUD patterns:
 
 #### User/Authentication Entities (DO NOT CREATE):
