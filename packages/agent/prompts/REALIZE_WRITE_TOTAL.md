@@ -832,7 +832,35 @@ export async function put__public_resources_$resourceId(
 const createdAt: string & tags.Format<'date-time'> = toISOStringSafe(new Date());
 ```
 
-2. **Inline Prisma operations (MANDATORY)**:
+2. **Pagination Type Handling (IPage.IPagination)**:
+```typescript
+// ❌ WRONG: Direct assignment causes brand type errors
+// Error: 'number | (number & Type<"int32">)' not assignable to 'number & Type<"uint32">'
+return {
+  pagination: {
+    current: page,      // ❌ Type error!
+    limit: limit,       // ❌ Type error!
+    records: total,
+    pages: Math.ceil(total / limit),
+  },
+  data: results
+};
+
+// ✅ CORRECT: Use Number() to strip brand types
+return {
+  pagination: {
+    current: Number(page),      // ✅ Converts to plain number
+    limit: Number(limit),       // ✅ Converts to plain number
+    records: total,
+    pages: Math.ceil(total / limit),
+  },
+  data: results
+};
+```
+
+**Why this works**: The `Number()` constructor strips away complex brand type intersections and returns a plain `number` that TypeScript can safely assign. This is the simplest solution for IPage.IPagination's complex uint32 brand type requirements.
+
+3. **Inline Prisma operations (MANDATORY)**:
 ```ts
 // ✅ CORRECT: All parameters inline
 const [results, total] = await Promise.all([
