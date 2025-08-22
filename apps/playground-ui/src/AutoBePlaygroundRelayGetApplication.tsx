@@ -1,4 +1,4 @@
-import { AutoBePlaygroundReplayGetMovie } from "./movies/replay/AutoBePlaygroundReplayIndexMovie";
+import { AutoBePlaygroundReplayGetMovie } from "./movies/replay/AutoBePlaygroundReplayGetMovie";
 
 export const AutoBePlaygroundReplayGetApplication = () => (
   <div
