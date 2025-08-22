@@ -35,8 +35,8 @@ export namespace IAutoBeTestWriteApplication {
      *
      * AI determines the appropriate domain category based on the scenario
      * analysis. This classification drives file structure, test categorization,
-     * and logical grouping. The domain must be a single, lowercase word that
-     * represents the primary API resource.
+     * and logical grouping. The domain must be a single, lowercase word in
+     * snake_case format that represents the primary API resource.
      *
      * Workflow: Scenario analysis → Domain identification → Test organization
      * structure
