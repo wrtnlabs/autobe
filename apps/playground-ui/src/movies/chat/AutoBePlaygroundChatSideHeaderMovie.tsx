@@ -1,4 +1,4 @@
-import { IAutoBeRpcHeader } from "@autobe/interface";
+import { IAutoBePlaygroundHeader } from "@autobe/interface";
 import {
   Table,
   TableCell,
@@ -48,6 +48,6 @@ export const AutoBePlaygroundChatSideHeaderMovie = (
 };
 export namespace AutoBePlaygroundChatSideHeaderMovie {
   export interface IProps {
-    header: IAutoBeRpcHeader<ILlmSchema.Model>;
+    header: IAutoBePlaygroundHeader<ILlmSchema.Model>;
   }
 }

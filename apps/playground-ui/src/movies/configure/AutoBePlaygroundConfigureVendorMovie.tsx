@@ -1,4 +1,4 @@
-import { IAutoBeRpcVendor } from "@autobe/interface";
+import { IAutoBePlaygroundVendor } from "@autobe/interface";
 import { Divider, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 
@@ -97,7 +97,7 @@ export function AutoBePlaygroundConfigureVendorMovie(
 }
 export namespace AutoBePlaygroundConfigureVendorMovie {
   export interface IProps {
-    config: IAutoBeRpcVendor;
-    onChange: (config: IAutoBeRpcVendor) => void;
+    config: IAutoBePlaygroundVendor;
+    onChange: (config: IAutoBePlaygroundVendor) => void;
   }
 }

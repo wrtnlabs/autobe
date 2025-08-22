@@ -1,4 +1,7 @@
-import { IAutoBeRpcHeader, IAutoBeTokenUsageJson } from "@autobe/interface";
+import {
+  IAutoBePlaygroundHeader,
+  IAutoBeTokenUsageJson,
+} from "@autobe/interface";
 import { Typography } from "@mui/material";
 import { ILlmSchema } from "@samchon/openapi";
 
@@ -37,7 +40,7 @@ export function AutoBePlaygroundChatSideMovie(
 }
 export namespace AutoBePlaygroundChatSideMovie {
   export interface IProps {
-    header: IAutoBeRpcHeader<ILlmSchema.Model>;
+    header: IAutoBePlaygroundHeader<ILlmSchema.Model>;
     state: AutoBePlaygroundState;
     tokenUsage: IAutoBeTokenUsageJson | null;
     error: Error | null;
