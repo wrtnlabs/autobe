@@ -10,20 +10,26 @@ export function jwtAuthorize(props: {
 }) {
   if (!props.request.headers.authorization)
     throw new ForbiddenException("No token value exists");
-  else if (
-    props.request.headers.authorization.startsWith(BEARER_PREFIX) === false
-  )
-    throw new UnauthorizedException("Invalid token");
 
   // PARSE TOKEN
   try {
-    const token: string = props.request.headers.authorization.substring(
-      BEARER_PREFIX.length,
-    );
+    if (
+      props.request.headers.authorization.startsWith(BEARER_PREFIX) === true
+    ) {
+      const token: string = props.request.headers.authorization.substring(
+        BEARER_PREFIX.length,
+      );
 
-    const verified = jwt.verify(token, MyGlobal.env.JWT_SECRET_KEY);
+      const verified = jwt.verify(token, MyGlobal.env.JWT_SECRET_KEY);
 
-    return verified;
+      return verified;
+    } else {
+      const token = props.request.headers.authorization;
+
+      const verified = jwt.verify(token, MyGlobal.env.JWT_SECRET_KEY);
+
+      return verified;
+    }
   } catch {
     throw new UnauthorizedException("Invalid token");
   }
