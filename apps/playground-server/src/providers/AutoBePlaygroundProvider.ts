@@ -18,9 +18,10 @@ export namespace AutoBePlaygroundProvider {
       IAutoBeRpcListener
     >,
   ): Promise<void> => {
-    await AutoBePlaygroundAcceptor.accept(
+    await AutoBePlaygroundAcceptor.accept({
+      prefix: `${acceptor.header.vendor.model}/chat`,
       acceptor,
-      (compiler) =>
+      agent: (compiler) =>
         new AutoBeAgent({
           model: acceptor.header.model,
           vendor: {
@@ -37,6 +38,6 @@ export namespace AutoBePlaygroundProvider {
           },
           compiler: () => compiler,
         }),
-    );
+    });
   };
 }

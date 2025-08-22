@@ -219,14 +219,15 @@ export namespace AutoBePlaygroundReplayProvider {
       test: await load("test.snapshots"),
       realize: await load("realize.snapshots"),
     };
-    await AutoBePlaygroundAcceptor.accept(
+    await AutoBePlaygroundAcceptor.accept({
+      prefix: `${props.vendor}/${props.project}/replay`,
       acceptor,
-      (compiler) =>
+      agent: (compiler) =>
         new AutoBeMockAgent({
           replay,
           compiler: () => compiler,
         }),
-    );
+    });
   };
 }
 

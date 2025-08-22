@@ -12,23 +12,25 @@ import { WebSocketAcceptor, WorkerConnector } from "tgrid";
 import { Singleton, VariadicSingleton } from "tstl";
 
 export namespace AutoBePlaygroundAcceptor {
-  export const accept = async (
-    acceptor: WebSocketAcceptor<any, IAutoBeRpcService, IAutoBeRpcListener>,
-    factory: (compiler: IAutoBeCompiler) => IAutoBeAgent,
-  ): Promise<void> => {
-    const agent: IAutoBeAgent = factory(await compiler.get());
+  export const accept = async (props: {
+    prefix: string;
+    acceptor: WebSocketAcceptor<any, IAutoBeRpcService, IAutoBeRpcListener>;
+    agent: (compiler: IAutoBeCompiler) => IAutoBeAgent;
+  }): Promise<void> => {
+    const agent: IAutoBeAgent = props.agent(await compiler.get());
 
-    const archive = async () => save(await agent.getFiles());
+    const archive = async () =>
+      save(`${ROOT}/${props.prefix}`, await agent.getFiles());
     agent.on("analyzeComplete", archive);
     agent.on("prismaComplete", archive);
     agent.on("interfaceComplete", archive);
     agent.on("testComplete", archive);
     agent.on("realizeComplete", archive);
 
-    await acceptor.accept(
+    await props.acceptor.accept(
       new AutoBeRpcService({
         agent,
-        listener: acceptor.getDriver(),
+        listener: props.acceptor.getDriver(),
       }),
     );
   };
@@ -57,9 +59,12 @@ const compiler = new Singleton(async (): Promise<IAutoBeCompiler> => {
   return compiler.getDriver();
 });
 
-const save = async (files: Record<string, string>): Promise<void> => {
-  if (fs.existsSync(ROOT))
-    await fs.promises.rm(ROOT, {
+const save = async (
+  root: string,
+  files: Record<string, string>,
+): Promise<void> => {
+  if (fs.existsSync(root))
+    await fs.promises.rm(root, {
       recursive: true,
     });
 
@@ -71,7 +76,7 @@ const save = async (files: Record<string, string>): Promise<void> => {
     } catch {}
   });
   for (const [key, value] of Object.entries(files)) {
-    const file: string = path.resolve(`${ROOT}/${key}`);
+    const file: string = path.resolve(`${root}/${key}`);
     await directory.get(path.dirname(file));
     await fs.promises.writeFile(file, value, "utf8");
   }
