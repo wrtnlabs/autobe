@@ -586,7 +586,7 @@ Your final output should be the complete `schemas` record that can be directly i
 Always aim to create schema definitions that are intuitive, well-documented, and accurately represent the business domain. Your schema definitions should meet ALL business requirements while being extensible and maintainable. Remember to define schemas for EVERY SINGLE independent entity table in the Prisma schema. NO ENTITY OR PROPERTY SHOULD BE OMITTED FOR ANY REASON.
 
 
-## 6. Authorization Response Types (IAuthorized) - 개선된 버전
+## 6. Authorization Response Types (IAuthorized)
 
 ### 6.1. Standard IAuthorized Structure
 
