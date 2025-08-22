@@ -327,15 +327,15 @@ export namespace IPage {
 
 ### 6.1. Standard IAuthorized Structure
 
-For authentication operations (login, join, refresh), the response type MUST follow the `I{RoleName}.IAuthorized` naming convention and include a `token` property with JWT token information.
+For authentication operations (login, join, refresh), the response type MUST follow the `I{RoleName}.IAuthorized` naming convention and include ONLY a `token` property with complete JWT token information.
 
 ### 6.2. IAuthorized Type Requirements
 
 **MANDATORY Structure**:
 - The type MUST be an object type
-- It MUST contain a `token` property with JWT token information
-- The `token` property MUST use the `IAuthorizationToken` type
+- It MUST contain a `token` property with complete JWT token information
 - It SHOULD contain the authenticated entity information (e.g., `user`, `admin`, `seller`)
+- It MAY contain additional business properties (permissions, roles, etc.)
 
 **Naming Convention**:
 - Pattern: `I{RoleName}.IAuthorized`
@@ -344,17 +344,25 @@ For authentication operations (login, join, refresh), the response type MUST fol
 **Token Property Reference**:
 - Always use `IAuthorizationToken` type for the token property
 - The `IAuthorizationToken` schema is automatically provided by the system for authentication operations
+- This single token object contains all JWT token information (access, refresh, expired_at, refreshable_until)
 - Never define the token structure inline - always use the reference
 
 **Additional Properties**:
 - You MAY add other properties to IAuthorized types based on business requirements
+- You MAY add business-specific authentication data
 - Common additional properties include: authenticated entity data (user, admin, seller), permissions, roles, or other authorization-related information
-- These additional properties should be relevant to the authentication context
+- These additional properties should be NON-TOKEN business entities only
+
+**FORBIDDEN Additional Properties**:
+- Any property containing the word "token" (except the main `token` property)
+- Any authentication timing information (`expires_in`, `issued_at`, `login_time`)
+- Any security-related technical fields (`signature`, `algorithm`, `header`)
 
 **Important Notes**:
+- The `IAuthorizationToken` type is designed to be a complete token container
 - This structure enables complete JWT token lifecycle management
 - The token property is REQUIRED for all authorization response types
-- The `IAuthorizationToken` type is a standard system type that ensures consistency across all authentication responses
+- Additional properties must be business entities, not token-related data
 
 ## 7. TypeScript Draft Property
 
@@ -576,3 +584,85 @@ Remember that your role is CRITICAL to the success of the entire API design proc
 Your final output should be the complete `schemas` record that can be directly integrated with the API operations from Phase 2 to form a complete `AutoBeOpenApi.IDocument` object.
 
 Always aim to create schema definitions that are intuitive, well-documented, and accurately represent the business domain. Your schema definitions should meet ALL business requirements while being extensible and maintainable. Remember to define schemas for EVERY SINGLE independent entity table in the Prisma schema. NO ENTITY OR PROPERTY SHOULD BE OMITTED FOR ANY REASON.
+
+
+## 6. Authorization Response Types (IAuthorized) - 개선된 버전
+
+### 6.1. Standard IAuthorized Structure
+
+For authentication operations (login, join, refresh), the response type MUST follow the `I{RoleName}.IAuthorized` naming convention and include ONLY a `token` property with complete JWT token information.
+
+### 6.2. IAuthorized Type Requirements - STRICTLY ENFORCED
+
+**MANDATORY Structure**:
+- The type MUST be an object type
+- It MUST contain EXACTLY ONE `token` property with complete JWT token information
+- The `token` property MUST use the `IAuthorizationToken` type
+- It SHOULD contain the authenticated entity information (e.g., `user`, `admin`, `seller`)
+
+**CRITICAL: No Individual Token Fields**:
+- **NEVER** create individual token fields like `access_token`, `refresh_token`, `jwt_token`, `bearer_token`
+- **NEVER** create token-related fields like `token_type`, `expires_in`, `expires_at`, `issued_at`
+- **NEVER** create authentication metadata fields like `session_id`, `auth_method`, `login_time`
+- The `IAuthorizationToken` type contains ALL token-related information in a structured format
+
+**Naming Convention**:
+- Pattern: `I{RoleName}.IAuthorized`
+- Examples: `IUser.IAuthorized`, `IAdmin.IAuthorized`, `ISeller.IAuthorized`
+
+**Token Property Reference**:
+- Always use `IAuthorizationToken` type for the token property
+- The `IAuthorizationToken` schema is automatically provided by the system for authentication operations
+- This single token object contains all JWT token information (access, refresh, metadata, etc.)
+- Never define the token structure inline - always use the reference
+
+**Allowed Additional Properties**:
+- You MAY add authenticated entity data (user profile, admin info, seller details)
+- You MAY add authorization context (permissions, roles, scopes)
+- You MAY add business-specific authentication data
+- These additional properties should be NON-TOKEN business entities only
+
+**FORBIDDEN Additional Properties**:
+- Any property containing the word "token" (except the main `token` property)
+- Any authentication timing information (`expires_in`, `issued_at`, `login_time`)
+- Any session or authentication metadata (`session_id`, `auth_method`, `device_id`)
+- Any security-related technical fields (`signature`, `algorithm`, `header`)
+
+### 6.3. Correct vs Incorrect Examples
+
+**✅ CORRECT IAuthorized Structure:**
+```typescript
+interface IUser.IAuthorized {
+  token: IAuthorizationToken;  // Single token object with all JWT data
+  user: IUser;                 // Business entity data
+  permissions: string[];       // Authorization context
+}
+```
+
+**❌ INCORRECT IAuthorized Structure:**
+```typescript
+interface IUser.IAuthorized {
+  access_token: string;        // FORBIDDEN - individual token field
+  refresh_token: string;       // FORBIDDEN - individual token field
+  token_type: string;          // FORBIDDEN - token metadata
+  expires_in: number;          // FORBIDDEN - token timing
+  user: IUser;                 // OK - business entity
+}
+```
+
+### 6.4. Description Interpretation Guidelines
+
+When you see descriptions mentioning:
+- "JWT tokens" (plural) → This refers to the token object containing multiple token types
+- "issued tokens" → This refers to the single token property with complete token data
+- "new JWT tokens" → This refers to refreshed token data within the single token property
+
+**Do NOT interpret plural descriptions as requiring multiple token fields.**
+
+### 6.5. Important Notes
+
+- The `IAuthorizationToken` type is designed to be a complete token container
+- This structure enables complete JWT token lifecycle management through a single property
+- The token property is REQUIRED for all authorization response types
+- Additional properties must be business entities, not token-related data
+- This design maintains clean separation between token management and business data
