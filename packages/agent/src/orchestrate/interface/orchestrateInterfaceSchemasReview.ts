@@ -35,6 +35,7 @@ export async function orchestrateInterfaceSchemasReview<
       controller: createController({
         model: ctx.model,
         pointer,
+        operations,
         schemas,
       }),
       histories: transformInterfaceSchemasReviewHistories(
@@ -80,6 +81,7 @@ export async function orchestrateInterfaceSchemasReview<
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   pointer: IPointer<IAutoBeInterfaceSchemasReviewApplication.IProps | null>;
+  operations: AutoBeOpenApi.IOperation[];
   schemas: Record<
     string,
     AutoBeOpenApi.IJsonSchemaDescriptive<AutoBeOpenApi.IJsonSchema>
@@ -100,14 +102,53 @@ function createController<Model extends ILlmSchema.Model>(props: {
       schemas: result.data.content,
       path: "$input.content",
     });
+
+    const content = Object.entries(result.data.content);
+
+    content.forEach(([tagName, jsonDescriptive]) => {
+      const index = props.operations.find(
+        (op) =>
+          op.responseBody?.typeName === tagName &&
+          op.method === "patch" &&
+          op.name === "index",
+      );
+
+      // The index API should return the `IPage<T>` type.
+      if (index) {
+        if ("type" in jsonDescriptive) {
+          if (typia.is<AutoBeOpenApi.IJsonSchema.IObject>(jsonDescriptive)) {
+            jsonDescriptive.properties ??= {};
+            const data = jsonDescriptive.properties["data"];
+            if (!typia.is<AutoBeOpenApi.IJsonSchema.IArray>(data)) {
+              errors.push({
+                path: `$input.content.${tagName}.properties.data`,
+                expected: `AutoBeOpenApi.IJsonSchema.IArray`,
+                value: data,
+                description: `The 'data' property must be an array for the index operation.`,
+              });
+            }
+          } else {
+            errors.push({
+              path: `$input.content.${tagName}`,
+              expected: `AutoBeOpenApi.IJsonSchemaDescriptive<AutoBeOpenApi.IJsonSchema.IObject>`,
+              value: jsonDescriptive,
+              description: `The schema for '${tagName}' must be an object.`,
+            });
+          }
+        }
+      }
+    });
+
     if (errors.length !== 0)
       return {
         success: false,
         errors,
         data: next,
       };
+
     return result;
   };
+
   const application: ILlmApplication<Model> = collection[
     props.model === "chatgpt" ? "chatgpt" : "claude"
   ](
