@@ -48,12 +48,14 @@ export const AutoBePlaygroundReplayIndexMovie = ({
     const minutes = Math.floor(seconds / 60);
     const hours = Math.floor(minutes / 60);
 
+    const paddedSeconds = (n: number) => n.toString().padStart(2, "0");
+
     if (hours > 0) {
-      return `${hours}h ${minutes % 60}m ${seconds % 60}s`;
+      return `${hours}h ${minutes % 60}m ${paddedSeconds(seconds % 60)}s`;
     } else if (minutes > 0) {
-      return `${minutes}m ${seconds % 60}s`;
+      return ` ${minutes}m ${paddedSeconds(seconds % 60)}s`;
     } else {
-      return `${seconds}s`;
+      return `${paddedSeconds(seconds)}s`;
     }
   };
 
@@ -249,9 +251,7 @@ export const AutoBePlaygroundReplayIndexMovie = ({
                                   return (
                                     <Step key={label}>
                                       <StepLabel
-                                        slots={{
-                                          stepIcon,
-                                        }}
+                                        slots={{ stepIcon }}
                                         sx={{
                                           "& .MuiStepLabel-label": {
                                             color: stepColor,
@@ -284,25 +284,71 @@ export const AutoBePlaygroundReplayIndexMovie = ({
                                           sx={{
                                             display: "flex",
                                             alignItems: "center",
-                                            gap: 0.5,
+                                            width: "100%",
+                                            gap: 1,
                                           }}
                                         >
-                                          <span>{label}</span>
-                                          {stepData && stepElapsed > 0 && (
-                                            <Typography
-                                              component="span"
-                                              sx={{
-                                                color:
-                                                  theme.palette.text.secondary,
-                                                fontSize: {
-                                                  xs: "0.65rem",
-                                                  sm: "0.7rem",
-                                                },
-                                              }}
-                                            >
-                                              ({formatElapsedTime(stepElapsed)})
-                                            </Typography>
-                                          )}
+                                          {/* Step name */}
+                                          <Typography
+                                            component="span"
+                                            sx={{
+                                              minWidth: 80,
+                                              textTransform: "capitalize",
+                                            }}
+                                          >
+                                            {label}
+                                          </Typography>
+
+                                          {/* Elapsed time */}
+                                          <Typography
+                                            component="span"
+                                            sx={{
+                                              color:
+                                                theme.palette.text.secondary,
+                                              fontSize: {
+                                                xs: "0.65rem",
+                                                sm: "0.7rem",
+                                              },
+                                              minWidth: 70,
+                                              ml: 1,
+                                              textAlign: "right",
+                                              display: "inline-block",
+                                            }}
+                                          >
+                                            {stepData && stepElapsed > 0
+                                              ? formatElapsedTime(stepElapsed)
+                                              : "-"}
+                                          </Typography>
+
+                                          {/* Aggregate info */}
+                                          {stepData?.aggregate &&
+                                            Object.keys(stepData.aggregate)
+                                              .length > 0 && (
+                                              <Typography
+                                                component="span"
+                                                sx={{
+                                                  color:
+                                                    theme.palette.text
+                                                      .secondary,
+                                                  fontSize: {
+                                                    xs: "0.65rem",
+                                                    sm: "0.7rem",
+                                                  },
+                                                  ml: "auto",
+                                                }}
+                                              >
+                                                (
+                                                {Object.entries(
+                                                  stepData.aggregate,
+                                                )
+                                                  .map(
+                                                    ([key, value]) =>
+                                                      `${key.charAt(0).toUpperCase()}: ${value}`,
+                                                  )
+                                                  .join(", ")}
+                                                )
+                                              </Typography>
+                                            )}
                                         </Box>
                                       </StepLabel>
                                     </Step>

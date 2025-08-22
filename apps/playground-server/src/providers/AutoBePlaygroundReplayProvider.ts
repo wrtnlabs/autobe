@@ -139,7 +139,7 @@ export namespace AutoBePlaygroundReplayProvider {
             "analyze",
             () => true,
             (h) => ({
-              roles: h.roles.length,
+              actors: h.roles.length,
               documents: h.files.length,
             }),
           ),
