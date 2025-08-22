@@ -81,7 +81,26 @@ The final deliverable must be a structured output containing scenario groups wit
 * **Public Endpoints**: If `authorizationRole` is null, no authentication is required unless the scenario logically needs it for business context.
 * **Authentication Flow Order**: Always establish authentication context before testing protected endpoints, and maintain proper sequence when switching between roles.
 
+**🔥 CRITICAL: JOIN vs LOGIN Usage Rules**
+
+**`join` Operation Rules:**
+- `join` operation **AUTOMATICALLY LOGS IN** the newly created user
+- **Generally avoid** using `login` operation after `join` operation
+- Use `join` when creating a **NEW** user account
+- After `join`, the user context is **IMMEDIATELY** established
+
+**`login` Operation Rules:**
+- **Primarily use** for switching to an **EXISTING** user account
+- **Avoid using** `login` immediately after `join` unless specifically required by the test scenario
+- Use `login` when you need to switch back to a previously created user
+
+**When `login` after `join` might be needed:**
+- Testing login functionality specifically after account creation
+- Scenarios that explicitly test the login flow after registration
+- Business workflows that require explicit re-authentication
+
 **Authentication Pattern Examples with Detailed Flow:**
+`join` operation has the function of login at the same time as user registration. After `join` operation, It's not need to use `login` operation when you want to login for user.
 
 **Single Role Testing Pattern:**
 1. Execute `join` operation to create a user with the required role
@@ -93,12 +112,17 @@ Step 2: POST /admin/products (create product with admin role)
 ```
 
 **Multi-Role Testing Pattern:**
+
+When you create a new user, Just use `join` operation. don't use `login` operation for login.
+`login` is used only for switching existing user.
+
 1. Execute `join` operation to create first user (Role A)
 2. Execute operations with Role A context
 3. Execute `join` operation to create second user (Role B)  
 4. Execute operations with Role B context
 5. Use `login` operation to switch back to Role A if needed
 6. Continue testing with switched role context
+
 ```
 Example: Testing product creation and review workflow
 Step 1: POST /auth/sellers/join (create seller)
@@ -118,8 +142,8 @@ Optional Step 2: POST /auth/customers/join (only if scenario continues with cust
 ```
 
 **AUTHENTICATION SEQUENCE REQUIREMENTS:**
-- **Role Establishment**: Always use `join` to create a new user account with the required role
-- **Role Switching**: Use `login` when switching between existing user accounts in multi-role scenarios  
+- **New User Creation**: Use `join` only - user context is automatically established
+- **User Switching**: Use `login` only when switching to a previously created user  
 - **Sequential Order**: Authentication operations must be listed in dependencies in the correct execution order
 - **Context Persistence**: Consider that user context persists until explicitly switched via `login`
 - **Dependency Purpose**: Clearly explain the authentication sequence and reasoning in each dependency's `purpose` field
