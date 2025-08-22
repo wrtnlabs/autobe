@@ -21,5 +21,15 @@ export namespace IAutoBePlaygroundReplay {
   export interface ISummary extends IProps {
     tokenUsage: IAutoBeTokenUsageJson;
     elapsed: number;
+    analyze: IStepState | null;
+    prisma: IStepState | null;
+    interface: IStepState | null;
+    test: IStepState | null;
+    realize: IStepState | null;
+  }
+  export interface IStepState {
+    success: boolean;
+    elapsed: number;
+    aggregate: Record<string, number>;
   }
 }

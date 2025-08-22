@@ -92,12 +92,36 @@ export namespace AutoBePlaygroundReplayProvider {
               await fs.promises.readFile(`${ROOT}/${r.vendor}/${file}`),
             ),
           );
+
         const histories: AutoBeHistory[] = await load(
           `${r.project}.${r.step}.json.gz`,
         );
         const snapshots: AutoBeEventSnapshot[] = await load(
           `${r.project}.${r.step}.snapshots.json.gz`,
         );
+        const predicate = <
+          Type extends "analyze" | "prisma" | "interface" | "test" | "realize",
+        >(
+          type: Type,
+          success: (history: AutoBeHistory.Mapper[Type]) => boolean,
+          aggregate: (
+            history: AutoBeHistory.Mapper[Type],
+          ) => Record<string, number>,
+        ): IAutoBePlaygroundReplay.IStepState | null => {
+          const history: AutoBeHistory.Mapper[Type] | undefined =
+            histories.find((h) => h.type === type) as
+              | AutoBeHistory.Mapper[Type]
+              | undefined;
+          if (history === undefined) return null;
+          return {
+            success: success(history),
+            aggregate: aggregate(history),
+            elapsed:
+              new Date(history.completed_at).getTime() -
+              new Date(history.created_at).getTime(),
+          };
+        };
+
         return {
           ...r,
           tokenUsage: snapshots.at(-1)!.tokenUsage,
@@ -111,6 +135,44 @@ export namespace AutoBePlaygroundReplayProvider {
                 new Date(h.created_at).getTime(),
             )
             .reduce((a, b) => a + b, 0),
+          analyze: predicate(
+            "analyze",
+            () => true,
+            (h) => ({
+              roles: h.roles.length,
+              documents: h.files.length,
+            }),
+          ),
+          prisma: predicate(
+            "prisma",
+            (h) => h.compiled.type === "success",
+            (h) => ({
+              files: h.result.data.files.length,
+              models: h.result.data.files.map((f) => f.models).flat().length,
+            }),
+          ),
+          interface: predicate(
+            "interface",
+            () => true,
+            (h) => ({
+              operations: h.document.operations.length,
+              schemas: Object.keys(h.document.components.schemas).length,
+            }),
+          ),
+          test: predicate(
+            "test",
+            (h) => h.compiled.type === "success",
+            (h) => ({
+              functions: h.files.length,
+            }),
+          ),
+          realize: predicate(
+            "realize",
+            (h) => h.compiled.type === "success",
+            (h) => ({
+              functions: h.functions.length,
+            }),
+          ),
         } satisfies IAutoBePlaygroundReplay.ISummary;
       }),
     );
