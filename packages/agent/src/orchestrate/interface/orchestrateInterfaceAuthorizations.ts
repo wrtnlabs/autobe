@@ -24,7 +24,7 @@ export async function orchestrateInterfaceAuthorizations<
     total: roles.length,
     completed: 0,
   };
-  const operations: AutoBeInterfaceAuthorization[] = await Promise.all(
+  const authorizations: AutoBeInterfaceAuthorization[] = await Promise.all(
     roles.map(async (role) => {
       const event: AutoBeInterfaceAuthorizationEvent = await process(
         ctx,
@@ -39,7 +39,7 @@ export async function orchestrateInterfaceAuthorizations<
     }),
   );
 
-  return operations;
+  return authorizations;
 }
 
 async function process<Model extends ILlmSchema.Model>(
