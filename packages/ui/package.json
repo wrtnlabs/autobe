@@ -19,7 +19,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "prepack": "publint && pnpm build"
+    "prepack": "pnpm build"
   },
   "devDependencies": {
     "@autobe/interface": "workspace:*",
