@@ -170,7 +170,7 @@ export const AutoBePlaygroundReplayIndexMovie = ({
                                   component="h2"
                                   sx={{
                                     fontWeight: 600,
-                                    fontSize: { xs: "1.1rem", sm: "1.25rem" },
+                                    fontSize: { xs: "1.2rem", sm: "1.4rem" },
                                   }}
                                 >
                                   {replay.project}
@@ -260,9 +260,9 @@ export const AutoBePlaygroundReplayIndexMovie = ({
                                               : 400,
                                             textTransform: "capitalize",
                                             fontSize: {
-                                              xs: "0.75rem",
-                                              sm: "0.8rem",
-                                              md: "0.875rem",
+                                              xs: "0.5rem",
+                                              sm: "0.55rem",
+                                              md: "0.76em",
                                             },
                                             mt: 0,
                                             ml: 1,
