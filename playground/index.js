@@ -20,7 +20,7 @@ const execWithStreaming = (command, options) =>
 
 const main = async () => {
   await Promise.all([
-    execWithStreaming("pnpm run start", {
+    execWithStreaming("pnpm start", {
       cwd: `${__dirname}/../apps/playground-server`,
     }),
     execWithStreaming("pnpm run dev", {
