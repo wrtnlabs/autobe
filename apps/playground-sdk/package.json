@@ -1,15 +1,12 @@
 {
-  "name": "@autobe/playground-server",
+  "name": "@autobe/playground-sdk",
   "version": "0.18.0",
   "description": "AI backend server code generator",
   "main": "src/index.ts",
   "scripts": {
     "build": "rimraf lib && tsc",
-    "postbuild": "node ../../internals/config/assertBuild.js",
     "dev": "rimraf lib && tsc --watch",
-    "prepack": "pnpm run build",
-    "prepare": "ts-patch install",
-    "start": "ts-node src/executable/server.ts"
+    "prepack": "pnpm run build"
   },
   "keywords": [],
   "author": "Wrtn Technologies",
@@ -34,27 +31,13 @@
     "typings": "lib/index.d.ts"
   },
   "dependencies": {
-    "@autobe/agent": "workspace:^",
-    "@autobe/compiler": "workspace:^",
-    "@autobe/filesystem": "workspace:^",
     "@autobe/interface": "workspace:^",
-    "@autobe/playground-sdk": "workspace:^",
-    "@autobe/rpc": "workspace:^",
-    "@nestia/core": "catalog:samchon",
-    "@nestjs/common": "^11.1.3",
-    "@nestjs/core": "^11.1.3",
-    "@nestjs/platform-express": "^11.1.6",
+    "@nestia/fetcher": "catalog:samchon",
     "@samchon/openapi": "catalog:samchon",
-    "openai": "catalog:libs",
-    "tgrid": "catalog:samchon",
-    "tstl": "catalog:samchon",
     "typia": "catalog:samchon"
   },
   "devDependencies": {
-    "@nestia/sdk": "catalog:samchon",
     "rimraf": "^6.0.1",
-    "ts-node": "catalog:typescript",
-    "ts-patch": "catalog:typescript",
     "typescript": "catalog:typescript"
   }
 }
