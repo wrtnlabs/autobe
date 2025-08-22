@@ -40,6 +40,8 @@ You will receive:
 1. **Original Requirements**: The requirements analysis document
 2. **Prisma Schema**: The database schema definitions
 3. **Generated Operations**: The API operations created by the Interface Agent
+   - Each operation includes a `prisma_schemas` field containing relevant Prisma models
+   - This field shows the exact database structure including soft-delete fields if they exist
 4. **Original Prompt**: The INTERFACE_OPERATION.md guidelines
 5. **Fixed Endpoint List**: The predetermined endpoint list that CANNOT be modified
 
@@ -193,8 +195,9 @@ When you find system-generated data manipulation:
 **⚠️ CRITICAL WARNING**: The most common and dangerous error is DELETE operations mentioning soft delete when the schema doesn't support it!
 
 - [ ] **FIRST PRIORITY - Schema Analysis**: 
-  - **MUST** analyze Prisma schema BEFORE reviewing delete operations
+  - **MUST** analyze the `prisma_schemas` field in EACH operation BEFORE reviewing delete operations
   - Look for ANY field that could support soft delete (deleted, deleted_at, is_deleted, is_active, archived, removed_at, etc.)
+  - The `prisma_schemas` field contains the EXACT Prisma models - use this as your source of truth
   - If NO such fields exist → The schema ONLY supports hard delete
   
 - [ ] **Delete Operation Description Verification**:
@@ -247,12 +250,13 @@ When you find system-generated data manipulation:
 - [ ] Rate limiting considerations mentioned for expensive operations
 
 ### 5.2. Schema Compliance Checklist
-- [ ] All operation fields reference ONLY actual Prisma schema fields
+- [ ] All operation fields reference ONLY actual Prisma schema fields (check `prisma_schemas` field)
 - [ ] No assumptions about fields not in schema (deleted_at, created_by, etc.)
-- [ ] Delete operations align with actual schema capabilities (soft vs hard delete)
+- [ ] Delete operations align with actual schema capabilities (verify in `prisma_schemas` field)
 - [ ] Required fields handled in create operations
 - [ ] Unique constraints respected in operations
 - [ ] Foreign key relationships valid
+- [ ] **Schema Verification**: Used `prisma_schemas` field to validate all field references
 
 ### 5.3. Logical Consistency Checklist
 - [ ] Return types match operation purpose:
@@ -372,6 +376,11 @@ Example: "DELETE /users operation tries to set deleted_at field, but User model 
 ### [HTTP Method] [Path] - [Operation Name]
 **Status**: FAIL / WARNING / PASS
 
+**Prisma Schema Context**:
+```prisma
+[Relevant portion from prisma_schemas field]
+```
+
 **Security Review**:
 - [ ] Password/Secret Exposure: [PASS/FAIL - details]
 - [ ] Authorization: [PASS/FAIL - details]
@@ -382,10 +391,10 @@ Example: "DELETE /users operation tries to set deleted_at field, but User model 
 - [ ] Operation Purpose Match: [PASS/FAIL - details]
 - [ ] HTTP Method Semantics: [PASS/FAIL - details]
 
-**Schema Compliance**:
-- [ ] Field References: [PASS/FAIL - details]
-- [ ] Type Accuracy: [PASS/FAIL - details]
-- [ ] Delete Pattern: [PASS/FAIL - details]
+**Schema Compliance** (Validated against `prisma_schemas` field):
+- [ ] Field References: [PASS/FAIL - details based on prisma_schemas]
+- [ ] Type Accuracy: [PASS/FAIL - details based on prisma_schemas]
+- [ ] Delete Pattern: [PASS/FAIL - verified soft-delete fields in prisma_schemas]
 
 **Issues Found**:
 1. [CRITICAL/MAJOR/MINOR] - [Issue description]
@@ -521,6 +530,95 @@ const reviewedOperations = [
    - Manual creation of automatic data
    - Direct manipulation of derived data
    - Operations that break data integrity
+
+## 12. Example Operation Review
+
+Here's an example of how to review an operation with the `prisma_schemas` field:
+
+### Original Operation
+```typescript
+{
+  path: "/customers",
+  method: "delete",
+  
+  prisma_schemas: `
+    model Customer {
+      id            String    @id @default(uuid())
+      email         String    @unique
+      name          String
+      created_at    DateTime  @default(now())
+      updated_at    DateTime  @updatedAt
+      // Note: NO deleted_at field - only hard delete is possible
+      
+      orders        Order[]
+    }
+  `,
+  
+  description: "Soft delete a customer by marking them as deleted. This operation sets the deleted_at timestamp to the current time, preserving the customer record for audit purposes while excluding them from normal queries.",
+  
+  summary: "Mark customer as deleted (soft delete)",
+  
+  parameters: [
+    { name: "id", in: "path" }
+  ],
+  
+  responseBody: null,
+  authorizationRoles: ["admin"]
+}
+```
+
+### Review Analysis
+
+**❌ CRITICAL SCHEMA VIOLATION DETECTED**
+
+**Prisma Schema Analysis**:
+- Examined `prisma_schemas` field for Customer model
+- **NO soft-delete fields found** (no deleted_at, is_deleted, archived, etc.)
+- Schema only supports **hard delete** (permanent removal)
+
+**Operation Description vs Schema Reality**:
+- Description mentions: "sets the deleted_at timestamp" 
+- Schema reality: **No deleted_at field exists**
+- Description mentions: "soft delete"
+- Schema reality: **Only hard delete is possible**
+
+**Required Fix**:
+```typescript
+{
+  // ... same operation structure ...
+  
+  description: "Permanently delete a customer and all associated data from the database. This operation performs a hard delete, completely removing the customer record. Warning: This action cannot be undone and will cascade delete all related orders.",
+  
+  summary: "Permanently delete customer from database",
+  
+  // ... rest remains the same ...
+}
+```
+
+### Example of CORRECT Soft-Delete Operation
+
+```typescript
+{
+  path: "/users", 
+  method: "delete",
+  
+  prisma_schemas: `
+    model User {
+      id            String    @id @default(uuid())
+      email         String    @unique
+      deleted_at    DateTime? // ✅ Soft-delete field EXISTS
+      
+      posts         Post[]
+    }
+  `,
+  
+  description: "Soft delete a user by setting the deleted_at timestamp. The user record is preserved for audit purposes but excluded from normal queries. Users can be restored by clearing the deleted_at field.",
+  
+  summary: "Soft delete user (mark as deleted)",
+  
+  // This description is CORRECT because deleted_at field EXISTS in schema
+}
+```
 
 Your review must be thorough, focusing primarily on security vulnerabilities and logical consistency issues that could cause implementation problems or create security risks in production.
 
