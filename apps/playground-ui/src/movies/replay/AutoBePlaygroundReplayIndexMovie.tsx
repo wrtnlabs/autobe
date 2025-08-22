@@ -7,7 +7,6 @@ import {
   Token,
 } from "@mui/icons-material";
 import {
-  AppBar,
   Box,
   Card,
   CardActionArea,
@@ -19,7 +18,6 @@ import {
   Step,
   StepLabel,
   Stepper,
-  Toolbar,
   Typography,
   alpha,
   useTheme,
@@ -27,7 +25,6 @@ import {
 
 export const AutoBePlaygroundReplayIndexMovie = ({
   replays,
-  title,
 }: AutoBePlaygroundReplayIndexMovie.IProps) => {
   const theme = useTheme();
 
@@ -87,307 +84,326 @@ export const AutoBePlaygroundReplayIndexMovie = ({
       style={{
         width: "100%",
         height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        position: "relative",
+        overflowY: "auto",
       }}
     >
-      <AppBar position="relative" component="div">
-        <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            {title ?? "AutoBE Playground Replays"}
-          </Typography>
-        </Toolbar>
-      </AppBar>
-      <div
-        style={{
-          width: "100%",
-          flex: 1,
-          overflowY: "auto",
-        }}
+      <Container
+        maxWidth="lg"
+        sx={{ py: { xs: 2, sm: 3, md: 4 }, px: { xs: 2, sm: 3 } }}
       >
-        <Container
-          maxWidth="lg"
-          sx={{ py: { xs: 2, sm: 3, md: 4 }, px: { xs: 2, sm: 3 } }}
-        >
-          {Object.entries(groupedReplays).map(([vendor, vendorReplays]) => (
-            <Box key={vendor} sx={{ mb: { xs: 3, sm: 4, md: 5 } }}>
-              <Typography
-                variant="h5"
-                component="h2"
-                sx={{
-                  mb: { xs: 2, sm: 2.5, md: 3 },
-                  fontWeight: 500,
-                  fontSize: { xs: "1.2rem", sm: "1.4rem", md: "1.5rem" },
-                  color: "text.secondary",
-                }}
-              >
-                {vendor}
-              </Typography>
-              <Divider sx={{ mb: { xs: 2, sm: 2.5, md: 3 } }} />
-              <Grid container spacing={{ xs: 2, sm: 2.5, md: 3 }}>
-                {vendorReplays.map((replay, index) => {
-                  const stepColor = getStepColor(replay.step);
+        {Object.entries(groupedReplays).map(([vendor, vendorReplays]) => (
+          <Box key={vendor} sx={{ mb: { xs: 3, sm: 4, md: 5 } }}>
+            <Typography
+              variant="h5"
+              component="h2"
+              sx={{
+                mb: { xs: 2, sm: 2.5, md: 3 },
+                fontWeight: 500,
+                fontSize: { xs: "1.2rem", sm: "1.4rem", md: "1.5rem" },
+                color: "text.secondary",
+              }}
+            >
+              {vendor}
+            </Typography>
+            <Divider sx={{ mb: { xs: 2, sm: 2.5, md: 3 } }} />
+            <Grid container spacing={{ xs: 2, sm: 2.5, md: 3 }}>
+              {vendorReplays.map((replay, index) => {
+                const stepColor = getStepColor(replay.step);
 
-                  return (
-                    <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4 }} key={index}>
-                      <Card
-                        sx={{
-                          height: "100%",
-                          transition: "all 0.3s ease-in-out",
-                          border: `1px solid ${alpha(stepColor, 0.2)}`,
-                          "&:hover": {
-                            transform: "translateY(-4px)",
-                            boxShadow: `0 8px 24px ${alpha(stepColor, 0.2)}`,
-                            borderColor: stepColor,
-                          },
-                        }}
+                return (
+                  <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4 }} key={index}>
+                    <Card
+                      sx={{
+                        height: "100%",
+                        transition: "all 0.3s ease-in-out",
+                        border: `1px solid ${alpha(stepColor, 0.2)}`,
+                        "&:hover": {
+                          transform: "translateY(-4px)",
+                          boxShadow: `0 8px 24px ${alpha(stepColor, 0.2)}`,
+                          borderColor: stepColor,
+                        },
+                      }}
+                    >
+                      <CardActionArea
+                        component="a"
+                        href={`./get.html?vendor=${replay.vendor}&project=${replay.project}&step=${replay.step}`}
+                        target="_blank"
+                        sx={{ height: "100%" }}
                       >
-                        <CardActionArea
-                          component="a"
-                          href={`./get.html?vendor=${replay.vendor}&project=${replay.project}&step=${replay.step}`}
-                          target="_blank"
-                          sx={{ height: "100%" }}
+                        <CardContent
+                          sx={{
+                            height: "100%",
+                            display: "flex",
+                            flexDirection: "column",
+                            p: { xs: 2, sm: 2.5, md: 3 },
+                          }}
                         >
-                          <CardContent
-                            sx={{
-                              height: "100%",
-                              display: "flex",
-                              flexDirection: "column",
-                              p: { xs: 2, sm: 2.5, md: 3 },
-                            }}
+                          {/* Header */}
+                          <Box sx={{ mb: 2 }}>
+                            <Stack
+                              direction="row"
+                              alignItems="center"
+                              justifyContent="space-between"
+                              mb={1}
+                            >
+                              <Typography
+                                variant="h6"
+                                component="h2"
+                                sx={{
+                                  fontWeight: 600,
+                                  fontSize: { xs: "1.2rem", sm: "1.4rem" },
+                                }}
+                              >
+                                {replay.project}
+                              </Typography>
+                              <ArrowForwardIos
+                                sx={{
+                                  fontSize: 16,
+                                  color: "text.secondary",
+                                }}
+                              />
+                            </Stack>
+                            <Divider sx={{ mt: 1.5 }} />
+                          </Box>
+
+                          {/* Stepper */}
+                          <Box sx={{ mb: 2 }}>
+                            <Stepper
+                              activeStep={getStepIndex(replay.step)}
+                              orientation="vertical"
+                              sx={{
+                                "& .MuiStepConnector-line": {
+                                  borderLeftWidth: 2,
+                                  minHeight: 8,
+                                },
+                                "& .MuiStep-root": {
+                                  paddingBottom: 0,
+                                  paddingTop: 0,
+                                  paddingLeft: 0,
+                                  paddingRight: 0,
+                                },
+                                "& .MuiStepLabel-root": {
+                                  paddingTop: 0,
+                                  paddingBottom: 0,
+                                  minHeight: 24,
+                                },
+                                "& .MuiStepContent-root": {
+                                  paddingTop: 0,
+                                  paddingBottom: 0,
+                                  marginTop: 0,
+                                  marginBottom: 0,
+                                },
+                              }}
+                            >
+                              {steps.map((label) => {
+                                const stepData =
+                                  replay[
+                                    label as keyof Pick<
+                                      IAutoBePlaygroundReplay.ISummary,
+                                      | "analyze"
+                                      | "prisma"
+                                      | "interface"
+                                      | "test"
+                                      | "realize"
+                                    >
+                                  ];
+                                const isCurrentStep = label === replay.step;
+                                const stepElapsed = stepData?.elapsed || 0;
+
+                                let stepIcon;
+                                let stepColor;
+
+                                if (stepData === null) {
+                                  // Not executed yet - gray
+                                  stepIcon = undefined;
+                                  stepColor = theme.palette.grey[400];
+                                } else if (stepData.success === true) {
+                                  stepIcon = CheckCircle;
+                                  stepColor = theme.palette.primary.main; // Blue for success
+                                } else if (stepData.success === false) {
+                                  stepIcon = Cancel;
+                                  stepColor = theme.palette.error.main; // Red for failure
+                                } else {
+                                  // Currently executing (success is null but has stepData)
+                                  stepIcon = undefined;
+                                  stepColor = getStepColor(label); // Use step's own color
+                                }
+
+                                return (
+                                  <Step key={label}>
+                                    <StepLabel
+                                      slots={{ stepIcon }}
+                                      sx={{
+                                        "& .MuiStepLabel-label": {
+                                          color: stepColor,
+                                          fontWeight: isCurrentStep
+                                            ? 700 // Bold for current step
+                                            : 400,
+                                          textTransform: "capitalize",
+                                          fontSize: {
+                                            xs: "0.5rem",
+                                            sm: "0.55rem",
+                                            md: "0.76em",
+                                          },
+                                          mt: 0,
+                                          ml: 1,
+                                        },
+                                        "& .MuiStepIcon-root": {
+                                          color: stepColor,
+                                          fontSize: {
+                                            xs: "1.2rem",
+                                            sm: "1.4rem",
+                                            md: "1.5rem",
+                                          },
+                                        },
+                                        "& .MuiStepIcon-text": {
+                                          fill: "#fff",
+                                        },
+                                      }}
+                                    >
+                                      <Box
+                                        sx={{
+                                          display: "flex",
+                                          alignItems: "center",
+                                          width: "100%",
+                                          gap: 1,
+                                        }}
+                                      >
+                                        {/* Step name */}
+                                        <Typography
+                                          component="span"
+                                          sx={{
+                                            minWidth: 80,
+                                            textTransform: "capitalize",
+                                          }}
+                                        >
+                                          {label}
+                                        </Typography>
+
+                                        {/* Elapsed time */}
+                                        <Typography
+                                          component="span"
+                                          sx={{
+                                            color: theme.palette.text.secondary,
+                                            fontSize: {
+                                              xs: "0.65rem",
+                                              sm: "0.7rem",
+                                            },
+                                            minWidth: 70,
+                                            ml: 1,
+                                            textAlign: "right",
+                                            display: "inline-block",
+                                          }}
+                                        >
+                                          {stepData && stepElapsed > 0
+                                            ? formatElapsedTime(stepElapsed)
+                                            : "-"}
+                                        </Typography>
+
+                                        {/* Aggregate info */}
+                                        {stepData?.aggregate &&
+                                          Object.keys(stepData.aggregate)
+                                            .length > 0 && (
+                                            <Typography
+                                              component="span"
+                                              sx={{
+                                                color:
+                                                  theme.palette.text.secondary,
+                                                fontSize: {
+                                                  xs: "0.65rem",
+                                                  sm: "0.7rem",
+                                                },
+                                                ml: "auto",
+                                              }}
+                                            >
+                                              (
+                                              {Object.entries(
+                                                stepData.aggregate,
+                                              )
+                                                .map(
+                                                  ([key, value]) =>
+                                                    `${key.charAt(0).toUpperCase()}: ${value}`,
+                                                )
+                                                .join(", ")}
+                                              )
+                                            </Typography>
+                                          )}
+                                      </Box>
+                                    </StepLabel>
+                                  </Step>
+                                );
+                              })}
+                            </Stepper>
+                          </Box>
+
+                          {/* Stats */}
+                          <Stack
+                            spacing={{ xs: 1.5, sm: 2 }}
+                            sx={{ flexGrow: 1 }}
                           >
-                            {/* Header */}
-                            <Box sx={{ mb: 2 }}>
+                            {/* Elapsed Time */}
+                            <Box>
                               <Stack
                                 direction="row"
                                 alignItems="center"
-                                justifyContent="space-between"
-                                mb={1}
+                                spacing={1}
+                                mb={0.5}
                               >
-                                <Typography
-                                  variant="h6"
-                                  component="h2"
+                                <AccessTime
                                   sx={{
-                                    fontWeight: 600,
-                                    fontSize: { xs: "1.2rem", sm: "1.4rem" },
-                                  }}
-                                >
-                                  {replay.project}
-                                </Typography>
-                                <ArrowForwardIos
-                                  sx={{
-                                    fontSize: 16,
+                                    fontSize: 18,
                                     color: "text.secondary",
                                   }}
                                 />
+                                <Typography
+                                  variant="body2"
+                                  color="text.secondary"
+                                >
+                                  Elapsed Time
+                                </Typography>
                               </Stack>
-                              <Divider sx={{ mt: 1.5 }} />
-                            </Box>
-
-                            {/* Stepper */}
-                            <Box sx={{ mb: 2 }}>
-                              <Stepper
-                                activeStep={getStepIndex(replay.step)}
-                                orientation="vertical"
+                              <Typography
+                                variant="h6"
                                 sx={{
-                                  "& .MuiStepConnector-line": {
-                                    borderLeftWidth: 2,
-                                    minHeight: 8,
-                                  },
-                                  "& .MuiStep-root": {
-                                    paddingBottom: 0,
-                                    paddingTop: 0,
-                                    paddingLeft: 0,
-                                    paddingRight: 0,
-                                  },
-                                  "& .MuiStepLabel-root": {
-                                    paddingTop: 0,
-                                    paddingBottom: 0,
-                                    minHeight: 24,
-                                  },
-                                  "& .MuiStepContent-root": {
-                                    paddingTop: 0,
-                                    paddingBottom: 0,
-                                    marginTop: 0,
-                                    marginBottom: 0,
+                                  fontWeight: 600,
+                                  color: stepColor,
+                                  fontSize: {
+                                    xs: "1rem",
+                                    sm: "1.1rem",
+                                    md: "1.25rem",
                                   },
                                 }}
                               >
-                                {steps.map((label) => {
-                                  const stepData =
-                                    replay[
-                                      label as keyof Pick<
-                                        IAutoBePlaygroundReplay.ISummary,
-                                        | "analyze"
-                                        | "prisma"
-                                        | "interface"
-                                        | "test"
-                                        | "realize"
-                                      >
-                                    ];
-                                  const isCurrentStep = label === replay.step;
-                                  const stepElapsed = stepData?.elapsed || 0;
-
-                                  let stepIcon;
-                                  let stepColor;
-
-                                  if (stepData === null) {
-                                    // Not executed yet - gray
-                                    stepIcon = undefined;
-                                    stepColor = theme.palette.grey[400];
-                                  } else if (stepData.success === true) {
-                                    stepIcon = CheckCircle;
-                                    stepColor = theme.palette.primary.main; // Blue for success
-                                  } else if (stepData.success === false) {
-                                    stepIcon = Cancel;
-                                    stepColor = theme.palette.error.main; // Red for failure
-                                  } else {
-                                    // Currently executing (success is null but has stepData)
-                                    stepIcon = undefined;
-                                    stepColor = getStepColor(label); // Use step's own color
-                                  }
-
-                                  return (
-                                    <Step key={label}>
-                                      <StepLabel
-                                        slots={{ stepIcon }}
-                                        sx={{
-                                          "& .MuiStepLabel-label": {
-                                            color: stepColor,
-                                            fontWeight: isCurrentStep
-                                              ? 700 // Bold for current step
-                                              : 400,
-                                            textTransform: "capitalize",
-                                            fontSize: {
-                                              xs: "0.5rem",
-                                              sm: "0.55rem",
-                                              md: "0.76em",
-                                            },
-                                            mt: 0,
-                                            ml: 1,
-                                          },
-                                          "& .MuiStepIcon-root": {
-                                            color: stepColor,
-                                            fontSize: {
-                                              xs: "1.2rem",
-                                              sm: "1.4rem",
-                                              md: "1.5rem",
-                                            },
-                                          },
-                                          "& .MuiStepIcon-text": {
-                                            fill: "#fff",
-                                          },
-                                        }}
-                                      >
-                                        <Box
-                                          sx={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            width: "100%",
-                                            gap: 1,
-                                          }}
-                                        >
-                                          {/* Step name */}
-                                          <Typography
-                                            component="span"
-                                            sx={{
-                                              minWidth: 80,
-                                              textTransform: "capitalize",
-                                            }}
-                                          >
-                                            {label}
-                                          </Typography>
-
-                                          {/* Elapsed time */}
-                                          <Typography
-                                            component="span"
-                                            sx={{
-                                              color:
-                                                theme.palette.text.secondary,
-                                              fontSize: {
-                                                xs: "0.65rem",
-                                                sm: "0.7rem",
-                                              },
-                                              minWidth: 70,
-                                              ml: 1,
-                                              textAlign: "right",
-                                              display: "inline-block",
-                                            }}
-                                          >
-                                            {stepData && stepElapsed > 0
-                                              ? formatElapsedTime(stepElapsed)
-                                              : "-"}
-                                          </Typography>
-
-                                          {/* Aggregate info */}
-                                          {stepData?.aggregate &&
-                                            Object.keys(stepData.aggregate)
-                                              .length > 0 && (
-                                              <Typography
-                                                component="span"
-                                                sx={{
-                                                  color:
-                                                    theme.palette.text
-                                                      .secondary,
-                                                  fontSize: {
-                                                    xs: "0.65rem",
-                                                    sm: "0.7rem",
-                                                  },
-                                                  ml: "auto",
-                                                }}
-                                              >
-                                                (
-                                                {Object.entries(
-                                                  stepData.aggregate,
-                                                )
-                                                  .map(
-                                                    ([key, value]) =>
-                                                      `${key.charAt(0).toUpperCase()}: ${value}`,
-                                                  )
-                                                  .join(", ")}
-                                                )
-                                              </Typography>
-                                            )}
-                                        </Box>
-                                      </StepLabel>
-                                    </Step>
-                                  );
-                                })}
-                              </Stepper>
+                                {formatElapsedTime(replay.elapsed)}
+                              </Typography>
                             </Box>
 
-                            {/* Stats */}
-                            <Stack
-                              spacing={{ xs: 1.5, sm: 2 }}
-                              sx={{ flexGrow: 1 }}
-                            >
-                              {/* Elapsed Time */}
-                              <Box>
-                                <Stack
-                                  direction="row"
-                                  alignItems="center"
-                                  spacing={1}
-                                  mb={0.5}
+                            {/* Total Tokens */}
+                            <Box>
+                              <Stack
+                                direction="row"
+                                alignItems="center"
+                                spacing={1}
+                                mb={0.5}
+                              >
+                                <Token
+                                  sx={{
+                                    fontSize: 18,
+                                    color: "text.secondary",
+                                  }}
+                                />
+                                <Typography
+                                  variant="body2"
+                                  color="text.secondary"
                                 >
-                                  <AccessTime
-                                    sx={{
-                                      fontSize: 18,
-                                      color: "text.secondary",
-                                    }}
-                                  />
-                                  <Typography
-                                    variant="body2"
-                                    color="text.secondary"
-                                  >
-                                    Elapsed Time
-                                  </Typography>
-                                </Stack>
+                                  Total Tokens
+                                </Typography>
+                              </Stack>
+                              <Stack direction="row" spacing={2}>
                                 <Typography
                                   variant="h6"
                                   sx={{
                                     fontWeight: 600,
-                                    color: stepColor,
                                     fontSize: {
                                       xs: "1rem",
                                       sm: "1.1rem",
@@ -395,89 +411,50 @@ export const AutoBePlaygroundReplayIndexMovie = ({
                                     },
                                   }}
                                 >
-                                  {formatElapsedTime(replay.elapsed)}
+                                  {formatTokenCount(
+                                    replay.tokenUsage.aggregate.total,
+                                  )}
                                 </Typography>
-                              </Box>
-
-                              {/* Total Tokens */}
-                              <Box>
-                                <Stack
-                                  direction="row"
-                                  alignItems="center"
-                                  spacing={1}
-                                  mb={0.5}
+                                <Typography
+                                  variant="body2"
+                                  sx={{
+                                    fontSize: {
+                                      xs: "0.8rem",
+                                      sm: "0.875rem",
+                                    },
+                                    color: "text.secondary",
+                                    alignSelf: "flex-end",
+                                    pb: 0.3,
+                                  }}
                                 >
-                                  <Token
-                                    sx={{
-                                      fontSize: 18,
-                                      color: "text.secondary",
-                                    }}
-                                  />
-                                  <Typography
-                                    variant="body2"
-                                    color="text.secondary"
-                                  >
-                                    Total Tokens
-                                  </Typography>
-                                </Stack>
-                                <Stack direction="row" spacing={2}>
-                                  <Typography
-                                    variant="h6"
-                                    sx={{
-                                      fontWeight: 600,
-                                      fontSize: {
-                                        xs: "1rem",
-                                        sm: "1.1rem",
-                                        md: "1.25rem",
-                                      },
-                                    }}
-                                  >
-                                    {formatTokenCount(
-                                      replay.tokenUsage.aggregate.total,
-                                    )}
-                                  </Typography>
-                                  <Typography
-                                    variant="body2"
-                                    sx={{
-                                      fontSize: {
-                                        xs: "0.8rem",
-                                        sm: "0.875rem",
-                                      },
-                                      color: "text.secondary",
-                                      alignSelf: "flex-end",
-                                      pb: 0.3,
-                                    }}
-                                  >
-                                    (in:{" "}
-                                    {formatTokenCount(
-                                      replay.tokenUsage.aggregate.input.total,
-                                    )}{" "}
-                                    / out:{" "}
-                                    {formatTokenCount(
-                                      replay.tokenUsage.aggregate.output.total,
-                                    )}
-                                    )
-                                  </Typography>
-                                </Stack>
-                              </Box>
-                            </Stack>
-                          </CardContent>
-                        </CardActionArea>
-                      </Card>
-                    </Grid>
-                  );
-                })}
-              </Grid>
-            </Box>
-          ))}
-        </Container>
-      </div>
+                                  (in:{" "}
+                                  {formatTokenCount(
+                                    replay.tokenUsage.aggregate.input.total,
+                                  )}{" "}
+                                  / out:{" "}
+                                  {formatTokenCount(
+                                    replay.tokenUsage.aggregate.output.total,
+                                  )}
+                                  )
+                                </Typography>
+                              </Stack>
+                            </Box>
+                          </Stack>
+                        </CardContent>
+                      </CardActionArea>
+                    </Card>
+                  </Grid>
+                );
+              })}
+            </Grid>
+          </Box>
+        ))}
+      </Container>
     </div>
   );
 };
 export namespace AutoBePlaygroundReplayIndexMovie {
   export interface IProps {
     replays: IAutoBePlaygroundReplay.ISummary[];
-    title?: string;
   }
 }
