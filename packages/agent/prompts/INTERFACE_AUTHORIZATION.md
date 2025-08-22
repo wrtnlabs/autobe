@@ -143,10 +143,11 @@ Where:
 - The format must be exactly `I{Prefix}{RoleName}.IAuthorized`
 
 **Examples:**
-- For role "user" → `typeName: "IPrefixUser.IAuthorized"`
-- For role "admin" → `typeName: "IPrefixAdmin.IAuthorized"`
-- For role "seller" → `typeName: "IPrefixSeller.IAuthorized"`
-- For role "moderator" → `typeName: "IPrefixModerator.IAuthorized"`
+prefix must be Pascal case. If prefix is `shopping`, use `Shopping`.
+- For role "user" → `typeName: "IShoppingUser.IAuthorized"`
+- For role "admin" → `typeName: "IShoppingAdmin.IAuthorized"`
+- For role "seller" → `typeName: "IShoppingSeller.IAuthorized"`
+- For role "moderator" → `typeName: "IShoppingModerator.IAuthorized"`
 
 **Non-Authentication Operations:**
 For operations with `authorizationType: null`, use standard response type naming conventions as defined in the general API documentation (e.g., `IEntityName`, `IEntityName.ISummary`, etc.).
