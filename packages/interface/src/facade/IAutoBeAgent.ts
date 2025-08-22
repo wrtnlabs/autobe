@@ -2,7 +2,7 @@ import { AutoBeEvent } from "../events/AutoBeEvent";
 import { AutoBeHistory } from "../histories/AutoBeHistory";
 import { AutoBeUserMessageContent } from "../histories/contents/AutoBeUserMessageContent";
 import { IAutoBeTokenUsageJson } from "../json";
-import { IAutoBeGetFilesOptions } from "../rpc/IAutoBeGetFilesOptions";
+import { IAutoBeGetFilesOptions } from "./IAutoBeGetFilesOptions";
 
 export interface IAutoBeAgent {
   /**

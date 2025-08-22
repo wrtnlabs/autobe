@@ -14,7 +14,7 @@
  *
  * @author Samchon
  */
-export interface IAutoBeRpcVendor {
+export interface IAutoBePlaygroundVendor {
   /**
    * AI model identifier specifying which model to use for vibe coding
    * operations.

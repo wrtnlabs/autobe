@@ -6,6 +6,8 @@ export * from "./json";
 
 export * from "./openapi";
 export * from "./prisma";
-export * from "./rpc";
 export * from "./test";
 export * from "./typings";
+
+export * from "./rpc";
+export * from "./playground";

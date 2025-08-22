@@ -19,6 +19,8 @@
     "@autobe/compiler": "workspace:^",
     "@autobe/filesystem": "workspace:^",
     "@autobe/interface": "workspace:^",
+    "@autobe/playground-api": "workspace:^",
+    "@autobe/playground-server": "workspace:^",
     "@autobe/utils": "workspace:^",
     "@nestia/core": "catalog:samchon",
     "@nestia/e2e": "catalog:samchon",

@@ -38,6 +38,9 @@ catalogs:
     embed-typescript:
       specifier: ^1.2.0
       version: 1.2.0
+    nestia:
+      specifier: ^7.4.0
+      version: 7.4.0
     prisma-markdown:
       specifier: ^3.0.0
       version: 3.0.1
@@ -100,7 +103,7 @@ importers:
         specifier: ^6.0.1
         version: 6.0.1
 
-  apps/playground-sdk:
+  apps/playground-api:
     dependencies:
       '@autobe/interface':
         specifier: workspace:^
@@ -111,13 +114,25 @@ importers:
       '@samchon/openapi':
         specifier: catalog:samchon
         version: 4.7.1
+      tgrid:
+        specifier: catalog:samchon
+        version: 1.2.0
       typia:
         specifier: catalog:samchon
         version: 9.7.1(typescript@5.9.2)
     devDependencies:
+      '@rollup/plugin-terser':
+        specifier: ^0.4.4
+        version: 0.4.4(rollup@4.46.2)
+      '@rollup/plugin-typescript':
+        specifier: ^12.1.2
+        version: 12.1.4(rollup@4.46.2)(tslib@2.8.1)(typescript@5.9.2)
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
+      rollup:
+        specifier: ^4.40.1
+        version: 4.46.2
       typescript:
         specifier: catalog:typescript
         version: 5.9.2
@@ -136,9 +151,9 @@ importers:
       '@autobe/interface':
         specifier: workspace:^
         version: link:../../packages/interface
-      '@autobe/playground-sdk':
+      '@autobe/playground-api':
         specifier: workspace:^
-        version: link:../playground-sdk
+        version: link:../playground-api
       '@autobe/rpc':
         specifier: workspace:^
         version: link:../../packages/rpc
@@ -173,6 +188,9 @@ importers:
       '@nestia/sdk':
         specifier: catalog:samchon
         version: 7.4.0(@nestia/core@7.4.0(@nestia/fetcher@7.4.0)(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6)(@samchon/openapi@4.7.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@9.7.1(typescript@5.9.2)))(@swc/core@1.13.3(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2)
+      nestia:
+        specifier: catalog:samchon
+        version: 7.4.0
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
@@ -191,6 +209,9 @@ importers:
       '@autobe/interface':
         specifier: workspace:^
         version: link:../../packages/interface
+      '@autobe/playground-api':
+        specifier: workspace:^
+        version: link:../playground-api
       '@autobe/ui':
         specifier: workspace:^
         version: link:../../packages/ui
@@ -230,9 +251,6 @@ importers:
       remark-mermaid-plugin:
         specifier: ^1.0.2
         version: 1.0.2
-      tgrid:
-        specifier: catalog:samchon
-        version: 1.2.0
       tstl:
         specifier: catalog:samchon
         version: 3.0.0
@@ -737,6 +755,12 @@ importers:
       '@autobe/interface':
         specifier: workspace:^
         version: link:../packages/interface
+      '@autobe/playground-api':
+        specifier: workspace:^
+        version: link:../apps/playground-api
+      '@autobe/playground-server':
+        specifier: workspace:^
+        version: link:../apps/playground-server
       '@autobe/utils':
         specifier: workspace:^
         version: link:../packages/utils
@@ -5171,6 +5195,10 @@ packages:
 
   neo-async@2.6.2:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
+
+  nestia@7.4.0:
+    resolution: {integrity: sha512-+eH1sOmyK7zxw5ZyQdkhPthf9csIGUpfv0Lt4LHDMBmhJaTBrcEVUAahBsMep+7qpyg4+O9xkh3o0U7W/WR7sg==}
+    hasBin: true
 
   next-sitemap@4.2.3:
     resolution: {integrity: sha512-vjdCxeDuWDzldhCnyFCQipw5bfpl4HmZA7uoo3GAaYGjGgfL4Cxb1CiztPuWGmS+auYs7/8OekRS8C2cjdAsjQ==}
@@ -11918,6 +11946,13 @@ snapshots:
   negotiator@1.0.0: {}
 
   neo-async@2.6.2: {}
+
+  nestia@7.4.0:
+    dependencies:
+      commander: 10.0.1
+      comment-json: 4.2.5
+      inquirer: 8.2.6
+      package-manager-detector: 0.2.11
 
   next-sitemap@4.2.3(next@15.4.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)):
     dependencies:

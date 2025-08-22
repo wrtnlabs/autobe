@@ -35,6 +35,8 @@
   },
   "dependencies": {
     "@autobe/interface": "workspace:^",
+    "@autobe/playground-api": "workspace:^",
+    "@autobe/ui": "workspace:^",
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^7.1.0",
     "@mui/material": "^7.1.0",
@@ -47,10 +49,8 @@
     "rehype-raw": "^7.0.0",
     "rehype-stringify": "^10.0.1",
     "remark-mermaid-plugin": "^1.0.2",
-    "tgrid": "catalog:samchon",
     "tstl": "catalog:samchon",
     "typia": "catalog:samchon",
-    "@autobe/ui": "workspace:^",
     "uuid": "^11.1.0"
   },
   "devDependencies": {

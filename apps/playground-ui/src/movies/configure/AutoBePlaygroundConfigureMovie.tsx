@@ -1,9 +1,8 @@
 import {
-  IAutoBeRpcHeader,
-  IAutoBeRpcListener,
-  IAutoBeRpcService,
-  IAutoBeRpcVendor,
+  IAutoBePlaygroundHeader,
+  IAutoBePlaygroundVendor,
 } from "@autobe/interface";
+import pApi from "@autobe/playground-api";
 import {
   Button,
   Divider,
@@ -17,7 +16,6 @@ import {
 } from "@mui/material";
 import { ILlmSchema } from "@samchon/openapi";
 import { useEffect, useState } from "react";
-import { WebSocketConnector } from "tgrid";
 
 import { AutoBePlaygroundListener } from "../../structures/AutoBePlaygroundListener";
 import { AutoBePlaygroundConfigureValidator } from "../../utils/AutoBePlaygroundConfigureValidator";
@@ -32,7 +30,7 @@ export function AutoBePlaygroundConfigureMovie(
   const [model, setModel] =
     useState<Exclude<ILlmSchema.Model, "gemini" | "3.0">>("chatgpt");
   const [supportAudio, setSupportAudio] = useState<boolean>(false);
-  const [vendorConfig, setVendorConfig] = useState<IAutoBeRpcVendor>({
+  const [vendorConfig, setVendorConfig] = useState<IAutoBePlaygroundVendor>({
     model: "gpt-4.1",
     apiKey: "",
     semaphore: 16,
@@ -50,23 +48,24 @@ export function AutoBePlaygroundConfigureMovie(
     if (progress === true || isReady() === false) return;
     setProgress(true);
     try {
-      const header: IAutoBeRpcHeader<ILlmSchema.Model> = {
+      const headers: IAutoBePlaygroundHeader<ILlmSchema.Model> = {
         model,
         vendor: vendorConfig,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         locale,
       };
       const listener: AutoBePlaygroundListener = new AutoBePlaygroundListener();
-      const connector: WebSocketConnector<
-        IAutoBeRpcHeader<ILlmSchema.Model>,
-        IAutoBeRpcListener,
-        IAutoBeRpcService
-      > = new WebSocketConnector(header, listener.getListener());
-      await connector.connect(serverURL);
+      const { driver: service } = await pApi.functional.autobe.playground.start(
+        {
+          host: serverURL,
+          headers: headers as any,
+        },
+        listener.getListener(),
+      );
       props.onNext({
-        header,
+        header: headers,
         listener,
-        service: connector.getDriver(),
+        service,
         uploadConfig: {
           supportAudio,
         },

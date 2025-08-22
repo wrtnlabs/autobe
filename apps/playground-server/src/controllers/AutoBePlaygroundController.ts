@@ -1,5 +1,5 @@
 import {
-  IAutoBeRpcHeader,
+  IAutoBePlaygroundHeader,
   IAutoBeRpcListener,
   IAutoBeRpcService,
 } from "@autobe/interface";
@@ -14,8 +14,9 @@ import { AutoBePlaygroundProvider } from "../providers/AutoBePlaygroundProvider"
 export class AutoBePlaygroundController {
   @WebSocketRoute("start")
   public async start(
+    @WebSocketRoute.Acceptor()
     acceptor: WebSocketAcceptor<
-      IAutoBeRpcHeader<ILlmSchema.Model>,
+      IAutoBePlaygroundHeader<ILlmSchema.Model>,
       IAutoBeRpcService,
       IAutoBeRpcListener
     >,

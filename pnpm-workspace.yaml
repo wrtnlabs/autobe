@@ -22,6 +22,7 @@ catalogs:
     '@samchon/openapi': ^4.7.1
     embed-prisma: ^1.1.0
     embed-typescript: ^1.2.0
+    nestia: ^7.4.0
     prisma-markdown: ^3.0.0
     tgrid: ^1.2.0
     tstl: ^3.0.0

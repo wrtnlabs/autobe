@@ -8,6 +8,7 @@ import {
   IAutoBeAgent,
   IAutoBeCompiler,
   IAutoBeCompilerListener,
+  IAutoBePlaygroundReplay,
 } from "@autobe/interface";
 import { Singleton, randint, sleep_for } from "tstl";
 import { v4 } from "uuid";
@@ -113,7 +114,7 @@ export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
       }
       this.histories_.push(userMessage);
       this.histories_.push(
-        this.props_.preset.histories.find((h) => h.type === type)!,
+        this.props_.replay.histories.find((h) => h.type === type)!,
       );
     };
     if (state.analyze === null) await take("analyze");
@@ -135,7 +136,7 @@ export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
   private getEventSnapshots(
     state: "analyze" | "prisma" | "interface" | "test" | "realize",
   ): AutoBeEventSnapshot[] | null {
-    return this.props_.preset[state] ?? null;
+    return this.props_.replay[state] ?? null;
   }
 }
 export namespace AutoBeMockAgent {
@@ -143,15 +144,7 @@ export namespace AutoBeMockAgent {
     compiler: (
       listener: IAutoBeCompilerListener,
     ) => IAutoBeCompiler | Promise<IAutoBeCompiler>;
-    preset: IPreset;
-  }
-  export interface IPreset {
-    histories: AutoBeHistory[];
-    analyze?: AutoBeEventSnapshot[] | null;
-    prisma?: AutoBeEventSnapshot[] | null;
-    interface?: AutoBeEventSnapshot[] | null;
-    test?: AutoBeEventSnapshot[] | null;
-    realize?: AutoBeEventSnapshot[] | null;
+    replay: IAutoBePlaygroundReplay;
   }
 }
 

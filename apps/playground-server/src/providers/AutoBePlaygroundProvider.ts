@@ -1,6 +1,6 @@
 import { AutoBeAgent } from "@autobe/agent";
 import {
-  IAutoBeRpcHeader,
+  IAutoBePlaygroundHeader,
   IAutoBeRpcListener,
   IAutoBeRpcService,
 } from "@autobe/interface";
@@ -8,17 +8,17 @@ import { ILlmSchema } from "@samchon/openapi";
 import OpenAI from "openai";
 import { WebSocketAcceptor } from "tgrid";
 
-import { AutoBePlaygroundAcceptorProvider } from "./AutoBePlaygroundAcceptorProvider";
+import { AutoBePlaygroundAcceptor } from "./AutoBePlaygroundAcceptor";
 
 export namespace AutoBePlaygroundProvider {
   export const start = async (
     acceptor: WebSocketAcceptor<
-      IAutoBeRpcHeader<ILlmSchema.Model>,
+      IAutoBePlaygroundHeader<ILlmSchema.Model>,
       IAutoBeRpcService,
       IAutoBeRpcListener
     >,
   ): Promise<void> => {
-    await AutoBePlaygroundAcceptorProvider.accept(
+    await AutoBePlaygroundAcceptor.accept(
       acceptor,
       (compiler) =>
         new AutoBeAgent({

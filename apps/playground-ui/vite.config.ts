@@ -13,7 +13,8 @@ export default defineConfig({
     rollupOptions: {
       input: {
         index: path.resolve(__dirname, "index.html"),
-        replay: path.resolve(__dirname, "replay.html"),
+        ["replay/index"]: path.resolve(__dirname, "replay/index.html"),
+        ["replay/get"]: path.resolve(__dirname, "replay/get.html"),
       },
     },
   },

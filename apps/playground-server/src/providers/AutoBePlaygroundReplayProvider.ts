@@ -1,39 +1,133 @@
 import { CompressUtil } from "@autobe/filesystem";
-import { IAutoBeRpcListener, IAutoBeRpcService } from "@autobe/interface";
-import { IAutoBePlaygroundReplay, IPage } from "@autobe/playground-sdk";
+import {
+  AutoBeEventSnapshot,
+  AutoBeHistory,
+  IAutoBePlaygroundReplay,
+  IAutoBeRpcListener,
+  IAutoBeRpcService,
+} from "@autobe/interface";
 import fs from "fs";
+import path from "path";
 import { WebSocketAcceptor } from "tgrid";
-import { Singleton } from "tstl";
 import typia from "typia";
 
 import { AutoBeMockAgent } from "../../../../packages/agent/src";
 import { MapUtil } from "../../../../packages/utils/src";
-import { AutoBePlaygroundAcceptorProvider } from "./AutoBePlaygroundAcceptorProvider";
+import { AutoBePlaygroundAcceptor } from "./AutoBePlaygroundAcceptor";
 
 export namespace AutoBePlaygroundReplayProvider {
-  export const index = async (
-    input: IAutoBePlaygroundReplay.IRequest,
-  ): Promise<IPage<IAutoBePlaygroundReplay>> => {
-    let data: IAutoBePlaygroundReplay[] = (await entire.get()).slice();
-    if (!!input.search?.project?.length)
-      data = data.filter((item) => item.project === input.search?.project);
-    if (!!input.search?.vendor?.length)
-      data = data.filter((item) => item.vendor === input.search?.vendor);
-    if (!!input.sort?.length)
-      for (const item of input.sort) {
-        const multiplier = item[0] === "-" ? -1 : 1;
-        const key = item.slice(1) as "vendor" | "project";
-        data = data.sort((a, b) => a[key].localeCompare(b[key]) * multiplier);
-      }
-    return {
-      pagination: {},
-      data,
+  export const index = async (): Promise<
+    IAutoBePlaygroundReplay.ISummary[]
+  > => {
+    interface IProjectState {
+      analyze: IStepState | null;
+      prisma: IStepState | null;
+      interface: IStepState | null;
+      test: IStepState | null;
+      realize: IStepState | null;
+    }
+    interface IStepState {
+      histories: boolean;
+      snapshots: boolean;
+    }
+    const getStep = (state: IProjectState) => {
+      for (const key of [
+        "realize",
+        "test",
+        "interface",
+        "prisma",
+        "analyze",
+      ] as const)
+        if (state[key] && state[key].histories && state[key].snapshots)
+          return key;
+      return null;
     };
+
+    const replays: IAutoBePlaygroundReplay.IProps[] = [];
+    const iterate = async (vendor: string) => {
+      const projectDict: Map<string, IProjectState> = new Map();
+      const emplace = (
+        project: string,
+        step: keyof IProjectState,
+      ): IStepState => {
+        const elem = MapUtil.take(projectDict, project, () => ({
+          analyze: null,
+          prisma: null,
+          interface: null,
+          test: null,
+          realize: null,
+        }));
+        return (elem[step] ??= { histories: false, snapshots: false });
+      };
+      for (const file of await fs.promises.readdir(`${ROOT}/${vendor}`)) {
+        const next: string = `${ROOT}/${vendor}/${file}`;
+        const stat: fs.Stats = await fs.promises.stat(next);
+        if (stat.isDirectory() === true)
+          await iterate([vendor, file].filter((s) => s.length).join("/"));
+        else if (file.endsWith(".json.gz")) {
+          const [project, step] = file.split(".");
+          if (typia.is<keyof IProjectState>(step) === false) continue;
+          else if (file === `${project}.${step}.json.gz`)
+            emplace(project, step).histories = true;
+          else if (file === `${project}.${step}.snapshots.json.gz`)
+            emplace(project, step).snapshots = true;
+        }
+      }
+      for (const [name, metadata] of projectDict) {
+        const step = getStep(metadata);
+        if (step === null) continue;
+        replays.push({
+          vendor,
+          project: name,
+          step,
+        });
+      }
+    };
+    await iterate("");
+    const data: IAutoBePlaygroundReplay.ISummary[] = await Promise.all(
+      replays.map(async (r) => {
+        const load = async <T>(file: string): Promise<T> =>
+          JSON.parse(
+            await CompressUtil.gunzip(
+              await fs.promises.readFile(`${ROOT}/${r.vendor}/${file}`),
+            ),
+          );
+        const histories: AutoBeHistory[] = await load(
+          `${r.project}.${r.step}.json.gz`,
+        );
+        const snapshots: AutoBeEventSnapshot[] = await load(
+          `${r.project}.${r.step}.snapshots.json.gz`,
+        );
+        return {
+          ...r,
+          tokenUsage: snapshots.at(-1)!.tokenUsage,
+          elapsed: histories
+            .filter(
+              (h) => h.type !== "userMessage" && h.type !== "assistantMessage",
+            )
+            .map(
+              (h) =>
+                new Date(h.completed_at).getTime() -
+                new Date(h.created_at).getTime(),
+            )
+            .reduce((a, b) => a + b, 0),
+        } satisfies IAutoBePlaygroundReplay.ISummary;
+      }),
+    );
+    return data.sort((a, b) =>
+      a.vendor !== b.vendor
+        ? a.vendor.localeCompare(b.vendor)
+        : a.project.localeCompare(b.project),
+    );
   };
 
   export const get = async (
-    props: IAutoBePlaygroundReplay,
-    acceptor: WebSocketAcceptor<null, IAutoBeRpcService, IAutoBeRpcListener>,
+    acceptor: WebSocketAcceptor<
+      undefined,
+      IAutoBeRpcService,
+      IAutoBeRpcListener
+    >,
+    props: IAutoBePlaygroundReplay.IProps,
   ): Promise<void> => {
     const load = async <T>(title: string): Promise<T | null> => {
       const location: string = `${ROOT}/${props.vendor}/${props.project}.${title}.json.gz`;
@@ -45,91 +139,35 @@ export namespace AutoBePlaygroundReplayProvider {
         return null;
       }
     };
-    const preset: AutoBeMockAgent.IPreset = {
-      histories: (await load(props.step ?? "realize"))!,
+    const histories: AutoBeHistory[] | null = await load(
+      props.step ?? "realize",
+    );
+    if (histories === null) {
+      await acceptor.reject(1002, "Unable to find the matched replay");
+      return;
+    }
+
+    const replay: IAutoBePlaygroundReplay = {
+      vendor: props.vendor,
+      project: props.project,
+      histories,
       analyze: await load("analyze.snapshots"),
       prisma: await load("prisma.snapshots"),
       interface: await load("interface.snapshots"),
       test: await load("test.snapshots"),
       realize: await load("realize.snapshots"),
     };
-    await AutoBePlaygroundAcceptorProvider.accept(
+    await AutoBePlaygroundAcceptor.accept(
       acceptor,
       (compiler) =>
         new AutoBeMockAgent({
-          preset,
+          replay,
           compiler: () => compiler,
         }),
     );
   };
 }
 
-const entire = new Singleton(async (): Promise<IAutoBePlaygroundReplay[]> => {
-  interface IProjectState {
-    analyze: IStepState | null;
-    prisma: IStepState | null;
-    interface: IStepState | null;
-    test: IStepState | null;
-    realize: IStepState | null;
-  }
-  interface IStepState {
-    histories: boolean;
-    snapshots: boolean;
-  }
-  const getStep = (state: IProjectState) => {
-    for (const key of [
-      "realize",
-      "test",
-      "interface",
-      "prisma",
-      "analyze",
-    ] as const)
-      if (state[key] && state[key].histories && state[key].snapshots)
-        return key;
-    return null;
-  };
-
-  const replays: IAutoBePlaygroundReplay[] = [];
-  const iterate = async (vendor: string) => {
-    const projectDict: Map<string, IProjectState> = new Map();
-    const emplace = (
-      project: string,
-      step: keyof IProjectState,
-    ): IStepState => {
-      const elem = MapUtil.take(projectDict, project, () => ({
-        analyze: null,
-        prisma: null,
-        interface: null,
-        test: null,
-        realize: null,
-      }));
-      return (elem[step] ??= { histories: false, snapshots: false });
-    };
-    for (const file of await fs.promises.readdir(`${ROOT}/${vendor}`)) {
-      const next: string = `${ROOT}/${vendor}/${file}`;
-      const stat: fs.Stats = await fs.promises.stat(next);
-      if (stat.isDirectory() === true) await iterate(`${vendor}/${file}`);
-      else if (file.endsWith(".json.gz")) {
-        const [project, step] = file.split(".");
-        if (typia.is<keyof IProjectState>(step) === false) continue;
-        else if (file === `${project}.${step}.json.gz`)
-          emplace(project, step).histories = true;
-        else if (file === `${project}.${step}.snapshots.json.gz`)
-          emplace(project, step).snapshots = true;
-      }
-    }
-    for (const [name, metadata] of projectDict) {
-      const step = getStep(metadata);
-      if (step === null) continue;
-      replays.push({
-        vendor,
-        project: name,
-        step,
-      });
-    }
-  };
-  await iterate(ROOT);
-  return replays;
-});
-
-const ROOT: string = `${__dirname}/../../../../test/assets/histories`;
+const ROOT: string = path.resolve(
+  `${__dirname}/../../../../test/assets/histories`,
+);

@@ -1,10 +1,10 @@
 {
-  "name": "@autobe/playground-sdk",
+  "name": "@autobe/playground-api",
   "version": "0.18.0",
   "description": "AI backend server code generator",
   "main": "src/index.ts",
   "scripts": {
-    "build": "rimraf lib && tsc",
+    "build": "rimraf lib && tsc && rollup -c",
     "dev": "rimraf lib && tsc --watch",
     "prepack": "pnpm run build"
   },
@@ -28,16 +28,21 @@
   "publishConfig": {
     "access": "public",
     "main": "lib/index.js",
+    "module": "lib/index.mjs",
     "typings": "lib/index.d.ts"
   },
   "dependencies": {
     "@autobe/interface": "workspace:^",
     "@nestia/fetcher": "catalog:samchon",
     "@samchon/openapi": "catalog:samchon",
+    "tgrid": "catalog:samchon",
     "typia": "catalog:samchon"
   },
   "devDependencies": {
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^12.1.2",
     "rimraf": "^6.0.1",
+    "rollup": "^4.40.1",
     "typescript": "catalog:typescript"
   }
 }

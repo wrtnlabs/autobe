@@ -1,5 +1,5 @@
 import {
-  IAutoBeRpcHeader,
+  IAutoBePlaygroundHeader,
   IAutoBeRpcService,
   IAutoBeTokenUsageJson,
 } from "@autobe/interface";
@@ -148,7 +148,7 @@ export namespace AutoBePlaygroundChatMovie {
     title?: string;
   }
   export interface IContext {
-    header: IAutoBeRpcHeader<ILlmSchema.Model>;
+    header: IAutoBePlaygroundHeader<ILlmSchema.Model>;
     service: IAutoBeRpcService;
     listener: AutoBePlaygroundListener;
     eventGroups?: IAutoBePlaygroundEventGroup[];

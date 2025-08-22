@@ -38,7 +38,7 @@
     "@autobe/compiler": "workspace:^",
     "@autobe/filesystem": "workspace:^",
     "@autobe/interface": "workspace:^",
-    "@autobe/playground-sdk": "workspace:^",
+    "@autobe/playground-api": "workspace:^",
     "@autobe/rpc": "workspace:^",
     "@nestia/core": "catalog:samchon",
     "@nestjs/common": "^11.1.3",
@@ -52,6 +52,7 @@
   },
   "devDependencies": {
     "@nestia/sdk": "catalog:samchon",
+    "nestia": "catalog:samchon",
     "rimraf": "^6.0.1",
     "ts-node": "catalog:typescript",
     "ts-patch": "catalog:typescript",

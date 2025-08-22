@@ -11,7 +11,7 @@ import path from "path";
 import { WebSocketAcceptor, WorkerConnector } from "tgrid";
 import { Singleton, VariadicSingleton } from "tstl";
 
-export namespace AutoBePlaygroundAcceptorProvider {
+export namespace AutoBePlaygroundAcceptor {
   export const accept = async (
     acceptor: WebSocketAcceptor<any, IAutoBeRpcService, IAutoBeRpcListener>,
     factory: (compiler: IAutoBeCompiler) => IAutoBeAgent,

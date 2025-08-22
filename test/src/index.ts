@@ -1,6 +1,7 @@
 import { AutoBeAgent, AutoBeTokenUsage } from "@autobe/agent";
 import { AutoBeCompiler } from "@autobe/compiler";
 import { IAutoBeCompilerListener } from "@autobe/interface";
+import { AutoBePlaygroundServer } from "@autobe/playground-server";
 import { DynamicExecutor } from "@nestia/e2e";
 import chalk from "chalk";
 import fs from "fs";
@@ -18,6 +19,7 @@ async function main(): Promise<void> {
   console.log("---------------------------------------------------");
 
   // PREPARE ENVIRONMENT
+  const backend: AutoBePlaygroundServer = new AutoBePlaygroundServer();
   const tokenUsage: AutoBeTokenUsage = new AutoBeTokenUsage();
   const factory: TestFactory = {
     getTokenUsage: () => tokenUsage,
@@ -66,6 +68,7 @@ async function main(): Promise<void> {
   >();
 
   // DO TEST
+  await backend.open();
   const exceptions: Error[] = await new Array(runsPerScenario)
     .fill(0)
     .reduce(async (acc, _) => {
@@ -149,6 +152,7 @@ async function main(): Promise<void> {
     Test: tokenUsage.test.total.toLocaleString("en-US"),
     Realize: tokenUsage.realize.total.toLocaleString("en-US"),
   });
+  await backend.close();
   if (exceptions.length !== 0) process.exit(-1);
 }
 

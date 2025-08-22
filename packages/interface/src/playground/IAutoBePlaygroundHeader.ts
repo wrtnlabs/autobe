@@ -1,6 +1,6 @@
 import { ILlmSchema } from "@samchon/openapi";
 
-import { IAutoBeRpcVendor } from "./IAutoBeRpcVendor";
+import { IAutoBePlaygroundVendor } from "./IAutoBePlaygroundVendor";
 
 /**
  * Interface representing the WebSocket connection header for vibe coding
@@ -19,7 +19,7 @@ import { IAutoBeRpcVendor } from "./IAutoBeRpcVendor";
  *
  * @author Samchon
  */
-export interface IAutoBeRpcHeader<Model extends ILlmSchema.Model> {
+export interface IAutoBePlaygroundHeader<Model extends ILlmSchema.Model> {
   /**
    * AI model type specification for type-safe function calling schemas.
    *
@@ -39,17 +39,17 @@ export interface IAutoBeRpcHeader<Model extends ILlmSchema.Model> {
   /**
    * AI vendor configuration for service provider integration.
    *
-   * Contains the complete {@link IAutoBeRpcVendor} configuration including model
-   * identifier, API authentication, and optional custom endpoints. This
-   * configuration enables the vibe coding system to connect with the specified
-   * AI service provider and utilize their capabilities throughout the automated
-   * development pipeline.
+   * Contains the complete {@link IAutoBePlaygroundVendor} configuration
+   * including model identifier, API authentication, and optional custom
+   * endpoints. This configuration enables the vibe coding system to connect
+   * with the specified AI service provider and utilize their capabilities
+   * throughout the automated development pipeline.
    *
    * The vendor configuration determines which AI service will power the
    * requirements analysis, database design, API specification, testing, and
    * implementation phases of the vibe coding process.
    */
-  vendor: IAutoBeRpcVendor;
+  vendor: IAutoBePlaygroundVendor;
 
   /**
    * User's locale preference for internationalized responses and communication.
