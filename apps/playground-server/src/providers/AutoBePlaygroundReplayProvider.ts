@@ -1,3 +1,4 @@
+import { AutoBeMockAgent } from "@autobe/agent";
 import { CompressUtil } from "@autobe/filesystem";
 import {
   AutoBeEventSnapshot,
@@ -6,13 +7,12 @@ import {
   IAutoBeRpcListener,
   IAutoBeRpcService,
 } from "@autobe/interface";
+import { MapUtil } from "@autobe/utils";
 import fs from "fs";
 import path from "path";
 import { WebSocketAcceptor } from "tgrid";
 import typia from "typia";
 
-import { AutoBeMockAgent } from "../../../../packages/agent/src";
-import { MapUtil } from "../../../../packages/utils/src";
 import { AutoBePlaygroundAcceptor } from "./AutoBePlaygroundAcceptor";
 
 export namespace AutoBePlaygroundReplayProvider {

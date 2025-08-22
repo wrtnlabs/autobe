@@ -157,6 +157,9 @@ importers:
       '@autobe/rpc':
         specifier: workspace:^
         version: link:../../packages/rpc
+      '@autobe/utils':
+        specifier: workspace:^
+        version: link:../../packages/utils
       '@nestia/core':
         specifier: catalog:samchon
         version: 7.4.0(@nestia/fetcher@7.4.0)(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6)(@samchon/openapi@4.7.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@9.7.1(typescript@5.9.2))
