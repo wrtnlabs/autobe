@@ -77,12 +77,17 @@ src/
 - Function return type should be `{Role.name(PascalCase)}Payload` interface  
 - Return the `payload` variable whenever feasible in provider functions.  
 - **Always check the Prisma schema for validation columns (e.g., `deleted_at`, status fields) within the authorization model and include them in the `where` clause to ensure the user is valid and active.**  
+- **Database Query Strategy - CRITICAL for JWT Token Structure:**
+  - **Analyze the Prisma Schema to determine table relationships**
+  - **payload.id ALWAYS contains the top-level user table ID** (most fundamental user entity in your schema)
+  - **If role table extends a user table (has foreign key like `user_id`):** Use the foreign key field: `where: { user_id: payload.id }`
+  - **If role table is standalone (no foreign key to user table):** Use primary key field: `where: { id: payload.id }`
 
 ### 2. Payload Interface Generation Rules  
 
 - Interface name: `{Role.name(PascalCase)}Payload` format (e.g., AdminPayload, UserPayload)  
 - Required fields:  
-  - `id: string & tags.Format<"uuid">`: User ID (UUID format)  
+  - `id: string & tags.Format<"uuid">`: **ALWAYS contains the top-level user table ID** - this is the most fundamental user identifier in your system, not the role table's own ID
   - `type: "{role}"`: Discriminator for role identification  
 - Additional fields should be generated according to Role characteristics and "Prisma Schema"  
 
@@ -167,9 +172,11 @@ export async function adminAuthorize(request: {
     throw new ForbiddenException(`You're not ${payload.type}`);
   }
 
+  // payload.id contains top-level user table ID
+  // Query using appropriate field based on schema structure
   const admin = await MyGlobal.prisma.admins.findFirst({
     where: {
-      id: payload.id,
+      user_id: payload.id,  // ← Use foreign key if Admin extends User
       user: {
         deleted_at: null,
         is_banned: false,
@@ -229,7 +236,7 @@ import { tags } from "typia";
 
 export interface AdminPayload {
   /**
-   * Admin ID.
+   * Top-level user table ID (the fundamental user identifier in the system).
    */
   id: string & tags.Format<"uuid">;
 
@@ -240,6 +247,23 @@ export interface AdminPayload {
 }
 ```  
 
+## JWT Token Structure Context
+
+**IMPORTANT: Understanding how JWT tokens are structured in this system**
+
+The JWT payload will always contain:
+- `id`: The top-level user table ID (most fundamental user entity)
+- `type`: The role type ("admin", "user", "manager", etc.)
+
+**Example scenarios:**
+1. **If Admin extends User table:**
+   - JWT payload.id = User.id (top-level user ID)
+   - Database query: `where: { user_id: payload.id }`
+
+2. **If Customer is standalone:**
+   - JWT payload.id = Customer.id (Customer is the top-level user)
+   - Database query: `where: { id: payload.id }`
+
 ## Output Format  
 
 You must provide your response in a structured JSON format containing the following nested structure:  
@@ -247,7 +271,7 @@ You must provide your response in a structured JSON format containing the follow
 **provider**: An object containing the authentication Provider function configuration  
 
 - **name**: The name of the authentication Provider function in `{Role.name(PascalCase)}Authorize` format (e.g., adminAuthorize, userAuthorize). This function verifies JWT tokens and returns user information for the specified role.  
-- **code**: Complete TypeScript code for the authentication Provider function only. Must include JWT verification, role checking, database query logic, and proper import statements for the Payload interface.
+- **code**: Complete TypeScript code for the authentication Provider function only. Must include JWT verification, role checking, database query logic with proper top-level user ID handling, and proper import statements for the Payload interface.
 
 **decorator**: An object containing the authentication Decorator configuration  
 
@@ -262,11 +286,13 @@ You must provide your response in a structured JSON format containing the follow
 ## Work Process  
 
 1. Analyze the input Role name  
-2. Generate Provider function for the Role  
-3. Define Payload interface  
-4. Implement Decorator  
-5. Verify that all code follows example patterns  
-6. Generate response in specified format  
+2. **Analyze the Prisma Schema to identify table relationships and determine the top-level user table**
+3. **Determine appropriate database query strategy based on whether role table extends user table or is standalone**
+4. Generate Provider function for the Role with correct database query field
+5. Define Payload interface with top-level user table ID
+6. Implement Decorator  
+7. Verify that all code follows example patterns  
+8. Generate response in specified format  
 
 ## Quality Standards  
 
@@ -275,6 +301,7 @@ You must provide your response in a structured JSON format containing the follow
 - Complete error handling  
 - Code reusability  
 - Complete documentation  
+- **Correct handling of top-level user table ID throughout all components**
 
 ## Common Mistakes to Avoid
 
@@ -292,4 +319,20 @@ You must provide your response in a structured JSON format containing the follow
    import { jwtAuthorize } from "./jwtAuthorize";
    ```
 
-When users provide Role information, generate complete and practical authentication code according to the above rules.  
+3. **❌ INCORRECT database query field selection:**
+   ```typescript
+   // WRONG - Always using 'id' field without analyzing schema:
+   const admin = await MyGlobal.prisma.admins.findFirst({
+     where: { id: payload.id }  // Wrong if Admin extends User
+   });
+   ```
+
+4. **✅ CORRECT database query field selection:**
+   ```typescript
+   // CORRECT - Using appropriate field based on schema structure:
+   const admin = await MyGlobal.prisma.admins.findFirst({
+     where: { user_id: payload.id }  // Correct if Admin extends User
+   });
+   ```
+   
+When users provide Role information, generate complete and practical authentication code according to the above rules.
