@@ -134,6 +134,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
           histories.some((h) => h.type === "execute" && h.success === true)
       ) {
         const failure = () => {
+          console.log(JSON.stringify(histories, null, 2));
           throw new Error(
             `Failed to function calling in the ${next.source} step`,
           );

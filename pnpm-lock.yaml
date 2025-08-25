@@ -8,7 +8,7 @@ catalogs:
   agentica:
     '@agentica/core':
       specifier: ^0.32.1
-      version: 0.32.1
+      version: 0.32.2
   libs:
     openai:
       specifier: ^5.12.2
@@ -508,7 +508,7 @@ importers:
     dependencies:
       '@agentica/core':
         specifier: catalog:agentica
-        version: 0.32.1(@modelcontextprotocol/sdk@1.17.2)(@samchon/openapi@4.7.1)(openai@5.12.2(ws@8.18.3)(zod@3.25.76))(typia@9.7.1(typescript@5.9.2))
+        version: 0.32.2(@modelcontextprotocol/sdk@1.17.2)(@samchon/openapi@4.7.1)(openai@5.12.2(ws@8.18.3)(zod@3.25.76))(typia@9.7.1(typescript@5.9.2))
       '@autobe/interface':
         specifier: workspace:^
         version: link:../interface
@@ -874,8 +874,8 @@ importers:
 
 packages:
 
-  '@agentica/core@0.32.1':
-    resolution: {integrity: sha512-zY+twuH5A3qfOC/llUGBF3lAEA28m+DPS6LDn6X7ggHc7GtDlvnotut78HnW22UJZL9l9mKnks/FCUsQ01mLIg==}
+  '@agentica/core@0.32.2':
+    resolution: {integrity: sha512-SSZ6UtgPTyOZmwTlMB0nfDczi6E7TizIdow9P19w3uj7EfYqpleqpJR9USFbXIJZlkah70FSPmz07uRu/rjurQ==}
     peerDependencies:
       '@modelcontextprotocol/sdk': ^1.12.0
       '@samchon/openapi': ^4.7.1
@@ -6968,7 +6968,7 @@ packages:
 
 snapshots:
 
-  '@agentica/core@0.32.1(@modelcontextprotocol/sdk@1.17.2)(@samchon/openapi@4.7.1)(openai@5.12.2(ws@8.18.3)(zod@3.25.76))(typia@9.7.1(typescript@5.9.2))':
+  '@agentica/core@0.32.2(@modelcontextprotocol/sdk@1.17.2)(@samchon/openapi@4.7.1)(openai@5.12.2(ws@8.18.3)(zod@3.25.76))(typia@9.7.1(typescript@5.9.2))':
     dependencies:
       '@samchon/openapi': 4.7.1
       openai: 5.12.2(ws@8.18.3)(zod@3.25.76)

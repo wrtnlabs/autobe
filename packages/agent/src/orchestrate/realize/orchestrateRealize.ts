@@ -69,7 +69,7 @@ export const orchestrateRealize =
     const writeProgress = { total: scenarios.length, completed: 0 };
     const writeEvents: AutoBeRealizeWriteEvent[] = await Promise.all(
       scenarios.map(async (scenario) => {
-        const code = orchestrateRealizeWrite(ctx, {
+        const code = await orchestrateRealizeWrite(ctx, {
           totalAuthorizations: authorizations,
           authorization: scenario.decoratorEvent ?? null,
           scenario,

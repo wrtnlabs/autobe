@@ -1,7 +1,7 @@
 import { orchestrateTestCorrect } from "@autobe/agent/src/orchestrate/test/orchestrateTestCorrect";
 import { IAutoBeTestWriteResult } from "@autobe/agent/src/orchestrate/test/structures/IAutoBeTestWriteResult";
 import { AutoBeCompilerInterfaceTemplate } from "@autobe/compiler/src/raw/AutoBeCompilerInterfaceTemplate";
-import { FileSystemIterator } from "@autobe/filesystem";
+import { CompressUtil, FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeTestCorrectEvent,
   AutoBeTestValidateEvent,
@@ -24,9 +24,10 @@ export const validate_agent_test_correct = async (
   const { agent } = await prepare_agent_test(factory, project);
   const model: string = TestGlobal.getVendorModel();
   const writes: IAutoBeTestWriteResult[] = JSON.parse(
-    await fs.promises.readFile(
-      `${TestGlobal.ROOT}/assets/histories/${model}/${project}.test.writes.json`,
-      "utf8",
+    await CompressUtil.gunzip(
+      await fs.promises.readFile(
+        `${TestGlobal.ROOT}/assets/histories/${model}/${project}.test.writes.json.gz`,
+      ),
     ),
   );
 

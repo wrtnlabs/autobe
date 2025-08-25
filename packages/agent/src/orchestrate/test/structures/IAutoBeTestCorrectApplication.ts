@@ -70,8 +70,8 @@ export namespace IAutoBeTestCorrectApplication {
      * AI generates the first corrected version of the test code based on error
      * analysis and correction strategies. This draft addresses all identified
      * compilation errors while preserving the original business logic and test
-     * workflow. The code is compilation-error-free and follows all
-     * established conventions.
+     * workflow. The code is compilation-error-free and follows all established
+     * conventions.
      *
      * The implementation incorporates lessons learned from error analysis to
      * produce properly typed, syntactically correct code that maintains the
@@ -80,7 +80,7 @@ export namespace IAutoBeTestCorrectApplication {
      *
      * Workflow: Error correction → TypeScript implementation → Functional
      * preservation
-     * 
+     *
      * DO: Resolve all compilation errors while maintaining original test intent
      */
     draft: string;

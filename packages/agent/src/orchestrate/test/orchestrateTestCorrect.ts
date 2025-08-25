@@ -4,6 +4,7 @@ import {
   IAutoBeCompiler,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -31,7 +32,7 @@ export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
           location: w.event.location,
           script: w.event.final,
         });
-        return predicate(
+        return await predicate(
           ctx,
           {
             artifacts: w.artifacts,
@@ -83,7 +84,7 @@ const predicate = async <Model extends ILlmSchema.Model>(
 ): Promise<AutoBeTestValidateEvent> => {
   if (event.result.type === "failure") ctx.dispatch(event);
   return event.result.type === "failure"
-    ? correct(ctx, content, event, life - 1)
+    ? await correct(ctx, content, event, life - 1)
     : event;
 };
 
@@ -110,8 +111,12 @@ const correct = async <Model extends ILlmSchema.Model>(
       },
     }),
     enforceFunctionCall: true,
-    message:
-      "Fix the `AutoBeTest.IFunction` data to resolve the compilation error.",
+    message: StringUtil.trim`
+      Fix the AutoBeTest.IFunction data to resolve the compilation error.
+
+      You don't need to explain me anything, but just fix it immediately
+      without any hesitation, explanation, and questions.
+    `,
   });
   if (pointer.value === null) throw new Error("Failed to modify test code.");
 
