@@ -24,45 +24,45 @@ export interface IAutoBeTestCorrectApplication {
 
 export namespace IAutoBeTestCorrectApplication {
   export interface IProps {
-    // /**
-    //  * Step 1: Initial analysis and understanding without compilation error
-    //  * context.
-    //  *
-    //  * AI analyzes the original test scenario, business requirements, and
-    //  * intended functionality without being influenced by compilation errors.
-    //  * This clean analysis establishes a clear understanding of what the test
-    //  * accomplishes, the expected business workflow, and the correct API
-    //  * integration patterns.
-    //  *
-    //  * This step ensures that error correction doesn't lose sight of the
-    //  * original test purpose and helps maintain the intended business logic
-    //  * while addressing technical compilation issues. The AI develops a
-    //  * comprehensive understanding of the test requirements before diving into
-    //  * error-specific details.
-    //  *
-    //  * Workflow: Scenario understanding → Business logic analysis → Intended
-    //  * functionality mapping
-    //  */
-    // think_without_compile_error: string;
+    /**
+     * Step 1: Initial analysis and understanding without compilation error
+     * context.
+     *
+     * AI analyzes the original test scenario, business requirements, and
+     * intended functionality without being influenced by compilation errors.
+     * This clean analysis establishes a clear understanding of what the test
+     * accomplishes, the expected business workflow, and the correct API
+     * integration patterns.
+     *
+     * This step ensures that error correction doesn't lose sight of the
+     * original test purpose and helps maintain the intended business logic
+     * while addressing technical compilation issues. The AI develops a
+     * comprehensive understanding of the test requirements before diving into
+     * error-specific details.
+     *
+     * Workflow: Scenario understanding → Business logic analysis → Intended
+     * functionality mapping
+     */
+    think_without_compile_error: string;
 
-    // /**
-    //  * Step 2: Compilation error analysis and root cause identification.
-    //  *
-    //  * AI re-analyzes the scenario and implementation with full awareness of
-    //  * compilation errors and diagnostic information. This step involves
-    //  * systematic examination of error messages, identification of error
-    //  * patterns, and understanding of how compilation issues relate to the
-    //  * intended functionality.
-    //  *
-    //  * The AI correlates compilation diagnostics with the original requirements
-    //  * to understand where the implementation diverged from correct TypeScript
-    //  * usage while maintaining the business logic intent. This analysis forms
-    //  * the foundation for targeted error correction strategies.
-    //  *
-    //  * Workflow: Error diagnostic analysis → Root cause identification →
-    //  * Correction strategy planning
-    //  */
-    // think_again_with_compile_error: string;
+    /**
+     * Step 2: Compilation error analysis and root cause identification.
+     *
+     * AI re-analyzes the scenario and implementation with full awareness of
+     * compilation errors and diagnostic information. This step involves
+     * systematic examination of error messages, identification of error
+     * patterns, and understanding of how compilation issues relate to the
+     * intended functionality.
+     *
+     * The AI correlates compilation diagnostics with the original requirements
+     * to understand where the implementation diverged from correct TypeScript
+     * usage while maintaining the business logic intent. This analysis forms
+     * the foundation for targeted error correction strategies.
+     *
+     * Workflow: Error diagnostic analysis → Root cause identification →
+     * Correction strategy planning
+     */
+    think_again_with_compile_error: string;
 
     /**
      * Step 3: Draft corrected TypeScript E2E test code implementation.
