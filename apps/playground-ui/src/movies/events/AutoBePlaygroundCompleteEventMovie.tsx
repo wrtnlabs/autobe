@@ -4,6 +4,7 @@ import {
   AutoBePrismaCompleteEvent,
   AutoBeRealizeCompleteEvent,
   AutoBeTestCompleteEvent,
+  IAutoBeGetFilesOptions,
   IAutoBeRpcService,
 } from "@autobe/interface";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
@@ -22,50 +23,26 @@ import {
 import StackBlitzSDK from "@stackblitz/sdk";
 import JsZip from "jszip";
 import { useState } from "react";
-import { Singleton, VariadicSingleton } from "tstl";
+import { VariadicSingleton } from "tstl";
 
 export function AutoBePlaygroundCompleteEventMovie(
   props: AutoBePlaygroundCompleteEventMovie.IProps,
 ) {
   const stage = getStage(props.event);
   const [size, setSize] = useState<number | null>(null);
-
-  const [postgres] = useState(
-    new Singleton(async () => {
-      setDownloading(true);
-      try {
-        const result: Record<string, string> = await props.service.getFiles({
-          stage,
-        });
-        return result;
-      } catch (error) {
-        throw error;
-      } finally {
-        setDownloading(false);
-      }
-    }),
-  );
-  const [sqlite] = useState(
-    new Singleton(async () => {
-      setDownloading(true);
-      try {
-        const result: Record<string, string> = await props.service.getFiles({
-          dbms: "sqlite",
-          stage,
-        });
-        return result;
-      } catch (error) {
-        throw error;
-      } finally {
-        setDownloading(false);
-      }
-    }),
-  );
   const [downloading, setDownloading] = useState(false);
 
+  const getFiles = (dbms: "postgres" | "sqlite") =>
+    getGetFilesFn({
+      getFiles: props.service.getFiles,
+      dbms,
+      stage,
+      preExecute: () => setDownloading(true),
+      postExecute: () => setDownloading(false),
+    });
   const openStackBlitz = async () => {
     const files: Record<string, string> = Object.fromEntries(
-      Object.entries(await sqlite.get()).filter(
+      Object.entries(await getFiles("sqlite")).filter(
         ([key, value]) =>
           key.startsWith("autobe/") === false &&
           new TextEncoder().encode(value).length < 512 * 1024, // 512 KB
@@ -95,9 +72,7 @@ export function AutoBePlaygroundCompleteEventMovie(
       const parent: JsZip = directory.get(separated.slice(0, -1).join("/"));
       return parent.folder(separated.at(-1)!)!;
     });
-    for (const [file, content] of Object.entries(
-      dbms === "postgres" ? await postgres.get() : await sqlite.get(),
-    )) {
+    for (const [file, content] of Object.entries(await getFiles(dbms))) {
       const separated: string[] = file.split("/");
       if (separated.length === 1) zip.file(file, content);
       else {
@@ -209,6 +184,30 @@ export namespace AutoBePlaygroundCompleteEventMovie {
       | AutoBeRealizeCompleteEvent;
   }
 }
+
+const getGetFilesFn = async (props: {
+  getFiles: (
+    options?: Partial<IAutoBeGetFilesOptions>,
+  ) => Promise<Record<string, string>>;
+  dbms: "postgres" | "sqlite";
+  stage: ReturnType<typeof getStage>;
+  preExecute: () => void;
+  postExecute: () => void;
+}) => {
+  const { getFiles, dbms, stage, preExecute, postExecute } = props;
+  preExecute();
+  try {
+    const result = await getFiles({
+      dbms,
+      stage,
+    });
+    return result;
+  } catch (error) {
+    throw error;
+  } finally {
+    postExecute();
+  }
+};
 
 function getTitle(
   event: AutoBePlaygroundCompleteEventMovie.IProps["event"],
