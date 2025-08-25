@@ -27,6 +27,8 @@
     "@nestia/fetcher": "catalog:samchon",
     "@nestia/migrate": "catalog:samchon",
     "@samchon/openapi": "catalog:samchon",
+    "@typescript-eslint/eslint-plugin": "^8.40.0",
+    "@typescript-eslint/parser": "^8.40.0",
     "dotenv": "^16.5.0",
     "dotenv-expand": "^12.0.2",
     "openai": "catalog:libs",
