@@ -82,7 +82,7 @@ export const test_compiler_realize_controller = async (
     content.includes("customer: ICustomerPayload"),
   );
   TestValidator.predicate("content includes createShoppingSale")(() =>
-    content.includes("return createShoppingSale({"),
+    content.includes("return await createShoppingSale({"),
   );
   TestValidator.predicate("content includes customer")(() =>
     content.includes("customer,"),
