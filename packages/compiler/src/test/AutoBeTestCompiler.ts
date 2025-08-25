@@ -7,17 +7,17 @@ import {
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import { AutoBeEndpointComparator, validateTestFunction } from "@autobe/utils";
-import tsEslintPlugin from "@typescript-eslint/eslint-plugin";
+import { EmbedEsLint } from "embed-eslint";
 import { HashMap, Pair } from "tstl";
 import ts from "typescript";
 import { IValidation } from "typia";
 import typiaTransform from "typia/lib/transform";
 
-import { AutoBeEsLintCompiler } from "../eslint/AutoBeEsLintCompiler";
 import { AutoBeCompilerInterfaceTemplate } from "../raw/AutoBeCompilerInterfaceTemplate";
 import { AutoBeCompilerTestTemplate } from "../raw/AutoBeCompilerTestTemplate";
 import TestExternal from "../raw/test.json";
 import { FilePrinter } from "../utils/FilePrinter";
+import { shrinkCompileResult } from "../utils/shrinkCompileResult";
 import { writeTestFunction } from "./programmers/writeTestFunction";
 
 export class AutoBeTestCompiler implements IAutoBeTestCompiler {
@@ -25,7 +25,7 @@ export class AutoBeTestCompiler implements IAutoBeTestCompiler {
     props: IAutoBeTypeScriptCompileProps,
   ): Promise<IAutoBeTypeScriptCompileResult> {
     const alias: string = props.package ?? "@ORGANIZATION/PROJECT-api";
-    const compiler: AutoBeEsLintCompiler = new AutoBeEsLintCompiler({
+    const compiler: EmbedEsLint = new EmbedEsLint({
       external: TestExternal as Record<string, string>,
       compilerOptions: {
         target: ts.ScriptTarget.ESNext,
@@ -55,10 +55,10 @@ export class AutoBeTestCompiler implements IAutoBeTestCompiler {
         ],
       }),
       rules: {
-        "no-floating-promises": tsEslintPlugin.rules["no-floating-promises"],
+        "no-floating-promises": "error",
       },
     });
-    return compiler.compile(props.files);
+    return shrinkCompileResult(compiler.compile(props.files));
   }
 
   public async validate(

@@ -4,13 +4,13 @@ import {
   IAutoBeTypeScriptCompiler,
 } from "@autobe/interface";
 import nestiaCoreTransform from "@nestia/core/lib/transform";
-import tsEslintPlugin from "@typescript-eslint/eslint-plugin";
+import { EmbedEsLint } from "embed-eslint";
 import ts from "typescript";
 import typiaTransform from "typia/lib/transform";
 
-import { AutoBeEsLintCompiler } from "./eslint/AutoBeEsLintCompiler";
 import NestJSExternal from "./raw/nestjs.json";
 import { FilePrinter } from "./utils/FilePrinter";
+import { shrinkCompileResult } from "./utils/shrinkCompileResult";
 
 /**
  * Official TypeScript compiler for final code validation and quality assurance.
@@ -42,7 +42,7 @@ export class AutoBeTypeScriptCompiler implements IAutoBeTypeScriptCompiler {
     props: IAutoBeTypeScriptCompileProps,
   ): Promise<IAutoBeTypeScriptCompileResult> {
     const alias: string = props.package ?? "@ORGANIZATION/PROJECT-api";
-    const compiler: AutoBeEsLintCompiler = new AutoBeEsLintCompiler({
+    const compiler: EmbedEsLint = new EmbedEsLint({
       external: NestJSExternal as Record<string, string>,
       compilerOptions: {
         target: ts.ScriptTarget.ESNext,
@@ -79,13 +79,15 @@ export class AutoBeTypeScriptCompiler implements IAutoBeTypeScriptCompiler {
         ],
       }),
       rules: {
-        "no-floating-promises": tsEslintPlugin.rules["no-floating-promises"],
+        "no-floating-promises": "error",
       },
     });
-    return compiler.compile({
-      ...props.files,
-      ...(props.prisma ?? {}),
-    });
+    return shrinkCompileResult(
+      compiler.compile({
+        ...props.files,
+        ...(props.prisma ?? {}),
+      }),
+    );
   }
 
   public async getExternal(location: string): Promise<string | undefined> {
