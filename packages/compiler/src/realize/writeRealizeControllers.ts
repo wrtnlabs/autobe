@@ -73,6 +73,40 @@ export const writeRealizeControllers = async (
                 ),
               ],
         );
+        const tryCatch = ts.factory.createTryStatement(
+          ts.factory.createBlock(
+            [
+              ts.factory.createReturnStatement(
+                ts.factory.createAwaitExpression(call),
+              ),
+            ],
+            true,
+          ),
+          ts.factory.createCatchClause(
+            ts.factory.createVariableDeclaration(
+              ts.factory.createIdentifier("error"),
+              undefined,
+              undefined,
+              undefined,
+            ),
+            ts.factory.createBlock(
+              [
+                ts.factory.createExpressionStatement(
+                  ts.factory.createCallExpression(
+                    ts.factory.createIdentifier("console.log"),
+                    undefined,
+                    [ts.factory.createIdentifier("error")],
+                  ),
+                ),
+                ts.factory.createThrowStatement(
+                  ts.factory.createIdentifier("error"),
+                ),
+              ],
+              true,
+            ),
+          ),
+          undefined,
+        );
         return ts.factory.updateMethodDeclaration(
           method,
           method.modifiers,
@@ -126,7 +160,7 @@ export const writeRealizeControllers = async (
               ]
             : method.parameters,
           method.type,
-          ts.factory.createBlock([ts.factory.createReturnStatement(call)]),
+          ts.factory.createBlock([tryCatch]),
         );
       },
     },
