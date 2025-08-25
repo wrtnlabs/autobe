@@ -35,13 +35,13 @@ export interface AutoBeTestWriteEvent
    */
   location: string;
 
-  /**
-   * Test scenario description and implementation strategy.
-   *
-   * Detailed explanation of the business scenario to be tested, including
-   * step-by-step execution plan and test methodology.
-   */
-  scenario: string;
+  // /**
+  //  * Test scenario description and implementation strategy.
+  //  *
+  //  * Detailed explanation of the business scenario to be tested, including
+  //  * step-by-step execution plan and test methodology.
+  //  */
+  // scenario: string;
 
   /**
    * Functional domain category for test organization.

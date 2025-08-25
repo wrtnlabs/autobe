@@ -52,33 +52,33 @@ export interface AutoBeTestCorrectEvent
    */
   result: IAutoBeTypeScriptCompileResult.IFailure;
 
-  /**
-   * AI's initial analysis of the test scenario without compilation error
-   * context.
-   *
-   * Contains the AI's clean analysis of the original test scenario, business
-   * requirements, and intended functionality before considering compilation
-   * errors. This analysis establishes a clear understanding of what the test
-   * should accomplish and the expected business workflow.
-   *
-   * This baseline thinking helps maintain the original test purpose during
-   * error correction and provides insight into the AI's initial interpretation
-   * of the requirements.
-   */
-  think_without_compile_error: string;
+  // /**
+  //  * AI's initial analysis of the test scenario without compilation error
+  //  * context.
+  //  *
+  //  * Contains the AI's clean analysis of the original test scenario, business
+  //  * requirements, and intended functionality before considering compilation
+  //  * errors. This analysis establishes a clear understanding of what the test
+  //  * should accomplish and the expected business workflow.
+  //  *
+  //  * This baseline thinking helps maintain the original test purpose during
+  //  * error correction and provides insight into the AI's initial interpretation
+  //  * of the requirements.
+  //  */
+  // think_without_compile_error: string;
 
-  /**
-   * AI's revised analysis after receiving compilation error feedback.
-   *
-   * Contains the AI's updated reasoning process after analyzing the compilation
-   * errors and understanding what corrections are needed. This revised thinking
-   * demonstrates how the AI learns from feedback and adjusts its approach to
-   * resolve the identified issues while maintaining test scenario validity.
-   *
-   * The evolution from initial to revised thinking illustrates the
-   * effectiveness of the feedback loop in improving AI-generated code quality.
-   */
-  think_again_with_compile_error: string;
+  // /**
+  //  * AI's revised analysis after receiving compilation error feedback.
+  //  *
+  //  * Contains the AI's updated reasoning process after analyzing the compilation
+  //  * errors and understanding what corrections are needed. This revised thinking
+  //  * demonstrates how the AI learns from feedback and adjusts its approach to
+  //  * resolve the identified issues while maintaining test scenario validity.
+  //  *
+  //  * The evolution from initial to revised thinking illustrates the
+  //  * effectiveness of the feedback loop in improving AI-generated code quality.
+  //  */
+  // think_again_with_compile_error: string;
 
   /**
    * The first corrected version of the test code addressing compilation errors.

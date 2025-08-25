@@ -17,18 +17,18 @@ export interface IAutoBeTestWriteApplication {
 
 export namespace IAutoBeTestWriteApplication {
   export interface IProps {
-    /**
-     * Step 1: Strategic test planning and scenario analysis.
-     *
-     * AI analyzes the given test scenario and creates a comprehensive
-     * implementation strategy. This planning phase is crucial for generating
-     * well-structured, maintainable test code. The AI must define test
-     * methodology, data preparation, execution flow, and validation logic
-     * before proceeding to code implementation.
-     *
-     * Workflow: Input scenario → Strategic analysis → Detailed test plan
-     */
-    scenario: string;
+    // /**
+    //  * Step 1: Strategic test planning and scenario analysis.
+    //  *
+    //  * AI analyzes the given test scenario and creates a comprehensive
+    //  * implementation strategy. This planning phase is crucial for generating
+    //  * well-structured, maintainable test code. The AI must define test
+    //  * methodology, data preparation, execution flow, and validation logic
+    //  * before proceeding to code implementation.
+    //  *
+    //  * Workflow: Input scenario → Strategic analysis → Detailed test plan
+    //  */
+    // scenario: string;
 
     /**
      * Step 2: Functional domain classification for test organization.

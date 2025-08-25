@@ -60,14 +60,14 @@ export const validate_agent_test_correct = async (
               e.file.location.replace(".ts", ".scenario"),
               JSON.stringify(e.file.scenario),
             ],
-            [
-              e.file.location.replace(".ts", ".1.think"),
-              e.think_without_compile_error,
-            ],
-            [
-              e.file.location.replace(".ts", ".2.think"),
-              e.think_again_with_compile_error,
-            ],
+            // [
+            //   e.file.location.replace(".ts", ".1.think"),
+            //   e.think_without_compile_error,
+            // ],
+            // [
+            //   e.file.location.replace(".ts", ".2.think"),
+            //   e.think_again_with_compile_error,
+            // ],
             [e.file.location.replace(".ts", ".review"), e.review],
             [e.file.location.replace(".ts", ".draft"), e.draft],
           ])
