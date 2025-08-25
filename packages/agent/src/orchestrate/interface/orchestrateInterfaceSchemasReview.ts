@@ -2,6 +2,7 @@ import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeInterfaceSchemasReviewEvent,
   AutoBeOpenApi,
+  AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
@@ -23,7 +24,7 @@ export async function orchestrateInterfaceSchemasReview<
     string,
     AutoBeOpenApi.IJsonSchemaDescriptive<AutoBeOpenApi.IJsonSchema>
   >,
-  progress: { total: number; completed: number },
+  progress: AutoBeProgressEventBase,
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   try {
     const pointer: IPointer<IAutoBeInterfaceSchemasReviewApplication.IProps | null> =
@@ -60,6 +61,7 @@ export async function orchestrateInterfaceSchemasReview<
       ).schemas ?? {};
     ctx.dispatch({
       type: "interfaceSchemasReview",
+      eventId: progress.eventId,
       schemas: schemas,
       review: pointer.value.review,
       plan: pointer.value.plan,
@@ -116,7 +118,10 @@ function createController<Model extends ILlmSchema.Model>(props: {
         // The index API should return the `IPage<T>` type.
         if (index) {
           // First check if the schema has the correct object structure
-          if (!("type" in jsonDescriptive) || jsonDescriptive.type !== "object") {
+          if (
+            !("type" in jsonDescriptive) ||
+            jsonDescriptive.type !== "object"
+          ) {
             errors.push({
               path: `$input.content.${tagName}`,
               expected: `{ type: "object", properties: { ... } }`,
@@ -130,9 +135,11 @@ function createController<Model extends ILlmSchema.Model>(props: {
               value: jsonDescriptive,
               description: `IPage schema must have a "properties" field containing "pagination" and "data" properties.`,
             });
-          } else if (typia.is<AutoBeOpenApi.IJsonSchema.IObject>(jsonDescriptive)) {
+          } else if (
+            typia.is<AutoBeOpenApi.IJsonSchema.IObject>(jsonDescriptive)
+          ) {
             jsonDescriptive.properties ??= {};
-            
+
             // Check pagination property
             const pagination = jsonDescriptive.properties["pagination"];
             if (!pagination || !("$ref" in pagination)) {
@@ -143,7 +150,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
                 description: `IPage must have a "pagination" property with $ref to IPage.IPagination.`,
               });
             }
-            
+
             // Check data property
             const data = jsonDescriptive.properties["data"];
             if (!typia.is<AutoBeOpenApi.IJsonSchema.IArray>(data)) {

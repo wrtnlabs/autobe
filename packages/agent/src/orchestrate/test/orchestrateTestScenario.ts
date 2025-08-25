@@ -9,6 +9,7 @@ import { AutoBeEndpointComparator, MapUtil, StringUtil } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { HashMap, IPointer, Pair } from "tstl";
 import typia from "typia";
+import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
@@ -53,6 +54,7 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
   ].join("\n");
 
   const progress: AutoBeProgressEventBase = {
+    eventId: v7(),
     total: operations.length,
     completed: 0,
   };
@@ -144,6 +146,7 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
   if (pointer.value.length === 0) return [];
   ctx.dispatch({
     type: "testScenarios",
+    eventId: progress.eventId,
     tokenUsage,
     scenarios: pointer.value
       .map((v) =>

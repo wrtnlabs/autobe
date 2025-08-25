@@ -2,6 +2,7 @@ import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeInterfaceOperationsEvent,
   AutoBeOpenApi,
+  AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { AutoBeEndpointComparator, StringUtil } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
@@ -9,6 +10,7 @@ import { HashMap, HashSet, IPointer } from "tstl";
 import typia from "typia";
 import { Escaper } from "typia/lib/utils/Escaper";
 import { NamingConvention } from "typia/lib/utils/NamingConvention";
+import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
@@ -30,11 +32,13 @@ export async function orchestrateInterfaceOperations<
     array: endpoints,
     capacity,
   });
-  const operationsProgress: IProgress = {
+  const operationsProgress: AutoBeProgressEventBase = {
+    eventId: v7(),
     total: endpoints.length,
     completed: 0,
   };
-  const operationsReviewProgress: IProgress = {
+  const operationsReviewProgress: AutoBeProgressEventBase = {
+    eventId: v7(),
     total: matrix.length,
     completed: 0,
   };
@@ -58,8 +62,8 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   endpoints: AutoBeOpenApi.IEndpoint[],
   retry: number,
-  operationsProgress: IProgress,
-  operationsReviewProgress: IProgress,
+  operationsProgress: AutoBeProgressEventBase,
+  operationsReviewProgress: AutoBeProgressEventBase,
 ): Promise<AutoBeOpenApi.IOperation[]> {
   const remained: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(
     endpoints,
@@ -95,7 +99,7 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   endpoints: HashSet<AutoBeOpenApi.IEndpoint>,
-  progress: IProgress,
+  progress: AutoBeProgressEventBase,
 ): Promise<AutoBeOpenApi.IOperation[]> {
   const prefix: string = NamingConvention.camel(ctx.state().analyze!.prefix);
   const pointer: IPointer<AutoBeOpenApi.IOperation[] | null> = {
@@ -334,11 +338,6 @@ const collection = {
       },
     }),
 };
-
-interface IProgress {
-  completed: number;
-  total: number;
-}
 
 type Validator = (
   input: unknown,

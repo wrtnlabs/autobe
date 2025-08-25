@@ -1,4 +1,5 @@
 import {
+  AutoBeProgressEventBase,
   AutoBeRealizeAuthorization,
   AutoBeRealizeWriteEvent,
 } from "@autobe/interface";
@@ -21,7 +22,7 @@ export async function orchestrateRealizeWrite<Model extends ILlmSchema.Model>(
     totalAuthorizations: AutoBeRealizeAuthorization[];
     authorization: AutoBeRealizeAuthorization | null;
     scenario: IAutoBeRealizeScenarioApplication.IProps;
-    progress: IProgress;
+    progress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeRealizeWriteEvent> {
   const artifacts: IAutoBeTestScenarioArtifacts =
@@ -76,6 +77,7 @@ export async function orchestrateRealizeWrite<Model extends ILlmSchema.Model>(
 
   const event: AutoBeRealizeWriteEvent = {
     type: "realizeWrite",
+    eventId: props.progress.eventId,
     location: props.scenario.location,
     content: pointer.value.implementationCode,
     tokenUsage,
@@ -121,8 +123,3 @@ const collection = {
   deepseek: claude,
   "3.1": claude,
 };
-
-export interface IProgress {
-  total: number;
-  completed: number;
-}

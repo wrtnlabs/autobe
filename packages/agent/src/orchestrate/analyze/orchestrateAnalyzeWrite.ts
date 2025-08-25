@@ -2,6 +2,7 @@ import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeWriteEvent,
+  AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
@@ -17,10 +18,7 @@ export const orchestrateAnalyzeWrite = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   scenario: AutoBeAnalyzeScenarioEvent,
   file: AutoBeAnalyzeFile.Scenario,
-  progress: {
-    total: number;
-    completed: number;
-  },
+  progress: AutoBeProgressEventBase,
 ): Promise<AutoBeAnalyzeWriteEvent> => {
   const pointer: IPointer<IAutoBeAnalyzeWriteApplication.IProps | null> = {
     value: null,
@@ -42,6 +40,7 @@ export const orchestrateAnalyzeWrite = async <Model extends ILlmSchema.Model>(
 
   const event: AutoBeAnalyzeWriteEvent = {
     type: "analyzeWrite",
+    eventId: progress.eventId,
     file: {
       ...file,
       content: pointer.value.content,

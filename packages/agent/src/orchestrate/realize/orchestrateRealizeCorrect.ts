@@ -1,4 +1,5 @@
 import {
+  AutoBeProgressEventBase,
   AutoBeRealizeAuthorization,
   AutoBeRealizeCorrectEvent,
   IAutoBeTypeScriptCompileResult,
@@ -24,7 +25,7 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
     scenario: IAutoBeRealizeScenarioApplication.IProps;
     code: string;
     diagnostic: IAutoBeTypeScriptCompileResult.IDiagnostic;
-    progress: IProgress;
+    progress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeRealizeCorrectEvent> {
   const artifacts: IAutoBeTestScenarioArtifacts =
@@ -71,6 +72,7 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
 
   const event: AutoBeRealizeCorrectEvent = {
     type: "realizeCorrect",
+    eventId: props.progress.eventId,
     location: props.scenario.location,
     content: pointer.value.implementationCode,
     tokenUsage,
@@ -115,8 +117,3 @@ const collection = {
   deepseek: claude,
   "3.1": claude,
 };
-
-export interface IProgress {
-  total: number;
-  completed: number;
-}

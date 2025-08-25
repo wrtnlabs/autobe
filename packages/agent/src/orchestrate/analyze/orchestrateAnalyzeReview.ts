@@ -41,6 +41,7 @@ export const orchestrateAnalyzeReview = async <Model extends ILlmSchema.Model>(
 
   const event: AutoBeAnalyzeReviewEvent = {
     type: "analyzeReview",
+    eventId: progress.eventId,
     file: myFile,
     plan: pointer.value.plan,
     review: pointer.value.review,

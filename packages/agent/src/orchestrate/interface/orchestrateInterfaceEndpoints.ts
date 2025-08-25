@@ -2,11 +2,13 @@ import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeInterfaceEndpointsEvent,
   AutoBeOpenApi,
+  AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { AutoBeInterfaceGroup } from "@autobe/interface/src/histories/contents/AutoBeInterfaceGroup";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { HashSet, IPointer } from "tstl";
 import typia from "typia";
+import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
@@ -22,7 +24,8 @@ export async function orchestrateInterfaceEndpoints<
   authorizations: AutoBeOpenApi.IOperation[],
   content: string = `Make endpoints for the given assets`,
 ): Promise<AutoBeOpenApi.IEndpoint[]> {
-  const progress: IProgress = {
+  const progress: AutoBeProgressEventBase = {
+    eventId: v7(),
     total: groups.length,
     completed: 0,
   };
@@ -42,7 +45,7 @@ async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   group: AutoBeInterfaceGroup,
   message: string,
-  progress: IProgress,
+  progress: AutoBeProgressEventBase,
   authorizations: AutoBeOpenApi.IOperation[],
 ): Promise<AutoBeOpenApi.IEndpoint[]> {
   const start: Date = new Date();
@@ -70,6 +73,7 @@ async function process<Model extends ILlmSchema.Model>(
 
   const event: AutoBeInterfaceEndpointsEvent = {
     type: "interfaceEndpoints",
+    eventId: progress.eventId,
     endpoints: new HashSet(
       pointer.value,
       OpenApiEndpointComparator.hashCode,
@@ -120,8 +124,3 @@ const collection = {
   deepseek: claude,
   "3.1": claude,
 };
-
-interface IProgress {
-  total: number;
-  completed: number;
-}

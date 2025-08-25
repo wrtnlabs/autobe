@@ -10,6 +10,7 @@ import { StringUtil } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
+import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
@@ -21,6 +22,7 @@ export async function orchestrateInterfaceAuthorizations<
 >(ctx: AutoBeContext<Model>): Promise<AutoBeInterfaceAuthorization[]> {
   const roles: AutoBeAnalyzeRole[] = ctx.state().analyze?.roles ?? [];
   const progress: AutoBeProgressEventBase = {
+    eventId: v7(),
     total: roles.length,
     completed: 0,
   };
@@ -69,6 +71,7 @@ async function process<Model extends ILlmSchema.Model>(
 
   return {
     type: "interfaceAuthorization",
+    eventId: progress.eventId,
     operations: pointer.value.operations,
     completed: ++progress.completed,
     tokenUsage,

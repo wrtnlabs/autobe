@@ -8,6 +8,7 @@ import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
 import { IPointer } from "tstl";
 import typia, { tags } from "typia";
+import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
@@ -34,10 +35,12 @@ export async function orchestrateInterfaceSchemas<
     capacity,
   });
   const progress: AutoBeProgressEventBase = {
+    eventId: v7(),
     total: typeNames.size,
     completed: 0,
   };
   const reviewProgress: AutoBeProgressEventBase = {
+    eventId: v7(),
     total: matrix.length,
     completed: 0,
   };
@@ -147,6 +150,7 @@ async function process<Model extends ILlmSchema.Model>(
     ).schemas ?? {};
   ctx.dispatch({
     type: "interfaceSchemas",
+    eventId: progress.eventId,
     schemas,
     tokenUsage,
     completed: (progress.completed += Object.keys(schemas).length),

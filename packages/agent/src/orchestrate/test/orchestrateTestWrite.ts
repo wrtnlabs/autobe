@@ -8,6 +8,7 @@ import {
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
+import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
@@ -23,6 +24,7 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
   scenarios: AutoBeTestScenario[],
 ): Promise<IAutoBeTestWriteResult[]> {
   const progress: AutoBeProgressEventBase = {
+    eventId: v7(),
     total: scenarios.length,
     completed: 0,
   };
@@ -93,6 +95,7 @@ async function process<Model extends ILlmSchema.Model>(
   pointer.value.final = await compiler.typescript.beautify(pointer.value.final);
   return {
     type: "testWrite",
+    eventId: progress.eventId,
     created_at: new Date().toISOString(),
     location: `test/features/api/${pointer.value.domain}/${scenario.functionName}.ts`,
     ...pointer.value,

@@ -9,6 +9,7 @@ import {
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
+import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
@@ -35,6 +36,7 @@ export async function orchestrateRealizeAuthorization<
 
   const roles: AutoBeAnalyzeRole[] = ctx.state().analyze?.roles ?? [];
   const progress: AutoBeProgressEventBase = {
+    eventId: v7(),
     total: roles.length,
     completed: 0,
   };
@@ -114,6 +116,7 @@ async function process<Model extends ILlmSchema.Model>(
 
   ctx.dispatch({
     type: "realizeAuthorizationWrite",
+    eventId: progress.eventId,
     created_at: new Date().toISOString(),
     authorization: authorization,
     tokenUsage,

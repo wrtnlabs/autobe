@@ -4,6 +4,7 @@ import { AutoBePrismaReviewEvent } from "@autobe/interface/src/events/AutoBePris
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
+import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
@@ -17,6 +18,7 @@ export async function orchestratePrismaReview<Model extends ILlmSchema.Model>(
   componentList: AutoBePrisma.IComponent[],
 ): Promise<AutoBePrismaReviewEvent[]> {
   const progress: AutoBeProgressEventBase = {
+    eventId: v7(),
     completed: 0,
     total: componentList.length,
   };
@@ -72,6 +74,7 @@ async function step<Model extends ILlmSchema.Model>(
 
   const event: AutoBePrismaReviewEvent = {
     type: "prismaReview",
+    eventId: progress.eventId,
     created_at: start.toISOString(),
     filename: component.filename,
     review: pointer.value.review,

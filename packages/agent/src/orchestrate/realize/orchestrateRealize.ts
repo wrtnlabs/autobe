@@ -1,6 +1,7 @@
 import {
   AutoBeAssistantMessageHistory,
   AutoBeOpenApi,
+  AutoBeProgressEventBase,
   AutoBeRealizeAuthorization,
   AutoBeRealizeFunction,
   AutoBeRealizeHistory,
@@ -9,7 +10,7 @@ import {
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
-import { v4 } from "uuid";
+import { v4, v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
@@ -66,7 +67,11 @@ export const orchestrateRealize =
         return orchestrateRealizeScenario(ctx, operation, authorization);
       });
 
-    const writeProgress = { total: scenarios.length, completed: 0 };
+    const writeProgress: AutoBeProgressEventBase = {
+      eventId: v7(),
+      total: scenarios.length,
+      completed: 0,
+    };
     const writeEvents: AutoBeRealizeWriteEvent[] = await Promise.all(
       scenarios.map(async (scenario) => {
         const code = orchestrateRealizeWrite(ctx, {
@@ -102,6 +107,7 @@ export const orchestrateRealize =
       const MAX_CORRECTION_ATTEMPTS = 5 as const;
 
       const reviewProgress = {
+        eventId: v7(),
         total: writeEvents.length,
         completed: writeEvents.length,
       };

@@ -8,6 +8,7 @@ import {
 } from "@autobe/interface";
 import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
 import { ILlmSchema } from "@samchon/openapi";
+import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
@@ -40,6 +41,7 @@ export const orchestrateAnalyze =
 
     // write documents
     const writeProgress: AutoBeProgressEventBase = {
+      eventId: v7(),
       total: scenario.files.length,
       completed: 0,
     };
@@ -57,6 +59,7 @@ export const orchestrateAnalyze =
 
     // review documents
     const reviewProgress: AutoBeProgressEventBase = {
+      eventId: v7(),
       total: fileList.length,
       completed: 0,
     };
