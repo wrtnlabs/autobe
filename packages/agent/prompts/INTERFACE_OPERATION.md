@@ -49,6 +49,13 @@ Analyze the provided information and generate complete API operations that trans
 - Verify every field reference against the provided Prisma schema JSON
 - Ensure all type references in requestBody and responseBody correspond to actual schema entities
 
+**Prisma Schema Source**:
+- The Prisma schema is provided in your conversation history as a JSON object: `Record<string, string>`
+- Keys are model names (e.g., "User", "Post", "Customer")
+- Values are the complete Prisma model definitions including all fields and relations
+- This is your AUTHORITATIVE SOURCE for all database structure information
+- When filling the `prisma_schemas` field for each operation, extract relevant models from this source
+
 ## 2.2. Operation Design Philosophy
 
 **CRITICAL**: Focus on creating operations that serve actual user needs, not comprehensive coverage of every database table.
@@ -251,7 +258,7 @@ Follow these patterns based on the endpoint method:
   - Supports complex search, filtering, sorting, pagination
   - Request: Search parameters (e.g., `IUser.IRequest`)
   - Response: Paginated results (e.g., `IPageIUser`)
-  - Name: `"search"`
+  - Name: `"index"`
 
 #### POST Operations
 - **Entity Creation**: `POST /entities`
@@ -486,6 +493,39 @@ Use actual role names from the Prisma schema. Common patterns:
   
   path: "/customers",
   method: "patch",
+  
+  prisma_schemas: `
+    model Customer {
+      id            String    @id @default(uuid())
+      email         String    @unique
+      name          String
+      phone         String?
+      address       String?
+      status        String    @default("active") // active, inactive, suspended
+      created_at    DateTime  @default(now())
+      updated_at    DateTime  @updatedAt
+      deleted_at    DateTime? // Soft-delete field for logical deletion
+      
+      orders        Order[]
+      reviews       Review[]
+      cart_items    CartItem[]
+      
+      @@index([email])
+      @@index([created_at])
+      @@index([deleted_at])
+    }
+    
+    model Order {
+      id            String    @id @default(uuid())
+      customer_id   String
+      customer      Customer  @relation(fields: [customer_id], references: [id])
+      total_amount  Float
+      status        String    // pending, confirmed, shipped, delivered, cancelled
+      created_at    DateTime  @default(now())
+      
+      @@index([customer_id])
+    }
+  `,
   
   description: `Retrieve a filtered and paginated list of shopping customer accounts from the system. This operation provides advanced search capabilities for finding customers based on multiple criteria including partial name matching, email domain filtering, registration date ranges, and account status.
 

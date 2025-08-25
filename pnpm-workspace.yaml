@@ -20,8 +20,9 @@ catalogs:
     '@nestia/migrate': ^7.4.0
     '@nestia/sdk': ^7.4.0
     '@samchon/openapi': ^4.7.1
+    embed-eslint: ^2.0.0
     embed-prisma: ^1.1.0
-    embed-typescript: ^1.2.0
+    embed-typescript: ^2.0.0
     nestia: ^7.4.0
     prisma-markdown: ^3.0.0
     tgrid: ^1.2.0

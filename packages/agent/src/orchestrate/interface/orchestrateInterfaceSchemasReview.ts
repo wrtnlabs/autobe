@@ -35,6 +35,7 @@ export async function orchestrateInterfaceSchemasReview<
       controller: createController({
         model: ctx.model,
         pointer,
+        operations,
         schemas,
       }),
       histories: transformInterfaceSchemasReviewHistories(
@@ -80,6 +81,7 @@ export async function orchestrateInterfaceSchemasReview<
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   pointer: IPointer<IAutoBeInterfaceSchemasReviewApplication.IProps | null>;
+  operations: AutoBeOpenApi.IOperation[];
   schemas: Record<
     string,
     AutoBeOpenApi.IJsonSchemaDescriptive<AutoBeOpenApi.IJsonSchema>
@@ -100,14 +102,88 @@ function createController<Model extends ILlmSchema.Model>(props: {
       schemas: result.data.content,
       path: "$input.content",
     });
+
+    Object.entries(result.data.content).forEach(
+      ([tagName, jsonDescriptive]) => {
+        const index: AutoBeOpenApi.IOperation | undefined =
+          props.operations.find(
+            (op) =>
+              op.responseBody?.typeName === tagName &&
+              op.method === "patch" &&
+              op.name === "index",
+          );
+
+        // The index API should return the `IPage<T>` type.
+        if (index) {
+          // First check if the schema has the correct object structure
+          if (!("type" in jsonDescriptive) || jsonDescriptive.type !== "object") {
+            errors.push({
+              path: `$input.content.${tagName}`,
+              expected: `{ type: "object", properties: { ... } }`,
+              value: jsonDescriptive,
+              description: `IPage schema must have type: "object". Found: ${JSON.stringify(jsonDescriptive)}`,
+            });
+          } else if (!("properties" in jsonDescriptive)) {
+            errors.push({
+              path: `$input.content.${tagName}`,
+              expected: `Schema with "properties" field`,
+              value: jsonDescriptive,
+              description: `IPage schema must have a "properties" field containing "pagination" and "data" properties.`,
+            });
+          } else if (typia.is<AutoBeOpenApi.IJsonSchema.IObject>(jsonDescriptive)) {
+            jsonDescriptive.properties ??= {};
+            
+            // Check pagination property
+            const pagination = jsonDescriptive.properties["pagination"];
+            if (!pagination || !("$ref" in pagination)) {
+              errors.push({
+                path: `$input.content.${tagName}.properties.pagination`,
+                expected: `{ $ref: "#/components/schemas/IPage.IPagination" }`,
+                value: pagination,
+                description: `IPage must have a "pagination" property with $ref to IPage.IPagination.`,
+              });
+            }
+            
+            // Check data property
+            const data = jsonDescriptive.properties["data"];
+            if (!typia.is<AutoBeOpenApi.IJsonSchema.IArray>(data)) {
+              errors.push({
+                path: `$input.content.${tagName}.properties.data`,
+                expected: `AutoBeOpenApi.IJsonSchema.IArray`,
+                value: data,
+                description: `The 'data' property must be an array for the index operation.`,
+              });
+            } else {
+              // Check if array items have proper type reference (not 'any')
+              const arraySchema: AutoBeOpenApi.IJsonSchema.IArray = data;
+              if (
+                !arraySchema.items ||
+                !("$ref" in arraySchema.items) ||
+                arraySchema.items.$ref === "#/components/schemas/any"
+              ) {
+                errors.push({
+                  path: `$input.content.${tagName}.properties.data.items`,
+                  expected: `Reference to a specific type (e.g., $ref to ISummary type)`,
+                  value: arraySchema.items,
+                  description: `The 'data' array must have a specific item type, not 'any[]'. Use a proper type reference like '{Entity}.ISummary' for paginated results.`,
+                });
+              }
+            }
+          }
+        }
+      },
+    );
+
     if (errors.length !== 0)
       return {
         success: false,
         errors,
         data: next,
       };
+
     return result;
   };
+
   const application: ILlmApplication<Model> = collection[
     props.model === "chatgpt" ? "chatgpt" : "claude"
   ](

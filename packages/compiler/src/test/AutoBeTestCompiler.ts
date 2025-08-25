@@ -7,7 +7,7 @@ import {
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import { AutoBeEndpointComparator, validateTestFunction } from "@autobe/utils";
-import { EmbedTypeScript, IEmbedTypeScriptResult } from "embed-typescript";
+import { EmbedEsLint } from "embed-eslint";
 import { HashMap, Pair } from "tstl";
 import ts from "typescript";
 import { IValidation } from "typia";
@@ -17,6 +17,7 @@ import { AutoBeCompilerInterfaceTemplate } from "../raw/AutoBeCompilerInterfaceT
 import { AutoBeCompilerTestTemplate } from "../raw/AutoBeCompilerTestTemplate";
 import TestExternal from "../raw/test.json";
 import { FilePrinter } from "../utils/FilePrinter";
+import { shrinkCompileResult } from "../utils/shrinkCompileResult";
 import { writeTestFunction } from "./programmers/writeTestFunction";
 
 export class AutoBeTestCompiler implements IAutoBeTestCompiler {
@@ -24,7 +25,7 @@ export class AutoBeTestCompiler implements IAutoBeTestCompiler {
     props: IAutoBeTypeScriptCompileProps,
   ): Promise<IAutoBeTypeScriptCompileResult> {
     const alias: string = props.package ?? "@ORGANIZATION/PROJECT-api";
-    const compiler: EmbedTypeScript = new EmbedTypeScript({
+    const compiler: EmbedEsLint = new EmbedEsLint({
       external: TestExternal as Record<string, string>,
       compilerOptions: {
         target: ts.ScriptTarget.ESNext,
@@ -53,13 +54,11 @@ export class AutoBeTestCompiler implements IAutoBeTestCompiler {
           ),
         ],
       }),
+      rules: {
+        "no-floating-promises": "error",
+      },
     });
-    const result: IEmbedTypeScriptResult = await compiler.compile(props.files);
-    return result.type === "success"
-      ? { type: "success" }
-      : result.type === "failure"
-        ? { type: "failure", diagnostics: result.diagnostics }
-        : { type: "exception", error: result.error };
+    return shrinkCompileResult(compiler.compile(props.files));
   }
 
   public async validate(

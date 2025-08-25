@@ -2,6 +2,7 @@ import {
   AutoBeRealizeAuthorization,
   AutoBeRealizeFunction,
   AutoBeRealizeValidateEvent,
+  IAutoBeCompiler,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
@@ -19,9 +20,11 @@ export async function compile<Model extends ILlmSchema.Model>(
   const payloads: Record<string, string> = Object.fromEntries(
     props.authorizations.map((el) => [el.payload.location, el.payload.content]),
   );
-  const compiler = await ctx.compiler();
-  const templateFiles = await compiler.realize.getTemplate();
-  const nodeModules = prisma?.type === "success" ? prisma.nodeModules : {};
+  const compiler: IAutoBeCompiler = await ctx.compiler();
+  const templateFiles: Record<string, string> =
+    await compiler.realize.getTemplate();
+  const nodeModules: Record<string, string> =
+    prisma?.type === "success" ? prisma.nodeModules : {};
 
   const filterTsFiles = (location: string) => location.endsWith(".ts");
 
@@ -41,13 +44,12 @@ export async function compile<Model extends ILlmSchema.Model>(
     ),
   };
 
-  const compiled = await compiler.typescript.compile({
-    files: files,
-  });
-
+  const compiled: IAutoBeTypeScriptCompileResult =
+    await compiler.typescript.compile({
+      files: files,
+    });
   if (compiled.type === "success") {
     return compiled;
-  } else if (compiled.type === "failure") {
   }
 
   const event: AutoBeRealizeValidateEvent = {
@@ -62,6 +64,5 @@ export async function compile<Model extends ILlmSchema.Model>(
     created_at: new Date().toISOString(),
   };
   ctx.dispatch(event);
-
   return compiled;
 }

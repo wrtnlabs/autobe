@@ -169,6 +169,31 @@ const data = someValue ? { ...someValue } : {};
 
 **Pattern**: `Type 'X' is not assignable to type 'Y'`
 
+**🚨 CRITICAL: IPage.IPagination Type Error (uint32 brand type)**
+```typescript
+// PROBLEM: Complex brand type mismatch
+// IPage.IPagination requires: number & Type<"uint32"> & JsonSchemaPlugin<{ format: "uint32" }>
+// But page and limit are: number | (number & Type<"int32">)
+
+// ❌ ERROR: Type assignment fails
+pagination: {
+  current: page,      // ❌ Type error!
+  limit: limit,       // ❌ Type error!
+  records: total,
+  pages: Math.ceil(total / limit),
+}
+
+// ✅ SOLUTION: Use Number() conversion to strip brand types
+pagination: {
+  current: Number(page),      // ✅ Converts to plain number
+  limit: Number(limit),       // ✅ Converts to plain number
+  records: total,
+  pages: Math.ceil(total / limit),
+}
+```
+
+**Why Number() works**: It strips away complex brand types and returns a plain `number` that TypeScript can safely assign to the branded type. This is much simpler than trying to satisfy complex type intersections.
+
 **🚨 CRITICAL: Prisma OrderBy Type Error**
 ```typescript
 // PROBLEM: External variable loses Prisma's type inference

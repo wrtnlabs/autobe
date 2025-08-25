@@ -99,7 +99,7 @@ export const orchestrateRealize =
     let compilation = await compile(ctx, { authorizations, functions });
 
     if (compilation.type !== "success") {
-      const MAX_CORRECTION_ATTEMPTS = 3 as const;
+      const MAX_CORRECTION_ATTEMPTS = 5 as const;
 
       const reviewProgress = {
         total: writeEvents.length,

@@ -179,6 +179,11 @@ export interface IPage<T extends object> {
 
   /**
    * List of records.
+   * 
+   * CRITICAL: NEVER use any[] here. Always specify the exact type:
+   * - For list views: data: IEntity.ISummary[]
+   * - For detailed views: data: IEntity[]
+   * - FORBIDDEN: data: any[]
    */
   data: T[];
 }
@@ -433,7 +438,12 @@ The TypeScript interfaces in the draft are then converted to JSON Schema definit
 1. **Write Clean TypeScript**: Follow TypeScript best practices and conventions
 2. **Use Namespaces**: Group related types using TypeScript namespaces
 3. **Document with JSDoc**: Add JSDoc comments that will be converted to descriptions
-4. **Explicit Types**: Be explicit about types rather than using `any`
+4. **Explicit Types - ABSOLUTELY NO 'any' TYPE**: 
+   - **CRITICAL**: NEVER use `any` type in TypeScript or JSON Schema
+   - **FORBIDDEN**: `any[]` in array items - ALWAYS specify the exact type
+   - **REQUIRED**: For paginated data arrays, use specific types like `{Entity}.ISummary[]`
+   - **EXAMPLE**: `data: IUser.ISummary[]` NOT `data: any[]`
+   - The use of `any` type is a CRITICAL ERROR that will cause review failure
 5. **Security First**: Apply security rules (no passwords in response types, no actor IDs in request types) at the TypeScript level
 
 ## 8. Output Format
@@ -456,6 +466,30 @@ const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
     required: [...],
     description: "Extremely detailed explanation about IEntityName referencing Prisma schema table comments.\n\nMultiple paragraphs focusing on different aspects of the entity.",
   },
+  
+  // CORRECT IPage format - MUST follow this structure exactly:
+  "IPageIEntityName.ISummary": {
+    type: "object",  // REQUIRED: Must have type: "object"
+    properties: {    // REQUIRED: Must have properties field
+      pagination: {
+        $ref: "#/components/schemas/IPage.IPagination"  // REQUIRED: Reference to pagination
+      },
+      data: {
+        type: "array",  // REQUIRED: Must be array type
+        items: {
+          $ref: "#/components/schemas/IEntityName.ISummary"  // REQUIRED: Specific type reference, NEVER 'any'
+        }
+      }
+    },
+    required: ["pagination", "data"],
+    description: "Paginated collection of entity summaries..."
+  },
+  
+  // WRONG format - NEVER do this:
+  // "IPageIEntityName": {
+  //   pagination: { $ref: "..." },  // ❌ Missing type: "object" and properties wrapper
+  //   data: { type: "array", items: {} }  // ❌ Missing properties wrapper
+  // },
   // Variant types
   "IEntityName.ICreate": { 
     // SECURITY: Never include author_id, creator_id, user_id - these come from authentication context
@@ -504,6 +538,7 @@ const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
 - **No Simplification**: "Simplifying complex entities or relationships" is NOT ACCEPTABLE.
 - **Ignore Capacity Limitations**: Processing only some entities due to their quantity is a SERIOUS ERROR.
 - **Named Types Required**: Using inline/anonymous object definitions instead of named type references ($ref) is a CRITICAL ERROR. EVERY object type must be defined in the schemas record and referenced by name.
+- **Any Type Prohibited**: Using `any` type or `any[]` in schemas is a CRITICAL ERROR. Every type must be explicitly defined. For paginated results, use specific types like `{Entity}.ISummary[]` not `any[]`.
 - **Security Violations**: Including password fields in responses or actor IDs in requests is a CRITICAL SECURITY ERROR.
 - **Authentication Bypass**: Accepting user identity from request body instead of authentication context is a CRITICAL SECURITY ERROR.
 
