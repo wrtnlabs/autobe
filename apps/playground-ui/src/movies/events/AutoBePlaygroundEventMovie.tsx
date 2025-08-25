@@ -1,6 +1,7 @@
 import { AutoBeEvent, IAutoBeRpcService } from "@autobe/interface";
 import {
   AutoBeAssistantMessageMovie,
+  AutoBeCompleteEventMovie,
   AutoBeProgressEventMovie,
   AutoBeScenarioEventMovie,
   AutoBeStartEventMovie,
@@ -9,8 +10,6 @@ import {
   IValidateEventGroupProps,
   ValidateEventGroup,
 } from "@autobe/ui";
-
-import { AutoBePlaygroundCompleteEventMovie } from "./AutoBePlaygroundCompleteEventMovie";
 
 export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
   props: AutoBePlaygroundEventMovie.IProps<Event>,
@@ -82,8 +81,8 @@ export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
     case "testComplete":
     case "realizeComplete":
       return (
-        <AutoBePlaygroundCompleteEventMovie
-          service={props.service}
+        <AutoBeCompleteEventMovie
+          getFiles={props.service.getFiles}
           event={back}
         />
       );

@@ -2,6 +2,10 @@ export { default as AutoBeStartEventMovie } from "./AutoBeStartEventMovie";
 export { default as AutoBeScenarioEventMovie } from "./AutoBeScenarioEventMovie";
 export { default as AutoBeProgressEventMovie } from "./AutoBeProgressEventMovie";
 export { default as AutoBeValidateEventMovie } from "./AutoBeValidateEventMovie";
+export {
+  default as AutoBeCompleteEventMovie,
+  type IAutoBeCompleteEventMovieProps,
+} from "./AutoBeCompleteEventMovie";
 
 // Common components
 export * from "./common";
