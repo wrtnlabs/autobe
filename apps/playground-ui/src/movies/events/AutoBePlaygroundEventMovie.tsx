@@ -5,10 +5,12 @@ import {
   AutoBeScenarioEventMovie,
   AutoBeStartEventMovie,
   AutoBeUserMessageMovie,
+  AutoBeValidateEventMovie,
+  IValidateEventGroupProps,
+  ValidateEventGroup,
 } from "@autobe/ui";
 
 import { AutoBePlaygroundCompleteEventMovie } from "./AutoBePlaygroundCompleteEventMovie";
-import { AutoBePlaygroundValidateEventMovie } from "./AutoBePlaygroundValidateEventMovie";
 
 export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
   props: AutoBePlaygroundEventMovie.IProps<Event>,
@@ -63,13 +65,14 @@ export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
     case "testValidate":
     case "realizeValidate":
     case "realizeAuthorizationValidate":
-      back satisfies AutoBePlaygroundValidateEventMovie.Supported;
+      if (props.events.length === 1) {
+        return <AutoBeValidateEventMovie event={back} />;
+      }
+
       return (
-        <AutoBePlaygroundValidateEventMovie
-          events={
-            props.events as AutoBePlaygroundValidateEventMovie.Supported[]
-          }
-          last={props.last}
+        <ValidateEventGroup
+          events={props.events as IValidateEventGroupProps["events"]}
+          defaultCollapsed={true}
         />
       );
     // COMPLETE EVENTS

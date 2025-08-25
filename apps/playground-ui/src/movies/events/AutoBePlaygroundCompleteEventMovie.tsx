@@ -144,14 +144,7 @@ export function AutoBePlaygroundCompleteEventMovie(
     </>
   );
   return (
-    <Card
-      elevation={1}
-      style={{
-        marginTop: 15,
-        marginBottom: 15,
-        marginRight: "15%",
-      }}
-    >
+    <Card elevation={1}>
       <CardContent>
         <Chip
           icon={<GradingIcon />}
