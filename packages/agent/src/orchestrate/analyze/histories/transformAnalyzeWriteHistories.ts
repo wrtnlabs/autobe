@@ -28,7 +28,6 @@ export const transformAnalyzeWriteHistories = <Model extends ILlmSchema.Model>(
               .map((el) => el.text)
               .join("\n")
           : h.text;
-
       return {
         ...h,
         text,

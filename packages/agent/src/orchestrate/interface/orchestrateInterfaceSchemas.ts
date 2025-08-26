@@ -4,6 +4,7 @@ import {
   AutoBeOpenApi,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
 import { IPointer } from "tstl";
@@ -138,25 +139,28 @@ async function process<Model extends ILlmSchema.Model>(
     }),
     enforceFunctionCall: true,
     promptCacheKey,
-    message: [
-      "Make type components please.",
-      "",
-      "Here is the list of request/response bodies' type names from",
-      "OpenAPI operations. Make type components of them. If more object",
-      "types are required during making the components, please make them",
-      "too.",
-      "",
-      ...Array.from(remained).map((k) => `- \`${k}\``),
-      ...(already.length !== 0
-        ? [
-            "",
-            "> By the way, here is the list of components schemas what you've",
-            "> already made. So, you don't need to make them again.",
-            ">",
-            ...already.map((k) => `> - \`${k}\``),
-          ]
-        : []),
-    ].join("\n"),
+    message: StringUtil.trim`
+      Make type components please.
+
+      Here is the list of request/response bodies' type names from
+      OpenAPI operations. Make type components of them. If more object
+      types are required during making the components, please make them
+      too.
+
+${Array.from(remained)
+  .map((k) => `      - \`${k}\``)
+  .join("\n")}${
+      already.length !== 0
+        ? StringUtil.trim`
+
+            > By the way, here is the list of components schemas what you've
+            > already made. So, you don't need to make them again.
+            >
+            ${already.map((k) => `> - \`${k}\``).join("\n")}
+          `
+        : ""
+    }
+    `,
   });
   if (pointer.value === null) throw new Error("Failed to create components.");
 

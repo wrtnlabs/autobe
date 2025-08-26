@@ -1,3 +1,5 @@
+import { StringUtil } from "@autobe/utils";
+
 import { IAutoBeTestScenarioArtifacts } from "../structures/IAutoBeTestScenarioArtifacts";
 
 export function completeTestCode(
@@ -18,18 +20,20 @@ export function completeTestCode(
     'string & Format<"uuid">',
     'string & tags.Format<"uuid">',
   );
-  code = [
-    `import { ArrayUtil, RandomGenerator, TestValidator } from "@nestia/e2e";`,
-    `import { IConnection } from "@nestia/fetcher";`,
-    `import typia, { tags } from "typia";`,
-    "",
-    `import api from "@ORGANIZATION/PROJECT-api";`,
-    ...typeReferences.map(
-      (ref) =>
-        `import type { ${ref} } from "@ORGANIZATION/PROJECT-api/lib/structures/${ref}";`,
-    ),
-    "",
-    code,
-  ].join("\n");
+  code = StringUtil.trim`
+    import { ArrayUtil, RandomGenerator, TestValidator } from "@nestia/e2e";
+    import { IConnection } from "@nestia/fetcher";
+    import typia, { tags } from "typia";
+    
+    import api from "@ORGANIZATION/PROJECT-api";
+    ${typeReferences
+      .map(
+        (ref) =>
+          `import type { ${ref} } from "@ORGANIZATION/PROJECT-api/lib/structures/${ref}";`,
+      )
+      .join("\n")},
+    
+    ${code}
+  `;
   return code;
 }

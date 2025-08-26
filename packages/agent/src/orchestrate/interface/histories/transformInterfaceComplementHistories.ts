@@ -1,5 +1,6 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
 import { AutoBeOpenApi } from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
@@ -36,34 +37,34 @@ export const transformInterfaceComplementHistories = (
     type: "assistantMessage",
     id: v7(),
     created_at: new Date().toISOString(),
-    text: [
-      "Here is the OpenAPI operations what you AI have made:",
-      "",
-      "```json",
-      JSON.stringify(document.operations),
-      "```",
-    ].join("\n"),
+    text: StringUtil.trim`
+      Here is the OpenAPI operations what you AI have made:
+
+      \`\`\`json
+      ${JSON.stringify(document.operations)}
+      \`\`\`
+    `,
   },
   {
     type: "assistantMessage",
     id: v7(),
     created_at: new Date().toISOString(),
-    text: [
-      "Here is the OpenAPI schemas what you AI have made:",
-      "",
-      "```json",
-      JSON.stringify(document.components.schemas),
-      "```",
-    ].join("\n"),
+    text: StringUtil.trim`
+      Here is the OpenAPI schemas what you AI have made:
+
+      \`\`\`json
+      ${JSON.stringify(document.components.schemas)}
+      \`\`\`
+    `,
   },
   {
     type: "assistantMessage",
     id: v7(),
     created_at: new Date().toISOString(),
-    text: [
-      "You AI have missed below schema types:",
-      "",
-      ...missed.map((s) => `- ${s}`),
-    ].join("\n"),
+    text: StringUtil.trim`
+      You AI have missed below schema types:
+
+      ${missed.map((s) => `- ${s}`).join("\n")}
+    `,
   },
 ];

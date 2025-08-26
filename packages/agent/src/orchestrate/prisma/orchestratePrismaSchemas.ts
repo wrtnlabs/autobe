@@ -1,6 +1,7 @@
 import { IAgenticaController } from "@agentica/core";
 import { AutoBePrisma } from "@autobe/interface";
 import { AutoBePrismaSchemasEvent } from "@autobe/interface/src/events/AutoBePrismaSchemasEvent";
+import { StringUtil } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -140,26 +141,26 @@ function createController<Model extends ILlmSchema.Model>(
           path: "$input.models",
           value: result.data.models,
           expected: `Array<AutoBePrisma.IModel>`,
-          description: [
-            "You missed some tables from the current domain's component.",
-            "",
-            "Look at the following details to fix the schemas. Never forget to",
-            "compose the `missed` tables at the next function calling.",
-            "",
-            "- filename: current domain's filename",
-            "- namespace: current domain's namespace",
-            "- expected: expected tables in the current domain",
-            "- actual: actual tables you made",
-            "- missed: tables you have missed, and you have to compose again",
-            "",
-            JSON.stringify({
+          description: StringUtil.trim`
+            You missed some tables from the current domain's component.
+
+            Look at the following details to fix the schemas. Never forget to
+            compose the \`missed\` tables at the next function calling.
+
+            - filename: current domain's filename
+            - namespace: current domain's namespace
+            - expected: expected tables in the current domain
+            - actual: actual tables you made
+            - missed: tables you have missed, and you have to compose again
+
+            ${JSON.stringify({
               filename: props.targetComponent.filename,
               namespace: props.targetComponent.namespace,
               expected,
               actual,
               missed,
-            }),
-          ].join("\n"),
+            })}
+          `,
         },
       ],
     };

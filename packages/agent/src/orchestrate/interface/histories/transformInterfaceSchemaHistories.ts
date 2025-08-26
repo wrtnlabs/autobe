@@ -1,5 +1,6 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
 import { AutoBeOpenApi } from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
@@ -23,12 +24,12 @@ export const transformInterfaceSchemaHistories = (
     type: "assistantMessage",
     id: v7(),
     created_at: new Date().toISOString(),
-    text: [
-      "Here is the list of API operations you have to implement its types:",
-      "",
-      "```json",
-      JSON.stringify(operations),
-      "```",
-    ].join("\n"),
+    text: StringUtil.trim`
+      Here is the list of API operations you have to implement its types:
+
+      \`\`\`json
+      ${JSON.stringify(operations)}
+      \`\`\`
+    `,
   },
 ];

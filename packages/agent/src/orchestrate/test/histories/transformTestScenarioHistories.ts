@@ -95,14 +95,18 @@ export const transformTestScenarioHistories = (
 
               Related Authentication APIs:
 
-              ${roles.length > 0
-                ? roles.map((role) => {
-                    return StringUtil.trim`
-                      - ${role.join?.method.toUpperCase()}: ${role.join?.path}
-                      - ${role.login?.method.toUpperCase()}: ${role.login?.path}
-                    `;
-                  }).join("\n")
-                : "- None"}
+              ${
+                roles.length > 0
+                  ? roles
+                      .map((role) => {
+                        return StringUtil.trim`
+                          - ${role.join?.method.toUpperCase()}: ${role.join?.path}
+                          - ${role.login?.method.toUpperCase()}: ${role.login?.path}
+                        `;
+                      })
+                      .join("\n")
+                  : "- None"
+              }
             `;
           })
           .join("\n")}
@@ -112,8 +116,9 @@ export const transformTestScenarioHistories = (
         These are the endpoints that have already been used in test codes generated as part of a plan group.
         These endpoints do not need to be tested again.
         However, it is allowed to reference or depend on these endpoints when writing test codes for other purposes.
-${exclude
-          .map((el) => `        - ${el.method.toUpperCase()}: ${el.path}`)
+
+        ${exclude
+          .map((el) => `- ${el.method.toUpperCase()}: ${el.path}`)
           .join("\n")}
       `,
     } satisfies IAgenticaHistoryJson.ISystemMessage,
