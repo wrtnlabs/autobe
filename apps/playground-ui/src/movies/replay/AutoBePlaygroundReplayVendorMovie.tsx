@@ -1,10 +1,6 @@
 import { IAutoBePlaygroundReplay } from "@autobe/interface";
-import {
-  Box,
-  Divider,
-  Grid,
-  Typography,
-} from "@mui/material";
+import { Box, Divider, Grid, Typography } from "@mui/material";
+
 import { AutoBePlaygroundReplayProjectMovie } from "./AutoBePlaygroundReplayProjectMovie";
 
 export const AutoBePlaygroundReplayVendorMovie = ({

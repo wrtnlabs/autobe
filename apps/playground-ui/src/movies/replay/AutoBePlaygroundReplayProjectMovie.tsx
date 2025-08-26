@@ -365,11 +365,7 @@ export const AutoBePlaygroundReplayProjectMovie = ({
                 >
                   {formatTokenCount(replay.tokenUsage.aggregate.total)}
                 </Typography>
-                <Stack 
-                  direction="column" 
-                  spacing={0}
-                  sx={{ mt: 0.2 }}
-                >
+                <Stack direction="column" spacing={0} sx={{ mt: 0.2 }}>
                   <Typography
                     variant="body2"
                     sx={{
@@ -380,13 +376,12 @@ export const AutoBePlaygroundReplayProjectMovie = ({
                       color: "text.secondary",
                     }}
                   >
-                    in: {formatTokenCount(
-                      replay.tokenUsage.aggregate.input.total,
-                    )}
-                    {replay.tokenUsage.aggregate.input.cached && 
-                    replay.tokenUsage.aggregate.input.cached > 0 
+                    in:{" "}
+                    {formatTokenCount(replay.tokenUsage.aggregate.input.total)}
+                    {replay.tokenUsage.aggregate.input.cached &&
+                    replay.tokenUsage.aggregate.input.cached > 0
                       ? ` (${formatTokenCount(replay.tokenUsage.aggregate.input.cached)} cached)`
-                      : ''}
+                      : ""}
                   </Typography>
                   <Typography
                     variant="body2"
@@ -398,9 +393,8 @@ export const AutoBePlaygroundReplayProjectMovie = ({
                       color: "text.secondary",
                     }}
                   >
-                    out: {formatTokenCount(
-                      replay.tokenUsage.aggregate.output.total,
-                    )}
+                    out:{" "}
+                    {formatTokenCount(replay.tokenUsage.aggregate.output.total)}
                   </Typography>
                 </Stack>
               </Stack>
