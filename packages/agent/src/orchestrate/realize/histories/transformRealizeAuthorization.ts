@@ -34,7 +34,9 @@ export const transformRealizeAuthorizationHistories = <
 
         ## Prisma Schema
 
+        \`\`\`json
         ${JSON.stringify(ctx.state().prisma?.schemas)}
+        \`\`\`
 
         ## Component Naming Convention
 

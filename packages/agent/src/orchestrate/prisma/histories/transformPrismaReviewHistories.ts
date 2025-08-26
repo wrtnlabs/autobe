@@ -62,7 +62,7 @@ export const transformPrismaReviewHistories = (props: {
         Focus your review exclusively on these tables.
         
         **Tables in this namespace:**
-        ${props.component.tables.map((table) => `- ${table}`).join("\n")},
+        ${props.component.tables.map((table) => `- ${table}`).join("\n")}
       `,
     },
   ];

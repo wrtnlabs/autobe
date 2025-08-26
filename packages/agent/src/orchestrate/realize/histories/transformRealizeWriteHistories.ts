@@ -153,6 +153,7 @@ export const transformRealizeWriteHistories = (
       type: "systemMessage",
       text: StringUtil.trim`
         Write new code based on the following operation.
+        
         \`\`\`json
         ${JSON.stringify(props.scenario)}
         \`\`\`

@@ -38,6 +38,7 @@ export const transformPrismaComponentsHistories = (
         \`\`\`json
         ${JSON.stringify(state.analyze.files)}
         \`\`\`
+        
         ## Prefix
         
         - Prefix provided by the user: ${prefix}

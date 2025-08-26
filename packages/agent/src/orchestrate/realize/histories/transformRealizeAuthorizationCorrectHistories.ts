@@ -79,6 +79,7 @@ export const transformRealizeAuthorizationCorrectHistories = <
         \`\`\`json
         ${JSON.stringify(diagnostics)}
         \`\`\`
+        
         ## Component Naming Convention
 
         If the name of the component is not correct, please correct it.

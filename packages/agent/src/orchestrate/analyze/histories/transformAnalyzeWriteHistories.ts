@@ -50,7 +50,7 @@ export const transformAnalyzeWriteHistories = <Model extends ILlmSchema.Model>(
       
       ## Metadata
       
-      Prefix name of the service to create is ${scenario.prefix},
+      Prefix name of the service to create is ${scenario.prefix}
       and here is the list of the roles to reference.
       
       \`\`\`json
@@ -61,6 +61,7 @@ export const transformAnalyzeWriteHistories = <Model extends ILlmSchema.Model>(
       in someday, and your role is to writing a document of them:
       
       ## The other documents that would be published in someday
+
       \`\`\`json
       ${JSON.stringify(
         scenario.files.filter((f) => f.filename !== file.filename),

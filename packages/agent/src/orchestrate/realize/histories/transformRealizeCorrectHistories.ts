@@ -30,13 +30,15 @@ export function transformRealizeCorrectHistories(props: {
       type: "assistantMessage",
       text: StringUtil.trim`
         Below is the code you made before. It's also something to review.
+
         \`\`\`typescript
         ${props.code}
         \`\`\`
+
         The code has a compilation error:
         \`\`\`json
         ${JSON.stringify(props.diagnostic)}
-
+        \`\`\`
       `,
       created_at: new Date().toISOString(),
     },
