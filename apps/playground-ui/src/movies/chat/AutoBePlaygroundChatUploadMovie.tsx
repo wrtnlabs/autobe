@@ -38,12 +38,18 @@ export const AutoBePlaygroundChatUploadMovie = (
   const conversate = async () => {
     if (enabled === false) return;
 
-    const sendText: string = text.trim();
-    const sendBuckets: IAutoBePlaygroundBucket[] = buckets;
-    if (sendText.length === 0 && sendBuckets.length === 0) {
+    if (text.trim().length === 0 && buckets.length === 0) {
       setEmptyText(true);
       return;
     }
+
+    const messages = [
+      {
+        type: "text",
+        text: text.trim(),
+      },
+      ...buckets.map(({ content }) => content),
+    ] as AutoBeUserMessageContent[];
 
     setEnabled(false);
     setEmptyText(false);
@@ -51,14 +57,6 @@ export const AutoBePlaygroundChatUploadMovie = (
     setBuckets([]);
 
     try {
-      const messages: AutoBeUserMessageContent[] = [];
-      if (sendText.length > 0) {
-        messages.push({
-          type: "text",
-          text: sendText,
-        });
-      }
-      for (const { content } of sendBuckets) messages.push(content);
       await props.conversate(messages);
     } catch (error) {
       props.setError(
