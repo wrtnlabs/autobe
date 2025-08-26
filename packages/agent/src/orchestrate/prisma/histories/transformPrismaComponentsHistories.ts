@@ -74,7 +74,7 @@ export const transformPrismaComponentsHistories = (
                 
                 ${state.analyze.roles
                   .map((role) => `- ${prefix}_${role.name.toLowerCase()}`)
-                  .join("\n")},
+                  .join("\n")}
               `
             : ""
         }
