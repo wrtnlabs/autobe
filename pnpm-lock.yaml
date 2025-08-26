@@ -719,7 +719,7 @@ importers:
         specifier: ^3.10.1
         version: 3.10.1
       tstl:
-        specifier: ^3.0.0
+        specifier: catalog:samchon
         version: 3.0.0
     devDependencies:
       '@autobe/interface':
