@@ -30,7 +30,7 @@ export const orchestrateAnalyzeScenario = async <
     source: "analyzeScenario",
     controller: createController<Model>({
       model: ctx.model,
-      pointer,
+      build: (value) => (pointer.value = value),
     }),
     histories: transformAnalyzeSceHistories(ctx),
     enforceFunctionCall: false,
@@ -67,7 +67,7 @@ export const orchestrateAnalyzeScenario = async <
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  pointer: IPointer<IAutoBeAnalyzeScenarioApplication.IProps | null>;
+  build: (value: IAutoBeAnalyzeScenarioApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
   const application: ILlmApplication<Model> = collection[
@@ -79,7 +79,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
     application,
     execute: {
       compose: (input) => {
-        props.pointer.value = input;
+        props.build(input);
       },
     } satisfies IAutoBeAnalyzeScenarioApplication,
   };
