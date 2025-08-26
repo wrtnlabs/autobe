@@ -129,6 +129,7 @@ export function AutoBePlaygroundChatMovie(
         ) : (
           sideMovie()
         )}
+
         <AutoBePlaygroundChatBodyMovie
           isMobile={isMobile}
           eventGroups={eventGroups}

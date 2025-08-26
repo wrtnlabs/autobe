@@ -1,7 +1,14 @@
 import { AutoBeUserMessageContent } from "@autobe/interface";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import CloseIcon from "@mui/icons-material/Close";
-import { Box, Chip, IconButton, TextField } from "@mui/material";
+import {
+  Box,
+  Chip,
+  IconButton,
+  Paper,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { ReactNode, RefObject, useEffect, useRef, useState } from "react";
 
 import { IAutoBePlaygroundBucket } from "../../structures/IAutoBePlaygroundBucket";
@@ -16,6 +23,7 @@ export const AutoBePlaygroundChatUploadMovie = (
   const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [dragging, setDragging] = useState(false);
   const [enabled, setEnabled] = useState(true);
   const [text, setText] = useState("");
   const [buckets, setBuckets] = useState<IAutoBePlaygroundBucket[]>([]);
@@ -106,7 +114,7 @@ export const AutoBePlaygroundChatUploadMovie = (
   const handleDragEnter = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    props.setDragging(true);
+    setDragging(true);
   };
 
   const handleDragLeave = (e: React.DragEvent) => {
@@ -117,7 +125,7 @@ export const AutoBePlaygroundChatUploadMovie = (
     const x = e.clientX;
     const y = e.clientY;
     if (x < rect.left || x >= rect.right || y < rect.top || y >= rect.bottom) {
-      props.setDragging(false);
+      setDragging(false);
     }
   };
 
@@ -129,7 +137,7 @@ export const AutoBePlaygroundChatUploadMovie = (
   const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    props.setDragging(false);
+    setDragging(false);
 
     const files = e.dataTransfer.files;
     await handleFileSelect(files);
@@ -144,111 +152,158 @@ export const AutoBePlaygroundChatUploadMovie = (
   }, [props.listener]);
 
   return (
-    <>
-      {buckets.length > 0 && (
-        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-          {buckets.map(({ file }, index) => (
-            <Chip
-              key={index}
-              label={file.name}
-              size="small"
-              onDelete={() => removeFile(index)}
-              deleteIcon={<CloseIcon />}
-              sx={{
-                maxWidth: 200,
-                "& .MuiChip-label": {
-                  display: "block",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                },
-              }}
-            />
-          ))}
+    <Paper
+      elevation={20}
+      sx={{
+        maxWidth: 768,
+        mx: "auto",
+        p: 1.5,
+        borderRadius: 2,
+        border: dragging ? "3px solid #1976d2" : "2px solid",
+        borderColor: dragging ? "#1976d2" : "divider",
+        backgroundColor: dragging
+          ? "rgba(25, 118, 210, 0.04)"
+          : "rgba(255, 255, 255, 0.95)",
+        backdropFilter: "blur(10px)",
+        transition: "all 0.2s",
+        position: "relative",
+      }}
+    >
+      {dragging ? (
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            minHeight: 120,
+            py: 4,
+          }}
+        >
+          <Typography
+            variant="h6"
+            sx={{
+              color: "primary.main",
+              fontWeight: "bold",
+              textAlign: "center",
+            }}
+          >
+            Drop files here to upload
+          </Typography>
         </Box>
-      )}
-      <TextField
-        inputRef={inputRef}
-        fullWidth
-        multiline
-        size="small"
-        maxRows={8}
-        placeholder={
-          emptyText
-            ? "Cannot send empty message"
-            : props.dragging
-              ? "Drop files here..."
-              : "Conversate with AI Chatbot"
-        }
-        value={text}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault();
-            if (enabled) void conversate();
-          }
-        }}
-        onChange={(e) => setText(e.target.value)}
-        error={emptyText}
-        sx={{
-          "& .MuiOutlinedInput-root": {
-            borderRadius: 2,
-            "& fieldset": {
-              borderColor: props.dragging ? "#1976d2" : undefined,
-              borderWidth: 2,
-            },
-            "&:hover fieldset": {
-              borderWidth: 2,
-            },
-            "&.Mui-focused fieldset": {
-              borderWidth: 2,
-            },
-          },
-          "& .MuiInputBase-input": {
-            fontSize: "0.95rem",
-            color: props.dragging ? "#1976d2" : "inherit",
-          },
-        }}
-      />
-
-      <input
-        ref={fileInputRef}
-        type="file"
-        multiple
-        accept={AutoBePlaygroundFileUploader.getAcceptAttribute(
-          props.uploadConfig?.supportAudio ?? false,
-          !!props.uploadConfig?.file,
-        )}
-        style={{ display: "none" }}
-        onChange={(e) => {
-          void handleFileSelect(e.target.files);
-          // Reset input to allow selecting the same file again
-          if (fileInputRef.current) fileInputRef.current.value = "";
-        }}
-      />
+      ) : null}
 
       <Box
         sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
+          display: dragging ? "none" : "flex",
+          flexDirection: "column",
+          gap: 1,
         }}
       >
-        <AutoBePlaygroundChatUploadFile
-          extensionError={extensionError}
-          onClick={() => fileInputRef.current?.click()}
-          enabled={enabled}
+        {buckets.length > 0 && (
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+            {buckets.map(({ file }, index) => (
+              <Chip
+                key={index}
+                label={file.name}
+                size="small"
+                onDelete={() => removeFile(index)}
+                deleteIcon={<CloseIcon />}
+                sx={{
+                  maxWidth: 200,
+                  "& .MuiChip-label": {
+                    display: "block",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  },
+                }}
+              />
+            ))}
+          </Box>
+        )}
+        <TextField
+          inputRef={inputRef}
+          fullWidth
+          multiline
+          size="small"
+          maxRows={8}
+          placeholder={
+            emptyText
+              ? "Cannot send empty message"
+              : dragging
+                ? "Drop files here..."
+                : "Conversate with AI Chatbot"
+          }
+          value={text}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              if (enabled) void conversate();
+            }
+          }}
+          onChange={(e) => setText(e.target.value)}
+          error={emptyText}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              borderRadius: 2,
+              "& fieldset": {
+                borderColor: dragging ? "#1976d2" : undefined,
+                borderWidth: 2,
+              },
+              "&:hover fieldset": {
+                borderWidth: 2,
+              },
+              "&.Mui-focused fieldset": {
+                borderWidth: 2,
+              },
+            },
+            "& .MuiInputBase-input": {
+              fontSize: "0.95rem",
+              color: dragging ? "#1976d2" : "inherit",
+            },
+          }}
         />
-        {props.uploadConfig?.supportAudio === true ? (
-          <AutoBePlaygroundChatVoiceMovie
+
+        <input
+          ref={fileInputRef}
+          type="file"
+          multiple
+          accept={AutoBePlaygroundFileUploader.getAcceptAttribute(
+            props.uploadConfig?.supportAudio ?? false,
+            !!props.uploadConfig?.file,
+          )}
+          style={{ display: "none" }}
+          onChange={(e) => {
+            void handleFileSelect(e.target.files);
+            // Reset input to allow selecting the same file again
+            if (fileInputRef.current) fileInputRef.current.value = "";
+          }}
+        />
+
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <AutoBePlaygroundChatUploadFile
+            extensionError={extensionError}
+            onClick={() => fileInputRef.current?.click()}
             enabled={enabled}
-            complete={(b) => setBuckets((o) => [...o, b])}
           />
-        ) : null}
-        <AutoBePlaygroundChatUploadSendButton
-          conversate={conversate}
-          enabled={enabled}
-        />
+          {props.uploadConfig?.supportAudio === true ? (
+            <AutoBePlaygroundChatVoiceMovie
+              enabled={enabled}
+              complete={(b) => setBuckets((o) => [...o, b])}
+            />
+          ) : null}
+          <AutoBePlaygroundChatUploadSendButton
+            conversate={conversate}
+            enabled={enabled}
+          />
+        </Box>
       </Box>
-    </>
+    </Paper>
   );
 };
 
@@ -282,8 +337,6 @@ const AutoBePlaygroundChatUploadSendButton = (props: {
 
 export namespace AutoBePlaygroundChatUploadMovie {
   export interface IProps {
-    dragging: boolean;
-    setDragging: (value: boolean) => void;
     listener: RefObject<IListener>;
     uploadConfig?: IAutoBePlaygroundUploadConfig;
     conversate: (messages: AutoBeUserMessageContent[]) => Promise<void>;

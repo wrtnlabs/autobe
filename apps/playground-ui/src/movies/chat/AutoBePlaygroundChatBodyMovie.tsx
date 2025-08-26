@@ -1,18 +1,18 @@
 import { AutoBeUserMessageContent, IAutoBeRpcService } from "@autobe/interface";
-import { Container } from "@mui/material";
+import { Box, Container } from "@mui/material";
 import { RefObject, useEffect, useRef } from "react";
 
 import { AutoBePlaygroundGlobal } from "../../AutoBePlaygroundGlobal";
 import { IAutoBePlaygroundEventGroup } from "../../structures/IAutoBePlaygroundEventGroup";
 import { IAutoBePlaygroundUploadConfig } from "../../structures/IAutoBePlaygroundUploadConfig";
 import { AutoBePlaygroundEventMovie } from "../events/AutoBePlaygroundEventMovie";
-import { AutoBePlaygroundChatPromptMovie } from "./AutoBePlaygroundChatPromptMovie";
+import { AutoBePlaygroundChatUploadMovie } from "./AutoBePlaygroundChatUploadMovie";
 
 export const AutoBePlaygroundChatBodyMovie = (
   props: AutoBePlaygroundChatBodyMovie.IProps,
 ) => {
   const bodyContainerRef = useRef<HTMLDivElement>(null);
-  const listener: RefObject<AutoBePlaygroundChatPromptMovie.IListener> = useRef(
+  const listener: RefObject<AutoBePlaygroundChatUploadMovie.IListener> = useRef(
     {
       handleDragEnter: () => {},
       handleDragLeave: () => {},
@@ -71,7 +71,24 @@ export const AutoBePlaygroundChatBodyMovie = (
       </Container>
 
       {/* Prompt input area */}
-      <AutoBePlaygroundChatPromptMovie {...props} listener={listener} />
+
+      <Box
+        sx={{
+          position: "fixed",
+          bottom: 0,
+          left: props.isMobile ? 0 : AutoBePlaygroundGlobal.SIDE_WIDTH,
+          right: 0,
+          px: 2,
+          pb: 2,
+        }}
+      >
+        <AutoBePlaygroundChatUploadMovie
+          listener={listener}
+          uploadConfig={props.uploadConfig}
+          conversate={props.conversate}
+          setError={props.setError}
+        />
+      </Box>
     </div>
   );
 };
