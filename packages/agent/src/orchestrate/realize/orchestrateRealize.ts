@@ -10,7 +10,7 @@ import {
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
-import { v4, v7 } from "uuid";
+import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
@@ -42,7 +42,7 @@ export const orchestrateRealize =
     if (predicate !== null)
       return ctx.assistantMessage({
         type: "assistantMessage",
-        id: v4(),
+        id: v7(),
         created_at: start.toISOString(),
         text: predicate,
         completed_at: new Date().toISOString(),

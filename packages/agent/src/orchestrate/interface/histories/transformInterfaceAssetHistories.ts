@@ -4,7 +4,7 @@ import {
   AutoBePrismaHistory,
   IAutoBePrismaCompileResult,
 } from "@autobe/interface";
-import { v4 } from "uuid";
+import { v7 } from "uuid";
 
 import { AutoBeState } from "../../../context/AutoBeState";
 
@@ -17,7 +17,7 @@ export const transformInterfaceAssetHistories = (
   const prisma: AutoBePrismaHistory = state.prisma!;
   return [
     {
-      id: v4(),
+      id: v7(),
       created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: [
@@ -40,7 +40,7 @@ export const transformInterfaceAssetHistories = (
       ].join("\n"),
     },
     {
-      id: v4(),
+      id: v7(),
       created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: [

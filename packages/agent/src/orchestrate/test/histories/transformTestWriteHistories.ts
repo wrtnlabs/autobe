@@ -7,7 +7,7 @@ import {
   OpenApi,
 } from "@samchon/openapi";
 import typia from "typia";
-import { v4 } from "uuid";
+import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { IAutoBeTestScenarioArtifacts } from "../structures/IAutoBeTestScenarioArtifacts";
@@ -18,7 +18,7 @@ export function transformTestWriteHistories(
 ): Array<IAgenticaHistoryJson.ISystemMessage> {
   return [
     {
-      id: v4(),
+      id: v7(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
       text: AutoBeSystemPromptConstant.TEST_WRITE.replace(
@@ -27,7 +27,7 @@ export function transformTestWriteHistories(
       ).replaceAll("{{FUNCTION_NAME}}", scenario.functionName),
     },
     {
-      id: v4(),
+      id: v7(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
       text: StringUtil.trim`

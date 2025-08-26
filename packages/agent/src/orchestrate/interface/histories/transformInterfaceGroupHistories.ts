@@ -1,5 +1,5 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
-import { v4 } from "uuid";
+import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
@@ -16,14 +16,14 @@ export const transformInterfaceGroupHistories = (
 
   return [
     {
-      id: v4(),
+      id: v7(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
       text: AutoBeSystemPromptConstant.INTERFACE_ENDPOINT,
     },
     ...transformInterfaceAssetHistories(state),
     {
-      id: v4(),
+      id: v7(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
       text: AutoBeSystemPromptConstant.INTERFACE_GROUP,

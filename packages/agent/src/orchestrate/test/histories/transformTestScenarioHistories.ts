@@ -1,7 +1,7 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
 import { AutoBeInterfaceAuthorization, AutoBeOpenApi } from "@autobe/interface";
 import { MapUtil } from "@autobe/utils";
-import { v4 } from "uuid";
+import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
@@ -40,13 +40,13 @@ export const transformTestScenarioHistories = (
 
   return [
     {
-      id: v4(),
+      id: v7(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
       text: AutoBeSystemPromptConstant.TEST_SCENARIO,
     } satisfies IAgenticaHistoryJson.ISystemMessage,
     {
-      id: v4(),
+      id: v7(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
       text: [
@@ -75,7 +75,7 @@ export const transformTestScenarioHistories = (
       ].join("\n"),
     } satisfies IAgenticaHistoryJson.ISystemMessage,
     {
-      id: v4(),
+      id: v7(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
       text: [

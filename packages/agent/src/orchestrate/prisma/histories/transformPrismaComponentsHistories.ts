@@ -1,6 +1,6 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
 import { NamingConvention } from "typia/lib/utils/NamingConvention";
-import { v4 } from "uuid";
+import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
@@ -17,13 +17,13 @@ export const transformPrismaComponentsHistories = (
   if (prefix) prefix = NamingConvention.snake(prefix);
   return [
     {
-      id: v4(),
+      id: v7(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
       text: AutoBeSystemPromptConstant.PRISMA_COMPONENT,
     },
     {
-      id: v4(),
+      id: v7(),
       created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: [

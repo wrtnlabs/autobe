@@ -1,6 +1,6 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
 import { AutoBeAnalyzeHistory, AutoBeOpenApi } from "@autobe/interface";
-import { v4 } from "uuid";
+import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
@@ -16,14 +16,14 @@ export const transformInterfaceOperationHistories = (
   return [
     {
       type: "systemMessage",
-      id: v4(),
+      id: v7(),
       created_at: new Date().toISOString(),
       text: AutoBeSystemPromptConstant.INTERFACE_OPERATION,
     },
     ...transformInterfaceAssetHistories(state),
     {
       type: "systemMessage",
-      id: v4(),
+      id: v7(),
       created_at: new Date().toISOString(),
       text: [
         `## Service Prefix`,
@@ -40,7 +40,7 @@ export const transformInterfaceOperationHistories = (
     },
     {
       type: "assistantMessage",
-      id: v4(),
+      id: v7(),
       created_at: new Date().toISOString(),
       text: [
         "You have to make API operations for the given endpoints:",

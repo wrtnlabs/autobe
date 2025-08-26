@@ -10,7 +10,7 @@ import {
 } from "@autobe/interface";
 import { IPointer } from "tstl";
 import typia from "typia";
-import { v4 } from "uuid";
+import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../constants/AutoBeSystemPromptConstant";
 import { IAutoBeConfig } from "../structures/IAutoBeConfig";
@@ -37,13 +37,13 @@ export const consentFunctionCall = async (props: {
     },
     histories: [
       {
-        id: v4(),
+        id: v7(),
         type: "systemMessage",
         text: AutoBeSystemPromptConstant.CONSENT_FUNCTION_CALL,
         created_at: new Date().toISOString(),
       } satisfies IAgenticaHistoryJson.ISystemMessage,
       {
-        id: v4(),
+        id: v7(),
         type: "assistantMessage",
         text: props.assistantMessage,
         created_at: new Date().toISOString(),

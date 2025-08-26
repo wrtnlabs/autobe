@@ -25,7 +25,7 @@ import {
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 import typia from "typia";
-import { v4 } from "uuid";
+import { v7 } from "uuid";
 
 import { AutoBeContext } from "../context/AutoBeContext";
 import { AutoBeState } from "../context/AutoBeState";
@@ -218,7 +218,7 @@ const createDispatch = (props: {
         event,
         history: {
           type: "analyze",
-          id: v4(),
+          id: v7(),
           reason: analyzeStart?.reason ?? "",
           prefix: event.prefix,
           roles: event.roles,
@@ -236,7 +236,7 @@ const createDispatch = (props: {
         event,
         history: {
           type: "prisma",
-          id: v4(),
+          id: v7(),
           reason: prismaStart?.reason ?? "",
           schemas: event.schemas,
           result: event.result,
@@ -254,7 +254,7 @@ const createDispatch = (props: {
         event,
         history: {
           type: "interface",
-          id: v4(),
+          id: v7(),
           reason: interfaceStart?.reason ?? "",
           authorizations: event.authorizations,
           document: event.document,
@@ -271,7 +271,7 @@ const createDispatch = (props: {
         event,
         history: {
           type: "test",
-          id: v4(),
+          id: v7(),
           reason: testStart?.reason ?? "",
           files: event.files,
           compiled: event.compiled,
@@ -288,7 +288,7 @@ const createDispatch = (props: {
         event,
         history: {
           type: "realize",
-          id: v4(),
+          id: v7(),
           reason: realizeStart?.reason ?? "",
           authorizations: event.authorizations,
           functions: event.functions,

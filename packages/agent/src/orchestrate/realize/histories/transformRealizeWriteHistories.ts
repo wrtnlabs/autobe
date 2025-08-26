@@ -1,6 +1,6 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
 import { AutoBeRealizeAuthorization } from "@autobe/interface";
-import { v4 } from "uuid";
+import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
@@ -53,7 +53,7 @@ export const transformRealizeWriteHistories = (
   if (props.state.analyze === null)
     return [
       {
-        id: v4(),
+        id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
         text: [
@@ -66,7 +66,7 @@ export const transformRealizeWriteHistories = (
   else if (props.state.prisma === null)
     return [
       {
-        id: v4(),
+        id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
         text: [
@@ -79,7 +79,7 @@ export const transformRealizeWriteHistories = (
   else if (props.state.analyze.step !== props.state.prisma.step)
     return [
       {
-        id: v4(),
+        id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
         text: [
@@ -93,7 +93,7 @@ export const transformRealizeWriteHistories = (
   else if (props.state.prisma.compiled.type !== "success")
     return [
       {
-        id: v4(),
+        id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
         text: [
@@ -107,7 +107,7 @@ export const transformRealizeWriteHistories = (
   else if (props.state.interface === null)
     return [
       {
-        id: v4(),
+        id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
         text: [
@@ -125,14 +125,14 @@ export const transformRealizeWriteHistories = (
 
   return [
     {
-      id: v4(),
+      id: v7(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
       text: AutoBeSystemPromptConstant.REALIZE_WRITE_TOTAL,
     },
     ...authorizationHistories,
     {
-      id: v4(),
+      id: v7(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
       text: AutoBeSystemPromptConstant.REALIZE_WRITE_ARTIFACT.replaceAll(
@@ -144,7 +144,7 @@ export const transformRealizeWriteHistories = (
         .replaceAll(`{input}`, input),
     },
     {
-      id: v4(),
+      id: v7(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
       text: [
@@ -155,7 +155,7 @@ export const transformRealizeWriteHistories = (
       ].join("\n"),
     },
     {
-      id: v4(),
+      id: v7(),
       created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: [

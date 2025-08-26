@@ -1,5 +1,5 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
-import { v4 } from "uuid";
+import { v7 } from "uuid";
 
 import { AutoBeState } from "../../../context/AutoBeState";
 
@@ -11,7 +11,7 @@ export const transformInterfacePrerequisiteHistories = (
   if (state.analyze === null)
     return [
       {
-        id: v4(),
+        id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
         text: [
@@ -24,7 +24,7 @@ export const transformInterfacePrerequisiteHistories = (
   else if (state.prisma === null)
     return [
       {
-        id: v4(),
+        id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
         text: [
@@ -37,7 +37,7 @@ export const transformInterfacePrerequisiteHistories = (
   else if (state.analyze.step !== state.prisma.step)
     return [
       {
-        id: v4(),
+        id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
         text: [
@@ -51,7 +51,7 @@ export const transformInterfacePrerequisiteHistories = (
   else if (state.prisma.compiled.type !== "success")
     return [
       {
-        id: v4(),
+        id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
         text: [

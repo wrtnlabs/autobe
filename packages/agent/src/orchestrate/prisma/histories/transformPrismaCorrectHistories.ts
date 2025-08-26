@@ -1,6 +1,6 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
 import { IAutoBePrismaValidation } from "@autobe/interface";
-import { v4 } from "uuid";
+import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 
@@ -11,13 +11,13 @@ export const transformPrismaCorrectHistories = (
 > => {
   return [
     {
-      id: v4(),
+      id: v7(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
       text: AutoBeSystemPromptConstant.PRISMA_CORRECT,
     },
     {
-      id: v4(),
+      id: v7(),
       created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: [
@@ -29,7 +29,7 @@ export const transformPrismaCorrectHistories = (
       ].join("\n"),
     },
     {
-      id: v4(),
+      id: v7(),
       created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: [
@@ -41,7 +41,7 @@ export const transformPrismaCorrectHistories = (
       ].join("\n"),
     },
     {
-      id: v4(),
+      id: v7(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
       text: [

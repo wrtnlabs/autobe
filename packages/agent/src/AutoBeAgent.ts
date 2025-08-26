@@ -13,7 +13,7 @@ import {
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 import { Semaphore, Singleton } from "tstl";
-import { v4 } from "uuid";
+import { v7 } from "uuid";
 
 import { AutoBeAgentBase } from "./AutoBeAgentBase";
 import { AutoBeContext } from "./context/AutoBeContext";
@@ -202,7 +202,7 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
     this.agentica_.on("assistantMessage", async (message) => {
       const start = new Date();
       const history: AutoBeAssistantMessageHistory = {
-        id: v4(),
+        id: v7(),
         type: "assistantMessage",
         text: await message.join(),
         created_at: start.toISOString(),
@@ -253,7 +253,7 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
   ): Promise<AutoBeHistory[]> {
     const index: number = this.histories_.length;
     const userMessageHistory: AutoBeUserMessageHistory = {
-      id: v4(),
+      id: v7(),
       type: "userMessage",
       contents:
         typeof content === "string"
