@@ -1,6 +1,6 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
 import { AutoBeAnalyzeRole } from "@autobe/interface";
-import { v4 } from "uuid";
+import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
@@ -15,14 +15,14 @@ export const transformInterfaceAuthorizationsHistories = (
   return [
     {
       type: "systemMessage",
-      id: v4(),
+      id: v7(),
       created_at: new Date().toISOString(),
       text: AutoBeSystemPromptConstant.INTERFACE_AUTHORIZATION,
     },
     ...transformInterfaceAssetHistories(state),
     {
       type: "assistantMessage",
-      id: v4(),
+      id: v7(),
       created_at: new Date().toISOString(),
       text: [
         "You have to make API operations for the given role:",

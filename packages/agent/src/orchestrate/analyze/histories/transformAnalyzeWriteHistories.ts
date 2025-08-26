@@ -2,7 +2,7 @@ import { IAgenticaHistoryJson } from "@agentica/core";
 import { AutoBeAnalyzeScenarioEvent } from "@autobe/interface";
 import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
 import { ILlmSchema } from "@samchon/openapi";
-import { v4 } from "uuid";
+import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../../context/AutoBeContext";
@@ -35,13 +35,13 @@ export const transformAnalyzeWriteHistories = <Model extends ILlmSchema.Model>(
         };
       }),
     {
-      id: v4(),
+      id: v7(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
       text: AutoBeSystemPromptConstant.ANALYZE_WRITE,
     },
     {
-      id: v4(),
+      id: v7(),
       created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: [

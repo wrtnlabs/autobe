@@ -41,7 +41,7 @@ export const orchestrateRealize =
     if (predicate !== null)
       return ctx.assistantMessage({
         type: "assistantMessage",
-        id: v4(),
+        id: v7(),
         created_at: start.toISOString(),
         text: predicate,
         completed_at: new Date().toISOString(),

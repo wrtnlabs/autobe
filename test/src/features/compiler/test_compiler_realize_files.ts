@@ -3,7 +3,7 @@ import { AutoBeCompiler } from "@autobe/compiler";
 import { FileSystemIterator } from "@autobe/filesystem";
 import cp from "child_process";
 import OpenAI from "openai";
-import { v4 } from "uuid";
+import { v7 } from "uuid";
 
 import { TestGlobal } from "../../TestGlobal";
 import { TestHistory } from "../../internal/TestHistory";
@@ -28,7 +28,7 @@ export const test_compiler_realize_files = async () => {
         compiled: {
           type: "success",
         },
-        id: v4(),
+        id: v7(),
         created_at: new Date().toISOString(),
         completed_at: new Date().toISOString(),
         reason: "Realize files for compiler",

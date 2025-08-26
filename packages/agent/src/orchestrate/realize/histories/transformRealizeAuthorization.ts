@@ -1,7 +1,7 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
 import { AutoBeAnalyzeRole } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
-import { v4 } from "uuid";
+import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../../context/AutoBeContext";
@@ -16,13 +16,13 @@ export const transformRealizeAuthorizationHistories = <
 > => {
   return [
     {
-      id: v4(),
+      id: v7(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
       text: AutoBeSystemPromptConstant.REALIZE_AUTHORIZATION,
     },
     {
-      id: v4(),
+      id: v7(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
       text: [

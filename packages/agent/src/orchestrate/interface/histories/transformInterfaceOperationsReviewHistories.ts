@@ -1,7 +1,7 @@
 import { IMicroAgenticaHistoryJson } from "@agentica/core";
 import { AutoBeOpenApi } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
-import { v4 } from "uuid";
+import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../../context/AutoBeContext";
@@ -16,20 +16,20 @@ export function transformInterfaceOperationsReviewHistories<
   return [
     {
       type: "systemMessage",
-      id: v4(),
+      id: v7(),
       created_at: new Date().toISOString(),
       text: AutoBeSystemPromptConstant.INTERFACE_OPERATION,
     },
     ...transformInterfaceAssetHistories(ctx.state()),
     {
       type: "systemMessage",
-      id: v4(),
+      id: v7(),
       created_at: new Date().toISOString(),
       text: AutoBeSystemPromptConstant.INTERFACE_OPERATION_REVIEW,
     },
     {
       type: "assistantMessage",
-      id: v4(),
+      id: v7(),
       created_at: new Date().toISOString(),
       text: [
         "Review the following API operations:",

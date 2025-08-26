@@ -1,7 +1,7 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
 import { AutoBeOpenApi } from "@autobe/interface";
 import { AutoBeInterfaceGroup } from "@autobe/interface/src/histories/contents/AutoBeInterfaceGroup";
-import { v4 } from "uuid";
+import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
@@ -16,14 +16,14 @@ export const transformInterfaceEndpointHistories = (
 > => [
   {
     type: "systemMessage",
-    id: v4(),
+    id: v7(),
     created_at: new Date().toISOString(),
     text: AutoBeSystemPromptConstant.INTERFACE_ENDPOINT,
   },
   ...transformInterfaceAssetHistories(state),
   {
     type: "assistantMessage",
-    id: v4(),
+    id: v7(),
     created_at: new Date().toISOString(),
     text: [
       "Here is the target group for the endpoints:",

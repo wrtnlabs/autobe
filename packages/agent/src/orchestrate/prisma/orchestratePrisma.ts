@@ -10,7 +10,7 @@ import {
 } from "@autobe/interface";
 import { AutoBePrismaSchemasEvent } from "@autobe/interface/src/events/AutoBePrismaSchemasEvent";
 import { ILlmSchema } from "@samchon/openapi";
-import { v4 } from "uuid";
+import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
@@ -30,7 +30,7 @@ export const orchestratePrisma = async <Model extends ILlmSchema.Model>(
   if (predicate !== null)
     return ctx.assistantMessage({
       type: "assistantMessage",
-      id: v4(),
+      id: v7(),
       created_at: start.toISOString(),
       text: predicate,
       completed_at: new Date().toISOString(),

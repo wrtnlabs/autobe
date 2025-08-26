@@ -9,7 +9,7 @@ import {
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
-import { v4 } from "uuid";
+import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
@@ -45,7 +45,7 @@ export const orchestrateAnalyzeScenario = async <
       ...(histories.at(-1)! as AgenticaAssistantMessageHistory),
       created_at: start.toISOString(),
       completed_at: new Date().toISOString(),
-      id: v4(),
+      id: v7(),
     } satisfies AutoBeAssistantMessageHistory;
   else if (pointer.value === null) {
     // unreachable

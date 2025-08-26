@@ -3,7 +3,7 @@ import {
   AutoBeRealizeAuthorization,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
-import { v4 } from "uuid";
+import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
@@ -25,7 +25,7 @@ export function transformRealizeCorrectHistories(props: {
   return [
     ...transformRealizeWriteHistories(props),
     {
-      id: v4(),
+      id: v7(),
       type: "assistantMessage",
       text: [
         `Below is the code you made before. It's also something to review.`,
@@ -40,7 +40,7 @@ export function transformRealizeCorrectHistories(props: {
       created_at: new Date().toISOString(),
     },
     {
-      id: v4(),
+      id: v7(),
       type: "systemMessage",
       text: AutoBeSystemPromptConstant.REALIZE_CORRECT,
       created_at: new Date().toISOString(),

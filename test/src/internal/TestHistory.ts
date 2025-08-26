@@ -7,7 +7,7 @@ import {
 } from "@autobe/interface";
 import fs from "fs";
 import typia from "typia";
-import { v4 } from "uuid";
+import { v7 } from "uuid";
 
 import { TestGlobal } from "../TestGlobal";
 import { TestProject } from "../structures/TestProject";
@@ -32,7 +32,7 @@ export namespace TestHistory {
     return [
       {
         type: "userMessage",
-        id: v4(),
+        id: v7(),
         created_at: new Date().toISOString(),
         contents: [
           {

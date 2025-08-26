@@ -1,7 +1,7 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
 import { AutoBeOpenApi } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import { v4 } from "uuid";
+import { v7 } from "uuid";
 
 export const transformRealizeWriteAuthorizationsHistories = (
   operation: AutoBeOpenApi.IOperation,
@@ -12,7 +12,7 @@ export const transformRealizeWriteAuthorizationsHistories = (
     operation.authorizationType === "login"
       ? [
           {
-            id: v4(),
+            id: v7(),
             created_at: new Date().toISOString(),
             type: "systemMessage" as const,
             text: StringUtil.trim`
@@ -105,7 +105,7 @@ export const transformRealizeWriteAuthorizationsHistories = (
     operation.authorizationType === "join"
       ? [
           {
-            id: v4(),
+            id: v7(),
             created_at: new Date().toISOString(),
             type: "systemMessage" as const,
             text: StringUtil.trim`
@@ -195,7 +195,7 @@ export const transformRealizeWriteAuthorizationsHistories = (
     operation.authorizationType === "refresh"
       ? [
           {
-            id: v4(),
+            id: v7(),
             created_at: new Date().toISOString(),
             type: "systemMessage" as const,
             text: StringUtil.trim`
@@ -271,7 +271,7 @@ export const transformRealizeWriteAuthorizationsHistories = (
 
               **DO NOT**:
               - Generate new access tokens with different payload structures
-              - Use random IDs like v4() in the payload
+              - Use random IDs like v7() in the payload
               - Create tokens without verifying the refresh token first
               - Use type annotations like: const payload: UserPayload = {...}
 

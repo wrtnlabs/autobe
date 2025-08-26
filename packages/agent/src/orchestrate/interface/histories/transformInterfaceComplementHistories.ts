@@ -1,6 +1,6 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
 import { AutoBeOpenApi } from "@autobe/interface";
-import { v4 } from "uuid";
+import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
@@ -15,14 +15,14 @@ export const transformInterfaceComplementHistories = (
 > => [
   {
     type: "systemMessage",
-    id: v4(),
+    id: v7(),
     created_at: new Date().toISOString(),
     text: AutoBeSystemPromptConstant.INTERFACE_OPERATION,
   },
   ...transformInterfaceAssetHistories(state),
   {
     type: "assistantMessage",
-    id: v4(),
+    id: v7(),
     created_at: new Date().toISOString(),
     text: [
       "Here is the OpenAPI operations what you AI have made:",
@@ -34,13 +34,13 @@ export const transformInterfaceComplementHistories = (
   },
   {
     type: "systemMessage",
-    id: v4(),
+    id: v7(),
     created_at: new Date().toISOString(),
     text: AutoBeSystemPromptConstant.INTERFACE_SCHEMA,
   },
   {
     type: "assistantMessage",
-    id: v4(),
+    id: v7(),
     created_at: new Date().toISOString(),
     text: [
       "Here is the OpenAPI schemas what you AI have made:",
@@ -52,13 +52,13 @@ export const transformInterfaceComplementHistories = (
   },
   {
     type: "systemMessage",
-    id: v4(),
+    id: v7(),
     created_at: new Date().toISOString(),
     text: AutoBeSystemPromptConstant.INTERFACE_COMPLEMENT,
   },
   {
     type: "assistantMessage",
-    id: v4(),
+    id: v7(),
     created_at: new Date().toISOString(),
     text: [
       "You AI have missed below schema types:",

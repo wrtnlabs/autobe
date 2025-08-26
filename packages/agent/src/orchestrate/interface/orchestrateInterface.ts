@@ -9,7 +9,7 @@ import {
 import { AutoBeEndpointComparator } from "@autobe/utils";
 import { ILlmSchema } from "@samchon/openapi";
 import { HashMap, Pair } from "tstl";
-import { v4 } from "uuid";
+import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
@@ -35,7 +35,7 @@ export const orchestrateInterface =
     if (predicate !== null)
       return ctx.assistantMessage({
         type: "assistantMessage",
-        id: v4(),
+        id: v7(),
         created_at: start.toISOString(),
         text: predicate,
         completed_at: new Date().toISOString(),

@@ -8,7 +8,7 @@ import {
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
-import { v4 } from "uuid";
+import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
@@ -29,7 +29,7 @@ export const orchestrateTest =
     if (predicate !== null)
       return ctx.assistantMessage({
         type: "assistantMessage",
-        id: v4(),
+        id: v7(),
         created_at: start.toISOString(),
         text: predicate,
         completed_at: new Date().toISOString(),
@@ -46,7 +46,7 @@ export const orchestrateTest =
       ctx.state().interface?.document.operations ?? [];
     if (operations.length === 0)
       return ctx.assistantMessage({
-        id: v4(),
+        id: v7(),
         type: "assistantMessage",
         created_at: start.toISOString(),
         completed_at: new Date().toISOString(),

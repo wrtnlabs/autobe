@@ -11,7 +11,7 @@ import {
   IAutoBePlaygroundReplay,
 } from "@autobe/interface";
 import { Singleton, randint, sleep_for } from "tstl";
-import { v4 } from "uuid";
+import { v7 } from "uuid";
 
 import { AutoBeAgentBase } from "./AutoBeAgentBase";
 import { AutoBeState } from "./context/AutoBeState";
@@ -50,7 +50,7 @@ export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
   ): Promise<AutoBeHistory[]> {
     // THE USER-MESSAGE
     const userMessage: AutoBeUserMessageHistory = {
-      id: v4(),
+      id: v7(),
       type: "userMessage",
       contents:
         typeof content === "string"
@@ -72,7 +72,7 @@ export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
     if (state.realize !== null) {
       await sleep_for(2_000);
       const assistantMessage: AutoBeAssistantMessageHistory = {
-        id: v4(),
+        id: v7(),
         type: "assistantMessage",
         text: [
           "AutoBE has successfully realized the application.",
@@ -94,7 +94,7 @@ export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
       if (snapshots === null) {
         this.histories_.push(userMessage);
         this.histories_.push({
-          id: v4(),
+          id: v7(),
           type: "assistantMessage",
           text: [
             "The histories are prepared until current state.",

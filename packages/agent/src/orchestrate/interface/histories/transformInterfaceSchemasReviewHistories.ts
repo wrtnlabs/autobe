@@ -1,6 +1,6 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
 import { AutoBeOpenApi } from "@autobe/interface";
-import { v4 } from "uuid";
+import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
@@ -19,20 +19,20 @@ export const transformInterfaceSchemasReviewHistories = (
   return [
     {
       type: "systemMessage",
-      id: v4(),
+      id: v7(),
       created_at: new Date().toISOString(),
       text: AutoBeSystemPromptConstant.INTERFACE_SCHEMA,
     },
     ...transformInterfaceAssetHistories(state),
     {
       type: "systemMessage",
-      id: v4(),
+      id: v7(),
       created_at: new Date().toISOString(),
       text: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_REVIEW,
     },
     {
       type: "assistantMessage",
-      id: v4(),
+      id: v7(),
       created_at: new Date().toISOString(),
       text: [
         "The Schema Agent has generated schemas for the following API operations.",
@@ -46,7 +46,7 @@ export const transformInterfaceSchemasReviewHistories = (
       ].join("\n"),
     },
     {
-      id: v4(),
+      id: v7(),
       type: "assistantMessage",
       created_at: new Date().toISOString(),
       text: [
