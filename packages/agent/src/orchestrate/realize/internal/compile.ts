@@ -6,6 +6,7 @@ import {
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
+import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../../context/AutoBeContext";
 
@@ -54,6 +55,7 @@ export async function compile<Model extends ILlmSchema.Model>(
 
   const event: AutoBeRealizeValidateEvent = {
     type: "realizeValidate",
+    id: v7(),
     result: compiled,
     files: Object.fromEntries(
       compiled.type === "failure"

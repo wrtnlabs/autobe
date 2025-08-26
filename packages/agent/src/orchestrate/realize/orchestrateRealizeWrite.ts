@@ -7,6 +7,7 @@ import { StringUtil } from "@autobe/utils";
 import { ILlmApplication, ILlmController, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
+import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
@@ -80,7 +81,7 @@ export async function orchestrateRealizeWrite<Model extends ILlmSchema.Model>(
 
   const event: AutoBeRealizeWriteEvent = {
     type: "realizeWrite",
-    id: props.progress.id,
+    id: v7(),
     location: props.scenario.location,
     content: pointer.value.implementationCode,
     tokenUsage,

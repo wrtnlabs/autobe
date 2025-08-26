@@ -23,7 +23,6 @@ export async function orchestrateInterfaceAuthorizations<
 >(ctx: AutoBeContext<Model>): Promise<AutoBeInterfaceAuthorization[]> {
   const roles: AutoBeAnalyzeRole[] = ctx.state().analyze?.roles ?? [];
   const progress: AutoBeProgressEventBase = {
-    id: v7(),
     total: roles.length,
     completed: 0,
   };
@@ -76,7 +75,7 @@ async function process<Model extends ILlmSchema.Model>(
 
   return {
     type: "interfaceAuthorization",
-    id: progress.id,
+    id: v7(),
     operations: pointer.value.operations,
     completed: ++progress.completed,
     tokenUsage,

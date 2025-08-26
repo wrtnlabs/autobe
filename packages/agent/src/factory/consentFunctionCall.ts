@@ -79,6 +79,7 @@ export const consentFunctionCall = async (props: {
   }
   props.dispatch({
     type: "consentFunctionCall",
+    id: v7(),
     source: props.source,
     assistantMessage: props.assistantMessage,
     result: pointer.value,

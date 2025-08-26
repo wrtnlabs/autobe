@@ -16,6 +16,9 @@ import { tags } from "typia";
  * @template Type The literal string type that uniquely identifies the event
  */
 export interface AutoBeEventBase<Type extends string> {
+  /** A unique identifier for the event. */
+  id: string;
+
   /**
    * Unique identifier for the event type.
    *

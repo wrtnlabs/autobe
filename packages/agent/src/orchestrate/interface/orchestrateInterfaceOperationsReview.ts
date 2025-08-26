@@ -7,6 +7,7 @@ import {
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
+import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { transformInterfaceOperationsReviewHistories } from "./histories/transformInterfaceOperationsReviewHistories";
@@ -51,7 +52,7 @@ export async function orchestrateInterfaceOperationsReview<
 
     ctx.dispatch({
       type: "interfaceOperationsReview",
-      id: progress.id,
+      id: v7(),
       operations: content,
       review: pointer.value.review,
       plan: pointer.value.plan,

@@ -212,6 +212,7 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
       this.histories_.push(history);
       this.dispatch({
         type: "assistantMessage",
+        id: history.id,
         text: history.text,
         created_at: history.created_at,
       }).catch(() => {});

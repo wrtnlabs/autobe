@@ -31,13 +31,13 @@ export async function orchestrateRealizeAuthorization<
 >(ctx: AutoBeContext<Model>): Promise<AutoBeRealizeAuthorization[]> {
   ctx.dispatch({
     type: "realizeAuthorizationStart",
+    id: v7(),
     step: ctx.state().test?.step ?? 0,
     created_at: new Date().toISOString(),
   });
 
   const roles: AutoBeAnalyzeRole[] = ctx.state().analyze?.roles ?? [];
   const progress: AutoBeProgressEventBase = {
-    id: v7(),
     total: roles.length,
     completed: 0,
   };
@@ -58,6 +58,7 @@ export async function orchestrateRealizeAuthorization<
   );
   ctx.dispatch({
     type: "realizeAuthorizationComplete",
+    id: v7(),
     created_at: new Date().toISOString(),
     step: ctx.state().test?.step ?? 0,
   });
@@ -121,7 +122,7 @@ async function process<Model extends ILlmSchema.Model>(
 
   ctx.dispatch({
     type: "realizeAuthorizationWrite",
-    id: progress.id,
+    id: v7(),
     created_at: new Date().toISOString(),
     authorization: authorization,
     tokenUsage,

@@ -54,6 +54,7 @@ export const orchestrateAnalyzeScenario = async <
   }
   return {
     type: "analyzeScenario",
+    id: v7(),
     prefix: pointer.value.prefix,
     language: pointer.value.language,
     roles: pointer.value.roles,

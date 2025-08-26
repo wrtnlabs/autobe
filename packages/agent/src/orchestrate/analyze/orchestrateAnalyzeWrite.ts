@@ -8,19 +8,23 @@ import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/Auto
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
+import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { transformAnalyzeWriteHistories } from "./histories/transformAnalyzeWriteHistories";
 import { IAutoBeAnalyzeWriteApplication } from "./structures/IAutoBeAnalyzeWriteApplication";
 
-export const orchestrateAnalyzeWrite = async <Model extends ILlmSchema.Model>(
-  ctx: AutoBeContext<Model>,
-  scenario: AutoBeAnalyzeScenarioEvent,
-  file: AutoBeAnalyzeFile.Scenario,
-  progress: AutoBeProgressEventBase,
-  promptCacheKey: string,
-): Promise<AutoBeAnalyzeWriteEvent> => {
+export const orchestrateAnalyzeWrite = async <
+  Model extends ILlmSchema.Model,
+>(props: {
+  ctx: AutoBeContext<Model>;
+  scenario: AutoBeAnalyzeScenarioEvent;
+  file: AutoBeAnalyzeFile.Scenario;
+  progress: AutoBeProgressEventBase;
+  promptCacheKey: string;
+}): Promise<AutoBeAnalyzeWriteEvent> => {
+  const { ctx, scenario, file, progress, promptCacheKey } = props;
   const pointer: IPointer<IAutoBeAnalyzeWriteApplication.IProps | null> = {
     value: null,
   };
@@ -42,7 +46,7 @@ export const orchestrateAnalyzeWrite = async <Model extends ILlmSchema.Model>(
 
   const event: AutoBeAnalyzeWriteEvent = {
     type: "analyzeWrite",
-    id: progress.id,
+    id: v7(),
     file: {
       ...file,
       content: pointer.value.content,

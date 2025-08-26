@@ -8,6 +8,7 @@ import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
 import { IPointer } from "tstl";
 import typia from "typia";
+import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
@@ -61,7 +62,7 @@ export async function orchestrateInterfaceSchemasReview<
       ).schemas ?? {};
     ctx.dispatch({
       type: "interfaceSchemasReview",
-      id: progress.id,
+      id: v7(),
       schemas: schemas,
       review: pointer.value.review,
       plan: pointer.value.plan,

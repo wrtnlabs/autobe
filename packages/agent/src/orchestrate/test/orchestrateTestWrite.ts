@@ -25,7 +25,6 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
   scenarios: AutoBeTestScenario[],
 ): Promise<IAutoBeTestWriteResult[]> {
   const progress: AutoBeProgressEventBase = {
-    id: v7(),
     total: scenarios.length,
     completed: 0,
   };
@@ -39,13 +38,12 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
       try {
         const artifacts: IAutoBeTestScenarioArtifacts =
           await getTestScenarioArtifacts(ctx, scenario);
-        const event: AutoBeTestWriteEvent = await process(
-          ctx,
+        const event: AutoBeTestWriteEvent = await process(ctx, {
           scenario,
           artifacts,
           progress,
           promptCacheKey,
-        );
+        });
         ctx.dispatch(event);
         return {
           scenario,
@@ -60,22 +58,16 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
   return result.filter((r) => r !== null);
 }
 
-/**
- * Process function that generates test code for each individual scenario. Takes
- * the AutoBeContext and scenario information as input and uses MicroAgentica to
- * generate appropriate test code through LLM interaction.
- *
- * @param ctx - The AutoBeContext containing model, vendor and configuration
- * @param scenario - The test scenario information to generate code for
- * @param artifacts - The artifacts containing the reference files and schemas
- */
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  scenario: AutoBeTestScenario,
-  artifacts: IAutoBeTestScenarioArtifacts,
-  progress: AutoBeProgressEventBase,
-  promptCacheKey: string,
+  props: {
+    scenario: AutoBeTestScenario;
+    artifacts: IAutoBeTestScenarioArtifacts;
+    progress: AutoBeProgressEventBase;
+    promptCacheKey: string;
+  },
 ): Promise<AutoBeTestWriteEvent> {
+  const { scenario, artifacts, progress, promptCacheKey } = props;
   const pointer: IPointer<IAutoBeTestWriteApplication.IProps | null> = {
     value: null,
   };
@@ -99,7 +91,7 @@ async function process<Model extends ILlmSchema.Model>(
   pointer.value.final = await compiler.typescript.beautify(pointer.value.final);
   return {
     type: "testWrite",
-    id: progress.id,
+    id: v7(),
     created_at: new Date().toISOString(),
     location: `test/features/api/${pointer.value.domain}/${scenario.functionName}.ts`,
     ...pointer.value,

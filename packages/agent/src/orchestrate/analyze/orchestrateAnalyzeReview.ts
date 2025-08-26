@@ -8,6 +8,7 @@ import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/Auto
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
+import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
@@ -43,7 +44,7 @@ export const orchestrateAnalyzeReview = async <Model extends ILlmSchema.Model>(
 
   const event: AutoBeAnalyzeReviewEvent = {
     type: "analyzeReview",
-    id: progress.id,
+    id: v7(),
     file: myFile,
     plan: pointer.value.plan,
     review: pointer.value.review,

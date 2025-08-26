@@ -42,6 +42,7 @@ export const orchestrateInterface =
       });
     ctx.dispatch({
       type: "interfaceStart",
+      id: v7(),
       created_at: start.toISOString(),
       reason: props.reason,
       step: ctx.state().analyze?.step ?? 0,
@@ -101,6 +102,7 @@ export const orchestrateInterface =
     // DO COMPILE
     return ctx.dispatch({
       type: "interfaceComplete",
+      id: v7(),
       document,
       authorizations,
       created_at: new Date().toISOString(),
