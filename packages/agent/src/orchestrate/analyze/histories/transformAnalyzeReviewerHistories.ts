@@ -22,7 +22,7 @@ export const transformAnalyzeReviewerHistories = <
   | IAgenticaHistoryJson.ISystemMessage
 > => {
   return [
-    ...transformAnalyzeWriteHistories(ctx, scenario, myFile).slice(0, 2),
+    ...transformAnalyzeWriteHistories(ctx, scenario, myFile).slice(0, -1),
     {
       id: v7(),
       created_at: new Date().toISOString(),
