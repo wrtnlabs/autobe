@@ -40,7 +40,7 @@ export const transformPrismaComponentsHistories = (
         \`\`\`
         ## Prefix
         
-        - Prefix provided by the user: ${prefix},
+        - Prefix provided by the user: ${prefix}
         
         "The user wants all database schema (table) names to start with the prefix provided below.
         
