@@ -52,9 +52,9 @@ export const transformAnalyzeReviewerHistories = <
       created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: StringUtil.trim`
-        Review the ${myFile.filename} document.,
+        Review the ${myFile.filename} document.
         
-        Note that, never review others.,
+        Note that, never review others.
       `,
     },
   ];
