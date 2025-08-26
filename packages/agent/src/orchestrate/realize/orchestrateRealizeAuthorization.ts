@@ -13,6 +13,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformRealizeAuthorizationHistories } from "./histories/transformRealizeAuthorization";
 import { orchestrateRealizeAuthorizationCorrect } from "./orchestrateRealizeAuthorizationCorrect";
 import { IAutoBeRealizeAuthorizationApplication } from "./structures/IAutoBeRealizeAuthorizationApplication";
@@ -41,16 +42,17 @@ export async function orchestrateRealizeAuthorization<
     completed: 0,
   };
   const templateFiles = await (await ctx.compiler()).realize.getTemplate();
-  const authorizations: AutoBeRealizeAuthorization[] = await Promise.all(
-    roles.map((role) =>
-      process(
-        ctx,
-        role,
-        InternalFileSystem.DEFAULT.map((el) => ({
-          [el]: templateFiles[el],
-        })).reduce((acc, cur) => Object.assign(acc, cur), {}),
-        progress,
-      ),
+  const authorizations: AutoBeRealizeAuthorization[] = await executeCachedBatch(
+    roles.map(
+      (role) => () =>
+        process(
+          ctx,
+          role,
+          InternalFileSystem.DEFAULT.map((el) => ({
+            [el]: templateFiles[el],
+          })).reduce((acc, cur) => Object.assign(acc, cur), {}),
+          progress,
+        ),
     ),
   );
   ctx.dispatch({

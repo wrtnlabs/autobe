@@ -16,6 +16,7 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { emplaceMap } from "../../utils/emplaceMap";
+import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformInterfaceOperationHistories } from "./histories/transformInterfaceOperationHistories";
 import { orchestrateInterfaceOperationsReview } from "./orchestrateInterfaceOperationsReview";
 import { IAutoBeInterfaceOperationApplication } from "./structures/IAutoBeInterfaceOperationApplication";
@@ -43,8 +44,8 @@ export async function orchestrateInterfaceOperations<
     completed: 0,
   };
   return (
-    await Promise.all(
-      matrix.map(async (it) => {
+    await executeCachedBatch(
+      matrix.map((it) => async () => {
         const row: AutoBeOpenApi.IOperation[] = await divideAndConquer(
           ctx,
           it,

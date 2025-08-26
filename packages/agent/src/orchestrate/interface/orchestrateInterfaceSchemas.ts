@@ -13,6 +13,7 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
+import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformInterfaceSchemaHistories } from "./histories/transformInterfaceSchemaHistories";
 import { orchestrateInterfaceSchemasReview } from "./orchestrateInterfaceSchemasReview";
 import { IAutoBeInterfaceSchemaApplication } from "./structures/IAutoBeInterfaceSchemaApplication";
@@ -53,8 +54,8 @@ export async function orchestrateInterfaceSchemas<
           IAuthorizationToken: authTokenSchema,
         }
       : {};
-  for (const y of await Promise.all(
-    matrix.map(async (it) => {
+  for (const y of await executeCachedBatch(
+    matrix.map((it) => async () => {
       const row: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
         await divideAndConquer(ctx, operations, it, 3, progress);
       const newbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =

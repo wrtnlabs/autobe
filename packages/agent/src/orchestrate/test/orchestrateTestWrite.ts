@@ -12,6 +12,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { completeTestCode } from "./compile/completeTestCode";
 import { getTestScenarioArtifacts } from "./compile/getTestScenarioArtifacts";
 import { transformTestWriteHistories } from "./histories/transformTestWriteHistories";
@@ -28,13 +29,13 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
     total: scenarios.length,
     completed: 0,
   };
-  const result: Array<IAutoBeTestWriteResult | null> = await Promise.all(
+  const result: Array<IAutoBeTestWriteResult | null> = await executeCachedBatch(
     /**
      * Generate test code for each scenario. Maps through plans array to create
      * individual test code implementations. Each scenario is processed to
      * generate corresponding test code and progress events.
      */
-    scenarios.map(async (scenario) => {
+    scenarios.map((scenario) => async () => {
       try {
         const artifacts: IAutoBeTestScenarioArtifacts =
           await getTestScenarioArtifacts(ctx, scenario);

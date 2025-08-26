@@ -12,6 +12,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformInterfaceEndpointHistories } from "./histories/transformInterfaceEndpointHistories";
 import { IAutoBeInterfaceEndpointApplication } from "./structures/IAutoBeInterfaceEndpointApplication";
 import { OpenApiEndpointComparator } from "./utils/OpenApiEndpointComparator";
@@ -30,8 +31,10 @@ export async function orchestrateInterfaceEndpoints<
     completed: 0,
   };
   const endpoints: AutoBeOpenApi.IEndpoint[] = (
-    await Promise.all(
-      groups.map((g) => process(ctx, g, content, progress, authorizations)),
+    await executeCachedBatch(
+      groups.map(
+        (g) => () => process(ctx, g, content, progress, authorizations),
+      ),
     )
   ).flat();
   return new HashSet(

@@ -14,6 +14,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformInterfaceAuthorizationsHistories } from "./histories/transformInterfaceAuthorizationsHistories";
 import { IAutoBeInterfaceAuthorizationsApplication } from "./structures/IAutoBeInterfaceAuthorizationsApplication";
 
@@ -26,20 +27,21 @@ export async function orchestrateInterfaceAuthorizations<
     total: roles.length,
     completed: 0,
   };
-  const authorizations: AutoBeInterfaceAuthorization[] = await Promise.all(
-    roles.map(async (role) => {
-      const event: AutoBeInterfaceAuthorizationEvent = await process(
-        ctx,
-        role,
-        progress,
-      );
-      ctx.dispatch(event);
-      return {
-        role: role.name,
-        operations: event.operations,
-      };
-    }),
-  );
+  const authorizations: AutoBeInterfaceAuthorization[] =
+    await executeCachedBatch(
+      roles.map((role) => async () => {
+        const event: AutoBeInterfaceAuthorizationEvent = await process(
+          ctx,
+          role,
+          progress,
+        );
+        ctx.dispatch(event);
+        return {
+          role: role.name,
+          operations: event.operations,
+        };
+      }),
+    );
 
   return authorizations;
 }

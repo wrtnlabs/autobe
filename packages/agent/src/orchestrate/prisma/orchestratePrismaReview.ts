@@ -8,6 +8,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformPrismaReviewHistories } from "./histories/transformPrismaReviewHistories";
 import { IAutoBePrismaReviewApplication } from "./structures/IAutoBePrismaReviewApplication";
 
@@ -23,8 +24,8 @@ export async function orchestratePrismaReview<Model extends ILlmSchema.Model>(
     total: componentList.length,
   };
   return (
-    await Promise.all(
-      componentList.map(async (component) => {
+    await executeCachedBatch(
+      componentList.map((component) => async () => {
         try {
           return await step(ctx, application, schemas, component, progress);
         } catch {
