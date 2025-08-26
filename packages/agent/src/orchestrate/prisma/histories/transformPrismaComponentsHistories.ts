@@ -36,7 +36,7 @@ export const transformPrismaComponentsHistories = (
         ## Requirement Analysis Report
         
         \`\`\`json
-        ${JSON.stringify(state.analyze.files)},
+        ${JSON.stringify(state.analyze.files)}
         \`\`\`
         ## Prefix
         
