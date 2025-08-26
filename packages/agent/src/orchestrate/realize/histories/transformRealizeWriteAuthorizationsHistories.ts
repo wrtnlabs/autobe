@@ -50,7 +50,10 @@ export const transformRealizeWriteAuthorizationsHistories = (
               **NOTE**: The jsonwebtoken library is automatically imported as jwt. Use it to generate tokens with the EXACT payload structure:
 
               **CRITICAL**: Use the predefined payload structures for consistency:
+
+              \`\`\`json
               ${JSON.stringify(payloads)}
+              \`\`\`
 
               // JWT is already imported: import jwt from "jsonwebtoken";
               

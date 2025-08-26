@@ -50,7 +50,7 @@ export const transformRealizeWriteHistories = (
     propsFields.length > 0
       ? StringUtil.trim`
         props: {
-${propsFields.map((field) => `          ${field}`).join("\n")}
+          ${propsFields.map((field) => `${field},`).join("\n")}
         }`
       : `// No props parameter needed - function should have no parameters`;
 

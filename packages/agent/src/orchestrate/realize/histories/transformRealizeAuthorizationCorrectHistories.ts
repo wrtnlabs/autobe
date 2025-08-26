@@ -68,8 +68,8 @@ export const transformRealizeAuthorizationCorrectHistories = <
 
         ## File Paths
 
-${Object.keys(templateFiles)
-          .map((path) => `        - ${path}`)
+        ${Object.keys(templateFiles)
+          .map((path) => `- ${path}`)
           .join("\n")}
 
         ## Compile Errors
