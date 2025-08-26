@@ -271,7 +271,7 @@ export const transformRealizeWriteAuthorizationsHistories = (
 
               **DO NOT**:
               - Generate new access tokens with different payload structures
-              - Use random IDs like v7() in the payload
+              - Use random IDs like v4() in the payload
               - Create tokens without verifying the refresh token first
               - Use type annotations like: const payload: UserPayload = {...}
 
