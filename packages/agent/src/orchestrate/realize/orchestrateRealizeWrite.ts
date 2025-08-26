@@ -23,6 +23,7 @@ export async function orchestrateRealizeWrite<Model extends ILlmSchema.Model>(
     authorization: AutoBeRealizeAuthorization | null;
     scenario: IAutoBeRealizeScenarioApplication.IProps;
     progress: AutoBeProgressEventBase;
+    promptCacheKey: string;
   },
 ): Promise<AutoBeRealizeWriteEvent> {
   const artifacts: IAutoBeTestScenarioArtifacts =
@@ -49,6 +50,7 @@ export async function orchestrateRealizeWrite<Model extends ILlmSchema.Model>(
       },
     }),
     enforceFunctionCall: true,
+    promptCacheKey: props.promptCacheKey,
     message: [
       `Write complete, production-ready TypeScript code that strictly follows these rules:`,
       "",

@@ -82,6 +82,8 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
           event.body.tool_choice = "required";
         if (event.body.parallel_tool_calls !== undefined)
           delete event.body.parallel_tool_calls;
+        if (next.promptCacheKey)
+          event.body.prompt_cache_key = next.promptCacheKey;
         await props.dispatch({
           ...event,
           type: "vendorRequest",

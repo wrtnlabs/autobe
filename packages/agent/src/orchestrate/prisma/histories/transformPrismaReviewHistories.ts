@@ -22,6 +22,12 @@ export const transformPrismaReviewHistories = (props: {
     {
       id: v7(),
       created_at: new Date().toISOString(),
+      type: "systemMessage",
+      text: AutoBeSystemPromptConstant.PRISMA_REVIEW,
+    },
+    {
+      id: v7(),
+      created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: [
         "Here is the requirement analysis report given by the user:",
@@ -42,12 +48,6 @@ export const transformPrismaReviewHistories = (props: {
         JSON.stringify(props.schemas),
         "```",
       ].join("\n"),
-    },
-    {
-      id: v7(),
-      created_at: new Date().toISOString(),
-      type: "systemMessage",
-      text: AutoBeSystemPromptConstant.PRISMA_REVIEW,
     },
     {
       id: v7(),

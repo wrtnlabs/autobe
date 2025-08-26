@@ -29,11 +29,12 @@ export async function orchestrateInterfaceAuthorizations<
   };
   const authorizations: AutoBeInterfaceAuthorization[] =
     await executeCachedBatch(
-      roles.map((role) => async () => {
+      roles.map((role) => async (promptCacheKey) => {
         const event: AutoBeInterfaceAuthorizationEvent = await process(
           ctx,
           role,
           progress,
+          promptCacheKey,
         );
         ctx.dispatch(event);
         return {
@@ -50,6 +51,7 @@ async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   role: AutoBeAnalyzeRole,
   progress: AutoBeProgressEventBase,
+  promptCacheKey: string,
 ): Promise<AutoBeInterfaceAuthorizationEvent> {
   const pointer: IPointer<IAutoBeInterfaceAuthorizationsApplication.IProps | null> =
     {
@@ -66,6 +68,7 @@ async function process<Model extends ILlmSchema.Model>(
       },
     }),
     enforceFunctionCall: true,
+    promptCacheKey,
     message: "Create Authorization Operation for the given roles",
   });
   if (pointer.value === null)

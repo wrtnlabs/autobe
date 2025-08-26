@@ -45,13 +45,14 @@ export async function orchestrateInterfaceOperations<
   };
   return (
     await executeCachedBatch(
-      matrix.map((it) => async () => {
+      matrix.map((it) => async (promptCacheKey) => {
         const row: AutoBeOpenApi.IOperation[] = await divideAndConquer(
           ctx,
           it,
           3,
           operationsProgress,
           operationsReviewProgress,
+          promptCacheKey,
         );
         return row;
       }),
@@ -65,6 +66,7 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
   retry: number,
   operationsProgress: AutoBeProgressEventBase,
   operationsReviewProgress: AutoBeProgressEventBase,
+  promptCacheKey: string,
 ): Promise<AutoBeOpenApi.IOperation[]> {
   const remained: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(
     endpoints,
@@ -79,7 +81,7 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
   for (let i: number = 0; i < retry; ++i) {
     if (remained.empty() === true || unique.size() >= endpoints.length) break;
     const operations: AutoBeOpenApi.IOperation[] = remained.size()
-      ? await process(ctx, remained, operationsProgress)
+      ? await process(ctx, remained, operationsProgress, promptCacheKey)
       : [];
 
     for (const item of operations) {
@@ -101,6 +103,7 @@ async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   endpoints: HashSet<AutoBeOpenApi.IEndpoint>,
   progress: AutoBeProgressEventBase,
+  promptCacheKey: string,
 ): Promise<AutoBeOpenApi.IOperation[]> {
   const prefix: string = NamingConvention.camel(ctx.state().analyze!.prefix);
   const pointer: IPointer<AutoBeOpenApi.IOperation[] | null> = {
@@ -156,6 +159,7 @@ async function process<Model extends ILlmSchema.Model>(
       },
     }),
     enforceFunctionCall: true,
+    promptCacheKey,
     message: "Make API operations",
   });
   if (pointer.value === null) throw new Error("Failed to create operations."); // never be happened

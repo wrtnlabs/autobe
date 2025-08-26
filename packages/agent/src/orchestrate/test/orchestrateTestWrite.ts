@@ -35,7 +35,7 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
      * individual test code implementations. Each scenario is processed to
      * generate corresponding test code and progress events.
      */
-    scenarios.map((scenario) => async () => {
+    scenarios.map((scenario) => async (promptCacheKey) => {
       try {
         const artifacts: IAutoBeTestScenarioArtifacts =
           await getTestScenarioArtifacts(ctx, scenario);
@@ -44,6 +44,7 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
           scenario,
           artifacts,
           progress,
+          promptCacheKey,
         );
         ctx.dispatch(event);
         return {
@@ -73,6 +74,7 @@ async function process<Model extends ILlmSchema.Model>(
   scenario: AutoBeTestScenario,
   artifacts: IAutoBeTestScenarioArtifacts,
   progress: AutoBeProgressEventBase,
+  promptCacheKey: string,
 ): Promise<AutoBeTestWriteEvent> {
   const pointer: IPointer<IAutoBeTestWriteApplication.IProps | null> = {
     value: null,
@@ -88,6 +90,7 @@ async function process<Model extends ILlmSchema.Model>(
       },
     }),
     enforceFunctionCall: true,
+    promptCacheKey,
     message: "Create e2e test functions.",
   });
   if (pointer.value === null) throw new Error("Failed to create test code.");

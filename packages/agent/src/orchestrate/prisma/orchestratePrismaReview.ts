@@ -25,9 +25,16 @@ export async function orchestratePrismaReview<Model extends ILlmSchema.Model>(
   };
   return (
     await executeCachedBatch(
-      componentList.map((component) => async () => {
+      componentList.map((component) => async (promptCacheKey) => {
         try {
-          return await step(ctx, application, schemas, component, progress);
+          return await step(
+            ctx,
+            application,
+            schemas,
+            component,
+            progress,
+            promptCacheKey,
+          );
         } catch {
           ++progress.completed;
           return null;
@@ -43,6 +50,7 @@ async function step<Model extends ILlmSchema.Model>(
   schemas: Record<string, string>,
   component: AutoBePrisma.IComponent,
   progress: AutoBeProgressEventBase,
+  promptCacheKey: string,
 ): Promise<AutoBePrismaReviewEvent> {
   const start: Date = new Date();
   const pointer: IPointer<IAutoBePrismaReviewApplication.IProps | null> = {
@@ -68,6 +76,7 @@ async function step<Model extends ILlmSchema.Model>(
       },
     }),
     enforceFunctionCall: true,
+    promptCacheKey,
     message: "Please review the Prisma schema file.",
   });
   if (pointer.value === null)

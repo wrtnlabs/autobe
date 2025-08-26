@@ -9,7 +9,7 @@ export namespace TestLogger {
       content.push(`  - progress: (${event.completed} of ${event.total})`);
     if (typia.is<TokenUsageEvent>(event))
       content.push(
-        `  - token usage: (input: ${event.tokenUsage.input.total.toLocaleString()}, output: ${event.tokenUsage.output.total.toLocaleString()})`,
+        `  - token usage: (input: ${event.tokenUsage.input.total.toLocaleString()}, cached: ${event.tokenUsage.input.cached.toLocaleString()}, output: ${event.tokenUsage.output.total.toLocaleString()})`,
       );
     if (event.type === "consentFunctionCall")
       content.push(

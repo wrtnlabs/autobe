@@ -21,6 +21,18 @@ export const transformInterfaceComplementHistories = (
   },
   ...transformInterfaceAssetHistories(state),
   {
+    type: "systemMessage",
+    id: v7(),
+    created_at: new Date().toISOString(),
+    text: AutoBeSystemPromptConstant.INTERFACE_SCHEMA,
+  },
+  {
+    type: "systemMessage",
+    id: v7(),
+    created_at: new Date().toISOString(),
+    text: AutoBeSystemPromptConstant.INTERFACE_COMPLEMENT,
+  },
+  {
     type: "assistantMessage",
     id: v7(),
     created_at: new Date().toISOString(),
@@ -33,12 +45,6 @@ export const transformInterfaceComplementHistories = (
     ].join("\n"),
   },
   {
-    type: "systemMessage",
-    id: v7(),
-    created_at: new Date().toISOString(),
-    text: AutoBeSystemPromptConstant.INTERFACE_SCHEMA,
-  },
-  {
     type: "assistantMessage",
     id: v7(),
     created_at: new Date().toISOString(),
@@ -49,12 +55,6 @@ export const transformInterfaceComplementHistories = (
       JSON.stringify(document.components.schemas),
       "```",
     ].join("\n"),
-  },
-  {
-    type: "systemMessage",
-    id: v7(),
-    created_at: new Date().toISOString(),
-    text: AutoBeSystemPromptConstant.INTERFACE_COMPLEMENT,
   },
   {
     type: "assistantMessage",

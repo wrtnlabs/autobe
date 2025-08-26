@@ -33,7 +33,8 @@ export async function orchestrateInterfaceEndpoints<
   const endpoints: AutoBeOpenApi.IEndpoint[] = (
     await executeCachedBatch(
       groups.map(
-        (g) => () => process(ctx, g, content, progress, authorizations),
+        (g) => (promptCacheKey) =>
+          process(ctx, g, content, progress, authorizations, promptCacheKey),
       ),
     )
   ).flat();
@@ -50,6 +51,7 @@ async function process<Model extends ILlmSchema.Model>(
   message: string,
   progress: AutoBeProgressEventBase,
   authorizations: AutoBeOpenApi.IOperation[],
+  promptCacheKey: string,
 ): Promise<AutoBeOpenApi.IEndpoint[]> {
   const start: Date = new Date();
   const pointer: IPointer<AutoBeOpenApi.IEndpoint[] | null> = {
@@ -70,6 +72,7 @@ async function process<Model extends ILlmSchema.Model>(
       },
     }),
     enforceFunctionCall: true,
+    promptCacheKey,
     message,
   });
   if (pointer.value === null) throw new Error("Failed to generate endpoints."); // unreachable

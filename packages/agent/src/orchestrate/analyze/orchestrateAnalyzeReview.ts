@@ -20,6 +20,7 @@ export const orchestrateAnalyzeReview = async <Model extends ILlmSchema.Model>(
   otherFiles: AutoBeAnalyzeFile[],
   myFile: AutoBeAnalyzeFile,
   progress: AutoBeProgressEventBase,
+  promptCacheKey: string,
 ): Promise<AutoBeAnalyzeReviewEvent> => {
   const pointer: IPointer<IAutoBeAnalyzeReviewApplication.IProps | null> = {
     value: null,
@@ -34,6 +35,7 @@ export const orchestrateAnalyzeReview = async <Model extends ILlmSchema.Model>(
       ...transformAnalyzeReviewerHistories(ctx, scenario, otherFiles, myFile),
     ],
     enforceFunctionCall: true,
+    promptCacheKey,
     message: "Review the requirement document",
   });
   if (pointer.value === null)

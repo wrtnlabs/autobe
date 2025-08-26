@@ -71,6 +71,7 @@ export namespace AutoBeContext {
     histories: Array<IMicroAgenticaHistoryJson>;
     enforceFunctionCall: boolean;
     message: string;
+    promptCacheKey?: string;
   }
   export interface IResult<Model extends ILlmSchema.Model> {
     histories: MicroAgenticaHistory<Model>[];

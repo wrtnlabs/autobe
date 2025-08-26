@@ -23,7 +23,7 @@ export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
   const completed: IPointer<number> = { value: 0 };
   const id: string = v7();
   return await executeCachedBatch(
-    componentList.map((component) => async () => {
+    componentList.map((component) => async (promptCacheKey) => {
       const otherTables: string[] = componentList
         .filter((y) => component !== y)
         .map((c) => c.tables)
@@ -35,6 +35,7 @@ export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
         total,
         completed,
         id,
+        promptCacheKey,
       });
       ctx.dispatch(event);
       return event;
@@ -51,6 +52,7 @@ async function process<Model extends ILlmSchema.Model>(
     id: string;
     total: number;
     completed: IPointer<number>;
+    promptCacheKey: string;
   },
 ): Promise<AutoBePrismaSchemasEvent> {
   const pointer: IPointer<IAutoBePrismaSchemaApplication.IProps | null> = {
@@ -76,6 +78,7 @@ async function process<Model extends ILlmSchema.Model>(
       },
     }),
     enforceFunctionCall: true,
+    promptCacheKey: props.promptCacheKey,
     message: "Make prisma schema file please",
   });
   if (pointer.value === null)

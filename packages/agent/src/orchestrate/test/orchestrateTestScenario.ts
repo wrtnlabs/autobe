@@ -68,7 +68,7 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
       capacity: 5,
     });
     await executeCachedBatch(
-      matrix.map((include) => async () => {
+      matrix.map((include) => async (promptCacheKey) => {
         exclude.push(
           ...(await divideAndConquer(
             ctx,
@@ -78,6 +78,7 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
             include,
             exclude.map((x) => x.endpoint),
             progress,
+            promptCacheKey,
           )),
         );
       }),
@@ -115,6 +116,7 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
   include: AutoBeOpenApi.IOperation[],
   exclude: AutoBeOpenApi.IEndpoint[],
   progress: AutoBeProgressEventBase,
+  promptCacheKey: string,
 ) => {
   const pointer: IPointer<IAutoBeTestScenarioApplication.IScenarioGroup[]> = {
     value: [],
@@ -142,6 +144,7 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
       },
     }),
     enforceFunctionCall: true,
+    promptCacheKey,
     message: `Create e2e test scenarios.`,
   });
   if (pointer.value.length === 0) return [];

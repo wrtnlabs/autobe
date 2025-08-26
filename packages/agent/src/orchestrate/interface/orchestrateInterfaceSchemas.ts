@@ -55,9 +55,16 @@ export async function orchestrateInterfaceSchemas<
         }
       : {};
   for (const y of await executeCachedBatch(
-    matrix.map((it) => async () => {
+    matrix.map((it) => async (promptCacheKey) => {
       const row: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-        await divideAndConquer(ctx, operations, it, 3, progress);
+        await divideAndConquer(
+          ctx,
+          operations,
+          it,
+          3,
+          progress,
+          promptCacheKey,
+        );
       const newbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
         await orchestrateInterfaceSchemasReview(
           ctx,
@@ -80,13 +87,21 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
   typeNames: string[],
   retry: number,
   progress: AutoBeProgressEventBase,
+  promptCacheKey: string,
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   const remained: Set<string> = new Set(typeNames);
   const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
   for (let i: number = 0; i < retry; ++i) {
     if (remained.size === 0) break;
     const newbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-      await process(ctx, operations, schemas, remained, progress);
+      await process(
+        ctx,
+        operations,
+        schemas,
+        remained,
+        progress,
+        promptCacheKey,
+      );
     for (const key of Object.keys(newbie)) {
       schemas[key] = newbie[key];
       remained.delete(key);
@@ -101,6 +116,7 @@ async function process<Model extends ILlmSchema.Model>(
   oldbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
   remained: Set<string>,
   progress: AutoBeProgressEventBase,
+  promptCacheKey: string,
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   const already: string[] = Object.keys(oldbie);
   const pointer: IPointer<Record<
@@ -121,6 +137,7 @@ async function process<Model extends ILlmSchema.Model>(
       pointer,
     }),
     enforceFunctionCall: true,
+    promptCacheKey,
     message: [
       "Make type components please.",
       "",
