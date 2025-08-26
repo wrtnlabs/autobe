@@ -72,7 +72,6 @@ export const validate_agent_realize_write = async (
             authorization: authorization ?? null,
             progress,
             scenario,
-            id: v7(),
           },
         );
 
@@ -100,7 +99,6 @@ export const validate_agent_realize_write = async (
             authorization: authorization ?? null,
             progress,
             scenario,
-            id: v7(),
           },
         );
 
