@@ -66,13 +66,13 @@ export const orchestrateAnalyze =
       completed: 0,
     };
     const newFiles: AutoBeAnalyzeFile[] = await executeCachedBatch(
-      fileList.map((file, i) => async (promptCacheKey) => {
+      fileList.map((file) => async (promptCacheKey) => {
         try {
           const event: AutoBeAnalyzeReviewEvent =
             await orchestrateAnalyzeReview(
               ctx,
               scenario,
-              fileList.filter((_, j) => j !== i), // other files
+              fileList, // all files
               file,
               reviewProgress,
               promptCacheKey,

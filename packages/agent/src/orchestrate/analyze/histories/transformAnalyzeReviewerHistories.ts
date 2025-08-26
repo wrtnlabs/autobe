@@ -14,7 +14,7 @@ export const transformAnalyzeReviewerHistories = <
 >(
   ctx: AutoBeContext<Model>,
   scenario: AutoBeAnalyzeScenarioEvent,
-  otherFiles: AutoBeAnalyzeFile[],
+  allFiles: AutoBeAnalyzeFile[],
   myFile: AutoBeAnalyzeFile,
 ): Array<
   | IAgenticaHistoryJson.IUserMessage
@@ -22,7 +22,7 @@ export const transformAnalyzeReviewerHistories = <
   | IAgenticaHistoryJson.ISystemMessage
 > => {
   return [
-    ...transformAnalyzeWriteHistories(ctx, scenario, myFile),
+    ...transformAnalyzeWriteHistories(ctx, scenario, myFile).slice(0, 2),
     {
       id: v7(),
       created_at: new Date().toISOString(),
@@ -34,16 +34,10 @@ export const transformAnalyzeReviewerHistories = <
       created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: StringUtil.trim`
-        Here are the other documents written in other agents:
+        Here are the all documents written:
         
         \`\`\`json
-        ${JSON.stringify(otherFiles)}
-        \`\`\`
-        
-        And here is the target document to review what you have written:
-        
-        \`\`\`json
-        ${JSON.stringify(myFile)}
+        ${JSON.stringify(allFiles)}
         \`\`\`
       `,
     },

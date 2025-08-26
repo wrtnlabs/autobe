@@ -17,7 +17,7 @@ import { IAutoBeAnalyzeReviewApplication } from "./structures/IAutoBeAnalyzeRevi
 export const orchestrateAnalyzeReview = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   scenario: AutoBeAnalyzeScenarioEvent,
-  otherFiles: AutoBeAnalyzeFile[],
+  allFiles: AutoBeAnalyzeFile[],
   myFile: AutoBeAnalyzeFile,
   progress: AutoBeProgressEventBase,
   promptCacheKey: string,
@@ -32,7 +32,7 @@ export const orchestrateAnalyzeReview = async <Model extends ILlmSchema.Model>(
       pointer,
     }),
     histories: [
-      ...transformAnalyzeReviewerHistories(ctx, scenario, otherFiles, myFile),
+      ...transformAnalyzeReviewerHistories(ctx, scenario, allFiles, myFile),
     ],
     enforceFunctionCall: true,
     promptCacheKey,
