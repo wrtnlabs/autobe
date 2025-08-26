@@ -714,6 +714,13 @@ importers:
         version: 5.9.2
 
   packages/ui:
+    dependencies:
+      jszip:
+        specifier: ^3.10.1
+        version: 3.10.1
+      tstl:
+        specifier: ^3.0.0
+        version: 3.0.0
     devDependencies:
       '@autobe/interface':
         specifier: workspace:*

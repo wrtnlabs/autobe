@@ -6,7 +6,9 @@ import {
   AutoBeTestCompleteEvent,
   IAutoBeGetFilesOptions,
 } from "@autobe/interface";
+import JsZip from "jszip";
 import { useState } from "react";
+import { VariadicSingleton } from "tstl";
 
 import { EventCard, EventContent, EventHeader } from "./common";
 
@@ -63,16 +65,27 @@ export const AutoBeCompleteEventMovie = (
   };
 
   const download = async (dbms: "postgres" | "sqlite") => {
-    const files = await getFiles(dbms);
+    const zip: JsZip = new JsZip();
+    const directory = new VariadicSingleton((location: string): JsZip => {
+      const separated: string[] = location.split("/");
+      if (separated.length === 1) return zip.folder(separated[0])!;
+      const parent: JsZip = directory.get(separated.slice(0, -1).join("/"));
+      return parent.folder(separated.at(-1)!)!;
+    });
+    for (const [file, content] of Object.entries(await getFiles(dbms))) {
+      const separated: string[] = file.split("/");
+      if (separated.length === 1) zip.file(file, content);
+      else {
+        const folder: JsZip = directory.get(separated.slice(0, -1).join("/"));
+        folder.file(separated.at(-1)!, content);
+      }
+    }
+    const data: Blob = await zip.generateAsync({ type: "blob" });
 
-    // 간단한 다운로드 구현 (JSZip 없이)
-    const data = JSON.stringify(files, null, 2);
-    const blob = new Blob([data], { type: "application/json" });
-
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
+    const url: string = URL.createObjectURL(data);
+    const a: HTMLAnchorElement = document.createElement("a");
     a.href = url;
-    a.download = `AutoBE.${props.event.type}.json`;
+    a.download = `AutoBE.${props.event.type}.zip`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

@@ -28,5 +28,9 @@
     "react": "catalog:ui",
     "react-dom": "catalog:ui",
     "typescript": "catalog:typescript"
+  },
+  "dependencies": {
+    "jszip": "^3.10.1",
+    "tstl": "catalog:samchon"
   }
 }
