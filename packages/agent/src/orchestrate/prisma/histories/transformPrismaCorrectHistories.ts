@@ -17,18 +17,6 @@ export const transformPrismaCorrectHistories = (
       type: "systemMessage",
       text: AutoBeSystemPromptConstant.PRISMA_CORRECT,
     },
-    // {
-    //   id: v7(),
-    //   created_at: new Date().toISOString(),
-    //   type: "systemMessage",
-    //   text: [
-    //     "Before fixing the schema files,",
-    //     "study about Prisma schema language",
-    //     "from the best practices and examples",
-    //     "",
-    //     AutoBeSystemPromptConstant.PRISMA_EXAMPLE,
-    //   ].join("\n"),
-    // },
     {
       id: v7(),
       created_at: new Date().toISOString(),

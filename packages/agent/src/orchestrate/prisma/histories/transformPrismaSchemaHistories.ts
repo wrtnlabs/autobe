@@ -1,5 +1,6 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
 import { AutoBePrisma } from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
@@ -22,33 +23,45 @@ export const transformPrismaSchemaHistories = (
       id: v7(),
       created_at: new Date().toISOString(),
       type: "assistantMessage",
-      text: [
-        "Here is the input data for generating Prisma DB schema.",
-        "",
-        "```",
-        JSON.stringify({
-          requirementAnalysisReport,
+      text: StringUtil.trim`
+        Here is the requirement analysis report:
+
+        \`\`\`json
+        ${JSON.stringify(requirementAnalysisReport)}
+        \`\`\`
+      `,
+    },
+    {
+      id: v7(),
+      created_at: new Date().toISOString(),
+      type: "assistantMessage",
+      text: StringUtil.trim`
+        Here is the input data for generating Prisma DB schema.
+        
+        \`\`\`json
+        ${JSON.stringify({
           targetComponent,
           otherTables,
-        }),
-        "```",
-      ].join("\n"),
+        })}
+        \`\`\`
+      `,
     },
     {
       id: v7(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
-      text: [
-        "You've already taken a mistake that creating models from the other components.",
-        "Note that, you have to make models from the target component only. Never make",
-        "models from the other components. The other components' models are already made.",
-        "",
-        "```json",
-        JSON.stringify({
+      text: StringUtil.trim`
+        You've already taken a mistake that creating models from the other components.
+
+        Note that, you have to make models from the target component only. Never make
+        models from the other components. The other components' models are already made.
+        
+        \`\`\`json
+        ${JSON.stringify({
           targetComponent,
-        }),
-        "```",
-      ].join("\n"),
+        })}
+        \`\`\`
+      `,
     },
   ];
 };
