@@ -6,6 +6,7 @@ import {
   AutoBeAnalyzeScenarioEvent,
   AutoBeAssistantMessageHistory,
 } from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -33,12 +34,12 @@ export const orchestrateAnalyzeScenario = async <
     }),
     histories: transformAnalyzeSceHistories(ctx),
     enforceFunctionCall: false,
-    message: [
-      `Design a complete list of documents and user roles for this project.`,
-      `Define user roles that can authenticate via API and create appropriate documentation files.`,
-      `You must respect the number of documents specified by the user.`,
-      `Note that the user's locale is in ${ctx.locale}.`,
-    ].join("\n"),
+    message: StringUtil.trim`
+      Design a complete list of documents and user roles for this project.
+      Define user roles that can authenticate via API and create appropriate documentation files.
+      You must respect the number of documents specified by the user.
+      Note that the user's locale is in ${ctx.locale}.
+    `,
   });
   if (histories.at(-1)?.type === "assistantMessage")
     return {

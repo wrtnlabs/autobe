@@ -42,28 +42,28 @@ export const transformPrismaComponentsHistories = (
         
         - Prefix provided by the user: ${prefix}
         
-        "The user wants all database schema (table) names to start with the prefix provided below.
+        The user wants all database schema (table) names to start with the prefix provided below.
         
-        "DO: Use the provided prefix for all table names
-        "DO: Place special-purpose prefixes like \`mv\` (for materialized views) before the given prefix
-        "DO NOT: Apply prefix if it is \`null\`",
+        - DO: Use the provided prefix for all table names
+        - DO: Place special-purpose prefixes like \`mv\` (for materialized views) before the given prefix
+        - DO NOT: Apply prefix if it is \`null\`
         
-        "## Prefix Example",
+        ## Prefix Example
         
-        "If the prefix is \`shopping\`, then table names are like:
+        If the prefix is \`shopping\`, then table names are like:
         
         - \`shopping_sales\`
         - \`shopping_sale_options\`
         
-        "In cases where a table is created for performance optimization purposes (e.g., materialized views), the \`mv_\` prefix must come first.",
-        "For example:",
-        "",
-        "- \`mv_shopping_daily_stats\`
+        In cases where a table is created for performance optimization purposes 
+        (e.g., materialized views), the \`mv_\` prefix must come first. For example:
+        
+        - \`mv_shopping_daily_stats\`
         
         ${
           state.analyze.roles.length > 0
             ? StringUtil.trim`
-                ## User Role Handling,
+                ## User Role Handling
                 
                 The Requirement Analysis Report contains the following user roles: ${state.analyze.roles.join(", ")}
                 
