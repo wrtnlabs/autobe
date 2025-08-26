@@ -1,23 +1,68 @@
-import AddIcon from "@mui/icons-material/Add";
-import ErrorIcon from "@mui/icons-material/Error";
-import { IconButton, Tooltip } from "@mui/material";
+import { AutoBeUserMessageContent } from "@autobe/interface";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import CloseIcon from "@mui/icons-material/Close";
+import { Box, Chip, IconButton, TextField } from "@mui/material";
 import { ReactNode, RefObject, useEffect, useRef, useState } from "react";
 
 import { IAutoBePlaygroundBucket } from "../../structures/IAutoBePlaygroundBucket";
 import { IAutoBePlaygroundUploadConfig } from "../../structures/IAutoBePlaygroundUploadConfig";
 import { AutoBePlaygroundFileUploader } from "../../utils/AutoBePlaygroundFileUploader";
+import { AutoBePlaygroundChatUploadFile } from "./AutoBePlaygroundChatUploadFile";
 import { AutoBePlaygroundChatVoiceMovie } from "./AutoBePlaygroundChatVoiceMovie";
 
 export const AutoBePlaygroundChatUploadMovie = (
   props: AutoBePlaygroundChatUploadMovie.IProps,
 ) => {
+  const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [enabled, setEnabled] = useState(true);
+  const [text, setText] = useState("");
+  const [buckets, setBuckets] = useState<IAutoBePlaygroundBucket[]>([]);
   const [extensionError, setExtensionError] = useState<ReactNode | null>(null);
 
+  const [emptyText, setEmptyText] = useState(false);
+
+  const removeFile = (index: number) => {
+    setBuckets(buckets.filter((_, i) => i !== index));
+  };
+
+  const conversate = async () => {
+    if (enabled === false) return;
+
+    const sendText: string = text.trim();
+    const sendBuckets: IAutoBePlaygroundBucket[] = buckets;
+    if (sendText.length === 0 && sendBuckets.length === 0) {
+      setEmptyText(true);
+      return;
+    }
+
+    setEnabled(false);
+    setEmptyText(false);
+    setText("");
+    setBuckets([]);
+
+    try {
+      const messages: AutoBeUserMessageContent[] = [];
+      if (sendText.length > 0) {
+        messages.push({
+          type: "text",
+          text: sendText,
+        });
+      }
+      for (const { content } of sendBuckets) messages.push(content);
+      await props.conversate(messages);
+    } catch (error) {
+      props.setError(
+        error instanceof Error ? error : new Error("Unknown error"),
+      );
+    }
+    setEnabled(true);
+  };
   const handleFileSelect = async (fileList: FileList | null) => {
     if (!fileList) return;
 
-    props.setEnabled(false);
+    setEnabled(false);
     setExtensionError(null);
 
     const newFiles: IAutoBePlaygroundBucket[] = [];
@@ -54,8 +99,8 @@ export const AutoBePlaygroundChatUploadMovie = (
       );
       setTimeout(() => setExtensionError(null), 5_000);
     }
-    props.complete(newFiles);
-    props.setEnabled(true);
+    setBuckets((o) => [...o, ...newFiles]);
+    setEnabled(true);
   };
 
   const handleDragEnter = (e: React.DragEvent) => {
@@ -100,6 +145,70 @@ export const AutoBePlaygroundChatUploadMovie = (
 
   return (
     <>
+      {buckets.length > 0 && (
+        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+          {buckets.map(({ file }, index) => (
+            <Chip
+              key={index}
+              label={file.name}
+              size="small"
+              onDelete={() => removeFile(index)}
+              deleteIcon={<CloseIcon />}
+              sx={{
+                maxWidth: 200,
+                "& .MuiChip-label": {
+                  display: "block",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                },
+              }}
+            />
+          ))}
+        </Box>
+      )}
+      <TextField
+        inputRef={inputRef}
+        fullWidth
+        multiline
+        size="small"
+        maxRows={8}
+        placeholder={
+          emptyText
+            ? "Cannot send empty message"
+            : props.dragging
+              ? "Drop files here..."
+              : "Conversate with AI Chatbot"
+        }
+        value={text}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            if (enabled) void conversate();
+          }
+        }}
+        onChange={(e) => setText(e.target.value)}
+        error={emptyText}
+        sx={{
+          "& .MuiOutlinedInput-root": {
+            borderRadius: 2,
+            "& fieldset": {
+              borderColor: props.dragging ? "#1976d2" : undefined,
+              borderWidth: 2,
+            },
+            "&:hover fieldset": {
+              borderWidth: 2,
+            },
+            "&.Mui-focused fieldset": {
+              borderWidth: 2,
+            },
+          },
+          "& .MuiInputBase-input": {
+            fontSize: "0.95rem",
+            color: props.dragging ? "#1976d2" : "inherit",
+          },
+        }}
+      />
+
       <input
         ref={fileInputRef}
         type="file"
@@ -115,65 +224,59 @@ export const AutoBePlaygroundChatUploadMovie = (
           if (fileInputRef.current) fileInputRef.current.value = "";
         }}
       />
-      <Tooltip
-        title={extensionError || ""}
-        open={!!extensionError}
-        placement="top"
-        arrow
-        componentsProps={{
-          tooltip: {
-            sx: {
-              bgcolor: "error.main",
-              "& .MuiTooltip-arrow": {
-                color: "error.main",
-              },
-            },
-          },
+
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
         }}
       >
+        <AutoBePlaygroundChatUploadFile
+          extensionError={extensionError}
+          onClick={() => fileInputRef.current?.click()}
+          enabled={enabled}
+        />
+        {props.uploadConfig?.supportAudio === true ? (
+          <AutoBePlaygroundChatVoiceMovie
+            enabled={enabled}
+            complete={(b) => setBuckets((o) => [...o, b])}
+          />
+        ) : null}
+
         <IconButton
           size="small"
-          color={extensionError ? "error" : "primary"}
-          onClick={() => fileInputRef.current?.click()}
-          disabled={!props.enabled}
+          color="primary"
+          onClick={() => void conversate()}
+          disabled={!enabled}
           sx={{
             p: 0.75,
-            border: "1px solid",
-            borderColor: extensionError ? "error.main" : "divider",
-            backgroundColor: extensionError ? "error.light" : "transparent",
+            backgroundColor: "primary.main",
+            color: "primary.contrastText",
             "&:hover": {
-              backgroundColor: extensionError ? "error.light" : "action.hover",
-              borderColor: extensionError ? "error.main" : "primary.main",
+              backgroundColor: "primary.dark",
             },
-            transition: "all 0.3s ease",
+            "&.Mui-disabled": {
+              backgroundColor: "action.disabledBackground",
+              color: "action.disabled",
+            },
           }}
         >
-          {extensionError ? (
-            <ErrorIcon fontSize="small" />
-          ) : (
-            <AddIcon fontSize="small" />
-          )}
+          <ArrowUpwardIcon fontSize="small" />
         </IconButton>
-      </Tooltip>
-      {props.uploadConfig?.supportAudio === true ? (
-        <AutoBePlaygroundChatVoiceMovie
-          enabled={props.enabled}
-          complete={(b) => props.complete([b])}
-        />
-      ) : null}
+      </Box>
     </>
   );
 };
 
 export namespace AutoBePlaygroundChatUploadMovie {
   export interface IProps {
-    enabled: boolean;
     dragging: boolean;
-    setEnabled: (value: boolean) => void;
     setDragging: (value: boolean) => void;
     listener: RefObject<IListener>;
-    complete: (files: IAutoBePlaygroundBucket[]) => void;
     uploadConfig?: IAutoBePlaygroundUploadConfig;
+    conversate: (messages: AutoBeUserMessageContent[]) => Promise<void>;
+    setError: (error: Error) => void;
   }
   export interface IListener {
     handleDragEnter: (event: React.DragEvent) => void;
