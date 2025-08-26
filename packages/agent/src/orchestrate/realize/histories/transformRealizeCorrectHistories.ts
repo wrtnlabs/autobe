@@ -36,6 +36,7 @@ export function transformRealizeCorrectHistories(props: {
         \`\`\`
 
         The code has a compilation error:
+        
         \`\`\`json
         ${JSON.stringify(props.diagnostic)}
         \`\`\`

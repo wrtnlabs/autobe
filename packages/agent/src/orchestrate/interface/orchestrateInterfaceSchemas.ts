@@ -147,19 +147,19 @@ async function process<Model extends ILlmSchema.Model>(
       types are required during making the components, please make them
       too.
 
-${Array.from(remained)
-  .map((k) => `      - \`${k}\``)
-  .join("\n")}${
-      already.length !== 0
-        ? StringUtil.trim`
+      ${Array.from(remained)
+        .map((k) => `      - \`${k}\``)
+        .join("\n")}${
+        already.length !== 0
+          ? StringUtil.trim`
 
             > By the way, here is the list of components schemas what you've
             > already made. So, you don't need to make them again.
             >
             ${already.map((k) => `> - \`${k}\``).join("\n")}
           `
-        : ""
-    }
+          : ""
+      }
     `,
   });
   if (pointer.value === null) throw new Error("Failed to create components.");
