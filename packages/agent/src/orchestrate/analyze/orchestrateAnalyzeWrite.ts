@@ -8,6 +8,7 @@ import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/Auto
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
+import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
@@ -21,9 +22,8 @@ export const orchestrateAnalyzeWrite = async <
   scenario: AutoBeAnalyzeScenarioEvent;
   file: AutoBeAnalyzeFile.Scenario;
   progress: AutoBeProgressEventBase;
-  id: string;
 }): Promise<AutoBeAnalyzeWriteEvent> => {
-  const { ctx, scenario, file, progress, id } = props;
+  const { ctx, scenario, file, progress } = props;
   const pointer: IPointer<IAutoBeAnalyzeWriteApplication.IProps | null> = {
     value: null,
   };
@@ -44,7 +44,7 @@ export const orchestrateAnalyzeWrite = async <
 
   const event: AutoBeAnalyzeWriteEvent = {
     type: "analyzeWrite",
-    id: id,
+    id: v7(),
     file: {
       ...file,
       content: pointer.value.content,

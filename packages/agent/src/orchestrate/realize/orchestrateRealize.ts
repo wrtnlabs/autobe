@@ -80,7 +80,6 @@ export const orchestrateRealize =
           authorization: scenario.decoratorEvent ?? null,
           scenario,
           progress: writeProgress,
-          id: writeProgressId,
         });
         return code;
       }),

@@ -46,7 +46,6 @@ export const orchestrateAnalyze =
       total: scenario.files.length,
       completed: 0,
     };
-    const progressId: string = v7();
     const fileList: AutoBeAnalyzeFile[] = await executeCachedBatch(
       scenario.files.map((file) => async () => {
         const event: AutoBeAnalyzeWriteEvent = await orchestrateAnalyzeWrite({
@@ -54,7 +53,6 @@ export const orchestrateAnalyze =
           scenario,
           file,
           progress: writeProgress,
-          id: progressId,
         });
         return event.file;
       }),
@@ -65,7 +63,6 @@ export const orchestrateAnalyze =
       total: fileList.length,
       completed: 0,
     };
-    const reviewProgressId: string = v7();
     const newFiles: AutoBeAnalyzeFile[] = await executeCachedBatch(
       fileList.map((file, i) => async () => {
         try {
@@ -76,7 +73,6 @@ export const orchestrateAnalyze =
               fileList.filter((_, j) => j !== i), // other files
               file,
               reviewProgress,
-              reviewProgressId,
             );
           return {
             ...event.file,
