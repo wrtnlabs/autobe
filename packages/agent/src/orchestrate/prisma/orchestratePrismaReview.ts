@@ -18,15 +18,15 @@ export async function orchestratePrismaReview<Model extends ILlmSchema.Model>(
   componentList: AutoBePrisma.IComponent[],
 ): Promise<AutoBePrismaReviewEvent[]> {
   const progress: AutoBeProgressEventBase = {
-    id: v7(),
     completed: 0,
     total: componentList.length,
   };
+  const id: string = v7();
   return (
     await Promise.all(
       componentList.map(async (component) => {
         try {
-          return await step(ctx, application, schemas, component, progress);
+          return await step(ctx, application, schemas, component, progress, id);
         } catch {
           ++progress.completed;
           return null;
@@ -42,6 +42,7 @@ async function step<Model extends ILlmSchema.Model>(
   schemas: Record<string, string>,
   component: AutoBePrisma.IComponent,
   progress: AutoBeProgressEventBase,
+  id: string,
 ): Promise<AutoBePrismaReviewEvent> {
   const start: Date = new Date();
   const pointer: IPointer<IAutoBePrismaReviewApplication.IProps | null> = {
@@ -74,7 +75,7 @@ async function step<Model extends ILlmSchema.Model>(
 
   const event: AutoBePrismaReviewEvent = {
     type: "prismaReview",
-    id: progress.id,
+    id,
     created_at: start.toISOString(),
     filename: component.filename,
     review: pointer.value.review,

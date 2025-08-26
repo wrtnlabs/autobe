@@ -30,16 +30,17 @@ export async function orchestrateRealizeAuthorization<
 >(ctx: AutoBeContext<Model>): Promise<AutoBeRealizeAuthorization[]> {
   ctx.dispatch({
     type: "realizeAuthorizationStart",
+    id: v7(),
     step: ctx.state().test?.step ?? 0,
     created_at: new Date().toISOString(),
   });
 
   const roles: AutoBeAnalyzeRole[] = ctx.state().analyze?.roles ?? [];
   const progress: AutoBeProgressEventBase = {
-    id: v7(),
     total: roles.length,
     completed: 0,
   };
+  const progressId: string = v7();
   const templateFiles = await (await ctx.compiler()).realize.getTemplate();
   const authorizations: AutoBeRealizeAuthorization[] = await Promise.all(
     roles.map((role) =>
@@ -50,11 +51,13 @@ export async function orchestrateRealizeAuthorization<
           [el]: templateFiles[el],
         })).reduce((acc, cur) => Object.assign(acc, cur), {}),
         progress,
+        progressId,
       ),
     ),
   );
   ctx.dispatch({
     type: "realizeAuthorizationComplete",
+    id: v7(),
     created_at: new Date().toISOString(),
     step: ctx.state().test?.step ?? 0,
   });
@@ -66,6 +69,7 @@ async function process<Model extends ILlmSchema.Model>(
   role: AutoBeAnalyzeRole,
   templateFiles: Record<string, string>,
   progress: AutoBeProgressEventBase,
+  progressId: string,
 ): Promise<AutoBeRealizeAuthorization> {
   const pointer: IPointer<IAutoBeRealizeAuthorizationApplication.IProps | null> =
     {
@@ -116,7 +120,7 @@ async function process<Model extends ILlmSchema.Model>(
 
   ctx.dispatch({
     type: "realizeAuthorizationWrite",
-    id: progress.id,
+    id: progressId,
     created_at: new Date().toISOString(),
     authorization: authorization,
     tokenUsage,

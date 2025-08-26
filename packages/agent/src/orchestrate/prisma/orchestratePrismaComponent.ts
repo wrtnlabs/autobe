@@ -3,6 +3,7 @@ import { AutoBePrismaComponentsEvent } from "@autobe/interface/src/events/AutoBe
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
+import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
@@ -36,6 +37,7 @@ export async function orchestratePrismaComponents<
     throw new Error("Failed to extract files and tables."); // unreachable
   return {
     type: "prismaComponents",
+    id: v7(),
     created_at: start.toISOString(),
     thinking: pointer.value.thinking,
     review: pointer.value.review,

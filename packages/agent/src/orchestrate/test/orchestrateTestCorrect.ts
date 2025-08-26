@@ -8,6 +8,7 @@ import { StringUtil } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
+import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
@@ -65,6 +66,7 @@ const compile = async <Model extends ILlmSchema.Model>(
   });
   return {
     type: "testValidate",
+    id: v7(),
     file: {
       scenario: func.scenario,
       location: func.location,
@@ -125,6 +127,7 @@ const correct = async <Model extends ILlmSchema.Model>(
 
   ctx.dispatch({
     type: "testCorrect",
+    id: v7(),
     created_at: new Date().toISOString(),
     file: validate.file,
     result: validate.result,

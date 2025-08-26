@@ -8,6 +8,7 @@ import {
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
+import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
@@ -58,6 +59,7 @@ export async function orchestrateRealizeAuthorizationCorrect<
 
   ctx.dispatch({
     type: "realizeAuthorizationValidate",
+    id: v7(),
     created_at: new Date().toISOString(),
     authorization: authorization,
     result: compiled,
@@ -120,6 +122,7 @@ export async function orchestrateRealizeAuthorizationCorrect<
   ctx.dispatch({
     ...pointer.value,
     type: "realizeAuthorizationCorrect",
+    id: v7(),
     created_at: new Date().toISOString(),
     authorization: result,
     result: compiled,

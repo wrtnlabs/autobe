@@ -8,6 +8,7 @@ import {
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
+import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
@@ -49,6 +50,7 @@ async function iterate<Model extends ILlmSchema.Model>(
   );
   ctx.dispatch({
     type: "prismaValidate",
+    id: v7(),
     result,
     schemas,
     compiled: await compiler.prisma.compile({
@@ -144,6 +146,7 @@ async function execute<Model extends ILlmSchema.Model>(
   };
   ctx.dispatch({
     type: "prismaCorrect",
+    id: v7(),
     failure,
     planning: pointer.value.planning,
     correction: correction,

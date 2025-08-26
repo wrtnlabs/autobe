@@ -123,6 +123,7 @@ function createController<Model extends ILlmSchema.Model>(
 
     ctx.dispatch({
       type: "prismaInsufficient",
+      id: v7(),
       created_at: new Date().toISOString(),
       component: props.targetComponent,
       actual,

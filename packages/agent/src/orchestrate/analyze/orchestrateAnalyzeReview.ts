@@ -20,6 +20,7 @@ export const orchestrateAnalyzeReview = async <Model extends ILlmSchema.Model>(
   otherFiles: AutoBeAnalyzeFile[],
   myFile: AutoBeAnalyzeFile,
   progress: AutoBeProgressEventBase,
+  id: string,
 ): Promise<AutoBeAnalyzeReviewEvent> => {
   const pointer: IPointer<IAutoBeAnalyzeReviewApplication.IProps | null> = {
     value: null,
@@ -41,7 +42,7 @@ export const orchestrateAnalyzeReview = async <Model extends ILlmSchema.Model>(
 
   const event: AutoBeAnalyzeReviewEvent = {
     type: "analyzeReview",
-    id: progress.id,
+    id: id,
     file: myFile,
     plan: pointer.value.plan,
     review: pointer.value.review,

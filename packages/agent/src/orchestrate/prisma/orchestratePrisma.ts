@@ -37,6 +37,7 @@ export const orchestratePrisma = async <Model extends ILlmSchema.Model>(
     });
   ctx.dispatch({
     type: "prismaStart",
+    id: v7(),
     created_at: start.toISOString(),
     reason: props.reason,
     step: ctx.state().analyze?.step ?? 0,
@@ -93,6 +94,7 @@ export const orchestratePrisma = async <Model extends ILlmSchema.Model>(
   // PROPAGATE
   return ctx.dispatch({
     type: "prismaComplete",
+    id: v7(),
     result,
     schemas: finalSchemas,
     compiled: await compiler.prisma.compile({

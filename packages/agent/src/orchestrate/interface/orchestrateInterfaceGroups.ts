@@ -3,6 +3,7 @@ import { AutoBeInterfaceGroupsEvent } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
+import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
@@ -34,6 +35,7 @@ export async function orchestrateInterfaceGroups<
   if (pointer.value === null) throw new Error("Failed to generate groups."); // unreachable
   return {
     type: "interfaceGroups",
+    id: v7(),
     created_at: start.toISOString(),
     groups: pointer.value.groups,
     tokenUsage,

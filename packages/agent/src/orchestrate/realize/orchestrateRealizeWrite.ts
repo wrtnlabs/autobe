@@ -23,6 +23,7 @@ export async function orchestrateRealizeWrite<Model extends ILlmSchema.Model>(
     authorization: AutoBeRealizeAuthorization | null;
     scenario: IAutoBeRealizeScenarioApplication.IProps;
     progress: AutoBeProgressEventBase;
+    id: string;
   },
 ): Promise<AutoBeRealizeWriteEvent> {
   const artifacts: IAutoBeTestScenarioArtifacts =
@@ -77,7 +78,7 @@ export async function orchestrateRealizeWrite<Model extends ILlmSchema.Model>(
 
   const event: AutoBeRealizeWriteEvent = {
     type: "realizeWrite",
-    id: props.progress.id,
+    id: props.id,
     location: props.scenario.location,
     content: pointer.value.implementationCode,
     tokenUsage,

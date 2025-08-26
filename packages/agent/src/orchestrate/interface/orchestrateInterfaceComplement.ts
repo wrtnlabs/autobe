@@ -8,6 +8,7 @@ import {
 import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
 import { IPointer } from "tstl";
 import typia from "typia";
+import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
@@ -70,6 +71,7 @@ async function step<Model extends ILlmSchema.Model>(
     );
   ctx.dispatch({
     type: "interfaceComplement",
+    id: v7(),
     missed,
     schemas: pointer.value,
     tokenUsage,

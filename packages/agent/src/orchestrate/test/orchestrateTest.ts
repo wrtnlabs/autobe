@@ -36,6 +36,7 @@ export const orchestrateTest =
       });
     ctx.dispatch({
       type: "testStart",
+      id: v7(),
       created_at: start.toISOString(),
       reason: props.reason,
       step: ctx.state().analyze?.step ?? 0,
@@ -87,6 +88,7 @@ export const orchestrateTest =
       });
     return ctx.dispatch({
       type: "testComplete",
+      id: v7(),
       created_at: new Date().toISOString(),
       files: success.map((s) => s.file),
       compiled,

@@ -13,24 +13,6 @@
  */
 export interface AutoBeProgressEventBase {
   /**
-   * A unique identifier for the event group.
-   *
-   * Ensures that event occurrences can be distinguished even when they share
-   * the same name. This prevents metric collisions across different event
-   * sources or instances, enabling accurate tracking and aggregation.
-   *
-   * Especially critical when accumulating `completed` counts: multiple events
-   * with the same name can still be tracked independently thanks to this ID.
-   *
-   * Example use cases:
-   *
-   * - Distinguishing between similar code-generation tasks running in parallel.
-   * - Separating progress metrics for identical interface design steps triggered
-   *   by different agents.
-   */
-  id: string;
-
-  /**
    * Total number of items to process.
    *
    * Represents the complete count of operations, files, endpoints, or other

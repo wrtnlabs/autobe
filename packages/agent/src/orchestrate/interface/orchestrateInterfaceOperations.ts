@@ -32,16 +32,7 @@ export async function orchestrateInterfaceOperations<
     array: endpoints,
     capacity,
   });
-  const operationsProgress: AutoBeProgressEventBase = {
-    id: v7(),
-    total: endpoints.length,
-    completed: 0,
-  };
-  const operationsReviewProgress: AutoBeProgressEventBase = {
-    id: v7(),
-    total: matrix.length,
-    completed: 0,
-  };
+
   return (
     await Promise.all(
       matrix.map(async (it) => {
@@ -49,8 +40,16 @@ export async function orchestrateInterfaceOperations<
           ctx,
           it,
           3,
-          operationsProgress,
-          operationsReviewProgress,
+          {
+            total: matrix.length,
+            completed: 0,
+            id: v7(),
+          },
+          {
+            total: matrix.length,
+            completed: 0,
+            id: v7(),
+          },
         );
         return row;
       }),
@@ -62,8 +61,8 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   endpoints: AutoBeOpenApi.IEndpoint[],
   retry: number,
-  operationsProgress: AutoBeProgressEventBase,
-  operationsReviewProgress: AutoBeProgressEventBase,
+  operationsProgress: AutoBeProgressEventBase & { id: string },
+  operationsReviewProgress: AutoBeProgressEventBase & { id: string },
 ): Promise<AutoBeOpenApi.IOperation[]> {
   const remained: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(
     endpoints,
@@ -161,6 +160,7 @@ async function process<Model extends ILlmSchema.Model>(
 
   ctx.dispatch({
     type: "interfaceOperations",
+    id: v7(),
     operations: pointer.value,
     tokenUsage,
     ...progress,

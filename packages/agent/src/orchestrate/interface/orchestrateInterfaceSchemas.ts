@@ -35,15 +35,15 @@ export async function orchestrateInterfaceSchemas<
     capacity,
   });
   const progress: AutoBeProgressEventBase = {
-    id: v7(),
     total: typeNames.size,
     completed: 0,
   };
+  const progressId: string = v7();
   const reviewProgress: AutoBeProgressEventBase = {
-    id: v7(),
     total: matrix.length,
     completed: 0,
   };
+  const reviewProgressId: string = v7();
   const roles: string[] =
     ctx.state().analyze?.roles.map((role) => role.name) ?? [];
 
@@ -56,13 +56,14 @@ export async function orchestrateInterfaceSchemas<
   for (const y of await Promise.all(
     matrix.map(async (it) => {
       const row: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-        await divideAndConquer(ctx, operations, it, 3, progress);
+        await divideAndConquer(ctx, operations, it, 3, progress, progressId);
       const newbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
         await orchestrateInterfaceSchemasReview(
           ctx,
           operations,
           row,
           reviewProgress,
+          reviewProgressId,
         );
       return { ...row, ...newbie };
     }),
@@ -79,13 +80,14 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
   typeNames: string[],
   retry: number,
   progress: AutoBeProgressEventBase,
+  progressId: string,
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   const remained: Set<string> = new Set(typeNames);
   const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
   for (let i: number = 0; i < retry; ++i) {
     if (remained.size === 0) break;
     const newbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-      await process(ctx, operations, schemas, remained, progress);
+      await process(ctx, operations, schemas, remained, progress, progressId);
     for (const key of Object.keys(newbie)) {
       schemas[key] = newbie[key];
       remained.delete(key);
@@ -100,6 +102,7 @@ async function process<Model extends ILlmSchema.Model>(
   oldbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
   remained: Set<string>,
   progress: AutoBeProgressEventBase,
+  progressId: string,
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   const already: string[] = Object.keys(oldbie);
   const pointer: IPointer<Record<
@@ -150,7 +153,7 @@ async function process<Model extends ILlmSchema.Model>(
     ).schemas ?? {};
   ctx.dispatch({
     type: "interfaceSchemas",
-    id: progress.id,
+    id: progressId,
     schemas,
     tokenUsage,
     completed: (progress.completed += Object.keys(schemas).length),

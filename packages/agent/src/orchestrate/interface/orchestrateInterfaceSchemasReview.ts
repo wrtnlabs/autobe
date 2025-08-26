@@ -25,6 +25,7 @@ export async function orchestrateInterfaceSchemasReview<
     AutoBeOpenApi.IJsonSchemaDescriptive<AutoBeOpenApi.IJsonSchema>
   >,
   progress: AutoBeProgressEventBase,
+  progressId: string,
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   try {
     const pointer: IPointer<IAutoBeInterfaceSchemasReviewApplication.IProps | null> =
@@ -61,7 +62,7 @@ export async function orchestrateInterfaceSchemasReview<
       ).schemas ?? {};
     ctx.dispatch({
       type: "interfaceSchemasReview",
-      id: progress.id,
+      id: progressId,
       schemas: schemas,
       review: pointer.value.review,
       plan: pointer.value.plan,
