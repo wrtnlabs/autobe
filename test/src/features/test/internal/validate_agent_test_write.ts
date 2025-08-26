@@ -1,7 +1,7 @@
 import { orchestrateTestWrite } from "@autobe/agent/src/orchestrate/test/orchestrateTestWrite";
 import { IAutoBeTestWriteResult } from "@autobe/agent/src/orchestrate/test/structures/IAutoBeTestWriteResult";
 import { AutoBeCompilerInterfaceTemplate } from "@autobe/compiler/src/raw/AutoBeCompilerInterfaceTemplate";
-import { FileSystemIterator } from "@autobe/filesystem";
+import { CompressUtil, FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeTestScenario,
   IAutoBeCompiler,
@@ -26,9 +26,10 @@ export const validate_agent_test_write = async (
   const { agent } = await prepare_agent_test(factory, project);
   const model: string = TestGlobal.getVendorModel();
   const scenarios: AutoBeTestScenario[] = JSON.parse(
-    await fs.promises.readFile(
-      `${TestGlobal.ROOT}/assets/histories/${model}/${project}.test.scenarios.json`,
-      "utf8",
+    await CompressUtil.gunzip(
+      await fs.promises.readFile(
+        `${TestGlobal.ROOT}/assets/histories/${model}/${project}.test.scenarios.json.gz`,
+      ),
     ),
   );
   typia.assert(scenarios);
@@ -48,7 +49,7 @@ export const validate_agent_test_write = async (
     ),
     ...writes
       .map((w) => [
-        [w.event.location.replace(".ts", ".scenario"), w.event.scenario],
+        // [w.event.location.replace(".ts", ".scenario"), w.event.scenario],
         [w.event.location.replace(".ts", ".draft"), w.event.draft],
         [w.event.location.replace(".ts", ".review"), w.event.review],
         [w.event.location, w.event.final],

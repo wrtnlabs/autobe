@@ -1,7 +1,7 @@
 import { orchestrateTestCorrect } from "@autobe/agent/src/orchestrate/test/orchestrateTestCorrect";
 import { IAutoBeTestWriteResult } from "@autobe/agent/src/orchestrate/test/structures/IAutoBeTestWriteResult";
 import { AutoBeCompilerInterfaceTemplate } from "@autobe/compiler/src/raw/AutoBeCompilerInterfaceTemplate";
-import { FileSystemIterator } from "@autobe/filesystem";
+import { CompressUtil, FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeTestCorrectEvent,
   AutoBeTestValidateEvent,
@@ -24,9 +24,10 @@ export const validate_agent_test_correct = async (
   const { agent } = await prepare_agent_test(factory, project);
   const model: string = TestGlobal.getVendorModel();
   const writes: IAutoBeTestWriteResult[] = JSON.parse(
-    await fs.promises.readFile(
-      `${TestGlobal.ROOT}/assets/histories/${model}/${project}.test.writes.json`,
-      "utf8",
+    await CompressUtil.gunzip(
+      await fs.promises.readFile(
+        `${TestGlobal.ROOT}/assets/histories/${model}/${project}.test.writes.json.gz`,
+      ),
     ),
   );
 
@@ -59,14 +60,14 @@ export const validate_agent_test_correct = async (
               e.file.location.replace(".ts", ".scenario"),
               JSON.stringify(e.file.scenario),
             ],
-            [
-              e.file.location.replace(".ts", ".1.think"),
-              e.think_without_compile_error,
-            ],
-            [
-              e.file.location.replace(".ts", ".2.think"),
-              e.think_again_with_compile_error,
-            ],
+            // [
+            //   e.file.location.replace(".ts", ".1.think"),
+            //   e.think_without_compile_error,
+            // ],
+            // [
+            //   e.file.location.replace(".ts", ".2.think"),
+            //   e.think_again_with_compile_error,
+            // ],
             [e.file.location.replace(".ts", ".review"), e.review],
             [e.file.location.replace(".ts", ".draft"), e.draft],
           ])

@@ -4,12 +4,13 @@ import {
   IAutoBeTypeScriptCompiler,
 } from "@autobe/interface";
 import nestiaCoreTransform from "@nestia/core/lib/transform";
-import { EmbedTypeScript, IEmbedTypeScriptResult } from "embed-typescript";
+import { EmbedEsLint } from "embed-eslint";
 import ts from "typescript";
 import typiaTransform from "typia/lib/transform";
 
 import NestJSExternal from "./raw/nestjs.json";
 import { FilePrinter } from "./utils/FilePrinter";
+import { shrinkCompileResult } from "./utils/shrinkCompileResult";
 
 /**
  * Official TypeScript compiler for final code validation and quality assurance.
@@ -41,7 +42,7 @@ export class AutoBeTypeScriptCompiler implements IAutoBeTypeScriptCompiler {
     props: IAutoBeTypeScriptCompileProps,
   ): Promise<IAutoBeTypeScriptCompileResult> {
     const alias: string = props.package ?? "@ORGANIZATION/PROJECT-api";
-    const compiler: EmbedTypeScript = new EmbedTypeScript({
+    const compiler: EmbedEsLint = new EmbedEsLint({
       external: NestJSExternal as Record<string, string>,
       compilerOptions: {
         target: ts.ScriptTarget.ESNext,
@@ -77,18 +78,16 @@ export class AutoBeTypeScriptCompiler implements IAutoBeTypeScriptCompiler {
           ),
         ],
       }),
+      rules: {
+        "no-floating-promises": "error",
+      },
     });
-
-    const result: IEmbedTypeScriptResult = await compiler.compile({
-      ...props.files,
-      ...(props.prisma ?? {}),
-    });
-
-    return result.type === "success"
-      ? { type: "success" }
-      : result.type === "failure"
-        ? { type: "failure", diagnostics: result.diagnostics }
-        : { type: "exception", error: result.error };
+    return shrinkCompileResult(
+      compiler.compile({
+        ...props.files,
+        ...(props.prisma ?? {}),
+      }),
+    );
   }
 
   public async getExternal(location: string): Promise<string | undefined> {
