@@ -243,29 +243,40 @@ export const AutoBePlaygroundChatUploadMovie = (
             complete={(b) => setBuckets((o) => [...o, b])}
           />
         ) : null}
-
-        <IconButton
-          size="small"
-          color="primary"
-          onClick={() => void conversate()}
-          disabled={!enabled}
-          sx={{
-            p: 0.75,
-            backgroundColor: "primary.main",
-            color: "primary.contrastText",
-            "&:hover": {
-              backgroundColor: "primary.dark",
-            },
-            "&.Mui-disabled": {
-              backgroundColor: "action.disabledBackground",
-              color: "action.disabled",
-            },
-          }}
-        >
-          <ArrowUpwardIcon fontSize="small" />
-        </IconButton>
+        <AutoBePlaygroundChatUploadSendButton
+          conversate={conversate}
+          enabled={enabled}
+        />
       </Box>
     </>
+  );
+};
+
+const AutoBePlaygroundChatUploadSendButton = (props: {
+  conversate: () => Promise<void>;
+  enabled: boolean;
+}) => {
+  return (
+    <IconButton
+      size="small"
+      color="primary"
+      onClick={() => void props.conversate()}
+      disabled={!props.enabled}
+      sx={{
+        p: 0.75,
+        backgroundColor: "primary.main",
+        color: "primary.contrastText",
+        "&:hover": {
+          backgroundColor: "primary.dark",
+        },
+        "&.Mui-disabled": {
+          backgroundColor: "action.disabledBackground",
+          color: "action.disabled",
+        },
+      }}
+    >
+      <ArrowUpwardIcon fontSize="small" />
+    </IconButton>
   );
 };
 
