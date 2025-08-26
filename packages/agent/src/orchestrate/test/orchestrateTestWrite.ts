@@ -28,7 +28,6 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
     total: scenarios.length,
     completed: 0,
   };
-  const id: string = v7();
   const result: Array<IAutoBeTestWriteResult | null> = await executeCachedBatch(
     /**
      * Generate test code for each scenario. Maps through plans array to create
@@ -44,7 +43,6 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
           scenario,
           artifacts,
           progress,
-          id,
         });
         ctx.dispatch(event);
         return {
@@ -74,9 +72,8 @@ async function process<Model extends ILlmSchema.Model>(props: {
   scenario: AutoBeTestScenario;
   artifacts: IAutoBeTestScenarioArtifacts;
   progress: AutoBeProgressEventBase;
-  id: string;
 }): Promise<AutoBeTestWriteEvent> {
-  const { ctx, scenario, artifacts, progress, id } = props;
+  const { ctx, scenario, artifacts, progress } = props;
   const pointer: IPointer<IAutoBeTestWriteApplication.IProps | null> = {
     value: null,
   };
@@ -99,7 +96,7 @@ async function process<Model extends ILlmSchema.Model>(props: {
   pointer.value.final = await compiler.typescript.beautify(pointer.value.final);
   return {
     type: "testWrite",
-    id: id,
+    id: v7(),
     created_at: new Date().toISOString(),
     location: `test/features/api/${pointer.value.domain}/${scenario.functionName}.ts`,
     ...pointer.value,

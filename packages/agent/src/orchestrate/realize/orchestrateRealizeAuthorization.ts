@@ -41,7 +41,6 @@ export async function orchestrateRealizeAuthorization<
     total: roles.length,
     completed: 0,
   };
-  const progressId: string = v7();
   const templateFiles = await (await ctx.compiler()).realize.getTemplate();
   const authorizations: AutoBeRealizeAuthorization[] = await executeCachedBatch(
     roles.map(
@@ -53,7 +52,6 @@ export async function orchestrateRealizeAuthorization<
             [el]: templateFiles[el],
           })).reduce((acc, cur) => Object.assign(acc, cur), {}),
           progress,
-          progressId,
         ),
     ),
   );
@@ -71,7 +69,6 @@ async function process<Model extends ILlmSchema.Model>(
   role: AutoBeAnalyzeRole,
   templateFiles: Record<string, string>,
   progress: AutoBeProgressEventBase,
-  progressId: string,
 ): Promise<AutoBeRealizeAuthorization> {
   const pointer: IPointer<IAutoBeRealizeAuthorizationApplication.IProps | null> =
     {
@@ -122,7 +119,7 @@ async function process<Model extends ILlmSchema.Model>(
 
   ctx.dispatch({
     type: "realizeAuthorizationWrite",
-    id: progressId,
+    id: v7(),
     created_at: new Date().toISOString(),
     authorization: authorization,
     tokenUsage,
