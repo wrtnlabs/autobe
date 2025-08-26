@@ -14,6 +14,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
+import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { predicateStateMessage } from "../../utils/predicateStateMessage";
 import { compile } from "./internal/compile";
 import { orchestrateRealizeAuthorization } from "./orchestrateRealizeAuthorization";
@@ -73,8 +74,8 @@ export const orchestrateRealize =
       completed: 0,
     };
     const writeProgressId: string = v7();
-    const writeEvents: AutoBeRealizeWriteEvent[] = await Promise.all(
-      scenarios.map(async (scenario) => {
+    const writeEvents: AutoBeRealizeWriteEvent[] = await executeCachedBatch(
+      scenarios.map((scenario) => async () => {
         const code = await orchestrateRealizeWrite(ctx, {
           totalAuthorizations: authorizations,
           authorization: scenario.decoratorEvent ?? null,
@@ -125,34 +126,39 @@ export const orchestrateRealize =
           reviewProgress.total += Object.keys(failedFiles).length;
           const failure: IAutoBeTypeScriptCompileResult.IFailure = compilation;
 
-          await Promise.all(
-            Object.entries(failedFiles).map(async ([location, content]) => {
-              const diagnostic:
-                | IAutoBeTypeScriptCompileResult.IDiagnostic
-                | undefined = failure.diagnostics.find(
-                (el) => el.file === location,
-              );
+          await executeCachedBatch(
+            Object.entries(failedFiles).map(
+              ([location, content]) =>
+                async () => {
+                  const diagnostic:
+                    | IAutoBeTypeScriptCompileResult.IDiagnostic
+                    | undefined = failure.diagnostics.find(
+                    (el) => el.file === location,
+                  );
 
-              const scenario = scenarios.find((el) => el.location === location);
-              if (diagnostic && scenario) {
-                const correctEvent = await orchestrateRealizeCorrect(ctx, {
-                  totalAuthorizations: authorizations,
-                  authorization: scenario.decoratorEvent ?? null,
-                  scenario,
-                  code: content,
-                  diagnostic,
-                  progress: reviewProgress,
-                });
+                  const scenario = scenarios.find(
+                    (el) => el.location === location,
+                  );
+                  if (diagnostic && scenario) {
+                    const correctEvent = await orchestrateRealizeCorrect(ctx, {
+                      totalAuthorizations: authorizations,
+                      authorization: scenario.decoratorEvent ?? null,
+                      scenario,
+                      code: content,
+                      diagnostic,
+                      progress: reviewProgress,
+                    });
 
-                const corrected = functions.find(
-                  (el) => el.location === correctEvent.location,
-                );
+                    const corrected = functions.find(
+                      (el) => el.location === correctEvent.location,
+                    );
 
-                if (corrected) {
-                  corrected.content = correctEvent.content;
-                }
-              }
-            }),
+                    if (corrected) {
+                      corrected.content = correctEvent.content;
+                    }
+                  }
+                },
+            ),
           );
 
           compilation = await compile(ctx, { authorizations, functions });

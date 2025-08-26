@@ -12,6 +12,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { completeTestCode } from "./compile/completeTestCode";
 import { transformTestCorrectHistories } from "./histories/transformTestCorrectHistories";
 import { IAutoBeTestCorrectApplication } from "./structures/IAutoBeTestCorrectApplication";
@@ -24,31 +25,32 @@ export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
   writeResult: IAutoBeTestWriteResult[],
   life: number = 4,
 ): Promise<AutoBeTestValidateEvent[]> => {
-  const result: Array<AutoBeTestValidateEvent | null> = await Promise.all(
-    writeResult.map(async (w) => {
-      try {
-        const event: AutoBeTestValidateEvent = await compile(ctx, {
-          artifacts: w.artifacts,
-          scenario: w.scenario,
-          location: w.event.location,
-          script: w.event.final,
-        });
-        return await predicate(
-          ctx,
-          {
+  const result: Array<AutoBeTestValidateEvent | null> =
+    await executeCachedBatch(
+      writeResult.map((w) => async () => {
+        try {
+          const event: AutoBeTestValidateEvent = await compile(ctx, {
             artifacts: w.artifacts,
             scenario: w.scenario,
             location: w.event.location,
             script: w.event.final,
-          },
-          event,
-          life,
-        );
-      } catch {
-        return null;
-      }
-    }),
-  );
+          });
+          return await predicate(
+            ctx,
+            {
+              artifacts: w.artifacts,
+              scenario: w.scenario,
+              location: w.event.location,
+              script: w.event.final,
+            },
+            event,
+            life,
+          );
+        } catch {
+          return null;
+        }
+      }),
+    );
   return result.filter((r) => r !== null);
 };
 

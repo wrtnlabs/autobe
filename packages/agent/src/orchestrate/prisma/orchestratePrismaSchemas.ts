@@ -8,6 +8,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformPrismaSchemaHistories } from "./histories/transformPrismaSchemaHistories";
 import { IAutoBePrismaSchemaApplication } from "./structures/IAutoBePrismaSchemaApplication";
 
@@ -21,8 +22,8 @@ export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
     .reduce((x, y) => x + y, 0);
   const completed: IPointer<number> = { value: 0 };
   const id: string = v7();
-  return await Promise.all(
-    componentList.map(async (component) => {
+  return await executeCachedBatch(
+    componentList.map((component) => async () => {
       const otherTables: string[] = componentList
         .filter((y) => component !== y)
         .map((c) => c.tables)

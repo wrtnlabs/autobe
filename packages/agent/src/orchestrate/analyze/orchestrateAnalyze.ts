@@ -12,6 +12,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
+import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { orchestrateAnalyzeReview } from "./orchestrateAnalyzeReview";
 import { orchestrateAnalyzeScenario } from "./orchestrateAnalyzeScenario";
 import { orchestrateAnalyzeWrite } from "./orchestrateAnalyzeWrite";
@@ -46,8 +47,8 @@ export const orchestrateAnalyze =
       completed: 0,
     };
     const progressId: string = v7();
-    const fileList: AutoBeAnalyzeFile[] = await Promise.all(
-      scenario.files.map(async (file) => {
+    const fileList: AutoBeAnalyzeFile[] = await executeCachedBatch(
+      scenario.files.map((file) => async () => {
         const event: AutoBeAnalyzeWriteEvent = await orchestrateAnalyzeWrite({
           ctx,
           scenario,
@@ -65,8 +66,8 @@ export const orchestrateAnalyze =
       completed: 0,
     };
     const reviewProgressId: string = v7();
-    const newFiles: AutoBeAnalyzeFile[] = await Promise.all(
-      fileList.map(async (file, i) => {
+    const newFiles: AutoBeAnalyzeFile[] = await executeCachedBatch(
+      fileList.map((file, i) => async () => {
         try {
           const event: AutoBeAnalyzeReviewEvent =
             await orchestrateAnalyzeReview(

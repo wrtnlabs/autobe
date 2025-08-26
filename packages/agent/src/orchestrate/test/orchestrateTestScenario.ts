@@ -14,6 +14,7 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
+import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformTestScenarioHistories } from "./histories/transformTestScenarioHistories";
 import { IAutoBeTestScenarioApplication } from "./structures/IAutoBeTestScenarioApplication";
 import { IAutoBeTestScenarioAuthorizationRole } from "./structures/IAutoBeTestScenarioAuthorizationRole";
@@ -66,8 +67,8 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
       array: include,
       capacity: 5,
     });
-    await Promise.all(
-      matrix.map(async (include) => {
+    await executeCachedBatch(
+      matrix.map((include) => async () => {
         exclude.push(
           ...(await divideAndConquer(
             ctx,
