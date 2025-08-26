@@ -9,9 +9,7 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { transformAnalyzeWriteHistories } from "./transformAnalyzeWriteHistories";
 
-export const transformAnalyzeRevieweHistories = <
-  Model extends ILlmSchema.Model,
->(
+export const transformAnalyzeReviewHistories = <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   scenario: AutoBeAnalyzeScenarioEvent,
   allFiles: AutoBeAnalyzeFile[],

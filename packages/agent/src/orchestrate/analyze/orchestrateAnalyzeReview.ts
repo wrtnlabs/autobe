@@ -11,7 +11,7 @@ import typia from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { transformAnalyzeRevieweHistories } from "./histories/transformAnalyzeRevieweHistories";
+import { transformAnalyzeReviewHistories } from "./histories/transformAnalyzeReviewHistories";
 import { IAutoBeAnalyzeReviewApplication } from "./structures/IAutoBeAnalyzeReviewApplication";
 
 export const orchestrateAnalyzeReview = async <Model extends ILlmSchema.Model>(
@@ -32,7 +32,7 @@ export const orchestrateAnalyzeReview = async <Model extends ILlmSchema.Model>(
       pointer,
     }),
     histories: [
-      ...transformAnalyzeRevieweHistories(ctx, scenario, allFiles, myFile),
+      ...transformAnalyzeReviewHistories(ctx, scenario, allFiles, myFile),
     ],
     enforceFunctionCall: true,
     promptCacheKey,
