@@ -25,10 +25,10 @@ export interface AutoBeProgressEventBase {
    * Example use cases:
    *
    * - Distinguishing between similar code-generation tasks running in parallel.
-   * - Separating progress metrics for identical interface design steps
-   *   triggered by different agents.
+   * - Separating progress metrics for identical interface design steps triggered
+   *   by different agents.
    */
-  eventId: string;
+  id: string;
 
   /**
    * Total number of items to process.

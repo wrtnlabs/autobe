@@ -36,7 +36,7 @@ export async function orchestrateRealizeAuthorization<
 
   const roles: AutoBeAnalyzeRole[] = ctx.state().analyze?.roles ?? [];
   const progress: AutoBeProgressEventBase = {
-    eventId: v7(),
+    id: v7(),
     total: roles.length,
     completed: 0,
   };
@@ -116,7 +116,7 @@ async function process<Model extends ILlmSchema.Model>(
 
   ctx.dispatch({
     type: "realizeAuthorizationWrite",
-    eventId: progress.eventId,
+    id: progress.id,
     created_at: new Date().toISOString(),
     authorization: authorization,
     tokenUsage,

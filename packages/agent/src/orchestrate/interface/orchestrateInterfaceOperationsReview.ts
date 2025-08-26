@@ -51,7 +51,7 @@ export async function orchestrateInterfaceOperationsReview<
 
     ctx.dispatch({
       type: "interfaceOperationsReview",
-      eventId: progress.eventId,
+      id: progress.id,
       operations: content,
       review: pointer.value.review,
       plan: pointer.value.plan,

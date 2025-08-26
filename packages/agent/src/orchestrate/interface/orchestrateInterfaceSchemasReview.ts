@@ -61,7 +61,7 @@ export async function orchestrateInterfaceSchemasReview<
       ).schemas ?? {};
     ctx.dispatch({
       type: "interfaceSchemasReview",
-      eventId: progress.eventId,
+      id: progress.id,
       schemas: schemas,
       review: pointer.value.review,
       plan: pointer.value.plan,

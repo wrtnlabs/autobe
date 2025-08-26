@@ -18,7 +18,7 @@ export async function orchestratePrismaReview<Model extends ILlmSchema.Model>(
   componentList: AutoBePrisma.IComponent[],
 ): Promise<AutoBePrismaReviewEvent[]> {
   const progress: AutoBeProgressEventBase = {
-    eventId: v7(),
+    id: v7(),
     completed: 0,
     total: componentList.length,
   };
@@ -74,7 +74,7 @@ async function step<Model extends ILlmSchema.Model>(
 
   const event: AutoBePrismaReviewEvent = {
     type: "prismaReview",
-    eventId: progress.eventId,
+    id: progress.id,
     created_at: start.toISOString(),
     filename: component.filename,
     review: pointer.value.review,

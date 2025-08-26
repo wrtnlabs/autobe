@@ -68,7 +68,7 @@ export const orchestrateRealize =
       });
 
     const writeProgress: AutoBeProgressEventBase = {
-      eventId: v7(),
+      id: v7(),
       total: scenarios.length,
       completed: 0,
     };
@@ -107,7 +107,7 @@ export const orchestrateRealize =
       const MAX_CORRECTION_ATTEMPTS = 5 as const;
 
       const reviewProgress = {
-        eventId: v7(),
+        id: v7(),
         total: writeEvents.length,
         completed: writeEvents.length,
       };

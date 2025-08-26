@@ -25,7 +25,7 @@ export async function orchestrateInterfaceEndpoints<
   content: string = `Make endpoints for the given assets`,
 ): Promise<AutoBeOpenApi.IEndpoint[]> {
   const progress: AutoBeProgressEventBase = {
-    eventId: v7(),
+    id: v7(),
     total: groups.length,
     completed: 0,
   };
@@ -73,7 +73,7 @@ async function process<Model extends ILlmSchema.Model>(
 
   const event: AutoBeInterfaceEndpointsEvent = {
     type: "interfaceEndpoints",
-    eventId: progress.eventId,
+    id: progress.id,
     endpoints: new HashSet(
       pointer.value,
       OpenApiEndpointComparator.hashCode,

@@ -54,7 +54,7 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
   ].join("\n");
 
   const progress: AutoBeProgressEventBase = {
-    eventId: v7(),
+    id: v7(),
     total: operations.length,
     completed: 0,
   };
@@ -146,7 +146,7 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
   if (pointer.value.length === 0) return [];
   ctx.dispatch({
     type: "testScenarios",
-    eventId: progress.eventId,
+    id: progress.id,
     tokenUsage,
     scenarios: pointer.value
       .map((v) =>

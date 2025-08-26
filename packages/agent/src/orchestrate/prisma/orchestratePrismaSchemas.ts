@@ -20,7 +20,7 @@ export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
     .map((c) => c.tables.length)
     .reduce((x, y) => x + y, 0);
   const completed: IPointer<number> = { value: 0 };
-  const eventId: string = v7();
+  const id: string = v7();
   return await Promise.all(
     componentList.map(async (component) => {
       const otherTables: string[] = componentList
@@ -33,7 +33,7 @@ export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
         start,
         total,
         completed,
-        eventId,
+        id,
       });
       ctx.dispatch(event);
       return event;
@@ -47,7 +47,7 @@ async function process<Model extends ILlmSchema.Model>(
     component: AutoBePrisma.IComponent;
     otherTables: string[];
     start: Date;
-    eventId: string;
+    id: string;
     total: number;
     completed: IPointer<number>;
   },
@@ -81,7 +81,7 @@ async function process<Model extends ILlmSchema.Model>(
     throw new Error("Unreachable code: Prisma Schema not generated");
   return {
     type: "prismaSchemas",
-    eventId: props.eventId,
+    id: props.id,
     created_at: props.start.toISOString(),
     plan: pointer.value.plan,
     models: pointer.value.models,

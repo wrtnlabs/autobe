@@ -35,12 +35,12 @@ export async function orchestrateInterfaceSchemas<
     capacity,
   });
   const progress: AutoBeProgressEventBase = {
-    eventId: v7(),
+    id: v7(),
     total: typeNames.size,
     completed: 0,
   };
   const reviewProgress: AutoBeProgressEventBase = {
-    eventId: v7(),
+    id: v7(),
     total: matrix.length,
     completed: 0,
   };
@@ -150,7 +150,7 @@ async function process<Model extends ILlmSchema.Model>(
     ).schemas ?? {};
   ctx.dispatch({
     type: "interfaceSchemas",
-    eventId: progress.eventId,
+    id: progress.id,
     schemas,
     tokenUsage,
     completed: (progress.completed += Object.keys(schemas).length),

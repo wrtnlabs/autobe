@@ -14,6 +14,7 @@ import {
 import { StringUtil } from "@autobe/utils";
 import fs from "fs";
 import typia from "typia";
+import { v7 } from "uuid";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
@@ -121,6 +122,7 @@ export const validate_agent_realize_correct = async (
   );
 
   const reviewProgress = {
+    id: v7(),
     total: writeEvents.length,
     completed: writeEvents.length,
   };

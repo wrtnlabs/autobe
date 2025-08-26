@@ -40,7 +40,7 @@ export const orchestrateAnalyzeWrite = async <Model extends ILlmSchema.Model>(
 
   const event: AutoBeAnalyzeWriteEvent = {
     type: "analyzeWrite",
-    eventId: progress.eventId,
+    id: progress.id,
     file: {
       ...file,
       content: pointer.value.content,

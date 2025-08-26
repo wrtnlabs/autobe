@@ -41,7 +41,7 @@ export const orchestrateAnalyze =
 
     // write documents
     const writeProgress: AutoBeProgressEventBase = {
-      eventId: v7(),
+      id: v7(),
       total: scenario.files.length,
       completed: 0,
     };
@@ -59,7 +59,7 @@ export const orchestrateAnalyze =
 
     // review documents
     const reviewProgress: AutoBeProgressEventBase = {
-      eventId: v7(),
+      id: v7(),
       total: fileList.length,
       completed: 0,
     };

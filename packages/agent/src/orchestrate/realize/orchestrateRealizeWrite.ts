@@ -77,7 +77,7 @@ export async function orchestrateRealizeWrite<Model extends ILlmSchema.Model>(
 
   const event: AutoBeRealizeWriteEvent = {
     type: "realizeWrite",
-    eventId: props.progress.eventId,
+    id: props.progress.id,
     location: props.scenario.location,
     content: pointer.value.implementationCode,
     tokenUsage,

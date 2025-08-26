@@ -33,12 +33,12 @@ export async function orchestrateInterfaceOperations<
     capacity,
   });
   const operationsProgress: AutoBeProgressEventBase = {
-    eventId: v7(),
+    id: v7(),
     total: endpoints.length,
     completed: 0,
   };
   const operationsReviewProgress: AutoBeProgressEventBase = {
-    eventId: v7(),
+    id: v7(),
     total: matrix.length,
     completed: 0,
   };

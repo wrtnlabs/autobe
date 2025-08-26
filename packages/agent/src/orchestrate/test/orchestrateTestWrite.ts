@@ -24,7 +24,7 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
   scenarios: AutoBeTestScenario[],
 ): Promise<IAutoBeTestWriteResult[]> {
   const progress: AutoBeProgressEventBase = {
-    eventId: v7(),
+    id: v7(),
     total: scenarios.length,
     completed: 0,
   };
@@ -95,7 +95,7 @@ async function process<Model extends ILlmSchema.Model>(
   pointer.value.final = await compiler.typescript.beautify(pointer.value.final);
   return {
     type: "testWrite",
-    eventId: progress.eventId,
+    id: progress.id,
     created_at: new Date().toISOString(),
     location: `test/features/api/${pointer.value.domain}/${scenario.functionName}.ts`,
     ...pointer.value,

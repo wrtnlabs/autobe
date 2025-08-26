@@ -9,6 +9,7 @@ import {
 } from "@autobe/interface";
 import fs from "fs";
 import typia from "typia";
+import { v7 } from "uuid";
 
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
@@ -56,7 +57,7 @@ export const validate_agent_realize_write = async (
     ),
   );
 
-  const progress = { total: scenarios.length, completed: 0 };
+  const progress = { id: v7(), total: scenarios.length, completed: 0 };
   const writes: (AutoBeRealizeWriteEvent | null)[] = await Promise.all(
     scenarios.map(async (scenario) => {
       const authorization = authorizations.find(
