@@ -44,12 +44,10 @@ export async function orchestrateInterfaceOperations<
           {
             total: matrix.length,
             completed: 0,
-            id: v7(),
           },
           {
             total: matrix.length,
             completed: 0,
-            id: v7(),
           },
           promptCacheKey,
         );
@@ -63,8 +61,8 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   endpoints: AutoBeOpenApi.IEndpoint[],
   retry: number,
-  operationsProgress: AutoBeProgressEventBase & { id: string },
-  operationsReviewProgress: AutoBeProgressEventBase & { id: string },
+  operationsProgress: AutoBeProgressEventBase,
+  operationsReviewProgress: AutoBeProgressEventBase,
   promptCacheKey: string,
 ): Promise<AutoBeOpenApi.IOperation[]> {
   const remained: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(

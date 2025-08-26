@@ -22,7 +22,6 @@ export async function orchestratePrismaReview<Model extends ILlmSchema.Model>(
     completed: 0,
     total: componentList.length,
   };
-  const id: string = v7();
   return (
     await executeCachedBatch(
       componentList.map((component) => async (promptCacheKey) => {
@@ -33,7 +32,6 @@ export async function orchestratePrismaReview<Model extends ILlmSchema.Model>(
             component,
             progress,
             promptCacheKey,
-            id,
           });
         } catch {
           ++progress.completed;
@@ -52,7 +50,6 @@ async function step<Model extends ILlmSchema.Model>(
     component: AutoBePrisma.IComponent;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
-    id: string;
   },
 ): Promise<AutoBePrismaReviewEvent> {
   const start: Date = new Date();
@@ -87,7 +84,7 @@ async function step<Model extends ILlmSchema.Model>(
 
   const event: AutoBePrismaReviewEvent = {
     type: "prismaReview",
-    id: props.id,
+    id: v7(),
     created_at: start.toISOString(),
     filename: props.component.filename,
     review: pointer.value.review,
