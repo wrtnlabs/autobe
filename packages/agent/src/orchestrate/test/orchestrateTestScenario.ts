@@ -58,7 +58,6 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
     total: operations.length,
     completed: 0,
   };
-  const id: string = v7();
   const exclude: IAutoBeTestScenarioApplication.IScenarioGroup[] = [];
   let include: AutoBeOpenApi.IOperation[] = Array.from(operations);
 
@@ -68,18 +67,17 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
       capacity: 5,
     });
     await executeCachedBatch(
-      matrix.map((include) => async () => {
+      matrix.map((include) => async (promptCacheKey) => {
         exclude.push(
-          ...(await divideAndConquer(
-            ctx,
+          ...(await divideAndConquer(ctx, {
             dict,
             endpointNotFound,
-            operations,
+            entire: operations,
             include,
-            exclude.map((x) => x.endpoint),
+            exclude: exclude.map((x) => x.endpoint),
             progress,
-            id,
-          )),
+            promptCacheKey,
+          })),
         );
       }),
     );
@@ -110,13 +108,15 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
 
 const divideAndConquer = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>,
-  endpointNotFound: string,
-  entire: AutoBeOpenApi.IOperation[],
-  include: AutoBeOpenApi.IOperation[],
-  exclude: AutoBeOpenApi.IEndpoint[],
-  progress: AutoBeProgressEventBase,
-  id: string,
+  props: {
+    dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>;
+    endpointNotFound: string;
+    entire: AutoBeOpenApi.IOperation[];
+    include: AutoBeOpenApi.IOperation[];
+    exclude: AutoBeOpenApi.IEndpoint[];
+    progress: AutoBeProgressEventBase;
+    promptCacheKey: string;
+  },
 ): Promise<IAutoBeTestScenarioApplication.IScenarioGroup[]> => {
   const pointer: IPointer<IAutoBeTestScenarioApplication.IScenarioGroup[]> = {
     value: [],
@@ -129,14 +129,14 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
     source: "testScenarios",
     histories: transformTestScenarioHistories(
       ctx.state(),
-      entire,
-      include,
-      exclude,
+      props.entire,
+      props.include,
+      props.exclude,
     ),
     controller: createController({
       model: ctx.model,
-      endpointNotFound,
-      dict,
+      endpointNotFound: props.endpointNotFound,
+      dict: props.dict,
       authorizations,
       build: (next) => {
         pointer.value ??= [];
@@ -144,12 +144,13 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
       },
     }),
     enforceFunctionCall: true,
+    promptCacheKey: props.promptCacheKey,
     message: `Create e2e test scenarios.`,
   });
   if (pointer.value.length === 0) return [];
   ctx.dispatch({
     type: "testScenarios",
-    id: id,
+    id: v7(),
     tokenUsage,
     scenarios: pointer.value
       .map((v) =>
@@ -164,8 +165,8 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
         ),
       )
       .flat(),
-    completed: ++progress.completed,
-    total: progress.total,
+    completed: ++props.progress.completed,
+    total: props.progress.total,
     step: ctx.state().interface?.step ?? 0,
     created_at: new Date().toISOString(),
   });

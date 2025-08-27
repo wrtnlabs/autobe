@@ -1,5 +1,6 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
 import { AutoBeAnalyzeRole } from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
@@ -24,17 +25,16 @@ export const transformInterfaceAuthorizationsHistories = (
       type: "assistantMessage",
       id: v7(),
       created_at: new Date().toISOString(),
-      text: [
-        "You have to make API operations for the given role:",
-        "",
-        "## Role",
-        "",
-        "```json",
-        JSON.stringify(role),
-        "```",
-        "",
-        "",
-      ].join("\n"),
+      text: StringUtil.trim`
+        You have to make API operations for the given role:
+
+        ## Role
+
+        \`\`\`json
+        ${JSON.stringify(role)}
+        \`\`\`
+
+      `,
     },
   ];
 };

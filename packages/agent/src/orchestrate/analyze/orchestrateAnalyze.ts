@@ -47,13 +47,16 @@ export const orchestrateAnalyze =
       completed: 0,
     };
     const fileList: AutoBeAnalyzeFile[] = await executeCachedBatch(
-      scenario.files.map((file) => async () => {
-        const event: AutoBeAnalyzeWriteEvent = await orchestrateAnalyzeWrite({
+      scenario.files.map((file) => async (promptCacheKey) => {
+        const event: AutoBeAnalyzeWriteEvent = await orchestrateAnalyzeWrite(
           ctx,
-          scenario,
-          file,
-          progress: writeProgress,
-        });
+          {
+            scenario,
+            file,
+            progress: writeProgress,
+            promptCacheKey,
+          },
+        );
         return event.file;
       }),
     );
@@ -64,16 +67,16 @@ export const orchestrateAnalyze =
       completed: 0,
     };
     const newFiles: AutoBeAnalyzeFile[] = await executeCachedBatch(
-      fileList.map((file, i) => async () => {
+      fileList.map((file) => async (promptCacheKey) => {
         try {
           const event: AutoBeAnalyzeReviewEvent =
-            await orchestrateAnalyzeReview(
-              ctx,
+            await orchestrateAnalyzeReview(ctx, {
               scenario,
-              fileList.filter((_, j) => j !== i), // other files
-              file,
-              reviewProgress,
-            );
+              allFiles: fileList, // all files
+              myFile: file,
+              progress: reviewProgress,
+              promptCacheKey,
+            });
           return {
             ...event.file,
             content: event.content,

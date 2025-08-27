@@ -44,7 +44,7 @@ export async function orchestrateRealizeAuthorization<
   const templateFiles = await (await ctx.compiler()).realize.getTemplate();
   const authorizations: AutoBeRealizeAuthorization[] = await executeCachedBatch(
     roles.map(
-      (role) => () =>
+      (role) => (promptCacheKey) =>
         process(
           ctx,
           role,
@@ -52,6 +52,7 @@ export async function orchestrateRealizeAuthorization<
             [el]: templateFiles[el],
           })).reduce((acc, cur) => Object.assign(acc, cur), {}),
           progress,
+          promptCacheKey,
         ),
     ),
   );
@@ -69,6 +70,7 @@ async function process<Model extends ILlmSchema.Model>(
   role: AutoBeAnalyzeRole,
   templateFiles: Record<string, string>,
   progress: AutoBeProgressEventBase,
+  promptCacheKey: string,
 ): Promise<AutoBeRealizeAuthorization> {
   const pointer: IPointer<IAutoBeRealizeAuthorizationApplication.IProps | null> =
     {
@@ -84,6 +86,7 @@ async function process<Model extends ILlmSchema.Model>(
       },
     }),
     enforceFunctionCall: true,
+    promptCacheKey,
     message: "Create Authorization Provider and Decorator.",
   });
   if (pointer.value === null) throw new Error("Failed to create decorator.");

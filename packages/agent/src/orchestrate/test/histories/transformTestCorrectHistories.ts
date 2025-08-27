@@ -1,5 +1,6 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
 import { IAutoBeTypeScriptCompileResult } from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
@@ -17,19 +18,19 @@ export const transformTestCorrectHistories = (
     id: v7(),
     created_at: new Date().toISOString(),
     type: "assistantMessage",
-    text: [
-      "## Generated TypeScript Code",
-      "```typescript",
-      func.script,
-      "```",
-      "",
-      "## Compile Errors",
-      "Fix the compilation error in the provided code.",
-      "",
-      "```json",
-      JSON.stringify(failure.diagnostics),
-      "```",
-    ].join("\n"),
+    text: StringUtil.trim`
+      ## Generated TypeScript Code
+      \`\`\`typescript
+      ${func.script}
+      \`\`\`
+
+      ## Compile Errors
+      Fix the compilation error in the provided code.
+
+      \`\`\`json
+      ${JSON.stringify(failure.diagnostics)}
+      \`\`\`
+    `,
   },
   {
     id: v7(),

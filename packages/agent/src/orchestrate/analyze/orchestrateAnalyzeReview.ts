@@ -12,15 +12,18 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { transformAnalyzeReviewerHistories } from "./histories/transformAnalyzeReviewerHistories";
+import { transformAnalyzeReviewHistories } from "./histories/transformAnalyzeReviewHistories";
 import { IAutoBeAnalyzeReviewApplication } from "./structures/IAutoBeAnalyzeReviewApplication";
 
 export const orchestrateAnalyzeReview = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  scenario: AutoBeAnalyzeScenarioEvent,
-  otherFiles: AutoBeAnalyzeFile[],
-  myFile: AutoBeAnalyzeFile,
-  progress: AutoBeProgressEventBase,
+  props: {
+    scenario: AutoBeAnalyzeScenarioEvent;
+    allFiles: AutoBeAnalyzeFile[];
+    myFile: AutoBeAnalyzeFile;
+    progress: AutoBeProgressEventBase;
+    promptCacheKey: string;
+  },
 ): Promise<AutoBeAnalyzeReviewEvent> => {
   const pointer: IPointer<IAutoBeAnalyzeReviewApplication.IProps | null> = {
     value: null,
@@ -32,9 +35,15 @@ export const orchestrateAnalyzeReview = async <Model extends ILlmSchema.Model>(
       pointer,
     }),
     histories: [
-      ...transformAnalyzeReviewerHistories(ctx, scenario, otherFiles, myFile),
+      ...transformAnalyzeReviewHistories(
+        ctx,
+        props.scenario,
+        props.allFiles,
+        props.myFile,
+      ),
     ],
     enforceFunctionCall: true,
+    promptCacheKey: props.promptCacheKey,
     message: "Review the requirement document",
   });
   if (pointer.value === null)
@@ -43,13 +52,13 @@ export const orchestrateAnalyzeReview = async <Model extends ILlmSchema.Model>(
   const event: AutoBeAnalyzeReviewEvent = {
     type: "analyzeReview",
     id: v7(),
-    file: myFile,
+    file: props.myFile,
     plan: pointer.value.plan,
     review: pointer.value.review,
     content: pointer.value.content,
     tokenUsage,
-    total: progress.total,
-    completed: ++progress.completed,
+    total: props.progress.total,
+    completed: ++props.progress.completed,
     step: (ctx.state().analyze?.step ?? -1) + 1,
     created_at: new Date().toISOString(),
   };

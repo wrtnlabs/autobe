@@ -3,6 +3,7 @@ import {
   AutoBeRealizeAuthorization,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
 import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
@@ -36,11 +37,11 @@ export const transformRealizeAuthorizationCorrectHistories = <
       id: v7(),
       created_at: new Date().toISOString(),
       type: "assistantMessage",
-      text: [
-        "## Generated TypeScript Code",
-        "",
-        "```json",
-        `${JSON.stringify({
+      text: StringUtil.trim`
+        ## Generated TypeScript Code
+
+        \`\`\`json
+        ${JSON.stringify({
           provider: {
             location: auth.provider.location,
             name: auth.provider.name,
@@ -56,38 +57,39 @@ export const transformRealizeAuthorizationCorrectHistories = <
             name: auth.payload.name,
             content: auth.payload.content,
           },
-        } satisfies Omit<AutoBeRealizeAuthorization, "role">)}`,
-        "```",
-        "",
-        "## Prisma Schema",
-        "",
-        "```json",
-        `${JSON.stringify(ctx.state().prisma?.schemas)}`,
-        "```",
-        "",
-        "## File Paths",
-        "",
-        Object.keys(templateFiles)
+        } satisfies Omit<AutoBeRealizeAuthorization, "role">)}
+        \`\`\`
+
+        ## Prisma Schema
+
+        \`\`\`json
+        ${JSON.stringify(ctx.state().prisma?.schemas)}
+        \`\`\`
+
+        ## File Paths
+
+        ${Object.keys(templateFiles)
           .map((path) => `- ${path}`)
-          .join("\n"),
-        "",
-        "## Compile Errors",
-        "",
-        "Fix the compilation error in the provided code.",
-        "",
-        "```json",
-        JSON.stringify(diagnostics),
-        "```",
-        "## Component Naming Convention",
-        "",
-        "If the name of the component is not correct, please correct it.",
-        "",
-        "Please follow this naming convention for the authorization components:",
-        "",
-        `- Provider Name: ${auth.role.name.toLowerCase()}Authorize (e.g. ${auth.role.name.toLowerCase()}Authorize)`,
-        `- Decorator Name: ${auth.role.name.charAt(0).toUpperCase() + auth.role.name.slice(1).toLowerCase()}Auth (e.g. ${auth.role.name.charAt(0).toUpperCase() + auth.role.name.slice(1).toLowerCase()}Auth)`,
-        `- Payload Name: ${auth.role.name.charAt(0).toUpperCase() + auth.role.name.slice(1).toLowerCase()}Payload (e.g. ${auth.role.name.charAt(0).toUpperCase() + auth.role.name.slice(1).toLowerCase()}Payload)`,
-      ].join("\n"),
+          .join("\n")}
+
+        ## Compile Errors
+
+        Fix the compilation error in the provided code.
+
+        \`\`\`json
+        ${JSON.stringify(diagnostics)}
+        \`\`\`
+        
+        ## Component Naming Convention
+
+        If the name of the component is not correct, please correct it.
+
+        Please follow this naming convention for the authorization components:
+
+        - Provider Name: ${auth.role.name.toLowerCase()}Authorize (e.g. ${auth.role.name.toLowerCase()}Authorize)
+        - Decorator Name: ${auth.role.name.charAt(0).toUpperCase() + auth.role.name.slice(1).toLowerCase()}Auth (e.g. ${auth.role.name.charAt(0).toUpperCase() + auth.role.name.slice(1).toLowerCase()}Auth)
+        - Payload Name: ${auth.role.name.charAt(0).toUpperCase() + auth.role.name.slice(1).toLowerCase()}Payload (e.g. ${auth.role.name.charAt(0).toUpperCase() + auth.role.name.slice(1).toLowerCase()}Payload)
+      `,
     },
   ];
 };

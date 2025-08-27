@@ -1,6 +1,6 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
 import { AutoBeInterfaceAuthorization, AutoBeOpenApi } from "@autobe/interface";
-import { MapUtil } from "@autobe/utils";
+import { MapUtil, StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
@@ -49,73 +49,78 @@ export const transformTestScenarioHistories = (
       id: v7(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
-      text: [
-        "# Operations",
-        "",
-        "Below are the full operations. Please refer to this.",
-        "Your role is to draft all test cases for each given Operation.",
-        "It is also permissible to write multiple test codes on a single endpoint.",
-        "However, rather than meaningless tests, business logic tests should be written and an E2E test situation should be assumed.",
-        "",
-        "Please carefully analyze each operation to identify all dependencies required for testing.",
-        "For example, if you want to test liking and then deleting a post,",
-        "you might think to test post creation, liking, and unlike operations.",
-        "However, even if not explicitly mentioned, user registration or login are essential prerequisites.",
-        "Pay close attention to IDs and related values in the API,",
-        "and ensure you identify all dependencies between endpoints.",
-        "",
-        "```json",
-        JSON.stringify(
+      text: StringUtil.trim`
+        # Operations
+
+        Below are the full operations. Please refer to this.
+        Your role is to draft all test cases for each given Operation.
+        It is also permissible to write multiple test codes on a single endpoint.
+        However, rather than meaningless tests, business logic tests should be written and an E2E test situation should be assumed.
+
+        Please carefully analyze each operation to identify all dependencies required for testing.
+        For example, if you want to test liking and then deleting a post,
+        you might think to test post creation, liking, and unlike operations.
+        However, even if not explicitly mentioned, user registration or login are essential prerequisites.
+        Pay close attention to IDs and related values in the API,
+        and ensure you identify all dependencies between endpoints.
+
+        \`\`\`json
+        ${JSON.stringify(
           entire.map((el) => ({
             ...el,
             specification: undefined,
           })),
-        ),
-        "```",
-      ].join("\n"),
+        )}
+        \`\`\`
+      `,
     } satisfies IAgenticaHistoryJson.ISystemMessage,
     {
       id: v7(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
-      text: [
-        "# Included in Test Plan",
-        "",
-        "Below are the endpoints that have been included in the test plan.",
-        "Each endpoint shows its authentication requirements and related authentication APIs.",
-        "When testing endpoints that require authentication, ensure you include the corresponding join/login operations in your test scenario to establish proper authentication context.",
-        "",
-        include
+      text: StringUtil.trim`
+        # Included in Test Plan
+
+        Below are the endpoints that have been included in the test plan.
+        Each endpoint shows its authentication requirements and related authentication APIs.
+        When testing endpoints that require authentication, ensure you include the corresponding join/login operations in your test scenario to establish proper authentication context.
+
+        ${include
           .map((el, i) => {
             const roles = Array.from(authorizationRoles.values()).filter(
               (role) => role.name === el.authorizationRole,
             );
-            return [
-              `## ${i + 1}. ${el.method.toUpperCase()} ${el.path}`,
-              "",
-              "Related Authentication APIs:",
-              "",
-              roles.length > 0
-                ? roles.map((role) => {
-                    return [
-                      `- ${role.join?.method.toUpperCase()}: ${role.join?.path}`,
-                      `- ${role.login?.method.toUpperCase()}: ${role.login?.path}`,
-                    ].join("\n");
-                  })
-                : "- None",
-            ];
+            return StringUtil.trim`
+              ## ${i + 1}. ${el.method.toUpperCase()} ${el.path}
+
+              Related Authentication APIs:
+
+              ${
+                roles.length > 0
+                  ? roles
+                      .map((role) => {
+                        return StringUtil.trim`
+                          - ${role.join?.method.toUpperCase()}: ${role.join?.path}
+                          - ${role.login?.method.toUpperCase()}: ${role.login?.path}
+                        `;
+                      })
+                      .join("\n")
+                  : "- None"
+              }
+            `;
           })
-          .join("\n"),
-        "",
-        "# Excluded from Test Plan",
-        "",
-        "These are the endpoints that have already been used in test codes generated as part of a plan group.",
-        "These endpoints do not need to be tested again.",
-        "However, it is allowed to reference or depend on these endpoints when writing test codes for other purposes.",
-        exclude
+          .join("\n")}
+
+        # Excluded from Test Plan
+
+        These are the endpoints that have already been used in test codes generated as part of a plan group.
+        These endpoints do not need to be tested again.
+        However, it is allowed to reference or depend on these endpoints when writing test codes for other purposes.
+
+        ${exclude
           .map((el) => `- ${el.method.toUpperCase()}: ${el.path}`)
-          .join("\n"),
-      ].join("\n"),
+          .join("\n")}
+      `,
     } satisfies IAgenticaHistoryJson.ISystemMessage,
   ];
 };

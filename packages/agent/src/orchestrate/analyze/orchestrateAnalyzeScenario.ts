@@ -6,6 +6,7 @@ import {
   AutoBeAnalyzeScenarioEvent,
   AutoBeAssistantMessageHistory,
 } from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -29,16 +30,16 @@ export const orchestrateAnalyzeScenario = async <
     source: "analyzeScenario",
     controller: createController<Model>({
       model: ctx.model,
-      pointer,
+      build: (value) => (pointer.value = value),
     }),
     histories: transformAnalyzeSceHistories(ctx),
     enforceFunctionCall: false,
-    message: [
-      `Design a complete list of documents and user roles for this project.`,
-      `Define user roles that can authenticate via API and create appropriate documentation files.`,
-      `You must respect the number of documents specified by the user.`,
-      `Note that the user's locale is in ${ctx.locale}.`,
-    ].join("\n"),
+    message: StringUtil.trim`
+      Design a complete list of documents and user roles for this project.
+      Define user roles that can authenticate via API and create appropriate documentation files.
+      You must respect the number of documents specified by the user.
+      Note that the user's locale is in ${ctx.locale}.
+    `,
   });
   if (histories.at(-1)?.type === "assistantMessage")
     return {
@@ -66,7 +67,7 @@ export const orchestrateAnalyzeScenario = async <
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  pointer: IPointer<IAutoBeAnalyzeScenarioApplication.IProps | null>;
+  build: (value: IAutoBeAnalyzeScenarioApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
   const application: ILlmApplication<Model> = collection[
@@ -78,7 +79,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
     application,
     execute: {
       compose: (input) => {
-        props.pointer.value = input;
+        props.build(input);
       },
     } satisfies IAutoBeAnalyzeScenarioApplication,
   };

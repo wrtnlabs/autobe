@@ -28,11 +28,12 @@ export async function orchestrateInterfaceAuthorizations<
   };
   const authorizations: AutoBeInterfaceAuthorization[] =
     await executeCachedBatch(
-      roles.map((role) => async () => {
+      roles.map((role) => async (promptCacheKey) => {
         const event: AutoBeInterfaceAuthorizationEvent = await process(
           ctx,
           role,
           progress,
+          promptCacheKey,
         );
         ctx.dispatch(event);
         return {
@@ -49,6 +50,7 @@ async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   role: AutoBeAnalyzeRole,
   progress: AutoBeProgressEventBase,
+  promptCacheKey: string,
 ): Promise<AutoBeInterfaceAuthorizationEvent> {
   const pointer: IPointer<IAutoBeInterfaceAuthorizationsApplication.IProps | null> =
     {
@@ -65,6 +67,7 @@ async function process<Model extends ILlmSchema.Model>(
       },
     }),
     enforceFunctionCall: true,
+    promptCacheKey,
     message: "Create Authorization Operation for the given roles",
   });
   if (pointer.value === null)
@@ -111,27 +114,27 @@ function createController<Model extends ILlmSchema.Model>(props: {
           expected:
             "Response body with I{RoleName(PascalCase)}.IAuthorized type is required",
           value: op.responseBody,
-          description: [
-            "Response body is required for authentication operations.",
-            "",
-            "The responseBody must contain description and typeName fields.",
-            "typeName must be I{Prefix(PascalCase)}{RoleName(PascalCase)}.IAuthorized",
-            "description must be a detailed description of the response body.",
-          ].join("\n"),
+          description: StringUtil.trim`
+            Response body is required for authentication operations.
+
+            The responseBody must contain description and typeName fields.
+            typeName must be I{Prefix(PascalCase)}{RoleName(PascalCase)}.IAuthorized
+            description must be a detailed description of the response body.
+          `,
         });
       else if (!op.responseBody.typeName.endsWith(".IAuthorized"))
         errors.push({
           path: `$input.operations.${i}.responseBody.typeName`,
           expected: `Type name must be I{RoleName(PascalCase)}.IAuthorized`,
           value: op.responseBody?.typeName,
-          description: [
-            `Wrong response body type name: ${op.responseBody?.typeName}`,
-            "",
-            `For authentication operations (login, join, refresh), the response body type name must follow the convention "I{RoleName}.IAuthorized".`,
-            ``,
-            `This standardized naming convention ensures consistency across all authentication endpoints and clearly identifies authorization response types.`,
-            `The Role name should be in PascalCase format (e.g., IUser.IAuthorized, IAdmin.IAuthorized, ISeller.IAuthorized).`,
-          ].join("\n"),
+          description: StringUtil.trim`
+            Wrong response body type name: ${op.responseBody?.typeName}
+
+            For authentication operations (login, join, refresh), the response body type name must follow the convention "I{RoleName}.IAuthorized".
+
+            This standardized naming convention ensures consistency across all authentication endpoints and clearly identifies authorization response types.
+            The Role name should be in PascalCase format (e.g., IUser.IAuthorized, IAdmin.IAuthorized, ISeller.IAuthorized).
+          `,
         });
     });
 

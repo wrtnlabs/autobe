@@ -3,6 +3,7 @@ import {
   AutoBeRealizeAuthorization,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
@@ -27,16 +28,19 @@ export function transformRealizeCorrectHistories(props: {
     {
       id: v7(),
       type: "assistantMessage",
-      text: [
-        `Below is the code you made before. It's also something to review.`,
-        "```typescript",
-        props.code,
-        "```",
-        `The code has a compilation error:`,
-        "```json",
-        JSON.stringify(props.diagnostic),
-        "",
-      ].join("\n"),
+      text: StringUtil.trim`
+        Below is the code you made before. It's also something to review.
+
+        \`\`\`typescript
+        ${props.code}
+        \`\`\`
+
+        The code has a compilation error:
+        
+        \`\`\`json
+        ${JSON.stringify(props.diagnostic)}
+        \`\`\`
+      `,
       created_at: new Date().toISOString(),
     },
     {

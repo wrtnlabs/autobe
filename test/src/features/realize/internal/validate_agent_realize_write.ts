@@ -1,5 +1,6 @@
 import { orchestrateRealizeWrite } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeWrite";
 import { IAutoBeRealizeScenarioApplication } from "@autobe/agent/src/orchestrate/realize/structures/IAutoBeRealizeScenarioApplication";
+import { executeCachedBatch } from "@autobe/agent/src/utils/executeCachedBatch";
 import { CompressUtil, FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeEvent,
@@ -58,12 +59,11 @@ export const validate_agent_realize_write = async (
   );
 
   const progress = { id: v7(), total: scenarios.length, completed: 0 };
-  const writes: (AutoBeRealizeWriteEvent | null)[] = await Promise.all(
-    scenarios.map(async (scenario) => {
+  const writes: (AutoBeRealizeWriteEvent | null)[] = await executeCachedBatch(
+    scenarios.map((scenario) => async (promptCacheKey) => {
       const authorization = authorizations.find(
         (a) => a.role.name === scenario.decoratorEvent?.role.name,
       );
-
       try {
         const write: AutoBeRealizeWriteEvent = await orchestrateRealizeWrite(
           agent.getContext(),
@@ -72,9 +72,9 @@ export const validate_agent_realize_write = async (
             authorization: authorization ?? null,
             progress,
             scenario,
+            promptCacheKey,
           },
         );
-
         return write;
       } catch (err) {
         return null;
@@ -85,12 +85,11 @@ export const validate_agent_realize_write = async (
   const locations = writes.filter((w) => w !== null).map((el) => el.location);
   const rejected = scenarios.filter((s) => !locations.includes(s.location));
 
-  const retried = await Promise.all(
-    rejected.map(async (scenario) => {
+  const retried = await executeCachedBatch(
+    rejected.map((scenario) => async (promptCacheKey) => {
       const authorization = authorizations.find(
         (a) => a.role.name === scenario.decoratorEvent?.role.name,
       );
-
       try {
         const write: AutoBeRealizeWriteEvent = await orchestrateRealizeWrite(
           agent.getContext(),
@@ -99,9 +98,9 @@ export const validate_agent_realize_write = async (
             authorization: authorization ?? null,
             progress,
             scenario,
+            promptCacheKey,
           },
         );
-
         return write;
       } catch (err) {
         return null;

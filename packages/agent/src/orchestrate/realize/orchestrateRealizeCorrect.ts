@@ -4,6 +4,7 @@ import {
   AutoBeRealizeCorrectEvent,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
 import { ILlmApplication, ILlmController, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -56,10 +57,11 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
       totalAuthorizations: props.totalAuthorizations,
     }),
     enforceFunctionCall: true,
-    message: [
-      `Correct the TypeScript code implementation to strictly follow these rules:`,
-      `1. Ensure that the code is production-ready and follows best practices.`,
-    ].join("\n"),
+    message: StringUtil.trim`
+      Correct the TypeScript code implementation to strictly follow these rules:
+      
+      1. Ensure that the code is production-ready and follows best practices.
+    `,
   });
 
   if (pointer.value === null)

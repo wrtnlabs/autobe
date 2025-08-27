@@ -22,12 +22,17 @@ export async function orchestratePrismaReview<Model extends ILlmSchema.Model>(
     completed: 0,
     total: componentList.length,
   };
-  const id: string = v7();
   return (
     await executeCachedBatch(
-      componentList.map((component) => async () => {
+      componentList.map((component) => async (promptCacheKey) => {
         try {
-          return await step(ctx, application, schemas, component, progress, id);
+          return await step(ctx, {
+            application,
+            schemas,
+            component,
+            progress,
+            promptCacheKey,
+          });
         } catch {
           ++progress.completed;
           return null;
@@ -39,11 +44,13 @@ export async function orchestratePrismaReview<Model extends ILlmSchema.Model>(
 
 async function step<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  application: AutoBePrisma.IApplication,
-  schemas: Record<string, string>,
-  component: AutoBePrisma.IComponent,
-  progress: AutoBeProgressEventBase,
-  id: string,
+  props: {
+    application: AutoBePrisma.IApplication;
+    schemas: Record<string, string>;
+    component: AutoBePrisma.IComponent;
+    progress: AutoBeProgressEventBase;
+    promptCacheKey: string;
+  },
 ): Promise<AutoBePrismaReviewEvent> {
   const start: Date = new Date();
   const pointer: IPointer<IAutoBePrismaReviewApplication.IProps | null> = {
@@ -59,9 +66,9 @@ async function step<Model extends ILlmSchema.Model>(
           .reduce((acc, cur) => {
             return Object.assign(acc, cur);
           }, {}) ?? {},
-      application,
-      schemas,
-      component,
+      application: props.application,
+      schemas: props.schemas,
+      component: props.component,
     }),
     controller: createController(ctx, {
       build: (next) => {
@@ -69,6 +76,7 @@ async function step<Model extends ILlmSchema.Model>(
       },
     }),
     enforceFunctionCall: true,
+    promptCacheKey: props.promptCacheKey,
     message: "Please review the Prisma schema file.",
   });
   if (pointer.value === null)
@@ -76,15 +84,15 @@ async function step<Model extends ILlmSchema.Model>(
 
   const event: AutoBePrismaReviewEvent = {
     type: "prismaReview",
-    id,
+    id: v7(),
     created_at: start.toISOString(),
-    filename: component.filename,
+    filename: props.component.filename,
     review: pointer.value.review,
     plan: pointer.value.plan,
     modifications: pointer.value.modifications,
     tokenUsage,
-    completed: ++progress.completed,
-    total: progress.total,
+    completed: ++props.progress.completed,
+    total: props.progress.total,
     step: ctx.state().analyze?.step ?? 0,
   };
   ctx.dispatch(event);

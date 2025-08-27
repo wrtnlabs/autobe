@@ -15,15 +15,16 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { transformAnalyzeWriteHistories } from "./histories/transformAnalyzeWriteHistories";
 import { IAutoBeAnalyzeWriteApplication } from "./structures/IAutoBeAnalyzeWriteApplication";
 
-export const orchestrateAnalyzeWrite = async <
-  Model extends ILlmSchema.Model,
->(props: {
-  ctx: AutoBeContext<Model>;
-  scenario: AutoBeAnalyzeScenarioEvent;
-  file: AutoBeAnalyzeFile.Scenario;
-  progress: AutoBeProgressEventBase;
-}): Promise<AutoBeAnalyzeWriteEvent> => {
-  const { ctx, scenario, file, progress } = props;
+export const orchestrateAnalyzeWrite = async <Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  props: {
+    scenario: AutoBeAnalyzeScenarioEvent;
+    file: AutoBeAnalyzeFile.Scenario;
+    progress: AutoBeProgressEventBase;
+    promptCacheKey: string;
+  },
+): Promise<AutoBeAnalyzeWriteEvent> => {
+  const { scenario, file, progress, promptCacheKey } = props;
   const pointer: IPointer<IAutoBeAnalyzeWriteApplication.IProps | null> = {
     value: null,
   };
@@ -35,6 +36,7 @@ export const orchestrateAnalyzeWrite = async <
     }),
     histories: transformAnalyzeWriteHistories(ctx, scenario, file),
     enforceFunctionCall: true,
+    promptCacheKey,
     message: "Write requirement analysis report.",
   });
   if (pointer.value === null) {

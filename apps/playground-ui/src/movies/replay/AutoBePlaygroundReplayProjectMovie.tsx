@@ -11,6 +11,7 @@ import {
   Card,
   CardActionArea,
   CardContent,
+  Chip,
   Divider,
   Stack,
   Step,
@@ -19,7 +20,6 @@ import {
   Typography,
   alpha,
   useTheme,
-  Chip,
 } from "@mui/material";
 
 export const AutoBePlaygroundReplayProjectMovie = ({
@@ -179,11 +179,7 @@ export const AutoBePlaygroundReplayProjectMovie = ({
                   replay[
                     label as keyof Pick<
                       IAutoBePlaygroundReplay.ISummary,
-                      | "analyze"
-                      | "prisma"
-                      | "interface"
-                      | "test"
-                      | "realize"
+                      "analyze" | "prisma" | "interface" | "test" | "realize"
                     >
                   ];
                 const isCurrentStep = label === replay.step;
@@ -281,13 +277,11 @@ export const AutoBePlaygroundReplayProjectMovie = ({
 
                         {/* Aggregate info */}
                         {stepData?.aggregate &&
-                          Object.keys(stepData.aggregate)
-                            .length > 0 && (
+                          Object.keys(stepData.aggregate).length > 0 && (
                             <Typography
                               component="span"
                               sx={{
-                                color:
-                                  theme.palette.text.secondary,
+                                color: theme.palette.text.secondary,
                                 fontSize: {
                                   xs: "0.65rem",
                                   sm: "0.7rem",
@@ -296,9 +290,7 @@ export const AutoBePlaygroundReplayProjectMovie = ({
                               }}
                             >
                               (
-                              {Object.entries(
-                                stepData.aggregate,
-                              )
+                              {Object.entries(stepData.aggregate)
                                 .map(
                                   ([key, value]) =>
                                     `${key.charAt(0).toUpperCase()}: ${value}`,
@@ -316,28 +308,17 @@ export const AutoBePlaygroundReplayProjectMovie = ({
           </Box>
 
           {/* Stats */}
-          <Stack
-            spacing={{ xs: 1.5, sm: 2 }}
-            sx={{ flexGrow: 1 }}
-          >
+          <Stack spacing={{ xs: 1.5, sm: 2 }} sx={{ flexGrow: 1 }}>
             {/* Elapsed Time */}
             <Box>
-              <Stack
-                direction="row"
-                alignItems="center"
-                spacing={1}
-                mb={0.5}
-              >
+              <Stack direction="row" alignItems="center" spacing={1} mb={0.5}>
                 <AccessTime
                   sx={{
                     fontSize: 18,
                     color: "text.secondary",
                   }}
                 />
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                >
+                <Typography variant="body2" color="text.secondary">
                   Elapsed Time
                 </Typography>
               </Stack>
@@ -359,26 +340,18 @@ export const AutoBePlaygroundReplayProjectMovie = ({
 
             {/* Total Tokens */}
             <Box>
-              <Stack
-                direction="row"
-                alignItems="center"
-                spacing={1}
-                mb={0.5}
-              >
+              <Stack direction="row" alignItems="center" spacing={1} mb={0.5}>
                 <Token
                   sx={{
                     fontSize: 18,
                     color: "text.secondary",
                   }}
                 />
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                >
+                <Typography variant="body2" color="text.secondary">
                   Total Tokens
                 </Typography>
               </Stack>
-              <Stack direction="row" spacing={2}>
+              <Stack direction="row" spacing={2} alignItems="flex-start">
                 <Typography
                   variant="h6"
                   sx={{
@@ -390,32 +363,40 @@ export const AutoBePlaygroundReplayProjectMovie = ({
                     },
                   }}
                 >
-                  {formatTokenCount(
-                    replay.tokenUsage.aggregate.total,
-                  )}
+                  {formatTokenCount(replay.tokenUsage.aggregate.total)}
                 </Typography>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    fontSize: {
-                      xs: "0.8rem",
-                      sm: "0.875rem",
-                    },
-                    color: "text.secondary",
-                    alignSelf: "flex-end",
-                    pb: 0.3,
-                  }}
-                >
-                  (in:{" "}
-                  {formatTokenCount(
-                    replay.tokenUsage.aggregate.input.total,
-                  )}{" "}
-                  / out:{" "}
-                  {formatTokenCount(
-                    replay.tokenUsage.aggregate.output.total,
-                  )}
-                  )
-                </Typography>
+                <Stack direction="column" spacing={0} sx={{ mt: 0.2 }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontSize: {
+                        xs: "0.7rem",
+                        sm: "0.75rem",
+                      },
+                      color: "text.secondary",
+                    }}
+                  >
+                    in:{" "}
+                    {formatTokenCount(replay.tokenUsage.aggregate.input.total)}
+                    {replay.tokenUsage.aggregate.input.cached &&
+                    replay.tokenUsage.aggregate.input.cached > 0
+                      ? ` (${formatTokenCount(replay.tokenUsage.aggregate.input.cached)} cached)`
+                      : ""}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontSize: {
+                        xs: "0.7rem",
+                        sm: "0.75rem",
+                      },
+                      color: "text.secondary",
+                    }}
+                  >
+                    out:{" "}
+                    {formatTokenCount(replay.tokenUsage.aggregate.output.total)}
+                  </Typography>
+                </Stack>
               </Stack>
             </Box>
           </Stack>

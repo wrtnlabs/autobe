@@ -1,6 +1,7 @@
 import { IAgenticaController } from "@agentica/core";
 import { AutoBePrisma } from "@autobe/interface";
 import { AutoBePrismaSchemasEvent } from "@autobe/interface/src/events/AutoBePrismaSchemasEvent";
+import { StringUtil } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -21,9 +22,8 @@ export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
     .map((c) => c.tables.length)
     .reduce((x, y) => x + y, 0);
   const completed: IPointer<number> = { value: 0 };
-  const id: string = v7();
   return await executeCachedBatch(
-    componentList.map((component) => async () => {
+    componentList.map((component) => async (promptCacheKey) => {
       const otherTables: string[] = componentList
         .filter((y) => component !== y)
         .map((c) => c.tables)
@@ -34,7 +34,7 @@ export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
         start,
         total,
         completed,
-        id,
+        promptCacheKey,
       });
       ctx.dispatch(event);
       return event;
@@ -48,9 +48,9 @@ async function process<Model extends ILlmSchema.Model>(
     component: AutoBePrisma.IComponent;
     otherTables: string[];
     start: Date;
-    id: string;
     total: number;
     completed: IPointer<number>;
+    promptCacheKey: string;
   },
 ): Promise<AutoBePrismaSchemasEvent> {
   const pointer: IPointer<IAutoBePrismaSchemaApplication.IProps | null> = {
@@ -76,13 +76,14 @@ async function process<Model extends ILlmSchema.Model>(
       },
     }),
     enforceFunctionCall: true,
+    promptCacheKey: props.promptCacheKey,
     message: "Make prisma schema file please",
   });
   if (pointer.value === null)
     throw new Error("Unreachable code: Prisma Schema not generated");
   return {
     type: "prismaSchemas",
-    id: props.id,
+    id: v7(),
     created_at: props.start.toISOString(),
     plan: pointer.value.plan,
     models: pointer.value.models,
@@ -138,26 +139,26 @@ function createController<Model extends ILlmSchema.Model>(
           path: "$input.models",
           value: result.data.models,
           expected: `Array<AutoBePrisma.IModel>`,
-          description: [
-            "You missed some tables from the current domain's component.",
-            "",
-            "Look at the following details to fix the schemas. Never forget to",
-            "compose the `missed` tables at the next function calling.",
-            "",
-            "- filename: current domain's filename",
-            "- namespace: current domain's namespace",
-            "- expected: expected tables in the current domain",
-            "- actual: actual tables you made",
-            "- missed: tables you have missed, and you have to compose again",
-            "",
-            JSON.stringify({
+          description: StringUtil.trim`
+            You missed some tables from the current domain's component.
+
+            Look at the following details to fix the schemas. Never forget to
+            compose the \`missed\` tables at the next function calling.
+
+            - filename: current domain's filename
+            - namespace: current domain's namespace
+            - expected: expected tables in the current domain
+            - actual: actual tables you made
+            - missed: tables you have missed, and you have to compose again
+
+            ${JSON.stringify({
               filename: props.targetComponent.filename,
               namespace: props.targetComponent.namespace,
               expected,
               actual,
               missed,
-            }),
-          ].join("\n"),
+            })}
+          `,
         },
       ],
     };

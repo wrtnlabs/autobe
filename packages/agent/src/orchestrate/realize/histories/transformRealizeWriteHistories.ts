@@ -1,5 +1,6 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
 import { AutoBeRealizeAuthorization } from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
@@ -47,7 +48,10 @@ export const transformRealizeWriteHistories = (
 
   const input =
     propsFields.length > 0
-      ? `props: {\n${propsFields.map((field) => `  ${field}`).join("\n")}\n}`
+      ? StringUtil.trim`
+        props: {
+        ${propsFields.map((field) => `  ${field},`).join("\n")}
+        }`
       : `// No props parameter needed - function should have no parameters`;
 
   if (props.state.analyze === null)
@@ -147,30 +151,31 @@ export const transformRealizeWriteHistories = (
       id: v7(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
-      text: [
-        "Write new code based on the following operation.",
-        "```json",
-        JSON.stringify(props.scenario),
-        "```",
-      ].join("\n"),
+      text: StringUtil.trim`
+        Write new code based on the following operation.
+        
+        \`\`\`json
+        ${JSON.stringify(props.scenario)}
+        \`\`\`
+      `,
     },
     {
       id: v7(),
       created_at: new Date().toISOString(),
       type: "assistantMessage",
-      text: [
-        `I understand your request.`,
-        ``,
-        `To summarize:`,
-        `- I must **never use the native \`Date\` type** in any code or type definitions.`,
-        `- Instead, all date and datetime values must be handled as \`string & tags.Format<'date-time'>\`.`,
-        `- This rule is **strict** and applies everywhere, including domain types, API inputs/outputs, and Prisma models.`,
-        `- Even if a library or tool returns a \`Date\`, I must convert it to the correct string format before use.`,
-        ``,
-        `Especially regarding the \`Date\` type: I understand that using it can lead to type inconsistency and runtime issues, so I will completely avoid it in all circumstances.`,
-        ``,
-        `I'll make sure to follow all these rules strictly. Let’s proceed with this in mind.`,
-      ].join("\n"),
+      text: StringUtil.trim`
+        I understand your request.
+
+        To summarize:
+        - I must **never use the native \`Date\` type** in any code or type definitions.
+        - Instead, all date and datetime values must be handled as \`string & tags.Format<'date-time'>\`.
+        - This rule is **strict** and applies everywhere, including domain types, API inputs/outputs, and Prisma models.
+        - Even if a library or tool returns a \`Date\`, I must convert it to the correct string format before use.
+
+        Especially regarding the \`Date\` type: I understand that using it can lead to type inconsistency and runtime issues, so I will completely avoid it in all circumstances.
+
+        I'll make sure to follow all these rules strictly. Let's proceed with this in mind.
+      `,
     },
   ];
 };

@@ -1,5 +1,6 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
 import { IAutoBePrismaValidation } from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
@@ -20,37 +21,25 @@ export const transformPrismaCorrectHistories = (
       id: v7(),
       created_at: new Date().toISOString(),
       type: "assistantMessage",
-      text: [
-        "Here is the Prisma application data what you made:",
-        "",
-        "```json",
-        JSON.stringify(result.data),
-        "```",
-      ].join("\n"),
+      text: StringUtil.trim`
+        Here is the Prisma application data what you made:
+        
+        \`\`\`json
+        ${JSON.stringify(result.data)}
+        \`\`\`
+      `,
     },
     {
       id: v7(),
       created_at: new Date().toISOString(),
       type: "assistantMessage",
-      text: [
-        "Below are the list of errors what you have to fix:",
-        "",
-        "```json",
-        JSON.stringify(result.errors),
-        "```",
-      ].join("\n"),
-    },
-    {
-      id: v7(),
-      created_at: new Date().toISOString(),
-      type: "systemMessage",
-      text: [
-        "Before fixing the schema files,",
-        "study about Prisma schema language",
-        "from the best practices and examples",
-        "",
-        AutoBeSystemPromptConstant.PRISMA_EXAMPLE,
-      ].join("\n"),
+      text: StringUtil.trim`
+        Below are the list of errors what you have to fix:
+        
+        \`\`\`json
+        ${JSON.stringify(result.errors)}
+        \`\`\`
+      `,
     },
   ];
 };

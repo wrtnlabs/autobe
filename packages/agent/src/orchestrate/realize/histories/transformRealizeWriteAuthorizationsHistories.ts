@@ -50,7 +50,10 @@ export const transformRealizeWriteAuthorizationsHistories = (
               **NOTE**: The jsonwebtoken library is automatically imported as jwt. Use it to generate tokens with the EXACT payload structure:
 
               **CRITICAL**: Use the predefined payload structures for consistency:
+
+              \`\`\`json
               ${JSON.stringify(payloads)}
+              \`\`\`
 
               // JWT is already imported: import jwt from "jsonwebtoken";
               
@@ -151,7 +154,10 @@ export const transformRealizeWriteAuthorizationsHistories = (
               **NOTE**: The jsonwebtoken library is automatically imported as jwt. After successful registration, generate tokens with the EXACT payload structure:
 
               **CRITICAL**: Use the predefined payload structures for consistency:
+
+              \`\`\`json
               ${JSON.stringify(payloads)}
+              \`\`\`
 
               // JWT is already imported: import jwt from "jsonwebtoken";
               
@@ -223,7 +229,10 @@ export const transformRealizeWriteAuthorizationsHistories = (
               3. Generate a new access token with THE SAME payload structure as the original
 
               **CRITICAL**: Use the predefined payload structures for consistency:
+
+              \`\`\`json
               ${JSON.stringify(payloads)}
+              \`\`\`
 
               // JWT is already imported: import jwt from "jsonwebtoken";
               

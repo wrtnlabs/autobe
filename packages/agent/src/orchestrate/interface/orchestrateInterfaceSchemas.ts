@@ -4,6 +4,7 @@ import {
   AutoBeOpenApi,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
 import { IPointer } from "tstl";
@@ -53,9 +54,16 @@ export async function orchestrateInterfaceSchemas<
         }
       : {};
   for (const y of await executeCachedBatch(
-    matrix.map((it) => async () => {
+    matrix.map((it) => async (promptCacheKey) => {
       const row: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-        await divideAndConquer(ctx, operations, it, 3, progress);
+        await divideAndConquer(
+          ctx,
+          operations,
+          it,
+          3,
+          progress,
+          promptCacheKey,
+        );
       const newbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
         await orchestrateInterfaceSchemasReview(
           ctx,
@@ -78,13 +86,21 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
   typeNames: string[],
   retry: number,
   progress: AutoBeProgressEventBase,
+  promptCacheKey: string,
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   const remained: Set<string> = new Set(typeNames);
   const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
   for (let i: number = 0; i < retry; ++i) {
     if (remained.size === 0) break;
     const newbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-      await process(ctx, operations, schemas, remained, progress);
+      await process(
+        ctx,
+        operations,
+        schemas,
+        remained,
+        progress,
+        promptCacheKey,
+      );
     for (const key of Object.keys(newbie)) {
       schemas[key] = newbie[key];
       remained.delete(key);
@@ -99,6 +115,7 @@ async function process<Model extends ILlmSchema.Model>(
   oldbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
   remained: Set<string>,
   progress: AutoBeProgressEventBase,
+  promptCacheKey: string,
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   const already: string[] = Object.keys(oldbie);
   const pointer: IPointer<Record<
@@ -119,25 +136,29 @@ async function process<Model extends ILlmSchema.Model>(
       pointer,
     }),
     enforceFunctionCall: true,
-    message: [
-      "Make type components please.",
-      "",
-      "Here is the list of request/response bodies' type names from",
-      "OpenAPI operations. Make type components of them. If more object",
-      "types are required during making the components, please make them",
-      "too.",
-      "",
-      ...Array.from(remained).map((k) => `- \`${k}\``),
-      ...(already.length !== 0
-        ? [
-            "",
-            "> By the way, here is the list of components schemas what you've",
-            "> already made. So, you don't need to make them again.",
-            ">",
-            ...already.map((k) => `> - \`${k}\``),
-          ]
-        : []),
-    ].join("\n"),
+    promptCacheKey,
+    message: StringUtil.trim`
+      Make type components please.
+
+      Here is the list of request/response bodies' type names from
+      OpenAPI operations. Make type components of them. If more object
+      types are required during making the components, please make them
+      too.
+
+      ${Array.from(remained)
+        .map((k) => `      - \`${k}\``)
+        .join("\n")}${
+        already.length !== 0
+          ? StringUtil.trim`
+
+            > By the way, here is the list of components schemas what you've
+            > already made. So, you don't need to make them again.
+            >
+            ${already.map((k) => `> - \`${k}\``).join("\n")}
+          `
+          : ""
+      }
+    `,
   });
   if (pointer.value === null) throw new Error("Failed to create components.");
 

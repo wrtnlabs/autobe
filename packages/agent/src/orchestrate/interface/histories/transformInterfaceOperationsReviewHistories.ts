@@ -1,5 +1,6 @@
 import { IMicroAgenticaHistoryJson } from "@agentica/core";
 import { AutoBeOpenApi } from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
 import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
@@ -31,13 +32,13 @@ export function transformInterfaceOperationsReviewHistories<
       type: "assistantMessage",
       id: v7(),
       created_at: new Date().toISOString(),
-      text: [
-        "Review the following API operations:",
-        "",
-        "```json",
-        JSON.stringify(operations),
-        "```",
-      ].join("\n"),
+      text: StringUtil.trim`
+        Review the following API operations:
+
+        \`\`\`json
+        ${JSON.stringify(operations)}
+        \`\`\`
+      `,
     },
   ];
 }

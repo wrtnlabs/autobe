@@ -74,12 +74,13 @@ export const orchestrateRealize =
       completed: 0,
     };
     const writeEvents: AutoBeRealizeWriteEvent[] = await executeCachedBatch(
-      scenarios.map((scenario) => async () => {
+      scenarios.map((scenario) => async (promptCacheKey) => {
         const code = await orchestrateRealizeWrite(ctx, {
           totalAuthorizations: authorizations,
           authorization: scenario.decoratorEvent ?? null,
           scenario,
           progress: writeProgress,
+          promptCacheKey,
         });
         return code;
       }),

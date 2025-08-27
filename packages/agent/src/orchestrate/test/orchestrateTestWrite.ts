@@ -34,15 +34,15 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
      * individual test code implementations. Each scenario is processed to
      * generate corresponding test code and progress events.
      */
-    scenarios.map((scenario) => async () => {
+    scenarios.map((scenario) => async (promptCacheKey) => {
       try {
         const artifacts: IAutoBeTestScenarioArtifacts =
           await getTestScenarioArtifacts(ctx, scenario);
-        const event: AutoBeTestWriteEvent = await process({
-          ctx,
+        const event: AutoBeTestWriteEvent = await process(ctx, {
           scenario,
           artifacts,
           progress,
+          promptCacheKey,
         });
         ctx.dispatch(event);
         return {
@@ -58,22 +58,16 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
   return result.filter((r) => r !== null);
 }
 
-/**
- * Process function that generates test code for each individual scenario. Takes
- * the AutoBeContext and scenario information as input and uses MicroAgentica to
- * generate appropriate test code through LLM interaction.
- *
- * @param ctx - The AutoBeContext containing model, vendor and configuration
- * @param scenario - The test scenario information to generate code for
- * @param artifacts - The artifacts containing the reference files and schemas
- */
-async function process<Model extends ILlmSchema.Model>(props: {
-  ctx: AutoBeContext<Model>;
-  scenario: AutoBeTestScenario;
-  artifacts: IAutoBeTestScenarioArtifacts;
-  progress: AutoBeProgressEventBase;
-}): Promise<AutoBeTestWriteEvent> {
-  const { ctx, scenario, artifacts, progress } = props;
+async function process<Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  props: {
+    scenario: AutoBeTestScenario;
+    artifacts: IAutoBeTestScenarioArtifacts;
+    progress: AutoBeProgressEventBase;
+    promptCacheKey: string;
+  },
+): Promise<AutoBeTestWriteEvent> {
+  const { scenario, artifacts, progress, promptCacheKey } = props;
   const pointer: IPointer<IAutoBeTestWriteApplication.IProps | null> = {
     value: null,
   };
@@ -88,6 +82,7 @@ async function process<Model extends ILlmSchema.Model>(props: {
       },
     }),
     enforceFunctionCall: true,
+    promptCacheKey,
     message: "Create e2e test functions.",
   });
   if (pointer.value === null) throw new Error("Failed to create test code.");

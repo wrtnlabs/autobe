@@ -1,4 +1,5 @@
 import { IMicroAgenticaHistoryJson } from "@agentica/core";
+import { StringUtil } from "@autobe/utils";
 import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
@@ -21,13 +22,15 @@ export function transformAnalyzeSceHistories<Model extends ILlmSchema.Model>(
     {
       id: v7(),
       type: "systemMessage",
-      text: [
-        "One agent per page of the document you specify will write according to the instructions below.",
-        "You should also refer to the content to define the document list.",
-        "```",
-        AutoBeSystemPromptConstant.ANALYZE_WRITE,
-        "```",
-      ].join("\n"),
+      text: StringUtil.trim`
+        > One agent per page of the document you specify will 
+        > write according to the instructions below. You should also refer 
+        > to the content to define the document list.
+
+        ----------------------
+
+        ${AutoBeSystemPromptConstant.ANALYZE_WRITE}
+      `,
       created_at: new Date().toISOString(),
     },
   ];

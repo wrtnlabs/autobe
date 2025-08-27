@@ -36,7 +36,7 @@ export async function orchestrateInterfaceOperations<
 
   return (
     await executeCachedBatch(
-      matrix.map((it) => async () => {
+      matrix.map((it) => async (promptCacheKey) => {
         const row: AutoBeOpenApi.IOperation[] = await divideAndConquer(
           ctx,
           it,
@@ -44,13 +44,12 @@ export async function orchestrateInterfaceOperations<
           {
             total: matrix.length,
             completed: 0,
-            id: v7(),
           },
           {
             total: matrix.length,
             completed: 0,
-            id: v7(),
           },
+          promptCacheKey,
         );
         return row;
       }),
@@ -62,8 +61,9 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   endpoints: AutoBeOpenApi.IEndpoint[],
   retry: number,
-  operationsProgress: AutoBeProgressEventBase & { id: string },
-  operationsReviewProgress: AutoBeProgressEventBase & { id: string },
+  operationsProgress: AutoBeProgressEventBase,
+  operationsReviewProgress: AutoBeProgressEventBase,
+  promptCacheKey: string,
 ): Promise<AutoBeOpenApi.IOperation[]> {
   const remained: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(
     endpoints,
@@ -78,7 +78,7 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
   for (let i: number = 0; i < retry; ++i) {
     if (remained.empty() === true || unique.size() >= endpoints.length) break;
     const operations: AutoBeOpenApi.IOperation[] = remained.size()
-      ? await process(ctx, remained, operationsProgress)
+      ? await process(ctx, remained, operationsProgress, promptCacheKey)
       : [];
 
     for (const item of operations) {
@@ -100,6 +100,7 @@ async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   endpoints: HashSet<AutoBeOpenApi.IEndpoint>,
   progress: AutoBeProgressEventBase,
+  promptCacheKey: string,
 ): Promise<AutoBeOpenApi.IOperation[]> {
   const prefix: string = NamingConvention.camel(ctx.state().analyze!.prefix);
   const pointer: IPointer<AutoBeOpenApi.IOperation[] | null> = {
@@ -155,6 +156,7 @@ async function process<Model extends ILlmSchema.Model>(
       },
     }),
     enforceFunctionCall: true,
+    promptCacheKey,
     message: "Make API operations",
   });
   if (pointer.value === null) throw new Error("Failed to create operations."); // never be happened
@@ -223,13 +225,13 @@ function createController<Model extends ILlmSchema.Model>(props: {
           errors.push({
             path: `$input.operations[${i}].authorizationRoles[${j}]`,
             expected: `null | ${props.roles.map((str) => JSON.stringify(str)).join(" | ")}`,
-            description: [
-              `Role "${role}" is not defined in the roles list.`,
-              "",
-              "Please select one of them below, or do not define (`null`):  ",
-              "",
-              ...props.roles.map((role) => `- ${role}`),
-            ].join("\n"),
+            description: StringUtil.trim`
+              Role "${role}" is not defined in the roles list.
+
+              Please select one of them below, or do not define (\`null\`):  
+
+              ${props.roles.map((role) => `- ${role}`).join("\n")}
+            `,
             value: role,
           });
         });
@@ -252,15 +254,16 @@ function createController<Model extends ILlmSchema.Model>(props: {
           path: `$input.operations[${i}].{"path"|"method"}`,
           expected: "Unique endpoint (path and method)",
           value: key,
-          description: [
-            `Duplicated endpoint detected (method: ${op.method}, path: ${op.path}).`,
-            "",
-            "The duplicated endpoints of others are located in below accessors.",
-            "Check them, and consider which operation endpoint would be proper to modify.",
-            ...indexes.map(
-              (idx) => `- $input.operations.[${idx}].{"path"|"method"}`,
-            ),
-          ].join("\n"),
+          description: StringUtil.trim`
+            Duplicated endpoint detected (method: ${op.method}, path: ${op.path}).
+
+            The duplicated endpoints of others are located in below accessors.
+            Check them, and consider which operation endpoint would be proper to modify.
+            
+            ${indexes
+              .map((idx) => `- $input.operations.[${idx}].{"path"|"method"}`)
+              .join("\n")}
+          `,
         });
         indexes.push(i);
       } else endpoints.emplace(key, [i]);
@@ -281,20 +284,20 @@ function createController<Model extends ILlmSchema.Model>(props: {
           path: `$input.operations[${i}].name`,
           expected: "Unique name in the same accessor scope.",
           value: op.name,
-          description: [
-            `Duplicated operation accessor detected (name: ${op.name}, accessor: ${key}).`,
-            "",
-            "The operation name must be unique within the parent accessor.",
-            "In other worlds, the operation accessor determined by the name",
-            "must be unique in the OpenAPI document.",
-            "",
-            "Here is the list of elements of duplicated operation names.",
-            "Check them, and consider which operation name would be proper to modify.",
-            "",
-            ...indexes
+          description: StringUtil.trim`
+            Duplicated operation accessor detected (name: ${op.name}, accessor: ${key}).
+
+            The operation name must be unique within the parent accessor.
+            In other worlds, the operation accessor determined by the name
+            must be unique in the OpenAPI document.
+
+            Here is the list of elements of duplicated operation names.
+            Check them, and consider which operation name would be proper to modify.
+
+            ${indexes
               .map((idx) => `- ${operations[idx].name} (accessor: ${key})`)
-              .join("\n"),
-          ].join("\n"),
+              .join("\n")}
+          `,
         });
       }
       indexes.push(i);
