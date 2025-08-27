@@ -11,3 +11,4 @@ export type {
   IChatBubbleProps,
   IContentRendererProps,
 } from "./common/ChatBubble";
+export { AutoBeVoiceRecoderButton } from "./AutoBeVoiceRecoderButton";

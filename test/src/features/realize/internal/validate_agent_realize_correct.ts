@@ -1,4 +1,4 @@
-import { compileRealizeFiles } from "@autobe/agent/src/orchestrate/realize/internal/compile";
+import { compileRealizeFiles } from "@autobe/agent/src/orchestrate/realize/internal/compileRealizeFiles";
 import { orchestrateRealizeCorrect } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeCorrect";
 import { IAutoBeRealizeScenarioApplication } from "@autobe/agent/src/orchestrate/realize/structures/IAutoBeRealizeScenarioApplication";
 import { CompressUtil, FileSystemIterator } from "@autobe/filesystem";

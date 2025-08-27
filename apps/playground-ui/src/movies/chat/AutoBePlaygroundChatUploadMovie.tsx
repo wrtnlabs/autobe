@@ -1,5 +1,9 @@
 import { AutoBeUserMessageContent } from "@autobe/interface";
-import { AutoBeChatUploadSendButton, AutoBeFileUploadBox } from "@autobe/ui";
+import {
+  AutoBeChatUploadSendButton,
+  AutoBeFileUploadBox,
+  AutoBeVoiceRecoderButton,
+} from "@autobe/ui";
 import CloseIcon from "@mui/icons-material/Close";
 import { Box, Chip, Paper, TextField, Typography } from "@mui/material";
 import { ReactNode, RefObject, useEffect, useRef, useState } from "react";
@@ -7,7 +11,6 @@ import { ReactNode, RefObject, useEffect, useRef, useState } from "react";
 import { IAutoBePlaygroundBucket } from "../../structures/IAutoBePlaygroundBucket";
 import { IAutoBePlaygroundUploadConfig } from "../../structures/IAutoBePlaygroundUploadConfig";
 import { AutoBePlaygroundFileUploader } from "../../utils/AutoBePlaygroundFileUploader";
-import { AutoBePlaygroundChatVoiceMovie } from "./AutoBePlaygroundChatVoiceMovie";
 
 export const AutoBePlaygroundChatUploadMovie = (
   props: AutoBePlaygroundChatUploadMovie.IProps,
@@ -282,9 +285,9 @@ export const AutoBePlaygroundChatUploadMovie = (
             enabled={enabled}
           />
           {props.uploadConfig?.supportAudio === true ? (
-            <AutoBePlaygroundChatVoiceMovie
+            <AutoBeVoiceRecoderButton
               enabled={enabled}
-              complete={(b) => setBuckets((o) => [...o, b])}
+              onComplete={(content) => setBuckets((o) => [...o, content])}
             />
           ) : null}
           <AutoBeChatUploadSendButton
