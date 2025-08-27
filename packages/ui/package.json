@@ -13,6 +13,16 @@
     "url": "https://github.com/wrtnlabs/autobe/issues"
   },
   "main": "src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts"
+    },
+    "./utils": {
+      "types": "./src/utils/index.ts",
+      "import": "./src/utils/index.ts"
+    }
+  },
   "publishConfig": {
     "main": "lib/index.js"
   },
