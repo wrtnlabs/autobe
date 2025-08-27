@@ -31,7 +31,7 @@ export function completeTestCode(
         (ref) =>
           `import type { ${ref} } from "@ORGANIZATION/PROJECT-api/lib/structures/${ref}";`,
       )
-      .join("\n")},
+      .join("\n")}
     
     ${code}
   `;

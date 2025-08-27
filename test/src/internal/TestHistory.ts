@@ -53,6 +53,7 @@ export namespace TestHistory {
       await fs.promises.readFile(location),
     );
     const histories: AutoBeHistory[] = JSON.parse(content);
+    console.log(histories.filter((h) => h.type === "test").at(0)?.compiled);
     return typia.assert(histories);
   };
 

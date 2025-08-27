@@ -16,7 +16,7 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { predicateStateMessage } from "../../utils/predicateStateMessage";
-import { compile } from "./internal/compile";
+import { compileRealizeFiles } from "./internal/compileRealizeFiles";
 import { orchestrateRealizeAuthorization } from "./orchestrateRealizeAuthorization";
 import { orchestrateRealizeCorrect } from "./orchestrateRealizeCorrect";
 import { orchestrateRealizeScenario } from "./orchestrateRealizeScenario";
@@ -103,7 +103,10 @@ export const orchestrateRealize =
       };
     });
 
-    let compilation = await compile(ctx, { authorizations, functions });
+    let compilation = await compileRealizeFiles(ctx, {
+      authorizations,
+      functions,
+    });
 
     if (compilation.type !== "success") {
       const MAX_CORRECTION_ATTEMPTS = 5 as const;
@@ -160,7 +163,10 @@ export const orchestrateRealize =
             ),
           );
 
-          compilation = await compile(ctx, { authorizations, functions });
+          compilation = await compileRealizeFiles(ctx, {
+            authorizations,
+            functions,
+          });
           if (compilation.type === "success") {
             break;
           }
@@ -175,7 +181,6 @@ export const orchestrateRealize =
         functions,
         authorizations,
       });
-
     return ctx.dispatch({
       type: "realizeComplete",
       id: v7(),
@@ -183,7 +188,7 @@ export const orchestrateRealize =
       functions,
       authorizations,
       controllers,
-      compiled: await compile(ctx, { authorizations, functions }),
+      compiled: await compileRealizeFiles(ctx, { authorizations, functions }),
       step: ctx.state().analyze?.step ?? 0,
       elapsed: new Date().getTime() - start.getTime(),
     });

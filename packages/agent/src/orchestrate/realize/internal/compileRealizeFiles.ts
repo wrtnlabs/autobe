@@ -10,7 +10,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../../context/AutoBeContext";
 
-export async function compile<Model extends ILlmSchema.Model>(
+export async function compileRealizeFiles<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
     authorizations: AutoBeRealizeAuthorization[];
@@ -27,7 +27,8 @@ export async function compile<Model extends ILlmSchema.Model>(
   const nodeModules: Record<string, string> =
     prisma?.type === "success" ? prisma.nodeModules : {};
 
-  const filterTsFiles = (location: string) => location.endsWith(".ts");
+  const filterTsFiles = (location: string) =>
+    location.startsWith("src/") && location.endsWith(".ts");
 
   const files: Record<string, string> = {
     ...nodeModules,

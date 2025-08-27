@@ -64,13 +64,9 @@ export const orchestrateTest =
       ctx,
       scenarios,
     );
-
     const corrects: AutoBeTestValidateEvent[] = await orchestrateTestCorrect(
       ctx,
       written,
-    );
-    const success: AutoBeTestValidateEvent[] = corrects.filter(
-      (c) => c.result.type === "success",
     );
 
     // DO COMPILE
@@ -83,14 +79,14 @@ export const orchestrateTest =
               dbms: "sqlite",
             }),
           ).filter(([key]) => key.endsWith(".ts")),
-          ...success.map((s) => [s.file.location, s.file.content]),
+          ...corrects.map((s) => [s.file.location, s.file.content]),
         ]),
       });
     return ctx.dispatch({
       type: "testComplete",
       id: v7(),
       created_at: new Date().toISOString(),
-      files: success.map((s) => s.file),
+      files: corrects.map((s) => s.file),
       compiled,
       step: ctx.state().interface?.step ?? 0,
       elapsed: new Date().getTime() - start.getTime(),

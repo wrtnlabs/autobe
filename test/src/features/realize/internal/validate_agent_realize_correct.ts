@@ -1,4 +1,4 @@
-import { compile } from "@autobe/agent/src/orchestrate/realize/internal/compile";
+import { compileRealizeFiles } from "@autobe/agent/src/orchestrate/realize/internal/compile";
 import { orchestrateRealizeCorrect } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeCorrect";
 import { IAutoBeRealizeScenarioApplication } from "@autobe/agent/src/orchestrate/realize/structures/IAutoBeRealizeScenarioApplication";
 import { CompressUtil, FileSystemIterator } from "@autobe/filesystem";
@@ -86,7 +86,7 @@ export const validate_agent_realize_correct = async (
     };
   });
 
-  const compilation: IAutoBeTypeScriptCompileResult = await compile(
+  const compilation: IAutoBeTypeScriptCompileResult = await compileRealizeFiles(
     agent.getContext(),
     {
       authorizations,
@@ -195,13 +195,11 @@ export const validate_agent_realize_correct = async (
     },
   });
 
-  const afterCorrection: IAutoBeTypeScriptCompileResult = await compile(
-    agent.getContext(),
-    {
+  const afterCorrection: IAutoBeTypeScriptCompileResult =
+    await compileRealizeFiles(agent.getContext(), {
       authorizations,
       functions,
-    },
-  );
+    });
 
   console.debug(
     JSON.stringify(
