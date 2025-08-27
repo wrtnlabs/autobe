@@ -288,7 +288,7 @@ export const AutoBePlaygroundChatUploadMovie = (
             />
           ) : null}
           <AutoBeChatUploadSendButton
-            conversate={conversate}
+            onClick={() => conversate()}
             enabled={enabled}
           />
         </Box>

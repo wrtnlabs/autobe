@@ -1,7 +1,7 @@
 /** Props interface for AutoBeChatUploadSendButton component */
 interface IAutoBeChatUploadSendButtonProps {
   /** Function to trigger conversation */
-  conversate: () => Promise<void>;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => Promise<void>;
   /** Whether the button is enabled */
   enabled: boolean;
 }
@@ -39,7 +39,7 @@ export const AutoBeChatUploadSendButton = (
   return (
     <button
       style={baseStyles}
-      onClick={() => void props.conversate()}
+      onClick={(e) => void props.onClick?.(e)}
       disabled={!props.enabled}
       onMouseEnter={(e) => {
         if (props.enabled) {
