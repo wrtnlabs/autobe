@@ -1,4 +1,5 @@
 import { AutoBeUserMessageContent } from "@autobe/interface";
+import { AutoBeFileUploadBox } from "@autobe/ui";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import CloseIcon from "@mui/icons-material/Close";
 import {
@@ -14,7 +15,6 @@ import { ReactNode, RefObject, useEffect, useRef, useState } from "react";
 import { IAutoBePlaygroundBucket } from "../../structures/IAutoBePlaygroundBucket";
 import { IAutoBePlaygroundUploadConfig } from "../../structures/IAutoBePlaygroundUploadConfig";
 import { AutoBePlaygroundFileUploader } from "../../utils/AutoBePlaygroundFileUploader";
-import { AutoBePlaygroundChatUploadFile } from "./AutoBePlaygroundChatUploadFile";
 import { AutoBePlaygroundChatVoiceMovie } from "./AutoBePlaygroundChatVoiceMovie";
 
 export const AutoBePlaygroundChatUploadMovie = (
@@ -284,7 +284,7 @@ export const AutoBePlaygroundChatUploadMovie = (
             alignItems: "center",
           }}
         >
-          <AutoBePlaygroundChatUploadFile
+          <AutoBeFileUploadBox
             extensionError={extensionError}
             onClick={() => fileInputRef.current?.click()}
             enabled={enabled}
