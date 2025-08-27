@@ -6,6 +6,7 @@ export {
   type AutoBeFileUploadBox as IAutoBeFileUploadBox,
 } from "./AutoBeFileUploadBox";
 export { default as ChatBubble } from "./common/ChatBubble";
+export { AutoBeChatUploadSendButton } from "./AutoBeChatUploadSendButton";
 export type {
   IChatBubbleProps,
   IContentRendererProps,

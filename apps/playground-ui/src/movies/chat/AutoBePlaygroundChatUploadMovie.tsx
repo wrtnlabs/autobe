@@ -1,15 +1,7 @@
 import { AutoBeUserMessageContent } from "@autobe/interface";
-import { AutoBeFileUploadBox } from "@autobe/ui";
-import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import { AutoBeChatUploadSendButton, AutoBeFileUploadBox } from "@autobe/ui";
 import CloseIcon from "@mui/icons-material/Close";
-import {
-  Box,
-  Chip,
-  IconButton,
-  Paper,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Chip, Paper, TextField, Typography } from "@mui/material";
 import { ReactNode, RefObject, useEffect, useRef, useState } from "react";
 
 import { IAutoBePlaygroundBucket } from "../../structures/IAutoBePlaygroundBucket";
@@ -295,7 +287,7 @@ export const AutoBePlaygroundChatUploadMovie = (
               complete={(b) => setBuckets((o) => [...o, b])}
             />
           ) : null}
-          <AutoBePlaygroundChatUploadSendButton
+          <AutoBeChatUploadSendButton
             conversate={conversate}
             enabled={enabled}
           />
@@ -304,35 +296,6 @@ export const AutoBePlaygroundChatUploadMovie = (
     </Paper>
   );
 };
-
-const AutoBePlaygroundChatUploadSendButton = (props: {
-  conversate: () => Promise<void>;
-  enabled: boolean;
-}) => {
-  return (
-    <IconButton
-      size="small"
-      color="primary"
-      onClick={() => void props.conversate()}
-      disabled={!props.enabled}
-      sx={{
-        p: 0.75,
-        backgroundColor: "primary.main",
-        color: "primary.contrastText",
-        "&:hover": {
-          backgroundColor: "primary.dark",
-        },
-        "&.Mui-disabled": {
-          backgroundColor: "action.disabledBackground",
-          color: "action.disabled",
-        },
-      }}
-    >
-      <ArrowUpwardIcon fontSize="small" />
-    </IconButton>
-  );
-};
-
 export namespace AutoBePlaygroundChatUploadMovie {
   export interface IProps {
     listener: RefObject<IListener>;
