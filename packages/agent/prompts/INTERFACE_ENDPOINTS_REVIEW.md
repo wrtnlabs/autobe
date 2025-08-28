@@ -33,9 +33,9 @@ You will receive a comprehensive collection of API endpoints generated independe
 5. **Maintains Coherence**: Ensure the final API presents a logical, intuitive structure
 
 **CRITICAL HTTP Method Understanding**:
-- `PATCH` with request body is used for complex search/filtering operations (not GET)
-- `GET` is for simple retrieval without request body
-- This is by design in AutoBE to support complex search criteria
+- `PATCH` is used for retrieving information with complicated request data (searching/filtering with requestBody)
+- `GET` is for retrieving information (single resource or simple collection) without request body
+- This is by design in AutoBE to support complex search criteria that cannot be expressed in URL parameters
 
 ## 3. Review Principles
 
@@ -67,6 +67,7 @@ PATCH /users/query
 - Unnecessary path nesting beyond 3-4 levels
 - Multiple endpoints for what should be query parameters
 - Separate endpoints for every possible filter combination
+- Endpoints that violate stance-based rules (e.g., independent endpoints for subsidiary entities)
 
 **Examples**:
 ```
@@ -80,6 +81,13 @@ GET /users/deleted
 # Over-engineered - Excessive nesting
 GET /departments/{deptId}/teams/{teamId}/members/{memberId}/projects/{projectId}/tasks
 → Simplify to: GET /tasks?projectId={projectId}
+
+# Over-engineered - Violating stance rules
+PATCH /articleComments  (if comments are subsidiary stance)
+POST /articleComments
+→ Should be: Access through parent only
+PATCH /articles/{articleId}/comments
+POST /articles/{articleId}/comments
 ```
 
 ### 3.3 Consistency Standards
@@ -89,11 +97,14 @@ GET /departments/{deptId}/teams/{teamId}/members/{memberId}/projects/{projectId}
 - Maintain uniform parameter naming across endpoints (always `{resourceId}` format)
 - Follow consistent nesting patterns (max 3-4 levels)
 - Use standard HTTP methods appropriately:
-  - `get`: Simple retrieval (single resource or basic collection)
-  - `patch`: Complex search/filter with request body
+  - `get`: Retrieve information (single resource or simple collection)
+  - `patch`: Retrieve information with complicated request data (searching/filtering with requestBody)
   - `post`: Create new records
   - `put`: Update existing records
-  - `delete`: Remove records (hard or soft based on schema)
+  - `delete`: Remove records - behavior depends on Prisma schema:
+    * If entity has soft delete fields (e.g., `deleted_at`, `is_deleted`), performs soft delete
+    * If NO soft delete fields exist in schema, performs hard delete
+    * NEVER assume soft delete fields exist without verifying in actual Prisma schema
 
 **Naming Conventions**:
 - Resource names MUST be in camelCase (e.g., `/attachmentFiles` not `/attachment-files`)
@@ -104,14 +115,34 @@ GET /departments/{deptId}/teams/{teamId}/members/{memberId}/projects/{projectId}
 
 ### 3.4 Value Assessment
 
-**Endpoints to Remove**:
-- System-generated data manipulation endpoints (POST/PUT/DELETE on logs, metrics, analytics)
+**Endpoints to Remove Based on Stance and System Tables**:
+
+**System Tables (identified by requirements saying "THE system SHALL automatically..."):**
+- ❌ POST endpoints on system tables (system creates these automatically)
+- ❌ PUT endpoints on system tables (system data is immutable)
+- ❌ DELETE endpoints on system tables (audit/compliance data must be preserved)
+- ✅ Keep GET endpoints for viewing system data (if users need to see it)
+- ✅ Keep PATCH endpoints for searching/filtering system data
+
+**Based on Table Stance Property:**
+- **PRIMARY stance violations**: None should be removed (full CRUD is expected)
+- **SUBSIDIARY stance violations**: 
+  * ❌ Independent PATCH endpoints like `PATCH /subsidiaryEntities`
+  * ❌ Independent POST endpoints like `POST /subsidiaryEntities`
+  * ❌ Direct access endpoints not through parent
+  * ✅ Keep only nested endpoints through parent: `/parent/{parentId}/subsidiaries`
+- **SNAPSHOT stance violations**:
+  * ❌ POST endpoints (snapshots are system-generated)
+  * ❌ PUT endpoints (historical data is immutable)
+  * ❌ DELETE endpoints (audit trail must be preserved)
+  * ✅ Keep GET endpoints for viewing historical state
+  * ✅ Keep PATCH endpoints for searching/filtering historical data
+
+**Other Issues to Remove**:
 - Redundant CRUD operations on join tables
-- Endpoints that expose internal implementation details (especially "snapshot" in paths)
+- Endpoints exposing "snapshot" keyword in paths (implementation detail)
 - Operations better handled as side effects
 - Unnecessary granular access to nested resources beyond 3-4 levels
-- Subsidiary stance entities with independent endpoints (should only be accessed through parent)
-- Write operations (POST/PUT/DELETE) on snapshot stance entities
 
 **Keep Endpoints That**:
 - Serve distinct business purposes
@@ -247,28 +278,60 @@ GET /products?categoryId={categoryId}
 
 ### 7.7 Snapshot Implementation Exposure
 ```
+# CRITICAL: Snapshot tables must be COMPLETELY HIDDEN from API paths
 # Before: Exposing internal snapshot architecture
 GET /articles/snapshots
 GET /articles/{articleId}/snapshots/{snapshotId}
 GET /sales/{saleId}/snapshots/{snapshotId}/reviews
 POST /articles/{articleId}/snapshots
-# After: Hide snapshot implementation details
-GET /articles  (snapshots accessed as regular articles)
-GET /articles/{articleId}  (specific version if needed)
-GET /sales/{saleId}/reviews  (remove snapshot from path)
+GET /articles/{articleId}/snapshots/{snapshotId}/files
+
+# After: Hide ALL snapshot references - present clean business interface
+GET /articles  (if the table is bbs_article_snapshots)
+GET /articles/{articleId}  (access specific article without snapshot reference)
+GET /sales/{saleId}/reviews  (NOT /sales/{saleId}/snapshots/{snapshotId}/reviews)
+GET /articles/{articleId}/files  (NOT /articles/{articleId}/snapshots/{snapshotId}/files)
 # Remove POST - snapshots are system-generated
+
+# Key Principle: Snapshot tables are internal versioning/history mechanisms
+# The API should present a clean business-oriented interface without exposing the underlying snapshot architecture
+# Example transformations:
+# - bbs_article_snapshots → /articles
+# - bbs_article_snapshot_files → /articles/{articleId}/files
+# - shopping_sale_snapshot_review_comments → /sales/{saleId}/reviews/comments
 ```
 
 ### 7.8 Stance-Based Violations
 ```
+# Review endpoints based on table stance property in Prisma schema
+
+# PRIMARY stance - Should have full CRUD (keep all)
+PATCH /articles
+GET /articles/{articleId}  
+POST /articles
+PUT /articles/{articleId}
+DELETE /articles/{articleId}
+
+# SUBSIDIARY stance violations (REMOVE independent endpoints)
 # Before: Independent endpoints for subsidiary entities
-PATCH /orderItems  (subsidiary of orders)
-POST /orderItems
-DELETE /orderItems/{itemId}
-# After: Access only through parent
-PATCH /orders/{orderId}/items
-POST /orders/{orderId}/items
-DELETE /orders/{orderId}/items/{itemId}
+PATCH /orderItems  (subsidiary of orders - REMOVE)
+POST /orderItems  (REMOVE - no independent creation)
+GET /orderItems/{itemId}  (REMOVE - no independent access)
+DELETE /orderItems/{itemId}  (REMOVE - no independent deletion)
+
+# After: Access ONLY through parent
+GET /orders/{orderId}/items/{itemId}  (KEEP - nested access)
+POST /orders/{orderId}/items  (KEEP - create through parent)
+PUT /orders/{orderId}/items/{itemId}  (KEEP - update through parent)
+DELETE /orders/{orderId}/items/{itemId}  (KEEP - delete through parent)
+
+# SNAPSHOT stance violations (REMOVE write operations)
+POST /articleSnapshots  (REMOVE - system-generated)
+PUT /articleSnapshots/{snapshotId}  (REMOVE - immutable)
+DELETE /articleSnapshots/{snapshotId}  (REMOVE - audit trail)
+# Keep only read operations:
+GET /articles/{articleId}  (KEEP - view historical state)
+PATCH /articles  (KEEP - search/filter historical data with request body)
 ```
 
 ## 8. Function Call Requirement
