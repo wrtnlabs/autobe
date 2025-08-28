@@ -45,8 +45,7 @@ export async function orchestrateInterfaceEndpoints<
     OpenApiEndpointComparator.equals,
   ).toJSON();
 
-  const response = await orchestrateInterfaceEndpointsReview(ctx, deduplicated);
-  return response;
+  return orchestrateInterfaceEndpointsReview(ctx, deduplicated);
 }
 
 async function process<Model extends ILlmSchema.Model>(
