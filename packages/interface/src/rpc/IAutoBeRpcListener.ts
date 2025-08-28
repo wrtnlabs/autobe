@@ -42,6 +42,7 @@ import {
   AutoBeUserMessageEvent,
 } from "../events";
 import { AutoBeInterfaceAuthorizationEvent } from "../events/AutoBeInterfaceAuthorizationEvent";
+import { AutoBeInterfaceEndpointsReviewEvent } from "../events/AutoBeInterfaceEndpointsReviewEvent";
 import { AutoBeInterfaceGroupsEvent } from "../events/AutoBeInterfaceGroupsEvent";
 import { AutoBeRealizeAuthorizationCompleteEvent } from "../events/AutoBeRealizeAuthorizationCompleteEvent";
 import { AutoBeRealizeAuthorizationStartEvent } from "../events/AutoBeRealizeAuthorizationStartEvent";
@@ -262,6 +263,16 @@ export interface IAutoBeRpcListener {
    * foundation being built.
    */
   interfaceEndpoints?(event: AutoBeInterfaceEndpointsEvent): Promise<void>;
+
+  /**
+   * Optional handler for API endpoint review events.
+   *
+   * Called when the Interface agent reviews API endpoints, enabling client
+   * applications to show the review process and any identified issues.
+   */
+  interfaceEndpointsReview?(
+    event: AutoBeInterfaceEndpointsReviewEvent,
+  ): Promise<void>;
 
   /**
    * Optional handler for API operation definition progress events.

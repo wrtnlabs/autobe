@@ -4,6 +4,7 @@ import { AutoBeAnalyzeWriteEvent } from "./AutoBeAnalyzeWriteEvent";
 import { AutoBeInterfaceAuthorizationEvent } from "./AutoBeInterfaceAuthorizationEvent";
 import { AutoBeInterfaceComplementEvent } from "./AutoBeInterfaceComplementEvent";
 import { AutoBeInterfaceEndpointsEvent } from "./AutoBeInterfaceEndpointsEvent";
+import { AutoBeInterfaceEndpointsReviewEvent } from "./AutoBeInterfaceEndpointsReviewEvent";
 import { AutoBeInterfaceGroupsEvent } from "./AutoBeInterfaceGroupsEvent";
 import { AutoBeInterfaceOperationsEvent } from "./AutoBeInterfaceOperationsEvent";
 import { AutoBeInterfaceOperationsReviewEvent } from "./AutoBeInterfaceOperationsReviewEvent";
@@ -66,6 +67,7 @@ export type AutoBeEventSource =
   | AutoBeInterfaceAuthorizationEvent["type"]
   | AutoBeInterfaceGroupsEvent["type"]
   | AutoBeInterfaceEndpointsEvent["type"]
+  | AutoBeInterfaceEndpointsReviewEvent["type"]
   | AutoBeInterfaceOperationsEvent["type"]
   | AutoBeInterfaceOperationsReviewEvent["type"]
   | AutoBeInterfaceSchemasEvent["type"]

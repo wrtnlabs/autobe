@@ -175,6 +175,7 @@ const sleepMap: Record<AutoBeEvent.Type, number> = {
   interfaceStart: 1_000,
   interfaceGroups: 1_000,
   interfaceEndpoints: 1_000,
+  interfaceEndpointsReview: 1_000,
   interfaceOperations: 400,
   interfaceOperationsReview: 400,
   interfaceAuthorization: 400,
