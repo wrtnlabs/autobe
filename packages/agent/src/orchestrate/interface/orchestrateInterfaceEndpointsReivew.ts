@@ -3,6 +3,7 @@ import { AutoBeOpenApi } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
+import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
@@ -44,6 +45,7 @@ export async function orchestrateInterfaceEndpointsReview<
   const response = pointer.value?.endpoints ?? [];
 
   ctx.dispatch({
+    id: v7(),
     type: "interfaceEndpointsReview",
     endpoints,
     content: response,
