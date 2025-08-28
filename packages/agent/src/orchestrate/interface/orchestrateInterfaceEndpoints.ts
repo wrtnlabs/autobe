@@ -14,6 +14,7 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformInterfaceEndpointHistories } from "./histories/transformInterfaceEndpointHistories";
+import { orchestrateInterfaceEndpointsReview } from "./orchestrateInterfaceEndpontsReivew";
 import { IAutoBeInterfaceEndpointApplication } from "./structures/IAutoBeInterfaceEndpointApplication";
 import { OpenApiEndpointComparator } from "./utils/OpenApiEndpointComparator";
 
@@ -37,11 +38,15 @@ export async function orchestrateInterfaceEndpoints<
       ),
     )
   ).flat();
-  return new HashSet(
+
+  const deduplicated: AutoBeOpenApi.IEndpoint[] = new HashSet(
     endpoints,
     OpenApiEndpointComparator.hashCode,
     OpenApiEndpointComparator.equals,
   ).toJSON();
+
+  const response = await orchestrateInterfaceEndpointsReview(ctx, deduplicated);
+  return response;
 }
 
 async function process<Model extends ILlmSchema.Model>(
