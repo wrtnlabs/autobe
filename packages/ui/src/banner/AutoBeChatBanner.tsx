@@ -1,7 +1,7 @@
 import { IAutoBeTokenUsageJson } from "@autobe/interface";
 
 import { COLORS, SHADOWS } from "../constant/color";
-import { AutoBeTokenUsageCard } from "./AutoBeTokenUsageCard";
+import { AutoBeTokenUsage } from "./AutoBeTokenUsage";
 
 interface IAutoBeChatBannerProps {
   tokenUsage: IAutoBeTokenUsageJson | null;
@@ -27,7 +27,7 @@ export const AutoBeChatBanner = (props: IAutoBeChatBannerProps) => {
           width: "100%",
         }}
       >
-        <AutoBeTokenUsageCard tokenUsage={props.tokenUsage} />
+        <AutoBeTokenUsage tokenUsage={props.tokenUsage} />
       </div>
     </header>
   );

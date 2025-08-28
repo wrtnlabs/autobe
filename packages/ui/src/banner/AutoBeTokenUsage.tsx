@@ -101,7 +101,7 @@ const TokenValue = ({ children, variant }: ITokenValueProps) => {
  * @param props - Component props
  * @returns JSX element representing the token usage card
  */
-export const AutoBeTokenUsageCard = ({ tokenUsage }: ITokenUsageCardProps) => {
+export const AutoBeTokenUsage = ({ tokenUsage }: ITokenUsageCardProps) => {
   return (
     <>
       <div
@@ -161,4 +161,4 @@ export const AutoBeTokenUsageCard = ({ tokenUsage }: ITokenUsageCardProps) => {
   );
 };
 
-export default AutoBeTokenUsageCard;
+export default AutoBeTokenUsage;

@@ -1,2 +1,2 @@
 export * from "./AutoBeChatBanner";
-export * from "./AutoBeTokenUsageCard";
+export * from "./AutoBeTokenUsage";
