@@ -4,10 +4,13 @@ import {
   IAutoBeGetFilesOptions,
   IAutoBeTokenUsageJson,
 } from "@autobe/interface";
-import { AutoBeEventMovie, AutoBeProgressEventMovie } from "@autobe/ui";
+import {
+  AutoBeChatBanner,
+  AutoBeEventMovie,
+  AutoBeProgressEventMovie,
+} from "@autobe/ui";
 import { forwardRef } from "react";
 
-import TokenUsageCard from "../TokenUsageCard";
 import AutoBeHistoryMovie from "./histories/AutoBeHistoryMovie";
 
 interface IChatMovieProps {
@@ -55,7 +58,7 @@ const ChatMovie = forwardRef<HTMLDivElement, IChatMovieProps>((props, ref) => {
 
   return (
     <div className="flex flex-col h-full w-full">
-      {props.tokenUsage && <TokenUsageCard tokenUsage={props.tokenUsage} />}
+      {props.tokenUsage && <AutoBeChatBanner tokenUsage={props.tokenUsage} />}
 
       {/* 뒤로 가기 버튼 */}
       {props.onGoBack && (
