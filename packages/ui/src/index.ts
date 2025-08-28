@@ -8,3 +8,4 @@ export type {
 } from "./common/ChatBubble";
 export { AutoBeFileUploader } from "./utils";
 export * from "./upload";
+export * from "./banner";

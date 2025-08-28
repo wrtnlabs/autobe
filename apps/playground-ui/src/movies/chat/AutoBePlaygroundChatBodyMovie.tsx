@@ -1,5 +1,14 @@
-import { AutoBeUserMessageContent, IAutoBeRpcService } from "@autobe/interface";
-import { AutoBeChatUploadBox, AutoBeEventMovie } from "@autobe/ui";
+import {
+  AutoBeUserMessageContent,
+  IAutoBeRpcService,
+  IAutoBeTokenUsageJson,
+} from "@autobe/interface";
+import {
+  AutoBeChatBanner,
+  AutoBeChatUploadBox,
+  AutoBeEventMovie,
+} from "@autobe/ui";
+import { useMediaQuery } from "@autobe/ui/hooks";
 import { Box, Container } from "@mui/material";
 import { RefObject, useEffect, useRef } from "react";
 
@@ -26,6 +35,7 @@ export const AutoBePlaygroundChatBodyMovie = (
     });
   }, [props.eventGroups.length]);
 
+  const isMinWidthLg = useMediaQuery(useMediaQuery.MIN_WIDTH_LG);
   return (
     <div
       onDragEnter={(e) => listener.current.handleDragEnter(e)}
@@ -43,6 +53,8 @@ export const AutoBePlaygroundChatBodyMovie = (
         backgroundColor: "lightblue",
       }}
     >
+      {!isMinWidthLg && <AutoBeChatBanner tokenUsage={props.tokenUsage} />}
+
       <Container
         style={{
           paddingBottom: 120,
@@ -97,5 +109,6 @@ export namespace AutoBePlaygroundChatBodyMovie {
     conversate: (messages: AutoBeUserMessageContent[]) => Promise<void>;
     setError: (error: Error) => void;
     uploadConfig?: IAutoBePlaygroundUploadConfig;
+    tokenUsage: IAutoBeTokenUsageJson | null;
   }
 }

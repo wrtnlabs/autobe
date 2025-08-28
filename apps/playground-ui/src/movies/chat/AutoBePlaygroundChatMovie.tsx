@@ -3,18 +3,8 @@ import {
   IAutoBeRpcService,
   IAutoBeTokenUsageJson,
 } from "@autobe/interface";
-import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
-import {
-  AppBar,
-  Container,
-  Drawer,
-  IconButton,
-  Theme,
-  Toolbar,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+import { useMediaQuery } from "@autobe/ui/hooks";
+import { AppBar, Container, Toolbar, Typography } from "@mui/material";
 import { ILlmSchema } from "@samchon/openapi";
 import { useEffect, useState } from "react";
 
@@ -38,7 +28,6 @@ export function AutoBePlaygroundChatMovie(
   const [tokenUsage, setTokenUsage] = useState<IAutoBeTokenUsageJson | null>(
     null,
   );
-  const [openSide, setOpenSide] = useState(false);
 
   //----
   // EVENT INTERACTIONS
@@ -60,8 +49,9 @@ export function AutoBePlaygroundChatMovie(
   //----
   // RENDERERS
   //----
-  const theme: Theme = useTheme();
-  const isMobile: boolean = useMediaQuery(theme.breakpoints.down("lg"));
+
+  const isMinWidthLg = useMediaQuery(useMediaQuery.MIN_WIDTH_LG);
+  const isMobile = !isMinWidthLg;
   const sideMovie = () => (
     <div
       style={{
@@ -71,10 +61,7 @@ export function AutoBePlaygroundChatMovie(
         backgroundColor: "#eeeeee",
       }}
     >
-      <Container
-        maxWidth={false}
-        onClick={isMobile ? () => setOpenSide(false) : undefined}
-      >
+      <Container maxWidth={false}>
         <AutoBePlaygroundChatSideMovie
           header={props.header}
           tokenUsage={tokenUsage}
@@ -99,13 +86,6 @@ export function AutoBePlaygroundChatMovie(
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             {props.title ?? "AutoBE Playground"}
           </Typography>
-          {isMobile ? (
-            <>
-              <IconButton onClick={() => setOpenSide(true)}>
-                <ReceiptLongIcon />
-              </IconButton>
-            </>
-          ) : null}
         </Toolbar>
       </AppBar>
       <div
@@ -118,17 +98,7 @@ export function AutoBePlaygroundChatMovie(
           overflow: "hidden",
         }}
       >
-        {isMobile ? (
-          <Drawer
-            anchor="right"
-            open={openSide}
-            onClose={() => setOpenSide(false)}
-          >
-            {sideMovie()}
-          </Drawer>
-        ) : (
-          sideMovie()
-        )}
+        {isMobile || sideMovie()}
 
         <AutoBePlaygroundChatBodyMovie
           isMobile={isMobile}
@@ -139,6 +109,7 @@ export function AutoBePlaygroundChatMovie(
           }}
           setError={setError}
           uploadConfig={props.uploadConfig}
+          tokenUsage={tokenUsage}
         />
       </div>
     </div>

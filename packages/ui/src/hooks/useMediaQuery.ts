@@ -60,3 +60,9 @@ export function useMediaQuery(
 
   return matches;
 }
+
+export namespace useMediaQuery {
+  export const MIN_WIDTH_LG = "(min-width: 1200px)";
+  export const MIN_WIDTH_MD = "(min-width: 900px)";
+  export const MIN_WIDTH_SM = "(min-width: 600px)";
+}
