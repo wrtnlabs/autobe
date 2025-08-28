@@ -194,6 +194,26 @@ const Chat = () => {
             events={event}
             tokenUsage={tokenUsage}
             onGoBack={handleGoBack}
+            getFiles={async (options) => {
+              const response = new Promise<Record<string, string>>(
+                (resolve) => {
+                  vscode.onMessage((message) => {
+                    if (message.type === "res_get_files") {
+                      resolve(message.data);
+                    }
+                  });
+                },
+              );
+              vscode.postMessage({
+                type: "req_get_files",
+                data: {
+                  sessionId: sessionId!,
+                  options,
+                },
+              });
+
+              return await response;
+            }}
           />
         )}
       </div>

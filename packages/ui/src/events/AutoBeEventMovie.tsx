@@ -1,18 +1,26 @@
-import { AutoBeEvent, IAutoBeRpcService } from "@autobe/interface";
+import { AutoBeEvent, IAutoBeGetFilesOptions } from "@autobe/interface";
+
 import {
-  AutoBeAssistantMessageMovie,
   AutoBeCompleteEventMovie,
   AutoBeProgressEventMovie,
   AutoBeScenarioEventMovie,
   AutoBeStartEventMovie,
-  AutoBeUserMessageMovie,
   AutoBeValidateEventMovie,
   IValidateEventGroupProps,
   ValidateEventGroup,
-} from "@autobe/ui";
+} from ".";
+import { AutoBeAssistantMessageMovie, AutoBeUserMessageMovie } from "..";
 
-export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
-  props: AutoBePlaygroundEventMovie.IProps<Event>,
+export interface IAutoBeEventMovieProps<Event extends AutoBeEvent> {
+  getFiles: (
+    options?: Partial<IAutoBeGetFilesOptions>,
+  ) => Promise<Record<string, string>>;
+  events: Event[];
+  last: boolean;
+}
+
+export function AutoBeEventMovie<Event extends AutoBeEvent>(
+  props: IAutoBeEventMovieProps<Event>,
 ) {
   const back: Event = props.events[props.events.length - 1]!;
   switch (back.type) {
@@ -81,10 +89,7 @@ export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
     case "testComplete":
     case "realizeComplete":
       return (
-        <AutoBeCompleteEventMovie
-          getFiles={props.service.getFiles}
-          event={back}
-        />
+        <AutoBeCompleteEventMovie getFiles={props.getFiles} event={back} />
       );
     // DISCARD
     case "prismaCorrect":
@@ -104,10 +109,5 @@ export function AutoBePlaygroundEventMovie<Event extends AutoBeEvent>(
       return null;
   }
 }
-export namespace AutoBePlaygroundEventMovie {
-  export interface IProps<Event extends AutoBeEvent> {
-    service: IAutoBeRpcService;
-    events: Event[];
-    last: boolean;
-  }
-}
+
+export default AutoBeEventMovie;

@@ -1,11 +1,12 @@
 import { AutoBeUserMessageContent, IAutoBeRpcService } from "@autobe/interface";
-import { AutoBeChatUploadBox, AutoBeEventMovie } from "@autobe/ui";
 import { Box, Container } from "@mui/material";
 import { RefObject, useEffect, useRef } from "react";
 
+import { AutoBeChatUploadBox } from ".";
 import { AutoBePlaygroundGlobal } from "../../AutoBePlaygroundGlobal";
 import { IAutoBePlaygroundEventGroup } from "../../structures/IAutoBePlaygroundEventGroup";
 import { IAutoBePlaygroundUploadConfig } from "../../structures/IAutoBePlaygroundUploadConfig";
+import { AutoBePlaygroundEventMovie } from "../events/AutoBePlaygroundEventMovie";
 
 export const AutoBePlaygroundChatBodyMovie = (
   props: AutoBePlaygroundChatBodyMovie.IProps,
@@ -58,9 +59,9 @@ export const AutoBePlaygroundChatBodyMovie = (
         ref={bodyContainerRef}
       >
         {props.eventGroups.map((e, index) => (
-          <AutoBeEventMovie
+          <AutoBePlaygroundEventMovie
             key={index}
-            getFiles={props.service.getFiles}
+            service={props.service}
             events={e.events}
             last={index === props.eventGroups.length - 1}
           />
