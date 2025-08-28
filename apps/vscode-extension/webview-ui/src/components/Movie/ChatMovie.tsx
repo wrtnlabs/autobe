@@ -1,14 +1,13 @@
 import {
   AutoBeEvent,
   AutoBeHistory,
+  IAutoBeGetFilesOptions,
   IAutoBeTokenUsageJson,
 } from "@autobe/interface";
+import { AutoBeEventMovie, AutoBeProgressEventMovie } from "@autobe/ui";
 import { forwardRef } from "react";
 
 import TokenUsageCard from "../TokenUsageCard";
-import AutoBeEventsMovie, {
-  isAutoBeProgressEventBase,
-} from "./events/AutoBeEventsMovie";
 import AutoBeHistoryMovie from "./histories/AutoBeHistoryMovie";
 
 interface IChatMovieProps {
@@ -16,7 +15,21 @@ interface IChatMovieProps {
   events: Array<AutoBeEvent>;
   tokenUsage: IAutoBeTokenUsageJson | null;
   onGoBack?: () => void;
+  getFiles: (
+    options?: Partial<IAutoBeGetFilesOptions>,
+  ) => Promise<Record<string, string>>;
 }
+
+export const isAutoBeProgressEventBase = (
+  event: AutoBeEvent,
+): event is AutoBeProgressEventMovie.IProps["event"] => {
+  return (
+    "total" in event &&
+    "completed" in event &&
+    typeof event.total === "number" &&
+    typeof event.completed === "number"
+  );
+};
 
 const ChatMovie = forwardRef<HTMLDivElement, IChatMovieProps>((props, ref) => {
   const { histories, events } = props;
@@ -70,12 +83,17 @@ const ChatMovie = forwardRef<HTMLDivElement, IChatMovieProps>((props, ref) => {
       )}
 
       <div ref={ref} className="flex-1 overflow-auto p-4">
-        <div>
+        <div className="flex flex-col gap-4">
           {logList.map((v, i) =>
             v._type === "history" ? (
               <AutoBeHistoryMovie key={i} history={v} />
             ) : (
-              <AutoBeEventsMovie key={i} event={v} />
+              <AutoBeEventMovie
+                key={i}
+                getFiles={props.getFiles}
+                events={[v]}
+                last={i === logList.length - 1}
+              />
             ),
           )}
         </div>

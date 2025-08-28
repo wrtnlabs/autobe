@@ -364,6 +364,19 @@ export namespace AutoBeOpenApi {
      *   of summarized sales. Detailed sale information would be obtained by
      *   specifying the sale ID in the path parameter.
      *
+     * **CRITICAL WARNING about soft delete keywords**:
+     * DO NOT use terms like "soft delete", "soft-delete", or similar variations
+     * in this description UNLESS the operation actually implements soft deletion.
+     * These keywords trigger validation logic that expects a corresponding
+     * soft_delete_column to be specified. Only use these terms when you intend
+     * to implement soft deletion (marking records as deleted without removing
+     * them from the database).
+     *
+     * Example of problematic description:
+     * ❌ "This would normally be a soft-delete, but we intentionally perform
+     * permanent deletion here" - This triggers soft delete validation despite
+     * being a hard delete operation.
+     *
      * > MUST be written in English. Never use other languages.
      */
     description: string;
@@ -380,6 +393,14 @@ export namespace AutoBeOpenApi {
      *
      * IMPORTANT: The summary should clearly indicate which Prisma DB table this
      * operation relates to, helping to ensure all tables have API coverage.
+     *
+     * **CRITICAL WARNING about soft delete keywords**:
+     * DO NOT use terms like "soft delete", "soft-delete", or similar variations
+     * in this summary UNLESS the operation actually implements soft deletion.
+     * These keywords trigger validation logic that expects a corresponding
+     * soft_delete_column to be specified. Only use these terms when you intend
+     * to implement soft deletion (marking records as deleted without removing
+     * them from the database).
      *
      * > MUST be written in English. Never use other languages
      */
@@ -1396,6 +1417,8 @@ export namespace AutoBeOpenApi {
 
     /**
      * HTTP method of the API operation.
+     *
+     * **IMPORTANT**: Methods must be written in lowercase only (e.g., "get", not "GET").
      *
      * Note that, if the API operation has {@link requestBody}, method must not
      * be `get`.

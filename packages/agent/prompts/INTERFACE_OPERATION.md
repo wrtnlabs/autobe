@@ -210,7 +210,9 @@ makeOperations({
         typeName: "IPageIResource"
       },
       authorizationRoles: ["user"],
-      name: "index"
+      name: "index",
+      model_name: "Resource",
+      soft_delete_column: null
     },
     // ONLY include operations that pass validation
     // DO NOT include system-generated data manipulation
@@ -240,6 +242,21 @@ Include separate paragraphs for:
 - Validation rules and business logic
 - Related API operations that might be used together
 - Expected behavior and error handling
+
+**⚠️ CRITICAL WARNING - Soft Delete Keywords**:
+DO NOT use terms like "soft delete", "soft-delete", or similar variations in the description or summary UNLESS the operation actually implements soft deletion. These keywords trigger validation logic that expects a corresponding `soft_delete_column` to be specified.
+
+**Why this matters**: The validation system checks for consistency between soft delete mentions and the `soft_delete_column` field. If you mention soft delete but don't implement it (or vice versa), validation will fail.
+
+**Examples of problematic descriptions**:
+- ❌ "This would normally be a soft-delete, but we intentionally perform permanent deletion here"
+- ❌ "Unlike soft-delete operations, this permanently removes the record"
+- ❌ "This is not a soft delete - records are permanently removed"
+
+**Instead, write**:
+- ✅ "This operation permanently removes the record from the database"
+- ✅ "Records are completely deleted and cannot be recovered"
+- ✅ "This performs a hard delete, removing all associated data"
 
 **IMPORTANT**: All descriptions MUST be written in English. Never use other languages.
 
@@ -280,6 +297,7 @@ Follow these patterns based on the endpoint method:
   - No request body
   - No response body or confirmation message
   - Name: `"erase"`
+  - **Important**: Only mention "soft delete" in summary/description if actually implementing soft deletion with a valid `soft_delete_column`
 
 ### 5.4. Parameter Definition
 
@@ -391,7 +409,70 @@ Each operation must have a globally unique accessor within the API. The accessor
 **Global Uniqueness:**
 Every accessor must be unique across the entire API. This prevents naming conflicts in generated SDKs where operations are accessed via dot notation (e.g., `api.shopping.sale.review.at()`)
 
-### 5.7. Authorization Roles
+### 5.7. Model Name and Soft Delete Configuration
+
+#### Model Name Field
+The `model_name` field identifies the primary Prisma model that this operation targets:
+- **Purpose**: Specifies which database table/model is the main subject of the operation
+- **Format**: Must exactly match the Prisma model name (case-sensitive)
+- **Examples**:
+  - For `/users/{userId}` → `model_name: "User"`
+  - For `/articles/{articleId}/comments` → `model_name: "Comment"`
+  - For `/shopping/orders` → `model_name: "Order"`
+
+**Important**: The model name must correspond to an actual model defined in your Prisma schema.
+
+#### Soft Delete Column Field
+The `soft_delete_column` field specifies the column used for soft deletion:
+- **Purpose**: Identifies which field in the model is used to mark records as deleted without removing them from the database
+- **Format**: Exact field name from the Prisma model, or `null` if hard delete is used
+- **Common Patterns**:
+  - `"deleted_at"`: Timestamp field marking deletion time
+  - `"deletedAt"`: Camel-cased deletion timestamp
+  - `"is_deleted"`: Boolean flag for deletion status
+  - `null`: No soft deletion (hard delete will be performed)
+
+**Critical Rules**:
+1. **For DELETE operations**:
+   - If the model has a soft-delete field (like `deleted_at`), set `soft_delete_column` to that field name
+   - If the model uses hard deletion, set `soft_delete_column` to `null`
+   - The operation's summary/description should reflect whether it's soft or hard delete
+
+2. **Consistency Check**:
+   - If `soft_delete_column` is specified, the summary or description MUST mention "soft delete"
+   - If summary/description mentions "soft delete", the `soft_delete_column` MUST be specified
+   - The specified column must exist in the model's Prisma schema
+   - **WARNING**: Never use "soft delete" terminology unless actually implementing it
+   - Avoid phrases like "unlike soft-delete" or "not a soft delete" as these still trigger validation
+
+3. **For non-DELETE operations**:
+   - Generally set to `null` unless the operation specifically deals with soft-deleted records
+   - GET/PATCH operations that filter out soft-deleted records should document this behavior
+
+**Example**:
+```typescript
+// For a model with soft delete capability
+{
+  method: "delete",
+  path: "/articles/{articleId}",
+  model_name: "Article",
+  soft_delete_column: "deleted_at",
+  summary: "Soft delete an article by marking it as deleted",
+  // ... other fields
+}
+
+// For a model using hard delete
+{
+  method: "delete",
+  path: "/temp-files/{fileId}",
+  model_name: "TempFile",
+  soft_delete_column: null,
+  summary: "Permanently remove a temporary file from the system",
+  // ... other fields
+}
+```
+
+### 5.8. Authorization Roles
 
 The `authorizationRoles` field must specify which user roles can access the endpoint:
 
@@ -428,6 +509,8 @@ Use actual role names from the Prisma schema. Common patterns:
   - Violate architectural principles
   - Serve no real user need
 - **Prisma Schema Alignment**: All operations must accurately reflect the underlying database schema
+- **Model Identification**: Every operation MUST specify the correct `model_name` matching the Prisma schema
+- **Soft Delete Configuration**: DELETE operations MUST correctly specify `soft_delete_column` based on the model's schema
 - **Detailed Descriptions**: Every operation must have comprehensive, multi-paragraph descriptions
 - **Proper Type References**: All requestBody and responseBody typeName fields must reference valid component types
 - **Accurate Parameters**: Path parameters must match exactly with the endpoint path
@@ -550,7 +633,9 @@ This operation integrates with the Customer table as defined in the Prisma schem
   },
   
   authorizationRoles: ["admin"],
-  name: "search"
+  name: "search",
+  model_name: "Customer",
+  soft_delete_column: "deleted_at"
 }
 ```
 

@@ -5,6 +5,7 @@ import {
   IResponseCreateChatSession,
 } from "./create-chat-session.dto";
 import { IRequestGetConfig, IResponseGetConfig } from "./get-config.dto";
+import { IRequestGetFiles, IResponseGetFiles } from "./get-files.dto";
 import {
   IRequestGetSessionDetail,
   IResponseGetSessionDetail,
@@ -37,7 +38,9 @@ export type IAutoBeWebviewMessage =
   | IRequestGetSessionList
   | IResponseGetSessionList
   | IRequestGetSessionDetail
-  | IResponseGetSessionDetail;
+  | IResponseGetSessionDetail
+  | IRequestGetFiles
+  | IResponseGetFiles;
 
 export * from "./get-config.dto";
 export * from "./set-config.dto";
@@ -51,3 +54,4 @@ export * from "./save-files.dto";
 export * from "./remove-session.dto";
 export * from "./get-session-list.dto";
 export * from "./get-session-detail.dto";
+export * from "./get-files.dto";

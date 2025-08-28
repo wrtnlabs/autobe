@@ -174,5 +174,47 @@ export namespace IAutoBeInterfaceOperationsReviewApplication {
      * database structure and business logic requirements.
      */
     prisma_schemas: string;
+
+    /**
+     * Primary Prisma model name for this operation.
+     *
+     * Identifies the main database table/model that this operation targets.
+     * This must match exactly with the Prisma model name defined in the schema.
+     * When soft deletion is specified, this model name indicates which table
+     * should be soft-deleted.
+     *
+     * For example:
+     * - In a "GET /users/:id" operation, this would be "User"
+     * - In a "POST /articles" operation, this would be "Article"
+     * - In a "DELETE /comments/:id" with soft delete, this specifies the "Comment" model to soft-delete
+     *
+     * This property is essential for:
+     * - Determining the primary entity for CRUD operations
+     * - Identifying which table to apply soft deletion to
+     * - Validating operations against the correct Prisma model
+     * - Generating appropriate database queries and validations
+     */
+    model_name: string;
+
+    /**
+     * Soft delete column name for the Prisma models.
+     *
+     * Specifies the column name used for soft deletion in the database tables
+     * associated with this operation. When set to a non-null value, it indicates
+     * that the related entities support soft deletion through this column
+     * (typically a timestamp field like `deleted_at` or `deletedAt`).
+     *
+     * When null, it means the entities involved in this operation use hard
+     * deletion or don't support deletion at all. This information is crucial
+     * for generating appropriate CRUD operations and ensuring data integrity
+     * policies are correctly implemented.
+     *
+     * Common soft delete patterns:
+     * - `"deleted_at"`: Records deletion timestamp
+     * - `"deletedAt"`: Camel-cased deletion timestamp
+     * - `"is_deleted"`: Boolean flag for deletion status
+     * - `null`: No soft deletion (hard delete only)
+     */
+    soft_delete_column: string | null;
   }
 }

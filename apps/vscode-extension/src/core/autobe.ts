@@ -279,6 +279,23 @@ export class AutoBeWrapper {
         });
         return;
       }
+
+      case "req_get_files": {
+        const session = this.chatSessionMap.get(message.data.sessionId);
+        if (session === undefined) {
+          throw new Error("Session not found");
+        }
+
+        const files = await session.agent
+          ?.getDriver()
+          .getFiles(message.data.options);
+
+        await this.postMessage({
+          type: "res_get_files",
+          data: files ?? {},
+        });
+        return;
+      }
     }
   }
 
