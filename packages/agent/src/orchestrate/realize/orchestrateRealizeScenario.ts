@@ -1,4 +1,8 @@
-import { AutoBeOpenApi, AutoBeRealizeAuthorization } from "@autobe/interface";
+import {
+  AutoBeOpenApi,
+  AutoBeRealizeAuthorization,
+  AutoBeTestFile,
+} from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
@@ -29,7 +33,7 @@ export const orchestrateRealizeScenario = <Model extends ILlmSchema.Model>(
   operation: AutoBeOpenApi.IOperation,
   authorization?: AutoBeRealizeAuthorization,
 ): IAutoBeRealizeScenarioApplication.IProps => {
-  const testScenarios =
+  const testFiles: AutoBeTestFile[] =
     ctx
       .state()
       .test?.files.filter(
@@ -47,7 +51,7 @@ export const orchestrateRealizeScenario = <Model extends ILlmSchema.Model>(
     operation: operation,
     functionName: functionName,
     location: `src/providers/${functionName}.ts`,
-    testScenarios: testScenarios.map((el) => el.scenario.draft),
+    testFiles: testFiles,
     decoratorEvent: authorization,
   };
 };
