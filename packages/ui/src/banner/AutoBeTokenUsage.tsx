@@ -106,18 +106,6 @@ export const AutoBeTokenUsage = ({ tokenUsage }: ITokenUsageCardProps) => {
     <>
       <div
         style={{
-          fontSize: "1.125rem",
-          fontWeight: "600",
-          color: COLORS.GRAY_TEXT_DARK,
-          marginBottom: "12px",
-          borderBottom: `1px solid ${COLORS.GRAY_BORDER_LIGHT}`,
-          paddingBottom: "8px",
-        }}
-      >
-        Token Usage
-      </div>
-      <div
-        style={{
           display: "flex",
           flexDirection: "column",
           gap: "8px",
