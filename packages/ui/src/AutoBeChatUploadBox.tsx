@@ -1,27 +1,40 @@
 import { AutoBeUserMessageContent } from "@autobe/interface";
 import {
+  AutoBeUserMessageAudioContent,
+  AutoBeUserMessageFileContent,
+  AutoBeUserMessageImageContent,
+} from "@autobe/interface";
+import { ReactNode, RefObject, useEffect, useRef, useState } from "react";
+
+import {
   AutoBeChatUploadSendButton,
   AutoBeFileUploadBox,
   AutoBeVoiceRecoderButton,
-} from "@autobe/ui";
-import { AutoBeFileUploader } from "@autobe/ui/utils";
-import CloseIcon from "@mui/icons-material/Close";
-import { Box, Chip, Paper, TextField, Typography } from "@mui/material";
-import { ReactNode, RefObject, useEffect, useRef, useState } from "react";
+} from ".";
+import { AutoBeFileUploader } from "./utils";
 
-import { IAutoBePlaygroundBucket } from "../../structures/IAutoBePlaygroundBucket";
-import { IAutoBePlaygroundUploadConfig } from "../../structures/IAutoBePlaygroundUploadConfig";
+export interface IAutoBeBucket {
+  file: File;
+  content:
+    | AutoBeUserMessageAudioContent
+    | AutoBeUserMessageFileContent
+    | AutoBeUserMessageImageContent;
+}
 
-export const AutoBePlaygroundChatUploadMovie = (
-  props: AutoBePlaygroundChatUploadMovie.IProps,
-) => {
-  const inputRef = useRef<HTMLInputElement>(null);
+export interface IAutoBeChatUploadConfig {
+  supportAudio?: boolean;
+  file?: (file: File) => Promise<{ id: string }>;
+  image?: (file: File) => Promise<{ url: string }>;
+}
+
+export const AutoBeChatUploadBox = (props: AutoBeChatUploadBox.IProps) => {
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [dragging, setDragging] = useState(false);
   const [enabled, setEnabled] = useState(true);
   const [text, setText] = useState("");
-  const [buckets, setBuckets] = useState<IAutoBePlaygroundBucket[]>([]);
+  const [buckets, setBuckets] = useState<IAutoBeBucket[]>([]);
   const [extensionError, setExtensionError] = useState<ReactNode | null>(null);
 
   const [emptyText, setEmptyText] = useState(false);
@@ -60,13 +73,14 @@ export const AutoBePlaygroundChatUploadMovie = (
     }
     setEnabled(true);
   };
+
   const handleFileSelect = async (fileList: FileList | null) => {
     if (!fileList) return;
 
     setEnabled(false);
     setExtensionError(null);
 
-    const newFiles: IAutoBePlaygroundBucket[] = [];
+    const newFiles: IAutoBeBucket[] = [];
     const errorFileNames: string[] = [];
 
     for (const file of fileList) {
@@ -142,80 +156,137 @@ export const AutoBePlaygroundChatUploadMovie = (
   }, [props.listener]);
 
   return (
-    <Paper
-      elevation={20}
-      sx={{
-        maxWidth: 768,
-        mx: "auto",
-        p: 1.5,
-        borderRadius: 2,
-        border: dragging ? "3px solid #1976d2" : "2px solid",
-        borderColor: dragging ? "#1976d2" : "divider",
+    <div
+      style={{
+        maxWidth: "768px",
+        margin: "0 auto",
+        padding: "12px",
+        borderRadius: "16px",
+        border: dragging ? "3px solid #1976d2" : "2px solid #e0e0e0",
         backgroundColor: dragging
           ? "rgba(25, 118, 210, 0.04)"
           : "rgba(255, 255, 255, 0.95)",
         backdropFilter: "blur(10px)",
         transition: "all 0.2s",
         position: "relative",
+        boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.12)",
       }}
     >
       {dragging ? (
-        <Box
-          sx={{
+        <div
+          style={{
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            minHeight: 120,
-            py: 4,
+            minHeight: "120px",
+            paddingTop: "32px",
+            paddingBottom: "32px",
           }}
         >
-          <Typography
-            variant="h6"
-            sx={{
-              color: "primary.main",
+          <h6
+            style={{
+              color: "#1976d2",
               fontWeight: "bold",
               textAlign: "center",
+              fontSize: "1.25rem",
+              margin: 0,
             }}
           >
             Drop files here to upload
-          </Typography>
-        </Box>
+          </h6>
+        </div>
       ) : null}
 
-      <Box
-        sx={{
+      <div
+        style={{
           display: dragging ? "none" : "flex",
           flexDirection: "column",
-          gap: 1,
+          gap: "8px",
         }}
       >
         {buckets.length > 0 && (
-          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "4px",
+            }}
+          >
             {buckets.map(({ file }, index) => (
-              <Chip
+              <div
                 key={index}
-                label={file.name}
-                size="small"
-                onDelete={() => removeFile(index)}
-                deleteIcon={<CloseIcon />}
-                sx={{
-                  maxWidth: 200,
-                  "& .MuiChip-label": {
-                    display: "block",
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  backgroundColor: "#f5f5f5",
+                  borderRadius: "16px",
+                  padding: "4px 8px",
+                  fontSize: "0.875rem",
+                  maxWidth: "200px",
+                  border: "1px solid #e0e0e0",
+                }}
+              >
+                <span
+                  style={{
                     overflow: "hidden",
                     textOverflow: "ellipsis",
-                  },
-                }}
-              />
+                    whiteSpace: "nowrap",
+                    marginRight: "4px",
+                  }}
+                >
+                  {file.name}
+                </span>
+                <button
+                  style={{
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    padding: "2px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: "50%",
+                    width: "16px",
+                    height: "16px",
+                  }}
+                  onClick={() => removeFile(index)}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "#f0f0f0";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "transparent";
+                  }}
+                >
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+                  </svg>
+                </button>
+              </div>
             ))}
-          </Box>
+          </div>
         )}
-        <TextField
-          inputRef={inputRef}
-          fullWidth
-          multiline
-          size="small"
-          maxRows={8}
+        <textarea
+          ref={inputRef}
+          style={{
+            width: "100%",
+            minHeight: "40px",
+            maxHeight: "192px",
+            padding: "8px 12px",
+            border: `2px solid ${emptyText ? "#f44336" : dragging ? "#1976d2" : "#e0e0e0"}`,
+            borderRadius: "8px",
+            fontSize: "0.95rem",
+            fontFamily: "inherit",
+            resize: "none",
+            outline: "none",
+            color: dragging ? "#1976d2" : "inherit",
+            backgroundColor: "transparent",
+            transition: "border-color 0.2s",
+          }}
           placeholder={
             emptyText
               ? "Cannot send empty message"
@@ -231,25 +302,13 @@ export const AutoBePlaygroundChatUploadMovie = (
             }
           }}
           onChange={(e) => setText(e.target.value)}
-          error={emptyText}
-          sx={{
-            "& .MuiOutlinedInput-root": {
-              borderRadius: 2,
-              "& fieldset": {
-                borderColor: dragging ? "#1976d2" : undefined,
-                borderWidth: 2,
-              },
-              "&:hover fieldset": {
-                borderWidth: 2,
-              },
-              "&.Mui-focused fieldset": {
-                borderWidth: 2,
-              },
-            },
-            "& .MuiInputBase-input": {
-              fontSize: "0.95rem",
-              color: dragging ? "#1976d2" : "inherit",
-            },
+          onFocus={(e) => {
+            e.currentTarget.style.borderColor = "#1976d2";
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.borderColor = emptyText
+              ? "#f44336"
+              : "#e0e0e0";
           }}
         />
 
@@ -269,8 +328,8 @@ export const AutoBePlaygroundChatUploadMovie = (
           }}
         />
 
-        <Box
-          sx={{
+        <div
+          style={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
@@ -291,15 +350,16 @@ export const AutoBePlaygroundChatUploadMovie = (
             onClick={() => conversate()}
             enabled={enabled}
           />
-        </Box>
-      </Box>
-    </Paper>
+        </div>
+      </div>
+    </div>
   );
 };
-export namespace AutoBePlaygroundChatUploadMovie {
+
+export namespace AutoBeChatUploadBox {
   export interface IProps {
     listener: RefObject<IListener>;
-    uploadConfig?: IAutoBePlaygroundUploadConfig;
+    uploadConfig?: IAutoBeChatUploadConfig;
     conversate: (messages: AutoBeUserMessageContent[]) => Promise<void>;
     setError: (error: Error) => void;
   }

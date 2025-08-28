@@ -1,6 +1,12 @@
 import { ReactNode, useState } from "react";
 
-export const AutoBeFileUploadBox = (props: AutoBeFileUploadBox.IProps) => {
+export interface IAutoBeFileUploadBoxProps {
+  extensionError: ReactNode | null;
+  onClick: () => void;
+  enabled: boolean;
+}
+
+export const AutoBeFileUploadBox = (props: IAutoBeFileUploadBoxProps) => {
   const [isHovered, setIsHovered] = useState(false);
 
   const hasError = !!props.extensionError;
@@ -115,10 +121,3 @@ export const AutoBeFileUploadBox = (props: AutoBeFileUploadBox.IProps) => {
 };
 
 export default AutoBeFileUploadBox;
-export namespace AutoBeFileUploadBox {
-  export interface IProps {
-    extensionError: ReactNode | null;
-    onClick: () => void;
-    enabled: boolean;
-  }
-}

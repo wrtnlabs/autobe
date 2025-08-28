@@ -1,4 +1,5 @@
 import { AutoBeUserMessageContent, IAutoBeRpcService } from "@autobe/interface";
+import { AutoBeChatUploadBox } from "@autobe/ui";
 import { Box, Container } from "@mui/material";
 import { RefObject, useEffect, useRef } from "react";
 
@@ -6,20 +7,17 @@ import { AutoBePlaygroundGlobal } from "../../AutoBePlaygroundGlobal";
 import { IAutoBePlaygroundEventGroup } from "../../structures/IAutoBePlaygroundEventGroup";
 import { IAutoBePlaygroundUploadConfig } from "../../structures/IAutoBePlaygroundUploadConfig";
 import { AutoBePlaygroundEventMovie } from "../events/AutoBePlaygroundEventMovie";
-import { AutoBePlaygroundChatUploadMovie } from "./AutoBePlaygroundChatUploadMovie";
 
 export const AutoBePlaygroundChatBodyMovie = (
   props: AutoBePlaygroundChatBodyMovie.IProps,
 ) => {
   const bodyContainerRef = useRef<HTMLDivElement>(null);
-  const listener: RefObject<AutoBePlaygroundChatUploadMovie.IListener> = useRef(
-    {
-      handleDragEnter: () => {},
-      handleDragLeave: () => {},
-      handleDrop: () => {},
-      handleDragOver: () => {},
-    },
-  );
+  const listener: RefObject<AutoBeChatUploadBox.IListener> = useRef({
+    handleDragEnter: () => {},
+    handleDragLeave: () => {},
+    handleDrop: () => {},
+    handleDragOver: () => {},
+  });
 
   useEffect(() => {
     if (props.eventGroups.length === 0) return;
@@ -82,7 +80,7 @@ export const AutoBePlaygroundChatBodyMovie = (
           pb: 2,
         }}
       >
-        <AutoBePlaygroundChatUploadMovie
+        <AutoBeChatUploadBox
           listener={listener}
           uploadConfig={props.uploadConfig}
           conversate={props.conversate}
