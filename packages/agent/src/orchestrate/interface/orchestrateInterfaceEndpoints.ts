@@ -14,7 +14,7 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformInterfaceEndpointHistories } from "./histories/transformInterfaceEndpointHistories";
-import { orchestrateInterfaceEndpointsReview } from "./orchestrateInterfaceEndpontsReivew";
+import { orchestrateInterfaceEndpointsReview } from "./orchestrateInterfaceEndpointsReview";
 import { IAutoBeInterfaceEndpointApplication } from "./structures/IAutoBeInterfaceEndpointApplication";
 import { OpenApiEndpointComparator } from "./utils/OpenApiEndpointComparator";
 
