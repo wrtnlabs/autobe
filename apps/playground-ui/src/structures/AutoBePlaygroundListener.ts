@@ -97,6 +97,9 @@ export class AutoBePlaygroundListener {
       interfaceEndpoints: async (event) => {
         this.accumulate(event);
       },
+      interfaceEndpointsReview: async (event) => {
+        this.accumulate(event);
+      },
       interfaceOperations: async (event) => {
         this.accumulate(event);
       },

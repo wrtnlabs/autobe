@@ -93,6 +93,7 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
       );
     // DISCARD
     case "prismaCorrect":
+    case "interfaceEndpointsReview":
     case "testCorrect":
     case "realizeAuthorizationCorrect":
     case "realizeCorrect":
