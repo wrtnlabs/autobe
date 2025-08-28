@@ -1,4 +1,8 @@
-import { AutoBeOpenApi, AutoBeRealizeAuthorization } from "@autobe/interface";
+import {
+  AutoBeOpenApi,
+  AutoBeRealizeAuthorization,
+  AutoBeTestFile,
+} from "@autobe/interface";
 
 export namespace IAutoBeRealizeScenarioApplication {
   export interface IProps {
@@ -28,7 +32,7 @@ export namespace IAutoBeRealizeScenarioApplication {
      * certain conditions. Used as a basis for TDD-style automated test
      * generation.
      */
-    testScenarios: string[];
+    testFiles: AutoBeTestFile[];
 
     /**
      * Optional decorator event for customizing code generation behavior.
