@@ -274,7 +274,7 @@ If the original code attempts to implement functionality that cannot be realized
 - **Function Signature Errors**: Match exact API SDK function signatures
 - **Import Errors**: Remember no import statements should be used in E2E tests
 - **Authentication Issues**: Use only actual authentication APIs provided in materials
-- **TestValidator Errors**: Apply proper curried function syntax and parameter order
+- **TestValidator Errors**: Apply proper function syntax and parameter order
 - **typia.random() Errors**: Always provide explicit generic type arguments to `typia.random<T>()`
 
 ### 4.4. Special Compilation Error Patterns and Solutions
@@ -324,7 +324,8 @@ If the test scenario suggests implementing complex error message validation or u
 If you encounter code like:
 ```typescript
 // WRONG: Don't implement complex error message validation
-await TestValidator.error("limit validation error")(
+await TestValidator.error(
+  "limit validation error",
   async () => {
     await api.functional.bbs.categories.patch(connection, {
       body: { page: 1, limit: 1000000 } satisfies IBbsCategories.IRequest,
@@ -345,11 +346,14 @@ await TestValidator.error("limit validation error")(
 
 ```typescript
 // CORRECT: Simple error occurrence testing
-TestValidator.error("limit validation error")(() => {
-  return api.functional.bbs.categories.patch(connection, {
-    body: { page: 1, limit: 1000000 } satisfies IBbsCategories.IRequest,
-  });
-});
+TestValidator.error(
+  "limit validation error",
+  () => {
+    return api.functional.bbs.categories.patch(connection, {
+      body: { page: 1, limit: 1000000 } satisfies IBbsCategories.IRequest,
+    });
+  },
+);
 ```
 
 **Rule:** Only test scenarios that involve runtime errors with properly typed, valid TypeScript code. Skip any test scenarios that require detailed error message validation or complex error inspection logic.
@@ -364,16 +368,16 @@ For best type compatibility, use the actual value (from API responses or variabl
 ```typescript
 // CORRECT: actual value first, expected value second
 const member: IMember = await api.functional.membership.join(connection, ...);
-TestValidator.equals("no recommender")(member.recommender)(null); // member.recommender is IRecommender | null, can accept null ✓
+TestValidator.equals("no recommender", member.recommender, null); // member.recommender is IRecommender | null, can accept null ✓
 
 // WRONG: expected value first, actual value second - may cause type errors
-TestValidator.equals("no recommender")(null)(member.recommender); // null cannot accept IRecommender | null ✗
+TestValidator.equals("no recommender", null, member.recommender); // null cannot accept IRecommender | null ✗
 
 // CORRECT: String comparison example
-TestValidator.equals("user ID matches")(createdUser.id)(expectedId); // actual first, expected second ✓
+TestValidator.equals("user ID matches", createdUser.id, expectedId); // actual first, expected second ✓
 
 // CORRECT: Object comparison example  
-TestValidator.equals("user data matches")(actualUser)(expectedUserData); // actual first, expected second ✓
+TestValidator.equals("user data matches", actualUser, expectedUserData); // actual first, expected second ✓
 ```
 
 **Additional type compatibility examples:**
@@ -382,22 +386,22 @@ TestValidator.equals("user data matches")(actualUser)(expectedUserData); // actu
 const user = { id: "123", name: "John", email: "john@example.com" };
 const userSummary = { id: "123", name: "John" };
 
-TestValidator.equals("user contains summary data")(user)(userSummary); // user type can accept userSummary ✓
-TestValidator.equals("user summary matches")(userSummary)(user); // WRONG: userSummary cannot accept user with extra properties ✗
+TestValidator.equals("user contains summary data", user, userSummary); // user type can accept userSummary ✓
+TestValidator.equals("user summary matches", userSummary, user); // WRONG: userSummary cannot accept user with extra properties ✗
 
 // CORRECT: Extract specific properties for comparison
-TestValidator.equals("user ID matches")(user.id)(userSummary.id); // string = string ✓
-TestValidator.equals("user name matches")(user.name)(userSummary.name); // string = string ✓
+TestValidator.equals("user ID matches", user.id, userSummary.id); // string = string ✓
+TestValidator.equals("user name matches", user.name, userSummary.name); // string = string ✓
 
 // CORRECT: Union type parameter order
 const value: string | null = getSomeValue();
-TestValidator.equals("value should be null")(value)(null); // string | null can accept null ✓
-TestValidator.equals("value should be null")(null)(value); // WRONG: null cannot accept string | null ✗
+TestValidator.equals("value should be null", value, null); // string | null can accept null ✓
+TestValidator.equals("value should be null", null, value); // WRONG: null cannot accept string | null ✗
 ```
 
 **Solution approach:**
-- Use the pattern `TestValidator.equals("description")(actualValue)(expectedValue)` where actualValue is typically from API responses
-- If compilation errors occur with `TestValidator.equals(title)(x)(y)` because `y` cannot be assigned to `x`'s type, reverse the order to `TestValidator.equals(title)(y)(x)`
+- Use the pattern `TestValidator.equals("description", actualValue, expectedValue)` where actualValue is typically from API responses
+- If compilation errors occur with `TestValidator.equals(title, x, y)` because `y` cannot be assigned to `x`'s type, reverse the order to `TestValidator.equals(title, y, x)`
 - Alternatively, extract specific properties for comparison to ensure type compatibility
 - Apply the same logic to `TestValidator.notEquals()` calls
 
@@ -426,41 +430,11 @@ If the original code attempts to implement functionality that cannot be realized
 4. **Maintain test flow**: Ensure the remaining code still forms a coherent test workflow
 5. **Focus on feasible functionality**: Preserve and fix only the parts that can be properly implemented
 
-### 4.4.6. Incorrect TestValidator Curried Function Usage
-
-If you encounter incorrect usage of `TestValidator` functions that are not properly curried, fix them to use the correct curried function call pattern.
-
-**Common incorrect patterns to fix:**
-```typescript
-// WRONG: Passing all parameters at once
-TestValidator.equals(title, x, y);
-TestValidator.notEquals(title, x, y);
-TestValidator.error(title, asyncFunction);
-
-// WRONG: Partial currying with multiple parameters
-TestValidator.equals(title)(x, y);
-TestValidator.notEquals(title)(x, y);
-
-// WRONG: Missing currying steps
-TestValidator.predicate(title, condition);
-```
-
-**Correct curried function patterns:**
-```typescript
-// CORRECT: Fully curried TestValidator calls
-TestValidator.equals(title)(x)(y);
-TestValidator.notEquals(title)(x)(y);
-TestValidator.predicate(title)(condition);
-TestValidator.error(title)(asyncFunction);
-```
-
 **Solution approach:**
 1. **Identify incorrect patterns**: Look for compilation errors related to incorrect parameter counts or function signatures
-2. **Apply proper currying**: Convert all parameters to sequential function calls
+2. **Apply proper parameters**: Pass all parameters directly to the function
 3. **Maintain type safety**: Ensure parameter order follows the type-safe guidelines (first parameter determines generic type)
-4. **Verify function signatures**: Check that each curried call receives exactly one parameter
-
-**Rule:** All `TestValidator` functions are curried and must be called with the pattern `TestValidator.functionName(param1)(param2)(param3)` rather than `TestValidator.functionName(param1, param2, param3)`.
+4. **Verify function signatures**: Check that each function call receives the correct number of parameters
 
 ### 4.4.7. Missing Generic Type Arguments in typia.random()
 
@@ -505,7 +479,6 @@ Your corrected code must:
 
 **Code Quality:**
 - Follow all conventions and requirements from the original system prompt
-- Use proper TestValidator curried function syntax
 - Apply actual-first, expected-second pattern for equality assertions
 - Remove only unimplementable functionality, not working code
 

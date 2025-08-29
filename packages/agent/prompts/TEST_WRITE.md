@@ -386,14 +386,15 @@ export async function test_api_shopping_sale_review_update(
       service: "debate", // path parameter {service}
       section: "economics", // path parameter {section}
       body: { // request body
-        title: RandomGenerator.paragraph()(),
-        body: RandomGenerator.content()()(),
+        title: RandomGenerator.paragraph(),
+        body: RandomGenerator.content(),
         files: ArrayUtil.repeat(
           typia.random<number & tags.Format<"uint32"> & tags.Maximum<3>>(),
-        )(() => {
-          return {
-            url: typia.random<string & tags.Format<"uri">>(),
-          };
+          () => {
+            return {
+              url: typia.random<string & tags.Format<"uri">>(),
+            };
+          },
         }),
       } satisfies IBbsArticle.ICreate, 
         // must be ensured by satisfies {RequestBodyDto}
@@ -502,8 +503,8 @@ RandomGenerator.alphabets(3) // length required
 RandomGenerator.alphaNumeric(4) // length required
 RandomGenerator.mobile()
 RandomGenerator.name()
-RandomGenerator.paragraph()() // Note: curried function
-RandomGenerator.content()()() // Note: curried function
+RandomGenerator.paragraph()
+RandomGenerator.content()
 ```
 
 **Pattern-based generation:**
@@ -511,26 +512,26 @@ RandomGenerator.content()()() // Note: curried function
 typia.random<string & tags.Pattern<"^[A-Z]{3}[0-9]{3}$">>()
 ```
 
-**Important:** Some RandomGenerator functions are curried. Always check `node_modules/@nestia/e2e/lib/RandomGenerator.d.ts` for exact usage.
+**Important:** Always check `node_modules/@nestia/e2e/lib/RandomGenerator.d.ts` for exact usage patterns and parameters.
 
 #### 3.6.3. Array Generation
 
 Use `ArrayUtil` static functions for array creation:
 
 ```typescript
-ArrayUtil.repeat(3)(() => ({ name: RandomGenerator.name() }))
-ArrayUtil.asyncRepeat(10)(async () => { /* async logic */ })
-ArrayUtil.asyncMap(array)(async (elem) => { /* transform logic */ })
-ArrayUtil.asyncFilter(array)(async (elem) => { /* filter logic */ })
+ArrayUtil.repeat(3, () => ({ name: RandomGenerator.name() }))
+ArrayUtil.asyncRepeat(10, async () => { /* async logic */ })
+ArrayUtil.asyncMap(array, async (elem) => { /* transform logic */ })
+ArrayUtil.asyncFilter(array, async (elem) => { /* filter logic */ })
 ```
 
 **Array element selection:**
 ```typescript
 RandomGenerator.pick(array) // Select random element
-RandomGenerator.sample(array)(3) // Select N random elements
+RandomGenerator.sample(array, 3) // Select N random elements
 ```
 
-**Important:** These are curried functions. Always check `node_modules/@nestia/e2e/lib/ArrayUtil.d.ts` for correct usage patterns.
+**Important:** Always check `node_modules/@nestia/e2e/lib/ArrayUtil.d.ts` for correct usage patterns and parameters.
 
 ### 3.4. Authentication Handling
 
@@ -580,19 +581,19 @@ await api.functional.users.authenticate.login(connection, {
 ### 3.5. Logic Validation and Assertions
 
 ```typescript
-TestValidator.equals("x equals y")(3)(3);
-TestValidator.notEquals("x and y are different")(3)(4);
-TestValidator.predicate("assert condition")(3 === 3);
-TestValidator.error("error must be thrown")(() => {
+TestValidator.equals("x equals y", 3, 3);
+TestValidator.notEquals("x and y are different", 3, 4);
+TestValidator.predicate("assert condition", 3 === 3);
+TestValidator.error("error must be thrown", () => {
   throw new Error("An error thrown");
 });
 ```
 
 **Available assertion functions:**
-- `TestValidator.equals("title")(expected)(actual)`
-- `TestValidator.notEquals("title")(expected)(actual)`
-- `TestValidator.predicate("title")(booleanCondition)`
-- `TestValidator.error("title")(async () => { /* code that should throw */ })`
+- `TestValidator.equals("title", expected, actual)`
+- `TestValidator.notEquals("title", expected, actual)`
+- `TestValidator.predicate("title", booleanCondition)`
+- `TestValidator.error("title", async () => { /* code that should throw */ })`
 
 **Type-safe equality assertions:**
 When using `TestValidator.equals()` and `TestValidator.notEquals()`, be careful about parameter order. The generic type is determined by the first parameter, so the second parameter must be assignable to the first parameter's type.
@@ -603,16 +604,16 @@ For best type compatibility, use the actual value (from API responses or variabl
 ```typescript
 // CORRECT: actual value first, expected value second
 const member: IMember = await api.functional.membership.join(connection, ...);
-TestValidator.equals("no recommender")(member.recommender)(null); // member.recommender is IRecommender | null, can accept null ✓
+TestValidator.equals("no recommender", member.recommender, null); // member.recommender is IRecommender | null, can accept null ✓
 
 // WRONG: expected value first, actual value second - may cause type errors
-TestValidator.equals("no recommender")(null)(member.recommender); // null cannot accept IRecommender | null ✗
+TestValidator.equals("no recommender", null, member.recommender); // null cannot accept IRecommender | null ✗
 
 // CORRECT: String comparison example
-TestValidator.equals("user ID matches")(createdUser.id)(expectedId); // actual first, expected second ✓
+TestValidator.equals("user ID matches", createdUser.id, expectedId); // actual first, expected second ✓
 
 // CORRECT: Object comparison example  
-TestValidator.equals("user data matches")(actualUser)(expectedUserData); // actual first, expected second ✓
+TestValidator.equals("user data matches", actualUser, expectedUserData); // actual first, expected second ✓
 ```
 
 **Additional type compatibility examples:**
@@ -621,34 +622,30 @@ TestValidator.equals("user data matches")(actualUser)(expectedUserData); // actu
 const user = { id: "123", name: "John", email: "john@example.com" };
 const userSummary = { id: "123", name: "John" };
 
-TestValidator.equals("user contains summary data")(user)(userSummary); // user type can accept userSummary ✓
-TestValidator.equals("user summary matches")(userSummary)(user); // WRONG: userSummary cannot accept user with extra properties ✗
+TestValidator.equals("user contains summary data", user, usrSummary); // user type can accept userSummary ✓
+TestValidator.equals("user summary matches", userSummary, user); // WRONG: userSummary cannot accept user with extra properties ✗
 
 // CORRECT: Extract specific properties for comparison
-TestValidator.equals("user ID matches")(user.id)(userSummary.id); // string = string ✓
-TestValidator.equals("user name matches")(user.name)(userSummary.name); // string = string ✓
+TestValidator.equals("user ID matches", user.id, userSummary.id); // string = string ✓
+TestValidator.equals("user name matches", user.name, userSummary.name); // string = string ✓
 
 // CORRECT: Union type parameter order
 const value: string | null = getSomeValue();
-TestValidator.equals("value should be null")(value)(null); // string | null can accept null ✓
-TestValidator.equals("value should be null")(null)(value); // WRONG: null cannot accept string | null ✗
+TestValidator.equals("value should be null", value, null); // string | null can accept null ✓
+TestValidator.equals("value should be null", null, value); // WRONG: null cannot accept string | null ✗
 ```
 
-**Rule:** Use the pattern `TestValidator.equals("description")(actualValue)(expectedValue)` where actualValue is typically from API responses and expectedValue is your test expectation. If type errors occur, check that the actual value's type can accept the expected value's type.
+**Rule:** Use the pattern `TestValidator.equals("description", actualValue, expectedValue)` where actualValue is typically from API responses and expectedValue is your test expectation. If type errors occur, check that the actual value's type can accept the expected value's type.
 
-**TestValidator curried function usage:**
-All TestValidator functions are curried and must be called with separate function calls for each parameter:
+**TestValidator function usage:**
+All TestValidator functions accept their parameters directly:
 
 ```typescript
-// CORRECT: Fully curried function calls
-TestValidator.equals("title")(actualValue)(expectedValue);
-TestValidator.notEquals("title")(actualValue)(expectedValue);
-TestValidator.predicate("title")(booleanCondition);
-TestValidator.error("title")(errorFunction);
-
-// WRONG: Don't pass all parameters at once
+// CORRECT: Direct function calls with positional parameters
 TestValidator.equals("title", actualValue, expectedValue);
-TestValidator.equals("title")(actualValue, expectedValue);
+TestValidator.notEquals("title", actualValue, expectedValue);
+TestValidator.predicate("title", booleanCondition);
+TestValidator.error("title", errorFunction);
 ```
 
 **Custom assertions:**
@@ -670,18 +667,22 @@ When using `TestValidator.error()`, only test whether an error occurs or not. Do
 
 ```typescript
 // CORRECT: Simple error occurrence testing
-TestValidator.error("duplicate email should fail")(() => {
-  return api.functional.users.create(connection, {
-    body: {
-      email: existingUser.email, // This will cause a runtime business logic error
-      name: RandomGenerator.name(),
-      password: "validPassword123",
-    } satisfies IUser.ICreate,
-  });
-});
+TestValidator.error(
+  "duplicate email should fail", 
+  async () => {
+    return await api.functional.users.create(connection, {
+      body: {
+        email: existingUser.email, // This will cause a runtime business logic error
+        name: RandomGenerator.name(),
+        password: "validPassword123",
+      } satisfies IUser.ICreate,
+    });
+  },
+);
 
 // WRONG: Don't validate error messages or use fallback closures
-TestValidator.error("limit validation error")(
+TestValidator.error(
+  "limit validation error",
   async () => {
     await api.functional.bbs.categories.patch(connection, {
       body: { page: 1, limit: 1000000 } satisfies IBbsCategories.IRequest,
@@ -694,20 +695,23 @@ TestValidator.error("limit validation error")(
 );
 
 // WRONG: Don't test TypeScript compilation errors - SKIP THESE SCENARIOS
-TestValidator.error("missing name fails")(() => {
-  return api.functional.users.create(connection, {
-    body: {
-      // name: intentionally omitted ← DON'T DO THIS
-      email: typia.random<string & tags.Format<"email">>(),
-      password: "validPassword123",
-    } as any, // ← NEVER USE THIS
-  });
-});
+TestValidator.error(
+  "missing name fails",
+  async () => {
+    return await api.functional.users.create(connection, {
+      body: {
+        // name: intentionally omitted ← DON'T DO THIS
+        email: typia.random<string & tags.Format<"email">>(),
+        password: "validPassword123",
+      } as any, // ← NEVER USE THIS
+    });
+  },
+);
 ```
 
 **Rule:** Only test scenarios that involve runtime errors with properly typed, valid TypeScript code. Skip any test scenarios that require type system violations, compilation errors, or detailed error message validation.
 
-**Important:** TestValidator functions are curried and must use the pattern shown above. Always check `node_modules/@nestia/e2e/lib/TestValidator.d.ts` for exact usage patterns.
+**Important:** Always check `node_modules/@nestia/e2e/lib/TestValidator.d.ts` for exact function signatures and usage patterns.
 
 ### 3.7. Complete Example
 
@@ -760,8 +764,8 @@ export async function test_api_shopping_sale_review_update(
       connection,
       {
         body: {
-          name: RandomGenerator.paragraph()(),
-          description: RandomGenerator.content()()(),
+          name: RandomGenerator.paragraph(),
+          description: RandomGenerator.content(),
           price: 10000,
           currency: "KRW",
           category: typia.random<"clothes" | "electronics" | "service">(),
@@ -806,7 +810,7 @@ export async function test_api_shopping_sale_review_update(
       },
     );
   typia.assert(saleReloaded);
-  TestValidator.equals("sale")(sale.id)(saleReloaded.id);
+  TestValidator.equals("sale", sale.id, saleReloaded.id);
 
   // 5. Customer adds the product to shopping cart
   const commodity: IShoppingCartCommodity = 
@@ -856,7 +860,7 @@ export async function test_api_shopping_sale_review_update(
             country: "South Korea",
             province: "Seoul",
             city: "Seoul Seocho-gu",
-            department: RandomGenerator.paragraph()(),
+            department: RandomGenerator.paragraph(),
             possession: `${typia.random<number & tags.Format<"uint32">>()}-${typia.random<number & tags.Format<"uint32">>()}`,
             zip_code: typia.random<
               number 
@@ -894,7 +898,7 @@ export async function test_api_shopping_sale_review_update(
       }
     );
   typia.assert(orderReloaded);
-  TestValidator.equals("order")(order.id)(orderReloaded.id);
+  TestValidator.equals("order", order.id, orderReloaded.id);
 
   const delivery: IShoppingDelivery = 
     await api.functional.shoppings.sellers.deliveries.create(
@@ -983,7 +987,7 @@ export async function test_api_shopping_sale_review_update(
       },
     );
   typia.assert(read);
-  TestValidator.equals("snapshots")(read.snapshots)([
+  TestValidator.equals("snapshots", read.snapshots, [
     ...review.snapshots,
     snapshot,
   ]);
@@ -1045,7 +1049,7 @@ Before submitting your generated E2E test code, verify:
 - [ ] Function has exactly one parameter: `connection: api.IConnection`
 - [ ] No import statements - code starts directly with `export async function`
 - [ ] No external imports or functions are defined outside the main function
-- [ ] All TestValidator functions use proper curried syntax
+- [ ] All TestValidator functions use proper positional parameter syntax
 
 **API Integration:**
 - [ ] All API calls use proper parameter structure and type safety
@@ -1073,7 +1077,7 @@ Before submitting your generated E2E test code, verify:
 - [ ] **CRITICAL**: Only API functions and DTOs from the provided materials are used (not from examples)
 - [ ] **CRITICAL**: No fictional functions or types from examples are used
 - [ ] **CRITICAL**: No type safety violations (`any`, `@ts-ignore`, `@ts-expect-error`)
-- [ ] **CRITICAL**: All TestValidator functions use correct curried syntax
+- [ ] **CRITICAL**: All TestValidator functions use correct positional parameter syntax
 - [ ] Follows proper TypeScript conventions and type safety practices
 
 **Performance & Security:**
