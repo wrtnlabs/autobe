@@ -110,6 +110,7 @@ export function AutoBePlaygroundChatMovie(
           setError={setError}
           uploadConfig={props.uploadConfig}
           tokenUsage={tokenUsage}
+          header={props.header}
         />
       </div>
     </div>

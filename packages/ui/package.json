@@ -42,6 +42,7 @@
   },
   "devDependencies": {
     "@autobe/interface": "workspace:*",
+    "@samchon/openapi": "catalog:samchon",
     "@types/react": "catalog:ui",
     "@types/react-dom": "catalog:ui",
     "react": "catalog:ui",

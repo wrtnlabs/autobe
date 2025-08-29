@@ -1,5 +1,6 @@
 import {
   AutoBeUserMessageContent,
+  IAutoBePlaygroundHeader,
   IAutoBeRpcService,
   IAutoBeTokenUsageJson,
 } from "@autobe/interface";
@@ -10,6 +11,7 @@ import {
 } from "@autobe/ui";
 import { useMediaQuery } from "@autobe/ui/hooks";
 import { Box, Container } from "@mui/material";
+import { ILlmSchema } from "@samchon/openapi";
 import { RefObject, useEffect, useRef } from "react";
 
 import { AutoBePlaygroundGlobal } from "../../AutoBePlaygroundGlobal";
@@ -53,7 +55,9 @@ export const AutoBePlaygroundChatBodyMovie = (
         backgroundColor: "lightblue",
       }}
     >
-      {!isMinWidthLg && <AutoBeChatBanner tokenUsage={props.tokenUsage} />}
+      {!isMinWidthLg && (
+        <AutoBeChatBanner header={props.header} tokenUsage={props.tokenUsage} />
+      )}
 
       <Container
         style={{
@@ -110,5 +114,6 @@ export namespace AutoBePlaygroundChatBodyMovie {
     setError: (error: Error) => void;
     uploadConfig?: IAutoBePlaygroundUploadConfig;
     tokenUsage: IAutoBeTokenUsageJson | null;
+    header: IAutoBePlaygroundHeader<ILlmSchema.Model>;
   }
 }

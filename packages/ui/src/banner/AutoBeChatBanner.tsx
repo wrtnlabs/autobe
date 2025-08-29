@@ -2,10 +2,16 @@ import { IAutoBeTokenUsageJson } from "@autobe/interface";
 
 import { Collapsible } from "../common";
 import { COLORS, SHADOWS } from "../constant/color";
+import {
+  AutoBeAgentInformation,
+  IAutoBeAgentInformationProps,
+} from "./AutoBeAgentInformation";
 import { AutoBeTokenUsage } from "./AutoBeTokenUsage";
 
 /** Props interface for AutoBeChatBanner component */
 interface IAutoBeChatBannerProps {
+  /** Agent information to display */
+  header: IAutoBeAgentInformationProps["header"];
   /** Token usage data to display */
   tokenUsage: IAutoBeTokenUsageJson | null;
 }
@@ -32,6 +38,14 @@ export const AutoBeChatBanner = (props: IAutoBeChatBannerProps) => {
         }}
       >
         <h3>Summaries</h3>
+
+        <Collapsible
+          title="Agent Information"
+          defaultCollapsed={false}
+          animated={true}
+        >
+          <AutoBeAgentInformation header={props.header} />
+        </Collapsible>
 
         <Collapsible
           title="Token Usage"
