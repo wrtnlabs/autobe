@@ -17,9 +17,6 @@ import {
 } from ".";
 import { useMediaQuery } from "./hooks";
 
-/** Side panel width constant */
-const SIDE_PANEL_WIDTH = 450;
-
 export interface IAutoBeChatMainProps {
   isMobile: boolean;
   eventGroups: IAutoBeEventGroup[];
@@ -34,6 +31,8 @@ export interface IAutoBeChatMainProps {
 
 export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
   const bodyContainerRef = useRef<HTMLDivElement>(null);
+  const scrollAnchorRef = useRef<HTMLDivElement>(null);
+
   const listener: RefObject<AutoBeChatUploadBox.IListener> = useRef({
     handleDragEnter: () => {},
     handleDragLeave: () => {},
@@ -43,11 +42,10 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
 
   useEffect(() => {
     if (props.eventGroups.length === 0) return;
-    bodyContainerRef.current?.scrollIntoView({
+    scrollAnchorRef.current?.scrollIntoView({
       behavior: "smooth",
-      block: "end",
     });
-  }, [props.eventGroups.length]);
+  }, [bodyContainerRef.current?.scrollHeight]);
 
   const isMinWidthLg = useMediaQuery(useMediaQuery.MIN_WIDTH_LG);
   return (
@@ -59,11 +57,13 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
       style={{
         position: "relative",
         overflowY: "auto",
-        height: "100%",
-        width: props.isMobile ? "100%" : `calc(100% - ${SIDE_PANEL_WIDTH}px)`,
         margin: 0,
         backgroundColor: "lightblue",
+        flexGrow: 1,
+        display: "flex",
+        flexDirection: "column",
       }}
+      ref={bodyContainerRef}
     >
       {!isMinWidthLg && (
         <AutoBeChatBanner
@@ -75,17 +75,12 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
 
       <div
         style={{
-          paddingBottom: 120,
-          width: "100%",
-          minHeight: "100%",
           backgroundColor: "lightblue",
-          maxWidth: "100%",
-          margin: 0,
+          padding: "2rem",
           gap: 16,
           display: "flex",
           flexDirection: "column",
         }}
-        ref={bodyContainerRef}
       >
         {props.eventGroups.map((e, index) => (
           <AutoBeEventMovie
@@ -97,17 +92,22 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
         ))}
       </div>
 
-      {/* Prompt input area */}
-
+      {/*
+       * Prompt input area
+       * this flexGrow: 1 means that the prompt input area will take up the remaining space
+       * so that the upload box will be at the bottom of the screen
+       */}
+      <div
+        style={{ flexGrow: 1, minHeight: "1rem" }}
+        ref={scrollAnchorRef}
+      ></div>
       <div
         style={{
-          position: "fixed",
-          bottom: 0,
-          left: props.isMobile ? 0 : SIDE_PANEL_WIDTH,
+          position: "sticky",
+          bottom: 16,
+          left: 0,
           right: 0,
-          paddingLeft: 16,
-          paddingRight: 16,
-          paddingBottom: 16,
+          zIndex: 1000,
         }}
       >
         <AutoBeChatUploadBox

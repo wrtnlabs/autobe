@@ -57,10 +57,9 @@ export function AutoBePlaygroundChatMovie(
   const sideMovie = () => (
     <div
       style={{
-        width: isMobile ? undefined : SIDE_WIDTH,
-        height: "100%",
         overflowY: "auto",
         backgroundColor: "#eeeeee",
+        minWidth: "24rem",
       }}
     >
       <Container maxWidth={false}>
@@ -93,10 +92,9 @@ export function AutoBePlaygroundChatMovie(
       <div
         style={{
           width: "100%",
-          flex: 1,
+          flexGrow: 1,
           display: "flex",
           flexDirection: "row",
-          position: "relative",
           overflow: "hidden",
         }}
       >
@@ -131,5 +129,3 @@ export namespace AutoBePlaygroundChatMovie {
     uploadConfig?: IAutoBeUploadConfig;
   }
 }
-
-const SIDE_WIDTH = 450;
