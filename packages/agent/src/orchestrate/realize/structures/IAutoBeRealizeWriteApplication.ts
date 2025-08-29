@@ -1,4 +1,21 @@
 export interface IAutoBeRealizeWriteApplication {
+  /**
+   * Generates provider function implementation through multi-phase development.
+   *
+   * This method implements a systematic approach to generate NestJS provider
+   * functions that handle business logic for API operations. It follows a
+   * schema-first approach with multiple refinement phases to ensure type-safe,
+   * error-free code generation.
+   *
+   * The generation process includes:
+   * 1. Strategic planning based on Prisma schema analysis
+   * 2. Initial draft without Date type usage
+   * 3. Review and refinement for completeness
+   * 4. Compiler feedback integration if errors detected
+   * 5. Final implementation with all validations and type safety
+   *
+   * @param next Properties containing the multi-phase implementation plan and code
+   */
   coding: (next: IAutoBeRealizeWriteApplication.IProps) => void;
 }
 

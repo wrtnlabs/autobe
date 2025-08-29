@@ -1,6 +1,27 @@
 import { IAutoBeRealizeWriteApplication } from "./IAutoBeRealizeWriteApplication";
 
 export interface IAutoBeRealizeCorrectApplication {
+  /**
+   * Reviews and corrects TypeScript compilation errors with minimal changes.
+   *
+   * This method acts as the Error Correction Specialist, fixing TypeScript
+   * compilation errors while preserving original business logic. It applies
+   * the principle of minimal intervention - only changing what's necessary
+   * to resolve compilation issues.
+   *
+   * The correction strategy prioritizes:
+   * - **Minimal changes**: Fix only what causes errors, preserve everything else
+   * - **Schema as truth**: If fields don't exist in schema, remove them entirely
+   * - **Type safety**: Apply proper conversions without using `as any`
+   * - **Unrecoverable errors**: Document contradictions and use typia.random when impossible
+   *
+   * Common fixes include removing non-existent fields (like deleted_at),
+   * converting types properly, and resolving Prisma query structure issues.
+   * When schema-API contradictions make implementation impossible, it documents
+   * the issue and returns mock data.
+   *
+   * @param props Properties containing error analysis and the corrected multi-phase implementation
+   */
   review: (props: IAutoBeRealizeCorrectApplication.IProps) => void;
 }
 

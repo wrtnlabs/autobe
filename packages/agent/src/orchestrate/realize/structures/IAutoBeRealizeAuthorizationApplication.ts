@@ -1,6 +1,23 @@
 import { CamelPattern, PascalPattern } from "@autobe/interface";
 
 export interface IAutoBeRealizeAuthorizationApplication {
+  /**
+   * Generates authentication provider, decorator, and payload type for role-based authorization.
+   *
+   * This method creates a complete authentication infrastructure for a specific
+   * role in the NestJS application. It generates three interconnected components
+   * that work together to provide JWT-based authentication and authorization.
+   *
+   * The generated components include:
+   * - **Provider Function**: Handles JWT verification and user validation from database
+   * - **Decorator**: NestJS parameter decorator for injecting authenticated user data
+   * - **Payload Type**: TypeScript interface defining the authenticated user structure
+   *
+   * All components follow strict naming conventions and integrate with the existing
+   * authentication architecture using the shared jwtAuthorize function.
+   *
+   * @param next Properties containing provider, decorator, and payload type configurations
+   */
   createDecorator: (
     next: IAutoBeRealizeAuthorizationApplication.IProps,
   ) => void;
