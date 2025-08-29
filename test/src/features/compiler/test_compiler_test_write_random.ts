@@ -132,8 +132,8 @@ export const test_compiler_test_write_random = async (
     () =>
       result.includes("RandomGenerator.alphabets();") &&
       result.includes("RandomGenerator.alphaNumeric();") &&
-      result.includes("RandomGenerator.paragraph(,);") &&
-      result.includes("RandomGenerator.content(,,);") &&
+      result.includes("RandomGenerator.paragraph();") &&
+      result.includes("RandomGenerator.content();") &&
       result.includes("RandomGenerator.mobile();") &&
       result.includes("RandomGenerator.name();"),
   );

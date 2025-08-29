@@ -244,22 +244,21 @@ export namespace AutoBeTestRandomProgrammer {
   export const keywordRandom = (
     ctx: IAutoBeTestProgrammerContext,
     expr: AutoBeTest.IKeywordRandom,
-  ): ts.Expression => {
-    let value: ts.Expression = ts.factory.createPropertyAccessExpression(
-      ts.factory.createIdentifier(
-        ctx.importer.external({
-          type: "instance",
-          library: "@nestia/e2e",
-          name: "RandomGenerator",
-        }),
+  ): ts.Expression =>
+    ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(
+        ts.factory.createIdentifier(
+          ctx.importer.external({
+            type: "instance",
+            library: "@nestia/e2e",
+            name: "RandomGenerator",
+          }),
+        ),
+        expr.keyword,
       ),
-      expr.keyword,
+      undefined,
+      undefined,
     );
-    new Array(KEYWORD_CURRYING_COUNT[expr.keyword]).fill(0).forEach(() => {
-      value = ts.factory.createCallExpression(value, undefined, undefined);
-    });
-    return value;
-  };
 }
 
 const createTypiaTag = (
@@ -303,12 +302,3 @@ const createTypiaRandom = (
         : [ts.factory.createIntersectionTypeNode(typeArguments)],
     undefined,
   );
-
-const KEYWORD_CURRYING_COUNT = {
-  alphabets: 1,
-  alphaNumeric: 1,
-  mobile: 1,
-  name: 1,
-  paragraph: 2,
-  content: 3,
-};

@@ -10,6 +10,7 @@ export const test_compiler_typescript_node = async (): Promise<void> => {
       "src/MyConfiguration.ts": FILE,
     },
   });
+  if (result.type === "failure") console.log(result.diagnostics);
   TestValidator.equals("result", result.type, "success");
   typia.assertEquals(result);
 };
@@ -26,6 +27,6 @@ export namespace MyConfiguration {
       : fs.existsSync(__dirname + "/.env")
         ? __dirname
         : path.resolve(__dirname + "/..");
-  },);
+  });
 }
 `;
