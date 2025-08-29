@@ -4,18 +4,28 @@ import { StringUtil, transformOpenApiDocument } from "@autobe/utils";
 import {
   HttpMigration,
   IHttpMigrateApplication,
+  ILlmSchema,
   OpenApi,
 } from "@samchon/openapi";
 import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
+import { AutoBeContext } from "../../../context/AutoBeContext";
+import { getTestExternalDeclarations } from "../compile/getTestExternalDeclarations";
 import { IAutoBeTestScenarioArtifacts } from "../structures/IAutoBeTestScenarioArtifacts";
 
-export function transformTestWriteHistories(
+export async function transformTestWriteHistories<
+  Model extends ILlmSchema.Model,
+>(
+  ctx: AutoBeContext<Model>,
   scenario: AutoBeTestScenario,
   artifacts: IAutoBeTestScenarioArtifacts,
-): Array<IAgenticaHistoryJson.ISystemMessage> {
+): Promise<
+  Array<
+    IAgenticaHistoryJson.ISystemMessage | IAgenticaHistoryJson.IAssistantMessage
+  >
+> {
   return [
     {
       id: v7(),
@@ -24,16 +34,20 @@ export function transformTestWriteHistories(
       text: AutoBeSystemPromptConstant.TEST_WRITE.replace(
         "{{AutoBeTestScenario}}",
         JSON.stringify(typia.llm.parameters<AutoBeTestScenario, "llama">()),
-      ).replaceAll("{{FUNCTION_NAME}}", scenario.functionName),
+      ),
     },
     {
       id: v7(),
       created_at: new Date().toISOString(),
-      type: "systemMessage",
+      type: "assistantMessage",
       text: StringUtil.trim`
         Here is the list of input material composition.
 
         Make e2e test functions based on the following information.
+
+        ## Function Name
+
+        The e2e test function name must be ${JSON.stringify(scenario.functionName)}.
 
         ## Scenario Plan
 
@@ -65,6 +79,12 @@ export function transformTestWriteHistories(
 
         \`\`\`json
         ${JSON.stringify(artifacts.e2e)}
+        \`\`\`
+
+        ## External Definitions
+
+        \`\`\`json
+        ${JSON.stringify(await getTestExternalDeclarations(ctx))}
         \`\`\`
       `,
     },

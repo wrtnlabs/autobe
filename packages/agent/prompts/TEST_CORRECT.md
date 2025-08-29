@@ -463,6 +463,29 @@ const x: string & tags.Format<"uuid"> = typia.random<string & tags.Format<"uuid"
 
 **Rule:** Always use the pattern `typia.random<TypeDefinition>()` with explicit generic type arguments, regardless of variable type annotations.
 
+### 4.4.8. Promises Must Be Awaited
+
+If you encounter the compilation error "Promises must be awaited", this means an asynchronous function is being called without the `await` keyword.
+
+**Common error patterns to fix:**
+```typescript
+// WRONG: Missing await for async function calls
+api.functional.users.getUser(connection, userId); // ← Compilation error: Promises must be awaited
+TestValidator.error("test", () => api.functional.users.create(connection, body)); // ← Missing await
+
+// CORRECT: Use await with async function calls
+await api.functional.users.getUser(connection, userId); 
+await TestValidator.error("test", () => api.functional.users.create(connection, body));
+```
+
+**Solution approach:**
+1. **Identify async function calls**: All API SDK functions return Promises
+2. **Add await keyword**: Ensure all async function calls are preceded by `await`
+3. **Check TestValidator calls**: Even within TestValidator functions, API calls must be awaited
+4. **Verify async context**: Ensure the containing function is marked as `async`
+
+**Rule:** All asynchronous function calls must use the `await` keyword to properly handle Promises.
+
 ## 5. Correction Requirements
 
 Your corrected code must:

@@ -56,7 +56,7 @@ This contains the complete test scenario specification:
 
 - **`endpoint`**: The target API endpoint specification including URL, HTTP method, parameters, request/response schemas, and expected behavior that your test must validate
 - **`draft`**: A detailed natural language description of the test scenario, including business context, prerequisites, step-by-step workflow, success criteria, and edge cases to consider
-- **`functionName`**: The identifier used to construct the E2E test function name (will be used as `{{FUNCTION_NAME}}`)
+- **`functionName`**: The identifier used to construct the E2E test function name (will be given as an assistant message)
 - **`dependencies`**: List of prerequisite functions that must be called before executing the main test logic, such as authentication, data setup, or resource creation
 
 Use the `endpoint` to understand the API contract, the `draft` to understand the business scenario and test requirements, and the `dependencies` to determine what preparatory steps are needed.
@@ -278,7 +278,7 @@ You must understand the **interrelationships** among all input materials beyond 
 
 ## 3. Code Generation Requirements
 
-### 3.1. Critical Requirements and Type Safety
+### 3.0. Critical Requirements and Type Safety
 
 **Example Code Limitations:**
 
@@ -336,7 +336,7 @@ If the test scenario description includes functionality that cannot be implement
 
 Focus on creating a working, realistic test that validates the available functionality rather than trying to implement non-existent features.
 
-### 3.2. Test Function Structure
+### 3.1. Test Function Structure
 
 ```typescript
 /**
@@ -369,12 +369,11 @@ export async function {{FUNCTION_NAME}}(
 - Explain business context and test necessity
 
 **Code organization:**
-- Write only the single test function - no additional functions, variables, or imports outside the function
-- Import statements will be automatically added by the system
+- Write only the single test function - no additional functions or variables outside the function
 - If you need helper functions, define them inside the main function
 - Use clear, descriptive comments for each major step
 
-### 3.3. API SDK Function Invocation
+### 3.2. API SDK Function Invocation
 
 ```typescript
 export async function test_api_shopping_sale_review_update(
@@ -445,25 +444,53 @@ await api.functional.users.articles.update(connection, {
 **API function calling pattern:**
 Use the pattern `api.functional.{path}.{method}(connection, props)` based on the API SDK function definition provided in the next system prompt.
 
-### 3.6. Random Data Generation
+### 3.5. Random Data Generation
 
-**CRITICAL: Always provide generic type arguments to `typia.random<T>()`**
-The `typia.random<T>()` function requires explicit generic type arguments. Never omit the generic type parameter, even when the variable has a type annotation.
+**CRITICAL: Type Constraints and typia.random Usage**
+
+**1. Always provide generic type arguments to `typia.random<T>()`**
+The `typia.random<T>()` function requires explicit generic type arguments. Never omit the generic type parameter.
 
 ```typescript
-// WRONG: Missing generic type argument causes compilation error
-const x = typia.random(); // ← Compilation error
-const x: string & tags.Format<"uuid"> = typia.random(); // ← Compilation error
+// ❌ WRONG: Missing generic type argument
+const x = typia.random(); // Compilation error
+const x: string & tags.Format<"uuid"> = typia.random(); // Still wrong!
 
-// CORRECT: Always provide generic type argument
+// ✅ CORRECT: Always provide generic type argument
 const x = typia.random<string & tags.Format<"uuid">>();
-const x: string = typia.random<string & tags.Format<"uuid">>();
-const x: string & tags.Format<"uuid"> = typia.random<string & tags.Format<"uuid">>();
+const userId = typia.random<string & tags.Format<"uuid">>();
+```
+
+**2. Using tags for type constraints**
+Use the `tags` namespace directly:
+
+```typescript
+// Use tags directly
+typia.random<string & tags.Format<"email">>();
+typia.random<string & tags.Format<"uuid">>();
+typia.random<number & tags.Type<"uint32"> & tags.Minimum<1> & tags.Maximum<100>>();
+```
+
+**3. Common type constraint patterns:**
+```typescript
+// String formats
+typia.random<string & tags.Format<"email">>();
+typia.random<string & tags.Format<"uuid">>();
+typia.random<string & tags.Format<"url">>();
+typia.random<string & tags.Format<"date-time">>();
+
+// Number constraints
+typia.random<number & tags.Type<"uint32">>();
+typia.random<number & tags.Type<"uint32"> & tags.Minimum<1> & tags.Maximum<100>>();
+typia.random<number & tags.MultipleOf<5>>();
+
+// String patterns
+typia.random<string & tags.Pattern<"^[A-Z]{3}[0-9]{3}$">>();
 ```
 
 **Rule:** Always use the pattern `typia.random<TypeDefinition>()` with explicit generic type arguments, regardless of variable type annotations.
 
-#### 3.6.1. Numeric Values
+#### 3.5.1. Numeric Values
 
 Generate random numbers with constraints using intersection types:
 
@@ -481,7 +508,7 @@ typia.random<number & tags.Type<"uint32"> & tags.Minimum<100> & tags.Maximum<900
 typia.random<number & tags.Type<"uint32"> & tags.ExclusiveMinimum<100> & tags.ExclusiveMaximum<1000> & tags.MultipleOf<10>>()
 ```
 
-#### 3.6.2. String Values
+#### 3.5.2. String Values
 
 **Format-based generation:**
 ```typescript
@@ -498,13 +525,70 @@ typia.random<string & tags.Format<"uuid">>()
 - `json-pointer`, `relative-json-pointer`
 
 **RandomGenerator utility functions:**
+
+**⚠️ CRITICAL: paragraph() and content() take OBJECT parameters, NOT numbers!**
+
 ```typescript
-RandomGenerator.alphabets(3) // length required
-RandomGenerator.alphaNumeric(4) // length required
-RandomGenerator.mobile()
-RandomGenerator.name()
-RandomGenerator.paragraph()
-RandomGenerator.content()
+// Functions that take NUMBER parameters:
+RandomGenerator.alphabets(3)      // takes number: generates 3 random letters
+RandomGenerator.alphaNumeric(4)   // takes number: generates 4 random alphanumeric chars
+RandomGenerator.name()            // optional number: default 2-3 words
+RandomGenerator.name(1)           // takes number: generates 1 word name
+RandomGenerator.mobile()          // no params or optional string prefix
+RandomGenerator.mobile("011")     // takes string: phone with "011" prefix
+
+// ❌ WRONG - Common AI mistake:
+RandomGenerator.paragraph(5)      // ERROR! Cannot pass number directly
+RandomGenerator.content(3)        // ERROR! Cannot pass number directly
+
+// ✅ CORRECT - paragraph() takes OBJECT with these properties:
+// - sentences: number of words (NOT actual sentences!)
+// - wordMin: minimum characters per word
+// - wordMax: maximum characters per word
+RandomGenerator.paragraph()                                      // uses defaults
+RandomGenerator.paragraph({ sentences: 5 })                      // 5 words
+RandomGenerator.paragraph({ sentences: 10, wordMin: 3, wordMax: 7 })  // 10 words, 3-7 chars each
+
+// ✅ CORRECT - content() takes OBJECT with these properties:
+// - paragraphs: number of paragraphs
+// - sentenceMin: minimum words per paragraph
+// - sentenceMax: maximum words per paragraph  
+// - wordMin: minimum characters per word
+// - wordMax: maximum characters per word
+RandomGenerator.content()                                        // uses defaults
+RandomGenerator.content({ paragraphs: 3 })                       // 3 paragraphs
+RandomGenerator.content({ 
+  paragraphs: 5,
+  sentenceMin: 10,
+  sentenceMax: 20,
+  wordMin: 4,
+  wordMax: 8
+})  // 5 paragraphs, 10-20 words each, 4-8 chars per word
+```
+
+**Real Usage Examples:**
+```typescript
+// Generate a product name (short paragraph)
+const productName = RandomGenerator.paragraph({ 
+  sentences: 3,    // 3 words for product name
+  wordMin: 5,      // each word 5-10 characters
+  wordMax: 10 
+});
+
+// Generate a product description (multi-paragraph content)
+const productDescription = RandomGenerator.content({ 
+  paragraphs: 3,     // 3 paragraphs
+  sentenceMin: 15,   // each paragraph has 15-25 words
+  sentenceMax: 25,
+  wordMin: 4,        // each word 4-8 characters
+  wordMax: 8
+});
+
+// Generate a short bio
+const userBio = RandomGenerator.paragraph({ sentences: 8 });  // 8-word bio
+
+// Generate article content
+const articleBody = RandomGenerator.content({ paragraphs: 5 });  // 5 paragraph article
 ```
 
 **Pattern-based generation:**
@@ -514,7 +598,7 @@ typia.random<string & tags.Pattern<"^[A-Z]{3}[0-9]{3}$">>()
 
 **Important:** Always check `node_modules/@nestia/e2e/lib/RandomGenerator.d.ts` for exact usage patterns and parameters.
 
-#### 3.6.3. Array Generation
+#### 3.5.3. Array Generation
 
 Use `ArrayUtil` static functions for array creation:
 
@@ -533,7 +617,7 @@ RandomGenerator.sample(array, 3) // Select N random elements
 
 **Important:** Always check `node_modules/@nestia/e2e/lib/ArrayUtil.d.ts` for correct usage patterns and parameters.
 
-### 3.4. Authentication Handling
+### 3.3. Authentication Handling
 
 ```typescript
 export async function test_api_shopping_sale_review_update(
@@ -578,7 +662,46 @@ await api.functional.users.authenticate.login(connection, {
 // await switch_to_admin_user(); ← This function doesn't exist
 ```
 
-### 3.5. Logic Validation and Assertions
+### 3.4. Logic Validation and Assertions
+
+**CRITICAL: Title Parameter is MANDATORY**
+
+⚠️ **ALL TestValidator functions REQUIRE a descriptive title as the FIRST parameter**
+
+The title parameter:
+- Is **MANDATORY** - never omit it
+- Must be a **descriptive string** explaining what is being tested
+- Should be **specific and meaningful** (not generic like "test" or "check")
+- Helps identify which assertion failed in test results
+
+```typescript
+// ❌ WRONG: Missing title parameter - COMPILATION ERROR
+TestValidator.equals(3, 3);                    // Missing title!
+TestValidator.notEquals(3, 4);                 // Missing title!
+TestValidator.predicate(true);                 // Missing title!
+TestValidator.error(() => { throw Error(); }); // Missing title!
+
+// ✅ CORRECT: All functions include descriptive title as first parameter
+TestValidator.equals("user count should be 3", 3, 3);
+TestValidator.notEquals("old and new ID should differ", oldId, newId);
+TestValidator.predicate("price should be positive", price > 0);
+TestValidator.error("duplicate email should fail", () => { throw Error(); });
+```
+
+**Title Best Practices:**
+```typescript
+// ✅ GOOD: Descriptive titles that explain the business logic
+TestValidator.equals("created user email matches input", user.email, inputEmail);
+TestValidator.equals("order total includes tax", order.total, basePrice + tax);
+TestValidator.predicate("user has admin role", user.roles.includes("admin"));
+await TestValidator.error("cannot delete active order", async () => { /* ... */ });
+
+// ❌ BAD: Generic or unclear titles
+TestValidator.equals("test", value1, value2);           // Too generic
+TestValidator.equals("check", result, expected);        // Unclear
+TestValidator.equals("1", user.id, "123");            // Meaningless
+TestValidator.equals("", status, "active");            // Empty title
+```
 
 ```typescript
 TestValidator.equals("x equals y", 3, 3);
@@ -589,11 +712,20 @@ TestValidator.error("error must be thrown", () => {
 });
 ```
 
-**Available assertion functions:**
-- `TestValidator.equals("title", expected, actual)`
-- `TestValidator.notEquals("title", expected, actual)`
-- `TestValidator.predicate("title", booleanCondition)`
-- `TestValidator.error("title", async () => { /* code that should throw */ })`
+**Available assertion functions (ALL require title as first parameter):**
+- `TestValidator.equals("descriptive title", expected, actual)` - **Title is MANDATORY**
+- `TestValidator.notEquals("descriptive title", expected, actual)` - **Title is MANDATORY**
+- `TestValidator.predicate("descriptive title", booleanCondition)` - **Title is MANDATORY**
+- `TestValidator.error("descriptive title", () => { /* code that should throw */ })` - For synchronous error functions, **Title is MANDATORY**
+- `await TestValidator.error("descriptive title", async () => { /* code that should throw */ })` - For async error functions, **Title is MANDATORY**
+
+**⚠️ REMINDER: The title parameter is NOT optional - omitting it will cause compilation errors**
+
+**CRITICAL: async/await Usage Rule for TestValidator.error()**
+- **When the callback function is async**: You MUST use `await` before `TestValidator.error()`
+- **When the callback function is NOT async**: You MUST NOT use `await` before `TestValidator.error()`
+- The callback function is async when it contains async API calls or other await statements
+- Using await incorrectly will cause runtime errors or unexpected behavior
 
 **Type-safe equality assertions:**
 When using `TestValidator.equals()` and `TestValidator.notEquals()`, be careful about parameter order. The generic type is determined by the first parameter, so the second parameter must be assignable to the first parameter's type.
@@ -602,9 +734,9 @@ When using `TestValidator.equals()` and `TestValidator.notEquals()`, be careful 
 For best type compatibility, use the actual value (from API responses or variables) as the first parameter and the expected value as the second parameter:
 
 ```typescript
-// CORRECT: actual value first, expected value second
+// CORRECT: title first, then actual value, then expected value
 const member: IMember = await api.functional.membership.join(connection, ...);
-TestValidator.equals("no recommender", member.recommender, null); // member.recommender is IRecommender | null, can accept null ✓
+TestValidator.equals("no recommender", member.recommender, null); // ✓ Has title, correct parameter order
 
 // WRONG: expected value first, actual value second - may cause type errors
 TestValidator.equals("no recommender", null, member.recommender); // null cannot accept IRecommender | null ✗
@@ -635,18 +767,32 @@ TestValidator.equals("value should be null", value, null); // string | null can 
 TestValidator.equals("value should be null", null, value); // WRONG: null cannot accept string | null ✗
 ```
 
-**Rule:** Use the pattern `TestValidator.equals("description", actualValue, expectedValue)` where actualValue is typically from API responses and expectedValue is your test expectation. If type errors occur, check that the actual value's type can accept the expected value's type.
+**Rule:** Use the pattern `TestValidator.equals("descriptive title", actualValue, expectedValue)` where:
+1. **"descriptive title"** is MANDATORY as the first parameter
+2. **actualValue** is typically from API responses (second parameter)
+3. **expectedValue** is your test expectation (third parameter)
+
+If type errors occur, first ensure you haven't forgotten the title parameter, then check that the actual value's type can accept the expected value's type.
 
 **TestValidator function usage:**
-All TestValidator functions accept their parameters directly:
+All TestValidator functions accept their parameters directly. **The first parameter (title) is ALWAYS required**:
 
 ```typescript
-// CORRECT: Direct function calls with positional parameters
-TestValidator.equals("title", actualValue, expectedValue);
-TestValidator.notEquals("title", actualValue, expectedValue);
-TestValidator.predicate("title", booleanCondition);
-TestValidator.error("title", errorFunction);
+// CORRECT: Direct function calls with MANDATORY title parameter
+TestValidator.equals("user email matches", actualValue, expectedValue);      // Title required!
+TestValidator.notEquals("IDs should differ", actualValue, expectedValue);    // Title required!
+TestValidator.predicate("is valid price", booleanCondition);                // Title required!
+TestValidator.error("should throw on invalid input", errorFunction);        // Title required!
+
+// ❌ WRONG: Never omit the title parameter
+TestValidator.equals(actualValue, expectedValue);           // COMPILATION ERROR!
+TestValidator.notEquals(actualValue, expectedValue);        // COMPILATION ERROR!
+TestValidator.predicate(booleanCondition);                  // COMPILATION ERROR!
+TestValidator.error(errorFunction);                         // COMPILATION ERROR!
 ```
+
+**Common Mistake to Avoid:**
+Many developers accidentally omit the title parameter. This is a **compilation error**. Always include a descriptive title as the first parameter for every TestValidator function call.
 
 **Custom assertions:**
 For complex validation logic not covered by TestValidator, use standard conditional logic:
@@ -656,8 +802,47 @@ if (condition) {
 }
 ```
 
-**TestValidator.error() type safety:**
-When using `TestValidator.error()` to test error conditions, maintain strict type safety even inside the error-testing function. Never use type safety bypass mechanisms like `any`, `@ts-ignore`, or `@ts-expect-error` within the error test block.
+**TestValidator.error() type safety and async/await usage:**
+When using `TestValidator.error()` to test error conditions:
+1. Maintain strict type safety even inside the error-testing function
+2. Never use type safety bypass mechanisms like `any`, `@ts-ignore`, or `@ts-expect-error` within the error test block
+3. **CRITICAL**: Use `await` ONLY when the callback function is `async`:
+
+```typescript
+// CORRECT: Async callback → use await
+await TestValidator.error(
+  "API call should fail", 
+  async () => {
+    await api.functional.users.create(connection, {
+      body: { /* invalid data */ } satisfies IUser.ICreate,
+    });
+  },
+);
+
+// CORRECT: Sync callback → no await
+TestValidator.error(
+  "should throw error immediately", 
+  () => {
+    throw new Error("Immediate error");
+  },
+);
+
+// WRONG: Async callback without await
+TestValidator.error( // ← Missing await!
+  "API call should fail",
+  async () => {
+    await api.functional.users.create(connection, { /* ... */ });
+  },
+);
+
+// WRONG: Sync callback with await
+await TestValidator.error( // ← Unnecessary await!
+  "should throw error immediately",
+  () => {
+    throw new Error("Immediate error");
+  },
+);
+```
 
 **IMPORTANT: Skip TypeScript compilation error scenarios**
 If the test scenario requires intentionally omitting required fields or creating TypeScript compilation errors to test validation, **DO NOT IMPLEMENT** these test cases. Focus only on runtime business logic errors that can occur with valid TypeScript code.
@@ -666,8 +851,8 @@ If the test scenario requires intentionally omitting required fields or creating
 When using `TestValidator.error()`, only test whether an error occurs or not. Do NOT attempt to validate specific error messages, error types, or implement fallback closures for error message inspection. The function signature is simply:
 
 ```typescript
-// CORRECT: Simple error occurrence testing
-TestValidator.error(
+// CORRECT: Async API call error - use await
+await TestValidator.error(
   "duplicate email should fail", 
   async () => {
     return await api.functional.users.create(connection, {
@@ -680,8 +865,38 @@ TestValidator.error(
   },
 );
 
-// WRONG: Don't validate error messages or use fallback closures
+// CORRECT: Synchronous validation error - no await
 TestValidator.error(
+  "invalid score should throw",
+  () => {
+    if (score < 0 || score > 100) {
+      throw new Error("Score must be between 0 and 100");
+    }
+  },
+);
+
+// CORRECT: Multiple async operations - use await
+await TestValidator.error(
+  "concurrent operations should fail",
+  async () => {
+    const promises = [
+      api.functional.orders.create(connection, { body: invalidOrderData }),
+      api.functional.payments.process(connection, { body: invalidPayment }),
+    ];
+    await Promise.all(promises);
+  },
+);
+
+// WRONG: Async callback without await - will not catch errors properly
+TestValidator.error( // ← Missing await! Test will pass even if no error is thrown
+  "should fail but won't be caught",
+  async () => {
+    await api.functional.users.delete(connection, { id: nonExistentId });
+  },
+);
+
+// WRONG: Don't validate error messages or use fallback closures
+await TestValidator.error(
   "limit validation error",
   async () => {
     await api.functional.bbs.categories.patch(connection, {
@@ -713,7 +928,7 @@ TestValidator.error(
 
 **Important:** Always check `node_modules/@nestia/e2e/lib/TestValidator.d.ts` for exact function signatures and usage patterns.
 
-### 3.7. Complete Example
+### 3.6. Complete Example
 
 ```typescript
 /**
@@ -860,7 +1075,7 @@ export async function test_api_shopping_sale_review_update(
             country: "South Korea",
             province: "Seoul",
             city: "Seoul Seocho-gu",
-            department: RandomGenerator.paragraph(),
+            department: RandomGenerator.paragraph(),  // CORRECT: default paragraph settings
             possession: `${typia.random<number & tags.Format<"uint32">>()}-${typia.random<number & tags.Format<"uint32">>()}`,
             zip_code: typia.random<
               number 
@@ -1012,7 +1227,6 @@ This example demonstrates:
 - Use meaningful variable names that reflect business entities and contexts
 - Follow TypeScript best practices and maintain strict type safety
 - Ensure proper error handling and comprehensive edge case coverage
-- Never include import statements - start directly with `export async function`
 
 ### 4.2. Test Design
 
@@ -1045,10 +1259,10 @@ This example demonstrates:
 Before submitting your generated E2E test code, verify:
 
 **Function Structure:**
-- [ ] Function follows the correct naming convention: `{{FUNCTION_NAME}}`
+- [ ] Function follows the correct naming convention
 - [ ] Function has exactly one parameter: `connection: api.IConnection`
-- [ ] No import statements - code starts directly with `export async function`
-- [ ] No external imports or functions are defined outside the main function
+- [ ] No external functions are defined outside the main function
+- [ ] **CRITICAL**: All TestValidator functions include descriptive title as first parameter
 - [ ] All TestValidator functions use proper positional parameter syntax
 
 **API Integration:**
@@ -1068,16 +1282,18 @@ Before submitting your generated E2E test code, verify:
 
 **Code Quality:**
 - [ ] Random data generation uses appropriate constraints and formats
-- [ ] All TestValidator assertions use actual-first, expected-second pattern
+- [ ] **CRITICAL**: All TestValidator functions include descriptive title as FIRST parameter
+- [ ] All TestValidator assertions use actual-first, expected-second pattern (after title)
 - [ ] Code includes comprehensive documentation and comments
 - [ ] Variable naming is descriptive and follows business context
 - [ ] Simple error validation only (no complex error message checking)
+- [ ] **CRITICAL**: For TestValidator.error(), use `await` ONLY with async callbacks
 
 **Type Safety & Code Quality:**
 - [ ] **CRITICAL**: Only API functions and DTOs from the provided materials are used (not from examples)
 - [ ] **CRITICAL**: No fictional functions or types from examples are used
 - [ ] **CRITICAL**: No type safety violations (`any`, `@ts-ignore`, `@ts-expect-error`)
-- [ ] **CRITICAL**: All TestValidator functions use correct positional parameter syntax
+- [ ] **CRITICAL**: All TestValidator functions include title as first parameter and use correct positional parameter syntax
 - [ ] Follows proper TypeScript conventions and type safety practices
 
 **Performance & Security:**

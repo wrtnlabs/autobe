@@ -73,7 +73,7 @@ async function process<Model extends ILlmSchema.Model>(
   };
   const { tokenUsage } = await ctx.conversate({
     source: "testWrite",
-    histories: transformTestWriteHistories(scenario, artifacts),
+    histories: await transformTestWriteHistories(ctx, scenario, artifacts),
     controller: createController({
       model: ctx.model,
       artifacts,

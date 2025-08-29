@@ -106,7 +106,11 @@ const correct = async <Model extends ILlmSchema.Model>(
   };
   const { tokenUsage } = await ctx.conversate({
     source: "testCorrect",
-    histories: transformTestCorrectHistories(content, validate.result),
+    histories: await transformTestCorrectHistories(
+      ctx,
+      content,
+      validate.result,
+    ),
     controller: createController({
       model: ctx.model,
       artifacts: content.artifacts,
