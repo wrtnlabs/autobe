@@ -6,14 +6,19 @@ import {
   AutoBeAgentInformation,
   IAutoBeAgentInformationProps,
 } from "./AutoBeAgentInformation";
+import { AutoBeChatState, IAutoBeChatStateProps } from "./AutoBeChatState";
 import { AutoBeTokenUsage } from "./AutoBeTokenUsage";
 
 /** Props interface for AutoBeChatBanner component */
 interface IAutoBeChatBannerProps {
   /** Agent information to display */
   header: IAutoBeAgentInformationProps["header"];
+
   /** Token usage data to display */
   tokenUsage: IAutoBeTokenUsageJson | null;
+
+  /** Chat state to display */
+  state: IAutoBeChatStateProps["state"];
 }
 
 /** Chat banner component with collapsible token usage display */
@@ -24,6 +29,7 @@ export const AutoBeChatBanner = (props: IAutoBeChatBannerProps) => {
         padding: "0 48",
         position: "sticky",
         top: "12px",
+        marginBottom: "1rem",
         zIndex: 10,
       }}
     >
@@ -41,18 +47,22 @@ export const AutoBeChatBanner = (props: IAutoBeChatBannerProps) => {
 
         <Collapsible
           title="Agent Information"
-          defaultCollapsed={false}
+          defaultCollapsed={true}
           animated={true}
         >
           <AutoBeAgentInformation header={props.header} />
         </Collapsible>
-
+        <br />
         <Collapsible
           title="Token Usage"
           defaultCollapsed={false}
           animated={true}
         >
           <AutoBeTokenUsage tokenUsage={props.tokenUsage} />
+        </Collapsible>
+        <br />
+        <Collapsible title="Chat State" defaultCollapsed={true} animated={true}>
+          <AutoBeChatState state={props.state} />
         </Collapsible>
       </div>
     </header>

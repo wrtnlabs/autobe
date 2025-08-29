@@ -6,7 +6,7 @@ import {
   AutoBeTestCompleteEvent,
 } from "@autobe/interface";
 
-export class AutoBePlaygroundState {
+export class AutoBeListenerState {
   public analyze: AutoBeAnalyzeCompleteEvent | null;
   public prisma: AutoBePrismaCompleteEvent | null;
   public interface: AutoBeInterfaceCompleteEvent | null;

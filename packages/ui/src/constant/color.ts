@@ -11,6 +11,11 @@ export const COLORS = {
   TOKEN_INPUT: "#2563eb", // Blue
   TOKEN_OUTPUT: "#16a34a", // Green
   TOKEN_TOTAL: "#9333ea", // Purple
+
+  // Table colors
+  TABLE_BORDER: "#eee",
+  TABLE_BORDER_THICK: "#ddd",
+  TABLE_HEADER_BG: "#f5f5f5",
 } as const;
 
 /** Shadow styles */

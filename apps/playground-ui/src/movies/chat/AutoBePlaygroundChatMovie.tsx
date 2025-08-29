@@ -3,15 +3,17 @@ import {
   IAutoBeRpcService,
   IAutoBeTokenUsageJson,
 } from "@autobe/interface";
+import {
+  AutoBeChatMain,
+  AutoBeListener,
+  IAutoBeEventGroup,
+  IAutoBeUploadConfig,
+} from "@autobe/ui";
 import { useMediaQuery } from "@autobe/ui/hooks";
 import { AppBar, Container, Toolbar, Typography } from "@mui/material";
 import { ILlmSchema } from "@samchon/openapi";
 import { useEffect, useState } from "react";
 
-import { AutoBePlaygroundListener } from "../../structures/AutoBePlaygroundListener";
-import { IAutoBePlaygroundEventGroup } from "../../structures/IAutoBePlaygroundEventGroup";
-import { IAutoBePlaygroundUploadConfig } from "../../structures/IAutoBePlaygroundUploadConfig";
-import { AutoBePlaygroundChatBodyMovie } from "./AutoBePlaygroundChatBodyMovie";
 import { AutoBePlaygroundChatSideMovie } from "./AutoBePlaygroundChatSideMovie";
 
 export function AutoBePlaygroundChatMovie(
@@ -22,7 +24,7 @@ export function AutoBePlaygroundChatMovie(
   //----
   // STATES
   const [error, setError] = useState<Error | null>(null);
-  const [eventGroups, setEventGroups] = useState<IAutoBePlaygroundEventGroup[]>(
+  const [eventGroups, setEventGroups] = useState<IAutoBeEventGroup[]>(
     props?.eventGroups ?? [],
   );
   const [tokenUsage, setTokenUsage] = useState<IAutoBeTokenUsageJson | null>(
@@ -55,10 +57,9 @@ export function AutoBePlaygroundChatMovie(
   const sideMovie = () => (
     <div
       style={{
-        width: isMobile ? undefined : SIDE_WIDTH,
-        height: "100%",
         overflowY: "auto",
         backgroundColor: "#eeeeee",
+        minWidth: "24rem",
       }}
     >
       <Container maxWidth={false}>
@@ -91,16 +92,15 @@ export function AutoBePlaygroundChatMovie(
       <div
         style={{
           width: "100%",
-          flex: 1,
+          flexGrow: 1,
           display: "flex",
           flexDirection: "row",
-          position: "relative",
           overflow: "hidden",
         }}
       >
         {isMobile || sideMovie()}
 
-        <AutoBePlaygroundChatBodyMovie
+        <AutoBeChatMain
           isMobile={isMobile}
           eventGroups={eventGroups}
           service={props.service}
@@ -111,6 +111,7 @@ export function AutoBePlaygroundChatMovie(
           uploadConfig={props.uploadConfig}
           tokenUsage={tokenUsage}
           header={props.header}
+          state={props.listener.getState()}
         />
       </div>
     </div>
@@ -123,10 +124,8 @@ export namespace AutoBePlaygroundChatMovie {
   export interface IContext {
     header: IAutoBePlaygroundHeader<ILlmSchema.Model>;
     service: IAutoBeRpcService;
-    listener: AutoBePlaygroundListener;
-    eventGroups?: IAutoBePlaygroundEventGroup[];
-    uploadConfig?: IAutoBePlaygroundUploadConfig;
+    listener: AutoBeListener;
+    eventGroups?: IAutoBeEventGroup[];
+    uploadConfig?: IAutoBeUploadConfig;
   }
 }
-
-const SIDE_WIDTH = 450;

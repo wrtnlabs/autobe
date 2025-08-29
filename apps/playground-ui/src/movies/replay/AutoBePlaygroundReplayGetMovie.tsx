@@ -3,6 +3,7 @@ import {
   IAutoBePlaygroundReplay,
 } from "@autobe/interface";
 import pApi from "@autobe/playground-api";
+import { AutoBeListener } from "@autobe/ui";
 import { ErrorOutline, ReplayOutlined } from "@mui/icons-material";
 import {
   Alert,
@@ -21,7 +22,6 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 
-import { AutoBePlaygroundListener } from "../../structures/AutoBePlaygroundListener";
 import { AutoBePlaygroundChatMovie } from "../chat/AutoBePlaygroundChatMovie";
 
 export const AutoBePlaygroundReplayGetMovie = () => {
@@ -48,7 +48,7 @@ export const AutoBePlaygroundReplayGetMovie = () => {
     }, 300);
 
     const connect = async () => {
-      const listener: AutoBePlaygroundListener = new AutoBePlaygroundListener();
+      const listener: AutoBeListener = new AutoBeListener();
       const { driver } = await pApi.functional.autobe.playground.replay.get(
         {
           host: "http://localhost:5890",

@@ -1,25 +1,23 @@
 import { AutoBeEvent, IAutoBeRpcListener } from "@autobe/interface";
 import { List } from "tstl";
 
-import { AutoBePlaygroundState } from "./AutoBePlaygroundState";
-import { IAutoBePlaygroundEventGroup } from "./IAutoBePlaygroundEventGroup";
+import { AutoBeListenerState } from "./AutoBeListenerState";
+import { IAutoBeEventGroup } from "./IAutoBeEventGroup";
 
-export class AutoBePlaygroundListener {
+export class AutoBeListener {
   private callback_:
-    | ((eventGroups: IAutoBePlaygroundEventGroup[]) => Promise<void>)
+    | ((eventGroups: IAutoBeEventGroup[]) => Promise<void>)
     | null;
   private listener_: Required<IAutoBeRpcListener>;
-  private events_: List<IAutoBePlaygroundEventGroup> = new List();
-  private dict_: Map<
-    AutoBeEvent.Type,
-    List.Iterator<IAutoBePlaygroundEventGroup>
-  > = new Map();
-  private readonly state_: AutoBePlaygroundState;
+  private events_: List<IAutoBeEventGroup> = new List();
+  private dict_: Map<AutoBeEvent.Type, List.Iterator<IAutoBeEventGroup>> =
+    new Map();
+  private readonly state_: AutoBeListenerState;
 
   public constructor() {
     this.callback_ = null;
 
-    this.state_ = new AutoBePlaygroundState();
+    this.state_ = new AutoBeListenerState();
     this.listener_ = {
       assistantMessage: async (event) => {
         this.insert(event);
@@ -223,9 +221,7 @@ export class AutoBePlaygroundListener {
     };
   }
 
-  public on(
-    callback: (eventGroups: IAutoBePlaygroundEventGroup[]) => Promise<void>,
-  ) {
+  public on(callback: (eventGroups: IAutoBeEventGroup[]) => Promise<void>) {
     this.callback_ = callback;
   }
 
@@ -233,13 +229,14 @@ export class AutoBePlaygroundListener {
     return this.listener_;
   }
 
-  public getState(): AutoBePlaygroundState {
+  public getState(): AutoBeListenerState {
     return this.state_;
   }
 
   private accumulate(event: AutoBeEvent) {
-    const it: List.Iterator<IAutoBePlaygroundEventGroup> | undefined =
-      this.dict_.get(event.type);
+    const it: List.Iterator<IAutoBeEventGroup> | undefined = this.dict_.get(
+      event.type,
+    );
     if (it === undefined)
       this.dict_.set(
         event.type,
