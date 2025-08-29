@@ -1,6 +1,5 @@
 import { AutoBeTest } from "@autobe/interface";
 import ts from "typescript";
-import { ExpressionFactory } from "typia/lib/factories/ExpressionFactory";
 
 import { AutoBeTestStatementProgrammer } from "./AutoBeTestStatementProgrammer";
 import { IAutoBeTestProgrammerContext } from "./IAutoBeTestProgrammerContext";
@@ -71,8 +70,8 @@ const arrayExpression = (
   argList: AutoBeTest.IExpression[],
 ): ts.AwaitExpression =>
   ts.factory.createAwaitExpression(
-    ExpressionFactory.currying({
-      function: ts.factory.createPropertyAccessExpression(
+    ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(
         ts.factory.createIdentifier(
           ctx.importer.external({
             type: "instance",
@@ -82,6 +81,7 @@ const arrayExpression = (
         ),
         name,
       ),
-      arguments: argList.map((a) => writeTestExpression(ctx, a)),
-    }),
+      undefined,
+      argList.map((a) => writeTestExpression(ctx, a)),
+    ),
   );

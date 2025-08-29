@@ -1,6 +1,5 @@
 import { AutoBeTest } from "@autobe/interface";
 import ts from "typescript";
-import { ExpressionFactory } from "typia/lib/factories/ExpressionFactory";
 
 import { IAutoBeTestProgrammerContext } from "./IAutoBeTestProgrammerContext";
 import { writeTestExpression } from "./writeTestExpression";
@@ -29,8 +28,8 @@ export namespace AutoBeTestRandomProgrammer {
     ctx: IAutoBeTestProgrammerContext,
     expr: AutoBeTest.ISampleRandom,
   ): ts.CallExpression =>
-    ExpressionFactory.currying({
-      function: ts.factory.createPropertyAccessExpression(
+    ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(
         ts.factory.createIdentifier(
           ctx.importer.external({
             type: "instance",
@@ -40,11 +39,12 @@ export namespace AutoBeTestRandomProgrammer {
         ),
         "sample",
       ),
-      arguments: [
+      undefined,
+      [
         writeTestExpression(ctx, expr.array),
         writeTestExpression(ctx, expr.count),
       ],
-    });
+    );
 
   export const booleanRandom = (
     _ctx: IAutoBeTestProgrammerContext,
