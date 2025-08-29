@@ -622,7 +622,7 @@ TestValidator.equals("user data matches", actualUser, expectedUserData); // actu
 const user = { id: "123", name: "John", email: "john@example.com" };
 const userSummary = { id: "123", name: "John" };
 
-TestValidator.equals("user contains summary data", user, usrSummary); // user type can accept userSummary ✓
+TestValidator.equals("user contains summary data", user, userSummary); // user type can accept userSummary ✓
 TestValidator.equals("user summary matches", userSummary, user); // WRONG: userSummary cannot accept user with extra properties ✗
 
 // CORRECT: Extract specific properties for comparison
