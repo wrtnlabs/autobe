@@ -3,14 +3,17 @@ import {
   IAutoBeRpcService,
   IAutoBeTokenUsageJson,
 } from "@autobe/interface";
-import { AutoBeListener, IAutoBeEventGroup } from "@autobe/ui";
+import {
+  AutoBeChatMain,
+  AutoBeListener,
+  IAutoBeEventGroup,
+  IAutoBeUploadConfig,
+} from "@autobe/ui";
 import { useMediaQuery } from "@autobe/ui/hooks";
 import { AppBar, Container, Toolbar, Typography } from "@mui/material";
 import { ILlmSchema } from "@samchon/openapi";
 import { useEffect, useState } from "react";
 
-import { IAutoBePlaygroundUploadConfig } from "../../structures/IAutoBePlaygroundUploadConfig";
-import { AutoBePlaygroundChatBodyMovie } from "./AutoBePlaygroundChatBodyMovie";
 import { AutoBePlaygroundChatSideMovie } from "./AutoBePlaygroundChatSideMovie";
 
 export function AutoBePlaygroundChatMovie(
@@ -99,7 +102,7 @@ export function AutoBePlaygroundChatMovie(
       >
         {isMobile || sideMovie()}
 
-        <AutoBePlaygroundChatBodyMovie
+        <AutoBeChatMain
           isMobile={isMobile}
           eventGroups={eventGroups}
           service={props.service}
@@ -110,6 +113,7 @@ export function AutoBePlaygroundChatMovie(
           uploadConfig={props.uploadConfig}
           tokenUsage={tokenUsage}
           header={props.header}
+          state={props.listener.getState()}
         />
       </div>
     </div>
@@ -124,7 +128,7 @@ export namespace AutoBePlaygroundChatMovie {
     service: IAutoBeRpcService;
     listener: AutoBeListener;
     eventGroups?: IAutoBeEventGroup[];
-    uploadConfig?: IAutoBePlaygroundUploadConfig;
+    uploadConfig?: IAutoBeUploadConfig;
   }
 }
 

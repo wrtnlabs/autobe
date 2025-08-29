@@ -8,6 +8,7 @@ import {
   AutoBeChatBanner,
   AutoBeChatUploadBox,
   AutoBeEventMovie,
+  AutoBeListenerState,
   IAutoBeEventGroup,
 } from "@autobe/ui";
 import { useMediaQuery } from "@autobe/ui/hooks";
@@ -56,7 +57,11 @@ export const AutoBePlaygroundChatBodyMovie = (
       }}
     >
       {!isMinWidthLg && (
-        <AutoBeChatBanner header={props.header} tokenUsage={props.tokenUsage} />
+        <AutoBeChatBanner
+          header={props.header}
+          tokenUsage={props.tokenUsage}
+          state={props.state}
+        />
       )}
 
       <Container
@@ -115,5 +120,6 @@ export namespace AutoBePlaygroundChatBodyMovie {
     uploadConfig?: IAutoBePlaygroundUploadConfig;
     tokenUsage: IAutoBeTokenUsageJson | null;
     header: IAutoBePlaygroundHeader<ILlmSchema.Model>;
+    state: AutoBeListenerState;
   }
 }

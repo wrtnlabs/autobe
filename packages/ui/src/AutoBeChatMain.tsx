@@ -11,6 +11,7 @@ import {
   AutoBeChatBanner,
   AutoBeChatUploadBox,
   AutoBeEventMovie,
+  AutoBeListenerState,
   IAutoBeEventGroup,
   IAutoBeUploadConfig,
 } from ".";
@@ -18,6 +19,18 @@ import { useMediaQuery } from "./hooks";
 
 /** Side panel width constant */
 const SIDE_PANEL_WIDTH = 450;
+
+export interface IAutoBeChatMainProps {
+  isMobile: boolean;
+  eventGroups: IAutoBeEventGroup[];
+  service: IAutoBeRpcService;
+  conversate: (messages: AutoBeUserMessageContent[]) => Promise<void>;
+  setError: (error: Error) => void;
+  uploadConfig?: IAutoBeUploadConfig;
+  tokenUsage: IAutoBeTokenUsageJson | null;
+  header: IAutoBePlaygroundHeader<ILlmSchema.Model>;
+  state: AutoBeListenerState;
+}
 
 export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
   const bodyContainerRef = useRef<HTMLDivElement>(null);
@@ -53,7 +66,11 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
       }}
     >
       {!isMinWidthLg && (
-        <AutoBeChatBanner header={props.header} tokenUsage={props.tokenUsage} />
+        <AutoBeChatBanner
+          header={props.header}
+          tokenUsage={props.tokenUsage}
+          state={props.state}
+        />
       )}
 
       <div
@@ -103,13 +120,4 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
     </div>
   );
 };
-export interface IAutoBeChatMainProps {
-  isMobile: boolean;
-  eventGroups: IAutoBeEventGroup[];
-  service: IAutoBeRpcService;
-  conversate: (messages: AutoBeUserMessageContent[]) => Promise<void>;
-  setError: (error: Error) => void;
-  uploadConfig?: IAutoBeUploadConfig;
-  tokenUsage: IAutoBeTokenUsageJson | null;
-  header: IAutoBePlaygroundHeader<ILlmSchema.Model>;
-}
+export default AutoBeChatMain;
