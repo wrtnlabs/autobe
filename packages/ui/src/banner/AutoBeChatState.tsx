@@ -50,7 +50,9 @@ interface IStateStepProps {
 /** Component for displaying active state step */
 const StateStep = ({ step, data }: IStateStepProps) => (
   <div style={getStepItemStyle(true)}>
-    <div style={stepTitleStyle}>{step}</div>
+    <div
+      style={stepTitleStyle}
+    >{`${step.charAt(0).toUpperCase()}${step.slice(1)}`}</div>
     <div style={stepDataStyle}>
       {Object.entries(getStepCount(data))
         .map(([key, value]) => `${key}: ${value.toLocaleString()}`)
@@ -66,7 +68,9 @@ const StateStep = ({ step, data }: IStateStepProps) => (
 /** Component for displaying empty state step */
 const StateEmpty = ({ step }: { step: string }) => (
   <div style={getStepItemStyle(false)}>
-    <div style={stepTitleStyle}>{step}</div>
+    <div
+      style={stepTitleStyle}
+    >{`${step.charAt(0).toUpperCase()}${step.slice(1)}`}</div>
     <div style={stepDataStyle}>0 items • ⏱️ 0 mins</div>
   </div>
 );
