@@ -89,5 +89,5 @@ export const archive_realize = async (
       ),
     });
 
-  TestValidator.equals("result")(result.compiled.type)("success");
+  TestValidator.equals("result", result.compiled.type, "success");
 };

@@ -12,7 +12,7 @@ export const test_compiler_interface_name = async (
     await compiler.interface.write(DOCUMENT);
   const content: string =
     result["src/controllers/shopping/sale/ShoppingSaleController.ts"];
-  TestValidator.predicate("method name")(() =>
+  TestValidator.predicate("method name", () =>
     content.includes("public async at("),
   );
 };

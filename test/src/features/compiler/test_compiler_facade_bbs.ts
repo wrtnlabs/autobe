@@ -25,6 +25,6 @@ export const test_compiler_facade_bbs = async (
       prisma: prisma.nodeModules,
       package: "@samchon/bbs-api",
     });
-  TestValidator.equals("result")(result.type)("success");
+  TestValidator.equals("result", result.type, "success");
   typia.assertEquals(result);
 };

@@ -85,5 +85,5 @@ export const validate_agent_interface_complement = async (
       "logs/missed.json": JSON.stringify(Array.from(missed).sort()),
     },
   });
-  TestValidator.equals("missed")(Array.from(missed).sort())([]);
+  TestValidator.equals("missed", Array.from(missed).sort(), []);
 };

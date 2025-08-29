@@ -23,5 +23,5 @@ export const test_compiler_test_compile = async (): Promise<void> => {
       `,
     },
   });
-  TestValidator.equals("result")(result.type)("success");
+  TestValidator.equals("result", result.type, "success");
 };

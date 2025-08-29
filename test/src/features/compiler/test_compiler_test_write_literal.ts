@@ -86,14 +86,15 @@ export const test_compiler_test_write_literal = async (
     },
     prettier: false,
   });
-  TestValidator.predicate("binary")(() => result.includes("3 !== 4"));
-  TestValidator.predicate("boolean")(() => result.includes("false"));
-  TestValidator.predicate("numeric")(() => result.includes("42"));
-  TestValidator.predicate("string")(() => result.includes(`"Hello, World!"`));
-  TestValidator.predicate("null")(() => result.includes("null"));
-  TestValidator.predicate("undefined")(() => result.includes("undefined"));
-  TestValidator.predicate("array")(() => result.includes("["));
-  TestValidator.predicate("object")(
+  TestValidator.predicate("binary", () => result.includes("3 !== 4"));
+  TestValidator.predicate("boolean", () => result.includes("false"));
+  TestValidator.predicate("numeric", () => result.includes("42"));
+  TestValidator.predicate("string", () => result.includes(`"Hello, World!"`));
+  TestValidator.predicate("null", () => result.includes("null"));
+  TestValidator.predicate("undefined", () => result.includes("undefined"));
+  TestValidator.predicate("array", () => result.includes("["));
+  TestValidator.predicate(
+    "object",
     () => result.includes("key1:") && result.includes(`"a-b-c-d":`),
   );
 };

@@ -44,7 +44,8 @@ export const test_compiler_test_build = async () => {
       Object.entries(files).filter(([key]) => key.endsWith(".ts")),
     ),
   });
-  TestValidator.predicate("result")(
+  TestValidator.predicate(
+    "result",
     () =>
       result.type === "success" ||
       (result.type === "failure" &&

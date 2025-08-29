@@ -12,7 +12,8 @@ export const test_compiler_prisma_failure = async (): Promise<void> => {
         "invalid.prisma": ["ASDFGHJ", "ZXCVBNM"].join("\n\n"),
       },
     });
-  TestValidator.predicate("result")(
+  TestValidator.predicate(
+    "result",
     () =>
       result.type === "failure" &&
       result.reason.includes("ASDFGHJ") &&

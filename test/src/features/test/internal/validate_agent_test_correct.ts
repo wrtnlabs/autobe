@@ -86,7 +86,9 @@ export const validate_agent_test_correct = async (
       ),
     },
   });
-  TestValidator.equals("result")(result.length)(
+  TestValidator.equals(
+    "result",
+    result.length,
     result.filter((r) => r.result.type === "success").length,
   );
 };
