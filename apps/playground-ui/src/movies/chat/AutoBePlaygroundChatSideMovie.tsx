@@ -2,13 +2,14 @@ import {
   IAutoBePlaygroundHeader,
   IAutoBeTokenUsageJson,
 } from "@autobe/interface";
-import { AutoBeListenerState } from "@autobe/ui";
+import {
+  AutoBeChatState,
+  AutoBeListenerState,
+  AutoBeTokenUsage,
+} from "@autobe/ui";
+import { AutoBeAgentInformation } from "@autobe/ui";
 import { Typography } from "@mui/material";
 import { ILlmSchema } from "@samchon/openapi";
-
-import { AutoBePlaygroundChatSideHeaderMovie } from "./AutoBePlaygroundChatSideHeaderMovie";
-import { AutoBePlaygroundChatSideStateMovie } from "./AutoBePlaygroundChatSideStateMovie";
-import { AutoBePlaygroundChatTokenUsageMovie } from "./AutoBePlaygroundChatTokenUsageMovie";
 
 export function AutoBePlaygroundChatSideMovie(
   props: AutoBePlaygroundChatSideMovie.IProps,
@@ -28,13 +29,22 @@ export function AutoBePlaygroundChatSideMovie(
           {props.error.message}
         </>
       ) : null}
-      <AutoBePlaygroundChatSideHeaderMovie header={props.header} />
+
+      <h4>Agent Information</h4>
+      <hr />
+      <AutoBeAgentInformation header={props.header} />
       <br />
       {props.tokenUsage !== null ? (
-        <AutoBePlaygroundChatTokenUsageMovie tokenUsage={props.tokenUsage} />
+        <>
+          <h4>Token Usage</h4>
+          <hr />
+          <AutoBeTokenUsage tokenUsage={props.tokenUsage} />
+        </>
       ) : null}
       <br />
-      <AutoBePlaygroundChatSideStateMovie state={props.state} />
+      <h4>State</h4>
+      <hr />
+      <AutoBeChatState state={props.state} />
     </div>
   );
 }
