@@ -85,7 +85,7 @@ export const test_compiler_realize_test = async (
           : fs.existsSync(__dirname + "/.env")
             ? __dirname
             : path.resolve(__dirname + "/..");
-      },);
+      })();
     }
 `;
   await FileSystemIterator.save({
