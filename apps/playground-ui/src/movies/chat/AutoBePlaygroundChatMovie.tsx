@@ -3,13 +3,12 @@ import {
   IAutoBeRpcService,
   IAutoBeTokenUsageJson,
 } from "@autobe/interface";
+import { AutoBeListener, IAutoBeEventGroup } from "@autobe/ui";
 import { useMediaQuery } from "@autobe/ui/hooks";
 import { AppBar, Container, Toolbar, Typography } from "@mui/material";
 import { ILlmSchema } from "@samchon/openapi";
 import { useEffect, useState } from "react";
 
-import { AutoBePlaygroundListener } from "../../structures/AutoBePlaygroundListener";
-import { IAutoBePlaygroundEventGroup } from "../../structures/IAutoBePlaygroundEventGroup";
 import { IAutoBePlaygroundUploadConfig } from "../../structures/IAutoBePlaygroundUploadConfig";
 import { AutoBePlaygroundChatBodyMovie } from "./AutoBePlaygroundChatBodyMovie";
 import { AutoBePlaygroundChatSideMovie } from "./AutoBePlaygroundChatSideMovie";
@@ -22,7 +21,7 @@ export function AutoBePlaygroundChatMovie(
   //----
   // STATES
   const [error, setError] = useState<Error | null>(null);
-  const [eventGroups, setEventGroups] = useState<IAutoBePlaygroundEventGroup[]>(
+  const [eventGroups, setEventGroups] = useState<IAutoBeEventGroup[]>(
     props?.eventGroups ?? [],
   );
   const [tokenUsage, setTokenUsage] = useState<IAutoBeTokenUsageJson | null>(
@@ -123,8 +122,8 @@ export namespace AutoBePlaygroundChatMovie {
   export interface IContext {
     header: IAutoBePlaygroundHeader<ILlmSchema.Model>;
     service: IAutoBeRpcService;
-    listener: AutoBePlaygroundListener;
-    eventGroups?: IAutoBePlaygroundEventGroup[];
+    listener: AutoBeListener;
+    eventGroups?: IAutoBeEventGroup[];
     uploadConfig?: IAutoBePlaygroundUploadConfig;
   }
 }

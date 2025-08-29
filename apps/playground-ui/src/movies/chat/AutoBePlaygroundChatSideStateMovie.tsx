@@ -1,3 +1,4 @@
+import { AutoBeListenerState } from "@autobe/ui";
 import {
   Table,
   TableBody,
@@ -6,8 +7,6 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-
-import { AutoBePlaygroundState } from "../../structures/AutoBePlaygroundState";
 
 export const AutoBePlaygroundChatSideStateMovie = (
   props: AutoBePlaygroundChatSideStateMovie.IProps,
@@ -108,6 +107,6 @@ export const AutoBePlaygroundChatSideStateMovie = (
 };
 export namespace AutoBePlaygroundChatSideStateMovie {
   export interface IProps {
-    state: AutoBePlaygroundState;
+    state: AutoBeListenerState;
   }
 }

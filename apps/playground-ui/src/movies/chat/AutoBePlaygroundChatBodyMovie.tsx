@@ -8,6 +8,7 @@ import {
   AutoBeChatBanner,
   AutoBeChatUploadBox,
   AutoBeEventMovie,
+  IAutoBeEventGroup,
 } from "@autobe/ui";
 import { useMediaQuery } from "@autobe/ui/hooks";
 import { Box, Container } from "@mui/material";
@@ -15,7 +16,6 @@ import { ILlmSchema } from "@samchon/openapi";
 import { RefObject, useEffect, useRef } from "react";
 
 import { AutoBePlaygroundGlobal } from "../../AutoBePlaygroundGlobal";
-import { IAutoBePlaygroundEventGroup } from "../../structures/IAutoBePlaygroundEventGroup";
 import { IAutoBePlaygroundUploadConfig } from "../../structures/IAutoBePlaygroundUploadConfig";
 
 export const AutoBePlaygroundChatBodyMovie = (
@@ -108,7 +108,7 @@ export const AutoBePlaygroundChatBodyMovie = (
 export namespace AutoBePlaygroundChatBodyMovie {
   export interface IProps {
     isMobile: boolean;
-    eventGroups: IAutoBePlaygroundEventGroup[];
+    eventGroups: IAutoBeEventGroup[];
     service: IAutoBeRpcService;
     conversate: (messages: AutoBeUserMessageContent[]) => Promise<void>;
     setError: (error: Error) => void;
