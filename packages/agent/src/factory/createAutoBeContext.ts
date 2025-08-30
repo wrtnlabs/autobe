@@ -63,7 +63,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
     setTimeout(() => props.dispatch(message).catch(() => {}));
     return message;
   },
-  conversate: async (next) => {
+  conversate: async (next, closure) => {
     const execute = async (): Promise<AutoBeContext.IResult<Model>> => {
       const agent: MicroAgentica<Model> = new MicroAgentica<Model>({
         model: props.model,
@@ -118,6 +118,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
           })
           .catch(() => {});
       });
+      if (closure) closure(agent);
 
       const histories: MicroAgenticaHistory<Model>[] = await agent.conversate(
         next.message,
