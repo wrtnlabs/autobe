@@ -18,13 +18,16 @@ export namespace IAutoBeRealizeWriteApplication {
      * 📋 STEP 1 - PRISMA SCHEMA VERIFICATION:
      *
      * DO:
+     *
      * - Examine the actual Prisma schema model definition
      * - List EVERY field that exists in the model with exact types
      * - Explicitly note fields that DO NOT exist
-     * 
+     *
      * DO NOT:
+     *
      * - Assume common fields exist without verification
-     * - Use fields like deleted_at, created_by, updated_by, is_deleted, is_active without checking
+     * - Use fields like deleted_at, created_by, updated_by, is_deleted, is_active
+     *   without checking
      *
      * 📋 STEP 2 - FIELD INVENTORY:
      *
@@ -161,7 +164,7 @@ export namespace IAutoBeRealizeWriteApplication {
      *
      * This is the initial drafting phase where you outline the basic skeleton
      * of the function.
-     * 
+     *
      * DO NOT: Use the native Date type.
      *
      * - The function signature must correctly include `user`, `parameters`, and
@@ -174,10 +177,12 @@ export namespace IAutoBeRealizeWriteApplication {
      * Import rules:
      *
      * DO NOT:
+     *
      * - Add any new import statements manually
      * - Write import statements directly (this causes compile errors)
-     * 
-     * Note: All necessary imports are provided globally or by the system automatically.
+     *
+     * Note: All necessary imports are provided globally or by the system
+     * automatically.
      *
      * ✅ Requirements:
      *

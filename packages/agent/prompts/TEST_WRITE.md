@@ -157,6 +157,18 @@ Complete DTO type information is provided for all entities your test function wi
 - Ensure you populate the correct data types when creating test data
 - Understand the relationships between different DTO types (e.g., `ICreate` vs `IUpdate` vs base type)
 
+**Critical DTO Type Usage Rules:**
+- **Use DTO types exactly as provided**: NEVER add any prefix or namespace to DTO types
+  - ❌ WRONG: `api.structures.ICustomer` 
+  - ❌ WRONG: `api.ICustomer`
+  - ❌ WRONG: `structures.ICustomer`
+  - ❌ WRONG: `dto.ICustomer`
+  - ✅ CORRECT: `ICustomer` (use the exact name provided)
+- **Always use `satisfies` for request body data**: When declaring or assigning request body DTOs, use `satisfies` keyword:
+  - Variable declaration: `const requestBody = { ... } satisfies IRequestBody;`
+  - API function body parameter: `body: { ... } satisfies IRequestBody`
+  - Never use `as` keyword for type assertions with request bodies
+
 > Note: The above DTO example is fictional - use only the actual DTOs provided in the next system prompt.
 
 ### 2.3. API SDK Function Definition
@@ -539,6 +551,7 @@ typia.random<string & tags.Pattern<"^[A-Z]{3}[0-9]{3}$">>();
 
 **Rule:** Always use the pattern `typia.random<TypeDefinition>()` with explicit generic type arguments, regardless of variable type annotations.
 
+
 #### 3.5.1. Numeric Values
 
 Generate random numbers with constraints using intersection types:
@@ -660,9 +673,26 @@ ArrayUtil.asyncFilter(array, async (elem) => { /* filter logic */ })
 
 **Array element selection:**
 ```typescript
-RandomGenerator.pick(array) // Select random element
-RandomGenerator.sample(array, 3) // Select N random elements
+// ❌ WRONG: Without 'as const', literal types are lost
+const roles = ["admin", "user", "guest"];
+const role = RandomGenerator.pick(roles); // role is 'string', not literal union
+
+// ✅ CORRECT: Use 'as const' to preserve literal types
+const roles = ["admin", "user", "guest"] as const;
+const role = RandomGenerator.pick(roles); // role is "admin" | "user" | "guest"
+
+// More examples:
+const statuses = ["pending", "approved", "rejected"] as const;
+const status = RandomGenerator.pick(statuses);
+
+const categories = ["clothes", "electronics", "service"] as const;
+const category = RandomGenerator.pick(categories);
+
+// For multiple selections:
+RandomGenerator.sample(roles, 2); // Select 2 random roles
 ```
+
+**Rule:** Always use `as const` when creating arrays of literal values for `RandomGenerator.pick()` to ensure TypeScript preserves the exact literal types.
 
 **Important:** Always check `node_modules/@nestia/e2e/lib/ArrayUtil.d.ts` for correct usage patterns and parameters.
 
@@ -696,6 +726,16 @@ export async function test_api_shopping_sale_review_update(
 - You don't need to manually handle token storage or header management
 - Simply call authentication APIs when needed and continue with authenticated requests
 - Token switching (e.g., between different user roles) is handled automatically by calling the appropriate authentication API functions
+
+**Connection Headers Initialization:**
+- `connection.headers` has a default value of `undefined`
+- Before assigning any value to `connection.headers`, you must initialize it as an object:
+  ```typescript
+  // Initialize headers object if undefined
+  connection.headers ??= {};
+  // Now you can assign values
+  connection.headers.Authorization = "Bearer token-value";
+  ```
 
 **IMPORTANT: Use only actual authentication APIs**
 Never attempt to create helper functions like `create_fresh_user_connection()` or similar non-existent utilities. Always use the actual authentication API functions provided in the materials to handle user login, registration, and role switching.

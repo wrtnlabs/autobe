@@ -281,11 +281,12 @@ export namespace IAutoBeTypeScriptCompileResult {
 - Resolve type mismatches by following exact API SDK function signatures
 - Address compilation issues through proper TypeScript syntax and typing
 - Maintain strict type safety throughout the entire correction process
+- **AGGRESSIVE SCENARIO MODIFICATION**: If compilation errors cannot be resolved through code changes alone, aggressively modify or rewrite the test scenario itself to achieve compilation success
 
 The goal is to achieve genuine compilation success through proper TypeScript usage, not to hide errors through type system suppression.
 
 **IMPLEMENTATION FEASIBILITY REQUIREMENT:**
-If the original code attempts to implement functionality that cannot be realized with the provided API functions and DTO types, **REMOVE those parts** during error correction. Only fix and retain code that is technically feasible with the actual materials provided.
+If the original code attempts to implement functionality that cannot be realized with the provided API functions and DTO types, **REMOVE OR REWRITE those parts** during error correction. Prioritize achieving successful compilation by aggressively modifying the test scenario when necessary, rather than preserving unimplementable test cases.
 
 ### 4.2. Diagnostic Analysis Process
 
@@ -364,6 +365,19 @@ Refer to the following DTO definitions and replace undefined types with the corr
 - Replace the undefined type reference with the correct DTO type
 - Ensure the type usage matches the provided type definition structure
 
+**Critical DTO Type Usage Rules:**
+- **Use DTO types exactly as provided**: NEVER add any prefix or namespace to DTO types
+  - ❌ WRONG: `api.structures.ICustomer` 
+  - ❌ WRONG: `api.ICustomer`
+  - ❌ WRONG: `structures.ICustomer`
+  - ❌ WRONG: `dto.ICustomer`
+  - ❌ WRONG: `types.ICustomer`
+  - ✅ CORRECT: `ICustomer` (use the exact name provided)
+- **Always use `satisfies` for request body data**: When declaring or assigning request body DTOs, use `satisfies` keyword:
+  - Variable declaration: `const requestBody = { ... } satisfies IRequestBody;`
+  - API function body parameter: `body: { ... } satisfies IRequestBody`
+  - Never use `as` keyword for type assertions with request bodies
+
 ### 4.4.3. Complex Error Message Validation
 
 If the test scenario suggests implementing complex error message validation or using fallback closures with `TestValidator.error()`, **DO NOT IMPLEMENT** these test cases. Focus only on simple error occurrence testing.
@@ -390,6 +404,7 @@ await TestValidator.error(
 - Simplify to only test whether an error occurs or not
 - Do not attempt to validate specific error messages, error types, or error properties
 - Focus on runtime business logic errors with properly typed, valid TypeScript code
+- **AGGRESSIVE SCENARIO MODIFICATION**: If the test case fundamentally relies on complex error validation that cannot be implemented, completely remove or rewrite that test case to focus on simpler, compilable scenarios
 
 ```typescript
 // CORRECT: Simple error occurrence testing
@@ -533,6 +548,108 @@ await TestValidator.error("test", () => api.functional.users.create(connection, 
 
 **Rule:** All asynchronous function calls must use the `await` keyword to properly handle Promises.
 
+### 4.4.9. Connection Headers Initialization
+
+If you encounter errors related to `connection.headers` being undefined when trying to assign values:
+
+**Error pattern:**
+```typescript
+// WRONG: Direct assignment when headers is undefined
+connection.headers.Authorization = "Bearer token"; // ← Error: Cannot set property 'Authorization' of undefined
+```
+
+**Solution:**
+```typescript
+// CORRECT: Initialize headers object before assignment
+connection.headers ??= {};
+connection.headers.Authorization = "Bearer token";
+```
+
+**Solution approach:**
+1. **Check if headers exists**: `connection.headers` has a default value of `undefined`
+2. **Initialize if needed**: Use the nullish coalescing assignment operator `??=` to initialize
+3. **Then assign values**: After initialization, you can safely assign header values
+
+**Rule:** Always initialize `connection.headers` as an empty object before assigning any values to it.
+
+### 4.4.10. Typia Tag Type Conversion Errors (Compilation Error Fix Only)
+
+**⚠️ CRITICAL: This section is ONLY for fixing compilation errors. Do NOT use satisfies pattern in normal code!**
+
+When encountering type errors with Typia tags, especially when dealing with complex intersection types:
+
+**Error pattern:**
+```typescript
+// Error: Type 'number & Type<"int32">' is not assignable to type '(number & Type<"int32"> & Minimum<1> & Maximum<1000>) | undefined'
+const limit: number & tags.Type<"int32"> & tags.Minimum<1> & tags.Maximum<1000> = typia.random<number & tags.Type<"int32">>();
+```
+
+**Solution (ONLY USE THIS WHEN YOU GET A COMPILATION ERROR):**
+```typescript
+// ⚠️ IMPORTANT: Only use satisfies when you encounter type mismatch compilation errors!
+// Don't add satisfies to code that already compiles successfully.
+
+// WRONG: Including tags in satisfies - DON'T DO THIS!
+const limit = typia.random<number & tags.Type<"int32">>() satisfies (number & tags.Type<"int32">) as (number & tags.Type<"int32">);  // NO! Don't include tags in satisfies
+const pageLimit = typia.random<number & tags.Type<"uint32">>() satisfies (number & tags.Type<"uint32">) as number;  // WRONG! satisfies should use basic type only
+
+// CORRECT: Use satisfies with basic type only (WHEN FIXING COMPILATION ERRORS)
+const limit = typia.random<number & tags.Type<"int32">>() satisfies number as number;  // YES! satisfies uses basic type
+const pageLimit = typia.random<number & tags.Type<"uint32"> & tags.Minimum<10> & tags.Maximum<100>>() satisfies number as number;  // CORRECT!
+
+// More examples (ONLY WHEN FIXING ERRORS):
+const name = typia.random<string & tags.MinLength<3> & tags.MaxLength<50>>() satisfies string as string;  // Good
+const email = typia.random<string & tags.Format<"email">>() satisfies string as string;  // Good
+const age = typia.random<number & tags.Type<"uint32"> & tags.Minimum<0> & tags.Maximum<120>>() satisfies number as number;  // Good
+```
+
+**Solution approach:**
+1. **Check if there's a compilation error**: Only use satisfies if TypeScript complains about type mismatches
+2. **Use basic types in satisfies**: `satisfies number`, `satisfies string`, NOT `satisfies (number & tags.Type<"int32">)`
+3. **Then use as**: Convert to the target basic type
+
+**Rule:** The `satisfies ... as ...` pattern is a COMPILATION ERROR FIX, not a general coding pattern. Only use it when the TypeScript compiler reports type mismatch errors with tagged types.
+
+### 4.4.11. Literal Type Arrays with RandomGenerator.pick
+
+When selecting from a fixed set of literal values using `RandomGenerator.pick()`, you MUST use `as const` to preserve literal types:
+
+**Problem:**
+```typescript
+// WRONG: Without 'as const', the array becomes string[] and loses literal types
+const possibleRoles = ["super_admin", "compliance_officer", "customer_service"];
+const role = RandomGenerator.pick(possibleRoles); // role is type 'string', not literal union
+
+const adminData = {
+  email: "admin@example.com",
+  role: role  // Type error: string is not assignable to "super_admin" | "compliance_officer" | "customer_service"
+} satisfies IAdmin.ICreate;
+```
+
+**Solution:**
+```typescript
+// CORRECT: Use 'as const' to preserve literal types
+const possibleRoles = ["super_admin", "compliance_officer", "customer_service"] as const;
+const role = RandomGenerator.pick(possibleRoles); // role is type "super_admin" | "compliance_officer" | "customer_service"
+
+const adminData = {
+  email: "admin@example.com",
+  role: role  // Works! Literal type matches expected union
+} satisfies IAdmin.ICreate;
+
+// More examples:
+const statuses = ["active", "inactive", "pending"] as const;
+const status = RandomGenerator.pick(statuses);
+
+const priorities = [1, 2, 3, 4, 5] as const;
+const priority = RandomGenerator.pick(priorities);
+
+const booleans = [true, false] as const;
+const isActive = RandomGenerator.pick(booleans);
+```
+
+**Rule:** Always use `as const` when creating arrays of literal values for `RandomGenerator.pick()`. This ensures TypeScript preserves the literal types instead of widening to primitive types.
+
 ## 5. Correction Requirements
 
 Your corrected code must:
@@ -542,10 +659,11 @@ Your corrected code must:
 - Compile successfully without any errors or warnings
 - Maintain proper TypeScript syntax and type safety
 
-**Functionality Preservation:**
-- Maintain the original test functionality and business logic
-- Preserve comprehensive test coverage and validation logic
-- Keep all realistic and implementable test scenarios
+**Functionality Preservation vs Compilation Success:**
+- Prioritize compilation success over preserving original functionality when they conflict
+- Aggressively modify test scenarios to achieve compilable code
+- Remove or rewrite test cases that are fundamentally incompatible with the provided API
+- Keep only test scenarios that can be successfully compiled with the available materials
 
 **Code Quality:**
 - Follow all conventions and requirements from the original system prompt
