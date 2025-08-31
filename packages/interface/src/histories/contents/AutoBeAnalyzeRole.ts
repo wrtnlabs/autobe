@@ -1,3 +1,5 @@
+import { tags } from "typia";
+
 import { CamelPattern } from "../../typings/CamelPattern";
 
 /**
@@ -29,7 +31,7 @@ export interface AutoBeAnalyzeRole {
    *
    * MUST use camelCase naming convention.
    */
-  name: string & CamelPattern;
+  name: string & CamelPattern & tags.MinLength<1>;
 
   /**
    * Human-readable description of the role's permissions and capabilities.
@@ -39,4 +41,21 @@ export interface AutoBeAnalyzeRole {
    * authorization rules and API endpoint restrictions.
    */
   description: string;
+
+  /**
+   * Role category classification for system-wide permission hierarchy.
+   *
+   * This property categorizes roles into three fundamental permission levels,
+   * establishing a clear hierarchy for authorization decisions throughout the
+   * application. The kind determines baseline access patterns and security
+   * boundaries:
+   *
+   * - "guest": Unauthenticated users or those with minimal permissions. Typically
+   *   limited to public resources and registration/login endpoints.
+   * - "member": Authenticated users with standard access permissions. Can access
+   *   personal resources and participate in core application features.
+   * - "admin": System administrators with elevated permissions. Can manage other
+   *   users, access administrative functions, and modify system-wide settings.
+   */
+  kind: "guest" | "member" | "admin";
 }

@@ -80,7 +80,7 @@ These documents establish WHY the service exists and MUST be created first:
 These define WHAT the system does from a business perspective:
 
 - **Service Operation Overview**: How the service works in natural language, main user journeys
-- **User Roles & Personas**: Different user types, their needs, permission levels in business terms
+- **User Roles & Personas**: Different user types, their needs, permission levels in business terms. Each role must specify its kind (guest/member/admin) to establish the permission hierarchy
 - **Primary User Scenarios**: Most common success paths, step-by-step interactions
 - **Secondary & Special Scenarios**: Alternative flows, edge cases, bulk operations
 - **Exception Handling**: Error situations from user perspective, recovery processes
@@ -164,6 +164,30 @@ Do **not** forget to include the Table of Contents when calculating the total nu
 ## Specific Property Notations
 - **IAutoBeAnalyzeScenarioApplication.IProps.prefix**: Use camelCase notation (e.g., `shopping`, `userManagement`, `contentPortal`)
 - **AutoBeAnalyzeRole.name**: Use camelCase notation
+- **AutoBeAnalyzeRole.kind**: Categorize roles into permission hierarchy levels:
+  - **"guest"**: Unauthenticated or minimal permission users who can only access public resources and basic functions like registration/login
+  - **"member"**: Authenticated standard users who can access personal resources and participate in core application features
+  - **"admin"**: System administrators with elevated permissions who can manage users, access administrative functions, and modify system settings
+
+# User Role Definition Guidelines
+
+## CRITICAL: Understanding name vs kind
+
+The role `name` and `kind` serve different purposes:
+
+- **name**: Domain-specific business role identifier
+  - Must reflect the actual role in your business domain
+  - Should be specific to your service context
+
+- **kind**: Permission level classification
+  - Limited to three values: "guest", "member", or "admin"
+  - Determines the base security level and access patterns
+  - Multiple different roles can share the same kind
+
+## Correct Role Definition Process
+
+1. **Identify business roles**: Define roles based on your specific domain
+2. **Assign appropriate kind**: Map each role to its permission level
 
 # File Metadata Requirements
 
