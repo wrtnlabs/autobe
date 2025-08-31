@@ -155,7 +155,8 @@ function createController<Model extends ILlmSchema.Model>(props: {
         .filter((v) => v !== null),
     );
     for (const type of typia.misc.literals<AuthorizationType>())
-      if (authorizationTypes.has(type) === false)
+      if (props.role.kind === "guest" && type === "login") continue;
+      else if (authorizationTypes.has(type) === false)
         errors.push({
           path: "$input.operations[].authorizationType",
           expected: StringUtil.trim`{
