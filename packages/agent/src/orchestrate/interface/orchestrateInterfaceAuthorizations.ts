@@ -61,7 +61,7 @@ async function process<Model extends ILlmSchema.Model>(
     histories: transformInterfaceAuthorizationsHistories(ctx.state(), role),
     controller: createController({
       model: ctx.model,
-      role: role.name,
+      role,
       build: (next) => {
         pointer.value = next;
       },
@@ -87,7 +87,7 @@ async function process<Model extends ILlmSchema.Model>(
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  role: string;
+  role: AutoBeAnalyzeRole;
   build: (next: IAutoBeInterfaceAuthorizationsApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
@@ -99,11 +99,18 @@ function createController<Model extends ILlmSchema.Model>(props: {
       typia.validate<IAutoBeInterfaceAuthorizationsApplication.IProps>(next);
     if (result.success === false) return result;
 
+    // remove login operation for guest role
+    if (props.role.kind === "guest") {
+      result.data.operations = result.data.operations.filter(
+        (op) => op.authorizationType !== "login",
+      );
+    }
+
     const errors: IValidation.IError[] = [];
     result.data.operations.forEach((op, i) => {
       // validate authorizationRole
       if (op.authorizationRole !== null) {
-        op.authorizationRole = props.role;
+        op.authorizationRole = props.role.name;
       }
 
       // validate responseBody.typeName -> must be ~.IAuthorized
@@ -160,7 +167,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
           There must be an operation that has defined AutoBeOpenApi.IOperation.authorizationType := "${type}"
           for the "${props.role}" role's authorization activity; "${type}".
 
-          However, none of the operations have the AutoBeOpenApi.IOperation.authorizationType := "${type}" 
+          However, none of the operations have the AutoBeOpenApi.IOperation.authorizationType := "${type}"
           value, so that the "${props.role}" cannot perform the authorization ${type} activity.
 
           Please make that operation at the next function calling. You have to do it.
