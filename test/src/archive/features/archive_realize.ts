@@ -88,6 +88,7 @@ export const archive_realize = async (
         })),
       ),
     });
-
+  if (result.compiled.type === "failure")
+    console.log(result.compiled.diagnostics);
   TestValidator.equals("result", result.compiled.type, "success");
 };
