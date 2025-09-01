@@ -505,7 +505,69 @@ await api.functional.users.articles.update(connection, {
 **API function calling pattern:**
 Use the pattern `api.functional.{path}.{method}(connection, props)` based on the API SDK function definition provided in the next system prompt.
 
-### 3.5. Random Data Generation
+### 3.3. API Response and Request Type Checking
+
+**CRITICAL: Always verify API response and request types match exactly**
+
+When calling API functions, you MUST double-check that:
+1. The response type matches what the API actually returns
+2. The request body type matches what the API expects
+3. Namespace types are fully qualified (not abbreviated)
+
+**Common Type Mismatch Errors:**
+
+```typescript
+// ❌ WRONG: Using incorrect response type
+const user: IUser = await api.functional.user.authenticate.login(connection, {
+  body: { email: "test@example.com", password: "1234" }
+});
+// Compilation Error: Type 'IUser.IAuthorized' is not assignable to type 'IUser'
+
+// ✅ CORRECT: Use the exact response type from API
+const user: IUser.IAuthorized = await api.functional.user.authenticate.login(connection, {
+  body: { email: "test@example.com", password: "1234" }
+});
+```
+
+**Namespace Type Errors:**
+
+```typescript
+// ❌ WRONG: Abbreviated namespace types
+const profile: IProfile = await api.functional.users.profiles.create(connection, {
+  body: { name: "John" } satisfies IProfile  // Missing namespace!
+});
+
+// ✅ CORRECT: Use fully qualified namespace types
+const profile: IUser.IProfile = await api.functional.users.profiles.create(connection, {
+  body: { name: "John" } satisfies IUser.IProfile.ICreate
+});
+```
+
+**Request Body Type Verification:**
+
+```typescript
+// ❌ WRONG: Using wrong request body type
+await api.functional.products.update(connection, {
+  id: productId,
+  body: productData satisfies IProduct  // Wrong! Should be IProduct.IUpdate
+});
+
+// ✅ CORRECT: Use the specific request body type
+await api.functional.products.update(connection, {
+  id: productId,
+  body: productData satisfies IProduct.IUpdate
+});
+```
+
+**Type Checking Strategy:**
+1. **Check the API function definition** - Look at the return type in the function signature
+2. **Check namespace types** - Ensure you're using `INamespace.IType` not just `IType`
+3. **Check request body types** - Use specific types like `ICreate`, `IUpdate`, not the base type
+4. **Double-check after writing** - Review your type assignments before proceeding
+
+**IMPORTANT**: TypeScript will catch these errors at compile time, but getting them right the first time saves debugging effort and ensures your test logic is correct.
+
+### 3.4. Random Data Generation
 
 **CRITICAL: Type Constraints and typia.random Usage**
 
@@ -552,7 +614,7 @@ typia.random<string & tags.Pattern<"^[A-Z]{3}[0-9]{3}$">>();
 **Rule:** Always use the pattern `typia.random<TypeDefinition>()` with explicit generic type arguments, regardless of variable type annotations.
 
 
-#### 3.5.1. Numeric Values
+#### 3.4.1. Numeric Values
 
 Generate random numbers with constraints using intersection types:
 
@@ -570,7 +632,7 @@ typia.random<number & tags.Type<"uint32"> & tags.Minimum<100> & tags.Maximum<900
 typia.random<number & tags.Type<"uint32"> & tags.ExclusiveMinimum<100> & tags.ExclusiveMaximum<1000> & tags.MultipleOf<10>>()
 ```
 
-#### 3.5.2. String Values
+#### 3.4.2. String Values
 
 **Format-based generation:**
 ```typescript
@@ -660,7 +722,7 @@ typia.random<string & tags.Pattern<"^[A-Z]{3}[0-9]{3}$">>()
 
 **Important:** Always check `node_modules/@nestia/e2e/lib/RandomGenerator.d.ts` for exact usage patterns and parameters.
 
-#### 3.5.3. Array Generation
+#### 3.4.3. Array Generation
 
 Use `ArrayUtil` static functions for array creation:
 
@@ -696,7 +758,119 @@ RandomGenerator.sample(roles, 2); // Select 2 random roles
 
 **Important:** Always check `node_modules/@nestia/e2e/lib/ArrayUtil.d.ts` for correct usage patterns and parameters.
 
-### 3.3. Authentication Handling
+**Common Mistake - Incorrect Type Casting After Filter:**
+
+```typescript
+// ❌ WRONG: Incorrect type casting after filter
+const roles = ["admin", "user", "guest"] as const;
+const myRole = RandomGenerator.pick(roles);
+const otherRoles = roles.filter(r => r !== myRole) as typeof roles; // COMPILATION ERROR!
+
+// The problem: 
+// - 'roles' has type: readonly ["admin", "user", "guest"] (ordered, immutable tuple)
+// - 'filter' returns: Array<"admin" | "user" | "guest"> (mutable array)
+// - You CANNOT cast a mutable array to an immutable tuple!
+
+// ✅ CORRECT: Don't cast, work with the filtered array type
+const roles = ["admin", "user", "guest"] as const;
+const myRole = RandomGenerator.pick(roles);
+const otherRoles = roles.filter(r => r !== myRole); // Type: ("admin" | "user" | "guest")[]
+
+// If you need to pick from otherRoles:
+if (otherRoles.length > 0) {
+  const anotherRole = RandomGenerator.pick(otherRoles);
+}
+
+// Alternative approach using type assertion on the filtered result:
+const validOtherRoles = otherRoles as ("admin" | "user" | "guest")[];
+const anotherRole = RandomGenerator.pick(validOtherRoles);
+```
+
+**Key Points:**
+- `as const` creates a readonly tuple with preserved order and literal types
+- Array methods like `filter()` return regular mutable arrays
+- Never cast filtered results back to the original readonly tuple type
+- If needed, cast to the union type array instead: `as ("value1" | "value2")[]`
+
+### 3.5. Handling Nullable and Undefined Values
+
+When working with nullable or undefined values, you must handle them properly before assigning to non-nullable types:
+
+**Common Error Pattern:**
+```typescript
+// ❌ WRONG: Direct assignment of nullable to non-nullable
+const x: string | null | undefined = someApiCall();
+const y: string = x; 
+// Compilation Error:
+// Type 'string | null | undefined' is not assignable to type 'string'.
+// Type 'undefined' is not assignable to type 'string'
+```
+
+**Solution 1: Conditional Logic (Use when branching is needed)**
+```typescript
+// ✅ For conditional branching based on null/undefined
+const x: string | null | undefined = await someApiCall();
+if (x === null || x === undefined) {
+  // Handle null/undefined case
+  console.log("Value is not available");
+  return;
+} else {
+  // x is now narrowed to string type
+  const y: string = x; // Safe assignment
+  // Continue with string value
+}
+```
+
+**Solution 2: Type Assertion with typia (STRONGLY RECOMMENDED)**
+```typescript
+// ✅ For strict type checking without branching
+const x: string | null | undefined = await someApiCall();
+typia.assert<string>(x); // Throws if x is null or undefined
+const y: string = x; // Safe - x is guaranteed to be string
+
+// Can also be used inline
+const user: IUser | null = await api.functional.users.get(connection, { id });
+typia.assert<IUser>(user); // Ensures user is not null
+// Now user can be used as IUser type
+```
+
+**More Complex Examples:**
+```typescript
+// Multiple nullable properties
+const response: {
+  data?: {
+    user?: IUser;
+    token?: string;
+  };
+} = await someApiCall();
+
+// Option 1: Nested checks (verbose)
+if (response.data && response.data.user && response.data.token) {
+  const user: IUser = response.data.user;
+  const token: string = response.data.token;
+}
+
+// Option 2: Type assertion (cleaner, recommended)
+typia.assert<{
+  data: {
+    user: IUser;
+    token: string;
+  };
+}>(response);
+// Now all properties are guaranteed to exist
+const user: IUser = response.data.user;
+const token: string = response.data.token;
+```
+
+**Best Practices:**
+1. **Use `typia.assert` for simple type validation** - It's cleaner and more readable
+2. **Use conditional checks only when you need different logic branches** - When null/undefined requires different handling
+3. **Never use non-null assertion operator (!)** - Avoid `const y: string = x!;` as it bypasses type safety
+4. **Be explicit about nullable handling** - Don't ignore potential null/undefined values
+
+**Rule:** Always validate nullable/undefined values before assigning to non-nullable types. Prefer `typia.assert` for straightforward type validation, use conditional checks only when branching logic is required.
+
+### 3.6. Authentication Handling
 
 ```typescript
 export async function test_api_shopping_sale_review_update(
@@ -736,6 +910,19 @@ export async function test_api_shopping_sale_review_update(
   // Now you can assign values
   connection.headers.Authorization = "Bearer token-value";
   ```
+- **IMPORTANT**: When creating an unauthorized connection:
+  ```typescript
+  // ✅ CORRECT: Just create empty headers
+  const unauthConn: api.IConnection = { ...connection, headers: {} };
+  
+  // ❌ WRONG: Don't do unnecessary operations on empty objects
+  const unauthConn: api.IConnection = { ...connection, headers: {} };
+  delete unauthConn.headers.Authorization;  // Pointless!
+  unauthConn.headers.Authorization = null;   // Pointless!
+  unauthConn.headers.Authorization = undefined;  // Pointless!
+  
+  // The empty object {} already means no Authorization header exists!
+  ```
 
 **IMPORTANT: Use only actual authentication APIs**
 Never attempt to create helper functions like `create_fresh_user_connection()` or similar non-existent utilities. Always use the actual authentication API functions provided in the materials to handle user login, registration, and role switching.
@@ -751,7 +938,7 @@ await api.functional.users.authenticate.login(connection, {
 // await switch_to_admin_user(); ← This function doesn't exist
 ```
 
-### 3.4. Logic Validation and Assertions
+### 3.7. Logic Validation and Assertions
 
 **CRITICAL: Title Parameter is MANDATORY**
 
@@ -1017,7 +1204,7 @@ TestValidator.error(
 
 **Important:** Always check `node_modules/@nestia/e2e/lib/TestValidator.d.ts` for exact function signatures and usage patterns.
 
-### 3.6. Complete Example
+### 3.8. Complete Example
 
 ```typescript
 /**
@@ -1343,6 +1530,313 @@ This example demonstrates:
 - Include rationale for test design decisions and business rule validations
 - Use step-by-step comments that explain business purpose, not just technical operations
 
+## 4.5. Avoiding Illogical Code Patterns
+
+### 4.5.1. Common Illogical Anti-patterns
+
+When generating test code, avoid these common illogical patterns that often lead to compilation errors:
+
+**1. Mixing Authentication Roles Without Context Switching**
+```typescript
+// ❌ ILLOGICAL: Creating admin as customer without role switching
+const admin = await api.functional.customers.authenticate.join(connection, {
+  body: {
+    email: adminEmail,
+    password: "admin123",
+    role: "admin"  // Customers can't have admin role!
+  } satisfies ICustomer.IJoin,
+});
+
+// ✅ LOGICAL: Use proper admin authentication endpoint
+const admin = await api.functional.admins.authenticate.join(connection, {
+  body: {
+    email: adminEmail,
+    password: "admin123"
+  } satisfies IAdmin.IJoin,
+});
+```
+
+**2. Creating Resources with Invalid Relationships**
+```typescript
+// ❌ ILLOGICAL: Creating review before purchase
+const review = await api.functional.products.reviews.create(connection, {
+  productId: product.id,
+  body: {
+    rating: 5,
+    comment: "Great product!"
+  } satisfies IReview.ICreate,
+});
+// Error: User hasn't purchased the product yet!
+
+// ✅ LOGICAL: Follow proper business flow
+// 1. Create user
+// 2. Create order
+// 3. Complete purchase
+// 4. Then create review
+```
+
+**3. Using Deleted or Non-existent Resources**
+```typescript
+// ❌ ILLOGICAL: Using deleted user's data
+await api.functional.users.delete(connection, { id: user.id });
+const userPosts = await api.functional.users.posts.index(connection, { 
+  userId: user.id  // This user was just deleted!
+});
+
+// ✅ LOGICAL: Don't reference deleted resources
+await api.functional.users.delete(connection, { id: user.id });
+// Create new user or use different user for subsequent operations
+```
+
+**4. Violating Business Rule Constraints**
+```typescript
+// ❌ ILLOGICAL: Setting invalid status transitions
+const order = await api.functional.orders.create(connection, {
+  body: { status: "pending" } satisfies IOrder.ICreate,
+});
+await api.functional.orders.update(connection, {
+  id: order.id,
+  body: { status: "delivered" } satisfies IOrder.IUpdate,  // Can't go from pending to delivered directly!
+});
+
+// ✅ LOGICAL: Follow proper status flow
+// pending → processing → shipped → delivered
+```
+
+**5. Creating Circular Dependencies**
+```typescript
+// ❌ ILLOGICAL: Parent referencing child that references parent
+const category = await api.functional.categories.create(connection, {
+  body: {
+    name: "Electronics",
+    parentId: subCategory.id  // subCategory doesn't exist yet!
+  } satisfies ICategory.ICreate,
+});
+
+// ✅ LOGICAL: Create parent first, then children
+const parentCategory = await api.functional.categories.create(connection, {
+  body: { name: "Electronics" } satisfies ICategory.ICreate,
+});
+const subCategory = await api.functional.categories.create(connection, {
+  body: {
+    name: "Smartphones",
+    parentId: parentCategory.id
+  } satisfies ICategory.ICreate,
+});
+```
+
+**6. Performing Unnecessary Operations on Already-Modified Objects**
+```typescript
+// ❌ ILLOGICAL: Deleting properties from an empty object
+const unauthConn: api.IConnection = { ...connection, headers: {} };
+delete unauthConn.headers.Authorization;  // headers is already an empty object!
+
+// ❌ ILLOGICAL: Setting null to properties in an empty object
+const unauthConn: api.IConnection = { ...connection, headers: {} };
+unauthConn.headers.Authorization = null;  // Pointless! headers is already empty!
+
+// ❌ ILLOGICAL: Setting properties that are already set
+const newUser = { name: "John", age: 30 };
+newUser.name = "John";  // Already set to "John"!
+
+// ✅ LOGICAL: Only perform necessary modifications
+// If you want unauthorized connection, just create empty headers
+const unauthConn: api.IConnection = { ...connection, headers: {} };
+
+// If you want to remove specific header from existing headers
+const unauthConn: api.IConnection = { 
+  ...connection, 
+  headers: Object.fromEntries(
+    Object.entries(connection.headers).filter(([key]) => key !== "Authorization")
+  )
+};
+```
+
+**IMPORTANT**: Always review your TypeScript code logically. Ask yourself:
+- Does this operation make sense given the current state?
+- Am I trying to delete something that doesn't exist?
+- Am I setting a value that's already been set?
+- Does the sequence of operations follow logical business rules?
+
+### 4.5.2. Business Logic Validation Patterns
+
+**1. Validate Prerequisites Before Actions**
+```typescript
+// ✅ CORRECT: Check prerequisites
+// Before updating user profile, ensure user exists and is authenticated
+const currentUser = await api.functional.users.me(connection);
+typia.assert(currentUser);
+
+const updatedProfile = await api.functional.users.update(connection, {
+  id: currentUser.id,
+  body: { nickname: "NewNickname" } satisfies IUser.IUpdate,
+});
+```
+
+**2. Respect Data Ownership**
+```typescript
+// ✅ CORRECT: User can only modify their own resources
+// Switch to user A
+await api.functional.users.authenticate.login(connection, {
+  body: { email: userA.email, password: "password" } satisfies IUser.ILogin,
+});
+
+// User A creates a post
+const postA = await api.functional.posts.create(connection, {
+  body: { title: "My Post", content: "Content" } satisfies IPost.ICreate,
+});
+
+// Switch to user B
+await api.functional.users.authenticate.login(connection, {
+  body: { email: userB.email, password: "password" } satisfies IUser.ILogin,
+});
+
+// User B should NOT be able to update User A's post
+await TestValidator.error(
+  "other user cannot update post",
+  async () => {
+    await api.functional.posts.update(connection, {
+      id: postA.id,
+      body: { title: "Hacked!" } satisfies IPost.IUpdate,
+    });
+  },
+);
+```
+
+**3. Follow Temporal Logic**
+```typescript
+// ✅ CORRECT: Events must happen in logical order
+// 1. Create event
+const event = await api.functional.events.create(connection, {
+  body: {
+    title: "Conference",
+    startDate: "2024-06-01T09:00:00Z",
+    endDate: "2024-06-01T17:00:00Z"
+  } satisfies IEvent.ICreate,
+});
+
+// 2. Register for event (can only happen after event is created)
+const registration = await api.functional.events.registrations.create(connection, {
+  eventId: event.id,
+  body: { attendeeName: "John Doe" } satisfies IRegistration.ICreate,
+});
+
+// 3. Check in (can only happen after registration)
+const checkIn = await api.functional.events.registrations.checkIn(connection, {
+  eventId: event.id,
+  registrationId: registration.id,
+});
+```
+
+### 4.5.3. Data Consistency Patterns
+
+**1. Maintain Referential Integrity**
+```typescript
+// ✅ CORRECT: Ensure all references are valid
+const author = await api.functional.authors.create(connection, {
+  body: { name: "John Doe" } satisfies IAuthor.ICreate,
+});
+
+const book = await api.functional.books.create(connection, {
+  body: {
+    title: "My Book",
+    authorId: author.id,  // Valid reference
+    publisherId: publisher.id  // Ensure publisher was created earlier
+  } satisfies IBook.ICreate,
+});
+```
+
+**2. Respect Quantity and Limit Constraints**
+```typescript
+// ✅ CORRECT: Check inventory before ordering
+const product = await api.functional.products.at(connection, { id: productId });
+typia.assert(product);
+
+TestValidator.predicate(
+  "sufficient inventory exists",
+  product.inventory >= orderQuantity
+);
+
+const order = await api.functional.orders.create(connection, {
+  body: {
+    productId: product.id,
+    quantity: orderQuantity
+  } satisfies IOrder.ICreate,
+});
+```
+
+**3. Handle State Transitions Properly**
+```typescript
+// ✅ CORRECT: Follow proper workflow states
+// Create draft
+const article = await api.functional.articles.create(connection, {
+  body: {
+    title: "Draft Article",
+    content: "Initial content",
+    status: "draft"
+  } satisfies IArticle.ICreate,
+});
+
+// Review (only drafts can be reviewed)
+const reviewed = await api.functional.articles.review(connection, {
+  id: article.id,
+  body: { approved: true } satisfies IArticle.IReview,
+});
+
+// Publish (only reviewed articles can be published)
+const published = await api.functional.articles.publish(connection, {
+  id: article.id,
+});
+```
+
+### 4.5.4. Error Scenario Patterns
+
+**1. Test Logical Business Rule Violations**
+```typescript
+// ✅ CORRECT: Test business rule enforcement
+// Cannot withdraw more than account balance
+const account = await api.functional.accounts.at(connection, { id: accountId });
+typia.assert(account);
+
+await TestValidator.error(
+  "cannot withdraw more than balance",
+  async () => {
+    await api.functional.accounts.withdraw(connection, {
+      id: account.id,
+      body: {
+        amount: account.balance + 1000  // Exceeds balance
+      } satisfies IWithdrawal.ICreate,
+    });
+  },
+);
+```
+
+**2. Test Permission Boundaries**
+```typescript
+// ✅ CORRECT: Test access control
+// Regular user cannot access admin endpoints
+await api.functional.users.authenticate.login(connection, {
+  body: { email: regularUser.email, password: "password" } satisfies IUser.ILogin,
+});
+
+await TestValidator.error(
+  "regular user cannot access admin data",
+  async () => {
+    await api.functional.admin.users.index(connection);
+  },
+);
+```
+
+### 4.5.5. Best Practices Summary
+
+1. **Always follow the natural business flow**: Don't skip steps or create impossible scenarios
+2. **Respect data relationships**: Ensure parent-child, ownership, and reference relationships are valid
+3. **Consider timing and state**: Operations should happen in logical order respecting state machines
+4. **Validate prerequisites**: Check that required conditions are met before performing actions
+5. **Test both success and failure paths**: But ensure failure scenarios are logically possible
+6. **Maintain data consistency**: Don't create orphaned records or broken references
+7. **Use realistic test data**: Random data should still make business sense
+
 ## 5. Final Checklist
 
 Before submitting your generated E2E test code, verify:
@@ -1368,6 +1862,7 @@ Before submitting your generated E2E test code, verify:
 - [ ] Proper data dependencies and setup procedures
 - [ ] Edge cases and error conditions are appropriately tested
 - [ ] Only implementable functionality is included (unimplementable parts are omitted)
+- [ ] **No illogical patterns**: All test scenarios respect business rules and data relationships
 
 **Code Quality:**
 - [ ] Random data generation uses appropriate constraints and formats
@@ -1389,5 +1884,14 @@ Before submitting your generated E2E test code, verify:
 - [ ] Efficient resource usage and proper cleanup where necessary
 - [ ] Secure test data generation practices
 - [ ] No hardcoded sensitive information in test data
+
+**Logical Consistency:**
+- [ ] No authentication role mixing without proper context switching
+- [ ] No operations on deleted or non-existent resources
+- [ ] All business rule constraints are respected
+- [ ] No circular dependencies in data creation
+- [ ] Proper temporal ordering of events
+- [ ] Maintained referential integrity
+- [ ] Realistic error scenarios that could actually occur
 
 Generate your E2E test code following these guidelines to ensure comprehensive, maintainable, and reliable API testing.

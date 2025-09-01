@@ -2,7 +2,7 @@ import { IAgenticaHistoryJson } from "@agentica/core";
 import { IAutoBeTypeScriptCompileResult } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { ILlmSchema } from "@samchon/openapi";
-import { v7 } from "uuid";
+import { v4, v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../../context/AutoBeContext";
@@ -14,17 +14,15 @@ export const transformTestCorrectHistories = async <
 >(
   ctx: AutoBeContext<Model>,
   func: IAutoBeTestFunction,
-  failure: IAutoBeTypeScriptCompileResult.IFailure,
+  failures: IAutoBeTypeScriptCompileResult.IFailure[],
 ): Promise<
   Array<
     IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
   >
 > => {
-  const previous = await transformTestWriteHistories(
-    ctx,
-    func.scenario,
-    func.artifacts,
-  );
+  const previous: Array<
+    IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
+  > = await transformTestWriteHistories(ctx, func.scenario, func.artifacts);
   return [
     ...previous.slice(0, -1),
     {
@@ -33,27 +31,29 @@ export const transformTestCorrectHistories = async <
       type: "systemMessage",
       text: AutoBeSystemPromptConstant.TEST_CORRECT,
     },
-    {
-      id: v7(),
-      created_at: new Date().toISOString(),
-      type: "assistantMessage",
-      text: StringUtil.trim`
-        ${previous.at(-1)!.text}
+    previous.at(-1)!,
+    ...failures.map(
+      (f) =>
+        ({
+          id: v4(),
+          created_at: new Date().toISOString(),
+          type: "assistantMessage",
+          text: StringUtil.trim`
+            ## Generated TypeScript Code
 
-        ## Generated TypeScript Code
+            \`\`\`typescript
+            ${func.script}
+            \`\`\`
 
-        \`\`\`typescript
-        ${func.script}
-        \`\`\`
+            ## Compile Errors
 
-        ## Compile Errors
-        
-        Fix the compilation error in the provided code.
+            Fix the compliation error in the provided code.
 
-        \`\`\`json
-        ${JSON.stringify(failure.diagnostics)}
-        \`\`\`
-      `,
-    },
+            \`\`\`json
+            ${JSON.stringify(f.diagnostics)}
+            \`\`\`
+          `,
+        }) satisfies IAgenticaHistoryJson.IAssistantMessage,
+    ),
   ];
 };

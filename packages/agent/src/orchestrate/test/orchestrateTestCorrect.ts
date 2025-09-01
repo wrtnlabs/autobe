@@ -43,6 +43,7 @@ export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
               location: w.event.location,
               script: w.event.final,
             },
+            [],
             event,
             life,
           );
@@ -83,18 +84,20 @@ const compile = async <Model extends ILlmSchema.Model>(
 const predicate = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   content: IAutoBeTestFunction,
+  failures: IAutoBeTypeScriptCompileResult.IFailure[],
   event: AutoBeTestValidateEvent,
   life: number,
 ): Promise<AutoBeTestValidateEvent> => {
   if (event.result.type === "failure") ctx.dispatch(event);
   return event.result.type === "failure"
-    ? await correct(ctx, content, event, life - 1)
+    ? await correct(ctx, content, failures, event, life - 1)
     : event;
 };
 
 const correct = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   content: IAutoBeTestFunction,
+  failures: IAutoBeTypeScriptCompileResult.IFailure[],
   validate: AutoBeTestValidateEvent,
   life: number,
 ): Promise<AutoBeTestValidateEvent> => {
@@ -106,11 +109,10 @@ const correct = async <Model extends ILlmSchema.Model>(
   };
   const { tokenUsage } = await ctx.conversate({
     source: "testCorrect",
-    histories: await transformTestCorrectHistories(
-      ctx,
-      content,
+    histories: await transformTestCorrectHistories(ctx, content, [
+      ...failures,
       validate.result,
-    ),
+    ]),
     controller: createController({
       model: ctx.model,
       artifacts: content.artifacts,
@@ -146,7 +148,13 @@ const correct = async <Model extends ILlmSchema.Model>(
     script: pointer.value.final,
   };
   const newValidate: AutoBeTestValidateEvent = await compile(ctx, newContent);
-  return predicate(ctx, newContent, newValidate, life);
+  return predicate(
+    ctx,
+    newContent,
+    [...failures, validate.result],
+    newValidate,
+    life,
+  );
 };
 
 const createController = <Model extends ILlmSchema.Model>(props: {
