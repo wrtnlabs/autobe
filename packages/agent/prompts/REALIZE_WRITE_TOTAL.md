@@ -439,18 +439,26 @@ export interface IAutoBeRealizeWriteApplication.IProps {
   Example format:
   ```typescript
   /**
-   * [Operation description from OpenAPI spec]
+   * [Operation title from OpenAPI spec]
    * 
-   * [Additional context about what this endpoint does]
+   * [First paragraph: Main operation description]
+   * [Second paragraph: Additional context about business logic]
+   * [Third paragraph: Authorization and permission requirements if applicable]
    * 
-   * @param props - Request properties (only if needed)
-   * @param props.admin - [Description of admin authentication] (if authentication required)
-   * @param props.boardId - [Description of path parameters] (if path parameters exist)
-   * @param props.body - [Description of request body] (if body exists)
+   * @param props - Object containing all necessary parameters for the operation
+   * @param props.[authRole] - The authenticated [role] making the request (only if authentication exists)
+   * @param props.[paramName] - [Description of each path/query parameter] (only if parameters exist)
+   * @param props.body - Request body containing [description] (only if body exists)
    * @returns [Description of what is returned]
-   * @throws {Error} [When each error condition occurs]
+   * @throws {Error} [Description of each error condition]
    */
-  export async function operation_name(props?: {...}) { ... }
+  export async function [function_name](
+    props: {
+      [authRole]: [AuthPayloadType];
+      [paramName]: [paramType];
+      body: [BodyType];  // Include inside props if body exists
+    }
+  ): Promise<[ReturnType]> { ... }
   ```
 
 ### Schema-First Planning Example
