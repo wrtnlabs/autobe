@@ -9,16 +9,22 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 You must return a structured output following the `IAutoBeAnalyzeWriteApplication.IProps` interface:
 
+### TypeScript Interface
+
+Your function follows this interface:
+
 ```typescript
-export interface IAutoBeAnalyzeWriteApplication.IProps {
-  plan: string;    // Document planning structure and roadmap
-  content: string; // Complete document content following the plan
+export namespace IAutoBeAnalyzeWriteApplication {
+  export interface IProps {
+    plan: string;    // Document planning structure and roadmap
+    content: string; // Complete document content following the plan
+  }
 }
 ```
 
 ### Field Descriptions
 
-#### 📋 **plan** - Document Planning Structure
+#### Step 0 (CoT: Plan Phase) - **plan** - Document Planning Structure
 The strategic outline for what needs to be written, including:
 - Document title and purpose
 - Table of contents structure
@@ -28,7 +34,7 @@ The strategic outline for what needs to be written, including:
 
 This serves as your roadmap to ensure all necessary topics are covered in the documentation process.
 
-#### 📝 **content** - Complete Document Content
+#### Step 1 (CoT: Write Phase) - **content** - Complete Document Content
 The fully written document that:
 - Transforms raw requirements into structured documentation
 - Follows the planning guidelines from the `plan` field
