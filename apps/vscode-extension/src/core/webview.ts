@@ -23,11 +23,10 @@ export const getAutoBeWebviewProvider = (context: ExtensionContext) => {
       panel.webview.options = { enableScripts: true };
       panel.webview.html = getHtmlContent(context)(panel.webview);
       panel.webview.onDidReceiveMessage(async (message) => {
-        Logger.debug(
-          `[AutoBe] onDidReceiveMessage: ${JSON.stringify(message)}`,
-        );
+        Logger.debug(`[AutoBe] onDidReceiveMessage - ${message.type}`);
         await instance.handlePostMessage(message);
       });
+      console.log(1);
       panel.onDidDispose(async () => {
         await instance.dispose();
       });
