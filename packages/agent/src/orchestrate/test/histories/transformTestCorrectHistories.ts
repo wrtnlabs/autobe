@@ -47,7 +47,7 @@ export const transformTestCorrectHistories = async <
 
             ## Compile Errors
 
-            Fix the compliation error in the provided code.
+            Fix the compilation error in the provided code.
 
             \`\`\`json
             ${JSON.stringify(f.diagnostics)}
