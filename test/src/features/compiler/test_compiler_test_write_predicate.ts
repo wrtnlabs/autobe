@@ -89,20 +89,21 @@ export const test_compiler_test_write_predicate = async (
     prettier: false,
   });
 
-  TestValidator.predicate("equal")(() =>
-    result.includes(`TestValidator.equals("equal_to")(true)(true)`),
+  TestValidator.predicate("equal", () =>
+    result.includes(`TestValidator.equals("equal_to", true, true)`),
   );
-  TestValidator.predicate("notEqual")(() =>
+  TestValidator.predicate("notEqual", () =>
     result.includes(
-      `TestValidator.error("not_equal_to")(() => TestValidator.equals("not_equal_to")(10)(20))`,
+      `TestValidator.error("not_equal_to", () => TestValidator.equals("not_equal_to", 10, 20))`,
     ),
   );
-  TestValidator.predicate("conditional")(() =>
-    result.includes(`TestValidator.predicate("conditional")(true)`),
+  TestValidator.predicate("conditional", () =>
+    result.includes(`TestValidator.predicate("conditional", true)`),
   );
-  TestValidator.predicate("error")(
+  TestValidator.predicate(
+    "error",
     () =>
-      result.includes(`TestValidator.error("error")(async () => {`) &&
+      result.includes(`TestValidator.error("error", async () => {`) &&
       result.includes(`throw new Error("intended error")`),
   );
 };

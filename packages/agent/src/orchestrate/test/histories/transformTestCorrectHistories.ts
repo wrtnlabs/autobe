@@ -1,47 +1,59 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
 import { IAutoBeTypeScriptCompileResult } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
+import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
+import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeTestFunction } from "../structures/IAutoBeTestFunction";
 import { transformTestWriteHistories } from "./transformTestWriteHistories";
 
-export const transformTestCorrectHistories = (
+export const transformTestCorrectHistories = async <
+  Model extends ILlmSchema.Model,
+>(
+  ctx: AutoBeContext<Model>,
   func: IAutoBeTestFunction,
   failure: IAutoBeTypeScriptCompileResult.IFailure,
-): Array<
-  IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
-> => [
-  ...transformTestWriteHistories(func.scenario, func.artifacts),
-  {
-    id: v7(),
-    created_at: new Date().toISOString(),
-    type: "assistantMessage",
-    text: StringUtil.trim`
-      ## Generated TypeScript Code
-      \`\`\`typescript
-      ${func.script}
-      \`\`\`
+): Promise<
+  Array<
+    IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
+  >
+> => {
+  const previous = await transformTestWriteHistories(
+    ctx,
+    func.scenario,
+    func.artifacts,
+  );
+  return [
+    ...previous.slice(0, -1),
+    {
+      id: v7(),
+      created_at: new Date().toISOString(),
+      type: "systemMessage",
+      text: AutoBeSystemPromptConstant.TEST_CORRECT,
+    },
+    {
+      id: v7(),
+      created_at: new Date().toISOString(),
+      type: "assistantMessage",
+      text: StringUtil.trim`
+        ${previous.at(-1)!.text}
 
-      ## Compile Errors
-      Fix the compilation error in the provided code.
+        ## Generated TypeScript Code
 
-      \`\`\`json
-      ${JSON.stringify(failure.diagnostics)}
-      \`\`\`
-    `,
-  },
-  {
-    id: v7(),
-    created_at: new Date().toISOString(),
-    type: "systemMessage",
-    text: AutoBeSystemPromptConstant.TEST_CORRECT.replace(
-      "{{API_DTO_SCHEMAS}}",
-      transformTestWriteHistories.structures(func.artifacts),
-    ).replace(
-      "{{API_SDK_FUNCTIONS}}",
-      transformTestWriteHistories.functional(func.artifacts),
-    ),
-  },
-];
+        \`\`\`typescript
+        ${func.script}
+        \`\`\`
+
+        ## Compile Errors
+        
+        Fix the compilation error in the provided code.
+
+        \`\`\`json
+        ${JSON.stringify(failure.diagnostics)}
+        \`\`\`
+      `,
+    },
+  ];
+};

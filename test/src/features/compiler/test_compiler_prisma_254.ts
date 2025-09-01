@@ -34,7 +34,7 @@ export const test_compiler_prisma_254 = async (
         root: `${TestGlobal.ROOT}/results/compiler/prisma/254/${dbms}`,
         files: files,
       });
-    TestValidator.equals(dbms)(result.type)("success");
+    TestValidator.equals(dbms, result.type, "success");
   };
   await write("postgres");
   await write("sqlite");

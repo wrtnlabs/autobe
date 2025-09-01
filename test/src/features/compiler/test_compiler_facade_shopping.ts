@@ -30,6 +30,6 @@ export const test_compiler_facade_shopping = async (
   if (result.type !== "success") {
     console.log(result);
   }
-  TestValidator.equals("result")(result.type)("success");
+  TestValidator.equals("result", result.type, "success");
   typia.assertEquals(result);
 };

@@ -1,6 +1,6 @@
 {
   "name": "@autobe/utils",
-  "version": "0.20.0",
+  "version": "0.21.0",
   "description": "AI backend server code generator",
   "main": "src/index.ts",
   "scripts": {

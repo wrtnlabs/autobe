@@ -3,6 +3,7 @@ import {
   IAutoBePlaygroundVendor,
 } from "@autobe/interface";
 import pApi from "@autobe/playground-api";
+import { AutoBeListener } from "@autobe/ui";
 import {
   Button,
   Divider,
@@ -17,7 +18,6 @@ import {
 import { ILlmSchema } from "@samchon/openapi";
 import { useEffect, useState } from "react";
 
-import { AutoBePlaygroundListener } from "../../structures/AutoBePlaygroundListener";
 import { AutoBePlaygroundConfigureValidator } from "../../utils/AutoBePlaygroundConfigureValidator";
 import { AutoBePlaygroundChatMovie } from "../chat/AutoBePlaygroundChatMovie";
 import { AutoBePlaygroundConfigureVendorMovie } from "./AutoBePlaygroundConfigureVendorMovie";
@@ -54,7 +54,7 @@ export function AutoBePlaygroundConfigureMovie(
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         locale,
       };
-      const listener: AutoBePlaygroundListener = new AutoBePlaygroundListener();
+      const listener: AutoBeListener = new AutoBeListener();
       const { driver: service } = await pApi.functional.autobe.playground.start(
         {
           host: serverURL,

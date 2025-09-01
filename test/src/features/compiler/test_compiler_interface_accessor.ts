@@ -12,9 +12,9 @@ export const test_compiler_interface_accessor = async (
   const migrate: IHttpMigrateApplication = HttpMigration.application(
     await compiler.interface.transform(DOCUMENT),
   );
-  TestValidator.equals("accessor")(
+  TestValidator.equals(
+    "accessor",
     migrate.routes.map((r) => r.accessor.join(".")).sort(),
-  )(
     [
       "shopping.customer.authenticate.join",
       "shopping.customer.authenticate.token.refresh",

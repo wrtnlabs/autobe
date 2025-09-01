@@ -32,6 +32,18 @@ export namespace IAutoBeTestScenarioApplication {
      *
      * Each scenario represents a specific test case for the same `path` and
      * `method`.
+     *
+     * IMPORTANT: Each scenario must be actually implementable. A scenario's
+     * implementability is determined by the existence of ALL APIs (endpoints)
+     * required to test it. This includes not only the primary endpoint being
+     * tested, but also ALL dependency endpoints needed for setup,
+     * authentication, and data preparation. If even one required dependency API
+     * is missing from the available operations, the scenario cannot be
+     * implemented and should not be generated.
+     *
+     * Example: A "test banned user login" scenario requires both a login API
+     * AND a ban user API. If the ban API doesn't exist, this scenario is not
+     * implementable regardless of database schema fields.
      */
     scenarios: IScenario[] & tags.MinItems<1>;
   }
@@ -42,6 +54,11 @@ export namespace IAutoBeTestScenarioApplication {
    * This interface defines a structured, user-centric test draft that includes
    * a descriptive function name, a detailed scenario draft, and logical
    * dependencies on other endpoints required for context or setup.
+   *
+   * CRITICAL: All referenced endpoints MUST exist in the provided API
+   * operations. Do NOT create scenarios for non-existent APIs, even if database
+   * schema fields suggest their existence. Test scenarios must be implementable
+   * with available APIs only.
    */
   export interface IScenario {
     /**
@@ -120,12 +137,22 @@ export namespace IAutoBeTestScenarioApplication {
      * authentication, resource creation, or data setup, that are relevant to
      * the test. This list is not a strict execution order — if ordering is
      * important, it must be described explicitly in the `purpose`.
+     *
+     * WARNING: Every endpoint referenced here MUST exist in the provided API
+     * operations. Do NOT reference endpoints that are not explicitly available,
+     * even if they seem logically necessary based on database schema or
+     * business logic.
      */
     dependencies: IDependencies[];
   }
 
   export interface IDependencies {
-    /** Target API endpoint that this scenario depends on. */
+    /**
+     * Target API endpoint that this scenario depends on.
+     *
+     * This endpoint MUST exist in the available API operations list.
+     * Non-existent endpoints will cause test implementation failures.
+     */
     endpoint: AutoBeOpenApi.IEndpoint;
 
     /**

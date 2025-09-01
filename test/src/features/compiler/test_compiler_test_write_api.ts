@@ -40,17 +40,17 @@ export async function test_compiler_test_write_api(
     prettier: false,
   });
 
-  TestValidator.predicate("import")(() =>
+  TestValidator.predicate("import", () =>
     result.includes(
       `import { IPageIBbsArticle } from "@ORGANIZATION/PROJECT-api/lib/structures/IPageIBbsArticle"`,
     ),
   );
-  TestValidator.predicate("call")(() =>
+  TestValidator.predicate("call", () =>
     result.includes(
       `const page: IPageIBbsArticle.ISummary = await api.functional.bbs.articles.index(connection, {`,
     ),
   );
-  TestValidator.predicate("assert")(() =>
+  TestValidator.predicate("assert", () =>
     result.includes(`typia.assert(page)`),
   );
 }

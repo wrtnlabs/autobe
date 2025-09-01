@@ -1,6 +1,7 @@
 import {
   IAgenticaVendor,
   IMicroAgenticaHistoryJson,
+  MicroAgentica,
   MicroAgenticaHistory,
 } from "@agentica/core";
 import {
@@ -49,6 +50,7 @@ export interface AutoBeContext<Model extends ILlmSchema.Model> {
   // factories
   conversate(
     props: AutoBeContext.IConversate<Model>,
+    closure?: (agent: MicroAgentica<Model>) => void,
   ): Promise<AutoBeContext.IResult<Model>>;
 }
 export namespace AutoBeContext {

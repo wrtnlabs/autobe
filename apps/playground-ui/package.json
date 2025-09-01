@@ -1,7 +1,7 @@
 {
   "type": "module",
   "name": "@autobe/playground-ui",
-  "version": "0.20.0",
+  "version": "0.21.0",
   "description": "AutoBE WebSocket Chat Application",
   "main": "./lib/index.mjs",
   "typings": "./lib/index.d.ts",

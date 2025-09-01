@@ -32,5 +32,5 @@ export const test_compiler_prisma_unique = async (): Promise<void> => {
       `${TestGlobal.ROOT}/results/compiler/prisma/unique/reason.log`,
       compiled.reason,
     );
-  TestValidator.equals("compile result")(compiled.type)("success");
+  TestValidator.equals("compile result", compiled.type, "success");
 };

@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@autobe/test",
-  "version": "0.20.0",
+  "version": "0.21.0",
   "description": "AutoBE Test Program",
   "main": "src/index.ts",
   "scripts": {
@@ -27,8 +27,6 @@
     "@nestia/fetcher": "catalog:samchon",
     "@nestia/migrate": "catalog:samchon",
     "@samchon/openapi": "catalog:samchon",
-    "@typescript-eslint/eslint-plugin": "^8.40.0",
-    "@typescript-eslint/parser": "^8.40.0",
     "dotenv": "^16.5.0",
     "dotenv-expand": "^12.0.2",
     "openai": "catalog:libs",

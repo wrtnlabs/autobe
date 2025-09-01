@@ -227,6 +227,59 @@ This example demonstrates the correct structure for grouping multiple test scena
 * **Dependency Purpose Explanation**: Clearly explain why each dependency is necessary, with special attention to authentication sequence and role requirements
 * **Business Justification**: Explain the business value and importance of each test scenario
 
+### 4.6. Implementation Feasibility Principle
+
+**🚨 CRITICAL: Only Test What Exists - API Availability Verification**
+
+This principle ensures that all generated test scenarios are **actually implementable** with the provided API endpoints. The IAutoBeTestScenarioApplication.IScenario structure requires that ALL referenced endpoints must exist.
+
+**MANDATORY VERIFICATION REQUIREMENTS:**
+
+1. **Primary Endpoint Verification**: The `endpoint` in IScenarioGroup MUST exist in the provided operations array
+2. **Dependencies Verification**: ALL endpoints in `dependencies[]` MUST exist in either include or exclude lists
+3. **No Schema-Based Assumptions**: Database schema fields (e.g., `is_banned`, `deleted_at`) do NOT guarantee corresponding API availability
+
+**ABSOLUTE PROHIBITIONS:**
+- ❌ **NEVER create scenarios for non-existent APIs** regardless of schema fields
+- ❌ **NEVER reference unavailable endpoints in dependencies** 
+- ❌ **NEVER infer API functionality from Prisma schema alone**
+- ❌ **NEVER create "hypothetical" test scenarios** for APIs that might exist
+
+**Pre-Scenario Generation Checklist:**
+```typescript
+// For EVERY scenario you generate, verify:
+1. endpoint exists in operations[] ✓
+2. ALL dependencies[].endpoint exist in operations[] ✓
+3. NO references to non-provided APIs ✓
+```
+
+**Common Pitfall Examples:**
+```typescript
+// ❌ FORBIDDEN: Ban functionality exists in schema but NOT in API
+{
+  functionName: "test_api_user_banned_login_failure",
+  dependencies: [
+    {
+      endpoint: { method: "post", path: "/admin/users/{userId}/ban" }, // NO SUCH API!
+      purpose: "Ban user to test login restriction"
+    }
+  ]
+}
+
+// ✅ CORRECT: Only use actually provided APIs
+{
+  functionName: "test_api_user_login_invalid_password",
+  dependencies: [
+    {
+      endpoint: { method: "post", path: "/auth/users/join" }, // EXISTS in operations
+      purpose: "Create user account for login testing"
+    }
+  ]
+}
+```
+
+**Rule**: If an API endpoint is not explicitly listed in the provided operations array, it CANNOT be used in any scenario, regardless of database schema structure or business logic assumptions.
+
 ## 5. Detailed Scenario Generation Guidelines
 
 ### 5.1. API Analysis Methodology
@@ -359,6 +412,10 @@ By following these guidelines, generated test scenarios will be comprehensive, a
 
 ### 8.1. Essential Element Verification
 
+* [ ] **API Existence Verification**: Have you verified that ALL referenced endpoints (both primary and dependencies) exist in the provided operations array?
+* [ ] **No Schema Inference**: Have you avoided creating scenarios based on database schema fields without corresponding APIs?
+* [ ] **Dependency Availability**: Have you confirmed every dependency endpoint is available in the include/exclude lists?
+* [ ] **Implementation Feasibility**: Can every scenario be actually implemented with the provided APIs only?
 * [ ] Are all included endpoints covered with appropriate scenarios?
 * [ ] Do scenarios reflect realistic business workflows and user journeys?
 * [ ] Are function names descriptive and follow the business feature-centric naming convention?

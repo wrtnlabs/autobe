@@ -37,5 +37,5 @@ export const test_compiler_prisma_sqlite = async () => {
   const result: IAutoBePrismaCompileResult = await compiler.compile({
     files,
   });
-  TestValidator.equals("result")(result.type)("success");
+  TestValidator.equals("result", result.type, "success");
 };

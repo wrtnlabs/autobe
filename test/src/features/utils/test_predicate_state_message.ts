@@ -17,7 +17,7 @@ export const test_predicate_state_message = (): void => {
     const message: string | null = predicateStateMessage(state, y);
     const expected: boolean = y === "analyze";
     const actual: boolean = message === null;
-    TestValidator.equals(`null -> ${y}`)(expected)(actual);
+    TestValidator.equals(`null -> ${y}`, expected, actual);
   });
 
   typia.misc.literals<Step>().forEach((x, i, array) => {
@@ -33,7 +33,7 @@ export const test_predicate_state_message = (): void => {
       const message: string | null = predicateStateMessage(state, y);
       const expected: boolean = i >= j - 1;
       const actual: boolean = message === null;
-      TestValidator.equals(`${x} -> ${y}`)(expected)(actual);
+      TestValidator.equals(`${x} -> ${y}`, expected, actual);
     });
   });
 };

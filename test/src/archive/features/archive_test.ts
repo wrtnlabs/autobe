@@ -83,5 +83,7 @@ export const archive_test = async (
         snapshots.map((s) => s.event).filter((e) => e.type === "testWrite"),
       ),
     });
-  TestValidator.equals("result")(result.compiled.type)("success");
+  if (result.compiled.type === "failure")
+    console.log(result.compiled.diagnostics);
+  TestValidator.equals("result", result.compiled.type, "success");
 };

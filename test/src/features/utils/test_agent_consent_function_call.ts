@@ -25,10 +25,14 @@ export const test_agent_consent_function_call = async () => {
       },
       assistantMessage: message,
     });
-  TestValidator.equals("consent")(true)(
+  TestValidator.equals(
+    "consent",
+    true,
     !!(await consent("Do you want to proceed?")),
   );
-  TestValidator.equals("notApplicable")(false)(
+  TestValidator.equals(
+    "notApplicable",
+    false,
     !!(await consent(
       "Not enough information to compose parameters for the function calling.",
     )),

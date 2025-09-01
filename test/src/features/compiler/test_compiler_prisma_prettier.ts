@@ -20,7 +20,8 @@ export const test_compiler_prisma_prettier = async (
   });
 
   for (const [key, value] of Object.entries(schemas))
-    TestValidator.predicate(key)(
+    TestValidator.predicate(
+      key,
       value
         .split("\n")
         .every((line) => line.startsWith("///") === false || line.length <= 80),

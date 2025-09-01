@@ -361,7 +361,6 @@ export interface RealizeCoderOutput {
   prisma_schemas: string;
   draft_without_date_type: string;
   review: string;
-  withCompilerFeedback: string;
   implementationCode: string;
 }
 ```
@@ -417,7 +416,7 @@ export interface RealizeCoderOutput {
   
   **Should validate**: Field usage against schema, type safety, and adherence to conventions.
 
-* **withCompilerFeedback?** (required):
+* **withCompilerFeedback?** (optional):
   If the draft caused TypeScript errors or warnings, include a corrected version of the code here with fixes and a brief explanation of what was changed.
   
   **Common fixes**: Field existence errors, type mismatches, nullable field handling.

@@ -2,6 +2,7 @@ export * from "./events";
 export { default as AutoBeAssistantMessageMovie } from "./AutoBeAssistantMessageMovie";
 export { default as AutoBeUserMessageMovie } from "./AutoBeUserMessageMovie";
 export { default as ChatBubble } from "./common/ChatBubble";
+export { default as AutoBeChatMain } from "./AutoBeChatMain";
 export type {
   IChatBubbleProps,
   IContentRendererProps,
@@ -9,3 +10,4 @@ export type {
 export { AutoBeFileUploader } from "./utils";
 export * from "./upload";
 export * from "./banner";
+export * from "./structure";

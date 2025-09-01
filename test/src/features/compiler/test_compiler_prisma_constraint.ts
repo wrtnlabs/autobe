@@ -25,5 +25,5 @@ export const test_compiler_prisma_constraint = async (): Promise<void> => {
 
   const validate: IAutoBePrismaValidation =
     await compiler.validate(application);
-  TestValidator.equals("gin index duplicated")(validate.success)(false);
+  TestValidator.equals("gin index duplicated", validate.success, false);
 };

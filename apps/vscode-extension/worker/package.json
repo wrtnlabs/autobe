@@ -1,6 +1,6 @@
 {
   "name": "@autobe/vscode-extension/worker",
-  "version": "0.20.0",
+  "version": "0.21.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -23,6 +23,6 @@
     "@ryoppippi/unplugin-typia": "^2.6.5",
     "ts-patch": "^3.3.0",
     "tsdown": "^0.14.0",
-    "typia": "^9.7.1"
+    "typia": "^9.7.2"
   }
 }

@@ -9,8 +9,10 @@ import {
   AutoBeEventMovie,
   AutoBeProgressEventMovie,
 } from "@autobe/ui";
-import { forwardRef } from "react";
+import { IAutoBeAgentInformationProps } from "node_modules/@autobe/ui/src/banner/AutoBeAgentInformation";
+import { forwardRef, useEffect, useState } from "react";
 
+import useVsCode from "../../hooks/use-vscode";
 import AutoBeHistoryMovie from "./histories/AutoBeHistoryMovie";
 
 interface IChatMovieProps {
@@ -36,6 +38,30 @@ export const isAutoBeProgressEventBase = (
 
 const ChatMovie = forwardRef<HTMLDivElement, IChatMovieProps>((props, ref) => {
   const { histories, events } = props;
+  const [header, setHeader] = useState<
+    IAutoBeAgentInformationProps["header"] | null
+  >(null);
+  const vscode = useVsCode();
+
+  useEffect(() => {
+    vscode.onMessage((message) => {
+      if (message.type === "res_get_config") {
+        setHeader({
+          model: "chatgpt",
+          locale: "ko-KR",
+          vendor: {
+            model: message.data.model ?? "gpt-4.1",
+            semaphore: 16,
+          },
+          timezone: "Asia/Seoul",
+        });
+      }
+    });
+    vscode.postMessage({
+      type: "req_get_config",
+    });
+  }, []);
+
   const compactEvents = events.filter((v, idx) => {
     if (idx === events.length - 1) {
       return true;
@@ -58,7 +84,9 @@ const ChatMovie = forwardRef<HTMLDivElement, IChatMovieProps>((props, ref) => {
 
   return (
     <div className="flex flex-col h-full w-full">
-      {props.tokenUsage && <AutoBeChatBanner tokenUsage={props.tokenUsage} />}
+      {props.tokenUsage && header && (
+        <AutoBeChatBanner header={header} tokenUsage={props.tokenUsage} />
+      )}
 
       {/* 뒤로 가기 버튼 */}
       {props.onGoBack && (

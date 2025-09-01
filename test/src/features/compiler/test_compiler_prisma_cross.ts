@@ -11,5 +11,5 @@ export const test_compiler_prisma_cross = async (): Promise<void> => {
     typia.assert<AutoBePrisma.IApplication>(json);
 
   const result: IAutoBePrismaValidation = await compiler.validate(application);
-  TestValidator.equals("result")(result.success)(false);
+  TestValidator.equals("result", result.success, false);
 };

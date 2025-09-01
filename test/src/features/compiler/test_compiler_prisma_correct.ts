@@ -9,6 +9,6 @@ export const test_compiler_prisma_correct = async (): Promise<void> => {
     await new AutoBePrismaCompiler().compile({
       files: await RepositoryFileSystem.prisma("samchon", "shopping-backend"),
     });
-  TestValidator.equals("result")(result.type)("success");
+  TestValidator.equals("result", result.type, "success");
   typia.assertEquals(result);
 };

@@ -66,7 +66,7 @@ export const test_compiler_test_write_accessor = async (
     },
     prettier: false,
   });
-  TestValidator.predicate("identifier")(() => result.includes("something"));
-  TestValidator.predicate("property")(() => result.includes("a.b?.c"));
-  TestValidator.predicate("element")(() => result.includes(`a[0]?.["x-y-z"]`));
+  TestValidator.predicate("identifier", () => result.includes("something"));
+  TestValidator.predicate("property", () => result.includes("a.b?.c"));
+  TestValidator.predicate("element", () => result.includes(`a[0]?.["x-y-z"]`));
 };

@@ -19,5 +19,5 @@ const process = async (name: string, expected: "success" | "failure") => {
       `,
     },
   });
-  TestValidator.equals("result")(result.type)(expected);
+  TestValidator.equals("result", result.type, expected);
 };

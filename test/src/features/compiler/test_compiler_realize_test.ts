@@ -102,6 +102,6 @@ export const test_compiler_realize_test = async (
     simultaneous: 1,
   });
   typia.assert(result);
-  TestValidator.equals("operations.length")(!!operations.length)(true);
-  TestValidator.equals("reset.value")(reset.value)(true);
+  TestValidator.equals("operations.length", !!operations.length, true);
+  TestValidator.equals("reset.value", reset.value, true);
 };

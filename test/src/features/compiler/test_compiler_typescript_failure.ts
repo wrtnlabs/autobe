@@ -34,7 +34,8 @@ export const test_compiler_typescript_failure = async (): Promise<void> => {
       "src/error.ts": "asdfasdfasfewfds;",
     },
   });
-  TestValidator.predicate("result")(
+  TestValidator.predicate(
+    "result",
     () =>
       result.type === "failure" &&
       result.diagnostics.length === 1 &&

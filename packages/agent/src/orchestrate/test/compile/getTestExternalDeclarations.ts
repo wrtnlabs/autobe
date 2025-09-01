@@ -19,6 +19,8 @@ const singleton = new Singleton(async (compiler: IAutoBeTestCompiler) => {
     return { [location]: content };
   };
   return {
+    ...external("node_modules/@nestia/e2e/lib/ArrayUtil.d.ts"),
+    ...external("node_modules/@nestia/e2e/lib/RandomGenerator.d.ts"),
     ...external("node_modules/@nestia/e2e/lib/TestValidator.d.ts"),
     ...external("node_modules/@nestia/fetcher/lib/IConnection.d.ts"),
   } satisfies Record<string, string>;

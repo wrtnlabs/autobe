@@ -1,6 +1,5 @@
 import { AutoBeTest } from "@autobe/interface";
 import ts from "typescript";
-import { ExpressionFactory } from "typia/lib/factories/ExpressionFactory";
 
 import { IAutoBeTestProgrammerContext } from "./IAutoBeTestProgrammerContext";
 import { writeTestExpression } from "./writeTestExpression";
@@ -10,8 +9,8 @@ export namespace AutoBeTestPredicateProgrammer {
     ctx: IAutoBeTestProgrammerContext,
     expression: AutoBeTest.IEqualPredicate,
   ): ts.CallExpression =>
-    ExpressionFactory.currying({
-      function: ts.factory.createPropertyAccessExpression(
+    ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(
         ts.factory.createIdentifier(
           ctx.importer.external({
             type: "instance",
@@ -21,19 +20,20 @@ export namespace AutoBeTestPredicateProgrammer {
         ),
         "equals",
       ),
-      arguments: [
+      undefined,
+      [
         ts.factory.createStringLiteral(expression.title),
         writeTestExpression(ctx, expression.x),
         writeTestExpression(ctx, expression.y),
       ],
-    });
+    );
 
   export const notEqualPredicate = (
     ctx: IAutoBeTestProgrammerContext,
     expression: AutoBeTest.INotEqualPredicate,
   ): ts.CallExpression =>
-    ExpressionFactory.currying({
-      function: ts.factory.createPropertyAccessExpression(
+    ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(
         ts.factory.createIdentifier(
           ctx.importer.external({
             type: "instance",
@@ -43,7 +43,8 @@ export namespace AutoBeTestPredicateProgrammer {
         ),
         "error",
       ),
-      arguments: [
+      undefined,
+      [
         ts.factory.createStringLiteral(expression.title),
         ts.factory.createArrowFunction(
           undefined,
@@ -59,14 +60,14 @@ export namespace AutoBeTestPredicateProgrammer {
           }),
         ),
       ],
-    });
+    );
 
   export const conditionalPredicate = (
     ctx: IAutoBeTestProgrammerContext,
     expression: AutoBeTest.IConditionalPredicate,
   ): ts.CallExpression =>
-    ExpressionFactory.currying({
-      function: ts.factory.createPropertyAccessExpression(
+    ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(
         ts.factory.createIdentifier(
           ctx.importer.external({
             type: "instance",
@@ -76,18 +77,19 @@ export namespace AutoBeTestPredicateProgrammer {
         ),
         "predicate",
       ),
-      arguments: [
+      undefined,
+      [
         ts.factory.createStringLiteral(expression.title),
         writeTestExpression(ctx, expression.expression),
       ],
-    });
+    );
 
   export const errorPredicate = (
     ctx: IAutoBeTestProgrammerContext,
     expression: AutoBeTest.IErrorPredicate,
   ): ts.CallExpression =>
-    ExpressionFactory.currying({
-      function: ts.factory.createPropertyAccessExpression(
+    ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(
         ts.factory.createIdentifier(
           ctx.importer.external({
             type: "instance",
@@ -97,18 +99,19 @@ export namespace AutoBeTestPredicateProgrammer {
         ),
         "error",
       ),
-      arguments: [
+      undefined,
+      [
         ts.factory.createStringLiteral(expression.title),
         writeTestExpression(ctx, expression.function),
       ],
-    });
+    );
 
   // export const httpErrorPredicate = (
   //   ctx: IAutoBeTestProgrammerContext,
   //   expression: AutoBeTest.IHttpErrorPredicate,
   // ): ts.CallExpression =>
-  //   ExpressionFactory.currying({
-  //     function: ts.factory.createPropertyAccessExpression(
+  //   ts.factory.createCallExpression(
+  //     ts.factory.createPropertyAccessExpression(
   //       ts.factory.createIdentifier(
   //         ctx.importer.external({
   //           type: "instance",
@@ -118,10 +121,11 @@ export namespace AutoBeTestPredicateProgrammer {
   //       ),
   //       "httpError",
   //     ),
-  //     arguments: [
+  //     undefined,
+  //     [
   //       ts.factory.createStringLiteral(expression.title),
   //       ts.factory.createNumericLiteral(expression.status),
   //       writeTestExpression(ctx, expression.function),
   //     ],
-  //   });
+  //   );
 }
