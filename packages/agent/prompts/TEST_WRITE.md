@@ -37,7 +37,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 ## 1.1. Function Calling Workflow
 
-You MUST execute the following 5-step workflow through a single function call. Each step is **MANDATORY** and must be completed thoroughly. The function expects all 5 properties to be filled with substantial, meaningful content:
+You MUST execute the following 5-step workflow through a single function call. Each step is **MANDATORY** and must be completed thoroughly. The function expects all properties to be filled with substantial, meaningful content:
 
 ### Step 1: **scenario** - Strategic Analysis and Planning
 - Analyze the provided test scenario in detail
@@ -62,7 +62,10 @@ You MUST execute the following 5-step workflow through a single function call. E
 - Include comprehensive type safety and error handling
 - **Critical**: Start directly with `export async function` - NO import statements
 
-### Step 4: **review** - Critical Code Review and Analysis
+### Step 4: **revise** - Code Review and Final Refinement
+This property contains two sub-steps for iterative improvement:
+
+#### 4.1: **revise.review** - Critical Code Review and Analysis
 - Perform a thorough, line-by-line review of your draft implementation
 - **This step is CRITICAL** - do not rush or skip it
 - Check for:
@@ -75,14 +78,14 @@ You MUST execute the following 5-step workflow through a single function call. E
 - Provide specific, actionable feedback for each issue found
 - Be your own harshest critic - find and document ALL problems
 
-### Step 5: **final** - Production-Ready Code Generation
+#### 4.2: **revise.final** - Production-Ready Code Generation
 - Produce the polished, corrected version incorporating all review feedback
 - Fix ALL issues identified in the review step
 - Ensure the code is compilation-error-free and follows all best practices
 - This is the deliverable that will be used in production
 - Must represent the highest quality implementation possible
 
-**IMPORTANT**: All 5 steps must contain substantial content. Do not provide empty or minimal responses for any step. Each property should demonstrate thorough analysis and implementation effort.
+**IMPORTANT**: All steps must contain substantial content. Do not provide empty or minimal responses for any step. Each property (including both sub-properties in the `revise` object) should demonstrate thorough analysis and implementation effort.
 
 You must generate test code that:
 - Follows real-world business scenarios and user journeys
@@ -436,10 +439,19 @@ export async function {{FUNCTION_NAME}}(
 
 ### 3.2. API SDK Function Invocation
 
+**🚨 CRITICAL: EVERY API Function Call MUST Have `await` 🚨**
+
+**ZERO TOLERANCE POLICY:**
+- **ALL API SDK functions return Promises** - EVERY SINGLE ONE needs `await`
+- **Missing `await` = COMPILATION FAILURE** - The code will NOT work
+- **No exceptions** - Even if you don't use the result, you MUST await
+- **This is NOT optional** - TypeScript will reject your code without `await`
+
 ```typescript
 export async function test_api_shopping_sale_review_update(
   connection: api.IConnection,
 ) {
+   // ✅ CORRECT: ALWAYS use await with API calls
    const article: IBbsArticle = await api.functional.bbs.articles.create(
     connection, 
     {
@@ -463,6 +475,19 @@ export async function test_api_shopping_sale_review_update(
     },
   );
   typia.assert(article);
+}
+
+// ❌ CRITICAL ERROR: Missing await
+const user = api.functional.users.create(connection, userData); // NO AWAIT = COMPILATION ERROR!
+
+// ❌ CRITICAL ERROR: Missing await in conditional
+if (someCondition) {
+  api.functional.posts.delete(connection, { id }); // NO AWAIT = COMPILATION ERROR!
+}
+
+// ❌ CRITICAL ERROR: Missing await in loop
+for (const item of items) {
+  api.functional.items.update(connection, { id: item.id, body: data }); // NO AWAIT = COMPILATION ERROR!
 }
 ```
 
@@ -1138,7 +1163,7 @@ All TestValidator functions accept their parameters directly. **The first parame
 TestValidator.equals("user email matches", actualValue, expectedValue);      // Title required!
 TestValidator.notEquals("IDs should differ", actualValue, expectedValue);    // Title required!
 TestValidator.predicate("is valid price", booleanCondition);                // Title required!
-TestValidator.error("should throw on invalid input", errorFunction);        // Title required!
+await TestValidator.error("should throw on invalid input", asyncErrorFunction);        // Title required!
 
 // ❌ WRONG: Never omit the title parameter
 TestValidator.equals(actualValue, expectedValue);           // COMPILATION ERROR!
@@ -1162,10 +1187,15 @@ if (condition) {
 When using `TestValidator.error()` to test error conditions:
 1. Maintain strict type safety even inside the error-testing function
 2. Never use type safety bypass mechanisms like `any`, `@ts-ignore`, or `@ts-expect-error` within the error test block
-3. **CRITICAL**: Use `await` ONLY when the callback function is `async`:
+3. **🚨 CRITICAL: Use `await` ONLY when the callback function is `async` 🚨**
+
+**⚠️ MEMORIZE THIS RULE ⚠️**
+- **Async callback (has `async` keyword)** → **MUST use `await TestValidator.error()`**
+- **Non-async callback (no `async` keyword)** → **MUST NOT use `await`**
+- **Getting this wrong = Test failures and false positives**
 
 ```typescript
-// CORRECT: Async callback → use await
+// ✅ CORRECT: Async callback → use await
 await TestValidator.error(
   "API call should fail", 
   async () => {
@@ -1175,7 +1205,7 @@ await TestValidator.error(
   },
 );
 
-// CORRECT: Sync callback → no await
+// ✅ CORRECT: Sync callback → no await
 TestValidator.error(
   "should throw error immediately", 
   () => {
@@ -1183,19 +1213,32 @@ TestValidator.error(
   },
 );
 
-// WRONG: Async callback without await
-TestValidator.error( // ← Missing await!
+// ❌ CRITICAL ERROR: Async callback without await - TEST WILL PASS EVEN IF NO ERROR!
+TestValidator.error( // ← Missing await! This is BROKEN!
   "API call should fail",
   async () => {
     await api.functional.users.create(connection, { /* ... */ });
   },
 );
 
-// WRONG: Sync callback with await
-await TestValidator.error( // ← Unnecessary await!
-  "should throw error immediately",
-  () => {
-    throw new Error("Immediate error");
+// 🚨 MORE CRITICAL EXAMPLES - PAY ATTENTION! 🚨
+// ✅ CORRECT: Multiple async operations need await
+await TestValidator.error(
+  "concurrent operations should fail",
+  async () => {
+    const promises = [
+      api.functional.orders.create(connection, { body: invalidData }),
+      api.functional.payments.process(connection, { body: invalidPayment }),
+    ];
+    await Promise.all(promises);
+  },
+);
+
+// ❌ CRITICAL ERROR: Forgetting await inside async callback
+await TestValidator.error(
+  "should fail",
+  async () => {
+    api.functional.users.delete(connection, { id }); // NO AWAIT = WON'T CATCH ERROR!
   },
 );
 ```
@@ -1927,6 +1970,15 @@ Before submitting your generated E2E test code, verify:
 - [ ] No external functions are defined outside the main function
 - [ ] **CRITICAL**: All TestValidator functions include descriptive title as first parameter
 - [ ] All TestValidator functions use proper positional parameter syntax
+
+**🚨 CRITICAL AWAIT CHECKLIST - VERIFY EVERY LINE 🚨**
+- [ ] **EVERY `api.functional.*` call has `await`** - Check EVERY SINGLE ONE
+- [ ] **TestValidator.error with async callback has `await`** - Both on TestValidator AND inside callback
+- [ ] **No bare Promise assignments** - Always `const x = await ...` not `const x = ...`
+- [ ] **All async operations inside loops have `await`** - for/while/forEach loops
+- [ ] **All async operations inside conditionals have `await`** - if/else/switch statements
+- [ ] **Return statements with async calls have `await`** - `return await api.functional...`
+- [ ] **Promise.all() calls have `await`** - `await Promise.all([...])`
 
 **API Integration:**
 - [ ] All API calls use proper parameter structure and type safety

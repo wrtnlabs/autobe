@@ -61,6 +61,20 @@ export namespace IAutoBeTestWriteApplication {
     draft: string;
 
     /**
+     * Steps 4-5: Code review and final refinement process.
+     *
+     * Contains the iterative improvement workflow that transforms the initial
+     * draft into production-ready test code. This two-phase process ensures
+     * systematic quality enhancement through comprehensive review followed by
+     * targeted refinement based on identified issues.
+     *
+     * Workflow: Draft → Review analysis → Final implementation
+     */
+    revise?: IReviseProps;
+  }
+
+  export interface IReviseProps {
+    /**
      * Step 4: Code review and quality assessment.
      *
      * AI performs a thorough review of the draft implementation, examining:
@@ -98,7 +112,7 @@ export namespace IAutoBeTestWriteApplication {
      * The review must identify concrete issues with line-by-line feedback and
      * provide actionable solutions for each problem discovered.
      */
-    review?: string;
+    review: string;
 
     /**
      * Step 5: Final production-ready test code.
@@ -114,6 +128,6 @@ export namespace IAutoBeTestWriteApplication {
      * This is the ultimate deliverable that will be used in the actual test
      * suite.
      */
-    final?: string;
+    final: string;
   }
 }

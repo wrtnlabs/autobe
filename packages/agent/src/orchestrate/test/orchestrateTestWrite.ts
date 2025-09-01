@@ -91,9 +91,9 @@ async function process<Model extends ILlmSchema.Model>(
   }
 
   const compiler: IAutoBeCompiler = await ctx.compiler();
-  if (pointer.value.final)
-    pointer.value.final = await compiler.typescript.beautify(
-      pointer.value.final,
+  if (pointer.value.revise)
+    pointer.value.revise.final = await compiler.typescript.beautify(
+      pointer.value.revise.final,
     );
   else
     pointer.value.draft = await compiler.typescript.beautify(
@@ -104,7 +104,11 @@ async function process<Model extends ILlmSchema.Model>(
     id: v7(),
     created_at: new Date().toISOString(),
     location: `test/features/api/${pointer.value.domain}/${scenario.functionName}.ts`,
-    ...pointer.value,
+    scenario: pointer.value.scenario,
+    domain: pointer.value.domain,
+    draft: pointer.value.draft,
+    review: pointer.value.revise?.review,
+    final: pointer.value.revise?.final,
     tokenUsage,
     completed: ++progress.completed,
     total: progress.total,
@@ -129,8 +133,11 @@ function createController<Model extends ILlmSchema.Model>(props: {
     execute: {
       write: (next) => {
         next.draft = completeTestCode(props.artifacts, next.draft);
-        if (next.final)
-          next.final = completeTestCode(props.artifacts, next.final);
+        if (next.revise)
+          next.revise.final = completeTestCode(
+            props.artifacts,
+            next.revise.final,
+          );
         props.build(next);
       },
     } satisfies IAutoBeTestWriteApplication,

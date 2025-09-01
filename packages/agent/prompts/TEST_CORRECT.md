@@ -26,23 +26,18 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 ## 1.1. Function Calling Workflow
 
-You MUST execute the following 5-step workflow through a single function call. Each step is **MANDATORY** and must be completed thoroughly. The function expects all 5 properties to be filled with substantial, meaningful content:
+You MUST execute the following 4-step workflow through a single function call. Each step is **MANDATORY** and must be completed thoroughly. The function expects all properties to be filled with substantial, meaningful content:
 
-### Step 1: **think_without_compile_error** - Initial Analysis Without Error Context
-- Analyze the original test scenario and business requirements
-- Understand the intended functionality without being influenced by compilation errors
-- Establish a clear understanding of what the test should accomplish
-- Map out the expected business workflow and API integration patterns
-- This clean analysis ensures error correction doesn't lose sight of the original test purpose
-
-### Step 2: **think_again_with_compile_error** - Compilation Error Analysis
-- Re-analyze the scenario with full awareness of compilation errors
+### Step 1: **think** - Deep Compilation Error Analysis and Correction Strategy
 - Systematically examine each error message and diagnostic information
-- Identify error patterns and understand how they relate to the intended functionality
+- Identify error patterns and understand root causes
 - Correlate compilation diagnostics with the original requirements
 - Plan targeted error correction strategies based on root cause analysis
+- Map out the expected business workflow and API integration patterns
+- Ensure error correction doesn't lose sight of the original test purpose
+- This deep analysis forms the foundation for all subsequent corrections
 
-### Step 3: **draft** - Draft Corrected Implementation
+### Step 2: **draft** - Draft Corrected Implementation
 - Generate the first corrected version of the test code
 - Address ALL identified compilation errors systematically
 - Preserve the original business logic and test workflow
@@ -50,7 +45,9 @@ You MUST execute the following 5-step workflow through a single function call. E
 - Follow all established conventions and type safety requirements
 - **Critical**: Start directly with `export async function` - NO import statements
 
-### Step 4: **review** - Code Review and Validation
+### Step 3-4: **revise** - Review and Final Implementation (Object with two properties)
+
+#### Property 1: **revise.review** - Code Review and Validation
 - Perform a comprehensive review of the corrected draft
 - **This step is CRITICAL** - thoroughly validate all corrections
 - Verify that:
@@ -62,14 +59,14 @@ You MUST execute the following 5-step workflow through a single function call. E
 - Identify any remaining issues or improvements needed
 - Document specific validations performed
 
-### Step 5: **final** - Production-Ready Corrected Code
+#### Property 2: **revise.final** - Production-Ready Corrected Code
 - Produce the final, polished version incorporating all review feedback
 - Ensure ALL compilation issues are resolved
 - Maintain strict type safety without using any bypass mechanisms
 - Deliver production-ready test code that compiles successfully
 - This is the deliverable that will replace the compilation-failed code
 
-**IMPORTANT**: All 5 steps must contain substantial content. Do not provide empty or minimal responses for any step. Each property should demonstrate thorough analysis and correction effort.
+**IMPORTANT**: All steps must contain substantial content. Do not provide empty or minimal responses for any step. Each property should demonstrate thorough analysis and correction effort.
 
 ## 2. Input Materials Overview
 
@@ -718,6 +715,29 @@ const x: string & tags.Format<"uuid"> = typia.random<string & tags.Format<"uuid"
 
 If you encounter the compilation error "Promises must be awaited", this means an asynchronous function is being called without the `await` keyword. This is a CRITICAL error that MUST be fixed immediately.
 
+**🤖 MECHANICAL RULE - NO THINKING REQUIRED 🤖**
+
+```typescript
+// When IAutoBeTypeScriptCompileResult.IDiagnostic.messageText starts with "Promises must be awaited"
+// → JUST ADD await - NO QUESTIONS ASKED!
+
+// Error: "Promises must be awaited" at line 42
+api.functional.users.create(connection, userData);  // ← Line 42
+// FIX: Just add await
+await api.functional.users.create(connection, userData);  // ← FIXED!
+
+// Error: "Promises must be awaited" at line 89
+TestValidator.error("test", async () => { ... });  // ← Line 89
+// FIX: Just add await
+await TestValidator.error("test", async () => { ... });  // ← FIXED!
+```
+
+**SIMPLE ALGORITHM:**
+1. See error message starting with "Promises must be awaited"? ✓
+2. Find the line number in the error ✓
+3. Add `await` in front of the function call ✓
+4. DONE! No analysis needed! ✓
+
 **⚠️ AI AGENTS: PAY ATTENTION - THIS IS MANDATORY ⚠️**
 
 **Common error patterns that MUST be fixed:**
@@ -747,6 +767,62 @@ typia.assert(users);
 await TestValidator.error("test", async () => {
   await api.functional.users.create(connection, body);
 });
+```
+
+**🔴 SPECIAL ATTENTION: TestValidator.error with async callbacks 🔴**
+
+This is a COMMON MISTAKE that AI agents keep making:
+
+```typescript
+// ⚠️ CRITICAL RULE ⚠️
+// If the callback has `async` keyword → You MUST use `await TestValidator.error()`
+// If the callback has NO `async` keyword → You MUST NOT use `await`
+
+// ❌ CRITICAL ERROR: Async callback without await on TestValidator.error
+TestValidator.error(  // ← NO AWAIT = TEST WILL FALSELY PASS!
+  "should fail on duplicate email",
+  async () => {  // ← This is async!
+    await api.functional.users.create(connection, {
+      body: { email: existingEmail } satisfies IUser.ICreate
+    });
+  }
+);
+// THIS TEST WILL PASS EVEN IF NO ERROR IS THROWN!
+
+// ✅ CORRECT: Async callback requires await on TestValidator.error
+await TestValidator.error(  // ← MUST have await!
+  "should fail on duplicate email",
+  async () => {  // ← This is async!
+    await api.functional.users.create(connection, {
+      body: { email: existingEmail } satisfies IUser.ICreate
+    });
+  }
+);
+
+// ✅ CORRECT: Non-async callback requires NO await
+TestValidator.error(  // ← NO await needed
+  "should throw on invalid value",
+  () => {  // ← NOT async!
+    if (value < 0) throw new Error("Invalid value");
+  }
+);
+
+// ❌ MORE CRITICAL ERRORS TO AVOID:
+// Forgetting await inside async callback
+await TestValidator.error(
+  "should fail",
+  async () => {
+    api.functional.users.delete(connection, { id }); // NO AWAIT = WON'T CATCH ERROR!
+  }
+);
+
+// ❌ Using await on non-async callback
+await TestValidator.error(  // ← WRONG! No await needed for sync callback
+  "should throw",
+  () => {
+    throw new Error("Error");
+  }
+);
 ```
 
 **CRITICAL RULES - MEMORIZE THESE:**
@@ -798,10 +874,20 @@ return await api.functional.users.get(connection, { id });
 - [ ] All async operations inside conditionals have `await`
 - [ ] Return statements with async calls have `await`
 
+**🔥 DOUBLE-CHECK TestValidator.error USAGE 🔥**
+- [ ] If callback has `async` keyword → TestValidator.error MUST have `await`
+- [ ] If callback has NO `async` keyword → TestValidator.error MUST NOT have `await`
+- [ ] ALL API calls inside async callbacks MUST have `await`
+
 **FINAL WARNING:**
 If you generate code with missing `await` keywords, the code WILL NOT COMPILE. This is not a style preference - it's a HARD REQUIREMENT. The TypeScript compiler will reject your code.
 
 **Rule:** 🚨 EVERY asynchronous function call MUST use the `await` keyword - NO EXCEPTIONS! 🚨
+
+**MOST COMMON AI MISTAKE:** Forgetting `await` on `TestValidator.error` when the callback is `async`. This makes the test USELESS because it will pass even when it should fail!
+
+**🤖 REMEMBER THE MECHANICAL RULE:**
+If `messageText` starts with "Promises must be awaited" → Just add `await`. Don't analyze, don't think, just add `await` to that line. It's that simple!
 
 ### 5.4.10. Connection Headers and Authentication
 
@@ -1341,6 +1427,11 @@ Your corrected code must:
 - [ ] **Return statements with async calls have `await`** - `return await api.functional...`
 - [ ] **Promise.all() calls have `await`** - `await Promise.all([...])`
 - [ ] **No floating Promises** - Every Promise must be awaited or returned
+
+**🎯 SPECIFIC TestValidator.error CHECKLIST:**
+- [ ] **Async callback (`async () => {}`)** → `await TestValidator.error()` REQUIRED
+- [ ] **Sync callback (`() => {}`)** → NO `await` on TestValidator.error
+- [ ] **Inside async callbacks** → ALL API calls MUST have `await`
 
 **Functionality Preservation vs Compilation Success:**
 - Prioritize compilation success over preserving original functionality when they conflict

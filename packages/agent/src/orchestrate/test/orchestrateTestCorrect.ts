@@ -131,7 +131,14 @@ const correct = async <Model extends ILlmSchema.Model>(
   if (pointer.value === null) throw new Error("Failed to modify test code.");
 
   const compiler: IAutoBeCompiler = await ctx.compiler();
-  pointer.value.final = await compiler.typescript.beautify(pointer.value.final);
+  if (pointer.value.revise)
+    pointer.value.revise.final = await compiler.typescript.beautify(
+      pointer.value.revise.final,
+    );
+  else
+    pointer.value.draft = await compiler.typescript.beautify(
+      pointer.value.draft,
+    );
 
   ctx.dispatch({
     type: "testCorrect",
@@ -141,11 +148,14 @@ const correct = async <Model extends ILlmSchema.Model>(
     result: validate.result,
     tokenUsage,
     step: ctx.state().analyze?.step ?? 0,
-    ...pointer.value,
+    think: pointer.value.think,
+    draft: pointer.value.draft,
+    review: pointer.value.revise?.review,
+    final: pointer.value.revise?.final,
   });
   const newContent: IAutoBeTestFunction = {
     ...content,
-    script: pointer.value.final,
+    script: pointer.value.revise?.final ?? pointer.value.draft,
   };
   const newValidate: AutoBeTestValidateEvent = await compile(ctx, newContent);
   return predicate(
@@ -174,7 +184,11 @@ const createController = <Model extends ILlmSchema.Model>(props: {
     execute: {
       rewrite: (next) => {
         next.draft = completeTestCode(props.artifacts, next.draft);
-        next.final = completeTestCode(props.artifacts, next.final);
+        if (next.revise)
+          next.revise.final = completeTestCode(
+            props.artifacts,
+            next.revise.final,
+          );
         props.build(next);
       },
     } satisfies IAutoBeTestCorrectApplication,

@@ -53,32 +53,21 @@ export interface AutoBeTestCorrectEvent
   result: IAutoBeTypeScriptCompileResult.IFailure;
 
   /**
-   * AI's initial analysis of the test scenario without compilation error
-   * context.
+   * AI's deep compilation error analysis and correction strategy.
    *
-   * Contains the AI's clean analysis of the original test scenario, business
-   * requirements, and intended functionality before considering compilation
-   * errors. This analysis establishes a clear understanding of what the test
-   * should accomplish and the expected business workflow.
+   * Contains the AI's comprehensive analysis of compilation errors and the
+   * strategic approach for resolving them. This analysis examines each error
+   * message to understand root causes, identifies error patterns, and develops
+   * targeted correction strategies while maintaining the original test
+   * purpose.
    *
-   * This baseline thinking helps maintain the original test purpose during
-   * error correction and provides insight into the AI's initial interpretation
-   * of the requirements.
+   * The AI correlates compilation diagnostics with business requirements to
+   * ensure that error corrections preserve the intended functionality. This
+   * deep analysis forms the foundation for all subsequent correction efforts,
+   * demonstrating the AI's ability to understand complex type errors and
+   * develop systematic solutions.
    */
-  think_without_compile_error: string;
-
-  /**
-   * AI's revised analysis after receiving compilation error feedback.
-   *
-   * Contains the AI's updated reasoning process after analyzing the compilation
-   * errors and understanding what corrections are needed. This revised thinking
-   * demonstrates how the AI learns from feedback and adjusts its approach to
-   * resolve the identified issues while maintaining test scenario validity.
-   *
-   * The evolution from initial to revised thinking illustrates the
-   * effectiveness of the feedback loop in improving AI-generated code quality.
-   */
-  think_again_with_compile_error: string;
+  think: string;
 
   /**
    * The first corrected version of the test code addressing compilation errors.
@@ -105,7 +94,7 @@ export interface AutoBeTestCorrectEvent
    * The review provides insight into the AI's quality assurance process and
    * helps stakeholders understand how the correction maintains test integrity.
    */
-  review: string;
+  review?: string;
 
   /**
    * The final production-ready corrected test code.
@@ -119,7 +108,7 @@ export interface AutoBeTestCorrectEvent
    * the compilation-failed code and demonstrates the AI's ability to learn from
    * errors and produce high-quality test code.
    */
-  final: string;
+  final?: string;
 
   /**
    * Iteration number of the requirements analysis this test correction was
