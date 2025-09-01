@@ -544,13 +544,13 @@ When calling API functions, you MUST double-check that:
 ```typescript
 // ❌ WRONG: Using incorrect response type
 const user: IUser = await api.functional.user.authenticate.login(connection, {
-  body: { email: "test@example.com", password: "1234" }
+  body: { email: "test@example.com", password: "1234" } satisfies IUser.ILogin
 });
 // Compilation Error: Type 'IUser.IAuthorized' is not assignable to type 'IUser'
 
 // ✅ CORRECT: Use the exact response type from API
 const user: IUser.IAuthorized = await api.functional.user.authenticate.login(connection, {
-  body: { email: "test@example.com", password: "1234" }
+  body: { email: "test@example.com", password: "1234" } satisfies IUser.ILogin
 });
 ```
 
@@ -1169,7 +1169,7 @@ await TestValidator.error("should throw on invalid input", asyncErrorFunction); 
 TestValidator.equals(actualValue, expectedValue);           // COMPILATION ERROR!
 TestValidator.notEquals(actualValue, expectedValue);        // COMPILATION ERROR!
 TestValidator.predicate(booleanCondition);                  // COMPILATION ERROR!
-TestValidator.error(errorFunction);                         // COMPILATION ERROR!
+TestValidator.error(asyncErrorFunction);                         // COMPILATION ERROR!
 ```
 
 **Common Mistake to Avoid:**
@@ -1309,7 +1309,7 @@ await TestValidator.error(
 );
 
 // WRONG: Don't test TypeScript compilation errors - SKIP THESE SCENARIOS
-TestValidator.error(
+await TestValidator.error(
   "missing name fails",
   async () => {
     return await api.functional.users.create(connection, {

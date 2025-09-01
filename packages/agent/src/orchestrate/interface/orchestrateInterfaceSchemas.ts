@@ -162,16 +162,11 @@ async function process<Model extends ILlmSchema.Model>(
   });
   if (pointer.value === null) throw new Error("Failed to create components.");
 
-  const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-    typia.misc.assertClone<
-      Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>
-    >(
-      (
-        OpenApiV3_1Emender.convertComponents({
-          schemas: pointer.value,
-        }) as AutoBeOpenApi.IComponents
-      ).schemas ?? {},
-    );
+  const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = ((
+    OpenApiV3_1Emender.convertComponents({
+      schemas: pointer.value,
+    }) as AutoBeOpenApi.IComponents
+  ).schemas ?? {}) as Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
   ctx.dispatch({
     type: "interfaceSchemas",
     id: v7(),

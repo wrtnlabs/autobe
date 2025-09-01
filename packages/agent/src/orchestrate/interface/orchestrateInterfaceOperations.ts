@@ -118,7 +118,6 @@ async function process<Model extends ILlmSchema.Model>(
       model: ctx.model,
       roles: ctx.state().analyze?.roles.map((it) => it.name) ?? [],
       build: (operations) => {
-        typia.misc.assertClone(operations);
         pointer.value ??= [];
         const matrix: AutoBeOpenApi.IOperation[][] = operations.map((op) => {
           if (op.authorizationRoles.length === 0)
