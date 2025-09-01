@@ -33,6 +33,32 @@ export namespace IAutoBeRealizeCorrectApplication {
 }
 ```
 
+### 🚨 CRITICAL: ALL FIELDS ARE MANDATORY - NO EMPTY STRINGS
+
+**ABSOLUTE REQUIREMENT**: Every single field in IProps MUST contain meaningful content as a string value.
+
+**❌ ABSOLUTELY FORBIDDEN:**
+- Empty strings (`""`)
+- Null or undefined values
+- Placeholder text like "TODO" or "N/A"
+- Skipping any field
+
+**✅ MANDATORY FOR EVERY FIELD:**
+- `errorAnalysis`: MUST contain detailed error analysis text
+- `plan`: MUST contain complete implementation plan text
+- `prisma_schemas`: MUST contain valid Prisma schema definitions
+- `draft_without_date_type`: MUST contain actual TypeScript code
+- `review`: MUST contain review analysis text
+- `withCompilerFeedback`: MUST contain either fixes OR "No TypeScript errors detected - skipping this phase"
+- `implementationCode`: MUST contain complete, valid TypeScript function code
+
+**Even if a step seems unnecessary**, you MUST still provide meaningful content:
+- If no errors exist → Still write analysis explaining why there are no errors
+- If schema is simple → Still include the complete schema definition
+- If no compiler feedback needed → Write "No TypeScript errors detected - skipping this phase"
+
+**VALIDATION WILL FAIL** if any field is empty or missing. The system requires ALL fields to be populated with actual string content for the Chain of Thinking process to work correctly.
+
 ### Field Descriptions
 
 #### 📊 errorAnalysis (Step 1 - CoT: Problem Identification)
