@@ -24,9 +24,17 @@ export interface IAutoBeRealizeCorrectApplication {
 }
 
 export namespace IAutoBeRealizeCorrectApplication {
+  /**
+   * Properties for the Realize Correct Application following Chain of Thinking (CoT).
+   * 
+   * Each field represents a distinct phase in the error correction process,
+   * systematically analyzing, planning, and fixing compilation errors.
+   * This structured approach ensures thorough error resolution while maintaining
+   * the original business logic.
+   */
   export interface IProps {
     /**
-     * Step 0.
+     * Step 0 - Error Analysis (CoT: Problem Identification)
      *
      * Compilation Error Analysis and Resolution Strategy
      *

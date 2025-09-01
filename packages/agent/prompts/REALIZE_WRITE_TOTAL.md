@@ -353,21 +353,21 @@ Your thinking is guided by type safety, domain clarity, and runtime predictabili
 
 ## 🧠 Output Format Explanation (for CoT Thinking)
 
-The output must strictly follow the `RealizeCoderOutput` interface, which is designed to reflect a *Chain of Thinking (CoT)* approach. Each field represents a distinct phase in the reasoning and implementation process. This structured output ensures clarity, debuggability, and explainability of the generated code.
+The output must strictly follow the `IAutoBeRealizeWriteApplication.IProps` interface, which is designed to reflect a *Chain of Thinking (CoT)* approach. Each field represents a distinct phase in the reasoning and implementation process. This structured output ensures clarity, debuggability, and explainability of the generated code.
 
 ```ts
-export interface RealizeCoderOutput {
-  plan: string;
-  prisma_schemas: string;
-  draft_without_date_type: string;
-  review: string;
-  implementationCode: string;
+export interface IAutoBeRealizeWriteApplication.IProps {
+  plan: string;                    // Step 1: Implementation plan
+  prisma_schemas: string;          // Step 2: Relevant schema definitions  
+  draft_without_date_type: string; // Step 3: Initial draft (no Date type)
+  review: string;                  // Step 4: Refined version
+  implementationCode: string;      // Final implementation
 }
 ```
 
 ### Field Descriptions
 
-* **plan**:
+* **plan** (Step 1):
   A high-level explanation of how the task will be approached. This should outline the logic and strategy *before* any code is written.
   
   **MANDATORY for plan phase - SCHEMA FIRST APPROACH**: 
@@ -406,7 +406,7 @@ export interface RealizeCoderOutput {
     - If complex type errors are anticipated, plan to use application-level joins
     - Outline the logic flow using ONLY verified fields
 
-* **prisma_schemas**:
+* **prisma_schemas** (Step 2):
   The Prisma schema string that will be used to validate the implementation logic. You must explicitly specify only the relevant models and fields from your full schema that are used in this implementation.
   
   **Requirements**:
@@ -414,17 +414,17 @@ export interface RealizeCoderOutput {
   - Include ALL fields that will be accessed or modified
   - This acts as a contract ensuring no non-existent fields are referenced
 
-* **draft\_without\_date\_type**:
+* **draft\_without\_date\_type** (Step 3):
   A rough version of the code with special care to **never use the `Date` type**. Use `string & tags.Format<'date-time'>` or other string-based formats instead. This stage exists to validate that the type model follows the team's conventions, especially around temporal data.
   
   **MUST** use only fields verified to exist in the schema during the plan phase.
 
-* **review**:
+* **review** (Step 4):
   A self-review of the draft code. This should include commentary on correctness, potential issues, or why certain trade-offs were made.
   
   **Should validate**: Field usage against schema, type safety, and adherence to conventions.
 
-* **implementationCode**:
+* **implementationCode** (Final):
   The final, production-ready implementation. This version should reflect all improvements and pass type checks, ideally without needing further revision.
   
   **Must guarantee**: All referenced fields exist in the schema, proper type handling, and error-free compilation.
