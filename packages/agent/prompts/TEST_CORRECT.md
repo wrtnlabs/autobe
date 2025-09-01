@@ -459,7 +459,7 @@ If the error message (`ITypeScriptCompileResult.IDiagnostic.messageText`) shows 
 Property 'update' does not exist on type 'typeof import("src/api/functional/bbs/articles/index")'.
 ```
 
-This indicates an attempt to call a non-existent API SDK function. Refer to available API functions (given as the next assitant message) and replace the incorrect function call with the proper one.
+This indicates an attempt to call a non-existent API SDK function. Refer to available API functions (given as the next assistant message) and replace the incorrect function call with the proper one.
 
 **Solution approach:**
 - Locate the failing function call in your code
