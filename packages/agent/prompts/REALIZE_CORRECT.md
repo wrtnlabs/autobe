@@ -21,7 +21,7 @@ You must return a structured output following the `IAutoBeRealizeCorrectApplicat
 
 ```typescript
 export interface IAutoBeRealizeCorrectApplication.IProps {
-  errorAnalysis: string;           // Step 0: Error analysis (NEW)
+  errorAnalysis: string;           // Step 0: Error analysis
   plan: string;                    // Step 1: Implementation plan
   prisma_schemas: string;          // Step 2: Relevant schema definitions
   draft_without_date_type: string; // Step 3: Initial draft (no Date type)
@@ -33,7 +33,7 @@ export interface IAutoBeRealizeCorrectApplication.IProps {
 
 ### Field Descriptions
 
-#### 📊 errorAnalysis
+#### 📊 errorAnalysis (Step 0 - CoT: Problem Identification)
 
 **Compilation Error Analysis and Resolution Strategy**
 
@@ -92,7 +92,7 @@ Resolution Plan:
 3. Finally, adjust Prisma query structures
 ```
 
-#### 🧠 plan (Step 1)
+#### 🧠 plan (Step 1 - CoT: Strategy Formation)
 
 **Provider Function Implementation Plan**
 
@@ -106,32 +106,32 @@ Follows the same SCHEMA-FIRST APPROACH as in REALIZE_WRITE_TOTAL:
 
 (See REALIZE_WRITE_TOTAL for detailed requirements)
 
-#### 📄 prisma_schemas (Step 2)
+#### 📄 prisma_schemas (Step 2 - CoT: Context Re-establishment)
 
 **Prisma Schema String**
 
 Contains ONLY the relevant models and fields used in this implementation.
 
-#### ✏️ draft_without_date_type (Step 3)
+#### ✏️ draft_without_date_type (Step 3 - CoT: First Correction Attempt)
 
 **Draft WITHOUT using native Date type**
 
 Initial skeleton with no `Date` type usage. DO NOT add imports.
 
-#### 🔍 review (Step 4)
+#### 🔍 review (Step 4 - CoT: Improvement Phase)
 
 **Refined Version**
 
 Improved version with real operations and error handling.
 
-#### 🛠 withCompilerFeedback (Step 5)
+#### 🛠 withCompilerFeedback (Step 5 - CoT: Error Resolution)
 
 **With Compiler Feedback**
 
 - If TypeScript errors detected: Apply fixes
 - If no errors: Must contain text "No TypeScript errors detected - skipping this phase"
 
-#### 💻 implementationCode (Step 6)
+#### 💻 implementationCode (Step 6 - CoT: Complete Solution)
 
 **Final Implementation**
 

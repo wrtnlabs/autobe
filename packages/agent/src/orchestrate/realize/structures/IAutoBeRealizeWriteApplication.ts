@@ -20,9 +20,16 @@ export interface IAutoBeRealizeWriteApplication {
 }
 
 export namespace IAutoBeRealizeWriteApplication {
+  /**
+   * Properties for the Realize Write Application following Chain of Thinking (CoT).
+   * 
+   * Each field represents a distinct phase in the reasoning and implementation process,
+   * building upon the previous step to create a complete, error-free implementation.
+   * This structured approach ensures clarity, debuggability, and systematic thinking.
+   */
   export interface IProps {
     /**
-     * Step 1.
+     * Step 1 - Planning Phase (CoT: Initial Reasoning)
      *
      * 🧠 Provider Function Implementation Plan
      *
@@ -155,7 +162,7 @@ export namespace IAutoBeRealizeWriteApplication {
     plan: string;
 
     /**
-     * Step 2.
+     * Step 2 - Schema Definition (CoT: Context Establishment)
      *
      * The Prisma schema string that will be used to validate the implementation
      * logic in this file.
@@ -177,7 +184,7 @@ export namespace IAutoBeRealizeWriteApplication {
     prisma_schemas: string;
 
     /**
-     * Step 3.
+     * Step 3 - Initial Draft (CoT: First Implementation Attempt)
      *
      * Draft WITHOUT using native Date type.
      *
@@ -214,7 +221,7 @@ export namespace IAutoBeRealizeWriteApplication {
     draft_without_date_type: string;
 
     /**
-     * Step 4.
+     * Step 4 - Review and Refinement (CoT: Self-Reflection)
      *
      * A refined version of the draft with improved completeness.
      *
@@ -234,7 +241,7 @@ export namespace IAutoBeRealizeWriteApplication {
 
 
     /**
-     * Step 4.
+     * Final Step - Complete Implementation (CoT: Final Synthesis)
      *
      * The complete and fully correct TypeScript function implementation.
      *

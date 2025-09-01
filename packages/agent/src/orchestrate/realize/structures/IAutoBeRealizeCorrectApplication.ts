@@ -108,7 +108,7 @@ export namespace IAutoBeRealizeCorrectApplication {
     errorAnalysis: string;
 
     /**
-     * Step 1.
+     * Step 1 - Planning Phase (CoT: Strategy Formation)
      *
      * 🧠 Provider Function Implementation Plan
      *
@@ -240,7 +240,7 @@ export namespace IAutoBeRealizeCorrectApplication {
     plan: string;
 
     /**
-     * Step 2.
+     * Step 2 - Schema Definition (CoT: Context Re-establishment)
      *
      * The Prisma schema string that will be used to validate the implementation
      * logic in this file.
@@ -262,7 +262,7 @@ export namespace IAutoBeRealizeCorrectApplication {
     prisma_schemas: string;
 
     /**
-     * Step 3.
+     * Step 3 - Initial Draft (CoT: First Correction Attempt)
      *
      * Draft WITHOUT using native Date type.
      *
@@ -299,7 +299,7 @@ export namespace IAutoBeRealizeCorrectApplication {
     draft_without_date_type: string;
 
     /**
-     * Step 4.
+     * Step 4 - Review and Refinement (CoT: Improvement Phase)
      *
      * A refined version of the draft with improved completeness.
      *
@@ -318,7 +318,7 @@ export namespace IAutoBeRealizeCorrectApplication {
     review: string;
 
     /**
-     * Step 5.
+     * Step 5 - Compiler Feedback Integration (CoT: Error Resolution)
      *
      * 🛠 Compiler Feedback Integration
      *
@@ -352,7 +352,7 @@ export namespace IAutoBeRealizeCorrectApplication {
     withCompilerFeedback: string;
 
     /**
-     * Step 6.
+     * Step 6 - Final Implementation (CoT: Complete Solution)
      *
      * The complete and fully correct TypeScript function implementation.
      *
