@@ -38,14 +38,14 @@ export const Collapsible = ({
             background: "none",
             border: "none",
             cursor: "pointer",
-            padding: "4px",
-            borderRadius: "4px",
+            padding: "0",
+            borderRadius: "1rem",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             transition: animated ? "background-color 0.2s" : "none",
             color: COLORS.GRAY_TEXT_MEDIUM,
-            marginRight: "8px",
+            marginRight: "1rem",
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.backgroundColor = COLORS.GRAY_BORDER_LIGHT;
@@ -67,16 +67,16 @@ export const Collapsible = ({
             <path d="M7.41 8.58L12 13.17l4.59-4.59L18 10l-6 6-6-6 1.41-1.42z" />
           </svg>
         </button>
-        <h3
+        <h4
           style={{
             margin: 0,
-            fontSize: "1.125rem",
+            fontSize: "1rem",
             fontWeight: "600",
             color: COLORS.GRAY_TEXT_DARK,
           }}
         >
           {title}
-        </h3>
+        </h4>
       </div>
       {!isCollapsed && (
         <div

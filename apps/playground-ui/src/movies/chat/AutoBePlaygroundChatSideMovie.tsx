@@ -11,6 +11,14 @@ import { AutoBeAgentInformation } from "@autobe/ui";
 import { Typography } from "@mui/material";
 import { ILlmSchema } from "@samchon/openapi";
 
+export const Title = ({ name }: { name: string }) => {
+  return (
+    <>
+      <h4 style={{ margin: 0 }}>{name}</h4>
+      <hr />
+    </>
+  );
+};
 export function AutoBePlaygroundChatSideMovie(
   props: AutoBePlaygroundChatSideMovie.IProps,
 ) {
@@ -30,20 +38,17 @@ export function AutoBePlaygroundChatSideMovie(
         </>
       ) : null}
 
-      <h4>Agent Information</h4>
-      <hr />
+      <Title name="Agent Information" />
       <AutoBeAgentInformation header={props.header} />
       <br />
       {props.tokenUsage !== null ? (
         <>
-          <h4>Token Usage</h4>
-          <hr />
+          <Title name="Token Usage" />
           <AutoBeTokenUsage tokenUsage={props.tokenUsage} />
         </>
       ) : null}
       <br />
-      <h4>State</h4>
-      <hr />
+      <Title name="State" />
       <AutoBeChatState state={props.state} />
     </div>
   );

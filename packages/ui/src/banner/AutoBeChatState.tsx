@@ -15,9 +15,9 @@ export interface IAutoBeChatStateProps {
 
 /** Common styles for step items */
 const getStepItemStyle = (isActive: boolean): React.CSSProperties => ({
-  padding: "12px",
+  padding: "10px",
   backgroundColor: COLORS.GRAY_BACKGROUND,
-  borderRadius: "6px",
+  borderRadius: "8px",
   borderLeft: `4px solid ${isActive ? "#007bff" : COLORS.GRAY_BORDER}`,
 });
 
@@ -47,20 +47,23 @@ interface IStateStepProps {
     | AutoBeRealizeCompleteEvent;
 }
 
+const StepTitle = ({ step, elapsed }: { step: string; elapsed: number }) => (
+  <div style={stepTitleStyle}>
+    <span>{`${step.charAt(0).toUpperCase()}${step.slice(1)}`}</span>
+    <span style={{ margin: "0 4px" }}>•</span>
+    <span>
+      ⏱️ {(Math.floor((elapsed / 60_000) * 100) / 100).toLocaleString()} mins
+    </span>
+  </div>
+);
 /** Component for displaying active state step */
 const StateStep = ({ step, data }: IStateStepProps) => (
   <div style={getStepItemStyle(true)}>
-    <div
-      style={stepTitleStyle}
-    >{`${step.charAt(0).toUpperCase()}${step.slice(1)}`}</div>
+    <StepTitle step={step} elapsed={data.elapsed} />
     <div style={stepDataStyle}>
       {Object.entries(getStepCount(data))
         .map(([key, value]) => `${key}: ${value.toLocaleString()}`)
         .join(" • ")}
-    </div>
-    <div style={stepDataStyle}>
-      ⏱️ {(Math.floor((data.elapsed / 60_000) * 100) / 100).toLocaleString()}{" "}
-      mins
     </div>
   </div>
 );
@@ -68,10 +71,8 @@ const StateStep = ({ step, data }: IStateStepProps) => (
 /** Component for displaying empty state step */
 const StateEmpty = ({ step }: { step: string }) => (
   <div style={getStepItemStyle(false)}>
-    <div
-      style={stepTitleStyle}
-    >{`${step.charAt(0).toUpperCase()}${step.slice(1)}`}</div>
-    <div style={stepDataStyle}>0 items • ⏱️ 0 mins</div>
+    <StepTitle step={step} elapsed={0} />
+    <div style={stepDataStyle}>0 items</div>
   </div>
 );
 

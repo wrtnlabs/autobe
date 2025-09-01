@@ -41,10 +41,11 @@ export const AutoBeChatBanner = (props: IAutoBeChatBannerProps) => {
           padding: "0 16px 16px 16px",
           boxShadow: SHADOWS.CARD,
           width: "100%",
+          display: "flex",
+          flexDirection: "column",
         }}
       >
         <h3>Summaries</h3>
-
         <Collapsible
           title="Agent Information"
           defaultCollapsed={true}
@@ -52,7 +53,6 @@ export const AutoBeChatBanner = (props: IAutoBeChatBannerProps) => {
         >
           <AutoBeAgentInformation header={props.header} />
         </Collapsible>
-        <br />
         <Collapsible
           title="Token Usage"
           defaultCollapsed={false}
@@ -60,7 +60,6 @@ export const AutoBeChatBanner = (props: IAutoBeChatBannerProps) => {
         >
           <AutoBeTokenUsage tokenUsage={props.tokenUsage} />
         </Collapsible>
-        <br />
         <Collapsible title="Chat State" defaultCollapsed={true} animated={true}>
           <AutoBeChatState state={props.state} />
         </Collapsible>
