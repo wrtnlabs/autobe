@@ -26,7 +26,6 @@ export const getAutoBeWebviewProvider = (context: ExtensionContext) => {
         Logger.debug(`[AutoBe] onDidReceiveMessage - ${message.type}`);
         await instance.handlePostMessage(message);
       });
-      console.log(1);
       panel.onDidDispose(async () => {
         await instance.dispose();
       });
