@@ -3,6 +3,7 @@ export { default as AutoBeScenarioEventMovie } from "./AutoBeScenarioEventMovie"
 export { default as AutoBeProgressEventMovie } from "./AutoBeProgressEventMovie";
 export { default as AutoBeCompleteEventMovie } from "./AutoBeCompleteEventMovie";
 export { default as AutoBeValidateEventMovie } from "./AutoBeValidateEventMovie";
+export { default as AutoBeCorrectEventMovie } from "./AutoBeCorrectEventMovie";
 export { default as AutoBeEventMovie } from "./AutoBeEventMovie";
 
 // Common components

@@ -2,10 +2,13 @@ import { AutoBeEvent, IAutoBeGetFilesOptions } from "@autobe/interface";
 
 import {
   AutoBeCompleteEventMovie,
+  AutoBeCorrectEventMovie,
   AutoBeProgressEventMovie,
   AutoBeScenarioEventMovie,
   AutoBeStartEventMovie,
   AutoBeValidateEventMovie,
+  CorrectEventGroup,
+  ICorrectEventGroupProps,
   IValidateEventGroupProps,
   ValidateEventGroup,
 } from ".";
@@ -91,12 +94,24 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
       return (
         <AutoBeCompleteEventMovie getFiles={props.getFiles} event={back} />
       );
-    // DISCARD
+    // CORRECT EVENTS
     case "prismaCorrect":
-    case "interfaceEndpointsReview":
     case "testCorrect":
-    case "realizeAuthorizationCorrect":
     case "realizeCorrect":
+    case "realizeAuthorizationCorrect": {
+      if (props.events.length === 1) {
+        return <AutoBeCorrectEventMovie event={back} />;
+      }
+
+      return (
+        <CorrectEventGroup
+          events={props.events as ICorrectEventGroupProps["events"]}
+          defaultCollapsed={true}
+        />
+      );
+    }
+    // DISCARD
+    case "interfaceEndpointsReview":
     case "realizeTestComplete":
     case "realizeAuthorizationComplete":
     case "vendorRequest":
