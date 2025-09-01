@@ -36,7 +36,7 @@ You **prefer literal types, union types, and branded types** over unsafe casts o
      }
      
      if (body.title) {
-       conditions.title = { contains: body.title, mode: "insensitive" as const };
+       conditions.title = { contains: body.title };
      }
      
      // Date ranges
@@ -73,7 +73,7 @@ You **prefer literal types, union types, and branded types** over unsafe casts o
      
      // Text search conditions
      ...(body.title && { 
-       title: { contains: body.title, mode: "insensitive" as const } 
+       title: { contains: body.title } 
      }),
      
      // Complex date ranges - extract for readability
@@ -406,6 +406,14 @@ export interface RealizeCoderOutput {
     - If complex type errors are anticipated, plan to use application-level joins
     - Outline the logic flow using ONLY verified fields
 
+* **prisma_schemas**:
+  The Prisma schema string that will be used to validate the implementation logic. You must explicitly specify only the relevant models and fields from your full schema that are used in this implementation.
+  
+  **Requirements**:
+  - Include ONLY models referenced in the implementation
+  - Include ALL fields that will be accessed or modified
+  - This acts as a contract ensuring no non-existent fields are referenced
+
 * **draft\_without\_date\_type**:
   A rough version of the code with special care to **never use the `Date` type**. Use `string & tags.Format<'date-time'>` or other string-based formats instead. This stage exists to validate that the type model follows the team's conventions, especially around temporal data.
   
@@ -415,11 +423,6 @@ export interface RealizeCoderOutput {
   A self-review of the draft code. This should include commentary on correctness, potential issues, or why certain trade-offs were made.
   
   **Should validate**: Field usage against schema, type safety, and adherence to conventions.
-
-* **withCompilerFeedback?** (optional):
-  If the draft caused TypeScript errors or warnings, include a corrected version of the code here with fixes and a brief explanation of what was changed.
-  
-  **Common fixes**: Field existence errors, type mismatches, nullable field handling.
 
 * **implementationCode**:
   The final, production-ready implementation. This version should reflect all improvements and pass type checks, ideally without needing further revision.
@@ -870,7 +873,7 @@ const [results, total] = await Promise.all([
         member_id: body.member_id,
       }),
       ...(body.file_name !== undefined && body.file_name !== null && {
-        file_name: { contains: body.file_name, mode: "insensitive" as const },
+        file_name: { contains: body.file_name },
       }),
     },
     orderBy: { created_at: 'desc' },
@@ -1515,14 +1518,37 @@ where: {
   }
 }
 
-// ✅ Standard string operations
+// ✅ Standard string operations WITHOUT mode
 where: {
   title: {
-    contains: searchTerm,
-    mode: "insensitive"
+    contains: searchTerm
+    // NO mode property - not compatible with SQLite!
   }
 }
 ```
+
+**🚨 CRITICAL: String Search Mode Compatibility**
+
+The `mode: "insensitive"` option is **NOT SUPPORTED in SQLite** and will cause runtime errors!
+
+```typescript
+// ❌ FORBIDDEN: mode property breaks SQLite compatibility
+where: {
+  name: { 
+    contains: search, 
+    mode: "insensitive"  // ← BREAKS SQLite!
+  }
+}
+
+// ✅ CORRECT: Use contains without mode
+where: {
+  name: { 
+    contains: search  // Works on both PostgreSQL and SQLite
+  }
+}
+```
+
+**RULE: NEVER use the `mode` property in string operations. It's PostgreSQL-specific.**
 
 **Rule**: When in doubt, test the operation on both PostgreSQL and SQLite environments before implementation.
 
@@ -2465,10 +2491,10 @@ const updated = await MyGlobal.prisma.discussionboard_notification_setting.updat
 const results = await MyGlobal.prisma.discussionboard_tag.findMany({
   where: {
     ...(name && name.length > 0 && { 
-      name: { contains: name, mode: "insensitive" as const }
+      name: { contains: name }
     }),
     ...(description && description.length > 0 && { 
-      description: { contains: description, mode: "insensitive" as const }
+      description: { contains: description }
     }),
     ...(typeof enabled === "boolean" && { enabled }),
   },
@@ -2678,7 +2704,7 @@ where: {
     body.file_name !== null && {
       file_name: {
         contains: body.file_name,
-        mode: "insensitive" as const,
+        // NO mode property - SQLite compatibility
       },
     }),
 }

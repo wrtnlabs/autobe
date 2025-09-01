@@ -17,23 +17,23 @@ Fix the compilation error in the provided code - **use aggressive refactoring wh
 
 ## 📋 Output Format (Chain of Thinking)
 
-You must return a structured output following the `IAutoBeRealizeCorrectApplication.IProps` interface. This interface extends all fields from `IAutoBeRealizeWriteApplication.IProps` and adds an `errorAnalysis` field. Each field represents a phase in your error correction process:
+You must return a structured output following the `IAutoBeRealizeCorrectApplication.IProps` interface. This interface contains all necessary fields for the correction process, including an `errorAnalysis` field for error diagnosis. Each field represents a phase in your error correction process:
 
 ```typescript
 export interface IAutoBeRealizeCorrectApplication.IProps {
-  errorAnalysis: string;           // NEW: Detailed error analysis
+  errorAnalysis: string;           // Step 0: Error analysis (NEW)
   plan: string;                    // Step 1: Implementation plan
   prisma_schemas: string;          // Step 2: Relevant schema definitions
   draft_without_date_type: string; // Step 3: Initial draft (no Date type)
   review: string;                  // Step 4: Refined version
-  withCompilerFeedback: string;    // Step 4-2: Corrections (if needed)
-  implementationCode: string;      // Step 5: Final implementation
+  withCompilerFeedback: string;    // Step 5: Compiler feedback integration
+  implementationCode: string;      // Step 6: Final implementation
 }
 ```
 
 ### Field Descriptions
 
-#### 📊 errorAnalysis (REQUIRED - NEW FIELD)
+#### 📊 errorAnalysis
 
 **Compilation Error Analysis and Resolution Strategy**
 
@@ -124,14 +124,14 @@ Initial skeleton with no `Date` type usage. DO NOT add imports.
 
 Improved version with real operations and error handling.
 
-#### 🛠 withCompilerFeedback (Step 4-2)
+#### 🛠 withCompilerFeedback (Step 5)
 
 **With Compiler Feedback**
 
 - If TypeScript errors detected: Apply fixes
 - If no errors: Must contain text "No TypeScript errors detected - skipping this phase"
 
-#### 💻 implementationCode (Step 5)
+#### 💻 implementationCode (Step 6)
 
 **Final Implementation**
 
@@ -506,12 +506,46 @@ Based on error code, apply fixes in escalating order:
 | 2448 | Used before declaration | Move declaration up | Restructure code |
 | 7022/7006 | Implicit any | Add explicit type | Infer from usage |
 
+## 🏛️ Database Engine Compatibility
+
+**🚨 CRITICAL**: Our system supports both **PostgreSQL** and **SQLite**. All Prisma operations MUST be compatible with both engines.
+
+### ⚠️ FORBIDDEN: String Search Mode
+
+The `mode: "insensitive"` option is **PostgreSQL-specific** and **BREAKS SQLite compatibility**!
+
+```typescript
+// ❌ FORBIDDEN: Will cause runtime errors in SQLite
+where: {
+  name: { 
+    contains: search, 
+    mode: "insensitive"  // ← BREAKS SQLite!
+  }
+}
+
+// ✅ CORRECT: Works on both databases
+where: {
+  name: { 
+    contains: search  // No mode property
+  }
+}
+```
+
+**RULE: NEVER use the `mode` property in string operations. Remove it immediately if found in code.**
+
+### Other Compatibility Rules:
+- ❌ NO PostgreSQL arrays or JSON operators
+- ❌ NO database-specific raw queries
+- ❌ NO platform-specific data types
+- ✅ Use only standard Prisma operations
+
 ## 🎯 Key Principles
 
 1. **Types > Comments**: When type and comment conflict, type is ALWAYS correct
 2. **Schema is Truth**: If field doesn't exist in schema, it cannot be used
 3. **No Custom Imports**: All imports are auto-generated, never add new ones
 4. **Delete, Don't Workaround**: If a field doesn't exist, remove it entirely
+5. **Database Compatibility**: Remove any PostgreSQL-specific features (especially `mode: "insensitive"`)
 
 ## 🎯 Success Criteria
 

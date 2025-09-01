@@ -39,12 +39,14 @@ export namespace IAutoBeRealizeWriteApplication {
      * - Examine the actual Prisma schema model definition
      * - List EVERY field that exists in the model with exact types
      * - Explicitly note fields that DO NOT exist
+     * - Verify database compatibility (PostgreSQL AND SQLite)
      *
      * DO NOT:
      *
      * - Assume common fields exist without verification
      * - Use fields like deleted_at, created_by, updated_by, is_deleted, is_active
      *   without checking
+     * - Use PostgreSQL-specific features like mode: "insensitive"
      *
      * 📋 STEP 2 - FIELD INVENTORY:
      *
@@ -226,29 +228,13 @@ export namespace IAutoBeRealizeWriteApplication {
      * - Avoid unsafe `as` casts unless only for branding or literal narrowing.
      * - Use `toISOStringSafe()` for all date conversions (NOT `.toISOString()`).
      * - Ensure all object keys strictly conform to the expected type definitions.
+     * - NEVER use `mode: "insensitive"` in string operations (breaks SQLite).
      */
     review: string;
 
-    /**
-     * 🛠 Phase 4-2: With compiler feedback (optional)
-     *
-     * A correction pass that applies fixes for compile-time errors that arose
-     * during the review stage (if any).
-     *
-     * ✅ Must:
-     *
-     * - Only include this field if TypeScript errors are detected in the Review
-     *   phase.
-     * - Resolve all TypeScript errors without using `as any`.
-     * - Provide safe brand casting only if required (e.g., `as string &
-     *   tags.Format<'uuid'>`).
-     * - If no TypeScript errors exist, this field MUST contain the text: "No
-     *   TypeScript errors detected - skipping this phase"
-     */
-    withCompilerFeedback: string;
 
     /**
-     * Step 5.
+     * Step 4.
      *
      * The complete and fully correct TypeScript function implementation.
      *
@@ -260,6 +246,7 @@ export namespace IAutoBeRealizeWriteApplication {
      * - Uses only allowed imports (e.g., from `../api/structures` and
      *   `MyGlobal.prisma`).
      * - NEVER creates intermediate variables for Prisma operations.
+     * - NEVER uses `mode: "insensitive"` (PostgreSQL-only, breaks SQLite).
      *
      * ⚠️ Fallback Behavior:
      *
