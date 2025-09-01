@@ -32,6 +32,7 @@ export const test_compiler_realize_controller = async (
         role: {
           name: "customer",
           description: "Authorized customer role",
+          kind: "member",
         },
         decorator: {
           name: "CustomerAuth",

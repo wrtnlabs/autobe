@@ -60,6 +60,7 @@ export const validate_agent_realize_authorization_correct = async (
       role: {
         name: "moderator",
         description: "Authorized moderator role",
+        kind: "member",
       },
       decorator: {
         location: "src/decorators/ModeratorAuth.ts",
@@ -84,6 +85,7 @@ export const validate_agent_realize_authorization_correct = async (
       role: {
         name: "admin",
         description: "Authorized admin role",
+        kind: "admin",
       },
       decorator: {
         location: "src/decorators/AdminAuth.ts",
@@ -108,6 +110,7 @@ export const validate_agent_realize_authorization_correct = async (
       role: {
         name: "guest",
         description: "Authorized guest role",
+        kind: "guest",
       },
       decorator: {
         location: "src/decorators/GuestAuth.ts",
@@ -132,6 +135,7 @@ export const validate_agent_realize_authorization_correct = async (
       role: {
         name: "member",
         description: "Authorized member role",
+        kind: "member",
       },
       decorator: {
         location: "src/decorators/MemberAuth.ts",
