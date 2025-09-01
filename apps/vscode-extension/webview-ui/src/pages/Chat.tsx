@@ -22,9 +22,23 @@ const Chat = () => {
   const [header, setHeader] =
     useState<IAutoBePlaygroundHeader<ILlmSchema.Model> | null>(null);
 
-  if (header === null) {
-    return <div>Loading...</div>;
-  }
+  //----
+  // EVENT INTERACTIONS
+  //----
+  useEffect(() => {
+    listener.on(async (e) => {
+      service
+        .getTokenUsage()
+        .then(setTokenUsage)
+        .catch(() => {});
+      setEventGroups(e);
+    });
+    service
+      .getTokenUsage()
+      .then(setTokenUsage)
+      .catch(() => {});
+  }, []);
+
   vscode.onMessage((message) => {
     switch (message.type) {
       case "on_event_auto_be": {
@@ -51,28 +65,17 @@ const Chat = () => {
     }
   });
 
-  //----
-  // EVENT INTERACTIONS
-  //----
-  useEffect(() => {
-    listener.on(async (e) => {
-      service
-        .getTokenUsage()
-        .then(setTokenUsage)
-        .catch(() => {});
-      setEventGroups(e);
+  if (header === null) {
+    vscode.postMessage({
+      type: "req_get_config",
     });
-    service
-      .getTokenUsage()
-      .then(setTokenUsage)
-      .catch(() => {});
-  }, []);
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="flex flex-col h-full">
       {/* 채팅 영역 */}
-      <div className="flex-1 overflow-hidden">
-        {" "}
+      <div className="flex-1 overflow-hidden h-full mx-1">
         <AutoBeChatMain
           isMobile={true}
           eventGroups={eventGroups}
@@ -85,6 +88,7 @@ const Chat = () => {
           tokenUsage={tokenUsage}
           header={header}
           state={listener.getState()}
+          className="h-full"
         />
       </div>
     </div>

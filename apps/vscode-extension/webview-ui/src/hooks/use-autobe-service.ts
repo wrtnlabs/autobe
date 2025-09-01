@@ -4,9 +4,9 @@ import {
   IAutoBeRpcService,
   IAutoBeTokenUsageJson,
 } from "@autobe/interface";
+import { IAutoBeWebviewMessage } from "@autobe/vscode-extension/interface";
 import { useState } from "react";
 
-import { IAutoBeWebviewMessage } from "../../../interface/src";
 import useVsCode from "./use-vscode";
 
 export const useAutoBeService = () => {

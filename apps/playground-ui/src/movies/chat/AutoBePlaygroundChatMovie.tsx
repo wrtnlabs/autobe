@@ -111,6 +111,9 @@ export function AutoBePlaygroundChatMovie(
           tokenUsage={tokenUsage}
           header={props.header}
           state={props.listener.getState()}
+          style={{
+            backgroundColor: "lightblue",
+          }}
         />
       </div>
     </div>

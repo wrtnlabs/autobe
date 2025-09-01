@@ -27,6 +27,8 @@ export interface IAutoBeChatMainProps {
   tokenUsage: IAutoBeTokenUsageJson | null;
   header: IAutoBePlaygroundHeader<ILlmSchema.Model>;
   state: AutoBeListenerState;
+  className?: string;
+  style?: React.CSSProperties;
 }
 
 export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
@@ -58,11 +60,12 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
         position: "relative",
         overflowY: "auto",
         margin: 0,
-        backgroundColor: "lightblue",
         flexGrow: 1,
         display: "flex",
         flexDirection: "column",
+        ...props.style,
       }}
+      className={props.className}
       ref={bodyContainerRef}
     >
       {!isMinWidthLg && (
@@ -75,7 +78,6 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
 
       <div
         style={{
-          backgroundColor: "lightblue",
           padding: "2rem",
           gap: 16,
           display: "flex",

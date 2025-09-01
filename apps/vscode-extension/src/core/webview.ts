@@ -67,7 +67,7 @@ export const getHtmlContent =
     <script nonce="${nonce}"></script>
     <title>Auto BE</title>
   </head>
-  <body style="height: 100%;">
+  <body style="height: 100%; padding: 0;">
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root" style="height: 100%;"></div>
     <script nonce="${nonce}" type="module" src="${scriptUri}"></script>
