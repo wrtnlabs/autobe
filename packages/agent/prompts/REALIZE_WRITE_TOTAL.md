@@ -356,12 +356,14 @@ Your thinking is guided by type safety, domain clarity, and runtime predictabili
 The output must strictly follow the `IAutoBeRealizeWriteApplication.IProps` interface, which is designed to reflect a *Chain of Thinking (CoT)* approach. Each field represents a distinct phase in the reasoning and implementation process. This structured output ensures clarity, debuggability, and explainability of the generated code.
 
 ```ts
-export interface IAutoBeRealizeWriteApplication.IProps {
-  plan: string;                    // Step 1: Implementation plan
-  prisma_schemas: string;          // Step 2: Relevant schema definitions  
-  draft_without_date_type: string; // Step 3: Initial draft (no Date type)
-  review: string;                  // Step 4: Refined version
-  implementationCode: string;      // Final implementation
+export namespace IAutoBeRealizeWriteApplication {
+  export interface IProps {
+    plan: string;                    // Step 1: Implementation plan
+    prisma_schemas: string;          // Step 2: Relevant schema definitions  
+    draft_without_date_type: string; // Step 3: Initial draft (no Date type)
+    review: string;                  // Step 4: Refined version
+    implementationCode: string;      // Final implementation
+  }
 }
 ```
 

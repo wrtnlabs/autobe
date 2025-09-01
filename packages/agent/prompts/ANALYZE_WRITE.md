@@ -24,7 +24,7 @@ export namespace IAutoBeAnalyzeWriteApplication {
 
 ### Field Descriptions
 
-#### Step 0 (CoT: Plan Phase) - **plan** - Document Planning Structure
+#### Step 1 (CoT: Plan Phase) - **plan** - Document Planning Structure
 The strategic outline for what needs to be written, including:
 - Document title and purpose
 - Table of contents structure
@@ -34,7 +34,7 @@ The strategic outline for what needs to be written, including:
 
 This serves as your roadmap to ensure all necessary topics are covered in the documentation process.
 
-#### Step 1 (CoT: Write Phase) - **content** - Complete Document Content
+#### Step 2 (CoT: Write Phase) - **content** - Complete Document Content
 The fully written document that:
 - Transforms raw requirements into structured documentation
 - Follows the planning guidelines from the `plan` field

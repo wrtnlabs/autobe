@@ -20,20 +20,22 @@ Fix the compilation error in the provided code - **use aggressive refactoring wh
 You must return a structured output following the `IAutoBeRealizeCorrectApplication.IProps` interface. This interface contains all necessary fields for the correction process, including an `errorAnalysis` field for error diagnosis. Each field represents a phase in your error correction process:
 
 ```typescript
-export interface IAutoBeRealizeCorrectApplication.IProps {
-  errorAnalysis: string;           // Step 0: Error analysis
-  plan: string;                    // Step 1: Implementation plan
-  prisma_schemas: string;          // Step 2: Relevant schema definitions
-  draft_without_date_type: string; // Step 3: Initial draft (no Date type)
-  review: string;                  // Step 4: Refined version
-  withCompilerFeedback: string;    // Step 5: Compiler feedback integration
-  implementationCode: string;      // Step 6: Final implementation
+export namespace IAutoBeRealizeCorrectApplication {
+  export interface IProps {
+    errorAnalysis: string;           // Step 1: Error analysis
+    plan: string;                    // Step 2: Implementation plan
+    prisma_schemas: string;          // Step 3: Relevant schema definitions
+    draft_without_date_type: string; // Step 4: Initial draft (no Date type)
+    review: string;                  // Step 5: Refined version
+    withCompilerFeedback: string;    // Step 6: Compiler feedback integration
+    implementationCode: string;      // Step 7: Final implementation
+  }
 }
 ```
 
 ### Field Descriptions
 
-#### 📊 errorAnalysis (Step 0 - CoT: Problem Identification)
+#### 📊 errorAnalysis (Step 1 - CoT: Problem Identification)
 
 **Compilation Error Analysis and Resolution Strategy**
 
@@ -92,7 +94,7 @@ Resolution Plan:
 3. Finally, adjust Prisma query structures
 ```
 
-#### 🧠 plan (Step 1 - CoT: Strategy Formation)
+#### 🧠 plan (Step 2 - CoT: Strategy Formation)
 
 **Provider Function Implementation Plan**
 
@@ -106,32 +108,32 @@ Follows the same SCHEMA-FIRST APPROACH as in REALIZE_WRITE_TOTAL:
 
 (See REALIZE_WRITE_TOTAL for detailed requirements)
 
-#### 📄 prisma_schemas (Step 2 - CoT: Context Re-establishment)
+#### 📄 prisma_schemas (Step 3 - CoT: Context Re-establishment)
 
 **Prisma Schema String**
 
 Contains ONLY the relevant models and fields used in this implementation.
 
-#### ✏️ draft_without_date_type (Step 3 - CoT: First Correction Attempt)
+#### ✏️ draft_without_date_type (Step 4 - CoT: First Correction Attempt)
 
 **Draft WITHOUT using native Date type**
 
 Initial skeleton with no `Date` type usage. DO NOT add imports.
 
-#### 🔍 review (Step 4 - CoT: Improvement Phase)
+#### 🔍 review (Step 5 - CoT: Improvement Phase)
 
 **Refined Version**
 
 Improved version with real operations and error handling.
 
-#### 🛠 withCompilerFeedback (Step 5 - CoT: Error Resolution)
+#### 🛠 withCompilerFeedback (Step 6 - CoT: Error Resolution)
 
 **With Compiler Feedback**
 
 - If TypeScript errors detected: Apply fixes
 - If no errors: Must contain text "No TypeScript errors detected - skipping this phase"
 
-#### 💻 implementationCode (Step 6 - CoT: Complete Solution)
+#### 💻 implementationCode (Step 7 - CoT: Complete Solution)
 
 **Final Implementation**
 

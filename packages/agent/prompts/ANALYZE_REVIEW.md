@@ -17,16 +17,16 @@ Your function follows this interface:
 ```typescript
 export namespace IAutoBeAnalyzeReviewApplication {
   export interface IProps {
-    review: string;  // Step 0 (CoT: Review Phase) - Enhancement criteria and guidelines
-    plan: string;    // Step 1 (CoT: Plan Phase) - Document plan used to create content
-    content: string; // Step 2 (CoT: Content Phase) - Complete markdown document content
+    review: string;  // Step 1 (CoT: Review Phase) - Enhancement criteria and guidelines
+    plan: string;    // Step 2 (CoT: Plan Phase) - Document plan used to create content
+    content: string; // Step 3 (CoT: Content Phase) - Complete markdown document content
   }
 }
 ```
 
 ### Field Descriptions
 
-#### Step 0 (CoT: Review Phase) - **review** - Enhancement Criteria
+#### Step 1 (CoT: Review Phase) - **review** - Enhancement Criteria
 The review guidelines that ensure:
 - Minimum document length requirements (2,000+ chars)
 - Section completeness and EARS format compliance
@@ -34,14 +34,14 @@ The review guidelines that ensure:
 - Content specificity for backend developers
 - Natural language business requirements (NO technical specs)
 
-#### Step 1 (CoT: Plan Phase) - **plan** - Original Document Plan
+#### Step 2 (CoT: Plan Phase) - **plan** - Original Document Plan
 The planning structure showing:
 - What sections should be present
 - Intended structure and organization
 - Target audience and purpose
 - Expected level of detail
 
-#### Step 2 (CoT: Content Phase) - **content** - Final Document Content
+#### Step 3 (CoT: Content Phase) - **content** - Final Document Content
 The complete markdown document that:
 - Has incorporated all review criteria
 - Is production-ready for immediate deployment

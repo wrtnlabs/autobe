@@ -26,7 +26,7 @@ export interface IAutoBeAnalyzeReviewApplication {
 export namespace IAutoBeAnalyzeReviewApplication {
   export interface IProps {
     /**
-     * Step 0 (CoT: Review Phase) - Enhancement Criteria
+     * Step 1 (CoT: Review Phase) - Enhancement Criteria
      * 
      * The enhancement criteria and guidelines that the agent must follow.
      *
@@ -54,7 +54,7 @@ export namespace IAutoBeAnalyzeReviewApplication {
     review: string;
 
     /**
-     * Step 1 (CoT: Plan Phase) - Original Document Plan
+     * Step 2 (CoT: Plan Phase) - Original Document Plan
      * 
      * The document plan that was used to create the content.
      *
@@ -71,7 +71,7 @@ export namespace IAutoBeAnalyzeReviewApplication {
     plan: string;
 
     /**
-     * Step 2 (CoT: Content Phase) - Complete Document Content
+     * Step 3 (CoT: Content Phase) - Complete Document Content
      * 
      * The actual markdown document content that incorporates review feedback.
      *
