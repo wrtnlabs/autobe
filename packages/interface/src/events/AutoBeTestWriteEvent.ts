@@ -65,7 +65,7 @@ export interface AutoBeTestWriteEvent
    * Quality assessment results identifying issues, best practice violations,
    * and specific recommendations for code refinement.
    */
-  review: string;
+  review?: string;
 
   /**
    * Final production-ready test code.
@@ -73,7 +73,7 @@ export interface AutoBeTestWriteEvent
    * Polished implementation incorporating all review feedback, ready for
    * deployment in the actual test suite.
    */
-  final: string;
+  final?: string;
 
   /**
    * Iteration number of the requirements analysis this test writing reflects.

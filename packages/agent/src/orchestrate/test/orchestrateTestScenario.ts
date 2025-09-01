@@ -165,7 +165,7 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
         ),
       )
       .flat(),
-    completed: ++props.progress.completed,
+    completed: (props.progress.completed += pointer.value.length),
     total: props.progress.total,
     step: ctx.state().interface?.step ?? 0,
     created_at: new Date().toISOString(),

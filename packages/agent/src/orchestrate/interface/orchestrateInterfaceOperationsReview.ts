@@ -42,7 +42,7 @@ export async function orchestrateInterfaceOperationsReview<
     });
     if (pointer.value === null) {
       console.error("Failed to review operations.");
-      progress.completed += operations.length;
+      ++progress.completed;
       return [];
     }
 

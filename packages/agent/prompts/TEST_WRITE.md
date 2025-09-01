@@ -806,6 +806,33 @@ const y: string = x;
 // Type 'undefined' is not assignable to type 'string'
 ```
 
+**CRITICAL: Values that are both nullable AND undefinable**
+```typescript
+// When a type can be BOTH null and undefined:
+const age: number | null | undefined = getUserAge();
+
+// ❌ WRONG: Checking only null or only undefined
+if (age !== null) {
+  const validAge: number = age; // ERROR! age could still be undefined
+}
+
+if (age !== undefined) {
+  const validAge: number = age; // ERROR! age could still be null
+}
+
+// ✅ CORRECT: Must check BOTH null AND undefined
+if (age !== null && age !== undefined) {
+  const validAge: number = age; // Safe - age is definitely number
+}
+
+// Alternative: Check both conditions together
+if (age === null || age === undefined) {
+  console.log("Age not available");
+} else {
+  const validAge: number = age; // Safe - age is definitely number
+}
+```
+
 **Solution 1: Conditional Logic (Use when branching is needed)**
 ```typescript
 // ✅ For conditional branching based on null/undefined
@@ -862,6 +889,43 @@ const user: IUser = response.data.user;
 const token: string = response.data.token;
 ```
 
+**Special Case: Mixed nullable and undefinable in complex scenarios**
+```typescript
+// API might return different combinations of null/undefined
+interface IApiResponse {
+  status: string;
+  data: {
+    userId?: string;          // can be undefined (property missing)
+    userName: string | null;  // can be null (property exists but null)
+    userAge: number | null | undefined; // can be BOTH null or undefined
+  };
+}
+
+const response: IApiResponse = await fetchUserData();
+
+// ❌ WRONG: Incomplete checks for mixed nullable/undefinable
+if (response.data.userAge !== null) {
+  const age: number = response.data.userAge; // ERROR! Still could be undefined
+}
+
+// ✅ CORRECT: Comprehensive null AND undefined check
+if (response.data.userAge !== null && response.data.userAge !== undefined) {
+  const age: number = response.data.userAge; // Safe - definitely number
+  TestValidator.predicate("user is adult", age >= 18);
+}
+
+// ✅ CORRECT: Using typia for complete validation
+typia.assert<{
+  status: string;
+  data: {
+    userId: string;      // Will throw if undefined
+    userName: string;    // Will throw if null
+    userAge: number;     // Will throw if null or undefined
+  };
+}>(response);
+// All values are now guaranteed to be defined and non-null
+```
+
 **Best Practices:**
 1. **Use `typia.assert` for simple type validation** - It's cleaner and more readable
 2. **Use conditional checks only when you need different logic branches** - When null/undefined requires different handling
@@ -888,7 +952,7 @@ export async function test_api_shopping_sale_review_update(
         } satisfies IShoppingSeller.IJoin,
       },
     );
-  // Authentication token is automatically stored in connection.headers.Authorization
+  // Authentication token is automatically stored in connection.headers
   typia.assert(seller);
 }
 ```
@@ -901,14 +965,30 @@ export async function test_api_shopping_sale_review_update(
 - Simply call authentication APIs when needed and continue with authenticated requests
 - Token switching (e.g., between different user roles) is handled automatically by calling the appropriate authentication API functions
 
+**CRITICAL: Never manually assign connection.headers.Authorization**
+- The SDK internally manages `connection.headers.Authorization` when you call authentication API functions
+- **NEVER** directly assign values to `connection.headers.Authorization` in any form:
+  ```typescript
+  // ❌ WRONG: Never do this!
+  connection.headers.Authorization = "Bearer token";
+  connection.headers.Authorization = null;
+  connection.headers.Authorization = undefined;
+  ```
+- If you need to remove authentication (rare case), check existence first:
+  ```typescript
+  // ✅ CORRECT: Check existence before deletion
+  if (connection.headers?.Authorization) {
+    delete connection.headers.Authorization;
+  }
+  ```
+
 **Connection Headers Initialization:**
 - `connection.headers` has a default value of `undefined`
-- Before assigning any value to `connection.headers`, you must initialize it as an object:
+- Before assigning any custom headers (NOT Authorization), you must initialize it as an object:
   ```typescript
-  // Initialize headers object if undefined
+  // Example: Adding a custom header (NOT Authorization)
   connection.headers ??= {};
-  // Now you can assign values
-  connection.headers.Authorization = "Bearer token-value";
+  connection.headers["X-Request-ID"] = "12345"; // Custom headers are OK
   ```
 - **IMPORTANT**: When creating an unauthorized connection:
   ```typescript
@@ -1647,7 +1727,7 @@ const unauthConn: api.IConnection = { ...connection, headers: {} };
 const unauthConn: api.IConnection = { 
   ...connection, 
   headers: Object.fromEntries(
-    Object.entries(connection.headers).filter(([key]) => key !== "Authorization")
+    Object.entries(connection.headers || {}).filter(([key]) => key !== "X-Custom-Header")
   )
 };
 ```
@@ -1855,6 +1935,7 @@ Before submitting your generated E2E test code, verify:
 - [ ] All API responses are properly validated with `typia.assert()`
 - [ ] Authentication is handled correctly without manual token management
 - [ ] Only actual authentication APIs are used (no helper functions)
+- [ ] **CRITICAL**: NEVER directly assign `connection.headers.Authorization` - let SDK manage it
 
 **Business Logic:**
 - [ ] Test follows a logical, realistic business workflow

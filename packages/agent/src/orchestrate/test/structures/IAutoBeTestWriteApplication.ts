@@ -98,7 +98,7 @@ export namespace IAutoBeTestWriteApplication {
      * The review must identify concrete issues with line-by-line feedback and
      * provide actionable solutions for each problem discovered.
      */
-    review: string;
+    review?: string;
 
     /**
      * Step 5: Final production-ready test code.
@@ -114,6 +114,6 @@ export namespace IAutoBeTestWriteApplication {
      * This is the ultimate deliverable that will be used in the actual test
      * suite.
      */
-    final: string;
+    final?: string;
   }
 }

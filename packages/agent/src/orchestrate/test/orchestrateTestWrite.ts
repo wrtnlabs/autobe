@@ -85,10 +85,20 @@ async function process<Model extends ILlmSchema.Model>(
     promptCacheKey,
     message: "Create e2e test functions.",
   });
-  if (pointer.value === null) throw new Error("Failed to create test code.");
+  if (pointer.value === null) {
+    ++progress.completed;
+    throw new Error("Failed to create test code.");
+  }
 
   const compiler: IAutoBeCompiler = await ctx.compiler();
-  pointer.value.final = await compiler.typescript.beautify(pointer.value.final);
+  if (pointer.value.final)
+    pointer.value.final = await compiler.typescript.beautify(
+      pointer.value.final,
+    );
+  else
+    pointer.value.draft = await compiler.typescript.beautify(
+      pointer.value.draft,
+    );
   return {
     type: "testWrite",
     id: v7(),
@@ -119,7 +129,8 @@ function createController<Model extends ILlmSchema.Model>(props: {
     execute: {
       write: (next) => {
         next.draft = completeTestCode(props.artifacts, next.draft);
-        next.final = completeTestCode(props.artifacts, next.final);
+        if (next.final)
+          next.final = completeTestCode(props.artifacts, next.final);
         props.build(next);
       },
     } satisfies IAutoBeTestWriteApplication,

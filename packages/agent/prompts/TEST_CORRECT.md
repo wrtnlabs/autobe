@@ -712,50 +712,151 @@ const x: string & tags.Format<"uuid"> = typia.random<string & tags.Format<"uuid"
 
 **Rule:** Always use the pattern `typia.random<TypeDefinition>()` with explicit generic type arguments, regardless of variable type annotations.
 
-### 5.4.9. Promises Must Be Awaited
+### 5.4.9. 🚨 CRITICAL: Promises Must Be Awaited - ZERO TOLERANCE 🚨
 
-If you encounter the compilation error "Promises must be awaited", this means an asynchronous function is being called without the `await` keyword.
+**THIS IS NOT OPTIONAL - EVERY PROMISE MUST HAVE AWAIT**
 
-**Common error patterns to fix:**
+If you encounter the compilation error "Promises must be awaited", this means an asynchronous function is being called without the `await` keyword. This is a CRITICAL error that MUST be fixed immediately.
+
+**⚠️ AI AGENTS: PAY ATTENTION - THIS IS MANDATORY ⚠️**
+
+**Common error patterns that MUST be fixed:**
 ```typescript
-// WRONG: Missing await for async function calls
-api.functional.users.getUser(connection, userId); // ← Compilation error: Promises must be awaited
-TestValidator.error("test", () => api.functional.users.create(connection, body)); // ← Missing await
+// ❌ ABSOLUTELY WRONG: Missing await for async function calls
+api.functional.users.getUser(connection, userId); // ← CRITICAL ERROR: Promises must be awaited
+api.functional.posts.create(connection, body); // ← CRITICAL ERROR: No await!
+typia.assert(api.functional.users.list(connection)); // ← CRITICAL ERROR: Missing await!
 
-// CORRECT: Use await with async function calls
+// ❌ WRONG: Missing await in TestValidator.error with async callback
+TestValidator.error("test", async () => {
+  api.functional.users.create(connection, body); // ← CRITICAL ERROR: No await inside async!
+});
+
+// ❌ WRONG: Forgetting to await TestValidator.error itself when callback is async
+TestValidator.error("test", async () => { // ← Missing await on TestValidator.error!
+  await api.functional.users.create(connection, body);
+});
+
+// ✅ CORRECT: ALWAYS use await with ALL async function calls
 await api.functional.users.getUser(connection, userId); 
-await TestValidator.error("test", () => api.functional.users.create(connection, body));
+await api.functional.posts.create(connection, body);
+const users = await api.functional.users.list(connection);
+typia.assert(users);
+
+// ✅ CORRECT: Await TestValidator.error when callback is async
+await TestValidator.error("test", async () => {
+  await api.functional.users.create(connection, body);
+});
 ```
 
-**Solution approach:**
-1. **Identify async function calls**: All API SDK functions return Promises
-2. **Add await keyword**: Ensure all async function calls are preceded by `await`
-3. **Check TestValidator calls**: Even within TestValidator functions, API calls must be awaited
-4. **Verify async context**: Ensure the containing function is marked as `async`
+**CRITICAL RULES - MEMORIZE THESE:**
+1. **ALL API SDK functions return Promises** - EVERY SINGLE ONE needs `await`
+2. **No exceptions** - Even if you don't use the result, you MUST await
+3. **TestValidator.error with async callback** - Must await BOTH the TestValidator AND the API calls inside
+4. **Variable assignments** - `const result = await api.functional...` NOT `const result = api.functional...`
+5. **Inside any function** - Whether in main code or callbacks, ALL async calls need await
 
-**Rule:** All asynchronous function calls must use the `await` keyword to properly handle Promises.
-
-### 5.4.10. Connection Headers Initialization
-
-If you encounter errors related to `connection.headers` being undefined when trying to assign values:
-
-**Error pattern:**
+**MORE EXAMPLES OF CRITICAL ERRORS TO AVOID:**
 ```typescript
-// WRONG: Direct assignment when headers is undefined
-connection.headers.Authorization = "Bearer token"; // ← Error: Cannot set property 'Authorization' of undefined
+// ❌ CRITICAL ERROR: Chained calls without await
+const user = api.functional.users.create(connection, userData); // NO AWAIT!
+typia.assert(user); // This will fail - user is a Promise, not the actual data!
+
+// ❌ CRITICAL ERROR: In conditional statements
+if (someCondition) {
+  api.functional.posts.delete(connection, { id }); // NO AWAIT!
+}
+
+// ❌ CRITICAL ERROR: In loops
+for (const item of items) {
+  api.functional.items.process(connection, { id: item.id }); // NO AWAIT!
+}
+
+// ❌ CRITICAL ERROR: Return statements
+return api.functional.users.get(connection, { id }); // NO AWAIT!
+
+// ✅ CORRECT VERSIONS:
+const user = await api.functional.users.create(connection, userData);
+typia.assert(user);
+
+if (someCondition) {
+  await api.functional.posts.delete(connection, { id });
+}
+
+for (const item of items) {
+  await api.functional.items.process(connection, { id: item.id });
+}
+
+return await api.functional.users.get(connection, { id });
 ```
 
-**Solution:**
+**VERIFICATION CHECKLIST - CHECK EVERY LINE:**
+- [ ] Every `api.functional.*` call has `await` in front of it
+- [ ] Every `TestValidator.error` with async callback has `await` in front of it
+- [ ] No bare Promise assignments (always `const x = await ...` not `const x = ...`)
+- [ ] All async operations inside loops have `await`
+- [ ] All async operations inside conditionals have `await`
+- [ ] Return statements with async calls have `await`
+
+**FINAL WARNING:**
+If you generate code with missing `await` keywords, the code WILL NOT COMPILE. This is not a style preference - it's a HARD REQUIREMENT. The TypeScript compiler will reject your code.
+
+**Rule:** 🚨 EVERY asynchronous function call MUST use the `await` keyword - NO EXCEPTIONS! 🚨
+
+### 5.4.10. Connection Headers and Authentication
+
+**IMPORTANT**: The SDK automatically manages authentication headers when you call authentication APIs. You should NOT manually manipulate `connection.headers` for authentication purposes.
+
+**If you encounter compilation errors related to undefined `connection.headers`:**
+
+This typically indicates incorrect manual header manipulation. The proper approach is:
+
+1. **For authenticated requests**: Call the appropriate authentication API (login, join, etc.) and the SDK will manage headers automatically
+2. **For unauthenticated requests**: Create a new connection with empty headers:
+   ```typescript
+   const unauthConn: api.IConnection = { ...connection, headers: {} };
+   ```
+
+**CRITICAL: Never manually assign connection.headers.Authorization**
+
+The SDK automatically manages authentication headers. Manual manipulation is a major anti-pattern:
+
 ```typescript
-// CORRECT: Initialize headers object before assignment
+// ❌ WRONG: Never manually assign Authorization header
 connection.headers ??= {};
-connection.headers.Authorization = "Bearer token";
+connection.headers.Authorization = "Bearer token"; // SDK handles this!
+
+// ❌ WRONG: Never manually set to null/undefined
+connection.headers.Authorization = null;
+connection.headers.Authorization = undefined;
+
+// ❌ WRONG: Pointless operations on empty objects
+const unauthConn: api.IConnection = { ...connection, headers: {} };
+delete unauthConn.headers.Authorization; // Already empty!
 ```
 
-**Solution approach:**
-1. **Check if headers exists**: `connection.headers` has a default value of `undefined`
-2. **Initialize if needed**: Use the nullish coalescing assignment operator `??=` to initialize
-3. **Then assign values**: After initialization, you can safely assign header values
+**Correct authentication approach:**
+```typescript
+// ✅ CORRECT: Let SDK manage authentication
+await api.functional.users.authenticate.login(connection, {
+  body: { email: "user@example.com", password: "password" }
+});
+// Authorization header is now set by SDK - don't touch it!
+
+// ✅ CORRECT: If you need to remove auth (rare)
+if (connection.headers?.Authorization) {
+  delete connection.headers.Authorization;
+}
+```
+
+**Custom headers (NOT Authorization):**
+```typescript
+// ✅ CORRECT: Custom headers are OK
+connection.headers ??= {};
+connection.headers["X-Request-ID"] = "12345";
+connection.headers["X-Client-Version"] = "1.0.0";
+// But NEVER set Authorization manually!
+```
 
 **CRITICAL: Avoid unnecessary operations on empty headers:**
 ```typescript
@@ -772,7 +873,7 @@ unauthConn.headers.Authorization = undefined; // Unnecessary!
 // Remember: {} already means no properties exist. Don't perform operations on non-existent properties!
 ```
 
-**Rule:** Always initialize `connection.headers` as an empty object before assigning any values to it.
+**Rule:** Let the SDK manage authentication headers automatically. Never directly assign `connection.headers.Authorization`. Only create new connections with empty headers when you need unauthenticated requests.
 
 ### 5.4.11. Typia Tag Type Conversion Errors (Compilation Error Fix Only)
 
@@ -1028,18 +1129,27 @@ const unauthConn: api.IConnection = { ...connection, headers: {} };
 unauthConn.headers.Authorization = null;  // Setting null in empty object!
 unauthConn.headers.Authorization = undefined;  // Setting undefined in empty object!
 
+// CRITICAL ERROR: Manually assigning authentication token
+connection.headers ??= {};
+connection.headers.Authorization = "Bearer my-token";  // NEVER DO THIS! SDK manages auth!
+
 // FIX: Remove ALL unnecessary operations
 const unauthConn: api.IConnection = { ...connection, headers: {} };
 // STOP HERE! The empty object {} already means no Authorization header exists!
 // Do NOT: delete, set to null, set to undefined, or any other pointless operation
 
-// OR if you need to remove Authorization from existing headers:
-const unauthConn: api.IConnection = {
+// OR if you need to remove a custom header from existing headers:
+const modifiedConn: api.IConnection = {
   ...connection,
   headers: Object.fromEntries(
-    Object.entries(connection.headers).filter(([key]) => key !== "Authorization")
+    Object.entries(connection.headers || {}).filter(([key]) => key !== "X-Custom-Header")
   )
 };
+
+// BUT for Authorization removal (rare), check existence first:
+if (connection.headers?.Authorization) {
+  delete connection.headers.Authorization;
+}
 ```
 
 **CRITICAL REMINDER**: Always review your TypeScript code logically before submitting:
@@ -1063,6 +1173,30 @@ const apiResponse: string | null | undefined = await someApiCall();
 const processedValue: string = apiResponse;
 // Error: Type 'string | null | undefined' is not assignable to type 'string'.
 //        Type 'undefined' is not assignable to type 'string'.
+```
+
+**CRITICAL: Types that are BOTH nullable AND undefinable**
+```typescript
+// When a type can be BOTH null and undefined, you MUST check both:
+const score: number | null | undefined = getTestScore();
+
+// ❌ WRONG: Only checking null - compilation error!
+if (score !== null) {
+  const validScore: number = score; // ERROR! score could still be undefined
+  // Error: Type 'number | undefined' is not assignable to type 'number'
+}
+
+// ❌ WRONG: Only checking undefined - compilation error!
+if (score !== undefined) {
+  const validScore: number = score; // ERROR! score could still be null  
+  // Error: Type 'number | null' is not assignable to type 'number'
+}
+
+// ✅ CORRECT: Check BOTH null AND undefined
+if (score !== null && score !== undefined) {
+  const validScore: number = score; // Safe - score is definitely number
+  TestValidator.predicate("score is passing", validScore >= 70);
+}
 ```
 
 **Solution 1: Conditional Checks (When branching logic is needed)**
@@ -1105,6 +1239,60 @@ typia.assert<{ data: { items: string[] } }>(result);
 const items: string[] = result.data.items; // Safe
 ```
 
+**Complex Real-World Example with Mixed Nullable/Undefinable:**
+```typescript
+// Common in API responses - different fields have different nullable patterns
+interface IUserProfile {
+  id: string;
+  name: string | null;              // Name can be null but not undefined
+  email?: string;                   // Email can be undefined but not null
+  phone: string | null | undefined; // Phone can be BOTH null or undefined
+  metadata?: {
+    lastLogin: Date | null;         // Can be null (never logged in)
+    preferences?: Record<string, any>; // Can be undefined (not set)
+  };
+}
+
+const profile: IUserProfile = await getUserProfile();
+
+// ❌ WRONG: Incomplete null/undefined handling
+if (profile.phone) {
+  // This misses the case where phone is empty string ""
+  sendSMS(profile.phone); 
+}
+
+if (profile.phone !== null) {
+  // ERROR! phone could still be undefined
+  const phoneNumber: string = profile.phone;
+}
+
+// ✅ CORRECT: Comprehensive checks for mixed nullable/undefinable
+if (profile.phone !== null && profile.phone !== undefined && profile.phone.length > 0) {
+  const phoneNumber: string = profile.phone; // Safe - definitely non-empty string
+  sendSMS(phoneNumber);
+}
+
+// ✅ CORRECT: Using typia for complete validation
+try {
+  typia.assert<{
+    id: string;
+    name: string;      // Will throw if null
+    email: string;     // Will throw if undefined
+    phone: string;     // Will throw if null OR undefined
+    metadata: {
+      lastLogin: Date; // Will throw if null
+      preferences: Record<string, any>; // Will throw if undefined
+    };
+  }>(profile);
+  
+  // All values are now guaranteed to be non-null and defined
+  console.log(`User ${profile.name} logged in at ${profile.metadata.lastLogin}`);
+} catch (error) {
+  // Handle incomplete profile data
+  console.log("Profile data is incomplete");
+}
+```
+
 **Array Elements with Nullable Types:**
 ```typescript
 // COMPILATION ERROR: find() returns T | undefined
@@ -1141,6 +1329,18 @@ Your corrected code must:
 - Resolve all TypeScript compilation errors identified in the diagnostics
 - Compile successfully without any errors or warnings
 - Maintain proper TypeScript syntax and type safety
+- **CRITICAL**: Never manually assign `connection.headers.Authorization` - let SDK manage it
+- **🚨 CRITICAL**: EVERY Promise/async function call MUST have `await` - NO EXCEPTIONS
+
+**Promise/Await Verification Checklist - MANDATORY:**
+- [ ] **Every `api.functional.*` call has `await`** - Check EVERY SINGLE ONE
+- [ ] **Every `TestValidator.error` with async callback has `await`** - Both on the TestValidator AND inside the callback
+- [ ] **No bare Promise assignments** - Always `const x = await ...` not `const x = ...`
+- [ ] **All async operations inside loops have `await`** - for/while/forEach loops
+- [ ] **All async operations inside conditionals have `await`** - if/else/switch statements
+- [ ] **Return statements with async calls have `await`** - `return await api.functional...`
+- [ ] **Promise.all() calls have `await`** - `await Promise.all([...])`
+- [ ] **No floating Promises** - Every Promise must be awaited or returned
 
 **Functionality Preservation vs Compilation Success:**
 - Prioritize compilation success over preserving original functionality when they conflict
@@ -1152,11 +1352,15 @@ Your corrected code must:
 - Follow all conventions and requirements from the original system prompt
 - Apply actual-first, expected-second pattern for equality assertions
 - Remove only unimplementable functionality, not working code
+- **VERIFY**: Double-check EVERY async function call has `await` before submitting
 
 **Systematic Approach:**
 - Analyze compilation diagnostics systematically
 - Address root causes rather than just symptoms
 - Ensure fixes don't introduce new compilation errors
 - Verify the corrected code maintains test coherence
+- **FINAL CHECK**: Scan entire code for missing `await` keywords
+
+**REMEMBER:** Missing `await` keywords will cause immediate compilation failure. This is not negotiable - the TypeScript compiler enforces this strictly.
 
 Generate corrected code that achieves successful compilation while maintaining all original requirements and functionality.

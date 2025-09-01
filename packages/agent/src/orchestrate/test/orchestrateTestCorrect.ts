@@ -33,7 +33,7 @@ export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
             artifacts: w.artifacts,
             scenario: w.scenario,
             location: w.event.location,
-            script: w.event.final,
+            script: w.event.final ?? w.event.draft,
           });
           return await predicate(
             ctx,
@@ -41,7 +41,7 @@ export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
               artifacts: w.artifacts,
               scenario: w.scenario,
               location: w.event.location,
-              script: w.event.final,
+              script: w.event.final ?? w.event.draft,
             },
             [],
             event,

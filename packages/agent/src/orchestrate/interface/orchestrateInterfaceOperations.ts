@@ -34,6 +34,14 @@ export async function orchestrateInterfaceOperations<
     capacity,
   });
 
+  const progress: AutoBeProgressEventBase = {
+    total: matrix.flat().length,
+    completed: 0,
+  };
+  const reviewProgress: AutoBeProgressEventBase = {
+    total: matrix.length,
+    completed: 0,
+  };
   return (
     await executeCachedBatch(
       matrix.map((it) => async (promptCacheKey) => {
@@ -41,14 +49,8 @@ export async function orchestrateInterfaceOperations<
           ctx,
           it,
           3,
-          {
-            total: matrix.length,
-            completed: 0,
-          },
-          {
-            total: matrix.length,
-            completed: 0,
-          },
+          progress,
+          reviewProgress,
           promptCacheKey,
         );
         return row;
@@ -116,6 +118,7 @@ async function process<Model extends ILlmSchema.Model>(
       model: ctx.model,
       roles: ctx.state().analyze?.roles.map((it) => it.name) ?? [],
       build: (operations) => {
+        typia.misc.assertClone(operations);
         pointer.value ??= [];
         const matrix: AutoBeOpenApi.IOperation[][] = operations.map((op) => {
           if (op.authorizationRoles.length === 0)
