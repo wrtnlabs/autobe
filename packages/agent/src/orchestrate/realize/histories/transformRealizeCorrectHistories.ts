@@ -19,7 +19,7 @@ export function transformRealizeCorrectHistories(props: {
   authorization: AutoBeRealizeAuthorization | null;
   totalAuthorizations: AutoBeRealizeAuthorization[];
   code: string;
-  diagnostic: IAutoBeTypeScriptCompileResult.IDiagnostic;
+  failures: IAutoBeTypeScriptCompileResult.IDiagnostic[];
 }): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > {
@@ -34,15 +34,26 @@ export function transformRealizeCorrectHistories(props: {
         \`\`\`typescript
         ${props.code}
         \`\`\`
-
-        The code has a compilation error:
-        
-        \`\`\`json
-        ${JSON.stringify(props.diagnostic)}
-        \`\`\`
       `,
       created_at: new Date().toISOString(),
     },
+    ...props.failures.map(
+      (f) =>
+        ({
+          id: v7(),
+          type: "assistantMessage",
+          text: StringUtil.trim`
+      ## Compile Errors
+
+      Fix the comilation error in the provided code.
+
+      \`\`\`typescript
+      ${JSON.stringify(f)}
+      \`\`\`
+      `,
+          created_at: new Date().toISOString(),
+        }) satisfies IAgenticaHistoryJson.IAssistantMessage,
+    ),
     {
       id: v7(),
       type: "systemMessage",

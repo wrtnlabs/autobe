@@ -2,6 +2,8 @@ import {
   AutoBeProgressEventBase,
   AutoBeRealizeAuthorization,
   AutoBeRealizeCorrectEvent,
+  AutoBeRealizeFunction,
+  AutoBeRealizeValidateEvent,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
@@ -12,21 +14,87 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { getTestScenarioArtifacts } from "../test/compile/getTestScenarioArtifacts";
 import { IAutoBeTestScenarioArtifacts } from "../test/structures/IAutoBeTestScenarioArtifacts";
 import { transformRealizeCorrectHistories } from "./histories/transformRealizeCorrectHistories";
+import { compileRealizeFiles } from "./internal/compileRealizeFiles";
 import { IAutoBeRealizeCorrectApplication } from "./structures/IAutoBeRealizeCorrectApplication";
 import { IAutoBeRealizeScenarioApplication } from "./structures/IAutoBeRealizeScenarioApplication";
 import { replaceImportStatements } from "./utils/replaceImportStatements";
 
 export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
+  scenarios: IAutoBeRealizeScenarioApplication.IProps[],
+  authorizations: AutoBeRealizeAuthorization[],
+  functions: AutoBeRealizeFunction[],
+  failures: IAutoBeTypeScriptCompileResult.IDiagnostic[],
+  progress: IProgress,
+  life: number = 5,
+): Promise<AutoBeRealizeValidateEvent> {
+  const event = await compileRealizeFiles(ctx, { authorizations, functions });
+  if (event.result.type === "failure") ctx.dispatch(event);
+
+  if (event.result.type === "success") {
+    console.debug("compilation success!");
+    return event;
+  } else if (--life <= 0) return event;
+
+  const diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[] = [
+    ...failures,
+    ...(event.result.type === "failure" ? event.result.diagnostics : []),
+  ];
+
+  const locations: string[] =
+    (event.result.type === "failure"
+      ? event.result.diagnostics.map((d) => d.file)
+      : null
+    )?.filter((el) => el !== null) ?? [];
+
+  progress.total += Object.keys(locations).length;
+
+  await executeCachedBatch(
+    locations.map((location) => async (): Promise<AutoBeRealizeFunction> => {
+      const scenario = scenarios.find((el) => el.location === location);
+      const func = functions.find((el) => el.location === location)!;
+      const errors = diagnostics.filter((d) => d.file === location);
+
+      if (errors.length && scenario) {
+        const correctEvent = await correct(ctx, {
+          totalAuthorizations: authorizations,
+          authorization: scenario.decoratorEvent ?? null,
+          scenario,
+          code: func.content,
+          failures: errors,
+          progress: progress,
+        });
+
+        func.content = correctEvent.content;
+      }
+
+      return func;
+    }),
+  );
+
+  return orchestrateRealizeCorrect(
+    ctx,
+    scenarios,
+    authorizations,
+    functions,
+    diagnostics,
+    progress,
+    life - 1,
+  );
+}
+
+export async function correct<Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
   props: {
     authorization: AutoBeRealizeAuthorization | null;
     totalAuthorizations: AutoBeRealizeAuthorization[];
     scenario: IAutoBeRealizeScenarioApplication.IProps;
     code: string;
-    diagnostic: IAutoBeTypeScriptCompileResult.IDiagnostic;
+    failures: IAutoBeTypeScriptCompileResult.IDiagnostic[];
     progress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeRealizeCorrectEvent> {
@@ -53,7 +121,7 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
       artifacts,
       authorization: props.authorization,
       code: props.code,
-      diagnostic: props.diagnostic,
+      failures: props.failures,
       totalAuthorizations: props.totalAuthorizations,
     }),
     enforceFunctionCall: true,
@@ -118,3 +186,8 @@ const collection = {
   deepseek: claude,
   "3.1": claude,
 };
+
+export interface IProgress {
+  total: number;
+  completed: number;
+}

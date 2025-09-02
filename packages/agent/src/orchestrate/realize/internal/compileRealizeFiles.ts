@@ -16,7 +16,7 @@ export async function compileRealizeFiles<Model extends ILlmSchema.Model>(
     authorizations: AutoBeRealizeAuthorization[];
     functions: AutoBeRealizeFunction[];
   },
-): Promise<IAutoBeTypeScriptCompileResult> {
+): Promise<AutoBeRealizeValidateEvent> {
   const prisma = ctx.state().prisma?.compiled;
   const payloads: Record<string, string> = Object.fromEntries(
     props.authorizations.map((el) => [el.payload.location, el.payload.content]),
@@ -50,22 +50,15 @@ export async function compileRealizeFiles<Model extends ILlmSchema.Model>(
     await compiler.typescript.compile({
       files: files,
     });
-  if (compiled.type === "success") {
-    return compiled;
-  }
 
   const event: AutoBeRealizeValidateEvent = {
     type: "realizeValidate",
     id: v7(),
+    files: files,
     result: compiled,
-    files: Object.fromEntries(
-      compiled.type === "failure"
-        ? compiled.diagnostics.map((d) => [d.file, d.code])
-        : [],
-    ),
     step: ctx.state().analyze?.step ?? 0,
     created_at: new Date().toISOString(),
   };
-  ctx.dispatch(event);
-  return compiled;
+
+  return event;
 }

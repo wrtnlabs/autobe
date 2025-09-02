@@ -52,9 +52,7 @@ export interface AutoBeRealizeValidateEvent
    * that resolve implementation issues while maintaining consistency with the
    * overall application architecture.
    */
-  result:
-    | IAutoBeTypeScriptCompileResult.IFailure
-    | IAutoBeTypeScriptCompileResult.IException;
+  result: IAutoBeTypeScriptCompileResult;
 
   /**
    * Iteration number of the requirements analysis this validation was performed

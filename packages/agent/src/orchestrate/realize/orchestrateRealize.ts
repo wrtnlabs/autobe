@@ -7,7 +7,6 @@ import {
   AutoBeRealizeHistory,
   AutoBeRealizeWriteEvent,
   IAutoBeCompiler,
-  IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
@@ -16,7 +15,6 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { predicateStateMessage } from "../../utils/predicateStateMessage";
-import { compileRealizeFiles } from "./internal/compileRealizeFiles";
 import { orchestrateRealizeAuthorization } from "./orchestrateRealizeAuthorization";
 import { orchestrateRealizeCorrect } from "./orchestrateRealizeCorrect";
 import { orchestrateRealizeScenario } from "./orchestrateRealizeScenario";
@@ -103,76 +101,19 @@ export const orchestrateRealize =
       };
     });
 
-    let compilation = await compileRealizeFiles(ctx, {
+    const reviewProgress = {
+      total: writeEvents.length,
+      completed: writeEvents.length,
+    };
+
+    const result = await orchestrateRealizeCorrect(
+      ctx,
+      scenarios,
       authorizations,
       functions,
-    });
-
-    if (compilation.type !== "success") {
-      const MAX_CORRECTION_ATTEMPTS = 5 as const;
-
-      const reviewProgress = {
-        id: v7(),
-        total: writeEvents.length,
-        completed: writeEvents.length,
-      };
-
-      for (let attempt = 0; attempt < MAX_CORRECTION_ATTEMPTS; attempt++) {
-        if (compilation.type === "failure") {
-          const failedFiles: Record<string, string> = Object.fromEntries(
-            compilation.type === "failure"
-              ? compilation.diagnostics.map((d) => [d.file, d.code])
-              : [],
-          );
-
-          reviewProgress.total += Object.keys(failedFiles).length;
-          const failure: IAutoBeTypeScriptCompileResult.IFailure = compilation;
-
-          await executeCachedBatch(
-            Object.entries(failedFiles).map(
-              ([location, content]) =>
-                async () => {
-                  const diagnostic:
-                    | IAutoBeTypeScriptCompileResult.IDiagnostic
-                    | undefined = failure.diagnostics.find(
-                    (el) => el.file === location,
-                  );
-
-                  const scenario = scenarios.find(
-                    (el) => el.location === location,
-                  );
-                  if (diagnostic && scenario) {
-                    const correctEvent = await orchestrateRealizeCorrect(ctx, {
-                      totalAuthorizations: authorizations,
-                      authorization: scenario.decoratorEvent ?? null,
-                      scenario,
-                      code: content,
-                      diagnostic,
-                      progress: reviewProgress,
-                    });
-
-                    const corrected = functions.find(
-                      (el) => el.location === correctEvent.location,
-                    );
-
-                    if (corrected) {
-                      corrected.content = correctEvent.content;
-                    }
-                  }
-                },
-            ),
-          );
-
-          compilation = await compileRealizeFiles(ctx, {
-            authorizations,
-            functions,
-          });
-          if (compilation.type === "success") {
-            break;
-          }
-        }
-      }
-    }
+      [],
+      reviewProgress,
+    );
 
     const compiler: IAutoBeCompiler = await ctx.compiler();
     const controllers: Record<string, string> =
@@ -181,6 +122,7 @@ export const orchestrateRealize =
         functions,
         authorizations,
       });
+
     return ctx.dispatch({
       type: "realizeComplete",
       id: v7(),
@@ -188,7 +130,7 @@ export const orchestrateRealize =
       functions,
       authorizations,
       controllers,
-      compiled: await compileRealizeFiles(ctx, { authorizations, functions }),
+      compiled: result.result,
       step: ctx.state().analyze?.step ?? 0,
       elapsed: new Date().getTime() - start.getTime(),
     });
