@@ -4,6 +4,7 @@ import {
   IAutoBeTokenUsageJson,
 } from "@autobe/interface";
 import { AutoBeChatMain, AutoBeListener, IAutoBeEventGroup } from "@autobe/ui";
+import { IAutoBeWebviewMessage } from "@autobe/vscode-extension/interface";
 import { ILlmSchema } from "@samchon/openapi";
 import { useEffect, useState } from "react";
 
@@ -38,32 +39,39 @@ const Chat = () => {
       .then(setTokenUsage)
       .catch(() => {});
   }, []);
-
-  vscode.onMessage((message) => {
-    switch (message.type) {
-      case "on_event_auto_be": {
-        const fn =
-          listener.getListener()[message.data.type as keyof IAutoBeRpcListener];
-        if (fn) {
-          fn(message.data as any);
+  useEffect(() => {
+    const defaultEventListenFn = (message: IAutoBeWebviewMessage) => {
+      switch (message.type) {
+        case "on_event_auto_be": {
+          const fn =
+            listener.getListener()[
+              message.data.type as keyof IAutoBeRpcListener
+            ];
+          if (fn) {
+            fn(message.data as any);
+          }
+          return;
         }
-        return;
+        case "res_get_config":
+          setHeader({
+            model: message.data.model as ILlmSchema.Model,
+            vendor: {
+              model: message.data.model,
+              apiKey: message.data.apiKey ?? "",
+              baseURL: message.data.baseUrl ?? "",
+              semaphore: message.data.concurrencyRequest ?? 16,
+            },
+            timezone: message.data.timezone ?? "en-US",
+            locale: message.data.locale ?? "en-US",
+          });
+          break;
       }
-      case "res_get_config":
-        setHeader({
-          model: message.data.model as ILlmSchema.Model,
-          vendor: {
-            model: message.data.model,
-            apiKey: message.data.apiKey ?? "",
-            baseURL: message.data.baseUrl ?? "",
-            semaphore: message.data.concurrencyRequest ?? 16,
-          },
-          timezone: message.data.timezone ?? "en-US",
-          locale: message.data.locale ?? "en-US",
-        });
-        break;
-    }
-  });
+    };
+    vscode.onMessage(defaultEventListenFn);
+    return () => {
+      vscode.offMessage(defaultEventListenFn);
+    };
+  }, [vscode]);
 
   if (header === null) {
     vscode.postMessage({
