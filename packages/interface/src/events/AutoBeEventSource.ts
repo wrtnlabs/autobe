@@ -20,6 +20,7 @@ import { AutoBeRealizeCorrectEvent } from "./AutoBeRealizeCorrectEvent";
 import { AutoBeRealizeWriteEvent } from "./AutoBeRealizeWriteEvent";
 import { AutoBeTestCorrectEvent } from "./AutoBeTestCorrectEvent";
 import { AutoBeTestScenariosEvent } from "./AutoBeTestScenariosEvent";
+import { AutoBeTestScenariosReviewEvent } from "./AutoBeTestScenariosReviewEvent";
 import { AutoBeTestWriteEvent } from "./AutoBeTestWriteEvent";
 
 /**
@@ -76,6 +77,7 @@ export type AutoBeEventSource =
 
   // test
   | AutoBeTestScenariosEvent["type"]
+  | AutoBeTestScenariosReviewEvent["type"]
   | AutoBeTestWriteEvent["type"]
   | AutoBeTestCorrectEvent["type"]
   // realize

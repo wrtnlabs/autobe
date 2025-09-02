@@ -186,6 +186,7 @@ const sleepMap: Record<AutoBeEvent.Type, number> = {
   // TEST
   testStart: 1_000,
   testScenarios: 40,
+  testScenariosReview: 40,
   testWrite: 40,
   testValidate: 100,
   testCorrect: 100,

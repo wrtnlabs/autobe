@@ -47,6 +47,7 @@ export * from "./AutoBeInterfaceStartEvent";
 export * from "./AutoBeTestCompleteEvent";
 export * from "./AutoBeTestCorrectEvent";
 export * from "./AutoBeTestScenariosEvent";
+export * from "./AutoBeTestScenariosReviewEvent";
 export * from "./AutoBeTestStartEvent";
 export * from "./AutoBeTestValidateEvent";
 export * from "./AutoBeTestWriteEvent";
