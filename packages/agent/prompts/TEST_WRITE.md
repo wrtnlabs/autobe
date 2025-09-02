@@ -398,6 +398,71 @@ If the test scenario description includes functionality that cannot be implement
 3. **Functionality Scope**: Implement only the parts of the scenario that are technically possible
 4. **Graceful Omission**: Skip unimplementable parts without attempting workarounds or assumptions
 
+**⚠️ CRITICAL: Property Access Rules**
+
+**Common AI Mistakes with Properties:**
+
+```typescript
+// ❌ WRONG: Using non-existent properties (AI often invents these)
+const user = await api.functional.users.create(connection, {
+  body: {
+    email: "test@example.com",
+    fullName: "John Doe",  // Property doesn't exist in IUser.ICreate!
+    phoneNumber: "123-456-7890"  // Property doesn't exist!
+  } satisfies IUser.ICreate
+});
+
+// ✅ CORRECT: Only use properties that actually exist in the DTO
+const user = await api.functional.users.create(connection, {
+  body: {
+    email: "test@example.com",
+    name: "John Doe",  // Use the actual property name
+    phone: "123-456-7890"  // Use the actual property name
+  } satisfies IUser.ICreate
+});
+```
+
+**Response Property Access:**
+```typescript
+// ❌ WRONG: Accessing non-existent response properties
+const order = await api.functional.orders.create(connection, { body: orderData });
+const orderId = order.order_id;  // Property might not exist!
+const customerName = order.customer.full_name;  // Nested property might not exist!
+
+// ✅ CORRECT: Access only properties that exist in the response type
+const order = await api.functional.orders.create(connection, { body: orderData });
+const orderId = order.id;  // Use actual property name from response type
+const customerName = order.customer.name;  // Use actual nested property
+```
+
+**Missing Required Properties:**
+```typescript
+// ❌ WRONG: Missing required properties in request body
+const product = await api.functional.products.create(connection, {
+  body: {
+    name: "Product Name"
+    // Missing required properties: price, category, etc.
+  } satisfies IProduct.ICreate
+});
+
+// ✅ CORRECT: Include ALL required properties
+const product = await api.functional.products.create(connection, {
+  body: {
+    name: "Product Name",
+    price: 1000,
+    category: "electronics",
+    description: "Product description"
+  } satisfies IProduct.ICreate
+});
+```
+
+**Property Name Rules:**
+1. **Check the exact property names** in the provided DTO types - don't guess or assume
+2. **Use the exact casing** - `userId` not `user_id`, `createdAt` not `created_at`
+3. **Check nested property paths** - `user.profile.name` not `user.profileName`
+4. **Include ALL required properties** - TypeScript will error if any are missing
+5. **Don't add extra properties** - Only use properties defined in the DTO type
+
 Focus on creating a working, realistic test that validates the available functionality rather than trying to implement non-existent features.
 
 ### 3.1. Test Function Structure
@@ -887,7 +952,16 @@ typia.assert<IUser>(user); // Ensures user is not null
 ```
 
 **Solution 3: Non-null Assertion with typia.assert Safety Net (Use when logic guarantees non-null)**
+
+⚠️ **CRITICAL WARNING**: Never forget the `!` when using `typia.assert` with non-null assertions!
+
 ```typescript
+// ❌ WRONG: Forgetting the ! in typia.assert
+const value = typia.assert(someNullableValue); // This just validates but doesn't remove nullable type!
+
+// ✅ CORRECT: Always include the ! inside typia.assert
+const value = typia.assert(someNullableValue!); // Properly removes nullable and validates at runtime
+
 // ✅ When logic guarantees value cannot be null/undefined, but TypeScript type system still shows nullable
 // Use non-null assertion (!) with typia.assert for double safety
 const firstWithShipped = filteredDeliveryPage.data.find(
@@ -896,7 +970,7 @@ const firstWithShipped = filteredDeliveryPage.data.find(
 if (firstWithShipped) {
   // Logic guarantees shipped_at is not null/undefined due to find condition
   // But TypeScript still sees it as nullable
-  const shippedAt = typia.assert(firstWithShipped.shipped_at!);
+  const shippedAt = typia.assert(firstWithShipped.shipped_at!); // NEVER forget the !
   // Now shippedAt is safely typed as non-nullable string
   
   const filteredByDate = await api.functional.shoppingMallAiBackend.customer.orders.deliveries.index(
@@ -922,6 +996,16 @@ if (activeUser) {
 const deepValue = obj?.nested?.value;
 if (deepValue !== undefined) {
   const value = typia.assert(deepValue!); // Safe - we checked undefined
+}
+
+// ⚠️ COMMON MISTAKE: Forgetting the ! in typia.assert
+const user = users.find(u => u.id === targetId);
+if (user) {
+  // ❌ WRONG: Forgetting the !
+  const userId = typia.assert(user.id); // Still nullable type!
+  
+  // ✅ CORRECT: Always include the !
+  const userId = typia.assert(user.id!); // Properly typed as non-nullable
 }
 ```
 
@@ -996,8 +1080,18 @@ typia.assert<{
 3. **Use `typia.assert(value!)` pattern when logic guarantees non-null** - When you've already filtered/checked for null but TypeScript doesn't narrow the type
 4. **Be explicit about nullable handling** - Don't ignore potential null/undefined values
 5. **Avoid bare non-null assertion (!)** - Always wrap with `typia.assert()` for runtime safety: `typia.assert(x!)` not just `x!`
+6. **⚠️ NEVER forget the `!` when using typia.assert for non-null assertions** - `typia.assert(value!)` NOT `typia.assert(value)`
 
-**Rule:** Always validate nullable/undefined values before assigning to non-nullable types. Prefer `typia.assert` for straightforward type validation, use conditional checks only when branching logic is required, and use `typia.assert(value!)` when your logic guarantees non-null but TypeScript's type system doesn't recognize it.
+**Critical Reminder - Common AI Mistakes:**
+```typescript
+// ❌ AI OFTEN FORGETS THE ! 
+const issuanceId = typia.assert(issuance.id); // WRONG - Still nullable!
+
+// ✅ ALWAYS INCLUDE THE !
+const issuanceId = typia.assert(issuance.id!); // CORRECT - Properly non-nullable
+```
+
+**Rule:** Always validate nullable/undefined values before assigning to non-nullable types. Prefer `typia.assert` for straightforward type validation, use conditional checks only when branching logic is required, and use `typia.assert(value!)` when your logic guarantees non-null but TypeScript's type system doesn't recognize it. NEVER forget the `!` inside `typia.assert()` when removing nullable types.
 
 ### 3.6. Authentication Handling
 

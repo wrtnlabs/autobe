@@ -48,7 +48,7 @@ export const transformTestScenarioHistories = (
     {
       id: v7(),
       created_at: new Date().toISOString(),
-      type: "systemMessage",
+      type: "assistantMessage",
       text: StringUtil.trim`
         # Operations
 
@@ -73,11 +73,11 @@ export const transformTestScenarioHistories = (
         )}
         \`\`\`
       `,
-    } satisfies IAgenticaHistoryJson.ISystemMessage,
+    } satisfies IAgenticaHistoryJson.IAssistantMessage,
     {
       id: v7(),
       created_at: new Date().toISOString(),
-      type: "systemMessage",
+      type: "assistantMessage",
       text: StringUtil.trim`
         # Included in Test Plan
 
@@ -121,6 +121,6 @@ export const transformTestScenarioHistories = (
           .map((el) => `- ${el.method.toUpperCase()}: ${el.path}`)
           .join("\n")}
       `,
-    } satisfies IAgenticaHistoryJson.ISystemMessage,
+    } satisfies IAgenticaHistoryJson.IAssistantMessage,
   ];
 };

@@ -738,6 +738,98 @@ If the original code attempts to implement functionality that cannot be realized
 3. **Maintain type safety**: Ensure parameter order follows the type-safe guidelines (first parameter determines generic type)
 4. **Verify function signatures**: Check that each function call receives the correct number of parameters
 
+### 5.4.7. Property Access Errors - Non-existent and Missing Required Properties
+
+**⚠️ CRITICAL: Only use properties that actually exist in the DTO types**
+
+**Common AI Mistakes with Properties:**
+
+**1. Using Non-existent Properties in Request Bodies**
+```typescript
+// COMPILATION ERROR: Property doesn't exist
+const user = await api.functional.users.create(connection, {
+  body: {
+    email: "test@example.com",
+    fullName: "John Doe",  // Error: Property 'fullName' does not exist on type 'IUser.ICreate'
+    phoneNumber: "123-456-7890"  // Error: Property 'phoneNumber' does not exist
+  } satisfies IUser.ICreate
+});
+
+// FIX: Use the actual property names from the DTO
+const user = await api.functional.users.create(connection, {
+  body: {
+    email: "test@example.com",
+    name: "John Doe",  // Use correct property name
+    phone: "123-456-7890"  // Use correct property name
+  } satisfies IUser.ICreate
+});
+```
+
+**2. Accessing Non-existent Response Properties**
+```typescript
+// COMPILATION ERROR: Property doesn't exist on response
+const order = await api.functional.orders.create(connection, { body: orderData });
+const orderId = order.order_id;  // Error: Property 'order_id' does not exist
+const customerName = order.customer.full_name;  // Error: Property 'full_name' does not exist
+
+// FIX: Use actual property names from response type
+const order = await api.functional.orders.create(connection, { body: orderData });
+const orderId = order.id;  // Use correct property name
+const customerName = order.customer.name;  // Use correct nested property
+```
+
+**3. Missing Required Properties**
+```typescript
+// COMPILATION ERROR: Missing required properties
+const product = await api.functional.products.create(connection, {
+  body: {
+    name: "Product Name"
+    // Error: Missing required properties: 'price', 'category'
+  } satisfies IProduct.ICreate
+});
+
+// FIX: Include ALL required properties
+const product = await api.functional.products.create(connection, {
+  body: {
+    name: "Product Name",
+    price: 1000,  // Add missing required property
+    category: "electronics",  // Add missing required property
+    description: "Product description"  // Add if required
+  } satisfies IProduct.ICreate
+});
+```
+
+**4. Wrong Property Casing**
+```typescript
+// COMPILATION ERROR: Wrong property casing
+const filter = {
+  user_id: "123",  // Error: Property 'user_id' does not exist
+  created_at: new Date()  // Error: Property 'created_at' does not exist
+} satisfies IFilter;
+
+// FIX: Use correct camelCase property names
+const filter = {
+  userId: "123",  // Correct camelCase
+  createdAt: new Date()  // Correct camelCase
+} satisfies IFilter;
+```
+
+**Property Verification Strategy:**
+1. **Check DTO definitions** - Look at the exact property names in the provided DTOs
+2. **Verify property existence** - Ensure every property you use exists in the type
+3. **Check required properties** - Include all non-optional properties
+4. **Use correct casing** - Follow the exact casing from the DTO (usually camelCase)
+5. **Check nested paths** - Verify full property paths for nested objects
+
+**Resolution Checklist:**
+- ✅ Are all property names spelled correctly?
+- ✅ Do all properties exist in the DTO type?
+- ✅ Are all required properties included?
+- ✅ Is the property casing correct (camelCase vs snake_case)?
+- ✅ Are nested property paths valid?
+
+**IMPORTANT**: TypeScript will catch these errors at compile time. Always refer to the actual DTO definitions to ensure you're using the correct property names and including all required properties.
+
 ### 5.4.8. Missing Generic Type Arguments in typia.random()
 
 If you encounter compilation errors related to `typia.random()` calls without explicit generic type arguments, fix them by adding the required type parameters.
@@ -1365,6 +1457,9 @@ const processedValue: string = apiResponse; // Now safe
 ```
 
 **Solution 3: Non-null Assertion with typia.assert (When logic guarantees non-null)**
+
+⚠️ **CRITICAL WARNING**: Never forget the `!` when using `typia.assert` with non-null assertions!
+
 ```typescript
 // COMPILATION ERROR: TypeScript doesn't narrow type despite logical guarantee
 const firstWithShipped = filteredDeliveryPage.data.find(
@@ -1375,13 +1470,18 @@ if (firstWithShipped) {
   // Error: Type 'string | null | undefined' is not assignable to type 'string'
 }
 
-// FIX: Use non-null assertion with typia.assert for double safety
+// ❌ WRONG FIX: Forgetting the ! in typia.assert
+if (firstWithShipped) {
+  const shippedAt = typia.assert(firstWithShipped.shipped_at); // Still nullable type!
+}
+
+// ✅ CORRECT FIX: Always include the ! inside typia.assert
 const firstWithShipped = filteredDeliveryPage.data.find(
   (d) => d.shipped_at !== null && d.shipped_at !== undefined,
 );
 if (firstWithShipped) {
   // Logic guarantees non-null due to find condition, but TS doesn't know
-  const shippedAt = typia.assert(firstWithShipped.shipped_at!);
+  const shippedAt = typia.assert(firstWithShipped.shipped_at!); // NEVER forget the !
   // Now shippedAt is safely typed as string with runtime validation
 }
 
@@ -1394,6 +1494,16 @@ if (activeItem) {
 // FIX: 
 if (activeItem) {
   const value = typia.assert(activeItem.value!); // Safe - condition guarantees non-null
+}
+
+// ⚠️ COMMON MISTAKE: Forgetting the ! in typia.assert
+const issuance = await api.functional.issuances.at(connection, { id: targetId });
+if (issuance && issuance.id) {
+  // ❌ WRONG: AI often forgets the !
+  const issuanceId = typia.assert(issuance.id); // Still nullable!
+  
+  // ✅ CORRECT: Always include the !
+  const issuanceId = typia.assert(issuance.id!); // Properly non-nullable
 }
 
 // ERROR: Complex property access with logical checks
@@ -1502,9 +1612,19 @@ typia.assert<IUser>(admin); // Throws if undefined
 3. **Use conditional checks only when branching is needed** - When null requires different logic
 4. **Use `typia.assert(value!)` when logic guarantees non-null** - When TypeScript can't infer non-null despite logical guarantees
 5. **Avoid bare non-null assertion (!)** - Always combine with `typia.assert()` for runtime safety
-6. **Consider the business logic** - Sometimes null/undefined indicates a real error condition
+6. **⚠️ NEVER forget the `!` when using typia.assert for non-null assertions** - `typia.assert(value!)` NOT `typia.assert(value)`
+7. **Consider the business logic** - Sometimes null/undefined indicates a real error condition
 
-**Rule:** TypeScript's strict null checks prevent runtime errors. Always validate nullable values before assignment. Use `typia.assert` for straightforward validation, conditional checks for branching logic, and `typia.assert(value!)` when your code logic guarantees non-null but TypeScript's control flow analysis doesn't recognize it.
+**Critical Reminder - Common AI Mistakes:**
+```typescript
+// ❌ AI OFTEN FORGETS THE ! 
+const userId = typia.assert(user.id); // WRONG - Still nullable!
+
+// ✅ ALWAYS INCLUDE THE !
+const userId = typia.assert(user.id!); // CORRECT - Properly non-nullable
+```
+
+**Rule:** TypeScript's strict null checks prevent runtime errors. Always validate nullable values before assignment. Use `typia.assert` for straightforward validation, conditional checks for branching logic, and `typia.assert(value!)` when your code logic guarantees non-null but TypeScript's control flow analysis doesn't recognize it. NEVER forget the `!` inside `typia.assert()` when removing nullable types.
 
 ## 6. Correction Requirements
 
