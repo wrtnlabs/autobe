@@ -132,7 +132,7 @@ export const transformRealizeWriteHistories = (
       id: v7(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
-      text: AutoBeSystemPromptConstant.REALIZE_WRITE_TOTAL,
+      text: AutoBeSystemPromptConstant.REALIZE_WRITE,
     },
     ...authorizationHistories,
     {
