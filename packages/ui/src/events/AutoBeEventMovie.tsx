@@ -1,4 +1,4 @@
-import { AutoBeEvent, IAutoBeGetFilesOptions } from "@autobe/interface";
+import { AutoBeEvent } from "@autobe/interface";
 
 import {
   AutoBeCompleteEventMovie,
@@ -13,11 +13,9 @@ import {
   ValidateEventGroup,
 } from ".";
 import { AutoBeAssistantMessageMovie, AutoBeUserMessageMovie } from "..";
+import { useAutoBeAgent } from "../context/AutoBeAgentContext";
 
 export interface IAutoBeEventMovieProps<Event extends AutoBeEvent> {
-  getFiles: (
-    options?: Partial<IAutoBeGetFilesOptions>,
-  ) => Promise<Record<string, string>>;
   events: Event[];
   last: boolean;
 }
@@ -25,6 +23,8 @@ export interface IAutoBeEventMovieProps<Event extends AutoBeEvent> {
 export function AutoBeEventMovie<Event extends AutoBeEvent>(
   props: IAutoBeEventMovieProps<Event>,
 ) {
+  const { service } = useAutoBeAgent();
+
   const back: Event = props.events[props.events.length - 1]!;
   switch (back.type) {
     case "userMessage":
@@ -92,7 +92,7 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
     case "testComplete":
     case "realizeComplete":
       return (
-        <AutoBeCompleteEventMovie getFiles={props.getFiles} event={back} />
+        <AutoBeCompleteEventMovie getFiles={service.getFiles} event={back} />
       );
     // CORRECT EVENTS
     case "prismaCorrect":

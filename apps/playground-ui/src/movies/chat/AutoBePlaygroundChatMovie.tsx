@@ -1,20 +1,15 @@
+import { IAutoBePlaygroundHeader, IAutoBeRpcService } from "@autobe/interface";
 import {
-  IAutoBePlaygroundHeader,
-  IAutoBeRpcService,
-  IAutoBeTokenUsageJson,
-} from "@autobe/interface";
-import {
+  AutoBeAgentProvider,
   AutoBeChatMain,
   AutoBeListener,
   IAutoBeEventGroup,
   IAutoBeUploadConfig,
 } from "@autobe/ui";
 import { useMediaQuery } from "@autobe/ui/hooks";
-import { AppBar, Container, Toolbar, Typography } from "@mui/material";
+import { AppBar, Toolbar, Typography } from "@mui/material";
 import { ILlmSchema } from "@samchon/openapi";
-import { useEffect, useState } from "react";
-
-import { AutoBePlaygroundChatSideMovie } from "./AutoBePlaygroundChatSideMovie";
+import { useState } from "react";
 
 export function AutoBePlaygroundChatMovie(
   props: AutoBePlaygroundChatMovie.IProps,
@@ -23,30 +18,7 @@ export function AutoBePlaygroundChatMovie(
   // VARIABLES
   //----
   // STATES
-  const [error, setError] = useState<Error | null>(null);
-  const [eventGroups, setEventGroups] = useState<IAutoBeEventGroup[]>(
-    props?.eventGroups ?? [],
-  );
-  const [tokenUsage, setTokenUsage] = useState<IAutoBeTokenUsageJson | null>(
-    null,
-  );
-
-  //----
-  // EVENT INTERACTIONS
-  //----
-  useEffect(() => {
-    props.listener.on(async (e) => {
-      props.service
-        .getTokenUsage()
-        .then(setTokenUsage)
-        .catch(() => {});
-      setEventGroups(e);
-    });
-    props.service
-      .getTokenUsage()
-      .then(setTokenUsage)
-      .catch(() => {});
-  }, []);
+  const [, setError] = useState<Error | null>(null);
 
   //----
   // RENDERERS
@@ -80,41 +52,23 @@ export function AutoBePlaygroundChatMovie(
           overflow: "hidden",
         }}
       >
-        {isMobile || (
-          <div
-            style={{
-              overflowY: "auto",
-              backgroundColor: "#eeeeee",
-              minWidth: "24rem",
-            }}
-          >
-            <Container maxWidth={false}>
-              <AutoBePlaygroundChatSideMovie
-                header={props.header}
-                tokenUsage={tokenUsage}
-                error={error}
-                state={props.listener.getState()}
-              />
-            </Container>
-          </div>
-        )}
-
-        <AutoBeChatMain
-          isMobile={isMobile}
-          eventGroups={eventGroups}
+        <AutoBeAgentProvider
+          listener={props.listener}
           service={props.service}
-          conversate={async (contents) => {
-            await props.service.conversate(contents);
-          }}
-          setError={setError}
-          uploadConfig={props.uploadConfig}
-          tokenUsage={tokenUsage}
           header={props.header}
-          state={props.listener.getState()}
-          style={{
-            backgroundColor: "lightblue",
-          }}
-        />
+        >
+          <AutoBeChatMain
+            isMobile={isMobile}
+            conversate={async (contents) => {
+              await props.service.conversate(contents);
+            }}
+            setError={setError}
+            uploadConfig={props.uploadConfig}
+            style={{
+              backgroundColor: "lightblue",
+            }}
+          />
+        </AutoBeAgentProvider>
       </div>
     </div>
   );

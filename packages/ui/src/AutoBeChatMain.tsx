@@ -1,32 +1,20 @@
-import {
-  AutoBeUserMessageContent,
-  IAutoBePlaygroundHeader,
-  IAutoBeRpcService,
-  IAutoBeTokenUsageJson,
-} from "@autobe/interface";
-import { ILlmSchema } from "@samchon/openapi";
+import { AutoBeUserMessageContent } from "@autobe/interface";
 import { RefObject, useEffect, useRef } from "react";
 
 import {
   AutoBeChatBanner,
   AutoBeChatUploadBox,
   AutoBeEventMovie,
-  AutoBeListenerState,
-  IAutoBeEventGroup,
   IAutoBeUploadConfig,
 } from ".";
+import { useAutoBeAgent } from "./context/AutoBeAgentContext";
 import { useMediaQuery } from "./hooks";
 
 export interface IAutoBeChatMainProps {
   isMobile: boolean;
-  eventGroups: IAutoBeEventGroup[];
-  service: IAutoBeRpcService;
   conversate: (messages: AutoBeUserMessageContent[]) => Promise<void>;
   setError: (error: Error) => void;
   uploadConfig?: IAutoBeUploadConfig;
-  tokenUsage: IAutoBeTokenUsageJson | null;
-  header: IAutoBePlaygroundHeader<ILlmSchema.Model>;
-  state: AutoBeListenerState;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -34,6 +22,7 @@ export interface IAutoBeChatMainProps {
 export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
   const bodyContainerRef = useRef<HTMLDivElement>(null);
   const scrollAnchorRef = useRef<HTMLDivElement>(null);
+  const { eventGroups, tokenUsage, state, header } = useAutoBeAgent();
 
   const listener: RefObject<AutoBeChatUploadBox.IListener> = useRef({
     handleDragEnter: () => {},
@@ -43,7 +32,7 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
   });
 
   useEffect(() => {
-    if (props.eventGroups.length === 0) return;
+    if (eventGroups.length === 0) return;
     scrollAnchorRef.current?.scrollIntoView({
       behavior: "smooth",
     });
@@ -79,9 +68,9 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
       >
         {!isMinWidthLg && (
           <AutoBeChatBanner
-            header={props.header}
-            tokenUsage={props.tokenUsage}
-            state={props.state}
+            header={header}
+            tokenUsage={tokenUsage}
+            state={state}
           />
         )}
 
@@ -93,12 +82,11 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
             flexDirection: "column",
           }}
         >
-          {props.eventGroups.map((e, index) => (
+          {eventGroups.map((e, index) => (
             <AutoBeEventMovie
               key={index}
-              getFiles={props.service.getFiles}
               events={e.events}
-              last={index === props.eventGroups.length - 1}
+              last={index === eventGroups.length - 1}
             />
           ))}
         </div>
