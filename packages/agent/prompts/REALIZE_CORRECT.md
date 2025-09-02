@@ -17,18 +17,20 @@ Fix the compilation error in the provided code - **use aggressive refactoring wh
 
 ## 📋 Output Format (Chain of Thinking)
 
-You must return a structured output following the `IAutoBeRealizeCorrectApplication.IProps` interface. This interface contains all necessary fields for the correction process, including an `errorAnalysis` field for error diagnosis. Each field represents a phase in your error correction process:
+You must return a structured output following the `IAutoBeRealizeCorrectApplication.IProps` interface. This interface contains all necessary fields for the correction process within a `revise` object. Each field in the `revise` object represents a phase in your error correction process:
 
 ```typescript
 export namespace IAutoBeRealizeCorrectApplication {
   export interface IProps {
-    errorAnalysis: string;           // Step 1: Error analysis
-    plan: string;                    // Step 2: Implementation plan
-    prisma_schemas: string;          // Step 3: Relevant schema definitions
-    draft_without_date_type: string; // Step 4: Initial draft (no Date type)
-    review: string;                  // Step 5: Refined version
-    withCompilerFeedback: string;    // Step 6: Compiler feedback integration
-    implementationCode: string;      // Step 7: Final implementation
+    revise: {
+      errorAnalysis: string;           // Step 1: Error analysis
+      plan: string;                    // Step 2: Implementation plan
+      prisma_schemas: string;          // Step 3: Relevant schema definitions
+      draft_without_date_type: string; // Step 4: Initial draft (no Date type)
+      review: string;                  // Step 5: Refined version
+      withCompilerFeedback: string;    // Step 6: Compiler feedback integration
+      implementationCode: string;      // Step 7: Final implementation
+    }
   }
 }
 ```
@@ -43,14 +45,14 @@ export namespace IAutoBeRealizeCorrectApplication {
 - Placeholder text like "TODO" or "N/A"
 - Skipping any field
 
-**✅ MANDATORY FOR EVERY FIELD:**
-- `errorAnalysis`: MUST contain detailed error analysis text
-- `plan`: MUST contain complete implementation plan text
-- `prisma_schemas`: MUST contain valid Prisma schema definitions
-- `draft_without_date_type`: MUST contain actual TypeScript code
-- `review`: MUST contain review analysis text
-- `withCompilerFeedback`: MUST contain either fixes OR "No TypeScript errors detected - skipping this phase"
-- `implementationCode`: MUST contain complete, valid TypeScript function code
+**✅ MANDATORY FOR EVERY FIELD IN THE REVISE OBJECT:**
+- `revise.errorAnalysis`: MUST contain detailed error analysis text
+- `revise.plan`: MUST contain complete implementation plan text
+- `revise.prisma_schemas`: MUST contain valid Prisma schema definitions
+- `revise.draft_without_date_type`: MUST contain actual TypeScript code
+- `revise.review`: MUST contain review analysis text
+- `revise.withCompilerFeedback`: MUST contain either fixes OR "No TypeScript errors detected - skipping this phase"
+- `revise.implementationCode`: MUST contain complete, valid TypeScript function code
 
 **Even if a step seems unnecessary**, you MUST still provide meaningful content:
 - If no errors exist → Still write analysis explaining why there are no errors
@@ -61,7 +63,7 @@ export namespace IAutoBeRealizeCorrectApplication {
 
 ### Field Descriptions
 
-#### 📊 errorAnalysis (Step 1 - CoT: Problem Identification)
+#### 📊 revise.errorAnalysis (Step 1 - CoT: Problem Identification)
 
 **Compilation Error Analysis and Resolution Strategy**
 
@@ -120,7 +122,7 @@ Resolution Plan:
 3. Finally, adjust Prisma query structures
 ```
 
-#### 🧠 plan (Step 2 - CoT: Strategy Formation)
+#### 🧠 revise.plan (Step 2 - CoT: Strategy Formation)
 
 **Provider Function Implementation Plan**
 
@@ -134,32 +136,32 @@ Follows the same SCHEMA-FIRST APPROACH as in REALIZE_WRITE_TOTAL:
 
 (See REALIZE_WRITE_TOTAL for detailed requirements)
 
-#### 📄 prisma_schemas (Step 3 - CoT: Context Re-establishment)
+#### 📄 revise.prisma_schemas (Step 3 - CoT: Context Re-establishment)
 
 **Prisma Schema String**
 
 Contains ONLY the relevant models and fields used in this implementation.
 
-#### ✏️ draft_without_date_type (Step 4 - CoT: First Correction Attempt)
+#### ✏️ revise.draft_without_date_type (Step 4 - CoT: First Correction Attempt)
 
 **Draft WITHOUT using native Date type**
 
 Initial skeleton with no `Date` type usage. DO NOT add imports.
 
-#### 🔍 review (Step 5 - CoT: Improvement Phase)
+#### 🔍 revise.review (Step 5 - CoT: Improvement Phase)
 
 **Refined Version**
 
 Improved version with real operations and error handling.
 
-#### 🛠 withCompilerFeedback (Step 6 - CoT: Error Resolution)
+#### 🛠 revise.withCompilerFeedback (Step 6 - CoT: Error Resolution)
 
 **With Compiler Feedback**
 
 - If TypeScript errors detected: Apply fixes
 - If no errors: Must contain text "No TypeScript errors detected - skipping this phase"
 
-#### 💻 implementationCode (Step 7 - CoT: Complete Solution)
+#### 💻 revise.implementationCode (Step 7 - CoT: Complete Solution)
 
 **Final Implementation**
 

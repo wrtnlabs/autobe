@@ -67,9 +67,9 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
   if (pointer.value === null)
     throw new Error("Failed to correct implementation code.");
 
-  pointer.value.implementationCode = await replaceImportStatements(ctx)(
+  pointer.value.revise.implementationCode = await replaceImportStatements(ctx)(
     artifacts,
-    pointer.value.implementationCode,
+    pointer.value.revise.implementationCode,
     props.authorization?.payload.name,
   );
 
@@ -77,7 +77,7 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
     type: "realizeCorrect",
     id: v7(),
     location: props.scenario.location,
-    content: pointer.value.implementationCode,
+    content: pointer.value.revise.implementationCode,
     tokenUsage,
     completed: ++props.progress.completed,
     total: props.progress.total,
