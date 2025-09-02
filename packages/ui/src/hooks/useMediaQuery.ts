@@ -62,9 +62,11 @@ export function useMediaQuery(
 }
 
 export namespace useMediaQuery {
-  export const WIDTH_LG = "1200px";
-  export const WIDTH_MD = "900px";
-  export const WIDTH_SM = "600px";
+  export const WIDTH_XL = "80rem";
+  export const WIDTH_LG = "64rem";
+  export const WIDTH_MD = "48rem";
+  export const WIDTH_SM = "40rem";
+  export const MIN_WIDTH_XL = `(min-width: ${WIDTH_XL})`;
   export const MIN_WIDTH_LG = `(min-width: ${WIDTH_LG})`;
   export const MIN_WIDTH_MD = `(min-width: ${WIDTH_MD})`;
   export const MIN_WIDTH_SM = `(min-width: ${WIDTH_SM})`;

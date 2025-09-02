@@ -1,17 +1,7 @@
-import {
-  IAutoBePlaygroundHeader,
-  IAutoBePlaygroundVendor,
-} from "@autobe/interface";
-import { ILlmSchema } from "@samchon/openapi";
 import { ReactNode } from "react";
 
 import { COLORS } from "../constant/color";
-
-export interface IAutoBeAgentInformationProps {
-  header: Omit<IAutoBePlaygroundHeader<ILlmSchema.Model>, "vendor"> & {
-    vendor: Omit<IAutoBePlaygroundVendor, "apiKey">;
-  };
-}
+import { useAutoBeAgent } from "../context/AutoBeAgentContext";
 
 /** Props interface for InfoRow component */
 interface IInfoRowProps {
@@ -78,12 +68,10 @@ const InfoValue = ({ children }: IInfoValueProps) => (
  * Agent information component displaying model, locale, and configuration
  * details
  *
- * @param props - Component props
  * @returns JSX element representing the agent information
  */
-export const AutoBeAgentInformation = ({
-  header,
-}: IAutoBeAgentInformationProps) => {
+export const AutoBeAgentInformation = () => {
+  const { header } = useAutoBeAgent();
   return (
     <div
       style={{

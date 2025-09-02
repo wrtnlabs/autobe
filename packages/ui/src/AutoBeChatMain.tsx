@@ -22,7 +22,7 @@ export interface IAutoBeChatMainProps {
 export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
   const bodyContainerRef = useRef<HTMLDivElement>(null);
   const scrollAnchorRef = useRef<HTMLDivElement>(null);
-  const { eventGroups, tokenUsage, state, header } = useAutoBeAgent();
+  const { eventGroups } = useAutoBeAgent();
 
   const listener: RefObject<AutoBeChatUploadBox.IListener> = useRef({
     handleDragEnter: () => {},
@@ -66,13 +66,7 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
           margin: "0 auto",
         }}
       >
-        {!isMinWidthLg && (
-          <AutoBeChatBanner
-            header={header}
-            tokenUsage={tokenUsage}
-            state={state}
-          />
-        )}
+        {!isMinWidthLg && <AutoBeChatBanner />}
 
         <div
           style={{

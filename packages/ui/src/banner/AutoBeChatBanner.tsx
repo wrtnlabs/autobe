@@ -1,30 +1,13 @@
-import { IAutoBeTokenUsageJson } from "@autobe/interface";
 import { useState } from "react";
 
 import { Collapsible } from "../common";
 import { COLORS, SHADOWS } from "../constant/color";
 import { ReceiptIcon } from "../icons/Receipt";
-import {
-  AutoBeAgentInformation,
-  IAutoBeAgentInformationProps,
-} from "./AutoBeAgentInformation";
-import { AutoBeChatState, IAutoBeChatStateProps } from "./AutoBeChatState";
-import { AutoBeTokenUsage } from "./AutoBeTokenUsage";
-
-/** Props interface for AutoBeChatBanner component */
-interface IAutoBeChatBannerProps {
-  /** Agent information to display */
-  header: IAutoBeAgentInformationProps["header"];
-
-  /** Token usage data to display */
-  tokenUsage: IAutoBeTokenUsageJson | null;
-
-  /** Chat state to display */
-  state: IAutoBeChatStateProps["state"];
-}
+import { AutoBeAgentInformation } from "./AutoBeAgentInformation";
+import { AutoBeChatState } from "./AutoBeChatState";
 
 /** Chat banner component with collapsible token usage display */
-export const AutoBeChatBanner = (props: IAutoBeChatBannerProps) => {
+export const AutoBeChatBanner = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isReceiptHovered, setIsReceiptHovered] = useState(false);
   const [isCloseHovered, setIsCloseHovered] = useState(false);
@@ -146,17 +129,10 @@ export const AutoBeChatBanner = (props: IAutoBeChatBannerProps) => {
           defaultCollapsed={true}
           animated={true}
         >
-          <AutoBeAgentInformation header={props.header} />
-        </Collapsible>
-        <Collapsible
-          title="Token Usage"
-          defaultCollapsed={false}
-          animated={true}
-        >
-          <AutoBeTokenUsage tokenUsage={props.tokenUsage} />
+          <AutoBeAgentInformation />
         </Collapsible>
         <Collapsible title="Chat State" defaultCollapsed={true} animated={true}>
-          <AutoBeChatState state={props.state} />
+          <AutoBeChatState />
         </Collapsible>
       </div>
     </header>

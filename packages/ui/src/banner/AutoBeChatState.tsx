@@ -6,12 +6,8 @@ import {
   AutoBeTestCompleteEvent,
 } from "@autobe/interface";
 
-import { AutoBeListenerState } from "..";
 import { COLORS } from "../constant/color";
-
-export interface IAutoBeChatStateProps {
-  state: AutoBeListenerState;
-}
+import { useAutoBeAgent } from "../context/AutoBeAgentContext";
 
 /** Common styles for step items */
 const getStepItemStyle = (isActive: boolean): React.CSSProperties => ({
@@ -77,7 +73,8 @@ const StateEmpty = ({ step }: { step: string }) => (
 );
 
 /** Component to display development state information */
-export const AutoBeChatState = (props: IAutoBeChatStateProps) => {
+export const AutoBeChatState = () => {
+  const { state } = useAutoBeAgent();
   const containerStyle: React.CSSProperties = {
     display: "flex",
     flexDirection: "column",
@@ -90,12 +87,8 @@ export const AutoBeChatState = (props: IAutoBeChatStateProps) => {
     <div style={containerStyle}>
       <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
         {steps.map((stepType) =>
-          props.state[stepType] ? (
-            <StateStep
-              key={stepType}
-              step={stepType}
-              data={props.state[stepType]}
-            />
+          state[stepType] ? (
+            <StateStep key={stepType} step={stepType} data={state[stepType]} />
           ) : (
             <StateEmpty key={stepType} step={stepType} />
           ),
