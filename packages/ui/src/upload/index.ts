@@ -3,3 +3,4 @@ export * from "./AutoBeVoiceRecoderButton";
 export * from "./AutoBeChatUploadBox";
 export * from "./AutoBeChatUploadSendButton";
 export * from "./AutoBeUploadConfig";
+export * from "./AutoBeChatStatus";

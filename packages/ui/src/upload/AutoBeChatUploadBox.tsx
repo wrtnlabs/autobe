@@ -11,9 +11,9 @@ import {
   AutoBeFileUploadBox,
   AutoBeVoiceRecoderButton,
 } from ".";
-import { useAutoBeAgent } from "../context/AutoBeAgentContext";
 import { useMediaQuery } from "../hooks/useMediaQuery";
-import { AutoBeFileUploader, toCompactNumberFormat } from "../utils";
+import { AutoBeFileUploader } from "../utils";
+import { AutoBeChatStatus } from "./AutoBeChatStatus";
 
 export interface IAutoBeBucket {
   file: File;
@@ -30,7 +30,6 @@ export interface IAutoBeChatUploadConfig {
 }
 
 export const AutoBeChatUploadBox = (props: AutoBeChatUploadBox.IProps) => {
-  const { tokenUsage } = useAutoBeAgent();
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -274,41 +273,7 @@ export const AutoBeChatUploadBox = (props: AutoBeChatUploadBox.IProps) => {
           </div>
         )}
 
-        {/* Token Usage Display */}
-        {tokenUsage && (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              fontSize: "0.75rem",
-              color: "#6c757d",
-              marginBottom: "6px",
-              flexWrap: "wrap",
-              gap: "8px",
-            }}
-          >
-            <span>
-              <strong>Token Total:</strong>{" "}
-              {toCompactNumberFormat(tokenUsage.aggregate.total || 0)}
-            </span>
-            <span>•</span>
-            <span>
-              <strong>In:</strong>{" "}
-              {toCompactNumberFormat(tokenUsage.aggregate.input.total || 0)}
-            </span>
-            <span>•</span>
-            <span>
-              <strong>Cached:</strong>{" "}
-              {toCompactNumberFormat(tokenUsage.aggregate.input.cached || 0)}
-            </span>
-            <span>•</span>
-            <span>
-              <strong>Out:</strong>{" "}
-              {toCompactNumberFormat(tokenUsage.aggregate.output.total || 0)}
-            </span>
-          </div>
-        )}
-
+        <AutoBeChatStatus />
         <textarea
           ref={inputRef}
           style={{

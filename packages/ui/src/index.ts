@@ -10,5 +10,6 @@ export type {
 export { AutoBeFileUploader } from "./utils";
 export * from "./upload";
 export * from "./banner";
+export * from "./header";
 export * from "./structure";
 export * from "./context/AutoBeAgentContext";

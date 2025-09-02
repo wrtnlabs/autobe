@@ -2,9 +2,9 @@ import { AutoBeUserMessageContent } from "@autobe/interface";
 import { RefObject, useEffect, useRef } from "react";
 
 import {
-  AutoBeChatBanner,
   AutoBeChatUploadBox,
   AutoBeEventMovie,
+  AutoBeHeaderInfo,
   IAutoBeUploadConfig,
 } from ".";
 import { useAutoBeAgent } from "./context/AutoBeAgentContext";
@@ -38,7 +38,6 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
     });
   }, [bodyContainerRef.current?.scrollHeight]);
 
-  const isMinWidthLg = useMediaQuery(useMediaQuery.MIN_WIDTH_LG);
   return (
     <div
       onDragEnter={(e) => listener.current.handleDragEnter(e)}
@@ -57,6 +56,8 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
       className={props.className}
       ref={bodyContainerRef}
     >
+      {/* Header Info - Fixed to top right */}
+      <AutoBeHeaderInfo />
       <div
         style={{
           display: "flex",
@@ -66,8 +67,6 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
           margin: "0 auto",
         }}
       >
-        {!isMinWidthLg && <AutoBeChatBanner />}
-
         <div
           style={{
             padding: "2rem",
