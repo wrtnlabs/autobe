@@ -11,6 +11,7 @@ import {
   AutoBeFileUploadBox,
   AutoBeVoiceRecoderButton,
 } from ".";
+import { useMediaQuery } from "../hooks/useMediaQuery";
 import { AutoBeFileUploader } from "../utils";
 
 export interface IAutoBeBucket {
@@ -158,7 +159,7 @@ export const AutoBeChatUploadBox = (props: AutoBeChatUploadBox.IProps) => {
   return (
     <div
       style={{
-        maxWidth: "768px",
+        maxWidth: useMediaQuery.WIDTH_MD,
         margin: "0 auto",
         padding: "12px",
         borderRadius: "16px",

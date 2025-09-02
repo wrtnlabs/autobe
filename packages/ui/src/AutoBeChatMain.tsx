@@ -68,30 +68,40 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
       className={props.className}
       ref={bodyContainerRef}
     >
-      {!isMinWidthLg && (
-        <AutoBeChatBanner
-          header={props.header}
-          tokenUsage={props.tokenUsage}
-          state={props.state}
-        />
-      )}
-
       <div
         style={{
-          padding: "2rem",
-          gap: 16,
           display: "flex",
           flexDirection: "column",
+          maxWidth: useMediaQuery.WIDTH_MD,
+          width: "100%",
+          margin: "0 auto",
         }}
       >
-        {props.eventGroups.map((e, index) => (
-          <AutoBeEventMovie
-            key={index}
-            getFiles={props.service.getFiles}
-            events={e.events}
-            last={index === props.eventGroups.length - 1}
+        {!isMinWidthLg && (
+          <AutoBeChatBanner
+            header={props.header}
+            tokenUsage={props.tokenUsage}
+            state={props.state}
           />
-        ))}
+        )}
+
+        <div
+          style={{
+            padding: "2rem",
+            gap: 16,
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          {props.eventGroups.map((e, index) => (
+            <AutoBeEventMovie
+              key={index}
+              getFiles={props.service.getFiles}
+              events={e.events}
+              last={index === props.eventGroups.length - 1}
+            />
+          ))}
+        </div>
       </div>
 
       {/*
