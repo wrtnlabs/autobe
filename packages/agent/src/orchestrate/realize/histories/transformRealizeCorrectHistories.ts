@@ -1,14 +1,12 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
-import {
-  AutoBeRealizeAuthorization,
-  IAutoBeTypeScriptCompileResult,
-} from "@autobe/interface";
+import { AutoBeRealizeAuthorization } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeTestScenarioArtifacts } from "../../test/structures/IAutoBeTestScenarioArtifacts";
+import { IAutoBeRealizeFunctionFailure } from "../structures/IAutoBeRealizeFunctionfailure";
 import { IAutoBeRealizeScenarioApplication } from "../structures/IAutoBeRealizeScenarioApplication";
 import { transformRealizeWriteHistories } from "./transformRealizeWriteHistories";
 
@@ -19,7 +17,7 @@ export function transformRealizeCorrectHistories(props: {
   authorization: AutoBeRealizeAuthorization | null;
   totalAuthorizations: AutoBeRealizeAuthorization[];
   code: string;
-  failures: IAutoBeTypeScriptCompileResult.IDiagnostic[];
+  failures: IAutoBeRealizeFunctionFailure[];
 }): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > {
@@ -43,12 +41,19 @@ export function transformRealizeCorrectHistories(props: {
           id: v7(),
           type: "assistantMessage",
           text: StringUtil.trim`
+
+      ## Generated Typescript Code
+
+      \`\`\`typescript
+      ${f.function.content}
+      \`\`\`
+
       ## Compile Errors
 
       Fix the comilation error in the provided code.
 
       \`\`\`typescript
-      ${JSON.stringify(f)}
+      ${JSON.stringify(f.diagnostics)}
       \`\`\`
       `,
           created_at: new Date().toISOString(),
