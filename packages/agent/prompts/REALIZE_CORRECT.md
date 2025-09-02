@@ -391,7 +391,36 @@ const data = someValue ? { ...someValue } : {};
 
 **Pattern**: `Type 'X' is not assignable to type 'Y'`
 
-**🔴 MOST COMMON: Empty Array Type Mismatch**
+**CRITICAL: Schema vs Interface Type Mismatches**
+
+When Prisma schema and API interface have different types, you must handle the mismatch appropriately:
+
+**Nullable to Required Conversion (Most Common)**
+```typescript
+// ERROR: Type 'string | null' is not assignable to type 'string'
+// Prisma schema: ip_address: string | null
+// API interface: ip_address: string
+
+// WRONG: Trying to assign nullable directly
+return {
+  ip_address: created.ip_address,  // ERROR: string | null not assignable to string
+};
+
+// CORRECT: Provide default value for null case
+return {
+  ip_address: created.ip_address ?? "",      // Converts null to empty string
+  device_info: created.device_info ?? "",    // Same pattern for all nullable fields
+  port_number: created.port_number ?? 0,     // Number fields use 0 as default
+  is_active: created.is_active ?? false,     // Boolean fields use false as default
+};
+```
+
+**Resolution Priority:**
+1. **Use defaults when possible**: `?? ""` for strings, `?? 0` for numbers, `?? false` for booleans
+2. **Document if interface seems wrong**: Sometimes interface incorrectly requires non-nullable
+3. **Use typia.random only as last resort**: When field doesn't exist at all in schema
+
+**MOST COMMON: Empty Array Type Mismatch**
 ```typescript
 // ERROR MESSAGE: Type 'SomeType[]' is not assignable to type '[]'
 // Target allows only 0 element(s) but source may have more.

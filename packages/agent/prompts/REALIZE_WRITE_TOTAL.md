@@ -1414,11 +1414,71 @@ export async function delete__discussionBoard_administrators_$id(
 }
 ```
 
-### Key Rules for Contradictions:
+### Key Rules for Schema-Interface Contradictions:
 
+#### Type Mismatch Resolution Priority
+
+1. **Nullable to Required (Most Common)**
+   - Schema has `string | null`, interface expects `string`
+   - USE: Default values with `??` operator
+   - Example: `ip_address: created.ip_address ?? ""`
+
+2. **Required to Nullable (Rare)**
+   - Schema has `string`, interface expects `string | null`
+   - This usually indicates interface is correct, implementation straightforward
+   - Example: `field: value` (no special handling needed)
+
+3. **Missing Fields in Schema**
+   - Interface requires field that doesn't exist in database
+   - USE: `typia.random<T>()` with documentation
+   - Document the exact field mismatch
+
+4. **Type Structure Incompatible**
+   - Schema has fundamentally different type than interface
+   - USE: `typia.random<T>()` with documentation
+   - Explain why types cannot be converted
+
+#### Implementation Guidelines
+
+**When to use default values:**
+```typescript
+// Prisma returns nullable, interface expects required
+// This is ACCEPTABLE - provide sensible defaults
+return {
+  // String fields: empty string
+  ip_address: created.ip_address ?? "",
+  device_info: created.device_info ?? "",
+  
+  // Number fields: zero or minimum valid value
+  port: created.port ?? 0,
+  count: created.count ?? 0,
+  
+  // Boolean fields: false as safe default
+  is_active: created.is_active ?? false,
+  is_verified: created.is_verified ?? false,
+  
+  // Date fields: handle null before conversion
+  deleted_at: created.deleted_at ? toISOStringSafe(created.deleted_at) : null,
+};
+```
+
+**When to use typia.random:**
+```typescript
+// Field doesn't exist in schema at all
+// This is UNRECOVERABLE - document and mock
+/**
+ * SCHEMA-INTERFACE CONTRADICTION:
+ * Required by interface: username (string)
+ * Available in schema: Only email field
+ * Resolution: Returning mock data - schema needs username field added
+ */
+return typia.random<IUserResponse>();
+```
+
+#### Final Rules:
 - **NEVER attempt to use fields that don't exist** in the Prisma schema
-- **NEVER ignore API specifications** - document why they can't be followed
-- **ALWAYS return `typia.random<T>()`** with comprehensive documentation
+- **PREFER default values over mock data** when possible
+- **ALWAYS document contradictions** in comments
 - **CLEARLY state what needs to change** (schema or API spec) to resolve the issue
 
 ---

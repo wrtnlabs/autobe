@@ -58,9 +58,7 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
     }),
     enforceFunctionCall: true,
     message: StringUtil.trim`
-      Correct the TypeScript code implementation to strictly follow these rules:
-      
-      1. Ensure that the code is production-ready and follows best practices.
+      Correct the TypeScript code implementation.
     `,
   });
 
