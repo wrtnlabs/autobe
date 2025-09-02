@@ -54,24 +54,6 @@ export function AutoBePlaygroundChatMovie(
 
   const isMinWidthLg = useMediaQuery(useMediaQuery.MIN_WIDTH_LG);
   const isMobile = !isMinWidthLg;
-  const sideMovie = () => (
-    <div
-      style={{
-        overflowY: "auto",
-        backgroundColor: "#eeeeee",
-        minWidth: "24rem",
-      }}
-    >
-      <Container maxWidth={false}>
-        <AutoBePlaygroundChatSideMovie
-          header={props.header}
-          tokenUsage={tokenUsage}
-          error={error}
-          state={props.listener.getState()}
-        />
-      </Container>
-    </div>
-  );
   return (
     <div
       style={{
@@ -98,7 +80,24 @@ export function AutoBePlaygroundChatMovie(
           overflow: "hidden",
         }}
       >
-        {isMobile || sideMovie()}
+        {isMobile || (
+          <div
+            style={{
+              overflowY: "auto",
+              backgroundColor: "#eeeeee",
+              minWidth: "24rem",
+            }}
+          >
+            <Container maxWidth={false}>
+              <AutoBePlaygroundChatSideMovie
+                header={props.header}
+                tokenUsage={tokenUsage}
+                error={error}
+                state={props.listener.getState()}
+              />
+            </Container>
+          </div>
+        )}
 
         <AutoBeChatMain
           isMobile={isMobile}
@@ -112,6 +111,9 @@ export function AutoBePlaygroundChatMovie(
           tokenUsage={tokenUsage}
           header={props.header}
           state={props.listener.getState()}
+          style={{
+            backgroundColor: "lightblue",
+          }}
         />
       </div>
     </div>

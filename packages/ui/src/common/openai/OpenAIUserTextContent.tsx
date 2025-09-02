@@ -3,7 +3,6 @@ export const OpenAIUserTextContent = ({ text }: { text: string }) => (
   <div
     style={{
       position: "relative",
-      zIndex: 10,
       fontSize: "0.875rem",
       lineHeight: "1.625",
       whiteSpace: "pre-wrap",

@@ -8,6 +8,7 @@ export interface IRequestGetSessionDetail {
   type: "req_get_session_detail";
   data: {
     sessionId: string;
+    nonce: string;
   };
 }
 
@@ -18,5 +19,6 @@ export interface IResponseGetSessionDetail {
     history: Array<AutoBeHistory>;
     events: Array<AutoBeEvent>;
     tokenUsage: IAutoBeTokenUsageJson;
+    nonce: string;
   };
 }

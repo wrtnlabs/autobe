@@ -2,6 +2,7 @@ import { AutoBeTokenUsage } from "@autobe/agent";
 import {
   AutoBeEvent,
   AutoBeHistory,
+  AutoBeUserMessageContent,
   IAutoBeRpcListener,
   IAutoBeRpcService,
   IAutoBeTokenUsageJson,
@@ -83,11 +84,6 @@ export class AutoBeWrapper {
       this.chatSessionMap.set(session.sessionId, session);
     });
 
-    /** @todo Remove this codes this codes is for development purposes */
-    await loadReplayData(this.chatSessionMap, "bbs.interface");
-    await loadReplayData(this.chatSessionMap, "bbs.test");
-    await loadReplayData(this.chatSessionMap, "bbs.realize");
-
     Logger.debug(
       `AutoBeWrapper initialize: ${(chatSessionMap as any)?.length}`,
     );
@@ -123,7 +119,7 @@ export class AutoBeWrapper {
   }
 
   private async postMessage(message: IAutoBeWebviewMessage) {
-    Logger.debug(`[AutoBe] postMessage: ${JSON.stringify(message)}`);
+    Logger.debug(`[AutoBe] postMessage - ${message.type}`);
     await this.webview.postMessage(message);
   }
 
@@ -153,7 +149,14 @@ export class AutoBeWrapper {
       case "req_get_config": {
         await this.postMessage({
           type: "res_get_config",
-          data: this.config,
+          data: {
+            model: this.config.model ?? "gpt-4.1",
+            baseUrl: this.config.baseUrl ?? "",
+            concurrencyRequest: this.config.concurrencyRequest ?? 16,
+            timezone: this.config.timezone ?? "en-US",
+            locale: this.config.locale ?? "en-US",
+            ...this.config,
+          },
         });
         break;
       }
@@ -164,17 +167,25 @@ export class AutoBeWrapper {
       }
       case "req_create_chat_session": {
         const session = await this.createChatSession();
+
+        await this.postMessage({
+          type: "on_create_chat_session",
+          sessionId: session.sessionId,
+        });
+        const history = await this.conversate({
+          session,
+          message: message.data.message,
+        });
+
         await this.postMessage({
           type: "res_create_chat_session",
           data: {
             sessionId: session.sessionId,
+            history: history ?? [],
+            nonce: message.data.nonce,
           },
         });
 
-        await this.conversate({
-          session,
-          message: message.data.message,
-        });
         break;
       }
       case "req_conversate_chat_session": {
@@ -182,9 +193,17 @@ export class AutoBeWrapper {
         if (session === undefined) {
           throw new Error("Session not found");
         }
-        await this.conversate({
+        const history = await this.conversate({
           session,
           message: message.data.message,
+        });
+        await this.postMessage({
+          type: "res_conversate_chat_session",
+          data: {
+            sessionId: session.sessionId,
+            history: history ?? [],
+            nonce: message.data.nonce,
+          },
         });
         break;
       }
@@ -275,6 +294,7 @@ export class AutoBeWrapper {
             history: session.history,
             tokenUsage: session.tokenUsage,
             events: session.events,
+            nonce: message.data.nonce,
           },
         });
         return;
@@ -292,7 +312,10 @@ export class AutoBeWrapper {
 
         await this.postMessage({
           type: "res_get_files",
-          data: files ?? {},
+          data: {
+            files: files ?? {},
+            nonce: message.data.nonce,
+          },
         });
         return;
       }
@@ -310,7 +333,10 @@ export class AutoBeWrapper {
     return session;
   }
 
-  private async conversate(props: { session: Session; message: string }) {
+  private async conversate(props: {
+    session: Session;
+    message: string | AutoBeUserMessageContent | AutoBeUserMessageContent[];
+  }) {
     if (this.config?.apiKey === undefined) {
       Logger.debug(JSON.stringify(this.config));
       throw new Error("Config is not initialized");
@@ -368,5 +394,6 @@ export class AutoBeWrapper {
       .getDriver()
       .conversate(props.message);
     props.session.history.push(...history);
+    return history;
   }
 }

@@ -1,5 +1,8 @@
 import { IActionToConfig } from "./action-to-config.dto";
-import { IRequestConversateChatSession } from "./conversate-chat-session.dto";
+import {
+  IRequestConversateChatSession,
+  IResponseConversateChatSession,
+} from "./conversate-chat-session.dto";
 import {
   IRequestCreateChatSession,
   IResponseCreateChatSession,
@@ -14,6 +17,7 @@ import {
   IRequestGetSessionList,
   IResponseGetSessionList,
 } from "./get-session-list.dto";
+import { IOnCreateChatSession } from "./on-create-chat-session.dto";
 import { IOnEventAutoBe } from "./on-event-auto-be.dto";
 import { IOnEventUpdateTokenUsage } from "./on-event-update-token-usage.dto";
 import { IOnHistoryAutoBe } from "./on-history-auto-be.dto";
@@ -27,10 +31,12 @@ export type IAutoBeWebviewMessage =
   | IRequestSetConfig
   | IRequestCreateChatSession
   | IResponseCreateChatSession
+  | IOnCreateChatSession
   | IOnHistoryAutoBe
   | IOnEventAutoBe
   | IOnEventUpdateTokenUsage
   | IRequestConversateChatSession
+  | IResponseConversateChatSession
   | IActionToConfig
   | IRequestSaveFiles
   | IResponseSaveFiles

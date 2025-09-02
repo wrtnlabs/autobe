@@ -23,9 +23,7 @@ export const getAutoBeWebviewProvider = (context: ExtensionContext) => {
       panel.webview.options = { enableScripts: true };
       panel.webview.html = getHtmlContent(context)(panel.webview);
       panel.webview.onDidReceiveMessage(async (message) => {
-        Logger.debug(
-          `[AutoBe] onDidReceiveMessage: ${JSON.stringify(message)}`,
-        );
+        Logger.debug(`[AutoBe] onDidReceiveMessage - ${message.type}`);
         await instance.handlePostMessage(message);
       });
       panel.onDidDispose(async () => {
@@ -69,7 +67,7 @@ export const getHtmlContent =
     <script nonce="${nonce}"></script>
     <title>Auto BE</title>
   </head>
-  <body style="height: 100%;">
+  <body style="height: 100%; padding: 0;">
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root" style="height: 100%;"></div>
     <script nonce="${nonce}" type="module" src="${scriptUri}"></script>

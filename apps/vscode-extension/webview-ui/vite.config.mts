@@ -4,7 +4,7 @@ import { defineConfig } from "vite";
 export default defineConfig({
   plugins: [tailwindcss()],
   build: {
-    outDir: "../webview-ui/build",
+    outDir: "./build",
     emptyOutDir: true,
     minify: "esbuild",
     sourcemap: true,

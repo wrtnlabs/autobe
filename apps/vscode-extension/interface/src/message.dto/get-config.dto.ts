@@ -4,10 +4,12 @@ export interface IRequestGetConfig {
 
 export interface IResponseGetConfig {
   type: "res_get_config";
-  data: Partial<{
-    apiKey: string;
+  data: {
+    apiKey?: string;
     model: string;
     baseUrl: string;
     concurrencyRequest: number;
-  }>;
+    timezone: string;
+    locale: string;
+  };
 }

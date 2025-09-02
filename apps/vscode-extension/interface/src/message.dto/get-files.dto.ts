@@ -5,10 +5,14 @@ export interface IRequestGetFiles {
   data: {
     sessionId: string;
     options?: Partial<IAutoBeGetFilesOptions>;
+    nonce: string;
   };
 }
 
 export interface IResponseGetFiles {
   type: "res_get_files";
-  data: Record<string, string>;
+  data: {
+    files: Record<string, string>;
+    nonce: string;
+  };
 }

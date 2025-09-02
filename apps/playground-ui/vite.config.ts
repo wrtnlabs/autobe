@@ -10,6 +10,7 @@ const __dirname = path.dirname(__filename);
 export default defineConfig({
   base: "./",
   build: {
+    chunkSizeWarningLimit: 1000,
     rollupOptions: {
       input: {
         index: path.resolve(__dirname, "index.html"),

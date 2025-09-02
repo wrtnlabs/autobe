@@ -1,11 +1,11 @@
 import { IAutoBeWebviewMessage } from "@autobe/vscode-extension/interface";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import type { WebviewApi } from "vscode-webview";
 
 const vscodePointer: { v: null | WebviewApi<unknown> } = { v: null };
 const useVsCode = () => {
-  const handlerRef = useRef<((message: IAutoBeWebviewMessage) => void) | null>(
-    null,
+  const handlerRef = useRef<Set<(message: IAutoBeWebviewMessage) => void>>(
+    new Set(),
   );
 
   if (vscodePointer.v === null) {
@@ -16,7 +16,7 @@ const useVsCode = () => {
   useEffect(() => {
     const onMessage = (event: MessageEvent) => {
       const message = event.data as IAutoBeWebviewMessage;
-      handlerRef.current?.(message);
+      handlerRef.current?.forEach((fn) => fn(message));
     };
 
     window.addEventListener("message", onMessage);
@@ -27,7 +27,11 @@ const useVsCode = () => {
   }, []);
 
   const onMessage = (fn: (message: IAutoBeWebviewMessage) => void) => {
-    handlerRef.current = fn;
+    handlerRef.current?.add(fn);
+  };
+
+  const offMessage = (fn: (message: IAutoBeWebviewMessage) => void) => {
+    handlerRef.current?.delete(fn);
   };
 
   return {
@@ -37,6 +41,7 @@ const useVsCode = () => {
       vscode?.postMessage(message);
     },
     onMessage,
+    offMessage,
   };
 };
 
