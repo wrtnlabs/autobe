@@ -281,21 +281,32 @@ export const AutoBePlaygroundReplayProjectMovie = ({
                             <Typography
                               component="span"
                               sx={{
-                                color: theme.palette.text.secondary,
                                 fontSize: {
                                   xs: "0.65rem",
                                   sm: "0.7rem",
                                 },
                                 ml: "auto",
+                                color: theme.palette.text.secondary,
                               }}
                             >
                               (
-                              {Object.entries(stepData.aggregate)
-                                .map(
-                                  ([key, value]) =>
-                                    `${key.charAt(0).toUpperCase()}: ${value}`,
-                                )
-                                .join(", ")}
+                              {Object.entries(stepData.aggregate).map(
+                                ([key, value], index) => (
+                                  <Box
+                                    key={key}
+                                    component="span"
+                                    sx={{
+                                      color:
+                                        key === "errors"
+                                          ? theme.palette.error.main
+                                          : "inherit",
+                                    }}
+                                  >
+                                    {index > 0 && ", "}
+                                    {key.charAt(0).toUpperCase()}: {value}
+                                  </Box>
+                                ),
+                              )}
                               )
                             </Typography>
                           )}

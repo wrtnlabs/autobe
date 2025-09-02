@@ -164,6 +164,13 @@ export namespace AutoBePlaygroundReplayProvider {
             (h) => h.compiled.type === "success",
             (h) => ({
               functions: h.files.length,
+              ...(h.compiled.type === "failure"
+                ? {
+                    errors: new Set(
+                      h.compiled.diagnostics.map((d) => d.file ?? ""),
+                    ).size,
+                  }
+                : {}),
             }),
           ),
           realize: predicate(
@@ -171,6 +178,13 @@ export namespace AutoBePlaygroundReplayProvider {
             (h) => h.compiled.type === "success",
             (h) => ({
               functions: h.functions.length,
+              ...(h.compiled.type === "failure"
+                ? {
+                    errors: new Set(
+                      h.compiled.diagnostics.map((d) => d.file ?? ""),
+                    ).size,
+                  }
+                : {}),
             }),
           ),
         } satisfies IAutoBePlaygroundReplay.ISummary;

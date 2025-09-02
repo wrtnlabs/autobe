@@ -20,7 +20,18 @@ export const AutoBePlaygroundReplayVendorMovie = ({
       >
         {vendor}
       </Typography>
-      <Divider sx={{ mb: { xs: 2, sm: 2.5, md: 3 } }} />
+      <Divider sx={{ mb: { xs: 1, sm: 1.5 } }} />
+      <Typography
+        variant="caption"
+        sx={{
+          mb: { xs: 2, sm: 2.5 },
+          display: "block",
+          color: "text.secondary",
+          fontSize: { xs: "0.65rem", sm: "0.7rem" },
+        }}
+      >
+        A=Actors, D=Documents, F=Files/Functions, M=Models, O=Operations, S=Schemas, E=Errors
+      </Typography>
       <Grid container spacing={{ xs: 2, sm: 2.5, md: 3 }}>
         {replays.map((replay, index) => (
           <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4 }} key={index}>
