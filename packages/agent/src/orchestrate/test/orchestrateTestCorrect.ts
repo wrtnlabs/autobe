@@ -17,6 +17,7 @@ import { completeTestCode } from "./compile/completeTestCode";
 import { transformTestCorrectHistories } from "./histories/transformTestCorrectHistories";
 import { IAutoBeTestCorrectApplication } from "./structures/IAutoBeTestCorrectApplication";
 import { IAutoBeTestFunction } from "./structures/IAutoBeTestFunction";
+import { IAutoBeTestFunctionFailure } from "./structures/IAutoBeTestFunctionFailure";
 import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
 import { IAutoBeTestWriteResult } from "./structures/IAutoBeTestWriteResult";
 
@@ -84,7 +85,7 @@ const compile = async <Model extends ILlmSchema.Model>(
 const predicate = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   content: IAutoBeTestFunction,
-  failures: IAutoBeTypeScriptCompileResult.IFailure[],
+  failures: IAutoBeTestFunctionFailure[],
   event: AutoBeTestValidateEvent,
   life: number,
 ): Promise<AutoBeTestValidateEvent> => {
@@ -97,7 +98,7 @@ const predicate = async <Model extends ILlmSchema.Model>(
 const correct = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   content: IAutoBeTestFunction,
-  failures: IAutoBeTypeScriptCompileResult.IFailure[],
+  failures: IAutoBeTestFunctionFailure[],
   validate: AutoBeTestValidateEvent,
   life: number,
 ): Promise<AutoBeTestValidateEvent> => {
@@ -111,7 +112,10 @@ const correct = async <Model extends ILlmSchema.Model>(
     source: "testCorrect",
     histories: await transformTestCorrectHistories(ctx, content, [
       ...failures,
-      validate.result,
+      {
+        function: content,
+        failure: validate.result,
+      },
     ]),
     controller: createController({
       model: ctx.model,
@@ -161,7 +165,13 @@ const correct = async <Model extends ILlmSchema.Model>(
   return predicate(
     ctx,
     newContent,
-    [...failures, validate.result],
+    [
+      ...failures,
+      {
+        function: content,
+        failure: validate.result,
+      },
+    ],
     newValidate,
     life,
   );
