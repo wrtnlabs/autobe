@@ -64,7 +64,7 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
   do {
     const matrix: AutoBeOpenApi.IOperation[][] = divideArray({
       array: include,
-      capacity: 5,
+      capacity: 4,
     });
     await executeCachedBatch(
       matrix.map((include) => async (promptCacheKey) => {
