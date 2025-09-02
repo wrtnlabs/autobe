@@ -34,6 +34,14 @@ export async function orchestrateInterfaceOperations<
     capacity,
   });
 
+  const progress: AutoBeProgressEventBase = {
+    total: matrix.flat().length,
+    completed: 0,
+  };
+  const reviewProgress: AutoBeProgressEventBase = {
+    total: matrix.length,
+    completed: 0,
+  };
   return (
     await executeCachedBatch(
       matrix.map((it) => async (promptCacheKey) => {
@@ -41,14 +49,8 @@ export async function orchestrateInterfaceOperations<
           ctx,
           it,
           3,
-          {
-            total: matrix.length,
-            completed: 0,
-          },
-          {
-            total: matrix.length,
-            completed: 0,
-          },
+          progress,
+          reviewProgress,
           promptCacheKey,
         );
         return row;

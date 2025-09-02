@@ -199,21 +199,10 @@ function getEventDetails(
               </div>
             )}
 
-            {testEvent.think_without_compile_error && (
+            {testEvent.think && (
               <div>
-                <div style={labelStyle}>💭 Initial Analysis:</div>
-                <div style={codeBlockStyle}>
-                  {testEvent.think_without_compile_error}
-                </div>
-              </div>
-            )}
-
-            {testEvent.think_again_with_compile_error && (
-              <div>
-                <div style={labelStyle}>🔄 Revised Analysis:</div>
-                <div style={codeBlockStyle}>
-                  {testEvent.think_again_with_compile_error}
-                </div>
+                <div style={labelStyle}>🔄 Analysis:</div>
+                <div style={codeBlockStyle}>{testEvent.think}</div>
               </div>
             )}
 

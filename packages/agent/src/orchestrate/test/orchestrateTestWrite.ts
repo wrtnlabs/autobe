@@ -85,16 +85,30 @@ async function process<Model extends ILlmSchema.Model>(
     promptCacheKey,
     message: "Create e2e test functions.",
   });
-  if (pointer.value === null) throw new Error("Failed to create test code.");
+  if (pointer.value === null) {
+    ++progress.completed;
+    throw new Error("Failed to create test code.");
+  }
 
   const compiler: IAutoBeCompiler = await ctx.compiler();
-  pointer.value.final = await compiler.typescript.beautify(pointer.value.final);
+  if (pointer.value.revise)
+    pointer.value.revise.final = await compiler.typescript.beautify(
+      pointer.value.revise.final,
+    );
+  else
+    pointer.value.draft = await compiler.typescript.beautify(
+      pointer.value.draft,
+    );
   return {
     type: "testWrite",
     id: v7(),
     created_at: new Date().toISOString(),
     location: `test/features/api/${pointer.value.domain}/${scenario.functionName}.ts`,
-    ...pointer.value,
+    scenario: pointer.value.scenario,
+    domain: pointer.value.domain,
+    draft: pointer.value.draft,
+    review: pointer.value.revise?.review,
+    final: pointer.value.revise?.final,
     tokenUsage,
     completed: ++progress.completed,
     total: progress.total,
@@ -119,7 +133,11 @@ function createController<Model extends ILlmSchema.Model>(props: {
     execute: {
       write: (next) => {
         next.draft = completeTestCode(props.artifacts, next.draft);
-        next.final = completeTestCode(props.artifacts, next.final);
+        if (next.revise)
+          next.revise.final = completeTestCode(
+            props.artifacts,
+            next.revise.final,
+          );
         props.build(next);
       },
     } satisfies IAutoBeTestWriteApplication,

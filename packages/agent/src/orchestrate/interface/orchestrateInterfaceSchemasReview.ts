@@ -54,12 +54,11 @@ export async function orchestrateInterfaceSchemasReview<
       return {};
     }
 
-    const content: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-      (
-        OpenApiV3_1Emender.convertComponents({
-          schemas: pointer.value.content,
-        }) as AutoBeOpenApi.IComponents
-      ).schemas ?? {};
+    const content: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = ((
+      OpenApiV3_1Emender.convertComponents({
+        schemas: pointer.value.content,
+      }) as AutoBeOpenApi.IComponents
+    ).schemas ?? {}) as Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
     ctx.dispatch({
       type: "interfaceSchemasReview",
       id: v7(),

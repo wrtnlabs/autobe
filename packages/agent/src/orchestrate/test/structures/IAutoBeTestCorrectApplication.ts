@@ -4,16 +4,14 @@ export interface IAutoBeTestCorrectApplication {
    * generates corrected E2E test code.
    *
    * The AI executes this function to perform the complete error correction
-   * workflow: error-free analysis → compilation error analysis → draft
-   * correction → code review → final corrected implementation. This multi-step
-   * process ensures systematic error resolution while preserving original test
-   * functionality and maintaining code quality.
+   * workflow: compilation error analysis → draft correction → code review →
+   * final corrected implementation. This multi-step process ensures systematic
+   * error resolution while preserving original test functionality and
+   * maintaining code quality.
    *
-   * The corrector first analyzes the scenario without considering compilation
-   * errors to understand the intended functionality, then incorporates
-   * compilation diagnostics to identify specific issues, and finally produces
-   * corrected code through iterative refinement with comprehensive review and
-   * validation.
+   * The corrector analyzes compilation diagnostics to identify specific issues,
+   * develops correction strategies, and produces corrected code through
+   * iterative refinement with comprehensive review and validation.
    *
    * @param props Complete specification for error correction workflow including
    *   analysis steps, draft implementation, review process, and final code
@@ -25,47 +23,30 @@ export interface IAutoBeTestCorrectApplication {
 export namespace IAutoBeTestCorrectApplication {
   export interface IProps {
     /**
-     * Step 1: Initial analysis and understanding without compilation error
-     * context.
+     * Step 1: Deep compilation error analysis and correction strategy.
      *
-     * AI analyzes the original test scenario, business requirements, and
-     * intended functionality without being influenced by compilation errors.
-     * This clean analysis establishes a clear understanding of what the test
-     * accomplishes, the expected business workflow, and the correct API
-     * integration patterns.
+     * AI performs comprehensive analysis of compilation errors to develop
+     * targeted correction strategies. This step involves deep examination of
+     * error messages, identification of error patterns, understanding root
+     * causes, and planning systematic corrections.
      *
-     * This step ensures that error correction doesn't lose sight of the
-     * original test purpose and helps maintain the intended business logic
-     * while addressing technical compilation issues. The AI develops a
-     * comprehensive understanding of the test requirements before diving into
-     * error-specific details.
+     * The AI examines each compilation diagnostic to understand where the
+     * implementation diverged from correct TypeScript usage, identifies the
+     * business logic intent behind the failed code, and formulates strategies
+     * to fix errors while preserving the original test purpose. This analysis
+     * correlates error patterns with code structure to ensure corrections
+     * address root causes rather than symptoms.
      *
-     * Workflow: Scenario understanding → Business logic analysis → Intended
-     * functionality mapping
-     */
-    think_without_compile_error: string;
-
-    /**
-     * Step 2: Compilation error analysis and root cause identification.
-     *
-     * AI re-analyzes the scenario and implementation with full awareness of
-     * compilation errors and diagnostic information. This step involves
-     * systematic examination of error messages, identification of error
-     * patterns, and understanding of how compilation issues relate to the
-     * intended functionality.
-     *
-     * The AI correlates compilation diagnostics with the original requirements
-     * to understand where the implementation diverged from correct TypeScript
-     * usage while maintaining the business logic intent. This analysis forms
-     * the foundation for targeted error correction strategies.
+     * This deep analysis forms the foundation for all subsequent correction
+     * efforts, ensuring a methodical approach to resolving compilation issues.
      *
      * Workflow: Error diagnostic analysis → Root cause identification →
-     * Correction strategy planning
+     * Correction strategy planning → Business logic preservation strategy
      */
-    think_again_with_compile_error: string;
+    think: string;
 
     /**
-     * Step 3: Draft corrected TypeScript E2E test code implementation.
+     * Step 2: Draft corrected TypeScript E2E test code implementation.
      *
      * AI generates the first corrected version of the test code based on error
      * analysis and correction strategies. This draft addresses all identified
@@ -86,7 +67,29 @@ export namespace IAutoBeTestCorrectApplication {
     draft: string;
 
     /**
-     * Step 4: Code review and correction validation.
+     * Step 3-4: Review and finalization process.
+     *
+     * Encapsulates the review and final implementation phases into a single
+     * revision process. This structured approach ensures systematic validation
+     * and refinement of the corrected code through comprehensive review
+     * followed by production-ready implementation.
+     *
+     * The revision process maintains clear separation between review feedback
+     * and final deliverable while ensuring all corrections are properly
+     * validated and integrated.
+     */
+    revise?: IReviseProps;
+  }
+
+  /**
+   * Revision properties for the final review and implementation phases.
+   *
+   * This interface encapsulates the final two steps of the error correction
+   * workflow, ensuring systematic review and production-ready code delivery.
+   */
+  export interface IReviseProps {
+    /**
+     * Step 3: Code review and correction validation.
      *
      * AI performs a comprehensive review of the corrected draft implementation,
      * validating that all compilation errors have been resolved and that the
@@ -105,7 +108,7 @@ export namespace IAutoBeTestCorrectApplication {
     review: string;
 
     /**
-     * Step 5: Final production-ready corrected test code.
+     * Step 4: Final production-ready corrected test code.
      *
      * AI produces the final, polished version of the corrected test code
      * incorporating all review feedback and validation results. This code
@@ -119,7 +122,7 @@ export namespace IAutoBeTestCorrectApplication {
      * behaviors and user workflows.
      *
      * Workflow: Review integration → Final refinement → Production-ready
-     * implementation This is the ultimate deliverable that will replace the
+     * implementation. This is the ultimate deliverable that will replace the
      * compilation-failed code.
      */
     final: string;
