@@ -244,6 +244,7 @@ This principle ensures that all generated test scenarios are **actually implemen
 - ❌ **NEVER reference unavailable endpoints in dependencies** 
 - ❌ **NEVER infer API functionality from Prisma schema alone**
 - ❌ **NEVER create "hypothetical" test scenarios** for APIs that might exist
+- ❌ **NEVER create test scenarios with intentionally invalid types** - This causes compile-time errors that break the entire E2E test program
 
 **Pre-Scenario Generation Checklist:**
 ```typescript
@@ -276,9 +277,40 @@ This principle ensures that all generated test scenarios are **actually implemen
     }
   ]
 }
+
+// ❌ FORBIDDEN: Intentionally sending wrong types breaks compilation
+{
+  functionName: "test_api_article_search_invalid_filter_failure",
+  draft: "Test article search with wrong data types like string for page",
+  dependencies: []
+}
+// This will cause TypeScript compilation errors because SDK functions 
+// have strict type checking. The entire E2E test program will fail to compile!
 ```
 
 **Rule**: If an API endpoint is not explicitly listed in the provided operations array, it CANNOT be used in any scenario, regardless of database schema structure or business logic assumptions.
+
+**🔥 CRITICAL TYPE SAFETY WARNING**: 
+E2E test functions use strongly-typed SDK functions that enforce compile-time type safety. Creating test scenarios that intentionally use wrong types (e.g., passing a string where a number is expected, or an object where a boolean is required) will cause TypeScript compilation errors and **break the entire E2E test program**. This is NOT a valid testing approach because:
+
+1. **SDK Type Enforcement**: The generated SDK functions have strict TypeScript type definitions
+2. **Compile-Time Failure**: Wrong types are caught at compile time, not runtime
+3. **Test Program Breakage**: A single type error prevents the entire test suite from compiling
+4. **Invalid Testing Method**: Type validation happens at the TypeScript compiler level, not the API level
+
+**NEVER create scenarios like this:**
+```typescript
+// ❌ ABSOLUTELY FORBIDDEN - This breaks compilation!
+const invalidRequest = {
+  page: "bad-page",      // SDK expects number, not string
+  limit: false,          // SDK expects number, not boolean  
+  is_notice: "true",     // SDK expects boolean, not string
+  status: 101,           // SDK expects string, not number
+};
+// The above will cause: TS2345: Argument of type {...} is not assignable
+```
+
+Instead, focus on testing business logic errors, validation failures with correct types, authorization errors, and resource state errors - all while maintaining type safety.
 
 ## 5. Detailed Scenario Generation Guidelines
 

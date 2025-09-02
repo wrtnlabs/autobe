@@ -121,56 +121,60 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
   const pointer: IPointer<IAutoBeTestScenarioApplication.IScenarioGroup[]> = {
     value: [],
   };
-
   const authorizations: AutoBeInterfaceAuthorization[] =
     ctx.state().interface?.authorizations ?? [];
 
-  const { tokenUsage } = await ctx.conversate({
-    source: "testScenarios",
-    histories: transformTestScenarioHistories(
-      ctx.state(),
-      props.entire,
-      props.include,
-      props.exclude,
-    ),
-    controller: createController({
-      model: ctx.model,
-      endpointNotFound: props.endpointNotFound,
-      dict: props.dict,
-      authorizations,
-      build: (next) => {
-        pointer.value ??= [];
-        pointer.value.push(...next.scenarioGroups);
-      },
-    }),
-    enforceFunctionCall: true,
-    promptCacheKey: props.promptCacheKey,
-    message: `Create e2e test scenarios.`,
-  });
-  if (pointer.value.length === 0) return [];
-  ctx.dispatch({
-    type: "testScenarios",
-    id: v7(),
-    tokenUsage,
-    scenarios: pointer.value
-      .map((v) =>
-        v.scenarios.map(
-          (s) =>
-            ({
-              endpoint: v.endpoint,
-              draft: s.draft,
-              functionName: s.functionName,
-              dependencies: s.dependencies,
-            }) satisfies AutoBeTestScenario,
-        ),
-      )
-      .flat(),
-    completed: (props.progress.completed += pointer.value.length),
-    total: props.progress.total,
-    step: ctx.state().interface?.step ?? 0,
-    created_at: new Date().toISOString(),
-  });
-  return pointer.value;
+  try {
+    const { tokenUsage } = await ctx.conversate({
+      source: "testScenarios",
+      histories: transformTestScenarioHistories(
+        ctx.state(),
+        props.entire,
+        props.include,
+        props.exclude,
+      ),
+      controller: createController({
+        model: ctx.model,
+        endpointNotFound: props.endpointNotFound,
+        dict: props.dict,
+        authorizations,
+        build: (next) => {
+          pointer.value ??= [];
+          pointer.value.push(...next.scenarioGroups);
+        },
+      }),
+      enforceFunctionCall: true,
+      promptCacheKey: props.promptCacheKey,
+      message: `Create e2e test scenarios.`,
+    });
+    if (pointer.value.length === 0) return [];
+    ctx.dispatch({
+      type: "testScenarios",
+      id: v7(),
+      tokenUsage,
+      scenarios: pointer.value
+        .map((v) =>
+          v.scenarios.map(
+            (s) =>
+              ({
+                endpoint: v.endpoint,
+                draft: s.draft,
+                functionName: s.functionName,
+                dependencies: s.dependencies,
+              }) satisfies AutoBeTestScenario,
+          ),
+        )
+        .flat(),
+      completed: (props.progress.completed += pointer.value.length),
+      total: props.progress.total,
+      step: ctx.state().interface?.step ?? 0,
+      created_at: new Date().toISOString(),
+    });
+    return pointer.value;
+  } catch {
+    console.log("test scenario, failed to function call", props.include);
+    return [];
+  }
 };
 
 function createController<Model extends ILlmSchema.Model>(props: {
