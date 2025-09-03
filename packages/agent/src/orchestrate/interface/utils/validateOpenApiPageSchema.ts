@@ -110,7 +110,15 @@ export const validateOpenApiPageSchema = (props: {
         path: `${props.path}[${JSON.stringify(props.key)}].required`,
         value: undefined,
         expected: `"data" must be included in the required array.`,
-        description: StringUtil.trim``,
+        description: StringUtil.trim`
+          Following the system prompt, "${props.key}" type must have a property
+          "data" as a required field like below.
+
+          However, you have not defined the "data" property as a required field.
+          Please ensure to follow the structure exactly as shown.
+
+          ${getExampleJsonSchema(childName)}
+        `,
       });
   }
 
@@ -174,7 +182,15 @@ export const validateOpenApiPageSchema = (props: {
         path: `${props.path}[${JSON.stringify(props.key)}].required`,
         value: undefined,
         expected: `"pagination" must be included in the required array.`,
-        description: StringUtil.trim``,
+        description: StringUtil.trim`
+          Following the system prompt, "${props.key}" type must have a property
+          "pagination" as a required field like below.
+
+          However, you have not defined the "pagination" property as a required 
+          field. Please ensure to follow the structure exactly as shown.
+
+          ${getExampleJsonSchema(childName)}
+        `,
       });
   }
 };
