@@ -27,6 +27,7 @@ import { ILlmSchema } from "@samchon/openapi";
 import typia from "typia";
 import { v7 } from "uuid";
 
+import { AutoBeConfigConstant } from "../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../context/AutoBeContext";
 import { AutoBeState } from "../context/AutoBeState";
 import { AutoBeTokenUsage } from "../context/AutoBeTokenUsage";
@@ -47,152 +48,160 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
   histories: () => AutoBeHistory[];
   usage: () => AutoBeTokenUsage;
   dispatch: (event: AutoBeEvent) => Promise<void>;
-}): AutoBeContext<Model> => ({
-  model: props.model,
-  vendor: props.vendor,
-  locale: props.config.locale ?? "en-US",
-  compilerListener: props.compilerListener,
-  compiler: props.compiler,
-  files: props.files,
-  histories: props.histories,
-  state: props.state,
-  usage: props.usage,
-  dispatch: createDispatch(props),
-  assistantMessage: (message) => {
-    props.histories().push(message);
-    setTimeout(() => props.dispatch(message).catch(() => {}));
-    return message;
-  },
-  conversate: async (next, closure) => {
-    const execute = async (): Promise<AutoBeContext.IResult<Model>> => {
-      const agent: MicroAgentica<Model> = new MicroAgentica<Model>({
-        model: props.model,
-        vendor: props.vendor,
-        config: {
-          ...(props.config ?? {}),
-          executor: {
-            describe: null,
-          },
-        },
-        histories: next.histories,
-        controllers: [next.controller],
-      });
-      agent.on("request", async (event) => {
-        if (next.enforceFunctionCall === true && event.body.tools)
-          event.body.tool_choice = "required";
-        if (event.body.parallel_tool_calls !== undefined)
-          delete event.body.parallel_tool_calls;
-        if (next.promptCacheKey)
-          event.body.prompt_cache_key = next.promptCacheKey;
-        await props.dispatch({
-          ...event,
-          type: "vendorRequest",
-          source: next.source,
-        });
-      });
-      agent.on("response", (event) => {
-        void props
-          .dispatch({
-            ...event,
-            type: "vendorResponse",
-            source: next.source,
-          })
-          .catch(() => {});
-      });
-      agent.on("jsonParseError", (event) => {
-        void props
-          .dispatch({
-            ...event,
-            source: next.source,
-          })
-          .catch(() => {});
-      });
-      agent.on("validate", (event) => {
-        void props
-          .dispatch({
-            type: "jsonValidateError",
-            id: v7(),
-            source: next.source,
-            result: event.result,
-            created_at: event.created_at,
-          })
-          .catch(() => {});
-      });
-      if (closure) closure(agent);
-
-      const histories: MicroAgenticaHistory<Model>[] = await agent.conversate(
-        next.message,
-      );
-      const tokenUsage: IAutoBeTokenUsageJson.IComponent = agent
-        .getTokenUsage()
-        .toJSON().aggregate;
-      props
-        .usage()
-        .record(tokenUsage, [
-          STAGES.find((stage) => next.source.startsWith(stage)) ?? "analyze",
-        ]);
-
-      if (
-        true === next.enforceFunctionCall &&
-        false ===
-          histories.some((h) => h.type === "execute" && h.success === true)
-      ) {
-        const failure = () => {
-          throw new Error(
-            `Failed to function calling in the ${next.source} step`,
-          );
-        };
-        const last: MicroAgenticaHistory<Model> | undefined = histories.at(-1);
-        if (
-          last?.type === "assistantMessage" &&
-          last.text.trim().length !== 0
-        ) {
-          const consent: string | null = await consentFunctionCall({
-            source: next.source,
-            dispatch: (e) => {
-              props.dispatch(e).catch(() => {});
+}): AutoBeContext<Model> => {
+  const retry: number =
+    props.config?.retry ?? AutoBeConfigConstant.DEFAULT_RETRY;
+  const locale: string = props.config.locale ?? "en-US";
+  return {
+    model: props.model,
+    vendor: props.vendor,
+    retry,
+    locale,
+    compilerListener: props.compilerListener,
+    compiler: props.compiler,
+    files: props.files,
+    histories: props.histories,
+    state: props.state,
+    usage: props.usage,
+    dispatch: createDispatch(props),
+    assistantMessage: (message) => {
+      props.histories().push(message);
+      setTimeout(() => props.dispatch(message).catch(() => {}));
+      return message;
+    },
+    conversate: async (next, closure) => {
+      const execute = async (): Promise<AutoBeContext.IResult<Model>> => {
+        const agent: MicroAgentica<Model> = new MicroAgentica<Model>({
+          model: props.model,
+          vendor: props.vendor,
+          config: {
+            ...(props.config ?? {}),
+            retry: props.config?.retry ?? AutoBeConfigConstant.DEFAULT_RETRY,
+            executor: {
+              describe: null,
             },
-            config: props.config,
-            vendor: props.vendor,
-            assistantMessage: last.text,
+          },
+          histories: next.histories,
+          controllers: [next.controller],
+        });
+        agent.on("request", async (event) => {
+          if (next.enforceFunctionCall === true && event.body.tools)
+            event.body.tool_choice = "required";
+          if (event.body.parallel_tool_calls !== undefined)
+            delete event.body.parallel_tool_calls;
+          if (next.promptCacheKey)
+            event.body.prompt_cache_key = next.promptCacheKey;
+          await props.dispatch({
+            ...event,
+            type: "vendorRequest",
+            source: next.source,
           });
-          if (consent !== null) {
-            const newHistories: MicroAgenticaHistory<Model>[] =
-              await agent.conversate(consent);
-            const newTokenUsage: IAutoBeTokenUsageJson.IComponent = agent
-              .getTokenUsage()
-              .toJSON().aggregate;
-            props
-              .usage()
-              .record(
-                AutoBeTokenUsageComponent.minus(
-                  new AutoBeTokenUsageComponent(newTokenUsage),
-                  new AutoBeTokenUsageComponent(tokenUsage),
-                ),
-                [
-                  STAGES.find((stage) => next.source.startsWith(stage)) ??
-                    "analyze",
-                ],
-              );
-            if (
-              newHistories.some(
-                (h) => h.type === "execute" && h.success === true,
+        });
+        agent.on("response", (event) => {
+          void props
+            .dispatch({
+              ...event,
+              type: "vendorResponse",
+              source: next.source,
+            })
+            .catch(() => {});
+        });
+        agent.on("jsonParseError", (event) => {
+          void props
+            .dispatch({
+              ...event,
+              source: next.source,
+            })
+            .catch(() => {});
+        });
+        agent.on("validate", (event) => {
+          void props
+            .dispatch({
+              type: "jsonValidateError",
+              id: v7(),
+              source: next.source,
+              result: event.result,
+              created_at: event.created_at,
+            })
+            .catch(() => {});
+        });
+        if (closure) closure(agent);
+
+        const histories: MicroAgenticaHistory<Model>[] = await agent.conversate(
+          next.message,
+        );
+        const tokenUsage: IAutoBeTokenUsageJson.IComponent = agent
+          .getTokenUsage()
+          .toJSON().aggregate;
+        props
+          .usage()
+          .record(tokenUsage, [
+            STAGES.find((stage) => next.source.startsWith(stage)) ?? "analyze",
+          ]);
+
+        if (
+          true === next.enforceFunctionCall &&
+          false ===
+            histories.some((h) => h.type === "execute" && h.success === true)
+        ) {
+          const failure = () => {
+            throw new Error(
+              `Failed to function calling in the ${next.source} step`,
+            );
+          };
+          const last: MicroAgenticaHistory<Model> | undefined =
+            histories.at(-1);
+          if (
+            last?.type === "assistantMessage" &&
+            last.text.trim().length !== 0
+          ) {
+            const consent: string | null = await consentFunctionCall({
+              source: next.source,
+              dispatch: (e) => {
+                props.dispatch(e).catch(() => {});
+              },
+              config: props.config,
+              vendor: props.vendor,
+              assistantMessage: last.text,
+            });
+            if (consent !== null) {
+              const newHistories: MicroAgenticaHistory<Model>[] =
+                await agent.conversate(consent);
+              const newTokenUsage: IAutoBeTokenUsageJson.IComponent = agent
+                .getTokenUsage()
+                .toJSON().aggregate;
+              props
+                .usage()
+                .record(
+                  AutoBeTokenUsageComponent.minus(
+                    new AutoBeTokenUsageComponent(newTokenUsage),
+                    new AutoBeTokenUsageComponent(tokenUsage),
+                  ),
+                  [
+                    STAGES.find((stage) => next.source.startsWith(stage)) ??
+                      "analyze",
+                  ],
+                );
+              if (
+                newHistories.some(
+                  (h) => h.type === "execute" && h.success === true,
+                )
               )
-            )
-              return {
-                histories: newHistories,
-                tokenUsage: newTokenUsage,
-              };
+                return {
+                  histories: newHistories,
+                  tokenUsage: newTokenUsage,
+                };
+            }
           }
+          failure();
         }
-        failure();
-      }
-      return { histories, tokenUsage };
-    };
-    if (next.enforceFunctionCall === true) return forceRetry(execute);
-    else return execute();
-  },
-});
+        return { histories, tokenUsage };
+      };
+      if (next.enforceFunctionCall === true) return forceRetry(execute, retry);
+      else return execute();
+    },
+  };
+};
 
 const createDispatch = (props: {
   state: () => AutoBeState;
@@ -330,7 +339,7 @@ const transformAndDispatch = <
 
 const forceRetry = async <T>(
   task: () => Promise<T>,
-  count: number = 3,
+  count: number,
 ): Promise<T> => {
   let error: unknown = undefined;
   for (let i: number = 0; i < count; ++i)

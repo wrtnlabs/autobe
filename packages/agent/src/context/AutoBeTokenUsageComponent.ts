@@ -95,10 +95,10 @@ export class AutoBeTokenUsageComponent
         accepted_prediction: 0,
         rejected_prediction: 0,
       };
-      return;
+    } else {
+      this.input = props.input;
+      this.output = props.output;
     }
-    this.input = props.input;
-    this.output = props.output;
   }
 
   /**

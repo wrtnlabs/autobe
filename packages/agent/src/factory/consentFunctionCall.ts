@@ -12,6 +12,7 @@ import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
+import { AutoBeConfigConstant } from "../constants/AutoBeConfigConstant";
 import { AutoBeSystemPromptConstant } from "../constants/AutoBeSystemPromptConstant";
 import { IAutoBeConfig } from "../structures/IAutoBeConfig";
 import { IAutoBeVendor } from "../structures/IAutoBeVendor";
@@ -31,6 +32,7 @@ export const consentFunctionCall = async (props: {
     vendor: props.vendor,
     config: {
       ...(props.config ?? []),
+      retry: props.config?.retry ?? AutoBeConfigConstant.DEFAULT_RETRY,
       executor: {
         describe: null,
       },

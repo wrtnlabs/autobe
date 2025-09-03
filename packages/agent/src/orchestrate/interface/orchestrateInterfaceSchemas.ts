@@ -56,14 +56,7 @@ export async function orchestrateInterfaceSchemas<
   for (const y of await executeCachedBatch(
     matrix.map((it) => async (promptCacheKey) => {
       const row: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-        await divideAndConquer(
-          ctx,
-          operations,
-          it,
-          3,
-          progress,
-          promptCacheKey,
-        );
+        await divideAndConquer(ctx, operations, it, progress, promptCacheKey);
       const newbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
         await orchestrateInterfaceSchemasReview(
           ctx,
@@ -84,13 +77,12 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   operations: AutoBeOpenApi.IOperation[],
   typeNames: string[],
-  retry: number,
   progress: AutoBeProgressEventBase,
   promptCacheKey: string,
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   const remained: Set<string> = new Set(typeNames);
   const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
-  for (let i: number = 0; i < retry; ++i) {
+  for (let i: number = 0; i < ctx.retry; ++i) {
     if (remained.size === 0) break;
     const newbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
       await process(

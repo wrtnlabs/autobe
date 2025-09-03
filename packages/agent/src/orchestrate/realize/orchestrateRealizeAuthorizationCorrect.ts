@@ -24,7 +24,7 @@ export async function orchestrateRealizeAuthorizationCorrect<
   authorization: AutoBeRealizeAuthorization,
   prismaClients: Record<string, string>,
   templateFiles: Record<string, string>,
-  life: number = 4,
+  life: number = ctx.retry,
 ): Promise<AutoBeRealizeAuthorization> {
   const compiler: IAutoBeCompiler = await ctx.compiler();
   const providerContent: string = await compiler.typescript.beautify(
