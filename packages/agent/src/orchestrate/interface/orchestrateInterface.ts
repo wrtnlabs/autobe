@@ -20,6 +20,7 @@ import { orchestrateInterfaceEndpoints } from "./orchestrateInterfaceEndpoints";
 import { orchestrateInterfaceGroups } from "./orchestrateInterfaceGroups";
 import { orchestrateInterfaceOperations } from "./orchestrateInterfaceOperations";
 import { orchestrateInterfaceSchemas } from "./orchestrateInterfaceSchemas";
+import { orchestrateInterfaceSchemasReview } from "./orchestrateInterfaceSchemasReview";
 
 export const orchestrateInterface =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
@@ -94,10 +95,22 @@ export const orchestrateInterface =
         schemas: await orchestrateInterfaceSchemas(ctx, operations),
       },
     };
-    Object.assign(
-      document.components.schemas,
-      await orchestrateInterfaceComplement(ctx, document),
+
+    const complementedSchemas: Record<
+      string,
+      AutoBeOpenApi.IJsonSchemaDescriptive
+    > = await orchestrateInterfaceComplement(ctx, document);
+
+    const schemas: Record<
+      string,
+      AutoBeOpenApi.IJsonSchemaDescriptive<AutoBeOpenApi.IJsonSchema>
+    > = await orchestrateInterfaceSchemasReview(
+      ctx,
+      operations,
+      complementedSchemas,
     );
+
+    Object.assign(document.components.schemas, schemas);
 
     // DO COMPILE
     return ctx.dispatch({
