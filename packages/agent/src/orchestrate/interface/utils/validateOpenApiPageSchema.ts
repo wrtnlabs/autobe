@@ -8,6 +8,8 @@ export const validateOpenApiPageSchema = (props: {
   key: string;
   schema: AutoBeOpenApi.IJsonSchemaDescriptive;
 }): void => {
+  if (props.key.startsWith("IPage") === false) return;
+
   const childName: string = props.key.substring("IPage".length);
   if (AutoBeOpenApiTypeChecker.isObject(props.schema) === false) {
     props.errors.push({
