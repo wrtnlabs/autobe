@@ -13,7 +13,6 @@ import {
 } from ".";
 import { useMediaQuery } from "../hooks/useMediaQuery";
 import { AutoBeFileUploader } from "../utils";
-import { AutoBeChatStatus } from "./AutoBeChatStatus";
 
 export interface IAutoBeBucket {
   file: File;
@@ -273,7 +272,6 @@ export const AutoBeChatUploadBox = (props: AutoBeChatUploadBox.IProps) => {
           </div>
         )}
 
-        <AutoBeChatStatus />
         <textarea
           ref={inputRef}
           style={{
