@@ -12,8 +12,11 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { divideArray } from "../../utils/divideArray";
+import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformInterfaceSchemasReviewHistories } from "./histories/transformInterfaceSchemasReviewHistories";
 import { IAutoBeInterfaceSchemasReviewApplication } from "./structures/IAutobeInterfaceSchemasReviewApplication";
+import { authTokenSchema } from "./structures/authTokenSchema";
 import { validateAuthorizationSchema } from "./utils/validateAuthorizationSchema";
 import { validateOpenApiPageSchema } from "./utils/validateOpenApiPageSchema";
 
@@ -26,7 +29,70 @@ export async function orchestrateInterfaceSchemasReview<
     string,
     AutoBeOpenApi.IJsonSchemaDescriptive<AutoBeOpenApi.IJsonSchema>
   >,
+): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
+  const a = Object.entries(schemas).map(([key, schema]) => {
+    return { [key]: schema };
+  });
+
+  const matrix: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>[][] =
+    divideArray({
+      array: a,
+      capacity: 8,
+    });
+
+  const roles: string[] =
+    ctx.state().analyze?.roles.map((role) => role.name) ?? [];
+
+  const x: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
+    roles.length > 0
+      ? {
+          IAuthorization: authTokenSchema,
+        }
+      : {};
+
+  const progress: IProgress = {
+    total: matrix.length,
+    completed: 0,
+  };
+  for (const y of await executeCachedBatch(
+    matrix.map((it) => async (promptCacheKey) => {
+      const row: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
+        await divideAndConquer(ctx, operations, it, progress, promptCacheKey);
+      return row;
+    }),
+  )) {
+    Object.assign(x, y);
+  }
+
+  if (x.IAuthorizationToken) x.IAuthorizationToken = authTokenSchema;
+  return x;
+}
+
+async function divideAndConquer<Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  operations: AutoBeOpenApi.IOperation[],
+  schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>[],
   progress: AutoBeProgressEventBase,
+  promptCacheKey: string,
+): Promise<
+  Record<
+    string,
+    AutoBeOpenApi.IJsonSchemaDescriptive<AutoBeOpenApi.IJsonSchema>
+  >
+> {
+  const schema = schemas.reduce((acc, cur) => Object.assign(acc, cur), {});
+  return step(ctx, operations, schema, progress, promptCacheKey);
+}
+
+export async function step<Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  operations: AutoBeOpenApi.IOperation[],
+  schemas: Record<
+    string,
+    AutoBeOpenApi.IJsonSchemaDescriptive<AutoBeOpenApi.IJsonSchema>
+  >,
+  progress: AutoBeProgressEventBase,
+  promptCacheKey: string,
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   try {
     const pointer: IPointer<IAutoBeInterfaceSchemasReviewApplication.IProps | null> =
@@ -47,6 +113,7 @@ export async function orchestrateInterfaceSchemasReview<
         schemas,
       ),
       enforceFunctionCall: true,
+      promptCacheKey,
       message: "Review type schemas.",
     });
     if (pointer.value === null) {
@@ -60,6 +127,7 @@ export async function orchestrateInterfaceSchemasReview<
         schemas: pointer.value.content,
       }) as AutoBeOpenApi.IComponents
     ).schemas ?? {}) as Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+
     ctx.dispatch({
       type: "interfaceSchemasReview",
       id: v7(),
@@ -105,6 +173,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
       schemas: result.data.content,
       path: "$input.content",
     });
+
     Object.entries(result.data.content).forEach(([key, schema]) => {
       validateOpenApiPageSchema({
         path: "$input.content",
@@ -157,3 +226,8 @@ const collection = {
 type Validator = (
   input: unknown,
 ) => IValidation<IAutoBeInterfaceSchemasReviewApplication.IProps>;
+
+export interface IProgress {
+  total: number;
+  completed: number;
+}

@@ -205,7 +205,7 @@ const collection = {
   "3.1": claude,
 };
 
-export interface IProgress {
+interface IProgress {
   total: number;
   completed: number;
 }
