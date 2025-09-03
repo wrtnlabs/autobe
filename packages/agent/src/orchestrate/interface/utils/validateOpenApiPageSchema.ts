@@ -191,25 +191,31 @@ export const validateOpenApiPageSchema = (props: {
   }
 };
 
-const getExampleJsonSchema = (childName: string): string => {
+const getExampleJsonSchema = (
+  childName: string,
+  closure?: (value: AutoBeOpenApi.IJsonSchemaDescriptive.IObject) => any,
+): string => {
+  const value: AutoBeOpenApi.IJsonSchemaDescriptive.IObject = {
+    type: "object",
+    properties: {
+      data: {
+        type: "array",
+        items: {
+          $ref: `#/components/schemas/${childName}`,
+        },
+        description: "<SOME_DESCRIPTION>",
+      },
+      pagination: {
+        $ref: "#/components/schemas/IPage.IPagination",
+        description: "<SOME_DESCRIPTION>",
+      },
+    },
+    required: ["data", "pagination"],
+    description: "<SOME_DESCRIPTION>",
+  };
   return StringUtil.trim`
     \`\`\`json
-    {
-      "properties": {
-        "data": {
-          "items": {
-            "$ref": "#/components/schemas/${childName}"
-          },
-          "description": "<SOME_DESCRIPTION>"
-        },
-        "pagination": {
-          "$ref": "#/components/schemas/IPage.IPagination",
-          "description": "<SOME_DESCRIPTION>"
-        },
-      },
-      "required": ["data", "pagination"],
-      "description": "<SOME_DESCRIPTION>"
-    }
+    ${JSON.stringify((closure ?? ((v) => v))(value), null, 2)}
     \`\`\`
   `;
 };
