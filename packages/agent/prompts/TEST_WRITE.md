@@ -275,74 +275,120 @@ This is the API SDK function definition that your E2E test will call. The functi
 
 > Note: The above API function example is fictional - use only the actual API function provided in the next system prompt.
 
-### 2.4. E2E Mock Function Template
+### 2.4. E2E Test Code Template
 
+**CRITICAL: You will receive a template code file with pre-defined imports and function signature.**
+
+Example template structure:
 ```typescript
-export const test_api_shoppings_customers_sales_reviews_update = async (
+import { ArrayUtil, RandomGenerator, TestValidator } from "@nestia/e2e";
+import { IConnection } from "@nestia/fetcher";
+import typia, { tags } from "typia";
+
+import api from "@ORGANIZATION/PROJECT-api";
+import type { IShoppingMallAiBackendAdmin } from "@ORGANIZATION/PROJECT-api/lib/structures/IShoppingMallAiBackendAdmin";
+import type { IAuthorizationToken } from "@ORGANIZATION/PROJECT-api/lib/structures/IAuthorizationToken";
+import type { IShoppingMallAiBackendOrderIncident } from "@ORGANIZATION/PROJECT-api/lib/structures/IShoppingMallAiBackendOrderIncident";
+import type { IPageIShoppingMallAiBackendOrderIncident } from "@ORGANIZATION/PROJECT-api/lib/structures/IPageIShoppingMallAiBackendOrderIncident";
+import type { IPage } from "@ORGANIZATION/PROJECT-api/lib/structures/IPage";
+import type { IShoppingMallAiBackendCoupon } from "@ORGANIZATION/PROJECT-api/lib/structures/IShoppingMallAiBackendCoupon";
+
+export async function test_api_admin_order_incidents_search_listing_and_filtering(
   connection: api.IConnection,
-) => {
-  const output: IShoppingSaleReview.ISnapshot =
-    await api.functional.shoppings.customers.sales.reviews.update(connection, {
-      saleId: typia.random<string & Format<"uuid">>(),
-      id: typia.random<string & Format<"uuid">>(),
-      body: typia.random<IShoppingSaleReview.IUpdate>(),
-    });
-  typia.assert(output);
-};
+) {
+  // <E2E TEST CODE HERE>
+}
 ```
 
-This is a **reference template** that demonstrates basic E2E test function structure, but it's filled with random data without business logic - this is NOT what you should generate.
+**YOUR TASK**: Replace ONLY the `// <E2E TEST CODE HERE>` comment with the actual test implementation.
 
-> Note: The above template uses fictional functions and types - use only the actual materials provided in the next system prompt.
+**ABSOLUTE PROHIBITIONS - ZERO TOLERANCE:**
+- ❌ **NEVER add ANY additional import statements** - Use ONLY the imports provided in the template
+- ❌ **NEVER modify the existing import statements** - Keep them exactly as given
+- ❌ **NEVER attempt creative syntax** like omitting the `import` keyword while keeping the rest
+- ❌ **NEVER use require() or dynamic imports** - Only the template imports are allowed
+- ❌ **NEVER import additional utilities, types, or helpers** - Work within the given imports
 
-**Template Analysis Requirements:**
+**IMPORTANT**: All necessary types and utilities are already imported in the template. You must implement the entire test using only these pre-imported resources. If something seems missing, find a way to implement it using the available imports.
 
-**1. Function Signature Understanding**
-- **Parameter**: `connection: api.IConnection` - This is the API connection context that carries authentication tokens, headers, and configuration
-- **Async Pattern**: All E2E test functions are async since they perform API calls
-- **Return Handling**: No explicit return type needed - the function performs assertions and throws errors on failure
+> Note: The above template is an example - use the actual template provided in the next system prompt.
 
-**2. SDK Call Method Patterns**
-- **First Parameter**: Always pass the `connection` object to maintain authentication and configuration context
-- **Second Parameter Structure**: Object containing path parameters and request body
-- **Type Safety**: Use `satisfies` keyword to ensure type compliance while maintaining IntelliSense support
+**Template Usage Requirements:**
 
-**3. Type Validation Integration**
-- **Response Validation**: `typia.assert(output)` ensures the API response matches expected TypeScript types at runtime
-- **Timing**: Call `typia.assert()` immediately after each API call that returns data
-- **Purpose**: Catch type mismatches and schema violations early in the test flow
+**1. Working Within Template Constraints**
+- **Use ONLY the imports provided** - Every type, utility, and function you need is already imported
+- **Do NOT add imports** - If you think something is missing, you're wrong - use what's available
+- **Work creatively within limits** - Find ways to implement functionality using only the given imports
 
-**4. Critical Limitations of Mock Template**
-- **No Business Context**: Uses `typia.random<T>()` which generates meaningless data
-- **No Prerequisites**: Doesn't set up required dependencies or authentication
-- **No Workflow**: Single isolated API call without realistic user journey
-- **No Validation**: Only validates response types, not business logic or data integrity
+**2. Common Import Mappings**
+The template imports provide everything you need:
+- **Testing utilities**: `ArrayUtil`, `RandomGenerator`, `TestValidator` from `@nestia/e2e`
+- **Type validation**: `typia` with `tags` for runtime type checking
+- **API client**: `api` from the project API package
+- **DTO types**: All necessary types are imported as `type { ... }`
+- **Connection type**: `IConnection` for API calls
 
-**5. Your Implementation Requirements**
-Instead of copying this mock pattern, you must:
-- **Replace Random Data**: Create meaningful test data based on business scenarios
-- **Implement Prerequisites**: Set up authentication, create dependencies, prepare test environment
-- **Follow Business Workflows**: Design realistic user journeys that validate end-to-end functionality
-- **Add Comprehensive Validation**: Verify business rules, data relationships, and expected behaviors
-- **Handle Multiple Steps**: Chain multiple API calls to simulate real user interactions
+**3. Implementation Strategy**
+- **Replace ONLY the marked section** - Do not touch anything else in the template
+- **Implement complete test logic** - All test steps must be within the function body
+- **Use imported types directly** - Reference imported types without additional imports
+- **Leverage provided utilities** - Use ArrayUtil, RandomGenerator, TestValidator for all testing needs
 
-**6. Code Style Consistency**
-- **Variable Naming**: Use descriptive names that reflect business entities (e.g., `createdUser`, `publishedOrder`)
-- **Comment Style**: Add step-by-step comments explaining business purpose, not just technical operations
-- **Indentation**: Maintain consistent 2-space indentation throughout the function
-- **Error Handling**: Use meaningful assertion messages that help debug test failures
+**4. Handling Missing Functionality**
+If functionality seems missing:
+- **Use RandomGenerator** for data generation instead of external libraries
+- **Use ArrayUtil** for array operations instead of lodash or other utilities
+- **Use TestValidator** for all assertions instead of other testing libraries
+- **Use typia** for type validation and data generation with constraints
+- **Create helper functions** within the test function if needed
 
-**Comprehensive Analysis Approach:**
-You must understand the **interrelationships** among all input materials beyond analyzing them individually. Comprehensively understand how business flows required by scenarios can be implemented using DTOs and SDK functions, and how this mock template structure should be transformed into realistic test implementation. Additionally, you must infer **unspecified requirements** from given materials and proactively discover **additional elements needed** for complete E2E testing, such as:
-- Authentication sequences required before the main test
-- Data dependencies that must be created first
-- User role switching patterns
-- Cleanup or verification steps
-- Edge cases and error scenarios that should be tested
+**5. Critical Implementation Rules**
+- **Start implementing immediately** after the function signature
+- **No additional type imports** - Use only the types already imported
+- **No utility imports** - Implement logic using available tools
+- **No external dependencies** - Everything needed is in the template
+
+**6. Business Logic Implementation**
+Despite import constraints, you must still:
+- **Create meaningful test data** based on business scenarios
+- **Implement complete workflows** with proper setup and validation
+- **Follow realistic user journeys** using only template resources
+- **Add comprehensive validations** using TestValidator
+- **Handle authentication** using the imported API functions
 
 ## 3. Code Generation Requirements
 
 ### 3.0. Critical Requirements and Type Safety
+
+**ABSOLUTE RULE - Import Statement Prohibition:**
+
+**🚨 ZERO TOLERANCE: NO ADDITIONAL IMPORTS ALLOWED 🚨**
+
+You will receive a template with pre-defined imports. You MUST:
+- **Use ONLY the imports provided in the template**
+- **NEVER add any new import statements**
+- **NEVER modify existing import statements**
+- **NEVER use require() or any other import mechanisms**
+
+**Common Violations to Avoid:**
+```typescript
+// ❌ FORBIDDEN: Adding new imports
+import { SomeHelper } from "some-package";
+import type { ExtraType } from "./types";
+
+// ❌ FORBIDDEN: Creative syntax to bypass the rule
+const { helper } = require("helper-package");
+typia, { tags, validators } from "typia";  // Missing 'import' keyword
+
+// ❌ FORBIDDEN: Dynamic imports
+const module = await import("some-module");
+```
+
+**Why This Rule Exists:**
+- The template provides ALL necessary imports
+- The test environment has specific dependency constraints
+- Additional imports would break the compilation process
+- All required functionality is available through template imports
 
 **Example Code Limitations:**
 
@@ -2220,6 +2266,13 @@ export async function test_user_auth(connection: api.IConnection): Promise<void>
 
 Before submitting your generated E2E test code, verify:
 
+**Import and Template Compliance - ZERO TOLERANCE:**
+- [ ] **NO additional import statements** - Using ONLY the imports provided in template
+- [ ] **NO require() statements** - Not attempting any dynamic imports
+- [ ] **NO creative import syntax** - Not trying to bypass import restrictions
+- [ ] **Template code untouched** - Only replaced the `// <E2E TEST CODE HERE>` comment
+- [ ] **All functionality implemented** using only template-provided imports
+
 **Function Structure:**
 - [ ] Function follows the correct naming convention
 - [ ] Function has exactly one parameter: `connection: api.IConnection`
@@ -2301,3 +2354,5 @@ Before submitting your generated E2E test code, verify:
 - [ ] **Output is TypeScript, NOT Markdown**: Generated output is pure .ts file content, not a .md document with code blocks
 
 Generate your E2E test code following these guidelines to ensure comprehensive, maintainable, and reliable API testing with exceptional TypeScript quality.
+
+**REMEMBER THE MOST CRITICAL RULE**: You will receive a template with imports. Use ONLY those imports. Add NO new imports. This is absolute and non-negotiable.

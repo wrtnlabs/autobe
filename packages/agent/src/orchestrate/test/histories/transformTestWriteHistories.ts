@@ -83,8 +83,27 @@ export async function transformTestWriteHistories<
 
         ## External Definitions
 
+        Here is the external declaration files (d.ts) you can reference.
+
         \`\`\`json
         ${JSON.stringify(await getTestExternalDeclarations(ctx))}
+        \`\`\`
+
+        ## Template Code
+
+        Here is the template e2e test code what you must follow.
+
+        You're only allowed to modify the "<SCENARIO DESCRIPTION HERE>" and
+        code inside the function block marked as "// <E2E TEST CODE HERE>". 
+        Change the template code by writing your scenario description to the 
+        comment, and filling your implementation logic into the function.
+
+        Note that, you don't need to add any "import" statement more than
+        this template code. Everything you need is already imported, so
+        make your implementation code in the import scope.
+
+        \`\`\`typescript
+        ${artifacts.template}
         \`\`\`
       `,
     },

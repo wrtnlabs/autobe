@@ -34,6 +34,7 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
     await getTestScenarioArtifacts(ctx, {
       endpoint: props.scenario.operation,
       dependencies: [],
+      functionName: props.scenario.functionName,
     });
 
   const pointer: IPointer<IAutoBeRealizeCorrectApplication.IProps | null> = {

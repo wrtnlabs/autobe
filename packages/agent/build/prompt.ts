@@ -1,7 +1,7 @@
 import { AutoBePrismaCompiler } from "@autobe/compiler";
 import { FileSystemIterator, RepositoryFileSystem } from "@autobe/filesystem";
 import { AutoBeOpenApi } from "@autobe/interface";
-import { invertOpenApiDocument } from "@autobe/utils";
+import { StringUtil, invertOpenApiDocument } from "@autobe/utils";
 import { OpenApi } from "@samchon/openapi";
 import fs from "fs";
 import path from "path";
@@ -87,7 +87,12 @@ async function main(): Promise<void> {
         `export const enum AutoBeSystemPromptConstant {`,
         ...Object.entries(record).map(
           ([key, value]) =>
-            `  ${key.toUpperCase()} = ${JSON.stringify(value)},`,
+            `  ${key.toUpperCase()} = ${JSON.stringify(StringUtil.trim`
+                <!--
+                filename: ${key.toUpperCase()}.md
+                -->
+                ${value}
+              `)},`,
         ),
         // ...Object.entries(examples).map(
         //   ([key, value]) =>

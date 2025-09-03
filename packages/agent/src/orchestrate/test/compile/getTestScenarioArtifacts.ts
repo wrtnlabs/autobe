@@ -7,10 +7,14 @@ import { ILlmSchema, OpenApiTypeChecker } from "@samchon/openapi";
 
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeTestScenarioArtifacts } from "../structures/IAutoBeTestScenarioArtifacts";
+import { getTestTemplateCode } from "./getTestTemplateCode";
 
 export async function getTestScenarioArtifacts<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  scenario: Pick<AutoBeTestScenario, "endpoint" | "dependencies">,
+  scenario: Pick<
+    AutoBeTestScenario,
+    "endpoint" | "dependencies" | "functionName"
+  >,
 ): Promise<IAutoBeTestScenarioArtifacts> {
   const compiler: IAutoBeCompiler = await ctx.compiler();
   const document: AutoBeOpenApi.IDocument = filterDocument(
@@ -35,6 +39,7 @@ export async function getTestScenarioArtifacts<Model extends ILlmSchema.Model>(
     sdk: filter("src/api", "src/api/structures"),
     dto: filter("src/api/structures"),
     e2e: filter("test/features"),
+    template: getTestTemplateCode(scenario, document),
   };
 }
 

@@ -31,6 +31,7 @@ export async function orchestrateRealizeWrite<Model extends ILlmSchema.Model>(
   const artifacts: IAutoBeTestScenarioArtifacts =
     await getTestScenarioArtifacts(ctx, {
       endpoint: props.scenario.operation,
+      functionName: props.scenario.functionName,
       dependencies: [],
     });
   const pointer: IPointer<IAutoBeRealizeWriteApplication.IProps | null> = {
