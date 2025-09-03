@@ -24,12 +24,12 @@ export namespace TestLogger {
       );
     else if (event.type === "jsonParseError")
       content.push(`  - invalid json: ${event.errorMessage}`);
-    else if (event.type === "testCorrect")
-      content.push(
-        ...event.result.diagnostics.map(
-          (d) => `  - diagnostic (${d.category}): ${d.messageText}`,
-        ),
-      );
+    // else if (event.type === "testCorrect")
+    //   content.push(
+    //     ...event.result.diagnostics.map(
+    //       (d) => `  - diagnostic (${d.category}): ${d.messageText}`,
+    //     ),
+    //   );
     console.log(content.join("\n"));
   };
 }

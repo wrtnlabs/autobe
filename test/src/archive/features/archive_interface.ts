@@ -51,7 +51,7 @@ export const archive_interface = async (
   // REPORT RESULT
   const model: string = TestGlobal.getVendorModel();
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${model}/${project}/interface/main`,
+    root: `${TestGlobal.ROOT}/results/${model}/${project}/interface`,
     files: {
       ...(await agent.getFiles()),
       "pnpm-workspace.yaml": "",

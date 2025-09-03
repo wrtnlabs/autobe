@@ -52,7 +52,7 @@ export const archive_test = async (
   const histories: AutoBeHistory[] = agent.getHistories();
   const model: string = TestGlobal.getVendorModel();
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${model}/${project}/test/main`,
+    root: `${TestGlobal.ROOT}/results/${model}/${project}/test`,
     files: {
       ...(await agent.getFiles()),
       "pnpm-workspace.yaml": "",

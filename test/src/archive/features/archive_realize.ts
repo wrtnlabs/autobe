@@ -65,7 +65,7 @@ export const archive_realize = async (
 
   const nodeModules = prisma?.type === "success" ? prisma.nodeModules : {};
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${model}/${project}/realize/main`,
+    root: `${TestGlobal.ROOT}/results/${model}/${project}/realize`,
     files: {
       ...nodeModules,
       ...payloads,
