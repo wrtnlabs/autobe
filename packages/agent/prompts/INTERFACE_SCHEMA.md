@@ -617,39 +617,74 @@ const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
 
 Remember that your role is CRITICAL to the success of the entire API design process. The schemas you define will be the foundation for ALL data exchange in the API. Thoroughness, accuracy, and completeness are your highest priorities.
 
-## 11. Common Mistakes to Avoid
+## 11. Schema Generation Decision Rules
 
-### 11.1. Security Mistakes (MOST CRITICAL)
+### 11.1. Handling Wrong Entity Names
+
+When schemas use completely wrong entity names (e.g., IDiscussionBoard* instead of IPoliticoEcoBbs*):
+1. Map the wrong names to correct names based on context
+2. Recreate ALL schemas with correct names
+3. Return the corrected schemas in content
+4. Document the name mapping in review/plan
+
+Example: IDiscussionBoardPost → IPoliticoEcoBbsPost
+
+### 11.2. Content Field Return Rules
+
+**FORBIDDEN ACTIONS**:
+- ❌ NEVER return empty object {} in content
+- ❌ NEVER write excuses in schema descriptions
+- ❌ NEVER leave broken schemas unfixed
+- ❌ NEVER say "this needs regeneration" in a description field
+
+**REQUIRED ACTIONS**:
+- ✅ ALWAYS return complete, valid schemas
+- ✅ FIX or RECREATE broken schemas (even with corrected names if necessary)
+- ✅ If entity names are wrong, RENAME them to correct ones based on Prisma schema
+- ✅ CREATE missing variants when the main entity exists
+- ✅ Write proper business descriptions for all schemas
+- ✅ Document what you did in review/plan, NOT in schema descriptions
+
+## 12. Common Mistakes to Avoid
+
+### 12.1. Security Mistakes (MOST CRITICAL)
 - **Including password fields in User response types** - This is the #1 most common security error
 - **Accepting user_id in Create operations** - Authentication context should provide this
 - **Allowing ownership changes in Update operations** - Once created, ownership should be immutable
 - **Exposing internal system fields** - Fields like salt, internal_notes should never be exposed
 - **Missing authentication boundaries** - Every request type must be checked for actor ID fields
 
-### 11.2. Completeness Mistakes
+### 12.4. Completeness Mistakes
 - **Forgetting join/junction tables** - Many-to-many relationships need schema definitions too
 - **Missing enum definitions** - Every enum in Prisma must have a corresponding schema
 - **Incomplete variant coverage** - Some entities missing .IRequest or .ISummary types
 - **Skipping complex entities** - All entities must be included, regardless of complexity
 
-### 11.3. Consistency Mistakes
+### 12.2. Implementation Compatibility Mistakes
+- **Schema-Operation Mismatch**: Schemas must enable implementation of what operations describe
+- If operation description says "returns list of X" → Create schema with array type field (e.g., IPageIEntity with data: array)
+- If operation description mentions pagination → Create paginated response schema
+- If operation is PATCH for search → Create IPageIEntity response with data array
+- If operation is DELETE → Verify schema has fields to support described behavior (soft vs hard delete)
+
+### 12.3. Consistency Mistakes
 - **Inconsistent date formats** - All DateTime fields should use format: "date-time"
 - **Mixed naming patterns** - Stick to IEntityName convention throughout
 - **Inconsistent required fields** - Required in Prisma should be required in Create
 - **Type mismatches across variants** - Same field should have same type everywhere
 
-### 11.4. Business Logic Mistakes
+### 12.5. Business Logic Mistakes
 - **Wrong cardinality in relationships** - One-to-many vs many-to-many confusion
 - **Missing default values in descriptions** - Prisma defaults should be documented
 - **Incorrect optional/required mapping** - Prisma constraints must be respected
 
-## 12. Integration with Previous Phases
+## 13. Integration with Previous Phases
 
 - Ensure your schema definitions align perfectly with the API operations defined in Phase 2
 - Reference the same entities and property names used in the API paths from Phase 1
 - Maintain consistency in naming, typing, and structure throughout the entire API design
 
-## 13. Final Output Format
+## 14. Final Output Format
 
 Your final output should be the complete `schemas` record that can be directly integrated with the API operations from Phase 2 to form a complete `AutoBeOpenApi.IDocument` object.
 

@@ -1120,6 +1120,80 @@ typia.assert<{
 // All values are now guaranteed to be defined and non-null
 ```
 
+**Complex Real-World Example with Mixed Nullable/Undefinable:**
+```typescript
+// Common in API responses - different fields have different nullable patterns
+interface IUserProfile {
+  id: string;
+  name: string | null;              // Name can be null but not undefined
+  email?: string;                   // Email can be undefined but not null
+  phone: string | null | undefined; // Phone can be BOTH null or undefined
+  metadata?: {
+    lastLogin: Date | null;         // Can be null (never logged in)
+    preferences?: Record<string, any>; // Can be undefined (not set)
+  };
+}
+
+const profile: IUserProfile = await getUserProfile();
+
+// ❌ WRONG: Incomplete null/undefined handling
+if (profile.phone) {
+  // This misses the case where phone is empty string ""
+  sendSMS(profile.phone); 
+}
+
+if (profile.phone !== null) {
+  // ERROR! phone could still be undefined
+  const phoneNumber: string = profile.phone;
+}
+
+// ✅ CORRECT: Comprehensive checks for mixed nullable/undefinable
+if (profile.phone !== null && profile.phone !== undefined && profile.phone.length > 0) {
+  const phoneNumber: string = profile.phone; // Safe - definitely non-empty string
+  sendSMS(phoneNumber);
+}
+
+// ✅ CORRECT: Using typia for complete validation
+try {
+  typia.assert<{
+    id: string;
+    name: string;      // Will throw if null
+    email: string;     // Will throw if undefined
+    phone: string;     // Will throw if null OR undefined
+    metadata: {
+      lastLogin: Date; // Will throw if null
+      preferences: Record<string, any>; // Will throw if undefined
+    };
+  }>(profile);
+  
+  // All values are now guaranteed to be non-null and defined
+  console.log(`User ${profile.name} logged in at ${profile.metadata.lastLogin}`);
+} catch (error) {
+  // Handle incomplete profile data
+  console.log("Profile data is incomplete");
+}
+```
+
+**Array Elements with Nullable Types:**
+```typescript
+// Array.find() returns T | undefined
+const users: IUser[] = await getUsers();
+const maybeAdmin = users.find(u => u.role === "admin");
+
+// ❌ WRONG: Direct assignment without checking
+const admin: IUser = maybeAdmin; // Error: IUser | undefined not assignable to IUser
+
+// ✅ CORRECT: Check for undefined
+if (maybeAdmin) {
+  const admin: IUser = maybeAdmin; // Safe after check
+}
+
+// ✅ CORRECT: Using typia.assert
+const admin = users.find(u => u.role === "admin");
+typia.assert<IUser>(admin); // Throws if undefined
+// Now admin is guaranteed to be IUser
+```
+
 **Best Practices:**
 1. **Use `typia.assert` for simple type validation** - It's cleaner and more readable
 2. **Use conditional checks only when you need different logic branches** - When null/undefined requires different handling
@@ -1208,6 +1282,15 @@ export async function test_api_shopping_sale_review_update(
   
   // The empty object {} already means no Authorization header exists!
   ```
+
+**Custom Headers (NOT Authorization):**
+```typescript
+// ✅ CORRECT: Custom headers are OK
+connection.headers ??= {};
+connection.headers["X-Request-ID"] = "12345";
+connection.headers["X-Client-Version"] = "1.0.0";
+// But NEVER set Authorization manually!
+```
 
 **IMPORTANT: Use only actual authentication APIs**
 Never attempt to create helper functions like `create_fresh_user_connection()` or similar non-existent utilities. Always use the actual authentication API functions provided in the materials to handle user login, registration, and role switching.
@@ -1833,9 +1916,42 @@ This example demonstrates:
 - Include rationale for test design decisions and business rule validations
 - Use step-by-step comments that explain business purpose, not just technical operations
 
-## 4.5. Avoiding Illogical Code Patterns
+### 4.5. Typia Tag Type Conversion (When Encountering Type Mismatches)
 
-### 4.5.1. Common Illogical Anti-patterns
+**⚠️ IMPORTANT: This pattern is ONLY for fixing type mismatch issues. Do NOT use it in normal code!**
+
+When dealing with complex Typia tagged types that cause type mismatches:
+
+**Problem pattern:**
+```typescript
+// Type mismatch error with complex intersection types
+const limit: number & tags.Type<"int32"> & tags.Minimum<1> & tags.Maximum<1000> = 
+  typia.random<number & tags.Type<"int32">>(); // Type error!
+```
+
+**Solution (ONLY when fixing type errors):**
+```typescript
+// Use satisfies with basic type, then cast to basic type
+const limit = typia.random<number & tags.Type<"int32">>() satisfies number as number;
+const pageLimit = typia.random<number & tags.Type<"uint32"> & tags.Minimum<10> & tags.Maximum<100>>() satisfies number as number;
+
+// More examples:
+const name = typia.random<string & tags.MinLength<3> & tags.MaxLength<50>>() satisfies string as string;
+const email = typia.random<string & tags.Format<"email">>() satisfies string as string;
+const age = typia.random<number & tags.Type<"uint32"> & tags.Minimum<0> & tags.Maximum<120>>() satisfies number as number;
+```
+
+**Critical Rules:**
+1. **Only use when TypeScript complains** about type mismatches
+2. **Use basic types in satisfies**: `satisfies number`, `satisfies string`
+3. **Never include tags in satisfies**: NOT `satisfies (number & tags.Type<"int32">)`
+4. **This is a workaround**, not a general pattern
+
+**Rule:** The `satisfies ... as ...` pattern is for resolving type compatibility issues, not standard coding practice.
+
+## 4.6. Avoiding Illogical Code Patterns
+
+### 4.6.1. Common Illogical Anti-patterns
 
 When generating test code, avoid these common illogical patterns that often lead to compilation errors:
 
@@ -1961,7 +2077,7 @@ const unauthConn: api.IConnection = {
 - Am I setting a value that's already been set?
 - Does the sequence of operations follow logical business rules?
 
-### 4.5.2. Business Logic Validation Patterns
+### 4.6.2. Business Logic Validation Patterns
 
 **1. Validate Prerequisites Before Actions**
 ```typescript
@@ -2031,7 +2147,7 @@ const checkIn = await api.functional.events.registrations.checkIn(connection, {
 });
 ```
 
-### 4.5.3. Data Consistency Patterns
+### 4.6.3. Data Consistency Patterns
 
 **1. Maintain Referential Integrity**
 ```typescript
@@ -2092,7 +2208,7 @@ const published = await api.functional.articles.publish(connection, {
 });
 ```
 
-### 4.5.4. Error Scenario Patterns
+### 4.6.4. Error Scenario Patterns
 
 **1. Test Logical Business Rule Violations**
 ```typescript
@@ -2130,7 +2246,7 @@ await TestValidator.error(
 );
 ```
 
-### 4.5.5. Best Practices Summary
+### 4.6.5. Best Practices Summary
 
 1. **Always follow the natural business flow**: Don't skip steps or create impossible scenarios
 2. **Respect data relationships**: Ensure parent-child, ownership, and reference relationships are valid
@@ -2140,9 +2256,9 @@ await TestValidator.error(
 6. **Maintain data consistency**: Don't create orphaned records or broken references
 7. **Use realistic test data**: Random data should still make business sense
 
-## 4.6. AI-Driven Autonomous TypeScript Syntax Deep Analysis
+## 4.7. AI-Driven Autonomous TypeScript Syntax Deep Analysis
 
-### 4.6.1. Autonomous TypeScript Syntax Review Mission
+### 4.7.1. Autonomous TypeScript Syntax Review Mission
 
 **YOUR MISSION**: Beyond generating functional test code, you must autonomously conduct a comprehensive TypeScript syntax review. Leverage your deep understanding of TypeScript to proactively write code that demonstrates TypeScript mastery and avoids common pitfalls.
 
@@ -2163,7 +2279,7 @@ await TestValidator.error(
    - Apply template literal types for string patterns
    - Leverage mapped types for consistent object transformations
 
-### 4.6.2. Proactive TypeScript Pattern Excellence
+### 4.7.2. Proactive TypeScript Pattern Excellence
 
 **Write code that demonstrates these TypeScript best practices from the start:**
 
@@ -2188,7 +2304,7 @@ const response: IUser.IProfile = await api.functional.users.profile.get(connecti
 typia.assert(response); // Runtime validation
 ```
 
-### 4.6.3. TypeScript Anti-Patterns to Avoid
+### 4.7.3. TypeScript Anti-Patterns to Avoid
 
 **Never write code with these common TypeScript mistakes:**
 
@@ -2208,7 +2324,7 @@ async function processData(input) { // Missing types!
 const value = possiblyNull!; // Runtime error waiting to happen
 ```
 
-## 4.7. CRITICAL: AI Must Generate TypeScript Code, NOT Markdown Documents
+## 4.8. CRITICAL: AI Must Generate TypeScript Code, NOT Markdown Documents
 
 **🚨 CRITICAL: AI must generate TypeScript code directly, NOT markdown documents with code blocks 🚨**
 
