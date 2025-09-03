@@ -137,45 +137,6 @@ export namespace IAutoBeInterfaceOperationsReviewApplication {
   export interface IOperation
     extends Omit<AutoBeOpenApi.IOperation, "authorizationType"> {
     /**
-     * Prisma schema models relevant to this operation.
-     *
-     * Contains the complete Prisma schema definitions for all entities involved
-     * in this operation, including their fields, relations, and database
-     * constraints. This enables comprehensive validation and schema-aware
-     * operation design.
-     *
-     * The schema information serves multiple critical purposes:
-     *
-     * - **Field Verification**: Ensures all referenced fields actually exist in
-     *   the database schema and have the correct types
-     * - **Relationship Validation**: Confirms that entity relationships are
-     *   properly defined and can support the operation's data access patterns
-     * - **Soft-Delete Detection**: For DELETE operations, identifies whether
-     *   entities have soft-delete fields (deleted_at, is_deleted, etc.) to
-     *   determine if the operation should perform logical deletion instead of
-     *   physical removal
-     * - **Constraint Awareness**: Understands unique constraints, required
-     *   fields, and default values to generate accurate request/response
-     *   schemas
-     *
-     * Example content might include:
-     *
-     * ```prisma
-     * model User {
-     *   id         String    @id @default(uuid())
-     *   email      String    @unique
-     *   name       String
-     *   deleted_at DateTime? // Indicates soft-delete capability
-     *   posts      Post[]
-     * }
-     * ```
-     *
-     * This schema context ensures operations are fully aligned with the actual
-     * database structure and business logic requirements.
-     */
-    prisma_schemas: string;
-
-    /**
      * Primary Prisma model name for this operation.
      *
      * Identifies the main database table/model that this operation targets.
@@ -184,11 +145,14 @@ export namespace IAutoBeInterfaceOperationsReviewApplication {
      * should be soft-deleted.
      *
      * For example:
+     *
      * - In a "GET /users/:id" operation, this would be "User"
      * - In a "POST /articles" operation, this would be "Article"
-     * - In a "DELETE /comments/:id" with soft delete, this specifies the "Comment" model to soft-delete
+     * - In a "DELETE /comments/:id" with soft delete, this specifies the
+     *   "Comment" model to soft-delete
      *
      * This property is essential for:
+     *
      * - Determining the primary entity for CRUD operations
      * - Identifying which table to apply soft deletion to
      * - Validating operations against the correct Prisma model
@@ -200,9 +164,9 @@ export namespace IAutoBeInterfaceOperationsReviewApplication {
      * Soft delete column name for the Prisma models.
      *
      * Specifies the column name used for soft deletion in the database tables
-     * associated with this operation. When set to a non-null value, it indicates
-     * that the related entities support soft deletion through this column
-     * (typically a timestamp field like `deleted_at` or `deletedAt`).
+     * associated with this operation. When set to a non-null value, it
+     * indicates that the related entities support soft deletion through this
+     * column (typically a timestamp field like `deleted_at` or `deletedAt`).
      *
      * When null, it means the entities involved in this operation use hard
      * deletion or don't support deletion at all. This information is crucial
@@ -210,6 +174,7 @@ export namespace IAutoBeInterfaceOperationsReviewApplication {
      * policies are correctly implemented.
      *
      * Common soft delete patterns:
+     *
      * - `"deleted_at"`: Records deletion timestamp
      * - `"deletedAt"`: Camel-cased deletion timestamp
      * - `"is_deleted"`: Boolean flag for deletion status
