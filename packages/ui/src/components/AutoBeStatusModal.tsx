@@ -256,26 +256,29 @@ const ProgressCard = ({
       }}
     >
       <div style={{ flex: 1 }}>
-        <div
-          style={{
-            fontSize: "0.85rem",
-            fontWeight: "700",
-            marginBottom: "0.2rem",
-            textTransform: "uppercase",
-            letterSpacing: "0.02em",
-          }}
-        >
-          {step.name}
+        <div style={{ display: "flex", flexDirection: "row", gap: "0.2rem" }}>
+          <span
+            style={{
+              fontSize: "0.85rem",
+              fontWeight: "700",
+              marginBottom: "0.2rem",
+              textTransform: "uppercase",
+              letterSpacing: "0.02em",
+            }}
+          >
+            {step.name}
+          </span>
+          <span
+            style={{
+              fontSize: "0.75rem",
+              opacity: 0.9,
+              marginBottom: "0.2rem",
+            }}
+          >
+            ({step.title})
+          </span>
         </div>
-        <div
-          style={{
-            fontSize: "0.75rem",
-            opacity: 0.9,
-            marginBottom: "0.2rem",
-          }}
-        >
-          {step.title}
-        </div>
+
         {results && (
           <div
             style={{
@@ -315,20 +318,14 @@ const ProgressStatus = ({ state }: { state: AutoBeListenerState }) => (
         gap: "0.5rem",
       }}
     >
-      {PROGRESS_STEPS.map((step) => {
-        const isCompleted =
-          state[step.name as keyof AutoBeListenerState] !== null;
-        const results = step.getResults(state);
-
-        return (
-          <ProgressCard
-            key={step.name}
-            step={step}
-            isCompleted={isCompleted}
-            results={results}
-          />
-        );
-      })}
+      {PROGRESS_STEPS.map((step) => (
+        <ProgressCard
+          key={step.name}
+          step={step}
+          isCompleted={state[step.name as keyof AutoBeListenerState] !== null}
+          results={step.getResults(state)}
+        />
+      ))}
     </div>
   </div>
 );
