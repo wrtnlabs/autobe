@@ -8,7 +8,7 @@ import { AutoBeChatState } from "./AutoBeChatState";
 
 /** Chat banner component with collapsible token usage display */
 export const AutoBeChatBanner = () => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const [isReceiptHovered, setIsReceiptHovered] = useState(false);
   const [isCloseHovered, setIsCloseHovered] = useState(false);
 

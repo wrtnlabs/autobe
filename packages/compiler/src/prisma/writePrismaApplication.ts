@@ -392,7 +392,7 @@ const POSTGRES_MAIN_FILE = StringUtil.trim`
   }
   generator markdown {
     provider = "prisma-markdown"
-    output   = "../docs/ERD.md"
+    output   = "../../docs/ERD.md"
   }
 `;
 const SQLITE_MAIN_FILE = StringUtil.trim`
@@ -405,7 +405,7 @@ const SQLITE_MAIN_FILE = StringUtil.trim`
   }
   generator markdown {
     provider = "prisma-markdown"
-    output   = "../docs/ERD.md"
+    output   = "../../docs/ERD.md"
   }
 `;
 const MAX_IDENTIFIER_LENGTH = 63;

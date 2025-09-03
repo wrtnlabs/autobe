@@ -1,5 +1,4 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
-import { IAutoBeTypeScriptCompileResult } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { ILlmSchema } from "@samchon/openapi";
 import { v4, v7 } from "uuid";
@@ -7,6 +6,7 @@ import { v4, v7 } from "uuid";
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeTestFunction } from "../structures/IAutoBeTestFunction";
+import { IAutoBeTestFunctionFailure } from "../structures/IAutoBeTestFunctionFailure";
 import { transformTestWriteHistories } from "./transformTestWriteHistories";
 
 export const transformTestCorrectHistories = async <
@@ -14,7 +14,7 @@ export const transformTestCorrectHistories = async <
 >(
   ctx: AutoBeContext<Model>,
   func: IAutoBeTestFunction,
-  failures: IAutoBeTypeScriptCompileResult.IFailure[],
+  failures: IAutoBeTestFunctionFailure[],
 ): Promise<
   Array<
     IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
@@ -42,7 +42,7 @@ export const transformTestCorrectHistories = async <
             ## Generated TypeScript Code
 
             \`\`\`typescript
-            ${func.script}
+            ${f.function.script}
             \`\`\`
 
             ## Compile Errors
@@ -50,7 +50,7 @@ export const transformTestCorrectHistories = async <
             Fix the compilation error in the provided code.
 
             \`\`\`json
-            ${JSON.stringify(f.diagnostics)}
+            ${JSON.stringify(f.failure.diagnostics)}
             \`\`\`
           `,
         }) satisfies IAgenticaHistoryJson.IAssistantMessage,

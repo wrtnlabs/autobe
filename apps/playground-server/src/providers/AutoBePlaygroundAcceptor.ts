@@ -18,9 +18,9 @@ export namespace AutoBePlaygroundAcceptor {
     agent: (compiler: IAutoBeCompiler) => IAutoBeAgent;
   }): Promise<void> => {
     const agent: IAutoBeAgent = props.agent(await compiler.get());
-
     const archive = async () =>
       save(`${ROOT}/${props.prefix}`, await agent.getFiles());
+
     agent.on("analyzeComplete", archive);
     agent.on("prismaComplete", archive);
     agent.on("interfaceComplete", archive);
