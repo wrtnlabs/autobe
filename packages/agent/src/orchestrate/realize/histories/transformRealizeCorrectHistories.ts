@@ -15,6 +15,7 @@ export function transformRealizeCorrectHistories(props: {
   authorization: AutoBeRealizeAuthorization | null;
   totalAuthorizations: AutoBeRealizeAuthorization[];
   code: string;
+  dto: Record<string, string>;
   failures: IAutoBeRealizeFunctionFailure[];
 }): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage

@@ -19,6 +19,7 @@ import { compileRealizeFiles } from "./internal/compileRealizeFiles";
 import { IAutoBeRealizeCorrectApplication } from "./structures/IAutoBeRealizeCorrectApplication";
 import { IAutoBeRealizeFunctionFailure } from "./structures/IAutoBeRealizeFunctionFailure";
 import { IAutoBeRealizeScenarioApplication } from "./structures/IAutoBeRealizeScenarioApplication";
+import { getRealizeWriteDto } from "./utils/getRealizeWriteDto";
 import { replaceImportStatements } from "./utils/replaceImportStatements";
 
 export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
@@ -120,6 +121,8 @@ export async function correct<Model extends ILlmSchema.Model>(
   const pointer: IPointer<IAutoBeRealizeCorrectApplication.IProps | null> = {
     value: null,
   };
+
+  const dto = await getRealizeWriteDto(ctx, props.scenario.operation);
   const { tokenUsage } = await ctx.conversate({
     source: "realizeCorrect",
     controller: createController({
@@ -133,6 +136,7 @@ export async function correct<Model extends ILlmSchema.Model>(
       scenario: props.scenario,
       authorization: props.authorization,
       code: props.function.content,
+      dto,
       failures: props.failures.filter(
         (f) => f.function.location === props.function.location,
       ),

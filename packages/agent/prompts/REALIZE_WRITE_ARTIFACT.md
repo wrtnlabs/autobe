@@ -78,6 +78,8 @@ export async function your_function_name(): Promise<ReturnType> {
 }
 ```
 
+---
+
 # DTO
 
 When importing DTOs, you must **always** use this path structure:
@@ -89,3 +91,7 @@ import { Something } from '../api/structures/Something';
 * ✅ Use `../api/structures/...`
 * ❌ Never use `../../structures/...` — these paths will not resolve
 * If a type like `string & Format<"date-time">` is required, ensure you convert `Date` to a valid ISO string
+
+```json
+{artifacts_dto}
+```

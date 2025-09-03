@@ -13,6 +13,7 @@ export const transformRealizeWriteHistories = (props: {
   scenario: IAutoBeRealizeScenarioApplication.IProps;
   authorization: AutoBeRealizeAuthorization | null;
   totalAuthorizations: AutoBeRealizeAuthorization[];
+  dto: Record<string, string>;
 }): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
@@ -143,7 +144,9 @@ export const transformRealizeWriteHistories = (props: {
       text: AutoBeSystemPromptConstant.REALIZE_WRITE_ARTIFACT.replaceAll(
         `{prisma_schemas}`,
         JSON.stringify(props.state.prisma.schemas),
-      ).replaceAll(`{input}`, input),
+      )
+        .replaceAll(`{input}`, input)
+        .replaceAll(`{artifacts_dto}`, JSON.stringify(props.dto)),
     },
     {
       id: v7(),

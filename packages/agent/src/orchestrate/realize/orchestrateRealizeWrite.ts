@@ -14,6 +14,7 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { transformRealizeWriteHistories } from "./histories/transformRealizeWriteHistories";
 import { IAutoBeRealizeScenarioApplication } from "./structures/IAutoBeRealizeScenarioApplication";
 import { IAutoBeRealizeWriteApplication } from "./structures/IAutoBeRealizeWriteApplication";
+import { getRealizeWriteDto } from "./utils/getRealizeWriteDto";
 import { replaceImportStatements } from "./utils/replaceImportStatements";
 
 export async function orchestrateRealizeWrite<Model extends ILlmSchema.Model>(
@@ -29,6 +30,8 @@ export async function orchestrateRealizeWrite<Model extends ILlmSchema.Model>(
   const pointer: IPointer<IAutoBeRealizeWriteApplication.IProps | null> = {
     value: null,
   };
+
+  const dto = await getRealizeWriteDto(ctx, props.scenario.operation);
   const { tokenUsage } = await ctx.conversate({
     source: "realizeWrite",
     histories: transformRealizeWriteHistories({
@@ -36,6 +39,7 @@ export async function orchestrateRealizeWrite<Model extends ILlmSchema.Model>(
       scenario: props.scenario,
       authorization: props.authorization,
       totalAuthorizations: props.totalAuthorizations,
+      dto,
     }),
     controller: createController({
       model: ctx.model,
