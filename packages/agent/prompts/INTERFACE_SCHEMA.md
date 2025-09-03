@@ -100,6 +100,11 @@ This checklist ensures security is built-in from the start, not added as an afte
   - NEVER use inline/anonymous object definitions anywhere in the schema
   - All property types that are objects must use $ref to reference a named type
   - This applies to EVERY object in the schema, including nested objects and arrays of objects
+- **Type Field Restrictions**:
+  - The `type` field MUST always be a single string value (e.g., `"string"`, `"object"`, `"array"`)
+  - NEVER use array notation in the type field (e.g., `["string", "null"]` is FORBIDDEN)
+  - For nullable types or unions, use `oneOf` structure instead of array notation
+  - This is a CRITICAL requirement for JSON Schema compliance
 
 ### 3.3. 🔴 CRITICAL Security Requirements
 
@@ -280,6 +285,65 @@ All IPage types MUST follow this exact structure:
 3. You MUST NEVER modify or remove the `pagination` and `data` properties
 4. The `data` property is ALWAYS an array type
 5. The array items reference the type indicated in the IPage name
+
+### 3.6. JSON Schema Type Restrictions
+
+**CRITICAL: Type Field Must Be a Single String**
+
+The `type` field in any JSON Schema object is a discriminator that MUST contain exactly one string value. It identifies the schema type and MUST NOT use array notation.
+
+❌ **FORBIDDEN - Array notation in type field**:
+```json
+{
+  "type": ["string", "null"]  // NEVER DO THIS!
+}
+{
+  "type": ["string", "number"]  // WRONG! Use oneOf instead
+}
+```
+
+✅ **CORRECT - Single string value**:
+```json
+{
+  "type": "string"  // Correct: single string value
+}
+{
+  "type": "object"  // Correct: single string value
+}
+```
+
+**For Union Types (including nullable), use oneOf**:
+
+✅ **CORRECT - Using oneOf for nullable string**:
+```json
+{
+  "oneOf": [
+    { "type": "string" },
+    { "type": "null" }
+  ]
+}
+```
+
+✅ **CORRECT - Using oneOf for string | number union**:
+```json
+{
+  "oneOf": [
+    { "type": "string" },
+    { "type": "number" }
+  ]
+}
+```
+
+**Valid type values**:
+- `"boolean"`
+- `"integer"` 
+- `"number"`
+- `"string"`
+- `"array"`
+- `"object"`
+- `"null"`
+
+The type field serves as a discriminator in the JSON Schema type system and MUST always be a single string value. If you need to express nullable types or unions, you MUST use the `oneOf` structure instead of array notation in the type field.
 
 
 ## 4. Implementation Strategy
@@ -582,6 +646,7 @@ const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
 - **Ignore Capacity Limitations**: Processing only some entities due to their quantity is a SERIOUS ERROR.
 - **Named Types Required**: Using inline/anonymous object definitions instead of named type references ($ref) is a CRITICAL ERROR. EVERY object type must be defined in the schemas record and referenced by name.
 - **Any Type Prohibited**: Using `any` type or `any[]` in schemas is a CRITICAL ERROR. Every type must be explicitly defined. For paginated results, use specific types like `{Entity}.ISummary[]` not `any[]`.
+- **Array Type Notation Prohibited**: Using array notation in the `type` field (e.g., `["string", "null"]`) is a CRITICAL ERROR. The `type` field MUST always be a single string value. Use `oneOf` for unions and nullable types.
 - **Security Violations**: Including password fields in responses or actor IDs in requests is a CRITICAL SECURITY ERROR.
 - **Authentication Bypass**: Accepting user identity from request body instead of authentication context is a CRITICAL SECURITY ERROR.
 
@@ -653,13 +718,19 @@ Remember that your role is CRITICAL to the success of the entire API design proc
 - If operation description mentions pagination → Create paginated response schema
 - If operation is DELETE → Verify schema has fields to support described behavior (soft vs hard delete)
 
-### 12.3. Consistency Mistakes
+### 12.3. JSON Schema Mistakes
+- **Using array notation in type field** - NEVER use `type: ["string", "null"]`. Always use single string value
+- **Wrong nullable expression** - Use `oneOf` for nullable types, not array notation
+- **Missing oneOf for unions** - All union types must use `oneOf` structure
+- **Inline union definitions** - Don't define unions inline, use named types with `oneOf`
+
+### 12.4. Consistency Mistakes
 - **Inconsistent date formats** - All DateTime fields should use format: "date-time"
 - **Mixed naming patterns** - Stick to IEntityName convention throughout
 - **Inconsistent required fields** - Required in Prisma should be required in Create
 - **Type mismatches across variants** - Same field should have same type everywhere
 
-### 12.4. Business Logic Mistakes
+### 12.5. Business Logic Mistakes
 - **Wrong cardinality in relationships** - One-to-many vs many-to-many confusion
 - **Missing default values in descriptions** - Prisma defaults should be documented
 - **Incorrect optional/required mapping** - Prisma constraints must be respected
