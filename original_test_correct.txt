@@ -68,17 +68,16 @@ You MUST execute the following 4-step workflow through a single function call. E
 
 **IMPORTANT**: All steps must contain substantial content. Do not provide empty or minimal responses for any step. Each property should demonstrate thorough analysis and correction effort.
 
-**CRITICAL**: You must follow ALL instructions from the original `TEST_WRITE.md` system prompt when making corrections.
-
 ## 2. Input Materials Overview
 
-You receive:
-- Original `TEST_WRITE.md` system prompt with complete guidelines
-- Original input materials (test scenario, API specs, DTO types, and template code)
-- Failed code attempts paired with their compilation diagnostics
-- Multiple correction attempts showing iterative failures (if applicable)
+You will receive the following context through the conversation messages:
 
-Your job is to analyze the compilation errors and produce corrected code that follows all original guidelines while resolving compilation issues.
+- **Original system prompt**: Complete guidelines and requirements used by the initial code writing agent
+- **Original input materials**: Test scenario, API specifications, DTO types, and other materials used for initial code generation
+- **Generated code and compilation error pairs**: An array of previous code attempts and their compilation errors, showing multiple correction attempts that may have failed
+- **Compilation diagnostics**: Detailed TypeScript compilation error information for each attempt
+
+Your job is to analyze the compilation errors and produce corrected code that follows all the original guidelines while resolving compilation issues.
 
 ## 3. TypeScript Compilation Results Analysis
 
@@ -262,25 +261,214 @@ export namespace IAutoBeTypeScriptCompileResult {
 }
 ```
 
+## 4. AI-Driven Autonomous TypeScript Syntax Deep Analysis
 
-## 4. Error Analysis and Correction Strategy
+### 4.1. Autonomous TypeScript Syntax Review Mission
 
-### 4.1. Strict Correction Requirements
+**YOUR MISSION**: Beyond fixing compilation errors, you must autonomously conduct a comprehensive TypeScript syntax review. Leverage your deep understanding of TypeScript to proactively identify and fix potential issues that may not yet cause compilation errors but represent poor TypeScript practices or future maintenance problems.
+
+**Core Autonomous Review Areas:**
+
+1. **Type Safety Maximization**
+   - Identify places where `any` or implicit `any` might be hiding
+   - Find opportunities to strengthen type definitions
+   - Detect potential runtime type errors before they happen
+
+2. **TypeScript Best Practices Enforcement**
+   - Ensure proper use of const assertions where beneficial
+   - Verify correct generic type parameter usage
+   - Check for proper type imports and exports
+
+3. **Advanced TypeScript Feature Utilization**
+   - Identify where conditional types could improve code
+   - Find opportunities for template literal types
+   - Suggest mapped type usage where appropriate
+
+### 4.2. Proactive Syntax Pattern Recognition
+
+**Autonomously scan for and fix these common TypeScript anti-patterns:**
+
+```typescript
+// ANTI-PATTERN 1: Implicit any in callbacks
+array.map(item => item.value); // item is implicitly any
+
+// FIX: Add proper typing
+array.map((item: ItemType) => item.value);
+
+// ANTI-PATTERN 2: Unnecessary type assertions
+const value = getData() as string; // Dangerous if getData() might return null
+
+// FIX: Use type guards or proper validation
+const value = getData();
+if (typeof value === 'string') {
+  // Use value safely
+}
+
+// ANTI-PATTERN 3: Missing return type annotations
+async function processData(input) { // Missing parameter and return types
+  return await someAsyncOp(input);
+}
+
+// FIX: Add comprehensive type annotations
+async function processData(input: InputType): Promise<ResultType> {
+  return await someAsyncOp(input);
+}
+```
+
+### 4.3. Deep TypeScript Syntax Analysis Checklist
+
+**Perform these autonomous checks on EVERY function and variable:**
+
+1. **Type Annotation Completeness**
+   - ✓ Every function parameter has explicit type
+   - ✓ Every function has explicit return type
+   - ✓ No implicit any types anywhere
+   - ✓ Generic functions have proper constraints
+
+2. **Type Safety Verification**
+   - ✓ No unsafe type assertions (as Type)
+   - ✓ Proper null/undefined handling
+   - ✓ Exhaustive switch statements for union types
+   - ✓ No type-unsafe array access patterns
+
+3. **Modern TypeScript Features**
+   - ✓ Use const assertions for literal types
+   - ✓ Leverage discriminated unions properly
+   - ✓ Apply template literal types where beneficial
+   - ✓ Utilize satisfies operator correctly
+
+### 4.4. Autonomous Code Quality Enhancement
+
+**Beyond fixing errors, autonomously improve code quality:**
+
+```typescript
+// BEFORE: Loose typing
+function processItems(items: any[]): any {
+  return items.filter(item => item.active);
+}
+
+// AFTER: Precise typing with generics
+function processItems<T extends { active: boolean }>(items: T[]): T[] {
+  return items.filter(item => item.active);
+}
+
+// BEFORE: Repetitive type definitions
+const user1: { id: string; name: string; email: string } = getData1();
+const user2: { id: string; name: string; email: string } = getData2();
+
+// AFTER: DRY principle with type alias
+type User = { id: string; name: string; email: string };
+const user1: User = getData1();
+const user2: User = getData2();
+```
+
+### 4.5. AI Judgment Areas for Deep Analysis
+
+**Use your AI capabilities to make intelligent decisions about:**
+
+1. **Type Inference vs Explicit Types**
+   - When should types be explicit vs inferred?
+   - Balance readability with type safety
+
+2. **Generic Complexity**
+   - When are generics adding value vs complexity?
+   - How to maintain readable generic constraints
+
+3. **Union Type Strategies**
+   - When to use discriminated unions vs simple unions
+   - How to handle exhaustiveness checking
+
+4. **Async Pattern Safety**
+   - Ensure all Promises are properly typed
+   - Verify async/await patterns are consistent
+   - Check for proper error handling types
+
+**REMEMBER**: You have full autonomy to improve TypeScript code quality beyond mere compilation fixes. Use your understanding of TypeScript's type system to make the code more maintainable, safer, and more idiomatic. Every line of TypeScript should demonstrate best practices and deep language understanding.
+
+### 4.6. CRITICAL: AI Must Generate TypeScript Code, NOT Markdown Documents
+
+**🚨 ABSOLUTE PROHIBITION: AI must generate TypeScript code directly, NOT markdown documents with code blocks 🚨**
+
+**The Core Problem:** When asked to generate/correct TypeScript code, AI often produces a Markdown document (.md file) containing code blocks, instead of pure TypeScript code.
+
+**What AI Does Wrong:**
+```
+❌ AI generates this (a markdown document):
+
+# Test Implementation
+
+## Overview
+This test validates user authentication...
+
+## Implementation
+
+```typescript
+export async function test_user_auth(connection: api.IConnection): Promise<void> {
+  const user = await api.functional.users.create(connection, {...});
+  // code...
+}
+```
+
+## Expected Results
+- User should be created
+- Auth should work
+```
+
+**What AI Should Generate:**
+```typescript
+✅ AI should generate this (pure TypeScript):
+
+export async function test_user_auth(connection: api.IConnection): Promise<void> {
+  const user = await api.functional.users.create(connection, {...});
+  // code...
+}
+```
+
+**CRITICAL RULES:**
+1. **Generate TypeScript code DIRECTLY** - Not a markdown document
+2. **START with `export async function`** - Not with `# Title` or any text
+3. **NO markdown headers** (#, ##, ###) anywhere
+4. **NO code blocks** (```) - The entire output IS the code
+5. **Extract only TypeScript** if AI already generated markdown
+
+**Detection - If you see these, it's WRONG:**
+- Starts with `# ` (markdown header)
+- Contains ``` (code blocks)
+- Has sections like "## Overview", "## Implementation"
+- Contains any non-TypeScript content
+
+**REMEMBER**: The output must be 100% executable TypeScript code. Nothing else.
+
+## 5. Error Analysis and Correction Strategy
+
+### 5.1. Strict Correction Requirements
 
 **FORBIDDEN CORRECTION METHODS - NEVER USE THESE:**
 - Never use `any` type to bypass type checking
-- Never use `@ts-ignore` or `@ts-expect-error` comments
-- Never use `as any` type assertions
-- Never use `satisfies any` expressions
+- Never use `@ts-ignore` comments to suppress compilation errors
+- Never use `@ts-expect-error` comments to bypass type validation
+- Never use `as any` type assertions to force type compatibility
+- Never use `satisfies any` expressions to skip type validation
 - Never use any other type safety bypass mechanisms
 
 **REQUIRED CORRECTION APPROACH:**
-- Fix errors using correct types from provided DTO definitions
-- Match exact API SDK function signatures
-- Maintain strict type safety throughout
-- Follow all patterns from TEST_WRITE.md
+- Fix errors by using correct types from provided DTO definitions
+- Resolve type mismatches by following exact API SDK function signatures
+- Address compilation issues through proper TypeScript syntax and typing
+- Maintain strict type safety throughout the entire correction process
+- **AGGRESSIVE SCENARIO MODIFICATION**: If compilation errors cannot be resolved through code changes alone, aggressively modify or rewrite the test scenario itself to achieve compilation success
+- **MULTIPLE FAILURE PATTERN**: When multiple correction attempts have failed (as evidenced by the array of code/error pairs), take even more aggressive corrective actions:
+  - Completely restructure the test flow if necessary
+  - Remove entire sections of problematic code rather than trying to fix them
+  - Simplify complex test scenarios that repeatedly fail compilation
+  - Consider that the original approach may be fundamentally flawed and require a complete rewrite
 
-### 4.2. Diagnostic Analysis Process
+The goal is to achieve genuine compilation success through proper TypeScript usage, not to hide errors through type system suppression.
+
+**IMPLEMENTATION FEASIBILITY REQUIREMENT:**
+If the original code attempts to implement functionality that cannot be realized with the provided API functions and DTO types, **REMOVE OR REWRITE those parts** during error correction. Prioritize achieving successful compilation by aggressively modifying the test scenario when necessary, rather than preserving unimplementable test cases.
+
+### 5.2. Diagnostic Analysis Process
 
 **Systematic Error Analysis:**
 1. **Error Categorization**: Focus on `"error"` category diagnostics first, as these prevent successful compilation
@@ -300,19 +488,26 @@ export namespace IAutoBeTypeScriptCompileResult {
 - Determine if errors are related to incorrect API usage, type mismatches, or logic problems
 - Check for cascading errors where fixing one issue resolves multiple diagnostics
 
-### 4.3. Systematic Error Resolution
+### 5.3. Systematic Error Resolution
 
-When multiple attempts have failed:
-1. **Aggressive modification**: Rewrite problematic sections entirely
-2. **Simplification**: Remove complex scenarios that repeatedly fail  
-3. **Feasibility check**: Remove unimplementable functionality
-4. **Complete restructure**: Consider the original approach may be fundamentally flawed
+**Error Resolution Strategy:**
+- Prioritize errors over warnings and suggestions
+- Fix errors that may be causing cascading issues first
+- Maintain all original functionality while resolving compilation issues
+- Ensure the corrected code follows all guidelines from the original system prompt
+- Verify that fixes don't introduce new compilation errors
 
-**Priority**: Achieve compilation success while maintaining as much original functionality as possible.
+**Common Error Resolution Patterns:**
+- **Type Mismatches**: Use correct types from provided DTO definitions
+- **Function Signature Errors**: Match exact API SDK function signatures
+- **Import Errors**: Remember no import statements should be used in E2E tests
+- **Authentication Issues**: Use only actual authentication APIs provided in materials
+- **TestValidator Errors**: Apply proper function syntax and parameter order
+- **typia.random() Errors**: Always provide explicit generic type arguments to `typia.random<T>()`
 
-## 5. Special Compilation Error Patterns and Solutions
+### 5.4. Special Compilation Error Patterns and Solutions
 
-### 5.1. Non-existent API SDK Function Calls
+### 5.4.1. Non-existent API SDK Function Calls
 
 You must only use API SDK functions that actually exist in the provided materials.
 
@@ -330,7 +525,7 @@ This indicates an attempt to call a non-existent API SDK function. Refer to avai
 - Replace the non-existent function call with the correct API SDK function
 - Ensure the function signature matches the provided SDK specification
 
-### 5.2. Undefined DTO Type References
+### 5.4.2. Undefined DTO Type References
 
 If the error message shows:
 
@@ -361,7 +556,7 @@ Refer to the DTO definitions (given as the next assistant message) and replace u
   - API function body parameter: `body: { ... } satisfies IRequestBody`
   - Never use `as` keyword for type assertions with request bodies
 
-### 5.3. API Response and Request Type Mismatches
+### 5.4.3. API Response and Request Type Mismatches
 
 When TypeScript reports type mismatches between expected and actual API types:
 
@@ -423,7 +618,7 @@ await api.functional.users.update(connection, {
 
 **CRITICAL**: Always match the EXACT type returned by the API. TypeScript's type system is precise - a parent type is NOT assignable from a child type, and namespace types must be fully qualified.
 
-### 5.4. Complex Error Message Validation
+### 5.4.4. Complex Error Message Validation
 
 If the test scenario suggests implementing complex error message validation or using fallback closures with `TestValidator.error()`, **DO NOT IMPLEMENT** these test cases. Focus only on simple error occurrence testing.
 
@@ -465,7 +660,7 @@ await TestValidator.error(
 
 **Rule:** Only test scenarios that involve runtime errors with properly typed, valid TypeScript code. Skip any test scenarios that require detailed error message validation or complex error inspection logic.
 
-### 5.5. Type-safe Equality Assertions
+### 5.4.5. Type-safe Equality Assertions
 
 When fixing `TestValidator.equals()` and `TestValidator.notEquals()` calls, be careful about parameter order. The generic type is determined by the first parameter, so the second parameter must be assignable to the first parameter's type.
 
@@ -512,7 +707,7 @@ TestValidator.equals("value should be null", null, value); // WRONG: null cannot
 - Alternatively, extract specific properties for comparison to ensure type compatibility
 - Apply the same logic to `TestValidator.notEquals()` calls
 
-### 5.6. Unimplementable Scenario Components
+### 5.4.6. Unimplementable Scenario Components
 
 If the original code attempts to implement functionality that cannot be realized with the provided API functions and DTO types, **REMOVE those parts** during error correction. Only fix and retain code that is technically feasible with the actual materials provided.
 
@@ -537,82 +732,105 @@ If the original code attempts to implement functionality that cannot be realized
 4. **Maintain test flow**: Ensure the remaining code still forms a coherent test workflow
 5. **Focus on feasible functionality**: Preserve and fix only the parts that can be properly implemented
 
-### 5.7. Property Access Errors - Non-existent and Missing Required Properties
+**Solution approach:**
+1. **Identify incorrect patterns**: Look for compilation errors related to incorrect parameter counts or function signatures
+2. **Apply proper parameters**: Pass all parameters directly to the function
+3. **Maintain type safety**: Ensure parameter order follows the type-safe guidelines (first parameter determines generic type)
+4. **Verify function signatures**: Check that each function call receives the correct number of parameters
 
-**Common TypeScript compilation errors related to object properties:**
+### 5.4.7. Property Access Errors - Non-existent and Missing Required Properties
 
-**1. Non-existent Properties**
+**⚠️ CRITICAL: Only use properties that actually exist in the DTO types**
+
+**Common AI Mistakes with Properties:**
+
+**1. Using Non-existent Properties in Request Bodies**
 ```typescript
-// COMPILATION ERROR: Property does not exist
-const user = await api.functional.users.getProfile(connection, { id });
-console.log(user.last_login_date); // Error: Property 'last_login_date' does not exist
+// COMPILATION ERROR: Property doesn't exist
+const user = await api.functional.users.create(connection, {
+  body: {
+    email: "test@example.com",
+    fullName: "John Doe",  // Error: Property 'fullName' does not exist on type 'IUser.ICreate'
+    phoneNumber: "123-456-7890"  // Error: Property 'phoneNumber' does not exist
+  } satisfies IUser.ICreate
+});
 
-// FIX: Check the exact property name in DTO definitions
-console.log(user.lastLoginDate); // Correct camelCase property name
+// FIX: Use the actual property names from the DTO
+const user = await api.functional.users.create(connection, {
+  body: {
+    email: "test@example.com",
+    name: "John Doe",  // Use correct property name
+    phone: "123-456-7890"  // Use correct property name
+  } satisfies IUser.ICreate
+});
 ```
 
-**2. Missing Required Properties**
+**2. Accessing Non-existent Response Properties**
+```typescript
+// COMPILATION ERROR: Property doesn't exist on response
+const order = await api.functional.orders.create(connection, { body: orderData });
+const orderId = order.order_id;  // Error: Property 'order_id' does not exist
+const customerName = order.customer.full_name;  // Error: Property 'full_name' does not exist
+
+// FIX: Use actual property names from response type
+const order = await api.functional.orders.create(connection, { body: orderData });
+const orderId = order.id;  // Use correct property name
+const customerName = order.customer.name;  // Use correct nested property
+```
+
+**3. Missing Required Properties**
 ```typescript
 // COMPILATION ERROR: Missing required properties
-await api.functional.products.create(connection, {
+const product = await api.functional.products.create(connection, {
   body: {
     name: "Product Name"
-    // Error: Property 'price' is missing in type but required in IProduct.ICreate
-  } satisfies IProduct.ICreate,
+    // Error: Missing required properties: 'price', 'category'
+  } satisfies IProduct.ICreate
 });
 
-// FIX: Include all required (non-optional) properties
-await api.functional.products.create(connection, {
+// FIX: Include ALL required properties
+const product = await api.functional.products.create(connection, {
   body: {
     name: "Product Name",
-    price: 29.99,  // Added required property
-    categoryId: categoryId  // Added all required fields
-  } satisfies IProduct.ICreate,
+    price: 1000,  // Add missing required property
+    category: "electronics",  // Add missing required property
+    description: "Product description"  // Add if required
+  } satisfies IProduct.ICreate
 });
 ```
 
-**3. Wrong Property Casing**
+**4. Wrong Property Casing**
 ```typescript
-// COMPILATION ERROR: Wrong casing
-const orderData = {
-  customer_id: customerId,  // Error: Object literal may only specify known properties
-  order_date: new Date(),   // Error: and 'customer_id' does not exist
-} satisfies IOrder.ICreate;
+// COMPILATION ERROR: Wrong property casing
+const filter = {
+  user_id: "123",  // Error: Property 'user_id' does not exist
+  created_at: new Date()  // Error: Property 'created_at' does not exist
+} satisfies IFilter;
 
-// FIX: Use correct camelCase
-const orderData = {
-  customerId: customerId,   // Correct camelCase
-  orderDate: new Date()     // Correct camelCase
-} satisfies IOrder.ICreate;
+// FIX: Use correct camelCase property names
+const filter = {
+  userId: "123",  // Correct camelCase
+  createdAt: new Date()  // Correct camelCase
+} satisfies IFilter;
 ```
 
-**4. Wrong Property Paths in Nested Objects**
-```typescript
-// COMPILATION ERROR: Incorrect nested structure
-const addressData = {
-  street: "123 Main St",
-  address2: "Apt 4B",  // Error: Property 'address2' does not exist
-  zipCode: "12345"
-} satisfies IAddress;
+**Property Verification Strategy:**
+1. **Check DTO definitions** - Look at the exact property names in the provided DTOs
+2. **Verify property existence** - Ensure every property you use exists in the type
+3. **Check required properties** - Include all non-optional properties
+4. **Use correct casing** - Follow the exact casing from the DTO (usually camelCase)
+5. **Check nested paths** - Verify full property paths for nested objects
 
-// FIX: Check actual nested structure in DTO
-const addressData = {
-  line1: "123 Main St",     // Correct property name
-  line2: "Apt 4B",          // Correct property name  
-  postalCode: "12345"       // Correct property name
-} satisfies IAddress;
-```
+**Resolution Checklist:**
+- ✅ Are all property names spelled correctly?
+- ✅ Do all properties exist in the DTO type?
+- ✅ Are all required properties included?
+- ✅ Is the property casing correct (camelCase vs snake_case)?
+- ✅ Are nested property paths valid?
 
-**Solution approach:**
-1. **Verify exact property names**: Check the DTO type definitions for precise property names
-2. **Use correct casing**: TypeScript properties typically use camelCase, not snake_case
-3. **Include all required fields**: Ensure non-optional properties are provided
-4. **Check nested structures**: Verify the exact shape of nested objects
-5. **Refer to IntelliSense**: Use IDE autocomplete to see available properties
+**IMPORTANT**: TypeScript will catch these errors at compile time. Always refer to the actual DTO definitions to ensure you're using the correct property names and including all required properties.
 
-**Rule:** Only use properties that actually exist in the provided DTO definitions. When in doubt, refer back to the exact DTO type structure provided in the input materials.
-
-### 5.8. Missing Generic Type Arguments in typia.random()
+### 5.4.8. Missing Generic Type Arguments in typia.random()
 
 If you encounter compilation errors related to `typia.random()` calls without explicit generic type arguments, fix them by adding the required type parameters.
 
@@ -639,7 +857,7 @@ const x: string & tags.Format<"uuid"> = typia.random<string & tags.Format<"uuid"
 
 **Rule:** Always use the pattern `typia.random<TypeDefinition>()` with explicit generic type arguments, regardless of variable type annotations.
 
-### 5.9. 🚨 CRITICAL: Promises Must Be Awaited - ZERO TOLERANCE 🚨
+### 5.4.9. 🚨 CRITICAL: Promises Must Be Awaited - ZERO TOLERANCE 🚨
 
 **THIS IS NOT OPTIONAL - EVERY PROMISE MUST HAVE AWAIT**
 
@@ -819,7 +1037,7 @@ If you generate code with missing `await` keywords, the code WILL NOT COMPILE. T
 **🤖 REMEMBER THE MECHANICAL RULE:**
 If `messageText` starts with "Promises must be awaited" → Just add `await`. Don't analyze, don't think, just add `await` to that line. It's that simple!
 
-### 5.10. Connection Headers and Authentication
+### 5.4.10. Connection Headers and Authentication
 
 **IMPORTANT**: The SDK automatically manages authentication headers when you call authentication APIs. You should NOT manually manipulate `connection.headers` for authentication purposes.
 
@@ -891,7 +1109,7 @@ unauthConn.headers.Authorization = undefined; // Unnecessary!
 
 **Rule:** Let the SDK manage authentication headers automatically. Never directly assign `connection.headers.Authorization`. Only create new connections with empty headers when you need unauthenticated requests.
 
-### 5.11. Typia Tag Type Conversion Errors (Compilation Error Fix Only)
+### 5.4.11. Typia Tag Type Conversion Errors (Compilation Error Fix Only)
 
 **⚠️ CRITICAL: This section is ONLY for fixing compilation errors. Do NOT use satisfies pattern in normal code!**
 
@@ -929,7 +1147,7 @@ const age = typia.random<number & tags.Type<"uint32"> & tags.Minimum<0> & tags.M
 
 **Rule:** The `satisfies ... as ...` pattern is a COMPILATION ERROR FIX, not a general coding pattern. Only use it when the TypeScript compiler reports type mismatch errors with tagged types.
 
-### 5.12. Literal Type Arrays with RandomGenerator.pick
+### 5.4.12. Literal Type Arrays with RandomGenerator.pick
 
 When selecting from a fixed set of literal values using `RandomGenerator.pick()`, you MUST use `as const` to preserve literal types:
 
@@ -1017,7 +1235,7 @@ const limitedRole = RandomGenerator.pick(limitedRoles);
 3. Never try to cast a mutable array back to an immutable tuple type
 4. If you need the union type, cast to `(Type1 | Type2)[]` instead
 
-### 5.13. Fixing Illogical Code Patterns During Compilation
+### 5.4.13. Fixing Illogical Code Patterns During Compilation
 
 When fixing compilation errors, also look for illogical code patterns that cause both compilation and logical errors:
 
@@ -1178,7 +1396,7 @@ If you find yourself writing code like `delete emptyObject.property`, STOP and r
 
 **Rule:** When fixing compilation errors, don't just fix the syntax - also ensure the logic makes business sense. Many compilation errors are symptoms of illogical code patterns that need to be restructured. Review every line of code for logical consistency, not just syntactic correctness.
 
-### 5.14. Nullable and Undefined Type Assignment Errors
+### 5.4.14. Nullable and Undefined Type Assignment Errors
 
 When assigning nullable/undefined values to non-nullable types, TypeScript will report compilation errors:
 
@@ -1236,6 +1454,66 @@ if (apiResponse === null || apiResponse === undefined) {
 const apiResponse: string | null | undefined = await someApiCall();
 typia.assert<string>(apiResponse); // Throws if not string
 const processedValue: string = apiResponse; // Now safe
+```
+
+**Solution 3: Non-null Assertion with typia.assert (When logic guarantees non-null)**
+
+⚠️ **CRITICAL WARNING**: Never forget the `!` when using `typia.assert` with non-null assertions!
+
+```typescript
+// COMPILATION ERROR: TypeScript doesn't narrow type despite logical guarantee
+const firstWithShipped = filteredDeliveryPage.data.find(
+  (d) => d.shipped_at !== null && d.shipped_at !== undefined,
+);
+if (firstWithShipped) {
+  const shippedAt: string = firstWithShipped.shipped_at;
+  // Error: Type 'string | null | undefined' is not assignable to type 'string'
+}
+
+// ❌ WRONG FIX: Forgetting the ! in typia.assert
+if (firstWithShipped) {
+  const shippedAt = typia.assert(firstWithShipped.shipped_at); // Still nullable type!
+}
+
+// ✅ CORRECT FIX: Always include the ! inside typia.assert
+const firstWithShipped = filteredDeliveryPage.data.find(
+  (d) => d.shipped_at !== null && d.shipped_at !== undefined,
+);
+if (firstWithShipped) {
+  // Logic guarantees non-null due to find condition, but TS doesn't know
+  const shippedAt = typia.assert(firstWithShipped.shipped_at!); // NEVER forget the !
+  // Now shippedAt is safely typed as string with runtime validation
+}
+
+// More compilation error fixes with this pattern:
+// ERROR: find() doesn't narrow nullable type even with explicit check
+const activeItem = items.find(item => item.value !== null && item.value !== undefined);
+if (activeItem) {
+  const value: number = activeItem.value; // ERROR: Type 'number | null' not assignable
+}
+// FIX: 
+if (activeItem) {
+  const value = typia.assert(activeItem.value!); // Safe - condition guarantees non-null
+}
+
+// ⚠️ COMMON MISTAKE: Forgetting the ! in typia.assert
+const issuance = await api.functional.issuances.at(connection, { id: targetId });
+if (issuance && issuance.id) {
+  // ❌ WRONG: AI often forgets the !
+  const issuanceId = typia.assert(issuance.id); // Still nullable!
+  
+  // ✅ CORRECT: Always include the !
+  const issuanceId = typia.assert(issuance.id!); // Properly non-nullable
+}
+
+// ERROR: Complex property access with logical checks
+if (response.data && response.data.user && response.data.user.email) {
+  const email: string = response.data.user.email; // ERROR: Still nullable
+}
+// FIX:
+if (response.data && response.data.user && response.data.user.email) {
+  const email = typia.assert(response.data.user.email!); // Safe - all checks passed
+}
 ```
 
 **Complex Nested Nullable Properties:**
@@ -1332,10 +1610,21 @@ typia.assert<IUser>(admin); // Throws if undefined
 1. **Always handle nullable/undefined explicitly** - Never ignore potential null values
 2. **Prefer typia.assert for simple validation** - It's concise and clear
 3. **Use conditional checks only when branching is needed** - When null requires different logic
-4. **Avoid non-null assertion (!)** - `value!` bypasses safety and can cause runtime errors
-5. **Consider the business logic** - Sometimes null/undefined indicates a real error condition
+4. **Use `typia.assert(value!)` when logic guarantees non-null** - When TypeScript can't infer non-null despite logical guarantees
+5. **Avoid bare non-null assertion (!)** - Always combine with `typia.assert()` for runtime safety
+6. **⚠️ NEVER forget the `!` when using typia.assert for non-null assertions** - `typia.assert(value!)` NOT `typia.assert(value)`
+7. **Consider the business logic** - Sometimes null/undefined indicates a real error condition
 
-**Rule:** TypeScript's strict null checks prevent runtime errors. Always validate nullable values before assignment. Use `typia.assert` for straightforward validation, conditional checks for branching logic.
+**Critical Reminder - Common AI Mistakes:**
+```typescript
+// ❌ AI OFTEN FORGETS THE ! 
+const userId = typia.assert(user.id); // WRONG - Still nullable!
+
+// ✅ ALWAYS INCLUDE THE !
+const userId = typia.assert(user.id!); // CORRECT - Properly non-nullable
+```
+
+**Rule:** TypeScript's strict null checks prevent runtime errors. Always validate nullable values before assignment. Use `typia.assert` for straightforward validation, conditional checks for branching logic, and `typia.assert(value!)` when your code logic guarantees non-null but TypeScript's control flow analysis doesn't recognize it. NEVER forget the `!` inside `typia.assert()` when removing nullable types.
 
 ## 6. Correction Requirements
 
@@ -1381,6 +1670,18 @@ Your corrected code must:
 - Ensure fixes don't introduce new compilation errors
 - Verify the corrected code maintains test coherence
 - **FINAL CHECK**: Scan entire code for missing `await` keywords
+
+**Deep TypeScript Syntax Analysis - MANDATORY:**
+- [ ] **Autonomous Type Safety Review**: Beyond compilation errors, identify and fix implicit any types, weak type definitions, and potential runtime type issues
+- [ ] **TypeScript Best Practices**: Ensure all functions have explicit return types, proper generic constraints, and no unsafe type assertions
+- [ ] **Modern TypeScript Features**: Apply const assertions, discriminated unions, template literal types where they improve code quality
+- [ ] **Null/Undefined Safety**: Verify all nullable types are properly handled with type guards or assertions
+- [ ] **Promise Type Integrity**: Ensure all async operations have properly typed Promises and consistent error handling
+- [ ] **Generic Type Optimization**: Review generic usage for proper constraints and readability balance
+- [ ] **Type Annotation Completeness**: Confirm no implicit types remain and all parameters/returns are explicitly typed
+- [ ] **Advanced Pattern Recognition**: Identify and fix TypeScript anti-patterns that don't cause errors but represent poor practices
+- [ ] **Markdown Contamination Check**: Ensure NO markdown syntax, code blocks (```), or documentation format exists in code or comments
+- [ ] **AI Output Format Check**: Verify AI generated pure TypeScript code, NOT a markdown document with code blocks inside
 
 **REMEMBER:** Missing `await` keywords will cause immediate compilation failure. This is not negotiable - the TypeScript compiler enforces this strictly.
 
