@@ -32,12 +32,13 @@ export namespace IAutoBeInterfaceSchemasReviewApplication {
     /**
      * Issues and problems found during schema analysis.
      *
-     * DO: Document only problems that need fixing.
-     * DO NOT: Include positive feedback, compliments, or confirmations
+     * DO: Document only problems that need fixing. DO NOT: Include positive
+     * feedback, compliments, or confirmations
      *
      * Focus exclusively on issues organized by severity:
      *
      * Severity levels:
+     *
      * - Security vulnerabilities (exposed passwords, missing auth boundaries)
      * - Missing required variants, incorrect type mappings
      * - Missing format specifications, incomplete relationships
@@ -68,6 +69,7 @@ export namespace IAutoBeInterfaceSchemasReviewApplication {
      * Final validated and enhanced schemas ready for production use.
      *
      * DO:
+     *
      * - Include valid OpenAPI schema definitions
      * - Include all entities that were in the original input
      * - Provide fixed versions if original schemas have issues
@@ -75,6 +77,7 @@ export namespace IAutoBeInterfaceSchemasReviewApplication {
      * - Include created variants if schemas are missing them
      *
      * DO NOT:
+     *
      * - Return an empty object {} (this will delete all schemas)
      * - Return undefined or null
      * - Include explanations or excuses in schema descriptions
@@ -84,9 +87,6 @@ export namespace IAutoBeInterfaceSchemasReviewApplication {
      * entity names and context. This field becomes the final schemas used by
      * the system, so it must always contain complete, valid schemas.
      */
-    content: Record<
-      string,
-      AutoBeOpenApi.IJsonSchemaDescriptive<AutoBeOpenApi.IJsonSchema>
-    >;
+    content: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
   }
 }

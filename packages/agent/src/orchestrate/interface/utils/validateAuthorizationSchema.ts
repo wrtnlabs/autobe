@@ -25,7 +25,7 @@ export const validateAuthorizationSchema = (props: {
     value.properties["token"] = {
       $ref: "#/components/schemas/IAuthorizationToken",
       description: "JWT token information for authentication",
-    } as AutoBeOpenApi.IJsonSchemaDescriptive<AutoBeOpenApi.IJsonSchema.IReference>;
+    } as AutoBeOpenApi.IJsonSchemaDescriptive.IReference;
 
     value.required ??= [];
     if (value.required.includes("token") === false) {
@@ -36,6 +36,6 @@ export const validateAuthorizationSchema = (props: {
 
 const isObjectSchema = (
   schema: AutoBeOpenApi.IJsonSchemaDescriptive,
-): schema is AutoBeOpenApi.IJsonSchemaDescriptive<AutoBeOpenApi.IJsonSchema.IObject> => {
+): schema is AutoBeOpenApi.IJsonSchemaDescriptive.IObject => {
   return "type" in schema && schema.type === "object";
 };

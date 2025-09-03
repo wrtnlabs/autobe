@@ -10,10 +10,7 @@ import { transformInterfaceAssetHistories } from "./transformInterfaceAssetHisto
 export const transformInterfaceSchemasReviewHistories = (
   state: AutoBeState,
   operations: AutoBeOpenApi.IOperation[],
-  schemaDescriptive: Record<
-    string,
-    AutoBeOpenApi.IJsonSchemaDescriptive<AutoBeOpenApi.IJsonSchema>
-  >,
+  schemaDescriptive: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {

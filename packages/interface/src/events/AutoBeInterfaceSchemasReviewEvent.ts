@@ -53,10 +53,7 @@ export interface AutoBeInterfaceSchemasReviewEvent
    * Schemas Agent, including all data models, request/response types, and
    * shared definitions that need validation and potential enhancement.
    */
-  schemas: Record<
-    string,
-    AutoBeOpenApi.IJsonSchemaDescriptive<AutoBeOpenApi.IJsonSchema>
-  >;
+  schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
 
   /**
    * Detailed review feedback from the Interface Schemas Review Agent.
@@ -94,10 +91,7 @@ export interface AutoBeInterfaceSchemasReviewEvent
    * These revised schemas must pass all validation criteria before being used
    * for API endpoint generation.
    */
-  content: Record<
-    string,
-    AutoBeOpenApi.IJsonSchemaDescriptive<AutoBeOpenApi.IJsonSchema>
-  >;
+  content: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
 
   /**
    * Current iteration number of the schema generation being reviewed.

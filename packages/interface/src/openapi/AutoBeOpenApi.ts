@@ -1341,8 +1341,57 @@ export namespace AutoBeOpenApi {
    *    fully understand the type or property without needing to reference any
    *    other documentation
    */
-  export type IJsonSchemaDescriptive<Schema extends IJsonSchema = IJsonSchema> =
-    Schema & {
+  export type IJsonSchemaDescriptive =
+    | IJsonSchemaDescriptive.IConstant
+    | IJsonSchemaDescriptive.IBoolean
+    | IJsonSchemaDescriptive.IInteger
+    | IJsonSchemaDescriptive.INumber
+    | IJsonSchemaDescriptive.IString
+    | IJsonSchemaDescriptive.IArray
+    | IJsonSchemaDescriptive.IObject
+    | IJsonSchemaDescriptive.IReference
+    | IJsonSchemaDescriptive.IOneOf
+    | IJsonSchemaDescriptive.INull;
+  export namespace IJsonSchemaDescriptive {
+    /** Constant value type. */
+    export interface IConstant extends IJsonSchema.IConstant, IDescriptive {}
+
+    /** Boolean type info. */
+    export interface IBoolean extends IJsonSchema.IBoolean, IDescriptive {}
+
+    /** Integer type info. */
+    export interface IInteger extends IJsonSchema.IInteger, IDescriptive {}
+
+    /** Number (double) type info. */
+    export interface INumber extends IJsonSchema.INumber, IDescriptive {}
+
+    /** String type info. */
+    export interface IString extends IJsonSchema.IString, IDescriptive {}
+
+    /** Array type info. */
+    export interface IArray extends IJsonSchema.IArray, IDescriptive {}
+
+    /** Object type info. */
+    export interface IObject extends IJsonSchema.IObject, IDescriptive {}
+
+    /** Reference type directing named schema. */
+    export interface IReference extends IJsonSchema.IReference, IDescriptive {}
+
+    /**
+     * Union type.
+     *
+     * `IOneOf` represents an union type of the TypeScript (`A | B | C`).
+     *
+     * For reference, even though your Swagger (or OpenAPI) document has defined
+     * `anyOf` instead of the `oneOf`, {@link AutoBeOpenApi} forcibly converts it
+     * to `oneOf` type.
+     */
+    export interface IOneOf extends IJsonSchema.IOneOf, IDescriptive {}
+
+    /** Null type. */
+    export interface INull extends IJsonSchema.INull, IDescriptive {}
+
+    interface IDescriptive {
       /**
        * Description about the type.
        *
@@ -1366,7 +1415,8 @@ export namespace AutoBeOpenApi {
        * > MUST be written in English. Never use other languages.
        */
       description: string;
-    };
+    }
+  }
 
   /* -----------------------------------------------------------
     BACKGROUNDS

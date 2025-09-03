@@ -15,8 +15,7 @@ export const validateOpenApiPageSchema = (props: {
     props.errors.push({
       path: `${props.path}[${JSON.stringify(props.key)}]`,
       value: props.schema,
-      expected:
-        "AutoBeOpenApi.IJsonSchema.IDescriptive<AutoBeOpenApi.IJsonSchema.IObject>",
+      expected: "AutoBeOpenApi.IJsonSchemaDescriptive.IObject",
       description: StringUtil.trim`
           Following the system prompt, "${props.key}" type must be constructed like below.
           
@@ -40,8 +39,7 @@ export const validateOpenApiPageSchema = (props: {
     props.errors.push({
       path: `${props.path}[${JSON.stringify(props.key)}].properties.data`,
       value: undefined,
-      expected:
-        "AutoBeOpenApi.IJsonSchema.IDescriptive<AutoBeOpenApi.IJsonSchema.IArray>",
+      expected: "AutoBeOpenApi.IJsonSchemaDescriptive.IArray",
       description: StringUtil.trim`
         Following the system prompt, "${props.key}" type must have a property 
         "data" as an array type like below. 
@@ -57,8 +55,7 @@ export const validateOpenApiPageSchema = (props: {
       props.errors.push({
         path: `${props.path}[${JSON.stringify(props.key)}].properties.data`,
         value: properties.data,
-        expected:
-          "AutoBeOpenApi.IJsonSchema.IDescriptive<AutoBeOpenApi.IJsonSchema.IArray>",
+        expected: "AutoBeOpenApi.IJsonSchemaDescriptive.IArray",
         description: StringUtil.trim`
           Following the system prompt, "${props.key}" type must have an array typed 
           property "data" like below.
@@ -143,8 +140,7 @@ export const validateOpenApiPageSchema = (props: {
       props.errors.push({
         path: `${props.path}[${JSON.stringify(props.key)}].properties.pagination`,
         value: undefined,
-        expected:
-          "AutoBeOpenApi.IJsonSchema.IDescriptive<AutoBeOpenApi.IJsonSchema.IReference>",
+        expected: "AutoBeOpenApi.IJsonSchemaDescriptive.IReference",
         description: StringUtil.trim`
           Following the system prompt, "${props.key}" type must have a property
           "pagination" as a reference type like below.

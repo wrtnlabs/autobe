@@ -121,7 +121,7 @@ const document: AutoBeOpenApi.IDocument = {
         ...{
           description: "Information of shopping customer.",
         },
-      } satisfies AutoBeOpenApi.IJsonSchema.IObject as AutoBeOpenApi.IJsonSchemaDescriptive<AutoBeOpenApi.IJsonSchema.IObject>,
+      } satisfies AutoBeOpenApi.IJsonSchemaDescriptive.IObject,
       "IShoppingSale.ICreate": {
         type: "object",
         properties: {},
@@ -129,7 +129,7 @@ const document: AutoBeOpenApi.IDocument = {
         ...{
           description: "Create information of shopping sale.",
         },
-      } satisfies AutoBeOpenApi.IJsonSchema.IObject as AutoBeOpenApi.IJsonSchemaDescriptive<AutoBeOpenApi.IJsonSchema.IObject>,
+      } satisfies AutoBeOpenApi.IJsonSchemaDescriptive.IObject,
       IShoppingSale: {
         type: "object",
         properties: {},
@@ -137,7 +137,7 @@ const document: AutoBeOpenApi.IDocument = {
         ...{
           description: "Information of shopping sale.",
         },
-      } satisfies AutoBeOpenApi.IJsonSchema.IObject as AutoBeOpenApi.IJsonSchemaDescriptive<AutoBeOpenApi.IJsonSchema.IObject>,
+      } satisfies AutoBeOpenApi.IJsonSchemaDescriptive.IObject,
     },
     authorization: [
       {

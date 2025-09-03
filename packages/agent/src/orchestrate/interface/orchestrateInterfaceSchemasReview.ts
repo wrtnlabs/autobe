@@ -25,10 +25,7 @@ export async function orchestrateInterfaceSchemasReview<
 >(
   ctx: AutoBeContext<Model>,
   operations: AutoBeOpenApi.IOperation[],
-  schemas: Record<
-    string,
-    AutoBeOpenApi.IJsonSchemaDescriptive<AutoBeOpenApi.IJsonSchema>
-  >,
+  schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   const a = Object.entries(schemas).map(([key, schema]) => {
     return { [key]: schema };
@@ -74,12 +71,7 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
   schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>[],
   progress: AutoBeProgressEventBase,
   promptCacheKey: string,
-): Promise<
-  Record<
-    string,
-    AutoBeOpenApi.IJsonSchemaDescriptive<AutoBeOpenApi.IJsonSchema>
-  >
-> {
+): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   const schema = schemas.reduce((acc, cur) => Object.assign(acc, cur), {});
   return step(ctx, operations, schema, progress, promptCacheKey);
 }
@@ -87,10 +79,7 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
 export async function step<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   operations: AutoBeOpenApi.IOperation[],
-  schemas: Record<
-    string,
-    AutoBeOpenApi.IJsonSchemaDescriptive<AutoBeOpenApi.IJsonSchema>
-  >,
+  schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
   progress: AutoBeProgressEventBase,
   promptCacheKey: string,
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
@@ -153,10 +142,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   pointer: IPointer<IAutoBeInterfaceSchemasReviewApplication.IProps | null>;
   operations: AutoBeOpenApi.IOperation[];
-  schemas: Record<
-    string,
-    AutoBeOpenApi.IJsonSchemaDescriptive<AutoBeOpenApi.IJsonSchema>
-  >;
+  schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
