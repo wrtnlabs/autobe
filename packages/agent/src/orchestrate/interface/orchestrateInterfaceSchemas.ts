@@ -25,7 +25,7 @@ export async function orchestrateInterfaceSchemas<
 >(
   ctx: AutoBeContext<Model>,
   operations: AutoBeOpenApi.IOperation[],
-  capacity: number = 8,
+  capacity: number = 5,
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   const typeNames: Set<string> = new Set();
   for (const op of operations) {
