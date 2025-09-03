@@ -6,6 +6,8 @@ import { v7 } from "uuid";
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeRealizeScenarioResult } from "../structures/IAutoBeRealizeScenarioResult";
+import { getRealizeWriteCodeTemplate } from "../utils/getRealizeWriteCodeTemplate";
+import { getRealizeWriteInputType } from "../utils/getRealizeWriteInputType";
 import { transformRealizeWriteAuthorizationsHistories } from "./transformRealizeWriteAuthorizationsHistories";
 
 export const transformRealizeWriteHistories = (props: {
@@ -25,36 +27,6 @@ export const transformRealizeWriteHistories = (props: {
   );
 
   const operation = props.scenario.operation;
-  const propsFields: string[] = [];
-
-  // payload 추가
-  if (props.authorization && operation.authorizationRole) {
-    propsFields.push(
-      `${operation.authorizationRole}: ${props.authorization.payload.name};`,
-    );
-  }
-
-  // parameters 추가
-  operation.parameters.forEach((parameter) => {
-    const format =
-      "format" in parameter.schema
-        ? ` & tags.Format<'${parameter.schema.format}'>`
-        : "";
-    propsFields.push(`${parameter.name}: ${parameter.schema.type}${format};`);
-  });
-
-  // body 추가
-  if (operation.requestBody?.typeName) {
-    propsFields.push(`body: ${operation.requestBody.typeName};`);
-  }
-
-  const input =
-    propsFields.length > 0
-      ? StringUtil.trim`
-        props: {
-        ${propsFields.map((field) => `  ${field},`).join("\n")}
-        }`
-      : `// No props parameter needed - function should have no parameters`;
 
   if (props.state.analyze === null)
     return [
@@ -145,13 +117,26 @@ export const transformRealizeWriteHistories = (props: {
         `{prisma_schemas}`,
         JSON.stringify(props.state.prisma.schemas),
       )
-        .replaceAll(`{input}`, input)
+        .replaceAll(
+          `{input}`,
+          getRealizeWriteInputType(operation, props.authorization),
+        )
         .replaceAll(`{artifacts_dto}`, JSON.stringify(props.dto)),
     },
     {
       id: v7(),
-      created_at: new Date().toISOString(),
       type: "systemMessage",
+      created_at: new Date().toISOString(),
+      text: getRealizeWriteCodeTemplate(
+        props.scenario,
+        operation,
+        props.authorization,
+      ),
+    },
+    {
+      id: v7(),
+      type: "systemMessage",
+      created_at: new Date().toISOString(),
       text: StringUtil.trim`
         Write new code based on the following operation.
         

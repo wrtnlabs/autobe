@@ -2,6 +2,7 @@ import { AutoBeOpenApi, IAutoBeCompiler } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 
 import { AutoBeContext } from "../../../context/AutoBeContext";
+import { getRealizeWriteImportStatements } from "./getRealizeWriteImportStatements";
 
 export async function replaceImportStatements<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
@@ -87,18 +88,7 @@ export async function replaceImportStatements<Model extends ILlmSchema.Model>(
   }
 
   // Build the standard imports
-  const imports = [
-    'import jwt from "jsonwebtoken";',
-    'import { MyGlobal } from "../MyGlobal";',
-    'import typia, { tags } from "typia";',
-    'import { Prisma } from "@prisma/client";',
-    'import { v4 } from "uuid";',
-    'import { toISOStringSafe } from "../util/toISOStringSafe"',
-    ...typeReferences.map(
-      (ref) =>
-        `import { ${ref} } from "@ORGANIZATION/PROJECT-api/lib/structures/${ref}";`,
-    ),
-  ];
+  const imports = getRealizeWriteImportStatements(operation);
 
   // Only add decoratorType import if it exists
   if (decoratorType) {
