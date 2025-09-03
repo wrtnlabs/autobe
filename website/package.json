@@ -23,7 +23,7 @@
   "bugs": {
     "url": "https://github.com/wrtnlabs/autobe/issues"
   },
-  "homepage": "https://wrtnlabs.io/autobe",
+  "homepage": "https://autobe.dev",
   "dependencies": {
     "next": "^15.1.0",
     "nextra": "^4.2.17",
