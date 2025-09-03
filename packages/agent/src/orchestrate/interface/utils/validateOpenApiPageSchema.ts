@@ -168,24 +168,6 @@ export const validateOpenApiPageSchema = (props: {
           ${getExampleJsonSchema(childName)}
         `,
       });
-    } else if (
-      properties.pagination.$ref !== "#/components/schemas/IPage.IPagination"
-    ) {
-      props.errors.push({
-        path: `${props.path}[${JSON.stringify(props.key)}].properties.pagination.$ref`,
-        value: properties.pagination.$ref,
-        expected: `#/components/schemas/IPage.IPagination`,
-        description: StringUtil.trim`
-          Following the system prompt, "${props.key}" type must have a property
-          "pagination" as a reference type pointing the "IPage.IPagination" type.
-
-          However, you have not defined the "pagination" property as a reference
-          type pointing the "IPage.IPagination" type. Please ensure to follow the
-          structure exactly as shown.
-
-          ${getExampleJsonSchema(childName)}
-        `,
-      });
     }
     if (required.includes("pagination") === false)
       props.errors.push({
