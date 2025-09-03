@@ -205,10 +205,12 @@ const getExampleJsonSchema = (childName: string): string => {
         "data": {
           "items": {
             "$ref": "#/components/schemas/${childName}"
-          }
+          },
+          "description": "<SOME_DESCRIPTION>"
         },
         "pagination": {
-          "$ref": "#/components/schemas/IPage.IPagination"
+          "$ref": "#/components/schemas/IPage.IPagination",
+          "description": "<SOME_DESCRIPTION>"
         },
       },
       "required": ["data", "pagination"],
