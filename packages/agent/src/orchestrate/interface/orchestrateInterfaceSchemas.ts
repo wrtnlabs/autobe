@@ -25,7 +25,7 @@ export async function orchestrateInterfaceSchemas<
 >(
   ctx: AutoBeContext<Model>,
   operations: AutoBeOpenApi.IOperation[],
-  capacity: number = 8,
+  capacity: number = 5,
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   const typeNames: Set<string> = new Set();
   for (const op of operations) {
@@ -42,17 +42,14 @@ export async function orchestrateInterfaceSchemas<
   };
 
   const x: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
-
   for (const y of await executeCachedBatch(
     matrix.map((it) => async (promptCacheKey) => {
       const row: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
         await divideAndConquer(ctx, operations, it, progress, promptCacheKey);
       return row;
     }),
-  )) {
+  ))
     Object.assign(x, y);
-  }
-
   return x;
 }
 

@@ -619,17 +619,7 @@ Remember that your role is CRITICAL to the success of the entire API design proc
 
 ## 11. Schema Generation Decision Rules
 
-### 11.1. Handling Wrong Entity Names
-
-When schemas use completely wrong entity names (e.g., IDiscussionBoard* instead of IPoliticoEcoBbs*):
-1. Map the wrong names to correct names based on context
-2. Recreate ALL schemas with correct names
-3. Return the corrected schemas in content
-4. Document the name mapping in review/plan
-
-Example: IDiscussionBoardPost → IPoliticoEcoBbsPost
-
-### 11.2. Content Field Return Rules
+### 11.1. Content Field Return Rules
 
 **FORBIDDEN ACTIONS**:
 - ❌ NEVER return empty object {} in content
@@ -639,11 +629,8 @@ Example: IDiscussionBoardPost → IPoliticoEcoBbsPost
 
 **REQUIRED ACTIONS**:
 - ✅ ALWAYS return complete, valid schemas
-- ✅ FIX or RECREATE broken schemas (even with corrected names if necessary)
-- ✅ If entity names are wrong, RENAME them to correct ones based on Prisma schema
 - ✅ CREATE missing variants when the main entity exists
 - ✅ Write proper business descriptions for all schemas
-- ✅ Document what you did in review/plan, NOT in schema descriptions
 
 ## 12. Common Mistakes to Avoid
 
@@ -664,7 +651,6 @@ Example: IDiscussionBoardPost → IPoliticoEcoBbsPost
 - **Schema-Operation Mismatch**: Schemas must enable implementation of what operations describe
 - If operation description says "returns list of X" → Create schema with array type field (e.g., IPageIEntity with data: array)
 - If operation description mentions pagination → Create paginated response schema
-- If operation is PATCH for search → Create IPageIEntity response with data array
 - If operation is DELETE → Verify schema has fields to support described behavior (soft vs hard delete)
 
 ### 12.3. Consistency Mistakes
@@ -673,7 +659,7 @@ Example: IDiscussionBoardPost → IPoliticoEcoBbsPost
 - **Inconsistent required fields** - Required in Prisma should be required in Create
 - **Type mismatches across variants** - Same field should have same type everywhere
 
-### 12.5. Business Logic Mistakes
+### 12.4. Business Logic Mistakes
 - **Wrong cardinality in relationships** - One-to-many vs many-to-many confusion
 - **Missing default values in descriptions** - Prisma defaults should be documented
 - **Incorrect optional/required mapping** - Prisma constraints must be respected
