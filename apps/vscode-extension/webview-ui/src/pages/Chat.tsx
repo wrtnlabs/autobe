@@ -14,7 +14,6 @@ import useVsCode from "../hooks/use-vscode";
 const Chat = () => {
   const vscode = useVsCode();
   const [listener] = useState<AutoBeListener>(new AutoBeListener());
-  const [eventGroups, setEventGroups] = useState<IAutoBeEventGroup[]>([]);
   const service = useAutoBeService();
   const [, setError] = useState<Error | null>(null);
   const [tokenUsage, setTokenUsage] = useState<IAutoBeTokenUsageJson | null>(
@@ -23,22 +22,6 @@ const Chat = () => {
   const [header, setHeader] =
     useState<IAutoBePlaygroundHeader<ILlmSchema.Model> | null>(null);
 
-  //----
-  // EVENT INTERACTIONS
-  //----
-  useEffect(() => {
-    listener.on(async (e) => {
-      service
-        .getTokenUsage()
-        .then(setTokenUsage)
-        .catch(() => {});
-      setEventGroups(e);
-    });
-    service
-      .getTokenUsage()
-      .then(setTokenUsage)
-      .catch(() => {});
-  }, []);
   useEffect(() => {
     const defaultEventListenFn = (message: IAutoBeWebviewMessage) => {
       switch (message.type) {
@@ -86,16 +69,11 @@ const Chat = () => {
       <div className="flex-1 overflow-hidden h-full mx-1">
         <AutoBeChatMain
           isMobile={true}
-          eventGroups={eventGroups}
-          service={service}
           conversate={async (contents) => {
             await service.conversate(contents);
           }}
           setError={setError}
           uploadConfig={undefined}
-          tokenUsage={tokenUsage}
-          header={header}
-          state={listener.getState()}
           className="h-full"
         />
       </div>

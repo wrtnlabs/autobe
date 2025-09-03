@@ -30,6 +30,7 @@ export interface AutoBeContext<Model extends ILlmSchema.Model> {
   model: Model;
   vendor: IAgenticaVendor;
   locale: string;
+  retry: number;
 
   // accessors
   compilerListener: IAutoBeCompilerListener;

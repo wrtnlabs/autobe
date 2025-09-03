@@ -1,6 +1,6 @@
 import { ReactNode, useState } from "react";
 
-import { COLORS } from "../constant/color";
+import { COLORS } from "../../constant/color";
 
 /** Props interface for Collapsible component */
 interface ICollapsibleProps {

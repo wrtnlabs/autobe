@@ -9,9 +9,9 @@ catalogs:
     '@samchon/openapi':
       specifier: ^4.7.1
       version: 4.7.1
-    typia:
-      specifier: ^9.7.2
-      version: 9.7.2
+    tstl:
+      specifier: ^3.0.0
+      version: 3.0.0
   typescript:
     typescript:
       specifier: ~5.9.2
@@ -29,9 +29,6 @@ catalogs:
     react-dom:
       specifier: ^19.1.1
       version: 19.1.1
-    vite:
-      specifier: ^6.3.5
-      version: 6.3.5
 
 importers:
 
@@ -7077,7 +7074,7 @@ snapshots:
       '@babel/traverse': 7.28.3
       '@babel/types': 7.28.2
       convert-source-map: 2.0.0
-      debug: 4.4.1
+      debug: 4.4.1(supports-color@8.1.1)
       gensync: 1.0.0-beta.2
       json5: 2.2.3
       semver: 6.3.1
@@ -7161,7 +7158,7 @@ snapshots:
       '@babel/parser': 7.28.3
       '@babel/template': 7.27.2
       '@babel/types': 7.28.2
-      debug: 4.4.1
+      debug: 4.4.1(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -9959,10 +9956,6 @@ snapshots:
       lodash-es: 4.17.21
 
   dayjs@1.11.15: {}
-
-  debug@4.4.1:
-    dependencies:
-      ms: 2.1.3
 
   debug@4.4.1(supports-color@8.1.1):
     dependencies:

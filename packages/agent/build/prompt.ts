@@ -102,6 +102,7 @@ async function main(): Promise<void> {
         "",
       ].join("\n"),
     },
+    overwrite: true,
   });
 }
 main().catch(console.error);

@@ -6,7 +6,7 @@ interface IAssistantMessageProps {
   assistantName?: string;
 }
 
-const AutoBeAssistantMessageMovie = (props: IAssistantMessageProps) => {
+export const AutoBeAssistantMessageMovie = (props: IAssistantMessageProps) => {
   const { text, isoTimestamp, assistantName = "AutoBe" } = props;
 
   return (

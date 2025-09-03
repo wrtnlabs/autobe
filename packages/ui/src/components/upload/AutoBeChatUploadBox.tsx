@@ -11,8 +11,8 @@ import {
   AutoBeFileUploadBox,
   AutoBeVoiceRecoderButton,
 } from ".";
-import { useMediaQuery } from "../hooks/useMediaQuery";
-import { AutoBeFileUploader } from "../utils";
+import { useMediaQuery } from "../../hooks/useMediaQuery";
+import { AutoBeFileUploader } from "../../utils";
 
 export interface IAutoBeBucket {
   file: File;
@@ -271,6 +271,7 @@ export const AutoBeChatUploadBox = (props: AutoBeChatUploadBox.IProps) => {
             ))}
           </div>
         )}
+
         <textarea
           ref={inputRef}
           style={{

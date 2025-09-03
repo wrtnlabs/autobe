@@ -24,7 +24,6 @@ import { IAutoBeTestWriteResult } from "./structures/IAutoBeTestWriteResult";
 export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   writeResult: IAutoBeTestWriteResult[],
-  life: number = 4,
 ): Promise<AutoBeTestValidateEvent[]> => {
   const result: Array<AutoBeTestValidateEvent | null> =
     await executeCachedBatch(
@@ -46,7 +45,7 @@ export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
             },
             [],
             event,
-            life,
+            ctx.retry,
           );
         } catch {
           return null;

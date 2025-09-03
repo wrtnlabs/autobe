@@ -1,7 +1,7 @@
 import { AutoBeUserMessageAudioContent } from "@autobe/interface";
 import { useState } from "react";
 
-import { AutoBeVoiceRecorder } from "../utils/AutoBeVoiceRecorder";
+import { AutoBeVoiceRecorder } from "../../utils/AutoBeVoiceRecorder";
 
 export const AutoBeVoiceRecoderButton = (
   props: AutoBeVoiceRecoderButton.IProps,

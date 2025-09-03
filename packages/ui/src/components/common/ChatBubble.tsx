@@ -1,6 +1,6 @@
 import { AutoBeUserMessageContent } from "@autobe/interface";
 
-import { formatTime } from "../utils/time";
+import { formatTime } from "../../utils/time";
 import { OpenAIContent } from "./openai";
 
 /** Props interface for ChatBubble component */

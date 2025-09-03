@@ -18,7 +18,6 @@ import { IAutoBePrismaCorrectApplication } from "./structures/IAutoBePrismaCorre
 export function orchestratePrismaCorrect<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   application: AutoBePrisma.IApplication,
-  life: number = 4,
 ): Promise<IAutoBePrismaValidation> {
   const unique: Set<string> = new Set();
   for (const file of application.files)
@@ -28,7 +27,7 @@ export function orchestratePrismaCorrect<Model extends ILlmSchema.Model>(
       return true;
     });
   application.files = application.files.filter((f) => f.models.length !== 0);
-  return iterate(ctx, application, life);
+  return iterate(ctx, application, ctx.retry);
 }
 
 async function iterate<Model extends ILlmSchema.Model>(

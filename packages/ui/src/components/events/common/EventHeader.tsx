@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 
-import { formatTime } from "../../utils/time";
+import { formatTime } from "../../../utils/time";
 import { EventIcon, EventIconType } from "./EventIcon";
 
 export interface IEventHeaderProps {

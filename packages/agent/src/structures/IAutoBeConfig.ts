@@ -16,6 +16,9 @@
  * @author Samchon
  */
 export interface IAutoBeConfig {
+  /** @default 4 */
+  retry?: number;
+
   /**
    * Language and cultural locale preference for AI agent communication.
    *

@@ -18,18 +18,17 @@ import { IAutoBeInterfaceComplementApplication } from "./structures/IAutoBeInter
 export function orchestrateInterfaceComplement<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   document: AutoBeOpenApi.IDocument,
-  life: number = 8,
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
-  return step(ctx, document, life);
+  return step(ctx, document, 8);
 }
 
 async function step<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   document: AutoBeOpenApi.IDocument,
-  retry: number,
+  life: number,
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   const missed: string[] = getMissed(document);
-  if (missed.length === 0 || retry <= 0) {
+  if (missed.length === 0 || life <= 0) {
     return document.components.schemas;
   }
 
@@ -92,7 +91,7 @@ async function step<Model extends ILlmSchema.Model>(
         schemas: newSchemas,
       },
     },
-    retry - 1,
+    life - 1,
   );
 }
 

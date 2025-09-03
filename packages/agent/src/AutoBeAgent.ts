@@ -16,6 +16,7 @@ import { Semaphore, Singleton } from "tstl";
 import { v7 } from "uuid";
 
 import { AutoBeAgentBase } from "./AutoBeAgentBase";
+import { AutoBeConfigConstant } from "./constants/AutoBeConfigConstant";
 import { AutoBeContext } from "./context/AutoBeContext";
 import { AutoBeState } from "./context/AutoBeState";
 import { AutoBeTokenUsage } from "./context/AutoBeTokenUsage";
@@ -143,6 +144,7 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
       model: props.model,
       config: {
         ...(props.config ?? {}),
+        retry: props.config?.retry ?? AutoBeConfigConstant.DEFAULT_RETRY,
         executor: {
           describe: null,
         },

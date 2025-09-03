@@ -48,7 +48,6 @@ export async function orchestrateInterfaceOperations<
         const row: AutoBeOpenApi.IOperation[] = await divideAndConquer(
           ctx,
           it,
-          3,
           progress,
           reviewProgress,
           promptCacheKey,
@@ -62,7 +61,6 @@ export async function orchestrateInterfaceOperations<
 async function divideAndConquer<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   endpoints: AutoBeOpenApi.IEndpoint[],
-  retry: number,
   operationsProgress: AutoBeProgressEventBase,
   operationsReviewProgress: AutoBeProgressEventBase,
   promptCacheKey: string,
@@ -77,7 +75,7 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
       OpenApiEndpointComparator.hashCode,
       OpenApiEndpointComparator.equals,
     );
-  for (let i: number = 0; i < retry; ++i) {
+  for (let i: number = 0; i < ctx.retry; ++i) {
     if (remained.empty() === true || unique.size() >= endpoints.length) break;
     const operations: AutoBeOpenApi.IOperation[] = remained.size()
       ? await process(ctx, remained, operationsProgress, promptCacheKey)
