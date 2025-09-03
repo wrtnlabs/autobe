@@ -19,6 +19,7 @@ import { transformInterfaceSchemaHistories } from "./histories/transformInterfac
 import { orchestrateInterfaceSchemasReview } from "./orchestrateInterfaceSchemasReview";
 import { IAutoBeInterfaceSchemaApplication } from "./structures/IAutoBeInterfaceSchemaApplication";
 import { validateAuthorizationSchema } from "./utils/validateAuthorizationSchema";
+import { validateOpenApiPageSchema } from "./utils/validateOpenApiPageSchema";
 
 export async function orchestrateInterfaceSchemas<
   Model extends ILlmSchema.Model,
@@ -199,6 +200,14 @@ function createController<Model extends ILlmSchema.Model>(props: {
       errors,
       schemas: result.data.schemas,
       path: "$input.schemas",
+    });
+    Object.entries(result.data.schemas).forEach(([key, schema]) => {
+      validateOpenApiPageSchema({
+        path: "$input.schemas",
+        errors,
+        key,
+        schema,
+      });
     });
     if (errors.length !== 0)
       return {
