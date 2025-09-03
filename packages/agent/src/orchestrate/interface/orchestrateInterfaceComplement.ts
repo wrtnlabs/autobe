@@ -138,7 +138,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
     validateAuthorizationSchema({
       errors,
       schemas: result.data.schemas,
-      path: "$input.content",
+      path: "$input.schemas",
     });
     Object.entries(result.data.schemas).forEach(([key, schema]) => {
       validateOpenApiPageSchema({
