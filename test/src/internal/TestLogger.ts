@@ -19,6 +19,7 @@ export namespace TestLogger {
       );
     else if (event.type === "jsonValidateError")
       content.push(
+        event.source,
         "  - typia.validate<T>()",
         ...event.result.errors.map(
           (v) => `    - ${v.path}: ${v.expected} (${JSON.stringify(v.value)})`,
