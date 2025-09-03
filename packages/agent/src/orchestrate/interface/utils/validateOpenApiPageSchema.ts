@@ -112,7 +112,20 @@ export const validateOpenApiPageSchema = (props: {
 
   // PAGINATION
   if (properties.pagination === undefined) {
-    props.errors.push();
+    props.errors.push({
+      path: `${props.path}[${JSON.stringify(props.key)}].properties.pagination`,
+      value: undefined,
+      expected: `"pagination" property is required and must be a reference to IPage.IPagination.`,
+      description: StringUtil.trim`
+        Following the system prompt, "${props.key}" type must have a property
+        "pagination" as a reference type like below.
+
+        However, you have not defined the "pagination" property.
+        Please ensure to follow the structure exactly as shown.
+
+        ${getExampleJsonSchema(childName)}
+      `,
+    });
   } else {
     if (AutoBeOpenApiTypeChecker.isReference(properties.pagination) === false) {
       props.errors.push({
