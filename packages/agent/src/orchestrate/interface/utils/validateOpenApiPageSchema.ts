@@ -98,6 +98,8 @@ export const validateOpenApiPageSchema = (props: {
           type pointing the "${childName}" type. Please ensure to follow the 
           structure exactly as shown.
 
+          > Change the "$ref" value to be "#/components/schemas/${childName}".
+
           ${getExampleJsonSchema(childName)}
         `,
       });
@@ -120,7 +122,7 @@ export const validateOpenApiPageSchema = (props: {
         Following the system prompt, "${props.key}" type must have a property
         "pagination" as a reference type like below.
 
-        However, you have not defined the "pagination" property.
+        However, you have not defined the "pagination" property at all.
         Please ensure to follow the structure exactly as shown.
 
         ${getExampleJsonSchema(childName)}
@@ -152,10 +154,14 @@ export const validateOpenApiPageSchema = (props: {
         expected: `#/components/schemas/IPage.IPagination`,
         description: StringUtil.trim`
           Following the system prompt, "${props.key}" type must have a property
-          "pagination" as a reference type like below.
+          "pagination" as a reference type pointing the "IPage.IPagination" type 
+          like below.
 
-          However, you have not defined the "pagination" property as a reference type.
-          Please ensure to follow the structure exactly as shown.
+          However, you have not defined the "pagination" property as a reference 
+          type pointing the "IPage.IPagination" type. Please ensure to follow the 
+          structure exactly as shown.
+          
+          > Change the "$ref" value to be "#/components/schemas/IPage.IPagination".
 
           ${getExampleJsonSchema(childName)}
         `,
