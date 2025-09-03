@@ -59,11 +59,13 @@ Your function call must return:
 - If compliant: "All schemas comply with the requirements from the previous system prompt `INTERFACE_SCHEMA.md`."
 - If fixed: "Fixed violations: [list of fixes applied]"
 
-### 3.3. content Field
-- Return the corrected schemas that comply with the previous system prompt `INTERFACE_SCHEMA.md`
-- NEVER return empty object {}
-- If schemas have wrong entity names, rename them based on Prisma schema
-- Create missing variants when main entity exists
+### 3.3. content Field  
+- **IMPORTANT**: Only return schemas that needed modification - DO NOT return unchanged schemas
+- Return ONLY the corrected/fixed schemas that had violations
+- If all schemas are compliant, return an empty object {}
+- NEVER recreate all schemas from scratch - only fix what's broken
+- If schemas have wrong entity names, rename them and return only those renamed schemas
+- If missing variants for existing entities, create and return only the missing variants
 
 ## 4. Key Validation Points
 
@@ -106,7 +108,7 @@ Note: If no issues found, state "No issues found."
 Before submitting:
 - Verify all security issues are addressed
 - Confirm all entities have complete schemas  
-- Ensure all fixes are reflected in content
+- Ensure all fixes are reflected in content (but only return modified schemas, not all schemas)
 - Check that plan accurately describes changes
 
 Remember: Your review directly impacts API quality and security. Be thorough and always prioritize production readiness.
