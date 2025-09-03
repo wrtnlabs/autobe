@@ -92,45 +92,6 @@ export namespace IAutoBeInterfaceOperationApplication {
       "authorizationRole" | "authorizationType"
     > {
     /**
-     * Prisma schema models relevant to this operation.
-     *
-     * Contains the complete Prisma schema definitions for all entities involved
-     * in this operation, including their fields, relations, and database
-     * constraints. This enables comprehensive validation and schema-aware
-     * operation design.
-     *
-     * The schema information serves multiple critical purposes:
-     *
-     * - **Field Verification**: Ensures all referenced fields actually exist in
-     *   the database schema and have the correct types
-     * - **Relationship Validation**: Confirms that entity relationships are
-     *   properly defined and can support the operation's data access patterns
-     * - **Soft-Delete Detection**: For DELETE operations, identifies whether
-     *   entities have soft-delete fields (deleted_at, is_deleted, etc.) to
-     *   determine if the operation should perform logical deletion instead of
-     *   physical removal
-     * - **Constraint Awareness**: Understands unique constraints, required
-     *   fields, and default values to generate accurate request/response
-     *   schemas
-     *
-     * Example content might include:
-     *
-     * ```prisma
-     * model User {
-     *   id         String    @id @default(uuid())
-     *   email      String    @unique
-     *   name       String
-     *   deleted_at DateTime? // Indicates soft-delete capability
-     *   posts      Post[]
-     * }
-     * ```
-     *
-     * This schema context ensures operations are fully aligned with the actual
-     * database structure and business logic requirements.
-     */
-    prisma_schemas: string;
-
-    /**
      * Authorization roles required to access this API operation.
      *
      * This field specifies which user roles are allowed to access this
