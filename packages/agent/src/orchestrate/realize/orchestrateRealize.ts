@@ -19,7 +19,7 @@ import { orchestrateRealizeAuthorization } from "./orchestrateRealizeAuthorizati
 import { orchestrateRealizeCorrect } from "./orchestrateRealizeCorrect";
 import { orchestrateRealizeScenario } from "./orchestrateRealizeScenario";
 import { orchestrateRealizeWrite } from "./orchestrateRealizeWrite";
-import { IAutoBeRealizeScenarioApplication } from "./structures/IAutoBeRealizeScenarioApplication";
+import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
 
 export const orchestrateRealize =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
@@ -58,14 +58,15 @@ export const orchestrateRealize =
       await orchestrateRealizeAuthorization(ctx);
 
     // SCENARIOS
-    const scenarios: IAutoBeRealizeScenarioApplication.IProps[] =
-      operations.map((operation) => {
+    const scenarios: IAutoBeRealizeScenarioResult[] = operations.map(
+      (operation) => {
         const authorization = authorizations.find(
           (el) => el.role.name === operation.authorizationRole,
         );
 
         return orchestrateRealizeScenario(ctx, operation, authorization);
-      });
+      },
+    );
 
     const writeProgress: AutoBeProgressEventBase = {
       total: scenarios.length,

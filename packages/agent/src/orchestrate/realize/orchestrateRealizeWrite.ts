@@ -12,7 +12,7 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { transformRealizeWriteHistories } from "./histories/transformRealizeWriteHistories";
-import { IAutoBeRealizeScenarioApplication } from "./structures/IAutoBeRealizeScenarioApplication";
+import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
 import { IAutoBeRealizeWriteApplication } from "./structures/IAutoBeRealizeWriteApplication";
 import { getRealizeWriteDto } from "./utils/getRealizeWriteDto";
 import { replaceImportStatements } from "./utils/replaceImportStatements";
@@ -22,7 +22,7 @@ export async function orchestrateRealizeWrite<Model extends ILlmSchema.Model>(
   props: {
     totalAuthorizations: AutoBeRealizeAuthorization[];
     authorization: AutoBeRealizeAuthorization | null;
-    scenario: IAutoBeRealizeScenarioApplication.IProps;
+    scenario: IAutoBeRealizeScenarioResult;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
   },

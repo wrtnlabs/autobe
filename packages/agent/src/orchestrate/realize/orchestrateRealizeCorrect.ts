@@ -18,13 +18,13 @@ import { transformRealizeCorrectHistories } from "./histories/transformRealizeCo
 import { compileRealizeFiles } from "./internal/compileRealizeFiles";
 import { IAutoBeRealizeCorrectApplication } from "./structures/IAutoBeRealizeCorrectApplication";
 import { IAutoBeRealizeFunctionFailure } from "./structures/IAutoBeRealizeFunctionFailure";
-import { IAutoBeRealizeScenarioApplication } from "./structures/IAutoBeRealizeScenarioApplication";
+import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
 import { getRealizeWriteDto } from "./utils/getRealizeWriteDto";
 import { replaceImportStatements } from "./utils/replaceImportStatements";
 
 export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  scenarios: IAutoBeRealizeScenarioApplication.IProps[],
+  scenarios: IAutoBeRealizeScenarioResult[],
   authorizations: AutoBeRealizeAuthorization[],
   functions: AutoBeRealizeFunction[],
   failures: IAutoBeRealizeFunctionFailure[],
@@ -112,7 +112,7 @@ export async function correct<Model extends ILlmSchema.Model>(
   props: {
     authorization: AutoBeRealizeAuthorization | null;
     totalAuthorizations: AutoBeRealizeAuthorization[];
-    scenario: IAutoBeRealizeScenarioApplication.IProps;
+    scenario: IAutoBeRealizeScenarioResult;
     function: AutoBeRealizeFunction;
     failures: IAutoBeRealizeFunctionFailure[];
     progress: AutoBeProgressEventBase;

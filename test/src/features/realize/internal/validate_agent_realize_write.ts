@@ -1,5 +1,5 @@
 import { orchestrateRealizeWrite } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeWrite";
-import { IAutoBeRealizeScenarioApplication } from "@autobe/agent/src/orchestrate/realize/structures/IAutoBeRealizeScenarioApplication";
+import { IAutoBeRealizeScenarioResult } from "@autobe/agent/src/orchestrate/realize/structures/IAutoBeRealizeScenarioResult";
 import { executeCachedBatch } from "@autobe/agent/src/utils/executeCachedBatch";
 import { CompressUtil, FileSystemIterator } from "@autobe/filesystem";
 import {
@@ -50,7 +50,7 @@ export const validate_agent_realize_write = async (
     ),
   );
 
-  const scenarios: IAutoBeRealizeScenarioApplication.IProps[] = JSON.parse(
+  const scenarios: IAutoBeRealizeScenarioResult[] = JSON.parse(
     await CompressUtil.gunzip(
       await fs.promises.readFile(
         `${TestGlobal.ROOT}/assets/histories/${model}/${project}.realize.scenarios.json.gz`,

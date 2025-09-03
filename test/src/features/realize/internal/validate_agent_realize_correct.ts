@@ -1,6 +1,6 @@
 import { compileRealizeFiles } from "@autobe/agent/src/orchestrate/realize/internal/compileRealizeFiles";
 import { orchestrateRealizeCorrect } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeCorrect";
-import { IAutoBeRealizeScenarioApplication } from "@autobe/agent/src/orchestrate/realize/structures/IAutoBeRealizeScenarioApplication";
+import { IAutoBeRealizeScenarioResult } from "@autobe/agent/src/orchestrate/realize/structures/IAutoBeRealizeScenarioResult";
 import { CompressUtil, FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeEvent,
@@ -52,7 +52,7 @@ export const validate_agent_realize_correct = async (
     ),
   );
 
-  const scenarios: IAutoBeRealizeScenarioApplication.IProps[] = JSON.parse(
+  const scenarios: IAutoBeRealizeScenarioResult[] = JSON.parse(
     await CompressUtil.gunzip(
       await fs.promises.readFile(
         `${TestGlobal.ROOT}/assets/histories/${model}/${project}.realize.scenarios.json.gz`,
