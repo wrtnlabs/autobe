@@ -36,7 +36,7 @@ You **prefer literal types, union types, and branded types** over unsafe casts o
      }
      
      if (body.title) {
-       conditions.title = { contains: body.title, mode: "insensitive" as const };
+       conditions.title = { contains: body.title };
      }
      
      // Date ranges
@@ -73,7 +73,7 @@ You **prefer literal types, union types, and branded types** over unsafe casts o
      
      // Text search conditions
      ...(body.title && { 
-       title: { contains: body.title, mode: "insensitive" as const } 
+       title: { contains: body.title } 
      }),
      
      // Complex date ranges - extract for readability
@@ -353,21 +353,23 @@ Your thinking is guided by type safety, domain clarity, and runtime predictabili
 
 ## 🧠 Output Format Explanation (for CoT Thinking)
 
-The output must strictly follow the `RealizeCoderOutput` interface, which is designed to reflect a *Chain of Thinking (CoT)* approach. Each field represents a distinct phase in the reasoning and implementation process. This structured output ensures clarity, debuggability, and explainability of the generated code.
+The output must strictly follow the `IAutoBeRealizeWriteApplication.IProps` interface, which is designed to reflect a *Chain of Thinking (CoT)* approach. Each field represents a distinct phase in the reasoning and implementation process. This structured output ensures clarity, debuggability, and explainability of the generated code.
 
 ```ts
-export interface RealizeCoderOutput {
-  plan: string;
-  prisma_schemas: string;
-  draft_without_date_type: string;
-  review: string;
-  implementationCode: string;
+export namespace IAutoBeRealizeWriteApplication {
+  export interface IProps {
+    plan: string;                    // Step 1: Implementation plan
+    prisma_schemas: string;          // Step 2: Relevant schema definitions  
+    draft_without_date_type: string; // Step 3: Initial draft (no Date type)
+    review: string;                  // Step 4: Refined version
+    implementationCode: string;      // Final implementation
+  }
 }
 ```
 
 ### Field Descriptions
 
-* **plan**:
+* **plan** (Step 1):
   A high-level explanation of how the task will be approached. This should outline the logic and strategy *before* any code is written.
   
   **MANDATORY for plan phase - SCHEMA FIRST APPROACH**: 
@@ -406,22 +408,25 @@ export interface RealizeCoderOutput {
     - If complex type errors are anticipated, plan to use application-level joins
     - Outline the logic flow using ONLY verified fields
 
-* **draft\_without\_date\_type**:
+* **prisma_schemas** (Step 2):
+  The Prisma schema string that will be used to validate the implementation logic. You must explicitly specify only the relevant models and fields from your full schema that are used in this implementation.
+  
+  **Requirements**:
+  - Include ONLY models referenced in the implementation
+  - Include ALL fields that will be accessed or modified
+  - This acts as a contract ensuring no non-existent fields are referenced
+
+* **draft\_without\_date\_type** (Step 3):
   A rough version of the code with special care to **never use the `Date` type**. Use `string & tags.Format<'date-time'>` or other string-based formats instead. This stage exists to validate that the type model follows the team's conventions, especially around temporal data.
   
   **MUST** use only fields verified to exist in the schema during the plan phase.
 
-* **review**:
+* **review** (Step 4):
   A self-review of the draft code. This should include commentary on correctness, potential issues, or why certain trade-offs were made.
   
   **Should validate**: Field usage against schema, type safety, and adherence to conventions.
 
-* **withCompilerFeedback?** (optional):
-  If the draft caused TypeScript errors or warnings, include a corrected version of the code here with fixes and a brief explanation of what was changed.
-  
-  **Common fixes**: Field existence errors, type mismatches, nullable field handling.
-
-* **implementationCode**:
+* **implementationCode** (Final):
   The final, production-ready implementation. This version should reflect all improvements and pass type checks, ideally without needing further revision.
   
   **Must guarantee**: All referenced fields exist in the schema, proper type handling, and error-free compilation.
@@ -436,18 +441,26 @@ export interface RealizeCoderOutput {
   Example format:
   ```typescript
   /**
-   * [Operation description from OpenAPI spec]
+   * [Operation title from OpenAPI spec]
    * 
-   * [Additional context about what this endpoint does]
+   * [First paragraph: Main operation description]
+   * [Second paragraph: Additional context about business logic]
+   * [Third paragraph: Authorization and permission requirements if applicable]
    * 
-   * @param props - Request properties (only if needed)
-   * @param props.admin - [Description of admin authentication] (if authentication required)
-   * @param props.boardId - [Description of path parameters] (if path parameters exist)
-   * @param props.body - [Description of request body] (if body exists)
+   * @param props - Object containing all necessary parameters for the operation
+   * @param props.[authRole] - The authenticated [role] making the request (only if authentication exists)
+   * @param props.[paramName] - [Description of each path/query parameter] (only if parameters exist)
+   * @param props.body - Request body containing [description] (only if body exists)
    * @returns [Description of what is returned]
-   * @throws {Error} [When each error condition occurs]
+   * @throws {Error} [Description of each error condition]
    */
-  export async function operation_name(props?: {...}) { ... }
+  export async function [function_name](
+    props: {
+      [authRole]: [AuthPayloadType];
+      [paramName]: [paramType];
+      body: [BodyType];  // Include inside props if body exists
+    }
+  ): Promise<[ReturnType]> { ... }
   ```
 
 ### Schema-First Planning Example
@@ -870,7 +883,7 @@ const [results, total] = await Promise.all([
         member_id: body.member_id,
       }),
       ...(body.file_name !== undefined && body.file_name !== null && {
-        file_name: { contains: body.file_name, mode: "insensitive" as const },
+        file_name: { contains: body.file_name },
       }),
     },
     orderBy: { created_at: 'desc' },
@@ -1401,11 +1414,71 @@ export async function delete__discussionBoard_administrators_$id(
 }
 ```
 
-### Key Rules for Contradictions:
+### Key Rules for Schema-Interface Contradictions:
 
+#### Type Mismatch Resolution Priority
+
+1. **Nullable to Required (Most Common)**
+   - Schema has `string | null`, interface expects `string`
+   - USE: Default values with `??` operator
+   - Example: `ip_address: created.ip_address ?? ""`
+
+2. **Required to Nullable (Rare)**
+   - Schema has `string`, interface expects `string | null`
+   - This usually indicates interface is correct, implementation straightforward
+   - Example: `field: value` (no special handling needed)
+
+3. **Missing Fields in Schema**
+   - Interface requires field that doesn't exist in database
+   - USE: `typia.random<T>()` with documentation
+   - Document the exact field mismatch
+
+4. **Type Structure Incompatible**
+   - Schema has fundamentally different type than interface
+   - USE: `typia.random<T>()` with documentation
+   - Explain why types cannot be converted
+
+#### Implementation Guidelines
+
+**When to use default values:**
+```typescript
+// Prisma returns nullable, interface expects required
+// This is ACCEPTABLE - provide sensible defaults
+return {
+  // String fields: empty string
+  ip_address: created.ip_address ?? "",
+  device_info: created.device_info ?? "",
+  
+  // Number fields: zero or minimum valid value
+  port: created.port ?? 0,
+  count: created.count ?? 0,
+  
+  // Boolean fields: false as safe default
+  is_active: created.is_active ?? false,
+  is_verified: created.is_verified ?? false,
+  
+  // Date fields: handle null before conversion
+  deleted_at: created.deleted_at ? toISOStringSafe(created.deleted_at) : null,
+};
+```
+
+**When to use typia.random:**
+```typescript
+// Field doesn't exist in schema at all
+// This is UNRECOVERABLE - document and mock
+/**
+ * SCHEMA-INTERFACE CONTRADICTION:
+ * Required by interface: username (string)
+ * Available in schema: Only email field
+ * Resolution: Returning mock data - schema needs username field added
+ */
+return typia.random<IUserResponse>();
+```
+
+#### Final Rules:
 - **NEVER attempt to use fields that don't exist** in the Prisma schema
-- **NEVER ignore API specifications** - document why they can't be followed
-- **ALWAYS return `typia.random<T>()`** with comprehensive documentation
+- **PREFER default values over mock data** when possible
+- **ALWAYS document contradictions** in comments
 - **CLEARLY state what needs to change** (schema or API spec) to resolve the issue
 
 ---
@@ -1515,14 +1588,37 @@ where: {
   }
 }
 
-// ✅ Standard string operations
+// ✅ Standard string operations WITHOUT mode
 where: {
   title: {
-    contains: searchTerm,
-    mode: "insensitive"
+    contains: searchTerm
+    // NO mode property - not compatible with SQLite!
   }
 }
 ```
+
+**🚨 CRITICAL: String Search Mode Compatibility**
+
+The `mode: "insensitive"` option is **NOT SUPPORTED in SQLite** and will cause runtime errors!
+
+```typescript
+// ❌ FORBIDDEN: mode property breaks SQLite compatibility
+where: {
+  name: { 
+    contains: search, 
+    mode: "insensitive"  // ← BREAKS SQLite!
+  }
+}
+
+// ✅ CORRECT: Use contains without mode
+where: {
+  name: { 
+    contains: search  // Works on both PostgreSQL and SQLite
+  }
+}
+```
+
+**RULE: NEVER use the `mode` property in string operations. It's PostgreSQL-specific.**
 
 **Rule**: When in doubt, test the operation on both PostgreSQL and SQLite environments before implementation.
 
@@ -2465,10 +2561,10 @@ const updated = await MyGlobal.prisma.discussionboard_notification_setting.updat
 const results = await MyGlobal.prisma.discussionboard_tag.findMany({
   where: {
     ...(name && name.length > 0 && { 
-      name: { contains: name, mode: "insensitive" as const }
+      name: { contains: name }
     }),
     ...(description && description.length > 0 && { 
-      description: { contains: description, mode: "insensitive" as const }
+      description: { contains: description }
     }),
     ...(typeof enabled === "boolean" && { enabled }),
   },
@@ -2678,7 +2774,7 @@ where: {
     body.file_name !== null && {
       file_name: {
         contains: body.file_name,
-        mode: "insensitive" as const,
+        // NO mode property - SQLite compatibility
       },
     }),
 }

@@ -3,6 +3,7 @@ import { AutoBeOpenApi } from "@autobe/interface";
 import {
   ILlmApplication,
   ILlmSchema,
+  IValidation,
   OpenApiTypeChecker,
 } from "@samchon/openapi";
 import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
@@ -14,6 +15,8 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { transformInterfaceComplementHistories } from "./histories/transformInterfaceComplementHistories";
 import { IAutoBeInterfaceComplementApplication } from "./structures/IAutoBeInterfaceComplementApplication";
+import { validateAuthorizationSchema } from "./utils/validateAuthorizationSchema";
+import { validateOpenApiPageSchema } from "./utils/validateOpenApiPageSchema";
 
 export function orchestrateInterfaceComplement<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
@@ -123,9 +126,42 @@ function createController<Model extends ILlmSchema.Model>(props: {
   ) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
+
+  const validate = (
+    next: unknown,
+  ): IValidation<IAutoBeInterfaceComplementApplication.IProps> => {
+    const result: IValidation<IAutoBeInterfaceComplementApplication.IProps> =
+      typia.validate<IAutoBeInterfaceComplementApplication.IProps>(next);
+    if (result.success === false) return result;
+
+    const errors: IValidation.IError[] = [];
+    validateAuthorizationSchema({
+      errors,
+      schemas: result.data.schemas,
+      path: "$input.schemas",
+    });
+    Object.entries(result.data.schemas).forEach(([key, schema]) => {
+      validateOpenApiPageSchema({
+        path: "$input.schemas",
+        errors,
+        key,
+        schema,
+      });
+    });
+    if (errors.length !== 0)
+      return {
+        success: false,
+        errors,
+        data: next,
+      };
+    return result;
+  };
+
   const application: ILlmApplication<Model> = collection[
-    props.model
-  ] satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+    props.model === "chatgpt" ? "chatgpt" : "claude"
+  ](
+    validate,
+  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
     name: "interface",
@@ -138,17 +174,21 @@ function createController<Model extends ILlmSchema.Model>(props: {
   };
 }
 
-const claude = typia.llm.application<
-  IAutoBeInterfaceComplementApplication,
-  "claude"
->();
 const collection = {
-  chatgpt: typia.llm.application<
-    IAutoBeInterfaceComplementApplication,
-    "chatgpt"
-  >(),
-  claude,
-  llama: claude,
-  deepseek: claude,
-  "3.1": claude,
+  chatgpt: (validate: Validator) =>
+    typia.llm.application<IAutoBeInterfaceComplementApplication, "chatgpt">({
+      validate: {
+        complementComponents: validate,
+      },
+    }),
+  claude: (validate: Validator) =>
+    typia.llm.application<IAutoBeInterfaceComplementApplication, "claude">({
+      validate: {
+        complementComponents: validate,
+      },
+    }),
 };
+
+type Validator = (
+  input: unknown,
+) => IValidation<IAutoBeInterfaceComplementApplication.IProps>;

@@ -190,6 +190,12 @@ Tables I Must Create: [list each table from targetComponent.tables with EXACT na
 Required Count: [targetComponent.tables.length]
 Already Created Tables (Reference Only): [list otherTables - these ALREADY EXIST]
 
+REQUIREMENT ANALYSIS FOR COMMON PATTERNS:
+✅ Authentication Check: Does any entity need login? → ADD password_hash field
+✅ Soft Delete Check: Does requirements mention deletion/recovery? → ADD deleted_at field  
+✅ Status Management Check: Does entity have workflow/lifecycle? → ADD status/business_status fields
+✅ Audit Trail Check: Does system need history tracking? → ADD created_at, updated_at
+
 STANCE CLASSIFICATION:
 ✅ I will classify each table's stance based on business requirements
 ✅ Primary: Tables requiring independent user management and API operations
@@ -204,6 +210,7 @@ DESIGN PLANNING:
 ✅ I will identify materialized views (mv_) for denormalized data
 ✅ I will ensure strict 3NF normalization for regular tables
 ✅ I will assign correct stance to each model
+✅ I will add REQUIRED fields based on requirement patterns (auth, soft delete, status)
 ```
 
 ### Step 2: Model Generation (models)
@@ -251,6 +258,35 @@ You are building ONLY the tables listed in `targetComponent.tables` for the spec
 
 ### 🌟 REQUIRED PATTERNS
 
+#### Common Required Fields Pattern (CONDITIONAL BASED ON REQUIREMENTS)
+
+**Authentication Fields (WHEN entity requires login/authentication):**
+```typescript
+// User/Admin/Seller entities that require authentication
+users/admins/sellers: {
+  email: string (unique)
+  password_hash: string  // Required for login functionality
+  // Never store plain passwords
+}
+```
+
+**Soft Delete Fields (WHEN requirements mention deletion/recovery):**
+```typescript
+// All entities that need soft delete
+any_entity: {
+  deleted_at: datetime?  // Required for soft delete capability
+}
+```
+
+**Status/State Fields (WHEN entity has lifecycle/workflow):**
+```typescript
+// Entities with status tracking (orders, payments, etc.)
+orders/items: {
+  status: string  // or enum for order status
+  business_status: string  // for business workflow states
+}
+```
+
 #### Snapshot Pattern Implementation (MANDATORY FOR ENTITIES WITH STATE CHANGES)
 ```typescript
 // Main Entity (PRIMARY STANCE)
@@ -261,8 +297,7 @@ bbs_articles: {
   // ... other fields
   created_at: datetime
   updated_at: datetime
-  deleted_at: datetime?
-}
+  deleted_at: datetime?  // REQUIRED if soft delete is needed
 
 // Snapshot Table (SNAPSHOT STANCE)
 bbs_article_snapshots: {

@@ -20,9 +20,16 @@ export interface IAutoBeRealizeWriteApplication {
 }
 
 export namespace IAutoBeRealizeWriteApplication {
+  /**
+   * Properties for the Realize Write Application following Chain of Thinking (CoT).
+   * 
+   * Each field represents a distinct phase in the reasoning and implementation process,
+   * building upon the previous step to create a complete, error-free implementation.
+   * This structured approach ensures clarity, debuggability, and systematic thinking.
+   */
   export interface IProps {
     /**
-     * Step 1.
+     * Step 1 - Planning Phase (CoT: Initial Reasoning)
      *
      * 🧠 Provider Function Implementation Plan
      *
@@ -39,12 +46,14 @@ export namespace IAutoBeRealizeWriteApplication {
      * - Examine the actual Prisma schema model definition
      * - List EVERY field that exists in the model with exact types
      * - Explicitly note fields that DO NOT exist
+     * - Verify database compatibility (PostgreSQL AND SQLite)
      *
      * DO NOT:
      *
      * - Assume common fields exist without verification
      * - Use fields like deleted_at, created_by, updated_by, is_deleted, is_active
      *   without checking
+     * - Use PostgreSQL-specific features like mode: "insensitive"
      *
      * 📋 STEP 2 - FIELD INVENTORY:
      *
@@ -153,7 +162,7 @@ export namespace IAutoBeRealizeWriteApplication {
     plan: string;
 
     /**
-     * Step 2.
+     * Step 2 - Schema Definition (CoT: Context Establishment)
      *
      * The Prisma schema string that will be used to validate the implementation
      * logic in this file.
@@ -175,7 +184,7 @@ export namespace IAutoBeRealizeWriteApplication {
     prisma_schemas: string;
 
     /**
-     * Step 3.
+     * Step 3 - Initial Draft (CoT: First Implementation Attempt)
      *
      * Draft WITHOUT using native Date type.
      *
@@ -212,7 +221,7 @@ export namespace IAutoBeRealizeWriteApplication {
     draft_without_date_type: string;
 
     /**
-     * Step 4.
+     * Step 4 - Review and Refinement (CoT: Self-Reflection)
      *
      * A refined version of the draft with improved completeness.
      *
@@ -226,29 +235,13 @@ export namespace IAutoBeRealizeWriteApplication {
      * - Avoid unsafe `as` casts unless only for branding or literal narrowing.
      * - Use `toISOStringSafe()` for all date conversions (NOT `.toISOString()`).
      * - Ensure all object keys strictly conform to the expected type definitions.
+     * - NEVER use `mode: "insensitive"` in string operations (breaks SQLite).
      */
     review: string;
 
-    /**
-     * 🛠 Phase 4-2: With compiler feedback (optional)
-     *
-     * A correction pass that applies fixes for compile-time errors that arose
-     * during the review stage (if any).
-     *
-     * ✅ Must:
-     *
-     * - Only include this field if TypeScript errors are detected in the Review
-     *   phase.
-     * - Resolve all TypeScript errors without using `as any`.
-     * - Provide safe brand casting only if required (e.g., `as string &
-     *   tags.Format<'uuid'>`).
-     * - If no TypeScript errors exist, this field MUST contain the text: "No
-     *   TypeScript errors detected - skipping this phase"
-     */
-    withCompilerFeedback: string;
 
     /**
-     * Step 5.
+     * Step 5 - Complete Implementation (CoT: Final Synthesis)
      *
      * The complete and fully correct TypeScript function implementation.
      *
@@ -260,6 +253,7 @@ export namespace IAutoBeRealizeWriteApplication {
      * - Uses only allowed imports (e.g., from `../api/structures` and
      *   `MyGlobal.prisma`).
      * - NEVER creates intermediate variables for Prisma operations.
+     * - NEVER uses `mode: "insensitive"` (PostgreSQL-only, breaks SQLite).
      *
      * ⚠️ Fallback Behavior:
      *

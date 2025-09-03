@@ -1,5 +1,5 @@
 import { orchestrateRealizeScenario } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeScenario";
-import { IAutoBeRealizeScenarioApplication } from "@autobe/agent/src/orchestrate/realize/structures/IAutoBeRealizeScenarioApplication";
+import { IAutoBeRealizeScenarioResult } from "@autobe/agent/src/orchestrate/realize/structures/IAutoBeRealizeScenarioResult";
 import { CompressUtil } from "@autobe/filesystem";
 import {
   AutoBeEvent,
@@ -56,7 +56,7 @@ export const validate_agent_realize_scenario = async (
     ),
   );
 
-  const scenarios: IAutoBeRealizeScenarioApplication.IProps[] = operations.map(
+  const scenarios: IAutoBeRealizeScenarioResult[] = operations.map(
     (operation) => {
       const autohrization = authorizations.find(
         (el) => el.role.name === operation.authorizationRole,

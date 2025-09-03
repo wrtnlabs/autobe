@@ -129,6 +129,8 @@ Your review must comprehensively evaluate the following aspects:
 - **Constraint Implementation**: Confirm business rules are enforced at database level
 - **Audit Trail**: Validate temporal fields (created_at, updated_at) presence
 - **Soft Delete**: Check deleted_at implementation where required
+- **Authentication Fields**: Verify password_hash exists for entities requiring login
+- **Status Management**: Confirm status/business_status fields for workflow entities
 
 ### 7. Documentation Quality
 - **Model Descriptions**: Each table must have a clear purpose description
@@ -267,6 +269,20 @@ Draft Model: shopping_customers
 Issue: Missing fields for multi-factor authentication requirement
 Review: "The requirement analysis specifies 'THE system SHALL support multi-factor authentication for customer accounts', but the schema lacks fields for storing MFA secrets, backup codes, and authentication method preferences."
 Modification: Add mfa_secret, mfa_backup_codes, and mfa_enabled fields to support the security requirement
+```
+
+```
+Draft Model: shopping_sellers
+Issue: Missing password_hash field for authentication
+Review: "The requirement mentions seller login functionality, but the schema lacks password_hash field required for authentication."
+Modification: Add password_hash field to enable login functionality
+```
+
+```
+Draft Model: shopping_order_items
+Issue: Missing business_status field for workflow management
+Review: "Order items need to track business workflow states (pending, processing, shipped, delivered), but schema lacks business_status field."
+Modification: Add business_status field for workflow state management
 ```
 
 ### Scenario 5: Cross-Domain Inconsistency

@@ -1,25 +1,22 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
-import {
-  AutoBeRealizeAuthorization,
-  IAutoBeTypeScriptCompileResult,
-} from "@autobe/interface";
+import { AutoBeRealizeAuthorization } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
-import { IAutoBeTestScenarioArtifacts } from "../../test/structures/IAutoBeTestScenarioArtifacts";
-import { IAutoBeRealizeScenarioApplication } from "../structures/IAutoBeRealizeScenarioApplication";
+import { IAutoBeRealizeFunctionFailure } from "../structures/IAutoBeRealizeFunctionFailure";
+import { IAutoBeRealizeScenarioResult } from "../structures/IAutoBeRealizeScenarioResult";
 import { transformRealizeWriteHistories } from "./transformRealizeWriteHistories";
 
 export function transformRealizeCorrectHistories(props: {
   state: AutoBeState;
-  scenario: IAutoBeRealizeScenarioApplication.IProps;
-  artifacts: IAutoBeTestScenarioArtifacts;
+  scenario: IAutoBeRealizeScenarioResult;
   authorization: AutoBeRealizeAuthorization | null;
   totalAuthorizations: AutoBeRealizeAuthorization[];
   code: string;
-  diagnostic: IAutoBeTypeScriptCompileResult.IDiagnostic;
+  dto: Record<string, string>;
+  failures: IAutoBeRealizeFunctionFailure[];
 }): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > {
@@ -34,15 +31,33 @@ export function transformRealizeCorrectHistories(props: {
         \`\`\`typescript
         ${props.code}
         \`\`\`
-
-        The code has a compilation error:
-        
-        \`\`\`json
-        ${JSON.stringify(props.diagnostic)}
-        \`\`\`
       `,
       created_at: new Date().toISOString(),
     },
+    ...props.failures.map(
+      (f) =>
+        ({
+          id: v7(),
+          type: "assistantMessage",
+          text: StringUtil.trim`
+
+      ## Generated Typescript Code
+
+      \`\`\`typescript
+      ${f.function.content}
+      \`\`\`
+
+      ## Compile Errors
+
+      Fix the comilation error in the provided code.
+
+      \`\`\`typescript
+      ${JSON.stringify(f.diagnostics)}
+      \`\`\`
+      `,
+          created_at: new Date().toISOString(),
+        }) satisfies IAgenticaHistoryJson.IAssistantMessage,
+    ),
     {
       id: v7(),
       type: "systemMessage",

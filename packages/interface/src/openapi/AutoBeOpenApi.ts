@@ -1342,7 +1342,7 @@ export namespace AutoBeOpenApi {
    *    other documentation
    */
   export type IJsonSchemaDescriptive<Schema extends IJsonSchema = IJsonSchema> =
-    Omit<Schema, "description"> & {
+    Schema & {
       /**
        * Description about the type.
        *
