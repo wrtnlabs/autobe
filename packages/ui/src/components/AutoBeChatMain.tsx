@@ -1,10 +1,10 @@
 import { AutoBeUserMessageContent } from "@autobe/interface";
 import { RefObject, useEffect, useRef, useState } from "react";
 
-import { AutoBeChatUploadBox, AutoBeEventMovie, IAutoBeUploadConfig } from ".";
-import AutoBeStatusModal from "./components/AutoBeStatusModal";
-import { useAutoBeAgent } from "./context/AutoBeAgentContext";
-import { useMediaQuery } from "./hooks";
+import { AutoBeChatUploadBox, AutoBeEventMovie, IAutoBeUploadConfig } from "..";
+import { useAutoBeAgent } from "../context/AutoBeAgentContext";
+import { useMediaQuery } from "../hooks";
+import AutoBeStatusModal from "./AutoBeStatusModal";
 
 export interface IAutoBeChatMainProps {
   isMobile: boolean;

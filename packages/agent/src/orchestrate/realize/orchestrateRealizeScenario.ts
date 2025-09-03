@@ -6,7 +6,7 @@ import {
 import { ILlmSchema } from "@samchon/openapi";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { IAutoBeRealizeScenarioApplication } from "./structures/IAutoBeRealizeScenarioApplication";
+import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
 
 /**
  * Generates a planning result that defines what kind of function should be
@@ -32,7 +32,7 @@ export const orchestrateRealizeScenario = <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   operation: AutoBeOpenApi.IOperation,
   authorization?: AutoBeRealizeAuthorization,
-): IAutoBeRealizeScenarioApplication.IProps => {
+): IAutoBeRealizeScenarioResult => {
   const testFiles: AutoBeTestFile[] =
     ctx
       .state()

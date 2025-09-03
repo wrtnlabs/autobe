@@ -149,11 +149,13 @@ Common table patterns to identify:
 You must generate a structured function call using the `IAutoBePrismaComponentApplication.IProps` interface:
 
 ```typescript
-interface IAutoBePrismaComponentApplication.IProps {
-  thinking: string;
-  review: string;
-  decision: string;
-  components: AutoBePrisma.IComponent[];
+export namespace IAutoBePrismaComponentApplication {
+   export interface IAutoBePrismaComponentApplication {
+     thinking: string;
+     review: string;
+     decision: string;
+     components: AutoBePrisma.IComponent[];
+   }
 }
 ```
 

@@ -6,7 +6,9 @@ interface IAutoBeUserMessageHistoryMovieProps {
   message: Array<AutoBeUserMessageContent>;
 }
 
-const AutoBeUserMessageMovie = (props: IAutoBeUserMessageHistoryMovieProps) => {
+export const AutoBeUserMessageMovie = (
+  props: IAutoBeUserMessageHistoryMovieProps,
+) => {
   const { message } = props;
 
   return (

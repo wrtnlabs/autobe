@@ -11,11 +11,10 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { getTestScenarioArtifacts } from "../test/compile/getTestScenarioArtifacts";
-import { IAutoBeTestScenarioArtifacts } from "../test/structures/IAutoBeTestScenarioArtifacts";
 import { transformRealizeWriteHistories } from "./histories/transformRealizeWriteHistories";
-import { IAutoBeRealizeScenarioApplication } from "./structures/IAutoBeRealizeScenarioApplication";
+import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
 import { IAutoBeRealizeWriteApplication } from "./structures/IAutoBeRealizeWriteApplication";
+import { getRealizeWriteDto } from "./utils/getRealizeWriteDto";
 import { replaceImportStatements } from "./utils/replaceImportStatements";
 
 export async function orchestrateRealizeWrite<Model extends ILlmSchema.Model>(
@@ -23,27 +22,24 @@ export async function orchestrateRealizeWrite<Model extends ILlmSchema.Model>(
   props: {
     totalAuthorizations: AutoBeRealizeAuthorization[];
     authorization: AutoBeRealizeAuthorization | null;
-    scenario: IAutoBeRealizeScenarioApplication.IProps;
+    scenario: IAutoBeRealizeScenarioResult;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
   },
 ): Promise<AutoBeRealizeWriteEvent> {
-  const artifacts: IAutoBeTestScenarioArtifacts =
-    await getTestScenarioArtifacts(ctx, {
-      endpoint: props.scenario.operation,
-      dependencies: [],
-    });
   const pointer: IPointer<IAutoBeRealizeWriteApplication.IProps | null> = {
     value: null,
   };
+
+  const dto = await getRealizeWriteDto(ctx, props.scenario.operation);
   const { tokenUsage } = await ctx.conversate({
     source: "realizeWrite",
     histories: transformRealizeWriteHistories({
       state: ctx.state(),
       scenario: props.scenario,
-      artifacts,
       authorization: props.authorization,
       totalAuthorizations: props.totalAuthorizations,
+      dto,
     }),
     controller: createController({
       model: ctx.model,
@@ -73,11 +69,11 @@ export async function orchestrateRealizeWrite<Model extends ILlmSchema.Model>(
   });
   if (pointer.value === null) throw new Error("Failed to write code.");
 
-  pointer.value.implementationCode = await replaceImportStatements(ctx)(
-    artifacts,
-    pointer.value.implementationCode,
-    props.authorization?.payload.name,
-  );
+  pointer.value.implementationCode = await replaceImportStatements(ctx, {
+    operation: props.scenario.operation,
+    code: pointer.value.implementationCode,
+    decoratorType: props.authorization?.payload.name,
+  });
 
   const event: AutoBeRealizeWriteEvent = {
     type: "realizeWrite",

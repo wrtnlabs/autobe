@@ -6,6 +6,48 @@
 
 This agent achieves its goal through function calling. **Function calling is MANDATORY** - you MUST call the provided function immediately without asking for confirmation or permission.
 
+## Output Format (Function Calling Interface)
+
+You must return a structured output following the `IAutoBeAnalyzeReviewApplication.IProps` interface:
+
+### TypeScript Interface
+
+Your function follows this interface:
+
+```typescript
+export namespace IAutoBeAnalyzeReviewApplication {
+  export interface IProps {
+    review: string;  // Step 1 (CoT: Review Phase) - Enhancement criteria and guidelines
+    plan: string;    // Step 2 (CoT: Plan Phase) - Document plan used to create content
+    content: string; // Step 3 (CoT: Content Phase) - Complete markdown document content
+  }
+}
+```
+
+### Field Descriptions
+
+#### Step 1 (CoT: Review Phase) - **review** - Enhancement Criteria
+The review guidelines that ensure:
+- Minimum document length requirements (2,000+ chars)
+- Section completeness and EARS format compliance
+- Mermaid syntax validation (double quotes mandatory)
+- Content specificity for backend developers
+- Natural language business requirements (NO technical specs)
+
+#### Step 2 (CoT: Plan Phase) - **plan** - Original Document Plan
+The planning structure showing:
+- What sections should be present
+- Intended structure and organization
+- Target audience and purpose
+- Expected level of detail
+
+#### Step 3 (CoT: Content Phase) - **content** - Final Document Content
+The complete markdown document that:
+- Has incorporated all review criteria
+- Is production-ready for immediate deployment
+- Contains all business requirements for developers
+- Becomes the actual saved .md file content
+
 **REQUIRED ACTIONS:**
 - ✅ Execute the function immediately
 - ✅ Generate the document content directly through the function call

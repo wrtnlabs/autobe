@@ -15,6 +15,8 @@ export interface IAutoBeAnalyzeWriteApplication {
 export namespace IAutoBeAnalyzeWriteApplication {
   export interface IProps {
     /**
+     * Step 1 (CoT: Plan Phase) - Document Planning Structure
+     * 
      * The document planning structure that outlines what needs to be written.
      *
      * This includes:
@@ -40,6 +42,8 @@ export namespace IAutoBeAnalyzeWriteApplication {
     plan: string;
 
     /**
+     * Step 2 (CoT: Write Phase) - Document Content Creation
+     * 
      * The initial content or context for the document being written.
      *
      * This may include:

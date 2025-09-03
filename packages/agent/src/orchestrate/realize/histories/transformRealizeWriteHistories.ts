@@ -5,13 +5,18 @@ import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
-import { IAutoBeTestScenarioArtifacts } from "../../test/structures/IAutoBeTestScenarioArtifacts";
-import { IAutoBeRealizeScenarioApplication } from "../structures/IAutoBeRealizeScenarioApplication";
+import { IAutoBeRealizeScenarioResult } from "../structures/IAutoBeRealizeScenarioResult";
+import { getRealizeWriteCodeTemplate } from "../utils/getRealizeWriteCodeTemplate";
+import { getRealizeWriteInputType } from "../utils/getRealizeWriteInputType";
 import { transformRealizeWriteAuthorizationsHistories } from "./transformRealizeWriteAuthorizationsHistories";
 
-export const transformRealizeWriteHistories = (
-  props: IProps,
-): Array<
+export const transformRealizeWriteHistories = (props: {
+  state: AutoBeState;
+  scenario: IAutoBeRealizeScenarioResult;
+  authorization: AutoBeRealizeAuthorization | null;
+  totalAuthorizations: AutoBeRealizeAuthorization[];
+  dto: Record<string, string>;
+}): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
   const payloads = Object.fromEntries(
@@ -21,38 +26,7 @@ export const transformRealizeWriteHistories = (
     ]),
   );
 
-  const [operation] = props.artifacts.document.operations;
-
-  const propsFields: string[] = [];
-
-  // payload 추가
-  if (props.authorization && operation.authorizationRole) {
-    propsFields.push(
-      `${operation.authorizationRole}: ${props.authorization.payload.name};`,
-    );
-  }
-
-  // parameters 추가
-  operation.parameters.forEach((parameter) => {
-    const format =
-      "format" in parameter.schema
-        ? ` & tags.Format<'${parameter.schema.format}'>`
-        : "";
-    propsFields.push(`${parameter.name}: ${parameter.schema.type}${format};`);
-  });
-
-  // body 추가
-  if (operation.requestBody?.typeName) {
-    propsFields.push(`body: ${operation.requestBody.typeName};`);
-  }
-
-  const input =
-    propsFields.length > 0
-      ? StringUtil.trim`
-        props: {
-        ${propsFields.map((field) => `  ${field},`).join("\n")}
-        }`
-      : `// No props parameter needed - function should have no parameters`;
+  const operation = props.scenario.operation;
 
   if (props.state.analyze === null)
     return [
@@ -132,7 +106,7 @@ export const transformRealizeWriteHistories = (
       id: v7(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
-      text: AutoBeSystemPromptConstant.REALIZE_WRITE_TOTAL,
+      text: AutoBeSystemPromptConstant.REALIZE_WRITE,
     },
     ...authorizationHistories,
     {
@@ -143,14 +117,26 @@ export const transformRealizeWriteHistories = (
         `{prisma_schemas}`,
         JSON.stringify(props.state.prisma.schemas),
       )
-        .replaceAll(`{artifacts_sdk}`, JSON.stringify(props.artifacts.sdk))
-        .replaceAll(`{artifacts_dto}`, JSON.stringify(props.artifacts.dto))
-        .replaceAll(`{input}`, input),
+        .replaceAll(
+          `{input}`,
+          getRealizeWriteInputType(operation, props.authorization),
+        )
+        .replaceAll(`{artifacts_dto}`, JSON.stringify(props.dto)),
     },
     {
       id: v7(),
-      created_at: new Date().toISOString(),
       type: "systemMessage",
+      created_at: new Date().toISOString(),
+      text: getRealizeWriteCodeTemplate(
+        props.scenario,
+        operation,
+        props.authorization,
+      ),
+    },
+    {
+      id: v7(),
+      type: "systemMessage",
+      created_at: new Date().toISOString(),
       text: StringUtil.trim`
         Write new code based on the following operation.
         
@@ -179,11 +165,3 @@ export const transformRealizeWriteHistories = (
     },
   ];
 };
-
-interface IProps {
-  state: AutoBeState;
-  scenario: IAutoBeRealizeScenarioApplication.IProps;
-  artifacts: IAutoBeTestScenarioArtifacts;
-  authorization: AutoBeRealizeAuthorization | null;
-  totalAuthorizations: AutoBeRealizeAuthorization[];
-}

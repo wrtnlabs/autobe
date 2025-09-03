@@ -12,8 +12,9 @@ import {
   IValidateEventGroupProps,
   ValidateEventGroup,
 } from ".";
-import { AutoBeAssistantMessageMovie, AutoBeUserMessageMovie } from "..";
-import { useAutoBeAgent } from "../context/AutoBeAgentContext";
+import { useAutoBeAgent } from "../../context/AutoBeAgentContext";
+import { AutoBeAssistantMessageMovie } from "../AutoBeAssistantMessageMovie";
+import { AutoBeUserMessageMovie } from "../AutoBeUserMessageMovie";
 
 export interface IAutoBeEventMovieProps<Event extends AutoBeEvent> {
   events: Event[];

@@ -1,17 +1,16 @@
 import { compileRealizeFiles } from "@autobe/agent/src/orchestrate/realize/internal/compileRealizeFiles";
 import { orchestrateRealizeCorrect } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeCorrect";
-import { IAutoBeRealizeScenarioApplication } from "@autobe/agent/src/orchestrate/realize/structures/IAutoBeRealizeScenarioApplication";
+import { IAutoBeRealizeScenarioResult } from "@autobe/agent/src/orchestrate/realize/structures/IAutoBeRealizeScenarioResult";
 import { CompressUtil, FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeEvent,
   AutoBeEventSnapshot,
   AutoBeRealizeAuthorization,
   AutoBeRealizeFunction,
+  AutoBeRealizeValidateEvent,
   AutoBeRealizeWriteEvent,
   IAutoBeCompiler,
-  IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
-import { StringUtil } from "@autobe/utils";
 import fs from "fs";
 import typia from "typia";
 import { v7 } from "uuid";
@@ -53,7 +52,7 @@ export const validate_agent_realize_correct = async (
     ),
   );
 
-  const scenarios: IAutoBeRealizeScenarioApplication.IProps[] = JSON.parse(
+  const scenarios: IAutoBeRealizeScenarioResult[] = JSON.parse(
     await CompressUtil.gunzip(
       await fs.promises.readFile(
         `${TestGlobal.ROOT}/assets/histories/${model}/${project}.realize.scenarios.json.gz`,
@@ -86,7 +85,7 @@ export const validate_agent_realize_correct = async (
     };
   });
 
-  const compilation: IAutoBeTypeScriptCompileResult = await compileRealizeFiles(
+  const compilation: AutoBeRealizeValidateEvent = await compileRealizeFiles(
     agent.getContext(),
     {
       authorizations,
@@ -94,30 +93,13 @@ export const validate_agent_realize_correct = async (
     },
   );
 
-  if (compilation.type === "exception") {
-    throw new Error(
-      "Compilation itself is a level of history that is impossible.",
-    );
+  if (compilation.result.type !== "failure") {
+    throw new Error("Cannot test because the compilation was successful.");
   }
-
-  if (compilation.type === "success") {
-    console.debug(
-      "All compilation issues have already been resolved from previously archived content!",
-    );
-    return;
-  }
-
-  console.debug(StringUtil.trim`
-    -----------------BEFORE CORRECTION-----------------
-    Total Functions: ${functions.length}
-    Error Functions: ${new Set(compilation.diagnostics.map((el) => el.file)).size}
-    Errors: ${compilation.diagnostics.length}
-    -----------------BEFORE CORRECTION-----------------
-  `);
 
   const failedFiles: Record<string, string> = Object.fromEntries(
-    compilation.type === "failure"
-      ? compilation.diagnostics.map((d) => [d.file, d.code])
+    compilation.result.type === "failure"
+      ? compilation.result.diagnostics.map((d) => [d.file, d.code])
       : [],
   );
 
@@ -128,36 +110,13 @@ export const validate_agent_realize_correct = async (
   };
 
   reviewProgress.total += Object.keys(failedFiles).length;
-  const failure: IAutoBeTypeScriptCompileResult.IFailure = compilation;
-
-  await Promise.all(
-    Object.entries(failedFiles).map(async ([location, content]) => {
-      const diagnostic: IAutoBeTypeScriptCompileResult.IDiagnostic | undefined =
-        failure.diagnostics.find((el) => el.file === location);
-
-      const scenario = scenarios.find((el) => el.location === location);
-      if (diagnostic && scenario) {
-        const correctEvent = await orchestrateRealizeCorrect(
-          agent.getContext(),
-          {
-            totalAuthorizations: authorizations,
-            authorization: scenario.decoratorEvent ?? null,
-            scenario,
-            code: content,
-            diagnostic,
-            progress: reviewProgress,
-          },
-        );
-
-        const corrected = functions.find(
-          (el) => el.location === correctEvent.location,
-        );
-
-        if (corrected) {
-          corrected.content = correctEvent.content;
-        }
-      }
-    }),
+  await orchestrateRealizeCorrect(
+    agent.getContext(),
+    scenarios,
+    authorizations,
+    functions,
+    [],
+    reviewProgress,
   );
 
   const compiler: IAutoBeCompiler = await agent.getContext().compiler();
@@ -194,26 +153,4 @@ export const validate_agent_realize_correct = async (
       "logs/scenarios.json": JSON.stringify(scenarios),
     },
   });
-
-  const afterCorrection: IAutoBeTypeScriptCompileResult =
-    await compileRealizeFiles(agent.getContext(), {
-      authorizations,
-      functions,
-    });
-
-  console.debug(
-    JSON.stringify(
-      afterCorrection.type === "failure" ? afterCorrection.diagnostics : [],
-      null,
-      2,
-    ),
-  );
-
-  console.debug(StringUtil.trim`
-    ------------------AFTER CORRECTION-----------------
-    Total Functions: ${functions.length}
-    Error Functions: ${afterCorrection.type === "failure" ? new Set(afterCorrection.diagnostics.map((el) => el.file)).size : 0}
-    Errors: ${afterCorrection.type === "failure" ? afterCorrection.diagnostics.length : 0}
-    ------------------AFTER CORRECTION-----------------
-  `);
 };
