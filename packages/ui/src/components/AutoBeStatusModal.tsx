@@ -1,7 +1,8 @@
 import { IAutoBeTokenUsageJson } from "@autobe/interface";
-import React, { useEffect } from "react";
+import React from "react";
 
 import { useAutoBeAgent } from "../context/AutoBeAgentContext";
+import { useEscapeKey } from "../hooks";
 import { AutoBeListenerState } from "../structure";
 import { toCompactNumberFormat } from "../utils";
 
@@ -24,7 +25,7 @@ const MODAL_STYLES = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    zIndex: 50,
+    zIndex: 1001,
     padding: "1rem",
   },
   container: {
@@ -447,23 +448,6 @@ const TokenUsage = ({
       <ComponentStats name="total" component={tokenUsage.aggregate} />
     </div>
   );
-};
-
-const useEscapeKey = (isOpen: boolean, onClose: () => void) => {
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && isOpen) {
-        onClose();
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener("keydown", handleKeyDown);
-      return () => {
-        document.removeEventListener("keydown", handleKeyDown);
-      };
-    }
-  }, [isOpen, onClose]);
 };
 
 export const AutoBeStatusModal = ({
