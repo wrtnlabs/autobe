@@ -28,8 +28,8 @@ export const validateOpenApiPageSchema = (props: {
   }
 
   const properties: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-    props.schema.properties ?? {};
-  const required: string[] = props.schema.required ?? [];
+    props.schema.properties;
+  const required: string[] = props.schema.required;
 
   //----
   // CHILDREN DATA
