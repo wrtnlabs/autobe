@@ -5,15 +5,13 @@ import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
-import { IAutoBeTestScenarioArtifacts } from "../../test/structures/IAutoBeTestScenarioArtifacts";
-import { IAutoBeRealizeFunctionFailure } from "../structures/IAutoBeRealizeFunctionfailure";
+import { IAutoBeRealizeFunctionFailure } from "../structures/IAutoBeRealizeFunctionFailure";
 import { IAutoBeRealizeScenarioApplication } from "../structures/IAutoBeRealizeScenarioApplication";
 import { transformRealizeWriteHistories } from "./transformRealizeWriteHistories";
 
 export function transformRealizeCorrectHistories(props: {
   state: AutoBeState;
   scenario: IAutoBeRealizeScenarioApplication.IProps;
-  artifacts: IAutoBeTestScenarioArtifacts;
   authorization: AutoBeRealizeAuthorization | null;
   totalAuthorizations: AutoBeRealizeAuthorization[];
   code: string;

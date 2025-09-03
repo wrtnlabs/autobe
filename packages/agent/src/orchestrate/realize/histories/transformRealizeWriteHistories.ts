@@ -5,13 +5,15 @@ import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
-import { IAutoBeTestScenarioArtifacts } from "../../test/structures/IAutoBeTestScenarioArtifacts";
 import { IAutoBeRealizeScenarioApplication } from "../structures/IAutoBeRealizeScenarioApplication";
 import { transformRealizeWriteAuthorizationsHistories } from "./transformRealizeWriteAuthorizationsHistories";
 
-export const transformRealizeWriteHistories = (
-  props: IProps,
-): Array<
+export const transformRealizeWriteHistories = (props: {
+  state: AutoBeState;
+  scenario: IAutoBeRealizeScenarioApplication.IProps;
+  authorization: AutoBeRealizeAuthorization | null;
+  totalAuthorizations: AutoBeRealizeAuthorization[];
+}): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
   const payloads = Object.fromEntries(
@@ -21,8 +23,7 @@ export const transformRealizeWriteHistories = (
     ]),
   );
 
-  const [operation] = props.artifacts.document.operations;
-
+  const operation = props.scenario.operation;
   const propsFields: string[] = [];
 
   // payload 추가
@@ -142,10 +143,7 @@ export const transformRealizeWriteHistories = (
       text: AutoBeSystemPromptConstant.REALIZE_WRITE_ARTIFACT.replaceAll(
         `{prisma_schemas}`,
         JSON.stringify(props.state.prisma.schemas),
-      )
-        .replaceAll(`{artifacts_sdk}`, JSON.stringify(props.artifacts.sdk))
-        .replaceAll(`{artifacts_dto}`, JSON.stringify(props.artifacts.dto))
-        .replaceAll(`{input}`, input),
+      ).replaceAll(`{input}`, input),
     },
     {
       id: v7(),
@@ -179,11 +177,3 @@ export const transformRealizeWriteHistories = (
     },
   ];
 };
-
-interface IProps {
-  state: AutoBeState;
-  scenario: IAutoBeRealizeScenarioApplication.IProps;
-  artifacts: IAutoBeTestScenarioArtifacts;
-  authorization: AutoBeRealizeAuthorization | null;
-  totalAuthorizations: AutoBeRealizeAuthorization[];
-}

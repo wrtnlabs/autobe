@@ -14,12 +14,10 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
-import { getTestScenarioArtifacts } from "../test/compile/getTestScenarioArtifacts";
-import { IAutoBeTestScenarioArtifacts } from "../test/structures/IAutoBeTestScenarioArtifacts";
 import { transformRealizeCorrectHistories } from "./histories/transformRealizeCorrectHistories";
 import { compileRealizeFiles } from "./internal/compileRealizeFiles";
 import { IAutoBeRealizeCorrectApplication } from "./structures/IAutoBeRealizeCorrectApplication";
-import { IAutoBeRealizeFunctionFailure } from "./structures/IAutoBeRealizeFunctionfailure";
+import { IAutoBeRealizeFunctionFailure } from "./structures/IAutoBeRealizeFunctionFailure";
 import { IAutoBeRealizeScenarioApplication } from "./structures/IAutoBeRealizeScenarioApplication";
 import { replaceImportStatements } from "./utils/replaceImportStatements";
 
@@ -42,7 +40,7 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
 
   const locations: string[] =
     (event.result.type === "failure"
-      ? event.result.diagnostics.map((d) => d.file)
+      ? Array.from(new Set(event.result.diagnostics.map((d) => d.file)))
       : null
     )?.filter((el) => el !== null) ?? [];
 
@@ -119,12 +117,6 @@ export async function correct<Model extends ILlmSchema.Model>(
     progress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeRealizeCorrectEvent> {
-  const artifacts: IAutoBeTestScenarioArtifacts =
-    await getTestScenarioArtifacts(ctx, {
-      endpoint: props.scenario.operation,
-      dependencies: [],
-    });
-
   const pointer: IPointer<IAutoBeRealizeCorrectApplication.IProps | null> = {
     value: null,
   };
@@ -139,7 +131,6 @@ export async function correct<Model extends ILlmSchema.Model>(
     histories: transformRealizeCorrectHistories({
       state: ctx.state(),
       scenario: props.scenario,
-      artifacts,
       authorization: props.authorization,
       code: props.function.content,
       failures: props.failures.filter(
@@ -156,11 +147,11 @@ export async function correct<Model extends ILlmSchema.Model>(
   if (pointer.value === null)
     throw new Error("Failed to correct implementation code.");
 
-  pointer.value.revise.implementationCode = await replaceImportStatements(ctx)(
-    artifacts,
-    pointer.value.revise.implementationCode,
-    props.authorization?.payload.name,
-  );
+  pointer.value.revise.implementationCode = await replaceImportStatements(ctx, {
+    operation: props.scenario.operation,
+    code: pointer.value.revise.implementationCode,
+    decoratorType: props.authorization?.payload.name,
+  });
 
   const event: AutoBeRealizeCorrectEvent = {
     type: "realizeCorrect",

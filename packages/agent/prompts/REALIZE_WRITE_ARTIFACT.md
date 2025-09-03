@@ -78,23 +78,6 @@ export async function your_function_name(): Promise<ReturnType> {
 }
 ```
 
----
-
-# SDK
-
-The following is the SDK for the API. Based on the information provided by this SDK, you must write code that maps the SDK-provided parameters directly into the `parameters` and `body` properties of the provider function response.
-
-* If there are no parameters, define `parameters` as `Record<string, never>`.
-* If there is no body, define `body` as `Record<string, never>`.
-* **Every function must be implemented to accept both `parameters` and `body`, without exception.**
-* If any required type information is referenced in the SDK, refer to the definitions in the DTO section.
-
-```json
-{artifacts_sdk}
-```
-
----
-
 # DTO
 
 When importing DTOs, you must **always** use this path structure:
@@ -106,7 +89,3 @@ import { Something } from '../api/structures/Something';
 * ✅ Use `../api/structures/...`
 * ❌ Never use `../../structures/...` — these paths will not resolve
 * If a type like `string & Format<"date-time">` is required, ensure you convert `Date` to a valid ISO string
-
-```json
-{artifacts_dto}
-```
