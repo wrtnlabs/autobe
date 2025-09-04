@@ -6,9 +6,7 @@ export namespace JsonSchemaFactory {
   export const presets = (
     typeNames: Set<string>,
   ): Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> => {
-    const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
-      ...DEFAULT_SCHEMAS,
-    };
+    const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
     for (const [key, value] of Object.entries(DEFAULT_SCHEMAS)) {
       schemas[key] = value;
       typeNames.delete(key);
