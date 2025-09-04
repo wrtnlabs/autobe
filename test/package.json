@@ -7,9 +7,10 @@
   "scripts": {
     "prepare": "ts-patch install",
     "build": "tsc --noEmit",
+    "build:prompt": "node build/prompt.js",
     "dev": "tsc --watch --noEmit",
-    "start": "node build/prompt.js && pnpm run start:go",
-    "archive": "node build/prompt.js && pnpm run archive:go",
+    "start": "pnpm run build:prompt && pnpm run start:go",
+    "archive": "pnpm run build:prompt && pnpm run archive:go",
     "start:go": "ts-node src",
     "archive:go": "ts-node src/archive",
     "bench": "ts-node src/benchmarks"

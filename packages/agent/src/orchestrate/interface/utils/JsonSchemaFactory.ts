@@ -4,14 +4,21 @@ import typia, { tags } from "typia";
 
 export namespace JsonSchemaFactory {
   export const presets = (
-    typeNames: string[],
+    typeNames: Set<string>,
   ): Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> => {
-    return {
+    const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
       ...DEFAULT_SCHEMAS,
-      ...Object.fromEntries(
-        typeNames.filter(isPage).map((key) => [key, page(key)]),
-      ),
     };
+    for (const [key, value] of Object.entries(DEFAULT_SCHEMAS)) {
+      schemas[key] = value;
+      typeNames.delete(key);
+    }
+    for (const key of typeNames)
+      if (isPage(key)) {
+        schemas[key] = page(key);
+        typeNames.delete(key);
+      }
+    return schemas;
   };
 
   export const page = (

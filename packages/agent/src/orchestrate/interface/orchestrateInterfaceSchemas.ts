@@ -33,6 +33,9 @@ export async function orchestrateInterfaceSchemas<
     if (op.requestBody !== null) typeNames.add(op.requestBody.typeName);
     if (op.responseBody !== null) typeNames.add(op.responseBody.typeName);
   }
+  const presets: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
+    JsonSchemaFactory.presets(typeNames);
+
   const matrix: string[][] = divideArray({
     array: Array.from(typeNames),
     capacity,
@@ -41,8 +44,6 @@ export async function orchestrateInterfaceSchemas<
     total: typeNames.size,
     completed: 0,
   };
-
-  const presets: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
   const x: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
     ...presets,
   };
