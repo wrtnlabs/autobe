@@ -51,20 +51,22 @@ export const archive_test = async (
   // REPORT RESULT
   const histories: AutoBeHistory[] = agent.getHistories();
   const model: string = TestGlobal.getVendorModel();
-  await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${model}/${project}/test`,
-    files: {
-      ...(await agent.getFiles()),
-      "pnpm-workspace.yaml": "",
-      "logs/compiled.json": JSON.stringify(result.compiled),
-      "logs/snapshots.json": JSON.stringify(snapshots),
-      "logs/result.json": JSON.stringify({
-        ...result,
-        files: undefined,
-      }),
-      "logs/histories.json": JSON.stringify(histories),
-    },
-  });
+  try {
+    await FileSystemIterator.save({
+      root: `${TestGlobal.ROOT}/results/${model}/${project}/test`,
+      files: {
+        ...(await agent.getFiles()),
+        "pnpm-workspace.yaml": "",
+        "logs/compiled.json": JSON.stringify(result.compiled),
+        "logs/snapshots.json": JSON.stringify(snapshots),
+        "logs/result.json": JSON.stringify({
+          ...result,
+          files: undefined,
+        }),
+        "logs/histories.json": JSON.stringify(histories),
+      },
+    });
+  } catch {}
   if (TestGlobal.archive)
     await TestHistory.save({
       [`${project}.test.json`]: JSON.stringify(histories),

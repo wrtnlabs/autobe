@@ -50,32 +50,34 @@ export const archive_interface = async (
 
   // REPORT RESULT
   const model: string = TestGlobal.getVendorModel();
-  await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${model}/${project}/interface`,
-    files: {
-      ...(await agent.getFiles()),
-      "pnpm-workspace.yaml": "",
-      "logs/snapshots.json": JSON.stringify(snapshots),
-      "logs/result.json": JSON.stringify(result),
-      "logs/endpoints.json": JSON.stringify(
-        snapshots
-          .map((s) => s.event)
-          .filter((e) => e.type === "interfaceEndpoints")
-          .map((e) => e.endpoints)
-          .flat(),
-        null,
-        2,
-      ),
-      "logs/operation-endpoints.json": JSON.stringify(
-        result.document.operations.map((op) => ({
-          path: op.path,
-          method: op.method,
-        })),
-        null,
-        2,
-      ),
-    },
-  });
+  try {
+    await FileSystemIterator.save({
+      root: `${TestGlobal.ROOT}/results/${model}/${project}/interface`,
+      files: {
+        ...(await agent.getFiles()),
+        "pnpm-workspace.yaml": "",
+        "logs/snapshots.json": JSON.stringify(snapshots),
+        "logs/result.json": JSON.stringify(result),
+        "logs/endpoints.json": JSON.stringify(
+          snapshots
+            .map((s) => s.event)
+            .filter((e) => e.type === "interfaceEndpoints")
+            .map((e) => e.endpoints)
+            .flat(),
+          null,
+          2,
+        ),
+        "logs/operation-endpoints.json": JSON.stringify(
+          result.document.operations.map((op) => ({
+            path: op.path,
+            method: op.method,
+          })),
+          null,
+          2,
+        ),
+      },
+    });
+  } catch {}
   if (TestGlobal.archive) {
     await TestHistory.save({
       [`${project}.interface.json`]: JSON.stringify(agent.getHistories()),

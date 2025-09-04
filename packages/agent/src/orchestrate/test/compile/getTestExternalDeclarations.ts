@@ -23,6 +23,6 @@ const singleton = new Singleton(async (compiler: IAutoBeTestCompiler) => {
     ...external("node_modules/@nestia/e2e/lib/RandomGenerator.d.ts"),
     ...external("node_modules/@nestia/e2e/lib/TestValidator.d.ts"),
     ...external("node_modules/@nestia/fetcher/lib/IConnection.d.ts"),
-    ...external("typia/lib/module.d.ts"),
+    ...external("node_modules/typia/lib/module.d.ts"),
   } satisfies Record<string, string>;
 });

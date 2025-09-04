@@ -96,10 +96,12 @@ export const archive_analyze = async (
 
   // REPORT RESULT
   const files: Record<string, string> = await agent.getFiles();
-  await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${model}/${project}/analyze`,
-    files,
-  });
+  try {
+    await FileSystemIterator.save({
+      root: `${TestGlobal.ROOT}/results/${model}/${project}/analyze`,
+      files,
+    });
+  } catch {}
   if (TestGlobal.archive)
     await TestHistory.save({
       [`${project}.analyze.json`]: JSON.stringify(agent.getHistories()),

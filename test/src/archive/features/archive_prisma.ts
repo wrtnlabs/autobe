@@ -114,25 +114,27 @@ export const archive_prisma = async (
   }
 
   // REPORT RESULT
-  await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${model}/${project}/prisma`,
-    files: {
-      ...(await agent.getFiles()),
-      "logs/validates.json": JSON.stringify(validates),
-      "logs/result.json": JSON.stringify(history),
-      "logs/files.json": JSON.stringify(Object.keys(agent.getFiles())),
-      "logs/result-files.json": JSON.stringify(
-        Object.keys({
-          ...history.compiled.nodeModules,
-          ...history.compiled.schemas,
-        }),
-      ),
-      "logs/tokenUsage.json": JSON.stringify(agent.getTokenUsage()),
-      "logs/components.json": JSON.stringify(components),
-      "logs/schemas.json": JSON.stringify(schemas),
-      "logs/start.json": JSON.stringify(startEvent),
-    },
-  });
+  try {
+    await FileSystemIterator.save({
+      root: `${TestGlobal.ROOT}/results/${model}/${project}/prisma`,
+      files: {
+        ...(await agent.getFiles()),
+        "logs/validates.json": JSON.stringify(validates),
+        "logs/result.json": JSON.stringify(history),
+        "logs/files.json": JSON.stringify(Object.keys(agent.getFiles())),
+        "logs/result-files.json": JSON.stringify(
+          Object.keys({
+            ...history.compiled.nodeModules,
+            ...history.compiled.schemas,
+          }),
+        ),
+        "logs/tokenUsage.json": JSON.stringify(agent.getTokenUsage()),
+        "logs/components.json": JSON.stringify(components),
+        "logs/schemas.json": JSON.stringify(schemas),
+        "logs/start.json": JSON.stringify(startEvent),
+      },
+    });
+  } catch {}
   if (TestGlobal.archive)
     await TestHistory.save({
       [`${project}.prisma.json`]: JSON.stringify(agent.getHistories()),

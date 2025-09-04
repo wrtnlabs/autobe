@@ -64,18 +64,20 @@ export const archive_realize = async (
   );
 
   const nodeModules = prisma?.type === "success" ? prisma.nodeModules : {};
-  await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/${model}/${project}/realize`,
-    files: {
-      ...nodeModules,
-      ...payloads,
-      ...(await agent.getFiles()),
-      ...Object.fromEntries(
-        Object.entries(templateFiles).filter(([key]) => filterTsFiles(key)),
-      ),
-      "pnpm-workspace.yaml": "",
-    },
-  });
+  try {
+    await FileSystemIterator.save({
+      root: `${TestGlobal.ROOT}/results/${model}/${project}/realize`,
+      files: {
+        ...nodeModules,
+        ...payloads,
+        ...(await agent.getFiles()),
+        ...Object.fromEntries(
+          Object.entries(templateFiles).filter(([key]) => filterTsFiles(key)),
+        ),
+        "pnpm-workspace.yaml": "",
+      },
+    });
+  } catch {}
   if (TestGlobal.archive)
     await TestHistory.save({
       [`${project}.realize.json`]: JSON.stringify(agent.getHistories()),
