@@ -22,7 +22,8 @@ export namespace TestLogger {
         "  - typia.validate<T>()",
         `    - source: ${event.source}`,
         ...event.result.errors.map(
-          (v) => `    - ${v.path}: ${v.expected} (${JSON.stringify(v.value)})`,
+          (v) =>
+            `    - ${v.path}: ${v.expected} (${JSON.stringify(v.value)}) -> ${JSON.stringify(v.description ?? "no description")}`,
         ),
       );
     else if (event.type === "jsonParseError")

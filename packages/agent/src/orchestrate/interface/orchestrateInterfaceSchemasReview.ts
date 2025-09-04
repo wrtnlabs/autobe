@@ -18,7 +18,7 @@ import { transformInterfaceSchemasReviewHistories } from "./histories/transformI
 import { IAutoBeInterfaceSchemasReviewApplication } from "./structures/IAutobeInterfaceSchemasReviewApplication";
 import { authTokenSchema } from "./structures/authTokenSchema";
 import { fixPageJsonSchemas } from "./utils/fixPageJsonSchemas";
-import { fulfillInvalidJsonSchemaErrors } from "./utils/fulfillInvalidJsonSchemaErrors";
+import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMessages";
 import { validateAuthorizationSchema } from "./utils/validateAuthorizationSchema";
 
 export async function orchestrateInterfaceSchemasReview<
@@ -155,7 +155,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
     const result: IValidation<IAutoBeInterfaceSchemasReviewApplication.IProps> =
       typia.validate<IAutoBeInterfaceSchemasReviewApplication.IProps>(next);
     if (result.success === false) {
-      fulfillInvalidJsonSchemaErrors(result.errors);
+      fulfillJsonSchemaErrorMessages(result.errors);
       return result;
     }
 
