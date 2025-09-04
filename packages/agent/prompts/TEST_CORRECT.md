@@ -1538,6 +1538,195 @@ TestValidator.equals("coupon code", foundCoupon.code, expectedCode);
 
 **Rule:** TypeScript's strict null checks prevent runtime errors. Always validate nullable values before assignment. Use `typia.assert` for return values, `typia.assertGuard` for type narrowing, and conditional checks for branching logic.
 
+### 5.15. Handling Non-Existent Type Properties
+
+When you encounter the error **"Property 'someProperty' does not exist on type 'SomeDtoType'"**, this means the property genuinely does not exist in the type definition. You MUST handle this appropriately:
+
+**Important Guidelines:**
+1. **DO NOT attempt to use non-existent properties** - They are not available in the type
+2. **DO NOT try to force or cast the type** - This will only hide the error, not fix it
+3. **If the test scenario requires the missing property**, you must either:
+   - Skip/remove that specific test scenario element
+   - Find an alternative approach using available properties
+   - Modify the test logic to work without the missing property
+
+**Common Scenarios and Solutions:**
+
+**1. Missing Property in DTO**
+```typescript
+// COMPILATION ERROR: Property 'role' does not exist on type 'IUser.ICreate'
+const userData = {
+  email: "user@example.com",
+  password: "password123",
+  role: "admin"  // Error: This property doesn't exist!
+} satisfies IUser.ICreate;
+
+// SOLUTION 1: Remove the non-existent property
+const userData = {
+  email: "user@example.com",
+  password: "password123"
+  // Removed 'role' - it's not part of IUser.ICreate
+} satisfies IUser.ICreate;
+
+// SOLUTION 2: If test scenario requires role-based testing, skip it
+// Skip this test scenario - role-based user creation is not supported
+```
+
+**2. Missing Nested Properties**
+```typescript
+// COMPILATION ERROR: Property 'permissions' does not exist on type 'IAdmin'
+const admin = await api.functional.admins.at(connection, { id: adminId });
+TestValidator.equals("permissions", admin.permissions, ["read", "write"]);
+// Error: Property 'permissions' does not exist!
+
+// SOLUTION: Skip testing non-existent properties
+const admin = await api.functional.admins.at(connection, { id: adminId });
+// Skip permissions testing - property doesn't exist in IAdmin type
+// Test only available properties
+TestValidator.equals("email", admin.email, expectedEmail);
+```
+
+**3. Test Scenario Adaptation**
+```typescript
+// ORIGINAL SCENARIO: Test user profile with social media links
+// ERROR: Property 'socialMedia' does not exist on type 'IProfile'
+
+// SOLUTION: Adapt test to use available properties only
+const profile = await api.functional.profiles.create(connection, {
+  body: {
+    name: "John Doe",
+    bio: "Software Developer"
+    // Removed socialMedia - not available in IProfile type
+  } satisfies IProfile.ICreate
+});
+
+// Test only available properties
+TestValidator.equals("name", profile.name, "John Doe");
+TestValidator.equals("bio", profile.bio, "Software Developer");
+// Skip social media testing - feature not available
+```
+
+**4. Alternative Approaches**
+```typescript
+// If scenario requires testing discount codes but 'discountCode' doesn't exist:
+// Option 1: Skip the discount testing entirely
+// Option 2: Use available alternatives (e.g., if there's a 'couponCode' property instead)
+// Option 3: Modify test logic to achieve similar goals with available properties
+```
+
+**Decision Framework:**
+1. **Check if property is essential for test** → If yes, check for alternatives
+2. **No alternatives available** → Skip that test element
+3. **Document the skip** → Add comment explaining why element was skipped
+4. **Maintain test coherence** → Ensure remaining test still makes logical sense
+
+**Rule:** Never force usage of non-existent properties. Always work within the constraints of the actual type definitions. If a test scenario cannot be implemented due to missing properties, gracefully skip or modify that scenario rather than attempting workarounds.
+
+### 5.16. Handling Possibly Undefined Properties in Comparisons
+
+When you encounter the error **"someProperty is possibly undefined"** during comparisons or operations, this occurs when the property type includes `undefined` as a possible value (e.g., `number | undefined`).
+
+**Problem Example:**
+```typescript
+const requestBody: ITodoListAppEmailVerification.IRequest = {
+  page: 1,
+  limit: 10,  // Type is number | undefined in IRequest
+  verificationStatus: null,
+  sortBy: null,
+  sortOrder: null,
+};
+
+const response: IPageITodoListAppEmailVerification.ISummary =
+  await api.functional.todoListApp.user.emailVerifications.index(connection, {
+    body: requestBody,
+  });
+
+TestValidator.predicate(
+  "response data length does not exceed limit",
+  response.data.length <= requestBody.limit,  // ERROR: requestBody.limit is possibly undefined
+);
+```
+
+**Two Solutions:**
+
+**Solution 1: Use `satisfies` Instead of Type Declaration (RECOMMENDED)**
+```typescript
+// Don't declare the type explicitly, use satisfies instead
+const requestBody = {
+  page: 1,
+  limit: 10,  // Now TypeScript infers this as number, not number | undefined
+  verificationStatus: null,
+  sortBy: null,
+  sortOrder: null,
+} satisfies ITodoListAppEmailVerification.IRequest;
+
+// Now this comparison works without error
+TestValidator.predicate(
+  "response data length does not exceed limit",
+  response.data.length <= requestBody.limit,  // No error - limit is inferred as number
+);
+```
+
+**Why this works:**
+- When you use `satisfies`, TypeScript infers the actual type from the value (`10` is `number`)
+- The `satisfies` operator only checks that the value is compatible with the interface
+- This gives you the narrower type (`number`) while still ensuring API compatibility
+
+**Solution 2: Assert Non-Undefined with `typia.assert`**
+```typescript
+const requestBody: ITodoListAppEmailVerification.IRequest = {
+  page: 1,
+  limit: 10,
+  verificationStatus: null,
+  sortBy: null,
+  sortOrder: null,
+};
+
+// Assert that limit is not undefined when using it
+TestValidator.predicate(
+  "response data length does not exceed limit",
+  response.data.length <= typia.assert(requestBody.limit!),  // Assert it's number, not undefined
+);
+```
+
+**When to Use Each Solution:**
+
+1. **Use `satisfies` (Solution 1) when:**
+   - You're creating the object literal directly
+   - You know the exact values at compile time
+   - You want cleaner code without assertions
+
+2. **Use `typia.assert` (Solution 2) when:**
+   - You're working with existing typed variables
+   - The value might actually be undefined in some cases
+   - You need runtime validation
+
+**More Examples:**
+
+```typescript
+// Example with satisfies - Clean and type-safe
+const searchParams = {
+  keyword: "test",
+  maxResults: 50,
+  includeArchived: false,
+} satisfies ISearchRequest;
+
+// searchParams.maxResults is number, not number | undefined
+if (results.length > searchParams.maxResults) {
+  throw new Error("Too many results");
+}
+
+// Example with existing typed variable - Use assertion
+const config: IConfig = await loadConfig();
+// config.timeout might be number | undefined
+
+if (elapsedTime > typia.assert(config.timeout!)) {
+  throw new Error("Operation timed out");
+}
+```
+
+**Rule:** When properties have union types with `undefined`, prefer `satisfies` for object literals to get narrower types. Use `typia.assert` with non-null assertion for existing typed variables where you're confident the value exists.
+
 ## 6. Correction Requirements
 
 Your corrected code must:
