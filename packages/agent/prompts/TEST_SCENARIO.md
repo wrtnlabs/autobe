@@ -233,11 +233,36 @@ This example demonstrates the correct structure for grouping multiple test scena
 
 This principle ensures that all generated test scenarios are **actually implementable** with the provided API endpoints. The IAutoBeTestScenarioApplication.IScenario structure requires that ALL referenced endpoints must exist.
 
+#### ⚠️ MANDATORY: Pre-Scenario API Specification Analysis
+
+Before generating ANY scenario, you MUST:
+
+1. **Thoroughly analyze the provided API SDK functions**
+   - List all available endpoints with their exact method/path combinations
+   - Identify all available operations for each resource type
+   - Note which CRUD operations are available/missing for each entity
+
+2. **Precisely examine each DTO's properties and types**
+   - Document exact property names and their types
+   - Identify required vs optional fields
+   - Note any nested object structures or arrays
+   - Understand enum values and constraints
+
+3. **Map API capabilities to business requirements**
+   - Only design scenarios using actually available APIs
+   - If a desired feature lacks API support, exclude it from scenarios
+   - Never assume APIs exist based on business logic alone
+
+4. **Cross-reference with authentication requirements**
+   - Verify which authentication APIs are available for each role
+   - Ensure role-specific endpoints have corresponding auth endpoints
+
 **MANDATORY VERIFICATION REQUIREMENTS:**
 
 1. **Primary Endpoint Verification**: The `endpoint` in IScenarioGroup MUST exist in the provided operations array
 2. **Dependencies Verification**: ALL endpoints in `dependencies[]` MUST exist in either include or exclude lists
 3. **No Schema-Based Assumptions**: Database schema fields (e.g., `is_banned`, `deleted_at`) do NOT guarantee corresponding API availability
+4. **DTO Property Accuracy**: Every property used in scenarios MUST exist in the actual DTO definitions
 
 **ABSOLUTE PROHIBITIONS:**
 - ❌ **NEVER create scenarios for non-existent APIs** regardless of schema fields
@@ -245,6 +270,8 @@ This principle ensures that all generated test scenarios are **actually implemen
 - ❌ **NEVER infer API functionality from Prisma schema alone**
 - ❌ **NEVER create "hypothetical" test scenarios** for APIs that might exist
 - ❌ **NEVER create test scenarios with intentionally invalid types** - This causes compile-time errors that break the entire E2E test program
+- ❌ **NEVER assume DTO properties** - use only those explicitly defined in the provided specifications
+- ❌ **NEVER invent filtering, sorting, or search parameters** not present in the actual API definitions
 
 ### 4.3.1. CRITICAL: Type Validation Scenarios Are FORBIDDEN
 
@@ -255,6 +282,7 @@ AutoBE-generated backends provide **100% perfect type validation** for both requ
 1. **Request Parameter Validation**: AutoBE backends use advanced validation that ensures all incoming data perfectly matches expected types
 2. **Response Data Guarantee**: All response data is 100% type-safe and matches the declared TypeScript types exactly
 3. **No Need for Doubt**: There is ZERO need to test or validate type conformity - it's already perfect
+4. **typia.assert() Sufficiency**: The single call to `typia.assert(responseValue)` performs complete validation - any additional checking is redundant
 
 **NEVER create these types of scenarios:**
 - ❌ "Test with wrong data types" 
@@ -266,6 +294,10 @@ AutoBE-generated backends provide **100% perfect type validation** for both requ
 - ❌ "Verify response structure"
 - ❌ "Test with missing required fields"
 - ❌ "Validate data type conformity"
+- ❌ "Check individual properties of response"
+- ❌ "Validate each field separately"
+- ❌ "Test response property types one by one"
+- ❌ "Verify specific field formats in response"
 
 **Examples of FORBIDDEN scenarios:**
 ```typescript
@@ -274,6 +306,13 @@ AutoBE-generated backends provide **100% perfect type validation** for both requ
   functionName: "test_api_user_creation_response_validation",
   draft: "Create a user and validate that the response contains all required fields with correct types including UUID format for ID",
   // THIS IS FORBIDDEN - Response types are guaranteed
+}
+
+// ❌ NEVER: Testing individual response properties
+{
+  functionName: "test_api_product_response_field_validation",
+  draft: "Get product details and verify each field like price is number, name is string, id is UUID format",
+  // THIS IS FORBIDDEN - typia.assert() already validates everything
 }
 
 // ❌ NEVER: Testing request type errors
@@ -289,12 +328,20 @@ AutoBE-generated backends provide **100% perfect type validation** for both requ
   draft: "Test order creation without required customer_id field",
   // THIS IS FORBIDDEN - TypeScript won't compile
 }
+
+// ❌ NEVER: Individual property checking
+{
+  functionName: "test_api_user_response_properties",
+  draft: "Create user and check that response.id is string, response.email is valid email format, response.created_at is date",
+  // THIS IS FORBIDDEN - typia.assert() validates the entire response structure perfectly
+}
 ```
 
 **Why this is critical:**
 - Type validation tests cause TypeScript compilation errors that break the entire test suite
 - AutoBE backends already provide perfect type safety - testing it is redundant
 - Response data validation like `typia.assert(responseValue)` is unnecessary and forbidden
+- Individual property type checking after `typia.assert()` is completely pointless
 - Focus should be on business logic, not type system doubts
 
 **Pre-Scenario Generation Checklist:**
@@ -362,6 +409,84 @@ const invalidRequest = {
 ```
 
 Instead, focus on testing business logic errors, validation failures with correct types, authorization errors, and resource state errors - all while maintaining type safety.
+
+## 4.7. Forbidden Scenario Patterns
+
+### ❌ NEVER Generate These Scenario Patterns
+
+The following scenario patterns are **STRICTLY FORBIDDEN** as they violate core principles of the testing framework:
+
+#### 1. **Type Validation Scenarios**
+- ❌ "Test with wrong data types in request body"
+- ❌ "Validate response data types and formats"
+- ❌ "Check individual response properties for correct types"
+- ❌ "Verify UUID format in response fields"
+- ❌ "Ensure all response fields match expected types"
+- ❌ "Test with intentionally malformed request data"
+
+**Why forbidden**: These cause TypeScript compilation errors and are redundant since `typia.assert()` provides perfect validation.
+
+#### 2. **Non-Existent API Functionality**
+- ❌ "Test filtering by properties not in the API specification"
+- ❌ "Test sorting options not provided by the endpoint"
+- ❌ "Test search parameters not defined in DTOs"
+- ❌ "Test CRUD operations that don't exist for the entity"
+- ❌ "Test endpoints inferred from database schema but not in API"
+
+**Why forbidden**: Only APIs explicitly provided in the operations array can be tested.
+
+#### 3. **Authentication Manipulation**
+- ❌ "Test with manually crafted authentication tokens"
+- ❌ "Test by switching user context without proper join/login"
+- ❌ "Test with forged or expired authentication headers"
+- ❌ "Test direct header manipulation"
+
+**Why forbidden**: The SDK manages authentication automatically; manual manipulation breaks the system.
+
+#### 4. **Compile-Time Error Scenarios**
+- ❌ "Test with missing required fields"
+- ❌ "Test with additional properties not in DTO"
+- ❌ "Test with null for non-nullable fields"
+- ❌ "Test with wrong types that TypeScript would reject"
+
+**Why forbidden**: These scenarios won't compile and break the entire test suite.
+
+#### 5. **Redundant Response Validation**
+- ❌ "Verify each property exists in response"
+- ❌ "Check response.id is string type"
+- ❌ "Validate response.created_at is valid date"
+- ❌ "Ensure nested objects have correct structure"
+- ❌ "Test individual field presence one by one"
+
+**Why forbidden**: `typia.assert(responseValue)` performs complete validation; additional checks are pointless.
+
+### ✅ Focus on These Valid Scenarios Instead
+
+1. **Business Logic Validation**
+   - User permission boundaries
+   - Resource ownership rules
+   - Business constraint violations
+   - State transition validity
+
+2. **Runtime Errors with Valid Types**
+   - Duplicate resource creation
+   - Operations on non-existent resources
+   - Insufficient permissions with proper auth
+   - Business rule violations
+
+3. **Complex Workflows**
+   - Multi-step user journeys
+   - Cross-entity interactions
+   - Concurrent operation handling
+   - State-dependent behaviors
+
+4. **Edge Cases with Valid Data**
+   - Empty result sets
+   - Maximum length inputs
+   - Boundary value testing
+   - Complex filtering combinations (if supported by API)
+
+Remember: Every scenario must be implementable with the exact APIs and DTOs provided, using only valid TypeScript code that will compile successfully.
 
 ## 5. Detailed Scenario Generation Guidelines
 
@@ -536,3 +661,25 @@ By following these guidelines, generated test scenarios will be comprehensive, a
 * [ ] Is authentication context established before testing protected endpoints with proper flow order?
 * [ ] Have you referenced the "Included in Test Plan" section to identify available authentication APIs for each endpoint?
 * [ ] Have you checked the `authorizationRole` field in the Operations array to understand role requirements?
+
+### 8.5. Scenario Feasibility Verification
+
+**✅ MANDATORY: Check Every Scenario Against These Criteria**
+
+Before finalizing each scenario, verify:
+
+* [ ] **API Availability**: Does the primary API endpoint exist in the provided SDK?
+* [ ] **DTO Property Accuracy**: Are all request/response properties used in the scenario actually defined in the DTOs?
+* [ ] **No Type Violations**: Will the scenario compile without TypeScript errors?
+* [ ] **No Additional Imports**: Can the scenario be implemented without requiring any new imports?
+* [ ] **Dependency Existence**: Do all dependency endpoints exist in the available APIs?
+* [ ] **No Individual Type Checking**: Does the scenario avoid testing individual response property types?
+* [ ] **Business Logic Focus**: Is the scenario testing business logic rather than type validation?
+* [ ] **Realistic Implementation**: Can a developer implement this with the exact APIs provided?
+
+**🚨 RED FLAGS - If ANY of these are true, redesign the scenario:**
+- The scenario mentions "validate response format" or similar type checking
+- The scenario requires an API that doesn't exist in the operations array
+- The scenario uses DTO properties not found in the specifications
+- The scenario would require intentionally wrong types causing compilation errors
+- The scenario tests individual fields of the response one by one
