@@ -17,7 +17,8 @@ import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformInterfaceSchemaHistories } from "./histories/transformInterfaceSchemaHistories";
 import { IAutoBeInterfaceSchemaApplication } from "./structures/IAutoBeInterfaceSchemaApplication";
-import { fixPageSchemas } from "./utils/fixPageSchemas";
+import { fixPageJsonSchemas } from "./utils/fixPageJsonSchemas";
+import { fulfillInvalidJsonSchemaErrors } from "./utils/fulfillInvalidJsonSchemaErrors";
 import { validateAuthorizationSchema } from "./utils/validateAuthorizationSchema";
 
 export async function orchestrateInterfaceSchemas<
@@ -169,11 +170,14 @@ function createController<Model extends ILlmSchema.Model>(props: {
   const validate = (
     next: unknown,
   ): IValidation<IAutoBeInterfaceSchemaApplication.IProps> => {
-    fixPageSchemas(next, "schemas");
+    fixPageJsonSchemas(next, "schemas");
 
     const result: IValidation<IAutoBeInterfaceSchemaApplication.IProps> =
       typia.validate<IAutoBeInterfaceSchemaApplication.IProps>(next);
-    if (result.success === false) return result;
+    if (result.success === false) {
+      fulfillInvalidJsonSchemaErrors(result.errors);
+      return result;
+    }
 
     // Check all IAuthorized types
     const errors: IValidation.IError[] = [];

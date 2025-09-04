@@ -1,7 +1,7 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 
-export const fixPageSchemas = (input: unknown, path: string): void => {
+export const fixPageJsonSchemas = (input: unknown, path: string): void => {
   if (isObject(input) === false || isObject(input[path]) === false) return;
 
   if (input[path].description) delete input[path].description;

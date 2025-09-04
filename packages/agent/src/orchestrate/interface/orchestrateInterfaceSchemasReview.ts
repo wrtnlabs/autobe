@@ -17,7 +17,8 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformInterfaceSchemasReviewHistories } from "./histories/transformInterfaceSchemasReviewHistories";
 import { IAutoBeInterfaceSchemasReviewApplication } from "./structures/IAutobeInterfaceSchemasReviewApplication";
 import { authTokenSchema } from "./structures/authTokenSchema";
-import { fixPageSchemas } from "./utils/fixPageSchemas";
+import { fixPageJsonSchemas } from "./utils/fixPageJsonSchemas";
+import { fulfillInvalidJsonSchemaErrors } from "./utils/fulfillInvalidJsonSchemaErrors";
 import { validateAuthorizationSchema } from "./utils/validateAuthorizationSchema";
 
 export async function orchestrateInterfaceSchemasReview<
@@ -149,11 +150,14 @@ function createController<Model extends ILlmSchema.Model>(props: {
   const validate = (
     next: unknown,
   ): IValidation<IAutoBeInterfaceSchemasReviewApplication.IProps> => {
-    fixPageSchemas(next, "content");
+    fixPageJsonSchemas(next, "content");
 
     const result: IValidation<IAutoBeInterfaceSchemasReviewApplication.IProps> =
       typia.validate<IAutoBeInterfaceSchemasReviewApplication.IProps>(next);
-    if (result.success === false) return result;
+    if (result.success === false) {
+      fulfillInvalidJsonSchemaErrors(result.errors);
+      return result;
+    }
 
     const errors: IValidation.IError[] = [];
     validateAuthorizationSchema({
