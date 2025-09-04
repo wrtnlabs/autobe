@@ -27,7 +27,7 @@ export const fulfillInvalidJsonSchemaErrors = (
         array type listing up the every types what you want, but it is not 
         allowed in the JSON schema.
         
-        The JSON schema's type property value much be a single string type.
+        The JSON schema's type property value must be a single string type.
         In your case, you have to change it to an "oneOf" type which 
         represents an union type.
 
