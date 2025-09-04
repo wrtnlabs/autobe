@@ -8,8 +8,10 @@
     "prepare": "ts-patch install",
     "build": "tsc --noEmit",
     "dev": "tsc --watch --noEmit",
-    "start": "node build/prompt.js && ts-node src",
-    "archive": "node build/prompt.js && ts-node src/archive",
+    "start": "node build/prompt.js && pnpm run start:go",
+    "archive": "node build/prompt.js && pnpm run archive:go",
+    "start:go": "ts-node src",
+    "archive:go": "ts-node src/archive",
     "bench": "ts-node src/benchmarks"
   },
   "author": "Wrtn Technologies",

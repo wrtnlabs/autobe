@@ -16,8 +16,7 @@ import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformInterfaceSchemasReviewHistories } from "./histories/transformInterfaceSchemasReviewHistories";
 import { IAutoBeInterfaceSchemasReviewApplication } from "./structures/IAutobeInterfaceSchemasReviewApplication";
-import { authTokenSchema } from "./structures/authTokenSchema";
-import { fixPageJsonSchemas } from "./utils/fixPageJsonSchemas";
+import { JsonSchemaFactory } from "./utils/JsonSchemaFactory";
 import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMessages";
 import { validateAuthorizationSchema } from "./utils/validateAuthorizationSchema";
 
@@ -37,32 +36,20 @@ export async function orchestrateInterfaceSchemasReview<
       array: a,
       capacity: 8,
     });
-
-  const roles: string[] =
-    ctx.state().analyze?.roles.map((role) => role.name) ?? [];
-
-  const x: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-    roles.length > 0
-      ? {
-          IAuthorization: authTokenSchema,
-        }
-      : {};
-
   const progress: IProgress = {
     total: matrix.length,
     completed: 0,
   };
+
+  const x: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
   for (const y of await executeCachedBatch(
     matrix.map((it) => async (promptCacheKey) => {
       const row: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
         await divideAndConquer(ctx, operations, it, progress, promptCacheKey);
       return row;
     }),
-  )) {
+  ))
     Object.assign(x, y);
-  }
-
-  if (x.IAuthorizationToken) x.IAuthorizationToken = authTokenSchema;
   return x;
 }
 
@@ -122,8 +109,8 @@ export async function step<Model extends ILlmSchema.Model>(
       type: "interfaceSchemasReview",
       id: v7(),
       schemas: schemas,
-      review: pointer.value.review,
-      plan: pointer.value.plan,
+      review: pointer.value.think.review,
+      plan: pointer.value.think.plan,
       content,
       tokenUsage,
       step: ctx.state().analyze?.step ?? 0,
@@ -150,7 +137,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
   const validate = (
     next: unknown,
   ): IValidation<IAutoBeInterfaceSchemasReviewApplication.IProps> => {
-    fixPageJsonSchemas(next, "content");
+    JsonSchemaFactory.fix("content", next);
 
     const result: IValidation<IAutoBeInterfaceSchemasReviewApplication.IProps> =
       typia.validate<IAutoBeInterfaceSchemasReviewApplication.IProps>(next);

@@ -703,6 +703,67 @@ await api.functional.products.update(connection, {
 
 **IMPORTANT**: TypeScript will catch these errors at compile time, but getting them right the first time saves debugging effort and ensures your test logic is correct.
 
+### 3.3.1. Response Type Validation
+
+**CRITICAL: Response Data Type Trust**
+
+The response data from API calls is **100% guaranteed** to match the declared TypeScript types. The server ensures complete type safety and validation, so you should:
+
+1. **NEVER doubt or validate response type conformity** - The response will always match the declared type
+2. **NEVER write type validation code for responses** - It's redundant and counterproductive
+3. **Trust the type system completely** - If TypeScript says it's type `T`, it is exactly type `T`
+
+**Examples of What NOT to Do:**
+
+```typescript
+// ❌ WRONG: Unnecessary type validation for response data
+const guest = await api.functional.guests.create(connection, {
+  body: guestData
+});
+
+// ❌ NEVER do this - response types are guaranteed to be correct
+TestValidator.predicate(
+  "guest ID is valid UUID",
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+    guest.id,
+  ),
+);
+
+// ❌ WRONG: Checking if properties exist
+if (!guest.name) {
+  throw new Error("Guest name is missing");
+}
+
+// ❌ WRONG: Validating response data types
+if (typeof guest.age !== 'number') {
+  throw new Error("Age should be a number");
+}
+```
+
+**What You SHOULD Do:**
+
+```typescript
+// ✅ CORRECT: Trust the response type completely
+const guest = await api.functional.guests.create(connection, {
+  body: guestData
+});
+
+// Just use the data directly - it's guaranteed to be correct
+console.log(`Guest ${guest.name} created with ID ${guest.id}`);
+
+// ✅ CORRECT: Focus on business logic validation instead
+TestValidator.predicate(
+  "guest is adult",
+  guest.age >= 18  // Trust that age is a number
+);
+```
+
+**Key Points:**
+- The server performs thorough type validation before sending responses
+- Response data integrity is guaranteed by the backend framework
+- Type validation on the client side adds no value and only introduces unnecessary complexity
+- Focus your validation efforts on business rules and logic, not type conformity
+
 ### 3.4. Random Data Generation
 
 **CRITICAL: Type Constraints and typia.random Usage**

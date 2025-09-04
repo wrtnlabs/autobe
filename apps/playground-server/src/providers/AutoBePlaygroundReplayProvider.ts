@@ -147,7 +147,7 @@ export namespace AutoBePlaygroundReplayProvider {
             "prisma",
             (h) => h.compiled.type === "success",
             (h) => ({
-              files: h.result.data.files.length,
+              namespaces: h.result.data.files.length,
               models: h.result.data.files.map((f) => f.models).flat().length,
             }),
           ),

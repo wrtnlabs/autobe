@@ -17,7 +17,7 @@ import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformInterfaceSchemaHistories } from "./histories/transformInterfaceSchemaHistories";
 import { IAutoBeInterfaceSchemaApplication } from "./structures/IAutoBeInterfaceSchemaApplication";
-import { fixPageJsonSchemas } from "./utils/fixPageJsonSchemas";
+import { JsonSchemaFactory } from "./utils/JsonSchemaFactory";
 import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMessages";
 import { validateAuthorizationSchema } from "./utils/validateAuthorizationSchema";
 
@@ -42,7 +42,10 @@ export async function orchestrateInterfaceSchemas<
     completed: 0,
   };
 
-  const x: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
+  const presets: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
+  const x: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
+    ...presets,
+  };
   for (const y of await executeCachedBatch(
     matrix.map((it) => async (promptCacheKey) => {
       const row: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
@@ -51,6 +54,7 @@ export async function orchestrateInterfaceSchemas<
     }),
   ))
     Object.assign(x, y);
+  Object.assign(x, presets);
   return x;
 }
 
@@ -170,7 +174,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
   const validate = (
     next: unknown,
   ): IValidation<IAutoBeInterfaceSchemaApplication.IProps> => {
-    fixPageJsonSchemas(next, "schemas");
+    JsonSchemaFactory.fix("schemas", next);
 
     const result: IValidation<IAutoBeInterfaceSchemaApplication.IProps> =
       typia.validate<IAutoBeInterfaceSchemaApplication.IProps>(next);

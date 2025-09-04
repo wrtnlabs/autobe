@@ -29,6 +29,34 @@ export namespace IAutoBeInterfaceSchemasReviewApplication {
    * interface to understand what outputs are required.
    */
   export interface IProps {
+    think: IThink;
+
+    /**
+     * Final validated and enhanced schemas ready for production use.
+     *
+     * DO:
+     *
+     * - Include valid OpenAPI schema definitions
+     * - Include all entities that were in the original input
+     * - Provide fixed versions if original schemas have issues
+     * - Rename entities correctly if names are wrong
+     * - Include created variants if schemas are missing them
+     *
+     * DO NOT:
+     *
+     * - Return an empty object {} (this will delete all schemas)
+     * - Return undefined or null
+     * - Include explanations or excuses in schema descriptions
+     * - Leave broken schemas unfixed
+     *
+     * When original schemas are beyond repair, recreate them properly based on
+     * entity names and context. This field becomes the final schemas used by
+     * the system, so it must always contain complete, valid schemas.
+     */
+    content: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+  }
+
+  export interface IThink {
     /**
      * Issues and problems found during schema analysis.
      *
@@ -64,29 +92,5 @@ export namespace IAutoBeInterfaceSchemasReviewApplication {
      * field.
      */
     plan: string;
-
-    /**
-     * Final validated and enhanced schemas ready for production use.
-     *
-     * DO:
-     *
-     * - Include valid OpenAPI schema definitions
-     * - Include all entities that were in the original input
-     * - Provide fixed versions if original schemas have issues
-     * - Rename entities correctly if names are wrong
-     * - Include created variants if schemas are missing them
-     *
-     * DO NOT:
-     *
-     * - Return an empty object {} (this will delete all schemas)
-     * - Return undefined or null
-     * - Include explanations or excuses in schema descriptions
-     * - Leave broken schemas unfixed
-     *
-     * When original schemas are beyond repair, recreate them properly based on
-     * entity names and context. This field becomes the final schemas used by
-     * the system, so it must always contain complete, valid schemas.
-     */
-    content: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
   }
 }
