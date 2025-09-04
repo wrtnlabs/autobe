@@ -8,7 +8,12 @@ export const validateOpenApiPageSchema = (props: {
   key: string;
   schema: AutoBeOpenApi.IJsonSchemaDescriptive;
 }): void => {
-  if (props.key.startsWith("IPage") === false) return;
+  if (
+    props.key.startsWith("IPage") === false ||
+    props.key === "IPage" ||
+    props.key.startsWith("IPage.")
+  )
+    return;
 
   const childName: string = props.key.substring("IPage".length);
   if (AutoBeOpenApiTypeChecker.isObject(props.schema) === false) {
@@ -47,7 +52,7 @@ export const validateOpenApiPageSchema = (props: {
         However, you have not defined the "data" property at all.
         Please ensure to follow the structure exactly as shown.
 
-        ${getExampleJsonSchema(childName)}
+        ${getExampleJsonSchema(childName, (o) => o.properties.data)}
       `,
     });
   else {
@@ -63,7 +68,7 @@ export const validateOpenApiPageSchema = (props: {
           However, you have not defined the "data" property as an array type.
           Please ensure to follow the structure exactly as shown.
 
-          ${getExampleJsonSchema(childName)}
+          ${getExampleJsonSchema(childName, (o) => o.properties.data)}
         `,
       });
     else if (
@@ -72,7 +77,7 @@ export const validateOpenApiPageSchema = (props: {
       props.errors.push({
         path: `${props.path}[${JSON.stringify(props.key)}].properties.data.items`,
         value: properties.data.items,
-        expected: `#/components/schemas/${childName}`,
+        expected: "AutoBeOpenApi.IJsonSchemaDescriptive.IReference",
         description: StringUtil.trim`
           Following the system prompt, "${props.key}" type must have an array 
           typed property "data", and its items must be an reference type like below.
@@ -80,14 +85,14 @@ export const validateOpenApiPageSchema = (props: {
           However, you have not defined the "data.items" property as an reference type.
           Please ensure to follow the structure exactly as shown.
 
-          ${getExampleJsonSchema(childName)}
+          ${getExampleJsonSchema(childName, (o) => o.properties.data.items)}
         `,
       });
     else if (properties.data.items.$ref !== `#/components/schemas/${childName}`)
       props.errors.push({
-        path: `${props.path}[${JSON.stringify(props.key)}].properties.data.items`,
+        path: `${props.path}[${JSON.stringify(props.key)}].properties.data.items.$ref`,
         value: properties.data.items.$ref,
-        expected: `#/components/schemas/${childName}`,
+        expected: JSON.stringify(`#/components/schemas/${childName}`),
         description: StringUtil.trim`
           Following the system prompt, "${props.key}" type must have an array
           typed property "data", and its items must be an reference type pointing
@@ -97,15 +102,13 @@ export const validateOpenApiPageSchema = (props: {
           type pointing the "${childName}" type. Please ensure to follow the 
           structure exactly as shown.
 
-          > Change the "$ref" value to be "#/components/schemas/${childName}".
-
-          ${getExampleJsonSchema(childName)}
+          ${getExampleJsonSchema(childName, (o) => o.properties.data.items.$ref)}
         `,
       });
     if (required.includes("data") === false)
       props.errors.push({
         path: `${props.path}[${JSON.stringify(props.key)}].required`,
-        value: undefined,
+        value: required,
         expected: `"data" must be included in the required array.`,
         description: StringUtil.trim`
           Following the system prompt, "${props.key}" type must have a property
@@ -114,7 +117,7 @@ export const validateOpenApiPageSchema = (props: {
           However, you have not defined the "data" property as a required field.
           Please ensure to follow the structure exactly as shown.
 
-          ${getExampleJsonSchema(childName)}
+          ${getExampleJsonSchema(childName, (o) => o.required)}
         `,
       });
   }
@@ -124,7 +127,7 @@ export const validateOpenApiPageSchema = (props: {
     props.errors.push({
       path: `${props.path}[${JSON.stringify(props.key)}].properties.pagination`,
       value: undefined,
-      expected: `"pagination" property is required and must be a reference to IPage.IPagination.`,
+      expected: "AutoBeOpenApi.IJsonSchemaDescriptive.IReference",
       description: StringUtil.trim`
         Following the system prompt, "${props.key}" type must have a property
         "pagination" as a reference type like below.
@@ -132,7 +135,7 @@ export const validateOpenApiPageSchema = (props: {
         However, you have not defined the "pagination" property at all.
         Please ensure to follow the structure exactly as shown.
 
-        ${getExampleJsonSchema(childName)}
+        ${getExampleJsonSchema(childName, (o) => o.properties.pagination)}
       `,
     });
   } else {
@@ -148,7 +151,7 @@ export const validateOpenApiPageSchema = (props: {
           However, you have not defined the "pagination" property as a reference type.
           Please ensure to follow the structure exactly as shown.
 
-          ${getExampleJsonSchema(childName)}
+          ${getExampleJsonSchema(childName, (o) => o.properties.pagination)}
         `,
       });
     } else if (
@@ -157,7 +160,7 @@ export const validateOpenApiPageSchema = (props: {
       props.errors.push({
         path: `${props.path}[${JSON.stringify(props.key)}].properties.pagination.$ref`,
         value: properties.pagination.$ref,
-        expected: `#/components/schemas/IPage.IPagination`,
+        expected: JSON.stringify("#/components/schemas/IPage.IPagination"),
         description: StringUtil.trim`
           Following the system prompt, "${props.key}" type must have a property
           "pagination" as a reference type pointing the "IPage.IPagination" type 
@@ -167,16 +170,14 @@ export const validateOpenApiPageSchema = (props: {
           type pointing the "IPage.IPagination" type. Please ensure to follow the 
           structure exactly as shown.
           
-          > Change the "$ref" value to be "#/components/schemas/IPage.IPagination".
-
-          ${getExampleJsonSchema(childName)}
+          ${getExampleJsonSchema(childName, (o) => o.properties.pagination.$ref)}
         `,
       });
     }
     if (required.includes("pagination") === false)
       props.errors.push({
         path: `${props.path}[${JSON.stringify(props.key)}].required`,
-        value: undefined,
+        value: props.schema.required,
         expected: `"pagination" must be included in the required array.`,
         description: StringUtil.trim`
           Following the system prompt, "${props.key}" type must have a property
@@ -185,7 +186,7 @@ export const validateOpenApiPageSchema = (props: {
           However, you have not defined the "pagination" property as a required 
           field. Please ensure to follow the structure exactly as shown.
 
-          ${getExampleJsonSchema(childName)}
+          ${getExampleJsonSchema(childName, (o) => o.required)}
         `,
       });
   }
@@ -193,9 +194,9 @@ export const validateOpenApiPageSchema = (props: {
 
 const getExampleJsonSchema = (
   childName: string,
-  closure?: (value: AutoBeOpenApi.IJsonSchemaDescriptive.IObject) => any,
+  closure?: (value: ReturnType<typeof getExampleValue>) => any,
 ): string => {
-  const value: AutoBeOpenApi.IJsonSchemaDescriptive.IObject = {
+  const value = {
     type: "object",
     properties: {
       data: {
@@ -212,10 +213,35 @@ const getExampleJsonSchema = (
     },
     required: ["data", "pagination"],
     description: "<SOME_DESCRIPTION>",
-  };
+  } satisfies AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
   return StringUtil.trim`
-    \`\`\`json
-    ${JSON.stringify((closure ?? ((v) => v))(value), null, 2)}
-    \`\`\`
+    > Change the value as below.
+    >
+    > \`\`\`json
+    ${JSON.stringify((closure ?? ((v) => v))(value), null, 2)
+      .split("\n")
+      .map((s) => `> ${s}`)
+      .join("\n")}
+    > \`\`\`
   `;
 };
+
+const getExampleValue = (childName: string) =>
+  ({
+    type: "object",
+    properties: {
+      data: {
+        type: "array",
+        items: {
+          $ref: `#/components/schemas/${childName}`,
+        },
+        description: "<SOME_DESCRIPTION>",
+      },
+      pagination: {
+        $ref: "#/components/schemas/IPage.IPagination",
+        description: "<SOME_DESCRIPTION>",
+      },
+    },
+    required: ["data", "pagination"],
+    description: "<SOME_DESCRIPTION>",
+  }) satisfies AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
