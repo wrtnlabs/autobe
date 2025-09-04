@@ -17,9 +17,8 @@ import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformInterfaceSchemaHistories } from "./histories/transformInterfaceSchemaHistories";
 import { IAutoBeInterfaceSchemaApplication } from "./structures/IAutoBeInterfaceSchemaApplication";
-import { eraseVulnerableSchemas } from "./utils/eraseVulnerableSchemas";
+import { fixPageSchemas } from "./utils/fixPageSchemas";
 import { validateAuthorizationSchema } from "./utils/validateAuthorizationSchema";
-import { validateOpenApiPageSchema } from "./utils/validateOpenApiPageSchema";
 
 export async function orchestrateInterfaceSchemas<
   Model extends ILlmSchema.Model,
@@ -170,7 +169,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
   const validate = (
     next: unknown,
   ): IValidation<IAutoBeInterfaceSchemaApplication.IProps> => {
-    eraseVulnerableSchemas(next, "schemas");
+    fixPageSchemas(next, "schemas");
 
     const result: IValidation<IAutoBeInterfaceSchemaApplication.IProps> =
       typia.validate<IAutoBeInterfaceSchemaApplication.IProps>(next);
@@ -182,14 +181,6 @@ function createController<Model extends ILlmSchema.Model>(props: {
       errors,
       schemas: result.data.schemas,
       path: "$input.schemas",
-    });
-    Object.entries(result.data.schemas).forEach(([key, schema]) => {
-      validateOpenApiPageSchema({
-        path: "$input.schemas",
-        errors,
-        key,
-        schema,
-      });
     });
     if (errors.length !== 0)
       return {

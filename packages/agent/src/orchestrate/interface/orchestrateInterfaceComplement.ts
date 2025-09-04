@@ -15,9 +15,8 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { transformInterfaceComplementHistories } from "./histories/transformInterfaceComplementHistories";
 import { IAutoBeInterfaceComplementApplication } from "./structures/IAutoBeInterfaceComplementApplication";
-import { eraseVulnerableSchemas } from "./utils/eraseVulnerableSchemas";
+import { fixPageSchemas } from "./utils/fixPageSchemas";
 import { validateAuthorizationSchema } from "./utils/validateAuthorizationSchema";
-import { validateOpenApiPageSchema } from "./utils/validateOpenApiPageSchema";
 
 export function orchestrateInterfaceComplement<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
@@ -131,7 +130,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
   const validate = (
     next: unknown,
   ): IValidation<IAutoBeInterfaceComplementApplication.IProps> => {
-    eraseVulnerableSchemas(next, "schemas");
+    fixPageSchemas(next, "schemas");
 
     const result: IValidation<IAutoBeInterfaceComplementApplication.IProps> =
       typia.validate<IAutoBeInterfaceComplementApplication.IProps>(next);
@@ -142,14 +141,6 @@ function createController<Model extends ILlmSchema.Model>(props: {
       errors,
       schemas: result.data.schemas,
       path: "$input.schemas",
-    });
-    Object.entries(result.data.schemas).forEach(([key, schema]) => {
-      validateOpenApiPageSchema({
-        path: "$input.schemas",
-        errors,
-        key,
-        schema,
-      });
     });
     if (errors.length !== 0)
       return {
