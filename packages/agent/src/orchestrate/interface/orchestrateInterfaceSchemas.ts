@@ -17,6 +17,7 @@ import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformInterfaceSchemaHistories } from "./histories/transformInterfaceSchemaHistories";
 import { IAutoBeInterfaceSchemaApplication } from "./structures/IAutoBeInterfaceSchemaApplication";
+import { eraseVulnerableSchemas } from "./utils/eraseVulnerableSchemas";
 import { validateAuthorizationSchema } from "./utils/validateAuthorizationSchema";
 import { validateOpenApiPageSchema } from "./utils/validateOpenApiPageSchema";
 
@@ -169,6 +170,8 @@ function createController<Model extends ILlmSchema.Model>(props: {
   const validate = (
     next: unknown,
   ): IValidation<IAutoBeInterfaceSchemaApplication.IProps> => {
+    eraseVulnerableSchemas(next, "schemas");
+
     const result: IValidation<IAutoBeInterfaceSchemaApplication.IProps> =
       typia.validate<IAutoBeInterfaceSchemaApplication.IProps>(next);
     if (result.success === false) return result;

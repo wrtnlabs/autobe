@@ -15,6 +15,7 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { transformInterfaceComplementHistories } from "./histories/transformInterfaceComplementHistories";
 import { IAutoBeInterfaceComplementApplication } from "./structures/IAutoBeInterfaceComplementApplication";
+import { eraseVulnerableSchemas } from "./utils/eraseVulnerableSchemas";
 import { validateAuthorizationSchema } from "./utils/validateAuthorizationSchema";
 import { validateOpenApiPageSchema } from "./utils/validateOpenApiPageSchema";
 
@@ -130,6 +131,8 @@ function createController<Model extends ILlmSchema.Model>(props: {
   const validate = (
     next: unknown,
   ): IValidation<IAutoBeInterfaceComplementApplication.IProps> => {
+    eraseVulnerableSchemas(next, "schemas");
+
     const result: IValidation<IAutoBeInterfaceComplementApplication.IProps> =
       typia.validate<IAutoBeInterfaceComplementApplication.IProps>(next);
     if (result.success === false) return result;
