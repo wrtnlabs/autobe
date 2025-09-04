@@ -15,6 +15,7 @@ export namespace JsonSchemaFactory {
       if (isPage(key)) {
         schemas[key] = page(key);
         typeNames.delete(key);
+        typeNames.add(getPageName(key));
       }
     return schemas;
   };
@@ -63,6 +64,9 @@ export namespace JsonSchemaFactory {
     key.startsWith("IPage") === true &&
     key.startsWith("IPage.") === false &&
     key !== "IPage";
+
+  export const getPageName = (key: string): string =>
+    key.substring("IPage".length);
 
   const isRecord = (input: unknown): input is Record<string, unknown> =>
     typeof input === "object" && input !== null;
