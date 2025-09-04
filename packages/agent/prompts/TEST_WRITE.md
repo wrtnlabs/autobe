@@ -635,8 +635,9 @@ await api.functional.users.articles.update(connection, {
   - Never use `as RequestBodyDto` expression. It is not `any`, but `satisfies`.
   - Never use `as any` expression which breaks the type safety.
   - Never use `satisfies any` expression, as it breaks type safety
-- Always call `typia.assert(variable)` on API responses with non-void return types
+- Always call `typia.assert(response)` on API responses with non-void return types - this performs **COMPLETE AND PERFECT** type validation
 - Skip variable assignment and assertion for void return types
+- **CRITICAL**: `typia.assert()` already performs ALL possible type validations - NEVER add any additional validation
 
 **API function calling pattern:**
 Use the pattern `api.functional.{path}.{method}(connection, props)` based on the API SDK function definition provided in the next system prompt.
@@ -705,13 +706,31 @@ await api.functional.products.update(connection, {
 
 ### 3.3.1. Response Type Validation
 
-**CRITICAL: Response Data Type Trust**
+**CRITICAL: Response Data Type Trust and typia.assert() Usage**
 
-The response data from API calls is **100% guaranteed** to match the declared TypeScript types. The server ensures complete type safety and validation, so you should:
+The response data from API calls is **100% guaranteed** to match the declared TypeScript types. AutoBE-generated backends provide perfect type safety through advanced validation systems, ensuring that:
 
-1. **NEVER doubt or validate response type conformity** - The response will always match the declared type
-2. **NEVER write type validation code for responses** - It's redundant and counterproductive
-3. **Trust the type system completely** - If TypeScript says it's type `T`, it is exactly type `T`
+1. **Request Parameter Validation**: All incoming request data is thoroughly validated to match expected types before processing
+2. **Response Data Guarantee**: All response data is 100% type-safe and matches the declared TypeScript types exactly
+3. **No Type Errors Possible**: The backend framework guarantees type correctness at every layer
+
+**IMPORTANT: About typia.assert() on Responses:**
+- You MUST call `typia.assert(response)` for non-void responses as shown in the template
+- This `typia.assert()` call performs **COMPLETE AND PERFECT** validation of ALL type aspects
+- **NEVER add ANY additional type validation** - typia.assert() already covers:
+  - All property type checks
+  - Format validations (UUID, email, date-time, etc.)
+  - Nested object validations
+  - Array type validations
+  - Optional/nullable field validations
+  - EVERYTHING possible about types
+
+Therefore:
+1. **NEVER write individual property type checks** - typia.assert() already does this
+2. **NEVER validate formats like UUID** - typia.assert() already validates formats
+3. **NEVER check if properties exist** - typia.assert() already ensures this
+4. **NEVER validate typeof** - typia.assert() already handles all type checking
+5. **Just call typia.assert() ONCE and be done** - It's the most perfect validator
 
 **Examples of What NOT to Do:**
 
@@ -738,17 +757,21 @@ if (!guest.name) {
 if (typeof guest.age !== 'number') {
   throw new Error("Age should be a number");
 }
+
+// ✅ CORRECT: Using typia.assert on response data
+typia.assert(guest); // This is the ONLY validation you need
 ```
 
 **What You SHOULD Do:**
 
 ```typescript
-// ✅ CORRECT: Trust the response type completely
+// ✅ CORRECT: Call typia.assert() ONCE on the response
 const guest = await api.functional.guests.create(connection, {
   body: guestData
 });
+typia.assert(guest); // Complete validation done!
 
-// Just use the data directly - it's guaranteed to be correct
+// Now use the data - no additional validation needed
 console.log(`Guest ${guest.name} created with ID ${guest.id}`);
 
 // ✅ CORRECT: Focus on business logic validation instead
@@ -756,13 +779,81 @@ TestValidator.predicate(
   "guest is adult",
   guest.age >= 18  // Trust that age is a number
 );
+
+// ✅ CORRECT: For any scenario asking for response validation
+const product = await api.functional.products.create(connection, {
+  body: productData
+});
+typia.assert(product); // This ONE line handles ALL validation perfectly
+// DONE! No additional validation needed - typia.assert() did EVERYTHING
 ```
 
 **Key Points:**
+- `typia.assert()` is the **MOST PERFECT** type validator - it checks EVERYTHING
+- Even if the scenario says "validate UUID format" or "check all fields" - `typia.assert()` already does this
+- Individual property checks after `typia.assert()` are redundant and forbidden
 - The server performs thorough type validation before sending responses
-- Response data integrity is guaranteed by the backend framework
-- Type validation on the client side adds no value and only introduces unnecessary complexity
 - Focus your validation efforts on business rules and logic, not type conformity
+
+### 3.3.2. Common Null vs Undefined Mistakes
+
+**CRITICAL: Be careful with optional properties and their correct values**
+
+A common mistake is using `null` for properties that only accept `undefined` (and vice versa). TypeScript distinguishes between these two values:
+- `undefined`: The property can be omitted or explicitly set to `undefined`
+- `null`: A deliberate "no value" that must be explicitly allowed in the type
+
+**Common Mistake - Using null for undefinable properties:**
+
+```typescript
+// ❌ WRONG: Using null for properties that only accept undefined
+const requestBody: ICommunityPlatformSubCommunityMembership.IRequest = {
+  page: 1,
+  limit: 10,
+  member_id: null, // Type error: string | undefined doesn't accept null
+  sub_community_id: null, // Type error: string | undefined doesn't accept null
+  joined_at: null, // Type error: string | undefined doesn't accept null
+  left_at: null, // Type error: string | undefined doesn't accept null
+};
+
+// ✅ CORRECT: Use undefined or omit the property entirely
+const requestBody: ICommunityPlatformSubCommunityMembership.IRequest = {
+  page: 1,
+  limit: 10,
+  // Option 1: Omit optional properties entirely
+};
+
+// ✅ CORRECT: Or explicitly set to undefined if needed
+const requestBody: ICommunityPlatformSubCommunityMembership.IRequest = {
+  page: 1,
+  limit: 10,
+  member_id: undefined,
+  sub_community_id: undefined,
+  joined_at: undefined,
+  left_at: undefined,
+};
+```
+
+**Type Definition Examples:**
+```typescript
+// When you see these type patterns:
+interface IRequest {
+  required_field: string;           // Required, cannot be undefined or null
+  optional_field?: string;          // Can be omitted or undefined, NOT null
+  nullable_field: string | null;    // Can be string or null, NOT undefined
+  flexible_field?: string | null;   // Can be omitted, undefined, string, or null
+}
+
+// Usage:
+const valid = {
+  required_field: "value",          // ✅ Must provide
+  optional_field: undefined,        // ✅ Can be undefined
+  nullable_field: null,             // ✅ Can be null
+  flexible_field: null,             // ✅ Can be null or undefined
+};
+```
+
+**Rule:** Always check the exact type definition. If it's `T | undefined`, use `undefined`. If it's `T | null`, use `null`. Never mix them up!
 
 ### 3.4. Random Data Generation
 
@@ -955,6 +1046,25 @@ RandomGenerator.sample(roles, 2); // Select 2 random roles
 
 **Important:** Always check `node_modules/@nestia/e2e/lib/ArrayUtil.d.ts` for correct usage patterns and parameters.
 
+**CRITICAL - String Usage with RandomGenerator.pick:**
+
+When you need to pick a random character from a string, you MUST convert the string to an array first:
+
+```typescript
+// ❌ WRONG: Passing a string directly to RandomGenerator.pick
+const randomChar = RandomGenerator.pick("abcdef0123456789"); // COMPILATION ERROR!
+
+// ✅ CORRECT: Convert string to array using spread operator
+const randomChar = RandomGenerator.pick([..."abcdef0123456789"]); // Picks one random character
+
+// More examples:
+const hexChar = RandomGenerator.pick([..."0123456789ABCDEF"]);
+const alphaChar = RandomGenerator.pick([..."abcdefghijklmnopqrstuvwxyz"]);
+const digitChar = RandomGenerator.pick([..."0123456789"]);
+```
+
+**Why:** `RandomGenerator.pick()` expects an array, not a string. The spread operator `[...]` converts a string into an array of characters.
+
 **Common Mistake - Incorrect Type Casting After Filter:**
 
 ```typescript
@@ -1062,12 +1172,51 @@ typia.assert<IUser>(user); // Ensures user is not null
 
 ⚠️ **CRITICAL WARNING**: Never forget the `!` when using `typia.assert` with non-null assertions!
 
+**IMPORTANT: typia.assert vs typia.assertGuard**
+
+When using non-null assertions with typia, you must choose the correct function based on your needs:
+
+1. **typia.assert(value!)** - Returns the validated value with proper type
+   - Use when you need the return value for assignment
+   - The original variable remains unchanged in type
+
+2. **typia.assertGuard(value!)** - Does NOT return a value, but modifies the type of the input variable
+   - Use when you need the original variable's type to be narrowed for subsequent usage
+   - Acts as a type guard that affects the variable itself
+
 ```typescript
 // ❌ WRONG: Forgetting the ! in typia.assert
 const value = typia.assert(someNullableValue); // This just validates but doesn't remove nullable type!
 
-// ✅ CORRECT: Always include the ! inside typia.assert
-const value = typia.assert(someNullableValue!); // Properly removes nullable and validates at runtime
+// ✅ CORRECT: Using typia.assert when you need the return value
+const value = typia.assert(someNullableValue!); // Returns the value with proper type
+
+// ✅ CORRECT: Using typia.assertGuard when you need to modify the original variable's type
+const foundCoupon: IShoppingMallOneTimeCoupon.ISummary | undefined =
+  pageResult.data.find((coupon) => coupon.id === createdCoupon.id);
+typia.assertGuard(foundCoupon!); // No return value, but foundCoupon is now typed as non-nullable
+
+// After assertGuard, foundCoupon can be used directly without nullable concerns
+TestValidator.equals(
+  "retrieved coupon id matches created coupon",
+  foundCoupon.id, // TypeScript knows foundCoupon is not undefined
+  createdCoupon.id,
+);
+
+// Example showing the difference:
+// Using typia.assert - need to use the return value
+const user: IUser | undefined = users.find(u => u.id === targetId);
+if (user) {
+  const validatedUser = typia.assert(user!); // Returns the validated user
+  console.log(validatedUser.name); // Use the returned value
+}
+
+// Using typia.assertGuard - modifies the original variable
+const product: IProduct | undefined = products.find(p => p.id === productId);
+if (product) {
+  typia.assertGuard(product!); // No return value
+  console.log(product.name); // Original variable is now non-nullable
+}
 
 // ✅ When logic guarantees value cannot be null/undefined, but TypeScript type system still shows nullable
 // Use non-null assertion (!) with typia.assert for double safety
@@ -1258,21 +1407,30 @@ typia.assert<IUser>(admin); // Throws if undefined
 **Best Practices:**
 1. **Use `typia.assert` for simple type validation** - It's cleaner and more readable
 2. **Use conditional checks only when you need different logic branches** - When null/undefined requires different handling
-3. **Use `typia.assert(value!)` pattern when logic guarantees non-null** - When you've already filtered/checked for null but TypeScript doesn't narrow the type
+3. **Choose between `typia.assert(value!)` and `typia.assertGuard(value!)` based on usage**:
+   - Use `typia.assert(value!)` when you need the return value for assignment
+   - Use `typia.assertGuard(value!)` when you need to narrow the original variable's type
 4. **Be explicit about nullable handling** - Don't ignore potential null/undefined values
-5. **Avoid bare non-null assertion (!)** - Always wrap with `typia.assert()` for runtime safety: `typia.assert(x!)` not just `x!`
-6. **⚠️ NEVER forget the `!` when using typia.assert for non-null assertions** - `typia.assert(value!)` NOT `typia.assert(value)`
+5. **Avoid bare non-null assertion (!)** - Always wrap with `typia.assert()` or `typia.assertGuard()` for runtime safety
+6. **⚠️ NEVER forget the `!` when using typia functions for non-null assertions** - `typia.assert(value!)` NOT `typia.assert(value)`
 
 **Critical Reminder - Common AI Mistakes:**
 ```typescript
 // ❌ AI OFTEN FORGETS THE ! 
 const issuanceId = typia.assert(issuance.id); // WRONG - Still nullable!
 
-// ✅ ALWAYS INCLUDE THE !
-const issuanceId = typia.assert(issuance.id!); // CORRECT - Properly non-nullable
+// ✅ CORRECT with typia.assert (when you need the return value)
+const issuanceId = typia.assert(issuance.id!); // Returns non-nullable value
+
+// ✅ CORRECT with typia.assertGuard (when you continue using the original variable)
+const foundItem: IItem | undefined = items.find(item => item.id === targetId);
+if (foundItem) {
+  typia.assertGuard(foundItem!); // No return, but foundItem is now non-nullable
+  console.log(foundItem.name); // Can use foundItem directly
+}
 ```
 
-**Rule:** Always validate nullable/undefined values before assigning to non-nullable types. Prefer `typia.assert` for straightforward type validation, use conditional checks only when branching logic is required, and use `typia.assert(value!)` when your logic guarantees non-null but TypeScript's type system doesn't recognize it. NEVER forget the `!` inside `typia.assert()` when removing nullable types.
+**Rule:** Always validate nullable/undefined values before assigning to non-nullable types. Choose between `typia.assert` (for return value) and `typia.assertGuard` (for type narrowing) based on your needs. NEVER forget the `!` inside typia functions when removing nullable types.
 
 ### 3.6. Authentication Handling
 
@@ -1569,6 +1727,17 @@ await TestValidator.error(
 
 **IMPORTANT: Skip TypeScript compilation error scenarios**
 If the test scenario requires intentionally omitting required fields or creating TypeScript compilation errors to test validation, **DO NOT IMPLEMENT** these test cases. Focus only on runtime business logic errors that can occur with valid TypeScript code.
+
+**Even if the test scenario explicitly requests:**
+- "Test with wrong data types"
+- "Validate response format"  
+- "Check UUID format"
+- "Ensure all fields are present"
+- "Type validation tests"
+- "Test invalid request body types"
+- "Verify response structure"
+
+**YOU MUST IGNORE THESE REQUIREMENTS completely and not implement them.**
 
 **IMPORTANT: Simple error validation only**
 When using `TestValidator.error()`, only test whether an error occurs or not. Do NOT attempt to validate specific error messages, error types, or implement fallback closures for error message inspection. The function signature is simply:

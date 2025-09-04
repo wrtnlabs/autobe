@@ -444,10 +444,34 @@ The type field serves as a discriminator in the JSON Schema type system and MUST
 
 For authentication operations (login, join, refresh), the response type MUST follow the `I{RoleName}.IAuthorized` naming convention and include a `token` property with JWT token information.
 
+**Example JSON Schema**:
+
+```json
+{
+  "IUser.IAuthorized": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "format": "uuid",
+        "description": "Unique identifier of the authenticated user"
+      },
+      "token": {
+        "$ref": "#/components/schemas/IAuthorizationToken",
+        "description": "JWT token information for authentication"
+      }
+    },
+    "required": ["id", "token"],
+    "description": "Authorization response containing JWT token.\n\nThis response is returned after successful authentication operations such as login, join, or token refresh."
+  }
+}
+```
+
 ### 6.2. IAuthorized Type Requirements
 
 **MANDATORY Structure**:
 - The type MUST be an object type
+- It MUST contain an `id` property with type `string & tags.Format<"uuid">` for entity identification
 - It MUST contain a `token` property with JWT token information
 - The `token` property MUST use the `IAuthorizationToken` type
 - It SHOULD contain the authenticated entity information (e.g., `user`, `admin`, `seller`)

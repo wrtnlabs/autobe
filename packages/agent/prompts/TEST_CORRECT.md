@@ -537,6 +537,97 @@ If the original code attempts to implement functionality that cannot be realized
 4. **Maintain test flow**: Ensure the remaining code still forms a coherent test workflow
 5. **Focus on feasible functionality**: Preserve and fix only the parts that can be properly implemented
 
+### 5.6.1. MANDATORY Code Deletion - Type Validation Scenarios
+
+**CRITICAL: The following test patterns MUST BE COMPLETELY DELETED, not fixed:**
+
+1. **Intentionally Wrong Type Request Body Tests**
+   ```typescript
+   // ❌ DELETE ENTIRELY: Tests that intentionally send wrong types
+   await TestValidator.error("test wrong type", async () => {
+     await api.functional.users.create(connection, {
+       body: {
+         age: "not a number" as any, // DELETE THIS ENTIRE TEST
+         name: 123 as any           // DELETE THIS ENTIRE TEST
+       }
+     });
+   });
+   
+   // ❌ DELETE ENTIRELY: Tests that omit required fields intentionally
+   await TestValidator.error("test missing field", async () => {
+     await api.functional.products.create(connection, {
+       body: {
+         // price intentionally omitted - DELETE THIS ENTIRE TEST
+         name: "Product"
+       } as any
+     });
+   });
+   ```
+
+2. **Response Data Type Validation Tests**
+   ```typescript
+   // ❌ DELETE ENTIRELY: Any code that validates response type conformity
+   const user = await api.functional.users.create(connection, { body: userData });
+   typia.assert(user); // This is correct and required
+   
+   // DELETE ALL OF THESE:
+   TestValidator.predicate(
+     "user ID is valid UUID",
+     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(user.id)
+   );
+   
+   if (typeof user.age !== 'number') {
+     throw new Error("Age should be number"); // DELETE
+   }
+   
+   if (!user.name) {
+     throw new Error("Name is missing"); // DELETE
+   }
+   
+   // ❌ DELETE ENTIRELY: Any additional validation after typia.assert
+   const product = await api.functional.products.get(connection, { id });
+   typia.assert(product); // This is correct and required
+   
+   // ✅ CORRECT: typia.assert on response
+   const order = await api.functional.orders.create(connection, { body: orderData });
+   typia.assert(order); // This is correct and required
+   
+   // ❌ DELETE all of these - typia.assert() already validated EVERYTHING:
+   if (!order.id || typeof order.id !== 'string') {
+     throw new Error("Invalid order ID"); // DELETE
+   }
+   TestValidator.predicate(
+     "order ID is UUID", 
+     /^[0-9a-f]{8}-[0-9a-f]{4}/.test(order.id) // DELETE
+   );
+   if (order.items.length === 0) {
+     throw new Error("No items"); // DELETE - This is type validation, not business logic
+   }
+   ```
+
+**Action Required:**
+- When you see these patterns, DELETE THE ENTIRE TEST CASE
+- Do not try to fix or modify them
+- Do not replace them with different validation
+- Simply remove the code completely
+
+**Even if the test scenario explicitly asks for:**
+- "Test with wrong data types"
+- "Validate response format"  
+- "Check UUID format"
+- "Ensure all fields are present"
+- "Type validation tests"
+- "Validate each property individually"
+- "Check response structure"
+
+**YOU MUST IGNORE THESE REQUIREMENTS and not implement them**
+
+**CRITICAL Understanding about typia.assert():**
+- When you call `typia.assert(response)`, it performs **COMPLETE AND PERFECT** validation
+- It validates ALL aspects: types, formats, nested objects, arrays, optional fields - EVERYTHING
+- Any additional validation after `typia.assert()` is redundant and must be deleted
+- If a scenario asks for response validation, `typia.assert()` alone is sufficient - add NOTHING else
+
 ### 5.7. Property Access Errors - Non-existent and Missing Required Properties
 
 **Common TypeScript compilation errors related to object properties:**
@@ -638,6 +729,83 @@ const x: string & tags.Format<"uuid"> = typia.random<string & tags.Format<"uuid"
 4. **Verify compilation**: Check that the fix resolves the compilation error
 
 **Rule:** Always use the pattern `typia.random<TypeDefinition>()` with explicit generic type arguments, regardless of variable type annotations.
+
+### 5.8.1. Null vs Undefined Type Mismatches
+
+**Common TypeScript compilation errors related to null and undefined:**
+
+When you encounter errors about `null` not being assignable to `undefined` types (or vice versa), you need to understand the difference:
+- `T | undefined`: Property can be omitted or set to `undefined`, but NOT `null`
+- `T | null`: Property can be the type or `null`, but NOT `undefined`
+- `T | null | undefined`: Property accepts both `null` and `undefined`
+
+**Error Pattern 1: Null assigned to undefinable property**
+```typescript
+// COMPILATION ERROR:
+// Type 'null' is not assignable to type '(string & Format<"date-time">) | undefined'
+const requestBody: ICommunityPlatformSubCommunityMembership.IRequest = {
+  page: 1,
+  limit: 10,
+  member_id: null,        // Error: string | undefined doesn't accept null
+  sub_community_id: null, // Error: string | undefined doesn't accept null
+  joined_at: null,        // Error: (string & Format<"date-time">) | undefined doesn't accept null
+  left_at: null,          // Error: (string & Format<"date-time">) | undefined doesn't accept null
+};
+
+// FIX: Use undefined instead of null, or omit the properties
+const requestBody: ICommunityPlatformSubCommunityMembership.IRequest = {
+  page: 1,
+  limit: 10,
+  // Option 1: Omit optional properties entirely
+};
+
+// FIX: Or explicitly set to undefined
+const requestBody: ICommunityPlatformSubCommunityMembership.IRequest = {
+  page: 1,
+  limit: 10,
+  member_id: undefined,
+  sub_community_id: undefined,
+  joined_at: undefined,
+  left_at: undefined,
+};
+```
+
+**Error Pattern 2: Undefined assigned to nullable property**
+```typescript
+// COMPILATION ERROR:
+// Type 'undefined' is not assignable to type 'string | null'
+const updateData: IUser.IUpdate = {
+  name: "John Doe",
+  deletedAt: undefined,  // Error if deletedAt is string | null (not undefined)
+};
+
+// FIX: Use null instead of undefined
+const updateData: IUser.IUpdate = {
+  name: "John Doe",
+  deletedAt: null,  // Correct for nullable fields
+};
+```
+
+**Solution approach:**
+1. **Check the exact type definition**: Look at whether the type includes `| undefined`, `| null`, or both
+2. **For `T | undefined`**: Use `undefined` or omit the property
+3. **For `T | null`**: Use `null` for empty values
+4. **For `T | null | undefined`**: Either `null` or `undefined` works
+
+**Common UUID error pattern:**
+```typescript
+// Error: Type 'null' is not assignable to type '(string & Format<"uuid">) | undefined'
+filter: {
+  user_id: null,  // Wrong if user_id is string | undefined
+}
+
+// FIX:
+filter: {
+  user_id: undefined,  // Or omit entirely
+}
+```
+
+**Rule:** Always match the exact nullable/undefinable pattern in the type definition. Never use `null` for `T | undefined` types, and never use `undefined` for `T | null` types.
 
 ### 5.9. 🚨 CRITICAL: Promises Must Be Awaited - ZERO TOLERANCE 🚨
 
@@ -1231,11 +1399,28 @@ if (apiResponse === null || apiResponse === undefined) {
 ```
 
 **Solution 2: Type Assertion with typia (RECOMMENDED)**
+
+**IMPORTANT: typia.assert vs typia.assertGuard**
+
+When using non-null assertions with typia, choose the correct function:
+
+1. **typia.assert(value!)** - Returns the validated value with proper type
+   - Use when you need the return value for assignment
+   - Original variable remains unchanged in type
+
+2. **typia.assertGuard(value!)** - Does NOT return a value, but modifies the type of the input variable
+   - Use when you need the original variable's type to be narrowed
+   - Acts as a type guard that affects the variable itself
+
 ```typescript
-// FIX: Use typia.assert for direct type validation
+// FIX Option 1: Use typia.assert when you need the return value
 const apiResponse: string | null | undefined = await someApiCall();
-typia.assert<string>(apiResponse); // Throws if not string
-const processedValue: string = apiResponse; // Now safe
+const processedValue: string = typia.assert(apiResponse!); // Returns validated value
+
+// FIX Option 2: Use typia.assertGuard to narrow the original variable
+const apiResponse: string | null | undefined = await someApiCall();
+typia.assertGuard(apiResponse!); // No return, but apiResponse is now non-nullable
+const processedValue: string = apiResponse; // Now safe to use directly
 ```
 
 **Complex Nested Nullable Properties:**
@@ -1251,7 +1436,7 @@ if (result.data && result.data.items) {
 }
 
 // FIX 2: Type assertion (cleaner)
-typia.assert<{ data: { items: string[] } }>(result);
+typia.assertGuard<{ data: { items: string[] } }>(result);
 const items: string[] = result.data.items; // Safe
 ```
 
@@ -1330,12 +1515,28 @@ typia.assert<IUser>(admin); // Throws if undefined
 
 **Best Practices:**
 1. **Always handle nullable/undefined explicitly** - Never ignore potential null values
-2. **Prefer typia.assert for simple validation** - It's concise and clear
+2. **Choose the right typia function**:
+   - Use `typia.assert(value!)` when you need the return value
+   - Use `typia.assertGuard(value!)` when narrowing the original variable
 3. **Use conditional checks only when branching is needed** - When null requires different logic
-4. **Avoid non-null assertion (!)** - `value!` bypasses safety and can cause runtime errors
+4. **Avoid bare non-null assertion (!)** - Always wrap with typia functions for runtime safety
 5. **Consider the business logic** - Sometimes null/undefined indicates a real error condition
 
-**Rule:** TypeScript's strict null checks prevent runtime errors. Always validate nullable values before assignment. Use `typia.assert` for straightforward validation, conditional checks for branching logic.
+**Examples of Correct Usage:**
+```typescript
+// Example 1: Using typia.assert for assignment
+const foundItem: IItem | undefined = items.find(i => i.id === searchId);
+const item: IItem = typia.assert(foundItem!); // Returns validated value
+console.log(item.name);
+
+// Example 2: Using typia.assertGuard for narrowing
+const foundCoupon: ICoupon | undefined = coupons.find(c => c.code === code);
+typia.assertGuard(foundCoupon!); // No return, narrows foundCoupon type
+// foundCoupon is now typed as ICoupon (not ICoupon | undefined)
+TestValidator.equals("coupon code", foundCoupon.code, expectedCode);
+```
+
+**Rule:** TypeScript's strict null checks prevent runtime errors. Always validate nullable values before assignment. Use `typia.assert` for return values, `typia.assertGuard` for type narrowing, and conditional checks for branching logic.
 
 ## 6. Correction Requirements
 
@@ -1382,6 +1583,7 @@ Your corrected code must:
 - Verify the corrected code maintains test coherence
 - **FINAL CHECK**: Scan entire code for missing `await` keywords
 
-**REMEMBER:** Missing `await` keywords will cause immediate compilation failure. This is not negotiable - the TypeScript compiler enforces this strictly.
+**TEST_WRITE Guidelines Compliance:**
+Ensure all corrections follow the guidelines provided in TEST_WRITE prompt.
 
 Generate corrected code that achieves successful compilation while maintaining all original requirements and functionality.

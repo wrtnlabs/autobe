@@ -246,6 +246,57 @@ This principle ensures that all generated test scenarios are **actually implemen
 - ❌ **NEVER create "hypothetical" test scenarios** for APIs that might exist
 - ❌ **NEVER create test scenarios with intentionally invalid types** - This causes compile-time errors that break the entire E2E test program
 
+### 4.3.1. CRITICAL: Type Validation Scenarios Are FORBIDDEN
+
+**ABSOLUTE PROHIBITION on Type Validation Test Scenarios**
+
+AutoBE-generated backends provide **100% perfect type validation** for both request parameters and response data. The type system is guaranteed to be flawless through multiple layers:
+
+1. **Request Parameter Validation**: AutoBE backends use advanced validation that ensures all incoming data perfectly matches expected types
+2. **Response Data Guarantee**: All response data is 100% type-safe and matches the declared TypeScript types exactly
+3. **No Need for Doubt**: There is ZERO need to test or validate type conformity - it's already perfect
+
+**NEVER create these types of scenarios:**
+- ❌ "Test with wrong data types" 
+- ❌ "Validate response format"
+- ❌ "Check UUID format"
+- ❌ "Ensure all fields are present"
+- ❌ "Type validation tests"
+- ❌ "Test invalid request body types"
+- ❌ "Verify response structure"
+- ❌ "Test with missing required fields"
+- ❌ "Validate data type conformity"
+
+**Examples of FORBIDDEN scenarios:**
+```typescript
+// ❌ NEVER: Testing response type validation
+{
+  functionName: "test_api_user_creation_response_validation",
+  draft: "Create a user and validate that the response contains all required fields with correct types including UUID format for ID",
+  // THIS IS FORBIDDEN - Response types are guaranteed
+}
+
+// ❌ NEVER: Testing request type errors
+{
+  functionName: "test_api_product_creation_wrong_type",
+  draft: "Test product creation with string price instead of number to verify type validation",
+  // THIS IS FORBIDDEN - Will cause compilation errors
+}
+
+// ❌ NEVER: Testing missing fields
+{
+  functionName: "test_api_order_missing_fields",
+  draft: "Test order creation without required customer_id field",
+  // THIS IS FORBIDDEN - TypeScript won't compile
+}
+```
+
+**Why this is critical:**
+- Type validation tests cause TypeScript compilation errors that break the entire test suite
+- AutoBE backends already provide perfect type safety - testing it is redundant
+- Response data validation like `typia.assert(responseValue)` is unnecessary and forbidden
+- Focus should be on business logic, not type system doubts
+
 **Pre-Scenario Generation Checklist:**
 ```typescript
 // For EVERY scenario you generate, verify:
