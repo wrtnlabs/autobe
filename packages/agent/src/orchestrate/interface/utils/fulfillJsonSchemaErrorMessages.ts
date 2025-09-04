@@ -48,7 +48,7 @@ export const fulfillJsonSchemaErrorMessages = (
         {
           oneOf: [
         ${e.value.enum.map((t) => `    { "const": ${JSON.stringify(t)} },`).join("\n")}
-          ],,${"description" in e.value ? `\n  description: ${JSON.stringify(e.value.description)},` : ""}
+          ],${"description" in e.value ? `\n  description: ${JSON.stringify(e.value.description)},` : ""}
         }
         \`\`\`
       `;
@@ -71,7 +71,7 @@ export const fulfillJsonSchemaErrorMessages = (
         which lists up the every required property names.
 
         Please fill it with the required fields. If you think that there is
-        not any required fields at all, you still to have to fill the 
+        not any required fields at all, you still have to fill the 
         "required" property even though it becomes an empty array.
       `;
 };
