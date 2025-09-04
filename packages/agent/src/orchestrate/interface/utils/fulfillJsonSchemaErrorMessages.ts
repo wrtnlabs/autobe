@@ -48,7 +48,7 @@ export const fulfillJsonSchemaErrorMessages = (
         {
           oneOf: [
         ${e.value.enum.map((t) => `    { "const": ${JSON.stringify(t)} },`).join("\n")}
-          ],,${"description" in e.value ? `\n  description: ${JSON.stringify(e.value.description)},` : ""}
+          ],${"description" in e.value ? `\n  description: ${JSON.stringify(e.value.description)},` : ""}
         }
         \`\`\`
       `;
