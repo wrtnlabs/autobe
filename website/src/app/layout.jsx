@@ -40,11 +40,11 @@ export default async function RootLayout(props) {
         // }}
       >
         {/* ICONS */}
-        <link rel="manifest" href="/autobe/favicon/site.webmanifest" />
+        <link rel="manifest" href="/favicon/site.webmanifest" />
         <link
           rel="apple-touch-icon"
           sizes="180x180"
-          href="/autobe/favicon/apple-touch-icon.png"
+          href="/favicon/apple-touch-icon.png"
         />
         {[16, 32].map((size) => (
           <link
@@ -52,14 +52,14 @@ export default async function RootLayout(props) {
             rel="icon"
             type="image/png"
             sizes={`${size}x${size}`}
-            href={`/autobe/favicon/favicon-${size}x${size}.png`}
+            href={`/favicon/favicon-${size}x${size}.png`}
           />
         ))}
         {/* OG */}
         <meta name="og:type" content="object" />
         <meta name="og:site_name" content="AutoBE Guide Documents" />
-        <meta name="og:url" content="https://wrtnlabs.io/autobe" />
-        <meta name="og:image" content="https://wrtnlabs.io/autobe/og.jpg" />
+        <meta name="og:url" content="https://autobe.dev" />
+        <meta name="og:image" content="https://autobe.dev/og.jpg" />
         <meta name="og:title" content="AutoBE Guide Documents" />
         <meta
           name="og:description"
@@ -70,7 +70,7 @@ export default async function RootLayout(props) {
         <meta name="twitter:site" content="@SamchonGithub" />
         <meta
           name="twitter:image"
-          content="https://wrtnlabs.io/autobe/og.jpg"
+          content="https://autobe.dev/og.jpg"
         />
         <meta name="twitter:title" content="AutoBE Guide Documents" />
         <meta

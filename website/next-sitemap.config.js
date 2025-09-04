@@ -1,6 +1,6 @@
 /** @type {import("next-sitemap").IConfig} */
 module.exports = {
-  siteUrl: "https://wrtnlabs.io/autobe",
+  siteUrl: "https://autobe.dev",
   generateRobotsTxt: true,
   outDir: "./out",
 };

@@ -27,7 +27,7 @@ end
 [![NPM Version](https://img.shields.io/npm/v/@autobe/agent.svg)](https://www.npmjs.com/package/@autobe/agent)
 [![NPM Downloads](https://img.shields.io/npm/dm/@autobe/agent.svg)](https://www.npmjs.com/package/@autobe/agent)
 [![Build Status](https://github.com/wrtnlabs/autobe/workflows/build/badge.svg)](https://github.com/wrtnlabs/autobe/actions?query=workflow%3Abuild)
-[![Guide Documents](https://img.shields.io/badge/Guide-Documents-forestgreen)](https://wrtnlabs.io/autobe/docs/)
+[![Guide Documents](https://img.shields.io/badge/Guide-Documents-forestgreen)](https://autobe.dev/docs/)
 [![Discord Badge](https://dcbadge.limes.pink/api/server/https://discord.gg/aMhRmzkqCx?style=flat)](https://discord.gg/aMhRmzkqCx)
 
 [![Fund Raising News](https://wrtnlabs.io/agentica/images/badges/fund-raising-news-202503.svg)](https://www.bloomberg.com/news/videos/2025-03-31/wtrn-on-series-b-funding-growth-strategy-video)
@@ -85,42 +85,42 @@ pnpm run playground
 
 ## Documentation Resources
 
-Find comprehensive resources at our [official website](https://wrtnlabs.io/autobe).
+Find comprehensive resources at our [official website](https://autobe.dev).
 
 ### 🏠 Home
 
-- 🙋🏻‍♂️ [Introduction](https://wrtnlabs.io/autobe/docs)
-- 📦 [Setup](https://wrtnlabs.io/autobe/docs/setup)
+- 🙋🏻‍♂️ [Introduction](https://autobe.dev/docs)
+- 📦 [Setup](https://autobe.dev/docs/setup)
 - 🔍 Concepts
-  - [Waterfall Model](https://wrtnlabs.io/autobe/docs/concepts/waterfall)
-  - [Compiler Strategy](https://wrtnlabs.io/autobe/docs/concepts/compiler)
-  - [AI Function Calling](https://wrtnlabs.io/autobe/docs/concepts/function-calling)
+  - [Waterfall Model](https://autobe.dev/docs/concepts/waterfall)
+  - [Compiler Strategy](https://autobe.dev/docs/concepts/compiler)
+  - [AI Function Calling](https://autobe.dev/docs/concepts/function-calling)
 
 ### 📖 Features
 
 - 🤖 Agent Library
-  - [Facade Controller](https://wrtnlabs.io/autobe/docs/agent/facade)
-  - [Configuration](https://wrtnlabs.io/autobe/docs/agent/config)
-  - [Event Handling](https://wrtnlabs.io/autobe/docs/agent/event)
-  - [Prompt Histories](https://wrtnlabs.io/autobe/docs/agent/history)
+  - [Facade Controller](https://autobe.dev/docs/agent/facade)
+  - [Configuration](https://autobe.dev/docs/agent/config)
+  - [Event Handling](https://autobe.dev/docs/agent/event)
+  - [Prompt Histories](https://autobe.dev/docs/agent/history)
 - 📡 WebSocket Protocol
-  - [Remote Procedure Call](https://wrtnlabs.io/autobe/docs/websocket/rpc)
-  - [NestJS Server](https://wrtnlabs.io/autobe/docs/websocket/nestjs)
-  - [NodeJS Server](https://wrtnlabs.io/autobe/docs/websocket/nodejs)
-  - [Client Application](https://wrtnlabs.io/autobe/docs/websocket/client)
+  - [Remote Procedure Call](https://autobe.dev/docs/websocket/rpc)
+  - [NestJS Server](https://autobe.dev/docs/websocket/nestjs)
+  - [NodeJS Server](https://autobe.dev/docs/websocket/nodejs)
+  - [Client Application](https://autobe.dev/docs/websocket/client)
 - 🛠️ Backend Stack
-  - [TypeScript](https://wrtnlabs.io/autobe/docs/stack/typescript)
-  - [Prisma ORM](https://wrtnlabs.io/autobe/docs/stack/prisma)
-  - [NestJS Framework](https://wrtnlabs.io/autobe/docs/stack/nestjs)
+  - [TypeScript](https://autobe.dev/docs/stack/typescript)
+  - [Prisma ORM](https://autobe.dev/docs/stack/prisma)
+  - [NestJS Framework](https://autobe.dev/docs/stack/nestjs)
 
 ### 🔗 Appendix
 
-- 🌐 [No-Code Ecosystem](https://wrtnlabs.io/autobe/docs/ecosystem)
+- 🌐 [No-Code Ecosystem](https://autobe.dev/docs/ecosystem)
 - 📅 Roadmap
-  - [Alpha Release (completed)](https://wrtnlabs.io/autobe/docs/roadmap/alpha)
-  - [Beta Release (in progress)](https://wrtnlabs.io/autobe/docs/roadmap/beta)
-  - [v1.0 Official Release (planned)](https://wrtnlabs.io/autobe/docs/roadmap/v1.0)
-- 🔧 [API Documentation](https://wrtnlabs.io/autobe/api)
+  - [Alpha Release (completed)](https://autobe.dev/docs/roadmap/alpha)
+  - [Beta Release (in progress)](https://autobe.dev/docs/roadmap/beta)
+  - [v1.0 Official Release (planned)](https://autobe.dev/docs/roadmap/v1.0)
+- 🔧 [API Documentation](https://autobe.dev/api)
 
 ## No-Code Ecosystem
 

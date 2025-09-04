@@ -263,5 +263,5 @@ What improvements this brings
 - **License**: AGPL 3.0
 - **Maintainer**: Wrtn Technologies
 - **Repository**: https://github.com/wrtnlabs/autobe
-- **Documentation**: https://wrtnlabs.io/autobe/docs/
+- **Documentation**: https://autobe.dev/docs/
 - **Main Branch**: main

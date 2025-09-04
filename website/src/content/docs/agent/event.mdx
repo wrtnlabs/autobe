@@ -106,15 +106,15 @@ These events are essential for building interactive interfaces, logging conversa
 
 ```mermaid
 flowchart LR
-  start[<a href="/autobe/api/interfaces/_autobe_interface.AutoBeAnalyzeStartEvent.html" target="_blank"><u>Start</u></a>] --"draft"--> write[<a href="/autobe/api/interfaces/_autobe_interface.AutoBeAnalyzeWriteEvent.html" target="_blank"><u>Write</u></a>]
-  write --"amends"--> review[<a href="/autobe/api/interfaces/_autobe_interface.AutoBeAnalyzeReviewEvent.html" target="_blank"><u>Review</u></a>]
-  review --"finalize"--> complete[<a href="/autobe/api/interfaces/_autobe_interface.AutoBeAnalyzeCompleteEvent.html" target="_blank"><u>Complete</u></a>]
+  start[<a href="/api/interfaces/_autobe_interface.AutoBeAnalyzeStartEvent.html" target="_blank"><u>Start</u></a>] --"draft"--> write[<a href="/api/interfaces/_autobe_interface.AutoBeAnalyzeWriteEvent.html" target="_blank"><u>Write</u></a>]
+  write --"amends"--> review[<a href="/api/interfaces/_autobe_interface.AutoBeAnalyzeReviewEvent.html" target="_blank"><u>Review</u></a>]
+  review --"finalize"--> complete[<a href="/api/interfaces/_autobe_interface.AutoBeAnalyzeCompleteEvent.html" target="_blank"><u>Complete</u></a>]
   complete --"publishes" --> report(Report)
 ```
 
 Analyze events track the requirements analysis process, which follows a structured workflow from initial drafting to final completion. 
 
-The [`AutoBeAnalyzeStartEvent`](/autobe/api/interfaces/_autobe_interface.AutoBeAnalyzeStartEvent.html) event is fired when the agent begins drafting the requirements analysis. The [`AutoBeAnalyzeWriteEvent`](/autobe/api/interfaces/_autobe_interface.AutoBeAnalyzeWriteEvent.html) event occurs during the writing phase, followed by [`AutoBeAnalyzeReviewEvent`](/autobe/api/interfaces/_autobe_interface.AutoBeAnalyzeReviewEvent.html) during the review and amendment process. Finally, [`AutoBeAnalyzeCompleteEvent`](/autobe/api/interfaces/_autobe_interface.AutoBeAnalyzeCompleteEvent.html) is fired when the requirements analysis report is finalized.
+The [`AutoBeAnalyzeStartEvent`](/api/interfaces/_autobe_interface.AutoBeAnalyzeStartEvent.html) event is fired when the agent begins drafting the requirements analysis. The [`AutoBeAnalyzeWriteEvent`](/api/interfaces/_autobe_interface.AutoBeAnalyzeWriteEvent.html) event occurs during the writing phase, followed by [`AutoBeAnalyzeReviewEvent`](/api/interfaces/_autobe_interface.AutoBeAnalyzeReviewEvent.html) during the review and amendment process. Finally, [`AutoBeAnalyzeCompleteEvent`](/api/interfaces/_autobe_interface.AutoBeAnalyzeCompleteEvent.html) is fired when the requirements analysis report is finalized.
 
 [`AutoBeAnalyzeCompleteEvent`](/api/interfaces/_autobe_interface.AutoBeAnalyzeCompleteEvent.html) is generated when the `@autobe` agent and user have completed all discussions regarding requirements, and a report has been issued. The report consists of multiple markdown documents, which are stored in the `files` property.
 
@@ -163,11 +163,11 @@ The `step` property indicates which iteration of the requirements analysis repor
 
 ```mermaid
 flowchart LR
-  start[<a href="/autobe/api/interfaces/_autobe_interface.AutoBePrismaStartEvent.html" target="_blank"><u>Start</u></a>] --"lists"--> components[<a href="/autobe/api/interfaces/_autobe_interface.AutoBePrismaComponentsEvent.html" target="_blank"><u>Components</u></a>]
-  components --"designs"--> schemas[<a href="/autobe/api/interfaces/_autobe_interface.AutoBePrismaSchemasEvent.html" target="_blank"><u>Schemas</u></a>]
-  components --"compiles"--> validate[<a href="/autobe/api/interfaces/_autobe_interface.AutoBePrismaValidateEvent.html" target="_blank"><u>Validate</u></a>]
-  validate --"failure"--> correct[<a href="/autobe/api/interfaces/_autobe_interface.AutoBePrismaCorrectEvent.html" target="_blank"><u>Correct</u></a>]
-  validate --"success" --> complete[<a href="/autobe/api/interfaces/_autobe_interface.AutoBePrismaCompleteEvent.html" target="_blank"><u>Complete</u></a>]
+  start[<a href="/api/interfaces/_autobe_interface.AutoBePrismaStartEvent.html" target="_blank"><u>Start</u></a>] --"lists"--> components[<a href="/api/interfaces/_autobe_interface.AutoBePrismaComponentsEvent.html" target="_blank"><u>Components</u></a>]
+  components --"designs"--> schemas[<a href="/api/interfaces/_autobe_interface.AutoBePrismaSchemasEvent.html" target="_blank"><u>Schemas</u></a>]
+  components --"compiles"--> validate[<a href="/api/interfaces/_autobe_interface.AutoBePrismaValidateEvent.html" target="_blank"><u>Validate</u></a>]
+  validate --"failure"--> correct[<a href="/api/interfaces/_autobe_interface.AutoBePrismaCorrectEvent.html" target="_blank"><u>Correct</u></a>]
+  validate --"success" --> complete[<a href="/api/interfaces/_autobe_interface.AutoBePrismaCompleteEvent.html" target="_blank"><u>Complete</u></a>]
   complete --"generates"--> prisma(Prisma Schema)
 ```
 
@@ -221,12 +221,12 @@ The `step` property indicates which requirements analysis report iteration the d
 
 ```mermaid
 flowchart LR
-  start[<a href="/autobe/api/interfaces/_autobe_interface.AutoBeInterfaceStartEvent.html" target="_blank"><u>Start</u></a>] --"lists"--> endpoints[<a href="/autobe/api/interfaces/_autobe_interface.AutoBeInterfaceEndpointsEvent.html" target="_blank"><u>Endpoints</u></a>]
-  endpoints --"designs"--> operations[<a href="/autobe/api/interfaces/_autobe_interface.AutoBeInterfaceOperationsEvent.html" target="_blank"><u>Operations</u></a>]
-  endpoints --"schemas"--> components[<a href="/autobe/api/interfaces/_autobe_interface.AutoBeInterfaceSchemasEvent.html" target="_blank"><u>Components</u></a>]
-  endpoints --"fills"--> complement[<a href="/autobe/api/interfaces/_autobe_interface.AutoBeInterfaceComplementEvent.html" target="_blank"><u>Complement</u></a>]
-  endpoints --"compiles"--> complete[<a href="/autobe/api/interfaces/_autobe_interface.AutoBeInterfaceCompleteEvent.html" target="_blank"><u>Complete</u></a>]
-  complete --"composes"--> document(<a href="/autobe/api/interfaces/_autobe_interface.AutoBeOpenApi.IDocument.html" target="_blank"><u>OpenAPI</u></a>)
+  start[<a href="/api/interfaces/_autobe_interface.AutoBeInterfaceStartEvent.html" target="_blank"><u>Start</u></a>] --"lists"--> endpoints[<a href="/api/interfaces/_autobe_interface.AutoBeInterfaceEndpointsEvent.html" target="_blank"><u>Endpoints</u></a>]
+  endpoints --"designs"--> operations[<a href="/api/interfaces/_autobe_interface.AutoBeInterfaceOperationsEvent.html" target="_blank"><u>Operations</u></a>]
+  endpoints --"schemas"--> components[<a href="/api/interfaces/_autobe_interface.AutoBeInterfaceSchemasEvent.html" target="_blank"><u>Components</u></a>]
+  endpoints --"fills"--> complement[<a href="/api/interfaces/_autobe_interface.AutoBeInterfaceComplementEvent.html" target="_blank"><u>Complement</u></a>]
+  endpoints --"compiles"--> complete[<a href="/api/interfaces/_autobe_interface.AutoBeInterfaceCompleteEvent.html" target="_blank"><u>Complete</u></a>]
+  complete --"composes"--> document(<a href="/api/interfaces/_autobe_interface.AutoBeOpenApi.IDocument.html" target="_blank"><u>OpenAPI</u></a>)
   document --"generates"--> nestjs(NestJS Project)
 ```
 
@@ -271,11 +271,11 @@ The `step` property indicates which requirements analysis report iteration the A
 
 ```mermaid
 flowchart LR
-  start[<a href="/autobe/api/interfaces/_autobe_interface.AutoBeTestStartEvent.html" target="_blank"><u>Start</u></a>] --"plans"--> scenarios[<a href="/autobe/api/interfaces/_autobe_interface.AutoBeTestScenariosEvent.html" target="_blank"><u>Scenarios</u></a>]
-  scenarios --"coding"--> progress[<a href="/autobe/api/interfaces/_autobe_interface.AutoBeTestWriteEvent.html" target="_blank"><u>Progress</u></a>]
-  scenarios --"compiles"--> validate[<a href="/autobe/api/interfaces/_autobe_interface.AutoBeTestValidateEvent.html" target="_blank"><u>Validate</u></a>]
-  validate --"failure"--> correct[<a href="/autobe/api/interfaces/_autobe_interface.AutoBeTestCorrectEvent.html" target="_blank"><u>Correct</u></a>]
-  validate --"success"--> complete[<a href="/autobe/api/interfaces/_autobe_interface.AutoBeTestCompleteEvent.html" target="_blank"><u>Complete</u></a>]
+  start[<a href="/api/interfaces/_autobe_interface.AutoBeTestStartEvent.html" target="_blank"><u>Start</u></a>] --"plans"--> scenarios[<a href="/api/interfaces/_autobe_interface.AutoBeTestScenariosEvent.html" target="_blank"><u>Scenarios</u></a>]
+  scenarios --"coding"--> progress[<a href="/api/interfaces/_autobe_interface.AutoBeTestWriteEvent.html" target="_blank"><u>Progress</u></a>]
+  scenarios --"compiles"--> validate[<a href="/api/interfaces/_autobe_interface.AutoBeTestValidateEvent.html" target="_blank"><u>Validate</u></a>]
+  validate --"failure"--> correct[<a href="/api/interfaces/_autobe_interface.AutoBeTestCorrectEvent.html" target="_blank"><u>Correct</u></a>]
+  validate --"success"--> complete[<a href="/api/interfaces/_autobe_interface.AutoBeTestCompleteEvent.html" target="_blank"><u>Complete</u></a>]
 ```
 
 Test events monitor the e2e test code generation process.
