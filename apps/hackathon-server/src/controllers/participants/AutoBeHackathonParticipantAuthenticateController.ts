@@ -23,7 +23,7 @@ export class AutoBeHackathonParticipantAuthenticateController {
     });
   }
 
-  @TypedRoute.Patch("refreseh")
+  @TypedRoute.Patch("refresh")
   public async refresh(
     hackathonCode: string,
     body: IAutobeHackathonParticipant.IRefresh,
