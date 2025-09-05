@@ -247,6 +247,7 @@ Before generating ANY scenario, you MUST:
    - Identify required vs optional fields
    - Note any nested object structures or arrays
    - Understand enum values and constraints
+   - **CRITICAL: Distinguish between different DTO variants** - `IUser` vs `IUser.ISummary`, `IShoppingOrder` vs `IShoppingOrder.ICreate`, `IDiscussionArticle.ICreate` vs `IDiscussionArticle.IUpdate` are DIFFERENT types with different properties
 
 3. **Map API capabilities to business requirements**
    - Only design scenarios using actually available APIs
@@ -263,6 +264,7 @@ Before generating ANY scenario, you MUST:
 2. **Dependencies Verification**: ALL endpoints in `dependencies[]` MUST exist in either include or exclude lists
 3. **No Schema-Based Assumptions**: Backend implementation details do NOT guarantee corresponding API availability
 4. **DTO Property Accuracy**: Every property used in scenarios MUST exist in the actual DTO definitions
+5. **DTO Type Precision**: NEVER confuse different DTO variants (e.g., `IUser` vs `IUser.IAuthorized`) - each has distinct properties and usage contexts
 
 **ABSOLUTE PROHIBITIONS:**
 - ❌ **NEVER create scenarios for non-existent APIs**
@@ -271,6 +273,7 @@ Before generating ANY scenario, you MUST:
 - ❌ **NEVER create "hypothetical" test scenarios** for APIs that might exist
 - ❌ **NEVER create test scenarios with intentionally invalid types** - This causes compile-time errors that break the entire E2E test program
 - ❌ **NEVER assume DTO properties** - use only those explicitly defined in the provided specifications
+- ❌ **NEVER mix up DTO variants** - `IUser`, `IUser.ISummary`, `IUser.IAuthorized` are distinct types
 - ❌ **NEVER invent filtering, sorting, or search parameters** not present in the actual API definitions
 
 ### 4.3.1. CRITICAL: Type Validation Scenarios Are FORBIDDEN
@@ -498,6 +501,7 @@ Remember: Every scenario must be implementable with the exact APIs and DTOs prov
 * **Business Process Identification**: Identify multi-step business processes that span multiple API endpoints
 * **Validation Rule Extraction**: Extract all validation rules, constraints, and business logic from API specifications
 * **Authentication Requirements Analysis**: Review both the Operations array for `authorizationRole` and the "Included in Test Plan" section for available authentication APIs
+* **DTO Type Precision Analysis**: Carefully distinguish between different DTO variants (e.g., `IUser` vs `IUser.ISummary` vs `IUser.IAuthorized`) - each serves different purposes and has distinct properties for specific operations
 
 ### 5.2. Scenario Draft Structure
 
@@ -670,6 +674,7 @@ Before finalizing each scenario, verify:
 
 * [ ] **API Availability**: Does the primary API endpoint exist in the provided SDK?
 * [ ] **DTO Property Accuracy**: Are all request/response properties used in the scenario actually defined in the DTOs?
+* [ ] **DTO Type Distinction**: Have you correctly identified which DTO variant is used for each operation (e.g., ICreate for POST, IUpdate for PUT)?
 * [ ] **No Type Violations**: Will the scenario compile without TypeScript errors?
 * [ ] **No Additional Imports**: Can the scenario be implemented without requiring any new imports?
 * [ ] **Dependency Existence**: Do all dependency endpoints exist in the available APIs?

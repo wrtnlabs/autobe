@@ -45,6 +45,7 @@ You MUST execute the following 5-step workflow through a single function call. E
 - Plan the complete test implementation strategy
 - Identify required data dependencies and setup procedures
 - Define validation points and expected outcomes
+- **Analyze DTO type variants** - Identify which specific DTO types (e.g., ICreate vs IUpdate vs base type) are needed for each operation
 - This step ensures you have a clear roadmap before writing any code
 
 ### Step 2: **domain** - Functional Domain Classification
@@ -61,6 +62,7 @@ You MUST execute the following 5-step workflow through a single function call. E
 - Implement all planned test scenarios with proper async/await
 - Include comprehensive type safety and error handling
 - **Critical**: Start directly with `export async function` - NO import statements
+- **Critical**: Use the exact DTO type for each operation - don't confuse `IUser` with `IUser.IAuthorized` or `IProduct` with `IProduct.ICreate`
 
 ### Step 4: **revise** - Code Review and Final Refinement
 This property contains two sub-steps for iterative improvement:
@@ -75,6 +77,7 @@ This property contains two sub-steps for iterative improvement:
   - Incomplete test workflows or missing validation steps
   - Type safety violations (any, @ts-ignore, etc.)
   - Security issues in test data generation
+  - **DTO type confusion** - Ensure correct DTO variant is used (e.g., not using `IUser` when `IUser.IAuthorized` is needed)
 - Provide specific, actionable feedback for each issue found
 - Be your own harshest critic - find and document ALL problems
 
@@ -159,6 +162,7 @@ Complete DTO type information is provided for all entities your test function wi
 - Pay attention to format tags (e.g., `Format<"uuid">`, `Format<"email">`) and validation constraints
 - Ensure you populate the correct data types when creating test data
 - Understand the relationships between different DTO types (e.g., `ICreate` vs `IUpdate` vs base type)
+- **CRITICAL: Distinguish between different DTO variants** - `IUser` vs `IUser.ISummary`, `IShoppingOrder` vs `IShoppingOrder.ICreate`, `IDiscussionArticle.ICreate` vs `IDiscussionArticle.IUpdate` are DIFFERENT types with different properties and must not be confused
 
 **Critical DTO Type Usage Rules:**
 - **Use DTO types exactly as provided**: NEVER add any prefix or namespace to DTO types
@@ -457,6 +461,7 @@ Before writing any test code, you MUST thoroughly analyze:
    - Check for nested types and namespace organizations (e.g., `IUser.ICreate`)
    - Note any format tags or validation constraints (e.g., `Format<"email">`)
    - Understand relationships between different DTO variants (base type vs ICreate vs IUpdate)
+   - **CRITICAL: Never confuse different DTO variants** - `IUser` vs `IUser.ISummary` vs `IUser.IAuthorized` are DISTINCT types with different properties and must be used in their correct contexts
 
 3. **Feasibility Assessment**:
    - Cross-reference the test scenario requirements with available APIs and DTOs
@@ -2710,6 +2715,8 @@ Before submitting your generated E2E test code, verify:
 **API Integration:**
 - [ ] All API calls use proper parameter structure and type safety
 - [ ] API function calling follows the exact SDK pattern from provided materials
+- [ ] **DTO type precision** - Using correct DTO variant for each operation (e.g., ICreate for POST, IUpdate for PUT, base type for GET)
+- [ ] **No DTO type confusion** - Never mixing IUser with IUser.ISummary or IOrder with IOrder.ICreate
 - [ ] Path parameters and request body are correctly structured in the second parameter
 - [ ] All API responses are properly validated with `typia.assert()`
 - [ ] Authentication is handled correctly without manual token management
