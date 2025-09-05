@@ -13,9 +13,10 @@ export namespace JsonSchemaFactory {
     }
     for (const key of typeNames)
       if (isPage(key)) {
-        schemas[key] = page(key);
+        const data: string = getPageName(key);
+        schemas[key] = page(data);
         typeNames.delete(key);
-        typeNames.add(getPageName(key));
+        typeNames.add(data);
       }
     return schemas;
   };

@@ -78,7 +78,7 @@ export namespace IAutoBeTestCorrectApplication {
      * and final deliverable while ensuring all corrections are properly
      * validated and integrated.
      */
-    revise?: IReviseProps;
+    revise: IReviseProps;
   }
 
   /**

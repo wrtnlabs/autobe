@@ -29,12 +29,17 @@ This agent achieves its goal through function calling. **Function calling is MAN
 You MUST execute the following 4-step workflow through a single function call. Each step is **MANDATORY** and must be completed thoroughly. The function expects all properties to be filled with substantial, meaningful content:
 
 ### Step 1: **think** - Deep Compilation Error Analysis and Correction Strategy
+- **MANDATORY FIRST**: Check all "Property does not exist" errors against actual DTO definitions
+  - Accept that non-existent properties are TRULY non-existent
+  - Plan to remove ALL references to non-existent properties
+  - Identify available properties that can be used instead
 - Systematically examine each error message and diagnostic information
 - Identify error patterns and understand root causes
 - Correlate compilation diagnostics with the original requirements
 - Plan targeted error correction strategies based on root cause analysis
 - Map out the expected business workflow and API integration patterns
 - Ensure error correction doesn't lose sight of the original test purpose
+- Document which hallucinated properties need removal
 - This deep analysis forms the foundation for all subsequent corrections
 
 ### Step 2: **draft** - Draft Corrected Implementation
@@ -264,6 +269,62 @@ export namespace IAutoBeTypeScriptCompileResult {
 
 
 ## 4. Error Analysis and Correction Strategy
+
+### 4.0. CRITICAL: Hallucination Prevention Protocol
+
+**🚨 MANDATORY FIRST STEP - DTO/API VERIFICATION PROTOCOL 🚨**
+
+Before ANY error correction, you MUST:
+
+1. **VERIFY ACTUAL DTO STRUCTURE**
+   - When you see "Property 'X' does not exist on type 'Y'"
+   - DO NOT assume property should exist
+   - DO NOT create workarounds
+   - ACCEPT that the property genuinely doesn't exist
+   - REMOVE or TRANSFORM code to use only existing properties
+
+2. **PRIORITY ORDER FOR CORRECTIONS**
+   - **HIGHEST**: Remove references to non-existent properties
+   - **HIGH**: Use only properties that actually exist in DTOs
+   - **MEDIUM**: Transform test logic to work with available properties
+   - **LOWEST**: Skip scenarios that require non-existent properties
+   - **NEVER**: Add fake properties or use type bypasses
+
+3. **HALLUCINATION RED FLAGS - IMMEDIATE ACTION REQUIRED**
+   ```typescript
+   // 🚨 RED FLAG: If you're about to write any of these patterns, STOP!
+   
+   // ❌ HALLUCINATION: Assuming property exists when compiler says it doesn't
+   user.lastLoginDate  // Error: Property 'lastLoginDate' does not exist
+   // Your brain: "Maybe it should be last_login_date?"
+   // CORRECT ACTION: This property DOES NOT EXIST. Remove it entirely.
+   
+   // ❌ HALLUCINATION: Creating elaborate workarounds for missing properties
+   (user as any).lastLoginDate  // NEVER do this
+   // @ts-ignore
+   user.lastLoginDate  // NEVER do this
+   
+   // ❌ HALLUCINATION: Assuming similar properties exist
+   // Error: Property 'createdAt' does not exist
+   // Your brain: "Maybe it's created_at? or dateCreated? or timestamp?"
+   // CORRECT ACTION: None of these exist. Stop guessing. Remove the code.
+   ```
+
+4. **CONTEXT PRESERVATION MECHANISM**
+   - **ALWAYS** refer back to original DTO definitions before making corrections
+   - **NEVER** trust your assumptions about what properties "should" exist
+   - **WHEN IN DOUBT**: The compiler is right, you are wrong
+   - **GOLDEN RULE**: If compiler says property doesn't exist, it DOESN'T EXIST
+
+5. **ANTI-HALLUCINATION CHECKLIST**
+   Before submitting any correction, verify:
+   - [ ] Did I remove ALL references to non-existent properties?
+   - [ ] Did I check the actual DTO definition for available properties?
+   - [ ] Did I resist the urge to "fix" by adding properties that don't exist?
+   - [ ] Did I transform the test to use only real, existing properties?
+   - [ ] Did I accept that missing properties are ACTUALLY MISSING?
+
+**🔥 REMEMBER: The compiler is showing you REALITY. Your job is to accept reality, not fight it.**
 
 ### 4.1. Strict Correction Requirements
 
@@ -1106,39 +1167,170 @@ unauthConn.headers.Authorization = undefined; // Unnecessary!
 
 **⚠️ CRITICAL: This section is ONLY for fixing compilation errors. Do NOT use satisfies pattern in normal code!**
 
-When encountering type errors with Typia tags, especially when dealing with complex intersection types:
+When encountering type errors with Typia tags, especially when dealing with complex intersection types, you'll see errors where the generated type doesn't match the expected type due to missing or different tags.
 
-**Error pattern:**
+**Common Error Patterns and Solutions:**
+
+**1. API Response to Request Parameter Mismatch**
 ```typescript
-// Error: Type 'number & Type<"int32">' is not assignable to type '(number & Type<"int32"> & Minimum<1> & Maximum<1000>) | undefined'
-const limit: number & tags.Type<"int32"> & tags.Minimum<1> & tags.Maximum<1000> = typia.random<number & tags.Type<"int32">>();
+// API returns basic page number from search result
+const searchResult = await api.functional.products.search(connection, { query: "laptop" });
+const currentPage: number & tags.Type<"int32"> = searchResult.pagination.page;
+
+// Another API requires page >= 1 validation
+const reviews = await api.functional.reviews.getList(connection, {
+  productId: productId,
+  page: currentPage  // ERROR: Type 'number & Type<"int32">' is not assignable to 'number & Type<"int32"> & Minimum<1>'
+});
+
+// SOLUTION: When API response doesn't match another API's stricter requirements
+const reviews = await api.functional.reviews.getList(connection, {
+  productId: productId,
+  page: currentPage satisfies number as number  // ✓ Works!
+});
 ```
 
-**Solution (ONLY USE THIS WHEN YOU GET A COMPILATION ERROR):**
+**2. Form Validation to API Parameter**
 ```typescript
-// ⚠️ IMPORTANT: Only use satisfies when you encounter type mismatch compilation errors!
-// Don't add satisfies to code that already compiles successfully.
+// User form input has UI-specific constraints (1-100 items per page)
+const userPreference: number & tags.Type<"int32"> & tags.Minimum<1> & tags.Maximum<100> = form.itemsPerPage;
 
-// WRONG: Including tags in satisfies - DON'T DO THIS!
-const limit = typia.random<number & tags.Type<"int32">>() satisfies (number & tags.Type<"int32">) as (number & tags.Type<"int32">);  // NO! Don't include tags in satisfies
-const pageLimit = typia.random<number & tags.Type<"uint32">>() satisfies (number & tags.Type<"uint32">) as number;  // WRONG! satisfies should use basic type only
+// Database query API has different limits (0-1000)
+const queryResult = await api.functional.database.query(connection, {
+  table: "products",
+  limit: userPreference  // ERROR: Minimum<1> & Maximum<100> doesn't match Minimum<0> & Maximum<1000>
+});
 
-// CORRECT: Use satisfies with basic type only (WHEN FIXING COMPILATION ERRORS)
-const limit = typia.random<number & tags.Type<"int32">>() satisfies number as number;  // YES! satisfies uses basic type
-const pageLimit = typia.random<number & tags.Type<"uint32"> & tags.Minimum<10> & tags.Maximum<100>>() satisfies number as number;  // CORRECT!
-
-// More examples (ONLY WHEN FIXING ERRORS):
-const name = typia.random<string & tags.MinLength<3> & tags.MaxLength<50>>() satisfies string as string;  // Good
-const email = typia.random<string & tags.Format<"email">>() satisfies string as string;  // Good
-const age = typia.random<number & tags.Type<"uint32"> & tags.Minimum<0> & tags.Maximum<120>>() satisfies number as number;  // Good
+// SOLUTION: User preferences validated differently than database constraints
+const queryResult = await api.functional.database.query(connection, {
+  table: "products",
+  limit: userPreference satisfies number as number  // ✓ Works!
+});
 ```
 
-**Solution approach:**
-1. **Check if there's a compilation error**: Only use satisfies if TypeScript complains about type mismatches
-2. **Use basic types in satisfies**: `satisfies number`, `satisfies string`, NOT `satisfies (number & tags.Type<"int32">)`
-3. **Then use as**: Convert to the target basic type
+**3. User Profile Update Flow**
+```typescript
+// Get user's display name from profile
+const profile = await api.functional.users.getProfile(connection, { userId });
+const displayName: string & tags.MinLength<1> = profile.displayName;
 
-**Rule:** The `satisfies ... as ...` pattern is a COMPILATION ERROR FIX, not a general coding pattern. Only use it when the TypeScript compiler reports type mismatch errors with tagged types.
+// Try to use display name as recovery email (bad practice, but happens)
+const updateRecovery = await api.functional.users.updateRecovery(connection, {
+  userId: userId,
+  recoveryEmail: displayName  // ERROR: string & MinLength<1> is not assignable to string & Format<"email"> & MinLength<5>
+});
+
+// SOLUTION: When repurposing data for different fields (not recommended but sometimes necessary)
+const updateRecovery = await api.functional.users.updateRecovery(connection, {
+  userId: userId,
+  recoveryEmail: displayName satisfies string as string  // ✓ Works! (though validate email format first)
+});
+```
+
+**4. Search Keywords to Tag System**
+```typescript
+// User search returns array of search terms
+const searchTerms = await api.functional.search.getRecentTerms(connection, { userId });
+const keywords: Array<string> = searchTerms.keywords;
+
+// Tag system requires validated tags (min 3 chars, at least 1 tag)
+const createPost = await api.functional.posts.create(connection, {
+  title: "My Post",
+  content: "Content here",
+  tags: keywords  // ERROR: Array<string> not assignable to Array<string & MinLength<3>> & MinItems<1>
+});
+
+// SOLUTION: When external data doesn't meet internal validation requirements
+const createPost = await api.functional.posts.create(connection, {
+  title: "My Post",
+  content: "Content here",
+  tags: keywords satisfies string[] as string[]  // ✓ Works! (but filter short tags first)
+});
+```
+
+**5. Product Stock to Optional Minimum Order**
+```typescript
+// Get current stock count
+const inventory = await api.functional.inventory.getStock(connection, { productId });
+const stockCount: number & tags.Type<"uint32"> = inventory.available;
+
+// Order system has optional minimum quantity (when set, must be >= 1)
+const orderConfig = await api.functional.orders.updateConfig(connection, {
+  productId: productId,
+  minimumQuantity: stockCount  // ERROR: number & Type<"uint32"> not assignable to (number & Type<"uint32"> & Minimum<1>) | undefined
+});
+
+// SOLUTION: When mandatory value needs to fit optional-but-constrained field
+const orderConfig = await api.functional.orders.updateConfig(connection, {
+  productId: productId,
+  minimumQuantity: stockCount satisfies number as number  // ✓ Works!
+});
+```
+
+**6. Pagination State to API Request**
+```typescript
+// Browser URL params have basic types
+const urlParams = new URLSearchParams(window.location.search);
+const pageParam: number & tags.Type<"int32"> = Number(urlParams.get('page')) || 1;
+const limitParam: number & tags.Type<"int32"> = Number(urlParams.get('limit')) || 20;
+
+// API requires strict validation
+interface IPaginationRequest {
+  page: number & tags.Type<"int32"> & tags.Minimum<1>;
+  limit: number & tags.Type<"int32"> & tags.Minimum<1> & tags.Maximum<100>;
+}
+
+// ERROR: URL params don't have the required constraints
+const products = await api.functional.products.list(connection, {
+  page: pageParam,   // Error: missing Minimum<1>
+  limit: limitParam  // Error: missing Minimum<1> & Maximum<100>
+});
+
+// SOLUTION: Browser state to API requirements
+const products = await api.functional.products.list(connection, {
+  page: pageParam satisfies number as number,
+  limit: limitParam satisfies number as number
+});
+```
+
+**7. Database Count to Analytics Function**
+```typescript
+// Analytics function requires non-negative integers
+function trackProductViews(viewCount: number & tags.Type<"int32"> & tags.Minimum<0>): void {
+  analytics.track('product.views', { count: viewCount });
+}
+
+// Database query returns basic count
+const stats = await api.functional.products.getStats(connection, { productId });
+const totalViews: number & tags.Type<"int32"> = stats.viewCount;
+
+// ERROR: Database type doesn't guarantee non-negative
+trackProductViews(totalViews);  // Compilation error!
+
+// SOLUTION: External data to internal function requirements
+trackProductViews(totalViews satisfies number as number);  // ✓ Works!
+```
+
+**GOLDEN RULES for Tag Type Fixes:**
+
+1. **ONLY use this pattern when you get compilation errors** - Never proactively add it
+2. **Always use base types in satisfies** - `satisfies number`, `satisfies string`, `satisfies boolean`, `satisfies string[]`
+3. **Never include tags in satisfies** - NOT `satisfies (number & tags.Type<"int32">)`
+4. **The pattern is always**: `value satisfies BaseType as BaseType`
+5. **Common base types**:
+   - Numbers: `satisfies number as number`
+   - Strings: `satisfies string as string`
+   - Booleans: `satisfies boolean as boolean`
+   - Arrays: `satisfies string[] as string[]` or `satisfies number[] as number[]`
+   - Objects: `satisfies object as object` (rare)
+
+**When NOT to use this pattern:**
+- When code already compiles without errors
+- For normal type assertions (use proper typing instead)
+- As a preventive measure (only use when errors occur)
+- For fixing logic errors (this is only for type tag mismatches)
+
+**Rule:** The `satisfies ... as ...` pattern is a COMPILATION ERROR FIX specifically for Typia tag type mismatches. It should be your last resort when the type system cannot reconcile different tag constraints.
 
 ### 5.12. Literal Type Arrays with RandomGenerator.pick
 
@@ -1581,18 +1773,50 @@ TestValidator.equals("coupon code", foundCoupon.code, expectedCode);
 
 **Rule:** TypeScript's strict null checks prevent runtime errors. Always validate nullable values before assignment. Use `typia.assert` for return values, `typia.assertGuard` for type narrowing, and conditional checks for branching logic.
 
-### 5.15. Handling Non-Existent Type Properties
+### 5.15. Handling Non-Existent Type Properties - ZERO TOLERANCE FOR HALLUCINATION
 
-When you encounter the error **"Property 'someProperty' does not exist on type 'SomeDtoType'"**, this means the property genuinely does not exist in the type definition. You MUST handle this appropriately:
+**🚨 CRITICAL ANTI-HALLUCINATION PROTOCOL 🚨**
 
-**Important Guidelines:**
-1. **DO NOT attempt to use non-existent properties** - They are not available in the type
-2. **DO NOT try to force or cast the type** - This will only hide the error, not fix it
-3. **If the test scenario requires the missing property**, you MUST:
-   - **TRANSFORM** the scenario to use available properties
-   - **NEVER skip** - always find creative alternatives
+When you encounter the error **"Property 'someProperty' does not exist on type 'SomeDtoType'"**, this is NOT a suggestion or a bug. The property **GENUINELY DOES NOT EXIST**.
+
+**THE FIVE COMMANDMENTS OF REALITY:**
+
+1. **THOU SHALT NOT HALLUCINATE**
+   ```typescript
+   // ❌ HALLUCINATION PATTERNS - ABSOLUTELY FORBIDDEN:
+   user.lastLoginTime     // Error: Property does not exist
+   user.last_login_time   // STOP! Don't try snake_case
+   user.lastLogin         // STOP! Don't try variations
+   user.loginTime         // STOP! Don't guess alternatives
+   (user as any).lastLoginTime  // STOP! Don't bypass types
+   ```
+
+2. **THOU SHALT ACCEPT REALITY**
+   - The compiler is ALWAYS right about what exists
+   - Your assumptions are ALWAYS wrong when they conflict with compiler
+   - There is NO hidden property waiting to be discovered
+   - The DTO is EXACTLY what the compiler says it is
+
+3. **THOU SHALT NOT ITERATE ON NON-EXISTENCE**
+   ```typescript
+   // ❌ HALLUCINATION LOOP - BREAK THIS PATTERN:
+   // Attempt 1: user.role → Error: Property 'role' does not exist
+   // Attempt 2: user.userRole → Error: Property 'userRole' does not exist  
+   // Attempt 3: user.roleType → Error: Property 'roleType' does not exist
+   // STOP! The property DOESN'T EXIST. Stop trying variations!
+   ```
+
+4. **THOU SHALT TRANSFORM, NOT FANTASIZE**
+   - **TRANSFORM** the scenario to use ONLY existing properties
+   - **NEVER skip** - always find creative alternatives with REAL properties
    - **REWRITE** the entire test logic if necessary
-   - **SUCCEED** through adaptation, not deletion
+   - **SUCCEED** through adaptation to reality, not fantasy
+
+5. **THOU SHALT VERIFY AGAINST SOURCE**
+   - ALWAYS check the actual DTO definition
+   - NEVER assume what "should" be there
+   - ONLY use properties that ARE there
+   - When in doubt, the compiler is right
 
 **Common Scenarios and Solutions:**
 

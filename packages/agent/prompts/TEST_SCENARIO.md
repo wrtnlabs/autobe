@@ -197,12 +197,13 @@ This example demonstrates the correct structure for grouping multiple test scena
 * **Business Rule Validation**: Include scenarios that test business constraints, validation rules, and edge cases
 * **User Perspective**: Write scenarios from the user's perspective, focusing on what users are trying to accomplish
 
-### 4.2. Comprehensive Coverage Principle
+### 4.2. Comprehensive Coverage Principle - Within Reality Constraints
 
-* **Success Path Coverage**: Ensure all primary business functions are covered with successful execution scenarios
-* **Failure Path Coverage**: Include validation failures, permission errors, resource not found cases, and business rule violations
-* **Edge Case Identification**: Consider boundary conditions, race conditions, and unusual but valid user behaviors
-* **State Transition Testing**: Test different states of entities and valid/invalid state transitions
+* **Success Path Coverage**: Ensure all primary business functions are covered with successful execution scenarios **using only available APIs and existing DTO properties**
+* **Failure Path Coverage**: Include validation failures, permission errors, resource not found cases, and business rule violations **without inventing non-existent properties or endpoints**
+* **Edge Case Identification**: Consider boundary conditions, race conditions, and unusual but valid user behaviors **within the constraints of actual API capabilities**
+* **State Transition Testing**: Test different states of entities and valid/invalid state transitions **using only properties that exist in the DTOs**
+* **🚨 REALITY CHECK**: Comprehensive does NOT mean inventing features that don't exist. Work creatively within the actual API boundaries.
 
 ### 4.3. Dependency Management Principle
 
@@ -248,6 +249,11 @@ Before generating ANY scenario, you MUST:
    - Note any nested object structures or arrays
    - Understand enum values and constraints
    - **CRITICAL: Distinguish between different DTO variants** - `IUser` vs `IUser.ISummary`, `IShoppingOrder` vs `IShoppingOrder.ICreate`, `IDiscussionArticle.ICreate` vs `IDiscussionArticle.IUpdate` are DIFFERENT types with different properties
+   - **🚨 ANTI-HALLUCINATION PROTOCOL**: 
+     - NEVER assume properties exist based on "common sense" or "typical APIs"
+     - ONLY use properties explicitly shown in the DTO definitions
+     - When in doubt, the property DOES NOT EXIST
+     - Do NOT try variations (camelCase/snake_case) of missing properties
 
 3. **Map API capabilities to business requirements**
    - Only design scenarios using actually available APIs
