@@ -1,0 +1,154 @@
+datasource db {
+  provider   = "postgresql"
+  url        = env("SHOPPING_POSTGRES_URL")
+  extensions = [pg_trgm]
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions", "views"]
+  binaryTargets   = ["native"]
+}
+
+model autobe_hackathons {
+  //----
+  // COLUMNS
+  //----
+  id         String   @id @db.Uuid
+  code       String   @db.VarChar
+  name       String   @db.VarChar
+  created_at DateTime @db.Timestamptz
+  opened_at  DateTime @db.Timestamptz
+  closed_at  DateTime @db.Timestamptz
+
+  //----
+  // RELATIONS
+  //----
+  autobe_hackathon_participants autobe_hackathon_participants[]
+  autobe_hackathon_sessions     autobe_hackathon_sessions[]
+
+  @@unique([code])
+  @@index([name])
+  @@index([created_at])
+  @@index([opened_at, closed_at])
+}
+
+model autobe_hackathon_participants {
+  //----
+  // COLUMNS
+  //----
+  id                  String   @id @db.Uuid
+  autobe_hackathon_id String   @db.Uuid
+  email               String   @db.VarChar
+  name                String   @db.VarChar
+  password            String   @db.VarChar
+  created_at          DateTime @db.Timestamptz
+
+  //----
+  // RELATIONS
+  //----
+  hackathon autobe_hackathons @relation(fields: [autobe_hackathon_id], references: [id], onDelete: Cascade)
+
+  sessions autobe_hackathon_sessions[]
+
+  @@unique([autobe_hackathon_id, email])
+}
+
+model autobe_hackathon_sessions {
+  //----
+  // COLUMNS
+  //----
+  id                              String    @id @db.Uuid
+  autobe_hackathon_id             String    @db.Uuid
+  autobe_hackathon_participant_id String    @db.Uuid
+  model                           String    @db.VarChar
+  review_article_url              String?   @db.VarChar(2048)
+  created_at                      DateTime  @db.Timestamptz
+  completed_at                    DateTime? @db.Timestamptz
+
+  //----
+  // RELATIONS
+  //----
+  hackathon   autobe_hackathons             @relation(fields: [autobe_hackathon_id], references: [id], onDelete: Cascade)
+  participant autobe_hackathon_participants @relation(fields: [autobe_hackathon_participant_id], references: [id], onDelete: Cascade)
+
+  connections autobe_hackathon_session_connections[]
+  histories   autobe_hackathon_session_histories[]
+  events      autobe_hackathon_session_events[]
+  aggregate   autobe_hackathon_session_aggregates?
+
+  @@index([autobe_hackathon_id, created_at])
+  @@index([autobe_hackathon_participant_id, created_at])
+}
+
+model autobe_hackathon_session_connections {
+  //----
+  // COLUMNS
+  //----
+  id                          String    @id @db.Uuid
+  autobe_hackathon_session_id String    @db.Uuid
+  created_at                  DateTime  @db.Timestamptz
+  disconnected_at             DateTime? @db.Timestamptz
+
+  //----
+  // RELATIONS
+  //----
+  session                            autobe_hackathon_sessions            @relation(fields: [autobe_hackathon_session_id], references: [id], onDelete: Cascade)
+  autobe_hackathon_session_histories autobe_hackathon_session_histories[]
+  autobe_hackathon_session_events    autobe_hackathon_session_events[]
+
+  @@index([autobe_hackathon_session_id, created_at])
+}
+
+model autobe_hackathon_session_histories {
+  //----
+  // COLUMNS
+  //----
+  id                                     String   @id @db.Uuid
+  autobe_hackathon_session_id            String   @db.Uuid
+  autobe_hackathon_session_connection_id String   @db.Uuid
+  type                                   String   @db.VarChar
+  data                                   Json
+  created_at                             DateTime @db.Timestamptz
+
+  //----
+  // RELATIONS
+  //----
+  session    autobe_hackathon_sessions            @relation(fields: [autobe_hackathon_session_id], references: [id], onDelete: Cascade, map: "autobe_hackathon_session_histories_session_fkey")
+  connection autobe_hackathon_session_connections @relation(fields: [autobe_hackathon_session_connection_id], references: [id], onDelete: Cascade, map: "autobe_hackathon_session_histories_connection_fkey")
+
+  @@index([autobe_hackathon_session_id, created_at], map: "autobe_hackathon_session_histories_session_idx")
+  @@index([autobe_hackathon_session_connection_id, created_at], map: "autobe_hackathon_session_histories_connection_idx")
+}
+
+model autobe_hackathon_session_events {
+  //----
+  // COLUMNS
+  //----
+  id                                     String   @id @db.Uuid
+  autobe_hackathon_session_id            String   @db.Uuid
+  autobe_hackathon_session_connection_id String   @db.Uuid
+  type                                   String   @db.VarChar
+  stage                                  String   @db.VarChar
+  data                                   Json
+  created_at                             DateTime @db.Timestamptz
+
+  //----
+  // RELATIONS
+  //----
+  session   autobe_hackathon_sessions            @relation(fields: [autobe_hackathon_session_id], references: [id], onDelete: Cascade)
+  hackathon autobe_hackathon_session_connections @relation(fields: [autobe_hackathon_session_connection_id], references: [id], onDelete: Cascade)
+
+  @@index([autobe_hackathon_session_id, created_at])
+  @@index([autobe_hackathon_session_connection_id, created_at])
+}
+
+model autobe_hackathon_session_aggregates {
+  id String @id @db.Uuid
+  autobe_hackathon_session_id String @db.Uuid
+  state String? @db.VarChar
+  token_usage Json
+
+  @@unique([autobe_hackathon_session_id])
+  session autobe_hackathon_sessions @relation(fields: [autobe_hackathon_session_id], references: [id], onDelete: Cascade)
+}

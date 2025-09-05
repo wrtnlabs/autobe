@@ -11,4 +11,7 @@
     "editor.wordWrap": "on",
     "editor.formatOnSave": false,
   },
+  "[prisma]": {
+    "editor.defaultFormatter": "Prisma.prisma",
+  },
 }

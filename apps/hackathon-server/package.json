@@ -1,0 +1,102 @@
+{
+  "private": true,
+  "name": "@autobe/hackathon-server",
+  "version": "0.21.0",
+  "description": "AI backend server code generator",
+  "main": "src/index.ts",
+  "author": "Wrtn Technologies",
+  "license": "AGPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wrtnlabs/autobe"
+  },
+  "bugs": {
+    "url": "https://github.com/wrtnlabs/autobe/issues"
+  },
+  "files": [
+    "lib",
+    "src",
+    "package.json",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "pnpm run build:prisma && rimraf lib && tsc",
+    "build:env": "ts-node build/env.ts",
+    "build:prisma": "pnpm run build:env && prisma generate --schema=./prisma/schema",
+    "build:sdk": "nestia sdk",
+    "dev": "rimraf lib && tsc --watch",
+    "prepack": "pnpm run build",
+    "prepare": "ts-patch install && pnpm run build:env && pnpm run build:prisma"
+  },
+  "dependencies": {
+    "@autobe/agent": "workspace:^",
+    "@autobe/compiler": "workspace:^",
+    "@autobe/hackathon-api": "workspace:^",
+    "@autobe/interface": "workspace:^",
+    "@autobe/rpc": "workspace:^",
+    "@nestia/core": "catalog:samchon",
+    "@nestia/e2e": "^8.0.5",
+    "@nestia/sdk": "catalog:samchon",
+    "@nestjs/common": "^11.1.3",
+    "@nestjs/core": "^11.1.3",
+    "@nestjs/platform-express": "^11.1.6",
+    "@prisma/client": "^6.15.0",
+    "@samchon/openapi": "catalog:samchon",
+    "bcryptjs": "^3.0.2",
+    "dotenv": "^16.5.0",
+    "dotenv-expand": "^12.0.2",
+    "jsonwebtoken": "^9.0.2",
+    "openai": "catalog:libs",
+    "prisma": "^6.15.0",
+    "tgrid": "catalog:samchon",
+    "tstl": "catalog:samchon",
+    "typia": "catalog:samchon",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^24.3.1",
+    "@types/uuid": "^10.0.0",
+    "nestia": "catalog:samchon",
+    "rimraf": "^6.0.1",
+    "ts-node": "catalog:typescript",
+    "ts-patch": "catalog:typescript",
+    "typescript": "catalog:typescript"
+  },
+  "keywords": [
+    "ai",
+    "api",
+    "api-design",
+    "auto-generation",
+    "autobe",
+    "automation",
+    "backend",
+    "backend-development",
+    "code-generation",
+    "documentation",
+    "e2e-testing",
+    "erd",
+    "nestjs",
+    "openapi",
+    "orm",
+    "postgres",
+    "postgresql",
+    "prisma",
+    "requirements-analysis",
+    "rest",
+    "server",
+    "spiral-model",
+    "swagger",
+    "testing",
+    "typescript",
+    "vibe-coding",
+    "waterfall"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "main": "lib/index.js",
+    "typings": "lib/index.d.ts"
+  }
+}
