@@ -83,7 +83,8 @@ export const transformTestScenarioHistories = (
 
         Below are the endpoints that have been included in the test plan.
         Each endpoint shows its authentication requirements and related authentication APIs.
-        When testing endpoints that require authentication, ensure you include the corresponding join/login operations in your test scenario to establish proper authentication context.
+        When testing endpoints that require authentication, ensure you include the corresponding 
+        join/login operations in your test scenario to establish proper authentication context.
 
         ${include
           .map((el, i) => {
