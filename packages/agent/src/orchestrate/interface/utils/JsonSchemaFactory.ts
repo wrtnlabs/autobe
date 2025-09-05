@@ -1,5 +1,5 @@
 import { AutoBeOpenApi } from "@autobe/interface";
-import { StringUtil } from "@autobe/utils";
+import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
 import typia, { tags } from "typia";
 
 export namespace JsonSchemaFactory {
@@ -18,6 +18,29 @@ export namespace JsonSchemaFactory {
         typeNames.add(getPageName(key));
       }
     return schemas;
+  };
+
+  export const authorize = (
+    schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
+  ): void => {
+    for (const [key, value] of Object.entries(schemas)) {
+      if (key.endsWith(".IAuthorized") === false) continue;
+      else if (AutoBeOpenApiTypeChecker.isObject(value) === false) continue;
+
+      const parent: AutoBeOpenApi.IJsonSchemaDescriptive | undefined =
+        schemas[key.substring(0, key.length - ".IAuthorized".length)];
+      if (parent === undefined) continue;
+      else if (AutoBeOpenApiTypeChecker.isObject(parent) === false) continue;
+
+      value.properties = {
+        ...parent.properties,
+        ...value.properties,
+      };
+      value.required = [...parent.required];
+      if (value.required.includes("id") === false) value.required.push("id");
+      if (value.required.includes("token") === false)
+        value.required.push("token");
+    }
   };
 
   export const page = (
