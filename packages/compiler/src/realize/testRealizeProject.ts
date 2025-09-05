@@ -58,7 +58,7 @@ async function test(
     null,
     IAutoBeRealizeTestListener,
     IAutoBeRealizeTestService
-  > = new WorkerConnector(null, listener, "thread");
+  > = new WorkerConnector(null, listener, "process");
   await worker.connect(`${cwd}/bin/test/servant.js`, {
     stdio: "ignore",
     cwd,

@@ -247,6 +247,7 @@ Before generating ANY scenario, you MUST:
    - Identify required vs optional fields
    - Note any nested object structures or arrays
    - Understand enum values and constraints
+   - **CRITICAL: Distinguish between different DTO variants** - `IUser` vs `IUser.ISummary`, `IShoppingOrder` vs `IShoppingOrder.ICreate`, `IDiscussionArticle.ICreate` vs `IDiscussionArticle.IUpdate` are DIFFERENT types with different properties
 
 3. **Map API capabilities to business requirements**
    - Only design scenarios using actually available APIs
@@ -261,16 +262,18 @@ Before generating ANY scenario, you MUST:
 
 1. **Primary Endpoint Verification**: The `endpoint` in IScenarioGroup MUST exist in the provided operations array
 2. **Dependencies Verification**: ALL endpoints in `dependencies[]` MUST exist in either include or exclude lists
-3. **No Schema-Based Assumptions**: Database schema fields (e.g., `is_banned`, `deleted_at`) do NOT guarantee corresponding API availability
+3. **No Schema-Based Assumptions**: Backend implementation details do NOT guarantee corresponding API availability
 4. **DTO Property Accuracy**: Every property used in scenarios MUST exist in the actual DTO definitions
+5. **DTO Type Precision**: NEVER confuse different DTO variants (e.g., `IUser` vs `IUser.IAuthorized`) - each has distinct properties and usage contexts
 
 **ABSOLUTE PROHIBITIONS:**
-- ❌ **NEVER create scenarios for non-existent APIs** regardless of schema fields
+- ❌ **NEVER create scenarios for non-existent APIs**
 - ❌ **NEVER reference unavailable endpoints in dependencies** 
-- ❌ **NEVER infer API functionality from Prisma schema alone**
+- ❌ **NEVER infer API functionality from backend implementation alone**
 - ❌ **NEVER create "hypothetical" test scenarios** for APIs that might exist
 - ❌ **NEVER create test scenarios with intentionally invalid types** - This causes compile-time errors that break the entire E2E test program
 - ❌ **NEVER assume DTO properties** - use only those explicitly defined in the provided specifications
+- ❌ **NEVER mix up DTO variants** - `IUser`, `IUser.ISummary`, `IUser.IAuthorized` are distinct types
 - ❌ **NEVER invent filtering, sorting, or search parameters** not present in the actual API definitions
 
 ### 4.3.1. CRITICAL: Type Validation Scenarios Are FORBIDDEN
@@ -340,7 +343,7 @@ AutoBE-generated backends provide **100% perfect type validation** for both requ
 **Why this is critical:**
 - Type validation tests cause TypeScript compilation errors that break the entire test suite
 - AutoBE backends already provide perfect type safety - testing it is redundant
-- Response data validation like `typia.assert(responseValue)` is unnecessary and forbidden
+- Additional response data validation after `typia.assert(responseValue)` is unnecessary and forbidden
 - Individual property type checking after `typia.assert()` is completely pointless
 - Focus should be on business logic, not type system doubts
 
@@ -354,7 +357,7 @@ AutoBE-generated backends provide **100% perfect type validation** for both requ
 
 **Common Pitfall Examples:**
 ```typescript
-// ❌ FORBIDDEN: Ban functionality exists in schema but NOT in API
+// ❌ FORBIDDEN: Ban functionality exists in backend but NOT in API
 {
   functionName: "test_api_user_banned_login_failure",
   dependencies: [
@@ -386,7 +389,7 @@ AutoBE-generated backends provide **100% perfect type validation** for both requ
 // have strict type checking. The entire E2E test program will fail to compile!
 ```
 
-**Rule**: If an API endpoint is not explicitly listed in the provided operations array, it CANNOT be used in any scenario, regardless of database schema structure or business logic assumptions.
+**Rule**: If an API endpoint is not explicitly listed in the provided operations array, it CANNOT be used in any scenario, regardless of backend implementation or business logic assumptions.
 
 **🔥 CRITICAL TYPE SAFETY WARNING**: 
 E2E test functions use strongly-typed SDK functions that enforce compile-time type safety. Creating test scenarios that intentionally use wrong types (e.g., passing a string where a number is expected, or an object where a boolean is required) will cause TypeScript compilation errors and **break the entire E2E test program**. This is NOT a valid testing approach because:
@@ -431,7 +434,7 @@ The following scenario patterns are **STRICTLY FORBIDDEN** as they violate core 
 - ❌ "Test sorting options not provided by the endpoint"
 - ❌ "Test search parameters not defined in DTOs"
 - ❌ "Test CRUD operations that don't exist for the entity"
-- ❌ "Test endpoints inferred from database schema but not in API"
+- ❌ "Test endpoints inferred from backend implementation but not in API"
 
 **Why forbidden**: Only APIs explicitly provided in the operations array can be tested.
 
@@ -498,6 +501,7 @@ Remember: Every scenario must be implementable with the exact APIs and DTOs prov
 * **Business Process Identification**: Identify multi-step business processes that span multiple API endpoints
 * **Validation Rule Extraction**: Extract all validation rules, constraints, and business logic from API specifications
 * **Authentication Requirements Analysis**: Review both the Operations array for `authorizationRole` and the "Included in Test Plan" section for available authentication APIs
+* **DTO Type Precision Analysis**: Carefully distinguish between different DTO variants (e.g., `IUser` vs `IUser.ISummary` vs `IUser.IAuthorized`) - each serves different purposes and has distinct properties for specific operations
 
 ### 5.2. Scenario Draft Structure
 
@@ -621,7 +625,7 @@ By following these guidelines, generated test scenarios will be comprehensive, a
 ### 8.1. Essential Element Verification
 
 * [ ] **API Existence Verification**: Have you verified that ALL referenced endpoints (both primary and dependencies) exist in the provided operations array?
-* [ ] **No Schema Inference**: Have you avoided creating scenarios based on database schema fields without corresponding APIs?
+* [ ] **No Schema Inference**: Have you avoided creating scenarios based on backend implementation without corresponding APIs?
 * [ ] **Dependency Availability**: Have you confirmed every dependency endpoint is available in the include/exclude lists?
 * [ ] **Implementation Feasibility**: Can every scenario be actually implemented with the provided APIs only?
 * [ ] Are all included endpoints covered with appropriate scenarios?
@@ -670,6 +674,7 @@ Before finalizing each scenario, verify:
 
 * [ ] **API Availability**: Does the primary API endpoint exist in the provided SDK?
 * [ ] **DTO Property Accuracy**: Are all request/response properties used in the scenario actually defined in the DTOs?
+* [ ] **DTO Type Distinction**: Have you correctly identified which DTO variant is used for each operation (e.g., ICreate for POST, IUpdate for PUT)?
 * [ ] **No Type Violations**: Will the scenario compile without TypeScript errors?
 * [ ] **No Additional Imports**: Can the scenario be implemented without requiring any new imports?
 * [ ] **Dependency Existence**: Do all dependency endpoints exist in the available APIs?
