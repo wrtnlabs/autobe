@@ -18,6 +18,7 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformInterfaceSchemaHistories } from "./histories/transformInterfaceSchemaHistories";
 import { IAutoBeInterfaceSchemaApplication } from "./structures/IAutoBeInterfaceSchemaApplication";
 import { JsonSchemaFactory } from "./utils/JsonSchemaFactory";
+import { JsonSchemaNamingConvention } from "./utils/JsonSchemaNamingConvention";
 import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMessages";
 import { validateAuthorizationSchema } from "./utils/validateAuthorizationSchema";
 
@@ -28,6 +29,10 @@ export async function orchestrateInterfaceSchemas<
   operations: AutoBeOpenApi.IOperation[],
   capacity: number = 5,
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
+  // fix operation type names
+  JsonSchemaNamingConvention.operations(operations);
+
+  // gather type names
   const typeNames: Set<string> = new Set();
   for (const op of operations) {
     if (op.requestBody !== null) typeNames.add(op.requestBody.typeName);
@@ -36,6 +41,7 @@ export async function orchestrateInterfaceSchemas<
   const presets: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
     JsonSchemaFactory.presets(typeNames);
 
+  // divide and conquer
   const matrix: string[][] = divideArray({
     array: Array.from(typeNames),
     capacity,
@@ -53,9 +59,12 @@ export async function orchestrateInterfaceSchemas<
         await divideAndConquer(ctx, operations, it, progress, promptCacheKey);
       return row;
     }),
-  ))
+  )) {
+    JsonSchemaNamingConvention.schemas(operations, x, y);
     Object.assign(x, y);
+  }
   Object.assign(x, presets);
+  JsonSchemaNamingConvention.schemas(operations, x);
   JsonSchemaFactory.authorize(x);
   return x;
 }

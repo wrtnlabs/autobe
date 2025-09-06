@@ -17,6 +17,7 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformInterfaceSchemasReviewHistories } from "./histories/transformInterfaceSchemasReviewHistories";
 import { IAutoBeInterfaceSchemasReviewApplication } from "./structures/IAutobeInterfaceSchemasReviewApplication";
 import { JsonSchemaFactory } from "./utils/JsonSchemaFactory";
+import { JsonSchemaNamingConvention } from "./utils/JsonSchemaNamingConvention";
 import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMessages";
 import { validateAuthorizationSchema } from "./utils/validateAuthorizationSchema";
 
@@ -48,8 +49,10 @@ export async function orchestrateInterfaceSchemasReview<
         await divideAndConquer(ctx, operations, it, progress, promptCacheKey);
       return row;
     }),
-  ))
+  )) {
+    JsonSchemaNamingConvention.schemas(operations, x, y);
     Object.assign(x, y);
+  }
   return x;
 }
 

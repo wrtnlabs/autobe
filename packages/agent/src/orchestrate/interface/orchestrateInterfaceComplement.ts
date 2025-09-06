@@ -16,6 +16,7 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { transformInterfaceComplementHistories } from "./histories/transformInterfaceComplementHistories";
 import { IAutoBeInterfaceComplementApplication } from "./structures/IAutoBeInterfaceComplementApplication";
 import { JsonSchemaFactory } from "./utils/JsonSchemaFactory";
+import { JsonSchemaNamingConvention } from "./utils/JsonSchemaNamingConvention";
 import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMessages";
 import { validateAuthorizationSchema } from "./utils/validateAuthorizationSchema";
 
@@ -86,6 +87,7 @@ async function step<Model extends ILlmSchema.Model>(
     ...pointer.value,
     ...document.components.schemas,
   };
+  JsonSchemaNamingConvention.schemas(document.operations, newSchemas);
   return step(
     ctx,
     {
