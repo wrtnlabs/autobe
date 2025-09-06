@@ -3,7 +3,7 @@ import { orchestrateRealize } from "@autobe/agent/src/orchestrate/realize/orches
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeAssistantMessageHistory,
-  AutoBeEvent,
+  AutoBeEventOfSerializable,
   AutoBeEventSnapshot,
   AutoBeRealizeHistory,
 } from "@autobe/interface";
@@ -27,7 +27,7 @@ export const archive_realize = async (
   const { agent, zero } = await prepare_agent_realize(factory, project);
   const start: Date = new Date();
   const snapshots: AutoBeEventSnapshot[] = [];
-  const listen = (event: AutoBeEvent) => {
+  const listen = (event: AutoBeEventOfSerializable) => {
     if (TestGlobal.archive) TestLogger.event(start, event);
     snapshots.push({
       event,
@@ -38,7 +38,7 @@ export const archive_realize = async (
   agent.on("assistantMessage", listen);
   agent.on("jsonParseError", listen);
   agent.on("jsonValidateError", listen);
-  for (const type of typia.misc.literals<AutoBeEvent.Type>())
+  for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
     if (type.startsWith("realize")) agent.on(type, listen);
 
   // DO TEST GENERATION

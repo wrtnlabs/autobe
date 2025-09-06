@@ -1550,7 +1550,154 @@ if (foundItem) {
 
 **Rule:** Always validate nullable/undefined values before assigning to non-nullable types. Choose between `typia.assert` (for return value) and `typia.assertGuard` (for type narrowing) based on your needs. NEVER forget the `!` inside typia functions when removing nullable types.
 
-### 3.6. Authentication Handling
+### 3.6. TypeScript Type Narrowing and Control Flow Analysis
+
+TypeScript performs sophisticated control flow analysis to track how types change as code executes. Understanding this mechanism is crucial for writing correct test code without unnecessary type checks.
+
+**Core Concept: Type Narrowing**
+- TypeScript automatically narrows types based on control flow
+- Once a type is narrowed within a scope, it remains narrowed
+- Attempting impossible comparisons after narrowing will cause compilation errors
+
+**1. Boolean Type Narrowing**
+```typescript
+const isEnabled: boolean = checkFeatureFlag();
+
+if (isEnabled === false) {
+  // Within this block, isEnabled is narrowed to literal type 'false'
+  console.log("Feature disabled");
+} else {
+  // Within this else block, isEnabled is narrowed to literal type 'true'
+  
+  // ❌ WRONG: Redundant check - TypeScript knows isEnabled is true
+  if (isEnabled === true) {
+    console.log("Feature enabled");
+  }
+  
+  // ✅ CORRECT: Direct usage without additional checks
+  console.log("Feature enabled");
+}
+```
+
+**2. Union Type Narrowing**
+```typescript
+type ApiResponse = "success" | "error" | "pending";
+const response: ApiResponse = await getApiStatus();
+
+if (response === "success") {
+  // response is narrowed to literal type "success"
+  handleSuccess();
+} else if (response === "error") {
+  // response is narrowed to literal type "error"
+  handleError();
+} else {
+  // TypeScript knows response must be "pending" here
+  
+  // ✅ CORRECT: No additional check needed
+  handlePending();
+}
+```
+
+**3. Null/Undefined Type Narrowing**
+```typescript
+const userData: UserData | null | undefined = await fetchUserData();
+
+if (userData === null) {
+  // userData is narrowed to null
+  return "No user data found";
+} else if (userData === undefined) {
+  // userData is narrowed to undefined
+  return "User data not loaded";
+} else {
+  // userData is narrowed to UserData (non-nullable)
+  
+  // ✅ CORRECT: Safe to access UserData properties
+  return userData.name;
+}
+```
+
+**4. Discriminated Unions (Recommended Pattern)**
+```typescript
+// ✅ BEST PRACTICE: Use discriminated unions for clear type discrimination
+type TestResult = 
+  | { status: "success"; data: string }
+  | { status: "error"; error: Error }
+  | { status: "pending"; startTime: Date };
+
+function handleTestResult(result: TestResult) {
+  switch (result.status) {
+    case "success":
+      // TypeScript knows result has 'data' property
+      console.log(result.data);
+      break;
+    case "error":
+      // TypeScript knows result has 'error' property
+      console.error(result.error);
+      break;
+    case "pending":
+      // TypeScript knows result has 'startTime' property
+      console.log(`Started at: ${result.startTime}`);
+      break;
+  }
+}
+```
+
+**5. Custom Type Guards**
+```typescript
+// Define custom type guard functions for complex type checking
+function isValidResponse(response: any): response is { data: string; status: number } {
+  return response && 
+         typeof response.data === "string" && 
+         typeof response.status === "number";
+}
+
+const response = await makeApiCall();
+if (isValidResponse(response)) {
+  // response is narrowed to the expected shape
+  console.log(response.data);
+} else {
+  // handle invalid response
+  throw new Error("Invalid response format");
+}
+```
+
+**Best Practices for Test Code:**
+
+1. **Embrace Type Narrowing** - Let TypeScript's flow analysis guide your code structure
+2. **Avoid Redundant Checks** - Don't recheck conditions that TypeScript has already narrowed
+3. **Use Early Returns** - Simplify code flow and make type narrowing more obvious
+4. **Prefer Discriminated Unions** - They make type narrowing explicit and safe
+5. **Trust the Compiler** - If TypeScript says a comparison is impossible, it's correct
+
+**Common Anti-Patterns to Avoid:**
+```typescript
+// ❌ WRONG: Unnecessary type checks after narrowing
+if (typeof value === "string") {
+  if (typeof value === "number") { // This will never execute
+    // ...
+  }
+}
+
+// ❌ WRONG: Redundant boolean checks
+const isValid: boolean = validate();
+if (isValid === true) {
+  // ...
+} else if (isValid === false) { // Redundant - else is sufficient
+  // ...
+}
+
+// ✅ CORRECT: Clean control flow
+const isValid: boolean = validate();
+if (isValid) {
+  // handle valid case
+} else {
+  // handle invalid case
+}
+```
+
+**Rule:** Write test code that leverages TypeScript's control flow analysis. Avoid redundant type checks and impossible comparisons. Let type narrowing guide your code structure for cleaner, more maintainable tests.
+
+### 3.7. Authentication Handling
 
 ```typescript
 export async function test_api_shopping_sale_review_update(

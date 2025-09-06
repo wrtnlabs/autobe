@@ -2050,3 +2050,84 @@ Your corrected code must:
 Ensure all corrections follow the guidelines provided in TEST_WRITE prompt.
 
 Generate corrected code that achieves successful compilation while maintaining all original requirements and functionality.
+
+### 5.17. TypeScript Type Narrowing Compilation Errors - "No Overlap" Fix
+
+**Error Pattern: "This comparison appears to be unintentional because the types 'X' and 'Y' have no overlap"**
+
+This compilation error occurs when TypeScript's control flow analysis has already narrowed a type, making certain comparisons impossible.
+
+**Quick Fix Algorithm:**
+
+1. **Identify the error location** - Find "no overlap" in the diagnostic message
+2. **Trace back to the narrowing point** - Look for the if/else block or condition that narrowed the type
+3. **Remove the impossible comparison** - Delete the redundant check
+4. **Use the narrowed type directly** - No additional checks needed
+
+**Common Fix Patterns:**
+
+```typescript
+// PATTERN 1: Redundant else block checks
+// BEFORE (error):
+if (value === false) {
+  handleFalse();
+} else {
+  if (value !== false) {  // ERROR: 'true' and 'false' have no overlap
+    handleTrue();
+  }
+}
+
+// AFTER (fixed):
+if (value === false) {
+  handleFalse();
+} else {
+  handleTrue();  // Remove redundant check
+}
+
+// PATTERN 2: Exhausted union types
+// BEFORE (error):
+type Status = "pending" | "approved" | "rejected";
+if (status === "pending") {
+  // handle pending
+} else if (status === "approved") {
+  // handle approved  
+} else {
+  if (status !== "rejected") {  // ERROR: status must be "rejected"
+    // ...
+  }
+}
+
+// AFTER (fixed):
+if (status === "pending") {
+  // handle pending
+} else if (status === "approved") {
+  // handle approved
+} else {
+  // status is "rejected" - use directly
+}
+
+// PATTERN 3: Switch exhaustiveness
+// BEFORE (error):
+switch (action) {
+  case "create":
+  case "update":
+  case "delete":
+    break;
+  default:
+    if (action === "create") {  // ERROR: all cases handled
+      // ...
+    }
+}
+
+// AFTER (fixed):
+switch (action) {
+  case "create":
+  case "update":
+  case "delete":
+    break;
+  default:
+    const _exhaustive: never = action;
+}
+```
+
+**Rule:** When you see "no overlap" errors, simply remove the impossible comparison. The type is already narrowed - trust TypeScript's analysis.

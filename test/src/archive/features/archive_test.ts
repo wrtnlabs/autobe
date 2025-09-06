@@ -3,7 +3,7 @@ import { orchestrateTest } from "@autobe/agent/src/orchestrate/test/orchestrateT
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeAssistantMessageHistory,
-  AutoBeEvent,
+  AutoBeEventOfSerializable,
   AutoBeEventSnapshot,
   AutoBeHistory,
   AutoBeTestHistory,
@@ -28,7 +28,7 @@ export const archive_test = async (
   const { agent, zero } = await prepare_agent_test(factory, project);
   const snapshots: AutoBeEventSnapshot[] = [];
   const start: Date = new Date();
-  const listen = (event: AutoBeEvent) => {
+  const listen = (event: AutoBeEventOfSerializable) => {
     if (TestGlobal.archive) TestLogger.event(start, event);
     snapshots.push({
       event,
@@ -38,7 +38,7 @@ export const archive_test = async (
   agent.on("assistantMessage", listen);
   agent.on("jsonParseError", listen);
   agent.on("jsonValidateError", listen);
-  for (const type of typia.misc.literals<AutoBeEvent.Type>())
+  for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
     if (type.startsWith("test")) agent.on(type, listen);
 
   // DO TEST GENERATION
