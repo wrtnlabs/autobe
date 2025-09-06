@@ -61,6 +61,7 @@ export namespace JsonSchemaNamingConvention {
     const getValue = (v: string) => v.split(".")[0]!;
     const emplace = (v: string) =>
       MapUtil.take(similar, getKey(v), () => []).push(getValue(v));
+
     for (const v of typeNames) emplace(v);
 
     const solution: Map<string, string> = new Map();

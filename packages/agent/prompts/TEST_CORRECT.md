@@ -1163,13 +1163,24 @@ unauthConn.headers.Authorization = undefined; // Unnecessary!
 
 **Rule:** Let the SDK manage authentication headers automatically. Never directly assign `connection.headers.Authorization`. Only create new connections with empty headers when you need unauthenticated requests.
 
-### 5.11. Typia Tag Type Conversion Errors (Compilation Error Fix Only)
+### 5.11. Typia Tag Type Conversion Errors - MECHANICAL FIX RULE
 
-**⚠️ CRITICAL: This section is ONLY for fixing compilation errors. Do NOT use satisfies pattern in normal code!**
+**🤖 CRITICAL: MECHANICAL RULE - NO THINKING REQUIRED 🤖**
 
-When encountering type errors with Typia tags, especially when dealing with complex intersection types, you'll see errors where the generated type doesn't match the expected type due to missing or different tags.
+When you encounter ANY typia type tag mismatch error, apply the fix mechanically WITHOUT ANY ANALYSIS OR CONSIDERATION. This is a RULE, not a suggestion.
 
-**Common Error Patterns and Solutions:**
+**⚠️ MANDATORY FIRST: THE THREE-STEP MECHANICAL FIX**
+
+1. **See tag mismatch error?** → Don't read the details, don't analyze
+2. **Check if nullable** → Look for `| null | undefined`
+3. **Apply the pattern:**
+   - **Non-nullable:** `value satisfies BaseType as BaseType`
+   - **Nullable:** `value satisfies BaseType | null | undefined as BaseType | null | undefined`
+   - **Nullable → Non-nullable:** `typia.assert((value satisfies BaseType | null | undefined as BaseType | null | undefined)!)`
+
+**THAT'S IT. NO THINKING. JUST APPLY.**
+
+**Common Error Patterns and AUTOMATIC Solutions:**
 
 **1. API Response to Request Parameter Mismatch**
 ```typescript
@@ -1322,7 +1333,6 @@ trackProductViews(totalViews satisfies number as number);  // ✓ Works!
    - Strings: `satisfies string as string`
    - Booleans: `satisfies boolean as boolean`
    - Arrays: `satisfies string[] as string[]` or `satisfies number[] as number[]`
-   - Objects: `satisfies object as object` (rare)
 
 **When NOT to use this pattern:**
 - When code already compiles without errors
@@ -1330,7 +1340,12 @@ trackProductViews(totalViews satisfies number as number);  // ✓ Works!
 - As a preventive measure (only use when errors occur)
 - For fixing logic errors (this is only for type tag mismatches)
 
-**Rule:** The `satisfies ... as ...` pattern is a COMPILATION ERROR FIX specifically for Typia tag type mismatches. It should be your last resort when the type system cannot reconcile different tag constraints.
+**🔥 GOLDEN RULE - MEMORIZE THIS:**
+The `satisfies ... as ...` pattern is a MECHANICAL FIX for ALL Typia tag type mismatches. When you see these errors:
+- **DO NOT THINK** - Just apply the pattern
+- **DO NOT ANALYZE** - It's a mechanical rule
+- **DO NOT HESITATE** - Immediate application required
+- **This is LAW** - No exceptions, no considerations
 
 ### 5.12. Literal Type Arrays with RandomGenerator.pick
 
@@ -2131,3 +2146,4 @@ switch (action) {
 ```
 
 **Rule:** When you see "no overlap" errors, simply remove the impossible comparison. The type is already narrowed - trust TypeScript's analysis.
+
