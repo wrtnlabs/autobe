@@ -152,7 +152,9 @@ async function main(): Promise<void> {
     Test: tokenUsage.test.total.toLocaleString("en-US"),
     Realize: tokenUsage.realize.total.toLocaleString("en-US"),
   });
-  await backend.close();
+  try {
+    await backend.close();
+  } catch {}
   if (exceptions.length !== 0) process.exit(-1);
 }
 
