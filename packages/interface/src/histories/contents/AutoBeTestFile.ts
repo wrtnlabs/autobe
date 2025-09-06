@@ -1,3 +1,4 @@
+// import { IAutoBeTypeScriptCompileResult } from "../../compiler/IAutoBeTypeScriptCompileResult";
 import { AutoBeTestScenario } from "./AutoBeTestScenario";
 
 /**
@@ -61,4 +62,22 @@ export interface AutoBeTestFile {
    * executable TypeScript code.
    */
   scenario: AutoBeTestScenario;
+
+  // /**
+  //  * Compilation result of the generated test code.
+  //  *
+  //  * Contains the outcome of TypeScript compilation for this test file,
+  //  * including success indicators, diagnostic information for failures,
+  //  * or exception details if unexpected errors occurred during compilation.
+  //  *
+  //  * This result enables the AI agents to understand whether the generated
+  //  * test code is syntactically correct and type-safe, and provides detailed
+  //  * feedback for iterative refinement when compilation fails. The compilation
+  //  * process validates that the test code integrates properly with the testing
+  //  * framework, uses correct TypeScript syntax, and maintains type safety
+  //  * throughout all test scenarios.
+  //  *
+  //  * @see {@link IAutoBeTypeScriptCompileResult} for detailed result types
+  //  */
+  // result: IAutoBeTypeScriptCompileResult;
 }

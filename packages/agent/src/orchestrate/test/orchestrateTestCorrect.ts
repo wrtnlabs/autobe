@@ -18,7 +18,6 @@ import { transformTestCorrectHistories } from "./histories/transformTestCorrectH
 import { IAutoBeTestCorrectApplication } from "./structures/IAutoBeTestCorrectApplication";
 import { IAutoBeTestFunction } from "./structures/IAutoBeTestFunction";
 import { IAutoBeTestFunctionFailure } from "./structures/IAutoBeTestFunctionFailure";
-import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
 import { IAutoBeTestWriteResult } from "./structures/IAutoBeTestWriteResult";
 
 export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
@@ -74,6 +73,7 @@ const compile = async <Model extends ILlmSchema.Model>(
       scenario: func.scenario,
       location: func.location,
       content: func.script,
+      // result,
     },
     result,
     created_at: new Date().toISOString(),
@@ -118,7 +118,6 @@ const correct = async <Model extends ILlmSchema.Model>(
     ]),
     controller: createController({
       model: ctx.model,
-      artifacts: content.artifacts,
       build: (next) => {
         pointer.value = next;
       },
@@ -133,15 +132,16 @@ const correct = async <Model extends ILlmSchema.Model>(
   });
   if (pointer.value === null) throw new Error("Failed to modify test code.");
 
-  const compiler: IAutoBeCompiler = await ctx.compiler();
-  if (pointer.value.revise)
-    pointer.value.revise.final = await compiler.typescript.beautify(
-      pointer.value.revise.final,
-    );
-  else
-    pointer.value.draft = await compiler.typescript.beautify(
-      pointer.value.draft,
-    );
+  pointer.value.revise.final = await completeTestCode(
+    ctx,
+    content.artifacts,
+    pointer.value.revise.final,
+  );
+  pointer.value.draft = await completeTestCode(
+    ctx,
+    content.artifacts,
+    pointer.value.draft,
+  );
 
   ctx.dispatch({
     type: "testCorrect",
@@ -178,7 +178,6 @@ const correct = async <Model extends ILlmSchema.Model>(
 
 const createController = <Model extends ILlmSchema.Model>(props: {
   model: Model;
-  artifacts: IAutoBeTestScenarioArtifacts;
   build: (next: IAutoBeTestCorrectApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> => {
   assertSchemaModel(props.model);
@@ -192,12 +191,6 @@ const createController = <Model extends ILlmSchema.Model>(props: {
     application,
     execute: {
       rewrite: (next) => {
-        next.draft = completeTestCode(props.artifacts, next.draft);
-        if (next.revise)
-          next.revise.final = completeTestCode(
-            props.artifacts,
-            next.revise.final,
-          );
         props.build(next);
       },
     } satisfies IAutoBeTestCorrectApplication,
