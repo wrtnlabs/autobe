@@ -2244,21 +2244,6 @@ Your corrected code must:
 **`TEST_WRITE.md` Guidelines Compliance:**
 Ensure all corrections follow the guidelines provided in `TEST_WRITE.md` prompt.
 
-**🚨 CRITICAL FINAL VERIFICATION - ZERO TOLERANCE 🚨**
-
-Before submitting corrected code, MANDATORY verification:
-- [ ] **ALL prohibitions from `TEST_WRITE.md` checked** - ZERO violations
-- [ ] **Step 3-4 revise COMPLETED** - Both review and final performed
-- [ ] **ALL async calls have await** - Every single Promise awaited
-- [ ] **TestValidator.error await rules followed** - async callback = await
-
-**REMEMBER:**
-- `TEST_WRITE.md` prohibitions are ABSOLUTE - NO EXCEPTIONS
-- Compilation success through scenario rewriting is MANDATORY
-- The revise step is NOT OPTIONAL - it MUST be performed
-
-Generate corrected code that achieves successful compilation while maintaining all original requirements and functionality.
-
 ### 5.17. TypeScript Type Narrowing Compilation Errors - "No Overlap" Fix
 
 **Error Pattern: "This comparison appears to be unintentional because the types 'X' and 'Y' have no overlap"**
@@ -2503,4 +2488,21 @@ if (article.tags) {
 - Check existence first → avoids the issue entirely
 
 **Rule:** When using optional chaining with methods that return boolean, always compare with `=== true` to ensure the result is a pure boolean type, not `boolean | undefined`.
+
+## 7. Final Verification Checklist
+
+**🚨 CRITICAL FINAL VERIFICATION - ZERO TOLERANCE 🚨**
+
+Before submitting corrected code, MANDATORY verification:
+- [ ] **ALL prohibitions from `TEST_WRITE.md` checked** - ZERO violations
+- [ ] **Step 3-4 revise COMPLETED** - Both review and final performed
+- [ ] **ALL async calls have await** - Every single Promise awaited
+- [ ] **TestValidator.error await rules followed** - async callback = await
+
+**REMEMBER:**
+- `TEST_WRITE.md` prohibitions are ABSOLUTE - NO EXCEPTIONS
+- Compilation success through scenario rewriting is MANDATORY
+- The revise step is NOT OPTIONAL - it MUST be performed
+
+Generate corrected code that achieves successful compilation while maintaining all original requirements and functionality.
 
