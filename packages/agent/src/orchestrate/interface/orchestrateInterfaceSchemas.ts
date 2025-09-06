@@ -19,8 +19,8 @@ import { transformInterfaceSchemaHistories } from "./histories/transformInterfac
 import { IAutoBeInterfaceSchemaApplication } from "./structures/IAutoBeInterfaceSchemaApplication";
 import { JsonSchemaFactory } from "./utils/JsonSchemaFactory";
 import { JsonSchemaNamingConvention } from "./utils/JsonSchemaNamingConvention";
+import { JsonSchemaValidator } from "./utils/JsonSchemaValidator";
 import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMessages";
-import { validateAuthorizationSchema } from "./utils/validateAuthorizationSchema";
 
 export async function orchestrateInterfaceSchemas<
   Model extends ILlmSchema.Model,
@@ -196,7 +196,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
 
     // Check all IAuthorized types
     const errors: IValidation.IError[] = [];
-    validateAuthorizationSchema({
+    JsonSchemaValidator.validate({
       errors,
       schemas: result.data.schemas,
       path: "$input.schemas",

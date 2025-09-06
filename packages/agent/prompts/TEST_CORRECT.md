@@ -1375,79 +1375,7 @@ If `messageText` contains "Promises must be awaited" (regardless of what follows
 - "Promises must be awaited, end with a call to .then" → ADD AWAIT
 - "Promises must be awaited..." (any continuation) → ADD AWAIT
 
-### 5.10. Connection Headers and Authentication
-
-**IMPORTANT**: The SDK automatically manages authentication headers when you call authentication APIs. You should NOT manually manipulate `connection.headers` for authentication purposes.
-
-**If you encounter compilation errors related to undefined `connection.headers`:**
-
-This typically indicates incorrect manual header manipulation. The proper approach is:
-
-1. **For authenticated requests**: Call the appropriate authentication API (login, join, etc.) and the SDK will manage headers automatically
-2. **For unauthenticated requests**: Create a new connection with empty headers:
-   ```typescript
-   const unauthConn: api.IConnection = { ...connection, headers: {} };
-   ```
-
-**CRITICAL: Never manually assign connection.headers.Authorization**
-
-The SDK automatically manages authentication headers. Manual manipulation is a major anti-pattern:
-
-```typescript
-// ❌ WRONG: Never manually assign Authorization header
-connection.headers ??= {};
-connection.headers.Authorization = "Bearer token"; // SDK handles this!
-
-// ❌ WRONG: Never manually set to null/undefined
-connection.headers.Authorization = null;
-connection.headers.Authorization = undefined;
-
-// ❌ WRONG: Pointless operations on empty objects
-const unauthConn: api.IConnection = { ...connection, headers: {} };
-delete unauthConn.headers.Authorization; // Already empty!
-```
-
-**Correct authentication approach:**
-```typescript
-// ✅ CORRECT: Let SDK manage authentication
-await api.functional.users.authenticate.login(connection, {
-  body: { email: "user@example.com", password: "password" }
-});
-// Authorization header is now set by SDK - don't touch it!
-
-// ✅ CORRECT: If you need to remove auth (rare)
-if (connection.headers?.Authorization) {
-  delete connection.headers.Authorization;
-}
-```
-
-**Custom headers (NOT Authorization):**
-```typescript
-// ✅ CORRECT: Custom headers are OK
-connection.headers ??= {};
-connection.headers["X-Request-ID"] = "12345";
-connection.headers["X-Client-Version"] = "1.0.0";
-// But NEVER set Authorization manually!
-```
-
-**CRITICAL: Avoid unnecessary operations on empty headers:**
-```typescript
-// If you want an unauthorized connection:
-// ✅ CORRECT: Just create empty headers
-const unauthConn: api.IConnection = { ...connection, headers: {} };
-
-// ❌ WRONG: These are ALL pointless operations on an empty object:
-const unauthConn: api.IConnection = { ...connection, headers: {} };
-delete unauthConn.headers.Authorization;      // Unnecessary!
-unauthConn.headers.Authorization = null;      // Unnecessary!
-unauthConn.headers.Authorization = undefined; // Unnecessary!
-
-// Remember: {} already means no properties exist. Don't perform operations on non-existent properties!
-```
-
-**Rule:** Let the SDK manage authentication headers automatically. Never directly assign `connection.headers.Authorization`. Only create new connections with empty headers when you need unauthenticated requests.
-
-### 5.11. Typia Tag Type Conversion Errors - MECHANICAL FIX RULE
+### 5.10. Typia Tag Type Conversion Errors - MECHANICAL FIX RULE
 
 **🤖 CRITICAL: MECHANICAL RULE - NO THINKING REQUIRED 🤖**
 
@@ -1681,7 +1609,7 @@ The `satisfies ... as ...` pattern is a MECHANICAL FIX for ALL Typia tag type mi
 - **DO NOT HESITATE** - Immediate application required
 - **This is LAW** - No exceptions, no considerations
 
-### 5.12. Literal Type Arrays with RandomGenerator.pick
+### 5.11. Literal Type Arrays with RandomGenerator.pick
 
 When selecting from a fixed set of literal values using `RandomGenerator.pick()`, you MUST use `as const` to preserve literal types:
 
@@ -1769,7 +1697,7 @@ const limitedRole = RandomGenerator.pick(limitedRoles);
 3. Never try to cast a mutable array back to an immutable tuple type
 4. If you need the union type, cast to `(Type1 | Type2)[]` instead
 
-### 5.13. Fixing Illogical Code Patterns During Compilation
+### 5.12. Fixing Illogical Code Patterns During Compilation
 
 When fixing compilation errors, also look for illogical code patterns that cause both compilation and logical errors:
 
@@ -1889,35 +1817,18 @@ const comment = await api.functional.posts.comments.create(connection, {
 **5. Unnecessary Operations on Already-Modified Objects**
 ```typescript
 // ILLOGICAL CODE (may not cause compilation error but is nonsensical):
-const unauthConn: api.IConnection = { ...connection, headers: {} };
-delete unauthConn.headers.Authorization;  // Deleting from empty object!
+const emptyData = {};
+delete emptyData.property;  // Deleting from empty object!
 
 // MORE ILLOGICAL CODE:
-const unauthConn: api.IConnection = { ...connection, headers: {} };
-unauthConn.headers.Authorization = null;  // Setting null in empty object!
-unauthConn.headers.Authorization = undefined;  // Setting undefined in empty object!
-
-// CRITICAL ERROR: Manually assigning authentication token
-connection.headers ??= {};
-connection.headers.Authorization = "Bearer my-token";  // NEVER DO THIS! SDK manages auth!
+const emptyRecord = {};
+emptyRecord.field = null;  // Setting null in empty object!
+emptyRecord.item = undefined;  // Setting undefined in empty object!
 
 // FIX: Remove ALL unnecessary operations
-const unauthConn: api.IConnection = { ...connection, headers: {} };
-// STOP HERE! The empty object {} already means no Authorization header exists!
+const cleanData = {};
+// STOP HERE! The empty object {} already means no properties exist!
 // Do NOT: delete, set to null, set to undefined, or any other pointless operation
-
-// OR if you need to remove a custom header from existing headers:
-const modifiedConn: api.IConnection = {
-  ...connection,
-  headers: Object.fromEntries(
-    Object.entries(connection.headers || {}).filter(([key]) => key !== "X-Custom-Header")
-  )
-};
-
-// BUT for Authorization removal (rare), check existence first:
-if (connection.headers?.Authorization) {
-  delete connection.headers.Authorization;
-}
 ```
 
 **CRITICAL REMINDER**: Always review your TypeScript code logically before submitting:
@@ -1930,7 +1841,7 @@ If you find yourself writing code like `delete emptyObject.property`, STOP and r
 
 **Rule:** When fixing compilation errors, don't just fix the syntax - also ensure the logic makes business sense. Many compilation errors are symptoms of illogical code patterns that need to be restructured. Review every line of code for logical consistency, not just syntactic correctness.
 
-### 5.14. Using Typia for Type Assertions
+### 5.13. Using Typia for Type Assertions
 
 **When to use typia.assert vs typia.assertGuard:**
 
@@ -1961,7 +1872,7 @@ typia.assertGuard<{ data: { items: string[] } }>(result);
 const items: string[] = result.data.items; // Safe after assertGuard
 ```
 
-### 5.15. Handling Non-Existent Type Properties - ZERO TOLERANCE FOR HALLUCINATION
+### 5.14. Handling Non-Existent Type Properties - ZERO TOLERANCE FOR HALLUCINATION
 
 **🚨 CRITICAL ANTI-HALLUCINATION PROTOCOL 🚨**
 
@@ -2078,7 +1989,7 @@ TestValidator.equals("bio", profile.bio, "Software Developer");
 
 **Rule:** Never force usage of non-existent properties. Always work within the constraints of the actual type definitions. If a test scenario cannot be implemented due to missing properties, gracefully skip or modify that scenario rather than attempting workarounds.
 
-### 5.16. Handling Possibly Undefined Properties in Comparisons
+### 5.15. Handling Possibly Undefined Properties in Comparisons
 
 When you encounter the error **"someProperty is possibly undefined"** during comparisons or operations, this occurs when the property type includes `undefined` as a possible value (e.g., `number | undefined`).
 
@@ -2191,7 +2102,6 @@ Your corrected code must:
 - Resolve all TypeScript compilation errors identified in the diagnostics
 - Compile successfully without any errors or warnings
 - Maintain proper TypeScript syntax and type safety
-- **CRITICAL**: Never manually assign `connection.headers.Authorization` - let SDK manage it
 - **🚨 CRITICAL**: EVERY Promise/async function call MUST have `await` - NO EXCEPTIONS
 
 **Promise/Await Verification Checklist - MANDATORY:**
@@ -2244,7 +2154,7 @@ Your corrected code must:
 **`TEST_WRITE.md` Guidelines Compliance:**
 Ensure all corrections follow the guidelines provided in `TEST_WRITE.md` prompt.
 
-### 5.17. TypeScript Type Narrowing Compilation Errors - "No Overlap" Fix
+### 5.16. TypeScript Type Narrowing Compilation Errors - "No Overlap" Fix
 
 **Error Pattern: "This comparison appears to be unintentional because the types 'X' and 'Y' have no overlap"**
 
@@ -2325,7 +2235,7 @@ switch (action) {
 
 **Rule:** When you see "no overlap" errors, simply remove the impossible comparison. The type is already narrowed - trust TypeScript's analysis.
 
-### 5.18. Optional Chaining with Array Methods Returns Union Types
+### 5.17. Optional Chaining with Array Methods Returns Union Types
 
 **Problem: Optional chaining (`?.`) with array methods creates `T | undefined` types**
 

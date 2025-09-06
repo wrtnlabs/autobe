@@ -18,8 +18,8 @@ import { transformInterfaceSchemasReviewHistories } from "./histories/transformI
 import { IAutoBeInterfaceSchemasReviewApplication } from "./structures/IAutobeInterfaceSchemasReviewApplication";
 import { JsonSchemaFactory } from "./utils/JsonSchemaFactory";
 import { JsonSchemaNamingConvention } from "./utils/JsonSchemaNamingConvention";
+import { JsonSchemaValidator } from "./utils/JsonSchemaValidator";
 import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMessages";
-import { validateAuthorizationSchema } from "./utils/validateAuthorizationSchema";
 
 export async function orchestrateInterfaceSchemasReview<
   Model extends ILlmSchema.Model,
@@ -150,7 +150,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
     }
 
     const errors: IValidation.IError[] = [];
-    validateAuthorizationSchema({
+    JsonSchemaValidator.validate({
       errors,
       schemas: result.data.content,
       path: "$input.content",

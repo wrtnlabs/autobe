@@ -259,13 +259,7 @@ export async function update(
   props: update.Props,
 ): Promise<update.Output> {
   return PlainFetcher.fetch(
-    {
-      ...connection,
-      headers: {
-        ...connection.headers,
-        "Content-Type": "application/json",
-      },
-    },
+    connection,
     {
       ...update.METADATA,
       template: update.METADATA.path,
@@ -1049,6 +1043,32 @@ typia.random<string & tags.Format<"uuid">>();
 typia.random<number & tags.Type<"uint32"> & tags.Minimum<1> & tags.Maximum<100>>();
 ```
 
+**⚠️ CRITICAL: Tag Generic Syntax - Common Mistake**
+AI agents frequently make this syntax error - tags use generic `<>` syntax, NOT function call `()` syntax:
+
+```typescript
+// ✅ CORRECT: Tags use generic angle brackets
+typia.random<string & tags.Format<"email">>();  // CORRECT
+typia.random<string & tags.Format<"uuid">>();   // CORRECT
+typia.random<number & tags.Type<"int32">>();    // CORRECT
+
+// ❌ WRONG: Tags are NOT function calls - this causes compilation error
+typia.random<string & tags.Format("email")>();  // COMPILATION ERROR!
+typia.random<string & tags.Format("uuid")>();   // COMPILATION ERROR!
+typia.random<number & tags.Type("int32")>();    // COMPILATION ERROR!
+
+// More examples:
+// ✅ CORRECT
+typia.random<string & tags.MinLength<5> & tags.MaxLength<10>>();
+typia.random<number & tags.Minimum<0> & tags.Maximum<100>>();
+
+// ❌ WRONG
+typia.random<string & tags.MinLength(5) & tags.MaxLength(10)>();  // ERROR!
+typia.random<number & tags.Minimum(0) & tags.Maximum(100)>();      // ERROR!
+```
+
+**REMEMBER**: Tags are TypeScript type-level constructs using generic syntax `<>`, NOT runtime functions using parentheses `()`.
+
 **3. Common type constraint patterns:**
 ```typescript
 // String formats
@@ -1764,7 +1784,7 @@ export async function test_api_shopping_sale_review_update(
         } satisfies IShoppingSeller.IJoin,
       },
     );
-  // Authentication token is automatically stored in connection.headers
+  // Authentication token is automatically handled by SDK
   typia.assert(seller);
 }
 ```
@@ -1772,57 +1792,46 @@ export async function test_api_shopping_sale_review_update(
 > Note: The above example uses fictional functions and types - use only the actual materials provided in the next system prompt.
 
 **Authentication behavior:**
-- When API functions return authentication tokens, the SDK automatically stores them in `connection.headers`
+- The SDK automatically handles all authentication through API calls
 - You don't need to manually handle token storage or header management
 - Simply call authentication APIs when needed and continue with authenticated requests
 - Token switching (e.g., between different user roles) is handled automatically by calling the appropriate authentication API functions
 
-**CRITICAL: Never manually assign connection.headers.Authorization**
-- The SDK internally manages `connection.headers.Authorization` when you call authentication API functions
-- **NEVER** directly assign values to `connection.headers.Authorization` in any form:
-  ```typescript
-  // ❌ WRONG: Never do this!
-  connection.headers.Authorization = "Bearer token";
-  connection.headers.Authorization = null;
-  connection.headers.Authorization = undefined;
-  ```
-- If you need to remove authentication (rare case), check existence first:
-  ```typescript
-  // ✅ CORRECT: Check existence before deletion
-  if (connection.headers?.Authorization) {
-    delete connection.headers.Authorization;
-  }
-  ```
+**🚨 CRITICAL: ABSOLUTE PROHIBITION ON connection.headers 🚨**
 
-**Connection Headers Initialization:**
-- `connection.headers` has a default value of `undefined`
-- Before assigning any custom headers (NOT Authorization), you must initialize it as an object:
-  ```typescript
-  // Example: Adding a custom header (NOT Authorization)
-  connection.headers ??= {};
-  connection.headers["X-Request-ID"] = "12345"; // Custom headers are OK
-  ```
-- **IMPORTANT**: When creating an unauthorized connection:
-  ```typescript
-  // ✅ CORRECT: Just create empty headers
-  const unauthConn: api.IConnection = { ...connection, headers: {} };
-  
-  // ❌ WRONG: Don't do unnecessary operations on empty objects
-  const unauthConn: api.IConnection = { ...connection, headers: {} };
-  delete unauthConn.headers.Authorization;  // Pointless!
-  unauthConn.headers.Authorization = null;   // Pointless!
-  unauthConn.headers.Authorization = undefined;  // Pointless!
-  
-  // The empty object {} already means no Authorization header exists!
-  ```
+**The SDK has COMPLETE and EXCLUSIVE control over connection.headers management.**
+**E2E test functions have ZERO need to touch headers - EVER.**
 
-**Custom Headers (NOT Authorization):**
+**Why this is ABSOLUTE:**
+- The SDK automatically manages ALL headers including authentication tokens
+- The SDK handles token storage, updates, and removal internally
+- The SDK manages all header lifecycle operations
+- E2E tests ONLY need to call API functions - headers are NOT your concern
+
+**NEVER touch connection.headers in ANY way. This includes:**
+- ❌ NEVER access `connection.headers`
+- ❌ NEVER modify `connection.headers`
+- ❌ NEVER delete properties from `connection.headers`
+- ❌ NEVER initialize `connection.headers`
+- ❌ NEVER check `connection.headers`
+- ❌ NEVER think about `connection.headers`
+
+**The ONLY acceptable pattern for unauthenticated connections:**
 ```typescript
-// ✅ CORRECT: Custom headers are OK
-connection.headers ??= {};
-connection.headers["X-Request-ID"] = "12345";
-connection.headers["X-Client-Version"] = "1.0.0";
-// But NEVER set Authorization manually!
+// ✅ CORRECT: Create empty headers object without any manipulation
+const unauthConn: api.IConnection = { ...connection, headers: {} };
+// STOP HERE - DO NOT TOUCH headers AFTER CREATION
+```
+
+**ZERO TOLERANCE - Any code touching connection.headers is FORBIDDEN:**
+```typescript
+// ❌ ALL OF THESE ARE ABSOLUTELY FORBIDDEN:
+connection.headers.Authorization = "Bearer token";     // FORBIDDEN!
+connection.headers["X-Custom"] = "value";             // FORBIDDEN!
+delete connection.headers.Authorization;               // FORBIDDEN!
+connection.headers ??= {};                            // FORBIDDEN!
+if (connection.headers?.Authorization) { }            // FORBIDDEN!
+Object.entries(connection.headers || {})              // FORBIDDEN!
 ```
 
 **IMPORTANT: Use only actual authentication APIs**
@@ -2082,10 +2091,10 @@ try {
 **3. NEVER Delete/Modify Non-Existent Properties:**
 ```typescript
 // ❌ ABSOLUTELY FORBIDDEN:
-const emptyHeaders = { ...connection, headers: {} };
-delete emptyHeaders.headers.Authorization;     // FORBIDDEN! Already empty!
-emptyHeaders.headers.Authorization = null;     // FORBIDDEN! Pointless!
-if (emptyHeaders.headers.Authorization) {...}  // FORBIDDEN! Always false!
+const emptyObject = {};
+delete emptyObject.someProperty;              // FORBIDDEN! Already empty!
+emptyObject.nonExistent = null;              // FORBIDDEN! Pointless!
+if (emptyObject.someProperty) {...}          // FORBIDDEN! Always false!
 ```
 
 **4. NEVER Validate Response Data Types After typia.assert():**
@@ -2639,28 +2648,21 @@ const subCategory = await api.functional.categories.create(connection, {
 **6. Performing Unnecessary Operations on Already-Modified Objects**
 ```typescript
 // ❌ ILLOGICAL: Deleting properties from an empty object
-const unauthConn: api.IConnection = { ...connection, headers: {} };
-delete unauthConn.headers.Authorization;  // headers is already an empty object!
+const emptyData = {};
+delete emptyData.property;  // Object is already empty!
 
 // ❌ ILLOGICAL: Setting null to properties in an empty object
-const unauthConn: api.IConnection = { ...connection, headers: {} };
-unauthConn.headers.Authorization = null;  // Pointless! headers is already empty!
+const emptyRecord = {};
+emptyRecord.field = null;  // Pointless! Object is already empty!
 
 // ❌ ILLOGICAL: Setting properties that are already set
 const newUser = { name: "John", age: 30 };
 newUser.name = "John";  // Already set to "John"!
 
 // ✅ LOGICAL: Only perform necessary modifications
-// If you want unauthorized connection, just create empty headers
+// For unauthenticated connections, just create empty headers
 const unauthConn: api.IConnection = { ...connection, headers: {} };
-
-// If you want to remove specific header from existing headers
-const unauthConn: api.IConnection = { 
-  ...connection, 
-  headers: Object.fromEntries(
-    Object.entries(connection.headers || {}).filter(([key]) => key !== "X-Custom-Header")
-  )
-};
+// STOP - DO NOT manipulate headers after creation
 ```
 
 **IMPORTANT**: Always review your TypeScript code logically. Ask yourself:
@@ -3014,7 +3016,7 @@ Before submitting your generated E2E test code, verify:
 - [ ] All API responses are properly validated with `typia.assert()`
 - [ ] Authentication is handled correctly without manual token management
 - [ ] Only actual authentication APIs are used (no helper functions)
-- [ ] **CRITICAL**: NEVER directly assign `connection.headers.Authorization` - let SDK manage it
+- [ ] **CRITICAL**: NEVER touch connection.headers in any way - ZERO manipulation allowed
 
 **Business Logic:**
 - [ ] Test follows a logical, realistic business workflow
