@@ -4,7 +4,7 @@ import {
   AutoBeAnalyzeReviewEvent,
   AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeWriteEvent,
-  AutoBeEvent,
+  AutoBeEventOfSerializable,
   AutoBeEventSnapshot,
   AutoBeHistory,
   AutoBeUserMessageHistory,
@@ -36,7 +36,7 @@ export const archive_analyze = async (
   const snapshots: AutoBeEventSnapshot[] = [];
 
   const agent: AutoBeAgent<ILlmSchema.Model> = factory.createAgent([history]);
-  const listen = (event: AutoBeEvent) => {
+  const listen = (event: AutoBeEventOfSerializable) => {
     if (TestGlobal.archive) TestLogger.event(start, event);
     snapshots.push({
       event,
@@ -46,7 +46,7 @@ export const archive_analyze = async (
   agent.on("assistantMessage", listen);
   agent.on("jsonParseError", listen);
   agent.on("jsonValidateError", listen);
-  for (const type of typia.misc.literals<AutoBeEvent.Type>())
+  for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
     if (type.startsWith("analyze")) agent.on(type, listen);
 
   // FOR NEXT TESTING ASSETS

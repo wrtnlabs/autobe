@@ -1,17 +1,9 @@
 import { IAutoBeTokenUsageJson } from "../json";
-import { AutoBeEvent } from "./AutoBeEvent";
-import { AutoBeVendorRequestEvent } from "./AutoBeVendorRequestEvent";
-import { AutoBeVendorResponseEvent } from "./AutoBeVendorResponseEvent";
+import { AutoBeEventOfSerializable } from "./AutoBeEventOfSerializable";
 
 /** @internal */
 export interface AutoBeEventSnapshot<
-  Event extends Exclude<
-    AutoBeEvent,
-    AutoBeVendorRequestEvent | AutoBeVendorResponseEvent
-  > = Exclude<
-    AutoBeEvent,
-    AutoBeVendorRequestEvent | AutoBeVendorResponseEvent
-  >,
+  Event extends AutoBeEventOfSerializable = AutoBeEventOfSerializable,
 > {
   event: Event;
   tokenUsage: IAutoBeTokenUsageJson;

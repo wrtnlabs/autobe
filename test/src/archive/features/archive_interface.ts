@@ -2,7 +2,7 @@ import { AutoBeTokenUsage, orchestrate } from "@autobe/agent";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeAssistantMessageHistory,
-  AutoBeEvent,
+  AutoBeEventOfSerializable,
   AutoBeEventSnapshot,
   AutoBeInterfaceHistory,
 } from "@autobe/interface";
@@ -27,7 +27,7 @@ export const archive_interface = async (
   const snapshots: AutoBeEventSnapshot[] = [];
   const start: Date = new Date();
 
-  const listen = (event: AutoBeEvent) => {
+  const listen = (event: AutoBeEventOfSerializable) => {
     if (TestGlobal.archive) TestLogger.event(start, event);
     snapshots.push({
       event,
@@ -37,7 +37,7 @@ export const archive_interface = async (
   agent.on("assistantMessage", listen);
   agent.on("jsonParseError", listen);
   agent.on("jsonValidateError", listen);
-  for (const type of typia.misc.literals<AutoBeEvent.Type>())
+  for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
     if (type.startsWith("interface")) agent.on(type, listen);
 
   // REQUEST INTERFACE GENERATION

@@ -3,7 +3,7 @@ import { orchestrateRealizeCorrect } from "@autobe/agent/src/orchestrate/realize
 import { IAutoBeRealizeScenarioResult } from "@autobe/agent/src/orchestrate/realize/structures/IAutoBeRealizeScenarioResult";
 import { CompressUtil, FileSystemIterator } from "@autobe/filesystem";
 import {
-  AutoBeEvent,
+  AutoBeEventOfSerializable,
   AutoBeEventSnapshot,
   AutoBeRealizeAuthorization,
   AutoBeRealizeFunction,
@@ -31,7 +31,7 @@ export const validate_agent_realize_correct = async (
   const { agent } = await prepare_agent_realize(factory, project);
   const start: Date = new Date();
   const snapshots: AutoBeEventSnapshot[] = [];
-  const listen = (event: AutoBeEvent) => {
+  const listen = (event: AutoBeEventOfSerializable) => {
     if (TestGlobal.archive) TestLogger.event(start, event);
     snapshots.push({
       event,
@@ -40,7 +40,7 @@ export const validate_agent_realize_correct = async (
   };
 
   agent.on("assistantMessage", listen);
-  for (const type of typia.misc.literals<AutoBeEvent.Type>())
+  for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
     if (type.startsWith("realize")) agent.on(type, listen);
 
   const model: string = TestGlobal.getVendorModel();

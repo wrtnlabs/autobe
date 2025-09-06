@@ -10,6 +10,7 @@ export * from "./AutoBeJsonValidateErrorEvent";
 export * from "./AutoBeJsonParseErrorEvent";
 
 /** @internal */
+export * from "./AutoBeEventOfSerializable";
 export * from "./AutoBeEventSnapshot";
 export * from "./AutoBeProgressEventBase";
 export * from "./AutoBeTokenUsageEventBase";

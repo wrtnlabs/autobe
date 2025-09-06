@@ -70,7 +70,7 @@ export namespace IAutoBeTestWriteApplication {
      *
      * Workflow: Draft → Review analysis → Final implementation
      */
-    revise?: IReviseProps;
+    revise: IReviseProps;
   }
 
   export interface IReviseProps {

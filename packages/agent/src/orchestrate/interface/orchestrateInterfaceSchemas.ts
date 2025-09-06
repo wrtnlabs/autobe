@@ -56,6 +56,7 @@ export async function orchestrateInterfaceSchemas<
   ))
     Object.assign(x, y);
   Object.assign(x, presets);
+  JsonSchemaFactory.authorize(x);
   return x;
 }
 

@@ -2,7 +2,7 @@ import { AutoBeTokenUsage, orchestrate } from "@autobe/agent";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeAssistantMessageHistory,
-  AutoBeEvent,
+  AutoBeEventOfSerializable,
   AutoBeEventSnapshot,
   AutoBePrismaHistory,
   AutoBePrismaInsufficientEvent,
@@ -30,7 +30,7 @@ export const archive_prisma = async (
   const start: Date = new Date();
   const model: string = TestGlobal.getVendorModel();
   const snapshots: AutoBeEventSnapshot[] = [];
-  const listen = (event: AutoBeEvent) => {
+  const listen = (event: AutoBeEventOfSerializable) => {
     if (TestGlobal.archive) TestLogger.event(start, event);
     snapshots.push({
       event,
@@ -40,7 +40,7 @@ export const archive_prisma = async (
   agent.on("assistantMessage", listen);
   agent.on("jsonParseError", listen);
   agent.on("jsonValidateError", listen);
-  for (const type of typia.misc.literals<AutoBeEvent.Type>())
+  for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
     if (type.startsWith("prisma")) agent.on(type, listen);
 
   let startEvent: AutoBePrismaStartEvent | null = null;
