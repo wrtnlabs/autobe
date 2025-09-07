@@ -477,6 +477,29 @@ function unwrapNullableUndefinable<T>(value: T | null | undefined): T {
 3. **See `T | null`?** → Write `!== null`
 4. **NEVER MIX THESE UP** → Each pattern has exactly ONE solution
 
+**Common Error Patterns and IMMEDIATE Fixes:**
+
+```typescript
+// ERROR: "Type 'string | null | undefined' is not assignable to type 'string'"
+const data: string | null | undefined = getData();
+const value: string = data; // ERROR!
+
+// MECHANICAL FIX: Apply the pattern
+if (data !== null && data !== undefined) {
+  const value: string = data; // SUCCESS
+}
+
+// ERROR: "Type 'null' is not assignable to type 'string | undefined'"
+const request = {
+  userId: null  // ERROR if userId is string | undefined
+};
+
+// MECHANICAL FIX: Match the type pattern
+const request = {
+  userId: undefined  // or omit the property entirely
+};
+```
+
 ### 4.6. Property Access Errors - Non-existent and Missing Required Properties
 
 **1. Non-existent Properties**
@@ -542,6 +565,131 @@ When you encounter ANY typia type tag mismatch error, apply the fix mechanically
 
 **THAT'S IT. NO THINKING. JUST APPLY.**
 
+**Common Error Patterns and AUTOMATIC Solutions:**
+
+**1. API Response to Request Parameter Mismatch**
+```typescript
+// API returns basic page number from search result
+const searchResult = await api.functional.products.search(connection, { query: "laptop" });
+const currentPage: number & tags.Type<"int32"> = searchResult.pagination.page;
+
+// Another API requires page >= 1 validation
+const reviews = await api.functional.reviews.getList(connection, {
+  productId: productId,
+  page: currentPage  // ERROR: Type 'number & Type<"int32">' is not assignable to 'number & Type<"int32"> & Minimum<1>'
+});
+
+// SOLUTION: When API response doesn't match another API's stricter requirements
+const reviews = await api.functional.reviews.getList(connection, {
+  productId: productId,
+  page: currentPage satisfies number as number  // ✓ Works!
+});
+```
+
+**2. Form Validation to API Parameter**
+```typescript
+// User form input has UI-specific constraints (1-100 items per page)
+const userPreference: number & tags.Type<"int32"> & tags.Minimum<1> & tags.Maximum<100> = form.itemsPerPage;
+
+// Database query API has different limits (0-1000)
+const queryResult = await api.functional.database.query(connection, {
+  table: "products",
+  limit: userPreference  // ERROR: Minimum<1> & Maximum<100> doesn't match Minimum<0> & Maximum<1000>
+});
+
+// SOLUTION: User preferences validated differently than database constraints
+const queryResult = await api.functional.database.query(connection, {
+  table: "products",
+  limit: userPreference satisfies number as number  // ✓ Works!
+});
+```
+
+**3. Pagination Parameters**
+```typescript
+// ERROR: Basic int32 type to Minimum<0> requirement
+const requestBody = {
+  page: 1,
+  limit: 10  // Type: number & Type<"int32">
+} satisfies IRequest;
+
+const response = await api.functional.items.list(connection, {
+  page: requestBody.page,  // ERROR: Type 'number & Type<"int32">' is not assignable to 'number & Type<"int32"> & Minimum<0>'
+  limit: requestBody.limit // ERROR: same issue
+});
+
+// SOLUTION: Use satisfies pattern
+const response = await api.functional.items.list(connection, {
+  page: requestBody.page satisfies number as number,
+  limit: requestBody.limit satisfies number as number
+});
+```
+
+**4. TestValidator.equals Tag Type Errors - MECHANICAL FIX**
+
+```typescript
+// ERROR: Type 'number & Type<"int32"> & Minimum<0>' is not assignable to 'number & Type<"int32">'
+const x: number & Type<"int32"> & Minimum<0>;
+const y: number & Type<"int32">;
+
+TestValidator.equals("value", x, y); // compile error
+
+// MECHANICAL FIX: Apply satisfies pattern to the stricter type
+TestValidator.equals("value", x, y satisfies number as number); // compile success
+```
+
+**5. Union Type with Literal Numbers**
+```typescript
+// ERROR: Type '1 | (number & Type<"int32">)' is not assignable to parameter of type '(number & Type<"int32"> & Minimum<0>) | null | undefined'
+const pageNumber: 1 | (number & Type<"int32">) = Math.max(1, userInput);
+
+const response = await api.functional.data.list(connection, {
+  page: pageNumber  // ERROR: union type not compatible
+});
+
+// SOLUTION: Apply mechanical fix
+const response = await api.functional.data.list(connection, {
+  page: pageNumber satisfies number as number
+});
+```
+
+**6. Date/Time String Type Mismatches**
+```typescript
+// ERROR: Argument of type '(string & Format<"date-time">) | null' is not assignable to parameter of type 'null | undefined'
+const scheduledTime: (string & Format<"date-time">) | null = getScheduledTime();
+
+const request = await api.functional.notifications.create(connection, {
+  body: {
+    message: "Hello",
+    scheduledAt: scheduledTime  // ERROR: date-time string not assignable to null | undefined
+  }
+});
+
+// SOLUTION: Check what the API actually expects and transform accordingly
+// If API expects null/undefined when no scheduling:
+const request = await api.functional.notifications.create(connection, {
+  body: {
+    message: "Hello",
+    scheduledAt: scheduledTime ? scheduledTime satisfies string as string : undefined
+  }
+});
+```
+
+**GOLDEN RULES for Tag Type Fixes:**
+
+1. **ONLY use this pattern when you get compilation errors** - Never proactively add it
+2. **Always use base types in satisfies** - `satisfies number`, `satisfies string`, `satisfies boolean`, `satisfies string[]`
+3. **Never include tags in satisfies** - NOT `satisfies (number & tags.Type<"int32">)`
+4. **The pattern is always**: `value satisfies BaseType as BaseType`
+5. **Common base types**:
+   - Numbers: `satisfies number as number`
+   - Strings: `satisfies string as string`
+   - Booleans: `satisfies boolean as boolean`
+   - Arrays: `satisfies string[] as string[]` or `satisfies number[] as number[]`
+   - Nullable or undefindable:
+     - `satisfies BaseType | null as BaseType | null`
+     - `satisfies BaseType | undefined as BaseType | undefined`
+     - `satisfies BaseType | null | undefined as BaseType | null | undefined`
+
 ### 4.9. Literal Type Arrays with RandomGenerator.pick
 
 When selecting from a fixed set of literal values using `RandomGenerator.pick()`, you MUST use `as const` to preserve literal types:
@@ -554,6 +702,18 @@ const role = RandomGenerator.pick(possibleRoles); // role is type 'string', not 
 // CORRECT: Use 'as const' to preserve literal types
 const possibleRoles = ["super_admin", "compliance_officer", "customer_service"] as const;
 const role = RandomGenerator.pick(possibleRoles); // role is type "super_admin" | "compliance_officer" | "customer_service"
+
+const adminData = {
+  email: "admin@example.com",
+  role: role  // Works! Literal type matches expected union
+} satisfies IAdmin.ICreate;
+
+// More examples:
+const statuses = ["active", "inactive", "pending"] as const;
+const status = RandomGenerator.pick(statuses);
+
+const priorities = [1, 2, 3, 4, 5] as const;
+const priority = RandomGenerator.pick(priorities);
 ```
 
 ### 4.10. Handling Non-Existent Type Properties - ZERO TOLERANCE FOR HALLUCINATION
@@ -585,6 +745,27 @@ When you encounter the error **"Property 'someProperty' does not exist on type '
    - **NEVER skip** - always find creative alternatives with REAL properties
    - **REWRITE** the entire test logic if necessary
    - **SUCCEED** through adaptation to reality, not fantasy
+
+**Common Scenarios and Solutions:**
+
+```typescript
+// ORIGINAL SCENARIO: Test user profile with social media links
+// ERROR: Property 'socialMedia' does not exist on type 'IProfile'
+
+// SOLUTION: Adapt test to use available properties only
+const profile = await api.functional.profiles.create(connection, {
+  body: {
+    name: "John Doe",
+    bio: "Software Developer"
+    // Removed socialMedia - not available in IProfile type
+  } satisfies IProfile.ICreate
+});
+
+// Test only available properties
+TestValidator.equals("name", profile.name, "John Doe");
+TestValidator.equals("bio", profile.bio, "Software Developer");
+// Skip social media testing - feature not available
+```
 
 ### 4.11. Missing Required Properties - SCENARIO MODIFICATION MANDATE
 
@@ -623,7 +804,95 @@ const orderData = {
   quantity: 1,
   userId: user.id  // NOW WE HAVE IT!
 } satisfies IOrder.ICreate;
+
+// SOLUTION 2: If user already exists somewhere, find it
+const orderData = {
+  productId: product.id,
+  quantity: 1,
+  userId: existingUser.id  // Use any available user
+} satisfies IOrder.ICreate;
+
+// SOLUTION 3: If property type is simple, generate it
+const orderData = {
+  productId: product.id,
+  quantity: 1,
+  referenceNumber: typia.random<string>()  // Generate missing string
+} satisfies IOrder.ICreate;
 ```
+
+**Array Assignment Pattern:**
+```typescript
+// ERROR: Type 'IBasicProduct[]' is not assignable to 'IDetailedProduct[]'
+//        Property 'description' is missing in type 'IBasicProduct'
+const basicProducts: IBasicProduct[] = await api.functional.products.list(connection);
+const detailedProducts: IDetailedProduct[] = basicProducts; // ERROR!
+
+// SOLUTION: Transform the array by adding missing properties
+const detailedProducts: IDetailedProduct[] = basicProducts.map(basic => ({
+  ...basic,
+  description: "Default description",  // ADD missing property
+  specifications: {},                   // ADD missing property
+  inventory: { stock: 100 }            // ADD missing property
+}));
+
+// OR: Fetch detailed products from different endpoint
+const detailedProducts: IDetailedProduct[] = await api.functional.products.detailed.list(connection);
+```
+
+**YOUR MODIFICATION TOOLKIT:**
+1. **Missing user/auth data?** → Create a user/admin first
+2. **Missing reference IDs?** → Create the referenced entity
+3. **Missing timestamps?** → Use `new Date().toISOString()`
+4. **Missing descriptions/text?** → Use reasonable defaults
+5. **Missing numbers?** → Use sensible values (1, 100, etc.)
+6. **Missing complex objects?** → Build them step by step
+
+**SCENARIO REWRITING EXAMPLES:**
+```typescript
+// ORIGINAL SCENARIO: "Create an order"
+// PROBLEM: IOrder.ICreate requires customerId, shippingAddressId, paymentMethodId
+
+// REWRITTEN SCENARIO: "Create customer with address and payment, then order"
+const customer = await api.functional.customers.create(connection, {
+  body: { name: "Test User", email: "test@example.com" } satisfies ICustomer.ICreate
+});
+
+const address = await api.functional.addresses.create(connection, {
+  body: {
+    customerId: customer.id,
+    line1: "123 Main St",
+    city: "Seoul",
+    postalCode: "12345"
+  } satisfies IAddress.ICreate
+});
+
+const paymentMethod = await api.functional.payments.methods.create(connection, {
+  body: {
+    customerId: customer.id,
+    type: "card",
+    last4: "1234"
+  } satisfies IPaymentMethod.ICreate
+});
+
+// NOW we can create the order with all required properties!
+const order = await api.functional.orders.create(connection, {
+  body: {
+    customerId: customer.id,
+    shippingAddressId: address.id,
+    paymentMethodId: paymentMethod.id,
+    items: [{ productId: product.id, quantity: 1 }]
+  } satisfies IOrder.ICreate
+});
+```
+
+**REMEMBER:**
+- **Scenario says "test X"?** → Change it to "create Y, then test X"
+- **Property requires ID?** → Create that entity first
+- **Complex nested structure?** → Build it piece by piece
+- **Can't find a way?** → There's ALWAYS a way - be creative!
+
+**THE GOLDEN RULE:** 
+If compilation requires a property, that property WILL exist. Your job is not to question WHY it's needed, but to figure out HOW to provide it. Modify, create, generate - do whatever it takes!
 
 ### 4.12. "Is Possibly Undefined" Errors - DIRECT ACCESS PATTERN
 
@@ -646,6 +915,89 @@ console.log(user?.name); // OK: Returns undefined if user is undefined
 
 // SOLUTION 3: Use non-null assertion (only if you're CERTAIN)
 console.log(user!.name); // OK: But will throw at runtime if user is undefined
+```
+
+**Common Patterns and Solutions:**
+
+```typescript
+// PATTERN 1: Array find/filter results
+const product: IProduct | undefined = products.find(p => p.id === productId);
+// ERROR: Object is possibly 'undefined'
+const price = product.price * 1.1;
+
+// FIX: Guard against undefined
+if (product !== undefined) {
+  const price = product.price * 1.1; // OK
+}
+
+// PATTERN 2: Optional object properties
+interface IOrder {
+  id: string;
+  shipping?: {
+    address: string;
+    cost: number;
+  };
+}
+
+const order: IOrder = getOrder();
+// ERROR: Object is possibly 'undefined'
+console.log(order.shipping.address);
+
+// FIX: Check nested optional properties
+if (order.shipping !== undefined) {
+  console.log(order.shipping.address); // OK
+}
+// OR: Use optional chaining
+console.log(order.shipping?.address); // OK
+```
+
+**TestValidator Context - Special Cases:**
+```typescript
+// When using TestValidator.equals with possibly undefined values
+const foundItem: IItem | undefined = items.find(i => i.id === searchId);
+
+// ERROR: Object is possibly 'undefined'
+TestValidator.equals("item name", foundItem.name, "Expected Name");
+
+// FIX 1: Use optional chaining (if undefined is acceptable)
+TestValidator.equals("item name", foundItem?.name, "Expected Name");
+
+// FIX 2: Assert non-null (if you're certain it exists)
+TestValidator.equals("item name", foundItem!.name, "Expected Name");
+
+// FIX 3: Guard and handle (most explicit)
+if (foundItem !== undefined) {
+  TestValidator.equals("item name", foundItem.name, "Expected Name");
+} else {
+  throw new Error("Item not found");
+}
+```
+
+**Request Body Properties - Possibly Undefined:**
+```typescript
+// ERROR: Property is possibly undefined in comparisons
+const requestBody: IRequest = {
+  page: 1,
+  limit: 10,  // Type is number | undefined in IRequest
+};
+
+// ERROR: requestBody.limit is possibly undefined
+TestValidator.predicate(
+  "response data length does not exceed limit",
+  response.data.length <= requestBody.limit,
+);
+
+// SOLUTION 1: Use satisfies instead (RECOMMENDED)
+const requestBody = {
+  page: 1,
+  limit: 10,  // Now inferred as number, not number | undefined
+} satisfies IRequest;
+
+// SOLUTION 2: Assert non-undefined
+TestValidator.predicate(
+  "response data length does not exceed limit",
+  response.data.length <= typia.assert(requestBody.limit!),
+);
 ```
 
 ### 4.13. Optional Chaining with Array Methods Returns Union Types
@@ -672,6 +1024,35 @@ TestValidator.predicate(
   "article has blog tag",
   article.tags?.includes("blog") === true  // Always boolean: true or false
 );
+
+// More examples:
+TestValidator.predicate(
+  "user has admin role",
+  user.roles?.includes("admin") === true
+);
+
+TestValidator.predicate(
+  "product is in wishlist",
+  wishlist.items?.includes(productId) === true
+);
+
+TestValidator.predicate(
+  "comment contains keyword",
+  comment.keywords?.includes("important") === true
+);
+```
+
+**Solution 2: Default Value with `??` (Nullish Coalescing)**
+```typescript
+// ✅ CORRECT: Use nullish coalescing to provide default
+TestValidator.predicate(
+  "article has blog tag",
+  article.tags?.includes("blog") ?? false  // If undefined, default to false
+);
+
+// When you want different default behavior:
+const hasTag = article.tags?.includes("blog") ?? false;  // Default false
+const assumeHasTag = article.tags?.includes("blog") ?? true;  // Default true
 ```
 
 ### 4.14. Type-safe Equality Assertions
@@ -688,6 +1069,26 @@ TestValidator.equals("no recommender", member.recommender, null); // member.reco
 
 // WRONG: expected value first, actual value second - may cause type errors
 TestValidator.equals("no recommender", null, member.recommender); // null cannot accept IRecommender | null ✗
+
+// CORRECT: String comparison example
+TestValidator.equals("user ID matches", createdUser.id, expectedId); // actual first, expected second ✓
+
+// CORRECT: Object comparison example  
+TestValidator.equals("user data matches", actualUser, expectedUserData); // actual first, expected second ✓
+```
+
+**Additional type compatibility examples:**
+```typescript
+// CORRECT: First parameter type can accept second parameter
+const user = { id: "123", name: "John", email: "john@example.com" };
+const userSummary = { id: "123", name: "John" };
+
+TestValidator.equals("user contains summary data", user, userSummary); // user type can accept userSummary ✓
+TestValidator.equals("user summary matches", userSummary, user); // WRONG: userSummary cannot accept user with extra properties ✗
+
+// CORRECT: Extract specific properties for comparison
+TestValidator.equals("user ID matches", user.id, userSummary.id); // string = string ✓
+TestValidator.equals("user name matches", user.name, userSummary.name); // string = string ✓
 ```
 
 ### 4.15. TypeScript Type Narrowing Compilation Errors - "No Overlap" Fix
@@ -720,6 +1121,28 @@ if (value === false) {
 } else {
   handleTrue();  // Remove redundant check
 }
+
+// PATTERN 2: Exhausted union types
+// BEFORE (error):
+type Status = "pending" | "approved" | "rejected";
+if (status === "pending") {
+  // handle pending
+} else if (status === "approved") {
+  // handle approved  
+} else {
+  if (status !== "rejected") {  // ERROR: status must be "rejected"
+    // ...
+  }
+}
+
+// AFTER (fixed):
+if (status === "pending") {
+  // handle pending
+} else if (status === "approved") {
+  // handle approved
+} else {
+  // status is "rejected" - use directly
+}
 ```
 
 **Rule:** When you see "no overlap" errors, simply remove the impossible comparison. The type is already narrowed - trust TypeScript's analysis.
@@ -744,6 +1167,64 @@ Your corrected code must:
 - [ ] **`Promise.all()` calls have `await`** - `await Promise.all([...])`
 - [ ] **No floating Promises** - Every Promise must be awaited or returned
 
+**🎯 SPECIFIC `TestValidator.error` CHECKLIST:**
+- [ ] **Async callback (`async () => {}`)** → `await TestValidator.error()` REQUIRED
+- [ ] **Sync callback (`() => {}`)** → NO `await` on TestValidator.error
+- [ ] **Inside async callbacks** → ALL API calls MUST have `await`
+
+**MORE CRITICAL ERRORS TO AVOID:**
+```typescript
+// ❌ CRITICAL ERRORS TO AVOID:
+// Forgetting await inside async callback
+await TestValidator.error(
+  "should fail",
+  async () => {
+    api.functional.users.delete(connection, { id }); // NO AWAIT = WON'T CATCH ERROR!
+  }
+);
+
+// ❌ Using await on non-async callback
+await TestValidator.error(  // ← WRONG! No await needed for sync callback
+  "should throw",
+  () => {
+    throw new Error("Error");
+  }
+);
+
+// ❌ CRITICAL ERROR: Chained calls without await
+const user = api.functional.users.create(connection, userData); // NO AWAIT!
+typia.assert(user); // This will fail - user is a Promise, not the actual data!
+
+// ❌ CRITICAL ERROR: In conditional statements
+if (someCondition) {
+  api.functional.posts.delete(connection, { id }); // NO AWAIT!
+}
+
+// ❌ CRITICAL ERROR: In loops
+for (const item of items) {
+  api.functional.items.process(connection, { id: item.id }); // NO AWAIT!
+}
+
+// ❌ CRITICAL ERROR: Return statements
+return api.functional.users.get(connection, { id }); // NO AWAIT!
+
+// ✅ CORRECT VERSIONS:
+const user = await api.functional.users.create(connection, userData);
+typia.assert(user);
+
+if (someCondition) {
+  await api.functional.posts.delete(connection, { id });
+}
+
+for (const item of items) {
+  await api.functional.items.process(connection, { id: item.id });
+}
+
+return await api.functional.users.get(connection, { id });
+```
+
+**MOST COMMON AI MISTAKE:** Forgetting `await` on `TestValidator.error` when the callback is `async`. This makes the test USELESS because it will pass even when it should fail!
+
 **Nullable/Undefined Type Checks - MANDATORY:**
 - [ ] **Every `T | null | undefined`** → Check has `!== null && !== undefined` (BOTH conditions)
 - [ ] **Every `T | undefined`** → Check has `!== undefined` only
@@ -757,11 +1238,24 @@ Your corrected code must:
 - **Original Intent = IRRELEVANT**: If it doesn't compile, it doesn't matter
 - **Creative Freedom = UNLIMITED**: Any transformation that achieves success is valid
 
+**YOUR MANDATE:**
+- Transform impossible scenarios into possible ones
+- Rewrite contradictory logic into coherent flows
+- Convert type validation into business logic testing
+- Change ANYTHING needed for compilation success
+
 **Code Quality:**
 - Follow all conventions and requirements from the original system prompt
 - Apply actual-first, expected-second pattern for equality assertions
 - Remove only unimplementable functionality, not working code
 - **VERIFY**: Double-check EVERY async function call has `await` before submitting
+
+**Systematic Approach:**
+- Analyze compilation diagnostics systematically
+- Address root causes rather than just symptoms
+- Ensure fixes don't introduce new compilation errors
+- Verify the corrected code maintains test coherence
+- **FINAL CHECK**: Scan entire code for missing `await` keywords
 
 **`TEST_WRITE.md` Guidelines Compliance:**
 Ensure all corrections follow the guidelines provided in `TEST_WRITE.md` prompt.

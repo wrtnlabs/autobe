@@ -67,7 +67,7 @@ export const archive_test = async (
       },
     });
   } catch {}
-  if (TestGlobal.archive)
+  if (TestGlobal.archive) {
     await TestHistory.save({
       [`${project}.test.json`]: JSON.stringify(histories),
       [`${project}.test.snapshots.json`]: JSON.stringify(
@@ -85,6 +85,28 @@ export const archive_test = async (
         snapshots.map((s) => s.event).filter((e) => e.type === "testWrite"),
       ),
     });
+    try {
+      const realize: AutoBeHistory[] = await TestHistory.getHistories(
+        project,
+        "realize",
+      );
+      const interfaceIndex: number = realize.findIndex(
+        (h) => h.type === "interface",
+      );
+      if (
+        JSON.stringify(histories[interfaceIndex]) ===
+        JSON.stringify(realize[interfaceIndex])
+      ) {
+        const testIndex: number = realize.findIndex((h) => h.type === "test");
+        await TestHistory.save({
+          [`${project}.realize.json`]: JSON.stringify([
+            ...histories,
+            ...realize.slice(testIndex + 1),
+          ]),
+        });
+      }
+    } catch {}
+  }
   if (result.compiled.type === "failure")
     console.log(result.compiled.diagnostics);
   TestValidator.equals("result", result.compiled.type, "success");
