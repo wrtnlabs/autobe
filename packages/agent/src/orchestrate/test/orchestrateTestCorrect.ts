@@ -1,11 +1,12 @@
 import { IAgenticaController } from "@agentica/core";
 import {
+  AutoBeTestCorrectEvent,
   AutoBeTestValidateEvent,
   IAutoBeCompiler,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
+import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
@@ -26,7 +27,7 @@ export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
 ): Promise<AutoBeTestValidateEvent[]> => {
   const result: Array<AutoBeTestValidateEvent | null> =
     await executeCachedBatch(
-      writeResult.map((w) => async () => {
+      writeResult.map((w) => async (promptCacheKey) => {
         try {
           const event: AutoBeTestValidateEvent = await compile(ctx, {
             artifacts: w.artifacts,
@@ -44,9 +45,14 @@ export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
             },
             [],
             event,
+            promptCacheKey,
             ctx.retry,
           );
         } catch {
+          console.log(
+            "failed to correct test code, no function calling happened.",
+            w.scenario.functionName,
+          );
           return null;
         }
       }),
@@ -86,11 +92,12 @@ const predicate = async <Model extends ILlmSchema.Model>(
   content: IAutoBeTestFunction,
   failures: IAutoBeTestFunctionFailure[],
   event: AutoBeTestValidateEvent,
+  promptCacheKey: string,
   life: number,
 ): Promise<AutoBeTestValidateEvent> => {
   if (event.result.type === "failure") ctx.dispatch(event);
   return event.result.type === "failure"
-    ? await correct(ctx, content, failures, event, life - 1)
+    ? await correct(ctx, content, failures, event, promptCacheKey, life - 1)
     : event;
 };
 
@@ -99,6 +106,7 @@ const correct = async <Model extends ILlmSchema.Model>(
   content: IAutoBeTestFunction,
   failures: IAutoBeTestFunctionFailure[],
   validate: AutoBeTestValidateEvent,
+  promptCacheKey: string,
   life: number,
 ): Promise<AutoBeTestValidateEvent> => {
   if (validate.result.type !== "failure") return validate;
@@ -118,6 +126,7 @@ const correct = async <Model extends ILlmSchema.Model>(
     ]),
     controller: createController({
       model: ctx.model,
+      failure: validate.result,
       build: (next) => {
         pointer.value = next;
       },
@@ -129,6 +138,7 @@ const correct = async <Model extends ILlmSchema.Model>(
       You don't need to explain me anything, but just fix it immediately
       without any hesitation, explanation, and questions.
     `,
+    promptCacheKey,
   });
   if (pointer.value === null) throw new Error("Failed to modify test code.");
 
@@ -136,11 +146,13 @@ const correct = async <Model extends ILlmSchema.Model>(
     ctx,
     content.artifacts,
     pointer.value.revise.final,
+    pointer.value.think,
   );
   pointer.value.draft = await completeTestCode(
     ctx,
     content.artifacts,
     pointer.value.draft,
+    pointer.value.think,
   );
 
   ctx.dispatch({
@@ -151,11 +163,11 @@ const correct = async <Model extends ILlmSchema.Model>(
     result: validate.result,
     tokenUsage,
     step: ctx.state().analyze?.step ?? 0,
-    think: pointer.value.think,
+    think: pointer.value.think.overall,
     draft: pointer.value.draft,
     review: pointer.value.revise?.review,
     final: pointer.value.revise?.final,
-  });
+  } satisfies AutoBeTestCorrectEvent);
   const newContent: IAutoBeTestFunction = {
     ...content,
     script: pointer.value.revise?.final ?? pointer.value.draft,
@@ -172,19 +184,53 @@ const correct = async <Model extends ILlmSchema.Model>(
       },
     ],
     newValidate,
+    promptCacheKey,
     life,
   );
 };
 
 const createController = <Model extends ILlmSchema.Model>(props: {
   model: Model;
+  failure: IAutoBeTypeScriptCompileResult.IFailure;
   build: (next: IAutoBeTestCorrectApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> => {
   assertSchemaModel(props.model);
 
+  const validate = (
+    input: unknown,
+  ): IValidation<IAutoBeTestCorrectApplication.IProps> => {
+    const result: IValidation<IAutoBeTestCorrectApplication.IProps> =
+      typia.validate<IAutoBeTestCorrectApplication.IProps>(input);
+    if (result.success === false) return result;
+
+    // const expected: number = props.failure.diagnostics.length;
+    // const actual: number = result.data.think.analyses.length;
+    // if (expected !== actual)
+    //   return {
+    //     success: false,
+    //     errors: [
+    //       {
+    //         path: "$input.think.analyses",
+    //         expected: `Array<IValidation<IAutoBeTypeScriptCompileResult.IDiagnostic>> & MinItems<${expected}> & MaxItems<${expected}>`,
+    //         value: result.data.think.analyses,
+    //         description: StringUtil.trim`
+    //           The 'think.analyses' must contain all the compilation errors.
+
+    //           Therefore, the length of the 'think.analyses' must be not
+    //           ${actual}, but exactly ${expected}, which is equal to the length of
+    //           the 'diagnostics' of the compilation failure.
+    //         `,
+    //       },
+    //     ],
+    //     data: input,
+    //   };
+    return result;
+  };
   const application: ILlmApplication<Model> = collection[
-    props.model
-  ] satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+    props.model === "chatgpt" ? "chatgpt" : "claude"
+  ](
+    validate,
+  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
     name: "Modify Test Code",
@@ -197,11 +243,21 @@ const createController = <Model extends ILlmSchema.Model>(props: {
   };
 };
 
-const claude = typia.llm.application<IAutoBeTestCorrectApplication, "claude">();
 const collection = {
-  chatgpt: typia.llm.application<IAutoBeTestCorrectApplication, "chatgpt">(),
-  claude,
-  llama: claude,
-  deepseek: claude,
-  "3.1": claude,
+  chatgpt: (validate: Validator) =>
+    typia.llm.application<IAutoBeTestCorrectApplication, "chatgpt">({
+      validate: {
+        rewrite: validate,
+      },
+    }),
+  claude: (validate: Validator) =>
+    typia.llm.application<IAutoBeTestCorrectApplication, "claude">({
+      validate: {
+        rewrite: validate,
+      },
+    }),
 };
+
+type Validator = (
+  input: unknown,
+) => IValidation<IAutoBeTestCorrectApplication.IProps>;

@@ -155,7 +155,7 @@ export namespace IAutoBeTypeScriptCompileResult {
      * precision enables AI agents to make targeted corrections without
      * affecting unrelated code sections.
      */
-    start: number | undefined;
+    start: number | null | undefined;
 
     /**
      * Length of the text span covered by this diagnostic.
@@ -165,7 +165,7 @@ export namespace IAutoBeTypeScriptCompileResult {
      * specific text span. This information helps AI agents understand the scope
      * of corrections needed for each issue.
      */
-    length: number | undefined;
+    length: number | null | undefined;
 
     /**
      * Human-readable description of the compilation issue.

@@ -7,6 +7,7 @@ import {
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
+import { NamingConvention } from "typia/lib/utils/NamingConvention";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
@@ -49,7 +50,11 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
           artifacts,
           event,
         };
-      } catch (error) {
+      } catch {
+        console.log(
+          "failed to write test code, no function calling happened.",
+          scenario.functionName,
+        );
         return null;
       }
     }),
@@ -76,6 +81,7 @@ async function process<Model extends ILlmSchema.Model>(
     controller: createController({
       model: ctx.model,
       build: (next) => {
+        next.domain = NamingConvention.snake(next.domain);
         pointer.value = next;
       },
     }),

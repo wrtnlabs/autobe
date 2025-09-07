@@ -2075,6 +2075,7 @@ body: {
 ```
 
 **2. NEVER Test Specific HTTP Status Codes:**
+
 ```typescript
 // ❌ ABSOLUTELY FORBIDDEN:
 try {

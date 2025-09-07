@@ -12,6 +12,8 @@ export class TestGlobal {
       ? path.join(__dirname, "..", "..")
       : path.join(__dirname, "..");
 
+  public static readonly PLAYGROUND_PORT: number = 37198;
+
   public static get env(): IEnvironments {
     return environments.get();
   }

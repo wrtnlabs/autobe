@@ -1,5 +1,3 @@
-import { SnakePattern } from "@autobe/interface";
-
 export interface IAutoBeTestWriteApplication {
   /**
    * Main entry point for AI Function Call - generates complete E2E test code.
@@ -41,7 +39,7 @@ export namespace IAutoBeTestWriteApplication {
      * Workflow: Scenario analysis → Domain identification → Test organization
      * structure
      */
-    domain: string & SnakePattern;
+    domain: string;
 
     /**
      * Step 3: Initial TypeScript E2E test code implementation.

@@ -68,7 +68,7 @@ async function main(): Promise<void> {
   >();
 
   // DO TEST
-  await backend.open();
+  await backend.open(TestGlobal.PLAYGROUND_PORT);
   const exceptions: Error[] = await new Array(runsPerScenario)
     .fill(0)
     .reduce(async (acc, _) => {

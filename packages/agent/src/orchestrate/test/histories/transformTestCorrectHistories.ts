@@ -33,12 +33,13 @@ export const transformTestCorrectHistories = async <
     },
     previous.at(-1)!,
     ...failures.map(
-      (f) =>
+      (f, i, array) =>
         ({
           id: v4(),
           created_at: new Date().toISOString(),
           type: "assistantMessage",
           text: StringUtil.trim`
+            # ${i === array.length - 1 ? "Latest Failure" : "Previous Failure"}
             ## Generated TypeScript Code
 
             \`\`\`typescript
