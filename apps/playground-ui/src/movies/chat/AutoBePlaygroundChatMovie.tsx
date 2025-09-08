@@ -35,28 +35,34 @@ export function AutoBePlaygroundChatMovie(
 
   // Service factory function
   const serviceFactory = async (config: IAutoBeConfig) => {
+    // Set playground defaults
+    const playgroundConfig = {
+      ...config,
+      serverUrl: String(config["serverUrl"] ?? "http://localhost:5890"), // Default for playground
+    };
+
     const vendorConfig: IAutoBePlaygroundVendor = {
-      model: config.aiModel || "gpt-4.1",
-      apiKey: config.openApiKey || "",
-      baseURL: config.baseUrl || undefined,
-      semaphore: config.semaphore || 16,
+      model: playgroundConfig.aiModel ?? "gpt-4.1",
+      apiKey: playgroundConfig.openApiKey ?? "",
+      baseURL: playgroundConfig.baseUrl ?? undefined,
+      semaphore: playgroundConfig.semaphore ?? 16,
     };
 
     const headers: IAutoBePlaygroundHeader<ILlmSchema.Model> = {
-      model: (config.schemaModel || "chatgpt") as Exclude<
+      model: (playgroundConfig.schemaModel ?? "chatgpt") as Exclude<
         ILlmSchema.Model,
         "gemini" | "3.0"
       >,
       vendor: vendorConfig,
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      locale: config.locale || window.navigator.language,
+      locale: playgroundConfig.locale ?? window.navigator.language,
     };
 
     const autoBeListener: AutoBeListener = new AutoBeListener();
     const { driver: rpcService } =
       await pApi.functional.autobe.playground.start(
         {
-          host: config.serverUrl,
+          host: playgroundConfig.serverUrl,
           headers: headers as unknown as Record<string, string>,
         },
         autoBeListener.getListener(),
@@ -67,7 +73,7 @@ export function AutoBePlaygroundChatMovie(
       listener: autoBeListener,
       header: headers,
       uploadConfig: {
-        supportAudio: config.supportAudioEnable || false,
+        supportAudio: playgroundConfig.supportAudioEnable ?? false,
       },
     };
   };
@@ -130,9 +136,10 @@ export function AutoBePlaygroundChatMovie(
               }
             }}
             setError={setError}
-            uploadConfig={uploadConfig || undefined}
+            uploadConfig={uploadConfig ?? undefined}
             configFields={configFields}
             onServiceReady={handleServiceReady}
+            requiredFields={["serverUrl"]} // Playground requires serverUrl
             style={{
               backgroundColor: "lightblue",
             }}

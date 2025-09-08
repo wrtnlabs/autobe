@@ -24,6 +24,8 @@ export interface IAutoBeChatMainProps {
   style?: React.CSSProperties;
   configFields?: IConfigField[];
   onServiceReady?: (service: unknown) => void;
+  /** Additional required config fields beyond openApiKey */
+  requiredFields?: string[];
 }
 
 export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
@@ -64,7 +66,18 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
   // Check if required config is available
   const hasRequiredConfig = (): boolean => {
     const config = getCurrentConfig();
-    return !!(config.openApiKey && config.serverUrl);
+
+    // Always check openApiKey
+    if (!config.openApiKey) return false;
+
+    // Check additional required fields from props
+    if (props.requiredFields) {
+      for (const field of props.requiredFields) {
+        if (!config[field]) return false;
+      }
+    }
+
+    return true;
   };
 
   // Unified service connection handler

@@ -3,9 +3,6 @@
  * configuration fields with proper types
  */
 export interface IAutoBeBaseConfig {
-  /** Server URL for AutoBE API */
-  serverUrl: string;
-
   /** AI model to use (e.g., gpt-4.1, claude-3-sonnet) */
   aiModel: string;
 
@@ -37,7 +34,6 @@ export type IAutoBePartialConfig = Partial<IAutoBeBaseConfig> &
 
 /** Default configuration values */
 export const DEFAULT_CONFIG: IAutoBeBaseConfig = {
-  serverUrl: "http://localhost:5890",
   aiModel: "gpt-4.1",
   schemaModel: "chatgpt",
   locale: "en",
