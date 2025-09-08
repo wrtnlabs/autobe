@@ -26,6 +26,10 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
 ) {
   const { service } = useAutoBeAgent();
 
+  if (service === null) {
+    console.error("Service is not available");
+    return null;
+  }
   const back: Event = props.events[props.events.length - 1]!;
   switch (back.type) {
     case "userMessage":

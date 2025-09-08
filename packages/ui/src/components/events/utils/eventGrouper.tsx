@@ -2,6 +2,7 @@ import { AutoBeEvent } from "@autobe/interface";
 import { ReactNode } from "react";
 
 import { ValidateEventGroup } from "../groups";
+import { ValidateEvent } from "../groups/ValidateEventGroup";
 
 /** Configuration for event grouping */
 export interface IEventGrouperConfig {
@@ -71,7 +72,7 @@ export function groupEvents(
 /** Groups events by their category */
 function groupEventsByCategory(events: AutoBeEvent[]) {
   const grouped = {
-    validate: [] as unknown[],
+    validate: [] as ValidateEvent[],
     other: [] as AutoBeEvent[],
   };
 

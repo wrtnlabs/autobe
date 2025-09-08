@@ -11,7 +11,7 @@ import {
 import { AutoBeValidateEventMovie } from "../AutoBeValidateEventMovie";
 import { CollapsibleEventGroup } from "../common/CollapsibleEventGroup";
 
-type ValidateEvent =
+export type ValidateEvent =
   | AutoBePrismaInsufficientEvent
   | AutoBePrismaValidateEvent
   | AutoBeInterfaceOperationsReviewEvent

@@ -78,13 +78,11 @@ function getState(event: IAutoBeValidateEventMovieProps["event"]): IState {
             <br />
             {event.result.errors.length > 0 && (
               <>
-                {event.result.errors
-                  .slice(0, 3)
-                  .map((error: unknown, idx: number) => (
-                    <div key={idx} style={{ marginTop: "0.25rem" }}>
-                      • {error.message}
-                    </div>
-                  ))}
+                {event.result.errors.slice(0, 3).map((error, idx) => (
+                  <div key={idx} style={{ marginTop: "0.25rem" }}>
+                    • {error.message}
+                  </div>
+                ))}
               </>
             )}
             <br />
@@ -119,7 +117,7 @@ function getState(event: IAutoBeValidateEventMovieProps["event"]): IState {
                 {event.result.type === "failure" &&
                   event.result.diagnostics
                     .slice(0, 3)
-                    .map((diagnostic: unknown, idx: number) => (
+                    .map((diagnostic, idx) => (
                       <div key={idx} style={{ marginTop: "0.25rem" }}>
                         • {diagnostic.messageText}
                       </div>
@@ -194,7 +192,7 @@ function getState(event: IAutoBeValidateEventMovieProps["event"]): IState {
                 {event.result.type === "failure" &&
                   event.result.diagnostics
                     .slice(0, 2)
-                    .map((diagnostic: unknown, idx: number) => (
+                    .map((diagnostic, idx) => (
                       <div key={idx} style={{ marginTop: "0.25rem" }}>
                         • {diagnostic.messageText}
                       </div>
