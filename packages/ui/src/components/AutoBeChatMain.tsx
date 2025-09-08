@@ -65,9 +65,6 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
   const hasRequiredConfig = (): boolean => {
     const config = getCurrentConfig();
 
-    // Always check openApiKey
-    if (!config.openApiKey) return false;
-
     // Check additional required fields from props
     if (props.requiredFields) {
       for (const field of props.requiredFields) {
@@ -101,6 +98,7 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
     try {
       const config = getCurrentConfig();
       const serviceData = await getAutoBeService(config);
+      console.log("messages", messages);
       if (messages.length !== 0) {
         await serviceData.service.conversate(messages);
       }

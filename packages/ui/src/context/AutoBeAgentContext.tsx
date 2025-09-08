@@ -1,9 +1,4 @@
-import {
-  IAutoBePlaygroundHeader,
-  IAutoBeRpcService,
-  IAutoBeTokenUsageJson,
-} from "@autobe/interface";
-import { ILlmSchema } from "@samchon/openapi";
+import { IAutoBeRpcService, IAutoBeTokenUsageJson } from "@autobe/interface";
 import {
   ReactNode,
   createContext,
@@ -26,7 +21,6 @@ import { SearchParamsContext } from "./hooks-client-context.shared-runtime";
 export interface IAutoBeServiceData {
   service: IAutoBeRpcService;
   listener: AutoBeListener;
-  header: IAutoBePlaygroundHeader<ILlmSchema.Model>;
 }
 
 export type AutoBeServiceFactory = (
@@ -46,7 +40,6 @@ interface AutoBeAgentContextType {
   eventGroups: IAutoBeEventGroup[];
   tokenUsage: IAutoBeTokenUsageJson | null;
   state: AutoBeListenerState | null;
-  header: IAutoBePlaygroundHeader<ILlmSchema.Model> | null;
   service: IAutoBeRpcService | null;
   listener: AutoBeListener | null;
 
@@ -190,7 +183,6 @@ export function AutoBeAgentProvider({
         eventGroups,
         tokenUsage,
         state: serviceInstance?.listener?.getState() ?? null,
-        header: serviceInstance?.header ?? null,
         service: serviceInstance?.service ?? null,
         listener: serviceInstance?.listener ?? null,
 

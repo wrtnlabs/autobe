@@ -145,6 +145,7 @@ export namespace AutoBeHackathonSessionSocketProvider {
         accessToken: props.acceptor.header?.Authorization,
       });
     } catch (error) {
+      console.error(error);
       await props.acceptor.reject(1008, "Unauthorized");
       throw error;
     }

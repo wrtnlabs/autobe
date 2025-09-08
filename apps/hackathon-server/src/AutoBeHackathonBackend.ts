@@ -14,7 +14,7 @@ export class AutoBeHackathonBackend {
     ),
   ): Promise<void> {
     this.application_ = await NestFactory.create(AutoBeHackathonModule, {
-      logger: false,
+      logger: ["error", "warn", "log"],
     });
     this.application_.enableCors();
     await WebSocketAdaptor.upgrade(this.application_);

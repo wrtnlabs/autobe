@@ -172,38 +172,38 @@ const SectionTitle = ({ children }: { children: React.ReactNode }) => (
   </div>
 );
 
-const ConnectionInfo = ({
-  header,
-}: {
-  header: ReturnType<typeof useAutoBeAgent>["header"];
-}) => (
-  <div>
-    <SectionTitle>Connection Info</SectionTitle>
-    <div
-      style={{
-        background: "linear-gradient(145deg, #ffffff, #f8fafc)",
-        borderRadius: "10px",
-        padding: "1rem",
-        border: "1px solid rgba(148, 163, 184, 0.15)",
-        boxShadow: "0 2px 4px -1px rgba(0, 0, 0, 0.05)",
-      }}
-    >
-      <p
-        style={{
-          margin: 0,
-          fontSize: "0.8rem",
-          color: "#374151",
-          lineHeight: 1.5,
-        }}
-      >
-        <strong>Model:</strong> {header?.model || "N/A"} |{" "}
-        <strong>Vendor:</strong> {header?.vendor.model || "N/A"} |{" "}
-        <strong>Locale:</strong> {header?.locale || "N/A"} |{" "}
-        <strong>Timezone:</strong> {header?.timezone || "N/A"}
-      </p>
-    </div>
-  </div>
-);
+// const ConnectionInfo = ({
+//   header,
+// }: {
+//   header: IAutoBePlaygroundHeader<ILlmSchema.Model> | null;
+// }) => (
+//   <div>
+//     <SectionTitle>Connection Info</SectionTitle>
+//     <div
+//       style={{
+//         background: "linear-gradient(145deg, #ffffff, #f8fafc)",
+//         borderRadius: "10px",
+//         padding: "1rem",
+//         border: "1px solid rgba(148, 163, 184, 0.15)",
+//         boxShadow: "0 2px 4px -1px rgba(0, 0, 0, 0.05)",
+//       }}
+//     >
+//       <p
+//         style={{
+//           margin: 0,
+//           fontSize: "0.8rem",
+//           color: "#374151",
+//           lineHeight: 1.5,
+//         }}
+//       >
+//         <strong>Model:</strong> {header?.model || "N/A"} |{" "}
+//         <strong>Vendor:</strong> {header?.vendor.model || "N/A"} |{" "}
+//         <strong>Locale:</strong> {header?.locale || "N/A"} |{" "}
+//         <strong>Timezone:</strong> {header?.timezone || "N/A"}
+//       </p>
+//     </div>
+//   </div>
+// );
 
 const HighlightNumbers = ({
   text,
@@ -456,7 +456,7 @@ export const AutoBeStatusModal = ({
   isOpen,
   onClose,
 }: IAutoBeStatusModalProps) => {
-  const { tokenUsage, state, header } = useAutoBeAgent();
+  const { tokenUsage, state } = useAutoBeAgent();
 
   useEscapeKey(isOpen, onClose);
 
@@ -471,7 +471,7 @@ export const AutoBeStatusModal = ({
 
         <div style={MODAL_STYLES.content}>
           <div style={MODAL_STYLES.section}>
-            <ConnectionInfo header={header} />
+            {/* <ConnectionInfo header={header} /> */}
             <ProgressStatus state={state} />
             <TokenUsage tokenUsage={tokenUsage} />
           </div>

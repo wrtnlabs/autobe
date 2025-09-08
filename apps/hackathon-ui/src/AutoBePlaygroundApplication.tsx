@@ -1,8 +1,4 @@
-import {
-  IAutoBePlaygroundHeader,
-  IAutoBePlaygroundVendor,
-} from "@autobe/interface";
-import pApi from "@autobe/playground-api";
+import hApi from "@autobe/hackathon-api";
 import {
   AutoBeListener,
   IAutoBeConfig,
@@ -11,60 +7,51 @@ import {
 import { ILlmSchema } from "@samchon/openapi";
 import { useRef } from "react";
 
-import { AutoBePlaygroundChatMovie } from "./movies/chat/AutoBePlaygroundChatMovie";
-import { AutoBeAgentSessionStorageIndexedDBStrategy } from "./strategy/AutoBeAgentSessionStorageIndexedDBStrategy";
+import { AutoBePlaygroundChatMovie } from "./AutoBePlaygroundChatMovie";
+import { HACKATHON_CODE } from "./constant";
+import { useAuthorizationToken } from "./hooks/useAuthorizationToken";
+import { AutoBeAgentSessionStorageStrategy } from "./strategy/AutoBeAgentSessionStorageStrategy";
 
 export function AutoBePlaygroundApplication() {
+  const { getToken } = useAuthorizationToken();
+  const token = getToken();
+  /** @todo Process refresh token logic */
+  if (token === null || new Date(token.token.expired_at) < new Date()) {
+    window.location.href = "/login";
+    return;
+  }
+
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Playground service factory
   const serviceFactory = async (config: IAutoBeConfig) => {
-    // Set playground defaults
-    const playgroundConfig = {
-      ...config,
-      serverUrl: String(config["serverUrl"] ?? "http://127.0.0.1:5890"), // Default for playground
-    };
-
-    const vendorConfig: IAutoBePlaygroundVendor = {
-      model: playgroundConfig.aiModel ?? "gpt-4.1",
-      apiKey: playgroundConfig.openApiKey ?? "",
-      baseURL: playgroundConfig.baseUrl ?? undefined,
-      semaphore: playgroundConfig.semaphore ?? 16,
-    };
-
-    const headers: IAutoBePlaygroundHeader<ILlmSchema.Model> = {
-      model: (playgroundConfig.schemaModel ?? "chatgpt") as Exclude<
-        ILlmSchema.Model,
-        "gemini" | "3.0"
-      >,
-      vendor: vendorConfig,
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      locale: playgroundConfig.locale ?? window.navigator.language,
-    };
-
     const autoBeListener: AutoBeListener = new AutoBeListener();
+    console.log("config", config);
     const wrapper = await getAutoBeAgentSession({
-      storageStrategy: new AutoBeAgentSessionStorageIndexedDBStrategy(),
+      storageStrategy: new AutoBeAgentSessionStorageStrategy(),
       listener: autoBeListener,
       connect: () =>
-        pApi.functional.autobe.playground
+        hApi.autobe.hackathon.participants.sessions
           .start(
             {
-              host: playgroundConfig.serverUrl,
-              headers: headers as unknown as Record<string, string>,
+              host: import.meta.env.VITE_API_BASE_URL,
+              headers: {
+                Authorization: `Bearer ${token.token.access}`,
+                model: config.aiModel,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+              },
             },
+            HACKATHON_CODE,
             autoBeListener.getListener(),
           )
           .then((v) => v.driver),
-      headers,
     });
 
     return {
       service: wrapper.service,
       listener: wrapper.listener,
-      header: wrapper.headers,
       uploadConfig: {
-        supportAudio: playgroundConfig.supportAudioEnable ?? false,
+        supportAudio: config.supportAudioEnable ?? false,
       },
     };
   };
@@ -81,9 +68,8 @@ export function AutoBePlaygroundApplication() {
       <AutoBePlaygroundChatMovie
         title="AutoBE Playground"
         serviceFactory={serviceFactory}
-        storageStrategyFactory={() =>
-          new AutoBeAgentSessionStorageIndexedDBStrategy()
-        }
+        storageStrategyFactory={() => new AutoBeAgentSessionStorageStrategy()}
+        configFilter={(config) => config.key === "aiModel"}
       />
     </div>
   );

@@ -5,6 +5,7 @@ import {
   AutoBeChatSidebar,
   AutoBeServiceFactory,
   IAutoBeAgentSessionStorageStrategy,
+  IConfigField,
   SearchParamsContext,
   createAutoBeConfigFields,
 } from "@autobe/ui";
@@ -32,15 +33,9 @@ export function AutoBePlaygroundChatMovie(
   );
 
   // Configuration fields for AutoBE Playground (adds serverUrl to defaults)
-  const configFields = createAutoBeConfigFields({
-    key: "serverUrl",
-    label: "Server URL",
-    type: "text",
-    storageKey: "autobe_server_url",
-    placeholder: "http://127.0.0.1:5890",
-    default: "http://127.0.0.1:5890",
-    required: true,
-  });
+  const configFields = createAutoBeConfigFields().filter(
+    props.configFilter ?? (() => true),
+  );
 
   //----
   // RENDERERS
@@ -112,7 +107,6 @@ export function AutoBePlaygroundChatMovie(
                   isMobile={isMobile}
                   setError={setError}
                   configFields={configFields}
-                  requiredFields={["serverUrl"]} // Playground requires serverUrl
                   style={{
                     backgroundColor: "lightblue",
                   }}
@@ -131,5 +125,6 @@ export namespace AutoBePlaygroundChatMovie {
     serviceFactory: AutoBeServiceFactory;
     isUnusedConfig?: boolean;
     storageStrategyFactory: () => IAutoBeAgentSessionStorageStrategy;
+    configFilter?: (config: IConfigField) => boolean;
   }
 }
