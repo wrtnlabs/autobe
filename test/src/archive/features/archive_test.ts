@@ -66,7 +66,9 @@ export const archive_test = async (
         "logs/histories.json": JSON.stringify(histories),
       },
     });
-  } catch {}
+  } catch (error) {
+    console.log(error);
+  }
   if (TestGlobal.archive)
     await TestHistory.save({
       [`${project}.test.json`]: JSON.stringify(histories),

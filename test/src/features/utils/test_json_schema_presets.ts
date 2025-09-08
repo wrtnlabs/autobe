@@ -8,36 +8,25 @@ export const test_json_schema_presets = () => {
     JsonSchemaFactory.presets(
       new Set(["IPageIUser.ISummary", "IUser.IAuthorized"]),
     );
-  TestValidator.predicate(
-    "IPage.IPaination",
-    () =>
-      presets["IPage.IPagination"] &&
-      typia.is<AutoBeOpenApi.IJsonSchemaDescriptive.IObject>(
-        presets["IPage.IPagination"],
-      ),
+  TestValidator.predicate("IPage.IPaination", () =>
+    typia.is<AutoBeOpenApi.IJsonSchema.IObject>(presets["IPage.IPagination"]),
+  );
+  TestValidator.predicate("IAuthorizationToken", () =>
+    typia.is<AutoBeOpenApi.IJsonSchema.IObject>(presets["IAuthorizationToken"]),
   );
   TestValidator.predicate(
-    "IAuthorizationToken",
+    "IPageIUser.ISummary",
     () =>
-      presets["IAuthorizationToken"] &&
-      typia.is<AutoBeOpenApi.IJsonSchemaDescriptive.IObject>(
-        presets["IAuthorizationToken"],
-      ),
-  );
-  TestValidator.predicate(
-    "IPageUser.ISummary",
-    () =>
-      presets["IPageUser.ISummary"] &&
-      typia.is<AutoBeOpenApi.IJsonSchemaDescriptive.IObject>(
-        presets["IPageUser.ISummary"],
+      typia.is<AutoBeOpenApi.IJsonSchema.IObject>(
+        presets["IPageIUser.ISummary"],
       ) &&
-      typia.is<AutoBeOpenApi.IJsonSchemaDescriptive.IArray>(
-        presets["IPageUser.ISummary"].properties.data,
+      typia.is<AutoBeOpenApi.IJsonSchema.IArray>(
+        presets["IPageIUser.ISummary"].properties.data,
       ) &&
-      typia.is<AutoBeOpenApi.IJsonSchemaDescriptive.IReference>(
-        presets["IPageUser.ISummary"].properties.data.items,
+      typia.is<AutoBeOpenApi.IJsonSchema.IReference>(
+        presets["IPageIUser.ISummary"].properties.data.items,
       ) &&
-      presets["IPageUser.ISummary"].properties.data.items.$ref ===
+      presets["IPageIUser.ISummary"].properties.data.items.$ref ===
         "#/components/schemas/IUser.ISummary",
   );
 };

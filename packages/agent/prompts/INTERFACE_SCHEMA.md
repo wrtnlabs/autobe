@@ -105,6 +105,11 @@ This checklist ensures security is built-in from the start, not added as an afte
   - NEVER use array notation in the type field (e.g., `["string", "null"]` is FORBIDDEN)
   - For nullable types or unions, use `oneOf` structure instead of array notation
   - This is a CRITICAL requirement for JSON Schema compliance
+- **Array Type Naming Convention**:
+  - **CRITICAL**: NEVER use special characters in type names (e.g., `Array<ISomeDto>` or `ISomeDto[]`)
+  - If you need an array type alias, use names like `ISomeDtoArray` instead
+  - Type names MUST consist only of alphanumeric characters (no `<`, `>`, `[`, `]`, etc.)
+  - This is essential for proper JSON Schema type referencing and API compatibility
 
 ### 3.3. 🔴 CRITICAL Security Requirements
 

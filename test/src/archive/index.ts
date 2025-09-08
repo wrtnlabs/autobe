@@ -71,10 +71,12 @@ const collect = async (): Promise<ITestFunction[]> => {
   const projects: string[] =
     TestGlobal.getArguments("project") ?? typia.misc.literals<TestProject>();
   const from: string = TestGlobal.getArguments("from")?.[0] ?? "analyze";
+  const to: string = TestGlobal.getArguments("to")?.[0] ?? "realize";
   return container.filter(
     (func) =>
       projects.some((v) => v.includes(func.project)) &&
-      STEP_INDEXES[func.step] >= (STEP_INDEXES[from as "analyze"] ?? 0),
+      STEP_INDEXES[func.step] >= (STEP_INDEXES[from as "analyze"] ?? 0) &&
+      STEP_INDEXES[func.step] <= (STEP_INDEXES[to as "realize"] ?? 4),
   );
 };
 

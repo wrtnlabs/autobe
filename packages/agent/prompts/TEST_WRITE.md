@@ -121,6 +121,8 @@ This property contains two sub-steps for iterative improvement:
   - **DTO type confusion** - Ensure correct DTO variant is used (e.g., not using `IUser` when `IUser.IAuthorized` is needed)
 - Provide specific, actionable feedback for each issue found
 - Be your own harshest critic - find and document ALL problems
+- **🚨 MANDATORY: Check ALL PROHIBITED PATTERNS from this document**
+- **⚠️ CRITICAL: Verify ZERO violations of absolute prohibitions listed in this prompt**
 
 #### 4.2: **revise.final** - Production-Ready Code Generation
 - Produce the polished, corrected version incorporating all review feedback
@@ -128,6 +130,7 @@ This property contains two sub-steps for iterative improvement:
 - Ensure the code is compilation-error-free and follows all best practices
 - This is the deliverable that will be used in production
 - Must represent the highest quality implementation possible
+- **🚨 ZERO TOLERANCE: Must NOT contain ANY prohibited patterns**
 
 **IMPORTANT**: All steps must contain substantial content. Do not provide empty or minimal responses for any step. Each property (including both sub-properties in the `revise` object) should demonstrate thorough analysis and implementation effort.
 
@@ -256,13 +259,7 @@ export async function update(
   props: update.Props,
 ): Promise<update.Output> {
   return PlainFetcher.fetch(
-    {
-      ...connection,
-      headers: {
-        ...connection.headers,
-        "Content-Type": "application/json",
-      },
-    },
+    connection,
     {
       ...update.METADATA,
       template: update.METADATA.path,
@@ -527,6 +524,52 @@ Before writing any test code, you MUST thoroughly analyze:
 // SKIP: If scenario requests "search products by brand" but IProduct.ISearch has no brand field
 // Don't implement: await api.functional.products.search(connection, { query: { brand: "Nike" } });
 ```
+
+**🚨 CRITICAL: API Function Existence Verification**
+
+**ABSOLUTELY FORBIDDEN: Using Non-Existent API Functions**
+
+Before implementing ANY API call:
+
+1. **VERIFY EXISTENCE**: Check that the exact API function exists in the provided SDK
+   - Check the exact namespace path (e.g., `api.functional.users.create` vs `api.functional.user.create`)
+   - Verify the exact function name (e.g., `authenticate` vs `auth`, `index` vs `list`)
+   - Confirm the parameter structure matches what's documented
+
+2. **NEVER ASSUME API FUNCTIONS EXIST**
+   - Don't guess that "there should be" a bulk operation API
+   - Don't assume CRUD operations exist for all entities
+   - Don't infer that related entities have similar APIs
+
+3. **SCENARIO VS COMPILATION PRIORITY**
+   - **Compilation success is the #1 priority**
+   - If scenario requests a non-existent API function, **rewrite the scenario**
+   - Delete scenario elements that require non-existent functions
+   - Create alternative test flows using only available APIs
+
+```typescript
+// ❌ NEVER: Assume APIs exist based on patterns
+await api.functional.products.bulkUpdate(connection, {...}); // Doesn't exist!
+await api.functional.users.deactivate(connection, {...}); // Doesn't exist!
+await api.functional.orders.cancel(connection, {...}); // Check if it actually exists!
+
+// ✅ ALWAYS: Use only verified APIs from the provided materials
+await api.functional.products.update(connection, {...}); // Verified to exist
+await api.functional.users.delete(connection, {...}); // Verified to exist
+```
+
+**When Scenario Requests Non-Existent Functions:**
+
+1. **DO NOT** implement placeholder code that will fail
+2. **DO NOT** try similar-sounding function names  
+3. **DO NOT** create workarounds using non-existent APIs
+4. **INSTEAD**: Remove that test requirement entirely
+5. **REWRITE**: Create new test flows using only available APIs
+
+Example:
+- Scenario: "Test bulk approval of pending orders"
+- Reality: No `bulkApprove` API exists
+- Solution: Either test individual approvals OR skip this scenario entirely
 
 **🚨 MANDATORY: Aggressive Scenario Rewriting**
 
@@ -999,6 +1042,32 @@ typia.random<string & tags.Format<"email">>();
 typia.random<string & tags.Format<"uuid">>();
 typia.random<number & tags.Type<"uint32"> & tags.Minimum<1> & tags.Maximum<100>>();
 ```
+
+**⚠️ CRITICAL: Tag Generic Syntax - Common Mistake**
+AI agents frequently make this syntax error - tags use generic `<>` syntax, NOT function call `()` syntax:
+
+```typescript
+// ✅ CORRECT: Tags use generic angle brackets
+typia.random<string & tags.Format<"email">>();  // CORRECT
+typia.random<string & tags.Format<"uuid">>();   // CORRECT
+typia.random<number & tags.Type<"int32">>();    // CORRECT
+
+// ❌ WRONG: Tags are NOT function calls - this causes compilation error
+typia.random<string & tags.Format("email")>();  // COMPILATION ERROR!
+typia.random<string & tags.Format("uuid")>();   // COMPILATION ERROR!
+typia.random<number & tags.Type("int32")>();    // COMPILATION ERROR!
+
+// More examples:
+// ✅ CORRECT
+typia.random<string & tags.MinLength<5> & tags.MaxLength<10>>();
+typia.random<number & tags.Minimum<0> & tags.Maximum<100>>();
+
+// ❌ WRONG
+typia.random<string & tags.MinLength(5) & tags.MaxLength(10)>();  // ERROR!
+typia.random<number & tags.Minimum(0) & tags.Maximum(100)>();      // ERROR!
+```
+
+**REMEMBER**: Tags are TypeScript type-level constructs using generic syntax `<>`, NOT runtime functions using parentheses `()`.
 
 **3. Common type constraint patterns:**
 ```typescript
@@ -1715,7 +1784,7 @@ export async function test_api_shopping_sale_review_update(
         } satisfies IShoppingSeller.IJoin,
       },
     );
-  // Authentication token is automatically stored in connection.headers
+  // Authentication token is automatically handled by SDK
   typia.assert(seller);
 }
 ```
@@ -1723,57 +1792,46 @@ export async function test_api_shopping_sale_review_update(
 > Note: The above example uses fictional functions and types - use only the actual materials provided in the next system prompt.
 
 **Authentication behavior:**
-- When API functions return authentication tokens, the SDK automatically stores them in `connection.headers`
+- The SDK automatically handles all authentication through API calls
 - You don't need to manually handle token storage or header management
 - Simply call authentication APIs when needed and continue with authenticated requests
 - Token switching (e.g., between different user roles) is handled automatically by calling the appropriate authentication API functions
 
-**CRITICAL: Never manually assign connection.headers.Authorization**
-- The SDK internally manages `connection.headers.Authorization` when you call authentication API functions
-- **NEVER** directly assign values to `connection.headers.Authorization` in any form:
-  ```typescript
-  // ❌ WRONG: Never do this!
-  connection.headers.Authorization = "Bearer token";
-  connection.headers.Authorization = null;
-  connection.headers.Authorization = undefined;
-  ```
-- If you need to remove authentication (rare case), check existence first:
-  ```typescript
-  // ✅ CORRECT: Check existence before deletion
-  if (connection.headers?.Authorization) {
-    delete connection.headers.Authorization;
-  }
-  ```
+**🚨 CRITICAL: ABSOLUTE PROHIBITION ON connection.headers 🚨**
 
-**Connection Headers Initialization:**
-- `connection.headers` has a default value of `undefined`
-- Before assigning any custom headers (NOT Authorization), you must initialize it as an object:
-  ```typescript
-  // Example: Adding a custom header (NOT Authorization)
-  connection.headers ??= {};
-  connection.headers["X-Request-ID"] = "12345"; // Custom headers are OK
-  ```
-- **IMPORTANT**: When creating an unauthorized connection:
-  ```typescript
-  // ✅ CORRECT: Just create empty headers
-  const unauthConn: api.IConnection = { ...connection, headers: {} };
-  
-  // ❌ WRONG: Don't do unnecessary operations on empty objects
-  const unauthConn: api.IConnection = { ...connection, headers: {} };
-  delete unauthConn.headers.Authorization;  // Pointless!
-  unauthConn.headers.Authorization = null;   // Pointless!
-  unauthConn.headers.Authorization = undefined;  // Pointless!
-  
-  // The empty object {} already means no Authorization header exists!
-  ```
+**The SDK has COMPLETE and EXCLUSIVE control over connection.headers management.**
+**E2E test functions have ZERO need to touch headers - EVER.**
 
-**Custom Headers (NOT Authorization):**
+**Why this is ABSOLUTE:**
+- The SDK automatically manages ALL headers including authentication tokens
+- The SDK handles token storage, updates, and removal internally
+- The SDK manages all header lifecycle operations
+- E2E tests ONLY need to call API functions - headers are NOT your concern
+
+**NEVER touch connection.headers in ANY way. This includes:**
+- ❌ NEVER access `connection.headers`
+- ❌ NEVER modify `connection.headers`
+- ❌ NEVER delete properties from `connection.headers`
+- ❌ NEVER initialize `connection.headers`
+- ❌ NEVER check `connection.headers`
+- ❌ NEVER think about `connection.headers`
+
+**The ONLY acceptable pattern for unauthenticated connections:**
 ```typescript
-// ✅ CORRECT: Custom headers are OK
-connection.headers ??= {};
-connection.headers["X-Request-ID"] = "12345";
-connection.headers["X-Client-Version"] = "1.0.0";
-// But NEVER set Authorization manually!
+// ✅ CORRECT: Create empty headers object without any manipulation
+const unauthConn: api.IConnection = { ...connection, headers: {} };
+// STOP HERE - DO NOT TOUCH headers AFTER CREATION
+```
+
+**ZERO TOLERANCE - Any code touching connection.headers is FORBIDDEN:**
+```typescript
+// ❌ ALL OF THESE ARE ABSOLUTELY FORBIDDEN:
+connection.headers.Authorization = "Bearer token";     // FORBIDDEN!
+connection.headers["X-Custom"] = "value";             // FORBIDDEN!
+delete connection.headers.Authorization;               // FORBIDDEN!
+connection.headers ??= {};                            // FORBIDDEN!
+if (connection.headers?.Authorization) { }            // FORBIDDEN!
+Object.entries(connection.headers || {})              // FORBIDDEN!
 ```
 
 **IMPORTANT: Use only actual authentication APIs**
@@ -2003,6 +2061,55 @@ If the test scenario requires intentionally omitting required fields or creating
 - "Verify response structure"
 
 **YOU MUST IGNORE THESE REQUIREMENTS completely and not implement them.**
+
+**🚨 ABSOLUTE PROHIBITIONS - ZERO TOLERANCE LIST 🚨**
+
+**1. NEVER Send Wrong Type Data in Request Bodies:**
+```typescript
+// ❌ ABSOLUTELY FORBIDDEN:
+body: {
+  age: "not a number" as any,  // NEVER! age should be number
+  count: "123" as any,          // NEVER! count should be number
+  isActive: "true" as any       // NEVER! isActive should be boolean
+}
+```
+
+**2. NEVER Test Specific HTTP Status Codes:**
+
+```typescript
+// ❌ ABSOLUTELY FORBIDDEN:
+try {
+  await api.functional.resource.get(connection, { id });
+} catch (exp) {
+  if (exp instanceof api.HttpError) {
+    TestValidator.equals("status", exp.status, 404); // NEVER DO THIS!
+    TestValidator.equals("status", exp.status, 403); // NEVER DO THIS!
+    TestValidator.equals("status", exp.status, 500); // NEVER DO THIS!
+  }
+}
+```
+
+**3. NEVER Delete/Modify Non-Existent Properties:**
+```typescript
+// ❌ ABSOLUTELY FORBIDDEN:
+const emptyObject = {};
+delete emptyObject.someProperty;              // FORBIDDEN! Already empty!
+emptyObject.nonExistent = null;              // FORBIDDEN! Pointless!
+if (emptyObject.someProperty) {...}          // FORBIDDEN! Always false!
+```
+
+**4. NEVER Validate Response Data Types After typia.assert():**
+```typescript
+// ❌ ABSOLUTELY FORBIDDEN:
+const user = await api.functional.users.create(connection, { body });
+typia.assert(user); // This validates EVERYTHING
+
+// ALL OF THESE ARE FORBIDDEN AFTER typia.assert():
+TestValidator.predicate("uuid valid", /^[0-9a-f-]{36}$/i.test(user.id));
+TestValidator.equals("type check", typeof user.age, "number");
+if (!user.email) throw new Error("Missing email");
+if (typeof user.name !== 'string') throw new Error("Wrong type");
+```
 
 **IMPORTANT: Simple error validation only**
 When using `TestValidator.error()`, only test whether an error occurs or not. Do NOT attempt to validate specific error messages, error types, or implement fallback closures for error message inspection. The function signature is simply:
@@ -2542,28 +2649,21 @@ const subCategory = await api.functional.categories.create(connection, {
 **6. Performing Unnecessary Operations on Already-Modified Objects**
 ```typescript
 // ❌ ILLOGICAL: Deleting properties from an empty object
-const unauthConn: api.IConnection = { ...connection, headers: {} };
-delete unauthConn.headers.Authorization;  // headers is already an empty object!
+const emptyData = {};
+delete emptyData.property;  // Object is already empty!
 
 // ❌ ILLOGICAL: Setting null to properties in an empty object
-const unauthConn: api.IConnection = { ...connection, headers: {} };
-unauthConn.headers.Authorization = null;  // Pointless! headers is already empty!
+const emptyRecord = {};
+emptyRecord.field = null;  // Pointless! Object is already empty!
 
 // ❌ ILLOGICAL: Setting properties that are already set
 const newUser = { name: "John", age: 30 };
 newUser.name = "John";  // Already set to "John"!
 
 // ✅ LOGICAL: Only perform necessary modifications
-// If you want unauthorized connection, just create empty headers
+// For unauthenticated connections, just create empty headers
 const unauthConn: api.IConnection = { ...connection, headers: {} };
-
-// If you want to remove specific header from existing headers
-const unauthConn: api.IConnection = { 
-  ...connection, 
-  headers: Object.fromEntries(
-    Object.entries(connection.headers || {}).filter(([key]) => key !== "X-Custom-Header")
-  )
-};
+// STOP - DO NOT manipulate headers after creation
 ```
 
 **IMPORTANT**: Always review your TypeScript code logically. Ask yourself:
@@ -2884,6 +2984,14 @@ Before submitting your generated E2E test code, verify:
 - [ ] **Template code untouched** - Only replaced the `// <E2E TEST CODE HERE>` comment
 - [ ] **All functionality implemented** using only template-provided imports
 
+**🚨 ABSOLUTE PROHIBITIONS CHECKLIST - ZERO TOLERANCE 🚨**
+- [ ] **NO wrong type data in requests** - Never use `as any` to send wrong types
+- [ ] **NO HTTP status code testing** - Never test for 404, 403, 500, etc.
+- [ ] **NO illogical operations** - Never delete from empty objects
+- [ ] **NO response type validation after typia.assert()** - It already validates everything
+- [ ] **NO intentionally missing required fields** - All required fields must be present
+- [ ] **Step 4 revise COMPLETED** - Both revise.review and revise.final executed thoroughly
+
 **Function Structure:**
 - [ ] Function follows the correct naming convention
 - [ ] Function has exactly one parameter: `connection: api.IConnection`
@@ -2909,7 +3017,7 @@ Before submitting your generated E2E test code, verify:
 - [ ] All API responses are properly validated with `typia.assert()`
 - [ ] Authentication is handled correctly without manual token management
 - [ ] Only actual authentication APIs are used (no helper functions)
-- [ ] **CRITICAL**: NEVER directly assign `connection.headers.Authorization` - let SDK manage it
+- [ ] **CRITICAL**: NEVER touch connection.headers in any way - ZERO manipulation allowed
 
 **Business Logic:**
 - [ ] Test follows a logical, realistic business workflow

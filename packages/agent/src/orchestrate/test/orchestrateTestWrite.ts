@@ -3,11 +3,11 @@ import {
   AutoBeProgressEventBase,
   AutoBeTestScenario,
   AutoBeTestWriteEvent,
-  IAutoBeCompiler,
 } from "@autobe/interface";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
+import { NamingConvention } from "typia/lib/utils/NamingConvention";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
@@ -50,7 +50,11 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
           artifacts,
           event,
         };
-      } catch (error) {
+      } catch {
+        console.log(
+          "failed to write test code, no function calling happened.",
+          scenario.functionName,
+        );
         return null;
       }
     }),
@@ -76,8 +80,8 @@ async function process<Model extends ILlmSchema.Model>(
     histories: await transformTestWriteHistories(ctx, scenario, artifacts),
     controller: createController({
       model: ctx.model,
-      artifacts,
       build: (next) => {
+        next.domain = NamingConvention.snake(next.domain);
         pointer.value = next;
       },
     }),
@@ -90,15 +94,16 @@ async function process<Model extends ILlmSchema.Model>(
     throw new Error("Failed to create test code.");
   }
 
-  const compiler: IAutoBeCompiler = await ctx.compiler();
-  if (pointer.value.revise)
-    pointer.value.revise.final = await compiler.typescript.beautify(
-      pointer.value.revise.final,
-    );
-  else
-    pointer.value.draft = await compiler.typescript.beautify(
-      pointer.value.draft,
-    );
+  pointer.value.revise.final = await completeTestCode(
+    ctx,
+    artifacts,
+    pointer.value.revise.final,
+  );
+  pointer.value.draft = await completeTestCode(
+    ctx,
+    artifacts,
+    pointer.value.draft,
+  );
   return {
     type: "testWrite",
     id: v7(),
@@ -118,7 +123,6 @@ async function process<Model extends ILlmSchema.Model>(
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  artifacts: IAutoBeTestScenarioArtifacts;
   build: (next: IAutoBeTestWriteApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
@@ -132,12 +136,6 @@ function createController<Model extends ILlmSchema.Model>(props: {
     application,
     execute: {
       write: (next) => {
-        next.draft = completeTestCode(props.artifacts, next.draft);
-        if (next.revise)
-          next.revise.final = completeTestCode(
-            props.artifacts,
-            next.revise.final,
-          );
         props.build(next);
       },
     } satisfies IAutoBeTestWriteApplication,

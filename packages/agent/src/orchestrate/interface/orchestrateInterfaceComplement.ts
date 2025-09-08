@@ -17,8 +17,8 @@ import { transformInterfaceComplementHistories } from "./histories/transformInte
 import { IAutoBeInterfaceComplementApplication } from "./structures/IAutoBeInterfaceComplementApplication";
 import { JsonSchemaFactory } from "./utils/JsonSchemaFactory";
 import { JsonSchemaNamingConvention } from "./utils/JsonSchemaNamingConvention";
+import { JsonSchemaValidator } from "./utils/JsonSchemaValidator";
 import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMessages";
-import { validateAuthorizationSchema } from "./utils/validateAuthorizationSchema";
 
 export function orchestrateInterfaceComplement<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
@@ -143,7 +143,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
     }
 
     const errors: IValidation.IError[] = [];
-    validateAuthorizationSchema({
+    JsonSchemaValidator.validate({
       errors,
       schemas: result.data.schemas,
       path: "$input.schemas",

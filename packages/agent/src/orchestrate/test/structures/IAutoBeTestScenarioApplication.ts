@@ -1,4 +1,4 @@
-import { AutoBeOpenApi, SnakePattern } from "@autobe/interface";
+import { AutoBeOpenApi } from "@autobe/interface";
 import { tags } from "typia";
 
 export interface IAutoBeTestScenarioApplication {
@@ -128,7 +128,7 @@ export namespace IAutoBeTestScenarioApplication {
      * - Don't imply dependency on other API operations
      * - Represent complete user interactions
      */
-    functionName: string & SnakePattern;
+    functionName: string;
 
     /**
      * A list of other API endpoints that this scenario logically depends on.

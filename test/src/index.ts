@@ -68,7 +68,7 @@ async function main(): Promise<void> {
   >();
 
   // DO TEST
-  await backend.open();
+  await backend.open(TestGlobal.PLAYGROUND_PORT);
   const exceptions: Error[] = await new Array(runsPerScenario)
     .fill(0)
     .reduce(async (acc, _) => {
@@ -152,7 +152,9 @@ async function main(): Promise<void> {
     Test: tokenUsage.test.total.toLocaleString("en-US"),
     Realize: tokenUsage.realize.total.toLocaleString("en-US"),
   });
-  await backend.close();
+  try {
+    await backend.close();
+  } catch {}
   if (exceptions.length !== 0) process.exit(-1);
 }
 

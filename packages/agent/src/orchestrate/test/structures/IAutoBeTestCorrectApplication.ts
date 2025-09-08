@@ -1,3 +1,6 @@
+import { IAutoBeTypeScriptCompileResult } from "@autobe/interface";
+import { tags } from "typia";
+
 export interface IAutoBeTestCorrectApplication {
   /**
    * Main entry point for AI Function Call - analyzes compilation errors and
@@ -43,7 +46,7 @@ export namespace IAutoBeTestCorrectApplication {
      * Workflow: Error diagnostic analysis → Root cause identification →
      * Correction strategy planning → Business logic preservation strategy
      */
-    think: string;
+    think: IThinkProps;
 
     /**
      * Step 2: Draft corrected TypeScript E2E test code implementation.
@@ -79,6 +82,115 @@ export namespace IAutoBeTestCorrectApplication {
      * validated and integrated.
      */
     revise: IReviseProps;
+  }
+
+  /**
+   * Comprehensive compilation error analysis and correction planning
+   * properties.
+   *
+   * This interface structures the AI's deep thinking process during error
+   * correction, requiring individual analysis of each compilation error along
+   * with an overall strategy assessment. The AI must meticulously examine every
+   * error message, understand its root cause, and propose targeted solutions
+   * while maintaining a holistic view of the correction process.
+   *
+   * The structure enforces granular error analysis while ensuring the AI
+   * maintains awareness of overarching patterns and systemic issues that may
+   * require broader strategic changes like scenario rewrites or architectural
+   * adjustments.
+   */
+  export interface IThinkProps {
+    /**
+     * Individual analyses for each compilation diagnostic.
+     *
+     * Contains detailed examination of every compilation error encountered,
+     * with specific analysis and targeted solutions. Each entry represents a
+     * single compilation diagnostic that must be resolved. The AI must read
+     * error messages meticulously, understand the exact nature of each problem,
+     * and propose precise fixes based on the actual error content.
+     *
+     * This granular approach ensures no error is overlooked and each issue
+     * receives appropriate attention and resolution strategy.
+     */
+    analyses: IDiagnosticAnalysis[] & tags.MinItems<1>;
+
+    /**
+     * Overall assessment of compilation issues and correction strategies.
+     *
+     * Synthesizes patterns across all individual errors to identify systemic
+     * issues and overarching correction strategies. This includes verification
+     * of TEST_WRITE.md and TEST_CORRECT.md compliance, assessment of whether
+     * scenario rewrites are needed, identification of common error patterns,
+     * and documentation of broad strategic decisions.
+     *
+     * Must address: type safety compliance, async/await patterns, scenario
+     * adaptation requirements, and overall code quality considerations that
+     * span multiple errors.
+     */
+    overall: string;
+  }
+
+  /**
+   * Detailed analysis structure for individual compilation diagnostics.
+   *
+   * Represents the AI's systematic approach to understanding and resolving each
+   * compilation diagnostic. Each diagnostic must be thoroughly analyzed to
+   * understand its root cause, with a specific solution that addresses the
+   * exact issue while maintaining type safety and code quality.
+   */
+  export interface IDiagnosticAnalysis {
+    /**
+     * The actual compilation diagnostic information from TypeScript compiler.
+     *
+     * Contains the complete diagnostic information including error message,
+     * file location, error code, and severity. This raw data serves as the
+     * foundation for analysis and must be read meticulously to understand the
+     * exact nature of the compilation issue.
+     *
+     * **CRITICAL**: Use the compilation diagnostic input material EXACTLY as
+     * provided. Copy the diagnostic object directly from the input without any
+     * modifications, omissions, or reordering. Maintain the exact sequence of
+     * diagnostics as they appear in the original compilation result.
+     */
+    diagnostic: IAutoBeTypeScriptCompileResult.IDiagnostic;
+
+    /**
+     * Root cause analysis of why this compilation error occurred.
+     *
+     * AI must examine the error message carefully and identify the specific
+     * reason for failure. This includes understanding whether it's a missing
+     * property, type mismatch, nullable/undefined issue, incorrect API usage,
+     * or other TypeScript violations. The analysis should be precise and
+     * fact-based, directly tied to the error message content.
+     *
+     * **MANDATORY**: The AI must thoroughly review ALL sections of TEST_CORRECT.md
+     * and apply relevant error patterns and analysis guidelines from sections
+     * 4.1-4.16 to ensure accurate diagnosis.
+     *
+     * Example: "Property 'code' is missing because the object literal lacks
+     * this required field from ICommunityPlatformCommunity.ICreate interface"
+     */
+    analysis: string;
+
+    /**
+     * Specific solution to resolve this compilation error.
+     *
+     * Detailed correction strategy that addresses the exact issue identified in
+     * the analysis. Solutions must be actionable, type-safe, and compliant with
+     * all project guidelines. For nullable/undefined errors with typia tags,
+     * immediately apply typia.assert(value!) pattern. For missing properties,
+     * specify what will be added and how.
+     *
+     * **CRITICAL**: The AI must thoroughly review BOTH TEST_WRITE.md and
+     * TEST_CORRECT.md before proposing solutions. All prohibitions from
+     * TEST_WRITE.md must be strictly respected (no type bypasses, proper
+     * async/await usage, etc.), and correction patterns from TEST_CORRECT.md
+     * sections 4.1-4.16 must be properly applied.
+     *
+     * Example: "Add missing 'code' property using typia.random<string>() to
+     * generate a valid string value that satisfies the interface requirement"
+     */
+    solution: string;
   }
 
   /**

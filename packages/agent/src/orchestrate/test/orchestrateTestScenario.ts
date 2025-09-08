@@ -9,6 +9,7 @@ import { AutoBeEndpointComparator, MapUtil, StringUtil } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { HashMap, IPointer, Pair } from "tstl";
 import typia from "typia";
+import { NamingConvention } from "typia/lib/utils/NamingConvention";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
@@ -139,6 +140,11 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
         dict: props.dict,
         authorizations,
         build: (next) => {
+          next.scenarioGroups.forEach((sg) =>
+            sg.scenarios.forEach((s) => {
+              s.functionName = NamingConvention.snake(s.functionName);
+            }),
+          );
           pointer.value ??= [];
           pointer.value.push(...next.scenarioGroups);
         },
