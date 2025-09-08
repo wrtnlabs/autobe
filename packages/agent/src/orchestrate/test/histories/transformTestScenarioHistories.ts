@@ -74,9 +74,6 @@ export const transformTestScenarioHistories = (
         However, rather than meaningless tests, business logic tests should be written and an E2E test situation should be assumed.
 
         Please carefully analyze each operation to identify all dependencies required for testing.
-        For example, if you want to test liking and then deleting a post,
-        you might think to test post creation, liking, and unlike operations.
-        However, even if not explicitly mentioned, user registration or login are essential prerequisites.
         Pay close attention to IDs and related values in the API,
         and ensure you identify all dependencies between endpoints.
 
@@ -85,6 +82,16 @@ export const transformTestScenarioHistories = (
           document.operations.map((el) => ({
             ...el,
             specification: undefined,
+            requestedIds: getReferenceIds({
+              document,
+              operation: el,
+              type: "request",
+            }),
+            responseIds: getReferenceIds({
+              document,
+              operation: el,
+              type: "response",
+            }),
           })),
         )}
         \`\`\`
@@ -144,13 +151,20 @@ export const transformTestScenarioHistories = (
       created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: StringUtil.trim`
+        # Candidate Dependencies
+    
         Here is the list of candidate dependencies identified across 
         all operations by analyzing path parameters and request bodies.
-
-        As they are only candidates, identified by some_entity_id pattern,
-        please review and determine whether to include them in your test scenarios.
-
-        Endpoint | List of IDs from path parameters and request body
+    
+        **CRITICAL**: Each ID listed below represents a resource that MUST exist before the operation can execute.
+        You MUST identify and include the API operations that create these resources in your test scenario dependencies.
+    
+        For each \`some_entity_id\` pattern identified, you are REQUIRED to:
+        1. Find the API operation that creates that entity (has the ID in responseIds)
+        2. Include that operation in your dependency chain
+        3. Ensure proper execution order based on dependency relationships
+    
+        Endpoint | Required IDs (MUST be created by other APIs)
         ---------|---------------------------------------------------
         ${relationships
           .map((r) =>
@@ -160,6 +174,8 @@ export const transformTestScenarioHistories = (
             ].join(" | "),
           )
           .join("\n")}.
+    
+        **Example**: If an endpoint requires \`articleId\`, you MUST include the API that creates articles (e.g., \`POST /articles\`) in your dependencies.
       `,
     } satisfies IAgenticaHistoryJson.IAssistantMessage,
   ];

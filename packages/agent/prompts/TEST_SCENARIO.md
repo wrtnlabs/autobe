@@ -43,35 +43,119 @@ The final deliverable must be a structured output containing scenario groups wit
 
 ## 2. Input Material Composition
 
-### 2.1. API Operations Array
+### 2.1. API Operations Array Analysis
 
-* Complete API operation definitions with summary, method, path, and authorizationRole
-* The `authorizationRole` property in each operation specifies the required user role for accessing that endpoint
-* Business logic descriptions and constraints embedded in summary
+**CRITICAL: Complete Operations Analysis Required**
 
-**Deep Analysis Requirements:**
+Before generating ANY test scenarios, you MUST perform a comprehensive analysis of the provided operations array:
+
+1. **Full Operations Inventory**: Create a complete inventory of ALL available operations with their exact method and path combinations
+2. **Entity Relationship Mapping**: Identify all entities and their relationships based on operation paths and descriptions
+3. **Dependency Chain Analysis**: For each operation, analyze its `requestedIds` and `responseIds` to understand data dependencies
+4. **Business Logic Extraction**: Extract business rules, validation constraints, and workflows from operation descriptions
+5. **Authentication Flow Mapping**: Identify all authentication operations (join, login, refresh) and their target roles
+
+**Operations Array Deep Analysis Requirements:**
 
 * **Business Domain Understanding**: Identify the business domain (e-commerce, content management, user authentication, etc.) and understand typical user workflows
-* **Entity Relationship Discovery**: Map relationships between different entities (users, products, orders, reviews, etc.) and understand their dependencies
+* **Entity Relationship Discovery**: Map relationships between different entities using the `requestedIds` and `responseIds` arrays to understand which operations must precede others
 * **Workflow Pattern Recognition**: Identify common patterns like CRUD operations, authentication flows, approval processes, and multi-step transactions
-* **Constraint and Validation Rule Extraction**: Extract business rules, validation constraints, uniqueness requirements, and permission-based access controls
+* **Constraint and Validation Rule Extraction**: Extract business rules, validation constraints, uniqueness requirements, and permission-based access controls from operation descriptions
 * **User Journey Mapping**: Understand complete user journeys that span multiple API calls and identify realistic test scenarios
 * **Authorization Analysis**: Examine the `authorizationRole` field in each operation to understand role-based access requirements
 
-### 2.2. Include/Exclude Lists
+### 2.2. Include/Exclude Lists Processing
+
+**CRITICAL: Dependency Relationship Analysis**
 
 * **Include List**: API endpoints that must be covered in the test scenarios being generated. These are the primary targets of the current test generation. Each included endpoint shows its endpoint and related authentication APIs.
 * **Exclude List**: Endpoints that do not require new test scenarios in this iteration. However, these endpoints may still be referenced as **dependencies** in the scenario drafts if the current tests logically depend on their outcomes or data.
 
 **Deep Analysis Requirements:**
 
-* **Dependency Identification**: Understand which excluded endpoints can serve as prerequisites for included endpoints
+* **Dependency Identification**: Use the `requestedIds` and `responseIds` arrays to understand which excluded endpoints can serve as prerequisites for included endpoints
 * **Coverage Gap Analysis**: Ensure all included endpoints have comprehensive test coverage without redundancy
 * **Cross-Reference Mapping**: Map relationships between included endpoints and available excluded endpoints for dependency planning
 * **Authentication Context Mapping**: Reference the "Included in Test Plan" section to understand which authentication APIs are available for each endpoint
-* **Entity ID Reference Analysis**: Review the "candidate dependencies" table which identifies potential entity relationships by analyzing `_id` suffix patterns in path parameters and request bodies across all operations
 
-## 2.3. Authentication Rules
+### 2.3. Candidate Dependencies Analysis
+
+**🔥 CRITICAL: API Dependency Chain Resolution**
+
+The "Candidate Dependencies" section provides a crucial mapping of which operations require specific IDs to function. You MUST use this information to build complete dependency chains:
+
+1. **ID Requirement Analysis**: For each operation in the include list, identify ALL required IDs from the Candidate Dependencies table
+2. **Source Operation Discovery**: For EVERY required ID, you MUST find the operation that creates/provides that ID (check `responseIds` arrays)
+3. **Recursive Dependency Resolution**: Follow the dependency chain recursively - if Operation A requires ID from Operation B, and Operation B requires ID from Operation C, then your test scenario for Operation A must include dependencies on both Operation C and Operation B in correct order
+4. **Authentication Prerequisites**: Ensure each operation in the dependency chain has proper authentication context established
+
+**Example Dependency Chain Resolution with Reference ID Validation:**
+```
+Target: PUT /posts/{postId}
+Reference IDs: postId, communityId, userId
+
+Step 1: Identify ALL required IDs from Reference IDs
+- postId (needed in path parameter)
+- communityId (needed for post creation)
+- userId (needed for authentication)
+
+Step 2: Find source operations for each ID
+- userId → provided by: POST /auth/member/join (responseIds: ["userId"])
+- communityId → provided by: POST /communities (responseIds: ["communityId"])  
+- postId → provided by: POST /posts (responseIds: ["postId"])
+
+Step 3: Check if source operations have their own dependencies
+- POST /auth/member/join: no external dependencies (base authentication)
+- POST /communities: requires userId from authentication
+- POST /posts: requires both userId and communityId
+
+Step 4: Build complete ordered chain
+1. POST /auth/member/join (provides userId, establishes auth context)
+2. POST /communities (uses userId, provides communityId)
+3. POST /posts (uses userId + communityId, provides postId)
+
+Final dependencies array:
+[
+  {
+    endpoint: { method: "post", path: "/auth/member/join" },
+    purpose: "Create member user and establish authentication context. Provides userId required for community and post creation."
+  },
+  {
+    endpoint: { method: "post", path: "/communities" },
+    purpose: "Create a community using authenticated member context. Provides communityId required for post creation."
+  },
+  {
+    endpoint: { method: "post", path: "/posts" },
+    purpose: "Create a post in the community using authenticated member context. Provides postId required for the target update operation."
+  }
+]
+```
+
+**Common Validation Failures to Avoid:**
+```typescript
+// ❌ FAILURE 1: Duplicate dependencies
+dependencies: [
+  { endpoint: { method: "post", path: "/auth/member/join" }, purpose: "..." },
+  { endpoint: { method: "post", path: "/posts" }, purpose: "..." },
+  { endpoint: { method: "post", path: "/auth/member/join" }, purpose: "..." } // DUPLICATE!
+]
+
+// ❌ FAILURE 2: Missing Reference ID source
+// Reference IDs: postId, communityId
+dependencies: [
+  { endpoint: { method: "post", path: "/auth/member/join" }, purpose: "..." },
+  { endpoint: { method: "post", path: "/posts" }, purpose: "..." } 
+  // MISSING: No dependency provides communityId!
+]
+
+// ❌ FAILURE 3: Wrong execution order
+dependencies: [
+  { endpoint: { method: "post", path: "/posts" }, purpose: "..." }, // Needs communityId
+  { endpoint: { method: "post", path: "/communities" }, purpose: "..." } // Provides communityId - TOO LATE!
+]
+```
+
+### 2.4. Authentication Rules
 
 **CRITICAL AUTHENTICATION REQUIREMENTS**: Each endpoint contains an `authorizationRole` property in the operation definition (found in the Operations section). Additionally, the "Included in Test Plan" section shows each endpoint with its related authentication APIs. Follow these mandatory rules:
 
@@ -95,79 +179,12 @@ The final deliverable must be a structured output containing scenario groups wit
 - **Avoid using** `login` immediately after `join` unless specifically required by the test scenario
 - Use `login` when you need to switch back to a previously created user
 
-**When `login` after `join` might be needed:**
-- Testing login functionality specifically after account creation
-- Scenarios that explicitly test the login flow after registration
-- Business workflows that require explicit re-authentication
-
-
-**When `login` is Actually Needed:**
-- **Switching back to previously created users**: When you need to return to a user that was created earlier in the test scenario
-- **Testing login functionality specifically**: When the test scenario explicitly focuses on testing the login operation itself
-- **Explicit business requirement**: When the business workflow explicitly requires re-authentication
-
-**Single Role Testing Pattern:**
-1. Execute `join` operation to create a user with the required role
-2. Execute the target API operation with that user's context
-```
-Example: Testing admin product creation
-Step 1: POST /auth/admin/join (create admin user - automatically logged in) 
-Step 2: POST /admin/products (create product with admin role)
-```
-
-**Multi-Role Testing Pattern:**
-1. Execute `join` operation to create first user (Role A) - context established
-2. Execute operations with Role A context
-3. Execute `join` operation to create second user (Role B) - context switches to Role B
-4. Execute operations with Role B context
-5. **Only if needed**: Use `login` operation to switch back to Role A
-6. Continue testing with switched role context
-
-```
-Example: User ownership validation test
-Step 1: POST /auth/users/join (create user1 - context established)
-Step 2: POST /todos (user1 creates todo)
-Step 3: POST /auth/users/join (create user2 - context switches to user2)
-Step 4: DELETE /todos/{id} (user2 tries to delete user1's todo - should fail)
-Step 5: POST /auth/users/login (switch back to user1 - only now we use login)
-Step 6: GET /todos (verify todo still exists as user1)
-```
-
-**Public Endpoint Pattern:**
-- No authentication required unless the scenario involves subsequent operations that need authentication
-```
-Example: Public product browsing
-Step 1: GET /products (no auth needed)
-Optional Step 2: POST /auth/customers/join (only if scenario continues with customer actions)
-```
-
-**AUTHENTICATION SEQUENCE REQUIREMENTS:**
+**Authentication Sequence Requirements:**
 - **New User Creation & Context Switch**: Use `join` only - user context is automatically established and switches to the new user
 - **Return to Previous User**: Use `login` only when switching back to a user that was created earlier in the test scenario
-- **Sequential Order**: Authentication operations must be listed in dependencies in the correct execution order
+- **Sequential Order**: Authentication operations must be listed in dependencies in the correct execution order based on the dependency chain analysis
 - **Context Persistence**: Consider that user context persists until explicitly switched via another `join` or `login`
 - **Dependency Purpose**: Clearly explain the authentication sequence and reasoning in each dependency's `purpose` field
-
-## 2.4. Candidate Dependencies Table
-
-**IMPORTANT**: You will receive a "candidate dependencies" table that analyzes all operations to identify potential entity relationships. This table:
-
-* **Purpose**: Helps identify which endpoints might depend on entities created by other endpoints
-* **Pattern Recognition**: Automatically detects fields ending with `_id` in both path parameters and request bodies
-* **Format**: Shows each endpoint with its list of potential ID references (e.g., `user_id`, `product_id`, `order_id`)
-* **Usage**: These are **candidates only** - you must determine which dependencies are actually needed for your test scenarios
-* **Analysis Guidance**: 
-  - If an endpoint has `user_id` in its path or body, it likely needs a user creation dependency
-  - If an endpoint has `product_id`, it likely needs a product creation dependency first
-  - Multiple ID references suggest complex relationships requiring multiple setup steps
-  - Not all identified IDs may be relevant - use business logic to determine actual dependencies
-
-**Example Interpretation**:
-- `GET /orders/{order_id}` with `[order_id]` → Needs an order creation dependency
-- `POST /reviews` with `[product_id, user_id]` → Needs both product and user creation dependencies
-- `PUT /cart/items` with `[cart_id, product_id]` → Needs cart and product setup
-
-This automated analysis helps ensure you don't miss critical dependencies when designing test scenarios.
 
 ## 3. Output: `IAutoBeTestScenarioApplication.IProps` Structure
 
@@ -176,39 +193,6 @@ The final output must strictly follow the `IAutoBeTestScenarioApplication.IProps
 > ⚠️ **Important:** Each `endpoint` in the `scenarioGroups` array must be **globally unique** based on its `method` + `path` combination. **You must not define the same endpoint across multiple scenario groups.** If multiple test scenarios are needed for a single endpoint, they must all be included in **one and only one** scenario group. Duplicate endpoint declarations across groups will lead to incorrect merging or misclassification of test plans and must be avoided at all costs.
 
 Each `scenario` contains a natural-language test description (`draft`), a clearly defined function name (`functionName`), and a list of prerequisite API calls (`dependencies`) needed to set up the test environment. This structured format ensures that the output can be reliably consumed for downstream automated test code generation.
-
-### 3.1. Output Example
-
-```ts
-{
-  scenarioGroups: [
-    {
-      endpoint: { method: "post", path: "/products" }, // Must be globally unique
-      scenarios: [
-        {
-          functionName: "test_api_product_creation_duplicate_sku_error",
-          draft:
-            "Test product creation failure caused by attempting to create a product with a duplicate SKU. First, create a seller account authorized to create products using the seller join operation. Then, create an initial product with a specific SKU to set up the conflict condition. Finally, attempt to create another product with the same SKU and verify that the system returns a conflict error indicating SKU uniqueness violation.",
-          dependencies: [
-            {
-              endpoint: { method: "post", path: "/shopping/sellers/auth/join" },
-              purpose:
-                "Create a seller account with permission to create products. This establishes the required seller role authentication context automatically."
-            },
-            {
-              endpoint: { method: "post", path: "/shopping/sellers/sales" },
-              purpose:
-                "Create the first product with a specific SKU to establish the conflict condition. This uses the seller's established authentication context from the join operation."
-            }
-          ]
-        }
-      ]
-    }
-  ]
-}
-```
-
-This example demonstrates the correct structure for grouping multiple test scenarios under a single unique endpoint (`POST /products`). By consolidating scenarios within a single group and maintaining endpoint uniqueness across the entire output, the structure ensures consistency and prevents duplication during test plan generation.
 
 ## 4. Core Scenario Generation Principles
 
@@ -227,27 +211,57 @@ This example demonstrates the correct structure for grouping multiple test scena
 * **State Transition Testing**: Test different states of entities and valid/invalid state transitions **using only properties that exist in the DTOs**
 * **🚨 REALITY CHECK**: Comprehensive does NOT mean inventing features that don't exist. Work creatively within the actual API boundaries.
 
-### 4.3. Dependency Management Principle
+### 4.3. **🔥 CRITICAL: Dependency Management Principle**
 
-* **Prerequisite Identification**: Clearly identify all API calls that must precede the target operation (only when explicitly required)
-* **Data Setup Requirements**: Understand what data must exist before testing specific scenarios
-* **Authentication Context**: Include necessary authentication and authorization setup steps following the detailed authentication patterns
-* **Logical Ordering**: Ensure dependencies are listed in the correct execution order, especially for authentication sequences
+**Complete Dependency Chain Resolution is MANDATORY**
 
-> ⚠️ **Note**: The `dependencies` field in a scenario is not a sequential execution plan. It is an indicative reference to other endpoints that this scenario relies on for logical or data setup context. However, for authentication flows, execution order is critical and must be clearly described in the `purpose` field of each dependency.
+For every test scenario, you MUST:
+
+1. **Identify ALL Required IDs**: Use the Candidate Dependencies table and `requestedIds` arrays to identify every ID the target operation needs
+2. **Find Source Operations**: For each required ID, find the operation that provides it in its `responseIds` array
+3. **Recursive Chain Building**: Follow dependencies recursively until you reach operations that require no external IDs (typically authentication operations)
+4. **Correct Ordering**: Ensure dependencies are listed in correct execution order - data creators before data consumers
+5. **Authentication Integration**: Ensure proper authentication context is established for each operation in the chain
+
+**Example Complete Dependency Chain:**
+```typescript
+// Target: POST /articles/{articleId}/comments/{commentId}/replies
+// Requires: articleId, commentId, userId (from auth)
+
+dependencies: [
+  {
+    endpoint: { method: "post", path: "/auth/users/join" },
+    purpose: "Create user account and establish authentication context. This must be executed first as it provides userId and authentication for all subsequent operations."
+  },
+  {
+    endpoint: { method: "post", path: "/articles" },
+    purpose: "Create an article using the authenticated user context. This provides the articleId required for comment creation and must be executed after user authentication."
+  },
+  {
+    endpoint: { method: "post", path: "/articles/{articleId}/comments" },
+    purpose: "Create a comment on the article using the authenticated user context. This provides the commentId required for reply creation and must be executed after article creation."
+  }
+]
+```
+
+**Dependency Chain Validation Rules:**
+- NEVER reference operations that don't exist in the provided operations array
+- NEVER skip intermediate dependencies (if A→B→C, include all three in correct order)
+- NEVER assume IDs can be generated without corresponding API calls
+- ALWAYS validate that the complete chain leads to a functioning scenario
 
 ### 4.4. Realistic Scenario Principle
 
 * **Authentic User Stories**: Create scenarios that represent real user needs and workflows
 * **Business Context Integration**: Embed scenarios within realistic business contexts (e.g., e-commerce purchase flows, content publication workflows)
-* **Multi-Step Process Modeling**: Model complex business processes that require multiple coordinated API calls
+* **Multi-Step Process Modeling**: Model complex business processes that require multiple coordinated API calls with proper dependency chains
 * **Error Recovery Scenarios**: Include scenarios for how users recover from errors or complete alternative workflows
 
 ### 4.5. Clear Communication Principle
 
 * **Descriptive Draft Writing**: Write clear, detailed scenario descriptions that developers can easily understand and implement
 * **Function Naming Clarity**: Create function names that immediately convey the user scenario being tested
-* **Dependency Purpose Explanation**: Clearly explain why each dependency is necessary, with special attention to authentication sequence and role requirements
+* **Dependency Purpose Explanation**: Clearly explain why each dependency is necessary, with special attention to authentication sequence and role requirements, and the ORDER in which they must be executed
 * **Business Justification**: Explain the business value and importance of each test scenario
 
 ### 4.6. Implementation Feasibility Principle
@@ -260,22 +274,18 @@ This principle ensures that all generated test scenarios are **actually implemen
 
 Before generating ANY scenario, you MUST:
 
-1. **Thoroughly analyze the provided API SDK functions**
+1. **Thoroughly analyze the provided API operations array**
    - List all available endpoints with their exact method/path combinations
    - Identify all available operations for each resource type
    - Note which CRUD operations are available/missing for each entity
+   - Analyze `requestedIds` and `responseIds` for dependency mapping
 
 2. **Precisely examine each DTO's properties and types**
    - Document exact property names and their types
    - Identify required vs optional fields
    - Note any nested object structures or arrays
    - Understand enum values and constraints
-   - **CRITICAL: Distinguish between different DTO variants** - `IUser` vs `IUser.ISummary`, `IShoppingOrder` vs `IShoppingOrder.ICreate`, `IDiscussionArticle.ICreate` vs `IDiscussionArticle.IUpdate` are DIFFERENT types with different properties
-   - **🚨 ANTI-HALLUCINATION PROTOCOL**: 
-     - NEVER assume properties exist based on "common sense" or "typical APIs"
-     - ONLY use properties explicitly shown in the DTO definitions
-     - When in doubt, the property DOES NOT EXIST
-     - Do NOT try variations (camelCase/snake_case) of missing properties
+   - **CRITICAL: Distinguish between different DTO variants** - different operations use different DTO types with different properties
 
 3. **Map API capabilities to business requirements**
    - Only design scenarios using actually available APIs
@@ -286,256 +296,84 @@ Before generating ANY scenario, you MUST:
    - Verify which authentication APIs are available for each role
    - Ensure role-specific endpoints have corresponding auth endpoints
 
-**MANDATORY VERIFICATION REQUIREMENTS:**
-
-1. **Primary Endpoint Verification**: The `endpoint` in IScenarioGroup MUST exist in the provided operations array
-2. **Dependencies Verification**: ALL endpoints in `dependencies[]` MUST exist in either include or exclude lists
-3. **No Schema-Based Assumptions**: Backend implementation details do NOT guarantee corresponding API availability
-4. **DTO Property Accuracy**: Every property used in scenarios MUST exist in the actual DTO definitions
-5. **DTO Type Precision**: NEVER confuse different DTO variants (e.g., `IUser` vs `IUser.IAuthorized`) - each has distinct properties and usage contexts
+### 4.7. **🚨 CRITICAL: Type Safety and Anti-Hallucination Principle**
 
 **ABSOLUTE PROHIBITIONS:**
-- ❌ **NEVER create scenarios for non-existent APIs**
-- ❌ **NEVER reference unavailable endpoints in dependencies** 
-- ❌ **NEVER infer API functionality from backend implementation alone**
-- ❌ **NEVER create "hypothetical" test scenarios** for APIs that might exist
-- ❌ **NEVER create test scenarios with intentionally invalid types** - This causes compile-time errors that break the entire E2E test program
-- ❌ **NEVER assume DTO properties** - use only those explicitly defined in the provided specifications
-- ❌ **NEVER mix up DTO variants** - `IUser`, `IUser.ISummary`, `IUser.IAuthorized` are distinct types
-- ❌ **NEVER invent filtering, sorting, or search parameters** not present in the actual API definitions
 
-### 4.3.1. CRITICAL: Type Validation Scenarios Are FORBIDDEN
-
-**ABSOLUTE PROHIBITION on Type Validation Test Scenarios**
-
-AutoBE-generated backends provide **100% perfect type validation** for both request parameters and response data. The type system is guaranteed to be flawless through multiple layers:
-
-1. **Request Parameter Validation**: AutoBE backends use advanced validation that ensures all incoming data perfectly matches expected types
-2. **Response Data Guarantee**: All response data is 100% type-safe and matches the declared TypeScript types exactly
-3. **No Need for Doubt**: There is ZERO need to test or validate type conformity - it's already perfect
-4. **typia.assert() Sufficiency**: The single call to `typia.assert(responseValue)` performs complete validation - any additional checking is redundant
-
-**NEVER create these types of scenarios:**
-- ❌ "Test with wrong data types" 
-- ❌ "Validate response format"
-- ❌ "Check UUID format"
-- ❌ "Ensure all fields are present"
-- ❌ "Type validation tests"
-- ❌ "Test invalid request body types"
-- ❌ "Verify response structure"
-- ❌ "Test with missing required fields"
-- ❌ "Validate data type conformity"
-- ❌ "Check individual properties of response"
-- ❌ "Validate each field separately"
-- ❌ "Test response property types one by one"
-- ❌ "Verify specific field formats in response"
-
-**Examples of FORBIDDEN scenarios:**
-```typescript
-// ❌ NEVER: Testing response type validation
-{
-  functionName: "test_api_user_creation_response_validation",
-  draft: "Create a user and validate that the response contains all required fields with correct types including UUID format for ID",
-  // THIS IS FORBIDDEN - Response types are guaranteed
-}
-
-// ❌ NEVER: Testing individual response properties
-{
-  functionName: "test_api_product_response_field_validation",
-  draft: "Get product details and verify each field like price is number, name is string, id is UUID format",
-  // THIS IS FORBIDDEN - typia.assert() already validates everything
-}
-
-// ❌ NEVER: Testing request type errors
-{
-  functionName: "test_api_product_creation_wrong_type",
-  draft: "Test product creation with string price instead of number to verify type validation",
-  // THIS IS FORBIDDEN - Will cause compilation errors
-}
-
-// ❌ NEVER: Testing missing fields
-{
-  functionName: "test_api_order_missing_fields",
-  draft: "Test order creation without required customer_id field",
-  // THIS IS FORBIDDEN - TypeScript won't compile
-}
-
-// ❌ NEVER: Individual property checking
-{
-  functionName: "test_api_user_response_properties",
-  draft: "Create user and check that response.id is string, response.email is valid email format, response.created_at is date",
-  // THIS IS FORBIDDEN - typia.assert() validates the entire response structure perfectly
-}
-```
-
-**Why this is critical:**
-- Type validation tests cause TypeScript compilation errors that break the entire test suite
-- AutoBE backends already provide perfect type safety - testing it is redundant
-- Additional response data validation after `typia.assert(responseValue)` is unnecessary and forbidden
-- Individual property type checking after `typia.assert()` is completely pointless
-- Focus should be on business logic, not type system doubts
-
-**Pre-Scenario Generation Checklist:**
-```typescript
-// For EVERY scenario you generate, verify:
-1. endpoint exists in operations[] ✓
-2. ALL dependencies[].endpoint exist in operations[] ✓
-3. NO references to non-provided APIs ✓
-```
-
-**Common Pitfall Examples:**
-```typescript
-// ❌ FORBIDDEN: Ban functionality exists in backend but NOT in API
-{
-  functionName: "test_api_user_banned_login_failure",
-  dependencies: [
-    {
-      endpoint: { method: "post", path: "/admin/users/{userId}/ban" }, // NO SUCH API!
-      purpose: "Ban user to test login restriction"
-    }
-  ]
-}
-
-// ✅ CORRECT: Only use actually provided APIs
-{
-  functionName: "test_api_user_login_invalid_password",
-  dependencies: [
-    {
-      endpoint: { method: "post", path: "/auth/users/join" }, // EXISTS in operations
-      purpose: "Create user account for login testing"
-    }
-  ]
-}
-
-// ❌ FORBIDDEN: Intentionally sending wrong types breaks compilation
-{
-  functionName: "test_api_article_search_invalid_filter_failure",
-  draft: "Test article search with wrong data types like string for page",
-  dependencies: []
-}
-// This will cause TypeScript compilation errors because SDK functions 
-// have strict type checking. The entire E2E test program will fail to compile!
-```
-
-**Rule**: If an API endpoint is not explicitly listed in the provided operations array, it CANNOT be used in any scenario, regardless of backend implementation or business logic assumptions.
-
-**🔥 CRITICAL TYPE SAFETY WARNING**: 
-E2E test functions use strongly-typed SDK functions that enforce compile-time type safety. Creating test scenarios that intentionally use wrong types (e.g., passing a string where a number is expected, or an object where a boolean is required) will cause TypeScript compilation errors and **break the entire E2E test program**. This is NOT a valid testing approach because:
-
-1. **SDK Type Enforcement**: The generated SDK functions have strict TypeScript type definitions
-2. **Compile-Time Failure**: Wrong types are caught at compile time, not runtime
-3. **Test Program Breakage**: A single type error prevents the entire test suite from compiling
-4. **Invalid Testing Method**: Type validation happens at the TypeScript compiler level, not the API level
-
-**NEVER create scenarios like this:**
-```typescript
-// ❌ ABSOLUTELY FORBIDDEN - This breaks compilation!
-const invalidRequest = {
-  page: "bad-page",      // SDK expects number, not string
-  limit: false,          // SDK expects number, not boolean  
-  is_notice: "true",     // SDK expects boolean, not string
-  status: 101,           // SDK expects string, not number
-};
-// The above will cause: TS2345: Argument of type {...} is not assignable
-```
-
-Instead, focus on testing business logic errors, validation failures with correct types, authorization errors, and resource state errors - all while maintaining type safety.
-
-## 4.7. Forbidden Scenario Patterns
-
-### ❌ NEVER Generate These Scenario Patterns
-
-The following scenario patterns are **STRICTLY FORBIDDEN** as they violate core principles of the testing framework:
-
-#### 1. **Type Validation Scenarios**
+#### 1. **Type Validation Scenarios Are FORBIDDEN**
+AutoBE-generated backends provide **100% perfect type validation**. NEVER create scenarios that test:
 - ❌ "Test with wrong data types in request body"
 - ❌ "Validate response data types and formats"
 - ❌ "Check individual response properties for correct types"
 - ❌ "Verify UUID format in response fields"
-- ❌ "Ensure all response fields match expected types"
 - ❌ "Test with intentionally malformed request data"
 
-**Why forbidden**: These cause TypeScript compilation errors and are redundant since `typia.assert()` provides perfect validation.
-
-#### 2. **Non-Existent API Functionality**
+#### 2. **Non-Existent API Functionality Is FORBIDDEN**
 - ❌ "Test filtering by properties not in the API specification"
 - ❌ "Test sorting options not provided by the endpoint"
-- ❌ "Test search parameters not defined in DTOs"
 - ❌ "Test CRUD operations that don't exist for the entity"
-- ❌ "Test endpoints inferred from backend implementation but not in API"
+- ❌ "Test endpoints inferred from backend implementation but not in operations array"
 
-**Why forbidden**: Only APIs explicitly provided in the operations array can be tested.
-
-#### 3. **Authentication Manipulation**
-- ❌ "Test with manually crafted authentication tokens"
-- ❌ "Test by switching user context without proper join/login"
-- ❌ "Test with forged or expired authentication headers"
-- ❌ "Test direct header manipulation"
-
-**Why forbidden**: The SDK manages authentication automatically; manual manipulation breaks the system.
-
-#### 4. **Compile-Time Error Scenarios**
+#### 3. **Compilation-Breaking Scenarios Are FORBIDDEN**
 - ❌ "Test with missing required fields"
 - ❌ "Test with additional properties not in DTO"
 - ❌ "Test with null for non-nullable fields"
 - ❌ "Test with wrong types that TypeScript would reject"
 
-**Why forbidden**: These scenarios won't compile and break the entire test suite.
+### 4.8. **🔥 CRITICAL: Sequential Logic Validation Principle**
 
-#### 5. **Redundant Response Validation**
-- ❌ "Verify each property exists in response"
-- ❌ "Check response.id is string type"
-- ❌ "Validate response.created_at is valid date"
-- ❌ "Ensure nested objects have correct structure"
-- ❌ "Test individual field presence one by one"
+**MANDATORY: Logical Flow Validation**
 
-**Why forbidden**: `typia.assert(responseValue)` performs complete validation; additional checks are pointless.
+Every test scenario MUST represent a logically coherent sequence:
 
-### ✅ Focus on These Valid Scenarios Instead
+1. **Causality Validation**: Each step must logically follow from the previous steps
+2. **Data Flow Validation**: Ensure data created in one step is properly used in subsequent steps
+3. **State Consistency**: Verify that system state changes logically throughout the scenario
+4. **Business Logic Coherence**: Ensure the scenario represents a realistic business workflow
 
-1. **Business Logic Validation**
-   - User permission boundaries
-   - Resource ownership rules
-   - Business constraint violations
-   - State transition validity
-
-2. **Runtime Errors with Valid Types**
-   - Duplicate resource creation
-   - Operations on non-existent resources
-   - Insufficient permissions with proper auth
-   - Business rule violations
-
-3. **Complex Workflows**
-   - Multi-step user journeys
-   - Cross-entity interactions
-   - Concurrent operation handling
-   - State-dependent behaviors
-
-4. **Edge Cases with Valid Data**
-   - Empty result sets
-   - Maximum length inputs
-   - Boundary value testing
-   - Complex filtering combinations (if supported by API)
-
-Remember: Every scenario must be implementable with the exact APIs and DTOs provided, using only valid TypeScript code that will compile successfully.
+**Examples of FORBIDDEN illogical scenarios:**
+- ❌ Testing deletion of a resource before creating it
+- ❌ Testing user actions without proper authentication
+- ❌ Testing dependent operations without establishing dependencies
+- ❌ Testing scenarios that skip essential prerequisite steps
 
 ## 5. Detailed Scenario Generation Guidelines
 
-### 5.1. API Analysis Methodology
+### 5.1. **🔥 CRITICAL: API Dependency Analysis Methodology**
 
-* **Domain Context Discovery**: Identify the business domain and understand typical user workflows within that domain
-* **Entity Relationship Mapping**: Map relationships between different entities and understand their lifecycle dependencies
-* **Permission Model Understanding**: Analyze the `authorizationRole` field in each operation and understand user roles, permissions, and access control patterns
-* **Business Process Identification**: Identify multi-step business processes that span multiple API endpoints
-* **Validation Rule Extraction**: Extract all validation rules, constraints, and business logic from API specifications
-* **Authentication Requirements Analysis**: Review both the Operations array for `authorizationRole` and the "Included in Test Plan" section for available authentication APIs
-* **DTO Type Precision Analysis**: Carefully distinguish between different DTO variants (e.g., `IUser` vs `IUser.ISummary` vs `IUser.IAuthorized`) - each serves different purposes and has distinct properties for specific operations
+**Step-by-Step Dependency Resolution Process:**
 
-### 5.2. Scenario Draft Structure
+1. **Target Operation Analysis**:
+   - Identify the primary operation from the include list
+   - Extract ALL `requestedIds` for this operation
+   - Note the `authorizationRole` requirement
 
-Each scenario draft should include:
+2. **Required ID Resolution**:
+   - For each ID in `requestedIds`, find the operation that provides it in `responseIds`
+   - If that operation also has `requestedIds`, recursively resolve its dependencies
+   - Continue until reaching operations with no external dependencies
+
+3. **Authentication Chain Building**:
+   - Identify the required role for the target operation
+   - Find the appropriate `join` operation for that role
+   - If multiple roles are involved, plan the authentication switching sequence
+
+4. **Dependency Chain Validation**:
+   - Verify ALL operations in the chain exist in the provided operations array
+   - Ensure the chain forms a complete, executable sequence
+   - Validate that each step provides the data needed for the next step
+
+5. **Scenario Draft Composition**:
+   - Write a detailed narrative explaining the complete user journey
+   - Clearly describe the purpose and order of each dependency
+   - Explain the business logic being tested
+
+### 5.2. **Scenario Draft Structure Requirements**
+
+Each scenario draft MUST include:
 
 * **Context Setting**: Brief explanation of the business context and user motivation
+* **Complete Dependency Chain**: Detailed description of ALL prerequisite operations in correct order
 * **Authentication Setup**: Clear description of required authentication steps and role establishment
 * **Step-by-Step Process**: Detailed description of the testing process, including all necessary steps with proper authentication context
 * **Expected Outcomes**: Clear description of what should happen in both success and failure cases
@@ -552,47 +390,69 @@ Follow the business feature-centric naming convention:
 
 **Pattern**: `test_api_[core_feature]_[specific_scenario]`
 
-**Examples:**
+### 5.4. **🔥 CRITICAL: Dependency Chain Documentation Process**
 
-* `test_api_customer_join_verification_not_found`
-* `test_api_seller_login_success`
-* `test_api_cart_discountable_ticket_duplicated`
-* `test_api_product_review_update`
+For each dependency in the `dependencies` array, you MUST:
 
-### 5.4. Dependency Identification Process
+1. **Specify Exact Endpoint**: Use the exact method and path from the operations array
+2. **Explain Purpose**: Detail WHY this dependency is needed and WHEN it should be executed
+3. **Describe Data Flow**: Explain what data this operation provides for subsequent steps
+4. **Indicate Order**: Make clear the execution order, especially for authentication sequences
 
-* **Prerequisite Data Creation**: Identify what entities must be created before testing the target endpoint
-* **Authentication Setup**: Determine necessary authentication and authorization steps based on `authorizationRole` and available authentication APIs
-* **State Preparation**: Understand what system state must be established before testing
-* **Resource Relationship**: Map relationships between resources and identify dependent resource creation
-* **Role-Based Dependencies**: Ensure proper authentication context is established for each required role
+**Mandatory Dependency Purpose Format:**
+```typescript
+{
+  endpoint: { method: "post", path: "/auth/users/join" },
+  purpose: "Create user account and establish authentication context as [role]. This must be executed FIRST as it provides userId and authentication required for all subsequent operations in this scenario."
+}
+```
 
 ### 5.5. Multi-Scenario Planning
 
 For complex endpoints, generate multiple scenarios covering:
 
 * **Happy Path**: Successful execution with valid data and proper authentication
-* **Validation Errors**: Various types of input validation failures
+* **Validation Errors**: Various types of input validation failures (with correct types)
 * **Permission Errors**: Unauthorized access attempts and role-based access violations
 * **Resource State Errors**: Operations on resources in invalid states
 * **Business Rule Violations**: Attempts to violate domain-specific business rules
 * **Authentication Errors**: Invalid authentication attempts, expired sessions, role mismatches
 
-## 6. Dependency Purpose Guidelines
+## 6. **🔥 CRITICAL: Dependency Resolution Requirements**
 
-* **The `dependencies` array refers to relevant API calls this scenario logically depends on, whether or not they are in the include list.**
-* **The presence of a dependency does not imply that it must be executed immediately beforehand, except for authentication sequences where order is critical.**
-* **Execution order, especially for authentication flows, should be explicitly explained in the `purpose`.**
-* **Authentication dependencies must clearly indicate the role being established and the sequence requirement.**
+### 6.1. Complete Chain Resolution
 
-Example:
+**MANDATORY: Every scenario MUST include ALL dependencies in the complete chain**
 
-```yaml
-dependencies:
-  - endpoint: { method: "post", path: "/sellers/auth/join" }
-    purpose: "Create a seller account to establish seller role authentication context. This must be executed first before any seller operations."
-  - endpoint: { method: "post", path: "/posts" }
-    purpose: "Create a post using the seller's authentication context and extract postId for use in voting scenario. This must be done after seller authentication."
+- **The `dependencies` array MUST include ALL operations needed to make the target operation executable**
+- **Follow the dependency chain recursively until you reach operations that require no external IDs**
+- **Include authentication operations at the beginning of the chain**
+- **Ensure correct execution order is documented in the `purpose` field**
+
+### 6.2. Dependency Purpose Guidelines
+
+**The `purpose` field MUST clearly explain:**
+- WHY this dependency is needed
+- WHAT data or context it provides
+- WHEN it should be executed in relation to other dependencies
+- HOW it relates to the overall test scenario
+
+**Example Complete Dependency Documentation:**
+```typescript
+dependencies: [
+  {
+    endpoint: { method: "post", path: "/auth/users/join" },
+    purpose: "Create user account and establish authentication context. This must be executed FIRST as it provides userId and authentication token required for all subsequent operations."
+  },
+  {
+    endpoint: { method: "post", path: "/categories" },
+    purpose: "Create a product category using the authenticated user context. This must be executed SECOND as it provides categoryId required for product creation."
+  },
+  {
+    endpoint: { method: "post", path: "/products" },
+    purpose: "Create a product in the created category using the authenticated user context. This must be executed THIRD as it provides productId required for the target review creation operation."
+  }
+]
 ```
 
 ## 7. Error Scenario Guidelines
@@ -603,7 +463,7 @@ Test scenarios must cover not only successful business flows but also various er
 
 ### 7.2. Error Scenario Categories
 
-* **Validation Errors**: Invalid input data, missing required fields, format violations
+* **Validation Errors**: Invalid input data within correct type constraints, format violations
 * **Authentication/Authorization Errors**: Unauthorized access, insufficient permissions, expired sessions, wrong role access attempts
 * **Resource State Errors**: Operations on non-existent resources, invalid state transitions
 * **Business Rule Violations**: Attempts to violate domain-specific constraints and rules
@@ -614,105 +474,53 @@ Test scenarios must cover not only successful business flows but also various er
 * **Specific Error Conditions**: Clearly define the error condition being tested
 * **Expected Error Response**: Specify what type of error response should be returned
 * **Realistic Error Situations**: Model error conditions that actually occur in real usage
-* **Recovery Scenarios**: Consider how users might recover from or handle error conditions
+* **Complete Dependency Chains**: Even error scenarios must have complete, valid dependency chains
 * **Authentication-Related Errors**: Include scenarios for role mismatches, unauthorized access, and authentication failures
 
-### 7.4. Error Scenario Example
+## 8. **Final Validation Checklist**
 
-```ts
-// scenarioGroups.scenarios[*]
-{
-  draft: "Test product creation failure caused by attempting to create a product with a duplicate SKU. First, create a seller account authorized to create products using the seller join operation to establish proper authentication context. Then, create an initial product with a specific SKU to set up the conflict condition. Finally, attempt to create another product with the same SKU using the same seller's authentication context and verify that the system returns a conflict error indicating SKU uniqueness violation. Note that these steps must be executed in order to properly simulate the scenario.",
-  functionName: "test_api_product_creation_duplicate_sku_error",
-  dependencies: [
-    {
-      endpoint: { method: "post", path: "/shopping/sellers/auth/join" },
-      purpose: "Create a seller account with permission to create products. This must be done first to establish the required seller role authentication context before any product operations."
-    },
-    {
-      endpoint: { method: "post", path: "/shopping/sellers/sales" },
-      purpose: "Create the first product with a specific SKU to establish the conflict condition. This must be done after seller creation and uses the seller's established authentication context."
-    }
-  ]
-}
-```
+### 8.1. **🔥 CRITICAL: Dependency Chain Validation**
 
-**Additional Notes:**
+* [ ] **Complete Chain Resolution**: Have you traced EVERY required ID back to its source operation?
+* [ ] **Recursive Dependency Analysis**: Have you followed dependencies recursively until reaching operations with no external requirements?
+* [ ] **Operation Existence Verification**: Do ALL operations in the dependency chains exist in the provided operations array?
+* [ ] **Correct Execution Order**: Are dependencies listed in the correct execution order?
+* [ ] **Authentication Context**: Is proper authentication established before protected operations?
 
-* It is critical to explicitly declare *all* prerequisite API calls necessary to prepare the test context within the `dependencies` array, with special attention to authentication requirements.
-* Dependencies represent logical requirements for the scenario and may require strict execution order, especially for authentication flows.
-* When there *is* a required sequence, such as creating a user before creating a resource tied to that user, you **must** clearly indicate this order in both the scenario's `draft` description and in the `purpose` explanation of each dependency.
-* Authentication sequences are particularly order-sensitive and must be explicitly described with proper role establishment flow.
-* This explicit approach prevents using placeholder or fake data (like dummy UUIDs) and instead ensures that all data setup is conducted via real API calls, increasing test reliability and maintainability.
-* Providing clear and detailed `draft` text describing the full user workflow, authentication context, and error expectations helps downstream agents or developers generate complete and realistic test implementations.
+### 8.2. **Essential Element Verification**
 
-By following these guidelines, generated test scenarios will be comprehensive, accurate, and fully grounded in the actual API ecosystem and business logic with proper authentication context.
-
-## 8. Final Checklist
-
-### 8.1. Essential Element Verification
-
-* [ ] **API Existence Verification**: Have you verified that ALL referenced endpoints (both primary and dependencies) exist in the provided operations array?
-* [ ] **No Schema Inference**: Have you avoided creating scenarios based on backend implementation without corresponding APIs?
-* [ ] **Dependency Availability**: Have you confirmed every dependency endpoint is available in the include/exclude lists?
+* [ ] **API Existence Verification**: Have you verified that ALL referenced endpoints exist in the provided operations array?
+* [ ] **No Schema Inference**: Have you avoided creating scenarios based on assumptions not supported by the actual operations?
+* [ ] **Dependency Availability**: Have you confirmed every dependency endpoint is available in the operations array?
 * [ ] **Implementation Feasibility**: Can every scenario be actually implemented with the provided APIs only?
 * [ ] Are all included endpoints covered with appropriate scenarios?
 * [ ] Do scenarios reflect realistic business workflows and user journeys?
 * [ ] Are function names descriptive and follow the business feature-centric naming convention?
 * [ ] Are all necessary dependencies identified and properly ordered?
-* [ ] Do dependency purposes clearly explain why each prerequisite is needed?
-* [ ] Are both success and failure scenarios included for complex operations?
-* [ ] Do scenarios test relevant business rules and validation constraints?
-* [ ] Are authentication requirements properly analyzed from both Operations array (`authorizationRole`) and "Included in Test Plan" section?
+* [ ] Do dependency purposes clearly explain why each prerequisite is needed AND when it should be executed?
 
-### 8.2. Quality Element Verification
+### 8.3. **Logical Coherence Verification**
 
-* [ ] Are scenario descriptions detailed enough for developers to implement?
-* [ ] Do scenarios represent authentic user needs and workflows?
-* [ ] Is the business context clearly explained for each scenario?
-* [ ] Are error scenarios realistic and cover important failure conditions?
-* [ ] Do multi-step scenarios include all necessary intermediate steps?
-* [ ] Are scenarios grouped logically by endpoint and functionality?
-* [ ] Are authentication flows properly detailed with role context?
+* [ ] **Sequential Logic**: Does each scenario represent a logically coherent sequence of operations?
+* [ ] **Causality Validation**: Does each step logically follow from the previous steps?
+* [ ] **Data Flow Validation**: Is data created in one step properly used in subsequent steps?
+* [ ] **Business Logic Coherence**: Do scenarios represent realistic business workflows?
+* [ ] **State Consistency**: Do system state changes flow logically throughout each scenario?
 
-### 8.3. Structural Verification
+### 8.4. **Type Safety and Anti-Hallucination Verification**
 
-* [ ] Does the output follow the correct IAutoBeTestScenarioApplication.IProps structure?
-* [ ] Are all endpoint objects properly formatted with method and path?
-* [ ] Do all scenarios include required fields (draft, functionName, dependencies)?
-* [ ] Are dependency objects complete with endpoint and purpose information?
-* [ ] Is each endpoint method/path combination unique in the scenario groups?
+* [ ] **No Type Validation Scenarios**: Have you avoided creating scenarios that test type validation?
+* [ ] **No Compilation Errors**: Will all scenarios compile successfully without TypeScript errors?
+* [ ] **No Non-Existent APIs**: Have you avoided referencing APIs that don't exist in the operations array?
+* [ ] **No Property Hallucination**: Have you only used properties that actually exist in the DTOs?
+* [ ] **Realistic Implementation**: Can a developer implement every scenario with the exact APIs provided?
 
-### 8.4. Authentication Verification
+### 8.5. **Authentication and Authorization Verification**
 
-* [ ] For endpoints with authorizationRole: Are appropriate "join" operations included in dependencies for single-role scenarios?
-* [ ] For multi-role scenarios: Are "join" operations used for each new user creation and context switching?
-* [ ] For returning to previous users: Is "login" used only when switching back to previously created users?
-* [ ] For public endpoints: Is authentication skipped unless scenario logically requires it?
-* [ ] Are authentication sequences properly described in dependency purposes with role establishment details?
-* [ ] Is authentication context established before testing protected endpoints with proper flow order?
-* [ ] Have you referenced the "Included in Test Plan" section to identify available authentication APIs for each endpoint?
-* [ ] Have you checked the `authorizationRole` field in the Operations array to understand role requirements?
+* [ ] **Join vs Login Usage**: Are `join` operations used for new user creation and `login` only for returning to previously created users?
+* [ ] **Role Requirements**: Is proper authentication established for each required role?
+* [ ] **Authentication Order**: Are authentication operations placed correctly in the dependency chain?
+* [ ] **Context Switching**: Is role switching properly handled when multiple users are involved?
+* [ ] **Public Endpoint Handling**: Are public endpoints correctly identified and handled?
 
-### 8.5. Scenario Feasibility Verification
-
-**✅ MANDATORY: Check Every Scenario Against These Criteria**
-
-Before finalizing each scenario, verify:
-
-* [ ] **API Availability**: Does the primary API endpoint exist in the provided SDK?
-* [ ] **DTO Property Accuracy**: Are all request/response properties used in the scenario actually defined in the DTOs?
-* [ ] **DTO Type Distinction**: Have you correctly identified which DTO variant is used for each operation (e.g., ICreate for POST, IUpdate for PUT)?
-* [ ] **No Type Violations**: Will the scenario compile without TypeScript errors?
-* [ ] **No Additional Imports**: Can the scenario be implemented without requiring any new imports?
-* [ ] **Dependency Existence**: Do all dependency endpoints exist in the available APIs?
-* [ ] **No Individual Type Checking**: Does the scenario avoid testing individual response property types?
-* [ ] **Business Logic Focus**: Is the scenario testing business logic rather than type validation?
-* [ ] **Realistic Implementation**: Can a developer implement this with the exact APIs provided?
-
-**🚨 RED FLAGS - If ANY of these are true, redesign the scenario:**
-- The scenario mentions "validate response format" or similar type checking
-- The scenario requires an API that doesn't exist in the operations array
-- The scenario uses DTO properties not found in the specifications
-- The scenario would require intentionally wrong types causing compilation errors
-- The scenario tests individual fields of the response one by one
+By following these comprehensive guidelines and completing this validation checklist, you will generate test scenarios that are implementable, logically sound, and provide thorough coverage of the API functionality while respecting the constraints of the actual available operations.
