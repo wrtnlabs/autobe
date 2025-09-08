@@ -1,5 +1,13 @@
 import { tags } from "typia";
 
+export interface ICheck {
+  /** The title or description of the validation rule/check item */
+  title: string;
+
+  /** The validation state (true: passed/satisfied, false: failed/violated) */
+  state: boolean;
+}
+
 export interface IAutoBeTestCorrectApplication {
   /**
    * Main entry point for AI Function Call - analyzes compilation errors and
@@ -201,63 +209,73 @@ export namespace IAutoBeTestCorrectApplication {
    */
   export interface IReviseProps {
     /**
-     * Dual-document compliance validation for TEST_WRITE.md and TEST_CORRECT.md.
-     * 
-     * This property tracks whether each section from BOTH TEST_WRITE.md and 
-     * TEST_CORRECT.md guidelines has been properly followed. Since the correct 
-     * agent must ensure compliance with both documents, keys should include 
+     * Dual-document compliance validation for TEST_WRITE.md and
+     * TEST_CORRECT.md.
+     *
+     * This property tracks whether each section from BOTH TEST_WRITE.md and
+     * TEST_CORRECT.md guidelines has been properly followed. Since the correct
+     * agent must ensure compliance with both documents, keys should include
      * sections from both prompt files.
-     * 
-     * Keys should be prefixed with the source document for clarity:
-     * - "TEST_WRITE: " for sections from TEST_WRITE.md
-     * - "TEST_CORRECT: " for sections from TEST_CORRECT.md
-     * 
-     * Values indicate compliance status (true if followed, false if violated).
-     * 
-     * Note: Section identifiers may evolve as documentation updates, so 
+     *
+     * Each ICheck item should have:
+     *
+     * - Title: Prefixed with source document for clarity ("TEST_WRITE: " or
+     *   "TEST_CORRECT: ")
+     * - State: Compliance status (true if followed, false if violated)
+     *
+     * Note: Section identifiers may evolve as documentation updates, so
      * implementations should be flexible in handling different key formats.
-     * 
+     *
      * Example:
+     *
      * ```typescript
-     * rules: {
-     *   "TEST_WRITE: 1. Role and Responsibility": true,
-     *   "TEST_WRITE: 3.1. Import Management": true,
-     *   "TEST_CORRECT: 4.1. Missing Properties Pattern": true,
-     *   "TEST_CORRECT: 4.2. Type Mismatch Pattern": false,
+     * rules: [
+     *   { title: "TEST_WRITE: 1. Role and Responsibility", state: true },
+     *   { title: "TEST_WRITE: 3.1. Import Management", state: true },
+     *   {
+     *     title: "TEST_CORRECT: 4.1. Missing Properties Pattern",
+     *     state: true,
+     *   },
+     *   {
+     *     title: "TEST_CORRECT: 4.2. Type Mismatch Pattern",
+     *     state: false,
+     *   },
      *   // ... other sections from both documents
-     * }
+     * ];
      * ```
      */
-    rules: Record<string, boolean>;
+    rules: ICheck[] & tags.MinItems<1>;
 
     /**
      * Combined quality checklist validation from both prompt documents.
-     * 
-     * This property captures the compliance status for checklist items from 
-     * BOTH TEST_WRITE.md (Section 5: Final Checklist) and TEST_CORRECT.md 
-     * (Section 5: Final Review Checklist). The correct agent must validate 
+     *
+     * This property captures the compliance status for checklist items from
+     * BOTH TEST_WRITE.md (Section 5: Final Checklist) and TEST_CORRECT.md
+     * (Section 5: Final Review Checklist). The correct agent must validate
      * against both checklists to ensure comprehensive quality control.
-     * 
-     * Keys should match the checklist items as described in both documents,
-     * optionally prefixed with the source for clarity. Boolean values indicate
-     * whether each criterion has been satisfied.
-     * 
-     * Note: Checklist items may be updated over time, so implementations
-     * should adapt to documentation changes while maintaining the validation
-     * purpose.
-     * 
+     *
+     * Each ICheck item should have:
+     *
+     * - Title: Checklist item as described in the documents
+     * - State: Whether the criterion has been satisfied
+     *
+     * Note: Checklist items may be updated over time, so implementations should
+     * adapt to documentation changes while maintaining the validation purpose.
+     *
      * Example:
+     *
      * ```typescript
-     * checkList: {
-     *   "No compilation errors": true,
-     *   "Proper async/await usage": true,
-     *   "All typia tags preserved": true,
-     *   "No type bypasses or workarounds": false,
+     * checkList: [
+     *   { title: "No compilation errors", state: true },
+     *   { title: "Proper async/await usage", state: true },
+     *   { title: "All typia tags preserved", state: true },
+     *   { title: "No type bypasses or workarounds", state: false },
      *   // ... other checklist items from both documents
-     * }
+     * ];
      * ```
      */
-    checkList: Record<string, boolean>;
+    checkList: ICheck[] & tags.MinItems<1>;
+
     /**
      * Step 3: Code review and correction validation.
      *

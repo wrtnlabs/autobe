@@ -109,16 +109,18 @@ You MUST execute the following 5-step workflow through a single function call. E
 This property contains validation results and two sub-steps for iterative improvement:
 
 #### 4.1: **revise.rules** and **revise.checkList** - Compliance Validation Results
-- **rules**: A record tracking compliance with each section of this TEST_WRITE.md document
-  - Keys correspond to section identifiers (e.g., "1. Role and Responsibility", "2. Input Materials Provided")
-  - Values are boolean indicating whether that section's requirements were followed
+- **rules**: An array of ICheck objects tracking compliance with each section of this TEST_WRITE.md document
+  - Each object contains a `title` (section identifier) and `state` (compliance status)
+  - Titles correspond to section identifiers (e.g., "1. Role and Responsibility", "2. Input Materials Provided")
+  - State is boolean indicating whether that section's requirements were followed
   - The specific section identifiers may evolve as documentation updates
-  - Example: `{"1. Role and Responsibility": true, "3.1. Import Management": false}`
-- **checkList**: A record tracking each item from the Final Checklist (Section 5)
-  - Keys match the checklist items as written in the documentation
-  - Values are boolean indicating whether each criterion was satisfied
+  - Example: `[{title: "1. Role and Responsibility", state: true}, {title: "3.1. Import Management", state: false}]`
+- **checkList**: An array of ICheck objects tracking each item from the Final Checklist (Section 5)
+  - Each object contains a `title` (checklist item) and `state` (validation result)
+  - Titles match the checklist items as written in the documentation
+  - State is boolean indicating whether each criterion was satisfied
   - Items may be updated over time as requirements evolve
-  - Example: `{"No compilation errors": true, "Proper async/await usage": false}`
+  - Example: `[{title: "No compilation errors", state: true}, {title: "Proper async/await usage", state: false}]`
 
 #### 4.2: **revise.review** - Critical Code Review and Analysis
 - Perform a thorough, line-by-line review of your draft implementation

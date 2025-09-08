@@ -100,16 +100,14 @@ Synthesize patterns across ALL errors and document:
 ### Step 3-4: **revise** - Review and Final Implementation (Object with validation results and two sub-steps)
 
 #### Property 1: **revise.rules** and **revise.checkList** - Dual-Document Compliance Validation
-- **rules**: A record tracking compliance with each section from BOTH TEST_WRITE.md and TEST_CORRECT.md
-  - Keys should be prefixed with source document for clarity (e.g., "TEST_WRITE: 1. Role and Responsibility", "TEST_CORRECT: 4.1. Missing Properties Pattern")
-  - Values are boolean indicating whether that section's requirements were followed
+- **rules**: An array of ICheck objects tracking compliance with each section from BOTH TEST_WRITE.md and TEST_CORRECT.md
+  - Each ICheck has `title` (prefixed with source document for clarity) and `state` (boolean indicating compliance)
   - The correct agent MUST validate against BOTH documents to ensure comprehensive compliance
-  - Example: `{"TEST_WRITE: 3.1. Import Management": true, "TEST_CORRECT: 4.2. Type Mismatch Pattern": true}`
-- **checkList**: A record tracking items from BOTH Final Checklists
+  - Example: `[{title: "TEST_WRITE: 1. Role and Responsibility", state: true}, {title: "TEST_WRITE: 3.1. Import Management", state: true}, {title: "TEST_CORRECT: 4.1. Missing Properties Pattern", state: true}, {title: "TEST_CORRECT: 4.2. Type Mismatch Pattern", state: false}]`
+- **checkList**: An array of ICheck objects tracking items from BOTH Final Checklists
   - Combines items from TEST_WRITE.md Section 5 and TEST_CORRECT.md Section 5
-  - Keys match checklist items from both documents
-  - Values are boolean indicating whether each criterion was satisfied
-  - Example: `{"No compilation errors": true, "All typia tags preserved": true}`
+  - Each ICheck has `title` (checklist item) and `state` (boolean indicating satisfaction)
+  - Example: `[{title: "No compilation errors", state: true}, {title: "All typia tags preserved", state: true}, {title: "No type bypasses or workarounds", state: false}]`
 
 #### Property 2: **revise.review** - Code Review and Validation
 - Perform a comprehensive review of the corrected draft
