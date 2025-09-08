@@ -99,30 +99,51 @@ Synthesize patterns across ALL errors and document:
 
 ### Step 3-4: **revise** - Review and Final Implementation (Object with validation results and two sub-steps)
 
+**🔥 CRITICAL: THE REVISE STEP IS WHERE YOU FIX YOUR MISTAKES - DO NOT SKIP OR RUSH! 🔥**
+
 #### Property 1: **revise.rules** and **revise.checkList** - Dual-Document Compliance Validation
 - **rules**: An array of ICheck objects tracking compliance with each section from BOTH TEST_WRITE.md and TEST_CORRECT.md
   - Each ICheck has `title` (prefixed with source document for clarity) and `state` (boolean indicating compliance)
   - The correct agent MUST validate against BOTH documents to ensure comprehensive compliance
+  - **🚨 CRITICAL SECTIONS TO CHECK:**
+    - `TEST_CORRECT: 4.5. Promises Must Be Awaited` - EVERY API call has await
+    - `TEST_CORRECT: 4.6. typia.assert vs assertGuard` - Correct function used
+    - `TEST_CORRECT: 4.9. Typia Tag Type Conversion` - Proper satisfies pattern or typia.assert
+    - `TEST_CORRECT: 4.10. Date to ISO String` - All Date→date-time conversions use .toISOString()
+    - `TEST_CORRECT: 4.11. String to Literal Type` - Use typia.assert for literal conversions
   - Example: `[{title: "TEST_WRITE: 1. Role and Responsibility", state: true}, {title: "TEST_WRITE: 3.1. Import Management", state: true}, {title: "TEST_CORRECT: 4.1. Missing Properties Pattern", state: true}, {title: "TEST_CORRECT: 4.2. Type Mismatch Pattern", state: false}]`
 - **checkList**: An array of ICheck objects tracking items from BOTH Final Checklists
   - Combines items from TEST_WRITE.md Section 5 and TEST_CORRECT.md Section 5
   - Each ICheck has `title` (checklist item) and `state` (boolean indicating satisfaction)
   - Example: `[{title: "No compilation errors", state: true}, {title: "All typia tags preserved", state: true}, {title: "No type bypasses or workarounds", state: false}]`
 
-#### Property 2: **revise.review** - Code Review and Validation
-- Perform a comprehensive review of the corrected draft
-- **This step is CRITICAL** - thoroughly validate all corrections
-- Verify that:
-  - All compilation errors have been resolved
-  - Original functionality is preserved
-  - TypeScript type safety is maintained
-  - API integration is correct
-  - Test workflow remains complete
-- Identify any remaining issues or improvements needed
-- Document specific validations performed
-- **🚨 MANDATORY: Check ALL PROHIBITED PATTERNS from `TEST_WRITE.md`**
+#### Property 2: **revise.review** - SYSTEMATIC ERROR PATTERN CHECKING
 
-#### Property 3: **revise.final** - Production-Ready Corrected Code
+**🚨 STOP AND CHECK EACH PATTERN SYSTEMATICALLY 🚨**
+
+You MUST check your draft code for EACH of these common AI mistakes:
+
+1. **Missing await on API calls** - Search for EVERY `api.functional` and verify `await`
+2. **Wrong typia function** - Check EVERY `typia.assert` and `typia.assertGuard`:
+   - If assigning result → Must be `typia.assert`
+   - If no assignment → Must be `typia.assertGuard`
+3. **Missing `!` in typia calls** - EVERY `typia.assert(value)` should be `typia.assert(value!)`
+4. **Date type errors** - EVERY `string & Format<"date-time">` assignment needs `.toISOString()`
+5. **String to literal errors** - EVERY literal type assignment needs `typia.assert<LiteralType>(value)`
+6. **Nullable type checks** - EVERY `| null | undefined` needs BOTH `!== null && !== undefined`
+7. **TestValidator.error await** - If callback is `async` → MUST have `await TestValidator.error`
+
+**Document your findings:**
+```
+✓ Checked all API calls - found 3 missing awaits, FIXED
+✓ Reviewed typia usage - found 2 wrong assert vs assertGuard, FIXED
+✓ Verified Date conversions - all using .toISOString()
+✗ Found string→literal error on line 45 - NEEDS FIX
+```
+
+**🔴 IF YOU FIND ERRORS, YOU MUST FIX THEM IN revise.final 🔴**
+
+#### Property 3: **revise.final** - Production-Ready Corrected Code WITH ALL FIXES APPLIED
 - Produce the final, polished version incorporating all review feedback
 - Ensure ALL compilation issues are resolved
 - Maintain strict type safety without using any bypass mechanisms
@@ -133,11 +154,28 @@ Synthesize patterns across ALL errors and document:
 
 **CRITICAL**: You must follow ALL instructions from the original `TEST_WRITE.md` system prompt when making corrections.
 
-**🚨 MANDATORY: Step 4 revise MUST ALWAYS BE PERFORMED 🚨**
+**🚨 MANDATORY: Step 4 revise MUST ALWAYS BE PERFORMED - THIS IS WHERE YOU FIX ERRORS! 🚨**
+
+**THE REVISE STEP IS YOUR SALVATION - USE IT PROPERLY:**
+1. **revise.review is NOT a formality** - It's where you FIND your mistakes
+2. **Check SYSTEMATICALLY** - Go through EACH error pattern one by one
+3. **If you find errors in review, you MUST fix them in final**
+4. **Common AI failure:** Finding errors in review but not fixing them in final
+5. **Success metric:** revise.final should have ZERO compilation errors
+
+**🔥 REVISE STEP EXECUTION PROTOCOL:**
+```
+1. Run through EVERY item in the error pattern checklist
+2. Mark what you found (✓ OK, ✗ ERROR FOUND)
+3. For EVERY ✗, apply the fix in revise.final
+4. revise.final MUST be different from draft if ANY errors were found
+5. DO NOT copy draft to final if review found issues!
+```
+
 - Even if you think the draft is perfect, you MUST perform the revise step
-- The revise.review MUST thoroughly check ALL prohibitions from `TEST_WRITE.md`
-- The revise.final MAY be identical to draft if no issues found, BUT revise.review is MANDATORY
-- This is NOT optional - failing to perform Step 4 is a critical error
+- The revise.review MUST thoroughly check ALL prohibitions from `TEST_WRITE.md` AND all patterns from `TEST_CORRECT.md`
+- The revise.final MUST incorporate ALL fixes for issues found in review
+- This is NOT optional - failing to properly execute Step 4 means compilation failure
 
 ## 2. TypeScript Compilation Results Analysis
 
@@ -543,9 +581,46 @@ await TestValidator.error(  // ← MUST have await!
 );
 ```
 
-### 4.6. Nullable and Undefined Type Assignment
+### 4.6. Nullable and Undefined Type Assignment - typia.assert vs typia.assertGuard
 
 This section addresses TypeScript compilation errors when working with nullable (`| null`) and undefinable (`| undefined`) types. The key principle is that TypeScript requires exhaustive type narrowing - you must explicitly check for ALL possible null/undefined values.
+
+**🚨 CRITICAL: typia.assert vs typia.assertGuard Distinction 🚨**
+
+AI frequently confuses these two functions, causing compilation errors:
+
+**typia.assert(value!)** - RETURNS the validated value
+- Use when you need to assign the result to a new variable
+- The original variable's type remains unchanged
+- **COMPILATION ERROR**: Using original variable after assert without assignment
+
+**typia.assertGuard(value!)** - Returns VOID, modifies input variable's type
+- Use when you want to narrow the original variable's type
+- Acts as a type guard affecting the variable itself
+- **COMPILATION ERROR**: Trying to assign the result (returns void)
+
+```typescript
+// ❌ WRONG: Common AI mistake - using assert without assignment
+const item: IItem | undefined = items.find(i => i.id === targetId);
+if (item) {
+  typia.assert(item!); // Returns value but not assigned!
+  console.log(item.name); // ERROR: item is still IItem | undefined
+}
+
+// ✅ CORRECT Option 1: Use assert WITH assignment
+const item: IItem | undefined = items.find(i => i.id === targetId);
+if (item) {
+  const safeItem = typia.assert(item!);
+  console.log(safeItem.name); // OK: Use the returned value
+}
+
+// ✅ CORRECT Option 2: Use assertGuard for type narrowing
+const item: IItem | undefined = items.find(i => i.id === targetId);
+if (item) {
+  typia.assertGuard(item!); // Modifies item's type
+  console.log(item.name); // OK: item is now IItem
+}
+```
 
 **Core Problem:**
 TypeScript's type system requires explicit elimination of each union member. When a type is `T | null | undefined`, checking only for `null` is insufficient - TypeScript still considers `undefined` as a possibility.
@@ -634,7 +709,7 @@ const page: number & tags.Type<"int32"> = pageNumber!; // Removes null/undefined
 
 **Last Resort - Direct typia.assert Usage:**
 
-When dealing with complex nullable types or after repeated compilation failures, use `typia.assert`:
+When dealing with complex nullable types or after repeated compilation failures, use `typia.assert` or `typia.assertGuard` based on your needs:
 
 ```typescript
 //----
@@ -652,7 +727,9 @@ const result: number & tags.Type<"int32"> = typia.assert<number & tags.Type<"int
 
 **Remember:** 
 - The `!` operator removes null/undefined from the type
-- `typia.assert` validates the runtime value and ensures type safety
+- `typia.assert` validates and RETURNS the value - use for assignment
+- `typia.assertGuard` validates and MODIFIES the variable type - use for narrowing
+- Choose the right function based on whether you need the return value or type narrowing
 - Use this approach when conventional type narrowing becomes overly complex
 
 #### 4.6.1. Scope Problem - When Type Narrowing Gets Lost
@@ -679,7 +756,7 @@ const data: string = typia.assert<string>(value!);
 
 #### 4.6.2. Last Resort - When Conventional Solutions Fail
 
-If you encounter persistent nullable/undefined errors after multiple attempts, use `typia.assert`:
+If you encounter persistent nullable/undefined errors after multiple attempts, use `typia.assert` or `typia.assertGuard`:
 
 **CRITERIA FOR USING THIS APPROACH:**
 - Same nullable/undefined error occurs repeatedly after attempting fixes
@@ -1002,9 +1079,44 @@ const simple: number & tags.Type<"int32"> & tags.Minimum<0> = typia.assert<
 >(someValue);
 ```
 
-#### 4.9.3. Last Resort: Direct typia.assert<T>(value) Usage
+#### 4.9.3. Last Resort: Direct typia.assert<T>(value) or typia.assertGuard<T>(value) Usage
 
-When encountering persistent typia tag type errors that cannot be resolved through the conventional patterns, use `typia.assert<T>(value)` directly.
+When encountering persistent typia tag type errors that cannot be resolved through the conventional patterns, use `typia.assert<T>(value)` or `typia.assertGuard<T>(value)` based on your needs.
+
+**🚨 CRITICAL: Choose the Right Function for Tagged Types 🚨**
+
+```typescript
+// Tagged nullable types - SAME RULES APPLY!
+const tagged: (string & tags.Format<"uuid">) | null | undefined = getId();
+
+// ❌ WRONG: Using assert without assignment
+if (tagged) {
+  typia.assert(tagged!);
+  useId(tagged); // ERROR: tagged is still nullable!
+}
+
+// ✅ CORRECT Option 1: Use assert for assignment
+if (tagged) {
+  const validId = typia.assert(tagged!);
+  useId(validId); // OK: validId has correct type
+}
+
+// ✅ CORRECT Option 2: Use assertGuard for narrowing
+if (tagged) {
+  typia.assertGuard(tagged!);
+  useId(tagged); // OK: tagged is now non-nullable with tags
+}
+
+// Complex tagged types
+const complex: (number & tags.Type<"int32"> & tags.Minimum<0>) | undefined = getValue();
+
+// For assignment - use assert
+const safe = typia.assert(complex!);
+
+// For type narrowing - use assertGuard
+typia.assertGuard(complex!);
+// Now complex itself has the right type
+```
 
 **When to use this approach:**
 1. **Cannot find a solution** - You've tried the satisfies pattern but still get the same error
@@ -1056,8 +1168,82 @@ const requiredTagged: string & tags.Format<"uuid"> & tags.Pattern<"[0-9a-f-]+"> 
 - The conventional `satisfies` pattern has failed
 - You're encountering the same error repeatedly
 - The error involves `"typia.tag"` incompatibility
+- ALWAYS choose between `assert` (for return value) and `assertGuard` (for type narrowing)
 
-### 4.10. Literal Type Arrays with RandomGenerator.pick
+### 4.10. Date to ISO String Conversion for date-time Format
+
+When TypeScript reports type mismatch between `Date` and `string & Format<"date-time">`:
+
+**Error Pattern:**
+```
+Type 'Date' is not assignable to type 'string & Format<"date-time">'
+```
+
+**Solution: Use `.toISOString()` method**
+
+```typescript
+// ❌ ERROR: Cannot assign Date to string & Format<"date-time">
+const date: Date = new Date();
+const timestamp: string & tags.Format<"date-time"> = date; // ERROR!
+
+// ✅ CORRECT: Convert Date to ISO string
+const date: Date = new Date();
+const timestamp: string & tags.Format<"date-time"> = date.toISOString();
+
+// More examples:
+const createdAt: string & tags.Format<"date-time"> = new Date().toISOString();
+const updatedAt: string & tags.Format<"date-time"> = new Date(Date.now() + 86400000).toISOString(); // +1 day
+const scheduledFor: string & tags.Format<"date-time"> = new Date('2024-12-31').toISOString();
+
+// When working with Date objects from responses
+const order = await api.functional.orders.get(connection, { id });
+const orderDate: string & tags.Format<"date-time"> = new Date(order.created_at).toISOString();
+```
+
+**Remember:** The `Format<"date-time">` tag expects ISO 8601 string format, not Date objects. Always use `.toISOString()` for conversion.
+
+### 4.11. String to Literal Type Assignment
+
+When trying to assign a general `string` type to a literal union type:
+
+**Error Pattern:**
+```
+Argument of type 'string' is not assignable to parameter of type '"superadmin" | "administrator" | "support"'
+```
+
+**Solution: Use `typia.assert` for runtime validation and type conversion**
+
+```typescript
+// ❌ ERROR: Cannot assign string to literal union type
+const value: string = getValue();
+const role: "superadmin" | "administrator" | "support" = value; // ERROR!
+
+// ✅ CORRECT: Use typia.assert for validation and conversion
+const value: string = getValue();
+const role: "superadmin" | "administrator" | "support" = 
+  typia.assert<"superadmin" | "administrator" | "support">(value);
+
+// More examples with different literal types:
+const status: string = getStatus();
+const validStatus: "pending" | "approved" | "rejected" = 
+  typia.assert<"pending" | "approved" | "rejected">(status);
+
+const method: string = getMethod();
+const httpMethod: "GET" | "POST" | "PUT" | "DELETE" = 
+  typia.assert<"GET" | "POST" | "PUT" | "DELETE">(method);
+
+// With API responses
+const userType: string = response.data.type;
+const validUserType: "customer" | "vendor" | "admin" = 
+  typia.assert<"customer" | "vendor" | "admin">(userType);
+```
+
+**Important:** 
+- `typia.assert` will validate at runtime that the string value is actually one of the allowed literals
+- If the value doesn't match any literal, it will throw an error
+- This ensures type safety both at compile-time and runtime
+
+### 4.12. Literal Type Arrays with RandomGenerator.pick
 
 When selecting from a fixed set of literal values using `RandomGenerator.pick()`, you MUST use `as const` to preserve literal types:
 
@@ -2031,15 +2217,64 @@ Ensure all corrections follow the guidelines provided in `TEST_WRITE.md` prompt.
 
 **🚨 CRITICAL FINAL VERIFICATION - ZERO TOLERANCE 🚨**
 
-Before submitting corrected code, MANDATORY verification:
-- [ ] **ALL prohibitions from `TEST_WRITE.md` checked** - ZERO violations
-- [ ] **Step 3-4 revise COMPLETED** - Both review and final performed
-- [ ] **ALL async calls have await** - Every single Promise awaited
-- [ ] **TestValidator.error await rules followed** - async callback = await
+**SYSTEMATIC VERIFICATION PROTOCOL:**
+
+### 6.1. Common Error Pattern Checklist
+**GO THROUGH EACH ITEM - DO NOT SKIP ANY:**
+
+- [ ] **Missing await:** Search for ALL `api.functional` calls - EVERY one has `await`?
+- [ ] **typia.assert vs assertGuard:** Check EACH usage:
+  - [ ] Assignment uses `typia.assert` (returns value)?
+  - [ ] Type narrowing uses `typia.assertGuard` (no return)?
+- [ ] **Missing `!` operator:** ALL `typia.assert(value)` have `!` → `typia.assert(value!)`?
+- [ ] **Date conversions:** ALL `string & Format<"date-time">` use `.toISOString()`?
+- [ ] **String to literal:** ALL literal type assignments use `typia.assert<LiteralType>()`?
+- [ ] **Null/undefined checks:** ALL `| null | undefined` have BOTH checks?
+- [ ] **TestValidator.error:** async callback → has `await TestValidator.error()`?
+- [ ] **Non-existent properties:** NO references to properties that don't exist in DTOs?
+- [ ] **Type bypasses:** ZERO uses of `any`, `as any`, `@ts-ignore`, etc.?
+
+### 6.2. Revise Step Verification
+**CONFIRM YOUR REVISE STEP WAS PROPERLY EXECUTED:**
+
+- [ ] **revise.review performed:** Systematically checked all error patterns?
+- [ ] **Errors documented:** Listed all found issues in review?
+- [ ] **Fixes applied:** ALL errors found in review are FIXED in final?
+- [ ] **Final differs from draft:** If errors found, final is DIFFERENT from draft?
+- [ ] **No copy-paste:** Did NOT just copy draft to final when errors existed?
+
+### 6.3. Final Compilation Check
+**THE ULTIMATE TEST:**
+
+- [ ] **Code will compile:** ZERO TypeScript compilation errors?
+- [ ] **All patterns from TEST_WRITE.md followed:** No prohibited patterns?
+- [ ] **All fixes from TEST_CORRECT.md applied:** Used correct solutions?
+- [ ] **Business logic preserved:** Original scenario intent maintained?
 
 **REMEMBER:**
 - `TEST_WRITE.md` prohibitions are ABSOLUTE - NO EXCEPTIONS
 - Compilation success through scenario rewriting is MANDATORY
-- The revise step is NOT OPTIONAL - it MUST be performed
+- The revise step is NOT OPTIONAL - it MUST be performed PROPERLY
+- **Finding errors in review but not fixing them in final = FAILURE**
+- **The revise step is your LAST CHANCE to fix mistakes - USE IT!**
+
+**🔥 SUCCESS CRITERIA:**
+1. Draft may have errors - that's OK
+2. Review MUST find those errors - be thorough
+3. Final MUST fix ALL found errors - no exceptions
+4. Result MUST compile without errors - non-negotiable
+
+**AI COMMON FAILURE PATTERN TO AVOID:**
+```
+❌ WRONG:
+- Draft: Has compilation errors
+- Review: "Found issues with typia.assert usage"
+- Final: Identical to draft (NO FIXES APPLIED!)
+
+✅ CORRECT:
+- Draft: Has compilation errors
+- Review: "Found 3 missing awaits, 2 wrong typia functions"
+- Final: All 5 issues fixed, code compiles successfully
+```
 
 Generate corrected code that achieves successful compilation while maintaining all original requirements and functionality.

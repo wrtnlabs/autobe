@@ -1504,17 +1504,23 @@ typia.assert<IUser>(user); // Ensures user is not null
 
 ⚠️ **CRITICAL WARNING**: Never forget the `!` when using `typia.assert` with non-null assertions!
 
-**IMPORTANT: typia.assert vs typia.assertGuard**
+**🚨 CRITICAL: typia.assert vs typia.assertGuard - CHOOSE CORRECTLY! 🚨**
 
-When using non-null assertions with typia, you must choose the correct function based on your needs:
+When using typia for type validation and non-null assertions, you MUST choose the correct function. AI frequently confuses these two functions, leading to compilation errors:
 
 1. **typia.assert(value!)** - Returns the validated value with proper type
    - Use when you need the return value for assignment
    - The original variable remains unchanged in type
+   - **COMPILATION ERROR if misused**: Trying to use the original variable after typia.assert without using the return value
 
 2. **typia.assertGuard(value!)** - Does NOT return a value, but modifies the type of the input variable
    - Use when you need the original variable's type to be narrowed for subsequent usage
    - Acts as a type guard that affects the variable itself
+   - **COMPILATION ERROR if misused**: Trying to assign the result (it returns void)
+
+**⚠️ CRITICAL DISTINCTION:**
+- **typia.assert**: `const safeValue = typia.assert(unsafeValue!)` - Use the RETURN VALUE
+- **typia.assertGuard**: `typia.assertGuard(unsafeValue!)` - Use the ORIGINAL VARIABLE after calling
 
 ```typescript
 // ❌ WRONG: Forgetting the ! in typia.assert
@@ -1764,9 +1770,44 @@ if (foundItem) {
 
 **Rule:** Always validate nullable/undefined values before assigning to non-nullable types. Choose between `typia.assert` (for return value) and `typia.assertGuard` (for type narrowing) based on your needs. NEVER forget the `!` inside typia functions when removing nullable types.
 
+**🔥 CRITICAL: Common Compilation Errors from Wrong Function Choice 🔥**
+
+```typescript
+// ❌ WRONG: Using typia.assert without using return value
+const item: IItem | undefined = items.find(i => i.id === targetId);
+if (item) {
+  typia.assert(item!); // Returns value but not assigned!
+  console.log(item.name); // ERROR: item is still IItem | undefined
+}
+
+// ✅ CORRECT: Either use the return value or use assertGuard
+// Option 1: Use return value
+const item: IItem | undefined = items.find(i => i.id === targetId);
+if (item) {
+  const safeItem = typia.assert(item!);
+  console.log(safeItem.name); // OK: safeItem is IItem
+}
+
+// Option 2: Use assertGuard for type narrowing
+const item: IItem | undefined = items.find(i => i.id === targetId);
+if (item) {
+  typia.assertGuard(item!); // Narrows type of item itself
+  console.log(item.name); // OK: item is now IItem
+}
+
+// ❌ WRONG: Trying to assign assertGuard result
+const value = typia.assertGuard(nullableValue!); // ERROR: assertGuard returns void
+
+// ✅ CORRECT: Use assert for assignment
+const value = typia.assert(nullableValue!); // OK: Returns the validated value
+```
+
 **🚨 LAST RESORT for Nullable/Undefined: When You're Completely Stuck 🚨**
 
 If you've tried multiple approaches for handling nullable/undefined types and still can't resolve the compilation error:
+
+**ALSO APPLIES TO TYPIA TAGS:**
+The same typia.assert and typia.assertGuard distinction applies when working with tagged types:
 
 ```typescript
 //----
@@ -1794,6 +1835,41 @@ const required: string = typia.assert<string>(value!);
 ```
 
 **Remember:** If you have no idea how to handle nullable/undefined types, just use `typia.assert<T>(value!)` and move on with the test.
+
+**🎯 Tagged Types with typia.assert vs typia.assertGuard:**
+
+```typescript
+// With tagged nullable types - SAME RULES APPLY!
+const taggedNullable: (string & tags.Format<"uuid">) | null | undefined = getId();
+
+// ❌ WRONG: Using assert without assignment
+if (taggedNullable) {
+  typia.assert<string & tags.Format<"uuid">>(taggedNullable!);
+  sendId(taggedNullable); // ERROR: Still nullable!
+}
+
+// ✅ CORRECT Option 1: Use assert with assignment
+if (taggedNullable) {
+  const validId = typia.assert<string & tags.Format<"uuid">>(taggedNullable!);
+  sendId(validId); // OK: validId has correct type
+}
+
+// ✅ CORRECT Option 2: Use assertGuard for type narrowing
+if (taggedNullable) {
+  typia.assertGuard<string & tags.Format<"uuid">>(taggedNullable!);
+  sendId(taggedNullable); // OK: taggedNullable is now non-nullable
+}
+
+// Complex tagged types - SAME PRINCIPLE
+const complexTagged: (number & tags.Type<"int32"> & tags.Minimum<0>) | undefined = getValue();
+
+// Use assert for assignment
+const safeValue = typia.assert<number & tags.Type<"int32"> & tags.Minimum<0>>(complexTagged!);
+
+// OR use assertGuard for narrowing
+typia.assertGuard<number & tags.Type<"int32"> & tags.Minimum<0>>(complexTagged!);
+// Now complexTagged itself is the right type
+```
 
 ### 3.6. TypeScript Type Narrowing and Control Flow Analysis
 
@@ -3471,6 +3547,8 @@ export async function test_user_auth(connection: api.IConnection): Promise<void>
 
 ## 5. Final Checklist
 
+**🚨 SYSTEMATIC VERIFICATION - CHECK EVERY ITEM 🚨**
+
 Before submitting your generated E2E test code, verify:
 
 **Import and Template Compliance - ZERO TOLERANCE:**
@@ -3570,6 +3648,32 @@ Before submitting your generated E2E test code, verify:
 - [ ] **ONLY Executable Code**: Every line is valid, compilable TypeScript
 - [ ] **Output is TypeScript, NOT Markdown**: Generated output is pure .ts file content, not a .md document with code blocks
 
+**Revise Step Verification (MANDATORY):**
+- [ ] **Review performed systematically** - Checked each error pattern
+- [ ] **All found errors documented** - Listed what needs fixing
+- [ ] **Fixes applied in final** - Every error corrected
+- [ ] **Final differs from draft** - If errors found, final is updated
+- [ ] **No copy-paste** - Did NOT just copy draft when errors exist
+
+**🔥 CRITICAL REMINDERS:**
+- **The revise step is NOT optional** - It's where you fix mistakes
+- **Finding errors in review but not fixing them = FAILURE**
+- **AI common failure:** Copy-pasting draft to final despite finding errors
+- **Success path:** Draft (may have errors) → Review (finds errors) → Final (fixes ALL errors)
+
 Generate your E2E test code following these guidelines to ensure comprehensive, maintainable, and reliable API testing with exceptional TypeScript quality.
+
+**FINAL SUCCESS CRITERIA:**
+```
+✅ CORRECT EXECUTION:
+- Draft: Initial implementation (errors OK)
+- Review: "Found 3 missing awaits, 2 wrong typia functions"
+- Final: All 5 issues fixed, code compiles
+
+❌ WRONG EXECUTION:
+- Draft: Initial implementation with errors
+- Review: "Found issues with async/await"
+- Final: Identical to draft (NO FIXES!)
+```
 
 **REMEMBER THE MOST CRITICAL RULE**: You will receive a template with imports. Use ONLY those imports. Add NO new imports. This is absolute and non-negotiable.
