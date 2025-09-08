@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 
-import { AutoBeHackathonGlobal } from "../AutoBeHackathonGlobal";
+import { AutoBeHackathonConfiguration } from "../AutoBeHackathonConfiguration";
 
 export namespace JwtTokenManager {
   export type Type = "access" | "refresh";
@@ -30,8 +30,8 @@ export namespace JwtTokenManager {
         new Date(Date.now() + Expirations.REFRESH).toISOString(),
     };
     const [access, refresh] = [
-      AutoBeHackathonGlobal.env().HACKATHON_JWT_SECRET_KEY,
-      AutoBeHackathonGlobal.env().HACKATHON_JWT_REFRESH_KEY,
+      AutoBeHackathonConfiguration.env().HACKATHON_JWT_SECRET_KEY,
+      AutoBeHackathonConfiguration.env().HACKATHON_JWT_REFRESH_KEY,
     ].map((key) => jwt.sign(asset, key));
     return {
       ...asset,
@@ -46,8 +46,8 @@ export namespace JwtTokenManager {
       return jwt.verify(
         token,
         type === "access"
-          ? AutoBeHackathonGlobal.env().HACKATHON_JWT_SECRET_KEY
-          : AutoBeHackathonGlobal.env().HACKATHON_JWT_REFRESH_KEY,
+          ? AutoBeHackathonConfiguration.env().HACKATHON_JWT_SECRET_KEY
+          : AutoBeHackathonConfiguration.env().HACKATHON_JWT_REFRESH_KEY,
       ) as IAsset;
     };
 

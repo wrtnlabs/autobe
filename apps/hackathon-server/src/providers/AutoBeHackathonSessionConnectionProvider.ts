@@ -1,7 +1,7 @@
 import { IAutoBeHackathonSession } from "@autobe/hackathon-api";
 import { IAutoBeRpcListener, IAutoBeRpcService } from "@autobe/interface";
 import { WebSocketAcceptor } from "tgrid";
-import { v4 } from "uuid";
+import { v7 } from "uuid";
 
 import { AutoBeHackathonGlobal } from "../AutoBeHackathonGlobal";
 import { IEntity } from "../structures/IEntity";
@@ -19,7 +19,7 @@ export namespace AutoBeHackathonSessionConnectionProvider {
       await AutoBeHackathonGlobal.prisma.autobe_hackathon_session_connections.create(
         {
           data: {
-            id: v4(),
+            id: v7(),
             autobe_hackathon_session_id: props.session.id,
             created_at: new Date(),
             disconnected_at: null,

@@ -1,6 +1,6 @@
 import {
+  IAutoBeHackathon,
   IAutoBeHackathonSession,
-  IAutobeHackathon,
   IAutobeHackathonParticipant,
   IPage,
 } from "@autobe/hackathon-api";
@@ -24,7 +24,7 @@ export class AutoBeHackathonParticipantSessionController {
     @TypedParam("hackathonCode") hackathonCode: string,
     @TypedBody() body: IPage.IRequest,
   ): Promise<IPage<IAutoBeHackathonSession.ISummary>> {
-    const hackathon: IAutobeHackathon =
+    const hackathon: IAutoBeHackathon =
       await AutoBeHackathonProvider.get(hackathonCode);
     return await AutoBeHackathonSessionProvider.index({
       hackathon,
@@ -40,7 +40,7 @@ export class AutoBeHackathonParticipantSessionController {
     @TypedParam("hackathonCode") hackathonCode: string,
     @TypedParam("id") id: string & tags.Format<"uuid">,
   ): Promise<IAutoBeHackathonSession> {
-    const hackathon: IAutobeHackathon =
+    const hackathon: IAutoBeHackathon =
       await AutoBeHackathonProvider.get(hackathonCode);
     return await AutoBeHackathonSessionProvider.at({
       hackathon,
@@ -57,7 +57,7 @@ export class AutoBeHackathonParticipantSessionController {
     @TypedParam("id") id: string & tags.Format<"uuid">,
     @TypedBody() body: IAutoBeHackathonSession.IReview,
   ): Promise<void> {
-    const hackathon: IAutobeHackathon =
+    const hackathon: IAutoBeHackathon =
       await AutoBeHackathonProvider.get(hackathonCode);
     await AutoBeHackathonSessionProvider.review({
       hackathon,

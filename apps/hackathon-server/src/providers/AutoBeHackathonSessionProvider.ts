@@ -1,13 +1,18 @@
+import { AutoBeTokenUsage } from "@autobe/agent";
 import {
+  AutoBeHackathonModel,
+  IAutoBeHackathon,
   IAutoBeHackathonSession,
-  IAutobeHackathon,
   IAutobeHackathonParticipant,
   IPage,
 } from "@autobe/hackathon-api";
 import { IAutoBeTokenUsageJson } from "@autobe/interface";
 import { Prisma } from "@prisma/client";
+import typia from "typia";
+import { v7 } from "uuid";
 
 import { AutoBeHackathonGlobal } from "../AutoBeHackathonGlobal";
+import { IEntity } from "../structures/IEntity";
 import { PaginationUtil } from "../utils/PaginationUtil";
 import { AutoBeHackathonParticipantProvider } from "./AutoBeHackathonParticipantProvider";
 import { AutoBeHackathonSessionEventProvider } from "./AutoBeHackathonSessionEventProvider";
@@ -24,7 +29,8 @@ export namespace AutoBeHackathonSessionProvider {
       participant: AutoBeHackathonParticipantProvider.json.transform(
         input.participant,
       ),
-      model: input.model,
+      model: typia.assert<AutoBeHackathonModel>(input.model),
+      timezone: input.timezone,
       state: input.aggregate!.state as any,
       token_usage: input.aggregate!.token_usage as any as IAutoBeTokenUsageJson,
       histories: input.histories.map(
@@ -54,7 +60,8 @@ export namespace AutoBeHackathonSessionProvider {
       >,
     ): IAutoBeHackathonSession.ISummary => ({
       id: input.id,
-      model: input.model,
+      model: typia.assert<AutoBeHackathonModel>(input.model),
+      timezone: input.timezone,
       participant: AutoBeHackathonParticipantProvider.json.transform(
         input.participant,
       ),
@@ -74,7 +81,7 @@ export namespace AutoBeHackathonSessionProvider {
   }
 
   export const index = (props: {
-    hackathon: IAutobeHackathon;
+    hackathon: IAutoBeHackathon;
     participant: IAutobeHackathonParticipant;
     body: IPage.IRequest;
   }): Promise<IPage<IAutoBeHackathonSession.ISummary>> =>
@@ -97,7 +104,7 @@ export namespace AutoBeHackathonSessionProvider {
   export const find = async <
     Payload extends Prisma.autobe_hackathon_sessionsFindFirstArgs,
   >(props: {
-    hackathon: IAutobeHackathon;
+    hackathon: IAutoBeHackathon;
     participant: IAutobeHackathonParticipant;
     id: string;
     payload: Payload;
@@ -117,7 +124,7 @@ export namespace AutoBeHackathonSessionProvider {
   };
 
   export const at = async (props: {
-    hackathon: IAutobeHackathon;
+    hackathon: IAutoBeHackathon;
     participant: IAutobeHackathonParticipant;
     id: string;
   }): Promise<IAutoBeHackathonSession> => {
@@ -131,7 +138,7 @@ export namespace AutoBeHackathonSessionProvider {
   };
 
   export const review = async (props: {
-    hackathon: IAutobeHackathon;
+    hackathon: IAutoBeHackathon;
     participant: IAutobeHackathonParticipant;
     id: string;
     body: IAutoBeHackathonSession.IReview;
@@ -146,5 +153,36 @@ export namespace AutoBeHackathonSessionProvider {
       where: { id: props.id },
       data: { review_article_url: props.body.review_article_url },
     });
+  };
+
+  export const create = async (props: {
+    hackathon: IEntity;
+    participant: IEntity;
+    model: AutoBeHackathonModel;
+    timezone: string;
+  }): Promise<IAutoBeHackathonSession.ISummary> => {
+    const record =
+      await AutoBeHackathonGlobal.prisma.autobe_hackathon_sessions.create({
+        data: {
+          id: v7(),
+          autobe_hackathon_id: props.hackathon.id,
+          autobe_hackathon_participant_id: props.participant.id,
+          model: props.model,
+          timezone: props.timezone,
+          created_at: new Date(),
+          completed_at: null,
+          review_article_url: null,
+          aggregate: {
+            create: {
+              id: v7(),
+              state: null,
+              enabled: true,
+              token_usage: new AutoBeTokenUsage().toJSON() as any,
+            },
+          },
+        },
+        ...json.select(),
+      });
+    return summarize.transform(record);
   };
 }

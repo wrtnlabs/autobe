@@ -1,9 +1,10 @@
-import { IAutobeHackathon } from "@autobe/hackathon-api";
+import { IAutoBeHackathon } from "@autobe/hackathon-api";
 import { SwaggerCustomizer } from "@nestia/core";
 import { ExecutionContext, createParamDecorator } from "@nestjs/common";
 import { Request } from "express";
 import { Singleton } from "tstl";
 
+import { AutoBeHackathonConfiguration } from "../AutoBeHackathonConfiguration";
 import { AutoBeHackathonParticipantProvider } from "../providers/AutoBeHackathonParticipantProvider";
 import { AutoBeHackathonProvider } from "../providers/AutoBeHackathonProvider";
 
@@ -25,8 +26,9 @@ export const AutoBeHackathonParticipantAuth =
 
 const singleton = new Singleton(() =>
   createParamDecorator(async (_0: any, ctx: ExecutionContext) => {
-    const hackathon: IAutobeHackathon =
-      await AutoBeHackathonProvider.get("20250913");
+    const hackathon: IAutoBeHackathon = await AutoBeHackathonProvider.get(
+      AutoBeHackathonConfiguration.CODE,
+    );
     const request: Request = ctx.switchToHttp().getRequest();
     const value: string | string[] | undefined =
       request.headers.Authorization ?? request.headers.authorization;

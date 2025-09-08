@@ -9,6 +9,11 @@ export interface IAutobeHackathonParticipant {
   created_at: string & tags.Format<"date-time">;
 }
 export namespace IAutobeHackathonParticipant {
+  export interface IJoin {
+    email: string & tags.Format<"email">;
+    name: string;
+    password: string;
+  }
   export interface ILogin {
     email: string & tags.Format<"email">;
     password: string;

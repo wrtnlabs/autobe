@@ -51,16 +51,25 @@ export class AutoBeRpcService implements IAutoBeRpcService {
    */
   public constructor(private readonly props: AgenticaRpcService.IProps) {
     const { agent, listener } = this.props;
-    for (const key of typia.misc.literals<keyof IAutoBeRpcListener>())
+    for (const key of typia.misc.literals<keyof IAutoBeRpcListener>()) {
+      if (key === "enable") continue;
       agent.on(key, (event) => {
         listener[key]!(event as any).catch(() => {});
       });
+    }
   }
 
-  public conversate(
+  public async conversate(
     content: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
   ): Promise<AutoBeHistory[]> {
-    return this.props.agent.conversate(content);
+    if (this.props.onStart) this.props.onStart(content);
+
+    this.props.listener.enable(false).catch(() => {});
+    const result: AutoBeHistory[] = await this.props.agent.conversate(content);
+    this.props.listener.enable(true).catch(() => {});
+
+    if (this.props.onComplete) this.props.onComplete(result);
+    return result;
   }
 
   public async getFiles(
@@ -111,5 +120,11 @@ export namespace AgenticaRpcService {
      * the remote client.
      */
     listener: IAutoBeRpcListener;
+
+    onStart?: (
+      content: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
+    ) => void;
+
+    onComplete?: (result: AutoBeHistory[]) => void;
   }
 }

@@ -1,13 +1,11 @@
-import { AutoBeTokenUsage } from "@autobe/agent";
 import {
+  IAutoBeHackathon,
   IAutoBeHackathonSession,
-  IAutobeHackathon,
   IAutobeHackathonParticipant,
 } from "@autobe/hackathon-api";
 import { IAutoBeRpcListener, IAutoBeRpcService } from "@autobe/interface";
 import { WebSocketAcceptor } from "tgrid";
 import { tags } from "typia";
-import { v4 } from "uuid";
 
 import { AutoBeHackathonGlobal } from "../AutoBeHackathonGlobal";
 import { IEntity } from "../structures/IEntity";
@@ -15,6 +13,7 @@ import { AutoBeHackathonParticipantProvider } from "./AutoBeHackathonParticipant
 import { AutoBeHackathonProvider } from "./AutoBeHackathonProvider";
 import { AutoBeHackathonSessionConnectionProvider } from "./AutoBeHackathonSessionConnectionProvider";
 import { AutoBeHackathonSessionProvider } from "./AutoBeHackathonSessionProvider";
+import { AutoBeHackathonSessionSocketAcceptor } from "./acceptors/AutoBeHackathonSessionSocketAcceptor";
 
 export namespace AutoBeHackathonSessionSocketProvider {
   export const start = async (props: {
@@ -26,29 +25,17 @@ export namespace AutoBeHackathonSessionSocketProvider {
     >;
   }): Promise<void> => {
     // PREPARE ENTITIES
-    const hackathon: IAutobeHackathon = await findHackathon(props);
+    const hackathon: IAutoBeHackathon = await findHackathon(props);
     const participant: IAutobeHackathonParticipant = await authorize({
       hackathon,
       acceptor: props.acceptor,
     });
-    const session: IEntity =
-      await AutoBeHackathonGlobal.prisma.autobe_hackathon_sessions.create({
-        data: {
-          id: v4(),
-          autobe_hackathon_id: hackathon.id,
-          autobe_hackathon_participant_id: participant.id,
-          model: props.acceptor.header.model,
-          created_at: new Date(),
-          completed_at: null,
-          review_article_url: null,
-          aggregate: {
-            create: {
-              id: v4(),
-              state: null,
-              token_usage: new AutoBeTokenUsage().toJSON() as any,
-            },
-          },
-        },
+    const session: IAutoBeHackathonSession.ISummary =
+      await AutoBeHackathonSessionProvider.create({
+        hackathon,
+        participant,
+        model: props.acceptor.header.model,
+        timezone: props.acceptor.header.timezone,
       });
     const connection: IEntity =
       await AutoBeHackathonSessionConnectionProvider.emplace({
@@ -56,8 +43,12 @@ export namespace AutoBeHackathonSessionSocketProvider {
         acceptor: props.acceptor,
       });
 
-    // @todo START COMMUNICATION
-    connection;
+    // START COMMUNICATION
+    await AutoBeHackathonSessionSocketAcceptor.start({
+      session,
+      connection,
+      acceptor: props.acceptor,
+    });
   };
 
   export const restart = async (props: {
@@ -70,7 +61,7 @@ export namespace AutoBeHackathonSessionSocketProvider {
     >;
   }): Promise<void> => {
     // PREPARE RELATED ENTITIES
-    const hackathon: IAutobeHackathon = await findHackathon(props);
+    const hackathon: IAutoBeHackathon = await findHackathon(props);
     const participant: IAutobeHackathonParticipant = await authorize({
       hackathon,
       acceptor: props.acceptor,
@@ -87,8 +78,12 @@ export namespace AutoBeHackathonSessionSocketProvider {
         acceptor: props.acceptor,
       });
 
-    // @todo START COMMUNICATION
-    connection;
+    // START COMMUNICATION
+    await AutoBeHackathonSessionSocketAcceptor.restart({
+      session,
+      connection,
+      acceptor: props.acceptor,
+    });
   };
 
   export const replay = async (props: {
@@ -101,7 +96,7 @@ export namespace AutoBeHackathonSessionSocketProvider {
     >;
   }): Promise<void> => {
     // PREPARE RELATED ENTITIES
-    const hackathon: IAutobeHackathon = await findHackathon(props);
+    const hackathon: IAutoBeHackathon = await findHackathon(props);
     const participant: IAutobeHackathonParticipant = await authorize({
       hackathon,
       acceptor: props.acceptor,
@@ -113,12 +108,26 @@ export namespace AutoBeHackathonSessionSocketProvider {
       acceptor: props.acceptor,
     });
 
-    // @todo START COMMUNICATION
-    session;
+    // START COMMUNICATION
+    await AutoBeHackathonSessionSocketAcceptor.replay({
+      session,
+      connection:
+        await AutoBeHackathonGlobal.prisma.autobe_hackathon_session_connections.findFirstOrThrow(
+          {
+            where: {
+              autobe_hackathon_session_id: session.id,
+            },
+            orderBy: {
+              created_at: "desc",
+            },
+          },
+        ),
+      acceptor: props.acceptor,
+    });
   };
 
   const findSession = async (props: {
-    hackathon: IAutobeHackathon;
+    hackathon: IAutoBeHackathon;
     participant: IAutobeHackathonParticipant;
     id: string;
     acceptor: WebSocketAcceptor<
@@ -148,7 +157,7 @@ export namespace AutoBeHackathonSessionSocketProvider {
       IAutoBeRpcService,
       IAutoBeRpcListener
     >;
-  }): Promise<IAutobeHackathon> => {
+  }): Promise<IAutoBeHackathon> => {
     try {
       return await AutoBeHackathonProvider.get(props.hackathonCode);
     } catch (error) {
@@ -158,7 +167,7 @@ export namespace AutoBeHackathonSessionSocketProvider {
   };
 
   const authorize = async (props: {
-    hackathon: IAutobeHackathon;
+    hackathon: IAutoBeHackathon;
     acceptor: WebSocketAcceptor<
       IAutoBeHackathonSession.IReplayHeader,
       IAutoBeRpcService,

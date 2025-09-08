@@ -1,3 +1,5 @@
+export * from "./AutoBeHackathonModel";
+
 export * from "./IAutoBeHackathon";
 export * from "./IAutobeHackathonParticipant";
 export * from "./IAutoBeHackathonSession";

@@ -162,6 +162,15 @@ export class AutoBeTokenUsage implements IAutoBeTokenUsageJson {
     }
   }
 
+  public assign(props: IAutoBeTokenUsageJson) {
+    this.facade.assign(props.facade);
+    this.analyze.assign(props.analyze);
+    this.prisma.assign(props.prisma);
+    this.interface.assign(props.interface);
+    this.test.assign(props.test);
+    this.realize.assign(props.realize);
+  }
+
   /**
    * Serialize token usage data to JSON format.
    *

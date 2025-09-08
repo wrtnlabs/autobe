@@ -101,6 +101,15 @@ export class AutoBeTokenUsageComponent
     }
   }
 
+  public assign(props: IAutoBeTokenUsageJson.IComponent) {
+    this.input.total = props.input.total;
+    this.input.cached = props.input.cached;
+    this.output.total = props.output.total;
+    this.output.reasoning = props.output.reasoning;
+    this.output.accepted_prediction = props.output.accepted_prediction;
+    this.output.rejected_prediction = props.output.rejected_prediction;
+  }
+
   /**
    * Export token usage data as JSON.
    *

@@ -88,6 +88,17 @@ export interface IAutoBeRpcListener {
    */
   userMessage?(event: AutoBeUserMessageEvent): Promise<void>;
 
+  /**
+   * Whether to enable or disable conversation.
+   *
+   * If disabled (`value := false`), you cannot call the
+   * {@link IAutoBeRpcServer.conversate} method until you receive the next
+   * {@link enable} function call with `true` value.
+   *
+   * @param value `true` to enable conversation, `false` to disable.
+   */
+  enable(value: boolean): Promise<void>;
+
   /* -----------------------------------------------------------
     ANALYZE PHASE EVENTS
   ----------------------------------------------------------- */
