@@ -179,62 +179,6 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
       step: ctx.state().interface?.step ?? 0,
       created_at: new Date().toISOString(),
     });
-
-    // for (const group of pointer.value) {
-    //   console.log(
-    //     `Operation Endpoint:${group.endpoint.method} ${group.endpoint.path}`,
-    //   );
-    //   console.log(JSON.stringify(group.scenarios, null, 2));
-    // }
-
-    const entire: AutoBeOpenApi.IOperation[] =
-      ctx.state().interface?.document?.operations ?? [];
-
-    pointer.value.forEach((g) => {
-      console.log(`Operation Endpoint:${g.endpoint.method} ${g.endpoint.path}`);
-      entire.forEach((op) => {
-        if (op.method === g.endpoint.method && op.path === g.endpoint.path) {
-          g.scenarios.forEach((s) => {
-            console.log(
-              `--------------Scenario ${s.functionName}--------------`,
-            );
-            console.log(JSON.stringify(s, null, 2));
-            const referenceIds: string[] = [];
-
-            referenceIds.push(
-              ...getReferenceIds({
-                document: ctx.state().interface?.document!,
-                operation: op,
-              }),
-            );
-
-            s.dependencies.forEach((d) => {
-              entire.forEach((op2) => {
-                if (
-                  op2.path === d.endpoint.path &&
-                  op2.method === d.endpoint.method
-                ) {
-                  referenceIds.push(
-                    ...getReferenceIds({
-                      document: ctx.state().interface?.document!,
-                      operation: op2,
-                    }),
-                  );
-                }
-              });
-            });
-            console.log(
-              `Dependencies: ${s.dependencies.map((d) => `${d.endpoint.method} ${d.endpoint.path}`).join(", ")}`,
-            );
-            console.log(
-              `Reference IDs: ${Array.from(new Set(referenceIds)).join(", ")}`,
-            );
-          });
-          console.log("-------------FIN-------------");
-        }
-      });
-    });
-
     return pointer.value;
   } catch {
     console.log("test scenario, failed to function call", props.include);
