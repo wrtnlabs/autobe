@@ -1,3 +1,4 @@
+import { TestValidator } from "@nestia/e2e";
 import typia, { tags } from "typia/lib/module";
 import { v7 } from "uuid";
 
@@ -14,8 +15,8 @@ function getUnknownValue(): unknown {
 // Solution 1: Basic type
 const page: number & tags.Type<"int32"> = getValue();
 const pageWithMinimum: number & tags.Type<"int32"> & tags.Minimum<0> =
-  page satisfies number as number;
-pageWithMinimum;
+  getValue();
+TestValidator.equals("page", pageWithMinimum, page satisfies number as number);
 
 // Solution 2: Nullable type mismatch
 const userIdOptionial: (string & tags.Format<"uuid">) | null | undefined =
@@ -23,11 +24,15 @@ const userIdOptionial: (string & tags.Format<"uuid">) | null | undefined =
 const userIdOptionalByOtherWay:
   | (string & tags.Pattern<"<SOME-UUID-PATTERN>">)
   | null
-  | undefined = userIdOptionial satisfies string | null | undefined as
-  | string
-  | null
-  | undefined;
-userIdOptionalByOtherWay;
+  | undefined = getNullableUserId();
+TestValidator.equals(
+  "id",
+  userIdOptionalByOtherWay,
+  userIdOptionial satisfies string | null | undefined as
+    | string
+    | null
+    | undefined,
+);
 
 // Solution: Nullable to non-nullable
 const uuidOptional: (string & tags.Format<"uuid">) | null | undefined =
@@ -38,7 +43,16 @@ const uuidRequired: string & tags.Pattern<"<SOME-UUID-PATTERN>"> = typia.assert(
     | null
     | undefined)!,
 );
-uuidRequired;
+TestValidator.equals(
+  "uuid-nullable-to-non-nullable",
+  uuidRequired,
+  typia.assert(
+    (uuidOptional satisfies string | null | undefined as
+      | string
+      | null
+      | undefined)!,
+  ),
+);
 
 // Don't know how to or previous trial failed?
 // Just use typia.assert<T>(value) for simplicity

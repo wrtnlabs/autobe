@@ -742,67 +742,23 @@ const x: string = typia.random<string & tags.Format<"uuid">>();
 
 ### 4.9. Typia Tag Type Conversion Errors
 
-When you encounter ANY typia type tag mismatch error, apply this fix pattern. This is a consistent approach for resolving type conflicts.
+This section addresses a specific category of TypeScript compilation errors that occur when working with Typia's tagged types. These errors are characterized by the message: `Types of property '"typia.tag"' are incompatible`.
 
-**Common Problem Patterns:**
-```typescript
-// Problem 1: Basic type mismatch
-const pageNumber: number & tags.Type<"int32"> = getPageNumber();
-const response = await api.functional.items.list(connection, {
-  page: pageNumber,
-    // <ERROR>
-    //   Type 'number & Type<"int32">' is not assignable to 'number & Type<"int32"> & Minimum<1>'
-    //     Types of property '"typia.tag"' are incompatible.
-    // </ERROR>
-});
+**What causes this error:**
+Typia uses intersection types with special "tag" properties to enforce runtime validation constraints at the type level. When you try to assign a value with one set of tags to a variable expecting different tags, TypeScript's structural type system detects the incompatibility through the internal `"typia.tag"` property.
 
-// Problem 2: Nullable type mismatch
-const userId: (string & tags.Format<"uuid">) | null = getNullableUserId();
-const profile = await api.functional.profiles.get(connection, {
-  userId: userId,
-    // <ERROR>
-    //   Type '(string & Format<"uuid">) | null' is not assignable to type 'string'.
-    //     Type 'null' is not assignable to type 'string'
-    // </ERROR>
-});
+**Common scenarios where this occurs:**
+- Assigning a basic typed value to a variable with additional constraints (e.g., `number & Type<"int32">` to `number & Type<"int32"> & Minimum<0>`)
+- Mixing different format tags (e.g., `Format<"uuid">` vs `Pattern<"[0-9a-f-]+"`)
+- Converting between nullable and non-nullable tagged types
+- Using TestValidator.equals with values having different tag constraints
 
-// Nullable mistach between intersection types
-const x: (number & tags.Type<"int32">) | null | undefined = getValue();
-const y: number & tags.Type<"int32"> = x;
-  // <ERROR>
-  //   Type '(number & Type<"int32">) | null' is not assignable to type 'number & Type<"int32"> & Minimum<0>'.
-  //     Type 'null' is not assignable to type 'number & Type<"int32"> & Minimum<0>'.
-  //       Type 'null' is not assignable to type 'number'.
-  // </ERROR>
-```
+**Why normal type assertions don't work:**
+Regular TypeScript type assertions like `as` cannot reconcile the incompatible tag properties. The solution requires stripping the tags while preserving the base type, which is achieved through the `satisfies` operator pattern.
 
-**Solutions:**
-```typescript
-// Solution 1: Basic type
-const response = await api.functional.items.list(connection, {
-  page: pageNumber satisfies number as number  // Fixed!
-});
+**⚠️ THE FOUR-STEP FIX**
 
-// Solution 2: Nullable type
-const profile = await api.functional.profiles.get(connection, {
-  userId: userId satisfies string | null as string | null  // Fixed!
-});
-
-// Solution3: Nullable intersection type
-const y: number & tags.Type<"int32"> = typia.assert(
-  (x satisfies number | null | undefined as number | null | undefined)!
-);
-
-// Don't know how to or previous trial failed?
-// Just use typia.assert<T>(value) for simplicity
-const y: number & tags.Type<"int32"> = typia.assert<
-  number & tags.Type<"int32">
->(x);
-```
-
-**⚠️ THE THREE-STEP FIX**
-
-1. **See tag mismatch error?** → Identify the type mismatch
+1. **See tag mismatch error?** → Identify the type mismatch (look for `"typia.tag"` in error message)
 2. **Check if nullable** → Look for `| null | undefined`
 3. **Apply the pattern:**
    - **Non-nullable:** `value satisfies BaseType as BaseType`
@@ -810,213 +766,251 @@ const y: number & tags.Type<"int32"> = typia.assert<
    - **Nullable → Non-nullable:** `typia.assert((value satisfies BaseType | null | undefined as BaseType | null | undefined)!)`
 4. **Don't know how to?** → Use `typia.assert<T>(value)` for simplicity
 
-**Common Error Patterns and Solutions:**
+#### 4.9.1. Variable Assignment Type Mismatches
 
-**1. API Response to Request Parameter Mismatch**
+**Common Problem Patterns:**
 ```typescript
-// API returns basic page number from search result
-const searchResult = await api.functional.products.search(connection, { query: "laptop" });
-const currentPage: number & tags.Type<"int32"> = searchResult.pagination.page;
+//----
+// Problem 1: Basic type mismatch
+//----
+const page: number & tags.Type<"int32"> = getValue();
+const pageWithMinimum: number & tags.Type<"int32"> & tags.Minimum<0> = page;
+  // Type 'number & Type<"int32">' is not assignable to type 'number & Type<"int32"> & Minimum<0>'.
+  //   Type 'number & Type<"int32">' is not assignable to type 'Minimum<0>'.
+  //     Types of property '"typia.tag"' are incompatible.
 
-// Another API requires page >= 1 validation
-const reviews = await api.functional.reviews.getList(connection, {
-  productId: productId,
-  page: currentPage  // ERROR: Type 'number & Type<"int32">' is not assignable to type 'number & Type<"int32"> & Minimum<1>'
-});
+//----
+// Problem 2: Nullable type mismatch
+//----
+const userIdOptionial: (string & tags.Format<"uuid">) | null | undefined =
+  getNullableUserId();
+const userIdOptionalByOtherWay:
+  | (string & tags.Pattern<"<SOME-UUID-PATTERN>">)
+  | null
+  | undefined = userIdOptionial;
+  // Type 'string & Format<"uuid">' is not assignable to type '(string & Pattern<"<SOME-UUID-PATTERN>">) | null | undefined'.
+  //   Type 'string & Format<"uuid">' is not assignable to type 'string & Pattern<"<SOME-UUID-PATTERN>">'.
+  //     Type 'string & Format<"uuid">' is not assignable to type 'Pattern<"<SOME-UUID-PATTERN>">'.
+  //       Types of property '"typia.tag"' are incompatible.
 
-// SOLUTION: When API response doesn't match another API's stricter requirements
-const reviews = await api.functional.reviews.getList(connection, {
-  productId: productId,
-  page: currentPage satisfies number as number  // ✓ Works!
-});
+//----
+// Problem 3: Nullable to Non-nullable conversion
+//----
+const uuidOptional: (string & tags.Format<"uuid">) | null | undefined =
+  getNullableUserId();
+const uuidRequired: string & tags.Pattern<"<SOME-UUID-PATTERN>"> = uuidOptional;
+  // Type 'string & Format<"uuid">' is not assignable to type 'string & Pattern<"<SOME-UUID-PATTERN>">'.
+  //   Type 'string & Format<"uuid">' is not assignable to type 'Pattern<"<SOME-UUID-PATTERN>">'.
+  //     Types of property '"typia.tag"' are incompatible.
 ```
 
-**2. Form Validation to API Parameter**
+**Solutions:**
 ```typescript
-// User form input has UI-specific constraints (1-100 items per page)
-const userPreference: number & tags.Type<"int32"> & tags.Minimum<1> & tags.Maximum<100> = form.itemsPerPage;
+//----
+// Solution 1: Basic type
+//----
+const page: number & tags.Type<"int32"> = getValue();
+const pageWithMinimum: number & tags.Type<"int32"> & tags.Minimum<0> =
+  page satisfies number as number;
 
-// Database query API has different limits (0-1000)
-const queryResult = await api.functional.database.query(connection, {
-  table: "products",
-  limit: userPreference  // ERROR: Minimum<1> & Maximum<100> doesn't match Minimum<0> & Maximum<1000>
-});
+//----
+// Solution 2: Nullable type
+//----
+const userIdOptionial: (string & tags.Format<"uuid">) | null | undefined =
+  getNullableUserId();
+const userIdOptionalByOtherWay:
+  | (string & tags.Pattern<"<SOME-UUID-PATTERN>">)
+  | null
+  | undefined = userIdOptionial satisfies string | null | undefined as
+  | string
+  | null
+  | undefined;
 
-// SOLUTION: User preferences validated differently than database constraints
-const queryResult = await api.functional.database.query(connection, {
-  table: "products",
-  limit: userPreference satisfies number as number  // ✓ Works!
-});
+//----
+// Solution 3: Nullable to Non-nullable
+//----
+const uuidOptional: (string & tags.Format<"uuid">) | null | undefined =
+  getNullableUserId();
+const uuidRequired: string & tags.Pattern<"<SOME-UUID-PATTERN>"> = typia.assert(
+  (uuidOptional satisfies string | null | undefined as
+    | string
+    | null
+    | undefined)!,
+);
+
+//----
+// Don't know how to solve or your previous trial has failed?
+// 
+// Just use `typia.assert<T>(value)` function for simplicity
+//----
+const simple: number & tags.Type<"int32"> & tags.Minimum<0> = typia.assert<
+  number & tags.Type<"int32"> & tags.Minimum<0>
+>(someValue);
 ```
 
-**3. Pagination Parameters**
+#### 4.9.2. TestValidator.equals Type Mismatches
+
+When using TestValidator.equals with different tagged types, apply the same pattern:
+
+**Common Problem Patterns:**
 ```typescript
-// ERROR: Basic int32 type to Minimum<0> requirement
-const requestBody = {
-  page: 1,
-  limit: 10  // Type: number & Type<"int32">
-} satisfies IRequest;
+//----
+// Problem 1: Basic type with TestValidator.equals
+//----
+const page: number & tags.Type<"int32"> = getValue();
+const pageWithMinimum: number & tags.Type<"int32"> & tags.Minimum<0> =
+  getValue();
+TestValidator.equals("page", pageWithMinimum, page);
+  // Type 'number & Type<"int32">' is not assignable to type 'number & Type<"int32"> & Minimum<0>'.
+  //   Type 'number & Type<"int32">' is not assignable to type 'Minimum<0>'.
+  //     Types of property '"typia.tag"' are incompatible.
 
-const response = await api.functional.items.list(connection, {
-  page: requestBody.page,  // ERROR: Type 'number & Type<"int32">' is not assignable to 'number & Type<"int32"> & Minimum<0>'
-  limit: requestBody.limit // ERROR: same issue
-});
+//----
+// Problem 2: Nullable type mismatch in TestValidator.equals
+//----
+const userIdOptionial: (string & tags.Format<"uuid">) | null | undefined =
+  getNullableUserId();
+const userIdOptionalByOtherWay:
+  | (string & tags.Pattern<"<SOME-UUID-PATTERN>">)
+  | null
+  | undefined = getNullableUserId();
+TestValidator.equals("id", userIdOptionalByOtherWay, userIdOptionial);
+  // Type 'string & Format<"uuid">' is not assignable to type '(string & Pattern<"<SOME-UUID-PATTERN>">) | null | undefined'.
+  //   Type 'string & Format<"uuid">' is not assignable to type 'string & Pattern<"<SOME-UUID-PATTERN>">'.
+  //     Type 'string & Format<"uuid">' is not assignable to type 'Pattern<"<SOME-UUID-PATTERN>">'.
+  //       Types of property '"typia.tag"' are incompatible.
 
-// SOLUTION: Use satisfies pattern
-const response = await api.functional.items.list(connection, {
-  page: requestBody.page satisfies number as number,
-  limit: requestBody.limit satisfies number as number
-});
+//----
+// Problem 3: Nullable to non-nullable with TestValidator.equals
+//----
+const uuidOptional: (string & tags.Format<"uuid">) | null | undefined =
+  getNullableUserId();
+const uuidRequired: string & tags.Pattern<"<SOME-UUID-PATTERN>"> = typia.assert(
+  (uuidOptional satisfies string | null | undefined as
+    | string
+    | null
+    | undefined)!,
+);
+TestValidator.equals("uuid-nullable-to-non-nullable", uuidRequired, uuidOptional!);
+  // Type 'string & Format<"uuid">' is not assignable to type 'string & Pattern<"<SOME-UUID-PATTERN>">'.
+  //   Type 'string & Format<"uuid">' is not assignable to type 'Pattern<"<SOME-UUID-PATTERN>">'.
+  //     Types of property '"typia.tag"' are incompatible.
 ```
 
-**4. TestValidator.equals Tag Type Errors**
-
+**Solutions:**
 ```typescript
-// ERROR: Type 'number & Type<"int32"> & Minimum<0>' is not assignable to 'number & Type<"int32">'
-const x: number & Type<"int32"> & Minimum<0>;
-const y: number & Type<"int32">;
+//----
+// Solution 1: Basic type
+//----
+const page: number & tags.Type<"int32"> = getValue();
+const pageWithMinimum: number & tags.Type<"int32"> & tags.Minimum<0> =
+  getValue();
+TestValidator.equals("page", pageWithMinimum, page satisfies number as number);
 
-TestValidator.equals("value", x, y); // compile error
+//----
+// Solution 2: Nullable type mismatch
+//----
+const userIdOptionial: (string & tags.Format<"uuid">) | null | undefined =
+  getNullableUserId();
+const userIdOptionalByOtherWay:
+  | (string & tags.Pattern<"<SOME-UUID-PATTERN>">)
+  | null
+  | undefined = getNullableUserId();
+TestValidator.equals(
+  "id",
+  userIdOptionalByOtherWay,
+  userIdOptionial satisfies string | null | undefined as
+    | string
+    | null
+    | undefined,
+);
 
-// FIX: Apply satisfies pattern to the stricter type
-TestValidator.equals("value", x, y satisfies number as number); // compile success
+//----
+// Solution 3: Nullable to non-nullable
+//----
+const uuidOptional: (string & tags.Format<"uuid">) | null | undefined =
+  getNullableUserId();
+const uuidRequired: string & tags.Pattern<"<SOME-UUID-PATTERN>"> = typia.assert(
+  (uuidOptional satisfies string | null | undefined as
+    | string
+    | null
+    | undefined)!,
+);
+TestValidator.equals(
+  "uuid-nullable-to-non-nullable",
+  uuidRequired,
+  typia.assert(
+    (uuidOptional satisfies string | null | undefined as
+      | string
+      | null
+      | undefined)!,
+  ),
+);
+
+//----
+// Don't know how to or previous trial failed?
+// Just use typia.assert<T>(value) for simplicity
+//----
+const someValue: unknown = getUnknownValue();
+const simple: number & tags.Type<"int32"> & tags.Minimum<0> = typia.assert<
+  number & tags.Type<"int32"> & tags.Minimum<0>
+>(someValue);
 ```
 
-**5. Union Type with Literal Numbers**
+#### 4.9.3. Last Resort: Direct typia.assert<T>(value) Usage
+
+When encountering persistent typia tag type errors that cannot be resolved through the conventional patterns, use `typia.assert<T>(value)` directly.
+
+**When to use this approach:**
+1. **Cannot find a solution** - You've tried the satisfies pattern but still get the same error
+2. **Repeated compilation errors** - You've attempted to fix the same typia tag error multiple times without success
+
+**Key principle:** If you're facing the same typia tag compilation error for the second time, stop trying complex patterns and use `typia.assert<T>(value)` immediately.
+
+**Common scenarios:**
 ```typescript
-// ERROR: Type '1 | (number & Type<"int32">)' is not assignable to parameter of type '(number & Type<"int32"> & Minimum<0>) | null | undefined'
-const pageNumber: 1 | (number & Type<"int32">) = Math.max(1, userInput);
+//----
+// Scenario 1: Variable assignment with complex tag combinations
+//----
+// After failing with satisfies pattern twice...
+const someValue: unknown = getUnknownValue();
+const simple: number & tags.Type<"int32"> & tags.Minimum<0> = typia.assert<
+  number & tags.Type<"int32"> & tags.Minimum<0>
+>(someValue);
 
-const response = await api.functional.data.list(connection, {
-  page: pageNumber  // ERROR: union type not compatible
-});
+//----
+// Scenario 2: String with multiple format/pattern tags
+//----
+// When satisfies pattern keeps failing for string tags...
+const emailValue = getUserEmail();
+const strictEmail: string & tags.Format<"email"> & tags.Pattern<"^[^@]+@company\.com$"> = 
+  typia.assert<string & tags.Format<"email"> & tags.Pattern<"^[^@]+@company\.com$">>(emailValue);
 
-// SOLUTION: Apply fix
-const response = await api.functional.data.list(connection, {
-  page: pageNumber satisfies number as number
-});
+//----
+// Scenario 3: TestValidator.equals with tag mismatches
+//----
+// After repeated failures with satisfies pattern...
+const actual: number & tags.Type<"uint32"> & tags.Maximum<100> = getValue();
+const expected: number & tags.Type<"uint32"> & tags.Minimum<0> = 50;
+TestValidator.equals(
+  "value comparison",
+  actual,
+  typia.assert<number & tags.Type<"uint32"> & tags.Maximum<100>>(expected)
+);
+
+//----
+// Scenario 4: Nullable tagged types
+//----
+// When nullable tag conversions keep failing...
+const nullableTagged: (string & tags.Format<"uuid">) | null | undefined = getId();
+const requiredTagged: string & tags.Format<"uuid"> & tags.Pattern<"[0-9a-f-]+"> = 
+  typia.assert<string & tags.Format<"uuid"> & tags.Pattern<"[0-9a-f-]+">>(nullableTagged!);
 ```
 
-**6. Date/Time String Type Mismatches**
-```typescript
-// ERROR: Argument of type '(string & Format<"date-time">) | null' is not assignable to parameter of type 'null | undefined'
-const scheduledTime: (string & Format<"date-time">) | null = getScheduledTime();
-
-const request = await api.functional.notifications.create(connection, {
-  body: {
-    message: "Hello",
-    scheduledAt: scheduledTime  // ERROR: date-time string not assignable to null | undefined
-  }
-});
-
-// SOLUTION: Check what the API actually expects and transform accordingly
-// If API expects null/undefined when no scheduling:
-const request = await api.functional.notifications.create(connection, {
-  body: {
-    message: "Hello",
-    scheduledAt: scheduledTime ? scheduledTime satisfies string as string : undefined
-  }
-});
-```
-
-**7. Non-null Assertion Cases (When certain the value is not null/undefined)**
-```typescript
-// ERROR: Nullable type doesn't match stricter API requirements
-const pageNumber: (number & tags.Type<"int32">) | null | undefined = getUserPageNumber();
-// API requires: number & tags.Type<"int32"> & tags.Minimum<1>
-
-await api.functional.items.list(connection, {
-  page: pageNumber  // ERROR: Type '(number & Type<"int32">) | null | undefined' is not assignable to 'number & Type<"int32"> & Minimum<1>'
-});
-
-// WRONG: Just using non-null assertion isn't enough
-await api.functional.items.list(connection, {
-  page: pageNumber!  // ERROR: Type 'number & Type<"int32">' is not assignable to 'number & Type<"int32"> & Minimum<1>'
-});
-
-// CORRECT: Combine non-null assertion with satisfies pattern
-await api.functional.items.list(connection, {
-  page: typia.assert(pageNumber!) satisfies number as number
-});
-
-// More examples with complex type requirements
-const limit: (number & tags.Type<"uint32">) | null = getUserLimit();
-// API requires: number & tags.Type<"uint32"> & tags.Minimum<10> & tags.Maximum<50>
-await api.functional.search.products(connection, {
-  limit: typia.assert(limit!) satisfies number as number
-});
-
-// String with format and pattern requirements
-const email: (string & tags.Format<"email">) | undefined = form.email;
-// API requires: string & tags.Format<"email"> & tags.Pattern<"^[^@]+@company\.com$">
-await api.functional.employees.create(connection, {
-  email: typia.assert(email!) satisfies string as string
-});
-```
-
-**GOLDEN RULES for Tag Type Fixes:**
-
-1. **ONLY use this pattern when you get compilation errors** - Never proactively add it
-2. **Always use base types in satisfies** - `satisfies number`, `satisfies string`, `satisfies boolean`, `satisfies string[]`
-3. **Never include tags in satisfies** - NOT `satisfies (number & tags.Type<"int32">)`
-4. **The pattern is always**: `value satisfies BaseType as BaseType`
-5. **Common base types**:
-   - Numbers: `satisfies number as number`
-   - Strings: `satisfies string as string`
-   - Booleans: `satisfies boolean as boolean`
-   - Arrays: `satisfies string[] as string[]` or `satisfies number[] as number[]`
-   - Nullable or undefindable:
-     - `satisfies BaseType | null as BaseType | null`
-     - `satisfies BaseType | undefined as BaseType | undefined`
-     - `satisfies BaseType | null | undefined as BaseType | null | undefined`
-
-#### When Typia Tag Type Errors Cannot Be Resolved
-
-If you encounter persistent compilation errors related to typia tags that cannot be resolved through the conventional `satisfies ... as ...` pattern, use this last resort approach:
-
-**CRITERIA FOR USING THIS APPROACH:**
-- The same typia tag-related type error occurs repeatedly after attempting fixes
-- Complex generic constraints or conditional types make the satisfies pattern fail
-- The error involves typia validation decorators like @Format, @Pattern, @Type tags
-
-**LAST RESORT SOLUTION:**
-```typescript
-// When TypeScript keeps rejecting your typia tag types
-// AND you've tried the satisfies pattern without success
-// THEN use typia.assert with explicit generic type:
-
-// Example 1: Complex tagged type with validation
-type EmailString = string & tags.Format<"email">;
-const email = generateEmail();
-// After multiple failed attempts with satisfies pattern...
-const validEmail = typia.assert<EmailString>(email); // Explicit generic type
-
-// Example 2: Nested object with multiple tagged properties
-interface UserProfile {
-  email: string & tags.Format<"email">;
-  phone: string & tags.Pattern<"[0-9]{3}-[0-9]{4}">;
-  age: number & tags.Minimum<18> & tags.Maximum<100>;
-}
-const profile = buildProfile();
-// If satisfies pattern keeps failing...
-const validProfile = typia.assert<UserProfile>(profile); // Direct type assertion
-
-// Example 3: Array of tagged types
-type ValidatedItems = Array<{
-  id: string & tags.Format<"uuid">;
-  timestamp: string & tags.Format<"date-time">;
-}>;
-const items = generateItems();
-// When conventional patterns fail...
-const validItems = typia.assert<ValidatedItems>(items); // Skip the complexity
-```
-
-**IMPORTANT**: This approach should only be used when:
-1. You've attempted the satisfies pattern at least twice and the error persists
-2. The typia tag type constraints are making TypeScript inference fail
-3. The runtime validation through typia.assert ensures type safety
-
-**NOTE**: Unlike the nullable case, here we use explicit generic types `typia.assert<T>(value)` instead of non-null assertion, because we need to tell typia exactly what type schema to validate against.
+**Remember:** This is a LAST RESORT. Only use when:
+- The conventional `satisfies` pattern has failed
+- You're encountering the same error repeatedly
+- The error involves `"typia.tag"` incompatibility
 
 ### 4.10. Literal Type Arrays with RandomGenerator.pick
 
