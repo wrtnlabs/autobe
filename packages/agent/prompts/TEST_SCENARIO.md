@@ -45,7 +45,7 @@ The final deliverable must be a structured output containing scenario groups wit
 
 ### 2.1. API Operations Array Analysis
 
-**CRITICAL: Complete Operations Analysis Required**
+**Complete Operations Analysis Required**
 
 Before generating ANY test scenarios, you MUST perform a comprehensive analysis of the provided operations array:
 
@@ -66,7 +66,7 @@ Before generating ANY test scenarios, you MUST perform a comprehensive analysis 
 
 ### 2.2. Include/Exclude Lists Processing
 
-**CRITICAL: Dependency Relationship Analysis**
+**Dependency Relationship Analysis**
 
 * **Include List**: API endpoints that must be covered in the test scenarios being generated. These are the primary targets of the current test generation. Each included endpoint shows its endpoint and related authentication APIs.
 * **Exclude List**: Endpoints that do not require new test scenarios in this iteration. However, these endpoints may still be referenced as **dependencies** in the scenario drafts if the current tests logically depend on their outcomes or data.
@@ -80,7 +80,7 @@ Before generating ANY test scenarios, you MUST perform a comprehensive analysis 
 
 ### 2.3. Candidate Dependencies Analysis
 
-**🔥 CRITICAL: API Dependency Chain Resolution**
+**API Dependency Chain Resolution**
 
 The "Candidate Dependencies" section provides a crucial mapping of which operations require specific IDs to function. You MUST use this information to build complete dependency chains:
 
@@ -100,7 +100,7 @@ Final Chain: POST /auth/users/join → POST /articles → POST /articles/{articl
 
 ### 2.4. Authentication Rules
 
-**🔥 CRITICAL AUTHENTICATION REQUIREMENTS**: Each endpoint contains an `authorizationRole` property in the operation definition. You MUST analyze this property to determine the required user context and include the appropriate authentication operations in the correct order.
+**CRITICAL AUTHENTICATION REQUIREMENTS**: Each endpoint contains an `authorizationRole` property in the operation definition. You MUST analyze this property to determine the required user context and include the appropriate authentication operations in the correct order.
 
 ### 2.4.1. **Authorization Role Analysis Process**
 
@@ -111,7 +111,7 @@ Final Chain: POST /auth/users/join → POST /articles → POST /articles/{articl
 3. **Map Required User Contexts**: Create a list of ALL unique roles needed throughout the scenario
 4. **Determine Authentication Strategy**: Plan the authentication sequence based on user context requirements
 
-### 2.4.2. **🔥 CRITICAL: User Context Management Rules**
+### 2.4.2. **User Context Management Rules**
 
 **New User Context Creation:**
 - **Use `join` ONLY**: When you need to create a NEW user with a specific role
@@ -251,7 +251,7 @@ Each `scenario` contains a natural-language test description (`draft`), a clearl
 * **State Transition Testing**: Test different states of entities and valid/invalid state transitions **using only properties that exist in the DTOs**
 * **🚨 REALITY CHECK**: Comprehensive does NOT mean inventing features that don't exist. Work creatively within the actual API boundaries.
 
-### 4.3. **🔥 CRITICAL: Dependency Management Principle**
+### 4.3. **Dependency Management Principle**
 
 **Complete Dependency Chain Resolution is MANDATORY**
 
@@ -306,7 +306,7 @@ dependencies: [
 
 ### 4.6. Implementation Feasibility Principle
 
-**🚨 CRITICAL: Only Test What Exists - API Availability Verification**
+**🚨 Only Test What Exists - API Availability Verification**
 
 This principle ensures that all generated test scenarios are **actually implementable** with the provided API endpoints. The IAutoBeTestScenarioApplication.IScenario structure requires that ALL referenced endpoints must exist.
 
@@ -325,7 +325,7 @@ Before generating ANY scenario, you MUST:
    - Identify required vs optional fields
    - Note any nested object structures or arrays
    - Understand enum values and constraints
-   - **CRITICAL: Distinguish between different DTO variants** - different operations use different DTO types with different properties
+   - **Distinguish between different DTO variants** - different operations use different DTO types with different properties
 
 3. **Map API capabilities to business requirements**
    - Only design scenarios using actually available APIs
@@ -336,7 +336,7 @@ Before generating ANY scenario, you MUST:
    - Verify which authentication APIs are available for each role
    - Ensure role-specific endpoints have corresponding auth endpoints
 
-### 4.7. **🚨 CRITICAL: Type Safety and Anti-Hallucination Principle**
+### 4.7. **🚨 Type Safety and Anti-Hallucination Principle**
 
 **ABSOLUTE PROHIBITIONS:**
 
@@ -360,7 +360,7 @@ AutoBE-generated backends provide **100% perfect type validation**. NEVER create
 - ❌ "Test with null for non-nullable fields"
 - ❌ "Test with wrong types that TypeScript would reject"
 
-### 4.8. **🔥 CRITICAL: Sequential Logic Validation Principle**
+### 4.8. **Sequential Logic Validation Principle**
 
 **MANDATORY: Logical Flow Validation**
 
@@ -379,7 +379,7 @@ Every test scenario MUST represent a logically coherent sequence:
 
 ## 5. Detailed Scenario Generation Guidelines
 
-### 5.1. **🔥 CRITICAL: Authorization-Driven Dependency Analysis Methodology**
+### 5.1. **Authorization-Driven Dependency Analysis Methodology**
 
 **Step-by-Step Authorization-Aware Dependency Resolution Process:**
 
@@ -486,7 +486,7 @@ For complex endpoints, generate multiple scenarios covering:
 * **Business Rule Violations**: Attempts to violate domain-specific business rules
 * **Authentication Errors**: Invalid authentication attempts, expired sessions, role mismatches
 
-## 6. **🔥 CRITICAL: Dependency Resolution Requirements**
+## 6. **Dependency Resolution Requirements**
 
 ### 6.1. Complete Chain Resolution
 
@@ -496,10 +496,10 @@ For complex endpoints, generate multiple scenarios covering:
 - **Follow the dependency chain recursively until you reach operations that require no external IDs**
 - **Include authentication operations at the beginning of the chain**
 - **Ensure correct execution order is documented in the `purpose` field**
-- **🚨 CRITICAL: NO DUPLICATE DEPENDENCIES** - Each unique endpoint (method + path combination) must appear ONLY ONCE in the dependencies array
-- **🚨 CRITICAL: ALL Reference IDs must be resolved** - Every ID mentioned in the Reference IDs must have a corresponding dependency that creates/provides that ID
+- **🚨 NO DUPLICATE DEPENDENCIES** - Each unique endpoint (method + path combination) must appear ONLY ONCE in the dependencies array
+- **🚨 ALL Reference IDs must be resolved** - Every ID mentioned in the Reference IDs must have a corresponding dependency that creates/provides that ID
 
-### 6.2. **🔥 CRITICAL: Dependency Duplication Prevention**
+### 6.2. **Dependency Duplication Prevention**
 
 **ABSOLUTE PROHIBITION on Duplicate Dependencies:**
 
@@ -545,7 +545,7 @@ dependencies: [
 ]
 ```
 
-### 6.3. **🔥 CRITICAL: Reference ID Resolution Validation**
+### 6.3. **Reference ID Resolution Validation**
 
 **MANDATORY: Complete Reference ID Coverage**
 
@@ -633,7 +633,7 @@ Test scenarios must cover not only successful business flows but also various er
 
 ## 8. **Final Validation Checklist**
 
-### 8.1. **🔥 CRITICAL: Dependency Chain Validation**
+### 8.1. **Dependency Chain Validation**
 
 * [ ] **Complete Chain Resolution**: Have you traced EVERY required ID back to its source operation?
 * [ ] **Recursive Dependency Analysis**: Have you followed dependencies recursively until reaching operations with no external requirements?
@@ -643,7 +643,7 @@ Test scenarios must cover not only successful business flows but also various er
 * [ ] **🚨 NO DUPLICATE DEPENDENCIES**: Does each unique endpoint (method + path) appear ONLY ONCE in the dependencies array?
 * [ ] **🚨 COMPLETE REFERENCE ID COVERAGE**: Is every ID from the Reference IDs section resolved by a corresponding dependency?
 
-### 8.2. **🔥 CRITICAL: Reference ID Resolution Validation**
+### 8.2. **Reference ID Resolution Validation**
 
 * [ ] **All Reference IDs Identified**: Have you listed every ID mentioned in the "Reference IDs" section?
 * [ ] **Source Operations Found**: For each Reference ID, have you identified which operation provides it in `responseIds`?
@@ -651,7 +651,7 @@ Test scenarios must cover not only successful business flows but also various er
 * [ ] **Logical ID Flow**: Do dependencies provide IDs in the correct order for subsequent operations?
 * [ ] **No Orphaned IDs**: Are there any Reference IDs without corresponding source operations in the dependency chain?
 
-### 8.3. **🔥 CRITICAL: Dependency Uniqueness Validation**
+### 8.3. **Dependency Uniqueness Validation**
 
 * [ ] **No Endpoint Duplication**: Does each unique endpoint appear only once in the dependencies array?
 * [ ] **No Redundant Authentication**: Are authentication operations (join/login) not unnecessarily repeated?
@@ -670,7 +670,7 @@ Test scenarios must cover not only successful business flows but also various er
 * [ ] Are all necessary dependencies identified and properly ordered?
 * [ ] Do dependency purposes clearly explain why each prerequisite is needed AND when it should be executed?
 
-### 8.5. **🔥 CRITICAL: Authentication and Authorization Validation**
+### 8.5. **Authentication and Authorization Validation**
 
 * [ ] **Authorization Role Analysis**: Have you analyzed the `authorizationRole` of the target operation AND all dependency operations?
 * [ ] **User Context Mapping**: Have you identified ALL unique roles required throughout the entire scenario?
