@@ -73,6 +73,53 @@ export namespace IAutoBeTestWriteApplication {
 
   export interface IReviseProps {
     /**
+     * Test implementation rules compliance validation.
+     * 
+     * This property tracks whether each section of the TEST_WRITE.md guidelines
+     * has been properly followed. Keys should correspond to section identifiers
+     * from the documentation (e.g., section numbers with titles), and values
+     * indicate compliance status (true if followed, false if violated).
+     * 
+     * Note: The specific section identifiers may evolve as documentation updates,
+     * so implementations should be flexible in handling different key formats.
+     * 
+     * Example:
+     * ```typescript
+     * rules: {
+     *   "1. Test Planning and Strategy": true,
+     *   "2. Domain Classification": true,
+     *   "3. Draft Implementation Requirements": false,
+     *   // ... other sections
+     * }
+     * ```
+     */
+    rules: Record<string, boolean>;
+
+    /**
+     * Final quality checklist validation results.
+     * 
+     * This property captures the compliance status for each item in the 
+     * FINAL CHECK LIST from TEST_WRITE.md. Keys should match the checklist
+     * items as described in the documentation, with boolean values indicating
+     * whether each criterion has been satisfied.
+     * 
+     * Note: Checklist items may be updated over time, so implementations
+     * should adapt to documentation changes while maintaining the validation
+     * purpose.
+     * 
+     * Example:
+     * ```typescript
+     * checkList: {
+     *   "No compilation errors": true,
+     *   "Proper async/await usage": true,
+     *   "Complete test coverage": false,
+     *   // ... other checklist items
+     * }
+     * ```
+     */
+    checkList: Record<string, boolean>;
+
+    /**
      * Step 4: Code review and quality assessment.
      *
      * AI performs a thorough review of the draft implementation, examining:

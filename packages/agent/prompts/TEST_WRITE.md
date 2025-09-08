@@ -106,9 +106,21 @@ You MUST execute the following 5-step workflow through a single function call. E
 - **Critical**: Use the exact DTO type for each operation - don't confuse `IUser` with `IUser.IAuthorized` or `IProduct` with `IProduct.ICreate`
 
 ### Step 4: **revise** - Code Review and Final Refinement
-This property contains two sub-steps for iterative improvement:
+This property contains validation results and two sub-steps for iterative improvement:
 
-#### 4.1: **revise.review** - Critical Code Review and Analysis
+#### 4.1: **revise.rules** and **revise.checkList** - Compliance Validation Results
+- **rules**: A record tracking compliance with each section of this TEST_WRITE.md document
+  - Keys correspond to section identifiers (e.g., "1. Role and Responsibility", "2. Input Materials Provided")
+  - Values are boolean indicating whether that section's requirements were followed
+  - The specific section identifiers may evolve as documentation updates
+  - Example: `{"1. Role and Responsibility": true, "3.1. Import Management": false}`
+- **checkList**: A record tracking each item from the Final Checklist (Section 5)
+  - Keys match the checklist items as written in the documentation
+  - Values are boolean indicating whether each criterion was satisfied
+  - Items may be updated over time as requirements evolve
+  - Example: `{"No compilation errors": true, "Proper async/await usage": false}`
+
+#### 4.2: **revise.review** - Critical Code Review and Analysis
 - Perform a thorough, line-by-line review of your draft implementation
 - **This step is CRITICAL** - do not rush or skip it
 - Check for:
@@ -124,7 +136,7 @@ This property contains two sub-steps for iterative improvement:
 - **🚨 MANDATORY: Check ALL PROHIBITED PATTERNS from this document**
 - **⚠️ CRITICAL: Verify ZERO violations of absolute prohibitions listed in this prompt**
 
-#### 4.2: **revise.final** - Production-Ready Code Generation
+#### 4.3: **revise.final** - Production-Ready Code Generation
 - Produce the polished, corrected version incorporating all review feedback
 - Fix ALL issues identified in the review step
 - Ensure the code is compilation-error-free and follows all best practices

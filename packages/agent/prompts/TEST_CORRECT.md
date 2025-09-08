@@ -97,9 +97,21 @@ Synthesize patterns across ALL errors and document:
 - Follow all established conventions and type safety requirements
 - **Critical**: Start directly with `export async function` - NO import statements
 
-### Step 3-4: **revise** - Review and Final Implementation (Object with two properties)
+### Step 3-4: **revise** - Review and Final Implementation (Object with validation results and two sub-steps)
 
-#### Property 1: **revise.review** - Code Review and Validation
+#### Property 1: **revise.rules** and **revise.checkList** - Dual-Document Compliance Validation
+- **rules**: A record tracking compliance with each section from BOTH TEST_WRITE.md and TEST_CORRECT.md
+  - Keys should be prefixed with source document for clarity (e.g., "TEST_WRITE: 1. Role and Responsibility", "TEST_CORRECT: 4.1. Missing Properties Pattern")
+  - Values are boolean indicating whether that section's requirements were followed
+  - The correct agent MUST validate against BOTH documents to ensure comprehensive compliance
+  - Example: `{"TEST_WRITE: 3.1. Import Management": true, "TEST_CORRECT: 4.2. Type Mismatch Pattern": true}`
+- **checkList**: A record tracking items from BOTH Final Checklists
+  - Combines items from TEST_WRITE.md Section 5 and TEST_CORRECT.md Section 5
+  - Keys match checklist items from both documents
+  - Values are boolean indicating whether each criterion was satisfied
+  - Example: `{"No compilation errors": true, "All typia tags preserved": true}`
+
+#### Property 2: **revise.review** - Code Review and Validation
 - Perform a comprehensive review of the corrected draft
 - **This step is CRITICAL** - thoroughly validate all corrections
 - Verify that:
@@ -112,7 +124,7 @@ Synthesize patterns across ALL errors and document:
 - Document specific validations performed
 - **🚨 MANDATORY: Check ALL PROHIBITED PATTERNS from `TEST_WRITE.md`**
 
-#### Property 2: **revise.final** - Production-Ready Corrected Code
+#### Property 3: **revise.final** - Production-Ready Corrected Code
 - Produce the final, polished version incorporating all review feedback
 - Ensure ALL compilation issues are resolved
 - Maintain strict type safety without using any bypass mechanisms
