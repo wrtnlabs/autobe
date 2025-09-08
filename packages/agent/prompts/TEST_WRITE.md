@@ -480,7 +480,7 @@ Type safety is crucial for E2E tests to catch API contract violations and schema
 
 If the given test scenario is impossible to implement due to API/DTO limitations or logical contradictions:
 - **DO NOT** attempt to implement the impossible parts and generate errors
-- **DO NOT** blindly follow scenarios that will cause compilation or runtime failures
+- **DO NOT** follow scenarios that will cause compilation or runtime failures
 - **INSTEAD**: Use your own judgment to **COMPLETELY REWRITE** the scenario to be implementable
 
 **Your Authority Includes:**
@@ -2006,7 +2006,7 @@ When using `TestValidator.error()` to test error conditions:
 2. Never use type safety bypass mechanisms like `any`, `@ts-ignore`, or `@ts-expect-error` within the error test block
 3. **🚨 CRITICAL: Use `await` ONLY when the callback function is `async` 🚨**
 
-**⚠️ MEMORIZE THIS RULE ⚠️**
+**⚠️ IMPORTANT RULE ⚠️**
 - **Async callback (has `async` keyword)** → **MUST use `await TestValidator.error()`**
 - **Non-async callback (no `async` keyword)** → **MUST NOT use `await`**
 - **Getting this wrong = Test failures and false positives**
@@ -2541,6 +2541,12 @@ When dealing with complex Typia tagged types that cause type mismatches:
 // Type mismatch error with complex intersection types
 const limit: number & tags.Type<"int32"> & tags.Minimum<1> & tags.Maximum<1000> = 
   typia.random<number & tags.Type<"int32">>(); // Type error!
+
+// Type mismatch with nullable/undefined types
+const pageNumber: (number & tags.Type<"int32">) | null = getNullablePageNumber();
+const requestBody = {
+  page: pageNumber  // ERROR: Type '(number & Type<"int32">) | null' is not assignable to '(number & Type<"int32"> & Minimum<0>) | null'
+} satisfies ISomeRequestBody;
 ```
 
 **Solution (ONLY when fixing type errors):**
@@ -2549,10 +2555,20 @@ const limit: number & tags.Type<"int32"> & tags.Minimum<1> & tags.Maximum<1000> 
 const limit = typia.random<number & tags.Type<"int32">>() satisfies number as number;
 const pageLimit = typia.random<number & tags.Type<"uint32"> & tags.Minimum<10> & tags.Maximum<100>>() satisfies number as number;
 
+// For nullable/undefined types
+const pageNumber: (number & tags.Type<"int32">) | null = getNullablePageNumber();
+const requestBody = {
+  page: pageNumber satisfies number | null as number | null  // Fixed!
+};
+
 // More examples:
 const name = typia.random<string & tags.MinLength<3> & tags.MaxLength<50>>() satisfies string as string;
 const email = typia.random<string & tags.Format<"email">>() satisfies string as string;
 const age = typia.random<number & tags.Type<"uint32"> & tags.Minimum<0> & tags.Maximum<120>>() satisfies number as number;
+
+// Nullable examples
+const optionalEmail: (string & tags.Format<"email">) | undefined = getOptionalEmail();
+const result = optionalEmail satisfies string | undefined as string | undefined;
 ```
 
 **Critical Rules:**
@@ -2560,6 +2576,68 @@ const age = typia.random<number & tags.Type<"uint32"> & tags.Minimum<0> & tags.M
 2. **Use basic types in satisfies**: `satisfies number`, `satisfies string`
 3. **Never include tags in satisfies**: NOT `satisfies (number & tags.Type<"int32">)`
 4. **This is a workaround**, not a general pattern
+
+**Handling Nullable and Undefined Types:**
+When you have nullable or undefined types with tags, apply the same pattern:
+
+```typescript
+// For nullable types (Type | null)
+const nullableValue: (number & tags.Type<"int32">) | null = getNullableNumber();
+const result = nullableValue satisfies number | null as number | null;
+
+// For undefined types (Type | undefined)
+const optionalValue: (string & tags.Format<"email">) | undefined = getOptionalEmail();
+const result = optionalValue satisfies string | undefined as string | undefined;
+
+// For nullable AND undefined types (Type | null | undefined)
+const maybeValue: (number & tags.Type<"int32"> & tags.Minimum<1>) | null | undefined = getMaybeNumber();
+const result = maybeValue satisfies number | null | undefined as number | null | undefined;
+
+// Example in API calls
+const scheduledTime: (string & tags.Format<"date-time">) | null = getScheduledTime();
+await api.functional.events.create(connection, {
+  body: {
+    title: "Event",
+    startTime: scheduledTime satisfies string | null as string | null
+  }
+});
+```
+
+**Non-null Assertion Pattern (When you're certain the value is not null/undefined):**
+When you know a value cannot be null/undefined but need to match stricter type requirements:
+
+```typescript
+// Problem: Nullable type to stricter type with tags
+const pageNumber: (number & tags.Type<"int32">) | null | undefined = getUserPageNumber();
+// API requires: number & tags.Type<"int32"> & tags.Minimum<0>
+
+// WRONG: Just removing null/undefined isn't enough for stricter types
+await api.functional.items.list(connection, {
+  page: pageNumber!  // ERROR: Type 'number & Type<"int32">' is not assignable to 'number & Type<"int32"> & Minimum<0>'
+});
+
+// CORRECT: Combine non-null assertion with satisfies pattern
+await api.functional.items.list(connection, {
+  page: typia.assert(pageNumber!) satisfies number as number
+});
+
+// Example with more complex tag requirements
+const limit: (number & tags.Type<"uint32">) | null | undefined = getPageLimit();
+// API requires: number & tags.Type<"uint32"> & tags.Minimum<1> & tags.Maximum<100>
+await api.functional.products.list(connection, {
+  limit: typia.assert(limit!) satisfies number as number  // Handles the type mismatch
+});
+
+// String format with additional constraints
+const userId: (string & tags.Format<"uuid">) | undefined = session?.userId;
+// API requires: string & tags.Format<"uuid"> & tags.Pattern<"^[0-9a-f-]{36}$">
+await api.functional.users.get(connection, {
+  id: typia.assert(userId!) satisfies string as string
+});
+
+// ⚠️ WARNING: Only use non-null assertion when you're CERTAIN
+// If unsure, use conditional checks or the satisfies pattern instead
+```
 
 **Rule:** The `satisfies ... as ...` pattern is for resolving type compatibility issues, not standard coding practice.
 
