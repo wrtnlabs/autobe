@@ -972,63 +972,66 @@ typia.assert(product); // This ONE line handles ALL validation perfectly
 
 ### 3.3.2. Common Null vs Undefined Mistakes
 
-**CRITICAL: Be careful with optional properties and their correct values**
+**CRITICAL: Be careful with nullable and undefinable types**
 
-A common mistake is using `null` for properties that only accept `undefined` (and vice versa). TypeScript distinguishes between these two values:
-- `undefined`: The property can be omitted or explicitly set to `undefined`
-- `null`: A deliberate "no value" that must be explicitly allowed in the type
+TypeScript distinguishes between `null` and `undefined` - they are NOT interchangeable:
+- `T | undefined`: Can only be the value or `undefined`, NOT `null`
+- `T | null`: Can only be the value or `null`, NOT `undefined`
+- `T | null | undefined`: Can be the value, `null`, or `undefined`
 
-**Common Mistake - Using null for undefinable properties:**
+**Common Mistakes with Atomic Types:**
 
 ```typescript
-// ❌ WRONG: Using null for properties that only accept undefined
-const requestBody = {
-  page: 1,
-  limit: 10,
-  member_id: null, // Type error: string | undefined doesn't accept null
-  sub_community_id: null, // Type error: string | undefined doesn't accept null
-  joined_at: null, // Type error: string | undefined doesn't accept null
-  left_at: null, // Type error: string | undefined doesn't accept null
-} satisfies ICommunityPlatformSubCommunityMembership.IRequest;
+//----
+// Problem 1: Using null for undefined-only types
+//----
+const userId: string | undefined = null; // ❌ ERROR: Type 'null' is not assignable to type 'string | undefined'
 
-// ✅ CORRECT: Use undefined or omit the property entirely
-const requestBody = {
-  page: 1,
-  limit: 10,
-  // Option 1: Omit optional properties entirely
-} satisfies ICommunityPlatformSubCommunityMembership.IRequest;
+// ✅ CORRECT: Use undefined
+const userId: string | undefined = undefined;
 
-// ✅ CORRECT: Or explicitly set to undefined if needed
-const requestBody = {
-  page: 1,
-  limit: 10,
-  member_id: undefined,
-  sub_community_id: undefined,
-  joined_at: undefined,
-  left_at: undefined,
-} satisfies ICommunityPlatformSubCommunityMembership.IRequest;
-```
+//----
+// Problem 2: Using undefined for null-only types
+//----
+const score: number | null = undefined; // ❌ ERROR: Type 'undefined' is not assignable to type 'number | null'
 
-**Type Definition Examples:**
-```typescript
-// When you see these type patterns:
-interface IRequest {
-  required_field: string;           // Required, cannot be undefined or null
-  optional_field?: string;          // Can be omitted or undefined, NOT null
-  nullable_field: string | null;    // Can be string or null, NOT undefined
-  flexible_field?: string | null;   // Can be omitted, undefined, string, or null
+// ✅ CORRECT: Use null
+const score: number | null = null;
+
+//----
+// Problem 3: Forgetting to handle both null AND undefined
+//----
+const name: string | null | undefined = getName();
+if (name !== null) {
+  const length: number = name.length; // ❌ ERROR: 'name' is possibly 'undefined'
 }
 
-// Usage:
-const valid = {
-  required_field: "value",          // ✅ Must provide
-  optional_field: undefined,        // ✅ Can be undefined
-  nullable_field: null,             // ✅ Can be null
-  flexible_field: null,             // ✅ Can be null or undefined
-};
+// ✅ CORRECT: Check both null AND undefined
+const name: string | null | undefined = getName();
+if (name !== null && name !== undefined) {
+  const length: number = name.length; // Success!
+}
 ```
 
-**Rule:** Always check the exact type definition. If it's `T | undefined`, use `undefined`. If it's `T | null`, use `null`. Never mix them up!
+**With Typia Tagged Types:**
+
+```typescript
+//----
+// Problem: Wrong null/undefined with tagged types
+//----
+const email: (string & tags.Format<"email">) | undefined = null; // ❌ ERROR!
+
+// ✅ CORRECT: Match the exact union type
+const email: (string & tags.Format<"email">) | undefined = undefined;
+
+//----
+// With complex tags
+//----
+const pageNumber: (number & tags.Type<"int32"> & tags.Minimum<1>) | null = undefined; // ❌ ERROR!
+const pageNumber: (number & tags.Type<"int32"> & tags.Minimum<1>) | null = null; // ✅ CORRECT
+```
+
+**Rule:** Always match the EXACT nullable/undefinable pattern in the type definition. Never substitute one for the other!
 
 ### 3.4. Random Data Generation
 
@@ -1299,6 +1302,107 @@ const anotherRole = RandomGenerator.pick(validOtherRoles);
 - Array methods like `filter()` return regular mutable arrays
 - Never cast filtered results back to the original readonly tuple type
 - If needed, cast to the union type array instead: `as ("value1" | "value2")[]`
+
+#### 3.4.3. Working with Typia Tagged Types
+
+When creating test data with specific type constraints, you may encounter types with multiple tags. Understanding how to work with these tagged types is crucial for writing correct test code.
+
+**Common Tagged Type Patterns:**
+
+```typescript
+//----
+// Basic tagged types
+//----
+const userId: string & tags.Format<"uuid"> = typia.random<string & tags.Format<"uuid">>();
+const age: number & tags.Type<"int32"> & tags.Minimum<0> = typia.random<number & tags.Type<"int32"> & tags.Minimum<0>>();
+const email: string & tags.Format<"email"> = typia.random<string & tags.Format<"email">>();
+
+//----
+// Variable assignments with tag mismatches
+//----
+// When assigning values between variables with different tags:
+const page: number & tags.Type<"int32"> = typia.random<number & tags.Type<"int32">>();
+const pageWithMinimum: number & tags.Type<"int32"> & tags.Minimum<0> = 
+  page satisfies number as number; // Use satisfies pattern for type conversion
+```
+
+**Handling Tag Type Mismatches:**
+
+If you encounter type incompatibility due to different tags, use the `satisfies` pattern:
+
+```typescript
+//----
+// Pattern for non-nullable types
+//----
+const value1: string & tags.Format<"uuid"> = typia.random<string & tags.Format<"uuid">>();
+const value2: string & tags.Pattern<"[0-9a-f-]+"> = 
+  value1 satisfies string as string;
+
+//----
+// Pattern for nullable types
+//----
+const nullable1: (string & tags.Format<"email">) | null | undefined = getEmail();
+const nullable2: (string & tags.Pattern<".+@.+">) | null | undefined = 
+  nullable1 satisfies string | null | undefined as string | null | undefined;
+```
+
+**When to Use typia.assert for Tagged Types:**
+
+If the `satisfies` pattern doesn't work or becomes too complex, use `typia.assert`:
+
+```typescript
+//----
+// Last resort for complex tag conversions
+//----
+const complexValue = getComplexValue();
+const targetValue: number & tags.Type<"int32"> & tags.Minimum<0> = 
+  typia.assert<number & tags.Type<"int32"> & tags.Minimum<0>>(complexValue);
+
+//----
+// For nullable to non-nullable with tags
+//----
+const nullableTagged: (string & tags.Format<"uuid">) | null | undefined = getId();
+const requiredTagged: string & tags.Format<"uuid"> = 
+  typia.assert<string & tags.Format<"uuid">>(nullableTagged!);
+```
+
+**🚨 LAST RESORT PRINCIPLE: When Nothing Else Works 🚨**
+
+If you encounter type errors with tagged types and:
+- You don't know how to use the `satisfies` pattern
+- The type conversion seems too complex
+- You're completely stuck and have no idea what to do
+
+**Then just use `typia.assert<T>(value)` and move on:**
+
+```typescript
+//----
+// When you're stuck and nothing works
+//----
+const problematicValue = getSomeValue();
+// When you have no idea how to handle the type conversion...
+const workingValue: TargetType & tags.Whatever<"constraints"> = 
+  typia.assert<TargetType & tags.Whatever<"constraints">>(problematicValue);
+
+//----
+// Common "just make it work" scenarios
+//----
+// Scenario 1: Complex intersection types
+const result: string & tags.Format<"email"> & tags.Pattern<".*@company\.com"> = 
+  typia.assert<string & tags.Format<"email"> & tags.Pattern<".*@company\.com">>(someEmail);
+
+// Scenario 2: When type inference gets confusing
+const confusingType = doComplexOperation();
+const clearType: number & tags.Type<"int32"> & tags.Minimum<0> = 
+  typia.assert<number & tags.Type<"int32"> & tags.Minimum<0>>(confusingType);
+
+// Scenario 3: Multiple nullable conversions
+const mess: (string & tags.Format<"uuid">) | null | undefined = getData();
+const clean: string & tags.Format<"uuid"> = 
+  typia.assert<string & tags.Format<"uuid">>(mess!);
+```
+
+**Rule:** If you don't know how to handle the type conversion, don't waste time. Just use `typia.assert<T>(value)` and continue with the test implementation.
 
 ### 3.5. Handling Nullable and Undefined Values
 
@@ -1632,6 +1736,37 @@ if (foundItem) {
 ```
 
 **Rule:** Always validate nullable/undefined values before assigning to non-nullable types. Choose between `typia.assert` (for return value) and `typia.assertGuard` (for type narrowing) based on your needs. NEVER forget the `!` inside typia functions when removing nullable types.
+
+**🚨 LAST RESORT for Nullable/Undefined: When You're Completely Stuck 🚨**
+
+If you've tried multiple approaches for handling nullable/undefined types and still can't resolve the compilation error:
+
+```typescript
+//----
+// When nothing else makes sense
+//----
+const confusingValue: SomeType | null | undefined = getConfusingValue();
+// After multiple failed attempts with if checks, optional chaining, etc...
+const workingValue: SomeType = typia.assert<SomeType>(confusingValue!);
+
+//----
+// Common "I give up" scenarios
+//----
+// Deeply nested optional properties driving you crazy
+const nightmare = data?.user?.profile?.settings?.preferences?.theme;
+const theme: string = typia.assert<string>(nightmare!);
+
+// Complex union types with multiple null/undefined
+const chaos: (string | number | null | undefined)[] | null = getData();
+const cleanData: (string | number)[] = typia.assert<(string | number)[]>(chaos!);
+
+// When TypeScript's flow analysis doesn't help
+const value = complexCondition ? getValue() : null;
+// ... many lines later ...
+const required: string = typia.assert<string>(value!);
+```
+
+**Remember:** If you have no idea how to handle nullable/undefined types, just use `typia.assert<T>(value!)` and move on with the test.
 
 ### 3.6. TypeScript Type Narrowing and Control Flow Analysis
 
