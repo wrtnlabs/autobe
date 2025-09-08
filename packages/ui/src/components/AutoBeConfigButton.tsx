@@ -62,7 +62,7 @@ export const AutoBeConfigButton = (props: IAutoBeConfigButtonProps) => {
         e.currentTarget.style.background = "#f8f9fa";
         e.currentTarget.style.borderColor = "#dee2e6";
       }}
-      title={props.title || "Configure Settings"}
+      title={props.title ?? "Configure Settings"}
     >
       <svg
         width="14"
