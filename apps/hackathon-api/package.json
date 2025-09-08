@@ -6,7 +6,8 @@
   "scripts": {
     "build": "rimraf lib && tsc && rollup -c",
     "dev": "rimraf lib && tsc --watch",
-    "prepack": "pnpm run build"
+    "prepack": "pnpm run build",
+    "prepare": "ts-patch install"
   },
   "keywords": [],
   "author": "Wrtn Technologies",
@@ -43,6 +44,8 @@
     "@rollup/plugin-typescript": "^12.1.2",
     "rimraf": "^6.0.1",
     "rollup": "^4.40.1",
-    "typescript": "catalog:typescript"
+    "ts-patch": "catalog:typescript",
+    "typescript": "catalog:typescript",
+    "typescript-transform-paths": "^3.5.5"
   }
 }

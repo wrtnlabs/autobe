@@ -125,7 +125,7 @@ importers:
         version: 1.2.0
       typia:
         specifier: catalog:samchon
-        version: 9.7.2(typescript@5.9.2)
+        version: 9.7.2(@types/node@24.3.1)(typescript@5.9.2)
     devDependencies:
       '@rollup/plugin-terser':
         specifier: ^0.4.4
@@ -139,9 +139,15 @@ importers:
       rollup:
         specifier: ^4.40.1
         version: 4.49.0
+      ts-patch:
+        specifier: catalog:typescript
+        version: 3.3.0
       typescript:
         specifier: catalog:typescript
         version: 5.9.2
+      typescript-transform-paths:
+        specifier: ^3.5.5
+        version: 3.5.5(typescript@5.9.2)
 
   apps/hackathon-server:
     dependencies:
@@ -259,7 +265,7 @@ importers:
         version: 1.2.0
       typia:
         specifier: catalog:samchon
-        version: 9.7.2(typescript@5.9.2)
+        version: 9.7.2(@types/node@24.3.1)(typescript@5.9.2)
     devDependencies:
       '@rollup/plugin-terser':
         specifier: ^0.4.4
@@ -786,7 +792,7 @@ importers:
         version: 5.16.0
       typia:
         specifier: catalog:samchon
-        version: 9.7.2(typescript@5.9.2)
+        version: 9.7.2(@types/node@24.3.1)(typescript@5.9.2)
     devDependencies:
       rimraf:
         specifier: ^6.0.1
@@ -805,7 +811,7 @@ importers:
         version: 4.7.1
       typia:
         specifier: catalog:samchon
-        version: 9.7.2(typescript@5.9.2)
+        version: 9.7.2(@types/node@24.3.1)(typescript@5.9.2)
     devDependencies:
       rimraf:
         specifier: ^6.0.1
@@ -864,7 +870,7 @@ importers:
         version: 3.0.0
       typia:
         specifier: catalog:samchon
-        version: 9.7.2(typescript@5.9.2)
+        version: 9.7.2(@types/node@24.3.1)(typescript@5.9.2)
     devDependencies:
       rimraf:
         specifier: ^6.0.1
@@ -6763,6 +6769,11 @@ packages:
     peerDependencies:
       typescript: 5.0.x || 5.1.x || 5.2.x || 5.3.x || 5.4.x || 5.5.x || 5.6.x || 5.7.x || 5.8.x || 5.9.x
 
+  typescript-transform-paths@3.5.5:
+    resolution: {integrity: sha512-RMK86wKe/4+ad+3kMT9SKAs3K0tUHLe7hF+MLbD6VpC9VUmFuKorhf3pHz+qO5GdS4mUp2ncNUo14j6ws9UvBQ==}
+    peerDependencies:
+      typescript: '>=3.6.5'
+
   typescript@5.9.2:
     resolution: {integrity: sha512-CWBzXQrc/qOkhidw1OzBTQuYRbfyxDXJMVJ1XNwUHGROVmuaeiEm3OslpZ1RV96d7SKKjZKrSJu3+t/xlw3R9A==}
     engines: {node: '>=14.17'}
@@ -11331,26 +11342,6 @@ snapshots:
       through: 2.3.8
       wrap-ansi: 7.0.0
 
-  inquirer@8.2.7:
-    dependencies:
-      '@inquirer/external-editor': 1.0.1(@types/node@22.18.0)
-      ansi-escapes: 4.3.2
-      chalk: 4.1.2
-      cli-cursor: 3.1.0
-      cli-width: 3.0.0
-      figures: 3.2.0
-      lodash: 4.17.21
-      mute-stream: 0.0.8
-      ora: 5.4.1
-      run-async: 2.4.1
-      rxjs: 7.8.2
-      string-width: 4.2.3
-      strip-ansi: 6.0.1
-      through: 2.3.8
-      wrap-ansi: 6.2.0
-    transitivePeerDependencies:
-      - '@types/node'
-
   inquirer@8.2.7(@types/node@22.18.0):
     dependencies:
       '@inquirer/external-editor': 1.0.1(@types/node@22.18.0)
@@ -14045,6 +14036,11 @@ snapshots:
       typescript: 5.9.2
       yaml: 2.8.1
 
+  typescript-transform-paths@3.5.5(typescript@5.9.2):
+    dependencies:
+      minimatch: 9.0.5
+      typescript: 5.9.2
+
   typescript@5.9.2: {}
 
   typia@9.7.2(@types/node@22.18.0)(typescript@5.9.2):
@@ -14067,19 +14063,6 @@ snapshots:
       commander: 10.0.1
       comment-json: 4.2.5
       inquirer: 8.2.7(@types/node@24.3.1)
-      package-manager-detector: 0.2.11
-      randexp: 0.5.3
-      typescript: 5.9.2
-    transitivePeerDependencies:
-      - '@types/node'
-
-  typia@9.7.2(typescript@5.9.2):
-    dependencies:
-      '@samchon/openapi': 4.7.1
-      '@standard-schema/spec': 1.0.0
-      commander: 10.0.1
-      comment-json: 4.2.5
-      inquirer: 8.2.7
       package-manager-detector: 0.2.11
       randexp: 0.5.3
       typescript: 5.9.2

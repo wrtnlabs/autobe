@@ -2,7 +2,7 @@ import {
   IAutobeHackathon,
   IAutobeHackathonParticipant,
 } from "@autobe/hackathon-api";
-import { TypedRoute } from "@nestia/core";
+import { TypedBody, TypedParam, TypedRoute } from "@nestia/core";
 import { Controller } from "@nestjs/common";
 
 import { AutoBeHackathonParticipantProvider } from "../../providers/AutoBeHackathonParticipantProvider";
@@ -12,8 +12,8 @@ import { AutoBeHackathonProvider } from "../../providers/AutoBeHackathonProvider
 export class AutoBeHackathonParticipantAuthenticateController {
   @TypedRoute.Post("login")
   public async login(
-    hackathonCode: string,
-    body: IAutobeHackathonParticipant.ILogin,
+    @TypedParam("hackathonCode") hackathonCode: string,
+    @TypedBody() body: IAutobeHackathonParticipant.ILogin,
   ): Promise<IAutobeHackathonParticipant.IAuthorized> {
     const hackathon: IAutobeHackathon =
       await AutoBeHackathonProvider.get(hackathonCode);
@@ -25,8 +25,8 @@ export class AutoBeHackathonParticipantAuthenticateController {
 
   @TypedRoute.Patch("refresh")
   public async refresh(
-    hackathonCode: string,
-    body: IAutobeHackathonParticipant.IRefresh,
+    @TypedParam("hackathonCode") hackathonCode: string,
+    @TypedBody() body: IAutobeHackathonParticipant.IRefresh,
   ): Promise<IAutobeHackathonParticipant.IAuthorized> {
     const hackathon: IAutobeHackathon =
       await AutoBeHackathonProvider.get(hackathonCode);
