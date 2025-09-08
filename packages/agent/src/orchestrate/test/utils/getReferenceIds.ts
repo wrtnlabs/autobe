@@ -7,7 +7,7 @@ export const getReferenceIds = (props: {
 }): string[] => {
   const result: Set<string> = new Set();
   const emplace = (key: string) => {
-    if (key.endsWith("_id")) result.add(key);
+    if (key.endsWith("_id") || key.endsWith("Id")) result.add(key);
   };
 
   props.operation.parameters.forEach((p) => emplace(p.name));

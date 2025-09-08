@@ -7,7 +7,6 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeTestScenarioAuthorizationRole } from "../structures/IAutoBeTestScenarioAuthorizationRole";
 import { getReferenceIds } from "../utils/getReferenceIds";
-import { getResponseIds } from "../utils/getResponseIds";
 
 export const transformTestScenarioHistories = (
   state: AutoBeState,
@@ -84,10 +83,6 @@ export const transformTestScenarioHistories = (
             ...el,
             specification: undefined,
             requestedIds: getReferenceIds({
-              document,
-              operation: el,
-            }),
-            responseIds: getResponseIds({
               document,
               operation: el,
             }),
