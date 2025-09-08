@@ -71,7 +71,7 @@ export function groupEvents(
 /** Groups events by their category */
 function groupEventsByCategory(events: AutoBeEvent[]) {
   const grouped = {
-    validate: [] as any[],
+    validate: [] as unknown[],
     other: [] as AutoBeEvent[],
   };
 

@@ -1,7 +1,7 @@
 {
   "name": "@autobe/ui",
   "type": "commonjs",
-  "version": "0.22.1",
+  "version": "0.21.0",
   "description": "AutoBE UI",
   "author": "Wrtn Technologies",
   "homepage": "https://autobe.dev",
@@ -38,20 +38,27 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "prepack": "pnpm build"
+    "prepack": "pnpm build",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:ui": "vitest --ui"
   },
   "devDependencies": {
     "@autobe/interface": "workspace:*",
     "@samchon/openapi": "catalog:samchon",
     "@types/react": "catalog:ui",
     "@types/react-dom": "catalog:ui",
+    "@vitest/ui": "^2.0.0",
+    "happy-dom": "^15.0.0",
     "react": "catalog:ui",
     "react-dom": "catalog:ui",
-    "typescript": "catalog:typescript"
+    "typescript": "catalog:typescript",
+    "vitest": "^2.0.0"
   },
   "dependencies": {
     "@stackblitz/sdk": "^1.11.0",
     "jszip": "^3.10.1",
+    "overlay-kit": "^1.8.5",
     "tstl": "catalog:samchon"
   }
 }

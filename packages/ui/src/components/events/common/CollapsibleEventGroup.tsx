@@ -4,7 +4,7 @@ import { EventCard } from "./EventCard";
 import { EventContent } from "./EventContent";
 import { EventIcon, EventIconType } from "./EventIcon";
 
-export interface ICollapsibleEventGroupProps<T = any> {
+export interface ICollapsibleEventGroupProps<T = unknown> {
   /** Array of events of the same type */
   events: T[];
   /** Title for the group */
