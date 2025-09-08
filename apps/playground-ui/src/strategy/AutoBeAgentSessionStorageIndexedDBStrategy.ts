@@ -1,9 +1,6 @@
+import { AutoBeHistory, IAutoBeTokenUsageJson } from "@autobe/interface";
 import {
-  AutoBeEvent,
-  AutoBeHistory,
-  IAutoBeTokenUsageJson,
-} from "@autobe/interface";
-import {
+  AutoBeAgentSession_INIT,
   IAutoBeAgentSession,
   IAutoBeAgentSessionStorageStrategy,
   IAutoBeEventGroup,
@@ -19,40 +16,42 @@ export class AutoBeAgentSessionStorageIndexedDBStrategy
   }
 
   private connection: IDBOpenDBRequest;
-  private initializedPromise: Promise<void>;
-  private initialized: boolean;
+  private AutoBeAgentSession_INITializedPromise: Promise<void>;
+  private AutoBeAgentSession_INITialized: boolean;
   private readonly dbName: string;
 
   constructor(dbName: string = "autobe_agent_storage") {
     this.dbName = dbName;
-    this.initialized = false;
+    this.AutoBeAgentSession_INITialized = false;
 
     const req = window.indexedDB.open(this.dbName, 2);
-    this.initializedPromise = new Promise((resolve, reject) => {
-      req.onerror = (event) => {
-        reject(event);
-        console.error("Error opening database", event);
-      };
-      req.onupgradeneeded = function (event) {
-        console.log("Database upgraded", event);
-        const db: IDBDatabase = this.result;
-        if (!db.objectStoreNames.contains("sessions")) {
-          db.createObjectStore("sessions", { keyPath: "id" });
-        }
-      };
-      req.onsuccess = (event) => {
-        console.log("Database opened successfully", event);
-        this.initialized = true;
-        resolve();
-      };
-    });
+    this.AutoBeAgentSession_INITializedPromise = new Promise(
+      (resolve, reject) => {
+        req.onerror = (event) => {
+          reject(event);
+          console.error("Error opening database", event);
+        };
+        req.onupgradeneeded = function (event) {
+          console.log("Database upgraded", event);
+          const db: IDBDatabase = this.result;
+          if (!db.objectStoreNames.contains("sessions")) {
+            db.createObjectStore("sessions", { keyPath: "id" });
+          }
+        };
+        req.onsuccess = (event) => {
+          console.log("Database opened successfully", event);
+          this.AutoBeAgentSession_INITialized = true;
+          resolve();
+        };
+      },
+    );
     this.connection = req;
   }
 
   private async getObjectStore(name: string, mode: "readonly" | "readwrite") {
-    await this.initializedPromise;
-    if (!this.initialized) {
-      throw new Error("Database not initialized");
+    await this.AutoBeAgentSession_INITializedPromise;
+    if (!this.AutoBeAgentSession_INITialized) {
+      throw new Error("Database not AutoBeAgentSession_INITialized");
     }
     return this.connection.result.transaction(name, mode).objectStore(name);
   }
@@ -66,9 +65,9 @@ export class AutoBeAgentSessionStorageIndexedDBStrategy
     if (prev === undefined) {
       store.add({
         id: props.id,
-        title: INIT.title,
+        title: AutoBeAgentSession_INIT.title,
         history: props.history,
-        tokenUsage: INIT.tokenUsage,
+        tokenUsage: AutoBeAgentSession_INIT.tokenUsage,
         events: [],
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -93,9 +92,9 @@ export class AutoBeAgentSessionStorageIndexedDBStrategy
     if (prev === undefined) {
       store.add({
         id: props.id,
-        title: INIT.title,
-        history: INIT.history,
-        tokenUsage: INIT.tokenUsage,
+        title: AutoBeAgentSession_INIT.title,
+        history: AutoBeAgentSession_INIT.history,
+        tokenUsage: AutoBeAgentSession_INIT.tokenUsage,
         events: props.events,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -120,10 +119,10 @@ export class AutoBeAgentSessionStorageIndexedDBStrategy
     if (prev === undefined) {
       store.add({
         id: props.id,
-        title: INIT.title,
-        history: INIT.history,
+        title: AutoBeAgentSession_INIT.title,
+        history: AutoBeAgentSession_INIT.history,
         tokenUsage: props.tokenUsage,
-        events: INIT.events,
+        events: AutoBeAgentSession_INIT.events,
         createdAt: new Date(),
         updatedAt: new Date(),
       });
@@ -147,6 +146,7 @@ export class AutoBeAgentSessionStorageIndexedDBStrategy
 
   async getSessionList(): Promise<IAutoBeAgentSession[]> {
     const store = await this.getObjectStore("sessions", "readonly");
+    console.log(store);
     const prev = await promisifyIDBRequest(store.getAll());
     console.log(prev);
     return prev;
@@ -163,42 +163,4 @@ const promisifyIDBRequest = <T>(request: IDBRequest<T>): Promise<T> => {
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);
   });
-};
-
-const INIT = {
-  title: "Untitled",
-  history: [],
-  events: [],
-  tokenUsage: [
-    "aggregate",
-    "facade",
-    "analyze",
-    "prisma",
-    "interface",
-    "test",
-    "realize",
-  ].reduce(
-    (acc, cur) => ({
-      ...acc,
-      [cur]: {
-        total: 0,
-        input: {
-          total: 0,
-          cached: 0,
-        },
-        output: {
-          total: 0,
-          reasoning: 0,
-          accepted_prediction: 0,
-          rejected_prediction: 0,
-        },
-      },
-    }),
-    {} as IAutoBeTokenUsageJson,
-  ),
-} satisfies {
-  title: string;
-  history: AutoBeHistory[];
-  events: AutoBeEvent[];
-  tokenUsage: IAutoBeTokenUsageJson;
 };

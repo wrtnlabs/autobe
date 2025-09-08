@@ -3,11 +3,16 @@ import {
   IAutoBePlaygroundVendor,
 } from "@autobe/interface";
 import pApi from "@autobe/playground-api";
-import { AutoBeListener, IAutoBeConfig } from "@autobe/ui";
+import {
+  AutoBeListener,
+  IAutoBeConfig,
+  getAutoBeAgentSession,
+} from "@autobe/ui";
 import { ILlmSchema } from "@samchon/openapi";
 import { useRef } from "react";
 
 import { AutoBePlaygroundChatMovie } from "./movies/chat/AutoBePlaygroundChatMovie";
+import { AutoBeAgentSessionStorageIndexedDBStrategy } from "./strategy/AutoBeAgentSessionStorageIndexedDBStrategy";
 
 export function AutoBePlaygroundApplication() {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -38,19 +43,26 @@ export function AutoBePlaygroundApplication() {
     };
 
     const autoBeListener: AutoBeListener = new AutoBeListener();
-    const { driver: rpcService } =
-      await pApi.functional.autobe.playground.start(
-        {
-          host: playgroundConfig.serverUrl,
-          headers: headers as unknown as Record<string, string>,
-        },
-        autoBeListener.getListener(),
-      );
+    const wrapper = await getAutoBeAgentSession({
+      storageStrategy: new AutoBeAgentSessionStorageIndexedDBStrategy(),
+      listener: autoBeListener,
+      connect: () =>
+        pApi.functional.autobe.playground
+          .start(
+            {
+              host: playgroundConfig.serverUrl,
+              headers: headers as unknown as Record<string, string>,
+            },
+            autoBeListener.getListener(),
+          )
+          .then((v) => v.driver),
+      headers,
+    });
 
     return {
-      service: rpcService,
-      listener: autoBeListener,
-      header: headers,
+      service: wrapper.service,
+      listener: wrapper.listener,
+      header: wrapper.headers,
       uploadConfig: {
         supportAudio: playgroundConfig.supportAudioEnable ?? false,
       },
@@ -69,6 +81,9 @@ export function AutoBePlaygroundApplication() {
       <AutoBePlaygroundChatMovie
         title="AutoBE Playground"
         serviceFactory={serviceFactory}
+        storageStrategyFactory={() =>
+          new AutoBeAgentSessionStorageIndexedDBStrategy()
+        }
       />
     </div>
   );

@@ -20,6 +20,7 @@ import {
   IAutoBeEventGroup,
 } from "../structure";
 import { IAutoBeConfig } from "../types/config";
+import { useAutoBeAgentSessionList } from "./AutoBeAgentSessionList";
 import { SearchParamsContext } from "./hooks-client-context.shared-runtime";
 
 export interface IAutoBeServiceData {
@@ -83,6 +84,7 @@ export function AutoBeAgentProvider({
   const [serviceInstance, setServiceInstance] =
     useState<IAutoBeServiceData | null>(null);
 
+  const { refreshSessionList } = useAutoBeAgentSessionList();
   // Context-scoped service getter
   const getAutoBeService = useCallback(
     async (
@@ -157,6 +159,7 @@ export function AutoBeAgentProvider({
         if (v === null) {
           return null;
         }
+        refreshSessionList();
         setEventGroups(v.events);
         setTokenUsage(v.tokenUsage);
       })

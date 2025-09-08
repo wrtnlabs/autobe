@@ -1,5 +1,6 @@
 import { use, useState } from "react";
 
+import { useAutoBeAgentSessionList } from "../context/AutoBeAgentSessionList";
 import {
   IAutoBeAgentSession,
   IAutoBeAgentSessionStorageStrategy,
@@ -20,15 +21,13 @@ export interface IAutoBeChatSidebarProps {
   onSessionSelect: (id: string) => void;
   /** Function to delete a session */
   onDeleteSession: (id: string) => void;
-  getSessionList: Promise<IAutoBeAgentSession[]>;
 }
 
 /** Beautiful and modern chat sidebar component as part of layout */
 export const AutoBeChatSidebar = (props: IAutoBeChatSidebarProps) => {
-  const sessionList = use(props.getSessionList);
+  const { sessionList } = useAutoBeAgentSessionList();
   const collapsedWidth = "60px";
   const expandedWidth = "320px";
-
   return (
     <div
       className={props.className}

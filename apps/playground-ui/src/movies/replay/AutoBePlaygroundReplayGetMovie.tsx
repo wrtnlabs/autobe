@@ -19,6 +19,7 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 
+import { AutoBeAgentSessionStorageMockStrategy } from "../../strategy/AutoBeAgentSessionStorageMockStrategy";
 import { AutoBePlaygroundChatMovie } from "../chat/AutoBePlaygroundChatMovie";
 
 export const AutoBePlaygroundReplayGetMovie = () => {
@@ -51,6 +52,8 @@ export const AutoBePlaygroundReplayGetMovie = () => {
 
       setNext({
         title: "AutoBE Playground (Replay)",
+        storageStrategyFactory: () =>
+          new AutoBeAgentSessionStorageMockStrategy(),
         serviceFactory: async () => {
           const listener: AutoBeListener = new AutoBeListener();
           const { driver } = await pApi.functional.autobe.playground.replay.get(
@@ -114,6 +117,7 @@ export const AutoBePlaygroundReplayGetMovie = () => {
         title={next.title}
         serviceFactory={next.serviceFactory}
         isUnusedConfig={true}
+        storageStrategyFactory={next.storageStrategyFactory}
       />
     );
   }
