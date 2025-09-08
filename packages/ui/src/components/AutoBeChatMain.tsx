@@ -2,7 +2,7 @@ import { AutoBeUserMessageContent } from "@autobe/interface";
 import { OverlayProvider, overlay } from "overlay-kit";
 import { RefObject, useEffect, useRef } from "react";
 
-import { AutoBeChatUploadBox } from "..";
+import { AutoBeChatUploadBox, useAutoBeAgentSessionList } from "..";
 import { useAutoBeAgent } from "../context/AutoBeAgentContext";
 import { useMediaQuery } from "../hooks";
 import {
@@ -32,7 +32,7 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
   const bodyContainerRef = useRef<HTMLDivElement>(null);
   const scrollAnchorRef = useRef<HTMLDivElement>(null);
   const { eventGroups, getAutoBeService, connectionStatus } = useAutoBeAgent();
-
+  const { refreshSessionList } = useAutoBeAgentSessionList();
   const listener: RefObject<AutoBeChatUploadBox.IListener> = useRef({
     handleDragEnter: () => {},
     handleDragLeave: () => {},
@@ -103,6 +103,9 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
       const serviceData = await getAutoBeService(config);
       if (messages.length !== 0) {
         await serviceData.service.conversate(messages);
+      }
+      if (eventGroups.length === 0) {
+        refreshSessionList();
       }
     } catch (error) {
       console.error("Failed to connect:", error);
