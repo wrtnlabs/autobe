@@ -1,7 +1,4 @@
-import {
-  IAutoBePlaygroundHeader,
-  IAutoBePlaygroundReplay,
-} from "@autobe/interface";
+import { IAutoBePlaygroundReplay } from "@autobe/interface";
 import pApi from "@autobe/playground-api";
 import { AutoBeListener } from "@autobe/ui";
 import { ErrorOutline, ReplayOutlined } from "@mui/icons-material";
@@ -27,7 +24,7 @@ import { AutoBePlaygroundChatMovie } from "../chat/AutoBePlaygroundChatMovie";
 export const AutoBePlaygroundReplayGetMovie = () => {
   const theme = useTheme();
   const [props] = useState<IAutoBePlaygroundReplay.IProps | null>(getProps());
-  const [next, setNext] = useState<AutoBePlaygroundChatMovie.IContext | null>(
+  const [next, setNext] = useState<AutoBePlaygroundChatMovie.IProps | null>(
     null,
   );
   const [error, setError] = useState<Error | null>(null);
@@ -48,31 +45,36 @@ export const AutoBePlaygroundReplayGetMovie = () => {
     }, 300);
 
     const connect = async () => {
-      const listener: AutoBeListener = new AutoBeListener();
-      const { driver } = await pApi.functional.autobe.playground.replay.get(
-        {
-          host: "http://localhost:5890",
-        },
-        props,
-        listener.getListener(),
-      );
-
       // Complete the progress
       setLoadingProgress(100);
       clearInterval(progressInterval);
 
       setNext({
-        header: {
-          model: "chatgpt",
-          vendor: {
-            model: props.vendor,
-            apiKey: "********",
-          },
-          locale: "en-US",
-          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        } satisfies IAutoBePlaygroundHeader<"chatgpt">,
-        listener,
-        service: driver,
+        title: "AutoBE Playground (Replay)",
+        serviceFactory: async () => {
+          const listener: AutoBeListener = new AutoBeListener();
+          const { driver } = await pApi.functional.autobe.playground.replay.get(
+            {
+              host: "http://127.0.0.1:5890",
+            },
+            props,
+            listener.getListener(),
+          );
+
+          return {
+            service: driver,
+            listener,
+            header: {
+              model: "chatgpt",
+              vendor: {
+                model: props.vendor,
+                apiKey: "********",
+              },
+              locale: "en-US",
+              timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            },
+          };
+        },
       });
     };
 
@@ -108,7 +110,11 @@ export const AutoBePlaygroundReplayGetMovie = () => {
   // Successfully loaded
   if (next !== null) {
     return (
-      <AutoBePlaygroundChatMovie title="AutoBE Playground (Replay)" {...next} />
+      <AutoBePlaygroundChatMovie
+        title={next.title}
+        serviceFactory={next.serviceFactory}
+        isUnusedConfig={true}
+      />
     );
   }
 

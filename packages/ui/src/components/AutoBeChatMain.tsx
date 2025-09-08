@@ -2,7 +2,7 @@ import { AutoBeUserMessageContent } from "@autobe/interface";
 import { OverlayProvider, overlay } from "overlay-kit";
 import { RefObject, useEffect, useRef } from "react";
 
-import { AutoBeChatUploadBox, IAutoBeUploadConfig } from "..";
+import { AutoBeChatUploadBox } from "..";
 import { useAutoBeAgent } from "../context/AutoBeAgentContext";
 import { useMediaQuery } from "../hooks";
 import {
@@ -17,14 +17,13 @@ import AutoBeStatusButton from "./AutoBeStatusButton";
 import AutoBeEventGroupMovie from "./events/AutoBeEventGroupMovie";
 
 export interface IAutoBeChatMainProps {
+  isUnusedConfig?: boolean;
   isMobile: boolean;
-  conversate: (messages: AutoBeUserMessageContent[]) => Promise<void>;
   setError: (error: Error) => void;
-  uploadConfig?: IAutoBeUploadConfig;
   className?: string;
   style?: React.CSSProperties;
   configFields?: IConfigField[];
-  onServiceReady?: (service: unknown) => void;
+
   /** Additional required config fields beyond openApiKey */
   requiredFields?: string[];
 }
@@ -80,13 +79,11 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
   };
 
   // Unified service connection handler
-  const connectToService = async (): Promise<boolean> => {
-    if (connectionStatus === "connecting" || connectionStatus === "connected") {
-      return connectionStatus === "connected";
-    }
-
+  const conversate = async (
+    messages: AutoBeUserMessageContent[],
+  ): Promise<void> => {
     // Check if we have required config
-    if (!hasRequiredConfig()) {
+    if (props.isUnusedConfig === false && !hasRequiredConfig()) {
       overlay.open(({ isOpen, close }) => (
         <AutoBeConfigModal
           isOpen={isOpen}
@@ -94,31 +91,22 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
           title="Server Connection Required"
           fields={props.configFields || []}
           onSave={() => {
-            connectToService();
+            conversate(messages);
           }}
         />
       ));
-      return false;
     }
 
     // Connect to service
     try {
       const config = getCurrentConfig();
       const serviceData = await getAutoBeService(config);
-      props.onServiceReady?.(serviceData);
-      return true;
+      if (messages.length !== 0) {
+        await serviceData.service.conversate(messages);
+      }
     } catch (error) {
       console.error("Failed to connect:", error);
       props.setError(error as Error);
-      return false;
-    }
-  };
-
-  // Handle user messages
-  const handleConversate = async (messages: AutoBeUserMessageContent[]) => {
-    const connected = await connectToService();
-    if (connected) {
-      await props.conversate(messages);
     }
   };
 
@@ -136,7 +124,7 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
       hasRequiredConfig() &&
       connectionStatus === "disconnected"
     ) {
-      connectToService();
+      conversate([]);
     }
   }, [eventGroups.length, connectionStatus]);
 
@@ -270,10 +258,9 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
             `}
           </style>
 
-          <AutoBeConfigButton
-            fields={props.configFields || []}
-            onSave={connectToService}
-          />
+          {props.isUnusedConfig === false && (
+            <AutoBeConfigButton fields={props.configFields || []} />
+          )}
           <AutoBeStatusButton />
         </div>
         <div
@@ -350,8 +337,14 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
         >
           <AutoBeChatUploadBox
             listener={listener}
-            uploadConfig={props.uploadConfig}
-            conversate={handleConversate}
+            uploadConfig={
+              getCurrentConfig().supportAudioEnabled
+                ? {
+                    supportAudio: true,
+                  }
+                : undefined
+            }
+            conversate={conversate}
             setError={props.setError}
           />
         </div>

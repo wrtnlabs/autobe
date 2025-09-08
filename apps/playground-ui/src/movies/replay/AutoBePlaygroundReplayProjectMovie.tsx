@@ -93,7 +93,7 @@ export const AutoBePlaygroundReplayProjectMovie = ({
     >
       <CardActionArea
         component="a"
-        href={`./get.html?vendor=${replay.vendor}&project=${replay.project}&step=${replay.step}`}
+        href={`/replay/get?vendor=${replay.vendor}&project=${replay.project}&step=${replay.step}`}
         target="_blank"
         sx={{ height: "100%" }}
       >

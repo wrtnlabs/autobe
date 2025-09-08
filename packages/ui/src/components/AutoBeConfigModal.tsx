@@ -12,6 +12,7 @@ export interface IConfigField {
   label: string;
   type: "text" | "number" | "checkbox";
   placeholder?: string;
+  default?: string | number | boolean;
   suggestions?: string[];
   required?: boolean;
   min?: number;
@@ -228,7 +229,7 @@ export const AutoBeConfigModal = (props: IAutoBeConfigModalProps) => {
                 <AutoBeConfigInput
                   label={field.label}
                   type={field.type}
-                  value={String(config[field.key] || "")}
+                  value={String(config[field.key] || field.default || "")}
                   onChange={(value) => {
                     const finalValue =
                       field.type === "number" ? parseInt(value) || 0 : value;

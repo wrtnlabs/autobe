@@ -1,20 +1,11 @@
 import {
-  IAutoBePlaygroundHeader,
-  IAutoBePlaygroundVendor,
-  IAutoBeRpcService,
-} from "@autobe/interface";
-import pApi from "@autobe/playground-api";
-import {
   AutoBeAgentProvider,
   AutoBeChatMain,
-  AutoBeListener,
-  IAutoBeUploadConfig,
+  AutoBeServiceFactory,
   createAutoBeConfigFields,
 } from "@autobe/ui";
-import { IAutoBeConfig } from "@autobe/ui";
 import { useMediaQuery } from "@autobe/ui/hooks";
 import { AppBar, Toolbar, Typography } from "@mui/material";
-import { ILlmSchema } from "@samchon/openapi";
 import { useState } from "react";
 
 export function AutoBePlaygroundChatMovie(
@@ -25,10 +16,6 @@ export function AutoBePlaygroundChatMovie(
   //----
   // STATES
   const [, setError] = useState<Error | null>(null);
-  const [service, setService] = useState<IAutoBeRpcService | null>(null);
-  const [uploadConfig, setUploadConfig] = useState<IAutoBeUploadConfig | null>(
-    null,
-  );
 
   // Configuration fields for AutoBE Playground (adds serverUrl to defaults)
   const configFields = createAutoBeConfigFields({
@@ -36,70 +23,10 @@ export function AutoBePlaygroundChatMovie(
     label: "Server URL",
     type: "text",
     storageKey: "autobe_server_url",
-    placeholder: "http://localhost:5890",
+    placeholder: "http://127.0.0.1:5890",
+    default: "http://127.0.0.1:5890",
     required: true,
   });
-
-  // Service factory function
-  const serviceFactory = async (config: IAutoBeConfig) => {
-    // Set playground defaults
-    const playgroundConfig = {
-      ...config,
-      serverUrl: String(config["serverUrl"] ?? "http://localhost:5890"), // Default for playground
-    };
-
-    const vendorConfig: IAutoBePlaygroundVendor = {
-      model: playgroundConfig.aiModel ?? "gpt-4.1",
-      apiKey: playgroundConfig.openApiKey ?? "",
-      baseURL: playgroundConfig.baseUrl ?? undefined,
-      semaphore: playgroundConfig.semaphore ?? 16,
-    };
-
-    const headers: IAutoBePlaygroundHeader<ILlmSchema.Model> = {
-      model: (playgroundConfig.schemaModel ?? "chatgpt") as Exclude<
-        ILlmSchema.Model,
-        "gemini" | "3.0"
-      >,
-      vendor: vendorConfig,
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      locale: playgroundConfig.locale ?? window.navigator.language,
-    };
-
-    const autoBeListener: AutoBeListener = new AutoBeListener();
-    const { driver: rpcService } =
-      await pApi.functional.autobe.playground.start(
-        {
-          host: playgroundConfig.serverUrl,
-          headers: headers as unknown as Record<string, string>,
-        },
-        autoBeListener.getListener(),
-      );
-
-    return {
-      service: rpcService,
-      listener: autoBeListener,
-      header: headers,
-      uploadConfig: {
-        supportAudio: playgroundConfig.supportAudioEnable ?? false,
-      },
-    };
-  };
-
-  // Handle service creation
-  const handleServiceReady = (serviceData: unknown) => {
-    // Type guard to ensure serviceData has expected properties
-    if (
-      serviceData &&
-      typeof serviceData === "object" &&
-      "service" in serviceData &&
-      "uploadConfig" in serviceData
-    ) {
-      setService((serviceData as { service: IAutoBeRpcService }).service);
-      setUploadConfig(
-        (serviceData as { uploadConfig: IAutoBeUploadConfig }).uploadConfig,
-      );
-    }
-  };
 
   //----
   // RENDERERS
@@ -133,19 +60,12 @@ export function AutoBePlaygroundChatMovie(
           overflow: "hidden",
         }}
       >
-        <AutoBeAgentProvider serviceFactory={serviceFactory}>
+        <AutoBeAgentProvider serviceFactory={props.serviceFactory}>
           <AutoBeChatMain
+            isUnusedConfig={props.isUnusedConfig ?? false}
             isMobile={isMobile}
-            conversate={async (contents) => {
-              // Service will be available through context
-              if (service) {
-                await service.conversate(contents);
-              }
-            }}
             setError={setError}
-            uploadConfig={uploadConfig ?? undefined}
             configFields={configFields}
-            onServiceReady={handleServiceReady}
             requiredFields={["serverUrl"]} // Playground requires serverUrl
             style={{
               backgroundColor: "lightblue",
@@ -159,5 +79,7 @@ export function AutoBePlaygroundChatMovie(
 export namespace AutoBePlaygroundChatMovie {
   export interface IProps {
     title?: string;
+    serviceFactory: AutoBeServiceFactory;
+    isUnusedConfig?: boolean;
   }
 }

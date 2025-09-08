@@ -203,5 +203,6 @@ export function AutoBePlaygroundReplayIndexApplication() {
 }
 
 const CONNECTION: pApi.IConnection = {
-  host: "http://localhost:5890",
+  /** Loopback address */
+  host: "http://127.0.0.1:5890",
 };

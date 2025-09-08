@@ -312,27 +312,28 @@ const ProgressCard = ({
   </div>
 );
 
-const ProgressStatus = ({ state }: { state: AutoBeListenerState }) => (
-  <div>
-    <SectionTitle>Progress Status</SectionTitle>
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: "0.5rem",
-      }}
-    >
-      {PROGRESS_STEPS.map((step) => (
-        <ProgressCard
-          key={step.name}
-          step={step}
-          isCompleted={state[step.name as keyof AutoBeListenerState] !== null}
-          results={step.getResults(state)}
-        />
-      ))}
+const ProgressStatus = ({ state }: { state: AutoBeListenerState | null }) =>
+  state && (
+    <div>
+      <SectionTitle>Progress Status</SectionTitle>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "0.5rem",
+        }}
+      >
+        {PROGRESS_STEPS.map((step) => (
+          <ProgressCard
+            key={step.name}
+            step={step}
+            isCompleted={state[step.name as keyof AutoBeListenerState] !== null}
+            results={step.getResults(state)}
+          />
+        ))}
+      </div>
     </div>
-  </div>
-);
+  );
 
 const TokenRow = ({
   label,
