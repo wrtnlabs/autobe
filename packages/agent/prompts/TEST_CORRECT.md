@@ -665,6 +665,44 @@ const result = {
 
 **SOLUTION: Use `typia.assert(value!)` - it's simpler than restructuring code**
 
+#### When Multiple Compilation Errors Persist with Nullable/Undefined Types
+
+If you encounter persistent compilation errors related to nullable or undefined types that cannot be resolved through conventional methods, use this last resort approach:
+
+**CRITERIA FOR USING THIS APPROACH:**
+- The same nullable/undefined type error occurs repeatedly after attempting fixes
+- Complex type narrowing or conditional logic makes the code difficult to maintain
+- The error involves deeply nested object properties with optional chaining
+
+**LAST RESORT SOLUTION:**
+```typescript
+// When TypeScript keeps complaining about nullable/undefined despite your checks
+// AND you've tried conventional solutions without success
+// THEN use typia.assert with non-null assertion:
+
+// Example 1: Persistent nullable error
+const value: string | null = getData();
+// After multiple failed attempts to satisfy TypeScript...
+const safeValue = typia.assert(value!); // Force non-null and validate
+
+// Example 2: Complex optional chaining scenario
+const deepValue = obj?.nested?.property?.value;
+// If TypeScript won't accept your null checks...
+const safeDeepValue = typia.assert(deepValue!); // Assert and validate
+
+// Example 3: Function parameters with nullable types
+function processData(input: DataType | undefined) {
+  // After failed attempts with guard clauses...
+  const validInput = typia.assert(input!); // Skip the complexity
+  // Continue with validInput knowing it's validated
+}
+```
+
+**IMPORTANT**: This approach should only be used when:
+1. You've attempted the same fix twice and the error persists
+2. The conventional nullable handling patterns are making the code unnecessarily complex
+3. You're confident the value will exist at runtime (based on the test scenario logic)
+
 ### 4.7. Property Access Errors - Non-existent Properties
 
 When TypeScript reports that a property does not exist on a type, it means you're trying to access a property that isn't defined in the type definition.
@@ -711,14 +749,31 @@ When you encounter ANY typia type tag mismatch error, apply this fix pattern. Th
 // Problem 1: Basic type mismatch
 const pageNumber: number & tags.Type<"int32"> = getPageNumber();
 const response = await api.functional.items.list(connection, {
-  page: pageNumber  // ERROR: Type 'number & Type<"int32">' is not assignable to 'number & Type<"int32"> & Minimum<1>'
+  page: pageNumber,
+    // <ERROR>
+    //   Type 'number & Type<"int32">' is not assignable to 'number & Type<"int32"> & Minimum<1>'
+    //     Types of property '"typia.tag"' are incompatible.
+    // </ERROR>
 });
 
 // Problem 2: Nullable type mismatch
 const userId: (string & tags.Format<"uuid">) | null = getNullableUserId();
 const profile = await api.functional.profiles.get(connection, {
-  userId: userId  // ERROR: Type '(string & Format<"uuid">) | null' is not assignable to parameter
+  userId: userId,
+    // <ERROR>
+    //   Type '(string & Format<"uuid">) | null' is not assignable to type 'string'.
+    //     Type 'null' is not assignable to type 'string'
+    // </ERROR>
 });
+
+// Nullable mistach between intersection types
+const x: (number & tags.Type<"int32">) | null | undefined = getValue();
+const y: number & tags.Type<"int32"> = x;
+  // <ERROR>
+  //   Type '(number & Type<"int32">) | null' is not assignable to type 'number & Type<"int32"> & Minimum<0>'.
+  //     Type 'null' is not assignable to type 'number & Type<"int32"> & Minimum<0>'.
+  //       Type 'null' is not assignable to type 'number'.
+  // </ERROR>
 ```
 
 **Solutions:**
@@ -732,6 +787,17 @@ const response = await api.functional.items.list(connection, {
 const profile = await api.functional.profiles.get(connection, {
   userId: userId satisfies string | null as string | null  // Fixed!
 });
+
+// Solution3: Nullable intersection type
+const y: number & tags.Type<"int32"> = typia.assert(
+  (x satisfies number | null | undefined as number | null | undefined)!
+);
+
+// Don't know how to or previous trial failed?
+// Just use typia.assert<T>(value) for simplicity
+const y: number & tags.Type<"int32"> = typia.assert<
+  number & tags.Type<"int32">
+>(x);
 ```
 
 **⚠️ THE THREE-STEP FIX**
@@ -742,6 +808,7 @@ const profile = await api.functional.profiles.get(connection, {
    - **Non-nullable:** `value satisfies BaseType as BaseType`
    - **Nullable:** `value satisfies BaseType | null | undefined as BaseType | null | undefined`
    - **Nullable → Non-nullable:** `typia.assert((value satisfies BaseType | null | undefined as BaseType | null | undefined)!)`
+4. **Don't know how to?** → Use `typia.assert<T>(value)` for simplicity
 
 **Common Error Patterns and Solutions:**
 
@@ -754,7 +821,7 @@ const currentPage: number & tags.Type<"int32"> = searchResult.pagination.page;
 // Another API requires page >= 1 validation
 const reviews = await api.functional.reviews.getList(connection, {
   productId: productId,
-  page: currentPage  // ERROR: Type 'number & Type<"int32">' is not assignable to 'number & Type<"int32"> & Minimum<1>'
+  page: currentPage  // ERROR: Type 'number & Type<"int32">' is not assignable to type 'number & Type<"int32"> & Minimum<1>'
 });
 
 // SOLUTION: When API response doesn't match another API's stricter requirements
@@ -902,6 +969,54 @@ await api.functional.employees.create(connection, {
      - `satisfies BaseType | null as BaseType | null`
      - `satisfies BaseType | undefined as BaseType | undefined`
      - `satisfies BaseType | null | undefined as BaseType | null | undefined`
+
+#### When Typia Tag Type Errors Cannot Be Resolved
+
+If you encounter persistent compilation errors related to typia tags that cannot be resolved through the conventional `satisfies ... as ...` pattern, use this last resort approach:
+
+**CRITERIA FOR USING THIS APPROACH:**
+- The same typia tag-related type error occurs repeatedly after attempting fixes
+- Complex generic constraints or conditional types make the satisfies pattern fail
+- The error involves typia validation decorators like @Format, @Pattern, @Type tags
+
+**LAST RESORT SOLUTION:**
+```typescript
+// When TypeScript keeps rejecting your typia tag types
+// AND you've tried the satisfies pattern without success
+// THEN use typia.assert with explicit generic type:
+
+// Example 1: Complex tagged type with validation
+type EmailString = string & tags.Format<"email">;
+const email = generateEmail();
+// After multiple failed attempts with satisfies pattern...
+const validEmail = typia.assert<EmailString>(email); // Explicit generic type
+
+// Example 2: Nested object with multiple tagged properties
+interface UserProfile {
+  email: string & tags.Format<"email">;
+  phone: string & tags.Pattern<"[0-9]{3}-[0-9]{4}">;
+  age: number & tags.Minimum<18> & tags.Maximum<100>;
+}
+const profile = buildProfile();
+// If satisfies pattern keeps failing...
+const validProfile = typia.assert<UserProfile>(profile); // Direct type assertion
+
+// Example 3: Array of tagged types
+type ValidatedItems = Array<{
+  id: string & tags.Format<"uuid">;
+  timestamp: string & tags.Format<"date-time">;
+}>;
+const items = generateItems();
+// When conventional patterns fail...
+const validItems = typia.assert<ValidatedItems>(items); // Skip the complexity
+```
+
+**IMPORTANT**: This approach should only be used when:
+1. You've attempted the satisfies pattern at least twice and the error persists
+2. The typia tag type constraints are making TypeScript inference fail
+3. The runtime validation through typia.assert ensures type safety
+
+**NOTE**: Unlike the nullable case, here we use explicit generic types `typia.assert<T>(value)` instead of non-null assertion, because we need to tell typia exactly what type schema to validate against.
 
 ### 4.10. Literal Type Arrays with RandomGenerator.pick
 
@@ -1497,6 +1612,25 @@ Your corrected code must:
 - [ ] **Async callback (`async () => {}`)** → `await TestValidator.error()` REQUIRED
 - [ ] **Sync callback (`() => {}`)** → NO `await` on TestValidator.error
 - [ ] **Inside async callbacks** → ALL API calls MUST have `await`
+
+### Last Resort Solutions
+
+When encountering persistent compilation errors that cannot be resolved through conventional methods, use these last resort approaches:
+
+**1. NULLABLE/UNDEFINED TYPE ERRORS:**
+- **When to use**: Same nullable/undefined error occurs after 2+ fix attempts
+- **Solution**: `typia.assert(value!)` - forces non-null and validates
+- **Example**: `const safe = typia.assert(possiblyNull!);`
+
+**2. TYPIA TAG TYPE ERRORS:**
+- **When to use**: Same typia tag error occurs after 2+ attempts with satisfies pattern
+- **Solution**: `typia.assert<TargetType>(value)` - explicit generic type assertion
+- **Example**: `const valid = typia.assert<string & tags.Format<"email">>(email);`
+
+**CRITERIA FOR USING LAST RESORT SOLUTIONS:**
+1. You've attempted the same fix at least twice
+2. The conventional pattern is making code unnecessarily complex
+3. You're confident about runtime behavior based on test scenario
 
 **MORE CRITICAL ERRORS TO AVOID:**
 ```typescript
