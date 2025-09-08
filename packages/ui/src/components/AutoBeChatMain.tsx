@@ -2,7 +2,7 @@ import { AutoBeUserMessageContent } from "@autobe/interface";
 import { OverlayProvider, overlay } from "overlay-kit";
 import { RefObject, useEffect, useRef, useState } from "react";
 
-import { AutoBeChatUploadBox, AutoBeEventMovie, IAutoBeUploadConfig } from "..";
+import { AutoBeChatUploadBox, IAutoBeUploadConfig } from "..";
 import { useAutoBeAgent } from "../context/AutoBeAgentContext";
 import { useMediaQuery } from "../hooks";
 import {
@@ -14,6 +14,7 @@ import { getEncryptedSessionStorage } from "../utils/storage";
 import AutoBeConfigButton from "./AutoBeConfigButton";
 import AutoBeConfigModal, { IConfigField } from "./AutoBeConfigModal";
 import AutoBeStatusButton from "./AutoBeStatusButton";
+import AutoBeEventGroupMovie from "./events/AutoBeEventGroupMovie";
 
 export interface IAutoBeChatMainProps {
   isMobile: boolean;
@@ -93,7 +94,7 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
           title="Server Connection Required"
           fields={props.configFields || []}
           onSave={() => {
-            setTimeout(() => connectToService(), 100);
+            connectToService();
           }}
         />
       ));
@@ -158,7 +159,7 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
         className={props.className}
         ref={bodyContainerRef}
       >
-        {/* Control Buttons - Sticky position in top right */}
+        {/* Control Buttons & Status - Sticky position in top right */}
         <div
           style={{
             position: "sticky",
@@ -172,11 +173,106 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
             paddingRight: "1.5rem",
           }}
         >
+          {/* Connection Status Indicator */}
+          {isConnecting && (
+            <div
+              style={{
+                background: "#fff3cd",
+                color: "#856404",
+                border: "1px solid #ffeaa7",
+                borderRadius: "50px",
+                padding: "0.4rem 0.8rem",
+                fontSize: "0.8rem",
+                fontWeight: "500",
+                display: "flex",
+                alignItems: "center",
+                gap: "0.4rem",
+                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+              }}
+            >
+              <div
+                style={{
+                  width: "6px",
+                  height: "6px",
+                  backgroundColor: "#f39c12",
+                  borderRadius: "50%",
+                  animation: "pulse 1.5s infinite",
+                }}
+              ></div>
+              Connecting...
+            </div>
+          )}
+
+          {isServiceReady && (
+            <div
+              style={{
+                background: "#d1ecf1",
+                color: "#0c5460",
+                border: "1px solid #bee5eb",
+                borderRadius: "50px",
+                padding: "0.4rem 0.8rem",
+                fontSize: "0.8rem",
+                fontWeight: "500",
+                display: "flex",
+                alignItems: "center",
+                gap: "0.4rem",
+                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+              }}
+            >
+              <div
+                style={{
+                  width: "6px",
+                  height: "6px",
+                  backgroundColor: "#28a745",
+                  borderRadius: "50%",
+                  animation: "pulse 2s infinite",
+                }}
+              ></div>
+              Connected
+            </div>
+          )}
+
+          {!isServiceReady && !isConnecting && (
+            <div
+              style={{
+                background: "#f8d7da",
+                color: "#721c24",
+                border: "1px solid #f5c6cb",
+                borderRadius: "50px",
+                padding: "0.4rem 0.8rem",
+                fontSize: "0.8rem",
+                fontWeight: "500",
+                display: "flex",
+                alignItems: "center",
+                gap: "0.4rem",
+                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+              }}
+            >
+              <div
+                style={{
+                  width: "6px",
+                  height: "6px",
+                  backgroundColor: "#dc3545",
+                  borderRadius: "50%",
+                  animation: "pulse 2s infinite",
+                }}
+              ></div>
+              Disconnected
+            </div>
+          )}
+
+          <style>
+            {`
+              @keyframes pulse {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0.5; }
+              }
+            `}
+          </style>
+
           <AutoBeConfigButton
             fields={props.configFields || []}
-            onSave={() => {
-              setTimeout(() => connectToService(), 100);
-            }}
+            onSave={connectToService}
           />
           <AutoBeStatusButton />
         </div>
@@ -197,21 +293,6 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
               flexDirection: "column",
             }}
           >
-            {isConnecting && (
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  padding: "2rem",
-                  color: "#666",
-                  fontSize: "1rem",
-                }}
-              >
-                🔄 Connecting to AutoBE Server...
-              </div>
-            )}
-
             {!isServiceReady && !isConnecting && (
               <div
                 style={{
@@ -243,14 +324,9 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
               </div>
             )}
 
-            {isServiceReady &&
-              eventGroups.map((e, index) => (
-                <AutoBeEventMovie
-                  key={index}
-                  events={e.events}
-                  last={index === eventGroups.length - 1}
-                />
-              ))}
+            {isServiceReady && (
+              <AutoBeEventGroupMovie eventGroups={eventGroups} />
+            )}
           </div>
         </div>
 
