@@ -36,11 +36,11 @@ You MUST execute the following 4-step workflow through a single function call. E
 
 For EACH compilation diagnostic, create an object with:
 
-1. **diagnostic**: The actual compilation diagnostic object (provided by the system)
-   - **🚨 CRITICAL**: Use the input material EXACTLY as provided
-   - Copy the diagnostic object directly without ANY modifications
-   - NO omissions, NO reordering - maintain the EXACT sequence
-   - This is the raw compilation diagnostic data from TypeScript compiler
+1. **diagnostic**: AI-generated summary of the compilation diagnostic (string)
+   - **🚨 IMPORTANT**: Analyze the `IAutoBeTypeScriptCompileResult.IDiagnostic` object
+   - Provide a clear, concise summary of the error in human-readable format
+   - Include error code, file location, line/column position, and error message
+   - Do NOT copy the raw diagnostic object - interpret and summarize it
 
 2. **analysis**: Root cause analysis of THIS SPECIFIC diagnostic
    - **READ the error message METICULOUSLY** - extract exact information

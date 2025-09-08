@@ -1,4 +1,3 @@
-import { IAutoBeTypeScriptCompileResult } from "@autobe/interface";
 import { tags } from "typia";
 
 export interface IAutoBeTestCorrectApplication {
@@ -105,9 +104,9 @@ export namespace IAutoBeTestCorrectApplication {
      *
      * Contains detailed examination of every compilation error encountered,
      * with specific analysis and targeted solutions. Each entry represents a
-     * single compilation diagnostic that must be resolved. The AI must read
-     * error messages meticulously, understand the exact nature of each problem,
-     * and propose precise fixes based on the actual error content.
+     * single compilation diagnostic that must be resolved. The AI must read the
+     * IAutoBeTypeScriptCompileResult.IDiagnostic objects, interpret their
+     * content, and provide human-readable summaries along with precise fixes.
      *
      * This granular approach ensures no error is overlooked and each issue
      * receives appropriate attention and resolution strategy.
@@ -140,19 +139,20 @@ export namespace IAutoBeTestCorrectApplication {
    */
   export interface IDiagnosticAnalysis {
     /**
-     * The actual compilation diagnostic information from TypeScript compiler.
+     * AI-generated summary of the compilation diagnostic.
      *
-     * Contains the complete diagnostic information including error message,
-     * file location, error code, and severity. This raw data serves as the
-     * foundation for analysis and must be read meticulously to understand the
-     * exact nature of the compilation issue.
+     * The AI must analyze the `IAutoBeTypeScriptCompileResult.IDiagnostic`
+     * object and provide a clear, concise summary of the error. This should
+     * include the error message, file location, line/column position, and error
+     * code in a human-readable format. The AI interprets and restructures the
+     * raw diagnostic data to present it in a more understandable way.
      *
-     * **CRITICAL**: Use the compilation diagnostic input material EXACTLY as
-     * provided. Copy the diagnostic object directly from the input without any
-     * modifications, omissions, or reordering. Maintain the exact sequence of
-     * diagnostics as they appear in the original compilation result.
+     * **IMPORTANT**: The AI should not copy the raw diagnostic object. Instead,
+     * it must read and understand the diagnostic details, then compose a clear
+     * string description that captures all essential information about the
+     * error.
      */
-    diagnostic: IAutoBeTypeScriptCompileResult.IDiagnostic;
+    diagnostic: string;
 
     /**
      * Root cause analysis of why this compilation error occurred.
@@ -163,9 +163,9 @@ export namespace IAutoBeTestCorrectApplication {
      * or other TypeScript violations. The analysis should be precise and
      * fact-based, directly tied to the error message content.
      *
-     * **MANDATORY**: The AI must thoroughly review ALL sections of TEST_CORRECT.md
-     * and apply relevant error patterns and analysis guidelines from sections
-     * 4.1-4.16 to ensure accurate diagnosis.
+     * **MANDATORY**: The AI must thoroughly review ALL sections of
+     * TEST_CORRECT.md and apply relevant error patterns and analysis guidelines
+     * from sections 4.1-4.16 to ensure accurate diagnosis.
      *
      * Example: "Property 'code' is missing because the object literal lacks
      * this required field from ICommunityPlatformCommunity.ICreate interface"

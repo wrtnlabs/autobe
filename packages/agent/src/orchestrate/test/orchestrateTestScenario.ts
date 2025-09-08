@@ -23,9 +23,9 @@ import { IAutoBeTestScenarioAuthorizationRole } from "./structures/IAutoBeTestSc
 export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
 ): Promise<AutoBeTestScenario[]> {
-  const operations: AutoBeOpenApi.IOperation[] =
-    ctx.state().interface?.document.operations ?? [];
-  if (operations.length === 0) {
+  const document: AutoBeOpenApi.IDocument | undefined =
+    ctx.state().interface?.document;
+  if (document === undefined) {
     throw new Error(
       "Cannot write test scenarios because these are no operations.",
     );
@@ -33,7 +33,7 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
 
   const dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation> =
     new HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>(
-      operations.map(
+      document.operations.map(
         (op) =>
           new Pair(
             {
@@ -52,15 +52,17 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
     "",
     " method | path ",
     "--------|------",
-    ...operations.map((op) => `\`${op.method}\` | \`${op.path}\``).join("\n"),
+    ...document.operations
+      .map((op) => `\`${op.method}\` | \`${op.path}\``)
+      .join("\n"),
   ].join("\n");
 
   const progress: AutoBeProgressEventBase = {
-    total: operations.length,
+    total: document.operations.length,
     completed: 0,
   };
   const exclude: IAutoBeTestScenarioApplication.IScenarioGroup[] = [];
-  let include: AutoBeOpenApi.IOperation[] = Array.from(operations);
+  let include: AutoBeOpenApi.IOperation[] = [...document.operations];
 
   do {
     const matrix: AutoBeOpenApi.IOperation[][] = divideArray({
@@ -73,7 +75,7 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
           ...(await divideAndConquer(ctx, {
             dict,
             endpointNotFound,
-            entire: operations,
+            document,
             include,
             exclude: exclude.map((x) => x.endpoint),
             progress,
@@ -112,7 +114,7 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
   props: {
     dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>;
     endpointNotFound: string;
-    entire: AutoBeOpenApi.IOperation[];
+    document: AutoBeOpenApi.IDocument;
     include: AutoBeOpenApi.IOperation[];
     exclude: AutoBeOpenApi.IEndpoint[];
     progress: AutoBeProgressEventBase;
@@ -130,7 +132,7 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
       source: "testScenarios",
       histories: transformTestScenarioHistories(
         ctx.state(),
-        props.entire,
+        props.document,
         props.include,
         props.exclude,
       ),
