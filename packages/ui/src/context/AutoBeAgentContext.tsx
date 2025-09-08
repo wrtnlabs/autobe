@@ -29,10 +29,14 @@ export type AutoBeServiceFactory = (
   config: IAutoBeConfig,
 ) => Promise<IAutoBeServiceData>;
 
+export type AutoBeConnectionStatus =
+  | "disconnected" // 연결되지 않음
+  | "connecting" // 연결 중
+  | "connected"; // 연결 완료 및 활성 상태
+
 interface AutoBeAgentContextType {
   // Service state
-  isServiceReady: boolean;
-  isConnecting: boolean;
+  connectionStatus: AutoBeConnectionStatus;
 
   // Service data (available when ready)
   eventGroups: IAutoBeEventGroup[];
@@ -57,20 +61,16 @@ export function AutoBeAgentProvider({
   children: ReactNode;
 }) {
   // Service state
-  const [isServiceReady, setIsServiceReady] = useState(false);
-  const [isConnecting, setIsConnecting] = useState(false);
+  const [connectionStatus, setConnectionStatus] =
+    useState<AutoBeConnectionStatus>("disconnected");
 
   // Service data
   const [tokenUsage, setTokenUsage] = useState<IAutoBeTokenUsageJson | null>(
     null,
   );
   const [eventGroups, setEventGroups] = useState<IAutoBeEventGroup[]>([]);
-  const [service, setService] = useState<IAutoBeRpcService | null>(null);
-  const [listener, setListener] = useState<AutoBeListener | null>(null);
-  const [header, setHeader] =
-    useState<IAutoBePlaygroundHeader<ILlmSchema.Model> | null>(null);
 
-  // Context-scoped service instance (not global)
+  // Context-scoped service instance (contains service, listener, header)
   const [serviceInstance, setServiceInstance] =
     useState<IAutoBeServiceData | null>(null);
 
@@ -80,12 +80,12 @@ export function AutoBeAgentProvider({
       config: IAutoBeConfig = {} as IAutoBeConfig,
     ): Promise<IAutoBeServiceData> => {
       // Return existing instance if available
-      if (serviceInstance && isServiceReady) {
+      if (serviceInstance && connectionStatus === "connected") {
         return serviceInstance;
       }
 
       // Prevent multiple concurrent creations
-      if (isConnecting) {
+      if (connectionStatus === "connecting") {
         throw new Error("Service is already connecting. Please wait.");
       }
 
@@ -94,17 +94,12 @@ export function AutoBeAgentProvider({
       }
 
       try {
-        setIsConnecting(true);
+        setConnectionStatus("connecting");
 
         // Create new service instance
         const newServiceData = await serviceFactory(config);
         setServiceInstance(newServiceData);
-
-        // Update context state
-        setService(newServiceData.service);
-        setListener(newServiceData.listener);
-        setHeader(newServiceData.header);
-        setIsServiceReady(true);
+        setConnectionStatus("connected");
 
         // Set up event listeners
         newServiceData.listener.on(async (e) => {
@@ -121,24 +116,19 @@ export function AutoBeAgentProvider({
           .then(setTokenUsage)
           .catch(() => {});
 
-        setIsConnecting(false);
         return newServiceData;
       } catch (error) {
-        setIsConnecting(false);
+        setConnectionStatus("disconnected");
         throw error;
       }
     },
-    [serviceFactory, serviceInstance, isServiceReady, isConnecting],
+    [serviceFactory, serviceInstance, connectionStatus],
   );
 
   // Reset service (for reconnection, etc.)
   const resetService = useCallback(() => {
     setServiceInstance(null);
-    setIsServiceReady(false);
-    setIsConnecting(false);
-    setService(null);
-    setListener(null);
-    setHeader(null);
+    setConnectionStatus("disconnected");
     setEventGroups([]);
     setTokenUsage(null);
   }, []);
@@ -147,16 +137,15 @@ export function AutoBeAgentProvider({
     <AutoBeAgentContext.Provider
       value={{
         // Service state
-        isServiceReady,
-        isConnecting,
+        connectionStatus,
 
         // Service data
         eventGroups,
         tokenUsage,
-        state: listener?.getState() || null,
-        header,
-        service,
-        listener,
+        state: serviceInstance?.listener?.getState() ?? null,
+        header: serviceInstance?.header ?? null,
+        service: serviceInstance?.service ?? null,
+        listener: serviceInstance?.listener ?? null,
 
         // Service management
         getAutoBeService,

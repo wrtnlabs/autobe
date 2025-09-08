@@ -1,6 +1,6 @@
 import { AutoBeUserMessageContent } from "@autobe/interface";
 import { OverlayProvider, overlay } from "overlay-kit";
-import { RefObject, useEffect, useRef, useState } from "react";
+import { RefObject, useEffect, useRef } from "react";
 
 import { AutoBeChatUploadBox, IAutoBeUploadConfig } from "..";
 import { useAutoBeAgent } from "../context/AutoBeAgentContext";
@@ -32,9 +32,7 @@ export interface IAutoBeChatMainProps {
 export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
   const bodyContainerRef = useRef<HTMLDivElement>(null);
   const scrollAnchorRef = useRef<HTMLDivElement>(null);
-  const { eventGroups, getAutoBeService } = useAutoBeAgent();
-  const [isServiceReady, setIsServiceReady] = useState(false);
-  const [isConnecting, setIsConnecting] = useState(false);
+  const { eventGroups, getAutoBeService, connectionStatus } = useAutoBeAgent();
 
   const listener: RefObject<AutoBeChatUploadBox.IListener> = useRef({
     handleDragEnter: () => {},
@@ -83,7 +81,9 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
 
   // Unified service connection handler
   const connectToService = async (): Promise<boolean> => {
-    if (isConnecting || isServiceReady) return isServiceReady;
+    if (connectionStatus === "connecting" || connectionStatus === "connected") {
+      return connectionStatus === "connected";
+    }
 
     // Check if we have required config
     if (!hasRequiredConfig()) {
@@ -103,18 +103,14 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
 
     // Connect to service
     try {
-      setIsConnecting(true);
       const config = getCurrentConfig();
       const serviceData = await getAutoBeService(config);
       props.onServiceReady?.(serviceData);
-      setIsServiceReady(true);
       return true;
     } catch (error) {
       console.error("Failed to connect:", error);
       props.setError(error as Error);
       return false;
-    } finally {
-      setIsConnecting(false);
     }
   };
 
@@ -135,10 +131,14 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
 
   // Auto-connect if there are existing conversations and config is ready
   useEffect(() => {
-    if (eventGroups.length > 0 && hasRequiredConfig() && !isServiceReady) {
+    if (
+      eventGroups.length > 0 &&
+      hasRequiredConfig() &&
+      connectionStatus === "disconnected"
+    ) {
       connectToService();
     }
-  }, [eventGroups.length]);
+  }, [eventGroups.length, connectionStatus]);
 
   return (
     <OverlayProvider>
@@ -174,7 +174,36 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
           }}
         >
           {/* Connection Status Indicator */}
-          {isConnecting && (
+          {connectionStatus === "disconnected" && (
+            <div
+              style={{
+                background: "#f8d7da",
+                color: "#721c24",
+                border: "1px solid #f5c6cb",
+                borderRadius: "50px",
+                padding: "0.4rem 0.8rem",
+                fontSize: "0.8rem",
+                fontWeight: "500",
+                display: "flex",
+                alignItems: "center",
+                gap: "0.4rem",
+                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+              }}
+            >
+              <div
+                style={{
+                  width: "6px",
+                  height: "6px",
+                  backgroundColor: "#dc3545",
+                  borderRadius: "50%",
+                  animation: "pulse 2s infinite",
+                }}
+              ></div>
+              Disconnected
+            </div>
+          )}
+
+          {connectionStatus === "connecting" && (
             <div
               style={{
                 background: "#fff3cd",
@@ -203,12 +232,12 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
             </div>
           )}
 
-          {isServiceReady && (
+          {connectionStatus === "connected" && (
             <div
               style={{
-                background: "#d1ecf1",
-                color: "#0c5460",
-                border: "1px solid #bee5eb",
+                background: "#d4edda",
+                color: "#155724",
+                border: "1px solid #c3e6cb",
                 borderRadius: "50px",
                 padding: "0.4rem 0.8rem",
                 fontSize: "0.8rem",
@@ -225,39 +254,10 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
                   height: "6px",
                   backgroundColor: "#28a745",
                   borderRadius: "50%",
-                  animation: "pulse 2s infinite",
+                  animation: "pulse 1.5s infinite",
                 }}
               ></div>
               Connected
-            </div>
-          )}
-
-          {!isServiceReady && !isConnecting && (
-            <div
-              style={{
-                background: "#f8d7da",
-                color: "#721c24",
-                border: "1px solid #f5c6cb",
-                borderRadius: "50px",
-                padding: "0.4rem 0.8rem",
-                fontSize: "0.8rem",
-                fontWeight: "500",
-                display: "flex",
-                alignItems: "center",
-                gap: "0.4rem",
-                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-              }}
-            >
-              <div
-                style={{
-                  width: "6px",
-                  height: "6px",
-                  backgroundColor: "#dc3545",
-                  borderRadius: "50%",
-                  animation: "pulse 2s infinite",
-                }}
-              ></div>
-              Disconnected
             </div>
           )}
 
@@ -293,7 +293,7 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
               flexDirection: "column",
             }}
           >
-            {!isServiceReady && !isConnecting && (
+            {connectionStatus === "disconnected" && (
               <div
                 style={{
                   display: "flex",
@@ -324,7 +324,7 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
               </div>
             )}
 
-            {isServiceReady && (
+            {connectionStatus === "connected" && (
               <AutoBeEventGroupMovie eventGroups={eventGroups} />
             )}
           </div>
