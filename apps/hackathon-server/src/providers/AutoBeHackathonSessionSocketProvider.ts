@@ -132,9 +132,9 @@ export namespace AutoBeHackathonSessionSocketProvider {
         hackathon: props.hackathon,
         participant: props.participant,
         id: props.id,
-        payload: AutoBeHackathonSessionProvider.summurize.select(),
+        payload: AutoBeHackathonSessionProvider.summarize.select(),
       });
-      return AutoBeHackathonSessionProvider.summurize.transform(record);
+      return AutoBeHackathonSessionProvider.summarize.transform(record);
     } catch (error) {
       await props.acceptor.reject(1006, "Session not found");
       throw error;

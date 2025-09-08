@@ -47,7 +47,7 @@ export namespace AutoBeHackathonSessionProvider {
         },
       }) satisfies Prisma.autobe_hackathon_sessionsFindManyArgs;
   }
-  export namespace summurize {
+  export namespace summarize {
     export const transform = (
       input: Prisma.autobe_hackathon_sessionsGetPayload<
         ReturnType<typeof select>
@@ -80,8 +80,8 @@ export namespace AutoBeHackathonSessionProvider {
   }): Promise<IPage<IAutoBeHackathonSession.ISummary>> =>
     PaginationUtil.paginate({
       schema: AutoBeHackathonGlobal.prisma.autobe_hackathon_sessions,
-      payload: summurize.select(),
-      transform: summurize.transform,
+      payload: summarize.select(),
+      transform: summarize.transform,
     })({
       where: {
         autobe_hackathon_id: props.hackathon.id,
