@@ -338,7 +338,7 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
           <AutoBeChatUploadBox
             listener={listener}
             uploadConfig={
-              getCurrentConfig().supportAudioEnabled
+              getCurrentConfig().supportAudioEnable
                 ? {
                     supportAudio: true,
                   }

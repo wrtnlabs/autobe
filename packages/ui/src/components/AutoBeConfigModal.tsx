@@ -52,7 +52,7 @@ export const AutoBeConfigModal = (props: IAutoBeConfigModalProps) => {
         return stored === "true";
       }
       if (field.type === "number") {
-        return parseInt(stored) || 0;
+        return parseInt(stored, 10) || 0;
       }
       return stored;
     }
