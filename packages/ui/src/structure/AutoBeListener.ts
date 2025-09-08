@@ -5,9 +5,8 @@ import { AutoBeListenerState } from "./AutoBeListenerState";
 import { IAutoBeEventGroup } from "./IAutoBeEventGroup";
 
 export class AutoBeListener {
-  private callback_:
-    | ((eventGroups: IAutoBeEventGroup[]) => Promise<void>)
-    | null;
+  private callback_: Set<(eventGroups: IAutoBeEventGroup[]) => Promise<void>>;
+
   private listener_: Required<IAutoBeRpcListener>;
   private events_: List<IAutoBeEventGroup> = new List();
   private dict_: Map<AutoBeEvent.Type, List.Iterator<IAutoBeEventGroup>> =
@@ -15,7 +14,7 @@ export class AutoBeListener {
   private readonly state_: AutoBeListenerState;
 
   public constructor() {
-    this.callback_ = null;
+    this.callback_ = new Set();
 
     this.state_ = new AutoBeListenerState();
     this.listener_ = {
@@ -226,7 +225,11 @@ export class AutoBeListener {
   }
 
   public on(callback: (eventGroups: IAutoBeEventGroup[]) => Promise<void>) {
-    this.callback_ = callback;
+    this.callback_.add(callback);
+  }
+
+  public off(callback: (eventGroups: IAutoBeEventGroup[]) => Promise<void>) {
+    this.callback_.delete(callback);
   }
 
   public getListener(): Required<IAutoBeRpcListener> {
@@ -262,6 +265,8 @@ export class AutoBeListener {
   }
 
   private dispatch() {
-    this.callback_?.(this.events_.toJSON()).catch(() => {});
+    this.callback_.forEach((callback) =>
+      callback(this.events_.toJSON()).catch(() => {}),
+    );
   }
 }

@@ -9,15 +9,19 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useState,
 } from "react";
 
 import {
   AutoBeListener,
   AutoBeListenerState,
+  IAutoBeAgentSessionStorageStrategy,
   IAutoBeEventGroup,
 } from "../structure";
 import { IAutoBeConfig } from "../types/config";
+import { useAutoBeAgentSessionList } from "./AutoBeAgentSessionList";
+import { SearchParamsContext } from "./hooks-client-context.shared-runtime";
 
 export interface IAutoBeServiceData {
   service: IAutoBeRpcService;
@@ -56,15 +60,21 @@ const AutoBeAgentContext = createContext<AutoBeAgentContextType | null>(null);
 export function AutoBeAgentProvider({
   children,
   serviceFactory,
+  storageStrategy,
 }: {
-  serviceFactory?: AutoBeServiceFactory;
+  serviceFactory: AutoBeServiceFactory;
   children: ReactNode;
+  storageStrategy: IAutoBeAgentSessionStorageStrategy;
 }) {
   // Service state
   const [connectionStatus, setConnectionStatus] =
     useState<AutoBeConnectionStatus>("disconnected");
 
   // Service data
+  const searchParams = useContext(SearchParamsContext);
+  // Use URL parameter for conversation ID - enables bookmark/share support
+  const activeConversationId = searchParams?.get("session-id") ?? null;
+
   const [tokenUsage, setTokenUsage] = useState<IAutoBeTokenUsageJson | null>(
     null,
   );
@@ -74,6 +84,7 @@ export function AutoBeAgentProvider({
   const [serviceInstance, setServiceInstance] =
     useState<IAutoBeServiceData | null>(null);
 
+  const { refreshSessionList } = useAutoBeAgentSessionList();
   // Context-scoped service getter
   const getAutoBeService = useCallback(
     async (
@@ -132,6 +143,42 @@ export function AutoBeAgentProvider({
     setEventGroups([]);
     setTokenUsage(null);
   }, []);
+
+  useEffect(() => {
+    if (activeConversationId === null) {
+      setEventGroups([]);
+      setTokenUsage(null);
+      return;
+    }
+
+    storageStrategy
+      .getSession({
+        id: activeConversationId,
+      })
+      .then((v) => {
+        if (v === null) {
+          return null;
+        }
+        refreshSessionList();
+        setEventGroups(v.events);
+        setTokenUsage(v.tokenUsage);
+      })
+      .catch(console.error);
+  }, [activeConversationId]);
+
+  useEffect(() => {
+    serviceInstance?.listener.on(async (e) => {
+      serviceInstance?.service
+        .getTokenUsage()
+        .then(setTokenUsage)
+        .catch(() => {});
+      setEventGroups(e);
+    });
+    serviceInstance?.service
+      .getTokenUsage()
+      .then(setTokenUsage)
+      .catch(() => {});
+  }, [serviceInstance]);
 
   return (
     <AutoBeAgentContext.Provider

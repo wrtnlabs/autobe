@@ -23,7 +23,7 @@ export namespace AutoBeHackathonConfiguration {
       : fs.existsSync(__dirname + "/.env")
         ? __dirname
         : path.resolve(__dirname + "/..");
-  })();
+  })().replaceAll("\\", "/");
 }
 
 const environments = new Singleton(() => {
