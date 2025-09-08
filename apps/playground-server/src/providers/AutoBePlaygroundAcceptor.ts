@@ -33,6 +33,10 @@ export namespace AutoBePlaygroundAcceptor {
         listener: props.acceptor.getDriver(),
       }),
     );
+    void props.acceptor
+      .getDriver()
+      .enable(true)
+      .catch(() => {});
   };
 }
 

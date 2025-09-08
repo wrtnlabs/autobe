@@ -1,19 +1,15 @@
 import { tags } from "typia";
 
-export interface IAutobeHackathon {
-  id: string & tags.Format<"uuid">;
-  code: string;
-  name: string;
-  created_at: string & tags.Format<"date-time">;
-  opened_at: string & tags.Format<"date-time">;
-  closed_at: string & tags.Format<"date-time">;
-}
-export namespace IAutobeHackathon {
-  export interface ISummary {
+export interface IAutoBeHackathon extends IAutoBeHackathon.ISummary {}
+export namespace IAutoBeHackathon {
+  export interface ISummary extends ICreate {
     id: string & tags.Format<"uuid">;
+    created_at: string & tags.Format<"date-time">;
+  }
+
+  export interface ICreate {
     code: string;
     name: string;
-    created_at: string & tags.Format<"date-time">;
     opened_at: string & tags.Format<"date-time">;
     closed_at: string & tags.Format<"date-time">;
   }

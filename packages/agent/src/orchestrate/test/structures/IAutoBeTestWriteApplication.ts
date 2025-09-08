@@ -1,3 +1,5 @@
+import { tags } from "typia";
+
 export interface IAutoBeTestWriteApplication {
   /**
    * Main entry point for AI Function Call - generates complete E2E test code.
@@ -73,6 +75,52 @@ export namespace IAutoBeTestWriteApplication {
 
   export interface IReviseProps {
     /**
+     * Test implementation rules compliance validation.
+     *
+     * This property tracks whether each section of the TEST_WRITE.md guidelines
+     * has been properly followed. Each array element represents a section from
+     * the documentation with its title and compliance status.
+     *
+     * Note: The specific section titles may evolve as documentation updates, so
+     * implementations should be flexible in handling different titles.
+     *
+     * Example:
+     *
+     * ```typescript
+     * rules: [
+     *   { title: "1. Role and Responsibility", state: true },
+     *   { title: "2. Input Materials Provided", state: true },
+     *   { title: "3. Code Generation Requirements", state: false },
+     *   // ... other sections
+     * ];
+     * ```
+     */
+    rules: ICheck[] & tags.MinItems<1>;
+
+    /**
+     * Final quality checklist validation results.
+     *
+     * This property captures the compliance status for each item in the Final
+     * Checklist (Section 5) from TEST_WRITE.md. Each array element represents a
+     * checklist item with its description and validation result.
+     *
+     * Note: Checklist items may be updated over time, so implementations should
+     * adapt to documentation changes while maintaining the validation purpose.
+     *
+     * Example:
+     *
+     * ```typescript
+     * checkList: [
+     *   { title: "NO additional import statements", state: true },
+     *   { title: "NO wrong type data in requests", state: true },
+     *   { title: "EVERY api.functional.* call has await", state: false },
+     *   // ... other checklist items
+     * ];
+     * ```
+     */
+    checkList: ICheck[] & tags.MinItems<1>;
+
+    /**
      * Step 4: Code review and quality assessment.
      *
      * AI performs a thorough review of the draft implementation, examining:
@@ -127,5 +175,30 @@ export namespace IAutoBeTestWriteApplication {
      * suite.
      */
     final: string;
+  }
+
+  /**
+   * Check validation item structure.
+   *
+   * Represents a validation check with its title and compliance state. Used for
+   * both rules validation and final checklist validation.
+   */
+  export interface ICheck {
+    /**
+     * The title or description of the check.
+     *
+     * For rules: Section identifiers from TEST_WRITE.md (e.g., "1. Role and
+     * Responsibility") For checklist: Checklist item descriptions (e.g., "No
+     * compilation errors")
+     */
+    title: string;
+
+    /**
+     * The validation state of this check.
+     *
+     * - True: The requirement has been satisfied
+     * - False: The requirement has been violated or not met
+     */
+    state: boolean;
   }
 }

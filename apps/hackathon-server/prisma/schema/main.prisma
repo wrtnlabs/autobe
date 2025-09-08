@@ -62,6 +62,7 @@ model autobe_hackathon_sessions {
   autobe_hackathon_id             String    @db.Uuid
   autobe_hackathon_participant_id String    @db.Uuid
   model                           String    @db.VarChar
+  timezone                        String    @db.VarChar
   review_article_url              String?   @db.VarChar(2048)
   created_at                      DateTime  @db.Timestamptz
   completed_at                    DateTime? @db.Timestamptz
@@ -129,7 +130,6 @@ model autobe_hackathon_session_events {
   autobe_hackathon_session_id            String   @db.Uuid
   autobe_hackathon_session_connection_id String   @db.Uuid
   type                                   String   @db.VarChar
-  stage                                  String   @db.VarChar
   data                                   Json
   created_at                             DateTime @db.Timestamptz
 
@@ -147,6 +147,7 @@ model autobe_hackathon_session_aggregates {
   id String @id @db.Uuid
   autobe_hackathon_session_id String @db.Uuid
   state String? @db.VarChar
+  enabled Boolean
   token_usage Json
 
   @@unique([autobe_hackathon_session_id])

@@ -1,5 +1,6 @@
-import { IAutobeHackathon } from "@autobe/hackathon-api";
+import { IAutoBeHackathon } from "@autobe/hackathon-api";
 import { Prisma } from "@prisma/client";
+import { v7 } from "uuid";
 
 import { AutoBeHackathonGlobal } from "../AutoBeHackathonGlobal";
 
@@ -7,7 +8,7 @@ export namespace AutoBeHackathonProvider {
   export namespace json {
     export const transform = (
       input: Prisma.autobe_hackathonsGetPayload<ReturnType<typeof select>>,
-    ): IAutobeHackathon => ({
+    ): IAutoBeHackathon => ({
       id: input.id,
       code: input.code,
       name: input.name,
@@ -19,7 +20,7 @@ export namespace AutoBeHackathonProvider {
       ({}) satisfies Prisma.autobe_hackathonsFindManyArgs;
   }
 
-  export const get = async (code: string): Promise<IAutobeHackathon> => {
+  export const get = async (code: string): Promise<IAutoBeHackathon> => {
     const record =
       await AutoBeHackathonGlobal.prisma.autobe_hackathons.findFirstOrThrow({
         where: {
@@ -27,6 +28,21 @@ export namespace AutoBeHackathonProvider {
         },
         ...json.select(),
       });
+    return json.transform(record);
+  };
+
+  export const create = async (body: IAutoBeHackathon.ICreate) => {
+    const record = await AutoBeHackathonGlobal.prisma.autobe_hackathons.create({
+      data: {
+        id: v7(),
+        code: body.code,
+        name: body.name,
+        opened_at: new Date(body.opened_at),
+        closed_at: new Date(body.closed_at),
+        created_at: new Date(),
+      },
+      ...json.select(),
+    });
     return json.transform(record);
   };
 }

@@ -69,6 +69,7 @@ The final deliverable must be a structured output containing scenario groups wit
 * **Coverage Gap Analysis**: Ensure all included endpoints have comprehensive test coverage without redundancy
 * **Cross-Reference Mapping**: Map relationships between included endpoints and available excluded endpoints for dependency planning
 * **Authentication Context Mapping**: Reference the "Included in Test Plan" section to understand which authentication APIs are available for each endpoint
+* **Entity ID Reference Analysis**: Review the "candidate dependencies" table which identifies potential entity relationships by analyzing `_id` suffix patterns in path parameters and request bodies across all operations
 
 ## 2.3. Authentication Rules
 
@@ -146,6 +147,27 @@ Optional Step 2: POST /auth/customers/join (only if scenario continues with cust
 - **Sequential Order**: Authentication operations must be listed in dependencies in the correct execution order
 - **Context Persistence**: Consider that user context persists until explicitly switched via another `join` or `login`
 - **Dependency Purpose**: Clearly explain the authentication sequence and reasoning in each dependency's `purpose` field
+
+## 2.4. Candidate Dependencies Table
+
+**IMPORTANT**: You will receive a "candidate dependencies" table that analyzes all operations to identify potential entity relationships. This table:
+
+* **Purpose**: Helps identify which endpoints might depend on entities created by other endpoints
+* **Pattern Recognition**: Automatically detects fields ending with `_id` in both path parameters and request bodies
+* **Format**: Shows each endpoint with its list of potential ID references (e.g., `user_id`, `product_id`, `order_id`)
+* **Usage**: These are **candidates only** - you must determine which dependencies are actually needed for your test scenarios
+* **Analysis Guidance**: 
+  - If an endpoint has `user_id` in its path or body, it likely needs a user creation dependency
+  - If an endpoint has `product_id`, it likely needs a product creation dependency first
+  - Multiple ID references suggest complex relationships requiring multiple setup steps
+  - Not all identified IDs may be relevant - use business logic to determine actual dependencies
+
+**Example Interpretation**:
+- `GET /orders/{order_id}` with `[order_id]` → Needs an order creation dependency
+- `POST /reviews` with `[product_id, user_id]` → Needs both product and user creation dependencies
+- `PUT /cart/items` with `[cart_id, product_id]` → Needs cart and product setup
+
+This automated analysis helps ensure you don't miss critical dependencies when designing test scenarios.
 
 ## 3. Output: `IAutoBeTestScenarioApplication.IProps` Structure
 

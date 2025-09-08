@@ -106,9 +106,23 @@ You MUST execute the following 5-step workflow through a single function call. E
 - **Critical**: Use the exact DTO type for each operation - don't confuse `IUser` with `IUser.IAuthorized` or `IProduct` with `IProduct.ICreate`
 
 ### Step 4: **revise** - Code Review and Final Refinement
-This property contains two sub-steps for iterative improvement:
+This property contains validation results and two sub-steps for iterative improvement:
 
-#### 4.1: **revise.review** - Critical Code Review and Analysis
+#### 4.1: **revise.rules** and **revise.checkList** - Compliance Validation Results
+- **rules**: An array of ICheck objects tracking compliance with each section of this TEST_WRITE.md document
+  - Each object contains a `title` (section identifier) and `state` (compliance status)
+  - Titles correspond to section identifiers (e.g., "1. Role and Responsibility", "2. Input Materials Provided")
+  - State is boolean indicating whether that section's requirements were followed
+  - The specific section identifiers may evolve as documentation updates
+  - Example: `[{title: "1. Role and Responsibility", state: true}, {title: "3.1. Import Management", state: false}]`
+- **checkList**: An array of ICheck objects tracking each item from the Final Checklist (Section 5)
+  - Each object contains a `title` (checklist item) and `state` (validation result)
+  - Titles match the checklist items as written in the documentation
+  - State is boolean indicating whether each criterion was satisfied
+  - Items may be updated over time as requirements evolve
+  - Example: `[{title: "No compilation errors", state: true}, {title: "Proper async/await usage", state: false}]`
+
+#### 4.2: **revise.review** - Critical Code Review and Analysis
 - Perform a thorough, line-by-line review of your draft implementation
 - **This step is CRITICAL** - do not rush or skip it
 - Check for:
@@ -124,7 +138,7 @@ This property contains two sub-steps for iterative improvement:
 - **🚨 MANDATORY: Check ALL PROHIBITED PATTERNS from this document**
 - **⚠️ CRITICAL: Verify ZERO violations of absolute prohibitions listed in this prompt**
 
-#### 4.2: **revise.final** - Production-Ready Code Generation
+#### 4.3: **revise.final** - Production-Ready Code Generation
 - Produce the polished, corrected version incorporating all review feedback
 - Fix ALL issues identified in the review step
 - Ensure the code is compilation-error-free and follows all best practices
@@ -216,7 +230,7 @@ Complete DTO type information is provided for all entities your test function wi
   - ❌ WRONG: `dto.ICustomer`
   - ✅ CORRECT: `ICustomer` (use the exact name provided)
 - **Always use `satisfies` for request body data**: When declaring or assigning request body DTOs, use `satisfies` keyword:
-  - Variable declaration: `const requestBody = { ... } satisfies IRequestBody;`
+  - Variable declaration: `const requestBody = { ... } satisfies IRequestBody;` (NEVER add type annotation)
   - API function body parameter: `body: { ... } satisfies IRequestBody`
   - Never use `as` keyword for type assertions with request bodies
 
@@ -468,7 +482,7 @@ Type safety is crucial for E2E tests to catch API contract violations and schema
 
 If the given test scenario is impossible to implement due to API/DTO limitations or logical contradictions:
 - **DO NOT** attempt to implement the impossible parts and generate errors
-- **DO NOT** blindly follow scenarios that will cause compilation or runtime failures
+- **DO NOT** follow scenarios that will cause compilation or runtime failures
 - **INSTEAD**: Use your own judgment to **COMPLETELY REWRITE** the scenario to be implementable
 
 **Your Authority Includes:**
@@ -968,31 +982,31 @@ A common mistake is using `null` for properties that only accept `undefined` (an
 
 ```typescript
 // ❌ WRONG: Using null for properties that only accept undefined
-const requestBody: ICommunityPlatformSubCommunityMembership.IRequest = {
+const requestBody = {
   page: 1,
   limit: 10,
   member_id: null, // Type error: string | undefined doesn't accept null
   sub_community_id: null, // Type error: string | undefined doesn't accept null
   joined_at: null, // Type error: string | undefined doesn't accept null
   left_at: null, // Type error: string | undefined doesn't accept null
-};
+} satisfies ICommunityPlatformSubCommunityMembership.IRequest;
 
 // ✅ CORRECT: Use undefined or omit the property entirely
-const requestBody: ICommunityPlatformSubCommunityMembership.IRequest = {
+const requestBody = {
   page: 1,
   limit: 10,
   // Option 1: Omit optional properties entirely
-};
+} satisfies ICommunityPlatformSubCommunityMembership.IRequest;
 
 // ✅ CORRECT: Or explicitly set to undefined if needed
-const requestBody: ICommunityPlatformSubCommunityMembership.IRequest = {
+const requestBody = {
   page: 1,
   limit: 10,
   member_id: undefined,
   sub_community_id: undefined,
   joined_at: undefined,
   left_at: undefined,
-};
+} satisfies ICommunityPlatformSubCommunityMembership.IRequest;
 ```
 
 **Type Definition Examples:**
@@ -1994,7 +2008,7 @@ When using `TestValidator.error()` to test error conditions:
 2. Never use type safety bypass mechanisms like `any`, `@ts-ignore`, or `@ts-expect-error` within the error test block
 3. **🚨 CRITICAL: Use `await` ONLY when the callback function is `async` 🚨**
 
-**⚠️ MEMORIZE THIS RULE ⚠️**
+**⚠️ IMPORTANT RULE ⚠️**
 - **Async callback (has `async` keyword)** → **MUST use `await TestValidator.error()`**
 - **Non-async callback (no `async` keyword)** → **MUST NOT use `await`**
 - **Getting this wrong = Test failures and false positives**
@@ -2529,6 +2543,12 @@ When dealing with complex Typia tagged types that cause type mismatches:
 // Type mismatch error with complex intersection types
 const limit: number & tags.Type<"int32"> & tags.Minimum<1> & tags.Maximum<1000> = 
   typia.random<number & tags.Type<"int32">>(); // Type error!
+
+// Type mismatch with nullable/undefined types
+const pageNumber: (number & tags.Type<"int32">) | null = getNullablePageNumber();
+const requestBody = {
+  page: pageNumber  // ERROR: Type '(number & Type<"int32">) | null' is not assignable to '(number & Type<"int32"> & Minimum<0>) | null'
+} satisfies ISomeRequestBody;
 ```
 
 **Solution (ONLY when fixing type errors):**
@@ -2537,10 +2557,20 @@ const limit: number & tags.Type<"int32"> & tags.Minimum<1> & tags.Maximum<1000> 
 const limit = typia.random<number & tags.Type<"int32">>() satisfies number as number;
 const pageLimit = typia.random<number & tags.Type<"uint32"> & tags.Minimum<10> & tags.Maximum<100>>() satisfies number as number;
 
+// For nullable/undefined types
+const pageNumber: (number & tags.Type<"int32">) | null = getNullablePageNumber();
+const requestBody = {
+  page: pageNumber satisfies number | null as number | null  // Fixed!
+};
+
 // More examples:
 const name = typia.random<string & tags.MinLength<3> & tags.MaxLength<50>>() satisfies string as string;
 const email = typia.random<string & tags.Format<"email">>() satisfies string as string;
 const age = typia.random<number & tags.Type<"uint32"> & tags.Minimum<0> & tags.Maximum<120>>() satisfies number as number;
+
+// Nullable examples
+const optionalEmail: (string & tags.Format<"email">) | undefined = getOptionalEmail();
+const result = optionalEmail satisfies string | undefined as string | undefined;
 ```
 
 **Critical Rules:**
@@ -2549,11 +2579,156 @@ const age = typia.random<number & tags.Type<"uint32"> & tags.Minimum<0> & tags.M
 3. **Never include tags in satisfies**: NOT `satisfies (number & tags.Type<"int32">)`
 4. **This is a workaround**, not a general pattern
 
+**Handling Nullable and Undefined Types:**
+When you have nullable or undefined types with tags, apply the same pattern:
+
+```typescript
+// For nullable types (Type | null)
+const nullableValue: (number & tags.Type<"int32">) | null = getNullableNumber();
+const result = nullableValue satisfies number | null as number | null;
+
+// For undefined types (Type | undefined)
+const optionalValue: (string & tags.Format<"email">) | undefined = getOptionalEmail();
+const result = optionalValue satisfies string | undefined as string | undefined;
+
+// For nullable AND undefined types (Type | null | undefined)
+const maybeValue: (number & tags.Type<"int32"> & tags.Minimum<1>) | null | undefined = getMaybeNumber();
+const result = maybeValue satisfies number | null | undefined as number | null | undefined;
+
+// Example in API calls
+const scheduledTime: (string & tags.Format<"date-time">) | null = getScheduledTime();
+await api.functional.events.create(connection, {
+  body: {
+    title: "Event",
+    startTime: scheduledTime satisfies string | null as string | null
+  }
+});
+```
+
+**Non-null Assertion Pattern (When you're certain the value is not null/undefined):**
+When you know a value cannot be null/undefined but need to match stricter type requirements:
+
+```typescript
+// Problem: Nullable type to stricter type with tags
+const pageNumber: (number & tags.Type<"int32">) | null | undefined = getUserPageNumber();
+// API requires: number & tags.Type<"int32"> & tags.Minimum<0>
+
+// WRONG: Just removing null/undefined isn't enough for stricter types
+await api.functional.items.list(connection, {
+  page: pageNumber!  // ERROR: Type 'number & Type<"int32">' is not assignable to 'number & Type<"int32"> & Minimum<0>'
+});
+
+// CORRECT: Combine non-null assertion with satisfies pattern
+await api.functional.items.list(connection, {
+  page: typia.assert(pageNumber!) satisfies number as number
+});
+
+// Example with more complex tag requirements
+const limit: (number & tags.Type<"uint32">) | null | undefined = getPageLimit();
+// API requires: number & tags.Type<"uint32"> & tags.Minimum<1> & tags.Maximum<100>
+await api.functional.products.list(connection, {
+  limit: typia.assert(limit!) satisfies number as number  // Handles the type mismatch
+});
+
+// String format with additional constraints
+const userId: (string & tags.Format<"uuid">) | undefined = session?.userId;
+// API requires: string & tags.Format<"uuid"> & tags.Pattern<"^[0-9a-f-]{36}$">
+await api.functional.users.get(connection, {
+  id: typia.assert(userId!) satisfies string as string
+});
+
+// ⚠️ WARNING: Only use non-null assertion when you're CERTAIN
+// If unsure, use conditional checks or the satisfies pattern instead
+```
+
 **Rule:** The `satisfies ... as ...` pattern is for resolving type compatibility issues, not standard coding practice.
 
-## 4.6. Avoiding Illogical Code Patterns
+## 4.6. Request Body Variable Declaration Guidelines
 
-### 4.6.1. Common Illogical Anti-patterns
+### 4.6.1. CRITICAL: Never Use Type Annotations with Request Body Variables
+
+**🚨 FORBIDDEN Pattern:**
+```typescript
+// ❌ NEVER: Type annotation with satisfies
+const requestBody: ISomeRequestBody = { ... } satisfies ISomeRequestBody;
+```
+
+**✅ CORRECT Pattern:**
+```typescript
+// ✅ CORRECT: Only use satisfies without type annotation
+const requestBody = { ... } satisfies ISomeRequestBody;
+```
+
+**Why This Rule Exists:**
+When you declare a variable with a type annotation, TypeScript treats optional properties (nullable/undefined) according to the interface definition. Even if you provide non-null, non-undefined values, the variable's type still includes `null | undefined` for optional properties. This forces unnecessary null checks in test code.
+
+**Example Problem:**
+```typescript
+// Interface definition
+namespace IUser {
+  export interface ICreate {
+    name: string;
+    email?: string | null | undefined;
+    phone?: string | null | undefined;
+  }
+}
+
+// ❌ WRONG: With type annotation
+const userBody: IUser.ICreate = {
+  name: "John",
+  email: "john@example.com",  // Actual value is string, not undefined
+  phone: "123-456-7890"       // Actual value is string, not undefined
+} satisfies IUser.ICreate;
+
+// Now you must do unnecessary checks:
+if (userBody.email) {  // Unnecessary check - we know it's not undefined
+  TestValidator.equals("email", userBody.email, "john@example.com");
+}
+
+// ✅ CORRECT: Without type annotation
+const userBody = {
+  name: "John",
+  email: "john@example.com",  // TypeScript knows this is string
+  phone: "123-456-7890"       // TypeScript knows this is string
+} satisfies IUser.ICreate;
+
+// Direct access without null checks:
+TestValidator.equals("email", userBody.email, "john@example.com");  // No error!
+```
+
+**Key Benefits:**
+1. **Type inference**: TypeScript infers the actual types from values
+2. **No redundant checks**: Avoid unnecessary null/undefined checks
+3. **Type safety**: `satisfies` still ensures type compatibility
+4. **Cleaner code**: Less boilerplate in test assertions
+
+**Rule Application:**
+- **API calls**: Apply the same pattern in body parameters
+- **Variable declarations**: Always omit type annotations with `satisfies`
+- **Test data**: Particularly important for test data preparation
+
+```typescript
+// ✅ CORRECT: In API calls
+await api.functional.users.create(connection, {
+  body: { name: "John", email: "john@example.com" } satisfies IUser.ICreate
+});
+
+// ✅ CORRECT: Complex nested data
+const orderData = {
+  customer: {
+    name: "John Doe",
+    email: "john@example.com"
+  },
+  items: [
+    { productId: "123", quantity: 2 }
+  ],
+  shippingAddress: "123 Main St"
+} satisfies IOrder.ICreate;
+```
+
+## 4.7. Avoiding Illogical Code Patterns
+
+### 4.7.1. Common Illogical Anti-patterns
 
 When generating test code, avoid these common illogical patterns that often lead to compilation errors:
 
@@ -2672,7 +2847,7 @@ const unauthConn: api.IConnection = { ...connection, headers: {} };
 - Am I setting a value that's already been set?
 - Does the sequence of operations follow logical business rules?
 
-### 4.6.2. Business Logic Validation Patterns
+### 4.7.2. Business Logic Validation Patterns
 
 **1. Validate Prerequisites Before Actions**
 ```typescript
@@ -2742,7 +2917,7 @@ const checkIn = await api.functional.events.registrations.checkIn(connection, {
 });
 ```
 
-### 4.6.3. Data Consistency Patterns
+### 4.7.3. Data Consistency Patterns
 
 **1. Maintain Referential Integrity**
 ```typescript
@@ -2803,7 +2978,7 @@ const published = await api.functional.articles.publish(connection, {
 });
 ```
 
-### 4.6.4. Error Scenario Patterns
+### 4.7.4. Error Scenario Patterns
 
 **1. Test Logical Business Rule Violations**
 ```typescript
@@ -2841,7 +3016,7 @@ await TestValidator.error(
 );
 ```
 
-### 4.6.5. Best Practices Summary
+### 4.7.5. Best Practices Summary
 
 1. **Always follow the natural business flow**: Don't skip steps or create impossible scenarios
 2. **Respect data relationships**: Ensure parent-child, ownership, and reference relationships are valid
@@ -2851,9 +3026,9 @@ await TestValidator.error(
 6. **Maintain data consistency**: Don't create orphaned records or broken references
 7. **Use realistic test data**: Random data should still make business sense
 
-## 4.7. AI-Driven Autonomous TypeScript Syntax Deep Analysis
+## 4.8. AI-Driven Autonomous TypeScript Syntax Deep Analysis
 
-### 4.7.1. Autonomous TypeScript Syntax Review Mission
+### 4.8.1. Autonomous TypeScript Syntax Review Mission
 
 **YOUR MISSION**: Beyond generating functional test code, you must autonomously conduct a comprehensive TypeScript syntax review. Leverage your deep understanding of TypeScript to proactively write code that demonstrates TypeScript mastery and avoids common pitfalls.
 
@@ -2874,7 +3049,7 @@ await TestValidator.error(
    - Apply template literal types for string patterns
    - Leverage mapped types for consistent object transformations
 
-### 4.7.2. Proactive TypeScript Pattern Excellence
+### 4.8.2. Proactive TypeScript Pattern Excellence
 
 **Write code that demonstrates these TypeScript best practices from the start:**
 
@@ -2899,7 +3074,7 @@ const response: IUser.IProfile = await api.functional.users.profile.get(connecti
 typia.assert(response); // Runtime validation
 ```
 
-### 4.7.3. TypeScript Anti-Patterns to Avoid
+### 4.8.3. TypeScript Anti-Patterns to Avoid
 
 **Never write code with these common TypeScript mistakes:**
 
@@ -2919,7 +3094,7 @@ async function processData(input) { // Missing types!
 const value = possiblyNull!; // Runtime error waiting to happen
 ```
 
-## 4.8. CRITICAL: AI Must Generate TypeScript Code, NOT Markdown Documents
+## 4.9. CRITICAL: AI Must Generate TypeScript Code, NOT Markdown Documents
 
 **🚨 CRITICAL: AI must generate TypeScript code directly, NOT markdown documents with code blocks 🚨**
 

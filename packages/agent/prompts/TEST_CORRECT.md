@@ -36,11 +36,11 @@ You MUST execute the following 4-step workflow through a single function call. E
 
 For EACH compilation diagnostic, create an object with:
 
-1. **diagnostic**: The actual compilation diagnostic object (provided by the system)
-   - **🚨 CRITICAL**: Use the input material EXACTLY as provided
-   - Copy the diagnostic object directly without ANY modifications
-   - NO omissions, NO reordering - maintain the EXACT sequence
-   - This is the raw compilation diagnostic data from TypeScript compiler
+1. **diagnostic**: AI-generated summary of the compilation diagnostic (string)
+   - **🚨 IMPORTANT**: Analyze the `IAutoBeTypeScriptCompileResult.IDiagnostic` object
+   - Provide a clear, concise summary of the error in human-readable format
+   - Include error code, file location, line/column position, and error message
+   - Do NOT copy the raw diagnostic object - interpret and summarize it
 
 2. **analysis**: Root cause analysis of THIS SPECIFIC diagnostic
    - **READ the error message METICULOUSLY** - extract exact information
@@ -97,9 +97,19 @@ Synthesize patterns across ALL errors and document:
 - Follow all established conventions and type safety requirements
 - **Critical**: Start directly with `export async function` - NO import statements
 
-### Step 3-4: **revise** - Review and Final Implementation (Object with two properties)
+### Step 3-4: **revise** - Review and Final Implementation (Object with validation results and two sub-steps)
 
-#### Property 1: **revise.review** - Code Review and Validation
+#### Property 1: **revise.rules** and **revise.checkList** - Dual-Document Compliance Validation
+- **rules**: An array of ICheck objects tracking compliance with each section from BOTH TEST_WRITE.md and TEST_CORRECT.md
+  - Each ICheck has `title` (prefixed with source document for clarity) and `state` (boolean indicating compliance)
+  - The correct agent MUST validate against BOTH documents to ensure comprehensive compliance
+  - Example: `[{title: "TEST_WRITE: 1. Role and Responsibility", state: true}, {title: "TEST_WRITE: 3.1. Import Management", state: true}, {title: "TEST_CORRECT: 4.1. Missing Properties Pattern", state: true}, {title: "TEST_CORRECT: 4.2. Type Mismatch Pattern", state: false}]`
+- **checkList**: An array of ICheck objects tracking items from BOTH Final Checklists
+  - Combines items from TEST_WRITE.md Section 5 and TEST_CORRECT.md Section 5
+  - Each ICheck has `title` (checklist item) and `state` (boolean indicating satisfaction)
+  - Example: `[{title: "No compilation errors", state: true}, {title: "All typia tags preserved", state: true}, {title: "No type bypasses or workarounds", state: false}]`
+
+#### Property 2: **revise.review** - Code Review and Validation
 - Perform a comprehensive review of the corrected draft
 - **This step is CRITICAL** - thoroughly validate all corrections
 - Verify that:
@@ -112,7 +122,7 @@ Synthesize patterns across ALL errors and document:
 - Document specific validations performed
 - **🚨 MANDATORY: Check ALL PROHIBITED PATTERNS from `TEST_WRITE.md`**
 
-#### Property 2: **revise.final** - Production-Ready Corrected Code
+#### Property 3: **revise.final** - Production-Ready Corrected Code
 - Produce the final, polished version incorporating all review feedback
 - Ensure ALL compilation issues are resolved
 - Maintain strict type safety without using any bypass mechanisms
@@ -484,14 +494,14 @@ await api.functional.products.create(connection, {
 
 **THIS IS NOT OPTIONAL - EVERY PROMISE MUST HAVE AWAIT**
 
-When you see error messages containing "Promises must be awaited", apply this **MECHANICAL RULE**:
+When you see error messages containing "Promises must be awaited", apply this rule:
 
 ```typescript
 // When you see ANY of these error patterns:
 // - "Promises must be awaited..."
 // - "Promises must be awaited, end with a call to .catch..."
 // - "Promises must be awaited, end with a call to .then..."
-// → JUST ADD await - NO QUESTIONS ASKED!
+// → ADD await
 
 // Error: "Promises must be awaited..." at line 42
 api.functional.users.create(connection, userData);  // ← Line 42
@@ -499,7 +509,7 @@ api.functional.users.create(connection, userData);  // ← Line 42
 await api.functional.users.create(connection, userData);  // ← FIXED!
 ```
 
-**CRITICAL RULES - MEMORIZE THESE:**
+**CRITICAL RULES:**
 1. **ALL API SDK functions return Promises** - EVERY SINGLE ONE needs `await`
 2. **No exceptions** - Even if you don't use the result, you MUST await
 3. **TestValidator.error with async callback** - Must await BOTH the TestValidator AND the API calls inside
@@ -533,7 +543,7 @@ await TestValidator.error(  // ← MUST have await!
 );
 ```
 
-### 4.6. Nullable and Undefined Type Assignment - MECHANICAL RULE
+### 4.6. Nullable and Undefined Type Assignment
 
 **🚨 THE #1 AI FAILURE PATTERN - STOP DOING THIS 🚨**
 
@@ -547,12 +557,11 @@ if (value !== null) {
 // But TypeScript REQUIRES exhaustive elimination of ALL union members
 ```
 
-**THE ONLY RULE YOU NEED - MEMORIZE THIS PATTERN:**
+**THE PATTERN:**
 
 ```typescript
 // When you see: T | null | undefined
 // You MUST write: if (value !== null && value !== undefined)
-// NO EXCEPTIONS. NO THINKING. JUST APPLY.
 
 function unwrapNullableUndefinable<T>(value: T | null | undefined): T {
   if (value !== null && value !== undefined) {
@@ -562,7 +571,7 @@ function unwrapNullableUndefinable<T>(value: T | null | undefined): T {
 }
 ```
 
-**MECHANICAL APPLICATION GUIDE:**
+**Application Guide:**
 
 1. **See `T | null | undefined`?** → Write `!== null && !== undefined`
 2. **See `T | undefined`?** → Write `!== undefined`
@@ -576,7 +585,7 @@ function unwrapNullableUndefinable<T>(value: T | null | undefined): T {
 const data: string | null | undefined = getData();
 const value: string = data; // ERROR!
 
-// MECHANICAL FIX: Apply the pattern
+// FIX: Apply the pattern
 if (data !== null && data !== undefined) {
   const value: string = data; // SUCCESS
 }
@@ -586,7 +595,7 @@ const request = {
   userId: null  // ERROR if userId is string | undefined
 };
 
-// MECHANICAL FIX: Match the type pattern
+// FIX: Match the type pattern
 const request = {
   userId: undefined  // or omit the property entirely
 };
@@ -597,7 +606,7 @@ const request = {
 **🚨 CRITICAL INSIGHT: When typia tags are involved with nullable/undefined types, IGNORE THE TAGS and treat it like a simple nullable type 🚨**
 
 ```typescript
-// ERROR PATTERN TO MEMORIZE:
+// ERROR PATTERN:
 // Type '(BaseType & Tags) | null | undefined' does not satisfy the expected type 'BaseType'.
 // Type 'undefined' is not assignable to type 'BaseType'.
 
@@ -616,14 +625,14 @@ const requestBody = {
   page: pageNumber  // ERROR!
 };
 
-// ✅ CORRECT - JUST DO THIS IMMEDIATELY:
+// ✅ CORRECT:
 const pageNumber: (number & Type<"int32">) | null | undefined = getUserPreference();
 const requestBody = {
-  page: typia.assert(pageNumber!)  // DONE! MOVE ON!
+  page: typia.assert(pageNumber!)
 };
 ```
 
-**🔥 STOP OVERTHINKING - JUST USE `typia.assert(value!)` 🔥**
+**Use `typia.assert(value!)` for simplicity**
 
 This works because:
 1. The `!` removes null/undefined from the type
@@ -633,11 +642,10 @@ This works because:
 **OTHER SOLUTIONS EXIST BUT ARE USUALLY OVERKILL:**
 - Conditional checks? Too verbose for simple cases
 - Default values? Only if you actually want a default
-- Complex transformations? STOP! Just use `typia.assert(value!)`
+- Complex transformations? Use `typia.assert(value!)`
 
 **THE RULE:**
 See this error pattern? → Use `typia.assert(value!)` → Move to next error
-NO ANALYSIS. NO ALTERNATIVES. JUST FIX AND CONTINUE.
 
 **🚨 SCOPE PROBLEM - WHEN IF CONDITIONS DON'T HELP 🚨**
 
@@ -655,7 +663,7 @@ const result = {
 };
 ```
 
-**SOLUTION: Just use `typia.assert(value!)` - it's simpler than restructuring code!**
+**SOLUTION: Use `typia.assert(value!)` - it's simpler than restructuring code**
 
 ### 4.7. Property Access Errors - Non-existent Properties
 
@@ -694,24 +702,48 @@ const x = typia.random<string & tags.Format<"uuid">>();
 const x: string = typia.random<string & tags.Format<"uuid">>();
 ```
 
-### 4.9. Typia Tag Type Conversion Errors - MECHANICAL FIX RULE
+### 4.9. Typia Tag Type Conversion Errors
 
-**🤖 CRITICAL: MECHANICAL RULE - NO THINKING REQUIRED 🤖**
+When you encounter ANY typia type tag mismatch error, apply this fix pattern. This is a consistent approach for resolving type conflicts.
 
-When you encounter ANY typia type tag mismatch error, apply the fix mechanically WITHOUT ANY ANALYSIS OR CONSIDERATION. This is a RULE, not a suggestion.
+**Common Problem Patterns:**
+```typescript
+// Problem 1: Basic type mismatch
+const pageNumber: number & tags.Type<"int32"> = getPageNumber();
+const response = await api.functional.items.list(connection, {
+  page: pageNumber  // ERROR: Type 'number & Type<"int32">' is not assignable to 'number & Type<"int32"> & Minimum<1>'
+});
 
-**⚠️ MANDATORY FIRST: THE THREE-STEP MECHANICAL FIX**
+// Problem 2: Nullable type mismatch
+const userId: (string & tags.Format<"uuid">) | null = getNullableUserId();
+const profile = await api.functional.profiles.get(connection, {
+  userId: userId  // ERROR: Type '(string & Format<"uuid">) | null' is not assignable to parameter
+});
+```
 
-1. **See tag mismatch error?** → Don't read the details, don't analyze
+**Solutions:**
+```typescript
+// Solution 1: Basic type
+const response = await api.functional.items.list(connection, {
+  page: pageNumber satisfies number as number  // Fixed!
+});
+
+// Solution 2: Nullable type
+const profile = await api.functional.profiles.get(connection, {
+  userId: userId satisfies string | null as string | null  // Fixed!
+});
+```
+
+**⚠️ THE THREE-STEP FIX**
+
+1. **See tag mismatch error?** → Identify the type mismatch
 2. **Check if nullable** → Look for `| null | undefined`
 3. **Apply the pattern:**
    - **Non-nullable:** `value satisfies BaseType as BaseType`
    - **Nullable:** `value satisfies BaseType | null | undefined as BaseType | null | undefined`
    - **Nullable → Non-nullable:** `typia.assert((value satisfies BaseType | null | undefined as BaseType | null | undefined)!)`
 
-**THAT'S IT. NO THINKING. JUST APPLY.**
-
-**Common Error Patterns and AUTOMATIC Solutions:**
+**Common Error Patterns and Solutions:**
 
 **1. API Response to Request Parameter Mismatch**
 ```typescript
@@ -770,7 +802,7 @@ const response = await api.functional.items.list(connection, {
 });
 ```
 
-**4. TestValidator.equals Tag Type Errors - MECHANICAL FIX**
+**4. TestValidator.equals Tag Type Errors**
 
 ```typescript
 // ERROR: Type 'number & Type<"int32"> & Minimum<0>' is not assignable to 'number & Type<"int32">'
@@ -779,7 +811,7 @@ const y: number & Type<"int32">;
 
 TestValidator.equals("value", x, y); // compile error
 
-// MECHANICAL FIX: Apply satisfies pattern to the stricter type
+// FIX: Apply satisfies pattern to the stricter type
 TestValidator.equals("value", x, y satisfies number as number); // compile success
 ```
 
@@ -792,7 +824,7 @@ const response = await api.functional.data.list(connection, {
   page: pageNumber  // ERROR: union type not compatible
 });
 
-// SOLUTION: Apply mechanical fix
+// SOLUTION: Apply fix
 const response = await api.functional.data.list(connection, {
   page: pageNumber satisfies number as number
 });
@@ -817,6 +849,41 @@ const request = await api.functional.notifications.create(connection, {
     message: "Hello",
     scheduledAt: scheduledTime ? scheduledTime satisfies string as string : undefined
   }
+});
+```
+
+**7. Non-null Assertion Cases (When certain the value is not null/undefined)**
+```typescript
+// ERROR: Nullable type doesn't match stricter API requirements
+const pageNumber: (number & tags.Type<"int32">) | null | undefined = getUserPageNumber();
+// API requires: number & tags.Type<"int32"> & tags.Minimum<1>
+
+await api.functional.items.list(connection, {
+  page: pageNumber  // ERROR: Type '(number & Type<"int32">) | null | undefined' is not assignable to 'number & Type<"int32"> & Minimum<1>'
+});
+
+// WRONG: Just using non-null assertion isn't enough
+await api.functional.items.list(connection, {
+  page: pageNumber!  // ERROR: Type 'number & Type<"int32">' is not assignable to 'number & Type<"int32"> & Minimum<1>'
+});
+
+// CORRECT: Combine non-null assertion with satisfies pattern
+await api.functional.items.list(connection, {
+  page: typia.assert(pageNumber!) satisfies number as number
+});
+
+// More examples with complex type requirements
+const limit: (number & tags.Type<"uint32">) | null = getUserLimit();
+// API requires: number & tags.Type<"uint32"> & tags.Minimum<10> & tags.Maximum<50>
+await api.functional.search.products(connection, {
+  limit: typia.assert(limit!) satisfies number as number
+});
+
+// String with format and pattern requirements
+const email: (string & tags.Format<"email">) | undefined = form.email;
+// API requires: string & tags.Format<"email"> & tags.Pattern<"^[^@]+@company\.com$">
+await api.functional.employees.create(connection, {
+  email: typia.assert(email!) satisfies string as string
 });
 ```
 

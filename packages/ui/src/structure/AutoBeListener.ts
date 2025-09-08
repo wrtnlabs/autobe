@@ -18,6 +18,10 @@ export class AutoBeListener {
 
     this.state_ = new AutoBeListenerState();
     this.listener_ = {
+      enable: async (value) => {
+        // @todo SunRabbit
+        console.log("enable", value);
+      },
       assistantMessage: async (event) => {
         this.insert(event);
       },

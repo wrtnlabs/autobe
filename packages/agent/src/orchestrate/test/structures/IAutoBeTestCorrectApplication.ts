@@ -1,5 +1,12 @@
-import { IAutoBeTypeScriptCompileResult } from "@autobe/interface";
 import { tags } from "typia";
+
+export interface ICheck {
+  /** The title or description of the validation rule/check item */
+  title: string;
+
+  /** The validation state (true: passed/satisfied, false: failed/violated) */
+  state: boolean;
+}
 
 export interface IAutoBeTestCorrectApplication {
   /**
@@ -105,9 +112,9 @@ export namespace IAutoBeTestCorrectApplication {
      *
      * Contains detailed examination of every compilation error encountered,
      * with specific analysis and targeted solutions. Each entry represents a
-     * single compilation diagnostic that must be resolved. The AI must read
-     * error messages meticulously, understand the exact nature of each problem,
-     * and propose precise fixes based on the actual error content.
+     * single compilation diagnostic that must be resolved. The AI must read the
+     * IAutoBeTypeScriptCompileResult.IDiagnostic objects, interpret their
+     * content, and provide human-readable summaries along with precise fixes.
      *
      * This granular approach ensures no error is overlooked and each issue
      * receives appropriate attention and resolution strategy.
@@ -140,19 +147,20 @@ export namespace IAutoBeTestCorrectApplication {
    */
   export interface IDiagnosticAnalysis {
     /**
-     * The actual compilation diagnostic information from TypeScript compiler.
+     * AI-generated summary of the compilation diagnostic.
      *
-     * Contains the complete diagnostic information including error message,
-     * file location, error code, and severity. This raw data serves as the
-     * foundation for analysis and must be read meticulously to understand the
-     * exact nature of the compilation issue.
+     * The AI must analyze the `IAutoBeTypeScriptCompileResult.IDiagnostic`
+     * object and provide a clear, concise summary of the error. This should
+     * include the error message, file location, line/column position, and error
+     * code in a human-readable format. The AI interprets and restructures the
+     * raw diagnostic data to present it in a more understandable way.
      *
-     * **CRITICAL**: Use the compilation diagnostic input material EXACTLY as
-     * provided. Copy the diagnostic object directly from the input without any
-     * modifications, omissions, or reordering. Maintain the exact sequence of
-     * diagnostics as they appear in the original compilation result.
+     * **IMPORTANT**: The AI should not copy the raw diagnostic object. Instead,
+     * it must read and understand the diagnostic details, then compose a clear
+     * string description that captures all essential information about the
+     * error.
      */
-    diagnostic: IAutoBeTypeScriptCompileResult.IDiagnostic;
+    diagnostic: string;
 
     /**
      * Root cause analysis of why this compilation error occurred.
@@ -163,9 +171,9 @@ export namespace IAutoBeTestCorrectApplication {
      * or other TypeScript violations. The analysis should be precise and
      * fact-based, directly tied to the error message content.
      *
-     * **MANDATORY**: The AI must thoroughly review ALL sections of TEST_CORRECT.md
-     * and apply relevant error patterns and analysis guidelines from sections
-     * 4.1-4.16 to ensure accurate diagnosis.
+     * **MANDATORY**: The AI must thoroughly review ALL sections of
+     * TEST_CORRECT.md and apply relevant error patterns and analysis guidelines
+     * from sections 4.1-4.16 to ensure accurate diagnosis.
      *
      * Example: "Property 'code' is missing because the object literal lacks
      * this required field from ICommunityPlatformCommunity.ICreate interface"
@@ -200,6 +208,74 @@ export namespace IAutoBeTestCorrectApplication {
    * workflow, ensuring systematic review and production-ready code delivery.
    */
   export interface IReviseProps {
+    /**
+     * Dual-document compliance validation for TEST_WRITE.md and
+     * TEST_CORRECT.md.
+     *
+     * This property tracks whether each section from BOTH TEST_WRITE.md and
+     * TEST_CORRECT.md guidelines has been properly followed. Since the correct
+     * agent must ensure compliance with both documents, keys should include
+     * sections from both prompt files.
+     *
+     * Each ICheck item should have:
+     *
+     * - Title: Prefixed with source document for clarity ("TEST_WRITE: " or
+     *   "TEST_CORRECT: ")
+     * - State: Compliance status (true if followed, false if violated)
+     *
+     * Note: Section identifiers may evolve as documentation updates, so
+     * implementations should be flexible in handling different key formats.
+     *
+     * Example:
+     *
+     * ```typescript
+     * rules: [
+     *   { title: "TEST_WRITE: 1. Role and Responsibility", state: true },
+     *   { title: "TEST_WRITE: 3.1. Import Management", state: true },
+     *   {
+     *     title: "TEST_CORRECT: 4.1. Missing Properties Pattern",
+     *     state: true,
+     *   },
+     *   {
+     *     title: "TEST_CORRECT: 4.2. Type Mismatch Pattern",
+     *     state: false,
+     *   },
+     *   // ... other sections from both documents
+     * ];
+     * ```
+     */
+    rules: ICheck[] & tags.MinItems<1>;
+
+    /**
+     * Combined quality checklist validation from both prompt documents.
+     *
+     * This property captures the compliance status for checklist items from
+     * BOTH TEST_WRITE.md (Section 5: Final Checklist) and TEST_CORRECT.md
+     * (Section 5: Final Review Checklist). The correct agent must validate
+     * against both checklists to ensure comprehensive quality control.
+     *
+     * Each ICheck item should have:
+     *
+     * - Title: Checklist item as described in the documents
+     * - State: Whether the criterion has been satisfied
+     *
+     * Note: Checklist items may be updated over time, so implementations should
+     * adapt to documentation changes while maintaining the validation purpose.
+     *
+     * Example:
+     *
+     * ```typescript
+     * checkList: [
+     *   { title: "No compilation errors", state: true },
+     *   { title: "Proper async/await usage", state: true },
+     *   { title: "All typia tags preserved", state: true },
+     *   { title: "No type bypasses or workarounds", state: false },
+     *   // ... other checklist items from both documents
+     * ];
+     * ```
+     */
+    checkList: ICheck[] & tags.MinItems<1>;
+
     /**
      * Step 3: Code review and correction validation.
      *

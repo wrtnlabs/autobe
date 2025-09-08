@@ -36,6 +36,7 @@
     "@autobe/interface": "workspace:^",
     "@nestia/fetcher": "catalog:samchon",
     "@samchon/openapi": "catalog:samchon",
+    "openai": "catalog:libs",
     "tgrid": "catalog:samchon",
     "typia": "catalog:samchon"
   },

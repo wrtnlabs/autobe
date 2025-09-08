@@ -6,20 +6,36 @@ import { v7 } from "uuid";
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeTestScenarioAuthorizationRole } from "../structures/IAutoBeTestScenarioAuthorizationRole";
+import { getReferenceIds } from "../utils/getReferenceIds";
 
 export const transformTestScenarioHistories = (
   state: AutoBeState,
-  entire: AutoBeOpenApi.IOperation[],
+  document: AutoBeOpenApi.IDocument,
   include: AutoBeOpenApi.IOperation[],
   exclude: Pick<AutoBeOpenApi.IOperation, "method" | "path">[],
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
+  interface IRelationship {
+    endpoint: AutoBeOpenApi.IEndpoint;
+    ids: string[];
+  }
   const authorizations: AutoBeInterfaceAuthorization[] =
     state.interface?.authorizations ?? [];
-
   const authorizationRoles: Map<string, IAutoBeTestScenarioAuthorizationRole> =
     new Map();
+  const relationships: IRelationship[] = document.operations
+    .map((o) => ({
+      endpoint: {
+        method: o.method,
+        path: o.path,
+      },
+      ids: getReferenceIds({
+        document,
+        operation: o,
+      }),
+    }))
+    .filter((v) => v.ids.length !== 0);
 
   for (const authorization of authorizations) {
     for (const op of authorization.operations) {
@@ -66,7 +82,7 @@ export const transformTestScenarioHistories = (
 
         \`\`\`json
         ${JSON.stringify(
-          entire.map((el) => ({
+          document.operations.map((el) => ({
             ...el,
             specification: undefined,
           })),
@@ -121,6 +137,29 @@ export const transformTestScenarioHistories = (
         ${exclude
           .map((el) => `- ${el.method.toUpperCase()}: ${el.path}`)
           .join("\n")}
+      `,
+    } satisfies IAgenticaHistoryJson.IAssistantMessage,
+    {
+      id: v7(),
+      created_at: new Date().toISOString(),
+      type: "assistantMessage",
+      text: StringUtil.trim`
+        Here is the list of candidate dependencies identified across 
+        all operations by analyzing path parameters and request bodies.
+
+        As they are only candidates, identified by some_entity_id pattern,
+        please review and determine whether to include them in your test scenarios.
+
+        Endpoint | List of IDs from path parameters and request body
+        ---------|---------------------------------------------------
+        ${relationships
+          .map((r) =>
+            [
+              `\`${r.endpoint.method} ${r.endpoint.path}\``,
+              r.ids.map((id) => `\`${id}\``).join(", "),
+            ].join(" | "),
+          )
+          .join("\n")}.
       `,
     } satisfies IAgenticaHistoryJson.IAssistantMessage,
   ];

@@ -1,7 +1,7 @@
 {
   "extends": "../../internals/config/tsconfig.json",
   "compilerOptions": {
-    "outDir": "lib",
+    "outDir": "bin",
     "plugins": [
       { "transform": "typia/lib/transform" },
       { "transform": "@nestia/core/lib/transform" },

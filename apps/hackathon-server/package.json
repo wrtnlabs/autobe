@@ -27,11 +27,14 @@
     "build:sdk": "nestia sdk",
     "dev": "rimraf lib && tsc --watch",
     "prepack": "pnpm run build",
-    "prepare": "ts-patch install && pnpm run build:env && pnpm run build:prisma"
+    "prepare": "ts-patch install && pnpm run build:env && pnpm run build:prisma",
+    "schema": "ts-node src/executable/schema.ts",
+    "start": "ts-node src/executable/server.ts"
   },
   "dependencies": {
     "@autobe/agent": "workspace:^",
     "@autobe/compiler": "workspace:^",
+    "@autobe/filesystem": "workspace:^",
     "@autobe/hackathon-api": "workspace:^",
     "@autobe/interface": "workspace:^",
     "@autobe/rpc": "workspace:^",
@@ -44,6 +47,7 @@
     "@prisma/client": "^6.15.0",
     "@samchon/openapi": "catalog:samchon",
     "bcryptjs": "^3.0.2",
+    "csv-parse": "^6.1.0",
     "dotenv": "^16.5.0",
     "dotenv-expand": "^12.0.2",
     "jsonwebtoken": "^9.0.2",

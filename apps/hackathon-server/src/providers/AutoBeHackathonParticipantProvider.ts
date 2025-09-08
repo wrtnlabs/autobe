@@ -1,9 +1,10 @@
 import {
-  IAutobeHackathon,
+  IAutoBeHackathon,
   IAutobeHackathonParticipant,
 } from "@autobe/hackathon-api";
 import { ForbiddenException } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
+import { v7 } from "uuid";
 
 import { AutoBeHackathonGlobal } from "../AutoBeHackathonGlobal";
 import { BcryptUtil } from "../utils/BcryptUtil";
@@ -26,7 +27,7 @@ export namespace AutoBeHackathonParticipantProvider {
   }
 
   export const authorize = async (props: {
-    hackathon: IAutobeHackathon;
+    hackathon: IAutoBeHackathon;
     accessToken: string | null | undefined;
   }): Promise<IAutobeHackathonParticipant> => {
     if (!props.accessToken?.length)
@@ -55,7 +56,7 @@ export namespace AutoBeHackathonParticipantProvider {
   };
 
   export const login = async (props: {
-    hackathon: IAutobeHackathon;
+    hackathon: IAutoBeHackathon;
     body: IAutobeHackathonParticipant.ILogin;
   }): Promise<IAutobeHackathonParticipant.IAuthorized> => {
     const record =
@@ -81,7 +82,7 @@ export namespace AutoBeHackathonParticipantProvider {
   };
 
   export const refresh = async (props: {
-    hackathon: IAutobeHackathon;
+    hackathon: IAutoBeHackathon;
     body: IAutobeHackathonParticipant.IRefresh;
   }): Promise<IAutobeHackathonParticipant.IAuthorized> => {
     const decoded: JwtTokenManager.IAsset = await JwtTokenManager.verify(
@@ -100,6 +101,38 @@ export namespace AutoBeHackathonParticipantProvider {
         },
       );
     if (record === null) throw new ForbiddenException("Participant not found.");
+    return await tokenize(json.transform(record));
+  };
+
+  export const join = async (props: {
+    hackathon: IAutoBeHackathon;
+    body: IAutobeHackathonParticipant.IJoin;
+  }): Promise<IAutobeHackathonParticipant.IAuthorized> => {
+    const existing =
+      await AutoBeHackathonGlobal.prisma.autobe_hackathon_participants.findFirst(
+        {
+          where: {
+            autobe_hackathon_id: props.hackathon.id,
+            email: props.body.email,
+          },
+          select: { id: true },
+        },
+      );
+    if (existing !== null)
+      throw new ForbiddenException("Email already registered.");
+
+    const record =
+      await AutoBeHackathonGlobal.prisma.autobe_hackathon_participants.create({
+        data: {
+          id: v7(),
+          autobe_hackathon_id: props.hackathon.id,
+          email: props.body.email,
+          name: props.body.name,
+          password: await BcryptUtil.hash(props.body.password),
+          created_at: new Date(),
+        },
+        ...json.select(),
+      });
     return await tokenize(json.transform(record));
   };
 

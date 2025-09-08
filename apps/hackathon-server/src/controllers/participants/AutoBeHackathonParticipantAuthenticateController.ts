@@ -1,5 +1,5 @@
 import {
-  IAutobeHackathon,
+  IAutoBeHackathon,
   IAutobeHackathonParticipant,
 } from "@autobe/hackathon-api";
 import { TypedBody, TypedParam, TypedRoute } from "@nestia/core";
@@ -15,7 +15,7 @@ export class AutoBeHackathonParticipantAuthenticateController {
     @TypedParam("hackathonCode") hackathonCode: string,
     @TypedBody() body: IAutobeHackathonParticipant.ILogin,
   ): Promise<IAutobeHackathonParticipant.IAuthorized> {
-    const hackathon: IAutobeHackathon =
+    const hackathon: IAutoBeHackathon =
       await AutoBeHackathonProvider.get(hackathonCode);
     return await AutoBeHackathonParticipantProvider.login({
       hackathon,
@@ -28,7 +28,7 @@ export class AutoBeHackathonParticipantAuthenticateController {
     @TypedParam("hackathonCode") hackathonCode: string,
     @TypedBody() body: IAutobeHackathonParticipant.IRefresh,
   ): Promise<IAutobeHackathonParticipant.IAuthorized> {
-    const hackathon: IAutobeHackathon =
+    const hackathon: IAutoBeHackathon =
       await AutoBeHackathonProvider.get(hackathonCode);
     return await AutoBeHackathonParticipantProvider.refresh({
       hackathon,
