@@ -36,6 +36,7 @@ import {
   AutoBeTestCompleteEvent,
   AutoBeTestCorrectEvent,
   AutoBeTestScenariosEvent,
+  AutoBeTestScenariosReviewEvent,
   AutoBeTestStartEvent,
   AutoBeTestValidateEvent,
   AutoBeTestWriteEvent,
@@ -376,6 +377,14 @@ export interface IAutoBeRpcListener {
    * the application.
    */
   testScenarios?(event: AutoBeTestScenariosEvent): Promise<void>;
+
+  /**
+   * Optional handler for test scenario review events.
+   *
+   * Called when test scenarios are being reviewed, allowing client applications
+   * to show the review process and any identified issues.
+   */
+  testScenariosReview?(event: AutoBeTestScenariosReviewEvent): Promise<void>;
 
   /**
    * Optional handler for test code generation progress events.

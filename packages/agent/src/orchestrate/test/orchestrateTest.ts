@@ -1,3 +1,4 @@
+import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeAssistantMessageHistory,
   AutoBeOpenApi,
@@ -8,6 +9,7 @@ import {
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
+import path from "path";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
@@ -64,10 +66,24 @@ export const orchestrateTest =
       ctx,
       scenarios,
     );
+    console.log("--------------written--------------");
     const corrects: AutoBeTestValidateEvent[] = await orchestrateTestCorrect(
       ctx,
       written,
     );
+    console.log("--------------corrects--------------");
+
+    console.log(JSON.stringify(corrects, null, 2));
+
+    await FileSystemIterator.save({
+      root: `${path.join(__dirname, "../../../../../.aaa")}/test_corrects.json`,
+      files: {
+        ...Object.fromEntries(
+          corrects.map((c) => [c.file.location, c.file.content]),
+        ),
+      },
+    });
+
     // for (const c of corrects)
     //   if (c.result.type !== "success")
     //     c.file.content = c.file.content

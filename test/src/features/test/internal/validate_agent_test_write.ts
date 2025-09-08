@@ -4,6 +4,7 @@ import { AutoBeCompilerInterfaceTemplate } from "@autobe/compiler/src/raw/AutoBe
 import { CompressUtil, FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeTestScenario,
+  AutoBeTestScenariosEvent,
   IAutoBeCompiler,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
@@ -25,14 +26,18 @@ export const validate_agent_test_write = async (
   // PREPARE ASSETS
   const { agent } = await prepare_agent_test(factory, project);
   const model: string = TestGlobal.getVendorModel();
-  const scenarios: AutoBeTestScenario[] = JSON.parse(
+  const scenarioEvents: AutoBeTestScenariosEvent[] = JSON.parse(
     await CompressUtil.gunzip(
       await fs.promises.readFile(
         `${TestGlobal.ROOT}/assets/histories/${model}/${project}.test.scenarios.json.gz`,
       ),
     ),
   );
-  typia.assert(scenarios);
+  typia.assert(scenarioEvents);
+
+  const scenarios: AutoBeTestScenario[] = scenarioEvents
+    .map((e) => e.scenarios)
+    .flat();
 
   // GENERATE TEST FUNCTIONS
   const writes: IAutoBeTestWriteResult[] = await orchestrateTestWrite(

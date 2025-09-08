@@ -17,6 +17,7 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformTestScenarioHistories } from "./histories/transformTestScenarioHistories";
+import { orchestrateTestScenarioReview } from "./orchestrateTestScenarioReview";
 import { IAutoBeTestScenarioApplication } from "./structures/IAutoBeTestScenarioApplication";
 import { IAutoBeTestScenarioAuthorizationRole } from "./structures/IAutoBeTestScenarioAuthorizationRole";
 
@@ -61,6 +62,10 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
     total: document.operations.length,
     completed: 0,
   };
+  const reviewProgress: AutoBeProgressEventBase = {
+    total: operations.length,
+    completed: 0,
+  };
   const exclude: IAutoBeTestScenarioApplication.IScenarioGroup[] = [];
   let include: AutoBeOpenApi.IOperation[] = [...document.operations];
 
@@ -79,6 +84,7 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
             include,
             exclude: exclude.map((x) => x.endpoint),
             progress,
+            reviewProgress,
             promptCacheKey,
           })),
         );
@@ -118,6 +124,7 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
     include: AutoBeOpenApi.IOperation[];
     exclude: AutoBeOpenApi.IEndpoint[];
     progress: AutoBeProgressEventBase;
+    reviewProgress: AutoBeProgressEventBase;
     promptCacheKey: string;
   },
 ): Promise<IAutoBeTestScenarioApplication.IScenarioGroup[]> => {
@@ -178,7 +185,11 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
       step: ctx.state().interface?.step ?? 0,
       created_at: new Date().toISOString(),
     });
-    return pointer.value;
+    return orchestrateTestScenarioReview(
+      ctx,
+      pointer.value,
+      props.reviewProgress,
+    );
   } catch {
     console.log("test scenario, failed to function call", props.include);
     return [];
