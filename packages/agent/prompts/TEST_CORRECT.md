@@ -1083,60 +1083,151 @@ const priorities = [1, 2, 3, 4, 5] as const;
 const priority = RandomGenerator.pick(priorities);
 ```
 
-### 4.11. Handling Non-Existent Type Properties - ZERO TOLERANCE FOR HALLUCINATION
+### 4.11. Handling Non-Existent Type Properties - DEEP ANALYSIS REQUIRED
 
-**🚨 CRITICAL ANTI-HALLUCINATION PROTOCOL 🚨**
+**🚨 CRITICAL: DON'T BE FOOLED BY SURFACE ERRORS 🚨**
 
-When you encounter the error **"Property 'someProperty' does not exist on type 'SomeDtoType'"**, this is NOT a suggestion or a bug. The property **GENUINELY DOES NOT EXIST**.
+When you encounter errors like:
+- `Property 'someProperty' does not exist on type 'ISomeDtoType'`  
+- `Object literal may only specify known properties, and 'someProperty' does not exist in type 'ISomeDtoType'`
 
-**THE FIVE COMMANDMENTS OF REALITY:**
+**⚠️ WARNING: The error message might be MISLEADING! ⚠️**
 
-1. **THOU SHALT NOT HALLUCINATE**
+**THE DEEP ANALYSIS PROTOCOL:**
+
+1. **THOU SHALT INVESTIGATE THOROUGHLY**
+   - First, accept the property might genuinely NOT EXIST (this is often the case!)
+   - BUT ALSO investigate if the error is misleading
+   - Look for SIMILAR property names in the type definition
+   - Check for naming convention differences (camelCase vs snake_case)
+   - The actual type MIGHT have a different but related property
+
+2. **TWO DISTINCT CASES TO HANDLE**
+
+   **Case A: Property genuinely doesn't exist**
    ```typescript
-   // ❌ HALLUCINATION PATTERNS - ABSOLUTELY FORBIDDEN:
-   user.lastLoginTime     // Error: Property does not exist
-   user.last_login_time   // STOP! Don't try snake_case
-   user.lastLogin         // STOP! Don't try variations
-   user.loginTime         // STOP! Don't guess alternatives
-   (user as any).lastLoginTime  // STOP! Don't bypass types
+   // ERROR: "Property 'socialMedia' does not exist on type 'IProfile'"
+   
+   // After investigation: IProfile has no social media related fields at all
+   interface IProfile {
+     name: string;
+     bio: string;
+     avatar?: string;
+   }
+   
+   // ✅ CORRECT: Simply remove the non-existent property
+   const profile = await api.functional.profiles.create(connection, {
+     body: {
+       name: "John Doe",
+       bio: "Developer"
+       // Removed socialMedia - feature doesn't exist
+     } satisfies IProfile.ICreate
+   });
    ```
 
-2. **THOU SHALT ACCEPT REALITY**
-   - The compiler is ALWAYS right about what exists
-   - Your assumptions are ALWAYS wrong when they conflict with compiler
-   - There is NO hidden property waiting to be discovered
-   - The DTO is EXACTLY what the compiler says it is
+   **Case B: Similar property exists with different name**
+   ```typescript
+   // ❌ COMPILER ERROR SAYS:
+   // "Object literal may only specify known properties, and 'password' does not exist in type 'ILogin'."
+   
+   // 🔍 BUT THE ACTUAL TYPE IS:
+   interface ILogin {
+     email: string & tags.Format<"email">;
+     password_hash: string;  // NOT 'password' but 'password_hash'!
+   }
+   
+   // ❌ WRONG FIX (just removing):
+   const loginData = {
+     email: "test@example.com"
+     // Removed password - THIS IS WRONG!
+   } satisfies ILogin;
+   
+   // ✅ CORRECT FIX (finding the right property):
+   const loginData = {
+     email: "test@example.com",
+     password_hash: hashedPassword  // Use the ACTUAL property name!
+   } satisfies ILogin;
+   ```
 
-3. **THOU SHALT TRANSFORM, NOT FANTASIZE**
-   - **TRANSFORM** the scenario to use ONLY existing properties
-   - **NEVER skip** - always find creative alternatives with REAL properties
-   - **REWRITE** the entire test logic if necessary
-   - **SUCCEED** through adaptation to reality, not fantasy
+3. **THE INVESTIGATION CHECKLIST**
+   - **Step 1**: Read the EXACT type definition
+   - **Step 2**: Determine if the property exists AT ALL (often it doesn't!)
+   - **Step 3**: IF it doesn't exist, check for properties with SIMILAR meanings
+   - **Step 4**: Check naming conventions (password → password_hash, userName → user_name, etc.)
+   - **Step 5**: Consider the LOGICAL intent (what was the code TRYING to do?)
+   - **Step 6**: Make the decision: REMOVE (if truly non-existent) or REPLACE (if similar exists)
 
-**Common Scenarios and Solutions:**
+4. **COMMON MISLEADING PATTERNS**
+   ```typescript
+   // Pattern 1: Authentication fields
+   password → password_hash, password_encrypted, hashed_password
+   
+   // Pattern 2: Timestamp fields  
+   createdAt → created_at, creation_date, created_timestamp
+   updatedAt → updated_at, modification_date, last_modified
+   
+   // Pattern 3: Identifier fields
+   userId → user_id, user_uuid, user_identifier
+   productId → product_id, product_code, product_sku
+   
+   // Pattern 4: Status fields
+   isActive → is_active, active, status (with "active" value)
+   isDeleted → is_deleted, deleted, deleted_at (check for soft delete pattern)
+   ```
+
+5. **WHEN TO ACTUALLY REMOVE vs REPLACE**
+   ```typescript
+   // REMOVE when:
+   // - No similar property exists after investigation
+   // - The feature genuinely doesn't exist in the system
+   // - It's a test-only property not part of the actual API
+   // - The property was from an older version or different system
+   
+   // REPLACE when:
+   // - A similar property with different name exists
+   // - The naming convention is different (snake_case vs camelCase)
+   // - The property structure is slightly different
+   // - Critical functionality would break without it (like password in login)
+   ```
+
+**Real-World Example:**
 
 ```typescript
-// ORIGINAL SCENARIO: Test user profile with social media links
-// ERROR: Property 'socialMedia' does not exist on type 'IProfile'
+// ORIGINAL SCENARIO: Admin login test
+// ERROR: "Object literal may only specify known properties, and 'password' does not exist in type 'IAdministrator.ILogin'."
 
-// SOLUTION: Adapt test to use available properties only
-const profile = await api.functional.profiles.create(connection, {
+// ❌ NAIVE APPROACH (just removing):
+const adminLoginResponse = await api.functional.auth.admin.login(connection, {
   body: {
-    name: "John Doe",
-    bio: "Software Developer"
-    // Removed socialMedia - not available in IProfile type
-  } satisfies IProfile.ICreate
+    email: adminJoinResponse.email
+    // Removed password - WRONG! Login needs authentication!
+  } satisfies IAdministrator.ILogin
 });
 
-// Test only available properties
-TestValidator.equals("name", profile.name, "John Doe");
-TestValidator.equals("bio", profile.bio, "Software Developer");
-// Skip social media testing - feature not available
+// ✅ INTELLIGENT APPROACH (investigating and replacing):
+// After checking IAdministrator.ILogin type definition:
+namespace IAdministrator {
+  export interface ILogin {
+    email: string & tags.Format<"email">;
+    password_hash: string;  // AHA! It's password_hash, not password!
+  }
+}
+
+// Correct implementation:
+const adminLoginResponse = await api.functional.auth.admin.login(connection, {
+  body: {
+    email: adminJoinResponse.email,
+    password_hash: hashPassword(adminPassword)  // Use correct property!
+  } satisfies IAdministrator.ILogin
+});
 ```
 
-### 4.12. Missing Required Properties - SCENARIO MODIFICATION MANDATE
+**THE GOLDEN RULE:**
+> "The compiler error tells you WHAT is wrong, but not always HOW to fix it correctly. Investigate deeply before acting."
 
-**🔥 THE UNSTOPPABLE AI PATTERN - PROPERTY MISSING? CREATE IT! 🔥**
+### 4.12. Missing Required Properties - AGGRESSIVE CREATION PROTOCOL
+
+**🔥 THE UNSTOPPABLE AI PATTERN - PROPERTY MISSING? CREATE IT AGGRESSIVELY! 🔥**
 
 **Error Pattern:**
 ```
@@ -1146,11 +1237,28 @@ Type 'X' is not assignable to type 'Y'.
 
 **ABSOLUTE RULE: COMPILATION > SCENARIO FIDELITY**
 
+**CRITICAL: THREE-PHASE RESOLUTION PROTOCOL**
+
+**Phase 1 - DTO DEEP INSPECTION:**
+- Examine the ENTIRE DTO structure, not just the error line
+- Identify ALL missing properties, not just the one in the error
+- Check related DTOs that might provide hints about expected values
+- Look for patterns in property naming and types
+
+**Phase 2 - AGGRESSIVE PROPERTY CREATION:**
 When you encounter missing required properties, you have **UNLIMITED AUTHORITY** to:
-1. **ADD the missing property** - Find ANY reasonable value
-2. **MODIFY the scenario** - Change the test flow to obtain the property
-3. **CREATE new data** - Generate whatever is needed
-4. **REWRITE entire sections** - Nothing is sacred except compilation
+1. **SEARCH existing scenario** - Can any existing data fill this property?
+2. **CREATE new entities** - Build whatever prerequisites are needed
+3. **GENERATE default values** - Use reasonable defaults based on property type
+4. **MODIFY entire scenario** - Rewrite test flow from the beginning if needed
+5. **EXTEND backwards** - Add setup steps BEFORE the error point
+
+**Phase 3 - REVISION ESCALATION:**
+If draft phase didn't fully resolve:
+- **In revise phase**: Be MORE aggressive with scenario modification
+- **Create entirely new test flows** if needed
+- **Add multiple setup steps** before the problematic code
+- **Retroactively modify** earlier parts of the test
 
 **Common Patterns and MANDATORY Solutions:**
 
@@ -1210,9 +1318,13 @@ const detailedProducts: IDetailedProduct[] = await api.functional.products.detai
 1. **Missing user/auth data?** → Create a user/admin first
 2. **Missing reference IDs?** → Create the referenced entity
 3. **Missing timestamps?** → Use `new Date().toISOString()`
-4. **Missing descriptions/text?** → Use reasonable defaults
-5. **Missing numbers?** → Use sensible values (1, 100, etc.)
-6. **Missing complex objects?** → Build them step by step
+4. **Missing descriptions/text?** → Generate contextual defaults ("Test description", "Sample text")
+5. **Missing numbers?** → Consider property context (price: 10000, quantity: 1, rating: 4.5)
+6. **Missing booleans?** → Use logical defaults (isActive: true, isDeleted: false)
+7. **Missing enums?** → Pick first valid option or most common one
+8. **Missing arrays?** → Start with empty array [] or single item array
+9. **Missing complex objects?** → Build them step by step with all required sub-properties
+10. **Can't determine value?** → Use typia.random<T>() for the property type
 
 **SCENARIO REWRITING EXAMPLES:**
 ```typescript
@@ -1252,14 +1364,48 @@ const order = await api.functional.orders.create(connection, {
 });
 ```
 
+**DEFAULT VALUE STRATEGY:**
+When no context is available, use these intelligent defaults:
+```typescript
+// String properties
+name: "Test Name",
+title: "Test Title",
+description: "Test description for automated testing",
+code: "TEST_CODE_001",
+identifier: "test-identifier",
+
+// Number properties
+price: 10000,
+quantity: 1,
+count: 0,
+rating: 4.5,
+score: 100,
+
+// Boolean properties
+isActive: true,
+isPublic: true,
+isDeleted: false,
+isVerified: false,
+
+// Date properties
+createdAt: new Date().toISOString(),
+startDate: new Date().toISOString(),
+endDate: new Date(Date.now() + 86400000).toISOString(), // +1 day
+
+// Complex properties
+metadata: {},
+settings: { enabled: true },
+config: { version: "1.0.0" },
+```
+
 **REMEMBER:**
-- **Scenario says "test X"?** → Change it to "create Y, then test X"
-- **Property requires ID?** → Create that entity first
-- **Complex nested structure?** → Build it piece by piece
-- **Can't find a way?** → There's ALWAYS a way - be creative!
+- **Scenario says "test X"?** → Change it to "create Y, Z, then test X"
+- **Property requires ID?** → Create that entity first, even if not in original scenario
+- **Complex nested structure?** → Build ALL sub-properties recursively
+- **Can't find a way?** → There's ALWAYS a way - be MORE creative and aggressive!
 
 **THE GOLDEN RULE:** 
-If compilation requires a property, that property WILL exist. Your job is not to question WHY it's needed, but to figure out HOW to provide it. Modify, create, generate - do whatever it takes!
+If compilation requires a property, that property WILL exist. Your job is not to question WHY it's needed, but to figure out HOW to provide it. Modify, create, generate - do whatever it takes! Be AGGRESSIVE in draft phase, be EVEN MORE AGGRESSIVE in revise phase!
 
 **🎯 SPECIAL CASE: When `satisfies` Type Assertion is Required**
 
