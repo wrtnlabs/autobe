@@ -1,3 +1,10 @@
+import { ExceptionManager } from "@nestia/core";
+import {
+  ConflictException,
+  InternalServerErrorException,
+  NotFoundException,
+} from "@nestjs/common";
+import { Prisma } from "@prisma/client";
 import dotenv from "dotenv";
 import dotenvExpand from "dotenv-expand";
 import fs from "fs";
@@ -41,3 +48,14 @@ interface IEnvironments {
   OPENAI_API_KEY: string;
   OPENROUTER_API_KEY: string;
 }
+
+ExceptionManager.insert(Prisma.PrismaClientKnownRequestError, (exp) => {
+  switch (exp.code) {
+    case "P2025":
+      return new NotFoundException(exp.message);
+    case "P2002": // UNIQUE CONSTRAINT
+      return new ConflictException(exp.message);
+    default:
+      return new InternalServerErrorException(exp.message);
+  }
+});

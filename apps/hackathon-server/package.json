@@ -25,10 +25,11 @@
     "build:env": "ts-node build/env.ts",
     "build:prisma": "pnpm run build:env && prisma generate --schema=./prisma/schema",
     "build:sdk": "nestia sdk",
-    "build:schema": "ts-node src/executable/schema.ts",
     "dev": "rimraf lib && tsc --watch",
     "prepack": "pnpm run build",
-    "prepare": "ts-patch install && pnpm run build:env && pnpm run build:prisma"
+    "prepare": "ts-patch install && pnpm run build:env && pnpm run build:prisma",
+    "schema": "ts-node src/executable/schema.ts",
+    "start": "ts-node src/executable/server.ts"
   },
   "dependencies": {
     "@autobe/agent": "workspace:^",
