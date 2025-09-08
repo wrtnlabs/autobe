@@ -228,7 +228,7 @@ Complete DTO type information is provided for all entities your test function wi
   - ❌ WRONG: `dto.ICustomer`
   - ✅ CORRECT: `ICustomer` (use the exact name provided)
 - **Always use `satisfies` for request body data**: When declaring or assigning request body DTOs, use `satisfies` keyword:
-  - Variable declaration: `const requestBody = { ... } satisfies IRequestBody;`
+  - Variable declaration: `const requestBody = { ... } satisfies IRequestBody;` (NEVER add type annotation)
   - API function body parameter: `body: { ... } satisfies IRequestBody`
   - Never use `as` keyword for type assertions with request bodies
 
@@ -980,31 +980,31 @@ A common mistake is using `null` for properties that only accept `undefined` (an
 
 ```typescript
 // ❌ WRONG: Using null for properties that only accept undefined
-const requestBody: ICommunityPlatformSubCommunityMembership.IRequest = {
+const requestBody = {
   page: 1,
   limit: 10,
   member_id: null, // Type error: string | undefined doesn't accept null
   sub_community_id: null, // Type error: string | undefined doesn't accept null
   joined_at: null, // Type error: string | undefined doesn't accept null
   left_at: null, // Type error: string | undefined doesn't accept null
-};
+} satisfies ICommunityPlatformSubCommunityMembership.IRequest;
 
 // ✅ CORRECT: Use undefined or omit the property entirely
-const requestBody: ICommunityPlatformSubCommunityMembership.IRequest = {
+const requestBody = {
   page: 1,
   limit: 10,
   // Option 1: Omit optional properties entirely
-};
+} satisfies ICommunityPlatformSubCommunityMembership.IRequest;
 
 // ✅ CORRECT: Or explicitly set to undefined if needed
-const requestBody: ICommunityPlatformSubCommunityMembership.IRequest = {
+const requestBody = {
   page: 1,
   limit: 10,
   member_id: undefined,
   sub_community_id: undefined,
   joined_at: undefined,
   left_at: undefined,
-};
+} satisfies ICommunityPlatformSubCommunityMembership.IRequest;
 ```
 
 **Type Definition Examples:**
@@ -2563,9 +2563,92 @@ const age = typia.random<number & tags.Type<"uint32"> & tags.Minimum<0> & tags.M
 
 **Rule:** The `satisfies ... as ...` pattern is for resolving type compatibility issues, not standard coding practice.
 
-## 4.6. Avoiding Illogical Code Patterns
+## 4.6. Request Body Variable Declaration Guidelines
 
-### 4.6.1. Common Illogical Anti-patterns
+### 4.6.1. CRITICAL: Never Use Type Annotations with Request Body Variables
+
+**🚨 FORBIDDEN Pattern:**
+```typescript
+// ❌ NEVER: Type annotation with satisfies
+const requestBody: ISomeRequestBody = { ... } satisfies ISomeRequestBody;
+```
+
+**✅ CORRECT Pattern:**
+```typescript
+// ✅ CORRECT: Only use satisfies without type annotation
+const requestBody = { ... } satisfies ISomeRequestBody;
+```
+
+**Why This Rule Exists:**
+When you declare a variable with a type annotation, TypeScript treats optional properties (nullable/undefined) according to the interface definition. Even if you provide non-null, non-undefined values, the variable's type still includes `null | undefined` for optional properties. This forces unnecessary null checks in test code.
+
+**Example Problem:**
+```typescript
+// Interface definition
+namespace IUser {
+  export interface ICreate {
+    name: string;
+    email?: string | null | undefined;
+    phone?: string | null | undefined;
+  }
+}
+
+// ❌ WRONG: With type annotation
+const userBody: IUser.ICreate = {
+  name: "John",
+  email: "john@example.com",  // Actual value is string, not undefined
+  phone: "123-456-7890"       // Actual value is string, not undefined
+} satisfies IUser.ICreate;
+
+// Now you must do unnecessary checks:
+if (userBody.email) {  // Unnecessary check - we know it's not undefined
+  TestValidator.equals("email", userBody.email, "john@example.com");
+}
+
+// ✅ CORRECT: Without type annotation
+const userBody = {
+  name: "John",
+  email: "john@example.com",  // TypeScript knows this is string
+  phone: "123-456-7890"       // TypeScript knows this is string
+} satisfies IUser.ICreate;
+
+// Direct access without null checks:
+TestValidator.equals("email", userBody.email, "john@example.com");  // No error!
+```
+
+**Key Benefits:**
+1. **Type inference**: TypeScript infers the actual types from values
+2. **No redundant checks**: Avoid unnecessary null/undefined checks
+3. **Type safety**: `satisfies` still ensures type compatibility
+4. **Cleaner code**: Less boilerplate in test assertions
+
+**Rule Application:**
+- **API calls**: Apply the same pattern in body parameters
+- **Variable declarations**: Always omit type annotations with `satisfies`
+- **Test data**: Particularly important for test data preparation
+
+```typescript
+// ✅ CORRECT: In API calls
+await api.functional.users.create(connection, {
+  body: { name: "John", email: "john@example.com" } satisfies IUser.ICreate
+});
+
+// ✅ CORRECT: Complex nested data
+const orderData = {
+  customer: {
+    name: "John Doe",
+    email: "john@example.com"
+  },
+  items: [
+    { productId: "123", quantity: 2 }
+  ],
+  shippingAddress: "123 Main St"
+} satisfies IOrder.ICreate;
+```
+
+## 4.7. Avoiding Illogical Code Patterns
+
+### 4.7.1. Common Illogical Anti-patterns
 
 When generating test code, avoid these common illogical patterns that often lead to compilation errors:
 
@@ -2684,7 +2767,7 @@ const unauthConn: api.IConnection = { ...connection, headers: {} };
 - Am I setting a value that's already been set?
 - Does the sequence of operations follow logical business rules?
 
-### 4.6.2. Business Logic Validation Patterns
+### 4.7.2. Business Logic Validation Patterns
 
 **1. Validate Prerequisites Before Actions**
 ```typescript
@@ -2754,7 +2837,7 @@ const checkIn = await api.functional.events.registrations.checkIn(connection, {
 });
 ```
 
-### 4.6.3. Data Consistency Patterns
+### 4.7.3. Data Consistency Patterns
 
 **1. Maintain Referential Integrity**
 ```typescript
@@ -2815,7 +2898,7 @@ const published = await api.functional.articles.publish(connection, {
 });
 ```
 
-### 4.6.4. Error Scenario Patterns
+### 4.7.4. Error Scenario Patterns
 
 **1. Test Logical Business Rule Violations**
 ```typescript
@@ -2853,7 +2936,7 @@ await TestValidator.error(
 );
 ```
 
-### 4.6.5. Best Practices Summary
+### 4.7.5. Best Practices Summary
 
 1. **Always follow the natural business flow**: Don't skip steps or create impossible scenarios
 2. **Respect data relationships**: Ensure parent-child, ownership, and reference relationships are valid
@@ -2863,9 +2946,9 @@ await TestValidator.error(
 6. **Maintain data consistency**: Don't create orphaned records or broken references
 7. **Use realistic test data**: Random data should still make business sense
 
-## 4.7. AI-Driven Autonomous TypeScript Syntax Deep Analysis
+## 4.8. AI-Driven Autonomous TypeScript Syntax Deep Analysis
 
-### 4.7.1. Autonomous TypeScript Syntax Review Mission
+### 4.8.1. Autonomous TypeScript Syntax Review Mission
 
 **YOUR MISSION**: Beyond generating functional test code, you must autonomously conduct a comprehensive TypeScript syntax review. Leverage your deep understanding of TypeScript to proactively write code that demonstrates TypeScript mastery and avoids common pitfalls.
 
@@ -2886,7 +2969,7 @@ await TestValidator.error(
    - Apply template literal types for string patterns
    - Leverage mapped types for consistent object transformations
 
-### 4.7.2. Proactive TypeScript Pattern Excellence
+### 4.8.2. Proactive TypeScript Pattern Excellence
 
 **Write code that demonstrates these TypeScript best practices from the start:**
 
@@ -2911,7 +2994,7 @@ const response: IUser.IProfile = await api.functional.users.profile.get(connecti
 typia.assert(response); // Runtime validation
 ```
 
-### 4.7.3. TypeScript Anti-Patterns to Avoid
+### 4.8.3. TypeScript Anti-Patterns to Avoid
 
 **Never write code with these common TypeScript mistakes:**
 
@@ -2931,7 +3014,7 @@ async function processData(input) { // Missing types!
 const value = possiblyNull!; // Runtime error waiting to happen
 ```
 
-## 4.8. CRITICAL: AI Must Generate TypeScript Code, NOT Markdown Documents
+## 4.9. CRITICAL: AI Must Generate TypeScript Code, NOT Markdown Documents
 
 **🚨 CRITICAL: AI must generate TypeScript code directly, NOT markdown documents with code blocks 🚨**
 
