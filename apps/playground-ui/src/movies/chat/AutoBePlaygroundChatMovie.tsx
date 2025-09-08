@@ -31,7 +31,14 @@ export function AutoBePlaygroundChatMovie(
   );
 
   // Configuration fields for AutoBE Playground (adds serverUrl to defaults)
-  const configFields = createAutoBeConfigFields(["serverUrl"]);
+  const configFields = createAutoBeConfigFields({
+    key: "serverUrl",
+    label: "Server URL",
+    type: "text",
+    storageKey: "autobe_server_url",
+    placeholder: "http://localhost:5890",
+    required: true,
+  });
 
   // Service factory function
   const serviceFactory = async (config: IAutoBeConfig) => {

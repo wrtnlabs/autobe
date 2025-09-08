@@ -13,6 +13,7 @@ export interface IConfigField {
   type: "text" | "number" | "checkbox";
   placeholder?: string;
   suggestions?: string[];
+  required?: boolean;
   min?: number;
   max?: number;
   storageKey: string;
@@ -106,7 +107,7 @@ export const AutoBeConfigModal = (props: IAutoBeConfigModalProps) => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        zIndex: 1000,
+        zIndex: 1002,
       }}
       onClick={props.onClose}
     >
@@ -237,6 +238,7 @@ export const AutoBeConfigModal = (props: IAutoBeConfigModalProps) => {
                   suggestions={field.suggestions?.map((value) => ({ value }))}
                   min={field.min}
                   max={field.max}
+                  required={field.required}
                 />
               )}
             </div>
@@ -333,13 +335,6 @@ const ConfigButton = ({
 
 /** All available AutoBE configuration fields */
 const ALL_CONFIG_FIELDS: Record<string, IConfigField> = {
-  serverUrl: {
-    key: "serverUrl",
-    label: "Server URL",
-    type: "text",
-    storageKey: "autobe_server_url",
-    placeholder: "http://localhost:5890",
-  },
   locale: {
     key: "locale",
     label: "Language",
@@ -381,6 +376,7 @@ const ALL_CONFIG_FIELDS: Record<string, IConfigField> = {
     storageKey: "autobe_openapi_key_encrypted",
     placeholder: "sk-...",
     encrypted: true,
+    required: true,
   },
   baseUrl: {
     key: "baseUrl",
@@ -410,17 +406,6 @@ const ALL_CONFIG_FIELDS: Record<string, IConfigField> = {
 /** Available config field keys */
 export type AutoBeConfigKey = keyof typeof ALL_CONFIG_FIELDS;
 
-/** Default config keys (excluding serverUrl and other non-standard fields) */
-const DEFAULT_CONFIG_KEYS: AutoBeConfigKey[] = [
-  "locale",
-  "schemaModel",
-  "aiModel",
-  "openApiKey",
-  "baseUrl",
-  "semaphore",
-  "supportAudioEnable",
-];
-
 /**
  * Create AutoBE configuration fields with additional keys and optional
  * extensions
@@ -448,17 +433,9 @@ const DEFAULT_CONFIG_KEYS: AutoBeConfigKey[] = [
  * @returns Array of default + additional + extended config fields
  */
 export const createAutoBeConfigFields = (
-  additionalKeys: AutoBeConfigKey[] = [],
-  extensions: IConfigField[] = [],
+  ...extensions: IConfigField[]
 ): IConfigField[] => {
-  // Always include default keys + additional keys (remove duplicates)
-  const allKeys = [...new Set([...DEFAULT_CONFIG_KEYS, ...additionalKeys])];
-
-  const selectedFields = allKeys
-    .filter((key) => key in ALL_CONFIG_FIELDS)
-    .map((key) => ({ ...ALL_CONFIG_FIELDS[key] })); // Clone to avoid mutations
-
-  return [...selectedFields, ...extensions];
+  return [...Object.values(ALL_CONFIG_FIELDS), ...extensions];
 };
 
 export default AutoBeConfigModal;

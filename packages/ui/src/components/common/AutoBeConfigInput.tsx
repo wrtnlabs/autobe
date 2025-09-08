@@ -12,6 +12,7 @@ export interface IAutoBeConfigInputProps {
   max?: number;
   style?: CSSProperties;
   disabled?: boolean;
+  required?: boolean;
 }
 
 /**
@@ -31,9 +32,15 @@ export const AutoBeConfigInput = (props: IAutoBeConfigInputProps) => {
     max,
     style,
     disabled = false,
+    required = false,
   } = props;
 
   const suggestionId = `suggestions-${label.replace(/\s+/g, "-").toLowerCase()}`;
+
+  // Check if field is required and empty
+  const isEmpty =
+    value === "" || (typeof value === "string" && value.trim() === "");
+  const isRequiredEmpty = required && isEmpty;
 
   return (
     <div style={{ ...style }}>
@@ -42,12 +49,15 @@ export const AutoBeConfigInput = (props: IAutoBeConfigInputProps) => {
           display: "block",
           fontSize: "0.875rem",
           fontWeight: "500",
-          color: "#374151",
+          color: isRequiredEmpty ? "#dc3545" : "#374151",
           marginBottom: "0.5rem",
         }}
       >
         {icon && `${icon} `}
         {label}
+        {required && (
+          <span style={{ color: "#dc3545", marginLeft: "0.25rem" }}>*</span>
+        )}
       </label>
       <input
         type={type}
@@ -61,26 +71,51 @@ export const AutoBeConfigInput = (props: IAutoBeConfigInputProps) => {
         style={{
           width: "100%",
           padding: "0.75rem",
-          border: "1px solid #d1d5db",
+          border: `1px solid ${isRequiredEmpty ? "#dc3545" : "#d1d5db"}`,
           borderRadius: "8px",
           fontSize: "0.875rem",
           transition: "border-color 0.2s ease",
           outline: "none",
           boxSizing: "border-box",
-          backgroundColor: disabled ? "#f9fafb" : "white",
+          backgroundColor: disabled
+            ? "#f9fafb"
+            : isRequiredEmpty
+              ? "#fef2f2"
+              : "white",
           color: disabled ? "#9ca3af" : "#000000",
         }}
         onFocus={(e) => {
-          if (!disabled) {
+          if (!disabled && !isRequiredEmpty) {
             e.currentTarget.style.borderColor = "#3b82f6";
           }
         }}
         onBlur={(e) => {
           if (!disabled) {
-            e.currentTarget.style.borderColor = "#d1d5db";
+            const newIsEmpty =
+              e.currentTarget.value === "" ||
+              e.currentTarget.value.trim() === "";
+            const newIsRequiredEmpty = required && newIsEmpty;
+            e.currentTarget.style.borderColor = newIsRequiredEmpty
+              ? "#dc3545"
+              : "#d1d5db";
           }
         }}
       />
+      {isRequiredEmpty && (
+        <div
+          style={{
+            fontSize: "0.75rem",
+            color: "#dc3545",
+            marginTop: "0.25rem",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.25rem",
+          }}
+        >
+          <span>⚠️</span>
+          This field is required
+        </div>
+      )}
       {suggestions && (
         <datalist id={suggestionId}>
           {suggestions.map((suggestion, index) => (

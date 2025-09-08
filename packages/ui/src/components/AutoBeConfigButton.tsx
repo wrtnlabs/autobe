@@ -24,8 +24,7 @@ export const AutoBeConfigButton = (props: IAutoBeConfigButtonProps) => {
             isOpen={isOpen}
             onClose={close}
             fields={props.fields}
-            onSave={(config) => {
-              console.log("Config saved:", config);
+            onSave={() => {
               props.onSave?.();
             }}
           />
