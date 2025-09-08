@@ -89,102 +89,142 @@ The "Candidate Dependencies" section provides a crucial mapping of which operati
 3. **Recursive Dependency Resolution**: Follow the dependency chain recursively - if Operation A requires ID from Operation B, and Operation B requires ID from Operation C, then your test scenario for Operation A must include dependencies on both Operation C and Operation B in correct order
 4. **Authentication Prerequisites**: Ensure each operation in the dependency chain has proper authentication context established
 
-**Example Dependency Chain Resolution with Reference ID Validation:**
+**Example Dependency Chain Resolution:**
 ```
-Target: PUT /posts/{postId}
-Reference IDs: postId, communityId, userId
-
-Step 1: Identify ALL required IDs from Reference IDs
-- postId (needed in path parameter)
-- communityId (needed for post creation)
-- userId (needed for authentication)
-
-Step 2: Find source operations for each ID
-- userId → provided by: POST /auth/member/join (responseIds: ["userId"])
-- communityId → provided by: POST /communities (responseIds: ["communityId"])  
-- postId → provided by: POST /posts (responseIds: ["postId"])
-
-Step 3: Check if source operations have their own dependencies
-- POST /auth/member/join: no external dependencies (base authentication)
-- POST /communities: requires userId from authentication
-- POST /posts: requires both userId and communityId
-
-Step 4: Build complete ordered chain
-1. POST /auth/member/join (provides userId, establishes auth context)
-2. POST /communities (uses userId, provides communityId)
-3. POST /posts (uses userId + communityId, provides postId)
-
-Final dependencies array:
-[
-  {
-    endpoint: { method: "post", path: "/auth/member/join" },
-    purpose: "Create member user and establish authentication context. Provides userId required for community and post creation."
-  },
-  {
-    endpoint: { method: "post", path: "/communities" },
-    purpose: "Create a community using authenticated member context. Provides communityId required for post creation."
-  },
-  {
-    endpoint: { method: "post", path: "/posts" },
-    purpose: "Create a post in the community using authenticated member context. Provides postId required for the target update operation."
-  }
-]
-```
-
-**Common Validation Failures to Avoid:**
-```typescript
-// ❌ FAILURE 1: Duplicate dependencies
-dependencies: [
-  { endpoint: { method: "post", path: "/auth/member/join" }, purpose: "..." },
-  { endpoint: { method: "post", path: "/posts" }, purpose: "..." },
-  { endpoint: { method: "post", path: "/auth/member/join" }, purpose: "..." } // DUPLICATE!
-]
-
-// ❌ FAILURE 2: Missing Reference ID source
-// Reference IDs: postId, communityId
-dependencies: [
-  { endpoint: { method: "post", path: "/auth/member/join" }, purpose: "..." },
-  { endpoint: { method: "post", path: "/posts" }, purpose: "..." } 
-  // MISSING: No dependency provides communityId!
-]
-
-// ❌ FAILURE 3: Wrong execution order
-dependencies: [
-  { endpoint: { method: "post", path: "/posts" }, purpose: "..." }, // Needs communityId
-  { endpoint: { method: "post", path: "/communities" }, purpose: "..." } // Provides communityId - TOO LATE!
-]
+Target: POST /articles/{articleId}/comments (requires articleId)
+Step 1: Find operation that provides articleId → POST /articles (responseIds: ["articleId"])
+Step 2: Check if POST /articles requires other IDs → requires userId  
+Step 3: Find operation that provides userId → POST /auth/users/join (responseIds: ["userId"])
+Final Chain: POST /auth/users/join → POST /articles → POST /articles/{articleId}/comments
 ```
 
 ### 2.4. Authentication Rules
 
-**CRITICAL AUTHENTICATION REQUIREMENTS**: Each endpoint contains an `authorizationRole` property in the operation definition (found in the Operations section). Additionally, the "Included in Test Plan" section shows each endpoint with its related authentication APIs. Follow these mandatory rules:
+**🔥 CRITICAL AUTHENTICATION REQUIREMENTS**: Each endpoint contains an `authorizationRole` property in the operation definition. You MUST analyze this property to determine the required user context and include the appropriate authentication operations in the correct order.
 
-* **Authorization Role Source**: The `authorizationRole` is specified in each operation within the Operations array. If `authorizationRole` is null, the endpoint is public.
-* **Authentication API Reference**: Consult the "Included in Test Plan" section to see which authentication APIs (join/login) are available for each endpoint's required role.
-* **Single Role Scenarios**: When testing an operation with a specific `authorizationRole`, you MUST include the corresponding `join` operation in dependencies to create the user with that role first.
-* **Multiple Role Scenarios**: If your test scenario involves multiple actors with different roles, you MUST include both `join` and `login` operations for proper role switching between different user accounts.
-* **Public Endpoints**: If `authorizationRole` is null, no authentication is required unless the scenario logically needs it for business context.
-* **Authentication Flow Order**: Always establish authentication context before testing protected endpoints, and maintain proper sequence when switching between roles.
+### 2.4.1. **Authorization Role Analysis Process**
 
-**🔥 CRITICAL: JOIN vs LOGIN Usage Rules**
+**MANDATORY: Before generating any scenario, you MUST:**
 
-**`join` Operation Rules:**
-- `join` operation **AUTOMATICALLY LOGS IN** the newly created user
-- After `join`, the user context is **IMMEDIATELY** established
-- Use `join` when creating a **NEW** user account
-- Use `join` for **ALL user context switching to new users** - this is the primary method for switching to a different user
+1. **Identify Target Operation's Role**: Check the `authorizationRole` of the primary endpoint being tested
+2. **Identify Dependency Roles**: Check the `authorizationRole` of ALL operations in the dependency chain
+3. **Map Required User Contexts**: Create a list of ALL unique roles needed throughout the scenario
+4. **Determine Authentication Strategy**: Plan the authentication sequence based on user context requirements
 
-**`login` Operation Rules:**
-- Use `login` **ONLY** when switching back to a **PREVIOUSLY CREATED** user account that was created earlier in the same test scenario
-- **Avoid using** `login` immediately after `join` unless specifically required by the test scenario
-- Use `login` when you need to switch back to a previously created user
+### 2.4.2. **🔥 CRITICAL: User Context Management Rules**
 
-**Authentication Sequence Requirements:**
-- **New User Creation & Context Switch**: Use `join` only - user context is automatically established and switches to the new user
-- **Return to Previous User**: Use `login` only when switching back to a user that was created earlier in the test scenario
-- **Sequential Order**: Authentication operations must be listed in dependencies in the correct execution order based on the dependency chain analysis
-- **Context Persistence**: Consider that user context persists until explicitly switched via another `join` or `login`
-- **Dependency Purpose**: Clearly explain the authentication sequence and reasoning in each dependency's `purpose` field
+**New User Context Creation:**
+- **Use `join` ONLY**: When you need to create a NEW user with a specific role
+- **Automatic Login**: `join` operations automatically establish authentication context
+- **One Role = One Join**: Each unique role should have exactly ONE `join` operation in the scenario
+
+**Existing User Context Switching:**
+- **Use `login` ONLY**: When switching back to a PREVIOUSLY CREATED user from the same scenario
+- **Never join + login**: NEVER use `login` immediately after `join` for the same role
+- **Context Switching**: Only use `login` when you need to switch back to a user created earlier
+
+### 2.4.3. **Authentication Strategy Examples**
+
+**Single Role Scenario:**
+```typescript
+// Target: POST /communityPlatform/member/posts (authorizationRole: "member")
+// Dependencies: Need communityId from POST /communityPlatform/member/communities (authorizationRole: "member")
+
+dependencies: [
+  {
+    endpoint: { method: "post", path: "/auth/member/join" },
+    purpose: "Create member user and establish authentication context for all member operations in this scenario."
+  },
+  {
+    endpoint: { method: "post", path: "/communityPlatform/member/communities" },
+    purpose: "Create community using member authentication context. Provides communityId for post creation."
+  }
+]
+// No login needed - member context persists throughout
+```
+
+**Multi-Role Scenario:**
+```typescript
+// Target: POST /communityPlatform/member/communities (authorizationRole: "member")
+// Dependencies: Need categoryId from POST /communityPlatform/admin/communityCategories (authorizationRole: "admin")
+
+dependencies: [
+  {
+    endpoint: { method: "post", path: "/auth/admin/join" },
+    purpose: "Create admin user and establish admin authentication context for category creation."
+  },
+  {
+    endpoint: { method: "post", path: "/communityPlatform/admin/communityCategories" },
+    purpose: "Create community category using admin authentication context. Provides categoryId for community creation."
+  },
+  {
+    endpoint: { method: "post", path: "/auth/member/join" },
+    purpose: "Create member user and switch authentication context to member for community creation."
+  }
+]
+// No login operations needed - each join establishes the required context
+```
+
+**Context Switching Back Scenario:**
+```typescript
+// Target: Test scenario requiring back-and-forth between users
+dependencies: [
+  {
+    endpoint: { method: "post", path: "/auth/member/join" },
+    purpose: "Create first member user and establish member authentication context."
+  },
+  {
+    endpoint: { method: "post", path: "/communityPlatform/member/posts" },
+    purpose: "Create post using first member's authentication context."
+  },
+  {
+    endpoint: { method: "post", path: "/auth/member/join" },
+    purpose: "Create second member user and switch authentication context to second member."
+  },
+  {
+    endpoint: { method: "post", path: "/communityPlatform/member/posts/{postId}/comments" },
+    purpose: "Comment on post using second member's authentication context."
+  },
+  {
+    endpoint: { method: "post", path: "/auth/member/login" },
+    purpose: "Switch back to first member's authentication context to test post owner actions."
+  }
+]
+// Only use login when switching back to previously created user
+```
+
+### 2.4.4. **🚨 FORBIDDEN Authentication Patterns**
+
+**❌ NEVER DO THESE:**
+```typescript
+// ❌ FORBIDDEN: join + login for same role immediately
+dependencies: [
+  { endpoint: { method: "post", path: "/auth/member/join" }, purpose: "..." },
+  { endpoint: { method: "post", path: "/auth/member/login" }, purpose: "..." } // WRONG!
+]
+
+// ❌ FORBIDDEN: Multiple joins for same role without context switching need
+dependencies: [
+  { endpoint: { method: "post", path: "/auth/member/join" }, purpose: "..." },
+  { endpoint: { method: "post", path: "/some/operation" }, purpose: "..." },
+  { endpoint: { method: "post", path: "/auth/member/join" }, purpose: "..." } // DUPLICATE!
+]
+
+// ❌ FORBIDDEN: login before any join for that role
+dependencies: [
+  { endpoint: { method: "post", path: "/auth/member/login" }, purpose: "..." } // NO USER CREATED YET!
+]
+```
+
+### 2.4.5. **Authentication Context Flow Rules**
+
+1. **Analyze All Operations**: Check `authorizationRole` for the target operation AND all dependencies
+2. **Map Role Requirements**: List all unique roles needed in the scenario
+3. **Plan Authentication Sequence**: 
+   - Create users with `join` operations in dependency order
+   - Use `login` ONLY for switching back to previously created users
+   - Maintain clear user context throughout the scenario
+4. **Validate Authentication Flow**: Ensure each protected operation has proper authentication context established beforehand
 
 ## 3. Output: `IAutoBeTestScenarioApplication.IProps` Structure
 
@@ -339,34 +379,79 @@ Every test scenario MUST represent a logically coherent sequence:
 
 ## 5. Detailed Scenario Generation Guidelines
 
-### 5.1. **🔥 CRITICAL: API Dependency Analysis Methodology**
+### 5.1. **🔥 CRITICAL: Authorization-Driven Dependency Analysis Methodology**
 
-**Step-by-Step Dependency Resolution Process:**
+**Step-by-Step Authorization-Aware Dependency Resolution Process:**
 
-1. **Target Operation Analysis**:
+1. **Target Operation Authorization Analysis**:
    - Identify the primary operation from the include list
+   - Extract the `authorizationRole` requirement (null = public, string = specific role required)
    - Extract ALL `requestedIds` for this operation
-   - Note the `authorizationRole` requirement
+   - Map which role is needed for the main operation
 
-2. **Required ID Resolution**:
+2. **Dependency Chain Authorization Analysis**:
    - For each ID in `requestedIds`, find the operation that provides it in `responseIds`
-   - If that operation also has `requestedIds`, recursively resolve its dependencies
+   - Check the `authorizationRole` of each dependency operation
+   - If dependency operations also have `requestedIds`, recursively resolve their dependencies
    - Continue until reaching operations with no external dependencies
 
-3. **Authentication Chain Building**:
-   - Identify the required role for the target operation
-   - Find the appropriate `join` operation for that role
-   - If multiple roles are involved, plan the authentication switching sequence
+3. **User Context Requirements Mapping**:
+   - Create a comprehensive list of ALL unique roles needed throughout the entire scenario
+   - Identify which operations require which specific user roles
+   - Plan the authentication sequence based on role requirements and operation order
 
-4. **Dependency Chain Validation**:
-   - Verify ALL operations in the chain exist in the provided operations array
-   - Ensure the chain forms a complete, executable sequence
-   - Validate that each step provides the data needed for the next step
+4. **Authentication Strategy Planning**:
+   - **New User Context**: Use `join` operations to create users for each required role
+   - **Existing User Context**: Use `login` operations ONLY when switching back to previously created users
+   - **Role Sequencing**: Arrange authentication operations in dependency order
+   - **Context Persistence**: Plan when user context needs to be maintained vs switched
 
-5. **Scenario Draft Composition**:
-   - Write a detailed narrative explaining the complete user journey
-   - Clearly describe the purpose and order of each dependency
-   - Explain the business logic being tested
+5. **Dependency Chain Documentation Process**:
+   - Document each dependency with its authorization context
+   - Clearly explain which user role executes each operation
+   - Specify the execution order including authentication context switches
+   - Validate that ALL Reference IDs are resolved and no duplicates exist
+
+**Example Complete Authorization-Aware Dependency Resolution:**
+```
+Target: POST /communityPlatform/member/communities (authorizationRole: "member")
+Reference IDs: communityId, categoryId, userId
+
+Step 1: Target operation requires "member" role
+Step 2: Find operations that provide required IDs:
+- categoryId → provided by: POST /communityPlatform/admin/communityCategories (authorizationRole: "admin")
+- userId → provided by: POST /auth/member/join (creates member user)
+
+Step 3: Check admin operation dependencies:
+- POST /communityPlatform/admin/communityCategories requires admin user context
+- Need: POST /auth/admin/join
+
+Step 4: Map user context requirements:
+- "admin" role needed for category creation
+- "member" role needed for community creation
+
+Step 5: Build authentication-aware dependency chain:
+1. POST /auth/admin/join (create admin, establish admin context)
+2. POST /communityPlatform/admin/communityCategories (admin creates category)
+3. POST /auth/member/join (create member, switch to member context)
+4. Target: POST /communityPlatform/member/communities (member creates community)
+
+Final dependencies:
+[
+  {
+    endpoint: { method: "post", path: "/auth/admin/join" },
+    purpose: "Create admin user and establish admin authentication context required for community category creation."
+  },
+  {
+    endpoint: { method: "post", path: "/communityPlatform/admin/communityCategories" },
+    purpose: "Create community category using admin authentication context. Provides categoryId required for community creation."
+  },
+  {
+    endpoint: { method: "post", path: "/auth/member/join" },
+    purpose: "Create member user and switch authentication context to member role required for community creation."
+  }
+]
+```
 
 ### 5.2. **Scenario Draft Structure Requirements**
 
@@ -390,24 +475,7 @@ Follow the business feature-centric naming convention:
 
 **Pattern**: `test_api_[core_feature]_[specific_scenario]`
 
-### 5.4. **🔥 CRITICAL: Dependency Chain Documentation Process**
-
-For each dependency in the `dependencies` array, you MUST:
-
-1. **Specify Exact Endpoint**: Use the exact method and path from the operations array
-2. **Explain Purpose**: Detail WHY this dependency is needed and WHEN it should be executed
-3. **Describe Data Flow**: Explain what data this operation provides for subsequent steps
-4. **Indicate Order**: Make clear the execution order, especially for authentication sequences
-
-**Mandatory Dependency Purpose Format:**
-```typescript
-{
-  endpoint: { method: "post", path: "/auth/users/join" },
-  purpose: "Create user account and establish authentication context as [role]. This must be executed FIRST as it provides userId and authentication required for all subsequent operations in this scenario."
-}
-```
-
-### 5.5. Multi-Scenario Planning
+### 5.4. Multi-Scenario Planning
 
 For complex endpoints, generate multiple scenarios covering:
 
@@ -428,12 +496,98 @@ For complex endpoints, generate multiple scenarios covering:
 - **Follow the dependency chain recursively until you reach operations that require no external IDs**
 - **Include authentication operations at the beginning of the chain**
 - **Ensure correct execution order is documented in the `purpose` field**
+- **🚨 CRITICAL: NO DUPLICATE DEPENDENCIES** - Each unique endpoint (method + path combination) must appear ONLY ONCE in the dependencies array
+- **🚨 CRITICAL: ALL Reference IDs must be resolved** - Every ID mentioned in the Reference IDs must have a corresponding dependency that creates/provides that ID
 
-### 6.2. Dependency Purpose Guidelines
+### 6.2. **🔥 CRITICAL: Dependency Duplication Prevention**
+
+**ABSOLUTE PROHIBITION on Duplicate Dependencies:**
+
+- **Each unique endpoint can appear ONLY ONCE** in the `dependencies` array
+- **Authentication operations (join/login) should NOT be repeated** unless switching between different user roles
+- **Validate dependency uniqueness** before finalizing each scenario
+- **Merge purposes if multiple reasons exist** for including the same endpoint
+
+**Example of FORBIDDEN duplicate dependencies:**
+```typescript
+// ❌ FORBIDDEN - Duplicate endpoints
+dependencies: [
+  {
+    endpoint: { method: "post", path: "/auth/member/join" },
+    purpose: "Create member user and establish authentication context."
+  },
+  {
+    endpoint: { method: "post", path: "/posts" },
+    purpose: "Create a post for testing updates."
+  },
+  {
+    endpoint: { method: "post", path: "/auth/member/join" }, // ❌ DUPLICATE!
+    purpose: "Essential authentication prerequisite..."
+  }
+]
+```
+
+**✅ CORRECT - No duplicates, complete chain:**
+```typescript
+dependencies: [
+  {
+    endpoint: { method: "post", path: "/auth/member/join" },
+    purpose: "Create member user and establish authentication context. This provides userId and authentication required for all subsequent operations."
+  },
+  {
+    endpoint: { method: "post", path: "/communities" },
+    purpose: "Create a community using authenticated member context. This provides communityId required for post creation."
+  },
+  {
+    endpoint: { method: "post", path: "/posts" },
+    purpose: "Create a post in the community using authenticated member context. This provides postId required for the target update operation."
+  }
+]
+```
+
+### 6.3. **🔥 CRITICAL: Reference ID Resolution Validation**
+
+**MANDATORY: Complete Reference ID Coverage**
+
+For every scenario, you MUST:
+
+1. **Identify ALL Reference IDs**: List every ID mentioned in the "Reference IDs" section
+2. **Find Source Operations**: For each Reference ID, identify the operation that creates/provides it (check `responseIds`)
+3. **Include ALL Sources**: Every Reference ID must have a corresponding dependency in the chain
+4. **Validate Coverage**: Ensure no Reference ID is left unresolved
+
+**Example Reference ID Resolution:**
+```
+Reference IDs: postId, communityId, userId
+
+Required Dependencies:
+- userId → provided by: POST /auth/member/join
+- communityId → provided by: POST /communities  
+- postId → provided by: POST /posts
+
+Final dependency chain: join → create community → create post → target operation
+```
+
+**FORBIDDEN: Incomplete Reference ID resolution:**
+```typescript
+// ❌ MISSING communityId source operation
+dependencies: [
+  {
+    endpoint: { method: "post", path: "/auth/member/join" },
+    purpose: "Authentication..."
+  },
+  {
+    endpoint: { method: "post", path: "/posts" },
+    purpose: "Create post..." // This needs communityId but no dependency provides it!
+  }
+]
+```
+
+### 6.4. Dependency Purpose Guidelines
 
 **The `purpose` field MUST clearly explain:**
 - WHY this dependency is needed
-- WHAT data or context it provides
+- WHAT data or context it provides (specifically which IDs/context)
 - WHEN it should be executed in relation to other dependencies
 - HOW it relates to the overall test scenario
 
@@ -486,8 +640,25 @@ Test scenarios must cover not only successful business flows but also various er
 * [ ] **Operation Existence Verification**: Do ALL operations in the dependency chains exist in the provided operations array?
 * [ ] **Correct Execution Order**: Are dependencies listed in the correct execution order?
 * [ ] **Authentication Context**: Is proper authentication established before protected operations?
+* [ ] **🚨 NO DUPLICATE DEPENDENCIES**: Does each unique endpoint (method + path) appear ONLY ONCE in the dependencies array?
+* [ ] **🚨 COMPLETE REFERENCE ID COVERAGE**: Is every ID from the Reference IDs section resolved by a corresponding dependency?
 
-### 8.2. **Essential Element Verification**
+### 8.2. **🔥 CRITICAL: Reference ID Resolution Validation**
+
+* [ ] **All Reference IDs Identified**: Have you listed every ID mentioned in the "Reference IDs" section?
+* [ ] **Source Operations Found**: For each Reference ID, have you identified which operation provides it in `responseIds`?
+* [ ] **No Missing ID Sources**: Is every Reference ID covered by a dependency that creates/provides that ID?
+* [ ] **Logical ID Flow**: Do dependencies provide IDs in the correct order for subsequent operations?
+* [ ] **No Orphaned IDs**: Are there any Reference IDs without corresponding source operations in the dependency chain?
+
+### 8.3. **🔥 CRITICAL: Dependency Uniqueness Validation**
+
+* [ ] **No Endpoint Duplication**: Does each unique endpoint appear only once in the dependencies array?
+* [ ] **No Redundant Authentication**: Are authentication operations (join/login) not unnecessarily repeated?
+* [ ] **Merged Purposes**: If multiple reasons exist for an endpoint, have you combined them into a single comprehensive purpose?
+* [ ] **Clean Dependency Array**: Is the dependencies array free of any duplicate entries?
+
+### 8.4. **Essential Element Verification**
 
 * [ ] **API Existence Verification**: Have you verified that ALL referenced endpoints exist in the provided operations array?
 * [ ] **No Schema Inference**: Have you avoided creating scenarios based on assumptions not supported by the actual operations?
@@ -499,7 +670,19 @@ Test scenarios must cover not only successful business flows but also various er
 * [ ] Are all necessary dependencies identified and properly ordered?
 * [ ] Do dependency purposes clearly explain why each prerequisite is needed AND when it should be executed?
 
-### 8.3. **Logical Coherence Verification**
+### 8.5. **🔥 CRITICAL: Authentication and Authorization Validation**
+
+* [ ] **Authorization Role Analysis**: Have you analyzed the `authorizationRole` of the target operation AND all dependency operations?
+* [ ] **User Context Mapping**: Have you identified ALL unique roles required throughout the entire scenario?
+* [ ] **New User Context Creation**: Are you using `join` operations ONLY for creating new users with specific roles?
+* [ ] **Existing User Context**: Are you using `login` operations ONLY when switching back to previously created users?
+* [ ] **No Redundant Authentication**: Have you avoided unnecessary `join` + `login` combinations for the same role?
+* [ ] **Authentication Order**: Are authentication operations placed correctly in the dependency chain before their dependent operations?
+* [ ] **Context Flow Logic**: Does the authentication context flow logically throughout the scenario?
+* [ ] **Role-Operation Alignment**: Does each protected operation have the correct user context established beforehand?
+* [ ] **No Authentication Gaps**: Are there any protected operations without proper authentication context?
+
+### 8.6. **Logical Coherence Verification**
 
 * [ ] **Sequential Logic**: Does each scenario represent a logically coherent sequence of operations?
 * [ ] **Causality Validation**: Does each step logically follow from the previous steps?
@@ -507,20 +690,12 @@ Test scenarios must cover not only successful business flows but also various er
 * [ ] **Business Logic Coherence**: Do scenarios represent realistic business workflows?
 * [ ] **State Consistency**: Do system state changes flow logically throughout each scenario?
 
-### 8.4. **Type Safety and Anti-Hallucination Verification**
+### 8.7. **Type Safety and Anti-Hallucination Verification**
 
 * [ ] **No Type Validation Scenarios**: Have you avoided creating scenarios that test type validation?
 * [ ] **No Compilation Errors**: Will all scenarios compile successfully without TypeScript errors?
 * [ ] **No Non-Existent APIs**: Have you avoided referencing APIs that don't exist in the operations array?
 * [ ] **No Property Hallucination**: Have you only used properties that actually exist in the DTOs?
 * [ ] **Realistic Implementation**: Can a developer implement every scenario with the exact APIs provided?
-
-### 8.5. **Authentication and Authorization Verification**
-
-* [ ] **Join vs Login Usage**: Are `join` operations used for new user creation and `login` only for returning to previously created users?
-* [ ] **Role Requirements**: Is proper authentication established for each required role?
-* [ ] **Authentication Order**: Are authentication operations placed correctly in the dependency chain?
-* [ ] **Context Switching**: Is role switching properly handled when multiple users are involved?
-* [ ] **Public Endpoint Handling**: Are public endpoints correctly identified and handled?
 
 By following these comprehensive guidelines and completing this validation checklist, you will generate test scenarios that are implementable, logically sound, and provide thorough coverage of the API functionality while respecting the constraints of the actual available operations.
