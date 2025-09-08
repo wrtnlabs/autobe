@@ -545,163 +545,174 @@ await TestValidator.error(  // ← MUST have await!
 
 ### 4.6. Nullable and Undefined Type Assignment
 
-**🚨 THE #1 AI FAILURE PATTERN - STOP DOING THIS 🚨**
+This section addresses TypeScript compilation errors when working with nullable (`| null`) and undefinable (`| undefined`) types. The key principle is that TypeScript requires exhaustive type narrowing - you must explicitly check for ALL possible null/undefined values.
 
-```typescript
-// AI BRAIN: "I see T | null | undefined... let me just check null!"
-if (value !== null) {
-  const x: T = value; // 💥 COMPILATION ERROR - value could still be undefined!
-}
+**Core Problem:**
+TypeScript's type system requires explicit elimination of each union member. When a type is `T | null | undefined`, checking only for `null` is insufficient - TypeScript still considers `undefined` as a possibility.
 
-// WHY AI FAILS: You pattern-match from simpler cases (T | null or T | undefined)
-// But TypeScript REQUIRES exhaustive elimination of ALL union members
-```
-
-**THE PATTERN:**
-
-```typescript
-// When you see: T | null | undefined
-// You MUST write: if (value !== null && value !== undefined)
-
-function unwrapNullableUndefinable<T>(value: T | null | undefined): T {
-  if (value !== null && value !== undefined) {
-    return value; // TypeScript now knows it's T
-  }
-  throw new Error("Value is null or undefined");
-}
-```
-
-**Application Guide:**
+**THE PATTERN - Exhaustive Type Narrowing:**
 
 1. **See `T | null | undefined`?** → Write `!== null && !== undefined`
 2. **See `T | undefined`?** → Write `!== undefined`
 3. **See `T | null`?** → Write `!== null`
 4. **NEVER MIX THESE UP** → Each pattern has exactly ONE solution
 
-**Common Error Patterns and IMMEDIATE Fixes:**
+**Why AI Often Fails:**
+AI models tend to pattern-match from simpler cases (`T | null` or `T | undefined`) and incorrectly apply partial checks to `T | null | undefined`. TypeScript requires exhaustive elimination of ALL union members.
+
+**Common Error Examples:**
 
 ```typescript
-// ERROR: "Type 'string | null | undefined' is not assignable to type 'string'"
-const data: string | null | undefined = getData();
-const value: string = data; // ERROR!
-
-// FIX: Apply the pattern
-if (data !== null && data !== undefined) {
-  const value: string = data; // SUCCESS
+//----
+// Problem 1: The #1 AI failure pattern
+//----
+const value: string | null | undefined = getValue();
+if (value !== null) {
+  const x: string = value; // ERROR! value could still be undefined
 }
 
-// ERROR: "Type 'null' is not assignable to type 'string | undefined'"
-const request = {
-  userId: null  // ERROR if userId is string | undefined
-};
+//----
+// Solution 1: Check both null AND undefined
+//----
+const value: string | null | undefined = getValue();
+if (value !== null && value !== undefined) {
+  const x: string = value; // SUCCESS
+}
 
-// FIX: Match the type pattern
-const request = {
-  userId: undefined  // or omit the property entirely
-};
+//----
+// Problem 2: Wrong null/undefined assignment
+//----
+const userId: string | undefined = null; // ERROR! null is not assignable to string | undefined
+
+//----
+// Solution 2: Match the exact type
+//----
+const userId: string | undefined = undefined; // SUCCESS
+
+//----
+// Problem 3: Partial type narrowing
+//----
+const count: number | null | undefined = getCount();
+if (count !== undefined) {
+  const total: number = count; // ERROR! count could still be null
+}
+
+//----
+// Solution 3: Complete type narrowing
+//----
+const count: number | null | undefined = getCount();
+if (count !== null && count !== undefined) {
+  const total: number = count; // SUCCESS
+}
 ```
 
-**🎯 SPECIAL CASE: Typia Tag Types with Nullable/Undefined**
+**With Typia Tagged Types:**
 
-**🚨 CRITICAL INSIGHT: When typia tags are involved with nullable/undefined types, IGNORE THE TAGS and treat it like a simple nullable type 🚨**
+When nullable/undefined types include typia tags, treat them as simple nullable types for the purpose of type narrowing:
 
 ```typescript
-// ERROR PATTERN:
-// Type '(BaseType & Tags) | null | undefined' does not satisfy the expected type 'BaseType'.
-// Type 'undefined' is not assignable to type 'BaseType'.
+//----
+// Problem: Tagged nullable type assignment
+//----
+const pageNumber: (number & tags.Type<"int32">) | null | undefined = getPage();
+const page: number & tags.Type<"int32"> = pageNumber; // ERROR!
 
-// EXAMPLES:
-// Type '(number & Type<"int32">) | null | undefined' does not satisfy the expected type 'number'.
-// Type '(string & Format<"email">) | null | undefined' does not satisfy the expected type 'string'.
+//----
+// Solution 1: Type narrowing
+//----
+const pageNumber: (number & tags.Type<"int32">) | null | undefined = getPage();
+if (pageNumber !== null && pageNumber !== undefined) {
+  const page: number & tags.Type<"int32"> = pageNumber; // SUCCESS
+}
+
+//----
+// Solution 2: Non-null assertion
+//----
+const pageNumber: (number & tags.Type<"int32">) | null | undefined = getPage();
+const page: number & tags.Type<"int32"> = pageNumber!; // Removes null/undefined
 ```
 
-**THE KEY: Treat `(number & Type<"int32">) | null | undefined` as simply `number | null | undefined`**
+**Last Resort - Direct typia.assert Usage:**
 
-**THE INSTANT FIX - NO THINKING REQUIRED:**
+When dealing with complex nullable types or after repeated compilation failures, use `typia.assert`:
+
 ```typescript
-// ❌ WRONG - What AI keeps doing (and failing):
-const pageNumber: (number & Type<"int32">) | null | undefined = getUserPreference();
-const requestBody = {
-  page: pageNumber  // ERROR!
-};
+//----
+// When type narrowing becomes too complex
+//----
+const value: string | null | undefined = getValue();
+const required: string = typia.assert<string>(value!);
 
-// ✅ CORRECT:
-const pageNumber: (number & Type<"int32">) | null | undefined = getUserPreference();
-const requestBody = {
-  page: typia.assert(pageNumber!)
-};
+//----
+// With tagged types
+//----
+const tagged: (number & tags.Type<"int32">) | null | undefined = getTagged();
+const result: number & tags.Type<"int32"> = typia.assert<number & tags.Type<"int32">>(tagged!);
 ```
 
-**Use `typia.assert(value!)` for simplicity**
+**Remember:** 
+- The `!` operator removes null/undefined from the type
+- `typia.assert` validates the runtime value and ensures type safety
+- Use this approach when conventional type narrowing becomes overly complex
 
-This works because:
-1. The `!` removes null/undefined from the type
-2. `typia.assert()` validates the runtime value AND preserves tags
-3. It's ONE LINE that solves EVERYTHING
+#### 4.6.1. Scope Problem - When Type Narrowing Gets Lost
 
-**OTHER SOLUTIONS EXIST BUT ARE USUALLY OVERKILL:**
-- Conditional checks? Too verbose for simple cases
-- Default values? Only if you actually want a default
-- Complex transformations? Use `typia.assert(value!)`
-
-**THE RULE:**
-See this error pattern? → Use `typia.assert(value!)` → Move to next error
-
-**🚨 SCOPE PROBLEM - WHEN IF CONDITIONS DON'T HELP 🚨**
-
-Sometimes you might have already checked for null/undefined in a previous scope, but TypeScript still complains:
+Sometimes TypeScript's type narrowing doesn't persist across different scopes:
 
 ```typescript
-// You checked it before...
+//----
+// Problem: Type narrowing lost in different scope
+//----
+const value: string | null | undefined = getValue();
 if (value !== null && value !== undefined) {
   doSomething(value); // Works here
 }
+// Later...
+const data: string = value; // ERROR! TypeScript forgot your check
 
-// But later in different scope...
-const result = {
-  data: value  // ERROR! TypeScript forgot your check!
-};
+//----
+// Solution: Use typia.assert
+//----
+const value: string | null | undefined = getValue();
+const data: string = typia.assert<string>(value!);
 ```
 
-**SOLUTION: Use `typia.assert(value!)` - it's simpler than restructuring code**
+#### 4.6.2. Last Resort - When Conventional Solutions Fail
 
-#### When Multiple Compilation Errors Persist with Nullable/Undefined Types
-
-If you encounter persistent compilation errors related to nullable or undefined types that cannot be resolved through conventional methods, use this last resort approach:
+If you encounter persistent nullable/undefined errors after multiple attempts, use `typia.assert`:
 
 **CRITERIA FOR USING THIS APPROACH:**
-- The same nullable/undefined type error occurs repeatedly after attempting fixes
-- Complex type narrowing or conditional logic makes the code difficult to maintain
-- The error involves deeply nested object properties with optional chaining
+- Same nullable/undefined error occurs repeatedly after attempting fixes
+- Complex type narrowing makes code difficult to maintain
+- You're confident the value exists based on test logic
 
-**LAST RESORT SOLUTION:**
+**LAST RESORT SOLUTIONS:**
 ```typescript
-// When TypeScript keeps complaining about nullable/undefined despite your checks
-// AND you've tried conventional solutions without success
-// THEN use typia.assert with non-null assertion:
-
+//----
 // Example 1: Persistent nullable error
+//----
 const value: string | null = getData();
-// After multiple failed attempts to satisfy TypeScript...
-const safeValue = typia.assert(value!); // Force non-null and validate
+// After multiple failed attempts...
+const safeValue: string = typia.assert<string>(value!);
 
-// Example 2: Complex optional chaining scenario
-const deepValue = obj?.nested?.property?.value;
-// If TypeScript won't accept your null checks...
-const safeDeepValue = typia.assert(deepValue!); // Assert and validate
+//----
+// Example 2: Tagged nullable types
+//----
+const taggedValue: (number & tags.Type<"int32">) | undefined = getTagged();
+// If conventional patterns keep failing...
+const safeTagged: number & tags.Type<"int32"> = typia.assert<number & tags.Type<"int32">>(taggedValue!);
 
-// Example 3: Function parameters with nullable types
-function processData(input: DataType | undefined) {
-  // After failed attempts with guard clauses...
-  const validInput = typia.assert(input!); // Skip the complexity
-  // Continue with validInput knowing it's validated
+//----
+// Example 3: Function parameters
+//----
+function processData(input: string | undefined): string {
+  // After failed guard clause attempts...
+  const validInput: string = typia.assert<string>(input!);
+  return validInput.toUpperCase();
 }
 ```
 
-**IMPORTANT**: This approach should only be used when:
-1. You've attempted the same fix twice and the error persists
-2. The conventional nullable handling patterns are making the code unnecessarily complex
-3. You're confident the value will exist at runtime (based on the test scenario logic)
+**Remember:** Only use this when conventional patterns have failed twice
 
 ### 4.7. Property Access Errors - Non-existent Properties
 
@@ -782,12 +793,12 @@ const pageWithMinimum: number & tags.Type<"int32"> & tags.Minimum<0> = page;
 //----
 // Problem 2: Nullable type mismatch
 //----
-const userIdOptionial: (string & tags.Format<"uuid">) | null | undefined =
+const userIdOptional: (string & tags.Format<"uuid">) | null | undefined =
   getNullableUserId();
 const userIdOptionalByOtherWay:
   | (string & tags.Pattern<"<SOME-UUID-PATTERN>">)
   | null
-  | undefined = userIdOptionial;
+  | undefined = userIdOptional;
   // Type 'string & Format<"uuid">' is not assignable to type '(string & Pattern<"<SOME-UUID-PATTERN>">) | null | undefined'.
   //   Type 'string & Format<"uuid">' is not assignable to type 'string & Pattern<"<SOME-UUID-PATTERN>">'.
   //     Type 'string & Format<"uuid">' is not assignable to type 'Pattern<"<SOME-UUID-PATTERN>">'.
@@ -816,12 +827,12 @@ const pageWithMinimum: number & tags.Type<"int32"> & tags.Minimum<0> =
 //----
 // Solution 2: Nullable type
 //----
-const userIdOptionial: (string & tags.Format<"uuid">) | null | undefined =
+const userIdOptional: (string & tags.Format<"uuid">) | null | undefined =
   getNullableUserId();
 const userIdOptionalByOtherWay:
   | (string & tags.Pattern<"<SOME-UUID-PATTERN>">)
   | null
-  | undefined = userIdOptionial satisfies string | null | undefined as
+  | undefined = userIdOptional satisfies string | null | undefined as
   | string
   | null
   | undefined;
@@ -868,13 +879,13 @@ TestValidator.equals("page", pageWithMinimum, page);
 //----
 // Problem 2: Nullable type mismatch in TestValidator.equals
 //----
-const userIdOptionial: (string & tags.Format<"uuid">) | null | undefined =
+const userIdOptional: (string & tags.Format<"uuid">) | null | undefined =
   getNullableUserId();
 const userIdOptionalByOtherWay:
   | (string & tags.Pattern<"<SOME-UUID-PATTERN>">)
   | null
   | undefined = getNullableUserId();
-TestValidator.equals("id", userIdOptionalByOtherWay, userIdOptionial);
+TestValidator.equals("id", userIdOptionalByOtherWay, userIdOptional);
   // Type 'string & Format<"uuid">' is not assignable to type '(string & Pattern<"<SOME-UUID-PATTERN>">) | null | undefined'.
   //   Type 'string & Format<"uuid">' is not assignable to type 'string & Pattern<"<SOME-UUID-PATTERN>">'.
   //     Type 'string & Format<"uuid">' is not assignable to type 'Pattern<"<SOME-UUID-PATTERN>">'.
@@ -910,7 +921,7 @@ TestValidator.equals("page", pageWithMinimum, page satisfies number as number);
 //----
 // Solution 2: Nullable type mismatch
 //----
-const userIdOptionial: (string & tags.Format<"uuid">) | null | undefined =
+const userIdOptional: (string & tags.Format<"uuid">) | null | undefined =
   getNullableUserId();
 const userIdOptionalByOtherWay:
   | (string & tags.Pattern<"<SOME-UUID-PATTERN>">)
@@ -919,7 +930,7 @@ const userIdOptionalByOtherWay:
 TestValidator.equals(
   "id",
   userIdOptionalByOtherWay,
-  userIdOptionial satisfies string | null | undefined as
+  userIdOptional satisfies string | null | undefined as
     | string
     | null
     | undefined,

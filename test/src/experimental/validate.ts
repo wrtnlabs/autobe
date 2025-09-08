@@ -19,7 +19,7 @@ const pageWithMinimum: number & tags.Type<"int32"> & tags.Minimum<0> =
 TestValidator.equals("page", pageWithMinimum, page satisfies number as number);
 
 // Solution 2: Nullable type mismatch
-const userIdOptionial: (string & tags.Format<"uuid">) | null | undefined =
+const userIdOptional: (string & tags.Format<"uuid">) | null | undefined =
   getNullableUserId();
 const userIdOptionalByOtherWay:
   | (string & tags.Pattern<"<SOME-UUID-PATTERN>">)
@@ -28,7 +28,7 @@ const userIdOptionalByOtherWay:
 TestValidator.equals(
   "id",
   userIdOptionalByOtherWay,
-  userIdOptionial satisfies string | null | undefined as
+  userIdOptional satisfies string | null | undefined as
     | string
     | null
     | undefined,

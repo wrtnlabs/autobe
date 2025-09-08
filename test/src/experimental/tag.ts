@@ -18,12 +18,12 @@ const pageWithMinimum: number & tags.Type<"int32"> & tags.Minimum<0> =
 pageWithMinimum;
 
 // Solution 2: Nullable type mismatch
-const userIdOptionial: (string & tags.Format<"uuid">) | null | undefined =
+const userIdOptional: (string & tags.Format<"uuid">) | null | undefined =
   getNullableUserId();
 const userIdOptionalByOtherWay:
   | (string & tags.Pattern<"<SOME-UUID-PATTERN>">)
   | null
-  | undefined = userIdOptionial satisfies string | null | undefined as
+  | undefined = userIdOptional satisfies string | null | undefined as
   | string
   | null
   | undefined;
