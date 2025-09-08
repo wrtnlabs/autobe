@@ -527,6 +527,9 @@ Before writing any test code, you MUST thoroughly analyze:
 - Scenario requests functionality that requires API endpoints not available in the materials
 - Scenario requests data filtering or searching with parameters not supported by the actual DTO types
 - Scenario mentions workflow steps that depend on non-existent API operations
+- **Scenario requests validation of wrong type API requests (e.g., "send string where number expected")**
+- **Scenario asks to verify type mismatch errors or type validation**
+- **Scenario requires deliberate compilation errors or type errors**
 
 ```typescript
 // SKIP: If scenario requests "bulk ship all unshipped orders" but no such API function exists
@@ -537,7 +540,31 @@ Before writing any test code, you MUST thoroughly analyze:
 
 // SKIP: If scenario requests "search products by brand" but IProduct.ISearch has no brand field
 // Don't implement: await api.functional.products.search(connection, { query: { brand: "Nike" } });
+
+// SKIP: If scenario requests "test with wrong data type" or "validate type errors"
+// NEVER write code that deliberately creates type errors
+// The scenario itself should be ignored, not implemented with wrong types
 ```
+
+**🚨 CRITICAL: Detection and Removal in Review/Revise Stages 🚨**
+
+**Even if you accidentally implemented an unimplementable scenario in the draft stage:**
+
+1. **During REVIEW stage - DETECTION:**
+   - **IDENTIFY** all code that attempts unimplementable scenarios
+   - **DETECT** any API calls to non-existent functions
+   - **FIND** any usage of non-existent DTO properties
+   - **LOCATE** any deliberate type errors or `as any` usage
+   - **SPOT** any code that will cause compilation errors
+
+2. **During REVISE stage - COMPLETE REMOVAL:**
+   - **DELETE ENTIRELY** all code for unimplementable scenarios
+   - **REMOVE COMPLETELY** any test cases that cannot compile
+   - **ELIMINATE** all references to non-existent APIs or properties
+   - **PURGE** any deliberate type mismatches or error-causing code
+   - **If removing this code leaves the test empty or meaningless, create an alternative test that IS implementable**
+
+**Remember:** The review and revise stages are your safety net. Even if you made mistakes in the draft, you MUST catch and fix them. A working test with a modified scenario is infinitely better than a broken test that follows an impossible scenario.
 
 **🚨 CRITICAL: API Function Existence Verification**
 
@@ -737,8 +764,8 @@ export async function {{FUNCTION_NAME}}(
 export async function test_api_shopping_sale_review_update(
   connection: api.IConnection,
 ) {
-   // ✅ CORRECT: ALWAYS use await with API calls
-   const article: IBbsArticle = await api.functional.bbs.articles.create(
+  // ✅ CORRECT: ALWAYS use await with API calls
+  const article: IBbsArticle = await api.functional.bbs.articles.create(
     connection, 
     {
       service: "debate", // path parameter {service}
@@ -2208,20 +2235,121 @@ If the test scenario requires intentionally omitting required fields or creating
 - "Type validation tests"
 - "Test invalid request body types"
 - "Verify response structure"
+- "Test with mismatched types in API requests"
+- "Validate that API rejects incorrect types"
+- "Test type safety validation"
 
 **YOU MUST IGNORE THESE REQUIREMENTS completely and not implement them.**
+
+**🚨 CRITICAL: Absolute Prohibition on Deliberately Creating Type Errors 🚨**
+
+**NEVER, under ANY circumstances, deliberately create type errors in API requests.** This includes:
+- Using `as any` to bypass type checking and send wrong types
+- Deliberately sending string values where numbers are expected
+- Intentionally mismatching request/response types
+- Creating invalid type assertions to test "type validation"
+
+**If a scenario requests validation of wrong types in API requests:**
+1. **IMMEDIATELY IGNORE** that scenario requirement
+2. **DO NOT IMPLEMENT** any code that deliberately creates type errors
+3. **If you accidentally wrote such code in the draft step, you MUST completely remove it in the revise step**
+
+**🚨 MANDATORY: Review and Revise Stage Enforcement 🚨**
+
+During the **review** stage:
+- **DETECT** any code that deliberately creates type errors or compilation errors
+- **IDENTIFY** any use of `as any` to send wrong types
+- **FLAG** any scenarios that cannot be implemented without type violations
+
+During the **revise** stage:
+- **COMPLETELY REMOVE** any code that creates type errors
+- **DELETE ENTIRELY** any test cases that require type mismatches
+- **ELIMINATE** all instances of deliberately wrong type usage
+- **If an entire test scenario depends on type errors, remove the entire test implementation**
+
+**Remember:** Even if you mistakenly implemented wrong-type validation in the draft stage, you **MUST** detect and completely remove it during review and revise. This is not optional - it is **MANDATORY**.
 
 **🚨 ABSOLUTE PROHIBITIONS - ZERO TOLERANCE LIST 🚨**
 
 **1. NEVER Send Wrong Type Data in Request Bodies:**
+
+**❌ ABSOLUTELY FORBIDDEN - Never write code like this:**
 ```typescript
-// ❌ ABSOLUTELY FORBIDDEN:
+// ❌ FORBIDDEN: Using 'as any' to send wrong types
 body: {
   age: "not a number" as any,  // NEVER! age should be number
   count: "123" as any,          // NEVER! count should be number
   isActive: "true" as any       // NEVER! isActive should be boolean
 }
+
+// ❌ FORBIDDEN: Even inside TestValidator.error - still not allowed!
+await TestValidator.error(
+  "wrong type test",
+  async () => {
+    await api.functional.users.create(connection, {
+      body: {
+        age: "twenty" as any, // must be number type
+        email: 123 as any,    // must be string type
+      } satisfies IUser.ICreate,
+    });
+  }
+);
 ```
+
+**✅ CORRECT APPROACH - If you MUST test type-related errors, do it WITHOUT 'as any':**
+
+**Example 1: Testing business logic errors (not type errors)**
+```typescript
+// ✅ CORRECT: Testing duplicate email - proper types, runtime business error
+await TestValidator.error(
+  "duplicate email should fail",
+  async () => {
+    await api.functional.users.create(connection, {
+      body: {
+        email: existingUser.email,  // Same email - business logic error
+        name: "John Doe",
+        age: 25,  // Correct type: number
+      } satisfies IUser.ICreate,
+    });
+  }
+);
+```
+
+**Example 2: Testing invalid range values (not type errors)**
+```typescript
+// ✅ CORRECT: Testing out-of-range values - still correct type
+await TestValidator.error(
+  "negative age should fail",
+  async () => {
+    await api.functional.users.create(connection, {
+      body: {
+        email: "test@example.com",
+        name: "Test User",
+        age: -5,  // Negative number - still a number type!
+      } satisfies IUser.ICreate
+    });
+  }
+);
+```
+
+**Example 3: Testing missing required relationships (not type errors)**
+```typescript
+// ✅ CORRECT: Testing invalid reference - correct type, business validation error
+await TestValidator.error(
+  "non-existent product ID should fail",
+  async () => {
+    await api.functional.orders.create(connection, {
+      body: {
+        productId: "00000000-0000-0000-0000-000000000000",  // Valid UUID format, non-existent product
+        quantity: 1,
+        userId: validUser.id
+      } satisfies IOrder.ICreate
+    });
+  }
+);
+```
+
+**🚨 REMEMBER: The goal is to test BUSINESS LOGIC errors, not TYPE errors 🚨**
 
 **2. NEVER Test Specific HTTP Status Codes:**
 
@@ -2313,7 +2441,10 @@ await TestValidator.error(
   "limit validation error",
   async () => {
     await api.functional.bbs.categories.patch(connection, {
-      body: { page: 1, limit: 1000000 } satisfies IBbsCategories.IRequest,
+      body: {
+        page: 1,
+        limit: 1000000,
+      } satisfies IBbsCategories.IRequest,
     });
   },
   (error) => { // ← DON'T DO THIS - no fallback closure
@@ -2331,7 +2462,7 @@ await TestValidator.error(
         // name: intentionally omitted ← DON'T DO THIS
         email: typia.random<string & tags.Format<"email">>(),
         password: "validPassword123",
-      } as any, // ← NEVER USE THIS
+      } satisfies Partial<IUser.ICreate>, // never wrap on Partial<T> type
     });
   },
 );
@@ -2774,6 +2905,20 @@ await api.functional.users.get(connection, {
 
 // ⚠️ WARNING: Only use non-null assertion when you're CERTAIN
 // If unsure, use conditional checks or the satisfies pattern instead
+
+// Nullish coalescing with tagged types - MUST wrap with parentheses and satisfies
+const x: (number & tags.Type<"int32">) | null | undefined = getValue();
+// ❌ WRONG: Direct nullish coalescing causes type error
+const y: number & tags.Type<"int32"> & tags.Minimum<0> = x ?? 0; // COMPILATION ERROR!
+
+// ✅ CORRECT: Wrap with parentheses and use satisfies pattern
+const y: number & tags.Type<"int32"> & tags.Minimum<0> = (x ?? 0) satisfies number as number;
+
+// TestValidator example with nullish coalescing
+const pageNumber: (number & tags.Type<"int32">) | null | undefined = request.page;
+const actualPage: number & tags.Type<"int32"> & tags.Minimum<1> = 
+  (pageNumber ?? 1) satisfies number as number;
+TestValidator.equals("page defaults to 1", actualPage, pageNumber ?? 1);
 ```
 
 **Rule:** The `satisfies ... as ...` pattern is for resolving type compatibility issues, not standard coding practice.
@@ -2793,6 +2938,47 @@ const requestBody: ISomeRequestBody = { ... } satisfies ISomeRequestBody;
 // ✅ CORRECT: Only use satisfies without type annotation
 const requestBody = { ... } satisfies ISomeRequestBody;
 ```
+
+**🚨 CRITICAL: ALWAYS Use `const`, NEVER Use `let` for Request Body Variables 🚨**
+
+**ABSOLUTE PROHIBITION - ZERO TOLERANCE:**
+
+```typescript
+// ❌ ABSOLUTELY FORBIDDEN: Using 'let' for request body variables
+let requestBody = { ... } satisfies IRequestBody;
+requestBody = { ... } satisfies IRequestBody;  // NEVER reassign!
+
+// ❌ ABSOLUTELY FORBIDDEN: Mutating request body variables
+let body = { name: "John" } satisfies IUser.ICreate;
+body.name = "Jane";  // NEVER mutate!
+body = { name: "Jane" } satisfies IUser.ICreate;  // NEVER reassign!
+```
+
+**✅ CORRECT: Always Create New Variables Instead of Reassigning:**
+
+```typescript
+// ✅ CORRECT: Use const and create new variables for different request bodies
+const requestBody = { name: "John", age: 25 } satisfies IUser.ICreate;
+const requestBodyAgain = { name: "Jane", age: 30 } satisfies IUser.ICreate;
+
+// ✅ CORRECT: Create descriptive variable names for different purposes
+const createUserBody = { name: "John", email: "john@example.com" } satisfies IUser.ICreate;
+const updateUserBody = { name: "John Doe" } satisfies IUser.IUpdate;
+
+// ✅ CORRECT: Use numbered variables if you need multiple similar bodies
+const userBody1 = { name: "User 1" } satisfies IUser.ICreate;
+const userBody2 = { name: "User 2" } satisfies IUser.ICreate;
+const userBody3 = { name: "User 3" } satisfies IUser.ICreate;
+```
+
+**WHY THIS RULE EXISTS:**
+1. **Immutability**: Request bodies should be immutable - once created, they should never change
+2. **Clarity**: Each request body variable represents a specific API call with specific data
+3. **Type Safety**: `const` ensures TypeScript can properly infer literal types and prevent mutations
+4. **Debugging**: Easier to track which exact data was sent to which API call
+5. **Best Practice**: Follows functional programming principles and TypeScript best practices
+
+**REMEMBER:** If you need a different request body, CREATE A NEW VARIABLE. Never reuse or reassign.
 
 **Why This Rule Exists:**
 When you declare a variable with a type annotation, TypeScript treats optional properties (nullable/undefined) according to the interface definition. Even if you provide non-null, non-undefined values, the variable's type still includes `null | undefined` for optional properties. This forces unnecessary null checks in test code.

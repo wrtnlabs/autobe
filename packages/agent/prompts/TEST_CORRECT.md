@@ -763,6 +763,7 @@ Typia uses intersection types with special "tag" properties to enforce runtime v
 - Mixing different format tags (e.g., `Format<"uuid">` vs `Pattern<"[0-9a-f-]+"`)
 - Converting between nullable and non-nullable tagged types
 - Using TestValidator.equals with values having different tag constraints
+- **Nullish coalescing (`??`) with tagged types** - When default values have stricter type constraints
 
 **Why normal type assertions don't work:**
 Regular TypeScript type assertions like `as` cannot reconcile the incompatible tag properties. The solution requires stripping the tags while preserving the base type, which is achieved through the `satisfies` operator pattern.
@@ -775,6 +776,7 @@ Regular TypeScript type assertions like `as` cannot reconcile the incompatible t
    - **Non-nullable:** `value satisfies BaseType as BaseType`
    - **Nullable:** `value satisfies BaseType | null | undefined as BaseType | null | undefined`
    - **Nullable → Non-nullable:** `typia.assert((value satisfies BaseType | null | undefined as BaseType | null | undefined)!)`
+   - **Nullish coalescing:** `(value ?? default) satisfies BaseType as BaseType` (ALWAYS use parentheses)
 4. **Don't know how to?** → Use `typia.assert<T>(value)` for simplicity
 
 #### 4.9.1. Variable Assignment Type Mismatches
@@ -813,6 +815,15 @@ const uuidRequired: string & tags.Pattern<"<SOME-UUID-PATTERN>"> = uuidOptional;
   // Type 'string & Format<"uuid">' is not assignable to type 'string & Pattern<"<SOME-UUID-PATTERN>">'.
   //   Type 'string & Format<"uuid">' is not assignable to type 'Pattern<"<SOME-UUID-PATTERN>">'.
   //     Types of property '"typia.tag"' are incompatible.
+
+//----
+// Problem 4: Nullish coalescing with tagged types
+//----
+const x: (number & tags.Type<"int32">) | null | undefined = getValue();
+const y: number & tags.Type<"int32"> & tags.Minimum<0> = x ?? 0;
+  // Type 'number & Type<"int32">' is not assignable to type 'number & Type<"int32"> & Minimum<0>'.
+  //   Type 'number & Type<"int32">' is not assignable to type 'Minimum<0>'.
+  //     Types of property '"typia.tag"' are incompatible.
 ```
 
 **Solutions:**
@@ -848,6 +859,12 @@ const uuidRequired: string & tags.Pattern<"<SOME-UUID-PATTERN>"> = typia.assert(
     | null
     | undefined)!,
 );
+
+//----
+// Solution 4: Nullish coalescing - wrap with parentheses and use satisfies
+//----
+const x: (number & tags.Type<"int32">) | null | undefined = getValue();
+const y: number & tags.Type<"int32"> & tags.Minimum<0> = (x ?? 0) satisfies number as number;
 
 //----
 // Don't know how to solve or your previous trial has failed?
@@ -906,6 +923,16 @@ TestValidator.equals("uuid-nullable-to-non-nullable", uuidRequired, uuidOptional
   // Type 'string & Format<"uuid">' is not assignable to type 'string & Pattern<"<SOME-UUID-PATTERN>">'.
   //   Type 'string & Format<"uuid">' is not assignable to type 'Pattern<"<SOME-UUID-PATTERN>">'.
   //     Types of property '"typia.tag"' are incompatible.
+
+//----
+// Problem 4: Nullish coalescing with TestValidator.equals
+//----
+const x: (number & tags.Type<"int32">) | null | undefined = getValue();
+const y: number & tags.Type<"int32"> & tags.Minimum<0> = x ?? 0;
+TestValidator.equals("value check", y, x ?? 0);
+  // Type 'number & Type<"int32">' is not assignable to type 'number & Type<"int32"> & Minimum<0>'.
+  //   Type 'number & Type<"int32">' is not assignable to type 'Minimum<0>'.
+  //     Types of property '"typia.tag"' are incompatible.
 ```
 
 **Solutions:**
@@ -957,6 +984,13 @@ TestValidator.equals(
       | undefined)!,
   ),
 );
+
+//----
+// Solution 4: Nullish coalescing with TestValidator.equals
+//----
+const x: (number & tags.Type<"int32">) | null | undefined = getValue();
+const y: number & tags.Type<"int32"> & tags.Minimum<0> = (x ?? 0) satisfies number as number;
+TestValidator.equals("value check", y, (x ?? 0) satisfies number as number);
 
 //----
 // Don't know how to or previous trial failed?
@@ -1309,7 +1343,129 @@ const orderUpdate = {
    - For timestamps: Use `new Date().toISOString()`
 4. **Never remove `satisfies`** - It's there for type safety, add the missing property instead
 
-### 4.13. "Is Possibly Undefined" Errors - DIRECT ACCESS PATTERN
+### 4.13. Deliberate Wrong Type API Requests - ABSOLUTE PROHIBITION
+
+**🚨 CRITICAL: NEVER Send Wrong Type Data in API Requests 🚨**
+
+**Common Scenario Request:**
+"Test that the API properly validates input types and rejects wrong data types"
+
+**YOUR RESPONSE: DELETE THIS ENTIRE SCENARIO**
+
+**Error Pattern:**
+```typescript
+// Scenario asks: "Test with wrong data types to validate API error handling"
+// AI attempts to implement:
+await TestValidator.error(
+  "wrong type should fail",
+  async () => {
+    await api.functional.users.create(connection, {
+      body: {
+        age: "not a number", // COMPILATION ERROR!
+        email: 123,          // COMPILATION ERROR!
+      } satisfies IUser.ICreate,
+    });
+  }
+);
+```
+
+**WHY THIS IS ABSOLUTELY FORBIDDEN:**
+1. **Using `as any` to bypass type checking is PROHIBITED**
+2. **TypeScript compilation errors are NOT acceptable**
+3. **Type validation is handled by the framework, not your tests**
+4. **Business logic errors ≠ Type errors**
+
+**MANDATORY CORRECTION APPROACH:**
+
+**Step 1: Identify the problematic scenario**
+```typescript
+// WRONG SCENARIO: "Test that age field rejects string values"
+// WRONG SCENARIO: "Verify API returns error for incorrect data types"
+// WRONG SCENARIO: "Validate type checking on request body"
+```
+
+**Step 2: COMPLETELY REMOVE the type error test**
+```typescript
+// ❌ DELETE THIS ENTIRELY:
+await TestValidator.error(
+  "string age should fail",
+  async () => {
+    await api.functional.users.create(connection, {
+      body: {
+        age: "twenty" as any  // NEVER DO THIS!
+      } satisfies IPartial<IUser.ICreate>,
+    });
+  }
+);
+```
+
+**Step 3: Replace with BUSINESS LOGIC error tests (if needed)**
+```typescript
+// ✅ CORRECT: Test business logic errors instead
+await TestValidator.error(
+  "duplicate email should fail",
+  async () => {
+    await api.functional.users.create(connection, {
+      body: {
+        email: existingUser.email,  // Same email - business error
+        age: 25,  // CORRECT TYPE!
+        name: "John Doe",
+      } satisfies IUser.ICreate
+    });
+  }
+);
+
+// ✅ CORRECT: Test invalid range (still correct type)
+await TestValidator.error(
+  "negative age should fail",
+  async () => {
+    await api.functional.users.create(connection, {
+      body: {
+        email: "test@example.com",
+        age: -5,  // Negative but still a number!
+        name: "Test User",
+      } satisfies IUser.ICreate,
+    });
+  }
+);
+```
+
+**SCENARIO REWRITING MANDATE:**
+
+When you encounter scenarios requesting type validation:
+
+1. **In the draft step:**
+   - IMMEDIATELY recognize type validation requests
+   - DO NOT implement any `as any` code
+   - Transform to business logic tests or skip entirely
+
+2. **In the review step:**
+   - IDENTIFY any `as any` usage
+   - FLAG all deliberate type mismatches
+   - MARK for complete removal
+
+3. **In the revise step:**
+   - **COMPLETELY DELETE** any code with `as any`
+   - **REMOVE ENTIRELY** any type mismatch tests
+   - **ELIMINATE** all references to type validation
+   - If this leaves the test empty, create alternative business logic tests
+
+**RECOGNITION PATTERNS - Delete if you see:**
+- "Test with wrong data types"
+- "Validate type errors"
+- "Send string where number expected"
+- "Test type validation"
+- "Verify type checking"
+- "Test with mismatched types"
+- "Validate request body types"
+
+**REMEMBER:**
+- **Type errors are compile-time issues, not runtime tests**
+- **The framework handles ALL type validation automatically**
+- **Your job is to test BUSINESS LOGIC, not TYPES**
+- **When in doubt, DELETE the type test scenario**
+
+### 4.14. "Is Possibly Undefined" Errors - DIRECT ACCESS PATTERN
 
 **Error Pattern: "'something' is possibly 'undefined'"**
 
