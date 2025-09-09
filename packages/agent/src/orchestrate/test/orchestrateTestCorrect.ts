@@ -16,6 +16,7 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { completeTestCode } from "./compile/completeTestCode";
 import { transformTestCorrectHistories } from "./histories/transformTestCorrectHistories";
+import { orchestrateTestCorrectInvalidRequest } from "./orchestrateTestCorrectInvalidRequest";
 import { IAutoBeTestCorrectApplication } from "./structures/IAutoBeTestCorrectApplication";
 import { IAutoBeTestFunction } from "./structures/IAutoBeTestFunction";
 import { IAutoBeTestFunctionFailure } from "./structures/IAutoBeTestFunctionFailure";
@@ -29,12 +30,15 @@ export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
     await executeCachedBatch(
       writeResult.map((w) => async (promptCacheKey) => {
         try {
-          const event: AutoBeTestValidateEvent = await compile(ctx, {
-            artifacts: w.artifacts,
-            scenario: w.scenario,
-            location: w.event.location,
-            script: w.event.final ?? w.event.draft,
-          });
+          const compile = (script: string) =>
+            compileTestFile(ctx, {
+              artifacts: w.artifacts,
+              scenario: w.scenario,
+              location: w.event.location,
+              script,
+            });
+          const event: AutoBeTestValidateEvent =
+            await orchestrateTestCorrectInvalidRequest(ctx, compile, w);
           return await predicate(
             ctx,
             {
@@ -60,7 +64,7 @@ export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
   return result.filter((r) => r !== null);
 };
 
-const compile = async <Model extends ILlmSchema.Model>(
+const compileTestFile = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   func: IAutoBeTestFunction,
 ): Promise<AutoBeTestValidateEvent> => {
@@ -79,7 +83,6 @@ const compile = async <Model extends ILlmSchema.Model>(
       scenario: func.scenario,
       location: func.location,
       content: func.script,
-      // result,
     },
     result,
     created_at: new Date().toISOString(),
@@ -110,7 +113,7 @@ const correct = async <Model extends ILlmSchema.Model>(
   life: number,
 ): Promise<AutoBeTestValidateEvent> => {
   if (validate.result.type !== "failure") return validate;
-  else if (--life <= 0) return validate;
+  else if (life < 0) return validate;
 
   const pointer: IPointer<IAutoBeTestCorrectApplication.IProps | null> = {
     value: null,
@@ -140,7 +143,7 @@ const correct = async <Model extends ILlmSchema.Model>(
     `,
     promptCacheKey,
   });
-  if (pointer.value === null) throw new Error("Failed to modify test code.");
+  if (pointer.value === null) throw new Error("Failed to correct test code.");
 
   pointer.value.revise.final = await completeTestCode(
     ctx,
@@ -174,7 +177,10 @@ const correct = async <Model extends ILlmSchema.Model>(
     ...content,
     script: pointer.value.revise?.final ?? pointer.value.draft,
   };
-  const newValidate: AutoBeTestValidateEvent = await compile(ctx, newContent);
+  const newValidate: AutoBeTestValidateEvent = await compileTestFile(
+    ctx,
+    newContent,
+  );
   return predicate(
     ctx,
     newContent,
@@ -203,7 +209,7 @@ const createController = <Model extends ILlmSchema.Model>(props: {
   ): IValidation<IAutoBeTestCorrectApplication.IProps> => {
     const result: IValidation<IAutoBeTestCorrectApplication.IProps> =
       typia.validate<IAutoBeTestCorrectApplication.IProps>(input);
-    if (result.success === false) return result;
+    // if (result.success === false) return result;
 
     // const expected: number = props.failure.diagnostics.length;
     // const actual: number = result.data.think.analyses.length;
@@ -235,7 +241,7 @@ const createController = <Model extends ILlmSchema.Model>(props: {
   ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
-    name: "Modify Test Code",
+    name: "correct",
     application,
     execute: {
       rewrite: (next) => {
