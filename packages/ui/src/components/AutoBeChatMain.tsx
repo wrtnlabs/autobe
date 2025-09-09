@@ -98,7 +98,6 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
     try {
       const config = getCurrentConfig();
       const serviceData = await getAutoBeService(config);
-      console.log("messages", messages);
       if (messages.length !== 0) {
         await serviceData.service.conversate(messages);
       }

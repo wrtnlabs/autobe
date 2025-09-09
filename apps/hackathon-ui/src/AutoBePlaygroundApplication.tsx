@@ -17,7 +17,7 @@ export function AutoBePlaygroundApplication() {
   /** @todo Process refresh token logic */
   if (token === null || new Date(token.token.expired_at) < new Date()) {
     window.location.href = "/login";
-    return;
+    return null;
   }
 
   const scrollRef = useRef<HTMLDivElement>(null);
