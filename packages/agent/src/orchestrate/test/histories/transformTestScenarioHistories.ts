@@ -68,26 +68,18 @@ export const transformTestScenarioHistories = (
       text: StringUtil.trim`
         # Operations
 
-        Below are the full operations. Please refer to this.
-        Your role is to draft all test cases for each given Operation.
+        Below are the complete API operations with their corresponding schema definitions. 
+        This information is critical for understanding API capabilities, data structures, and dependency relationships.
+        Your role is to draft comprehensive test cases for each given Operation using both the operation definitions and schema structures.
         It is also permissible to write multiple test codes on a single endpoint.
         However, rather than meaningless tests, business logic tests should be written and an E2E test situation should be assumed.
 
-        Please carefully analyze each operation to identify all dependencies required for testing.
+        Please carefully analyze each operation and schema to identify all dependencies required for testing.
         Pay close attention to IDs and related values in the API,
         and ensure you identify all dependencies between endpoints.
 
         \`\`\`json
-        ${JSON.stringify(
-          document.operations.map((el) => ({
-            ...el,
-            specification: undefined,
-            requestedIds: getReferenceIds({
-              document,
-              operation: el,
-            }),
-          })),
-        )}
+        ${JSON.stringify({ operations: document.operations, schemas: document.components.schemas })}
         \`\`\`
       `,
     } satisfies IAgenticaHistoryJson.IAssistantMessage,
