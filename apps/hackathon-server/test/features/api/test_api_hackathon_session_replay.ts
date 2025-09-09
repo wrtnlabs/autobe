@@ -35,7 +35,7 @@ export const test_api_hackathon_session_replay = async (
       },
     );
   const summary: IAutoBeHackathonSession.ISummary | undefined = page.data.find(
-    (s) => s.model === "openai/gpt-4.1-mini" && s.state === "realize",
+    (s) => s.state === "realize",
   );
   if (summary === undefined) throw new Error("No hackathon session found");
 

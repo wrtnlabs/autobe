@@ -6,7 +6,7 @@ import {
   IAutoBeHackathonSession,
   IAutobeHackathonParticipant,
 } from "@autobe/interface";
-import { MapUtil } from "@nestia/e2e";
+import { MapUtil, RandomGenerator } from "@nestia/e2e";
 import fs from "fs";
 import typia from "typia";
 import { v7 } from "uuid";
@@ -24,52 +24,54 @@ export namespace AutoBeHackathonSessionSeeder {
     hackathon: IAutoBeHackathon;
     participants: IAutobeHackathonParticipant[];
   }): Promise<void> => {
-    for (const asset of await getAssets())
-      for (const participant of props.participants) {
-        const session: IAutoBeHackathonSession.ISummary =
-          await AutoBeHackathonSessionProvider.create({
-            hackathon: props.hackathon,
-            participant,
-            body: {
-              model: asset.model,
-              timezone: "Asia/Seoul",
-              title: `${asset.model}`,
-            },
-          });
-        const connection: IEntity =
-          await AutoBeHackathonGlobal.prisma.autobe_hackathon_session_connections.create(
-            {
-              data: {
-                id: v7(),
-                autobe_hackathon_session_id: session.id,
-                created_at: new Date(),
-                disconnected_at: null,
-              },
-            },
-          );
-        for (const history of asset.histories)
-          await AutoBeHackathonSessionHistoryProvider.create({
-            session,
-            history,
-            connection,
-          });
-        for (const snapshot of asset.snapshots)
-          await AutoBeHackathonSessionEventProvider.create({
-            session,
-            snapshot,
-            connection,
-          });
-        await AutoBeHackathonGlobal.prisma.autobe_hackathon_session_aggregates.update(
+    for (const asset of await getAssets()) {
+      const participant: IAutobeHackathonParticipant = RandomGenerator.pick(
+        props.participants,
+      );
+      const session: IAutoBeHackathonSession.ISummary =
+        await AutoBeHackathonSessionProvider.create({
+          hackathon: props.hackathon,
+          participant,
+          body: {
+            model: asset.model,
+            timezone: "Asia/Seoul",
+            title: `${asset.model}`,
+          },
+        });
+      const connection: IEntity =
+        await AutoBeHackathonGlobal.prisma.autobe_hackathon_session_connections.create(
           {
-            where: { autobe_hackathon_session_id: session.id },
             data: {
-              state: asset.state,
-              enabled: true,
-              token_usage: JSON.stringify(asset.snapshots.at(-1)!.tokenUsage),
+              id: v7(),
+              autobe_hackathon_session_id: session.id,
+              created_at: new Date(),
+              disconnected_at: null,
             },
           },
         );
-      }
+      for (const history of asset.histories)
+        await AutoBeHackathonSessionHistoryProvider.create({
+          session,
+          history,
+          connection,
+        });
+      for (const snapshot of asset.snapshots)
+        await AutoBeHackathonSessionEventProvider.create({
+          session,
+          snapshot,
+          connection,
+        });
+      await AutoBeHackathonGlobal.prisma.autobe_hackathon_session_aggregates.update(
+        {
+          where: { autobe_hackathon_session_id: session.id },
+          data: {
+            state: asset.state,
+            enabled: true,
+            token_usage: JSON.stringify(asset.snapshots.at(-1)!.tokenUsage),
+          },
+        },
+      );
+    }
   };
 }
 
