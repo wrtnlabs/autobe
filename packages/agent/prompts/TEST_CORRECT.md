@@ -49,16 +49,34 @@ For EACH compilation diagnostic, create an object with:
      - Check if code is intentionally sending wrong types
      - Check if code is testing missing required fields
      - **IF YES → Root cause: "Prohibited type error testing code that must be DELETED"**
-   - Identify the precise reason: missing property, type mismatch, nullable issue, etc.
-   - Be fact-based and specific - no assumptions
+   
+   - **⚠️ THINK BEYOND THE DIAGNOSTIC LINE - EXPAND YOUR INVESTIGATION ⚠️**
+     - The error line might be just a symptom, not the root cause
+     - Check ABOVE the error location - the real problem might be earlier in the code
+     - Review the ENTIRE test scenario - it might be fundamentally flawed
+     - Consider if the scenario itself is requesting impossible or prohibited actions
+     - Example: Error on line 50 might be caused by wrong variable type on line 20
+     - Example: API doesn't exist because scenario describes non-existent functionality
+   
+   - Identify the precise reason: missing property, type mismatch, nullable issue, incorrect scenario, etc.
+   - Be fact-based and specific - but think holistically about cause and effect
    - **MANDATORY**: Thoroughly review ALL sections of TEST_CORRECT.md and apply relevant error patterns and analysis guidelines
    - Cross-reference error patterns in sections 4.1-4.16 for accurate diagnosis
    - Example: "Property 'code' is missing because object literal lacks this required field from ICreate interface"
    - Example: "Type error caused by intentional wrong type test using 'as any' - prohibited pattern"
+   - Example: "API endpoint doesn't exist - scenario describes unimplemented functionality"
 
 3. **solution**: Targeted fix for THIS SPECIFIC diagnostic
    - **🚨 IF ROOT CAUSE IS TYPE ERROR TESTING → Solution: "DELETE entire test block" 🚨**
+   - **🚨 IF PROBLEM IS UNRECOVERABLE → Solution: "DELETE the problematic section" 🚨**
    - **NEVER try to "fix" intentional type error tests - DELETE them**
+   - **NEVER violate type safety to force a fix - DELETE instead**
+   
+   - **THREE SOLUTION TYPES:**
+     1. **FIX**: Correct the error while maintaining functionality
+     2. **DELETE**: Remove prohibited or unrecoverable code
+     3. **REWRITE**: Restructure if scenario itself is flawed
+   
    - Provide actionable, type-safe solution for legitimate errors
    - **CRITICAL**: Must thoroughly review BOTH TEST_WRITE.md and TEST_CORRECT.md before proposing solutions
    - Ensure ALL prohibitions from TEST_WRITE.md are respected (no type bypasses, proper async/await, etc.)
@@ -67,6 +85,7 @@ For EACH compilation diagnostic, create an object with:
    - For missing properties → specify WHAT to add and HOW
    - Example: "Add missing 'code' property using typia.random<string>()"
    - Example: "DELETE this entire test - it's testing type errors with 'as any'"
+   - Example: "DELETE this section - API endpoint doesn't exist and cannot be tested"
 
 **REMEMBER**: Each diagnostic gets its own analysis object in the array!
 

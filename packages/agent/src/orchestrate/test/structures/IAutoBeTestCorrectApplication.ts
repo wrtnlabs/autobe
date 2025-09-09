@@ -171,12 +171,20 @@ export namespace IAutoBeTestCorrectApplication {
      * - Check if code is testing missing required fields
      * - **IF YES → Root cause: "Prohibited type error testing code that must be DELETED"**
      *
+     * **⚠️ THINK BEYOND THE DIAGNOSTIC LINE - EXPAND YOUR INVESTIGATION ⚠️**
+     * - Do NOT focus only on the error line - it might be just a symptom
+     * - The real cause might be ABOVE the error location in earlier code
+     * - The test scenario itself might be fundamentally flawed or impossible
+     * - Consider if the scenario is requesting non-existent APIs or prohibited actions
+     * - Example: Error on line 50 might be caused by wrong type assignment on line 20
+     * - Example: API call fails because the scenario describes unimplemented functionality
+     *
      * AI must examine the error message carefully and identify the specific
      * reason for failure. This includes understanding whether it's a missing
      * property, type mismatch, nullable/undefined issue, incorrect API usage,
-     * intentional type error testing, or other TypeScript violations. The
-     * analysis should be precise and fact-based, directly tied to the error
-     * message content.
+     * intentional type error testing, flawed scenario, or other TypeScript
+     * violations. The analysis should be precise and fact-based, but also
+     * consider the broader context and causal relationships.
      *
      * **MANDATORY**: The AI must thoroughly review ALL sections of
      * TEST_CORRECT.md and apply relevant error patterns and analysis guidelines
@@ -187,6 +195,9 @@ export namespace IAutoBeTestCorrectApplication {
      *
      * Example: "Type error caused by intentional wrong type test using 'as any'
      * - prohibited pattern that must be deleted"
+     *
+     * Example: "API endpoint doesn't exist - scenario requests unimplemented
+     * functionality that cannot be tested"
      */
     analysis: string;
 
@@ -194,9 +205,17 @@ export namespace IAutoBeTestCorrectApplication {
      * Specific solution to resolve this compilation error.
      *
      * **🚨 IF ROOT CAUSE IS TYPE ERROR TESTING → Solution: "DELETE entire test block" 🚨**
+     * **🚨 IF PROBLEM IS UNRECOVERABLE → Solution: "DELETE the problematic section" 🚨**
      * - NEVER try to "fix" intentional type error tests - DELETE them
+     * - NEVER violate type safety to force a fix - DELETE instead
      * - Tests using `as any` to send wrong types must be DELETED
      * - Tests checking type validation must be DELETED
+     * - Unrecoverable compilation errors should result in DELETION
+     *
+     * **THREE SOLUTION TYPES:**
+     * 1. **FIX**: Correct the error while maintaining functionality
+     * 2. **DELETE**: Remove prohibited or unrecoverable code entirely
+     * 3. **REWRITE**: Restructure if the scenario itself is fundamentally flawed
      *
      * Detailed correction strategy that addresses the exact issue identified in
      * the analysis. Solutions must be actionable, type-safe, and compliant with
@@ -210,10 +229,19 @@ export namespace IAutoBeTestCorrectApplication {
      * async/await usage, etc.), and correction patterns from TEST_CORRECT.md
      * sections 4.1-4.16 must be properly applied.
      *
+     * **DELETION IS A VALID SOLUTION** when:
+     * - Code violates absolute prohibitions
+     * - Fixing would require type safety violations
+     * - The scenario describes impossible functionality
+     * - Multiple fix attempts have failed
+     *
      * Example: "Add missing 'code' property using typia.random<string>() to
      * generate a valid string value that satisfies the interface requirement"
      *
      * Example: "DELETE this entire test - it's testing type errors with 'as any'"
+     *
+     * Example: "DELETE this section - API endpoint doesn't exist and cannot be
+     * tested without violating type safety"
      */
     solution: string;
   }
