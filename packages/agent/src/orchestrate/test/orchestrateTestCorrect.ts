@@ -37,9 +37,9 @@ export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
               script,
             });
           const x: AutoBeTestValidateEvent =
-            await orchestrateTestCorrectTypiaTag(ctx, compile, w);
+            await orchestrateTestCorrectInvalidRequest(ctx, compile, w);
           const y: AutoBeTestValidateEvent =
-            await orchestrateTestCorrectInvalidRequest(
+            await orchestrateTestCorrectTypiaTag(
               ctx,
               compile,
               transformTestValidateEvent(x, w.artifacts),

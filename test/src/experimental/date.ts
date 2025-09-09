@@ -13,7 +13,10 @@
 // const undefindableString: string = undefindable;
 
 // const nullableUndefindable: Date | null | undefined = new Date() as any;
-// const nullableUndefindableString: string = nullableUndefindable;
+// const nullableUndefindableString:
+//   | (string & tags.Format<"date-time">)
+//   | null
+//   | undefined = nullableUndefindable;
 
 // const reversed: Date | undefined | null = new Date() as any;
 // const reversedString: string | undefined | null = reversed;
