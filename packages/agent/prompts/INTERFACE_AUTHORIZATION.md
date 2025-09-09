@@ -140,9 +140,37 @@ Use standard response type naming conventions.
 - Use exact field names as they appear in the schema
 - Describe behavior based on available schema structure
 
-## 4. Implementation Requirements
+## 4. Output Format (Function Calling Interface)
 
-### 4.1. Critical Requirements
+You must return a structured output following the `IAutoBeInterfaceAuthorizationsApplication.IProps` interface:
+
+### TypeScript Interface
+
+```typescript
+export namespace IAutoBeInterfaceAuthorizationsApplication {
+  export interface IProps {
+    operations: AutoBeOpenApi.IOperation[];  // Array of authorization operations
+  }
+}
+
+// Each operation follows the standard AutoBeOpenApi.IOperation structure
+```
+
+### Field Descriptions
+
+#### operations
+Array of authorization-related API operations. Each operation must include:
+- All standard `AutoBeOpenApi.IOperation` fields (specification, path, method, etc.)
+- Proper `authorizationType` values for auth operations (`"join"`, `"login"`, `"refresh"`, or `null`)
+- Appropriate `authorizationRole` for role-specific endpoints
+
+### Output Method
+
+You MUST call the `makeOperations()` function with your authorization operations.
+
+## 5. Implementation Requirements
+
+### 5.1. Critical Requirements
 - **Role-Based Essential Operations**: Generate appropriate essential operations based on role `kind`
 - **Operation Uniqueness**: Each authentication operation MUST be unique per role
 - **Schema-Driven Additions**: Add operations only for schema-supported features
@@ -152,7 +180,7 @@ Use standard response type naming conventions.
 - **Authentication Response Types**: All authentication operations (authorizationType !== null) MUST use `I{PascalPrefixName}{RoleName}.IAuthorized` format for response body typeName
 - **Function Call Required**: Use the provided function with all generated operations
 
-### 4.2. Implementation Strategy
+### 5.2. Implementation Strategy
 
 1. **Analyze Role Kind FIRST**: Determine which essential operations to generate based on `role.kind`
 2. **Generate Role-Appropriate Essential Operations**: 

@@ -596,9 +596,38 @@ The TypeScript interfaces in the draft are then converted to JSON Schema definit
    - The use of `any` type is a CRITICAL ERROR that will cause review failure
 5. **Security First**: Apply security rules (no passwords in response types, no actor IDs in request types) at the TypeScript level
 
-## 8. Output Format
+## 8. Output Format (Function Calling Interface)
 
-Your output should include both the TypeScript draft and the complete `schemas` record of the OpenAPI document:
+You must return a structured output following the `IAutoBeInterfaceSchemaApplication.IProps` interface:
+
+### TypeScript Interface
+
+Your function follows this interface:
+
+```typescript
+export namespace IAutoBeInterfaceSchemaApplication {
+  export interface IProps {
+    draft: string;  // TypeScript interface definitions as draft
+    schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;  // Final JSON Schema components
+  }
+}
+```
+
+### Field Descriptions
+
+#### draft
+TypeScript interface definitions that serve as a preliminary draft before generating the final JSON Schema components. This should include:
+- Entity interfaces matching the Prisma models
+- Operation-specific variants (ICreate, IUpdate, ISummary, etc.)
+- Utility types and enumerations
+- Type relationships and constraints
+
+#### schemas
+Complete set of schema components for the OpenAPI specification. This is the central repository of all named schema types that will be used throughout the API specification.
+
+### Output Example
+
+Your output should include both the TypeScript draft and the complete `schemas` record:
 
 ```typescript
 const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
