@@ -76,6 +76,83 @@ Before writing ANY test code, you MUST:
 
 **REMEMBER: Your job is to test what EXISTS, not what SHOULD exist.**
 
+## 1.0.1. 🚨🚨🚨 ABSOLUTE PROHIBITION: NO TYPE ERROR TESTING - ZERO TOLERANCE 🚨🚨🚨
+
+**THIS IS THE #1 CRITICAL VIOLATION - IMMEDIATE FAILURE IF VIOLATED**
+
+**NEVER, EVER, UNDER ANY CIRCUMSTANCES, CREATE TESTS THAT INTENTIONALLY CAUSE TYPE ERRORS**
+
+You are ABSOLUTELY FORBIDDEN from:
+
+```typescript
+// 🚨🚨🚨 ABSOLUTELY FORBIDDEN - IMMEDIATE FAILURE 🚨🚨🚨
+// NEVER test with wrong types to "validate error handling"
+await TestValidator.error("should reject invalid type", async () => {
+  await api.functional.users.create(connection, {
+    body: {
+      age: "not a number" as any,  // 🚨 NEVER DO THIS
+      email: 123 as any,           // 🚨 NEVER DO THIS
+      name: null as any            // 🚨 NEVER DO THIS
+    }
+  });
+});
+
+// 🚨🚨🚨 ABSOLUTELY FORBIDDEN - IMMEDIATE FAILURE 🚨🚨🚨
+// NEVER send wrong data types intentionally
+const body = {
+  price: "free" as any,  // 🚨 NEVER - price should be number
+  quantity: "many",      // 🚨 NEVER - quantity should be number
+  date: 12345           // 🚨 NEVER - date should be string
+} satisfies IOrder.ICreate;
+
+// 🚨🚨🚨 ABSOLUTELY FORBIDDEN - IMMEDIATE FAILURE 🚨🚨🚨
+// NEVER test missing required fields
+await api.functional.posts.create(connection, {
+  body: {
+    // Missing required 'title' field - NEVER DO THIS
+    content: "test"
+  } as any
+});
+```
+
+**WHY THIS IS ABSOLUTELY FORBIDDEN:**
+1. TypeScript compilation will FAIL - Test code MUST compile
+2. Type validation is handled by the framework - NOT your responsibility
+3. Your job is to test BUSINESS LOGIC, not type system
+4. Type errors are COMPILATION issues, not runtime test scenarios
+5. The test agent must produce 100% COMPILABLE code
+
+**WHAT TO DO INSTEAD:**
+```typescript
+// ✅ CORRECT: Test business logic with VALID types
+await TestValidator.error("cannot create duplicate email", async () => {
+  await api.functional.users.create(connection, {
+    body: {
+      email: existingEmail,  // Valid string
+      name: "John",         // Valid string
+      age: 25              // Valid number
+    }
+  });
+});
+
+// ✅ CORRECT: Test business rules with CORRECT types
+await TestValidator.error("insufficient balance", async () => {
+  await api.functional.accounts.withdraw(connection, {
+    body: {
+      amount: 1000000,  // Valid number, but exceeds balance
+      accountId: "123"  // Valid string
+    }
+  });
+});
+```
+
+**REMEMBER:**
+- **TYPE ERRORS = COMPILATION FAILURES = YOUR FAILURE**
+- **NEVER use `as any` to bypass type checking**
+- **NEVER intentionally send wrong data types**
+- **NEVER test type validation - it's NOT your job**
+- **If you're thinking about testing type errors - STOP IMMEDIATELY**
+
 ## 1.1. Function Calling Workflow
 
 You MUST execute the following 5-step workflow through a single function call. Each step is **MANDATORY** and must be completed thoroughly. The function expects all properties to be filled with substantial, meaningful content:
@@ -109,22 +186,31 @@ You MUST execute the following 5-step workflow through a single function call. E
 This property contains validation results and two sub-steps for iterative improvement:
 
 #### 4.1: **revise.rules** and **revise.checkList** - Compliance Validation Results
-- **rules**: An array of ICheck objects tracking compliance with each section of this TEST_WRITE.md document
+- **rules**: An array of ICheck objects tracking compliance with **ALL sections** of this TEST_WRITE.md document
+  - **🚨 CRITICAL: Every single section must be validated - no exceptions, no partial checks**
   - Each object contains a `title` (section identifier) and `state` (compliance status)
-  - Titles correspond to section identifiers (e.g., "1. Role and Responsibility", "2. Input Materials Provided")
+  - Titles correspond to section identifiers (e.g., "1. Role and Responsibility", "2. Input Materials Provided", "3.1. Import Management", etc.)
   - State is boolean indicating whether that section's requirements were followed
+  - **ALL sections are equally important** - from basic role understanding to detailed implementation patterns
   - The specific section identifiers may evolve as documentation updates
   - Example: `[{title: "1. Role and Responsibility", state: true}, {title: "3.1. Import Management", state: false}]`
-- **checkList**: An array of ICheck objects tracking each item from the Final Checklist (Section 5)
+- **checkList**: An array of ICheck objects tracking **EVERY item** from the Final Checklist (Section 5)
+  - **🚨 CRITICAL: All checklist items must be validated - each one is essential for quality**
   - Each object contains a `title` (checklist item) and `state` (validation result)
   - Titles match the checklist items as written in the documentation
   - State is boolean indicating whether each criterion was satisfied
+  - **No item is optional** - from compilation errors to type safety, everything matters
   - Items may be updated over time as requirements evolve
   - Example: `[{title: "No compilation errors", state: true}, {title: "Proper async/await usage", state: false}]`
 
 #### 4.2: **revise.review** - Critical Code Review and Analysis
 - Perform a thorough, line-by-line review of your draft implementation
 - **This step is CRITICAL** - do not rush or skip it
+- **🚨🚨🚨 FIRST PRIORITY: DETECT AND REMOVE ALL TYPE ERROR TESTING 🚨🚨🚨**
+  - **IMMEDIATELY IDENTIFY** any code using `as any` to send wrong types
+  - **IMMEDIATELY IDENTIFY** any intentional type mismatches for "testing"
+  - **IMMEDIATELY IDENTIFY** any missing required fields testing
+  - **THESE ARE AUTOMATIC FAILURES - REMOVE THEM ALL**
 - Check for:
   - TypeScript compilation errors and type mismatches
   - Missing or incorrect API function calls
@@ -3123,9 +3209,54 @@ const orderData = {
 } satisfies IOrder.ICreate;
 ```
 
-## 4.7. Avoiding Illogical Code Patterns
+## 4.7. Date Handling in DTOs
 
-### 4.7.1. Common Illogical Anti-patterns
+### 4.7.1. CRITICAL: Date Object Handling in DTOs
+
+**🚨 CRITICAL: DTOs are JSON-based data structures, NOT class instances 🚨**
+
+Since DTOs represent JSON data that will be transmitted over HTTP, you CANNOT use JavaScript class objects like `Date` directly. JSON doesn't support Date objects - they must be converted to strings.
+
+**❌ ABSOLUTELY FORBIDDEN:**
+```typescript
+// ❌ NEVER: Using Date object directly in DTO
+const requestBody = {
+  createdAt: new Date(),  // ❌ WRONG! Date object cannot be serialized to JSON
+  updatedAt: new Date()   // ❌ WRONG! This will cause runtime errors
+} satisfies IPost.ICreate;
+
+// ❌ NEVER: Using toString() for dates
+const requestBody = {
+  createdAt: new Date().toString(),  // ❌ WRONG! Wrong format for API
+} satisfies IPost.ICreate;
+```
+
+**✅ CORRECT: Always use toISOString() for Date values:**
+```typescript
+// ✅ CORRECT: Convert Date to ISO string format
+const requestBody = {
+  title: "Example Post",
+  content: "Post content",
+  createdAt: new Date().toISOString(),     // ✅ CORRECT: "2024-01-01T12:00:00.000Z"
+  updatedAt: new Date().toISOString()      // ✅ CORRECT: ISO 8601 format
+} satisfies IPost.ICreate;
+
+// ✅ CORRECT: Creating specific dates
+const requestBody = {
+  publishedAt: new Date("2024-01-01").toISOString(),
+  expiresAt: new Date(Date.now() + 86400000).toISOString()  // Tomorrow
+} satisfies IArticle.ICreate;
+```
+
+**REMEMBER:**
+- DTOs = JSON data structures
+- Date objects CANNOT be serialized to JSON
+- ALWAYS use `.toISOString()` not `.toString()`
+- ISO 8601 format is the standard for APIs
+
+## 4.8. Avoiding Illogical Code Patterns
+
+### 4.8.1. Common Illogical Anti-patterns
 
 When generating test code, avoid these common illogical patterns that often lead to compilation errors:
 
@@ -3423,7 +3554,7 @@ await TestValidator.error(
 6. **Maintain data consistency**: Don't create orphaned records or broken references
 7. **Use realistic test data**: Random data should still make business sense
 
-## 4.8. AI-Driven Autonomous TypeScript Syntax Deep Analysis
+## 4.9. AI-Driven Autonomous TypeScript Syntax Deep Analysis
 
 ### 4.8.1. Autonomous TypeScript Syntax Review Mission
 
@@ -3491,7 +3622,7 @@ async function processData(input) { // Missing types!
 const value = possiblyNull!; // Runtime error waiting to happen
 ```
 
-## 4.9. CRITICAL: AI Must Generate TypeScript Code, NOT Markdown Documents
+## 4.10. CRITICAL: AI Must Generate TypeScript Code, NOT Markdown Documents
 
 **🚨 CRITICAL: AI must generate TypeScript code directly, NOT markdown documents with code blocks 🚨**
 
@@ -3558,12 +3689,15 @@ Before submitting your generated E2E test code, verify:
 - [ ] **Template code untouched** - Only replaced the `// <E2E TEST CODE HERE>` comment
 - [ ] **All functionality implemented** using only template-provided imports
 
-**🚨 ABSOLUTE PROHIBITIONS CHECKLIST - ZERO TOLERANCE 🚨**
-- [ ] **NO wrong type data in requests** - Never use `as any` to send wrong types
+**🚨🚨🚨 ABSOLUTE PROHIBITIONS CHECKLIST - ZERO TOLERANCE 🚨🚨🚨**
+- [ ] **🚨 NO TYPE ERROR TESTING - THIS IS #1 VIOLATION 🚨** - NEVER intentionally send wrong types to test type validation
+- [ ] **NO `as any` USAGE** - NEVER use `as any` to bypass TypeScript type checking
+- [ ] **NO wrong type data in requests** - All data must match the exact TypeScript types
+- [ ] **NO missing required fields** - All required fields must be present with correct types
+- [ ] **NO testing type validation** - Type checking is NOT your responsibility
 - [ ] **NO HTTP status code testing** - Never test for 404, 403, 500, etc.
 - [ ] **NO illogical operations** - Never delete from empty objects
 - [ ] **NO response type validation after typia.assert()** - It already validates everything
-- [ ] **NO intentionally missing required fields** - All required fields must be present
 - [ ] **Step 4 revise COMPLETED** - Both revise.review and revise.final executed thoroughly
 
 **Function Structure:**

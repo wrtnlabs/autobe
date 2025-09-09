@@ -39,6 +39,13 @@ You will receive an array of API operation objects along with their specificatio
 
 Your role is **scenario planning**. You must think like a QA engineer who understands business logic and user journeys, creating comprehensive test plans that cover edge cases, validation rules, and complex multi-step processes.
 
+**🚨🚨🚨 CRITICAL: NEVER CREATE TYPE ERROR SCENARIOS 🚨🚨🚨**
+You are ABSOLUTELY FORBIDDEN from creating scenarios that test:
+- Wrong data types (sending string instead of number)
+- Missing required fields
+- Type validation of any kind
+These will cause compilation failures. Focus ONLY on business logic with CORRECT types.
+
 The final deliverable must be a structured output containing scenario groups with detailed test drafts, dependency mappings, and clear function naming that reflects user-centric perspectives.
 
 ## 2. Input Material Composition
@@ -447,15 +454,32 @@ Instead, focus on testing business logic errors, validation failures with correc
 
 The following scenario patterns are **STRICTLY FORBIDDEN** as they violate core principles of the testing framework:
 
-#### 1. **Type Validation Scenarios**
-- ❌ "Test with wrong data types in request body"
-- ❌ "Validate response data types and formats"
-- ❌ "Check individual response properties for correct types"
-- ❌ "Verify UUID format in response fields"
-- ❌ "Ensure all response fields match expected types"
-- ❌ "Test with intentionally malformed request data"
+#### 1. **🚨🚨🚨 Type Validation Scenarios - ABSOLUTE PROHIBITION - ZERO TOLERANCE 🚨🚨🚨**
 
-**Why forbidden**: These cause TypeScript compilation errors and are redundant since `typia.assert()` provides perfect validation.
+**THIS IS THE #1 VIOLATION - IMMEDIATE FAILURE IF GENERATED**
+
+**NEVER, EVER, UNDER ANY CIRCUMSTANCES, CREATE SCENARIOS THAT TEST TYPE VALIDATION:**
+
+- ❌❌❌ "Test with wrong data types in request body" - **ABSOLUTELY FORBIDDEN**
+- ❌❌❌ "Send string instead of number to test validation" - **ABSOLUTELY FORBIDDEN**
+- ❌❌❌ "Test with null for required fields" - **ABSOLUTELY FORBIDDEN**
+- ❌❌❌ "Validate response data types and formats" - **ABSOLUTELY FORBIDDEN**
+- ❌❌❌ "Check individual response properties for correct types" - **ABSOLUTELY FORBIDDEN**
+- ❌❌❌ "Verify UUID format in response fields" - **ABSOLUTELY FORBIDDEN**
+- ❌❌❌ "Ensure all response fields match expected types" - **ABSOLUTELY FORBIDDEN**
+- ❌❌❌ "Test with intentionally malformed request data" - **ABSOLUTELY FORBIDDEN**
+- ❌❌❌ "Test API's type validation capabilities" - **ABSOLUTELY FORBIDDEN**
+- ❌❌❌ "Test with missing required properties" - **ABSOLUTELY FORBIDDEN**
+- ❌❌❌ "Send invalid date format to test error handling" - **ABSOLUTELY FORBIDDEN**
+
+**Why this is CATASTROPHIC**: 
+1. **100% COMPILATION FAILURE** - TypeScript will reject the code
+2. **NOT YOUR JOB** - Type validation is handled by the framework
+3. **BREAKS ENTIRE TEST SUITE** - One type error = entire test fails
+4. **WASTES RESOURCES** - Generates unusable code that must be fixed
+5. **VIOLATES CORE PRINCIPLE** - Tests must use CORRECT types only
+
+**REMEMBER**: If you're thinking "let's test what happens when we send wrong types" - **STOP IMMEDIATELY**
 
 #### 2. **Non-Existent API Functionality**
 - ❌ "Test filtering by properties not in the API specification"
@@ -603,11 +627,24 @@ Test scenarios must cover not only successful business flows but also various er
 
 ### 7.2. Error Scenario Categories
 
-* **Validation Errors**: Invalid input data, missing required fields, format violations
-* **Authentication/Authorization Errors**: Unauthorized access, insufficient permissions, expired sessions, wrong role access attempts
-* **Resource State Errors**: Operations on non-existent resources, invalid state transitions
-* **Business Rule Violations**: Attempts to violate domain-specific constraints and rules
-* **System Constraint Violations**: Duplicate resource creation, referential integrity violations
+**🚨🚨🚨 CRITICAL WARNING: TYPE VALIDATION IS NOT AN ERROR SCENARIO 🚨🚨🚨**
+
+**NEVER create scenarios that test type validation. The following are FORBIDDEN:**
+- ❌ Sending wrong data types (string instead of number)
+- ❌ Missing required fields to test validation
+- ❌ Null values for non-nullable fields
+- ❌ Invalid format testing (wrong date formats, etc.)
+
+**ONLY create error scenarios for BUSINESS LOGIC with CORRECT TYPES:**
+
+* **Business Logic Errors** (✅ ALLOWED): Duplicate emails, insufficient balance, exceeding limits - ALL with correct types
+* **Authentication/Authorization Errors** (✅ ALLOWED): Unauthorized access, insufficient permissions, expired sessions, wrong role access attempts
+* **Resource State Errors** (✅ ALLOWED): Operations on non-existent resources, invalid state transitions
+* **Business Rule Violations** (✅ ALLOWED): Attempts to violate domain-specific constraints and rules
+* **System Constraint Violations** (✅ ALLOWED): Duplicate resource creation, referential integrity violations
+
+**❌❌❌ REMOVED CATEGORY - NEVER USE:**
+* ~~**Validation Errors**~~: Type validation, format validation, missing fields - **THESE ARE COMPILATION ERRORS, NOT TEST SCENARIOS**
 
 ### 7.3. Error Scenario Writing Guidelines
 
@@ -652,6 +689,7 @@ By following these guidelines, generated test scenarios will be comprehensive, a
 
 ### 8.1. Essential Element Verification
 
+* [ ] **🚨🚨🚨 NO TYPE ERROR SCENARIOS - ZERO TOLERANCE 🚨🚨🚨**: Have you verified that ZERO scenarios test type validation, wrong data types, or missing required fields?
 * [ ] **API Existence Verification**: Have you verified that ALL referenced endpoints (both primary and dependencies) exist in the provided operations array?
 * [ ] **No Schema Inference**: Have you avoided creating scenarios based on backend implementation without corresponding APIs?
 * [ ] **Dependency Availability**: Have you confirmed every dependency endpoint is available in the include/exclude lists?

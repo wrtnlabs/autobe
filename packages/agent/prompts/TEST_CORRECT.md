@@ -102,19 +102,25 @@ Synthesize patterns across ALL errors and document:
 **🔥 CRITICAL: THE REVISE STEP IS WHERE YOU FIX YOUR MISTAKES - DO NOT SKIP OR RUSH! 🔥**
 
 #### Property 1: **revise.rules** and **revise.checkList** - Dual-Document Compliance Validation
-- **rules**: An array of ICheck objects tracking compliance with each section from BOTH TEST_WRITE.md and TEST_CORRECT.md
+- **rules**: An array of ICheck objects tracking compliance with **ALL sections** from BOTH TEST_WRITE.md and TEST_CORRECT.md
+  - **🚨 CRITICAL: EVERY SINGLE SECTION from both documents must be validated - no exceptions**
   - Each ICheck has `title` (prefixed with source document for clarity) and `state` (boolean indicating compliance)
-  - The correct agent MUST validate against BOTH documents to ensure comprehensive compliance
-  - **🚨 CRITICAL SECTIONS TO CHECK:**
+  - The correct agent MUST validate against **ALL sections of BOTH documents** to ensure comprehensive compliance
+  - **ALL sections are equally important - not just the examples below:**
+    - Every section from TEST_WRITE.md (1 through 5, including all subsections)
+    - Every section from TEST_CORRECT.md (1 through 5, including all subsections 4.1-4.16)
     - `TEST_CORRECT: 4.5. Promises Must Be Awaited` - EVERY API call has await
     - `TEST_CORRECT: 4.6. typia.assert vs assertGuard` - Correct function used
     - `TEST_CORRECT: 4.9. Typia Tag Type Conversion` - Proper satisfies pattern or typia.assert
     - `TEST_CORRECT: 4.10. Date to ISO String` - All Date→date-time conversions use .toISOString()
     - `TEST_CORRECT: 4.11. String to Literal Type` - Use typia.assert for literal conversions
+    - **And ALL other sections** - each one contains critical requirements
   - Example: `[{title: "TEST_WRITE: 1. Role and Responsibility", state: true}, {title: "TEST_WRITE: 3.1. Import Management", state: true}, {title: "TEST_CORRECT: 4.1. Missing Properties Pattern", state: true}, {title: "TEST_CORRECT: 4.2. Type Mismatch Pattern", state: false}]`
-- **checkList**: An array of ICheck objects tracking items from BOTH Final Checklists
+- **checkList**: An array of ICheck objects tracking **ALL items** from BOTH Final Checklists
+  - **🚨 CRITICAL: Every checklist item must be validated - they are all essential**
   - Combines items from TEST_WRITE.md Section 5 and TEST_CORRECT.md Section 5
   - Each ICheck has `title` (checklist item) and `state` (boolean indicating satisfaction)
+  - **No checklist item is optional** - all are required for quality assurance
   - Example: `[{title: "No compilation errors", state: true}, {title: "All typia tags preserved", state: true}, {title: "No type bypasses or workarounds", state: false}]`
 
 #### Property 2: **revise.review** - SYSTEMATIC ERROR PATTERN CHECKING
@@ -360,6 +366,58 @@ export namespace IAutoBeTypeScriptCompileResult {
 ```
 
 ## 3. Critical Error Analysis and Correction Strategy
+
+### 3.0. 🚨🚨🚨 ABSOLUTE PRIORITY: REMOVE ALL TYPE ERROR TESTING - ZERO TOLERANCE 🚨🚨🚨
+
+**THIS IS THE #1 CAUSE OF COMPILATION FAILURES - REMOVE IMMEDIATELY**
+
+**SCAN YOUR CODE FOR THESE PATTERNS AND DELETE THEM ALL:**
+
+```typescript
+// 🚨 DELETE THIS IMMEDIATELY - Type error testing
+await TestValidator.error("should reject invalid type", async () => {
+  await api.functional.users.create(connection, {
+    body: {
+      age: "not a number" as any,  // 🚨 DELETE - Wrong type testing
+      email: 123 as any,           // 🚨 DELETE - Wrong type testing
+      name: null as any            // 🚨 DELETE - Wrong type testing
+    }
+  });
+});
+
+// 🚨 DELETE THIS IMMEDIATELY - Missing required fields
+await api.functional.posts.create(connection, {
+  body: {
+    // Missing 'title' field - DELETE THIS TEST
+    content: "test"
+  } as any
+});
+
+// 🚨 DELETE THIS IMMEDIATELY - Wrong type assignments
+const body = {
+  price: "free" as any,  // 🚨 DELETE - Wrong type
+  date: 12345           // 🚨 DELETE - Wrong type
+} satisfies IOrder.ICreate;
+```
+
+**CORRECTION ACTIONS:**
+1. **FIND** all instances of `as any` in test code
+2. **DELETE** entire test blocks that test type validation
+3. **REMOVE** any code sending wrong data types
+4. **ELIMINATE** tests for missing required fields
+5. **REPLACE** with business logic tests using CORRECT types
+
+**WHY THIS IS CRITICAL:**
+- Type validation is NOT the test's responsibility
+- TypeScript compiler WILL reject wrong types
+- Test code MUST compile successfully
+- These patterns cause 90% of compilation failures
+
+**WHAT TO KEEP:**
+- Business logic validation (duplicate emails, insufficient balance)
+- Permission/authorization tests
+- Data consistency tests
+- ALL using CORRECT TypeScript types
 
 ### 3.1. 🔍 CRITICAL: Precision Error Message Analysis
 
@@ -1177,6 +1235,7 @@ When TypeScript reports type mismatch between `Date` and `string & Format<"date-
 **Error Pattern:**
 ```
 Type 'Date' is not assignable to type 'string & Format<"date-time">'
+  Type 'Date' is not assignable to type 'string'.
 ```
 
 **Solution: Use `.toISOString()` method**
@@ -2081,6 +2140,126 @@ const config = {
 - You're confident about the type but TypeScript isn't
 - It's simpler than restructuring the entire code flow
 
+### 4.17. Date Type Nullable/Undefined Handling
+
+**CRITICAL: Proper handling of nullable/undefined Date types when converting to strings**
+
+When working with Date objects that might be nullable or undefined, you must handle them correctly based on the target type requirements.
+
+#### Case 1: Target Type is Nullable String
+
+When the target property accepts `string | null | undefined`:
+
+```typescript
+// Source: Date | null | undefined
+// Target: string | null | undefined
+
+const date: Date | null | undefined = getDate();
+
+// ✅ CORRECT: Preserve null/undefined
+const requestBody = {
+  createdAt: date?.toISOString() ?? null,  // Converts Date to string, preserves null
+  updatedAt: date?.toISOString() ?? undefined  // Converts Date to string, preserves undefined
+} satisfies IPost.ICreate;
+```
+
+#### Case 2: Target Type is Non-Nullable String
+
+When the target property requires a non-null string:
+
+```typescript
+// Source: Date | null | undefined
+// Target: string (non-nullable)
+
+const date: Date | null | undefined = getDate();
+
+// ✅ CORRECT: Provide default value
+const requestBody = {
+  createdAt: (date ?? new Date()).toISOString(),  // Always returns string
+  updatedAt: date?.toISOString() ?? new Date().toISOString()  // Alternative syntax
+} satisfies IPost.ICreate;
+```
+
+#### Case 3: Complex Union Types
+
+When dealing with `Date | string | undefined`:
+
+```typescript
+// Source: Date | string | undefined
+// Target: string | undefined
+
+const value: Date | string | undefined = getValue();
+
+// ✅ CORRECT: Handle all type possibilities
+const requestBody = {
+  publishedAt: value instanceof Date 
+    ? value.toISOString() 
+    : value  // Already string or undefined
+} satisfies IArticle.ICreate;
+
+// Alternative approach with type guard
+const requestBody = {
+  publishedAt: typeof value === 'string' 
+    ? value 
+    : value?.toISOString()  // Handles Date | undefined
+} satisfies IArticle.ICreate;
+```
+
+#### Case 4: Tagged Format Types
+
+When dealing with `string & tags.Format<"date-time"> | null | undefined`:
+
+```typescript
+// Source: Date | null | undefined
+// Target: string & tags.Format<"date-time"> | null | undefined
+
+const date: Date | null | undefined = getDate();
+
+// ✅ CORRECT: Type assertion for tagged types
+const requestBody = {
+  scheduledAt: date?.toISOString() as string & tags.Format<"date-time"> | null,
+  expiresAt: date 
+    ? date.toISOString() as string & tags.Format<"date-time">
+    : null
+} satisfies IEvent.ICreate;
+
+// When target is non-nullable tagged type
+const requestBody = {
+  timestamp: (date ?? new Date()).toISOString() as string & tags.Format<"date-time">
+} satisfies ILog.ICreate;
+```
+
+#### Common Patterns Summary
+
+```typescript
+// Quick reference for common patterns:
+
+// 1. Date | null → string | null
+date?.toISOString() ?? null
+
+// 2. Date | undefined → string | undefined  
+date?.toISOString()
+
+// 3. Date | null | undefined → string (non-null)
+(date ?? new Date()).toISOString()
+
+// 4. Date | string | undefined → string | undefined
+value instanceof Date ? value.toISOString() : value
+
+// 5. Date → string & tags.Format<"date-time">
+date.toISOString() as string & tags.Format<"date-time">
+
+// 6. Date | null → string & tags.Format<"date-time"> | null
+date?.toISOString() as string & tags.Format<"date-time"> | null
+```
+
+**REMEMBER:**
+- Always check the target type's nullability requirements
+- Use `??` operator for providing defaults
+- Use `?.` operator for preserving undefined
+- Use type assertions for tagged format types
+- Never use `.toString()` for dates - always use `.toISOString()`
+
 ## 5. Correction Requirements
 
 Your corrected code must:
@@ -2222,6 +2401,11 @@ Ensure all corrections follow the guidelines provided in `TEST_WRITE.md` prompt.
 ### 6.1. Common Error Pattern Checklist
 **GO THROUGH EACH ITEM - DO NOT SKIP ANY:**
 
+- [ ] **🚨🚨🚨 NO TYPE ERROR TESTING - #1 PRIORITY 🚨🚨🚨** ZERO tests with intentionally wrong types?
+  - [ ] **NO `as any` to send wrong types?**
+  - [ ] **NO missing required fields testing?**
+  - [ ] **NO wrong data type testing?**
+  - [ ] **ALL type error tests DELETED?**
 - [ ] **Missing await:** Search for ALL `api.functional` calls - EVERY one has `await`?
 - [ ] **typia.assert vs assertGuard:** Check EACH usage:
   - [ ] Assignment uses `typia.assert` (returns value)?
