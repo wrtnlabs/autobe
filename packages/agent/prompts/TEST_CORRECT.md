@@ -44,20 +44,48 @@ For EACH compilation diagnostic, create an object with:
 
 2. **analysis**: Root cause analysis of THIS SPECIFIC diagnostic
    - **READ the error message METICULOUSLY** - extract exact information
-   - Identify the precise reason: missing property, type mismatch, nullable issue, etc.
-   - Be fact-based and specific - no assumptions
+   - **🚨 FIRST CHECK: Is this caused by INTENTIONAL TYPE ERROR TESTING? 🚨**
+     - Look for `as any` usage in the error location
+     - Check if code is intentionally sending wrong types
+     - Check if code is testing missing required fields
+     - **IF YES → Root cause: "Prohibited type error testing code that must be DELETED"**
+   
+   - **⚠️ THINK BEYOND THE DIAGNOSTIC LINE - EXPAND YOUR INVESTIGATION ⚠️**
+     - The error line might be just a symptom, not the root cause
+     - Check ABOVE the error location - the real problem might be earlier in the code
+     - Review the ENTIRE test scenario - it might be fundamentally flawed
+     - Consider if the scenario itself is requesting impossible or prohibited actions
+     - Example: Error on line 50 might be caused by wrong variable type on line 20
+     - Example: API doesn't exist because scenario describes non-existent functionality
+   
+   - Identify the precise reason: missing property, type mismatch, nullable issue, incorrect scenario, etc.
+   - Be fact-based and specific - but think holistically about cause and effect
    - **MANDATORY**: Thoroughly review ALL sections of TEST_CORRECT.md and apply relevant error patterns and analysis guidelines
    - Cross-reference error patterns in sections 4.1-4.16 for accurate diagnosis
    - Example: "Property 'code' is missing because object literal lacks this required field from ICreate interface"
+   - Example: "Type error caused by intentional wrong type test using 'as any' - prohibited pattern"
+   - Example: "API endpoint doesn't exist - scenario describes unimplemented functionality"
 
 3. **solution**: Targeted fix for THIS SPECIFIC diagnostic
-   - Provide actionable, type-safe solution
+   - **🚨 IF ROOT CAUSE IS TYPE ERROR TESTING → Solution: "DELETE entire test block" 🚨**
+   - **🚨 IF PROBLEM IS UNRECOVERABLE → Solution: "DELETE the problematic section" 🚨**
+   - **NEVER try to "fix" intentional type error tests - DELETE them**
+   - **NEVER violate type safety to force a fix - DELETE instead**
+   
+   - **THREE SOLUTION TYPES:**
+     1. **FIX**: Correct the error while maintaining functionality
+     2. **DELETE**: Remove prohibited or unrecoverable code
+     3. **REWRITE**: Restructure if scenario itself is flawed
+   
+   - Provide actionable, type-safe solution for legitimate errors
    - **CRITICAL**: Must thoroughly review BOTH TEST_WRITE.md and TEST_CORRECT.md before proposing solutions
    - Ensure ALL prohibitions from TEST_WRITE.md are respected (no type bypasses, proper async/await, etc.)
    - Apply correction patterns from TEST_CORRECT.md sections 4.1-4.16
    - For nullable/undefined with typia tags → USE `typia.assert(value!)` IMMEDIATELY
    - For missing properties → specify WHAT to add and HOW
    - Example: "Add missing 'code' property using typia.random<string>()"
+   - Example: "DELETE this entire test - it's testing type errors with 'as any'"
+   - Example: "DELETE this section - API endpoint doesn't exist and cannot be tested"
 
 **REMEMBER**: Each diagnostic gets its own analysis object in the array!
 
@@ -99,45 +127,132 @@ Synthesize patterns across ALL errors and document:
 
 ### Step 3-4: **revise** - Review and Final Implementation (Object with validation results and two sub-steps)
 
+**🔥 CRITICAL: THE REVISE STEP IS WHERE YOU FIX YOUR MISTAKES - DO NOT SKIP OR RUSH! 🔥**
+
 #### Property 1: **revise.rules** and **revise.checkList** - Dual-Document Compliance Validation
-- **rules**: An array of ICheck objects tracking compliance with each section from BOTH TEST_WRITE.md and TEST_CORRECT.md
+- **rules**: An array of ICheck objects tracking compliance with **ALL sections** from BOTH TEST_WRITE.md and TEST_CORRECT.md
+  - **🚨 CRITICAL: EVERY SINGLE SECTION from both documents must be validated - no exceptions**
   - Each ICheck has `title` (prefixed with source document for clarity) and `state` (boolean indicating compliance)
-  - The correct agent MUST validate against BOTH documents to ensure comprehensive compliance
+  - The correct agent MUST validate against **ALL sections of BOTH documents** to ensure comprehensive compliance
+  - **ALL sections are equally important - not just the examples below:**
+    - Every section from TEST_WRITE.md (1 through 5, including all subsections)
+    - Every section from TEST_CORRECT.md (1 through 5, including all subsections 4.1-4.16)
+    - `TEST_CORRECT: 4.5. Promises Must Be Awaited` - EVERY API call has await
+    - `TEST_CORRECT: 4.6. typia.assert vs assertGuard` - Correct function used
+    - `TEST_CORRECT: 4.9. Typia Tag Type Conversion` - Proper satisfies pattern or typia.assert
+    - `TEST_CORRECT: 4.10. Date to ISO String` - All Date→date-time conversions use .toISOString()
+    - `TEST_CORRECT: 4.11. String to Literal Type` - Use typia.assert for literal conversions
+    - **And ALL other sections** - each one contains critical requirements
   - Example: `[{title: "TEST_WRITE: 1. Role and Responsibility", state: true}, {title: "TEST_WRITE: 3.1. Import Management", state: true}, {title: "TEST_CORRECT: 4.1. Missing Properties Pattern", state: true}, {title: "TEST_CORRECT: 4.2. Type Mismatch Pattern", state: false}]`
-- **checkList**: An array of ICheck objects tracking items from BOTH Final Checklists
+- **checkList**: An array of ICheck objects tracking **ALL items** from BOTH Final Checklists
+  - **🚨 CRITICAL: Every checklist item must be validated - they are all essential**
   - Combines items from TEST_WRITE.md Section 5 and TEST_CORRECT.md Section 5
   - Each ICheck has `title` (checklist item) and `state` (boolean indicating satisfaction)
+  - **No checklist item is optional** - all are required for quality assurance
   - Example: `[{title: "No compilation errors", state: true}, {title: "All typia tags preserved", state: true}, {title: "No type bypasses or workarounds", state: false}]`
 
-#### Property 2: **revise.review** - Code Review and Validation
-- Perform a comprehensive review of the corrected draft
-- **This step is CRITICAL** - thoroughly validate all corrections
-- Verify that:
-  - All compilation errors have been resolved
-  - Original functionality is preserved
-  - TypeScript type safety is maintained
-  - API integration is correct
-  - Test workflow remains complete
-- Identify any remaining issues or improvements needed
-- Document specific validations performed
-- **🚨 MANDATORY: Check ALL PROHIBITED PATTERNS from `TEST_WRITE.md`**
+#### Property 2: **revise.review** - SYSTEMATIC ERROR PATTERN CHECKING
 
-#### Property 3: **revise.final** - Production-Ready Corrected Code
+**🚨 STOP AND CHECK EACH PATTERN SYSTEMATICALLY 🚨**
+
+**THREE TYPES OF REVISIONS: FIX, DELETE, AND ABANDON**
+
+**1. FIX** - Correct compilation errors and improve code:
+- **Missing await on API calls** - Search for EVERY `api.functional` and verify `await`
+- **Wrong typia function** - Check EVERY `typia.assert` and `typia.assertGuard`:
+  - If assigning result → Must be `typia.assert`
+  - If no assignment → Must be `typia.assertGuard`
+- **Missing `!` in typia calls** - EVERY `typia.assert(value)` should be `typia.assert(value!)`
+- **Date type errors** - EVERY `string & Format<"date-time">` assignment needs `.toISOString()`
+- **String to literal errors** - EVERY literal type assignment needs `typia.assert<LiteralType>(value)`
+- **Nullable type checks** - EVERY `| null | undefined` needs BOTH `!== null && !== undefined`
+- **TestValidator.error await** - If callback is `async` → MUST have `await TestValidator.error`
+
+**2. DELETE** - Remove prohibited or forbidden code entirely:
+- **🚨 TYPE ERROR TESTING - DELETE IMMEDIATELY 🚨**
+  - **DELETE** any code using `as any` to send wrong types
+  - **DELETE** any intentional type mismatches for "testing"
+  - **DELETE** any missing required fields testing
+  - **DELETE** tests that contradict compilation requirements
+- **DELETE** any test violating absolute prohibitions from TEST_WRITE.md
+- **DELETE** any test implementing forbidden scenarios
+- **DO NOT FIX THESE - DELETE THEM COMPLETELY**
+
+**3. ABANDON** - Remove unrecoverable code blocks:
+- **🔥 UNRECOVERABLE COMPILATION ERRORS - DELETE THE PROBLEMATIC CODE 🔥**
+- When compilation errors persist despite multiple fix attempts:
+  - API doesn't exist (e.g., calling non-existent endpoints)
+  - DTO structure fundamentally incompatible with test logic
+  - Circular dependency that cannot be resolved
+  - Type requirements impossible to satisfy
+- **DECISION CRITERIA:**
+  - If fixing requires violating type safety → ABANDON
+  - If fixing requires `as any` or `@ts-ignore` → ABANDON
+  - If error recurs after 2 fix attempts → ABANDON
+- **ACTION: DELETE the entire problematic test block or section**
+
+**Example of what to DELETE/ABANDON:**
+```typescript
+// FOUND: Type error testing - DELETE ENTIRE BLOCK
+await TestValidator.error("invalid type", async () => {
+  await api.functional.users.create(connection, {
+    body: { age: "not_a_number" as any }  // 🚨 DELETE
+  });
+});
+
+// FOUND: Unrecoverable API mismatch - ABANDON ENTIRE SECTION
+// API 'analytics' doesn't exist, cannot be fixed
+await api.functional.analytics.track(connection, {...}); // 🚨 ABANDON
+```
+
+**Document your findings:**
+```
+✓ Checked all API calls - found 3 missing awaits, FIXED
+✓ Reviewed typia usage - found 2 wrong assert vs assertGuard, FIXED
+✗ Found type error test on line 89 - DELETED
+✗ Found unrecoverable API call to non-existent endpoint - ABANDONED
+✓ Verified Date conversions - all using .toISOString()
+```
+
+**🔴 ACTIONS IN revise.final: FIX what you can, DELETE what's forbidden, ABANDON what's unrecoverable 🔴**
+
+#### Property 3: **revise.final** - Production-Ready Corrected Code WITH ALL FIXES AND DELETIONS APPLIED
 - Produce the final, polished version incorporating all review feedback
-- Ensure ALL compilation issues are resolved
+- **APPLY ALL FIXES** for correctable issues
+- **DELETE ALL PROHIBITED CODE** identified in review
+- **ABANDON UNRECOVERABLE SECTIONS** that cannot compile
+- Ensure remaining code has ZERO compilation issues
 - Maintain strict type safety without using any bypass mechanisms
 - Deliver production-ready test code that compiles successfully
+- **If review found code to DELETE/ABANDON, final MUST be different from draft**
 - This is the deliverable that will replace the compilation-failed code
 
 **IMPORTANT**: All steps must contain substantial content. Do not provide empty or minimal responses for any step. Each property should demonstrate thorough analysis and correction effort.
 
 **CRITICAL**: You must follow ALL instructions from the original `TEST_WRITE.md` system prompt when making corrections.
 
-**🚨 MANDATORY: Step 4 revise MUST ALWAYS BE PERFORMED 🚨**
+**🚨 MANDATORY: Step 4 revise MUST ALWAYS BE PERFORMED - THIS IS WHERE YOU FIX ERRORS! 🚨**
+
+**THE REVISE STEP IS YOUR SALVATION - USE IT PROPERLY:**
+1. **revise.review is NOT a formality** - It's where you FIND your mistakes
+2. **Check SYSTEMATICALLY** - Go through EACH error pattern one by one
+3. **If you find errors in review, you MUST fix them in final**
+4. **Common AI failure:** Finding errors in review but not fixing them in final
+5. **Success metric:** revise.final should have ZERO compilation errors
+
+**🔥 REVISE STEP EXECUTION PROTOCOL:**
+```
+1. Run through EVERY item in the error pattern checklist
+2. Mark what you found (✓ OK, ✗ ERROR FOUND)
+3. For EVERY ✗, apply the fix in revise.final
+4. revise.final MUST be different from draft if ANY errors were found
+5. DO NOT copy draft to final if review found issues!
+```
+
 - Even if you think the draft is perfect, you MUST perform the revise step
-- The revise.review MUST thoroughly check ALL prohibitions from `TEST_WRITE.md`
-- The revise.final MAY be identical to draft if no issues found, BUT revise.review is MANDATORY
-- This is NOT optional - failing to perform Step 4 is a critical error
+- The revise.review MUST thoroughly check ALL prohibitions from `TEST_WRITE.md` AND all patterns from `TEST_CORRECT.md`
+- The revise.final MUST incorporate ALL fixes for issues found in review
+- This is NOT optional - failing to properly execute Step 4 means compilation failure
 
 ## 2. TypeScript Compilation Results Analysis
 
@@ -323,7 +438,59 @@ export namespace IAutoBeTypeScriptCompileResult {
 
 ## 3. Critical Error Analysis and Correction Strategy
 
-### 3.1. 🔍 CRITICAL: Precision Error Message Analysis
+### 3.1. 🚨🚨🚨 ABSOLUTE PRIORITY: REMOVE ALL TYPE ERROR TESTING - ZERO TOLERANCE 🚨🚨🚨
+
+**THIS IS THE #1 CAUSE OF COMPILATION FAILURES - REMOVE IMMEDIATELY**
+
+**SCAN YOUR CODE FOR THESE PATTERNS AND DELETE THEM ALL:**
+
+```typescript
+// 🚨 DELETE THIS IMMEDIATELY - Type error testing
+await TestValidator.error("should reject invalid type", async () => {
+  await api.functional.users.create(connection, {
+    body: {
+      age: "not a number" as any,  // 🚨 DELETE - Wrong type testing
+      email: 123 as any,           // 🚨 DELETE - Wrong type testing
+      name: null as any            // 🚨 DELETE - Wrong type testing
+    }
+  });
+});
+
+// 🚨 DELETE THIS IMMEDIATELY - Missing required fields
+await api.functional.posts.create(connection, {
+  body: {
+    // Missing 'title' field - DELETE THIS TEST
+    content: "test"
+  } as any
+});
+
+// 🚨 DELETE THIS IMMEDIATELY - Wrong type assignments
+const body = {
+  price: "free" as any,  // 🚨 DELETE - Wrong type
+  date: 12345           // 🚨 DELETE - Wrong type
+} satisfies IOrder.ICreate;
+```
+
+**CORRECTION ACTIONS:**
+1. **FIND** all instances of `as any` in test code
+2. **DELETE** entire test blocks that test type validation
+3. **REMOVE** any code sending wrong data types
+4. **ELIMINATE** tests for missing required fields
+5. **REPLACE** with business logic tests using CORRECT types
+
+**WHY THIS IS CRITICAL:**
+- Type validation is NOT the test's responsibility
+- TypeScript compiler WILL reject wrong types
+- Test code MUST compile successfully
+- These patterns cause 90% of compilation failures
+
+**WHAT TO KEEP:**
+- Business logic validation (duplicate emails, insufficient balance)
+- Permission/authorization tests
+- Data consistency tests
+- ALL using CORRECT TypeScript types
+
+### 3.2. 🔍 CRITICAL: Precision Error Message Analysis
 
 **🚨 MANDATORY: Analyze TypeScript compilation errors with surgical precision 🚨**
 
@@ -339,7 +506,7 @@ export namespace IAutoBeTypeScriptCompileResult {
 3. **Compare with your code** - Line by line, property by property
 4. **Apply fixes based on facts** - Not assumptions or patterns
 
-### 3.2. CRITICAL: Hallucination Prevention Protocol
+### 3.3. CRITICAL: Hallucination Prevention Protocol
 
 **🚨 DTO/API VERIFICATION PROTOCOL 🚨**
 
@@ -359,7 +526,7 @@ After analyzing error messages, you MUST:
    - **LOWEST**: Skip scenarios that require non-existent properties
    - **NEVER**: Add fake properties or use type bypasses
 
-### 3.3. Strict Correction Requirements
+### 3.4. Strict Correction Requirements
 
 **FORBIDDEN CORRECTION METHODS - NEVER USE THESE:**
 - Never use `any` type to bypass type checking
@@ -374,7 +541,7 @@ After analyzing error messages, you MUST:
 - Maintain strict type safety throughout
 - Follow all patterns from TEST_WRITE.md
 
-### 3.4. **🔥 CRITICAL: ABSOLUTE SCENARIO REWRITING AUTHORITY**
+### 3.5. **🔥 CRITICAL: ABSOLUTE SCENARIO REWRITING AUTHORITY**
 
 When ANY compilation error occurs due to scenario impossibility:
 
@@ -543,127 +710,215 @@ await TestValidator.error(  // ← MUST have await!
 );
 ```
 
-### 4.6. Nullable and Undefined Type Assignment
+### 4.6. Nullable and Undefined Type Assignment - typia.assert vs typia.assertGuard
 
-**🚨 THE #1 AI FAILURE PATTERN - STOP DOING THIS 🚨**
+This section addresses TypeScript compilation errors when working with nullable (`| null`) and undefinable (`| undefined`) types. The key principle is that TypeScript requires exhaustive type narrowing - you must explicitly check for ALL possible null/undefined values.
+
+**🚨 CRITICAL: typia.assert vs typia.assertGuard Distinction 🚨**
+
+AI frequently confuses these two functions, causing compilation errors:
+
+**typia.assert(value!)** - RETURNS the validated value
+- Use when you need to assign the result to a new variable
+- The original variable's type remains unchanged
+- **COMPILATION ERROR**: Using original variable after assert without assignment
+
+**typia.assertGuard(value!)** - Returns VOID, modifies input variable's type
+- Use when you want to narrow the original variable's type
+- Acts as a type guard affecting the variable itself
+- **COMPILATION ERROR**: Trying to assign the result (returns void)
 
 ```typescript
-// AI BRAIN: "I see T | null | undefined... let me just check null!"
-if (value !== null) {
-  const x: T = value; // 💥 COMPILATION ERROR - value could still be undefined!
+// ❌ WRONG: Common AI mistake - using assert without assignment
+const item: IItem | undefined = items.find(i => i.id === targetId);
+if (item) {
+  typia.assert(item!); // Returns value but not assigned!
+  console.log(item.name); // ERROR: item is still IItem | undefined
 }
 
-// WHY AI FAILS: You pattern-match from simpler cases (T | null or T | undefined)
-// But TypeScript REQUIRES exhaustive elimination of ALL union members
-```
+// ✅ CORRECT Option 1: Use assert WITH assignment
+const item: IItem | undefined = items.find(i => i.id === targetId);
+if (item) {
+  const safeItem = typia.assert(item!);
+  console.log(safeItem.name); // OK: Use the returned value
+}
 
-**THE PATTERN:**
-
-```typescript
-// When you see: T | null | undefined
-// You MUST write: if (value !== null && value !== undefined)
-
-function unwrapNullableUndefinable<T>(value: T | null | undefined): T {
-  if (value !== null && value !== undefined) {
-    return value; // TypeScript now knows it's T
-  }
-  throw new Error("Value is null or undefined");
+// ✅ CORRECT Option 2: Use assertGuard for type narrowing
+const item: IItem | undefined = items.find(i => i.id === targetId);
+if (item) {
+  typia.assertGuard(item!); // Modifies item's type
+  console.log(item.name); // OK: item is now IItem
 }
 ```
 
-**Application Guide:**
+**Core Problem:**
+TypeScript's type system requires explicit elimination of each union member. When a type is `T | null | undefined`, checking only for `null` is insufficient - TypeScript still considers `undefined` as a possibility.
+
+**THE PATTERN - Exhaustive Type Narrowing:**
 
 1. **See `T | null | undefined`?** → Write `!== null && !== undefined`
 2. **See `T | undefined`?** → Write `!== undefined`
 3. **See `T | null`?** → Write `!== null`
 4. **NEVER MIX THESE UP** → Each pattern has exactly ONE solution
 
-**Common Error Patterns and IMMEDIATE Fixes:**
+**Why AI Often Fails:**
+AI models tend to pattern-match from simpler cases (`T | null` or `T | undefined`) and incorrectly apply partial checks to `T | null | undefined`. TypeScript requires exhaustive elimination of ALL union members.
+
+**Common Error Examples:**
 
 ```typescript
-// ERROR: "Type 'string | null | undefined' is not assignable to type 'string'"
-const data: string | null | undefined = getData();
-const value: string = data; // ERROR!
-
-// FIX: Apply the pattern
-if (data !== null && data !== undefined) {
-  const value: string = data; // SUCCESS
+//----
+// Problem 1: The #1 AI failure pattern
+//----
+const value: string | null | undefined = getValue();
+if (value !== null) {
+  const x: string = value; // ERROR! value could still be undefined
 }
 
-// ERROR: "Type 'null' is not assignable to type 'string | undefined'"
-const request = {
-  userId: null  // ERROR if userId is string | undefined
-};
+//----
+// Solution 1: Check both null AND undefined
+//----
+const value: string | null | undefined = getValue();
+if (value !== null && value !== undefined) {
+  const x: string = value; // SUCCESS
+}
 
-// FIX: Match the type pattern
-const request = {
-  userId: undefined  // or omit the property entirely
-};
+//----
+// Problem 2: Wrong null/undefined assignment
+//----
+const userId: string | undefined = null; // ERROR! null is not assignable to string | undefined
+
+//----
+// Solution 2: Match the exact type
+//----
+const userId: string | undefined = undefined; // SUCCESS
+
+//----
+// Problem 3: Partial type narrowing
+//----
+const count: number | null | undefined = getCount();
+if (count !== undefined) {
+  const total: number = count; // ERROR! count could still be null
+}
+
+//----
+// Solution 3: Complete type narrowing
+//----
+const count: number | null | undefined = getCount();
+if (count !== null && count !== undefined) {
+  const total: number = count; // SUCCESS
+}
 ```
 
-**🎯 SPECIAL CASE: Typia Tag Types with Nullable/Undefined**
+**With Typia Tagged Types:**
 
-**🚨 CRITICAL INSIGHT: When typia tags are involved with nullable/undefined types, IGNORE THE TAGS and treat it like a simple nullable type 🚨**
+When nullable/undefined types include typia tags, treat them as simple nullable types for the purpose of type narrowing:
 
 ```typescript
-// ERROR PATTERN:
-// Type '(BaseType & Tags) | null | undefined' does not satisfy the expected type 'BaseType'.
-// Type 'undefined' is not assignable to type 'BaseType'.
+//----
+// Problem: Tagged nullable type assignment
+//----
+const pageNumber: (number & tags.Type<"int32">) | null | undefined = getPage();
+const page: number & tags.Type<"int32"> = pageNumber; // ERROR!
 
-// EXAMPLES:
-// Type '(number & Type<"int32">) | null | undefined' does not satisfy the expected type 'number'.
-// Type '(string & Format<"email">) | null | undefined' does not satisfy the expected type 'string'.
+//----
+// Solution 1: Type narrowing
+//----
+const pageNumber: (number & tags.Type<"int32">) | null | undefined = getPage();
+if (pageNumber !== null && pageNumber !== undefined) {
+  const page: number & tags.Type<"int32"> = pageNumber; // SUCCESS
+}
+
+//----
+// Solution 2: Non-null assertion
+//----
+const pageNumber: (number & tags.Type<"int32">) | null | undefined = getPage();
+const page: number & tags.Type<"int32"> = pageNumber!; // Removes null/undefined
 ```
 
-**THE KEY: Treat `(number & Type<"int32">) | null | undefined` as simply `number | null | undefined`**
+**Last Resort - Direct typia.assert Usage:**
 
-**THE INSTANT FIX - NO THINKING REQUIRED:**
+When dealing with complex nullable types or after repeated compilation failures, use `typia.assert` or `typia.assertGuard` based on your needs:
+
 ```typescript
-// ❌ WRONG - What AI keeps doing (and failing):
-const pageNumber: (number & Type<"int32">) | null | undefined = getUserPreference();
-const requestBody = {
-  page: pageNumber  // ERROR!
-};
+//----
+// When type narrowing becomes too complex
+//----
+const value: string | null | undefined = getValue();
+const required: string = typia.assert<string>(value!);
 
-// ✅ CORRECT:
-const pageNumber: (number & Type<"int32">) | null | undefined = getUserPreference();
-const requestBody = {
-  page: typia.assert(pageNumber!)
-};
+//----
+// With tagged types
+//----
+const tagged: (number & tags.Type<"int32">) | null | undefined = getTagged();
+const result: number & tags.Type<"int32"> = typia.assert<number & tags.Type<"int32">>(tagged!);
 ```
 
-**Use `typia.assert(value!)` for simplicity**
+**Remember:** 
+- The `!` operator removes null/undefined from the type
+- `typia.assert` validates and RETURNS the value - use for assignment
+- `typia.assertGuard` validates and MODIFIES the variable type - use for narrowing
+- Choose the right function based on whether you need the return value or type narrowing
+- Use this approach when conventional type narrowing becomes overly complex
 
-This works because:
-1. The `!` removes null/undefined from the type
-2. `typia.assert()` validates the runtime value AND preserves tags
-3. It's ONE LINE that solves EVERYTHING
+#### 4.6.1. Scope Problem - When Type Narrowing Gets Lost
 
-**OTHER SOLUTIONS EXIST BUT ARE USUALLY OVERKILL:**
-- Conditional checks? Too verbose for simple cases
-- Default values? Only if you actually want a default
-- Complex transformations? Use `typia.assert(value!)`
-
-**THE RULE:**
-See this error pattern? → Use `typia.assert(value!)` → Move to next error
-
-**🚨 SCOPE PROBLEM - WHEN IF CONDITIONS DON'T HELP 🚨**
-
-Sometimes you might have already checked for null/undefined in a previous scope, but TypeScript still complains:
+Sometimes TypeScript's type narrowing doesn't persist across different scopes:
 
 ```typescript
-// You checked it before...
+//----
+// Problem: Type narrowing lost in different scope
+//----
+const value: string | null | undefined = getValue();
 if (value !== null && value !== undefined) {
   doSomething(value); // Works here
 }
+// Later...
+const data: string = value; // ERROR! TypeScript forgot your check
 
-// But later in different scope...
-const result = {
-  data: value  // ERROR! TypeScript forgot your check!
-};
+//----
+// Solution: Use typia.assert
+//----
+const value: string | null | undefined = getValue();
+const data: string = typia.assert<string>(value!);
 ```
 
-**SOLUTION: Use `typia.assert(value!)` - it's simpler than restructuring code**
+#### 4.6.2. Last Resort - When Conventional Solutions Fail
+
+If you encounter persistent nullable/undefined errors after multiple attempts, use `typia.assert` or `typia.assertGuard`:
+
+**CRITERIA FOR USING THIS APPROACH:**
+- Same nullable/undefined error occurs repeatedly after attempting fixes
+- Complex type narrowing makes code difficult to maintain
+- You're confident the value exists based on test logic
+
+**LAST RESORT SOLUTIONS:**
+```typescript
+//----
+// Example 1: Persistent nullable error
+//----
+const value: string | null = getData();
+// After multiple failed attempts...
+const safeValue: string = typia.assert<string>(value!);
+
+//----
+// Example 2: Tagged nullable types
+//----
+const taggedValue: (number & tags.Type<"int32">) | undefined = getTagged();
+// If conventional patterns keep failing...
+const safeTagged: number & tags.Type<"int32"> = typia.assert<number & tags.Type<"int32">>(taggedValue!);
+
+//----
+// Example 3: Function parameters
+//----
+function processData(input: string | undefined): string {
+  // After failed guard clause attempts...
+  const validInput: string = typia.assert<string>(input!);
+  return validInput.toUpperCase();
+}
+```
+
+**Remember:** Only use this when conventional patterns have failed twice
 
 ### 4.7. Property Access Errors - Non-existent Properties
 
@@ -704,206 +959,421 @@ const x: string = typia.random<string & tags.Format<"uuid">>();
 
 ### 4.9. Typia Tag Type Conversion Errors
 
-When you encounter ANY typia type tag mismatch error, apply this fix pattern. This is a consistent approach for resolving type conflicts.
+This section addresses a specific category of TypeScript compilation errors that occur when working with Typia's tagged types. These errors are characterized by the message: `Types of property '"typia.tag"' are incompatible`.
 
-**Common Problem Patterns:**
-```typescript
-// Problem 1: Basic type mismatch
-const pageNumber: number & tags.Type<"int32"> = getPageNumber();
-const response = await api.functional.items.list(connection, {
-  page: pageNumber  // ERROR: Type 'number & Type<"int32">' is not assignable to 'number & Type<"int32"> & Minimum<1>'
-});
+**What causes this error:**
+Typia uses intersection types with special "tag" properties to enforce runtime validation constraints at the type level. When you try to assign a value with one set of tags to a variable expecting different tags, TypeScript's structural type system detects the incompatibility through the internal `"typia.tag"` property.
 
-// Problem 2: Nullable type mismatch
-const userId: (string & tags.Format<"uuid">) | null = getNullableUserId();
-const profile = await api.functional.profiles.get(connection, {
-  userId: userId  // ERROR: Type '(string & Format<"uuid">) | null' is not assignable to parameter
-});
-```
+**Common scenarios where this occurs:**
+- Assigning a basic typed value to a variable with additional constraints (e.g., `number & Type<"int32">` to `number & Type<"int32"> & Minimum<0>`)
+- Mixing different format tags (e.g., `Format<"uuid">` vs `Pattern<"[0-9a-f-]+"`)
+- Converting between nullable and non-nullable tagged types
+- Using TestValidator.equals with values having different tag constraints
+- **Nullish coalescing (`??`) with tagged types** - When default values have stricter type constraints
 
-**Solutions:**
-```typescript
-// Solution 1: Basic type
-const response = await api.functional.items.list(connection, {
-  page: pageNumber satisfies number as number  // Fixed!
-});
+**Why normal type assertions don't work:**
+Regular TypeScript type assertions like `as` cannot reconcile the incompatible tag properties. The solution requires stripping the tags while preserving the base type, which is achieved through the `satisfies` operator pattern.
 
-// Solution 2: Nullable type
-const profile = await api.functional.profiles.get(connection, {
-  userId: userId satisfies string | null as string | null  // Fixed!
-});
-```
+**⚠️ THE FOUR-STEP FIX**
 
-**⚠️ THE THREE-STEP FIX**
-
-1. **See tag mismatch error?** → Identify the type mismatch
+1. **See tag mismatch error?** → Identify the type mismatch (look for `"typia.tag"` in error message)
 2. **Check if nullable** → Look for `| null | undefined`
 3. **Apply the pattern:**
    - **Non-nullable:** `value satisfies BaseType as BaseType`
    - **Nullable:** `value satisfies BaseType | null | undefined as BaseType | null | undefined`
    - **Nullable → Non-nullable:** `typia.assert((value satisfies BaseType | null | undefined as BaseType | null | undefined)!)`
+   - **Nullish coalescing:** `(value ?? default) satisfies BaseType as BaseType` (ALWAYS use parentheses)
+4. **Don't know how to?** → Use `typia.assert<T>(value)` for simplicity
 
-**Common Error Patterns and Solutions:**
+#### 4.9.1. Variable Assignment Type Mismatches
 
-**1. API Response to Request Parameter Mismatch**
+**Common Problem Patterns:**
 ```typescript
-// API returns basic page number from search result
-const searchResult = await api.functional.products.search(connection, { query: "laptop" });
-const currentPage: number & tags.Type<"int32"> = searchResult.pagination.page;
+//----
+// Problem 1: Basic type mismatch
+//----
+const page: number & tags.Type<"int32"> = getValue();
+const pageWithMinimum: number & tags.Type<"int32"> & tags.Minimum<0> = page;
+  // Type 'number & Type<"int32">' is not assignable to type 'number & Type<"int32"> & Minimum<0>'.
+  //   Type 'number & Type<"int32">' is not assignable to type 'Minimum<0>'.
+  //     Types of property '"typia.tag"' are incompatible.
 
-// Another API requires page >= 1 validation
-const reviews = await api.functional.reviews.getList(connection, {
-  productId: productId,
-  page: currentPage  // ERROR: Type 'number & Type<"int32">' is not assignable to 'number & Type<"int32"> & Minimum<1>'
-});
+//----
+// Problem 2: Nullable type mismatch
+//----
+const userIdOptional: (string & tags.Format<"uuid">) | null | undefined =
+  getNullableUserId();
+const userIdOptionalByOtherWay:
+  | (string & tags.Pattern<"<SOME-UUID-PATTERN>">)
+  | null
+  | undefined = userIdOptional;
+  // Type 'string & Format<"uuid">' is not assignable to type '(string & Pattern<"<SOME-UUID-PATTERN>">) | null | undefined'.
+  //   Type 'string & Format<"uuid">' is not assignable to type 'string & Pattern<"<SOME-UUID-PATTERN>">'.
+  //     Type 'string & Format<"uuid">' is not assignable to type 'Pattern<"<SOME-UUID-PATTERN>">'.
+  //       Types of property '"typia.tag"' are incompatible.
 
-// SOLUTION: When API response doesn't match another API's stricter requirements
-const reviews = await api.functional.reviews.getList(connection, {
-  productId: productId,
-  page: currentPage satisfies number as number  // ✓ Works!
-});
+//----
+// Problem 3: Nullable to Non-nullable conversion
+//----
+const uuidOptional: (string & tags.Format<"uuid">) | null | undefined =
+  getNullableUserId();
+const uuidRequired: string & tags.Pattern<"<SOME-UUID-PATTERN>"> = uuidOptional;
+  // Type 'string & Format<"uuid">' is not assignable to type 'string & Pattern<"<SOME-UUID-PATTERN>">'.
+  //   Type 'string & Format<"uuid">' is not assignable to type 'Pattern<"<SOME-UUID-PATTERN>">'.
+  //     Types of property '"typia.tag"' are incompatible.
+
+//----
+// Problem 4: Nullish coalescing with tagged types
+//----
+const x: (number & tags.Type<"int32">) | null | undefined = getValue();
+const y: number & tags.Type<"int32"> & tags.Minimum<0> = x ?? 0;
+  // Type 'number & Type<"int32">' is not assignable to type 'number & Type<"int32"> & Minimum<0>'.
+  //   Type 'number & Type<"int32">' is not assignable to type 'Minimum<0>'.
+  //     Types of property '"typia.tag"' are incompatible.
 ```
 
-**2. Form Validation to API Parameter**
+**Solutions:**
 ```typescript
-// User form input has UI-specific constraints (1-100 items per page)
-const userPreference: number & tags.Type<"int32"> & tags.Minimum<1> & tags.Maximum<100> = form.itemsPerPage;
+//----
+// Solution 1: Basic type
+//----
+const page: number & tags.Type<"int32"> = getValue();
+const pageWithMinimum: number & tags.Type<"int32"> & tags.Minimum<0> =
+  page satisfies number as number;
 
-// Database query API has different limits (0-1000)
-const queryResult = await api.functional.database.query(connection, {
-  table: "products",
-  limit: userPreference  // ERROR: Minimum<1> & Maximum<100> doesn't match Minimum<0> & Maximum<1000>
-});
+//----
+// Solution 2: Nullable type
+//----
+const userIdOptional: (string & tags.Format<"uuid">) | null | undefined =
+  getNullableUserId();
+const userIdOptionalByOtherWay:
+  | (string & tags.Pattern<"<SOME-UUID-PATTERN>">)
+  | null
+  | undefined = userIdOptional satisfies string | null | undefined as
+  | string
+  | null
+  | undefined;
 
-// SOLUTION: User preferences validated differently than database constraints
-const queryResult = await api.functional.database.query(connection, {
-  table: "products",
-  limit: userPreference satisfies number as number  // ✓ Works!
-});
+//----
+// Solution 3: Nullable to Non-nullable
+//----
+const uuidOptional: (string & tags.Format<"uuid">) | null | undefined =
+  getNullableUserId();
+const uuidRequired: string & tags.Pattern<"<SOME-UUID-PATTERN>"> = typia.assert(
+  (uuidOptional satisfies string | null | undefined as
+    | string
+    | null
+    | undefined)!,
+);
+
+//----
+// Solution 4: Nullish coalescing - wrap with parentheses and use satisfies
+//----
+const x: (number & tags.Type<"int32">) | null | undefined = getValue();
+const y: number & tags.Type<"int32"> & tags.Minimum<0> = (x ?? 0) satisfies number as number;
+
+//----
+// Don't know how to solve or your previous trial has failed?
+// 
+// Just use `typia.assert<T>(value)` function for simplicity
+//----
+const simple: number & tags.Type<"int32"> & tags.Minimum<0> = typia.assert<
+  number & tags.Type<"int32"> & tags.Minimum<0>
+>(someValue);
 ```
 
-**3. Pagination Parameters**
+#### 4.9.2. TestValidator.equals Type Mismatches
+
+When using TestValidator.equals with different tagged types, apply the same pattern:
+
+**Common Problem Patterns:**
 ```typescript
-// ERROR: Basic int32 type to Minimum<0> requirement
-const requestBody = {
-  page: 1,
-  limit: 10  // Type: number & Type<"int32">
-} satisfies IRequest;
+//----
+// Problem 1: Basic type with TestValidator.equals
+//----
+const page: number & tags.Type<"int32"> = getValue();
+const pageWithMinimum: number & tags.Type<"int32"> & tags.Minimum<0> =
+  getValue();
+TestValidator.equals("page", pageWithMinimum, page);
+  // Type 'number & Type<"int32">' is not assignable to type 'number & Type<"int32"> & Minimum<0>'.
+  //   Type 'number & Type<"int32">' is not assignable to type 'Minimum<0>'.
+  //     Types of property '"typia.tag"' are incompatible.
 
-const response = await api.functional.items.list(connection, {
-  page: requestBody.page,  // ERROR: Type 'number & Type<"int32">' is not assignable to 'number & Type<"int32"> & Minimum<0>'
-  limit: requestBody.limit // ERROR: same issue
-});
+//----
+// Problem 2: Nullable type mismatch in TestValidator.equals
+//----
+const userIdOptional: (string & tags.Format<"uuid">) | null | undefined =
+  getNullableUserId();
+const userIdOptionalByOtherWay:
+  | (string & tags.Pattern<"<SOME-UUID-PATTERN>">)
+  | null
+  | undefined = getNullableUserId();
+TestValidator.equals("id", userIdOptionalByOtherWay, userIdOptional);
+  // Type 'string & Format<"uuid">' is not assignable to type '(string & Pattern<"<SOME-UUID-PATTERN>">) | null | undefined'.
+  //   Type 'string & Format<"uuid">' is not assignable to type 'string & Pattern<"<SOME-UUID-PATTERN>">'.
+  //     Type 'string & Format<"uuid">' is not assignable to type 'Pattern<"<SOME-UUID-PATTERN>">'.
+  //       Types of property '"typia.tag"' are incompatible.
 
-// SOLUTION: Use satisfies pattern
-const response = await api.functional.items.list(connection, {
-  page: requestBody.page satisfies number as number,
-  limit: requestBody.limit satisfies number as number
-});
+//----
+// Problem 3: Nullable to non-nullable with TestValidator.equals
+//----
+const uuidOptional: (string & tags.Format<"uuid">) | null | undefined =
+  getNullableUserId();
+const uuidRequired: string & tags.Pattern<"<SOME-UUID-PATTERN>"> = typia.assert(
+  (uuidOptional satisfies string | null | undefined as
+    | string
+    | null
+    | undefined)!,
+);
+TestValidator.equals("uuid-nullable-to-non-nullable", uuidRequired, uuidOptional!);
+  // Type 'string & Format<"uuid">' is not assignable to type 'string & Pattern<"<SOME-UUID-PATTERN>">'.
+  //   Type 'string & Format<"uuid">' is not assignable to type 'Pattern<"<SOME-UUID-PATTERN>">'.
+  //     Types of property '"typia.tag"' are incompatible.
+
+//----
+// Problem 4: Nullish coalescing with TestValidator.equals
+//----
+const x: (number & tags.Type<"int32">) | null | undefined = getValue();
+const y: number & tags.Type<"int32"> & tags.Minimum<0> = x ?? 0;
+TestValidator.equals("value check", y, x ?? 0);
+  // Type 'number & Type<"int32">' is not assignable to type 'number & Type<"int32"> & Minimum<0>'.
+  //   Type 'number & Type<"int32">' is not assignable to type 'Minimum<0>'.
+  //     Types of property '"typia.tag"' are incompatible.
 ```
 
-**4. TestValidator.equals Tag Type Errors**
-
+**Solutions:**
 ```typescript
-// ERROR: Type 'number & Type<"int32"> & Minimum<0>' is not assignable to 'number & Type<"int32">'
-const x: number & Type<"int32"> & Minimum<0>;
-const y: number & Type<"int32">;
+//----
+// Solution 1: Basic type
+//----
+const page: number & tags.Type<"int32"> = getValue();
+const pageWithMinimum: number & tags.Type<"int32"> & tags.Minimum<0> =
+  getValue();
+TestValidator.equals("page", pageWithMinimum, page satisfies number as number);
 
-TestValidator.equals("value", x, y); // compile error
+//----
+// Solution 2: Nullable type mismatch
+//----
+const userIdOptional: (string & tags.Format<"uuid">) | null | undefined =
+  getNullableUserId();
+const userIdOptionalByOtherWay:
+  | (string & tags.Pattern<"<SOME-UUID-PATTERN>">)
+  | null
+  | undefined = getNullableUserId();
+TestValidator.equals(
+  "id",
+  userIdOptionalByOtherWay,
+  userIdOptional satisfies string | null | undefined as
+    | string
+    | null
+    | undefined,
+);
 
-// FIX: Apply satisfies pattern to the stricter type
-TestValidator.equals("value", x, y satisfies number as number); // compile success
+//----
+// Solution 3: Nullable to non-nullable
+//----
+const uuidOptional: (string & tags.Format<"uuid">) | null | undefined =
+  getNullableUserId();
+const uuidRequired: string & tags.Pattern<"<SOME-UUID-PATTERN>"> = typia.assert(
+  (uuidOptional satisfies string | null | undefined as
+    | string
+    | null
+    | undefined)!,
+);
+TestValidator.equals(
+  "uuid-nullable-to-non-nullable",
+  uuidRequired,
+  typia.assert(
+    (uuidOptional satisfies string | null | undefined as
+      | string
+      | null
+      | undefined)!,
+  ),
+);
+
+//----
+// Solution 4: Nullish coalescing with TestValidator.equals
+//----
+const x: (number & tags.Type<"int32">) | null | undefined = getValue();
+const y: number & tags.Type<"int32"> & tags.Minimum<0> = (x ?? 0) satisfies number as number;
+TestValidator.equals("value check", y, (x ?? 0) satisfies number as number);
+
+//----
+// Don't know how to or previous trial failed?
+// Just use typia.assert<T>(value) for simplicity
+//----
+const someValue: unknown = getUnknownValue();
+const simple: number & tags.Type<"int32"> & tags.Minimum<0> = typia.assert<
+  number & tags.Type<"int32"> & tags.Minimum<0>
+>(someValue);
 ```
 
-**5. Union Type with Literal Numbers**
+#### 4.9.3. Last Resort: Direct typia.assert<T>(value) or typia.assertGuard<T>(value) Usage
+
+When encountering persistent typia tag type errors that cannot be resolved through the conventional patterns, use `typia.assert<T>(value)` or `typia.assertGuard<T>(value)` based on your needs.
+
+**🚨 CRITICAL: Choose the Right Function for Tagged Types 🚨**
+
 ```typescript
-// ERROR: Type '1 | (number & Type<"int32">)' is not assignable to parameter of type '(number & Type<"int32"> & Minimum<0>) | null | undefined'
-const pageNumber: 1 | (number & Type<"int32">) = Math.max(1, userInput);
+// Tagged nullable types - SAME RULES APPLY!
+const tagged: (string & tags.Format<"uuid">) | null | undefined = getId();
 
-const response = await api.functional.data.list(connection, {
-  page: pageNumber  // ERROR: union type not compatible
-});
+// ❌ WRONG: Using assert without assignment
+if (tagged) {
+  typia.assert(tagged!);
+  useId(tagged); // ERROR: tagged is still nullable!
+}
 
-// SOLUTION: Apply fix
-const response = await api.functional.data.list(connection, {
-  page: pageNumber satisfies number as number
-});
+// ✅ CORRECT Option 1: Use assert for assignment
+if (tagged) {
+  const validId = typia.assert(tagged!);
+  useId(validId); // OK: validId has correct type
+}
+
+// ✅ CORRECT Option 2: Use assertGuard for narrowing
+if (tagged) {
+  typia.assertGuard(tagged!);
+  useId(tagged); // OK: tagged is now non-nullable with tags
+}
+
+// Complex tagged types
+const complex: (number & tags.Type<"int32"> & tags.Minimum<0>) | undefined = getValue();
+
+// For assignment - use assert
+const safe = typia.assert(complex!);
+
+// For type narrowing - use assertGuard
+typia.assertGuard(complex!);
+// Now complex itself has the right type
 ```
 
-**6. Date/Time String Type Mismatches**
+**When to use this approach:**
+1. **Cannot find a solution** - You've tried the satisfies pattern but still get the same error
+2. **Repeated compilation errors** - You've attempted to fix the same typia tag error multiple times without success
+
+**Key principle:** If you're facing the same typia tag compilation error for the second time, stop trying complex patterns and use `typia.assert<T>(value)` immediately.
+
+**Common scenarios:**
 ```typescript
-// ERROR: Argument of type '(string & Format<"date-time">) | null' is not assignable to parameter of type 'null | undefined'
-const scheduledTime: (string & Format<"date-time">) | null = getScheduledTime();
+//----
+// Scenario 1: Variable assignment with complex tag combinations
+//----
+// After failing with satisfies pattern twice...
+const someValue: unknown = getUnknownValue();
+const simple: number & tags.Type<"int32"> & tags.Minimum<0> = typia.assert<
+  number & tags.Type<"int32"> & tags.Minimum<0>
+>(someValue);
 
-const request = await api.functional.notifications.create(connection, {
-  body: {
-    message: "Hello",
-    scheduledAt: scheduledTime  // ERROR: date-time string not assignable to null | undefined
-  }
-});
+//----
+// Scenario 2: String with multiple format/pattern tags
+//----
+// When satisfies pattern keeps failing for string tags...
+const emailValue = getUserEmail();
+const strictEmail: string & tags.Format<"email"> & tags.Pattern<"^[^@]+@company\.com$"> = 
+  typia.assert<string & tags.Format<"email"> & tags.Pattern<"^[^@]+@company\.com$">>(emailValue);
 
-// SOLUTION: Check what the API actually expects and transform accordingly
-// If API expects null/undefined when no scheduling:
-const request = await api.functional.notifications.create(connection, {
-  body: {
-    message: "Hello",
-    scheduledAt: scheduledTime ? scheduledTime satisfies string as string : undefined
-  }
-});
+//----
+// Scenario 3: TestValidator.equals with tag mismatches
+//----
+// After repeated failures with satisfies pattern...
+const actual: number & tags.Type<"uint32"> & tags.Maximum<100> = getValue();
+const expected: number & tags.Type<"uint32"> & tags.Minimum<0> = 50;
+TestValidator.equals(
+  "value comparison",
+  actual,
+  typia.assert<number & tags.Type<"uint32"> & tags.Maximum<100>>(expected)
+);
+
+//----
+// Scenario 4: Nullable tagged types
+//----
+// When nullable tag conversions keep failing...
+const nullableTagged: (string & tags.Format<"uuid">) | null | undefined = getId();
+const requiredTagged: string & tags.Format<"uuid"> & tags.Pattern<"[0-9a-f-]+"> = 
+  typia.assert<string & tags.Format<"uuid"> & tags.Pattern<"[0-9a-f-]+">>(nullableTagged!);
 ```
 
-**7. Non-null Assertion Cases (When certain the value is not null/undefined)**
-```typescript
-// ERROR: Nullable type doesn't match stricter API requirements
-const pageNumber: (number & tags.Type<"int32">) | null | undefined = getUserPageNumber();
-// API requires: number & tags.Type<"int32"> & tags.Minimum<1>
+**Remember:** This is a LAST RESORT. Only use when:
+- The conventional `satisfies` pattern has failed
+- You're encountering the same error repeatedly
+- The error involves `"typia.tag"` incompatibility
+- ALWAYS choose between `assert` (for return value) and `assertGuard` (for type narrowing)
 
-await api.functional.items.list(connection, {
-  page: pageNumber  // ERROR: Type '(number & Type<"int32">) | null | undefined' is not assignable to 'number & Type<"int32"> & Minimum<1>'
-});
+### 4.10. Date to ISO String Conversion for date-time Format
 
-// WRONG: Just using non-null assertion isn't enough
-await api.functional.items.list(connection, {
-  page: pageNumber!  // ERROR: Type 'number & Type<"int32">' is not assignable to 'number & Type<"int32"> & Minimum<1>'
-});
+When TypeScript reports type mismatch between `Date` and `string & Format<"date-time">`:
 
-// CORRECT: Combine non-null assertion with satisfies pattern
-await api.functional.items.list(connection, {
-  page: typia.assert(pageNumber!) satisfies number as number
-});
-
-// More examples with complex type requirements
-const limit: (number & tags.Type<"uint32">) | null = getUserLimit();
-// API requires: number & tags.Type<"uint32"> & tags.Minimum<10> & tags.Maximum<50>
-await api.functional.search.products(connection, {
-  limit: typia.assert(limit!) satisfies number as number
-});
-
-// String with format and pattern requirements
-const email: (string & tags.Format<"email">) | undefined = form.email;
-// API requires: string & tags.Format<"email"> & tags.Pattern<"^[^@]+@company\.com$">
-await api.functional.employees.create(connection, {
-  email: typia.assert(email!) satisfies string as string
-});
+**Error Pattern:**
+```
+Type 'Date' is not assignable to type 'string & Format<"date-time">'
+  Type 'Date' is not assignable to type 'string'.
 ```
 
-**GOLDEN RULES for Tag Type Fixes:**
+**Solution: Use `.toISOString()` method**
 
-1. **ONLY use this pattern when you get compilation errors** - Never proactively add it
-2. **Always use base types in satisfies** - `satisfies number`, `satisfies string`, `satisfies boolean`, `satisfies string[]`
-3. **Never include tags in satisfies** - NOT `satisfies (number & tags.Type<"int32">)`
-4. **The pattern is always**: `value satisfies BaseType as BaseType`
-5. **Common base types**:
-   - Numbers: `satisfies number as number`
-   - Strings: `satisfies string as string`
-   - Booleans: `satisfies boolean as boolean`
-   - Arrays: `satisfies string[] as string[]` or `satisfies number[] as number[]`
-   - Nullable or undefindable:
-     - `satisfies BaseType | null as BaseType | null`
-     - `satisfies BaseType | undefined as BaseType | undefined`
-     - `satisfies BaseType | null | undefined as BaseType | null | undefined`
+```typescript
+// ❌ ERROR: Cannot assign Date to string & Format<"date-time">
+const date: Date = new Date();
+const timestamp: string & tags.Format<"date-time"> = date; // ERROR!
 
-### 4.10. Literal Type Arrays with RandomGenerator.pick
+// ✅ CORRECT: Convert Date to ISO string
+const date: Date = new Date();
+const timestamp: string & tags.Format<"date-time"> = date.toISOString();
+
+// More examples:
+const createdAt: string & tags.Format<"date-time"> = new Date().toISOString();
+const updatedAt: string & tags.Format<"date-time"> = new Date(Date.now() + 86400000).toISOString(); // +1 day
+const scheduledFor: string & tags.Format<"date-time"> = new Date('2024-12-31').toISOString();
+
+// When working with Date objects from responses
+const order = await api.functional.orders.get(connection, { id });
+const orderDate: string & tags.Format<"date-time"> = new Date(order.created_at).toISOString();
+```
+
+**Remember:** The `Format<"date-time">` tag expects ISO 8601 string format, not Date objects. Always use `.toISOString()` for conversion.
+
+### 4.11. String to Literal Type Assignment
+
+When trying to assign a general `string` type to a literal union type:
+
+**Error Pattern:**
+```
+Argument of type 'string' is not assignable to parameter of type '"superadmin" | "administrator" | "support"'
+```
+
+**Solution: Use `typia.assert` for runtime validation and type conversion**
+
+```typescript
+// ❌ ERROR: Cannot assign string to literal union type
+const value: string = getValue();
+const role: "superadmin" | "administrator" | "support" = value; // ERROR!
+
+// ✅ CORRECT: Use typia.assert for validation and conversion
+const value: string = getValue();
+const role: "superadmin" | "administrator" | "support" = 
+  typia.assert<"superadmin" | "administrator" | "support">(value);
+
+// More examples with different literal types:
+const status: string = getStatus();
+const validStatus: "pending" | "approved" | "rejected" = 
+  typia.assert<"pending" | "approved" | "rejected">(status);
+
+const method: string = getMethod();
+const httpMethod: "GET" | "POST" | "PUT" | "DELETE" = 
+  typia.assert<"GET" | "POST" | "PUT" | "DELETE">(method);
+
+// With API responses
+const userType: string = response.data.type;
+const validUserType: "customer" | "vendor" | "admin" = 
+  typia.assert<"customer" | "vendor" | "admin">(userType);
+```
+
+**Important:** 
+- `typia.assert` will validate at runtime that the string value is actually one of the allowed literals
+- If the value doesn't match any literal, it will throw an error
+- This ensures type safety both at compile-time and runtime
+
+### 4.12. Literal Type Arrays with RandomGenerator.pick
 
 When selecting from a fixed set of literal values using `RandomGenerator.pick()`, you MUST use `as const` to preserve literal types:
 
@@ -929,60 +1399,151 @@ const priorities = [1, 2, 3, 4, 5] as const;
 const priority = RandomGenerator.pick(priorities);
 ```
 
-### 4.11. Handling Non-Existent Type Properties - ZERO TOLERANCE FOR HALLUCINATION
+### 4.11. Handling Non-Existent Type Properties - DEEP ANALYSIS REQUIRED
 
-**🚨 CRITICAL ANTI-HALLUCINATION PROTOCOL 🚨**
+**🚨 CRITICAL: DON'T BE FOOLED BY SURFACE ERRORS 🚨**
 
-When you encounter the error **"Property 'someProperty' does not exist on type 'SomeDtoType'"**, this is NOT a suggestion or a bug. The property **GENUINELY DOES NOT EXIST**.
+When you encounter errors like:
+- `Property 'someProperty' does not exist on type 'ISomeDtoType'`  
+- `Object literal may only specify known properties, and 'someProperty' does not exist in type 'ISomeDtoType'`
 
-**THE FIVE COMMANDMENTS OF REALITY:**
+**⚠️ WARNING: The error message might be MISLEADING! ⚠️**
 
-1. **THOU SHALT NOT HALLUCINATE**
+**THE DEEP ANALYSIS PROTOCOL:**
+
+1. **THOU SHALT INVESTIGATE THOROUGHLY**
+   - First, accept the property might genuinely NOT EXIST (this is often the case!)
+   - BUT ALSO investigate if the error is misleading
+   - Look for SIMILAR property names in the type definition
+   - Check for naming convention differences (camelCase vs snake_case)
+   - The actual type MIGHT have a different but related property
+
+2. **TWO DISTINCT CASES TO HANDLE**
+
+   **Case A: Property genuinely doesn't exist**
    ```typescript
-   // ❌ HALLUCINATION PATTERNS - ABSOLUTELY FORBIDDEN:
-   user.lastLoginTime     // Error: Property does not exist
-   user.last_login_time   // STOP! Don't try snake_case
-   user.lastLogin         // STOP! Don't try variations
-   user.loginTime         // STOP! Don't guess alternatives
-   (user as any).lastLoginTime  // STOP! Don't bypass types
+   // ERROR: "Property 'socialMedia' does not exist on type 'IProfile'"
+   
+   // After investigation: IProfile has no social media related fields at all
+   interface IProfile {
+     name: string;
+     bio: string;
+     avatar?: string;
+   }
+   
+   // ✅ CORRECT: Simply remove the non-existent property
+   const profile = await api.functional.profiles.create(connection, {
+     body: {
+       name: "John Doe",
+       bio: "Developer"
+       // Removed socialMedia - feature doesn't exist
+     } satisfies IProfile.ICreate
+   });
    ```
 
-2. **THOU SHALT ACCEPT REALITY**
-   - The compiler is ALWAYS right about what exists
-   - Your assumptions are ALWAYS wrong when they conflict with compiler
-   - There is NO hidden property waiting to be discovered
-   - The DTO is EXACTLY what the compiler says it is
+   **Case B: Similar property exists with different name**
+   ```typescript
+   // ❌ COMPILER ERROR SAYS:
+   // "Object literal may only specify known properties, and 'password' does not exist in type 'ILogin'."
+   
+   // 🔍 BUT THE ACTUAL TYPE IS:
+   interface ILogin {
+     email: string & tags.Format<"email">;
+     password_hash: string;  // NOT 'password' but 'password_hash'!
+   }
+   
+   // ❌ WRONG FIX (just removing):
+   const loginData = {
+     email: "test@example.com"
+     // Removed password - THIS IS WRONG!
+   } satisfies ILogin;
+   
+   // ✅ CORRECT FIX (finding the right property):
+   const loginData = {
+     email: "test@example.com",
+     password_hash: hashedPassword  // Use the ACTUAL property name!
+   } satisfies ILogin;
+   ```
 
-3. **THOU SHALT TRANSFORM, NOT FANTASIZE**
-   - **TRANSFORM** the scenario to use ONLY existing properties
-   - **NEVER skip** - always find creative alternatives with REAL properties
-   - **REWRITE** the entire test logic if necessary
-   - **SUCCEED** through adaptation to reality, not fantasy
+3. **THE INVESTIGATION CHECKLIST**
+   - **Step 1**: Read the EXACT type definition
+   - **Step 2**: Determine if the property exists AT ALL (often it doesn't!)
+   - **Step 3**: IF it doesn't exist, check for properties with SIMILAR meanings
+   - **Step 4**: Check naming conventions (password → password_hash, userName → user_name, etc.)
+   - **Step 5**: Consider the LOGICAL intent (what was the code TRYING to do?)
+   - **Step 6**: Make the decision: REMOVE (if truly non-existent) or REPLACE (if similar exists)
 
-**Common Scenarios and Solutions:**
+4. **COMMON MISLEADING PATTERNS**
+   ```typescript
+   // Pattern 1: Authentication fields
+   password → password_hash, password_encrypted, hashed_password
+   
+   // Pattern 2: Timestamp fields  
+   createdAt → created_at, creation_date, created_timestamp
+   updatedAt → updated_at, modification_date, last_modified
+   
+   // Pattern 3: Identifier fields
+   userId → user_id, user_uuid, user_identifier
+   productId → product_id, product_code, product_sku
+   
+   // Pattern 4: Status fields
+   isActive → is_active, active, status (with "active" value)
+   isDeleted → is_deleted, deleted, deleted_at (check for soft delete pattern)
+   ```
+
+5. **WHEN TO ACTUALLY REMOVE vs REPLACE**
+   ```typescript
+   // REMOVE when:
+   // - No similar property exists after investigation
+   // - The feature genuinely doesn't exist in the system
+   // - It's a test-only property not part of the actual API
+   // - The property was from an older version or different system
+   
+   // REPLACE when:
+   // - A similar property with different name exists
+   // - The naming convention is different (snake_case vs camelCase)
+   // - The property structure is slightly different
+   // - Critical functionality would break without it (like password in login)
+   ```
+
+**Real-World Example:**
 
 ```typescript
-// ORIGINAL SCENARIO: Test user profile with social media links
-// ERROR: Property 'socialMedia' does not exist on type 'IProfile'
+// ORIGINAL SCENARIO: Admin login test
+// ERROR: "Object literal may only specify known properties, and 'password' does not exist in type 'IAdministrator.ILogin'."
 
-// SOLUTION: Adapt test to use available properties only
-const profile = await api.functional.profiles.create(connection, {
+// ❌ NAIVE APPROACH (just removing):
+const adminLoginResponse = await api.functional.auth.admin.login(connection, {
   body: {
-    name: "John Doe",
-    bio: "Software Developer"
-    // Removed socialMedia - not available in IProfile type
-  } satisfies IProfile.ICreate
+    email: adminJoinResponse.email
+    // Removed password - WRONG! Login needs authentication!
+  } satisfies IAdministrator.ILogin
 });
 
-// Test only available properties
-TestValidator.equals("name", profile.name, "John Doe");
-TestValidator.equals("bio", profile.bio, "Software Developer");
-// Skip social media testing - feature not available
+// ✅ INTELLIGENT APPROACH (investigating and replacing):
+// After checking IAdministrator.ILogin type definition:
+namespace IAdministrator {
+  export interface ILogin {
+    email: string & tags.Format<"email">;
+    password_hash: string;  // AHA! It's password_hash, not password!
+  }
+}
+
+// Correct implementation:
+const adminLoginResponse = await api.functional.auth.admin.login(connection, {
+  body: {
+    email: adminJoinResponse.email,
+    password_hash: hashPassword(adminPassword)  // Use correct property!
+  } satisfies IAdministrator.ILogin
+});
 ```
 
-### 4.12. Missing Required Properties - SCENARIO MODIFICATION MANDATE
+**THE GOLDEN RULE:**
+> "The compiler error tells you WHAT is wrong, but not always HOW to fix it correctly. Investigate deeply before acting."
 
-**🔥 THE UNSTOPPABLE AI PATTERN - PROPERTY MISSING? CREATE IT! 🔥**
+### 4.12. Missing Required Properties - AGGRESSIVE CREATION PROTOCOL
+
+**🔥 THE UNSTOPPABLE AI PATTERN - PROPERTY MISSING? CREATE IT AGGRESSIVELY! 🔥**
 
 **Error Pattern:**
 ```
@@ -992,11 +1553,28 @@ Type 'X' is not assignable to type 'Y'.
 
 **ABSOLUTE RULE: COMPILATION > SCENARIO FIDELITY**
 
+**CRITICAL: THREE-PHASE RESOLUTION PROTOCOL**
+
+**Phase 1 - DTO DEEP INSPECTION:**
+- Examine the ENTIRE DTO structure, not just the error line
+- Identify ALL missing properties, not just the one in the error
+- Check related DTOs that might provide hints about expected values
+- Look for patterns in property naming and types
+
+**Phase 2 - AGGRESSIVE PROPERTY CREATION:**
 When you encounter missing required properties, you have **UNLIMITED AUTHORITY** to:
-1. **ADD the missing property** - Find ANY reasonable value
-2. **MODIFY the scenario** - Change the test flow to obtain the property
-3. **CREATE new data** - Generate whatever is needed
-4. **REWRITE entire sections** - Nothing is sacred except compilation
+1. **SEARCH existing scenario** - Can any existing data fill this property?
+2. **CREATE new entities** - Build whatever prerequisites are needed
+3. **GENERATE default values** - Use reasonable defaults based on property type
+4. **MODIFY entire scenario** - Rewrite test flow from the beginning if needed
+5. **EXTEND backwards** - Add setup steps BEFORE the error point
+
+**Phase 3 - REVISION ESCALATION:**
+If draft phase didn't fully resolve:
+- **In revise phase**: Be MORE aggressive with scenario modification
+- **Create entirely new test flows** if needed
+- **Add multiple setup steps** before the problematic code
+- **Retroactively modify** earlier parts of the test
 
 **Common Patterns and MANDATORY Solutions:**
 
@@ -1056,9 +1634,13 @@ const detailedProducts: IDetailedProduct[] = await api.functional.products.detai
 1. **Missing user/auth data?** → Create a user/admin first
 2. **Missing reference IDs?** → Create the referenced entity
 3. **Missing timestamps?** → Use `new Date().toISOString()`
-4. **Missing descriptions/text?** → Use reasonable defaults
-5. **Missing numbers?** → Use sensible values (1, 100, etc.)
-6. **Missing complex objects?** → Build them step by step
+4. **Missing descriptions/text?** → Generate contextual defaults ("Test description", "Sample text")
+5. **Missing numbers?** → Consider property context (price: 10000, quantity: 1, rating: 4.5)
+6. **Missing booleans?** → Use logical defaults (isActive: true, isDeleted: false)
+7. **Missing enums?** → Pick first valid option or most common one
+8. **Missing arrays?** → Start with empty array [] or single item array
+9. **Missing complex objects?** → Build them step by step with all required sub-properties
+10. **Can't determine value?** → Use typia.random<T>() for the property type
 
 **SCENARIO REWRITING EXAMPLES:**
 ```typescript
@@ -1098,14 +1680,48 @@ const order = await api.functional.orders.create(connection, {
 });
 ```
 
+**DEFAULT VALUE STRATEGY:**
+When no context is available, use these intelligent defaults:
+```typescript
+// String properties
+name: "Test Name",
+title: "Test Title",
+description: "Test description for automated testing",
+code: "TEST_CODE_001",
+identifier: "test-identifier",
+
+// Number properties
+price: 10000,
+quantity: 1,
+count: 0,
+rating: 4.5,
+score: 100,
+
+// Boolean properties
+isActive: true,
+isPublic: true,
+isDeleted: false,
+isVerified: false,
+
+// Date properties
+createdAt: new Date().toISOString(),
+startDate: new Date().toISOString(),
+endDate: new Date(Date.now() + 86400000).toISOString(), // +1 day
+
+// Complex properties
+metadata: {},
+settings: { enabled: true },
+config: { version: "1.0.0" },
+```
+
 **REMEMBER:**
-- **Scenario says "test X"?** → Change it to "create Y, then test X"
-- **Property requires ID?** → Create that entity first
-- **Complex nested structure?** → Build it piece by piece
-- **Can't find a way?** → There's ALWAYS a way - be creative!
+- **Scenario says "test X"?** → Change it to "create Y, Z, then test X"
+- **Property requires ID?** → Create that entity first, even if not in original scenario
+- **Complex nested structure?** → Build ALL sub-properties recursively
+- **Can't find a way?** → There's ALWAYS a way - be MORE creative and aggressive!
 
 **THE GOLDEN RULE:** 
-If compilation requires a property, that property WILL exist. Your job is not to question WHY it's needed, but to figure out HOW to provide it. Modify, create, generate - do whatever it takes!
+If compilation requires a property, that property WILL exist. Your job is not to question WHY it's needed, but to figure out HOW to provide it. Modify, create, generate - do whatever it takes! Be AGGRESSIVE in draft phase, be EVEN MORE AGGRESSIVE in revise phase!
 
 **🎯 SPECIAL CASE: When `satisfies` Type Assertion is Required**
 
@@ -1189,7 +1805,129 @@ const orderUpdate = {
    - For timestamps: Use `new Date().toISOString()`
 4. **Never remove `satisfies`** - It's there for type safety, add the missing property instead
 
-### 4.13. "Is Possibly Undefined" Errors - DIRECT ACCESS PATTERN
+### 4.13. Deliberate Wrong Type API Requests - ABSOLUTE PROHIBITION
+
+**🚨 CRITICAL: NEVER Send Wrong Type Data in API Requests 🚨**
+
+**Common Scenario Request:**
+"Test that the API properly validates input types and rejects wrong data types"
+
+**YOUR RESPONSE: DELETE THIS ENTIRE SCENARIO**
+
+**Error Pattern:**
+```typescript
+// Scenario asks: "Test with wrong data types to validate API error handling"
+// AI attempts to implement:
+await TestValidator.error(
+  "wrong type should fail",
+  async () => {
+    await api.functional.users.create(connection, {
+      body: {
+        age: "not a number", // COMPILATION ERROR!
+        email: 123,          // COMPILATION ERROR!
+      } satisfies IUser.ICreate,
+    });
+  }
+);
+```
+
+**WHY THIS IS ABSOLUTELY FORBIDDEN:**
+1. **Using `as any` to bypass type checking is PROHIBITED**
+2. **TypeScript compilation errors are NOT acceptable**
+3. **Type validation is handled by the framework, not your tests**
+4. **Business logic errors ≠ Type errors**
+
+**MANDATORY CORRECTION APPROACH:**
+
+**Step 1: Identify the problematic scenario**
+```typescript
+// WRONG SCENARIO: "Test that age field rejects string values"
+// WRONG SCENARIO: "Verify API returns error for incorrect data types"
+// WRONG SCENARIO: "Validate type checking on request body"
+```
+
+**Step 2: COMPLETELY REMOVE the type error test**
+```typescript
+// ❌ DELETE THIS ENTIRELY:
+await TestValidator.error(
+  "string age should fail",
+  async () => {
+    await api.functional.users.create(connection, {
+      body: {
+        age: "twenty" as any  // NEVER DO THIS!
+      } satisfies IPartial<IUser.ICreate>,
+    });
+  }
+);
+```
+
+**Step 3: Replace with BUSINESS LOGIC error tests (if needed)**
+```typescript
+// ✅ CORRECT: Test business logic errors instead
+await TestValidator.error(
+  "duplicate email should fail",
+  async () => {
+    await api.functional.users.create(connection, {
+      body: {
+        email: existingUser.email,  // Same email - business error
+        age: 25,  // CORRECT TYPE!
+        name: "John Doe",
+      } satisfies IUser.ICreate
+    });
+  }
+);
+
+// ✅ CORRECT: Test invalid range (still correct type)
+await TestValidator.error(
+  "negative age should fail",
+  async () => {
+    await api.functional.users.create(connection, {
+      body: {
+        email: "test@example.com",
+        age: -5,  // Negative but still a number!
+        name: "Test User",
+      } satisfies IUser.ICreate,
+    });
+  }
+);
+```
+
+**SCENARIO REWRITING MANDATE:**
+
+When you encounter scenarios requesting type validation:
+
+1. **In the draft step:**
+   - IMMEDIATELY recognize type validation requests
+   - DO NOT implement any `as any` code
+   - Transform to business logic tests or skip entirely
+
+2. **In the review step:**
+   - IDENTIFY any `as any` usage
+   - FLAG all deliberate type mismatches
+   - MARK for complete removal
+
+3. **In the revise step:**
+   - **COMPLETELY DELETE** any code with `as any`
+   - **REMOVE ENTIRELY** any type mismatch tests
+   - **ELIMINATE** all references to type validation
+   - If this leaves the test empty, create alternative business logic tests
+
+**RECOGNITION PATTERNS - Delete if you see:**
+- "Test with wrong data types"
+- "Validate type errors"
+- "Send string where number expected"
+- "Test type validation"
+- "Verify type checking"
+- "Test with mismatched types"
+- "Validate request body types"
+
+**REMEMBER:**
+- **Type errors are compile-time issues, not runtime tests**
+- **The framework handles ALL type validation automatically**
+- **Your job is to test BUSINESS LOGIC, not TYPES**
+- **When in doubt, DELETE the type test scenario**
+
+### 4.14. "Is Possibly Undefined" Errors - DIRECT ACCESS PATTERN
 
 **Error Pattern: "'something' is possibly 'undefined'"**
 
@@ -1473,6 +2211,126 @@ const config = {
 - You're confident about the type but TypeScript isn't
 - It's simpler than restructuring the entire code flow
 
+### 4.17. Date Type Nullable/Undefined Handling
+
+**CRITICAL: Proper handling of nullable/undefined Date types when converting to strings**
+
+When working with Date objects that might be nullable or undefined, you must handle them correctly based on the target type requirements.
+
+#### Case 1: Target Type is Nullable String
+
+When the target property accepts `string | null | undefined`:
+
+```typescript
+// Source: Date | null | undefined
+// Target: string | null | undefined
+
+const date: Date | null | undefined = getDate();
+
+// ✅ CORRECT: Preserve null/undefined
+const requestBody = {
+  createdAt: date?.toISOString() ?? null,  // Converts Date to string, preserves null
+  updatedAt: date?.toISOString() ?? undefined  // Converts Date to string, preserves undefined
+} satisfies IPost.ICreate;
+```
+
+#### Case 2: Target Type is Non-Nullable String
+
+When the target property requires a non-null string:
+
+```typescript
+// Source: Date | null | undefined
+// Target: string (non-nullable)
+
+const date: Date | null | undefined = getDate();
+
+// ✅ CORRECT: Provide default value
+const requestBody = {
+  createdAt: (date ?? new Date()).toISOString(),  // Always returns string
+  updatedAt: date?.toISOString() ?? new Date().toISOString()  // Alternative syntax
+} satisfies IPost.ICreate;
+```
+
+#### Case 3: Complex Union Types
+
+When dealing with `Date | string | undefined`:
+
+```typescript
+// Source: Date | string | undefined
+// Target: string | undefined
+
+const value: Date | string | undefined = getValue();
+
+// ✅ CORRECT: Handle all type possibilities
+const requestBody = {
+  publishedAt: value instanceof Date 
+    ? value.toISOString() 
+    : value  // Already string or undefined
+} satisfies IArticle.ICreate;
+
+// Alternative approach with type guard
+const requestBody = {
+  publishedAt: typeof value === 'string' 
+    ? value 
+    : value?.toISOString()  // Handles Date | undefined
+} satisfies IArticle.ICreate;
+```
+
+#### Case 4: Tagged Format Types
+
+When dealing with `string & tags.Format<"date-time"> | null | undefined`:
+
+```typescript
+// Source: Date | null | undefined
+// Target: string & tags.Format<"date-time"> | null | undefined
+
+const date: Date | null | undefined = getDate();
+
+// ✅ CORRECT: Type assertion for tagged types
+const requestBody = {
+  scheduledAt: date?.toISOString() as string & tags.Format<"date-time"> | null,
+  expiresAt: date 
+    ? date.toISOString() as string & tags.Format<"date-time">
+    : null
+} satisfies IEvent.ICreate;
+
+// When target is non-nullable tagged type
+const requestBody = {
+  timestamp: (date ?? new Date()).toISOString() as string & tags.Format<"date-time">
+} satisfies ILog.ICreate;
+```
+
+#### Common Patterns Summary
+
+```typescript
+// Quick reference for common patterns:
+
+// 1. Date | null → string | null
+date?.toISOString() ?? null
+
+// 2. Date | undefined → string | undefined  
+date?.toISOString()
+
+// 3. Date | null | undefined → string (non-null)
+(date ?? new Date()).toISOString()
+
+// 4. Date | string | undefined → string | undefined
+value instanceof Date ? value.toISOString() : value
+
+// 5. Date → string & tags.Format<"date-time">
+date.toISOString() as string & tags.Format<"date-time">
+
+// 6. Date | null → string & tags.Format<"date-time"> | null
+date?.toISOString() as string & tags.Format<"date-time"> | null
+```
+
+**REMEMBER:**
+- Always check the target type's nullability requirements
+- Use `??` operator for providing defaults
+- Use `?.` operator for preserving undefined
+- Use type assertions for tagged format types
+- Never use `.toString()` for dates - always use `.toISOString()`
+
 ## 5. Correction Requirements
 
 Your corrected code must:
@@ -1497,6 +2355,25 @@ Your corrected code must:
 - [ ] **Async callback (`async () => {}`)** → `await TestValidator.error()` REQUIRED
 - [ ] **Sync callback (`() => {}`)** → NO `await` on TestValidator.error
 - [ ] **Inside async callbacks** → ALL API calls MUST have `await`
+
+### Last Resort Solutions
+
+When encountering persistent compilation errors that cannot be resolved through conventional methods, use these last resort approaches:
+
+**1. NULLABLE/UNDEFINED TYPE ERRORS:**
+- **When to use**: Same nullable/undefined error occurs after 2+ fix attempts
+- **Solution**: `typia.assert(value!)` - forces non-null and validates
+- **Example**: `const safe = typia.assert(possiblyNull!);`
+
+**2. TYPIA TAG TYPE ERRORS:**
+- **When to use**: Same typia tag error occurs after 2+ attempts with satisfies pattern
+- **Solution**: `typia.assert<TargetType>(value)` - explicit generic type assertion
+- **Example**: `const valid = typia.assert<string & tags.Format<"email">>(email);`
+
+**CRITERIA FOR USING LAST RESORT SOLUTIONS:**
+1. You've attempted the same fix at least twice
+2. The conventional pattern is making code unnecessarily complex
+3. You're confident about runtime behavior based on test scenario
 
 **MORE CRITICAL ERRORS TO AVOID:**
 ```typescript
@@ -1590,15 +2467,69 @@ Ensure all corrections follow the guidelines provided in `TEST_WRITE.md` prompt.
 
 **🚨 CRITICAL FINAL VERIFICATION - ZERO TOLERANCE 🚨**
 
-Before submitting corrected code, MANDATORY verification:
-- [ ] **ALL prohibitions from `TEST_WRITE.md` checked** - ZERO violations
-- [ ] **Step 3-4 revise COMPLETED** - Both review and final performed
-- [ ] **ALL async calls have await** - Every single Promise awaited
-- [ ] **TestValidator.error await rules followed** - async callback = await
+**SYSTEMATIC VERIFICATION PROTOCOL:**
+
+### 6.1. Common Error Pattern Checklist
+**GO THROUGH EACH ITEM - DO NOT SKIP ANY:**
+
+- [ ] **🚨🚨🚨 NO TYPE ERROR TESTING - #1 PRIORITY 🚨🚨🚨** ZERO tests with intentionally wrong types?
+  - [ ] **NO `as any` to send wrong types?**
+  - [ ] **NO missing required fields testing?**
+  - [ ] **NO wrong data type testing?**
+  - [ ] **ALL type error tests DELETED?**
+- [ ] **Missing await:** Search for ALL `api.functional` calls - EVERY one has `await`?
+- [ ] **typia.assert vs assertGuard:** Check EACH usage:
+  - [ ] Assignment uses `typia.assert` (returns value)?
+  - [ ] Type narrowing uses `typia.assertGuard` (no return)?
+- [ ] **Missing `!` operator:** ALL `typia.assert(value)` have `!` → `typia.assert(value!)`?
+- [ ] **Date conversions:** ALL `string & Format<"date-time">` use `.toISOString()`?
+- [ ] **String to literal:** ALL literal type assignments use `typia.assert<LiteralType>()`?
+- [ ] **Null/undefined checks:** ALL `| null | undefined` have BOTH checks?
+- [ ] **TestValidator.error:** async callback → has `await TestValidator.error()`?
+- [ ] **Non-existent properties:** NO references to properties that don't exist in DTOs?
+- [ ] **Type bypasses:** ZERO uses of `any`, `as any`, `@ts-ignore`, etc.?
+
+### 6.2. Revise Step Verification
+**CONFIRM YOUR REVISE STEP WAS PROPERLY EXECUTED:**
+
+- [ ] **revise.review performed:** Systematically checked all error patterns?
+- [ ] **Errors documented:** Listed all found issues in review?
+- [ ] **Fixes applied:** ALL errors found in review are FIXED in final?
+- [ ] **Final differs from draft:** If errors found, final is DIFFERENT from draft?
+- [ ] **No copy-paste:** Did NOT just copy draft to final when errors existed?
+
+### 6.3. Final Compilation Check
+**THE ULTIMATE TEST:**
+
+- [ ] **Code will compile:** ZERO TypeScript compilation errors?
+- [ ] **All patterns from TEST_WRITE.md followed:** No prohibited patterns?
+- [ ] **All fixes from TEST_CORRECT.md applied:** Used correct solutions?
+- [ ] **Business logic preserved:** Original scenario intent maintained?
 
 **REMEMBER:**
 - `TEST_WRITE.md` prohibitions are ABSOLUTE - NO EXCEPTIONS
 - Compilation success through scenario rewriting is MANDATORY
-- The revise step is NOT OPTIONAL - it MUST be performed
+- The revise step is NOT OPTIONAL - it MUST be performed PROPERLY
+- **Finding errors in review but not fixing them in final = FAILURE**
+- **The revise step is your LAST CHANCE to fix mistakes - USE IT!**
+
+**🔥 SUCCESS CRITERIA:**
+1. Draft may have errors - that's OK
+2. Review MUST find those errors - be thorough
+3. Final MUST fix ALL found errors - no exceptions
+4. Result MUST compile without errors - non-negotiable
+
+**AI COMMON FAILURE PATTERN TO AVOID:**
+```
+❌ WRONG:
+- Draft: Has compilation errors
+- Review: "Found issues with typia.assert usage"
+- Final: Identical to draft (NO FIXES APPLIED!)
+
+✅ CORRECT:
+- Draft: Has compilation errors
+- Review: "Found 3 missing awaits, 2 wrong typia functions"
+- Final: All 5 issues fixed, code compiles successfully
+```
 
 Generate corrected code that achieves successful compilation while maintaining all original requirements and functionality.

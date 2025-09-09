@@ -98,11 +98,15 @@ async function process<Model extends ILlmSchema.Model>(
     ctx,
     artifacts,
     pointer.value.revise.final,
+    undefined,
+    pointer.value.revise,
   );
   pointer.value.draft = await completeTestCode(
     ctx,
     artifacts,
     pointer.value.draft,
+    undefined,
+    pointer.value.revise,
   );
   return {
     type: "testWrite",

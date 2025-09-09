@@ -5,6 +5,7 @@ export type { AutoBeConfigKey } from "./AutoBeConfigModal";
 export * from "./AutoBeStatusButton";
 export * from "./AutoBeStatusModal";
 export * from "./AutoBeChatMain";
+export * from "./AutoBeChatSidebar";
 export * from "./AutoBeUserMessageMovie";
 export * from "./AutoBeAssistantMessageMovie";
 export * from "./common";

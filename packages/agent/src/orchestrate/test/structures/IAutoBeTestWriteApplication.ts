@@ -123,40 +123,49 @@ export namespace IAutoBeTestWriteApplication {
     /**
      * Step 4: Code review and quality assessment.
      *
-     * AI performs a thorough review of the draft implementation, examining:
+     * **🚨 TWO TYPES OF REVISIONS: FIX AND DELETE 🚨**
+     *
+     * AI performs a thorough review of the draft implementation for:
+     *
+     * **1. FIX - Improve existing code:**
      *
      * **Compilation & Syntax:**
-     *
      * - TypeScript compilation errors and type mismatches
      * - Syntax errors and missing semicolons/brackets
      * - Correct function signatures and parameter types
      *
      * **Framework Compliance:**
-     *
      * - @nestia/e2e framework conventions adherence
      * - Proper API SDK function calling patterns
      * - Correct use of typia.assert() and TestValidator functions
      *
      * **Business Logic & Test Coverage:**
-     *
-     * - Complete workflow implementation (authentication → data setup → main test
-     *   → validation)
+     * - Complete workflow implementation (authentication → data setup → main test → validation)
      * - Realistic business scenarios and user journeys
      * - Edge case handling and error condition testing
      * - Proper data dependencies and cleanup procedures
      *
-     * **Code Quality & Security:**
+     * **2. DELETE - Remove prohibited code entirely:**
      *
-     * - Type safety violations (any, @ts-ignore, etc.)
-     * - Variable naming and code organization
+     * **🚨 TYPE ERROR TESTING - DELETE IMMEDIATELY 🚨**
+     * - DELETE any code using `as any` to send wrong types
+     * - DELETE any intentional type mismatches for "testing"
+     * - DELETE any missing required fields testing
+     * - DELETE tests that contradict compilation requirements
+     *
+     * **Code Quality & Security:**
+     * - Type safety violations (any, @ts-ignore, etc.) - DELETE if found
+     * - Variable naming and code organization - FIX if needed
      * - Performance considerations and resource management
      * - Security best practices in test data generation
      *
-     * Workflow: Draft code → Systematic analysis → Specific improvement
-     * recommendations
+     * Workflow: Draft code → Systematic analysis → FIX or DELETE decisions
      *
      * The review must identify concrete issues with line-by-line feedback and
-     * provide actionable solutions for each problem discovered.
+     * provide actionable solutions (FIX) or deletion instructions (DELETE) for
+     * each problem discovered.
+     *
+     * **DO NOT FIX TYPE ERROR TESTS - DELETE THEM COMPLETELY**
      */
     review: string;
 
@@ -165,11 +174,19 @@ export namespace IAutoBeTestWriteApplication {
      *
      * AI produces the final, polished version of the test code incorporating
      * all review feedback. This code represents the completed test
-     * implementation, ready for production deployment. All identified issues
-     * must be resolved, and the code must meet the highest quality standards.
+     * implementation, ready for production deployment.
      *
-     * Workflow: Review feedback → Code refinement → Production-ready
-     * implementation
+     * **🚨 CRITICAL: APPLY ALL FIXES AND DELETIONS FROM REVIEW 🚨**
+     * - FIX all correctable issues identified in review
+     * - DELETE all prohibited code identified in review
+     * - If review found type error tests, they MUST be deleted in final
+     * - If review found code to DELETE, final MUST be different from draft
+     *
+     * All identified issues must be resolved, and the code must meet the
+     * highest quality standards.
+     *
+     * Workflow: Review feedback → Apply FIXES → Apply DELETIONS →
+     * Production-ready implementation
      *
      * This is the ultimate deliverable that will be used in the actual test
      * suite.

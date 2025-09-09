@@ -63,6 +63,7 @@ model autobe_hackathon_sessions {
   autobe_hackathon_participant_id String    @db.Uuid
   model                           String    @db.VarChar
   timezone                        String    @db.VarChar
+  title                           String?   @db.VarChar
   review_article_url              String?   @db.VarChar(2048)
   created_at                      DateTime  @db.Timestamptz
   completed_at                    DateTime? @db.Timestamptz
