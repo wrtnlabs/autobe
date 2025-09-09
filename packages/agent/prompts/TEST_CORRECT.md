@@ -482,7 +482,7 @@ const body = {
 - Type validation is NOT the test's responsibility
 - TypeScript compiler WILL reject wrong types
 - Test code MUST compile successfully
-- These patterns cause 90% of compilation failures
+- These patterns cause 100% of compilation failures
 
 **WHAT TO KEEP:**
 - Business logic validation (duplicate emails, insufficient balance)
