@@ -6,7 +6,7 @@ import { v7 } from "uuid";
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { IAutoBeTestFunction } from "../structures/IAutoBeTestFunction";
 
-export const transformTestCorrectInvalidRequestHistories = (
+export const transformTestCorrectTypiaTagHistories = (
   func: IAutoBeTestFunction,
   diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[],
 ): Array<
@@ -16,7 +16,7 @@ export const transformTestCorrectInvalidRequestHistories = (
     id: v7(),
     created_at: new Date().toISOString(),
     type: "systemMessage",
-    text: AutoBeSystemPromptConstant.TEST_CORRECT_INVALID_REQUEST,
+    text: AutoBeSystemPromptConstant.TEST_CORRECT_TYPIA_TAG,
   },
   {
     id: v7(),

@@ -1,6 +1,7 @@
 import {
   AutoBeTestCorrectEvent,
   AutoBeTestValidateEvent,
+  IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { ILlmApplication, ILlmController, ILlmSchema } from "@samchon/openapi";
@@ -10,13 +11,13 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
-import { transformTestCorrectInvalidRequestHistories } from "./histories/transformTestCorrectInvalidRequestHistories";
-import { IAutoBeTestCorrectInvalidRequestApplication } from "./structures/IAutoBeTestCorrectInvalidRequestApplication";
+import { transformTestCorrectTypiaTagHistories } from "./histories/transformTestCorrectTypiaTagHistories";
+import { IAutoBeTestCorrectTypiaTagApplication } from "./structures/IAutoBeTestCorrectTypiaTagApplication";
 import { IAutoBeTestFunction } from "./structures/IAutoBeTestFunction";
 
 type CompileFunction = (script: string) => Promise<AutoBeTestValidateEvent>;
 
-export const orchestrateTestCorrectInvalidRequest = async <
+export const orchestrateTestCorrectTypiaTag = async <
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
@@ -34,7 +35,12 @@ const predicate = async <Model extends ILlmSchema.Model>(
   event: AutoBeTestValidateEvent,
   life: number,
 ): Promise<AutoBeTestValidateEvent> => {
-  if (event.result.type === "failure") {
+  if (
+    event.result.type === "failure" &&
+    event.result.diagnostics.some(
+      (d) => d.messageText.includes(REPRESENTATIVE_MESSAGE) === true,
+    )
+  ) {
     ctx.dispatch(event);
     return await correct(ctx, compile, write, event, life - 1);
   }
@@ -51,24 +57,26 @@ const correct = async <Model extends ILlmSchema.Model>(
   if (event.result.type !== "failure") return event;
   else if (life < 0) return event;
 
-  const pointer: IPointer<
-    IAutoBeTestCorrectInvalidRequestApplication.IProps | false | null
-  > = {
-    value: null,
-  };
+  const diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[] =
+    event.result.diagnostics.filter((d) =>
+      d.messageText.includes(REPRESENTATIVE_MESSAGE),
+    );
+  if (diagnostics.length === 0) return event;
+
+  const pointer: IPointer<IAutoBeTestCorrectTypiaTagApplication.IProps | null> =
+    {
+      value: null,
+    };
   const { tokenUsage } = await ctx.conversate({
     source: "testCorrect",
-    histories: await transformTestCorrectInvalidRequestHistories(
+    histories: await transformTestCorrectTypiaTagHistories(
       null!,
       event.result.diagnostics,
     ),
     controller: createController({
       model: ctx.model,
-      then: (next) => {
+      build: (next) => {
         pointer.value = next;
-      },
-      reject: () => {
-        pointer.value = false;
       },
     }),
     enforceFunctionCall: true,
@@ -80,7 +88,6 @@ const correct = async <Model extends ILlmSchema.Model>(
     `,
   });
   if (pointer.value === null) throw new Error("Failed to correct test code.");
-  else if (pointer.value === false) return event; // other's responsibility
 
   ctx.dispatch({
     type: "testCorrect",
@@ -109,10 +116,11 @@ const correct = async <Model extends ILlmSchema.Model>(
   return await predicate(ctx, compile, newWrite, newEvent, life - 1);
 };
 
+const REPRESENTATIVE_MESSAGE: string = `Types of property '"typia.tag"' are incompatible`;
+
 const createController = <Model extends ILlmSchema.Model>(props: {
   model: Model;
-  then: (next: IAutoBeTestCorrectInvalidRequestApplication.IProps) => void;
-  reject: () => void;
+  build: (next: IAutoBeTestCorrectTypiaTagApplication.IProps) => void;
 }): ILlmController<Model> => {
   assertSchemaModel(props.model);
   const application = collection[
@@ -124,22 +132,19 @@ const createController = <Model extends ILlmSchema.Model>(props: {
     application,
     execute: {
       rewrite: (next) => {
-        props.then(next);
+        props.build(next);
       },
-      reject: () => {
-        props.reject();
-      },
-    } satisfies IAutoBeTestCorrectInvalidRequestApplication,
+    } satisfies IAutoBeTestCorrectTypiaTagApplication,
   };
 };
 
 const collection = {
   chatgpt: typia.llm.application<
-    IAutoBeTestCorrectInvalidRequestApplication,
+    IAutoBeTestCorrectTypiaTagApplication,
     "chatgpt"
   >(),
   claude: typia.llm.application<
-    IAutoBeTestCorrectInvalidRequestApplication,
+    IAutoBeTestCorrectTypiaTagApplication,
     "claude"
   >(),
 };

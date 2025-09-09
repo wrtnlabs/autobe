@@ -66,14 +66,13 @@ export const orchestrateTest =
     );
     const corrects: AutoBeTestValidateEvent[] = await orchestrateTestCorrect(
       ctx,
-      written,
+      written.map((w) => ({
+        scenario: w.scenario,
+        artifacts: w.artifacts,
+        location: w.event.location,
+        script: w.event.final ?? w.event.draft,
+      })),
     );
-    // for (const c of corrects)
-    //   if (c.result.type !== "success")
-    //     c.file.content = c.file.content
-    //       .split("\n")
-    //       .map((s) => `// ${s}`)
-    //       .join("\n");
 
     // DO COMPILE
     const compiler: IAutoBeCompiler = await ctx.compiler();
