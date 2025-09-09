@@ -260,12 +260,12 @@ importers:
 
   apps/hackathon-ui:
     dependencies:
+      '@autobe/hackathon-api':
+        specifier: workspace:^
+        version: link:../hackathon-api
       '@autobe/interface':
         specifier: workspace:^
         version: link:../../packages/interface
-      '@autobe/playground-api':
-        specifier: workspace:^
-        version: link:../playground-api
       '@autobe/ui':
         specifier: workspace:^
         version: link:../../packages/ui
@@ -278,9 +278,6 @@ importers:
       '@samchon/openapi':
         specifier: catalog:samchon
         version: 4.7.1
-      '@stackblitz/sdk':
-        specifier: ^1.11.0
-        version: 1.11.0
       react:
         specifier: catalog:ui
         version: 19.1.1

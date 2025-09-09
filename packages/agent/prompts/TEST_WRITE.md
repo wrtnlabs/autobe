@@ -2453,7 +2453,15 @@ if (!user.email) throw new Error("Missing email");
 if (typeof user.name !== 'string') throw new Error("Wrong type");
 ```
 
-**IMPORTANT: Simple error validation only**
+**IMPORTANT: Understanding What to Test**
+
+**Core Testing Philosophy:**
+- **Type validation is NOT the responsibility of E2E tests** - it's the server's responsibility
+- **TypeScript compiler enforces type safety** - deliberately breaking it defeats the purpose
+- **Invalid type testing breaks the entire test suite** - compilation errors prevent any tests from running
+- **E2E tests should focus on business logic** - not on type system violations
+
+**Simple error validation only**
 When using `TestValidator.error()`, only test whether an error occurs or not. Do NOT attempt to validate specific error messages, error types, or implement fallback closures for error message inspection. The function signature is simply:
 
 ```typescript

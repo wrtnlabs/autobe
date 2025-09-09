@@ -3,8 +3,7 @@ import {
   AutoBeHistory,
   IAutoBeTokenUsageJson,
 } from "@autobe/interface";
-import { IAutoBePlaygroundHeader, IAutoBeRpcService } from "@autobe/interface";
-import { ILlmSchema } from "@samchon/openapi";
+import { IAutoBeRpcService } from "@autobe/interface";
 
 import { AutoBeListener } from "./AutoBeListener";
 import { IAutoBeEventGroup } from "./IAutoBeEventGroup";
@@ -74,21 +73,23 @@ export const AutoBeAgentSession_INIT = {
   tokenUsage: IAutoBeTokenUsageJson;
 };
 
-export interface IGetAutoBeAgentSessionProps {
-  headers: IAutoBePlaygroundHeader<ILlmSchema.Model>;
+export interface IGetAutoBeAgentSessionProps<
+  T extends Record<string, unknown>,
+> {
   listener: AutoBeListener;
   connect: () => Promise<IAutoBeRpcService>;
   sessionId?: string;
   storageStrategy: IAutoBeAgentSessionStorageStrategy;
+  additional?: T;
 }
 
-export const getAutoBeAgentSession = async (
-  props: IGetAutoBeAgentSessionProps,
+export const getAutoBeAgentSession = async <T extends Record<string, unknown>>(
+  props: IGetAutoBeAgentSessionProps<T>,
 ) => {
   const service = await props.connect();
   const id = props.sessionId ?? globalThis.crypto.randomUUID();
   const url = new URL(window.location.href);
-  url.searchParams.set("sessionId", id);
+  url.searchParams.set("session-id", id);
   window.history.pushState({}, "", url);
 
   props.listener.on(async (events) => {
@@ -118,6 +119,6 @@ export const getAutoBeAgentSession = async (
     } satisfies IAutoBeRpcService,
     id,
     listener: props.listener,
-    headers: props.headers,
+    additional: props.additional,
   };
 };

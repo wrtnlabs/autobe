@@ -65,9 +65,6 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
   const hasRequiredConfig = (): boolean => {
     const config = getCurrentConfig();
 
-    // Always check openApiKey
-    if (!config.openApiKey) return false;
-
     // Check additional required fields from props
     if (props.requiredFields) {
       for (const field of props.requiredFields) {

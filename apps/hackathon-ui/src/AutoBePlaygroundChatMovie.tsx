@@ -5,6 +5,7 @@ import {
   AutoBeChatSidebar,
   AutoBeServiceFactory,
   IAutoBeAgentSessionStorageStrategy,
+  IConfigField,
   createAutoBeConfigFields,
 } from "@autobe/ui";
 import { useMediaQuery } from "@autobe/ui/hooks";
@@ -20,21 +21,13 @@ export function AutoBePlaygroundChatMovie(
   // STATES
   const [, setError] = useState<Error | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-
   const [storageStrategy] = useState<IAutoBeAgentSessionStorageStrategy>(
     props.storageStrategyFactory(),
   );
-
   // Configuration fields for AutoBE Playground (adds serverUrl to defaults)
-  const configFields = createAutoBeConfigFields({
-    key: "serverUrl",
-    label: "Server URL",
-    type: "text",
-    storageKey: "autobe_server_url",
-    placeholder: "http://127.0.0.1:5890",
-    default: "http://127.0.0.1:5890",
-    required: true,
-  });
+  const configFields = createAutoBeConfigFields().filter(
+    props.configFilter ?? (() => true),
+  );
 
   //----
   // RENDERERS
@@ -86,6 +79,7 @@ export function AutoBePlaygroundChatMovie(
                 storageStrategy={storageStrategy}
                 isCollapsed={isMobile ? false : sidebarCollapsed}
                 onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+                onSessionSelect={() => {}}
                 onDeleteSession={(id) => {
                   storageStrategy.deleteSession({ id });
                 }}
@@ -95,7 +89,6 @@ export function AutoBePlaygroundChatMovie(
                 isMobile={isMobile}
                 setError={setError}
                 configFields={configFields}
-                requiredFields={["serverUrl"]} // Playground requires serverUrl
                 style={{
                   backgroundColor: "lightblue",
                 }}
@@ -113,5 +106,6 @@ export namespace AutoBePlaygroundChatMovie {
     serviceFactory: AutoBeServiceFactory;
     isUnusedConfig?: boolean;
     storageStrategyFactory: () => IAutoBeAgentSessionStorageStrategy;
+    configFilter?: (config: IConfigField) => boolean;
   }
 }

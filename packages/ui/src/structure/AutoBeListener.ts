@@ -6,21 +6,26 @@ import { IAutoBeEventGroup } from "./IAutoBeEventGroup";
 
 export class AutoBeListener {
   private callback_: Set<(eventGroups: IAutoBeEventGroup[]) => Promise<void>>;
+  private onEnableCallback_: Set<(value: boolean) => Promise<void>>;
 
   private listener_: Required<IAutoBeRpcListener>;
   private events_: List<IAutoBeEventGroup> = new List();
   private dict_: Map<AutoBeEvent.Type, List.Iterator<IAutoBeEventGroup>> =
     new Map();
+  private enable_: boolean = false;
   private readonly state_: AutoBeListenerState;
 
   public constructor() {
     this.callback_ = new Set();
+    this.onEnableCallback_ = new Set();
 
     this.state_ = new AutoBeListenerState();
     this.listener_ = {
       enable: async (value) => {
-        // @todo SunRabbit
-        console.log("enable", value);
+        this.enable_ = value;
+        this.onEnableCallback_.forEach((callback) =>
+          callback(value).catch(() => {}),
+        );
       },
       assistantMessage: async (event) => {
         this.insert(event);
@@ -238,6 +243,18 @@ export class AutoBeListener {
 
   public getState(): AutoBeListenerState {
     return this.state_;
+  }
+
+  public getEnable(): boolean {
+    return this.enable_;
+  }
+
+  public onEnable(callback: (value: boolean) => Promise<void>) {
+    this.onEnableCallback_.add(callback);
+  }
+
+  public offEnable(callback: (value: boolean) => Promise<void>) {
+    this.onEnableCallback_.delete(callback);
   }
 
   private accumulate(event: AutoBeEvent) {

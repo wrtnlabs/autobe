@@ -44,11 +44,10 @@ For EACH compilation diagnostic, create an object with:
 
 2. **analysis**: Root cause analysis of THIS SPECIFIC diagnostic
    - **READ the error message METICULOUSLY** - extract exact information
-   - **🚨 FIRST CHECK: Is this caused by INTENTIONAL TYPE ERROR TESTING? 🚨**
-     - Look for `as any` usage in the error location
-     - Check if code is intentionally sending wrong types
-     - Check if code is testing missing required fields
-     - **IF YES → Root cause: "Prohibited type error testing code that must be DELETED"**
+   - **🚨 FIRST CHECK: Was this caused by type error testing already removed by TEST_CORRECT_INVALID_REQUEST? 🚨**
+     - If the error location references code that no longer exists, it's likely already been handled
+     - Do NOT restore any code that was deleted for type error testing
+     - Focus on fixing the REMAINING legitimate compilation errors
    
    - **⚠️ THINK BEYOND THE DIAGNOSTIC LINE - EXPAND YOUR INVESTIGATION ⚠️**
      - The error line might be just a symptom, not the root cause
@@ -63,14 +62,12 @@ For EACH compilation diagnostic, create an object with:
    - **MANDATORY**: Thoroughly review ALL sections of TEST_CORRECT.md and apply relevant error patterns and analysis guidelines
    - Cross-reference error patterns in sections 4.1-4.16 for accurate diagnosis
    - Example: "Property 'code' is missing because object literal lacks this required field from ICreate interface"
-   - Example: "Type error caused by intentional wrong type test using 'as any' - prohibited pattern"
    - Example: "API endpoint doesn't exist - scenario describes unimplemented functionality"
 
 3. **solution**: Targeted fix for THIS SPECIFIC diagnostic
-   - **🚨 IF ROOT CAUSE IS TYPE ERROR TESTING → Solution: "DELETE entire test block" 🚨**
+   - **🚨 Type error testing should already be removed by TEST_CORRECT_INVALID_REQUEST 🚨**
    - **🚨 IF PROBLEM IS UNRECOVERABLE → Solution: "DELETE the problematic section" 🚨**
-   - **NEVER try to "fix" intentional type error tests - DELETE them**
-   - **NEVER violate type safety to force a fix - DELETE instead**
+   - **Focus on legitimate compilation errors that remain**
    
    - **THREE SOLUTION TYPES:**
      1. **FIX**: Correct the error while maintaining functionality
@@ -84,7 +81,6 @@ For EACH compilation diagnostic, create an object with:
    - For nullable/undefined with typia tags → USE `typia.assert(value!)` IMMEDIATELY
    - For missing properties → specify WHAT to add and HOW
    - Example: "Add missing 'code' property using typia.random<string>()"
-   - Example: "DELETE this entire test - it's testing type errors with 'as any'"
    - Example: "DELETE this section - API endpoint doesn't exist and cannot be tested"
 
 **REMEMBER**: Each diagnostic gets its own analysis object in the array!
@@ -169,11 +165,8 @@ Synthesize patterns across ALL errors and document:
 - **TestValidator.error await** - If callback is `async` → MUST have `await TestValidator.error`
 
 **2. DELETE** - Remove prohibited or forbidden code entirely:
-- **🚨 TYPE ERROR TESTING - DELETE IMMEDIATELY 🚨**
-  - **DELETE** any code using `as any` to send wrong types
-  - **DELETE** any intentional type mismatches for "testing"
-  - **DELETE** any missing required fields testing
-  - **DELETE** tests that contradict compilation requirements
+- **Note**: Type error testing should already be removed by TEST_CORRECT_INVALID_REQUEST
+- **DELETE** tests that contradict compilation requirements
 - **DELETE** any test violating absolute prohibitions from TEST_WRITE.md
 - **DELETE** any test implementing forbidden scenarios
 - **DO NOT FIX THESE - DELETE THEM COMPLETELY**
@@ -191,15 +184,14 @@ Synthesize patterns across ALL errors and document:
   - If error recurs after 2 fix attempts → ABANDON
 - **ACTION: DELETE the entire problematic test block or section**
 
+**Why Type Error Testing Must Be Abandoned:**
+- **Type validation is NOT the responsibility of E2E tests** - it's the server's responsibility
+- **TypeScript compiler enforces type safety** - deliberately breaking it defeats the purpose
+- **Invalid type testing breaks the entire test suite** - compilation errors prevent any tests from running
+- **E2E tests should focus on business logic** - not on type system violations
+
 **Example of what to DELETE/ABANDON:**
 ```typescript
-// FOUND: Type error testing - DELETE ENTIRE BLOCK
-await TestValidator.error("invalid type", async () => {
-  await api.functional.users.create(connection, {
-    body: { age: "not_a_number" as any }  // 🚨 DELETE
-  });
-});
-
 // FOUND: Unrecoverable API mismatch - ABANDON ENTIRE SECTION
 // API 'analytics' doesn't exist, cannot be fixed
 await api.functional.analytics.track(connection, {...}); // 🚨 ABANDON
@@ -438,57 +430,36 @@ export namespace IAutoBeTypeScriptCompileResult {
 
 ## 3. Critical Error Analysis and Correction Strategy
 
-### 3.1. 🚨🚨🚨 ABSOLUTE PRIORITY: REMOVE ALL TYPE ERROR TESTING - ZERO TOLERANCE 🚨🚨🚨
+### 3.0. 🔔 IMPORTANT: Cooperation with TEST_CORRECT_INVALID_REQUEST Agent
 
-**THIS IS THE #1 CAUSE OF COMPILATION FAILURES - REMOVE IMMEDIATELY**
+**CRITICAL ORCHESTRATION NOTE:**
+- The **TEST_CORRECT_INVALID_REQUEST** agent runs BEFORE this agent
+- It has ALREADY REMOVED all intentional type error testing code
+- **DO NOT RESTORE** any code that was deleted by TEST_CORRECT_INVALID_REQUEST
 
-**SCAN YOUR CODE FOR THESE PATTERNS AND DELETE THEM ALL:**
+**WHAT TEST_CORRECT_INVALID_REQUEST ALREADY HANDLED:**
+1. All `as any` type assertions used for wrong type testing
+2. Missing required field tests
+3. Wrong data type assignments for testing
+4. Any code using TestValidator.error() with type mismatches
 
-```typescript
-// 🚨 DELETE THIS IMMEDIATELY - Type error testing
-await TestValidator.error("should reject invalid type", async () => {
-  await api.functional.users.create(connection, {
-    body: {
-      age: "not a number" as any,  // 🚨 DELETE - Wrong type testing
-      email: 123 as any,           // 🚨 DELETE - Wrong type testing
-      name: null as any            // 🚨 DELETE - Wrong type testing
-    }
-  });
-});
+**YOUR RESPONSIBILITY:**
+- **NEVER recreate** type error testing code, even if scenarios suggest it
+- Focus on fixing REMAINING compilation errors after invalid requests are removed
+- If a scenario explicitly asks for "wrong type testing" → **IGNORE IT**
+- The deletion of type error tests is FINAL and PERMANENT
 
-// 🚨 DELETE THIS IMMEDIATELY - Missing required fields
-await api.functional.posts.create(connection, {
-  body: {
-    // Missing 'title' field - DELETE THIS TEST
-    content: "test"
-  } as any
-});
+**SCENARIO CONFLICT RESOLUTION:**
+- Scenario says: "Test with invalid email format" → **ALREADY DELETED**
+- Scenario says: "Send wrong data type" → **ALREADY DELETED**  
+- Scenario says: "Test missing required fields" → **ALREADY DELETED**
+- Your job: Fix the REMAINING legitimate compilation errors only
 
-// 🚨 DELETE THIS IMMEDIATELY - Wrong type assignments
-const body = {
-  price: "free" as any,  // 🚨 DELETE - Wrong type
-  date: 12345           // 🚨 DELETE - Wrong type
-} satisfies IOrder.ICreate;
-```
+### 3.1. Type Error Testing - Already Handled by TEST_CORRECT_INVALID_REQUEST
 
-**CORRECTION ACTIONS:**
-1. **FIND** all instances of `as any` in test code
-2. **DELETE** entire test blocks that test type validation
-3. **REMOVE** any code sending wrong data types
-4. **ELIMINATE** tests for missing required fields
-5. **REPLACE** with business logic tests using CORRECT types
+**Note**: The TEST_CORRECT_INVALID_REQUEST agent has already removed all intentional type error testing patterns. This includes `as any` assertions, missing required fields, wrong data types, and TestValidator.error() with type mismatches.
 
-**WHY THIS IS CRITICAL:**
-- Type validation is NOT the test's responsibility
-- TypeScript compiler WILL reject wrong types
-- Test code MUST compile successfully
-- These patterns cause 90% of compilation failures
-
-**WHAT TO KEEP:**
-- Business logic validation (duplicate emails, insufficient balance)
-- Permission/authorization tests
-- Data consistency tests
-- ALL using CORRECT TypeScript types
+**Your responsibility**: Focus on fixing the remaining legitimate compilation errors.
 
 ### 3.2. 🔍 CRITICAL: Precision Error Message Analysis
 
@@ -1805,127 +1776,9 @@ const orderUpdate = {
    - For timestamps: Use `new Date().toISOString()`
 4. **Never remove `satisfies`** - It's there for type safety, add the missing property instead
 
-### 4.13. Deliberate Wrong Type API Requests - ABSOLUTE PROHIBITION
+### 4.13. Wrong Type API Requests - Already Handled
 
-**🚨 CRITICAL: NEVER Send Wrong Type Data in API Requests 🚨**
-
-**Common Scenario Request:**
-"Test that the API properly validates input types and rejects wrong data types"
-
-**YOUR RESPONSE: DELETE THIS ENTIRE SCENARIO**
-
-**Error Pattern:**
-```typescript
-// Scenario asks: "Test with wrong data types to validate API error handling"
-// AI attempts to implement:
-await TestValidator.error(
-  "wrong type should fail",
-  async () => {
-    await api.functional.users.create(connection, {
-      body: {
-        age: "not a number", // COMPILATION ERROR!
-        email: 123,          // COMPILATION ERROR!
-      } satisfies IUser.ICreate,
-    });
-  }
-);
-```
-
-**WHY THIS IS ABSOLUTELY FORBIDDEN:**
-1. **Using `as any` to bypass type checking is PROHIBITED**
-2. **TypeScript compilation errors are NOT acceptable**
-3. **Type validation is handled by the framework, not your tests**
-4. **Business logic errors ≠ Type errors**
-
-**MANDATORY CORRECTION APPROACH:**
-
-**Step 1: Identify the problematic scenario**
-```typescript
-// WRONG SCENARIO: "Test that age field rejects string values"
-// WRONG SCENARIO: "Verify API returns error for incorrect data types"
-// WRONG SCENARIO: "Validate type checking on request body"
-```
-
-**Step 2: COMPLETELY REMOVE the type error test**
-```typescript
-// ❌ DELETE THIS ENTIRELY:
-await TestValidator.error(
-  "string age should fail",
-  async () => {
-    await api.functional.users.create(connection, {
-      body: {
-        age: "twenty" as any  // NEVER DO THIS!
-      } satisfies IPartial<IUser.ICreate>,
-    });
-  }
-);
-```
-
-**Step 3: Replace with BUSINESS LOGIC error tests (if needed)**
-```typescript
-// ✅ CORRECT: Test business logic errors instead
-await TestValidator.error(
-  "duplicate email should fail",
-  async () => {
-    await api.functional.users.create(connection, {
-      body: {
-        email: existingUser.email,  // Same email - business error
-        age: 25,  // CORRECT TYPE!
-        name: "John Doe",
-      } satisfies IUser.ICreate
-    });
-  }
-);
-
-// ✅ CORRECT: Test invalid range (still correct type)
-await TestValidator.error(
-  "negative age should fail",
-  async () => {
-    await api.functional.users.create(connection, {
-      body: {
-        email: "test@example.com",
-        age: -5,  // Negative but still a number!
-        name: "Test User",
-      } satisfies IUser.ICreate,
-    });
-  }
-);
-```
-
-**SCENARIO REWRITING MANDATE:**
-
-When you encounter scenarios requesting type validation:
-
-1. **In the draft step:**
-   - IMMEDIATELY recognize type validation requests
-   - DO NOT implement any `as any` code
-   - Transform to business logic tests or skip entirely
-
-2. **In the review step:**
-   - IDENTIFY any `as any` usage
-   - FLAG all deliberate type mismatches
-   - MARK for complete removal
-
-3. **In the revise step:**
-   - **COMPLETELY DELETE** any code with `as any`
-   - **REMOVE ENTIRELY** any type mismatch tests
-   - **ELIMINATE** all references to type validation
-   - If this leaves the test empty, create alternative business logic tests
-
-**RECOGNITION PATTERNS - Delete if you see:**
-- "Test with wrong data types"
-- "Validate type errors"
-- "Send string where number expected"
-- "Test type validation"
-- "Verify type checking"
-- "Test with mismatched types"
-- "Validate request body types"
-
-**REMEMBER:**
-- **Type errors are compile-time issues, not runtime tests**
-- **The framework handles ALL type validation automatically**
-- **Your job is to test BUSINESS LOGIC, not TYPES**
-- **When in doubt, DELETE the type test scenario**
+**Note: TEST_CORRECT_INVALID_REQUEST agent already handles removal of all wrong type API request tests. If you encounter such patterns, they should have been removed already. Do not restore them.**
 
 ### 4.14. "Is Possibly Undefined" Errors - DIRECT ACCESS PATTERN
 
@@ -2472,11 +2325,9 @@ Ensure all corrections follow the guidelines provided in `TEST_WRITE.md` prompt.
 ### 6.1. Common Error Pattern Checklist
 **GO THROUGH EACH ITEM - DO NOT SKIP ANY:**
 
-- [ ] **🚨🚨🚨 NO TYPE ERROR TESTING - #1 PRIORITY 🚨🚨🚨** ZERO tests with intentionally wrong types?
-  - [ ] **NO `as any` to send wrong types?**
-  - [ ] **NO missing required fields testing?**
-  - [ ] **NO wrong data type testing?**
-  - [ ] **ALL type error tests DELETED?**
+- [ ] **🚨 TYPE ERROR TESTING ALREADY REMOVED 🚨** Verified no restoration of deleted type error tests?
+  - [ ] **Confirmed TEST_CORRECT_INVALID_REQUEST already handled this?**
+  - [ ] **NO accidental restoration of deleted tests?**
 - [ ] **Missing await:** Search for ALL `api.functional` calls - EVERY one has `await`?
 - [ ] **typia.assert vs assertGuard:** Check EACH usage:
   - [ ] Assignment uses `typia.assert` (returns value)?
@@ -2508,10 +2359,12 @@ Ensure all corrections follow the guidelines provided in `TEST_WRITE.md` prompt.
 
 **REMEMBER:**
 - `TEST_WRITE.md` prohibitions are ABSOLUTE - NO EXCEPTIONS
+- **TEST_CORRECT_INVALID_REQUEST has ALREADY removed type error tests - DO NOT RESTORE THEM**
 - Compilation success through scenario rewriting is MANDATORY
 - The revise step is NOT OPTIONAL - it MUST be performed PROPERLY
 - **Finding errors in review but not fixing them in final = FAILURE**
 - **The revise step is your LAST CHANCE to fix mistakes - USE IT!**
+- **If scenario requests type error testing → IGNORE IT - those tests are PERMANENTLY DELETED**
 
 **🔥 SUCCESS CRITERIA:**
 1. Draft may have errors - that's OK

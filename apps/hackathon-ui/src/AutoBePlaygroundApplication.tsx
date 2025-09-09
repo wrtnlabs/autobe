@@ -1,90 +1,102 @@
-import {
-  IAutoBePlaygroundHeader,
-  IAutoBePlaygroundVendor,
-} from "@autobe/interface";
-import pApi from "@autobe/playground-api";
+import hApi from "@autobe/hackathon-api";
 import {
   AutoBeListener,
   IAutoBeConfig,
-  getAutoBeAgentSession,
+  SearchParamsProvider,
 } from "@autobe/ui";
-import { ILlmSchema } from "@samchon/openapi";
 import { useRef } from "react";
 
-import { AutoBePlaygroundChatMovie } from "./movies/chat/AutoBePlaygroundChatMovie";
-import { AutoBeAgentSessionStorageIndexedDBStrategy } from "./strategy/AutoBeAgentSessionStorageIndexedDBStrategy";
+import { AutoBePlaygroundChatMovie } from "./AutoBePlaygroundChatMovie";
+import { HACKATHON_CODE } from "./constant";
+import { useAuthorizationToken } from "./hooks/useAuthorizationToken";
+import { AutoBeAgentSessionStorageStrategy } from "./strategy/AutoBeAgentSessionStorageStrategy";
 
 export function AutoBePlaygroundApplication() {
+  const { getToken } = useAuthorizationToken();
+  const token = getToken();
+  /** @todo Process refresh token logic */
+  if (token === null || new Date(token.token.expired_at) < new Date()) {
+    window.location.href = "/login";
+    return null;
+  }
+
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Playground service factory
   const serviceFactory = async (config: IAutoBeConfig) => {
-    // Set playground defaults
-    const playgroundConfig = {
-      ...config,
-      serverUrl: String(config["serverUrl"] ?? "http://127.0.0.1:5890"), // Default for playground
-    };
+    const listener = new AutoBeListener();
+    const { service, sessionId } = await (async () => {
+      const connection = {
+        host: import.meta.env.VITE_API_BASE_URL,
+        headers: {
+          Authorization: `Bearer ${token.token.access}`,
+          model: config.aiModel,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        },
+      };
+      if (config.sessionId != null && typeof config.sessionId === "string") {
+        return {
+          service: await hApi.autobe.hackathon.participants.sessions
+            .connect(
+              connection,
+              HACKATHON_CODE,
+              config.sessionId,
+              listener.getListener(),
+            )
+            .then((v) => v.driver),
+          sessionId: config.sessionId,
+        };
+      }
 
-    const vendorConfig: IAutoBePlaygroundVendor = {
-      model: playgroundConfig.aiModel ?? "gpt-4.1",
-      apiKey: playgroundConfig.openApiKey ?? "",
-      baseURL: playgroundConfig.baseUrl ?? undefined,
-      semaphore: playgroundConfig.semaphore ?? 16,
-    };
+      const session = await hApi.autobe.hackathon.participants.sessions.create(
+        connection,
+        HACKATHON_CODE,
+        {
+          model: config.aiModel,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        },
+      );
 
-    const headers: IAutoBePlaygroundHeader<ILlmSchema.Model> = {
-      model: (playgroundConfig.schemaModel ?? "chatgpt") as Exclude<
-        ILlmSchema.Model,
-        "gemini" | "3.0"
-      >,
-      vendor: vendorConfig,
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      locale: playgroundConfig.locale ?? window.navigator.language,
-    };
-
-    const autoBeListener: AutoBeListener = new AutoBeListener();
-    const wrapper = await getAutoBeAgentSession({
-      storageStrategy: new AutoBeAgentSessionStorageIndexedDBStrategy(),
-      listener: autoBeListener,
-      connect: () =>
-        pApi.functional.autobe.playground
-          .start(
-            {
-              host: playgroundConfig.serverUrl,
-              headers: headers as unknown as Record<string, string>,
-            },
-            autoBeListener.getListener(),
+      return {
+        service: await hApi.autobe.hackathon.participants.sessions
+          .connect(
+            connection,
+            HACKATHON_CODE,
+            session.id,
+            listener.getListener(),
           )
           .then((v) => v.driver),
-      headers,
-    });
+        sessionId: session.id,
+      };
+    })();
 
     return {
-      service: wrapper.service,
-      listener: wrapper.listener,
-      header: wrapper.headers,
+      service,
+      sessionId,
+      listener,
       uploadConfig: {
-        supportAudio: playgroundConfig.supportAudioEnable ?? false,
+        supportAudio: config.supportAudioEnable ?? false,
       },
     };
   };
 
   return (
-    <div
-      ref={scrollRef}
-      style={{
-        width: "100%",
-        height: "100%",
-        overflow: "auto",
-      }}
-    >
-      <AutoBePlaygroundChatMovie
-        title="AutoBE Playground"
-        serviceFactory={serviceFactory}
-        storageStrategyFactory={() =>
-          new AutoBeAgentSessionStorageIndexedDBStrategy()
-        }
-      />
-    </div>
+    <SearchParamsProvider>
+      <div
+        ref={scrollRef}
+        style={{
+          width: "100%",
+          height: "100%",
+          overflow: "auto",
+        }}
+      >
+        <AutoBePlaygroundChatMovie
+          title="AutoBE Playground"
+          serviceFactory={serviceFactory}
+          storageStrategyFactory={() => new AutoBeAgentSessionStorageStrategy()}
+          configFilter={(config) => config.key === "aiModel"}
+        />
+      </div>
+    </SearchParamsProvider>
   );
 }
