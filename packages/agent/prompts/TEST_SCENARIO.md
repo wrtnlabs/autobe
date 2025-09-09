@@ -70,7 +70,7 @@ Before generating ANY test scenarios, you MUST perform a comprehensive analysis 
 **Operations Array Deep Analysis Requirements:**
 
 * **Business Domain Understanding**: Identify the business domain (e-commerce, content management, user authentication, etc.) and understand typical user workflows
-* **Entity Relationship Discovery**: Map relationships between different entities using the `requestedIds` and `responseIds` arrays to understand which operations must precede others
+* **Entity Relationship Discovery**: Map relationships between different entities using the Candidate Dependencies table to understand which operations must precede others
 * **Workflow Pattern Recognition**: Identify common patterns like CRUD operations, authentication flows, approval processes, and multi-step transactions
 * **Constraint and Validation Rule Extraction**: Extract business rules, validation constraints, uniqueness requirements, and permission-based access controls from operation descriptions
 * **User Journey Mapping**: Understand complete user journeys that span multiple API calls and identify realistic test scenarios
@@ -85,7 +85,7 @@ Before generating ANY test scenarios, you MUST perform a comprehensive analysis 
 
 **Deep Analysis Requirements:**
 
-* **Dependency Identification**: Use the `requestedIds` and `responseIds` arrays to understand which excluded endpoints can serve as prerequisites for included endpoints
+* **Dependency Identification**: Use the Candidate Dependencies table to understand which excluded endpoints can serve as prerequisites for included endpoints
 * **Coverage Gap Analysis**: Ensure all included endpoints have comprehensive test coverage without redundancy
 * **Cross-Reference Mapping**: Map relationships between included endpoints and available excluded endpoints for dependency planning
 * **Authentication Context Mapping**: Reference the "Included in Test Plan" section to understand which authentication APIs are available for each endpoint
@@ -113,14 +113,14 @@ The "Candidate Dependencies" section provides a crucial mapping of which operati
 
 **Phase 1: Initial Target Analysis**
 1. **Target Operation Requirements**: For each operation in the include list, identify ALL required IDs from the Candidate Dependencies table
-2. **Direct Dependency Identification**: For EVERY required ID, find the operation that creates/provides that ID (check `responseIds` arrays)
+2. **Direct Dependency Identification**: For EVERY required ID, find the operation that creates/provides that ID by examining response schemas of available operations
 3. **Authentication Context Requirements**: Identify the `authorizationRole` required for the target operation
 
 **Phase 2: Recursive Dependency Resolution**
 1. **Secondary Dependencies**: For each direct dependency operation, analyze ITS requirements from the Candidate Dependencies table
-2. **Tertiary Dependencies**: For each secondary dependency, analyze ITS requirements recursively
+2. **Tertiary Dependencies**: For each secondary dependency, analyze ITS requirements recursively from the Candidate Dependencies table
 3. **Continue Recursively**: Follow the dependency chain until reaching operations with no external ID requirements (typically authentication operations)
-4. **Multiple Dependency Paths**: If an operation has multiple ID requirements, trace ALL paths recursively
+4. **Multiple Dependency Paths**: If an operation has multiple ID requirements, trace ALL paths recursively using the Candidate Dependencies mapping
 
 **Phase 3: Complete Chain Assembly**
 1. **Authentication Prerequisites**: Ensure each operation in the dependency chain has proper authentication context established
@@ -247,20 +247,20 @@ dependencies: [
 
 ### 2.5. Complete Dependency Chain Resolution
 
-**MANDATORY: Complete End-to-End Dependency Tracing**
+**MANDATORY: Complete End-to-End Dependency Tracing with Real-World Examples**
 
-For every test scenario, you MUST trace dependencies to their absolute beginning using a systematic approach:
+For every test scenario, you MUST trace dependencies to their absolute beginning using a systematic approach. **FAILURE TO PERFORM COMPLETE RECURSIVE ANALYSIS IS THE #1 CAUSE OF BROKEN SCENARIOS.**
 
 **Step-by-Step Chain Building Process:**
 
 1. **Start with Target Operation Analysis**:
-   - Identify target operation's required path parameters (e.g., `{productId}`)
+   - Identify target operation's required path parameters (e.g., `{productId}`, `{articleId}`)
    - Examine request body schema for required ID properties (e.g., `authorId`, `categoryId`)
    - Note the `authorizationRole` requirement
 
 2. **Find Direct Dependencies**:
    - For each required ID, find operations whose response schemas contain that ID
-   - Check `responseIds` arrays in operations to locate ID providers
+   - Use the Candidate Dependencies table to locate ID providers
    - Identify the `authorizationRole` needed for each provider operation
 
 3. **Recursive Dependency Resolution**:
@@ -278,49 +278,51 @@ For every test scenario, you MUST trace dependencies to their absolute beginning
    - Ensure NO duplicate endpoints in the dependencies array
    - Validate that authentication context is established before protected operations
 
-**Complete Example: DELETE /products/{productId} (admin role)**
+**CRITICAL EXAMPLE: Incomplete vs Complete Dependency Analysis**
 
+❌ **WRONG - Incomplete Analysis (Common Mistake):**
 ```
-Step 1: Target Analysis
-- Target: DELETE /products/{productId} (requires: productId, authorizationRole: "admin")
+Target: POST /store/admin/products/{productId}/reviews
+Analysis: "productId needed → just need admin auth"
 
-Step 2: Find Direct Dependencies  
-- productId → provided by: POST /products (authorizationRole: "seller")
-
-Step 3: Recursive Analysis of POST /products
-- POST /products requires: categoryId (from request schema), authorizationRole: "seller"
-- categoryId → provided by: POST /categories (authorizationRole: "admin")
-
-Step 4: Recursive Analysis of POST /categories
-- POST /categories requires: authorizationRole: "admin" (no external IDs)
-- Ends here - admin user needs to be created
-
-Step 5: Authentication Context Mapping
-- Need "admin" role for: category creation, product deletion
-- Need "seller" role for: product creation
-- Plan: create admin → create category → create seller → create product → switch to admin → delete product
-
-Final Complete Chain:
-[
+Result:
+dependencies: [
   {
     endpoint: { method: "post", path: "/auth/admin/join" },
-    purpose: "Create admin user and establish admin authentication context for category creation and later product deletion."
+    purpose: "Create admin user..."
+  }
+]
+// MISSING: Where does productId come from?
+```
+
+✅ **CORRECT - Complete Recursive Analysis:**
+```
+Target: POST /store/admin/products/{productId}/reviews
+LEVEL 1: productId needed → provided by POST /store/seller/products
+LEVEL 2: POST /seller/products needs categoryId → provided by POST /store/admin/categories  
+LEVEL 3: POST /admin/categories needs admin role → provided by join
+
+Complete Chain:
+dependencies: [
+  {
+    endpoint: { method: "post", path: "/auth/admin/join" },
+    purpose: "Create admin user and establish authentication context for category creation."
   },
   {
-    endpoint: { method: "post", path: "/categories" },
-    purpose: "Create product category using admin authentication context. Provides categoryId required for product creation."
+    endpoint: { method: "post", path: "/store/admin/categories" },
+    purpose: "Create product category using admin authentication. Returns categoryId for product creation."
   },
   {
     endpoint: { method: "post", path: "/auth/seller/join" },
-    purpose: "Create seller user and switch authentication context to seller role required for product creation."
+    purpose: "Create seller user and switch to seller authentication context for product creation."
   },
   {
-    endpoint: { method: "post", path: "/products" },
-    purpose: "Create product using seller authentication context and categoryId from previous operation. Provides productId for the target deletion operation."
+    endpoint: { method: "post", path: "/store/seller/products" },
+    purpose: "Create product using seller authentication and categoryId. Returns productId for review creation."
   },
   {
     endpoint: { method: "post", path: "/auth/admin/login" },
-    purpose: "Switch back to admin authentication context (created earlier) to perform product deletion operation."
+    purpose: "Switch back to admin authentication context (created earlier) for review creation."
   }
 ]
 ```
@@ -366,9 +368,11 @@ Each `scenario` contains a natural-language test description (`draft`), a clearl
 
 ### 4.4. **Type Safety Principle**
 
+The following scenarios MUST NOT be created.
+
 **ABSOLUTE PROHIBITIONS:**
 - Creating scenarios that test with wrong data types (AutoBE provides perfect type validation)
-- Testing with missing required properties (would cause compilation errors)
+- Testing with missing required fields or properties (would cause compilation errors)
 - Testing with additional properties not in schema (would cause compilation errors)
 - Testing with null values for non-nullable properties (would cause compilation errors)
 - Creating scenarios that would fail TypeScript compilation
@@ -409,7 +413,7 @@ Before generating ANY scenario, you MUST:
    - List all available endpoints with their exact method/path combinations
    - Identify all available operations for each resource type
    - Note which CRUD operations are available/missing for each entity
-   - Analyze `requestedIds` and `responseIds` for dependency mapping
+   - Analyze Candidate Dependencies table for dependency mapping
 
 2. **Precisely examine each DTO's properties and types**
    - Document exact property names and their types
@@ -560,16 +564,18 @@ For complex endpoints, generate multiple scenarios covering:
 * **Business Rule Violations**: Attempts to violate domain-specific business rules
 * **Authentication Errors**: Invalid authentication attempts, expired sessions, role mismatches
 
-**CRITICAL: NO VALIDATION ERROR SCENARIOS**
+**CRITICAL: ABSOLUTELY NO VALIDATION ERROR SCENARIOS**
 
-**ABSOLUTE PROHIBITION**: Do NOT create scenarios that test input validation errors. This includes:
+**ABSOLUTE PROHIBITIONS - NEVER CREATE THESE SCENARIOS:**
 - ❌ **NEVER test missing required fields** - AutoBE provides perfect TypeScript validation
 - ❌ **NEVER test wrong data types** - TypeScript compilation prevents this
-- ❌ **NEVER test invalid format validation** - AutoBE handles this automatically
+- ❌ **NEVER test invalid format validation** - AutoBE handles this automatically  
 - ❌ **NEVER test schema constraint violations** - These are impossible with proper typing
 - ❌ **NEVER test malformed request bodies** - TypeScript prevents compilation
+- ❌ **NEVER mention "validation errors" or "incorrect fields" in draft descriptions**
+- ❌ **NEVER include scenarios that test input validation of any kind**
 
-**FOCUS ON BUSINESS LOGIC ONLY**: Create scenarios that test business rules, authorization, and real-world workflow constraints, NOT input validation.
+**FOCUS EXCLUSIVELY ON BUSINESS LOGIC**: Create scenarios that test business rules, authorization, resource states, and real-world workflow constraints, NOT input validation.
 
 ## 6. Error Scenario Guidelines
 
@@ -599,7 +605,7 @@ Test scenarios must cover not only successful business flows but also various er
 
 ### 7.1. **CRITICAL: Pre-Generation Validation (MUST Complete Before Function Call)**
 * [ ] **Complete Operations Inventory**: Have you catalogued ALL available operations with exact method+path combinations?
-* [ ] **Reference IDs Identification**: Have you identified every ID mentioned in the Reference IDs section?
+* [ ] **Reference IDs Identification**: Have you identified every ID mentioned in the Candidate Dependencies section?
 * [ ] **Related Authentication APIs Mapping**: For each target operation, have you identified its exact Related Authentication APIs from the include list?
 * [ ] **Business Logic Analysis**: Have you analyzed the draft scenario to understand the intended user workflow and business rules?
 
@@ -607,7 +613,7 @@ Test scenarios must cover not only successful business flows but also various er
 * [ ] **Complete ID Tracing**: Every required ID is traced back to its source operation through recursive analysis
 * [ ] **ALL Chain Operations Exist**: Every operation in the dependency chain exists in the provided operations array
 * [ ] **Correct Execution Order**: Dependencies are ordered correctly based on data flow (providers before consumers)
-* [ ] **Complete Reference ID Coverage**: Every ID from the "Reference IDs" section has a corresponding provider operation
+* [ ] **Complete Reference ID Coverage**: Every ID from the Candidate Dependencies section has a corresponding provider operation
 * [ ] **No Missing Links**: No gaps in the dependency chain from authentication to target operation
 * [ ] **COMPLETE RECURSIVE ANALYSIS**: ALL levels of dependencies have been traced recursively to their ultimate sources
 
