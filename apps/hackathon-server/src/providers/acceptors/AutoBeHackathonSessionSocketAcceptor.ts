@@ -25,26 +25,7 @@ import { AutoBeHackathonSessionEventProvider } from "../AutoBeHackathonSessionEv
 import { AutoBeHackathonSessionHistoryProvider } from "../AutoBeHackathonSessionHistoryProvider";
 
 export namespace AutoBeHackathonSessionSocketAcceptor {
-  export const start = async (props: {
-    session: IAutoBeHackathonSession.ISummary;
-    connection: IEntity;
-    acceptor: WebSocketAcceptor<
-      IAutoBeHackathonSession.IStartHeader,
-      IAutoBeRpcService,
-      IAutoBeRpcListener
-    >;
-  }): Promise<void> => {
-    await startCommunication({
-      ...props,
-      histories: undefined,
-    });
-    void props.acceptor
-      .getDriver()
-      .enable(true)
-      .catch(() => {});
-  };
-
-  export const restart = async (props: {
+  export const connect = async (props: {
     session: IAutoBeHackathonSession.ISummary;
     connection: IEntity;
     acceptor: WebSocketAcceptor<unknown, IAutoBeRpcService, IAutoBeRpcListener>;

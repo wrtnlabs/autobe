@@ -1,4 +1,3 @@
-import { IAutoBeHackathonSession } from "@autobe/hackathon-api";
 import { IAutoBeRpcListener, IAutoBeRpcService } from "@autobe/interface";
 import { WebSocketAcceptor } from "tgrid";
 import { v7 } from "uuid";
@@ -9,11 +8,7 @@ import { IEntity } from "../structures/IEntity";
 export namespace AutoBeHackathonSessionConnectionProvider {
   export const emplace = async (props: {
     session: IEntity;
-    acceptor: WebSocketAcceptor<
-      IAutoBeHackathonSession.IReplayHeader,
-      IAutoBeRpcService,
-      IAutoBeRpcListener
-    >;
+    acceptor: WebSocketAcceptor<unknown, IAutoBeRpcService, IAutoBeRpcListener>;
   }): Promise<IEntity> => {
     const connection =
       await AutoBeHackathonGlobal.prisma.autobe_hackathon_session_connections.create(

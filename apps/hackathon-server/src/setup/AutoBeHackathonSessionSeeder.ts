@@ -31,8 +31,10 @@ export namespace AutoBeHackathonSessionSeeder {
         await AutoBeHackathonSessionProvider.create({
           hackathon: props.hackathon,
           participant,
-          model: asset.model,
-          timezone: "Asia/Seoul",
+          body: {
+            model: asset.model,
+            timezone: "Asia/Seoul",
+          },
         });
       const connection: IEntity =
         await AutoBeHackathonGlobal.prisma.autobe_hackathon_session_connections.create(

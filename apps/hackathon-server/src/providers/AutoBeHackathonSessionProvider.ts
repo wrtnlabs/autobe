@@ -158,8 +158,7 @@ export namespace AutoBeHackathonSessionProvider {
   export const create = async (props: {
     hackathon: IEntity;
     participant: IEntity;
-    model: AutoBeHackathonModel;
-    timezone: string;
+    body: IAutoBeHackathonSession.ICreate;
   }): Promise<IAutoBeHackathonSession.ISummary> => {
     const record =
       await AutoBeHackathonGlobal.prisma.autobe_hackathon_sessions.create({
@@ -167,8 +166,9 @@ export namespace AutoBeHackathonSessionProvider {
           id: v7(),
           autobe_hackathon_id: props.hackathon.id,
           autobe_hackathon_participant_id: props.participant.id,
-          model: props.model,
-          timezone: props.timezone,
+          model: props.body.model,
+          timezone: props.body.timezone,
+          title: props.body.title ?? null,
           created_at: new Date(),
           completed_at: null,
           review_article_url: null,
@@ -184,5 +184,23 @@ export namespace AutoBeHackathonSessionProvider {
         ...json.select(),
       });
     return summarize.transform(record);
+  };
+
+  export const update = async (props: {
+    hackathon: IAutoBeHackathon;
+    participant: IAutobeHackathonParticipant;
+    id: string;
+    body: IAutoBeHackathonSession.IUpdate;
+  }): Promise<void> => {
+    await AutoBeHackathonGlobal.prisma.autobe_hackathon_sessions.update({
+      where: {
+        id: props.id,
+        autobe_hackathon_id: props.hackathon.id,
+        autobe_hackathon_participant_id: props.participant.id,
+      },
+      data: {
+        title: props.body.title,
+      },
+    });
   };
 }

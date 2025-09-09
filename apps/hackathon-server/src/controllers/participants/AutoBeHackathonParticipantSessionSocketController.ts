@@ -9,29 +9,11 @@ import { AutoBeHackathonSessionSocketProvider } from "../../providers/AutoBeHack
 
 @Controller("autobe/hackathon/:hackathonCode/participants/sessions")
 export class AutoBeHackathonParticipantSessionSocketController {
-  @WebSocketRoute("start")
-  public async start(
+  @WebSocketRoute(":id/connect")
+  public async connect(
     @WebSocketRoute.Acceptor()
     acceptor: WebSocketAcceptor<
-      IAutoBeHackathonSession.IStartHeader,
-      IAutoBeRpcService,
-      IAutoBeRpcListener
-    >,
-    @WebSocketRoute.Param("hackathonCode") hackathonCode: string,
-  ): Promise<void> {
-    try {
-      await AutoBeHackathonSessionSocketProvider.start({
-        hackathonCode,
-        acceptor,
-      });
-    } catch {}
-  }
-
-  @WebSocketRoute(":id/restart")
-  public async restart(
-    @WebSocketRoute.Acceptor()
-    acceptor: WebSocketAcceptor<
-      IAutoBeHackathonSession.IRestartHeader,
+      IAutoBeHackathonSession.IHeader,
       IAutoBeRpcService,
       IAutoBeRpcListener
     >,
@@ -39,7 +21,7 @@ export class AutoBeHackathonParticipantSessionSocketController {
     @WebSocketRoute.Param("id") id: string & tags.Format<"uuid">,
   ): Promise<void> {
     try {
-      await AutoBeHackathonSessionSocketProvider.restart({
+      await AutoBeHackathonSessionSocketProvider.connect({
         hackathonCode,
         id,
         acceptor,
@@ -51,7 +33,7 @@ export class AutoBeHackathonParticipantSessionSocketController {
   public async replay(
     @WebSocketRoute.Acceptor()
     acceptor: WebSocketAcceptor<
-      IAutoBeHackathonSession.IReplayHeader,
+      IAutoBeHackathonSession.IHeader,
       IAutoBeRpcService,
       IAutoBeRpcListener
     >,
