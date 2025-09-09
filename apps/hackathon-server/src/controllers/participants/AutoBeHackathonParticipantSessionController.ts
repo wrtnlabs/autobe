@@ -49,6 +49,40 @@ export class AutoBeHackathonParticipantSessionController {
     });
   }
 
+  @TypedRoute.Post()
+  public async create(
+    @AutoBeHackathonParticipantAuth()
+    participant: IAutobeHackathonParticipant,
+    @TypedParam("hackathonCode") hackathonCode: string,
+    @TypedBody() body: IAutoBeHackathonSession.ICreate,
+  ): Promise<IAutoBeHackathonSession.ISummary> {
+    const hackathon: IAutoBeHackathon =
+      await AutoBeHackathonProvider.get(hackathonCode);
+    return await AutoBeHackathonSessionProvider.create({
+      hackathon,
+      participant,
+      body,
+    });
+  }
+
+  @TypedRoute.Put(":id")
+  public async update(
+    @AutoBeHackathonParticipantAuth()
+    participant: IAutobeHackathonParticipant,
+    @TypedParam("hackathonCode") hackathonCode: string,
+    @TypedParam("id") id: string & tags.Format<"uuid">,
+    @TypedBody() body: IAutoBeHackathonSession.IUpdate,
+  ): Promise<void> {
+    const hackathon: IAutoBeHackathon =
+      await AutoBeHackathonProvider.get(hackathonCode);
+    await AutoBeHackathonSessionProvider.update({
+      hackathon,
+      participant,
+      id,
+      body,
+    });
+  }
+
   @TypedRoute.Put(":id/review")
   public async review(
     @AutoBeHackathonParticipantAuth()

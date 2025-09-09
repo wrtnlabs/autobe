@@ -25,19 +25,20 @@ export namespace IAutoBeHackathonSession {
     created_at: string & tags.Format<"date-time">;
     completed_at: null | (string & tags.Format<"date-time">);
   }
+
+  export interface ICreate {
+    model: AutoBeHackathonModel;
+    timezone: string;
+    title?: string | null;
+  }
+  export interface IUpdate {
+    title: string | null;
+  }
   export interface IReview {
     review_article_url: null | (string & tags.Format<"uri">);
   }
 
-  export interface IStartHeader {
-    Authorization: string;
-    model: AutoBeHackathonModel;
-    timezone: string;
-  }
-  export interface IRestartHeader {
-    Authorization: string;
-  }
-  export interface IReplayHeader {
+  export interface IHeader {
     Authorization: string;
   }
 }
