@@ -1,11 +1,12 @@
 import {
+  AutoBeEventSnapshot,
   AutoBeHackathonModel,
+  AutoBeHistory,
   IAutoBeHackathon,
   IAutoBeHackathonSession,
   IAutobeHackathonParticipant,
-} from "@autobe/hackathon-api";
-import { AutoBeEventSnapshot, AutoBeHistory } from "@autobe/interface";
-import { MapUtil, RandomGenerator } from "@nestia/e2e";
+} from "@autobe/interface";
+import { MapUtil } from "@nestia/e2e";
 import fs from "fs";
 import typia from "typia";
 import { v7 } from "uuid";
@@ -23,53 +24,52 @@ export namespace AutoBeHackathonSessionSeeder {
     hackathon: IAutoBeHackathon;
     participants: IAutobeHackathonParticipant[];
   }): Promise<void> => {
-    for (const asset of await getAssets()) {
-      const participant: IAutobeHackathonParticipant = RandomGenerator.pick(
-        props.participants,
-      );
-      const session: IAutoBeHackathonSession.ISummary =
-        await AutoBeHackathonSessionProvider.create({
-          hackathon: props.hackathon,
-          participant,
-          body: {
-            model: asset.model,
-            timezone: "Asia/Seoul",
-          },
-        });
-      const connection: IEntity =
-        await AutoBeHackathonGlobal.prisma.autobe_hackathon_session_connections.create(
+    for (const asset of await getAssets())
+      for (const participant of props.participants) {
+        const session: IAutoBeHackathonSession.ISummary =
+          await AutoBeHackathonSessionProvider.create({
+            hackathon: props.hackathon,
+            participant,
+            body: {
+              model: asset.model,
+              timezone: "Asia/Seoul",
+              title: `${asset.model}`,
+            },
+          });
+        const connection: IEntity =
+          await AutoBeHackathonGlobal.prisma.autobe_hackathon_session_connections.create(
+            {
+              data: {
+                id: v7(),
+                autobe_hackathon_session_id: session.id,
+                created_at: new Date(),
+                disconnected_at: null,
+              },
+            },
+          );
+        for (const history of asset.histories)
+          await AutoBeHackathonSessionHistoryProvider.create({
+            session,
+            history,
+            connection,
+          });
+        for (const snapshot of asset.snapshots)
+          await AutoBeHackathonSessionEventProvider.create({
+            session,
+            snapshot,
+            connection,
+          });
+        await AutoBeHackathonGlobal.prisma.autobe_hackathon_session_aggregates.update(
           {
+            where: { autobe_hackathon_session_id: session.id },
             data: {
-              id: v7(),
-              autobe_hackathon_session_id: session.id,
-              created_at: new Date(),
-              disconnected_at: null,
+              state: asset.state,
+              enabled: true,
+              token_usage: JSON.stringify(asset.snapshots.at(-1)!.tokenUsage),
             },
           },
         );
-      for (const history of asset.histories)
-        await AutoBeHackathonSessionHistoryProvider.create({
-          session,
-          history,
-          connection,
-        });
-      for (const snapshot of asset.snapshots)
-        await AutoBeHackathonSessionEventProvider.create({
-          session,
-          snapshot,
-          connection,
-        });
-      await AutoBeHackathonGlobal.prisma.autobe_hackathon_session_aggregates.update(
-        {
-          where: { autobe_hackathon_session_id: session.id },
-          data: {
-            state: asset.state,
-            enabled: true,
-            token_usage: asset.snapshots.at(-1)!.tokenUsage as any,
-          },
-        },
-      );
-    }
+      }
   };
 }
 
@@ -83,6 +83,7 @@ const getAssets = async (): Promise<IAsset[]> => {
     ).filter((s) => s.endsWith(".json.gz"));
 
     interface IGroup {
+      project: string;
       histories: string[];
       snapshots: string[];
     }
@@ -92,6 +93,7 @@ const getAssets = async (): Promise<IAsset[]> => {
       const project: string = elements[0];
       const tail: string = elements[2];
       const group: IGroup = MapUtil.take(groupDict, project, () => ({
+        project,
         histories: [],
         snapshots: [],
       }));
@@ -107,6 +109,7 @@ const getAssets = async (): Promise<IAsset[]> => {
       );
       assets.push({
         model,
+        project: group.project,
         state: group.histories.at(-1)!.split(".")[1] as State,
         histories: JSON.parse(
           await CompressUtil.gunzip(
@@ -134,6 +137,7 @@ const getAssets = async (): Promise<IAsset[]> => {
 
 interface IAsset {
   model: AutoBeHackathonModel;
+  project: string;
   state: "analyze" | "prisma" | "interface" | "test" | "realize";
   histories: AutoBeHistory[];
   snapshots: AutoBeEventSnapshot[];

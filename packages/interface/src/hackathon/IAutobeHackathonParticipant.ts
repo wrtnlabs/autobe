@@ -23,5 +23,8 @@ export namespace IAutobeHackathonParticipant {
   }
   export interface IAuthorized extends IAutobeHackathonParticipant {
     token: IAuthorizationToken;
+    setHeaders: {
+      Authorization: string;
+    };
   }
 }

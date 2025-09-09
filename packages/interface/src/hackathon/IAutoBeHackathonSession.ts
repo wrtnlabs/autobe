@@ -1,10 +1,8 @@
-import {
-  AutoBeEventSnapshot,
-  AutoBeHistory,
-  IAutoBeTokenUsageJson,
-} from "@autobe/interface";
 import { tags } from "typia";
 
+import { AutoBeEventSnapshot } from "../events/AutoBeEventSnapshot";
+import { AutoBeHistory } from "../histories/AutoBeHistory";
+import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
 import { AutoBeHackathonModel } from "./AutoBeHackathonModel";
 import { IAutobeHackathonParticipant } from "./IAutobeHackathonParticipant";
 
@@ -16,9 +14,10 @@ export interface IAutoBeHackathonSession
 export namespace IAutoBeHackathonSession {
   export interface ISummary {
     id: string;
+    participant: IAutobeHackathonParticipant;
+    title: string | null;
     model: AutoBeHackathonModel;
     timezone: string;
-    participant: IAutobeHackathonParticipant;
     state: null | "analyze" | "prisma" | "interface" | "test" | "realize";
     review_article_url: null | (string & tags.Format<"uri">);
     token_usage: IAutoBeTokenUsageJson;

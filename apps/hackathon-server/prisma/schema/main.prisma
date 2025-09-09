@@ -67,6 +67,7 @@ model autobe_hackathon_sessions {
   review_article_url              String?   @db.VarChar(2048)
   created_at                      DateTime  @db.Timestamptz
   completed_at                    DateTime? @db.Timestamptz
+  deleted_at                      DateTime? @db.Timestamptz
 
   //----
   // RELATIONS
@@ -110,7 +111,7 @@ model autobe_hackathon_session_histories {
   autobe_hackathon_session_id            String   @db.Uuid
   autobe_hackathon_session_connection_id String   @db.Uuid
   type                                   String   @db.VarChar
-  data                                   Json
+  data                                   String
   created_at                             DateTime @db.Timestamptz
 
   //----
@@ -131,7 +132,7 @@ model autobe_hackathon_session_events {
   autobe_hackathon_session_id            String   @db.Uuid
   autobe_hackathon_session_connection_id String   @db.Uuid
   type                                   String   @db.VarChar
-  data                                   Json
+  data                                   String
   created_at                             DateTime @db.Timestamptz
 
   //----
@@ -149,7 +150,7 @@ model autobe_hackathon_session_aggregates {
   autobe_hackathon_session_id String @db.Uuid
   state String? @db.VarChar
   enabled Boolean
-  token_usage Json
+  token_usage String
 
   @@unique([autobe_hackathon_session_id])
   session autobe_hackathon_sessions @relation(fields: [autobe_hackathon_session_id], references: [id], onDelete: Cascade)

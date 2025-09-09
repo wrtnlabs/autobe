@@ -11,7 +11,7 @@ export namespace AutoBeHackathonSessionHistoryProvider {
       input: Prisma.autobe_hackathon_session_historiesGetPayload<
         ReturnType<typeof select>
       >,
-    ): AutoBeHistory => input.data as any as AutoBeHistory;
+    ): AutoBeHistory => JSON.parse(input.data);
     export const select = () =>
       ({
         select: {
@@ -49,7 +49,7 @@ export namespace AutoBeHackathonSessionHistoryProvider {
           autobe_hackathon_session_id: props.session.id,
           autobe_hackathon_session_connection_id: props.connection.id,
           type: props.history.type,
-          data: props.history as any as Prisma.InputJsonValue,
+          data: JSON.stringify(props.history),
           created_at: new Date(),
         },
       },

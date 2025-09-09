@@ -11,7 +11,7 @@ export namespace AutoBeHackathonSessionEventProvider {
       input: Prisma.autobe_hackathon_session_eventsGetPayload<
         ReturnType<typeof select>
       >,
-    ): AutoBeEventSnapshot => input.data as any as AutoBeEventSnapshot;
+    ): AutoBeEventSnapshot => JSON.parse(input.data);
     export const select = () =>
       ({
         select: {
@@ -48,7 +48,7 @@ export namespace AutoBeHackathonSessionEventProvider {
         autobe_hackathon_session_id: props.session.id,
         autobe_hackathon_session_connection_id: props.connection.id,
         type: props.snapshot.event.type,
-        data: props.snapshot as any,
+        data: JSON.stringify(props.snapshot),
         created_at: new Date(),
       },
     });

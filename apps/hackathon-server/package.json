@@ -25,17 +25,17 @@
     "build:env": "ts-node build/env.ts",
     "build:prisma": "pnpm run build:env && prisma generate --schema=./prisma/schema",
     "build:sdk": "nestia sdk",
-    "dev": "rimraf lib && tsc --watch",
+    "dev": "rimraf bin && tsc -p test/tsconfig.json --watch --noEmit",
     "prepack": "pnpm run build",
     "prepare": "ts-patch install && pnpm run build:env && pnpm run build:prisma",
     "schema": "ts-node src/executable/schema.ts",
-    "start": "ts-node src/executable/server.ts"
+    "start": "ts-node src/executable/server.ts",
+    "test": "ts-node -P test/tsconfig.json test/index.ts"
   },
   "dependencies": {
     "@autobe/agent": "workspace:^",
     "@autobe/compiler": "workspace:^",
     "@autobe/filesystem": "workspace:^",
-    "@autobe/hackathon-api": "workspace:^",
     "@autobe/interface": "workspace:^",
     "@autobe/rpc": "workspace:^",
     "@nestia/core": "catalog:samchon",
@@ -59,15 +59,21 @@
     "uuid": "^11.1.0"
   },
   "devDependencies": {
+    "@autobe/hackathon-api": "workspace:^",
     "@types/express": "^5.0.3",
+    "@types/inquirer": "8.2.5",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.3.1",
     "@types/uuid": "^10.0.0",
+    "chalk": "4.1.2",
+    "commander": "^14.0.0",
+    "inquirer": "8.2.5",
     "nestia": "catalog:samchon",
     "rimraf": "^6.0.1",
     "ts-node": "catalog:typescript",
     "ts-patch": "catalog:typescript",
-    "typescript": "catalog:typescript"
+    "typescript": "catalog:typescript",
+    "typescript-transform-paths": "^3.5.5"
   },
   "keywords": [
     "ai",

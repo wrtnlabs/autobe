@@ -1,4 +1,4 @@
-import { IPage } from "@autobe/hackathon-api";
+import { IPage } from "@autobe/interface";
 import { ArrayUtil } from "@nestia/e2e";
 
 export namespace PaginationUtil {

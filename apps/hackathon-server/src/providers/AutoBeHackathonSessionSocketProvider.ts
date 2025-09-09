@@ -1,9 +1,10 @@
 import {
   IAutoBeHackathon,
   IAutoBeHackathonSession,
+  IAutoBeRpcListener,
+  IAutoBeRpcService,
   IAutobeHackathonParticipant,
-} from "@autobe/hackathon-api";
-import { IAutoBeRpcListener, IAutoBeRpcService } from "@autobe/interface";
+} from "@autobe/interface";
 import { WebSocketAcceptor } from "tgrid";
 import { tags } from "typia";
 

@@ -3,7 +3,7 @@ import {
   IAutoBeHackathonSession,
   IAutobeHackathonParticipant,
   IPage,
-} from "@autobe/hackathon-api";
+} from "@autobe/interface";
 import { TypedBody, TypedParam, TypedRoute } from "@nestia/core";
 import { Controller } from "@nestjs/common";
 import { tags } from "typia";
@@ -55,7 +55,7 @@ export class AutoBeHackathonParticipantSessionController {
     participant: IAutobeHackathonParticipant,
     @TypedParam("hackathonCode") hackathonCode: string,
     @TypedBody() body: IAutoBeHackathonSession.ICreate,
-  ): Promise<IAutoBeHackathonSession.ISummary> {
+  ): Promise<IAutoBeHackathonSession> {
     const hackathon: IAutoBeHackathon =
       await AutoBeHackathonProvider.get(hackathonCode);
     return await AutoBeHackathonSessionProvider.create({
@@ -98,6 +98,22 @@ export class AutoBeHackathonParticipantSessionController {
       participant,
       id,
       body,
+    });
+  }
+
+  @TypedRoute.Delete(":id")
+  public async erase(
+    @AutoBeHackathonParticipantAuth()
+    participant: IAutobeHackathonParticipant,
+    @TypedParam("hackathonCode") hackathonCode: string,
+    @TypedParam("id") id: string & tags.Format<"uuid">,
+  ): Promise<void> {
+    const hackathon: IAutoBeHackathon =
+      await AutoBeHackathonProvider.get(hackathonCode);
+    await AutoBeHackathonSessionProvider.erase({
+      hackathon,
+      participant,
+      id,
     });
   }
 }
