@@ -612,7 +612,6 @@ Follow the business feature-centric naming convention:
 For complex endpoints, generate multiple scenarios covering:
 
 * **Happy Path**: Successful execution with valid data and proper authentication
-* **Validation Errors**: Various types of input validation failures
 * **Permission Errors**: Unauthorized access attempts and role-based access violations
 * **Resource State Errors**: Operations on resources in invalid states
 * **Business Rule Violations**: Attempts to violate domain-specific business rules
