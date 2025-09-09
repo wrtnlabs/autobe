@@ -2,7 +2,7 @@ import hApi from "@autobe/hackathon-api";
 import {
   AutoBeListener,
   IAutoBeConfig,
-  getAutoBeAgentSession,
+  SearchParamsProvider,
 } from "@autobe/ui";
 import { useRef } from "react";
 
@@ -25,38 +25,54 @@ export function AutoBePlaygroundApplication() {
   // Playground service factory
   const serviceFactory = async (config: IAutoBeConfig) => {
     const listener = new AutoBeListener();
-    const service = await (() => {
+    const { service, sessionId } = await (async () => {
+      const connection = {
+        host: import.meta.env.VITE_API_BASE_URL,
+        headers: {
+          Authorization: `Bearer ${token.token.access}`,
+          model: config.aiModel,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        },
+      };
       if (config.sessionId != null && typeof config.sessionId === "string") {
-        return hApi.autobe.hackathon.participants.sessions.restart(
-          {
-            host: import.meta.env.VITE_API_BASE_URL,
-            headers: {
-              Authorization: `Bearer ${token.token.access}`,
-              model: config.aiModel,
-              timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-            },
-          },
-          HACKATHON_CODE,
-          config.sessionId,
-          listener.getListener(),
-        );
+        return {
+          service: await hApi.autobe.hackathon.participants.sessions
+            .connect(
+              connection,
+              HACKATHON_CODE,
+              config.sessionId,
+              listener.getListener(),
+            )
+            .then((v) => v.driver),
+          sessionId: config.sessionId,
+        };
       }
 
-      return hApi.autobe.hackathon.participants.sessions.start(
-        {
-          host: import.meta.env.VITE_API_BASE_URL,
-          headers: {
-            Authorization: `Bearer ${token.token.access}`,
-            model: config.aiModel,
-            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-          },
-        },
+      const session = await hApi.autobe.hackathon.participants.sessions.create(
+        connection,
         HACKATHON_CODE,
-        listener.getListener(),
+        {
+          model: config.aiModel,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        },
       );
-    })().then((v) => v.driver);
+
+      return {
+        service: await hApi.autobe.hackathon.participants.sessions
+          .connect(
+            connection,
+            HACKATHON_CODE,
+            session.id,
+            listener.getListener(),
+          )
+          .then((v) => v.driver),
+        sessionId: session.id,
+      };
+    })();
+
     return {
       service,
+      sessionId,
       listener,
       uploadConfig: {
         supportAudio: config.supportAudioEnable ?? false,
@@ -65,20 +81,22 @@ export function AutoBePlaygroundApplication() {
   };
 
   return (
-    <div
-      ref={scrollRef}
-      style={{
-        width: "100%",
-        height: "100%",
-        overflow: "auto",
-      }}
-    >
-      <AutoBePlaygroundChatMovie
-        title="AutoBE Playground"
-        serviceFactory={serviceFactory}
-        storageStrategyFactory={() => new AutoBeAgentSessionStorageStrategy()}
-        configFilter={(config) => config.key === "aiModel"}
-      />
-    </div>
+    <SearchParamsProvider>
+      <div
+        ref={scrollRef}
+        style={{
+          width: "100%",
+          height: "100%",
+          overflow: "auto",
+        }}
+      >
+        <AutoBePlaygroundChatMovie
+          title="AutoBE Playground"
+          serviceFactory={serviceFactory}
+          storageStrategyFactory={() => new AutoBeAgentSessionStorageStrategy()}
+          configFilter={(config) => config.key === "aiModel"}
+        />
+      </div>
+    </SearchParamsProvider>
   );
 }

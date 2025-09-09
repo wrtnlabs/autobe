@@ -16,11 +16,12 @@ import {
 } from "../structure";
 import { IAutoBeConfig } from "../types/config";
 import { useAutoBeAgentSessionList } from "./AutoBeAgentSessionList";
-import { SearchParamsContext } from "./hooks-client-context.shared-runtime";
+import { useSearchParams } from "./SearchParamsContext";
 
 export interface IAutoBeServiceData {
   service: IAutoBeRpcService;
   listener: AutoBeListener;
+  sessionId: string;
 }
 
 export type AutoBeServiceFactory = (
@@ -64,9 +65,9 @@ export function AutoBeAgentProvider({
     useState<AutoBeConnectionStatus>("disconnected");
 
   // Service data
-  const searchParams = useContext(SearchParamsContext);
+  const { searchParams } = useSearchParams();
   // Use URL parameter for conversation ID - enables bookmark/share support
-  const activeConversationId = searchParams?.get("session-id") ?? null;
+  const activeConversationId = searchParams.get("session-id") ?? null;
 
   const [tokenUsage, setTokenUsage] = useState<IAutoBeTokenUsageJson | null>(
     null,
@@ -106,6 +107,11 @@ export function AutoBeAgentProvider({
           sessionId: activeConversationId,
         });
         setServiceInstance(newServiceData);
+
+        const url = new URL(window.location.href);
+        url.searchParams.set("session-id", newServiceData.sessionId);
+        window.history.pushState({}, "", url);
+
         setConnectionStatus("connected");
 
         return newServiceData;

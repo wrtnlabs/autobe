@@ -13,7 +13,6 @@ import {
 } from ".";
 import { useAutoBeAgent } from "../../context/AutoBeAgentContext";
 import { useMediaQuery } from "../../hooks/useMediaQuery";
-import { IAutoBeEventGroup } from "../../structure";
 import { AutoBeFileUploader } from "../../utils";
 
 export interface IAutoBeBucket {

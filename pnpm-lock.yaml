@@ -260,27 +260,21 @@ importers:
 
   apps/hackathon-ui:
     dependencies:
+      '@autobe/hackathon-api':
+        specifier: workspace:^
+        version: link:../hackathon-api
       '@autobe/interface':
         specifier: workspace:^
         version: link:../../packages/interface
-      '@autobe/playground-api':
-        specifier: workspace:^
-        version: link:../playground-api
       '@autobe/ui':
         specifier: workspace:^
         version: link:../../packages/ui
       '@mui/icons-material':
         specifier: ^7.1.0
         version: 7.3.1(@mui/material@7.3.1(@emotion/react@11.14.0(@types/react@19.1.12)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.12)(react@19.1.1))(@types/react@19.1.12)(react@19.1.1))(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(@types/react@19.1.12)(react@19.1.1)
-      '@mui/material':
-        specifier: ^7.1.0
-        version: 7.3.1(@emotion/react@11.14.0(@types/react@19.1.12)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.12)(react@19.1.1))(@types/react@19.1.12)(react@19.1.1))(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@samchon/openapi':
         specifier: catalog:samchon
         version: 4.7.1
-      '@stackblitz/sdk':
-        specifier: ^1.11.0
-        version: 1.11.0
       react:
         specifier: catalog:ui
         version: 19.1.1

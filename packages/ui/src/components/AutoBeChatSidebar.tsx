@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 import { useAutoBeAgentSessionList } from "../context/AutoBeAgentSessionList";
+import { useSearchParams } from "../context/SearchParamsContext";
 import {
   IAutoBeAgentSession,
   IAutoBeAgentSessionStorageStrategy,
 } from "../structure";
+import { CompactSessionList } from "./common/CompactSessionList";
 
 /** Props interface for AutoBeChatSidebar component */
 export interface IAutoBeChatSidebarProps {
@@ -15,19 +17,36 @@ export interface IAutoBeChatSidebarProps {
   onToggle: () => void;
   /** Custom className */
   className?: string;
-  /** Current active session ID */
-  activeSessionId?: string;
   /** Function to select a session */
-  onSessionSelect: (id: string) => void;
+  onSessionSelect?: (id: string) => void;
   /** Function to delete a session */
-  onDeleteSession: (id: string) => void;
+  onDeleteSession?: (id: string) => void;
 }
 
+const collapsedWidth = "60px";
+const expandedWidth = "320px";
 /** Beautiful and modern chat sidebar component as part of layout */
 export const AutoBeChatSidebar = (props: IAutoBeChatSidebarProps) => {
   const { sessionList } = useAutoBeAgentSessionList();
-  const collapsedWidth = "60px";
-  const expandedWidth = "320px";
+  const { searchParams, setSearchParams } = useSearchParams();
+  const activeSessionId = searchParams.get("session-id") ?? null;
+  const [currentSessionId, setCurrentSessionId] = useState(
+    Array.isArray(activeSessionId) ? activeSessionId.at(0) : activeSessionId,
+  );
+
+  const handleOnSessionSelect = useCallback(
+    (sessionId: string) => {
+      props.onSessionSelect?.(sessionId);
+      setSearchParams((sp) => {
+        const newSp = new URLSearchParams(sp);
+        newSp.set("session-id", sessionId);
+        return newSp;
+      });
+      setCurrentSessionId(sessionId);
+    },
+    [props.onSessionSelect, setSearchParams],
+  );
+
   return (
     <div
       className={props.className}
@@ -132,69 +151,12 @@ export const AutoBeChatSidebar = (props: IAutoBeChatSidebarProps) => {
       >
         {props.isCollapsed ? (
           // Collapsed state - show compact conversation indicators
-          <div
-            style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}
-          >
-            {sessionList.slice(0, 8).map((session) => (
-              <div
-                key={session.id}
-                onClick={() => props.onSessionSelect?.(session.id)}
-                style={{
-                  width: "36px",
-                  height: "36px",
-                  borderRadius: "0.5rem",
-                  backgroundColor:
-                    props.activeSessionId === session.id
-                      ? "#3b82f6"
-                      : "#f3f4f6",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  cursor: "pointer",
-                  transition: "all 0.2s ease",
-                  margin: "0 auto",
-                  color:
-                    props.activeSessionId === session.id
-                      ? "#ffffff"
-                      : "#6b7280",
-                  fontSize: "0.875rem",
-                  fontWeight: "500",
-                }}
-                onMouseEnter={(e) => {
-                  if (props.activeSessionId !== session.id) {
-                    e.currentTarget.style.backgroundColor = "#e5e7eb";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (props.activeSessionId !== session.id) {
-                    e.currentTarget.style.backgroundColor = "#f3f4f6";
-                  }
-                }}
-                title={session.title}
-              >
-                {session.title.charAt(0).toUpperCase()}
-              </div>
-            ))}
-            {sessionList.length > 8 && (
-              <div
-                style={{
-                  width: "36px",
-                  height: "36px",
-                  borderRadius: "0.5rem",
-                  backgroundColor: "#f3f4f6",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  margin: "0 auto",
-                  color: "#6b7280",
-                  fontSize: "0.75rem",
-                  fontWeight: "500",
-                }}
-              >
-                +{sessionList.length - 8}
-              </div>
-            )}
-          </div>
+          <CompactSessionList
+            sessions={sessionList}
+            activeSessionId={currentSessionId}
+            maxItems={8}
+            onSessionSelect={handleOnSessionSelect}
+          />
         ) : (
           // Expanded state - show full conversation list
           <>
@@ -232,11 +194,9 @@ export const AutoBeChatSidebar = (props: IAutoBeChatSidebarProps) => {
                 <SessionListItem
                   key={session.id}
                   session={session}
-                  isActive={props.activeSessionId === session.id}
-                  onSelect={(sessionId: string) =>
-                    props.onSessionSelect?.(sessionId)
-                  }
-                  onDelete={props.onDeleteSession}
+                  isActive={currentSessionId === session.id}
+                  onSelect={handleOnSessionSelect}
+                  onDelete={props.onDeleteSession ?? (() => {})}
                 />
               ))
             )}
