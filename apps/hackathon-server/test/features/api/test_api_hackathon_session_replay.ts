@@ -87,7 +87,7 @@ export const test_api_hackathon_session_replay = async (
     "prisma",
     "interface",
     "test",
-    "realze",
+    "realize",
   ] as const)
     if (session.histories.some((h) => h.type === type))
       TestValidator.predicate(type, () =>
