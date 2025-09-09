@@ -2,16 +2,6 @@
   "extends": "../../internals/config/tsconfig.json",
   "compilerOptions": {
     "outDir": "lib",
-    "paths": {
-      "@autobe/hackathon-api": ["./src"],
-    },
-    "plugins": [
-      { "transform": "typia/lib/transform" },
-      {
-        "transform": "typescript-transform-paths",
-        "afterDeclarations": true,
-      },
-    ],
   },
   "include": ["src"],
 }

@@ -1,2 +1,4 @@
-export * from "./structures";
-export * from "./functional";
+export * from "./HttpError";
+export type * from "./IConnection";
+
+export * as functional from "./functional";

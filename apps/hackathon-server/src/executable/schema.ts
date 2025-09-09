@@ -41,8 +41,8 @@ async function main(): Promise<void> {
     password: AutoBeHackathonConfiguration.env().HACKATHON_POSTGRES_PASSWORD,
   };
   const root = {
-    account: process.argv[2] ?? config.username ?? "postgres",
-    password: process.argv[3] ?? config.password ?? "root",
+    account: process.argv[2] ?? "postgres",
+    password: process.argv[3] ?? "root",
   };
 
   await execute(

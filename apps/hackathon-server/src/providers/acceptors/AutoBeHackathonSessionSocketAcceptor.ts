@@ -1,11 +1,11 @@
 import { AutoBeAgent } from "@autobe/agent";
-import { IAutoBeHackathonSession } from "@autobe/hackathon-api";
 import {
   AutoBeEventOfSerializable,
   AutoBeEventSnapshot,
   AutoBeHistory,
   IAutoBeCompiler,
   IAutoBeCompilerListener,
+  IAutoBeHackathonSession,
   IAutoBeRpcListener,
   IAutoBeRpcService,
   IAutoBeTokenUsageJson,
@@ -56,11 +56,13 @@ export namespace AutoBeHackathonSessionSocketAcceptor {
     connection: IEntity;
     acceptor: WebSocketAcceptor<unknown, IAutoBeRpcService, IAutoBeRpcListener>;
   }): Promise<void> => {
+    const histories: AutoBeHistory[] =
+      await AutoBeHackathonSessionHistoryProvider.getAll({
+        session: props.session,
+      });
     const agent: AutoBeAgent<"chatgpt"> = await startCommunication({
       ...props,
-      histories: await AutoBeHackathonSessionHistoryProvider.getAll({
-        session: props.session,
-      }),
+      histories,
     });
     const snapshots: AutoBeEventSnapshot[] =
       await AutoBeHackathonSessionEventProvider.getAll({
@@ -69,15 +71,14 @@ export namespace AutoBeHackathonSessionSocketAcceptor {
     const listener = props.acceptor.getDriver();
     for (const s of snapshots) {
       agent.getTokenUsage().assign(s.tokenUsage);
-      await (listener as any)[s.event.type](s.event);
+      try {
+        await (listener as any)[s.event.type](s.event).catch(() => {});
+      } catch {}
       await sleep_for(10);
     }
 
     // REPLAY NEVER ALLOWS CONVERSATION
-    void props.acceptor
-      .getDriver()
-      .enable(false)
-      .catch(() => {});
+    void listener.enable(false).catch(() => {});
   };
 
   const startCommunication = async (props: {
@@ -129,7 +130,7 @@ export namespace AutoBeHackathonSessionSocketAcceptor {
               autobe_hackathon_session_id: props.session.id,
             },
             data: {
-              token_usage: tokenUsage as any,
+              token_usage: JSON.stringify(tokenUsage),
               state:
                 state.analyze === null
                   ? null

@@ -1,10 +1,11 @@
 import {
+  AutoBeEventSnapshot,
   AutoBeHackathonModel,
+  AutoBeHistory,
   IAutoBeHackathon,
   IAutoBeHackathonSession,
   IAutobeHackathonParticipant,
-} from "@autobe/hackathon-api";
-import { AutoBeEventSnapshot, AutoBeHistory } from "@autobe/interface";
+} from "@autobe/interface";
 import { MapUtil, RandomGenerator } from "@nestia/e2e";
 import fs from "fs";
 import typia from "typia";
@@ -34,6 +35,7 @@ export namespace AutoBeHackathonSessionSeeder {
           body: {
             model: asset.model,
             timezone: "Asia/Seoul",
+            title: `${asset.model}`,
           },
         });
       const connection: IEntity =
@@ -65,7 +67,7 @@ export namespace AutoBeHackathonSessionSeeder {
           data: {
             state: asset.state,
             enabled: true,
-            token_usage: asset.snapshots.at(-1)!.tokenUsage as any,
+            token_usage: JSON.stringify(asset.snapshots.at(-1)!.tokenUsage),
           },
         },
       );
@@ -83,6 +85,7 @@ const getAssets = async (): Promise<IAsset[]> => {
     ).filter((s) => s.endsWith(".json.gz"));
 
     interface IGroup {
+      project: string;
       histories: string[];
       snapshots: string[];
     }
@@ -92,6 +95,7 @@ const getAssets = async (): Promise<IAsset[]> => {
       const project: string = elements[0];
       const tail: string = elements[2];
       const group: IGroup = MapUtil.take(groupDict, project, () => ({
+        project,
         histories: [],
         snapshots: [],
       }));
@@ -107,6 +111,7 @@ const getAssets = async (): Promise<IAsset[]> => {
       );
       assets.push({
         model,
+        project: group.project,
         state: group.histories.at(-1)!.split(".")[1] as State,
         histories: JSON.parse(
           await CompressUtil.gunzip(
@@ -134,6 +139,7 @@ const getAssets = async (): Promise<IAsset[]> => {
 
 interface IAsset {
   model: AutoBeHackathonModel;
+  project: string;
   state: "analyze" | "prisma" | "interface" | "test" | "realize";
   histories: AutoBeHistory[];
   snapshots: AutoBeEventSnapshot[];

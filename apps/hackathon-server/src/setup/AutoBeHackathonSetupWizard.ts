@@ -11,7 +11,7 @@ export namespace AutoBeHackathonSetupWizard {
     await AutoBeHackathonSessionSeeder.seed({ hackathon, participants });
   };
 
-  export const schema = (): void => {
+  export const schema = async (): Promise<void> => {
     const execute = (type: string) => (argv: string) =>
       cp.execSync(`npx prisma migrate ${type} --schema=prisma/schema ${argv}`, {
         stdio: "inherit",

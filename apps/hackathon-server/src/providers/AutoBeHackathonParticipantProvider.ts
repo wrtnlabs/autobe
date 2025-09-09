@@ -1,7 +1,7 @@
 import {
   IAutoBeHackathon,
   IAutobeHackathonParticipant,
-} from "@autobe/hackathon-api";
+} from "@autobe/interface";
 import { ForbiddenException } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 import { v7 } from "uuid";
@@ -151,6 +151,9 @@ export namespace AutoBeHackathonParticipantProvider {
         refresh: token.refresh,
         expired_at: token.expired_at,
         refreshable_until: token.refreshable_until,
+      },
+      setHeaders: {
+        Authorization: `${BEARER_PREFIX}${token.access}`,
       },
     };
   };

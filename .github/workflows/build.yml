@@ -13,6 +13,14 @@ on:
 jobs:
   Ubuntu:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgis/postgis:16-3.4
+        env:
+          POSTGRES_PASSWORD: root
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -29,3 +37,9 @@ jobs:
       - name: Run Tests
         run: pnpm start
         working-directory: test
+
+      - name: Run Hackathon Server Test
+        run: |
+          pnpm run schema
+          pnpm run test --reset true
+        working-directory: apps/hackathon-server

@@ -1,5 +1,4 @@
 import hApi from "@autobe/hackathon-api";
-import { AutoBeHackathonModel } from "@autobe/interface";
 import {
   AutoBeListener,
   IAutoBeConfig,
@@ -10,9 +9,9 @@ import { useRef } from "react";
 import { AutoBePlaygroundChatMovie } from "./AutoBePlaygroundChatMovie";
 import { HACKATHON_CODE } from "./constant";
 import { useAuthorizationToken } from "./hooks/useAuthorizationToken";
-import { AutoBeAgentSessionStorageStrategy } from "./strategy/AutoBeAgentSessionStorageStrategy";
+import { AutoBeAgentSessionStorageMockStrategy } from "./strategy/AutoBeAgentSessionStorageMockStrategy";
 
-export function AutoBePlaygroundApplication() {
+export function AutoBeReplayPlayground() {
   const { getToken } = useAuthorizationToken();
   const token = getToken();
   /** @todo Process refresh token logic */
@@ -35,10 +34,11 @@ export function AutoBePlaygroundApplication() {
           timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         },
       };
+
       if (config.sessionId != null && typeof config.sessionId === "string") {
         return {
           service: await hApi.functional.autobe.hackathon.participants.sessions
-            .connect(
+            .replay(
               connection,
               HACKATHON_CODE,
               config.sessionId,
@@ -49,27 +49,8 @@ export function AutoBePlaygroundApplication() {
         };
       }
 
-      const session =
-        await hApi.functional.autobe.hackathon.participants.sessions.create(
-          connection,
-          HACKATHON_CODE,
-          {
-            model: config.aiModel as AutoBeHackathonModel,
-            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-          },
-        );
-
-      return {
-        service: await hApi.functional.autobe.hackathon.participants.sessions
-          .connect(
-            connection,
-            HACKATHON_CODE,
-            session.id,
-            listener.getListener(),
-          )
-          .then((v) => v.driver),
-        sessionId: session.id,
-      };
+      window.location.href = "/";
+      throw new Error("Session ID is required");
     })();
 
     return {
@@ -95,8 +76,11 @@ export function AutoBePlaygroundApplication() {
         <AutoBePlaygroundChatMovie
           title="AutoBE Playground"
           serviceFactory={serviceFactory}
-          storageStrategyFactory={() => new AutoBeAgentSessionStorageStrategy()}
+          storageStrategyFactory={() =>
+            new AutoBeAgentSessionStorageMockStrategy()
+          }
           configFilter={(config) => config.key === "aiModel"}
+          isReplay={true}
         />
       </div>
     </SearchParamsProvider>

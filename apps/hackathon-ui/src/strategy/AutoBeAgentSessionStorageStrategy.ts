@@ -1,4 +1,5 @@
-import hApi, { IAutoBeHackathonSession, IPage } from "@autobe/hackathon-api";
+import hApi from "@autobe/hackathon-api";
+import { IAutoBeHackathonSession, IPage } from "@autobe/interface";
 import {
   IAutoBeAgentSession,
   IAutoBeAgentSessionStorageStrategy,
@@ -23,7 +24,7 @@ export class AutoBeAgentSessionStorageStrategy
     const token = getToken();
 
     const result: IAutoBeHackathonSession =
-      await hApi.autobe.hackathon.participants.sessions.at(
+      await hApi.functional.autobe.hackathon.participants.sessions.at(
         {
           host: import.meta.env.VITE_API_BASE_URL,
           headers: {
@@ -51,7 +52,7 @@ export class AutoBeAgentSessionStorageStrategy
     const token = getToken();
 
     const result: IPage<IAutoBeHackathonSession.ISummary> =
-      await hApi.autobe.hackathon.participants.sessions.index(
+      await hApi.functional.autobe.hackathon.participants.sessions.index(
         {
           host: import.meta.env.VITE_API_BASE_URL,
           headers: {

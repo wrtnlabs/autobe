@@ -14,6 +14,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         index: path.resolve(__dirname, "index.html"),
+        replay: path.resolve(__dirname, "replay.html"),
         login: path.resolve(__dirname, "login.html"),
       },
     },

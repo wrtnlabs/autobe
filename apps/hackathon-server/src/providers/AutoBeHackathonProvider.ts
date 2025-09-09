@@ -1,4 +1,4 @@
-import { IAutoBeHackathon } from "@autobe/hackathon-api";
+import { IAutoBeHackathon } from "@autobe/interface";
 import { Prisma } from "@prisma/client";
 import { v7 } from "uuid";
 

@@ -1,7 +1,7 @@
 import {
   IAutoBeHackathon,
   IAutobeHackathonParticipant,
-} from "@autobe/hackathon-api";
+} from "@autobe/interface";
 import { ArrayUtil } from "@nestia/e2e";
 import fs from "fs";
 
