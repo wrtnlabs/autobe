@@ -11,3 +11,4 @@ export * from "./typings";
 
 export * from "./rpc";
 export * from "./playground";
+export * from "./hackathon";

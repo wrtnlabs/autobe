@@ -92,6 +92,7 @@ export function AutoBePlaygroundChatMovie(
                 style={{
                   backgroundColor: "lightblue",
                 }}
+                isReplay={props.isReplay}
               />
             </div>
           </AutoBeAgentProvider>
@@ -107,5 +108,6 @@ export namespace AutoBePlaygroundChatMovie {
     isUnusedConfig?: boolean;
     storageStrategyFactory: () => IAutoBeAgentSessionStorageStrategy;
     configFilter?: (config: IConfigField) => boolean;
+    isReplay?: boolean;
   }
 }

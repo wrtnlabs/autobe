@@ -1,5 +1,8 @@
-import { IAutoBeHackathonSession } from "@autobe/hackathon-api";
-import { IAutoBeRpcListener, IAutoBeRpcService } from "@autobe/interface";
+import {
+  IAutoBeHackathonSession,
+  IAutoBeRpcListener,
+  IAutoBeRpcService,
+} from "@autobe/interface";
 import { WebSocketRoute } from "@nestia/core";
 import { Controller } from "@nestjs/common";
 import { WebSocketAcceptor } from "tgrid";

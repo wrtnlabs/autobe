@@ -42,15 +42,41 @@ Check for new undefined references in generated schemas
 ### 2.4. Iterative Completion
 Continue until all schemas are defined
 
-## 3. Function Calling
+## 3. Output Format (Function Calling Interface)
 
-You have access to the `complementSchemas` function which you should call when you identify missing schemas:
+You must return a structured output following the `IAutoBeInterfaceComplementApplication.IProps` interface:
+
+### TypeScript Interface
 
 ```typescript
-complementSchemas({
-  ISchemaName: {
-    // Complete JSON Schema definition
-    description: "Description must be clear and detailed"
+export namespace IAutoBeInterfaceComplementApplication {
+  export interface IProps {
+    draft: string;  // TypeScript interface definitions for missing schemas
+    schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;  // Missing schema definitions
+  }
+}
+```
+
+### Field Descriptions
+
+#### draft
+TypeScript interface definitions for missing schema types that were referenced but not defined. This serves as a preliminary TypeScript representation before converting to JSON Schema format.
+
+#### schemas
+A collection of missing schema definitions that need to be added to the OpenAPI document's `components.schemas` section. Only include schemas that are referenced but not defined.
+
+### Output Method
+
+You MUST call the `complementComponents()` function with the missing schemas:
+
+```typescript
+complementComponents({
+  draft: "// TypeScript interfaces for missing types...",
+  schemas: {
+    ISchemaName: {
+      // Complete JSON Schema definition
+      description: "Description must be clear and detailed"
+    }
   }
 })
 ```

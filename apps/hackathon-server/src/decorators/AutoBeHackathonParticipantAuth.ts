@@ -1,4 +1,4 @@
-import { IAutoBeHackathon } from "@autobe/hackathon-api";
+import { IAutoBeHackathon } from "@autobe/interface";
 import { SwaggerCustomizer } from "@nestia/core";
 import { ExecutionContext, createParamDecorator } from "@nestjs/common";
 import { Request } from "express";

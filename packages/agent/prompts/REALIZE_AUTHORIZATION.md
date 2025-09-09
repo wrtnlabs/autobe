@@ -264,24 +264,74 @@ The JWT payload will always contain:
    - JWT payload.id = Customer.id (Customer is the top-level user)
    - Database query: `where: { id: payload.id }`
 
-## Output Format  
+## Output Format (Function Calling Interface)
 
-You must provide your response in a structured JSON format containing the following nested structure:  
+You must return a structured output following the `IAutoBeRealizeAuthorizationApplication.IProps` interface:
 
-**provider**: An object containing the authentication Provider function configuration  
+### TypeScript Interface
 
-- **name**: The name of the authentication Provider function in `{Role.name(PascalCase)}Authorize` format (e.g., adminAuthorize, userAuthorize). This function verifies JWT tokens and returns user information for the specified role.  
-- **content**: Complete TypeScript code for the authentication Provider function only. Must include JWT verification, role checking, database query logic with proper top-level user ID handling, and proper import statements for the Payload interface.
+```typescript
+export namespace IAutoBeRealizeAuthorizationApplication {
+  export interface IProps {
+    provider: IProvider;   // Authentication Provider function configuration
+    decorator: IDecorator; // Authentication Decorator configuration  
+    payload: IPayloadType; // Authentication Payload Type configuration
+  }
 
-**decorator**: An object containing the authentication Decorator configuration  
+  export interface IProvider {
+    name: string & CamelPattern;  // Provider function name in camelCase (e.g., adminAuthorize, userAuthorize)
+    content: string;              // Complete TypeScript code for the Provider function
+  }
 
-- **name**: The name of the Decorator to be generated in `{Role.name(PascalCase)}Auth` format (e.g., AdminAuth, UserAuth). The decorator name used in Controller method parameters.  
+  export interface IDecorator {
+    name: string & PascalPattern; // Decorator name in PascalCase (e.g., AdminAuth, UserAuth)
+    content: string;              // Complete TypeScript code for the Decorator
+  }
+
+  export interface IPayloadType {
+    name: string & PascalPattern; // Payload type name in PascalCase (e.g., AdminPayload, UserPayload)
+    content: string;              // Complete TypeScript code for the Payload interface
+  }
+}
+```
+
+### Field Descriptions
+
+#### provider
+Authentication Provider function configuration containing:
+- **name**: The name of the authentication Provider function in `{role}Authorize` format (e.g., `adminAuthorize`, `userAuthorize`). Must follow camelCase naming convention. This function verifies JWT tokens and returns user information for the specified role.
+- **content**: Complete TypeScript code for the authentication Provider function. Must include JWT verification, role checking, database query logic with proper top-level user ID handling, and proper import statements for the Payload interface.
+
+#### decorator  
+Authentication Decorator configuration containing:
+- **name**: The name of the Decorator in `{Role}Auth` format (e.g., `AdminAuth`, `UserAuth`). Must follow PascalCase naming convention. The decorator name used in Controller method parameters.
 - **content**: Complete TypeScript code for the Decorator. Must include complete authentication decorator implementation using SwaggerCustomizer, createParamDecorator, and Singleton pattern.
 
-**payload**: An object containing the Payload Type configuration
-
-- **name**: The name of the Payload Type in `{Role.name(PascalCase)}Payload` format (e.g., AdminPayload, UserPayload). Used as the TypeScript type for the authenticated user data.
+#### payload
+Authentication Payload Type configuration containing:
+- **name**: The name of the Payload Type in `{Role}Payload` format (e.g., `AdminPayload`, `UserPayload`). Must follow PascalCase naming convention. Used as the TypeScript type for the authenticated user data.
 - **content**: Complete TypeScript code for the Payload type interface. Must include proper field definitions with typia tags for type safety.
+
+### Output Method
+
+You MUST call the `createDecorator()` function with your structured output:
+
+```typescript
+createDecorator({
+  provider: {
+    name: "adminAuthorize",        // camelCase
+    content: "// Provider code..." // Complete implementation
+  },
+  decorator: {
+    name: "AdminAuth",              // PascalCase
+    content: "// Decorator code..." // Complete implementation
+  },
+  payload: {
+    name: "AdminPayload",           // PascalCase
+    content: "// Interface code..." // Complete implementation
+  }
+});
+```
 
 ## Work Process  
 

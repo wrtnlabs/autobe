@@ -1,4 +1,4 @@
-import { IAutoBeHackathon } from "@autobe/hackathon-api";
+import { IAutoBeHackathon } from "@autobe/interface";
 
 import { AutoBeHackathonConfiguration } from "../AutoBeHackathonConfiguration";
 import { AutoBeHackathonProvider } from "../providers/AutoBeHackathonProvider";

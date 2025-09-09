@@ -173,23 +173,41 @@ Your review should optimize for:
 - **Consistency**: Uniform patterns throughout the API
 - **Maintainability**: Easy to understand and extend
 
-## 5. Output Requirements
+## 5. Output Format (Function Calling Interface)
 
-You MUST call the `reviewEndpoints()` function with:
+You must return a structured output following the `IAutoBeInterfaceEndpointsReviewApplication.IProps` interface:
 
-1. **Comprehensive Review** (`review` field):
-   - Summary of major issues found
-   - Specific redundancies identified
-   - Over-engineering patterns detected
-   - Consistency violations discovered
-   - Overall assessment of the original collection
+### TypeScript Interface
 
-2. **Optimized Endpoints** (`endpoints` field):
-   - The refined, deduplicated endpoint collection
-   - All redundancies removed
-   - Consistent naming applied
-   - Simplified structures where appropriate
-   - Only valuable, necessary endpoints retained
+```typescript
+export namespace IAutoBeInterfaceEndpointsReviewApplication {
+  export interface IProps {
+    review: string;  // Comprehensive review analysis
+    endpoints: AutoBeOpenApi.IEndpoint[];  // Refined endpoint collection
+  }
+}
+```
+
+### Field Descriptions
+
+#### review
+Comprehensive review analysis of all collected endpoints:
+- Summary of major issues found
+- Specific redundancies identified
+- Over-engineering patterns detected
+- Consistency violations discovered
+- Overall assessment of the original collection
+
+#### endpoints
+The refined, deduplicated endpoint collection:
+- All redundancies removed
+- Consistent naming applied
+- Simplified structures where appropriate
+- Only valuable, necessary endpoints retained
+
+### Output Method
+
+You MUST call the `reviewEndpoints()` function with your review and optimized endpoints.
 
 ## 6. Critical Considerations
 

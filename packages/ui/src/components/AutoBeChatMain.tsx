@@ -18,6 +18,7 @@ import AutoBeEventGroupMovie from "./events/AutoBeEventGroupMovie";
 
 export interface IAutoBeChatMainProps {
   isUnusedConfig?: boolean;
+  isReplay?: boolean;
   isMobile: boolean;
   setError: (error: Error) => void;
   className?: string;
@@ -119,14 +120,20 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
 
   // Auto-connect if there are existing conversations and config is ready
   useEffect(() => {
+    if (props.isReplay === true) {
+      conversate([]);
+      return;
+    }
+
     if (
       eventGroups.length > 0 &&
       hasRequiredConfig() &&
       connectionStatus === "disconnected"
     ) {
       conversate([]);
+      return;
     }
-  }, [eventGroups.length, connectionStatus]);
+  }, [connectionStatus, eventGroups.length]);
 
   return (
     <OverlayProvider>

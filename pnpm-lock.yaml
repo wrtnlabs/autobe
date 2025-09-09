@@ -142,15 +142,9 @@ importers:
       rollup:
         specifier: ^4.40.1
         version: 4.49.0
-      ts-patch:
-        specifier: catalog:typescript
-        version: 3.3.0
       typescript:
         specifier: catalog:typescript
         version: 5.9.2
-      typescript-transform-paths:
-        specifier: ^3.5.5
-        version: 3.5.5(typescript@5.9.2)
 
   apps/hackathon-server:
     dependencies:
@@ -163,9 +157,6 @@ importers:
       '@autobe/filesystem':
         specifier: workspace:^
         version: link:../../packages/filesystem
-      '@autobe/hackathon-api':
-        specifier: workspace:^
-        version: link:../hackathon-api
       '@autobe/interface':
         specifier: workspace:^
         version: link:../../packages/interface
@@ -230,9 +221,15 @@ importers:
         specifier: ^11.1.0
         version: 11.1.0
     devDependencies:
+      '@autobe/hackathon-api':
+        specifier: workspace:^
+        version: link:../hackathon-api
       '@types/express':
         specifier: ^5.0.3
         version: 5.0.3
+      '@types/inquirer':
+        specifier: 8.2.5
+        version: 8.2.5
       '@types/jsonwebtoken':
         specifier: ^9.0.10
         version: 9.0.10
@@ -242,9 +239,18 @@ importers:
       '@types/uuid':
         specifier: ^10.0.0
         version: 10.0.0
+      chalk:
+        specifier: 4.1.2
+        version: 4.1.2
+      commander:
+        specifier: ^14.0.0
+        version: 14.0.0
+      inquirer:
+        specifier: 8.2.5
+        version: 8.2.5
       nestia:
         specifier: catalog:samchon
-        version: 8.0.7(@types/node@24.3.1)
+        version: 8.0.7
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
@@ -257,6 +263,9 @@ importers:
       typescript:
         specifier: catalog:typescript
         version: 5.9.2
+      typescript-transform-paths:
+        specifier: ^3.5.5
+        version: 3.5.5(typescript@5.9.2)
 
   apps/hackathon-ui:
     dependencies:
@@ -406,7 +415,7 @@ importers:
         version: 8.0.7(@nestia/core@8.0.7(@nestia/fetcher@8.0.7)(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6)(@samchon/openapi@4.7.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@9.7.2(@types/node@24.3.1)(typescript@5.9.2)))(@types/node@24.3.1)(typescript@5.9.2)
       nestia:
         specifier: catalog:samchon
-        version: 8.0.7(@types/node@24.3.1)
+        version: 8.0.7
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
@@ -3058,6 +3067,9 @@ packages:
   '@types/http-errors@2.0.5':
     resolution: {integrity: sha512-r8Tayk8HJnX0FztbZN7oVqGccWgw98T/0neJphO91KkmOzug1KkofZURD4UaD5uH8AqcFLfdPErnBod0u71/qg==}
 
+  '@types/inquirer@8.2.5':
+    resolution: {integrity: sha512-QXlzybid60YtAwfgG3cpykptRYUx2KomzNutMlWsQC64J/WG/gQSl+P4w7A21sGN0VIxRVava4rgnT7FQmFCdg==}
+
   '@types/istanbul-lib-coverage@2.0.6':
     resolution: {integrity: sha512-2QF/t/auWm0lsy8XtKVPG19v3sSOQlJe/YHZgfjb/KBBHOGSV+J2q/S671rcq9uTBrLAXmZpqJiaQbMT+zNU1w==}
 
@@ -3149,6 +3161,9 @@ packages:
 
   '@types/serve-static@1.15.8':
     resolution: {integrity: sha512-roei0UY3LhpOJvjbIP6ZZFngyLKl5dskOtDhxY5THRSpO+ZI+nzJ+m5yUMzGrp89YRa7lvknKkMYjqQFGwA7Sg==}
+
+  '@types/through@0.0.33':
+    resolution: {integrity: sha512-HsJ+z3QuETzP3cswwtzt2vEIiHBk/dCcHGhbmG5X3ecnwFD/lPrMpliGXxSCg03L9AhrdwA4Oz/qfspkDW+xGQ==}
 
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
@@ -3863,6 +3878,10 @@ packages:
   commander@13.1.0:
     resolution: {integrity: sha512-/rFeCpNJQbhSZjGVwO9RFV3xPqbnERS8MmIQzCtD/zl6gpJuV/bMLuN92oG3F7d8oDEHHRrujSXNUr8fpjntKw==}
     engines: {node: '>=18'}
+
+  commander@14.0.0:
+    resolution: {integrity: sha512-2uM9rYjPvyq39NwLRqaiLtWHyDC1FvryJDa2ATTVims5YAS4PupsEQsDvP14FqhFr0P49CYDugi59xaxJlTXRA==}
+    engines: {node: '>=20'}
 
   commander@2.20.3:
     resolution: {integrity: sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==}
@@ -9637,6 +9656,10 @@ snapshots:
 
   '@types/http-errors@2.0.5': {}
 
+  '@types/inquirer@8.2.5':
+    dependencies:
+      '@types/through': 0.0.33
+
   '@types/istanbul-lib-coverage@2.0.6': {}
 
   '@types/json-schema@7.0.15': {}
@@ -9728,6 +9751,10 @@ snapshots:
       '@types/http-errors': 2.0.5
       '@types/node': 22.18.0
       '@types/send': 0.17.5
+
+  '@types/through@0.0.33':
+    dependencies:
+      '@types/node': 22.18.0
 
   '@types/trusted-types@2.0.7':
     optional: true
@@ -10573,6 +10600,8 @@ snapshots:
   commander@12.1.0: {}
 
   commander@13.1.0: {}
+
+  commander@14.0.0: {}
 
   commander@2.20.3: {}
 
@@ -13018,14 +13047,12 @@ snapshots:
 
   neo-async@2.6.2: {}
 
-  nestia@8.0.7(@types/node@24.3.1):
+  nestia@8.0.7:
     dependencies:
       commander: 10.0.1
       comment-json: 4.2.5
-      inquirer: 8.2.7(@types/node@24.3.1)
+      inquirer: 8.2.5
       package-manager-detector: 0.2.11
-    transitivePeerDependencies:
-      - '@types/node'
 
   next-sitemap@4.2.3(next@15.5.2(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)):
     dependencies:

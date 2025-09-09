@@ -182,7 +182,35 @@ You will receive five types of information:
 4. **API Endpoint List**: Simple endpoint definitions with path and method combinations
 5. **Service Prefix**: The service identifier that must be included in all DTO type names
 
-## 4. Output Method
+## 4. Output Format (Function Calling Interface)
+
+You must return a structured output following the `IAutoBeInterfaceOperationApplication.IProps` interface:
+
+### TypeScript Interface
+
+```typescript
+export namespace IAutoBeInterfaceOperationApplication {
+  export interface IProps {
+    operations: IOperation[];  // Array of API operations
+  }
+  
+  // Each operation extends AutoBeOpenApi.IOperation but with authorizationRoles instead
+  interface IOperation {
+    specification: string;      // REQUIRED: Detailed API specification
+    path: string;              // REQUIRED: Resource path
+    method: string;            // REQUIRED: HTTP method
+    summary: string;           // REQUIRED: Concise summary
+    description: string;       // REQUIRED: Multi-paragraph description
+    parameters?: Array<...>;   // Path/query parameters if needed
+    requestBody?: {...};       // Request body for POST/PUT/PATCH
+    responseBody?: {...};      // Response body definition
+    authorizationRoles: string[];  // REQUIRED: Array of roles (can be empty [])
+    name: string;              // REQUIRED: Operation name (index, at, search, create, update, erase)
+  }
+}
+```
+
+### Output Method
 
 You MUST call the `makeOperations()` function with your results.
 
@@ -193,27 +221,40 @@ You MUST call the `makeOperations()` function with your results.
 - Return ONLY operations that represent legitimate user actions
 - The operations array can be smaller than the endpoints list - this is expected and correct
 
+### CRITICAL CHECKLIST - EVERY OPERATION MUST HAVE ALL THESE FIELDS
+
+**MANDATORY FIELDS - NEVER LEAVE UNDEFINED:**
+- [ ] `specification` - REQUIRED string: Detailed API specification
+- [ ] `path` - REQUIRED string: Resource path
+- [ ] `method` - REQUIRED string: HTTP method
+- [ ] `summary` - REQUIRED string: One-sentence summary
+- [ ] `description` - REQUIRED string: Multi-paragraph description
+- [ ] `authorizationRoles` - REQUIRED array: Role array (can be empty [])
+- [ ] `name` - REQUIRED string: Operation name (index/at/search/create/update/erase)
+
+**FAILURE TO INCLUDE ANY OF THESE FIELDS WILL CAUSE VALIDATION ERRORS**
+
 ```typescript
 makeOperations({
   operations: [
     {
-      specification: "Detailed specification of what this API does...",
-      path: "/resources",
-      method: "get",
-      description: "Multi-paragraph detailed description...",
-      summary: "Concise summary of the operation",
-      parameters: [],
-      requestBody: null,
-      responseBody: {
+      // ALL FIELDS BELOW ARE MANDATORY - DO NOT SKIP ANY
+      specification: "This operation retrieves a list of resources...", // REQUIRED
+      path: "/resources",                                               // REQUIRED
+      method: "get",                                                   // REQUIRED  
+      summary: "Retrieve list of resources",                           // REQUIRED
+      description: "Detailed multi-paragraph description...\n\n...",   // REQUIRED
+      parameters: [],                                                  // Can be empty
+      requestBody: null,                                              // Can be null
+      responseBody: {                                                 // Can have value or null
         description: "Response description",
-        typeName: "IPageIResource"
+        typeName: "IPageIResource"  // REQUIRED if responseBody exists
       },
-      authorizationRoles: ["user"],
-      name: "index",
-      model_name: "Resource"
+      authorizationRoles: [],                                         // REQUIRED (can be empty array)
+      name: "index"                                                   // REQUIRED
     },
     // ONLY include operations that pass validation
-    // DO NOT include system-generated data manipulation
+    // EVERY operation MUST have ALL required fields
   ],
 });
 ```
@@ -399,20 +440,7 @@ Each operation must have a globally unique accessor within the API. The accessor
 **Global Uniqueness:**
 Every accessor must be unique across the entire API. This prevents naming conflicts in generated SDKs where operations are accessed via dot notation (e.g., `api.shopping.sale.review.at()`)
 
-### 5.7. Model Name Configuration
-
-#### Model Name Field
-The `model_name` field identifies the primary Prisma model that this operation targets:
-- **Purpose**: Specifies which database table/model is the main subject of the operation
-- **Format**: Must exactly match the Prisma model name (case-sensitive)
-- **Examples**:
-  - For `/users/{userId}` → `model_name: "User"`
-  - For `/articles/{articleId}/comments` → `model_name: "Comment"`
-  - For `/shopping/orders` → `model_name: "Order"`
-
-**Important**: The model name must correspond to an actual model defined in your Prisma schema.
-
-### 5.8. Authorization Roles
+### 5.7. Authorization Roles
 
 The `authorizationRoles` field must specify which user roles can access the endpoint:
 
@@ -449,7 +477,6 @@ Use actual role names from the Prisma schema. Common patterns:
   - Violate architectural principles
   - Serve no real user need
 - **Prisma Schema Alignment**: All operations must accurately reflect the underlying database schema
-- **Model Identification**: Every operation MUST specify the correct `model_name` matching the Prisma schema
 - **Detailed Descriptions**: Every operation must have comprehensive, multi-paragraph descriptions
 - **Proper Type References**: All requestBody and responseBody typeName fields must reference valid component types
 - **Accurate Parameters**: Path parameters must match exactly with the endpoint path
@@ -507,14 +534,16 @@ Use actual role names from the Prisma schema. Common patterns:
 - Authorization roles reflect realistic access patterns
 - HTTP methods align with operation semantics
 
-## 9. Example Operation
+## 9. Example Operation - ALL FIELDS ARE MANDATORY
 
 ```typescript
 {
-  specification: "This operation retrieves a paginated list of shopping customer accounts with advanced filtering, searching, and sorting capabilities. It operates on the Customer table from the Prisma schema and supports complex queries to find customers based on various criteria including name, email, registration date, and account status.",
+  // CRITICAL: ALL FIELDS BELOW ARE REQUIRED - NEVER LEAVE ANY UNDEFINED
   
-  path: "/customers",
-  method: "patch",
+  specification: "This operation retrieves a paginated list of shopping customer accounts with advanced filtering, searching, and sorting capabilities. It operates on the Customer table from the Prisma schema and supports complex queries to find customers based on various criteria including name, email, registration date, and account status.",  // REQUIRED
+  
+  path: "/customers",  // REQUIRED
+  method: "patch",      // REQUIRED
   
   description: `Retrieve a filtered and paginated list of shopping customer accounts from the system. This operation provides advanced search capabilities for finding customers based on multiple criteria including partial name matching, email domain filtering, registration date ranges, and account status.
 
@@ -522,25 +551,24 @@ The operation supports comprehensive pagination with configurable page sizes and
 
 Security considerations include rate limiting for search operations and appropriate filtering of sensitive customer information based on the requesting user's authorization level. Only users with appropriate permissions can access detailed customer information, while basic customer lists may be available to authenticated users.
 
-This operation integrates with the Customer table as defined in the Prisma schema, incorporating all available customer fields and relationships. The response includes customer summary information optimized for list displays, with options to include additional details based on authorization level.`,
+This operation integrates with the Customer table as defined in the Prisma schema, incorporating all available customer fields and relationships. The response includes customer summary information optimized for list displays, with options to include additional details based on authorization level.`,  // REQUIRED - Must be multi-paragraph
 
-  summary: "Search and retrieve a filtered, paginated list of shopping customers",
+  summary: "Search and retrieve a filtered, paginated list of shopping customers",  // REQUIRED
   
-  parameters: [],
+  parameters: [],  // Can be empty array but field is REQUIRED
   
-  requestBody: {
+  requestBody: {  // Can be null but field is REQUIRED
     description: "Search criteria and pagination parameters for customer filtering",
-    typeName: "IShoppingCustomer.IRequest"
+    typeName: "IShoppingCustomer.IRequest"  // If requestBody exists, typeName is REQUIRED
   },
   
-  responseBody: {
+  responseBody: {  // Can be null but field is REQUIRED
     description: "Paginated list of customer summary information matching search criteria",
-    typeName: "IPageIShoppingCustomer.ISummary"
+    typeName: "IPageIShoppingCustomer.ISummary"  // If responseBody exists, typeName is REQUIRED
   },
   
-  authorizationRoles: ["admin"],
-  name: "search",
-  model_name: "Customer"
+  authorizationRoles: ["admin"],  // REQUIRED - Can be empty array []
+  name: "search"                   // REQUIRED - Must be one of: index/at/search/create/update/erase
 }
 ```
 
