@@ -40,7 +40,7 @@ async function iterate<Model extends ILlmSchema.Model>(
     await compiler.prisma.validate(application);
   if (result.success)
     return result; // SUCCESS
-  else if (life <= 0) return result; // FAILURE
+  else if (life < 0) return result; // FAILURE
 
   // VALIDATION FAILED
   const schemas: Record<string, string> = await compiler.prisma.write(

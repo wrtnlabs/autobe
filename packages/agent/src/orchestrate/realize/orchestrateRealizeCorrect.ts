@@ -29,7 +29,7 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
   functions: AutoBeRealizeFunction[],
   failures: IAutoBeRealizeFunctionFailure[],
   progress: IProgress,
-  life: number = 5,
+  life: number = ctx.retry,
 ): Promise<AutoBeRealizeValidateEvent> {
   const event = await compileRealizeFiles(ctx, { authorizations, functions });
   if (event.result.type === "failure") ctx.dispatch(event);
@@ -37,7 +37,7 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
   if (event.result.type === "success") {
     console.debug("compilation success!");
     return event;
-  } else if (--life <= 0) return event;
+  } else if (life < 0) return event;
 
   const locations: string[] =
     (event.result.type === "failure"
@@ -103,7 +103,7 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
     functions,
     failures,
     progress,
-    life,
+    life - 1,
   );
 }
 
