@@ -31,10 +31,11 @@
     "access": "public"
   },
   "dependencies": {
-    "@autobe/interface": "workspace:^",
     "@autobe/hackathon-api": "workspace:^",
+    "@autobe/interface": "workspace:^",
     "@autobe/ui": "workspace:^",
     "@mui/icons-material": "^7.1.0",
+    "@mui/material": "^7.1.0",
     "@samchon/openapi": "catalog:samchon",
     "react": "catalog:ui",
     "react-dom": "catalog:ui",
