@@ -4,7 +4,6 @@ import {
   IAutoBeConfig,
   getAutoBeAgentSession,
 } from "@autobe/ui";
-import { ILlmSchema } from "@samchon/openapi";
 import { useRef } from "react";
 
 import { AutoBePlaygroundChatMovie } from "./AutoBePlaygroundChatMovie";
@@ -25,31 +24,40 @@ export function AutoBePlaygroundApplication() {
 
   // Playground service factory
   const serviceFactory = async (config: IAutoBeConfig) => {
-    const autoBeListener: AutoBeListener = new AutoBeListener();
-    console.log("config", config);
-    const wrapper = await getAutoBeAgentSession({
-      storageStrategy: new AutoBeAgentSessionStorageStrategy(),
-      listener: autoBeListener,
-      connect: () =>
-        hApi.autobe.hackathon.participants.sessions
-          .start(
-            {
-              host: import.meta.env.VITE_API_BASE_URL,
-              headers: {
-                Authorization: `Bearer ${token.token.access}`,
-                model: config.aiModel,
-                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-              },
+    const listener = new AutoBeListener();
+    const service = await (() => {
+      if (config.sessionId != null && typeof config.sessionId === "string") {
+        return hApi.autobe.hackathon.participants.sessions.restart(
+          {
+            host: import.meta.env.VITE_API_BASE_URL,
+            headers: {
+              Authorization: `Bearer ${token.token.access}`,
+              model: config.aiModel,
+              timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
             },
-            HACKATHON_CODE,
-            autoBeListener.getListener(),
-          )
-          .then((v) => v.driver),
-    });
+          },
+          HACKATHON_CODE,
+          config.sessionId,
+          listener.getListener(),
+        );
+      }
 
+      return hApi.autobe.hackathon.participants.sessions.start(
+        {
+          host: import.meta.env.VITE_API_BASE_URL,
+          headers: {
+            Authorization: `Bearer ${token.token.access}`,
+            model: config.aiModel,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          },
+        },
+        HACKATHON_CODE,
+        listener.getListener(),
+      );
+    })().then((v) => v.driver);
     return {
-      service: wrapper.service,
-      listener: wrapper.listener,
+      service,
+      listener,
       uploadConfig: {
         supportAudio: config.supportAudioEnable ?? false,
       },

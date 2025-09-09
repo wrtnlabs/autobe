@@ -89,7 +89,7 @@ export const getAutoBeAgentSession = async <T extends Record<string, unknown>>(
   const service = await props.connect();
   const id = props.sessionId ?? globalThis.crypto.randomUUID();
   const url = new URL(window.location.href);
-  url.searchParams.set("sessionId", id);
+  url.searchParams.set("session-id", id);
   window.history.pushState({}, "", url);
 
   props.listener.on(async (events) => {

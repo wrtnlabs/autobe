@@ -1,4 +1,4 @@
-import hApi, { IAutoBeHackathonSession } from "@autobe/hackathon-api";
+import hApi, { IAutoBeHackathonSession, IPage } from "@autobe/hackathon-api";
 import {
   IAutoBeAgentSession,
   IAutoBeAgentSessionStorageStrategy,
@@ -50,7 +50,7 @@ export class AutoBeAgentSessionStorageStrategy
     const { getToken } = useAuthorizationToken();
     const token = getToken();
 
-    const result: IAutoBeHackathonSession[] =
+    const result: IPage<IAutoBeHackathonSession.ISummary> =
       await hApi.autobe.hackathon.participants.sessions.index(
         {
           host: import.meta.env.VITE_API_BASE_URL,
@@ -65,18 +65,14 @@ export class AutoBeAgentSessionStorageStrategy
         },
       );
 
-    console.error("result", result);
-    return result.map((session) => ({
+    return result.data.map((session) => ({
       id: session.id,
-      title: session.participant.name,
-      history: session.histories,
+      title: session.id.split("-").slice(1, 5).join("-"),
+      history: [],
       tokenUsage: session.token_usage,
       createdAt: new Date(session.created_at),
       updatedAt: new Date(session.completed_at ?? session.created_at),
-      events: session.event_snapshots.map((event) => ({
-        type: event.event.type,
-        events: [event.event],
-      })),
+      events: [],
     }));
   }
   deleteSession(): Promise<void> {

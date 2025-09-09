@@ -101,24 +101,12 @@ export function AutoBeAgentProvider({
         setConnectionStatus("connecting");
 
         // Create new service instance
-        const newServiceData = await serviceFactory(config);
+        const newServiceData = await serviceFactory({
+          ...config,
+          sessionId: activeConversationId,
+        });
         setServiceInstance(newServiceData);
         setConnectionStatus("connected");
-
-        // Set up event listeners
-        newServiceData.listener.on(async (e) => {
-          newServiceData.service
-            .getTokenUsage()
-            .then(setTokenUsage)
-            .catch(() => {});
-          setEventGroups(e);
-        });
-
-        // Get initial token usage
-        newServiceData.service
-          .getTokenUsage()
-          .then(setTokenUsage)
-          .catch(() => {});
 
         return newServiceData;
       } catch (error) {
@@ -160,18 +148,56 @@ export function AutoBeAgentProvider({
   }, [activeConversationId]);
 
   useEffect(() => {
-    serviceInstance?.listener.on(async (e) => {
-      serviceInstance?.service
+    if (serviceInstance === null) {
+      return;
+    }
+
+    serviceInstance.listener.on(async (e) => {
+      serviceInstance.service
         .getTokenUsage()
         .then(setTokenUsage)
         .catch(() => {});
       setEventGroups(e);
     });
-    serviceInstance?.service
+
+    serviceInstance.service
       .getTokenUsage()
       .then(setTokenUsage)
       .catch(() => {});
   }, [serviceInstance]);
+
+  useEffect(() => {
+    if (activeConversationId === null || serviceInstance === null) {
+      return;
+    }
+
+    const originConversate = serviceInstance.service.conversate;
+    serviceInstance.service.conversate = async (content) => {
+      const result = await originConversate(content);
+      await storageStrategy.appendHistory({
+        id: activeConversationId,
+        history: result,
+      });
+      return result;
+    };
+
+    const registerEvent = async (e: IAutoBeEventGroup[]) => {
+      await storageStrategy.appendEvent({
+        id: activeConversationId,
+        events: e,
+      });
+      await storageStrategy.setTokenUsage({
+        id: activeConversationId,
+        tokenUsage: await serviceInstance.service.getTokenUsage(),
+      });
+    };
+
+    serviceInstance.listener.on(registerEvent);
+    return () => {
+      serviceInstance.service.conversate = originConversate;
+      serviceInstance.listener.off(registerEvent);
+    };
+  }, [activeConversationId, serviceInstance]);
 
   return (
     <AutoBeAgentContext.Provider

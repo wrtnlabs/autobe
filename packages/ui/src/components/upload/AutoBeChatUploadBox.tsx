@@ -11,7 +11,9 @@ import {
   AutoBeFileUploadBox,
   AutoBeVoiceRecoderButton,
 } from ".";
+import { useAutoBeAgent } from "../../context/AutoBeAgentContext";
 import { useMediaQuery } from "../../hooks/useMediaQuery";
+import { IAutoBeEventGroup } from "../../structure";
 import { AutoBeFileUploader } from "../../utils";
 
 export interface IAutoBeBucket {
@@ -29,6 +31,7 @@ export interface IAutoBeChatUploadConfig {
 }
 
 export const AutoBeChatUploadBox = (props: AutoBeChatUploadBox.IProps) => {
+  const { listener } = useAutoBeAgent();
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -43,6 +46,17 @@ export const AutoBeChatUploadBox = (props: AutoBeChatUploadBox.IProps) => {
   const removeFile = (index: number) => {
     setBuckets(buckets.filter((_, i) => i !== index));
   };
+
+  useEffect(() => {
+    function trackEnable(value: boolean) {
+      setEnabled(value);
+      return Promise.resolve();
+    }
+    listener?.onEnable(trackEnable);
+    return () => {
+      listener?.offEnable(trackEnable);
+    };
+  }, [listener]);
 
   const conversate = async () => {
     if (enabled === false) return;
@@ -60,7 +74,6 @@ export const AutoBeChatUploadBox = (props: AutoBeChatUploadBox.IProps) => {
       ...buckets.map(({ content }) => content),
     ] as AutoBeUserMessageContent[];
 
-    setEnabled(false);
     setEmptyText(false);
     setText("");
     setBuckets([]);
@@ -72,7 +85,6 @@ export const AutoBeChatUploadBox = (props: AutoBeChatUploadBox.IProps) => {
         error instanceof Error ? error : new Error("Unknown error"),
       );
     }
-    setEnabled(true);
   };
 
   const handleFileSelect = async (fileList: FileList | null) => {
