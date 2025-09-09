@@ -11,6 +11,7 @@ export const completeTestCode = async <Model extends ILlmSchema.Model>(
   artifacts: IAutoBeTestScenarioArtifacts,
   code: string,
   think?: IAutoBeTestCorrectApplication.IThinkProps,
+  revise?: IAutoBeTestCorrectApplication.IReviseProps,
 ): Promise<string> => {
   const compiler = await ctx.compiler();
   code = await compiler.typescript.beautify(code);
@@ -23,13 +24,49 @@ export const completeTestCode = async <Model extends ILlmSchema.Model>(
   return await compiler.typescript.beautify(StringUtil.trim`
     ${getTestImportStatements(artifacts.document)}
     
-    ${code}${
-      think
-        ? `\n\n${JSON.stringify(think, null, 2)
-            .split("\n")
-            .map((s) => `// ${s}`)
-            .join("\n")}`
-        : ""
-    }
+    ${code}${think ? "\n\n" + getThinking(think) : ""}${revise ? "\n\n" + getRevise(revise) : ""}
   `);
+};
+
+const getThinking = (think: IAutoBeTestCorrectApplication.IThinkProps) => {
+  return StringUtil.trim`
+    /**
+    ${think.overall
+      .split("\n")
+      .map((s) => ` * ${s}`)
+      .join("\n")}
+     * 
+    ${think.analyses.map((a) =>
+      [a.diagnostic, a.analysis, a.solution]
+        .map(
+          (s) =>
+            ` * - ${s
+              .split("\n")
+              .map((l) => ` *   ${l}`)
+              .join("\n")}`,
+        )
+        .join("\n"),
+    )}
+     */
+    const __thinking = {};
+    __thinking;
+  `;
+};
+
+const getRevise = (revise: IAutoBeTestCorrectApplication.IReviseProps) => {
+  return StringUtil.trim`
+    /**
+    ${revise.review
+      .split("\n")
+      .map((s) => ` * ${s}`)
+      .join("\n")}
+
+     * - Rules
+    ${revise.rules.map((r) => ` *   - ${r.state ? "O" : "X"} ${r.title}`).join("\n")}
+     * - Check List
+    ${revise.checkList.map((c) => ` *   - ${c.state ? "O" : "X"} ${c.title}`).join("\n")}
+     */
+    const __revise = {};
+    __revise;
+  `;
 };

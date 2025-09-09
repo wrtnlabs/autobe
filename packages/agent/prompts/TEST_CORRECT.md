@@ -44,20 +44,29 @@ For EACH compilation diagnostic, create an object with:
 
 2. **analysis**: Root cause analysis of THIS SPECIFIC diagnostic
    - **READ the error message METICULOUSLY** - extract exact information
+   - **🚨 FIRST CHECK: Is this caused by INTENTIONAL TYPE ERROR TESTING? 🚨**
+     - Look for `as any` usage in the error location
+     - Check if code is intentionally sending wrong types
+     - Check if code is testing missing required fields
+     - **IF YES → Root cause: "Prohibited type error testing code that must be DELETED"**
    - Identify the precise reason: missing property, type mismatch, nullable issue, etc.
    - Be fact-based and specific - no assumptions
    - **MANDATORY**: Thoroughly review ALL sections of TEST_CORRECT.md and apply relevant error patterns and analysis guidelines
    - Cross-reference error patterns in sections 4.1-4.16 for accurate diagnosis
    - Example: "Property 'code' is missing because object literal lacks this required field from ICreate interface"
+   - Example: "Type error caused by intentional wrong type test using 'as any' - prohibited pattern"
 
 3. **solution**: Targeted fix for THIS SPECIFIC diagnostic
-   - Provide actionable, type-safe solution
+   - **🚨 IF ROOT CAUSE IS TYPE ERROR TESTING → Solution: "DELETE entire test block" 🚨**
+   - **NEVER try to "fix" intentional type error tests - DELETE them**
+   - Provide actionable, type-safe solution for legitimate errors
    - **CRITICAL**: Must thoroughly review BOTH TEST_WRITE.md and TEST_CORRECT.md before proposing solutions
    - Ensure ALL prohibitions from TEST_WRITE.md are respected (no type bypasses, proper async/await, etc.)
    - Apply correction patterns from TEST_CORRECT.md sections 4.1-4.16
    - For nullable/undefined with typia tags → USE `typia.assert(value!)` IMMEDIATELY
    - For missing properties → specify WHAT to add and HOW
    - Example: "Add missing 'code' property using typia.random<string>()"
+   - Example: "DELETE this entire test - it's testing type errors with 'as any'"
 
 **REMEMBER**: Each diagnostic gets its own analysis object in the array!
 
@@ -127,33 +136,76 @@ Synthesize patterns across ALL errors and document:
 
 **🚨 STOP AND CHECK EACH PATTERN SYSTEMATICALLY 🚨**
 
-You MUST check your draft code for EACH of these common AI mistakes:
+**THREE TYPES OF REVISIONS: FIX, DELETE, AND ABANDON**
 
-1. **Missing await on API calls** - Search for EVERY `api.functional` and verify `await`
-2. **Wrong typia function** - Check EVERY `typia.assert` and `typia.assertGuard`:
-   - If assigning result → Must be `typia.assert`
-   - If no assignment → Must be `typia.assertGuard`
-3. **Missing `!` in typia calls** - EVERY `typia.assert(value)` should be `typia.assert(value!)`
-4. **Date type errors** - EVERY `string & Format<"date-time">` assignment needs `.toISOString()`
-5. **String to literal errors** - EVERY literal type assignment needs `typia.assert<LiteralType>(value)`
-6. **Nullable type checks** - EVERY `| null | undefined` needs BOTH `!== null && !== undefined`
-7. **TestValidator.error await** - If callback is `async` → MUST have `await TestValidator.error`
+**1. FIX** - Correct compilation errors and improve code:
+- **Missing await on API calls** - Search for EVERY `api.functional` and verify `await`
+- **Wrong typia function** - Check EVERY `typia.assert` and `typia.assertGuard`:
+  - If assigning result → Must be `typia.assert`
+  - If no assignment → Must be `typia.assertGuard`
+- **Missing `!` in typia calls** - EVERY `typia.assert(value)` should be `typia.assert(value!)`
+- **Date type errors** - EVERY `string & Format<"date-time">` assignment needs `.toISOString()`
+- **String to literal errors** - EVERY literal type assignment needs `typia.assert<LiteralType>(value)`
+- **Nullable type checks** - EVERY `| null | undefined` needs BOTH `!== null && !== undefined`
+- **TestValidator.error await** - If callback is `async` → MUST have `await TestValidator.error`
+
+**2. DELETE** - Remove prohibited or forbidden code entirely:
+- **🚨 TYPE ERROR TESTING - DELETE IMMEDIATELY 🚨**
+  - **DELETE** any code using `as any` to send wrong types
+  - **DELETE** any intentional type mismatches for "testing"
+  - **DELETE** any missing required fields testing
+  - **DELETE** tests that contradict compilation requirements
+- **DELETE** any test violating absolute prohibitions from TEST_WRITE.md
+- **DELETE** any test implementing forbidden scenarios
+- **DO NOT FIX THESE - DELETE THEM COMPLETELY**
+
+**3. ABANDON** - Remove unrecoverable code blocks:
+- **🔥 UNRECOVERABLE COMPILATION ERRORS - DELETE THE PROBLEMATIC CODE 🔥**
+- When compilation errors persist despite multiple fix attempts:
+  - API doesn't exist (e.g., calling non-existent endpoints)
+  - DTO structure fundamentally incompatible with test logic
+  - Circular dependency that cannot be resolved
+  - Type requirements impossible to satisfy
+- **DECISION CRITERIA:**
+  - If fixing requires violating type safety → ABANDON
+  - If fixing requires `as any` or `@ts-ignore` → ABANDON
+  - If error recurs after 2 fix attempts → ABANDON
+- **ACTION: DELETE the entire problematic test block or section**
+
+**Example of what to DELETE/ABANDON:**
+```typescript
+// FOUND: Type error testing - DELETE ENTIRE BLOCK
+await TestValidator.error("invalid type", async () => {
+  await api.functional.users.create(connection, {
+    body: { age: "not_a_number" as any }  // 🚨 DELETE
+  });
+});
+
+// FOUND: Unrecoverable API mismatch - ABANDON ENTIRE SECTION
+// API 'analytics' doesn't exist, cannot be fixed
+await api.functional.analytics.track(connection, {...}); // 🚨 ABANDON
+```
 
 **Document your findings:**
 ```
 ✓ Checked all API calls - found 3 missing awaits, FIXED
 ✓ Reviewed typia usage - found 2 wrong assert vs assertGuard, FIXED
+✗ Found type error test on line 89 - DELETED
+✗ Found unrecoverable API call to non-existent endpoint - ABANDONED
 ✓ Verified Date conversions - all using .toISOString()
-✗ Found string→literal error on line 45 - NEEDS FIX
 ```
 
-**🔴 IF YOU FIND ERRORS, YOU MUST FIX THEM IN revise.final 🔴**
+**🔴 ACTIONS IN revise.final: FIX what you can, DELETE what's forbidden, ABANDON what's unrecoverable 🔴**
 
-#### Property 3: **revise.final** - Production-Ready Corrected Code WITH ALL FIXES APPLIED
+#### Property 3: **revise.final** - Production-Ready Corrected Code WITH ALL FIXES AND DELETIONS APPLIED
 - Produce the final, polished version incorporating all review feedback
-- Ensure ALL compilation issues are resolved
+- **APPLY ALL FIXES** for correctable issues
+- **DELETE ALL PROHIBITED CODE** identified in review
+- **ABANDON UNRECOVERABLE SECTIONS** that cannot compile
+- Ensure remaining code has ZERO compilation issues
 - Maintain strict type safety without using any bypass mechanisms
 - Deliver production-ready test code that compiles successfully
+- **If review found code to DELETE/ABANDON, final MUST be different from draft**
 - This is the deliverable that will replace the compilation-failed code
 
 **IMPORTANT**: All steps must contain substantial content. Do not provide empty or minimal responses for any step. Each property should demonstrate thorough analysis and correction effort.
@@ -367,7 +419,7 @@ export namespace IAutoBeTypeScriptCompileResult {
 
 ## 3. Critical Error Analysis and Correction Strategy
 
-### 3.0. 🚨🚨🚨 ABSOLUTE PRIORITY: REMOVE ALL TYPE ERROR TESTING - ZERO TOLERANCE 🚨🚨🚨
+### 3.1. 🚨🚨🚨 ABSOLUTE PRIORITY: REMOVE ALL TYPE ERROR TESTING - ZERO TOLERANCE 🚨🚨🚨
 
 **THIS IS THE #1 CAUSE OF COMPILATION FAILURES - REMOVE IMMEDIATELY**
 
@@ -419,7 +471,7 @@ const body = {
 - Data consistency tests
 - ALL using CORRECT TypeScript types
 
-### 3.1. 🔍 CRITICAL: Precision Error Message Analysis
+### 3.2. 🔍 CRITICAL: Precision Error Message Analysis
 
 **🚨 MANDATORY: Analyze TypeScript compilation errors with surgical precision 🚨**
 
@@ -435,7 +487,7 @@ const body = {
 3. **Compare with your code** - Line by line, property by property
 4. **Apply fixes based on facts** - Not assumptions or patterns
 
-### 3.2. CRITICAL: Hallucination Prevention Protocol
+### 3.3. CRITICAL: Hallucination Prevention Protocol
 
 **🚨 DTO/API VERIFICATION PROTOCOL 🚨**
 
@@ -455,7 +507,7 @@ After analyzing error messages, you MUST:
    - **LOWEST**: Skip scenarios that require non-existent properties
    - **NEVER**: Add fake properties or use type bypasses
 
-### 3.3. Strict Correction Requirements
+### 3.4. Strict Correction Requirements
 
 **FORBIDDEN CORRECTION METHODS - NEVER USE THESE:**
 - Never use `any` type to bypass type checking
@@ -470,7 +522,7 @@ After analyzing error messages, you MUST:
 - Maintain strict type safety throughout
 - Follow all patterns from TEST_WRITE.md
 
-### 3.4. **🔥 CRITICAL: ABSOLUTE SCENARIO REWRITING AUTHORITY**
+### 3.5. **🔥 CRITICAL: ABSOLUTE SCENARIO REWRITING AUTHORITY**
 
 When ANY compilation error occurs due to scenario impossibility:
 

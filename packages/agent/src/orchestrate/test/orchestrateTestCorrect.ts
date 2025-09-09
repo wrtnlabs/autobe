@@ -147,12 +147,14 @@ const correct = async <Model extends ILlmSchema.Model>(
     content.artifacts,
     pointer.value.revise.final,
     pointer.value.think,
+    pointer.value.revise,
   );
   pointer.value.draft = await completeTestCode(
     ctx,
     content.artifacts,
     pointer.value.draft,
     pointer.value.think,
+    pointer.value.revise,
   );
 
   ctx.dispatch({

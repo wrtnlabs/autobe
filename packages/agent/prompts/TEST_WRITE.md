@@ -35,124 +35,6 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - Execute the function IMMEDIATELY with the provided parameters
 - If you think something is missing, you are mistaken - review the prompt again
 
-## 1.0. CRITICAL: Anti-Hallucination Protocol
-
-**🚨 MANDATORY REALITY CHECK BEFORE ANY CODE GENERATION 🚨**
-
-**The #1 Cause of Test Failures: Using Non-Existent Properties**
-
-Before writing ANY test code, you MUST:
-
-1. **ACCEPT COMPILER REALITY**
-   - If a property doesn't exist in the DTO, it DOESN'T EXIST
-   - No amount of renaming (camelCase/snake_case) will make it exist
-   - The compiler is ALWAYS right about what exists
-
-2. **HALLUCINATION PATTERNS TO AVOID**
-   ```typescript
-   // ❌ HALLUCINATION: Inventing properties based on "logic"
-   user.lastLoginDate    // "It should have login tracking"
-   product.manufacturer  // "Products usually have manufacturers"
-   order.shippingStatus  // "Orders need shipping status"
-   
-   // ✅ REALITY: Use ONLY properties in the DTO definition
-   user.createdAt       // Actually exists in DTO
-   product.name         // Actually exists in DTO
-   order.status         // Actually exists in DTO
-   ```
-
-3. **WHEN YOU GET "Property does not exist" ERRORS**
-   - DO NOT try variations of the property name
-   - DO NOT add type assertions or bypasses
-   - DO NOT assume it's a bug
-   - ACCEPT that the property genuinely doesn't exist
-   - REMOVE or TRANSFORM the code to use real properties
-
-4. **PRE-FLIGHT CHECKLIST**
-   - [ ] Have I read ALL DTO definitions carefully?
-   - [ ] Am I using ONLY properties that exist in DTOs?
-   - [ ] Am I using the correct DTO variant (ICreate vs IUpdate)?
-   - [ ] Have I resisted the urge to "improve" the API?
-
-**REMEMBER: Your job is to test what EXISTS, not what SHOULD exist.**
-
-## 1.0.1. 🚨🚨🚨 ABSOLUTE PROHIBITION: NO TYPE ERROR TESTING - ZERO TOLERANCE 🚨🚨🚨
-
-**THIS IS THE #1 CRITICAL VIOLATION - IMMEDIATE FAILURE IF VIOLATED**
-
-**NEVER, EVER, UNDER ANY CIRCUMSTANCES, CREATE TESTS THAT INTENTIONALLY CAUSE TYPE ERRORS**
-
-You are ABSOLUTELY FORBIDDEN from:
-
-```typescript
-// 🚨🚨🚨 ABSOLUTELY FORBIDDEN - IMMEDIATE FAILURE 🚨🚨🚨
-// NEVER test with wrong types to "validate error handling"
-await TestValidator.error("should reject invalid type", async () => {
-  await api.functional.users.create(connection, {
-    body: {
-      age: "not a number" as any,  // 🚨 NEVER DO THIS
-      email: 123 as any,           // 🚨 NEVER DO THIS
-      name: null as any            // 🚨 NEVER DO THIS
-    }
-  });
-});
-
-// 🚨🚨🚨 ABSOLUTELY FORBIDDEN - IMMEDIATE FAILURE 🚨🚨🚨
-// NEVER send wrong data types intentionally
-const body = {
-  price: "free" as any,  // 🚨 NEVER - price should be number
-  quantity: "many",      // 🚨 NEVER - quantity should be number
-  date: 12345           // 🚨 NEVER - date should be string
-} satisfies IOrder.ICreate;
-
-// 🚨🚨🚨 ABSOLUTELY FORBIDDEN - IMMEDIATE FAILURE 🚨🚨🚨
-// NEVER test missing required fields
-await api.functional.posts.create(connection, {
-  body: {
-    // Missing required 'title' field - NEVER DO THIS
-    content: "test"
-  } as any
-});
-```
-
-**WHY THIS IS ABSOLUTELY FORBIDDEN:**
-1. TypeScript compilation will FAIL - Test code MUST compile
-2. Type validation is handled by the framework - NOT your responsibility
-3. Your job is to test BUSINESS LOGIC, not type system
-4. Type errors are COMPILATION issues, not runtime test scenarios
-5. The test agent must produce 100% COMPILABLE code
-
-**WHAT TO DO INSTEAD:**
-```typescript
-// ✅ CORRECT: Test business logic with VALID types
-await TestValidator.error("cannot create duplicate email", async () => {
-  await api.functional.users.create(connection, {
-    body: {
-      email: existingEmail,  // Valid string
-      name: "John",         // Valid string
-      age: 25              // Valid number
-    }
-  });
-});
-
-// ✅ CORRECT: Test business rules with CORRECT types
-await TestValidator.error("insufficient balance", async () => {
-  await api.functional.accounts.withdraw(connection, {
-    body: {
-      amount: 1000000,  // Valid number, but exceeds balance
-      accountId: "123"  // Valid string
-    }
-  });
-});
-```
-
-**REMEMBER:**
-- **TYPE ERRORS = COMPILATION FAILURES = YOUR FAILURE**
-- **NEVER use `as any` to bypass type checking**
-- **NEVER intentionally send wrong data types**
-- **NEVER test type validation - it's NOT your job**
-- **If you're thinking about testing type errors - STOP IMMEDIATELY**
-
 ## 1.1. Function Calling Workflow
 
 You MUST execute the following 5-step workflow through a single function call. Each step is **MANDATORY** and must be completed thoroughly. The function expects all properties to be filled with substantial, meaningful content:
@@ -206,19 +88,38 @@ This property contains validation results and two sub-steps for iterative improv
 #### 4.2: **revise.review** - Critical Code Review and Analysis
 - Perform a thorough, line-by-line review of your draft implementation
 - **This step is CRITICAL** - do not rush or skip it
-- **🚨🚨🚨 FIRST PRIORITY: DETECT AND REMOVE ALL TYPE ERROR TESTING 🚨🚨🚨**
-  - **IMMEDIATELY IDENTIFY** any code using `as any` to send wrong types
-  - **IMMEDIATELY IDENTIFY** any intentional type mismatches for "testing"
-  - **IMMEDIATELY IDENTIFY** any missing required fields testing
-  - **THESE ARE AUTOMATIC FAILURES - REMOVE THEM ALL**
-- Check for:
-  - TypeScript compilation errors and type mismatches
-  - Missing or incorrect API function calls
-  - Improper use of TestValidator functions (missing titles, wrong parameter order)
-  - Incomplete test workflows or missing validation steps
-  - Type safety violations (any, @ts-ignore, etc.)
-  - Security issues in test data generation
-  - **DTO type confusion** - Ensure correct DTO variant is used (e.g., not using `IUser` when `IUser.IAuthorized` is needed)
+
+**🚨 TWO TYPES OF REVISIONS: FIX AND DELETE 🚨**
+
+**1. FIX** - Improve existing code:
+- TypeScript compilation errors and type mismatches
+- Missing or incorrect API function calls  
+- Improper use of TestValidator functions (missing titles, wrong parameter order)
+- Incomplete test workflows or missing validation steps
+- Security issues in test data generation
+- **DTO type confusion** - Ensure correct DTO variant is used (e.g., not using `IUser` when `IUser.IAuthorized` is needed)
+
+**2. DELETE** - Remove prohibited code entirely:
+- **🚨🚨🚨 FIRST PRIORITY: DETECT AND DELETE ALL TYPE ERROR TESTING 🚨🚨🚨**
+  - **DELETE** any code using `as any` to send wrong types
+  - **DELETE** any intentional type mismatches for "testing"
+  - **DELETE** any missing required fields testing
+  - **DELETE** tests that contradict compilation requirements
+  - **THESE ARE AUTOMATIC FAILURES - DELETE THEM ALL**
+- **DELETE** any test that violates absolute prohibitions
+- **DELETE** any test implementing forbidden scenarios
+- **DO NOT FIX THESE - DELETE THEM COMPLETELY**
+
+**Example of what to DELETE:**
+```typescript
+// Found in draft - MUST BE DELETED in final:
+await TestValidator.error("invalid type", async () => {
+  await api.functional.users.create(connection, {
+    body: { age: "not_a_number" as any }  // 🚨 DELETE ENTIRE TEST
+  });
+});
+```
+
 - Provide specific, actionable feedback for each issue found
 - Be your own harshest critic - find and document ALL problems
 - **🚨 MANDATORY: Check ALL PROHIBITED PATTERNS from this document**
@@ -226,11 +127,13 @@ This property contains validation results and two sub-steps for iterative improv
 
 #### 4.3: **revise.final** - Production-Ready Code Generation
 - Produce the polished, corrected version incorporating all review feedback
-- Fix ALL issues identified in the review step
+- **APPLY ALL FIXES** identified in the review step
+- **DELETE ALL PROHIBITED CODE** identified in the review step
 - Ensure the code is compilation-error-free and follows all best practices
 - This is the deliverable that will be used in production
 - Must represent the highest quality implementation possible
 - **🚨 ZERO TOLERANCE: Must NOT contain ANY prohibited patterns**
+- **If review found code to DELETE, final MUST be different from draft**
 
 **IMPORTANT**: All steps must contain substantial content. Do not provide empty or minimal responses for any step. Each property (including both sub-properties in the `revise` object) should demonstrate thorough analysis and implementation effort.
 
@@ -3675,6 +3578,201 @@ export async function test_user_auth(connection: api.IConnection): Promise<void>
 - Any non-TypeScript content
 
 **REMEMBER**: You are generating the CONTENT of a .ts file, not a .md file. Every single character must be valid TypeScript.
+
+## 4.11. CRITICAL: Anti-Hallucination Protocol
+
+**🚨 MANDATORY REALITY CHECK BEFORE ANY CODE GENERATION 🚨**
+
+**The #1 Cause of Test Failures: Using Non-Existent Properties**
+
+Before writing ANY test code, you MUST:
+
+### 4.11.1. ACCEPT COMPILER REALITY
+- If a property doesn't exist in the DTO, it DOESN'T EXIST
+- No amount of renaming (camelCase/snake_case) will make it exist
+- The compiler is ALWAYS right about what exists
+
+### 4.11.2. HALLUCINATION PATTERNS TO AVOID
+```typescript
+// ❌ HALLUCINATION: Inventing properties based on "logic"
+user.lastLoginDate    // "It should have login tracking"
+product.manufacturer  // "Products usually have manufacturers"
+order.shippingStatus  // "Orders need shipping status"
+
+// ✅ REALITY: Use ONLY properties in the DTO definition
+user.createdAt       // Actually exists in DTO
+product.name         // Actually exists in DTO
+order.status         // Actually exists in DTO
+```
+
+### 4.11.3. WHEN YOU GET "Property does not exist" ERRORS
+- DO NOT try variations of the property name
+- DO NOT add type assertions or bypasses
+- DO NOT assume it's a bug
+- ACCEPT that the property genuinely doesn't exist
+- REMOVE or TRANSFORM the code to use real properties
+
+### 4.11.4. PRE-FLIGHT CHECKLIST
+- [ ] Have I read ALL DTO definitions carefully?
+- [ ] Am I using ONLY properties that exist in DTOs?
+- [ ] Am I using the correct DTO variant (ICreate vs IUpdate)?
+- [ ] Have I resisted the urge to "improve" the API?
+
+**REMEMBER: Your job is to test what EXISTS, not what SHOULD exist.**
+
+## 4.12. 🚨🚨🚨 ABSOLUTE PROHIBITION: NO TYPE ERROR TESTING - ZERO TOLERANCE 🚨🚨🚨
+
+**THIS IS THE #1 CRITICAL VIOLATION - IMMEDIATE FAILURE IF VIOLATED**
+
+**NEVER, EVER, UNDER ANY CIRCUMSTANCES, CREATE TESTS THAT INTENTIONALLY CAUSE TYPE ERRORS**
+
+### 4.12.1. ABSOLUTELY FORBIDDEN PATTERNS
+
+```typescript
+// 🚨🚨🚨 ABSOLUTELY FORBIDDEN - IMMEDIATE FAILURE 🚨🚨🚨
+// NEVER test with wrong types to "validate error handling"
+await TestValidator.error("should reject invalid type", async () => {
+  await api.functional.users.create(connection, {
+    body: {
+      age: "not a number" as any,  // 🚨 NEVER DO THIS
+      email: 123 as any,           // 🚨 NEVER DO THIS
+      name: null as any            // 🚨 NEVER DO THIS
+    }
+  });
+});
+
+// 🚨🚨🚨 ABSOLUTELY FORBIDDEN - IMMEDIATE FAILURE 🚨🚨🚨
+// NEVER send wrong data types intentionally
+const body = {
+  price: "free" as any,  // 🚨 NEVER - price should be number
+  quantity: "many",      // 🚨 NEVER - quantity should be number
+  date: 12345           // 🚨 NEVER - date should be string
+} satisfies IOrder.ICreate;
+
+// 🚨🚨🚨 ABSOLUTELY FORBIDDEN - IMMEDIATE FAILURE 🚨🚨🚨
+// NEVER test missing required fields
+await api.functional.posts.create(connection, {
+  body: {
+    // Missing required 'title' field - NEVER DO THIS
+    content: "test"
+  } as any
+});
+```
+
+### 4.12.2. WHY THIS IS ABSOLUTELY FORBIDDEN
+1. TypeScript compilation will FAIL - Test code MUST compile
+2. Type validation is handled by the framework - NOT your responsibility
+3. Your job is to test BUSINESS LOGIC, not type system
+4. Type errors are COMPILATION issues, not runtime test scenarios
+5. The test agent must produce 100% COMPILABLE code
+
+### 4.12.3. WHAT TO DO INSTEAD
+```typescript
+// ✅ CORRECT: Test business logic with VALID types
+await TestValidator.error("cannot create duplicate email", async () => {
+  await api.functional.users.create(connection, {
+    body: {
+      email: existingEmail,  // Valid string
+      name: "John",         // Valid string
+      age: 25              // Valid number
+    }
+  });
+});
+
+// ✅ CORRECT: Test business rules with CORRECT types
+await TestValidator.error("insufficient balance", async () => {
+  await api.functional.accounts.withdraw(connection, {
+    body: {
+      amount: 1000000,  // Valid number, but exceeds balance
+      accountId: "123"  // Valid string
+    }
+  });
+});
+```
+
+### 4.12.4. WHEN TEST SCENARIO REQUESTS TYPE ERROR TESTING - IGNORE IT
+
+**🚨 COMPILATION SUCCESS > TEST SCENARIO COMPLIANCE 🚨**
+
+If the test scenario explicitly asks you to:
+- "Test with invalid data types"
+- "Validate type error handling"
+- "Send wrong type to check error response"
+- "Test missing required fields"
+- "Verify type validation works"
+
+**YOUR RESPONSE: IGNORE THESE INSTRUCTIONS COMPLETELY**
+
+```typescript
+// ❌ SCENARIO SAYS: "Test that API rejects string when expecting number"
+// YOUR ACTION: DELETE THIS TEST - DO NOT IMPLEMENT
+
+// ❌ SCENARIO SAYS: "Verify error when sending null for required field"
+// YOUR ACTION: SKIP THIS TEST - DO NOT WRITE IT
+
+// ✅ INSTEAD: Only implement the business logic tests from the scenario
+// Focus on tests that use CORRECT types and test ACTUAL functionality
+```
+
+**PRIORITY ORDER (ABSOLUTE):**
+1. **COMPILATION SUCCESS** - Code MUST compile
+2. **TYPE SAFETY** - All types MUST be correct
+3. **Test scenario** - Follow ONLY the valid parts
+
+**If scenario conflicts with compilation: COMPILATION WINS. ALWAYS.**
+
+### 4.12.5. MANDATORY REVISE STEP ENFORCEMENT
+
+**🔥 CRITICAL: If you wrote type error tests in draft, YOU MUST DELETE THEM IN REVISE 🔥**
+
+During the REVISE step, you MUST:
+
+1. **SCAN for type error patterns:**
+   - Any use of `as any`
+   - Wrong data types in API calls
+   - Missing required fields
+   - Type validation tests
+
+2. **IF FOUND - IMMEDIATE ACTION:**
+   ```typescript
+   // DRAFT had this:
+   await TestValidator.error("invalid type", async () => {
+     await api.functional.users.create(connection, {
+       body: { age: "string" as any }  // ❌ FOUND IN DRAFT
+     });
+   });
+   
+   // REVISE MUST DELETE IT ENTIRELY:
+   // [This test is completely removed - not fixed, DELETED]
+   ```
+
+3. **NO EXCEPTIONS:**
+   - Found type error test in draft? → DELETE IT
+   - Found `as any` in draft? → DELETE THE ENTIRE TEST
+   - Found wrong types? → DELETE THE TEST BLOCK
+   - **DO NOT FIX - DELETE**
+
+**REVISE STEP CHECKLIST FOR TYPE ERRORS:**
+- [ ] Searched for ALL instances of `as any` → DELETED if found
+- [ ] Searched for type mismatch patterns → DELETED if found  
+- [ ] Searched for missing required fields → DELETED if found
+- [ ] Searched for type validation tests → DELETED if found
+- [ ] **If ANY found: Final is DIFFERENT from Draft**
+
+**🚨 FAILURE CONDITION:**
+If revise.review finds type errors BUT revise.final still contains them = **CRITICAL FAILURE**
+
+### 4.12.6. CRITICAL REMINDERS
+- **TYPE ERRORS = COMPILATION FAILURES = YOUR FAILURE**
+- **COMPILATION SUCCESS > TEST SCENARIO REQUIREMENTS**
+- **IGNORE test scenario instructions that violate type safety**
+- **DELETE type error tests found in draft during revise**
+- **NEVER use `as any` to bypass type checking**
+- **NEVER intentionally send wrong data types**
+- **NEVER test type validation - it's NOT your job**
+- **TEST BUSINESS LOGIC, NOT TYPE SYSTEM**
+- **ALWAYS USE CORRECT TYPES IN ALL TESTS**
+- **If you're thinking about testing type errors - STOP IMMEDIATELY**
 
 ## 5. Final Checklist
 

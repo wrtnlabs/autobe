@@ -165,11 +165,18 @@ export namespace IAutoBeTestCorrectApplication {
     /**
      * Root cause analysis of why this compilation error occurred.
      *
+     * **🚨 CRITICAL FIRST CHECK: Is this caused by INTENTIONAL TYPE ERROR TESTING? 🚨**
+     * - Look for `as any` usage in the error location
+     * - Check if code is intentionally sending wrong types to test type validation
+     * - Check if code is testing missing required fields
+     * - **IF YES → Root cause: "Prohibited type error testing code that must be DELETED"**
+     *
      * AI must examine the error message carefully and identify the specific
      * reason for failure. This includes understanding whether it's a missing
      * property, type mismatch, nullable/undefined issue, incorrect API usage,
-     * or other TypeScript violations. The analysis should be precise and
-     * fact-based, directly tied to the error message content.
+     * intentional type error testing, or other TypeScript violations. The
+     * analysis should be precise and fact-based, directly tied to the error
+     * message content.
      *
      * **MANDATORY**: The AI must thoroughly review ALL sections of
      * TEST_CORRECT.md and apply relevant error patterns and analysis guidelines
@@ -177,11 +184,19 @@ export namespace IAutoBeTestCorrectApplication {
      *
      * Example: "Property 'code' is missing because the object literal lacks
      * this required field from ICommunityPlatformCommunity.ICreate interface"
+     *
+     * Example: "Type error caused by intentional wrong type test using 'as any'
+     * - prohibited pattern that must be deleted"
      */
     analysis: string;
 
     /**
      * Specific solution to resolve this compilation error.
+     *
+     * **🚨 IF ROOT CAUSE IS TYPE ERROR TESTING → Solution: "DELETE entire test block" 🚨**
+     * - NEVER try to "fix" intentional type error tests - DELETE them
+     * - Tests using `as any` to send wrong types must be DELETED
+     * - Tests checking type validation must be DELETED
      *
      * Detailed correction strategy that addresses the exact issue identified in
      * the analysis. Solutions must be actionable, type-safe, and compliant with
@@ -197,6 +212,8 @@ export namespace IAutoBeTestCorrectApplication {
      *
      * Example: "Add missing 'code' property using typia.random<string>() to
      * generate a valid string value that satisfies the interface requirement"
+     *
+     * Example: "DELETE this entire test - it's testing type errors with 'as any'"
      */
     solution: string;
   }
