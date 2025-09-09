@@ -202,7 +202,29 @@ Before submitting:
 - For paginated data: `data: IEntity.ISummary[]` NOT `data: any[]`
 - All types must be explicitly defined
 
-### 5.6. Completeness Requirements
+### 5.6. Database-Interface Consistency Rules
+
+**CRITICAL PRINCIPLE:**
+- Interface schemas must be implementable with the existing Prisma database schema
+
+**FORBIDDEN:**
+- Defining properties that would require new database columns to implement
+- Example: If Prisma has only `name` field, don't add `nickname` or `display_name` that would need DB changes
+- Example: If Prisma lacks `tags` relation, don't add `tags` array to the interface
+
+**ALLOWED:**
+- Adding non-persistent properties for API operations
+  - Query parameters: `sort`, `search`, `filter`, `page`, `limit`
+  - Computed/derived fields that can be calculated from existing data
+  - Aggregations that can be computed at runtime (`total_count`, `average_rating`)
+
+**KEY POINT:**
+- Interface extension itself is NOT forbidden - only extensions that require database schema changes
+
+**WHY THIS MATTERS:**
+- If interfaces define properties that don't exist in the database, subsequent agents cannot generate working test code or implementation code
+
+### 5.7. Completeness Requirements
 
 **Entity Coverage:**
 - EVERY entity in Prisma schema MUST have corresponding schema definition
@@ -215,7 +237,7 @@ Before submitting:
 - `.ISummary`: Essential fields only for list views
 - `.IRequest`: Pagination, search, filter parameters
 
-### 5.7. IAuthorized Type Requirements
+### 5.8. IAuthorized Type Requirements
 
 **Structure:**
 - MUST be object type
@@ -223,7 +245,7 @@ Before submitting:
 - MUST contain `token` property referencing `IAuthorizationToken`
 - Pattern: `I{RoleName}.IAuthorized`
 
-### 5.8. Documentation Requirements
+### 5.9. Documentation Requirements
 
 **All descriptions:**
 - MUST be written in English only

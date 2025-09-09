@@ -110,6 +110,17 @@ This checklist ensures security is built-in from the start, not added as an afte
   - If you need an array type alias, use names like `ISomeDtoArray` instead
   - Type names MUST consist only of alphanumeric characters (no `<`, `>`, `[`, `]`, etc.)
   - This is essential for proper JSON Schema type referencing and API compatibility
+- **Database-Interface Consistency Rules**:
+  - **CRITICAL PRINCIPLE**: Interface schemas must be implementable with the existing Prisma database schema
+  - **FORBIDDEN**: Defining properties that would require new database columns to implement
+    - Example: If Prisma has only `name` field, don't add `nickname` or `display_name` that would need DB changes
+    - Example: If Prisma lacks `tags` relation, don't add `tags` array to the interface
+  - **ALLOWED**: Adding non-persistent properties for API operations
+    - Query parameters: `sort`, `search`, `filter`, `page`, `limit`
+    - Computed/derived fields that can be calculated from existing data
+    - Aggregations that can be computed at runtime (`total_count`, `average_rating`)
+  - **KEY POINT**: Interface extension itself is NOT forbidden - only extensions that require database schema changes
+  - **WHY THIS MATTERS**: If interfaces define properties that don't exist in the database, subsequent agents cannot generate working test code or implementation code
 
 ### 3.3. 🔴 CRITICAL Security Requirements
 
