@@ -111,12 +111,12 @@ export namespace AutoBeHackathonModeratorProvider {
 
   export const join = async (props: {
     hackathon: IAutoBeHackathon;
-    partipant: IAutoBeHackathonParticipant;
+    participant: IAutoBeHackathonParticipant;
   }): Promise<IAutoBeHackathonModerator.IAuthorized> => {
     const existing =
       await AutoBeHackathonGlobal.prisma.autobe_hackathon_moderators.findFirst({
         where: {
-          id: props.partipant.id,
+          id: props.participant.id,
         },
         select: { id: true },
       });
@@ -126,7 +126,7 @@ export namespace AutoBeHackathonModeratorProvider {
     const record =
       await AutoBeHackathonGlobal.prisma.autobe_hackathon_moderators.create({
         data: {
-          id: props.partipant.id,
+          id: props.participant.id,
           created_at: new Date(),
           updated_at: new Date(),
           deleted_at: null,

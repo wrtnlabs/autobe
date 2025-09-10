@@ -15,7 +15,7 @@ export namespace AutoBeHackathonModeratorSeeder {
     return await ArrayUtil.asyncMap(participants, (p) =>
       AutoBeHackathonModeratorProvider.join({
         hackathon,
-        partipant: p,
+        participant: p,
       }),
     );
   };
