@@ -1,12 +1,12 @@
 import {
   IAutoBeHackathon,
-  IAutobeHackathonParticipant,
+  IAutoBeHackathonParticipant,
 } from "@autobe/interface";
 import { TypedBody, TypedParam, TypedRoute } from "@nestia/core";
 import { Controller } from "@nestjs/common";
 
-import { AutoBeHackathonParticipantProvider } from "../../providers/AutoBeHackathonParticipantProvider";
 import { AutoBeHackathonProvider } from "../../providers/AutoBeHackathonProvider";
+import { AutoBeHackathonParticipantProvider } from "../../providers/actors/AutoBeHackathonParticipantProvider";
 
 @Controller("autobe/hackathon/:hackathonCode/participants/authenticate")
 export class AutoBeHackathonParticipantAuthenticateController {
@@ -14,8 +14,8 @@ export class AutoBeHackathonParticipantAuthenticateController {
   @TypedRoute.Post("login")
   public async login(
     @TypedParam("hackathonCode") hackathonCode: string,
-    @TypedBody() body: IAutobeHackathonParticipant.ILogin,
-  ): Promise<IAutobeHackathonParticipant.IAuthorized> {
+    @TypedBody() body: IAutoBeHackathonParticipant.ILogin,
+  ): Promise<IAutoBeHackathonParticipant.IAuthorized> {
     const hackathon: IAutoBeHackathon =
       await AutoBeHackathonProvider.get(hackathonCode);
     return await AutoBeHackathonParticipantProvider.login({
@@ -28,8 +28,8 @@ export class AutoBeHackathonParticipantAuthenticateController {
   @TypedRoute.Patch("refresh")
   public async refresh(
     @TypedParam("hackathonCode") hackathonCode: string,
-    @TypedBody() body: IAutobeHackathonParticipant.IRefresh,
-  ): Promise<IAutobeHackathonParticipant.IAuthorized> {
+    @TypedBody() body: IAutoBeHackathonParticipant.IRefresh,
+  ): Promise<IAutoBeHackathonParticipant.IAuthorized> {
     const hackathon: IAutoBeHackathon =
       await AutoBeHackathonProvider.get(hackathonCode);
     return await AutoBeHackathonParticipantProvider.refresh({

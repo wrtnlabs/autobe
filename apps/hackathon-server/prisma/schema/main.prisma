@@ -24,8 +24,8 @@ model autobe_hackathons {
   //----
   // RELATIONS
   //----
-  autobe_hackathon_participants autobe_hackathon_participants[]
-  autobe_hackathon_sessions     autobe_hackathon_sessions[]
+  participants autobe_hackathon_participants[]
+  sessions     autobe_hackathon_sessions[]
 
   @@unique([code])
   @@index([name])
@@ -37,21 +37,34 @@ model autobe_hackathon_participants {
   //----
   // COLUMNS
   //----
-  id                  String   @id @db.Uuid
-  autobe_hackathon_id String   @db.Uuid
-  email               String   @db.VarChar
-  name                String   @db.VarChar
-  password            String   @db.VarChar
-  created_at          DateTime @db.Timestamptz
+  id                  String    @id @db.Uuid
+  autobe_hackathon_id String    @db.Uuid
+  email               String    @db.VarChar
+  name                String    @db.VarChar
+  password            String    @db.VarChar
+  created_at          DateTime  @db.Timestamptz
+  updated_at          DateTime  @db.Timestamptz
+  deleted_at          DateTime? @db.Timestamptz
 
   //----
   // RELATIONS
   //----
+  of_moderator autobe_hackathon_moderators?
+  
   hackathon autobe_hackathons @relation(fields: [autobe_hackathon_id], references: [id], onDelete: Cascade)
 
   sessions autobe_hackathon_sessions[]
 
   @@unique([autobe_hackathon_id, email])
+}
+
+model autobe_hackathon_moderators {
+  id         String    @id @db.Uuid
+  created_at DateTime  @db.Timestamptz
+  updated_at DateTime  @db.Timestamptz
+  deleted_at DateTime? @db.Timestamptz
+
+  participant autobe_hackathon_participants @relation(fields: [id], references: [id], onDelete: Cascade)
 }
 
 model autobe_hackathon_sessions {

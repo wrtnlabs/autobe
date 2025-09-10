@@ -5,8 +5,8 @@ import { Request } from "express";
 import { Singleton } from "tstl";
 
 import { AutoBeHackathonConfiguration } from "../AutoBeHackathonConfiguration";
-import { AutoBeHackathonParticipantProvider } from "../providers/AutoBeHackathonParticipantProvider";
 import { AutoBeHackathonProvider } from "../providers/AutoBeHackathonProvider";
+import { AutoBeHackathonParticipantProvider } from "../providers/actors/AutoBeHackathonParticipantProvider";
 
 export const AutoBeHackathonParticipantAuth =
   () =>

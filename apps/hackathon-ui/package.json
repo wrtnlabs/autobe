@@ -6,8 +6,8 @@
   "main": "./lib/index.mjs",
   "typings": "./lib/index.d.ts",
   "scripts": {
-    "build": "vite build",
-    "dev": "vite",
+    "build": "vite build --mode qa",
+    "dev": "vite --host --mode qa",
     "prepack": "pnpm run build"
   },
   "keywords": [],

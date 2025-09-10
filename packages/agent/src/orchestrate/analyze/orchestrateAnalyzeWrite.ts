@@ -28,7 +28,7 @@ export const orchestrateAnalyzeWrite = async <Model extends ILlmSchema.Model>(
   const pointer: IPointer<IAutoBeAnalyzeWriteApplication.IProps | null> = {
     value: null,
   };
-  const { histories, tokenUsage } = await ctx.conversate({
+  const { tokenUsage } = await ctx.conversate({
     source: "analyzeWrite",
     controller: createController<Model>({
       model: ctx.model,
@@ -39,10 +39,8 @@ export const orchestrateAnalyzeWrite = async <Model extends ILlmSchema.Model>(
     promptCacheKey,
     message: "Write requirement analysis report.",
   });
-  if (pointer.value === null) {
-    console.log(JSON.stringify(histories, null, 2));
+  if (pointer.value === null)
     throw new Error("The Analyze Agent failed to create the document.");
-  }
 
   const event: AutoBeAnalyzeWriteEvent = {
     type: "analyzeWrite",

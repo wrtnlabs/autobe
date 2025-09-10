@@ -32,10 +32,14 @@ export function AutoBePlaygroundApplication() {
         host: import.meta.env.VITE_API_BASE_URL,
         headers: {
           Authorization: `Bearer ${token.token.access}`,
-          model: config.aiModel,
+          model:
+            config.aiModel == null || config.aiModel === ""
+              ? "openai/gpt-4.1-mini"
+              : config.aiModel,
           timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         },
       };
+
       if (config.sessionId != null && typeof config.sessionId === "string") {
         return {
           service: await hApi.functional.autobe.hackathon.participants.sessions
@@ -55,8 +59,8 @@ export function AutoBePlaygroundApplication() {
           connection,
           HACKATHON_CODE,
           {
-            model: config.aiModel as AutoBeHackathonModel,
-            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            model: connection.headers.model as AutoBeHackathonModel,
+            timezone: connection.headers.timezone,
           },
         );
 
