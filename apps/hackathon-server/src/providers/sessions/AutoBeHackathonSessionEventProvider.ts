@@ -2,8 +2,8 @@ import { AutoBeEventSnapshot } from "@autobe/interface";
 import { Prisma } from "@prisma/client";
 import { v4 } from "uuid";
 
-import { AutoBeHackathonGlobal } from "../AutoBeHackathonGlobal";
-import { IEntity } from "../structures/IEntity";
+import { AutoBeHackathonGlobal } from "../../AutoBeHackathonGlobal";
+import { IEntity } from "../../structures/IEntity";
 
 export namespace AutoBeHackathonSessionEventProvider {
   export namespace json {

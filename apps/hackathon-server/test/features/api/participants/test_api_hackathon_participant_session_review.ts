@@ -2,19 +2,13 @@ import HackathonApi from "@autobe/hackathon-api";
 import { IAutoBeHackathonSession } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 
-import { TestGlobal } from "../../TestGlobal";
+import { TestGlobal } from "../../../TestGlobal";
+import { test_api_hackathon_participant_login } from "./test_api_hackathon_participant_login";
 
-export const test_api_hackathon_session_review = async (
+export const test_api_hackathon_participant_session_review = async (
   connection: HackathonApi.IConnection,
 ): Promise<void> => {
-  await HackathonApi.functional.autobe.hackathon.participants.authenticate.login(
-    connection,
-    TestGlobal.CODE,
-    {
-      email: "samchon@wrtn.io",
-      password: "1234",
-    },
-  );
+  await test_api_hackathon_participant_login(connection);
 
   const hackathon: IAutoBeHackathonSession =
     await HackathonApi.functional.autobe.hackathon.participants.sessions.create(

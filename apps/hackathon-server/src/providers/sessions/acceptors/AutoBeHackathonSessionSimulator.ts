@@ -3,7 +3,7 @@ import { CompressUtil } from "@autobe/filesystem";
 import { IAutoBePlaygroundReplay } from "@autobe/interface";
 import fs from "fs";
 
-import { AutoBeHackathonConfiguration } from "../../AutoBeHackathonConfiguration";
+import { AutoBeHackathonConfiguration } from "../../../AutoBeHackathonConfiguration";
 import { AutoBeHackathonSessionCompiler } from "./AutoBeHackathonSessionCompiler";
 
 export namespace AutoBeHackathonSessionSimulator {

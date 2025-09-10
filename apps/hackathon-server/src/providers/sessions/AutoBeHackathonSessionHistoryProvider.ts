@@ -2,8 +2,8 @@ import { AutoBeHistory } from "@autobe/interface";
 import { Prisma } from "@prisma/client";
 import { v7 } from "uuid";
 
-import { AutoBeHackathonGlobal } from "../AutoBeHackathonGlobal";
-import { IEntity } from "../structures/IEntity";
+import { AutoBeHackathonGlobal } from "../../AutoBeHackathonGlobal";
+import { IEntity } from "../../structures/IEntity";
 
 export namespace AutoBeHackathonSessionHistoryProvider {
   export namespace json {

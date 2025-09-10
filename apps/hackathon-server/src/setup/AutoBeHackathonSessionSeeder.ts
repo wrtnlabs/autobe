@@ -4,8 +4,8 @@ import {
   AutoBeHistory,
   AutoBePhase,
   IAutoBeHackathon,
+  IAutoBeHackathonParticipant,
   IAutoBeHackathonSession,
-  IAutobeHackathonParticipant,
 } from "@autobe/interface";
 import { MapUtil, RandomGenerator } from "@nestia/e2e";
 import fs from "fs";
@@ -15,18 +15,18 @@ import { v7 } from "uuid";
 import { CompressUtil } from "../../../../packages/filesystem/src/CompressUtil";
 import { AutoBeHackathonConfiguration } from "../AutoBeHackathonConfiguration";
 import { AutoBeHackathonGlobal } from "../AutoBeHackathonGlobal";
-import { AutoBeHackathonSessionEventProvider } from "../providers/AutoBeHackathonSessionEventProvider";
-import { AutoBeHackathonSessionHistoryProvider } from "../providers/AutoBeHackathonSessionHistoryProvider";
-import { AutoBeHackathonSessionProvider } from "../providers/AutoBeHackathonSessionProvider";
+import { AutoBeHackathonSessionEventProvider } from "../providers/sessions/AutoBeHackathonSessionEventProvider";
+import { AutoBeHackathonSessionHistoryProvider } from "../providers/sessions/AutoBeHackathonSessionHistoryProvider";
+import { AutoBeHackathonSessionProvider } from "../providers/sessions/AutoBeHackathonSessionProvider";
 import { IEntity } from "../structures/IEntity";
 
 export namespace AutoBeHackathonSessionSeeder {
   export const seed = async (props: {
     hackathon: IAutoBeHackathon;
-    participants: IAutobeHackathonParticipant[];
+    participants: IAutoBeHackathonParticipant[];
   }): Promise<void> => {
     for (const asset of await getAssets()) {
-      const participant: IAutobeHackathonParticipant = RandomGenerator.pick(
+      const participant: IAutoBeHackathonParticipant = RandomGenerator.pick(
         props.participants,
       );
       const session: IAutoBeHackathonSession.ISummary =

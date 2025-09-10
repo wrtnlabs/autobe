@@ -1,18 +1,18 @@
 import {
   IAutoBeHackathon,
-  IAutobeHackathonParticipant,
+  IAutoBeHackathonParticipant,
 } from "@autobe/interface";
 import { ArrayUtil } from "@nestia/e2e";
 import fs from "fs";
 
 import { AutoBeHackathonConfiguration } from "../AutoBeHackathonConfiguration";
-import { AutoBeHackathonParticipantProvider } from "../providers/AutoBeHackathonParticipantProvider";
+import { AutoBeHackathonParticipantProvider } from "../providers/actors/AutoBeHackathonParticipantProvider";
 import { CsvUtil } from "../utils/CsvUtil";
 
 export namespace AutoBeHackathonParticipantSeeder {
   export const seed = async (
     hackathon: IAutoBeHackathon,
-  ): Promise<IAutobeHackathonParticipant[]> => {
+  ): Promise<IAutoBeHackathonParticipant[]> => {
     const input = await CsvUtil.parse(
       "email",
       "name",

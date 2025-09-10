@@ -2,8 +2,8 @@ import { IAutoBeRpcListener, IAutoBeRpcService } from "@autobe/interface";
 import { WebSocketAcceptor } from "tgrid";
 import { v7 } from "uuid";
 
-import { AutoBeHackathonGlobal } from "../AutoBeHackathonGlobal";
-import { IEntity } from "../structures/IEntity";
+import { AutoBeHackathonGlobal } from "../../AutoBeHackathonGlobal";
+import { IEntity } from "../../structures/IEntity";
 
 export namespace AutoBeHackathonSessionConnectionProvider {
   export const emplace = async (props: {

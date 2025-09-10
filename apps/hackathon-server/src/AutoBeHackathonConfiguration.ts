@@ -34,6 +34,7 @@ const environments = new Singleton(() => {
 
 interface IEnvironments {
   HACKATHON_API_PORT: `${number}`;
+  HACKATHON_SEMAPHORE: `${number}`;
 
   HACKATHON_JWT_SECRET_KEY: string;
   HACKATHON_JWT_REFRESH_KEY: string;

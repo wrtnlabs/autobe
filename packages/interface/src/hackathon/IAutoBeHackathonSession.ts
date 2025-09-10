@@ -5,7 +5,7 @@ import { AutoBePhase } from "../histories";
 import { AutoBeHistory } from "../histories/AutoBeHistory";
 import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
 import { AutoBeHackathonModel } from "./AutoBeHackathonModel";
-import { IAutobeHackathonParticipant } from "./IAutobeHackathonParticipant";
+import { IAutoBeHackathonParticipant } from "./IAutoBeHackathonParticipant";
 
 export interface IAutoBeHackathonSession
   extends IAutoBeHackathonSession.ISummary {
@@ -15,7 +15,7 @@ export interface IAutoBeHackathonSession
 export namespace IAutoBeHackathonSession {
   export interface ISummary {
     id: string;
-    participant: IAutobeHackathonParticipant;
+    participant: IAutoBeHackathonParticipant;
     title: string | null;
     model: AutoBeHackathonModel;
     timezone: string;

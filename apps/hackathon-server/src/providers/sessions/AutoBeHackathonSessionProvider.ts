@@ -3,18 +3,18 @@ import {
   AutoBeHackathonModel,
   AutoBePhase,
   IAutoBeHackathon,
+  IAutoBeHackathonParticipant,
   IAutoBeHackathonSession,
-  IAutobeHackathonParticipant,
   IPage,
 } from "@autobe/interface";
 import { Prisma } from "@prisma/client";
 import typia from "typia";
 import { v7 } from "uuid";
 
-import { AutoBeHackathonGlobal } from "../AutoBeHackathonGlobal";
-import { IEntity } from "../structures/IEntity";
-import { PaginationUtil } from "../utils/PaginationUtil";
-import { AutoBeHackathonParticipantProvider } from "./AutoBeHackathonParticipantProvider";
+import { AutoBeHackathonGlobal } from "../../AutoBeHackathonGlobal";
+import { IEntity } from "../../structures/IEntity";
+import { PaginationUtil } from "../../utils/PaginationUtil";
+import { AutoBeHackathonParticipantProvider } from "../actors/AutoBeHackathonParticipantProvider";
 import { AutoBeHackathonSessionEventProvider } from "./AutoBeHackathonSessionEventProvider";
 import { AutoBeHackathonSessionHistoryProvider } from "./AutoBeHackathonSessionHistoryProvider";
 
@@ -84,7 +84,7 @@ export namespace AutoBeHackathonSessionProvider {
 
   export const index = (props: {
     hackathon: IAutoBeHackathon;
-    participant: IAutobeHackathonParticipant;
+    participant: IAutoBeHackathonParticipant | null;
     body: IPage.IRequest;
   }): Promise<IPage<IAutoBeHackathonSession.ISummary>> =>
     PaginationUtil.paginate({
@@ -94,7 +94,7 @@ export namespace AutoBeHackathonSessionProvider {
     })({
       where: {
         autobe_hackathon_id: props.hackathon.id,
-        autobe_hackathon_participant_id: props.participant.id,
+        autobe_hackathon_participant_id: props.participant?.id ?? undefined,
         deleted_at: null,
       },
       orderBy: [
@@ -108,7 +108,7 @@ export namespace AutoBeHackathonSessionProvider {
     Payload extends Prisma.autobe_hackathon_sessionsFindFirstArgs,
   >(props: {
     hackathon: IAutoBeHackathon;
-    participant: IAutobeHackathonParticipant;
+    participant: IAutoBeHackathonParticipant | null;
     id: string;
     payload: Payload;
   }) => {
@@ -117,7 +117,7 @@ export namespace AutoBeHackathonSessionProvider {
         {
           where: {
             autobe_hackathon_id: props.hackathon.id,
-            autobe_hackathon_participant_id: props.participant.id,
+            autobe_hackathon_participant_id: props.participant?.id ?? undefined,
             id: props.id,
             deleted_at: null,
           },
@@ -129,7 +129,7 @@ export namespace AutoBeHackathonSessionProvider {
 
   export const at = async (props: {
     hackathon: IAutoBeHackathon;
-    participant: IAutobeHackathonParticipant;
+    participant: IAutoBeHackathonParticipant | null;
     id: string;
   }): Promise<IAutoBeHackathonSession> => {
     const record = await find({
@@ -174,7 +174,7 @@ export namespace AutoBeHackathonSessionProvider {
 
   export const update = async (props: {
     hackathon: IAutoBeHackathon;
-    participant: IAutobeHackathonParticipant;
+    participant: IAutoBeHackathonParticipant;
     id: string;
     body: IAutoBeHackathonSession.IUpdate;
   }): Promise<void> => {
@@ -194,7 +194,7 @@ export namespace AutoBeHackathonSessionProvider {
 
   export const review = async (props: {
     hackathon: IAutoBeHackathon;
-    participant: IAutobeHackathonParticipant;
+    participant: IAutoBeHackathonParticipant;
     id: string;
     body: IAutoBeHackathonSession.IReview;
   }): Promise<void> => {
@@ -215,7 +215,7 @@ export namespace AutoBeHackathonSessionProvider {
 
   export const erase = async (props: {
     hackathon: IAutoBeHackathon;
-    participant: IAutobeHackathonParticipant;
+    participant: IAutoBeHackathonParticipant;
     id: string;
   }): Promise<void> => {
     await find({

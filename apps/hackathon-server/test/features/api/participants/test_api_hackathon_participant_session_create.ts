@@ -2,19 +2,13 @@ import HackathonApi from "@autobe/hackathon-api";
 import { IAutoBeHackathonSession, IPage } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 
-import { TestGlobal } from "../../TestGlobal";
+import { TestGlobal } from "../../../TestGlobal";
+import { test_api_hackathon_participant_login } from "./test_api_hackathon_participant_login";
 
-export const test_api_hackathon_session_erase = async (
+export const test_api_hackathon_participant_session_create = async (
   connection: HackathonApi.IConnection,
 ): Promise<void> => {
-  await HackathonApi.functional.autobe.hackathon.participants.authenticate.login(
-    connection,
-    TestGlobal.CODE,
-    {
-      email: "samchon@wrtn.io",
-      password: "1234",
-    },
-  );
+  await test_api_hackathon_participant_login(connection);
 
   const hackathon: IAutoBeHackathonSession =
     await HackathonApi.functional.autobe.hackathon.participants.sessions.create(
@@ -26,18 +20,13 @@ export const test_api_hackathon_session_erase = async (
         timezone: "Asia/Seoul",
       } satisfies IAutoBeHackathonSession.ICreate,
     );
-  await HackathonApi.functional.autobe.hackathon.participants.sessions.erase(
-    connection,
-    TestGlobal.CODE,
-    hackathon.id,
-  );
-  await TestValidator.httpError("erased", 404, () =>
-    HackathonApi.functional.autobe.hackathon.participants.sessions.at(
+  const read: IAutoBeHackathonSession =
+    await HackathonApi.functional.autobe.hackathon.participants.sessions.at(
       connection,
       TestGlobal.CODE,
       hackathon.id,
-    ),
-  );
+    );
+  TestValidator.equals("id", read.id, hackathon.id);
 
   const page: IPage<IAutoBeHackathonSession.ISummary> =
     await HackathonApi.functional.autobe.hackathon.participants.sessions.index(
@@ -48,5 +37,5 @@ export const test_api_hackathon_session_erase = async (
         page: 1,
       },
     );
-  TestValidator.notEquals("page", page.data[0].id, hackathon.id);
+  TestValidator.equals("page", page.data[0].id, hackathon.id);
 };

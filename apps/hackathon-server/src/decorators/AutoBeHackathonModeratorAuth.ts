@@ -6,9 +6,9 @@ import { Singleton } from "tstl";
 
 import { AutoBeHackathonConfiguration } from "../AutoBeHackathonConfiguration";
 import { AutoBeHackathonProvider } from "../providers/AutoBeHackathonProvider";
-import { AutoBeHackathonParticipantProvider } from "../providers/actors/AutoBeHackathonParticipantProvider";
+import { AutoBeHackathonModeratorProvider } from "../providers/actors/AutoBeHackathonModeratorProvider";
 
-export const AutoBeHackathonParticipantAuth =
+export const AutoBeHackathonModeratorAuth =
   () =>
   (
     target: object,
@@ -32,7 +32,7 @@ const singleton = new Singleton(() =>
     const request: Request = ctx.switchToHttp().getRequest();
     const value: string | string[] | undefined =
       request.headers.Authorization ?? request.headers.authorization;
-    return AutoBeHackathonParticipantProvider.authorize({
+    return AutoBeHackathonModeratorProvider.authorize({
       hackathon,
       accessToken: Array.isArray(value) ? value[0] : value,
     });

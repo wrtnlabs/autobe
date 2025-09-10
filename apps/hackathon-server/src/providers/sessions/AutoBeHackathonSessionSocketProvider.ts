@@ -1,17 +1,18 @@
 import {
   IAutoBeHackathon,
+  IAutoBeHackathonParticipant,
   IAutoBeHackathonSession,
   IAutoBeRpcListener,
   IAutoBeRpcService,
-  IAutobeHackathonParticipant,
 } from "@autobe/interface";
 import { WebSocketAcceptor } from "tgrid";
 import { tags } from "typia";
 
-import { AutoBeHackathonGlobal } from "../AutoBeHackathonGlobal";
-import { IEntity } from "../structures/IEntity";
-import { AutoBeHackathonParticipantProvider } from "./AutoBeHackathonParticipantProvider";
-import { AutoBeHackathonProvider } from "./AutoBeHackathonProvider";
+import { AutoBeHackathonGlobal } from "../../AutoBeHackathonGlobal";
+import { IEntity } from "../../structures/IEntity";
+import { AutoBeHackathonProvider } from "../AutoBeHackathonProvider";
+import { AutoBeHackathonModeratorProvider } from "../actors/AutoBeHackathonModeratorProvider";
+import { AutoBeHackathonParticipantProvider } from "../actors/AutoBeHackathonParticipantProvider";
 import { AutoBeHackathonSessionConnectionProvider } from "./AutoBeHackathonSessionConnectionProvider";
 import { AutoBeHackathonSessionProvider } from "./AutoBeHackathonSessionProvider";
 import { AutoBeHackathonSessionSocketAcceptor } from "./acceptors/AutoBeHackathonSessionSocketAcceptor";
@@ -28,10 +29,12 @@ export namespace AutoBeHackathonSessionSocketProvider {
   }): Promise<void> => {
     // PREPARE RELATED ENTITIES
     const hackathon: IAutoBeHackathon = await findHackathon(props);
-    const participant: IAutobeHackathonParticipant = await authorize({
-      hackathon,
-      acceptor: props.acceptor,
-    });
+    const participant: IAutoBeHackathonParticipant = await authorizeParticipant(
+      {
+        hackathon,
+        acceptor: props.acceptor,
+      },
+    );
     const session: IAutoBeHackathonSession.ISummary = await findSession({
       hackathon,
       participant,
@@ -53,6 +56,7 @@ export namespace AutoBeHackathonSessionSocketProvider {
   };
 
   export const replay = async (props: {
+    type: "participant" | "moderator";
     hackathonCode: string;
     id: string & tags.Format<"uuid">;
     acceptor: WebSocketAcceptor<
@@ -63,10 +67,16 @@ export namespace AutoBeHackathonSessionSocketProvider {
   }): Promise<void> => {
     // PREPARE RELATED ENTITIES
     const hackathon: IAutoBeHackathon = await findHackathon(props);
-    const participant: IAutobeHackathonParticipant = await authorize({
-      hackathon,
-      acceptor: props.acceptor,
-    });
+    const participant: IAutoBeHackathonParticipant | null =
+      props.type === "participant"
+        ? await authorizeParticipant({
+            hackathon,
+            acceptor: props.acceptor,
+          })
+        : await authorizeModerator({
+            hackathon,
+            acceptor: props.acceptor,
+          });
     const session: IAutoBeHackathonSession.ISummary = await findSession({
       hackathon,
       participant,
@@ -103,10 +113,12 @@ export namespace AutoBeHackathonSessionSocketProvider {
   }): Promise<void> => {
     // PREPARE RELATED ENTITIES
     const hackathon: IAutoBeHackathon = await findHackathon(props);
-    const participant: IAutobeHackathonParticipant = await authorize({
-      hackathon,
-      acceptor: props.acceptor,
-    });
+    const participant: IAutoBeHackathonParticipant = await authorizeParticipant(
+      {
+        hackathon,
+        acceptor: props.acceptor,
+      },
+    );
     const session: IAutoBeHackathonSession.ISummary = await findSession({
       hackathon,
       participant,
@@ -129,7 +141,7 @@ export namespace AutoBeHackathonSessionSocketProvider {
 
   const findSession = async (props: {
     hackathon: IAutoBeHackathon;
-    participant: IAutobeHackathonParticipant;
+    participant: IAutoBeHackathonParticipant | null;
     id: string;
     acceptor: WebSocketAcceptor<
       IAutoBeHackathonSession.IHeader,
@@ -167,19 +179,39 @@ export namespace AutoBeHackathonSessionSocketProvider {
     }
   };
 
-  const authorize = async (props: {
+  const authorizeParticipant = async (props: {
     hackathon: IAutoBeHackathon;
     acceptor: WebSocketAcceptor<
       IAutoBeHackathonSession.IHeader,
       IAutoBeRpcService,
       IAutoBeRpcListener
     >;
-  }): Promise<IAutobeHackathonParticipant> => {
+  }): Promise<IAutoBeHackathonParticipant> => {
     try {
       return await AutoBeHackathonParticipantProvider.authorize({
         hackathon: props.hackathon,
         accessToken: props.acceptor.header?.Authorization,
       });
+    } catch (error) {
+      await props.acceptor.reject(1008, "Unauthorized");
+      throw error;
+    }
+  };
+
+  const authorizeModerator = async (props: {
+    hackathon: IAutoBeHackathon;
+    acceptor: WebSocketAcceptor<
+      IAutoBeHackathonSession.IHeader,
+      IAutoBeRpcService,
+      IAutoBeRpcListener
+    >;
+  }): Promise<null> => {
+    try {
+      await AutoBeHackathonModeratorProvider.authorize({
+        hackathon: props.hackathon,
+        accessToken: props.acceptor.header?.Authorization,
+      });
+      return null;
     } catch (error) {
       await props.acceptor.reject(1008, "Unauthorized");
       throw error;

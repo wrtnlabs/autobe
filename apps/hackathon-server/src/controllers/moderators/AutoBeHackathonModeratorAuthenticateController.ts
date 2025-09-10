@@ -1,24 +1,21 @@
-import {
-  IAutoBeHackathon,
-  IAutoBeHackathonParticipant,
-} from "@autobe/interface";
+import { IAutoBeHackathon, IAutoBeHackathonModerator } from "@autobe/interface";
 import { TypedBody, TypedParam, TypedRoute } from "@nestia/core";
 import { Controller } from "@nestjs/common";
 
 import { AutoBeHackathonProvider } from "../../providers/AutoBeHackathonProvider";
-import { AutoBeHackathonParticipantProvider } from "../../providers/actors/AutoBeHackathonParticipantProvider";
+import { AutoBeHackathonModeratorProvider } from "../../providers/actors/AutoBeHackathonModeratorProvider";
 
-@Controller("autobe/hackathon/:hackathonCode/participants/authenticate")
-export class AutoBeHackathonParticipantAuthenticateController {
+@Controller("autobe/hackathon/:hackathonCode/moderators/authenticate")
+export class AutoBeHackathonModeratorAuthenticateController {
   /** @assignHeaders setHeaders */
   @TypedRoute.Post("login")
   public async login(
     @TypedParam("hackathonCode") hackathonCode: string,
-    @TypedBody() body: IAutoBeHackathonParticipant.ILogin,
-  ): Promise<IAutoBeHackathonParticipant.IAuthorized> {
+    @TypedBody() body: IAutoBeHackathonModerator.ILogin,
+  ): Promise<IAutoBeHackathonModerator.IAuthorized> {
     const hackathon: IAutoBeHackathon =
       await AutoBeHackathonProvider.get(hackathonCode);
-    return await AutoBeHackathonParticipantProvider.login({
+    return await AutoBeHackathonModeratorProvider.login({
       hackathon,
       body,
     });
@@ -28,11 +25,11 @@ export class AutoBeHackathonParticipantAuthenticateController {
   @TypedRoute.Patch("refresh")
   public async refresh(
     @TypedParam("hackathonCode") hackathonCode: string,
-    @TypedBody() body: IAutoBeHackathonParticipant.IRefresh,
-  ): Promise<IAutoBeHackathonParticipant.IAuthorized> {
+    @TypedBody() body: IAutoBeHackathonModerator.IRefresh,
+  ): Promise<IAutoBeHackathonModerator.IAuthorized> {
     const hackathon: IAutoBeHackathon =
       await AutoBeHackathonProvider.get(hackathonCode);
-    return await AutoBeHackathonParticipantProvider.refresh({
+    return await AutoBeHackathonModeratorProvider.refresh({
       hackathon,
       body,
     });

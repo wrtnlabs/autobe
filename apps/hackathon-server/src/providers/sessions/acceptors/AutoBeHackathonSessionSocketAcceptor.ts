@@ -16,9 +16,9 @@ import { Driver, WebSocketAcceptor } from "tgrid";
 import { sleep_for } from "tstl";
 import typia from "typia";
 
-import { AutoBeHackathonConfiguration } from "../../AutoBeHackathonConfiguration";
-import { AutoBeHackathonGlobal } from "../../AutoBeHackathonGlobal";
-import { IEntity } from "../../structures/IEntity";
+import { AutoBeHackathonConfiguration } from "../../../AutoBeHackathonConfiguration";
+import { AutoBeHackathonGlobal } from "../../../AutoBeHackathonGlobal";
+import { IEntity } from "../../../structures/IEntity";
 import { AutoBeHackathonSessionConnectionProvider } from "../AutoBeHackathonSessionConnectionProvider";
 import { AutoBeHackathonSessionEventProvider } from "../AutoBeHackathonSessionEventProvider";
 import { AutoBeHackathonSessionHistoryProvider } from "../AutoBeHackathonSessionHistoryProvider";
@@ -93,7 +93,9 @@ export namespace AutoBeHackathonSessionSocketAcceptor {
             model: isOpenAi
               ? props.session.model.split("/").at(-1)!
               : props.session.model,
-            semaphore: 4,
+            semaphore: Number(
+              AutoBeHackathonConfiguration.env().HACKATHON_SEMAPHORE,
+            ),
           },
           config: {
             locale: "en-US",

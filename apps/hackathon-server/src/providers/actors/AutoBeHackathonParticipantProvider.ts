@@ -1,14 +1,17 @@
 import {
   IAutoBeHackathon,
-  IAutobeHackathonParticipant,
+  IAutoBeHackathonParticipant,
+  IPage,
 } from "@autobe/interface";
 import { ForbiddenException } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 import { v7 } from "uuid";
 
-import { AutoBeHackathonGlobal } from "../AutoBeHackathonGlobal";
-import { BcryptUtil } from "../utils/BcryptUtil";
-import { JwtTokenManager } from "../utils/JwtTokenManager";
+import { AutoBeHackathonGlobal } from "../../AutoBeHackathonGlobal";
+import { BcryptUtil } from "../../utils/BcryptUtil";
+import { JwtTokenManager } from "../../utils/JwtTokenManager";
+import { PaginationUtil } from "../../utils/PaginationUtil";
+import { AutoBeHackathonSessionProvider } from "../sessions/AutoBeHackathonSessionProvider";
 
 export namespace AutoBeHackathonParticipantProvider {
   export namespace json {
@@ -16,7 +19,8 @@ export namespace AutoBeHackathonParticipantProvider {
       input: Prisma.autobe_hackathon_participantsGetPayload<
         ReturnType<typeof select>
       >,
-    ): IAutobeHackathonParticipant => ({
+    ): IAutoBeHackathonParticipant => ({
+      type: "participant",
       id: input.id,
       email: input.email,
       name: input.name,
@@ -26,10 +30,48 @@ export namespace AutoBeHackathonParticipantProvider {
       ({}) satisfies Prisma.autobe_hackathon_participantsFindManyArgs;
   }
 
+  export namespace summarize {
+    export const transform = (
+      input: Prisma.autobe_hackathon_participantsGetPayload<
+        ReturnType<typeof select>
+      >,
+    ): IAutoBeHackathonParticipant.ISummary => ({
+      ...json.transform(input),
+      sessions: input.sessions.map((session) =>
+        AutoBeHackathonSessionProvider.summarize.transform(session),
+      ),
+    });
+    export const select = () =>
+      ({
+        include: {
+          sessions: AutoBeHackathonSessionProvider.summarize.select(),
+        },
+      }) satisfies Prisma.autobe_hackathon_participantsFindManyArgs;
+  }
+
+  export const index = async (props: {
+    hackathon: IAutoBeHackathon;
+    body: IPage.IRequest;
+  }): Promise<IPage<IAutoBeHackathonParticipant.ISummary>> =>
+    PaginationUtil.paginate({
+      schema: AutoBeHackathonGlobal.prisma.autobe_hackathon_participants,
+      payload: summarize.select(),
+      transform: summarize.transform,
+    })({
+      where: {
+        autobe_hackathon_id: props.hackathon.id,
+      },
+      orderBy: [
+        {
+          created_at: "desc",
+        },
+      ],
+    } satisfies Prisma.autobe_hackathon_participantsFindManyArgs)(props.body);
+
   export const authorize = async (props: {
     hackathon: IAutoBeHackathon;
     accessToken: string | null | undefined;
-  }): Promise<IAutobeHackathonParticipant> => {
+  }): Promise<IAutoBeHackathonParticipant> => {
     if (!props.accessToken?.length)
       throw new ForbiddenException("Access token is required.");
     else if (props.accessToken.startsWith(BEARER_PREFIX) === false)
@@ -57,8 +99,8 @@ export namespace AutoBeHackathonParticipantProvider {
 
   export const login = async (props: {
     hackathon: IAutoBeHackathon;
-    body: IAutobeHackathonParticipant.ILogin;
-  }): Promise<IAutobeHackathonParticipant.IAuthorized> => {
+    body: IAutoBeHackathonParticipant.ILogin;
+  }): Promise<IAutoBeHackathonParticipant.IAuthorized> => {
     const record =
       await AutoBeHackathonGlobal.prisma.autobe_hackathon_participants.findFirst(
         {
@@ -83,8 +125,8 @@ export namespace AutoBeHackathonParticipantProvider {
 
   export const refresh = async (props: {
     hackathon: IAutoBeHackathon;
-    body: IAutobeHackathonParticipant.IRefresh;
-  }): Promise<IAutobeHackathonParticipant.IAuthorized> => {
+    body: IAutoBeHackathonParticipant.IRefresh;
+  }): Promise<IAutoBeHackathonParticipant.IAuthorized> => {
     const decoded: JwtTokenManager.IAsset = await JwtTokenManager.verify(
       "refresh",
     )(props.body.value);
@@ -106,8 +148,8 @@ export namespace AutoBeHackathonParticipantProvider {
 
   export const join = async (props: {
     hackathon: IAutoBeHackathon;
-    body: IAutobeHackathonParticipant.IJoin;
-  }): Promise<IAutobeHackathonParticipant.IAuthorized> => {
+    body: IAutoBeHackathonParticipant.IJoin;
+  }): Promise<IAutoBeHackathonParticipant.IAuthorized> => {
     const existing =
       await AutoBeHackathonGlobal.prisma.autobe_hackathon_participants.findFirst(
         {
@@ -130,6 +172,8 @@ export namespace AutoBeHackathonParticipantProvider {
           name: props.body.name,
           password: await BcryptUtil.hash(props.body.password),
           created_at: new Date(),
+          updated_at: new Date(),
+          deleted_at: null,
         },
         ...json.select(),
       });
@@ -137,8 +181,8 @@ export namespace AutoBeHackathonParticipantProvider {
   };
 
   const tokenize = async (
-    participant: IAutobeHackathonParticipant,
-  ): Promise<IAutobeHackathonParticipant.IAuthorized> => {
+    participant: IAutoBeHackathonParticipant,
+  ): Promise<IAutoBeHackathonParticipant.IAuthorized> => {
     const token: JwtTokenManager.IOutput = await JwtTokenManager.generate({
       table: TABLE_NAME,
       id: participant.id,
