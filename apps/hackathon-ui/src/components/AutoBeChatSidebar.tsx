@@ -316,14 +316,17 @@ const STYLES = {
     flex: 1,
   },
   completedBadge: {
-    marginLeft: "0.5rem",
+    position: "absolute" as const,
+    bottom: "0.5rem",
+    right: "0.5rem",
     padding: "0.125rem 0.375rem",
     backgroundColor: "#10b981",
     color: "white",
     fontSize: "0.625rem",
     borderRadius: "9999px",
     fontWeight: "500",
-    flexShrink: 0,
+    boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
+    zIndex: 1,
   },
   reviewButton: {
     background: "rgba(255, 255, 255, 0.9)",
@@ -444,27 +447,7 @@ export const SessionListItem = (props: IConversationListItemProps) => {
               onClick={(e) => e.stopPropagation()}
             />
           ) : (
-            <>
-              <span style={STYLES.titleText}>
-                {session.title ?? "Untitled"}
-              </span>
-              {/* Completed badge */}
-              {session.completedAt && (
-                <span
-                  style={STYLES.completedBadge}
-                  title={`Completed: ${new Date(
-                    session.completedAt,
-                  ).toLocaleString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}`}
-                >
-                  Completed
-                </span>
-              )}
-            </>
+            <span style={STYLES.titleText}>{session.title ?? "Untitled"}</span>
           )}
         </div>
 
@@ -624,6 +607,24 @@ export const SessionListItem = (props: IConversationListItemProps) => {
             </button>
           </div>
         </div>
+      )}
+
+      {/* Completed badge - positioned at bottom right */}
+      {session.completedAt && (
+        <span
+          style={STYLES.completedBadge}
+          title={`Completed: ${new Date(session.completedAt).toLocaleString(
+            "en-US",
+            {
+              month: "short",
+              day: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            },
+          )}`}
+        >
+          Completed
+        </span>
       )}
     </div>
   );

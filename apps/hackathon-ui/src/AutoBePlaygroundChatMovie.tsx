@@ -42,6 +42,7 @@ export function AutoBePlaygroundChatMovie(
         "openai/gpt-4.1-mini",
         "qwen/qwen3-235b-a22b-2507",
       ],
+      default: "openai/gpt-4.1-mini",
     }));
   const { searchParams, setSearchParams } = useSearchParams();
 

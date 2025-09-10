@@ -122,7 +122,13 @@ export function AutoBeAgentProvider({
         throw error;
       }
     },
-    [serviceFactory, serviceInstance, connectionStatus],
+    [
+      serviceFactory,
+      serviceInstance,
+      connectionStatus,
+      activeConversationId,
+      searchParams,
+    ],
   );
 
   // Reset service (for reconnection, etc.)
