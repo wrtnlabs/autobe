@@ -180,7 +180,6 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
     });
     return pointer.value;
   } catch {
-    console.log("test scenario, failed to function call", props.include);
     return [];
   }
 };

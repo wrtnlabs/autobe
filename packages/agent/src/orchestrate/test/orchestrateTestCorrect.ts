@@ -75,10 +75,6 @@ export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
             ctx.retry,
           );
         } catch {
-          console.log(
-            "failed to correct test code, no function calling happened.",
-            w.scenario.functionName,
-          );
           return null;
         }
       }),

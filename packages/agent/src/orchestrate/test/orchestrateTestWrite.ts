@@ -51,10 +51,6 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
           event,
         };
       } catch {
-        console.log(
-          "failed to write test code, no function calling happened.",
-          scenario.functionName,
-        );
         return null;
       }
     }),
