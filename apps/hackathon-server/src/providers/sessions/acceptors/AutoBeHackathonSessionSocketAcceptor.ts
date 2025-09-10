@@ -50,7 +50,6 @@ export namespace AutoBeHackathonSessionSocketAcceptor {
           session: props.session,
           lastTime: snapshots.at(-1)?.event.created_at ?? null,
         });
-      console.log("next snapshots", nextSnapshots.length);
       snapshots.push(...nextSnapshots);
       for (const s of nextSnapshots)
         void (listener as any)[s.event.type](s.event).catch(() => {});
