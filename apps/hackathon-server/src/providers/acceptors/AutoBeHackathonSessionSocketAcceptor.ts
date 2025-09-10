@@ -31,7 +31,8 @@ export namespace AutoBeHackathonSessionSocketAcceptor {
     connection: IEntity;
     acceptor: WebSocketAcceptor<unknown, IAutoBeRpcService, IAutoBeRpcListener>;
   }): Promise<void> => {
-    await replay(props);
+    const snapshots: AutoBeEventSnapshot[] = await startReplay(props);
+    const listener: Driver<IAutoBeRpcListener> = props.acceptor.getDriver();
     while (true) {
       const record =
         await AutoBeHackathonGlobal.prisma.autobe_hackathon_session_aggregates.findFirstOrThrow(
@@ -44,11 +45,26 @@ export namespace AutoBeHackathonSessionSocketAcceptor {
             },
           },
         );
+      const nextSnapshots: AutoBeEventSnapshot[] =
+        await AutoBeHackathonSessionEventProvider.getNext({
+          session: props.session,
+          lastTime: snapshots.at(-1)?.event.created_at ?? null,
+        });
+      snapshots.push(...nextSnapshots);
+      for (const s of nextSnapshots)
+        void (listener as any)[s.event.type](s.event).catch(() => {});
       if (record.enabled === true) break;
       await sleep_for(2_500);
     }
-    const listener: Driver<IAutoBeRpcListener> = props.acceptor.getDriver();
     void listener.enable(true).catch(() => {});
+  };
+
+  export const replay = async (props: {
+    session: IAutoBeHackathonSession.ISummary;
+    connection: IEntity;
+    acceptor: WebSocketAcceptor<unknown, IAutoBeRpcService, IAutoBeRpcListener>;
+  }): Promise<void> => {
+    await startReplay(props);
   };
 
   export const simulate = async (props: {
@@ -67,11 +83,11 @@ export namespace AutoBeHackathonSessionSocketAcceptor {
     void listener.enable(true).catch(() => {});
   };
 
-  export const replay = async (props: {
+  const startReplay = async (props: {
     session: IAutoBeHackathonSession.ISummary;
     connection: IEntity;
     acceptor: WebSocketAcceptor<unknown, IAutoBeRpcService, IAutoBeRpcListener>;
-  }): Promise<void> => {
+  }): Promise<AutoBeEventSnapshot[]> => {
     const histories: AutoBeHistory[] =
       await AutoBeHackathonSessionHistoryProvider.getAll({
         session: props.session,
@@ -118,6 +134,7 @@ export namespace AutoBeHackathonSessionSocketAcceptor {
 
     // REPLAY NEVER ALLOWS CONVERSATION
     void listener.enable(false).catch(() => {});
+    return snapshots;
   };
 
   const startCommunication = async <
