@@ -19,9 +19,6 @@ export function transformTestScenarioReviewHistories<
   const operations: AutoBeOpenApi.IOperation[] =
     ctx.state().interface?.document.operations ?? [];
 
-  const prismaSchema: Record<string, string> =
-    ctx.state().prisma?.schemas ?? {};
-
   return [
     {
       id: v7(),
@@ -34,24 +31,6 @@ export function transformTestScenarioReviewHistories<
       created_at: new Date().toISOString(),
       type: "systemMessage",
       text: AutoBeSystemPromptConstant.TEST_SCENARIO_REVIEW,
-    },
-    {
-      id: v7(),
-      created_at: new Date().toISOString(),
-      type: "assistantMessage",
-      text: StringUtil.trim`
-        # Prisma DB Schema
-
-        Below is the complete Prisma database schema. Use this to understand:
-        - Entity relationships and foreign key dependencies
-        - Required fields that must be satisfied in API call sequences
-        - Business domain logic and entity lifecycles
-        - Database constraints that affect API call ordering
-
-        \`\`\`json
-        ${JSON.stringify(prismaSchema)}
-        \`\`\`
-      `,
     },
     {
       id: v7(),

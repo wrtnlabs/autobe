@@ -19,9 +19,7 @@ export async function orchestrateTestScenarioReview<
   groups: IAutoBeTestScenarioApplication.IScenarioGroup[],
   progress: AutoBeProgressEventBase,
 ): Promise<IAutoBeTestScenarioApplication.IScenarioGroup[]> {
-  const result = await review(ctx, groups, progress);
-
-  return result;
+  return await review(ctx, groups, progress);
 }
 
 async function review<Model extends ILlmSchema.Model>(
@@ -108,8 +106,6 @@ function createController<Model extends ILlmSchema.Model>(props: {
           );
 
           if (!matchingGroup) {
-            console.log("Over Grouping");
-
             return acc;
           }
 
@@ -118,7 +114,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
         [],
       );
 
-    filteredScenarioGroups;
+    result.data.scenarioGroups = filteredScenarioGroups;
 
     if (errors.length > 0) {
       return {
