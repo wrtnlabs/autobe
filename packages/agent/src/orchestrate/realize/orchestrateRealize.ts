@@ -15,6 +15,7 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { predicateStateMessage } from "../../utils/predicateStateMessage";
+import { compileRealizeFiles } from "./internal/compileRealizeFiles";
 import { orchestrateRealizeAuthorization } from "./orchestrateRealizeAuthorization";
 import { orchestrateRealizeCorrect } from "./orchestrateRealizeCorrect";
 import { orchestrateRealizeScenario } from "./orchestrateRealizeScenario";
@@ -107,7 +108,7 @@ export const orchestrateRealize =
       completed: writeEvents.length,
     };
 
-    const result = await orchestrateRealizeCorrect(
+    await orchestrateRealizeCorrect(
       ctx,
       scenarios,
       authorizations,
@@ -124,6 +125,11 @@ export const orchestrateRealize =
         authorizations,
       });
 
+    const { result } = await compileRealizeFiles(ctx, {
+      authorizations,
+      functions,
+    });
+
     return ctx.dispatch({
       type: "realizeComplete",
       id: v7(),
@@ -131,7 +137,7 @@ export const orchestrateRealize =
       functions,
       authorizations,
       controllers,
-      compiled: result.result,
+      compiled: result,
       step: ctx.state().analyze?.step ?? 0,
       elapsed: new Date().getTime() - start.getTime(),
     });

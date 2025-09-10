@@ -3,7 +3,6 @@ import {
   AutoBeRealizeAuthorization,
   AutoBeRealizeCorrectEvent,
   AutoBeRealizeFunction,
-  AutoBeRealizeValidateEvent,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { ILlmApplication, ILlmController, ILlmSchema } from "@samchon/openapi";
@@ -16,6 +15,7 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformRealizeCorrectHistories } from "./histories/transformRealizeCorrectHistories";
 import { compileRealizeFiles } from "./internal/compileRealizeFiles";
+import { orchestrateRealizeCorrectCasting } from "./orchestRateRealizeCorrectCasting";
 import { IAutoBeRealizeCorrectApplication } from "./structures/IAutoBeRealizeCorrectApplication";
 import { IAutoBeRealizeFunctionFailure } from "./structures/IAutoBeRealizeFunctionFailure";
 import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
@@ -28,72 +28,55 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
   authorizations: AutoBeRealizeAuthorization[],
   functions: AutoBeRealizeFunction[],
   failures: IAutoBeRealizeFunctionFailure[],
-  progress: IProgress,
+  progress: AutoBeProgressEventBase,
   life: number = ctx.retry,
-): Promise<AutoBeRealizeValidateEvent> {
-  const event = await compileRealizeFiles(ctx, { authorizations, functions });
-  if (event.result.type === "failure") ctx.dispatch(event);
+): Promise<AutoBeRealizeFunction[]> {
+  const validateEvent = await compileRealizeFiles(ctx, {
+    authorizations,
+    functions,
+  });
 
-  if (event.result.type === "success") {
-    console.debug("compilation success!");
-    return event;
-  } else if (life < 0) return event;
+  if (validateEvent.result.type === "failure") ctx.dispatch(validateEvent);
+  else if (validateEvent.result.type === "success") return functions;
+  else if (life < 0) return functions;
 
   const locations: string[] =
-    (event.result.type === "failure"
-      ? Array.from(new Set(event.result.diagnostics.map((d) => d.file)))
+    (validateEvent.result.type === "failure"
+      ? Array.from(new Set(validateEvent.result.diagnostics.map((d) => d.file)))
       : null
     )?.filter((el) => el !== null) ?? [];
 
   progress.total += Object.keys(locations).length;
 
   const diagnostics =
-    event.result.type === "failure" ? event.result.diagnostics : [];
+    validateEvent.result.type === "failure"
+      ? validateEvent.result.diagnostics
+      : [];
 
   const diagnosticsByFile = diagnostics.reduce<
-    Record<string, typeof diagnostics>
+    Record<string, IAutoBeRealizeFunctionFailure>
   >((acc, diagnostic) => {
     const location = diagnostic.file!;
     if (!acc[location]) {
-      acc[location] = [];
+      acc[location] = {
+        function: functions.find((el) => el.location === location)!,
+        diagnostics: [],
+      };
     }
-    acc[location].push(diagnostic);
+    acc[location].diagnostics.push(diagnostic);
     return acc;
   }, {});
 
-  for (const [location, diagnostics] of Object.entries(diagnosticsByFile)) {
-    const func = functions.find((el) => el.location === location);
+  failures.push(...Object.values(diagnosticsByFile));
 
-    if (func) {
-      failures.push({
-        function: func,
-        diagnostics,
-      });
-    }
-  }
-
-  await executeCachedBatch(
-    locations.map((location) => async (): Promise<AutoBeRealizeFunction> => {
-      const scenario = scenarios.find((el) => el.location === location);
-      const func = functions.find((el) => el.location === location)!;
-      const ReailzeFunctionFailures: IAutoBeRealizeFunctionFailure[] =
-        failures.filter((f) => f.function.location === location);
-
-      if (ReailzeFunctionFailures.length && scenario) {
-        const correctEvent = await correct(ctx, {
-          totalAuthorizations: authorizations,
-          authorization: scenario.decoratorEvent ?? null,
-          scenario,
-          function: func,
-          failures: ReailzeFunctionFailures,
-          progress: progress,
-        });
-
-        func.content = correctEvent.content;
-      }
-
-      return func;
-    }),
+  await correct(
+    ctx,
+    locations,
+    scenarios,
+    authorizations,
+    functions,
+    failures,
+    progress,
   );
 
   return orchestrateRealizeCorrect(
@@ -107,7 +90,41 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
   );
 }
 
-export async function correct<Model extends ILlmSchema.Model>(
+async function correct<Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  locations: string[],
+  scenarios: IAutoBeRealizeScenarioResult[],
+  authorizations: AutoBeRealizeAuthorization[],
+  functions: AutoBeRealizeFunction[],
+  failures: IAutoBeRealizeFunctionFailure[],
+  progress: AutoBeProgressEventBase,
+) {
+  await executeCachedBatch(
+    locations.map((location) => async (): Promise<AutoBeRealizeFunction> => {
+      const scenario = scenarios.find((el) => el.location === location);
+      const func = functions.find((el) => el.location === location)!;
+      const ReailzeFunctionFailures: IAutoBeRealizeFunctionFailure[] =
+        failures.filter((f) => f.function.location === location);
+
+      if (ReailzeFunctionFailures.length && scenario) {
+        const correctEvent = await step(ctx, {
+          totalAuthorizations: authorizations,
+          authorization: scenario.decoratorEvent ?? null,
+          scenario,
+          function: await orchestrateRealizeCorrectCasting(ctx, func, progress),
+          failures: ReailzeFunctionFailures,
+          progress: progress,
+        });
+
+        func.content = correctEvent.content;
+      }
+
+      return func;
+    }),
+  );
+}
+
+async function step<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
     authorization: AutoBeRealizeAuthorization | null;
@@ -204,8 +221,3 @@ const collection = {
   deepseek: claude,
   "3.1": claude,
 };
-
-interface IProgress {
-  total: number;
-  completed: number;
-}
