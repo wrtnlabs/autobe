@@ -31,31 +31,32 @@ export namespace AutoBeHackathonSessionSocketAcceptor {
     connection: IEntity;
     acceptor: WebSocketAcceptor<unknown, IAutoBeRpcService, IAutoBeRpcListener>;
   }): Promise<void> => {
-    const snapshots: AutoBeEventSnapshot[] = await startReplay(props);
+    const { histories, snapshots } = await startReplay(props);
     const listener: Driver<IAutoBeRpcListener> = props.acceptor.getDriver();
-    while (true) {
-      const record =
-        await AutoBeHackathonGlobal.prisma.autobe_hackathon_session_aggregates.findFirstOrThrow(
-          {
-            where: {
-              autobe_hackathon_session_id: props.session.id,
+    if (histories.length !== 0)
+      while (true) {
+        const record =
+          await AutoBeHackathonGlobal.prisma.autobe_hackathon_session_aggregates.findFirstOrThrow(
+            {
+              where: {
+                autobe_hackathon_session_id: props.session.id,
+              },
+              select: {
+                enabled: true,
+              },
             },
-            select: {
-              enabled: true,
-            },
-          },
-        );
-      const nextSnapshots: AutoBeEventSnapshot[] =
-        await AutoBeHackathonSessionEventProvider.getNext({
-          session: props.session,
-          lastTime: snapshots.at(-1)?.event.created_at ?? null,
-        });
-      snapshots.push(...nextSnapshots);
-      for (const s of nextSnapshots)
-        void (listener as any)[s.event.type](s.event).catch(() => {});
-      if (record.enabled === true) break;
-      await sleep_for(2_500);
-    }
+          );
+        const nextSnapshots: AutoBeEventSnapshot[] =
+          await AutoBeHackathonSessionEventProvider.getNext({
+            session: props.session,
+            lastTime: snapshots.at(-1)?.event.created_at ?? null,
+          });
+        snapshots.push(...nextSnapshots);
+        for (const s of nextSnapshots)
+          void (listener as any)[s.event.type](s.event).catch(() => {});
+        if (record.enabled === true) break;
+        await sleep_for(2_500);
+      }
     void listener.enable(true).catch(() => {});
   };
 
@@ -87,9 +88,13 @@ export namespace AutoBeHackathonSessionSocketAcceptor {
     session: IAutoBeHackathonSession.ISummary;
     connection: IEntity;
     acceptor: WebSocketAcceptor<unknown, IAutoBeRpcService, IAutoBeRpcListener>;
-  }): Promise<AutoBeEventSnapshot[]> => {
+  }) => {
     const histories: AutoBeHistory[] =
       await AutoBeHackathonSessionHistoryProvider.getAll({
+        session: props.session,
+      });
+    const snapshots: AutoBeEventSnapshot[] =
+      await AutoBeHackathonSessionEventProvider.getAll({
         session: props.session,
       });
     const isOpenAi: boolean = props.session.model.startsWith("openai/");
@@ -121,10 +126,6 @@ export namespace AutoBeHackathonSessionSocketAcceptor {
           histories,
         }),
     });
-    const snapshots: AutoBeEventSnapshot[] =
-      await AutoBeHackathonSessionEventProvider.getAll({
-        session: props.session,
-      });
     const listener: Driver<IAutoBeRpcListener> = props.acceptor.getDriver();
     for (const s of snapshots) {
       agent.getTokenUsage().assign(s.tokenUsage);
@@ -136,7 +137,7 @@ export namespace AutoBeHackathonSessionSocketAcceptor {
 
     // REPLAY NEVER ALLOWS CONVERSATION
     void listener.enable(false).catch(() => {});
-    return snapshots;
+    return { histories, snapshots };
   };
 
   const startCommunication = async <
