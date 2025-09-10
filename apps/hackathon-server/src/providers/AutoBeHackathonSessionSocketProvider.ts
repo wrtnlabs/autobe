@@ -92,6 +92,41 @@ export namespace AutoBeHackathonSessionSocketProvider {
     });
   };
 
+  export const simulate = async (props: {
+    hackathonCode: string;
+    id: string & tags.Format<"uuid">;
+    acceptor: WebSocketAcceptor<
+      IAutoBeHackathonSession.IHeader,
+      IAutoBeRpcService,
+      IAutoBeRpcListener
+    >;
+  }): Promise<void> => {
+    // PREPARE RELATED ENTITIES
+    const hackathon: IAutoBeHackathon = await findHackathon(props);
+    const participant: IAutobeHackathonParticipant = await authorize({
+      hackathon,
+      acceptor: props.acceptor,
+    });
+    const session: IAutoBeHackathonSession.ISummary = await findSession({
+      hackathon,
+      participant,
+      id: props.id,
+      acceptor: props.acceptor,
+    });
+    const connection: IEntity =
+      await AutoBeHackathonSessionConnectionProvider.emplace({
+        session,
+        acceptor: props.acceptor,
+      });
+
+    // START COMMUNICATION
+    await AutoBeHackathonSessionSocketAcceptor.simulate({
+      session,
+      connection,
+      acceptor: props.acceptor,
+    });
+  };
+
   const findSession = async (props: {
     hackathon: IAutoBeHackathon;
     participant: IAutobeHackathonParticipant;

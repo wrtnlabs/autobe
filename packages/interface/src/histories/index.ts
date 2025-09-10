@@ -8,3 +8,5 @@ export * from "./AutoBeInterfaceHistory";
 export * from "./AutoBePrismaHistory";
 export * from "./AutoBeRealizeHistory";
 export * from "./AutoBeTestHistory";
+
+export * from "./AutoBePhase";

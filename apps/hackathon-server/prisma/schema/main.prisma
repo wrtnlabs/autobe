@@ -148,7 +148,7 @@ model autobe_hackathon_session_events {
 model autobe_hackathon_session_aggregates {
   id String @id @db.Uuid
   autobe_hackathon_session_id String @db.Uuid
-  state String? @db.VarChar
+  phase String? @db.VarChar
   enabled Boolean
   token_usage String
 

@@ -1,6 +1,7 @@
 import { tags } from "typia";
 
 import { AutoBeEventSnapshot } from "../events/AutoBeEventSnapshot";
+import { AutoBePhase } from "../histories";
 import { AutoBeHistory } from "../histories/AutoBeHistory";
 import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
 import { AutoBeHackathonModel } from "./AutoBeHackathonModel";
@@ -18,7 +19,7 @@ export namespace IAutoBeHackathonSession {
     title: string | null;
     model: AutoBeHackathonModel;
     timezone: string;
-    state: null | "analyze" | "prisma" | "interface" | "test" | "realize";
+    phase: AutoBePhase | null;
     review_article_url: null | (string & tags.Format<"uri">);
     token_usage: IAutoBeTokenUsageJson;
     created_at: string & tags.Format<"date-time">;

@@ -21,16 +21,17 @@ export namespace AutoBeHackathonSessionConnectionProvider {
           },
         },
       );
-    props.acceptor.join().then(async () => {
-      await AutoBeHackathonGlobal.prisma.autobe_hackathon_session_connections.update(
-        {
-          where: { id: connection.id },
-          data: {
-            disconnected_at: new Date(),
-          },
-        },
-      );
-    });
     return connection;
+  };
+
+  export const disconnect = async (id: string): Promise<void> => {
+    await AutoBeHackathonGlobal.prisma.autobe_hackathon_session_connections.update(
+      {
+        where: { id },
+        data: {
+          disconnected_at: new Date(),
+        },
+      },
+    );
   };
 }

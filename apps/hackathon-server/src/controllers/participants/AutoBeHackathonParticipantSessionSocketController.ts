@@ -51,4 +51,24 @@ export class AutoBeHackathonParticipantSessionSocketController {
       });
     } catch {}
   }
+
+  @WebSocketRoute(":id/simulate")
+  public async simulate(
+    @WebSocketRoute.Acceptor()
+    acceptor: WebSocketAcceptor<
+      IAutoBeHackathonSession.IHeader,
+      IAutoBeRpcService,
+      IAutoBeRpcListener
+    >,
+    @WebSocketRoute.Param("hackathonCode") hackathonCode: string,
+    @WebSocketRoute.Param("id") id: string & tags.Format<"uuid">,
+  ): Promise<void> {
+    try {
+      await AutoBeHackathonSessionSocketProvider.simulate({
+        hackathonCode,
+        id,
+        acceptor,
+      });
+    } catch {}
+  }
 }

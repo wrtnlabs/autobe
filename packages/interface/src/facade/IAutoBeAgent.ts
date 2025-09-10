@@ -1,5 +1,6 @@
 import { AutoBeEvent } from "../events/AutoBeEvent";
 import { AutoBeHistory } from "../histories/AutoBeHistory";
+import { AutoBePhase } from "../histories/AutoBePhase";
 import { AutoBeUserMessageContent } from "../histories/contents/AutoBeUserMessageContent";
 import { IAutoBeTokenUsageJson } from "../json";
 import { IAutoBeGetFilesOptions } from "./IAutoBeGetFilesOptions";
@@ -122,6 +123,8 @@ export interface IAutoBeAgent {
    *   agent, operation type, and consumption category
    */
   getTokenUsage(): IAutoBeTokenUsageJson;
+
+  getPhase(): AutoBePhase | null;
 
   /**
    * Registers an event listener for specific development phase events.

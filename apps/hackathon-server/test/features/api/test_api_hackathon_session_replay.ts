@@ -14,37 +14,8 @@ import { TestGlobal } from "../../TestGlobal";
 export const test_api_hackathon_session_replay = async (
   connection: HackathonApi.IConnection,
 ): Promise<void> => {
-  // LOGIN AS PARTICIPANT
-  await HackathonApi.functional.autobe.hackathon.participants.authenticate.login(
-    connection,
-    TestGlobal.CODE,
-    {
-      email: "michael@wrtn.io",
-      password: "1234",
-    },
-  );
-
-  // SELECT A HACKATHON SESSION
-  const page: IPage<IAutoBeHackathonSession.ISummary> =
-    await HackathonApi.functional.autobe.hackathon.participants.sessions.index(
-      connection,
-      TestGlobal.CODE,
-      {
-        limit: 100,
-        page: 1,
-      },
-    );
-  const summary: IAutoBeHackathonSession.ISummary | undefined = page.data.find(
-    (s) => s.state === "realize",
-  );
-  if (summary === undefined) throw new Error("No hackathon session found");
-
-  const session: IAutoBeHackathonSession =
-    await HackathonApi.functional.autobe.hackathon.participants.sessions.at(
-      connection,
-      TestGlobal.CODE,
-      summary.id,
-    );
+  // FIND SESSION
+  const session: IAutoBeHackathonSession = await findSession(connection);
 
   // CONFIGURE LISTENER
   const enabled: IPointer<boolean | null> = {
@@ -93,4 +64,40 @@ export const test_api_hackathon_session_replay = async (
       TestValidator.predicate(type, () =>
         eventList.some((e) => e.type === `${type}Complete`),
       );
+};
+
+const findSession = async (
+  connection: HackathonApi.IConnection,
+): Promise<IAutoBeHackathonSession> => {
+  for (const account of ["samchon", "kakasoo", "michael", "sunrabbit"]) {
+    await HackathonApi.functional.autobe.hackathon.participants.authenticate.login(
+      connection,
+      TestGlobal.CODE,
+      {
+        email: `${account}@wrtn.io`,
+        password: "1234",
+      },
+    );
+    const page: IPage<IAutoBeHackathonSession.ISummary> =
+      await HackathonApi.functional.autobe.hackathon.participants.sessions.index(
+        connection,
+        TestGlobal.CODE,
+        {
+          limit: 100,
+          page: 1,
+        },
+      );
+    const summary: IAutoBeHackathonSession.ISummary | undefined =
+      page.data.find((s) => s.phase === "realize");
+    if (summary === undefined) continue;
+
+    const session: IAutoBeHackathonSession =
+      await HackathonApi.functional.autobe.hackathon.participants.sessions.at(
+        connection,
+        TestGlobal.CODE,
+        summary.id,
+      );
+    return session;
+  }
+  throw new Error("No hackathon session found, problem on DB seeder.");
 };

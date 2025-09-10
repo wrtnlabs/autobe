@@ -6,6 +6,7 @@ import {
 import {
   AutoBeAssistantMessageHistory,
   AutoBeHistory,
+  AutoBePhase,
   AutoBeUserMessageContent,
   AutoBeUserMessageHistory,
   IAutoBeAgent,
@@ -284,6 +285,18 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
 
   public getTokenUsage(): AutoBeTokenUsage {
     return this.usage_;
+  }
+
+  public getPhase(): AutoBePhase | null {
+    if (this.state_.analyze === null) return null;
+    else if (this.state_.realize?.step === this.state_.analyze.step)
+      return "realize";
+    else if (this.state_.test?.step === this.state_.analyze.step) return "test";
+    else if (this.state_.interface?.step === this.state_.analyze.step)
+      return "interface";
+    else if (this.state_.prisma?.step === this.state_.analyze.step)
+      return "prisma";
+    return "analyze";
   }
 
   /** @internal */

@@ -3,6 +3,7 @@ import {
   AutoBeEvent,
   AutoBeEventSnapshot,
   AutoBeHistory,
+  AutoBePhase,
   AutoBeUserMessageContent,
   AutoBeUserMessageHistory,
   IAutoBeAgent,
@@ -133,9 +134,17 @@ export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
     return this.token_usage_;
   }
 
-  private getEventSnapshots(
-    state: "analyze" | "prisma" | "interface" | "test" | "realize",
-  ): AutoBeEventSnapshot[] | null {
+  public getPhase(): AutoBePhase | null {
+    const state: AutoBeState = createAutoBeState(this.histories_);
+    if (state.analyze === null) return null;
+    else if (state.realize?.step === state.analyze.step) return "realize";
+    else if (state.test?.step === state.analyze.step) return "test";
+    else if (state.interface?.step === state.analyze.step) return "interface";
+    else if (state.prisma?.step === state.analyze.step) return "prisma";
+    return "analyze";
+  }
+
+  private getEventSnapshots(state: AutoBePhase): AutoBeEventSnapshot[] | null {
     return this.props_.replay[state] ?? null;
   }
 }

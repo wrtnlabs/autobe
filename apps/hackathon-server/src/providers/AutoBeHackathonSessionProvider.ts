@@ -1,6 +1,7 @@
 import { AutoBeTokenUsage } from "@autobe/agent";
 import {
   AutoBeHackathonModel,
+  AutoBePhase,
   IAutoBeHackathon,
   IAutoBeHackathonSession,
   IAutobeHackathonParticipant,
@@ -31,9 +32,7 @@ export namespace AutoBeHackathonSessionProvider {
       title: input.title ?? null,
       model: typia.assert<AutoBeHackathonModel>(input.model),
       timezone: input.timezone,
-      state: typia.assert<IAutoBeHackathonSession["state"]>(
-        input.aggregate!.state,
-      ),
+      phase: typia.assert<AutoBePhase | null>(input.aggregate!.phase),
       token_usage: JSON.parse(input.aggregate!.token_usage),
       histories: input.histories.map(
         AutoBeHackathonSessionHistoryProvider.json.transform,
@@ -68,9 +67,7 @@ export namespace AutoBeHackathonSessionProvider {
       title: input.title ?? null,
       model: typia.assert<AutoBeHackathonModel>(input.model),
       timezone: input.timezone,
-      state: typia.assert<IAutoBeHackathonSession["state"]>(
-        input.aggregate!.state,
-      ),
+      phase: typia.assert<AutoBePhase | null>(input.aggregate!.phase),
       review_article_url: input.review_article_url,
       token_usage: JSON.parse(input.aggregate!.token_usage),
       created_at: input.created_at.toISOString(),
@@ -164,7 +161,7 @@ export namespace AutoBeHackathonSessionProvider {
           aggregate: {
             create: {
               id: v7(),
-              state: null,
+              phase: null,
               enabled: true,
               token_usage: JSON.stringify(new AutoBeTokenUsage().toJSON()),
             },
