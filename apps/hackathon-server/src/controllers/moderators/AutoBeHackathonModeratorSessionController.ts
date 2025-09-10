@@ -12,7 +12,7 @@ import {
   TypedRoute,
   WebSocketRoute,
 } from "@nestia/core";
-import { Controller } from "@nestjs/common";
+import { Controller, Get } from "@nestjs/common";
 import { WebSocketAcceptor } from "tgrid";
 import { tags } from "typia";
 
@@ -38,7 +38,7 @@ export class AutoBeHackathonModeratorSessionController {
     });
   }
 
-  @TypedRoute.Get(":id")
+  @Get(":id")
   public async at(
     @AutoBeHackathonModeratorAuth() _moderator: IAutoBeHackathonModerator,
     @TypedParam("hackathonCode") hackathonCode: string,

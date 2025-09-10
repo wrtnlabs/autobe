@@ -5,7 +5,7 @@ import {
   IPage,
 } from "@autobe/interface";
 import { TypedBody, TypedParam, TypedRoute } from "@nestia/core";
-import { Controller } from "@nestjs/common";
+import { Controller, Get } from "@nestjs/common";
 import { tags } from "typia";
 
 import { AutoBeHackathonParticipantAuth } from "../../decorators/AutoBeHackathonParticipantAuth";
@@ -33,7 +33,7 @@ export class AutoBeHackathonParticipantSessionController {
     });
   }
 
-  @TypedRoute.Get(":id")
+  @Get(":id")
   public async at(
     @AutoBeHackathonParticipantAuth()
     participant: IAutoBeHackathonParticipant,
