@@ -286,7 +286,14 @@ export namespace AutoBeHackathonSessionProvider {
       session.aggregate?.phase !== "test" &&
       session.aggregate?.phase !== "realize"
     )
-      throw new UnprocessableEntityException("");
+      throw new UnprocessableEntityException(
+        StringUtil.trim`
+          You can write a review article only after processing the session 
+          to the "interface", "test", or "realize" phase.
+
+          However, the current phase of this session is "${session.aggregate?.phase ?? null}".
+        `,
+      );
     await AutoBeHackathonGlobal.prisma.autobe_hackathon_sessions.update({
       where: { id: props.id },
       data: {
