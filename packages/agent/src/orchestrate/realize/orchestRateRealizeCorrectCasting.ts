@@ -1,6 +1,9 @@
 import {
   AutoBeProgressEventBase,
+  AutoBeRealizeAuthorization,
   AutoBeRealizeFunction,
+  AutoBeRealizeValidateEvent,
+  IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { ILlmApplication, ILlmController, ILlmSchema } from "@samchon/openapi";
@@ -10,58 +13,107 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformCommonCorrectCastingHistories } from "../common/histories/transformCommonCorrectCastingHistories";
 import { IAutoBeCommonCorrectCastingApplication } from "../common/structures/IAutoBeCommonCorrectCastingApplication";
+import { compileRealizeFiles } from "./internal/compileRealizeFiles";
 
 export const orchestrateRealizeCorrectCasting = async <
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
-  func: AutoBeRealizeFunction,
+  authorizations: AutoBeRealizeAuthorization[],
+  functions: AutoBeRealizeFunction[],
   progress: AutoBeProgressEventBase,
-): Promise<AutoBeRealizeFunction> => {
+): Promise<AutoBeRealizeFunction[]> => {
+  const validateEvent = await compileRealizeFiles(ctx, {
+    authorizations,
+    functions,
+  });
+
+  return predicate(ctx, functions, progress, validateEvent);
+};
+
+const predicate = async <Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  functions: AutoBeRealizeFunction[],
+  progress: AutoBeProgressEventBase,
+  event: AutoBeRealizeValidateEvent,
+): Promise<AutoBeRealizeFunction[]> => {
+  if (event.result.type === "failure") {
+    ctx.dispatch(event);
+
+    const failures =
+      event.result.type === "failure" ? event.result.diagnostics : [];
+    return await correct(ctx, functions, failures, progress);
+  }
+  return functions;
+};
+
+const correct = async <Model extends ILlmSchema.Model>(
+  ctx: AutoBeContext<Model>,
+  functions: AutoBeRealizeFunction[],
+  failures: IAutoBeTypeScriptCompileResult.IDiagnostic[],
+  progress: AutoBeProgressEventBase,
+): Promise<AutoBeRealizeFunction[]> => {
   const pointer: IPointer<
     IAutoBeCommonCorrectCastingApplication.IProps | false | null
   > = {
     value: null,
   };
 
-  const { tokenUsage } = await ctx.conversate({
-    source: "realizeCorrect",
-    histories: transformCommonCorrectCastingHistories([]),
-    controller: createController({
-      model: ctx.model,
-      then: (next) => {
-        pointer.value = next;
-      },
-      reject: () => {
-        pointer.value = false;
-      },
+  const locations: string[] = Array.from(
+    new Set(failures.map((d) => d.file).filter((f): f is string => f !== null)),
+  );
+
+  progress.total += locations.length;
+  return executeCachedBatch(
+    locations.map((location) => async () => {
+      const func = functions.find((f) => f.location === location)!;
+
+      const { tokenUsage } = await ctx.conversate({
+        source: "realizeCorrect",
+        histories: transformCommonCorrectCastingHistories([
+          {
+            script: func.content,
+            diagnostics: failures.filter((d) => d.file === location),
+          },
+        ]),
+        controller: createController({
+          model: ctx.model,
+          then: (next) => {
+            pointer.value = next;
+          },
+          reject: () => {
+            pointer.value = false;
+          },
+        }),
+        enforceFunctionCall: true,
+        message: StringUtil.trim`
+          Fix the TypeScript casting problems to resolve the compilation error.
+
+          You don't need to explain me anything, but just fix or give it up 
+          immediately without any hesitation, explanation, and questions.
+      `,
+      });
+      if (pointer.value === null) return func;
+      else if (pointer.value === false) return func;
+
+      ctx.dispatch({
+        id: v7(),
+        type: "realizeCorrect",
+        content: pointer.value.revise.final,
+        created_at: new Date().toISOString(),
+        location: func.location,
+        step: ctx.state().analyze?.step ?? 0,
+        tokenUsage,
+        completed: ++progress.completed,
+        total: progress.total,
+      });
+
+      return { ...func, content: pointer.value.revise.final };
     }),
-    enforceFunctionCall: true,
-    message: StringUtil.trim`
-      Fix the TypeScript casting problems to resolve the compilation error.
-
-      You don't need to explain me anything, but just fix or give it up 
-      immediately without any hesitation, explanation, and questions.
-  `,
-  });
-  if (pointer.value === null) throw new Error("Failed to correct test code.");
-  else if (pointer.value === false) return func;
-
-  ctx.dispatch({
-    id: v7(),
-    type: "realizeCorrect",
-    content: pointer.value.revise.final,
-    created_at: new Date().toISOString(),
-    location: func.location,
-    step: ctx.state().analyze?.step ?? 0,
-    tokenUsage,
-    completed: progress.completed,
-    total: progress.total,
-  });
-
-  return { ...func, content: pointer.value.revise.final };
+  );
 };
 
 const createController = <Model extends ILlmSchema.Model>(props: {

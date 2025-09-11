@@ -15,7 +15,6 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformRealizeCorrectHistories } from "./histories/transformRealizeCorrectHistories";
 import { compileRealizeFiles } from "./internal/compileRealizeFiles";
-import { orchestrateRealizeCorrectCasting } from "./orchestRateRealizeCorrectCasting";
 import { IAutoBeRealizeCorrectApplication } from "./structures/IAutoBeRealizeCorrectApplication";
 import { IAutoBeRealizeFunctionFailure } from "./structures/IAutoBeRealizeFunctionFailure";
 import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
@@ -31,43 +30,41 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
   progress: AutoBeProgressEventBase,
   life: number = ctx.retry,
 ): Promise<AutoBeRealizeFunction[]> {
-  const validateEvent = await compileRealizeFiles(ctx, {
+  const event = await compileRealizeFiles(ctx, {
     authorizations,
     functions,
   });
 
-  if (validateEvent.result.type === "failure") ctx.dispatch(validateEvent);
-  else if (validateEvent.result.type === "success") return functions;
+  if (event.result.type !== "failure") return functions;
   else if (life < 0) return functions;
 
-  const locations: string[] =
-    (validateEvent.result.type === "failure"
-      ? Array.from(new Set(validateEvent.result.diagnostics.map((d) => d.file)))
-      : null
-    )?.filter((el) => el !== null) ?? [];
+  // Extract and process diagnostics
+  const diagnostics = event.result.diagnostics;
+  const locations: string[] = Array.from(
+    new Set(
+      diagnostics.map((d) => d.file).filter((f): f is string => f !== null),
+    ),
+  );
 
-  progress.total += Object.keys(locations).length;
+  progress.total += locations.length;
 
-  const diagnostics =
-    validateEvent.result.type === "failure"
-      ? validateEvent.result.diagnostics
-      : [];
+  // Group diagnostics by file and add to failures
+  const diagnosticsByFile: Record<string, IAutoBeRealizeFunctionFailure> = {};
+  diagnostics.forEach((diagnostic) => {
+    const location: string | null = diagnostic.file;
+    if (location === null) return;
 
-  const diagnosticsByFile = diagnostics.reduce<
-    Record<string, IAutoBeRealizeFunctionFailure>
-  >((acc, diagnostic) => {
-    const location = diagnostic.file!;
-    if (!acc[location]) {
-      acc[location] = {
-        function: functions.find((el) => el.location === location)!,
+    if (!diagnosticsByFile[location]) {
+      const func = functions.find((f) => f.location === location)!;
+      const failure: IAutoBeRealizeFunctionFailure = {
+        function: func,
         diagnostics: [],
       };
+      diagnosticsByFile[location] = failure;
+    } else {
+      diagnosticsByFile[location].diagnostics.push(diagnostic);
     }
-    acc[location].diagnostics.push(diagnostic);
-    return acc;
-  }, {});
-
-  failures.push(...Object.values(diagnosticsByFile));
+  });
 
   await correct(
     ctx,
@@ -75,7 +72,7 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
     scenarios,
     authorizations,
     functions,
-    failures,
+    [...failures, ...Object.values(diagnosticsByFile)],
     progress,
   );
 
@@ -84,7 +81,7 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
     scenarios,
     authorizations,
     functions,
-    failures,
+    [...failures, ...Object.values(diagnosticsByFile)],
     progress,
     life - 1,
   );
@@ -98,8 +95,8 @@ async function correct<Model extends ILlmSchema.Model>(
   functions: AutoBeRealizeFunction[],
   failures: IAutoBeRealizeFunctionFailure[],
   progress: AutoBeProgressEventBase,
-) {
-  await executeCachedBatch(
+): Promise<AutoBeRealizeFunction[]> {
+  return executeCachedBatch(
     locations.map((location) => async (): Promise<AutoBeRealizeFunction> => {
       const scenario = scenarios.find((el) => el.location === location);
       const func = functions.find((el) => el.location === location)!;
@@ -111,7 +108,7 @@ async function correct<Model extends ILlmSchema.Model>(
           totalAuthorizations: authorizations,
           authorization: scenario.decoratorEvent ?? null,
           scenario,
-          function: await orchestrateRealizeCorrectCasting(ctx, func, progress),
+          function: func,
           failures: ReailzeFunctionFailures,
           progress: progress,
         });
