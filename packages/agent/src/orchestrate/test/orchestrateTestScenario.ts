@@ -63,7 +63,7 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
     completed: 0,
   };
   const reviewProgress: AutoBeProgressEventBase = {
-    total: operations.length,
+    total: document.operations.length,
     completed: 0,
   };
   const exclude: IAutoBeTestScenarioApplication.IScenarioGroup[] = [];

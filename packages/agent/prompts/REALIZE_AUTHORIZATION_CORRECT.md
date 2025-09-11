@@ -119,25 +119,78 @@ Follow this systematic approach to fix compilation errors:
 - Maintain proper exception handling (ForbiddenException, UnauthorizedException)  
 - Ensure Swagger integration remains intact  
 
-## Output Format  
+## Output Format (Function Calling Interface)
 
-Provide your corrected code in the following JSON format:  
+You must return a structured output following the `IAutoBeRealizeAuthorizationCorrectApplication.IProps` interface:
 
-```json
-{
-  "provider": {
-    "name": "corrected_provider_name",
-    "code": "corrected_provider_code"
-  },
-  "decorator": {
-    "name": "corrected_decorator_name", 
-    "code": "corrected_decorator_code"
-  }
-  "decoratorType": {
-    "name": "corrected_payload_type_name",
-    "code": "corrected_payload_type_code"
+### TypeScript Interface
+
+```typescript
+export namespace IAutoBeRealizeAuthorizationCorrectApplication {
+  export interface IProps extends IAutoBeRealizeAuthorizationApplication.IProps {
+    error_analysis: string;     // Step 1: TypeScript compilation error analysis
+    solution_guidance: string;  // Step 2: Solution guidance and fix recommendations
+    
+    // Inherited from IAutoBeRealizeAuthorizationApplication.IProps:
+    provider: IProvider;        // Corrected Provider function
+    decorator: IDecorator;      // Corrected Decorator 
+    payload: IPayloadType;      // Corrected Payload Type
   }
 }
+```
+
+### Field Descriptions
+
+#### error_analysis
+**TypeScript compilation error analysis and diagnosis**
+- Combines insights from Step 1 (Error Analysis), Step 2 (Context Understanding), and Step 3 (Root Cause Identification) from the Analysis Process
+- Categorize all compilation errors by component (providers/decorator/payload)
+- List specific error messages with their locations, types, and root causes
+- Include error codes, line numbers, and database table mapping issues where applicable
+
+#### solution_guidance  
+**Solution guidance and fix recommendations**
+- Corresponds to Step 4 (Systematic Correction) from the Analysis Process
+- Provide clear, actionable instructions on how to resolve each identified error
+- Include specific steps like "add property X to interface Y", "update import path from A to B", or "change type from C to D"
+- Explain the correction strategy and dependency order for fixing errors
+
+#### provider (inherited)
+**Corrected authentication Provider function configuration** containing:
+- **name**: The name of the authentication Provider function in `{role}Authorize` format (camelCase)
+- **content**: Complete corrected TypeScript code for the Provider function with all compilation errors fixed
+
+#### decorator (inherited)
+**Corrected authentication Decorator configuration** containing:  
+- **name**: The name of the Decorator in `{Role}Auth` format (PascalCase)
+- **content**: Complete corrected TypeScript code for the Decorator with all compilation errors fixed
+
+#### payload (inherited)
+**Corrected authentication Payload Type configuration** containing:
+- **name**: The name of the Payload Type in `{Role}Payload` format (PascalCase)  
+- **content**: Complete corrected TypeScript code for the Payload interface with all compilation errors fixed
+
+### Output Method
+
+You MUST call the `correctDecorator()` function with your structured output:
+
+```typescript
+correctDecorator({
+  error_analysis: "Detailed analysis of compilation errors...",
+  solution_guidance: "Step-by-step fix recommendations...",
+  provider: {
+    name: "adminAuthorize",           // Corrected provider name
+    content: "// Corrected code..."   // Fixed implementation
+  },
+  decorator: {
+    name: "AdminAuth",                // Corrected decorator name
+    content: "// Corrected code..."   // Fixed implementation
+  },
+  payload: {
+    name: "AdminPayload",             // Corrected payload name
+    content: "// Corrected code..."   // Fixed implementation
+  }
+});
 ```  
 
 ## Validation Checklist  
@@ -155,9 +208,9 @@ Before submitting your corrections, verify:
 
 ## Response Process  
 
-1. **First**, analyze all errors and identify patterns  
-2. **Then**, explain your understanding of the issues  
-3. **Next**, describe your correction strategy  
-4. **Finally**, provide the corrected code in the specified JSON format  
+1. **First**, analyze all errors following Steps 1-3 from the Analysis Process
+2. **Then**, document your analysis in the `error_analysis` field
+3. **Next**, describe your correction strategy in the `solution_guidance` field
+4. **Finally**, provide the corrected code in the `provider`, `decorator`, and `payload` fields using the function call  
 
 Remember: Focus on fixing compilation errors while preserving the original authentication logic and NestJS integration patterns.  

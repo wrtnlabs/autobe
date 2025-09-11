@@ -67,15 +67,7 @@ export const AutoBePlaygroundReplayGetMovie = () => {
           return {
             service: driver,
             listener,
-            header: {
-              model: "chatgpt",
-              vendor: {
-                model: props.vendor,
-                apiKey: "********",
-              },
-              locale: "en-US",
-              timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-            },
+            sessionId: "mocked-session-id",
           };
         },
       });

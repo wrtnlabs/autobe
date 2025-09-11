@@ -3,11 +3,7 @@ import {
   IAutoBePlaygroundVendor,
 } from "@autobe/interface";
 import pApi from "@autobe/playground-api";
-import {
-  AutoBeListener,
-  IAutoBeConfig,
-  getAutoBeAgentSession,
-} from "@autobe/ui";
+import { AutoBeListener, IAutoBeConfig, IAutoBeServiceData } from "@autobe/ui";
 import { ILlmSchema } from "@samchon/openapi";
 import { useRef } from "react";
 
@@ -18,7 +14,9 @@ export function AutoBePlaygroundApplication() {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Playground service factory
-  const serviceFactory = async (config: IAutoBeConfig) => {
+  const serviceFactory = async (
+    config: IAutoBeConfig,
+  ): Promise<IAutoBeServiceData> => {
     // Set playground defaults
     const playgroundConfig = {
       ...config,
@@ -41,31 +39,29 @@ export function AutoBePlaygroundApplication() {
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       locale: playgroundConfig.locale ?? window.navigator.language,
     };
+    const listener = new AutoBeListener();
+    const { service, sessionId } = await (async () => {
+      const connection = {
+        host: playgroundConfig.serverUrl,
+        headers: headers as unknown as Record<string, string>,
+      };
 
-    const autoBeListener: AutoBeListener = new AutoBeListener();
-    const wrapper = await getAutoBeAgentSession({
-      storageStrategy: new AutoBeAgentSessionStorageIndexedDBStrategy(),
-      listener: autoBeListener,
-      connect: () =>
-        pApi.functional.autobe.playground
-          .start(
-            {
-              host: playgroundConfig.serverUrl,
-              headers: headers as unknown as Record<string, string>,
-            },
-            autoBeListener.getListener(),
-          )
+      const sessionId =
+        config.sessionId != null && typeof config.sessionId === "string"
+          ? config.sessionId
+          : globalThis.crypto.randomUUID();
+      return {
+        service: await pApi.functional.autobe.playground
+          .start(connection, listener.getListener())
           .then((v) => v.driver),
-      headers,
-    });
+        sessionId: sessionId,
+      };
+    })();
 
     return {
-      service: wrapper.service,
-      listener: wrapper.listener,
-      header: wrapper.headers,
-      uploadConfig: {
-        supportAudio: playgroundConfig.supportAudioEnable ?? false,
-      },
+      service,
+      sessionId,
+      listener,
     };
   };
 

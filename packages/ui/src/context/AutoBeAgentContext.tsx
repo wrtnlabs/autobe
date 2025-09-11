@@ -65,7 +65,7 @@ export function AutoBeAgentProvider({
     useState<AutoBeConnectionStatus>("disconnected");
 
   // Service data
-  const { searchParams } = useSearchParams();
+  const { searchParams, setSearchParams } = useSearchParams();
   // Use URL parameter for conversation ID - enables bookmark/share support
   const activeConversationId = searchParams.get("session-id") ?? null;
 
@@ -108,9 +108,11 @@ export function AutoBeAgentProvider({
         });
         setServiceInstance(newServiceData);
 
-        const url = new URL(window.location.href);
-        url.searchParams.set("session-id", newServiceData.sessionId);
-        window.history.pushState({}, "", url);
+        setSearchParams((sp) => {
+          const newSp = new URLSearchParams(sp);
+          newSp.set("session-id", newServiceData.sessionId);
+          return newSp;
+        });
 
         setConnectionStatus("connected");
 

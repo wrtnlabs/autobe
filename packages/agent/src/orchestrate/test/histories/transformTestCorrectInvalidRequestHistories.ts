@@ -8,22 +8,21 @@ import { IAutoBeTestFunction } from "../structures/IAutoBeTestFunction";
 
 export const transformTestCorrectInvalidRequestHistories = (
   func: IAutoBeTestFunction,
-  failure: IAutoBeTypeScriptCompileResult.IFailure,
+  diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[],
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
-> => {
-  return [
-    {
-      id: v7(),
-      created_at: new Date().toISOString(),
-      type: "systemMessage",
-      text: AutoBeSystemPromptConstant.TEST_CORRECT_INVALID_REQUEST,
-    },
-    {
-      id: v7(),
-      created_at: new Date().toISOString(),
-      type: "assistantMessage",
-      text: StringUtil.trim`
+> => [
+  {
+    id: v7(),
+    created_at: new Date().toISOString(),
+    type: "systemMessage",
+    text: AutoBeSystemPromptConstant.TEST_CORRECT_INVALID_REQUEST,
+  },
+  {
+    id: v7(),
+    created_at: new Date().toISOString(),
+    type: "assistantMessage",
+    text: StringUtil.trim`
         ## TypeScript Code
         
         \`\`\`typescript
@@ -33,9 +32,8 @@ export const transformTestCorrectInvalidRequestHistories = (
         ## Compile Errors
 
         \`\`\`json
-        ${JSON.stringify(failure.diagnostics)}
+        ${JSON.stringify(diagnostics)}
         \`\`\`
       `,
-    },
-  ];
-};
+  },
+];

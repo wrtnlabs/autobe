@@ -7,6 +7,9 @@ import {
 export class AutoBeAgentSessionStorageMockStrategy
   implements IAutoBeAgentSessionStorageStrategy
 {
+  editSessionTitle(): Promise<void> {
+    return Promise.resolve();
+  }
   appendEvent(): Promise<void> {
     return Promise.resolve();
   }

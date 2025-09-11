@@ -80,12 +80,6 @@ export const archive_test = async (
             .toJSON(),
         })),
       ),
-      [`${project}.test.scenarios.json`]: JSON.stringify(
-        snapshots.map((s) => s.event).filter((e) => e.type === "testScenarios"),
-      ),
-      [`${project}.test.writes.json`]: JSON.stringify(
-        snapshots.map((s) => s.event).filter((e) => e.type === "testWrite"),
-      ),
     });
   if (result.compiled.type === "failure")
     console.log(result.compiled.diagnostics);

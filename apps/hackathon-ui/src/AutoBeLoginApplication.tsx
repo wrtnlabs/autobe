@@ -36,7 +36,7 @@ export function AutoBeLoginApplication() {
     setIsLoading(true);
     try {
       const result =
-        await hApi.autobe.hackathon.participants.authenticate.login(
+        await hApi.functional.autobe.hackathon.participants.authenticate.login(
           {
             host: import.meta.env.VITE_API_BASE_URL,
           },

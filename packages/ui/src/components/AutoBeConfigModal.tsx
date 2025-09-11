@@ -60,14 +60,14 @@ export const AutoBeConfigModal = (props: IAutoBeConfigModalProps) => {
     // Return default values based on type
     if (field.type === "checkbox") return false;
     if (field.type === "number") return 0;
-    return "";
   };
 
   // Initialize config state from stored values
   const [config, setConfig] = useState<Record<string, unknown>>(() => {
     const initialConfig: Record<string, unknown> = {};
     props.fields.forEach((field) => {
-      initialConfig[field.key] = getStoredValue(field);
+      initialConfig[field.key] =
+        getStoredValue(field) ?? field.default ?? undefined;
     });
     return initialConfig;
   });
@@ -89,6 +89,7 @@ export const AutoBeConfigModal = (props: IAutoBeConfigModalProps) => {
       }
     });
 
+    console.log(config);
     // Call optional external save handler
     props.onSave?.(config);
     props.onClose();
@@ -385,6 +386,7 @@ const ALL_CONFIG_FIELDS: Record<string, IConfigField> = {
     type: "text",
     storageKey: "autobe_base_url",
     placeholder: "Leave empty for OpenAI default",
+    default: "https://api.openai.com/v1",
   },
   semaphore: {
     key: "semaphore",

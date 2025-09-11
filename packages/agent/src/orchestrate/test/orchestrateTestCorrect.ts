@@ -16,39 +16,39 @@ import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { completeTestCode } from "./compile/completeTestCode";
 import { transformTestCorrectHistories } from "./histories/transformTestCorrectHistories";
+import { transformTestValidateEvent } from "./histories/transformTestValidateEvent";
 import { orchestrateTestCorrectInvalidRequest } from "./orchestrateTestCorrectInvalidRequest";
+import { orchestrateTestCorrectTypiaTag } from "./orchestrateTestCorrectTypiaTag";
 import { IAutoBeTestCorrectApplication } from "./structures/IAutoBeTestCorrectApplication";
 import { IAutoBeTestFunction } from "./structures/IAutoBeTestFunction";
 import { IAutoBeTestFunctionFailure } from "./structures/IAutoBeTestFunctionFailure";
-import { IAutoBeTestWriteResult } from "./structures/IAutoBeTestWriteResult";
 
 export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  writeResult: IAutoBeTestWriteResult[],
+  writeResults: IAutoBeTestFunction[],
 ): Promise<AutoBeTestValidateEvent[]> => {
   const result: Array<AutoBeTestValidateEvent | null> =
     await executeCachedBatch(
-      writeResult.map((w) => async (promptCacheKey) => {
+      writeResults.map((w) => async (promptCacheKey) => {
         try {
           const compile = (script: string) =>
             compileTestFile(ctx, {
-              artifacts: w.artifacts,
-              scenario: w.scenario,
-              location: w.event.location,
+              ...w,
               script,
             });
-          const event: AutoBeTestValidateEvent =
+          const x: AutoBeTestValidateEvent =
             await orchestrateTestCorrectInvalidRequest(ctx, compile, w);
+          const y: AutoBeTestValidateEvent =
+            await orchestrateTestCorrectTypiaTag(
+              ctx,
+              compile,
+              transformTestValidateEvent(x, w.artifacts),
+            );
           return await predicate(
             ctx,
-            {
-              artifacts: w.artifacts,
-              scenario: w.scenario,
-              location: w.event.location,
-              script: w.event.final ?? w.event.draft,
-            },
+            transformTestValidateEvent(y, w.artifacts),
             [],
-            event,
+            y,
             promptCacheKey,
             ctx.retry,
           );

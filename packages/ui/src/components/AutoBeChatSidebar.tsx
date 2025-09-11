@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { useAutoBeAgentSessionList } from "../context/AutoBeAgentSessionList";
 import { useSearchParams } from "../context/SearchParamsContext";
@@ -6,6 +6,7 @@ import {
   IAutoBeAgentSession,
   IAutoBeAgentSessionStorageStrategy,
 } from "../structure";
+import { ActionButtonGroup } from "./common/ActionButtonGroup";
 import { CompactSessionList } from "./common/CompactSessionList";
 
 /** Props interface for AutoBeChatSidebar component */
@@ -18,16 +19,16 @@ export interface IAutoBeChatSidebarProps {
   /** Custom className */
   className?: string;
   /** Function to select a session */
-  onSessionSelect?: (id: string) => void;
+  onSessionSelect?: (id: string) => Promise<void> | void;
   /** Function to delete a session */
-  onDeleteSession?: (id: string) => void;
+  onDeleteSession?: (id: string) => Promise<void> | void;
 }
 
 const collapsedWidth = "60px";
 const expandedWidth = "320px";
 /** Beautiful and modern chat sidebar component as part of layout */
 export const AutoBeChatSidebar = (props: IAutoBeChatSidebarProps) => {
-  const { sessionList } = useAutoBeAgentSessionList();
+  const { sessionList, refreshSessionList } = useAutoBeAgentSessionList();
   const { searchParams, setSearchParams } = useSearchParams();
   const activeSessionId = searchParams.get("session-id") ?? null;
   const [currentSessionId, setCurrentSessionId] = useState(
@@ -46,6 +47,10 @@ export const AutoBeChatSidebar = (props: IAutoBeChatSidebarProps) => {
     },
     [props.onSessionSelect, setSearchParams],
   );
+
+  useEffect(() => {
+    setCurrentSessionId(activeSessionId);
+  }, [searchParams]);
 
   return (
     <div
@@ -196,7 +201,25 @@ export const AutoBeChatSidebar = (props: IAutoBeChatSidebarProps) => {
                   session={session}
                   isActive={currentSessionId === session.id}
                   onSelect={handleOnSessionSelect}
-                  onDelete={props.onDeleteSession ?? (() => {})}
+                  onDelete={async () => {
+                    await props.onDeleteSession?.(session.id);
+                    refreshSessionList();
+                    if (session.id === currentSessionId) {
+                      setSearchParams((sp) => {
+                        const newSp = new URLSearchParams(sp);
+                        newSp.delete("session-id");
+                        return newSp;
+                      });
+                    }
+                  }}
+                  onEditTitle={async (_: string, newTitle: string) => {
+                    // Update the session title through storage strategy
+                    await props.storageStrategy.editSessionTitle({
+                      id: session.id,
+                      title: newTitle,
+                    });
+                    refreshSessionList();
+                  }}
                 />
               ))
             )}
@@ -219,6 +242,8 @@ export interface IConversationListItemProps {
   onSelect: (sessionId: string) => void;
   /** Callback when conversation should be deleted */
   onDelete: (sessionId: string) => void;
+  /** Callback when conversation should be edited */
+  onEditTitle: (sessionId: string, title: string) => void;
 }
 
 /**
@@ -226,9 +251,41 @@ export interface IConversationListItemProps {
  * metadata, and actions
  */
 export const SessionListItem = (props: IConversationListItemProps) => {
-  const { session, isActive, onSelect, onDelete } = props;
+  const { session, isActive, onSelect, onDelete, onEditTitle } = props;
   const [isHovered, setIsHovered] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingTitle, setEditingTitle] = useState(session.title ?? "");
   const lastMessage = session.history.at(-1);
+
+  //----
+  // EVENT HANDLERS
+  //----
+  const handleStartEditing = () => {
+    setIsEditing(true);
+    setEditingTitle(session.title ?? "Untitled");
+  };
+
+  const handleSaveTitle = () => {
+    const trimmedTitle = editingTitle.trim();
+    if (trimmedTitle && trimmedTitle !== session.title) {
+      onEditTitle?.(session.id, trimmedTitle);
+    }
+    setIsEditing(false);
+  };
+
+  const handleCancelEditing = () => {
+    setIsEditing(false);
+    setEditingTitle(session.title ?? "Untitled");
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleSaveTitle();
+    } else if (e.key === "Escape") {
+      handleCancelEditing();
+    }
+  };
+
   return (
     <div
       style={{
@@ -252,19 +309,85 @@ export const SessionListItem = (props: IConversationListItemProps) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Conversation title */}
+      {/* Conversation title and action buttons */}
       <div
         style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "0.5rem",
           fontSize: "0.875rem",
           fontWeight: "500",
           color: isActive ? "#1d4ed8" : "#1f2937",
           lineHeight: "1.25",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
+          paddingRight: "0.5rem", // Space for buttons
         }}
       >
-        {session.title ?? "Untitled"}
+        {/* Title section */}
+        <div
+          style={{
+            flex: 1,
+            display: "flex",
+            alignItems: "center",
+            minWidth: 0, // Allow shrinking
+          }}
+        >
+          {isEditing ? (
+            <input
+              type="text"
+              value={editingTitle}
+              onChange={(e) => setEditingTitle(e.target.value)}
+              onKeyDown={handleKeyPress}
+              onBlur={handleSaveTitle}
+              style={{
+                flex: 1,
+                border: "1px solid #d1d5db",
+                borderRadius: "0.25rem",
+                padding: "0.25rem 0.5rem",
+                fontSize: "0.875rem",
+                fontWeight: "500",
+                color: isActive ? "#1d4ed8" : "#1f2937",
+                backgroundColor: "#ffffff",
+                outline: "none",
+                boxShadow: "0 0 0 2px rgba(59, 130, 246, 0.25)",
+              }}
+              autoFocus
+              onClick={(e) => e.stopPropagation()}
+            />
+          ) : (
+            <span
+              style={{
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                flex: 1,
+              }}
+            >
+              {session.title ?? "Untitled"}
+            </span>
+          )}
+        </div>
+
+        {/* Action buttons group */}
+        {!isEditing ? (
+          <div
+            style={{
+              visibility: isHovered ? "visible" : "hidden",
+              opacity: isHovered ? 1 : 0,
+              transition: "opacity 0.2s ease",
+            }}
+          >
+            <ActionButtonGroup
+              onEdit={handleStartEditing}
+              onDelete={onDelete ? () => onDelete(session.id) : undefined}
+            />
+          </div>
+        ) : (
+          <ActionButtonGroup
+            onSave={handleSaveTitle}
+            onCancel={handleCancelEditing}
+          />
+        )}
       </div>
 
       {/* Conversation metadata */}
@@ -291,59 +414,6 @@ export const SessionListItem = (props: IConversationListItemProps) => {
           <span>{session.history.length} messages</span>
         )}
       </div>
-
-      {/* Delete button - always visible with X icon */}
-      {onDelete && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            console.log(session);
-            onDelete(session.id);
-          }}
-          style={{
-            position: "absolute",
-            top: "0.5rem",
-            right: "0.5rem",
-            background: "rgba(0, 0, 0, 0.05)",
-            border: "none",
-            borderRadius: "50%",
-            width: "1.25rem",
-            height: "1.25rem",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "#6b7280",
-            transition: "all 0.2s ease",
-            opacity: isHovered ? 1 : 0.7,
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = "#fee2e2";
-            e.currentTarget.style.color = "#dc2626";
-            e.currentTarget.style.opacity = "1";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "rgba(0, 0, 0, 0.05)";
-            e.currentTarget.style.color = "#6b7280";
-            e.currentTarget.style.opacity = isHovered ? "1" : "0.7";
-          }}
-          title="Delete conversation"
-        >
-          <svg
-            width="10"
-            height="10"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M18 6L6 18" />
-            <path d="M6 6l12 12" />
-          </svg>
-        </button>
-      )}
     </div>
   );
 };

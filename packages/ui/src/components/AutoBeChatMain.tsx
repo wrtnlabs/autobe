@@ -69,7 +69,9 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
     // Check additional required fields from props
     if (props.requiredFields) {
       for (const field of props.requiredFields) {
-        if (!config[field]) return false;
+        if (!config[field]) {
+          return false;
+        }
       }
     }
 

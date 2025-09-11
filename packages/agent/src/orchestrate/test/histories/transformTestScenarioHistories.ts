@@ -68,25 +68,18 @@ export const transformTestScenarioHistories = (
       text: StringUtil.trim`
         # Operations
 
-        Below are the full operations. Please refer to this.
-        Your role is to draft all test cases for each given Operation.
+        Below are the complete API operations with their corresponding schema definitions. 
+        This information is critical for understanding API capabilities, data structures, and dependency relationships.
+        Your role is to draft comprehensive test cases for each given Operation using both the operation definitions and schema structures.
         It is also permissible to write multiple test codes on a single endpoint.
         However, rather than meaningless tests, business logic tests should be written and an E2E test situation should be assumed.
 
-        Please carefully analyze each operation to identify all dependencies required for testing.
-        For example, if you want to test liking and then deleting a post,
-        you might think to test post creation, liking, and unlike operations.
-        However, even if not explicitly mentioned, user registration or login are essential prerequisites.
+        Please carefully analyze each operation and schema to identify all dependencies required for testing.
         Pay close attention to IDs and related values in the API,
         and ensure you identify all dependencies between endpoints.
 
         \`\`\`json
-        ${JSON.stringify(
-          document.operations.map((el) => ({
-            ...el,
-            specification: undefined,
-          })),
-        )}
+        ${JSON.stringify({ operations: document.operations, schemas: document.components.schemas })}
         \`\`\`
       `,
     } satisfies IAgenticaHistoryJson.IAssistantMessage,
@@ -144,13 +137,20 @@ export const transformTestScenarioHistories = (
       created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: StringUtil.trim`
+        # Candidate Dependencies
+    
         Here is the list of candidate dependencies identified across 
         all operations by analyzing path parameters and request bodies.
-
-        As they are only candidates, identified by some_entity_id pattern,
-        please review and determine whether to include them in your test scenarios.
-
-        Endpoint | List of IDs from path parameters and request body
+    
+        **CRITICAL**: Each ID listed below represents a resource that MUST exist before the operation can execute.
+        You MUST identify and include the API operations that create these resources in your test scenario dependencies.
+    
+        For each \`some_entity_id\` pattern identified, you are REQUIRED to:
+        1. Find the API operation that creates that entity (has the ID in responseIds)
+        2. Include that operation in your dependency chain
+        3. Ensure proper execution order based on dependency relationships
+    
+        Endpoint | Required IDs (MUST be created by other APIs)
         ---------|---------------------------------------------------
         ${relationships
           .map((r) =>
@@ -160,6 +160,8 @@ export const transformTestScenarioHistories = (
             ].join(" | "),
           )
           .join("\n")}.
+    
+        **Example**: If an endpoint requires \`articleId\`, you MUST include the API that creates articles (e.g., \`POST /articles\`) in your dependencies.
       `,
     } satisfies IAgenticaHistoryJson.IAssistantMessage,
   ];

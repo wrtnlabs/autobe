@@ -209,7 +209,10 @@ export namespace AutoBeHackathonSessionProvider {
     });
     await AutoBeHackathonGlobal.prisma.autobe_hackathon_sessions.update({
       where: { id: props.id },
-      data: { review_article_url: props.body.review_article_url },
+      data: {
+        review_article_url: props.body.review_article_url,
+        completed_at: new Date(),
+      },
     });
   };
 

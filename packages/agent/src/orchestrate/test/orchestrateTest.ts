@@ -69,7 +69,12 @@ export const orchestrateTest =
     console.log("--------------written--------------");
     const corrects: AutoBeTestValidateEvent[] = await orchestrateTestCorrect(
       ctx,
-      written,
+      written.map((w) => ({
+        scenario: w.scenario,
+        artifacts: w.artifacts,
+        location: w.event.location,
+        script: w.event.final ?? w.event.draft,
+      })),
     );
     console.log("--------------corrects--------------");
 

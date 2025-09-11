@@ -5,6 +5,7 @@ import {
   AutoBeChatSidebar,
   AutoBeServiceFactory,
   IAutoBeAgentSessionStorageStrategy,
+  SearchParamsProvider,
   createAutoBeConfigFields,
 } from "@autobe/ui";
 import { useMediaQuery } from "@autobe/ui/hooks";
@@ -68,41 +69,43 @@ export function AutoBePlaygroundChatMovie(
           overflow: "hidden",
         }}
       >
-        <AutoBeAgentSessionListProvider storageStrategy={storageStrategy}>
-          <AutoBeAgentProvider
-            storageStrategy={storageStrategy}
-            serviceFactory={props.serviceFactory}
-          >
-            {/* Flex container for sidebar and main content */}
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                width: "100%",
-                height: "100%",
-              }}
+        <SearchParamsProvider>
+          <AutoBeAgentSessionListProvider storageStrategy={storageStrategy}>
+            <AutoBeAgentProvider
+              storageStrategy={storageStrategy}
+              serviceFactory={props.serviceFactory}
             >
-              <AutoBeChatSidebar
-                storageStrategy={storageStrategy}
-                isCollapsed={isMobile ? false : sidebarCollapsed}
-                onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
-                onDeleteSession={(id) => {
-                  storageStrategy.deleteSession({ id });
-                }}
-              />
-              <AutoBeChatMain
-                isUnusedConfig={props.isUnusedConfig ?? false}
-                isMobile={isMobile}
-                setError={setError}
-                configFields={configFields}
-                requiredFields={["serverUrl"]} // Playground requires serverUrl
+              {/* Flex container for sidebar and main content */}
+              <div
                 style={{
-                  backgroundColor: "lightblue",
+                  display: "flex",
+                  flexDirection: "row",
+                  width: "100%",
+                  height: "100%",
                 }}
-              />
-            </div>
-          </AutoBeAgentProvider>
-        </AutoBeAgentSessionListProvider>
+              >
+                <AutoBeChatSidebar
+                  storageStrategy={storageStrategy}
+                  isCollapsed={isMobile ? false : sidebarCollapsed}
+                  onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+                  onDeleteSession={(id) => {
+                    storageStrategy.deleteSession({ id });
+                  }}
+                />
+                <AutoBeChatMain
+                  isUnusedConfig={props.isUnusedConfig ?? false}
+                  isMobile={isMobile}
+                  setError={setError}
+                  configFields={configFields}
+                  requiredFields={["serverUrl", "openApiKey"]} // Playground requires serverUrl
+                  style={{
+                    backgroundColor: "lightblue",
+                  }}
+                />
+              </div>
+            </AutoBeAgentProvider>
+          </AutoBeAgentSessionListProvider>
+        </SearchParamsProvider>
       </div>
     </div>
   );

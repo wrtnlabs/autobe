@@ -40,6 +40,6 @@ jobs:
 
       - name: Run Hackathon Server Test
         run: |
-          pnpm run schema
+          pnpm run schema postgres root
           pnpm run test --reset true
         working-directory: apps/hackathon-server

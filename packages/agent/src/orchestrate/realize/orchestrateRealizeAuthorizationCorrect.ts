@@ -68,7 +68,7 @@ export async function orchestrateRealizeAuthorizationCorrect<
 
   if (compiled.type === "success") {
     return authorization;
-  } else if (compiled.type === "exception" || life === 0) {
+  } else if (compiled.type === "exception" || life < 0) {
     return authorization;
   }
 

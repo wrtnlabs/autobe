@@ -33,6 +33,9 @@ export interface IAutoBeAgentSessionStorageStrategy {
   ) => Promise<IAutoBeAgentSession>;
   getSessionList: () => Promise<IAutoBeAgentSession[]>;
   deleteSession: (props: Pick<IAutoBeAgentSession, "id">) => Promise<void>;
+  editSessionTitle: (
+    props: Pick<IAutoBeAgentSession, "id" | "title">,
+  ) => Promise<void>;
 }
 
 export const AutoBeAgentSession_INIT = {
@@ -82,43 +85,3 @@ export interface IGetAutoBeAgentSessionProps<
   storageStrategy: IAutoBeAgentSessionStorageStrategy;
   additional?: T;
 }
-
-export const getAutoBeAgentSession = async <T extends Record<string, unknown>>(
-  props: IGetAutoBeAgentSessionProps<T>,
-) => {
-  const service = await props.connect();
-  const id = props.sessionId ?? globalThis.crypto.randomUUID();
-  const url = new URL(window.location.href);
-  url.searchParams.set("session-id", id);
-  window.history.pushState({}, "", url);
-
-  props.listener.on(async (events) => {
-    await props.storageStrategy.appendEvent({
-      id,
-      events,
-    });
-    await props.storageStrategy.setTokenUsage({
-      id,
-      tokenUsage: await service.getTokenUsage(),
-    });
-  });
-
-  return {
-    service: {
-      getFiles: service.getFiles,
-      getHistories: service.getHistories,
-      getTokenUsage: service.getTokenUsage,
-      conversate: async (content) => {
-        const result = await service.conversate(content);
-        await props.storageStrategy.appendHistory({
-          id,
-          history: result,
-        });
-        return result;
-      },
-    } satisfies IAutoBeRpcService,
-    id,
-    listener: props.listener,
-    additional: props.additional,
-  };
-};
