@@ -7,10 +7,12 @@ import {
   IAutoBeHackathonSession,
   IPage,
 } from "@autobe/interface";
+import { UnprocessableEntityException } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 import typia from "typia";
 import { v7 } from "uuid";
 
+import { StringUtil } from "../../../../../packages/utils/src";
 import { AutoBeHackathonGlobal } from "../../AutoBeHackathonGlobal";
 import { IEntity } from "../../structures/IEntity";
 import { PaginationUtil } from "../../utils/PaginationUtil";
@@ -146,6 +148,72 @@ export namespace AutoBeHackathonSessionProvider {
     participant: IEntity;
     body: IAutoBeHackathonSession.ICreate;
   }): Promise<IAutoBeHackathonSession> => {
+    // DOMAIN RESTRICTIONS
+    if (props.body.model === "qwen/qwen3-235b-a22b-2507") {
+      const count: number =
+        await AutoBeHackathonGlobal.prisma.autobe_hackathon_sessions.count({
+          where: {
+            autobe_hackathon_id: props.hackathon.id,
+            autobe_hackathon_participant_id: props.participant.id,
+            model: "qwen/qwen3-235b-a22b-2507",
+          },
+        });
+      if (count >= 10)
+        throw new UnprocessableEntityException(
+          StringUtil.trim`
+          You can create up to 10 sessions with the "qwen/qwen3-235b-a22b-2507" model.
+        `,
+        );
+    } else if (props.body.model === "openai/gpt-4.1-mini") {
+      const count: number =
+        await AutoBeHackathonGlobal.prisma.autobe_hackathon_sessions.count({
+          where: {
+            autobe_hackathon_id: props.hackathon.id,
+            autobe_hackathon_participant_id: props.participant.id,
+            model: "openai/gpt-4.1-mini",
+          },
+        });
+      if (count >= 3)
+        throw new UnprocessableEntityException(
+          StringUtil.trim`
+            You can create up to 3 sessions with the "openai/gpt-4.1-mini" model.
+          `,
+        );
+    } else if (props.body.model === "openai/gpt-4.1") {
+      const completed: number =
+        await AutoBeHackathonGlobal.prisma.autobe_hackathon_sessions.count({
+          where: {
+            autobe_hackathon_id: props.hackathon.id,
+            autobe_hackathon_participant_id: props.participant.id,
+            model: "openai/gpt-4.1-mini",
+            completed_at: { not: null },
+          },
+        });
+      if (completed === 0)
+        throw new UnprocessableEntityException(
+          StringUtil.trim`
+            You must complete at least one session with the "openai/gpt-4.1-mini" 
+            model by writing a review article before creating a new session with 
+            the "openai/gpt-4.1" model.
+          `,
+        );
+      const duplicated: number =
+        await AutoBeHackathonGlobal.prisma.autobe_hackathon_sessions.count({
+          where: {
+            autobe_hackathon_id: props.hackathon.id,
+            autobe_hackathon_participant_id: props.participant.id,
+            model: "openai/gpt-4.1",
+          },
+        });
+      if (duplicated !== 0)
+        throw new UnprocessableEntityException(
+          StringUtil.trim`
+            You can create only one session with the "openai/gpt-4.1" model.
+          `,
+        );
+    }
+
+    // CREATE SESSION
     const record =
       await AutoBeHackathonGlobal.prisma.autobe_hackathon_sessions.create({
         data: {
@@ -198,12 +266,27 @@ export namespace AutoBeHackathonSessionProvider {
     id: string;
     body: IAutoBeHackathonSession.IReview;
   }): Promise<void> => {
-    await find({
+    const session = await find({
       hackathon: props.hackathon,
       participant: props.participant,
       id: props.id,
-      payload: { select: { id: true } },
+      payload: {
+        select: {
+          id: true,
+          aggregate: {
+            select: {
+              phase: true,
+            },
+          },
+        },
+      },
     });
+    if (
+      session.aggregate?.phase !== "interface" &&
+      session.aggregate?.phase !== "test" &&
+      session.aggregate?.phase !== "realize"
+    )
+      throw new UnprocessableEntityException("");
     await AutoBeHackathonGlobal.prisma.autobe_hackathon_sessions.update({
       where: { id: props.id },
       data: {
