@@ -30,7 +30,7 @@
     "prepare": "ts-patch install && pnpm run build:env && pnpm run build:prisma",
     "schema": "ts-node src/executable/schema.ts",
     "start": "ts-node src/executable/server.ts",
-    "start:pm2": "pm2 start ecosystem.config.js",
+    "pm2:start": "pm2 start ecosystem.config.js",
     "test": "ts-node -P test/tsconfig.json test/index.ts"
   },
   "dependencies": {
