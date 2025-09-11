@@ -25,37 +25,64 @@ export const orchestrateRealizeCorrectCasting = async <
   authorizations: AutoBeRealizeAuthorization[],
   functions: AutoBeRealizeFunction[],
   progress: AutoBeProgressEventBase,
+  life: number = ctx.retry,
 ): Promise<AutoBeRealizeFunction[]> => {
-  const validateEvent = await compileRealizeFiles(ctx, {
+  const validateEvent: AutoBeRealizeValidateEvent = await compileRealizeFiles(
+    ctx,
+    {
+      authorizations,
+      functions,
+    },
+  );
+
+  return predicate(
+    ctx,
     authorizations,
     functions,
-  });
-
-  return predicate(ctx, functions, progress, validateEvent);
+    progress,
+    validateEvent,
+    life,
+  );
 };
 
 const predicate = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
+  authorizations: AutoBeRealizeAuthorization[],
   functions: AutoBeRealizeFunction[],
   progress: AutoBeProgressEventBase,
   event: AutoBeRealizeValidateEvent,
+  life: number,
 ): Promise<AutoBeRealizeFunction[]> => {
   if (event.result.type === "failure") {
     ctx.dispatch(event);
 
     const failures =
       event.result.type === "failure" ? event.result.diagnostics : [];
-    return await correct(ctx, functions, failures, progress);
+    return await correct(
+      ctx,
+      authorizations,
+      functions,
+      failures,
+      progress,
+      event,
+      life - 1,
+    );
   }
   return functions;
 };
 
 const correct = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
+  authorizations: AutoBeRealizeAuthorization[],
   functions: AutoBeRealizeFunction[],
   failures: IAutoBeTypeScriptCompileResult.IDiagnostic[],
   progress: AutoBeProgressEventBase,
+  event: AutoBeRealizeValidateEvent,
+  life: number,
 ): Promise<AutoBeRealizeFunction[]> => {
+  if (event.result.type !== "failure") return functions;
+  else if (life < 0) return functions;
+
   const pointer: IPointer<
     IAutoBeCommonCorrectCastingApplication.IProps | false | null
   > = {
@@ -67,7 +94,7 @@ const correct = async <Model extends ILlmSchema.Model>(
   );
 
   progress.total += locations.length;
-  return executeCachedBatch(
+  await executeCachedBatch(
     locations.map((location) => async () => {
       const func = functions.find((f) => f.location === location)!;
 
@@ -113,6 +140,20 @@ const correct = async <Model extends ILlmSchema.Model>(
 
       return { ...func, content: pointer.value.revise.final };
     }),
+  );
+
+  const newValidate: AutoBeRealizeValidateEvent = await compileRealizeFiles(
+    ctx,
+    { authorizations, functions },
+  );
+
+  return await predicate(
+    ctx,
+    authorizations,
+    functions,
+    progress,
+    newValidate,
+    life - 1,
   );
 };
 
