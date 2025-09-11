@@ -1,0 +1,243 @@
+---
+title: AutoBE Hackathon 2025-09-12
+---
+
+## 1. Overview
+
+https://hackathon.autobe.dev
+
+위 URL 주소로 접속하시어, AutoBE 로 백엔드 어플리케이션을 만들고 리뷰해주세요.
+
+AI 모델은 (`openai/gpt-4.1-mini` -> `openai/gpt-4.1`) 순서로 사용해주시면 되며, 만들고자 하는 백엔드 어플리케이션의 주제는 자유로이 정하시면 됩니다.
+
+각각의 AI 모델로 백엔드 어플리케이션 생성이 끝난 뒤에는, https://github.com/wrtnlabs/autobe/discussions/new?category=hackathon-2025-09-12 에 리뷰 게시물을 작성하고, 이를 다시 AutoBE 채팅 세션에 기록해주시면 됩니다.
+
+저희 AutoBE 팀은 여러분의 상세하고 솔직한 리뷰를 바탕으로, AutoBE 를 더욱 발전시켜 나가겠습니다. 그리고 가장 훌륭한 리뷰를 작성하신 분께는 $2,000 달러의 상금을, 두 번째 분께는 $1,000 달러의 상금을 드리겠습니다. 나머지 참여자 분들께도 모두 소정의 상금 $50 달러를 드립니다.
+
+해커톤 대회를 진행하다가 궁금한 점이 생기시면, 언제든지 디스코드 채널 https://discord.gg/aMhRmzkqCx 에서 문의해주세요. 그럼 해커톤 대회에서 여러분의 멋진 리뷰를 기대하겠습니다. 감사합니다.
+
+- Start Date: 2025-09-12, 08:00:00 AM (PDT, UTC-7)
+- End Date: 2025-09-14, 23:59:59 AM (PDT, UTC-7)
+
+## 2. Sign Up
+
+[![](/images/hackathon/login.png)](https://hackathon.autobe.dev)
+
+해커톤 URL https://hackathon.autobe.dev 로 접속해주세요.
+
+그리고 이메일 및 비밀번호를 입력하여 로그인해주세요.
+
+이메일은 여러분이 AutoBE 해커톤 대회 참가 신청 때 입력했던 바로 그것이며, 비밀번호는 여러분께 이메일로 보내드린 AutoBE 안내문에 동봉되어있습니다.
+
+## 3. AI Model Specification
+
+![](/images/hackathon/config.png)
+
+> AI 모델 사용 순서: `openai/gpt-4.1-mini` -> `openai/gpt-4.1`
+
+새 채팅을 시작하며, 채팅에 사용할 AI 모델을 선택해주세요. 첫 채팅에서는 `openai/gpt-4.1-mini` 를 선택하여 진행해주세요. 
+
+`openai/gpt-4.1` 은 `openai/gpt-4.1-mini` 로 백엔드 어플리케이션을 생성한 뒤, 리뷰 게시물을 작성한 뒤에라야 이용할 수 있습니다. 따라서 `openai/gpt-4.1-mini` 를 충분히 사용해보신 후, `openai/gpt-4.1` 로 백엔드 어플리케이션을 생성해보시기 바랍니다.
+
+그리고 `qwen/qwen3-235b-a22b-2507` 는 재미를 위해 넣어두었습니다. 실제로 `qwen/qwen3-235b-a22b-2507` 는 백엔드 어플리케이션의 생성 성공률이 매우 낮으니, 본 해커톤 대회의 일정을 모두 소화하신 후, 여유가 되실 때 흥미 본위로 사용해주시기 바랍니다.
+
+- `openai/gpt-4.1-mini` (essential)
+- `openai/gpt-4.1` (essential, but after review mini)
+- `qwen/qwen3-235b-a22b-2507` (optional, low success rate)
+
+### 3.1. `openai/gpt-4.1-mini`
+
+![](/images/demonstrate/replay-openai-gpt4.1-mini.png)
+
+여러분이 가장 먼저 사용하시게 될 모델입니다.
+
+작고 값싼 모델로써, 가성비 있게 백엔드 어플리케이션을 만들 수 있습니다.
+
+그러나 모델 사이즈의 한계로 인해, 심층적인 요구사항 분석을 잘 못합니다. 그리고 요구사항 분석 정의서나 ERD 해설본 등, 각종 문서들의 완성도가 떨어질 수도 있습니다. 더불어 가끔씩 컴파일 에러를 해소하지 못하여, AutoBE 가 생성한 백엔드 어플리케이션이 빌드 실패할 수도 있습니다.
+
+여러분은 본 해커톤 대회에서 `openai/gpt-4.1-mini` 모델을 최대 3 번 사용할 수 있으니, 다양한 주제로 AutoBE 를 다각도로 체험해보시기 바랍니다.
+
+### 3.2. `openai/gpt-4.1`
+
+![](/images/demonstrate/replay-openai-gpt4.1.png)
+
+> 여러분은 이 모델을, 위 `openai/gpt-4.1-mini` 로 백엔드 어플리케이션을 생성하고 리뷰 게시물을 작성하신 뒤, 사용하실 수 있습니다.
+
+크기 비싼 모델로써, 여러분은 이 `openai/gpt-4.1` 을 통해 가장 완벽한 백엔드 어플리케이션을 만들 수 있습니다.
+
+심층적인 요구사항 분석에도 탁월하며, "나 삼성전자 회장인데 우리 회사의 조직 특성을 고려해서 ERP 시스템 만들어줘, 아무런 질문도 하지말고 니가 가진 모든 지식을 동원해서 알아서 해" 류의 막무가내식 요구사항도 잘 소화해냅니다. 요구사항 분석 정의서나 ERD 해설본 등의 퀄리티도 뛰어나고, 컴파일 에러 또한 매우 잘 이해하고 곧잘 해소해냅니다.
+
+그러나 그만큼 가격이 비쌉니다. Amazon 급 쇼핑몰 기준, 약 400 달러의 비용이 소요됩니다. 때문에 저희도 이 모델을 해커톤 대회에서 무제한 제공해드리지 못하고, `openai/gpt-4.1-mini` 미션을 완수한 뒤에 딱 한 번만 사용할 수 있도록 제한을 두고 있습니다.
+
+
+
+### 3.3. `qwen/qwen3-235b-a22b-2507`
+
+![](/images/demonstrate/replay-qwen3-235b-a22b.png)
+
+가장 싸고 가벼운 모델로써, 개발자들이 사용하는 노트북에서도 무리없이 구동 가능한 모델입니다.
+
+그러나 to do list 급 간단한 백엔드 어플리케이션만 제작이 가능하며, 조금만 요구사항이 복잡하거나 방대해져도 곧잘 고장나버리고는 합니다.
+
+재미를 위해 넣어둔 모델로써, 본 모델에 대한 리뷰는 필수가 아닙니다. 여러분이 여유가 되실 때, 흥미 본위로 사용해주시기 바랍니다.
+
+## 4. Conversation
+
+![](/images/hackathon/conversate.png)
+
+AutoBE 챗봇과 대화하여, 백엔드 어플리케이션을 만들어주세요.
+
+아래는 시사/경제 토론 게시판을 만들 때 사용한 예시입니다. 그러나 아래 대화와 같이, 아무튼 알아서 해줘식의 대화는 지양해주세요. 여러분이 원하는 요구사항들에 대하여, AI 와 충분히 토론해주세요.
+
+> I want to create a political/economic discussion board.
+>
+> Since I'm not familiar with programming, please write a requirements analysis report as you see fit.
+
+AutoBE 챗봇과 요구사항에 대하여 충분히 토의하였다면, AutoBE 는 곧 요구사항 분석 보고서를 발행해 줄 것입니다. 요구사항 정의서 발행에는 약 5 ~ 15 분 정도의 시간이 소요되니, 그동안 다른 일을 하시거나, 잠시간 휴식을 취하신 뒤에 돌아오셔도 됩니다.
+
+이후로는 각 단계에 따라 다음과 같은 대화들을 입력하시면, AutoBE 가 차례대로 작업을 진행하며 백엔드 어플리케이션을 만들어 줄 것입니다. 그리고 이 때부터는 각 단계별로 소요되는 시간이 지난하게 길어지니, 그동안 다른 일을 하셔도 좋습니다.
+
+- Design the database schema.
+- Create the API interface specification.
+- Make e2e test functions.
+- Implement the API functions.
+
+각 단계마다 소요되는 개략적인 시간은, 이전 [3. AI Model Specification](#3-ai-model-specification) 의 각 모델별 예제 스크린샷들을 참고해주세요.
+
+### 4.1. Analyze
+AutoBE 가 당신과의 대화 내용을 바탕으로, 요구사항을 정의하고 이에 대한 분석 보고서를 발행해줍니다.
+
+- 요구사항 분석 보고서 예시:
+  - [To Do List](https://github.com/wrtnlabs/autobe-example-todo/tree/main/docs/analysis)
+  - [Reddit like Community](https://github.com/wrtnlabs/autobe-example-reddit/tree/main/docs/analysis)
+  - [Political/Economic Discussion Board](https://github.com/wrtnlabs/autobe-example-bbs/tree/main/docs/analysis)
+  - [E-Commerce](https://github.com/wrtnlabs/autobe-example-shopping/tree/main/docs/analysis)
+
+당신이 원하는 백엔드 어플리케이션의 요구사항에 대하여, AutoBE 가 끊임없이 질문을 던지며 토론을 이어나갈 것입니다. AutoBE 가 요구사항이 충분히 도출되었다고 판단하면, 어떠한 스토리로 요구사항 분석 보고서를 발행할지 물어볼 것이며, 이 때 동의한다고 말하시면 그대로 요구사항 분석 보고서가 발행됩니다.
+
+만일 AutoBE 의 질문이 지나치게 세세하거나 아니면 만들고자 하는 주제에 대하여 세세하게 알지 못한다면, AutoBE 에게 더 이상의 질문으로 그만두고 재량적으로 판단하여 요구사항을 정의해달라고 하세요. 그러면 AutoBE 가 스스로 판단하여 요구사항을 정의하고 이에 대한 분석 보고서를 발행해줄 것입니다.
+
+여러분은 이렇게 발행된 요구사항 분석 보고서를 읽어보시고, 리뷰 게시물을 써주시면 됩니다. AutoBE 가 실제로 여러분이 원하는 요구사항을 제대로 도출하였는지, 아니면 중대 사항을 누락하거나 또는 필요 이상으로 세세하게 요구사항을 정의하였는지 등을 살펴보시고, 이에 대하여 논평해주세요.
+
+### 4.2. Database Design
+AutoBE 가 요구사항 분석 보고서를 바탕으로, 데이터베이스 엔티티를 설계하고 Prisma ORM 스키마를 작성하며 ERD (Entity Relationship Diagram) 및 해설서를 발간합니다.
+
+- DB 설계 예시 (ERD 및 해설서)
+  - [To Do List](https://github.com/wrtnlabs/autobe-example-todo/blob/main/docs/ERD.md)
+  - [Reddit like Community](https://github.com/wrtnlabs/autobe-example-reddit/blob/main/docs/ERD.md)
+  - [Political/Economic Discussion Board](https://github.com/wrtnlabs/autobe-example-bbs/blob/main/docs/ERD.md)
+  - [E-Commerce](https://github.com/wrtnlabs/autobe-example-shopping/blob/main/docs/ERD.md)
+
+여러분은 이 중 ERD (Entity Relationship Diagram) 과 그것의 상세 해설을 담은 ERD.md 파일을 주축으로 리뷰하시면 됩니다.
+
+DB 설계가 충분히 합리적이고 타당한지, 요구사항 분석 보고서에서 정의한 바들이 제대로 반영되었는지, 정규화와 무결성 원칙을 제대로 준수하고 있는지 등을 평가하여 리뷰해주세요.
+
+### 4.3. API Specification
+AutoBE 가 요구사항 분석 보고서와 DB 설계도를 바탕으로, API 인터페이스 명세서를 작성하고 (Swagger/OpenAPI), NestJS 컨트롤러 및 DTO (Data Transfer Object) 코드를 생성합니다.
+
+- API 스펙 예시
+  - To Do List: [API Controllers](https://github.com/wrtnlabs/autobe-example-todo/tree/main/src/controllers) / [DTO Structures](https://github.com/wrtnlabs/autobe-example-todo/tree/main/src/api/structures)
+  - Reddit like Community: [API Controllers](https://github.com/wrtnlabs/autobe-example-reddit/tree/main/src/controllers) / [DTO Structures](https://github.com/wrtnlabs/autobe-example-reddit/tree/main/src/api/structures)
+  - Political/Economic Discussion Board: [API Controllers](https://github.com/wrtnlabs/autobe-example-bbs/tree/main/src/controllers) / [DTO Structures](https://github.com/wrtnlabs/autobe-example-bbs/tree/main/src/api/structures)
+  - E-Commerce: [API Controllers](https://github.com/wrtnlabs/autobe-example-shopping/tree/main/src/controllers) / [DTO Structures](https://github.com/wrtnlabs/autobe-example-shopping/tree/main/src/api/structures)
+
+여러분은 각각의 API 컨트롤러와 DTO (Data Transfer Object) 코드들을 리뷰하시고, API 설계가 충분히 합리적이고 타당한지, 또한 문서화 수준이 충실하고 쉬이 이해할 수 있는지 등을 평가해주세요.
+
+그리고 API 컨트롤러에 아무런 로직 코드가 없다고 놀라지 마세요. 현재 단계는 오직 API 스펙에 대한 설계까지만 한 단계이며, 실제 API 구현은 [4.5. API Implementation](#45-api-implementation) 단계에서 진행됩니다.
+
+```typescript
+@Controller("/auth/customer")
+export class AuthCustomerController {
+  /**
+   * Register new customer in 'shopping_mall_ai_backend_customers', issuing
+   * tokens.
+   *
+   * Customer registration endpoint for shopping mall service. It creates a new
+   * member account, requiring email, phone number, secure password hash, legal
+   * name, and (optional) nickname, mirroring the
+   * 'shopping_mall_ai_backend_customers' schema. The flow issues JWT tokens,
+   * sets 'is_active' and 'is_verified' states, and snapshots 'created_at' and
+   * 'updated_at' for audit. Security policies enforce uniqueness of email and
+   * phone, password hash integrity, and activity tracking (last_login_at null
+   * at registration). New account is returned with authentication tokens for
+   * API use. If duplicate, validation fails. The schema links this table to
+   * customer withdrawal/session entities for lifecycle management. Error
+   * scenarios include unique validation, identity verification failure, or
+   * transaction rollback. Related operations: customer login, token refresh,
+   * withdrawal. Only customers who complete onboarding will be 'is_active'.
+   *
+   * Field mapping:
+   *
+   * - Email, phone_number, password_hash, name from schema for onboarding
+   * - Is_active true, is_verified as appropriate
+   * - Last_login_at null on join, set on first login
+   *
+   * All core authn details are present in the schema. Do not create extra
+   * fields.
+   *
+   * @param connection
+   * @param body Customer registration for shopping mall service
+   * @setHeader token.access Authorization
+   *
+   * @nestia Generated by Nestia - https://github.com/samchon/nestia
+   */
+  @TypedRoute.Post("join")
+  public async join(
+    @TypedBody() body: IShoppingMallAiBackendCustomer.IJoin,
+  ): Promise<IShoppingMallAiBackendCustomer.IAuthorized> {
+    body;
+    return typia.random<IShoppingMallAiBackendCustomer.IAuthorized>();
+  }
+}
+```
+
+### 4.4. E2E Test Functions
+AutoBE 가 API 인터페이스 명세서를 바탕으로, e2e 테스트 코드를 작성합니다.
+
+- E2E 테스트 코드 예시
+  - To Do List: [E2E Tests](https://github.com/wrtnlabs/autobe-example-todo/tree/main/test/features/api)
+  - Reddit like Community: [E2E Tests](https://github.com/wrtnlabs/autobe-example-reddit/tree/main/test/features/api)
+  - Political/Economic Discussion Board: [E2E Tests](https://github.com/wrtnlabs/autobe-example-bbs/tree/main/test/features/api)
+  - E-Commerce: [E2E Tests](https://github.com/wrtnlabs/autobe-example-shopping/tree/main/test/features/api)
+
+여러분은 이 e2e 테스트 코드들을 살펴보시며, 각 e2e 테스트 시나리오가 충분히 합리적이고 타당한지 판단해주세요. 그리고 e2e 테스트의 구현 코드가 사람이 읽기에도 괜찮은지, 또는 지나치게 복잡하거나 난해한 코드를 작성하였는지 등을 평가해주세요.
+
+이외에 e2e 테스트 코드에 대한 여러분의 솔직하고 가감없는 리뷰를 부탁드립니다.]
+
+### 4.5. API Implementation
+AutoBE 가 앞서의 모든 과정들을 바탕으로, API 로직 코드를 작성합니다.
+
+- API 구현 코드 예시
+  - [To Do List](https://github.com/wrtnlabs/autobe-example-todo/tree/main/src/providers)
+  - [Reddit like Community](https://github.com/wrtnlabs/autobe-example-reddit/tree/main/src/providers)
+  - [Political/Economic Discussion Board](https://github.com/wrtnlabs/autobe-example-bbs/tree/main/src/providers)
+  - [E-Commerce](https://github.com/wrtnlabs/autobe-example-shopping/tree/main/src/providers)
+
+이 역시 API 로직 구현 코드 전반을 살펴보며, 솔직하고 상세한 리뷰를 작성해주세요.
+
+여러분의 리뷰는 AutoBE 의 발전에 큰 도움이 됩니다.
+
+## 5. Review
+
+[![](/images/hackathon/review.png)](https://github.com/wrtnlabs/autobe/discussions/new?category=hackathon-2025-09-12)
+
+https://github.com/wrtnlabs/autobe/discussions/new?category=hackathon-2025-09-12
+
+AutoBE 로 백엔드 어플리케이션을 생성했다면, 위 URL 에 리뷰 게시물을 작성해주세요.
+
+입력해야 할 정보는 아래와 같이 총 8 가지입니다.
+
+여러분의 솔직하고 상세한 리뷰는 AutoBE 의 발전에 큰 도움이 됩니다. 감사합니다.
+
+1. 채팅 세션 URL
+   - 리뷰 대상 채팅 세션의 URL 을 입력해주세요
+   - ex: https://hackathon.autobe.dev/index.html?session-id=01993775-da38-731f-a4d4-8edd36653ba3
+2. 요구사항 분석 보고서에 대한 리뷰
+3. DB 설계에 대한 리뷰
+4. API 명세서에 대한 리뷰
+5. E2E 테스트 코드에 대한 리뷰
+6. API 구현 코드에 대한 리뷰
+7. AutoBE 의 레벨 정의 (junir / mid / senior)
+8. AutoBE 전반에 대한 리뷰
+
+이후 리뷰 아티클의 URL 을 복사하여, AutoBE 해커톤 어플리케이션에 입력해주세요.
