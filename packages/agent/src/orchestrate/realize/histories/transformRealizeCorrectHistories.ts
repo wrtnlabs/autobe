@@ -24,6 +24,12 @@ export function transformRealizeCorrectHistories(props: {
     ...transformRealizeWriteHistories(props),
     {
       id: v7(),
+      created_at: new Date().toISOString(),
+      type: "systemMessage",
+      text: AutoBeSystemPromptConstant.COMMON_CORRECT_CASTING,
+    },
+    {
+      id: v7(),
       type: "assistantMessage",
       text: StringUtil.trim`
         Below is the code you made before. It's also something to review.

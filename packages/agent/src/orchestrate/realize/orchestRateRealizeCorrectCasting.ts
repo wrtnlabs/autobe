@@ -39,6 +39,7 @@ export const orchestrateRealizeCorrectCasting = async <
     ctx,
     authorizations,
     functions,
+    [],
     progress,
     validateEvent,
     life,
@@ -49,6 +50,7 @@ const predicate = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   authorizations: AutoBeRealizeAuthorization[],
   functions: AutoBeRealizeFunction[],
+  failures: IAutoBeTypeScriptCompileResult.IDiagnostic[],
   progress: AutoBeProgressEventBase,
   event: AutoBeRealizeValidateEvent,
   life: number,
@@ -56,13 +58,14 @@ const predicate = async <Model extends ILlmSchema.Model>(
   if (event.result.type === "failure") {
     ctx.dispatch(event);
 
-    const failures =
-      event.result.type === "failure" ? event.result.diagnostics : [];
     return await correct(
       ctx,
       authorizations,
       functions,
-      failures,
+      [
+        ...failures,
+        ...(event.result.type === "failure" ? event.result.diagnostics : []),
+      ],
       progress,
       event,
       life - 1,
@@ -89,8 +92,11 @@ const correct = async <Model extends ILlmSchema.Model>(
     value: null,
   };
 
+  const diagnostics = event.result.diagnostics;
   const locations: string[] = Array.from(
-    new Set(failures.map((d) => d.file).filter((f): f is string => f !== null)),
+    new Set(
+      diagnostics.map((d) => d.file).filter((f): f is string => f !== null),
+    ),
   );
 
   progress.total += locations.length;
@@ -151,6 +157,12 @@ const correct = async <Model extends ILlmSchema.Model>(
     ctx,
     authorizations,
     functions,
+    [
+      ...failures,
+      ...(newValidate.result.type === "failure"
+        ? newValidate.result.diagnostics
+        : []),
+    ],
     progress,
     newValidate,
     life - 1,

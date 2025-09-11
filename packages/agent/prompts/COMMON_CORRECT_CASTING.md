@@ -817,6 +817,17 @@ interface IUser {
 }
 const user: IUser = getUser();
 const userName: string = user.name; // ERROR: string | undefined not assignable to string
+
+// Problem 4: Prisma query result with null to undefined conversion
+const post = await MyGlobal.prisma.community_platform_posts.findUnique({
+  where: { id: body.post_id },
+  select: { community_platform_member_id: true },
+});
+// post.community_platform_member_id is (string & Format<"uuid">) | null
+// But the target type expects string | undefined
+const memberId: string | undefined = post.community_platform_member_id; 
+// ERROR: Type '(string & Format<"uuid">) | null' is not assignable to type 'string | undefined'.
+//   Type 'null' is not assignable to type 'string | undefined'.
 ```
 
 **Solutions:**
@@ -843,6 +854,25 @@ if (user.name !== undefined) {
 }
 // Or provide a default:
 const userName: string = user.name ?? "Unknown";
+
+// Solution 4: Convert null to undefined for Prisma results
+const post = await MyGlobal.prisma.community_platform_posts.findUnique({
+  where: { id: body.post_id },
+  select: { community_platform_member_id: true },
+});
+
+// Option A: Using nullish coalescing to convert null to undefined
+const memberId: string | undefined = post?.community_platform_member_id ?? undefined;
+
+// Option B: Using conditional check
+const memberId: string | undefined = post?.community_platform_member_id !== null 
+  ? post.community_platform_member_id 
+  : undefined;
+
+// Option C: If you need to strip typia tags as well
+const memberId: string | undefined = post?.community_platform_member_id !== null
+  ? (post.community_platform_member_id satisfies string as string)
+  : undefined;
 ```
 
 ### 3.8. typia.assert vs typia.assertGuard

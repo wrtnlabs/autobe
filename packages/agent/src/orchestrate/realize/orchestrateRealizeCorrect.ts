@@ -62,18 +62,8 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
       };
       diagnosticsByFile[location] = failure;
     }
-    
     diagnosticsByFile[location].diagnostics.push(diagnostic);
   });
-
-  console.log(
-    life,
-    JSON.stringify(
-      [...failures, ...Object.values(diagnosticsByFile)],
-      null,
-      2,
-    ) + "\n",
-  );
 
   await correct(
     ctx,
