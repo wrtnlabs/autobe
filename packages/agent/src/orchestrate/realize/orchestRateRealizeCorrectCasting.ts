@@ -100,6 +100,7 @@ const correct = async <Model extends ILlmSchema.Model>(
   );
 
   progress.total += locations.length;
+
   await executeCachedBatch(
     locations.map((location) => async () => {
       const func = functions.find((f) => f.location === location)!;
@@ -129,6 +130,7 @@ const correct = async <Model extends ILlmSchema.Model>(
           immediately without any hesitation, explanation, and questions.
       `,
       });
+      ++progress.completed;
       if (pointer.value === null) return func;
       else if (pointer.value === false) return func;
 
@@ -140,7 +142,7 @@ const correct = async <Model extends ILlmSchema.Model>(
         location: func.location,
         step: ctx.state().analyze?.step ?? 0,
         tokenUsage,
-        completed: ++progress.completed,
+        completed: progress.completed,
         total: progress.total,
       });
 
