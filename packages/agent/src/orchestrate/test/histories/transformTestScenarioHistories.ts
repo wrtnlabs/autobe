@@ -108,15 +108,17 @@ export const transformTestScenarioHistories = (
       created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: StringUtil.trim`
-        # Operations
+        # API Operations
 
-        Below are the complete API operations with their corresponding schema definitions. 
-        This information is critical for understanding API capabilities, data structures, and dependency relationships.
-        Your role is to draft comprehensive test cases for each given Operation using both the operation definitions and schema structures.
-        It is also permissible to write multiple test codes on a single endpoint.
-        However, rather than meaningless tests, business logic tests should be written and an E2E test situation should be assumed.
+        Below are the complete API operations.
+        Use this information to understand capabilities and dependency relationships.
+        Generate scenarios only for endpoints listed in "Included in Test Plan".
+        Other operations may be referenced as dependencies only.
 
-        Please carefully analyze each operation and schema to identify all dependencies required for testing.
+        You may write multiple scenarios for a single included endpoint.
+        Focus on business-logic-oriented E2E flows rather than trivial CRUD.
+
+        Please analyze the operations to identify all dependencies required for testing.
         Pay close attention to IDs and related values in the API,
         and ensure you identify all dependencies between endpoints.
 
@@ -137,7 +139,7 @@ export const transformTestScenarioHistories = (
         When testing endpoints that require authentication, ensure you include the corresponding 
         join/login operations in your test scenario to establish proper authentication context.
 
-        **CRITICAL**: Generate test scenarios ONLY for these included endpoints. Do NOT create scenarios for excluded endpoints.
+        Generate test scenarios only for these included endpoints. Do not create scenarios for excluded endpoints. Operations not listed here may be used only as dependencies.
 
         ${include
           .map((el, i) => {
@@ -194,22 +196,18 @@ export const transformTestScenarioHistories = (
       text: StringUtil.trim`
         # Candidate Dependencies
     
-        Here is the list of candidate dependencies identified across 
-        all operations by analyzing path parameters and request bodies.
-    
-        **CRITICAL**: Each ID listed below represents a resource that MUST exist before the operation can execute.
-        You MUST identify and include the API operations that create these resources in your test scenario dependencies.
-        
-        **Dependency Resolution Process**: 
-        1. For each required ID (e.g., \`articleId\`), find the API operation that creates that resource
-        2. Look for creation operations (typically POST methods) that provide the needed ID in their response
-        3. Include these creator operations in your dependency chain in the correct order
-        4. Ensure all prerequisite resources are created before dependent resources
+        List of candidate dependencies extracted from path parameters and request bodies.
 
-        For each \`some_entity_id\` pattern identified, you are REQUIRED to:
-        1. Find the API operation that creates that entity (typically has POST method and creates the resource)
-        2. Include that operation in your dependency chain
-        3. Ensure proper execution order based on dependency relationships
+        Apply dependency resolution to the target endpoint from "Included in Test Plan" and to dependencies found recursively from it.
+        For each required ID, locate the operation that creates the resource. Include the creator only if that operation exists in the provided operations list. Do not assume or invent operations. If no creator exists, treat the ID as an external or pre-existing input.
+
+        Dependency resolution steps:
+        1. Starting from the target endpoint, collect required IDs.
+        2. For each ID, search for a creator operation (typically POST).
+        3. If found, add it to the dependency chain in execution order and repeat for its own required IDs.
+        4. Stop when no further creators exist or are needed.
+
+        For each some_entity_id pattern, use the same approach: include a creator only when it is present in the operations list.
     
         Endpoint | Required IDs (MUST be created by other APIs)
         ---------|---------------------------------------------------
@@ -220,11 +218,9 @@ export const transformTestScenarioHistories = (
               r.ids.map((id) => `\`${id}\``).join(", "),
             ].join(" | "),
           )
-          .join("\n")}.
-    
-        **Example**: If an endpoint requires \`articleId\`, you MUST include the API that creates articles (e.g., \`POST /articles\`) in your dependencies.
-        
-        **Important**: Only use operations that exist in the complete operations list provided above. Do not assume APIs exist - verify they are available before including them as dependencies.
+          .join("\n")}
+
+        Example: If an endpoint requires \`articleId\` and \`POST /articles\` exists, include it in dependencies
       `,
     } satisfies IAgenticaHistoryJson.IAssistantMessage,
   ];
