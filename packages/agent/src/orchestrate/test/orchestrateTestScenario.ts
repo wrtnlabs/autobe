@@ -16,7 +16,6 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
-import { OpenApiEndpointComparator } from "../interface/utils/OpenApiEndpointComparator";
 import { transformTestScenarioHistories } from "./histories/transformTestScenarioHistories";
 import { IAutoBeTestScenarioApplication } from "./structures/IAutoBeTestScenarioApplication";
 import { IAutoBeTestScenarioAuthorizationRole } from "./structures/IAutoBeTestScenarioAuthorizationRole";
@@ -139,7 +138,6 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
       ),
       controller: createController({
         model: ctx.model,
-        include: props.include,
         endpointNotFound: props.endpointNotFound,
         dict: props.dict,
         authorizations,
@@ -158,6 +156,16 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
       message: `Create e2e test scenarios.`,
     });
     if (pointer.value.length === 0) return [];
+    pointer.value.forEach((v) => {
+      if (
+        props.include.some(
+          (op) =>
+            v.endpoint.method === op.method && v.endpoint.path === op.path,
+        )
+      ) {
+        props.progress.completed += 1;
+      }
+    });
     ctx.dispatch({
       type: "testScenarios",
       id: v7(),
@@ -175,7 +183,7 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
           ),
         )
         .flat(),
-      completed: (props.progress.completed += pointer.value.length),
+      completed: props.progress.completed,
       total: props.progress.total,
       step: ctx.state().interface?.step ?? 0,
       created_at: new Date().toISOString(),
@@ -188,7 +196,6 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
-  include: AutoBeOpenApi.IOperation[];
   endpointNotFound: string;
   dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>;
   authorizations: AutoBeInterfaceAuthorization[];
@@ -202,31 +209,6 @@ function createController<Model extends ILlmSchema.Model>(props: {
     const result: IValidation<IAutoBeTestScenarioApplication.IProps> =
       typia.validate<IAutoBeTestScenarioApplication.IProps>(next);
     if (result.success === false) return result;
-
-    const filtered: HashMap<
-      AutoBeOpenApi.IEndpoint,
-      IAutoBeTestScenarioApplication.IScenarioGroup
-    > = new HashMap(
-      OpenApiEndpointComparator.hashCode,
-      OpenApiEndpointComparator.equals,
-    );
-
-    result.data.scenarioGroups.forEach((group) => {
-      for (const op of props.include) {
-        if (
-          group.endpoint.method === op.method &&
-          group.endpoint.path === op.path
-        ) {
-          if (filtered.has(group.endpoint)) {
-            filtered.get(group.endpoint).scenarios.push(...group.scenarios);
-          } else {
-            filtered.set(group.endpoint, group);
-          }
-        }
-      }
-    });
-
-    result.data.scenarioGroups = filtered.toJSON().map((it) => it.second);
 
     // merge to unique scenario groups
     const scenarioGroups: IAutoBeTestScenarioApplication.IScenarioGroup[] =
