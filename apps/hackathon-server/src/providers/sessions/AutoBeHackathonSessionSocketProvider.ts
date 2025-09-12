@@ -26,7 +26,6 @@ export namespace AutoBeHackathonSessionSocketProvider {
       IAutoBeRpcService,
       IAutoBeRpcListener
     >;
-    query: IAutoBeHackathonSession.IQuery;
   }): Promise<void> => {
     // PREPARE RELATED ENTITIES
     const hackathon: IAutoBeHackathon = await findHackathon(props);
@@ -53,7 +52,6 @@ export namespace AutoBeHackathonSessionSocketProvider {
       session,
       connection,
       acceptor: props.acceptor,
-      query: props.query,
     });
   };
 

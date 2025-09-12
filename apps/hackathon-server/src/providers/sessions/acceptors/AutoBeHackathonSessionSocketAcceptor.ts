@@ -30,12 +30,8 @@ export namespace AutoBeHackathonSessionSocketAcceptor {
     session: IAutoBeHackathonSession.ISummary;
     connection: IEntity;
     acceptor: WebSocketAcceptor<unknown, IAutoBeRpcService, IAutoBeRpcListener>;
-    query: IAutoBeHackathonSession.IQuery;
   }): Promise<void> => {
-    const { histories, snapshots } = await startReplay({
-      ...props,
-      replay: !props.query?.noReplay,
-    });
+    const { histories, snapshots } = await startReplay(props);
     const listener: Driver<IAutoBeRpcListener> = props.acceptor.getDriver();
     if (histories.length !== 0)
       while (true) {
@@ -69,10 +65,7 @@ export namespace AutoBeHackathonSessionSocketAcceptor {
     connection: IEntity;
     acceptor: WebSocketAcceptor<unknown, IAutoBeRpcService, IAutoBeRpcListener>;
   }): Promise<void> => {
-    await startReplay({
-      ...props,
-      replay: true,
-    });
+    await startReplay(props);
   };
 
   export const simulate = async (props: {
@@ -95,7 +88,6 @@ export namespace AutoBeHackathonSessionSocketAcceptor {
     session: IAutoBeHackathonSession.ISummary;
     connection: IEntity;
     acceptor: WebSocketAcceptor<unknown, IAutoBeRpcService, IAutoBeRpcListener>;
-    replay: boolean;
   }) => {
     const histories: AutoBeHistory[] =
       await AutoBeHackathonSessionHistoryProvider.getAll({
