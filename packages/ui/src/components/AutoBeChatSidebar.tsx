@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
 
-import { useAutoBeAgent } from "../context/AutoBeAgentContext";
 import { useAutoBeAgentSessionList } from "../context/AutoBeAgentSessionList";
 import { useSearchParams } from "../context/SearchParamsContext";
 import {
