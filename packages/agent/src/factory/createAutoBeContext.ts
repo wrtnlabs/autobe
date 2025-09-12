@@ -36,6 +36,7 @@ import { AutoBeTokenUsageComponent } from "../context/AutoBeTokenUsageComponent"
 import { IAutoBeApplication } from "../context/IAutoBeApplication";
 import { IAutoBeConfig } from "../structures/IAutoBeConfig";
 import { IAutoBeVendor } from "../structures/IAutoBeVendor";
+import { registerChunkTimeout } from "../utils/registerChunkTimeout";
 import { consentFunctionCall } from "./consentFunctionCall";
 import { getCriticalCompiler } from "./getCriticalCompiler";
 
@@ -103,7 +104,12 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
             source: next.source,
           });
         });
-        agent.on("response", (event) => {
+
+        const { chunkTimeoutAbortController: abortController } =
+          registerChunkTimeout(agent, {
+            timeout: 3 * 60 * 1000,
+          });
+        agent.on("response", async (event) => {
           void props
             .dispatch({
               ...event,
@@ -135,6 +141,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
 
         const histories: MicroAgenticaHistory<Model>[] = await agent.conversate(
           next.message,
+          { abortSignal: abortController.signal },
         );
         const tokenUsage: IAutoBeTokenUsageJson.IComponent = agent
           .getTokenUsage()
