@@ -95,6 +95,7 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
       }
       return true;
     });
+    progress.total = include.length + exclude.length;
   } while (include.length > 0);
 
   return exclude.flatMap((pg) => {
@@ -156,16 +157,6 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
       message: `Create e2e test scenarios.`,
     });
     if (pointer.value.length === 0) return [];
-    pointer.value.forEach((v) => {
-      if (
-        props.include.some(
-          (op) =>
-            v.endpoint.method === op.method && v.endpoint.path === op.path,
-        )
-      ) {
-        props.progress.completed += 1;
-      }
-    });
     ctx.dispatch({
       type: "testScenarios",
       id: v7(),
@@ -183,8 +174,8 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
           ),
         )
         .flat(),
-      completed: props.progress.completed,
-      total: props.progress.total,
+      completed: (props.progress.completed += pointer.value.length),
+      total: Math.max(props.progress.total, props.progress.completed),
       step: ctx.state().interface?.step ?? 0,
       created_at: new Date().toISOString(),
     });
