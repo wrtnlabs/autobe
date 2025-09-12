@@ -103,16 +103,20 @@ async function correct<Model extends ILlmSchema.Model>(
         failures.filter((f) => f.function.location === location);
 
       if (ReailzeFunctionFailures.length && scenario) {
-        const correctEvent = await step(ctx, {
-          totalAuthorizations: authorizations,
-          authorization: scenario.decoratorEvent ?? null,
-          scenario,
-          function: func,
-          failures: ReailzeFunctionFailures,
-          progress: progress,
-        });
+        try {
+          const correctEvent = await step(ctx, {
+            totalAuthorizations: authorizations,
+            authorization: scenario.decoratorEvent ?? null,
+            scenario,
+            function: func,
+            failures: ReailzeFunctionFailures,
+            progress: progress,
+          });
 
-        func.content = correctEvent.content;
+          func.content = correctEvent.content;
+        } catch (err) {
+          return func;
+        }
       }
 
       return func;
