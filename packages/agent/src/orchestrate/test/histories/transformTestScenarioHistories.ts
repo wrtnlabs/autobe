@@ -54,48 +54,6 @@ export const transformTestScenarioHistories = (
     }
   }
 
-  // console.log(JSON.stringify(include, null, 2));
-
-  // console.log("------------INCLUDED------------");
-  // console.log(
-  //   `        ${include
-  //     .map((el, i) => {
-  //       const roles = Array.from(authorizationRoles.values()).filter(
-  //         (role) => role.name === el.authorizationRole,
-  //       );
-  //       return StringUtil.trim`
-  //             ## ${i + 1}. ${el.method.toUpperCase()} ${el.path}
-
-  //             Related Authentication APIs:
-
-  //             ${
-  //               roles.length > 0
-  //                 ? roles
-  //                     .map((role) => {
-  //                       return StringUtil.trim`
-  //                         - ${role.join?.method.toUpperCase()}: ${role.join?.path}
-  //                         - ${role.login?.method.toUpperCase()}: ${role.login?.path}
-  //                       `;
-  //                     })
-  //                     .join("\n")
-  //                 : "- None"
-  //             }
-
-  //             Required IDs:
-
-  //             - ${
-  //               getReferenceIds({ document, operation: el }).length > 0
-  //                 ? getReferenceIds({ document, operation: el })
-  //                     .map((id) => `\`${id}\``)
-  //                     .join(", ")
-  //                 : "None"
-  //             }
-
-  //           `;
-  //     })
-  //     .join("\n")}`,
-  // );
-
   return [
     {
       id: v7(),
@@ -123,7 +81,7 @@ export const transformTestScenarioHistories = (
         and ensure you identify all dependencies between endpoints.
 
         \`\`\`json
-        ${JSON.stringify({ operations: document.operations, schemas: document.components.schemas })}
+        ${JSON.stringify({ operations: document.operations })}
         \`\`\`
       `,
     } satisfies IAgenticaHistoryJson.IAssistantMessage,

@@ -186,16 +186,6 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
       step: ctx.state().interface?.step ?? 0,
       created_at: new Date().toISOString(),
     });
-    pointer.value.forEach((v) => {
-      console.log(v.endpoint.method, v.endpoint.path);
-      v.scenarios.forEach((s) => {
-        console.log(s.functionName);
-        s.dependencies.forEach((d) => {
-          console.log(JSON.stringify(d, null, 2));
-        });
-      });
-    });
-    console.log("------------------SCENARIO-------------------");
     return pointer.value;
   } catch {
     return [];
