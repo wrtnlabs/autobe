@@ -4,7 +4,6 @@ import { AutoBeCompiler } from "@autobe/compiler";
 import { IAutoBeCompilerListener } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import fs from "fs";
-import OpenAI from "openai";
 import typia from "typia";
 
 import { TestFactory } from "../TestFactory";
@@ -98,18 +97,7 @@ const main = async (): Promise<void> => {
     createAgent: (histories) =>
       new AutoBeAgent({
         model: TestGlobal.env.SCHEMA_MODEL ?? "chatgpt",
-        vendor: {
-          api: new OpenAI({
-            apiKey: TestGlobal.vendorModel.startsWith("openai/")
-              ? TestGlobal.env.OPENAI_API_KEY
-              : TestGlobal.env.OPENROUTER_API_KEY,
-            baseURL: "https://openrouter.ai/api/v1",
-          }),
-          model: TestGlobal.vendorModel.startsWith("openai/")
-            ? TestGlobal.vendorModel.replace("openai/", "")
-            : TestGlobal.vendorModel,
-          semaphore,
-        },
+        vendor: TestGlobal.getVendorConfig(),
         config: {
           locale: "en-US",
         },

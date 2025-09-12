@@ -25,12 +25,7 @@ export const getClientAgent = (
   scenario: IScenario,
   semaphore: Semaphore,
 ): ClientAgent => {
-  const llm = new OpenAI({
-    apiKey: TestGlobal.vendorModel.startsWith("openai/")
-      ? TestGlobal.env.OPENAI_API_KEY
-      : TestGlobal.env.OPENROUTER_API_KEY,
-    baseURL: "https://openrouter.ai/api/v1",
-  });
+  const llm = TestGlobal.getVendorConfig().api;
   const baseHistories = [
     {
       role: "system",

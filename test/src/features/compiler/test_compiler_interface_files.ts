@@ -2,7 +2,6 @@ import { AutoBeAgent } from "@autobe/agent";
 import { AutoBeCompiler } from "@autobe/compiler";
 import { FileSystemIterator } from "@autobe/filesystem";
 import cp from "child_process";
-import OpenAI from "openai";
 
 import { TestGlobal } from "../../TestGlobal";
 import { TestHistory } from "../../internal/TestHistory";
@@ -12,12 +11,7 @@ export const test_compiler_interface_files = async () => {
 
   const agent: AutoBeAgent<"chatgpt"> = new AutoBeAgent({
     model: "chatgpt",
-    vendor: {
-      api: new OpenAI({
-        apiKey: "THIS IS JUST COMPILER TEST. SO WE DON'T NEED API KEY.",
-      }),
-      model: "gpt-4.1",
-    },
+    vendor: TestGlobal.getVendorConfig(),
     histories: await TestHistory.getHistories("todo", "interface"),
     compiler: (listener) => new AutoBeCompiler(listener),
   });
