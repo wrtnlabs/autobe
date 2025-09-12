@@ -301,7 +301,6 @@ export async function connect(
   connection: IConnection<connect.Header>,
   hackathonCode: string,
   id: string & tags.Format<"uuid">,
-  query: connect.Query,
   provider: connect.Provider,
 ): Promise<connect.Output> {
   const connector: WebSocketConnector<
@@ -310,7 +309,7 @@ export async function connect(
     connect.Listener
   > = new WebSocketConnector(connection.headers ?? ({} as any), provider);
   await connector.connect(
-    `${connection.host.endsWith("/") ? connection.host.substring(0, connection.host.length - 1) : connection.host}${connect.path(hackathonCode, id, query)}`,
+    `${connection.host.endsWith("/") ? connection.host.substring(0, connection.host.length - 1) : connection.host}${connect.path(hackathonCode, id)}`,
   );
   const driver: Driver<connect.Listener> = connector.getDriver();
   return {
@@ -326,24 +325,12 @@ export namespace connect {
   export type Header = IAutoBeHackathonSession.IHeader;
   export type Provider = IAutoBeRpcListener;
   export type Listener = IAutoBeRpcService;
-  export type Query = IAutoBeHackathonSession.IQuery;
 
   export const path = (
     hackathonCode: string,
     id: string & tags.Format<"uuid">,
-    query: Query,
-  ) => {
-    const variables: URLSearchParams = new URLSearchParams();
-    for (const [key, value] of Object.entries(query as any))
-      if (undefined === value) continue;
-      else if (Array.isArray(value))
-        value.forEach((elem: any) => variables.append(key, String(elem)));
-      else variables.set(key, String(value));
-    const location: string = `/autobe/hackathon/${encodeURIComponent(hackathonCode?.toString() ?? "null")}/participants/sessions/${encodeURIComponent(id?.toString() ?? "null")}/connect`;
-    return 0 === variables.size
-      ? location
-      : `${location}?${variables.toString()}`;
-  };
+  ) =>
+    `/autobe/hackathon/${encodeURIComponent(hackathonCode?.toString() ?? "null")}/participants/sessions/${encodeURIComponent(id?.toString() ?? "null")}/connect`;
 }
 
 /**
