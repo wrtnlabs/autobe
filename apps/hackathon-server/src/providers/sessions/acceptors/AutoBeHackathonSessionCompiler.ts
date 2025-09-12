@@ -25,7 +25,7 @@ const compiler = new Singleton(async (): Promise<IAutoBeCompiler> => {
     "process",
   );
   await compiler.connect(
-    `${__dirname}/../../executable/compiler${path.extname(__filename)}`,
+    `${__dirname}/../../../executable/compiler${path.extname(__filename)}`,
   );
   return compiler.getDriver();
 });
