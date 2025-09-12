@@ -41,4 +41,7 @@ export namespace IAutoBeHackathonSession {
   export interface IHeader {
     Authorization: string;
   }
+  export interface IQuery {
+    noReplay?: boolean | undefined;
+  }
 }

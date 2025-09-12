@@ -22,12 +22,14 @@ export class AutoBeHackathonParticipantSessionSocketController {
     >,
     @WebSocketRoute.Param("hackathonCode") hackathonCode: string,
     @WebSocketRoute.Param("id") id: string & tags.Format<"uuid">,
+    @WebSocketRoute.Query() query: IAutoBeHackathonSession.IQuery,
   ): Promise<void> {
     try {
       await AutoBeHackathonSessionSocketProvider.connect({
         hackathonCode,
         id,
         acceptor,
+        query,
       });
     } catch {}
   }
