@@ -157,6 +157,10 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
       message: `Create e2e test scenarios.`,
     });
     if (pointer.value.length === 0) return [];
+    props.progress.total = Math.max(
+      props.progress.total,
+      props.progress.completed,
+    );
     ctx.dispatch({
       type: "testScenarios",
       id: v7(),
@@ -175,7 +179,7 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
         )
         .flat(),
       completed: (props.progress.completed += pointer.value.length),
-      total: Math.max(props.progress.total, props.progress.completed),
+      total: props.progress.total,
       step: ctx.state().interface?.step ?? 0,
       created_at: new Date().toISOString(),
     });
