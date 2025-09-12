@@ -112,12 +112,6 @@ export const orchestrateRealize =
         reviewProgress,
       );
 
-    console.log("converted end");
-    console.log("converted end");
-    console.log("converted end");
-    console.log("converted end");
-    console.log("converted end");
-    console.log("converted end");
     const corrected: AutoBeRealizeFunction[] = await orchestrateRealizeCorrect(
       ctx,
       scenarios,
