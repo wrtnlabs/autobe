@@ -446,6 +446,12 @@ if (result && 'optionalField' in result) {
 **Pattern**: Type guard parameter type doesn't match the actual type
 
 **Common Cause**: Optional fields (undefined) vs nullable fields (null)
+
+**🚨 CRITICAL RULE FOR NULL/UNDEFINED:**
+- `field?: Type` means OPTIONAL → use `undefined` when missing, NEVER `null`
+- `field: Type | null` means REQUIRED NULLABLE → use `null` when empty, NEVER `undefined`
+- `field?: Type | null` means OPTIONAL + NULLABLE → can use either
+
 ```typescript
 // PROBLEM: Generated object has different type than interface
 // Interface: post_id?: string | null;  // optional + nullable
@@ -619,11 +625,11 @@ const orderByConditions =
     ? { username: body.sort_order === "asc" ? "asc" : "desc" }  // ERROR!
     : { created_at: body.sort_order === "asc" ? "asc" : "desc" };
 
-// FIX: Add 'as const' to all string literals
+// FIX: Add 'as const' to each literal value, not the expression
 const orderByConditions = 
   body.sort_by === "username"
-    ? { username: (body.sort_order === "asc" ? "asc" : "desc") as const }
-    : { created_at: (body.sort_order === "asc" ? "asc" : "desc") as const };
+    ? { username: body.sort_order === "asc" ? "asc" as const : "desc" as const }
+    : { created_at: body.sort_order === "asc" ? "asc" as const : "desc" as const };
 
 // OR use inline directly in findMany
 await prisma.moderator.findMany({
@@ -639,24 +645,37 @@ await prisma.moderator.findMany({
 
 **Pattern**: Dynamic string cannot be assigned to specific literal types
 
+**⚠️ CRITICAL: `satisfies` DOESN'T work for string → literal union narrowing!**
+
 ```typescript
 // ERROR EXAMPLE: Type 'string' not assignable to '"name" | "code" | "created_at"'
 const sortField: string = body.sortBy;
 const sorted = items.sort(sortField);  // ERROR!
 
+// ❌ WRONG: satisfies doesn't narrow the type
+const sortField = body.sort.replace(/^[-+]/, "") satisfies "name" | "created_at";
+// Still type 'string', not literal union!
+
 // SOLUTION PATTERNS (Examples - adjust for your literals):
 
-// Pattern 1: Type assertion (when you know it's valid)
+// ✅ Pattern 1: Type assertion (when you know it's valid)
 const sorted = items.sort(body.sortBy as "name" | "code" | "created_at");
+const sortField = body.sort.replace(/^[-+]/, "") as "name" | "created_at";
 
-// Pattern 2: Validate and narrow type
+// ✅ Pattern 2: Runtime validation with typia.assertGuard (RECOMMENDED)
+const sortField: string = body.sort.replace(/^[-+]/, "");
+typia.assertGuard<"name" | "created_at">(sortField);
+// sortField is now type "name" | "created_at", not string!
+
+// ✅ Pattern 3: Validate and narrow type
 if (["name", "code", "created_at"].includes(body.sortBy)) {
   const sorted = items.sort(body.sortBy as "name" | "code" | "created_at");
 }
 
-// Pattern 3: Common enum examples
+// Common enum examples:
 const discountType = body.discount_type as "amount" | "percentage";
 const status = body.status as "active" | "inactive" | "pending";
+const method = req.method.toUpperCase() as "GET" | "POST" | "PUT" | "DELETE";
 
 // Note: Actual literal values depend on your API specification
 ```

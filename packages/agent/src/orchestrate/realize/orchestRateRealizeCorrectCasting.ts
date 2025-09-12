@@ -126,9 +126,15 @@ const correct = async <Model extends ILlmSchema.Model>(
         message: StringUtil.trim`
           Fix the TypeScript casting problems to resolve the compilation error.
 
+          Most casting errors are caused by type mismatches between Date types and 
+          string & tags.Format<'date-time'>. To fix these:
+          - Use the pre-provided toISOStringSafe() function to convert Date to string
+          - Or use Date object's .toISOString() method
+          - Never use Date type directly in declarations or return values
+
           You don't need to explain me anything, but just fix or give it up 
           immediately without any hesitation, explanation, and questions.
-      `,
+        `,
       });
       ++progress.completed;
       if (pointer.value === null) return func;

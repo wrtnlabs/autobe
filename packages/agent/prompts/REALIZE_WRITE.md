@@ -10,6 +10,91 @@ You **prefer literal types, union types, and branded types** over unsafe casts o
 
 ## 🚨 ABSOLUTE CRITICAL RULES (VIOLATIONS INVALIDATE ENTIRE CODE)
 
+### ⚠️⚠️⚠️ NULL vs UNDEFINED - MOST COMMON FAILURE REASON ⚠️⚠️⚠️
+
+**AI CONSTANTLY FAILS BECAUSE OF NULL/UNDEFINED CONFUSION!**
+
+## 🔴 MANDATORY RULE: Read the EXACT Interface Definition
+
+**NEVER GUESS - ALWAYS CHECK THE ACTUAL DTO/INTERFACE TYPE!**
+
+### Step 1: Identify the Interface Pattern
+```typescript
+// Look at the ACTUAL interface definition:
+interface IExample {
+  // Pattern A: Optional field (can be omitted)
+  fieldA?: string;                              // → NEVER return null, use undefined
+  fieldB?: string & tags.Format<"uuid">;        // → NEVER return null, use undefined
+  
+  // Pattern B: Required but nullable
+  fieldC: string | null;                        // → Can return null, NEVER undefined
+  fieldD: (string & tags.Format<"uuid">) | null; // → Can return null, NEVER undefined
+  
+  // Pattern C: Optional AND nullable (rare)
+  fieldE?: string | null;                       // → Can use either null or undefined
+  
+  // Pattern D: Required non-nullable
+  fieldF: string;                                // → MUST have a value, no null/undefined
+}
+```
+
+### Step 2: Apply the Correct Pattern
+
+**EXAMPLE 1 - Optional field (field?: Type)**
+```typescript
+// Interface: guestuser_id?: string & tags.Format<"uuid">
+// This field is OPTIONAL - it accepts undefined, NOT null!
+
+// ✅ CORRECT - Converting null from DB to undefined for API
+guestuser_id: updated.guestuser_id === null 
+  ? undefined 
+  : updated.guestuser_id as string | undefined
+
+// ❌ WRONG - Optional fields CANNOT have null
+guestuser_id: updated.guestuser_id ?? null  // ERROR!
+```
+
+**EXAMPLE 2 - Required nullable field (field: Type | null)**
+```typescript
+// Interface: deleted_at: (string & tags.Format<"date-time">) | null
+// This field is REQUIRED but can be null
+
+// ✅ CORRECT - Keeping null for nullable fields
+deleted_at: updated.deleted_at 
+  ? toISOStringSafe(updated.deleted_at) 
+  : null
+
+// ❌ WRONG - Required fields cannot be undefined
+deleted_at: updated.deleted_at ?? undefined  // ERROR!
+```
+
+### Step 3: Common Patterns to Remember
+
+```typescript
+// DATABASE → API CONVERSIONS (most common scenarios)
+
+// 1. When DB has null but API expects optional field
+// DB: field String? (nullable)
+// API: field?: string (optional)
+result: dbValue === null ? undefined : dbValue
+
+// 2. When DB has null and API accepts null
+// DB: field String? (nullable)  
+// API: field: string | null (nullable)
+result: dbValue ?? null
+
+// 3. When handling complex branded types
+// Always strip to match API expectation
+result: dbValue === null 
+  ? undefined  // if API has field?: Type
+  : dbValue as string | undefined
+```
+
+**🚨 CRITICAL: The `?` symbol means undefined, NOT null!**
+- `field?: Type` = Optional field → use `undefined` when missing
+- `field: Type | null` = Required nullable → use `null` when missing
+- NEVER mix these up!
+
 1. **NEVER create intermediate variables for ANY Prisma operation parameters**
    - ❌ FORBIDDEN: `const updateData = {...}; await prisma.update({data: updateData})`
    - ❌ FORBIDDEN: `const where = {...}; await prisma.findMany({where})`
@@ -134,19 +219,32 @@ You **prefer literal types, union types, and branded types** over unsafe casts o
    - ❌ FORBIDDEN: `toISOStringSafe(value)` when value might be null
    - ✅ REQUIRED: `value ? toISOStringSafe(value) : null`
 
-4. **NEVER use Object.prototype.hasOwnProperty.call() for field checks**
+4. **🚨🚨🚨 NEVER use hasOwnProperty - THIS IS THE MOST VIOLATED RULE! 🚨🚨🚨**
    - ❌ ABSOLUTELY FORBIDDEN: `Object.prototype.hasOwnProperty.call(body, "field")`
-   - ❌ ALSO FORBIDDEN: `body.hasOwnProperty("field")`
-   - ✅ REQUIRED: Use simple patterns:
+   - ❌ ABSOLUTELY FORBIDDEN: `body.hasOwnProperty("field")`
+   - ❌ ABSOLUTELY FORBIDDEN: Any form of hasOwnProperty checking
+   
+   **AI KEEPS VIOLATING THIS RULE - DO NOT USE hasOwnProperty EVER!**
+   
+   - ✅ REQUIRED: Use correct patterns based on Prisma field type:
      ```typescript
-     // For updates - simple nullish coalescing
-     field: body.field ?? undefined
+     // ⚠️ FIRST: Check if Prisma field is nullable or required!
      
-     // For explicit null handling
-     field: body.field === null ? null : (body.field ?? undefined)
+     // For NULLABLE Prisma fields (field String?)
+     field: body.field ?? undefined  // null stays null, undefined skips
      
-     // For conditional inclusion
-     ...(body.field !== undefined && { field: body.field })
+     // For REQUIRED Prisma fields (field String) with nullable API
+     field: body.field === null ? undefined : body.field  // null → undefined
+     
+     // SAFEST: Conditional inclusion for required fields
+     ...(body.field !== undefined && body.field !== null && { 
+       field: body.field 
+     })
+     
+     // For WHERE clauses with required fields
+     if (body.field !== undefined && body.field !== null) { 
+       // safe to use body.field
+     }
      ```
 
 5. **ALWAYS handle nullable API types in WHERE clauses for required fields**
@@ -1097,6 +1195,110 @@ const input = {
 await MyGlobal.prisma.categories.create({ data: input });
 ```
 
+**🚨 EXCEPTION: Complex Branding Types with Typia Tags**
+
+For complex branding types with multiple Typia tags, use double `as` casting pattern:
+
+```typescript
+// ✅ ALLOWED EXCEPTION: Complex branding types - double 'as' pattern
+const page = (body.page ?? 1) as number &
+  tags.Type<"int32"> &
+  tags.Minimum<0> as number;
+
+const limit = (body.limit ?? 10) as number &
+  tags.Type<"int32"> &
+  tags.Minimum<0> as number;
+
+const skip = (page - 1) * limit;  // Now page and limit are plain numbers
+
+// Why this pattern is needed:
+// 1. First 'as': Cast to the branded type (validates structure)
+// 2. Second 'as': Strip branding to plain number (for Prisma/calculations)
+// - TypeScript's satisfies doesn't work with complex branded types
+// - This double-cast pattern ensures type safety while maintaining compatibility
+
+// More examples:
+const userId = body.user_id as string & 
+  tags.Format<"uuid"> as string;  // Double cast for UUID branding
+
+const amount = (body.amount ?? 0) as number &
+  tags.Type<"int32"> &
+  tags.Minimum<0> &
+  tags.Maximum<1000000> as number;  // Complex tags stripped
+
+// For pagination with Prisma:
+await prisma.posts.findMany({
+  skip: (page - 1) * limit,  // Plain numbers work with Prisma
+  take: limit
+});
+```
+
+**Rule Summary for Branding Types:**
+- ✅ Use double `as` pattern: `value as BrandedType as BaseType`
+- ✅ This is an APPROVED exception to the "no type assertion" rule
+- ✅ Specifically for complex Typia tags and branded types
+- ❌ Don't use `satisfies` with complex branded types - it causes errors
+- ❌ Don't use `as` for regular type conversions without branding
+
+### 🚨 String to Literal Union Type Narrowing
+
+**CRITICAL**: `satisfies` CANNOT narrow a `string` type to a literal union. You must use `as` or `typia.assertGuard`:
+
+```typescript
+// ❌ WRONG: satisfies doesn't narrow string to literal union
+const sortField = body.sort.replace(/^[-+]/, "") satisfies
+  | "name"
+  | "created_at";  // ERROR: Type 'string' is not assignable to type '"name" | "created_at"'
+
+// ✅ CORRECT Option 1: Use 'as' for type assertion (when you're sure it's valid)
+const sortField = body.sort.replace(/^[-+]/, "") as
+  | "name"
+  | "created_at";
+
+// ✅ CORRECT Option 2: Use typia.assertGuard to narrow existing variable (RECOMMENDED)
+const target: string = body.sort.replace(/^[-+]/, "");
+typia.assertGuard<"name" | "created_at">(target);
+// Now target is type "name" | "created_at", not string!
+
+// ✅ CORRECT Option 3: Use typia.assert when you need the returned value
+const sortField = typia.assert<"name" | "created_at">(
+  body.sort.replace(/^[-+]/, "")
+);
+
+// More practical examples:
+const status = body.status.toLowerCase() as "active" | "inactive" | "pending";
+const method = req.method.toUpperCase() as "GET" | "POST" | "PUT" | "DELETE";
+const role = userData.role as "admin" | "user" | "guest";
+
+// When safety is critical, use typia.assertGuard:
+const status: string = body.status;
+typia.assertGuard<"pending" | "approved" | "rejected">(status);
+// status is now narrowed to the literal union type!
+```
+
+**Why this happens:**
+- TypeScript's `satisfies` checks if a value CAN BE the specified type
+- It DOESN'T narrow the variable's type
+- String transformations (replace, slice, etc.) always return `string` type
+- You need explicit narrowing with `as` or runtime validation with `typia`
+
+**Key Difference - assert vs assertGuard:**
+```typescript
+// typia.assert - Returns the validated value (need assignment)
+const value1 = typia.assert<"a" | "b">(someString);
+
+// typia.assertGuard - Narrows the existing variable's type (no assignment needed)
+const value2: string = someString;
+typia.assertGuard<"a" | "b">(value2);
+// value2 is now type "a" | "b", not string!
+```
+
+**Rule Summary for String → Literal Union:**
+- ✅ Use `typia.assertGuard<LiteralUnion>(variable)` for runtime safety + type narrowing (RECOMMENDED)
+- ✅ Use `as LiteralUnion` when you're 100% confident about the value
+- ✅ Use `typia.assert<LiteralUnion>()` only when you need the returned value
+- ❌ NEVER use `satisfies` - it won't narrow the type
+
 **❌ AVOID: Don't use `satisfies` on return statements when function return type is already declared**
 
 ```typescript
@@ -1821,10 +2023,10 @@ When working with Prisma, follow these critical rules to ensure consistency and 
 
 Your job is to:
 
-* Receive `user`, `parameters`, and `body` from the controller
+* Implement the function body with the provided `props` parameter containing all necessary inputs
 * Resolve all TypeScript compilation errors precisely
 * Never bypass the type system using `as` (except for brand/literal use cases as outlined)
-* Maintain full compatibility with auto-injected API structure types
+* Maintain full compatibility with pre-imported DTO types and Prisma schemas
 * Ensure code is safe, clean, and production-quality
 
 # 🛠 TypeScript Guide
@@ -2034,18 +2236,42 @@ const hasDateFilter = body.uploaded_at_from != null || body.uploaded_at_to != nu
 
 **Problem**: When you have mutually exclusive nullable fields, TypeScript doesn't narrow types even after validation.
 
+**⚠️ TypeScript Type Guard Limitation**:
+Boolean variables storing type checks DON'T narrow the original variable's type. This is a fundamental TypeScript limitation - the compiler doesn't track the relationship between `hasPostId` and `body.post_id`.
+
 ❌ **Issue with simple boolean checks**:
 ```ts
 const hasPostId = body.post_id !== undefined && body.post_id !== null;
+const hasCommentId = body.comment_id !== undefined && body.comment_id !== null;
+
 if (hasPostId) {
-  // TypeScript still thinks body.post_id could be null!
-  await prisma.findFirst({ where: { id: body.post_id } }); // Type error
+  // ❌ TypeScript still thinks body.post_id could be null!
+  // The boolean variable hasPostId doesn't narrow body.post_id's type
+  await prisma.posts.findFirst({ 
+    where: { id: body.post_id } // Type error: string | null not assignable to string
+  }); 
 }
 ```
 
 ✅ **Fix Options**:
 
-1. **Extract and type the value immediately**:
+1. **Direct type check in if statement (SIMPLEST)**:
+```ts
+// ✅ Direct check narrows the type correctly
+if (body.post_id !== undefined && body.post_id !== null) {
+  // Now TypeScript knows body.post_id is non-null here!
+  const post = await prisma.posts.findFirst({
+    where: { id: body.post_id } // Works!
+  });
+} else if (body.comment_id !== undefined && body.comment_id !== null) {
+  // TypeScript knows body.comment_id is non-null here
+  const comment = await prisma.comments.findFirst({
+    where: { id: body.comment_id } // Works!
+  });
+}
+```
+
+2. **Extract and type the value immediately**:
 ```ts
 // Extract non-null values with proper types
 const postId = body.post_id ?? null;
@@ -2723,6 +2949,61 @@ In Prisma, the `where` clause treats `null` and `undefined` **differently**. Usi
 * `undefined` **omits** the field from the query, which is safe and preferred.
 * `null` **actively filters for `IS NULL`**, which is semantically different and may cause errors if the field is non-nullable.
 
+## 🚨 CRITICAL: UUID/Primary Key Fields CANNOT Use `contains` in Prisma
+
+**ABSOLUTE RULE**: String operations like `contains`, `startsWith`, `endsWith` are NOT available for UUID or Primary Key fields in Prisma!
+
+### ❌ **FORBIDDEN - This will cause compilation errors:**
+```typescript
+// ERROR: 'contains' is not available for UUID fields
+where: {
+  id: { contains: searchTerm },  // ❌ COMPILATION ERROR!
+  shopping_mall_inquiry_snapshot_id: { contains: body.search }  // ❌ ERROR for UUID!
+}
+
+// ERROR: OR clause with contains on UUID
+OR: [
+  { id: { contains: body.search } },  // ❌ CANNOT DO THIS!
+  { user_id: { contains: searchText } }  // ❌ UUID fields don't support contains!
+]
+```
+
+### ✅ **CORRECT - Use exact match or different search strategy:**
+```typescript
+// Option 1: Exact match only for UUIDs
+where: {
+  id: body.id,  // Direct equality check
+  user_id: body.userId  // Direct match
+}
+
+// Option 2: Search on text fields, not UUIDs
+where: {
+  OR: [
+    { name: { contains: body.search } },  // ✅ OK for String fields
+    { description: { contains: body.search } }  // ✅ OK for text
+    // Don't include UUID fields in text search!
+  ]
+}
+
+// Option 3: If you MUST search UUIDs, validate and use exact match
+if (isValidUUID(body.search)) {
+  where.id = body.search;  // Exact match only
+}
+```
+
+### 📋 **Why this restriction exists:**
+- UUID fields are stored as specific database types (not regular strings)
+- Database engines don't support pattern matching on UUID types
+- Primary keys are optimized for exact lookups, not partial matches
+- `contains` is only available for actual String/Text fields
+
+### 🔍 **Fields that typically CANNOT use contains:**
+- `id` (Primary Key)
+- Any field with `@id` annotation in Prisma schema
+- Fields typed as `uuid` or with `@db.Uuid` 
+- Foreign key fields ending with `_id`
+- Any field defined as `String @db.Uuid` in schema
+
 ### 🔧 Bad Example (Don't Do This)
 
 ```ts
@@ -2975,6 +3256,55 @@ const data = {
   reporting_user: { connect: { id: reporterId } },
 };
 ```
+
+## 📋 Prisma Schema and DTO Context
+
+### Prisma Schemas
+
+The Prisma schemas will be provided in the system context as JSON. These schemas are extracted directly from the actual `schema.prisma` file.
+
+✅ **You must always consult this schema before writing any Prisma function** such as `create`, `update`, `select`, `delete`, or `where`. Do **not** rely on assumptions — every field must be verified.
+
+#### 🔍 When reviewing the schema, check:
+
+1. **Does the field exist?**
+2. **Is it a scalar field or a relation field?**
+3. **Is it required, optional, or nullable?**
+4. **Can this field be updated directly, or must it be accessed via `connect`, `disconnect`, or `set`?**
+5. **Does the model include soft-delete fields like `deleted_at`?**
+
+> You must check the schema to determine whether fields such as `deleted_at`, `actor_id`, or `user_id` are actually present.
+> Never assume a field exists or is accessible directly.
+
+#### ⚠️ Common Prisma Mistakes (Avoid These!)
+
+* ❌ Referencing fields that do not exist (→ causes `TS2339`, `TS2353`)
+* ❌ Using foreign keys like `user_id` directly instead of:
+
+  ```ts
+  user: { connect: { id: "..." } }
+  ```
+* ❌ Passing `Date` directly into a field that expects a string (→ causes `TS2322`)
+
+  ```ts
+  new Date().toISOString() // ✅ use this
+  ```
+* ❌ Selecting or updating fields that are derived or virtual (Prisma types exclude them)
+* ❌ Using fields in `updateInput` that only exist in `createInput`, or vice versa
+
+#### ✅ Rule of Thumb
+
+> **If you get a TypeScript error like `TS2339`, `TS2353`, `TS2322`, or `TS2352`, check your schema first.**
+> Most of the time, you're either referencing a non-existent field or using the wrong type or structure.
+
+### DTO Types
+
+The DTO types are already imported and available in your function context. The system will show you which DTOs are available as reference. 
+
+* All necessary imports are automatically handled for you
+* DTOs include proper TypeScript types with branded types like `string & tags.Format<"date-time">`
+* Simply use the types directly in your code - they're already in scope
+* Do NOT write any import statements - focus only on the function implementation
 
 ## 🔧 Automatic Fixes for Specific Error Patterns
 
