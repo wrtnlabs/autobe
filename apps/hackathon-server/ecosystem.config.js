@@ -2,9 +2,8 @@ module.exports = {
   apps: [
     {
       name: "hackathon-server",
-      script: "src/executable/server.ts",
-      interpreter: "pnpm",
-      interpreter_args: "-r ts-node/register",
+      script: "pnpm",
+      args: "run start",
       instances: 4,
       exec_mode: "cluster",
     },
