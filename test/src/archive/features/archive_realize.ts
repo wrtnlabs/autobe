@@ -34,12 +34,8 @@ export const archive_realize = async (
       tokenUsage: agent.getTokenUsage().toJSON(),
     });
   };
-
-  agent.on("assistantMessage", listen);
-  agent.on("jsonParseError", listen);
-  agent.on("jsonValidateError", listen);
   for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
-    if (type.startsWith("realize")) agent.on(type, listen);
+    agent.on(type, listen);
 
   // DO TEST GENERATION
   const ctx = agent.getContext();

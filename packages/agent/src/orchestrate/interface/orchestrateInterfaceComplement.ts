@@ -33,7 +33,7 @@ async function step<Model extends ILlmSchema.Model>(
   life: number,
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   const missed: string[] = getMissed(document);
-  if (missed.length === 0 || life <= 0) {
+  if (missed.length === 0 || life < 0) {
     return document.components.schemas;
   }
 

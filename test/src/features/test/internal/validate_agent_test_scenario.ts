@@ -1,6 +1,10 @@
 import { orchestrateTestScenario } from "@autobe/agent/src/orchestrate/test/orchestrateTestScenario";
 import { FileSystemIterator } from "@autobe/filesystem";
-import { AutoBeOpenApi, AutoBeTestScenario } from "@autobe/interface";
+import {
+  AutoBeEventOfSerializable,
+  AutoBeOpenApi,
+  AutoBeTestScenario,
+} from "@autobe/interface";
 import { AutoBeEndpointComparator } from "@autobe/utils";
 import { HashMap, Pair } from "tstl";
 import typia from "typia";
@@ -8,6 +12,7 @@ import typia from "typia";
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
 import { TestHistory } from "../../../internal/TestHistory";
+import { TestLogger } from "../../../internal/TestLogger";
 import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_test } from "./prepare_agent_test";
 
@@ -19,6 +24,10 @@ export const validate_agent_test_scenario = async (
 
   // PREPARE ASSETS
   const { agent } = await prepare_agent_test(factory, project);
+
+  const start: Date = new Date();
+  for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
+    agent.on(type, (event) => TestLogger.event(start, event));
 
   // GENERATE TEST SCENARIOS
   const result: AutoBeTestScenario[] = await orchestrateTestScenario(

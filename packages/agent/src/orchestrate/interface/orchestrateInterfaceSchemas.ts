@@ -11,6 +11,7 @@ import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
+import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
@@ -27,7 +28,7 @@ export async function orchestrateInterfaceSchemas<
 >(
   ctx: AutoBeContext<Model>,
   operations: AutoBeOpenApi.IOperation[],
-  capacity: number = 5,
+  capacity: number = AutoBeConfigConstant.INTERFACE_CAPACITY,
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   // fix operation type names
   JsonSchemaNamingConvention.operations(operations);

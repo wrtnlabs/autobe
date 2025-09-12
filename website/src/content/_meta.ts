@@ -10,6 +10,9 @@ const meta: MetaRecord = {
     type: "page",
     title: "📖 Guide Documents",
   },
+  tutorial: {
+    display: "hidden",
+  },
   demo: {
     type: "menu",
     title: "📚 Demonstrations",

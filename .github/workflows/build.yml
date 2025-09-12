@@ -3,6 +3,8 @@ on:
   pull_request:
     paths:
       - '.github/workflows/build.yml'
+      - 'apps/*/src/**'
+      - 'apps/*/package.json'
       - 'packages/*/src/**'
       - 'packages/*/package.json'
       - 'test/**'
@@ -40,6 +42,6 @@ jobs:
 
       - name: Run Hackathon Server Test
         run: |
-          pnpm run schema
+          pnpm run schema postgres root
           pnpm run test --reset true
         working-directory: apps/hackathon-server

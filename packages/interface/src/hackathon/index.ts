@@ -1,7 +1,9 @@
 export * from "./AutoBeHackathonModel";
 
+export * from "./IAutoBeHackathonModerator";
+export * from "./IAutoBeHackathonParticipant";
+
 export * from "./IAutoBeHackathon";
-export * from "./IAutobeHackathonParticipant";
 export * from "./IAutoBeHackathonSession";
 export * from "./IAutoBeHackathonSessionConnection";
 

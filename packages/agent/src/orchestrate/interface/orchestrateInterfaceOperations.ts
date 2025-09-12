@@ -12,6 +12,7 @@ import { Escaper } from "typia/lib/utils/Escaper";
 import { NamingConvention } from "typia/lib/utils/NamingConvention";
 import { v7 } from "uuid";
 
+import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
@@ -27,7 +28,7 @@ export async function orchestrateInterfaceOperations<
 >(
   ctx: AutoBeContext<Model>,
   endpoints: AutoBeOpenApi.IEndpoint[],
-  capacity: number = 8,
+  capacity: number = AutoBeConfigConstant.INTERFACE_CAPACITY,
 ): Promise<AutoBeOpenApi.IOperation[]> {
   const matrix: AutoBeOpenApi.IEndpoint[][] = divideArray({
     array: endpoints,

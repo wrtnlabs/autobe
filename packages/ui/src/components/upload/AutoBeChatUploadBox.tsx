@@ -31,7 +31,7 @@ export interface IAutoBeChatUploadConfig {
 
 export const AutoBeChatUploadBox = (props: AutoBeChatUploadBox.IProps) => {
   const { listener } = useAutoBeAgent();
-  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const inputRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [dragging, setDragging] = useState(false);
@@ -41,6 +41,7 @@ export const AutoBeChatUploadBox = (props: AutoBeChatUploadBox.IProps) => {
   const [extensionError, setExtensionError] = useState<ReactNode | null>(null);
 
   const [emptyText, setEmptyText] = useState(false);
+  const [isComposing, setIsComposing] = useState(false);
 
   const removeFile = (index: number) => {
     setBuckets(buckets.filter((_, i) => i !== index));
@@ -55,6 +56,13 @@ export const AutoBeChatUploadBox = (props: AutoBeChatUploadBox.IProps) => {
       listener?.offEnable(trackEnable);
     };
   }, [listener]);
+
+  // Sync text state when cleared programmatically (like after sending message)
+  useEffect(() => {
+    if (inputRef.current && text === "" && inputRef.current.innerText !== "") {
+      inputRef.current.innerText = "";
+    }
+  }, [text]);
 
   const conversate = async () => {
     if (enabled === false) return;
@@ -181,6 +189,7 @@ export const AutoBeChatUploadBox = (props: AutoBeChatUploadBox.IProps) => {
         transition: "all 0.2s",
         position: "relative",
         boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.12)",
+        opacity: 0.8,
       }}
     >
       {dragging ? (
@@ -282,47 +291,79 @@ export const AutoBeChatUploadBox = (props: AutoBeChatUploadBox.IProps) => {
           </div>
         )}
 
-        <textarea
-          ref={inputRef}
-          style={{
-            width: "100%",
-            minHeight: "40px",
-            maxHeight: "192px",
-            padding: "8px 12px",
-            border: `2px solid ${emptyText ? "#f44336" : dragging ? "#1976d2" : "#e0e0e0"}`,
-            borderRadius: "8px",
-            fontSize: "0.95rem",
-            fontFamily: "inherit",
-            resize: "none",
-            outline: "none",
-            color: dragging ? "#1976d2" : "inherit",
-            backgroundColor: "transparent",
-            transition: "border-color 0.2s",
-          }}
-          placeholder={
-            emptyText
-              ? "Cannot send empty message"
-              : dragging
-                ? "Drop files here..."
-                : "Conversate with AI Chatbot"
-          }
-          value={text}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              if (enabled) void conversate();
-            }
-          }}
-          onChange={(e) => setText(e.target.value)}
-          onFocus={(e) => {
-            e.currentTarget.style.borderColor = "#1976d2";
-          }}
-          onBlur={(e) => {
-            e.currentTarget.style.borderColor = emptyText
-              ? "#f44336"
-              : "#e0e0e0";
-          }}
-        />
+        <div style={{ position: "relative" }}>
+          <div
+            ref={inputRef}
+            contentEditable={true}
+            style={{
+              width: "97%",
+              minHeight: "40px",
+              maxHeight: "192px",
+              padding: "8px 12px",
+              border: "none",
+              borderRadius: "8px",
+              fontSize: "0.95rem",
+              fontFamily: "inherit",
+              outline: "none",
+              boxShadow: "none",
+              backgroundColor: "transparent",
+              transition: "color 0.2s, opacity 0.2s",
+              overflowY: "auto",
+              wordBreak: "break-word",
+              whiteSpace: "pre-wrap",
+              lineHeight: "1.4",
+              // Custom scrollbar styles
+              scrollbarWidth: "thin",
+              scrollbarColor: "rgba(0, 0, 0, 0.3) transparent",
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey && !isComposing) {
+                e.preventDefault();
+                if (enabled) {
+                  void conversate();
+                }
+              }
+            }}
+            onCompositionStart={() => {
+              setIsComposing(true);
+            }}
+            onCompositionEnd={() => {
+              setIsComposing(false);
+            }}
+            onInput={(e) => {
+              const target = e.target as HTMLDivElement;
+              const newText = target.innerText || "";
+              // Only update state if text actually changed to prevent cursor issues
+              if (newText !== text) {
+                setText(newText);
+              }
+            }}
+            suppressContentEditableWarning={true}
+          />
+          {!text && (
+            <div
+              style={{
+                position: "absolute",
+                top: "8px",
+                left: "12px",
+                right: "12px",
+                bottom: "8px",
+                color: "rgba(153, 153, 153, 0.6)",
+                fontSize: "0.95rem",
+                fontFamily: "inherit",
+                pointerEvents: "none",
+                lineHeight: "1.4",
+                padding: "2px 0",
+              }}
+            >
+              {emptyText
+                ? "Cannot send empty message"
+                : dragging
+                  ? "Drop files here..."
+                  : "Conversate with AI Chatbot"}
+            </div>
+          )}
+        </div>
 
         <input
           ref={fileInputRef}

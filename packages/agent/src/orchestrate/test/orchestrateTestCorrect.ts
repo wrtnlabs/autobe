@@ -14,49 +14,67 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { orchestrateCommonCorrectCasting } from "../common/orchestrateCommonCorrectCasting";
 import { completeTestCode } from "./compile/completeTestCode";
 import { transformTestCorrectHistories } from "./histories/transformTestCorrectHistories";
+import { transformTestValidateEvent } from "./histories/transformTestValidateEvent";
 import { orchestrateTestCorrectInvalidRequest } from "./orchestrateTestCorrectInvalidRequest";
 import { IAutoBeTestCorrectApplication } from "./structures/IAutoBeTestCorrectApplication";
 import { IAutoBeTestFunction } from "./structures/IAutoBeTestFunction";
 import { IAutoBeTestFunctionFailure } from "./structures/IAutoBeTestFunctionFailure";
-import { IAutoBeTestWriteResult } from "./structures/IAutoBeTestWriteResult";
 
 export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  writeResult: IAutoBeTestWriteResult[],
+  writeResults: IAutoBeTestFunction[],
 ): Promise<AutoBeTestValidateEvent[]> => {
   const result: Array<AutoBeTestValidateEvent | null> =
     await executeCachedBatch(
-      writeResult.map((w) => async (promptCacheKey) => {
+      writeResults.map((w) => async (promptCacheKey) => {
         try {
           const compile = (script: string) =>
             compileTestFile(ctx, {
-              artifacts: w.artifacts,
-              scenario: w.scenario,
-              location: w.event.location,
+              ...w,
               script,
             });
-          const event: AutoBeTestValidateEvent =
+          const x: AutoBeTestValidateEvent =
             await orchestrateTestCorrectInvalidRequest(ctx, compile, w);
+          const y: AutoBeTestValidateEvent =
+            await orchestrateCommonCorrectCasting(
+              ctx,
+              {
+                source: "testCorrect",
+                validate: compile,
+                correct: (next) =>
+                  ({
+                    type: "testCorrect",
+                    id: v7(),
+                    created_at: new Date().toISOString(),
+                    file: {
+                      scenario: w.scenario,
+                      location: w.location,
+                      content: next.final ?? next.draft,
+                    },
+                    result: next.failure,
+                    tokenUsage: next.tokenUsage,
+                    think: next.think,
+                    draft: next.draft,
+                    review: next.review,
+                    final: next.final,
+                    step: ctx.state().analyze?.step ?? 0,
+                  }) satisfies AutoBeTestCorrectEvent,
+                script: (event) => event.file.content,
+              },
+              x.file.content,
+            );
           return await predicate(
             ctx,
-            {
-              artifacts: w.artifacts,
-              scenario: w.scenario,
-              location: w.event.location,
-              script: w.event.final ?? w.event.draft,
-            },
+            transformTestValidateEvent(y, w.artifacts),
             [],
-            event,
+            y,
             promptCacheKey,
             ctx.retry,
           );
         } catch {
-          console.log(
-            "failed to correct test code, no function calling happened.",
-            w.scenario.functionName,
-          );
           return null;
         }
       }),

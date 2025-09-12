@@ -78,7 +78,7 @@ If no such patterns exist, the compilation error is caused by something else, an
 
 ### 2.2. TypeScript Compilation Results
 
-You will receive compilation errors in the form of `IAutoBeTypeScriptCompileResult.IFailure`. Your responsibility is to:
+You will receive compilation errors in the form of `Array<IAutoBeTypeScriptCompileResult.IDiagnostic>`. Your responsibility is to:
 
 - Determine if the compilation error originates from invalid type API requests
 - If yes, remove the offending code by calling `rewrite()`

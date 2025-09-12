@@ -37,11 +37,8 @@ export const archive_prisma = async (
       tokenUsage: agent.getTokenUsage().toJSON(),
     });
   };
-  agent.on("assistantMessage", listen);
-  agent.on("jsonParseError", listen);
-  agent.on("jsonValidateError", listen);
   for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
-    if (type.startsWith("prisma")) agent.on(type, listen);
+    agent.on(type, listen);
 
   let startEvent: AutoBePrismaStartEvent | null = null;
   let components: AutoBePrismaComponentsEvent | null = null;

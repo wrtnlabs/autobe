@@ -1,16 +1,16 @@
 import {
   IAutoBeHackathon,
+  IAutoBeHackathonParticipant,
   IAutoBeHackathonSession,
-  IAutobeHackathonParticipant,
   IPage,
 } from "@autobe/interface";
 import { TypedBody, TypedParam, TypedRoute } from "@nestia/core";
-import { Controller } from "@nestjs/common";
+import { Controller, Get } from "@nestjs/common";
 import { tags } from "typia";
 
 import { AutoBeHackathonParticipantAuth } from "../../decorators/AutoBeHackathonParticipantAuth";
 import { AutoBeHackathonProvider } from "../../providers/AutoBeHackathonProvider";
-import { AutoBeHackathonSessionProvider } from "../../providers/AutoBeHackathonSessionProvider";
+import { AutoBeHackathonSessionProvider } from "../../providers/sessions/AutoBeHackathonSessionProvider";
 
 @Controller("autobe/hackathon/:hackathonCode/participants/sessions")
 export class AutoBeHackathonParticipantSessionController {
@@ -20,7 +20,7 @@ export class AutoBeHackathonParticipantSessionController {
   @TypedRoute.Patch()
   public async index(
     @AutoBeHackathonParticipantAuth()
-    participant: IAutobeHackathonParticipant,
+    participant: IAutoBeHackathonParticipant,
     @TypedParam("hackathonCode") hackathonCode: string,
     @TypedBody() body: IPage.IRequest,
   ): Promise<IPage<IAutoBeHackathonSession.ISummary>> {
@@ -33,10 +33,10 @@ export class AutoBeHackathonParticipantSessionController {
     });
   }
 
-  @TypedRoute.Get(":id")
+  @Get(":id")
   public async at(
     @AutoBeHackathonParticipantAuth()
-    participant: IAutobeHackathonParticipant,
+    participant: IAutoBeHackathonParticipant,
     @TypedParam("hackathonCode") hackathonCode: string,
     @TypedParam("id") id: string & tags.Format<"uuid">,
   ): Promise<IAutoBeHackathonSession> {
@@ -52,7 +52,7 @@ export class AutoBeHackathonParticipantSessionController {
   @TypedRoute.Post()
   public async create(
     @AutoBeHackathonParticipantAuth()
-    participant: IAutobeHackathonParticipant,
+    participant: IAutoBeHackathonParticipant,
     @TypedParam("hackathonCode") hackathonCode: string,
     @TypedBody() body: IAutoBeHackathonSession.ICreate,
   ): Promise<IAutoBeHackathonSession> {
@@ -68,7 +68,7 @@ export class AutoBeHackathonParticipantSessionController {
   @TypedRoute.Put(":id")
   public async update(
     @AutoBeHackathonParticipantAuth()
-    participant: IAutobeHackathonParticipant,
+    participant: IAutoBeHackathonParticipant,
     @TypedParam("hackathonCode") hackathonCode: string,
     @TypedParam("id") id: string & tags.Format<"uuid">,
     @TypedBody() body: IAutoBeHackathonSession.IUpdate,
@@ -86,7 +86,7 @@ export class AutoBeHackathonParticipantSessionController {
   @TypedRoute.Put(":id/review")
   public async review(
     @AutoBeHackathonParticipantAuth()
-    participant: IAutobeHackathonParticipant,
+    participant: IAutoBeHackathonParticipant,
     @TypedParam("hackathonCode") hackathonCode: string,
     @TypedParam("id") id: string & tags.Format<"uuid">,
     @TypedBody() body: IAutoBeHackathonSession.IReview,
@@ -104,7 +104,7 @@ export class AutoBeHackathonParticipantSessionController {
   @TypedRoute.Delete(":id")
   public async erase(
     @AutoBeHackathonParticipantAuth()
-    participant: IAutobeHackathonParticipant,
+    participant: IAutoBeHackathonParticipant,
     @TypedParam("hackathonCode") hackathonCode: string,
     @TypedParam("id") id: string & tags.Format<"uuid">,
   ): Promise<void> {

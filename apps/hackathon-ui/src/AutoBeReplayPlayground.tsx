@@ -9,14 +9,15 @@ import { useRef } from "react";
 import { AutoBePlaygroundChatMovie } from "./AutoBePlaygroundChatMovie";
 import { HACKATHON_CODE } from "./constant";
 import { useAuthorizationToken } from "./hooks/useAuthorizationToken";
-import { AutoBeAgentSessionStorageMockStrategy } from "./strategy/AutoBeAgentSessionStorageMockStrategy";
+import { AutoBeAgentSessionStorageStrategy } from "./strategy/AutoBeAgentSessionStorageStrategy";
+import { goToLogin } from "./utils";
 
 export function AutoBeReplayPlayground() {
   const { getToken } = useAuthorizationToken();
   const token = getToken();
   /** @todo Process refresh token logic */
   if (token === null || new Date(token.token.expired_at) < new Date()) {
-    window.location.href = "/login";
+    goToLogin();
     return null;
   }
 
@@ -49,7 +50,6 @@ export function AutoBeReplayPlayground() {
         };
       }
 
-      window.location.href = "/";
       throw new Error("Session ID is required");
     })();
 
@@ -76,9 +76,7 @@ export function AutoBeReplayPlayground() {
         <AutoBePlaygroundChatMovie
           title="AutoBE Playground"
           serviceFactory={serviceFactory}
-          storageStrategyFactory={() =>
-            new AutoBeAgentSessionStorageMockStrategy()
-          }
+          storageStrategyFactory={() => new AutoBeAgentSessionStorageStrategy()}
           configFilter={(config) => config.key === "aiModel"}
           isReplay={true}
         />

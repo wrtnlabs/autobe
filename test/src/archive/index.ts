@@ -186,6 +186,13 @@ const main = async (): Promise<void> => {
     Realize: tokenUsage.realize.total.toLocaleString("en-US"),
   });
 };
+
+global.process.on("uncaughtException", (error) =>
+  console.log("uncaughtException", error),
+);
+global.process.on("unhandledRejection", (error) =>
+  console.log("unhandledRejection", error),
+);
 main().catch((error) => {
   console.log(error);
   process.exit(-1);

@@ -1,0 +1,107 @@
+labels: ["review", "autobe", "hackathon-2025-09-12"]
+# category: "General"  # Change to the actual Discussion category if needed
+title: "[Review] AutoBE Hackathon 2025-09-12 - <short summary title>"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ✍️ **Writing Guideline**
+        - Each bullet point should be answered in **max 200 words**.
+        - Avoid yes/no answers; be concise but concrete.
+        - **Overall Review** should be **200+ words**.
+
+  - type: input
+    id: conversation_links
+    attributes:
+      label: "Conversation Links"
+      description: |
+        - Please provide the links to the conversation you reviewed.
+      placeholder: "https://...."
+    validations:
+      required: true
+
+  - type: textarea
+    id: requirements
+    attributes:
+      label: "1. Requirements Analysis"
+      description: |
+        - Were the requirements understood and prioritized clearly?
+        - Are user roles and permissions designed realistically?
+        - Were non-functional needs (performance/security) considered?
+        (Max 200 words)
+      placeholder: "- Priority definition…\n- RBAC/permission scope…\n- Performance/security concerns…"
+    validations:
+      required: true
+
+  - type: textarea
+    id: database
+    attributes:
+      label: "2. Database Design"
+      description: |
+        - Are table relationships logical for the intended service?
+        - Is unnecessary duplication or over-engineering avoided?
+        (Max 200 words)
+      placeholder: "- ER relationships validity…\n- Normalization/duplication checks…"
+    validations:
+      required: true
+
+  - type: textarea
+    id: api
+    attributes:
+      label: "3. API Design"
+      description: |
+        - Do the APIs follow RESTful principles (methods/URIs/status codes)?
+        - Are formats and documentation consistent enough to be useful?
+        (Max 200 words)
+      placeholder: "- Endpoint/method correctness…\n- Error model/versioning/docs…"
+    validations:
+      required: true
+
+  - type: textarea
+    id: tests
+    attributes:
+      label: "4. Test Code"
+      description: |
+        - Do tests verify key business logic?
+        - Are both normal and error cases covered?
+        (Max 200 words)
+      placeholder: "- Unit/integration/contract tests…\n- Failure paths/edge cases…"
+    validations:
+      required: true
+
+  - type: textarea
+    id: implementation
+    attributes:
+      label: "5. Implementation Code"
+      description: |
+        - Is the code readable and organized into a clear structure?
+        - Are basic performance and security concerns addressed?
+        (Max 200 words)
+      placeholder: "- Directory structure/layering…\n- N+1 prevention/caching/input validation…"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: level
+    attributes:
+      label: "Estimated Code Proficiency Level"
+      description: "Select the overall proficiency level for the deliverable."
+      options:
+        - junior
+        - mid
+        - senior
+    validations:
+      required: true
+
+  - type: textarea
+    id: overall
+    attributes:
+      label: "🙌 Overall Review"
+      description: |
+        - What are the main strengths and weaknesses of AutoBE?
+        - What level does the generated code quality correspond to?
+        - What specific improvements should be prioritized?
+        (**200+ words recommended**)
+      placeholder: "Strengths: …\nWeaknesses: …\nRecommended improvements: … (e.g., schema evolution, error model standardization, load testing, secret management, etc.)"
+    validations:
+      required: true

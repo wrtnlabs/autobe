@@ -259,6 +259,58 @@ If you see the same type assignment error pattern:
 
 **🎯 SUPER SIMPLE FIX - Just Remove or Rename the Field!**
 
+**⚠️ COMMON NAMING ERROR PATTERNS (Examples from Production):**
+```typescript
+// These are EXAMPLES - actual field names vary by project
+// Pattern: Wrong Field Name → Typical Correct Pattern
+
+// Example: User type field confusion
+'seller_user_id'    → Often should be 'user_id' or 'member_id'
+'guest_user_id'     → Often should be 'user_id' or removed entirely
+'admin_user_id'     → Often maps to a common user field
+
+// Example: Soft delete fields that often don't exist
+'deleted_at'        → Usually doesn't exist - remove or use hard delete
+'is_deleted'        → Check if soft delete is actually in schema
+
+// Example: Naming convention mismatches  
+'userId'            → Might be 'user_id' (snake_case)
+'created_by'        → Often doesn't exist as audit field
+```
+
+**Note**: These are examples. Always check YOUR specific Prisma schema for actual field names.
+
+**🔥 CRITICAL PATTERN: Cart Items User Field Problem (Example)**
+```typescript
+// COMMON ERROR PATTERN in shopping cart systems!
+// Example: cart_items table often doesn't have direct user fields
+
+// ❌ WRONG PATTERN: Trying to access non-existent user fields
+const cartItem = await prisma.cart_items.findUnique({
+  where: { id },
+  select: { 
+    guest_user_id: true,    // Example: Field might not exist in cart_items
+    member_user_id: true    // Example: Field might not exist in cart_items
+  }
+});
+
+// ✅ CORRECT PATTERN: User info might be in cart table, not cart_items
+// Example approach - actual implementation depends on your schema:
+// Step 1: Get cart_id from cart_item
+const cartItem = await prisma.cart_items.findUnique({
+  where: { id },
+  select: { shopping_cart_id: true }
+});
+
+// Step 2: Get user info from cart
+const cart = await prisma.carts.findUnique({
+  where: { id: cartItem.shopping_cart_id },
+  select: { user_id: true }  // Check your schema for actual field name
+});
+
+// Note: These are examples. Your schema structure may differ.
+```
+
 ```typescript
 // ERROR: 'username' does not exist in type '{ email: { contains: string; }; }'
 
@@ -304,6 +356,64 @@ Field doesn't exist error?
 │   └── YES → You typed wrong name, fix it
 └── Done! Error fixed!
 ```
+
+**🚨 CRITICAL: Prisma WHERE Clause Non-Existent Field Handling**
+
+**Common Cases**: Fields like `deleted_at`, `guest_user_id`, `created_by`, `updated_by` that don't exist in schema
+
+**Example Errors**:
+- `'deleted_at' does not exist in type 'shopping_mall_cart_item_optionsWhereUniqueInput'`
+- `'guest_user_id' does not exist in type 'shopping_mall_cart_itemsWhereUniqueInput'`
+
+**🎯 SOLUTION: Remove Non-Existent Fields from WHERE Clause**
+
+```typescript
+// ERROR: Using non-existent fields
+const result = await prisma.shopping_mall_cart_items.findUnique({
+  where: {
+    id: itemId,
+    deleted_at: null,        // ❌ Field doesn't exist!
+    guest_user_id: userId    // ❌ Field doesn't exist!
+  }
+});
+
+// CORRECT: Remove non-existent fields
+const result = await prisma.shopping_mall_cart_items.findUnique({
+  where: {
+    id: itemId               // ✅ Only use existing fields
+  }
+});
+
+// If you need user filtering, check if user_id exists instead
+const result = await prisma.shopping_mall_cart_items.findUnique({
+  where: {
+    id: itemId,
+    user_id: userId          // ✅ Use actual field name from schema
+  }
+});
+```
+
+**Handling Soft Delete Without deleted_at**:
+```typescript
+// If deleted_at doesn't exist, use hard delete or return mock data
+// DON'T try to find alternatives - just remove the field
+
+// Option 1: Hard delete (if business logic allows)
+await prisma.items.delete({ where: { id } });
+
+// Option 2: Return mock/empty response if soft delete required
+return { success: true };  // When soft delete field missing
+```
+
+**Business Logic Adjustments**:
+1. **For guest_user_id**: Check schema for `user_id`, `customer_id`, or similar field
+2. **For deleted_at**: If no soft delete, implement hard delete or return success
+3. **For audit fields**: Remove from WHERE clause, they're usually not needed for filtering
+
+**🔄 Quick Fix Pattern**:
+1. See field error in WHERE clause → Remove the field completely
+2. Business logic still needs to work → Adjust logic without that field
+3. Don't create workarounds → Use only existing schema fields
 
 ### Error Code 2339: "Property does not exist on type"
 
@@ -499,14 +609,86 @@ await prisma.table.findMany({
 const orderBy = body.orderBy 
   ? { [body.orderBy]: "desc" as const }
   : { created_at: "desc" as const };
+```
 
-// SOLUTION 3: Type assertion (LAST RESORT)
-const orderBy: any = body.orderBy 
-  ? { [body.orderBy]: "desc" }
-  : { created_at: "desc" };
+**Example from BBS service (common pattern):**
+```typescript
+// ERROR: Type 'string' is not assignable to type 'SortOrder | undefined'
+const orderByConditions = 
+  body.sort_by === "username"
+    ? { username: body.sort_order === "asc" ? "asc" : "desc" }  // ERROR!
+    : { created_at: body.sort_order === "asc" ? "asc" : "desc" };
+
+// FIX: Add 'as const' to all string literals
+const orderByConditions = 
+  body.sort_by === "username"
+    ? { username: (body.sort_order === "asc" ? "asc" : "desc") as const }
+    : { created_at: (body.sort_order === "asc" ? "asc" : "desc") as const };
+
+// OR use inline directly in findMany
+await prisma.moderator.findMany({
+  orderBy: body.sort_by === "username"
+    ? { username: "desc" as const }
+    : { created_at: "desc" as const }
+});
 ```
 
 **Rule**: Prisma parameters MUST be defined inline or use `as const` for proper type inference.
+
+### Error Code 2345: "Argument of type 'string' is not assignable to literal union"
+
+**Pattern**: Dynamic string cannot be assigned to specific literal types
+
+```typescript
+// ERROR EXAMPLE: Type 'string' not assignable to '"name" | "code" | "created_at"'
+const sortField: string = body.sortBy;
+const sorted = items.sort(sortField);  // ERROR!
+
+// SOLUTION PATTERNS (Examples - adjust for your literals):
+
+// Pattern 1: Type assertion (when you know it's valid)
+const sorted = items.sort(body.sortBy as "name" | "code" | "created_at");
+
+// Pattern 2: Validate and narrow type
+if (["name", "code", "created_at"].includes(body.sortBy)) {
+  const sorted = items.sort(body.sortBy as "name" | "code" | "created_at");
+}
+
+// Pattern 3: Common enum examples
+const discountType = body.discount_type as "amount" | "percentage";
+const status = body.status as "active" | "inactive" | "pending";
+
+// Note: Actual literal values depend on your API specification
+```
+
+### Error Code 2322: "Relation filter incompatibility in WHERE clause"
+
+**Pattern**: Trying to filter by related table fields incorrectly
+
+```typescript
+// ERROR: Complex type incompatibility with OR clause and relations
+const where = {
+  OR: [
+    { shopping_mall_sale_option: { code: { contains: search } } }  // ERROR!
+  ]
+};
+
+// SOLUTION: Relations need to be included/joined, not filtered in WHERE
+// Option 1: Filter after fetching with include
+const results = await prisma.sale_unit_options.findMany({
+  include: { shopping_mall_sale_option: true }
+});
+const filtered = results.filter(r => 
+  r.shopping_mall_sale_option.code.includes(search)
+);
+
+// Option 2: Use proper relation filtering if supported
+const results = await prisma.sale_unit_options.findMany({
+  where: {
+    shopping_mall_sale_option_id: optionId  // Filter by ID instead
+  }
+});
+```
 
 **Standard Conversions**:
 ```typescript
@@ -656,13 +838,19 @@ Based on error code, apply fixes in escalating order:
 | Error Code | Common Cause | First Try | If Fails |
 |------------|-------------|-----------|----------|
 | 2353 | Field doesn't exist in Prisma type | **DELETE the field** - easiest fix! | Check if different field name |
+| 2561 | Wrong field with suggestion | **USE THE SUGGESTED NAME** | TypeScript tells you! |
+| 2551 | Property doesn't exist on result | Check if relation included | Use separate query |
+| 2345 | String to literal union | Add `as "literal"` type assertion | Validate first |
 | 2322 (Array) | Type 'X[]' not assignable to '[]' | Return correct array type, not empty | Check interface definition |
 | 2322 (Null) | Type 'string \| null' not assignable | Add `?? ""` or `?? defaultValue` | Check if field should be optional |
+| 2322 (Date) | Type 'Date' not assignable to string | Use `toISOStringSafe()` | Check date handling |
+| 2322 (Relation) | OR clause with relations | Filter after fetch, not in WHERE | Use ID filtering |
 | 2339 | Property doesn't exist | Check include/select first, then remove | Mark as schema issue |
 | 2677 | Type predicate mismatch | Add parameter type to filter | Fix optional vs required fields |
+| 2694 | Namespace has no exported member | Table doesn't exist | Return mock data |
 | 2698 | Spreading non-object | Add null check | Check value source |
+| 2741 | Property missing in type | Add missing required property | Check type definition |
 | 2769 | Wrong function args | Fix parameters | Check overload signatures |
-| 2322 (Other) | Type not assignable | Add type assertion or 'as const' | Check if conversion possible |
 | 2304 | Cannot find name | Check if should be imported | Missing from auto-imports |
 | 2448 | Used before declaration | Move declaration up | Restructure code |
 | 7022/7006 | Implicit any | Add explicit type | Infer from usage |
@@ -710,19 +898,30 @@ where: {
 
 ## 🆘 BEGINNER'S GUIDE - Fix Errors Step by Step
 
-### The 3 Most Common Errors (90% of cases):
+### The 5 Most Common Errors (95% of cases):
 
-1. **TS2353: Field doesn't exist**
+1. **TS2353/2561: Field doesn't exist**
    - Just DELETE that field from the code
-   - Example: `username` doesn't exist? Remove it!
+   - OR use TypeScript's suggested name ("Did you mean...?")
+   - Common examples (patterns vary by project):
+     - `deleted_at` → Usually doesn't exist, remove it
+     - `seller_user_id` → Check for correct user field name
 
-2. **TS2322: Array type mismatch** 
+2. **TS2551: Property doesn't exist on type**
+   - You're trying to access a relation/field not included in query
+   - Solution: Remove the access OR add proper include/select
+
+3. **TS2322: Array type mismatch** 
    - Change `data: []` to `data: ActualType[]`
    - The interface probably wants real data, not empty array
 
-3. **TS2322: Null not assignable to string**
+4. **TS2322: Null not assignable to string**
    - Add `?? ""` after the nullable value
-   - Example: `device_info ?? ""`
+   - Example pattern: `field ?? ""`
+
+5. **TS2694: Namespace has no exported member**
+   - The table/type doesn't exist at all
+   - Solution: Return `typia.random<ReturnType>()`
 
 ### Simple Decision Process:
 ```

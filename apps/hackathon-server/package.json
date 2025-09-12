@@ -30,6 +30,7 @@
     "prepare": "ts-patch install && pnpm run build:env && pnpm run build:prisma",
     "schema": "ts-node src/executable/schema.ts",
     "start": "ts-node src/executable/server.ts",
+    "pm2:start": "pm2 start ecosystem.config.js",
     "test": "ts-node -P test/tsconfig.json test/index.ts"
   },
   "dependencies": {
@@ -69,6 +70,7 @@
     "commander": "^14.0.0",
     "inquirer": "8.2.5",
     "nestia": "catalog:samchon",
+    "pm2": "^6.0.10",
     "rimraf": "^6.0.1",
     "ts-node": "catalog:typescript",
     "ts-patch": "catalog:typescript",

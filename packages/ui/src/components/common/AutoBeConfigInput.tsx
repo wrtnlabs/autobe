@@ -5,7 +5,7 @@ export interface IAutoBeConfigInputProps {
   value: string | number;
   onChange: (value: string) => void;
   placeholder?: string;
-  type?: "text" | "password" | "url" | "number";
+  type?: "text" | "password" | "url" | "number" | "list";
   icon?: string;
   suggestions?: Array<{ value: string; label?: string }>;
   min?: number;
@@ -35,6 +35,7 @@ export const AutoBeConfigInput = (props: IAutoBeConfigInputProps) => {
     required = false,
   } = props;
 
+  console.log("suggestions", suggestions);
   const suggestionId = `suggestions-${label.replace(/\s+/g, "-").toLowerCase()}`;
 
   // Check if field is required and empty
@@ -59,48 +60,100 @@ export const AutoBeConfigInput = (props: IAutoBeConfigInputProps) => {
           <span style={{ color: "#dc3545", marginLeft: "0.25rem" }}>*</span>
         )}
       </label>
-      <input
-        type={type}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        list={suggestions ? suggestionId : undefined}
-        min={min}
-        max={max}
-        disabled={disabled}
-        style={{
-          width: "100%",
-          padding: "0.75rem",
-          border: `1px solid ${isRequiredEmpty ? "#dc3545" : "#d1d5db"}`,
-          borderRadius: "8px",
-          fontSize: "0.875rem",
-          transition: "border-color 0.2s ease",
-          outline: "none",
-          boxSizing: "border-box",
-          backgroundColor: disabled
-            ? "#f9fafb"
-            : isRequiredEmpty
-              ? "#fef2f2"
-              : "white",
-          color: disabled ? "#9ca3af" : "#000000",
-        }}
-        onFocus={(e) => {
-          if (!disabled && !isRequiredEmpty) {
-            e.currentTarget.style.borderColor = "#3b82f6";
-          }
-        }}
-        onBlur={(e) => {
-          if (!disabled) {
-            const newIsEmpty =
-              e.currentTarget.value === "" ||
-              e.currentTarget.value.trim() === "";
-            const newIsRequiredEmpty = required && newIsEmpty;
-            e.currentTarget.style.borderColor = newIsRequiredEmpty
-              ? "#dc3545"
-              : "#d1d5db";
-          }
-        }}
-      />
+      {type === "list" ? (
+        <select
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          disabled={disabled}
+          style={{
+            width: "100%",
+            padding: "0.75rem",
+            border: `1px solid ${isRequiredEmpty ? "#dc3545" : "#d1d5db"}`,
+            borderRadius: "8px",
+            fontSize: "0.875rem",
+            transition: "border-color 0.2s ease",
+            outline: "none",
+            boxSizing: "border-box",
+            backgroundColor: disabled
+              ? "#f9fafb"
+              : isRequiredEmpty
+                ? "#fef2f2"
+                : "white",
+            color: disabled ? "#9ca3af" : "#000000",
+            cursor: disabled ? "not-allowed" : "pointer",
+          }}
+          onFocus={(e) => {
+            if (!disabled && !isRequiredEmpty) {
+              e.currentTarget.style.borderColor = "#3b82f6";
+            }
+          }}
+          onBlur={(e) => {
+            if (!disabled) {
+              const newIsEmpty =
+                e.currentTarget.value === "" ||
+                e.currentTarget.value.trim() === "";
+              const newIsRequiredEmpty = required && newIsEmpty;
+              e.currentTarget.style.borderColor = newIsRequiredEmpty
+                ? "#dc3545"
+                : "#d1d5db";
+            }
+          }}
+        >
+          {placeholder && (
+            <option value="" disabled>
+              {placeholder}
+            </option>
+          )}
+          {suggestions?.map((suggestion, index) => (
+            <option key={index} value={suggestion.value}>
+              {suggestion.label || suggestion.value}
+            </option>
+          ))}
+        </select>
+      ) : (
+        <input
+          type={type}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          list={suggestions ? suggestionId : undefined}
+          min={min}
+          max={max}
+          disabled={disabled}
+          style={{
+            width: "100%",
+            padding: "0.75rem",
+            border: `1px solid ${isRequiredEmpty ? "#dc3545" : "#d1d5db"}`,
+            borderRadius: "8px",
+            fontSize: "0.875rem",
+            transition: "border-color 0.2s ease",
+            outline: "none",
+            boxSizing: "border-box",
+            backgroundColor: disabled
+              ? "#f9fafb"
+              : isRequiredEmpty
+                ? "#fef2f2"
+                : "white",
+            color: disabled ? "#9ca3af" : "#000000",
+          }}
+          onFocus={(e) => {
+            if (!disabled && !isRequiredEmpty) {
+              e.currentTarget.style.borderColor = "#3b82f6";
+            }
+          }}
+          onBlur={(e) => {
+            if (!disabled) {
+              const newIsEmpty =
+                e.currentTarget.value === "" ||
+                e.currentTarget.value.trim() === "";
+              const newIsRequiredEmpty = required && newIsEmpty;
+              e.currentTarget.style.borderColor = newIsRequiredEmpty
+                ? "#dc3545"
+                : "#d1d5db";
+            }
+          }}
+        />
+      )}
       {isRequiredEmpty && (
         <div
           style={{
@@ -116,7 +169,7 @@ export const AutoBeConfigInput = (props: IAutoBeConfigInputProps) => {
           This field is required
         </div>
       )}
-      {suggestions && (
+      {suggestions && type !== "list" && (
         <datalist id={suggestionId}>
           {suggestions.map((suggestion, index) => (
             <option key={index} value={suggestion.value}>

@@ -156,6 +156,17 @@ export class AutoBeAgentSessionStorageIndexedDBStrategy
     const store = await this.getObjectStore("sessions", "readwrite");
     await promisifyIDBRequest(store.delete(props.id));
   }
+
+  async editSessionTitle(
+    props: Pick<IAutoBeAgentSession, "id" | "title">,
+  ): Promise<void> {
+    const store = await this.getObjectStore("sessions", "readwrite");
+    const prev = await promisifyIDBRequest(store.get(props.id));
+    if (prev === undefined) {
+      return;
+    }
+    await promisifyIDBRequest(store.put({ ...prev, title: props.title }));
+  }
 }
 
 const promisifyIDBRequest = <T>(request: IDBRequest<T>): Promise<T> => {

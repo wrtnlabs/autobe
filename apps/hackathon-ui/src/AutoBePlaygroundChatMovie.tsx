@@ -2,15 +2,18 @@ import {
   AutoBeAgentProvider,
   AutoBeAgentSessionListProvider,
   AutoBeChatMain,
-  AutoBeChatSidebar,
   AutoBeServiceFactory,
   IAutoBeAgentSessionStorageStrategy,
   IConfigField,
   createAutoBeConfigFields,
+  useSearchParams,
 } from "@autobe/ui";
 import { useMediaQuery } from "@autobe/ui/hooks";
 import { AppBar, Toolbar, Typography } from "@mui/material";
 import { useState } from "react";
+import { Toaster } from "sonner";
+
+import AutoBeChatSidebar from "./components/AutoBeChatSidebar";
 
 export function AutoBePlaygroundChatMovie(
   props: AutoBePlaygroundChatMovie.IProps,
@@ -25,10 +28,23 @@ export function AutoBePlaygroundChatMovie(
     props.storageStrategyFactory(),
   );
   // Configuration fields for AutoBE Playground (adds serverUrl to defaults)
-  const configFields = createAutoBeConfigFields().filter(
-    props.configFilter ?? (() => true),
-  );
+  const configFields = createAutoBeConfigFields()
+    .filter(props.configFilter ?? (() => true))
+    .map((v) => ({
+      ...v,
+      placeholder: undefined,
+      type: "list",
+      suggestions: [
+        "openai/gpt-4.1",
+        "openai/gpt-4.1-mini",
+        "qwen/qwen3-235b-a22b-2507",
+      ],
+      default: "openai/gpt-4.1-mini",
+    })) satisfies IConfigField[];
+  const { searchParams, setSearchParams } = useSearchParams();
 
+  const currentSessionId = searchParams.get("session-id");
+  const activeConfigFields = currentSessionId == null ? configFields : [];
   //----
   // RENDERERS
   //----
@@ -45,10 +61,11 @@ export function AutoBePlaygroundChatMovie(
         position: "relative",
       }}
     >
+      <Toaster position="top-center" richColors />
       <AppBar position="relative" component="div">
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            {props.title ?? "AutoBE Playground"}
+            {props.title ?? "AutoBE Hackathon"}
           </Typography>
         </Toolbar>
       </AppBar>
@@ -80,15 +97,22 @@ export function AutoBePlaygroundChatMovie(
                 isCollapsed={isMobile ? false : sidebarCollapsed}
                 onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
                 onSessionSelect={() => {}}
-                onDeleteSession={(id) => {
-                  storageStrategy.deleteSession({ id });
+                onDeleteSession={async (id) => {
+                  await storageStrategy.deleteSession({ id });
+                  if (searchParams.get("session-id") === id) {
+                    setSearchParams((sp) => {
+                      const newSp = new URLSearchParams(sp);
+                      newSp.delete("session-id");
+                      return newSp;
+                    });
+                  }
                 }}
               />
               <AutoBeChatMain
                 isUnusedConfig={props.isUnusedConfig ?? false}
                 isMobile={isMobile}
                 setError={setError}
-                configFields={configFields}
+                configFields={activeConfigFields}
                 style={{
                   backgroundColor: "lightblue",
                 }}

@@ -1,7 +1,7 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
 import { StringUtil } from "@autobe/utils";
 import { ILlmSchema } from "@samchon/openapi";
-import { v4, v7 } from "uuid";
+import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../../context/AutoBeContext";
@@ -35,7 +35,7 @@ export const transformTestCorrectHistories = async <
     ...failures.map(
       (f, i, array) =>
         ({
-          id: v4(),
+          id: v7(),
           created_at: new Date().toISOString(),
           type: "assistantMessage",
           text: StringUtil.trim`

@@ -46,7 +46,7 @@ async function main(): Promise<void> {
   };
 
   await execute(
-    config.database,
+    "postgres",
     root.account,
     root.password,
     `

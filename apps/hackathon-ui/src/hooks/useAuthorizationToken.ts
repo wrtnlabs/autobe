@@ -1,4 +1,4 @@
-import { IAutobeHackathonParticipant } from "@autobe/hackathon-api";
+import { IAutobeHackathonParticipant } from "@autobe/interface";
 
 export const useAuthorizationToken = () => {
   return {

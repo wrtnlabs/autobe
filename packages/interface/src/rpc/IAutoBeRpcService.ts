@@ -1,4 +1,5 @@
 import { IAutoBeGetFilesOptions } from "../facade/IAutoBeGetFilesOptions";
+import { AutoBePhase } from "../histories";
 import { AutoBeHistory } from "../histories/AutoBeHistory";
 import { AutoBeUserMessageContent } from "../histories/contents/AutoBeUserMessageContent";
 import { IAutoBeTokenUsageJson } from "../json/IAutoBeTokenUsageJson";
@@ -132,4 +133,6 @@ export interface IAutoBeRpcService {
    *   detailed breakdowns by agent, operation type, and usage category
    */
   getTokenUsage(): Promise<IAutoBeTokenUsageJson>;
+
+  getPhase(): Promise<AutoBePhase | null>;
 }

@@ -17,6 +17,7 @@ export class AutoBeHackathonBackend {
       logger: ["error", "warn", "log"],
     });
     this.application_.enableCors();
+    this.application_.enableShutdownHooks();
     await WebSocketAdaptor.upgrade(this.application_);
     await this.application_.listen(port, "0.0.0.0");
   }

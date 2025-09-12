@@ -34,11 +34,8 @@ export const archive_interface = async (
       tokenUsage: agent.getTokenUsage().toJSON(),
     });
   };
-  agent.on("assistantMessage", listen);
-  agent.on("jsonParseError", listen);
-  agent.on("jsonValidateError", listen);
   for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
-    if (type.startsWith("interface")) agent.on(type, listen);
+    agent.on(type, listen);
 
   // REQUEST INTERFACE GENERATION
   const result: AutoBeInterfaceHistory | AutoBeAssistantMessageHistory =

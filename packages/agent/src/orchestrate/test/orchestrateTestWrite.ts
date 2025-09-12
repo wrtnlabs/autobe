@@ -51,10 +51,6 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
           event,
         };
       } catch {
-        console.log(
-          "failed to write test code, no function calling happened.",
-          scenario.functionName,
-        );
         return null;
       }
     }),
@@ -75,7 +71,7 @@ async function process<Model extends ILlmSchema.Model>(
   const pointer: IPointer<IAutoBeTestWriteApplication.IProps | null> = {
     value: null,
   };
-  const { tokenUsage } = await ctx.conversate({
+  const { histories, tokenUsage } = await ctx.conversate({
     source: "testWrite",
     histories: await transformTestWriteHistories(ctx, scenario, artifacts),
     controller: createController({
@@ -90,6 +86,10 @@ async function process<Model extends ILlmSchema.Model>(
     message: "Create e2e test functions.",
   });
   if (pointer.value === null) {
+    console.log(
+      "Failed to create test code.",
+      histories.map((h) => h.type),
+    );
     ++progress.completed;
     throw new Error("Failed to create test code.");
   }

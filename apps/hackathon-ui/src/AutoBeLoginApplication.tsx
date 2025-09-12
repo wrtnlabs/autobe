@@ -1,5 +1,6 @@
 import hApi from "@autobe/hackathon-api";
 import { useState } from "react";
+import { Toaster, toast } from "sonner";
 
 import { HACKATHON_CODE } from "./constant";
 import { useAuthorizationToken } from "./hooks/useAuthorizationToken";
@@ -9,7 +10,7 @@ export function AutoBeLoginApplication() {
   // STATES
   //----
   const [credentials, setCredentials] = useState({
-    username: "",
+    email: "",
     password: "",
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -19,7 +20,7 @@ export function AutoBeLoginApplication() {
   // EVENT HANDLERS
   //----
   const handleInputChange =
-    (field: "username" | "password") =>
+    (field: "email" | "password") =>
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setCredentials((prev) => ({
         ...prev,
@@ -29,25 +30,27 @@ export function AutoBeLoginApplication() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!credentials.username.trim() || !credentials.password.trim()) {
+    if (!credentials.email.trim() || !credentials.password.trim()) {
       return;
     }
 
     setIsLoading(true);
     try {
       const result =
-        await hApi.autobe.hackathon.participants.authenticate.login(
+        await hApi.functional.autobe.hackathon.participants.authenticate.login(
           {
             host: import.meta.env.VITE_API_BASE_URL,
           },
           HACKATHON_CODE,
           {
-            email: credentials.username,
+            email: credentials.email,
             password: credentials.password,
           },
         );
       setToken(JSON.stringify(result));
       window.location.href = "/";
+    } catch (e) {
+      toast.error("Invalid credentials");
     } finally {
       setIsLoading(false);
     }
@@ -125,13 +128,14 @@ export function AutoBeLoginApplication() {
     <div style={containerStyle}>
       <form style={formStyle} onSubmit={handleSubmit}>
         <h1 style={titleStyle}>Login</h1>
+        <Toaster position="top-center" richColors />
 
         <div>
           <input
             type="text"
-            placeholder="Username"
-            value={credentials.username}
-            onChange={handleInputChange("username")}
+            placeholder="Email"
+            value={credentials.email}
+            onChange={handleInputChange("email")}
             onKeyPress={handleKeyPress}
             disabled={isLoading}
             style={inputStyle}
@@ -170,7 +174,7 @@ export function AutoBeLoginApplication() {
           type="submit"
           disabled={
             isLoading ||
-            !credentials.username.trim() ||
+            !credentials.email.trim() ||
             !credentials.password.trim()
           }
           style={buttonStyle}

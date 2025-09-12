@@ -1,4 +1,4 @@
-import hApi from "@autobe/hackathon-api";
+import hApi, { HttpError } from "@autobe/hackathon-api";
 import { IAutoBeHackathonSession, IPage } from "@autobe/interface";
 import {
   IAutoBeAgentSession,
@@ -17,6 +17,7 @@ export class AutoBeAgentSessionStorageStrategy
   setTokenUsage(): Promise<void> {
     return Promise.resolve();
   }
+
   async getSession(
     props: Pick<IAutoBeAgentSession, "id">,
   ): Promise<IAutoBeAgentSession> {
@@ -52,34 +53,77 @@ export class AutoBeAgentSessionStorageStrategy
     const token = getToken();
 
     const result: IPage<IAutoBeHackathonSession.ISummary> =
-      await hApi.functional.autobe.hackathon.participants.sessions.index(
-        {
-          host: import.meta.env.VITE_API_BASE_URL,
-          headers: {
-            Authorization: `Bearer ${token.token.access}`,
+      await hApi.functional.autobe.hackathon.participants.sessions
+        .index(
+          {
+            host: import.meta.env.VITE_API_BASE_URL,
+            headers: {
+              Authorization: `Bearer ${token.token.access}`,
+            },
           },
-        },
-        HACKATHON_CODE,
-        {
-          page: 1,
-          limit: 100,
-        },
-      );
+          HACKATHON_CODE,
+          {
+            page: 1,
+            limit: 100,
+          },
+        )
+        .catch((e) => {
+          if (e instanceof HttpError && e.status === 403) {
+            window.location.href = "/login";
+          }
+          throw e;
+        });
 
     return result.data.map((session) => ({
       id: session.id,
-      title: session.id.split("-").slice(1, 5).join("-"),
+      title: session.title ?? "Untitled",
       history: [],
       tokenUsage: session.token_usage,
       createdAt: new Date(session.created_at),
       updatedAt: new Date(session.completed_at ?? session.created_at),
+      completedAt: session.completed_at,
       events: [],
+      phase: session.phase,
+      model: session.model,
     }));
   }
-  deleteSession(): Promise<void> {
-    return Promise.resolve();
+  async deleteSession(props: Pick<IAutoBeAgentSession, "id">): Promise<void> {
+    const { getToken } = useAuthorizationToken();
+    const token = getToken();
+
+    await hApi.functional.autobe.hackathon.participants.sessions.erase(
+      {
+        host: import.meta.env.VITE_API_BASE_URL,
+        headers: {
+          Authorization: `Bearer ${token.token.access}`,
+        },
+      },
+      HACKATHON_CODE,
+      props.id,
+    );
   }
   async appendHistory(): Promise<void> {
     return Promise.resolve();
+  }
+
+  async editSessionTitle(
+    props: Pick<IAutoBeAgentSession, "id" | "title">,
+  ): Promise<void> {
+    const { getToken } = useAuthorizationToken();
+    const token = getToken();
+
+    await hApi.functional.autobe.hackathon.participants.sessions.update(
+      {
+        host: import.meta.env.VITE_API_BASE_URL,
+        headers: {
+          Authorization: `Bearer ${token.token.access}`,
+        },
+      },
+      HACKATHON_CODE,
+      props.id,
+      {
+        title: props.title,
+      },
+    );
   }
 }
