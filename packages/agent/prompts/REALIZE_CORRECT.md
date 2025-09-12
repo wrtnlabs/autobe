@@ -143,6 +143,14 @@ Errors Found:
 2. TS2345: Type 'Date' is not assignable to type 'string'
    - Cause: Direct Date assignment without conversion
    - Fix: Use toISOStringSafe() for all date values
+   - ⚠️ CRITICAL: toISOStringSafe CANNOT handle null! Always check first:
+     ```typescript
+     // ❌ WRONG: Will crash if value is null
+     toISOStringSafe(value)
+     
+     // ✅ CORRECT: Check null first
+     value ? toISOStringSafe(value) : null
+     ```
 
 Resolution Plan:
 1. First, remove all non-existent field references
@@ -248,6 +256,29 @@ return typia.random<ReturnType>();
 If you see the same type assignment error pattern:
 1. Identify the conversion needed (e.g., `string` → enum)
 2. Apply the SAME conversion pattern to ALL similar cases
+
+## 🚨🚨🚨 MOST VIOLATED RULE - NEVER USE hasOwnProperty 🚨🚨🚨
+
+**ABSOLUTELY FORBIDDEN - AI KEEPS VIOLATING THIS:**
+```typescript
+// ❌ NEVER USE THESE PATTERNS:
+Object.prototype.hasOwnProperty.call(body, "field")  // FORBIDDEN!
+body.hasOwnProperty("field")                         // FORBIDDEN!
+```
+
+**✅ REQUIRED - Use simple patterns ONLY:**
+```typescript
+// For checking if field exists
+if (body.field !== undefined && body.field !== null) { /* use it */ }
+
+// For conditional inclusion
+...(body.field !== undefined && body.field !== null && { field: body.field })
+
+// For updates
+field: body.field === null ? undefined : body.field
+```
+
+**This is the MOST VIOLATED RULE - DO NOT USE hasOwnProperty EVER!**
 
 ## 🚨 CRITICAL ERROR PATTERNS BY ERROR CODE
 
@@ -604,17 +635,16 @@ const orderBy = body.orderBy
 // ERROR: 'string' is not assignable to 'SortOrder'
 await prisma.table.findMany({ orderBy }); // TYPE ERROR
 
-// SOLUTION 1: Define inline (BEST)
+// SOLUTION: Define inline (ONLY WAY - NO INTERMEDIATE VARIABLES!)
 await prisma.table.findMany({
   orderBy: body.orderBy 
     ? { [body.orderBy]: "desc" as const }  // Literal type
     : { created_at: "desc" as const }
 });
 
-// SOLUTION 2: If variable needed, use 'as const' everywhere
-const orderBy = body.orderBy 
-  ? { [body.orderBy]: "desc" as const }
-  : { created_at: "desc" as const };
+// ❌ FORBIDDEN: NEVER create intermediate variables for Prisma operations!
+// const orderBy = { ... };  // VIOLATION!
+// await prisma.findMany({ orderBy });  // FORBIDDEN!
 ```
 
 **Example from BBS service (common pattern):**
@@ -625,18 +655,15 @@ const orderByConditions =
     ? { username: body.sort_order === "asc" ? "asc" : "desc" }  // ERROR!
     : { created_at: body.sort_order === "asc" ? "asc" : "desc" };
 
-// FIX: Add 'as const' to each literal value, not the expression
-const orderByConditions = 
-  body.sort_by === "username"
-    ? { username: body.sort_order === "asc" ? "asc" as const : "desc" as const }
-    : { created_at: body.sort_order === "asc" ? "asc" as const : "desc" as const };
-
-// OR use inline directly in findMany
+// FIX: Use inline directly in findMany (NO INTERMEDIATE VARIABLES!)
 await prisma.moderator.findMany({
   orderBy: body.sort_by === "username"
-    ? { username: "desc" as const }
-    : { created_at: "desc" as const }
+    ? { username: body.sort_order === "asc" ? "asc" as const : "desc" as const }
+    : { created_at: body.sort_order === "asc" ? "asc" as const : "desc" as const }
 });
+
+// ❌ FORBIDDEN: Creating orderByConditions variable
+// const orderByConditions = { ... };  // NEVER DO THIS!
 ```
 
 **Rule**: Prisma parameters MUST be defined inline or use `as const` for proper type inference.
@@ -850,6 +877,18 @@ Based on error code, apply fixes in escalating order:
 4. **ALWAYS** document when aggressive refactoring was needed
 5. **ALWAYS** follow inline parameter rule for Prisma
 6. **ALWAYS** maintain type safety
+7. **NEVER** use `satisfies` on return statements when function has return type
+   ```typescript
+   // ❌ REDUNDANT: Function already has return type
+   async function getUser(): Promise<IUser> {
+     return { ... } satisfies IUser;  // Unnecessary!
+   }
+   
+   // ✅ CORRECT: Let function return type handle validation
+   async function getUser(): Promise<IUser> {
+     return { ... };  // Function type validates this
+   }
+   ```
 7. **ALWAYS** maintain API functionality - change implementation, not the contract
 
 ## 📊 Quick Reference Table
