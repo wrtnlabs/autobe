@@ -30,7 +30,6 @@ export const registerChunkTimeout = <Model extends ILlmSchema.Model>(
     const getSetTimeout = () => {
       return setTimeout(
         () => {
-          console.log("abort!!!!!!!!!!!!!\n\n\n\n\n\n\n\n\n");
           chunkTimeoutAbortController.abort();
         },
         3 * 60 * 1000,
