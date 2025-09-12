@@ -113,7 +113,6 @@ export function AutoBeAgentProvider({
           newSp.set("session-id", newServiceData.sessionId);
           return newSp;
         });
-
         setConnectionStatus("connected");
 
         return newServiceData;

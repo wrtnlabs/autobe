@@ -57,7 +57,15 @@ export function AutoBePlaygroundApplication() {
               config.sessionId,
               listener.getListener(),
             )
-            .then((v) => v.driver)
+            .then((v) => {
+              v.connector
+                .join()
+                .then(() => {
+                  window.location.reload();
+                })
+                .catch(() => {});
+              return v.driver;
+            })
             .catch(errorHandler),
           sessionId: config.sessionId,
         };
