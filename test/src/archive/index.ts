@@ -9,7 +9,6 @@ import typia from "typia";
 
 import { TestFactory } from "../TestFactory";
 import { TestGlobal } from "../TestGlobal";
-import { TestConfigurator } from "../internal/TestConfigurator";
 import { TestProject } from "../structures/TestProject";
 
 type Step = keyof AutoBeState;
@@ -91,7 +90,6 @@ const main = async (): Promise<void> => {
       TestGlobal.getArguments("semaphore")?.[0] ??
       "16",
   );
-  TestGlobal.vendorModel = await TestConfigurator.getVendorModel();
 
   // AGENT
   const tokenUsage: AutoBeTokenUsage = new AutoBeTokenUsage();
@@ -107,7 +105,9 @@ const main = async (): Promise<void> => {
               : TestGlobal.env.OPENROUTER_API_KEY,
             baseURL: "https://openrouter.ai/api/v1",
           }),
-          model: TestGlobal.vendorModel,
+          model: TestGlobal.vendorModel.startsWith("openai/")
+            ? TestGlobal.vendorModel.replace("openai/", "")
+            : TestGlobal.vendorModel,
           semaphore,
         },
         config: {

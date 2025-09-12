@@ -33,7 +33,9 @@ async function main(): Promise<void> {
               : TestGlobal.env.OPENROUTER_API_KEY,
             baseURL: "https://openrouter.ai/api/v1",
           }),
-          model: TestGlobal.vendorModel,
+          model: TestGlobal.vendorModel.startsWith("openai/")
+            ? TestGlobal.vendorModel.replace("openai/", "")
+            : TestGlobal.vendorModel,
           semaphore: Number(TestGlobal.getArguments("semaphore")?.[0] ?? "16"),
         },
         config: {

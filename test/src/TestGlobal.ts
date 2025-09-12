@@ -33,7 +33,8 @@ export class TestGlobal {
   }
 
   public static archive: boolean = process.argv.includes("--archive");
-  public static vendorModel: string = "gpt-4.1";
+  public static vendorModel: string =
+    TestGlobal.getArguments("vendor")?.[0] || "openai/gpt-4.1";
 }
 
 interface IEnvironments {

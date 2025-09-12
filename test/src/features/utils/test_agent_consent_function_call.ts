@@ -14,9 +14,14 @@ export const test_agent_consent_function_call = async () => {
       config: {},
       vendor: {
         api: new OpenAI({
-          apiKey: TestGlobal.env.OPENAI_API_KEY,
+          apiKey: TestGlobal.vendorModel.startsWith("openai/")
+            ? TestGlobal.env.OPENAI_API_KEY
+            : TestGlobal.env.OPENROUTER_API_KEY,
+          baseURL: "https://openrouter.ai/api/v1",
         }),
-        model: "gpt-4.1",
+        model: TestGlobal.vendorModel.startsWith("openai/")
+          ? TestGlobal.vendorModel.replace("openai/", "")
+          : TestGlobal.vendorModel,
         semaphore: Number(TestGlobal.getArguments("semaphore")?.[0] ?? "16"),
       },
       assistantMessage: message,

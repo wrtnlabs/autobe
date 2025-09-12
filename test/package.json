@@ -30,10 +30,8 @@
     "@nestia/fetcher": "catalog:samchon",
     "@nestia/migrate": "catalog:samchon",
     "@samchon/openapi": "catalog:samchon",
-    "commander": "11.1.0",
     "dotenv": "^16.5.0",
     "dotenv-expand": "^12.0.2",
-    "inquirer": "8.2.5",
     "openai": "catalog:libs",
     "tgrid": "catalog:samchon",
     "tstl": "catalog:samchon",
@@ -41,7 +39,6 @@
     "uuid": "^11.1.0"
   },
   "devDependencies": {
-    "@types/inquirer": "8.2.5",
     "@types/node": "^22.15.17",
     "@types/uuid": "^10.0.0",
     "chalk": "4.1.2",

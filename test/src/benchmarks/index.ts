@@ -34,11 +34,15 @@ async function main() {
         model: "chatgpt",
         vendor: {
           api: new OpenAI({
-            apiKey: TestGlobal.env.OPENAI_API_KEY,
-            maxRetries: 30,
+            apiKey: TestGlobal.vendorModel.startsWith("openai/")
+              ? TestGlobal.env.OPENAI_API_KEY
+              : TestGlobal.env.OPENROUTER_API_KEY,
+            baseURL: "https://openrouter.ai/api/v1",
           }),
+          model: TestGlobal.vendorModel.startsWith("openai/")
+            ? TestGlobal.vendorModel.replace("openai/", "")
+            : TestGlobal.vendorModel,
           semaphore: Number(TestGlobal.env.SEMAPHORE ?? "32"),
-          model: "gpt-4.1",
         },
         config: {
           locale: "en-US",
