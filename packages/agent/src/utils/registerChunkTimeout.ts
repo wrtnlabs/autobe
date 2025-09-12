@@ -27,22 +27,20 @@ export const registerChunkTimeout = <Model extends ILlmSchema.Model>(
   const chunkTimeoutAbortController =
     options.abortController ?? new AbortController();
   agent.on("response", async (event) => {
-    const getSetTimeout = () => {
-      return setTimeout(
-        () => {
-          chunkTimeoutAbortController.abort();
-        },
-        3 * 60 * 1000,
-      );
-    };
-    const timeoutPointer: IPointer<NodeJS.Timeout> = {
-      value: getSetTimeout(),
-    };
-    for await (const _chunk of event.stream) {
-      if (timeoutPointer.value != null) clearTimeout(timeoutPointer.value);
-      timeoutPointer.value = getSetTimeout();
-    }
-    clearTimeout(timeoutPointer.value);
+    const completed: IPointer<boolean> = { value: false };
+    const sleep = setTimeout(() => {
+      if (completed.value === true) return;
+      try {
+        chunkTimeoutAbortController.abort();
+      } catch {}
+    }, options.timeout);
+    event
+      .join()
+      .catch(() => {})
+      .finally(() => {
+        completed.value = true;
+        clearTimeout(sleep);
+      });
   });
   return {
     agent,

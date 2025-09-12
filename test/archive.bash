@@ -25,6 +25,12 @@ pnpm run archive --vendor qwen/qwen3-next-80b-a3b-instruct --project reddit > ar
 pnpm run archive --vendor qwen/qwen3-next-80b-a3b-instruct --project bbs > archive.qwen3-next-80b-bbs.log
 pnpm run archive --vendor qwen/qwen3-next-80b-a3b-instruct --project shopping > archive.qwen3-next-80b-shopping.log
 
+# qwen/qwen3-coder
+pnpm run archive --vendor qwen/qwen3-coder --project todo > archive.qwen3-coder-todo.log
+pnpm run archive --vendor qwen/qwen3-coder --project reddit > archive.qwen3-coder-reddit.log
+pnpm run archive --vendor qwen/qwen3-coder --project bbs > archive.qwen3-coder-bbs.log
+pnpm run archive --vendor qwen/qwen3-coder --project shopping > archive.qwen3-coder-shopping.log
+
 ################################################
 # SPECIAL PHASES
 ################################################
@@ -42,7 +48,7 @@ pnpm run archive --vendor openai/gpt-4.1-mini --project shopping --from realize 
 
 # qwen/qwen3-235b-a22b-2507
 pnpm run archive --vendor qwen/qwen3-235b-a22b-2507 --project todo --from interface > archive.qwen3-235b-todo.log
-pnpm run archive --vendor qwen/qwen3-235b-a22b-2507 --project reddit --from test > archive.qwen3-235b-reddit.log
+pnpm run archive --vendor qwen/qwen3-235b-a22b-2507 --project reddit --from realize > archive.qwen3-235b-reddit.log
 pnpm run archive --vendor qwen/qwen3-235b-a22b-2507 --project bbs --from interface > archive.qwen3-235b-bbs.log
 pnpm run archive --vendor qwen/qwen3-235b-a22b-2507 --project shopping --from interface > archive.qwen-235b-shopping.log
 

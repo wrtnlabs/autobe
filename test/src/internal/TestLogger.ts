@@ -60,6 +60,10 @@ export namespace TestLogger {
               `id: ${event.id}`,
               `elapsed time: ${time(t1)}`,
               `chunk times: (max: ${Math.max(...chunks.map((c) => c.first))}, delayed: ${time(chunks.at(-1)?.second ?? t1)})`,
+              `chunks (last 5 items): [${chunks
+                .slice(-5)
+                .map((c) => c.first)
+                .join(", ")}]`,
             ]
               .map((s) => `  - ${s}`)
               .join("\n"),
@@ -72,7 +76,7 @@ export namespace TestLogger {
         .then(() => {
           completed.value = true;
           console.log(
-            `Response chunk times (${event.source}): (max: ${Math.max(...chunks.map((c) => c.first))})`,
+            `Response chunk times (${event.source}, ${time(t1)}): (max: ${Math.max(...chunks.map((c) => c.first))})`,
           );
         });
     }
