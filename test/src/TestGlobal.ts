@@ -32,23 +32,14 @@ export class TestGlobal {
     );
   }
 
-  public static getVendorModel(): string {
-    const specified = this.getArguments("vendor")?.[0];
-    if (!!specified?.length) return specified;
-    else if (TestGlobal.env.VENDOR_MODEL === undefined) return "openai/gpt-4.1";
-    else if (TestGlobal.env.BASE_URL === undefined)
-      return `openai/${TestGlobal.env.VENDOR_MODEL}`;
-    return TestGlobal.env.VENDOR_MODEL;
-  }
-
   public static archive: boolean = process.argv.includes("--archive");
+  public static vendorModel: string = "gpt-4.1";
 }
 
 interface IEnvironments {
-  API_KEY?: string;
-  BASE_URL?: string;
+  OPENAI_API_KEY?: string;
+  OPENROUTER_API_KEY?: string;
   SCHEMA_MODEL?: ILlmSchema.Model;
-  VENDOR_MODEL?: string;
   SEMAPHORE?: string;
   BENCHMARK_RUNS_PER_SCENARIO?: string;
 }

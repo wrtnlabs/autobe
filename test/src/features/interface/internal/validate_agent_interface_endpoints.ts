@@ -15,11 +15,11 @@ export const validate_agent_interface_endpoints = async (
   factory: TestFactory,
   project: TestProject,
 ) => {
-  if (TestGlobal.env.API_KEY === undefined) return false;
+  if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
   const { agent } = await prepare_agent_interface(factory, project);
 
-  const model: string = TestGlobal.getVendorModel();
+  const model: string = TestGlobal.vendorModel;
   const groups: AutoBeInterfaceGroup[] = typia.json.assertParse<
     AutoBeInterfaceGroup[]
   >(

@@ -15,7 +15,7 @@ import { TestFileSystem } from "./TestFileSystem";
 export namespace TestHistory {
   export const save = async (files: Record<string, string>): Promise<void> => {
     await TestFileSystem.save({
-      root: `${TestGlobal.ROOT}/assets/histories/${TestGlobal.getVendorModel()}`,
+      root: `${TestGlobal.ROOT}/assets/histories/${TestGlobal.vendorModel}`,
       overwrite: true,
       files,
     });
@@ -47,7 +47,7 @@ export namespace TestHistory {
     project: TestProject,
     type: "analyze" | "prisma" | "interface" | "test" | "realize",
   ): Promise<AutoBeHistory[]> => {
-    const location: string = `${TestGlobal.ROOT}/assets/histories/${TestGlobal.getVendorModel()}/${project}.${type}.json.gz`;
+    const location: string = `${TestGlobal.ROOT}/assets/histories/${TestGlobal.vendorModel}/${project}.${type}.json.gz`;
     const content: string = await CompressUtil.gunzip(
       await fs.promises.readFile(location),
     );
@@ -61,7 +61,7 @@ export namespace TestHistory {
     const snapshots: AutoBeEventSnapshot[] = JSON.parse(
       await CompressUtil.gunzip(
         await fs.promises.readFile(
-          `${TestGlobal.ROOT}/assets/histories/${TestGlobal.getVendorModel()}/${project}.${type}.snapshots.json.gz`,
+          `${TestGlobal.ROOT}/assets/histories/${TestGlobal.vendorModel}/${project}.${type}.snapshots.json.gz`,
         ),
       ),
     );
@@ -73,6 +73,6 @@ export namespace TestHistory {
     type: "analyze" | "prisma" | "interface" | "test" | "realize",
   ): boolean =>
     fs.existsSync(
-      `${TestGlobal.ROOT}/assets/histories/${TestGlobal.getVendorModel()}/${project}.${type}.json.gz`,
+      `${TestGlobal.ROOT}/assets/histories/${TestGlobal.vendorModel}/${project}.${type}.json.gz`,
     );
 }

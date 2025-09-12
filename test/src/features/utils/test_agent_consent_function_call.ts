@@ -5,7 +5,7 @@ import OpenAI from "openai";
 import { TestGlobal } from "../../TestGlobal";
 
 export const test_agent_consent_function_call = async () => {
-  if (TestGlobal.env.API_KEY === undefined) return false;
+  if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
   const consent = (message: string) =>
     consentFunctionCall({
@@ -14,13 +14,9 @@ export const test_agent_consent_function_call = async () => {
       config: {},
       vendor: {
         api: new OpenAI({
-          apiKey: TestGlobal.env.API_KEY,
-          baseURL: TestGlobal.env.BASE_URL,
+          apiKey: TestGlobal.env.OPENAI_API_KEY,
         }),
-        model:
-          TestGlobal.getArguments("vendor")?.[0] ??
-          TestGlobal.env.VENDOR_MODEL ??
-          "gpt-4.1",
+        model: "gpt-4.1",
         semaphore: Number(TestGlobal.getArguments("semaphore")?.[0] ?? "16"),
       },
       assistantMessage: message,

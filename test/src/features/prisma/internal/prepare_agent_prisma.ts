@@ -12,7 +12,7 @@ export const prepare_agent_prisma = async (
   factory: TestFactory,
   project: TestProject,
 ) => {
-  if (TestGlobal.env.API_KEY === undefined)
+  if (TestGlobal.env.OPENAI_API_KEY === undefined)
     throw new Error("No OpenAI API key provided");
 
   const histories: AutoBeHistory[] = await TestHistory.getHistories(

@@ -22,11 +22,11 @@ export const validate_agent_test_write = async (
   factory: TestFactory,
   project: TestProject,
 ) => {
-  if (TestGlobal.env.API_KEY === undefined) return false;
+  if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
   // PREPARE ASSETS
   const { agent } = await prepare_agent_test(factory, project);
-  const model: string = TestGlobal.getVendorModel();
+  const model: string = TestGlobal.vendorModel;
   const scenarios: AutoBeTestScenario[] = JSON.parse(
     await CompressUtil.gunzip(
       await fs.promises.readFile(

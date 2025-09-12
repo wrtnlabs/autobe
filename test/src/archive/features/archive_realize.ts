@@ -21,7 +21,7 @@ export const archive_realize = async (
   factory: TestFactory,
   project: TestProject,
 ) => {
-  if (TestGlobal.env.API_KEY === undefined) return false;
+  if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
   // PREPARE AGENT
   const { agent, zero } = await prepare_agent_realize(factory, project);
@@ -50,7 +50,7 @@ export const archive_realize = async (
 
   const templateFiles = await (await ctx.compiler()).realize.getTemplate();
   // REPORT RESULT
-  const model: string = TestGlobal.getVendorModel();
+  const model: string = TestGlobal.vendorModel;
   const prisma = ctx.state().prisma?.compiled;
 
   const payloads = Object.fromEntries(

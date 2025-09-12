@@ -17,7 +17,7 @@ export const validate_agent_realize_authorization = async (
   factory: TestFactory,
   project: TestProject,
 ) => {
-  if (TestGlobal.env.API_KEY === undefined) return false;
+  if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
   // PREPARE AGENT
   const { agent } = await prepare_agent_realize(factory, project);
@@ -70,7 +70,7 @@ export const validate_agent_realize_authorization = async (
   };
 
   const histories: AutoBeHistory[] = agent.getHistories();
-  const model: string = TestGlobal.getVendorModel();
+  const model: string = TestGlobal.vendorModel;
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/${model}/${project}/realize/authorization`,
     files: {

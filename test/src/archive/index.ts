@@ -9,6 +9,7 @@ import typia from "typia";
 
 import { TestFactory } from "../TestFactory";
 import { TestGlobal } from "../TestGlobal";
+import { TestConfigurator } from "../internal/TestConfigurator";
 import { TestProject } from "../structures/TestProject";
 
 type Step = keyof AutoBeState;
@@ -85,15 +86,12 @@ const main = async (): Promise<void> => {
   // PRELIMINARIES
   //----
   // CONFIGURATION
-  const vendorModel: string =
-    TestGlobal.getArguments("vendor")?.[0] ??
-    TestGlobal.env.VENDOR_MODEL ??
-    "gpt-4.1";
   const semaphore: number = Number(
     TestGlobal.env.SEMAPHORE ??
       TestGlobal.getArguments("semaphore")?.[0] ??
       "16",
   );
+  TestGlobal.vendorModel = await TestConfigurator.getVendorModel();
 
   // AGENT
   const tokenUsage: AutoBeTokenUsage = new AutoBeTokenUsage();
@@ -104,10 +102,12 @@ const main = async (): Promise<void> => {
         model: TestGlobal.env.SCHEMA_MODEL ?? "chatgpt",
         vendor: {
           api: new OpenAI({
-            apiKey: TestGlobal.env.API_KEY,
-            baseURL: TestGlobal.env.BASE_URL,
+            apiKey: TestGlobal.vendorModel.startsWith("openai/")
+              ? TestGlobal.env.OPENAI_API_KEY
+              : TestGlobal.env.OPENROUTER_API_KEY,
+            baseURL: "https://openrouter.ai/api/v1",
           }),
-          model: vendorModel,
+          model: TestGlobal.vendorModel,
           semaphore,
         },
         config: {
@@ -139,7 +139,7 @@ const main = async (): Promise<void> => {
     -----------------------------------------------------------
     Configurations
     
-    - Vendor Model: ${vendorModel}
+    - Vendor Model: ${TestGlobal.vendorModel}
     - Schema Model: ${TestGlobal.env.SCHEMA_MODEL ?? "chatgpt"}
     - Semaphore: ${semaphore}
 

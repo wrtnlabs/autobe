@@ -34,8 +34,7 @@ async function main() {
         model: "chatgpt",
         vendor: {
           api: new OpenAI({
-            apiKey: TestGlobal.env.API_KEY,
-            baseURL: TestGlobal.env.BASE_URL,
+            apiKey: TestGlobal.env.OPENAI_API_KEY,
             maxRetries: 30,
           }),
           semaphore: Number(TestGlobal.env.SEMAPHORE ?? "32"),

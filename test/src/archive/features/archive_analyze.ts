@@ -22,7 +22,7 @@ export const archive_analyze = async (
   factory: TestFactory,
   project: TestProject,
 ) => {
-  if (TestGlobal.env.API_KEY === undefined) return false;
+  if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
   // PREPARE ASSETS
   const [history]: AutoBeHistory[] = await TestHistory.initial(project);
@@ -32,7 +32,7 @@ export const archive_analyze = async (
   if (content === null) throw new Error("History must have a text content.");
 
   const start: Date = new Date();
-  const model: string = TestGlobal.getVendorModel();
+  const model: string = TestGlobal.vendorModel;
   const snapshots: AutoBeEventSnapshot[] = [];
 
   const agent: AutoBeAgent<ILlmSchema.Model> = factory.createAgent([history]);

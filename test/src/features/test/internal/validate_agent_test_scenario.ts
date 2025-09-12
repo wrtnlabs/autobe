@@ -20,7 +20,7 @@ export const validate_agent_test_scenario = async (
   factory: TestFactory,
   project: TestProject,
 ) => {
-  if (TestGlobal.env.API_KEY === undefined) return false;
+  if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
   // PREPARE ASSETS
   const { agent } = await prepare_agent_test(factory, project);
@@ -58,7 +58,7 @@ export const validate_agent_test_scenario = async (
   }
 
   // REPORT RESULT
-  const model: string = TestGlobal.getVendorModel();
+  const model: string = TestGlobal.vendorModel;
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/${model}/${project}/test/scenario`,
     files: {

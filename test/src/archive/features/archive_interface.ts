@@ -20,7 +20,7 @@ export const archive_interface = async (
   factory: TestFactory,
   project: TestProject,
 ) => {
-  if (TestGlobal.env.API_KEY === undefined) return false;
+  if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
   // PREPARE AGENT
   const { agent, zero } = await prepare_agent_interface(factory, project);
@@ -48,7 +48,7 @@ export const archive_interface = async (
     throw new Error("History type must be interface.");
 
   // REPORT RESULT
-  const model: string = TestGlobal.getVendorModel();
+  const model: string = TestGlobal.vendorModel;
   try {
     await FileSystemIterator.save({
       root: `${TestGlobal.ROOT}/results/${model}/${project}/interface`,

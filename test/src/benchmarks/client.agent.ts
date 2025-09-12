@@ -26,8 +26,7 @@ export const getClientAgent = (
   semaphore: Semaphore,
 ): ClientAgent => {
   const llm = new OpenAI({
-    apiKey: TestGlobal.env.API_KEY,
-    baseURL: TestGlobal.env.BASE_URL,
+    apiKey: TestGlobal.env.OPENAI_API_KEY,
   });
   const baseHistories = [
     {

@@ -28,13 +28,12 @@ async function main(): Promise<void> {
         model: TestGlobal.env.SCHEMA_MODEL ?? "chatgpt",
         vendor: {
           api: new OpenAI({
-            apiKey: TestGlobal.env.API_KEY,
-            baseURL: TestGlobal.env.BASE_URL,
+            apiKey: TestGlobal.vendorModel.startsWith("openai/")
+              ? TestGlobal.env.OPENAI_API_KEY
+              : TestGlobal.env.OPENROUTER_API_KEY,
+            baseURL: "https://openrouter.ai/api/v1",
           }),
-          model:
-            TestGlobal.getArguments("vendor")?.[0] ??
-            TestGlobal.env.VENDOR_MODEL ??
-            "gpt-4.1",
+          model: TestGlobal.vendorModel,
           semaphore: Number(TestGlobal.getArguments("semaphore")?.[0] ?? "16"),
         },
         config: {

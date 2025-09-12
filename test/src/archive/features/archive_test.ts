@@ -22,7 +22,7 @@ export let archive_test = async (
   factory: TestFactory,
   project: TestProject,
 ) => {
-  if (TestGlobal.env.API_KEY === undefined) return false;
+  if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
   // PREPARE AGENT
   let { agent, zero } = await prepare_agent_test(factory, project);
@@ -48,7 +48,7 @@ export let archive_test = async (
 
   // REPORT RESULT
   let histories: AutoBeHistory[] = agent.getHistories();
-  let model: string = TestGlobal.getVendorModel();
+  let model: string = TestGlobal.vendorModel;
   try {
     await FileSystemIterator.save({
       root: `${TestGlobal.ROOT}/results/${model}/${project}/test`,
