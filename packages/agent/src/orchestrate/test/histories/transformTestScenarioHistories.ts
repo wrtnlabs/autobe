@@ -54,6 +54,48 @@ export const transformTestScenarioHistories = (
     }
   }
 
+  // console.log(JSON.stringify(include, null, 2));
+
+  // console.log("------------INCLUDED------------");
+  // console.log(
+  //   `        ${include
+  //     .map((el, i) => {
+  //       const roles = Array.from(authorizationRoles.values()).filter(
+  //         (role) => role.name === el.authorizationRole,
+  //       );
+  //       return StringUtil.trim`
+  //             ## ${i + 1}. ${el.method.toUpperCase()} ${el.path}
+
+  //             Related Authentication APIs:
+
+  //             ${
+  //               roles.length > 0
+  //                 ? roles
+  //                     .map((role) => {
+  //                       return StringUtil.trim`
+  //                         - ${role.join?.method.toUpperCase()}: ${role.join?.path}
+  //                         - ${role.login?.method.toUpperCase()}: ${role.login?.path}
+  //                       `;
+  //                     })
+  //                     .join("\n")
+  //                 : "- None"
+  //             }
+
+  //             Required IDs:
+
+  //             - ${
+  //               getReferenceIds({ document, operation: el }).length > 0
+  //                 ? getReferenceIds({ document, operation: el })
+  //                     .map((id) => `\`${id}\``)
+  //                     .join(", ")
+  //                 : "None"
+  //             }
+
+  //           `;
+  //     })
+  //     .join("\n")}`,
+  // );
+
   return [
     {
       id: v7(),
@@ -95,11 +137,16 @@ export const transformTestScenarioHistories = (
         When testing endpoints that require authentication, ensure you include the corresponding 
         join/login operations in your test scenario to establish proper authentication context.
 
+        **CRITICAL**: Generate test scenarios ONLY for these included endpoints. Do NOT create scenarios for excluded endpoints.
+
         ${include
           .map((el, i) => {
             const roles = Array.from(authorizationRoles.values()).filter(
               (role) => role.name === el.authorizationRole,
             );
+
+            const requiredIds = getReferenceIds({ document, operation: el });
+
             return StringUtil.trim`
               ## ${i + 1}. ${el.method.toUpperCase()} ${el.path}
 
@@ -116,6 +163,14 @@ export const transformTestScenarioHistories = (
                       })
                       .join("\n")
                   : "- None"
+              }
+
+              Required IDs:
+              
+              - ${
+                requiredIds.length > 0
+                  ? requiredIds.map((id) => `\`${id}\``).join(", ")
+                  : "None"
               }
             `;
           })
@@ -144,9 +199,15 @@ export const transformTestScenarioHistories = (
     
         **CRITICAL**: Each ID listed below represents a resource that MUST exist before the operation can execute.
         You MUST identify and include the API operations that create these resources in your test scenario dependencies.
-    
+        
+        **Dependency Resolution Process**: 
+        1. For each required ID (e.g., \`articleId\`), find the API operation that creates that resource
+        2. Look for creation operations (typically POST methods) that provide the needed ID in their response
+        3. Include these creator operations in your dependency chain in the correct order
+        4. Ensure all prerequisite resources are created before dependent resources
+
         For each \`some_entity_id\` pattern identified, you are REQUIRED to:
-        1. Find the API operation that creates that entity (has the ID in responseIds)
+        1. Find the API operation that creates that entity (typically has POST method and creates the resource)
         2. Include that operation in your dependency chain
         3. Ensure proper execution order based on dependency relationships
     
@@ -162,6 +223,8 @@ export const transformTestScenarioHistories = (
           .join("\n")}.
     
         **Example**: If an endpoint requires \`articleId\`, you MUST include the API that creates articles (e.g., \`POST /articles\`) in your dependencies.
+        
+        **Important**: Only use operations that exist in the complete operations list provided above. Do not assume APIs exist - verify they are available before including them as dependencies.
       `,
     } satisfies IAgenticaHistoryJson.IAssistantMessage,
   ];
