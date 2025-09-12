@@ -210,8 +210,9 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
         }
         return { histories, tokenUsage };
       };
-      if (next.enforceFunctionCall === true) return forceRetry(execute, retry);
-      else return execute();
+      if (next.enforceFunctionCall === true)
+        return await forceRetry(execute, retry);
+      else return await execute();
     },
   };
 };

@@ -50,7 +50,8 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
           artifacts,
           event,
         };
-      } catch {
+      } catch (error) {
+        console.log("test write failed", error);
         return null;
       }
     }),

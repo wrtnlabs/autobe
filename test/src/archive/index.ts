@@ -175,12 +175,8 @@ const main = async (): Promise<void> => {
   });
 };
 
-global.process.on("uncaughtException", (error) =>
-  console.log("uncaughtException", error),
-);
-global.process.on("unhandledRejection", (error) =>
-  console.log("unhandledRejection", error),
-);
+global.process.on("uncaughtException", () => {});
+global.process.on("unhandledRejection", () => {});
 main().catch((error) => {
   console.log(error);
   process.exit(-1);

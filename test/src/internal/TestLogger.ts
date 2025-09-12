@@ -66,12 +66,15 @@ export namespace TestLogger {
           );
         }
       })().catch(() => {});
-      event.join().then(() => {
-        completed.value = true;
-        console.log(
-          `Response chunk times (${event.source}): (max: ${Math.max(...chunks.map((c) => c.first))})`,
-        );
-      });
+      event
+        .join()
+        .catch(() => {})
+        .then(() => {
+          completed.value = true;
+          console.log(
+            `Response chunk times (${event.source}): (max: ${Math.max(...chunks.map((c) => c.first))})`,
+          );
+        });
     }
 
     // PRINT

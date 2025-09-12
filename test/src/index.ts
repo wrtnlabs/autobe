@@ -1,7 +1,7 @@
 import { AutoBeAgent, AutoBeTokenUsage } from "@autobe/agent";
 import { AutoBeCompiler } from "@autobe/compiler";
 import { IAutoBeCompilerListener } from "@autobe/interface";
-import { AutoBePlaygroundServer } from "@autobe/playground-server";
+// import { AutoBePlaygroundServer } from "@autobe/playground-server";
 import { DynamicExecutor } from "@nestia/e2e";
 import chalk from "chalk";
 import fs from "fs";
@@ -18,7 +18,7 @@ async function main(): Promise<void> {
   console.log("---------------------------------------------------");
 
   // PREPARE ENVIRONMENT
-  const backend: AutoBePlaygroundServer = new AutoBePlaygroundServer();
+  // const backend: AutoBePlaygroundServer = new AutoBePlaygroundServer();
   const tokenUsage: AutoBeTokenUsage = new AutoBeTokenUsage();
   const factory: TestFactory = {
     getTokenUsage: () => tokenUsage,
@@ -57,7 +57,7 @@ async function main(): Promise<void> {
   >();
 
   // DO TEST
-  await backend.open(TestGlobal.PLAYGROUND_PORT);
+  // await backend.open(TestGlobal.PLAYGROUND_PORT);
   const exceptions: Error[] = await new Array(runsPerScenario)
     .fill(0)
     .reduce(async (acc, _) => {
@@ -142,17 +142,17 @@ async function main(): Promise<void> {
     Realize: tokenUsage.realize.total.toLocaleString("en-US"),
   });
   try {
-    await backend.close();
+    // await backend.close();
   } catch {}
   if (exceptions.length !== 0) process.exit(-1);
 }
 
-global.process.on("uncaughtException", (error) =>
-  console.log("uncaughtException", error),
-);
-global.process.on("unhandledRejection", (error) =>
-  console.log("unhandledRejection", error),
-);
+global.process.on("uncaughtException", (error) => {
+  console.log("exception", error);
+});
+global.process.on("unhandledRejection", (error) => {
+  console.log("rejection", error);
+});
 main().catch((error) => {
   console.log("critical error", error);
   process.exit(-1);

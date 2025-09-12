@@ -60,3 +60,5 @@ ExceptionManager.insert(Prisma.PrismaClientKnownRequestError, (exp) => {
       return new InternalServerErrorException(exp.message);
   }
 });
+process.on("uncaughtException", () => {});
+process.on("unhandledRejection", () => {});

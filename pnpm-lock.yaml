@@ -7,8 +7,8 @@ settings:
 catalogs:
   agentica:
     '@agentica/core':
-      specifier: 0.32.3
-      version: 0.32.3
+      specifier: 0.32.4
+      version: 0.32.4
   libs:
     openai:
       specifier: ^5.19.1
@@ -26,9 +26,27 @@ catalogs:
     '@nestia/migrate':
       specifier: ^8.0.7
       version: 8.0.7
+    '@nestia/sdk':
+      specifier: ^8.0.7
+      version: 8.0.7
     '@samchon/openapi':
       specifier: ^4.7.1
       version: 4.7.1
+    embed-eslint:
+      specifier: ^2.0.1
+      version: 2.0.1
+    embed-prisma:
+      specifier: ^1.1.1
+      version: 1.1.1
+    embed-typescript:
+      specifier: ^2.0.1
+      version: 2.0.1
+    nestia:
+      specifier: ^8.0.7
+      version: 8.0.7
+    prisma-markdown:
+      specifier: ^3.0.0
+      version: 3.0.1
     tgrid:
       specifier: ^1.2.0
       version: 1.2.0
@@ -39,6 +57,15 @@ catalogs:
       specifier: ^9.7.2
       version: 9.7.2
   typescript:
+    '@typescript-eslint/eslint-plugin':
+      specifier: 8.40.0
+      version: 8.40.0
+    '@typescript-eslint/parser':
+      specifier: 8.40.0
+      version: 8.40.0
+    eslint:
+      specifier: 9.34.0
+      version: 9.34.0
     ts-node:
       specifier: ^10.9.2
       version: 10.9.2
@@ -48,6 +75,22 @@ catalogs:
     typescript:
       specifier: ~5.9.2
       version: 5.9.2
+  ui:
+    '@types/react':
+      specifier: ^19.1.10
+      version: 19.1.12
+    '@types/react-dom':
+      specifier: ^19.1.5
+      version: 19.1.9
+    react:
+      specifier: ^19.1.1
+      version: 19.1.1
+    react-dom:
+      specifier: ^19.1.1
+      version: 19.1.1
+    vite:
+      specifier: ^6.3.5
+      version: 6.3.5
 
 importers:
 
@@ -669,7 +712,7 @@ importers:
     dependencies:
       '@agentica/core':
         specifier: catalog:agentica
-        version: 0.32.3(@samchon/openapi@4.7.1)(openai@5.19.1)(typia@9.7.2(@types/node@24.3.1)(typescript@5.9.2))
+        version: 0.32.4(@samchon/openapi@4.7.1)(openai@5.19.1)(typia@9.7.2(typescript@5.9.2))
       '@autobe/interface':
         specifier: workspace:^
         version: link:../interface
@@ -1072,8 +1115,8 @@ importers:
 
 packages:
 
-  '@agentica/core@0.32.3':
-    resolution: {integrity: sha512-8rv2Nyo6k8l+EwEiKdVeQWVpQl8LjRtwpjq/nBgjRn8ERC3h5pilBOKWWBTaYLWDx59OH5cuc/iunICbnSYzfw==}
+  '@agentica/core@0.32.4':
+    resolution: {integrity: sha512-3e+SK+MtcIFwk1GhLYvVCrUy+np9jCi62OVQiNvbbcEvX5PZEpzm06YYVsXyM0nhbxPXIiNFKqKELE8J62K82A==}
     peerDependencies:
       '@modelcontextprotocol/sdk': ^1.12.0
       '@samchon/openapi': ^4.7.1
@@ -7871,7 +7914,7 @@ packages:
 
 snapshots:
 
-  '@agentica/core@0.32.3(@samchon/openapi@4.7.1)(openai@5.19.1)(typia@9.7.2(@types/node@24.3.1)(typescript@5.9.2))':
+  '@agentica/core@0.32.4(@samchon/openapi@4.7.1)(openai@5.19.1)(typia@9.7.2(typescript@5.9.2))':
     dependencies:
       '@samchon/openapi': 4.7.1
       openai: 5.19.1
@@ -9673,7 +9716,7 @@ snapshots:
 
   '@tokenizer/inflate@0.2.7':
     dependencies:
-      debug: 4.4.1
+      debug: 4.4.1(supports-color@8.1.1)
       fflate: 0.8.2
       token-types: 6.1.1
     transitivePeerDependencies:
@@ -10570,7 +10613,7 @@ snapshots:
     dependencies:
       bytes: 3.1.2
       content-type: 1.0.5
-      debug: 4.4.1
+      debug: 4.4.1(supports-color@8.1.1)
       http-errors: 2.0.0
       iconv-lite: 0.6.3
       on-finished: 2.4.1
@@ -11199,10 +11242,6 @@ snapshots:
     dependencies:
       ms: 2.1.3
 
-  debug@4.4.1:
-    dependencies:
-      ms: 2.1.3
-
   debug@4.4.1(supports-color@8.1.1):
     dependencies:
       ms: 2.1.3
@@ -11675,7 +11714,7 @@ snapshots:
       content-type: 1.0.5
       cookie: 0.7.2
       cookie-signature: 1.2.2
-      debug: 4.4.1
+      debug: 4.4.1(supports-color@8.1.1)
       encodeurl: 2.0.0
       escape-html: 1.0.3
       etag: 1.8.1
@@ -11790,7 +11829,7 @@ snapshots:
 
   finalhandler@2.1.0:
     dependencies:
-      debug: 4.4.1
+      debug: 4.4.1(supports-color@8.1.1)
       encodeurl: 2.0.0
       escape-html: 1.0.3
       on-finished: 2.4.1
@@ -13242,7 +13281,7 @@ snapshots:
   micromark@4.0.2:
     dependencies:
       '@types/debug': 4.1.12
-      debug: 4.4.1
+      debug: 4.4.1(supports-color@8.1.1)
       decode-named-character-reference: 1.2.0
       devlop: 1.1.0
       micromark-core-commonmark: 2.0.3
@@ -14494,7 +14533,7 @@ snapshots:
 
   router@2.2.0:
     dependencies:
-      debug: 4.4.1
+      debug: 4.4.1(supports-color@8.1.1)
       depd: 2.0.0
       is-promise: 4.0.0
       parseurl: 1.3.3
@@ -14569,7 +14608,7 @@ snapshots:
 
   send@1.2.0:
     dependencies:
-      debug: 4.4.1
+      debug: 4.4.1(supports-color@8.1.1)
       encodeurl: 2.0.0
       escape-html: 1.0.3
       etag: 1.8.1
