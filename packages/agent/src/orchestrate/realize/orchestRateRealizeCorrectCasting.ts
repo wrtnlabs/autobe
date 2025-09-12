@@ -101,7 +101,7 @@ const correct = async <Model extends ILlmSchema.Model>(
 
   progress.total += locations.length;
 
-  await executeCachedBatch(
+  const converted = await executeCachedBatch(
     locations.map((location) => async () => {
       const func = functions.find((f) => f.location === location)!;
 
@@ -164,7 +164,7 @@ const correct = async <Model extends ILlmSchema.Model>(
   return await predicate(
     ctx,
     authorizations,
-    functions,
+    converted,
     [
       ...failures,
       ...(newValidate.result.type === "failure"
