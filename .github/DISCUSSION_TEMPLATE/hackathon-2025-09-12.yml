@@ -9,6 +9,7 @@ body:
         - Each bullet point should be answered in **max 200 words**.
         - Avoid yes/no answers; be concise but concrete.
         - **Overall Review** should be **200+ words**.
+        - **All answers must be written in English.**
 
   - type: input
     id: conversation_links

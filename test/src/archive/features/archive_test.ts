@@ -18,36 +18,37 @@ import { TestHistory } from "../../internal/TestHistory";
 import { TestLogger } from "../../internal/TestLogger";
 import { TestProject } from "../../structures/TestProject";
 
-export const archive_test = async (
+export let archive_test = async (
   factory: TestFactory,
   project: TestProject,
 ) => {
-  if (TestGlobal.env.API_KEY === undefined) return false;
+  if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
   // PREPARE AGENT
-  const { agent, zero } = await prepare_agent_test(factory, project);
-  const snapshots: AutoBeEventSnapshot[] = [];
-  const start: Date = new Date();
-  const listen = (event: AutoBeEventOfSerializable) => {
+  let { agent, zero } = await prepare_agent_test(factory, project);
+  let snapshots: AutoBeEventSnapshot[] = [];
+  let start: Date = new Date();
+  let listen = (event: AutoBeEventOfSerializable) => {
     if (TestGlobal.archive) TestLogger.event(start, event);
     snapshots.push({
       event,
       tokenUsage: agent.getTokenUsage().toJSON(),
     });
   };
-  for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
+  for (let type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
     agent.on(type, listen);
+  agent.on("vendorResponse", (e) => TestLogger.event(start, e));
 
   // DO TEST GENERATION
-  const result: AutoBeAssistantMessageHistory | AutoBeTestHistory =
+  let result: AutoBeAssistantMessageHistory | AutoBeTestHistory =
     await orchestrateTest(agent.getContext())({
       reason: "Validate agent test",
     });
   if (result.type !== "test") throw new Error("Failed to generate test.");
 
   // REPORT RESULT
-  const histories: AutoBeHistory[] = agent.getHistories();
-  const model: string = TestGlobal.getVendorModel();
+  let histories: AutoBeHistory[] = agent.getHistories();
+  let model: string = TestGlobal.vendorModel;
   try {
     await FileSystemIterator.save({
       root: `${TestGlobal.ROOT}/results/${model}/${project}/test`,
@@ -63,9 +64,7 @@ export const archive_test = async (
         "logs/histories.json": JSON.stringify(histories),
       },
     });
-  } catch (error) {
-    console.log(error);
-  }
+  } catch {}
   if (TestGlobal.archive)
     await TestHistory.save({
       [`${project}.test.json`]: JSON.stringify(histories),

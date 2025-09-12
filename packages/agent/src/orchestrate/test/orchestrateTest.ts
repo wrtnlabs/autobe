@@ -58,12 +58,17 @@ export const orchestrateTest =
 
     // PLAN
     const scenarios: AutoBeTestScenario[] = await orchestrateTestScenario(ctx);
+    if (scenarios.length === 0)
+      throw new Error("No scenarios generated. Please check the logs.");
 
     // TEST CODE
     const written: IAutoBeTestWriteResult[] = await orchestrateTestWrite(
       ctx,
       scenarios,
     );
+    if (written.length === 0)
+      throw new Error("No test code written. Please check the logs.");
+
     const corrects: AutoBeTestValidateEvent[] = await orchestrateTestCorrect(
       ctx,
       written.map((w) => ({

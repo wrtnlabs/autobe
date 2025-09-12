@@ -12,7 +12,7 @@ export const validate_agent_interface_groups = async (
   factory: TestFactory,
   project: TestProject,
 ) => {
-  if (TestGlobal.env.API_KEY === undefined) return false;
+  if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
   const { agent } = await prepare_agent_interface(factory, project);
   const result: AutoBeInterfaceGroupsEvent = await orchestrateInterfaceGroups(

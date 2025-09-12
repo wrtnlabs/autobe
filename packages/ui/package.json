@@ -59,6 +59,7 @@
     "@stackblitz/sdk": "^1.11.0",
     "jszip": "^3.10.1",
     "overlay-kit": "^1.8.5",
+    "tgrid": "catalog:samchon",
     "tstl": "catalog:samchon"
   }
 }

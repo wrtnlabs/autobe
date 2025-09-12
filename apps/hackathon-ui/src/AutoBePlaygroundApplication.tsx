@@ -1,12 +1,18 @@
 import hApi, { HttpError } from "@autobe/hackathon-api";
-import { AutoBeHackathonModel } from "@autobe/interface";
+import {
+  AutoBeHackathonModel,
+  IAutoBeRpcListener,
+  IAutoBeRpcService,
+} from "@autobe/interface";
 import {
   AutoBeListener,
   IAutoBeConfig,
+  IAutoBeServiceData,
   SearchParamsProvider,
 } from "@autobe/ui";
 import { useRef } from "react";
 import { toast } from "sonner";
+import { Communicator } from "tgrid";
 
 import { AutoBePlaygroundChatMovie } from "./AutoBePlaygroundChatMovie";
 import { HACKATHON_CODE } from "./constant";
@@ -28,7 +34,7 @@ export function AutoBePlaygroundApplication() {
   // Playground service factory
   const serviceFactory = async (config: IAutoBeConfig) => {
     const listener = new AutoBeListener();
-    const { service, sessionId } = await (async () => {
+    const { service, sessionId, connector } = await (async () => {
       const connection = {
         host: import.meta.env.VITE_API_BASE_URL,
         headers: {
@@ -49,16 +55,18 @@ export function AutoBePlaygroundApplication() {
       };
 
       if (config.sessionId != null && typeof config.sessionId === "string") {
-        return {
-          service: await hApi.functional.autobe.hackathon.participants.sessions
+        const { connector, driver } =
+          await hApi.functional.autobe.hackathon.participants.sessions
             .connect(
               connection,
               HACKATHON_CODE,
               config.sessionId,
               listener.getListener(),
             )
-            .then((v) => v.driver)
-            .catch(errorHandler),
+            .catch(errorHandler);
+        return {
+          service: driver,
+          connector,
           sessionId: config.sessionId,
         };
       }
@@ -71,24 +79,31 @@ export function AutoBePlaygroundApplication() {
           })
           .catch(errorHandler);
 
-      return {
-        service: await hApi.functional.autobe.hackathon.participants.sessions
+      const { connector, driver } =
+        await hApi.functional.autobe.hackathon.participants.sessions
           .connect(
             connection,
             HACKATHON_CODE,
             session.id,
             listener.getListener(),
           )
-          .then((v) => v.driver)
-          .catch(errorHandler),
+          .catch(errorHandler);
+
+      return {
+        service: driver,
+        listener,
+        connector,
+        close: connector.close,
         sessionId: session.id,
-      };
+      } satisfies IAutoBeServiceData;
     })();
 
     return {
       service,
       sessionId,
       listener,
+      connector,
+      close: connector.close,
       uploadConfig: {
         supportAudio: config.supportAudioEnable ?? false,
       },

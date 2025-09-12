@@ -2,7 +2,6 @@ import { AutoBeAgent, AutoBeTokenUsage } from "@autobe/agent";
 import { AutoBeCompiler } from "@autobe/compiler";
 import { FileSystemIterator } from "@autobe/filesystem";
 import fs from "fs";
-import OpenAI from "openai";
 import { Semaphore } from "tstl";
 import typia from "typia";
 
@@ -32,15 +31,7 @@ async function main() {
     createAgent: (scenario: IScenario) => {
       const autobe = new AutoBeAgent({
         model: "chatgpt",
-        vendor: {
-          api: new OpenAI({
-            apiKey: TestGlobal.env.API_KEY,
-            baseURL: TestGlobal.env.BASE_URL,
-            maxRetries: 30,
-          }),
-          semaphore: Number(TestGlobal.env.SEMAPHORE ?? "32"),
-          model: "gpt-4.1",
-        },
+        vendor: TestGlobal.getVendorConfig(),
         config: {
           locale: "en-US",
         },

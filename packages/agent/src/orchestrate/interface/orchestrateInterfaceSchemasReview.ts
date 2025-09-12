@@ -99,7 +99,6 @@ export async function step<Model extends ILlmSchema.Model>(
       message: "Review type schemas.",
     });
     if (pointer.value === null) {
-      console.error("Failed to extract review information.");
       ++progress.completed;
       return {};
     }
@@ -124,8 +123,7 @@ export async function step<Model extends ILlmSchema.Model>(
       created_at: new Date().toISOString(),
     } satisfies AutoBeInterfaceSchemasReviewEvent);
     return content;
-  } catch (error) {
-    console.error("Error occurred during interface schemas review:", error);
+  } catch {
     ++progress.completed;
     return {};
   }
@@ -152,7 +150,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
     }
 
     const errors: IValidation.IError[] = [];
-    JsonSchemaValidator.validate({
+    JsonSchemaValidator.validateSchemas({
       errors,
       schemas: result.data.content,
       path: "$input.content",

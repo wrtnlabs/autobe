@@ -19,10 +19,10 @@ import { compileRealizeFiles } from "./internal/compileRealizeFiles";
 import { orchestrateRealizeCorrectCasting } from "./orchestRateRealizeCorrectCasting";
 import { orchestrateRealizeAuthorization } from "./orchestrateRealizeAuthorization";
 import { orchestrateRealizeCorrect } from "./orchestrateRealizeCorrect";
-import { orchestrateRealizeScenario } from "./orchestrateRealizeScenario";
 import { orchestrateRealizeWrite } from "./orchestrateRealizeWrite";
 import { IAutoBeRealizeFunctionFailure } from "./structures/IAutoBeRealizeFunctionFailure";
 import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
+import { generateRealizeScenario } from "./utils/generateRealizeScenario";
 
 export const orchestrateRealize =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
@@ -62,13 +62,7 @@ export const orchestrateRealize =
 
     // SCENARIOS
     const scenarios: IAutoBeRealizeScenarioResult[] = operations.map(
-      (operation) => {
-        const authorization = authorizations.find(
-          (el) => el.role.name === operation.authorizationRole,
-        );
-
-        return orchestrateRealizeScenario(ctx, operation, authorization);
-      },
+      (operation) => generateRealizeScenario(ctx, operation, authorizations),
     );
 
     const writeProgress: AutoBeProgressEventBase = {
@@ -116,9 +110,14 @@ export const orchestrateRealize =
         authorizations,
         functions,
         reviewProgress,
-        1,
       );
 
+    console.log("converted end");
+    console.log("converted end");
+    console.log("converted end");
+    console.log("converted end");
+    console.log("converted end");
+    console.log("converted end");
     const corrected: AutoBeRealizeFunction[] = await orchestrateRealizeCorrect(
       ctx,
       scenarios,

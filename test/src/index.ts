@@ -1,23 +1,15 @@
 import { AutoBeAgent, AutoBeTokenUsage } from "@autobe/agent";
 import { AutoBeCompiler } from "@autobe/compiler";
 import { IAutoBeCompilerListener } from "@autobe/interface";
-import { AutoBePlaygroundServer } from "@autobe/playground-server";
+// import { AutoBePlaygroundServer } from "@autobe/playground-server";
 import { DynamicExecutor } from "@nestia/e2e";
 import chalk from "chalk";
 import fs from "fs";
-import OpenAI from "openai";
 import path from "path";
 import process from "process";
 
 import { TestFactory } from "./TestFactory";
 import { TestGlobal } from "./TestGlobal";
-
-global.process.on("uncaughtException", (error) =>
-  console.log("uncaughtException", error),
-);
-global.process.on("unhandledRejection", (error) =>
-  console.log("unhandledRejection", error),
-);
 
 async function main(): Promise<void> {
   console.log("---------------------------------------------------");
@@ -26,24 +18,14 @@ async function main(): Promise<void> {
   console.log("---------------------------------------------------");
 
   // PREPARE ENVIRONMENT
-  const backend: AutoBePlaygroundServer = new AutoBePlaygroundServer();
+  // const backend: AutoBePlaygroundServer = new AutoBePlaygroundServer();
   const tokenUsage: AutoBeTokenUsage = new AutoBeTokenUsage();
   const factory: TestFactory = {
     getTokenUsage: () => tokenUsage,
     createAgent: (histories) =>
       new AutoBeAgent({
         model: TestGlobal.env.SCHEMA_MODEL ?? "chatgpt",
-        vendor: {
-          api: new OpenAI({
-            apiKey: TestGlobal.env.API_KEY,
-            baseURL: TestGlobal.env.BASE_URL,
-          }),
-          model:
-            TestGlobal.getArguments("vendor")?.[0] ??
-            TestGlobal.env.VENDOR_MODEL ??
-            "gpt-4.1",
-          semaphore: Number(TestGlobal.getArguments("semaphore")?.[0] ?? "16"),
-        },
+        vendor: TestGlobal.getVendorConfig(),
         config: {
           locale: "en-US",
         },
@@ -75,7 +57,7 @@ async function main(): Promise<void> {
   >();
 
   // DO TEST
-  await backend.open(TestGlobal.PLAYGROUND_PORT);
+  // await backend.open(TestGlobal.PLAYGROUND_PORT);
   const exceptions: Error[] = await new Array(runsPerScenario)
     .fill(0)
     .reduce(async (acc, _) => {
@@ -160,11 +142,17 @@ async function main(): Promise<void> {
     Realize: tokenUsage.realize.total.toLocaleString("en-US"),
   });
   try {
-    await backend.close();
+    // await backend.close();
   } catch {}
   if (exceptions.length !== 0) process.exit(-1);
 }
 
+global.process.on("uncaughtException", (error) => {
+  console.log("exception", error);
+});
+global.process.on("unhandledRejection", (error) => {
+  console.log("rejection", error);
+});
 main().catch((error) => {
   console.log("critical error", error);
   process.exit(-1);

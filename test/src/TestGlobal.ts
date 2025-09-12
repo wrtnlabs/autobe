@@ -1,19 +1,14 @@
+import { IAutoBeVendor } from "@autobe/agent";
 import { ILlmSchema } from "@samchon/openapi";
 import dotenv from "dotenv";
 import dotenvExpand from "dotenv-expand";
+import OpenAI from "openai";
 import path from "path";
 import process from "process";
 import { Singleton } from "tstl";
 import typia from "typia";
 
 export class TestGlobal {
-  public static readonly ROOT: string =
-    __filename.substring(__filename.length - 2) === "js"
-      ? path.join(__dirname, "..", "..")
-      : path.join(__dirname, "..");
-
-  public static readonly PLAYGROUND_PORT: number = 37198;
-
   public static get env(): IEnvironments {
     return environments.get();
   }
@@ -32,23 +27,38 @@ export class TestGlobal {
     );
   }
 
-  public static getVendorModel(): string {
-    const specified = this.getArguments("vendor")?.[0];
-    if (!!specified?.length) return specified;
-    else if (TestGlobal.env.VENDOR_MODEL === undefined) return "openai/gpt-4.1";
-    else if (TestGlobal.env.BASE_URL === undefined)
-      return `openai/${TestGlobal.env.VENDOR_MODEL}`;
-    return TestGlobal.env.VENDOR_MODEL;
+  public static getVendorConfig(): IAutoBeVendor {
+    const isOpenAi: boolean = TestGlobal.vendorModel.startsWith("openai/");
+    return {
+      api: new OpenAI({
+        apiKey: isOpenAi
+          ? TestGlobal.env.OPENAI_API_KEY
+          : TestGlobal.env.OPENROUTER_API_KEY,
+        baseURL: isOpenAi ? undefined : "https://openrouter.ai/api/v1",
+      }),
+      model: isOpenAi
+        ? TestGlobal.vendorModel.replace("openai/", "")
+        : TestGlobal.vendorModel,
+      semaphore: Number(TestGlobal.getArguments("semaphore")?.[0] ?? "16"),
+    };
   }
 
+  public static readonly ROOT: string =
+    __filename.substring(__filename.length - 2) === "js"
+      ? path.join(__dirname, "..", "..")
+      : path.join(__dirname, "..");
+
+  public static readonly PLAYGROUND_PORT: number = 37198;
+
   public static archive: boolean = process.argv.includes("--archive");
+  public static vendorModel: string =
+    this.getArguments("vendor")?.[0] || "openai/gpt-4.1";
 }
 
 interface IEnvironments {
-  API_KEY?: string;
-  BASE_URL?: string;
+  OPENAI_API_KEY?: string;
+  OPENROUTER_API_KEY?: string;
   SCHEMA_MODEL?: ILlmSchema.Model;
-  VENDOR_MODEL?: string;
   SEMAPHORE?: string;
   BENCHMARK_RUNS_PER_SCENARIO?: string;
 }

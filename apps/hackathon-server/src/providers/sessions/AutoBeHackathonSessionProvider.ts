@@ -151,19 +151,19 @@ export namespace AutoBeHackathonSessionProvider {
   }): Promise<IAutoBeHackathonSession> => {
     // DOMAIN RESTRICTIONS
     if (props.enforce !== true) {
-      if (props.body.model === "qwen/qwen3-235b-a22b-2507") {
+      if (props.body.model === "qwen/qwen3-next-80b-a3b-instruct") {
         const count: number =
           await AutoBeHackathonGlobal.prisma.autobe_hackathon_sessions.count({
             where: {
               autobe_hackathon_id: props.hackathon.id,
               autobe_hackathon_participant_id: props.participant.id,
-              model: "qwen/qwen3-235b-a22b-2507",
+              model: "qwen/qwen3-next-80b-a3b-instruc",
             },
           });
         if (count >= 10)
           throw new UnprocessableEntityException(
             StringUtil.trim`
-          You can create up to 10 sessions with the "qwen/qwen3-235b-a22b-2507" model.
+          You can create up to 10 sessions with the "qwen/qwen3-next-80b-a3b-instruc" model.
         `,
           );
       } else if (props.body.model === "openai/gpt-4.1-mini") {

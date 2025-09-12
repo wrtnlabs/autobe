@@ -211,6 +211,7 @@ export namespace AutoBeHackathonSessionSocketAcceptor {
         },
       }),
     );
+    props.acceptor.ping(500);
     void props.acceptor.join().then(() => {
       void AutoBeHackathonSessionConnectionProvider.disconnect(
         props.connection.id,

@@ -15,10 +15,10 @@ export const validate_agent_prisma_schemas = async (
   factory: TestFactory,
   project: TestProject,
 ) => {
-  if (TestGlobal.env.API_KEY === undefined) return false;
+  if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
   const { agent } = await prepare_agent_prisma(factory, project);
-  const model: string = TestGlobal.getVendorModel();
+  const model: string = TestGlobal.vendorModel;
   const components: AutoBePrismaComponentsEvent = JSON.parse(
     await fs.promises.readFile(
       `${TestGlobal.ROOT}/assets/histories/${model}/${project}.prisma.components.json`,

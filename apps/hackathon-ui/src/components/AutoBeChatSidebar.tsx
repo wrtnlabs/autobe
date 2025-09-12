@@ -51,6 +51,7 @@ export const AutoBeChatSidebar = (props: IAutoBeChatSidebarProps) => {
         return newSp;
       });
       setCurrentSessionId(sessionId);
+      window.location.href = `${window.location.origin}${window.location.pathname}?session-id=${sessionId}`;
     },
     [props.onSessionSelect, setSearchParams],
   );

@@ -197,7 +197,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
 
     // Check all IAuthorized types
     const errors: IValidation.IError[] = [];
-    JsonSchemaValidator.validate({
+    JsonSchemaValidator.validateSchemas({
       errors,
       schemas: result.data.schemas,
       path: "$input.schemas",

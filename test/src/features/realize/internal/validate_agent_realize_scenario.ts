@@ -1,5 +1,5 @@
-import { orchestrateRealizeScenario } from "@autobe/agent/src/orchestrate/realize/orchestrateRealizeScenario";
 import { IAutoBeRealizeScenarioResult } from "@autobe/agent/src/orchestrate/realize/structures/IAutoBeRealizeScenarioResult";
+import { generateRealizeScenario } from "@autobe/agent/src/orchestrate/realize/utils/generateRealizeScenario";
 import { CompressUtil } from "@autobe/filesystem";
 import {
   AutoBeEventOfSerializable,
@@ -21,7 +21,7 @@ export const validate_agent_realize_scenario = async (
   factory: TestFactory,
   project: TestProject,
 ) => {
-  if (TestGlobal.env.API_KEY === undefined) return false;
+  if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
   // PREPARE AGENT
   const { agent } = await prepare_agent_realize(factory, project);
@@ -39,7 +39,7 @@ export const validate_agent_realize_scenario = async (
   for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
     if (type.startsWith("realize")) agent.on(type, listen);
 
-  const model: string = TestGlobal.getVendorModel();
+  const model: string = TestGlobal.vendorModel;
   const operations: AutoBeOpenApi.IOperation[] = JSON.parse(
     await CompressUtil.gunzip(
       await fs.promises.readFile(
@@ -58,14 +58,10 @@ export const validate_agent_realize_scenario = async (
 
   const scenarios: IAutoBeRealizeScenarioResult[] = operations.map(
     (operation) => {
-      const autohrization = authorizations.find(
-        (el) => el.role.name === operation.authorizationRole,
-      );
-
-      return orchestrateRealizeScenario(
+      return generateRealizeScenario(
         agent.getContext(),
         operation,
-        autohrization,
+        authorizations,
       );
     },
   );

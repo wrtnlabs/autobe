@@ -189,7 +189,6 @@ export const AutoBeChatUploadBox = (props: AutoBeChatUploadBox.IProps) => {
         transition: "all 0.2s",
         position: "relative",
         boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.12)",
-        opacity: 0.8,
       }}
     >
       {dragging ? (

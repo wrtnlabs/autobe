@@ -4,7 +4,6 @@ import { AutoBeCompiler } from "@autobe/compiler";
 import { IAutoBeCompilerListener } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import fs from "fs";
-import OpenAI from "openai";
 import typia from "typia";
 
 import { TestFactory } from "../TestFactory";
@@ -85,10 +84,6 @@ const main = async (): Promise<void> => {
   // PRELIMINARIES
   //----
   // CONFIGURATION
-  const vendorModel: string =
-    TestGlobal.getArguments("vendor")?.[0] ??
-    TestGlobal.env.VENDOR_MODEL ??
-    "gpt-4.1";
   const semaphore: number = Number(
     TestGlobal.env.SEMAPHORE ??
       TestGlobal.getArguments("semaphore")?.[0] ??
@@ -102,14 +97,7 @@ const main = async (): Promise<void> => {
     createAgent: (histories) =>
       new AutoBeAgent({
         model: TestGlobal.env.SCHEMA_MODEL ?? "chatgpt",
-        vendor: {
-          api: new OpenAI({
-            apiKey: TestGlobal.env.API_KEY,
-            baseURL: TestGlobal.env.BASE_URL,
-          }),
-          model: vendorModel,
-          semaphore,
-        },
+        vendor: TestGlobal.getVendorConfig(),
         config: {
           locale: "en-US",
         },
@@ -139,7 +127,7 @@ const main = async (): Promise<void> => {
     -----------------------------------------------------------
     Configurations
     
-    - Vendor Model: ${vendorModel}
+    - Vendor Model: ${TestGlobal.vendorModel}
     - Schema Model: ${TestGlobal.env.SCHEMA_MODEL ?? "chatgpt"}
     - Semaphore: ${semaphore}
 
@@ -168,7 +156,7 @@ const main = async (): Promise<void> => {
         `- Success: ${(Date.now() - start.getTime()).toLocaleString()} ms`,
       );
     } catch (error) {
-      console.log("  - Error");
+      console.log("  - Error", error);
       throw error;
     }
   }
@@ -187,12 +175,8 @@ const main = async (): Promise<void> => {
   });
 };
 
-global.process.on("uncaughtException", (error) =>
-  console.log("uncaughtException", error),
-);
-global.process.on("unhandledRejection", (error) =>
-  console.log("unhandledRejection", error),
-);
+global.process.on("uncaughtException", () => {});
+global.process.on("unhandledRejection", () => {});
 main().catch((error) => {
   console.log(error);
   process.exit(-1);

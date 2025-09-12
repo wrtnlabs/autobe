@@ -1,4 +1,8 @@
-import { IAutoBeRpcService, IAutoBeTokenUsageJson } from "@autobe/interface";
+import {
+  IAutoBeRpcListener,
+  IAutoBeRpcService,
+  IAutoBeTokenUsageJson,
+} from "@autobe/interface";
 import {
   ReactNode,
   createContext,
@@ -7,6 +11,7 @@ import {
   useEffect,
   useState,
 } from "react";
+import { Communicator } from "tgrid";
 
 import {
   AutoBeListener,
@@ -21,6 +26,8 @@ import { useSearchParams } from "./SearchParamsContext";
 export interface IAutoBeServiceData {
   service: IAutoBeRpcService;
   listener: AutoBeListener;
+  connector: Communicator<IAutoBeRpcListener, IAutoBeRpcService>;
+  close: () => void | Promise<void>;
   sessionId: string;
 }
 
@@ -106,6 +113,13 @@ export function AutoBeAgentProvider({
           ...config,
           sessionId: activeConversationId,
         });
+        newServiceData.connector.join().then(async () => {
+          const res = await serviceFactory({
+            ...config,
+            sessionId: activeConversationId,
+          });
+          setServiceInstance(res);
+        });
         setServiceInstance(newServiceData);
 
         setSearchParams((sp) => {
@@ -113,7 +127,6 @@ export function AutoBeAgentProvider({
           newSp.set("session-id", newServiceData.sessionId);
           return newSp;
         });
-
         setConnectionStatus("connected");
 
         return newServiceData;
