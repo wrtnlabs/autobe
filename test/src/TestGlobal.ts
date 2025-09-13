@@ -60,6 +60,7 @@ interface IEnvironments {
   OPENROUTER_API_KEY?: string;
   SCHEMA_MODEL?: ILlmSchema.Model;
   SEMAPHORE?: string;
+  TIMEOUT?: string;
   BENCHMARK_RUNS_PER_SCENARIO?: string;
 }
 

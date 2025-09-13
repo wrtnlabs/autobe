@@ -55,7 +55,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
 }): AutoBeContext<Model> => {
   const config: Required<Omit<IAutoBeConfig, "backoffStrategy" | "timezone">> =
     {
-      retry: props.config.retry ?? AutoBeConfigConstant.DEFAULT_RETRY,
+      retry: props.config.retry ?? AutoBeConfigConstant.RETRY,
       locale: props.config.locale ?? "en-US",
       timeout: props.config.timeout ?? AutoBeConfigConstant.TIMEOUT,
     };
@@ -95,7 +95,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
           vendor: props.vendor,
           config: {
             ...(props.config ?? {}),
-            retry: props.config?.retry ?? AutoBeConfigConstant.DEFAULT_RETRY,
+            retry: props.config?.retry ?? AutoBeConfigConstant.RETRY,
             executor: {
               describe: null,
             },
@@ -243,9 +243,10 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
           tokenUsage,
         };
       };
-      if (next.enforceFunctionCall === true)
-        return await forceRetry(execute, config.retry);
-      else return await execute();
+      return await execute();
+      // if (next.enforceFunctionCall === true)
+      //   return await forceRetry(execute, config.retry);
+      // else return await execute();
     },
   };
 };
@@ -398,5 +399,6 @@ const forceRetry = async <T>(
     }
   throw error;
 };
+forceRetry;
 
 const STAGES = typia.misc.literals<keyof IAutoBeApplication>();

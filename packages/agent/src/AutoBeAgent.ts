@@ -145,7 +145,7 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
       model: props.model,
       config: {
         ...(props.config ?? {}),
-        retry: props.config?.retry ?? AutoBeConfigConstant.DEFAULT_RETRY,
+        retry: props.config?.retry ?? AutoBeConfigConstant.RETRY,
         executor: {
           describe: null,
         },

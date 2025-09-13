@@ -65,6 +65,7 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
   };
   const exclude: IAutoBeTestScenarioApplication.IScenarioGroup[] = [];
   let include: AutoBeOpenApi.IOperation[] = [...document.operations];
+  let trial: number = 0;
 
   do {
     const matrix: AutoBeOpenApi.IOperation[][] = divideArray({
@@ -98,7 +99,7 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
       return true;
     });
     progress.total = include.length + exclude.length;
-  } while (include.length > 0);
+  } while (include.length > 0 && ++trial < ctx.retry);
 
   return exclude.flatMap((pg) => {
     return pg.scenarios.map((plan) => {

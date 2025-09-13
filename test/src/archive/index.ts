@@ -1,4 +1,5 @@
 import { AutoBeAgent, AutoBeTokenUsage } from "@autobe/agent";
+import { AutoBeConfigConstant } from "@autobe/agent/src/constants/AutoBeConfigConstant";
 import { AutoBeState } from "@autobe/agent/src/context/AutoBeState";
 import { AutoBeCompiler } from "@autobe/compiler";
 import { IAutoBeCompilerListener } from "@autobe/interface";
@@ -100,6 +101,9 @@ const main = async (): Promise<void> => {
         vendor: TestGlobal.getVendorConfig(),
         config: {
           locale: "en-US",
+          timeout: Number(
+            TestGlobal.env.TIMEOUT ?? String(AutoBeConfigConstant.TIMEOUT),
+          ),
         },
         compiler: (listener) => new AutoBeCompiler(listener),
         histories,
