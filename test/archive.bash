@@ -48,7 +48,7 @@ pnpm run archive --vendor openai/gpt-4.1-mini --project shopping --from realize 
 
 # qwen/qwen3-235b-a22b-2507
 pnpm run archive --vendor qwen/qwen3-235b-a22b-2507 --project todo --from interface > archive.qwen3-235b-todo.log
-pnpm run archive --vendor qwen/qwen3-235b-a22b-2507 --project reddit --from realize > archive.qwen3-235b-reddit.log
+pnpm run archive --vendor qwen/qwen3-235b-a22b-2507 --project reddit --from interface > archive.qwen3-235b-reddit.log
 pnpm run archive --vendor qwen/qwen3-235b-a22b-2507 --project bbs --from interface > archive.qwen3-235b-bbs.log
 pnpm run archive --vendor qwen/qwen3-235b-a22b-2507 --project shopping --from interface > archive.qwen-235b-shopping.log
 
