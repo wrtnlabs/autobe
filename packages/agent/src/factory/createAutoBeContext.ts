@@ -169,14 +169,16 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
 
         if (result.type === "error") throw result.error;
         else if (result.type === "timeout") {
-          void props.dispatch({
-            type: "vendorTimeout",
-            id: v7(),
-            source: next.source,
-            timeout: config.timeout,
-            retry: trial.timeout++,
-            created_at: new Date().toISOString(),
-          });
+          void props
+            .dispatch({
+              type: "vendorTimeout",
+              id: v7(),
+              source: next.source,
+              timeout: config.timeout,
+              retry: trial.timeout++,
+              created_at: new Date().toISOString(),
+            })
+            .catch(() => {});
           throw result.error;
         } else if (
           true === next.enforceFunctionCall &&

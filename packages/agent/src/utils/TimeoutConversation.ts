@@ -39,12 +39,12 @@ export namespace TimeoutConversation {
     const timeout: Singleton<NodeJS.Timeout> = new Singleton(() =>
       setTimeout(() => {
         if (result.value !== null) return;
-        void holder.notify_all().catch(() => {});
         abort.abort(`Timeout, over ${props.timeout} ms`);
         result.value = {
           type: "timeout",
           error: new AutoBeTimeoutError(`Timeout, over ${props.timeout} ms.`),
         };
+        void holder.notify_all().catch(() => {});
       }, props.timeout),
     );
 
