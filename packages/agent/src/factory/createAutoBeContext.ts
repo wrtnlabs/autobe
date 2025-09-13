@@ -243,10 +243,9 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
           tokenUsage,
         };
       };
-      return await execute();
-      // if (next.enforceFunctionCall === true)
-      //   return await forceRetry(execute, config.retry);
-      // else return await execute();
+      if (next.enforceFunctionCall === true)
+        return await forceRetry(execute, config.retry);
+      else return await execute();
     },
   };
 };
@@ -399,6 +398,5 @@ const forceRetry = async <T>(
     }
   throw error;
 };
-forceRetry;
 
 const STAGES = typia.misc.literals<keyof IAutoBeApplication>();
