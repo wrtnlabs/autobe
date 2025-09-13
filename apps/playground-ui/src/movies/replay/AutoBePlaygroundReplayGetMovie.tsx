@@ -56,18 +56,21 @@ export const AutoBePlaygroundReplayGetMovie = () => {
           new AutoBeAgentSessionStorageMockStrategy(),
         serviceFactory: async () => {
           const listener: AutoBeListener = new AutoBeListener();
-          const { driver } = await pApi.functional.autobe.playground.replay.get(
-            {
-              host: "http://127.0.0.1:5890",
-            },
-            props,
-            listener.getListener(),
-          );
+          const { connector, driver } =
+            await pApi.functional.autobe.playground.replay.get(
+              {
+                host: "http://127.0.0.1:5890",
+              },
+              props,
+              listener.getListener(),
+            );
 
           return {
+            connector,
             service: driver,
             listener,
             sessionId: "mocked-session-id",
+            close: () => connector.close(),
           };
         },
       });

@@ -1,9 +1,5 @@
 import hApi, { HttpError } from "@autobe/hackathon-api";
-import {
-  AutoBeHackathonModel,
-  IAutoBeRpcListener,
-  IAutoBeRpcService,
-} from "@autobe/interface";
+import { AutoBeHackathonModel } from "@autobe/interface";
 import {
   AutoBeListener,
   IAutoBeConfig,
@@ -12,7 +8,6 @@ import {
 } from "@autobe/ui";
 import { useRef } from "react";
 import { toast } from "sonner";
-import { Communicator } from "tgrid";
 
 import { AutoBePlaygroundChatMovie } from "./AutoBePlaygroundChatMovie";
 import { HACKATHON_CODE } from "./constant";

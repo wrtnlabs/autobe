@@ -162,6 +162,7 @@ const sleepMap: Record<AutoBeEvent.Type, number> = {
   assistantMessage: 1_000,
   vendorRequest: 0,
   vendorResponse: 0,
+  vendorTimeout: 0,
   jsonParseError: 0,
   jsonValidateError: 0,
   consentFunctionCall: 0,

@@ -26,17 +26,25 @@ export namespace TestLogger {
       content.push(
         "  - typia.validate<T>()",
         `    - source: ${event.source}`,
+        `    - life: ${event.life}`,
         ...event.result.errors.map(
           (v) =>
             `    - ${v.path}: ${v.expected} (${JSON.stringify(v.value)}) -> ${JSON.stringify(v.description ?? "no description")}`,
         ),
       );
     else if (event.type === "jsonParseError")
-      content.push(`  - invalid json: ${event.errorMessage}`);
-    // VENDOR RESPONSE
-    else if (event.type === "vendorResponse") {
+      content.push(
+        `  - invalid json: ${event.errorMessage}`,
+        `  - life: ${event.life}`,
+        `  - arguments: ${event.arguments}`,
+      );
+    // VENDORS
+    else if (event.type === "vendorTimeout") {
+      content.push(`  - source: ${event.source}`, `  - retry: ${event.retry}`);
+    } else if (event.type === "vendorResponse") {
       content.push(`  - source ${event.source}`);
       content.push(`  - id: ${event.id}`);
+      content.push(`  - retry: ${event.retry}`);
 
       const t1: Date = new Date();
       const t2: IPointer<Date> = { value: t1 };

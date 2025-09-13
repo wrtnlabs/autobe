@@ -39,7 +39,6 @@ export const archive_prisma = async (
   };
   for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
     agent.on(type, listen);
-  agent.on("vendorResponse", (e) => TestLogger.event(start, e));
 
   let startEvent: AutoBePrismaStartEvent | null = null;
   let components: AutoBePrismaComponentsEvent | null = null;

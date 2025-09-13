@@ -64,6 +64,8 @@ export interface IAutoBeConfig {
    */
   timezone?: string;
 
+  timeout?: number;
+
   /**
    * Backoff strategy for retrying failed operations.
    *

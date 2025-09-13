@@ -37,7 +37,7 @@ export let archive_test = async (
   };
   for (let type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
     agent.on(type, listen);
-  agent.on("vendorResponse", (e) => TestLogger.event(start, e));
+  agent.on("vendorTimeout", (e) => TestLogger.event(start, e));
 
   // DO TEST GENERATION
   let result: AutoBeAssistantMessageHistory | AutoBeTestHistory =

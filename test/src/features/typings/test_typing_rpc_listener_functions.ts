@@ -6,6 +6,7 @@ export const test_typing_rpc_listener_functions = () => {
     AutoBeEvent.Type,
     | "vendorRequest"
     | "vendorResponse"
+    | "vendorTimeout"
     | "jsonValidateError"
     | "jsonParseError"
     | "consentFunctionCall"

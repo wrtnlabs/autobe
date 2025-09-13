@@ -7,8 +7,8 @@ settings:
 catalogs:
   agentica:
     '@agentica/core':
-      specifier: 0.32.4
-      version: 0.32.4
+      specifier: 0.32.6
+      version: 0.32.6
   libs:
     openai:
       specifier: ^5.19.1
@@ -715,7 +715,7 @@ importers:
     dependencies:
       '@agentica/core':
         specifier: catalog:agentica
-        version: 0.32.4(@samchon/openapi@4.7.1)(openai@5.19.1)(typia@9.7.2(typescript@5.9.2))
+        version: 0.32.6(@samchon/openapi@4.7.1)(openai@5.19.1)(typia@9.7.2(typescript@5.9.2))
       '@autobe/interface':
         specifier: workspace:^
         version: link:../interface
@@ -1121,8 +1121,8 @@ importers:
 
 packages:
 
-  '@agentica/core@0.32.4':
-    resolution: {integrity: sha512-3e+SK+MtcIFwk1GhLYvVCrUy+np9jCi62OVQiNvbbcEvX5PZEpzm06YYVsXyM0nhbxPXIiNFKqKELE8J62K82A==}
+  '@agentica/core@0.32.6':
+    resolution: {integrity: sha512-h4J11N7OwZENkNKCDy+lsaz4v0f/xW2+rIak4JL/utpCqdmGd1y+GbWdVPVopVmpCzDCCoQ7rYRZdHs18PzjkA==}
     peerDependencies:
       '@modelcontextprotocol/sdk': ^1.12.0
       '@samchon/openapi': ^4.7.1
@@ -7920,7 +7920,7 @@ packages:
 
 snapshots:
 
-  '@agentica/core@0.32.4(@samchon/openapi@4.7.1)(openai@5.19.1)(typia@9.7.2(typescript@5.9.2))':
+  '@agentica/core@0.32.6(@samchon/openapi@4.7.1)(openai@5.19.1)(typia@9.7.2(typescript@5.9.2))':
     dependencies:
       '@samchon/openapi': 4.7.1
       openai: 5.19.1

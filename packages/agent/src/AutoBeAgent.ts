@@ -230,6 +230,7 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
         ...e,
         type: "vendorRequest",
         source: "facade",
+        retry: 0,
       }).catch(() => {});
     });
     this.agentica_.on("response", (e) => {
@@ -237,6 +238,7 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
         ...e,
         type: "vendorResponse",
         source: "facade",
+        retry: 0,
       }).catch(() => {});
     });
   }

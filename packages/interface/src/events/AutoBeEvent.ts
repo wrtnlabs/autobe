@@ -49,6 +49,7 @@ import { AutoBeTestWriteEvent } from "./AutoBeTestWriteEvent";
 import { AutoBeUserMessageEvent } from "./AutoBeUserMessageEvent";
 import { AutoBeVendorRequestEvent } from "./AutoBeVendorRequestEvent";
 import { AutoBeVendorResponseEvent } from "./AutoBeVendorResponseEvent";
+import { AutoBeVendorTimeoutEvent } from "./AutoBeVendorTimeoutEvent";
 
 /**
  * Union type representing all possible events that can occur during the AutoBe
@@ -78,6 +79,7 @@ export type AutoBeEvent =
   | AutoBeUserMessageEvent
   | AutoBeVendorRequestEvent
   | AutoBeVendorResponseEvent
+  | AutoBeVendorTimeoutEvent
   | AutoBeJsonValidateErrorEvent
   | AutoBeJsonParseErrorEvent
   | AutoBeConsentFunctionCallEvent
@@ -170,6 +172,7 @@ export namespace AutoBeEvent {
     userMessage: AutoBeUserMessageEvent;
     vendorRequest: AutoBeVendorRequestEvent;
     vendorResponse: AutoBeVendorResponseEvent;
+    vendorTimeout: AutoBeVendorTimeoutEvent;
     jsonValidateError: AutoBeJsonValidateErrorEvent;
     jsonParseError: AutoBeJsonParseErrorEvent;
     consentFunctionCall: AutoBeConsentFunctionCallEvent;
