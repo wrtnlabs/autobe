@@ -39,13 +39,13 @@ export namespace TimeoutConversation {
     const timeout: Singleton<NodeJS.Timeout> = new Singleton(() =>
       setTimeout(() => {
         if (result.value !== null) return;
-        abort.abort(`Timeout, over ${props.timeout} ms`);
         result.value = {
           type: "timeout",
           error: new AutoBeTimeoutError(`Timeout, over ${props.timeout} ms.`),
         };
+        abort.abort(`Timeout, over ${props.timeout} ms`);
         void holder.notify_all().catch(() => {});
-      }, props.timeout),
+      }, 100),
     );
 
     // DO CONVERSATE
@@ -58,14 +58,14 @@ export namespace TimeoutConversation {
       })
       .then(
         (v) =>
-          (result.value = {
+          (result.value ??= {
             type: "success",
             histories: v,
           }),
       )
       .catch(
         (e) =>
-          (result.value = {
+          (result.value ??= {
             type: "error",
             error: e as Error,
           }),
@@ -77,6 +77,7 @@ export namespace TimeoutConversation {
 
     await holder.wait();
     await sleep_for(0);
+    console.log("the result", result.value);
     return result.value!;
   };
 }
