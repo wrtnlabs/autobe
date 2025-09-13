@@ -45,7 +45,7 @@ export namespace TimeoutConversation {
         };
         abort.abort(`Timeout, over ${props.timeout} ms`);
         void holder.notify_all().catch(() => {});
-      }, 100),
+      }, props.timeout),
     );
 
     // DO CONVERSATE
@@ -77,7 +77,6 @@ export namespace TimeoutConversation {
 
     await holder.wait();
     await sleep_for(0);
-    console.log("the result", result.value);
     return result.value!;
   };
 }
