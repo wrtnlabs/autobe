@@ -37,7 +37,7 @@ import { IAutoBeApplication } from "../context/IAutoBeApplication";
 import { IAutoBeConfig } from "../structures/IAutoBeConfig";
 import { IAutoBeVendor } from "../structures/IAutoBeVendor";
 import { AutoBeTimeoutError } from "../utils/AutoBeTimeoutError";
-import { TimeoutConversation } from "../utils/TimeoutConversation";
+import { TimedConversation } from "../utils/TimedConversation";
 import { consentFunctionCall } from "./consentFunctionCall";
 import { getCriticalCompiler } from "./getCriticalCompiler";
 
@@ -57,7 +57,10 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
     {
       retry: props.config.retry ?? AutoBeConfigConstant.RETRY,
       locale: props.config.locale ?? "en-US",
-      timeout: props.config.timeout ?? AutoBeConfigConstant.TIMEOUT,
+      timeout:
+        props.config.timeout === null
+          ? null
+          : (props.config.timeout ?? AutoBeConfigConstant.TIMEOUT),
     };
   const critical: Semaphore = new Semaphore(2);
   return {
@@ -152,8 +155,8 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
         if (closure) closure(agent);
 
         // DO CONVERSATE
-        const result: TimeoutConversation.IResult<Model> =
-          await TimeoutConversation.process({
+        const result: TimedConversation.IResult<Model> =
+          await TimedConversation.process({
             agent,
             timeout: config.timeout,
             message: next.message,
@@ -174,7 +177,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
               type: "vendorTimeout",
               id: v7(),
               source: next.source,
-              timeout: config.timeout,
+              timeout: config.timeout!,
               retry: trial.timeout++,
               created_at: new Date().toISOString(),
             })

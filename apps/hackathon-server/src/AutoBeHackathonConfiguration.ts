@@ -36,6 +36,7 @@ interface IEnvironments {
   HACKATHON_API_PORT: `${number}`;
   HACKATHON_SEMAPHORE: `${number}`;
   HACKATHON_COMPILERS: `${number}`;
+  HACKATHON_TIMEOUT?: `${number}` | "NULL" | undefined;
 
   HACKATHON_JWT_SECRET_KEY: string;
   HACKATHON_JWT_REFRESH_KEY: string;

@@ -140,5 +140,25 @@ export interface IAutoBeTestCompiler {
    */
   getExternal(): Promise<Record<string, string>>;
 
+  /**
+   * Retrieves template files and boilerplate code for test project structure.
+   *
+   * Provides access to template files that establish the foundational structure
+   * for E2E test projects, including configuration files, helper utilities,
+   * setup scripts, and boilerplate code that forms the skeleton of the test
+   * environment. These templates ensure consistent test project organization
+   * and provide reusable patterns for common testing scenarios.
+   *
+   * The template files complement the generated test functions by providing
+   * standardized project structure, configuration patterns, and utility
+   * functions that support efficient test development and maintenance. This
+   * includes test runner configurations, database setup utilities, API client
+   * initialization patterns, and other foundational elements required for
+   * comprehensive E2E testing infrastructure.
+   *
+   * @returns Promise resolving to key-value pairs mapping template file paths
+   *   to their content, establishing the complete test project structure and
+   *   supporting infrastructure for E2E test execution
+   */
   getTemplate(): Promise<Record<string, string>>;
 }

@@ -64,7 +64,40 @@ export interface IAutoBeConfig {
    */
   timezone?: string;
 
-  timeout?: number;
+  /**
+   * Maximum execution time limit for agent conversations in milliseconds.
+   *
+   * Controls the maximum duration allowed for each agent's conversation and
+   * code generation process. When set to a numeric value, the agent will
+   * automatically abort the conversation if it exceeds the specified time
+   * limit, preventing infinite loops or excessively long running operations
+   * that could consume excessive resources.
+   *
+   * Setting this value to `null` disables the timeout, allowing the agent to
+   * run indefinitely until the conversation naturally completes or encounters
+   * an error. This unlimited mode should be used with caution, particularly in
+   * production environments where resource management is critical.
+   *
+   * The timeout applies to each individual agent conversation phase (analyze,
+   * prisma, interface, test, realize) separately, not to the entire AutoBE
+   * pipeline execution. This ensures that a single slow phase doesn't prevent
+   * completion of other phases while still protecting against runaway
+   * processes.
+   *
+   * @example
+   *   // 10 minute timeout
+   *   {
+   *     timeout: 10 * 60 * 1_000;
+   *   }
+   *
+   *   // No timeout (unlimited)
+   *   {
+   *     timeout: null;
+   *   }
+   *
+   * @default 1_800_000 (30 minutes)
+   */
+  timeout?: number | null;
 
   /**
    * Backoff strategy for retrying failed operations.

@@ -134,5 +134,22 @@ export interface IAutoBeRpcService {
    */
   getTokenUsage(): Promise<IAutoBeTokenUsageJson>;
 
+  /**
+   * Retrieves the current development phase in the vibe coding pipeline via RPC.
+   *
+   * Returns the active phase of the AutoBE development process through the RPC
+   * interface, indicating which agent is currently executing or which stage of
+   * backend generation is in progress. This asynchronous method enables remote
+   * clients to track overall pipeline progress and coordinate multi-phase
+   * operations across distributed systems.
+   *
+   * The phase information reflects the real-time state of the agent as it
+   * progresses through the waterfall development model, transitioning from
+   * analyze through prisma, interface, test, and realize phases. When no phase
+   * is active (before starting or after completion), returns null.
+   *
+   * @returns Promise resolving to the current AutoBePhase enum value indicating
+   *   the active development phase, or null when no phase is currently executing
+   */
   getPhase(): Promise<AutoBePhase | null>;
 }

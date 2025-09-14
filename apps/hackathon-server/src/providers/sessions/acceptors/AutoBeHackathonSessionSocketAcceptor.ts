@@ -1,4 +1,5 @@
 import { AutoBeAgent } from "@autobe/agent";
+import { AutoBeConfigConstant } from "@autobe/agent/src/constants/AutoBeConfigConstant";
 import {
   AutoBeEventOfSerializable,
   AutoBeEventSnapshot,
@@ -121,6 +122,13 @@ export namespace AutoBeHackathonSessionSocketAcceptor {
           config: {
             locale: "en-US",
             timezone: props.session.timezone,
+            timeout:
+              AutoBeHackathonConfiguration.env().HACKATHON_TIMEOUT === "NULL"
+                ? null
+                : Number(
+                    AutoBeHackathonConfiguration.env().HACKATHON_TIMEOUT ??
+                      AutoBeConfigConstant.TIMEOUT,
+                  ),
           },
           compiler: () => AutoBeHackathonSessionCompiler.get(),
           histories,

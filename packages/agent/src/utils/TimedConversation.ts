@@ -4,11 +4,11 @@ import { ConditionVariable, IPointer, Singleton, sleep_for } from "tstl";
 
 import { AutoBeTimeoutError } from "./AutoBeTimeoutError";
 
-export namespace TimeoutConversation {
+export namespace TimedConversation {
   export interface IProps<Model extends ILlmSchema.Model> {
     agent: MicroAgentica<Model>;
-    timeout: number;
     message: string;
+    timeout: number | null;
   }
   export type IResult<Model extends ILlmSchema.Model> =
     | ISuccessResult<Model>
@@ -30,6 +30,21 @@ export namespace TimeoutConversation {
   export const process = async <Model extends ILlmSchema.Model>(
     props: IProps<Model>,
   ): Promise<IResult<Model>> => {
+    if (props.timeout === null)
+      try {
+        const histories: MicroAgenticaHistory<Model>[] =
+          await props.agent.conversate(props.message);
+        return {
+          type: "success",
+          histories,
+        };
+      } catch (error) {
+        return {
+          type: "error",
+          error: error as Error,
+        };
+      }
+
     // PREPARE TIMEOUT HANDLERS
     const result: IPointer<IResult<Model> | null> = {
       value: null,
@@ -45,7 +60,7 @@ export namespace TimeoutConversation {
         };
         abort.abort(`Timeout, over ${props.timeout} ms`);
         void holder.notify_all().catch(() => {});
-      }, props.timeout),
+      }, props.timeout!),
     );
 
     // DO CONVERSATE

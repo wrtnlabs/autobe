@@ -124,6 +124,23 @@ export interface IAutoBeAgent {
    */
   getTokenUsage(): IAutoBeTokenUsageJson;
 
+  /**
+   * Retrieves the current development phase in the vibe coding pipeline.
+   *
+   * Returns the active phase of the AutoBE development process, indicating which
+   * agent is currently executing or which stage of backend generation is in
+   * progress. This information is useful for tracking overall pipeline progress,
+   * displaying phase-specific UI elements, and coordinating multi-phase
+   * operations.
+   *
+   * The phase information updates in real-time as the agent progresses through
+   * the waterfall development model, transitioning from analyze through prisma,
+   * interface, test, and realize phases. When no phase is active (before
+   * starting or after completion), returns null.
+   *
+   * @returns Current AutoBePhase enum value indicating the active development
+   *   phase, or null when no phase is currently executing
+   */
   getPhase(): AutoBePhase | null;
 
   /**
