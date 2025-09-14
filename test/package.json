@@ -10,9 +10,10 @@
     "build:prompt": "node build/prompt.js",
     "dev": "tsc --watch --noEmit",
     "start": "pnpm run build:prompt && pnpm run start:go",
-    "archive": "pnpm run build:prompt && pnpm run archive:go",
     "start:go": "ts-node src",
+    "archive": "pnpm run build:prompt && pnpm run archive:go",
     "archive:go": "ts-node src/archive",
+    "archive:commit": "ts-node src/archive/commit.ts",
     "bench": "ts-node src/benchmarks"
   },
   "author": "Wrtn Technologies",

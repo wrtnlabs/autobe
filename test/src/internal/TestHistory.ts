@@ -3,6 +3,7 @@ import { CompressUtil } from "@autobe/filesystem";
 import {
   AutoBeEventSnapshot,
   AutoBeHistory,
+  AutoBePhase,
   IAutoBeTokenUsageJson,
 } from "@autobe/interface";
 import fs from "fs";
@@ -45,9 +46,9 @@ export namespace TestHistory {
 
   export const getHistories = async (
     project: TestProject,
-    type: "analyze" | "prisma" | "interface" | "test" | "realize",
+    phase: AutoBePhase,
   ): Promise<AutoBeHistory[]> => {
-    const location: string = `${TestGlobal.ROOT}/assets/histories/${TestGlobal.vendorModel}/${project}.${type}.json.gz`;
+    const location: string = `${TestGlobal.ROOT}/assets/histories/${TestGlobal.vendorModel}/${project}.${phase}.json.gz`;
     const content: string = await CompressUtil.gunzip(
       await fs.promises.readFile(location),
     );
@@ -56,22 +57,19 @@ export namespace TestHistory {
 
   export const getTokenUsage = async (
     project: TestProject,
-    type: "analyze" | "prisma" | "interface" | "test" | "realize",
+    phase: AutoBePhase,
   ): Promise<IAutoBeTokenUsageJson> => {
     const snapshots: AutoBeEventSnapshot[] = JSON.parse(
       await CompressUtil.gunzip(
         await fs.promises.readFile(
-          `${TestGlobal.ROOT}/assets/histories/${TestGlobal.vendorModel}/${project}.${type}.snapshots.json.gz`,
+          `${TestGlobal.ROOT}/assets/histories/${TestGlobal.vendorModel}/${project}.${phase}.snapshots.json.gz`,
         ),
       ),
     );
     return snapshots.at(-1)?.tokenUsage ?? new AutoBeTokenUsage().toJSON();
   };
 
-  export const has = (
-    project: TestProject,
-    type: "analyze" | "prisma" | "interface" | "test" | "realize",
-  ): boolean =>
+  export const has = (project: TestProject, type: AutoBePhase): boolean =>
     fs.existsSync(
       `${TestGlobal.ROOT}/assets/histories/${TestGlobal.vendorModel}/${project}.${type}.json.gz`,
     );
