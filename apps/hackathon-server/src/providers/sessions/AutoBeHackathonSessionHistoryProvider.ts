@@ -16,6 +16,7 @@ export namespace AutoBeHackathonSessionHistoryProvider {
       ({
         select: {
           data: true,
+          created_at: true,
         },
       }) satisfies Prisma.autobe_hackathon_session_historiesFindManyArgs;
   }

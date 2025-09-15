@@ -36,12 +36,12 @@ export namespace AutoBeHackathonSessionProvider {
       timezone: input.timezone,
       phase: typia.assert<AutoBePhase | null>(input.aggregate!.phase),
       token_usage: JSON.parse(input.aggregate!.token_usage),
-      histories: input.histories.map(
-        AutoBeHackathonSessionHistoryProvider.json.transform,
-      ),
-      event_snapshots: input.events.map(
-        AutoBeHackathonSessionEventProvider.json.transform,
-      ),
+      histories: input.histories
+        .sort((a, b) => a.created_at.getTime() - b.created_at.getTime())
+        .map(AutoBeHackathonSessionHistoryProvider.json.transform),
+      event_snapshots: input.events
+        .sort((a, b) => a.created_at.getTime() - b.created_at.getTime())
+        .map(AutoBeHackathonSessionEventProvider.json.transform),
       review_article_url: input.review_article_url,
       created_at: input.created_at.toISOString(),
       completed_at: input.completed_at?.toISOString() ?? null,
