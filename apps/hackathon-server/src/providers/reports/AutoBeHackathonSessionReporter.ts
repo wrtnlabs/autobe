@@ -10,13 +10,44 @@ import { AutoBeHackathonSessionProvider } from "../sessions/AutoBeHackathonSessi
 
 export namespace AutoBeHackathonSessionReporter {
   export const report = async (): Promise<Record<string, string>> => {
+    const reviewed: ICollection = await iterate(true);
+    const notReviewed: ICollection = await iterate(false);
+    return {
+      "README.md": index({
+        reviewed: reviewed.sessions,
+        notReviewed: notReviewed.sessions,
+      }),
+      ...reviewed.files,
+      ...notReviewed.files,
+    };
+  };
+
+  interface ICollection {
+    sessions: IAutoBeHackathonSession.ISummary[];
+    files: Record<string, string>;
+  }
+  const iterate = async (reviewed: boolean): Promise<ICollection> => {
     const records =
       await AutoBeHackathonGlobal.prisma.autobe_hackathon_sessions.findMany({
         where: {
-          review_article_url: {
-            not: null,
-          },
+          review_article_url: reviewed
+            ? {
+                not: null,
+              }
+            : null,
           deleted_at: null,
+          participant: {
+            email: {
+              not: {
+                endsWith: "@wrtn.io",
+              },
+            },
+          },
+          aggregate: {
+            phase: {
+              not: null,
+            },
+          },
         },
         orderBy: { id: "asc" },
         ...AutoBeHackathonSessionProvider.summarize.select(),
@@ -24,12 +55,13 @@ export namespace AutoBeHackathonSessionReporter {
     const summaries: IAutoBeHackathonSession.ISummary[] = records.map(
       AutoBeHackathonSessionProvider.summarize.transform,
     );
+    const output: Record<string, string> = {};
+    const prefix: string = reviewed ? "reviewed" : "not-reviewed";
 
-    const output: Record<string, string> = {
-      "README.md": index(summaries),
-    };
     await ArrayUtil.asyncForEach(summaries, async (s, i) => {
-      console.log(`Processing session: ${i + 1} of ${records.length}`);
+      console.log(
+        `Processing ${prefix} session: ${i + 1} of ${records.length}`,
+      );
       const detailed: IAutoBeHackathonSession =
         AutoBeHackathonSessionProvider.json.transform(
           await AutoBeHackathonGlobal.prisma.autobe_hackathon_sessions.findFirstOrThrow(
@@ -54,31 +86,51 @@ export namespace AutoBeHackathonSessionReporter {
         dbms: "sqlite",
       });
       for (const [key, value] of Object.entries(files))
-        output[`${s.id}/${key}`] = value;
-      output[`${s.id}/README.md`] = at(detailed);
+        output[`${prefix}/${s.id}/${key}`] = value;
+      output[`${prefix}/${s.id}/README.md`] = at(detailed);
     });
-    return output;
+    return {
+      sessions: summaries,
+      files: output,
+    };
   };
 
-  const index = (sessions: IAutoBeHackathonSession.ISummary[]): string => {
-    const row = (s: IAutoBeHackathonSession.ISummary, i: number): string =>
-      [
-        `[${i + 1}](./${s.id})`,
-        `[${s.participant.name}](./${s.id})`,
-        `[\`${s.model}\`](./${s.id})`,
-        `[\`${s.phase}\`](./${s.id})`,
-        `[wrtnlabs/autobe/discussions/${s.review_article_url?.split("https://github.com/wrtnlabs/autobe/discussions/")[1]?.split("#")[0]}](${s.review_article_url})`,
-      ].join(" | ");
+  const index = (props: {
+    reviewed: IAutoBeHackathonSession.ISummary[];
+    notReviewed: IAutoBeHackathonSession.ISummary[];
+  }): string => {
+    const row =
+      (prefix: string) =>
+      (s: IAutoBeHackathonSession.ISummary, i: number): string =>
+        [
+          `[${i + 1}](./${prefix}/${s.id})`,
+          `[${s.participant.name}](./${prefix}/${s.id})`,
+          `[\`${s.model}\`](./${prefix}/${s.id})`,
+          `[\`${s.phase}\`](./${prefix}/${s.id})`,
+          ...(s.review_article_url === null
+            ? []
+            : [
+                `[discussions#${s.review_article_url.split("https://github.com/wrtnlabs/autobe/discussions/")[1]?.split("#")[0]}](${s.review_article_url})`,
+              ]),
+        ].join(" | ");
     return StringUtil.trim`
       # AutoBe Hackathon 2025
 
       > https://autobe.dev/docs/hackathon/
 
       Generation results of AutoBe Hackathon 2025 participants.
+
+      ## Reviewed Sessions
       
        No | Participant | Model | Phase | Review Article 
       ----|-------------|-------|-------|----------------
-      ${sessions.map(row).join("\n")},
+      ${props.reviewed.map(row("reviewed")).join("\n")},
+
+      ## Not Reviewed Sessions
+
+       No | Participant | Model | Phase
+      ----|-------------|-------|-------
+      ${props.notReviewed.map(row("not-reviewed")).join("\n")}
     `;
   };
 
@@ -134,7 +186,7 @@ export namespace AutoBeHackathonSessionReporter {
         let value: string = StringUtil.trim`
           ${title("Prisma")}
 
-          - document: [\`ERD.md\`](./docs/ERD.md)
+          - document: [\`docs/ERD.md\`](./docs/ERD.md)
           - namespaces: ${h.result.data.files.length.toLocaleString()}
           - tables: ${h.result.data.files
             .map((f) => f.models)
