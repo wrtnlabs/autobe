@@ -55,7 +55,12 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
     if (location === null) return;
 
     if (!diagnosticsByFile[location]) {
-      const func = functions.find((f) => f.location === location)!;
+      const func = functions.find((f) => f.location === location);
+
+      if (!func) {
+        return;
+      }
+
       const failure: IAutoBeRealizeFunctionFailure = {
         function: func,
         diagnostics: [],
@@ -65,13 +70,21 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
     diagnosticsByFile[location].diagnostics.push(diagnostic);
   });
 
-  await correct(
+  const newFailures: IAutoBeRealizeFunctionFailure[] = [
+    ...failures,
+    ...Object.values(diagnosticsByFile),
+  ];
+
+  const corrected: AutoBeRealizeFunction[] = await correct(
     ctx,
     locations,
     scenarios,
     authorizations,
     functions,
-    [...failures, ...Object.values(diagnosticsByFile)],
+    filterDiagnostics(
+      newFailures,
+      functions.map((fn) => fn.location),
+    ),
     progress,
   );
 
@@ -79,8 +92,11 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
     ctx,
     scenarios,
     authorizations,
-    functions,
-    [...failures, ...Object.values(diagnosticsByFile)],
+    corrected,
+    filterDiagnostics(
+      newFailures,
+      corrected.map((c) => c.location),
+    ),
     progress,
     life - 1,
   );
@@ -95,25 +111,30 @@ async function correct<Model extends ILlmSchema.Model>(
   failures: IAutoBeRealizeFunctionFailure[],
   progress: AutoBeProgressEventBase,
 ): Promise<AutoBeRealizeFunction[]> {
-  return executeCachedBatch(
+  const result: AutoBeRealizeFunction[] = await executeCachedBatch(
     locations.map((location) => async (): Promise<AutoBeRealizeFunction> => {
       const scenario = scenarios.find((el) => el.location === location);
-      const func = functions.find((el) => el.location === location)!;
-      const ReailzeFunctionFailures: IAutoBeRealizeFunctionFailure[] =
-        failures.filter((f) => f.function.location === location);
+      const func = functions.find((el) => el.location === location);
 
-      if (ReailzeFunctionFailures.length && scenario) {
+      if (!func) {
+        throw new Error("No function found for location: " + location);
+      }
+
+      const RealizeFunctionFailures: IAutoBeRealizeFunctionFailure[] =
+        failures.filter((f) => f.function?.location === location);
+
+      if (RealizeFunctionFailures.length && scenario) {
         try {
           const correctEvent = await step(ctx, {
             totalAuthorizations: authorizations,
             authorization: scenario.decoratorEvent ?? null,
             scenario,
             function: func,
-            failures: ReailzeFunctionFailures,
+            failures: RealizeFunctionFailures,
             progress: progress,
           });
 
-          func.content = correctEvent.content;
+          return { ...func, content: correctEvent.content };
         } catch (err) {
           return func;
         }
@@ -122,6 +143,8 @@ async function correct<Model extends ILlmSchema.Model>(
       return func;
     }),
   );
+
+  return result;
 }
 
 async function step<Model extends ILlmSchema.Model>(
@@ -208,6 +231,24 @@ function createController<Model extends ILlmSchema.Model>(props: {
       },
     } satisfies IAutoBeRealizeCorrectApplication,
   };
+}
+
+/**
+ * Filter diagnostic failures to only include those matching the given
+ * locations.
+ *
+ * @param failures - Array of function failures with diagnostic information
+ * @param locations - Array of file locations to filter by
+ * @returns Filtered array of failures matching the specified locations
+ * @warning This function assumes f.function and f.function.location are always defined.
+ *          If f.function is undefined, this will throw a runtime error.
+ *          Consider using optional chaining: f.function?.location
+ */
+function filterDiagnostics(
+  failures: IAutoBeRealizeFunctionFailure[],
+  locations: string[],
+): Array<IAutoBeRealizeFunctionFailure> {
+  return failures.filter((f) => locations.includes(f.function.location));
 }
 
 const claude = typia.llm.application<
