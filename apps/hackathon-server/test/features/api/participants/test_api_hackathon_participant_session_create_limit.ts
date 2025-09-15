@@ -49,7 +49,7 @@ const process = async (connection: HackathonApi.IConnection) => {
         connection,
         TestGlobal.CODE,
         {
-          model: "qwen/qwen3-next-80b-a3b-instruc",
+          model: "qwen/qwen3-next-80b-a3b-instruct",
           timezone: "Asia/Seoul",
         },
       );
