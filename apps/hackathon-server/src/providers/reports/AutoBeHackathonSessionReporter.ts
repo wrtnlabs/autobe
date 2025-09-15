@@ -18,13 +18,7 @@ export namespace AutoBeHackathonSessionReporter {
           },
           deleted_at: null,
         },
-        orderBy: [
-          {
-            participant: { email: "asc" },
-          },
-          { model: "asc" },
-          { created_at: "asc" },
-        ],
+        orderBy: { id: "asc" },
         ...AutoBeHackathonSessionProvider.summarize.select(),
       });
     const summaries: IAutoBeHackathonSession.ISummary[] = records.map(
