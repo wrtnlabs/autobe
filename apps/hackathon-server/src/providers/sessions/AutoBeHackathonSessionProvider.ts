@@ -158,6 +158,7 @@ export namespace AutoBeHackathonSessionProvider {
               autobe_hackathon_id: props.hackathon.id,
               autobe_hackathon_participant_id: props.participant.id,
               model: "qwen/qwen3-next-80b-a3b-instruc",
+              deleted_at: null,
             },
           });
         if (count >= 10)
@@ -173,6 +174,7 @@ export namespace AutoBeHackathonSessionProvider {
               autobe_hackathon_id: props.hackathon.id,
               autobe_hackathon_participant_id: props.participant.id,
               model: "openai/gpt-4.1-mini",
+              deleted_at: null,
             },
           });
         if (count >= 3)
@@ -189,6 +191,7 @@ export namespace AutoBeHackathonSessionProvider {
               autobe_hackathon_participant_id: props.participant.id,
               model: "openai/gpt-4.1-mini",
               completed_at: { not: null },
+              deleted_at: null,
             },
           });
         if (completed === 0)
@@ -205,6 +208,7 @@ export namespace AutoBeHackathonSessionProvider {
               autobe_hackathon_id: props.hackathon.id,
               autobe_hackathon_participant_id: props.participant.id,
               model: "openai/gpt-4.1",
+              deleted_at: null,
             },
           });
         if (duplicated !== 0)
