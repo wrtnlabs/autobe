@@ -86,5 +86,28 @@ export interface IAutoBeRealizeCompiler {
    */
   test(props: IAutoBeRealizeTestProps): Promise<IAutoBeRealizeTestResult>;
 
+  /**
+   * Retrieves template files and boilerplate code for backend implementation
+   * structure.
+   *
+   * Provides access to template files that establish the foundational structure
+   * for NestJS backend implementations, including module configurations,
+   * provider patterns, controller templates, and infrastructure code that forms
+   * the skeleton of the backend application. These templates ensure consistent
+   * application architecture and provide reusable patterns for common backend
+   * implementation scenarios.
+   *
+   * The template files complement the generated implementation code by providing
+   * standardized project structure, dependency injection patterns, middleware
+   * configurations, and utility functions that support efficient backend
+   * development and maintenance. This includes NestJS module definitions,
+   * database connection configurations, authentication/authorization patterns,
+   * and other foundational elements required for comprehensive backend
+   * application infrastructure.
+   *
+   * @returns Promise resolving to key-value pairs mapping template file paths
+   *   to their content, establishing the complete backend project structure and
+   *   supporting infrastructure for production-ready application deployment
+   */
   getTemplate(): Promise<Record<string, string>>;
 }

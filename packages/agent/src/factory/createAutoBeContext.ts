@@ -24,6 +24,7 @@ import {
   IAutoBeTokenUsageJson,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
+import { Semaphore } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
@@ -35,7 +36,10 @@ import { AutoBeTokenUsageComponent } from "../context/AutoBeTokenUsageComponent"
 import { IAutoBeApplication } from "../context/IAutoBeApplication";
 import { IAutoBeConfig } from "../structures/IAutoBeConfig";
 import { IAutoBeVendor } from "../structures/IAutoBeVendor";
+import { AutoBeTimeoutError } from "../utils/AutoBeTimeoutError";
+import { TimedConversation } from "../utils/TimedConversation";
 import { consentFunctionCall } from "./consentFunctionCall";
+import { getCriticalCompiler } from "./getCriticalCompiler";
 
 export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
   model: Model;
@@ -49,16 +53,23 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
   usage: () => AutoBeTokenUsage;
   dispatch: (event: AutoBeEvent) => Promise<void>;
 }): AutoBeContext<Model> => {
-  const retry: number =
-    props.config?.retry ?? AutoBeConfigConstant.DEFAULT_RETRY;
-  const locale: string = props.config.locale ?? "en-US";
+  const config: Required<Omit<IAutoBeConfig, "backoffStrategy" | "timezone">> =
+    {
+      retry: props.config.retry ?? AutoBeConfigConstant.RETRY,
+      locale: props.config.locale ?? "en-US",
+      timeout: props.config.timeout ?? null,
+    };
+  const critical: Semaphore = new Semaphore(2);
   return {
     model: props.model,
     vendor: props.vendor,
-    retry,
-    locale,
+    retry: config.retry,
+    locale: config.locale,
     compilerListener: props.compilerListener,
-    compiler: props.compiler,
+    compiler: async () => {
+      const compiler = await props.compiler();
+      return getCriticalCompiler(critical, compiler);
+    },
     files: props.files,
     histories: props.histories,
     state: props.state,
@@ -66,17 +77,25 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
     dispatch: createDispatch(props),
     assistantMessage: (message) => {
       props.histories().push(message);
-      setTimeout(() => props.dispatch(message).catch(() => {}));
+      setTimeout(() => {
+        void props.dispatch(message).catch(() => {});
+      });
       return message;
     },
     conversate: async (next, closure) => {
+      const trial = {
+        request: 0,
+        response: 0,
+        timeout: 0,
+      };
       const execute = async (): Promise<AutoBeContext.IResult<Model>> => {
+        // CREATE AGENT
         const agent: MicroAgentica<Model> = new MicroAgentica<Model>({
           model: props.model,
           vendor: props.vendor,
           config: {
             ...(props.config ?? {}),
-            retry: props.config?.retry ?? AutoBeConfigConstant.DEFAULT_RETRY,
+            retry: props.config?.retry ?? AutoBeConfigConstant.RETRY,
             executor: {
               describe: null,
             },
@@ -84,6 +103,8 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
           histories: next.histories,
           controllers: [next.controller],
         });
+
+        // ADD EVENT LISTENERS
         agent.on("request", async (event) => {
           if (next.enforceFunctionCall === true && event.body.tools)
             event.body.tool_choice = "required";
@@ -95,14 +116,16 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
             ...event,
             type: "vendorRequest",
             source: next.source,
+            retry: trial.request++,
           });
         });
-        agent.on("response", (event) => {
+        agent.on("response", async (event) => {
           void props
             .dispatch({
               ...event,
               type: "vendorResponse",
               source: next.source,
+              retry: trial.response++,
             })
             .catch(() => {});
         });
@@ -121,15 +144,20 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
               id: v7(),
               source: next.source,
               result: event.result,
+              life: event.life,
               created_at: event.created_at,
             })
             .catch(() => {});
         });
         if (closure) closure(agent);
 
-        const histories: MicroAgenticaHistory<Model>[] = await agent.conversate(
-          next.message,
-        );
+        // DO CONVERSATE
+        const result: TimedConversation.IResult<Model> =
+          await TimedConversation.process({
+            agent,
+            timeout: config.timeout,
+            message: next.message,
+          });
         const tokenUsage: IAutoBeTokenUsageJson.IComponent = agent
           .getTokenUsage()
           .toJSON().aggregate;
@@ -139,10 +167,25 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
             STAGES.find((stage) => next.source.startsWith(stage)) ?? "analyze",
           ]);
 
-        if (
+        if (result.type === "error") throw result.error;
+        else if (result.type === "timeout") {
+          void props
+            .dispatch({
+              type: "vendorTimeout",
+              id: v7(),
+              source: next.source,
+              timeout: config.timeout!,
+              retry: trial.timeout++,
+              created_at: new Date().toISOString(),
+            })
+            .catch(() => {});
+          throw result.error;
+        } else if (
           true === next.enforceFunctionCall &&
           false ===
-            histories.some((h) => h.type === "execute" && h.success === true)
+            result.histories.some(
+              (h) => h.type === "execute" && h.success === true,
+            )
         ) {
           const failure = () => {
             throw new Error(
@@ -150,7 +193,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
             );
           };
           const last: MicroAgenticaHistory<Model> | undefined =
-            histories.at(-1);
+            result.histories.at(-1);
           if (
             last?.type === "assistantMessage" &&
             last.text.trim().length !== 0
@@ -195,10 +238,14 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
           }
           failure();
         }
-        return { histories, tokenUsage };
+        return {
+          histories: result.histories,
+          tokenUsage,
+        };
       };
-      if (next.enforceFunctionCall === true) return forceRetry(execute, retry);
-      else return execute();
+      if (next.enforceFunctionCall === true)
+        return await forceRetry(execute, config.retry);
+      else return await execute();
     },
   };
 };
@@ -312,7 +359,7 @@ const createDispatch = (props: {
           step: event.step,
         } satisfies AutoBeRealizeHistory,
       }) as AutoBeContext.DispatchHistory<Event>;
-    props.dispatch(event).catch(() => {});
+    void props.dispatch(event).catch(() => {});
     return null as AutoBeContext.DispatchHistory<Event>;
   };
 };
@@ -333,7 +380,7 @@ const transformAndDispatch = <
 }): NonNullable<AutoBeContext.DispatchHistory<Event>> => {
   props.histories().push(props.history);
   props.state()[props.history.type] = props.history as any;
-  props.dispatch(props.event).catch(() => {});
+  void props.dispatch(props.event).catch(() => {});
   return props.history;
 };
 
@@ -346,6 +393,7 @@ const forceRetry = async <T>(
     try {
       return await task();
     } catch (e) {
+      if (e instanceof AutoBeTimeoutError) throw e;
       error = e;
     }
   throw error;

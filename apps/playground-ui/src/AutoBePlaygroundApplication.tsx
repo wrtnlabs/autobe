@@ -40,7 +40,11 @@ export function AutoBePlaygroundApplication() {
       locale: playgroundConfig.locale ?? window.navigator.language,
     };
     const listener = new AutoBeListener();
-    const { service, sessionId } = await (async () => {
+    const {
+      driver: service,
+      sessionId,
+      connector,
+    } = await (async () => {
       const connection = {
         host: playgroundConfig.serverUrl,
         headers: headers as unknown as Record<string, string>,
@@ -51,9 +55,10 @@ export function AutoBePlaygroundApplication() {
           ? config.sessionId
           : globalThis.crypto.randomUUID();
       return {
-        service: await pApi.functional.autobe.playground
-          .start(connection, listener.getListener())
-          .then((v) => v.driver),
+        ...(await pApi.functional.autobe.playground.start(
+          connection,
+          listener.getListener(),
+        )),
         sessionId: sessionId,
       };
     })();
@@ -62,7 +67,9 @@ export function AutoBePlaygroundApplication() {
       service,
       sessionId,
       listener,
-    };
+      connector,
+      close: () => connector.close(),
+    } satisfies IAutoBeServiceData;
   };
 
   return (

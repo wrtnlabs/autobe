@@ -1,2 +1,4 @@
+assets/participants.csv
 prisma/migrations
 prisma/schema/migrations
+results/

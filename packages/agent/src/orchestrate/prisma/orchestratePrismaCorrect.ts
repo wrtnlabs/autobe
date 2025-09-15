@@ -27,7 +27,7 @@ export function orchestratePrismaCorrect<Model extends ILlmSchema.Model>(
       return true;
     });
   application.files = application.files.filter((f) => f.models.length !== 0);
-  return iterate(ctx, application, ctx.retry);
+  return iterate(ctx, application, Math.max(ctx.retry, 5));
 }
 
 async function iterate<Model extends ILlmSchema.Model>(

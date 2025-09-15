@@ -79,7 +79,40 @@ export interface IAutoBeCompiler {
    */
   typescript: IAutoBeTypeScriptCompiler;
 
+  /**
+   * Custom Test compiler for E2E test code generation and validation.
+   *
+   * Provides specialized compilation services for Test agent-generated E2E test
+   * functions, transforming test scenarios and specifications into executable
+   * TypeScript test code. The Test compiler ensures that generated test code
+   * properly integrates with the NestJS application, maintains type safety with
+   * API specifications, and provides comprehensive validation coverage for all
+   * business requirements.
+   *
+   * The compiler includes sophisticated validation mechanisms for test AST
+   * structures, generation of complete test function implementations, and
+   * compilation validation that ensures test code is production-ready. It
+   * supports the iterative improvement cycle through AI self-correction when
+   * test code contains errors that need refinement before execution.
+   */
   test: IAutoBeTestCompiler;
 
+  /**
+   * Custom Realize compiler for backend implementation validation and E2E test
+   * execution.
+   *
+   * Serves as the final validation layer in the AutoBE development pipeline,
+   * orchestrating comprehensive E2E test execution against fully implemented
+   * backend applications. The Realize compiler generates NestJS controller
+   * implementations with proper authorization handling and executes Test
+   * agent-generated test suites to ensure that implementations correctly fulfill
+   * all business requirements and API contracts.
+   *
+   * The compiler manages complete test environments, handles database state for
+   * clean testing conditions, and provides detailed validation results that
+   * determine the production readiness of generated backend applications. This
+   * comprehensive approach guarantees that AutoBE-generated code works correctly
+   * on the first deployment without manual debugging cycles.
+   */
   realize: IAutoBeRealizeCompiler;
 }

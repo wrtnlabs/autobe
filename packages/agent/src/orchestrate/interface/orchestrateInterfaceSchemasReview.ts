@@ -10,6 +10,7 @@ import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
+import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
@@ -27,6 +28,7 @@ export async function orchestrateInterfaceSchemasReview<
   ctx: AutoBeContext<Model>,
   operations: AutoBeOpenApi.IOperation[],
   schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
+  capacity: number = AutoBeConfigConstant.INTERFACE_CAPACITY,
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   const a = Object.entries(schemas).map(([key, schema]) => {
     return { [key]: schema };
@@ -35,7 +37,7 @@ export async function orchestrateInterfaceSchemasReview<
   const matrix: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>[][] =
     divideArray({
       array: a,
-      capacity: 8,
+      capacity,
     });
   const progress: IProgress = {
     total: matrix.length,
@@ -97,7 +99,6 @@ export async function step<Model extends ILlmSchema.Model>(
       message: "Review type schemas.",
     });
     if (pointer.value === null) {
-      console.error("Failed to extract review information.");
       ++progress.completed;
       return {};
     }
@@ -122,8 +123,7 @@ export async function step<Model extends ILlmSchema.Model>(
       created_at: new Date().toISOString(),
     } satisfies AutoBeInterfaceSchemasReviewEvent);
     return content;
-  } catch (error) {
-    console.error("Error occurred during interface schemas review:", error);
+  } catch {
     ++progress.completed;
     return {};
   }
@@ -150,7 +150,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
     }
 
     const errors: IValidation.IError[] = [];
-    JsonSchemaValidator.validate({
+    JsonSchemaValidator.validateSchemas({
       errors,
       schemas: result.data.content,
       path: "$input.content",

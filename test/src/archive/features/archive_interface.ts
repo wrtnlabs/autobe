@@ -20,7 +20,7 @@ export const archive_interface = async (
   factory: TestFactory,
   project: TestProject,
 ) => {
-  if (TestGlobal.env.API_KEY === undefined) return false;
+  if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
   // PREPARE AGENT
   const { agent, zero } = await prepare_agent_interface(factory, project);
@@ -34,22 +34,20 @@ export const archive_interface = async (
       tokenUsage: agent.getTokenUsage().toJSON(),
     });
   };
-  agent.on("assistantMessage", listen);
-  agent.on("jsonParseError", listen);
-  agent.on("jsonValidateError", listen);
   for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
-    if (type.startsWith("interface")) agent.on(type, listen);
+    agent.on(type, listen);
 
   // REQUEST INTERFACE GENERATION
   const result: AutoBeInterfaceHistory | AutoBeAssistantMessageHistory =
     await orchestrate.interface(agent.getContext())({
       reason: "Step to the interface designing after DB schema generation",
     });
+  console.log("The interface result history", result);
   if (result.type !== "interface")
     throw new Error("History type must be interface.");
 
   // REPORT RESULT
-  const model: string = TestGlobal.getVendorModel();
+  const model: string = TestGlobal.vendorModel;
   try {
     await FileSystemIterator.save({
       root: `${TestGlobal.ROOT}/results/${model}/${project}/interface`,

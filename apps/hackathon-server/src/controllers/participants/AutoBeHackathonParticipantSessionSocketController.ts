@@ -8,7 +8,7 @@ import { Controller } from "@nestjs/common";
 import { WebSocketAcceptor } from "tgrid";
 import { tags } from "typia";
 
-import { AutoBeHackathonSessionSocketProvider } from "../../providers/AutoBeHackathonSessionSocketProvider";
+import { AutoBeHackathonSessionSocketProvider } from "../../providers/sessions/AutoBeHackathonSessionSocketProvider";
 
 @Controller("autobe/hackathon/:hackathonCode/participants/sessions")
 export class AutoBeHackathonParticipantSessionSocketController {
@@ -45,6 +45,27 @@ export class AutoBeHackathonParticipantSessionSocketController {
   ): Promise<void> {
     try {
       await AutoBeHackathonSessionSocketProvider.replay({
+        type: "participant",
+        hackathonCode,
+        id,
+        acceptor,
+      });
+    } catch {}
+  }
+
+  @WebSocketRoute(":id/simulate")
+  public async simulate(
+    @WebSocketRoute.Acceptor()
+    acceptor: WebSocketAcceptor<
+      IAutoBeHackathonSession.IHeader,
+      IAutoBeRpcService,
+      IAutoBeRpcListener
+    >,
+    @WebSocketRoute.Param("hackathonCode") hackathonCode: string,
+    @WebSocketRoute.Param("id") id: string & tags.Format<"uuid">,
+  ): Promise<void> {
+    try {
+      await AutoBeHackathonSessionSocketProvider.simulate({
         hackathonCode,
         id,
         acceptor,

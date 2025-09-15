@@ -24,11 +24,11 @@ export const archive_prisma = async (
   factory: TestFactory,
   project: TestProject,
 ) => {
-  if (TestGlobal.env.API_KEY === undefined) return false;
+  if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
   const { agent, zero } = await prepare_agent_prisma(factory, project);
   const start: Date = new Date();
-  const model: string = TestGlobal.getVendorModel();
+  const model: string = TestGlobal.vendorModel;
   const snapshots: AutoBeEventSnapshot[] = [];
   const listen = (event: AutoBeEventOfSerializable) => {
     if (TestGlobal.archive) TestLogger.event(start, event);
@@ -37,11 +37,8 @@ export const archive_prisma = async (
       tokenUsage: agent.getTokenUsage().toJSON(),
     });
   };
-  agent.on("assistantMessage", listen);
-  agent.on("jsonParseError", listen);
-  agent.on("jsonValidateError", listen);
   for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
-    if (type.startsWith("prisma")) agent.on(type, listen);
+    agent.on(type, listen);
 
   let startEvent: AutoBePrismaStartEvent | null = null;
   let components: AutoBePrismaComponentsEvent | null = null;

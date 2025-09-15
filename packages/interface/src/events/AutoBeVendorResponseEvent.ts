@@ -55,6 +55,8 @@ export interface AutoBeVendorResponseEvent
    */
   stream: AsyncGenerator<OpenAI.ChatCompletionChunk, undefined, undefined>;
 
+  retry: number;
+
   /**
    * Optional request configuration used for the OpenAI API call.
    *

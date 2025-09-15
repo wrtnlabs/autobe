@@ -1,13 +1,14 @@
 {
   "type": "module",
   "name": "@autobe/hackathon-ui",
-  "version": "0.22.1",
+  "version": "0.23.1",
   "description": "AutoBE WebSocket Chat Application",
   "main": "./lib/index.mjs",
   "typings": "./lib/index.d.ts",
   "scripts": {
-    "build": "vite build",
-    "dev": "vite",
+    "build": "vite build --mode qa",
+    "build:prod": "vite build --mode production",
+    "dev": "vite --host --mode qa",
     "prepack": "pnpm run build"
   },
   "keywords": [],
@@ -39,6 +40,8 @@
     "@samchon/openapi": "catalog:samchon",
     "react": "catalog:ui",
     "react-dom": "catalog:ui",
+    "sonner": "^2.0.7",
+    "tgrid": "catalog:samchon",
     "typia": "catalog:samchon",
     "uuid": "^11.1.0"
   },

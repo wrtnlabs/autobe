@@ -1,4 +1,5 @@
-assets/migrate
-assets/logs
+assets/migrate/
+assets/logs/
+repositories/
 results/
 benchmark-logs/

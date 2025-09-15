@@ -38,11 +38,6 @@ export const AutoBeChatSidebar = (props: IAutoBeChatSidebarProps) => {
   const handleOnSessionSelect = useCallback(
     (sessionId: string) => {
       props.onSessionSelect?.(sessionId);
-      setSearchParams((sp) => {
-        const newSp = new URLSearchParams(sp);
-        newSp.set("session-id", sessionId);
-        return newSp;
-      });
       setCurrentSessionId(sessionId);
     },
     [props.onSessionSelect, setSearchParams],

@@ -1,8 +1,8 @@
-import { IAutobeHackathonParticipant } from "@autobe/interface";
+import { IAutoBeHackathonParticipant } from "@autobe/interface";
 
 export const useAuthorizationToken = () => {
   return {
-    getToken: (): IAutobeHackathonParticipant.IAuthorized => {
+    getToken: (): IAutoBeHackathonParticipant.IAuthorized => {
       return JSON.parse(sessionStorage.getItem("hackathon_token") ?? "null");
     },
     setToken: (token: string): void => {

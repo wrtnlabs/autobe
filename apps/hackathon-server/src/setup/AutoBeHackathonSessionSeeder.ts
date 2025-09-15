@@ -2,9 +2,10 @@ import {
   AutoBeEventSnapshot,
   AutoBeHackathonModel,
   AutoBeHistory,
+  AutoBePhase,
   IAutoBeHackathon,
+  IAutoBeHackathonParticipant,
   IAutoBeHackathonSession,
-  IAutobeHackathonParticipant,
 } from "@autobe/interface";
 import { MapUtil, RandomGenerator } from "@nestia/e2e";
 import fs from "fs";
@@ -14,18 +15,18 @@ import { v7 } from "uuid";
 import { CompressUtil } from "../../../../packages/filesystem/src/CompressUtil";
 import { AutoBeHackathonConfiguration } from "../AutoBeHackathonConfiguration";
 import { AutoBeHackathonGlobal } from "../AutoBeHackathonGlobal";
-import { AutoBeHackathonSessionEventProvider } from "../providers/AutoBeHackathonSessionEventProvider";
-import { AutoBeHackathonSessionHistoryProvider } from "../providers/AutoBeHackathonSessionHistoryProvider";
-import { AutoBeHackathonSessionProvider } from "../providers/AutoBeHackathonSessionProvider";
+import { AutoBeHackathonSessionEventProvider } from "../providers/sessions/AutoBeHackathonSessionEventProvider";
+import { AutoBeHackathonSessionHistoryProvider } from "../providers/sessions/AutoBeHackathonSessionHistoryProvider";
+import { AutoBeHackathonSessionProvider } from "../providers/sessions/AutoBeHackathonSessionProvider";
 import { IEntity } from "../structures/IEntity";
 
 export namespace AutoBeHackathonSessionSeeder {
   export const seed = async (props: {
     hackathon: IAutoBeHackathon;
-    participants: IAutobeHackathonParticipant[];
+    participants: IAutoBeHackathonParticipant[];
   }): Promise<void> => {
     for (const asset of await getAssets()) {
-      const participant: IAutobeHackathonParticipant = RandomGenerator.pick(
+      const participant: IAutoBeHackathonParticipant = RandomGenerator.pick(
         props.participants,
       );
       const session: IAutoBeHackathonSession.ISummary =
@@ -37,6 +38,7 @@ export namespace AutoBeHackathonSessionSeeder {
             timezone: "Asia/Seoul",
             title: `${asset.model}`,
           },
+          enforce: true,
         });
       const connection: IEntity =
         await AutoBeHackathonGlobal.prisma.autobe_hackathon_session_connections.create(
@@ -65,7 +67,7 @@ export namespace AutoBeHackathonSessionSeeder {
         {
           where: { autobe_hackathon_session_id: session.id },
           data: {
-            state: asset.state,
+            phase: asset.phase,
             enabled: true,
             token_usage: JSON.stringify(asset.snapshots.at(-1)!.tokenUsage),
           },
@@ -104,15 +106,15 @@ const getAssets = async (): Promise<IAsset[]> => {
     }
     for (const group of groupDict.values()) {
       group.histories.sort((a, b) =>
-        compare(a.split(".")[1] as State, b.split(".")[1] as State),
+        compare(a.split(".")[1] as AutoBePhase, b.split(".")[1] as AutoBePhase),
       );
       group.snapshots.sort((a, b) =>
-        compare(a.split(".")[1] as State, b.split(".")[1] as State),
+        compare(a.split(".")[1] as AutoBePhase, b.split(".")[1] as AutoBePhase),
       );
       assets.push({
         model,
         project: group.project,
-        state: group.histories.at(-1)!.split(".")[1] as State,
+        phase: group.histories.at(-1)!.split(".")[1] as AutoBePhase,
         histories: JSON.parse(
           await CompressUtil.gunzip(
             await fs.promises.readFile(
@@ -140,12 +142,17 @@ const getAssets = async (): Promise<IAsset[]> => {
 interface IAsset {
   model: AutoBeHackathonModel;
   project: string;
-  state: "analyze" | "prisma" | "interface" | "test" | "realize";
+  phase: AutoBePhase;
   histories: AutoBeHistory[];
   snapshots: AutoBeEventSnapshot[];
 }
-type State = IAsset["state"];
 
-const sequence = ["analyze", "prisma", "interface", "test", "realize"] as const;
-const compare = (a: State, b: State): number =>
+const sequence = [
+  "analyze",
+  "prisma",
+  "interface",
+  "test",
+  "realize",
+] as const satisfies AutoBePhase[];
+const compare = (a: AutoBePhase, b: AutoBePhase): number =>
   sequence.indexOf(a) - sequence.indexOf(b);

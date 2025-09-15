@@ -6,4 +6,5 @@ export interface AutoBeJsonParseErrorEvent
   source: AutoBeEventSource;
   arguments: string;
   errorMessage: string;
+  life: number;
 }

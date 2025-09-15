@@ -51,10 +51,6 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
           event,
         };
       } catch {
-        console.log(
-          "failed to write test code, no function calling happened.",
-          scenario.functionName,
-        );
         return null;
       }
     }),
@@ -98,15 +94,11 @@ async function process<Model extends ILlmSchema.Model>(
     ctx,
     artifacts,
     pointer.value.revise.final,
-    undefined,
-    pointer.value.revise,
   );
   pointer.value.draft = await completeTestCode(
     ctx,
     artifacts,
     pointer.value.draft,
-    undefined,
-    pointer.value.revise,
   );
   return {
     type: "testWrite",

@@ -1,4 +1,4 @@
-import { tags } from "typia";
+// import { tags } from "typia";
 
 export interface IAutoBeTestWriteApplication {
   /**
@@ -64,9 +64,9 @@ export namespace IAutoBeTestWriteApplication {
      * Steps 4-5: Code review and final refinement process.
      *
      * Contains the iterative improvement workflow that transforms the initial
-     * draft into production-ready test code. This two-phase process ensures
-     * systematic quality enhancement through comprehensive review followed by
-     * targeted refinement based on identified issues.
+     * draft into production-ready test code. The review phase identifies issues
+     * to fix or code to delete, followed by the final phase that produces
+     * the polished, production-ready test implementation.
      *
      * Workflow: Draft → Review analysis → Final implementation
      */
@@ -74,51 +74,51 @@ export namespace IAutoBeTestWriteApplication {
   }
 
   export interface IReviseProps {
-    /**
-     * Test implementation rules compliance validation.
-     *
-     * This property tracks whether each section of the TEST_WRITE.md guidelines
-     * has been properly followed. Each array element represents a section from
-     * the documentation with its title and compliance status.
-     *
-     * Note: The specific section titles may evolve as documentation updates, so
-     * implementations should be flexible in handling different titles.
-     *
-     * Example:
-     *
-     * ```typescript
-     * rules: [
-     *   { title: "1. Role and Responsibility", state: true },
-     *   { title: "2. Input Materials Provided", state: true },
-     *   { title: "3. Code Generation Requirements", state: false },
-     *   // ... other sections
-     * ];
-     * ```
-     */
-    rules: ICheck[] & tags.MinItems<1>;
+    // /**
+    //  * Test implementation rules compliance validation.
+    //  *
+    //  * This property tracks whether each section of the TEST_WRITE.md guidelines
+    //  * has been properly followed. Each array element represents a section from
+    //  * the documentation with its title and compliance status.
+    //  *
+    //  * Note: The specific section titles may evolve as documentation updates, so
+    //  * implementations should be flexible in handling different titles.
+    //  *
+    //  * Example:
+    //  *
+    //  * ```typescript
+    //  * rules: [
+    //  *   { title: "1. Role and Responsibility", state: true },
+    //  *   { title: "2. Input Materials Provided", state: true },
+    //  *   { title: "3. Code Generation Requirements", state: false },
+    //  *   // ... other sections
+    //  * ];
+    //  * ```
+    //  */
+    // rules: ICheck[] & tags.MinItems<1>;
 
-    /**
-     * Final quality checklist validation results.
-     *
-     * This property captures the compliance status for each item in the Final
-     * Checklist (Section 5) from TEST_WRITE.md. Each array element represents a
-     * checklist item with its description and validation result.
-     *
-     * Note: Checklist items may be updated over time, so implementations should
-     * adapt to documentation changes while maintaining the validation purpose.
-     *
-     * Example:
-     *
-     * ```typescript
-     * checkList: [
-     *   { title: "NO additional import statements", state: true },
-     *   { title: "NO wrong type data in requests", state: true },
-     *   { title: "EVERY api.functional.* call has await", state: false },
-     *   // ... other checklist items
-     * ];
-     * ```
-     */
-    checkList: ICheck[] & tags.MinItems<1>;
+    // /**
+    //  * Final quality checklist validation results.
+    //  *
+    //  * This property captures the compliance status for each item in the Final
+    //  * Checklist (Section 5) from TEST_WRITE.md. Each array element represents a
+    //  * checklist item with its description and validation result.
+    //  *
+    //  * Note: Checklist items may be updated over time, so implementations should
+    //  * adapt to documentation changes while maintaining the validation purpose.
+    //  *
+    //  * Example:
+    //  *
+    //  * ```typescript
+    //  * checkList: [
+    //  *   { title: "NO additional import statements", state: true },
+    //  *   { title: "NO wrong type data in requests", state: true },
+    //  *   { title: "EVERY api.functional.* call has await", state: false },
+    //  *   // ... other checklist items
+    //  * ];
+    //  * ```
+    //  */
+    // checkList: ICheck[] & tags.MinItems<1>;
 
     /**
      * Step 4: Code review and quality assessment.
@@ -130,17 +130,21 @@ export namespace IAutoBeTestWriteApplication {
      * **1. FIX - Improve existing code:**
      *
      * **Compilation & Syntax:**
+     *
      * - TypeScript compilation errors and type mismatches
      * - Syntax errors and missing semicolons/brackets
      * - Correct function signatures and parameter types
      *
      * **Framework Compliance:**
+     *
      * - @nestia/e2e framework conventions adherence
      * - Proper API SDK function calling patterns
      * - Correct use of typia.assert() and TestValidator functions
      *
      * **Business Logic & Test Coverage:**
-     * - Complete workflow implementation (authentication → data setup → main test → validation)
+     *
+     * - Complete workflow implementation (authentication → data setup → main test
+     *   → validation)
      * - Realistic business scenarios and user journeys
      * - Edge case handling and error condition testing
      * - Proper data dependencies and cleanup procedures
@@ -148,12 +152,14 @@ export namespace IAutoBeTestWriteApplication {
      * **2. DELETE - Remove prohibited code entirely:**
      *
      * **🚨 TYPE ERROR TESTING - DELETE IMMEDIATELY 🚨**
+     *
      * - DELETE any code using `as any` to send wrong types
      * - DELETE any intentional type mismatches for "testing"
      * - DELETE any missing required fields testing
      * - DELETE tests that contradict compilation requirements
      *
      * **Code Quality & Security:**
+     *
      * - Type safety violations (any, @ts-ignore, etc.) - DELETE if found
      * - Variable naming and code organization - FIX if needed
      * - Performance considerations and resource management
@@ -177,6 +183,7 @@ export namespace IAutoBeTestWriteApplication {
      * implementation, ready for production deployment.
      *
      * **🚨 CRITICAL: APPLY ALL FIXES AND DELETIONS FROM REVIEW 🚨**
+     *
      * - FIX all correctable issues identified in review
      * - DELETE all prohibited code identified in review
      * - If review found type error tests, they MUST be deleted in final
@@ -194,28 +201,28 @@ export namespace IAutoBeTestWriteApplication {
     final: string;
   }
 
-  /**
-   * Check validation item structure.
-   *
-   * Represents a validation check with its title and compliance state. Used for
-   * both rules validation and final checklist validation.
-   */
-  export interface ICheck {
-    /**
-     * The title or description of the check.
-     *
-     * For rules: Section identifiers from TEST_WRITE.md (e.g., "1. Role and
-     * Responsibility") For checklist: Checklist item descriptions (e.g., "No
-     * compilation errors")
-     */
-    title: string;
+  // /**
+  //  * Check validation item structure.
+  //  *
+  //  * Represents a validation check with its title and compliance state. Used for
+  //  * both rules validation and final checklist validation.
+  //  */
+  // export interface ICheck {
+  //   /**
+  //    * The title or description of the check.
+  //    *
+  //    * For rules: Section identifiers from TEST_WRITE.md (e.g., "1. Role and
+  //    * Responsibility") For checklist: Checklist item descriptions (e.g., "No
+  //    * compilation errors")
+  //    */
+  //   title: string;
 
-    /**
-     * The validation state of this check.
-     *
-     * - True: The requirement has been satisfied
-     * - False: The requirement has been violated or not met
-     */
-    state: boolean;
-  }
+  //   /**
+  //    * The validation state of this check.
+  //    *
+  //    * - True: The requirement has been satisfied
+  //    * - False: The requirement has been violated or not met
+  //    */
+  //   state: boolean;
+  // }
 }

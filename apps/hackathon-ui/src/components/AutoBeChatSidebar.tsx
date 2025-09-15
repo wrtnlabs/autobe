@@ -1,4 +1,5 @@
-import { functional } from "@autobe/hackathon-api";
+import { HttpError, functional } from "@autobe/hackathon-api";
+import { AutoBePhase } from "@autobe/interface";
 import {
   ActionButtonGroup,
   CompactSessionList,
@@ -8,6 +9,7 @@ import {
   useSearchParams,
 } from "@autobe/ui";
 import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 import { HACKATHON_CODE } from "../constant";
 import { useAuthorizationToken } from "../hooks/useAuthorizationToken";
@@ -49,6 +51,7 @@ export const AutoBeChatSidebar = (props: IAutoBeChatSidebarProps) => {
         return newSp;
       });
       setCurrentSessionId(sessionId);
+      window.location.href = `${window.location.origin}${window.location.pathname}?session-id=${sessionId}`;
     },
     [props.onSessionSelect, setSearchParams],
   );
@@ -78,8 +81,6 @@ export const AutoBeChatSidebar = (props: IAutoBeChatSidebarProps) => {
       <div
         style={{
           padding: props.isCollapsed ? "1rem 0.75rem" : "1.5rem 1.25rem 1rem",
-          borderBottom: "1px solid #f3f4f6",
-          backgroundColor: "#fafafa",
           transition: "padding 0.3s ease",
         }}
       >
@@ -150,6 +151,48 @@ export const AutoBeChatSidebar = (props: IAutoBeChatSidebarProps) => {
         </div>
       </div>
 
+      {/* New Conversation Button */}
+      {!props.isCollapsed && (
+        <div
+          style={{
+            padding: "0 1.25rem 1rem",
+          }}
+        >
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              window.location.href = "/index.html";
+            }}
+            style={{
+              background: "transparent",
+              border: "none",
+              borderRadius: "0.375rem",
+              padding: "0.5rem 0.75rem",
+              fontSize: "0.875rem",
+              fontWeight: "500",
+              color: "#9ca3af",
+              cursor: "pointer",
+              transition: "all 0.2s ease",
+              width: "auto",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "flex-start",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = "#f3f4f6";
+              e.currentTarget.style.color = "#1f2937";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "transparent";
+              e.currentTarget.style.color = "#9ca3af";
+            }}
+            title="Start new conversation"
+          >
+            + New Conversation
+          </button>
+        </div>
+      )}
+
       {/* Conversations list */}
       <div
         style={{
@@ -210,7 +253,7 @@ export const AutoBeChatSidebar = (props: IAutoBeChatSidebarProps) => {
                   onSelect={handleOnSessionSelect}
                   onDelete={async () => {
                     await props.onDeleteSession?.(session.id);
-                    refreshSessionList();
+                    await refreshSessionList();
                     if (session.id === currentSessionId) {
                       setSearchParams((sp) => {
                         const newSp = new URLSearchParams(sp);
@@ -230,19 +273,32 @@ export const AutoBeChatSidebar = (props: IAutoBeChatSidebarProps) => {
                   onSubmitReview={async (sessionId, link) => {
                     const { getToken } = useAuthorizationToken();
                     const token = getToken();
-                    await functional.autobe.hackathon.participants.sessions.review(
-                      {
-                        host: import.meta.env.VITE_API_BASE_URL,
-                        headers: {
-                          Authorization: `Bearer ${token.token.access}`,
+                    await functional.autobe.hackathon.participants.sessions
+                      .review(
+                        {
+                          host: import.meta.env.VITE_API_BASE_URL,
+                          headers: {
+                            Authorization: `Bearer ${token.token.access}`,
+                          },
                         },
-                      },
-                      HACKATHON_CODE,
-                      sessionId,
-                      {
-                        review_article_url: link,
-                      },
-                    );
+                        HACKATHON_CODE,
+                        sessionId,
+                        {
+                          review_article_url: link,
+                        },
+                      )
+                      .catch((e) => {
+                        if (e instanceof HttpError && e.status === 400) {
+                          toast.error("Invalid review article URL");
+                        }
+                        if (e instanceof HttpError && e.status === 403) {
+                          window.location.href = "/login";
+                        }
+                        if (e instanceof HttpError && e.status === 422) {
+                          toast.error(JSON.parse(e.message).message);
+                        }
+                        throw e;
+                      });
                     refreshSessionList();
                   }}
                 />
@@ -316,14 +372,17 @@ const STYLES = {
     flex: 1,
   },
   completedBadge: {
-    marginLeft: "0.5rem",
+    position: "absolute" as const,
+    bottom: "0.5rem",
+    right: "0.5rem",
     padding: "0.125rem 0.375rem",
     backgroundColor: "#10b981",
     color: "white",
     fontSize: "0.625rem",
     borderRadius: "9999px",
     fontWeight: "500",
-    flexShrink: 0,
+    boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
+    zIndex: 1,
   },
   reviewButton: {
     background: "rgba(255, 255, 255, 0.9)",
@@ -368,7 +427,6 @@ export const SessionListItem = (props: IConversationListItemProps) => {
   const [editingTitle, setEditingTitle] = useState(session.title ?? "");
   const [showReviewInput, setShowReviewInput] = useState(false);
   const [reviewLink, setReviewLink] = useState("");
-  const lastMessage = session.history.at(-1);
 
   const handleSaveTitle = () => {
     const trimmedTitle = editingTitle.trim();
@@ -444,27 +502,7 @@ export const SessionListItem = (props: IConversationListItemProps) => {
               onClick={(e) => e.stopPropagation()}
             />
           ) : (
-            <>
-              <span style={STYLES.titleText}>
-                {session.title ?? "Untitled"}
-              </span>
-              {/* Completed badge */}
-              {session.completedAt && (
-                <span
-                  style={STYLES.completedBadge}
-                  title={`Completed: ${new Date(
-                    session.completedAt,
-                  ).toLocaleString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}`}
-                >
-                  Completed
-                </span>
-              )}
-            </>
+            <span style={STYLES.titleText}>{session.title ?? "Untitled"}</span>
           )}
         </div>
 
@@ -472,9 +510,8 @@ export const SessionListItem = (props: IConversationListItemProps) => {
         {showActions && (
           <div
             style={{
-              visibility: isHovered ? "visible" : "hidden",
-              opacity: isHovered ? 1 : 0,
-              transition: "opacity 0.2s ease",
+              visibility: "visible",
+              opacity: 1,
               display: "flex",
               gap: "0.375rem",
             }}
@@ -493,7 +530,14 @@ export const SessionListItem = (props: IConversationListItemProps) => {
                   e.stopPropagation();
                   setShowReviewInput(true);
                 }}
-                style={STYLES.reviewButton}
+                style={{
+                  ...STYLES.reviewButton,
+                  width: "auto",
+                  height: "auto",
+                  padding: "0.25rem 0.5rem",
+                  fontSize: "0.75rem",
+                  fontWeight: "500",
+                }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.backgroundColor = "#eff6ff";
                   e.currentTarget.style.color = "#3b82f6";
@@ -511,18 +555,7 @@ export const SessionListItem = (props: IConversationListItemProps) => {
                 }}
                 title="Submit Review"
               >
-                <svg
-                  width="12"
-                  height="12"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                  <polyline points="15,3 21,3 21,9" />
-                  <line x1="10" y1="14" x2="21" y2="3" />
-                </svg>
+                Review
               </button>
             )}
           </div>
@@ -541,18 +574,10 @@ export const SessionListItem = (props: IConversationListItemProps) => {
       {/* Conversation metadata */}
       <div style={STYLES.metadata}>
         <span>
-          {session.history.length > 0 && lastMessage !== undefined
-            ? new Date(lastMessage.created_at).toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-              })
-            : "No messages"}
+          {(session as unknown as { phase: AutoBePhase }).phase ??
+            "not started"}{" "}
+          - {(session as unknown as { model: string }).model}
         </span>
-        {session.history.length > 0 && (
-          <span>{session.history.length} messages</span>
-        )}
       </div>
 
       {/* Review input field - only show for incomplete sessions */}
@@ -624,6 +649,24 @@ export const SessionListItem = (props: IConversationListItemProps) => {
             </button>
           </div>
         </div>
+      )}
+
+      {/* Completed badge - positioned at bottom right */}
+      {session.completedAt && (
+        <span
+          style={STYLES.completedBadge}
+          title={`Completed: ${new Date(session.completedAt).toLocaleString(
+            "en-US",
+            {
+              month: "short",
+              day: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            },
+          )}`}
+        >
+          Completed
+        </span>
       )}
     </div>
   );

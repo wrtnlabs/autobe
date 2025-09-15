@@ -32,7 +32,7 @@ export const consentFunctionCall = async (props: {
     vendor: props.vendor,
     config: {
       ...(props.config ?? []),
-      retry: props.config?.retry ?? AutoBeConfigConstant.DEFAULT_RETRY,
+      retry: props.config?.retry ?? AutoBeConfigConstant.RETRY,
       executor: {
         describe: null,
       },

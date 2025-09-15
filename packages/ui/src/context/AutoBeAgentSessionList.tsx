@@ -14,7 +14,7 @@ import {
 
 interface AutoBeAgentSessionListContextType {
   sessionList: IAutoBeAgentSession[];
-  refreshSessionList: () => void;
+  refreshSessionList: () => Promise<void>;
 }
 
 const AutoBeAgentSessionListContext =
@@ -29,8 +29,8 @@ export function AutoBeAgentSessionListProvider({
 }) {
   const [sessionList, setSessionList] = useState<IAutoBeAgentSession[]>([]);
 
-  const refreshSessionList = useCallback(() => {
-    storageStrategy.getSessionList().then(setSessionList);
+  const refreshSessionList = useCallback(async () => {
+    await storageStrategy.getSessionList().then(setSessionList);
   }, [storageStrategy]);
 
   useEffect(() => {

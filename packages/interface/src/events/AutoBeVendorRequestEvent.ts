@@ -42,6 +42,8 @@ export interface AutoBeVendorRequestEvent
    */
   body: OpenAI.ChatCompletionCreateParamsStreaming;
 
+  retry: number;
+
   /**
    * Optional request configuration for the OpenAI API call.
    *

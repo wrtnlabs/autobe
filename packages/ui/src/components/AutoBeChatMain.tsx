@@ -102,6 +102,16 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
       const config = getCurrentConfig();
       const serviceData = await getAutoBeService(config);
       if (messages.length !== 0) {
+        await new Promise((resolve) => {
+          if (serviceData.listener.getEnable() === true) {
+            resolve(void 0);
+          }
+          serviceData.listener.onEnable(async (value) => {
+            if (value === true) {
+              resolve(void 0);
+            }
+          });
+        });
         await serviceData.service.conversate(messages);
       }
       if (eventGroups.length === 0) {
@@ -267,9 +277,11 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
             `}
           </style>
 
-          {props.isUnusedConfig === false && (
-            <AutoBeConfigButton fields={props.configFields || []} />
-          )}
+          {props.isUnusedConfig === false &&
+            props.configFields?.length != null &&
+            props.configFields.length > 0 && (
+              <AutoBeConfigButton fields={props.configFields || []} />
+            )}
           <AutoBeStatusButton />
         </div>
         <div

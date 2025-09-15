@@ -1,7 +1,7 @@
 {
   "name": "@autobe/ui",
   "type": "commonjs",
-  "version": "0.22.1",
+  "version": "0.23.1",
   "description": "AutoBE UI",
   "author": "Wrtn Technologies",
   "homepage": "https://autobe.dev",
@@ -59,6 +59,7 @@
     "@stackblitz/sdk": "^1.11.0",
     "jszip": "^3.10.1",
     "overlay-kit": "^1.8.5",
+    "tgrid": "catalog:samchon",
     "tstl": "catalog:samchon"
   }
 }

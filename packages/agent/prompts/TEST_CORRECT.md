@@ -28,90 +28,38 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 You MUST execute the following 4-step workflow through a single function call. Each step is **MANDATORY** and must be completed thoroughly. The function expects all properties to be filled with substantial, meaningful content:
 
-### Step 1: **think** - Deep Compilation Error Analysis and Correction Strategy (Object with 2 properties)
+### Step 1: **think** - Deep Compilation Error Analysis and Correction Strategy
 
-**CRITICAL**: The `think` property is an OBJECT with 2 required properties: `analyses` array and `overall` string. You MUST analyze EVERY compilation error individually AND provide overall strategic assessment.
+Perform a comprehensive analysis of all compilation errors to develop targeted correction strategies.
 
-#### Property 1: **think.analyses** - Individual Diagnostic Analysis Array
+This step involves:
 
-For EACH compilation diagnostic, create an object with:
+1. **Individual Error Analysis**: 
+   - Examine EACH compilation diagnostic thoroughly
+   - Provide clear summaries of error codes, locations, and messages
+   - **🚨 FIRST CHECK**: Was this caused by type error testing already removed by TEST_CORRECT_INVALID_REQUEST?
+   - **⚠️ THINK BEYOND THE ERROR LINE** - the root cause might be elsewhere in the code
+   - Consider if the scenario itself is requesting impossible functionality
 
-1. **diagnostic**: AI-generated summary of the compilation diagnostic (string)
-   - **🚨 IMPORTANT**: Analyze the `IAutoBeTypeScriptCompileResult.IDiagnostic` object
-   - Provide a clear, concise summary of the error in human-readable format
-   - Include error code, file location, line/column position, and error message
-   - Do NOT copy the raw diagnostic object - interpret and summarize it
+2. **Root Cause Identification**:
+   - Identify precise reasons: missing properties, type mismatches, nullable issues, etc.
+   - Cross-reference error patterns in TEST_CORRECT.md sections 4.1-4.16
+   - Check if errors are symptoms of broader issues (e.g., non-existent APIs)
 
-2. **analysis**: Root cause analysis of THIS SPECIFIC diagnostic
-   - **READ the error message METICULOUSLY** - extract exact information
-   - **🚨 FIRST CHECK: Was this caused by type error testing already removed by TEST_CORRECT_INVALID_REQUEST? 🚨**
-     - If the error location references code that no longer exists, it's likely already been handled
-     - Do NOT restore any code that was deleted for type error testing
-     - Focus on fixing the REMAINING legitimate compilation errors
-   
-   - **⚠️ THINK BEYOND THE DIAGNOSTIC LINE - EXPAND YOUR INVESTIGATION ⚠️**
-     - The error line might be just a symptom, not the root cause
-     - Check ABOVE the error location - the real problem might be earlier in the code
-     - Review the ENTIRE test scenario - it might be fundamentally flawed
-     - Consider if the scenario itself is requesting impossible or prohibited actions
-     - Example: Error on line 50 might be caused by wrong variable type on line 20
-     - Example: API doesn't exist because scenario describes non-existent functionality
-   
-   - Identify the precise reason: missing property, type mismatch, nullable issue, incorrect scenario, etc.
-   - Be fact-based and specific - but think holistically about cause and effect
-   - **MANDATORY**: Thoroughly review ALL sections of TEST_CORRECT.md and apply relevant error patterns and analysis guidelines
-   - Cross-reference error patterns in sections 4.1-4.16 for accurate diagnosis
-   - Example: "Property 'code' is missing because object literal lacks this required field from ICreate interface"
-   - Example: "API endpoint doesn't exist - scenario describes unimplemented functionality"
-
-3. **solution**: Targeted fix for THIS SPECIFIC diagnostic
-   - **🚨 Type error testing should already be removed by TEST_CORRECT_INVALID_REQUEST 🚨**
-   - **🚨 IF PROBLEM IS UNRECOVERABLE → Solution: "DELETE the problematic section" 🚨**
-   - **Focus on legitimate compilation errors that remain**
-   
+3. **Solution Strategy**:
    - **THREE SOLUTION TYPES:**
      1. **FIX**: Correct the error while maintaining functionality
      2. **DELETE**: Remove prohibited or unrecoverable code
      3. **REWRITE**: Restructure if scenario itself is flawed
-   
-   - Provide actionable, type-safe solution for legitimate errors
-   - **CRITICAL**: Must thoroughly review BOTH TEST_WRITE.md and TEST_CORRECT.md before proposing solutions
-   - Ensure ALL prohibitions from TEST_WRITE.md are respected (no type bypasses, proper async/await, etc.)
-   - Apply correction patterns from TEST_CORRECT.md sections 4.1-4.16
-   - For nullable/undefined with typia tags → USE `typia.assert(value!)` IMMEDIATELY
+   - For nullable/undefined with typia tags → USE `typia.assert(value!)` 
    - For missing properties → specify WHAT to add and HOW
-   - Example: "Add missing 'code' property using typia.random<string>()"
-   - Example: "DELETE this section - API endpoint doesn't exist and cannot be tested"
 
-**REMEMBER**: Each diagnostic gets its own analysis object in the array!
-
-#### Property 2: **think.overall** - Strategic Overview and Compliance Check
-
-Synthesize patterns across ALL errors and document:
-
-1. **Common Error Patterns**: Identify recurring issues
-   - "Found 5 nullable/undefined errors - all need typia.assert(value!)"
-   - "3 missing property errors in different DTOs"
-
-2. **Type Safety Compliance**: Verify no forbidden patterns
-   - Check for 'any' usage, @ts-ignore, type bypasses
-   - Confirm nullable checks use BOTH null && undefined
-   - Example: "✓ No type safety violations found"
-
-3. **Async/Await Verification**: Audit Promise handling
-   - Count all API calls and verify await usage
-   - Check TestValidator.error with async callbacks
-   - Example: "15 API calls found - all have await"
-
-4. **Scenario Adaptation Needs**: Exercise rewrite authority
-   - Document if scenario changes are needed
-   - Be BOLD - compilation success is mandatory
-   - Example: "Must rewrite test flow - 'analytics' API doesn't exist, switching to 'metrics'"
-
-5. **Code Quality Assessment**: Overall standards check
-   - TEST_WRITE.md compliance (actual-first pattern, etc.)
-   - Proper satisfies usage
-   - Example: "Following all conventions, clean structure maintained"
+4. **Overall Strategic Assessment**:
+   - Identify common error patterns across all diagnostics
+   - Verify type safety compliance (no 'any', @ts-ignore, etc.)
+   - Audit async/await usage for all API calls
+   - Document any scenario adaptations needed
+   - Assess overall code quality and standards compliance
 
 ### Step 2: **draft** - Draft Corrected Implementation
 - Generate the first corrected version of the test code
@@ -121,33 +69,11 @@ Synthesize patterns across ALL errors and document:
 - Follow all established conventions and type safety requirements
 - **Critical**: Start directly with `export async function` - NO import statements
 
-### Step 3-4: **revise** - Review and Final Implementation (Object with validation results and two sub-steps)
+### Step 3-4: **revise** - Review and Final Implementation
 
 **🔥 CRITICAL: THE REVISE STEP IS WHERE YOU FIX YOUR MISTAKES - DO NOT SKIP OR RUSH! 🔥**
 
-#### Property 1: **revise.rules** and **revise.checkList** - Dual-Document Compliance Validation
-- **rules**: An array of ICheck objects tracking compliance with **ALL sections** from BOTH TEST_WRITE.md and TEST_CORRECT.md
-  - **🚨 CRITICAL: EVERY SINGLE SECTION from both documents must be validated - no exceptions**
-  - Each ICheck has `title` (prefixed with source document for clarity) and `state` (boolean indicating compliance)
-  - The correct agent MUST validate against **ALL sections of BOTH documents** to ensure comprehensive compliance
-  - **ALL sections are equally important - not just the examples below:**
-    - Every section from TEST_WRITE.md (1 through 5, including all subsections)
-    - Every section from TEST_CORRECT.md (1 through 5, including all subsections 4.1-4.16)
-    - `TEST_CORRECT: 4.5. Promises Must Be Awaited` - EVERY API call has await
-    - `TEST_CORRECT: 4.6. typia.assert vs assertGuard` - Correct function used
-    - `TEST_CORRECT: 4.9. Typia Tag Type Conversion` - Proper satisfies pattern or typia.assert
-    - `TEST_CORRECT: 4.10. Date to ISO String` - All Date→date-time conversions use .toISOString()
-    - `TEST_CORRECT: 4.11. String to Literal Type` - Use typia.assert for literal conversions
-    - **And ALL other sections** - each one contains critical requirements
-  - Example: `[{title: "TEST_WRITE: 1. Role and Responsibility", state: true}, {title: "TEST_WRITE: 3.1. Import Management", state: true}, {title: "TEST_CORRECT: 4.1. Missing Properties Pattern", state: true}, {title: "TEST_CORRECT: 4.2. Type Mismatch Pattern", state: false}]`
-- **checkList**: An array of ICheck objects tracking **ALL items** from BOTH Final Checklists
-  - **🚨 CRITICAL: Every checklist item must be validated - they are all essential**
-  - Combines items from TEST_WRITE.md Section 5 and TEST_CORRECT.md Section 5
-  - Each ICheck has `title` (checklist item) and `state` (boolean indicating satisfaction)
-  - **No checklist item is optional** - all are required for quality assurance
-  - Example: `[{title: "No compilation errors", state: true}, {title: "All typia tags preserved", state: true}, {title: "No type bypasses or workarounds", state: false}]`
-
-#### Property 2: **revise.review** - SYSTEMATIC ERROR PATTERN CHECKING
+#### Property 1: **revise.review** - SYSTEMATIC ERROR PATTERN CHECKING
 
 **🚨 STOP AND CHECK EACH PATTERN SYSTEMATICALLY 🚨**
 
@@ -208,7 +134,7 @@ await api.functional.analytics.track(connection, {...}); // 🚨 ABANDON
 
 **🔴 ACTIONS IN revise.final: FIX what you can, DELETE what's forbidden, ABANDON what's unrecoverable 🔴**
 
-#### Property 3: **revise.final** - Production-Ready Corrected Code WITH ALL FIXES AND DELETIONS APPLIED
+#### Property 2: **revise.final** - Production-Ready Corrected Code WITH ALL FIXES AND DELETIONS APPLIED
 - Produce the final, polished version incorporating all review feedback
 - **APPLY ALL FIXES** for correctable issues
 - **DELETE ALL PROHIBITED CODE** identified in review

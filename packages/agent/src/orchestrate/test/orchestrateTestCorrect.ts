@@ -14,11 +14,11 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { orchestrateCommonCorrectCasting } from "../common/orchestrateCommonCorrectCasting";
 import { completeTestCode } from "./compile/completeTestCode";
 import { transformTestCorrectHistories } from "./histories/transformTestCorrectHistories";
 import { transformTestValidateEvent } from "./histories/transformTestValidateEvent";
 import { orchestrateTestCorrectInvalidRequest } from "./orchestrateTestCorrectInvalidRequest";
-import { orchestrateTestCorrectTypiaTag } from "./orchestrateTestCorrectTypiaTag";
 import { IAutoBeTestCorrectApplication } from "./structures/IAutoBeTestCorrectApplication";
 import { IAutoBeTestFunction } from "./structures/IAutoBeTestFunction";
 import { IAutoBeTestFunctionFailure } from "./structures/IAutoBeTestFunctionFailure";
@@ -39,10 +39,32 @@ export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
           const x: AutoBeTestValidateEvent =
             await orchestrateTestCorrectInvalidRequest(ctx, compile, w);
           const y: AutoBeTestValidateEvent =
-            await orchestrateTestCorrectTypiaTag(
+            await orchestrateCommonCorrectCasting(
               ctx,
-              compile,
-              transformTestValidateEvent(x, w.artifacts),
+              {
+                source: "testCorrect",
+                validate: compile,
+                correct: (next) =>
+                  ({
+                    type: "testCorrect",
+                    id: v7(),
+                    created_at: new Date().toISOString(),
+                    file: {
+                      scenario: w.scenario,
+                      location: w.location,
+                      content: next.final ?? next.draft,
+                    },
+                    result: next.failure,
+                    tokenUsage: next.tokenUsage,
+                    think: next.think,
+                    draft: next.draft,
+                    review: next.review,
+                    final: next.final,
+                    step: ctx.state().analyze?.step ?? 0,
+                  }) satisfies AutoBeTestCorrectEvent,
+                script: (event) => event.file.content,
+              },
+              x.file.content,
             );
           return await predicate(
             ctx,
@@ -53,10 +75,6 @@ export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
             ctx.retry,
           );
         } catch {
-          console.log(
-            "failed to correct test code, no function calling happened.",
-            w.scenario.functionName,
-          );
           return null;
         }
       }),
@@ -149,15 +167,11 @@ const correct = async <Model extends ILlmSchema.Model>(
     ctx,
     content.artifacts,
     pointer.value.revise.final,
-    pointer.value.think,
-    pointer.value.revise,
   );
   pointer.value.draft = await completeTestCode(
     ctx,
     content.artifacts,
     pointer.value.draft,
-    pointer.value.think,
-    pointer.value.revise,
   );
 
   ctx.dispatch({
@@ -168,7 +182,7 @@ const correct = async <Model extends ILlmSchema.Model>(
     result: validate.result,
     tokenUsage,
     step: ctx.state().analyze?.step ?? 0,
-    think: pointer.value.think.overall,
+    think: pointer.value.think,
     draft: pointer.value.draft,
     review: pointer.value.revise?.review,
     final: pointer.value.revise?.final,

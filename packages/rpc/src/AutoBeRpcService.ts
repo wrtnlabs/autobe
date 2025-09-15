@@ -1,5 +1,6 @@
 import {
   AutoBeHistory,
+  AutoBePhase,
   AutoBeUserMessageContent,
   IAutoBeAgent,
   IAutoBeGetFilesOptions,
@@ -65,11 +66,14 @@ export class AutoBeRpcService implements IAutoBeRpcService {
     if (this.props.onStart) this.props.onStart(content);
 
     this.props.listener.enable(false).catch(() => {});
-    const result: AutoBeHistory[] = await this.props.agent.conversate(content);
-    this.props.listener.enable(true).catch(() => {});
-
-    if (this.props.onComplete) this.props.onComplete(result);
-    return result;
+    try {
+      const result: AutoBeHistory[] =
+        await this.props.agent.conversate(content);
+      if (this.props.onComplete) this.props.onComplete(result);
+      return result;
+    } finally {
+      this.props.listener.enable(true).catch(() => {});
+    }
   }
 
   public async getFiles(
@@ -84,6 +88,10 @@ export class AutoBeRpcService implements IAutoBeRpcService {
 
   public async getTokenUsage(): Promise<IAutoBeTokenUsageJson> {
     return this.props.agent.getTokenUsage();
+  }
+
+  public async getPhase(): Promise<AutoBePhase | null> {
+    return this.props.agent.getPhase();
   }
 }
 

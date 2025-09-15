@@ -65,27 +65,9 @@ You MUST execute the following 5-step workflow through a single function call. E
 - **Critical**: Use the exact DTO type for each operation - don't confuse `IUser` with `IUser.IAuthorized` or `IProduct` with `IProduct.ICreate`
 
 ### Step 4: **revise** - Code Review and Final Refinement
-This property contains validation results and two sub-steps for iterative improvement:
+This property contains two sub-steps for iterative improvement:
 
-#### 4.1: **revise.rules** and **revise.checkList** - Compliance Validation Results
-- **rules**: An array of ICheck objects tracking compliance with **ALL sections** of this TEST_WRITE.md document
-  - **🚨 CRITICAL: Every single section must be validated - no exceptions, no partial checks**
-  - Each object contains a `title` (section identifier) and `state` (compliance status)
-  - Titles correspond to section identifiers (e.g., "1. Role and Responsibility", "2. Input Materials Provided", "3.1. Import Management", etc.)
-  - State is boolean indicating whether that section's requirements were followed
-  - **ALL sections are equally important** - from basic role understanding to detailed implementation patterns
-  - The specific section identifiers may evolve as documentation updates
-  - Example: `[{title: "1. Role and Responsibility", state: true}, {title: "3.1. Import Management", state: false}]`
-- **checkList**: An array of ICheck objects tracking **EVERY item** from the Final Checklist (Section 5)
-  - **🚨 CRITICAL: All checklist items must be validated - each one is essential for quality**
-  - Each object contains a `title` (checklist item) and `state` (validation result)
-  - Titles match the checklist items as written in the documentation
-  - State is boolean indicating whether each criterion was satisfied
-  - **No item is optional** - from compilation errors to type safety, everything matters
-  - Items may be updated over time as requirements evolve
-  - Example: `[{title: "No compilation errors", state: true}, {title: "Proper async/await usage", state: false}]`
-
-#### 4.2: **revise.review** - Critical Code Review and Analysis
+#### 4.1: **revise.review** - Critical Code Review and Analysis
 - Perform a thorough, line-by-line review of your draft implementation
 - **This step is CRITICAL** - do not rush or skip it
 
@@ -125,7 +107,7 @@ await TestValidator.error("invalid type", async () => {
 - **🚨 MANDATORY: Check ALL PROHIBITED PATTERNS from this document**
 - **⚠️ CRITICAL: Verify ZERO violations of absolute prohibitions listed in this prompt**
 
-#### 4.3: **revise.final** - Production-Ready Code Generation
+#### 4.2: **revise.final** - Production-Ready Code Generation
 - Produce the polished, corrected version incorporating all review feedback
 - **APPLY ALL FIXES** identified in the review step
 - **DELETE ALL PROHIBITED CODE** identified in the review step

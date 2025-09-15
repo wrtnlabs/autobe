@@ -121,6 +121,7 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
     case "realizeAuthorizationComplete":
     case "vendorRequest":
     case "vendorResponse":
+    case "vendorTimeout":
     case "jsonParseError":
     case "jsonValidateError":
     case "consentFunctionCall":

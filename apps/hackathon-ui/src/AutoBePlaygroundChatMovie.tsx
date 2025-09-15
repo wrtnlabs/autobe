@@ -9,14 +9,9 @@ import {
   useSearchParams,
 } from "@autobe/ui";
 import { useMediaQuery } from "@autobe/ui/hooks";
-import {
-  AppBar,
-  FormControlLabel,
-  Switch,
-  Toolbar,
-  Typography,
-} from "@mui/material";
+import { AppBar, Toolbar, Typography } from "@mui/material";
 import { useState } from "react";
+import { Toaster } from "sonner";
 
 import AutoBeChatSidebar from "./components/AutoBeChatSidebar";
 
@@ -37,31 +32,19 @@ export function AutoBePlaygroundChatMovie(
     .filter(props.configFilter ?? (() => true))
     .map((v) => ({
       ...v,
+      placeholder: undefined,
+      type: "list",
       suggestions: [
         "openai/gpt-4.1",
         "openai/gpt-4.1-mini",
-        "qwen/qwen3-235b-a22b-2507",
+        "qwen/qwen3-next-80b-a3b-instruct",
       ],
-    }));
+      default: "openai/gpt-4.1-mini",
+    })) satisfies IConfigField[];
   const { searchParams, setSearchParams } = useSearchParams();
 
-  /**
-   * Handle replay mode toggle Switches between replay.html and index.html while
-   * preserving query parameters
-   */
-  const handleReplayToggle = (event: React.ChangeEvent<HTMLInputElement>) => {
-    event.stopPropagation(); // Prevent toolbar onClick from firing
-    const isReplayMode = event.target.checked;
-    const currentUrl = new URL(window.location.href);
-    const queryString = currentUrl.search;
-
-    if (isReplayMode) {
-      window.location.href = `/replay.html${queryString}`;
-    } else {
-      window.location.href = `/${queryString}`;
-    }
-  };
-
+  const currentSessionId = searchParams.get("session-id");
+  const activeConfigFields = currentSessionId == null ? configFields : [];
   //----
   // RENDERERS
   //----
@@ -78,31 +61,12 @@ export function AutoBePlaygroundChatMovie(
         position: "relative",
       }}
     >
+      <Toaster position="top-center" richColors />
       <AppBar position="relative" component="div">
-        <Toolbar
-          style={{
-            cursor: "pointer",
-          }}
-          onClick={() => {
-            window.location.href = "/";
-          }}
-        >
+        <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            {props.title ?? "AutoBE Playground"}
+            {props.title ?? "AutoBE Hackathon"}
           </Typography>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={props.isReplay ?? false}
-                onChange={handleReplayToggle}
-                name="replayMode"
-                color="secondary"
-                size="small"
-              />
-            }
-            label="Replay"
-            style={{ color: "white", marginLeft: "16px" }}
-          />
         </Toolbar>
       </AppBar>
       <div
@@ -133,8 +97,8 @@ export function AutoBePlaygroundChatMovie(
                 isCollapsed={isMobile ? false : sidebarCollapsed}
                 onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
                 onSessionSelect={() => {}}
-                onDeleteSession={(id) => {
-                  storageStrategy.deleteSession({ id });
+                onDeleteSession={async (id) => {
+                  await storageStrategy.deleteSession({ id });
                   if (searchParams.get("session-id") === id) {
                     setSearchParams((sp) => {
                       const newSp = new URLSearchParams(sp);
@@ -148,7 +112,7 @@ export function AutoBePlaygroundChatMovie(
                 isUnusedConfig={props.isUnusedConfig ?? false}
                 isMobile={isMobile}
                 setError={setError}
-                configFields={configFields}
+                configFields={activeConfigFields}
                 style={{
                   backgroundColor: "lightblue",
                 }}

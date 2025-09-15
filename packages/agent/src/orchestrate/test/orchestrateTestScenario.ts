@@ -32,6 +32,8 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
     );
   }
 
+  Object.entries(document.components.schemas);
+
   const dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation> =
     new HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>(
       document.operations.map(
@@ -68,6 +70,7 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
   };
   const exclude: IAutoBeTestScenarioApplication.IScenarioGroup[] = [];
   let include: AutoBeOpenApi.IOperation[] = [...document.operations];
+  let trial: number = 0;
 
   do {
     const matrix: AutoBeOpenApi.IOperation[][] = divideArray({
@@ -101,7 +104,8 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
       }
       return true;
     });
-  } while (include.length > 0);
+    progress.total = include.length + exclude.length;
+  } while (include.length > 0 && ++trial < ctx.retry);
 
   return exclude.flatMap((pg) => {
     return pg.scenarios.map((plan) => {
@@ -163,6 +167,11 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
       message: `Create e2e test scenarios.`,
     });
     if (pointer.value.length === 0) return [];
+
+    props.progress.total = Math.max(
+      props.progress.total,
+      (props.progress.completed += pointer.value.length),
+    );
     ctx.dispatch({
       type: "testScenarios",
       id: v7(),
@@ -180,7 +189,7 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
           ),
         )
         .flat(),
-      completed: (props.progress.completed += pointer.value.length),
+      completed: props.progress.completed,
       total: props.progress.total,
       step: ctx.state().interface?.step ?? 0,
       created_at: new Date().toISOString(),
@@ -191,7 +200,6 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
       props.reviewProgress,
     );
   } catch {
-    console.log("test scenario, failed to function call", props.include);
     return [];
   }
 };

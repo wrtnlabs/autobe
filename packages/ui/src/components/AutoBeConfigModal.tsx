@@ -10,7 +10,7 @@ import AutoBeConfigInput from "./common/AutoBeConfigInput";
 export interface IConfigField {
   key: string;
   label: string;
-  type: "text" | "number" | "checkbox";
+  type: "text" | "number" | "checkbox" | "list";
   placeholder?: string;
   default?: string | number | boolean;
   suggestions?: string[];

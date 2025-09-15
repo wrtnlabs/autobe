@@ -3,6 +3,7 @@ import { IAutoBeTestWriteResult } from "@autobe/agent/src/orchestrate/test/struc
 import { AutoBeCompilerInterfaceTemplate } from "@autobe/compiler/src/raw/AutoBeCompilerInterfaceTemplate";
 import { CompressUtil, FileSystemIterator } from "@autobe/filesystem";
 import {
+  AutoBeEventOfSerializable,
   AutoBeTestScenario,
   AutoBeTestScenariosEvent,
   IAutoBeCompiler,
@@ -14,6 +15,7 @@ import typia from "typia";
 import { TestFactory } from "../../../TestFactory";
 import { TestGlobal } from "../../../TestGlobal";
 import { TestHistory } from "../../../internal/TestHistory";
+import { TestLogger } from "../../../internal/TestLogger";
 import { TestProject } from "../../../structures/TestProject";
 import { prepare_agent_test } from "./prepare_agent_test";
 
@@ -21,30 +23,29 @@ export const validate_agent_test_write = async (
   factory: TestFactory,
   project: TestProject,
 ) => {
-  if (TestGlobal.env.API_KEY === undefined) return false;
+  if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
   // PREPARE ASSETS
   const { agent } = await prepare_agent_test(factory, project);
-  const model: string = TestGlobal.getVendorModel();
-  const scenarioEvents: AutoBeTestScenariosEvent[] = JSON.parse(
+  const model: string = TestGlobal.vendorModel;
+  const scenarios: AutoBeTestScenario[] = JSON.parse(
     await CompressUtil.gunzip(
       await fs.promises.readFile(
         `${TestGlobal.ROOT}/assets/histories/${model}/${project}.test.scenarios.json.gz`,
       ),
     ),
   );
-  typia.assert(scenarioEvents);
 
-  const scenarios: AutoBeTestScenario[] = scenarioEvents
-    .map((e) => e.scenarios)
-    .flat();
+  const start: Date = new Date();
+  for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
+    agent.on(type, (event) => TestLogger.event(start, event));
+  agent.on("vendorResponse", (e) => TestLogger.event(start, e));
 
   // GENERATE TEST FUNCTIONS
   const writes: IAutoBeTestWriteResult[] = await orchestrateTestWrite(
     agent.getContext(),
     scenarios,
   );
-  typia.assert(writes);
 
   // REPORT RESULT
   const compiler: IAutoBeCompiler = await agent.getContext().compiler();
