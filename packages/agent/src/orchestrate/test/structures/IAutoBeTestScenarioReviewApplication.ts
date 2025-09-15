@@ -33,6 +33,9 @@ export namespace IAutoBeTestScenarioReviewApplication {
      */
     plan: string;
 
+    /** If the scenario groups pass the review, Set to true. */
+    pass: boolean;
+
     /**
      * The reviewed and improved scenario groups with all quality fixes applied.
      *

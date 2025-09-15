@@ -62,7 +62,7 @@ export function transformTestScenarioReviewHistories<
         Match each operation with its corresponding schema.
 
         \`\`\`json
-        ${JSON.stringify({ operations: document.operations, schemas: document.components.schemas })}
+        ${JSON.stringify({ operations: document.operations })}
         \`\`\`
       `,
     },
@@ -71,11 +71,51 @@ export function transformTestScenarioReviewHistories<
       created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: StringUtil.trim`
-        Please review the following test scenario groups:
 
-        \`\`\`json
-        ${JSON.stringify(groups)}
-        \`\`\`
+      # Test Scenario Groups
+
+      Please review the following test scenario groups:
+
+      \`\`\`json
+      ${JSON.stringify(
+        groups.map((g) => {
+          return {
+            ...g,
+            scenarios: g.scenarios.map((s) => {
+              const requiredId: string[] = [];
+
+              s.dependencies.forEach((dep) => {
+                document.operations.forEach((op) => {
+                  if (
+                    g.endpoint.method === op.method &&
+                    g.endpoint.path === op.path
+                  ) {
+                    requiredId.push(
+                      ...getReferenceIds({ document, operation: op }),
+                    );
+                  }
+
+                  if (
+                    op.method === dep.endpoint.method &&
+                    op.path === dep.endpoint.path
+                  ) {
+                    requiredId.push(
+                      ...getReferenceIds({ document, operation: op }),
+                    );
+                  }
+                });
+              });
+
+              return {
+                ...s,
+                requiredIds:
+                  requiredId.length > 0 ? Array.from(new Set(requiredId)) : [],
+              };
+            }),
+          };
+        }),
+      )}
+      \`\`\`
       `,
     },
     {
@@ -85,16 +125,18 @@ export function transformTestScenarioReviewHistories<
       text: StringUtil.trim`
         # Candidate Dependencies
     
-        Here is the list of candidate dependencies identified across 
-        all operations by analyzing path parameters and request bodies.
-    
-        **CRITICAL**: Each ID listed below represents a resource that MUST exist before the operation can execute.
-        You MUST identify and include the API operations that create these resources in your test scenario dependencies.
-    
-        For each \`some_entity_id\` pattern identified, you are REQUIRED to:
-        1. Find the API operation that creates that entity (has the ID in responseIds)
-        2. Include that operation in your dependency chain
-        3. Ensure proper execution order based on dependency relationships
+        List of candidate dependencies extracted from path parameters and request bodies.
+
+        Apply dependency resolution to the target endpoint from "Included in Test Plan" and to dependencies found recursively from it.
+        For each required ID, locate the operation that creates the resource. Include the creator only if that operation exists in the provided operations list. Do not assume or invent operations. If no creator exists, treat the ID as an external or pre-existing input.
+
+        Dependency resolution steps:
+        1. Starting from the target endpoint, collect required IDs.
+        2. For each ID, search for a creator operation (typically POST).
+        3. If found, add it to the dependency chain in execution order and repeat for its own required IDs.
+        4. Stop when no further creators exist or are needed.
+
+        For each some_entity_id pattern, use the same approach: include a creator only when it is present in the operations list.
     
         Endpoint | Required IDs (MUST be created by other APIs)
         ---------|---------------------------------------------------
@@ -105,9 +147,9 @@ export function transformTestScenarioReviewHistories<
               r.ids.map((id) => `\`${id}\``).join(", "),
             ].join(" | "),
           )
-          .join("\n")}.
-    
-        **Example**: If an endpoint requires \`articleId\`, you MUST include the API that creates articles (e.g., \`POST /articles\`) in your dependencies.
+          .join("\n")}
+
+        Example: If an endpoint requires \`articleId\` and \`POST /articles\` exists, include it in dependencies
       `,
     } satisfies IAgenticaHistoryJson.IAssistantMessage,
   ];

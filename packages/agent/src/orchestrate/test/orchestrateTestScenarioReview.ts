@@ -19,14 +19,60 @@ export async function orchestrateTestScenarioReview<
   groups: IAutoBeTestScenarioApplication.IScenarioGroup[],
   progress: AutoBeProgressEventBase,
 ): Promise<IAutoBeTestScenarioApplication.IScenarioGroup[]> {
-  return await review(ctx, groups, progress);
+  const res: IAutoBeTestScenarioApplication.IScenarioGroup[] = await review(
+    ctx,
+    groups,
+    progress,
+    ctx.retry,
+  );
+
+  console.log();
+  console.log(`-------------Before vs After-------------`);
+  console.log(`Before Length: ${groups.length}`);
+  console.log(`After Group Length: ${res.length}\n`);
+
+  groups.forEach((group) => {
+    res.forEach((r) => {
+      if (
+        group.endpoint.method === r.endpoint.method &&
+        group.endpoint.path === r.endpoint.path
+      ) {
+        console.log(`Group : ${group.endpoint.method} ${group.endpoint.path}`);
+        console.log(`Before Scenario Length: ${group.scenarios.length}`);
+        console.log(`After Scenario Length: ${r.scenarios.length}`);
+
+        group.scenarios.forEach((s) => {
+          r.scenarios.forEach((r) => {
+            if (s.functionName === r.functionName) {
+              console.log(`Scenario Name: ${s.functionName}`);
+
+              console.log(
+                `Before Dependencies: ${JSON.stringify(s.dependencies, null, 2)}`,
+              );
+              console.log(
+                `After Dependencies: ${JSON.stringify(r.dependencies, null, 2)}`,
+              );
+            }
+          });
+        });
+        console.log();
+      }
+    });
+  });
+
+  return res;
 }
 
 async function review<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   groups: IAutoBeTestScenarioApplication.IScenarioGroup[],
   progress: AutoBeProgressEventBase,
+  life: number,
 ): Promise<IAutoBeTestScenarioApplication.IScenarioGroup[]> {
+  if (life === 0) {
+    return groups;
+  }
+
   const pointer: IPointer<IAutoBeTestScenarioReviewApplication.IProps | null> =
     {
       value: null,
@@ -69,9 +115,12 @@ async function review<Model extends ILlmSchema.Model>(
     created_at: new Date().toISOString(),
   });
 
-  console.log(JSON.stringify(pointer.value, null, 2));
+  if (pointer.value.pass === true) {
+    console.log(`Pass in life ${life}`);
+    return pointer.value.scenarioGroups;
+  }
 
-  return pointer.value.scenarioGroups;
+  return await review(ctx, pointer.value.scenarioGroups, progress, life - 1);
 }
 
 function createController<Model extends ILlmSchema.Model>(props: {
