@@ -1,4 +1,4 @@
-name: build
+name: hackathon
 on:
   pull_request:
     paths:
