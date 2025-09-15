@@ -157,15 +157,15 @@ export namespace AutoBeHackathonSessionProvider {
             where: {
               autobe_hackathon_id: props.hackathon.id,
               autobe_hackathon_participant_id: props.participant.id,
-              model: "qwen/qwen3-next-80b-a3b-instruc",
+              model: "qwen/qwen3-next-80b-a3b-instruct",
               deleted_at: null,
             },
           });
         if (count >= 10)
           throw new UnprocessableEntityException(
             StringUtil.trim`
-          You can create up to 10 sessions with the "qwen/qwen3-next-80b-a3b-instruc" model.
-        `,
+              You can create up to 10 sessions with the "qwen/qwen3-next-80b-a3b-instruct" model.
+            `,
           );
       } else if (props.body.model === "openai/gpt-4.1-mini") {
         const count: number =

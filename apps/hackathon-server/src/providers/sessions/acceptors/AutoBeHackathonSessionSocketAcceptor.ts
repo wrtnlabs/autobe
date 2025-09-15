@@ -134,12 +134,11 @@ export namespace AutoBeHackathonSessionSocketAcceptor {
           histories,
         }),
     });
+
     const listener: Driver<IAutoBeRpcListener> = props.acceptor.getDriver();
     for (const s of snapshots) {
       agent.getTokenUsage().assign(s.tokenUsage);
-      try {
-        await (listener as any)[s.event.type](s.event).catch(() => {});
-      } catch {}
+      void (listener as any)[s.event.type](s.event).catch(() => {});
       await sleep_for(10);
     }
 

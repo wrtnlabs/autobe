@@ -20,12 +20,11 @@ export const test_api_hackathon_moderator_participant_index = async (
       },
     );
   TestValidator.predicate("page", () =>
-    page.data.every(
-      (p) =>
-        p.email === "samchon@wrtn.io" ||
-        p.email === "kakasoo@wrtn.io" ||
-        p.email === "michael@wrtn.io" ||
-        p.email === "sunrabbit@wrtn.io",
-    ),
+    [
+      "samchon@wrtn.io",
+      "kakasoo@wrtn.io",
+      "michael@wrtn.io",
+      "sunrabbit@wrtn.io",
+    ].every((email) => page.data.some((p) => p.email === email)),
   );
 };

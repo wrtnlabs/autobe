@@ -11,12 +11,12 @@ import typia from "typia";
 
 import { StringUtil } from "../../../../../../packages/utils/src";
 import { TestGlobal } from "../../../TestGlobal";
-import { test_api_hackathon_participant_login } from "./test_api_hackathon_participant_login";
+import { test_api_hackathon_participant_join } from "./test_api_hackathon_participant_join";
 
 export const test_api_hackathon_participant_session_simulate = async (
   connection: HackathonApi.IConnection,
 ): Promise<void> => {
-  await test_api_hackathon_participant_login(connection);
+  await test_api_hackathon_participant_join(connection);
 
   const session: IAutoBeHackathonSession =
     await HackathonApi.functional.autobe.hackathon.participants.sessions.create(

@@ -1,43 +1,27 @@
 import HackathonApi from "@autobe/hackathon-api";
 import {
   AutoBePhase,
-  IAutoBeHackathon,
   IAutoBeHackathonParticipant,
   IAutoBeHackathonSession,
 } from "@autobe/interface";
-import { RandomGenerator, TestValidator } from "@nestia/e2e";
+import { TestValidator } from "@nestia/e2e";
 import typia, { tags } from "typia";
 
 import { AutoBeHackathonGlobal } from "../../../../src/AutoBeHackathonGlobal";
-import { AutoBeHackathonProvider } from "../../../../src/providers/AutoBeHackathonProvider";
-import { AutoBeHackathonParticipantProvider } from "../../../../src/providers/actors/AutoBeHackathonParticipantProvider";
 import { TestGlobal } from "../../../TestGlobal";
+import { test_api_hackathon_participant_join } from "./test_api_hackathon_participant_join";
 
 export const test_api_hackathon_participant_session_review_limit = async (
   connection: HackathonApi.IConnection,
 ): Promise<void> => {
-  const hackathon: IAutoBeHackathon = await AutoBeHackathonProvider.get(
-    TestGlobal.CODE,
-  );
-  const participant: IAutoBeHackathonParticipant.IAuthorized =
-    await AutoBeHackathonParticipantProvider.join({
-      hackathon,
-      body: {
-        email: RandomGenerator.alphabets(10) + "@autobe.dev",
-        name: "Tester",
-        password: "1234",
-      },
-    });
-  connection.headers ??= {};
-  connection.headers.Authorization = participant.setHeaders.Authorization;
-
+  const participant: IAutoBeHackathonParticipant =
+    await test_api_hackathon_participant_join(connection);
   try {
     await process(connection);
   } finally {
     await AutoBeHackathonGlobal.prisma.autobe_hackathon_participants.delete({
       where: { id: participant.id },
     });
-    delete connection.headers;
   }
 };
 

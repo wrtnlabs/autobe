@@ -40,7 +40,7 @@ export const validate_api_hackathon_session_replay = async (
   const { connector } = await connect(listener);
   let length: number = 0;
   while (true) {
-    await sleep_for(1_000);
+    await sleep_for(2_000);
     if (eventList.length === length) break;
     length = eventList.length;
   }
