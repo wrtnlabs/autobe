@@ -95,7 +95,7 @@ export interface IAutoBeConfig {
    *     timeout: null;
    *   }
    *
-   * @default 1_800_000 (30 minutes)
+   * @default null
    */
   timeout?: number | null;
 

@@ -57,10 +57,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
     {
       retry: props.config.retry ?? AutoBeConfigConstant.RETRY,
       locale: props.config.locale ?? "en-US",
-      timeout:
-        props.config.timeout === null
-          ? null
-          : (props.config.timeout ?? AutoBeConfigConstant.TIMEOUT),
+      timeout: props.config.timeout ?? null,
     };
   const critical: Semaphore = new Semaphore(2);
   return {
