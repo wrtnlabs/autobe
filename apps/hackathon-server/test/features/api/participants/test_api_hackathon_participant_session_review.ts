@@ -14,13 +14,13 @@ import { test_api_hackathon_participant_join } from "./test_api_hackathon_partic
 export const test_api_hackathon_participant_session_review = async (
   connection: HackathonApi.IConnection,
 ): Promise<void> => {
-  const partipant: IAutoBeHackathonParticipant =
+  const participant: IAutoBeHackathonParticipant =
     await test_api_hackathon_participant_join(connection);
   try {
     await process(connection);
   } finally {
     await AutoBeHackathonGlobal.prisma.autobe_hackathon_participants.delete({
-      where: { id: partipant.id },
+      where: { id: participant.id },
     });
   }
 };
