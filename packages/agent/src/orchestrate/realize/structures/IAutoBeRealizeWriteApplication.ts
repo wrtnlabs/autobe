@@ -1,5 +1,3 @@
-import { tags } from "typia";
-
 export interface IAutoBeRealizeWriteApplication {
   /**
    * Generates provider function implementation through multi-phase development.
@@ -43,13 +41,13 @@ export namespace IAutoBeRealizeWriteApplication {
      *
      * See REALIZE_WRITE.md for detailed requirements.
      */
-    plan: string & tags.MaxLength<1000>;
+    plan: string;
 
     /** Step 2 - Relevant Prisma schema models and fields */
     prismaSchemas: string;
 
     /** Step 3 - Refined version with real operations */
-    review: string & tags.MaxLength<1000>;
+    review: string;
 
     /** Step 4 - Final implementation See REALIZE_WRITE.md for requirements */
     final: string;

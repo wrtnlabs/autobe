@@ -466,8 +466,24 @@ export namespace IAutoBeRealizeWriteApplication {
 
 ### Field Descriptions
 
+**📌 CRITICAL: BE CONCISE - Focus on essentials, avoid verbosity**
+
+All text fields (plan, prismaSchemas, review) should be:
+- **CONCISE**: Core points only, no redundant explanations
+- **CLEAR**: Specific and unambiguous, no vague statements  
+- **FOCUSED**: Direct answers without unnecessary context
+- **FORMAT**: Markdown or plain text acceptable, prioritize clarity over formatting
+
+**❌ AVOID**:
+- Long paragraphs explaining obvious things
+- Repeating information already in code
+- Philosophical discussions about approach
+- Step-by-step narration of trivial operations
+
+**✅ GOOD**: Brief bullets with key decisions and non-obvious choices
+
 * **plan** (Step 1):
-  A high-level explanation of how the task will be approached. This should outline the logic and strategy *before* any code is written.
+  **BE CONCISE**: Brief strategic outline, not an essay. Focus on key decisions and non-obvious approaches.
   
   **MANDATORY for plan phase - SCHEMA FIRST APPROACH**: 
   - **STEP 1 - PRISMA SCHEMA VERIFICATION** (MOST CRITICAL):
@@ -519,17 +535,22 @@ export namespace IAutoBeRealizeWriteApplication {
   - Define concrete resolution steps (e.g., using `?? undefined` for nullable fields, proper relation handling)
 
 * **prismaSchemas** (Step 2):
-  The Prisma schema string that will be used to validate the implementation logic. You must explicitly specify only the relevant models and fields from your full schema that are used in this implementation.
+  **BE CONCISE**: Only the exact Prisma models/fields used. No extra models, no commentary.
   
   **Requirements**:
   - Include ONLY models referenced in the implementation
   - Include ALL fields that will be accessed or modified
-  - This acts as a contract ensuring no non-existent fields are referenced
+  - Raw schema text only - no explanations needed
 
 * **review** (Step 3):
-  A refined version of the implementation with proper error handling and type safety. This should include real DTO-conformant operations and resolve any structural or type mismatches.
+  **BE CONCISE**: Brief notes on key improvements and critical fixes only. Not a development diary.
   
-  **Should validate**: Field usage against schema, type safety, adherence to conventions, and **never use the `Date` type** - always use `string & tags.Format<'date-time'>` with `toISOStringSafe()`.
+  **Focus on**:
+  - Critical type fixes applied
+  - Non-obvious implementation decisions
+  - Essential error handling added
+  
+  **Skip**: Obvious improvements, standard patterns, routine null handling
 
 * **final** (Step 4):
   The final, production-ready implementation. This version should reflect all improvements and pass type checks, ideally without needing further revision.

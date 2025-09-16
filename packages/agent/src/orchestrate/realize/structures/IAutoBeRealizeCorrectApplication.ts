@@ -23,7 +23,11 @@ export namespace IAutoBeRealizeCorrectApplication {
   }
 
   export interface IRevise {
-    /** Step 1: Compilation error analysis and resolution strategy. */
+    /** 
+     * Step 1: TypeScript compilation error analysis and resolution strategy.
+     * Analyzes TypeScript compiler diagnostics (error codes, messages) to understand
+     * type mismatches, missing properties, nullable conflicts, and other compilation issues.
+     */
     errorAnalysis?: string;
 
     /** Step 2: Provider function implementation plan. */
@@ -35,10 +39,7 @@ export namespace IAutoBeRealizeCorrectApplication {
     /** Step 4: Refined version with improved completeness. */
     review?: string;
 
-    /** Step 5: Corrected implementation after compiler feedback. */
-    withCompilerFeedback?: string;
-
-    /** Step 6: Final complete TypeScript function implementation. */
+    /** Step 5: Final complete TypeScript function implementation. */
     final: string;
   }
 }
