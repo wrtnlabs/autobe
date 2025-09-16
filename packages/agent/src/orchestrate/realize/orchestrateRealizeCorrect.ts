@@ -43,7 +43,10 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
   const diagnostics = event.result.diagnostics;
   const locations: string[] = Array.from(
     new Set(
-      diagnostics.map((d) => d.file).filter((f): f is string => f !== null),
+      diagnostics
+        .map((d) => d.file)
+        .filter((f): f is string => f !== null)
+        .filter((f) => f.startsWith("src/providers")),
     ),
   );
 

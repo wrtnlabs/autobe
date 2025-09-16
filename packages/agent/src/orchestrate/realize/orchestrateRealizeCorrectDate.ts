@@ -256,7 +256,8 @@ const diagnose = (event: AutoBeRealizeValidateEvent): string[] => {
   const diagnostics = event.result.diagnostics;
   const locations = diagnostics
     .map((d) => d.file)
-    .filter((f): f is string => f !== null);
+    .filter((f): f is string => f !== null)
+    .filter((f) => f.startsWith("src/providers"));
 
   return Array.from(new Set(locations));
 };
