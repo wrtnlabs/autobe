@@ -51,11 +51,13 @@ subgraph "Compiler Feedback"
 end
 ```
 
-AutoBE follows a waterfall methodology to generate backend applications, with 40 specialized agents handling each phase. The agents work in coordinated teams throughout the development process.
+AutoBE follows a waterfall methodology to generate backend applications, with 40+ specialized agents handling each phase. The agents work in coordinated teams throughout the development process.
 
 Each waterfall stage includes AI-friendly compilers that guarantee type safety of the generated code. Rather than generating code directly, AutoBE's agents first construct language-neutral Abstract Syntax Trees using predefined schemas. Each AST node undergoes validation against type rules before any code generation occurs, catching structural errors at the conceptual level rather than during compilation.
 
-This approach is designed to ensure that the final generated TypeScript and Prisma code is 100% buildable. Based on our testing with multiple example projects including e-commerce platforms, discussion boards, and task management systems, AutoBE maintains this compilation guarantee across diverse application types. Here are the waterfall phase outputs from AutoBE's Economic/Political Discussion Board example:
+This approach is designed to ensure that the final generated TypeScript and Prisma code is 100% buildable. Based on our testing with multiple example projects including e-commerce platforms, discussion boards, and task management systems, AutoBE maintains this compilation guarantee across diverse application types.
+
+Here are the waterfall phase outputs from another AutoBE example - "Economic/Political Discussion Board":
 
 1. **Requirements Analysis**: [Report](https://github.com/wrtnlabs/autobe-example-bbs/tree/main/docs/analysis)
 2. **Database Design**: [Entity Relationship Diagram](https://github.com/wrtnlabs/autobe-example-bbs/tree/main/docs/ERD.md) / [Prisma Schema](https://github.com/wrtnlabs/autobe-example-bbs/tree/main/prisma/schema)
@@ -63,9 +65,9 @@ This approach is designed to ensure that the final generated TypeScript and Pris
 4. **E2E Test Functions**: [`test/features/api`](https://github.com/wrtnlabs/autobe-example-bbs/tree/main/test/features/api)
 5. **API Implementations**: [`src/providers`](https://github.com/wrtnlabs/autobe-example-bbs/tree/main/src/providers)
 
-You don't need to use all phases though - stop at any stage that fits your needs. Whether you want just requirements analysis, database design, API specification, or e2e testing, AutoBE adapts to your workflow.
+Also, you don't need to use all phases - stop at any stage that fits your needs. Whether you want just requirements analysis, database design, API specification, or e2e testing, AutoBE adapts to your workflow.
 
-By the way, if you're skipping the full pipeline because of language preference rather than workflow needs, this capability is in development - AutoBE's language-neutral AST structure will soon support additional programming languages beyond TypeScript.
+Additionally, if you're skipping the full pipeline because of language preference rather than workflow needs, this capability is in development - AutoBE's language-neutral AST structure will soon support additional programming languages beyond TypeScript.
 
 ## Documentation Resources
 
