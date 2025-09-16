@@ -33,7 +33,7 @@ https://github.com/user-attachments/assets/b995dd2a-23bd-43c9-96cb-96d5c805f19f
 
 ## Getting Started
 
-[![Playground StackBlitz Screenshot](https://autobe.dev/images/demonstrate/stackblitz.png)](https://stackblitz.com/github/wrtnlabs/autobe-playground-stackblitz)
+[![Playground StackBlitz](https://autobe.dev/images/demonstrate/stackblitz.png)](https://stackblitz.com/github/wrtnlabs/autobe-playground-stackblitz)
 
 https://stackblitz.com/github/wrtnlabs/autobe-playground-stackblitz
 
