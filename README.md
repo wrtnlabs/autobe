@@ -29,8 +29,6 @@ https://github.com/user-attachments/assets/b995dd2a-23bd-43c9-96cb-96d5c805f19f
    - E2E Test Functions: [`test/features/api`](https://github.com/wrtnlabs/autobe-example-shopping/tree/main/test/features/api)
    - API Implementations: [`src/providers`](https://github.com/wrtnlabs/autobe-example-shopping/tree/main/src/providers)
 
-![Compilation Success Dashboard](https://autobe.dev/images/demonstrate/replay-openai-gpt4.1.png)
-
 ## Getting Started
 
 [![Playground StackBlitz](https://autobe.dev/images/demonstrate/stackblitz.png)](https://stackblitz.com/github/wrtnlabs/autobe-playground-stackblitz)
@@ -55,6 +53,49 @@ cd autobe
 pnpm install
 pnpm run playground
 ```
+
+![Compilation Success Dashboard](https://autobe.dev/images/demonstrate/replay-openai-gpt4.1.png)
+
+> After installing AutoBE locally and running the playground, you can replay chat sessions from AutoBE development team's testing at http://localhost:5713/replay/index.html.
+
+## Documentation Resources
+
+Find comprehensive resources at our [official website](https://autobe.dev).
+
+### 🏠 Home
+
+- 🙋🏻‍♂️ [Introduction](https://autobe.dev/docs)
+- 📦 [Setup](https://autobe.dev/docs/setup)
+- 🔍 Concepts
+  - [Waterfall Model](https://autobe.dev/docs/concepts/waterfall)
+  - [Compiler Strategy](https://autobe.dev/docs/concepts/compiler)
+  - [AI Function Calling](https://autobe.dev/docs/concepts/function-calling)
+
+### 📖 Features
+
+- 🤖 Agent Library
+  - [Facade Controller](https://autobe.dev/docs/agent/facade)
+  - [Configuration](https://autobe.dev/docs/agent/config)
+  - [Event Handling](https://autobe.dev/docs/agent/event)
+  - [Prompt Histories](https://autobe.dev/docs/agent/history)
+- 📡 WebSocket Protocol
+  - [Remote Procedure Call](https://autobe.dev/docs/websocket/rpc)
+  - [NestJS Server](https://autobe.dev/docs/websocket/nestjs)
+  - [NodeJS Server](https://autobe.dev/docs/websocket/nodejs)
+  - [Client Application](https://autobe.dev/docs/websocket/client)
+- 🛠️ Backend Stack
+  - [TypeScript](https://autobe.dev/docs/stack/typescript)
+  - [Prisma ORM](https://autobe.dev/docs/stack/prisma)
+  - [NestJS Framework](https://autobe.dev/docs/stack/nestjs)
+
+### 🔗 Appendix
+
+- 🌐 [No-Code Ecosystem](https://autobe.dev/docs/ecosystem)
+- 📅 Roadmap
+  - [Alpha Release (done)](https://autobe.dev/docs/roadmap/alpha)
+  - [Beta Release (done)](https://autobe.dev/docs/roadmap/beta)
+  - [v1.0 Official Release (active)](https://autobe.dev/docs/roadmap/v1.0)
+- 🔧 [API Documentation](https://autobe.dev/api)
 
 ## How AutoBE Works
 
@@ -95,45 +136,6 @@ To illustrate this process, here are the phase outputs from our "Economic/Politi
 Also, you don't need to use all phases - stop at any stage that fits your needs. Whether you want just requirements analysis, database design, API specification, or e2e testing, AutoBE adapts to your workflow.
 
 Additionally, if you're skipping the full pipeline because of language preference rather than workflow needs, this capability is in development - AutoBE's language-neutral AST structure will soon support additional programming languages beyond TypeScript.
-
-## Documentation Resources
-
-Find comprehensive resources at our [official website](https://autobe.dev).
-
-### 🏠 Home
-
-- 🙋🏻‍♂️ [Introduction](https://autobe.dev/docs)
-- 📦 [Setup](https://autobe.dev/docs/setup)
-- 🔍 Concepts
-  - [Waterfall Model](https://autobe.dev/docs/concepts/waterfall)
-  - [Compiler Strategy](https://autobe.dev/docs/concepts/compiler)
-  - [AI Function Calling](https://autobe.dev/docs/concepts/function-calling)
-
-### 📖 Features
-
-- 🤖 Agent Library
-  - [Facade Controller](https://autobe.dev/docs/agent/facade)
-  - [Configuration](https://autobe.dev/docs/agent/config)
-  - [Event Handling](https://autobe.dev/docs/agent/event)
-  - [Prompt Histories](https://autobe.dev/docs/agent/history)
-- 📡 WebSocket Protocol
-  - [Remote Procedure Call](https://autobe.dev/docs/websocket/rpc)
-  - [NestJS Server](https://autobe.dev/docs/websocket/nestjs)
-  - [NodeJS Server](https://autobe.dev/docs/websocket/nodejs)
-  - [Client Application](https://autobe.dev/docs/websocket/client)
-- 🛠️ Backend Stack
-  - [TypeScript](https://autobe.dev/docs/stack/typescript)
-  - [Prisma ORM](https://autobe.dev/docs/stack/prisma)
-  - [NestJS Framework](https://autobe.dev/docs/stack/nestjs)
-
-### 🔗 Appendix
-
-- 🌐 [No-Code Ecosystem](https://autobe.dev/docs/ecosystem)
-- 📅 Roadmap
-  - [Alpha Release (done)](https://autobe.dev/docs/roadmap/alpha)
-  - [Beta Release (done)](https://autobe.dev/docs/roadmap/beta)
-  - [v1.0 Official Release (active)](https://autobe.dev/docs/roadmap/v1.0)
-- 🔧 [API Documentation](https://autobe.dev/api)
 
 ## Roadmap Schedule
 
