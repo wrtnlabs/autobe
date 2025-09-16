@@ -19,6 +19,7 @@ import { compileRealizeFiles } from "./internal/compileRealizeFiles";
 import { orchestrateRealizeCorrectCasting } from "./orchestRateRealizeCorrectCasting";
 import { orchestrateRealizeAuthorization } from "./orchestrateRealizeAuthorization";
 import { orchestrateRealizeCorrect } from "./orchestrateRealizeCorrect";
+import { orchestrateRealizeCorrectDate } from "./orchestrateRealizeCorrectDate";
 import { orchestrateRealizeWrite } from "./orchestrateRealizeWrite";
 import { IAutoBeRealizeFunctionFailure } from "./structures/IAutoBeRealizeFunctionFailure";
 import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
@@ -112,32 +113,35 @@ export const orchestrateRealize =
         reviewProgress,
       );
 
-    console.log("converted end");
-    console.log("converted end");
-    console.log("converted end");
-    console.log("converted end");
-    console.log("converted end");
-    console.log("converted end");
-    const corrected: AutoBeRealizeFunction[] = await orchestrateRealizeCorrect(
-      ctx,
-      scenarios,
-      authorizations,
-      converted,
-      [] satisfies IAutoBeRealizeFunctionFailure[],
-      reviewProgress,
-    );
+    const correctedDate: AutoBeRealizeFunction[] =
+      await orchestrateRealizeCorrectDate(
+        ctx,
+        authorizations,
+        converted,
+        reviewProgress,
+      );
+
+    const totalCorrected: AutoBeRealizeFunction[] =
+      await orchestrateRealizeCorrect(
+        ctx,
+        scenarios,
+        authorizations,
+        correctedDate,
+        [] satisfies IAutoBeRealizeFunctionFailure[],
+        reviewProgress,
+      );
 
     const compiler: IAutoBeCompiler = await ctx.compiler();
     const controllers: Record<string, string> =
       await compiler.realize.controller({
         document: ctx.state().interface!.document,
-        functions: corrected,
+        functions: totalCorrected,
         authorizations,
       });
 
     const { result } = await compileRealizeFiles(ctx, {
       authorizations,
-      functions: corrected,
+      functions: totalCorrected,
     });
 
     return ctx.dispatch({

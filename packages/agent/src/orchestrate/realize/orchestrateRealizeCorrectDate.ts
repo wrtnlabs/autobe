@@ -14,8 +14,8 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
-import { transformCommonCorrectCastingHistories } from "../common/histories/transformCommonCorrectCastingHistories";
-import { IAutoBeCommonCorrectCastingApplication } from "../common/structures/IAutoBeCommonCorrectCastingApplication";
+import { transformCommonCorrectDateHistories } from "../common/histories/transformCommonCorrectDateHistories";
+import { IAutoBeCommonCorrectDateApplication } from "../common/structures/IAutoBeCommonCorrectDateApplication";
 import { compileRealizeFiles } from "./internal/compileRealizeFiles";
 
 /** Result of attempting to correct a single function */
@@ -24,7 +24,7 @@ type CorrectionResult = {
   func: AutoBeRealizeFunction;
 };
 
-export const orchestrateRealizeCorrectCasting = async <
+export const orchestrateRealizeCorrectDate = async <
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
@@ -91,9 +91,19 @@ const correct = async <Model extends ILlmSchema.Model>(
     return functions;
   }
 
-  const locations: string[] = diagnose(event).filter((l) =>
-    functions.map((f) => f.location).includes(l),
+  // Filter only Date-related errors
+  const dateErrors = filterDateErrors(failures);
+  const locations: string[] = diagnose(event).filter(
+    (l) =>
+      functions.map((f) => f.location).includes(l) &&
+      dateErrors.some((e) => e.file === l),
   );
+
+  // If no date errors found, return original functions
+  if (locations.length === 0) {
+    return functions;
+  }
+
   progress.total += locations.length;
 
   const converted: CorrectionResult[] = await executeCachedBatch(
@@ -103,17 +113,17 @@ const correct = async <Model extends ILlmSchema.Model>(
       )!;
 
       const pointer: IPointer<
-        IAutoBeCommonCorrectCastingApplication.IProps | false | null
+        IAutoBeCommonCorrectDateApplication.IProps | false | null
       > = {
         value: null,
       };
 
       const { tokenUsage } = await ctx.conversate({
         source: "realizeCorrect",
-        histories: transformCommonCorrectCastingHistories([
+        histories: transformCommonCorrectDateHistories([
           {
             script: func.content,
-            diagnostics: failures.filter((d) => d.file === location),
+            diagnostics: dateErrors.filter((d) => d.file === location),
           },
         ]),
         controller: createController({
@@ -127,16 +137,37 @@ const correct = async <Model extends ILlmSchema.Model>(
         }),
         enforceFunctionCall: true,
         message: StringUtil.trim`
-          Fix the TypeScript casting problems to resolve the compilation error.
+          Fix ALL Date type problems in this code following these ABSOLUTE RULES:
 
-          Most casting errors are caused by type mismatches between Date types and 
-          string & tags.Format<'date-time'>. To fix these:
-          - Use ONLY the pre-provided toISOStringSafe() function to convert Date to string
-          - Do NOT use .toISOString() method directly (use toISOStringSafe instead)
-          - Never use Date type directly in declarations or return values
+          🔴 CRITICAL DATE TYPE RULES:
+          1. NEVER declare variables with ': Date' type
+          2. NEVER use 'Date' as return type or parameter type
+          3. ALWAYS use 'string & tags.Format<"date-time">' for date type declarations
+          4. Use toISOStringSafe() to convert Date or string to ISO format
+          5. toISOStringSafe() REQUIRES a parameter - it's NOT optional
 
-          You don't need to explain me anything, but just fix or give it up 
-          immediately without any hesitation, explanation, and questions.
+          📅 toISOStringSafe FUNCTION SIGNATURE:
+          function toISOStringSafe(
+            value: Date | (string & tags.Format<"date-time">)
+          ): string & tags.Format<"date-time">
+          
+          Note: This function CANNOT accept null or undefined!
+
+          📅 CORRECT PATTERNS:
+          - Creating timestamps: toISOStringSafe(new Date())
+          - Converting nullable dates: value ? toISOStringSafe(value) : null
+          - Converting strings: toISOStringSafe(dateString)
+          - Type declarations: string & tags.Format<'date-time'>
+          - Never store Date in variables: const now = new Date() is FORBIDDEN
+
+          🚨 COMMON ERRORS TO FIX:
+          - Type 'Date' is not assignable → Use toISOStringSafe()
+          - Direct Date assignment → Wrap with toISOStringSafe()
+          - Date type in function signature → Change to string & tags.Format<'date-time'>
+          - For nullable values → Check null BEFORE calling toISOStringSafe()
+
+          Fix these Date type issues immediately. If you cannot fix them, reject the task.
+          Do not explain, just fix the code or give up.
         `,
       });
       ++progress.completed;
@@ -232,6 +263,29 @@ const diagnose = (event: AutoBeRealizeValidateEvent): string[] => {
 };
 
 /**
+ * Filter diagnostics to only include Date-related errors
+ *
+ * @param diagnostics - All diagnostics
+ * @returns Date-related diagnostics only
+ */
+const filterDateErrors = (
+  diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[],
+): IAutoBeTypeScriptCompileResult.IDiagnostic[] => {
+  return diagnostics.filter((d) => {
+    const messageText = d.messageText?.toLowerCase() || "";
+    return (
+      messageText.includes("date") ||
+      messageText.includes("date-time") ||
+      messageText.includes("toisostring") ||
+      messageText.includes("cannot read property") ||
+      messageText.includes("type 'date'") ||
+      messageText.includes("tags.format<'date-time'>") ||
+      messageText.includes('tags.format<"date-time">')
+    );
+  });
+};
+
+/**
  * Separate correction results into successful, failed, and ignored functions
  *
  * @param corrections - Array of correction results
@@ -284,7 +338,7 @@ const filterRelevantDiagnostics = (
 
 const createController = <Model extends ILlmSchema.Model>(props: {
   model: Model;
-  then: (next: IAutoBeCommonCorrectCastingApplication.IProps) => void;
+  then: (next: IAutoBeCommonCorrectDateApplication.IProps) => void;
   reject: () => void;
 }): ILlmController<Model> => {
   assertSchemaModel(props.model);
@@ -293,7 +347,7 @@ const createController = <Model extends ILlmSchema.Model>(props: {
   ] satisfies ILlmApplication<any> as any as ILlmApplication<Model>;
   return {
     protocol: "class",
-    name: "correctInvalidRequest",
+    name: "correctDateInvalidRequest",
     application,
     execute: {
       rewrite: (next) => {
@@ -302,17 +356,17 @@ const createController = <Model extends ILlmSchema.Model>(props: {
       reject: () => {
         props.reject();
       },
-    } satisfies IAutoBeCommonCorrectCastingApplication,
+    } satisfies IAutoBeCommonCorrectDateApplication,
   };
 };
 
 const collection = {
   chatgpt: typia.llm.application<
-    IAutoBeCommonCorrectCastingApplication,
+    IAutoBeCommonCorrectDateApplication,
     "chatgpt"
   >(),
   claude: typia.llm.application<
-    IAutoBeCommonCorrectCastingApplication,
+    IAutoBeCommonCorrectDateApplication,
     "claude"
   >(),
 };

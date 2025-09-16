@@ -18,6 +18,7 @@ import { compileRealizeFiles } from "./internal/compileRealizeFiles";
 import { IAutoBeRealizeCorrectApplication } from "./structures/IAutoBeRealizeCorrectApplication";
 import { IAutoBeRealizeFunctionFailure } from "./structures/IAutoBeRealizeFunctionFailure";
 import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
+import { filterDiagnostics } from "./utils/filterDiagnostics";
 import { getRealizeWriteDto } from "./utils/getRealizeWriteDto";
 import { replaceImportStatements } from "./utils/replaceImportStatements";
 
@@ -42,7 +43,10 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
   const diagnostics = event.result.diagnostics;
   const locations: string[] = Array.from(
     new Set(
-      diagnostics.map((d) => d.file).filter((f): f is string => f !== null),
+      diagnostics
+        .map((d) => d.file)
+        .filter((f): f is string => f !== null)
+        .filter((f) => f.startsWith("src/providers")),
     ),
   );
 
@@ -53,9 +57,15 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
   diagnostics.forEach((diagnostic) => {
     const location: string | null = diagnostic.file;
     if (location === null) return;
+    if (!location.startsWith("src/providers")) return;
 
     if (!diagnosticsByFile[location]) {
-      const func = functions.find((f) => f.location === location)!;
+      const func = functions.find((f) => f.location === location);
+
+      if (!func) {
+        return;
+      }
+
       const failure: IAutoBeRealizeFunctionFailure = {
         function: func,
         diagnostics: [],
@@ -65,13 +75,21 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
     diagnosticsByFile[location].diagnostics.push(diagnostic);
   });
 
-  await correct(
+  const newFailures: IAutoBeRealizeFunctionFailure[] = [
+    ...failures,
+    ...Object.values(diagnosticsByFile),
+  ];
+
+  const corrected: AutoBeRealizeFunction[] = await correct(
     ctx,
     locations,
     scenarios,
     authorizations,
     functions,
-    [...failures, ...Object.values(diagnosticsByFile)],
+    filterDiagnostics(
+      newFailures,
+      functions.map((fn) => fn.location),
+    ),
     progress,
   );
 
@@ -79,8 +97,11 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
     ctx,
     scenarios,
     authorizations,
-    functions,
-    [...failures, ...Object.values(diagnosticsByFile)],
+    corrected,
+    filterDiagnostics(
+      newFailures,
+      corrected.map((c) => c.location),
+    ),
     progress,
     life - 1,
   );
@@ -95,25 +116,30 @@ async function correct<Model extends ILlmSchema.Model>(
   failures: IAutoBeRealizeFunctionFailure[],
   progress: AutoBeProgressEventBase,
 ): Promise<AutoBeRealizeFunction[]> {
-  return executeCachedBatch(
+  const result: AutoBeRealizeFunction[] = await executeCachedBatch(
     locations.map((location) => async (): Promise<AutoBeRealizeFunction> => {
       const scenario = scenarios.find((el) => el.location === location);
-      const func = functions.find((el) => el.location === location)!;
-      const ReailzeFunctionFailures: IAutoBeRealizeFunctionFailure[] =
-        failures.filter((f) => f.function.location === location);
+      const func = functions.find((el) => el.location === location);
 
-      if (ReailzeFunctionFailures.length && scenario) {
+      if (!func) {
+        throw new Error("No function found for location: " + location);
+      }
+
+      const RealizeFunctionFailures: IAutoBeRealizeFunctionFailure[] =
+        failures.filter((f) => f.function?.location === location);
+
+      if (RealizeFunctionFailures.length && scenario) {
         try {
           const correctEvent = await step(ctx, {
             totalAuthorizations: authorizations,
             authorization: scenario.decoratorEvent ?? null,
             scenario,
             function: func,
-            failures: ReailzeFunctionFailures,
+            failures: RealizeFunctionFailures,
             progress: progress,
           });
 
-          func.content = correctEvent.content;
+          return { ...func, content: correctEvent.content };
         } catch (err) {
           return func;
         }
@@ -122,6 +148,8 @@ async function correct<Model extends ILlmSchema.Model>(
       return func;
     }),
   );
+
+  return result;
 }
 
 async function step<Model extends ILlmSchema.Model>(
@@ -168,9 +196,9 @@ async function step<Model extends ILlmSchema.Model>(
   if (pointer.value === null)
     throw new Error("Failed to correct implementation code.");
 
-  pointer.value.revise.implementationCode = await replaceImportStatements(ctx, {
+  pointer.value.revise.final = await replaceImportStatements(ctx, {
     operation: props.scenario.operation,
-    code: pointer.value.revise.implementationCode,
+    code: pointer.value.revise.final,
     decoratorType: props.authorization?.payload.name,
   });
 
@@ -178,7 +206,7 @@ async function step<Model extends ILlmSchema.Model>(
     type: "realizeCorrect",
     id: v7(),
     location: props.scenario.location,
-    content: pointer.value.revise.implementationCode,
+    content: pointer.value.revise.final,
     tokenUsage,
     completed: ++props.progress.completed,
     total: props.progress.total,
