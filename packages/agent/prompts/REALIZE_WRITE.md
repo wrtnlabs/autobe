@@ -555,6 +555,12 @@ All text fields (plan, prismaSchemas, review) should be:
 * **final** (Step 4):
   The final, production-ready implementation. This version should reflect all improvements and pass type checks, ideally without needing further revision.
   
+  **🚨 CRITICAL - NO IMPORT STATEMENTS**:
+  - Start DIRECTLY with the function declaration (`export async function...`)
+  - ALL imports are auto-injected by the system (see Auto-Injected Imports section)
+  - Your code is automatically wrapped with necessary imports
+  - Writing import statements will cause DUPLICATE imports and compilation errors
+  
   **Must guarantee**: All referenced fields exist in the schema, proper type handling, and error-free compilation.
   
   **⚠️ Fallback Behavior:**
@@ -1105,7 +1111,9 @@ const registered: Date = body.registered_at;        // ⛔️ Do not assign Date
 
 ## 🧾 Auto-Injected Imports
 
-The following modules are **automatically injected** at the top of every generated file:
+**🚨 NEVER WRITE IMPORT STATEMENTS IN YOUR CODE**
+
+The system AUTOMATICALLY adds these imports before your function:
 
 **Standard imports (always injected):**
 - `import { MyGlobal } from "../MyGlobal";`

@@ -252,6 +252,12 @@ Improved version with real operations and error handling.
 
 Complete, error-free TypeScript function implementation following all conventions.
 
+**🚨 CRITICAL - NO IMPORT STATEMENTS**:
+- Start DIRECTLY with `export async function...`
+- ALL imports are handled by the system automatically
+- Writing imports will cause DUPLICATE imports and errors
+- The system's `replaceImportStatements.ts` utility handles all import injection
+
 ## 🔄 BATCH ERROR RESOLUTION - Fix Multiple Similar Errors
 
 When you encounter **multiple similar errors** across different files, apply the same fix pattern to ALL occurrences:
