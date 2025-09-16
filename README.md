@@ -131,7 +131,7 @@ gantt
 
   section v1.0 Official Release
   Debate Enhancement: planned, 2025-09-15, 90d
-  Cyclinic Workflow: planned, 2025-09-15, 90d
+  Cyclic Workflow: planned, 2025-09-15, 90d
   Achieve 100% Working: active, 2025-09-15, 90d
 ```
 
