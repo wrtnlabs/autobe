@@ -111,6 +111,7 @@ export const orchestrateRealize =
         authorizations,
         functions,
         reviewProgress,
+        parseInt((ctx.retry / 2).toString()),
       );
 
     const correctedDate: AutoBeRealizeFunction[] =
@@ -119,6 +120,7 @@ export const orchestrateRealize =
         authorizations,
         converted,
         reviewProgress,
+        parseInt((ctx.retry / 2).toString()),
       );
 
     const totalCorrected: AutoBeRealizeFunction[] =
