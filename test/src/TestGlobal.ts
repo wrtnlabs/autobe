@@ -28,7 +28,9 @@ export class TestGlobal {
   }
 
   public static getVendorConfig(): IAutoBeVendor {
-    const isOpenAi: boolean = TestGlobal.vendorModel.startsWith("openai/");
+    const isOpenAi: boolean =
+      TestGlobal.vendorModel.startsWith("openai/") &&
+      TestGlobal.vendorModel.startsWith("openai/gpt-oss-") === false;
     return {
       api: new OpenAI({
         apiKey: isOpenAi
