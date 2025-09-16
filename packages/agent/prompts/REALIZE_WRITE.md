@@ -617,54 +617,21 @@ All text fields (plan, prismaSchemas, review) should be:
 
 ```
 plan: "
-STEP 1 - PRISMA SCHEMA VERIFICATION:
-Checked REALIZE_CODER_ARTIFACT.md for discussionboard_user model schema:
-model discussionboard_user {
-  id            String   @id
-  email         String   @unique
-  password_hash String
-  display_name  String?
-  avatar_url    String?
-  is_active     Boolean  @default(true)
-  is_banned     Boolean  @default(false)
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-}
+SCHEMA CHECK:
+- Has: id, email, password_hash, display_name?, avatar_url?, is_active, is_banned, created_at, updated_at
+- Missing: deleted_at, created_by, updated_by
 
-CRITICAL: Common fields that DO NOT EXIST in this model:
-- deleted_at (NO SOFT DELETE SUPPORT - will use hard delete)
-- created_by (no audit trail)
-- updated_by (no audit trail)
-- is_deleted (no soft delete flag)
+CONTRADICTION: API requires soft delete, schema lacks deleted_at
+→ Will return typia.random<T>() with comment
 
-STEP 2 - API SPEC VS SCHEMA VERIFICATION:
-API Comment requires: Soft delete with deleted_at field
-Prisma Schema has: No deleted_at field
-CONTRADICTION DETECTED: API specification requires soft delete but schema doesn't support it
+OPERATIONS:
+- Select: id, email, is_active, created_at
+- Update: is_active, is_banned, display_name, avatar_url
+- Delete: Hard delete only
 
-STEP 3 - FIELD INVENTORY:
-Confirmed fields available for use:
-- id, email, password_hash, display_name, avatar_url
-- is_active, is_banned (Boolean flags)
-- created_at, updated_at (DateTime fields)
-
-STEP 4 - FIELD ACCESS STRATEGY:
-- Select: Will only select fields that exist: id, email, is_active, created_at
-- Update: Can update is_active, is_banned, display_name, avatar_url
-- Delete: Must use hard delete since no deleted_at field exists
-
-STEP 5 - TYPE COMPATIBILITY:
-- DateTime fields (created_at, updated_at): Convert using toISOStringSafe()
-- Optional fields (display_name, avatar_url): Handle null values properly
-- Use IDiscussionboardUser (auto-injected) for type safety
-
-STEP 6 - IMPLEMENTATION DECISION:
-Due to API-Schema contradiction, will implement placeholder with typia.random<T>()
-Cannot fulfill API requirements without schema modification
-
-STEP 7 - RETURN TYPE STRATEGY:
-Function return type is Promise<IDiscussionboardUser>
-Will NOT use satisfies on return statement - redundant with function signature
+TYPE HANDLING:
+- DateTime → toISOStringSafe()
+- Optional fields → handle null
 "
 ```
 
