@@ -44,11 +44,10 @@ subgraph "Functional Agents"
   coder --"Main Program" --> realize("Realize")
 end
 subgraph "Compiler Feedback"
-  prisma --"validates" --> prismaCompiler("Prisma Compiler")
-  interface --"validates" --> openapiValidator("OpenAPI Validator")
-  interface --"generates" --> tsCompiler("TypeScript Compiler")
-  test --"validates" --> tsCompiler("TypeScript Compiler")
-  realize --"validates" --> tsCompiler("TypeScript Compiler")
+  prisma --"validates" --> prismaCompiler("<a href="https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/prisma/AutoBePrisma.ts" target="_blank">Prisma Compiler</a>")
+  interface --"generates" --> openapiCompiler("<a href="https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/openapi/AutoBeOpenApi.ts" target="_blank">OpenAPI Compiler</a>")
+  test --"analyzes" --> testCompiler("<a href="https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/test/AutoBeTest.ts" target="_blank">Test Compiler</a>")
+  realize --"compiles" --> realizeCompiler("TypeScript Compiler")
 end
 ```
 
