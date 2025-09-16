@@ -15,5 +15,7 @@ export function filterDiagnostics(
   failures: IAutoBeRealizeFunctionFailure[],
   locations: string[],
 ): IAutoBeRealizeFunctionFailure[] {
-  return failures.filter((f) => locations.includes(f.function.location));
+  return failures
+    .filter((f) => f.function.location.startsWith("src/providers"))
+    .filter((f) => locations.includes(f.function.location));
 }
