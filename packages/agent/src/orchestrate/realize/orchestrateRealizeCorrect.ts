@@ -18,6 +18,7 @@ import { compileRealizeFiles } from "./internal/compileRealizeFiles";
 import { IAutoBeRealizeCorrectApplication } from "./structures/IAutoBeRealizeCorrectApplication";
 import { IAutoBeRealizeFunctionFailure } from "./structures/IAutoBeRealizeFunctionFailure";
 import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
+import { filterDiagnostics } from "./utils/filterDiagnostics";
 import { getRealizeWriteDto } from "./utils/getRealizeWriteDto";
 import { replaceImportStatements } from "./utils/replaceImportStatements";
 
@@ -53,6 +54,7 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
   diagnostics.forEach((diagnostic) => {
     const location: string | null = diagnostic.file;
     if (location === null) return;
+    if (!location.startsWith("src/providers")) return;
 
     if (!diagnosticsByFile[location]) {
       const func = functions.find((f) => f.location === location);
@@ -191,9 +193,9 @@ async function step<Model extends ILlmSchema.Model>(
   if (pointer.value === null)
     throw new Error("Failed to correct implementation code.");
 
-  pointer.value.revise.implementationCode = await replaceImportStatements(ctx, {
+  pointer.value.revise.final = await replaceImportStatements(ctx, {
     operation: props.scenario.operation,
-    code: pointer.value.revise.implementationCode,
+    code: pointer.value.revise.final,
     decoratorType: props.authorization?.payload.name,
   });
 
@@ -201,7 +203,7 @@ async function step<Model extends ILlmSchema.Model>(
     type: "realizeCorrect",
     id: v7(),
     location: props.scenario.location,
-    content: pointer.value.revise.implementationCode,
+    content: pointer.value.revise.final,
     tokenUsage,
     completed: ++props.progress.completed,
     total: props.progress.total,
@@ -231,24 +233,6 @@ function createController<Model extends ILlmSchema.Model>(props: {
       },
     } satisfies IAutoBeRealizeCorrectApplication,
   };
-}
-
-/**
- * Filter diagnostic failures to only include those matching the given
- * locations.
- *
- * @param failures - Array of function failures with diagnostic information
- * @param locations - Array of file locations to filter by
- * @returns Filtered array of failures matching the specified locations
- * @warning This function assumes f.function and f.function.location are always defined.
- *          If f.function is undefined, this will throw a runtime error.
- *          Consider using optional chaining: f.function?.location
- */
-function filterDiagnostics(
-  failures: IAutoBeRealizeFunctionFailure[],
-  locations: string[],
-): Array<IAutoBeRealizeFunctionFailure> {
-  return failures.filter((f) => locations.includes(f.function.location));
 }
 
 const claude = typia.llm.application<
