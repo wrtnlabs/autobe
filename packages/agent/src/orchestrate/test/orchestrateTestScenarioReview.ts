@@ -26,40 +26,6 @@ export async function orchestrateTestScenarioReview<
     ctx.retry,
   );
 
-  console.log();
-  console.log(`-------------Before vs After-------------`);
-  console.log(`Before Length: ${groups.length}`);
-  console.log(`After Group Length: ${res.length}\n`);
-
-  groups.forEach((group) => {
-    res.forEach((r) => {
-      if (
-        group.endpoint.method === r.endpoint.method &&
-        group.endpoint.path === r.endpoint.path
-      ) {
-        console.log(`Group : ${group.endpoint.method} ${group.endpoint.path}`);
-        console.log(`Before Scenario Length: ${group.scenarios.length}`);
-        console.log(`After Scenario Length: ${r.scenarios.length}`);
-
-        group.scenarios.forEach((s) => {
-          r.scenarios.forEach((r) => {
-            if (s.functionName === r.functionName) {
-              console.log(`Scenario Name: ${s.functionName}`);
-
-              console.log(
-                `Before Dependencies: ${JSON.stringify(s.dependencies, null, 2)}`,
-              );
-              console.log(
-                `After Dependencies: ${JSON.stringify(r.dependencies, null, 2)}`,
-              );
-            }
-          });
-        });
-        console.log();
-      }
-    });
-  });
-
   return res;
 }
 
@@ -83,7 +49,7 @@ async function review<Model extends ILlmSchema.Model>(
     controller: createController({
       model: ctx.model,
       pointer,
-      originalGroup: groups,
+      originalGroups: groups,
     }),
     histories: transformTestScenarioReviewHistories(ctx, groups),
     enforceFunctionCall: true,
@@ -116,7 +82,6 @@ async function review<Model extends ILlmSchema.Model>(
   });
 
   if (pointer.value.pass === true) {
-    console.log(`Pass in life ${life}`);
     return pointer.value.scenarioGroups;
   }
 
@@ -126,7 +91,7 @@ async function review<Model extends ILlmSchema.Model>(
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
   pointer: IPointer<IAutoBeTestScenarioReviewApplication.IProps | null>;
-  originalGroup: IAutoBeTestScenarioApplication.IScenarioGroup[];
+  originalGroups: IAutoBeTestScenarioApplication.IScenarioGroup[];
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
@@ -143,25 +108,24 @@ function createController<Model extends ILlmSchema.Model>(props: {
 
     const errors: IValidation.IError[] = [];
 
-    // validate endpoints between scenarioGroups and groups
+    // validate endpoints between scenarioGroups and originalGroups
     const filteredScenarioGroups: IAutoBeTestScenarioApplication.IScenarioGroup[] =
-      scenarioGroups.reduce<IAutoBeTestScenarioApplication.IScenarioGroup[]>(
-        (acc, scenarioGroup) => {
-          // Keep only groups whose endpoint matches with one in props.groups
-          const matchingGroup = props.originalGroup.find(
-            (g) =>
-              g.endpoint.method === scenarioGroup.endpoint.method &&
-              g.endpoint.path === scenarioGroup.endpoint.path,
-          );
+      props.originalGroups.reduce<
+        IAutoBeTestScenarioApplication.IScenarioGroup[]
+      >((acc, originalGroup) => {
+        // Keep only groups whose endpoint matches with one in props.originalGroups
+        const matchingGroup = scenarioGroups.find(
+          (g) =>
+            g.endpoint.method === originalGroup.endpoint.method &&
+            g.endpoint.path === originalGroup.endpoint.path,
+        );
 
-          if (!matchingGroup) {
-            return acc;
-          }
+        if (!matchingGroup) {
+          return [...acc, originalGroup];
+        }
 
-          return [...acc, scenarioGroup];
-        },
-        [],
-      );
+        return [...acc, matchingGroup];
+      }, []);
 
     result.data.scenarioGroups = filteredScenarioGroups;
 
