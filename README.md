@@ -41,7 +41,7 @@ Visit the site above to use AutoBE directly through the StackBlitz website. Simp
 
 Here's an example conversation script to use with AutoBE. Following this script will guide AutoBE to create an "Economic/Political Discussion Board":
 
-1. **Requirements Analysis**: "I want to create a economic/political discussion board. Since I'm not familiar with programming, please write a requirements analysis report as you see fit."
+1. **Requirements Analysis**: "I want to create an economic/political discussion board. Since I'm not familiar with programming, please write a requirements analysis report as you see fit."
 2. **Database Design**: "Design the database schema."
 3. **API Specification**: "Create the API interface specification."
 4. **Testing**: "Make the e2e test functions."
