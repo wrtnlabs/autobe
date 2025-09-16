@@ -1,6 +1,6 @@
 # AutoBE - AI backend builder for prototype to production
 
-[![GitHub License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/wrtnlabs/autobe/blob/master/LICENSE)
+[![GitHub License](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](https://github.com/wrtnlabs/autobe/blob/master/LICENSE)
 [![NPM Version](https://img.shields.io/npm/v/@autobe/agent.svg)](https://www.npmjs.com/package/@autobe/agent)
 [![NPM Downloads](https://img.shields.io/npm/dm/@autobe/agent.svg)](https://www.npmjs.com/package/@autobe/agent)
 [![Build Status](https://github.com/wrtnlabs/autobe/workflows/build/badge.svg)](https://github.com/wrtnlabs/autobe/actions?query=workflow%3Abuild)
@@ -30,6 +30,31 @@ https://github.com/user-attachments/assets/b995dd2a-23bd-43c9-96cb-96d5c805f19f
    - API Implementations: [`src/providers`](https://github.com/wrtnlabs/autobe-example-shopping/tree/main/src/providers)
 
 ![Compilation Success Dashboard](https://autobe.dev/images/demonstrate/replay-openai-gpt4.1.png)
+
+## Getting Started
+
+[![Playground StackBlitz Screenshot](https://autobe.dev/images/demonstrate/stackblitz.png)](https://stackblitz.com/github/wrtnlabs/autobe-playground-stackblitz)
+
+https://stackblitz.com/github/wrtnlabs/autobe-playground-stackblitz
+
+Visit the site above to use AutoBE directly through the StackBlitz website. Simply discuss the topic you want to build, and AutoBE will create a backend application for you.
+
+Here's an example conversation script to use with AutoBE. Following this script will guide AutoBE to create an "Economic/Political Discussion Board":
+
+1. **Requirements Analysis**: "I want to create a economic/political discussion board. Since I'm not familiar with programming, please write a requirements analysis report as you see fit."
+2. **Database Design**: "Design the database schema."
+3. **API Specification**: "Create the API interface specification."
+4. **Testing**: "Make the e2e test functions."
+5. **Implementation**: "Implement API functions."
+
+If you want to use Local LLMs like `qwen3-80b-a3b` or maintain multiple chat sessions for frequent conversations with AutoBE, run the following commands. You can install AutoBE locally, run the playground application directly, and manage your chat sessions:
+
+```bash
+git clone https://github.com/wrtnlabs/autobe
+cd autobe
+pnpm install
+pnpm run playground
+```
 
 ## How AutoBE Works
 
