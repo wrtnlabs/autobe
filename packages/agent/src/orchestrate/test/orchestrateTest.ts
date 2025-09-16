@@ -68,7 +68,6 @@ export const orchestrateTest =
       ctx,
       scenarios,
     );
-    console.log("--------------written--------------");
     if (written.length === 0)
       throw new Error("No test code written. Please check the logs.");
 
@@ -81,9 +80,6 @@ export const orchestrateTest =
         script: w.event.final ?? w.event.draft,
       })),
     );
-    console.log("--------------corrects--------------");
-
-    console.log(JSON.stringify(corrects, null, 2));
 
     await FileSystemIterator.save({
       root: `${path.join(__dirname, "../../../../../.aaa")}/test_corrects.json`,

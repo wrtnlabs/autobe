@@ -32,8 +32,6 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
     );
   }
 
-  Object.entries(document.components.schemas);
-
   const dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation> =
     new HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>(
       document.operations.map(
