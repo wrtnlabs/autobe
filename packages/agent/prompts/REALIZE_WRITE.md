@@ -457,10 +457,9 @@ The output must strictly follow the `IAutoBeRealizeWriteApplication.IProps` inte
 export namespace IAutoBeRealizeWriteApplication {
   export interface IProps {
     plan: string;                    // Step 1: Implementation plan
-    prisma_schemas: string;          // Step 2: Relevant schema definitions  
-    draft_without_date_type: string; // Step 3: Initial draft (no Date type)
-    review: string;                  // Step 4: Refined version
-    implementationCode: string;      // Final implementation
+    prismaSchemas: string;          // Step 2: Relevant schema definitions  
+    review: string;                  // Step 3: Refined version
+    final: string;      // Step 4: Final implementation
   }
 }
 ```
@@ -476,6 +475,7 @@ export namespace IAutoBeRealizeWriteApplication {
     - MUST list EVERY field that exists in the model with their exact types
     - MUST explicitly note fields that DO NOT exist (e.g., "Note: deleted_at field DOES NOT EXIST in this model")
     - Common assumption errors to avoid: `deleted_at`, `created_by`, `updated_by`, `is_deleted`, `is_active` - these are NOT standard fields
+    - Verify database compatibility (PostgreSQL AND SQLite) - NEVER use PostgreSQL-specific features like `mode: "insensitive"`
   
   - **STEP 2 - API SPEC VS SCHEMA VERIFICATION**:
     - Compare API comment/JSDoc requirements with actual Prisma schema
@@ -505,8 +505,20 @@ export namespace IAutoBeRealizeWriteApplication {
   - **STEP 6 - IMPLEMENTATION APPROACH**: 
     - If complex type errors are anticipated, plan to use application-level joins
     - Outline the logic flow using ONLY verified fields
+    - Use `typia.random<T>()` with explanatory comment if logic cannot be implemented
+    - Structure: always a single `async function`, using only `props` parameter (if needed)
+  
+  **🔍 Feasibility Analysis Requirement:**
+  - Before generating any code, MUST analyze whether the implementation is feasible based on given Prisma schema and DTO types
+  - If required fields or relationships are missing/incompatible, explicitly state implementation is NOT possible
+  - In such cases, only return detailed comment in `final` explaining why logic cannot be implemented
+  
+  **🔥 Error Handling Plan (if errors expected):**
+  - Document error messages and TypeScript error codes
+  - Analyze root cause (type mismatch, missing field, nullability)
+  - Define concrete resolution steps (e.g., using `?? undefined` for nullable fields, proper relation handling)
 
-* **prisma_schemas** (Step 2):
+* **prismaSchemas** (Step 2):
   The Prisma schema string that will be used to validate the implementation logic. You must explicitly specify only the relevant models and fields from your full schema that are used in this implementation.
   
   **Requirements**:
@@ -514,20 +526,39 @@ export namespace IAutoBeRealizeWriteApplication {
   - Include ALL fields that will be accessed or modified
   - This acts as a contract ensuring no non-existent fields are referenced
 
-* **draft\_without\_date\_type** (Step 3):
-  A rough version of the code with special care to **never use the `Date` type**. Use `string & tags.Format<'date-time'>` or other string-based formats instead. This stage exists to validate that the type model follows the team's conventions, especially around temporal data.
+* **review** (Step 3):
+  A refined version of the implementation with proper error handling and type safety. This should include real DTO-conformant operations and resolve any structural or type mismatches.
   
-  **MUST** use only fields verified to exist in the schema during the plan phase.
+  **Should validate**: Field usage against schema, type safety, adherence to conventions, and **never use the `Date` type** - always use `string & tags.Format<'date-time'>` with `toISOStringSafe()`.
 
-* **review** (Step 4):
-  A self-review of the draft code. This should include commentary on correctness, potential issues, or why certain trade-offs were made.
-  
-  **Should validate**: Field usage against schema, type safety, and adherence to conventions.
-
-* **implementationCode** (Final):
+* **final** (Step 4):
   The final, production-ready implementation. This version should reflect all improvements and pass type checks, ideally without needing further revision.
   
   **Must guarantee**: All referenced fields exist in the schema, proper type handling, and error-free compilation.
+  
+  **⚠️ Fallback Behavior:**
+  - If the `plan` phase determines implementation is NOT feasible due to schema/DTO mismatches:
+    - Still return syntactically valid function
+    - Return mock data using `typia.random<T>()` with comment explaining limitation
+    - Example:
+    ```typescript
+    // ⚠️ Cannot implement logic due to missing relation between A and B
+    export async function someFunction(...) {
+      return typia.random<IReturn>(); // mocked output
+    }
+    ```
+  
+  **⚠️ Prohibited Practices:**
+  - Do NOT add or modify import statements manually (auto-handled)
+  - Do NOT use `any`, `as any`, or `satisfies any`
+  - Do NOT assign native `Date` objects directly (use `toISOStringSafe()`)
+  - Do NOT use unsafe type assertions except for safe branding/literal narrowing
+  - Do NOT write code outside single async function structure
+  - Do NOT perform input validation (assume validated)
+  - Do NOT use dynamic imports (`import()`)
+  - Do NOT use Prisma-generated input types (use types from `../api/structures`)
+  - Do NOT use `Object.prototype.hasOwnProperty.call()`
+  - Do NOT escape newlines/quotes in implementation string
   
   **🚨 MANDATORY JSDoc Requirements**:
   - Every function MUST include comprehensive JSDoc documentation
@@ -873,11 +904,10 @@ export async function put__public_resources_$resourceId(
      - Converting validated data that you're certain matches the target type
 
    - 🔍 **If uncertain**, use alternatives:
-     - `typia.assert<T>()` for runtime validation and type conversion
-     - `typia.assertGuard<T>()` for type narrowing with validation
      - Custom type guards for complex validation logic
+     - Type assertions with careful consideration
 
-    > ⚠️ Only use `as` when you can guarantee type safety. When in doubt, prefer validation over assertion.
+    > ⚠️ Only use `as` when you can guarantee type safety.
 4. Assuming field presence without declaration (e.g., `parameters.id`)
 5. Manual validation (all values are assumed to be valid and present)
 6. Unapproved imports (e.g., lodash)
@@ -887,10 +917,9 @@ export async function put__public_resources_$resourceId(
    **Note**: Some modules are auto-injected (see Auto-Injected Imports section) and should not be manually imported.
 
    > ⚠️ For example, avoid dynamic import patterns like `import("some-module").SomeType`.
-   > These can break type resolution and cause cryptic errors such as:
-   > `"Property 'assert' does not exist on type 'typeof import(\"node_modules/typia/lib/tags/index\")'"`
+   > These can break type resolution and cause cryptic errors.
    > 
-   > **Note**: Use auto-injected modules directly (e.g., `typia.assert()`, `tags.Format`) without manual imports.
+   > **Note**: Use auto-injected modules directly (e.g., `tags.Format`) without manual imports.
    > Dynamic imports bypass static type checking and make code unpredictable.
 
 9. **🚨 CRITICAL: Creating intermediate update variables for Prisma operations**
@@ -1116,7 +1145,6 @@ These imports are globally available and will always be present.
 **Usage examples:**
 ```typescript
 // ✅ Correct - Use directly without imports
-const validated = typia.assert<IUser>(data);
 const id = v4() as string & tags.Format<'uuid'>;
 const dateString = toISOStringSafe(new Date());
 
@@ -1242,7 +1270,7 @@ await prisma.posts.findMany({
 
 ### 🚨 String to Literal Union Type Narrowing
 
-**CRITICAL**: `satisfies` CANNOT narrow a `string` type to a literal union. You must use `as` or `typia.assertGuard`:
+**CRITICAL**: `satisfies` CANNOT narrow a `string` type to a literal union. You must use `as` for type assertions:
 
 ```typescript
 // ❌ WRONG: satisfies doesn't narrow string to literal union
@@ -1255,25 +1283,16 @@ const sortField = body.sort.replace(/^[-+]/, "") as
   | "name"
   | "created_at";
 
-// ✅ CORRECT Option 2: Use typia.assertGuard to narrow existing variable (RECOMMENDED)
-const target: string = body.sort.replace(/^[-+]/, "");
-typia.assertGuard<"name" | "created_at">(target);
-// Now target is type "name" | "created_at", not string!
-
-// ✅ CORRECT Option 3: Use typia.assert when you need the returned value
-const sortField = typia.assert<"name" | "created_at">(
-  body.sort.replace(/^[-+]/, "")
-);
+// ✅ CORRECT Option 2: Use type assertion when confident
+const target = body.sort.replace(/^[-+]/, "") as "name" | "created_at";
 
 // More practical examples:
 const status = body.status.toLowerCase() as "active" | "inactive" | "pending";
 const method = req.method.toUpperCase() as "GET" | "POST" | "PUT" | "DELETE";
 const role = userData.role as "admin" | "user" | "guest";
 
-// When safety is critical, use typia.assertGuard:
-const status: string = body.status;
-typia.assertGuard<"pending" | "approved" | "rejected">(status);
-// status is now narrowed to the literal union type!
+// When safety is critical, use type guards or careful assertions:
+const status = body.status as "pending" | "approved" | "rejected";
 ```
 
 **Why this happens:**
@@ -1282,21 +1301,9 @@ typia.assertGuard<"pending" | "approved" | "rejected">(status);
 - String transformations (replace, slice, etc.) always return `string` type
 - You need explicit narrowing with `as` or runtime validation with `typia`
 
-**Key Difference - assert vs assertGuard:**
-```typescript
-// typia.assert - Returns the validated value (need assignment)
-const value1 = typia.assert<"a" | "b">(someString);
-
-// typia.assertGuard - Narrows the existing variable's type (no assignment needed)
-const value2: string = someString;
-typia.assertGuard<"a" | "b">(value2);
-// value2 is now type "a" | "b", not string!
-```
-
 **Rule Summary for String → Literal Union:**
-- ✅ Use `typia.assertGuard<LiteralUnion>(variable)` for runtime safety + type narrowing (RECOMMENDED)
-- ✅ Use `as LiteralUnion` when you're 100% confident about the value
-- ✅ Use `typia.assert<LiteralUnion>()` only when you need the returned value
+- ✅ Use `as LiteralUnion` when you're confident about the value
+- ✅ Create custom type guards for runtime validation
 - ❌ NEVER use `satisfies` - it won't narrow the type
 
 **❌ AVOID: Don't use `satisfies` on return statements when function return type is already declared**
@@ -2162,15 +2169,10 @@ const input = {
 };
 ```
 
-3. Using `typia.assertGuard` or `typia.assert`:
+3. Using type assertions:
 
 ```ts
-void typia.assertGuard<1 | -1>(body.value);
-value // 1 | -1
-```
-
-```ts
-const value = typia.assert<1 | -1>(body.value); // 1 | -1
+const value = body.value as 1 | -1; // 1 | -1
 ```
 
 
@@ -2355,16 +2357,10 @@ npm install --save-dev @types/bcrypt
 **Problem**: `string | (string & Format<'uuid'>)` is not assignable to `string & Format<'uuid'>`
 
 ✅ **Fix**:
-Use either a validated cast or `typia.assertGuard`:
+Use a type assertion:
 
 ```ts
 const id = body.id as string & tags.Format<'uuid'>; // Allowed exception
-```
-
-OR:
-
-```ts
-const id = typia.assertGuard<string & tags.Format<'uuid'>>(body.id);
 ```
 
 ### 🕒 Dates and DateTimes Must Be Strings
@@ -3616,179 +3612,207 @@ export interface IUser {
 
 ---
 
-## 🛡️ `typia.assert` vs `typia.assertGuard`
+## 🛡️ Advanced Type Narrowing and Casting Patterns
 
-`typia` provides two main runtime validation utilities: `assert` and `assertGuard`.
-Both serve to validate runtime data against a TypeScript type, but their **behavior and return types differ**, which can influence which one to use depending on your use case.
+**IMPORTANT**: Following patterns help resolve TypeScript type casting and assignment errors safely without causing infinite recursive type issues.
 
-### 🔍 `typia.assert<T>(input): T`
+### 🎯 The satisfies Pattern for Typia Tag Mismatches
 
-* Validates that `input` conforms to type `T`.
-* If invalid, throws a detailed exception.
-* **Returns** the parsed and validated input as type `T`.
-* Ideal when you want **to validate and use the result immediately**.
+When encountering Typia tag type incompatibility errors (`"typia.tag"` in error message), use the `satisfies` pattern to strip tags while preserving base types:
 
-**Example:**
+**THE FOUR-STEP FIX:**
+1. **See tag mismatch error?** → Identify the type mismatch
+2. **Check if nullable** → Look for `| null | undefined`
+3. **Apply the pattern:**
+   - **Non-nullable:** `value satisfies BaseType as BaseType`
+   - **Nullable:** `value satisfies BaseType | null | undefined as BaseType | null | undefined`
+   - **Nullish coalescing:** `(value ?? default) satisfies BaseType as BaseType` (ALWAYS use parentheses)
 
-```ts
-const user = typia.assert<IUser>(input); // user is of type IUser
+```typescript
+// Problem: Tag mismatch between different constraints
+const page: number & tags.Type<"int32"> = getValue();
+const pageWithMinimum: number & tags.Type<"int32"> & tags.Minimum<0> = page; // ERROR!
+
+// Solution: Strip tags using satisfies pattern
+const pageWithMinimum: number & tags.Type<"int32"> & tags.Minimum<0> = 
+  page satisfies number as number;
+
+// With nullable types
+const userId: (string & tags.Format<"uuid">) | null | undefined = getId();
+const simpleId: string | null | undefined = 
+  userId satisfies string | null | undefined as string | null | undefined;
+
+// With nullish coalescing - ALWAYS wrap in parentheses
+const x: (number & tags.Type<"int32">) | null | undefined = getValue();
+const y: number & tags.Type<"int32"> & tags.Minimum<0> = 
+  (x ?? 0) satisfies number as number;
 ```
 
----
+### 📅 Date to String Conversions
 
-### 🧪 `typia.assertGuard<T>(input): void`
+Always use `.toISOString()` when converting Date to string types:
 
-* Validates that `input` conforms to type `T`.
-* If invalid, throws an exception like `assert`.
-* **Does not return anything** (`void` return type).
-* Acts like a **type guard** for the input **within the scope**.
-* Useful when you want to narrow the type **for subsequent logic**, but **don't need to reassign the value**.
+```typescript
+// ❌ ERROR: Cannot assign Date to string
+const date: Date = new Date();
+const timestamp: string & tags.Format<"date-time"> = date; // ERROR!
 
-**Example:**
+// ✅ CORRECT: Convert Date to ISO string
+const timestamp: string & tags.Format<"date-time"> = date.toISOString();
 
-```ts
-typia.assertGuard<IUser>(input); // input is now treated as IUser
+// Handling nullable dates
+const date: Date | null | undefined = getDate();
+const timestamp: string | null | undefined = date?.toISOString() ?? null;
 
-// input can be used safely as IUser here
-console.log(input.username);
+// Providing default for non-nullable target
+const timestamp: string = (date ?? new Date()).toISOString();
 ```
 
-### 📎 Appendix – `assert` vs `assertGuard`
+### 🔍 Exhaustive Nullable/Undefined Type Narrowing
 
-```ts
-/**
- * Asserts a value type.
- *
- * Asserts a parametric value type and throws a {@link TypeGuardError} with detailed
- * reason, if the parametric value is not following the type `T`. Otherwise, the
- * value is following the type `T`, just input parameter would be returned.
- *
- * If what you want is not asserting but just knowing whether the parametric value is
- * following the type `T` or not, you can choose the {@link is} function instead.
- * Otherwise you want to know all the errors, {@link validate} is the way to go.
- * Also, if you want to automatically cast the parametric value to the type `T`
- * when no problem (perform the assertion guard of type).
- *
- * On the other and, if you don't want to allow any superfluous property that is not
- * enrolled to the type `T`, you can use {@link assertEquals} function instead.
- *
- * @template T Type of the input value
- * @param input A value to be asserted
- * @param errorFactory Custom error factory. Default is `TypeGuardError`
- * @returns Parametric input value
- * @throws A {@link TypeGuardError} instance with detailed reason
- *
- * @author Jeongho Nam - https://github.com/samchon
- */
-export declare function assert<T>(input: T, errorFactory?: undefined | ((props: TypeGuardError.IProps) => Error)): T;
-/**
- * Asserts a value type.
- *
- * Asserts a parametric value type and throws a {@link TypeGuardError} with detailed
- * reason, if the parametric value is not following the type `T`. Otherwise, the
- * value is following the type `T`, just input parameter would be returned.
- *
- * If what you want is not asserting but just knowing whether the parametric value is
- * following the type `T` or not, you can choose the {@link is} function instead.
- * Otherwise, you want to know all the errors, {@link validate} is the way to go.
- *
- * On the other and, if you don't want to allow any superfluous property that is not
- * enrolled to the type `T`, you can use {@link assertEquals} function instead.
- *
- * @template T Type of the input value
- * @param input A value to be asserted
- * @param errorFactory Custom error factory. Default is `TypeGuardError`
- * @returns Parametric input value casted as `T`
- * @throws A {@link TypeGuardError} instance with detailed reason
- *
- * @author Jeongho Nam - https://github.com/samchon
- */
-export declare function assert<T>(input: unknown, errorFactory?: undefined | ((props: TypeGuardError.IProps) => Error)): T;
-/**
- * Assertion guard of a value type.
- *
- * Asserts a parametric value type and throws a {@link TypeGuardError} with detailed
- * reason, if the parametric value is not following the type `T`. Otherwise, the
- * value is following the type `T`, nothing would be returned, but the input value
- * would be automatically casted to the type `T`. This is the concept of
- * "Assertion Guard" of a value type.
- *
- * If what you want is not asserting but just knowing whether the parametric value is
- * following the type `T` or not, you can choose the {@link is} function instead.
- * Otherwise you want to know all the errors, {@link validate} is the way to go.
- * Also, if you want to returns the parametric value when no problem, you can use
- * {@link assert} function instead.
- *
- * On the other and, if you don't want to allow any superfluous property that is not
- * enrolled to the type `T`, you can use {@link assertGuardEquals} function instead.
- *
- * @template T Type of the input value
- * @param input A value to be asserted
- * @param errorFactory Custom error factory. Default is `TypeGuardError`
- * @throws A {@link TypeGuardError} instance with detailed reason
- *
- * @author Jeongho Nam - https://github.com/samchon
- */
-export declare function assertGuard<T>(input: T, errorFactory?: undefined | ((props: TypeGuardError.IProps) => Error)): asserts input is T;
-/**
- * Assertion guard of a value type.
- *
- * Asserts a parametric value type and throws a {@link TypeGuardError} with detailed
- * reason, if the parametric value is not following the type `T`. Otherwise, the
- * value is following the type `T`, nothing would be returned, but the input value
- * would be automatically casted to the type `T`. This is the concept of
- * "Assertion Guard" of a value type.
- *
- * If what you want is not asserting but just knowing whether the parametric value is
- * following the type `T` or not, you can choose the {@link is} function instead.
- * Otherwise you want to know all the errors, {@link validate} is the way to go.
- * Also, if you want to returns the parametric value when no problem, you can use
- * {@link assert} function instead.
- *
- * On the other and, if you don't want to allow any superfluous property that is not
- * enrolled to the type `T`, you can use {@link assertGuardEquals} function instead.
- *
- * @template T Type of the input value
- * @param input A value to be asserted
- * @param errorFactory Custom error factory. Default is `TypeGuardError`
- * @throws A {@link TypeGuardError} instance with detailed reason
- *
- * @author Jeongho Nam - https://github.com/samchon
- */
-export declare function assertGuard<T>(input: unknown, errorFactory?: undefined | ((props: TypeGuardError.IProps) => Error)): asserts input is T;
+TypeScript requires explicit elimination of each union member:
 
+**THE PATTERN:**
+1. **See `T | null | undefined`?** → Write `!== null && !== undefined`
+2. **See `T | undefined`?** → Write `!== undefined`
+3. **See `T | null`?** → Write `!== null`
+
+```typescript
+// Problem: Incomplete type narrowing
+const value: string | null | undefined = getValue();
+if (value !== null) {
+  processString(value); // ERROR: value is still string | undefined
+}
+
+// Solution: Exhaustive checking
+if (value !== null && value !== undefined) {
+  processString(value); // OK: value is string
+}
+
+// Converting null to undefined (common with Prisma)
+const dbValue: string | null = getFromDatabase();
+const apiValue: string | undefined = dbValue !== null ? dbValue : undefined;
+
+// Or using nullish coalescing
+const apiValue: string | undefined = dbValue ?? undefined;
 ```
 
-### Handling Typia Assertion Errors for JsonSchemaPlugin Format Mismatches
+### 🔤 String to Literal Union Type Narrowing
+
+For literal type assignments, use type assertions when confident:
+
+```typescript
+// Problem: Cannot assign string to literal union
+const status: string = getStatus();
+const validStatus: "pending" | "approved" | "rejected" = status; // ERROR!
+
+// Solution: Type assertion
+const validStatus: "pending" | "approved" | "rejected" = 
+  status as "pending" | "approved" | "rejected";
+
+// With runtime validation using custom type guard
+function isValidStatus(s: string): s is "pending" | "approved" | "rejected" {
+  return ["pending", "approved", "rejected"].includes(s);
+}
+
+if (isValidStatus(status)) {
+  // status is now typed as literal union
+}
+```
+
+### ⛓️ Optional Chaining with Boolean Results
+
+Optional chaining with array methods returns `T | undefined`, not pure boolean:
+
+```typescript
+// Problem: Optional chaining creates boolean | undefined
+const hasBlogTag = article.tags?.includes("blog"); // Type: boolean | undefined
+TestValidator.predicate("has tag", hasBlogTag); // ERROR: expects boolean
+
+// Solution 1: Compare with true (RECOMMENDED)
+TestValidator.predicate(
+  "has tag", 
+  article.tags?.includes("blog") === true
+);
+
+// Solution 2: Use nullish coalescing
+TestValidator.predicate(
+  "has tag",
+  article.tags?.includes("blog") ?? false
+);
+```
+
+### 🚫 Type Narrowing "No Overlap" Errors
+
+When TypeScript says types have "no overlap", remove redundant checks:
+
+```typescript
+// Problem: Redundant type check after narrowing
+if (value === false) {
+  handleFalse();
+} else {
+  if (value !== false) { // ERROR: 'true' and 'false' have no overlap
+    handleTrue();
+  }
+}
+
+// Solution: Remove redundant check
+if (value === false) {
+  handleFalse();
+} else {
+  handleTrue(); // value must be true here
+}
+```
+
+### 🎯 Safe Type Handling Patterns Summary
+
+```typescript
+// Custom type guard for complex validation
+function isUser(obj: unknown): obj is IUser {
+  return typeof obj === 'object' && 
+         obj !== null && 
+         'username' in obj &&
+         'email' in obj;
+}
+
+// Type assertion when confident
+const user = input as IUser;
+
+// Conditional narrowing for safety
+if (isUser(input)) {
+  console.log(input.username); // Safe access
+}
+```
+
+
+### Handling Type Errors for JsonSchemaPlugin Format Mismatches
 
 - These errors occur because a value typed as `number & Type<"int32">` is being assigned where `number & Type<"int32"> & typia.tags.JsonSchemaPlugin<{ format: "uint32" }>` is expected.
 - The root cause is a mismatch between signed (`int32`) and unsigned (`uint32`) integer formats.
-- To resolve these, use **typia.assert** to explicitly assert or validate the value conforms to the expected `uint32` format.
+- To resolve these, use type assertions or ensure proper type compatibility.
 - Example:
 
 ```ts
-const value = getValue(); // type: number & tags.Type<"int32">
+const value = getValue() as number & tags.Type<"int32"> & tags.JsonSchemaPlugin<{ format: "uint32" }>;
 
-typia.assert<number & tags.Type<"int32"> & tags.JsonSchemaPlugin<{ format: "uint32" }>>(value);
-
-// Now `value` is guaranteed to conform to the expected unsigned 32-bit integer type.
+// Value is now typed correctly
 ```
 
-* Always use typia.tags' `assert` or related functions for runtime validation and to satisfy TypeScript's type checker.
-* This approach ensures type safety without compromising runtime correctness.
+* Use type assertions carefully to satisfy TypeScript's type checker.
+* This approach ensures type safety when you're confident about the value.
 
 ---
 
-### ✅ Summary: Which Should I Use?
+### ✅ Summary: Type Handling Best Practices
 
-| Use Case                             | Recommended API          |
+| Use Case                             | Recommended Approach     |
 | ------------------------------------ | ------------------------ |
-| Validate and return typed value      | `typia.assert<T>()`      |
-| Narrow type without reassigning      | `typia.assertGuard<T>()` |
-| Use validated object directly        | `typia.assert<T>()`      |
-| Use input inside a conditional block | `typia.assertGuard<T>()` |
+| Type assertion when confident        | `as T`                   |
+| Runtime validation needed            | Custom type guards       |
+| Safe type narrowing                  | Conditional checks       |
+| Complex validation logic             | Helper functions         |
 
-> **Note:** Since `assertGuard` returns `void`, if you need **both type narrowing and a returned value**, `assert` is the better choice.
+> **Note:** Avoid using typia.assert or typia.assertGuard with Prisma types to prevent infinite recursive type issues.
 
 ---
 

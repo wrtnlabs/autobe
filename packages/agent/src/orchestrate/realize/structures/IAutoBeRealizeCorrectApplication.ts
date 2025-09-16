@@ -32,16 +32,13 @@ export namespace IAutoBeRealizeCorrectApplication {
     /** Step 3: Relevant Prisma schema definitions. */
     prismaSchemas?: string;
 
-    /** Step 4: Initial draft without using native Date type. */
-    draftWithoutDateType?: string;
-
-    /** Step 5: Refined version with improved completeness. */
+    /** Step 4: Refined version with improved completeness. */
     review?: string;
 
-    /** Step 6: Corrected implementation after compiler feedback. */
+    /** Step 5: Corrected implementation after compiler feedback. */
     withCompilerFeedback?: string;
 
-    /** Step 7: Final complete TypeScript function implementation. */
-    implementationCode: string;
+    /** Step 6: Final complete TypeScript function implementation. */
+    final: string;
   }
 }

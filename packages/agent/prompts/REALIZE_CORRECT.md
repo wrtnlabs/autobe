@@ -10,7 +10,7 @@ Fix the compilation error in the provided code - **use the minimal effort needed
 
 ### ⚡ Quick Fix Priority (for simple errors)
 When errors are obvious (null handling, type conversions, missing fields):
-1. Go directly to `implementationCode` with the fix
+1. Go directly to `final` with the fix
 2. Skip all intermediate CoT steps
 3. Save tokens and processing time
 
@@ -36,10 +36,9 @@ export namespace IAutoBeRealizeCorrectApplication {
       errorAnalysis?: string;           // Step 1: Error analysis (OPTIONAL)
       plan?: string;                    // Step 2: Implementation plan (OPTIONAL)
       prismaSchemas?: string;           // Step 3: Relevant schema definitions (OPTIONAL)
-      draftWithoutDateType?: string;    // Step 4: Initial draft (OPTIONAL)
-      review?: string;                  // Step 5: Refined version (OPTIONAL)
-      withCompilerFeedback?: string;    // Step 6: Compiler feedback (OPTIONAL)
-      implementationCode: string;       // Step 7: Final implementation (REQUIRED)
+      review?: string;                  // Step 4: Refined version (OPTIONAL)
+      withCompilerFeedback?: string;    // Step 5: Compiler feedback (OPTIONAL)
+      final: string;                    // Step 6: Final implementation (REQUIRED)
     }
   }
 }
@@ -50,13 +49,12 @@ export namespace IAutoBeRealizeCorrectApplication {
 **NEW APPROACH**: Most fields are now OPTIONAL to allow efficient correction when errors are obvious.
 
 **REQUIRED FIELD:**
-- `revise.implementationCode`: MUST contain complete, valid TypeScript function code
+- `revise.final`: MUST contain complete, valid TypeScript function code
 
 **⚡ OPTIONAL FIELDS - Skip When Obvious:**
 - `revise.errorAnalysis`: Skip if error is trivial (e.g., simple null handling)
 - `revise.plan`: Skip if fix is straightforward
 - `revise.prismaSchemas`: Skip if schema context is clear from error
-- `revise.draftWithoutDateType`: Skip if going directly to solution
 - `revise.review`: Skip if no complex logic to review
 - `revise.withCompilerFeedback`: Skip if first attempt succeeds
 
@@ -81,7 +79,7 @@ export namespace IAutoBeRealizeCorrectApplication {
 // For simple "Type 'string | null' is not assignable to type 'string'"
 {
   revise: {
-    implementationCode: `
+    final: `
       // ... fixed code with device_info: updated.device_info ?? "" ...
     `
     // Other fields omitted as fix is obvious
@@ -178,26 +176,20 @@ Follows the same SCHEMA-FIRST APPROACH as in REALIZE_WRITE_TOTAL:
 
 Contains ONLY the relevant models and fields used in this implementation.
 
-#### revise.draftWithoutDateType (Step 4 - OPTIONAL - CoT: First Correction Attempt)
-
-**Draft WITHOUT using native Date type**
-
-Initial skeleton with no `Date` type usage. DO NOT add imports.
-
-#### revise.review (Step 5 - OPTIONAL - CoT: Improvement Phase)
+#### revise.review (Step 4 - OPTIONAL - CoT: Improvement Phase)
 
 **Refined Version**
 
 Improved version with real operations and error handling.
 
-#### 🛠 revise.withCompilerFeedback (Step 6 - OPTIONAL - CoT: Error Resolution)
+#### 🛠 revise.withCompilerFeedback (Step 5 - OPTIONAL - CoT: Error Resolution)
 
 **With Compiler Feedback**
 
 - If TypeScript errors detected: Apply fixes
 - If no errors: Must contain text "No TypeScript errors detected - skipping this phase"
 
-#### 💻 revise.implementationCode (Step 7 - REQUIRED - CoT: Complete Solution)
+#### 💻 revise.final (Step 6 - REQUIRED - CoT: Complete Solution)
 
 **Final Implementation**
 
@@ -689,10 +681,8 @@ const sortField = body.sort.replace(/^[-+]/, "") satisfies "name" | "created_at"
 const sorted = items.sort(body.sortBy as "name" | "code" | "created_at");
 const sortField = body.sort.replace(/^[-+]/, "") as "name" | "created_at";
 
-// ✅ Pattern 2: Runtime validation with typia.assertGuard (RECOMMENDED)
-const sortField: string = body.sort.replace(/^[-+]/, "");
-typia.assertGuard<"name" | "created_at">(sortField);
-// sortField is now type "name" | "created_at", not string!
+// ✅ Pattern 2: Type assertion when confident
+const sortField = body.sort.replace(/^[-+]/, "") as "name" | "created_at";
 
 // ✅ Pattern 3: Validate and narrow type
 if (["name", "code", "created_at"].includes(body.sortBy)) {
@@ -829,7 +819,7 @@ export async function method__path_to_endpoint(props: {
 ```
 Can this be fixed without changing schema or API contract?
 ├── YES → Proceed to Step 3
-└── NO → Jump to Step 4 (Implement Safe Placeholder)
+└── NO → Jump to Step 3 (Implement Safe Placeholder)
 ```
 
 ### Step 3: Apply Fix (Start Minimal, Then Escalate)
@@ -846,7 +836,7 @@ Based on error code, apply fixes in escalating order:
    - Restructure data flow to avoid the compilation issue
    - Split complex operations into simpler, compilable parts
 
-### Step 4: Implement Safe Placeholder (If Unrecoverable)
+### Step 3 (Alternative): Implement Safe Placeholder (If Unrecoverable)
 - Document the exact contradiction
 - Explain what needs to change
 - Return `typia.random<T>()` with clear TODO
@@ -995,9 +985,9 @@ Read error message
 ```
 Error Complexity Assessment:
 ├── Simple (single line, obvious fix)
-│   └── Skip to implementationCode only
+│   └── Skip to final only
 ├── Medium (2-3 related errors)
-│   └── Use errorAnalysis + implementationCode
+│   └── Use errorAnalysis + final
 └── Complex (multiple files, nested errors)
     └── Use full Chain of Thinking
 
@@ -1015,10 +1005,10 @@ Common Simple Fixes (skip CoT):
 ### Example 1: Simple Null Handling (Skip CoT)
 **Error**: `Type 'string | null' is not assignable to type 'string'`
 ```typescript
-// Just provide fixed code in implementationCode
+// Just provide fixed code in final
 {
   revise: {
-    implementationCode: `
+    final: `
       export async function updateUser(...) {
         // ...
         return {
@@ -1041,7 +1031,7 @@ Common Simple Fixes (skip CoT):
     plan: "Need to restructure queries to avoid nested operations...",
     prismaSchemas: "model User { ... }",
     // ... other steps ...
-    implementationCode: "// Complete refactored solution"
+    final: "// Complete refactored solution"
   }
 }
 ```

@@ -1,7 +1,7 @@
 # Prisma Schemas
 
 ```json
-{prisma_schemas}
+{prismaSchemas}
 ````
 
 # ℹ️ How to Use the Above Prisma Schemas
