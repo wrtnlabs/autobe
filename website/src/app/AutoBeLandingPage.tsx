@@ -446,7 +446,7 @@ export default function AutoBeLandingPage() {
                 </div>
                 
                 <div className="grid md:grid-cols-2 gap-6">
-                  <div className="flex items-start">
+                  <div className="flex items-start bg-purple-500/5 border border-purple-600/20 rounded-xl p-4 transition-all duration-300 hover:bg-purple-500/10 hover:border-purple-600/40 hover:scale-[1.02]">
                     <span className="text-purple-400 mr-3">📦</span>
                     <div>
                       <p className="font-semibold text-white">Zero Configuration</p>
@@ -455,7 +455,7 @@ export default function AutoBeLandingPage() {
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-start">
+                  <div className="flex items-start bg-purple-500/5 border border-purple-600/20 rounded-xl p-4 transition-all duration-300 hover:bg-purple-500/10 hover:border-purple-600/40 hover:scale-[1.02]">
                     <span className="text-purple-400 mr-3">🔒</span>
                     <div>
                       <p className="font-semibold text-white">100% Type Safety</p>
@@ -464,7 +464,7 @@ export default function AutoBeLandingPage() {
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-start">
+                  <div className="flex items-start bg-purple-500/5 border border-purple-600/20 rounded-xl p-4 transition-all duration-300 hover:bg-purple-500/10 hover:border-purple-600/40 hover:scale-[1.02]">
                     <span className="text-purple-400 mr-3">⚡</span>
                     <div>
                       <p className="font-semibold text-white">Frontend Ready</p>
@@ -473,7 +473,7 @@ export default function AutoBeLandingPage() {
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-start">
+                  <div className="flex items-start bg-purple-500/5 border border-purple-600/20 rounded-xl p-4 transition-all duration-300 hover:bg-purple-500/10 hover:border-purple-600/40 hover:scale-[1.02]">
                     <span className="text-purple-400 mr-3">🧪</span>
                     <div>
                       <p className="font-semibold text-white">E2E Test Integration</p>
