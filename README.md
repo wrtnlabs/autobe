@@ -144,9 +144,10 @@ Every AutoBE-generated backend automatically includes a type-safe client SDK, ma
 - **Zero Configuration**: SDK is auto-generated alongside your backend - no manual setup required
 - **100% Type Safety**: Full TypeScript support with autocomplete and compile-time validation
 - **Framework Agnostic**: Works with React, Vue, Angular, or any TypeScript/JavaScript project
+- **E2E Test Integration**: Powers AI-generated test suites for comprehensive backend testing
 
 ```typescript
-import api, { IPost } from "@autobe-generated-backend-sdk";
+import api, { IPost } from "autobe-generated-sdk";
 
 // Type-safe API calls with full autocomplete
 const connection: api.IConnection = {
@@ -165,9 +166,9 @@ const post: IPost = await api.functional.posts.create(connection, {
 });
 ```
 
-This eliminates the traditional pain points of API integration - no more manual type definitions, no more runtime surprises, and no more API documentation lookups.
+This SDK eliminates the traditional pain points of API integration - no more manual type definitions, no more runtime surprises, and no more API documentation lookups. Your frontend developers can focus on building features, not wrestling with API contracts.
 
-Your frontend developers can focus on building features, not wrestling with API contracts.
+**Beyond Frontend Integration**: The SDK powers both frontend development and E2E test generation. AutoBE uses the same type-safe SDK internally to generate comprehensive test suites, ensuring every API endpoint is thoroughly tested. This creates a robust feedback loop that enhances backend stability - AI writes tests using the SDK, the SDK ensures type safety, and your backend becomes more reliable with every generated test.
 
 ## Roadmap Schedule
 
