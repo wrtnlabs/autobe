@@ -5,6 +5,10 @@ const meta: MetaRecord = {
     type: "page",
     title: "Introduction",
     display: "hidden",
+    theme: {
+      layout: "full",
+      toc: false,
+    },
   },
   docs: {
     type: "page",

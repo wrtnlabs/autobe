@@ -25,11 +25,14 @@
   },
   "homepage": "https://autobe.dev",
   "dependencies": {
+    "@tailwindcss/postcss": "^4.1.13",
     "next": "^15.1.0",
     "nextra": "^4.2.17",
     "nextra-theme-docs": "^4.2.17",
+    "postcss": "^8.5.6",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "tailwindcss": "^4.1.12",
     "tstl": "catalog:samchon",
     "typescript": "catalog:typescript"
   },
