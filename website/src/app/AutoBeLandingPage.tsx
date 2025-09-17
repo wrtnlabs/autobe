@@ -356,52 +356,116 @@ export default function AutoBeLandingPage() {
             </p>
           </div>
 
-          <div className="bg-gradient-to-r from-blue-500/5 to-purple-500/5 border border-gray-600/30 rounded-3xl p-12">
-            <div className="grid md:grid-cols-2 gap-12 items-center">
-              <div>
-                <h3 className="text-3xl font-bold mb-6">
-                  AI-Friendly Compilers
-                </h3>
-                <div className="space-y-4">
-                  <div className="flex items-start">
-                    <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center mr-4 mt-1">
-                      <span className="text-white text-sm">✕</span>
+          <div className="space-y-8">
+            {/* AI-Friendly Compilers */}
+            <div className="bg-gradient-to-r from-blue-500/5 to-purple-500/5 border border-gray-600/30 rounded-3xl p-12">
+              <div className="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                  <h3 className="text-3xl font-bold mb-6">
+                    AI-Friendly Compilers
+                  </h3>
+                  <div className="space-y-4">
+                    <div className="flex items-start">
+                      <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center mr-4 mt-1">
+                        <span className="text-white text-sm">✕</span>
+                      </div>
+                      <div>
+                        <p className="font-semibold text-white">
+                          Traditional AI Tools
+                        </p>
+                        <p className="text-gray-400 text-sm">
+                          Generate code as text → Often contains syntax errors
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-semibold text-white">
-                        Traditional AI Tools
-                      </p>
-                      <p className="text-gray-400 text-sm">
-                        Generate code as text → Often contains syntax errors
-                      </p>
+                    <div className="flex items-start">
+                      <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mr-4 mt-1">
+                        <span className="text-white text-sm">✓</span>
+                      </div>
+                      <div>
+                        <p className="font-semibold text-white">
+                          AutoBE Approach
+                        </p>
+                        <p className="text-gray-400 text-sm">
+                          AI generates AST → Compiler validates → Perfect code
+                          generation
+                        </p>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex items-start">
-                    <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mr-4 mt-1">
-                      <span className="text-white text-sm">✓</span>
-                    </div>
-                    <div>
-                      <p className="font-semibold text-white">
-                        AutoBE Approach
-                      </p>
-                      <p className="text-gray-400 text-sm">
-                        AI generates AST → Compiler validates → Perfect code
-                        generation
-                      </p>
+                </div>
+                <div className="bg-black/20 rounded-2xl p-6">
+                  <div className="text-sm text-green-400 mb-2">
+                    // AutoBE Process
+                  </div>
+                  <div className="text-gray-300 font-mono text-sm space-y-1">
+                    <div>1. AI → Abstract Syntax Tree</div>
+                    <div>2. Compiler → Validates Structure</div>
+                    <div>3. Generator → Perfect TypeScript</div>
+                    <div className="text-green-400 mt-2">
+                      ✓ 100% Compilation Success
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="bg-black/20 rounded-2xl p-6">
-                <div className="text-sm text-green-400 mb-2">
-                  // AutoBE Process
+            </div>
+
+            {/* Automatic SDK Generation */}
+            <div className="bg-gradient-to-r from-purple-500/5 to-indigo-500/5 border border-gray-600/30 rounded-3xl p-12">
+              <div className="grid md:grid-cols-2 gap-12 items-center">
+                <div className="bg-black/20 rounded-2xl p-6">
+                  <div className="text-sm text-purple-400 mb-2">
+                    // Frontend Integration
+                  </div>
+                  <div className="text-gray-300 font-mono text-sm space-y-1">
+                    <div className="text-blue-300">import <span className="text-white">api</span> from <span className="text-green-400">"@some-sdk"</span>;</div>
+                    <div className="mt-3"></div>
+                    <div className="text-blue-300">await <span className="text-white">api.functional.users.</span><span className="text-yellow-300">login</span>(</div>
+                    <div className="ml-4 text-white">connection,</div>
+                    <div className="ml-4">{"{"}</div>
+                    <div className="ml-6">email: <span className="text-green-400">"jaxtyn@wrtn.io"</span>,</div>
+                    <div className="ml-6">password: <span className="text-green-400">"1234"</span>,</div>
+                    <div className="ml-4">{"}"},</div>
+                    <div>);</div>
+                  </div>
                 </div>
-                <div className="text-gray-300 font-mono text-sm space-y-1">
-                  <div>1. AI → Abstract Syntax Tree</div>
-                  <div>2. Compiler → Validates Structure</div>
-                  <div>3. Generator → Perfect TypeScript</div>
-                  <div className="text-green-400 mt-2">
-                    ✓ 100% Compilation Success
+                <div>
+                  <h3 className="text-3xl font-bold mb-6">
+                    Automatic SDK Generation
+                  </h3>
+                  <div className="space-y-4">
+                    <p className="text-gray-300">
+                      Every backend comes with a <span className="text-purple-400 font-semibold">type-safe client SDK</span>
+                    </p>
+                    <div className="space-y-3">
+                      <div className="flex items-start">
+                        <span className="text-purple-400 mr-3">📦</span>
+                        <div>
+                          <p className="font-semibold text-white">Zero Configuration</p>
+                          <p className="text-gray-400 text-sm">
+                            SDK is auto-generated with your backend - no setup needed
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-start">
+                        <span className="text-purple-400 mr-3">🔒</span>
+                        <div>
+                          <p className="font-semibold text-white">100% Type Safety</p>
+                          <p className="text-gray-400 text-sm">
+                            Full TypeScript types, autocomplete, and compile-time validation
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-start">
+                        <span className="text-purple-400 mr-3">⚡</span>
+                        <div>
+                          <p className="font-semibold text-white">Frontend Ready</p>
+                          <p className="text-gray-400 text-sm">
+                            Import and use immediately in React, Vue, or any TypeScript project
+                          </p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
