@@ -245,8 +245,8 @@ export const AutoBeExperimentCollection = {
           {
             name: "Realize",
             time: "16m 56s",
-            detail: "functions: 78, E: 4",
-            success: true,
+            detail: "functions: 78, errors: 4",
+            success: false,
           },
         ],
       },
@@ -285,8 +285,8 @@ export const AutoBeExperimentCollection = {
           {
             name: "Realize",
             time: "19m 22s",
-            detail: "functions: 196, E: 7",
-            success: true,
+            detail: "functions: 196, errors: 7",
+            success: false,
           },
         ],
       },
@@ -325,8 +325,8 @@ export const AutoBeExperimentCollection = {
           {
             name: "Realize",
             time: "15m 31s",
-            detail: "functions: 347, E: 8",
-            success: true,
+            detail: "functions: 347, errors: 8",
+            success: false,
           },
         ],
       },
@@ -370,7 +370,7 @@ export const AutoBeExperimentCollection = {
           {
             name: "Realize",
             time: "6m 55s",
-            detail: "functions: 11, E: 1",
+            detail: "functions: 11, errors: 1",
             success: false,
           },
         ],
@@ -410,7 +410,7 @@ export const AutoBeExperimentCollection = {
           {
             name: "Realize",
             time: "22m 13s",
-            detail: "functions: 60, E: 4",
+            detail: "functions: 60, errors: 4",
             success: false,
           },
         ],
@@ -444,13 +444,13 @@ export const AutoBeExperimentCollection = {
           {
             name: "Test",
             time: "54m 27s",
-            detail: "functions: 26, E: 2",
+            detail: "functions: 26, errors: 2",
             success: false,
           },
           {
             name: "Realize",
             time: "40m 59s",
-            detail: "functions: 68, E: 5",
+            detail: "functions: 68, errors: 5",
             success: false,
           },
         ],
