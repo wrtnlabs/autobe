@@ -146,6 +146,9 @@ export class AutoBeListener {
       testScenarios: async (event) => {
         this.accumulate(event);
       },
+      testScenariosReview: async (event) => {
+        this.accumulate(event);
+      },
       testWrite: async (event) => {
         this.accumulate(event);
       },

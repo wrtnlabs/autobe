@@ -94,6 +94,11 @@ function getState(event: AutoBeProgressEventMovie.IProps["event"]): IState {
           title: "Test Scenarios",
           description: "Planning E2E test scenarios",
         };
+      case "testScenariosReview":
+        return {
+          title: "Test Scenarios Review",
+          description: "Reviewing E2E test scenarios",
+        };
       case "testWrite":
         return {
           title: "Test Write",
