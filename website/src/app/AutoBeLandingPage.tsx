@@ -433,14 +433,18 @@ export default function AutoBeLandingPage() {
 {"  "}host: <span className="text-green-400">"http://localhost:1234"</span>,{"\n"}
 {"}"};{"\n"}
 <span className="text-blue-300">await</span> api.functional.users.<span className="text-yellow-300">login</span>(connection, {"{"}{"\n"}
-{"  "}email: <span className="text-green-400">"user@example.com"</span>,{"\n"}
-{"  "}password: <span className="text-green-400">"secure-password"</span>{"\n"}
+{"  "}body: {"{"}{"\n"}
+{"    "}email: <span className="text-green-400">"user@example.com"</span>,{"\n"}
+{"    "}password: <span className="text-green-400">"secure-password"</span>,{"\n"}
+{"  "}{"}"},{"\n"}
 {"}"});{"\n"}
 {"\n"}<span className="text-gray-500">// TypeScript catches errors at compile time</span>{"\n"}
 <span className="text-blue-300">const</span> post: <span className="text-cyan-300">IPost</span> = <span className="text-blue-300">await</span> api.functional.posts.<span className="text-yellow-300">create</span>(connection, {"{"}{"\n"}
-{"  "}title: <span className="text-green-400">"Hello World"</span>,{"\n"}
-{"  "}content: <span className="text-green-400">"My first post"</span>,{"\n"}
-{"  "}<span className="text-gray-500">// authorId: "123" {"<-"} TypeScript error if this field is missing!</span>{"\n"}
+{"  "}body: {"{"}{"\n"}
+{"    "}title: <span className="text-green-400">"Hello World"</span>,{"\n"}
+{"    "}content: <span className="text-green-400">"My first post"</span>,{"\n"}
+{"    "}<span className="text-gray-500">// authorId: "123" {"<-"} TypeScript error if this field is missing!</span>{"\n"}
+{"  "}{"}"},{"\n"}
 {"}"});
                   </pre>
                 </div>

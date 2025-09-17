@@ -154,15 +154,19 @@ const connection: api.IConnection = {
   host: "http://localhost:1234",
 };
 await api.functional.users.login(connection, {
-  email: "user@example.com",
-  password: "secure-password"
+  body: {
+    email: "user@example.com",
+    password: "secure-password",
+  },
 });
 
 // TypeScript catches errors at compile time
 const post: IPost = await api.functional.posts.create(connection, {
-  title: "Hello World",
-  content: "My first post",
-  // authorId: "123" <- TypeScript error if this field is missing!
+  body: {
+    title: "Hello World",
+    content: "My first post",
+    // authorId: "123" <- TypeScript error if this field is missing!
+  },
 });
 ```
 

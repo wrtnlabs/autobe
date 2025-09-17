@@ -42,7 +42,7 @@
     "boilerplate"
   ],
   "author": "AUTHOR",
-  "license": "AGPL-3.0",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/samchon/nestia-start/issues"
   },
