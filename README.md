@@ -137,6 +137,38 @@ Also, you don't need to use all phases - stop at any stage that fits your needs.
 
 Additionally, if you're skipping the full pipeline because of language preference rather than workflow needs, this capability is in development - AutoBE's language-neutral AST structure will soon support additional programming languages beyond TypeScript.
 
+## Type-Safe Client SDK
+
+Every AutoBE-generated backend automatically includes a type-safe client SDK, making frontend integration seamless and error-free. This SDK provides:
+
+- **Zero Configuration**: SDK is auto-generated alongside your backend - no manual setup required
+- **100% Type Safety**: Full TypeScript support with autocomplete and compile-time validation
+- **Framework Agnostic**: Works with React, Vue, Angular, or any TypeScript/JavaScript project
+
+```typescript
+import api, { IPost } from "@autobe-generated-backend-sdk";
+
+// Type-safe API calls with full autocomplete
+const connection: api.IConnection = {
+  host: "http://localhost:1234",
+};
+await api.functional.users.login(connection, {
+  email: "user@example.com",
+  password: "secure-password"
+});
+
+// TypeScript catches errors at compile time
+const post: IPost = await api.functional.posts.create(connection, {
+  title: "Hello World",
+  content: "My first post",
+  // authorId: "123" <- TypeScript error if this field is missing!
+});
+```
+
+This eliminates the traditional pain points of API integration - no more manual type definitions, no more runtime surprises, and no more API documentation lookups.
+
+Your frontend developers can focus on building features, not wrestling with API contracts.
+
 ## Roadmap Schedule
 
 ```mermaid
