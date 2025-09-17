@@ -81,22 +81,6 @@ export const orchestrateTest =
       })),
     );
 
-    await FileSystemIterator.save({
-      root: `${path.join(__dirname, "../../../../../.aaa")}/test_corrects.json`,
-      files: {
-        ...Object.fromEntries(
-          corrects.map((c) => [c.file.location, c.file.content]),
-        ),
-      },
-    });
-
-    // for (const c of corrects)
-    //   if (c.result.type !== "success")
-    //     c.file.content = c.file.content
-    //       .split("\n")
-    //       .map((s) => `// ${s}`)
-    //       .join("\n");
-
     // DO COMPILE
     const compiler: IAutoBeCompiler = await ctx.compiler();
     const compiled: IAutoBeTypeScriptCompileResult =

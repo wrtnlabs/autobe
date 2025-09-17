@@ -118,7 +118,7 @@ DEDUPLICATION RULES:
    - Remove all subsequent duplicates
 3. Special case - Authentication operations:
    - Keep only ONE authentication operation per required role
-   - Prefer join over login for new user scenarios
+   - Must only use join for new user scenarios
 ```
 
 ## AUTHENTICATION CONTEXT VALIDATION
