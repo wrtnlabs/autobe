@@ -5,7 +5,6 @@ import { CompressUtil, FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeEventOfSerializable,
   AutoBeTestScenario,
-  AutoBeTestScenariosEvent,
   IAutoBeCompiler,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
