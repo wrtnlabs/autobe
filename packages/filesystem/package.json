@@ -1,6 +1,6 @@
 {
   "name": "@autobe/filesystem",
-  "version": "0.23.1",
+  "version": "0.24.0",
   "description": "AI backend server code generator",
   "main": "src/index.ts",
   "author": "Wrtn Technologies",

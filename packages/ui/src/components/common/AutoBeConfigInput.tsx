@@ -170,7 +170,7 @@ export const AutoBeConfigInput = (props: IAutoBeConfigInputProps) => {
         </div>
       )}
       {suggestions && type !== "list" && (
-        <datalist id={suggestionId}>
+        <datalist id={suggestionId} style={{ cursor: "pointer" }}>
           {suggestions.map((suggestion, index) => (
             <option key={index} value={suggestion.value}>
               {suggestion.label || suggestion.value}

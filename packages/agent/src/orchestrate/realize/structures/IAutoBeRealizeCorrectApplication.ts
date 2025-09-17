@@ -23,7 +23,11 @@ export namespace IAutoBeRealizeCorrectApplication {
   }
 
   export interface IRevise {
-    /** Step 1: Compilation error analysis and resolution strategy. */
+    /** 
+     * Step 1: TypeScript compilation error analysis and resolution strategy.
+     * Analyzes TypeScript compiler diagnostics (error codes, messages) to understand
+     * type mismatches, missing properties, nullable conflicts, and other compilation issues.
+     */
     errorAnalysis?: string;
 
     /** Step 2: Provider function implementation plan. */
@@ -32,16 +36,10 @@ export namespace IAutoBeRealizeCorrectApplication {
     /** Step 3: Relevant Prisma schema definitions. */
     prismaSchemas?: string;
 
-    /** Step 4: Initial draft without using native Date type. */
-    draftWithoutDateType?: string;
-
-    /** Step 5: Refined version with improved completeness. */
+    /** Step 4: Refined version with improved completeness. */
     review?: string;
 
-    /** Step 6: Corrected implementation after compiler feedback. */
-    withCompilerFeedback?: string;
-
-    /** Step 7: Final complete TypeScript function implementation. */
-    implementationCode: string;
+    /** Step 5: Final complete TypeScript function implementation. */
+    final: string;
   }
 }

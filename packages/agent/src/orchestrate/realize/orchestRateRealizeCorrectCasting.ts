@@ -131,8 +131,8 @@ const correct = async <Model extends ILlmSchema.Model>(
 
           Most casting errors are caused by type mismatches between Date types and 
           string & tags.Format<'date-time'>. To fix these:
-          - Use the pre-provided toISOStringSafe() function to convert Date to string
-          - Or use Date object's .toISOString() method
+          - Use ONLY the pre-provided toISOStringSafe() function to convert Date to string
+          - Do NOT use .toISOString() method directly (use toISOStringSafe instead)
           - Never use Date type directly in declarations or return values
 
           You don't need to explain me anything, but just fix or give it up 
@@ -225,7 +225,8 @@ const diagnose = (event: AutoBeRealizeValidateEvent): string[] => {
   const diagnostics = event.result.diagnostics;
   const locations = diagnostics
     .map((d) => d.file)
-    .filter((f): f is string => f !== null);
+    .filter((f): f is string => f !== null)
+    .filter((f) => f.startsWith("src/providers"));
 
   return Array.from(new Set(locations));
 };

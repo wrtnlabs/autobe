@@ -57,6 +57,7 @@ export const AutoBeConfigModal = (props: IAutoBeConfigModalProps) => {
       return stored;
     }
 
+    if (field.default !== undefined) return field.default;
     // Return default values based on type
     if (field.type === "checkbox") return false;
     if (field.type === "number") return 0;
@@ -66,8 +67,7 @@ export const AutoBeConfigModal = (props: IAutoBeConfigModalProps) => {
   const [config, setConfig] = useState<Record<string, unknown>>(() => {
     const initialConfig: Record<string, unknown> = {};
     props.fields.forEach((field) => {
-      initialConfig[field.key] =
-        getStoredValue(field) ?? field.default ?? undefined;
+      initialConfig[field.key] = getStoredValue(field) ?? undefined;
     });
     return initialConfig;
   });
@@ -343,6 +343,7 @@ const ALL_CONFIG_FIELDS: Record<string, IConfigField> = {
     type: "text",
     storageKey: "autobe_locale",
     placeholder: "en",
+    default: "en",
     suggestions: ["en", "ko", "ja", "zh", "es", "fr", "de"],
   },
   schemaModel: {
@@ -351,6 +352,7 @@ const ALL_CONFIG_FIELDS: Record<string, IConfigField> = {
     type: "text",
     storageKey: "autobe_schema_model",
     placeholder: "chatgpt",
+    default: "chatgpt",
     suggestions: ["chatgpt", "claude"],
   },
   aiModel: {
@@ -359,16 +361,12 @@ const ALL_CONFIG_FIELDS: Record<string, IConfigField> = {
     type: "text",
     storageKey: "autobe_ai_model",
     placeholder: "gpt-4.1",
+    default: "gpt-4.1",
     suggestions: [
       "gpt-4.1",
-      "gpt-4",
-      "gpt-4-turbo",
-      "gpt-3.5-turbo",
-      "claude-3-sonnet",
-      "claude-3-haiku",
-      "claude-3-opus",
-      "llama-3.1-70b",
-      "deepseek-coder",
+      "gpt-4.1-mini",
+      "qwen/qwen3-235b-a22b-2507",
+      "qwen/qwen3-next-80b-a3b-instruct",
     ],
   },
   openApiKey: {
@@ -385,8 +383,8 @@ const ALL_CONFIG_FIELDS: Record<string, IConfigField> = {
     label: "Base URL",
     type: "text",
     storageKey: "autobe_base_url",
-    placeholder: "Leave empty for OpenAI default",
-    default: "https://api.openai.com/v1",
+    placeholder: "https://api.openai.com/v1",
+    suggestions: ["https://api.openai.com/v1", "https://openrouter.ai/api/v1"],
   },
   semaphore: {
     key: "semaphore",
@@ -394,6 +392,7 @@ const ALL_CONFIG_FIELDS: Record<string, IConfigField> = {
     type: "number",
     storageKey: "autobe_semaphore",
     placeholder: "16",
+    default: 16,
     min: 1,
     max: 100,
   },

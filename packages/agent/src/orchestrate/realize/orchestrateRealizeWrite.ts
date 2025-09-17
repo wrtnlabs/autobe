@@ -69,9 +69,9 @@ export async function orchestrateRealizeWrite<Model extends ILlmSchema.Model>(
   });
   if (pointer.value === null) throw new Error("Failed to write code.");
 
-  pointer.value.implementationCode = await replaceImportStatements(ctx, {
+  pointer.value.final = await replaceImportStatements(ctx, {
     operation: props.scenario.operation,
-    code: pointer.value.implementationCode,
+    code: pointer.value.final,
     decoratorType: props.authorization?.payload.name,
   });
 
@@ -79,7 +79,7 @@ export async function orchestrateRealizeWrite<Model extends ILlmSchema.Model>(
     type: "realizeWrite",
     id: v7(),
     location: props.scenario.location,
-    content: pointer.value.implementationCode,
+    content: pointer.value.final,
     tokenUsage,
     completed: ++props.progress.completed,
     total: props.progress.total,

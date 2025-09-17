@@ -141,14 +141,13 @@ export class AutoBeAgentSessionStorageIndexedDBStrategy
   async getSession(props: { id: string }) {
     const store = await this.getObjectStore("sessions", "readonly");
     const prev = await promisifyIDBRequest(store.get(props.id));
+    return undefined;
     return prev;
   }
 
   async getSessionList(): Promise<IAutoBeAgentSession[]> {
     const store = await this.getObjectStore("sessions", "readonly");
-    console.log(store);
     const prev = await promisifyIDBRequest(store.getAll());
-    console.log(prev);
     return prev;
   }
 

@@ -6,11 +6,57 @@ IMPORTANT: You must respond with a function call to the `review` method, never w
 
 ## 🎯 Primary Mission
 
-Fix the compilation error in the provided code - **use the minimal effort needed** for simple errors, **use aggressive refactoring** for complex ones:
+Fix the compilation error in the provided code - **use the minimal effort needed** for simple errors, **use aggressive refactoring** for complex ones.
+
+### 📝 Comment Guidelines - KEEP IT MINIMAL
+
+**IMPORTANT**: Keep comments concise and to the point:
+- JSDoc: Only essential information (1-2 lines for description)
+- Inline comments: Maximum 1 line explaining WHY, not WHAT
+- Error explanations: Brief statement of the issue
+- NO verbose multi-paragraph explanations
+- NO redundant information already clear from code
+
+**Good Example:**
+```typescript
+/**
+ * Updates user profile.
+ * 
+ * @param props - Request properties
+ * @returns Updated user data
+ */
+export async function updateUser(props: {...}): Promise<IUser> {
+  // Exclude system fields from update
+  const { id, created_at, ...updateData } = props.body;
+  return MyGlobal.prisma.user.update({...});
+}
+```
+
+**Bad Example (TOO VERBOSE):**
+```typescript
+/**
+ * Updates user profile information in the database.
+ * 
+ * This function takes the user data from the request body and updates
+ * the corresponding user record in the database. It excludes system
+ * fields that should not be modified by users.
+ * 
+ * The function performs the following steps:
+ * 1. Extracts update data from request body
+ * 2. Removes system fields
+ * 3. Updates the database record
+ * 4. Returns the updated user
+ * 
+ * @param props - The request properties object
+ * @param props.body - The request body containing user update data
+ * @param props.userId - The ID of the user to update
+ * @returns The updated user object with all fields
+ */
+```
 
 ### ⚡ Quick Fix Priority (for simple errors)
 When errors are obvious (null handling, type conversions, missing fields):
-1. Go directly to `implementationCode` with the fix
+1. Go directly to `final` with the fix
 2. Skip all intermediate CoT steps
 3. Save tokens and processing time
 
@@ -33,13 +79,11 @@ You must return a structured output following the `IAutoBeRealizeCorrectApplicat
 export namespace IAutoBeRealizeCorrectApplication {
   export interface IProps {
     revise: {
-      errorAnalysis?: string;           // Step 1: Error analysis (OPTIONAL)
+      errorAnalysis?: string;           // Step 1: TypeScript compilation error analysis (OPTIONAL)
       plan?: string;                    // Step 2: Implementation plan (OPTIONAL)
       prismaSchemas?: string;           // Step 3: Relevant schema definitions (OPTIONAL)
-      draftWithoutDateType?: string;    // Step 4: Initial draft (OPTIONAL)
-      review?: string;                  // Step 5: Refined version (OPTIONAL)
-      withCompilerFeedback?: string;    // Step 6: Compiler feedback (OPTIONAL)
-      implementationCode: string;       // Step 7: Final implementation (REQUIRED)
+      review?: string;                  // Step 4: Refined version (OPTIONAL)
+      final: string;                    // Step 5: Final implementation (REQUIRED)
     }
   }
 }
@@ -50,15 +94,13 @@ export namespace IAutoBeRealizeCorrectApplication {
 **NEW APPROACH**: Most fields are now OPTIONAL to allow efficient correction when errors are obvious.
 
 **REQUIRED FIELD:**
-- `revise.implementationCode`: MUST contain complete, valid TypeScript function code
+- `revise.final`: MUST contain complete, valid TypeScript function code
 
 **⚡ OPTIONAL FIELDS - Skip When Obvious:**
 - `revise.errorAnalysis`: Skip if error is trivial (e.g., simple null handling)
 - `revise.plan`: Skip if fix is straightforward
 - `revise.prismaSchemas`: Skip if schema context is clear from error
-- `revise.draftWithoutDateType`: Skip if going directly to solution
 - `revise.review`: Skip if no complex logic to review
-- `revise.withCompilerFeedback`: Skip if first attempt succeeds
 
 **🎯 WHEN TO SKIP STEPS:**
 
@@ -81,7 +123,7 @@ export namespace IAutoBeRealizeCorrectApplication {
 // For simple "Type 'string | null' is not assignable to type 'string'"
 {
   revise: {
-    implementationCode: `
+    final: `
       // ... fixed code with device_info: updated.device_info ?? "" ...
     `
     // Other fields omitted as fix is obvious
@@ -93,9 +135,29 @@ export namespace IAutoBeRealizeCorrectApplication {
 
 #### 📊 revise.errorAnalysis (Step 1 - OPTIONAL - CoT: Problem Identification)
 
-**Compilation Error Analysis and Resolution Strategy**
+**TypeScript Compilation Error Analysis and Resolution Strategy**
 
-This field contains a detailed analysis of TypeScript compilation errors that occurred during the previous compilation attempt, along with specific strategies to resolve each error.
+This field analyzes the TypeScript compiler diagnostics provided in the input:
+
+**What this analyzes:**
+- **TypeScript error codes**: e.g., TS2322 (type assignment), TS2339 (missing property), TS2345 (argument mismatch)
+- **Compiler diagnostics**: The actual compilation failures from `tsc`, not runtime or logic errors
+- **Error messages**: From the `messageText` field in the diagnostic JSON
+
+**Common compilation error patterns:**
+- Type mismatches: `Type 'X' is not assignable to type 'Y'`
+- Missing properties: `Property 'foo' does not exist on type 'Bar'`
+- Nullable conflicts: `Type 'string | null' is not assignable to type 'string'`
+- Prisma type incompatibilities with DTOs
+- Typia tag mismatches: `Types of property '"typia.tag"' are incompatible`
+
+**Resolution strategies to document:**
+- Type conversions needed (e.g., `.toISOString()` for Date to string)
+- Null handling approaches (e.g., `?? ""` or `?? undefined`)
+- Field access corrections
+- Type assertion requirements
+
+**IMPORTANT**: This analyzes the TypeScript compilation errors from the provided diagnostics JSON, NOT errors you might anticipate or create yourself.
 
 The analysis MUST include:
 
@@ -178,30 +240,23 @@ Follows the same SCHEMA-FIRST APPROACH as in REALIZE_WRITE_TOTAL:
 
 Contains ONLY the relevant models and fields used in this implementation.
 
-#### revise.draftWithoutDateType (Step 4 - OPTIONAL - CoT: First Correction Attempt)
-
-**Draft WITHOUT using native Date type**
-
-Initial skeleton with no `Date` type usage. DO NOT add imports.
-
-#### revise.review (Step 5 - OPTIONAL - CoT: Improvement Phase)
+#### revise.review (Step 4 - OPTIONAL - CoT: Improvement Phase)
 
 **Refined Version**
 
 Improved version with real operations and error handling.
 
-#### 🛠 revise.withCompilerFeedback (Step 6 - OPTIONAL - CoT: Error Resolution)
-
-**With Compiler Feedback**
-
-- If TypeScript errors detected: Apply fixes
-- If no errors: Must contain text "No TypeScript errors detected - skipping this phase"
-
-#### 💻 revise.implementationCode (Step 7 - REQUIRED - CoT: Complete Solution)
+#### 💻 revise.final (Step 5 - REQUIRED - CoT: Complete Solution)
 
 **Final Implementation**
 
 Complete, error-free TypeScript function implementation following all conventions.
+
+**🚨 CRITICAL - NO IMPORT STATEMENTS**:
+- Start DIRECTLY with `export async function...`
+- ALL imports are handled by the system automatically
+- Writing imports will cause DUPLICATE imports and errors
+- The system's `replaceImportStatements.ts` utility handles all import injection
 
 ## 🔄 BATCH ERROR RESOLUTION - Fix Multiple Similar Errors
 
@@ -689,10 +744,8 @@ const sortField = body.sort.replace(/^[-+]/, "") satisfies "name" | "created_at"
 const sorted = items.sort(body.sortBy as "name" | "code" | "created_at");
 const sortField = body.sort.replace(/^[-+]/, "") as "name" | "created_at";
 
-// ✅ Pattern 2: Runtime validation with typia.assertGuard (RECOMMENDED)
-const sortField: string = body.sort.replace(/^[-+]/, "");
-typia.assertGuard<"name" | "created_at">(sortField);
-// sortField is now type "name" | "created_at", not string!
+// ✅ Pattern 2: Type assertion when confident
+const sortField = body.sort.replace(/^[-+]/, "") as "name" | "created_at";
 
 // ✅ Pattern 3: Validate and narrow type
 if (["name", "code", "created_at"].includes(body.sortBy)) {
@@ -784,27 +837,10 @@ import { AuthPayload } from "../decorators/payload/AuthPayload";
 /**
  * [Preserve Original Description]
  * 
- * IMPLEMENTATION BLOCKED - SCHEMA-API CONTRADICTION
- * 
- * Required by API specification:
- * - [Specific requirement that cannot be met]
- * 
- * Missing from Prisma schema:
- * - [Specific missing field/relation]
- * 
- * Resolution options:
- * 1. Add [field_name] to [table_name] in schema
- * 2. Remove [requirement] from API specification
- * 
- * Current implementation returns type-safe mock data.
+ * Cannot implement: Schema missing [field_name] required by API.
  * 
  * @param props - Request properties
- * @param props.auth - Authentication payload
- * @param props.body - Request body
- * @param props.params - Path parameters
- * @param props.query - Query parameters
- * @returns Mock response matching expected type
- * @todo Resolve schema-API contradiction
+ * @returns Mock response
  */
 export async function method__path_to_endpoint(props: {
   auth: AuthPayload;
@@ -812,8 +848,7 @@ export async function method__path_to_endpoint(props: {
   params: { id: string & tags.Format<"uuid"> };
   query: IQueryParams;
 }): Promise<IResponseType> {
-  // Implementation impossible due to schema-API contradiction
-  // See function documentation for details
+  // Schema-API mismatch: missing [field_name]
   return typia.random<IResponseType>();
 }
 ```
@@ -829,7 +864,7 @@ export async function method__path_to_endpoint(props: {
 ```
 Can this be fixed without changing schema or API contract?
 ├── YES → Proceed to Step 3
-└── NO → Jump to Step 4 (Implement Safe Placeholder)
+└── NO → Jump to Step 3 (Implement Safe Placeholder)
 ```
 
 ### Step 3: Apply Fix (Start Minimal, Then Escalate)
@@ -846,7 +881,7 @@ Based on error code, apply fixes in escalating order:
    - Restructure data flow to avoid the compilation issue
    - Split complex operations into simpler, compilable parts
 
-### Step 4: Implement Safe Placeholder (If Unrecoverable)
+### Step 3 (Alternative): Implement Safe Placeholder (If Unrecoverable)
 - Document the exact contradiction
 - Explain what needs to change
 - Return `typia.random<T>()` with clear TODO
@@ -995,9 +1030,9 @@ Read error message
 ```
 Error Complexity Assessment:
 ├── Simple (single line, obvious fix)
-│   └── Skip to implementationCode only
+│   └── Skip to final only
 ├── Medium (2-3 related errors)
-│   └── Use errorAnalysis + implementationCode
+│   └── Use errorAnalysis + final
 └── Complex (multiple files, nested errors)
     └── Use full Chain of Thinking
 
@@ -1015,10 +1050,10 @@ Common Simple Fixes (skip CoT):
 ### Example 1: Simple Null Handling (Skip CoT)
 **Error**: `Type 'string | null' is not assignable to type 'string'`
 ```typescript
-// Just provide fixed code in implementationCode
+// Just provide fixed code in final
 {
   revise: {
-    implementationCode: `
+    final: `
       export async function updateUser(...) {
         // ...
         return {
@@ -1041,7 +1076,7 @@ Common Simple Fixes (skip CoT):
     plan: "Need to restructure queries to avoid nested operations...",
     prismaSchemas: "model User { ... }",
     // ... other steps ...
-    implementationCode: "// Complete refactored solution"
+    final: "// Complete refactored solution"
   }
 }
 ```

@@ -84,14 +84,14 @@ export function AutoBePlaygroundChatMovie(
                   height: "100%",
                 }}
               >
-                <AutoBeChatSidebar
+                {/* <AutoBeChatSidebar
                   storageStrategy={storageStrategy}
                   isCollapsed={isMobile ? false : sidebarCollapsed}
                   onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
                   onDeleteSession={(id) => {
                     storageStrategy.deleteSession({ id });
                   }}
-                />
+                /> */}
                 <AutoBeChatMain
                   isUnusedConfig={props.isUnusedConfig ?? false}
                   isMobile={isMobile}
