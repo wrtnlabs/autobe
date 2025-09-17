@@ -479,9 +479,9 @@ const MODEL_DATA = {
             detail: "tags: 10, models: 57",
             success: true,
           },
-          { name: "Interface", time: "-", detail: "-", success: false },
-          { name: "Test", time: "-", detail: "-", success: false },
-          { name: "Realize", time: "-", detail: "-", success: false },
+          { name: "Interface", time: "-", detail: "-", success: null },
+          { name: "Test", time: "-", detail: "-", success: null },
+          { name: "Realize", time: "-", detail: "-", success: null },
         ],
       },
     ],
@@ -819,13 +819,23 @@ export default function AutoBeLandingPage() {
                         >
                           <td className="py-2 pr-3 w-6">
                             <div
-                              className={`w-3 h-3 ${phase.success ? "bg-green-500" : "bg-red-500"} rounded-full`}
+                              className={`w-3 h-3 ${
+                                phase.success === true 
+                                  ? "bg-green-500" 
+                                  : phase.success === false 
+                                  ? "bg-red-500" 
+                                  : "bg-gray-600"
+                              } rounded-full`}
                             ></div>
                           </td>
                           <td className="py-2 pr-3 text-sm w-20">
                             <span
                               className={
-                                phase.success ? "text-white" : "text-red-400"
+                                phase.success === true 
+                                  ? "text-white" 
+                                  : phase.success === false 
+                                  ? "text-red-400"
+                                  : "text-gray-500"
                               }
                             >
                               {phase.name}
@@ -849,7 +859,7 @@ export default function AutoBeLandingPage() {
                       <span className="mr-2">⏱</span>
                       <span>Elapsed Time</span>
                     </div>
-                    <span className="text-green-400 font-bold">
+                    <span className="text-blue-400 font-bold">
                       {example.elapsed}
                     </span>
                   </div>
