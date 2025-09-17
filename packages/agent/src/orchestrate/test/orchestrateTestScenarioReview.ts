@@ -61,12 +61,17 @@ async function review<Model extends ILlmSchema.Model>(
     return groups;
   }
 
+  progress.total = Math.max(
+    progress.total,
+    (progress.completed += pointer.value.scenarioGroups.length),
+  );
+
   ctx.dispatch({
     type: "testScenariosReview",
     id: v7(),
     tokenUsage,
     total: progress.total,
-    completed: ++progress.completed,
+    completed: progress.completed,
     scenarios: pointer.value.scenarioGroups
       .map((group) => {
         return group.scenarios.map((s) => {

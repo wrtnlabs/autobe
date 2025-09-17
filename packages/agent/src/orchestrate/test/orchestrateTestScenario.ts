@@ -103,6 +103,7 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
       return true;
     });
     progress.total = include.length + exclude.length;
+    reviewProgress.total = include.length + exclude.length;
   } while (include.length > 0 && ++trial < ctx.retry);
 
   return exclude.flatMap((pg) => {
