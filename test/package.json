@@ -14,6 +14,7 @@
     "archive": "pnpm run build:prompt && pnpm run archive:go",
     "archive:go": "ts-node src/archive",
     "archive:commit": "ts-node src/archive/commit.ts",
+    "archive:publish": "ts-node src/archive/publish.ts",
     "bench": "ts-node src/benchmarks"
   },
   "author": "Wrtn Technologies",

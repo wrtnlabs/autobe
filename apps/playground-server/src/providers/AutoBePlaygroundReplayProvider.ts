@@ -3,6 +3,7 @@ import { CompressUtil } from "@autobe/filesystem";
 import {
   AutoBeEventSnapshot,
   AutoBeHistory,
+  AutoBePhase,
   IAutoBePlaygroundReplay,
   IAutoBeRpcListener,
   IAutoBeRpcService,
@@ -79,7 +80,7 @@ export namespace AutoBePlaygroundReplayProvider {
         replays.push({
           vendor,
           project: name,
-          step,
+          phase: step,
         });
       }
     };
@@ -94,20 +95,18 @@ export namespace AutoBePlaygroundReplayProvider {
           );
 
         const histories: AutoBeHistory[] = await load(
-          `${r.project}.${r.step}.json.gz`,
+          `${r.project}.${r.phase}.json.gz`,
         );
         const snapshots: AutoBeEventSnapshot[] = await load(
-          `${r.project}.${r.step}.snapshots.json.gz`,
+          `${r.project}.${r.phase}.snapshots.json.gz`,
         );
-        const predicate = <
-          Type extends "analyze" | "prisma" | "interface" | "test" | "realize",
-        >(
+        const predicate = <Type extends AutoBePhase>(
           type: Type,
           success: (history: AutoBeHistory.Mapper[Type]) => boolean,
           aggregate: (
             history: AutoBeHistory.Mapper[Type],
           ) => Record<string, number>,
-        ): IAutoBePlaygroundReplay.IStepState | null => {
+        ): IAutoBePlaygroundReplay.IPhaseState | null => {
           const history: AutoBeHistory.Mapper[Type] | undefined =
             histories.find((h) => h.type === type) as
               | AutoBeHistory.Mapper[Type]
@@ -216,7 +215,7 @@ export namespace AutoBePlaygroundReplayProvider {
       }
     };
     const histories: AutoBeHistory[] | null = await load(
-      props.step ?? "realize",
+      props.phase ?? "realize",
     );
     if (histories === null) {
       await acceptor.reject(1002, "Unable to find the matched replay");
