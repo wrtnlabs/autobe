@@ -29,7 +29,7 @@ export default function AutoBeLandingTechMovie() {
                         Traditional AI Tools
                       </p>
                       <p className="text-gray-400 text-sm">
-                        Generate code as text � Often contains syntax errors
+                        Generate code as text → Often contains syntax errors
                       </p>
                     </div>
                   </div>
@@ -42,7 +42,7 @@ export default function AutoBeLandingTechMovie() {
                         AutoBE Approach
                       </p>
                       <p className="text-gray-400 text-sm">
-                        AI generates AST � Compiler validates � Perfect code
+                        AI generates AST → Compiler validates → Perfect code
                         generation
                       </p>
                     </div>

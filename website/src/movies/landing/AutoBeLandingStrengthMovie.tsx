@@ -1,5 +1,100 @@
 "use client";
 
+import AutoBeLandingStrengthCardMovie from "./AutoBeLandingStrengthCardMovie";
+
+const features = [
+  {
+    gradientFrom: "rgba(59, 130, 246, 0.1)",
+    gradientTo: "rgba(147, 51, 234, 0.1)",
+    hoverFrom: "rgba(59, 130, 246, 0.2)",
+    hoverTo: "rgba(147, 51, 234, 0.2)",
+    shadowColor: "rgb(147, 51, 234)",
+    iconBg: "bg-blue-500/20",
+    iconColor: "text-blue-400",
+    icon: "⚡",
+    title: "Intelligent Agents",
+    subtitle: "40+ specialized agents collaborate",
+    description: "From requirements analysis to API implementation - the entire waterfall development process is fully automated by our intelligent agent system.",
+    footerColor: "text-blue-400",
+    footer: "• Analyze • Prisma • Interface • Test • Realize",
+  },
+  {
+    gradientFrom: "rgba(236, 72, 153, 0.1)",
+    gradientTo: "rgba(239, 68, 68, 0.1)",
+    hoverFrom: "rgba(236, 72, 153, 0.2)",
+    hoverTo: "rgba(239, 68, 68, 0.2)",
+    shadowColor: "rgb(236, 72, 153)",
+    iconBg: "bg-pink-500/20",
+    iconColor: "text-pink-400",
+    icon: "✓",
+    title: "AST-Based Generation",
+    subtitle: "100% compilation guaranteed",
+    description: "AI generates Abstract Syntax Trees first, then compilers validate and generate code - ensuring structural correctness every time.",
+    footerColor: "text-pink-400",
+    footer: "TypeScript • Prisma • OpenAPI • Zero Errors",
+  },
+  {
+    gradientFrom: "rgba(147, 51, 234, 0.1)",
+    gradientTo: "rgba(236, 72, 153, 0.1)",
+    hoverFrom: "rgba(147, 51, 234, 0.2)",
+    hoverTo: "rgba(236, 72, 153, 0.2)",
+    shadowColor: "rgb(147, 51, 234)",
+    iconBg: "bg-purple-500/20",
+    iconColor: "text-purple-400",
+    icon: "🚀",
+    title: "Modern Tech Stack",
+    subtitle: "Proven enterprise frameworks",
+    description: "Built with TypeScript, NestJS, and Prisma - the most trusted tools for enterprise-grade backend applications.",
+    footerColor: "text-purple-400",
+    footer: "PostgreSQL • SQLite • Production-Ready",
+  },
+  {
+    gradientFrom: "rgba(34, 197, 94, 0.1)",
+    gradientTo: "rgba(20, 184, 166, 0.1)",
+    hoverFrom: "rgba(34, 197, 94, 0.2)",
+    hoverTo: "rgba(20, 184, 166, 0.2)",
+    shadowColor: "rgb(34, 197, 94)",
+    iconBg: "bg-green-500/20",
+    iconColor: "text-green-400",
+    icon: "📚",
+    title: "Enterprise Ready",
+    subtitle: "Complete development lifecycle",
+    description: "Comprehensive documentation, E2E testing, and clean architecture that juniors can understand and seniors can extend with AI assistants.",
+    footerColor: "text-green-400",
+    footer: "Full Documentation • Testing • Maintainable Code",
+  },
+  {
+    gradientFrom: "rgba(234, 179, 8, 0.1)",
+    gradientTo: "rgba(251, 146, 60, 0.1)",
+    hoverFrom: "rgba(234, 179, 8, 0.2)",
+    hoverTo: "rgba(251, 146, 60, 0.2)",
+    shadowColor: "rgb(251, 146, 60)",
+    iconBg: "bg-yellow-500/20",
+    iconColor: "text-yellow-400",
+    icon: "💰",
+    title: "Cost Effective",
+    subtitle: "Reduce development time & cost",
+    description: "From months to hours of development time. Significantly reduce backend development costs while maintaining enterprise-grade quality.",
+    footerColor: "text-yellow-400",
+    footer: "Time Saving • Cost Reduction • High ROI",
+  },
+  {
+    gradientFrom: "rgba(6, 182, 212, 0.1)",
+    gradientTo: "rgba(59, 130, 246, 0.1)",
+    hoverFrom: "rgba(6, 182, 212, 0.2)",
+    hoverTo: "rgba(59, 130, 246, 0.2)",
+    shadowColor: "rgb(6, 182, 212)",
+    iconBg: "bg-cyan-500/20",
+    iconColor: "text-cyan-400",
+    icon: "🌐",
+    title: "Open Source & Extensible",
+    subtitle: "Flexible and community-driven",
+    description: "Open source project with support for multiple LLMs (GPT-4.1, Qwen3), local development, and seamless integration with AI coding assistants.",
+    footerColor: "text-cyan-400",
+    footer: "Multi-LLM Support • Local Setup • AI Assistant Ready",
+  },
+];
+
 export default function AutoBeLandingStrengthMovie() {
   return (
     <section className="py-20 px-6">
@@ -12,109 +107,9 @@ export default function AutoBeLandingStrengthMovie() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {/* Feature 1 */}
-          <div className="bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-gray-600/30 rounded-2xl p-8 transition-all duration-300 hover:from-blue-500/20 hover:to-purple-500/20 hover:border-gray-500/50 hover:shadow-xl hover:shadow-purple-500/10 hover:scale-[1.02]">
-            <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mb-6">
-              <div className="text-blue-400 text-2xl">⚡</div>
-            </div>
-            <h3 className="text-2xl font-bold mb-4">Intelligent Agents</h3>
-            <p className="text-gray-300 mb-4">
-              40+ specialized agents collaborate
-            </p>
-            <p className="text-gray-400 text-sm mb-4">
-              From requirements analysis to API implementation - the entire
-              waterfall development process is fully automated by our
-              intelligent agent system.
-            </p>
-            <p className="text-blue-400 text-sm font-semibold">
-              " Analyze " Prisma " Interface " Test " Realize
-            </p>
-          </div>
-
-          {/* Feature 2 */}
-          <div className="bg-gradient-to-br from-pink-500/10 to-red-500/10 border border-gray-600/30 rounded-2xl p-8 transition-all duration-300 hover:from-pink-500/20 hover:to-red-500/20 hover:border-gray-500/50 hover:shadow-xl hover:shadow-pink-500/10 hover:scale-[1.02]">
-            <div className="w-16 h-16 bg-pink-500/20 rounded-full flex items-center justify-center mb-6">
-              <div className="text-pink-400 text-2xl">✓</div>
-            </div>
-            <h3 className="text-2xl font-bold mb-4">AST-Based Generation</h3>
-            <p className="text-gray-300 mb-4">100% compilation guaranteed</p>
-            <p className="text-gray-400 text-sm mb-4">
-              AI generates Abstract Syntax Trees first, then compilers validate
-              and generate code - ensuring structural correctness every time.
-            </p>
-            <p className="text-pink-400 text-sm font-semibold">
-              TypeScript " Prisma " OpenAPI " Zero Errors
-            </p>
-          </div>
-
-          {/* Feature 3 */}
-          <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-gray-600/30 rounded-2xl p-8 transition-all duration-300 hover:from-purple-500/20 hover:to-pink-500/20 hover:border-gray-500/50 hover:shadow-xl hover:shadow-purple-500/10 hover:scale-[1.02]">
-            <div className="w-16 h-16 bg-purple-500/20 rounded-full flex items-center justify-center mb-6">
-              <div className="text-purple-400 text-2xl">🚀</div>
-            </div>
-            <h3 className="text-2xl font-bold mb-4">Modern Tech Stack</h3>
-            <p className="text-gray-300 mb-4">Proven enterprise frameworks</p>
-            <p className="text-gray-400 text-sm mb-4">
-              Built with TypeScript, NestJS, and Prisma - the most trusted tools
-              for enterprise-grade backend applications.
-            </p>
-            <p className="text-purple-400 text-sm font-semibold">
-              PostgreSQL " SQLite " Production-Ready
-            </p>
-          </div>
-
-          {/* Feature 4 */}
-          <div className="bg-gradient-to-br from-green-500/10 to-teal-500/10 border border-gray-600/30 rounded-2xl p-8 transition-all duration-300 hover:from-green-500/20 hover:to-teal-500/20 hover:border-gray-500/50 hover:shadow-xl hover:shadow-green-500/10 hover:scale-[1.02]">
-            <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mb-6">
-              <div className="text-green-400 text-2xl">📚</div>
-            </div>
-            <h3 className="text-2xl font-bold mb-4">Enterprise Ready</h3>
-            <p className="text-gray-300 mb-4">Complete development lifecycle</p>
-            <p className="text-gray-400 text-sm mb-4">
-              Comprehensive documentation, E2E testing, and clean architecture
-              that juniors can understand and seniors can extend with AI
-              assistants.
-            </p>
-            <p className="text-green-400 text-sm font-semibold">
-              Full Documentation " Testing " Maintainable Code
-            </p>
-          </div>
-
-          {/* Feature 5 */}
-          <div className="bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border border-gray-600/30 rounded-2xl p-8 transition-all duration-300 hover:from-yellow-500/20 hover:to-orange-500/20 hover:border-gray-500/50 hover:shadow-xl hover:shadow-orange-500/10 hover:scale-[1.02]">
-            <div className="w-16 h-16 bg-yellow-500/20 rounded-full flex items-center justify-center mb-6">
-              <div className="text-yellow-400 text-2xl">💰</div>
-            </div>
-            <h3 className="text-2xl font-bold mb-4">Cost Effective</h3>
-            <p className="text-gray-300 mb-4">Reduce development time & cost</p>
-            <p className="text-gray-400 text-sm mb-4">
-              From months to hours of development time. Significantly reduce
-              backend development costs while maintaining enterprise-grade
-              quality.
-            </p>
-            <p className="text-yellow-400 text-sm font-semibold">
-              Time Saving " Cost Reduction " High ROI
-            </p>
-          </div>
-
-          {/* Feature 6 */}
-          <div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border border-gray-600/30 rounded-2xl p-8 transition-all duration-300 hover:from-cyan-500/20 hover:to-blue-500/20 hover:border-gray-500/50 hover:shadow-xl hover:shadow-cyan-500/10 hover:scale-[1.02]">
-            <div className="w-16 h-16 bg-cyan-500/20 rounded-full flex items-center justify-center mb-6">
-              <div className="text-cyan-400 text-2xl">🌐</div>
-            </div>
-            <h3 className="text-2xl font-bold mb-4">
-              Open Source & Extensible
-            </h3>
-            <p className="text-gray-300 mb-4">Flexible and community-driven</p>
-            <p className="text-gray-400 text-sm mb-4">
-              Open source project with support for multiple LLMs (GPT-4.1,
-              Qwen3), local development, and seamless integration with AI coding
-              assistants.
-            </p>
-            <p className="text-cyan-400 text-sm font-semibold">
-              Multi-LLM Support " Local Setup " AI Assistant Ready
-            </p>
-          </div>
+          {features.map((feature, index) => (
+            <AutoBeLandingStrengthCardMovie key={index} {...feature} />
+          ))}
         </div>
       </div>
     </section>

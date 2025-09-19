@@ -25,6 +25,7 @@
   },
   "homepage": "https://autobe.dev",
   "dependencies": {
+    "@autobe/interface": "workspace:^",
     "@tailwindcss/postcss": "^4.1.13",
     "next": "^15.1.0",
     "nextra": "^4.2.17",

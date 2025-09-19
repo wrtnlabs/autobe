@@ -1075,6 +1075,9 @@ importers:
 
   website:
     dependencies:
+      '@autobe/interface':
+        specifier: workspace:^
+        version: link:../packages/interface
       '@tailwindcss/postcss':
         specifier: ^4.1.13
         version: 4.1.13
