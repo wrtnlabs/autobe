@@ -79,12 +79,12 @@ export default function AutoBeLandingDemoReplayMovie({
                     <td className="py-2 pr-3 w-6">
                       <div className="w-3 h-3 bg-gray-600 rounded-full"></div>
                     </td>
-                    <td className="py-2 pr-3 text-sm w-20">
+                    <td className="py-2 pr-1 text-sm">
                       <span className="text-gray-500">
                         {phaseName.charAt(0).toUpperCase() + phaseName.slice(1)}
                       </span>
                     </td>
-                    <td className="py-2 pl-3 text-sm text-gray-500 whitespace-nowrap">
+                    <td className="py-2 pl-1 text-sm text-gray-500 whitespace-nowrap">
                       -
                     </td>
                     <td className="py-2 px-3 text-sm text-gray-500 text-right w-20 whitespace-nowrap hidden sm:table-cell">
@@ -129,7 +129,7 @@ export default function AutoBeLandingDemoReplayMovie({
                       {phaseName.charAt(0).toUpperCase() + phaseName.slice(1)}
                     </span>
                   </td>
-                  <td className="py-2 pl-3 text-sm text-gray-400 whitespace-nowrap">
+                  <td className="py-2 pl-1 text-sm text-gray-400 whitespace-nowrap">
                     {detail}
                   </td>
                   <td className="py-2 px-3 text-sm text-gray-400 text-right w-20 whitespace-nowrap hidden sm:table-cell">
