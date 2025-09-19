@@ -1,3 +1,4 @@
+import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 
 import { AutoBeHackathonConfiguration } from "../AutoBeHackathonConfiguration";
@@ -9,13 +10,17 @@ async function execute(
   password: string,
   script: string,
 ): Promise<void> {
+  const env = AutoBeHackathonConfiguration.env();
   try {
     const prisma = new PrismaClient({
-      datasources: {
-        db: {
-          url: `postgresql://${username}:${password}@${AutoBeHackathonConfiguration.env().HACKATHON_POSTGRES_HOST}:${AutoBeHackathonConfiguration.env().HACKATHON_POSTGRES_PORT}/${database}`,
+      adapter: new PrismaPg(
+        {
+          connectionString: `postgresql://${username}:${password}@${env.HACKATHON_POSTGRES_HOST}:${env.HACKATHON_POSTGRES_PORT}/${database}&schema=${env.HACKATHON_POSTGRES_SCHEMA}`,
         },
-      },
+        {
+          schema: env.HACKATHON_POSTGRES_SCHEMA,
+        },
+      ),
     });
     const queries: string[] = script
       .split("\n")
