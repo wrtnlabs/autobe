@@ -60,7 +60,7 @@ const main = async (): Promise<void> => {
   for (const vendor of [
     "openai/gpt-4.1",
     "openai/gpt-4.1-mini",
-    "qwen/qwen3-next-80b-instruct",
+    "qwen/qwen3-next-80b-a3b-instruct",
   ])
     for (const project of typia.misc.literals<TestProject>()) {
       const replay: IAutoBePlaygroundReplay.ISummary | null = await collect({

@@ -2,12 +2,43 @@
 
 import { useState } from "react";
 
-import { AutoBeExperimentCollection } from "../data/AutoBeExperimentCollection";
+import replaysData from "../../data/replays.json";
 
-export default function AutoBeLandingPage() {
-  const [selectedModel, setSelectedModel] = useState<
-    "openai/gpt-4.1" | "openai/gpt-4.1-mini" | "qwen/qwen3-next-80b-a3b"
-  >("openai/gpt-4.1");
+// Convert elapsed time from milliseconds to human readable format
+function formatElapsedTime(ms: number): string {
+  const seconds = Math.floor(ms / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+
+  const s = seconds % 60;
+  const m = minutes % 60;
+  const h = hours;
+
+  if (h > 0) {
+    return `${h}h ${m}m ${s}s`;
+  } else if (m > 0) {
+    return `${m}m ${s}s`;
+  } else {
+    return `${s}s`;
+  }
+}
+
+// Format token numbers with K/M suffix
+function formatTokens(num: number): string {
+  if (num >= 1000000) {
+    return `${(num / 1000000).toFixed(2)}M`;
+  } else if (num >= 1000) {
+    return `${(num / 1000).toFixed(1)}K`;
+  }
+  return num.toString();
+}
+
+export default function AutoBeLandingMovie() {
+  // Get available models from replays data
+  const models = Object.keys(replaysData as any);
+  const [selectedModel, setSelectedModel] = useState<string>(
+    models[0] || "openai/gpt-4.1",
+  );
   return (
     <div className="text-white overflow-hidden">
       {/* Hero Section */}
@@ -90,31 +121,34 @@ export default function AutoBeLandingPage() {
 
             {/* Model Tabs */}
             <div className="flex justify-center mb-8">
-              <div className="relative bg-gray-800/50 rounded-full p-1 inline-grid grid-cols-3">
+              <div
+                className="relative bg-gray-800/50 rounded-full p-1 inline-grid"
+                style={{
+                  gridTemplateColumns: `repeat(${models.length}, minmax(140px, 1fr))`,
+                }}
+              >
                 {/* Sliding background indicator */}
                 <div
                   className="absolute top-1 bottom-1 bg-blue-600 rounded-full shadow-lg transition-all duration-300 ease-out"
                   style={{
-                    width: `calc(33.333% - 4px)`,
-                    transform: `translateX(${Object.keys(AutoBeExperimentCollection).indexOf(selectedModel) * 100}%)`,
+                    width: `calc(${100 / models.length}% - 4px)`,
+                    transform: `translateX(${models.indexOf(selectedModel) * 100}%)`,
                     left: "4px",
                   }}
                 />
-                {Object.entries(AutoBeExperimentCollection).map(
-                  ([key, model]) => (
-                    <button
-                      key={key}
-                      onClick={() => setSelectedModel(key as "openai/gpt-4.1")}
-                      className={`relative z-10 px-4 py-3 rounded-full text-sm font-medium transition-all duration-200 min-w-[140px] ${
-                        selectedModel === key
-                          ? "text-white"
-                          : "text-gray-400 hover:text-white"
-                      }`}
-                    >
-                      {model.name}
-                    </button>
-                  ),
-                )}
+                {models.map((model) => (
+                  <button
+                    key={model}
+                    onClick={() => setSelectedModel(model)}
+                    className={`relative z-10 px-4 py-3 rounded-full text-sm font-medium transition-all duration-200 min-w-[140px] ${
+                      selectedModel === model
+                        ? "text-white"
+                        : "text-gray-400 hover:text-white"
+                    }`}
+                  >
+                    {model}
+                  </button>
+                ))}
               </div>
             </div>
           </div>
@@ -126,97 +160,155 @@ export default function AutoBeLandingPage() {
               margin: "0 auto",
             }}
           >
-            {AutoBeExperimentCollection[selectedModel].examples.map(
-              (example, index) => (
-                <a
-                  key={index}
-                  href={example.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block bg-white/5 border border-gray-600/30 rounded-2xl p-6 transition-all duration-300 hover:bg-white/10 hover:border-gray-500/50 hover:shadow-xl hover:shadow-blue-500/10 hover:scale-[1.02]"
-                >
-                  <div className="mb-6">
-                    <h3 className="text-2xl font-bold">{example.title}</h3>
-                    <p className="text-sm text-gray-400 mt-1">
-                      {example.description}
-                    </p>
-                  </div>
+            {(replaysData as any)[selectedModel]?.map(
+              (replay: any, index: number) => {
+                // Use project name directly from replay data
+                const projectTitle =
+                  replay.project.charAt(0).toUpperCase() +
+                  replay.project.slice(1);
 
-                  <div className="mb-6">
-                    <table className="w-full">
-                      <tbody>
-                        {example.phases.map((phase, phaseIndex) => (
-                          <tr
-                            key={phaseIndex}
-                            className="border-b border-gray-700/30 last:border-0"
-                          >
-                            <td className="py-2 pr-3 w-6">
-                              <div
-                                className={`w-3 h-3 ${
-                                  phase.success === true
-                                    ? "bg-green-500"
-                                    : phase.success === false
-                                      ? "bg-red-500"
-                                      : "bg-gray-600"
-                                } rounded-full`}
-                              ></div>
-                            </td>
-                            <td className="py-2 pr-3 text-sm w-20">
-                              <span
-                                className={
-                                  phase.success === true
-                                    ? "text-white"
-                                    : phase.success === false
-                                      ? "text-red-400"
-                                      : "text-gray-500"
-                                }
+                // Generate URL based on vendor and project
+                const vendor = replay.vendor.replace(/\//g, "-");
+                const url = `https://github.com/wrtnlabs/autobe-example-${replay.project}-${vendor}`;
+
+                const tokenUsage = replay.tokenUsage.aggregate;
+                const totalTokens = formatTokens(tokenUsage.total);
+                const inputTokens = formatTokens(tokenUsage.input.total);
+                const cachedTokens = formatTokens(tokenUsage.input.cached);
+                const outputTokens = formatTokens(tokenUsage.output.total);
+
+                return (
+                  <a
+                    key={index}
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block bg-white/5 border border-gray-600/30 rounded-2xl p-6 transition-all duration-300 hover:bg-white/10 hover:border-gray-500/50 hover:shadow-xl hover:shadow-blue-500/10 hover:scale-[1.02]"
+                  >
+                    <div className="mb-6">
+                      <h3 className="text-2xl font-bold">{projectTitle}</h3>
+                    </div>
+
+                    <div className="mb-6">
+                      <table className="w-full">
+                        <tbody>
+                          {[
+                            "analyze",
+                            "prisma",
+                            "interface",
+                            "test",
+                            "realize",
+                          ].map((phaseName) => {
+                            const phase = replay[phaseName];
+                            if (!phase) {
+                              return (
+                                <tr
+                                  key={phaseName}
+                                  className="border-b border-gray-700/30 last:border-0"
+                                >
+                                  <td className="py-2 pr-3 w-6">
+                                    <div className="w-3 h-3 bg-gray-600 rounded-full"></div>
+                                  </td>
+                                  <td className="py-2 pr-3 text-sm w-20">
+                                    <span className="text-gray-500">
+                                      {phaseName.charAt(0).toUpperCase() +
+                                        phaseName.slice(1)}
+                                    </span>
+                                  </td>
+                                  <td className="py-2 pl-3 text-sm text-gray-500 whitespace-nowrap">
+                                    -
+                                  </td>
+                                  <td className="py-2 px-3 text-sm text-gray-500 text-right w-20 whitespace-nowrap hidden sm:table-cell">
+                                    -
+                                  </td>
+                                </tr>
+                              );
+                            }
+
+                            const detail = phase.aggregate
+                              ? Object.entries(phase.aggregate)
+                                  .map(([key, value]) => `${key}: ${value}`)
+                                  .join(", ")
+                              : "-";
+
+                            return (
+                              <tr
+                                key={phaseName}
+                                className="border-b border-gray-700/30 last:border-0"
                               >
-                                {phase.name}
-                              </span>
-                            </td>
-                            <td className="py-2 pl-3 text-sm text-gray-400 whitespace-nowrap">
-                              {phase.detail}
-                            </td>
-                            <td className="py-2 px-3 text-sm text-gray-400 text-right w-20 whitespace-nowrap hidden sm:table-cell">
-                              {phase.time}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-
-                  <div className="border-t border-gray-600 pt-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center text-sm text-gray-400">
-                        <span className="mr-2">⏱</span>
-                        <span>Elapsed Time</span>
-                      </div>
-                      <span className="text-blue-400 font-bold">
-                        {example.elapsed}
-                      </span>
+                                <td className="py-2 pr-3 w-6">
+                                  <div
+                                    className={`w-3 h-3 ${
+                                      phase.success === true
+                                        ? "bg-green-500"
+                                        : phase.success === false
+                                          ? "bg-red-500"
+                                          : "bg-gray-600"
+                                    } rounded-full`}
+                                  ></div>
+                                </td>
+                                <td className="py-2 pr-3 text-sm w-20">
+                                  <span
+                                    className={
+                                      phase.success === true
+                                        ? "text-white"
+                                        : phase.success === false
+                                          ? "text-red-400"
+                                          : "text-gray-500"
+                                    }
+                                  >
+                                    {phaseName.charAt(0).toUpperCase() +
+                                      phaseName.slice(1)}
+                                  </span>
+                                </td>
+                                <td className="py-2 pl-3 text-sm text-gray-400 whitespace-nowrap">
+                                  {detail}
+                                </td>
+                                <td className="py-2 px-3 text-sm text-gray-400 text-right w-20 whitespace-nowrap hidden sm:table-cell">
+                                  {phase.elapsed
+                                    ? formatElapsedTime(phase.elapsed)
+                                    : "-"}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
                     </div>
 
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center text-sm text-gray-400">
-                        <span className="mr-2">🧠</span>
-                        <span>Total Tokens</span>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-bold text-white">
-                          {example.tokens}
+                    <div className="border-t border-gray-600 pt-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center text-sm text-gray-400">
+                          <span className="mr-2">⏱</span>
+                          <span>Elapsed Time</span>
                         </div>
-                        <div className="text-xs text-gray-400">
-                          {example.tokensDetail.split("\n").map((line, i) => (
-                            <div key={i}>{line}</div>
-                          ))}
+                        <span className="text-blue-400 font-bold">
+                          {formatElapsedTime(replay.elapsed)}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center text-sm text-gray-400">
+                          <span className="mr-2">🧠</span>
+                          <span>Total Tokens</span>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-bold text-white">
+                            {totalTokens}
+                          </div>
+                          <div className="text-xs text-gray-400">
+                            <div>
+                              in: {inputTokens} ({cachedTokens} cached)
+                            </div>
+                            <div>out: {outputTokens}</div>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </a>
-              ),
-            )}
+                  </a>
+                );
+              },
+            ) || []}
           </div>
         </div>
       </section>
@@ -418,42 +510,101 @@ export default function AutoBeLandingPage() {
                     Automatic SDK Generation
                   </h3>
                   <p className="text-gray-300 mb-4">
-                    Every backend comes with a <span className="text-purple-400 font-semibold">type-safe client SDK</span> - zero configuration, 100% type safety
+                    Every backend comes with a{" "}
+                    <span className="text-purple-400 font-semibold">
+                      type-safe client SDK
+                    </span>{" "}
+                    - zero configuration, 100% type safety
                   </p>
                   <p className="text-gray-300 mb-8">
-                    The SDK powers both frontend integration and E2E test generation, creating a robust feedback loop that ensures backend stability
+                    The SDK powers both frontend integration and E2E test
+                    generation, creating a robust feedback loop that ensures
+                    backend stability
                   </p>
                 </div>
-                
+
                 <div className="bg-black/20 rounded-2xl p-6">
                   <pre className="text-gray-300 font-mono text-xs lg:text-sm">
-<span className="text-blue-300">import</span> api, {"{"} <span className="text-cyan-300">IPost</span> {"}"} <span className="text-blue-300">from</span> <span className="text-green-400">"autobe-generated-sdk"</span>;{"\n"}
-{"\n"}<span className="text-gray-500">// Type-safe API calls with full autocomplete</span>{"\n"}
-<span className="text-blue-300">const</span> connection: <span className="text-cyan-300">api.IConnection</span> = {"{"}{"\n"}
-{"  "}host: <span className="text-green-400">"http://localhost:1234"</span>,{"\n"}
-{"}"};{"\n"}
-<span className="text-blue-300">await</span> api.functional.users.<span className="text-yellow-300">login</span>(connection, {"{"}{"\n"}
-{"  "}body: {"{"}{"\n"}
-{"    "}email: <span className="text-green-400">"user@example.com"</span>,{"\n"}
-{"    "}password: <span className="text-green-400">"secure-password"</span>,{"\n"}
-{"  "}{"}"},{"\n"}
-{"}"});{"\n"}
-{"\n"}<span className="text-gray-500">// TypeScript catches errors at compile time</span>{"\n"}
-<span className="text-blue-300">const</span> post: <span className="text-cyan-300">IPost</span> = <span className="text-blue-300">await</span> api.functional.posts.<span className="text-yellow-300">create</span>(connection, {"{"}{"\n"}
-{"  "}body: {"{"}{"\n"}
-{"    "}title: <span className="text-green-400">"Hello World"</span>,{"\n"}
-{"    "}content: <span className="text-green-400">"My first post"</span>,{"\n"}
-{"    "}<span className="text-gray-500">// authorId: "123" {"<-"} TypeScript error if this field is missing!</span>{"\n"}
-{"  "}{"}"},{"\n"}
-{"}"});
+                    <span className="text-blue-300">import</span> api, {"{"}{" "}
+                    <span className="text-cyan-300">IPost</span> {"}"}{" "}
+                    <span className="text-blue-300">from</span>{" "}
+                    <span className="text-green-400">
+                      "autobe-generated-sdk"
+                    </span>
+                    ;{"\n"}
+                    {"\n"}
+                    <span className="text-gray-500">
+                      // Type-safe API calls with full autocomplete
+                    </span>
+                    {"\n"}
+                    <span className="text-blue-300">
+                      const
+                    </span> connection:{" "}
+                    <span className="text-cyan-300">api.IConnection</span> ={" "}
+                    {"{"}
+                    {"\n"}
+                    {"  "}host:{" "}
+                    <span className="text-green-400">
+                      "http://localhost:1234"
+                    </span>
+                    ,{"\n"}
+                    {"}"};{"\n"}
+                    <span className="text-blue-300">await</span>{" "}
+                    api.functional.users.
+                    <span className="text-yellow-300">
+                      login
+                    </span>(connection, {"{"}
+                    {"\n"}
+                    {"  "}body: {"{"}
+                    {"\n"}
+                    {"    "}email:{" "}
+                    <span className="text-green-400">"user@example.com"</span>,
+                    {"\n"}
+                    {"    "}password:{" "}
+                    <span className="text-green-400">"secure-password"</span>,
+                    {"\n"}
+                    {"  "}
+                    {"}"},{"\n"}
+                    {"}"});{"\n"}
+                    {"\n"}
+                    <span className="text-gray-500">
+                      // TypeScript catches errors at compile time
+                    </span>
+                    {"\n"}
+                    <span className="text-blue-300">const</span> post:{" "}
+                    <span className="text-cyan-300">IPost</span> ={" "}
+                    <span className="text-blue-300">await</span>{" "}
+                    api.functional.posts.
+                    <span className="text-yellow-300">
+                      create
+                    </span>(connection, {"{"}
+                    {"\n"}
+                    {"  "}body: {"{"}
+                    {"\n"}
+                    {"    "}title:{" "}
+                    <span className="text-green-400">"Hello World"</span>,{"\n"}
+                    {"    "}content:{" "}
+                    <span className="text-green-400">"My first post"</span>,
+                    {"\n"}
+                    {"    "}
+                    <span className="text-gray-500">
+                      // authorId: "123" {"<-"} TypeScript error if this field
+                      is missing!
+                    </span>
+                    {"\n"}
+                    {"  "}
+                    {"}"},{"\n"}
+                    {"}"});
                   </pre>
                 </div>
-                
+
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="flex items-start bg-purple-500/5 border border-purple-600/20 rounded-xl p-4 transition-all duration-300 hover:bg-purple-500/10 hover:border-purple-600/40 hover:scale-[1.02]">
                     <span className="text-purple-400 mr-3">📦</span>
                     <div>
-                      <p className="font-semibold text-white">Zero Configuration</p>
+                      <p className="font-semibold text-white">
+                        Zero Configuration
+                      </p>
                       <p className="text-gray-400 text-sm">
                         Auto-generated with your backend
                       </p>
@@ -462,7 +613,9 @@ export default function AutoBeLandingPage() {
                   <div className="flex items-start bg-purple-500/5 border border-purple-600/20 rounded-xl p-4 transition-all duration-300 hover:bg-purple-500/10 hover:border-purple-600/40 hover:scale-[1.02]">
                     <span className="text-purple-400 mr-3">🔒</span>
                     <div>
-                      <p className="font-semibold text-white">100% Type Safety</p>
+                      <p className="font-semibold text-white">
+                        100% Type Safety
+                      </p>
                       <p className="text-gray-400 text-sm">
                         Full TypeScript support & validation
                       </p>
@@ -480,7 +633,9 @@ export default function AutoBeLandingPage() {
                   <div className="flex items-start bg-purple-500/5 border border-purple-600/20 rounded-xl p-4 transition-all duration-300 hover:bg-purple-500/10 hover:border-purple-600/40 hover:scale-[1.02]">
                     <span className="text-purple-400 mr-3">🧪</span>
                     <div>
-                      <p className="font-semibold text-white">E2E Test Integration</p>
+                      <p className="font-semibold text-white">
+                        E2E Test Integration
+                      </p>
                       <p className="text-gray-400 text-sm">
                         Powers AI-generated test suites
                       </p>
@@ -515,14 +670,15 @@ export default function AutoBeLandingPage() {
                     Runtime Optimization in Progress
                   </h3>
                   <p className="text-gray-400 text-sm">
-                    While we guarantee 100% compilation success, runtime behavior may need testing and refinement. 
-                    Our v1.0 release (Q4 2025) targets 100% runtime success.
+                    While we guarantee 100% compilation success, runtime
+                    behavior may need testing and refinement. Our v1.0 release
+                    (Q4 2025) targets 100% runtime success.
                   </p>
                 </div>
               </div>
               <div className="pl-14">
                 <div className="text-xs text-gray-500 font-mono bg-black/30 rounded p-2">
-                  Current: 100% Compilation ✓<br/>
+                  Current: 100% Compilation ✓<br />
                   Target: 100% Runtime Success
                 </div>
               </div>
@@ -539,8 +695,9 @@ export default function AutoBeLandingPage() {
                     Token Consumption
                   </h3>
                   <p className="text-gray-400 text-sm">
-                    Complex projects require significant AI tokens. We're implementing RAG optimization 
-                    to reduce token usage by up to 70%.
+                    Complex projects require significant AI tokens. We're
+                    implementing RAG optimization to reduce token usage by up to
+                    70%.
                   </p>
                 </div>
               </div>
@@ -552,7 +709,9 @@ export default function AutoBeLandingPage() {
                   </div>
                   <div className="flex justify-between">
                     <span>E-Commerce Platform:</span>
-                    <span className="text-blue-400 font-mono">~250M tokens</span>
+                    <span className="text-blue-400 font-mono">
+                      ~250M tokens
+                    </span>
                   </div>
                 </div>
               </div>
@@ -569,8 +728,8 @@ export default function AutoBeLandingPage() {
                     Design Interpretation
                   </h3>
                   <p className="text-gray-400 text-sm">
-                    AI-generated designs may differ from your vision. Always review the generated 
-                    specifications before implementation.
+                    AI-generated designs may differ from your vision. Always
+                    review the generated specifications before implementation.
                   </p>
                 </div>
               </div>
@@ -592,8 +751,9 @@ export default function AutoBeLandingPage() {
                     Post-Generation Maintenance
                   </h3>
                   <p className="text-gray-400 text-sm">
-                    AutoBE focuses on initial generation. For ongoing maintenance, 
-                    combine with AI coding assistants like Claude Code.
+                    AutoBE focuses on initial generation. For ongoing
+                    maintenance, combine with AI coding assistants like Claude
+                    Code.
                   </p>
                 </div>
               </div>
@@ -607,7 +767,8 @@ export default function AutoBeLandingPage() {
 
           <div className="mt-12 text-center">
             <p className="text-gray-400 mb-6">
-              Despite these limitations, AutoBE significantly accelerates backend development
+              Despite these limitations, AutoBE significantly accelerates
+              backend development
             </p>
             <a
               href="https://autobe.dev/docs/roadmap/v1.0"
