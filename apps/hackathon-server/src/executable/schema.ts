@@ -15,7 +15,7 @@ async function execute(
     const prisma = new PrismaClient({
       adapter: new PrismaPg(
         {
-          connectionString: `postgresql://${username}:${password}@${env.HACKATHON_POSTGRES_HOST}:${env.HACKATHON_POSTGRES_PORT}/${database}&schema=${env.HACKATHON_POSTGRES_SCHEMA}`,
+          connectionString: `postgresql://${username}:${password}@${env.HACKATHON_POSTGRES_HOST}:${env.HACKATHON_POSTGRES_PORT}/${database}?schema=${env.HACKATHON_POSTGRES_SCHEMA}`,
         },
         {
           schema: env.HACKATHON_POSTGRES_SCHEMA,
