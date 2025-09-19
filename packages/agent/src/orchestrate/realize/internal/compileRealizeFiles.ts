@@ -23,7 +23,9 @@ export async function compileRealizeFiles<Model extends ILlmSchema.Model>(
   );
   const compiler: IAutoBeCompiler = await ctx.compiler();
   const templateFiles: Record<string, string> =
-    await compiler.realize.getTemplate();
+    await compiler.realize.getTemplate({
+      dbms: "sqlite",
+    });
   const nodeModules: Record<string, string> =
     prisma?.type === "success" ? prisma.nodeModules : {};
 

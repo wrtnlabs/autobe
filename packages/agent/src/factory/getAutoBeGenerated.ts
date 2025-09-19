@@ -104,6 +104,9 @@ export async function getAutoBeGenerated(
         document: state.interface!.document,
         authorizations: state.realize.authorizations,
         functions: state.realize.functions,
+        options: {
+          dbms: options?.dbms ?? "postgres",
+        },
       }),
     );
   if (options?.stage === "test") return ret;

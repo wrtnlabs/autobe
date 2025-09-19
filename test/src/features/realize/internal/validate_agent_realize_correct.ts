@@ -128,7 +128,9 @@ export const validate_agent_realize_correct = async (
     },
   );
 
-  const templateFiles = await compiler.realize.getTemplate();
+  const templateFiles = await compiler.realize.getTemplate({
+    dbms: "sqlite",
+  });
   const files = await agent.getFiles();
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/${model}/${project}/realize/correct`,

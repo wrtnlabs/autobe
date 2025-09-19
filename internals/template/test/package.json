@@ -28,6 +28,7 @@
     "webpack:test": "npm run webpack && node bin/test/webpack.js",
     "------------------------DEPLOYS------------------------": "",
     "package:api": "npm run build:api && cd packages/api && npm publish",
+    "schema": "ts-node src/executable/schema",
     "start": "node lib/executable/server",
     "start:dev": "nest start --watch",
     "start:swagger": "ts-node src/executable/swagger.ts"
@@ -111,6 +112,9 @@
     "tstl": "^3.0.0",
     "typia": "^9.7.2",
     "uuid": "^9.0.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["better-sqlite3"]
   },
   "stackblitz": {
     "startCommand": "npm run prepare && npm run build:test && npm run test -- --simultaneous 1"

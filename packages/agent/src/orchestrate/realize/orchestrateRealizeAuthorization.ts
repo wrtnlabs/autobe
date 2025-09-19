@@ -41,7 +41,11 @@ export async function orchestrateRealizeAuthorization<
     total: roles.length,
     completed: 0,
   };
-  const templateFiles = await (await ctx.compiler()).realize.getTemplate();
+  const templateFiles = await (
+    await ctx.compiler()
+  ).realize.getTemplate({
+    dbms: "sqlite",
+  });
   const authorizations: AutoBeRealizeAuthorization[] = await executeCachedBatch(
     roles.map(
       (role) => (promptCacheKey) =>

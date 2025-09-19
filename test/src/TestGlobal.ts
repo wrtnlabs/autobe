@@ -33,9 +33,10 @@ export class TestGlobal {
       TestGlobal.vendorModel.startsWith("openai/gpt-oss-") === false;
     return {
       api: new OpenAI({
-        apiKey: isOpenAi
-          ? TestGlobal.env.OPENAI_API_KEY
-          : TestGlobal.env.OPENROUTER_API_KEY,
+        apiKey:
+          (isOpenAi
+            ? TestGlobal.env.OPENAI_API_KEY
+            : TestGlobal.env.OPENROUTER_API_KEY) ?? "********",
         baseURL: isOpenAi ? undefined : "https://openrouter.ai/api/v1",
       }),
       model: isOpenAi

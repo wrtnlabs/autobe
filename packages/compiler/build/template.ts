@@ -60,6 +60,14 @@ const main = async (): Promise<void> => {
       ...(await getDefinition("compiler/IAutoBeRealizeTestService.ts")),
     },
   });
+  await template({
+    root: `${__dirname}/../../../internals/template/realize-of-postgres`,
+    name: "AutoBeCompilerRealizeTemplateOfPostgres",
+  });
+  await template({
+    root: `${__dirname}/../../../internals/template/realize-of-sqlite`,
+    name: "AutoBeCompilerRealizeTemplateOfSQLite",
+  });
 };
 main().catch((error) => {
   console.error(error);

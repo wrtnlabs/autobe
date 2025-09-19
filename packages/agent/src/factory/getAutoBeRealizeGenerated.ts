@@ -3,6 +3,7 @@ import {
   AutoBeRealizeAuthorization,
   AutoBeRealizeFunction,
   IAutoBeCompiler,
+  IAutoBeGetFilesOptions,
 } from "@autobe/interface";
 
 export const getAutoBeRealizeGenerated = async (props: {
@@ -10,6 +11,7 @@ export const getAutoBeRealizeGenerated = async (props: {
   document: AutoBeOpenApi.IDocument;
   authorizations: AutoBeRealizeAuthorization[];
   functions: AutoBeRealizeFunction[];
+  options: IAutoBeGetFilesOptions;
 }): Promise<Record<string, string>> => ({
   ...Object.fromEntries(props.functions.map((f) => [f.location, f.content])),
   ...Object.fromEntries(
@@ -21,7 +23,7 @@ export const getAutoBeRealizeGenerated = async (props: {
       ])
       .flat(),
   ),
-  ...(await props.compiler.realize.getTemplate()),
+  ...(await props.compiler.realize.getTemplate(props.options)),
   ...(await props.compiler.realize.controller({
     document: props.document,
     functions: props.functions,
