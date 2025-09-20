@@ -21,7 +21,7 @@ catalogs:
     '@nestia/sdk': ^8.0.7
     '@samchon/openapi': ^4.7.1
     embed-eslint: ^2.0.1
-    embed-prisma: ^1.1.1
+    embed-prisma: ^1.1.2
     embed-typescript: ^2.0.1
     nestia: ^8.0.7
     prisma-markdown: ^3.0.0
