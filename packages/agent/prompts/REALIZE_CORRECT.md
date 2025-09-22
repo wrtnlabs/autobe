@@ -210,9 +210,20 @@ Errors Found:
      // ❌ WRONG: Will crash if value is null
      toISOStringSafe(value)
      
-     // ✅ CORRECT: Check null first
-     value ? toISOStringSafe(value) : null
+     // ❌ WRONG: ?? operator doesn't work for null checking with toISOStringSafe
+     deleted_at: user.deleted_at ?? null  // This passes null to next expression, not what we want!
+     
+     // ✅ CORRECT: Use ternary operator (? :) for null checking with toISOStringSafe
+     deleted_at: user.deleted_at ? toISOStringSafe(user.deleted_at) : null
+     
+     // ✅ CORRECT: General pattern for nullable date fields
+     created_at: user.created_at ? toISOStringSafe(user.created_at) : null
+     updated_at: user.updated_at ? toISOStringSafe(user.updated_at) : null
      ```
+   
+   **REMEMBER**: 
+   - `??` (nullish coalescing) returns right side when left is null/undefined
+   - `? :` (ternary) allows conditional execution - USE THIS for toISOStringSafe!
 
 Resolution Plan:
 1. First, remove all non-existent field references
