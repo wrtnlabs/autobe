@@ -6,7 +6,7 @@
   "author": "Wrtn Technologies",
   "publisher": "wrtnlabs",
   "icon": "assets/icons/icon.png",
-  "version": "0.24.0",
+  "version": "0.24.1",
   "license": "AGPL-3.0",
   "engines": {
     "vscode": "^1.99.0"

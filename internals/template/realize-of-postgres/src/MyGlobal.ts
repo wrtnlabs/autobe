@@ -1,3 +1,4 @@
+import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 import crypto from "crypto";
 import dotenv from "dotenv";
@@ -7,10 +8,14 @@ import typia from "typia";
 
 /* eslint-disable */
 export class MyGlobal {
-  public static readonly prisma: PrismaClient = new PrismaClient();
   public static testing: boolean = false;
+
   public static get env(): MyGlobal.IEnvironments {
     return environments.get();
+  }
+
+  public static get prisma(): PrismaClient {
+    return prisma.get();
   }
 
   /**
@@ -64,9 +69,15 @@ export class MyGlobal {
 export namespace MyGlobal {
   export interface IEnvironments {
     API_PORT: `${number}`;
-
-    /** JWT Secret Key. */
     JWT_SECRET_KEY: string;
+
+    POSTGRES_HOST: string;
+    POSTGRES_PORT: `${number}`;
+    POSTGRES_DATABASE: string;
+    POSTGRES_SCHEMA: string;
+    POSTGRES_USERNAME: string;
+    POSTGRES_PASSWORD: string;
+    POSTGRES_URL: string;
   }
 }
 const environments = new Singleton(() => {
@@ -74,3 +85,12 @@ const environments = new Singleton(() => {
   dotenvExpand.expand(env);
   return typia.assert<MyGlobal.IEnvironments>(process.env);
 });
+const prisma = new Singleton(
+  () =>
+    new PrismaClient({
+      adapter: new PrismaPg(
+        { connectionString: environments.get().POSTGRES_URL },
+        { schema: environments.get().POSTGRES_SCHEMA },
+      ),
+    }),
+);

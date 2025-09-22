@@ -41,7 +41,8 @@ export const getCriticalCompiler = (
     realize: {
       controller: (props) => lock(() => compiler.realize.controller(props)),
       test: (props) => lock(() => compiler.realize.test(props)),
-      getTemplate: () => lock(() => compiler.realize.getTemplate()),
+      getTemplate: (options) =>
+        lock(() => compiler.realize.getTemplate(options)),
     },
   };
 };

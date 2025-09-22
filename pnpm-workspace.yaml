@@ -21,7 +21,7 @@ catalogs:
     '@nestia/sdk': ^8.0.7
     '@samchon/openapi': ^4.7.1
     embed-eslint: ^2.0.1
-    embed-prisma: ^1.1.1
+    embed-prisma: ^1.1.2
     embed-typescript: ^2.0.1
     nestia: ^8.0.7
     prisma-markdown: ^3.0.0
@@ -35,6 +35,12 @@ catalogs:
     ts-node: ^10.9.2
     ts-patch: ^3.3.0
     typescript: ~5.9.2
+  prisma:
+    '@prisma/adapter-pg': ^6.16.2
+    '@prisma/adapter-better-sqlite3': ^6.16.2
+    '@prisma/client': ^6.16.2
+    '@prisma/internals': ^6.16.2
+    prisma: ^6.16.2
   ui:
     react: ^19.1.1
     react-dom: ^19.1.1

@@ -1,13 +1,11 @@
 import HackathonApi from "@autobe/hackathon-api";
 import {
-  AutoBeHackathonModel,
   AutoBePhase,
   IAutoBeHackathonSession,
   IAutoBeRpcListener,
 } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 import { IPointer } from "tstl";
-import typia from "typia";
 
 import { StringUtil } from "../../../../../../packages/utils/src";
 import { TestGlobal } from "../../../TestGlobal";
@@ -23,7 +21,7 @@ export const test_api_hackathon_participant_session_simulate = async (
       connection,
       TestGlobal.CODE,
       {
-        model: typia.random<AutoBeHackathonModel>(),
+        model: "openai/gpt-4.1-mini",
         timezone: "Asia/Seoul",
       },
     );

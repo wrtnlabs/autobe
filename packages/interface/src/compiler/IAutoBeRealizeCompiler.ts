@@ -1,3 +1,4 @@
+import { IAutoBeGetFilesOptions } from "../facade/IAutoBeGetFilesOptions";
 import { IAutoBeRealizeControllerProps } from "./IAutoBeRealizeControllerProps";
 import { IAutoBeRealizeTestProps } from "./IAutoBeRealizeTestProps";
 import { IAutoBeRealizeTestResult } from "./IAutoBeRealizeTestResult";
@@ -97,17 +98,17 @@ export interface IAutoBeRealizeCompiler {
    * application architecture and provide reusable patterns for common backend
    * implementation scenarios.
    *
-   * The template files complement the generated implementation code by providing
-   * standardized project structure, dependency injection patterns, middleware
-   * configurations, and utility functions that support efficient backend
-   * development and maintenance. This includes NestJS module definitions,
-   * database connection configurations, authentication/authorization patterns,
-   * and other foundational elements required for comprehensive backend
-   * application infrastructure.
+   * The template files complement the generated implementation code by
+   * providing standardized project structure, dependency injection patterns,
+   * middleware configurations, and utility functions that support efficient
+   * backend development and maintenance. This includes NestJS module
+   * definitions, database connection configurations,
+   * authentication/authorization patterns, and other foundational elements
+   * required for comprehensive backend application infrastructure.
    *
    * @returns Promise resolving to key-value pairs mapping template file paths
    *   to their content, establishing the complete backend project structure and
    *   supporting infrastructure for production-ready application deployment
    */
-  getTemplate(): Promise<Record<string, string>>;
+  getTemplate(options: IAutoBeGetFilesOptions): Promise<Record<string, string>>;
 }

@@ -1,6 +1,6 @@
 {
   "name": "@autobe/compiler",
-  "version": "0.24.0",
+  "version": "0.24.1",
   "description": "AI backend server code generator",
   "main": "src/index.ts",
   "author": "Wrtn Technologies",

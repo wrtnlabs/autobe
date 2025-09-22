@@ -45,7 +45,11 @@ export const validate_agent_realize_authorization_correct = async (
 
   const ctx = agent.getContext();
 
-  const template = await (await ctx.compiler()).realize.getTemplate();
+  const template = await (
+    await ctx.compiler()
+  ).realize.getTemplate({
+    dbms: "sqlite",
+  });
 
   const templateFiles = InternalFileSystem.DEFAULT.map((el) => ({
     [el]: template[el],

@@ -16,8 +16,10 @@ export const test_compiler_facade_bbs = async (
   const prisma: IAutoBePrismaCompileResult = await compiler.prisma.compile({
     files: await RepositoryFileSystem.prisma("samchon", "bbs-backend"),
   });
-  if (prisma.type !== "success")
+  if (prisma.type !== "success") {
+    console.log(prisma.type === "failure" ? prisma.reason : prisma.error);
     throw new Error("Failed to pass prisma generate");
+  }
 
   const result: IAutoBeTypeScriptCompileResult =
     await compiler.typescript.compile({

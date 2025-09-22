@@ -52,7 +52,11 @@ export const validate_agent_realize_authorization = async (
   const prismaClients: Record<string, string> =
     prisma?.type === "success" ? prisma.nodeModules : {};
 
-  const templateFiles = await (await ctx.compiler()).realize.getTemplate();
+  const templateFiles = await (
+    await ctx.compiler()
+  ).realize.getTemplate({
+    dbms: "sqlite",
+  });
   const files: Record<string, string> = {
     ...InternalFileSystem.DEFAULT.map((key) => ({
       [key]: templateFiles[key],

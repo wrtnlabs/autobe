@@ -35,7 +35,6 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
     authorizations,
     functions,
   });
-
   if (event.result.type !== "failure") return functions;
   else if (life < 0) return functions;
 

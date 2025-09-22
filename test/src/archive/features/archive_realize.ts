@@ -47,7 +47,11 @@ export const archive_realize = async (
 
   const filterTsFiles = (location: string) => location.endsWith(".ts");
 
-  const templateFiles = await (await ctx.compiler()).realize.getTemplate();
+  const templateFiles = await (
+    await ctx.compiler()
+  ).realize.getTemplate({
+    dbms: "sqlite",
+  });
   // REPORT RESULT
   const model: string = TestGlobal.vendorModel;
   const prisma = ctx.state().prisma?.compiled;

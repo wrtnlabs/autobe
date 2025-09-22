@@ -166,7 +166,10 @@ const correct = async <Model extends ILlmSchema.Model>(
 
   const newValidate: AutoBeRealizeValidateEvent = await compileRealizeFiles(
     ctx,
-    { authorizations, functions: converted.map((c) => c.func) },
+    {
+      authorizations,
+      functions: converted.map((c) => c.func),
+    },
   );
 
   if (newValidate.result.type === "success") {

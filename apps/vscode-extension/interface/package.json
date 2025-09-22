@@ -1,6 +1,6 @@
 {
   "name": "@autobe/vscode-extension/interface",
-  "version": "0.24.0",
+  "version": "0.24.1",
   "private": true,
   "description": "Interface for AutoBe VSCode Extension",
   "main": "src/index.ts",
