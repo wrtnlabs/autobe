@@ -1,59 +1,103 @@
 ---
-title: AutoBE > Guide Documents > Roadmap > v1.0 Official Release (planned)
+title: AutoBE > Guide Documents > Roadmap > v1.0 Official Release
 ---
 
-# AutoBE v1.0 Official Release Roadmap
+## Preface
+```mermaid
+gantt
+  dateFormat YYYY-MM-DD
+  title AutoBE v1.0 Official Release Roadmap
 
-## Official Release
+  section Agent Enhancement
+  Type Correction Agent :   done,  2025-09-16,  6d
+  Interface Prerequisite: active,  2025-09-22, 14d
+  Domain Restrictions   : planned, 2025-10-06, 21d
+  Debation Enhancement  : planned, 2025-10-27, 21d
 
-AutoBE v1.0 represents a fundamental shift from proof-of-concept to production-ready automation that transforms how digital services are created. This official release establishes AutoBE as the foundation for a complete no-coding ecosystem where anyone can build, deploy, and operate sophisticated applications through simple conversation.
+  section Runtime Testing
+  Authorization         : active,  2025-09-22, 14d
+  Business Logic        : planned, 2025-09-29, 14d
+  Prisma ORM Query      : planned, 2025-09-29, 45d
+  Domestic Demonstration: planned, 2025-09-22, 30d
 
-Our vision extends beyond generating working code to creating a comprehensive platform where business ideas become reality within minutes. The v1.0 release, targeted for December 1, 2025, focuses on three core pillars: business-ready backend generation that supports real commercial operations, seamless integration with our no-coding ecosystem that eliminates technical barriers, and a hosting service that instantly transforms conversations into deployed applications.
+  section Cyclic Workflow
+  Analysis : planned, 2025-09-29, 77d
+  Prisma   : planned, 2025-10-13, 63d
+  Interface: planned, 2025-10-27, 49d
+  Test     : planned, 2025-11-10, 35d
+  Realize  : planned, 2025-11-24, 21d
 
-We envision a world where the ability to articulate an idea becomes the only prerequisite for digital entrepreneurship. Whether it's a grandmother in rural Korea opening an online marketplace or a small business owner automating customer management, AutoBE v1.0 will democratize access to sophisticated technology infrastructure that was previously available only to well-funded enterprises.
+  section Service
+  Hackathon Contest  : done,    2025-09-16,  7d
+  Demonstration Video: done,    2025-09-16, 13d
+  Multiple Session   : planned, 2025-09-29, 14d
+  VSCode Extension   : planned, 2025-10-13, 14d
+  AI Chatbot Support : planned, 2025-10-27, 14d
 
-## Production-Ready Business Applications
+  section Documentation
+  Introduction Articles: 2025-09-16, 13d
+  Performance Benchmark: 2025-09-29, 42d
+```
 
-> A 70-year-old grandmother who grows tomatoes in the countryside created an online debate website in just 10 minutes. This grandmother, who is unfamiliar with both coding and computers, completed a current affairs and economics debate community simply by conversing with Wrtn's AI. What's remarkable is that this site allows both writing and commenting entirely through voice. Users can even engage in current affairs debates with AI.
->
-> The next day, the grandmother invested another 20 minutes to open an agricultural products shopping mall. Customers simply say "I'd like to order 2kg of tomatoes" and the order is completed, while the grandmother manages everything from orders and shipping to inventory through simple chat.
+## 1. Agent Enhancement
+### 1.1. Type Correction Agent
+### 1.2. Interface Prerequisite
+### 1.3. Domain Restrictions
+### 1.4. Debatation Enhancement
 
-This story isn't science fiction—it represents the transformative potential of AutoBE v1.0. The rural grandmother's achievement demonstrates how AutoBE eliminates the traditional barriers between business ideas and digital implementation, enabling anyone with entrepreneurial vision to create sophisticated, commercially viable applications regardless of their technical background.
+## 2. Runtime Testing
+### 2.1. Authorization
+### 2.2. Business Logic
+### 2.3. Prisma ORM Query
+### 2.4. Domestic Demonstration
 
-AutoBE v1.0 transforms from a development tool into a business enablement platform. The official release focuses on generating backend systems that can handle real commercial traffic, process actual transactions, and support growing businesses from day one.
+## 3. Cyclic Workflow
+일방향적 workflow 를 순환형으로 전환하는 작업을 진행한다.
 
-The production readiness encompasses comprehensive security implementations including enterprise-grade authentication, authorization, and data protection mechanisms. Performance optimization ensures that generated applications can scale from initial launch to thousands of concurrent users without architectural changes. Database design incorporates production best practices including proper indexing, query optimization, and data integrity constraints that maintain reliability under real-world load.
+현재 AutoBE 를 구성하는 에이전트는 AI function calling 에 사용하는 함수가 오직 한 개뿐이며, input materials 는 이전 단계의 에이전트가 생성한 결과물 전체이다. 가령 test agent 의 경우에는 이전 (analyze, prisma, interface) 에이전트가 생성한 요구사항 정의서와 DB 설계 및 API 스펙 모두를 전달받아 테스트 코드를 생성한다. 이 때문에 각 단계가 진행될 때마다 소요되는 AI 토큰 비용은 기하급수적으로 증가하였다.
 
-Business logic implementation reaches commercial sophistication, handling complex scenarios like inventory management, payment processing, customer relationship management, and regulatory compliance. Error handling and logging provide the operational visibility necessary for business-critical applications, while automated backup and recovery mechanisms protect against data loss.
+이에 AutoBE 를 구성하는 각 워크플로우가 복수의 함수를 순환적으로 호출하는 구조로 전환한다. 각 에이전트는 여러 차례 (multi-turn) 에 걸쳐 필요한 input materials 만큼만을 추출하여 활용하며, 필요충분한 정보를 모았을 때 비로소 최종 결과물을 생성한다. 이를 통해 토큰 소비량과 컨텍스트를 대폭 절감, 각 워크플로우의 완성도를 높인다.
 
-These applications handle real customer interactions, process genuine transactions, and operate at business scale from the moment of creation, making stories like the rural grandmother's digital entrepreneurship journey an accessible reality for anyone.
+**식으로 잘 써라, 아래 예시 코드는 그대로 활용하는게 좋음.**
 
-## No Coding Ecosystem
+```typescript
+interface ITestWriteApplication {
+  getDocument(title: string): string;
+  getModel(name: string): AutoBePrisma.IModel; 
+  getOperation(input: AutoBeOpenApi.IEndpoint): AutoBeOpenApi.IOperation;
+  getSchema(key: string): AutoBeOpenApi.IJsonSchemaDescriptive;
+  complete(file: IAutoBeTestFunction): void;
+  halt(reason: string): void;
+}
+```
 
-![Auto BE - OG Diagram](https://github.com/user-attachments/assets/d7bd7403-dedb-4194-9a21-4c2fb3af18e8)
+## 4. Service
+### 4.1. Hackathon Contest
+AutoBE 베타 릴리즈 후, 해커톤 대회를 운영한다.
 
-AutoBE v1.0 serves as the cornerstone of a revolutionary no-coding ecosystem that eliminates the traditional boundaries between business ideas and digital implementation. The integration of AutoBE, Agentica, and AutoView creates a seamless pipeline from concept to fully operational digital business.
+현재 해커톤 대회가 종료되었으며, 우승자가 선정되었다.
 
-The ecosystem operates on a simple yet powerful principle: if you can describe what you want, you can build it. AutoBE generates the backend infrastructure that powers your business logic, handles data management, and provides secure API endpoints. Agentica transforms this backend into an intelligent AI assistant that can interact naturally with customers, process orders, answer questions, and handle routine business operations. AutoView completes the picture by automatically generating user interfaces that customers and business owners can use across web and mobile platforms.
+해커톤 대회 참여자들이 제출한 피드백: https://github.com/wrtnlabs/autobe/discussions/categories/hackathon-2025-09-12
 
-This integrated approach eliminates the traditional handoffs between different development phases. Instead of requiring separate teams for backend development, AI integration, and frontend creation, the entire stack emerges from a single conversation. The grandmother's agricultural marketplace demonstrates this seamlessly: one conversation with AutoBE created the product catalog and order management system, Agentica enabled voice-based ordering and customer service, and AutoView generated both the customer shopping interface and the admin dashboard for inventory management.
+### 4.2. Demonstration Video
+AutoBE 및 AutoView 를 사용한 시연 영상을 제작함.
 
-The ecosystem's intelligence extends beyond individual tools to understand the relationships between different components. When AutoBE designs an e-commerce backend, Agentica automatically understands the business context to provide relevant customer service, while AutoView generates interfaces that match the specific domain requirements. This contextual awareness ensures that the generated applications feel purpose-built rather than generic.
+데모 영상 제작이 완료되었으며, 아래는 그 결과.
 
-Business owners focus entirely on their domain expertise—understanding customers, refining products, and growing their market—while the technical infrastructure adapts automatically to support their evolving needs. The ecosystem handles scaling challenges, security updates, and feature enhancements through the same conversational interface used for initial creation.
+https://youtu.be/iE0b3Gt_uPk
 
-## Hosting Service
+### 4.3. Multiple Session
+AutoBE 의 로컬 플레이그라운드가 해커톤 때 사용한 서비스처럼 여러 세션을 지원토록 개선, 
 
-The AutoBE Hosting Service represents the culmination of our no-coding vision: a platform where conversations instantly become deployed, operational applications accessible to real users. This service eliminates the final barrier between idea and implementation by handling all infrastructure, deployment, and operational concerns automatically.
+### 4.4. VSCode Extension
+AutoBE 를 vscode extension 으로도 구현, AutoBE 를 직접 git clone 해야만 사용할 수 있는 플레이그라운드를 벗어나, vscode 마켓플레이스에서 바로 설치하여 사용할 수 있도록 개선.
 
-When users complete their conversation with AutoBE, the system doesn't just generate code—it immediately provisions cloud infrastructure, deploys the application, configures security settings, and makes the service available through a custom domain. The backend API starts handling requests within minutes of conversation completion, with automatic scaling, monitoring, and backup systems already in place.
+### 4.5. AI Chatbot Support
+AutoBE 로 생성한 백엔드 어플리케이션을 즉시 AI 챗봇으로 변환, 사용자가 백엔드 API 기능들을 대화형으로 체험해 볼 수 있도록 지원.
 
-The integration with Agentica transforms every AutoBE-generated backend into an intelligent AI assistant accessible through web interfaces, mobile apps, or even phone calls. Customers can interact with businesses using natural language, while the AI handles order processing, customer service, appointment scheduling, and routine inquiries. Business owners manage their operations through the same conversational interface, asking questions like "How many orders did we receive today?" or "Schedule a promotional campaign for next week."
+## 5. Documentation
+### 5.1. Introduction Articles
+AutoBE 를 소개하는 게시물들을 작성, 개발자 커뮤니티에 배포.
 
-AutoView integration generates customer-facing applications and administrative dashboards that are immediately live and functional. The shopping mall created through AutoBE conversation becomes a fully operational e-commerce site with product catalogs, shopping carts, payment processing, and order tracking—all accessible through web browsers and mobile devices within minutes of the initial conversation.
-
-The hosting service includes comprehensive business support features: payment gateway integration for immediate monetization, analytics dashboards for business insights, customer communication tools for engagement, and automated marketing capabilities for growth. Domain management, SSL certificates, and compliance configurations are handled automatically, allowing business owners to focus entirely on serving their customers.
-
-Our ultimate vision is a world where anyone with a business idea can immediately test it in the market. Instead of months of planning, development, and deployment, entrepreneurs can validate concepts, serve real customers, and iterate based on actual feedback within the same day they conceive their idea. The hosting service transforms AutoBE from a development tool into a complete business platform that democratizes digital entrepreneurship.
-
-Digital business creation becomes as simple as having a conversation. Whether it's a local restaurant wanting online ordering, a consultant needing client management tools, or an artist seeking to sell their work online, the AutoBE Hosting Service instantly transforms ideas into operational businesses ready to serve customers and generate revenue.
+### 5.2. Performance Benchmark
+AutoBE 의 성능을 각 AI 모델별로 벤치마킹, AutoBE 가 생성하는 백엔드 어플리케이션의 품질을 수치화하여 제시.
