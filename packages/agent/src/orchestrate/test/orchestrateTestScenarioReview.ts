@@ -23,7 +23,6 @@ export async function orchestrateTestScenarioReview<
     ctx,
     groups,
     progress,
-    ctx.retry,
   );
 
   return res;
@@ -33,12 +32,7 @@ async function review<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   groups: IAutoBeTestScenarioApplication.IScenarioGroup[],
   progress: AutoBeProgressEventBase,
-  life: number,
 ): Promise<IAutoBeTestScenarioApplication.IScenarioGroup[]> {
-  if (life === 0) {
-    return groups;
-  }
-
   const pointer: IPointer<IAutoBeTestScenarioReviewApplication.IProps | null> =
     {
       value: null,
@@ -90,7 +84,7 @@ async function review<Model extends ILlmSchema.Model>(
     return pointer.value.scenarioGroups;
   }
 
-  return await review(ctx, pointer.value.scenarioGroups, progress, life - 1);
+  return pointer.value.scenarioGroups;
 }
 
 function createController<Model extends ILlmSchema.Model>(props: {
