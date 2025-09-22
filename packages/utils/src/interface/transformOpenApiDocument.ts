@@ -63,6 +63,9 @@ export function transformOpenApiDocument(
             },
           }
         : undefined,
+      ...{
+        "x-autobe-prerequisites": op.prerequisites,
+      },
     };
   }
 

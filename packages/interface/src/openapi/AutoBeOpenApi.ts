@@ -624,14 +624,26 @@ export namespace AutoBeOpenApi {
      * creates an explicit dependency chain between API endpoints, ensuring
      * proper execution order and data availability.
      *
+     * ## CRITICAL WARNING: Authentication Prerequisites
+     * 
+     * **NEVER include authentication-related operations as prerequisites!**
+     * Authentication is handled separately through the `authorizationRole` field 
+     * and should NOT be part of the prerequisite chain. Do NOT add prerequisites for:
+     * - Login endpoints
+     * - Token validation endpoints
+     * - User authentication checks
+     * - Permission verification endpoints
+     * 
+     * Prerequisites are ONLY for business logic dependencies, NOT for authentication/authorization.
+     *
      * ## Purpose and Use Cases
      *
      * Prerequisites are essential for operations that depend on:
      *
      * 1. **Existence Validation**: Ensuring resources exist before manipulation
      * 2. **State Requirements**: Verifying resources are in the correct state
-     * 3. **Permission Checks**: Confirming user has access to parent resources
-     * 4. **Data Dependencies**: Loading necessary data for the current operation
+     * 3. **Data Dependencies**: Loading necessary data for the current operation
+     * 4. **Business Logic Constraints**: Enforcing domain-specific rules
      *
      * ## Execution Flow
      *
@@ -651,7 +663,7 @@ export namespace AutoBeOpenApi {
      * prerequisites: [
      *   {
      *     endpoint: { path: "/orders/{orderId}", method: "get" },
-     *     description: "Verify order exists and is accessible to the user",
+     *     description: "Order must exist in the system",
      *   },
      * ];
      * ```
@@ -675,7 +687,7 @@ export namespace AutoBeOpenApi {
      * prerequisites: [
      *   {
      *     endpoint: { path: "/projects/{projectId}", method: "get" },
-     *     description: "Project must exist and user must have access",
+     *     description: "Project must exist",
      *   },
      *   {
      *     endpoint: {
@@ -696,6 +708,7 @@ export namespace AutoBeOpenApi {
      * 4. **Performance**: Consider caching prerequisite results when appropriate
      * 5. **Documentation**: Each prerequisite must have a clear description
      *    explaining why it's required
+     * 6. **No Authentication**: NEVER use prerequisites for authentication checks
      *
      * ## Test Generation Impact
      *
@@ -1590,6 +1603,25 @@ export namespace AutoBeOpenApi {
    * current operation can proceed. This ensures proper resource validation,
    * state checking, and data availability in complex API workflows.
    *
+   * ## CRITICAL WARNING: Authentication is NOT a Prerequisite
+   *
+   * **NEVER use prerequisites for authentication or authorization checks!**
+   * 
+   * Prerequisites are ONLY for business logic dependencies such as:
+   * - Checking if a resource exists
+   * - Verifying resource state
+   * - Loading required data
+   * 
+   * Do NOT create prerequisites for:
+   * - Login/authentication endpoints
+   * - Token validation
+   * - Permission checks
+   * - User authorization verification
+   * 
+   * Authentication is handled separately via the `authorizationRole` field 
+   * on the operation itself. Mixing authentication with business prerequisites 
+   * creates confusion and incorrect test scenarios.
+   *
    * ## Core Concept
    *
    * Prerequisites create an execution dependency graph for API operations. They
@@ -1632,15 +1664,15 @@ export namespace AutoBeOpenApi {
    * }
    * ```
    *
-   * ### 4. Authorization Chain
+   * ### 4. Business Logic Dependencies
    *
    * ```typescript
    * {
    *   "endpoint": {
-   *     "path": "/organizations/{orgId}/membership",
+   *     "path": "/inventory/{productId}/stock",
    *     "method": "get"
    *   },
-   *   "description": "User must be organization member to access resources"
+   *   "description": "Product must have sufficient stock before creating order"
    * }
    * ```
    *
@@ -1650,6 +1682,7 @@ export namespace AutoBeOpenApi {
    * 2. **Minimal Dependencies**: Only include truly necessary prerequisites
    * 3. **Logical Order**: If multiple prerequisites exist, order them logically
    * 4. **Error Context**: Description should help understand failure scenarios
+   * 5. **No Authentication**: Prerequisites must NEVER be authentication checks
    *
    * ## Test Generation Usage
    *
@@ -1667,6 +1700,7 @@ export namespace AutoBeOpenApi {
    * - Ensure prerequisite descriptions are specific, not generic
    * - Validate that circular dependencies don't exist
    * - Document any side effects of prerequisite calls
+   * - NEVER use for authentication/authorization validation
    *
    * @example
    *   // For an operation to add item to cart
@@ -1721,7 +1755,7 @@ export namespace AutoBeOpenApi {
      * Guidelines for good descriptions:
      *
      * - Be specific about the requirement (e.g., "must be in 'active' state")
-     * - Mention access control if relevant (e.g., "user must be owner")
+     * - Explain business logic constraints (e.g., "budget must not be exceeded")
      * - Explain data dependencies (e.g., "provides pricing information needed")
      * - Keep it concise but complete
      *
