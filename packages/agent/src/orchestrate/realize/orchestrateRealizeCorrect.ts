@@ -129,16 +129,22 @@ async function correct<Model extends ILlmSchema.Model>(
 
       if (RealizeFunctionFailures.length && scenario) {
         try {
-          const correctEvent = await step(ctx, {
-            totalAuthorizations: authorizations,
-            authorization: scenario.decoratorEvent ?? null,
-            scenario,
-            function: func,
-            failures: RealizeFunctionFailures,
-            progress: progress,
-          });
+          const correctEvent: AutoBeRealizeCorrectEvent | null = await step(
+            ctx,
+            {
+              totalAuthorizations: authorizations,
+              authorization: scenario.decoratorEvent ?? null,
+              scenario,
+              function: func,
+              failures: RealizeFunctionFailures,
+              progress: progress,
+            },
+          );
 
-          return { ...func, content: correctEvent.content };
+          return {
+            ...func,
+            content: correctEvent === null ? "" : correctEvent.content,
+          };
         } catch (err) {
           return func;
         }
@@ -161,7 +167,7 @@ async function step<Model extends ILlmSchema.Model>(
     failures: IAutoBeRealizeFunctionFailure[];
     progress: AutoBeProgressEventBase;
   },
-): Promise<AutoBeRealizeCorrectEvent> {
+): Promise<AutoBeRealizeCorrectEvent | null> {
   const pointer: IPointer<IAutoBeRealizeCorrectApplication.IProps | null> = {
     value: null,
   };
@@ -192,8 +198,9 @@ async function step<Model extends ILlmSchema.Model>(
     `,
   });
 
-  if (pointer.value === null)
-    throw new Error("Failed to correct implementation code.");
+  if (pointer.value === null) {
+    return null;
+  }
 
   pointer.value.revise.final = await replaceImportStatements(ctx, {
     operation: props.scenario.operation,
