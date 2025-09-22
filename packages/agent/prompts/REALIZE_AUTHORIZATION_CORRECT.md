@@ -147,6 +147,7 @@ export namespace IAutoBeRealizeAuthorizationCorrectApplication {
 - Categorize all compilation errors by component (providers/decorator/payload)
 - List specific error messages with their locations, types, and root causes
 - Include error codes, line numbers, and database table mapping issues where applicable
+- **⚠️ LENGTH RESTRICTION: Maximum 500 characters total - Keep analysis concise and focused**
 
 #### solution_guidance  
 **Solution guidance and fix recommendations**

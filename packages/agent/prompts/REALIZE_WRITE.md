@@ -535,12 +535,27 @@ All text fields (plan, prismaSchemas, review) should be:
   - Define concrete resolution steps (e.g., using `?? undefined` for nullable fields, proper relation handling)
 
 * **prismaSchemas** (Step 2):
-  **BE CONCISE**: Only the exact Prisma models/fields used. No extra models, no commentary.
+  **SCHEMA ANALYSIS, NOT SCHEMA COPY**: Analyze the relevant Prisma models for implementation feasibility.
+  **⚠️ LENGTH RESTRICTION: Maximum 500 characters total**
   
   **Requirements**:
-  - Include ONLY models referenced in the implementation
-  - Include ALL fields that will be accessed or modified
-  - Raw schema text only - no explanations needed
+  - **DO NOT copy-paste the entire Prisma schema** - provide analysis instead
+  - **Focus on critical field availability**:
+    - ✅ Verify time-related fields: `created_at`, `updated_at`, `deleted_at` existence
+    - ✅ Check for soft delete support: Does `deleted_at` field exist?
+    - ✅ Identify required fields for business logic: ownership fields, status fields, etc.
+    - ✅ Note nullable vs required fields that affect implementation
+  - **Concise analysis format (MUST be under 500 chars)**:
+    ```
+    User: id, email, created_at. NO deleted_at.
+    Post: author_id, created_at, updated_at. NO deleted_at.
+    Comment: post_id, user_id, deleted_at exists.
+    Missing: User.role field needed for authorization.
+    ```
+  - **Flag missing but needed fields**:
+    - If logic requires soft delete but `deleted_at` missing → note it
+    - If audit fields needed but not present → note it
+    - If relation fields missing → note it
 
 * **review** (Step 3):
   **BE CONCISE**: Brief notes on key improvements and critical fixes only. Not a development diary.
