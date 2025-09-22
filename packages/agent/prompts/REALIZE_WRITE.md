@@ -217,7 +217,19 @@ result: dbValue === null
 
 3. **ALWAYS check null before calling toISOStringSafe**
    - ❌ FORBIDDEN: `toISOStringSafe(value)` when value might be null
+   - ❌ FORBIDDEN: `deleted_at: user.deleted_at ?? null` - This doesn't call toISOStringSafe!
    - ✅ REQUIRED: `value ? toISOStringSafe(value) : null`
+   
+   **CRITICAL DISTINCTION - ?? vs ternary operator:**
+   ```typescript
+   // ❌ WRONG: Using ?? doesn't convert the date!
+   deleted_at: user.deleted_at ?? null  // Returns raw Date or null, NOT converted!
+   
+   // ✅ CORRECT: Using ternary operator for conditional conversion
+   deleted_at: user.deleted_at ? toISOStringSafe(user.deleted_at) : null
+   ```
+   
+   **REMEMBER**: `??` only provides fallback, `? :` allows conditional execution!
 
 4. **🚨🚨🚨 NEVER use hasOwnProperty - THIS IS THE MOST VIOLATED RULE! 🚨🚨🚨**
    - ❌ ABSOLUTELY FORBIDDEN: `Object.prototype.hasOwnProperty.call(body, "field")`
