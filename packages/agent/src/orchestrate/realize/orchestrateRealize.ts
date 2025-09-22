@@ -21,7 +21,6 @@ import { orchestrateRealizeAuthorization } from "./orchestrateRealizeAuthorizati
 import { orchestrateRealizeCorrect } from "./orchestrateRealizeCorrect";
 import { orchestrateRealizeCorrectDate } from "./orchestrateRealizeCorrectDate";
 import { orchestrateRealizeWrite } from "./orchestrateRealizeWrite";
-import { IAutoBeRealizeFunctionFailure } from "./structures/IAutoBeRealizeFunctionFailure";
 import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
 import { generateRealizeScenario } from "./utils/generateRealizeScenario";
 
@@ -70,22 +69,31 @@ export const orchestrateRealize =
       total: scenarios.length,
       completed: 0,
     };
-    const writeEvents: AutoBeRealizeWriteEvent[] = await executeCachedBatch(
-      scenarios.map((scenario) => async (promptCacheKey) => {
-        const code = await orchestrateRealizeWrite(ctx, {
-          totalAuthorizations: authorizations,
-          authorization: scenario.decoratorEvent ?? null,
-          scenario,
-          progress: writeProgress,
-          promptCacheKey,
-        });
-        return code;
-      }),
-    );
+    const writeEvents: (AutoBeRealizeWriteEvent | null)[] =
+      await executeCachedBatch(
+        scenarios.map((scenario) => async (promptCacheKey) => {
+          const props = {
+            totalAuthorizations: authorizations,
+            authorization: scenario.decoratorEvent ?? null,
+            scenario,
+            progress: writeProgress,
+            promptCacheKey,
+          };
+
+          const code: AutoBeRealizeWriteEvent | null =
+            await orchestrateRealizeWrite(ctx, props).catch(() => {
+              return orchestrateRealizeWrite(ctx, props).catch(() => null);
+            });
+
+          return code;
+        }),
+      );
 
     const functions: AutoBeRealizeFunction[] = Object.entries(
       Object.fromEntries(
-        writeEvents.map((event) => [event.location, event.content]),
+        writeEvents
+          .filter((w) => w !== null)
+          .map((event) => [event.location, event.content]),
       ),
     ).map(([location, content]) => {
       const scenario = scenarios.find((el) => el.location === location)!;
@@ -100,38 +108,37 @@ export const orchestrateRealize =
       };
     });
 
-    const reviewProgress = {
+    const reviewProgress: AutoBeProgressEventBase = {
       total: writeEvents.length,
       completed: writeEvents.length,
     };
 
-    const converted: AutoBeRealizeFunction[] =
+    console.log("casting", reviewProgress);
+    const totalCorrected: AutoBeRealizeFunction[] =
       await orchestrateRealizeCorrectCasting(
         ctx,
         authorizations,
         functions,
         reviewProgress,
-        parseInt((ctx.retry / 2).toString()),
-      );
-
-    const correctedDate: AutoBeRealizeFunction[] =
-      await orchestrateRealizeCorrectDate(
-        ctx,
-        authorizations,
-        converted,
-        reviewProgress,
-        parseInt((ctx.retry / 2).toString()),
-      );
-
-    const totalCorrected: AutoBeRealizeFunction[] =
-      await orchestrateRealizeCorrect(
-        ctx,
-        scenarios,
-        authorizations,
-        correctedDate,
-        [] satisfies IAutoBeRealizeFunctionFailure[],
-        reviewProgress,
-      );
+      ).then(async (res) => {
+        console.log("date", reviewProgress);
+        return orchestrateRealizeCorrectDate(
+          ctx,
+          authorizations,
+          res,
+          reviewProgress,
+        ).then(async (res) => {
+          console.log("correct", reviewProgress);
+          return orchestrateRealizeCorrect(
+            ctx,
+            scenarios,
+            authorizations,
+            res,
+            [],
+            reviewProgress,
+          );
+        });
+      });
 
     const compiler: IAutoBeCompiler = await ctx.compiler();
     const controllers: Record<string, string> =
