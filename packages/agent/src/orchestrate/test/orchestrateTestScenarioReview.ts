@@ -24,7 +24,6 @@ export async function orchestrateTestScenarioReview<
     groups,
     progress,
   );
-
   return res;
 }
 
@@ -33,58 +32,56 @@ async function review<Model extends ILlmSchema.Model>(
   groups: IAutoBeTestScenarioApplication.IScenarioGroup[],
   progress: AutoBeProgressEventBase,
 ): Promise<IAutoBeTestScenarioApplication.IScenarioGroup[]> {
-  const pointer: IPointer<IAutoBeTestScenarioReviewApplication.IProps | null> =
-    {
-      value: null,
-    };
+  try {
+    const pointer: IPointer<IAutoBeTestScenarioReviewApplication.IProps | null> =
+      {
+        value: null,
+      };
+    const { tokenUsage } = await ctx.conversate({
+      source: "testScenariosReview",
+      controller: createController({
+        model: ctx.model,
+        pointer,
+        originalGroups: groups,
+      }),
+      histories: transformTestScenarioReviewHistories(ctx, groups),
+      enforceFunctionCall: true,
+      message: "Review the Test Scenario.",
+    });
+    if (pointer.value === null) {
+      // unreachable
+      throw new Error("Failed to get review result.");
+    }
 
-  const { tokenUsage } = await ctx.conversate({
-    source: "testScenariosReview",
-    controller: createController({
-      model: ctx.model,
-      pointer,
-      originalGroups: groups,
-    }),
-    histories: transformTestScenarioReviewHistories(ctx, groups),
-    enforceFunctionCall: true,
-    message: "Review the Test Scenario.",
-  });
+    progress.total = Math.max(
+      progress.total,
+      (progress.completed += pointer.value.scenarioGroups.length),
+    );
 
-  if (pointer.value === null) {
-    console.error("Failed to review test scenarios.");
+    ctx.dispatch({
+      type: "testScenariosReview",
+      id: v7(),
+      tokenUsage,
+      total: progress.total,
+      completed: progress.completed,
+      scenarios: pointer.value.scenarioGroups
+        .map((group) => {
+          return group.scenarios.map((s) => {
+            return {
+              ...s,
+              endpoint: group.endpoint,
+            } satisfies AutoBeTestScenario;
+          });
+        })
+        .flat(),
+      step: ctx.state().interface?.step ?? 0,
+      created_at: new Date().toISOString(),
+    });
+    return pointer.value.scenarioGroups;
+  } catch {
+    progress.completed += groups.length;
     return groups;
   }
-
-  progress.total = Math.max(
-    progress.total,
-    (progress.completed += pointer.value.scenarioGroups.length),
-  );
-
-  ctx.dispatch({
-    type: "testScenariosReview",
-    id: v7(),
-    tokenUsage,
-    total: progress.total,
-    completed: progress.completed,
-    scenarios: pointer.value.scenarioGroups
-      .map((group) => {
-        return group.scenarios.map((s) => {
-          return {
-            ...s,
-            endpoint: group.endpoint,
-          } satisfies AutoBeTestScenario;
-        });
-      })
-      .flat(),
-    step: ctx.state().interface?.step ?? 0,
-    created_at: new Date().toISOString(),
-  });
-
-  if (pointer.value.pass === true) {
-    return pointer.value.scenarioGroups;
-  }
-
-  return pointer.value.scenarioGroups;
 }
 
 function createController<Model extends ILlmSchema.Model>(props: {
