@@ -12,7 +12,10 @@ export namespace OperationValidator {
     errors: IValidation.IError[];
     path: string;
     operations: Array<
-      Omit<AutoBeOpenApi.IOperation, "authorizationRole" | "authorizationType">
+      Omit<
+        AutoBeOpenApi.IOperation,
+        "authorizationRole" | "authorizationType" | "prerequisites"
+      >
     >;
   }
   export const validate = (props: IProps): void => {

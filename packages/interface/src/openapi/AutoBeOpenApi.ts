@@ -614,6 +614,8 @@ export namespace AutoBeOpenApi {
      * naming conflicts.
      */
     name: string & CamelPattern;
+
+    prerequisites: IPrerequisite[];
   }
 
   /**
@@ -1485,5 +1487,10 @@ export namespace AutoBeOpenApi {
      * - `delete`: remove record
      */
     method: "get" | "post" | "put" | "delete" | "patch";
+  }
+
+  export interface IPrerequisite {
+    endpoint: IEndpoint;
+    description: string;
   }
 }
