@@ -1,4 +1,4 @@
-import { MyGlobal } from "../../../realize-of-postgres/src/MyGlobal";
+import { MyGlobal } from "../MyGlobal";
 import { MySetupWizard } from "../setup/MySetupWizard";
 
 const main = async (): Promise<void> => {
