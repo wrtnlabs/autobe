@@ -1,4 +1,4 @@
-import { IAutoBePlaygroundReplay } from "@autobe/interface";
+import { AutoBePhase, IAutoBePlaygroundReplay } from "@autobe/interface";
 import {
   AccessTime,
   ArrowForwardIos,
@@ -52,7 +52,7 @@ export const AutoBePlaygroundReplayProjectMovie = ({
     return count.toString();
   };
 
-  const getStepColor = (step: string) => {
+  const getPhaseColor = (p: AutoBePhase | null) => {
     const colors = {
       analyze: theme.palette.info.main,
       prisma: theme.palette.secondary.main,
@@ -60,7 +60,7 @@ export const AutoBePlaygroundReplayProjectMovie = ({
       test: theme.palette.warning.main,
       realize: theme.palette.success.main,
     };
-    return colors[step as keyof typeof colors] || theme.palette.grey[500];
+    return colors[p as keyof typeof colors] ?? theme.palette.grey[500];
   };
 
   const getVendorColor = (vendor: string) => {
@@ -72,10 +72,9 @@ export const AutoBePlaygroundReplayProjectMovie = ({
     return colors[vendor as keyof typeof colors] || theme.palette.grey[500];
   };
 
-  const steps = ["analyze", "prisma", "interface", "test", "realize"];
-  const getStepIndex = (step: string) => steps.indexOf(step);
-
-  const stepColor = getStepColor(replay.step);
+  const phases = ["analyze", "prisma", "interface", "test", "realize"];
+  const getPhaseIndex = (p: AutoBePhase | null) => phases.indexOf(p ?? "null");
+  const phaseColor = getPhaseColor(replay.phase);
   const vendorColor = getVendorColor(replay.vendor);
 
   return (
@@ -83,17 +82,17 @@ export const AutoBePlaygroundReplayProjectMovie = ({
       sx={{
         height: "100%",
         transition: "all 0.3s ease-in-out",
-        border: `1px solid ${alpha(stepColor, 0.2)}`,
+        border: `1px solid ${alpha(phaseColor, 0.2)}`,
         "&:hover": {
           transform: "translateY(-4px)",
-          boxShadow: `0 8px 24px ${alpha(stepColor, 0.2)}`,
-          borderColor: stepColor,
+          boxShadow: `0 8px 24px ${alpha(phaseColor, 0.2)}`,
+          borderColor: phaseColor,
         },
       }}
     >
       <CardActionArea
         component="a"
-        href={`/replay/get?vendor=${replay.vendor}&project=${replay.project}&step=${replay.step}`}
+        href={`/replay/get?vendor=${replay.vendor}&project=${replay.project}&phase=${replay.phase}`}
         target="_blank"
         sx={{ height: "100%" }}
       >
@@ -148,7 +147,7 @@ export const AutoBePlaygroundReplayProjectMovie = ({
           {/* Stepper */}
           <Box sx={{ mb: 2 }}>
             <Stepper
-              activeStep={getStepIndex(replay.step)}
+              activeStep={getPhaseIndex(replay.phase)}
               orientation="vertical"
               sx={{
                 "& .MuiStepConnector-line": {
@@ -174,7 +173,7 @@ export const AutoBePlaygroundReplayProjectMovie = ({
                 },
               }}
             >
-              {steps.map((label) => {
+              {phases.map((label) => {
                 const stepData =
                   replay[
                     label as keyof Pick<
@@ -182,7 +181,7 @@ export const AutoBePlaygroundReplayProjectMovie = ({
                       "analyze" | "prisma" | "interface" | "test" | "realize"
                     >
                   ];
-                const isCurrentStep = label === replay.step;
+                const isCurrentStep = label === replay.phase;
                 const stepElapsed = stepData?.elapsed || 0;
 
                 let stepIcon;
@@ -201,7 +200,7 @@ export const AutoBePlaygroundReplayProjectMovie = ({
                 } else {
                   // Currently executing (success is null but has stepData)
                   stepIcon = undefined;
-                  stepColor = getStepColor(label); // Use step's own color
+                  stepColor = getPhaseColor(label as AutoBePhase | null); // Use step's own color
                 }
 
                 return (
@@ -337,7 +336,7 @@ export const AutoBePlaygroundReplayProjectMovie = ({
                 variant="h6"
                 sx={{
                   fontWeight: 600,
-                  color: stepColor,
+                  color: phaseColor,
                   fontSize: {
                     xs: "1rem",
                     sm: "1.1rem",
