@@ -1,6 +1,12 @@
 ################################################
 # SPECIAL PHASES
 ################################################
+# openai/gpt-5
+pnpm run archive --vendor openai/gpt-5 --project todo > archive.gpt-5-todo.log
+pnpm run archive --vendor openai/gpt-5 --project reddit > archive.gpt-5-reddit.log
+pnpm run archive --vendor openai/gpt-5 --project bbs > archive.gpt-5-bbs.log
+pnpm run archive --vendor openai/gpt-5 --project shopping > archive.gpt-5-shopping.log
+
 # openai/gpt-4.1
 pnpm run archive --vendor openai/gpt-4.1 --project todo > archive.gpt-big-todo.log
 pnpm run archive --vendor openai/gpt-4.1 --project reddit > archive.gpt-big-reddit.log
