@@ -111,10 +111,10 @@ Thank you for reading this long post, and we appreciate your model recommendatio
 
 ---------------
 
-Model                 | `todo` | `bbs` | `reddit` | `shopping`
-----------------------|--------|-------|----------|------------
-`openai/gpt-4.1`      | ✅    | ✅    | ✅       | ✅
-`openai/gpt-4.1-mini` | ✅    | ✅    | ✅       | ✅
-`openai/gpt-5`        | ❌    | ❌    | ❌       | ❌
-`qwen3-next-80b-a3b`  | ✅    | ✅    | ✅       | ❌
-`qwen3-coder`         | ❌    | ❌    | ❌       | ❌
+<sub>Model</sub> \ <sup>Backend</sup> | `todo` | `bbs` | `reddit` | `shopping`
+--------------------------------------|--------|-------|----------|------------
+`openai/gpt-4.1`                      | ✅    | ✅    | ✅       | ✅
+`openai/gpt-4.1-mini`                 | ✅    | ✅    | ✅       | ✅
+`openai/gpt-5`                        | ❌    | ❌    | ❌       | ❌
+`qwen3-next-80b-a3b`                  | ✅    | ✅    | ✅       | ❌
+`qwen3-coder`                         | ❌    | ❌    | ❌       | ❌
