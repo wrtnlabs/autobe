@@ -87,7 +87,7 @@ export namespace JsonSchemaValidator {
         .join(".");
       props.errors.push({
         path: `${props.path}[${JSON.stringify(props.key)}]`,
-        expected: `Interface name starting with 'I': ${JSON.stringify(expected)}}`,
+        expected: `Interface name starting with 'I': ${JSON.stringify(expected)}`,
         value: props.key,
         description: StringUtil.trim`
           JSON schema type name must be an interface name starting with 'I'.
