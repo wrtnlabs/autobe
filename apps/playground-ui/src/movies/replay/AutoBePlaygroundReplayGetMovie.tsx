@@ -261,7 +261,7 @@ export const AutoBePlaygroundReplayGetMovie = () => {
                   color: theme.palette.text.secondary,
                 }}
               >
-                {props.vendor} • {props.project} • {props.step}
+                {props.vendor} • {props.project} • {props.phase}
               </Typography>
             </Stack>
 
@@ -312,12 +312,12 @@ const getProps = (): IAutoBePlaygroundReplay.IProps | null => {
   const query: URLSearchParams = new URLSearchParams(window.location.search);
   const vendor: string | null = query.get("vendor");
   const project: string | null = query.get("project");
-  const step: string | null = query.get("step");
-  if (vendor === null || project === null || step === null) return null;
+  const phase: string | null = query.get("phase");
+  if (vendor === null || project === null || phase === null) return null;
 
   return {
     vendor,
     project,
-    step: step as "analyze",
+    phase: phase as "analyze",
   };
 };
