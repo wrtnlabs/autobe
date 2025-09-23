@@ -115,7 +115,7 @@ Thank you for reading this long post, and we appreciate your model recommendatio
 --------------------------------------|--------|-------|----------|------------
 `openai/gpt-4.1-mini`                 | ✅    | ✅    | ✅       | ✅
 `openai/gpt-4.1`                      | ✅    | ✅    | ✅       | ✅
-`openai/gpt-5`                        | ✅    | ❌    | ❌       | ❌
+`openai/gpt-5`                        | ✅    | ✅    | ❌       | ❌
 `qwen3-next-80b-a3b`                  | ✅    | ✅    | ✅       | ❌
 `qwen3-235b-a22b`                     | ✅    | ✅    | ❌       | ❌
 `qwen3-coder` (450b-a30b)             | ❌    | ❌    | ❌       | ❌
