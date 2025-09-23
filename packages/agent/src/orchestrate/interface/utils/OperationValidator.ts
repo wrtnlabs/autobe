@@ -48,12 +48,13 @@ export namespace OperationValidator {
           path: `${props.path}[${i}].requestBody.typeName`,
           key: op.requestBody.typeName,
         });
-      if (op.responseBody !== null)
+      if (op.responseBody !== null) {
         JsonSchemaValidator.validateKey({
           errors: props.errors,
           path: `${props.path}[${i}].responseBody.typeName`,
           key: op.responseBody.typeName,
         });
+      }
     });
 
     // validate duplicated endpoints
