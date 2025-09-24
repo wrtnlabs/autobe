@@ -14,8 +14,8 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
-import { transformCommonCorrectCastingHistories } from "../common/histories/transformCommonCorrectCastingHistories";
 import { IAutoBeCommonCorrectCastingApplication } from "../common/structures/IAutoBeCommonCorrectCastingApplication";
+import { transformRealizeCorrectCastingHistories } from "./histories/transformRealizeCorrectCastingHistories";
 import { compileRealizeFiles } from "./internal/compileRealizeFiles";
 
 /** Result of attempting to correct a single function */
@@ -110,7 +110,7 @@ const correct = async <Model extends ILlmSchema.Model>(
 
       const { tokenUsage } = await ctx.conversate({
         source: "realizeCorrect",
-        histories: transformCommonCorrectCastingHistories([
+        histories: transformRealizeCorrectCastingHistories([
           {
             script: func.content,
             diagnostics: failures.filter((d) => d.file === location),
