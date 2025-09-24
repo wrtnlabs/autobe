@@ -29,7 +29,7 @@ export const orchestrateAnalyze =
     ctx.dispatch({
       type: "analyzeStart",
       id: v7(),
-      reason: props.reason,
+      reason: props.instruction,
       step,
       created_at: startTime.toISOString(),
     });

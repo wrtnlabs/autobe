@@ -39,7 +39,7 @@ export const orchestratePrisma = async <Model extends ILlmSchema.Model>(
     type: "prismaStart",
     id: v7(),
     created_at: start.toISOString(),
-    reason: props.reason,
+    reason: props.instruction,
     step: ctx.state().analyze?.step ?? 0,
   });
 

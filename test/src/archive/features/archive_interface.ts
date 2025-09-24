@@ -40,7 +40,7 @@ export const archive_interface = async (
   // REQUEST INTERFACE GENERATION
   const result: AutoBeInterfaceHistory | AutoBeAssistantMessageHistory =
     await orchestrate.interface(agent.getContext())({
-      reason: "Step to the interface designing after DB schema generation",
+      instruction: "Step to the interface designing after DB schema generation",
     });
   console.log("The interface result history", result);
   if (result.type !== "interface")

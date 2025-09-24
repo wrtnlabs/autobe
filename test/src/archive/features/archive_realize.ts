@@ -41,7 +41,7 @@ export const archive_realize = async (
   const ctx = agent.getContext();
   const result: AutoBeAssistantMessageHistory | AutoBeRealizeHistory =
     await orchestrateRealize(ctx)({
-      reason: "Validate agent realize",
+      instruction: "Validate agent realize",
     });
   if (result.type !== "realize") throw new Error("Failed to generate realize.");
 

@@ -25,15 +25,15 @@ import { AutoBeAnalyzeRole } from "./contents/AutoBeAnalyzeRole";
 export interface AutoBeAnalyzeHistory
   extends AutoBeAgentHistoryBase<"analyze"> {
   /**
-   * Reason why the Analyze agent was activated through function calling.
+   * Instructions for the Analyze agent redefined by AI from user's utterance.
    *
-   * Explains the specific circumstances that triggered the AI chatbot to invoke
-   * the Analyze agent via function calling. This could include reasons such as
-   * initial project requirements gathering, requests for requirement
-   * clarification, updates to existing requirements based on user feedback, or
-   * revision requests for the analysis report.
+   * Contains AI-generated specific guidance for the requirements analysis phase,
+   * interpreted and refined from the user's original request. These instructions
+   * direct the Analyze agent on how to approach requirements gathering,
+   * what aspects to focus on, and any specific constraints or considerations
+   * to include in the analysis report.
    */
-  reason: string;
+  instruction: string;
 
   /**
    * Iteration number of this requirements analysis report.

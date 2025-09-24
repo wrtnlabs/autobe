@@ -42,7 +42,7 @@ export let archive_test = async (
   // DO TEST GENERATION
   let result: AutoBeAssistantMessageHistory | AutoBeTestHistory =
     await orchestrateTest(agent.getContext())({
-      reason: "Validate agent test",
+      instruction: "Validate agent test",
     });
   if (result.type !== "test") throw new Error("Failed to generate test.");
 

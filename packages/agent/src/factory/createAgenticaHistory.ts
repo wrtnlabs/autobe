@@ -30,7 +30,7 @@ export function createAgenticaHistory<Model extends ILlmSchema.Model>(props: {
     created_at: props.history.created_at,
     type: "execute" as const,
     arguments: {
-      reason: props.history.reason,
+      reason: props.history.instruction,
     },
     value: {
       success:

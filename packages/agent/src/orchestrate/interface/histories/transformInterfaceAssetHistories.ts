@@ -29,7 +29,7 @@ export const transformInterfaceAssetHistories = (
 
         ## User Request
 
-        ${analyze.reason}
+        ${analyze.instruction}
 
         ## Requirement Analysis Report
 

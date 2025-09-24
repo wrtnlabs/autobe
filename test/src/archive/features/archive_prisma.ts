@@ -82,12 +82,12 @@ export const archive_prisma = async (
 
   let history: AutoBePrismaHistory | AutoBeAssistantMessageHistory =
     await orchestrate.prisma(agent.getContext(), {
-      reason:
+      instruction:
         "Step to the Prisma DB schema generation after requirements analysis",
     });
   if (history.type !== "prisma") {
     history = await orchestrate.prisma(agent.getContext(), {
-      reason: "Don't ask me to do that, and just do it right now.",
+      instruction: "Don't ask me to do that, and just do it right now.",
     });
     if (history.type !== "prisma")
       throw new Error("History type must be prisma.");

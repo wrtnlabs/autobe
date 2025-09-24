@@ -60,15 +60,15 @@ export interface AutoBeTestHistory extends AutoBeAgentHistoryBase<"test"> {
   compiled: IAutoBeTypeScriptCompileResult;
 
   /**
-   * Reason why the Test agent was activated through function calling.
+   * Instructions for the Test agent redefined by AI from user's utterance.
    *
-   * Explains the specific circumstances that triggered the AI chatbot to invoke
-   * the Test agent via function calling. This could include reasons such as
-   * initial test suite generation after API specification completion, updating
-   * test scenarios due to API changes, or regenerating tests to reflect
-   * modified business requirements or database schemas.
+   * Contains AI-generated specific guidance for the test code generation phase,
+   * interpreted and refined from the user's original request. These instructions
+   * direct the Test agent on test scenario prioritization, coverage requirements,
+   * edge cases to consider, and specific business rules to validate through
+   * comprehensive e2e testing.
    */
-  reason: string;
+  instruction: string;
 
   /**
    * Iteration number of the requirements analysis report this test code was

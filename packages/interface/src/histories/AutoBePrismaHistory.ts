@@ -70,15 +70,16 @@ export interface AutoBePrismaHistory extends AutoBeAgentHistoryBase<"prisma"> {
   compiled: IAutoBePrismaCompileResult;
 
   /**
-   * Reason why the Prisma agent was activated through function calling.
+   * Instructions for the Prisma agent redefined by AI from user's utterance.
    *
-   * Explains the specific circumstances that triggered the AI chatbot to invoke
-   * the Prisma agent via function calling. This could include reasons such as
-   * new requirements that require database schema changes, updates to existing
-   * requirements that affect data models, or initial database design requests
-   * from the user conversation.
+   * Contains AI-generated specific guidance for the database design phase,
+   * interpreted and refined from the user's original request. These instructions
+   * direct the Prisma agent on how to approach database schema design,
+   * which data models to prioritize, relationships to establish, and any
+   * specific constraints or performance considerations to implement.
    */
-  reason: string;
+  instruction: string;
+
   /**
    * Iteration number of the requirements analysis report this database design
    * was performed for.

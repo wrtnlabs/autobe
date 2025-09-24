@@ -38,7 +38,7 @@ export const orchestrateTest =
       type: "testStart",
       id: v7(),
       created_at: start.toISOString(),
-      reason: props.reason,
+      reason: props.instruction,
       step: ctx.state().analyze?.step ?? 0,
     });
 
