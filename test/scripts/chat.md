@@ -58,7 +58,11 @@ A chat session is an entity that records who opened it with which model (e.g., `
 
 The detailed content in `ChatHistory` will be stored in JSON format. This is because there are so many types that it's difficult to normalize in DB, the content is constantly added, and the data and attribute formats can sometimes be binary or streaming. So in DB design, we'll use one JSON (text) field, but separately record the `type` to know what kind of history it is.
 
-Also, the backend application created by AutoBE will only provide read functionality for `ChatSession` and `ChatSessionHistory`. I'll handle all the actual chat session creation, connection, and conversation logic myself by creating websocket server logic. So AutoBE should only handle table design and read operations, and never touch the chat logic implementation itself. You know how inefficient it would be to implement chat logic with RESTful API, right? I'll handle everything with websockets.
+**For Chat Session implementation:**
+- AutoBE should provide RESTful APIs for chat session creation, read operations, update operations (title change), and deletion
+- I'll handle all the actual chat conversation logic myself by creating websocket server logic
+- The websocket implementation will handle connection management and history creation
+- AutoBE should never touch the chat conversation logic implementation itself
 
 However, when images, PDFs, or other files are attached in conversation history, these attached files should be recorded once more in `ChatSessionHistoryFile`.
 
@@ -154,7 +158,7 @@ model autobe_hackathon_session_aggregates {
 For the `type` in `ChatSessionHistory`, I'm thinking of the following structure. Please flesh it out and add comments for documentation. I'll refactor and improve it directly to implement the websocket server, and since this is stored as JSON value in DB, it doesn't need to be too strict.
 
 ```typescript
-interface IWrtnChatSessionHistory = 
+type IWrtnChatSessionHistory = 
   | IWrtnChatSessionSystemMessageHistory
   | IWrtnChatSessionUserMessageHistory
   | IWrtnChatSessionAssistantMessageHistory
@@ -178,25 +182,62 @@ interface IWrtnChatSessionFunctionCallMessageHistory {
 ## Chat Procedure
 Procedure is a type of special-purpose AI agent that doesn't use chat interfaces but only accepts designated forms as input to perform specific tasks. Stable Diffusion for image generation is the most representative example.
 
-Of course, I'll handle the detailed implementation myself, and AutoBE just needs to handle DB design and RESTful API adequately. Since I'll modify and rewrite everything anyway, don't overthink it and just make it reasonably.
+**For Procedure Session implementation:**
+- AutoBE should provide RESTful APIs for procedure session creation, read operations, update operations (title change), and deletion
+- I'll handle all the actual procedure execution logic myself by creating websocket server logic
+- The websocket implementation will handle connection management and history creation
+- AutoBE should never touch the procedure execution logic implementation itself
 
 By the way, enterprise or team managers can limit which procedures can be used by their members. For example, in a company, the "Image Generation" procedure might be allowed for the "Marketing" team but restricted for the "Engineering" team.
 
 - `Procedure`
 - `ProcedureSession`
+- `ProcedureSessionConnection`
 - `ProcedureSessionHistory`
+- `ProcedureSessionAggregate`
 
 However, for procedures too, detailed history data should be stored as JSON, but the attributes listed below must be recorded for tracking and detailed management.
 
 ```prisma
-model wrtn_chat_procedures { ... }
-model wrtn_chat_procedure_sessions { ... }
-model wrtn_chat_procedure_session_histories {
+model wrtn_procedures { ... }
+model wrtn_procedure_sessions { ... }
+model wrtn_procedure_session_connections { ... }
+model wrtn_procedure_session_histories {
   ...
   type String
   arguments String // JSON value
   success Boolean
   value String // JSON value
+}
+model wrtn_procedure_session_aggregates {
+  ...
+  token_usage String // JSON value
+}
+```
+
+## Token Usage Analytics
+
+For both `ChatSessionAggregate` and `ProcedureSessionAggregate`, the token usage information should follow this structure:
+
+```typescript
+export interface IWrtnTokenUsage {
+  total: number;
+  input: IWrtnTokenUsage.IInput;
+  output: IWrtnTokenUsage.IOutput;
+}
+
+export namespace IWrtnTokenUsage {
+  export interface IInput {
+    total: number;
+    cached: number;
+  }
+
+  export interface IOutput {
+    total: number;
+    reasoning: number;
+    accepted_prediction: number;
+    rejected_prediction: number;
+  }
 }
 ```
 
