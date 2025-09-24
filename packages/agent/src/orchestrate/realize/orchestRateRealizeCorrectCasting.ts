@@ -172,7 +172,18 @@ const correct = async <Model extends ILlmSchema.Model>(
     },
   );
 
-  if (newValidate.result.type === "success") {
+  const newResult: IAutoBeTypeScriptCompileResult = newValidate.result;
+  if (newResult.type === "success") {
+    return converted.map((c) => c.func);
+  } else if (newResult.type === "exception") {
+    // Compilation exception, return current functions. because retrying won't help.
+    return functions;
+  }
+
+  if (
+    newResult.diagnostics.every((d) => !d.file?.startsWith("src/providers"))
+  ) {
+    // No diagnostics related to provider functions, stop correcting
     return converted.map((c) => c.func);
   }
 
@@ -193,9 +204,7 @@ const correct = async <Model extends ILlmSchema.Model>(
   const failedLocations: string[] = failed.map((f) => f.location);
   const allDiagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[] = [
     ...failures,
-    ...(newValidate.result.type === "failure"
-      ? newValidate.result.diagnostics
-      : []),
+    ...(newResult.type === "failure" ? newResult.diagnostics : []),
   ];
   const relevantDiagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[] =
     filterRelevantDiagnostics(allDiagnostics, failedLocations);
