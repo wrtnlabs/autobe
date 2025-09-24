@@ -72,89 +72,6 @@ However, when images, PDFs, or other files are attached in conversation history,
 - `ChatSessionHistoryFile`
 - `ChatSessionAggregate` (token usage aggregation, etc.)
 
-Below is the chat session schema designed for AutoBE's hackathon competition. This will be very helpful for AutoBE in requirements analysis and DB design.
-
-```prisma
-model autobe_hackathon_sessions {
-  //----
-  // COLUMNS
-  //----
-  id                              String    @id @db.Uuid
-  autobe_hackathon_id             String    @db.Uuid
-  autobe_hackathon_participant_id String    @db.Uuid
-  model                           String    @db.VarChar
-  timezone                        String    @db.VarChar
-  title                           String?   @db.VarChar
-  review_article_url              String?   @db.VarChar(2048)
-  created_at                      DateTime  @db.Timestamptz
-  completed_at                    DateTime? @db.Timestamptz
-  deleted_at                      DateTime? @db.Timestamptz
-
-  //----
-  // RELATIONS
-  //----
-  hackathon   autobe_hackathons             @relation(fields: [autobe_hackathon_id], references: [id], onDelete: Cascade)
-  participant autobe_hackathon_participants @relation(fields: [autobe_hackathon_participant_id], references: [id], onDelete: Cascade)
-
-  connections autobe_hackathon_session_connections[]
-  histories   autobe_hackathon_session_histories[]
-  events      autobe_hackathon_session_events[]
-  aggregate   autobe_hackathon_session_aggregates?
-
-  @@index([autobe_hackathon_id, created_at])
-  @@index([autobe_hackathon_participant_id, created_at])
-}
-
-model autobe_hackathon_session_connections {
-  //----
-  // COLUMNS
-  //----
-  id                          String    @id @db.Uuid
-  autobe_hackathon_session_id String    @db.Uuid
-  created_at                  DateTime  @db.Timestamptz
-  disconnected_at             DateTime? @db.Timestamptz
-
-  //----
-  // RELATIONS
-  //----
-  session                            autobe_hackathon_sessions            @relation(fields: [autobe_hackathon_session_id], references: [id], onDelete: Cascade)
-  autobe_hackathon_session_histories autobe_hackathon_session_histories[]
-  autobe_hackathon_session_events    autobe_hackathon_session_events[]
-
-  @@index([autobe_hackathon_session_id, created_at])
-}
-
-model autobe_hackathon_session_histories {
-  //----
-  // COLUMNS
-  //----
-  id                                     String   @id @db.Uuid
-  autobe_hackathon_session_id            String   @db.Uuid
-  autobe_hackathon_session_connection_id String   @db.Uuid
-  type                                   String   @db.VarChar
-  data                                   String  // JSON value, encrypted for security
-  created_at                             DateTime @db.Timestamptz
-
-  //----
-  // RELATIONS
-  //----
-  session    autobe_hackathon_sessions            @relation(fields: [autobe_hackathon_session_id], references: [id], onDelete: Cascade, map: "autobe_hackathon_session_histories_session_fkey")
-  connection autobe_hackathon_session_connections @relation(fields: [autobe_hackathon_session_connection_id], references: [id], onDelete: Cascade, map: "autobe_hackathon_session_histories_connection_fkey")
-
-  @@index([autobe_hackathon_session_id, created_at], map: "autobe_hackathon_session_histories_session_idx")
-  @@index([autobe_hackathon_session_connection_id, created_at], map: "autobe_hackathon_session_histories_connection_idx")
-}
-
-model autobe_hackathon_session_aggregates {
-  id String @id @db.Uuid
-  autobe_hackathon_session_id String @db.Uuid
-  token_usage String // JSON value
-
-  @@unique([autobe_hackathon_session_id])
-  session autobe_hackathon_sessions @relation(fields: [autobe_hackathon_session_id], references: [id], onDelete: Cascade)
-}
-```
-
 For the `type` in `ChatSessionHistory`, I'm thinking of the following structure. Please flesh it out and add comments for documentation. I'll refactor and improve it directly to implement the websocket server, and since this is stored as JSON value in DB, it doesn't need to be too strict.
 
 ```typescript
@@ -176,6 +93,49 @@ interface IWrtnChatSessionFunctionCallMessageHistory {
   arguments: Record<string, any>;
   success: boolean; // success or failure
   value: unknown; // return value or exception value
+}
+```
+
+Here is a pseudo-code example of how DB models might be designed in Prisma.
+
+```prisma
+model wrtn_chat_sessions {
+  id String @id @db.Uuid
+  wrtn_account_id String @db.Uuid
+  wrtn_member_id String @db.Uuid
+  vendor String
+  title String?
+  created_at DateTime @db.Timestamptz
+  updated_at DateTime @db.Timestamptz
+  deleted_at DateTime? @db.Timestamptz
+}
+model wrtn_chat_session_connections {
+  id String @id @db.Uuid
+  wrtn_chat_session_id String @db.Uuid
+  wrtn_member_id String @db.Uuid
+  connected_at DateTime @db.Timestamptz
+  disconnected_at DateTime? @db.Timestamptz
+}
+model wrtn_chat_session_histories {
+  id String @id @db.Uuid
+  wrtn_chat_session_id String @db.Uuid
+  wrtn_chat_session_connection_id String @db.Uuid
+  type String
+  value String // JSON value, encrypted
+  created_at DateTime @db.Timestamptz
+}
+model wrtn_chat_session_history_files {
+  id String @id @db.Uuid
+  wrtn_chat_session_history_id String @db.Uuid
+  wrtn_file_id String @db.Uuid
+  sequence Int
+}
+model wrtn_chat_session_aggregates {
+  id String @id @db.Uuid
+  wrtn_chat_session_id String @db.Uuid
+  token_usage String // JSON value
+
+  @@unique([wrtn_chat_session_id])
 }
 ```
 
