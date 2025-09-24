@@ -20,11 +20,12 @@ export const orchestrateAnalyzeWrite = async <Model extends ILlmSchema.Model>(
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
     file: AutoBeAnalyzeFile.Scenario;
+    instruction: string;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
   },
 ): Promise<AutoBeAnalyzeWriteEvent> => {
-  const { scenario, file, progress, promptCacheKey } = props;
+  const { file, progress, promptCacheKey } = props;
   const pointer: IPointer<IAutoBeAnalyzeWriteApplication.IProps | null> = {
     value: null,
   };
@@ -34,7 +35,7 @@ export const orchestrateAnalyzeWrite = async <Model extends ILlmSchema.Model>(
       model: ctx.model,
       pointer,
     }),
-    histories: transformAnalyzeWriteHistories(ctx, scenario, file),
+    histories: transformAnalyzeWriteHistories(ctx, props),
     enforceFunctionCall: true,
     promptCacheKey,
     message: "Write requirement analysis report.",

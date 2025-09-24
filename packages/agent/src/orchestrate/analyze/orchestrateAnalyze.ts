@@ -36,7 +36,7 @@ export const orchestrateAnalyze =
 
     // Generate analysis scenario
     const scenario: AutoBeAnalyzeScenarioEvent | AutoBeAssistantMessageHistory =
-      await orchestrateAnalyzeScenario(ctx);
+      await orchestrateAnalyzeScenario(ctx, props.instruction);
     if (scenario.type === "assistantMessage")
       return ctx.assistantMessage(scenario);
     else ctx.dispatch(scenario);
@@ -55,6 +55,7 @@ export const orchestrateAnalyze =
             file,
             progress: writeProgress,
             promptCacheKey,
+            instruction: props.instruction,
           },
         );
         return event.file;

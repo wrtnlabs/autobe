@@ -8,6 +8,7 @@ import { AutoBeContext } from "../../../context/AutoBeContext";
 
 export function transformAnalyzeSceHistories<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
+  instruction: string,
 ): Array<IMicroAgenticaHistoryJson> {
   return [
     ...ctx
@@ -30,6 +31,21 @@ export function transformAnalyzeSceHistories<Model extends ILlmSchema.Model>(
         ----------------------
 
         ${AutoBeSystemPromptConstant.ANALYZE_WRITE}
+      `,
+      created_at: new Date().toISOString(),
+    },
+    {
+      id: v7(),
+      type: "assistantMessage",
+      text: StringUtil.trim`
+        ## Instructions from Requirements Discussion
+        
+        The following instructions were extracted by AI from 
+        the discussion with the user about requirements.
+        Use these to guide document structure planning and 
+        scenario definitions.
+        
+        ${instruction}
       `,
       created_at: new Date().toISOString(),
     },
