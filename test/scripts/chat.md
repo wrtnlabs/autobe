@@ -96,7 +96,7 @@ interface IWrtnChatSessionFunctionCallMessageHistory {
 }
 ```
 
-Here is a pseudo-code example of how DB models might be designed in Prisma.
+Here is a pseudo-code example of how DB models might be designed in Prisma. By the way, don't trust me too much about this. Just use it as a reference and design it better on your own.
 
 ```prisma
 model wrtn_chat_sessions {
