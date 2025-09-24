@@ -19,7 +19,6 @@ import { compileRealizeFiles } from "./internal/compileRealizeFiles";
 import { orchestrateRealizeCorrectCasting } from "./orchestRateRealizeCorrectCasting";
 import { orchestrateRealizeAuthorization } from "./orchestrateRealizeAuthorization";
 import { orchestrateRealizeCorrect } from "./orchestrateRealizeCorrect";
-import { orchestrateRealizeCorrectDate } from "./orchestrateRealizeCorrectDate";
 import { orchestrateRealizeWrite } from "./orchestrateRealizeWrite";
 import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
 import { generateRealizeScenario } from "./utils/generateRealizeScenario";
@@ -113,7 +112,6 @@ export const orchestrateRealize =
       completed: writeEvents.length,
     };
 
-    console.log("casting", reviewProgress);
     const totalCorrected: AutoBeRealizeFunction[] =
       await orchestrateRealizeCorrectCasting(
         ctx,
@@ -121,23 +119,14 @@ export const orchestrateRealize =
         functions,
         reviewProgress,
       ).then(async (res) => {
-        console.log("date", reviewProgress);
-        return orchestrateRealizeCorrectDate(
+        return orchestrateRealizeCorrect(
           ctx,
+          scenarios,
           authorizations,
           res,
+          [],
           reviewProgress,
-        ).then(async (res) => {
-          console.log("correct", reviewProgress);
-          return orchestrateRealizeCorrect(
-            ctx,
-            scenarios,
-            authorizations,
-            res,
-            [],
-            reviewProgress,
-          );
-        });
+        );
       });
 
     const compiler: IAutoBeCompiler = await ctx.compiler();
@@ -157,7 +146,7 @@ export const orchestrateRealize =
       type: "realizeComplete",
       id: v7(),
       created_at: new Date().toISOString(),
-      functions,
+      functions: totalCorrected,
       authorizations,
       controllers,
       compiled: result,
