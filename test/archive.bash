@@ -8,16 +8,16 @@ pnpm run archive --vendor openai/gpt-5 --project bbs > archive.gpt-5-bbs.log
 pnpm run archive --vendor openai/gpt-5 --project shopping > archive.gpt-5-shopping.log
 
 # openai/gpt-4.1
-pnpm run archive --vendor openai/gpt-4.1 --project todo > archive.gpt-big-todo.log
-pnpm run archive --vendor openai/gpt-4.1 --project reddit > archive.gpt-big-reddit.log
-pnpm run archive --vendor openai/gpt-4.1 --project bbs > archive.gpt-big-bbs.log
-pnpm run archive --vendor openai/gpt-4.1 --project shopping > archive.gpt-big-shopping.log
+pnpm run archive --vendor openai/gpt-4.1 --project todo > archive.gpt-4.1-todo.log
+pnpm run archive --vendor openai/gpt-4.1 --project reddit > archive.gpt-4.1-reddit.log
+pnpm run archive --vendor openai/gpt-4.1 --project bbs > archive.gpt-4.1-bbs.log
+pnpm run archive --vendor openai/gpt-4.1 --project shopping > archive.gpt-4.1-shopping.log
 
 # openai/gpt-4.1-mini
-pnpm run archive --vendor openai/gpt-4.1-mini --project todo > archive.gpt-mini-todo.log
-pnpm run archive --vendor openai/gpt-4.1-mini --project reddit > archive.gpt-mini-reddit.log
-pnpm run archive --vendor openai/gpt-4.1-mini --project bbs > archive.gpt-mini-bbs.log
-pnpm run archive --vendor openai/gpt-4.1-mini --project shopping > archive.gpt-mini-shopping.log
+pnpm run archive --vendor openai/gpt-4.1-mini --project todo > archive.gpt-4.1-mini-todo.log
+pnpm run archive --vendor openai/gpt-4.1-mini --project reddit > archive.gpt-4.1-mini-reddit.log
+pnpm run archive --vendor openai/gpt-4.1-mini --project bbs > archive.gpt-4.1-mini-bbs.log
+pnpm run archive --vendor openai/gpt-4.1-mini --project shopping > archive.gpt-4.1-mini-shopping.log
 
 # openai/gpt-oss-120b
 pnpm run archive --vendor openai/gpt-oss-120b --project todo > archive.gpt-oss-120b-todo.log
@@ -53,16 +53,16 @@ pnpm run archive --vendor qwen/qwen3-coder --project shopping > archive.qwen3-co
 # SPECIAL PHASES
 ################################################
 # openai/gpt-4.1
-pnpm run archive --vendor openai/gpt-4.1 --project todo --from realize > archive.gpt-big-todo.log
-pnpm run archive --vendor openai/gpt-4.1 --project reddit --from realize > archive.gpt-big-reddit.log
-pnpm run archive --vendor openai/gpt-4.1 --project bbs --from realize > archive.gpt-big-bbs.log
-pnpm run archive --vendor openai/gpt-4.1 --project shopping --from realize > archive.gpt-big-shopping.log
+pnpm run archive --vendor openai/gpt-4.1 --project todo --from realize > archive.gpt-4.1-todo.log
+pnpm run archive --vendor openai/gpt-4.1 --project reddit --from realize > archive.gpt-4.1-reddit.log
+pnpm run archive --vendor openai/gpt-4.1 --project bbs --from realize > archive.gpt-4.1-bbs.log
+pnpm run archive --vendor openai/gpt-4.1 --project shopping --from realize > archive.gpt-4.1-shopping.log
 
 # openai/gpt-4.1-mini
-pnpm run archive --vendor openai/gpt-4.1-mini --project todo --from realize > archive.gpt-mini-todo.log
-pnpm run archive --vendor openai/gpt-4.1-mini --project reddit --from realize > archive.gpt-mini-reddit.log
-pnpm run archive --vendor openai/gpt-4.1-mini --project bbs --from realize > archive.gpt-mini-bbs.log
-pnpm run archive --vendor openai/gpt-4.1-mini --project shopping --from realize > archive.gpt-mini-shopping.log
+pnpm run archive --vendor openai/gpt-4.1-mini --project todo --from realize > archive.gpt-4.1-mini-todo.log
+pnpm run archive --vendor openai/gpt-4.1-mini --project reddit --from realize > archive.gpt-4.1-mini-reddit.log
+pnpm run archive --vendor openai/gpt-4.1-mini --project bbs --from realize > archive.gpt-4.1-mini-bbs.log
+pnpm run archive --vendor openai/gpt-4.1-mini --project shopping --from realize > archive.gpt-4.1-mini-shopping.log
 
 # qwen/qwen3-235b-a22b-2507
 pnpm run archive --vendor qwen/qwen3-235b-a22b-2507 --project todo --from interface > archive.qwen3-235b-todo.log

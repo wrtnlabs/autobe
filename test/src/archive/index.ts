@@ -24,6 +24,7 @@ const PROJECT_INDEXES: Record<TestProject, number> = {
   bbs: 1,
   reddit: 2,
   shopping: 3,
+  chat: 4,
 };
 
 const STEP_INDEXES: Record<Step, number> = {
