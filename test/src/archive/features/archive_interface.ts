@@ -109,7 +109,7 @@ export const archive_interface = async (
           snapshots
             .map((s) => s.event)
             .filter((e) => e.type === "interfaceSchemas")
-            .map((e) => Object.entries(e.schemas)),
+            .flatMap((e) => Object.entries(e.schemas)),
         ),
       ),
     });
