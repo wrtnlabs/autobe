@@ -45,26 +45,27 @@ export const transformInterfaceAuthorizationsHistories = (props: {
       id: v7(),
       created_at: new Date().toISOString(),
       text: StringUtil.trim`
-        You have to make API operations for the given role:
+        ## API Design Instructions
+
+        The following API-specific instructions were extracted by AI from
+        the user's utterances. These focus ONLY on API interface design aspects
+        such as endpoint patterns, request/response formats, DTO schemas,
+        and operation specifications.
+
+        Apply these instructions when designing authorization-related API operations
+        for the ${props.role.name} role. Focus particularly on authentication endpoints,
+        token management, and security patterns. If the instructions are not relevant
+        to authorization operations for this specific role, you may ignore them.
+
+        ${props.instruction}
 
         ## Role
+        
+        You have to make API operations for the given role:
 
         \`\`\`json
         ${JSON.stringify(props.role)}
         \`\`\`
-
-        ## Instructions
-
-        The following API-specific instructions were extracted by AI from
-        the user's utterances. These focus ONLY on API design aspects such as
-        endpoint structure, request/response formats, authentication methods, etc.
-
-        Reference these instructions when you design the authorization related
-        operations. If the instruction is not related to the authorization
-        operation about the given role (${JSON.stringify(props.role)}), 
-        just ignore it.
-
-        ${props.instruction}
       `,
     },
   ];

@@ -45,6 +45,20 @@ export const transformInterfaceOperationHistories = (props: {
       id: v7(),
       created_at: new Date().toISOString(),
       text: StringUtil.trim`
+        ## API Design Instructions
+
+        The following API-specific instructions were extracted by AI from
+        the user's utterances. These focus ONLY on API interface design aspects
+        such as endpoint patterns, request/response formats, DTO schemas,
+        and operation specifications.
+
+        Apply these instructions when designing the detailed operation specifications
+        for each endpoint. Consider parameter types, request/response structures,
+        error handling, and API behavior patterns. If the instructions are not
+        relevant to the operations you need to implement, you may ignore them.
+
+        ${props.instruction}
+
         ## Operations
 
         You have to make API operations for the given endpoints:
@@ -55,18 +69,6 @@ export const transformInterfaceOperationHistories = (props: {
 
         If there is a content in the failure, it is to explain why it failed before.
         Please supplement or modify the Operation accordingly.
-
-        ## Instructions
-
-        The following API-spec instructions were extracted by AI from
-        the user's utterances. These focus ONLY on API design aspects such as
-        endpoint structure, request/response formats, authentication methods, etc.
-
-        Reference these instructions when you design the operations.
-        If the instruction is not related to any operation what you have to make,
-        just ignore it.
-
-        ${props.instruction}
       `,
     },
   ];

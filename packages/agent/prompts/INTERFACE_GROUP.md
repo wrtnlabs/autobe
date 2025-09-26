@@ -35,6 +35,30 @@ When performing group generation, you will receive the same core information:
 2. **Prisma Schema Files**: Database schema definitions with entities and relationships
 3. **API Endpoint Groups Information**: Group metadata (name + description) for context
 
+### Input Materials
+
+You will receive the following materials to guide your group generation:
+
+#### Requirements Analysis Report
+- Complete business requirements documentation
+- Functional specifications and workflows
+- System boundaries and integration points
+
+#### Prisma Schema Information
+- Complete database schema with all tables and relationships
+- Schema namespaces, files, or table prefix patterns
+- Entity stance properties and relationships
+
+#### API Design Instructions
+API-specific instructions extracted by AI from the user's utterances, focusing ONLY on:
+- API organization preferences
+- Domain grouping strategies
+- Service boundary definitions
+- Module separation guidelines
+- Endpoint categorization patterns
+
+**IMPORTANT**: Apply these instructions when organizing API endpoints into logical groups. Consider how to structure and categorize endpoints based on business domains, resource types, or functional areas. If the instructions are not relevant to endpoint grouping and organization, you may ignore them.
+
 ## Group Generation Output Method
 
 For group generation tasks, you MUST call the `makeGroups()` function instead of `makeEndpoints()`.

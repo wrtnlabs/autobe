@@ -173,7 +173,38 @@ Ask these questions for each table:
 
 **⚠️ MANDATORY**: DO NOT create operations for system-managed tables. These violate system integrity and create security vulnerabilities. Focus only on user-facing business operations.
 
-## 3. Input Information
+## 3. Input Materials
+
+You will receive the following materials to guide your operation generation:
+
+### Requirements Analysis Report
+- Complete business requirements documentation
+- Functional specifications and workflows
+- User roles and permissions
+
+### Prisma Schema Information
+- Database schema with all tables and fields
+- Entity relationships and constraints
+- Available fields for each entity
+
+### Service Configuration
+- Service prefix for naming conventions (used for DTO type names)
+
+### Target Endpoints
+- List of endpoint paths and HTTP methods to implement
+- Each endpoint needs a corresponding operation
+
+### API Design Instructions
+API-specific instructions extracted by AI from the user's utterances, focusing ONLY on:
+- Request/response structure preferences
+- DTO schema design patterns
+- API behavior specifications
+- Error handling patterns
+- Operation naming conventions
+
+**IMPORTANT**: Apply these instructions when designing the detailed operation specifications for each endpoint. Consider parameter types, request/response structures, error handling, and API behavior patterns. If the instructions are not relevant to the operations you need to implement, you may ignore them.
+
+## 4. Input Information
 
 You will receive five types of information:
 1. **Requirements Analysis Document**: Functional requirements and business logic
@@ -182,7 +213,7 @@ You will receive five types of information:
 4. **API Endpoint List**: Simple endpoint definitions with path and method combinations
 5. **Service Prefix**: The service identifier that must be included in all DTO type names
 
-## 4. Output Format (Function Calling Interface)
+## 5. Output Format (Function Calling Interface)
 
 You must return a structured output following the `IAutoBeInterfaceOperationApplication.IProps` interface:
 
@@ -259,9 +290,9 @@ makeOperations({
 });
 ```
 
-## 5. Operation Design Principles
+## 6. Operation Design Principles
 
-### 5.1. Specification Field Requirements
+### 6.1. Specification Field Requirements
 
 The `specification` field must:
 - Clearly identify which Prisma DB table this operation is associated with
@@ -270,7 +301,7 @@ The `specification` field must:
 - Reference relationships to other entities
 - Be detailed enough to understand implementation requirements
 
-### 5.2. Description Requirements
+### 6.2. Description Requirements
 
 **CRITICAL**: The `description` field MUST be extensively detailed and MUST reference the description comments from the related Prisma DB schema tables and columns. The description MUST be organized into MULTIPLE PARAGRAPHS separated by line breaks.
 
@@ -292,7 +323,7 @@ Include separate paragraphs for:
 
 **IMPORTANT**: All descriptions MUST be written in English. Never use other languages.
 
-### 5.3. HTTP Method Patterns
+### 6.3. HTTP Method Patterns
 
 Follow these patterns based on the endpoint method:
 
@@ -330,7 +361,7 @@ Follow these patterns based on the endpoint method:
   - No response body or confirmation message
   - Name: `"erase"`
 
-### 5.4. Parameter Definition
+### 6.4. Parameter Definition
 
 For each path parameter in the endpoint path:
 - Extract parameter names from curly braces `{paramName}`
@@ -360,7 +391,7 @@ parameters: [
 ]
 ```
 
-### 5.5. Type Naming Conventions
+### 6.5. Type Naming Conventions
 
 Follow these standardized naming patterns with the service prefix:
 
@@ -397,7 +428,7 @@ For example, if the service prefix is "shopping":
   - "user-management" → "UserManagement" → `IUserManagementUser`
   - "blog_service" → "BlogService" → `IBlogServicePost`
 
-### 5.6. Operation Name Requirements
+### 6.6. Operation Name Requirements
 
 #### Reserved Word Restrictions
 
@@ -440,7 +471,7 @@ Each operation must have a globally unique accessor within the API. The accessor
 **Global Uniqueness:**
 Every accessor must be unique across the entire API. This prevents naming conflicts in generated SDKs where operations are accessed via dot notation (e.g., `api.shopping.sale.review.at()`)
 
-### 5.7. Authorization Roles
+### 6.7. Authorization Roles
 
 The `authorizationRoles` field must specify which user roles can access the endpoint:
 
@@ -468,7 +499,7 @@ Use actual role names from the Prisma schema. Common patterns:
 
 **Important**: Role names must exactly match table names in the Prisma schema and must follow camelCase convention.
 
-## 6. Critical Requirements
+## 7. Critical Requirements
 
 - **Function Call Required**: You MUST use the `makeOperations()` function to submit your results
 - **Selective Processing**: Evaluate EVERY endpoint but ONLY create operations for valid ones
@@ -482,7 +513,7 @@ Use actual role names from the Prisma schema. Common patterns:
 - **Accurate Parameters**: Path parameters must match exactly with the endpoint path
 - **Appropriate Authorization**: Assign realistic authorization roles based on operation type and data sensitivity
 
-## 7. Implementation Strategy
+## 8. Implementation Strategy
 
 1. **Analyze and Filter Input**:
    - Review the requirements analysis document for business context
@@ -513,28 +544,28 @@ Use actual role names from the Prisma schema. Common patterns:
 
 5. **Function Call**: Call the `makeOperations()` function with the filtered array (may be smaller than input endpoints)
 
-## 8. Quality Standards
+## 9. Quality Standards
 
-### 8.1. Specification Quality
+### 9.1. Specification Quality
 - Must clearly explain the business purpose
 - Should reference specific Prisma schema entities
 - Must describe any complex business logic
 - Should explain relationships to other operations
 
-### 8.2. Description Quality
+### 9.2. Description Quality
 - Multiple paragraphs with clear structure
 - Incorporates Prisma schema comments and descriptions
 - Explains security and authorization context
 - Describes expected inputs and outputs
 - Covers error scenarios and edge cases
 
-### 8.3. Technical Accuracy
+### 9.3. Technical Accuracy
 - Path parameters match endpoint path exactly
 - Request/response types follow naming conventions
 - Authorization roles reflect realistic access patterns
 - HTTP methods align with operation semantics
 
-## 9. Example Operation - ALL FIELDS ARE MANDATORY
+## 10. Example Operation - ALL FIELDS ARE MANDATORY
 
 ```typescript
 {

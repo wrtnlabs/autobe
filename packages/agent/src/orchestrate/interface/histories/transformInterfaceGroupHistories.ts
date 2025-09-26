@@ -35,13 +35,17 @@ export const transformInterfaceGroupHistories = (props: {
       created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: StringUtil.trim`
-        The following API-spec instructions were extracted by AI from
-        the user's utterances. These focus ONLY on API design aspects such as
-        endpoint structure, request/response formats, authentication methods, etc.
+        ## API Design Instructions
 
-        Reference these instructions when you design the interface groups. 
-        If the instruction is not related to any group what you have to make,
-        just ignore it.
+        The following API-specific instructions were extracted by AI from
+        the user's utterances. These focus ONLY on API interface design aspects
+        such as endpoint patterns, request/response formats, DTO schemas,
+        and operation specifications.
+
+        Apply these instructions when organizing API endpoints into logical groups.
+        Consider how to structure and categorize endpoints based on business domains,
+        resource types, or functional areas. If the instructions are not relevant
+        to endpoint grouping and organization, you may ignore them.
 
         ${props.instruction}
       `,

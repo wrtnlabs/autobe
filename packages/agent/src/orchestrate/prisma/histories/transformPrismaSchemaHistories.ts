@@ -37,15 +37,6 @@ export const transformPrismaSchemaHistories = (props: {
       created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: StringUtil.trim`
-        Here is the input data for generating Prisma DB schema.
-        
-        \`\`\`json
-        ${JSON.stringify({
-          targetComponent: props.targetComponent,
-          otherTables: props.otherTables,
-        })}
-        \`\`\`
-
         ## Database Design Instructions
 
         The following database-specific instructions were extracted by AI from
@@ -57,6 +48,17 @@ export const transformPrismaSchemaHistories = (props: {
         component, you may ignore it.
 
         ${props.instruction}
+
+        ## Target Component
+        
+        Here is the input data for generating Prisma DB schema.
+        
+        \`\`\`json
+        ${JSON.stringify({
+          targetComponent: props.targetComponent,
+          otherTables: props.otherTables,
+        })}
+        \`\`\`
       `,
     },
     {

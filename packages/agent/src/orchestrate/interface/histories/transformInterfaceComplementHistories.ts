@@ -39,6 +39,20 @@ export const transformInterfaceComplementHistories = (props: {
     id: v7(),
     created_at: new Date().toISOString(),
     text: StringUtil.trim`
+      ## API Design Instructions
+
+      The following API-specific instructions were extracted by AI from
+      the user's utterances. These focus ONLY on API interface design aspects
+      such as endpoint patterns, request/response formats, DTO schemas,
+      and operation specifications.
+
+      Apply these instructions when completing the missing schema types.
+      Focus on ensuring the schemas align with the overall API design patterns
+      and data structure requirements. If the instructions are not relevant
+      to the specific schemas you need to create, you may ignore them.
+
+      ${props.instruction}
+
       ## Operations
 
       Here is the OpenAPI operations what you AI have made:
@@ -60,18 +74,6 @@ export const transformInterfaceComplementHistories = (props: {
       However, you AI have missed below schema types:
 
       ${props.missed.map((s) => `- ${s}`).join("\n")}
-
-      ## API Design Instructions
-
-      The following API-specific instructions were extracted by AI from
-      the user's utterances. These focus ONLY on API design aspects such as
-      endpoint structure, request/response formats, authentication methods, etc.
-
-      Reference these instructions when designing the type schemas 
-      you have missed. If the instruction is not related to the type schemas 
-      you have missed (have to make), just ignore it.
-
-      ${props.instruction}
     `,
   },
 ];

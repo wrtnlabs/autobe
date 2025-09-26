@@ -28,6 +28,20 @@ export const transformInterfaceEndpointHistories = (props: {
     id: v7(),
     created_at: new Date().toISOString(),
     text: StringUtil.trim`
+      ## API Design Instructions
+
+      The following API-specific instructions were extracted by AI from
+      the user's utterances. These focus ONLY on API interface design aspects
+      such as endpoint patterns, request/response formats, DTO schemas,
+      and operation specifications.
+
+      Apply these instructions when designing endpoints for the ${props.group.name} group.
+      Consider the specified URL patterns, HTTP methods, parameter structures,
+      and response formats. If the instructions are not relevant to this specific
+      endpoint group, you may ignore them.
+
+      ${props.instruction}
+
       ## Group Information
 
       Here is the target group for the endpoints:
@@ -50,18 +64,6 @@ export const transformInterfaceEndpointHistories = (props: {
         })),
       )}
       \`\`\`
-
-      ## Instructions
-
-      The following API-specific instructions were extracted by AI from
-      the user's utterances. These focus ONLY on API design aspects such as
-      endpoint structure, request/response formats, authentication methods, etc.
-
-      Reference these instructions when you design the endpoints for the given
-      group (${JSON.stringify(props.group)}). If the instruction is not related
-      to the endpoints about the given group, just ignore it.
-
-      ${props.instruction}
     `,
   },
 ];

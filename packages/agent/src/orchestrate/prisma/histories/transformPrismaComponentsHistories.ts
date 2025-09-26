@@ -31,12 +31,12 @@ export const transformPrismaComponentsHistories = (
       created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: StringUtil.trim`
+        ## Requirement Analysis Report
+
         Here is the requirement analysis report.
         
         Call the provided tool function to generate Prisma DB schema
         referencing below requirement analysis report.
-        
-        ## Requirement Analysis Report
         
         \`\`\`json
         ${JSON.stringify(state.analyze.files)}
