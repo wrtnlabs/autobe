@@ -55,11 +55,15 @@ export function transformTestScenarioReviewHistories(props: {
       text: StringUtil.trim`
         ## Instructions
 
-        The following e2e-test-specific instructions were extracted by AI
-        from the users' utterances. These focuses ONLY on e2e-test-related parts.
+        The following e2e-test-specific instructions were extracted by AI from
+        the user's requirements and conversations. These instructions focus
+        exclusively on test-related aspects such as test coverage priorities,
+        specific edge cases to validate, business logic verification strategies,
+        and critical user workflows that must be tested.
         
-        Apply these instructions when generating test scenarios.
-        If the instructions are not relevant to the target API operations,
+        Apply these instructions when reviewing test scenarios to ensure the
+        tests align with the user's testing requirements and expectations.
+        If any instructions are not relevant to the target API operations,
         you may ignore them.
 
         ${props.instruction}
