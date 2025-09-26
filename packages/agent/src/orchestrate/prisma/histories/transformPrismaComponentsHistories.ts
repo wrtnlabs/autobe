@@ -83,10 +83,14 @@ export const transformPrismaComponentsHistories = (
             : ""
         }
 
-        ## Instructions from Discussion
+        ## Database Design Instructions
 
-        The following instruction was extracted by AI from
-        the discussion with the user about DB schema design.
+        The following database-specific instructions were extracted by AI from
+        the user's utterances. These focus ONLY on database schema design aspects
+        such as table structure, relationships, constraints, and indexing strategies.
+
+        Reference these instructions when designing namespace components and 
+        DB table names.
 
         ${props.instruction}
       `,

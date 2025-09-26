@@ -28,15 +28,16 @@ export interface IAutoBeApplication {
   analyze(props: {
     /**
      * Requirements-focused instructions extracted from user utterances.
-     * 
-     * Contains AI-interpreted guidance specifically for the requirements analysis phase.
-     * Should focus ONLY on features, business rules, user stories, and functional 
-     * specifications. Must NOT include database design, API patterns, or implementation
-     * details which belong to other phases.
-     * 
+     *
+     * Contains AI-interpreted guidance specifically for the requirements
+     * analysis phase. Should focus ONLY on features, business rules, user
+     * stories, and functional specifications. Must NOT include database design,
+     * API patterns, or implementation details which belong to other phases.
+     *
      * Examples:
+     *
      * - "Focus on inventory management with real-time stock tracking"
-     * - "Prioritize user authentication with role-based permissions" 
+     * - "Prioritize user authentication with role-based permissions"
      * - "Emphasize order processing workflow with approval stages"
      */
     instruction: string;
@@ -64,12 +65,14 @@ export interface IAutoBeApplication {
   prisma(props: {
     /**
      * Database design instructions extracted from user utterances.
-     * 
-     * Contains AI-interpreted guidance specifically for the database schema design phase.
-     * Should focus ONLY on schema structure, relationships, constraints, and indexing
-     * strategies. Must NOT include API design or business logic implementation details.
-     * 
+     *
+     * Contains AI-interpreted guidance specifically for the database schema
+     * design phase. Should focus ONLY on schema structure, relationships,
+     * constraints, and indexing strategies. Must NOT include API design or
+     * business logic implementation details.
+     *
      * Examples:
+     *
      * - "Design flexible product catalog with variant support"
      * - "Optimize for high-volume transaction queries"
      * - "Implement strict referential integrity for financial data"
@@ -93,12 +96,14 @@ export interface IAutoBeApplication {
   interface(props: {
     /**
      * API design instructions extracted from user utterances.
-     * 
-     * Contains AI-interpreted guidance specifically for the API interface design phase.
-     * Should focus ONLY on endpoint patterns, request/response formats, DTO schemas,
-     * and operation specifications. Must NOT include database details or implementation logic.
-     * 
+     *
+     * Contains AI-interpreted guidance specifically for the API interface
+     * design phase. Should focus ONLY on endpoint patterns, request/response
+     * formats, DTO schemas, and operation specifications. Must NOT include
+     * database details or implementation logic.
+     *
      * Examples:
+     *
      * - "Create RESTful endpoints with pagination for all list operations"
      * - "Design mobile-friendly APIs with minimal response payloads"
      * - "Follow OpenAPI 3.0 patterns with comprehensive error responses"
@@ -130,12 +135,14 @@ export interface IAutoBeApplication {
   test(props: {
     /**
      * Testing strategy instructions extracted from user utterances.
-     * 
-     * Contains AI-interpreted guidance specifically for the test code generation phase.
-     * Should focus ONLY on test scenarios, coverage priorities, edge cases, and
-     * validation strategies. Must NOT include implementation or API design details.
-     * 
+     *
+     * Contains AI-interpreted guidance specifically for the test code
+     * generation phase. Should focus ONLY on test scenarios, coverage
+     * priorities, edge cases, and validation strategies. Must NOT include
+     * implementation or API design details.
+     *
      * Examples:
+     *
      * - "Prioritize payment flow testing with failure scenarios"
      * - "Generate comprehensive tests for concurrent user operations"
      * - "Focus on data integrity validation across all endpoints"
@@ -167,13 +174,15 @@ export interface IAutoBeApplication {
   realize(props: {
     /**
      * Implementation instructions extracted from user utterances.
-     * 
-     * Contains AI-interpreted guidance specifically for the business logic implementation
-     * phase. Should focus ONLY on architectural patterns, performance requirements,
-     * business logic details, and service layer decisions. Must NOT include database
-     * schema or API interface specifications.
-     * 
+     *
+     * Contains AI-interpreted guidance specifically for the business logic
+     * implementation phase. Should focus ONLY on architectural patterns,
+     * performance requirements, business logic details, and service layer
+     * decisions. Must NOT include database schema or API interface
+     * specifications.
+     *
      * Examples:
+     *
      * - "Implement with caching for frequently accessed data"
      * - "Use transaction patterns for financial operations"
      * - "Optimize for 10K concurrent users with rate limiting"

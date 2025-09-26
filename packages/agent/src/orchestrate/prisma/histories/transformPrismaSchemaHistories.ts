@@ -46,11 +46,15 @@ export const transformPrismaSchemaHistories = (props: {
         })}
         \`\`\`
 
-        The following instruction was extracted by AI from
-        the discussion with the user about the DB schema design.
+        ## Database Design Instructions
 
-        Reference them when designing the DB schema design. If the
-        instruction is not related to the current domain, ignore it.
+        The following database-specific instructions were extracted by AI from
+        the user's utterances. These focus ONLY on database schema design aspects
+        such as table structure, relationships, constraints, and indexing strategies.
+
+        Reference these instructions when designing the DB schema for this specific
+        component. If the instruction is not related to the current domain or
+        component, you may ignore it.
 
         ${props.instruction}
       `,
