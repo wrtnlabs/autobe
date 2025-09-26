@@ -47,12 +47,12 @@ export let archive_test = async (
 
   // DO TEST GENERATION
   let histories: AutoBeHistory[] = await go(userMessage.contents);
-  if (histories.at(-1)?.type !== "test") {
+  if (histories.every((h) => h.type !== "test")) {
     histories = await go("Don't ask me to do that, and just do it right now.");
-    if (histories.at(-1)?.type !== "test")
+    if (histories.every((h) => h.type !== "test"))
       throw new Error("History type must be test.");
   }
-  const result: AutoBeTestHistory = histories.at(-1) as AutoBeTestHistory;
+  const result: AutoBeTestHistory = histories.find((h) => h.type === "test")!;
 
   // REPORT RESULT
   let model: string = TestGlobal.vendorModel;

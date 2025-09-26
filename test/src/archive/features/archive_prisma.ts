@@ -79,13 +79,15 @@ export const archive_prisma = async (
 
   // REQUEST PRISMA GENERATION
   let histories: AutoBeHistory[] = await go(userMessage.contents);
-  if (histories.at(-1)?.type !== "prisma") {
+  if (histories.every((h) => h.type !== "prisma")) {
     histories = await go("Don't ask me to do that, and just do it right now.");
-    if (histories.at(-1)?.type !== "prisma")
+    if (histories.every((h) => h.type !== "prisma"))
       throw new Error("History type must be prisma.");
   }
 
-  const prisma: AutoBePrismaHistory = histories.at(-1) as AutoBePrismaHistory;
+  const prisma: AutoBePrismaHistory = histories.find(
+    (h) => h.type === "prisma",
+  )!;
   if (prisma.compiled.type !== "success") {
     await FileSystemIterator.save({
       root: `${TestGlobal.ROOT}/results/${model}/${project}/prisma-error`,

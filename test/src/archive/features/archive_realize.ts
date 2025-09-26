@@ -46,12 +46,14 @@ export const archive_realize = async (
 
   // DO REALIZE GENERATION
   let histories: AutoBeHistory[] = await go(userMessage.contents);
-  if (histories.at(-1)?.type !== "realize") {
+  if (histories.every((h) => h.type !== "realize")) {
     histories = await go("Don't ask me to do that, and just do it right now.");
-    if (histories.at(-1)?.type !== "realize")
-      throw new Error("History type must be test.");
+    if (histories.every((h) => h.type !== "realize"))
+      throw new Error("History type must be realize.");
   }
-  const result: AutoBeRealizeHistory = histories.at(-1) as AutoBeRealizeHistory;
+  const result: AutoBeRealizeHistory = histories.find(
+    (h) => h.type === "realize",
+  )!;
 
   // REPORT RESULT
   const model: string = TestGlobal.vendorModel;

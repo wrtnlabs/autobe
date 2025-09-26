@@ -47,14 +47,14 @@ export const archive_interface = async (
 
   // REQUEST INTERFACE GENERATION
   let histories: AutoBeHistory[] = await go(userMessage.contents);
-  if (histories.at(-1)?.type !== "interface") {
+  if (histories.every((h) => h.type !== "interface")) {
     histories = await go("Don't ask me to do that, and just do it right now.");
-    if (histories.at(-1)?.type !== "interface")
+    if (histories.every((h) => h.type !== "interface"))
       throw new Error("History type must be interface.");
   }
-  const result: AutoBeInterfaceHistory = histories.at(
-    -1,
-  ) as AutoBeInterfaceHistory;
+  const result: AutoBeInterfaceHistory = histories.find(
+    (h) => h.type === "interface",
+  )!;
 
   // REPORT RESULT
   const model: string = TestGlobal.vendorModel;

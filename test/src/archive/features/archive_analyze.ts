@@ -67,11 +67,11 @@ export const archive_analyze = async (
   ) => agent.conversate(c);
 
   let histories: AutoBeHistory[] = await go(userMessage.contents);
-  if (histories.at(-1)?.type !== "analyze") {
+  if (histories.every((h) => h.type !== "analyze")) {
     histories = await go(
       "I'm not familiar with the analyze feature. Please determine everything by yourself, and just show me the analysis report.",
     );
-    if (histories.at(-1)?.type !== "analyze") {
+    if (histories.every((h) => h.type !== "analyze")) {
       await FileSystemIterator.save({
         root: `${TestGlobal.ROOT}/results/${model}/${project}/analyze-failure`,
         files: {
