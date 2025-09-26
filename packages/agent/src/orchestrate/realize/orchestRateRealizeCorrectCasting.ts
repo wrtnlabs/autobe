@@ -94,6 +94,12 @@ const correct = async <Model extends ILlmSchema.Model>(
   const locations: string[] = diagnose(event).filter((l) =>
     functions.map((f) => f.location).includes(l),
   );
+  
+  // If no locations to correct, return original functions
+  if (locations.length === 0) {
+    return functions;
+  }
+  
   progress.total += locations.length;
 
   const converted: CorrectionResult[] = await executeCachedBatch(
@@ -220,7 +226,11 @@ const correct = async <Model extends ILlmSchema.Model>(
     life - 1,
   );
 
-  return [...success, ...ignored, ...retriedFunctions];
+  // Get functions that were not modified (not in converted array)
+  const convertedLocations = converted.map(c => c.func.location);
+  const unchanged = functions.filter(f => !convertedLocations.includes(f.location));
+
+  return [...success, ...ignored, ...retriedFunctions, ...unchanged];
 };
 
 /**
