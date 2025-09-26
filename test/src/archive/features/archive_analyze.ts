@@ -67,11 +67,11 @@ export const archive_analyze = async (
   ) => agent.conversate(c);
 
   let histories: AutoBeHistory[] = await go(userMessage.contents);
-  if (histories.every((el) => el.type !== "analyze")) {
+  if (histories.at(-1)?.type !== "analyze") {
     histories = await go(
       "I'm not familiar with the analyze feature. Please determine everything by yourself, and just show me the analysis report.",
     );
-    if (histories.every((el) => el.type !== "analyze")) {
+    if (histories.at(-1)?.type !== "analyze") {
       await FileSystemIterator.save({
         root: `${TestGlobal.ROOT}/results/${model}/${project}/analyze-failure`,
         files: {
@@ -87,13 +87,7 @@ export const archive_analyze = async (
   try {
     await FileSystemIterator.save({
       root: `${TestGlobal.ROOT}/results/${model}/${project}/analyze`,
-      files: {
-        ...files,
-        "autobe/analysis.md": Object.entries(files)
-          .filter(([key]) => key.endsWith(".md"))
-          .map(([_, v]) => v)
-          .join("\n\n"),
-      },
+      files,
     });
   } catch {}
   if (TestGlobal.archive)
