@@ -14,6 +14,7 @@ export async function orchestratePrismaComponents<
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
+  instruction: string,
   message: string = "Design database from the given requirement analysis documents.",
 ): Promise<AutoBePrismaComponentsEvent> {
   const start: Date = new Date();
@@ -23,7 +24,10 @@ export async function orchestratePrismaComponents<
   const prefix: string | null = ctx.state().analyze?.prefix ?? null;
   const { tokenUsage } = await ctx.conversate({
     source: "prismaComponents",
-    histories: transformPrismaComponentsHistories(ctx.state(), prefix),
+    histories: transformPrismaComponentsHistories(ctx.state(), {
+      prefix,
+      instruction,
+    }),
     controller: createController({
       model: ctx.model,
       build: (next) => {

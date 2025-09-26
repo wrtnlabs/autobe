@@ -15,6 +15,7 @@ import { IAutoBePrismaSchemaApplication } from "./structures/IAutoBePrismaSchema
 
 export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
+  instruction: string,
   componentList: AutoBePrisma.IComponent[],
 ): Promise<AutoBePrismaSchemasEvent[]> {
   const start: Date = new Date();
@@ -29,6 +30,7 @@ export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
         .map((c) => c.tables)
         .flat();
       const event: AutoBePrismaSchemasEvent = await process(ctx, {
+        instruction,
         component,
         otherTables,
         start,
@@ -45,6 +47,7 @@ export async function orchestratePrismaSchemas<Model extends ILlmSchema.Model>(
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
+    instruction: string;
     component: AutoBePrisma.IComponent;
     otherTables: string[];
     start: Date;
@@ -58,16 +61,18 @@ async function process<Model extends ILlmSchema.Model>(
   };
   const { tokenUsage } = await ctx.conversate({
     source: "prismaSchemas",
-    histories: transformPrismaSchemaHistories(
-      ctx
-        .state()
-        .analyze?.files.map((file) => ({ [file.filename]: file.content }))
-        .reduce((acc, cur) => {
-          return Object.assign(acc, cur);
-        }, {}) ?? {},
-      props.component,
-      props.otherTables,
-    ),
+    histories: transformPrismaSchemaHistories({
+      analysis:
+        ctx
+          .state()
+          .analyze?.files.map((file) => ({ [file.filename]: file.content }))
+          .reduce((acc, cur) => {
+            return Object.assign(acc, cur);
+          }, {}) ?? {},
+      targetComponent: props.component,
+      otherTables: props.otherTables,
+      instruction: props.instruction,
+    }),
     controller: createController(ctx, {
       targetComponent: props.component,
       otherTables: props.otherTables,

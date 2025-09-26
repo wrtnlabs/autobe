@@ -45,12 +45,16 @@ export const orchestratePrisma = async <Model extends ILlmSchema.Model>(
 
   // COMPONENTS
   const componentEvent: AutoBePrismaComponentsEvent =
-    await orchestratePrismaComponents(ctx);
+    await orchestratePrismaComponents(ctx, props.instruction);
   ctx.dispatch(componentEvent);
 
   // CONSTRUCT AST DATA
   const schemaEvents: AutoBePrismaSchemasEvent[] =
-    await orchestratePrismaSchemas(ctx, componentEvent.components);
+    await orchestratePrismaSchemas(
+      ctx,
+      props.instruction,
+      componentEvent.components,
+    );
   const application: AutoBePrisma.IApplication = {
     files: schemaEvents.map((e) => e.file),
   };

@@ -8,14 +8,17 @@ import { AutoBeState } from "../../../context/AutoBeState";
 
 export const transformPrismaComponentsHistories = (
   state: AutoBeState,
-  prefix: string | null = null,
+  props: {
+    prefix: string | null;
+    instruction: string;
+  },
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
   if (state.analyze === null)
     // unreachable
     throw new Error("Analyze state is not set.");
-  if (prefix) prefix = NamingConvention.snake(prefix);
+  if (props.prefix) props.prefix = NamingConvention.snake(props.prefix);
   return [
     {
       id: v7(),
@@ -41,7 +44,7 @@ export const transformPrismaComponentsHistories = (
         
         ## Prefix
         
-        - Prefix provided by the user: ${prefix}
+        - Prefix provided by the user: ${props.prefix}
         
         The user wants all database schema (table) names to start with the prefix provided below.
         
@@ -74,11 +77,18 @@ export const transformPrismaComponentsHistories = (
                 Create separate tables for each role:
                 
                 ${state.analyze.roles
-                  .map((role) => `- ${prefix}_${role.name.toLowerCase()}`)
+                  .map((role) => `- ${props.prefix}_${role.name.toLowerCase()}`)
                   .join("\n")}
               `
             : ""
         }
+
+        ## Instructions from Discussion
+
+        The following instruction was extracted by AI from
+        the discussion with the user about DB schema design.
+
+        ${props.instruction}
       `,
     },
   ];

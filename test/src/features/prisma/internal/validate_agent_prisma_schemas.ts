@@ -46,6 +46,7 @@ export const validate_agent_prisma_schemas = async (
 
   const result: AutoBePrismaSchemasEvent[] = await orchestratePrismaSchemas(
     agent.getContext(),
+    "Design database without violation of normalization and integrity rules.",
     components.components,
   );
   if (TestGlobal.archive)

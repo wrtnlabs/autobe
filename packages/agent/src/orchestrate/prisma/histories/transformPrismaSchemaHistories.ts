@@ -5,11 +5,12 @@ import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 
-export const transformPrismaSchemaHistories = (
-  requirementAnalysisReport: Record<string, string>,
-  targetComponent: AutoBePrisma.IComponent,
-  otherTables: string[],
-): Array<
+export const transformPrismaSchemaHistories = (props: {
+  analysis: Record<string, string>;
+  targetComponent: AutoBePrisma.IComponent;
+  otherTables: string[];
+  instruction: string;
+}): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
   return [
@@ -27,7 +28,7 @@ export const transformPrismaSchemaHistories = (
         Here is the requirement analysis report:
 
         \`\`\`json
-        ${JSON.stringify(requirementAnalysisReport)}
+        ${JSON.stringify(props.analysis)}
         \`\`\`
       `,
     },
@@ -40,10 +41,18 @@ export const transformPrismaSchemaHistories = (
         
         \`\`\`json
         ${JSON.stringify({
-          targetComponent,
-          otherTables,
+          targetComponent: props.targetComponent,
+          otherTables: props.otherTables,
         })}
         \`\`\`
+
+        The following instruction was extracted by AI from
+        the discussion with the user about the DB schema design.
+
+        Reference them when designing the DB schema design. If the
+        instruction is not related to the current domain, ignore it.
+
+        ${props.instruction}
       `,
     },
     {
@@ -58,7 +67,7 @@ export const transformPrismaSchemaHistories = (
         
         \`\`\`json
         ${JSON.stringify({
-          targetComponent,
+          targetComponent: props.targetComponent,
         })}
         \`\`\`
       `,
