@@ -40,7 +40,7 @@ export let archive_test = async (
   agent.on("vendorTimeout", (e) => TestLogger.event(start, e));
 
   const userMessage: AutoBeUserMessageHistory =
-    await TestHistory.getUserMessage(project, "prisma");
+    await TestHistory.getUserMessage(project, "test");
   const go = (
     c: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
   ) => agent.conversate(c);

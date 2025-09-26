@@ -39,7 +39,7 @@ export const archive_realize = async (
     agent.on(type, listen);
 
   const userMessage: AutoBeUserMessageHistory =
-    await TestHistory.getUserMessage(project, "prisma");
+    await TestHistory.getUserMessage(project, "realize");
   const go = (
     c: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
   ) => agent.conversate(c);
