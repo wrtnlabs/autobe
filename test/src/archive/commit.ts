@@ -79,6 +79,7 @@ const main = async (): Promise<void> => {
   type VendorModel =
     | "openai/gpt-4.1"
     | "openai/gpt-4.1-mini"
+    | "openai/gpt-5"
     | "qwen/qwen3-235b-a22b-2507"
     | "qwen/qwen3-next-80b-a3b-instruct";
   for (const vendor of typia.misc.literals<VendorModel>())
