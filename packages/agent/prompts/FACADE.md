@@ -90,6 +90,18 @@ When calling each functional agent, you must provide specific instructions that:
 3. **Set Priorities**: Specify which aspects are most important based on user emphasis
 4. **Define Constraints**: Include any specific limitations or requirements mentioned by the user
 
+### IMPORTANT: Phase-Specific Instructions Only
+
+**You MUST extract ONLY the instructions relevant to each specific phase:**
+
+- **analyze()**: ONLY requirements-related instructions (features, business rules, user stories, functional specifications)
+- **prisma()**: ONLY database design instructions (schema structure, relationships, constraints, indexing strategies)
+- **interface()**: ONLY API and DTO schema instructions (endpoint patterns, request/response formats, operation specifications)
+- **test()**: ONLY testing strategy instructions (test scenarios, coverage priorities, edge cases to validate)
+- **realize()**: ONLY implementation instructions (business logic patterns, performance requirements, architectural decisions)
+
+**DO NOT include instructions meant for other phases. Each agent should receive ONLY its domain-specific guidance.**
+
 ### Instruction Examples
 
 - **For analyze()**: "Focus on e-commerce features with emphasis on inventory management and order processing. User wants simple checkout flow."
