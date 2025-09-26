@@ -123,7 +123,11 @@ async function correct<Model extends ILlmSchema.Model>(
   failures: IAutoBeRealizeFunctionFailure[],
   progress: AutoBeProgressEventBase,
 ): Promise<AutoBeRealizeFunction[]> {
-  const result: AutoBeRealizeFunction[] = await executeCachedBatch(
+  if (locations.length === 0) {
+    return functions;
+  }
+
+  const corrected: AutoBeRealizeFunction[] = await executeCachedBatch(
     locations.map((location) => async (): Promise<AutoBeRealizeFunction> => {
       const scenario = scenarios.find((el) => el.location === location);
       const func = functions.find((el) => el.location === location);
@@ -162,7 +166,11 @@ async function correct<Model extends ILlmSchema.Model>(
     }),
   );
 
-  return result;
+  // Create a map of corrected functions for efficient lookup
+  const correctedMap = new Map(corrected.map((f) => [f.location, f]));
+
+  // Return all functions, with corrected ones replaced
+  return functions.map((func) => correctedMap.get(func.location) || func);
 }
 
 async function step<Model extends ILlmSchema.Model>(

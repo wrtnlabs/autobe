@@ -54,6 +54,11 @@ function removeAllImports(
     .replace(
       /import\s*\*\s*as\s+jwt\s+from\s*["']jsonwebtoken["']\s*;?\s*/gm,
       "",
+    )
+    // NestJS HttpException
+    .replace(
+      /import\s*{\s*HttpException\s*}\s*from\s*["']@nestjs\/common["']\s*;?\s*/gm,
+      "",
     );
 
   // Remove API structure imports with wrong paths
