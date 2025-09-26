@@ -14,7 +14,10 @@ export async function orchestrateInterfaceGroups<
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
-  message: string = "Design API operations for the given assets.",
+  props: {
+    instruction: string;
+    message?: string;
+  },
 ): Promise<AutoBeInterfaceGroupsEvent> {
   const start: Date = new Date();
   const pointer: IPointer<IAutoBeInterfaceGroupApplication.IProps | null> = {
@@ -22,7 +25,10 @@ export async function orchestrateInterfaceGroups<
   };
   const { tokenUsage } = await ctx.conversate({
     source: "interfaceGroups",
-    histories: transformInterfaceGroupHistories(ctx.state()),
+    histories: transformInterfaceGroupHistories({
+      state: ctx.state(),
+      instruction: props.instruction,
+    }),
     controller: createController({
       model: ctx.model,
       build: (next) => {
@@ -30,7 +36,7 @@ export async function orchestrateInterfaceGroups<
       },
     }),
     enforceFunctionCall: true,
-    message,
+    message: props.message ?? "Design API operations for the given assets.",
   });
   if (pointer.value === null) throw new Error("Failed to generate groups."); // unreachable
   return {

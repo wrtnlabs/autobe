@@ -64,6 +64,7 @@ export const transformInterfaceAssetHistories = (
         \`\`\`
 
         ## Entity Relationship Diagrams
+        
         \`\`\`json
         ${JSON.stringify(
           (prisma.compiled as IAutoBePrismaCompileResult.ISuccess).diagrams,

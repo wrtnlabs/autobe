@@ -22,20 +22,24 @@ import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMe
 
 export function orchestrateInterfaceComplement<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  document: AutoBeOpenApi.IDocument,
+  props: {
+    instruction: string;
+    document: AutoBeOpenApi.IDocument;
+  },
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
-  return step(ctx, document, 8);
+  return step(ctx, props, 8);
 }
 
 async function step<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  document: AutoBeOpenApi.IDocument,
+  props: {
+    instruction: string;
+    document: AutoBeOpenApi.IDocument;
+  },
   life: number,
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
-  const missed: string[] = getMissed(document);
-  if (missed.length === 0 || life < 0) {
-    return document.components.schemas;
-  }
+  const missed: string[] = getMissed(props.document);
+  if (missed.length === 0 || life < 0) return props.document.components.schemas;
 
   const pointer: IPointer<Record<
     string,
@@ -45,11 +49,12 @@ async function step<Model extends ILlmSchema.Model>(
   };
   const { tokenUsage } = await ctx.conversate({
     source: "interfaceComplement",
-    histories: transformInterfaceComplementHistories(
-      ctx.state(),
-      document,
+    histories: transformInterfaceComplementHistories({
+      state: ctx.state(),
+      instruction: props.instruction,
+      document: props.document,
       missed,
-    ),
+    }),
     controller: createController({
       model: ctx.model,
       build: (next) => {
@@ -85,16 +90,19 @@ async function step<Model extends ILlmSchema.Model>(
 
   const newSchemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
     ...pointer.value,
-    ...document.components.schemas,
+    ...props.document.components.schemas,
   };
-  JsonSchemaNamingConvention.schemas(document.operations, newSchemas);
+  JsonSchemaNamingConvention.schemas(props.document.operations, newSchemas);
   return step(
     ctx,
     {
-      ...document,
-      components: {
-        ...document.components,
-        schemas: newSchemas,
+      instruction: props.instruction,
+      document: {
+        ...props.document,
+        components: {
+          ...props.document.components,
+          schemas: newSchemas,
+        },
       },
     },
     life - 1,

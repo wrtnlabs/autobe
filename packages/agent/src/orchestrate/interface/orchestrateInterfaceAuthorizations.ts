@@ -20,7 +20,10 @@ import { IAutoBeInterfaceAuthorizationsApplication } from "./structures/IAutoBeI
 
 export async function orchestrateInterfaceAuthorizations<
   Model extends ILlmSchema.Model,
->(ctx: AutoBeContext<Model>): Promise<AutoBeInterfaceAuthorization[]> {
+>(
+  ctx: AutoBeContext<Model>,
+  instruction: string,
+): Promise<AutoBeInterfaceAuthorization[]> {
   const roles: AutoBeAnalyzeRole[] = ctx.state().analyze?.roles ?? [];
   const progress: AutoBeProgressEventBase = {
     total: roles.length,
@@ -29,12 +32,12 @@ export async function orchestrateInterfaceAuthorizations<
   const authorizations: AutoBeInterfaceAuthorization[] =
     await executeCachedBatch(
       roles.map((role) => async (promptCacheKey) => {
-        const event: AutoBeInterfaceAuthorizationEvent = await process(
-          ctx,
+        const event: AutoBeInterfaceAuthorizationEvent = await process(ctx, {
           role,
           progress,
           promptCacheKey,
-        );
+          instruction,
+        });
         ctx.dispatch(event);
         return {
           role: role.name,
@@ -48,9 +51,12 @@ export async function orchestrateInterfaceAuthorizations<
 
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  role: AutoBeAnalyzeRole,
-  progress: AutoBeProgressEventBase,
-  promptCacheKey: string,
+  props: {
+    instruction: string;
+    role: AutoBeAnalyzeRole;
+    progress: AutoBeProgressEventBase;
+    promptCacheKey: string;
+  },
 ): Promise<AutoBeInterfaceAuthorizationEvent> {
   const pointer: IPointer<IAutoBeInterfaceAuthorizationsApplication.IProps | null> =
     {
@@ -58,16 +64,20 @@ async function process<Model extends ILlmSchema.Model>(
     };
   const { tokenUsage } = await ctx.conversate({
     source: "interfaceAuthorization",
-    histories: transformInterfaceAuthorizationsHistories(ctx.state(), role),
+    histories: transformInterfaceAuthorizationsHistories({
+      state: ctx.state(),
+      instruction: props.instruction,
+      role: props.role,
+    }),
     controller: createController({
       model: ctx.model,
-      role,
+      role: props.role,
       build: (next) => {
         pointer.value = next;
       },
     }),
     enforceFunctionCall: true,
-    promptCacheKey,
+    promptCacheKey: props.promptCacheKey,
     message: "Create Authorization Operation for the given roles",
   });
   if (pointer.value === null)
@@ -77,11 +87,11 @@ async function process<Model extends ILlmSchema.Model>(
     type: "interfaceAuthorization",
     id: v7(),
     operations: pointer.value.operations,
-    completed: ++progress.completed,
+    completed: ++props.progress.completed,
     tokenUsage,
     created_at: new Date().toISOString(),
     step: ctx.state().analyze?.step ?? 0,
-    total: progress.total,
+    total: props.progress.total,
   } satisfies AutoBeInterfaceAuthorizationEvent;
 }
 

@@ -30,7 +30,10 @@ export const validate_agent_interface_schemas = async (
 
   // GENERATE COMPONENTS
   const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-    await orchestrateInterfaceSchemas(agent.getContext(), operations);
+    await orchestrateInterfaceSchemas(agent.getContext(), {
+      operations,
+      instruction: "Design API specs carefully considering the security.",
+    });
   typia.assert(schemas);
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/${model}/${project}/interface/schemas`,

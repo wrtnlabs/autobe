@@ -50,22 +50,33 @@ export const orchestrateInterface =
     });
 
     // ENDPOINTS
-    const init: AutoBeInterfaceGroupsEvent =
-      await orchestrateInterfaceGroups(ctx);
+    const init: AutoBeInterfaceGroupsEvent = await orchestrateInterfaceGroups(
+      ctx,
+      {
+        instruction: props.instruction,
+      },
+    );
     ctx.dispatch(init);
 
     // AUTHORIZATION
     const authorizations: AutoBeInterfaceAuthorization[] =
-      await orchestrateInterfaceAuthorizations(ctx);
+      await orchestrateInterfaceAuthorizations(ctx, props.instruction);
     const authOperations: AutoBeOpenApi.IOperation[] = authorizations
       .map((authorization) => authorization.operations)
       .flat();
 
     // ENDPOINTS & OPERATIONS
     const endpoints: AutoBeOpenApi.IEndpoint[] =
-      await orchestrateInterfaceEndpoints(ctx, init.groups, authOperations);
+      await orchestrateInterfaceEndpoints(ctx, {
+        groups: init.groups,
+        authorizations: authOperations,
+        instruction: props.instruction,
+      });
     const firstOperations: AutoBeOpenApi.IOperation[] =
-      await orchestrateInterfaceOperations(ctx, endpoints);
+      await orchestrateInterfaceOperations(ctx, {
+        endpoints,
+        instruction: props.instruction,
+      });
     const operations: AutoBeOpenApi.IOperation[] = new HashMap<
       AutoBeOpenApi.IEndpoint,
       AutoBeOpenApi.IOperation
@@ -91,14 +102,20 @@ export const orchestrateInterface =
       operations,
       components: {
         authorization: ctx.state().analyze?.roles ?? [],
-        schemas: await orchestrateInterfaceSchemas(ctx, operations),
+        schemas: await orchestrateInterfaceSchemas(ctx, {
+          instruction: props.instruction,
+          operations,
+        }),
       },
     };
 
     const complementedSchemas: Record<
       string,
       AutoBeOpenApi.IJsonSchemaDescriptive
-    > = await orchestrateInterfaceComplement(ctx, document);
+    > = await orchestrateInterfaceComplement(ctx, {
+      instruction: props.instruction,
+      document,
+    });
     Object.assign(document.components.schemas, complementedSchemas);
 
     const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =

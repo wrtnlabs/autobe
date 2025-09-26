@@ -27,15 +27,18 @@ export async function orchestrateInterfaceSchemas<
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
-  operations: AutoBeOpenApi.IOperation[],
-  capacity: number = AutoBeConfigConstant.INTERFACE_CAPACITY,
+  props: {
+    operations: AutoBeOpenApi.IOperation[];
+    instruction: string;
+    capacity?: number;
+  },
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   // fix operation type names
-  JsonSchemaNamingConvention.operations(operations);
+  JsonSchemaNamingConvention.operations(props.operations);
 
   // gather type names
   const typeNames: Set<string> = new Set();
-  for (const op of operations) {
+  for (const op of props.operations) {
     if (op.requestBody !== null) typeNames.add(op.requestBody.typeName);
     if (op.responseBody !== null) typeNames.add(op.responseBody.typeName);
   }
@@ -45,7 +48,7 @@ export async function orchestrateInterfaceSchemas<
   // divide and conquer
   const matrix: string[][] = divideArray({
     array: Array.from(typeNames),
-    capacity,
+    capacity: props.capacity ?? AutoBeConfigConstant.INTERFACE_CAPACITY,
   });
   const progress: AutoBeProgressEventBase = {
     total: typeNames.size,
@@ -57,39 +60,48 @@ export async function orchestrateInterfaceSchemas<
   for (const y of await executeCachedBatch(
     matrix.map((it) => async (promptCacheKey) => {
       const row: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-        await divideAndConquer(ctx, operations, it, progress, promptCacheKey);
+        await divideAndConquer(ctx, {
+          instruction: props.instruction,
+          operations: props.operations,
+          typeNames: it,
+          progress,
+          promptCacheKey,
+        });
       return row;
     }),
   )) {
-    JsonSchemaNamingConvention.schemas(operations, x, y);
+    JsonSchemaNamingConvention.schemas(props.operations, x, y);
     Object.assign(x, y);
   }
   Object.assign(x, presets);
-  JsonSchemaNamingConvention.schemas(operations, x);
+  JsonSchemaNamingConvention.schemas(props.operations, x);
   JsonSchemaFactory.authorize(x);
   return x;
 }
 
 async function divideAndConquer<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  operations: AutoBeOpenApi.IOperation[],
-  typeNames: string[],
-  progress: AutoBeProgressEventBase,
-  promptCacheKey: string,
+  props: {
+    operations: AutoBeOpenApi.IOperation[];
+    typeNames: string[];
+    progress: AutoBeProgressEventBase;
+    promptCacheKey: string;
+    instruction: string;
+  },
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
-  const remained: Set<string> = new Set(typeNames);
+  const remained: Set<string> = new Set(props.typeNames);
   const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
   for (let i: number = 0; i < ctx.retry; ++i) {
     if (remained.size === 0) break;
     const newbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-      await process(
-        ctx,
-        operations,
-        schemas,
+      await process(ctx, {
+        instruction: props.instruction,
+        operations: props.operations,
+        promptCacheKey: props.promptCacheKey,
+        progress: props.progress,
+        oldbie: schemas,
         remained,
-        progress,
-        promptCacheKey,
-      );
+      });
     for (const key of Object.keys(newbie)) {
       schemas[key] = newbie[key];
       remained.delete(key);
@@ -100,13 +112,16 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
 
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  operations: AutoBeOpenApi.IOperation[],
-  oldbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
-  remained: Set<string>,
-  progress: AutoBeProgressEventBase,
-  promptCacheKey: string,
+  props: {
+    operations: AutoBeOpenApi.IOperation[];
+    oldbie: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+    remained: Set<string>;
+    progress: AutoBeProgressEventBase;
+    promptCacheKey: string;
+    instruction: string;
+  },
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
-  const already: string[] = Object.keys(oldbie);
+  const already: string[] = Object.keys(props.oldbie);
   const pointer: IPointer<Record<
     string,
     AutoBeOpenApi.IJsonSchemaDescriptive
@@ -115,7 +130,11 @@ async function process<Model extends ILlmSchema.Model>(
   };
   const { tokenUsage } = await ctx.conversate({
     source: "interfaceSchemas",
-    histories: transformInterfaceSchemaHistories(ctx.state(), operations),
+    histories: transformInterfaceSchemaHistories({
+      state: ctx.state(),
+      operations: props.operations,
+      instruction: props.instruction,
+    }),
     controller: createController({
       model: ctx.model,
       build: async (next) => {
@@ -125,7 +144,7 @@ async function process<Model extends ILlmSchema.Model>(
       pointer,
     }),
     enforceFunctionCall: true,
-    promptCacheKey,
+    promptCacheKey: props.promptCacheKey,
     message: StringUtil.trim`
       Make type components please.
 
@@ -134,7 +153,7 @@ async function process<Model extends ILlmSchema.Model>(
       types are required during making the components, please make them
       too.
 
-      ${Array.from(remained)
+      ${Array.from(props.remained)
         .map((k) => `      - \`${k}\``)
         .join("\n")}${
         already.length !== 0
@@ -161,9 +180,9 @@ async function process<Model extends ILlmSchema.Model>(
     id: v7(),
     schemas,
     tokenUsage,
-    completed: (progress.completed += Object.keys(schemas).length),
-    total: (progress.total += Object.keys(schemas).filter(
-      (k) => remained.has(k) === false,
+    completed: (props.progress.completed += Object.keys(schemas).length),
+    total: (props.progress.total += Object.keys(schemas).filter(
+      (k) => props.remained.has(k) === false,
     ).length),
     step: ctx.state().prisma?.step ?? 0,
     created_at: new Date().toISOString(),

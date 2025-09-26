@@ -7,13 +7,14 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { AutoBeState } from "../../../context/AutoBeState";
 import { transformInterfaceAssetHistories } from "./transformInterfaceAssetHistories";
 
-export const transformInterfaceOperationHistories = (
-  state: AutoBeState,
-  endpoints: AutoBeOpenApi.IEndpoint[],
-): Array<
+export const transformInterfaceOperationHistories = (props: {
+  state: AutoBeState;
+  endpoints: AutoBeOpenApi.IEndpoint[];
+  instruction: string;
+}): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
-  const analyze: AutoBeAnalyzeHistory = state.analyze!;
+  const analyze: AutoBeAnalyzeHistory = props.state.analyze!;
   return [
     {
       type: "systemMessage",
@@ -21,7 +22,7 @@ export const transformInterfaceOperationHistories = (
       created_at: new Date().toISOString(),
       text: AutoBeSystemPromptConstant.INTERFACE_OPERATION,
     },
-    ...transformInterfaceAssetHistories(state),
+    ...transformInterfaceAssetHistories(props.state),
     {
       type: "systemMessage",
       id: v7(),
@@ -44,14 +45,28 @@ export const transformInterfaceOperationHistories = (
       id: v7(),
       created_at: new Date().toISOString(),
       text: StringUtil.trim`
+        ## Operations
+
         You have to make API operations for the given endpoints:
 
         \`\`\`json
-        ${JSON.stringify(endpoints)}
+        ${JSON.stringify(props.endpoints)}
         \`\`\`
 
         If there is a content in the failure, it is to explain why it failed before.
         Please supplement or modify the Operation accordingly.
+
+        ## Instructions
+
+        The following API-spec instructions were extracted by AI from
+        the user's utterances. These focus ONLY on API design aspects such as
+        endpoint structure, request/response formats, authentication methods, etc.
+
+        Reference these instructions when you design the operations.
+        If the instruction is not related to any operation what you have to make,
+        just ignore it.
+
+        ${props.instruction}
       `,
     },
   ];

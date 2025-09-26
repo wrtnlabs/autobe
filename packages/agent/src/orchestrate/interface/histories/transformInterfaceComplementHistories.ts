@@ -7,11 +7,12 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { AutoBeState } from "../../../context/AutoBeState";
 import { transformInterfaceAssetHistories } from "./transformInterfaceAssetHistories";
 
-export const transformInterfaceComplementHistories = (
-  state: AutoBeState,
-  document: AutoBeOpenApi.IDocument,
-  missed: string[],
-): Array<
+export const transformInterfaceComplementHistories = (props: {
+  state: AutoBeState;
+  instruction: string;
+  missed: string[];
+  document: AutoBeOpenApi.IDocument;
+}): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => [
   {
@@ -20,7 +21,7 @@ export const transformInterfaceComplementHistories = (
     created_at: new Date().toISOString(),
     text: AutoBeSystemPromptConstant.INTERFACE_OPERATION,
   },
-  ...transformInterfaceAssetHistories(state),
+  ...transformInterfaceAssetHistories(props.state),
   {
     type: "systemMessage",
     id: v7(),
@@ -38,33 +39,39 @@ export const transformInterfaceComplementHistories = (
     id: v7(),
     created_at: new Date().toISOString(),
     text: StringUtil.trim`
+      ## Operations
+
       Here is the OpenAPI operations what you AI have made:
 
       \`\`\`json
-      ${JSON.stringify(document.operations)}
+      ${JSON.stringify(props.document.operations)}
       \`\`\`
-    `,
-  },
-  {
-    type: "assistantMessage",
-    id: v7(),
-    created_at: new Date().toISOString(),
-    text: StringUtil.trim`
+
+      ## Schemas
+
       Here is the OpenAPI schemas what you AI have made:
 
       \`\`\`json
-      ${JSON.stringify(document.components.schemas)}
+      ${JSON.stringify(props.document.components.schemas)}
       \`\`\`
-    `,
-  },
-  {
-    type: "assistantMessage",
-    id: v7(),
-    created_at: new Date().toISOString(),
-    text: StringUtil.trim`
-      You AI have missed below schema types:
 
-      ${missed.map((s) => `- ${s}`).join("\n")}
+      ## Missed Types
+
+      However, you AI have missed below schema types:
+
+      ${props.missed.map((s) => `- ${s}`).join("\n")}
+
+      ## API Design Instructions
+
+      The following API-specific instructions were extracted by AI from
+      the user's utterances. These focus ONLY on API design aspects such as
+      endpoint structure, request/response formats, authentication methods, etc.
+
+      Reference these instructions when designing the type schemas 
+      you have missed. If the instruction is not related to the type schemas 
+      you have missed (have to make), just ignore it.
+
+      ${props.instruction}
     `,
   },
 ];

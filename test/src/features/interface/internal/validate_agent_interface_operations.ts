@@ -29,7 +29,10 @@ export const validate_agent_interface_operations = async (
 
   // GENERATE OPERATIONS
   const operations: AutoBeOpenApi.IOperation[] =
-    await orchestrateInterfaceOperations(agent.getContext(), endpoints);
+    await orchestrateInterfaceOperations(agent.getContext(), {
+      endpoints,
+      instruction: "Design API specs carefully considering the security.",
+    });
   typia.assert(operations);
 
   // REPORT RESULT

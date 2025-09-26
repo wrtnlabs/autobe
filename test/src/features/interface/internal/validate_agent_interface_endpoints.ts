@@ -38,11 +38,11 @@ export const validate_agent_interface_endpoints = async (
   );
 
   const endpoints: AutoBeOpenApi.IEndpoint[] =
-    await orchestrateInterfaceEndpoints(
-      agent.getContext(),
+    await orchestrateInterfaceEndpoints(agent.getContext(), {
       groups,
       authorizations,
-    );
+      instruction: "Design API specs carefully considering the security.",
+    });
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/${model}/${project}/interface/endpoints`,
     files: {

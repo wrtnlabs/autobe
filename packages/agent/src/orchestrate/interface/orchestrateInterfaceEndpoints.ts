@@ -22,39 +22,50 @@ export async function orchestrateInterfaceEndpoints<
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
-  groups: AutoBeInterfaceGroup[],
-  authorizations: AutoBeOpenApi.IOperation[],
-  content: string = `Make endpoints for the given assets`,
+  props: {
+    groups: AutoBeInterfaceGroup[];
+    authorizations: AutoBeOpenApi.IOperation[];
+    instruction: string;
+    message?: string;
+  },
 ): Promise<AutoBeOpenApi.IEndpoint[]> {
   const progress: AutoBeProgressEventBase = {
-    total: groups.length,
+    total: props.groups.length,
     completed: 0,
   };
   const endpoints: AutoBeOpenApi.IEndpoint[] = (
     await executeCachedBatch(
-      groups.map(
-        (g) => (promptCacheKey) =>
-          process(ctx, g, content, progress, authorizations, promptCacheKey),
+      props.groups.map(
+        (group) => (promptCacheKey) =>
+          process(ctx, {
+            group,
+            authorizations: props.authorizations,
+            instruction: props.instruction,
+            message: props.message ?? "Make endpoints for the given assets.",
+            progress,
+            promptCacheKey,
+          }),
       ),
     )
   ).flat();
-
   const deduplicated: AutoBeOpenApi.IEndpoint[] = new HashSet(
     endpoints,
     OpenApiEndpointComparator.hashCode,
     OpenApiEndpointComparator.equals,
   ).toJSON();
-
   return orchestrateInterfaceEndpointsReview(ctx, deduplicated);
 }
 
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  group: AutoBeInterfaceGroup,
-  message: string,
-  progress: AutoBeProgressEventBase,
-  authorizations: AutoBeOpenApi.IOperation[],
-  promptCacheKey: string,
+  props: {
+    group: AutoBeInterfaceGroup;
+    message: string;
+    progress: AutoBeProgressEventBase;
+    authorizations: AutoBeOpenApi.IOperation[];
+    promptCacheKey: string;
+    instruction: string;
+  },
 ): Promise<AutoBeOpenApi.IEndpoint[]> {
   const start: Date = new Date();
   const pointer: IPointer<AutoBeOpenApi.IEndpoint[] | null> = {
@@ -62,11 +73,12 @@ async function process<Model extends ILlmSchema.Model>(
   };
   const { tokenUsage } = await ctx.conversate({
     source: "interfaceEndpoints",
-    histories: transformInterfaceEndpointHistories(
-      ctx.state(),
-      group,
-      authorizations,
-    ),
+    histories: transformInterfaceEndpointHistories({
+      state: ctx.state(),
+      group: props.group,
+      authorizations: props.authorizations,
+      instruction: props.instruction,
+    }),
     controller: createController({
       model: ctx.model,
       build: (endpoints) => {
@@ -75,8 +87,8 @@ async function process<Model extends ILlmSchema.Model>(
       },
     }),
     enforceFunctionCall: true,
-    promptCacheKey,
-    message,
+    promptCacheKey: props.promptCacheKey,
+    message: props.message,
   });
   if (pointer.value === null) throw new Error("Failed to generate endpoints."); // unreachable
 
@@ -91,8 +103,8 @@ async function process<Model extends ILlmSchema.Model>(
     tokenUsage,
     created_at: start.toISOString(),
     step: ctx.state().analyze?.step ?? 0,
-    completed: ++progress.completed,
-    total: progress.total,
+    completed: ++props.progress.completed,
+    total: props.progress.total,
   };
   ctx.dispatch(event);
   return pointer.value;

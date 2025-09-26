@@ -7,13 +7,14 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { AutoBeState } from "../../../context/AutoBeState";
 import { transformInterfaceAssetHistories } from "./transformInterfaceAssetHistories";
 
-export const transformInterfaceAuthorizationsHistories = (
-  state: AutoBeState,
-  role: AutoBeAnalyzeRole,
-): Array<
+export const transformInterfaceAuthorizationsHistories = (props: {
+  state: AutoBeState;
+  role: AutoBeAnalyzeRole;
+  instruction: string;
+}): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
-  const analyze: AutoBeAnalyzeHistory = state.analyze!;
+  const analyze: AutoBeAnalyzeHistory = props.state.analyze!;
   return [
     {
       type: "systemMessage",
@@ -21,7 +22,7 @@ export const transformInterfaceAuthorizationsHistories = (
       created_at: new Date().toISOString(),
       text: AutoBeSystemPromptConstant.INTERFACE_AUTHORIZATION,
     },
-    ...transformInterfaceAssetHistories(state),
+    ...transformInterfaceAssetHistories(props.state),
     {
       type: "systemMessage",
       id: v7(),
@@ -49,9 +50,21 @@ export const transformInterfaceAuthorizationsHistories = (
         ## Role
 
         \`\`\`json
-        ${JSON.stringify(role)}
+        ${JSON.stringify(props.role)}
         \`\`\`
 
+        ## Instructions
+
+        The following API-specific instructions were extracted by AI from
+        the user's utterances. These focus ONLY on API design aspects such as
+        endpoint structure, request/response formats, authentication methods, etc.
+
+        Reference these instructions when you design the authorization related
+        operations. If the instruction is not related to the authorization
+        operation about the given role (${JSON.stringify(props.role)}), 
+        just ignore it.
+
+        ${props.instruction}
       `,
     },
   ];

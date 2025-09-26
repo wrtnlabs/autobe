@@ -17,6 +17,9 @@ export const validate_agent_interface_groups = async (
   const { agent } = await prepare_agent_interface(factory, project);
   const result: AutoBeInterfaceGroupsEvent = await orchestrateInterfaceGroups(
     agent.getContext(),
+    {
+      instruction: "Design API specs carefully considering the security.",
+    },
   );
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/${project}/interface/endpoints`,
