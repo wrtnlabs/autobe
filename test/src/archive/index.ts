@@ -101,9 +101,10 @@ const main = async (): Promise<void> => {
         vendor: TestGlobal.getVendorConfig(),
         config: {
           locale: "en-US",
-          timeout: TestGlobal.env.TIMEOUT
-            ? Number(TestGlobal.env.TIMEOUT)
-            : null,
+          timeout:
+            TestGlobal.env.TIMEOUT && TestGlobal.env.TIMEOUT !== "NULL"
+              ? Number(TestGlobal.env.TIMEOUT)
+              : null,
         },
         compiler: (listener) => new AutoBeCompiler(listener),
         histories,

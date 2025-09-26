@@ -22,10 +22,13 @@ import { IAutoBeTestWriteResult } from "./structures/IAutoBeTestWriteResult";
 
 export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  scenarios: AutoBeTestScenario[],
+  props: {
+    instruction: string;
+    scenarios: AutoBeTestScenario[];
+  },
 ): Promise<IAutoBeTestWriteResult[]> {
   const progress: AutoBeProgressEventBase = {
-    total: scenarios.length,
+    total: props.scenarios.length,
     completed: 0,
   };
   const result: Array<IAutoBeTestWriteResult | null> = await executeCachedBatch(
@@ -34,7 +37,7 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
      * individual test code implementations. Each scenario is processed to
      * generate corresponding test code and progress events.
      */
-    scenarios.map((scenario) => async (promptCacheKey) => {
+    props.scenarios.map((scenario) => async (promptCacheKey) => {
       try {
         const artifacts: IAutoBeTestScenarioArtifacts =
           await getTestScenarioArtifacts(ctx, scenario);
@@ -43,6 +46,7 @@ export async function orchestrateTestWrite<Model extends ILlmSchema.Model>(
           artifacts,
           progress,
           promptCacheKey,
+          instruction: props.instruction,
         });
         ctx.dispatch(event);
         return {
@@ -65,6 +69,7 @@ async function process<Model extends ILlmSchema.Model>(
     artifacts: IAutoBeTestScenarioArtifacts;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
+    instruction: string;
   },
 ): Promise<AutoBeTestWriteEvent> {
   const { scenario, artifacts, progress, promptCacheKey } = props;
@@ -73,7 +78,11 @@ async function process<Model extends ILlmSchema.Model>(
   };
   const { tokenUsage } = await ctx.conversate({
     source: "testWrite",
-    histories: await transformTestWriteHistories(ctx, scenario, artifacts),
+    histories: await transformTestWriteHistories(ctx, {
+      scenario,
+      artifacts,
+      instruction: props.instruction,
+    }),
     controller: createController({
       model: ctx.model,
       build: (next) => {

@@ -32,6 +32,7 @@ export const validate_agent_test_scenario = async (
   // GENERATE TEST SCENARIOS
   const result: AutoBeTestScenario[] = await orchestrateTestScenario(
     agent.getContext(),
+    "Generate diverse and comprehensive test scenarios.",
   );
   typia.assert(result);
 

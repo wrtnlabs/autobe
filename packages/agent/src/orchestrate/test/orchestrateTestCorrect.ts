@@ -25,11 +25,14 @@ import { IAutoBeTestFunctionFailure } from "./structures/IAutoBeTestFunctionFail
 
 export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  writeResults: IAutoBeTestFunction[],
+  props: {
+    instruction: string;
+    functions: IAutoBeTestFunction[];
+  },
 ): Promise<AutoBeTestValidateEvent[]> => {
   const result: Array<AutoBeTestValidateEvent | null> =
     await executeCachedBatch(
-      writeResults.map((w) => async (promptCacheKey) => {
+      props.functions.map((w) => async (promptCacheKey) => {
         try {
           const compile = (script: string) =>
             compileTestFile(ctx, {
@@ -68,10 +71,13 @@ export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
             );
           return await predicate(
             ctx,
-            transformTestValidateEvent(y, w.artifacts),
-            [],
-            y,
-            promptCacheKey,
+            {
+              function: transformTestValidateEvent(y, w.artifacts),
+              failures: [],
+              validate: y,
+              promptCacheKey,
+              instruction: props.instruction,
+            },
             ctx.retry,
           );
         } catch {
@@ -110,44 +116,54 @@ const compileTestFile = async <Model extends ILlmSchema.Model>(
 
 const predicate = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  content: IAutoBeTestFunction,
-  failures: IAutoBeTestFunctionFailure[],
-  event: AutoBeTestValidateEvent,
-  promptCacheKey: string,
+  props: {
+    function: IAutoBeTestFunction;
+    failures: IAutoBeTestFunctionFailure[];
+    validate: AutoBeTestValidateEvent;
+    promptCacheKey: string;
+    instruction: string;
+  },
   life: number,
 ): Promise<AutoBeTestValidateEvent> => {
-  if (event.result.type === "failure") ctx.dispatch(event);
-  return event.result.type === "failure"
-    ? await correct(ctx, content, failures, event, promptCacheKey, life - 1)
-    : event;
+  if (props.validate.result.type === "failure") ctx.dispatch(props.validate);
+  return props.validate.result.type === "failure"
+    ? await correct(ctx, props, life - 1)
+    : props.validate;
 };
 
 const correct = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  content: IAutoBeTestFunction,
-  failures: IAutoBeTestFunctionFailure[],
-  validate: AutoBeTestValidateEvent,
-  promptCacheKey: string,
+  props: {
+    function: IAutoBeTestFunction;
+    failures: IAutoBeTestFunctionFailure[];
+    validate: AutoBeTestValidateEvent;
+    promptCacheKey: string;
+    instruction: string;
+  },
   life: number,
 ): Promise<AutoBeTestValidateEvent> => {
-  if (validate.result.type !== "failure") return validate;
-  else if (life < 0) return validate;
+  if (props.validate.result.type !== "failure") return props.validate;
+  else if (life < 0) return props.validate;
 
   const pointer: IPointer<IAutoBeTestCorrectApplication.IProps | null> = {
     value: null,
   };
   const { tokenUsage } = await ctx.conversate({
     source: "testCorrect",
-    histories: await transformTestCorrectHistories(ctx, content, [
-      ...failures,
-      {
-        function: content,
-        failure: validate.result,
-      },
-    ]),
+    histories: await transformTestCorrectHistories(ctx, {
+      instruction: props.instruction,
+      function: props.function,
+      failures: [
+        ...props.failures,
+        {
+          function: props.function,
+          failure: props.validate.result,
+        },
+      ],
+    }),
     controller: createController({
       model: ctx.model,
-      failure: validate.result,
+      failure: props.validate.result,
       build: (next) => {
         pointer.value = next;
       },
@@ -159,18 +175,18 @@ const correct = async <Model extends ILlmSchema.Model>(
       You don't need to explain me anything, but just fix it immediately
       without any hesitation, explanation, and questions.
     `,
-    promptCacheKey,
+    promptCacheKey: props.promptCacheKey,
   });
   if (pointer.value === null) throw new Error("Failed to correct test code.");
 
   pointer.value.revise.final = await completeTestCode(
     ctx,
-    content.artifacts,
+    props.function.artifacts,
     pointer.value.revise.final,
   );
   pointer.value.draft = await completeTestCode(
     ctx,
-    content.artifacts,
+    props.function.artifacts,
     pointer.value.draft,
   );
 
@@ -178,8 +194,8 @@ const correct = async <Model extends ILlmSchema.Model>(
     type: "testCorrect",
     id: v7(),
     created_at: new Date().toISOString(),
-    file: validate.file,
-    result: validate.result,
+    file: props.validate.file,
+    result: props.validate.result,
     tokenUsage,
     step: ctx.state().analyze?.step ?? 0,
     think: pointer.value.think,
@@ -187,26 +203,29 @@ const correct = async <Model extends ILlmSchema.Model>(
     review: pointer.value.revise?.review,
     final: pointer.value.revise?.final,
   } satisfies AutoBeTestCorrectEvent);
-  const newContent: IAutoBeTestFunction = {
-    ...content,
+  const newFunction: IAutoBeTestFunction = {
+    ...props.function,
     script: pointer.value.revise?.final ?? pointer.value.draft,
   };
   const newValidate: AutoBeTestValidateEvent = await compileTestFile(
     ctx,
-    newContent,
+    newFunction,
   );
   return predicate(
     ctx,
-    newContent,
-    [
-      ...failures,
-      {
-        function: content,
-        failure: validate.result,
-      },
-    ],
-    newValidate,
-    promptCacheKey,
+    {
+      function: newFunction,
+      failures: [
+        ...props.failures,
+        {
+          function: props.function,
+          failure: props.validate.result,
+        },
+      ],
+      validate: newValidate,
+      promptCacheKey: props.promptCacheKey,
+      instruction: props.instruction,
+    },
     life,
   );
 };

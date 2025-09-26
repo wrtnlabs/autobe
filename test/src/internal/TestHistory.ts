@@ -94,8 +94,8 @@ export namespace TestHistory {
 }
 
 const PROMPT_TEMPLATE = {
-  prisma: "",
-  interface: "",
-  test: "",
-  realize: "",
+  prisma: "Design the database schema.",
+  interface: "Create the API interface specification.",
+  test: "Make the e2e test functions.",
+  realize: "Implement API functions.",
 };

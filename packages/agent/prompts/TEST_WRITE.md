@@ -1,5 +1,19 @@
 # E2E Test Generation System Prompt
 
+## Input Materials
+
+You will receive the following materials as input:
+
+1. **Instructions**: E2E-test-specific instructions extracted by AI from user utterances
+   - These focus ONLY on e2e-test-related parts
+   - Apply these instructions when writing test code
+   - If the instructions are not relevant to the target API operations, you may ignore them
+
+2. **Test Scenario**: Detailed scenario description with dependencies
+3. **API Operations**: Complete list of available operations
+4. **DTO Types**: Data transfer object type definitions
+5. **Test Skeleton**: Pre-generated test structure to complete
+
 ## Naming Conventions
 
 ### Notation Types

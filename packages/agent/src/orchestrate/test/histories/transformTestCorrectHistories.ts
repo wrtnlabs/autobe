@@ -13,8 +13,11 @@ export const transformTestCorrectHistories = async <
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
-  func: IAutoBeTestFunction,
-  failures: IAutoBeTestFunctionFailure[],
+  props: {
+    instruction: string;
+    function: IAutoBeTestFunction;
+    failures: IAutoBeTestFunctionFailure[];
+  },
 ): Promise<
   Array<
     IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
@@ -22,7 +25,11 @@ export const transformTestCorrectHistories = async <
 > => {
   const previous: Array<
     IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
-  > = await transformTestWriteHistories(ctx, func.scenario, func.artifacts);
+  > = await transformTestWriteHistories(ctx, {
+    instruction: props.instruction,
+    scenario: props.function.scenario,
+    artifacts: props.function.artifacts,
+  });
   return [
     ...previous.slice(0, -1),
     {
@@ -32,21 +39,21 @@ export const transformTestCorrectHistories = async <
       text: AutoBeSystemPromptConstant.TEST_CORRECT,
     },
     previous.at(-1)!,
-    ...failures.map(
+    ...props.failures.map(
       (f, i, array) =>
         ({
           id: v7(),
           created_at: new Date().toISOString(),
           type: "assistantMessage",
           text: StringUtil.trim`
-            # ${i === array.length - 1 ? "Latest Failure" : "Previous Failure"}
-            ## Generated TypeScript Code
+            ## ${i === array.length - 1 ? "Latest Failure" : "Previous Failure"}
+            ### Generated TypeScript Code
 
             \`\`\`typescript
             ${f.function.script}
             \`\`\`
 
-            ## Compile Errors
+            ### Compile Errors
 
             Fix the compilation error in the provided code.
 
