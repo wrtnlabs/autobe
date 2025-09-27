@@ -125,6 +125,9 @@ export const orchestrateInterface =
         document.components.schemas,
       );
     Object.assign(document.components.schemas, schemas);
+    for (const key of Object.keys(document.components.schemas))
+      if (key === "IPageI" || key.startsWith("IPageI."))
+        delete document.components.schemas[key];
 
     // DO COMPILE
     return ctx.dispatch({

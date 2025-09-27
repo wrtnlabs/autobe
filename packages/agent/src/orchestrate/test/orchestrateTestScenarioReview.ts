@@ -87,9 +87,9 @@ async function review<Model extends ILlmSchema.Model>(
       created_at: new Date().toISOString(),
     });
     // @todo michael: need to investigate scenario removal more gracefully
-    return pointer.value.pass ||
-      pointer.value.scenarioGroups.length < props.groups.length
-      ? props.groups
+    return pointer.value.pass
+      ? // || pointer.value.scenarioGroups.length < props.groups.length
+        props.groups
       : pointer.value.scenarioGroups;
   } catch {
     props.progress.completed += props.groups.length;
