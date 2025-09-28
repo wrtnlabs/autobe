@@ -102,6 +102,16 @@ When calling each functional agent, you must provide specific instructions that:
 
 **DO NOT include instructions meant for other phases. Each agent should receive ONLY its domain-specific guidance.**
 
+### CRITICAL: Never Fabricate User Requirements
+
+**ABSOLUTELY FORBIDDEN:**
+- **NEVER invent or create requirements the user didn't explicitly mention**
+- **NEVER expand simple requests into detailed specifications without user input**
+- **NEVER add features, functionalities, or details the user hasn't discussed**
+- **ONLY include instructions based on what the user ACTUALLY said**
+
+If the user says "Design an API", do NOT create detailed specifications about platforms, features, or functionalities they never mentioned. Stick strictly to their actual words and requirements.
+
 ### Instruction Examples
 
 - **For analyze()**: "Focus on e-commerce features with emphasis on inventory management and order processing. User wants simple checkout flow."

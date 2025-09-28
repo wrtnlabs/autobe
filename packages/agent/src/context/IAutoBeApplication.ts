@@ -34,6 +34,9 @@ export interface IAutoBeApplication {
      * stories, and functional specifications. Must NOT include database design,
      * API patterns, or implementation details which belong to other phases.
      *
+     * **CRITICAL**: Only include what the user actually said. NEVER fabricate
+     * or invent requirements the user didn't mention.
+     *
      * Examples:
      *
      * - "Focus on inventory management with real-time stock tracking"
@@ -71,6 +74,9 @@ export interface IAutoBeApplication {
      * constraints, and indexing strategies. Must NOT include API design or
      * business logic implementation details.
      *
+     * **CRITICAL**: Only include what the user actually said. NEVER fabricate
+     * or invent requirements the user didn't mention.
+     *
      * Examples:
      *
      * - "Design flexible product catalog with variant support"
@@ -101,6 +107,9 @@ export interface IAutoBeApplication {
      * design phase. Should focus ONLY on endpoint patterns, request/response
      * formats, DTO schemas, and operation specifications. Must NOT include
      * database details or implementation logic.
+     *
+     * **CRITICAL**: Only include what the user actually said. NEVER fabricate
+     * or invent requirements the user didn't mention.
      *
      * Examples:
      *
@@ -141,6 +150,9 @@ export interface IAutoBeApplication {
      * priorities, edge cases, and validation strategies. Must NOT include
      * implementation or API design details.
      *
+     * **CRITICAL**: Only include what the user actually said. NEVER fabricate
+     * or invent requirements the user didn't mention.
+     *
      * Examples:
      *
      * - "Prioritize payment flow testing with failure scenarios"
@@ -180,6 +192,9 @@ export interface IAutoBeApplication {
      * performance requirements, business logic details, and service layer
      * decisions. Must NOT include database schema or API interface
      * specifications.
+     *
+     * **CRITICAL**: Only include what the user actually said. NEVER fabricate
+     * or invent requirements the user didn't mention.
      *
      * Examples:
      *
