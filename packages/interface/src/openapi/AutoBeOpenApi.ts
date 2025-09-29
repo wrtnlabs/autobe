@@ -625,16 +625,19 @@ export namespace AutoBeOpenApi {
      * proper execution order and data availability.
      *
      * ## CRITICAL WARNING: Authentication Prerequisites
-     * 
+     *
      * **NEVER include authentication-related operations as prerequisites!**
-     * Authentication is handled separately through the `authorizationRole` field 
-     * and should NOT be part of the prerequisite chain. Do NOT add prerequisites for:
+     * Authentication is handled separately through the `authorizationRole`
+     * field and should NOT be part of the prerequisite chain. Do NOT add
+     * prerequisites for:
+     *
      * - Login endpoints
      * - Token validation endpoints
      * - User authentication checks
      * - Permission verification endpoints
-     * 
-     * Prerequisites are ONLY for business logic dependencies, NOT for authentication/authorization.
+     *
+     * Prerequisites are ONLY for business logic dependencies, NOT for
+     * authentication/authorization.
      *
      * ## Purpose and Use Cases
      *
@@ -1606,20 +1609,22 @@ export namespace AutoBeOpenApi {
    * ## CRITICAL WARNING: Authentication is NOT a Prerequisite
    *
    * **NEVER use prerequisites for authentication or authorization checks!**
-   * 
+   *
    * Prerequisites are ONLY for business logic dependencies such as:
+   *
    * - Checking if a resource exists
    * - Verifying resource state
    * - Loading required data
-   * 
+   *
    * Do NOT create prerequisites for:
+   *
    * - Login/authentication endpoints
    * - Token validation
    * - Permission checks
    * - User authorization verification
-   * 
-   * Authentication is handled separately via the `authorizationRole` field 
-   * on the operation itself. Mixing authentication with business prerequisites 
+   *
+   * Authentication is handled separately via the `authorizationRole` field on
+   * the operation itself. Mixing authentication with business prerequisites
    * creates confusion and incorrect test scenarios.
    *
    * ## Core Concept

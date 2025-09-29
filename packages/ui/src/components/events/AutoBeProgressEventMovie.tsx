@@ -89,6 +89,11 @@ function getState(event: AutoBeProgressEventMovie.IProps["event"]): IState {
           title: "Interface Schemas Review",
           description: "Reviewing API type schemas",
         };
+      case "interfacePrerequisites":
+        return {
+          title: "Interface Prerequisites",
+          description: "Defining API prerequisites",
+        };
       case "testScenarios":
         return {
           title: "Test Scenarios",
