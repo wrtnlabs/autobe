@@ -193,7 +193,7 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
       step: ctx.state().interface?.step ?? 0,
       created_at: new Date().toISOString(),
     });
-    return orchestrateTestScenarioReview(
+    return await orchestrateTestScenarioReview(
       ctx,
       pointer.value,
       props.reviewProgress,

@@ -1,1 +1,1 @@
-export type TestProject = "todo" | "bbs" | "reddit" | "shopping";
+export type TestProject = "todo" | "bbs" | "reddit" | "shopping" | "chat";

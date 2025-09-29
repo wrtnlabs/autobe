@@ -14,8 +14,8 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
-import { transformCommonCorrectCastingHistories } from "../common/histories/transformCommonCorrectCastingHistories";
 import { IAutoBeCommonCorrectCastingApplication } from "../common/structures/IAutoBeCommonCorrectCastingApplication";
+import { transformRealizeCorrectCastingHistories } from "./histories/transformRealizeCorrectCastingHistories";
 import { compileRealizeFiles } from "./internal/compileRealizeFiles";
 
 /** Result of attempting to correct a single function */
@@ -94,6 +94,12 @@ const correct = async <Model extends ILlmSchema.Model>(
   const locations: string[] = diagnose(event).filter((l) =>
     functions.map((f) => f.location).includes(l),
   );
+  
+  // If no locations to correct, return original functions
+  if (locations.length === 0) {
+    return functions;
+  }
+  
   progress.total += locations.length;
 
   const converted: CorrectionResult[] = await executeCachedBatch(
@@ -110,7 +116,7 @@ const correct = async <Model extends ILlmSchema.Model>(
 
       const { tokenUsage } = await ctx.conversate({
         source: "realizeCorrect",
-        histories: transformCommonCorrectCastingHistories([
+        histories: transformRealizeCorrectCastingHistories([
           {
             script: func.content,
             diagnostics: failures.filter((d) => d.file === location),
@@ -172,7 +178,18 @@ const correct = async <Model extends ILlmSchema.Model>(
     },
   );
 
-  if (newValidate.result.type === "success") {
+  const newResult: IAutoBeTypeScriptCompileResult = newValidate.result;
+  if (newResult.type === "success") {
+    return converted.map((c) => c.func);
+  } else if (newResult.type === "exception") {
+    // Compilation exception, return current functions. because retrying won't help.
+    return functions;
+  }
+
+  if (
+    newResult.diagnostics.every((d) => !d.file?.startsWith("src/providers"))
+  ) {
+    // No diagnostics related to provider functions, stop correcting
     return converted.map((c) => c.func);
   }
 
@@ -193,9 +210,7 @@ const correct = async <Model extends ILlmSchema.Model>(
   const failedLocations: string[] = failed.map((f) => f.location);
   const allDiagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[] = [
     ...failures,
-    ...(newValidate.result.type === "failure"
-      ? newValidate.result.diagnostics
-      : []),
+    ...(newResult.type === "failure" ? newResult.diagnostics : []),
   ];
   const relevantDiagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[] =
     filterRelevantDiagnostics(allDiagnostics, failedLocations);
@@ -211,7 +226,11 @@ const correct = async <Model extends ILlmSchema.Model>(
     life - 1,
   );
 
-  return [...success, ...ignored, ...retriedFunctions];
+  // Get functions that were not modified (not in converted array)
+  const convertedLocations = converted.map(c => c.func.location);
+  const unchanged = functions.filter(f => !convertedLocations.includes(f.location));
+
+  return [...success, ...ignored, ...retriedFunctions, ...unchanged];
 };
 
 /**

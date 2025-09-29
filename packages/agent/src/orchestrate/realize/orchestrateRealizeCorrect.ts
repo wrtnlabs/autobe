@@ -40,6 +40,14 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
 
   // Extract and process diagnostics
   const diagnostics = event.result.diagnostics;
+
+  if (
+    event.result.diagnostics.every((d) => !d.file?.startsWith("src/providers"))
+  ) {
+    // No diagnostics related to provider functions, stop correcting
+    return functions;
+  }
+
   const locations: string[] = Array.from(
     new Set(
       diagnostics
@@ -115,7 +123,11 @@ async function correct<Model extends ILlmSchema.Model>(
   failures: IAutoBeRealizeFunctionFailure[],
   progress: AutoBeProgressEventBase,
 ): Promise<AutoBeRealizeFunction[]> {
-  const result: AutoBeRealizeFunction[] = await executeCachedBatch(
+  if (locations.length === 0) {
+    return functions;
+  }
+
+  const corrected: AutoBeRealizeFunction[] = await executeCachedBatch(
     locations.map((location) => async (): Promise<AutoBeRealizeFunction> => {
       const scenario = scenarios.find((el) => el.location === location);
       const func = functions.find((el) => el.location === location);
@@ -129,16 +141,22 @@ async function correct<Model extends ILlmSchema.Model>(
 
       if (RealizeFunctionFailures.length && scenario) {
         try {
-          const correctEvent = await step(ctx, {
-            totalAuthorizations: authorizations,
-            authorization: scenario.decoratorEvent ?? null,
-            scenario,
-            function: func,
-            failures: RealizeFunctionFailures,
-            progress: progress,
-          });
+          const correctEvent: AutoBeRealizeCorrectEvent | null = await step(
+            ctx,
+            {
+              totalAuthorizations: authorizations,
+              authorization: scenario.decoratorEvent ?? null,
+              scenario,
+              function: func,
+              failures: RealizeFunctionFailures,
+              progress: progress,
+            },
+          );
 
-          return { ...func, content: correctEvent.content };
+          return {
+            ...func,
+            content: correctEvent === null ? "" : correctEvent.content,
+          };
         } catch (err) {
           return func;
         }
@@ -148,7 +166,11 @@ async function correct<Model extends ILlmSchema.Model>(
     }),
   );
 
-  return result;
+  // Create a map of corrected functions for efficient lookup
+  const correctedMap = new Map(corrected.map((f) => [f.location, f]));
+
+  // Return all functions, with corrected ones replaced
+  return functions.map((func) => correctedMap.get(func.location) || func);
 }
 
 async function step<Model extends ILlmSchema.Model>(
@@ -161,7 +183,7 @@ async function step<Model extends ILlmSchema.Model>(
     failures: IAutoBeRealizeFunctionFailure[];
     progress: AutoBeProgressEventBase;
   },
-): Promise<AutoBeRealizeCorrectEvent> {
+): Promise<AutoBeRealizeCorrectEvent | null> {
   const pointer: IPointer<IAutoBeRealizeCorrectApplication.IProps | null> = {
     value: null,
   };
@@ -192,8 +214,9 @@ async function step<Model extends ILlmSchema.Model>(
     `,
   });
 
-  if (pointer.value === null)
-    throw new Error("Failed to correct implementation code.");
+  if (pointer.value === null) {
+    return null;
+  }
 
   pointer.value.revise.final = await replaceImportStatements(ctx, {
     operation: props.scenario.operation,

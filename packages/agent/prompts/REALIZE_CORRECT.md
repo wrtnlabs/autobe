@@ -210,9 +210,20 @@ Errors Found:
      // ❌ WRONG: Will crash if value is null
      toISOStringSafe(value)
      
-     // ✅ CORRECT: Check null first
-     value ? toISOStringSafe(value) : null
+     // ❌ WRONG: ?? operator doesn't work for null checking with toISOStringSafe
+     deleted_at: user.deleted_at ?? null  // This passes null to next expression, not what we want!
+     
+     // ✅ CORRECT: Use ternary operator (? :) for null checking with toISOStringSafe
+     deleted_at: user.deleted_at ? toISOStringSafe(user.deleted_at) : null
+     
+     // ✅ CORRECT: General pattern for nullable date fields
+     created_at: user.created_at ? toISOStringSafe(user.created_at) : null
+     updated_at: user.updated_at ? toISOStringSafe(user.updated_at) : null
      ```
+   
+   **REMEMBER**: 
+   - `??` (nullish coalescing) returns right side when left is null/undefined
+   - `? :` (ternary) allows conditional execution - USE THIS for toISOStringSafe!
 
 Resolution Plan:
 1. First, remove all non-existent field references
@@ -886,6 +897,36 @@ Based on error code, apply fixes in escalating order:
 - Explain what needs to change
 - Return `typia.random<T>()` with clear TODO
 
+## 🚨 CRITICAL: Error Handling with HttpException
+
+**MANDATORY**: Always use HttpException for error handling:
+```typescript
+// ✅ CORRECT - Use HttpException with message and numeric status code
+throw new HttpException("Error message", 404);
+throw new HttpException("Unauthorized: You can only delete your own posts", 403);
+throw new HttpException("Bad Request: Invalid input", 400);
+
+// ❌ FORBIDDEN - Never use Error
+throw new Error("Some error");  // FORBIDDEN!
+
+// ❌ FORBIDDEN - Never use enum or imported constants for status codes
+throw new HttpException("Error", HttpStatus.NOT_FOUND);  // FORBIDDEN!
+throw new HttpException("Error", StatusCodes.BAD_REQUEST);  // FORBIDDEN!
+
+// ✅ REQUIRED - Always use direct numeric literals
+throw new HttpException("Not Found", 404);  // Direct number only
+throw new HttpException("Forbidden", 403);  // Direct number only
+throw new HttpException("Bad Request", 400);  // Direct number only
+```
+
+**Common HTTP Status Codes to Use**:
+- 400: Bad Request (invalid input, validation error)
+- 401: Unauthorized (authentication required)
+- 403: Forbidden (no permission)
+- 404: Not Found (resource doesn't exist)
+- 409: Conflict (duplicate resource, state conflict)
+- 500: Internal Server Error (unexpected error)
+
 ## 🚫 NEVER DO
 
 1. **NEVER** use `as any` to bypass errors
@@ -896,6 +937,8 @@ Based on error code, apply fixes in escalating order:
 6. **NEVER** add custom import statements - all imports are auto-generated
 7. **NEVER** use bcrypt, bcryptjs, or external hashing libraries
 8. **NEVER** prioritize comments over types - types are the source of truth
+9. **NEVER** use `throw new Error()` - always use `throw new HttpException(message, statusCode)`
+10. **NEVER** use enum or imported constants for HttpException status codes - use numeric literals only
 
 ## ⚡ BUT DO (When Necessary for Compilation)
 

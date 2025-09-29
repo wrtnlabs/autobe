@@ -96,7 +96,13 @@ export const archive_analyze = async (
   try {
     await FileSystemIterator.save({
       root: `${TestGlobal.ROOT}/results/${model}/${project}/analyze`,
-      files,
+      files: {
+        ...files,
+        "autobe/analysis.md": Object.entries(files)
+          .filter(([key]) => key.endsWith(".md"))
+          .map(([_, v]) => v)
+          .join("\n\n"),
+      },
     });
   } catch {}
   if (TestGlobal.archive)

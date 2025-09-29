@@ -58,8 +58,8 @@ export default function AutoBeLandingHeroMovie() {
         {/* Demo Video */}
         <div className="relative max-w-4xl mx-auto">
           <iframe
-            src="https://www.youtube.com/embed/JNreQ0Rk94g"
-            title="AutoBE Demonstration (Bulletin Board System)"
+            src="https://www.youtube.com/embed/iE0b3Gt_uPk"
+            title="AutoBE & AutoView Demonstration (Reddit like Community)"
             width="100%"
             style={{ aspectRatio: "16/9" }}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"

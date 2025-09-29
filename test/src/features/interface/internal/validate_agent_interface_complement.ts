@@ -1,5 +1,5 @@
 import { orchestrateInterfaceComplement } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceComplement";
-import { FileSystemIterator } from "@autobe/filesystem";
+import { CompressUtil, FileSystemIterator } from "@autobe/filesystem";
 import { AutoBeOpenApi } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 import { OpenApiTypeChecker } from "@samchon/openapi";
@@ -21,15 +21,17 @@ export const validate_agent_interface_complement = async (
   const { agent } = await prepare_agent_interface(factory, project);
   const model: string = TestGlobal.vendorModel;
   const operations: AutoBeOpenApi.IOperation[] = JSON.parse(
-    await fs.promises.readFile(
-      `${TestGlobal.ROOT}/assets/histories/${model}/${project}.interface.operations.json`,
-      "utf8",
+    await CompressUtil.gunzip(
+      await fs.promises.readFile(
+        `${TestGlobal.ROOT}/assets/histories/${model}/${project}.interface.operations.json.gz`,
+      ),
     ),
   );
   const components: AutoBeOpenApi.IComponents = JSON.parse(
-    await fs.promises.readFile(
-      `${TestGlobal.ROOT}/assets/histories/${model}/${project}.interface.components.json`,
-      "utf8",
+    await CompressUtil.gunzip(
+      await fs.promises.readFile(
+        `${TestGlobal.ROOT}/assets/histories/${model}/${project}.interface.schemas.json.gz`,
+      ),
     ),
   );
   typia.assert(operations);

@@ -1,59 +1,320 @@
 ---
-title: AutoBE > Guide Documents > Roadmap > v1.0 Official Release (planned)
+title: AutoBE > Guide Documents > Roadmap > v1.0 Official Release
 ---
+import { Tabs } from "nextra/components";
 
-# AutoBE v1.0 Official Release Roadmap
+## Preface
+```mermaid
+gantt
+  dateFormat YYYY-MM-DD
+  title AutoBE v1.0 Official Release Roadmap
 
-## Official Release
+  section Agent Enhancement
+  Type Correction Agent :   done,  2025-09-16,  6d
+  Interface Prerequisite: active,  2025-09-22, 14d
+  Domain Restrictions   : planned, 2025-10-06, 21d
+  Debation Enhancement  : planned, 2025-10-27, 21d
 
-AutoBE v1.0 represents a fundamental shift from proof-of-concept to production-ready automation that transforms how digital services are created. This official release establishes AutoBE as the foundation for a complete no-coding ecosystem where anyone can build, deploy, and operate sophisticated applications through simple conversation.
+  section Runtime Testing
+  Authorization         : active,  2025-09-22, 14d
+  Business Logic        : planned, 2025-09-29, 14d
+  Prisma ORM Query      : planned, 2025-09-29, 45d
+  Domestic Demonstration: planned, 2025-09-22, 30d
 
-Our vision extends beyond generating working code to creating a comprehensive platform where business ideas become reality within minutes. The v1.0 release, targeted for December 1, 2025, focuses on three core pillars: business-ready backend generation that supports real commercial operations, seamless integration with our no-coding ecosystem that eliminates technical barriers, and a hosting service that instantly transforms conversations into deployed applications.
+  section RAG Optimization
+  Prisma   : planned, 2025-10-13, 63d
+  Interface: planned, 2025-10-27, 49d
+  Test     : planned, 2025-11-10, 35d
+  Realize  : planned, 2025-11-24, 21d
 
-We envision a world where the ability to articulate an idea becomes the only prerequisite for digital entrepreneurship. Whether it's a grandmother in rural Korea opening an online marketplace or a small business owner automating customer management, AutoBE v1.0 will democratize access to sophisticated technology infrastructure that was previously available only to well-funded enterprises.
+  section Service
+  Hackathon Contest  : done,    2025-09-16,  7d
+  Demonstration Video: done,    2025-09-16, 13d
+  Multiple Session   : planned, 2025-09-29, 14d
+  VSCode Extension   : planned, 2025-10-13, 14d
+  AI Chatbot Support : planned, 2025-10-27, 14d
 
-## Production-Ready Business Applications
+  section Documentation
+  Introduction Articles: 2025-09-16, 13d
+  Performance Benchmark: 2025-09-29, 42d
+```
 
-> A 70-year-old grandmother who grows tomatoes in the countryside created an online debate website in just 10 minutes. This grandmother, who is unfamiliar with both coding and computers, completed a current affairs and economics debate community simply by conversing with Wrtn's AI. What's remarkable is that this site allows both writing and commenting entirely through voice. Users can even engage in current affairs debates with AI.
->
-> The next day, the grandmother invested another 20 minutes to open an agricultural products shopping mall. Customers simply say "I'd like to order 2kg of tomatoes" and the order is completed, while the grandmother manages everything from orders and shipping to inventory through simple chat.
+## 1. Agent Enhancement
+### 1.1. Type Correction Agent
+We are introducing an independent correction agent specialized in TypeScript type casting and type assignment error resolution to dramatically improve compilation success rates.
 
-This story isn't science fiction—it represents the transformative potential of AutoBE v1.0. The rural grandmother's achievement demonstrates how AutoBE eliminates the traditional barriers between business ideas and digital implementation, enabling anyone with entrepreneurial vision to create sophisticated, commercially viable applications regardless of their technical background.
+AutoBE's Test and Realize Agents frequently generated various type casting errors during complex TypeScript code generation, including typia tag type mismatches, Date to string conversions, and nullable/undefined type assignments. The existing general-purpose compiler feedback system could not effectively resolve these specialized error patterns, and complex cross-type issues like `"typia.tag"` property mismatches were a persistent cause of compilation failures.
 
-AutoBE v1.0 transforms from a development tool into a business enablement platform. The official release focuses on generating backend systems that can handle real commercial traffic, process actual transactions, and support growing businesses from day one.
+The AutoBE team has developed a Type Correction Agent that specializes exclusively in handling type casting errors. This agent implements expert resolution strategies for 12 major type error patterns, including `satisfies` operator patterns, precise distinction between `typia.assert` vs `typia.assertGuard`, and nullish coalescing handling.
 
-The production readiness encompasses comprehensive security implementations including enterprise-grade authentication, authorization, and data protection mechanisms. Performance optimization ensures that generated applications can scale from initial launch to thousands of concurrent users without architectural changes. Database design incorporates production best practices including proper indexing, query optimization, and data integrity constraints that maintain reliability under real-world load.
+**Key Achievement**: This mission is now complete, resulting in achieving **100% compilation success rate** not only with `openai/gpt-4.1` but also with lightweight models like `openai/gpt-4.1-mini` and `qwen3-next-80b-a3b` in the Beta release. This significantly improves AutoBE's accessibility, laying the foundation for more developers to leverage AI backend development cost-effectively.
 
-Business logic implementation reaches commercial sophistication, handling complex scenarios like inventory management, payment processing, customer relationship management, and regulatory compliance. Error handling and logging provide the operational visibility necessary for business-critical applications, while automated backup and recovery mechanisms protect against data loss.
+### 1.2. Interface Prerequisite
+We're building a prerequisite derivation system that clearly defines dependencies between API calls, simultaneously enhancing test quality and AI chatbot intelligence.
 
-These applications handle real customer interactions, process genuine transactions, and operate at business scale from the moment of creation, making stories like the rural grandmother's digital entrepreneurship journey an accessible reality for anyone.
+By adding the `AutoBeOpenApi.IOperation.prerequisites` property to the Interface Agent, we explicitly define other APIs that must be called before performing each API operation. For example, a "Create Order" API requires prerequisite API calls such as "User Authentication", "Inventory Check", and "Shipping Address Validation", and these dependency relationships are systematically documented.
 
-## No Coding Ecosystem
+**Core Applications**:
 
-![Auto BE - OG Diagram](https://github.com/user-attachments/assets/d7bd7403-dedb-4194-9a21-4c2fb3af18e8)
+1. **Sophisticated E2E Test Scenarios**: The Test Agent accurately understands API call sequences to generate realistic test cases that reflect actual user flows. With clear prerequisites, test data preparation, state setup, and cleanup operations can be automated.
 
-AutoBE v1.0 serves as the cornerstone of a revolutionary no-coding ecosystem that eliminates the traditional boundaries between business ideas and digital implementation. The integration of AutoBE, Agentica, and AutoView creates a seamless pipeline from concept to fully operational digital business.
+2. **AI Chatbot Intelligence Enhancement**: As described in [4.5. AI Chatbot Support](#45-ai-chatbot-support), when the AI chatbot processes user requests, it can automatically collect necessary information and call APIs in the correct sequence. For instance, when a user requests "cancel my order", the chatbot automatically follows the sequence: "User Authentication → Order Lookup → Cancellation Eligibility Check → Order Cancellation".
 
-The ecosystem operates on a simple yet powerful principle: if you can describe what you want, you can build it. AutoBE generates the backend infrastructure that powers your business logic, handles data management, and provides secure API endpoints. Agentica transforms this backend into an intelligent AI assistant that can interact naturally with customers, process orders, answer questions, and handle routine business operations. AutoView completes the picture by automatically generating user interfaces that customers and business owners can use across web and mobile platforms.
+This feature goes beyond simple documentation to become the core infrastructure that can instantly transform AutoBE-generated backends into conversational interfaces.
 
-This integrated approach eliminates the traditional handoffs between different development phases. Instead of requiring separate teams for backend development, AI integration, and frontend creation, the entire stack emerges from a single conversation. The grandmother's agricultural marketplace demonstrates this seamlessly: one conversation with AutoBE created the product catalog and order management system, Agentica enabled voice-based ordering and customer service, and AutoView generated both the customer shopping interface and the admin dashboard for inventory management.
+### 1.3. Domain Restrictions
+We're systematically managing domain-specific constraints and business rules to generate production-level backend applications.
 
-The ecosystem's intelligence extends beyond individual tools to understand the relationships between different components. When AutoBE designs an e-commerce backend, Agentica automatically understands the business context to provide relevant customer service, while AutoView generates interfaces that match the specific domain requirements. This contextual awareness ensures that the generated applications feel purpose-built rather than generic.
+Real business environments have unique constraints and rules for each domain. Examples include transaction limits in the financial domain, inventory management rules in e-commerce, and privacy requirements in healthcare systems. AutoBE is evolving to understand these domain-specific characteristics and automatically apply appropriate constraints.
 
-Business owners focus entirely on their domain expertise—understanding customers, refining products, and growing their market—while the technical infrastructure adapts automatically to support their evolving needs. The ecosystem handles scaling challenges, security updates, and feature enhancements through the same conversational interface used for initial creation.
+**Implementation Details**:
+- **Industry Templates**: Building a library of standard constraints for major industries including finance, healthcare, e-commerce, and education
+- **Regulatory Compliance Automation**: Automatically applying regulatory requirements like GDPR, PCI-DSS, HIPAA at the code level
+- **Business Rules Engine**: A system for declaratively defining and validating complex business logic
+- **Domain Validation Framework**: Automatic verification that generated code complies with all domain constraints
 
-## Hosting Service
+Through this, AutoBE can generate production-ready backends that meet actual business requirements, beyond simple CRUD applications.
 
-The AutoBE Hosting Service represents the culmination of our no-coding vision: a platform where conversations instantly become deployed, operational applications accessible to real users. This service eliminates the final barrier between idea and implementation by handling all infrastructure, deployment, and operational concerns automatically.
+### 1.4. Debation Enhancement
+We're implementing an intelligent conversation system that derives perfect backend specifications through in-depth requirements discussion with users.
 
-When users complete their conversation with AutoBE, the system doesn't just generate code—it immediately provisions cloud infrastructure, deploys the application, configures security settings, and makes the service available through a custom domain. The backend API starts handling requests within minutes of conversation completion, with automatic scaling, monitoring, and backup systems already in place.
+The v1.0 release aims to accurately understand and implement concrete, complex requirements based on real business cases, rather than abstract requirements like "just handle it for me". To achieve this, AutoBE will have sophisticated debate capabilities to actively engage with users, discover hidden requirements, and clarify ambiguous aspects.
 
-The integration with Agentica transforms every AutoBE-generated backend into an intelligent AI assistant accessible through web interfaces, mobile apps, or even phone calls. Customers can interact with businesses using natural language, while the AI handles order processing, customer service, appointment scheduling, and routine inquiries. Business owners manage their operations through the same conversational interface, asking questions like "How many orders did we receive today?" or "Schedule a promotional campaign for next week."
+**Enhanced Conversation Capabilities**:
+- **Context-Based Questioning**: Generating customized questions tailored to domain and project characteristics
+- **Requirements Conflict Detection**: Identifying conflicting requirements and resolving them with users
+- **Best Practice Suggestions**: Proposing industry standards and best practices for user requirements
+- **Progressive Specification**: Converting abstract requirements into concrete specifications through step-by-step dialogue
+- **Decision Recording**: Systematically documenting all design decisions and their rationale
 
-AutoView integration generates customer-facing applications and administrative dashboards that are immediately live and functional. The shopping mall created through AutoBE conversation becomes a fully operational e-commerce site with product catalogs, shopping carts, payment processing, and order tracking—all accessible through web browsers and mobile devices within minutes of the initial conversation.
+Through these enhanced debate capabilities, AutoBE evolves beyond a simple code generation tool to become a true AI technology partner.
 
-The hosting service includes comprehensive business support features: payment gateway integration for immediate monetization, analytics dashboards for business insights, customer communication tools for engagement, and automated marketing capabilities for growth. Domain management, SSL certificates, and compliance configurations are handled automatically, allowing business owners to focus entirely on serving their customers.
+## 2. Runtime Testing
+![](/images/demonstrate/test-but-failed.png)
 
-Our ultimate vision is a world where anyone with a business idea can immediately test it in the market. Instead of months of planning, development, and deployment, entrepreneurs can validate concepts, serve real customers, and iterate based on actual feedback within the same day they conceive their idea. The hosting service transforms AutoBE from a development tool into a complete business platform that democratizes digital entrepreneurship.
+AutoBE achieved the groundbreaking milestone of **100% compilation success rate** in the Beta release. Now for v1.0 release, we're taking it a step further, aiming for **100% runtime success rate**, opening a new era where AI generates flawless backend applications ready for immediate deployment.
 
-Digital business creation becomes as simple as having a conversation. Whether it's a local restaurant wanting online ordering, a consultant needing client management tools, or an artist seeking to sell their work online, the AutoBE Hosting Service instantly transforms ideas into operational businesses ready to serve customers and generate revenue.
+While compilation success ensures syntactic correctness, true value lies in code that operates stably in production environments. AutoBE v1.0 builds a system where AI autonomously verifies and guarantees all aspects of runtime quality including business logic accuracy, data integrity, performance optimization, and security enhancement.
+
+### 2.1. Authorization
+We're improving code generation to accurately implement authentication/authorization logic at runtime.
+
+Correctly implementing JWT and Session-based authentication, and automatically generating basic permission management logic based on user roles. Implementing essential lifecycle management including token creation, renewal, and expiration to automatically create authentication systems that operate stably.
+
+### 2.2. Business Logic
+Generating runtime error-free logic by accurately implementing business rules.
+
+**Core Improvements**:
+- **Basic Transaction Processing**: Ensuring atomicity of database operations
+- **Business Rule Implementation**: Accurately converting domain-specific business logic to code
+- **Error Handling**: Appropriate handling of predictable exceptions
+- **Data Validation**: Automatic generation of input data validation logic
+
+AutoBE stably implements business logic specified in requirements.
+
+### 2.3. Prisma ORM Query
+Improving ORM query generation to accurately execute database queries at runtime.
+
+Currently, AutoBE occasionally generates code that passes compilation but fails at runtime when generating Prisma ORM queries in complex DB designs. Issues particularly arise with multi-relation joins, circular references, and complex filtering conditions.
+
+In v1.0, we're improving to accurately handle join queries and filtering logic, properly use basic aggregate functions, and maintain data consistency during transaction processing. Through this, we generate code that operates stably throughout the entire workflow from (analyze → prisma → interface → test → realize).
+
+### 2.4. Domestic Demonstration
+Wrtn Technologies validates practicality by applying AutoBE to their own service development.
+
+To make AutoBE a tool usable in actual production environments, we're experimentally applying it to our own service development. While specific details cannot be disclosed, we plan to verify practical applicability by utilizing it for actual operational service development.
+
+**Validation Goals**:
+- **Practicality**: Generating backends that meet actual business requirements
+- **Stability**: Generated code operating stably in production environments
+- **Maintainability**: Developers can understand and modify AI-generated code
+- **Development Speed**: Development time reduction compared to traditional development methods
+
+Through this proof-of-concept project, we'll prove that AutoBE is a practical tool usable in real work environments.
+
+## 3. RAG Optimization
+![](/images/demonstrate/replay-openai-gpt4.1.png)
+
+Transitioning to a next-generation architecture that maximizes token efficiency and improves generation quality through intelligent cyclic workflows.
+
+Currently, each AutoBE agent operates with a single function call, receiving and processing all results from previous stages in bulk. For example, the Test Agent receives all documents generated by Analysis, Prisma, and Interface Agents at once, causing inefficiency where token consumption increases exponentially at each stage.
+
+In v1.0, we're transitioning to an intelligent cyclic structure where each agent **selectively requests only necessary information**. Agents gradually collect information through multiple function calls and generate final outputs when sufficient context is secured.
+
+**Revolutionary Improvement Effects**:
+- **90% Token Consumption Reduction**: Eliminating unnecessary context through selective information loading
+- **Improved Memory Efficiency**: Stable processing even in large-scale projects
+- **Enhanced Accuracy**: More accurate code generation with focused context
+- **Progressive Improvement**: Immediate reflection of feedback at each stage
+
+<Tabs 
+  items={["Interface Agent", "Test Agent"]}
+  defaultIndex={1}>
+  <Tabs.Tab>
+```typescript showLineNumbers
+interface IAutoBeInterfaceOperationApplication {
+  getDocuments(filenames: string[]): Record<string, string>;
+  getModels(names: string[]): AutoBePrisma.IModel[]; 
+  complete(operations: AutoBeOpenApi.IOperation[]): void;
+  halt(reason: string): void;
+}
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```typescript showLineNumbers
+interface IAutoBeTestScenarioApplication {
+  getDocuments(filenames: string[]): Record<string, string>;
+  getModels(names: string[]): AutoBePrisma.IModel[]; 
+  getOperation(endpoints: AutoBeOpenApi.IEndpoint[]): {
+    operations: AutoBeOpenApi.IOperation[];
+    schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+  };
+  complete(scenario: IAutoBeTestScenario): void;
+  halt(reason: string): void;
+}
+```
+  </Tabs.Tab>
+</Tabs>
+
+This cyclic workflow evolves AutoBE into a smarter and more efficient system, enabling cost-effective operation even in large-scale enterprise projects.
+
+## 4. Service
+### 4.1. Hackathon Contest
+Following the beta release, we're hosting a hackathon to validate AutoBE in practice and collect community feedback.
+
+The first AutoBE hackathon runs from September 12-14, 2025. 40 skilled backend developers will participate to evaluate AutoBE's code generation capabilities. Participants will use `openai/gpt-4.1-mini` and `openai/gpt-4.1` models to generate actual backend applications, validating the entire process from requirements analysis to implementation code.
+
+**Expected Outcomes**:
+- Running a contest with total prizes of $6,400
+- Securing diverse technical reviews
+- Collecting practitioner feedback on production readiness
+- Deriving insights on AutoBE's strengths and areas for improvement
+
+Participant feedback: https://github.com/wrtnlabs/autobe/discussions/categories/hackathon-2025-09-12
+
+### 4.2. Demonstration Video
+We're creating a demo video that visually showcases the full-stack development process combining AutoBE and AutoView.
+
+By integrating AutoBE's backend generation capabilities with AutoView's frontend automation, we'll demonstrate AI building a complete web application from start to finish. The video will capture the process of implementing a community platform like Reddit in just a few hours.
+
+**Demo Content**:
+- Backend construction from natural language requirements alone
+- Frontend generation based on Swagger documentation
+- Database schema design and API implementation process
+- Completing an executable application
+
+Demo Video:
+
+<br/>
+<iframe
+  src="https://www.youtube.com/embed/iE0b3Gt_uPk"
+  title="Demo AutoBE & AutoView : Full-Stack development of a Reddit-like App"
+  width="100%"
+  style={{ aspectRatio: "16/9" }}
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+  referrerPolicy="strict-origin-when-cross-origin"
+  allowFullScreen
+></iframe>
+
+### 4.3. Multiple Session
+![](/images/hackathon/conversate.png)
+
+Adding multi-session management functionality to the local playground for efficient management of multiple projects.
+
+The current AutoBE playground only supports single sessions, with the limitation that previous conversations disappear when starting new projects. In v1.0, we're applying the multi-session interface implemented in the hackathon service to local environments, allowing developers to work on multiple projects simultaneously and return to previous conversations at any time.
+
+**Technical Differences**:
+- **Hackathon Service**: Multi-user session management in PostgreSQL-based cloud environment
+- **Local Playground**: Lightweight local session management system based on SQLite
+
+**Key Features**:
+- Maintaining independent conversation history per project
+- Quick switching and search between sessions
+- Export/import conversation content
+- Save and reuse project templates
+
+### 4.4. VSCode Extension
+Launching an extension that allows developers to use AutoBE directly in their most familiar environment: VSCode.
+
+Currently, using AutoBE requires the cumbersome process of cloning the repository and installing dependencies. In v1.0, we're providing a one-click installable extension from the VSCode Marketplace, enabling developers to immediately start AI backend development in their familiar IDE environment.
+
+**Core Features**:
+- **Integrated Development Environment**: Direct use of AutoBE chat interface within VSCode
+- **Real-time Code Generation**: Generated code immediately reflects in the editor for instant editing
+- **IntelliSense Support**: Auto-completion and documentation for generated APIs and data models
+- **Debugging Integration**: Immediately debug generated backend code with VSCode debugger
+- **Git Integration**: Automated change tracking and version control
+
+Through this, AutoBE naturally integrates into developers' daily workflows, making AI-assisted development not a special tool but a routine development practice.
+
+### 4.5. AI Chatbot Support
+Instantly transform AutoBE-generated backends into conversational AI chatbots, allowing perfect experience and validation of API functionality without technical knowledge.
+
+Backend applications generated by AutoBE include hundreds of API endpoints and complex data models, making it difficult to grasp the entire structure. Especially for business managers or planners unfamiliar with programming, it's hard to verify whether the generated backend properly implements their requirements.
+
+v1.0 innovatively solves this problem through **automatic AI chatbot conversion**. It analyzes the generated backend API and automatically creates an intelligent chatbot that can use all functions in natural language.
+
+**Real-World Usage Scenario**:
+The video below shows a real case of converting an AutoBE-generated shopping mall backend into a chatbot. Users can use all functions of the complex e-commerce system through natural conversations like "search for products", "add to cart", "place an order".
+
+**Tasks the Chatbot Automatically Handles**:
+- Automatic API call sequence determination (utilizing prerequisites)
+- Conversationally collecting necessary parameters
+- Step-by-step guidance through complex workflows
+- Friendly explanations and alternatives when errors occur
+- Displaying execution results in an easy-to-understand format
+
+This presents a new paradigm: **"Verify while conversing"** instead of **"Try it out since it's built"**.
+
+<br/>
+<iframe
+  src="https://www.youtube.com/embed/RAzYo02HTXA"
+  title="Demo AutoBE & AutoView : Full-Stack development of a Reddit-like App"
+  width="100%"
+  style={{ aspectRatio: "16/9" }}
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+  referrerPolicy="strict-origin-when-cross-origin"
+  allowFullScreen
+></iframe>
+
+## 5. Documentation
+### 5.1. Introduction Articles
+Spreading AutoBE to the global developer community through strategic content marketing.
+
+Building on the successful documentation strategy of the beta release, v1.0 will produce more systematic and comprehensive technical content for distribution to major developer communities and platforms.
+
+**Content Strategy**:
+- **Technical Deep Dive Series**: Detailed explanations of core technologies including AutoBE architecture, compiler strategy, AI Function Calling
+- **Success Case Studies**: Real enterprise project cases using AutoBE and ROI analysis
+- **Tutorial Series**: Step-by-step learning materials from beginner to advanced
+- **Comparative Analysis**: Quantitative analysis of AutoBE's advantages over traditional development methods
+
+**Distribution Channels**:
+- Major technical blog platforms like Medium, Dev.to, Hacker News
+- Developer communities like Reddit, Stack Overflow
+- Live coding sessions through video platforms like YouTube, Twitch
+- Presentations and workshops at major tech conferences
+
+### 5.2. Performance Benchmark
+Establishing new benchmark standards for AI Function Calling-based code generation and systematically evaluating major AI model performance.
+
+AutoBE's innovation lies in AI **directly constructing AST (Abstract Syntax Tree) structures through Function Calling** rather than writing code as text. This means completely different evaluation criteria are needed compared to existing code generation benchmarks.
+
+**AutoBE-Specific Benchmark Framework**:
+- **Function Calling Accuracy**: Accurate execution rate of complex nested function calls
+- **AST Structure Completeness**: Syntactic/semantic accuracy of generated syntax trees
+- **Context Consistency**: Ability to maintain context across multi-stage workflows
+- **Domain Understanding**: Accuracy of converting business requirements to code
+- **Compilation Success Rate**: Ratio of immediately buildable generated code
+- **Runtime Stability**: Error rate in actual execution environments
+
+**Models Under Evaluation**:
+- **OpenAI**: GPT-4.1, GPT-4.1-mini, GPT-5 (upcoming)
+- **Anthropic**: Claude 4 series
+- **Open Source**: Qwen3-next-80b-a3b, Llama 3.1, Mistral Large
+- **New Models**: Monthly evaluation of new models
+
+**Public Benchmark Leaderboard**:
+With the v1.0 release, we'll publish a **monthly AutoBE Benchmark Report**. We'll evaluate each model's performance across 10 categories and 100 test scenarios, publishing rankings. This will provide objective metrics for developers to select the optimal AI model for their project characteristics.
+
+Through cost-performance analysis, we'll provide guidance for startups to choose economical models and enterprises to select highest-performance models. This benchmark will establish itself as the new industry standard in AI code generation.

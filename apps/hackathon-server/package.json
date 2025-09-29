@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@autobe/hackathon-server",
-  "version": "0.24.1",
+  "version": "0.24.2",
   "description": "AI backend server code generator",
   "main": "src/index.ts",
   "author": "Wrtn Technologies",

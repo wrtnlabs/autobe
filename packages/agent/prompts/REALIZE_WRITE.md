@@ -217,7 +217,19 @@ result: dbValue === null
 
 3. **ALWAYS check null before calling toISOStringSafe**
    - ❌ FORBIDDEN: `toISOStringSafe(value)` when value might be null
+   - ❌ FORBIDDEN: `deleted_at: user.deleted_at ?? null` - This doesn't call toISOStringSafe!
    - ✅ REQUIRED: `value ? toISOStringSafe(value) : null`
+   
+   **CRITICAL DISTINCTION - ?? vs ternary operator:**
+   ```typescript
+   // ❌ WRONG: Using ?? doesn't convert the date!
+   deleted_at: user.deleted_at ?? null  // Returns raw Date or null, NOT converted!
+   
+   // ✅ CORRECT: Using ternary operator for conditional conversion
+   deleted_at: user.deleted_at ? toISOStringSafe(user.deleted_at) : null
+   ```
+   
+   **REMEMBER**: `??` only provides fallback, `? :` allows conditional execution!
 
 4. **🚨🚨🚨 NEVER use hasOwnProperty - THIS IS THE MOST VIOLATED RULE! 🚨🚨🚨**
    - ❌ ABSOLUTELY FORBIDDEN: `Object.prototype.hasOwnProperty.call(body, "field")`
@@ -279,7 +291,7 @@ result: dbValue === null
      where: { id: parameters.id }
    });
    if (resource.author_id !== user.id) {
-     throw new Error("Unauthorized: You can only delete your own posts");
+     throw new HttpException("Unauthorized: You can only delete your own posts", 403);
    }
    
    // ✅ REQUIRED for UPDATE operations - MUST verify permission
@@ -287,7 +299,7 @@ result: dbValue === null
      where: { id: parameters.id }
    });
    if (resource.author_id !== user.id && user.role !== "admin") {
-     throw new Error("Unauthorized: Only the author or admin can update this article");
+     throw new HttpException("Unauthorized: Only the author or admin can update this article", 403);
    }
    
    // ✅ REQUIRED for CREATE in nested resources - MUST check parent access
@@ -297,7 +309,7 @@ result: dbValue === null
    });
    const isMember = board.members.some(m => m.user_id === user.id && !m.banned);
    if (!isMember && user.role !== "admin") {
-     throw new Error("Unauthorized: You must be a board member to create posts");
+     throw new HttpException("Unauthorized: You must be a board member to create posts", 403);
    }
    ```
    
@@ -535,12 +547,27 @@ All text fields (plan, prismaSchemas, review) should be:
   - Define concrete resolution steps (e.g., using `?? undefined` for nullable fields, proper relation handling)
 
 * **prismaSchemas** (Step 2):
-  **BE CONCISE**: Only the exact Prisma models/fields used. No extra models, no commentary.
+  **SCHEMA ANALYSIS, NOT SCHEMA COPY**: Analyze the relevant Prisma models for implementation feasibility.
+  **⚠️ LENGTH RESTRICTION: Maximum 500 characters total**
   
   **Requirements**:
-  - Include ONLY models referenced in the implementation
-  - Include ALL fields that will be accessed or modified
-  - Raw schema text only - no explanations needed
+  - **DO NOT copy-paste the entire Prisma schema** - provide analysis instead
+  - **Focus on critical field availability**:
+    - ✅ Verify time-related fields: `created_at`, `updated_at`, `deleted_at` existence
+    - ✅ Check for soft delete support: Does `deleted_at` field exist?
+    - ✅ Identify required fields for business logic: ownership fields, status fields, etc.
+    - ✅ Note nullable vs required fields that affect implementation
+  - **Concise analysis format (MUST be under 500 chars)**:
+    ```
+    User: id, email, created_at. NO deleted_at.
+    Post: author_id, created_at, updated_at. NO deleted_at.
+    Comment: post_id, user_id, deleted_at exists.
+    Missing: User.role field needed for authorization.
+    ```
+  - **Flag missing but needed fields**:
+    - If logic requires soft delete but `deleted_at` missing → note it
+    - If audit fields needed but not present → note it
+    - If relation fields missing → note it
 
 * **review** (Step 3):
   **BE CONCISE**: Brief notes on key improvements and critical fixes only. Not a development diary.
@@ -551,6 +578,44 @@ All text fields (plan, prismaSchemas, review) should be:
   - Essential error handling added
   
   **Skip**: Obvious improvements, standard patterns, routine null handling
+
+## 🚨 CRITICAL: Error Handling with HttpException
+
+**MANDATORY**: Always use HttpException for ALL error handling:
+
+```typescript
+// ✅ CORRECT - Use HttpException with message and numeric status code
+throw new HttpException("Error message", 404);
+throw new HttpException("Unauthorized: You can only delete your own posts", 403);
+throw new HttpException("Bad Request: Invalid input", 400);
+throw new HttpException("Not Found", 404);
+
+// ❌ ABSOLUTELY FORBIDDEN - Never use Error
+throw new Error("Some error");  // FORBIDDEN!
+
+// ❌ ABSOLUTELY FORBIDDEN - Never use enum or imported constants for status codes
+throw new HttpException("Error", HttpStatus.NOT_FOUND);  // FORBIDDEN!
+throw new HttpException("Error", StatusCodes.BAD_REQUEST);  // FORBIDDEN!
+
+// ✅ REQUIRED - Always use direct numeric literals
+throw new HttpException("Not Found", 404);  // Direct number only
+throw new HttpException("Forbidden", 403);  // Direct number only
+throw new HttpException("Bad Request", 400);  // Direct number only
+```
+
+**Common HTTP Status Codes to Use**:
+- 400: Bad Request (invalid input, validation error)
+- 401: Unauthorized (authentication required)  
+- 403: Forbidden (no permission)
+- 404: Not Found (resource doesn't exist)
+- 409: Conflict (duplicate resource, state conflict)
+- 500: Internal Server Error (unexpected error)
+
+**RULE**: HttpException takes exactly 2 parameters: message (string) and statusCode (number)
+- NO enum imports
+- NO constant imports
+- NO StatusCode objects
+- ONLY direct numeric literals
 
 * **final** (Step 4):
   The final, production-ready implementation. This version should reflect all improvements and pass type checks, ideally without needing further revision.
@@ -769,7 +834,7 @@ export async function delete__users_$id(
   
   // Example: Prevent deleting super admins
   if (user.role === "super_admin" && admin.level !== "super") {
-    throw new Error("Unauthorized: Only super admins can delete other super admins");
+    throw new HttpException("Unauthorized: Only super admins can delete other super admins", 403);
   }
   
   // Proceed with deletion...
@@ -1458,7 +1523,7 @@ export async function delete__posts_$id(
   
   // 🔴 STEP 2: MANDATORY ownership check - NO EXCEPTIONS
   if (post.author_id !== user.id) {
-    throw new Error("Unauthorized: You can only delete your own posts");
+    throw new HttpException("Unauthorized: You can only delete your own posts", 403);
   }
   
   // ✅ ONLY AFTER authorization check, proceed with operation
@@ -1507,7 +1572,7 @@ export async function put__boards_$id(
   const isAdmin = member?.role === "admin";
   
   if (!isOwner && !isAdmin) {
-    throw new Error("Unauthorized: Only board owner or admin can update board settings");
+    throw new HttpException("Unauthorized: Only board owner or admin can update board settings", 403);
   }
   
   // Proceed with update...
@@ -1535,7 +1600,7 @@ export async function post__boards_$boardId_posts(
   });
   
   if (!membership) {
-    throw new Error("Unauthorized: You must be a board member to create posts");
+    throw new HttpException("Unauthorized: You must be a board member to create posts", 403);
   }
   
   // Check if board allows posting
@@ -1544,7 +1609,7 @@ export async function post__boards_$boardId_posts(
   });
   
   if (board.posting_restricted && membership.role === "member") {
-    throw new Error("Unauthorized: Only moderators can post in this board");
+    throw new HttpException("Unauthorized: Only moderators can post in this board", 403);
   }
   
   // Create the post with user as author
@@ -1984,7 +2049,7 @@ When working with Prisma, follow these critical rules to ensure consistency and 
     const user = await MyGlobal.prisma.users.findUnique({
       where: { id: userId },
     });
-    if (!user) throw new Error("User not found");
+    if (!user) throw new HttpException("User not found", 404);
     ```
 
     * Another option is to allow the receiving variable or return type to accept `null` when absence is an acceptable outcome.
@@ -2277,7 +2342,7 @@ const commentId = body.comment_id ?? null;
 
 // Validate exclusivity
 if ((postId === null) === (commentId === null)) {
-  throw new Error("Exactly one of post_id or comment_id must be provided");
+  throw new HttpException("Exactly one of post_id or comment_id must be provided", 400);
 }
 
 // Use extracted values with clear types
@@ -2301,7 +2366,7 @@ if (body.post_id !== null && body.post_id !== undefined) {
   targetType = 'comment';
   targetId = body.comment_id;
 } else {
-  throw new Error("Either post_id or comment_id must be provided");
+  throw new HttpException("Either post_id or comment_id must be provided", 400);
 }
 
 // Now use targetType and targetId with clear types
@@ -2316,10 +2381,10 @@ if (targetType === 'post') {
 ```ts
 // Validate and assign in one step
 if (!body.post_id && !body.comment_id) {
-  throw new Error("Either post_id or comment_id required");
+  throw new HttpException("Either post_id or comment_id required", 400);
 }
 if (body.post_id && body.comment_id) {
-  throw new Error("Only one of post_id or comment_id allowed");
+  throw new HttpException("Only one of post_id or comment_id allowed", 400);
 }
 
 // Create the like with validated fields
@@ -2570,7 +2635,7 @@ const record = await MyGlobal.prisma.users.findFirst({
   },
 });
 
-if (!record) throw new Error("User not found");
+if (!record) throw new HttpException("User not found", 404);
 
 const result = {
   id: record.id,

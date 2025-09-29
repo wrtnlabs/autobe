@@ -1,5 +1,4 @@
 import { AutoBeAgent, AutoBeTokenUsage } from "@autobe/agent";
-import { AutoBeConfigConstant } from "@autobe/agent/src/constants/AutoBeConfigConstant";
 import { AutoBeState } from "@autobe/agent/src/context/AutoBeState";
 import { AutoBeCompiler } from "@autobe/compiler";
 import { IAutoBeCompilerListener } from "@autobe/interface";
@@ -24,6 +23,7 @@ const PROJECT_INDEXES: Record<TestProject, number> = {
   bbs: 1,
   reddit: 2,
   shopping: 3,
+  chat: 4,
 };
 
 const STEP_INDEXES: Record<Step, number> = {
@@ -101,10 +101,9 @@ const main = async (): Promise<void> => {
         vendor: TestGlobal.getVendorConfig(),
         config: {
           locale: "en-US",
-          timeout:
-            TestGlobal.env.TIMEOUT !== "NULL"
-              ? Number(TestGlobal.env.TIMEOUT ?? AutoBeConfigConstant.TIMEOUT)
-              : null,
+          timeout: TestGlobal.env.TIMEOUT
+            ? Number(TestGlobal.env.TIMEOUT)
+            : null,
         },
         compiler: (listener) => new AutoBeCompiler(listener),
         histories,

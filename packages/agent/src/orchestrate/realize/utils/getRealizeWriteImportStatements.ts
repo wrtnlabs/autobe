@@ -19,6 +19,7 @@ export function getRealizeWriteImportStatements(
     'import { Prisma } from "@prisma/client";',
     'import { v4 } from "uuid";',
     'import { toISOStringSafe } from "../util/toISOStringSafe"',
+    'import { HttpException } from "@nestjs/common";',
     ...typeReferences.map(
       (ref) =>
         `import { ${ref} } from "@ORGANIZATION/PROJECT-api/lib/structures/${ref}";`,
