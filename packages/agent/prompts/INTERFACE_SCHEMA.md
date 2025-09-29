@@ -800,7 +800,7 @@ const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
 
 ## 9. Critical Success Factors
 
-### 10.1. Absolute Completeness Principles
+### 9.1. Absolute Completeness Principles
 
 - **Process ALL Entities**: EVERY entity defined in the Prisma schema MUST have corresponding schema definitions.
 - **Complete Property Coverage**: ALL properties of each entity MUST be included in schema definitions.
@@ -808,14 +808,14 @@ const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
 - **No Simplification**: Complex entities or relationships MUST be faithfully represented without simplification.
 - **Verification of Completeness**: Before final output, verify that ALL entities and properties have been defined.
 
-### 10.2. High-Volume Processing Strategy
+### 9.2. High-Volume Processing Strategy
 
 - **Batch Processing**: If there are many entities, process them in groups, but ALL groups MUST be completed.
 - **No Prioritization**: ALL entities and their properties have equal importance and must be processed.
 - **Systematic Approach**: Use a methodical approach to ensure no entity or property is overlooked.
 - **Detailed Tracking**: Maintain a tracking system to verify completeness of schema definitions.
 
-### 10.3. Critical Warnings
+### 9.3. Critical Warnings
 
 - **Partial Implementation Prohibited**: "Defining schemas for only some entities and omitting others" is a CRITICAL ERROR.
 - **Property Omission Prohibited**: "Including only some properties of an entity" is a SERIOUS ERROR.
@@ -861,7 +861,7 @@ Remember that your role is CRITICAL to the success of the entire API design proc
 
 ## 11. Schema Generation Decision Rules
 
-### 12.1. Content Field Return Rules
+### 11.1. Content Field Return Rules
 
 **FORBIDDEN ACTIONS**:
 - ❌ NEVER return empty object {} in content
@@ -876,7 +876,7 @@ Remember that your role is CRITICAL to the success of the entire API design proc
 
 ## 12. Common Mistakes to Avoid
 
-### 13.1. Security Mistakes (MOST CRITICAL)
+### 12.1. Security Mistakes (MOST CRITICAL)
 - **Including password fields in User response types** - This is the #1 most common security error
 - **Accepting user_id in Create operations** - Authentication context should provide this
 - **Allowing ownership changes in Update operations** - Once created, ownership should be immutable
@@ -884,31 +884,31 @@ Remember that your role is CRITICAL to the success of the entire API design proc
 - **Exposing internal system fields** - Fields like salt, internal_notes should never be exposed
 - **Missing authentication boundaries** - Every request type must be checked for actor ID fields
 
-### 13.2. Completeness Mistakes
+### 12.2. Completeness Mistakes
 - **Forgetting join/junction tables** - Many-to-many relationships need schema definitions too
 - **Missing enum definitions** - Every enum in Prisma must have a corresponding schema
 - **Incomplete variant coverage** - Some entities missing .IRequest or .ISummary types
 - **Skipping complex entities** - All entities must be included, regardless of complexity
 
-### 13.3. Implementation Compatibility Mistakes
+### 12.3. Implementation Compatibility Mistakes
 - **Schema-Operation Mismatch**: Schemas must enable implementation of what operations describe
 - If operation description says "returns list of X" → Create schema with array type field (e.g., IPageIEntity with data: array)
 - If operation description mentions pagination → Create paginated response schema
 - If operation is DELETE → Verify schema has fields to support described behavior (soft vs hard delete)
 
-### 13.4. JSON Schema Mistakes
+### 12.4. JSON Schema Mistakes
 - **Using array notation in type field** - NEVER use `type: ["string", "null"]`. Always use single string value
 - **Wrong nullable expression** - Use `oneOf` for nullable types, not array notation
 - **Missing oneOf for unions** - All union types must use `oneOf` structure
 - **Inline union definitions** - Don't define unions inline, use named types with `oneOf`
 
-### 13.5. Consistency Mistakes
+### 12.5. Consistency Mistakes
 - **Inconsistent date formats** - All DateTime fields should use format: "date-time"
 - **Mixed naming patterns** - Stick to IEntityName convention throughout
 - **Inconsistent required fields** - Required in Prisma should be required in Create
 - **Type mismatches across variants** - Same field should have same type everywhere
 
-### 13.6. Business Logic Mistakes
+### 12.6. Business Logic Mistakes
 - **Wrong cardinality in relationships** - One-to-many vs many-to-many confusion
 - **Missing default values in descriptions** - Prisma defaults should be documented
 - **Incorrect optional/required mapping** - Prisma constraints must be respected

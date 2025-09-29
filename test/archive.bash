@@ -35,7 +35,7 @@ pnpm run archive --vendor qwen/qwen3-30b-a3b-instruct-2507 --project shopping > 
 pnpm run archive --vendor qwen/qwen3-235b-a22b-2507 --project todo > archive.qwen3-235b-todo.log
 pnpm run archive --vendor qwen/qwen3-235b-a22b-2507 --project reddit > archive.qwen3-235b-reddit.log
 pnpm run archive --vendor qwen/qwen3-235b-a22b-2507 --project bbs > archive.qwen3-235b-bbs.log
-pnpm run archive --vendor qwen/qwen3-235b-a22b-2507 --project shopping > archive.qwen-235b-shopping.log
+pnpm run archive --vendor qwen/qwen3-235b-a22b-2507 --project shopping > archive.qwen3-235b-shopping.log
 
 # qwen/qwen3-next-80b-a3b
 pnpm run archive --vendor qwen/qwen3-next-80b-a3b-instruct --project todo > archive.qwen3-next-80b-todo.log
@@ -68,7 +68,7 @@ pnpm run archive --vendor openai/gpt-4.1-mini --project shopping --from realize 
 pnpm run archive --vendor qwen/qwen3-235b-a22b-2507 --project todo --from interface > archive.qwen3-235b-todo.log
 pnpm run archive --vendor qwen/qwen3-235b-a22b-2507 --project reddit --from interface > archive.qwen3-235b-reddit.log
 pnpm run archive --vendor qwen/qwen3-235b-a22b-2507 --project bbs --from interface > archive.qwen3-235b-bbs.log
-pnpm run archive --vendor qwen/qwen3-235b-a22b-2507 --project shopping --from interface > archive.qwen-235b-shopping.log
+pnpm run archive --vendor qwen/qwen3-235b-a22b-2507 --project shopping --from interface > archive.qwen3-235b-shopping.log
 
 # qwen/qwen3-next-80b-a3b
 pnpm run archive --vendor qwen/qwen3-next-80b-a3b-instruct --project todo --from interface > archive.qwen3-next-80b-todo.log
