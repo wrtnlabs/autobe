@@ -29,9 +29,9 @@ export const orchestrateRealize =
     props: IAutoBeApplicationProps,
   ): Promise<AutoBeAssistantMessageHistory | AutoBeRealizeHistory> => {
     // PREDICATION
-    const operations: AutoBeOpenApi.IOperation[] | undefined =
-      ctx.state().interface?.document.operations;
-    if (!operations)
+    const document: AutoBeOpenApi.IDocument | undefined =
+      ctx.state().interface?.document;
+    if (document === undefined)
       throw new Error("Can't do realize agent because operations are nothing.");
 
     const start: Date = new Date();
@@ -60,10 +60,9 @@ export const orchestrateRealize =
       await orchestrateRealizeAuthorization(ctx);
 
     // SCENARIOS
-    const scenarios: IAutoBeRealizeScenarioResult[] = operations.map(
+    const scenarios: IAutoBeRealizeScenarioResult[] = document.operations.map(
       (operation) => generateRealizeScenario(ctx, operation, authorizations),
     );
-    const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
 
     const writeProgress: AutoBeProgressEventBase = {
       total: scenarios.length,
