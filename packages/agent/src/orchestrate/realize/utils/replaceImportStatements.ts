@@ -102,7 +102,7 @@ export async function replaceImportStatements<Model extends ILlmSchema.Model>(
     code: string;
     decoratorType?: string;
   },
-) {
+): Promise<string> {
   let { operation, code, decoratorType } = props;
 
   // Extract type references from operation
