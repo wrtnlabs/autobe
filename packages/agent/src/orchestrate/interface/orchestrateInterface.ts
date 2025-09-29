@@ -6,6 +6,7 @@ import {
   AutoBeInterfaceHistory,
   AutoBeOpenApi,
 } from "@autobe/interface";
+import { AutoBeInterfacePrerequisite } from "@autobe/interface/src/histories/contents/AutoBeInterfacePrerequisite";
 import { AutoBeEndpointComparator } from "@autobe/utils";
 import { ILlmSchema } from "@samchon/openapi";
 import { HashMap, Pair } from "tstl";
@@ -19,6 +20,7 @@ import { orchestrateInterfaceComplement } from "./orchestrateInterfaceComplement
 import { orchestrateInterfaceEndpoints } from "./orchestrateInterfaceEndpoints";
 import { orchestrateInterfaceGroups } from "./orchestrateInterfaceGroups";
 import { orchestrateInterfaceOperations } from "./orchestrateInterfaceOperations";
+import { orchestrateInterfacePrerequisites } from "./orchestrateInterfacePrerequisites";
 import { orchestrateInterfaceSchemas } from "./orchestrateInterfaceSchemas";
 import { orchestrateInterfaceSchemasReview } from "./orchestrateInterfaceSchemasReview";
 
@@ -109,6 +111,16 @@ export const orchestrateInterface =
         document.components.schemas,
       );
     Object.assign(document.components.schemas, schemas);
+
+    const prerequisites: AutoBeInterfacePrerequisite[] =
+      await orchestrateInterfacePrerequisites(ctx, document);
+
+    document.operations.forEach((op) => {
+      op.prerequisites =
+        prerequisites.find(
+          (p) => p.endpoint.method === op.method && p.endpoint.path === op.path,
+        )?.prerequisites ?? [];
+    });
 
     // DO COMPILE
     return ctx.dispatch({
