@@ -68,6 +68,7 @@ export const validate_agent_realize_write = async (
         const write: AutoBeRealizeWriteEvent = await orchestrateRealizeWrite(
           agent.getContext(),
           {
+            document: agent.getContext().state().interface!.document,
             totalAuthorizations: authorizations,
             authorization: authorization ?? null,
             progress,
@@ -95,6 +96,7 @@ export const validate_agent_realize_write = async (
           agent.getContext(),
           {
             totalAuthorizations: authorizations,
+            document: agent.getContext().state().interface!.document,
             authorization: authorization ?? null,
             progress,
             scenario,
