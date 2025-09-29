@@ -1,5 +1,5 @@
 import { AutoBeOpenApi } from "@autobe/interface";
-import { AutoBeEndpointComparator, StringUtil } from "@autobe/utils";
+import { AutoBeOpenApiEndpointComparator, StringUtil } from "@autobe/utils";
 import { HashMap } from "tstl";
 import { IValidation } from "typia";
 import { Escaper } from "typia/lib/utils/Escaper";
@@ -8,14 +8,13 @@ import { emplaceMap } from "../../../utils/emplaceMap";
 import { JsonSchemaValidator } from "./JsonSchemaValidator";
 
 export namespace OperationValidator {
-  export interface IProps {
+  export const validate = (props: {
     errors: IValidation.IError[];
     path: string;
     operations: Array<
       Omit<AutoBeOpenApi.IOperation, "authorizationRole" | "authorizationType">
     >;
-  }
-  export const validate = (props: IProps): void => {
+  }): void => {
     props.operations.forEach((op, i) => {
       // get method has request body
       if (op.method === "get" && op.requestBody !== null)
@@ -59,8 +58,8 @@ export namespace OperationValidator {
 
     // validate duplicated endpoints
     const endpoints: HashMap<AutoBeOpenApi.IEndpoint, number[]> = new HashMap(
-      AutoBeEndpointComparator.hashCode,
-      AutoBeEndpointComparator.equals,
+      AutoBeOpenApiEndpointComparator.hashCode,
+      AutoBeOpenApiEndpointComparator.equals,
     );
     props.operations.forEach((op, i) => {
       const key: AutoBeOpenApi.IEndpoint = {

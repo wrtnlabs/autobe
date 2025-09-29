@@ -5,7 +5,11 @@ import {
   AutoBeProgressEventBase,
   AutoBeTestScenario,
 } from "@autobe/interface";
-import { AutoBeEndpointComparator, MapUtil, StringUtil } from "@autobe/utils";
+import {
+  AutoBeOpenApiEndpointComparator,
+  MapUtil,
+  StringUtil,
+} from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { HashMap, IPointer, Pair } from "tstl";
 import typia from "typia";
@@ -45,8 +49,8 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
             op,
           ),
       ),
-      AutoBeEndpointComparator.hashCode,
-      AutoBeEndpointComparator.equals,
+      AutoBeOpenApiEndpointComparator.hashCode,
+      AutoBeOpenApiEndpointComparator.equals,
     );
 
   const endpointNotFound: string = [
@@ -405,8 +409,8 @@ const uniqueScenarioGroups = (
 ): IAutoBeTestScenarioApplication.IScenarioGroup[] =>
   new HashMap(
     groups.map((g) => new Pair(g.endpoint, g)),
-    AutoBeEndpointComparator.hashCode,
-    AutoBeEndpointComparator.equals,
+    AutoBeOpenApiEndpointComparator.hashCode,
+    AutoBeOpenApiEndpointComparator.equals,
   )
     .toJSON()
     .map((it) => it.second);

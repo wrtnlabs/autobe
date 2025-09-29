@@ -5,6 +5,7 @@ import {
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { AutoBeInterfaceGroup } from "@autobe/interface/src/histories/contents/AutoBeInterfaceGroup";
+import { AutoBeOpenApiEndpointComparator } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import { HashSet, IPointer } from "tstl";
 import typia from "typia";
@@ -16,7 +17,6 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformInterfaceEndpointHistories } from "./histories/transformInterfaceEndpointHistories";
 import { orchestrateInterfaceEndpointsReview } from "./orchestrateInterfaceEndpointsReview";
 import { IAutoBeInterfaceEndpointApplication } from "./structures/IAutoBeInterfaceEndpointApplication";
-import { OpenApiEndpointComparator } from "./utils/OpenApiEndpointComparator";
 
 export async function orchestrateInterfaceEndpoints<
   Model extends ILlmSchema.Model,
@@ -50,8 +50,8 @@ export async function orchestrateInterfaceEndpoints<
   ).flat();
   const deduplicated: AutoBeOpenApi.IEndpoint[] = new HashSet(
     endpoints,
-    OpenApiEndpointComparator.hashCode,
-    OpenApiEndpointComparator.equals,
+    AutoBeOpenApiEndpointComparator.hashCode,
+    AutoBeOpenApiEndpointComparator.equals,
   ).toJSON();
   return orchestrateInterfaceEndpointsReview(ctx, deduplicated);
 }
@@ -97,8 +97,8 @@ async function process<Model extends ILlmSchema.Model>(
     id: v7(),
     endpoints: new HashSet(
       pointer.value,
-      OpenApiEndpointComparator.hashCode,
-      OpenApiEndpointComparator.equals,
+      AutoBeOpenApiEndpointComparator.hashCode,
+      AutoBeOpenApiEndpointComparator.equals,
     ).toJSON(),
     tokenUsage,
     created_at: start.toISOString(),

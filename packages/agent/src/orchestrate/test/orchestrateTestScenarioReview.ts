@@ -1,6 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import { AutoBeProgressEventBase, AutoBeTestScenario } from "@autobe/interface";
-import { AutoBeEndpointComparator } from "@autobe/utils";
+import { AutoBeOpenApiEndpointComparator } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { HashMap, IPointer, Pair } from "tstl";
 import typia from "typia";
@@ -172,8 +172,8 @@ const uniqueScenarioGroups = (
 ): IAutoBeTestScenarioApplication.IScenarioGroup[] =>
   new HashMap(
     groups.map((g) => new Pair(g.endpoint, g)),
-    AutoBeEndpointComparator.hashCode,
-    AutoBeEndpointComparator.equals,
+    AutoBeOpenApiEndpointComparator.hashCode,
+    AutoBeOpenApiEndpointComparator.equals,
   )
     .toJSON()
     .map((it) => it.second);

@@ -4,7 +4,7 @@ import {
   AutoBeOpenApi,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
-import { StringUtil } from "@autobe/utils";
+import { AutoBeOpenApiEndpointComparator, StringUtil } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { HashMap, HashSet, IPointer } from "tstl";
 import typia from "typia";
@@ -19,7 +19,6 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformInterfaceOperationHistories } from "./histories/transformInterfaceOperationHistories";
 import { orchestrateInterfaceOperationsReview } from "./orchestrateInterfaceOperationsReview";
 import { IAutoBeInterfaceOperationApplication } from "./structures/IAutoBeInterfaceOperationApplication";
-import { OpenApiEndpointComparator } from "./utils/OpenApiEndpointComparator";
 import { OperationValidator } from "./utils/OperationValidator";
 
 export async function orchestrateInterfaceOperations<
@@ -72,13 +71,13 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
 ): Promise<AutoBeOpenApi.IOperation[]> {
   const remained: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(
     props.endpoints,
-    OpenApiEndpointComparator.hashCode,
-    OpenApiEndpointComparator.equals,
+    AutoBeOpenApiEndpointComparator.hashCode,
+    AutoBeOpenApiEndpointComparator.equals,
   );
   const unique: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation> =
     new HashMap(
-      OpenApiEndpointComparator.hashCode,
-      OpenApiEndpointComparator.equals,
+      AutoBeOpenApiEndpointComparator.hashCode,
+      AutoBeOpenApiEndpointComparator.equals,
     );
   for (let i: number = 0; i < ctx.retry; ++i) {
     if (remained.empty() === true || unique.size() >= props.endpoints.length)

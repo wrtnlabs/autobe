@@ -1,7 +1,15 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 import { hash } from "tstl";
 
-export namespace AutoBeEndpointComparator {
+export namespace AutoBeOpenApiEndpointComparator {
+  export function compare(
+    x: AutoBeOpenApi.IEndpoint,
+    y: AutoBeOpenApi.IEndpoint,
+  ): number {
+    if (x.path !== y.path) return x.path.localeCompare(y.path);
+    return x.method.localeCompare(y.method);
+  }
+
   export const equals = (
     x: AutoBeOpenApi.IEndpoint,
     y: AutoBeOpenApi.IEndpoint,

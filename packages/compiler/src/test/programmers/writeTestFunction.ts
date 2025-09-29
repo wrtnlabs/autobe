@@ -1,6 +1,6 @@
 import { AutoBeOpenApi, IAutoBeTestWriteProps } from "@autobe/interface";
 import {
-  AutoBeEndpointComparator,
+  AutoBeOpenApiEndpointComparator,
   transformOpenApiDocument,
 } from "@autobe/utils";
 import { NestiaMigrateImportProgrammer } from "@nestia/migrate/lib/programmers/NestiaMigrateImportProgrammer";
@@ -75,13 +75,13 @@ function associate(
             o,
           ),
       ),
-      AutoBeEndpointComparator.hashCode,
-      AutoBeEndpointComparator.equals,
+      AutoBeOpenApiEndpointComparator.hashCode,
+      AutoBeOpenApiEndpointComparator.equals,
     );
   const functions: HashMap<AutoBeOpenApi.IEndpoint, IAutoBeTestApiFunction> =
     new HashMap(
-      AutoBeEndpointComparator.hashCode,
-      AutoBeEndpointComparator.equals,
+      AutoBeOpenApiEndpointComparator.hashCode,
+      AutoBeOpenApiEndpointComparator.equals,
     );
 
   // from migrate application

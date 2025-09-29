@@ -141,7 +141,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
   const validate = (
     next: unknown,
   ): IValidation<IAutoBeInterfaceComplementApplication.IProps> => {
-    JsonSchemaFactory.fix("schemas", next);
+    JsonSchemaFactory.fixPage("schemas", next);
 
     const result: IValidation<IAutoBeInterfaceComplementApplication.IProps> =
       typia.validate<IAutoBeInterfaceComplementApplication.IProps>(next);

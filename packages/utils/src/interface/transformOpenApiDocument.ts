@@ -7,14 +7,14 @@ import {
 } from "@samchon/openapi";
 import { HashMap } from "tstl";
 
-import { AutoBeEndpointComparator } from "./AutoBeEndpointComparator";
+import { AutoBeOpenApiEndpointComparator } from "./AutoBeOpenApiEndpointComparator";
 
 export function transformOpenApiDocument(
   document: AutoBeOpenApi.IDocument,
 ): OpenApi.IDocument {
   const dict: HashMap<AutoBeOpenApi.IEndpoint, string> = new HashMap(
-    AutoBeEndpointComparator.hashCode,
-    AutoBeEndpointComparator.equals,
+    AutoBeOpenApiEndpointComparator.hashCode,
+    AutoBeOpenApiEndpointComparator.equals,
   );
   const paths: Record<string, OpenApi.IPath> = {};
 

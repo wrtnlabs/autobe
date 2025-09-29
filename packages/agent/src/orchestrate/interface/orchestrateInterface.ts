@@ -6,7 +6,7 @@ import {
   AutoBeInterfaceHistory,
   AutoBeOpenApi,
 } from "@autobe/interface";
-import { AutoBeEndpointComparator } from "@autobe/utils";
+import { AutoBeOpenApiEndpointComparator } from "@autobe/utils";
 import { ILlmSchema } from "@samchon/openapi";
 import { HashMap, Pair } from "tstl";
 import { v7 } from "uuid";
@@ -21,6 +21,7 @@ import { orchestrateInterfaceGroups } from "./orchestrateInterfaceGroups";
 import { orchestrateInterfaceOperations } from "./orchestrateInterfaceOperations";
 import { orchestrateInterfaceSchemas } from "./orchestrateInterfaceSchemas";
 import { orchestrateInterfaceSchemasReview } from "./orchestrateInterfaceSchemasReview";
+import { JsonSchemaFactory } from "./utils/JsonSchemaFactory";
 
 export const orchestrateInterface =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
@@ -91,8 +92,8 @@ export const orchestrateInterface =
             o, // early inserted be kept
           ),
       ),
-      AutoBeEndpointComparator.hashCode,
-      AutoBeEndpointComparator.equals,
+      AutoBeOpenApiEndpointComparator.hashCode,
+      AutoBeOpenApiEndpointComparator.equals,
     )
       .toJSON()
       .map((it) => it.second);
@@ -125,9 +126,10 @@ export const orchestrateInterface =
         document.components.schemas,
       );
     Object.assign(document.components.schemas, schemas);
-    for (const key of Object.keys(document.components.schemas))
-      if (key === "IPageI" || key.startsWith("IPageI."))
-        delete document.components.schemas[key];
+    JsonSchemaFactory.removeUnused({
+      operations: document.operations,
+      schemas: document.components.schemas,
+    });
 
     // DO COMPILE
     return ctx.dispatch({

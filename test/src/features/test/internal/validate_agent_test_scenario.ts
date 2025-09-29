@@ -5,7 +5,7 @@ import {
   AutoBeOpenApi,
   AutoBeTestScenario,
 } from "@autobe/interface";
-import { AutoBeEndpointComparator } from "@autobe/utils";
+import { AutoBeOpenApiEndpointComparator } from "@autobe/utils";
 import { HashMap, Pair } from "tstl";
 import typia from "typia";
 
@@ -50,8 +50,8 @@ export const validate_agent_test_scenario = async (
             op,
           ),
       ),
-      AutoBeEndpointComparator.hashCode,
-      AutoBeEndpointComparator.equals,
+      AutoBeOpenApiEndpointComparator.hashCode,
+      AutoBeOpenApiEndpointComparator.equals,
     );
   for (const group of result) {
     endpoints.get(group.endpoint);
