@@ -1,6 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import { AutoBeProgressEventBase, AutoBeTestScenario } from "@autobe/interface";
-import { AutoBeEndpointComparator } from "@autobe/utils";
+import { AutoBeOpenApiEndpointComparator } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { HashMap, IPointer, Pair } from "tstl";
 import typia from "typia";
@@ -16,21 +16,26 @@ export async function orchestrateTestScenarioReview<
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
-  groups: IAutoBeTestScenarioApplication.IScenarioGroup[],
-  progress: AutoBeProgressEventBase,
+  props: {
+    instruction: string;
+    groups: IAutoBeTestScenarioApplication.IScenarioGroup[];
+    progress: AutoBeProgressEventBase;
+  },
 ): Promise<IAutoBeTestScenarioApplication.IScenarioGroup[]> {
   const res: IAutoBeTestScenarioApplication.IScenarioGroup[] = await review(
     ctx,
-    groups,
-    progress,
+    props,
   );
   return res;
 }
 
 async function review<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  groups: IAutoBeTestScenarioApplication.IScenarioGroup[],
-  progress: AutoBeProgressEventBase,
+  props: {
+    instruction: string;
+    groups: IAutoBeTestScenarioApplication.IScenarioGroup[];
+    progress: AutoBeProgressEventBase;
+  },
 ): Promise<IAutoBeTestScenarioApplication.IScenarioGroup[]> {
   try {
     const pointer: IPointer<IAutoBeTestScenarioReviewApplication.IProps | null> =
@@ -42,9 +47,13 @@ async function review<Model extends ILlmSchema.Model>(
       controller: createController({
         model: ctx.model,
         pointer,
-        originalGroups: groups,
+        originalGroups: props.groups,
       }),
-      histories: transformTestScenarioReviewHistories(ctx, groups),
+      histories: transformTestScenarioReviewHistories({
+        state: ctx.state(),
+        groups: props.groups,
+        instruction: props.instruction,
+      }),
       enforceFunctionCall: true,
       message: "Review the Test Scenario.",
     });
@@ -53,17 +62,17 @@ async function review<Model extends ILlmSchema.Model>(
       throw new Error("Failed to get review result.");
     }
 
-    progress.total = Math.max(
-      progress.total,
-      (progress.completed += pointer.value.scenarioGroups.length),
+    props.progress.total = Math.max(
+      props.progress.total,
+      (props.progress.completed += pointer.value.scenarioGroups.length),
     );
 
     ctx.dispatch({
       type: "testScenariosReview",
       id: v7(),
       tokenUsage,
-      total: progress.total,
-      completed: progress.completed,
+      total: props.progress.total,
+      completed: props.progress.completed,
       scenarios: pointer.value.scenarioGroups
         .map((group) => {
           return group.scenarios.map((s) => {
@@ -77,10 +86,14 @@ async function review<Model extends ILlmSchema.Model>(
       step: ctx.state().interface?.step ?? 0,
       created_at: new Date().toISOString(),
     });
-    return pointer.value.scenarioGroups;
+    // @todo michael: need to investigate scenario removal more gracefully
+    return pointer.value.pass
+      ? // || pointer.value.scenarioGroups.length < props.groups.length
+        props.groups
+      : pointer.value.scenarioGroups;
   } catch {
-    progress.completed += groups.length;
-    return groups;
+    props.progress.completed += props.groups.length;
+    return props.groups;
   }
 }
 
@@ -159,8 +172,8 @@ const uniqueScenarioGroups = (
 ): IAutoBeTestScenarioApplication.IScenarioGroup[] =>
   new HashMap(
     groups.map((g) => new Pair(g.endpoint, g)),
-    AutoBeEndpointComparator.hashCode,
-    AutoBeEndpointComparator.equals,
+    AutoBeOpenApiEndpointComparator.hashCode,
+    AutoBeOpenApiEndpointComparator.equals,
   )
     .toJSON()
     .map((it) => it.second);

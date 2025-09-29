@@ -279,7 +279,7 @@ const createDispatch = (props: {
         history: {
           type: "analyze",
           id: v7(),
-          reason: analyzeStart?.reason ?? "",
+          instruction: analyzeStart?.reason ?? "",
           prefix: event.prefix,
           roles: event.roles,
           files: event.files,
@@ -297,7 +297,7 @@ const createDispatch = (props: {
         history: {
           type: "prisma",
           id: v7(),
-          reason: prismaStart?.reason ?? "",
+          instruction: prismaStart?.reason ?? "",
           schemas: event.schemas,
           result: event.result,
           compiled: event.compiled,
@@ -315,7 +315,7 @@ const createDispatch = (props: {
         history: {
           type: "interface",
           id: v7(),
-          reason: interfaceStart?.reason ?? "",
+          instruction: interfaceStart?.reason ?? "",
           authorizations: event.authorizations,
           document: event.document,
           created_at: interfaceStart?.created_at ?? new Date().toISOString(),
@@ -332,7 +332,7 @@ const createDispatch = (props: {
         history: {
           type: "test",
           id: v7(),
-          reason: testStart?.reason ?? "",
+          instruction: testStart?.reason ?? "",
           files: event.files,
           compiled: event.compiled,
           created_at: testStart?.created_at ?? new Date().toISOString(),
@@ -349,7 +349,7 @@ const createDispatch = (props: {
         history: {
           type: "realize",
           id: v7(),
-          reason: realizeStart?.reason ?? "",
+          instruction: realizeStart?.reason ?? "",
           authorizations: event.authorizations,
           functions: event.functions,
           controllers: event.controllers,

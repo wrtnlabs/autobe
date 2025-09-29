@@ -10,8 +10,11 @@ import { AutoBeContext } from "../../../context/AutoBeContext";
 
 export const transformAnalyzeWriteHistories = <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  scenario: AutoBeAnalyzeScenarioEvent,
-  file: AutoBeAnalyzeFile.Scenario,
+  props: {
+    scenario: AutoBeAnalyzeScenarioEvent;
+    file: AutoBeAnalyzeFile.Scenario;
+    instruction: string;
+  },
 ): Array<
   | IAgenticaHistoryJson.IUserMessage
   | IAgenticaHistoryJson.IAssistantMessage
@@ -46,15 +49,15 @@ export const transformAnalyzeWriteHistories = <Model extends ILlmSchema.Model>(
     text: StringUtil.trim`
       ## Language
       
-      The language of the document is ${JSON.stringify(scenario.language ?? "en-US")}.
+      The language of the document is ${JSON.stringify(props.scenario.language ?? "en-US")}.
       
       ## Metadata
       
-      Prefix name of the service to create is ${scenario.prefix}
+      Prefix name of the service to create is ${props.scenario.prefix}
       and here is the list of the roles to reference.
       
       \`\`\`json
-      ${JSON.stringify(scenario.roles)}
+      ${JSON.stringify(props.scenario.roles)}
       \`\`\`
       
       Here is the entire list of the documents that would be published
@@ -64,14 +67,26 @@ export const transformAnalyzeWriteHistories = <Model extends ILlmSchema.Model>(
 
       \`\`\`json
       ${JSON.stringify(
-        scenario.files.filter((f) => f.filename !== file.filename),
+        props.scenario.files.filter((f) => f.filename !== props.file.filename),
       )}
       \`\`\`
       
       ## The document to write
       \`\`\`json
-      ${JSON.stringify(file)}
+      ${JSON.stringify(props.file)}
       \`\`\`
+
+      ## Instructions from Requirements Discussion
+      
+      The following instructions were extracted by AI from 
+      the discussion with the user about requirements.
+      If these instructions are relevant to the document you're 
+      currently writing (${props.file.filename}), incorporate 
+      them appropriately. 
+      
+      If not relevant to this specific document, ignore them.
+      
+      ${props.instruction}
     `,
   },
 ];

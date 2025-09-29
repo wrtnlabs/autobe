@@ -1,4 +1,8 @@
 export interface IAutoBeApplicationProps {
-  /** The reason of the function call. */
-  reason: string;
+  /**
+   * Instructions for each agent phase redefined by AI from user's utterance.
+   * Contains specific guidance for analyze/prisma/interface/test/realize
+   * agents.
+   */
+  instruction: string;
 }

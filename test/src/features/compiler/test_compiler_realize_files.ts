@@ -31,7 +31,7 @@ export const test_compiler_realize_files = async () => {
         id: v7(),
         created_at: new Date().toISOString(),
         completed_at: new Date().toISOString(),
-        reason: "Realize files for compiler",
+        instruction: "Realize files for compiler",
         step: 0,
       },
     ],

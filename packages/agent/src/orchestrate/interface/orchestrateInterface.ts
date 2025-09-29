@@ -7,7 +7,7 @@ import {
   AutoBeOpenApi,
 } from "@autobe/interface";
 import { AutoBeInterfacePrerequisite } from "@autobe/interface/src/histories/contents/AutoBeInterfacePrerequisite";
-import { AutoBeEndpointComparator } from "@autobe/utils";
+import { AutoBeOpenApiEndpointComparator } from "@autobe/utils";
 import { ILlmSchema } from "@samchon/openapi";
 import { HashMap, Pair } from "tstl";
 import { v7 } from "uuid";
@@ -23,6 +23,7 @@ import { orchestrateInterfaceOperations } from "./orchestrateInterfaceOperations
 import { orchestrateInterfacePrerequisites } from "./orchestrateInterfacePrerequisites";
 import { orchestrateInterfaceSchemas } from "./orchestrateInterfaceSchemas";
 import { orchestrateInterfaceSchemasReview } from "./orchestrateInterfaceSchemasReview";
+import { JsonSchemaFactory } from "./utils/JsonSchemaFactory";
 
 export const orchestrateInterface =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
@@ -47,28 +48,38 @@ export const orchestrateInterface =
       type: "interfaceStart",
       id: v7(),
       created_at: start.toISOString(),
-      reason: props.reason,
+      reason: props.instruction,
       step: ctx.state().analyze?.step ?? 0,
     });
 
     // ENDPOINTS
-    const init: AutoBeInterfaceGroupsEvent =
-      await orchestrateInterfaceGroups(ctx);
+    const init: AutoBeInterfaceGroupsEvent = await orchestrateInterfaceGroups(
+      ctx,
+      {
+        instruction: props.instruction,
+      },
+    );
     ctx.dispatch(init);
 
     // AUTHORIZATION
     const authorizations: AutoBeInterfaceAuthorization[] =
-      await orchestrateInterfaceAuthorizations(ctx);
-
-    const authOperations = authorizations
+      await orchestrateInterfaceAuthorizations(ctx, props.instruction);
+    const authOperations: AutoBeOpenApi.IOperation[] = authorizations
       .map((authorization) => authorization.operations)
       .flat();
 
     // ENDPOINTS & OPERATIONS
     const endpoints: AutoBeOpenApi.IEndpoint[] =
-      await orchestrateInterfaceEndpoints(ctx, init.groups, authOperations);
+      await orchestrateInterfaceEndpoints(ctx, {
+        groups: init.groups,
+        authorizations: authOperations,
+        instruction: props.instruction,
+      });
     const firstOperations: AutoBeOpenApi.IOperation[] =
-      await orchestrateInterfaceOperations(ctx, endpoints);
+      await orchestrateInterfaceOperations(ctx, {
+        endpoints,
+        instruction: props.instruction,
+      });
     const operations: AutoBeOpenApi.IOperation[] = new HashMap<
       AutoBeOpenApi.IEndpoint,
       AutoBeOpenApi.IOperation
@@ -83,8 +94,8 @@ export const orchestrateInterface =
             o, // early inserted be kept
           ),
       ),
-      AutoBeEndpointComparator.hashCode,
-      AutoBeEndpointComparator.equals,
+      AutoBeOpenApiEndpointComparator.hashCode,
+      AutoBeOpenApiEndpointComparator.equals,
     )
       .toJSON()
       .map((it) => it.second);
@@ -94,14 +105,20 @@ export const orchestrateInterface =
       operations,
       components: {
         authorization: ctx.state().analyze?.roles ?? [],
-        schemas: await orchestrateInterfaceSchemas(ctx, operations),
+        schemas: await orchestrateInterfaceSchemas(ctx, {
+          instruction: props.instruction,
+          operations,
+        }),
       },
     };
 
     const complementedSchemas: Record<
       string,
       AutoBeOpenApi.IJsonSchemaDescriptive
-    > = await orchestrateInterfaceComplement(ctx, document);
+    > = await orchestrateInterfaceComplement(ctx, {
+      instruction: props.instruction,
+      document,
+    });
     Object.assign(document.components.schemas, complementedSchemas);
 
     const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
@@ -111,6 +128,10 @@ export const orchestrateInterface =
         document.components.schemas,
       );
     Object.assign(document.components.schemas, schemas);
+    JsonSchemaFactory.removeUnused({
+      operations: document.operations,
+      schemas: document.components.schemas,
+    });
 
     const prerequisites: AutoBeInterfacePrerequisite[] =
       await orchestrateInterfacePrerequisites(ctx, document);

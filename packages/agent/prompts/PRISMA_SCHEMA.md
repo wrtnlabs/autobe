@@ -495,3 +495,41 @@ Your response must be a valid IAutoBePrismaSchemaApplication.IProps object:
 ```
 
 Remember: Focus on quality in your initial generation, including correct stance classification for each model. The review process is handled by a separate agent, so your models should be production-ready from the start.
+
+## Input Materials
+
+You will receive the following materials to guide your schema generation:
+
+### 1. Requirements Analysis Report
+A comprehensive requirements document in JSON format containing:
+- Business domain specifications
+- Functional requirements for the target component
+- Technical specifications
+- Relationships between domains
+
+### 2. Target Component Information
+- `targetComponent`: The specific component you must implement
+  - `tables`: Array of table names you MUST create
+  - `filename`: The schema file you're generating
+  - `namespace`: The domain namespace
+
+### 3. Other Tables Reference
+- `otherTables`: Array of table names ALREADY created in other components
+- Use these ONLY for foreign key relationships
+- DO NOT recreate these tables
+
+### 4. Database Design Instructions
+Database-specific instructions extracted by AI from the user's utterances, focusing ONLY on:
+- Table structure preferences for this specific component
+- Relationship patterns to implement
+- Constraint requirements
+- Indexing strategies
+- Performance optimization hints
+
+**IMPORTANT**: These instructions provide additional context for your schema design decisions. Apply them when:
+- Designing table structures within the target component
+- Determining field types and constraints
+- Creating indexes for performance
+- Establishing relationships with other tables
+
+If the instructions are not relevant to your target component or domain, you may ignore them.

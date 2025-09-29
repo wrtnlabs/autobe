@@ -4,7 +4,7 @@ import {
   AutoBeOpenApi,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
-import { StringUtil } from "@autobe/utils";
+import { AutoBeOpenApiEndpointComparator, StringUtil } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { HashMap, HashSet, IPointer } from "tstl";
 import typia from "typia";
@@ -19,21 +19,22 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformInterfaceOperationHistories } from "./histories/transformInterfaceOperationHistories";
 import { orchestrateInterfaceOperationsReview } from "./orchestrateInterfaceOperationsReview";
 import { IAutoBeInterfaceOperationApplication } from "./structures/IAutoBeInterfaceOperationApplication";
-import { OpenApiEndpointComparator } from "./utils/OpenApiEndpointComparator";
 import { OperationValidator } from "./utils/OperationValidator";
 
 export async function orchestrateInterfaceOperations<
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
-  endpoints: AutoBeOpenApi.IEndpoint[],
-  capacity: number = AutoBeConfigConstant.INTERFACE_CAPACITY,
+  props: {
+    instruction: string;
+    endpoints: AutoBeOpenApi.IEndpoint[];
+    capacity?: number;
+  },
 ): Promise<AutoBeOpenApi.IOperation[]> {
   const matrix: AutoBeOpenApi.IEndpoint[][] = divideArray({
-    array: endpoints,
-    capacity,
+    array: props.endpoints,
+    capacity: props.capacity ?? AutoBeConfigConstant.INTERFACE_CAPACITY,
   });
-
   const progress: AutoBeProgressEventBase = {
     total: matrix.flat().length,
     completed: 0,
@@ -45,13 +46,13 @@ export async function orchestrateInterfaceOperations<
   return (
     await executeCachedBatch(
       matrix.map((it) => async (promptCacheKey) => {
-        const row: AutoBeOpenApi.IOperation[] = await divideAndConquer(
-          ctx,
-          it,
+        const row: AutoBeOpenApi.IOperation[] = await divideAndConquer(ctx, {
+          endpoints: it,
           progress,
           reviewProgress,
           promptCacheKey,
-        );
+          instruction: props.instruction,
+        });
         return row;
       }),
     )
@@ -60,25 +61,34 @@ export async function orchestrateInterfaceOperations<
 
 async function divideAndConquer<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  endpoints: AutoBeOpenApi.IEndpoint[],
-  operationsProgress: AutoBeProgressEventBase,
-  operationsReviewProgress: AutoBeProgressEventBase,
-  promptCacheKey: string,
+  props: {
+    endpoints: AutoBeOpenApi.IEndpoint[];
+    progress: AutoBeProgressEventBase;
+    reviewProgress: AutoBeProgressEventBase;
+    promptCacheKey: string;
+    instruction: string;
+  },
 ): Promise<AutoBeOpenApi.IOperation[]> {
   const remained: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(
-    endpoints,
-    OpenApiEndpointComparator.hashCode,
-    OpenApiEndpointComparator.equals,
+    props.endpoints,
+    AutoBeOpenApiEndpointComparator.hashCode,
+    AutoBeOpenApiEndpointComparator.equals,
   );
   const unique: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation> =
     new HashMap(
-      OpenApiEndpointComparator.hashCode,
-      OpenApiEndpointComparator.equals,
+      AutoBeOpenApiEndpointComparator.hashCode,
+      AutoBeOpenApiEndpointComparator.equals,
     );
   for (let i: number = 0; i < ctx.retry; ++i) {
-    if (remained.empty() === true || unique.size() >= endpoints.length) break;
+    if (remained.empty() === true || unique.size() >= props.endpoints.length)
+      break;
     const operations: AutoBeOpenApi.IOperation[] = remained.size()
-      ? await process(ctx, remained, operationsProgress, promptCacheKey)
+      ? await process(ctx, {
+          endpoints: remained,
+          progress: props.progress,
+          promptCacheKey: props.promptCacheKey,
+          instruction: props.instruction,
+        })
       : [];
 
     for (const item of operations) {
@@ -90,7 +100,7 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
     await orchestrateInterfaceOperationsReview(
       ctx,
       unique.toJSON().map((it) => it.second),
-      operationsReviewProgress,
+      props.reviewProgress,
     );
   for (const item of newbie) unique.set(item, item);
   return unique.toJSON().map((it) => it.second);
@@ -98,9 +108,12 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
 
 async function process<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
-  endpoints: HashSet<AutoBeOpenApi.IEndpoint>,
-  progress: AutoBeProgressEventBase,
-  promptCacheKey: string,
+  props: {
+    endpoints: HashSet<AutoBeOpenApi.IEndpoint>;
+    progress: AutoBeProgressEventBase;
+    promptCacheKey: string;
+    instruction: string;
+  },
 ): Promise<AutoBeOpenApi.IOperation[]> {
   const prefix: string = NamingConvention.camel(ctx.state().analyze!.prefix);
   const pointer: IPointer<AutoBeOpenApi.IOperation[] | null> = {
@@ -108,10 +121,11 @@ async function process<Model extends ILlmSchema.Model>(
   };
   const { tokenUsage } = await ctx.conversate({
     source: "interfaceOperations",
-    histories: transformInterfaceOperationHistories(
-      ctx.state(),
-      endpoints.toJSON(),
-    ),
+    histories: transformInterfaceOperationHistories({
+      state: ctx.state(),
+      endpoints: props.endpoints.toJSON(),
+      instruction: props.instruction,
+    }),
     controller: createController({
       model: ctx.model,
       roles: ctx.state().analyze?.roles.map((it) => it.name) ?? [],
@@ -145,10 +159,10 @@ async function process<Model extends ILlmSchema.Model>(
           }));
         });
         pointer.value.push(...matrix.flat());
-        progress.completed += matrix.flat().length;
-        progress.total += operations
+        props.progress.completed += matrix.flat().length;
+        props.progress.total += operations
           .map((op) =>
-            endpoints.has({ path: op.path, method: op.method })
+            props.endpoints.has({ path: op.path, method: op.method })
               ? op.authorizationRoles.length === 0
                 ? 0
                 : op.authorizationRoles.length - 1
@@ -158,7 +172,7 @@ async function process<Model extends ILlmSchema.Model>(
       },
     }),
     enforceFunctionCall: true,
-    promptCacheKey,
+    promptCacheKey: props.promptCacheKey,
     message: "Make API operations",
   });
   if (pointer.value === null) throw new Error("Failed to create operations."); // never be happened
@@ -168,7 +182,7 @@ async function process<Model extends ILlmSchema.Model>(
     id: v7(),
     operations: pointer.value,
     tokenUsage,
-    ...progress,
+    ...props.progress,
     step: ctx.state().analyze?.step ?? 0,
     created_at: new Date().toISOString(),
   } satisfies AutoBeInterfaceOperationsEvent);

@@ -41,7 +41,25 @@ export namespace JsonSchemaValidator {
           it to a valid variable name at the next time.
         `,
       });
-    if (props.key === "IPageIRequest")
+    if (props.key.endsWith(".IPage")) {
+      const expected: string = `IPage${props.key.substring(0, props.key.length - 6)}`;
+      props.errors.push({
+        path: `${props.path}[${JSON.stringify(props.key)}]`,
+        expected: `"IPage" must be followed by another interface name. Use ${JSON.stringify(expected)} instead.`,
+        value: props.key,
+        description: StringUtil.trim`
+          "IPage" is a reserved type name for pagination response.
+          The pagination data type name must be post-fixed after "IPage".
+          
+          However, you've defined ${JSON.stringify(props.key)}, 
+          post-fixing ".IPage" after the pagination data type name.
+
+          Change it to a valid pagination type name to be
+          ${JSON.stringify(expected)} at the next time. Note that,
+          this is not a recommendation, but an instruction you must follow.
+        `,
+      });
+    } else if (props.key === "IPageIRequest")
       props.errors.push({
         path: `${props.path}[${JSON.stringify(props.key)}]`,
         expected: `"IPageIRequest" is a mistake. Use "IPage.IRequest" instead.`,

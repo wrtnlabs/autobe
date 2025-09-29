@@ -22,21 +22,21 @@ This AI chatbot service requires membership registration to use, and each member
 
 When a regular member additionally has a moderator or administrator record (each having a 1:1 relationship with member), they acquire corresponding system permissions.
 
-Also, each member can have accounts, and `ChatSession` or `ProcedureSession` etc. are all attributed to these accounts. These accounts can be transferred to other members - considering cases where employees leave the company and need to hand over their sessions and assets to successors.
+Also, each member can have accounts, and `WrtnChatSession` or `WrtnProcedureSession` etc. are all attributed to these accounts. These accounts can be transferred to other members - considering cases where employees leave the company and need to hand over their sessions and assets to successors.
 
-- `Member`
+- `WrtnMember`
   - Name
   - Phone number
   - Password
-- `MemberEmail`
+- `WrtnMemberEmail`
   - Email address, but must be verified
   - Multiple emails can be registered per member
-- `Account`
+- `WrtnAccount`
   - Account code (someone)
   - Can be transferred to other members
-- `Moderator`
+- `WrtnModerator`
   - When regular member has additional moderator record, gains moderator permissions
-- `Administrator`
+- `WrtnAdministrator`
   - When regular member has additional administrator record, gains administrator permissions
 
 ## Enterprise
@@ -48,15 +48,17 @@ Also, employees have company-level positions called title with values (owner, ma
 
 Finally, all appointment and position/role change information for employees and companions must be recorded for tracking. Member appointments can be made by managers, and manager appointments can be made by owners/chiefs. Even if someone who was previously a manager is currently demoted to member, the past appointment or change history must not be compromised.
 
-- `Enterprise`: Company or corporation
-- `EnterpriseEmployee`: Employee targets member
-- `EnterpriseTeam`: Has hierarchical structure
-- `EnterpriseTeamCompanion`: Team member targets employee
+- `WrtnEnterprise`: Company or corporation
+- `WrtnEnterpriseEmployee`: Employee targets member
+- `WrtnEnterpriseEmployeeAppointment`
+- `WrtnEnterpriseTeam`: Has hierarchical structure
+- `WrtnEnterpriseTeamCompanion`: Team member targets employee
+- `WrtnEnterpriseTeamCompanionAppointment`
 
 ## Chat Session
 A chat session is an entity that records who opened it with which model (e.g., `openai/gpt-4.1`) and when. User connection information to that session is called connection. All conversation history in each session is referred to as history.
 
-The detailed content in `ChatHistory` will be stored in JSON format. This is because there are so many types that it's difficult to normalize in DB, the content is constantly added, and the data and attribute formats can sometimes be binary or streaming. So in DB design, we'll use one JSON (text) field, but separately record the `type` to know what kind of history it is.
+The detailed content in `WrtnChatSessionHistory` will be stored in JSON format. This is because there are so many types that it's difficult to normalize in DB, the content is constantly added, and the data and attribute formats can sometimes be binary or streaming. So in DB design, we'll use one JSON (text) field, but separately record the `type` to know what kind of history it is.
 
 **For Chat Session implementation:**
 - AutoBE should provide RESTful APIs for chat session creation, read operations, update operations (title change), and deletion
@@ -64,15 +66,15 @@ The detailed content in `ChatHistory` will be stored in JSON format. This is bec
 - The websocket implementation will handle connection management and history creation
 - AutoBE should never touch the chat conversation logic implementation itself
 
-However, when images, PDFs, or other files are attached in conversation history, these attached files should be recorded once more in `ChatSessionHistoryFile`.
+However, when images, PDFs, or other files are attached in conversation history, these attached files should be recorded once more in `WrtnChatSessionHistoryFile`.
 
-- `ChatSession`
-- `ChatSessionConnection` (connected_at ~ disconnected_at)
-- `ChatSessionHistory`
-- `ChatSessionHistoryFile`
-- `ChatSessionAggregate` (token usage aggregation, etc.)
+- `WrtnChatSession`
+- `WrtnChatSessionConnection` (connected_at ~ disconnected_at)
+- `WrtnChatSessionHistory`
+- `WrtnChatSessionHistoryFile`
+- `WrtnChatSessionAggregate` (token usage aggregation, etc.)
 
-For the `type` in `ChatSessionHistory`, I'm thinking of the following structure. Please flesh it out and add comments for documentation. I'll refactor and improve it directly to implement the websocket server, and since this is stored as JSON value in DB, it doesn't need to be too strict.
+For the `type` in `WrtnChatSessionHistory`, I'm thinking of the following structure. Please flesh it out and add comments for documentation. I'll refactor and improve it directly to implement the websocket server, and since this is stored as JSON value in DB, it doesn't need to be too strict.
 
 ```typescript
 type IWrtnChatSessionHistory = 

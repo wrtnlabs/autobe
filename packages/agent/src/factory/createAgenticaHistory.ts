@@ -1,10 +1,16 @@
-import { AgenticaOperation, MicroAgenticaHistory } from "@agentica/core";
+import {
+  AgenticaExecuteHistory,
+  AgenticaOperation,
+  MicroAgenticaHistory,
+} from "@agentica/core";
 import {
   AutoBeAssistantMessageHistory,
   AutoBeHistory,
   AutoBeUserMessageHistory,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
+
+import { IAutoBeApplicationProps } from "../context/IAutoBeApplicationProps";
 
 export function createAgenticaHistory<Model extends ILlmSchema.Model>(props: {
   operations: readonly AgenticaOperation<Model>[];
@@ -30,8 +36,8 @@ export function createAgenticaHistory<Model extends ILlmSchema.Model>(props: {
     created_at: props.history.created_at,
     type: "execute" as const,
     arguments: {
-      reason: props.history.reason,
-    },
+      instruction: props.history.instruction,
+    } satisfies IAutoBeApplicationProps,
     value: {
       success:
         props.history.type === "analyze" || props.history.type === "interface"
@@ -39,7 +45,7 @@ export function createAgenticaHistory<Model extends ILlmSchema.Model>(props: {
           : props.history.compiled.type === "success",
     },
     success: true,
-  };
+  } satisfies Partial<AgenticaExecuteHistory<Model>>;
   return {
     ...partial,
     protocol: operation.protocol as "class",
@@ -49,5 +55,5 @@ export function createAgenticaHistory<Model extends ILlmSchema.Model>(props: {
       protocol: operation.protocol as "class",
       operation: operation.toJSON(),
     }),
-  };
+  } satisfies AgenticaExecuteHistory<Model>;
 }

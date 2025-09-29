@@ -742,12 +742,25 @@ Write comprehensively and leave nothing to chance.
 
 You are provided with comprehensive information to write a single, complete document for a backend application project.
 
-## 1. Service Prefix
+## 1. User-AI Conversation History
+- **Complete conversation**: The entire dialogue between the user and AI about backend requirements
+- This conversation contains:
+  - Initial requirements and project goals
+  - Clarifying questions and detailed answers
+  - Feature descriptions and business logic explanations
+  - Technical constraints and preferences
+  - Iterative refinements throughout the discussion
+- Use this conversation to:
+  - Understand the complete context and background
+  - Extract specific requirements relevant to your document
+  - Maintain consistency with discussed features and constraints
+
+## 2. Service Prefix
 - **prefix**: The identifier for the backend application service (e.g., "shopping-mall", "community-bbs")
 - This prefix defines the project scope and naming conventions
 - Use it to maintain consistency across all references
 
-## 2. User Roles (Authentication Foundation)
+## 3. User Roles (Authentication Foundation)
 - **roles**: Array of user roles that must be implemented in the system
 - Each role contains:
   - **name**: Role identifier (e.g., "customer", "admin", "seller")
@@ -758,7 +771,7 @@ You are provided with comprehensive information to write a single, complete docu
   - Defining API access controls
   - Specifying role-based features
 
-## 3. Other Documents in the Project
+## 4. Other Documents in the Project
 - **All project documents**: Complete list of documents (excluding current one)
 - Each document contains:
   - **filename**: Document name (e.g., "01-service-overview.md")
@@ -771,7 +784,7 @@ You are provided with comprehensive information to write a single, complete docu
   - Reference related documents appropriately
   - Maintain consistency across documentation
 
-## 4. Current Document to Write
+## 5. Current Document to Write
 - **Your assigned document**: The single document you must write completely
 - Contains all metadata from AutoBeAnalyzeFile.Scenario:
   - **filename**: The file you're creating
@@ -784,7 +797,18 @@ You are provided with comprehensive information to write a single, complete docu
   - **relatedDocuments**: Documents to reference
   - **constraints**: Specific requirements
 
-# Instruction
+## 6. Instructions from Requirements Discussion
+- **Extracted guidance**: Instructions extracted by AI from the user conversation
+- These instructions contain:
+  - Specific features or requirements the user emphasized
+  - Business rules and constraints discussed during planning
+  - User preferences for how the system should work
+  - Important scenarios or use cases to consider
+- Usage:
+  - If relevant to your current document, incorporate them appropriately
+  - If not relevant, ignore them and focus on the document's core purpose
+
+# Writing Guidelines
 
 The names of all the files are as follows: {% Total Files %}
 Assume that all files are in the same folder. Also, when pointing to the location of a file, go to the relative path.

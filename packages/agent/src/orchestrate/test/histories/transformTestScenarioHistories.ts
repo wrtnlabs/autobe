@@ -8,12 +8,13 @@ import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeTestScenarioAuthorizationRole } from "../structures/IAutoBeTestScenarioAuthorizationRole";
 import { getReferenceIds } from "../utils/getReferenceIds";
 
-export const transformTestScenarioHistories = (
-  state: AutoBeState,
-  document: AutoBeOpenApi.IDocument,
-  include: AutoBeOpenApi.IOperation[],
-  exclude: Pick<AutoBeOpenApi.IOperation, "method" | "path">[],
-): Array<
+export const transformTestScenarioHistories = (props: {
+  state: AutoBeState;
+  document: AutoBeOpenApi.IDocument;
+  include: AutoBeOpenApi.IOperation[];
+  exclude: Pick<AutoBeOpenApi.IOperation, "method" | "path">[];
+  instruction: string;
+}): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
   interface IRelationship {
@@ -21,18 +22,18 @@ export const transformTestScenarioHistories = (
     ids: string[];
   }
   const authorizations: AutoBeInterfaceAuthorization[] =
-    state.interface?.authorizations ?? [];
+    props.state.interface?.authorizations ?? [];
   const authorizationRoles: Map<string, IAutoBeTestScenarioAuthorizationRole> =
     new Map();
-  const relationships: IRelationship[] = document.operations
-    .map((o) => ({
+  const relationships: IRelationship[] = props.document.operations
+    .map((operation) => ({
       endpoint: {
-        method: o.method,
-        path: o.path,
+        method: operation.method,
+        path: operation.path,
       },
       ids: getReferenceIds({
-        document,
-        operation: o,
+        document: props.document,
+        operation,
       }),
     }))
     .filter((v) => v.ids.length !== 0);
@@ -66,7 +67,22 @@ export const transformTestScenarioHistories = (
       created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: StringUtil.trim`
-        # API Operations
+        ## Instructions
+
+        The following e2e-test-specific instructions were extracted by AI from
+        the user's requirements and conversations. These instructions focus
+        exclusively on test-related aspects such as test coverage priorities,
+        specific edge cases to validate, business logic verification strategies,
+        and critical user workflows that must be tested.
+        
+        Apply these instructions when generating test scenarios to ensure the
+        tests align with the user's testing requirements and expectations.
+        If any instructions are not relevant to the target API operations,
+        you may ignore them.
+
+        ${props.instruction}
+
+        ## API Operations
 
         Below are the complete API operations.
         Use this information to understand capabilities and dependency relationships.
@@ -81,16 +97,12 @@ export const transformTestScenarioHistories = (
         and ensure you identify all dependencies between endpoints.
 
         \`\`\`json
-        ${JSON.stringify({ operations: document.operations })}
+        ${JSON.stringify({
+          operations: props.document.operations,
+        })}
         \`\`\`
-      `,
-    } satisfies IAgenticaHistoryJson.IAssistantMessage,
-    {
-      id: v7(),
-      created_at: new Date().toISOString(),
-      type: "assistantMessage",
-      text: StringUtil.trim`
-        # Included in Test Plan
+
+        ## Included in Test Plan
 
         Below are the endpoints that have been included in the test plan.
         Each endpoint shows its authentication requirements and related authentication APIs.
@@ -99,14 +111,16 @@ export const transformTestScenarioHistories = (
 
         Generate test scenarios only for these included endpoints. Do not create scenarios for excluded endpoints. Operations not listed here may be used only as dependencies.
 
-        ${include
+        ${props.include
           .map((el, i) => {
             const roles = Array.from(authorizationRoles.values()).filter(
               (role) => role.name === el.authorizationRole,
             );
 
-            const requiredIds = getReferenceIds({ document, operation: el });
-
+            const requiredIds = getReferenceIds({
+              document: props.document,
+              operation: el,
+            });
             return StringUtil.trim`
               ## ${i + 1}. ${el.method.toUpperCase()} ${el.path}
 
@@ -136,23 +150,17 @@ export const transformTestScenarioHistories = (
           })
           .join("\n")}
 
-        # Excluded from Test Plan
+        ## Excluded from Test Plan
 
         These are the endpoints that have already been used in test codes generated as part of a plan group.
         These endpoints do not need to be tested again.
         However, it is allowed to reference or depend on these endpoints when writing test codes for other purposes.
 
-        ${exclude
+        ${props.exclude
           .map((el) => `- ${el.method.toUpperCase()}: ${el.path}`)
           .join("\n")}
-      `,
-    } satisfies IAgenticaHistoryJson.IAssistantMessage,
-    {
-      id: v7(),
-      created_at: new Date().toISOString(),
-      type: "assistantMessage",
-      text: StringUtil.trim`
-        # Candidate Dependencies
+
+        ## Candidate Dependencies
     
         List of candidate dependencies extracted from path parameters and request bodies.
 

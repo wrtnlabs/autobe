@@ -1,11 +1,12 @@
 import { AutoBeTokenUsage } from "@autobe/agent";
-import { orchestrateRealize } from "@autobe/agent/src/orchestrate/realize/orchestrateRealize";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
-  AutoBeAssistantMessageHistory,
   AutoBeEventOfSerializable,
   AutoBeEventSnapshot,
+  AutoBeHistory,
   AutoBeRealizeHistory,
+  AutoBeUserMessageContent,
+  AutoBeUserMessageHistory,
 } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 import typia from "typia";
@@ -37,43 +38,30 @@ export const archive_realize = async (
   for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
     agent.on(type, listen);
 
-  // DO TEST GENERATION
-  const ctx = agent.getContext();
-  const result: AutoBeAssistantMessageHistory | AutoBeRealizeHistory =
-    await orchestrateRealize(ctx)({
-      reason: "Validate agent realize",
-    });
-  if (result.type !== "realize") throw new Error("Failed to generate realize.");
+  const userMessage: AutoBeUserMessageHistory =
+    await TestHistory.getUserMessage(project, "realize");
+  const go = (
+    c: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
+  ) => agent.conversate(c);
 
-  const filterTsFiles = (location: string) => location.endsWith(".ts");
+  // DO REALIZE GENERATION
+  let histories: AutoBeHistory[] = await go(userMessage.contents);
+  if (histories.every((h) => h.type !== "realize")) {
+    histories = await go("Don't ask me to do that, and just do it right now.");
+    if (histories.every((h) => h.type !== "realize"))
+      throw new Error("History type must be realize.");
+  }
+  const result: AutoBeRealizeHistory = histories.find(
+    (h) => h.type === "realize",
+  )!;
 
-  const templateFiles = await (
-    await ctx.compiler()
-  ).realize.getTemplate({
-    dbms: "sqlite",
-  });
   // REPORT RESULT
   const model: string = TestGlobal.vendorModel;
-  const prisma = ctx.state().prisma?.compiled;
-
-  const payloads = Object.fromEntries(
-    result.authorizations.map((authorization) => [
-      authorization.payload.location,
-      authorization.payload.content,
-    ]),
-  );
-
-  const nodeModules = prisma?.type === "success" ? prisma.nodeModules : {};
   try {
     await FileSystemIterator.save({
       root: `${TestGlobal.ROOT}/results/${model}/${project}/realize`,
       files: {
-        ...nodeModules,
-        ...payloads,
         ...(await agent.getFiles()),
-        ...Object.fromEntries(
-          Object.entries(templateFiles).filter(([key]) => filterTsFiles(key)),
-        ),
         "pnpm-workspace.yaml": "",
       },
     });

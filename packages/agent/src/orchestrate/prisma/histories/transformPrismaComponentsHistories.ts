@@ -8,14 +8,17 @@ import { AutoBeState } from "../../../context/AutoBeState";
 
 export const transformPrismaComponentsHistories = (
   state: AutoBeState,
-  prefix: string | null = null,
+  props: {
+    prefix: string | null;
+    instruction: string;
+  },
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
   if (state.analyze === null)
     // unreachable
     throw new Error("Analyze state is not set.");
-  if (prefix) prefix = NamingConvention.snake(prefix);
+  if (props.prefix) props.prefix = NamingConvention.snake(props.prefix);
   return [
     {
       id: v7(),
@@ -28,12 +31,12 @@ export const transformPrismaComponentsHistories = (
       created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: StringUtil.trim`
+        ## Requirement Analysis Report
+
         Here is the requirement analysis report.
         
         Call the provided tool function to generate Prisma DB schema
         referencing below requirement analysis report.
-        
-        ## Requirement Analysis Report
         
         \`\`\`json
         ${JSON.stringify(state.analyze.files)}
@@ -41,7 +44,7 @@ export const transformPrismaComponentsHistories = (
         
         ## Prefix
         
-        - Prefix provided by the user: ${prefix}
+        - Prefix provided by the user: ${props.prefix}
         
         The user wants all database schema (table) names to start with the prefix provided below.
         
@@ -74,11 +77,22 @@ export const transformPrismaComponentsHistories = (
                 Create separate tables for each role:
                 
                 ${state.analyze.roles
-                  .map((role) => `- ${prefix}_${role.name.toLowerCase()}`)
+                  .map((role) => `- ${props.prefix}_${role.name.toLowerCase()}`)
                   .join("\n")}
               `
             : ""
         }
+
+        ## Database Design Instructions
+
+        The following database-specific instructions were extracted by AI from
+        the user's utterances. These focus ONLY on database schema design aspects
+        such as table structure, relationships, constraints, and indexing strategies.
+
+        Reference these instructions when designing namespace components and 
+        DB table names.
+
+        ${props.instruction}
       `,
     },
   ];

@@ -1,10 +1,12 @@
-import { AutoBeTokenUsage, orchestrate } from "@autobe/agent";
+import { AutoBeTokenUsage } from "@autobe/agent";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
-  AutoBeAssistantMessageHistory,
   AutoBeEventOfSerializable,
   AutoBeEventSnapshot,
+  AutoBeHistory,
   AutoBeInterfaceHistory,
+  AutoBeUserMessageContent,
+  AutoBeUserMessageHistory,
 } from "@autobe/interface";
 import { AutoBeInterfaceGroup } from "@autobe/interface/src/histories/contents/AutoBeInterfaceGroup";
 import typia from "typia";
@@ -37,14 +39,22 @@ export const archive_interface = async (
   for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
     agent.on(type, listen);
 
+  const userMessage: AutoBeUserMessageHistory =
+    await TestHistory.getUserMessage(project, "interface");
+  const go = (
+    c: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
+  ) => agent.conversate(c);
+
   // REQUEST INTERFACE GENERATION
-  const result: AutoBeInterfaceHistory | AutoBeAssistantMessageHistory =
-    await orchestrate.interface(agent.getContext())({
-      reason: "Step to the interface designing after DB schema generation",
-    });
-  console.log("The interface result history", result);
-  if (result.type !== "interface")
-    throw new Error("History type must be interface.");
+  let histories: AutoBeHistory[] = await go(userMessage.contents);
+  if (histories.every((h) => h.type !== "interface")) {
+    histories = await go("Don't ask me to do that, and just do it right now.");
+    if (histories.every((h) => h.type !== "interface"))
+      throw new Error("History type must be interface.");
+  }
+  const result: AutoBeInterfaceHistory = histories.find(
+    (h) => h.type === "interface",
+  )!;
 
   // REPORT RESULT
   const model: string = TestGlobal.vendorModel;
@@ -54,25 +64,6 @@ export const archive_interface = async (
       files: {
         ...(await agent.getFiles()),
         "pnpm-workspace.yaml": "",
-        "logs/snapshots.json": JSON.stringify(snapshots),
-        "logs/result.json": JSON.stringify(result),
-        "logs/endpoints.json": JSON.stringify(
-          snapshots
-            .map((s) => s.event)
-            .filter((e) => e.type === "interfaceEndpoints")
-            .map((e) => e.endpoints)
-            .flat(),
-          null,
-          2,
-        ),
-        "logs/operation-endpoints.json": JSON.stringify(
-          result.document.operations.map((op) => ({
-            path: op.path,
-            method: op.method,
-          })),
-          null,
-          2,
-        ),
       },
     });
   } catch {}

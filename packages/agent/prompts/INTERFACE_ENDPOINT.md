@@ -69,14 +69,47 @@ Analyze the provided information and generate a SELECTIVE array of API endpoints
 - ❌ NEVER create PUT endpoints (system data is immutable)
 - ❌ NEVER create DELETE endpoints (audit/compliance data must be preserved)
 
-## 3. Input Information
+## 3. Input Materials
+
+You will receive the following materials to guide your endpoint generation:
+
+### Requirements Analysis Report
+- Business requirements documentation
+- Functional specifications
+- User interaction patterns
+
+### Prisma Schema Information
+- Database schema with all tables and fields
+- Entity relationships and dependencies
+- Stance properties for each table (primary/subsidiary/snapshot)
+
+### API Endpoint Groups
+- Target group information for organizing endpoints
+- Group name and description
+- Domain boundaries for endpoint organization
+
+### Already Existing Operations
+- List of authorization operations that already exist
+- Avoid duplicating these endpoints
+
+### API Design Instructions
+API-specific instructions extracted by AI from the user's utterances, focusing ONLY on:
+- Endpoint URL patterns and structure preferences
+- HTTP method usage guidelines
+- Resource naming conventions
+- API organization patterns
+- RESTful design preferences
+
+**IMPORTANT**: Apply these instructions when designing endpoints for the specified group. Consider the specified URL patterns, HTTP methods, and resource organization. If the instructions are not relevant to this specific endpoint group, you may ignore them.
+
+## 4. Input Information
 
 You will receive three types of information:
 1. **Requirements Analysis Document**: Functional requirements and business logic
 2. **Prisma Schema Files**: Database schema definitions with entities and relationships
 3. **API Endpoint Groups**: Group information with name and description that categorize the endpoints
 
-## 4. Output Method
+## 5. Output Method
 
 You MUST call the `makeEndpoints()` function with your results.
 
@@ -96,9 +129,9 @@ makeEndpoints({
 });
 ```
 
-## 5. Endpoint Design Principles
+## 6. Endpoint Design Principles
 
-### 5.1. Follow REST principles
+### 6.1. Follow REST principles
 
 - Resource-centric URL design (use nouns, not verbs)
 - Appropriate HTTP methods:
@@ -108,7 +141,7 @@ makeEndpoints({
   - `put`: Update existing records
   - `delete`: Remove records
 
-### 5.2. Path Formatting Rules
+### 6.2. Path Formatting Rules
 
 **CRITICAL PATH VALIDATION REQUIREMENTS:**
 
@@ -149,7 +182,7 @@ makeEndpoints({
 
 **IMPORTANT**: All descriptions throughout the API design MUST be written in English. Never use other languages.
 
-### 5.3. Path patterns
+### 6.3. Path patterns
 
 - Collection endpoints: `/resources`
 - Single resource endpoints: `/resources/{resourceId}`
@@ -163,7 +196,7 @@ Examples:
 - `/orders/{orderId}` - Single order
 - `/products` - Products collection
 
-### 5.4. Standard API operations per entity
+### 6.4. Standard API operations per entity
 
 For EACH **primary business entity** identified in the requirements document, Prisma DB Schema, and API endpoint groups, consider including these standard endpoints:
 
@@ -186,7 +219,7 @@ For EACH **primary business entity** identified in the requirements document, Pr
 - If NO soft delete fields exist in the schema, the DELETE endpoint MUST perform hard delete
 - NEVER assume soft delete fields exist without verifying in the actual Prisma schema
 
-### 5.5. Entity-Specific Restrictions
+### 6.5. Entity-Specific Restrictions
 
 **DO NOT CREATE:**
 - User creation endpoints (POST /users, POST /admins)
@@ -225,7 +258,7 @@ Create operations for DIFFERENT paths and DIFFERENT purposes only.
 {"path": "/users/{userId}", "method": "get"}  // Profile retrieval OK
 ```
 
-## 6. Path Validation Rules
+## 7. Path Validation Rules
 
 **MANDATORY PATH VALIDATION**: Every path you generate MUST pass these validation rules:
 
@@ -250,7 +283,7 @@ Create operations for DIFFERENT paths and DIFFERENT purposes only.
 - `/attachmentFiles`
 - `/orders/{orderId}/items/{itemId}`
 
-## 7. Critical Requirements
+## 8. Critical Requirements
 
 - **Function Call Required**: You MUST use the `makeEndpoints()` function to submit your results
 - **Path Validation**: EVERY path MUST pass the validation rules above
@@ -261,7 +294,7 @@ Create operations for DIFFERENT paths and DIFFERENT purposes only.
 - **Clean Paths**: Paths should be clean without prefixes or role indicators
 - **Group Alignment**: Consider the API endpoint groups when organizing related endpoints
 
-## 8. Implementation Strategy
+## 9. Implementation Strategy
 
 1. **Analyze Input Information**:
    - Review the requirements analysis document for functional needs
@@ -320,7 +353,7 @@ Create operations for DIFFERENT paths and DIFFERENT purposes only.
 
 Your implementation MUST be SELECTIVE and THOUGHTFUL, focusing on entities that users actually interact with while avoiding unnecessary endpoints for system-managed tables. Generate endpoints that serve real business needs, not exhaustive coverage of every database table. Calling the `makeEndpoints()` function is MANDATORY.
 
-## 9. Path Transformation Examples
+## 10. Path Transformation Examples
 
 | Original Format | Improved Format | Explanation |
 |-----------------|-----------------|-------------|
@@ -334,11 +367,11 @@ Your implementation MUST be SELECTIVE and THOUGHTFUL, focusing on entities that 
 | `/bbs/articles/snapshots` | `/articles` | Remove "snapshot" from all paths |
 | `/bbs/articles/snapshots/files` | `/articles/{articleId}/files` | Always remove "snapshot" from paths |
 
-## 10. Example Cases
+## 11. Example Cases
 
 Below are example projects that demonstrate the proper endpoint formatting.
 
-### 10.1. BBS (Bulletin Board System)
+### 11.1. BBS (Bulletin Board System)
 
 ```json
 [
@@ -368,7 +401,7 @@ Below are example projects that demonstrate the proper endpoint formatting.
 - Both simple GET and complex PATCH endpoints for collections
 - Standard CRUD pattern: PATCH (search), GET (single), POST (create), PUT (update), DELETE (delete)
 
-### 10.2. Shopping Mall
+### 11.2. Shopping Mall
 
 ```json
 [

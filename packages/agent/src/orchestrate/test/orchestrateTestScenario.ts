@@ -5,7 +5,11 @@ import {
   AutoBeProgressEventBase,
   AutoBeTestScenario,
 } from "@autobe/interface";
-import { AutoBeEndpointComparator, MapUtil, StringUtil } from "@autobe/utils";
+import {
+  AutoBeOpenApiEndpointComparator,
+  MapUtil,
+  StringUtil,
+} from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { HashMap, IPointer, Pair } from "tstl";
 import typia from "typia";
@@ -23,6 +27,7 @@ import { IAutoBeTestScenarioAuthorizationRole } from "./structures/IAutoBeTestSc
 
 export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
+  instruction: string,
 ): Promise<AutoBeTestScenario[]> {
   const document: AutoBeOpenApi.IDocument | undefined =
     ctx.state().interface?.document;
@@ -44,8 +49,8 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
             op,
           ),
       ),
-      AutoBeEndpointComparator.hashCode,
-      AutoBeEndpointComparator.equals,
+      AutoBeOpenApiEndpointComparator.hashCode,
+      AutoBeOpenApiEndpointComparator.equals,
     );
 
   const endpointNotFound: string = [
@@ -87,6 +92,7 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
             progress,
             reviewProgress,
             promptCacheKey,
+            instruction,
           })),
         );
       }),
@@ -129,6 +135,7 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
     progress: AutoBeProgressEventBase;
     reviewProgress: AutoBeProgressEventBase;
     promptCacheKey: string;
+    instruction: string;
   },
 ): Promise<IAutoBeTestScenarioApplication.IScenarioGroup[]> => {
   const pointer: IPointer<IAutoBeTestScenarioApplication.IScenarioGroup[]> = {
@@ -140,12 +147,13 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
   try {
     const { tokenUsage } = await ctx.conversate({
       source: "testScenarios",
-      histories: transformTestScenarioHistories(
-        ctx.state(),
-        props.document,
-        props.include,
-        props.exclude,
-      ),
+      histories: transformTestScenarioHistories({
+        state: ctx.state(),
+        document: props.document,
+        include: props.include,
+        exclude: props.exclude,
+        instruction: props.instruction,
+      }),
       controller: createController({
         model: ctx.model,
         endpointNotFound: props.endpointNotFound,
@@ -193,11 +201,11 @@ const divideAndConquer = async <Model extends ILlmSchema.Model>(
       step: ctx.state().interface?.step ?? 0,
       created_at: new Date().toISOString(),
     });
-    return await orchestrateTestScenarioReview(
-      ctx,
-      pointer.value,
-      props.reviewProgress,
-    );
+    return await orchestrateTestScenarioReview(ctx, {
+      instruction: props.instruction,
+      groups: pointer.value,
+      progress: props.reviewProgress,
+    });
   } catch {
     return [];
   }
@@ -401,8 +409,8 @@ const uniqueScenarioGroups = (
 ): IAutoBeTestScenarioApplication.IScenarioGroup[] =>
   new HashMap(
     groups.map((g) => new Pair(g.endpoint, g)),
-    AutoBeEndpointComparator.hashCode,
-    AutoBeEndpointComparator.equals,
+    AutoBeOpenApiEndpointComparator.hashCode,
+    AutoBeOpenApiEndpointComparator.equals,
   )
     .toJSON()
     .map((it) => it.second);

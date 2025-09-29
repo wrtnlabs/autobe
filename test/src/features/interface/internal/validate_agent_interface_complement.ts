@@ -40,8 +40,11 @@ export const validate_agent_interface_complement = async (
   // COMPLEMENT DOCUMENT
   const complemented: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
     await orchestrateInterfaceComplement(agent.getContext(), {
-      operations,
-      components,
+      instruction: "Design API specs carefully considering the security.",
+      document: {
+        operations,
+        components,
+      },
     });
 
   // VALIDATE COMPLEMENT

@@ -1,12 +1,12 @@
 import { AutoBeTokenUsage } from "@autobe/agent";
-import { orchestrateTest } from "@autobe/agent/src/orchestrate/test/orchestrateTest";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
-  AutoBeAssistantMessageHistory,
   AutoBeEventOfSerializable,
   AutoBeEventSnapshot,
   AutoBeHistory,
   AutoBeTestHistory,
+  AutoBeUserMessageContent,
+  AutoBeUserMessageHistory,
 } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 import typia from "typia";
@@ -39,35 +39,35 @@ export let archive_test = async (
     agent.on(type, listen);
   agent.on("vendorTimeout", (e) => TestLogger.event(start, e));
 
+  const userMessage: AutoBeUserMessageHistory =
+    await TestHistory.getUserMessage(project, "test");
+  const go = (
+    c: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
+  ) => agent.conversate(c);
+
   // DO TEST GENERATION
-  let result: AutoBeAssistantMessageHistory | AutoBeTestHistory =
-    await orchestrateTest(agent.getContext())({
-      reason: "Validate agent test",
-    });
-  if (result.type !== "test") throw new Error("Failed to generate test.");
+  let histories: AutoBeHistory[] = await go(userMessage.contents);
+  if (histories.every((h) => h.type !== "test")) {
+    histories = await go("Don't ask me to do that, and just do it right now.");
+    if (histories.every((h) => h.type !== "test"))
+      throw new Error("History type must be test.");
+  }
+  const result: AutoBeTestHistory = histories.find((h) => h.type === "test")!;
 
   // REPORT RESULT
-  let histories: AutoBeHistory[] = agent.getHistories();
   let model: string = TestGlobal.vendorModel;
   try {
     await FileSystemIterator.save({
       root: `${TestGlobal.ROOT}/results/${model}/${project}/test`,
       files: {
         ...(await agent.getFiles()),
-        "pnpm-workspace.yaml": "",
-        "logs/compiled.json": JSON.stringify(result.compiled),
-        "logs/snapshots.json": JSON.stringify(snapshots),
-        "logs/result.json": JSON.stringify({
-          ...result,
-          files: undefined,
-        }),
-        "logs/histories.json": JSON.stringify(histories),
+        "test-workspace.yaml": "",
       },
     });
   } catch {}
   if (TestGlobal.archive)
     await TestHistory.save({
-      [`${project}.test.json`]: JSON.stringify(histories),
+      [`${project}.test.json`]: JSON.stringify(agent.getHistories()),
       [`${project}.test.snapshots.json`]: JSON.stringify(
         snapshots.map((s) => ({
           event: s.event,

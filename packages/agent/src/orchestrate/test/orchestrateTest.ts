@@ -38,7 +38,7 @@ export const orchestrateTest =
       type: "testStart",
       id: v7(),
       created_at: start.toISOString(),
-      reason: props.reason,
+      reason: props.instruction,
       step: ctx.state().analyze?.step ?? 0,
     });
 
@@ -57,31 +57,37 @@ export const orchestrateTest =
       });
 
     // PLAN
-    const scenarios: AutoBeTestScenario[] = await orchestrateTestScenario(ctx);
+    const scenarios: AutoBeTestScenario[] = await orchestrateTestScenario(
+      ctx,
+      props.instruction,
+    );
     if (scenarios.length === 0)
       throw new Error("No scenarios generated. Please check the logs.");
 
     // TEST CODE
-    const written: IAutoBeTestWriteResult[] = await orchestrateTestWrite(
-      ctx,
+    const written: IAutoBeTestWriteResult[] = await orchestrateTestWrite(ctx, {
+      instruction: props.instruction,
       scenarios,
-    );
+    });
     if (written.length === 0)
       throw new Error("No test code written. Please check the logs.");
 
     const corrects: AutoBeTestValidateEvent[] = await orchestrateTestCorrect(
       ctx,
-      written.map((w) => ({
-        scenario: w.scenario,
-        artifacts: w.artifacts,
-        location: w.event.location,
-        script: w.event.final ?? w.event.draft,
-      })),
+      {
+        instruction: props.instruction,
+        functions: written.map((w) => ({
+          scenario: w.scenario,
+          artifacts: w.artifacts,
+          location: w.event.location,
+          script: w.event.final ?? w.event.draft,
+        })),
+      },
     );
 
     // DO COMPILE
     const compiler: IAutoBeCompiler = await ctx.compiler();
-    const compiled: IAutoBeTypeScriptCompileResult =
+    const compileResult: IAutoBeTypeScriptCompileResult =
       await compiler.typescript.compile({
         files: Object.fromEntries([
           ...Object.entries(
@@ -97,7 +103,7 @@ export const orchestrateTest =
       id: v7(),
       created_at: new Date().toISOString(),
       files: corrects.map((s) => s.file),
-      compiled,
+      compiled: compileResult,
       step: ctx.state().interface?.step ?? 0,
       elapsed: new Date().getTime() - start.getTime(),
     });

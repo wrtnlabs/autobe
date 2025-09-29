@@ -7,6 +7,7 @@ import {
   AutoBeEventOfSerializable,
   AutoBeEventSnapshot,
   AutoBeHistory,
+  AutoBeUserMessageContent,
   AutoBeUserMessageHistory,
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
@@ -25,17 +26,13 @@ export const archive_analyze = async (
   if (TestGlobal.env.OPENAI_API_KEY === undefined) return false;
 
   // PREPARE ASSETS
-  const [history]: AutoBeHistory[] = await TestHistory.initial(project);
-  typia.assertGuard<AutoBeUserMessageHistory>(history);
-  const content: string | null =
-    history.contents[0].type === "text" ? history.contents[0].text : null;
-  if (content === null) throw new Error("History must have a text content.");
-
+  const userMessage: AutoBeUserMessageHistory =
+    await TestHistory.getUserMessage(project, "analyze");
   const start: Date = new Date();
   const model: string = TestGlobal.vendorModel;
   const snapshots: AutoBeEventSnapshot[] = [];
 
-  const agent: AutoBeAgent<ILlmSchema.Model> = factory.createAgent([history]);
+  const agent: AutoBeAgent<ILlmSchema.Model> = factory.createAgent([]);
   const listen = (event: AutoBeEventOfSerializable) => {
     if (TestGlobal.archive) TestLogger.event(start, event);
     snapshots.push({
@@ -65,28 +62,22 @@ export const archive_analyze = async (
   const zero: AutoBeTokenUsage = new AutoBeTokenUsage(
     factory.getTokenUsage().toJSON(),
   );
-  const go = (message: string) =>
-    agent.conversate(
-      [
-        message,
-        "",
-        "Make every determinant by yourself, and just show me the analysis report. call analyze function.",
-      ].join("\n"),
-    );
-  let results: AutoBeHistory[] = await go(content);
-  if (results.every((el) => el.type !== "analyze")) {
-    results = await go(
+  const go = (
+    c: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
+  ) => agent.conversate(c);
+
+  let histories: AutoBeHistory[] = await go(userMessage.contents);
+  if (histories.every((h) => h.type !== "analyze")) {
+    histories = await go(
       "I'm not familiar with the analyze feature. Please determine everything by yourself, and just show me the analysis report.",
     );
-    if (results.every((el) => el.type !== "analyze")) {
+    if (histories.every((h) => h.type !== "analyze")) {
       await FileSystemIterator.save({
         root: `${TestGlobal.ROOT}/results/${model}/${project}/analyze-failure`,
         files: {
           "histories.json": JSON.stringify(agent.getHistories(), null, 2),
         },
       });
-
-      console.debug(JSON.stringify(results, null, 2));
       throw new Error("Some history type must be analyze.");
     }
   }
@@ -96,13 +87,7 @@ export const archive_analyze = async (
   try {
     await FileSystemIterator.save({
       root: `${TestGlobal.ROOT}/results/${model}/${project}/analyze`,
-      files: {
-        ...files,
-        "autobe/analysis.md": Object.entries(files)
-          .filter(([key]) => key.endsWith(".md"))
-          .map(([_, v]) => v)
-          .join("\n\n"),
-      },
+      files,
     });
   } catch {}
   if (TestGlobal.archive)

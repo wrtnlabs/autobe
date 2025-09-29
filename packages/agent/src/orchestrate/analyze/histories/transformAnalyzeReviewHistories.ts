@@ -20,7 +20,11 @@ export const transformAnalyzeReviewHistories = <Model extends ILlmSchema.Model>(
   | IAgenticaHistoryJson.ISystemMessage
 > => {
   return [
-    ...transformAnalyzeWriteHistories(ctx, scenario, myFile).slice(0, -1),
+    ...transformAnalyzeWriteHistories(ctx, {
+      scenario,
+      file: myFile,
+      instruction: "",
+    }).slice(0, -2),
     {
       id: v7(),
       created_at: new Date().toISOString(),

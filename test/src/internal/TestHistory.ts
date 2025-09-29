@@ -4,6 +4,7 @@ import {
   AutoBeEventSnapshot,
   AutoBeHistory,
   AutoBePhase,
+  AutoBeUserMessageHistory,
   IAutoBeTokenUsageJson,
 } from "@autobe/interface";
 import fs from "fs";
@@ -22,15 +23,20 @@ export namespace TestHistory {
     });
   };
 
-  export const initial = async (
+  export const getUserMessage = async (
     project: TestProject,
-  ): Promise<AutoBeHistory[]> => {
-    const text: string = await fs.promises.readFile(
-      `${TestGlobal.ROOT}/scripts/${project}.md`,
-      "utf8",
-    );
-    return [
-      {
+    phase: AutoBePhase,
+  ): Promise<AutoBeUserMessageHistory> => {
+    const full: string = `${TestGlobal.ROOT}/scripts/${project}/${phase}`;
+    if (fs.existsSync(`${full}.md`) === false) {
+      const text: string =
+        phase === "analyze"
+          ? await fs.promises.readFile(
+              `${TestGlobal.ROOT}/scripts/${project}.md`,
+              "utf8",
+            )
+          : PROMPT_TEMPLATE[phase];
+      return {
         type: "userMessage",
         id: v7(),
         created_at: new Date().toISOString(),
@@ -40,8 +46,20 @@ export namespace TestHistory {
             text,
           },
         ],
-      },
-    ];
+      };
+    }
+    const text: string = await fs.promises.readFile(`${full}.md`, "utf8");
+    return {
+      type: "userMessage",
+      id: v7(),
+      created_at: new Date().toISOString(),
+      contents: [
+        {
+          type: "text",
+          text: text,
+        },
+      ],
+    };
   };
 
   export const getHistories = async (
@@ -74,3 +92,10 @@ export namespace TestHistory {
       `${TestGlobal.ROOT}/assets/histories/${TestGlobal.vendorModel}/${project}.${type}.json.gz`,
     );
 }
+
+const PROMPT_TEMPLATE = {
+  prisma: "Design the database schema.",
+  interface: "Create the API interface specification.",
+  test: "Make the e2e test functions.",
+  realize: "Implement API functions.",
+};

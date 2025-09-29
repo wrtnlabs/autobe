@@ -1,7 +1,7 @@
 import { IAgenticaController } from "@agentica/core";
 import { AutoBeOpenApi, AutoBeProgressEventBase } from "@autobe/interface";
 import { AutoBeInterfacePrerequisite } from "@autobe/interface/src/histories/contents/AutoBeInterfacePrerequisite";
-import { AutoBeEndpointComparator } from "@autobe/utils";
+import { AutoBeOpenApiEndpointComparator } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { HashMap, IPointer, Pair } from "tstl";
 import typia from "typia";
@@ -38,8 +38,8 @@ export async function orchestrateInterfacePrerequisites<
       prerequisiteOperations.map(
         (op) => new Pair({ path: op.path, method: op.method }, op),
       ),
-      AutoBeEndpointComparator.hashCode,
-      AutoBeEndpointComparator.equals,
+      AutoBeOpenApiEndpointComparator.hashCode,
+      AutoBeOpenApiEndpointComparator.equals,
     );
 
   const prerequisitesNotFound: string = [

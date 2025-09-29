@@ -1,20 +1,18 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
 import { AutoBeOpenApi } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
-import { AutoBeContext } from "../../../context/AutoBeContext";
+import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeTestScenarioApplication } from "../structures/IAutoBeTestScenarioApplication";
 import { getReferenceIds } from "../utils/getReferenceIds";
 
-export function transformTestScenarioReviewHistories<
-  Model extends ILlmSchema.Model,
->(
-  ctx: AutoBeContext<Model>,
-  groups: IAutoBeTestScenarioApplication.IScenarioGroup[],
-): Array<
+export function transformTestScenarioReviewHistories(props: {
+  state: AutoBeState;
+  instruction: string;
+  groups: IAutoBeTestScenarioApplication.IScenarioGroup[];
+}): Array<
   IAgenticaHistoryJson.ISystemMessage | IAgenticaHistoryJson.IAssistantMessage
 > {
   interface IRelationship {
@@ -23,8 +21,7 @@ export function transformTestScenarioReviewHistories<
   }
 
   const document: AutoBeOpenApi.IDocument | undefined =
-    ctx.state().interface?.document;
-
+    props.state.interface?.document;
   if (document === undefined) {
     throw new Error(
       "Cannot review test scenarios because there are no operations.",
@@ -56,74 +53,80 @@ export function transformTestScenarioReviewHistories<
       created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: StringUtil.trim`
-        # Available API Operations for Reference
+        ## Instructions
+
+        The following e2e-test-specific instructions were extracted by AI from
+        the user's requirements and conversations. These instructions focus
+        exclusively on test-related aspects such as test coverage priorities,
+        specific edge cases to validate, business logic verification strategies,
+        and critical user workflows that must be tested.
+        
+        Apply these instructions when reviewing test scenarios to ensure the
+        tests align with the user's testing requirements and expectations.
+        If any instructions are not relevant to the target API operations,
+        you may ignore them.
+
+        ${props.instruction}
+
+        ## Available API Operations for Reference
 
         Below are all available API operations and interface schemas for validation purposes.
         Match each operation with its corresponding schema.
 
         \`\`\`json
-        ${JSON.stringify({ operations: document.operations })}
+        ${JSON.stringify({
+          operations: document.operations,
+        })}
         \`\`\`
-      `,
-    },
-    {
-      id: v7(),
-      created_at: new Date().toISOString(),
-      type: "assistantMessage",
-      text: StringUtil.trim`
 
-      # Test Scenario Groups
+        ## Test Scenario Groups
 
-      Please review the following test scenario groups:
+        Please review the following test scenario groups:
 
-      \`\`\`json
-      ${JSON.stringify(
-        groups.map((g) => {
-          return {
-            ...g,
-            scenarios: g.scenarios.map((s) => {
-              const requiredId: string[] = [];
+        \`\`\`json
+        ${JSON.stringify(
+          props.groups.map((g) => {
+            return {
+              ...g,
+              scenarios: g.scenarios.map((s) => {
+                const requiredId: string[] = [];
 
-              s.dependencies.forEach((dep) => {
-                document.operations.forEach((op) => {
-                  if (
-                    g.endpoint.method === op.method &&
-                    g.endpoint.path === op.path
-                  ) {
-                    requiredId.push(
-                      ...getReferenceIds({ document, operation: op }),
-                    );
-                  }
+                s.dependencies.forEach((dep) => {
+                  document.operations.forEach((op) => {
+                    if (
+                      g.endpoint.method === op.method &&
+                      g.endpoint.path === op.path
+                    ) {
+                      requiredId.push(
+                        ...getReferenceIds({ document, operation: op }),
+                      );
+                    }
 
-                  if (
-                    op.method === dep.endpoint.method &&
-                    op.path === dep.endpoint.path
-                  ) {
-                    requiredId.push(
-                      ...getReferenceIds({ document, operation: op }),
-                    );
-                  }
+                    if (
+                      op.method === dep.endpoint.method &&
+                      op.path === dep.endpoint.path
+                    ) {
+                      requiredId.push(
+                        ...getReferenceIds({ document, operation: op }),
+                      );
+                    }
+                  });
                 });
-              });
 
-              return {
-                ...s,
-                requiredIds:
-                  requiredId.length > 0 ? Array.from(new Set(requiredId)) : [],
-              };
-            }),
-          };
-        }),
-      )}
-      \`\`\`
-      `,
-    },
-    {
-      id: v7(),
-      created_at: new Date().toISOString(),
-      type: "assistantMessage",
-      text: StringUtil.trim`
-        # Candidate Dependencies
+                return {
+                  ...s,
+                  requiredIds:
+                    requiredId.length > 0
+                      ? Array.from(new Set(requiredId))
+                      : [],
+                };
+              }),
+            };
+          }),
+        )}
+        \`\`\`
+
+        ## Candidate Dependencies
     
         List of candidate dependencies extracted from path parameters and request bodies.
 
@@ -151,6 +154,6 @@ export function transformTestScenarioReviewHistories<
 
         Example: If an endpoint requires \`articleId\` and \`POST /articles\` exists, include it in dependencies
       `,
-    } satisfies IAgenticaHistoryJson.IAssistantMessage,
+    },
   ];
 }

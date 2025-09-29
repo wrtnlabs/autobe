@@ -1,4 +1,3 @@
-import { IAutoBeApplicationProps } from "./IAutoBeApplicationProps";
 import { IAutoBeApplicationResult } from "./IAutoBeApplicationResult";
 
 /**
@@ -26,7 +25,26 @@ export interface IAutoBeApplication {
    * conversation. When executed after other agents have generated code, it can
    * also interpret change requests in the context of existing implementations.
    */
-  analyze(props: IAutoBeApplicationProps): Promise<IAutoBeApplicationResult>;
+  analyze(props: {
+    /**
+     * Requirements-focused instructions extracted from user utterances.
+     *
+     * Contains AI-interpreted guidance specifically for the requirements
+     * analysis phase. Should focus ONLY on features, business rules, user
+     * stories, and functional specifications. Must NOT include database design,
+     * API patterns, or implementation details which belong to other phases.
+     *
+     * **CRITICAL**: Only include what the user actually said. NEVER fabricate
+     * or invent requirements the user didn't mention.
+     *
+     * Examples:
+     *
+     * - "Focus on inventory management with real-time stock tracking"
+     * - "Prioritize user authentication with role-based permissions"
+     * - "Emphasize order processing workflow with approval stages"
+     */
+    instruction: string;
+  }): Promise<IAutoBeApplicationResult>;
 
   /**
    * Run prisma agent.
@@ -47,7 +65,26 @@ export interface IAutoBeApplication {
    * generate ERD documentation using prisma-markdown. An internal review
    * process ensures schema quality and optimization.
    */
-  prisma(props: IAutoBeApplicationProps): Promise<IAutoBeApplicationResult>;
+  prisma(props: {
+    /**
+     * Database design instructions extracted from user utterances.
+     *
+     * Contains AI-interpreted guidance specifically for the database schema
+     * design phase. Should focus ONLY on schema structure, relationships,
+     * constraints, and indexing strategies. Must NOT include API design or
+     * business logic implementation details.
+     *
+     * **CRITICAL**: Only include what the user actually said. NEVER fabricate
+     * or invent requirements the user didn't mention.
+     *
+     * Examples:
+     *
+     * - "Design flexible product catalog with variant support"
+     * - "Optimize for high-volume transaction queries"
+     * - "Implement strict referential integrity for financial data"
+     */
+    instruction: string;
+  }): Promise<IAutoBeApplicationResult>;
 
   /**
    * Run interface agent.
@@ -62,7 +99,26 @@ export interface IAutoBeApplication {
    * generated interface includes comprehensive JSDoc comments and undergoes
    * internal review for consistency.
    */
-  interface(props: IAutoBeApplicationProps): Promise<IAutoBeApplicationResult>;
+  interface(props: {
+    /**
+     * API design instructions extracted from user utterances.
+     *
+     * Contains AI-interpreted guidance specifically for the API interface
+     * design phase. Should focus ONLY on endpoint patterns, request/response
+     * formats, DTO schemas, and operation specifications. Must NOT include
+     * database details or implementation logic.
+     *
+     * **CRITICAL**: Only include what the user actually said. NEVER fabricate
+     * or invent requirements the user didn't mention.
+     *
+     * Examples:
+     *
+     * - "Create RESTful endpoints with pagination for all list operations"
+     * - "Design mobile-friendly APIs with minimal response payloads"
+     * - "Follow OpenAPI 3.0 patterns with comprehensive error responses"
+     */
+    instruction: string;
+  }): Promise<IAutoBeApplicationResult>;
 
   /**
    * Run test program agent.
@@ -85,7 +141,26 @@ export interface IAutoBeApplication {
    * TypeScript compiler validation and internal review ensure test quality and
    * optimal coverage.
    */
-  test(props: IAutoBeApplicationProps): Promise<IAutoBeApplicationResult>;
+  test(props: {
+    /**
+     * Testing strategy instructions extracted from user utterances.
+     *
+     * Contains AI-interpreted guidance specifically for the test code
+     * generation phase. Should focus ONLY on test scenarios, coverage
+     * priorities, edge cases, and validation strategies. Must NOT include
+     * implementation or API design details.
+     *
+     * **CRITICAL**: Only include what the user actually said. NEVER fabricate
+     * or invent requirements the user didn't mention.
+     *
+     * Examples:
+     *
+     * - "Prioritize payment flow testing with failure scenarios"
+     * - "Generate comprehensive tests for concurrent user operations"
+     * - "Focus on data integrity validation across all endpoints"
+     */
+    instruction: string;
+  }): Promise<IAutoBeApplicationResult>;
 
   /**
    * Run realize agent.
@@ -108,5 +183,25 @@ export interface IAutoBeApplication {
    * validation checks, and processes business rules according to
    * specifications.
    */
-  realize(props: IAutoBeApplicationProps): Promise<IAutoBeApplicationResult>;
+  realize(props: {
+    /**
+     * Implementation instructions extracted from user utterances.
+     *
+     * Contains AI-interpreted guidance specifically for the business logic
+     * implementation phase. Should focus ONLY on architectural patterns,
+     * performance requirements, business logic details, and service layer
+     * decisions. Must NOT include database schema or API interface
+     * specifications.
+     *
+     * **CRITICAL**: Only include what the user actually said. NEVER fabricate
+     * or invent requirements the user didn't mention.
+     *
+     * Examples:
+     *
+     * - "Implement with caching for frequently accessed data"
+     * - "Use transaction patterns for financial operations"
+     * - "Optimize for 10K concurrent users with rate limiting"
+     */
+    instruction: string;
+  }): Promise<IAutoBeApplicationResult>;
 }

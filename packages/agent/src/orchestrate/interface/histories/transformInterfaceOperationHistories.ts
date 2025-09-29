@@ -7,13 +7,14 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { AutoBeState } from "../../../context/AutoBeState";
 import { transformInterfaceAssetHistories } from "./transformInterfaceAssetHistories";
 
-export const transformInterfaceOperationHistories = (
-  state: AutoBeState,
-  endpoints: AutoBeOpenApi.IEndpoint[],
-): Array<
+export const transformInterfaceOperationHistories = (props: {
+  state: AutoBeState;
+  endpoints: AutoBeOpenApi.IEndpoint[];
+  instruction: string;
+}): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
-  const analyze: AutoBeAnalyzeHistory = state.analyze!;
+  const analyze: AutoBeAnalyzeHistory = props.state.analyze!;
   return [
     {
       type: "systemMessage",
@@ -21,7 +22,7 @@ export const transformInterfaceOperationHistories = (
       created_at: new Date().toISOString(),
       text: AutoBeSystemPromptConstant.INTERFACE_OPERATION,
     },
-    ...transformInterfaceAssetHistories(state),
+    ...transformInterfaceAssetHistories(props.state),
     {
       type: "systemMessage",
       id: v7(),
@@ -44,10 +45,26 @@ export const transformInterfaceOperationHistories = (
       id: v7(),
       created_at: new Date().toISOString(),
       text: StringUtil.trim`
+        ## API Design Instructions
+
+        The following API-specific instructions were extracted by AI from
+        the user's utterances. These focus ONLY on API interface design aspects
+        such as endpoint patterns, request/response formats, DTO schemas,
+        and operation specifications.
+
+        Apply these instructions when designing the detailed operation specifications
+        for each endpoint. Consider parameter types, request/response structures,
+        error handling, and API behavior patterns. If the instructions are not
+        relevant to the operations you need to implement, you may ignore them.
+
+        ${props.instruction}
+
+        ## Operations
+
         You have to make API operations for the given endpoints:
 
         \`\`\`json
-        ${JSON.stringify(endpoints)}
+        ${JSON.stringify(props.endpoints)}
         \`\`\`
 
         If there is a content in the failure, it is to explain why it failed before.

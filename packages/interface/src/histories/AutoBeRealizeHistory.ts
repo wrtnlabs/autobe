@@ -75,15 +75,15 @@ export interface AutoBeRealizeHistory
   compiled: IAutoBeTypeScriptCompileResult;
 
   /**
-   * Reason why the Realize agent was activated through function calling.
+   * Instructions for the Realize agent redefined by AI from user's utterance.
    *
-   * Explains the specific circumstances that triggered the AI chatbot to invoke
-   * the Realize agent via function calling. This could include reasons such as
-   * initial implementation generation after API and test completion, updating
-   * business logic due to requirement changes, or regenerating implementation
-   * to reflect modified API specifications or database schemas.
+   * Contains AI-generated specific guidance for the implementation phase,
+   * interpreted and refined from the user's original request. These instructions
+   * direct the Realize agent on business logic priorities, architectural patterns
+   * to follow, performance optimizations to consider, and specific implementation
+   * details required to fulfill the business requirements.
    */
-  reason: string;
+  instruction: string;
 
   /**
    * Iteration number of the requirements analysis report this implementation

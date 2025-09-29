@@ -18,7 +18,10 @@ export const validate_agent_prisma_components = async (
 
   const { agent } = await prepare_agent_prisma(factory, project);
   const result: AutoBePrismaComponentsEvent | AutoBeAssistantMessageHistory =
-    await orchestratePrismaComponents(agent.getContext());
+    await orchestratePrismaComponents(
+      agent.getContext(),
+      "Design database without violation of normalization and integrity rules.",
+    );
   if (result.type !== "prismaComponents")
     throw new Error("Failed to orchestrate prisma components");
   else if (TestGlobal.archive)

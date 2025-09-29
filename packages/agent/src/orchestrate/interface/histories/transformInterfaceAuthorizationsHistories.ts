@@ -7,13 +7,14 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { AutoBeState } from "../../../context/AutoBeState";
 import { transformInterfaceAssetHistories } from "./transformInterfaceAssetHistories";
 
-export const transformInterfaceAuthorizationsHistories = (
-  state: AutoBeState,
-  role: AutoBeAnalyzeRole,
-): Array<
+export const transformInterfaceAuthorizationsHistories = (props: {
+  state: AutoBeState;
+  role: AutoBeAnalyzeRole;
+  instruction: string;
+}): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
-  const analyze: AutoBeAnalyzeHistory = state.analyze!;
+  const analyze: AutoBeAnalyzeHistory = props.state.analyze!;
   return [
     {
       type: "systemMessage",
@@ -21,7 +22,7 @@ export const transformInterfaceAuthorizationsHistories = (
       created_at: new Date().toISOString(),
       text: AutoBeSystemPromptConstant.INTERFACE_AUTHORIZATION,
     },
-    ...transformInterfaceAssetHistories(state),
+    ...transformInterfaceAssetHistories(props.state),
     {
       type: "systemMessage",
       id: v7(),
@@ -44,14 +45,27 @@ export const transformInterfaceAuthorizationsHistories = (
       id: v7(),
       created_at: new Date().toISOString(),
       text: StringUtil.trim`
-        You have to make API operations for the given role:
+        ## API Design Instructions
+
+        The following API-specific instructions were extracted by AI from
+        the user's utterances. These focus ONLY on API interface design aspects
+        such as endpoint patterns, request/response formats, DTO schemas,
+        and operation specifications.
+
+        Apply these instructions when designing authorization-related API operations
+        for the ${props.role.name} role. Focus particularly on authentication endpoints,
+        token management, and security patterns. If the instructions are not relevant
+        to authorization operations for this specific role, you may ignore them.
+
+        ${props.instruction}
 
         ## Role
+        
+        You have to make API operations for the given role:
 
         \`\`\`json
-        ${JSON.stringify(role)}
+        ${JSON.stringify(props.role)}
         \`\`\`
-
       `,
     },
   ];

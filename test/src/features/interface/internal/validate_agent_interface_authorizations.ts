@@ -24,7 +24,10 @@ export const validate_agent_interface_authorizations = async (
     agent.getContext().state().analyze?.roles ?? [];
 
   const authorizations: AutoBeInterfaceAuthorization[] =
-    await orchestrateInterfaceAuthorizations(agent.getContext());
+    await orchestrateInterfaceAuthorizations(
+      agent.getContext(),
+      "Design API specs carefully considering the security.",
+    );
 
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/${model}/${project}/interface/authorizations`,

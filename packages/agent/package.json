@@ -1,6 +1,6 @@
 {
   "name": "@autobe/agent",
-  "version": "0.24.2",
+  "version": "0.25.0",
   "description": "AI backend server code generator",
   "main": "src/index.ts",
   "author": "Wrtn Technologies",

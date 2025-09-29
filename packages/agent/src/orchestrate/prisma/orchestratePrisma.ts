@@ -39,18 +39,22 @@ export const orchestratePrisma = async <Model extends ILlmSchema.Model>(
     type: "prismaStart",
     id: v7(),
     created_at: start.toISOString(),
-    reason: props.reason,
+    reason: props.instruction,
     step: ctx.state().analyze?.step ?? 0,
   });
 
   // COMPONENTS
   const componentEvent: AutoBePrismaComponentsEvent =
-    await orchestratePrismaComponents(ctx);
+    await orchestratePrismaComponents(ctx, props.instruction);
   ctx.dispatch(componentEvent);
 
   // CONSTRUCT AST DATA
   const schemaEvents: AutoBePrismaSchemasEvent[] =
-    await orchestratePrismaSchemas(ctx, componentEvent.components);
+    await orchestratePrismaSchemas(
+      ctx,
+      props.instruction,
+      componentEvent.components,
+    );
   const application: AutoBePrisma.IApplication = {
     files: schemaEvents.map((e) => e.file),
   };

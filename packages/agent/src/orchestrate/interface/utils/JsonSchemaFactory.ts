@@ -1,5 +1,6 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
+import { OpenApiTypeChecker } from "@samchon/openapi";
 import typia, { tags } from "typia";
 
 export namespace JsonSchemaFactory {
@@ -44,6 +45,37 @@ export namespace JsonSchemaFactory {
     }
   };
 
+  export const removeUnused = (props: {
+    operations: AutoBeOpenApi.IOperation[];
+    schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+  }): void => {
+    const used: Set<string> = new Set();
+    const visit = (schema: AutoBeOpenApi.IJsonSchema): void =>
+      OpenApiTypeChecker.visit({
+        components: { schemas: props.schemas },
+        schema,
+        closure: (next) => {
+          if (OpenApiTypeChecker.isReference(next)) {
+            const key: string = next.$ref.split("/").pop()!;
+            used.add(key);
+          }
+        },
+      });
+
+    for (const op of props.operations) {
+      if (op.requestBody !== null)
+        visit({
+          $ref: `#/components/schemas/${op.requestBody.typeName}`,
+        });
+      if (op.responseBody !== null)
+        visit({
+          $ref: `#/components/schemas/${op.responseBody.typeName}`,
+        });
+    }
+    for (const key of Object.keys(props.schemas))
+      if (used.has(key) === false) delete props.schemas[key];
+  };
+
   export const page = (
     key: string,
   ): AutoBeOpenApi.IJsonSchemaDescriptive.IObject => ({
@@ -69,7 +101,7 @@ export namespace JsonSchemaFactory {
     `,
   });
 
-  export const fix = (path: string, input: unknown): void => {
+  export const fixPage = (path: string, input: unknown): void => {
     if (isRecord(input) === false || isRecord(input[path]) === false) return;
 
     if (input[path].description) delete input[path].description;

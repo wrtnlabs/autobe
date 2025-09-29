@@ -29,7 +29,7 @@ export const transformInterfaceAssetHistories = (
 
         ## User Request
 
-        ${analyze.reason}
+        ${analyze.instruction}
 
         ## Requirement Analysis Report
 
@@ -64,6 +64,7 @@ export const transformInterfaceAssetHistories = (
         \`\`\`
 
         ## Entity Relationship Diagrams
+        
         \`\`\`json
         ${JSON.stringify(
           (prisma.compiled as IAutoBePrismaCompileResult.ISuccess).diagrams,

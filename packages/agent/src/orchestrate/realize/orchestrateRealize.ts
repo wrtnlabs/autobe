@@ -51,7 +51,7 @@ export const orchestrateRealize =
       type: "realizeStart",
       id: v7(),
       created_at: start.toISOString(),
-      reason: props.reason,
+      reason: props.instruction,
       step: ctx.state().test?.step ?? 0,
     });
 

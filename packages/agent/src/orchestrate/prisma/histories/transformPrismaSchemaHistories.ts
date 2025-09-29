@@ -5,11 +5,12 @@ import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 
-export const transformPrismaSchemaHistories = (
-  requirementAnalysisReport: Record<string, string>,
-  targetComponent: AutoBePrisma.IComponent,
-  otherTables: string[],
-): Array<
+export const transformPrismaSchemaHistories = (props: {
+  analysis: Record<string, string>;
+  targetComponent: AutoBePrisma.IComponent;
+  otherTables: string[];
+  instruction: string;
+}): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
   return [
@@ -27,7 +28,7 @@ export const transformPrismaSchemaHistories = (
         Here is the requirement analysis report:
 
         \`\`\`json
-        ${JSON.stringify(requirementAnalysisReport)}
+        ${JSON.stringify(props.analysis)}
         \`\`\`
       `,
     },
@@ -36,12 +37,26 @@ export const transformPrismaSchemaHistories = (
       created_at: new Date().toISOString(),
       type: "assistantMessage",
       text: StringUtil.trim`
+        ## Database Design Instructions
+
+        The following database-specific instructions were extracted by AI from
+        the user's utterances. These focus ONLY on database schema design aspects
+        such as table structure, relationships, constraints, and indexing strategies.
+
+        Reference these instructions when designing the DB schema for this specific
+        component. If the instruction is not related to the current domain or
+        component, you may ignore it.
+
+        ${props.instruction}
+
+        ## Target Component
+        
         Here is the input data for generating Prisma DB schema.
         
         \`\`\`json
         ${JSON.stringify({
-          targetComponent,
-          otherTables,
+          targetComponent: props.targetComponent,
+          otherTables: props.otherTables,
         })}
         \`\`\`
       `,
@@ -58,7 +73,7 @@ export const transformPrismaSchemaHistories = (
         
         \`\`\`json
         ${JSON.stringify({
-          targetComponent,
+          targetComponent: props.targetComponent,
         })}
         \`\`\`
       `,

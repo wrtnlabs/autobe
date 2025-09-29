@@ -43,7 +43,10 @@ export const validate_agent_test_write = async (
   // GENERATE TEST FUNCTIONS
   const writes: IAutoBeTestWriteResult[] = await orchestrateTestWrite(
     agent.getContext(),
-    scenarios,
+    {
+      instruction: "Generate diverse and comprehensive test scenarios.",
+      scenarios,
+    },
   );
 
   // REPORT RESULT

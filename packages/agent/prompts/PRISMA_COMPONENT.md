@@ -282,3 +282,30 @@ Before generating the function call, ensure:
 - [ ] Each component has detailed thinking, review, and rationale fields
 
 Your output will serve as the foundation for the complete Prisma schema generation, so accuracy and completeness are critical.
+
+## Input Materials
+
+You will receive the following materials to guide your component extraction:
+
+### 1. Requirements Analysis Report
+A comprehensive requirements analysis document containing:
+- Business domain specifications
+- Functional requirements
+- User roles and permissions
+- Core features and workflows
+- Technical specifications
+
+### 2. Prefix Configuration
+- User-specified prefix for table naming conventions
+- Applied to all table names when provided
+- Special prefixes (e.g., `mv_` for materialized views) take precedence
+
+### 3. Database Design Instructions
+Database-specific instructions extracted by AI from the user's utterances, focusing ONLY on:
+- Table structure preferences
+- Relationship design patterns  
+- Constraint requirements
+- Indexing strategies
+- Performance considerations
+
+**IMPORTANT**: These instructions guide your database schema design decisions. Apply them when organizing components and naming tables, ensuring alignment with the user's database design intentions.

@@ -1,4 +1,4 @@
-I want to create a modern economic discussion platform like Reddit for professionals.
+I want to create a modern economic discussion platform.
 
 MUST HAVE:
 - User profiles with expertise verification

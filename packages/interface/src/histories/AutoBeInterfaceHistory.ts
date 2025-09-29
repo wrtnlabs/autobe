@@ -51,15 +51,15 @@ export interface AutoBeInterfaceHistory
   authorizations: AutoBeInterfaceAuthorization[];
 
   /**
-   * Reason why the Interface agent was activated through function calling.
+   * Instructions for the Interface agent redefined by AI from user's utterance.
    *
-   * Explains the specific circumstances that triggered the AI chatbot to invoke
-   * the Interface agent via function calling. This could include reasons such
-   * as completing initial API design after database schema creation, updating
-   * API specifications due to requirement changes, or regenerating interfaces
-   * to reflect modified data models.
+   * Contains AI-generated specific guidance for the API design phase,
+   * interpreted and refined from the user's original request. These instructions
+   * direct the Interface agent on how to approach RESTful API design,
+   * which endpoints to expose, operation patterns to follow, and security
+   * requirements to implement based on the business context.
    */
-  reason: string;
+  instruction: string;
 
   /**
    * Iteration number of the requirements analysis report this API design was

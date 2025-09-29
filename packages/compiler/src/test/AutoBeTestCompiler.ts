@@ -6,7 +6,10 @@ import {
   IAutoBeTypeScriptCompileProps,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
-import { AutoBeEndpointComparator, validateTestFunction } from "@autobe/utils";
+import {
+  AutoBeOpenApiEndpointComparator,
+  validateTestFunction,
+} from "@autobe/utils";
 import { EmbedEsLint } from "embed-eslint";
 import { HashMap, Pair } from "tstl";
 import ts from "typescript";
@@ -79,8 +82,8 @@ export class AutoBeTestCompiler implements IAutoBeTestCompiler {
             op,
           ),
       ),
-      AutoBeEndpointComparator.hashCode,
-      AutoBeEndpointComparator.equals,
+      AutoBeOpenApiEndpointComparator.hashCode,
+      AutoBeOpenApiEndpointComparator.equals,
     );
     validateTestFunction({
       function: props.function,

@@ -1,15 +1,15 @@
-import { AutoBeTokenUsage, orchestrate } from "@autobe/agent";
+import { AutoBeTokenUsage } from "@autobe/agent";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
-  AutoBeAssistantMessageHistory,
   AutoBeEventOfSerializable,
   AutoBeEventSnapshot,
+  AutoBeHistory,
   AutoBePrismaHistory,
   AutoBePrismaInsufficientEvent,
-  AutoBePrismaStartEvent,
   AutoBePrismaValidateEvent,
+  AutoBeUserMessageContent,
+  AutoBeUserMessageHistory,
 } from "@autobe/interface";
-import { AutoBePrismaComponentsEvent } from "@autobe/interface/src/events/AutoBePrismaComponentsEvent";
 import { AutoBePrismaSchemasEvent } from "@autobe/interface/src/events/AutoBePrismaSchemasEvent";
 import typia from "typia";
 
@@ -39,15 +39,6 @@ export const archive_prisma = async (
   };
   for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
     agent.on(type, listen);
-
-  let startEvent: AutoBePrismaStartEvent | null = null;
-  let components: AutoBePrismaComponentsEvent | null = null;
-  agent.on("prismaStart", (event) => {
-    startEvent = event;
-  });
-  agent.on("prismaComponents", (event) => {
-    components = event;
-  });
 
   const schemas: AutoBePrismaSchemasEvent[] = [];
   const insufficients: AutoBePrismaInsufficientEvent[] = [];
@@ -80,30 +71,35 @@ export const archive_prisma = async (
     });
   });
 
-  let history: AutoBePrismaHistory | AutoBeAssistantMessageHistory =
-    await orchestrate.prisma(agent.getContext(), {
-      reason:
-        "Step to the Prisma DB schema generation after requirements analysis",
-    });
-  if (history.type !== "prisma") {
-    history = await orchestrate.prisma(agent.getContext(), {
-      reason: "Don't ask me to do that, and just do it right now.",
-    });
-    if (history.type !== "prisma")
+  const userMessage: AutoBeUserMessageHistory =
+    await TestHistory.getUserMessage(project, "prisma");
+  const go = (
+    c: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
+  ) => agent.conversate(c);
+
+  // REQUEST PRISMA GENERATION
+  let histories: AutoBeHistory[] = await go(userMessage.contents);
+  if (histories.every((h) => h.type !== "prisma")) {
+    histories = await go("Don't ask me to do that, and just do it right now.");
+    if (histories.every((h) => h.type !== "prisma"))
       throw new Error("History type must be prisma.");
   }
-  if (history.compiled.type !== "success") {
+
+  const prisma: AutoBePrismaHistory = histories.find(
+    (h) => h.type === "prisma",
+  )!;
+  if (prisma.compiled.type !== "success") {
     await FileSystemIterator.save({
       root: `${TestGlobal.ROOT}/results/${model}/${project}/prisma-error`,
       files: {
-        "result.json": JSON.stringify(history.result),
-        ...history.schemas,
-        ...(history.compiled.type === "failure"
+        "result.json": JSON.stringify(prisma.result),
+        ...prisma.schemas,
+        ...(prisma.compiled.type === "failure"
           ? {
-              "reason.log": history.compiled.reason,
+              "reason.log": prisma.compiled.reason,
             }
           : {
-              "error.json": JSON.stringify(history.compiled.error),
+              "error.json": JSON.stringify(prisma.compiled.error),
             }),
       },
     });
@@ -114,22 +110,7 @@ export const archive_prisma = async (
   try {
     await FileSystemIterator.save({
       root: `${TestGlobal.ROOT}/results/${model}/${project}/prisma`,
-      files: {
-        ...(await agent.getFiles()),
-        "logs/validates.json": JSON.stringify(validates),
-        "logs/result.json": JSON.stringify(history),
-        "logs/files.json": JSON.stringify(Object.keys(agent.getFiles())),
-        "logs/result-files.json": JSON.stringify(
-          Object.keys({
-            ...history.compiled.nodeModules,
-            ...history.compiled.schemas,
-          }),
-        ),
-        "logs/tokenUsage.json": JSON.stringify(agent.getTokenUsage()),
-        "logs/components.json": JSON.stringify(components),
-        "logs/schemas.json": JSON.stringify(schemas),
-        "logs/start.json": JSON.stringify(startEvent),
-      },
+      files: await agent.getFiles(),
     });
   } catch {}
   if (TestGlobal.archive)
