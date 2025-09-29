@@ -161,7 +161,14 @@ const correct = async <Model extends ILlmSchema.Model>(
 
           The instruction to write at first was as follows, and the code you received is the code you wrote according to this instruction.
           When modifying, modify the entire code, but not the import statement.
+
+          Below is template code you wrote:
           ${getRealizeWriteCodeTemplate(scenario, scenario.operation, authorization ?? null)}
+
+          Current code is as follows:
+          \`\`\`typescript
+          ${func.content}
+          \`\`\`
         `,
       });
       ++progress.completed;
@@ -198,17 +205,28 @@ const correct = async <Model extends ILlmSchema.Model>(
     }),
   );
 
+  // Get functions that were not modified (not in locations array)
+  const unchangedFunctions: AutoBeRealizeFunction[] = functions.filter(
+    (f) => !locations.includes(f.location),
+  );
+
+  // Merge converted functions with unchanged functions for validation
+  const allFunctionsForValidation = [
+    ...converted.map((c) => c.func),
+    ...unchangedFunctions,
+  ];
+
   const newValidate: AutoBeRealizeValidateEvent = await compileRealizeFiles(
     ctx,
     {
       authorizations,
-      functions: converted.map((c) => c.func),
+      functions: allFunctionsForValidation,
     },
   );
 
   const newResult: IAutoBeTypeScriptCompileResult = newValidate.result;
   if (newResult.type === "success") {
-    return converted.map((c) => c.func);
+    return allFunctionsForValidation;
   } else if (newResult.type === "exception") {
     // Compilation exception, return current functions. because retrying won't help.
     return functions;
@@ -218,7 +236,7 @@ const correct = async <Model extends ILlmSchema.Model>(
     newResult.diagnostics.every((d) => !d.file?.startsWith("src/providers"))
   ) {
     // No diagnostics related to provider functions, stop correcting
-    return converted.map((c) => c.func);
+    return allFunctionsForValidation;
   }
 
   const newLocations: string[] = diagnose(newValidate);
@@ -229,9 +247,9 @@ const correct = async <Model extends ILlmSchema.Model>(
     newLocations,
   );
 
-  // If no failures to retry, return success and ignored functions
+  // If no failures to retry, return all functions
   if (failed.length === 0) {
-    return [...success, ...ignored];
+    return [...success, ...ignored, ...unchangedFunctions];
   }
 
   // Collect diagnostics relevant to failed functions
@@ -255,13 +273,7 @@ const correct = async <Model extends ILlmSchema.Model>(
     life - 1,
   );
 
-  // Get functions that were not modified (not in converted array)
-  const convertedLocations = converted.map((c) => c.func.location);
-  const unchanged = functions.filter(
-    (f) => !convertedLocations.includes(f.location),
-  );
-
-  return [...success, ...ignored, ...retriedFunctions, ...unchanged];
+  return [...success, ...ignored, ...retriedFunctions, ...unchangedFunctions];
 };
 
 /**

@@ -649,31 +649,44 @@ await MyGlobal.prisma.posts.create({
 
 #### UPDATE Operation - CRITICAL PATTERN
 ```typescript
-// For UPDATE: Handle null vs undefined carefully
+// 🚨 PREFERRED: Simple pattern with ?? undefined for most fields
 await MyGlobal.prisma.posts.update({
   where: { id },
   data: {
-    // For required fields
-    title: body.title === undefined ? undefined : body.title,
+    // SIMPLE PATTERN for most fields - use ?? undefined
+    title: body.title ?? undefined,
+    description: body.description ?? undefined,
+    status: body.status ?? undefined,
     
-    // For nullable fields - THREE states possible:
-    // 1. undefined = don't change
-    // 2. null = set to NULL  
-    // 3. value = set to value
-    deleted_at: body.deleted_at === undefined 
-      ? undefined  // Don't change
-      : body.deleted_at === null
-        ? null     // Set to NULL
-        : toISOString(body.deleted_at),  // Set to value
+    // For non-nullable Prisma fields when API allows null
+    // Convert null to undefined (skip update)
+    required_field: body.required_field === null ? undefined : body.required_field,
+    
+    // 🚨 CRITICAL: For ALL date/time fields - use this simple pattern
+    // null → undefined (skip update), value → convert
+    start_at: body.start_at ? toISOStringSafe(body.start_at) : undefined,
+    end_at: body.end_at ? toISOStringSafe(body.end_at) : undefined,
+    scheduled_at: body.scheduled_at ? toISOStringSafe(body.scheduled_at) : undefined,
+    
+    // ⚠️ Setting date to NULL is EXTREMELY RARE (< 1% of cases)
+    // Only for special cases like calendar apps (all-day vs timed events)
+    // DO NOT use the complex pattern below unless absolutely necessary:
+    // deleted_at: body.deleted_at === undefined 
+    //   ? undefined : body.deleted_at === null
+    //     ? null : toISOStringSafe(body.deleted_at)
         
-    // For Date fields specifically
-    executed_at: body.executed_at === undefined
-      ? undefined
-      : body.executed_at === null
-        ? null
-        : new Date(body.executed_at),  // Prisma expects Date, not string
+    // Always update updated_at
+    updated_at: toISOStringSafe(new Date()),
   }
 });
+
+// ❌ AVOID: Overcomplicated conditional spreading (unless necessary)
+// Only use when you need complex conditional logic
+const data = {
+  ...(body.title !== undefined ? { title: body.title } : {}),
+  ...(body.description !== undefined ? { description: body.description } : {}),
+  // This pattern is harder to read and maintain
+};
 ```
 
 **Key Difference:**
@@ -707,6 +720,53 @@ await MyGlobal.prisma.items.create({
   }
 });
 ```
+
+**✅ ALLOWED: Using `satisfies` with Prisma Types**
+
+When working with Prisma input types (imported from `@prisma/client`), use `satisfies` for type checking:
+
+```typescript
+import { Prisma } from "@prisma/client";
+
+// ✅ GOOD: Use satisfies with Prisma types for type safety
+const updateData = {
+  updated_at: toISOStringSafe(new Date()),
+  ...(body.session_id === null
+    ? { session_id: null }
+    : body.session_id !== undefined
+      ? { session_id: body.session_id }
+      : {}),
+  ...(body.user_agent !== undefined && {
+    user_agent: body.user_agent
+  }),
+  ...(body.deleted_at !== undefined && {
+    deleted_at: body.deleted_at ? toISOStringSafe(body.deleted_at) : null
+  }),
+} satisfies Prisma.discussion_board_guestsUpdateInput;
+
+const updated = await MyGlobal.prisma.discussion_board_guests.update({
+  where: { id },
+  data: updateData,
+});
+
+// ✅ ALSO GOOD: Direct satisfies in operations
+await MyGlobal.prisma.discussion_board_posts.create({
+  data: {
+    id: v4() as string & tags.Format<'uuid'>,
+    title: body.title,
+    content: body.content,
+    author_id: userId,
+    created_at: toISOStringSafe(new Date()),
+    updated_at: toISOStringSafe(new Date()),
+  } satisfies Prisma.discussion_board_postsCreateInput,
+});
+```
+
+**Why Prisma types with `satisfies` are beneficial:**
+- Prisma generates exact TypeScript types matching your schema
+- Catches field name typos and type mismatches at compile time
+- Helps with complex conditional update patterns
+- No runtime overhead while ensuring type correctness
 
 ### 4.4. Return Type Construction Pattern
 
@@ -959,17 +1019,39 @@ await MyGlobal.prisma.users.create({
 
 ### Error: Type 'null' is not assignable to type 'undefined' (in update operations)
 ```typescript
-// WRONG - When updating, null means "set to NULL"
+// CONTEXT MATTERS: Check if Prisma field is nullable or non-nullable!
+
+// Case 1: Non-nullable Prisma field (e.g., title String)
+// WRONG - Trying to set non-nullable field to null
 await MyGlobal.prisma.posts.update({
   data: {
-    category_id: body.category_id, // Could be null
+    title: body.title, // ERROR if body.title can be null
   }
 });
 
-// CORRECT - Convert null to undefined to skip updating
+// CORRECT - Convert null to undefined for non-nullable fields
 await MyGlobal.prisma.posts.update({
   data: {
-    category_id: body.category_id === null ? undefined : body.category_id,
+    title: body.title ?? undefined, // Skip if null or undefined
+    // OR more explicit:
+    title: body.title === null ? undefined : body.title,
+  }
+});
+
+// Case 2: Nullable Prisma field (e.g., category_id String?)
+// CORRECT - Can pass null/undefined as intended
+await MyGlobal.prisma.posts.update({
+  data: {
+    category_id: body.category_id, // OK - field accepts null
+  }
+});
+
+// Case 3: When value is already safe (no null/undefined in type)
+// CORRECT - Just use directly
+await MyGlobal.prisma.posts.update({
+  data: {
+    community_platform_sub_community_id: updated.community_platform_sub_community_id,
+    // No conversion needed - already non-nullable string
   }
 });
 ```

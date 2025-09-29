@@ -41,19 +41,18 @@ export function transformRealizeCorrectHistories(props: {
       `,
       created_at: new Date().toISOString(),
     },
-    ...props.failures.map(
-      (f) =>
-        ({
-          id: v7(),
-          type: "assistantMessage",
-          text: StringUtil.trim`
+    ...props.failures.map((f) => {
+      return {
+        id: v7(),
+        type: "assistantMessage",
+        text: StringUtil.trim`
             This is a past code and an error with the code. Please refer to the annotation for the location of the error.
 
             ${printErrorHints(f.function.content, f.diagnostics)}
           `,
-          created_at: new Date().toISOString(),
-        }) satisfies IAgenticaHistoryJson.IAssistantMessage,
-    ),
+        created_at: new Date().toISOString(),
+      } satisfies IAgenticaHistoryJson.IAssistantMessage;
+    }),
     {
       id: v7(),
       type: "systemMessage",

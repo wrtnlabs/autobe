@@ -1284,6 +1284,51 @@ const input = {
 await MyGlobal.prisma.categories.create({ data: input });
 ```
 
+**✅ ALLOWED: Using `satisfies` with Prisma Types**
+
+When working with Prisma input types (imported from `@prisma/client`), you can use `satisfies` for type checking:
+
+```typescript
+import { Prisma } from "@prisma/client";
+
+// ✅ GOOD: Use satisfies with Prisma input types
+const updateData = {
+  name: body.name,
+  description: body.description,
+  updated_at: toISOStringSafe(new Date()),
+} satisfies Prisma.discussion_board_guestsUpdateInput;
+
+await MyGlobal.prisma.discussion_board_guests.update({
+  where: { id: guestId },
+  data: updateData,
+});
+
+// ✅ ALSO GOOD: Direct satisfies in the operation
+await MyGlobal.prisma.discussion_board_members.create({
+  data: {
+    id: v4() as string & tags.Format<'uuid'>,
+    board_id: boardId,
+    user_id: userId,
+    role: "member",
+    joined_at: toISOStringSafe(new Date()),
+  } satisfies Prisma.discussion_board_membersCreateInput,
+});
+
+// ✅ USEFUL: For complex conditional updates
+const conditionalUpdate = {
+  ...(body.name && { name: body.name }),
+  ...(body.email && { email: body.email }),
+  ...(body.role && { role: body.role }),
+  updated_at: toISOStringSafe(new Date()),
+} satisfies Prisma.discussion_board_usersUpdateInput;
+```
+
+**Why Prisma types with `satisfies` work well:**
+- Prisma generates precise TypeScript types for all models
+- `satisfies` helps catch type errors at compile time
+- No runtime overhead while ensuring type safety
+- Particularly useful for complex update operations with optional fields
+
 **🚨 EXCEPTION: Complex Branding Types with Typia Tags**
 
 For complex branding types with multiple Typia tags, use double `as` casting pattern:
@@ -2719,19 +2764,52 @@ const data: { name?: string | null } = {};
 
 ---
 
-#### ✅ 2. Choose `null` vs `undefined` based on operation intent
+#### ✅ 2. Choose `null` vs `undefined` based on Prisma field type and operation intent
 
-**For Updates (when you want to skip unchanged fields):**
+**For Updates with non-nullable Prisma fields:**
 ```ts
-data.description = body.description ?? undefined; // Skip if not provided
+// If Prisma field is non-nullable (e.g., title String)
+data.title = body.title === null ? undefined : body.title; // Convert null to undefined
+data.title = body.title ?? undefined; // Skip if null or undefined
 ```
 
-**For Creates or explicit NULL assignment:**
+**For Updates with nullable Prisma fields:**
+```ts
+// If Prisma field is nullable (e.g., description String?)
+data.description = body.description; // Can pass null/undefined as intended
+```
+
+**Special handling for timestamps and date fields:**
+```ts
+// 🚨 CRITICAL: Date/time fields should almost NEVER be set to null in updates
+// Treat null as "don't update" (convert to undefined)
+
+// ✅ CORRECT: Standard pattern for ALL date fields
+data.start_at = body.start_at ? toISOStringSafe(body.start_at) : undefined;
+data.end_at = body.end_at ? toISOStringSafe(body.end_at) : undefined;
+data.executed_at = body.executed_at ? toISOStringSafe(body.executed_at) : undefined;
+
+// For created_at/updated_at - NEVER allow null updates
+data.created_at = body.created_at ? toISOStringSafe(body.created_at) : undefined;
+// Always update updated_at to current time
+data.updated_at = toISOStringSafe(new Date());
+
+// ❌ WRONG: Setting date fields to null (extremely rare!)
+data.start_at = body.start_at === null ? null : toISOStringSafe(body.start_at);
+// This would clear the date - only needed in rare cases like:
+// - Calendar apps distinguishing all-day vs timed events
+// - Clearing a scheduled date to mark as "unscheduled"
+// In 99% of cases, you should NOT do this!
+```
+
+**For Creates (setting initial values):**
 ```ts
 data.description = body.description ?? null; // Set to NULL if not provided
+data.created_at = toISOStringSafe(new Date());
+data.updated_at = toISOStringSafe(new Date());
 ```
 
-**For clearing a field in updates:**
+**For clearing a nullable field in updates:**
 ```ts
 data.description = shouldClear ? null : undefined; // null = clear, undefined = skip
 ```
@@ -2913,7 +2991,11 @@ await prisma.findMany({ where, orderBy }); // Complex type errors!
 
 1. **Check Prisma schema first** - Verify all field names before coding
 2. **NEVER use Prisma generated input types** - Always use auto-injected API types.
-3. **Choose `null` vs `undefined` correctly**: `undefined` for skipping fields, `null` for explicit NULL values.
+3. **Choose `null` vs `undefined` correctly**: 
+   - `undefined` = skip update (don't change the field)
+   - `null` = set field to NULL in database (only for nullable columns)
+   - **CRITICAL**: For non-nullable fields, NEVER pass `null` - convert to `undefined`
+   - **IMPORTANT**: When API sends `null` for timestamps like `created_at`, treat as "don't update" (convert to `undefined`)
 4. **Use simple property assignment**: `field: value ?? undefined` for clearest type errors.
 5. Use `null` for creates/explicit NULLs, `undefined` for updates/skips.
 6. **Always use `IModel.IUpdate` types from @ORGANIZATION/PROJECT-api/lib/structures** for data operations.

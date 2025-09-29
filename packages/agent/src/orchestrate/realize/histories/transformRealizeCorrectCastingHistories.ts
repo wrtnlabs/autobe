@@ -24,13 +24,13 @@ export const transformRealizeCorrectCastingHistories = (
       text: AutoBeSystemPromptConstant.REALIZE_CORRECT_CASTING,
     },
     ...failures.map(
-      (f, i, array) =>
+      (f) =>
         ({
           id: v7(),
           created_at: new Date().toISOString(),
           type: "assistantMessage",
           text: StringUtil.trim`
-          # ${i === array.length - 1 ? "Latest Failure" : "Previous Failure"}
+          # Errors
 
           This is a past code and an error with the code. Please refer to the annotation for the location of the error.
 

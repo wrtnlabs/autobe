@@ -216,7 +216,13 @@ async function step<Model extends ILlmSchema.Model>(
       The instruction to write at first was as follows, and the code you received is the code you wrote according to this instruction.
       When modifying, modify the entire code, but not the import statement.
 
+      Below is template code you wrote:
       ${getRealizeWriteCodeTemplate(props.scenario, props.scenario.operation, props.authorization ?? null)}
+
+      Current code is as follows:
+      \`\`\`typescript
+      ${props.function.content}
+      \`\`\`
     `,
   });
 
