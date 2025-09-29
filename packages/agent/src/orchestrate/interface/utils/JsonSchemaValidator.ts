@@ -42,7 +42,7 @@ export namespace JsonSchemaValidator {
         `,
       });
     if (props.key.endsWith(".IPage")) {
-      const expected: string = `IPage${props.key.substring(props.key.length - 6)}`;
+      const expected: string = `IPage${props.key.substring(0, props.key.length - 6)}`;
       props.errors.push({
         path: `${props.path}[${JSON.stringify(props.key)}]`,
         expected: `"IPage" must be followed by another interface name. Use ${JSON.stringify(expected)} instead.`,
