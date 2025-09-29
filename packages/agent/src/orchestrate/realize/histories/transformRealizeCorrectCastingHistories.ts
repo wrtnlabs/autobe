@@ -4,6 +4,7 @@ import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
+import { printErrorHints } from "../utils/printErrorHints";
 
 interface IFailure {
   diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[];
@@ -30,13 +31,10 @@ export const transformRealizeCorrectCastingHistories = (
           type: "assistantMessage",
           text: StringUtil.trim`
           # ${i === array.length - 1 ? "Latest Failure" : "Previous Failure"}
-          ## Generated TypeScript Code
-          \`\`\`typescript
-          ${f.script}
-          \`\`\`
-          ## Compile Errors
-          \`\`\`json
-          ${JSON.stringify(f.diagnostics)}
+
+          This is a past code and an error with the code. Please refer to the annotation for the location of the error.
+
+          ${printErrorHints(f.script, f.diagnostics)}          
           \`\`\`
         `,
         }) satisfies IAgenticaHistoryJson.IAssistantMessage,

@@ -19,6 +19,7 @@ import { IAutoBeRealizeCorrectApplication } from "./structures/IAutoBeRealizeCor
 import { IAutoBeRealizeFunctionFailure } from "./structures/IAutoBeRealizeFunctionFailure";
 import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
 import { filterDiagnostics } from "./utils/filterDiagnostics";
+import { getRealizeWriteCodeTemplate } from "./utils/getRealizeWriteCodeTemplate";
 import { getRealizeWriteDto } from "./utils/getRealizeWriteDto";
 import { replaceImportStatements } from "./utils/replaceImportStatements";
 
@@ -211,6 +212,11 @@ async function step<Model extends ILlmSchema.Model>(
     enforceFunctionCall: true,
     message: StringUtil.trim`
       Correct the TypeScript code implementation.
+
+      The instruction to write at first was as follows, and the code you received is the code you wrote according to this instruction.
+      When modifying, modify the entire code, but not the import statement.
+
+      ${getRealizeWriteCodeTemplate(props.scenario, props.scenario.operation, props.authorization ?? null)}
     `,
   });
 

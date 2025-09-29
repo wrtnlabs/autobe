@@ -17,6 +17,9 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { IAutoBeCommonCorrectCastingApplication } from "../common/structures/IAutoBeCommonCorrectCastingApplication";
 import { transformRealizeCorrectCastingHistories } from "./histories/transformRealizeCorrectCastingHistories";
 import { compileRealizeFiles } from "./internal/compileRealizeFiles";
+import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
+import { getRealizeWriteCodeTemplate } from "./utils/getRealizeWriteCodeTemplate";
+import { replaceImportStatements } from "./utils/replaceImportStatements";
 
 /** Result of attempting to correct a single function */
 type CorrectionResult = {
@@ -28,6 +31,7 @@ export const orchestrateRealizeCorrectCasting = async <
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
+  scenarios: IAutoBeRealizeScenarioResult[],
   authorizations: AutoBeRealizeAuthorization[],
   functions: AutoBeRealizeFunction[],
   progress: AutoBeProgressEventBase,
@@ -43,6 +47,7 @@ export const orchestrateRealizeCorrectCasting = async <
 
   return predicate(
     ctx,
+    scenarios,
     authorizations,
     functions,
     [],
@@ -54,6 +59,7 @@ export const orchestrateRealizeCorrectCasting = async <
 
 const predicate = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
+  scenarios: IAutoBeRealizeScenarioResult[],
   authorizations: AutoBeRealizeAuthorization[],
   functions: AutoBeRealizeFunction[],
   failures: IAutoBeTypeScriptCompileResult.IDiagnostic[],
@@ -66,6 +72,7 @@ const predicate = async <Model extends ILlmSchema.Model>(
 
     return await correct(
       ctx,
+      scenarios,
       authorizations,
       functions,
       [...failures, ...event.result.diagnostics],
@@ -79,6 +86,7 @@ const predicate = async <Model extends ILlmSchema.Model>(
 
 const correct = async <Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
+  scenarios: IAutoBeRealizeScenarioResult[],
   authorizations: AutoBeRealizeAuthorization[],
   functions: AutoBeRealizeFunction[],
   failures: IAutoBeTypeScriptCompileResult.IDiagnostic[],
@@ -107,6 +115,13 @@ const correct = async <Model extends ILlmSchema.Model>(
       const func: AutoBeRealizeFunction = functions.find(
         (f) => f.location === location,
       )!;
+
+      const scenario = scenarios.find((s) => s.location === func.location)!;
+
+      const operation = scenario.operation;
+      const authorization = authorizations.find(
+        (a) => a.role.name === operation.authorizationRole,
+      );
 
       const pointer: IPointer<
         IAutoBeCommonCorrectCastingApplication.IProps | false | null
@@ -143,6 +158,10 @@ const correct = async <Model extends ILlmSchema.Model>(
 
           You don't need to explain me anything, but just fix or give it up 
           immediately without any hesitation, explanation, and questions.
+
+          The instruction to write at first was as follows, and the code you received is the code you wrote according to this instruction.
+          When modifying, modify the entire code, but not the import statement.
+          ${getRealizeWriteCodeTemplate(scenario, scenario.operation, authorization ?? null)}
         `,
       });
       ++progress.completed;
@@ -150,6 +169,12 @@ const correct = async <Model extends ILlmSchema.Model>(
         return { result: "exception" as const, func: func };
       else if (pointer.value === false)
         return { result: "ignore" as const, func: func };
+
+      pointer.value.revise.final = await replaceImportStatements(ctx, {
+        operation: operation,
+        code: pointer.value.revise.final,
+        decoratorType: authorization?.payload.name,
+      });
 
       ctx.dispatch({
         id: v7(),
@@ -221,6 +246,7 @@ const correct = async <Model extends ILlmSchema.Model>(
   // Recursively retry failed functions
   const retriedFunctions: AutoBeRealizeFunction[] = await predicate(
     ctx,
+    scenarios,
     authorizations,
     failed,
     relevantDiagnostics,

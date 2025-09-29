@@ -115,6 +115,7 @@ export const orchestrateRealize =
     const totalCorrected: AutoBeRealizeFunction[] =
       await orchestrateRealizeCorrectCasting(
         ctx,
+        scenarios,
         authorizations,
         functions,
         reviewProgress,
