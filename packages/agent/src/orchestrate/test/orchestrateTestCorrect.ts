@@ -179,11 +179,12 @@ const correct = async <Model extends ILlmSchema.Model>(
   });
   if (pointer.value === null) throw new Error("Failed to correct test code.");
 
-  pointer.value.revise.final = await completeTestCode(
-    ctx,
-    props.function.artifacts,
-    pointer.value.revise.final,
-  );
+  if (pointer.value.revise.final)
+    pointer.value.revise.final = await completeTestCode(
+      ctx,
+      props.function.artifacts,
+      pointer.value.revise.final,
+    );
   pointer.value.draft = await completeTestCode(
     ctx,
     props.function.artifacts,
@@ -201,7 +202,7 @@ const correct = async <Model extends ILlmSchema.Model>(
     think: pointer.value.think,
     draft: pointer.value.draft,
     review: pointer.value.revise?.review,
-    final: pointer.value.revise?.final,
+    final: pointer.value.revise?.final ?? undefined,
   } satisfies AutoBeTestCorrectEvent);
   const newFunction: IAutoBeTestFunction = {
     ...props.function,

@@ -10,6 +10,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { completeTestCode } from "./compile/completeTestCode";
 import { transformTestCorrectInvalidRequestHistories } from "./histories/transformTestCorrectInvalidRequestHistories";
 import { IAutoBeTestCorrectInvalidRequestApplication } from "./structures/IAutoBeTestCorrectInvalidRequestApplication";
 import { IAutoBeTestFunction } from "./structures/IAutoBeTestFunction";
@@ -82,6 +83,17 @@ const correct = async <Model extends ILlmSchema.Model>(
   if (pointer.value === null) throw new Error("Failed to correct test code.");
   else if (pointer.value === false) return event; // other's responsibility
 
+  if (pointer.value.revise.final)
+    pointer.value.revise.final = await completeTestCode(
+      ctx,
+      write.artifacts,
+      pointer.value.revise.final,
+    );
+  pointer.value.draft = await completeTestCode(
+    ctx,
+    write.artifacts,
+    pointer.value.draft,
+  );
   ctx.dispatch({
     type: "testCorrect",
     id: v7(),
@@ -97,7 +109,7 @@ const correct = async <Model extends ILlmSchema.Model>(
     think: pointer.value.think,
     draft: pointer.value.draft,
     review: pointer.value.revise?.review,
-    final: pointer.value.revise?.final,
+    final: pointer.value.revise?.final ?? undefined,
   } satisfies AutoBeTestCorrectEvent);
   const newWrite: IAutoBeTestFunction = {
     artifacts: write.artifacts,
