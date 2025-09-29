@@ -49,8 +49,10 @@ export const archive_interface = async (
   let histories: AutoBeHistory[] = await go(userMessage.contents);
   if (histories.every((h) => h.type !== "interface")) {
     histories = await go("Don't ask me to do that, and just do it right now.");
-    if (histories.every((h) => h.type !== "interface"))
+    if (histories.every((h) => h.type !== "interface")) {
+      console.log(histories.map((h) => h.type));
       throw new Error("History type must be interface.");
+    }
   }
   const result: AutoBeInterfaceHistory = histories.find(
     (h) => h.type === "interface",

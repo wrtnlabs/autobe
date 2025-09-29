@@ -25,40 +25,6 @@ export interface IAutoBeInterfaceSchemaApplication {
 export namespace IAutoBeInterfaceSchemaApplication {
   export interface IProps {
     /**
-     * TypeScript draft code for schema definitions.
-     *
-     * This property contains TypeScript interface definitions that serve as a
-     * preliminary draft before generating the final JSON schema components.
-     * The draft allows for initial design and validation of the schema structure
-     * using TypeScript's type system before converting to OpenAPI/JSON Schema format.
-     *
-     * The draft typically includes:
-     * - Entity interfaces matching the Prisma models
-     * - Operation-specific variants (ICreate, IUpdate, etc.)
-     * - Utility types and enumerations
-     * - Type relationships and constraints
-     *
-     * This TypeScript draft serves as the foundation for the subsequent schema
-     * generation, ensuring type safety and consistency. The final schemas in the
-     * `schemas` property should be derived from and validated against this draft.
-     *
-     * Example draft structure:
-     * ```typescript
-     * interface IUser {
-     *   id: string;
-     *   email: string;
-     *   profile: IUserProfile;
-     * }
-     * 
-     * namespace IUser {
-     *   interface ICreate extends Omit<IUser, "id"> {}
-     *   interface IUpdate extends Partial<ICreate> {}
-     * }
-     * ```
-     */
-    draft: string;
-
-    /**
      * Complete set of schema components for the OpenAPI specification.
      *
      * This property contains comprehensive type definitions for all entities in

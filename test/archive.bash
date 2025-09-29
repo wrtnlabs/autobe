@@ -71,9 +71,9 @@ pnpm run archive --vendor qwen/qwen3-235b-a22b-2507 --project bbs --from interfa
 pnpm run archive --vendor qwen/qwen3-235b-a22b-2507 --project shopping --from interface > archive.qwen-235b-shopping.log
 
 # qwen/qwen3-next-80b-a3b
-pnpm run archive --vendor qwen/qwen3-next-80b-a3b-instruct --project todo --from realize > archive.qwen3-next-80b-todo.log
-pnpm run archive --vendor qwen/qwen3-next-80b-a3b-instruct --project reddit --from realize > archive.qwen3-next-80b-reddit.log
-pnpm run archive --vendor qwen/qwen3-next-80b-a3b-instruct --project bbs --from realize > archive.qwen3-next-80b-bbs.log
+pnpm run archive --vendor qwen/qwen3-next-80b-a3b-instruct --project todo --from interface > archive.qwen3-next-80b-todo.log
+pnpm run archive --vendor qwen/qwen3-next-80b-a3b-instruct --project reddit --from interface > archive.qwen3-next-80b-reddit.log
+pnpm run archive --vendor qwen/qwen3-next-80b-a3b-instruct --project bbs --from interface > archive.qwen3-next-80b-bbs.log
 pnpm run archive --vendor qwen/qwen3-next-80b-a3b-instruct --project shopping --from interface > archive.qwen3-next-80b-shopping.log
 
 # qwen/qwen3-coder

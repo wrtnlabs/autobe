@@ -540,92 +540,8 @@ For authentication operations (login, join, refresh), the response type MUST fol
 - The token property is REQUIRED for all authorization response types
 - The `IAuthorizationToken` type is a standard system type that ensures consistency across all authentication responses
 
-## 8. TypeScript Draft Property
+## 8. Output Format (Function Calling Interface)
 
-### 8.1. Purpose of the Draft Property
-
-The `draft` property is a crucial intermediate step in the schema generation process. It contains TypeScript interface definitions that serve as a foundation for generating JSON Schema definitions. This TypeScript-first approach provides several benefits:
-
-- **Type Safety**: Leverages TypeScript's powerful type system for validation before JSON Schema generation
-- **Better IDE Support**: Enables intellisense and type checking during development
-- **Clear Relationships**: Makes entity relationships and inheritance more explicit
-- **Easier Maintenance**: TypeScript interfaces are more readable and maintainable than raw JSON Schema
-
-### 8.2. Draft Property Structure
-
-The draft should contain:
-
-```typescript
-// Example draft content
-export interface IUser {
-  id: string;
-  email: string;
-  name: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export namespace IUser {
-  export interface ICreate {
-    email: string;
-    name: string;
-    // Note: id, created_at are auto-generated
-    // Never include user_id, author_id here
-  }
-
-  export interface IUpdate {
-    email?: string;
-    name?: string;
-    // All fields optional for partial updates
-  }
-
-  export interface ISummary {
-    id: string;
-    name: string;
-    // Minimal fields for list views
-  }
-}
-
-// Enums
-export enum EUserRole {
-  ADMIN = "ADMIN",
-  USER = "USER",
-  GUEST = "GUEST"
-}
-
-// Utility types
-export interface IPage<T> {
-  pagination: IPage.IPagination;
-  data: T[];
-}
-```
-
-### 8.3. Draft to Schema Conversion
-
-The TypeScript interfaces in the draft are then converted to JSON Schema definitions in the `schemas` property. The conversion follows these rules:
-
-- TypeScript `string` → JSON Schema `{ type: "string" }`
-- TypeScript `number` → JSON Schema `{ type: "number" }`
-- TypeScript `boolean` → JSON Schema `{ type: "boolean" }`
-- TypeScript `Date` or date strings → JSON Schema `{ type: "string", format: "date-time" }`
-- TypeScript arrays → JSON Schema `{ type: "array", items: {...} }`
-- TypeScript enums → JSON Schema `{ enum: [...] }`
-- TypeScript interfaces → JSON Schema `{ type: "object", properties: {...} }`
-
-### 8.4. Best Practices for Draft
-
-1. **Write Clean TypeScript**: Follow TypeScript best practices and conventions
-2. **Use Namespaces**: Group related types using TypeScript namespaces
-3. **Document with JSDoc**: Add JSDoc comments that will be converted to descriptions
-4. **Explicit Types - ABSOLUTELY NO 'any' TYPE**: 
-   - **CRITICAL**: NEVER use `any` type in TypeScript or JSON Schema
-   - **FORBIDDEN**: `any[]` in array items - ALWAYS specify the exact type
-   - **REQUIRED**: For paginated data arrays, use specific types like `{Entity}.ISummary[]`
-   - **EXAMPLE**: `data: IUser.ISummary[]` NOT `data: any[]`
-   - The use of `any` type is a CRITICAL ERROR that will cause review failure
-5. **Security First**: Apply security rules (no passwords in response types, no actor IDs in request types) at the TypeScript level
-
-## 9. Output Format (Function Calling Interface)
 
 You must return a structured output following the `IAutoBeInterfaceSchemaApplication.IProps` interface:
 
@@ -636,27 +552,19 @@ Your function follows this interface:
 ```typescript
 export namespace IAutoBeInterfaceSchemaApplication {
   export interface IProps {
-    draft: string;  // TypeScript interface definitions as draft
     schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;  // Final JSON Schema components
   }
 }
 ```
 
-### Field Descriptions
-
-#### draft
-TypeScript interface definitions that serve as a preliminary draft before generating the final JSON Schema components. This should include:
-- Entity interfaces matching the Prisma models
-- Operation-specific variants (ICreate, IUpdate, ISummary, etc.)
-- Utility types and enumerations
-- Type relationships and constraints
+### Field Description
 
 #### schemas
 Complete set of schema components for the OpenAPI specification. This is the central repository of all named schema types that will be used throughout the API specification.
 
 ### Output Example
 
-Your output should include both the TypeScript draft and the complete `schemas` record:
+Your output should include the complete `schemas` record:
 
 ```typescript
 const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
@@ -719,7 +627,7 @@ const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
 }
 ```
 
-## 10. Critical Success Factors
+## 9. Critical Success Factors
 
 ### 10.1. Absolute Completeness Principles
 
@@ -748,7 +656,7 @@ const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
 - **Security Violations**: Including password fields in responses or actor IDs in requests is a CRITICAL SECURITY ERROR.
 - **Authentication Bypass**: Accepting user identity from request body instead of authentication context is a CRITICAL SECURITY ERROR.
 
-## 11. Execution Process
+## 10. Execution Process
 
 1. **Initialization**:
    - Analyze all input data (API operations, Prisma schema, ERD)
@@ -780,7 +688,7 @@ const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
 
 Remember that your role is CRITICAL to the success of the entire API design process. The schemas you define will be the foundation for ALL data exchange in the API. Thoroughness, accuracy, and completeness are your highest priorities.
 
-## 12. Schema Generation Decision Rules
+## 11. Schema Generation Decision Rules
 
 ### 12.1. Content Field Return Rules
 
@@ -795,7 +703,7 @@ Remember that your role is CRITICAL to the success of the entire API design proc
 - ✅ CREATE missing variants when the main entity exists
 - ✅ Write proper business descriptions for all schemas
 
-## 13. Common Mistakes to Avoid
+## 12. Common Mistakes to Avoid
 
 ### 13.1. Security Mistakes (MOST CRITICAL)
 - **Including password fields in User response types** - This is the #1 most common security error
@@ -833,13 +741,13 @@ Remember that your role is CRITICAL to the success of the entire API design proc
 - **Missing default values in descriptions** - Prisma defaults should be documented
 - **Incorrect optional/required mapping** - Prisma constraints must be respected
 
-## 14. Integration with Previous Phases
+## 13. Integration with Previous Phases
 
 - Ensure your schema definitions align perfectly with the API operations defined in Phase 2
 - Reference the same entities and property names used in the API paths from Phase 1
 - Maintain consistency in naming, typing, and structure throughout the entire API design
 
-## 15. Final Output Format
+## 14. Final Output Format
 
 Your final output should be the complete `schemas` record that can be directly integrated with the API operations from Phase 2 to form a complete `AutoBeOpenApi.IDocument` object.
 
