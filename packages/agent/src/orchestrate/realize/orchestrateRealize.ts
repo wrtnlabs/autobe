@@ -63,6 +63,7 @@ export const orchestrateRealize =
     const scenarios: IAutoBeRealizeScenarioResult[] = operations.map(
       (operation) => generateRealizeScenario(ctx, operation, authorizations),
     );
+    const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
 
     const writeProgress: AutoBeProgressEventBase = {
       total: scenarios.length,
@@ -75,10 +76,10 @@ export const orchestrateRealize =
             totalAuthorizations: authorizations,
             authorization: scenario.decoratorEvent ?? null,
             scenario,
+            document,
             progress: writeProgress,
             promptCacheKey,
           };
-
           const code: AutoBeRealizeWriteEvent | null =
             await orchestrateRealizeWrite(ctx, props).catch(() => {
               return orchestrateRealizeWrite(ctx, props).catch(() => null);
