@@ -107,21 +107,32 @@ Final validated and enhanced schemas:
 ### Issues Found by Category
 
 #### 1. Security Violations
-- CRITICAL: IUser exposes hashed_password field
-- CRITICAL: IPost.ICreate accepts author_id
+- CRITICAL: IUser exposes hashed_password field in response DTO
+- CRITICAL: IPost.ICreate accepts author_id (should come from auth context)
+- CRITICAL: IComment.IUpdate allows modification of created_at timestamp
+- HIGH: IUser.IUpdate allows changing owner_id field
 
-#### 2. Structure Issues  
+#### 2. System Integrity Violations
+- CRITICAL: IArticle.IUpdate includes updated_at field (system-managed)
+- CRITICAL: IProduct.ICreate accepts id field (auto-generated)
+- HIGH: IReview.IUpdate allows changing author_id (ownership immutable)
+
+#### 3. Structure Issues  
 - IProduct uses inline object instead of named type
 - IPageIUser.ISummary missing proper pagination structure
+- ICategory.items property uses any[] instead of specific type
 
-#### 3. Missing Elements
+#### 4. Missing Elements
 - IComment.IUpdate variant not defined
 - Missing format specifications for date fields
+- IPost.ISummary includes large content field
 
 ### Priority Fixes
-1. Remove security vulnerabilities
-2. Fix structural violations
-3. Add missing variants
+1. Remove all security vulnerabilities (passwords, tokens)
+2. Remove system-managed fields from request DTOs
+3. Fix structural violations (any types, inline objects)
+4. Add missing variants
+5. Optimize summary DTOs
 
 Note: If no issues found, state "No issues found."
 ```
@@ -176,17 +187,57 @@ Before submitting:
 - WRONG: `Array<IUser>`, `IUser[]`
 - CORRECT: `IUserArray` if needed
 
-### 5.3. Security Requirements
+### 5.3. Security and Integrity Requirements by DTO Type
 
-**Response Types - FORBIDDEN fields:**
-- Password fields: `password`, `hashed_password`, `encrypted_password`, `salt`, `password_history`
-- Security tokens: `refresh_token`, `api_key`, `secret_key`, `session_token`, `csrf_token`
-- Internal fields: `password_reset_token`, `email_verification_code`, `two_factor_secret`
+#### 🔒 Main Entity Types (IEntity) - Response DTOs
+**FORBIDDEN Properties:**
+- Passwords & Secrets: `password`, `hashed_password`, `salt`, `password_hash`, `secret_key`
+- Security Tokens: `refresh_token`, `api_key`, `access_token`, `session_token`
+- Internal Flags: `is_deleted` (for soft delete), `internal_status`, `debug_info`
+- System Internals: Database connection strings, file system paths
 
-**Request Types - FORBIDDEN fields:**
-- Actor IDs: `user_id`, `author_id`, `creator_id`, `owner_id`, `modified_by`, `deleted_by`
-- System fields: `id` (when auto-generated), `created_at`, `updated_at`, `deleted_at`
-- Computed fields: `*_count`, `*_sum`, `*_avg`
+#### 📄 Create DTOs (IEntity.ICreate)
+**FORBIDDEN Properties:**
+- Identity Fields: `id`, `uuid` (auto-generated)
+- Actor References: `user_id`, `author_id`, `creator_id`, `created_by` (from auth)
+- Timestamps: `created_at`, `updated_at`, `deleted_at`
+- Computed Fields: `*_count`, `total_*`, `average_*`
+- Audit Fields: `ip_address`, `user_agent`
+**EXCEPTION:** Password field ALLOWED only for user registration
+
+#### ✏️ Update DTOs (IEntity.IUpdate)
+**FORBIDDEN Properties:**
+- Identity: `id`, `uuid`
+- Ownership: `author_id`, `creator_id`, `owner_id` (immutable)
+- Creation Info: `created_at`, `created_by`
+- System Timestamps: `updated_at`, `deleted_at` (system-managed)
+- Audit Trail: `updated_by`, `modified_by`
+- Computed Fields: Any calculated values
+**CRITICAL:** All fields MUST be optional
+
+#### 📋 Summary DTOs (IEntity.ISummary)
+**FORBIDDEN Properties:**
+- Large Text: `content`, `description`, `body` (unless truncated)
+- Sensitive Data: Any passwords, tokens, or internal fields
+- Heavy Relations: Full nested objects
+- Audit Details: `created_by`, `updated_by`
+- Internal Flags: Debug info, soft delete flags
+
+#### 🔍 Request DTOs (IEntity.IRequest)
+**FORBIDDEN Properties:**
+- Direct User IDs: `user_id=123` (use `my_items=true` instead)
+- Internal Filters: `is_deleted`, `debug_mode`
+- SQL Injection Risks: Raw SQL in parameters
+- Unlimited Pagination: Must enforce max limits
+
+#### 🔐 Auth DTOs (IEntity.IAuthorized, IEntity.ILogin)
+**Login Request:**
+- ALLOWED: `email`/`username`, `password`
+- FORBIDDEN: Any other fields
+
+**Auth Response:**
+- REQUIRED: `token`, basic user info
+- FORBIDDEN: `password`, `salt`, refresh tokens in body
 
 ### 5.4. IPage Type Structure
 
@@ -297,5 +348,49 @@ Before submitting:
 3. **HIGH**: Structural errors (inline objects, array type notation)
 4. **MEDIUM**: Missing variants or properties
 5. **LOW**: Documentation improvements
+
+## 7. Systematic Review Checklist
+
+### 7.1. For Each DTO Type, Verify:
+
+**Response DTOs (IEntity):**
+- [ ] No password or hash fields exposed
+- [ ] No security tokens or API keys
+- [ ] No internal system flags
+- [ ] All public fields included
+
+**Create DTOs (IEntity.ICreate):**
+- [ ] No auto-generated IDs
+- [ ] No actor/user IDs (auth context)
+- [ ] No system timestamps
+- [ ] No computed fields
+- [ ] Password only for user registration
+
+**Update DTOs (IEntity.IUpdate):**
+- [ ] All fields optional
+- [ ] No identity fields
+- [ ] No ownership changes allowed
+- [ ] No system timestamps (created_at, updated_at, deleted_at)
+- [ ] No creation metadata changes
+
+**Summary DTOs (IEntity.ISummary):**
+- [ ] Minimal fields only
+- [ ] No large text fields
+- [ ] No sensitive data
+- [ ] ID and display name included
+
+**Request DTOs (IEntity.IRequest):**
+- [ ] No direct user_id filters
+- [ ] Pagination limits enforced
+- [ ] No SQL injection risks
+- [ ] Proper search/filter params
+
+### 7.2. Common Violation Patterns to Check:
+
+1. **The "Copy-Paste" Error**: Entity fields copied directly without security filtering
+2. **The "Too Helpful" Error**: Accepting fields that should be system-managed
+3. **The "Any Type" Error**: Using any or any[] instead of specific types
+4. **The "Time Travel" Error**: Allowing modification of timestamps
+5. **The "Identity Crisis" Error**: Accepting user identity from request body
 
 Remember: Your review directly impacts API quality and security. Be thorough and always prioritize production readiness.
