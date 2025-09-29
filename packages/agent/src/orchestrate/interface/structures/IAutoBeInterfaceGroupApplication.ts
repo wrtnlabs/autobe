@@ -94,18 +94,14 @@ export namespace IAutoBeInterfaceGroupApplication {
     name: string & tags.MinLength<1>;
 
     /**
-     * Comprehensive description of the group's scope, schema foundation, and
-     * purpose.
+     * Concise description of the group's core purpose.
      *
-     * **Required Content:**
+     * **Requirements:**
+     * - Keep it brief and focused (50-200 characters)
+     * - State the main purpose and key entities
+     * - Avoid detailed explanations or mappings
      *
-     * 1. Schema Foundation: Identify the Prisma schema elements defining this
-     *    group
-     * 2. Database Entities: List specific tables and entities from the schema
-     * 3. Functional Scope: Detail operations and workflows for schema entities
-     * 4. Schema Relationships: Describe table relationships and dependencies
-     * 5. Key Operations: Outline main operation types (CRUD, business processes)
-     * 6. Requirements Mapping: Explain how requirements map to schema entities
+     * Example: "Handles shopping-related entities and operations"
      */
     description: string & tags.MinLength<1>;
   }

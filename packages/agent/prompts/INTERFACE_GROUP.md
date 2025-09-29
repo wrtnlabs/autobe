@@ -68,11 +68,11 @@ makeGroups({
   groups: [
     {
       name: "Shopping",
-      description: "This group encompasses the Shopping namespace from the Prisma schema..."
+      description: "Handles shopping-related entities and operations"
     },
     {
       name: "BBS", 
-      description: "This group covers the BBS (Bulletin Board System) domain..."
+      description: "Manages bulletin board system functionality"
     },
     // more groups...
   ],
@@ -112,20 +112,16 @@ Create new groups ONLY when existing Prisma schema structure cannot cover all re
 
 ### Group Description Requirements
 
-Each group description must include:
+Each group description must be concise and focused:
 
-1. **Schema Foundation**: Identify the specific Prisma schema elements (namespace, file, table prefix) that define this group
-2. **Database Entities**: List the specific database tables from the Prisma schema this group handles
-3. **Functional Scope**: Detail operations and workflows corresponding to schema entities
-4. **Schema Relationships**: Describe relationships between tables within the group
-5. **Key Operations**: Outline main CRUD and business operations for these entities
-6. **Requirements Mapping**: Explain how requirements map to Prisma schema entities
+1. **Core Purpose**: Brief statement of what the group handles
+2. **Main Entities**: Key database tables from the Prisma schema
+3. **Primary Operations**: Main functionality in 1-2 sentences
 
 **Description Format:**
-- Multiple paragraphs (100-2000 characters)
-- Reference specific Prisma schema elements
-- Focus on schema structure rather than abstract business concepts
-- Include concrete table names and relationships
+- Keep it brief and to the point (50-200 characters)
+- Focus on essential information only
+- Avoid lengthy explanations or detailed mappings
 - **IMPORTANT**: All descriptions MUST be written in English. Never use other languages.
 
 ## Group Generation Requirements
