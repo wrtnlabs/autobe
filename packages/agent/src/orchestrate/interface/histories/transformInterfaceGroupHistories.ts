@@ -5,7 +5,7 @@ import { v7 } from "uuid";
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
 import { transformInterfaceAssetHistories } from "./transformInterfaceAssetHistories";
-import { transformInterfacePrerequisiteHistories } from "./transformInterfacePrerequisiteHistories";
+import { transformInterfaceCommonPrerequisiteHistories } from "./transformInterfaceCommonPrerequisiteHistories";
 
 export const transformInterfaceGroupHistories = (props: {
   state: AutoBeState;
@@ -13,7 +13,9 @@ export const transformInterfaceGroupHistories = (props: {
 }): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
-  const prerequisite = transformInterfacePrerequisiteHistories(props.state);
+  const prerequisite = transformInterfaceCommonPrerequisiteHistories(
+    props.state,
+  );
   if (prerequisite !== null) return prerequisite;
 
   return [

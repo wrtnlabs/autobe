@@ -143,6 +143,7 @@ async function process<Model extends ILlmSchema.Model>(
                     .join("/"),
                 authorizationRole: null,
                 authorizationType: null,
+                prerequisites: [],
               },
             ];
           return op.authorizationRoles.map((role) => ({
@@ -154,6 +155,7 @@ async function process<Model extends ILlmSchema.Model>(
                 .join("/"),
             authorizationRole: role,
             authorizationType: null,
+            prerequisites: [],
           }));
         });
         pointer.value.push(...matrix.flat());

@@ -45,6 +45,7 @@ import {
 import { AutoBeInterfaceAuthorizationEvent } from "../events/AutoBeInterfaceAuthorizationEvent";
 import { AutoBeInterfaceEndpointsReviewEvent } from "../events/AutoBeInterfaceEndpointsReviewEvent";
 import { AutoBeInterfaceGroupsEvent } from "../events/AutoBeInterfaceGroupsEvent";
+import { AutoBeInterfacePrerequisitesEvent } from "../events/AutoBeInterfacePrerequisitesEvent";
 import { AutoBeRealizeAuthorizationCompleteEvent } from "../events/AutoBeRealizeAuthorizationCompleteEvent";
 import { AutoBeRealizeAuthorizationStartEvent } from "../events/AutoBeRealizeAuthorizationStartEvent";
 
@@ -356,6 +357,17 @@ export interface IAutoBeRpcListener {
    * artifacts.
    */
   interfaceComplete?(event: AutoBeInterfaceCompleteEvent): Promise<void>;
+
+  /**
+   * Optional handler for API prerequisite creation events.
+   *
+   * Called when the Interface agent creates prerequisites for API operations,
+   * enabling client applications to show the progress of prerequisite creation
+   * and track which operations are being analyzed.
+   */
+  interfacePrerequisites?(
+    event: AutoBeInterfacePrerequisitesEvent,
+  ): Promise<void>;
 
   /* -----------------------------------------------------------
     TEST PHASE EVENTS

@@ -110,7 +110,13 @@ Final validated and enhanced schemas:
 - CRITICAL: IUser exposes hashed_password field in response DTO
 - CRITICAL: IPost.ICreate accepts author_id (should come from auth context)
 - CRITICAL: IComment.IUpdate allows modification of created_at timestamp
+- CRITICAL: IUser.ICreate accepts hashed_password instead of plain password
 - HIGH: IUser.IUpdate allows changing owner_id field
+
+#### 2. Database Consistency Violations
+- CRITICAL: IProduct includes updated_at but Prisma schema only has created_at
+- CRITICAL: IReview response includes deleted_at that doesn't exist in database
+- HIGH: IComment schema assumes timestamps that don't exist in Prisma
 
 #### 2. System Integrity Violations
 - CRITICAL: IArticle.IUpdate includes updated_at field (system-managed)
@@ -203,7 +209,12 @@ Before submitting:
 - Timestamps: `created_at`, `updated_at`, `deleted_at`
 - Computed Fields: `*_count`, `total_*`, `average_*`
 - Audit Fields: `ip_address`, `user_agent`
-**EXCEPTION:** Password field ALLOWED only for user registration
+- **Hashed Passwords**: `hashed_password`, `password_hash`, `password_hashed`
+  - Password hashing is BACKEND responsibility, not client's
+  - Clients must send plain `password`, backend hashes before storage
+
+**ALLOWED:**
+- Plain `password` field ONLY for user registration/auth endpoints
 
 #### ✏️ Update DTOs (IEntity.IUpdate)
 **FORBIDDEN Properties:**
@@ -280,9 +291,13 @@ Before submitting:
 
 **CRITICAL PRINCIPLE:**
 - Interface schemas must be implementable with the existing Prisma database schema
+- **Timestamp Verification**: NEVER assume timestamps exist - verify each one in Prisma schema
 
 **FORBIDDEN:**
 - Defining properties that would require new database columns to implement
+- **Common Timestamp Mistake**: Adding `created_at`, `updated_at`, `deleted_at` without verification
+  - These fields vary by table - some tables may have none, some only `created_at`
+  - Always check actual Prisma schema before including any timestamp
 - Example: If Prisma has only `name` field, don't add `nickname` or `display_name` that would need DB changes
 - Example: If Prisma lacks `tags` relation, don't add `tags` array to the interface
 
@@ -358,13 +373,15 @@ Before submitting:
 - [ ] No security tokens or API keys
 - [ ] No internal system flags
 - [ ] All public fields included
+- [ ] Timestamp fields EXIST in Prisma schema (no phantom timestamps)
 
 **Create DTOs (IEntity.ICreate):**
 - [ ] No auto-generated IDs
 - [ ] No actor/user IDs (auth context)
 - [ ] No system timestamps
 - [ ] No computed fields
-- [ ] Password only for user registration
+- [ ] Password field is plain text ONLY (never hashed_password or password_hash)
+- [ ] No pre-hashed passwords accepted from clients
 
 **Update DTOs (IEntity.IUpdate):**
 - [ ] All fields optional
@@ -392,5 +409,28 @@ Before submitting:
 3. **The "Any Type" Error**: Using any or any[] instead of specific types
 4. **The "Time Travel" Error**: Allowing modification of timestamps
 5. **The "Identity Crisis" Error**: Accepting user identity from request body
+6. **The "Helpful Hash" Error**: Client trying to help by sending hashed password instead of plain text
+7. **The "Phantom Timestamp" Error**: Assuming all tables have created_at, updated_at, deleted_at
+8. **The "DB Mismatch" Error**: Creating fields that don't exist in database
+
+### 7.3. Final Quality Assurance Summary
+
+Before approving any schema review, ensure ALL of the following critical areas are verified:
+
+**Database Schema Accuracy:**
+- Every property must exist in Prisma schema - no assumptions about field existence
+- Timestamps verified individually - not all tables have all timestamp fields
+- No phantom fields that would require database schema changes
+
+**Password Security:**
+- Request DTOs accept plain `password` only - never `hashed_password` or `password_hash`
+- Response DTOs exclude ALL password variants
+- Password hashing is exclusively backend responsibility
+
+**System Field Protection:**
+- System-managed timestamps never appear in request DTOs
+- Auto-generated IDs never accepted in Create DTOs
+- Ownership fields are immutable in Update DTOs
+- Internal system flags never exposed in responses
 
 Remember: Your review directly impacts API quality and security. Be thorough and always prioritize production readiness.

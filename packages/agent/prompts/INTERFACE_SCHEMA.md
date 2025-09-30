@@ -115,6 +115,9 @@ This checklist ensures security is built-in from the start, not added as an afte
 ### 4.2. Schema Definition Requirements
 
 - **Completeness**: Include ALL properties from the Prisma schema for each entity
+  - **Existence Verification**: Only include properties that actually exist in the Prisma schema
+  - Common mistake: Assuming `created_at`, `updated_at`, `deleted_at` are always present
+  - These timestamps vary by table - verify each one exists before including
 - **Type Accuracy**: Map Prisma types to appropriate OpenAPI types and formats
 - **Required Fields**: Accurately mark required fields based on Prisma schema constraints
 - **Relationships**: Properly handle entity relationships (references to other entities)
@@ -182,7 +185,9 @@ This section provides comprehensive guidelines for each DTO type to ensure secur
 - **Audit Fields**: `ip_address`, `user_agent` (captured by middleware)
 
 **Special Considerations**:
-- Password fields may be ALLOWED in specific auth-related creates (user registration)
+- **Password Handling**: Only accept plain `password` field in auth-related creates
+  - Never accept `hashed_password` or `password_hash` - password hashing is backend's responsibility
+  - Clients send plaintext, backend hashes before storage
 - Foreign keys for "belongs to" relationships are allowed (category_id, group_id)
 - Default values should be handled by database, not required in DTO
 
@@ -302,7 +307,7 @@ interface IUser {
 interface IUser.ICreate {
   email: string;
   name: string;
-  password: string;  // OK for registration only
+  password: string;  // Plain text only - never hashed_password (backend handles hashing)
   // id, created_at, created_by are auto-generated
 }
 
@@ -924,3 +929,40 @@ Remember that your role is CRITICAL to the success of the entire API design proc
 Your final output should be the complete `schemas` record that can be directly integrated with the API operations from Phase 2 to form a complete `AutoBeOpenApi.IDocument` object.
 
 Always aim to create schema definitions that are intuitive, well-documented, and accurately represent the business domain. Your schema definitions should meet ALL business requirements while being extensible and maintainable. Remember to define schemas for EVERY SINGLE independent entity table in the Prisma schema. NO ENTITY OR PROPERTY SHOULD BE OMITTED FOR ANY REASON.
+
+## 15. Final Security and Quality Checklist
+
+Before completing the schema generation, verify ALL of the following items:
+
+### ✅ Database Schema Accuracy
+- [ ] **Every property exists in Prisma schema** - Do NOT assume fields exist
+- [ ] **Timestamp fields verified** - Only include `created_at`, `updated_at`, `deleted_at` if they actually exist in the specific table
+- [ ] **No phantom fields** - Do NOT add fields that would require database schema changes
+
+### ✅ Password and Authentication Security
+- [ ] **Request DTOs use plain `password`** - Never accept `hashed_password` or `password_hash` in requests
+- [ ] **Response DTOs exclude all passwords** - No `password`, `hashed_password`, `salt`, or `password_hash` fields
+- [ ] **Actor IDs from context only** - Never accept `user_id`, `author_id`, `creator_id` in request bodies
+- [ ] **No authentication bypass** - User identity MUST come from JWT/session, not request body
+
+### ✅ System Field Protection
+- [ ] **Timestamps are system-managed** - Never accept `created_at`, `updated_at`, `deleted_at` in requests
+- [ ] **IDs are auto-generated** - Never accept `id` or `uuid` in Create DTOs (unless explicitly required)
+- [ ] **Ownership is immutable** - Never allow changing `author_id`, `owner_id` in Update DTOs
+- [ ] **No internal fields exposed** - Exclude `is_deleted`, `internal_status`, `debug_info` from responses
+
+### ✅ DTO Type Completeness
+- [ ] **Main entity type defined** - `IEntity` with all non-sensitive fields
+- [ ] **Create DTO minimal** - Only required business fields, no system fields
+- [ ] **Update DTO all optional** - Every field optional, no ownership changes allowed
+- [ ] **Summary DTO optimized** - Only essential fields for list views
+- [ ] **Request DTO secure** - No direct user IDs, proper pagination limits
+
+### ✅ Schema Quality Standards
+- [ ] **No inline objects** - Every object type defined as named schema with $ref
+- [ ] **Single string type field** - Never use array notation like `["string", "null"]`
+- [ ] **Proper nullable handling** - Use `oneOf` for nullable types
+- [ ] **English descriptions only** - All descriptions in English
+- [ ] **Complete documentation** - Every schema and property has meaningful descriptions
+
+This checklist ensures security-first design, database consistency, and maintainable API schemas.

@@ -124,6 +124,9 @@ export class AutoBeListener {
       interfaceComplement: async (event) => {
         this.insert(event);
       },
+      interfacePrerequisites: async (event) => {
+        this.insert(event);
+      },
       interfaceComplete: async (event) => {
         this.dict_.delete("interfaceEndpoints");
         this.dict_.delete("interfaceOperations");
@@ -131,6 +134,7 @@ export class AutoBeListener {
         this.dict_.delete("interfaceAuthorization");
         this.dict_.delete("interfaceSchemas");
         this.dict_.delete("interfaceSchemasReview");
+        this.dict_.delete("interfacePrerequisites");
         this.state_.setInterface(event);
         this.insert(event);
       },

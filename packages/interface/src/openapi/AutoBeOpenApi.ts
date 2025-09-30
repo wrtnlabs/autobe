@@ -287,7 +287,8 @@ export namespace AutoBeOpenApi {
    *       "description": "Create a new order application from shopping cart...",
    *       "parameters": [...],
    *       "requestBody": {...},
-   *       "responses": {...}
+   *       "responses": {...},
+   *       ...
    *     }
    *   }
    * }
@@ -614,6 +615,116 @@ export namespace AutoBeOpenApi {
      * naming conflicts.
      */
     name: string & CamelPattern;
+
+    /**
+     * Prerequisites for this API operation.
+     *
+     * The `prerequisites` field defines API operations that must be
+     * successfully executed before this operation can be performed. This
+     * creates an explicit dependency chain between API endpoints, ensuring
+     * proper execution order and data availability.
+     *
+     * ## CRITICAL WARNING: Authentication Prerequisites
+     *
+     * **NEVER include authentication-related operations as prerequisites!**
+     * Authentication is handled separately through the `authorizationRole`
+     * field and should NOT be part of the prerequisite chain. Do NOT add
+     * prerequisites for:
+     *
+     * - Login endpoints
+     * - Token validation endpoints
+     * - User authentication checks
+     * - Permission verification endpoints
+     *
+     * Prerequisites are ONLY for business logic dependencies, NOT for
+     * authentication/authorization.
+     *
+     * ## Purpose and Use Cases
+     *
+     * Prerequisites are essential for operations that depend on:
+     *
+     * 1. **Existence Validation**: Ensuring resources exist before manipulation
+     * 2. **State Requirements**: Verifying resources are in the correct state
+     * 3. **Data Dependencies**: Loading necessary data for the current operation
+     * 4. **Business Logic Constraints**: Enforcing domain-specific rules
+     *
+     * ## Execution Flow
+     *
+     * When an operation has prerequisites:
+     *
+     * 1. Each prerequisite API must be called first in the specified order
+     * 2. Prerequisites must return successful responses (2xx status codes)
+     * 3. Only after all prerequisites succeed can the main operation proceed
+     * 4. If any prerequisite fails, the operation should not be attempted
+     *
+     * ## Common Patterns
+     *
+     * ### Resource Existence Check
+     *
+     * ```typescript
+     * // Before updating an order item, ensure the order exists
+     * prerequisites: [
+     *   {
+     *     endpoint: { path: "/orders/{orderId}", method: "get" },
+     *     description: "Order must exist in the system",
+     *   },
+     * ];
+     * ```
+     *
+     * ### State Validation
+     *
+     * ```typescript
+     * // Before processing payment, ensure order is in correct state
+     * prerequisites: [
+     *   {
+     *     endpoint: { path: "/orders/{orderId}/status", method: "get" },
+     *     description: "Order must be in 'pending_payment' status",
+     *   },
+     * ];
+     * ```
+     *
+     * ### Hierarchical Dependencies
+     *
+     * ```typescript
+     * // Before accessing a deeply nested resource
+     * prerequisites: [
+     *   {
+     *     endpoint: { path: "/projects/{projectId}", method: "get" },
+     *     description: "Project must exist",
+     *   },
+     *   {
+     *     endpoint: {
+     *       path: "/projects/{projectId}/tasks/{taskId}",
+     *       method: "get",
+     *     },
+     *     description: "Task must exist within the project",
+     *   },
+     * ];
+     * ```
+     *
+     * ## Important Guidelines
+     *
+     * 1. **Order Matters**: Prerequisites are executed in array order
+     * 2. **Parameter Inheritance**: Path parameters from prerequisites can be used
+     *    in the main operation
+     * 3. **Error Handling**: Failed prerequisites should prevent main operation
+     * 4. **Performance**: Consider caching prerequisite results when appropriate
+     * 5. **Documentation**: Each prerequisite must have a clear description
+     *    explaining why it's required
+     * 6. **No Authentication**: NEVER use prerequisites for authentication checks
+     *
+     * ## Test Generation Impact
+     *
+     * The Test Agent uses prerequisites to:
+     *
+     * - Generate proper test setup sequences
+     * - Create valid test data in the correct order
+     * - Ensure test scenarios follow realistic workflows
+     * - Validate error handling when prerequisites fail
+     *
+     * @see {@link IPrerequisite} for the structure of each prerequisite
+     */
+    prerequisites: IPrerequisite[];
   }
 
   /**
@@ -1485,5 +1596,185 @@ export namespace AutoBeOpenApi {
      * - `delete`: remove record
      */
     method: "get" | "post" | "put" | "delete" | "patch";
+  }
+
+  /**
+   * Prerequisite API operation dependency.
+   *
+   * `IPrerequisite` defines a dependency relationship between API operations,
+   * specifying that certain endpoints must be successfully called before the
+   * current operation can proceed. This ensures proper resource validation,
+   * state checking, and data availability in complex API workflows.
+   *
+   * ## CRITICAL WARNING: Authentication is NOT a Prerequisite
+   *
+   * **NEVER use prerequisites for authentication or authorization checks!**
+   *
+   * Prerequisites are ONLY for business logic dependencies such as:
+   *
+   * - Checking if a resource exists
+   * - Verifying resource state
+   * - Loading required data
+   *
+   * Do NOT create prerequisites for:
+   *
+   * - Login/authentication endpoints
+   * - Token validation
+   * - Permission checks
+   * - User authorization verification
+   *
+   * Authentication is handled separately via the `authorizationRole` field on
+   * the operation itself. Mixing authentication with business prerequisites
+   * creates confusion and incorrect test scenarios.
+   *
+   * ## Core Concept
+   *
+   * Prerequisites create an execution dependency graph for API operations. They
+   * explicitly declare which APIs must succeed before attempting the current
+   * operation, preventing invalid states and ensuring data consistency.
+   *
+   * ## Structure
+   *
+   * Each prerequisite consists of:
+   *
+   * 1. **endpoint**: The API endpoint that must be called first
+   * 2. **description**: Clear explanation of why this prerequisite is required
+   *
+   * ## Common Use Cases
+   *
+   * ### 1. Resource Existence Validation
+   *
+   * ```typescript
+   * {
+   *   "endpoint": { "path": "/users/{userId}", "method": "get" },
+   *   "description": "User must exist before updating their profile"
+   * }
+   * ```
+   *
+   * ### 2. Parent-Child Relationships
+   *
+   * ```typescript
+   * {
+   *   "endpoint": { "path": "/posts/{postId}", "method": "get" },
+   *   "description": "Post must exist before adding comments"
+   * }
+   * ```
+   *
+   * ### 3. State Prerequisites
+   *
+   * ```typescript
+   * {
+   *   "endpoint": { "path": "/orders/{orderId}/status", "method": "get" },
+   *   "description": "Order must be in 'confirmed' state before shipping"
+   * }
+   * ```
+   *
+   * ### 4. Business Logic Dependencies
+   *
+   * ```typescript
+   * {
+   *   "endpoint": {
+   *     "path": "/inventory/{productId}/stock",
+   *     "method": "get"
+   *   },
+   *   "description": "Product must have sufficient stock before creating order"
+   * }
+   * ```
+   *
+   * ## Implementation Guidelines
+   *
+   * 1. **Clear Descriptions**: Always explain WHY the prerequisite is needed
+   * 2. **Minimal Dependencies**: Only include truly necessary prerequisites
+   * 3. **Logical Order**: If multiple prerequisites exist, order them logically
+   * 4. **Error Context**: Description should help understand failure scenarios
+   * 5. **No Authentication**: Prerequisites must NEVER be authentication checks
+   *
+   * ## Test Generation Usage
+   *
+   * The Test Agent utilizes prerequisites to:
+   *
+   * - Set up test data in the correct sequence
+   * - Generate realistic test scenarios
+   * - Create both positive and negative test cases
+   * - Ensure proper cleanup in reverse dependency order
+   *
+   * ## Best Practices
+   *
+   * - Keep prerequisite chains as short as possible for performance
+   * - Consider caching prerequisite results when safe to do so
+   * - Ensure prerequisite descriptions are specific, not generic
+   * - Validate that circular dependencies don't exist
+   * - Document any side effects of prerequisite calls
+   * - NEVER use for authentication/authorization validation
+   *
+   * @example
+   *   // For an operation to add item to cart
+   *   const addToCartOperation = {
+   *     path: "/carts/{cartId}/items",
+   *     method: "post",
+   *     prerequisites: [
+   *       {
+   *         endpoint: { path: "/carts/{cartId}", method: "get" },
+   *         description:
+   *           "Shopping cart must exist and belong to current user",
+   *       },
+   *       {
+   *         endpoint: { path: "/products/{productId}", method: "get" },
+   *         description: "Product must exist and be available for purchase",
+   *       },
+   *     ],
+   *   };
+   */
+  export interface IPrerequisite {
+    /**
+     * The API endpoint that must be called before the main operation.
+     *
+     * This specifies the exact HTTP method and path of the prerequisite API.
+     * The endpoint must be a valid operation defined elsewhere in the API
+     * specification. Path parameters in the prerequisite endpoint can reference
+     * the same parameters available in the main operation.
+     *
+     * @example
+     *   ```typescript
+     *   endpoint: {
+     *     path: "/organizations/{orgId}/projects/{projectId}",
+     *     method: "get"
+     *   }
+     *   ```;
+     */
+    endpoint: IEndpoint;
+
+    /**
+     * Clear description of why this prerequisite is required.
+     *
+     * This description should explain:
+     *
+     * - What validation or check this prerequisite performs
+     * - What state or condition must be satisfied
+     * - What happens if this prerequisite fails
+     * - Any specific data from the prerequisite used by the main operation
+     *
+     * The description helps developers understand the dependency relationship
+     * and aids in debugging when prerequisites fail.
+     *
+     * Guidelines for good descriptions:
+     *
+     * - Be specific about the requirement (e.g., "must be in 'active' state")
+     * - Explain business logic constraints (e.g., "budget must not be exceeded")
+     * - Explain data dependencies (e.g., "provides pricing information needed")
+     * - Keep it concise but complete
+     *
+     * > MUST be written in English. Never use other languages.
+     *
+     * @example
+     *   "Order must exist, belong to the current user, and be in 'pending' status";
+     *
+     * @example
+     *   "Product inventory must be checked to ensure sufficient stock";
+     *
+     * @example
+     *   "Parent category must exist before creating subcategory";
+     */
+    description: string;
   }
 }
