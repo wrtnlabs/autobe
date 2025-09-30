@@ -7,7 +7,10 @@ import {
   AutoBeOpenApi,
 } from "@autobe/interface";
 import { AutoBeInterfacePrerequisite } from "@autobe/interface/src/histories/contents/AutoBeInterfacePrerequisite";
-import { AutoBeOpenApiEndpointComparator } from "@autobe/utils";
+import {
+  AutoBeOpenApiEndpointComparator,
+  revertOpenApiAccessor,
+} from "@autobe/utils";
 import { ILlmSchema } from "@samchon/openapi";
 import { HashMap, Pair } from "tstl";
 import { v7 } from "uuid";
@@ -142,6 +145,7 @@ export const orchestrateInterface =
           (p) => p.endpoint.method === op.method && p.endpoint.path === op.path,
         )?.prerequisites ?? [];
     });
+    revertOpenApiAccessor(document);
 
     // DO COMPILE
     return ctx.dispatch({
