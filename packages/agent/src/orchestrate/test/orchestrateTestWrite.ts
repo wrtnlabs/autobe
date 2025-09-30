@@ -99,11 +99,12 @@ async function process<Model extends ILlmSchema.Model>(
     throw new Error("Failed to create test code.");
   }
 
-  pointer.value.revise.final = await completeTestCode(
-    ctx,
-    artifacts,
-    pointer.value.revise.final,
-  );
+  if (pointer.value.revise.final)
+    pointer.value.revise.final = await completeTestCode(
+      ctx,
+      artifacts,
+      pointer.value.revise.final,
+    );
   pointer.value.draft = await completeTestCode(
     ctx,
     artifacts,
@@ -118,7 +119,7 @@ async function process<Model extends ILlmSchema.Model>(
     domain: pointer.value.domain,
     draft: pointer.value.draft,
     review: pointer.value.revise?.review,
-    final: pointer.value.revise?.final,
+    final: pointer.value.revise?.final ?? undefined,
     tokenUsage,
     completed: ++progress.completed,
     total: progress.total,

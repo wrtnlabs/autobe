@@ -220,6 +220,7 @@ async function step<Model extends ILlmSchema.Model>(
 
   pointer.value.revise.final = await replaceImportStatements(ctx, {
     operation: props.scenario.operation,
+    schemas: ctx.state().interface!.document.components.schemas,
     code: pointer.value.revise.final,
     decoratorType: props.authorization?.payload.name,
   });

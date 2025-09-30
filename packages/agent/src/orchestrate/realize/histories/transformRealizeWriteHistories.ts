@@ -100,6 +100,7 @@ export const transformRealizeWriteHistories = (props: {
   const authorizationHistories = operation.authorizationType
     ? transformRealizeWriteAuthorizationsHistories(operation, payloads)
     : [];
+  const document = props.state.interface.document;
 
   return [
     {
@@ -127,11 +128,12 @@ export const transformRealizeWriteHistories = (props: {
       id: v7(),
       type: "systemMessage",
       created_at: new Date().toISOString(),
-      text: getRealizeWriteCodeTemplate(
-        props.scenario,
+      text: getRealizeWriteCodeTemplate({
+        authorization: props.authorization,
+        scenario: props.scenario,
+        schemas: document.components.schemas,
         operation,
-        props.authorization,
-      ),
+      }),
     },
     {
       id: v7(),

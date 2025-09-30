@@ -98,6 +98,7 @@ export async function replaceImportStatements<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
     operation: AutoBeOpenApi.IOperation;
+    schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
     code: string;
     decoratorType?: string;
   },
@@ -121,7 +122,7 @@ export async function replaceImportStatements<Model extends ILlmSchema.Model>(
   code = removeAllImports(code, typeReferences, decoratorType);
 
   // Build the standard imports
-  const imports = getRealizeWriteImportStatements(operation);
+  const imports = getRealizeWriteImportStatements(props);
 
   // Only add decoratorType import if it exists
   if (decoratorType) {

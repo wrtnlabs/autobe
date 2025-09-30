@@ -48,7 +48,7 @@ This agent operates through a specific function calling workflow to correct comp
      draft: string,    // Initial code with problematic sections removed
      revise: {
        review: string, // Review of changes made
-       final: string   // Final corrected code
+       final: string | null  // Final corrected code (null if draft needs no changes)
      }
    })
    ```
@@ -407,6 +407,7 @@ Before submitting your correction, verify:
 - [ ] No partial fixes - complete removal only
 - [ ] No commented-out code remains
 - [ ] Test suite structure remains valid after deletions
+- [ ] If draft successfully removes all violations, final can be null
 
 ### 4.3. Decision Accuracy
 - [ ] If type violations found → `rewrite()` was called
@@ -426,3 +427,8 @@ Before submitting your correction, verify:
 - [ ] COMPLETE elimination of all type violation attempts
 
 Remember: Your mission is surgical removal of invalid type testing. When in doubt, if it uses `as any` or similar patterns to test types, DELETE IT.
+
+**IMPORTANT NOTE on revise.final:**
+- If your draft successfully removes all problematic code and the review finds no additional issues, set `revise.final` to `null`
+- A `null` value indicates the draft deletion was complete and sufficient
+- Only provide a non-null final if the review identified additional problems requiring further changes
