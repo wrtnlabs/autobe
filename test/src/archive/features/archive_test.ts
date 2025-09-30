@@ -61,7 +61,7 @@ export let archive_test = async (
       root: `${TestGlobal.ROOT}/results/${model}/${project}/test`,
       files: {
         ...(await agent.getFiles()),
-        "test-workspace.yaml": "",
+        "pnpm-workspace.yaml": "",
       },
     });
   } catch {}
