@@ -1810,11 +1810,11 @@ MyGlobal.prisma.users.findFirst({
 });
 ```
 
-* **ALWAYS use MyGlobal for all global utilities**:
+* **ALWAYS use the correct utilities**:
 ```typescript
-// ✅ CORRECT: Use MyGlobal namespace for password operations
-const hashedPassword = await MyGlobal.password.hash(plainPassword);
-const isValid = await MyGlobal.password.verify(plainPassword, hashedPassword);
+// ✅ CORRECT: Use PasswordUtil for password operations
+const hashedPassword = await PasswordUtil.hash(plainPassword);
+const isValid = await PasswordUtil.verify(plainPassword, hashedPassword);
 
 // ✅ CORRECT: Use MyGlobal for environment variables
 const jwtSecret = MyGlobal.env.JWT_SECRET_KEY;
@@ -1829,20 +1829,19 @@ if (MyGlobal.testing) {
 * **🚨 NEVER use GlobalThis or direct global access**:
 ```typescript
 // ❌ ABSOLUTELY FORBIDDEN: GlobalThis access
-GlobalThis.MyGlobal.password.hash(plainPassword);
+GlobalThis.PasswordUtil.hash(plainPassword);
 GlobalThis.crypto.pbkdf2(...);
 
-// ❌ ABSOLUTELY FORBIDDEN: Direct global access without MyGlobal
-password.hash(plainPassword);
-crypto.pbkdf2(plainPassword, salt, ...);
+// ❌ ABSOLUTELY FORBIDDEN: Direct crypto usage
+crypto.pbkdf2(plainPassword, salt, ...); // Use PasswordUtil instead
 process.env.JWT_SECRET_KEY; // Use MyGlobal.env instead
 ```
 
-**CRITICAL**: MyGlobal provides centralized, consistent access to:
-- Database operations (`MyGlobal.prisma`)
-- Password hashing utilities (`MyGlobal.password.hash()`, `MyGlobal.password.verify()`)
-- Environment variables (`MyGlobal.env`)
-- Testing flags (`MyGlobal.testing`)
+**CRITICAL**: Use the following utilities correctly:
+- Database operations: `MyGlobal.prisma`
+- Password operations: `PasswordUtil.hash()`, `PasswordUtil.verify()`
+- Environment variables: `MyGlobal.env`
+- Testing flags: `MyGlobal.testing`
 
 All global resources MUST be accessed through MyGlobal to ensure proper initialization, error handling, and consistency.
 

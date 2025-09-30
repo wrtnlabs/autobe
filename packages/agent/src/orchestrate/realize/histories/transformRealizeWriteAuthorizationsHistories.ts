@@ -29,13 +29,13 @@ export const transformRealizeWriteAuthorizationsHistories = (
               - Must NOT require authentication decorator (this endpoint creates authentication)
               - Should check if user exists and password matches
 
-              ### MANDATORY: Use MyGlobal.password for Password Verification
+              ### MANDATORY: Use PasswordUtil for Password Verification
               
-              **CRITICAL**: You MUST use MyGlobal.password utilities for password verification to ensure consistency with the join operation:
+              **CRITICAL**: You MUST use PasswordUtil utilities for password verification to ensure consistency with the join operation:
 
               \`\`\`typescript
               // Example: Password verification in login
-              const isValid = await MyGlobal.password.verify(
+              const isValid = await PasswordUtil.verify(
                 body.password,           // plain password from request
                 user.password_hash       // hashed password from database
               );
@@ -126,13 +126,13 @@ export const transformRealizeWriteAuthorizationsHistories = (
               - Should create a new user record in the database
               - Must NOT require authentication decorator (public endpoint)
 
-              ### MANDATORY: Use MyGlobal.password for Password Hashing
+              ### MANDATORY: Use PasswordUtil for Password Hashing
               
-              **CRITICAL**: You MUST use MyGlobal.password utilities for password hashing to ensure consistency across all authentication operations:
+              **CRITICAL**: You MUST use PasswordUtil utilities for password hashing to ensure consistency across all authentication operations:
 
               \`\`\`typescript
               // Example: Password hashing in join/registration
-              const hashedPassword = await MyGlobal.password.hash(body.password);
+              const hashedPassword = await PasswordUtil.hash(body.password);
               
               // Store the hashed password in database
               await MyGlobal.prisma.users.create({

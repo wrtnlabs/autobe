@@ -341,8 +341,21 @@ return typia.random<ReturnType>();
 **IMPORTANT**: NEVER add custom imports. All necessary imports are auto-generated.
 - If a function is missing, it means it should already be imported
 - DO NOT create new import statements
-- DO NOT use bcrypt, bcryptjs, or any hashing libraries
+- DO NOT use bcrypt, bcryptjs, or any external hashing libraries
+- Use PasswordUtil.hash() and PasswordUtil.verify() for password operations
 - The missing function should already exist in the codebase
+
+**Password Handling Pattern:**
+```typescript
+// For password hashing (registration, password update)
+const hashedPassword = await PasswordUtil.hash(plainPassword);
+
+// For password verification (login)
+const isValid = await PasswordUtil.verify(plainPassword, hashedPassword);
+if (!isValid) {
+  throw new HttpException("Invalid credentials", 401);
+}
+```
 
 ### Common Logic Errors in Generated Code
 
@@ -1233,7 +1246,7 @@ throw new HttpException("Bad Request", 400);  // Direct number only
 4. **NEVER** violate REALIZE_WRITE_TOTAL conventions
 5. **NEVER** create variables for Prisma operation parameters
 6. **NEVER** add custom import statements - all imports are auto-generated
-7. **NEVER** use bcrypt, bcryptjs, or external hashing libraries
+7. **NEVER** use bcrypt, bcryptjs, or external hashing libraries - use PasswordUtil instead
 8. **NEVER** prioritize comments over types - types are the source of truth
 9. **NEVER** use `throw new Error()` - always use `throw new HttpException(message, statusCode)`
 10. **NEVER** use enum or imported constants for HttpException status codes - use numeric literals only

@@ -89,7 +89,8 @@ export function getRealizeWriteCodeTemplate(props: {
     \`\`\`typescript
     ${getRealizeWriteImportStatements(props).join("\n")} 
 
-    // ONLY YOU HAVE TO WRITE THIS, AND USE IMPORTED.
+    // DON'T CHANGE FUNCTION NAME AND PARAMETERS,
+    // ONLY YOU HAVE TO WRITE THIS FUNCTION BODY, AND USE IMPORTED.
     export async function ${props.scenario.functionName}(${formattedSignature}): Promise<${returnType}> {
       ...
     }
