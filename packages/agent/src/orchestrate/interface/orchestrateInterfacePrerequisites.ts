@@ -129,7 +129,7 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
     });
     if (pointer.value === null) return [];
 
-    props.progress.completed += props.includes.length;
+    props.progress.completed += pointer.value.length;
     ctx.dispatch({
       type: "interfacePrerequisites",
       id: v7(),

@@ -7,7 +7,6 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeTestScenarioAuthorizationRole } from "../structures/IAutoBeTestScenarioAuthorizationRole";
 import { getPrerequisites } from "../utils/getPrerequisites";
-import { getReferenceIds } from "../utils/getReferenceIds";
 
 export const transformTestScenarioHistories = (props: {
   state: AutoBeState;
@@ -90,51 +89,20 @@ export const transformTestScenarioHistories = (props: {
         When testing endpoints that require authentication, ensure you include the corresponding 
         join/login operations in your test scenario to establish proper authentication context.
 
-        ${props.include
-          .map((el, i) => {
-            const roles: IAutoBeTestScenarioAuthorizationRole[] = Array.from(
-              authorizationRoles.values(),
-            ).filter((role) => role.name === el.authorizationRole);
-            const prerequisites: AutoBeOpenApi.IPrerequisite[] =
-              getPrerequisites({ document: props.document, endpoint: el });
-            const requiredIds: string[] = getReferenceIds({
+        \`\`\`json
+        ${JSON.stringify(
+          props.include.map((el) => ({
+            ...el,
+            prerequisites: getPrerequisites({
               document: props.document,
-              operation: el,
-            });
-
-            return StringUtil.trim`
-              ## ${i + 1}. ${el.method.toUpperCase()} ${el.path}
-
-              Prerequisite Endpoints:
-              \`\`\`json
-              ${JSON.stringify(prerequisites)}
-              \`\`\`
-
-              Related Authentication APIs:
-
-              ${
-                roles.length > 0
-                  ? roles
-                      .map((role) => {
-                        return StringUtil.trim`
-                          - ${role.join?.method.toUpperCase()}: ${role.join?.path}
-                          - ${role.login?.method.toUpperCase()}: ${role.login?.path}
-                        `;
-                      })
-                      .join("\n")
-                  : "- None (Public endpoint)"
-              }
-
-              Required IDs:
-              
-              ${
-                requiredIds.length > 0
-                  ? requiredIds.map((id) => `- \`${id}\``).join("\n")
-                  : "- None"
-              }
-            `;
-          })
-          .join("\n\n")}
+              endpoint: el,
+            }),
+            authorizationRoles: Array.from(authorizationRoles.values()).filter(
+              (role) => role.name === el.authorizationRole,
+            ),
+          })),
+        )}
+        \`\`\`
 
         ## Excluded from Test Plan
 
@@ -142,9 +110,9 @@ export const transformTestScenarioHistories = (props: {
         These endpoints do not need to be tested again.
         However, it is allowed to reference or depend on these endpoints when writing test codes for other purposes.
 
-        ${props.exclude
-          .map((el) => `- ${el.method.toUpperCase()}: ${el.path}`)
-          .join("\n")}
+        \`\`\`json
+        ${JSON.stringify(props.exclude)}
+        \`\`\`
 
       `,
     } satisfies IAgenticaHistoryJson.IAssistantMessage,

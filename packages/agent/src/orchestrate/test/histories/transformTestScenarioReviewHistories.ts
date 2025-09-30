@@ -28,6 +28,12 @@ export function transformTestScenarioReviewHistories(props: {
       id: v7(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
+      text: AutoBeSystemPromptConstant.TEST_SCENARIO,
+    },
+    {
+      id: v7(),
+      created_at: new Date().toISOString(),
+      type: "systemMessage",
       text: AutoBeSystemPromptConstant.TEST_SCENARIO_REVIEW,
     },
     {
