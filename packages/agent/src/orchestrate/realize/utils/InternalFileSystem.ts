@@ -7,6 +7,6 @@ export namespace InternalFileSystem {
   export const DEFAULT = [
     "src/providers/authorize/jwtAuthorize.ts",
     "src/MyGlobal.ts",
-    "src/util/toISOStringSafe.ts",
+    "src/utils/toISOStringSafe.ts",
   ];
 }

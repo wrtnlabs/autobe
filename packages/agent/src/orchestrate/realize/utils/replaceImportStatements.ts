@@ -46,7 +46,7 @@ function removeAllImports(
     .replace(/import\s*{\s*v4\s*}\s*from\s*["']uuid["']\s*;?\s*/gm, "")
     // toISOStringSafe utility
     .replace(
-      /import\s*{\s*toISOStringSafe\s*}\s*from\s*["']\.\.\/util\/toISOStringSafe["']\s*;?\s*/gm,
+      /import\s*{\s*toISOStringSafe\s*}\s*from\s*["']\.\.\/utils\/toISOStringSafe["']\s*;?\s*/gm,
       "",
     )
     // JWT imports (if LLM adds them)

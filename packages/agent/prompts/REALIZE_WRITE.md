@@ -1185,7 +1185,7 @@ The system AUTOMATICALLY adds these imports before your function:
 - `import typia, { tags } from "typia";`
 - `import { Prisma } from "@prisma/client";`
 - `import { v4 } from "uuid";`
-- `import { toISOStringSafe } from "../util/toISOStringSafe";`
+- `import { toISOStringSafe } from "../utils/toISOStringSafe";`
 
 **Conditional imports:**
 - **When decoratorEvent is provided**: `import { ${decoratorType} } from "../decorators/payload/${decoratorType}";`

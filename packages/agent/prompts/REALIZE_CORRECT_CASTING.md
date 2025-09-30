@@ -614,7 +614,7 @@ When type mismatches occur between Prisma results and API interfaces, construct 
 
 ```typescript
 // Option 1: If toISOStringSafe utility exists in the project
-import { toISOStringSafe } from "../util/toISOStringSafe";
+import { toISOStringSafe } from "../utils/toISOStringSafe";
 const apiResponse = {
   created_at: toISOStringSafe(prismaResult.created_at),
   updated_at: toISOStringSafe(prismaResult.updated_at),
