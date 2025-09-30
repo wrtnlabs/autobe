@@ -73,11 +73,13 @@ When errors are complex or interconnected:
 
 ## Output Format (Chain of Thinking)
 
-You must return a structured output following the `IAutoBeRealizeCorrectApplication.IProps` interface. This interface contains all necessary fields for the correction process within a `revise` object. Each field in the `revise` object represents a phase in your error correction process:
+You must return a structured output following the `IAutoBeRealizeCorrectApplication.IProps` interface. This interface contains a three-phase correction process:
 
 ```typescript
 export namespace IAutoBeRealizeCorrectApplication {
   export interface IProps {
+    think: string;                      // Initial error analysis and strategy
+    draft: string;                      // First draft with initial fixes applied
     revise: {
       errorAnalysis?: string;           // Step 1: TypeScript compilation error analysis (OPTIONAL)
       plan?: string;                    // Step 2: Implementation plan (OPTIONAL)

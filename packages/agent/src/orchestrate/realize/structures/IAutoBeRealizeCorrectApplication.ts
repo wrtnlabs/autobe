@@ -18,6 +18,12 @@ export namespace IAutoBeRealizeCorrectApplication {
    * resolution.
    */
   export interface IProps {
+    /** Initial analysis of the TypeScript compilation errors. */
+    think: string;
+
+    /** Draft correction with initial fixes applied. */
+    draft: string;
+
     /** Revision process containing all error correction phases. */
     revise: IRevise;
   }
