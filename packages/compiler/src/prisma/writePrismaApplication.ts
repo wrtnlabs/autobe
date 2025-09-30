@@ -92,6 +92,7 @@ function writeColumns(props: {
     "//----",
     writePrimary({
       dbms: props.dbms,
+      model: props.model,
       field: props.model.primaryField,
     }),
     ...props.model.foreignFields
@@ -117,13 +118,19 @@ function writeColumns(props: {
 
 function writePrimary(props: {
   dbms: "postgres" | "sqlite";
+  model: AutoBePrisma.IModel;
   field: AutoBePrisma.IPrimaryField;
 }): string {
   const type: string | undefined =
     props.dbms === "postgres" ? POSTGRES_PHYSICAL_TYPES.uuid : undefined;
+  const pkeyName: string = `${props.model.name}__pkey`;
+  const signature: string =
+    pkeyName.length <= MAX_IDENTIFIER_LENGTH
+      ? "@id"
+      : `@id(map: "${shortName(pkeyName)}")`;
   return [
     writeComment(props.field.description, 78),
-    `${props.field.name} String @id${type ? ` ${type}` : ""}`,
+    `${props.field.name} String ${signature}${type ? ` ${type}` : ""}`,
   ].join("\n");
 }
 
