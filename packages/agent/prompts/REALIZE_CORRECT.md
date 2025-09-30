@@ -392,7 +392,9 @@ If you see the same type assignment error pattern:
 1. Identify the conversion needed (e.g., `string` → enum)
 2. Apply the SAME conversion pattern to ALL similar cases
 
-## 🚨🚨🚨 MOST VIOLATED RULE - NEVER USE hasOwnProperty 🚨🚨🚨
+## 🚨🚨🚨 MOST COMMON ERRORS IN GENERATED CODE 🚨🚨🚨
+
+### 1. NEVER USE hasOwnProperty - MOST VIOLATED RULE
 
 **ABSOLUTELY FORBIDDEN - AI KEEPS VIOLATING THIS:**
 ```typescript
@@ -413,7 +415,40 @@ if (body.field !== undefined && body.field !== null) { /* use it */ }
 field: body.field === null ? undefined : body.field
 ```
 
-**This is the MOST VIOLATED RULE - DO NOT USE hasOwnProperty EVER!**
+### 2. Non-Nullable Field Mishandling
+
+**Common mistake: Adding null checks for fields that CANNOT be null**
+```typescript
+// ❌ WRONG - Checking null for non-nullable DateTime field
+return {
+  created_at: updated.created_at ? toISOStringSafe(updated.created_at) : null,
+  // created_at is DateTime (not DateTime?), so it ALWAYS exists!
+};
+
+// ✅ CORRECT - Direct usage for non-nullable fields
+return {
+  created_at: toISOStringSafe(updated.created_at),  // Always exists
+  updated_at: toISOStringSafe(updated.updated_at),  // Always exists
+};
+```
+
+### 3. Wrong Identifier Fields in WHERE Clauses
+
+**Using wrong field to identify records for updates:**
+```typescript
+// ❌ WRONG - Checking for 'id' when it's not the identifier
+if (!('id' in attachmentUpdate)) {
+  throw new HttpException("id is required", 400);
+}
+
+// ✅ CORRECT - Use the actual identifying field from the API
+await prisma.attachments.update({
+  where: { 
+    attachment_file_id: attachmentUpdate.attachment_file_id  // Correct field
+  },
+  data: { /* updates */ }
+});
+```
 
 ## 🚨 CRITICAL ERROR PATTERNS BY ERROR CODE
 
