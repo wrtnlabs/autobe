@@ -1,6 +1,7 @@
 import { IAgenticaHistoryJson } from "@agentica/core";
 import { AutoBeOpenApi } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
+import { OpenApiTypeChecker } from "@samchon/openapi";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
@@ -12,12 +13,24 @@ export const transformInterfacePrerequisitesHistories = (
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
-  const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-    document.components.schemas ?? {};
-
-  const operations: AutoBeOpenApi.IOperation[] = document.operations.filter(
-    (op) => op.authorizationType === null && op.method === "post",
-  );
+  const domainSchemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
+    {};
+  const visit = (key: string) =>
+    OpenApiTypeChecker.visit({
+      schema: {
+        $ref: `#/components/schemas/${key}`,
+      },
+      components: document.components,
+      closure: (next) => {
+        if (OpenApiTypeChecker.isReference(next))
+          domainSchemas[next.$ref.split("/").pop()!] =
+            document.components.schemas[next.$ref.split("/").pop()!];
+      },
+    });
+  for (const op of include) {
+    if (op.requestBody) visit(op.requestBody.typeName);
+    if (op.responseBody) visit(op.responseBody.typeName);
+  }
 
   return [
     {
@@ -31,37 +44,52 @@ export const transformInterfacePrerequisitesHistories = (
       id: v7(),
       created_at: new Date().toISOString(),
       text: StringUtil.trim`
-        # Available API Operations
+        ## Document Overview
+        
+        ### Entire API Operations
         
         All operations in this project for prerequisite references.
-        These are the complete list of API endpoints that can be used as prerequisites.
-        You should select appropriate operations from this list when establishing dependency chains.
+        These are the complete list of API endpoints that can be used 
+        as prerequisites. You should select appropriate operations from 
+        this list when establishing dependency chains.
 
         \`\`\`json
         ${JSON.stringify({
-          operations: operations.map((op) => {
-            return {
-              ...op,
-              prerequisites: undefined,
-            };
-          }),
+          operations: document.operations
+            .filter(
+              (op) => op.authorizationType === null && op.method === "post",
+            )
+            .map((op) => {
+              return {
+                ...op,
+                prerequisites: undefined,
+              };
+            }),
         })}
         \`\`\`
 
-        # Schema Definitions
+        ### Entire Schema Definitions
 
         Data structure definitions to understand entity relationships.
-        Use these schemas to identify parent-child relationships and data dependencies between operations.
+        Use these schemas to identify parent-child relationships and 
+        data dependencies between operations.
 
         \`\`\`json
-        ${JSON.stringify(schemas)}
+        ${JSON.stringify({
+          components: {
+            schemas: document.components.schemas,
+          },
+        })}
         \`\`\`
             
-        # Target Operations
+        ## Target Operations and Schemas
+
+        ### Target Operations
 
         Operations requiring prerequisite analysis.
-        For each of these operations, analyze if they need any prerequisites from the available operations above.
-        Add prerequisites only when there are genuine dependencies like resource existence checks or state validations.
+        For each of these operations, analyze if they need any prerequisites 
+        from the available operations above. Add prerequisites only when there 
+        are genuine dependencies like resource existence checks or state validations.
 
         \`\`\`json
         ${JSON.stringify(
@@ -74,6 +102,13 @@ export const transformInterfacePrerequisitesHistories = (
         )}
         \`\`\`
 
+        ### Domain Schemas
+
+        Schema definitions for the target operations.
+
+        \`\`\`json
+        ${JSON.stringify(domainSchemas)}
+        \`\`\`
       `,
     },
   ];

@@ -22,12 +22,10 @@ export async function orchestrateInterfacePrerequisites<
 ): Promise<AutoBeInterfacePrerequisite[]> {
   const operations: AutoBeOpenApi.IOperation[] =
     document.operations.filter((op) => op.authorizationType === null) ?? [];
-
   const progress: AutoBeProgressEventBase = {
     total: operations.length,
     completed: 0,
   };
-
   const prerequisiteOperations: AutoBeOpenApi.IOperation[] =
     document.operations.filter(
       (op) => op.authorizationType === null && op.method === "post",
@@ -129,7 +127,7 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
     });
     if (pointer.value === null) return [];
 
-    props.progress.completed += pointer.value.length;
+    props.progress.completed += props.includes.length;
     ctx.dispatch({
       type: "interfacePrerequisites",
       id: v7(),
@@ -140,9 +138,9 @@ async function divideAndConquer<Model extends ILlmSchema.Model>(
       completed: props.progress.completed,
       step: ctx.state().prisma?.step ?? 0,
     });
-
     return pointer.value;
   } catch {
+    props.progress.completed += props.includes.length;
     return [];
   }
 }
