@@ -16,6 +16,7 @@ import typia from "typia";
 import { NamingConvention } from "typia/lib/utils/NamingConvention";
 import { v7 } from "uuid";
 
+import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
@@ -28,6 +29,7 @@ import { IAutoBeTestScenarioAuthorizationRole } from "./structures/IAutoBeTestSc
 export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   instruction: string,
+  capacity: number = AutoBeConfigConstant.INTERFACE_CAPACITY,
 ): Promise<AutoBeTestScenario[]> {
   const document: AutoBeOpenApi.IDocument | undefined =
     ctx.state().interface?.document;
@@ -78,7 +80,7 @@ export async function orchestrateTestScenario<Model extends ILlmSchema.Model>(
   do {
     const matrix: AutoBeOpenApi.IOperation[][] = divideArray({
       array: include,
-      capacity: 4,
+      capacity: capacity ?? AutoBeConfigConstant.INTERFACE_CAPACITY,
     });
     await executeCachedBatch(
       matrix.map((include) => async (promptCacheKey) => {

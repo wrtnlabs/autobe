@@ -7,6 +7,7 @@ import { HashMap, IPointer, Pair } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
+import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { divideArray } from "../../utils/divideArray";
@@ -19,6 +20,7 @@ export async function orchestrateInterfacePrerequisites<
 >(
   ctx: AutoBeContext<Model>,
   document: AutoBeOpenApi.IDocument,
+  capacity: number = AutoBeConfigConstant.INTERFACE_CAPACITY,
 ): Promise<AutoBeInterfacePrerequisite[]> {
   const operations: AutoBeOpenApi.IOperation[] =
     document.operations.filter((op) => op.authorizationType === null) ?? [];
@@ -57,7 +59,7 @@ export async function orchestrateInterfacePrerequisites<
   do {
     const matrix: AutoBeOpenApi.IOperation[][] = divideArray({
       array: include,
-      capacity: 4,
+      capacity: capacity ?? AutoBeConfigConstant.INTERFACE_CAPACITY,
     });
 
     await executeCachedBatch(
