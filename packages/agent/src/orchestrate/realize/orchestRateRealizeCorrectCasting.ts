@@ -163,7 +163,12 @@ const correct = async <Model extends ILlmSchema.Model>(
           When modifying, modify the entire code, but not the import statement.
 
           Below is template code you wrote:
-          ${getRealizeWriteCodeTemplate(scenario, scenario.operation, authorization ?? null)}
+          ${getRealizeWriteCodeTemplate({
+            scenario,
+            schemas: ctx.state().interface!.document.components.schemas,
+            operation: scenario.operation,
+            authorization: authorization ?? null,
+          })}
 
           Current code is as follows:
           \`\`\`typescript
@@ -178,6 +183,7 @@ const correct = async <Model extends ILlmSchema.Model>(
         return { result: "ignore" as const, func: func };
 
       pointer.value.revise.final = await replaceImportStatements(ctx, {
+        schemas: ctx.state().interface!.document.components.schemas,
         operation: operation,
         code: pointer.value.revise.final,
         decoratorType: authorization?.payload.name,
