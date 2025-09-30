@@ -182,6 +182,14 @@ const correct = async <Model extends ILlmSchema.Model>(
       else if (pointer.value === false)
         return { result: "ignore" as const, func: func };
 
+      if (pointer.value.revise.final === null) {
+        // No revisions made, return original function
+        return {
+          result: "success" as const,
+          func: func,
+        };
+      }
+
       pointer.value.revise.final = await replaceImportStatements(ctx, {
         schemas: ctx.state().interface!.document.components.schemas,
         operation: operation,

@@ -1,37 +1,11 @@
 export interface IAutoBeRealizeWriteApplication {
   /**
-   * Generate complete provider function implementation using Chain of Thinking
-   * approach.
+   * Generate complete provider function implementation using Chain of Thinking.
    *
-   * This function implements the core business logic for a single API
-   * operation, following a systematic 4-phase development process to ensure
-   * correctness and maintainability.
+   * Follows a 4-phase process: plan → prismaSchemas → review → final.
+   * Ensures type safety, proper Prisma usage, and API contract compliance.
    *
-   * The implementation process:
-   *
-   * 1. **Planning Phase**: Analyzes Prisma schema, plans field usage, and defines
-   *    implementation strategy with proper null/undefined handling
-   * 2. **Schema Definition**: Extracts and documents relevant Prisma models and
-   *    their exact field types for reference
-   * 3. **Review Phase**: Refines the implementation with real operations, error
-   *    handling, and edge case considerations
-   * 4. **Final Implementation**: Produces complete, compilable TypeScript code
-   *    with proper imports, types, and NestJS conventions
-   *
-   * Key requirements handled:
-   *
-   * - **Type Safety**: Strict TypeScript compliance with proper null/undefined
-   *   patterns
-   * - **Database Operations**: Prisma queries with inline parameters (no
-   *   intermediate variables)
-   * - **Error Handling**: HttpException with numeric status codes (never enum
-   *   constants)
-   * - **Authentication**: Proper auth payload usage and permission validation
-   * - **Data Transformation**: Correct API response formatting with type
-   *   conversions
-   *
-   * @param next - The Chain of Thinking properties containing planning, schema
-   *   analysis, review, and final implementation phases
+   * @param next - Chain of Thinking properties for implementation
    */
   coding: (next: IAutoBeRealizeWriteApplication.IProps) => void;
 }

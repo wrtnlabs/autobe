@@ -2,49 +2,17 @@ export interface IAutoBeRealizeCorrectApplication {
   /**
    * Systematically analyze and correct TypeScript compilation errors.
    *
-   * This function implements a three-phase error correction workflow designed
-   * to handle both simple and complex compilation issues efficiently. The
-   * approach balances speed for obvious fixes with thoroughness for complex
-   * problems.
+   * Implements a three-phase workflow (think → draft → revise) that balances
+   * efficiency for simple errors with thoroughness for complex problems.
    *
-   * **Correction Strategy Selection:**
+   * Common error patterns handled:
    *
-   * - **Quick Fix (for simple errors)**: Skip intermediate analysis steps and go
-   *   directly to the solution when errors are obvious (null handling, missing
-   *   fields)
-   * - **Full Analysis (for complex errors)**: Use complete Chain of Thinking
-   *   process when errors are interconnected or require careful consideration
+   * - TS2353: Non-existent fields in Prisma operations
+   * - TS2339: Missing properties on types
+   * - TS2322: Type assignment mismatches
+   * - TS2345: String to literal union conversions
    *
-   * **Common Error Patterns Handled:**
-   *
-   * 1. **TS2353 "Object literal may only specify known properties"**:
-   *
-   *    - Remove non-existent fields from Prisma operations
-   *    - Fix field name typos using TypeScript suggestions
-   *    - Adjust query structures to match schema
-   * 2. **TS2339 "Property does not exist on type"**:
-   *
-   *    - Add missing include/select clauses for relations
-   *    - Remove references to fields not in query results
-   *    - Handle optional field access safely
-   * 3. **TS2322 "Type 'X' is not assignable to type 'Y'"**:
-   *
-   *    - Add null handling with ?? operators for return values
-   *    - Convert null to undefined for optional API fields
-   *    - Use toISOStringSafe() for Date to string conversions
-   * 4. **TS2345 "Argument of type 'string' not assignable to literal union"**:
-   *
-   *    - Add type assertions for dynamic strings to literal types
-   *    - Validate enum values before assignment
-   *
-   * **Error Correction Workflow:**
-   *
-   * 1. **think**: Quick assessment of error complexity and correction strategy
-   * 2. **draft**: Initial fixes applied to resolve obvious compilation errors
-   * 3. **revise**: Complete systematic correction with all phases when needed
-   *
-   * @param props - The three-phase error correction properties containing
-   *   analysis, draft fixes, and systematic revision workflow
+   * @param props - Three-phase correction properties
    */
   review: (props: IAutoBeRealizeCorrectApplication.IProps) => void;
 }
