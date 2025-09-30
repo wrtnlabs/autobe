@@ -6,8 +6,6 @@ export const getPrerequisites = (props: {
   document: AutoBeOpenApi.IDocument;
   endpoint: AutoBeOpenApi.IEndpoint;
 }): AutoBeOpenApi.IPrerequisite[] => {
-  console.log(`getPrerequisites init`);
-  const a = process.hrtime.bigint();
   const visited: Set<string> = new Set<string>();
   const result: HashMap<
     AutoBeOpenApi.IEndpoint,
@@ -46,7 +44,6 @@ export const getPrerequisites = (props: {
   };
 
   traverse(props.endpoint);
-  console.log(`getPrerequisites end ${process.hrtime.bigint() - a}`);
   return result
     .toJSON()
     .map((it) => it.second)
