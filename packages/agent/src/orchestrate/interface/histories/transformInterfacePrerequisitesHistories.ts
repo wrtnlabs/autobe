@@ -45,10 +45,11 @@ export const transformInterfacePrerequisitesHistories = (
       created_at: new Date().toISOString(),
       text: StringUtil.trim`
         ## Document Overview
-        
+
         ### Entire API Operations
         
         All operations in this project for prerequisite references.
+
         These are the complete list of API endpoints that can be used 
         as prerequisites. You should select appropriate operations from 
         this list when establishing dependency chains.
@@ -71,6 +72,7 @@ export const transformInterfacePrerequisitesHistories = (
         ### Entire Schema Definitions
 
         Data structure definitions to understand entity relationships.
+
         Use these schemas to identify parent-child relationships and 
         data dependencies between operations.
 
@@ -87,6 +89,7 @@ export const transformInterfacePrerequisitesHistories = (
         ### Target Operations
 
         Operations requiring prerequisite analysis.
+        
         For each of these operations, analyze if they need any prerequisites 
         from the available operations above. Add prerequisites only when there 
         are genuine dependencies like resource existence checks or state validations.
