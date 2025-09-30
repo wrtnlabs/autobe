@@ -91,14 +91,16 @@ export namespace IAutoBeRealizeCorrectApplication {
 }
 ```
 
-### 📝 FIELD REQUIREMENTS: OPTIONAL STEPS FOR EFFICIENCY
+### 📝 FIELD REQUIREMENTS: THREE-PHASE CORRECTION PROCESS
 
-**NEW APPROACH**: Most fields are now OPTIONAL to allow efficient correction when errors are obvious.
+**NEW APPROACH**: Three-phase process with think → draft → revise for systematic error correction.
 
-**REQUIRED FIELD:**
+**REQUIRED FIELDS:**
+- `think`: Initial analysis of the TypeScript compilation errors and resolution strategy
+- `draft`: First attempt at fixing the errors with initial corrections applied
 - `revise.final`: MUST contain complete, valid TypeScript function code
 
-**⚡ OPTIONAL FIELDS - Skip When Obvious:**
+**⚡ OPTIONAL FIELDS in revise - Skip When Obvious:**
 - `revise.errorAnalysis`: Skip if error is trivial (e.g., simple null handling)
 - `revise.plan`: Skip if fix is straightforward
 - `revise.prismaSchemas`: Skip if schema context is clear from error
@@ -124,6 +126,8 @@ export namespace IAutoBeRealizeCorrectApplication {
 ```typescript
 // For simple "Type 'string | null' is not assignable to type 'string'"
 {
+  think: "Simple null handling error - need to add default values",
+  draft: "// Initial fix with ?? operators added",
   revise: {
     final: `
       // ... fixed code with device_info: updated.device_info ?? "" ...
@@ -134,6 +138,26 @@ export namespace IAutoBeRealizeCorrectApplication {
 ```
 
 ### Field Descriptions
+
+#### 🧠 think (REQUIRED - Initial Analysis)
+
+**Initial Error Analysis and Strategy**
+
+This field contains your first assessment of the TypeScript compilation errors:
+- Identify error patterns (null handling, missing fields, type mismatches)
+- Determine correction approach (minimal fix vs refactoring)
+- Note if errors are simple or complex
+- Decide which optional fields in revise to use
+
+#### ✏️ draft (REQUIRED - First Attempt)
+
+**Draft Correction with Initial Fixes**
+
+The code after applying your first round of corrections:
+- Apply obvious fixes (null checks, type conversions)
+- Remove non-existent fields
+- Add missing required properties
+- This is your working draft before final refinement
 
 #### 📊 revise.errorAnalysis (Step 1 - OPTIONAL - CoT: Problem Identification)
 
@@ -320,6 +344,49 @@ return typia.random<ReturnType>();
 - DO NOT use bcrypt, bcryptjs, or any hashing libraries
 - The missing function should already exist in the codebase
 
+### Common Logic Errors in Generated Code
+
+**1. Wrong Field for WHERE Conditions**
+```typescript
+// ❌ WRONG - Using 'id' when you need a different identifier
+if (!('id' in attachmentUpdate)) {
+  throw new HttpException("Attachment id is required", 400);
+}
+
+// ✅ CORRECT - Use the actual field that identifies the record
+const updated = await prisma.attachments.update({
+  where: { attachment_file_id: attachmentUpdate.attachment_file_id },
+  // Use the correct field based on your API design
+});
+```
+
+**2. Overcomplicated Null/Undefined Handling**
+```typescript
+// ❌ WRONG - Too complex for simple cases
+if (attachmentUpdate.uploaded_at !== undefined) {
+  if (attachmentUpdate.uploaded_at !== null) {
+    if (typeof attachmentUpdate.uploaded_at === 'string') {
+      updateData.uploaded_at = attachmentUpdate.uploaded_at;
+    } else {
+      updateData.uploaded_at = toISOStringSafe(attachmentUpdate.uploaded_at);
+    }
+  } else {
+    updateData.uploaded_at = null;
+  }
+}
+
+// ✅ CORRECT - Simplified based on actual field nullability
+// For non-nullable DateTime field:
+updateData.uploaded_at = attachmentUpdate.uploaded_at 
+  ? toISOStringSafe(attachmentUpdate.uploaded_at)
+  : toISOStringSafe(new Date()); // Provide default for non-nullable
+
+// For nullable DateTime? field:
+updateData.uploaded_at = attachmentUpdate.uploaded_at 
+  ? toISOStringSafe(attachmentUpdate.uploaded_at)
+  : null;
+```
+
 ### Type Assignment Patterns
 If you see the same type assignment error pattern:
 1. Identify the conversion needed (e.g., `string` → enum)
@@ -463,6 +530,11 @@ When you see type errors in Prisma updates, always check:
 2. What type does the API send (T | null | undefined)?
 3. Are you in an UPDATE context or RETURN context?
 
+**⚠️ CRITICAL: Non-nullable Field Handling**
+- If a Prisma field is non-nullable (e.g., `DateTime` not `DateTime?`), you CANNOT set it to null
+- For non-nullable DateTime fields, ALWAYS provide a value or skip the update
+- When returning non-nullable fields, no null checks needed - just use directly
+
 **Real Example - Community Platform Post Update:**
 ```typescript
 // API Type: community_platform_sub_community_id?: string | null | undefined
@@ -504,6 +576,19 @@ return {
 return {
   community_platform_sub_community_id: updated.community_platform_sub_community_id,
   // It's already a string, no conversion needed!
+};
+
+// ANOTHER EXAMPLE: Non-nullable DateTime field
+// ❌ WRONG - Unnecessary null check for non-nullable field
+return {
+  uploaded_at: updated.uploaded_at ? toISOStringSafe(updated.uploaded_at) : null
+  // uploaded_at is DateTime (non-nullable), so it ALWAYS has a value!
+};
+
+// ✅ CORRECT - Direct conversion for non-nullable DateTime
+return {
+  uploaded_at: toISOStringSafe(updated.uploaded_at)
+  // No null check needed - field is guaranteed to exist
 };
 ```
 
@@ -1268,11 +1353,16 @@ Common Simple Fixes (skip CoT):
 
 ## 💡 Real Examples
 
-### Example 1: Simple Null Handling (Skip CoT)
+### Example 1: Simple Null Handling
 **Error**: `Type 'string | null' is not assignable to type 'string'`
 ```typescript
-// Just provide fixed code in final
 {
+  think: "Simple null handling errors on device_info and ip_address fields. Need to add default empty strings.",
+  draft: `// Fixed with ?? "" for null handling
+    return {
+      device_info: updated.device_info ?? "",
+      ip_address: updated.ip_address ?? ""
+    };`,
   revise: {
     final: `
       export async function updateUser(...) {
@@ -1292,6 +1382,8 @@ Common Simple Fixes (skip CoT):
 **Error**: Multiple interconnected type errors with missing relations
 ```typescript
 {
+  think: "Complex error pattern with missing relations and type mismatches. Multiple fields don't exist in schema. Need full analysis and refactoring.",
+  draft: "// Initial attempt to fix by removing non-existent fields and restructuring queries",
   revise: {
     errorAnalysis: "Multiple cascading errors due to missing relation...",
     plan: "Need to restructure queries to avoid nested operations...",
