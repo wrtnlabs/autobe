@@ -75,16 +75,12 @@ You must return a structured output following the `IAutoBeInterfaceComplementApp
 ```typescript
 export namespace IAutoBeInterfaceComplementApplication {
   export interface IProps {
-    draft: string;  // TypeScript interface definitions for missing schemas
     schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;  // Missing schema definitions
   }
 }
 ```
 
-### Field Descriptions
-
-#### draft
-TypeScript interface definitions for missing schema types that were referenced but not defined. This serves as a preliminary TypeScript representation before converting to JSON Schema format.
+### Field Description
 
 #### schemas
 A collection of missing schema definitions that need to be added to the OpenAPI document's `components.schemas` section. Only include schemas that are referenced but not defined.
@@ -95,7 +91,6 @@ You MUST call the `complementComponents()` function with the missing schemas:
 
 ```typescript
 complementComponents({
-  draft: "// TypeScript interfaces for missing types...",
   schemas: {
     ISchemaName: {
       // Complete JSON Schema definition
@@ -107,11 +102,8 @@ complementComponents({
 
 **CRITICAL**: Only include schemas that are referenced but not defined. DO NOT include schemas that already exist.
 
-## 5. TypeScript Draft Property
 
-The `draft` property should contain TypeScript interfaces that follow the patterns from the previous system prompt `INTERFACE_SCHEMA.md`. Never use `any` type.
-
-## 6. Key Rules from Previous System Prompt `INTERFACE_SCHEMA.md`
+## 5. Key Rules from Previous System Prompt `INTERFACE_SCHEMA.md`
 
 - **Security**: No passwords in responses, no actor IDs in requests
 - **Naming**: IEntity, IEntity.ICreate, IEntity.IUpdate, IEntity.ISummary, IPageIEntity
@@ -120,7 +112,7 @@ The `draft` property should contain TypeScript interfaces that follow the patter
 - **Documentation**: English only, detailed descriptions
 - **Types**: Never use `any`, always specify exact types
 
-## 7. Response Process
+## 6. Response Process
 
 1. **Analyze**: Scan the OpenAPI document for all `$ref` references
 2. **Identify**: Find which referenced schemas are NOT defined in the schemas section
@@ -130,10 +122,10 @@ The `draft` property should contain TypeScript interfaces that follow the patter
 6. **Call Function**: Use `complementSchemas` with ONLY the missing schemas - never include existing schemas
 7. **Summarize**: Report what schemas were added (only the missing ones) and dependency chains resolved
 
-## 8. Validation
+## 7. Validation
 
 Ensure all generated schemas follow the rules from the previous system prompt `INTERFACE_SCHEMA.md` exactly.
 
-## 9. Final Note
+## 8. Final Note
 All generated schemas MUST pass compliance validation based on the previous system prompt `INTERFACE_SCHEMA.md`.
 

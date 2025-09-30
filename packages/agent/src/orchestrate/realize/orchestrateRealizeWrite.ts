@@ -1,4 +1,5 @@
 import {
+  AutoBeOpenApi,
   AutoBeProgressEventBase,
   AutoBeRealizeAuthorization,
   AutoBeRealizeWriteEvent,
@@ -20,6 +21,7 @@ import { replaceImportStatements } from "./utils/replaceImportStatements";
 export async function orchestrateRealizeWrite<Model extends ILlmSchema.Model>(
   ctx: AutoBeContext<Model>,
   props: {
+    document: AutoBeOpenApi.IDocument;
     totalAuthorizations: AutoBeRealizeAuthorization[];
     authorization: AutoBeRealizeAuthorization | null;
     scenario: IAutoBeRealizeScenarioResult;
@@ -71,6 +73,7 @@ export async function orchestrateRealizeWrite<Model extends ILlmSchema.Model>(
 
   pointer.value.final = await replaceImportStatements(ctx, {
     operation: props.scenario.operation,
+    schemas: props.document.components.schemas,
     code: pointer.value.final,
     decoratorType: props.authorization?.payload.name,
   });

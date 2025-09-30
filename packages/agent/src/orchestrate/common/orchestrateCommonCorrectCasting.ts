@@ -120,7 +120,7 @@ const correct = async <
       think: pointer.value.think,
       draft: pointer.value.draft,
       review: pointer.value.revise.review,
-      final: pointer.value.revise.final,
+      final: pointer.value.revise.final ?? undefined,
       tokenUsage,
     }),
   );
@@ -129,7 +129,7 @@ const correct = async <
     factory,
     [...failures, event],
     script,
-    await factory.validate(pointer.value.revise.final),
+    await factory.validate(pointer.value.revise.final ?? pointer.value.draft),
     life - 1,
   );
 };

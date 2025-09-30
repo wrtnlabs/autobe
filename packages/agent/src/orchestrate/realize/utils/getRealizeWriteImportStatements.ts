@@ -1,26 +1,38 @@
 import { AutoBeOpenApi } from "@autobe/interface";
+import { OpenApiTypeChecker } from "@samchon/openapi";
 
-export function getRealizeWriteImportStatements(
-  operation: AutoBeOpenApi.IOperation,
-) {
-  const typeReferences: string[] = Array.from(
-    new Set(
-      [operation.requestBody, operation.responseBody]
-        .filter((el) => el !== null)
-        .map((el) => el.typeName.split(".")[0]!),
-    ),
-  );
+export function getRealizeWriteImportStatements(props: {
+  operation: AutoBeOpenApi.IOperation;
+  schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+}) {
+  const typeReferences: Set<string> = new Set();
+  const visit = (key: string) =>
+    OpenApiTypeChecker.visit({
+      schema: {
+        $ref: `#/components/schemas/${key}`,
+      },
+      components: { schemas: props.schemas },
+      closure: (next) => {
+        if (OpenApiTypeChecker.isReference(next))
+          typeReferences.add(next.$ref.split("/").pop()!.split(".")[0]!);
+      },
+    });
+  if (props.operation.requestBody) visit(props.operation.requestBody.typeName);
+  if (props.operation.responseBody)
+    visit(props.operation.responseBody.typeName);
 
   // Build the standard imports
   const imports = [
-    'import jwt from "jsonwebtoken";',
-    'import { MyGlobal } from "../MyGlobal";',
-    'import typia, { tags } from "typia";',
-    'import { Prisma } from "@prisma/client";',
-    'import { v4 } from "uuid";',
-    'import { toISOStringSafe } from "../util/toISOStringSafe"',
     'import { HttpException } from "@nestjs/common";',
-    ...typeReferences.map(
+    'import { Prisma } from "@prisma/client";',
+    'import jwt from "jsonwebtoken";',
+    'import typia, { tags } from "typia";',
+    'import { v4 } from "uuid";',
+
+    'import { MyGlobal } from "../MyGlobal";',
+    'import { toISOStringSafe } from "../util/toISOStringSafe"',
+    "",
+    ...Array.from(typeReferences).map(
       (ref) =>
         `import { ${ref} } from "@ORGANIZATION/PROJECT-api/lib/structures/${ref}";`,
     ),

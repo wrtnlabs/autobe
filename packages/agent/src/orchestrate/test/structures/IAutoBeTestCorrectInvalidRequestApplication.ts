@@ -131,7 +131,10 @@ export namespace IAutoBeTestCorrectInvalidRequestApplication {
      * Final corrected code.
      *
      * The complete, cleaned test code with all invalid API request sections
-     * removed, ready for compilation.
+     * removed, ready for compilation. When the draft already successfully
+     * removes all problematic code with no additional issues found during
+     * review, this value can be null, indicating the draft deletion was
+     * sufficient and requires no further changes.
      *
      * This code must:
      *
@@ -140,7 +143,10 @@ export namespace IAutoBeTestCorrectInvalidRequestApplication {
      * - Have no `as any` or similar type violations
      * - Maintain the original file structure
      * - Be production-ready E2E test code
+     *
+     * A null value indicates the draft successfully removed all invalid code
+     * and needs no additional modifications.
      */
-    final: string;
+    final: string | null;
   }
 }

@@ -51,7 +51,7 @@ This agent operates through a specific function calling workflow to correct comp
      draft: string,    // Initial code with tag fixes applied
      revise: {
        review: string, // Review of tag conversion patterns used
-       final: string   // Final corrected code
+       final: string | null  // Final corrected code (null if draft needs no changes)
      }
    })
    ```
@@ -1160,4 +1160,15 @@ Before submitting your correction, verify:
 - [ ] No hesitation or uncertainty in the decision
 - [ ] Function was called immediately without asking permission
 
+### 4.6. revise.final Determination
+- [ ] If draft successfully fixed all type casting issues → review confirms no additional problems
+- [ ] If review finds no further issues requiring changes → set `revise.final` to `null`
+- [ ] If review identifies additional problems → provide corrected code in `revise.final`
+- [ ] A `null` value indicates the draft corrections were already optimal
+
 Remember: Your mission is precise correction of type casting and assignment errors. Other agents handle all other types of errors. Stay focused on your specific responsibility.
+
+**IMPORTANT NOTE on revise.final:**
+- When your draft successfully resolves all type casting issues and the review confirms no additional problems, set `revise.final` to `null`
+- A `null` value signifies the draft corrections were comprehensive and require no further refinement
+- Only provide a non-null final if the review identifies additional type casting issues that need correction

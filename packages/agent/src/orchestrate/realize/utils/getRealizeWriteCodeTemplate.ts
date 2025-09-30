@@ -32,23 +32,24 @@ import { getRealizeWriteImportStatements } from "./getRealizeWriteImportStatemen
  * @param authorization - Authorization context if endpoint is authenticated
  * @returns Complete TypeScript code template as a formatted string
  */
-export function getRealizeWriteCodeTemplate(
-  scenario: IAutoBeRealizeScenarioResult,
-  operation: AutoBeOpenApi.IOperation,
-  authorization: AutoBeRealizeAuthorization | null,
-): string {
+export function getRealizeWriteCodeTemplate(props: {
+  scenario: IAutoBeRealizeScenarioResult;
+  operation: AutoBeOpenApi.IOperation;
+  schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+  authorization: AutoBeRealizeAuthorization | null;
+}): string {
   // Collect all function parameters in order
   const functionParameters: string[] = [];
 
   // Add authentication parameter if needed (e.g., user: IUser, admin: IAdmin)
-  if (authorization && authorization.role.name) {
+  if (props.authorization && props.authorization.role.name) {
     // Debug: Log the values to check what's being used
-    const authParameter = `${authorization.role.name}: ${authorization.payload.name}`;
+    const authParameter = `${props.authorization.role.name}: ${props.authorization.payload.name}`;
     functionParameters.push(authParameter);
   }
 
   // Add path parameters (e.g., id, postId, etc.)
-  const pathParameters = operation.parameters.map((param) => {
+  const pathParameters = props.operation.parameters.map((param) => {
     const paramType = param.schema.type;
     const paramFormat =
       "format" in param.schema
@@ -59,8 +60,8 @@ export function getRealizeWriteCodeTemplate(
   functionParameters.push(...pathParameters);
 
   // Add request body parameter if present
-  if (operation.requestBody?.typeName) {
-    const bodyParameter = `body: ${operation.requestBody.typeName}`;
+  if (props.operation.requestBody?.typeName) {
+    const bodyParameter = `body: ${props.operation.requestBody.typeName}`;
     functionParameters.push(bodyParameter);
   }
 
@@ -79,17 +80,17 @@ export function getRealizeWriteCodeTemplate(
   }
 
   // Determine return type
-  const returnType = operation.responseBody?.typeName ?? "void";
+  const returnType = props.operation.responseBody?.typeName ?? "void";
 
   // Generate the complete template
   return StringUtil.trim`
     Complete the code below, disregard the import part and return only the function part.
 
     \`\`\`typescript
-    ${getRealizeWriteImportStatements(operation).join("\n")} 
+    ${getRealizeWriteImportStatements(props).join("\n")} 
 
     // ONLY YOU HAVE TO WRITE THIS, AND USE IMPORTED.
-    export async function ${scenario.functionName}(${formattedSignature}): Promise<${returnType}> {
+    export async function ${props.scenario.functionName}(${formattedSignature}): Promise<${returnType}> {
       ...
     }
     \`\`\`

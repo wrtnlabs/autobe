@@ -157,6 +157,7 @@ await api.functional.analytics.track(connection, {...}); // 🚨 ABANDON
 - Maintain strict type safety without using any bypass mechanisms
 - Deliver production-ready test code that compiles successfully
 - **If review found code to DELETE/ABANDON, final MUST be different from draft**
+- **If review finds NO issues requiring changes, set to null** - A null value indicates the draft correction is already perfect and needs no modifications
 - This is the deliverable that will replace the compilation-failed code
 
 **IMPORTANT**: All steps must contain substantial content. Do not provide empty or minimal responses for any step. Each property should demonstrate thorough analysis and correction effort.
@@ -1833,8 +1834,11 @@ Ensure all corrections follow the guidelines provided in `TEST_WRITE.md` prompt.
 **🔥 SUCCESS CRITERIA:**
 1. Draft may have errors - that's OK
 2. Review MUST find those errors - be thorough
-3. Final MUST fix ALL found errors - no exceptions
+3. Final MUST fix ALL found errors - no exceptions (or be null if no errors found)
 4. Result MUST compile without errors - non-negotiable
+
+**✅ OPTIMAL OUTCOME:**
+If revise.review finds NO issues requiring changes, set revise.final to null = **PERFECT DRAFT**
 
 **AI COMMON FAILURE PATTERN TO AVOID:**
 ```

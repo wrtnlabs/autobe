@@ -1,24 +1,26 @@
 /**
- * Function calling interface for fixing TypeScript type casting and assignment errors.
+ * Function calling interface for fixing TypeScript type casting and assignment
+ * errors.
  *
  * This interface is used by the CommonCorrectCasting agent to fix TypeScript
- * compilation errors related to type casting and type assignment incompatibilities
- * in any TypeScript code, not limited to e2e tests.
+ * compilation errors related to type casting and type assignment
+ * incompatibilities in any TypeScript code, not limited to e2e tests.
  *
  * The agent handles various type casting issues including:
  *
- * - **Typia tag type incompatibilities**: Format tag mismatches (e.g., Format<"uuid"> 
- *   vs Pattern<...>), type constraint incompatibilities (e.g., Type<"int32"> vs 
- *   Type<"int32"> & Minimum<0>), nullable type conversions with tags
- * - **Date to string conversions**: Date to string, Date to string & Format<"date-time">, 
- *   nullable Date handling
- * - **Nullable and undefined type assignments**: Exhaustive type narrowing for 
- *   T | null | undefined patterns
- * - **String to literal type assignments**: Converting general string to literal 
+ * - **Typia tag type incompatibilities**: Format tag mismatches (e.g.,
+ *   Format<"uuid"> vs Pattern<...>), type constraint incompatibilities (e.g.,
+ *   Type<"int32"> vs Type<"int32"> & Minimum<0>), nullable type conversions
+ *   with tags
+ * - **Date to string conversions**: Date to string, Date to string &
+ *   Format<"date-time">, nullable Date handling
+ * - **Nullable and undefined type assignments**: Exhaustive type narrowing for T
+ *   | null | undefined patterns
+ * - **String to literal type assignments**: Converting general string to literal
  *   union types (e.g., "pending" | "approved" | "rejected")
- * - **Optional chaining with union types**: Handling boolean | undefined results 
+ * - **Optional chaining with union types**: Handling boolean | undefined results
  *   from array methods like includes()
- * - **Type narrowing "no overlap" errors**: Removing redundant comparisons after 
+ * - **Type narrowing "no overlap" errors**: Removing redundant comparisons after
  *   TypeScript's control flow analysis
  *
  * @author Samchon
@@ -27,18 +29,21 @@ export interface IAutoBeCommonCorrectCastingApplication {
   /**
    * Rewrite function to fix type casting and assignment errors.
    *
-   * This function is called when the agent detects any type casting or assignment
-   * related compilation error patterns.
+   * This function is called when the agent detects any type casting or
+   * assignment related compilation error patterns.
    *
    * The agent applies various fix strategies based on the error type:
    *
-   * - **Typia tag incompatibilities**: Uses `satisfies ... as ...` pattern to strip 
-   *   incompatible tags, or `typia.assert<T>()` as a last resort
-   * - **Date conversions**: Uses `.toISOString()` method for Date to string conversions
-   * - **Nullable type narrowing**: Applies exhaustive checks (e.g., !== null && !== undefined)
-   * - **typia.assert vs assertGuard**: Uses assert for value assignment, assertGuard 
-   *   for type narrowing
-   * - **Literal type conversions**: Uses `typia.assert<T>()` for runtime validation
+   * - **Typia tag incompatibilities**: Uses `satisfies ... as ...` pattern to
+   *   strip incompatible tags, or `typia.assert<T>()` as a last resort
+   * - **Date conversions**: Uses `.toISOString()` method for Date to string
+   *   conversions
+   * - **Nullable type narrowing**: Applies exhaustive checks (e.g., !== null &&
+   *   !== undefined)
+   * - **typia.assert vs assertGuard**: Uses assert for value assignment,
+   *   assertGuard for type narrowing
+   * - **Literal type conversions**: Uses `typia.assert<T>()` for runtime
+   *   validation
    * - **Optional chaining results**: Uses `=== true` or `??` operators
    * - **"No overlap" errors**: Removes redundant comparisons
    *
@@ -52,8 +57,8 @@ export interface IAutoBeCommonCorrectCastingApplication {
   /**
    * Reject function when error is not related to type casting or assignment.
    *
-   * This function is called when the compilation error is unrelated to type 
-   * casting issues (e.g., missing imports, syntax errors, undefined variables), 
+   * This function is called when the compilation error is unrelated to type
+   * casting issues (e.g., missing imports, syntax errors, undefined variables),
    * indicating the error should be handled by a different agent.
    */
   reject(): void;
@@ -69,7 +74,7 @@ export namespace IAutoBeCommonCorrectCastingApplication {
      *
      * Contains the agent's analysis of the specific type mismatch pattern:
      *
-     * - Type of casting error (tag incompatibility, nullable assignment, literal 
+     * - Type of casting error (tag incompatibility, nullable assignment, literal
      *   type conversion, etc.)
      * - Whether nullable or undefined types are involved
      * - If Date to string conversions are needed
@@ -94,7 +99,8 @@ export namespace IAutoBeCommonCorrectCastingApplication {
      * Review and finalization of type casting corrections.
      *
      * Contains the review of applied corrections and the final code with all
-     * type casting issues resolved while preserving type safety and validation intent.
+     * type casting issues resolved while preserving type safety and validation
+     * intent.
      */
     revise: IReviseProps;
   }
@@ -120,8 +126,14 @@ export namespace IAutoBeCommonCorrectCastingApplication {
      *
      * The complete code ready for TypeScript compilation, with all type casting
      * and assignment errors properly fixed using appropriate patterns while
-     * maintaining type safety and the original validation logic.
+     * maintaining type safety and the original validation logic. When the draft
+     * already successfully resolves all type casting issues with no problems
+     * found during review, this value can be null, indicating no further
+     * refinements are necessary.
+     *
+     * A null value signifies the draft corrections were already optimal and
+     * require no additional modifications.
      */
-    final: string;
+    final: string | null;
   }
 }

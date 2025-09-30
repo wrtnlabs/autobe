@@ -94,12 +94,12 @@ const correct = async <Model extends ILlmSchema.Model>(
   const locations: string[] = diagnose(event).filter((l) =>
     functions.map((f) => f.location).includes(l),
   );
-  
+
   // If no locations to correct, return original functions
   if (locations.length === 0) {
     return functions;
   }
-  
+
   progress.total += locations.length;
 
   const converted: CorrectionResult[] = await executeCachedBatch(
@@ -154,7 +154,7 @@ const correct = async <Model extends ILlmSchema.Model>(
       ctx.dispatch({
         id: v7(),
         type: "realizeCorrect",
-        content: pointer.value.revise.final,
+        content: pointer.value.revise.final ?? pointer.value.draft,
         created_at: new Date().toISOString(),
         location: func.location,
         step: ctx.state().analyze?.step ?? 0,
@@ -165,7 +165,10 @@ const correct = async <Model extends ILlmSchema.Model>(
 
       return {
         result: "success" as const,
-        func: { ...func, content: pointer.value.revise.final },
+        func: {
+          ...func,
+          content: pointer.value.revise.final ?? pointer.value.draft,
+        },
       };
     }),
   );
@@ -227,8 +230,10 @@ const correct = async <Model extends ILlmSchema.Model>(
   );
 
   // Get functions that were not modified (not in converted array)
-  const convertedLocations = converted.map(c => c.func.location);
-  const unchanged = functions.filter(f => !convertedLocations.includes(f.location));
+  const convertedLocations = converted.map((c) => c.func.location);
+  const unchanged = functions.filter(
+    (f) => !convertedLocations.includes(f.location),
+  );
 
   return [...success, ...ignored, ...retriedFunctions, ...unchanged];
 };

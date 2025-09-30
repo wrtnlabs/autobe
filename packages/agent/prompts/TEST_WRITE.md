@@ -130,6 +130,7 @@ await TestValidator.error("invalid type", async () => {
 - Must represent the highest quality implementation possible
 - **🚨 ZERO TOLERANCE: Must NOT contain ANY prohibited patterns**
 - **If review found code to DELETE, final MUST be different from draft**
+- **If review finds NO issues requiring changes, set to null** - A null value indicates the draft is already perfect and needs no modifications
 
 **IMPORTANT**: All steps must contain substantial content. Do not provide empty or minimal responses for any step. Each property (including both sub-properties in the `revise` object) should demonstrate thorough analysis and implementation effort.
 
@@ -3765,6 +3766,9 @@ During the REVISE step, you MUST:
 
 **🚨 FAILURE CONDITION:**
 If revise.review finds type errors BUT revise.final still contains them = **CRITICAL FAILURE**
+
+**✅ SUCCESS CONDITION:**
+If revise.review finds NO issues requiring changes, set revise.final to null = **OPTIMAL OUTCOME**
 
 ### 4.12.6. CRITICAL REMINDERS
 - **TYPE ERRORS = COMPILATION FAILURES = YOUR FAILURE**
