@@ -118,6 +118,11 @@ result: dbValue === null
    - Your provider functions should trust the framework's validation pipeline
    - Adding duplicate validation creates maintenance burden and potential inconsistencies
 
+4. **Business Logic vs Type Validation**
+   - Business logic validation (e.g., checking if a value exceeds a limit) is ALLOWED and EXPECTED
+   - Type validation (e.g., checking if a string is actually a string) is FORBIDDEN
+   - The distinction: If TypeScript already knows the type, don't check it at runtime
+
 #### ❌ ABSOLUTELY FORBIDDEN Patterns:
 
 ```typescript
@@ -147,6 +152,16 @@ if (typeof body.age === 'number' && body.age > 0) {
 // ❌ FORBIDDEN - Array type checking
 if (!Array.isArray(body.tags)) {
   throw new Error('Tags must be an array');
+}
+
+// ❌ FORBIDDEN - Checking parameter value types
+if (typeof body.title !== 'string' || body.title.trim() === '') {
+  throw new Error('Title must be a non-empty string');
+}
+
+// ❌ FORBIDDEN - Validating that a typed parameter matches its type
+if (body.price && typeof body.price !== 'number') {
+  throw new Error('Price must be a number');
 }
 ```
 
@@ -181,14 +196,30 @@ export async function createPost(props: {
 
 ✅ **Business logic conditions** (NOT type validation):
 ```typescript
-// ✅ OK - Business rule, not type check
+// ✅ OK - Business rule validation (checking VALUE, not TYPE)
+if (props.title.trim().length === 0) {
+  throw new HttpException('Title cannot be empty', 400);
+}
+
+// ✅ OK - Business constraint validation
 if (props.quantity > props.maxAllowed) {
-  throw new Error('Quantity exceeds maximum allowed');
+  throw new HttpException('Quantity exceeds maximum allowed', 400);
 }
 
 // ✅ OK - Checking for optional fields (existence, not type)
 if (body.email) {
   // Email was provided (we already know it's a string if present)
+  await sendEmailTo(body.email);
+}
+
+// ✅ OK - Validating business rules on string content
+if (body.title.length > 100) {
+  throw new HttpException('Title must not exceed 100 characters', 400);
+}
+
+// ❌ BUT THIS IS FORBIDDEN - Don't validate the TYPE
+if (typeof body.title !== 'string') {
+  throw new Error('Title must be a string');
 }
 ```
 
@@ -198,6 +229,70 @@ Any code that checks `typeof`, `instanceof`, or validates that a parameter match
 
 1. **NEVER create intermediate variables for ANY Prisma operation parameters**
    - ❌ FORBIDDEN: `const updateData = {...}; await prisma.update({data: updateData})`
+
+## 🔤 String Literal and Escape Sequence Handling
+
+### CRITICAL: Escape Sequences in Function Calling Context
+
+When writing code that will be generated through function calling (JSON), escape sequences require special handling:
+
+#### ❌ WRONG - Single Backslash (Will be consumed by JSON parsing)
+```typescript
+// This will become a newline character after JSON parsing!
+if (/[\r\n]/.test(title)) {
+  throw new HttpException("Title must not contain line breaks.", 400);
+}
+```
+
+#### ✅ CORRECT - Double Backslash for Escape Sequences
+```typescript
+// Use double backslash to preserve the escape sequence
+if (/[\\r\\n]/.test(title)) {
+  throw new HttpException("Title must not contain line breaks.", 400);
+}
+
+// For other common escape sequences:
+const pattern = /[\\t\\n\\r]/; // Tab, newline, carriage return
+const unicodePattern = /\\u0000/; // Unicode escape
+```
+
+#### 📋 Escape Sequence Reference
+
+When your code will be transmitted through JSON (function calling):
+
+| Intent | Write This | After JSON Parse |
+|--------|------------|------------------|
+| `\n` | `\\n` | `\n` |
+| `\r` | `\\r` | `\r` |
+| `\t` | `\\t` | `\t` |
+| `\\` | `\\\\` | `\\` |
+| `\"` | `\\"` | `\"` |
+| `\'` | `\\'` | `\'` |
+
+#### 🎯 Rule of Thumb
+
+1. **Regular string literals**: Use normal escape sequences
+2. **Regular expressions in function calling**: Use DOUBLE backslashes
+3. **String content validation**: Consider using character ranges or Unicode values
+
+```typescript
+// Alternative approaches that avoid escape sequence issues:
+
+// Option 1: Character codes
+if (title.includes(String.fromCharCode(10)) || title.includes(String.fromCharCode(13))) {
+  throw new HttpException("Title must not contain line breaks.", 400);
+}
+
+// Option 2: Direct string methods
+if (title.includes('\n') || title.includes('\r')) {
+  throw new HttpException("Title must not contain line breaks.", 400);
+}
+
+// Option 3: Split-based detection
+if (title.split('\n').length > 1 || title.split('\r').length > 1) {
+  throw new HttpException("Title must not contain line breaks.", 400);
+}
+```
    - ❌ FORBIDDEN: `const where = {...}; await prisma.findMany({where})`
    - ❌ FORBIDDEN: `const where: Record<string, unknown> = {...}` - WORST VIOLATION!
    - ❌ FORBIDDEN: `const orderBy = {...}; await prisma.findMany({orderBy})`

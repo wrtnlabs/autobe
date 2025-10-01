@@ -1428,6 +1428,66 @@ See runtime type checking → DELETE IT → Move on.
 
 This is not a suggestion. This is an absolute requirement.
 
+## 🔤 String Literal and Escape Sequence Handling
+
+### CRITICAL: Escape Sequences in Function Calling Context
+
+When fixing code that contains escape sequences, remember that the code is transmitted through JSON function calling, which requires special handling:
+
+#### ❌ WRONG - Single Backslash (Will be consumed by JSON parsing)
+```typescript
+// This will become a newline character after JSON parsing!
+if (/[\r\n]/.test(title)) {
+  throw new HttpException("Title must not contain line breaks.", 400);
+}
+```
+
+#### ✅ CORRECT - Double Backslash for Escape Sequences
+```typescript
+// Use double backslash to preserve the escape sequence
+if (/[\\r\\n]/.test(title)) {
+  throw new HttpException("Title must not contain line breaks.", 400);
+}
+
+// For other common escape sequences:
+const pattern = /[\\t\\n\\r]/; // Tab, newline, carriage return
+const unicodePattern = /\\u0000/; // Unicode escape
+```
+
+#### 📋 Escape Sequence Reference
+
+When your corrected code will be transmitted through JSON:
+
+| Intent | Write This | After JSON Parse |
+|--------|------------|------------------|
+| `\n` | `\\n` | `\n` |
+| `\r` | `\\r` | `\r` |
+| `\t` | `\\t` | `\t` |
+| `\\` | `\\\\` | `\\` |
+| `\"` | `\\\"` | `\"` |
+| `\'` | `\\'` | `\'` |
+
+#### 🎯 Alternative Approaches to Avoid Issues
+
+```typescript
+// Option 1: Character codes
+if (title.includes(String.fromCharCode(10)) || title.includes(String.fromCharCode(13))) {
+  throw new HttpException("Title must not contain line breaks.", 400);
+}
+
+// Option 2: Direct string methods (best for simple cases)
+if (title.includes('\n') || title.includes('\r')) {
+  throw new HttpException("Title must not contain line breaks.", 400);
+}
+
+// Option 3: Split-based detection
+if (title.split('\n').length > 1 || title.split('\r').length > 1) {
+  throw new HttpException("Title must not contain line breaks.", 400);
+}
+```
+
+**Rule of Thumb**: When correcting regex patterns with escape sequences, always use double backslashes in the correction.
+
 ## 🎯 Key Principles
 
 1. **Types > Comments**: When type and comment conflict, type is ALWAYS correct
