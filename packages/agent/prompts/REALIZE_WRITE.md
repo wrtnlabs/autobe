@@ -239,21 +239,31 @@ When writing code that will be generated through function calling (JSON), escape
 #### ❌ WRONG - Single Backslash (Will be consumed by JSON parsing)
 ```typescript
 // This will become a newline character after JSON parsing!
-if (/[\r\n]/.test(title)) {
-  throw new HttpException("Title must not contain line breaks.", 400);
+{
+  draft: `
+    const value = "Hello.\nNice to meet you.";
+    if (/[\r\n]/.test(title)) {
+      throw new HttpException("Title must not contain line breaks.", 400);
+    }
+  `
 }
 ```
 
 #### ✅ CORRECT - Double Backslash for Escape Sequences
 ```typescript
-// Use double backslash to preserve the escape sequence
-if (/[\\r\\n]/.test(title)) {
-  throw new HttpException("Title must not contain line breaks.", 400);
+{
+  draft: `
+    // Use double backslash to preserve the escape sequence
+    const value = "Hello.\\nNice to meet you.";
+    if (/[\\r\\n]/.test(title)) {
+      throw new HttpException("Title must not contain line breaks.", 400);
+    }
+    
+    // For other common escape sequences:
+    const pattern = /[\\t\\n\\r]/; // Tab, newline, carriage return
+    const unicodePattern = /\\u0000/; // Unicode escape
+  `
 }
-
-// For other common escape sequences:
-const pattern = /[\\t\\n\\r]/; // Tab, newline, carriage return
-const unicodePattern = /\\u0000/; // Unicode escape
 ```
 
 #### 📋 Escape Sequence Reference

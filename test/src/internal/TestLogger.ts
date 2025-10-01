@@ -1,5 +1,8 @@
-import { AutoBeEvent, IAutoBeTokenUsageJson } from "@autobe/interface";
-import { IPointer, Pair, sleep_for } from "tstl";
+import {
+  AutoBeEvent,
+  IAutoBeTokenUsageJson,
+  IAutoBeTypeScriptCompileResult,
+} from "@autobe/interface";
 import typia from "typia";
 
 export namespace TestLogger {
@@ -17,7 +20,7 @@ export namespace TestLogger {
       content.push(
         `  - token usage: (input: ${event.tokenUsage.input.total.toLocaleString()}, cached: ${event.tokenUsage.input.cached.toLocaleString()}, output: ${event.tokenUsage.output.total.toLocaleString()})`,
       );
-    // SPECIFICATIONS
+    // FUNCTION CALLING
     if (event.type === "consentFunctionCall")
       content.push(
         `  - consent: ${event.assistantMessage} -> ${event.result?.type === "consent" ? event.result.message : "null"} `,
@@ -38,59 +41,28 @@ export namespace TestLogger {
         `  - life: ${event.life}`,
         `  - arguments: ${event.arguments}`,
       );
-    // VENDORS
-    else if (event.type === "vendorTimeout") {
-      content.push(`  - source: ${event.source}`, `  - retry: ${event.retry}`);
-    } else if (event.type === "vendorResponse") {
-      content.push(`  - source ${event.source}`);
-      content.push(`  - id: ${event.id}`);
-      content.push(`  - retry: ${event.retry}`);
-
-      const t1: Date = new Date();
-      const t2: IPointer<Date> = { value: t1 };
-      const completed: IPointer<boolean> = { value: false };
-      const chunks: Pair<number, Date>[] = [];
-      void (async () => {
-        for await (const _c of event.stream) {
-          const now: Date = new Date();
-          chunks.push(new Pair(now.getTime() - t2.value.getTime(), now));
-          t2.value = now;
-        }
-      })().catch(() => {});
-      void (async () => {
-        while (true) {
-          await sleep_for(60_000);
-          if (completed.value === true) break;
-          console.log("Response streaming not completed yet");
-          console.log(
-            [
-              `source: ${event.source}`,
-              `id: ${event.id}`,
-              `elapsed time: ${time(t1)}`,
-              `chunk times: (max: ${Math.max(...chunks.map((c) => c.first))}, delayed: ${time(chunks.at(-1)?.second ?? t1)})`,
-              `chunks (last 5 items): [${chunks
-                .slice(-5)
-                .map((c) => c.first)
-                .join(", ")}]`,
-            ]
-              .map((s) => `  - ${s}`)
-              .join("\n"),
-          );
-        }
-      })().catch(() => {});
-      event
-        .join()
-        .catch(() => {})
-        .then(() => {
-          completed.value = true;
-          console.log(
-            `Response chunk times (${event.source}, ${time(t1)}): (max: ${Math.max(...chunks.map((c) => c.first))})`,
-          );
-        });
-    }
+    // VALIDATIONS
+    else if (event.type === "realizeValidate")
+      content.push(
+        ...printCompiled(event.result, Object.keys(event.files).length),
+      );
 
     // PRINT
     console.log(content.join("\n"));
+  };
+
+  const printCompiled = (
+    result: IAutoBeTypeScriptCompileResult,
+    total: number,
+  ): string[] => {
+    const o: string[] = [`  - result: ${result.type}`];
+    if (result.type === "exception") return o;
+    const success: number =
+      result.type === "success"
+        ? total
+        : new Set(result.diagnostics.map((d) => d.file)).size;
+    o.push(`  - success: ${success} of ${total}`);
+    return o;
   };
 }
 
