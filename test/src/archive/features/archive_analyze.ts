@@ -1,9 +1,6 @@
 import { AutoBeAgent, AutoBeTokenUsage } from "@autobe/agent";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
-  AutoBeAnalyzeReviewEvent,
-  AutoBeAnalyzeScenarioEvent,
-  AutoBeAnalyzeWriteEvent,
   AutoBeEventOfSerializable,
   AutoBeEventSnapshot,
   AutoBeHistory,
@@ -43,21 +40,6 @@ export const archive_analyze = async (
   for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
     agent.on(type, listen);
 
-  // FOR NEXT TESTING ASSETS
-  let scenario: AutoBeAnalyzeScenarioEvent | null = null;
-  const writes: AutoBeAnalyzeWriteEvent[] = [];
-  const reviews: AutoBeAnalyzeReviewEvent[] = [];
-
-  agent.on("analyzeScenario", (e) => {
-    scenario = e;
-  });
-  agent.on("analyzeWrite", (e) => {
-    writes.push(e);
-  });
-  agent.on("analyzeReview", (e) => {
-    reviews.push(e);
-  });
-
   // GENERATE REPORT
   const zero: AutoBeTokenUsage = new AutoBeTokenUsage(
     factory.getTokenUsage().toJSON(),
@@ -90,19 +72,22 @@ export const archive_analyze = async (
       files,
     });
   } catch {}
-  if (TestGlobal.archive)
-    await TestHistory.save({
-      [`${project}.analyze.json`]: JSON.stringify(agent.getHistories()),
-      [`${project}.analyze.snapshots.json`]: JSON.stringify(
-        snapshots.map((s) => ({
-          event: s.event,
-          tokenUsage: new AutoBeTokenUsage(s.tokenUsage)
-            .decrement(zero)
-            .toJSON(),
-        })),
-      ),
-      [`${project}.analyze.writes.json`]: JSON.stringify(writes),
-      [`${project}.analyze.reviews.json`]: JSON.stringify(reviews),
-      [`${project}.analyze.scenario.json`]: JSON.stringify(scenario),
-    });
+  await TestHistory.save({
+    [`${project}.analyze.json`]: JSON.stringify(agent.getHistories()),
+    [`${project}.analyze.snapshots.json`]: JSON.stringify(
+      snapshots.map((s) => ({
+        event: s.event,
+        tokenUsage: new AutoBeTokenUsage(s.tokenUsage).decrement(zero).toJSON(),
+      })),
+    ),
+    // [`${project}.analyze.writes.json`]: JSON.stringify(
+    //   snapshots.map((s) => s.event).filter((e) => e.type === "analyzeWrite"),
+    // ),
+    // [`${project}.analyze.reviews.json`]: JSON.stringify(
+    //   snapshots.map((s) => s.event).filter((e) => e.type === "analyzeReview"),
+    // ),
+    // [`${project}.analyze.scenario.json`]: JSON.stringify(
+    //   snapshots.map((s) => s.event).find((e) => e.type === "analyzeScenario")!,
+    // ),
+  });
 };

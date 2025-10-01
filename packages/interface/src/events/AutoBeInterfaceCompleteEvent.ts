@@ -51,6 +51,26 @@ export interface AutoBeInterfaceCompleteEvent
   authorizations: AutoBeInterfaceAuthorization[];
 
   /**
+   * Array of schema type names that are referenced but not yet implemented in
+   * components.schemas.
+   *
+   * When this array is not empty, it indicates critical missing type
+   * definitions that will cause cascading failures throughout the entire
+   * compilation pipeline:
+   *
+   * - Interface compilation will fail due to unresolved type references
+   * - Test code generation will fail due to missing DTO types
+   * - Realize agent cannot implement endpoints without proper type definitions
+   * - TypeScript compilation will ultimately fail with "Cannot find name" errors
+   *
+   * This represents a fundamental incompleteness in the OpenAPI specification
+   * that must be resolved before any subsequent development phases can proceed.
+   * The Interface agent will attempt to automatically generate these missing
+   * schemas through the complement process.
+   */
+  missed: string[];
+
+  /**
    * Iteration number of the requirements analysis this API design was completed
    * for.
    *

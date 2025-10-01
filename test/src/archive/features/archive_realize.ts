@@ -66,18 +66,15 @@ export const archive_realize = async (
       },
     });
   } catch {}
-  if (TestGlobal.archive)
-    await TestHistory.save({
-      [`${project}.realize.json`]: JSON.stringify(agent.getHistories()),
-      [`${project}.realize.snapshots.json`]: JSON.stringify(
-        snapshots.map((s) => ({
-          event: s.event,
-          tokenUsage: new AutoBeTokenUsage(s.tokenUsage)
-            .increment(zero)
-            .toJSON(),
-        })),
-      ),
-    });
+  await TestHistory.save({
+    [`${project}.realize.json`]: JSON.stringify(agent.getHistories()),
+    [`${project}.realize.snapshots.json`]: JSON.stringify(
+      snapshots.map((s) => ({
+        event: s.event,
+        tokenUsage: new AutoBeTokenUsage(s.tokenUsage).increment(zero).toJSON(),
+      })),
+    ),
+  });
   if (result.compiled.type === "failure")
     console.log(result.compiled.diagnostics);
   TestValidator.equals("result", result.compiled.type, "success");

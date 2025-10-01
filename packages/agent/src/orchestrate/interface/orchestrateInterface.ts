@@ -9,6 +9,7 @@ import {
 import { AutoBeInterfacePrerequisite } from "@autobe/interface/src/histories/contents/AutoBeInterfacePrerequisite";
 import {
   AutoBeOpenApiEndpointComparator,
+  missedOpenApiSchemas,
   revertOpenApiAccessor,
 } from "@autobe/utils";
 import { ILlmSchema } from "@samchon/openapi";
@@ -115,36 +116,42 @@ export const orchestrateInterface =
       },
     };
 
-    const complementedSchemas: Record<
-      string,
-      AutoBeOpenApi.IJsonSchemaDescriptive
-    > = await orchestrateInterfaceComplement(ctx, {
-      instruction: props.instruction,
-      document,
-    });
-    Object.assign(document.components.schemas, complementedSchemas);
+    const complement = async () =>
+      Object.assign(
+        document.components.schemas,
+        await orchestrateInterfaceComplement(ctx, {
+          instruction: props.instruction,
+          document,
+        }),
+      );
+    await complement();
 
-    const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
+    Object.assign(
+      document.components.schemas,
       await orchestrateInterfaceSchemasReview(
         ctx,
         operations,
         document.components.schemas,
-      );
-    Object.assign(document.components.schemas, schemas);
+      ),
+    );
+    if (missedOpenApiSchemas(document).length !== 0) await complement();
+
     JsonSchemaFactory.removeUnused({
       operations: document.operations,
       schemas: document.components.schemas,
     });
 
+    // CONNECT PRE-REQUISITES
     const prerequisites: AutoBeInterfacePrerequisite[] =
       await orchestrateInterfacePrerequisites(ctx, document);
-
     document.operations.forEach((op) => {
       op.prerequisites =
         prerequisites.find(
           (p) => p.endpoint.method === op.method && p.endpoint.path === op.path,
         )?.prerequisites ?? [];
     });
+
+    // NORMALIZE ACCESSORS
     revertOpenApiAccessor(document);
 
     // DO COMPILE
@@ -152,6 +159,7 @@ export const orchestrateInterface =
       type: "interfaceComplete",
       id: v7(),
       document,
+      missed: missedOpenApiSchemas(document),
       authorizations,
       created_at: new Date().toISOString(),
       elapsed: new Date().getTime() - start.getTime(),

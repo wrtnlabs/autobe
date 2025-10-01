@@ -8,7 +8,7 @@ import {
   AutoBeUserMessageContent,
   AutoBeUserMessageHistory,
 } from "@autobe/interface";
-import { AutoBeInterfaceGroup } from "@autobe/interface/src/histories/contents/AutoBeInterfaceGroup";
+import { TestValidator } from "@nestia/e2e";
 import typia from "typia";
 
 import { TestFactory } from "../../TestFactory";
@@ -69,43 +69,40 @@ export const archive_interface = async (
       },
     });
   } catch {}
-  if (TestGlobal.archive) {
-    await TestHistory.save({
-      [`${project}.interface.json`]: JSON.stringify(agent.getHistories()),
-      [`${project}.interface.snapshots.json`]: JSON.stringify(
-        snapshots.map((s) => ({
-          event: s.event,
-          tokenUsage: new AutoBeTokenUsage(s.tokenUsage)
-            .increment(zero)
-            .toJSON(),
-        })),
-      ),
-      [`${project}.interface.groups.json`]: JSON.stringify(
-        snapshots
-          .map((s) => s.event)
-          .filter((e) => e.type === "interfaceGroups")
-          .map((e) => e.groups)
-          .flat() satisfies AutoBeInterfaceGroup[],
-      ),
-      [`${project}.interface.endpoints.json`]: JSON.stringify(
-        snapshots
-          .map((s) => s.event)
-          .filter((e) => e.type === "interfaceEndpoints")
-          .map((e) => e.endpoints)
-          .flat(),
-      ),
-      [`${project}.interface.operations.json`]: JSON.stringify(
-        result.document.operations,
-      ),
-      [`${project}.interface.schemas.json`]: JSON.stringify(
-        Object.fromEntries(
-          snapshots
-            .map((s) => s.event)
-            .filter((e) => e.type === "interfaceSchemas")
-            .map((e) => Object.entries(e.schemas))
-            .flat(),
-        ),
-      ),
-    });
-  }
+  await TestHistory.save({
+    [`${project}.interface.json`]: JSON.stringify(agent.getHistories()),
+    [`${project}.interface.snapshots.json`]: JSON.stringify(
+      snapshots.map((s) => ({
+        event: s.event,
+        tokenUsage: new AutoBeTokenUsage(s.tokenUsage).increment(zero).toJSON(),
+      })),
+    ),
+    // [`${project}.interface.groups.json`]: JSON.stringify(
+    //   snapshots
+    //     .map((s) => s.event)
+    //     .filter((e) => e.type === "interfaceGroups")
+    //     .map((e) => e.groups)
+    //     .flat() satisfies AutoBeInterfaceGroup[],
+    // ),
+    // [`${project}.interface.endpoints.json`]: JSON.stringify(
+    //   snapshots
+    //     .map((s) => s.event)
+    //     .filter((e) => e.type === "interfaceEndpoints")
+    //     .map((e) => e.endpoints)
+    //     .flat(),
+    // ),
+    // [`${project}.interface.operations.json`]: JSON.stringify(
+    //   result.document.operations,
+    // ),
+    // [`${project}.interface.schemas.json`]: JSON.stringify(
+    //   Object.fromEntries(
+    //     snapshots
+    //       .map((s) => s.event)
+    //       .filter((e) => e.type === "interfaceSchemas")
+    //       .map((e) => Object.entries(e.schemas))
+    //       .flat(),
+    //   ),
+    // ),
+  });
+  TestValidator.equals("missed", result.missed, []);
 };

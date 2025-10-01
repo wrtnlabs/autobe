@@ -54,10 +54,10 @@ export interface AutoBeInterfaceHistory
    * Instructions for the Interface agent redefined by AI from user's utterance.
    *
    * Contains AI-generated specific guidance for the API design phase,
-   * interpreted and refined from the user's original request. These instructions
-   * direct the Interface agent on how to approach RESTful API design,
-   * which endpoints to expose, operation patterns to follow, and security
-   * requirements to implement based on the business context.
+   * interpreted and refined from the user's original request. These
+   * instructions direct the Interface agent on how to approach RESTful API
+   * design, which endpoints to expose, operation patterns to follow, and
+   * security requirements to implement based on the business context.
    */
   instruction: string;
 
@@ -75,6 +75,26 @@ export interface AutoBeInterfaceHistory
    * schema changes.
    */
   step: number;
+
+  /**
+   * Array of schema type names that are referenced but not yet implemented in
+   * components.schemas.
+   *
+   * When this array is not empty, it indicates critical missing type
+   * definitions that will cause cascading failures throughout the entire
+   * compilation pipeline:
+   *
+   * - Interface compilation will fail due to unresolved type references
+   * - Test code generation will fail due to missing DTO types
+   * - Realize agent cannot implement endpoints without proper type definitions
+   * - TypeScript compilation will ultimately fail with "Cannot find name" errors
+   *
+   * This represents a fundamental incompleteness in the OpenAPI specification
+   * that must be resolved before any subsequent development phases can proceed.
+   * The Interface agent will attempt to automatically generate these missing
+   * schemas through the complement process.
+   */
+  missed: string[];
 
   /**
    * ISO 8601 timestamp indicating when the API design process was completed.

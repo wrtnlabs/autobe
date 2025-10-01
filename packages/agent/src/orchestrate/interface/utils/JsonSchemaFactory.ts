@@ -131,8 +131,8 @@ export namespace JsonSchemaFactory {
 const DEFAULT_SCHEMAS = typia.assertEquals<
   Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>
 >(
-  typia.json.schemas<[IPage.IPagination, IAuthorizationToken]>().components
-    ?.schemas,
+  typia.json.schemas<[IPage.IPagination, IPage.IRequest, IAuthorizationToken]>()
+    .components?.schemas,
 );
 
 namespace IPage {
@@ -153,6 +153,19 @@ namespace IPage {
      * Equal to {@link records} / {@link limit} with ceiling.
      */
     pages: number & tags.Type<"uint32">;
+  }
+
+  /** Page request data */
+  export interface IRequest {
+    /** Page number. */
+    page?: null | (number & tags.Type<"uint32">);
+
+    /**
+     * Limitation of records per a page.
+     *
+     * @default 100
+     */
+    limit?: null | (number & tags.Type<"uint32">);
   }
 }
 

@@ -1,11 +1,7 @@
 import { IAgenticaController } from "@agentica/core";
 import { AutoBeOpenApi } from "@autobe/interface";
-import {
-  ILlmApplication,
-  ILlmSchema,
-  IValidation,
-  OpenApiTypeChecker,
-} from "@samchon/openapi";
+import { missedOpenApiSchemas } from "@autobe/utils";
+import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -27,7 +23,7 @@ export function orchestrateInterfaceComplement<Model extends ILlmSchema.Model>(
     document: AutoBeOpenApi.IDocument;
   },
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
-  return step(ctx, props, 8);
+  return step(ctx, props, false);
 }
 
 async function step<Model extends ILlmSchema.Model>(
@@ -36,10 +32,10 @@ async function step<Model extends ILlmSchema.Model>(
     instruction: string;
     document: AutoBeOpenApi.IDocument;
   },
-  life: number,
+  wasEmpty: boolean,
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
-  const missed: string[] = getMissed(props.document);
-  if (missed.length === 0 || life < 0) return props.document.components.schemas;
+  const missed: string[] = missedOpenApiSchemas(props.document);
+  if (missed.length === 0) return props.document.components.schemas;
 
   const pointer: IPointer<Record<
     string,
@@ -88,6 +84,10 @@ async function step<Model extends ILlmSchema.Model>(
     created_at: new Date().toISOString(),
   });
 
+  const empty: boolean = Object.keys(pointer.value).length === 0;
+  if (empty === true && wasEmpty === true)
+    return props.document.components.schemas;
+
   const newSchemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
     ...pointer.value,
     ...props.document.components.schemas,
@@ -105,30 +105,9 @@ async function step<Model extends ILlmSchema.Model>(
         },
       },
     },
-    life - 1,
+    empty,
   );
 }
-
-const getMissed = (document: AutoBeOpenApi.IDocument): string[] => {
-  const missed: Set<string> = new Set();
-  const check = (name: string) => {
-    if (document.components.schemas[name] === undefined) missed.add(name);
-  };
-  for (const op of document.operations) {
-    if (op.requestBody !== null) check(op.requestBody.typeName);
-    if (op.responseBody !== null) check(op.responseBody.typeName);
-  }
-  for (const value of Object.values(document.components.schemas))
-    OpenApiTypeChecker.visit({
-      components: document.components,
-      schema: value,
-      closure: (next) => {
-        if (OpenApiTypeChecker.isReference(next))
-          check(next.$ref.split("/").pop()!);
-      },
-    });
-  return Array.from(missed);
-};
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;

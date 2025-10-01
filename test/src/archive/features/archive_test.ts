@@ -65,18 +65,15 @@ export let archive_test = async (
       },
     });
   } catch {}
-  if (TestGlobal.archive)
-    await TestHistory.save({
-      [`${project}.test.json`]: JSON.stringify(agent.getHistories()),
-      [`${project}.test.snapshots.json`]: JSON.stringify(
-        snapshots.map((s) => ({
-          event: s.event,
-          tokenUsage: new AutoBeTokenUsage(s.tokenUsage)
-            .increment(zero)
-            .toJSON(),
-        })),
-      ),
-    });
+  await TestHistory.save({
+    [`${project}.test.json`]: JSON.stringify(agent.getHistories()),
+    [`${project}.test.snapshots.json`]: JSON.stringify(
+      snapshots.map((s) => ({
+        event: s.event,
+        tokenUsage: new AutoBeTokenUsage(s.tokenUsage).increment(zero).toJSON(),
+      })),
+    ),
+  });
   if (result.compiled.type === "failure")
     console.log(result.compiled.diagnostics);
   TestValidator.equals("result", result.compiled.type, "success");

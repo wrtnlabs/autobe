@@ -318,6 +318,7 @@ const createDispatch = (props: {
           instruction: interfaceStart?.reason ?? "",
           authorizations: event.authorizations,
           document: event.document,
+          missed: event.missed,
           created_at: interfaceStart?.created_at ?? new Date().toISOString(),
           completed_at: new Date().toISOString(),
           step: event.step,

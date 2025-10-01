@@ -52,7 +52,7 @@ const main = async (): Promise<void> => {
         console.log(StringUtil.trim`
           \`\`\`bash
           code results/${vendor}/${project}/${phase}
-          pnpm run archive --vendor ${vendor} --project ${project} --from ${phase} > archive.${vendor}.${project}.log
+          pnpm run archive --vendor ${vendor.replaceAll("/", "-")} --project ${project} --from ${phase} > archive.${vendor}.${project}.log
           \`\`\`
         `);
         console.log("\n");

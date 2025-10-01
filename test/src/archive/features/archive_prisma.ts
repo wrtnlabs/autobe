@@ -113,16 +113,13 @@ export const archive_prisma = async (
       files: await agent.getFiles(),
     });
   } catch {}
-  if (TestGlobal.archive)
-    await TestHistory.save({
-      [`${project}.prisma.json`]: JSON.stringify(agent.getHistories()),
-      [`${project}.prisma.snapshots.json`]: JSON.stringify(
-        snapshots.map((s) => ({
-          event: s.event,
-          tokenUsage: new AutoBeTokenUsage(s.tokenUsage)
-            .increment(zero)
-            .toJSON(),
-        })),
-      ),
-    });
+  await TestHistory.save({
+    [`${project}.prisma.json`]: JSON.stringify(agent.getHistories()),
+    [`${project}.prisma.snapshots.json`]: JSON.stringify(
+      snapshots.map((s) => ({
+        event: s.event,
+        tokenUsage: new AutoBeTokenUsage(s.tokenUsage).increment(zero).toJSON(),
+      })),
+    ),
+  });
 };
