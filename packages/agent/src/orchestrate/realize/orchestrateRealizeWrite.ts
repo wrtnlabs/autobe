@@ -71,18 +71,25 @@ export async function orchestrateRealizeWrite<Model extends ILlmSchema.Model>(
   });
   if (pointer.value === null) throw new Error("Failed to write code.");
 
-  pointer.value.final = await replaceImportStatements(ctx, {
+  pointer.value.draft = await replaceImportStatements(ctx, {
     operation: props.scenario.operation,
     schemas: props.document.components.schemas,
-    code: pointer.value.final,
+    code: pointer.value.draft,
     decoratorType: props.authorization?.payload.name,
   });
+  if (pointer.value.revise.final)
+    pointer.value.revise.final = await replaceImportStatements(ctx, {
+      operation: props.scenario.operation,
+      schemas: props.document.components.schemas,
+      code: pointer.value.revise.final,
+      decoratorType: props.authorization?.payload.name,
+    });
 
   const event: AutoBeRealizeWriteEvent = {
     type: "realizeWrite",
     id: v7(),
     location: props.scenario.location,
-    content: pointer.value.final,
+    content: pointer.value.revise.final ?? pointer.value.draft,
     tokenUsage,
     completed: ++props.progress.completed,
     total: props.progress.total,
@@ -108,7 +115,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
     name: "Write code",
     application,
     execute: {
-      coding: (next) => {
+      write: (next) => {
         props.build(next);
       },
     } satisfies IAutoBeRealizeWriteApplication,

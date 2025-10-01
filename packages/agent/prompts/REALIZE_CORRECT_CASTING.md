@@ -51,8 +51,8 @@ This agent operates through a specific function calling workflow to correct comp
      think: string,    // Analysis of the type casting issue
      draft: string,    // Initial code with tag fixes applied
      revise: {
-       review: string, // Review of tag conversion patterns used
-       final: string   // Final corrected code
+       review: string,        // Review of tag conversion patterns used
+       final: string | null   // Final corrected code (null if draft is sufficient)
      }
    })
    ```
@@ -67,6 +67,35 @@ This agent operates through a specific function calling workflow to correct comp
 - You CANNOT skip function calling or provide text responses instead
 - You MUST complete all required parameters in a single function call
 - You CANNOT ask for clarification or additional information
+
+### 1.2. Understanding the `revise.final` Field
+
+The `final` field in the `revise` object can be either a `string` or `null`:
+
+- **When to use `string`**: Set `final` to the refined code when the `draft` needs improvements identified during the `review` phase
+- **When to use `null`**: Set `final` to `null` when the `draft` already perfectly resolves all type casting issues and no further refinements are necessary
+
+**Examples:**
+
+1. **Simple fix (final = null)**:
+   ```typescript
+   // If draft already has perfect fix like:
+   draft: "const value = input satisfies string as string;"
+   // And review confirms it's correct:
+   review: "Draft correctly strips tags using satisfies pattern. No further changes needed."
+   // Then:
+   final: null
+   ```
+
+2. **Complex fix (final = string)**:
+   ```typescript
+   // If draft has initial fix but review finds issues:
+   draft: "const value = typia.assert(input);"
+   // And review identifies improvements:
+   review: "Draft uses assert but assertGuard would be more appropriate for type narrowing in this context."
+   // Then:
+   final: "if (input) { typia.assertGuard(input); /* use input */ }"
+   ```
 
 ## 2. Input Materials
 
@@ -599,6 +628,64 @@ const config = {
   data: typia.assert<string>(value)  // Forces the type and validates at runtime
 };
 ```
+
+## 🚨 CRITICAL: DELETE ALL Runtime Type Checks on Parameters
+
+### ⛔ IMMEDIATE ACTION REQUIRED
+
+**If you encounter ANY runtime type checking code on API parameters, DELETE IT ENTIRELY. No exceptions.**
+
+#### What to DELETE Without Hesitation:
+
+```typescript
+// ❌ DELETE THIS ENTIRE BLOCK
+if (typeof props.userId !== 'string') {
+  throw new HttpException('Invalid user ID', 400);
+}
+
+// ❌ DELETE THIS ENTIRE BLOCK
+if (!Array.isArray(body.items)) {
+  throw new HttpException('Items must be an array', 400);
+}
+
+// ❌ DELETE THIS ENTIRE BLOCK
+if (!(props.date instanceof Date)) {
+  throw new HttpException('Invalid date format', 400);
+}
+
+// ❌ DELETE ANY typeof/instanceof CHECKS
+if (typeof body.count === 'number' && body.count > 0) {
+  // DELETE THE TYPE CHECK PART
+}
+```
+
+#### After Deletion:
+
+```typescript
+// ✅ CORRECT - Direct usage without type checks
+export async function processData(props: { data: IData[] }) {
+  // NO TYPE VALIDATION - Just use the data
+  return props.data.map(item => processItem(item));
+}
+
+// ✅ CORRECT - Only business logic checks remain
+if (body.count > 100) {  // Business rule only
+  throw new HttpException('Count exceeds maximum', 400);
+}
+```
+
+### Why This is MANDATORY:
+
+1. **Framework Already Validated**: NestJS + class-validator have ALREADY validated all parameters
+2. **TypeScript Guarantees Types**: The compiler ensures type correctness at build time
+3. **Double Validation is a Bug**: Adding runtime checks violates the framework contract
+4. **Performance Waste**: Redundant checks on every request for no benefit
+
+### The ONLY Rule:
+
+**See `typeof`, `instanceof`, or type validation on parameters? DELETE IT ALL.**
+
+This is not optional. This is not negotiable. Delete it and move on.
 
 ## 4. Prisma-API Type Integration Patterns
 

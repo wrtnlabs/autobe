@@ -1,30 +1,3 @@
-/**
- * Function calling interface for fixing TypeScript type casting and assignment
- * errors.
- *
- * This interface is used by the CommonCorrectCasting agent to fix TypeScript
- * compilation errors related to type casting and type assignment
- * incompatibilities in any TypeScript code, not limited to e2e tests.
- *
- * The agent handles various type casting issues including:
- *
- * - **Typia tag type incompatibilities**: Format tag mismatches (e.g.,
- *   Format<"uuid"> vs Pattern<...>), type constraint incompatibilities (e.g.,
- *   Type<"int32"> vs Type<"int32"> & Minimum<0>), nullable type conversions
- *   with tags
- * - **Date to string conversions**: Date to string, Date to string &
- *   Format<"date-time">, nullable Date handling
- * - **Nullable and undefined type assignments**: Exhaustive type narrowing for T
- *   | null | undefined patterns
- * - **String to literal type assignments**: Converting general string to literal
- *   union types (e.g., "pending" | "approved" | "rejected")
- * - **Optional chaining with union types**: Handling boolean | undefined results
- *   from array methods like includes()
- * - **Type narrowing "no overlap" errors**: Removing redundant comparisons after
- *   TypeScript's control flow analysis
- *
- * @author Samchon
- */
 export interface IAutoBeCommonCorrectCastingApplication {
   /**
    * Rewrite function to fix type casting and assignment errors.
@@ -64,10 +37,6 @@ export interface IAutoBeCommonCorrectCastingApplication {
   reject(): void;
 }
 export namespace IAutoBeCommonCorrectCastingApplication {
-  /**
-   * Properties for the rewrite function containing the type casting error
-   * analysis and correction workflow.
-   */
   export interface IProps {
     /**
      * Initial analysis of the type casting or assignment error.
@@ -105,7 +74,6 @@ export namespace IAutoBeCommonCorrectCastingApplication {
     revise: IReviseProps;
   }
 
-  /** Properties for the revision phase of type casting corrections. */
   export interface IReviseProps {
     /**
      * Review of the type casting correction patterns applied.
@@ -131,7 +99,7 @@ export namespace IAutoBeCommonCorrectCastingApplication {
      * found during review, this value can be null, indicating no further
      * refinements are necessary.
      *
-     * A null value signifies the draft corrections were already optimal and
+     * A `null` value signifies the draft corrections were already optimal and
      * require no additional modifications.
      */
     final: string | null;
