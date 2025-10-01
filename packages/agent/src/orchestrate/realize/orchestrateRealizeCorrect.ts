@@ -43,7 +43,9 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
   const diagnostics = event.result.diagnostics;
 
   if (
-    event.result.diagnostics.every((d) => !d.file?.startsWith("src/providers"))
+    event.result.diagnostics.every(
+      (d) => !d.file?.startsWith("src/providers"),
+    ) === true
   ) {
     // No diagnostics related to provider functions, stop correcting
     return functions;
