@@ -278,7 +278,7 @@ function createController<Model extends ILlmSchema.Model>(props: {
     name: "Write code",
     application,
     execute: {
-      review: (next) => {
+      correct: (next) => {
         props.build(next);
       },
     } satisfies IAutoBeRealizeCorrectApplication,
