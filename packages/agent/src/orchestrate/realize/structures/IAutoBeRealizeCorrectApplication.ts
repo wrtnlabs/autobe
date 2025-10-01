@@ -7,7 +7,7 @@ export interface IAutoBeRealizeCorrectApplication {
    *
    * @param props Three-phase correction properties
    */
-  review(props: IAutoBeRealizeCorrectApplication.IProps): void;
+  correct(props: IAutoBeRealizeCorrectApplication.IProps): void;
 }
 
 export namespace IAutoBeRealizeCorrectApplication {
