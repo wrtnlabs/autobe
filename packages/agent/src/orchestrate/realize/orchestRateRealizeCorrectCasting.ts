@@ -44,7 +44,6 @@ export const orchestrateRealizeCorrectCasting = async <
       functions,
     },
   );
-
   return predicate(
     ctx,
     scenarios,
@@ -69,7 +68,6 @@ const predicate = async <Model extends ILlmSchema.Model>(
 ): Promise<AutoBeRealizeFunction[]> => {
   if (event.result.type === "failure") {
     ctx.dispatch(event);
-
     return await correct(
       ctx,
       scenarios,
@@ -177,25 +175,25 @@ const correct = async <Model extends ILlmSchema.Model>(
         `,
       });
       ++progress.completed;
+
       if (pointer.value === null)
         return { result: "exception" as const, func: func };
       else if (pointer.value === false)
         return { result: "ignore" as const, func: func };
 
-      if (pointer.value.revise.final === null) {
-        // No revisions made, return original function
-        return {
-          result: "success" as const,
-          func: func,
-        };
-      }
-
-      pointer.value.revise.final = await replaceImportStatements(ctx, {
+      pointer.value.draft = await replaceImportStatements(ctx, {
         schemas: ctx.state().interface!.document.components.schemas,
         operation: operation,
-        code: pointer.value.revise.final,
+        code: pointer.value.draft,
         decoratorType: authorization?.payload.name,
       });
+      if (pointer.value.revise.final)
+        pointer.value.revise.final = await replaceImportStatements(ctx, {
+          schemas: ctx.state().interface!.document.components.schemas,
+          operation: operation,
+          code: pointer.value.revise.final,
+          decoratorType: authorization?.payload.name,
+        });
 
       ctx.dispatch({
         id: v7(),
@@ -208,7 +206,6 @@ const correct = async <Model extends ILlmSchema.Model>(
         completed: progress.completed,
         total: progress.total,
       });
-
       return {
         result: "success" as const,
         func: {

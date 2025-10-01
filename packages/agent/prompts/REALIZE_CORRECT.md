@@ -1295,7 +1295,7 @@ throw new HttpException("Bad Request", 400);  // Direct number only
 
 | Error Code | Common Cause | First Try | If Fails |
 |------------|-------------|-----------|----------|
-| **TYPE CHECK** | Runtime type validation | **DELETE ALL TYPE CHECKING CODE** | No alternative - just delete |
+| **TYPE CHECK** | Runtime type validation | **DO NOT TRY TO FIX THE COMPILE ERROR - DELETE ALL TYPE CHECKING CODE INSTEAD** | No alternative - just delete the validation code |
 | 2353 | Field doesn't exist in Prisma type | **DELETE the field** - easiest fix! | Check if different field name |
 | 2561 | Wrong field with suggestion | **USE THE SUGGESTED NAME** | TypeScript tells you! |
 | 2551 | Property doesn't exist on result | Check if relation included | Use separate query |
@@ -1349,9 +1349,11 @@ where: {
 
 ## 🚨 ABSOLUTE PROHIBITION: Runtime Type Checking on Parameters
 
-### ⛔ IMMEDIATE DELETION REQUIRED
+### ⛔ IMMEDIATE DELETION REQUIRED - DO NOT ATTEMPT TO FIX COMPILE ERRORS
 
-**If you find ANY runtime type checking code on API parameters, DELETE IT COMPLETELY. This is non-negotiable.**
+**If you find ANY runtime type checking code on API parameters that causes compile errors, DO NOT TRY TO FIX THE COMPILE ERROR. DELETE THE TYPE CHECKING CODE COMPLETELY INSTEAD. This is non-negotiable.**
+
+**CRITICAL: The compile error is NOT the problem - the type checking code itself is the problem. Don't fix it, DELETE IT.**
 
 #### What to Delete on Sight:
 

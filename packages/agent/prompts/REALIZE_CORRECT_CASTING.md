@@ -570,11 +570,11 @@ const role: "superadmin" | "administrator" | "support" =
   typia.assert<"superadmin" | "administrator" | "support">(value);
 
 // More examples with different literal types:
-const status: string = getStatus();
+const status: string | null = getStatus();
 const validStatus: "pending" | "approved" | "rejected" = 
   typia.assert<"pending" | "approved" | "rejected">(status);
 
-const method: string = getMethod();
+const method: string | null | undefined = getMethod();
 const httpMethod: "GET" | "POST" | "PUT" | "DELETE" = 
   typia.assert<"GET" | "POST" | "PUT" | "DELETE">(method);
 ```

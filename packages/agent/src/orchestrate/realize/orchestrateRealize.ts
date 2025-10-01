@@ -79,12 +79,11 @@ export const orchestrateRealize =
             progress: writeProgress,
             promptCacheKey,
           };
-          const code: AutoBeRealizeWriteEvent | null =
+          const event: AutoBeRealizeWriteEvent | null =
             await orchestrateRealizeWrite(ctx, props).catch(() => {
               return orchestrateRealizeWrite(ctx, props).catch(() => null);
             });
-
-          return code;
+          return event;
         }),
       );
 

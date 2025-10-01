@@ -961,12 +961,12 @@ const status: string = getStatus();
 const validStatus: "pending" | "approved" | "rejected" = 
   typia.assert<"pending" | "approved" | "rejected">(status);
 
-const method: string = getMethod();
+const method: string | null = getMethod();
 const httpMethod: "GET" | "POST" | "PUT" | "DELETE" = 
   typia.assert<"GET" | "POST" | "PUT" | "DELETE">(method);
 
 // With API responses
-const userType: string = response.data.type;
+const userType: string | null | undefined = response.data.type;
 const validUserType: "customer" | "vendor" | "admin" = 
   typia.assert<"customer" | "vendor" | "admin">(userType);
 ```
