@@ -43,8 +43,15 @@ const main = async (): Promise<void> => {
         );
         const last: AutoBeHistory | undefined = histories.at(-1);
         if (last === undefined) continue;
-        else if (last.type !== "test" && last.type !== "realize") continue;
-        else if (last.compiled.type !== "failure") continue;
+        else if (
+          !(
+            (last.type === "prisma" && last.compiled.type === "failure") ||
+            (last.type === "interface" && last.missed.length !== 0) ||
+            (last.type === "test" && last.compiled.type === "failure") ||
+            (last.type === "realize" && last.compiled.type === "failure")
+          )
+        )
+          continue;
 
         console.log("=======================================================");
         console.log(vendor, project, phase);
@@ -56,21 +63,27 @@ const main = async (): Promise<void> => {
           \`\`\`
         `);
         console.log("\n");
-        console.log(last.compiled.diagnostics);
-        console.log("\n");
-        console.log(
-          Array.from(
-            new Set(
-              last.compiled.diagnostics
-                .map((d) => d.file)
-                .filter((f) => f !== null),
+        if (last.type === "prisma") {
+          if (last.compiled.type === "failure")
+            console.log(last.compiled.reason);
+        } else if (last.type === "interface") console.log(last.missed);
+        else if (last.compiled.type === "failure") {
+          console.log(last.compiled.diagnostics);
+          console.log("\n");
+          console.log(
+            Array.from(
+              new Set(
+                last.compiled.diagnostics
+                  .map((d) => d.file)
+                  .filter((f) => f !== null),
+              ),
+            ).map((f) =>
+              path.resolve(
+                `${TestGlobal.ROOT}/results/${vendor}/${project}/${phase}/${f}`,
+              ),
             ),
-          ).map((f) =>
-            path.resolve(
-              `${TestGlobal.ROOT}/results/${vendor}/${project}/${phase}/${f}`,
-            ),
-          ),
-        );
+          );
+        }
         console.log("-------------------------------------------------------");
         console.log("\n");
 

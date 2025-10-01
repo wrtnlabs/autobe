@@ -609,7 +609,7 @@ All text fields (plan, prismaSchemas, review) should be:
     - Verify database compatibility (PostgreSQL AND SQLite) - NEVER use PostgreSQL-specific features like `mode: "insensitive"`
   
   - **STEP 2 - API SPEC VS SCHEMA VERIFICATION**:
-    - Compare API comment/JSDoc requirements with actual Prisma schema
+    - Compare API requirements with actual Prisma schema
     - Identify any contradictions (e.g., API requires soft delete but schema lacks deleted_at)
     - If contradiction found, mark as "CONTRADICTION DETECTED" and plan to use typia.random<T>()
   
@@ -645,7 +645,7 @@ All text fields (plan, prismaSchemas, review) should be:
   - In such cases, only return detailed comment in `final` explaining why logic cannot be implemented
   
   **🔥 Error Handling Plan (if errors expected):**
-  - Document error messages and TypeScript error codes
+  - Identify error messages and TypeScript error codes
   - Analyze root cause (type mismatch, missing field, nullability)
   - Define concrete resolution steps (e.g., using `?? undefined` for nullable fields, proper relation handling)
 
@@ -752,29 +752,8 @@ throw new HttpException("Bad Request", 400);  // Direct number only
   - Do NOT use `Object.prototype.hasOwnProperty.call()`
   - Do NOT escape newlines/quotes in implementation string
   
-  **🚨 MANDATORY JSDoc Requirements**:
-  - Every function MUST include comprehensive JSDoc documentation
-  - The JSDoc MUST clearly describe the operation according to the OpenAPI specification
-  - Include @param descriptions for the props parameter (if it exists)
-  - Include @returns description that matches the operation's purpose
-  - Include @throws for all possible error conditions
-  
-  Example format:
+  **Function Structure**:
   ```typescript
-  /**
-   * [Operation title from OpenAPI spec]
-   * 
-   * [First paragraph: Main operation description]
-   * [Second paragraph: Additional context about business logic]
-   * [Third paragraph: Authorization and permission requirements if applicable]
-   * 
-   * @param props - Object containing all necessary parameters for the operation
-   * @param props.[authRole] - The authenticated [role] making the request (only if authentication exists)
-   * @param props.[paramName] - [Description of each path/query parameter] (only if parameters exist)
-   * @param props.body - Request body containing [description] (only if body exists)
-   * @returns [Description of what is returned]
-   * @throws {Error} [Description of each error condition]
-   */
   export async function [function_name](
     props: {
       [authRole]: [AuthPayloadType];
@@ -845,16 +824,23 @@ Functions take parameters based on what is actually needed:
 - **NO parameters**: If no authentication, URL parameters, or body is required
 - **Single `props` parameter**: If any authentication, parameters, or body is needed
 
-**MUST include comprehensive JSDoc documentation**.
+**Must follow the standard function structure**.
 
-### 📝 JSDoc Documentation Requirements
+### 📝 Comment Guidelines
 
-**Every function MUST include JSDoc that clearly describes:**
-1. **Function purpose**: What the operation does according to the OpenAPI specification
-2. **Authorization requirements**: Who can perform this operation
-3. **Parameter descriptions**: What each props field represents
-4. **Return value**: What the function returns
-5. **Throws documentation**: What errors can be thrown and when
+**Comments should be used ONLY for exceptional cases:**
+1. **Complex logic**: When the implementation logic is particularly complex and needs explanation
+2. **Schema contradictions**: When API spec and Prisma schema don't match
+3. **typia.random() usage**: When returning mock data due to implementation impossibility
+4. **Unavoidable workarounds**: When forced to use a non-ideal solution
+
+**DO NOT write comments for:**
+- Function purpose or descriptions
+- Parameter explanations
+- Return value descriptions
+- Error cases
+- Normal business logic
+- Standard CRUD operations
 
 ### 🔧 Props Parameter Structure
 
@@ -882,20 +868,6 @@ type Props = {
 
 **Example with authentication and all fields:**
 ```typescript
-/**
- * Creates a new discussion board post.
- * 
- * This endpoint allows authenticated users to create posts in discussion boards
- * where they have posting privileges.
- * 
- * @param props - Request properties
- * @param props.user - The authenticated user making the request
- * @param props.boardId - UUID of the board to create the post in
- * @param props.body - The post creation data including title and content
- * @returns The newly created post with all fields populated
- * @throws {Error} When user lacks posting privileges in the board
- * @throws {Error} When the board doesn't exist or is archived
- */
 export async function post__boards_$boardId_posts(
   props: {
     user: UserPayload;
@@ -910,17 +882,6 @@ export async function post__boards_$boardId_posts(
 
 **Without authentication (public endpoint):**
 ```typescript
-/**
- * Retrieves public board information.
- * 
- * This endpoint returns publicly accessible board details without
- * requiring authentication.
- * 
- * @param props - Request properties
- * @param props.boardId - UUID of the board to retrieve
- * @returns The board information
- * @throws {Error} When board doesn't exist or is private
- */
 export async function get__public_boards_$boardId(
   props: {
     boardId: string & tags.Format<'uuid'>;
@@ -937,15 +898,6 @@ export async function get__public_boards_$boardId(
 // Import the specific type from decoratorEvent
 import { AdminPayload } from '../decorators/payload/AdminPayload';
 
-/**
- * Deletes a user account (admin only).
- * 
- * @param props - Request properties
- * @param props.admin - Admin user performing the deletion
- * @param props.id - UUID of the user to delete
- * @returns void
- * @throws {Error} When attempting to delete super admin without proper privileges
- */
 export async function delete__users_$id(
   props: {
     admin: AdminPayload;
@@ -1819,11 +1771,11 @@ return typia.random<ReturnType>();
 
 ## 🚨 Handling API Spec vs Prisma Schema Contradictions
 
-When the API specification (from OpenAPI/JSDoc comments) contradicts the actual Prisma schema, you MUST:
+When the API specification (from OpenAPI) contradicts the actual Prisma schema, you MUST:
 
 1. **Identify the contradiction** in your plan phase
-2. **Document the conflict** clearly 
-3. **Implement a placeholder** instead of attempting an impossible implementation
+2. **Add a comment explaining the conflict** 
+3. **Return typia.random()** instead of attempting an impossible implementation
 
 ### Common Contradiction Patterns:
 
@@ -1874,13 +1826,13 @@ export async function delete__discussionBoard_administrators_$id(
 
 3. **Missing Fields in Schema**
    - Interface requires field that doesn't exist in database
-   - USE: `typia.random<T>()` with documentation
-   - Document the exact field mismatch
+   - USE: `typia.random<T>()` with comment
+   - Comment should explain the exact field mismatch
 
 4. **Type Structure Incompatible**
    - Schema has fundamentally different type than interface
-   - USE: `typia.random<T>()` with documentation
-   - Explain why types cannot be converted
+   - USE: `typia.random<T>()` with comment
+   - Comment should explain why types cannot be converted
 
 #### Implementation Guidelines
 
@@ -1909,7 +1861,7 @@ return {
 **When to use typia.random:**
 ```typescript
 // Field doesn't exist in schema at all
-// This is UNRECOVERABLE - document and mock
+// This is UNRECOVERABLE - add comment and return mock
 /**
  * SCHEMA-INTERFACE CONTRADICTION:
  * Required by interface: username (string)
@@ -1922,7 +1874,7 @@ return typia.random<IUserResponse>();
 #### Final Rules:
 - **NEVER attempt to use fields that don't exist** in the Prisma schema
 - **PREFER default values over mock data** when possible
-- **ALWAYS document contradictions** in comments
+- **ALWAYS add comments for contradictions** explaining the issue
 - **CLEARLY state what needs to change** (schema or API spec) to resolve the issue
 
 ---
@@ -2302,7 +2254,7 @@ Your mission is to write **high-quality, production-grade TypeScript code** that
    * Use `undefined` only when necessary, and guard all optional fields properly.
    * Prefer `??`, `?.`, and narrow types using `if` checks or type predicates.
 
-6. **Write Declarative, Self-Documenting Code**
+6. **Write Clear, Readable Code**
    * Prioritize readability and clarity over cleverness.
    * Favor pure functions and explicit return types.
 
@@ -4319,10 +4271,11 @@ Before submitting your implementation, verify ALL of the following:
    - [ ] Using MyGlobal for all global access
    - [ ] Direct return without `satisfies` on typed functions
 
-5. **📄 Documentation**
-   - [ ] Added JSDoc comment with description and param details
-   - [ ] Marked deprecated functions appropriately
-   - [ ] Clear @throws documentation for error cases
+5. **📄 Comments (ONLY for exceptions)**
+   - [ ] Comments added ONLY for complex logic that needs explanation
+   - [ ] Schema contradictions documented with comment
+   - [ ] typia.random() usage explained with comment
+   - [ ] NO comments for normal CRUD operations or standard logic
 
 6. **🔐 Security & Authorization**
    - [ ] Implemented authorization when user/admin parameter present
@@ -4355,7 +4308,7 @@ Before submitting your implementation, verify ALL of the following:
 If you cannot check any item above:
 1. **DO NOT** submit the implementation
 2. **REVISE** your code to meet all requirements
-3. **DOCUMENT** any unavoidable issues in comments
+3. **ADD COMMENTS** only for unavoidable issues or contradictions
 
 Remember: The goal is 100% working, type-safe code that follows all conventions and best practices.
 
