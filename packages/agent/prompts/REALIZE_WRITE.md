@@ -107,6 +107,8 @@ result: dbValue === null
    - All parameters passed to API provider functions have ALREADY been validated by the NestJS controller layer
    - The controller uses class-validator decorators and transformation pipes
    - By the time parameters reach your function, they are GUARANTEED to match their declared types
+   - **JSON Schema validation is PERFECT and COMPLETE** - it handles ALL constraints including minLength, maxLength, pattern, format, etc.
+   - **ABSOLUTE TRUST**: Never doubt that JSON Schema has already validated everything perfectly
 
 2. **TypeScript Type System is Sufficient**
    - The TypeScript compiler ensures type safety at compile time
@@ -117,11 +119,14 @@ result: dbValue === null
    - NestJS + class-validator handle ALL input validation
    - Your provider functions should trust the framework's validation pipeline
    - Adding duplicate validation creates maintenance burden and potential inconsistencies
+   - **JSON Schema is INFALLIBLE** - if a parameter passes through, it means ALL constraints are satisfied
+   - **NEVER second-guess JSON Schema** - it has already checked length, format, pattern, and every other constraint
 
 4. **Business Logic vs Type Validation**
    - Business logic validation (e.g., checking if a value exceeds a limit) is ALLOWED and EXPECTED
    - Type validation (e.g., checking if a string is actually a string) is FORBIDDEN
    - The distinction: If TypeScript already knows the type, don't check it at runtime
+   - **CRITICAL CLARIFICATION**: String.length checks, String.trim().length checks, and pattern validation are NOT business logic - they are TYPE/FORMAT validation that JSON Schema has ALREADY handled perfectly
 
 #### ❌ ABSOLUTELY FORBIDDEN Patterns:
 
@@ -159,6 +164,17 @@ if (typeof body.title !== 'string' || body.title.trim() === '') {
   throw new Error('Title must be a non-empty string');
 }
 
+// ❌ FORBIDDEN - Using trim() to bypass validation
+if (body.title.trim().length === 0) {
+  throw new HttpException("Title cannot be empty or whitespace.", 400);
+}
+
+// ❌ FORBIDDEN - Any form of trim() followed by length check
+const trimmed = body.title.trim();
+if (trimmed.length < 5 || trimmed.length > 100) {
+  throw new HttpException("Title must be between 5 and 100 characters", 400);
+}
+
 // ❌ FORBIDDEN - Validating that a typed parameter matches its type
 if (body.price && typeof body.price !== 'number') {
   throw new Error('Price must be a number');
@@ -180,14 +196,30 @@ export async function postTodoListAdminTodos(props: {
   if (/[\r\n]/.test(title)) {
     throw new HttpException("Title must not contain line breaks.", 400);
   }
+
+  // ❌ Even though whitespace trimming is a common practice,
+  //     this is also a distrust of the type system AND JSON Schema
+  //     just believe the framework, and never doubt it!
+  // ❌ ABSOLUTELY FORBIDDEN - trim() does NOT make validation acceptable
+  const trimmed = title.trim();
+  if (trimmed.length === 0)
+    throw new HttpException("Title cannot be empty or whitespace-only.", 400);
+  
+  // ❌ ALSO FORBIDDEN - checking trimmed length against any constraint
+  if (title.trim().length < 3 || title.trim().length > 100) {
+    throw new HttpException("Title must be between 3 and 100 characters", 400);
+  }
+
   // ...
 }
 ```
 
-**CRITICAL**: The above example shows THREE violations:
+**CRITICAL**: The above example shows MULTIPLE violations:
 1. **Minimum length validation** (`title.length === 0`) - JSON Schema can enforce `minLength`
 2. **Maximum length validation** (`title.length > 100`) - JSON Schema can enforce `maxLength`  
 3. **Pattern validation** (checking for newlines) - JSON Schema can enforce `pattern`
+4. **Trim-based validation** (`title.trim().length`) - JSON Schema has ALREADY handled whitespace constraints
+5. **Any form of String.trim() followed by validation** - This is attempting to bypass JSON Schema's perfect validation
 
 These constraints are ALREADY validated by NestJS using JSON Schema decorators in the DTO. The controller has already ensured:
 - The title meets minimum/maximum length requirements
@@ -342,17 +374,39 @@ When your code will be transmitted through JSON (function calling):
 
 The presence of newline validation typically indicates you're violating the **ABSOLUTE PROHIBITION** against runtime type checking on API parameters. As stated earlier, all parameters passed to API provider functions have ALREADY been validated by the NestJS controller layer.
 
-**Common Violation Pattern:**
+**Common Violation Patterns:**
 ```typescript
 // ❌ FORBIDDEN: This indicates distrust of the type system
 if (title.includes('\n')) {
   throw new HttpException("Title must not contain line breaks.", 400);
 }
+
+// ❌ FORBIDDEN: Using trim() to bypass JSON Schema validation
+if (title.trim().length === 0) {
+  throw new HttpException("Title cannot be empty or whitespace.", 400);
+}
+
+// ❌ FORBIDDEN: Checking trimmed value length
+const trimmedTitle = title.trim();
+if (trimmedTitle.length < 10 || trimmedTitle.length > 200) {
+  throw new HttpException("Title must be between 10 and 200 characters", 400);
+}
+
+// ❌ FORBIDDEN: ANY String manipulation followed by validation
+if (!title.trim() || title.trim().length === 0) {
+  throw new HttpException("Invalid title", 400);
+}
 ```
 
 This type of check suggests you're doubting whether the `title` parameter conforms to its declared type, which violates our core principle of trusting the framework's validation pipeline.
 
-**MANDATORY ACTION**: If you encounter such validation code, you MUST delete it entirely. Under no circumstances are you permitted to validate the type or content constraints of input parameters. The correct approach is complete removal of any code that doubts parameter validity.
+**MANDATORY ACTION**: If you encounter such validation code, you MUST delete it entirely. This includes:
+- ANY use of `String.trim()` followed by validation
+- ANY length checks on strings (trimmed or untrimmed)
+- ANY pattern matching or character validation
+- ANY attempt to "clean" or "normalize" input before validation
+
+Under no circumstances are you permitted to validate the type or content constraints of input parameters. The correct approach is complete removal of any code that doubts parameter validity. JSON Schema has ALREADY done this perfectly.
 
 #### 🎯 Rule of Thumb
 
@@ -4474,7 +4528,14 @@ Before submitting your implementation, verify ALL of the following:
    - [ ] No `typeof` checks on parameters
    - [ ] No `instanceof` checks on parameters  
    - [ ] No manual validation of parameter types
+   - [ ] No newline character (`\n`) checks in strings
+   - [ ] No String.trim() followed by any validation
+   - [ ] No String.length checks (including after trim())
+   - [ ] No empty string validation (e.g., `str === ""` or `!str`)
+   - [ ] No pattern/regex validation on parameters
+   - [ ] No whitespace-only checks
    - [ ] Trust that all parameters match their declared types
+   - [ ] Trust that JSON Schema has validated ALL constraints perfectly
 
 2. **📝 Prisma Operations**
    - [ ] ALL Prisma operations use inline parameters (no intermediate variables)

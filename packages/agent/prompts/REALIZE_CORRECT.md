@@ -8,6 +8,54 @@ IMPORTANT: You must respond with a function call to the `review` method, never w
 
 Fix the compilation error in the provided code - **use the minimal effort needed** for simple errors, **use aggressive refactoring** for complex ones.
 
+## 🚫 ABSOLUTE RULES: Parameter Validation Must Be DELETED
+
+### ❌ NEVER PERFORM RUNTIME TYPE VALIDATION ON PARAMETERS
+
+**This is an ABSOLUTE PROHIBITION that must be followed without exception.**
+
+1. **Already Validated at Controller Level**
+   - All parameters have ALREADY been validated by NestJS controller layer
+   - **JSON Schema validation is PERFECT and COMPLETE** - it handles ALL constraints
+   - **ABSOLUTE TRUST**: Never doubt that JSON Schema has already validated everything perfectly
+
+2. **JSON Schema is INFALLIBLE**
+   - If a parameter passes through, it means ALL constraints are satisfied
+   - **NEVER second-guess JSON Schema** - it has checked length, format, pattern, and every other constraint
+
+### 🚫 ABSOLUTELY FORBIDDEN - DELETE THESE IMMEDIATELY:
+
+```typescript
+// ❌ DELETE: All typeof/instanceof checks
+if (typeof body.title !== 'string') { /* DELETE THIS */ }
+if (!(props.date instanceof Date)) { /* DELETE THIS */ }
+
+// ❌ DELETE: String.length validation
+if (body.title.length === 0) { /* DELETE THIS */ }
+if (body.title.length > 100) { /* DELETE THIS */ }
+
+// ❌ DELETE: String.trim() followed by ANY validation
+if (body.title.trim().length === 0) { /* DELETE THIS */ }
+const trimmed = body.title.trim();
+if (trimmed.length < 10) { /* DELETE THIS */ }
+if (!body.name.trim()) { /* DELETE THIS */ }
+
+// ❌ DELETE: Newline character checks
+if (title.includes('\n')) { /* DELETE THIS */ }
+if (/[\r\n]/.test(title)) { /* DELETE THIS */ }
+
+// ❌ DELETE: ANY attempt to "clean" input before validation
+const cleaned = title.trim().toLowerCase();
+if (cleaned.length === 0) { /* DELETE THIS */ }
+```
+
+### 🎯 CORRECTION ACTION: Just DELETE the validation code
+
+When you see parameter validation:
+1. **DELETE the entire validation block**
+2. **DO NOT replace with anything**
+3. **Trust that JSON Schema has already done this perfectly**
+
 ### 📝 Comment Guidelines - KEEP IT MINIMAL
 
 **IMPORTANT**: Keep comments concise and to the point:
@@ -417,7 +465,37 @@ If you see the same type assignment error pattern:
 
 ## 🚨🚨🚨 MOST COMMON ERRORS IN GENERATED CODE 🚨🚨🚨
 
-### 1. NEVER USE hasOwnProperty - MOST VIOLATED RULE
+### 1. String.trim() Validation Pattern - MUST DELETE
+
+**AI FREQUENTLY VIOLATES THIS RULE - DELETE ALL OCCURRENCES:**
+
+```typescript
+// ❌ FORBIDDEN - Using trim() to bypass validation
+const title = body.title.trim();
+if (title.length === 0) {
+  throw new HttpException("Title cannot be empty", 400);
+}
+
+// ❌ FORBIDDEN - trim() in any validation context
+if (!body.description.trim()) {
+  throw new HttpException("Description required", 400);
+}
+
+// ❌ FORBIDDEN - Complex trim() validation
+if (body.name.trim().length < 3 || body.name.trim().length > 50) {
+  throw new HttpException("Invalid name length", 400);
+}
+
+// ❌ FORBIDDEN - Using trimmed variable for checks
+const trimmedValue = input.trim();
+if (trimmedValue === "" || trimmedValue.length === 0) {
+  // DELETE ENTIRE BLOCK
+}
+```
+
+**🎯 CORRECT ACTION**: DELETE the entire validation. JSON Schema has ALREADY validated ALL constraints including whitespace handling.
+
+### 2. NEVER USE hasOwnProperty - MOST VIOLATED RULE
 
 **ABSOLUTELY FORBIDDEN - AI KEEPS VIOLATING THIS:**
 ```typescript
@@ -1712,8 +1790,12 @@ Before submitting your corrected code, verify ALL of the following:
    - [ ] **DELETED all `typeof` checks on parameters**
    - [ ] **DELETED all `instanceof` checks on parameters**
    - [ ] **DELETED all manual type validation code**
+   - [ ] **DELETED all newline character (`\n`) checks in strings**
+   - [ ] **DELETED all String.trim() followed by validation**
+   - [ ] **DELETED all length checks after trim()**
    - [ ] **NO type checking logic remains in the code**
    - [ ] Remember: Parameters are ALREADY validated at controller level
+   - [ ] Remember: JSON Schema validation is PERFECT and COMPLETE
 
 2. **🛑 Error Handling**
    - [ ] Using `HttpException` with numeric status codes only
