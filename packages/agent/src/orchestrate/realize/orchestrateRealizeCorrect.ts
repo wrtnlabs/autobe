@@ -219,6 +219,7 @@ async function step<Model extends ILlmSchema.Model>(
       When modifying, modify the entire code, but not the import statement.
 
       Below is template code you wrote:
+      
       ${getRealizeWriteCodeTemplate({
         scenario: props.scenario,
         schemas: ctx.state().interface!.document.components.schemas,

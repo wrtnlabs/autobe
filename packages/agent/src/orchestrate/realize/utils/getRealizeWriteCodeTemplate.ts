@@ -20,9 +20,9 @@ import { getRealizeWriteImportStatements } from "./getRealizeWriteImportStatemen
  *   import { MyGlobal } from "../MyGlobal";
  *   // ... other imports
  *
- *   async function post__users_create(
+ *   async function post__users_create(props: {
  *     body: IUserCreateRequest
- *   ): Promise<IUserResponse> {
+ *   }): Promise<IUserResponse> {
  *     ...
  *   }
  *   ```;
@@ -50,12 +50,7 @@ export function getRealizeWriteCodeTemplate(props: {
 
   // Add path parameters (e.g., id, postId, etc.)
   const pathParameters = props.operation.parameters.map((param) => {
-    const paramType = param.schema.type;
-    const paramFormat =
-      "format" in param.schema
-        ? ` & tags.Format<'${param.schema.format}'>`
-        : "";
-    return `${param.name}: ${paramType}${paramFormat}`;
+    return `${param.name}: ${writeParameterType(param.schema)}`;
   });
   functionParameters.push(...pathParameters);
 
@@ -97,3 +92,38 @@ export function getRealizeWriteCodeTemplate(props: {
     \`\`\`
   `;
 }
+
+const writeParameterType = (
+  schema: AutoBeOpenApi.IParameter["schema"],
+): string => {
+  const elements: string[] =
+    schema.type === "integer"
+      ? ["number", `tags.Type<"int32">`]
+      : [schema.type];
+  if (schema.type === "number") {
+    if (schema.minimum !== undefined)
+      elements.push(`tags.Minimum<${schema.minimum}>`);
+    if (schema.maximum !== undefined)
+      elements.push(`tags.Maximum<${schema.maximum}>`);
+    if (schema.exclusiveMinimum !== undefined)
+      elements.push(`tags.ExclusiveMinimum<${schema.exclusiveMinimum}>`);
+    if (schema.exclusiveMaximum !== undefined)
+      elements.push(`tags.ExclusiveMaximum<${schema.exclusiveMaximum}>`);
+    if (schema.multipleOf !== undefined)
+      elements.push(`tags.MultipleOf<${schema.multipleOf}>`);
+  } else if (schema.type === "string") {
+    if (schema.format !== undefined)
+      elements.push(`tags.Format<${JSON.stringify(schema.format)}>`);
+    if (schema.contentMediaType !== undefined)
+      elements.push(
+        `tags.ContentMediaType<${JSON.stringify(schema.contentMediaType)}>`,
+      );
+    if (schema.pattern !== undefined)
+      elements.push(`tags.Pattern<${JSON.stringify(schema.pattern)}>`);
+    if (schema.minLength !== undefined)
+      elements.push(`tags.MinLength<${schema.minLength}>`);
+    if (schema.maxLength !== undefined)
+      elements.push(`tags.MaxLength<${schema.maxLength}>`);
+  }
+  return elements.join(" & ");
+};

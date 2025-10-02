@@ -57,11 +57,11 @@ export namespace TestLogger {
   ): string[] => {
     const o: string[] = [`  - result: ${result.type}`];
     if (result.type === "exception") return o;
-    const failed: number =
+    const success: number =
       result.type === "success"
         ? total
-        : new Set(result.diagnostics.map((d) => d.file)).size;
-    o.push(`  - error: ${failed} of ${total}`);
+        : total - new Set(result.diagnostics.map((d) => d.file)).size;
+    o.push(`  - success: ${success} of ${total}`);
     return o;
   };
 }
