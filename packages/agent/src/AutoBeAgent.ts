@@ -1,7 +1,9 @@
 import {
+  AgenticaExecuteHistory,
   IAgenticaTokenUsageJson,
   IAgenticaVendor,
   MicroAgentica,
+  MicroAgenticaHistory,
 } from "@agentica/core";
 import {
   AutoBeAssistantMessageHistory,
@@ -277,7 +279,21 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
     this.histories_.push(userMessageHistory);
     this.dispatch(userMessageHistory).catch(() => {});
 
-    await this.agentica_.conversate(content);
+    const agenticaHistories: MicroAgenticaHistory<Model>[] =
+      await this.agentica_.conversate(content);
+    const errorHistory: AgenticaExecuteHistory<Model> | undefined =
+      agenticaHistories.find(
+        (h): h is AgenticaExecuteHistory<Model> =>
+          h.type === "execute" && h.success === false,
+      );
+    if (errorHistory !== undefined) {
+      if (errorHistory.value instanceof Error) throw errorHistory.value;
+      else {
+        const v = new Error();
+        Object.assign(v, errorHistory.value);
+        throw v;
+      }
+    }
     return this.histories_.slice(index);
   }
 
