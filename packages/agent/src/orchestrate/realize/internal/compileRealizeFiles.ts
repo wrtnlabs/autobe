@@ -47,13 +47,11 @@ export async function compileRealizeFiles<Model extends ILlmSchema.Model>(
       props.functions.map((el) => [el.location, el.content]),
     ),
   };
-
   const compiled: IAutoBeTypeScriptCompileResult =
     await compiler.typescript.compile({
       files: files,
     });
-
-  const event: AutoBeRealizeValidateEvent = {
+  return {
     type: "realizeValidate",
     id: v7(),
     files: files,
@@ -61,6 +59,4 @@ export async function compileRealizeFiles<Model extends ILlmSchema.Model>(
     step: ctx.state().analyze?.step ?? 0,
     created_at: new Date().toISOString(),
   };
-
-  return event;
 }

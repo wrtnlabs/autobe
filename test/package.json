@@ -15,6 +15,7 @@
     "archive:go": "ts-node src/archive",
     "archive:commit": "ts-node src/archive/commit.ts",
     "archive:publish": "ts-node src/archive/publish.ts",
+    "archive:failures": "ts-node src/archive/failures.ts > failures.log",
     "bench": "ts-node src/benchmarks"
   },
   "author": "Wrtn Technologies",

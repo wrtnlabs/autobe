@@ -80,7 +80,7 @@ const correct = async (props: {
 const main = async (): Promise<void> => {
   await correct({
     vendor: "openai/gpt-4.1-mini",
-    project: "shopping",
+    project: "bbs",
   });
 };
 main().catch(console.error);
