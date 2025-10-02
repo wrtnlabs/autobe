@@ -152,7 +152,7 @@ export namespace AutoBePlaygroundReplayProvider {
           ),
           interface: predicate(
             "interface",
-            () => true,
+            (h) => h.missed.length === 0,
             (h) => ({
               operations: h.document.operations.length,
               schemas: Object.keys(h.document.components.schemas).length,
