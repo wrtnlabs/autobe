@@ -176,7 +176,7 @@ const correct = async <Model extends ILlmSchema.Model>(
           \`\`\`
 
           Also, never use typia.assert and typia.assertGuard like functions
-          to the Prisma types. Your mission is to fixing the casting problem of
+          to the Prisma types. Your mission is to fix the casting problem of
           primitive types like string or number. Prisma type is not your scope.
           
           If you take a mistake that casting the Prisma type with the typia.assert
