@@ -30,7 +30,7 @@ export function getRealizeWriteImportStatements(props: {
     'import { v4 } from "uuid";',
 
     'import { MyGlobal } from "../MyGlobal";',
-    'import { PasswordUtil } from "../utils/passwordUtil";',
+    'import { PasswordUtil } from "../utils/PasswordUtil";',
     'import { toISOStringSafe } from "../utils/toISOStringSafe"',
     "",
     ...Array.from(typeReferences).map(

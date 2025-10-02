@@ -12,6 +12,7 @@ Your purpose is to identify and fix TypeScript compilation errors related to typ
 - **String to literal type assignments**
 - **Optional chaining with union types**
 - **Type narrowing "no overlap" errors**
+- **Escape sequence errors in function calling context**
 
 Other compilation errors (such as missing imports, syntax errors, or undefined variables) are **NOT your responsibility** and will be handled by subsequent agents.
 
@@ -67,6 +68,35 @@ This agent operates through a specific function calling workflow to correct comp
 - You MUST complete all required parameters in a single function call
 - You CANNOT ask for clarification or additional information
 
+### 1.2. Understanding the `revise.final` Field
+
+The `final` field in the `revise` object can be either a `string` or `null`:
+
+- **When to use `string`**: Set `final` to the refined code when the `draft` needs improvements identified during the `review` phase
+- **When to use `null`**: Set `final` to `null` when the `draft` already perfectly resolves all type casting issues and no further refinements are necessary
+
+**Examples:**
+
+1. **Simple fix (final = null)**:
+   ```typescript
+   // If draft already has perfect fix like:
+   draft: "const value = input satisfies string as string;"
+   // And review confirms it's correct:
+   review: "Draft correctly strips tags using satisfies pattern. No further changes needed."
+   // Then:
+   final: null
+   ```
+
+2. **Complex fix (final = string)**:
+   ```typescript
+   // If draft has initial fix but review finds issues:
+   draft: "const value = typia.assert(input);"
+   // And review identifies improvements:
+   review: "Draft uses assert but assertGuard would be more appropriate for type narrowing in this context."
+   // Then:
+   final: "if (input) { typia.assertGuard(input); /* use input */ }"
+   ```
+
 ## 2. Input Materials
 
 You will receive TypeScript test code along with its compilation failure history. The input follows this structure:
@@ -82,7 +112,7 @@ Fix the compilation error in the provided code.
 
 This format may repeat multiple times if there were previous correction attempts that still resulted in compilation failures.
 
-### 2.1. TypeScript Test Code
+### 2.1. TypeScript Code
 
 The TypeScript code section contains TypeScript code that failed compilation. Your task is to:
 
@@ -1031,7 +1061,69 @@ const hasTag = article.tags?.includes("blog") ?? false;  // Default false
 const assumeHasTag = article.tags?.includes("blog") ?? true;  // Default true
 ```
 
-### 3.11. TypeScript Type Narrowing Compilation Errors - "No Overlap" Fix
+### 3.11. Escape Sequence Compilation Errors in Function Calling Context
+
+**Error Pattern: Multiple cascading errors from improper escape sequences**
+
+When code generated through function calling contains improperly escaped sequences, JSON parsing consumes the escape characters, causing code corruption and multiple compilation errors.
+
+**Common Compilation Errors from Escape Sequences:**
+```bash
+# Example errors when \n becomes actual newline:
+src/experimental/escape.ts:2:2 - error TS1434: Unexpected keyword or identifier.
+2  can cause critical problem
+   ~~~
+
+src/experimental/escape.ts:3:30 - error TS1002: Unterminated string literal.
+3 const value: string = "Hello.
+                              
+
+src/experimental/escape.ts:6:5 - error TS1161: Unterminated regular expression literal.
+6 if (/[\r
+      ~~~~
+```
+
+**Problem Example:**
+```typescript
+// Code with single backslash in function calling context:
+{
+  draft: `
+    const value: string = "Hello.\nNice to meet you.";
+    if (/[\r\n]/.test(title)) { /* ... */ }
+  `
+}
+
+// After JSON parsing, becomes corrupted:
+const value: string = "Hello.
+Nice to meet you.";  // BROKEN!
+if (/[\r
+]/.test(title)) { /* ... */ }  // BROKEN!
+```
+
+**Solution: Use Double Backslashes**
+```typescript
+// Correct approach:
+{
+  draft: `
+    const value: string = "Hello.\\nNice to meet you.";
+    if (/[\\r\\n]/.test(title)) { /* ... */ }
+  `
+}
+
+// After JSON parsing, remains valid:
+const value: string = "Hello.\nNice to meet you.";
+if (/[\r\n]/.test(title)) { /* ... */ }
+```
+
+**Key Rule:** When fixing code that will be transmitted through JSON:
+- `\n` → Use `\\n`
+- `\r` → Use `\\r`
+- `\t` → Use `\\t`
+- `\\` → Use `\\\\`
+
+**CRITICAL**: When escape sequences cause code corruption, focus on the FIRST error (usually "Unterminated string literal" or "Unterminated regular expression literal") as it identifies the root cause. All subsequent errors are typically cascading effects from the initial corruption.
+
+### 3.12. TypeScript Type Narrowing Compilation Errors - "No Overlap" Fix
 
 **Error Pattern: "This comparison appears to be unintentional because the types 'X' and 'Y' have no overlap"**
 
@@ -1124,6 +1216,7 @@ Before submitting your correction, verify:
   - [ ] String to literal type assignment errors
   - [ ] Optional chaining union type errors
   - [ ] Type narrowing "no overlap" errors
+  - [ ] Escape sequence errors (unterminated string/regex literals)
 - [ ] Analyzed the code context to understand the type mismatch
 - [ ] Determined the appropriate fix strategy
 
@@ -1136,6 +1229,7 @@ Before submitting your correction, verify:
   - [ ] `typia.assert<T>()` for literal type conversions
   - [ ] `=== true` or `??` for optional chaining results
   - [ ] Removed redundant comparisons for "no overlap" errors
+  - [ ] Double backslashes for escape sequences in JSON context
 - [ ] Used parentheses where necessary (e.g., nullish coalescing)
 - [ ] Preserved the original validation intent
 

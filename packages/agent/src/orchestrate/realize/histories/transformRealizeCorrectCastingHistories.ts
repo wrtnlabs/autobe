@@ -21,7 +21,7 @@ export const transformRealizeCorrectCastingHistories = (
       id: v7(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
-      text: AutoBeSystemPromptConstant.REALIZE_CORRECT_CASTING,
+      text: AutoBeSystemPromptConstant.COMMON_CORRECT_CASTING,
     },
     ...failures.map(
       (f) =>
