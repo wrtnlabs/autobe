@@ -4,13 +4,17 @@ import { IAutoBePlaygroundReplay } from "@autobe/interface";
 import { useState } from "react";
 
 import replaysData from "../../data/replays.json";
-import AutoBeLandingDemoReplayMovie from "./AutoBeLandingDemoReplayMovie";
+import AutoBeLandingDemoModelMovie from "./AutoBeLandingDemoModelMovie";
 
-export default function AutoBeLandingDemoMovie() {
+export default function AutoBeLandingDemoMovie(
+  props: AutoBeLandingDemoMovie.IProps,
+) {
   // Get available models from replays data
-  const models = Object.keys(replaysData as IAutoBePlaygroundReplay.Collection);
+  const models: string[] = Object.keys(
+    replaysData as IAutoBePlaygroundReplay.Collection,
+  );
   const [selectedModel, setSelectedModel] = useState<string>(
-    models[0] || "openai/gpt-4.1",
+    props.model ?? models[0] ?? "openai/gpt-4.1",
   );
 
   return (
@@ -49,27 +53,23 @@ export default function AutoBeLandingDemoMovie() {
                       : "text-gray-400 hover:text-white"
                   }`}
                 >
-                  {model}
+                  {model.split("/")[1] ?? model}
                 </button>
               ))}
             </div>
           </div>
         </div>
-
-        <div
-          className="gap-6 grid grid-cols-1 lg:grid-cols-2"
-          style={{
-            maxWidth: "920px",
-            margin: "0 auto",
-          }}
-        >
-          {(replaysData as IAutoBePlaygroundReplay.Collection)[
-            selectedModel
-          ]?.map((replay: IAutoBePlaygroundReplay.ISummary, index: number) => (
-            <AutoBeLandingDemoReplayMovie key={index} replay={replay} />
-          )) || []}
-        </div>
+        <AutoBeLandingDemoModelMovie
+          data={
+            (replaysData as IAutoBePlaygroundReplay.Collection)[selectedModel]
+          }
+        />
       </div>
     </section>
   );
+}
+export namespace AutoBeLandingDemoMovie {
+  export interface IProps {
+    model?: string;
+  }
 }

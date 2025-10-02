@@ -59,8 +59,16 @@ export default function AutoBeLandingDemoReplayMovie({
       rel="noopener noreferrer"
       className="block bg-white/5 border border-gray-600/30 rounded-2xl p-6 transition-all duration-300 hover:bg-white/10 hover:border-gray-500/50 hover:shadow-xl hover:shadow-blue-500/10 hover:scale-[1.02]"
     >
-      <div className="mb-6">
+      <div className="mb-6 flex items-center justify-between">
         <h3 className="text-2xl font-bold">{projectTitle}</h3>
+        <div className="flex items-center gap-2 group cursor-pointer">
+          <span className="text-xs text-gray-400 bg-gray-700/30 group-hover:bg-gray-600/40 px-3 py-1.5 rounded-lg transition-all">
+            {replay.vendor}
+          </span>
+          <svg className="w-4 h-4 text-white/60 group-hover:text-white group-hover:scale-110 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </div>
       </div>
 
       <div className="mb-6">
