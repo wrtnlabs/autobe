@@ -1,9 +1,12 @@
-import { AutoBeOpenApi } from "@autobe/interface";
+import { AutoBeOpenApi, AutoBePrisma } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
 import { OpenApiTypeChecker } from "@samchon/openapi";
 import typia, { tags } from "typia";
 
 export namespace JsonSchemaFactory {
+  /* -----------------------------------------------------------
+    ASSIGNMENTS
+  ----------------------------------------------------------- */
   export const presets = (
     typeNames: Set<string>,
   ): Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> => {
@@ -45,14 +48,19 @@ export namespace JsonSchemaFactory {
     }
   };
 
-  export const removeUnused = (props: {
-    operations: AutoBeOpenApi.IOperation[];
-    schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+  export const finalize = (props: {
+    document: AutoBeOpenApi.IDocument;
+    application: AutoBePrisma.IApplication;
   }): void => {
+    removeUnused(props.document);
+    fixTimestamps(props);
+  };
+
+  const removeUnused = (document: AutoBeOpenApi.IDocument): void => {
     const used: Set<string> = new Set();
     const visit = (schema: AutoBeOpenApi.IJsonSchema): void =>
       OpenApiTypeChecker.visit({
-        components: { schemas: props.schemas },
+        components: { schemas: document.components.schemas },
         schema,
         closure: (next) => {
           if (OpenApiTypeChecker.isReference(next)) {
@@ -62,7 +70,7 @@ export namespace JsonSchemaFactory {
         },
       });
 
-    for (const op of props.operations) {
+    for (const op of document.operations) {
       if (op.requestBody !== null)
         visit({
           $ref: `#/components/schemas/${op.requestBody.typeName}`,
@@ -72,10 +80,45 @@ export namespace JsonSchemaFactory {
           $ref: `#/components/schemas/${op.responseBody.typeName}`,
         });
     }
-    for (const key of Object.keys(props.schemas))
-      if (used.has(key) === false) delete props.schemas[key];
+    for (const key of Object.keys(document.components.schemas))
+      if (used.has(key) === false) delete document.components.schemas[key];
   };
 
+  const fixTimestamps = (props: {
+    document: AutoBeOpenApi.IDocument;
+    application: AutoBePrisma.IApplication;
+  }): void => {
+    const entireModels: AutoBePrisma.IModel[] = props.application.files
+      .map((f) => f.models)
+      .flat();
+    for (const value of Object.values(props.document.components.schemas)) {
+      if (AutoBeOpenApiTypeChecker.isObject(value) === false) continue;
+
+      const model: AutoBePrisma.IModel | undefined = value[
+        "x-samchon-prisma-schema"
+      ]
+        ? entireModels.find((m) => m.name === value["x-samchon-prisma-schema"])
+        : undefined;
+      if (model === undefined) continue;
+
+      const properties: string[] = Object.keys(value.properties);
+      for (const key of properties) {
+        if (
+          key !== "created_at" &&
+          key !== "updated_at" &&
+          key !== "deleted_at"
+        )
+          continue;
+        const column: AutoBePrisma.IPlainField | undefined =
+          model.plainFields.find((c) => c.name === key);
+        if (column === undefined) delete value.properties[key];
+      }
+    }
+  };
+
+  /* -----------------------------------------------------------
+    PAGINATION
+  ----------------------------------------------------------- */
   export const page = (
     key: string,
   ): AutoBeOpenApi.IJsonSchemaDescriptive.IObject => ({

@@ -32,7 +32,8 @@ export const transformRealizeCorrectCastingHistories = (
           text: StringUtil.trim`
           # Errors
 
-          This is a past code and an error with the code. Please refer to the annotation for the location of the error.
+          This is a past code and an error with the code. 
+          Please refer to the annotation for the location of the error.
 
           ${printErrorHints(f.script, f.diagnostics)}          
           \`\`\`

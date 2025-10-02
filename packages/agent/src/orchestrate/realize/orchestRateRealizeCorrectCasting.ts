@@ -161,6 +161,7 @@ const correct = async <Model extends ILlmSchema.Model>(
           When modifying, modify the entire code, but not the import statement.
 
           Below is template code you wrote:
+
           ${getRealizeWriteCodeTemplate({
             scenario,
             schemas: ctx.state().interface!.document.components.schemas,
@@ -169,9 +170,21 @@ const correct = async <Model extends ILlmSchema.Model>(
           })}
 
           Current code is as follows:
+
           \`\`\`typescript
           ${func.content}
           \`\`\`
+
+          Also, never use typia.assert and typia.assertGuard like functions
+          to the Prisma types. Your mission is to fixing the casting problem of
+          primitive types like string or number. Prisma type is not your scope.
+          
+          If you take a mistake that casting the Prisma type with the typia.assert
+          function, it would be fallen into the infinite compliation due to extremely
+          complicated Prisma type. Note that, the typia.assert function is allowed 
+          only in the individual property level string or literal type.
+
+          I repeat that, never assert the Prisma type. It's not your mission.
         `,
       });
       ++progress.completed;

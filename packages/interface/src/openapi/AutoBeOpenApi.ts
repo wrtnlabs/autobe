@@ -1483,7 +1483,20 @@ export namespace AutoBeOpenApi {
     export interface IArray extends IJsonSchema.IArray, IDescriptive {}
 
     /** Object type info. */
-    export interface IObject extends IJsonSchema.IObject, IDescriptive {}
+    export interface IObject extends IJsonSchema.IObject, IDescriptive {
+      /**
+       * Related Prisma schema.
+       *
+       * If the type is directly related to a specific Prisma schema model,
+       * include the exact model name here to establish a clear link between the
+       * OpenAPI schema and the Prisma model.
+       *
+       * This field is optional and should only be included when there is a
+       * direct correspondence to a Prisma model. If there's not any Prisma
+       * model association, this field can be omitted.
+       */
+      "x-samchon-prisma-schema"?: string;
+    }
 
     /** Reference type directing named schema. */
     export interface IReference extends IJsonSchema.IReference, IDescriptive {}

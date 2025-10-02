@@ -136,9 +136,9 @@ export const orchestrateInterface =
     );
     if (missedOpenApiSchemas(document).length !== 0) await complement();
 
-    JsonSchemaFactory.removeUnused({
-      operations: document.operations,
-      schemas: document.components.schemas,
+    JsonSchemaFactory.finalize({
+      document,
+      application: ctx.state().prisma!.result.data,
     });
 
     // CONNECT PRE-REQUISITES
