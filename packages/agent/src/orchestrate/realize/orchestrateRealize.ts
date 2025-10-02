@@ -5,6 +5,7 @@ import {
   AutoBeRealizeAuthorization,
   AutoBeRealizeFunction,
   AutoBeRealizeHistory,
+  AutoBeRealizeValidateEvent,
   AutoBeRealizeWriteEvent,
   IAutoBeCompiler,
 } from "@autobe/interface";
@@ -55,102 +56,148 @@ export const orchestrateRealize =
       step: ctx.state().test?.step ?? 0,
     });
 
-    // AUTHORIZATIONS
+    // PREPARE ASSETS
+    const compiler: IAutoBeCompiler = await ctx.compiler();
     const authorizations: AutoBeRealizeAuthorization[] =
       await orchestrateRealizeAuthorization(ctx);
 
-    // SCENARIOS
-    const scenarios: IAutoBeRealizeScenarioResult[] = document.operations.map(
-      (operation) => generateRealizeScenario(ctx, operation, authorizations),
-    );
-
     const writeProgress: AutoBeProgressEventBase = {
-      total: scenarios.length,
+      total: document.operations.length,
       completed: 0,
     };
-    const writeEvents: (AutoBeRealizeWriteEvent | null)[] =
-      await executeCachedBatch(
-        scenarios.map((scenario) => async (promptCacheKey) => {
-          const props = {
-            totalAuthorizations: authorizations,
-            authorization: scenario.decoratorEvent ?? null,
-            scenario,
-            document,
-            progress: writeProgress,
-            promptCacheKey,
-          };
-          const event: AutoBeRealizeWriteEvent | null =
-            await orchestrateRealizeWrite(ctx, props).catch(() => {
-              return orchestrateRealizeWrite(ctx, props).catch(() => null);
-            });
-          return event;
-        }),
-      );
-
-    const functions: AutoBeRealizeFunction[] = Object.entries(
-      Object.fromEntries(
-        writeEvents
-          .filter((w) => w !== null)
-          .map((event) => [event.location, event.content]),
-      ),
-    ).map(([location, content]) => {
-      const scenario = scenarios.find((el) => el.location === location)!;
-      return {
-        location,
-        content,
-        endpoint: {
-          method: scenario.operation.method,
-          path: scenario.operation.path,
-        },
-        name: scenario.functionName,
-      };
-    });
-
-    const reviewProgress: AutoBeProgressEventBase = {
-      total: writeEvents.length,
-      completed: writeEvents.length,
+    const correctProgress: AutoBeProgressEventBase = {
+      total: document.operations.length,
+      completed: 0,
     };
 
-    const totalCorrected: AutoBeRealizeFunction[] =
-      await orchestrateRealizeCorrectCasting(
-        ctx,
-        scenarios,
-        authorizations,
-        functions,
-        reviewProgress,
-      ).then(async (res) => {
-        return orchestrateRealizeCorrect(
-          ctx,
-          scenarios,
-          authorizations,
-          res,
-          [],
-          reviewProgress,
-        );
+    const process = async (
+      artifacts: IAutoBeRealizeScenarioResult[],
+    ): Promise<IBucket> => {
+      const writes: AutoBeRealizeWriteEvent[] = (
+        await executeCachedBatch(
+          artifacts.map((art) => async (promptCacheKey) => {
+            const props = {
+              totalAuthorizations: authorizations,
+              authorization: art.decoratorEvent ?? null,
+              scenario: art,
+              document,
+              progress: writeProgress,
+              promptCacheKey,
+            };
+            const event: AutoBeRealizeWriteEvent | null =
+              await orchestrateRealizeWrite(ctx, props).catch(() => {
+                return orchestrateRealizeWrite(ctx, props).catch(() => null);
+              });
+            return event;
+          }),
+        )
+      ).filter((e) => e !== null);
+      const functions: AutoBeRealizeFunction[] = Object.entries(
+        Object.fromEntries(writes.map((w) => [w.location, w.content])),
+      ).map(([location, content]) => {
+        const scenario: IAutoBeRealizeScenarioResult = artifacts.find(
+          (el) => el.location === location,
+        )!;
+        return {
+          location,
+          content,
+          endpoint: {
+            method: scenario.operation.method,
+            path: scenario.operation.path,
+          },
+          name: scenario.functionName,
+        };
       });
+      const corrected: AutoBeRealizeFunction[] =
+        await orchestrateRealizeCorrectCasting(
+          ctx,
+          artifacts,
+          authorizations,
+          functions,
+          correctProgress,
+        ).then(async (res) => {
+          return await orchestrateRealizeCorrect(
+            ctx,
+            artifacts,
+            authorizations,
+            res,
+            [],
+            correctProgress,
+          );
+        });
+      const validate: AutoBeRealizeValidateEvent = await compileRealizeFiles(
+        ctx,
+        {
+          authorizations,
+          functions: corrected,
+        },
+      );
+      return {
+        corrected,
+        validate,
+      };
+    };
 
-    const compiler: IAutoBeCompiler = await ctx.compiler();
+    // SCENARIOS
+    const entireScenarios: IAutoBeRealizeScenarioResult[] =
+      document.operations.map((operation) =>
+        generateRealizeScenario(ctx, operation, authorizations),
+      );
+    let bucket: IBucket = await process(entireScenarios);
+    for (let i: number = 0; i < ctx.retry; ++i) {
+      if (bucket.validate.result.type !== "failure") break;
+
+      const failedScenarios: IAutoBeRealizeScenarioResult[] = Array.from(
+        new Set(bucket.validate.result.diagnostics.map((f) => f.file)),
+      )
+        .map((location) =>
+          bucket.corrected.find((f) => f.location === location),
+        )
+        .filter((f) => f !== undefined)
+        .map((f) =>
+          entireScenarios.find(
+            (s) =>
+              s.operation.path === f.endpoint.path &&
+              s.operation.method === f.endpoint.method,
+          ),
+        )
+        .filter((o) => o !== undefined);
+      if (failedScenarios.length === 0) break;
+
+      writeProgress.total += failedScenarios.length;
+      correctProgress.total += failedScenarios.length;
+
+      const newBucket: IBucket = await process(failedScenarios);
+      const corrected: Map<string, AutoBeRealizeFunction> = new Map([
+        ...bucket.corrected.map((f) => [f.location, f] as const),
+        ...newBucket.corrected.map((f) => [f.location, f] as const),
+      ]);
+      bucket = {
+        corrected: Array.from(corrected.values()),
+        validate: newBucket.validate,
+      };
+    }
+
     const controllers: Record<string, string> =
       await compiler.realize.controller({
         document: ctx.state().interface!.document,
-        functions: totalCorrected,
+        functions: bucket.corrected,
         authorizations,
       });
-
-    const { result } = await compileRealizeFiles(ctx, {
-      authorizations,
-      functions: totalCorrected,
-    });
-
     return ctx.dispatch({
       type: "realizeComplete",
       id: v7(),
       created_at: new Date().toISOString(),
-      functions: totalCorrected,
+      functions: bucket.corrected,
       authorizations,
       controllers,
-      compiled: result,
+      compiled: bucket.validate.result,
       step: ctx.state().analyze?.step ?? 0,
       elapsed: new Date().getTime() - start.getTime(),
     });
   };
+
+interface IBucket {
+  corrected: AutoBeRealizeFunction[];
+  validate: AutoBeRealizeValidateEvent;
+}
