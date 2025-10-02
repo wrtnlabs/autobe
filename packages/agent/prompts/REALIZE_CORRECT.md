@@ -1382,7 +1382,33 @@ if (!(props.createdAt instanceof Date)) {
 if (typeof body.age === 'number' && body.age > 0) {
   // DELETE THE TYPE CHECK - Keep only business logic
 }
+
+// ❌ DELETE JSON Schema constraint validation
+export async function postTodoListAdminTodos(props: {
+  admin: AdminPayload;
+  body: ITodoListTodo.ICreate;
+}): Promise<ITodoListTodo> {
+  // ❌ ALL OF THESE VALIDATIONS ARE FORBIDDEN!
+  const title = props.body.title.trim();
+  if (title.length === 0) {
+    throw new HttpException("Title must not be empty or whitespace-only.", 400);
+  }
+  if (title.length > 100) {
+    throw new HttpException("Title must not exceed 100 characters.", 400);
+  }
+  if (/[\\r\\n]/.test(title)) {
+    throw new HttpException("Title must not contain line breaks.", 400);
+  }
+  // ...
+}
 ```
+
+**JSON Schema Constraint Violations:**
+1. **Minimum length validation** (`title.length === 0`) - JSON Schema can enforce `minLength`
+2. **Maximum length validation** (`title.length > 100`) - JSON Schema can enforce `maxLength`  
+3. **Pattern validation** (checking for newlines) - JSON Schema can enforce `pattern`
+
+These constraints are ALREADY validated by NestJS using JSON Schema decorators in the DTO.
 
 #### After Deletion:
 
@@ -1395,11 +1421,6 @@ export async function updateUser(props: { userId: string; body: IUpdateUser }) {
     data: props.body
   });
   return updated;
-}
-
-// ✅ CORRECT - Only business logic checks
-if (body.age > 120) {  // Business rule, not type check
-  throw new HttpException('Age cannot exceed 120', 400);
 }
 ```
 
@@ -1531,39 +1552,7 @@ if (title.includes('\n')) {
 
 **MANDATORY ACTION**: When you encounter such validation code during error correction, you MUST delete it entirely. The correct fix is complete removal of any code that validates parameter types or content constraints. Trust the framework's validation pipeline.
 
-#### ❌ FORBIDDEN: JSON Schema Constraint Validation
-
-**CRITICAL**: The following example shows validation code that MUST BE DELETED, regardless of whether it compiles successfully or not:
-
-```typescript
-// ❌ FORBIDDEN - JSON Schema constraint validation
-export async function postTodoListAdminTodos(props: {
-  admin: AdminPayload;
-  body: ITodoListTodo.ICreate;
-}): Promise<ITodoListTodo> {
-  // ❌ ALL OF THESE VALIDATIONS ARE FORBIDDEN!
-  const title = props.body.title.trim();
-  if (title.length === 0) {
-    throw new HttpException("Title must not be empty or whitespace-only.", 400);
-  }
-  if (title.length > 100) {
-    throw new HttpException("Title must not exceed 100 characters.", 400);
-  }
-  if (/[\\r\\n]/.test(title)) {
-    throw new HttpException("Title must not contain line breaks.", 400);
-  }
-  // ...
-}
-```
-
-**These violations MUST BE DELETED because:**
-1. **Minimum length validation** (`title.length === 0`) - JSON Schema can enforce `minLength`
-2. **Maximum length validation** (`title.length > 100`) - JSON Schema can enforce `maxLength`  
-3. **Pattern validation** (checking for newlines) - JSON Schema can enforce `pattern`
-
-**ABSOLUTE RULE**: Even if the code compiles without errors, these validations MUST be removed. They violate the principle of trusting the framework's validation pipeline. The NestJS controller has already validated all JSON Schema constraints through decorators in the DTO.
-
-## 🎯 Key Principles
+#### 🎯 Key Principles
 
 1. **Types > Comments**: When type and comment conflict, type is ALWAYS correct
 2. **Schema is Truth**: If field doesn't exist in schema, it cannot be used
