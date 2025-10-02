@@ -73,19 +73,29 @@ export const orchestrateRealize =
     const process = async (
       artifacts: IAutoBeRealizeScenarioResult[],
     ): Promise<IBucket> => {
-      const writes: AutoBeRealizeWriteEvent[] = await executeCachedBatch(
-        artifacts.map(
-          (art) => (promptCacheKey) =>
-            orchestrateRealizeWrite(ctx, {
+      const writes: AutoBeRealizeWriteEvent[] = (
+        await executeCachedBatch(
+          artifacts.map((art) => async (promptCacheKey) => {
+            const props = {
               totalAuthorizations: authorizations,
               authorization: art.decoratorEvent ?? null,
               scenario: art,
               document,
               progress: writeProgress,
               promptCacheKey,
-            }),
-        ),
-      );
+            };
+            try {
+              return await orchestrateRealizeWrite(ctx, props);
+            } catch {
+              try {
+                return await orchestrateRealizeWrite(ctx, props);
+              } catch {
+                return null;
+              }
+            }
+          }),
+        )
+      ).filter((w) => w !== null);
       const functions: AutoBeRealizeFunction[] = Object.entries(
         Object.fromEntries(writes.map((w) => [w.location, w.content])),
       ).map(([location, content]) => {
