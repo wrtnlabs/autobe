@@ -180,7 +180,7 @@ const correct = async <Model extends ILlmSchema.Model>(
           primitive types like string or number. Prisma type is not your scope.
           
           If you take a mistake that casting the Prisma type with the typia.assert
-          function, it would be fallen into the infinite compliation due to extremely
+          function, it would be fallen into the infinite compilation due to extremely
           complicated Prisma type. Note that, the typia.assert function is allowed 
           only in the individual property level string or literal type.
 

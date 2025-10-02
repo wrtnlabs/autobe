@@ -1616,6 +1616,70 @@ const dateString = toISOStringSafe(new Date());
 
 ## ✅ Approved and Required Practices
 
+### 🚨🚨🚨 ABSOLUTE RULE: NEVER Use Type Annotation for Prisma/DTO Variables 🚨🚨🚨
+
+**THIS IS AN ABSOLUTE, NON-NEGOTIABLE RULE THAT OVERRIDES ALL OTHER PRACTICES**
+
+When declaring variables with Prisma types or DTO types, you MUST use `satisfies` and NEVER use type annotation with `:`. This is ESPECIALLY CRITICAL when the type contains nullable or optional properties.
+
+**Why this is CRITICAL:**
+- Type annotation (`:`) creates a variable with a wide type that includes null/undefined
+- When you reuse this variable, TypeScript doesn't narrow the type properly
+- This causes cascading null/undefined errors throughout your code
+- `satisfies` allows proper type narrowing and inference
+
+```typescript
+// ❌ ABSOLUTELY FORBIDDEN - Type annotation causes null/undefined errors
+const createData: Prisma.usersCreateInput = {
+  id: v4(),
+  name: body.name,
+  email: body.email,  // email can be null in Prisma type
+};
+// Later usage will cause errors because TypeScript thinks createData.email might be null
+const emailDomain = createData.email.split('@')[1]; // ERROR! Object is possibly 'null'
+
+// ✅ MANDATORY - Use satisfies for ALL Prisma/DTO types
+const createData = {
+  id: v4(),
+  name: body.name,
+  email: body.email,
+} satisfies Prisma.usersCreateInput;
+// TypeScript properly infers createData.email's actual value
+const emailDomain = createData.email.split('@')[1]; // Works correctly!
+
+// ❌ ABSOLUTELY FORBIDDEN - Type annotation with DTO types
+const response: IUser = {
+  id: user.id,
+  name: user.name,
+  approved_at: toISOStringSafe(user.approved_at),
+};
+
+// ✅ MANDATORY - Use satisfies with DTO types
+const response = {
+  id: user.id,
+  name: user.name,
+  approved_at: toISOStringSafe(user.approved_at),
+} satisfies IUser;
+
+// ❌ ABSOLUTELY FORBIDDEN - type error with nullable fields
+const updateFields: Prisma.postsUpdateInput = {
+  title: body.title,
+  link: "http://example.com", // be string | null
+};
+
+// ✅ MANDATORY - Always use satisfies
+const updateFields = {
+  title: body.title,
+  link: "http://example.com",
+} satisfies Prisma.postsUpdateInput;
+```
+
+**REMEMBER**: 
+- This rule applies to ALL Prisma types: `Prisma.*CreateInput`, `Prisma.*UpdateInput`, `Prisma.*WhereInput`, etc.
+- This rule applies to ALL DTO types: `IUser`, `IPost.ICreate`, `IComment.IUpdate`, etc.
+- NO EXCEPTIONS - even if you think it's safe, ALWAYS use `satisfies`
+- Violating this rule WILL cause type errors when the variable is reused
+
 ### ✅ Structural Type Conformance Using `satisfies`
 
 Use `satisfies` strategically to ensure proper type structure:
@@ -4540,7 +4604,7 @@ Before submitting your implementation, verify ALL of the following:
 2. **📝 Prisma Operations**
    - [ ] ALL Prisma operations use inline parameters (no intermediate variables)
    - [ ] Checked ID field configuration (`@default()` presence) before create operations
-   - [ ] Used `satisfies` with Prisma types where beneficial
+   - [ ] **MANDATORY**: Used `satisfies` (never `:`) for ALL Prisma/DTO type variable declarations
    - [ ] Handled nullable fields correctly (null vs undefined)
    - [ ] orderBy defined inline, never extracted as variable
 
