@@ -144,7 +144,7 @@ export const orchestrateRealize =
         generateRealizeScenario(ctx, operation, authorizations),
       );
     let bucket: IBucket = await process(entireScenarios);
-    for (let i: number = 0; i < ctx.retry; ++i) {
+    for (let i: number = 0; i < 2; ++i) {
       if (bucket.validate.result.type !== "failure") break;
 
       const failedScenarios: IAutoBeRealizeScenarioResult[] = Array.from(
