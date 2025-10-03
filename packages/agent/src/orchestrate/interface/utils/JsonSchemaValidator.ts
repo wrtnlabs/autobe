@@ -152,7 +152,8 @@ export namespace JsonSchemaValidator {
     for (const e of errors) {
       if (e.path.endsWith(`.properties["x-autobe-prisma-schema"]`) === false)
         continue;
-      e.expected = "undefined value (remove this property)";
+      e.expected =
+        "undefined value (remove this property and re-define it in the root schema)";
       e.description = StringUtil.trim`
         You have defined a property named "x-autobe-prisma-schema"
         somewhere wrong place.
