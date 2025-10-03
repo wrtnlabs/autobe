@@ -23,6 +23,7 @@ import {
   IAutoBeGetFilesOptions,
   IAutoBeTokenUsageJson,
 } from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
 import { ILlmSchema } from "@samchon/openapi";
 import { Semaphore } from "tstl";
 import typia from "typia";
@@ -152,11 +153,31 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
         if (closure) closure(agent);
 
         // DO CONVERSATE
+        const message: string =
+          next.enforceFunctionCall === true
+            ? StringUtil.trim`
+                ${next.message}
+
+                > You have to call function(s) of below to accomplish my request.
+                >
+                > Never hesitate the function calling. Never ask for me permission 
+                > to execute the function. Never explain me your plan with waiting
+                > for my approval.
+                >
+                > I gave you every information for the function calling, so just 
+                > call it. I repeat that, never hesitate the function calling. 
+                > Just do it without any explanation.
+                >
+                ${next.controller.application.functions
+                  .map((f) => `> - ${f.name}`)
+                  .join("\n")}
+              `
+            : next.message;
         const result: TimedConversation.IResult<Model> =
           await TimedConversation.process({
-            agent,
             timeout: config.timeout,
-            message: next.message,
+            agent,
+            message,
           });
         const tokenUsage: IAutoBeTokenUsageJson.IComponent = agent
           .getTokenUsage()
@@ -189,7 +210,15 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
         ) {
           const failure = () => {
             throw new Error(
-              `Failed to function calling in the ${next.source} step`,
+              StringUtil.trim`
+                Failed to function calling in the ${next.source} step.
+
+                Here is the list of history types that occurred during the conversation:
+
+                ${result.histories.map((h) => `- ${h.type}`).join("\n")}
+
+                ${JSON.stringify(result.histories)}
+              `,
             );
           };
           const last: MicroAgenticaHistory<Model> | undefined =

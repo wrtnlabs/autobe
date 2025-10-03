@@ -16,6 +16,12 @@ pnpm run archive --vendor openai/gpt-5 --project reddit > archive.openai-gpt-5.r
 pnpm run archive --vendor openai/gpt-5 --project bbs > archive.openai-gpt-5.bbs.log
 pnpm run archive --vendor openai/gpt-5 --project shopping > archive.openai-gpt-5.shopping.log
 
+# openai/gpt-5-mini
+pnpm run archive --vendor openai/gpt-5-mini --project todo > archive.openai-gpt-5-mini.todo.log
+pnpm run archive --vendor openai/gpt-5-mini --project reddit > archive.openai-gpt-5-mini.reddit.log
+pnpm run archive --vendor openai/gpt-5-mini --project bbs > archive.openai-gpt-5-mini.bbs.log
+pnpm run archive --vendor openai/gpt-5-mini --project shopping > archive.openai-gpt-5-mini.shopping.log
+
 # openai/gpt-4.1
 pnpm run archive --vendor openai/gpt-4.1 --project todo > archive.openai-gpt-4.1.todo.log
 pnpm run archive --vendor openai/gpt-4.1 --project reddit > archive.openai-gpt-4.1.reddit.log
