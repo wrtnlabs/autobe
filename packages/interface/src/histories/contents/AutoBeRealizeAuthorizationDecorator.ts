@@ -1,4 +1,4 @@
-import { PascalPattern } from "../../typings/PascalPattern";
+import { PascalCasePattern } from "../../typings/PascalCasePattern";
 
 /**
  * Authorization decorator implementation for role-based access control.
@@ -27,7 +27,7 @@ export interface AutoBeRealizeAuthorizationDecorator {
    * @ShoppingCustomerAuth() decorator that can be applied to controllers and routes
    * to enforce shopping customer-specific authorization policies.
    */
-  name: string & PascalPattern;
+  name: string & PascalCasePattern;
 
   /**
    * File path where the decorator will be generated.

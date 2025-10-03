@@ -1,4 +1,4 @@
-import { PascalPattern } from "../../typings/PascalPattern";
+import { PascalCasePattern } from "../../typings/PascalCasePattern";
 
 /**
  * Authorization payload structure for authentication tokens.
@@ -25,7 +25,7 @@ export interface AutoBeRealizeAuthorizationPayload {
    * defines the structure of data stored in JWT tokens, ensuring type safety
    * throughout the authentication flow.
    */
-  name: string & PascalPattern;
+  name: string & PascalCasePattern;
 
   /**
    * File path where the payload interface will be generated.

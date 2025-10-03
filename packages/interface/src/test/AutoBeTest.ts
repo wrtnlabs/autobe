@@ -1,7 +1,7 @@
 import { tags } from "typia";
 
 import { AutoBeOpenApi } from "../openapi/AutoBeOpenApi";
-import { CamelPattern } from "../typings/CamelPattern";
+import { CamelCasePattern } from "../typings/CamelCasePattern";
 
 /**
  * AST type system for programmatic E2E test function generation through AI
@@ -512,7 +512,7 @@ export namespace AutoBeTest {
      * automatic data capture eliminates the need for separate variable
      * declaration statements.
      */
-    variableName?: (string & CamelPattern) | null;
+    variableName?: (string & CamelCasePattern) | null;
   }
 
   /**

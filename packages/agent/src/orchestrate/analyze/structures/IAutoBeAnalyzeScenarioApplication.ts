@@ -1,4 +1,4 @@
-import { AutoBeAnalyzeRole, CamelPattern } from "@autobe/interface";
+import { AutoBeAnalyzeRole, CamelCasePattern } from "@autobe/interface";
 import { AutoBeAnalyzeFile } from "@autobe/interface/src/histories/contents/AutoBeAnalyzeFile";
 import { tags } from "typia";
 
@@ -31,7 +31,7 @@ export namespace IAutoBeAnalyzeScenarioApplication {
      *
      * DO: Use camelCase naming convention.
      */
-    prefix: string & CamelPattern;
+    prefix: string & CamelCasePattern;
 
     /** Roles to be assigned for the project */
     roles: AutoBeAnalyzeRole[];

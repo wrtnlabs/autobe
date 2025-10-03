@@ -1,4 +1,4 @@
-import { AutoBeOpenApi, CamelPattern } from "@autobe/interface";
+import { AutoBeOpenApi, CamelCasePattern } from "@autobe/interface";
 import { tags } from "typia";
 
 export interface IAutoBeInterfaceOperationApplication {
@@ -86,8 +86,7 @@ export namespace IAutoBeInterfaceOperationApplication {
    * }
    * ```
    */
-  export interface IOperation
-    extends AutoBeOpenApi.IEndpoint {
+  export interface IOperation extends AutoBeOpenApi.IEndpoint {
     /**
      * Specification of the API operation.
      *
@@ -339,7 +338,7 @@ export namespace IAutoBeInterfaceOperationApplication {
      * operations can be uniquely identified in generated SDKs and prevents
      * naming conflicts.
      */
-    name: string & CamelPattern;
+    name: string & CamelCasePattern;
 
     /**
      * Authorization roles required to access this API operation.
@@ -422,6 +421,6 @@ export namespace IAutoBeInterfaceOperationApplication {
      * handled by decorators at the controller level, and the provider function
      * will receive the authenticated user object with the appropriate type.
      */
-    authorizationRoles: Array<string & CamelPattern & tags.MinLength<1>>;
+    authorizationRoles: Array<string & CamelCasePattern & tags.MinLength<1>>;
   }
 }

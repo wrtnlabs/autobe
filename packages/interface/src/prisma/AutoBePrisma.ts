@@ -1,7 +1,7 @@
 import { tags } from "typia";
 
-import { CamelPattern } from "../typings";
-import { SnakePattern } from "../typings/SnakePattern";
+import { CamelCasePattern } from "../typings";
+import { SnakeCasePattern } from "../typings/SnakeCasePattern";
 
 /**
  * AST type system for programmatic Prisma ORM schema generation through AI
@@ -202,7 +202,7 @@ export namespace AutoBePrisma {
      * ensuring logical grouping and proper organization of related data
      * structures.
      */
-    tables: Array<string & SnakePattern> & tags.MinItems<1>;
+    tables: Array<string & SnakeCasePattern> & tags.MinItems<1>;
   }
 
   /**
@@ -260,7 +260,7 @@ export namespace AutoBePrisma {
      * "shopping_sale_snapshots", "bbs_articles" Materialized views use "mv_"
      * prefix: "mv_shopping_sale_last_snapshots"
      */
-    name: string & SnakePattern;
+    name: string & SnakeCasePattern;
 
     /**
      * Detailed description explaining the business purpose and usage of the
@@ -504,7 +504,7 @@ export namespace AutoBePrisma {
      * models in the uploaded schemas. Represents the unique identifier for each
      * record in the table.
      */
-    name: string & SnakePattern;
+    name: string & SnakeCasePattern;
 
     /**
      * Data type of the primary key field.
@@ -543,7 +543,7 @@ export namespace AutoBePrisma {
      * "bbs_article_id", "attachment_file_id" For self-references: "parent_id"
      * (e.g., in hierarchical structures)
      */
-    name: string & SnakePattern;
+    name: string & SnakeCasePattern;
 
     /**
      * Data type of the foreign key field.
@@ -629,7 +629,7 @@ export namespace AutoBePrisma {
      * Naming convention: camelCase, descriptive of the relationship's business
      * meaning
      */
-    name: string & CamelPattern;
+    name: string & CamelCasePattern;
 
     /**
      * Name of the target model being referenced by this relation.
@@ -696,7 +696,7 @@ export namespace AutoBePrisma {
      * - Business data: value, quantity, price, volume, balance
      * - Flags: primary, required, exclusive, secret, multiplicative
      */
-    name: string & SnakePattern;
+    name: string & SnakeCasePattern;
 
     /**
      * Data type of the field for Prisma schema generation.

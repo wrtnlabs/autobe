@@ -32,7 +32,8 @@ export namespace TestLogger {
         `    - life: ${event.life}`,
         ...event.result.errors.map(
           (v) =>
-            `    - ${v.path}: ${v.expected} (${JSON.stringify(v.value)}) -> ${JSON.stringify(v.description ?? "no description")}`,
+            `    - ${v.path}: ${v.expected} -> ${JSON.stringify(v.description ?? "no description")}\n` +
+            `    - ${JSON.stringify(v.value)}`,
         ),
       );
     else if (event.type === "jsonParseError")

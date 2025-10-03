@@ -1,6 +1,6 @@
 import { tags } from "typia";
 
-import { CamelPattern } from "../../typings/CamelPattern";
+import { CamelCasePattern } from "../../typings/CamelCasePattern";
 
 /**
  * Interface representing a user role definition in the requirements analysis
@@ -31,7 +31,7 @@ export interface AutoBeAnalyzeRole {
    *
    * MUST use camelCase naming convention.
    */
-  name: string & CamelPattern & tags.MinLength<1>;
+  name: string & CamelCasePattern & tags.MinLength<1>;
 
   /**
    * Human-readable description of the role's permissions and capabilities.

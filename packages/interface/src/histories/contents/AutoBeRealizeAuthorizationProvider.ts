@@ -1,4 +1,4 @@
-import { CamelPattern } from "../../typings/CamelPattern";
+import { CamelCasePattern } from "../../typings/CamelCasePattern";
 
 /**
  * Authorization provider implementation for runtime access control.
@@ -27,7 +27,7 @@ export interface AutoBeRealizeAuthorizationProvider {
    * the provider's purpose. For example, 'JwtAuthGuard' implements JWT token
    * validation, while 'RolesGuard' enforces role-based access control.
    */
-  name: string & CamelPattern;
+  name: string & CamelCasePattern;
 
   /**
    * File path where the provider will be generated.

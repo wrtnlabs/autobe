@@ -11,7 +11,8 @@ export namespace JsonSchemaValidator {
   }
 
   export const validateSchemas = (props: IProps): void => {
-    authorization(props);
+    validateAuthorization(props);
+    validatePrismaSchema(props.errors);
     for (const key of Object.keys(props.schemas))
       validateKey({
         errors: props.errors,
@@ -121,7 +122,7 @@ export namespace JsonSchemaValidator {
     }
   };
 
-  const authorization = (props: IProps): void => {
+  const validateAuthorization = (props: IProps): void => {
     for (const [key, value] of Object.entries(props.schemas)) {
       if (!key.endsWith(".IAuthorized")) continue;
       else if (AutoBeOpenApiTypeChecker.isObject(value) === false) {
@@ -144,6 +145,32 @@ export namespace JsonSchemaValidator {
       value.required ??= [];
       if (value.required.includes("token") === false)
         value.required.push("token");
+    }
+  };
+
+  const validatePrismaSchema = (errors: IValidation.IError[]): void => {
+    for (const e of errors) {
+      if (e.path.endsWith(`.properties["x-autobe-prisma-schema"]`) === false)
+        continue;
+      e.expected = "undefined value (remove this property)";
+      e.description = StringUtil.trim`
+        You have defined a property named "x-autobe-prisma-schema"
+        somewhere wrong place.
+        
+        You have defined a property name "x-autobe-prisma-schema" as 
+        an object type. However, this "x-autobe-prisma-schema" property
+        must be defined only in the root schema object as a metadata,
+        not in the nested object property.
+
+        Remove this property at the next time, and re-define it in the
+        root object schema.
+        
+        - Current path (wrong): ${e.path}
+        - Must be (object root): ${e.path.replace(
+          `.properties["x-autobe-prisma-schema"]`,
+          `["x-autobe-prisma-schema"]`,
+        )} 
+      `;
     }
   };
 }

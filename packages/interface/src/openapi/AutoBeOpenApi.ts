@@ -1,6 +1,6 @@
 import { tags } from "typia";
 
-import { CamelPattern } from "../typings/CamelPattern";
+import { CamelCasePattern } from "../typings/CamelCasePattern";
 
 /**
  * AST type system for programmatic OpenAPI specification generation through AI
@@ -489,7 +489,7 @@ export namespace AutoBeOpenApi {
      * handled by decorators at the controller level, and the provider function
      * will receive the authenticated user object with the appropriate type.
      */
-    authorizationRole: (string & CamelPattern & tags.MinLength<1>) | null;
+    authorizationRole: (string & CamelCasePattern & tags.MinLength<1>) | null;
 
     /**
      * Functional name of the API endpoint.
@@ -614,7 +614,7 @@ export namespace AutoBeOpenApi {
      * operations can be uniquely identified in generated SDKs and prevents
      * naming conflicts.
      */
-    name: string & CamelPattern;
+    name: string & CamelCasePattern;
 
     /**
      * Prerequisites for this API operation.
@@ -769,7 +769,7 @@ export namespace AutoBeOpenApi {
      * Therefore, if a user type cannot be clearly and uniquely distinguished in
      * the database, It **cannot** be used as a valid `role` here.
      */
-    name: string & CamelPattern;
+    name: string & CamelCasePattern;
 
     /**
      * Detailed description of the authorization role
@@ -841,7 +841,7 @@ export namespace AutoBeOpenApi {
      *
      * MUST use camelCase naming convention.
      */
-    name: string & CamelPattern;
+    name: string & CamelCasePattern;
 
     /**
      * Description about the path parameter.
@@ -1270,6 +1270,19 @@ export namespace AutoBeOpenApi {
     /** Object type info. */
     export interface IObject extends ISignificant<"object"> {
       /**
+       * Related Prisma schema.
+       *
+       * If the type is directly related to a specific Prisma schema model,
+       * include the exact model name here to establish a clear link between the
+       * OpenAPI schema and the Prisma model.
+       *
+       * This field is optional and should only be included when there is a
+       * direct correspondence to a Prisma model. If there's not any Prisma
+       * model association, this field can be omitted.
+       */
+      "x-autobe-prisma-schema"?: string | null | undefined;
+
+      /**
        * Properties of the object.
        *
        * The `properties` means a list of key-value pairs of the object's
@@ -1483,20 +1496,7 @@ export namespace AutoBeOpenApi {
     export interface IArray extends IJsonSchema.IArray, IDescriptive {}
 
     /** Object type info. */
-    export interface IObject extends IJsonSchema.IObject, IDescriptive {
-      /**
-       * Related Prisma schema.
-       *
-       * If the type is directly related to a specific Prisma schema model,
-       * include the exact model name here to establish a clear link between the
-       * OpenAPI schema and the Prisma model.
-       *
-       * This field is optional and should only be included when there is a
-       * direct correspondence to a Prisma model. If there's not any Prisma
-       * model association, this field can be omitted.
-       */
-      "x-autobe-prisma-schema"?: string | null | undefined;
-    }
+    export interface IObject extends IJsonSchema.IObject, IDescriptive {}
 
     /** Reference type directing named schema. */
     export interface IReference extends IJsonSchema.IReference, IDescriptive {}

@@ -1,3 +1,3 @@
-export * from "./CamelPattern";
-export * from "./PascalPattern";
-export * from "./SnakePattern";
+export * from "./CamelCasePattern";
+export * from "./PascalCasePattern";
+export * from "./SnakeCasePattern";

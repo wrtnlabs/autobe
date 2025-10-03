@@ -1,5 +1,5 @@
 import { AutoBeOpenApi } from "../../openapi/AutoBeOpenApi";
-import { SnakePattern } from "../../typings/SnakePattern";
+import { SnakeCasePattern } from "../../typings/SnakeCasePattern";
 import { AutoBeTestScenarioDependency } from "./AutoBeTestScenarioDependency";
 
 export interface AutoBeTestScenario {
@@ -41,7 +41,7 @@ export interface AutoBeTestScenario {
    * Pattern: method__segment1_segment2_$param Example: "get__users_$userId",
    * "post__orders", "delete__items_$itemId"
    */
-  functionName: string & SnakePattern;
+  functionName: string & SnakeCasePattern;
 
   /**
    * Functions that must be called before running the main test.
