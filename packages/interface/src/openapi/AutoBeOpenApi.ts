@@ -1495,7 +1495,7 @@ export namespace AutoBeOpenApi {
        * direct correspondence to a Prisma model. If there's not any Prisma
        * model association, this field can be omitted.
        */
-      "x-samchon-prisma-schema"?: string;
+      "x-autobe-prisma-schema"?: string | null | undefined;
     }
 
     /** Reference type directing named schema. */

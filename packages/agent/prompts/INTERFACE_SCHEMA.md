@@ -155,9 +155,9 @@ This checklist ensures security is built-in from the start, not added as an afte
     - Aggregations that can be computed at runtime (`total_count`, `average_rating`)
   - **KEY POINT**: Interface extension itself is NOT forbidden - only extensions that require database schema changes
   - **WHY THIS MATTERS**: If interfaces define properties that don't exist in the database, subsequent agents cannot generate working test code or implementation code
-- **x-samchon-prisma-schema Linkage**:
+- **x-autobe-prisma-schema Linkage**:
   - **PURPOSE**: When an object schema directly corresponds to a Prisma model, include this field to establish the connection
-  - **FORMAT**: `"x-samchon-prisma-schema": "PrismaModelName"` (exact model name from Prisma schema)
+  - **FORMAT**: `"x-autobe-prisma-schema": "PrismaModelName"` (exact model name from Prisma schema)
   - **WHEN TO USE**: 
     - For ANY schema type that maps to a Prisma model (not just main entities)
     - Includes: `IEntity`, `IEntity.ISummary`, `IEntity.ICreate`, `IEntity.IUpdate`, etc.
@@ -165,17 +165,17 @@ This checklist ensures security is built-in from the start, not added as an afte
     - If no direct Prisma table association exists, OMIT this field entirely
   - **BENEFITS**: Enables better code generation and validation by subsequent agents
   - **EXAMPLES**: 
-    - `IUser` → `"x-samchon-prisma-schema": "User"`
-    - `IUser.ISummary` → `"x-samchon-prisma-schema": "User"`
-    - `IUser.ICreate` → `"x-samchon-prisma-schema": "User"`
-    - `IPageIUser` → No `x-samchon-prisma-schema` (pagination wrapper, not a direct table mapping)
-    - `IAuthorizationToken` → No `x-samchon-prisma-schema` (system type, not a database table)
+    - `IUser` → `"x-autobe-prisma-schema": "User"`
+    - `IUser.ISummary` → `"x-autobe-prisma-schema": "User"`
+    - `IUser.ICreate` → `"x-autobe-prisma-schema": "User"`
+    - `IPageIUser` → No `x-autobe-prisma-schema` (pagination wrapper, not a direct table mapping)
+    - `IAuthorizationToken` → No `x-autobe-prisma-schema` (system type, not a database table)
   - **CRITICAL FOR VALIDATION**: This field enables automatic verification that all properties in your schema actually exist in the corresponding Prisma model
-  - **VALIDATION RULE**: When `x-samchon-prisma-schema` is present, EVERY property in the schema MUST exist in the referenced Prisma model
+  - **VALIDATION RULE**: When `x-autobe-prisma-schema` is present, EVERY property in the schema MUST exist in the referenced Prisma model
     - Exception: Computed/derived fields that are explicitly calculated from existing fields
     - Exception: Relation fields that are populated via joins
   - **TIMESTAMP VERIFICATION**: Use this field to verify timestamp fields:
-    - If `"x-samchon-prisma-schema": "User"`, then `created_at` is ONLY valid if the Prisma `User` model has `created_at`
+    - If `"x-autobe-prisma-schema": "User"`, then `created_at` is ONLY valid if the Prisma `User` model has `created_at`
     - NEVER add `created_at`, `updated_at`, `deleted_at` without verifying against the linked Prisma model
 
 ### 4.3. 🔴 CRITICAL Security and Integrity Requirements by DTO Type
@@ -609,13 +609,13 @@ The type field serves as a discriminator in the JSON Schema type system and MUST
 1. **For Each Entity**:
    - Define the main entity schema (`IEntityName`)
    - Create all necessary variant types based on API operations
-   - **For types with Prisma correspondence**: Add `"x-samchon-prisma-schema": "PrismaModelName"`
+   - **For types with Prisma correspondence**: Add `"x-autobe-prisma-schema": "PrismaModelName"`
      - Applies to: `IEntity`, `IEntity.ISummary`, `IEntity.ICreate`, `IEntity.IUpdate`, etc.
      - Does NOT apply to: `IEntity.IRequest` (query params), `IPageIEntity` (wrapper), system types
    - Ensure all properties are documented with descriptions from Prisma schema
    - Mark required fields based on Prisma schema constraints
    - **CRITICAL**: Apply security filtering - remove sensitive fields from response types
-   - **VALIDATION STEP**: When `x-samchon-prisma-schema` is present, verify:
+   - **VALIDATION STEP**: When `x-autobe-prisma-schema` is present, verify:
      - Every property you're adding actually exists in the Prisma model
      - Timestamp fields (`created_at`, `updated_at`, `deleted_at`) are only included if present in Prisma
      - No phantom fields are being introduced
@@ -778,7 +778,7 @@ const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
   // Main entity types
   IEntityName: { 
     type: "object", 
-    "x-samchon-prisma-schema": "EntityName"  // Only if this type directly maps to a Prisma model
+    "x-autobe-prisma-schema": "EntityName"  // Only if this type directly maps to a Prisma model
     properties: {
       propertyName: {
         type: "string",
@@ -816,7 +816,7 @@ const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
   "IEntityName.ICreate": { 
     // SECURITY: Never include author_id, creator_id, user_id - these come from authentication context
     type: "object",
-    "x-samchon-prisma-schema": "EntityName"  // Include for all DTO types that map to Prisma model
+    "x-autobe-prisma-schema": "EntityName"  // Include for all DTO types that map to Prisma model
     properties: {...},
     required: [...],
     description: "...",
@@ -824,20 +824,20 @@ const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
   "IEntityName.IUpdate": { 
     // SECURITY: Never allow updating ownership fields like author_id or creator_id
     type: "object",
-    "x-samchon-prisma-schema": "EntityName"  // Include for all DTO types that map to Prisma model
+    "x-autobe-prisma-schema": "EntityName"  // Include for all DTO types that map to Prisma model
     properties: {...},
     required: [...],
     description: "...",
   },
   "IEntityName.ISummary": { 
     type: "object",
-    "x-samchon-prisma-schema": "EntityName"  // Include for all DTO types that map to Prisma model
+    "x-autobe-prisma-schema": "EntityName"  // Include for all DTO types that map to Prisma model
     properties: {...},
     required: [...],
     description: "...",
   },
   "IEntityName.IRequest": { 
-    // No x-samchon-prisma-schema - this is for query parameters, not a direct table mapping
+    // No x-autobe-prisma-schema - this is for query parameters, not a direct table mapping
     type: "object",
     properties: {...},
     required: [...],
@@ -997,8 +997,8 @@ Before completing the schema generation, verify ALL of the following items:
   - **VERIFY**: Check each table individually in the Prisma schema
   - **NEVER**: Add timestamps just because other tables have them
 - [ ] **No phantom fields** - Do NOT add fields that would require database schema changes
-- [ ] **x-samchon-prisma-schema linkage** - Add this field for ANY types that map to Prisma models (IEntity, IEntity.ISummary, IEntity.ICreate, etc.)
-- [ ] **Validate with x-samchon-prisma-schema** - When this field is present:
+- [ ] **x-autobe-prisma-schema linkage** - Add this field for ANY types that map to Prisma models (IEntity, IEntity.ISummary, IEntity.ICreate, etc.)
+- [ ] **Validate with x-autobe-prisma-schema** - When this field is present:
   - Every property MUST exist in the referenced Prisma model (except computed fields)
   - Use it to double-check timestamp fields existence
   - Ensure the Prisma model name is spelled correctly

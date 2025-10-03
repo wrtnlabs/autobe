@@ -95,9 +95,9 @@ export namespace JsonSchemaFactory {
       if (AutoBeOpenApiTypeChecker.isObject(value) === false) continue;
 
       const model: AutoBePrisma.IModel | undefined = value[
-        "x-samchon-prisma-schema"
+        "x-autobe-prisma-schema"
       ]
-        ? entireModels.find((m) => m.name === value["x-samchon-prisma-schema"])
+        ? entireModels.find((m) => m.name === value["x-autobe-prisma-schema"])
         : undefined;
       if (model === undefined) continue;
 

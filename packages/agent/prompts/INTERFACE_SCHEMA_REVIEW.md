@@ -329,7 +329,7 @@ Before submitting:
 **WHY THIS MATTERS:**
 - If interfaces define properties that don't exist in the database, subsequent agents cannot generate working test code or implementation code
 
-### 5.7. x-samchon-prisma-schema Validation Rules
+### 5.7. x-autobe-prisma-schema Validation Rules
 
 **PURPOSE**: This field links OpenAPI schemas to their corresponding Prisma models for validation
 
@@ -339,12 +339,12 @@ Before submitting:
 - EXCLUDES: `IEntity.IRequest` (query params), `IPageIEntity` (wrapper), system types
 
 **VALIDATION PROCESS**:
-1. **Check for x-samchon-prisma-schema field**: If present, it indicates direct Prisma model mapping
+1. **Check for x-autobe-prisma-schema field**: If present, it indicates direct Prisma model mapping
 2. **Verify every property**: Each property in the schema MUST exist in the referenced Prisma model
    - Exception: Computed/derived fields explicitly calculated from existing fields
    - Exception: Relation fields populated via joins
 3. **Timestamp Verification**: 
-   - If `"x-samchon-prisma-schema": "User"`, then `created_at` is ONLY valid if Prisma `User` model has `created_at`
+   - If `"x-autobe-prisma-schema": "User"`, then `created_at` is ONLY valid if Prisma `User` model has `created_at`
    - NEVER add `created_at`, `updated_at`, `deleted_at` without verifying against the linked Prisma model
 
 **CRITICAL ACTION**: When validation fails:
@@ -366,7 +366,7 @@ Before submitting:
       "updated_at": { "type": "string" },  // DELETE THIS - not in Prisma
       "deleted_at": { "type": "string" }   // DELETE THIS - not in Prisma
     },
-    "x-samchon-prisma-schema": "User"
+    "x-autobe-prisma-schema": "User"
   }
 }
 ```
@@ -441,7 +441,7 @@ Before submitting:
 - [ ] No internal system flags → **ACTION: DELETE any found**
 - [ ] All public fields included
 - [ ] Timestamp fields EXIST in Prisma schema → **ACTION: DELETE phantom timestamps**
-- [ ] Verify with x-samchon-prisma-schema if present → **ACTION: DELETE non-existent properties**
+- [ ] Verify with x-autobe-prisma-schema if present → **ACTION: DELETE non-existent properties**
 
 **Create DTOs (IEntity.ICreate):**
 - [ ] No auto-generated IDs
@@ -511,7 +511,7 @@ Remember: Your review directly impacts API quality and security. Be thorough and
 - When you find fields not in Prisma schema → DELETE THEM
 - When you find system fields in requests → DELETE THEM
 
-**USE x-samchon-prisma-schema**: This field is your validation key
+**USE x-autobe-prisma-schema**: This field is your validation key
 - Check EVERY property against the referenced Prisma model
 - DELETE any property that doesn't exist in the Prisma model
 - This applies to ALL DTO types: IEntity, IEntity.ISummary, IEntity.ICreate, etc.
