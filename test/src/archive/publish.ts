@@ -14,8 +14,8 @@ import { TestProject } from "../structures/TestProject";
 
 const SEQUENCE: Record<string, number> = {
   todo: 1,
-  reddit: 2,
-  bbs: 3,
+  bbs: 2,
+  reddit: 3,
   shopping: 4,
 };
 
@@ -61,6 +61,7 @@ const main = async (): Promise<void> => {
     "openai/gpt-4.1",
     "openai/gpt-4.1-mini",
     "openai/gpt-5",
+    "openai/gpt-5-mini",
     "qwen/qwen3-next-80b-a3b-instruct",
   ])
     for (const project of typia.misc.literals<TestProject>()) {
