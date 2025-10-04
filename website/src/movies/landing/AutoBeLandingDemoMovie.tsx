@@ -28,34 +28,36 @@ export default function AutoBeLandingDemoMovie(
 
           {/* Model Tabs */}
           <div className="flex justify-center mb-8">
-            <div
-              className="relative bg-gray-800/50 rounded-full p-1 inline-grid"
-              style={{
-                gridTemplateColumns: `repeat(${models.length}, minmax(140px, 1fr))`,
-              }}
-            >
-              {/* Sliding background indicator */}
+            <div className="max-w-full overflow-x-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
               <div
-                className="absolute top-1 bottom-1 bg-blue-600 rounded-full shadow-lg transition-all duration-300 ease-out"
+                className="relative bg-gray-800/50 rounded-full p-1 inline-grid"
                 style={{
-                  width: `calc(${100 / models.length}% - 4px)`,
-                  transform: `translateX(${models.indexOf(selectedModel) * 100}%)`,
-                  left: "4px",
+                  gridTemplateColumns: `repeat(${models.length}, minmax(140px, 1fr))`,
                 }}
-              />
-              {models.map((model) => (
-                <button
-                  key={model}
-                  onClick={() => setSelectedModel(model)}
-                  className={`relative z-10 px-4 py-3 rounded-full text-sm font-medium transition-all duration-200 min-w-[140px] ${
-                    selectedModel === model
-                      ? "text-white"
-                      : "text-gray-400 hover:text-white"
-                  }`}
-                >
-                  {model.split("/")[1] ?? model}
-                </button>
-              ))}
+              >
+                {/* Sliding background indicator */}
+                <div
+                  className="absolute top-1 bottom-1 bg-blue-600 rounded-full shadow-lg transition-all duration-300 ease-out"
+                  style={{
+                    width: `calc(${100 / models.length}% - 4px)`,
+                    transform: `translateX(${models.indexOf(selectedModel) * 100}%)`,
+                    left: "4px",
+                  }}
+                />
+                {models.map((model) => (
+                  <button
+                    key={model}
+                    onClick={() => setSelectedModel(model)}
+                    className={`relative z-10 px-4 py-3 rounded-full text-sm font-medium transition-all duration-200 min-w-[140px] ${
+                      selectedModel === model
+                        ? "text-white"
+                        : "text-gray-400 hover:text-white"
+                    }`}
+                  >
+                    {model.split("/")[1] ?? model}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>
