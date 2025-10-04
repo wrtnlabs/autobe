@@ -22,6 +22,7 @@ const main = async (): Promise<void> => {
     | "openai/gpt-4.1"
     | "openai/gpt-4.1-mini"
     | "openai/gpt-5"
+    | "openai/gpt-5-mini"
     | "qwen/qwen3-next-80b-a3b-instruct";
   const phaseSequence = [
     "analyze",
