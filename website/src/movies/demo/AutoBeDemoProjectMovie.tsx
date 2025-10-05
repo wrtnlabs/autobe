@@ -53,7 +53,7 @@ export default function AutoBeDemoProjectMovie({ replay }: ReplayCardProps) {
 
   // Detect container width to show/hide time column
   const containerRef = useRef<HTMLAnchorElement>(null);
-  const [showTimeColumn, setShowTimeColumn] = useState(true);
+  const [showTimeColumn, setShowTimeColumn] = useState(false);
 
   useEffect(() => {
     const checkWidth = () => {
