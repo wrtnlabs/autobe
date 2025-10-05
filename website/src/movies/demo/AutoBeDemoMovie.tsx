@@ -1,16 +1,13 @@
 "use client";
 
-import { IAutoBePlaygroundReplay } from "@autobe/interface";
+import { AutoBeDemoStorage } from "@/src/data/AutoBeDemoStorage";
 import { useState } from "react";
 
-import replaysData from "../../data/replays.json";
 import AutoBeDemoModelMovie from "./AutoBeDemoModelMovie";
 
 export default function AutoBeDemoMovie(props: AutoBeDemoMovie.IProps) {
   // Get available models from replays data
-  const models: string[] = Object.keys(
-    replaysData as IAutoBePlaygroundReplay.Collection,
-  );
+  const models: string[] = AutoBeDemoStorage.getModels();
   const [selectedModel, setSelectedModel] = useState<string>(
     props.model ?? models[0] ?? "openai/gpt-4.1",
   );
@@ -52,11 +49,7 @@ export default function AutoBeDemoMovie(props: AutoBeDemoMovie.IProps) {
             </div>
           </div>
         </div>
-        <AutoBeDemoModelMovie
-          data={
-            (replaysData as IAutoBePlaygroundReplay.Collection)[selectedModel]
-          }
-        />
+        <AutoBeDemoModelMovie model={selectedModel} />
       </div>
     </section>
   );

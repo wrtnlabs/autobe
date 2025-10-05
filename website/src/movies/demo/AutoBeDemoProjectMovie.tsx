@@ -1,43 +1,25 @@
 "use client";
 
+import { AutoBeDemoStorage } from "@/src/data/AutoBeDemoStorage";
 import { IAutoBePlaygroundReplay } from "@autobe/interface";
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
-// Convert elapsed time from milliseconds to human readable format
-function formatElapsedTime(ms: number): string {
-  const seconds = Math.floor(ms / 1000);
-  const minutes = Math.floor(seconds / 60);
-  const hours = Math.floor(minutes / 60);
-
-  const s = seconds % 60;
-  const m = minutes % 60;
-  const h = hours;
-
-  if (h > 0) {
-    return `${h}h ${m}m ${s}s`;
-  } else if (m > 0) {
-    return `${m}m ${s}s`;
-  } else {
-    return `${s}s`;
-  }
-}
-
-// Format token numbers with K/M suffix
-function formatTokens(num: number): string {
-  if (num >= 1000000) {
-    return `${(num / 1000000).toFixed(2)}M`;
-  } else if (num >= 1000) {
-    return `${(num / 1000).toFixed(1)}K`;
-  }
-  return num.toString();
-}
-
-interface ReplayCardProps {
-  replay: IAutoBePlaygroundReplay.ISummary;
-}
-
-export default function AutoBeDemoProjectMovie({ replay }: ReplayCardProps) {
+export default function AutoBeDemoProjectMovie(
+  props: AutoBeDemoProjectMovie.IProps,
+) {
   // Use project name directly from replay data
+  const replay: IAutoBePlaygroundReplay.ISummary | null =
+    AutoBeDemoStorage.getProject(props);
+  
+  if (replay === null) {
+    return (
+      <div className="block bg-white/5 border border-gray-600/30 rounded-2xl p-6 flex flex-col items-center justify-center min-h-[200px]">
+        <div className="text-4xl mb-3">📦</div>
+        <p className="text-gray-400">No project data available</p>
+      </div>
+    );
+  }
+
   const projectTitle =
     replay.project.charAt(0).toUpperCase() + replay.project.slice(1);
 
@@ -64,8 +46,8 @@ export default function AutoBeDemoProjectMovie({ replay }: ReplayCardProps) {
     };
 
     checkWidth();
-    window.addEventListener('resize', checkWidth);
-    
+    window.addEventListener("resize", checkWidth);
+
     // Use ResizeObserver for more accurate detection
     const resizeObserver = new ResizeObserver(checkWidth);
     if (containerRef.current) {
@@ -73,7 +55,7 @@ export default function AutoBeDemoProjectMovie({ replay }: ReplayCardProps) {
     }
 
     return () => {
-      window.removeEventListener('resize', checkWidth);
+      window.removeEventListener("resize", checkWidth);
       resizeObserver.disconnect();
     };
   }, []);
@@ -220,4 +202,39 @@ export default function AutoBeDemoProjectMovie({ replay }: ReplayCardProps) {
       </div>
     </a>
   );
+}
+export namespace AutoBeDemoProjectMovie {
+  export interface IProps {
+    model: string;
+    project: string;
+  }
+}
+
+// Convert elapsed time from milliseconds to human readable format
+function formatElapsedTime(ms: number): string {
+  const seconds = Math.floor(ms / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+
+  const s = seconds % 60;
+  const m = minutes % 60;
+  const h = hours;
+
+  if (h > 0) {
+    return `${h}h ${m}m ${s}s`;
+  } else if (m > 0) {
+    return `${m}m ${s}s`;
+  } else {
+    return `${s}s`;
+  }
+}
+
+// Format token numbers with K/M suffix
+function formatTokens(num: number): string {
+  if (num >= 1000000) {
+    return `${(num / 1000000).toFixed(2)}M`;
+  } else if (num >= 1000) {
+    return `${(num / 1000).toFixed(1)}K`;
+  }
+  return num.toString();
 }
