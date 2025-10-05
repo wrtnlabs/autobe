@@ -1,6 +1,7 @@
 "use client";
 
 import { IAutoBePlaygroundReplay } from "@autobe/interface";
+import { useState, useEffect, useRef } from "react";
 
 // Convert elapsed time from milliseconds to human readable format
 function formatElapsedTime(ms: number): string {
@@ -35,9 +36,7 @@ interface ReplayCardProps {
   replay: IAutoBePlaygroundReplay.ISummary;
 }
 
-export default function AutoBeLandingDemoReplayMovie({
-  replay,
-}: ReplayCardProps) {
+export default function AutoBeDemoProjectMovie({ replay }: ReplayCardProps) {
   // Use project name directly from replay data
   const projectTitle =
     replay.project.charAt(0).toUpperCase() + replay.project.slice(1);
@@ -52,8 +51,36 @@ export default function AutoBeLandingDemoReplayMovie({
   const cachedTokens = formatTokens(tokenUsage.input.cached);
   const outputTokens = formatTokens(tokenUsage.output.total);
 
+  // Detect container width to show/hide time column
+  const containerRef = useRef<HTMLAnchorElement>(null);
+  const [showTimeColumn, setShowTimeColumn] = useState(true);
+
+  useEffect(() => {
+    const checkWidth = () => {
+      if (containerRef.current) {
+        // Show time column only if container is wider than 400px
+        setShowTimeColumn(containerRef.current.offsetWidth > 400);
+      }
+    };
+
+    checkWidth();
+    window.addEventListener('resize', checkWidth);
+    
+    // Use ResizeObserver for more accurate detection
+    const resizeObserver = new ResizeObserver(checkWidth);
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
+    }
+
+    return () => {
+      window.removeEventListener('resize', checkWidth);
+      resizeObserver.disconnect();
+    };
+  }, []);
+
   return (
     <a
+      ref={containerRef}
       href={url}
       target="_blank"
       rel="noopener noreferrer"
@@ -65,8 +92,18 @@ export default function AutoBeLandingDemoReplayMovie({
           <span className="text-xs text-gray-400 bg-gray-700/30 group-hover:bg-gray-600/40 px-3 py-1.5 rounded-lg transition-all">
             {replay.vendor}
           </span>
-          <svg className="w-4 h-4 text-white/60 group-hover:text-white group-hover:scale-110 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          <svg
+            className="w-4 h-4 text-white/60 group-hover:text-white group-hover:scale-110 transition-all"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 5l7 7-7 7"
+            />
           </svg>
         </div>
       </div>
@@ -95,9 +132,11 @@ export default function AutoBeLandingDemoReplayMovie({
                     <td className="py-2 pl-1 text-sm text-gray-500 whitespace-nowrap">
                       -
                     </td>
-                    <td className="py-2 px-3 text-sm text-gray-500 text-right w-20 whitespace-nowrap hidden sm:table-cell">
-                      -
-                    </td>
+                    {showTimeColumn && (
+                      <td className="py-2 px-3 text-sm text-gray-500 text-right w-20 whitespace-nowrap">
+                        -
+                      </td>
+                    )}
                   </tr>
                 );
               }
@@ -140,9 +179,11 @@ export default function AutoBeLandingDemoReplayMovie({
                   <td className="py-2 pl-1 text-sm text-gray-400 whitespace-nowrap">
                     {detail}
                   </td>
-                  <td className="py-2 px-3 text-sm text-gray-400 text-right w-20 whitespace-nowrap hidden sm:table-cell">
-                    {phase.elapsed ? formatElapsedTime(phase.elapsed) : "-"}
-                  </td>
+                  {showTimeColumn && (
+                    <td className="py-2 px-3 text-sm text-gray-400 text-right w-20 whitespace-nowrap">
+                      {phase.elapsed ? formatElapsedTime(phase.elapsed) : "-"}
+                    </td>
+                  )}
                 </tr>
               );
             })}

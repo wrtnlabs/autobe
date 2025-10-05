@@ -1,10 +1,12 @@
+"use client";
+
 import { IAutoBePlaygroundReplay } from "@autobe/interface";
 
 import replaysData from "../../data/replays.json";
-import AutoBeLandingDemoReplayMovie from "./AutoBeLandingDemoReplayMovie";
+import AutoBeDemoProjectMovie from "./AutoBeDemoProjectMovie";
 
-export default function AutoBeLandingDemoModelMovie(
-  props: AutoBeLandingDemoModelMovie.IProps,
+export default function AutoBeDemoModelMovie(
+  props: AutoBeReplayModelMovie.IProps,
 ) {
   const replayList: IAutoBePlaygroundReplay.ISummary[] =
     typeof props.data === "string"
@@ -19,12 +21,12 @@ export default function AutoBeLandingDemoModelMovie(
       }}
     >
       {replayList.map((replay, index) => (
-        <AutoBeLandingDemoReplayMovie key={index} replay={replay} />
+        <AutoBeDemoProjectMovie key={index} replay={replay} />
       ))}
     </div>
   );
 }
-export namespace AutoBeLandingDemoModelMovie {
+export namespace AutoBeReplayModelMovie {
   export interface IProps {
     data: string | IAutoBePlaygroundReplay.ISummary[];
   }
