@@ -21,7 +21,13 @@ export default function AutoBeDemoModelMovie(
   }
 
   return (
-    <div className="gap-3 sm:gap-6 grid grid-cols-1 lg:grid-cols-2">
+    <div
+      className="gap-6 grid grid-cols-1 lg:grid-cols-2"
+      style={{
+        maxWidth: "920px",
+        margin: "0 auto",
+      }}
+    >
       {replayList.map((replay, index) => (
         <AutoBeDemoProjectMovie
           key={index}
