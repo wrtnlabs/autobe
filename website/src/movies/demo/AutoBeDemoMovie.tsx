@@ -13,12 +13,11 @@ export default function AutoBeDemoMovie(props: AutoBeDemoMovie.IProps) {
   );
 
   return (
-    <section className="px-6">
+    <section className="px-2 sm:px-6">
       <div className="max-w-6xl mx-auto">
         {/* Model Selection - Simple Dropdown */}
         <div className="mb-8">
-          <div className="flex justify-center items-center gap-4">
-            <span className="text-gray-300 font-medium">Select AI Model:</span>
+          <div className="flex justify-center">
             <div className="relative">
               <select
                 value={selectedModel}
