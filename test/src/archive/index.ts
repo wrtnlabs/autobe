@@ -139,7 +139,11 @@ const main = async (): Promise<void> => {
     List of functions to archive
   `);
   console.log("");
-  for (const tf of testFunctions) console.log(`- (${tf.project}, ${tf.step})`);
+  for (const tf of testFunctions)
+    console.log(
+      `- (${tf.project}, ${tf.step})`,
+      `- code results/${TestGlobal.vendorModel}/${tf.project}/realize`,
+    );
   console.log("");
 
   //----

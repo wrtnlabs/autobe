@@ -23,7 +23,10 @@ export function orchestrateInterfaceComplement<Model extends ILlmSchema.Model>(
     document: AutoBeOpenApi.IDocument;
   },
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
-  return step(ctx, props, false);
+  return step(ctx, props, {
+    wasEmpty: false,
+    life: 10,
+  });
 }
 
 async function step<Model extends ILlmSchema.Model>(
@@ -32,10 +35,14 @@ async function step<Model extends ILlmSchema.Model>(
     instruction: string;
     document: AutoBeOpenApi.IDocument;
   },
-  wasEmpty: boolean,
+  progress: {
+    wasEmpty: boolean;
+    life: number;
+  },
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   const missed: string[] = missedOpenApiSchemas(props.document);
   if (missed.length === 0) return props.document.components.schemas;
+  else if (progress.life === 0) return props.document.components.schemas;
 
   const pointer: IPointer<Record<
     string,
@@ -85,7 +92,7 @@ async function step<Model extends ILlmSchema.Model>(
   });
 
   const empty: boolean = Object.keys(pointer.value).length === 0;
-  if (empty === true && wasEmpty === true)
+  if (empty === true && progress.wasEmpty === true)
     return props.document.components.schemas;
 
   const newSchemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
@@ -105,7 +112,10 @@ async function step<Model extends ILlmSchema.Model>(
         },
       },
     },
-    empty,
+    {
+      wasEmpty: empty,
+      life: progress.life - 1,
+    },
   );
 }
 
