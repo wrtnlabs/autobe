@@ -12,7 +12,8 @@
     "build:pagefind": "pagefind --site .next/server/app --output-path out/_pagefind",
     "build:sitemap": "next-sitemap",
     "deploy": "node build/deploy",
-    "dev": "next dev"
+    "dev": "next dev",
+    "screenshot": "node build/screenshot.js"
   },
   "repository": {
     "type": "git",
@@ -43,6 +44,7 @@
     "gh-pages": "^5.0.0",
     "next-sitemap": "^4.2.3",
     "pagefind": "^1.3.0",
+    "puppeteer": "^24.23.0",
     "rimraf": "^5.0.0",
     "typedoc": "^0.28.9"
   }
