@@ -5,7 +5,9 @@ import { useEffect, useState } from "react";
 import AutoBeDemoModelMovie from "../demo/AutoBeDemoModelMovie";
 
 export default function AutoBeScreenshotMovie() {
-  const [model, setModel] = useState<string>(window ? getValue() : "");
+  const [model, setModel] = useState<string>(
+    typeof window !== "undefined" ? getValue() : "",
+  );
   useEffect(() => {
     setModel(getValue());
   }, []);
