@@ -16,6 +16,7 @@ import { AutoBeConfigConstant } from "../constants/AutoBeConfigConstant";
 import { AutoBeSystemPromptConstant } from "../constants/AutoBeSystemPromptConstant";
 import { IAutoBeConfig } from "../structures/IAutoBeConfig";
 import { IAutoBeVendor } from "../structures/IAutoBeVendor";
+import { supportMistral } from "./supportMistral";
 
 export const consentFunctionCall = async (props: {
   dispatch: (event: AutoBeEvent) => void;
@@ -67,6 +68,8 @@ export const consentFunctionCall = async (props: {
       } satisfies IConsentApplication),
     ],
   });
+  supportMistral(agent, props.vendor);
+
   const histories: MicroAgenticaHistory<"chatgpt">[] = await agent.conversate(
     "Analyze and judge this assistant message please.",
   );

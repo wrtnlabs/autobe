@@ -38,6 +38,7 @@ export namespace TestLogger {
       );
     else if (event.type === "jsonParseError")
       content.push(
+        `  - source: ${event.source}`,
         `  - invalid json: ${event.errorMessage}`,
         `  - life: ${event.life}`,
         `  - arguments: ${event.arguments}`,

@@ -44,25 +44,25 @@ export const archive_analyze = async (
   const zero: AutoBeTokenUsage = new AutoBeTokenUsage(
     factory.getTokenUsage().toJSON(),
   );
-  const go = (
+  const go = async (
     c: string | AutoBeUserMessageContent | AutoBeUserMessageContent[],
-  ) => agent.conversate(c);
+  ): Promise<boolean> => {
+    const histories: AutoBeHistory[] = await agent.conversate(c);
+    return histories.some((h) => h.type === "analyze");
+  };
 
-  let histories: AutoBeHistory[] = await go(userMessage.contents);
-  if (histories.every((h) => h.type !== "analyze")) {
-    histories = await go(
-      "I'm not familiar with the analyze feature. Please determine everything by yourself, and just show me the analysis report.",
-    );
-    if (histories.every((h) => h.type !== "analyze")) {
-      await FileSystemIterator.save({
-        root: `${TestGlobal.ROOT}/results/${model}/${project}/analyze-failure`,
-        files: {
-          "histories.json": JSON.stringify(agent.getHistories(), null, 2),
-        },
-      });
-      throw new Error("Some history type must be analyze.");
-    }
-  }
+  if ((await go(userMessage.contents)) === false)
+    if (
+      (await go(
+        "I'm not familiar with the analyze feature. Please determine everything by yourself, and just show me the analysis report.",
+      )) === false
+    )
+      if (
+        (await go(
+          "I already told you to publish the analysis report. Never ask me anything, and just do it right now.",
+        )) === false
+      )
+        throw new Error("Some history type must be analyze.");
 
   // REPORT RESULT
   const files: Record<string, string> = await agent.getFiles();

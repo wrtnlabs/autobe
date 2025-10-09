@@ -41,6 +41,7 @@ import { AutoBeTimeoutError } from "../utils/AutoBeTimeoutError";
 import { TimedConversation } from "../utils/TimedConversation";
 import { consentFunctionCall } from "./consentFunctionCall";
 import { getCriticalCompiler } from "./getCriticalCompiler";
+import { supportMistral } from "./supportMistral";
 
 export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
   model: Model;
@@ -104,6 +105,7 @@ export const createAutoBeContext = <Model extends ILlmSchema.Model>(props: {
           histories: next.histories,
           controllers: [next.controller],
         });
+        supportMistral(agent, props.vendor);
 
         // ADD EVENT LISTENERS
         agent.on("request", async (event) => {

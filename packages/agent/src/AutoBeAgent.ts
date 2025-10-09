@@ -27,6 +27,7 @@ import { createAgenticaHistory } from "./factory/createAgenticaHistory";
 import { createAutoBeController } from "./factory/createAutoBeApplication";
 import { createAutoBeContext } from "./factory/createAutoBeContext";
 import { createAutoBeState } from "./factory/createAutoBeState";
+import { supportMistral } from "./factory/supportMistral";
 import { transformFacadeStateMessage } from "./orchestrate/facade/transformFacadeStateMessage";
 import { IAutoBeProps } from "./structures/IAutoBeProps";
 import { randomBackoffStrategy } from "./utils/backoffRetry";
@@ -162,6 +163,7 @@ export class AutoBeAgent<Model extends ILlmSchema.Model>
         }),
       ],
     });
+    supportMistral(this.agentica_, props.vendor);
 
     // HISTORIES MANIPULATION
     this.agentica_.getHistories().push(
