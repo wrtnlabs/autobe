@@ -46,7 +46,7 @@ const meta: MetaRecord = {
   },
   screenshot: {
     type: "page",
-    title: "Introduction",
+    title: "Screenshot",
     display: "hidden",
     theme: {
       layout: "full",
