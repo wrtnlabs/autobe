@@ -45,7 +45,7 @@ Here's an example conversation script to use with AutoBE. Following this script 
 4. **Testing**: "Make the e2e test functions."
 5. **Implementation**: "Implement API functions."
 
-If you want to use Local LLMs like `qwen3-80b-a3b` or maintain multiple chat sessions for frequent conversations with AutoBE, run the following commands. You can install AutoBE locally, run the playground application directly, and manage your chat sessions:
+If you want to use Local LLMs like `qwen3-next-80b-a3b-instruct` or maintain multiple chat sessions for frequent conversations with AutoBE, run the following commands. You can install AutoBE locally, run the playground application directly, and manage your chat sessions:
 
 ```bash
 git clone https://github.com/wrtnlabs/autobe
@@ -54,7 +54,7 @@ pnpm install
 pnpm run playground
 ```
 
-![Compilation Success Dashboard](https://autobe.dev/images/demonstrate/replay-openai-gpt4.1.png)
+![Compilation Success Dashboard](https://autobe.dev/images/demonstrate/replay-openai-gpt-4.1.png)
 
 > After installing AutoBE locally and running the playground, you can replay chat sessions from AutoBE development team's testing at http://localhost:5713/replay/index.html.
 
