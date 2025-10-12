@@ -18,29 +18,65 @@ In other words, while the core is AI chatbot + procedures, it has all imaginable
 > Since this service is being created by Wrtn Technologies, please use the prefix `Wrtn` (lowercase `wrtn`).
 
 ## User
-This AI chatbot service requires membership registration to use, and each member can have multiple email addresses.
+This is a B2B enterprise-exclusive service, and `WrtnMember` refers to internal Wrtn service members (not enterprise employees). Each member can have multiple email addresses.
 
-When a regular member additionally has a moderator or administrator record (each having a 1:1 relationship with member), they acquire corresponding system permissions.
+However, simply registering as an internal member doesn't immediately grant permissions to manage enterprise services. Only when approved by an administrator can members be promoted to moderator or administrator roles.
 
-Also, each member can have accounts, and `WrtnChatSession` or `WrtnProcedureSession` etc. are all attributed to these accounts. These accounts can be transferred to other members - considering cases where employees leave the company and need to hand over their sessions and assets to successors.
+Internal members have a `title` field with values (administrator, moderator, member) that determines their system permissions.
+
+Also, internal members mainly have administrative roles for managing the B2B service itself.
 
 - `WrtnMember`
-  - Name
-  - Phone number
-  - Password
-- `WrtnMemberEmail`
-  - Email address, but must be verified
-  - Multiple emails can be registered per member
-- `WrtnAccount`
-  - Account code (someone)
-  - Can be transferred to other members
-- `WrtnModerator`
-  - When regular member has additional moderator record, gains moderator permissions
-- `WrtnAdministrator`
-  - When regular member has additional administrator record, gains administrator permissions
+- `WrtnMemberAppointment`
+- Title of `WrtnMember`
+  - administrator
+  - moderator
+  - guest
+
+```prisma
+model wrtn_members {
+  id String @id @uuid
+  name String
+  mobile String
+  password String
+  title String
+  created_at DateTime
+  updated_at DateTime // updated when title changes
+  approved_at DateTime? // first approved time  
+  deleted_at DateTime?
+  
+  @@unique([mobile])
+  @@index([name])
+  @@index([title])
+}
+
+model wrtn_member_appointments {
+  id String @id @uuid
+  wrtn_appointer_id String @uuid
+  wrtn_member_id String @uuid  
+  title String
+  created_at DateTime
+}
+
+model wrtn_member_emails {
+  id String @id @uuid
+  wrtn_member_id String @uuid
+  email String
+  verified_at DateTime?
+  created_at DateTime
+  deleted_at DateTime?
+  
+  @@unique([email])
+  @@index([wrtn_member_id])
+}
+```
 
 ## Enterprise
-Companies or corporations are referred to as enterprise. All employees hired by that company are called employee, and each organization within the company is called team. Finally, members of each team are called companion. Naturally, an employee can belong to multiple teams simultaneously.
+Companies or corporations are referred to as enterprise. `WrtnEnterpriseEmployee` refers to enterprise members (not internal Wrtn service members). All employees hired by that company are called employee, and each organization within the company is called team. Finally, members of each team are called companion. Naturally, an employee can belong to multiple teams simultaneously.
+
+**Important**: Only `WrtnMember` (internal Wrtn service administrators) can create enterprises. When an enterprise is created, the WrtnMember also appoints the initial owner employee. Since this initial owner is appointed by WrtnMember (not by another enterprise employee), there is no `wrtn_enterprise_employee_appointments` record for this first owner - their `approved_at` timestamp directly indicates when they were appointed as owner.
+
+After the initial owner is established, `WrtnEnterpriseEmployee` registration follows normal flow: new employees must be approved by another employee with a title of manager or higher to become an official enterprise member, and these appointments are recorded in `wrtn_enterprise_employee_appointments`.
 
 However, teams have a hierarchical structure. That is, one team can be a sub-team of another team. For example, there might be an "Engineering" team with sub-teams like "Backend", "Frontend", "AI", etc. Each team can only belong to one parent team (i.e., multiple parent teams are not allowed).
 
@@ -48,12 +84,85 @@ Also, employees have company-level positions called title with values (owner, ma
 
 Finally, all appointment and position/role change information for employees and companions must be recorded for tracking. Member appointments can be made by managers, and manager appointments can be made by owners/chiefs. Even if someone who was previously a manager is currently demoted to member, the past appointment or change history must not be compromised.
 
+Note: The key difference between `WrtnMember` and `WrtnEnterpriseEmployee` is that `WrtnMember` can have multiple email addresses simultaneously, while `WrtnEnterpriseEmployee` has a single email per enterprise.
+
+`WrtnChatSession` and `WrtnProcedureSession` are directly attributed to `WrtnEnterpriseEmployee`. When employees leave the company, their sessions can be transferred to other employees.
+
 - `WrtnEnterprise`: Company or corporation
-- `WrtnEnterpriseEmployee`: Employee targets member
+- `WrtnEnterpriseEmployee`: Employed member (or someone applying)
 - `WrtnEnterpriseEmployeeAppointment`
 - `WrtnEnterpriseTeam`: Has hierarchical structure
 - `WrtnEnterpriseTeamCompanion`: Team member targets employee
 - `WrtnEnterpriseTeamCompanionAppointment`
+
+```prisma
+model wrtn_enterprises {
+  id String @id @uuid
+  code String
+  name String
+  created_at DateTime
+  updated_at DateTime
+  deleted_at DateTime?
+}
+
+model wrtn_enterprise_employees {
+  id String @id @uuid
+  wrtn_enterprise_id String @uuid
+  email String
+  password String
+  name String
+  title String
+  created_at DateTime
+  updated_at DateTime // whenever title changed
+  approved_at DateTime? // first approved time
+  deleted_at DateTime? // the fired time
+
+  @@unique([wrtn_enterprise_id, email])
+  @@index([wrtn_enterprise_id, name])
+}
+
+model wrtn_enterprise_employee_appointments {
+  id String @id @uuid
+  wrtn_enterprise_appointer_id String @uuid
+  wrtn_enterprise_employee_id String @uuid
+  title String
+  created_at DateTime
+}
+
+model wrtn_enterprise_teams {
+  id String @id @uuid
+  wrtn_enterprise_id String @uuid
+  parent_id String? @uuid
+  code String
+  name String
+  created_at DateTime
+  updated_at DateTime
+  deleted_at DateTime?
+
+  @@unique([wrtn_enterprise_id, code])
+  @@unique([wrtn_enterprise_id, name])
+}
+
+model wrtn_enterprise_team_companions {
+  id String @id @uuid
+  wrtn_enterprise_team_id String @uuid
+  wrtn_enterprise_employee_id String @uuid
+  role String
+  created_at DateTime
+  updated_at DateTime
+  deleted_at DateTime?
+  
+  @@unique([wrtn_enterprise_team_id, wrtn_enterprise_employee_id])
+}
+
+model wrtn_enterprise_team_companion_appointments {
+  id String @id @uuid
+  wrtn_enterprise_team_appointer_id String @uuid
+  wrtn_enterprise_team_employee_id String @uuid
+  role String
+  created_at DateTime
+}
+```
 
 ## Chat Session
 A chat session is an entity that records who opened it with which model (e.g., `openai/gpt-4.1`) and when. User connection information to that session is called connection. All conversation history in each session is referred to as history.
@@ -83,18 +192,54 @@ type IWrtnChatSessionHistory =
   | IWrtnChatSessionAssistantMessageHistory
   | IWrtnChatSessionFunctionCallMessageHistory;
 
-// messages
-interface IWrtnChatSessionSystemMessageHistory {}
-interface IWrtnChatSessionUserMessageHistory {}
-interface IWrtnChatSessionAssistantMessageHistory {}
+// System message - initial instructions or context
+interface IWrtnChatSessionSystemMessageHistory {
+  type: 'system';
+  content: string; // system prompt or instructions
+  metadata?: {
+    purpose?: string; // e.g., 'initial_context', 'rule_update'
+  };
+}
 
-// function call
+// User message - from the enterprise employee
+interface IWrtnChatSessionUserMessageHistory {
+  type: 'user';
+  content: string; // user's message text
+  attachments?: Array<{
+    file_id: string;
+    filename: string;
+    mime_type: string;
+    size: number;
+  }>;
+  metadata?: {
+    edited?: boolean; // if message was edited after sending
+    voice_input?: boolean; // if input via voice
+  };
+}
+
+// Assistant message - AI response
+interface IWrtnChatSessionAssistantMessageHistory {
+  type: 'assistant';
+  content: string; // assistant's response text
+  metadata?: {
+    model?: string; // specific model used if different from session default
+    truncated?: boolean; // if response was cut off
+    reasoning_tokens?: number; // for o1 models
+  };
+}
+
+// Function call - tool/API usage
 interface IWrtnChatSessionFunctionCallMessageHistory {
+  type: 'function_call';
   application: string; // application name (group of functions)
   function: string; // function name
   arguments: Record<string, any>;
   success: boolean; // success or failure
   value: unknown; // return value or exception value
+  metadata?: {
+    duration_ms?: number; // execution time
+    retry_count?: number; // if retried
+  };
 }
 ```
 
@@ -103,8 +248,7 @@ Here is a pseudo-code example of how DB models might be designed in Prisma. By t
 ```prisma
 model wrtn_chat_sessions {
   id String @id @db.Uuid
-  wrtn_account_id String @db.Uuid
-  wrtn_member_id String @db.Uuid
+  wrtn_enterprise_employee_id String @db.Uuid
   vendor String
   title String?
   created_at DateTime @db.Timestamptz
@@ -114,7 +258,7 @@ model wrtn_chat_sessions {
 model wrtn_chat_session_connections {
   id String @id @db.Uuid
   wrtn_chat_session_id String @db.Uuid
-  wrtn_member_id String @db.Uuid
+  wrtn_enterprise_employee_id String @db.Uuid
   connected_at DateTime @db.Timestamptz
   disconnected_at DateTime? @db.Timestamptz
 }
@@ -152,28 +296,72 @@ Procedure is a type of special-purpose AI agent that doesn't use chat interfaces
 
 By the way, enterprise or team managers can limit which procedures can be used by their members. For example, in a company, the "Image Generation" procedure might be allowed for the "Marketing" team but restricted for the "Engineering" team.
 
-- `Procedure`
-- `ProcedureSession`
-- `ProcedureSessionConnection`
-- `ProcedureSessionHistory`
-- `ProcedureSessionAggregate`
+- `WrtnProcedure`
+- `WrtnProcedureSession`
+- `WrtnProcedureSessionConnection`
+- `WrtnProcedureSessionHistory`
+- `WrtnProcedureSessionAggregate`
 
 However, for procedures too, detailed history data should be stored as JSON, but the attributes listed below must be recorded for tracking and detailed management.
 
 ```prisma
-model wrtn_procedures { ... }
-model wrtn_procedure_sessions { ... }
-model wrtn_procedure_session_connections { ... }
+model wrtn_procedures {
+  id String @id @db.Uuid
+  code String
+  name String
+  description String?
+  icon String? // URL or emoji
+  active Boolean @default(true)
+  created_at DateTime @db.Timestamptz
+  updated_at DateTime @db.Timestamptz
+  deleted_at DateTime? @db.Timestamptz
+  
+  @@unique([code])
+  @@index([active])
+}
+
+model wrtn_procedure_sessions {
+  id String @id @db.Uuid
+  wrtn_enterprise_employee_id String @db.Uuid
+  wrtn_procedure_id String @db.Uuid
+  title String?
+  created_at DateTime @db.Timestamptz
+  updated_at DateTime @db.Timestamptz
+  deleted_at DateTime? @db.Timestamptz
+  
+  @@index([wrtn_enterprise_employee_id])
+  @@index([wrtn_procedure_id])
+}
+
+model wrtn_procedure_session_connections {
+  id String @id @db.Uuid
+  wrtn_procedure_session_id String @db.Uuid
+  wrtn_enterprise_employee_id String @db.Uuid
+  connected_at DateTime @db.Timestamptz
+  disconnected_at DateTime? @db.Timestamptz
+  
+  @@index([wrtn_procedure_session_id])
+}
+
 model wrtn_procedure_session_histories {
-  ...
+  id String @id @db.Uuid
+  wrtn_procedure_session_id String @db.Uuid
+  wrtn_procedure_session_connection_id String @db.Uuid
   type String
   arguments String // JSON value
   success Boolean
-  value String // JSON value
+  value String // JSON value, encrypted
+  created_at DateTime @db.Timestamptz
+  
+  @@index([wrtn_procedure_session_id])
 }
+
 model wrtn_procedure_session_aggregates {
-  ...
+  id String @id @db.Uuid
+  wrtn_procedure_session_id String @db.Uuid
   token_usage String // JSON value
+  
+  @@unique([wrtn_procedure_session_id])
 }
 ```
 
