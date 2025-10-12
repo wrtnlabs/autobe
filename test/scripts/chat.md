@@ -17,6 +17,8 @@ In other words, while the core is AI chatbot + procedures, it has all imaginable
 
 > Since this service is being created by Wrtn Technologies, please use the prefix `Wrtn` (lowercase `wrtn`).
 
+**Important Note**: This requirements document covers the core structure, but some implementation details are intentionally left incomplete. AutoBE should identify and implement any missing components necessary for a complete enterprise B2B service, including but not limited to: file management systems, billing/cost tracking, permission management, dashboard/analytics, session transfer mechanisms, and security/authentication systems. Use your best judgment to fill these gaps appropriately.
+
 ## User
 This is a B2B enterprise-exclusive service, and `WrtnMember` refers to internal Wrtn service members (not enterprise employees). Each member can have multiple email addresses.
 
@@ -395,5 +397,13 @@ export namespace IWrtnTokenUsage {
 If there are other elements needed to implement this service, AutoBE should discover, design, and implement them independently.
 
 If you discover something I didn't directly mention, you can proceed with your own discretion. If there's something I mentioned but missed, you can supplement and improve it appropriately without damaging the basic story.
+
+**Specifically, AutoBE must fill in the following missing components**:
+- **File Management**: Design `wrtn_files` table and related storage system for attachments
+- **Billing & Cost Management**: Implement cost tracking, invoicing, and payment systems
+- **Permission System**: Create mechanism for restricting procedures by enterprise/team
+- **Dashboard & Analytics**: Design comprehensive statistics and monitoring systems
+- **Session Transfer**: Implement mechanism for transferring sessions between employees
+- **Security & Authentication**: Add proper authentication, authorization, and encryption systems
 
 Especially for statistics and dashboards, I only said they were necessary without specifying detailed specs. I completely trust your capabilities, so please design and implement them well on your own.
