@@ -24,6 +24,7 @@ module.exports = {
         "@typescript-eslint/no-require-imports": "off",
         "@typescript-eslint/no-empty-object-type": "off",
         "@typescript-eslint/prefer-as-const": "off",
+        "prefer-as-const": "off",
       },
     },
   ],

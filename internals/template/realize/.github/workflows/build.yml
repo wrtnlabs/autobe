@@ -21,16 +21,16 @@ jobs:
         run: pnpm install
 
       - name: Build Swagger
-        run: npm run build:swagger
+        run: pnpm run build:swagger
 
       - name: Build SDK
-        run: npm run build:sdk
+        run: pnpm run build:sdk
 
       - name: Compile Backend-Server
-        run: npm run build
+        run: pnpm run build
 
       - name: Run Test Program
-        run: npm run test -- --reset true --simultaneous 16
+        run: pnpm run test -- --reset true --simultaneous 16
 
       - name: EsLint
-        run: npm run eslint
+        run: pnpm run eslint
