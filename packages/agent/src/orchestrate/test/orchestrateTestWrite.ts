@@ -4,7 +4,7 @@ import {
   AutoBeTestScenario,
   AutoBeTestWriteEvent,
 } from "@autobe/interface";
-import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
+import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { NamingConvention } from "typia/lib/utils/NamingConvention";
@@ -13,6 +13,7 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { completeTestCode } from "./compile/completeTestCode";
 import { getTestScenarioArtifacts } from "./compile/getTestScenarioArtifacts";
 import { transformTestWriteHistories } from "./histories/transformTestWriteHistories";
@@ -85,6 +86,7 @@ async function process<Model extends ILlmSchema.Model>(
     }),
     controller: createController({
       model: ctx.model,
+      functionName: props.scenario.functionName,
       build: (next) => {
         next.domain = NamingConvention.snake(next.domain);
         pointer.value = next;
@@ -129,13 +131,33 @@ async function process<Model extends ILlmSchema.Model>(
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
+  functionName: string;
   build: (next: IAutoBeTestWriteApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> {
   assertSchemaModel(props.model);
 
+  const validate: Validator = (input) => {
+    const result: IValidation<IAutoBeTestWriteApplication.IProps> =
+      typia.validate<IAutoBeTestWriteApplication.IProps>(input);
+    if (result.success === false) return result;
+    const errors: IValidation.IError[] = validateEmptyCode({
+      functionName: props.functionName,
+      draft: result.data.draft,
+      revise: result.data.revise,
+    });
+    return errors.length
+      ? {
+          success: false,
+          errors,
+          data: result.data,
+        }
+      : result;
+  };
   const application: ILlmApplication<Model> = collection[
-    props.model
-  ] satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+    props.model === "chatgpt" ? "chatgpt" : "claude"
+  ](
+    validate,
+  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
   return {
     protocol: "class",
     name: "Create Test Code",
@@ -148,12 +170,21 @@ function createController<Model extends ILlmSchema.Model>(props: {
   };
 }
 
-const claude = typia.llm.application<IAutoBeTestWriteApplication, "claude">();
 const collection = {
-  chatgpt: typia.llm.application<IAutoBeTestWriteApplication, "chatgpt">(),
-  claude,
-  llama: claude,
-  deepseek: claude,
-  "3.1": claude,
-  "3.0": typia.llm.application<IAutoBeTestWriteApplication, "3.0">(),
+  chatgpt: (validate: Validator) =>
+    typia.llm.application<IAutoBeTestWriteApplication, "chatgpt">({
+      validate: {
+        write: validate,
+      },
+    }),
+  claude: (validate: Validator) =>
+    typia.llm.application<IAutoBeTestWriteApplication, "claude">({
+      validate: {
+        write: validate,
+      },
+    }),
 };
+
+type Validator = (
+  input: unknown,
+) => IValidation<IAutoBeTestWriteApplication.IProps>;

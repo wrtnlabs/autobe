@@ -5,7 +5,12 @@ import {
   AutoBeRealizeFunction,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import { ILlmApplication, ILlmController, ILlmSchema } from "@samchon/openapi";
+import {
+  ILlmApplication,
+  ILlmController,
+  ILlmSchema,
+  IValidation,
+} from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
@@ -13,6 +18,7 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { transformRealizeCorrectHistories } from "./histories/transformRealizeCorrectHistories";
 import { compileRealizeFiles } from "./internal/compileRealizeFiles";
 import { IAutoBeRealizeCorrectApplication } from "./structures/IAutoBeRealizeCorrectApplication";
@@ -70,9 +76,10 @@ export async function orchestrateRealizeCorrect<Model extends ILlmSchema.Model>(
     if (!location.startsWith("src/providers")) return;
 
     if (!diagnosticsByFile[location]) {
-      const func = functions.find((f) => f.location === location);
-
-      if (!func) {
+      const func: AutoBeRealizeFunction | undefined = functions.find(
+        (f) => f.location === location,
+      );
+      if (func === undefined) {
         return;
       }
 
@@ -195,6 +202,7 @@ async function step<Model extends ILlmSchema.Model>(
     source: "realizeCorrect",
     controller: createController({
       model: ctx.model,
+      functionName: props.scenario.functionName,
       build: (next) => {
         pointer.value = next;
       },
@@ -268,12 +276,33 @@ async function step<Model extends ILlmSchema.Model>(
 
 function createController<Model extends ILlmSchema.Model>(props: {
   model: Model;
+  functionName: string;
   build: (next: IAutoBeRealizeCorrectApplication.IProps) => void;
 }): ILlmController<Model> {
   assertSchemaModel(props.model);
+
+  const validate: Validator = (input) => {
+    const result: IValidation<IAutoBeRealizeCorrectApplication.IProps> =
+      typia.validate<IAutoBeRealizeCorrectApplication.IProps>(input);
+    if (result.success === false) return result;
+    const errors: IValidation.IError[] = validateEmptyCode({
+      functionName: props.functionName,
+      draft: result.data.draft,
+      revise: result.data.revise,
+    });
+    return errors.length
+      ? {
+          success: false,
+          errors,
+          data: result.data,
+        }
+      : result;
+  };
   const application: ILlmApplication<Model> = collection[
-    props.model
-  ] satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
+    props.model === "chatgpt" ? "chatgpt" : "claude"
+  ](
+    validate,
+  ) satisfies ILlmApplication<any> as unknown as ILlmApplication<Model>;
 
   return {
     protocol: "class",
@@ -287,14 +316,21 @@ function createController<Model extends ILlmSchema.Model>(props: {
   };
 }
 
-const claude = typia.llm.application<
-  IAutoBeRealizeCorrectApplication,
-  "claude"
->();
 const collection = {
-  chatgpt: typia.llm.application<IAutoBeRealizeCorrectApplication, "chatgpt">(),
-  claude,
-  llama: claude,
-  deepseek: claude,
-  "3.1": claude,
+  chatgpt: (validate: Validator) =>
+    typia.llm.application<IAutoBeRealizeCorrectApplication, "chatgpt">({
+      validate: {
+        correct: validate,
+      },
+    }),
+  claude: (validate: Validator) =>
+    typia.llm.application<IAutoBeRealizeCorrectApplication, "claude">({
+      validate: {
+        correct: validate,
+      },
+    }),
 };
+
+type Validator = (
+  input: unknown,
+) => IValidation<IAutoBeRealizeCorrectApplication.IProps>;

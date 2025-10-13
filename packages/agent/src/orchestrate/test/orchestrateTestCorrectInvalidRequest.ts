@@ -3,13 +3,19 @@ import {
   AutoBeTestValidateEvent,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import { ILlmApplication, ILlmController, ILlmSchema } from "@samchon/openapi";
+import {
+  ILlmApplication,
+  ILlmController,
+  ILlmSchema,
+  IValidation,
+} from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
+import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { completeTestCode } from "./compile/completeTestCode";
 import { transformTestCorrectInvalidRequestHistories } from "./histories/transformTestCorrectInvalidRequestHistories";
 import { IAutoBeTestCorrectInvalidRequestApplication } from "./structures/IAutoBeTestCorrectInvalidRequestApplication";
@@ -65,6 +71,7 @@ const correct = async <Model extends ILlmSchema.Model>(
     ),
     controller: createController({
       model: ctx.model,
+      functionName: write.scenario.functionName,
       then: (next) => {
         pointer.value = next;
       },
@@ -123,13 +130,31 @@ const correct = async <Model extends ILlmSchema.Model>(
 
 const createController = <Model extends ILlmSchema.Model>(props: {
   model: Model;
+  functionName: string;
   then: (next: IAutoBeTestCorrectInvalidRequestApplication.IProps) => void;
   reject: () => void;
 }): ILlmController<Model> => {
   assertSchemaModel(props.model);
+  const validate: Validator = (input) => {
+    const result: IValidation<IAutoBeTestCorrectInvalidRequestApplication.IProps> =
+      typia.validate<IAutoBeTestCorrectInvalidRequestApplication.IProps>(input);
+    if (result.success === false) return result;
+    const errors: IValidation.IError[] = validateEmptyCode({
+      functionName: props.functionName,
+      draft: result.data.draft,
+      revise: result.data.revise,
+    });
+    return errors.length
+      ? {
+          success: false,
+          errors,
+          data: result.data,
+        }
+      : result;
+  };
   const application = collection[
     props.model === "chatgpt" ? "chatgpt" : "claude"
-  ] satisfies ILlmApplication<any> as any as ILlmApplication<Model>;
+  ](validate) satisfies ILlmApplication<any> as any as ILlmApplication<Model>;
   return {
     protocol: "class",
     name: "correctInvalidRequest",
@@ -146,12 +171,34 @@ const createController = <Model extends ILlmSchema.Model>(props: {
 };
 
 const collection = {
-  chatgpt: typia.llm.application<
-    IAutoBeTestCorrectInvalidRequestApplication,
-    "chatgpt"
-  >(),
-  claude: typia.llm.application<
-    IAutoBeTestCorrectInvalidRequestApplication,
-    "claude"
-  >(),
+  chatgpt: (validate: Validator) =>
+    typia.llm.application<
+      IAutoBeTestCorrectInvalidRequestApplication,
+      "chatgpt"
+    >({
+      validate: {
+        rewrite: validate,
+        reject: () => ({
+          success: true,
+          data: undefined,
+        }),
+      },
+    }),
+  claude: (validate: Validator) =>
+    typia.llm.application<
+      IAutoBeTestCorrectInvalidRequestApplication,
+      "claude"
+    >({
+      validate: {
+        rewrite: validate,
+        reject: () => ({
+          success: true,
+          data: undefined,
+        }),
+      },
+    }),
 };
+
+type Validator = (
+  input: unknown,
+) => IValidation<IAutoBeTestCorrectInvalidRequestApplication.IProps>;

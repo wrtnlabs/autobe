@@ -14,6 +14,7 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { assertSchemaModel } from "../../context/assertSchemaModel";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { orchestrateCommonCorrectCasting } from "../common/orchestrateCommonCorrectCasting";
 import { completeTestCode } from "./compile/completeTestCode";
 import { transformTestCorrectHistories } from "./histories/transformTestCorrectHistories";
@@ -66,6 +67,7 @@ export const orchestrateTestCorrect = async <Model extends ILlmSchema.Model>(
                     step: ctx.state().analyze?.step ?? 0,
                   }) satisfies AutoBeTestCorrectEvent,
                 script: (event) => event.file.content,
+                functionName: w.scenario.functionName,
               },
               x.file.content,
             );
@@ -163,6 +165,7 @@ const correct = async <Model extends ILlmSchema.Model>(
     }),
     controller: createController({
       model: ctx.model,
+      functionName: props.function.scenario.functionName,
       failure: props.validate.result,
       build: (next) => {
         pointer.value = next;
@@ -233,6 +236,7 @@ const correct = async <Model extends ILlmSchema.Model>(
 
 const createController = <Model extends ILlmSchema.Model>(props: {
   model: Model;
+  functionName: string;
   failure: IAutoBeTypeScriptCompileResult.IFailure;
   build: (next: IAutoBeTestCorrectApplication.IProps) => void;
 }): IAgenticaController.IClass<Model> => {
@@ -243,30 +247,19 @@ const createController = <Model extends ILlmSchema.Model>(props: {
   ): IValidation<IAutoBeTestCorrectApplication.IProps> => {
     const result: IValidation<IAutoBeTestCorrectApplication.IProps> =
       typia.validate<IAutoBeTestCorrectApplication.IProps>(input);
-    // if (result.success === false) return result;
-
-    // const expected: number = props.failure.diagnostics.length;
-    // const actual: number = result.data.think.analyses.length;
-    // if (expected !== actual)
-    //   return {
-    //     success: false,
-    //     errors: [
-    //       {
-    //         path: "$input.think.analyses",
-    //         expected: `Array<IValidation<IAutoBeTypeScriptCompileResult.IDiagnostic>> & MinItems<${expected}> & MaxItems<${expected}>`,
-    //         value: result.data.think.analyses,
-    //         description: StringUtil.trim`
-    //           The 'think.analyses' must contain all the compilation errors.
-
-    //           Therefore, the length of the 'think.analyses' must be not
-    //           ${actual}, but exactly ${expected}, which is equal to the length of
-    //           the 'diagnostics' of the compilation failure.
-    //         `,
-    //       },
-    //     ],
-    //     data: input,
-    //   };
-    return result;
+    if (result.success === false) return result;
+    const errors: IValidation.IError[] = validateEmptyCode({
+      functionName: props.functionName,
+      draft: result.data.draft,
+      revise: result.data.revise,
+    });
+    return errors.length
+      ? {
+          success: false,
+          errors,
+          data: result.data,
+        }
+      : result;
   };
   const application: ILlmApplication<Model> = collection[
     props.model === "chatgpt" ? "chatgpt" : "claude"
