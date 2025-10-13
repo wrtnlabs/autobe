@@ -15,6 +15,7 @@ pnpm run archive --vendor openai/gpt-4.1 --project todo > archive.openai-gpt-4.1
 pnpm run archive --vendor openai/gpt-4.1 --project bbs > archive.openai-gpt-4.1.bbs.log
 pnpm run archive --vendor openai/gpt-4.1 --project reddit > archive.openai-gpt-4.1.reddit.log
 pnpm run archive --vendor openai/gpt-4.1 --project shopping > archive.openai-gpt-4.1.shopping.log
+pnpm run archive --vendor openai/gpt-4.1 --project chat > archive.openai-gpt-4.1.chat.log
 
 # openai/gpt-4.1-mini
 pnpm run archive --vendor openai/gpt-4.1-mini --project todo > archive.openai-gpt-4.1-mini.todo.log
