@@ -8,6 +8,7 @@ prisma/schema/migrations
 prisma/bbs.db
 
 *.DS_Store
+.env
+.npmrc
 package-lock.json
 pnpm-lock.yaml
-.npmrc
