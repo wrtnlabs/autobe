@@ -725,6 +725,24 @@ export namespace AutoBeOpenApi {
      * @see {@link IPrerequisite} for the structure of each prerequisite
      */
     prerequisites: IPrerequisite[];
+
+    /**
+     * Accessor of the operation.
+     *
+     * If you configure this property, the assigned value will be used as
+     * {@link IHttpMigrateRoute.accessor}. Also, it can be used as the
+     * {@link IHttpLlmFunction.name} by joining with `.` character in the LLM
+     * function calling application.
+     *
+     * Note that the `x-samchon-accessor` value must be unique in the entire
+     * OpenAPI document operations. If there are duplicated `x-samchon-accessor`
+     * values, {@link IHttpMigrateRoute.accessor} will ignore all duplicated
+     * `x-samchon-accessor` values and generate the
+     * {@link IHttpMigrateRoute.accessor} by itself.
+     *
+     * @internal
+     */
+    accessor?: string[] | undefined;
   }
 
   /**

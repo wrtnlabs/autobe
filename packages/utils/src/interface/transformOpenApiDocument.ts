@@ -65,6 +65,7 @@ export function transformOpenApiDocument(
         : undefined,
       ...{
         "x-autobe-prerequisites": op.prerequisites,
+        "x-samchon-accessor": op.accessor,
       },
     };
   }

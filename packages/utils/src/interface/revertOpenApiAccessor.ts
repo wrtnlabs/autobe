@@ -17,11 +17,9 @@ export const revertOpenApiAccessor = (
     const route: IHttpMigrateRoute | undefined = migrate.routes.find(
       (r) => r.method === op.method && r.path === op.path,
     );
-    if (
-      route !== undefined &&
-      route.accessor.length !== 0 &&
-      route.accessor.at(-1) !== op.name
-    )
+    if (route === undefined) continue;
+    if (route.accessor.length !== 0 && route.accessor.at(-1) !== op.name)
       op.name = route.accessor.at(-1)!;
+    op.accessor = route.accessor;
   }
 };
