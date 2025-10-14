@@ -55,7 +55,10 @@ export class TestGlobal {
 
   public static archive: boolean = process.argv.includes("--archive");
   public static vendorModel: string =
-    this.getArguments("vendor")?.[0] || "openai/gpt-4.1";
+    this.getArguments("vendor")?.[0] ?? "openai/gpt-4.1";
+  public static schemaModel: ILlmSchema.Model = (this.getArguments(
+    "schema",
+  )?.[0] ?? "chatgpt") as ILlmSchema.Model;
 }
 
 interface IEnvironments {

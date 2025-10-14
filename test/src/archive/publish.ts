@@ -62,6 +62,7 @@ const main = async (): Promise<void> => {
     "openai/gpt-4.1-mini",
     "openai/gpt-5",
     "openai/gpt-5-mini",
+    "anthropic/claude-sonnet-4.5",
     "qwen/qwen3-next-80b-a3b-instruct",
   ])
     for (const project of typia.misc.literals<TestProject>()) {

@@ -2,10 +2,10 @@
 # ANTHROPIC
 ################################################
 # anthropic/claude-sonnet-4.5
-pnpm run archive --vendor anthropic/claude-sonnet-4.5 --project todo > archive.claude-sonnet-4.5.todo.log
-pnpm run archive --vendor anthropic/claude-sonnet-4.5 --project bbs > archive.claude-sonnet-4.5.bbs.log
-pnpm run archive --vendor anthropic/claude-sonnet-4.5 --project reddit > archive.claude-sonnet-4.5.reddit.log
-pnpm run archive --vendor anthropic/claude-sonnet-4.5 --project shopping > archive.claude-sonnet-4.5.shopping.log
+pnpm run archive --vendor anthropic/claude-sonnet-4.5 --schema claude --project todo > archive.claude-sonnet-4.5.todo.log
+pnpm run archive --vendor anthropic/claude-sonnet-4.5 --schema claude --project bbs > archive.claude-sonnet-4.5.bbs.log
+pnpm run archive --vendor anthropic/claude-sonnet-4.5 --schema claude --project reddit > archive.claude-sonnet-4.5.reddit.log
+pnpm run archive --vendor anthropic/claude-sonnet-4.5 --schema claude --project shopping > archive.claude-sonnet-4.5.shopping.log
 
 ################################################
 # OPENAI

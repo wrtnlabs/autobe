@@ -24,7 +24,7 @@ async function main(): Promise<void> {
     getTokenUsage: () => tokenUsage,
     createAgent: (histories) =>
       new AutoBeAgent({
-        model: TestGlobal.env.SCHEMA_MODEL ?? "chatgpt",
+        model: TestGlobal.schemaModel,
         vendor: TestGlobal.getVendorConfig(),
         config: {
           locale: "en-US",
