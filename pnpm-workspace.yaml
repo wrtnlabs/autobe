@@ -19,7 +19,7 @@ catalogs:
     '@nestia/fetcher': ^8.0.7
     '@nestia/migrate': ^8.0.7
     '@nestia/sdk': ^8.0.7
-    '@samchon/openapi': ^4.7.1
+    '@samchon/openapi': ^4.7.2
     embed-eslint: ^2.0.1
     embed-prisma: ^1.1.2
     embed-typescript: ^2.0.1
