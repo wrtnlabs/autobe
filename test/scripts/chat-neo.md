@@ -6,7 +6,23 @@
 
 ## 1. Overview
 
-나는 엔터프라이즈 SASS AI chatbot 서비스를 만들꺼야.
+뤼튼 엔터프라이즈는 기업 고객을 위한 B2B SaaS AI 서비스로, AI Chatbot과 AI Procedure 두 가지 핵심 기능을 제공한다.
+
+이 서비스는 단순히 AI 에이전트를 제공하는 것을 넘어, 기업 환경에 필요한 모든 관리 기능을 갖춘 종합 플랫폼이다. 기업과 직원, 팀 단위의 체계적인 조직 관리, 세션 단위의 상세한 사용 내역 추적, 토큰 사용량 기반의 정확한 비용 계산, 그리고 권한별 접근 제어까지 엔터프라이즈 환경에 필요한 모든 기능을 제공한다.
+
+시스템은 크게 네 가지 계층으로 구성된다:
+
+1. **Internal Management Layer**: `wrtn_members`로 대표되는 내부 관리자들이 전체 엔터프라이즈 고객사를 관리한다. administrator, moderator, member의 세 가지 역할로 구분되며, 기업 등록과 최초 owner 임명을 담당한다.
+
+2. **Enterprise Layer**: 각 기업(`wrtn_enterprises`)과 그 소속 직원(`wrtn_enterprise_employees`), 그리고 팀 조직(`wrtn_enterprise_teams`)으로 구성된다. 기업 내 직책(owner/manager/member/observer)과 팀 내 역할(chief/manager/member)을 통해 세밀한 권한 관리가 가능하다.
+
+3. **Service Layer**: 핵심 AI 서비스인 Chatbot과 Procedure를 제공한다. 각 세션은 공개 수준(private/protected/public)을 설정할 수 있으며, 모든 대화와 실행 내역이 암호화되어 저장된다.
+
+4. **Analytics Layer**: 모든 세션의 토큰 사용량을 집계하고, 비용을 추적하며, 사용 통계를 제공한다. 이를 통해 기업은 AI 서비스 사용 현황을 실시간으로 모니터링할 수 있다.
+
+특히 이 시스템은 모든 인사 변동과 권한 변경을 appointments 테이블에 기록하여 완벽한 감사 추적(audit trail)을 제공하며, 초대장 시스템을 통해 보안이 강화된 사용자 온보딩을 지원한다. 또한 팀의 계층 구조와 복수 팀 소속을 지원하여 실제 기업의 복잡한 조직 구조를 그대로 반영할 수 있다.
+
+> 서비스 prefix 는 `wrtn` 으로 한다.
 
 ## 2. Internal Member (Supporter)
 
@@ -49,6 +65,8 @@ model wrtn_member_invitations {
   wrtn_member_id String @uuid // invitor's member id
   email String
   created_at DateTime
+  expired_at DateTime?
+  deleted_at DateTime?
 }
 
 model wrtn_member_emails {
@@ -72,7 +90,7 @@ model wrtn_member_emails {
 - `moderator`: moderator, member를 임명하고 권한 변경할 수 있다.
 - `member`: 통계 및 단순 레코드 열람만 할 수 있다.
 
-`wrtn_members`, 이들은 이메일과 비밀번호로 로그인할 것이되, 복수의 이메일 계정을 가질 수 있다. 그 이유는 SASS 서비스 특성상 기업 고객사로의 출장을 가야할 수도 있는데, 이 때 그 회사가 보안을 이유로 폐쇄망이 갖춰져있어 외부 인터넷 접속이 불가능할 수도 있기 때문이다.
+`wrtn_members`, 이들은 이메일과 비밀번호로 로그인할 것이되, 복수의 이메일 계정을 가질 수 있다. 그 이유는 SaaS 서비스 특성상 기업 고객사로의 출장을 가야할 수도 있는데, 이 때 그 회사가 보안을 이유로 폐쇄망이 갖춰져있어 외부 인터넷 접속이 불가능할 수도 있기 때문이다.
 
 또한 `wrtn_members` 의 가입은 크게 두 방법으로 이루어진다. 첫 번째는 당사자가 직접 뤼튼 엔터프라이즈의 내부 직원용 홈페이지에 들어와 가입 신청을 하거든, administrator 또는 moderator 가 이를 승인해주는 방법이다. 이 때에는 가입 승인 처리와 동시에 `wrtn_member_appointments` 레코드가 생성되고, `wrtn_members.approved_at` 에 그 시각이 기록된다. 두 번째 방법은 기존의 회원이 `wrtn_member_invitations` 레코드를 발행하며 새 회원에게 이메일로 초대장을 보내는 것이다. 이 때 초대받은 사람이 가입 신청을 하면, 그 즉시로 `wrtn_members` 와 함께 `wrtn_member_appointments` 레코드도 생성된다. 물론 이 때의 임명자는 바로 초대장을 보낸 바로 그 회원이며, `wrtn_member_emails.verified_at` 는 `wrtn_member_invitations.created_at` 의 것이 기록된다.
 
@@ -128,6 +146,7 @@ model wrtn_enterprise_employee_invitations {
   email String @uuid
   title String
   created_at DateTime
+  expired_at DateTime?
   deleted_at DateTime?
 }
 
@@ -170,10 +189,13 @@ model wrtn_enterprise_team_companion_invitations {
   wrtn_enterprise_team_id String @uuid // target team
   wrtn_enterprise_employee_id String @uuid // target employee to invite
   wrtn_enterprise_invitor_id String @uuid // some employee who invited
+  created_at DateTime
+  expired_at DateTime?
+  deleted_at DateTime?
 }
 ```
 
-### 3.1. Enterprise
+### 3.1. Corporation
 
 `wrtn_enterprises` 는 뤼튼 엔터프라이즈 AI 서비스를 이용하는 기업 고객사들이다. 이들의 등록은 오직 `wrtn_members` 중 그 역할이 administrator 또는 moderator 만 할 수 있으며, 동시에 최초의 owner 직원을 임명하게 된다.
 
@@ -188,7 +210,7 @@ model wrtn_enterprise_team_companion_invitations {
 - `member`: AI 서비스 이용 가능, 임명 권한 없음
 - `observer`: 통계 및 사용 내역 열람만 가능
 
-직원의 가입은 두 가지 방법으로 이루어진다. 첫 번째는 당사자가 직접 기업 홈페이지에서 가입 신청을 하고 owner 또는 manager 가 이를 승인하는 것이다. 이 때 승인과 동시에 `wrtn_enterprise_employee_appointments` 레코드가 생성되고 `wrtn_enterprise_employees.approved_at` 에 승인 시각이 기록된다. 두 번째는 기존 직원이 (역시 owner 또는 manager) `wrtn_enterprise_employee_invitations` 를 통해 이메일로 초대장을 보내는 것이다. 초대받은 사람이 가입하면 즉시 `wrtn_enterprise_employees` 와 `wrtn_enterprise_employee_appointments` 레코드가 생성되며, 초대장에 명시된 직책이 부여된다.
+직원의 가입은 두 가지 방법으로 이루어진다. 첫 번째는 당사자가 직접 기업 홈페이지에서 가입 신청을 하고 owner 또는 manager 가 이를 승인하는 것이다. 이 때 승인과 동시에 `wrtn_enterprise_employee_appointments` 레코드가 생성되고 `wrtn_enterprise_employees.approved_at` 에 승인 시각이 기록된다. 두 번째는 기존 직원이 (역시 owner 또는 manager) `wrtn_enterprise_employee_invitations` 를 통해 이메일로 초대장을 보내는 것이다. 초대받은 사람이 가입하면 즉시 `wrtn_enterprise_employees` 와 `wrtn_enterprise_employee_appointments` 레코드가 생성되며, 초대장에 명시된 직책이 부여된다. 초대장이 수락되지 않은 경우 `expired_at` 시점에 만료되며, 만료된 초대장으로는 가입할 수 없다.
 
 직원의 직책은 변경될 수 있으며, 심지어 `null` 로 설정하여 모든 권한을 박탈할 수도 있다. owner 는 다른 모든 직원의 직책을 변경하거나 `null` 로 만들 수 있고, manager 는 member 와 observer 의 직책만 변경할 수 있다. 직책이 `null` 이 되면 해당 직원은 기업 계정은 유지하되 어떠한 권한도 행사할 수 없게 된다. 모든 직책 변경은 `wrtn_enterprise_employee_appointments` 에 기록되며, `wrtn_enterprise_employees.updated_at` 이 갱신된다.
 
@@ -200,7 +222,7 @@ model wrtn_enterprise_team_companion_invitations {
 
 ### 3.3. Team
 
-`wrtn_enterprise_teams` 는 기업 내 조직이다. `parent_id` 를 통해 계층 구조를 가질 수 있어, "개발팀" 아래 "백엔드팀", "프론트엔드팀" 같은 하위 팀을 둘 수 있다. 각 팀은 기업 내에서 고유한 `code` 와 `name` 을 가진다. 참고로 `wrtn_enterprise_teams` 또한 owner 또는 manager 직책을 가진 직원만이 만들 수 있다.
+`wrtn_enterprise_teams` 는 기업 내 조직이다. `parent_id` 를 통해 계층 구조를 가질 수 있어, "개발팀" 아래 "백엔드팀", "프론트엔드팀" 같은 하위 팀을 둘 수 있다. 각 팀은 기업 내에서 고유한 `code` 와 `name` 을 가진다. 참고로 `wrtn_enterprise_teams` 는 owner 또는 manager 직책을 가진 직원만이 만들 수 있으며, 팀 생성자는 동시에 해당 팀의 최초 chief 를 임명한다. 팀 삭제는 owner 또는 manager 직책을 가진 직원이 할 수 있으며, `wrtn_enterprise_teams.deleted_at` 에 그 시각이 기록된다.
 
 그리고 `wrtn_enterprise_team_companions` 는 팀 구성원이다. 한 직원은 여러 팀에 동시에 소속될 수 있으며, 각 팀에서의 역할 (`wrtn_enterprise_team_companions.role`) 은 다음과 같다.
 
@@ -212,7 +234,7 @@ model wrtn_enterprise_team_companion_invitations {
 
 팀 구성원의 임명은 팀 내 역할에 따라 권한이 다르다. chief 는 다른 chief, manager, member 를 모두 팀에 임명할 수 있고, manager 는 member 만 임명할 수 있다. member 는 임명 권한이 없다. 모든 임명 이력은 `wrtn_enterprise_team_companion_appointments` 에 기록되며, `wrtn_enterprise_team_appointer_id` 는 임명한 팀 구성원의 companion ID 이다. 
 
-팀원 초대는 `wrtn_enterprise_team_companion_invitations` 를 통해 이루어진다. chief 와 manager 만이 다른 직원을 자신의 팀으로 초대할 수 있으며, 초대받은 직원이 수락하면 `wrtn_enterprise_team_companions` 레코드가 생성되고 동시에 `wrtn_enterprise_team_companion_appointments` 에 임명 기록이 남는다.
+팀원 초대는 `wrtn_enterprise_team_companion_invitations` 를 통해 이루어진다. chief 와 manager 만이 다른 직원을 자신의 팀으로 초대할 수 있으며, 초대받은 직원이 수락하면 `wrtn_enterprise_team_companions` 레코드가 생성되고 동시에 `wrtn_enterprise_team_companion_appointments` 에 임명 기록이 남는다. 팀원 초대장도 `expired_at` 시점에 만료되며, 만료된 초대장으로는 팀에 가입할 수 없다.
 
 팀 구성원의 역할도 변경될 수 있으며, `null` 로 설정하여 팀 내 모든 권한을 박탈할 수도 있다. chief 는 다른 모든 팀원의 역할을 변경하거나 `null` 로 만들 수 있고, manager 는 member 의 역할만 변경할 수 있다. 역할이 `null` 이 되면 해당 직원은 팀 소속은 유지하되 팀 내에서 어떠한 권한도 행사할 수 없게 된다. 모든 역할 변경은 `wrtn_enterprise_team_companion_appointments` 에 기록되며, `wrtn_enterprise_team_companions.updated_at` 이 갱신된다.
 
@@ -544,3 +566,5 @@ model wrtn_enterprise_team_procedures {
   @@index([wrtn_procedure_id])
 }
 ```
+
+## 7. Statistics
