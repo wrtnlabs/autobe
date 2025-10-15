@@ -228,12 +228,27 @@ model wrtn_enterprise_team_companion_invitations {
 
 ## 4. AI Chatbot
 
+AI Chatbot 서비스는 뤼튼 엔터프라이즈의 핵심 기능으로써, OpenAI GPT 등의 AI 모델과 자연어로 대화할 수 있는 서비스이다.
 
+`wrtn_chat_sessions` 는 그러한 AI 챗봇의 세션으로써, 기업의 직원이 `openai/gpt-4.1` 나 `anthropic/claude-sonnet-4.5` 등의 AI 모델을 선택하여 채팅방을 개설할 수 있다. 또한 `wrtn_chat_sessions.disclosure` 를 조정하여 해당 채팅방을 동 기업 내 누구와 공유할 지 설정할 수 있다.
+
+- `public`: 기업 구성원 모두가 채팅방 열람 가능
+- `protected`: 기업의 같은 팀 동료들끼리만 열람 가능
+- `private`: 당사자만 열람 가능
+
+그리고 딱 여기 `wrtn_chat_sessions` 까지가 Restful API 로 생성할 수 있는 엔티티의 끝이다. 이후로 채팅 세션에의 접속 정보를 뜻하는 `wrtn_chat_session_connections` 와 채팅 세션에서 사람과 AI 가 주고받은 정보들을 뜻하는 `wrtn_chat_session_histories` 는 모두 WebSocket streaming API 에서 생성하니, AutoBE 는 이들에 대한 열람 API 만을 만들면 된다. 웹소켓 로직을 구현하는 것은 사람에게 넘기자.
+
+또한 `wrtn_chat_session_histories` 에는 사람과 AI가 주고받은 데이터 정보가 `wrtn_chat_session_histories.data` JSON value 로써 기록되는데, 다만 개인 민감 정보 등을 고려하여 그 데이터는 모두 암호화된다. 그리고 이들 `data` 는 아래와 같이 복수의 타입을 유니언으로 묶은 형태인데, `wrtn_chat_session_histories.type` 이 그것의 discriminator key 역할을 한다.
+
+마지막으로 `wrtn_chat_session_aggregates` 은 해당 채팅 세션의 총 토큰 사용량을 계산하여 누적 기록하는 엔티티로써, `wrtn_chat_session_histories` 레코드가 생성될 때 `token_usage` 값이 `null` 이 아니거든, 그것은 항시 `wrtn_chat_session_aggregates.token_usage` 에 더해진다.
+
+단, 반복컨대 본 AI chatbot 은 웹소켓으로 구현된다. 따라서 AutoBE 가 만들어낼 Restful API 에서는 오직 `wrtn_chat_sessions` 레코드만 생성할 수 있고, 나머지 레코드들은 오직 읽기 API 로만 구현해야한다. 절대 나머지 엔티티들을 작성하고 편집하는 API 를 설계해서는 아니될 것이다.
 
 ```prisma
 model wrtn_chat_sessions {
   id String @id @uuid
   wrtn_enterprise_employee_id String @uuid
+  wrtn_enterprise_employee_persona_id String @uuid
   vendor String
   title String?
 
@@ -244,14 +259,18 @@ model wrtn_chat_sessions {
   created_at DateTime
   updated_at DateTime // when title or disclosure changed 
   deleted_at DateTime?
+
+  @@index([wrtn_enterprise_employee_id, created_at])
+  @@index([wrtn_enterprise_employee_persona_id])
 }
 
 model wrtn_chat_session_connections {
   id String @id @uuid
   wrtn_chat_session_id String @uuid
-  wrtn_enterprise_employee_id String @uuid
   connected_at DateTime
   disconnected_at DateTime?
+
+  @@index([wrtn_chat_session_id, connected_at, disconnected_at])
 }
 
 model wrtn_chat_session_histories {
@@ -262,6 +281,9 @@ model wrtn_chat_session_histories {
   data String // JSON value, encrypted
   token_usage String? // JSON value
   created_at DateTime
+
+  @@index([wrtn_chat_session_id, created_at])
+  @@index([wrtn_chat_session_connection_id])
 }
 
 model wrtn_chat_session_history_files {
@@ -269,6 +291,9 @@ model wrtn_chat_session_history_files {
   wrtn_chat_session_history_id String @uuid
   wrtn_file_id String @uuid
   sequence Int
+
+  @@index([wrtn_chat_session_history_id])
+  @@index([wrtn_file_id])
 }
 
 model wrtn_chat_session_aggregates {
@@ -277,6 +302,85 @@ model wrtn_chat_session_aggregates {
   token_usage String // JSON value
 
   @@unique([wrtn_chat_session_id])
+}
+```
+
+참고로 이 밑으로 적은 인터페이스 타입들은 내가 (사람이) 직접 `wrtn_chat_user_histories.data` 의 타입에 대하여 정의한 DTO 타입들이야. 웹소켓에서 본격적으로 다루게 될 녀석들인데, 너 AutoBE 는 이 타입 그대로 구현하되 각 타입마다 시의적절한 설명을 보충하여 사용하도록 해.
+
+```typescript
+export type IWrtnChatHistory =
+  | IWrtnChatUserMessageHistory
+  | IWrtnChatAssistantMessageHistory
+  | IWrtnChatFunctionCallHistory;
+
+export interface IWrtnChatUserMessageHistory {
+  id: string & tags.Format<"uuid">;
+  type: "userMessage";
+  contents: IWrtnChatUserMessageContent[];
+  created_at: string & tags.Format<"date-time">;
+}
+
+export type IWrtnChatUserMessageContent = 
+  | IWrtnChatUserMessageAudioContent
+  | IWrtnChatUserMessageFileContent
+  | IWrtnChatUserMessageImageContent
+  | IWrtnChatUserMessageTextContent
+export interface IWrtnChatUserMessageAudioContent {
+  type: "audio";
+  file: IWrtnFile;
+}
+export interface IWrtnChatUserMessageFileContent {
+  type: "audio";
+  file: IWrtnFile;
+}
+export interface IWrtnChatUserMessageImageContent {
+  type: "audio";
+  file: IWrtnFile;
+}
+export interface IWrtnChatUserMessageTextContent {
+  type: "audio";
+  file: IWrtnFile;
+}
+
+export interface IWrtnChatAssistantMessageHistory {
+  id: string & tags.Format<"uuid">;
+  type: "assistantMessage";
+  text: string;
+  files: IWrtnFile[];
+  created_at: string & tags.Format<"date-time">;
+  completed_at: string & tags.Format<"date-time">;
+}
+
+export interface IWrtnChatFunctionCallHistory {
+  id: string & tags.Format<"uuid">;
+  type: "functionCall";
+  arguments: object;
+  success: boolean;
+  value: unknown;
+  created_at: string & tags.Format<"date-time">;
+  completed_at: string & tags.Format<"date-time">;
+}
+```
+
+마지막으로 토큰 사용량 타입은 이렇게 정의한다.
+
+물론 이 또한 너가 상세한 설명을 보충하여 (`AutoBeOpenApi.IJsonSchemaDescriptive.description`) DTO 정의해야함.
+
+```typescript
+export interface IWrtnTokenUsage {
+  total: number;
+  input: IWrtnTokenUsageInput;
+  output: IWrtnTokenUsageOutput;
+}
+export interface IWrtnTokenUsageInput {
+  total: number;
+  cached: number;
+}
+export interface IWrtnTokenUsageOutput {
+  total: number;
+  reasoning: number;
+  accepted_prediction: number;
+  rejected_prediction: number;
 }
 ```
 
@@ -316,6 +420,7 @@ model wrtn_procedures {
   
   @@unique([code])
   @@unique([title])
+  @@index([created_at])
 }
 
 model wrtn_procedure_sessions {
@@ -333,17 +438,12 @@ model wrtn_procedure_sessions {
   deleted_at DateTime?
   
   @@index([wrtn_procedure_id])
-  @@index([wrtn_enterprise_employee_id])
+  @@index([wrtn_enterprise_employee_id, created_at])
 }
 
 model wrtn_procedure_session_connections {
   id String @id @uuid
   wrtn_procedure_session_id String @uuid
-
-  // who connected to the session
-  // it can be different from the session creator
-  // when the session is shared to others
-  wrtn_enterprise_employee_id String @uuid 
   
   // - http
   // - websocket
@@ -351,8 +451,7 @@ model wrtn_procedure_session_connections {
   connected_at DateTime
   disconnected_at DateTime?
   
-  @@index([wrtn_procedure_session_id])
-  @@index([wrtn_enterprise_employee_id])
+  @@index([wrtn_procedure_session_id, created_at, disconnected_at])
 }
 
 // Must define every JSON value columns separately
@@ -368,7 +467,7 @@ model wrtn_procedure_session_histories {
   created_at DateTime
   completed DateTime?
   
-  @@index([wrtn_procedure_session_id])
+  @@index([wrtn_procedure_session_id, created_at])
   @@index([wrtn_procedure_session_connection_id])
 }
 
@@ -378,5 +477,53 @@ model wrtn_procedure_session_aggregates {
   token_usage String // JSON value, total aggregation
   
   @@unique([wrtn_procedure_session_id])
+}
+```
+
+
+## 6. Configurations
+### 6.1. Persona
+뤼튼의 모든 엔터프라이즈 유저들은 (`wrtn_enterprise_employees`) 페르소나를 설정할 수 있다. 여기서 말하는 페르소나란, AI chatbot 의 말투 및 태도에 관한 것을 뜻한다. 
+
+그리고 엔터프라이즈 유저들이 설정한 페르소나를 저장하는 테이블이 `wrtn_enterprise_employee_personas` 인데, 보다시피 `updated_at` 컬럼이 존재하지 않는다. 이것인 곧 인터프라이즈 유저가 페르소나를 수정했어도, 시스템 상에서는 기존 레코드를 수정하는게 아니라 새 레코드를 만들어 누적하는 개념이기 때문에 그러하다. 
+
+왜냐하면 페르소나 정보는 AI chatbot 세션에 기록되는데 (`wrtn_chat_sessions.wrtn_enterprise_employee_persona_id`), 이것의 정합성을 지키기 위해서이다. 이미 기존에 한창 진행한 채팅 세션이, 페르소나 설정을 바꾸었다고 갑자기 말투나 성격까지 바뀌어서야 되겠는가?
+
+```prisma
+model wrtn_enterprise_employee_personas {
+  id String @id @uuid
+  wrtn_enterprise_employee_id String @uuid
+  avatar_image_url String
+  name String
+  auto_web_search Boolean
+  auto_question_suggest Boolean
+  tone String
+  memory String? // JSON value
+  prompt String?
+  created_at DateTime
+  deleted_at DateTime?
+
+  @@index([wrtn_enterprise_employee_id, created_at])
+}
+
+model wrtn_enterprise_procedures {
+  id String @id @uuid
+  wrtn_enterprise_id String @uuid
+  wrtn_procedure_id String @uuid
+  sequence Int
+  created_at DateTime
+  deleted_at DateTime?
+
+  @@unique([wrtn_enterprise_id, wrtn_procedure_id])
+  @@index([wrtn_enterprise_id])
+}
+
+model wrtn_enterprise_team_procedures {
+  id String @id @uuid
+  wrtn_enterprise_team_id String @uuid
+  wrtn_procedure_id String @uuid
+  sequence Int
+  created_at DateTime
+  deleted_at DateTime?
 }
 ```
