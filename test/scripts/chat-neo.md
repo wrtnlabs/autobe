@@ -101,7 +101,8 @@ model wrtn_enterprise_employees {
   // - manager
   // - member
   // - observer
-  title String
+  // - null: 아무 직책도 없어 그 무엇도 할 수 없는 상태
+  title String?
   created_at DateTime
   updated_at DateTime // whenever title changed
   approved_at DateTime? // first approved time
@@ -115,7 +116,7 @@ model wrtn_enterprise_employee_appointments {
   id String @id @uuid
   wrtn_enterprise_employee_id String @uuid
   wrtn_enterprise_appointer_id String? @uuid
-  title String
+  title String?
   created_at DateTime
 }
 
@@ -148,7 +149,7 @@ model wrtn_enterprise_team_companions {
   id String @id @uuid
   wrtn_enterprise_team_id String @uuid
   wrtn_enterprise_employee_id String @uuid
-  role String
+  role String?
   created_at DateTime
   updated_at DateTime
   deleted_at DateTime?
@@ -160,7 +161,7 @@ model wrtn_enterprise_team_companion_appointments {
   id String @id @uuid
   wrtn_enterprise_team_appointer_id String @uuid
   wrtn_enterprise_team_employee_id String @uuid
-  role String
+  role String?
   created_at DateTime
 }
 
@@ -189,23 +190,35 @@ model wrtn_enterprise_team_companion_invitations {
 
 직원의 가입은 두 가지 방법으로 이루어진다. 첫 번째는 당사자가 직접 기업 홈페이지에서 가입 신청을 하고 owner 또는 manager 가 이를 승인하는 것이다. 이 때 승인과 동시에 `wrtn_enterprise_employee_appointments` 레코드가 생성되고 `wrtn_enterprise_employees.approved_at` 에 승인 시각이 기록된다. 두 번째는 기존 직원이 (역시 owner 또는 manager) `wrtn_enterprise_employee_invitations` 를 통해 이메일로 초대장을 보내는 것이다. 초대받은 사람이 가입하면 즉시 `wrtn_enterprise_employees` 와 `wrtn_enterprise_employee_appointments` 레코드가 생성되며, 초대장에 명시된 직책이 부여된다.
 
+직원의 직책은 변경될 수 있으며, 심지어 `null` 로 설정하여 모든 권한을 박탈할 수도 있다. owner 는 다른 모든 직원의 직책을 변경하거나 `null` 로 만들 수 있고, manager 는 member 와 observer 의 직책만 변경할 수 있다. 직책이 `null` 이 되면 해당 직원은 기업 계정은 유지하되 어떠한 권한도 행사할 수 없게 된다. 모든 직책 변경은 `wrtn_enterprise_employee_appointments` 에 기록되며, `wrtn_enterprise_employees.updated_at` 이 갱신된다.
+
 다만 최초 owner 의 경우 `wrtn_members` 에 의해 임명되므로 `wrtn_enterprise_employee_appointments.wrtn_enterprise_appointer_id` 가 `null` 이 된다. 이는 기업 생성 시점에 내부 관리자가 직접 owner 를 지정했음을 의미한다.
 
-직원이 퇴사 처리되면 `wrtn_enterprise_employees.deleted_at` 에 그 시각이 기록되며, 이 때도 `wrtn_enterprise_employee_appointments` 레코드가 생성된다. 이 때의 `title` 은 `null` 이 되어 더 이상 직책이 없음을 나타낸다.
+직원의 퇴사는 두 가지 경우로 나뉜다. 첫 번째는 owner 또는 manager 가 직원을 해고하는 경우이다. owner 는 모든 직책의 직원을 해고할 수 있으며, manager 는 member 와 observer 만 해고할 수 있다. 해고 처리 시 `wrtn_enterprise_employees.deleted_at` 에 그 시각이 기록되고, `wrtn_enterprise_employee_appointments` 레코드가 새로 생성된다. 이 때 임명자 (`wrtn_enterprise_appointer_id`) 는 해고를 집행한 그 직원이며, `title` 은 `null` 이 되어 더 이상 직책이 없음을 나타낸다.
+
+두 번째는 직원 본인이 스스로 사직하는 경우이다. 이 때도 마찬가지로 `wrtn_enterprise_employees.deleted_at` 에 시각이 기록되고 `wrtn_enterprise_employee_appointments` 레코드가 생성되지만, `wrtn_enterprise_appointer_id` 는 자기 자신의 ID가 되며, `title` 은 역시 `null` 이 된다. 이를 통해 자진 퇴사와 해고를 구분할 수 있다.
 
 ### 3.3. Team
 
 `wrtn_enterprise_teams` 는 기업 내 조직이다. `parent_id` 를 통해 계층 구조를 가질 수 있어, "개발팀" 아래 "백엔드팀", "프론트엔드팀" 같은 하위 팀을 둘 수 있다. 각 팀은 기업 내에서 고유한 `code` 와 `name` 을 가진다. 참고로 `wrtn_enterprise_teams` 또한 owner 또는 manager 직책을 가진 직원만이 만들 수 있다.
 
-`wrtn_enterprise_team_companions` 는 팀 구성원이다. 한 직원은 여러 팀에 동시에 소속될 수 있으며, 각 팀에서의 역할 (`wrtn_enterprise_team_companions.role`) 은 다음과 같다.
+그리고 `wrtn_enterprise_team_companions` 는 팀 구성원이다. 한 직원은 여러 팀에 동시에 소속될 수 있으며, 각 팀에서의 역할 (`wrtn_enterprise_team_companions.role`) 은 다음과 같다.
 
 - `chief`: 팀장, chief 와 manager, member 를 팀에 임명할 수 있다
 - `manager`: 매니저, member 만 팀에 임명할 수 있다
 - `member`: 팀원, 임명 권한 없음
 
-### 3.4. Employee
+### 3.4. Companion
 
-팀 구성원의 임명 이력은 `wrtn_enterprise_team_companion_appointments` 에 기록되며, `wrtn_enterprise_team_appointer_id` 는 임명한 팀 구성원의 ID 이다. 팀원 초대는 `wrtn_enterprise_team_companion_invitations` 를 통해 이루어진다.
+팀 구성원의 임명은 팀 내 역할에 따라 권한이 다르다. chief 는 다른 chief, manager, member 를 모두 팀에 임명할 수 있고, manager 는 member 만 임명할 수 있다. member 는 임명 권한이 없다. 모든 임명 이력은 `wrtn_enterprise_team_companion_appointments` 에 기록되며, `wrtn_enterprise_team_appointer_id` 는 임명한 팀 구성원의 companion ID 이다. 
+
+팀원 초대는 `wrtn_enterprise_team_companion_invitations` 를 통해 이루어진다. chief 와 manager 만이 다른 직원을 자신의 팀으로 초대할 수 있으며, 초대받은 직원이 수락하면 `wrtn_enterprise_team_companions` 레코드가 생성되고 동시에 `wrtn_enterprise_team_companion_appointments` 에 임명 기록이 남는다.
+
+팀 구성원의 역할도 변경될 수 있으며, `null` 로 설정하여 팀 내 모든 권한을 박탈할 수도 있다. chief 는 다른 모든 팀원의 역할을 변경하거나 `null` 로 만들 수 있고, manager 는 member 의 역할만 변경할 수 있다. 역할이 `null` 이 되면 해당 직원은 팀 소속은 유지하되 팀 내에서 어떠한 권한도 행사할 수 없게 된다. 모든 역할 변경은 `wrtn_enterprise_team_companion_appointments` 에 기록되며, `wrtn_enterprise_team_companions.updated_at` 이 갱신된다.
+
+팀 구성원의 해촉도 두 가지 경우로 나뉜다. 첫 번째는 chief 또는 manager 가 팀원을 강제 해촉하는 경우이다. chief 는 모든 역할의 팀원을 해촉할 수 있으며, manager 는 member 만 해촉할 수 있다. 해촉 처리 시 `wrtn_enterprise_team_companions.deleted_at` 에 그 시각이 기록되고, `wrtn_enterprise_team_companion_appointments` 레코드가 새로 생성된다. 이 때 임명자는 해촉을 집행한 그 팀원이며, `role` 은 `null` 이 되어 더 이상 팀 내 역할이 없음을 나타낸다.
+
+두 번째는 팀원 본인이 스스로 팀을 탈퇴하는 경우이다. 이 때도 마찬가지로 `wrtn_enterprise_team_companions.deleted_at` 에 시각이 기록되고 `wrtn_enterprise_team_companion_appointments` 레코드가 생성되지만, `wrtn_enterprise_team_appointer_id` 는 자기 자신의 companion ID가 되며, `role` 은 역시 `null` 이 된다. 이를 통해 자진 탈퇴와 강제 해촉을 구분할 수 있다.
 
 ## 4. AI Chatbot
 
@@ -214,6 +227,7 @@ model wrtn_chat_sessions {
   id String @id @uuid
   wrtn_enterprise_employee_id String @uuid
   wrtn_enterprise_employee_persona_id String @uuid
+  wrtn_enterprise_team_id String? @uuid // 팀 소속이 없을 때만 null
   vendor String
   title String?
 
@@ -394,6 +408,7 @@ model wrtn_procedure_sessions {
   id String @id @uuid
   wrtn_procedure_id String @uuid // which procedure selected
   wrtn_enterprise_employee_id String @uuid // who created this session
+  wrtn_enterprise_team_id String? @uuid // 팀 소속이 없을 때만 null
   title String?
 
   // - private: only session creator can access
