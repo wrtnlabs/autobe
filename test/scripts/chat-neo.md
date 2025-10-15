@@ -505,25 +505,41 @@ model wrtn_enterprise_employee_personas {
 
   @@index([wrtn_enterprise_employee_id, created_at])
 }
+```
 
+### 6.2. Enterprise Procedure
+각 회사는 당사가 사용할 수 있는 프로시저를 직접 지정할 수 있다. 이것을 관리하는 엔티티가 `wrtn_enterprise_procedures` 인데, 만일 아무런 레코드도 존재하지 않는다면, 그 회사는 정말 그 어떠한 프로시저도 사용할 수 없는 경우에 해당한다.
+
+그리고 각 회사의 각 팀은 다시 각 팀이 사용할 수 있는 프로시저를 스스로 설정할 수 있다; `wrtn_enterprise_team_procedures`. 그러나 설정할 수 있는 프로시저는 해당 회사가 지원하는 프로시저로 한정한다.
+
+또한 해당 팀에 단 하나의 `wrtn_enterprise_team_procedures` 레코드도 없다면, 이 때는 해당 팀이 그 어떠한 프로시저도 사용할 수 없는게 아니라, `wrtn_enterprise_procedures` 설정을 따라가는 것으로 한다.
+
+이외에 `wrtn_enterprise_procedures` 와 `wrtn_enterprise_team_procedures` 는 각각 설정자를 기록하고 있는데, 이 때 설정자 값이 `null` 이라면 `wrtn_enterprise_procedures` 는 엔터프라이즈 계정을 개설한 `wrtn_members` 가 행한 설정이라 그러한 것이고, `wrtn_enterprise_team_procedures` 는 팀을 개설하면서 회사의 관리자 이상 직책인이 (`wrtn_enterprise_employees.title`) 해당 팀에서 사용 가능한 프로시저를 동시 설정해서 그러한 것이다.
+
+```prisma
 model wrtn_enterprise_procedures {
   id String @id @uuid
   wrtn_enterprise_id String @uuid
   wrtn_procedure_id String @uuid
+  wrtn_enterprise_configurator_id String? @uuid // employee.id
   sequence Int
   created_at DateTime
   deleted_at DateTime?
 
   @@unique([wrtn_enterprise_id, wrtn_procedure_id])
-  @@index([wrtn_enterprise_id])
+  @@index([wrtn_procedure_id])
 }
 
 model wrtn_enterprise_team_procedures {
   id String @id @uuid
   wrtn_enterprise_team_id String @uuid
   wrtn_procedure_id String @uuid
+  wrtn_enterprise_team_configurator_id String? @uuid // companion.id
   sequence Int
   created_at DateTime
   deleted_at DateTime?
+
+  @@unique([wrtn_enterprise_team_id, wrtn_procedure_id])
+  @@index([wrtn_procedure_id])
 }
 ```
