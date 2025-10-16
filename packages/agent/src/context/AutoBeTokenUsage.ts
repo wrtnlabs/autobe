@@ -1,7 +1,7 @@
 import { IAutoBeTokenUsageJson } from "@autobe/interface";
 
 import { AutoBeTokenUsageComponent } from "./AutoBeTokenUsageComponent";
-import { IAutoBeApplication } from "./IAutoBeApplication";
+import { IAutoBeFacadeApplication } from "./IAutoBeFacadeApplication";
 
 /**
  * Comprehensive token usage tracker for the AutoBe vibe coding system.
@@ -218,7 +218,7 @@ export class AutoBeTokenUsage implements IAutoBeTokenUsageJson {
    */
   public record(
     usage: IAutoBeTokenUsageJson.IComponent,
-    additionalStages: (keyof IAutoBeApplication)[] = [],
+    additionalStages: (keyof IAutoBeFacadeApplication)[] = [],
   ) {
     additionalStages.forEach((stage) => {
       this[stage].increment(usage);

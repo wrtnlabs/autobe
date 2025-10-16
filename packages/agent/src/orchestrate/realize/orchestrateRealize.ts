@@ -13,7 +13,7 @@ import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
+import { IAutoBeFacadeApplicationProps } from "../../context/IAutoBeFacadeApplicationProps";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { predicateStateMessage } from "../../utils/predicateStateMessage";
 import { compileRealizeFiles } from "./internal/compileRealizeFiles";
@@ -27,7 +27,7 @@ import { generateRealizeScenario } from "./utils/generateRealizeScenario";
 export const orchestrateRealize =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
   async (
-    props: IAutoBeApplicationProps,
+    props: IAutoBeFacadeApplicationProps,
   ): Promise<AutoBeAssistantMessageHistory | AutoBeRealizeHistory> => {
     // PREDICATION
     const document: AutoBeOpenApi.IDocument | undefined =

@@ -11,7 +11,7 @@ import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
+import { IAutoBeFacadeApplicationProps } from "../../context/IAutoBeFacadeApplicationProps";
 import { predicateStateMessage } from "../../utils/predicateStateMessage";
 import { orchestrateTestCorrect } from "./orchestrateTestCorrect";
 import { orchestrateTestScenario } from "./orchestrateTestScenario";
@@ -21,7 +21,7 @@ import { IAutoBeTestWriteResult } from "./structures/IAutoBeTestWriteResult";
 export const orchestrateTest =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
   async (
-    props: IAutoBeApplicationProps,
+    props: IAutoBeFacadeApplicationProps,
   ): Promise<AutoBeAssistantMessageHistory | AutoBeTestHistory> => {
     // PREDICATION
     const start: Date = new Date();

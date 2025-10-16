@@ -17,7 +17,7 @@ import { HashMap, Pair } from "tstl";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
+import { IAutoBeFacadeApplicationProps } from "../../context/IAutoBeFacadeApplicationProps";
 import { predicateStateMessage } from "../../utils/predicateStateMessage";
 import { orchestrateInterfaceAuthorizations } from "./orchestrateInterfaceAuthorizations";
 import { orchestrateInterfaceComplement } from "./orchestrateInterfaceComplement";
@@ -32,7 +32,7 @@ import { JsonSchemaFactory } from "./utils/JsonSchemaFactory";
 export const orchestrateInterface =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
   async (
-    props: IAutoBeApplicationProps,
+    props: IAutoBeFacadeApplicationProps,
   ): Promise<AutoBeAssistantMessageHistory | AutoBeInterfaceHistory> => {
     // PREDICATION
     const start: Date = new Date();

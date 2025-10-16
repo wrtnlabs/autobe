@@ -45,6 +45,7 @@ export const archive_prisma = async (
       await FileSystemIterator.save({
         root: `${TestGlobal.ROOT}/results/${model}/${project}/prisma`,
         files: {
+          "histories.json": JSON.stringify(agent.getHistories(), null, 2),
           "instruction.md": e.reason,
         },
       });

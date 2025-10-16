@@ -1,11 +1,11 @@
-import { IAutoBeApplicationResult } from "./IAutoBeApplicationResult";
+import { IAutoBeFacadeApplicationResult } from "./IAutoBeFacadeApplicationResult";
 
 /**
  * Application for AutoBE function calling.
  *
  * @author Samchon
  */
-export interface IAutoBeApplication {
+export interface IAutoBeFacadeApplication {
   /**
    * Run Analyze Agent.
    *
@@ -27,24 +27,25 @@ export interface IAutoBeApplication {
    */
   analyze(props: {
     /**
-     * Requirements-focused instructions extracted from user utterances.
+     * Requirements-focused instructions extracted verbatim from user utterances.
      *
-     * Contains AI-interpreted guidance specifically for the requirements
-     * analysis phase. Should focus ONLY on features, business rules, user
-     * stories, and functional specifications. Must NOT include database design,
-     * API patterns, or implementation details which belong to other phases.
+     * Contains the RAW, UNMODIFIED instructions from the entire conversation
+     * history specifically for the requirements analysis phase. Should focus
+     * ONLY on features, business rules, user stories, and functional
+     * specifications. Must NOT include database design, API patterns, or
+     * implementation details which belong to other phases.
      *
-     * **CRITICAL**: Only include what the user actually said. NEVER fabricate
-     * or invent requirements the user didn't mention.
+     * **CRITICAL**: Copy-paste the user's exact words including:
+     * - Complete technical specifications with all code blocks preserved
+     * - Original formatting, line breaks, indentation, and markdown
+     * - User's tone, emphasis, and any absolute commands
+     * - ALL relevant instructions from ANY point in the conversation
      *
-     * Examples:
-     *
-     * - "Focus on inventory management with real-time stock tracking"
-     * - "Prioritize user authentication with role-based permissions"
-     * - "Emphasize order processing workflow with approval stages"
+     * **NEVER**: Summarize, abbreviate, interpret, or fabricate requirements.
+     * When in doubt, include MORE raw content, not less.
      */
     instruction: string;
-  }): Promise<IAutoBeApplicationResult>;
+  }): Promise<IAutoBeFacadeApplicationResult>;
 
   /**
    * Run prisma agent.
@@ -67,24 +68,25 @@ export interface IAutoBeApplication {
    */
   prisma(props: {
     /**
-     * Database design instructions extracted from user utterances.
+     * Database design instructions extracted verbatim from user utterances.
      *
-     * Contains AI-interpreted guidance specifically for the database schema
-     * design phase. Should focus ONLY on schema structure, relationships,
-     * constraints, and indexing strategies. Must NOT include API design or
-     * business logic implementation details.
+     * Contains the RAW, UNMODIFIED instructions from the entire conversation
+     * history specifically for the database schema design phase. Should focus
+     * ONLY on schema structure, relationships, constraints, and indexing
+     * strategies. Must NOT include API design or business logic implementation
+     * details.
      *
-     * **CRITICAL**: Only include what the user actually said. NEVER fabricate
-     * or invent requirements the user didn't mention.
+     * **CRITICAL**: Copy-paste the user's exact words including:
+     * - Complete CREATE TABLE statements and schema definitions AS-IS
+     * - All column names, types, constraints exactly as specified
+     * - Original formatting, SQL code blocks, and comments
+     * - User's emphatic rules about forbidden patterns or requirements
      *
-     * Examples:
-     *
-     * - "Design flexible product catalog with variant support"
-     * - "Optimize for high-volume transaction queries"
-     * - "Implement strict referential integrity for financial data"
+     * **NEVER**: Summarize, abbreviate, interpret, or fabricate requirements.
+     * Technical specifications are sacred - pass them through untouched.
      */
     instruction: string;
-  }): Promise<IAutoBeApplicationResult>;
+  }): Promise<IAutoBeFacadeApplicationResult>;
 
   /**
    * Run interface agent.
@@ -101,24 +103,25 @@ export interface IAutoBeApplication {
    */
   interface(props: {
     /**
-     * API design instructions extracted from user utterances.
+     * API design instructions extracted verbatim from user utterances.
      *
-     * Contains AI-interpreted guidance specifically for the API interface
-     * design phase. Should focus ONLY on endpoint patterns, request/response
-     * formats, DTO schemas, and operation specifications. Must NOT include
-     * database details or implementation logic.
+     * Contains the RAW, UNMODIFIED instructions from the entire conversation
+     * history specifically for the API interface design phase. Should focus
+     * ONLY on endpoint patterns, request/response formats, DTO schemas, and
+     * operation specifications. Must NOT include database details or
+     * implementation logic.
      *
-     * **CRITICAL**: Only include what the user actually said. NEVER fabricate
-     * or invent requirements the user didn't mention.
+     * **CRITICAL**: Copy-paste the user's exact words including:
+     * - Complete OpenAPI/Swagger specifications if provided
+     * - Exact endpoint paths, methods, and parameter names
+     * - DTO structures and validation rules as specified
+     * - Original formatting and code blocks preserved
      *
-     * Examples:
-     *
-     * - "Create RESTful endpoints with pagination for all list operations"
-     * - "Design mobile-friendly APIs with minimal response payloads"
-     * - "Follow OpenAPI 3.0 patterns with comprehensive error responses"
+     * **NEVER**: Summarize, abbreviate, interpret, or fabricate requirements.
+     * Preserve all technical details exactly as provided.
      */
     instruction: string;
-  }): Promise<IAutoBeApplicationResult>;
+  }): Promise<IAutoBeFacadeApplicationResult>;
 
   /**
    * Run test program agent.
@@ -143,24 +146,24 @@ export interface IAutoBeApplication {
    */
   test(props: {
     /**
-     * Testing strategy instructions extracted from user utterances.
+     * Testing strategy instructions extracted verbatim from user utterances.
      *
-     * Contains AI-interpreted guidance specifically for the test code
-     * generation phase. Should focus ONLY on test scenarios, coverage
-     * priorities, edge cases, and validation strategies. Must NOT include
-     * implementation or API design details.
+     * Contains the RAW, UNMODIFIED instructions from the entire conversation
+     * history specifically for the test code generation phase. Should focus
+     * ONLY on test scenarios, coverage priorities, edge cases, and validation
+     * strategies. Must NOT include implementation or API design details.
      *
-     * **CRITICAL**: Only include what the user actually said. NEVER fabricate
-     * or invent requirements the user didn't mention.
+     * **CRITICAL**: Copy-paste the user's exact words including:
+     * - Specific test cases or scenarios mentioned
+     * - Testing priorities and coverage requirements
+     * - Edge cases and validation rules
+     * - Original wording without interpretation
      *
-     * Examples:
-     *
-     * - "Prioritize payment flow testing with failure scenarios"
-     * - "Generate comprehensive tests for concurrent user operations"
-     * - "Focus on data integrity validation across all endpoints"
+     * **NEVER**: Summarize, abbreviate, interpret, or fabricate requirements.
+     * Include all testing-related instructions from the conversation.
      */
     instruction: string;
-  }): Promise<IAutoBeApplicationResult>;
+  }): Promise<IAutoBeFacadeApplicationResult>;
 
   /**
    * Run realize agent.
@@ -185,23 +188,23 @@ export interface IAutoBeApplication {
    */
   realize(props: {
     /**
-     * Implementation instructions extracted from user utterances.
+     * Implementation instructions extracted verbatim from user utterances.
      *
-     * Contains AI-interpreted guidance specifically for the business logic
-     * implementation phase. Should focus ONLY on architectural patterns,
-     * performance requirements, business logic details, and service layer
-     * decisions. Must NOT include database schema or API interface
-     * specifications.
+     * Contains the RAW, UNMODIFIED instructions from the entire conversation
+     * history specifically for the business logic implementation phase. Should
+     * focus ONLY on architectural patterns, performance requirements, business
+     * logic details, and service layer decisions. Must NOT include database
+     * schema or API interface specifications.
      *
-     * **CRITICAL**: Only include what the user actually said. NEVER fabricate
-     * or invent requirements the user didn't mention.
+     * **CRITICAL**: Copy-paste the user's exact words including:
+     * - Specific implementation patterns or code examples
+     * - Performance requirements and constraints
+     * - Business logic rules and algorithms
+     * - Original technical specifications preserved
      *
-     * Examples:
-     *
-     * - "Implement with caching for frequently accessed data"
-     * - "Use transaction patterns for financial operations"
-     * - "Optimize for 10K concurrent users with rate limiting"
+     * **NEVER**: Summarize, abbreviate, interpret, or fabricate requirements.
+     * Pass through all implementation details exactly as stated.
      */
     instruction: string;
-  }): Promise<IAutoBeApplicationResult>;
+  }): Promise<IAutoBeFacadeApplicationResult>;
 }

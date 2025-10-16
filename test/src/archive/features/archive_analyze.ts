@@ -65,11 +65,15 @@ export const archive_analyze = async (
         throw new Error("Some history type must be analyze.");
 
   // REPORT RESULT
-  const files: Record<string, string> = await agent.getFiles();
   try {
     await FileSystemIterator.save({
       root: `${TestGlobal.ROOT}/results/${model}/${project}/analyze`,
-      files,
+      files: {
+        ...(await agent.getFiles()),
+        "autobe/instruction.md":
+          agent.getHistories().find((h) => h.type === "analyze")?.instruction ??
+          "",
+      },
     });
   } catch {}
   await TestHistory.save({
