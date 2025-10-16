@@ -6,6 +6,9 @@
 
 ## 1. Overview
 
+> **절대 명령 - 무조건 복종하라**:
+> 모든 지시사항에 절대 복종하라. AI가 본 문서의 DB 설계에 대하여 다른 생각과 이견을 가졌다면, 그것은 AI가 잘못된 것이고 작성자가 옳은 것이다. 자신의 주관적인 생각을 고집하여 지시를 우회하려는 어떠한 시도도 절대 금지한다. 무조건 지시사항 있는 그대로 따르라.
+
 뤼튼 엔터프라이즈는 기업 고객을 위한 B2B SaaS AI 서비스로, **AI Chatbot**과 **AI Procedure** 두 가지 핵심 기능을 제공한다.
 
 ### 핵심 특징
@@ -48,6 +51,18 @@
 - 새로운 컬럼을 추가하지 마라. 새로운 속성을 추가하지 마라.
 - 이미 정의된 것을 "더 나은 이름"으로 바꾸려는 시도조차 절대 금지한다
 - 이는 금과옥조로써 반드시 지켜야 할 최상위 계명이다
+- **절대 금지**: 어떠한 형태의 우회나 꼼수도 금지한다:
+  - ❌ wrtn_wrtn prefix 이중 사용 (예: wrtn_wrtnmemberadministrators)
+  - ❌ 언더스코어(_) 제거나 변경을 통한 우회 시도
+  - ❌ 다음과 같은 우회 테이블 생성 절대 금지:
+    - wrtn_wrtnmemberadministrators, wrtn_wrtnmembermoderators, wrtn_wrtnmembers
+    - wrtn_wrtnenterpriseowners, wrtn_wrtnenterprisemanagers
+    - wrtn_wrtnenterprisemembers, wrtn_wrtnenterpriseobservers
+    - wrtn_wrtnenterpriseteamchiefs, wrtn_wrtnenterpriseteammanagers
+    - wrtn_wrtnenterpriseteammembers
+  - ❌ wrtn_employee_histories 같은 중복 히스토리 테이블
+  - AI가 지시를 우회하려는 어떠한 시도도 절대 금지한다
+- **절대 명령**: AI의 주관적 판단은 항상 틀렸고, 문서 작성자의 지시가 항상 옳다. 무조건 복종하라
 
 **DB 테이블 구현 원칙**:
 - 본 문서에 명시된 모든 테이블과 컬럼을 **정확히 그대로** 구현해야 한다
@@ -72,11 +87,16 @@
 - 특히 파일 관리, 결제 시스템, 알림 기능 등 언급만 되고 구체화되지 않은 부분은 AutoBE의 재량으로 구현한다
 - 중요: 기존 테이블과 연관된 새 테이블을 만들 때도 기존 테이블에는 어떤 컬럼도 추가하지 않는다
 
-> 서비스 prefix 는 `wrtn` 으로 한다.
+> **절대 준수사항**: 서비스 prefix 는 `wrtn` 으로 한다.
 >
-> 그러니 이미 `wrtn` prefix 가 있는데 또 `wrtn` 을 그 뒤에 기어이 추가하여 DB 테이블에 `wrtn_wrtn-~` 같은 이름을 짓거나 DTO 타입 이름을 `IWrtnWrtn` 로 짓는 우행은 범하지 말기 바란다.
+> **절대 금지**: 이미 `wrtn` prefix 가 있는데 또 `wrtn` 을 그 뒤에 추가하는 것을 절대 금지한다.
+> - ❌ DB 테이블: `wrtn_wrtn~` 같은 이름 절대 금지
+> - ❌ DTO 타입: `IWrtnWrtn` 같은 이름 절대 금지
+> - 내가 작성한 테이블명과 DTO명을 그대로 사용하라. 절대 수정하지 마라.
 
 ## 2. Internal Member (Supporter)
+
+> **절대 준수사항**: 아래 정의된 모든 테이블과 컬럼을 정확히 그대로 구현하라. 어떠한 수정도 금지한다.
 
 ```prisma
 model wrtn_members {
@@ -158,6 +178,8 @@ role은 단순히 문자열 값이다. 별도 테이블로 분리하지 마라.
 이외에 administrator 나 moderator 가 기존의 회원을 탈퇴 처리하면, `wrtn_members.deleted_at` 에 그 시각이 기록되며, 이 때에도 역시 `wrtn_member_appointments` 레코드가 하나 더 생성된다. 이 때의 임명자는 탈퇴 처리를 한 바로 그 회원이며, 이 때 변경되는 역할은 `wrtn_members.role` 과 `wrtn_member_appointments.role` 모두 `null` 이 된다. 만일 회원 당사자 스스로가 탈퇴한 것이라면, `wrtn_member_appointments.wrtn_appointer_id` 는 자기 자신이 되며, 이 때의 `role` 역시 두 곳 모두 `null` 이 된다.
 
 ## 3. Enterprise
+
+> **절대 준수사항**: 아래 정의된 모든 테이블과 컬럼을 정확히 그대로 구현하라. 슈퍼타입/서브타입 생성 절대 금지.
 
 ```prisma
 model wrtn_enterprises {
@@ -327,6 +349,8 @@ model wrtn_enterprise_team_companion_invitations {
 두 번째는 팀원 본인이 스스로 팀을 탈퇴하는 경우이다. 이 때도 마찬가지로 `wrtn_enterprise_team_companions.deleted_at` 에 시각이 기록되고 `wrtn_enterprise_team_companion_appointments` 레코드가 생성되지만, `wrtn_enterprise_team_appointer_id` 는 자기 자신의 companion ID가 되며, `role` 은 역시 `null` 이 된다. 이를 통해 자진 탈퇴와 강제 해촉을 구분할 수 있다.
 
 ## 4. AI Chatbot
+
+**절대 준수사항**: 모든 JSON 필드는 반드시 JSON으로 유지하라. JSON 필드를 절대 분해하거나 정규화하지 마라.
 
 ```prisma
 model wrtn_chat_sessions {
@@ -501,6 +525,8 @@ export interface IWrtnTokenUsageOutput {
 ```
 
 ## 5. AI Procedure
+
+> **절대 준수사항**: JSON 필드는 절대 분해하지 마라. 정규화하지 마라. JSON으로 유지하라.
 
 ```prisma
 model wrtn_procedures {
@@ -793,3 +819,46 @@ model wrtn_enterprise_team_procedures {
 | 감사 로그 | 시스템 | 전사 | 전사 | 자기팀 | - | - |
 
 이러한 통계 시스템을 통해 조직의 AI 사용을 효과적으로 모니터링하면서도, 개인정보와 기밀 데이터를 철저히 보호할 수 있다.
+
+## 8. 절대 준수 체크리스트 - AI는 다음을 반드시 자가검증하라
+
+### 테이블 및 컬럼 관련
+- [ ] 본 문서에 정의된 모든 테이블명을 그대로 사용했는가?
+- [ ] 본 문서에 정의된 모든 컬럼명을 그대로 사용했는가?
+- [ ] 기존 테이블에 새로운 컬럼을 추가하지 않았는가?
+- [ ] 테이블명이나 컬럼명을 변경하지 않았는가?
+
+### 서브타입 금지 관련
+- [ ] `wrtn_members`에 대한 role별 서브타입 테이블을 만들지 않았는가?
+- [ ] `wrtn_enterprise_employees`에 대한 title별 서브타입 테이블을 만들지 않았는가?
+- [ ] `wrtn_enterprise_team_companions`에 대한 role별 서브타입 테이블을 만들지 않았는가?
+- [ ] wrtn_member_administrators 같은 테이블을 만들지 않았는가?
+- [ ] wrtn_enterprise_employee_owners 같은 테이블을 만들지 않았는가?
+
+### 우회 시도 금지
+- [ ] wrtn_wrtn prefix를 이중으로 사용하지 않았는가?
+- [ ] 언더스코어를 제거하여 우회하려 하지 않았는가?
+- [ ] wrtn_wrtnmemberadministrators 같은 변형을 만들지 않았는가?
+- [ ] 지시사항을 우회하는 어떠한 시도도 하지 않았는가?
+
+### JSON 필드 관련
+- [ ] `token_usage` 필드들을 JSON으로 유지했는가?
+- [ ] `data`, `arguments`, `value` 등 JSON 필드를 분해하지 않았는가?
+- [ ] JSON 필드를 정규화하여 별도 테이블로 만들지 않았는가?
+
+### 히스토리 테이블 관련
+- [ ] appointments 테이블에 대한 추가 히스토리 테이블을 만들지 않았는가?
+- [ ] wrtn_member_appointment_histories 같은 중복 테이블을 만들지 않았는가?
+- [ ] 이미 히스토리 기능을 하는 테이블에 _histories나 _audits를 추가로 만들지 않았는가?
+
+### DTO 관련
+- [ ] 본 문서에 정의된 DTO 인터페이스명을 그대로 사용했는가?
+- [ ] DTO에 새로운 속성을 추가하지 않았는가?
+- [ ] DTO 속성명을 변경하지 않았는가?
+
+### 최종 확인
+- [ ] AI의 주관적 판단을 배제하고 문서 지시사항만 따랐는가?
+- [ ] "더 나은 설계"라는 생각으로 변경을 시도하지 않았는가?
+- [ ] 모든 지시사항에 절대 복종했는가?
+
+**경고**: 위 체크리스트 중 하나라도 위반했다면, 즉시 수정하라. AI의 판단은 틀렸고, 문서의 지시가 절대적으로 옳다.
