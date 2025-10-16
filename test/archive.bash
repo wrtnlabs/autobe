@@ -7,6 +7,12 @@ pnpm run archive --vendor anthropic/claude-sonnet-4.5 --schema claude --project 
 pnpm run archive --vendor anthropic/claude-sonnet-4.5 --schema claude --project reddit > archive.claude-sonnet-4.5.reddit.log
 pnpm run archive --vendor anthropic/claude-sonnet-4.5 --schema claude --project shopping > archive.claude-sonnet-4.5.shopping.log
 
+# anthropic/claude-haiku-4.5
+pnpm run archive --vendor anthropic/claude-haiku-4.5 --schema claude --project todo > archive.claude-haiku-4.5.todo.log
+pnpm run archive --vendor anthropic/claude-haiku-4.5 --schema claude --project bbs > archive.claude-haiku-4.5.bbs.log
+pnpm run archive --vendor anthropic/claude-haiku-4.5 --schema claude --project reddit > archive.claude-haiku-4.5.reddit.log
+pnpm run archive --vendor anthropic/claude-haiku-4.5 --schema claude --project shopping > archive.claude-haiku-4.5.shopping.log
+
 ################################################
 # OPENAI
 ################################################
@@ -142,3 +148,12 @@ pnpm run archive --vendor z-ai/glm-4.6 --project todo > archive.z-ai-glm-4.6.tod
 pnpm run archive --vendor z-ai/glm-4.6 --project bbs > archive.z-ai-glm-4.6.bbs.log
 pnpm run archive --vendor z-ai/glm-4.6 --project reddit > archive.z-ai-glm-4.6.reddit.log
 pnpm run archive --vendor z-ai/glm-4.6 --project shopping > archive.z-ai-glm-4.6.shopping.log
+
+################################################
+# KIMI
+################################################
+# moonshotai/kimi-k2-0905
+pnpm run archive --vendor moonshotai/kimi-k2-0905 --project todo --schema claude > archive.moonshotai-kimi-k2-0905.todo.log
+pnpm run archive --vendor moonshotai/kimi-k2-0905 --project bbs --schema claude > archive.moonshotai-kimi-k2-0905.bbs.log
+pnpm run archive --vendor moonshotai/kimi-k2-0905 --project reddit --schema claude > archive.moonshotai-kimi-k2-0905.reddit.log
+pnpm run archive --vendor moonshotai/kimi-k2-0905 --project shopping --schema claude > archive.moonshotai-kimi-k2-0905.shopping.log
