@@ -38,6 +38,15 @@
 
 ### AutoBE 구현 지침
 
+**절대 불가침의 금과옥조 - 최고 우선순위 계명**:
+이는 모든 다른 지침보다 우선하는 절대권위를 가진다. 어떤 이유로도, 어떤 상황에서도 절대 위반할 수 없다:
+- **절대 금지**: 기존 테이블명, 컬럼명, 타입, DTO 인터페이스명, 속성명의 변경
+- **절대 금지**: 기존에 정의된 어떤 것이든 이름 변경, 타입 변경, 삭제
+- 본 문서에 이미 작성된 모든 내용은 신성불가침이며, 오직 **추가**만 가능하다
+- 테이블명을 바꾸지 마라. 컬럼명을 바꾸지 마라. DTO명을 바꾸지 마라. 속성명을 바꾸지 마라.
+- 이미 정의된 것을 "더 나은 이름"으로 바꾸려는 시도조차 절대 금지한다
+- 이는 금과옥조로써 반드시 지켜야 할 최상위 계명이다
+
 **DB 테이블 구현 원칙**:
 - 본 문서에 명시된 모든 테이블명과 컬럼은 **필수** 구현해야 한다
 - 테이블명, 기존 컬럼명, 타입을 임의로 변경하거나 재해석할 수 없다
@@ -126,6 +135,8 @@ model wrtn_member_emails {
 - `administrator`: administrator, moderator, member 모두를 임명하고 권한 변경할 수 있다.
 - `moderator`: moderator, member를 임명하고 권한 변경할 수 있다.
 - `member`: 통계 및 단순 레코드 열람만 할 수 있다.
+
+> **중요**: `wrtn_members.role`은 위의 3가지 값(administrator/moderator/member/null)만 가진다. 절대로 각 role별로 서브타입이나 추가 테이블을 만들지 마라. 이 role 값들만으로 충분하다.
 
 `wrtn_members`, 이들은 이메일과 비밀번호로 로그인할 것이되, 복수의 이메일 계정을 가질 수 있다. 그 이유는 SaaS 서비스 특성상 기업 고객사로의 출장을 가야할 수도 있는데, 이 때 그 회사가 보안을 이유로 폐쇄망이 갖춰져있어 외부 인터넷 접속이 불가능할 수도 있기 때문이다.
 
@@ -247,6 +258,8 @@ model wrtn_enterprise_team_companion_invitations {
 - `member`: AI 서비스 이용 가능, 임명 권한 없음
 - `observer`: 통계 및 사용 내역 열람만 가능
 
+> **중요**: `wrtn_enterprise_employees.title`은 위의 4가지 값(owner/manager/member/observer/null)만 가진다. 절대로 각 title별로 서브타입이나 추가 테이블을 만들지 마라. 이 title 값들만으로 충분하다.
+
 직원의 가입은 두 가지 방법으로 이루어진다. 첫 번째는 당사자가 직접 기업 홈페이지에서 가입 신청을 하고 owner 또는 manager 가 이를 승인하는 것이다. 이 때 승인과 동시에 `wrtn_enterprise_employee_appointments` 레코드가 생성되고 `wrtn_enterprise_employees.approved_at` 에 승인 시각이 기록된다. 두 번째는 기존 직원이 (역시 owner 또는 manager) `wrtn_enterprise_employee_invitations` 를 통해 이메일로 초대장을 보내는 것이다. 초대받은 사람이 가입하면 즉시 `wrtn_enterprise_employees` 와 `wrtn_enterprise_employee_appointments` 레코드가 생성되며, 초대장에 명시된 직책이 부여된다. 초대장이 수락되지 않은 경우 `expired_at` 시점에 만료되며, 만료된 초대장으로는 가입할 수 없다.
 
 직원의 직책은 변경될 수 있으며, 심지어 `null` 로 설정하여 모든 권한을 박탈할 수도 있다. owner 는 다른 모든 직원의 직책을 변경하거나 `null` 로 만들 수 있고, manager 는 member 와 observer 의 직책만 변경할 수 있다. 직책이 `null` 이 되면 해당 직원은 기업 계정은 유지하되 어떠한 권한도 행사할 수 없게 된다. 모든 직책 변경은 `wrtn_enterprise_employee_appointments` 에 기록되며, `wrtn_enterprise_employees.updated_at` 이 갱신된다.
@@ -266,6 +279,8 @@ model wrtn_enterprise_team_companion_invitations {
 - `chief`: 팀장, chief 와 manager, member 를 팀에 임명할 수 있다
 - `manager`: 매니저, member 만 팀에 임명할 수 있다
 - `member`: 팀원, 임명 권한 없음
+
+> **중요**: `wrtn_enterprise_team_companions.role`은 위의 3가지 값(chief/manager/member/null)만 가진다. 절대로 각 role별로 서브타입이나 추가 테이블을 만들지 마라. 이 role 값들만으로 충분하다.
 
 ### 3.4. Companion
 
@@ -344,6 +359,14 @@ model wrtn_chat_session_aggregates {
 ```
 
 AI Chatbot 서비스는 뤼튼 엔터프라이즈의 핵심 기능으로써, OpenAI GPT 등의 AI 모델과 자연어로 대화할 수 있는 서비스이다.
+
+> **중요**: 이 섹션의 모든 JSON 필드들은 반드시 JSON 타입으로 유지해야 한다. 절대로 JSON 필드를 해체하여 정규 컬럼으로 나누지 마라. 특히 다음 필드들은 반드시 JSON으로 유지해야 한다:
+>
+> - `wrtn_chat_session_histories.data` - JSON value, encrypted
+> - `wrtn_chat_session_histories.token_usage` - JSON value
+> - `wrtn_chat_session_aggregates.token_usage` - JSON value
+>
+> 추가 필드를 달아도 된다는 것은 새로운 컬럼을 추가할 수 있다는 의미이지, 기존 JSON 필드를 분해하라는 의미가 절대 아니다.
 
 `wrtn_chat_sessions` 는 그러한 AI 챗봇의 세션으로써, 기업의 직원이 `openai/gpt-4.1` 나 `anthropic/claude-sonnet-4.5` 등의 AI 모델을 선택하여 채팅방을 개설할 수 있다. 또한 `wrtn_chat_sessions.disclosure` 를 조정하여 해당 채팅방을 동 기업 내 누구와 공유할 지 설정할 수 있다.
 
@@ -497,6 +520,7 @@ model wrtn_procedure_session_connections {
 
 // Must define every JSON value columns separately
 // Never merge them into one column like "data"
+// CRITICAL: 절대로 JSON 필드를 정규화하여 분해하지 마라
 model wrtn_procedure_session_histories {
   id String @id @uuid
   wrtn_procedure_session_id String @uuid
@@ -523,6 +547,13 @@ model wrtn_procedure_session_aggregates {
 
 함수 형태의 AI 서비스.
 
+**중요**: 이 섹션의 모든 JSON 필드들은 반드시 JSON 타입으로 유지해야 한다. 절대로 JSON 필드를 해체하여 정규 컬럼으로 나누지 마라. 특히 다음 필드들은 반드시 JSON으로 유지해야 한다:
+- `wrtn_procedure_session_histories.arguments` - JSON value, encrypted
+- `wrtn_procedure_session_histories.value` - JSON value, encrypted
+- `wrtn_procedure_session_histories.token_usage` - JSON value
+- `wrtn_procedure_session_aggregates.token_usage` - JSON value
+추가 필드를 달아도 된다는 것은 새로운 컬럼을 추가할 수 있다는 의미이지, 기존 JSON 필드를 분해하라는 의미가 절대 아니다.
+
 뤼튼 엔터프라이즈에서 말하는 AI Procedure 란, 위 [4. AI Chatbot](#4-ai-chatbot) 과 같은 챗봇의 형태가 아닌, 지정된 형태의 인풋을 받아서 약속된 형태의 아웃풋을 반환하는 함수형 서비스이다. 문자 그대로 함수(프로시저) 형태의 AI 서비스로써, Stable Diffusion 으로 이미지를 생성하는게 AI Procedure 의 가장 대표적인 사례이다.
 
 또한 이 중 뤼튼 엔터프라이즈가 제공하는 프로시저의 종류 및 그에 대한 설명은 `wrtn_procedures` 테이블에 기록되는데 (메타데이터의 일종), 다만 enterprise 및 team 단위로 사용 가능한 프로시저의 종류를 설정하고 제약할 수 있으니, 이 점에 유의하기 바란다.
@@ -543,7 +574,9 @@ Progress   | None    | Streaming
 
 ## 6. Configurations
 ### 6.1. Persona
-뤼튼의 모든 엔터프라이즈 유저들은 (`wrtn_enterprise_employees`) 페르소나를 설정할 수 있다. 여기서 말하는 페르소나란, AI chatbot 의 말투 및 태도에 관한 것을 뜻한다. 
+뤼튼의 모든 엔터프라이즈 유저들은 (`wrtn_enterprise_employees`) 페르소나를 설정할 수 있다. 여기서 말하는 페르소나란, AI chatbot 의 말투 및 태도에 관한 것을 뜻한다.
+
+> **중요**: `wrtn_enterprise_employee_personas.memory` 필드는 JSON value로 유지해야 한다. 절대로 이를 분해하여 정규 컬럼으로 나누지 마라. 
 
 그리고 엔터프라이즈 유저들이 설정한 페르소나를 저장하는 테이블이 `wrtn_enterprise_employee_personas` 인데, 보다시피 `updated_at` 컬럼이 존재하지 않는다. 이것인 곧 인터프라이즈 유저가 페르소나를 수정했어도, 시스템 상에서는 기존 레코드를 수정하는게 아니라 새 레코드를 만들어 누적하는 개념이기 때문에 그러하다. 
 
@@ -680,16 +713,30 @@ model wrtn_enterprise_team_procedures {
 
 ### 7.4. 감사 추적 (Audit Trail)
 
-모든 중요한 활동은 감사 로그에 기록되어야 한다:
+**절대 금지사항**: 감사 추적 전용 테이블을 만들지 마라. 이는 잘못된 비정규화 설계이며 절대 허용되지 않는다.
 
-- 로그인/로그아웃
-- 권한 변경
-- 세션 생성/삭제
-- 파일 업로드/다운로드
-- 설정 변경
-- 데이터 접근 (특히 타인 데이터)
+감사 로그는 반드시 각 도메인별 히스토리성 테이블을 통해 정규화 원칙을 지키며 관리해야 한다. 이미 본 문서에는 이런 올바른 패턴의 테이블들이 정의되어 있다:
 
-감사 로그 역시 권한에 따라 조회 범위가 제한된다. 시스템 관리자는 전체를, owner는 자사 전체를, chief는 자기 팀의 로그만 볼 수 있다.
+**도메인별 히스토리 테이블 예시**:
+- `wrtn_member_appointments` - 내부 회원 임명/권한 변경 이력
+- `wrtn_enterprise_employee_appointments` - 직원 임명/직책 변경 이력  
+- `wrtn_enterprise_team_companion_appointments` - 팀 구성원 임명/역할 변경 이력
+- `wrtn_chat_session_histories` - 채팅 세션의 모든 활동 이력
+- `wrtn_procedure_session_histories` - 프로시저 실행 이력
+- `wrtn_member_invitations`, `wrtn_enterprise_employee_invitations`, `wrtn_enterprise_team_companion_invitations` - 각종 초대 활동 이력
+
+이러한 도메인별 히스토리 테이블들을 활용하여 API 로직 차원에서 감사 로그를 제공해야 한다. 각 도메인의 영역을 철저히 분리하여 전문적으로 관리하는 것이 정규화의 기본이다.
+
+모든 중요한 활동은 해당 도메인의 히스토리 테이블에 기록되어야 한다:
+
+- 로그인/로그아웃 - 각 사용자 타입별 세션 테이블
+- 권한 변경 - appointments 테이블들
+- 세션 생성/삭제 - session 관련 테이블들
+- 파일 업로드/다운로드 - 파일 도메인 테이블
+- 설정 변경 - 각 설정 도메인별 히스토리
+- 데이터 접근 (특히 타인 데이터) - 각 도메인별 접근 기록
+
+감사 로그 조회 역시 권한에 따라 각 도메인 테이블에서 필터링하여 제공한다. 시스템 관리자는 전체를, owner는 자사 전체를, chief는 자기 팀의 로그만 볼 수 있다.
 
 ### 접근 권한 요약
 
