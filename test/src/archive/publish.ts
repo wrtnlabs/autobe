@@ -10,6 +10,7 @@ import fs from "fs";
 import typia from "typia";
 
 import { TestGlobal } from "../TestGlobal";
+import { TestHistory } from "../internal/TestHistory";
 import { TestProject } from "../structures/TestProject";
 
 const SEQUENCE: Record<string, number> = {
@@ -57,21 +58,13 @@ const collect = async (props: {
 
 const main = async (): Promise<void> => {
   const collection: IAutoBePlaygroundReplay.Collection = {};
-  for (const vendor of [
-    "openai/gpt-4.1",
-    "openai/gpt-4.1-mini",
-    "openai/gpt-5",
-    "openai/gpt-5-mini",
-    "anthropic/claude-sonnet-4.5",
-    "qwen/qwen3-next-80b-a3b-instruct",
-  ])
+  for (const vendor of await TestHistory.getVendorModels())
     for (const project of typia.misc.literals<TestProject>()) {
       const replay: IAutoBePlaygroundReplay.ISummary | null = await collect({
         vendor,
         project,
       });
       if (replay === null) continue;
-
       collection[vendor] ??= [];
       collection[vendor].push(replay);
     }

@@ -62,6 +62,22 @@ export namespace TestHistory {
     };
   };
 
+  export const getVendorModels = async (): Promise<string[]> => {
+    const result: string[] = [];
+    for (const vendor of await fs.promises.readdir(
+      `${TestGlobal.ROOT}/assets/histories`,
+    ))
+      for (const model of await fs.promises.readdir(
+        `${TestGlobal.ROOT}/assets/histories/${vendor}`,
+      )) {
+        const stat: fs.Stats = await fs.promises.lstat(
+          `${TestGlobal.ROOT}/assets/histories/${vendor}/${model}`,
+        );
+        if (stat.isDirectory() === true) result.push(`${vendor}/${model}`);
+      }
+    return result.sort();
+  };
+
   export const getHistories = async (
     project: TestProject,
     phase: AutoBePhase,

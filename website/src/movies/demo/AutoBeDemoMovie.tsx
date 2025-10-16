@@ -1,6 +1,7 @@
 "use client";
 
 import { AutoBeDemoStorage } from "@/src/data/AutoBeDemoStorage";
+import { IAutoBePlaygroundReplay } from "@autobe/interface";
 import { useState } from "react";
 
 import AutoBeDemoModelMovie from "./AutoBeDemoModelMovie";
@@ -9,7 +10,7 @@ export default function AutoBeDemoMovie(props: AutoBeDemoMovie.IProps) {
   // Get available models from replays data
   const models: string[] = AutoBeDemoStorage.getModels();
   const [selectedModel, setSelectedModel] = useState<string>(
-    props.model ?? models[0] ?? "openai/gpt-4.1",
+    props.model ?? "openai/gpt-4.1",
   );
 
   return (
@@ -26,7 +27,7 @@ export default function AutoBeDemoMovie(props: AutoBeDemoMovie.IProps) {
               >
                 {models.map((model) => (
                   <option key={model} value={model}>
-                    {model}
+                    {emoji(model)} {model}
                   </option>
                 ))}
               </select>
@@ -58,3 +59,15 @@ export namespace AutoBeDemoMovie {
     model?: string;
   }
 }
+
+const emoji = (key: string): string => {
+  const projects: IAutoBePlaygroundReplay.ISummary[] | null =
+    AutoBeDemoStorage.getModelProjects(key);
+  const success: number =
+    projects === null
+      ? 0
+      : projects.filter((p) => p.realize !== null && p.realize.success === true)
+          .length;
+  // return success >= 3 ? "🟢" : "❌";
+  return success >= 3 ? "🟢" : success !== 0 ? "🟡" : "❌";
+};

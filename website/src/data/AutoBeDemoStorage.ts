@@ -1,9 +1,10 @@
 import { IAutoBePlaygroundReplay } from "@autobe/interface";
+import { Singleton } from "tstl";
 
 import data from "./replays.json";
 
 export namespace AutoBeDemoStorage {
-  export const getModels = () => Object.keys(data);
+  export const getModels = () => vendorModels.get();
 
   export const getModelProjects = (
     model: string,
@@ -24,3 +25,19 @@ export namespace AutoBeDemoStorage {
 }
 
 const PROJECTS = ["todo", "bbs", "reddit", "shopping"];
+const vendorModels = new Singleton(() => {
+  const success: string[] = [];
+  const passes: string[] = [];
+  const failure: string[] = [];
+  for (const [key, collection] of Object.entries(
+    data as IAutoBePlaygroundReplay.Collection,
+  )) {
+    const count: number = collection.filter(
+      (r) => r.realize !== null && r.realize.success === true,
+    ).length;
+    if (count >= 3) success.push(key);
+    else if (count !== 0) passes.push(key);
+    else failure.push(key);
+  }
+  return [...success.sort(), ...passes.sort(), ...failure.sort()];
+});
