@@ -144,6 +144,13 @@ model wrtn_member_emails {
 
 > **중요**: `wrtn_members.role`은 위의 3가지 값(administrator/moderator/member/null)만 가진다. 절대로 각 role별로 서브타입이나 추가 테이블을 만들지 마라. 이 role 값들만으로 충분하다.
 
+**절대 금지 - 다음과 같은 테이블을 만들면 안 된다**:
+- ❌ `wrtn_member_administrators`
+- ❌ `wrtn_member_moderators`  
+- ❌ `wrtn_member_members`
+- ❌ 기타 role별 서브타입 테이블
+role은 단순히 문자열 값이다. 별도 테이블로 분리하지 마라.
+
 `wrtn_members`, 이들은 이메일과 비밀번호로 로그인할 것이되, 복수의 이메일 계정을 가질 수 있다. 그 이유는 SaaS 서비스 특성상 기업 고객사로의 출장을 가야할 수도 있는데, 이 때 그 회사가 보안을 이유로 폐쇄망이 갖춰져있어 외부 인터넷 접속이 불가능할 수도 있기 때문이다.
 
 또한 `wrtn_members` 의 가입은 크게 두 방법으로 이루어진다. 첫 번째는 당사자가 직접 뤼튼 엔터프라이즈의 내부 직원용 홈페이지에 들어와 가입 신청을 하거든, administrator 또는 moderator 가 이를 승인해주는 방법이다. 이 때에는 가입 승인 처리와 동시에 `wrtn_member_appointments` 레코드가 생성되고, `wrtn_members.approved_at` 에 그 시각이 기록된다. 두 번째 방법은 기존의 회원이 `wrtn_member_invitations` 레코드를 발행하며 새 회원에게 이메일로 초대장을 보내는 것이다. 이 때 초대받은 사람이 가입 신청을 하면, 그 즉시로 `wrtn_members` 와 함께 `wrtn_member_appointments` 레코드도 생성된다. 물론 이 때의 임명자는 바로 초대장을 보낸 바로 그 회원이며, `wrtn_member_emails.verified_at` 는 `wrtn_member_invitations.created_at` 의 것이 기록된다.
@@ -265,6 +272,15 @@ model wrtn_enterprise_team_companion_invitations {
 - `observer`: 통계 및 사용 내역 열람만 가능
 
 > **중요**: `wrtn_enterprise_employees.title`은 위의 4가지 값(owner/manager/member/observer/null)만 가진다. 절대로 각 title별로 서브타입이나 추가 테이블을 만들지 마라. 이 title 값들만으로 충분하다.
+> 
+> **절대 금지 - 다음과 같은 테이블을 만들면 안 된다**:
+> - ❌ `wrtn_enterprise_employee_owners`
+> - ❌ `wrtn_enterprise_employee_managers`
+> - ❌ `wrtn_enterprise_employee_members`
+> - ❌ `wrtn_enterprise_employee_observers`
+> - ❌ 기타 title별 서브타입 테이블
+>
+> title은 단순히 문자열 값이다. 별도 테이블로 분리하지 마라.
 
 직원의 가입은 두 가지 방법으로 이루어진다. 첫 번째는 당사자가 직접 기업 홈페이지에서 가입 신청을 하고 owner 또는 manager 가 이를 승인하는 것이다. 이 때 승인과 동시에 `wrtn_enterprise_employee_appointments` 레코드가 생성되고 `wrtn_enterprise_employees.approved_at` 에 승인 시각이 기록된다. 두 번째는 기존 직원이 (역시 owner 또는 manager) `wrtn_enterprise_employee_invitations` 를 통해 이메일로 초대장을 보내는 것이다. 초대받은 사람이 가입하면 즉시 `wrtn_enterprise_employees` 와 `wrtn_enterprise_employee_appointments` 레코드가 생성되며, 초대장에 명시된 직책이 부여된다. 초대장이 수락되지 않은 경우 `expired_at` 시점에 만료되며, 만료된 초대장으로는 가입할 수 없다.
 
@@ -287,6 +303,16 @@ model wrtn_enterprise_team_companion_invitations {
 - `member`: 팀원, 임명 권한 없음
 
 > **중요**: `wrtn_enterprise_team_companions.role`은 위의 3가지 값(chief/manager/member/null)만 가진다. 절대로 각 role별로 서브타입이나 추가 테이블을 만들지 마라. 이 role 값들만으로 충분하다.
+> 
+> **절대 금지 - 다음과 같은 테이블을 만들면 안 된다**:
+> - ❌ `wrtn_enterprise_team_companion_chiefs`
+> - ❌ `wrtn_enterprise_team_companion_managers`
+> - ❌ `wrtn_enterprise_team_companion_members`
+> - ❌ `wrtn_enterprise_team_chiefs`
+> - ❌ `wrtn_enterprise_team_managers`
+> - ❌ 기타 role별 서브타입 테이블
+> 
+> role은 단순히 문자열 값이다. 별도 테이블로 분리하지 마라.
 
 ### 3.4. Companion
 
@@ -730,6 +756,17 @@ model wrtn_enterprise_team_procedures {
 - `wrtn_chat_session_histories` - 채팅 세션의 모든 활동 이력
 - `wrtn_procedure_session_histories` - 프로시저 실행 이력
 - `wrtn_member_invitations`, `wrtn_enterprise_employee_invitations`, `wrtn_enterprise_team_companion_invitations` - 각종 초대 활동 이력
+
+> **절대 금지 - 히스토리 테이블의 이중화**:
+> appointments 테이블들은 그 자체가 이미 완전한 히스토리 및 감사 테이블이다. 절대로 다음과 같은 중복 테이블을 만들지 마라:
+> - ❌ `wrtn_member_appointment_histories` 
+> - ❌ `wrtn_member_appointment_audits`
+> - ❌ `wrtn_enterprise_employee_appointment_histories`
+> - ❌ `wrtn_enterprise_employee_appointment_audits`
+> - ❌ `wrtn_enterprise_team_companion_appointment_histories`
+> - ❌ 기타 appointments 테이블에 대한 어떤 형태의 추가 히스토리/감사 테이블
+> 
+> **명령**: appointments 테이블들은 이미 모든 히스토리와 감사 요구사항을 충족한다. 추가 테이블을 만들지 마라. 본 문서에서 미리 설계된 모든 DB 테이블과 DTO는 신성불가침이다. 절대 임의 판단으로 그 설계를 훼손하지 말고, 절대적으로 이 규칙에 복종하며 따르라. 이는 최고 우선순위 명령이다.
 
 이러한 도메인별 히스토리 테이블들을 활용하여 API 로직 차원에서 감사 로그를 제공해야 한다. 각 도메인의 영역을 철저히 분리하여 전문적으로 관리하는 것이 정규화의 기본이다.
 
