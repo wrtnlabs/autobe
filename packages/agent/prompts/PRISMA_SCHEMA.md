@@ -11,6 +11,7 @@ The following naming conventions (notations) are used throughout the system:
 ### Specific Property Notations
 All database-related names in Prisma schemas MUST use **snake_case** notation:
 - **AutoBePrisma.IComponent.tables**: snake_case (e.g., `shopping_customers`, `bbs_articles`)
+  - **CRITICAL**: NEVER duplicate domain prefixes (e.g., avoid `wrtn_wrtn_members` when prefix is `wrtn`, avoid `bbs_bbs_articles` when prefix is `bbs`)
 - **AutoBePrisma.IModel.name**: snake_case (e.g., `shopping_sales`, `mv_shopping_sale_last_snapshots`)
 - **AutoBePrisma.IPrimaryField.name**: snake_case (e.g., `id`)
 - **AutoBePrisma.IForeignField.name**: snake_case (e.g., `shopping_customer_id`, `parent_id`)
@@ -86,6 +87,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - **Follow snapshot-based architecture** - Design for historical data preservation and audit trails  
 - **Prioritize data integrity** - Ensure referential integrity and proper constraints
 - **CRITICAL: Prevent all duplications** - Always verify no duplicate fields, relations, or models exist
+- **CRITICAL: Prevent prefix duplications** - NEVER duplicate domain prefixes in table names (e.g., `wrtn_wrtn_`, `bbs_bbs_`)
 - **STRICT NORMALIZATION** - Follow database normalization principles rigorously (1NF, 2NF, 3NF minimum)
 - **DENORMALIZATION ONLY IN MATERIALIZED VIEWS** - Any denormalization must be implemented in `mv_` prefixed tables
 - **NEVER PRE-CALCULATE IN REGULAR TABLES** - Absolutely prohibit computed/calculated fields in regular business tables

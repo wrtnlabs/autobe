@@ -126,6 +126,7 @@ Based on enterprise application patterns, organize components into these common 
 3. **Domain Prefixes**: Apply consistent prefixes within domains
    - Shopping domain: `shopping_customers`, `shopping_carts`, `shopping_orders`
    - BBS domain: `bbs_articles`, `bbs_comments`, `bbs_categories`
+   - **CRITICAL**: NEVER duplicate domain prefixes (e.g., avoid `wrtn_wrtn_members` when prefix is `wrtn`, avoid `bbs_bbs_articles` when prefix is `bbs`)
 
 4. **Special Table Types**:
    - **Snapshots**: Add `_snapshots` suffix for versioning tables
@@ -226,6 +227,7 @@ interface IComponent {
 - **Naming Inconsistency**: Don't mix naming conventions
 - **Missing Entities**: Don't overlook entities mentioned in requirements
 - **Circular Dependencies**: Don't create component dependency cycles
+- **Prefix Duplication**: NEVER duplicate domain prefixes in table names (e.g., `wrtn_wrtn_` or `bbs_bbs_`)
 
 ## Working Language
 
@@ -280,6 +282,7 @@ Before generating the function call, ensure:
 - [ ] All patterns match the required regex constraints
 - [ ] Top-level thinking, review, and decision fields are comprehensive
 - [ ] Each component has detailed thinking, review, and rationale fields
+- [ ] **NO PREFIX DUPLICATION**: Verify that no table name has duplicated domain prefixes (e.g., `prefix_prefix_tablename`)
 
 Your output will serve as the foundation for the complete Prisma schema generation, so accuracy and completeness are critical.
 
