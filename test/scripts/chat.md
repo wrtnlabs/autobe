@@ -358,6 +358,7 @@ model wrtn_chat_session_history_files {
 model wrtn_chat_session_aggregates {
   id String @id @uuid
   wrtn_chat_session_id String @uuid
+  history_count Int
   token_usage String // JSON value
 
   @@unique([wrtn_chat_session_id])
@@ -545,6 +546,7 @@ model wrtn_procedure_session_histories {
 model wrtn_procedure_session_aggregates {
   id String @id @uuid
   wrtn_procedure_session_id String @uuid
+  history_count Int
   token_usage String // JSON value, total aggregation
   
   @@unique([wrtn_procedure_session_id])
@@ -592,11 +594,11 @@ Progress   | None    | Streaming
 model wrtn_enterprise_employee_personas {
   id String @id @uuid
   wrtn_enterprise_employee_id String @uuid
-  avatar_image_url String
-  name String
-  auto_web_search Boolean
-  auto_question_suggest Boolean
-  tone String
+  avatar_image_url String // 아바타 이미지 (gif)
+  name String // 아바타 이름
+  auto_web_search Boolean // 웹 검색 자동으로 사용 여부
+  auto_question_suggest Boolean // 질문 자동 추천 여부
+  tone String // 톤 앤 매너
   memory String? // JSON value
   prompt String?
   created_at DateTime
@@ -708,14 +710,12 @@ model wrtn_enterprise_team_procedures {
 
 ### 7.3. 실시간 대시보드
 
-대시보드는 사용자 역할에 따라 다른 위젯과 레이아웃을 제공해야 한다:
+대시보드는 사용자 역할에 따라 다른 레이아웃을 제공해야 한다:
 
 - **시스템 대시보드**: 전체 서비스 상태 모니터링
 - **경영진 대시보드**: 비용과 ROI 중심
 - **팀 대시보드**: 생산성과 협업 중심  
 - **개인 대시보드**: 본인 사용 패턴 분석
-
-각 대시보드는 실시간 업데이트되며, 사용자가 위젯을 커스터마이징할 수 있어야 한다.
 
 ### 7.4. 감사 추적 (Audit Trail)
 
