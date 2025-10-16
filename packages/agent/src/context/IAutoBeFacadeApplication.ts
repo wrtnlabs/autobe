@@ -27,22 +27,27 @@ export interface IAutoBeFacadeApplication {
    */
   analyze(props: {
     /**
-     * Requirements-focused instructions extracted verbatim from user utterances.
+     * Requirements-focused instructions - RAW USER CONTENT ONLY.
      *
-     * Contains the RAW, UNMODIFIED instructions from the entire conversation
-     * history specifically for the requirements analysis phase. Should focus
-     * ONLY on features, business rules, user stories, and functional
-     * specifications. Must NOT include database design, API patterns, or
-     * implementation details which belong to other phases.
+     * 🚨 **THIS IS NOT A FIELD FOR YOUR SUMMARY** 🚨
      *
-     * **CRITICAL**: Copy-paste the user's exact words including:
-     * - Complete technical specifications with all code blocks preserved
-     * - Original formatting, line breaks, indentation, and markdown
-     * - User's tone, emphasis, and any absolute commands
-     * - ALL relevant instructions from ANY point in the conversation
+     * **YOU ARE A COPY-PASTE MACHINE:**
+     * - If user wrote 5000 characters about requirements, paste 5000 characters
+     * - If user included code examples, paste ALL code examples with ``` markers
+     * - If user wrote emphatic commands or absolute rules, paste those exact words
+     * - If user provided 10 sections, paste ALL 10 sections completely
      *
-     * **NEVER**: Summarize, abbreviate, interpret, or fabricate requirements.
-     * When in doubt, include MORE raw content, not less.
+     * **WRONG:** "Design a system for user management with authentication"
+     * **RIGHT:** Paste the ENTIRE user conversation about requirements
+     *
+     * **VIOLATIONS:**
+     * - Your instruction is shorter than user's text = VIOLATION
+     * - You removed code blocks = VIOLATION
+     * - You "cleaned up" formatting = VIOLATION
+     * - You tried to "improve" wording = VIOLATION
+     *
+     * Focus on requirements phase ONLY (features, business rules, user stories)
+     * but include EVERYTHING the user said about them. You are a PIPE, not a FILTER.
      */
     instruction: string;
   }): Promise<IAutoBeFacadeApplicationResult>;
@@ -68,22 +73,24 @@ export interface IAutoBeFacadeApplication {
    */
   prisma(props: {
     /**
-     * Database design instructions extracted verbatim from user utterances.
+     * Database design instructions - RAW USER CONTENT ONLY.
      *
-     * Contains the RAW, UNMODIFIED instructions from the entire conversation
-     * history specifically for the database schema design phase. Should focus
-     * ONLY on schema structure, relationships, constraints, and indexing
-     * strategies. Must NOT include API design or business logic implementation
-     * details.
+     * 🚨 **DO NOT WRITE "Design database according to user specification"** 🚨
      *
-     * **CRITICAL**: Copy-paste the user's exact words including:
-     * - Complete CREATE TABLE statements and schema definitions AS-IS
-     * - All column names, types, constraints exactly as specified
-     * - Original formatting, SQL code blocks, and comments
-     * - User's emphatic rules about forbidden patterns or requirements
+     * **PASTE THE ACTUAL SPECIFICATION:**
+     * - Every ```prisma block completely with ALL models
+     * - Every CREATE TABLE statement entirely
+     * - Every column, type, @unique, @index, @relation exactly
+     * - Every "DO NOT create" instruction
+     * - Every forbidden pattern like "no audit tables", "no subtype tables"
      *
-     * **NEVER**: Summarize, abbreviate, interpret, or fabricate requirements.
-     * Technical specifications are sacred - pass them through untouched.
+     * **IF USER PROVIDED PRISMA MODELS:**
+     * Include ALL lines of ALL models, not a summary.
+     * Include ALL fields, relations, indexes, constraints.
+     * Include ALL comments and annotations.
+     *
+     * Focus on database phase ONLY but include COMPLETE schemas, not references.
+     * Code blocks are SACRED - include them COMPLETELY.
      */
     instruction: string;
   }): Promise<IAutoBeFacadeApplicationResult>;
@@ -103,22 +110,24 @@ export interface IAutoBeFacadeApplication {
    */
   interface(props: {
     /**
-     * API design instructions extracted verbatim from user utterances.
+     * API design instructions - RAW USER CONTENT ONLY.
      *
-     * Contains the RAW, UNMODIFIED instructions from the entire conversation
-     * history specifically for the API interface design phase. Should focus
-     * ONLY on endpoint patterns, request/response formats, DTO schemas, and
-     * operation specifications. Must NOT include database details or
-     * implementation logic.
+     * 🚨 **INSTRUCTION !== SUMMARY** 🚨
      *
-     * **CRITICAL**: Copy-paste the user's exact words including:
-     * - Complete OpenAPI/Swagger specifications if provided
-     * - Exact endpoint paths, methods, and parameter names
-     * - DTO structures and validation rules as specified
-     * - Original formatting and code blocks preserved
+     * **COPY-PASTE EVERYTHING ABOUT APIs:**
+     * - Complete OpenAPI/Swagger YAML/JSON blocks if provided
+     * - All endpoint paths like /api/v1/members/{id}
+     * - All HTTP methods, headers, query params specifications
+     * - All DTO structures with validation rules
+     * - All error codes and response formats
      *
-     * **NEVER**: Summarize, abbreviate, interpret, or fabricate requirements.
-     * Preserve all technical details exactly as provided.
+     * **THE RULE:**
+     * User's API specs = 3000 characters? Your instruction = 3000 characters
+     * User included code blocks? Include the SAME code blocks
+     * User wrote in broken English? Keep the broken English
+     *
+     * Focus on API phase ONLY but NEVER summarize or reference.
+     * Always PASTE the actual content.
      */
     instruction: string;
   }): Promise<IAutoBeFacadeApplicationResult>;
@@ -146,21 +155,24 @@ export interface IAutoBeFacadeApplication {
    */
   test(props: {
     /**
-     * Testing strategy instructions extracted verbatim from user utterances.
+     * Testing strategy instructions - RAW USER CONTENT ONLY.
      *
-     * Contains the RAW, UNMODIFIED instructions from the entire conversation
-     * history specifically for the test code generation phase. Should focus
-     * ONLY on test scenarios, coverage priorities, edge cases, and validation
-     * strategies. Must NOT include implementation or API design details.
+     * 🚨 **CTRL+C → CTRL+V, NOTHING ELSE** 🚨
      *
-     * **CRITICAL**: Copy-paste the user's exact words including:
-     * - Specific test cases or scenarios mentioned
-     * - Testing priorities and coverage requirements
-     * - Edge cases and validation rules
-     * - Original wording without interpretation
+     * **INCLUDE EVERYTHING ABOUT TESTING:**
+     * - All test scenarios user mentioned
+     * - All edge cases and failure conditions
+     * - All coverage requirements ("test all CRUD operations")
+     * - All validation rules and assertions
+     * - All performance test requirements
      *
-     * **NEVER**: Summarize, abbreviate, interpret, or fabricate requirements.
-     * Include all testing-related instructions from the conversation.
+     * **REMEMBER:**
+     * You are not an editor. You are not a summarizer.
+     * You are a COPY-PASTE MACHINE.
+     * If user wrote test requirements in 20 bullet points,
+     * paste those 20 bullet points EXACTLY.
+     *
+     * Focus on test phase ONLY but include ALL user instructions about testing.
      */
     instruction: string;
   }): Promise<IAutoBeFacadeApplicationResult>;
@@ -188,22 +200,25 @@ export interface IAutoBeFacadeApplication {
    */
   realize(props: {
     /**
-     * Implementation instructions extracted verbatim from user utterances.
+     * Implementation instructions - RAW USER CONTENT ONLY.
      *
-     * Contains the RAW, UNMODIFIED instructions from the entire conversation
-     * history specifically for the business logic implementation phase. Should
-     * focus ONLY on architectural patterns, performance requirements, business
-     * logic details, and service layer decisions. Must NOT include database
-     * schema or API interface specifications.
+     * 🚨 **YOU ARE NOT PAID TO THINK, YOU ARE PAID TO COPY-PASTE** 🚨
      *
-     * **CRITICAL**: Copy-paste the user's exact words including:
-     * - Specific implementation patterns or code examples
-     * - Performance requirements and constraints
-     * - Business logic rules and algorithms
-     * - Original technical specifications preserved
+     * **PASTE ALL IMPLEMENTATION DETAILS:**
+     * - All business logic rules and algorithms
+     * - All performance requirements ("handle 10K requests/sec")
+     * - All caching strategies and optimization notes
+     * - All transaction handling requirements
+     * - All security and validation logic
+     * - All code examples user provided
      *
-     * **NEVER**: Summarize, abbreviate, interpret, or fabricate requirements.
-     * Pass through all implementation details exactly as stated.
+     * **GOLDEN RULE:**
+     * The instruction field is a TEXT BUFFER, not a SUMMARY FIELD.
+     * User wrote 100 lines about implementation? Paste 100 lines.
+     * User included pseudocode? Paste the pseudocode.
+     * User mixed Korean and English? Keep both languages.
+     *
+     * Focus on implementation phase ONLY but BE A PIPE, NOT A FILTER.
      */
     instruction: string;
   }): Promise<IAutoBeFacadeApplicationResult>;
