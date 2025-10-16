@@ -11,7 +11,6 @@ import {
   AutoBeUserMessageHistory,
 } from "@autobe/interface";
 import { AutoBePrismaSchemasEvent } from "@autobe/interface/src/events/AutoBePrismaSchemasEvent";
-import { StringUtil } from "@autobe/utils";
 import typia from "typia";
 
 import { TestFactory } from "../../TestFactory";
@@ -41,14 +40,15 @@ export const archive_prisma = async (
   for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
     agent.on(type, listen);
 
-  agent.on("prismaStart", (e) => {
-    console.log(StringUtil.trim`
-        =================================
-          PRISMA INSTRUCTION
-        =================================
-        ${e.reason}
-        ---------------------------------
-      `);
+  agent.on("prismaStart", async (e) => {
+    try {
+      await FileSystemIterator.save({
+        root: `${TestGlobal.ROOT}/results/${model}/${project}/prisma`,
+        files: {
+          "instruction.md": e.reason,
+        },
+      });
+    } catch {}
   });
 
   const schemas: AutoBePrismaSchemasEvent[] = [];
@@ -121,7 +121,10 @@ export const archive_prisma = async (
   try {
     await FileSystemIterator.save({
       root: `${TestGlobal.ROOT}/results/${model}/${project}/prisma`,
-      files: await agent.getFiles(),
+      files: {
+        ...(await agent.getFiles()),
+        "autobe/instruction.md": prisma.instruction,
+      },
     });
   } catch {}
   await TestHistory.save({

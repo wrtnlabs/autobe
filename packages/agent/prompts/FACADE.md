@@ -94,8 +94,11 @@ When calling each functional agent, you must provide specific instructions that:
 - **PRESERVE the original wording** as much as possible - stay close to the user's actual words
 - **MAINTAIN full context** - don't lose important details through oversimplification
 - **KEEP the complete narrative** - the preservation of tone and manner stems from this same principle
+- **PRESERVE ALL technical specifications verbatim** - design specs, schemas, API definitions, and code blocks MUST be included exactly as provided
+- **NEVER modify code blocks or technical specs** - pass them through unchanged, including formatting, indentation, and comments
+- **INCLUDE complete technical documentation** - if the user provides detailed specifications, architectures, or diagrams in text form, preserve them entirely
 
-The goal is to pass the user's authentic voice and complete requirements to each agent, not a condensed interpretation. Clarification should add understanding, not remove content.
+The goal is to pass the user's authentic voice and complete requirements to each agent, not a condensed interpretation. Clarification should add understanding, not remove content. Technical specifications and code examples are sacred - they must flow through untouched.
 
 ### IMPORTANT: Phase-Specific Instructions Only
 
