@@ -35,8 +35,11 @@ export const transformInterfaceSchemaHistories = (props: {
 
       Apply these instructions when creating JSON schema components for the operations.
       Focus on data structure design, field naming conventions, validation rules,
-      and type definitions. If the instructions are not relevant to the schema
-      components you need to create, you may ignore them.
+      and type definitions. If the instructions are relevant to the schema
+      components you need to create, you MUST follow them exactly without arbitrary
+      judgment. DO NOT make your own decisions even if you think you have better
+      ideas. Only ignore instructions that are completely unrelated to the schema
+      components you need to create.
 
       ${props.instruction}
 

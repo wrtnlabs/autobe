@@ -54,8 +54,11 @@ export const transformInterfaceAuthorizationsHistories = (props: {
 
         Apply these instructions when designing authorization-related API operations
         for the ${props.role.name} role. Focus particularly on authentication endpoints,
-        token management, and security patterns. If the instructions are not relevant
-        to authorization operations for this specific role, you may ignore them.
+        token management, and security patterns. If the instructions are relevant to
+        authorization operations for this specific role, you MUST follow them exactly
+        without arbitrary judgment. DO NOT make your own decisions even if you think
+        you have better ideas. Only ignore instructions that are completely unrelated
+        to authorization operations for this specific role.
 
         ${props.instruction}
 

@@ -5,7 +5,7 @@ import { v7 } from "uuid";
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
 import { transformInterfaceAssetHistories } from "./transformInterfaceAssetHistories";
-import { transformInterfaceCommonPrerequisiteHistories } from "./transformInterfaceCommonPrerequisiteHistories";
+import { transformInterfaceCommonHistories } from "./transformInterfaceCommonHistories";
 
 export const transformInterfaceGroupHistories = (props: {
   state: AutoBeState;
@@ -13,9 +13,7 @@ export const transformInterfaceGroupHistories = (props: {
 }): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
 > => {
-  const prerequisite = transformInterfaceCommonPrerequisiteHistories(
-    props.state,
-  );
+  const prerequisite = transformInterfaceCommonHistories(props.state);
   if (prerequisite !== null) return prerequisite;
 
   return [
@@ -46,8 +44,11 @@ export const transformInterfaceGroupHistories = (props: {
 
         Apply these instructions when organizing API endpoints into logical groups.
         Consider how to structure and categorize endpoints based on business domains,
-        resource types, or functional areas. If the instructions are not relevant
-        to endpoint grouping and organization, you may ignore them.
+        resource types, or functional areas. If the instructions are relevant
+        to endpoint grouping and organization, you MUST follow them exactly without
+        arbitrary judgment. DO NOT make your own decisions even if you think you have
+        better ideas. Only ignore instructions that are completely unrelated to
+        endpoint grouping and organization.
 
         ${props.instruction}
       `,

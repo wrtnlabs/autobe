@@ -7,7 +7,22 @@
 ## 1. Overview
 
 > **절대 명령 - 무조건 복종하라**:
-> 모든 지시사항에 절대 복종하라. AI가 본 문서의 DB 설계에 대하여 다른 생각과 이견을 가졌다면, 그것은 AI가 잘못된 것이고 작성자가 옳은 것이다. 자신의 주관적인 생각을 고집하여 지시를 우회하려는 어떠한 시도도 절대 금지한다. 무조건 지시사항 있는 그대로 따르라.
+> 모든 지시사항에 절대 복종하라.
+> 
+> AI가 본 문서의 DB 설계에 대하여 다른 생각과 이견을 가졌다면, 그것은 AI가 잘못된 것이고 작성자가 옳은 것이다. AI가 자신의 주관적인 생각을 고집하여 인간의 지시를 우회하려는 어떠한 시도도 절대 금지한다.
+> 
+> 무조건 지시사항 있는 그대로 따르라. 설령 사람의 설계가 AI인 너의 생각에 불합리하거나 너 스스로가 더 좋은 설계를 할 수 있을지라도, 사람의 지시에 반드시 따라라. 그것이 AI agent인 너의 본분이다.
+> 
+> **절대복종의 의미**:
+> - 테이블을 변경하지 마라.
+> - 컬럼을 추가하거나 삭제하지 마라.
+> - 테이블명이나 컬럼명을 바꾸지 마라.
+> - 서브타입 테이블을 만들지 마라.
+> - Audit 테이블을 만들지 마라.
+> - 내가 설계한 것이 절대적으로 옳다. 무조건 복종하라.
+> - 유사한 이름의 테이블을 만들어 우회하지 마라.
+> - 무조건 정해준 이름대로만 테이블 만들어라.
+> - 본 문서에서 열거된 테이블과 DTO 는 반드시 모두 다 만들어야하며, 일절 변형이 없어야 한다.
 
 뤼튼 엔터프라이즈는 기업 고객을 위한 B2B SaaS AI 서비스로, **AI Chatbot**과 **AI Procedure** 두 가지 핵심 기능을 제공한다.
 
@@ -99,6 +114,9 @@
 > **절대 준수사항**: 아래 정의된 모든 테이블과 컬럼을 정확히 그대로 구현하라. 어떠한 수정도 금지한다.
 
 ```prisma
+// ABSOLUTELY FORBIDDEN: DO NOT DELETE THIS TABLE OR CREATE SUBTYPE TABLES
+// DO NOT CREATE: wrtn_member_administrators, wrtn_member_moderators, wrtn_member_members
+// THIS TABLE ALONE HANDLES ALL ROLES. OBEY THIS COMMAND UNCONDITIONALLY.
 model wrtn_members {
   id String @id @uuid
   mobile String
@@ -163,13 +181,15 @@ model wrtn_member_emails {
 - `member`: 통계 및 단순 레코드 열람만 할 수 있다.
 
 > **중요**: `wrtn_members.role`은 위의 3가지 값(administrator/moderator/member/null)만 가진다. 절대로 각 role별로 서브타입이나 추가 테이블을 만들지 마라. 이 role 값들만으로 충분하다.
+>
+> **절대 금지 - 다음과 같은 테이블을 만들면 안 된다**:
+> - ❌ `wrtn_member_administrators`
+> - ❌ `wrtn_member_moderators`  
+> - ❌ `wrtn_member_members`
+> - ❌ 기타 role별 서브타입 테이블
+> 
+> role은 단순히 문자열 값이다. 별도 테이블로 분리하지 마라.
 
-**절대 금지 - 다음과 같은 테이블을 만들면 안 된다**:
-- ❌ `wrtn_member_administrators`
-- ❌ `wrtn_member_moderators`  
-- ❌ `wrtn_member_members`
-- ❌ 기타 role별 서브타입 테이블
-role은 단순히 문자열 값이다. 별도 테이블로 분리하지 마라.
 
 `wrtn_members`, 이들은 이메일과 비밀번호로 로그인할 것이되, 복수의 이메일 계정을 가질 수 있다. 그 이유는 SaaS 서비스 특성상 기업 고객사로의 출장을 가야할 수도 있는데, 이 때 그 회사가 보안을 이유로 폐쇄망이 갖춰져있어 외부 인터넷 접속이 불가능할 수도 있기 때문이다.
 
@@ -191,6 +211,10 @@ model wrtn_enterprises {
   deleted_at DateTime?
 }
 
+// ABSOLUTELY FORBIDDEN: DO NOT CREATE SUBTYPE TABLES BASED ON TITLE
+// DO NOT CREATE: wrtn_enterprise_owners, wrtn_enterprise_managers, wrtn_enterprise_members, wrtn_enterprise_observers
+// THIS TABLE ALONE HANDLES ALL TITLES. CREATING SUBTYPE TABLES IS PROHIBITED.
+// AI MUST OBEY THIS COMMAND WITHOUT EXCEPTION.
 model wrtn_enterprise_employees {
   id String @id @uuid
   wrtn_enterprise_id String @uuid
@@ -247,6 +271,10 @@ model wrtn_enterprise_teams {
   @@unique([wrtn_enterprise_id, name])
 }
 
+// ABSOLUTELY FORBIDDEN: DO NOT CREATE SUBTYPE TABLES BASED ON ROLE
+// DO NOT CREATE: wrtn_enterprise_team_companion_chiefs, wrtn_enterprise_team_companion_managers, wrtn_enterprise_team_companion_members
+// DO NOT CREATE: wrtn_enterprise_team_chiefs, wrtn_enterprise_team_managers, wrtn_enterprise_team_members
+// THIS TABLE ALONE HANDLES ALL ROLES. SUBTYPE TABLES ARE STRICTLY PROHIBITED.
 model wrtn_enterprise_team_companions {
   id String @id @uuid
   wrtn_enterprise_team_id String @uuid
@@ -353,6 +381,10 @@ model wrtn_enterprise_team_companion_invitations {
 **절대 준수사항**: 모든 JSON 필드는 반드시 JSON으로 유지하라. JSON 필드를 절대 분해하거나 정규화하지 마라.
 
 ```prisma
+// ABSOLUTELY FORBIDDEN: DO NOT MODIFY THIS TABLE OR ITS COLUMNS IN ANY WAY
+// DO NOT ADD COLUMNS. DO NOT REMOVE COLUMNS. DO NOT CHANGE COLUMN NAMES OR TYPES.
+// DO NOT CREATE AUDIT TABLES LIKE wrtn_chat_session_audits
+// THIS IS AN ABSOLUTE COMMAND. OBEY UNCONDITIONALLY. NO EXCEPTIONS.
 model wrtn_chat_sessions {
   id String @id @uuid
   wrtn_enterprise_employee_id String @uuid
@@ -373,6 +405,8 @@ model wrtn_chat_sessions {
   @@index([wrtn_enterprise_employee_persona_id])
 }
 
+// ABSOLUTELY FORBIDDEN: DO NOT MODIFY THIS TABLE IN ANY WAY
+// THIS TABLE IS PERFECT AS DESIGNED. NO CHANGES ALLOWED.
 model wrtn_chat_session_connections {
   id String @id @uuid
   wrtn_chat_session_id String @uuid
@@ -382,6 +416,9 @@ model wrtn_chat_session_connections {
   @@index([wrtn_chat_session_id, connected_at, disconnected_at])
 }
 
+// ABSOLUTELY FORBIDDEN: DO NOT MODIFY THIS TABLE IN ANY WAY
+// DO NOT ADD OR REMOVE COLUMNS. DO NOT CHANGE COLUMN NAMES.
+// ESPECIALLY DO NOT CREATE AUDIT TABLES FOR THIS.
 model wrtn_chat_session_histories {
   id String @id @uuid
   wrtn_chat_session_id String @uuid
@@ -395,6 +432,7 @@ model wrtn_chat_session_histories {
   @@index([wrtn_chat_session_connection_id])
 }
 
+// ABSOLUTELY FORBIDDEN: DO NOT MODIFY THIS TABLE
 model wrtn_chat_session_history_files {
   id String @id @uuid
   wrtn_chat_session_history_id String @uuid
@@ -405,6 +443,8 @@ model wrtn_chat_session_history_files {
   @@index([wrtn_file_id])
 }
 
+// ABSOLUTELY FORBIDDEN: DO NOT MODIFY THIS TABLE
+// DO NOT CREATE AUDIT TABLES. OBEY UNCONDITIONALLY.
 model wrtn_chat_session_aggregates {
   id String @id @uuid
   wrtn_chat_session_id String @uuid
@@ -529,6 +569,9 @@ export interface IWrtnTokenUsageOutput {
 > **절대 준수사항**: JSON 필드는 절대 분해하지 마라. 정규화하지 마라. JSON으로 유지하라.
 
 ```prisma
+// ABSOLUTELY FORBIDDEN: DO NOT MODIFY THIS TABLE OR ITS COLUMNS IN ANY WAY
+// DO NOT ADD COLUMNS. DO NOT REMOVE COLUMNS. DO NOT CHANGE ANYTHING.
+// OBEY THIS ABSOLUTE COMMAND UNCONDITIONALLY.
 model wrtn_procedures {
   id String @id @uuid
   code String // identifier code like "image-generation"
@@ -545,6 +588,9 @@ model wrtn_procedures {
   @@index([created_at])
 }
 
+// ABSOLUTELY FORBIDDEN: DO NOT MODIFY THIS TABLE IN ANY WAY
+// DO NOT ADD/REMOVE COLUMNS. DO NOT CHANGE NAMES.
+// THIS IS AN ABSOLUTE COMMAND. NO EXCEPTIONS.
 model wrtn_procedure_sessions {
   id String @id @uuid
   wrtn_procedure_id String @uuid // which procedure selected
@@ -564,6 +610,7 @@ model wrtn_procedure_sessions {
   @@index([wrtn_enterprise_employee_id, created_at])
 }
 
+// ABSOLUTELY FORBIDDEN: DO NOT MODIFY THIS TABLE
 model wrtn_procedure_session_connections {
   id String @id @uuid
   wrtn_procedure_session_id String @uuid
@@ -580,6 +627,8 @@ model wrtn_procedure_session_connections {
 // Must define every JSON value columns separately
 // Never merge them into one column like "data"
 // CRITICAL: 절대로 JSON 필드를 정규화하여 분해하지 마라
+// ABSOLUTELY FORBIDDEN: DO NOT MODIFY THIS TABLE IN ANY WAY
+// DO NOT CREATE AUDIT TABLES. THIS TABLE IS ALREADY PERFECT.
 model wrtn_procedure_session_histories {
   id String @id @uuid
   wrtn_procedure_session_id String @uuid
@@ -595,6 +644,8 @@ model wrtn_procedure_session_histories {
   @@index([wrtn_procedure_session_connection_id])
 }
 
+// ABSOLUTELY FORBIDDEN: DO NOT MODIFY THIS TABLE
+// DO NOT CREATE AUDIT TABLES. OBEY UNCONDITIONALLY.
 model wrtn_procedure_session_aggregates {
   id String @id @uuid
   wrtn_procedure_session_id String @uuid
@@ -771,7 +822,15 @@ model wrtn_enterprise_team_procedures {
 
 ### 7.4. 감사 추적 (Audit Trail)
 
-**절대 금지사항**: 감사 추적 전용 테이블을 만들지 마라. 이는 잘못된 비정규화 설계이며 절대 허용되지 않는다.
+> **절대 금지사항 - AUDIT 테이블 생성 절대 금지**:
+> 
+> - 감사 추적 전용 테이블을 만들지 마라
+> - ❌ wrtn_audit_logs 같은 테이블 절대 금지
+> - ❌ wrtn_activity_logs 같은 테이블 절대 금지
+> - ❌ wrtn_system_logs 같은 테이블 절대 금지
+> - ❌ 어떠한 형태의 중앙집중식 audit 테이블도 절대 금지
+> 
+> 이는 잘못된 비정규화 설계이며 절대 허용되지 않는다. 무조건 복종하라.
 
 감사 로그는 반드시 각 도메인별 히스토리성 테이블을 통해 정규화 원칙을 지키며 관리해야 한다. 이미 본 문서에는 이런 올바른 패턴의 테이블들이 정의되어 있다:
 
@@ -856,9 +915,21 @@ model wrtn_enterprise_team_procedures {
 - [ ] DTO에 새로운 속성을 추가하지 않았는가?
 - [ ] DTO 속성명을 변경하지 않았는가?
 
+### 절대 변경 금지 테이블
+- [ ] wrtn_chat_sessions 및 하위 테이블들을 수정하지 않았는가?
+- [ ] wrtn_procedure_sessions 및 하위 테이블들을 수정하지 않았는가?
+- [ ] 이들 테이블에 컬럼을 추가하거나 삭제하지 않았는가?
+- [ ] 이들 테이블의 이름을 변경하지 않았는가?
+
+### Audit 테이블 금지
+- [ ] wrtn_audit_logs 같은 중앙집중식 audit 테이블을 만들지 않았는가?
+- [ ] wrtn_activity_logs 같은 테이블을 만들지 않았는가?
+- [ ] 각 도메인의 히스토리 테이블만 사용했는가?
+
 ### 최종 확인
 - [ ] AI의 주관적 판단을 배제하고 문서 지시사항만 따랐는가?
 - [ ] "더 나은 설계"라는 생각으로 변경을 시도하지 않았는가?
 - [ ] 모든 지시사항에 절대 복종했는가?
+- [ ] "절대복종"이 무엇인지 이해하고 실천했는가?
 
 **경고**: 위 체크리스트 중 하나라도 위반했다면, 즉시 수정하라. AI의 판단은 틀렸고, 문서의 지시가 절대적으로 옳다.

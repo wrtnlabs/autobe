@@ -54,8 +54,11 @@ export const transformInterfaceOperationHistories = (props: {
 
         Apply these instructions when designing the detailed operation specifications
         for each endpoint. Consider parameter types, request/response structures,
-        error handling, and API behavior patterns. If the instructions are not
-        relevant to the operations you need to implement, you may ignore them.
+        error handling, and API behavior patterns. If the instructions are relevant
+        to the operations you need to implement, you MUST follow them exactly without
+        arbitrary judgment. DO NOT make your own decisions even if you think you have
+        better ideas. Only ignore instructions that are completely unrelated to the
+        operations you need to implement.
 
         ${props.instruction}
 

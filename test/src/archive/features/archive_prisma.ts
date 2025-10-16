@@ -11,6 +11,7 @@ import {
   AutoBeUserMessageHistory,
 } from "@autobe/interface";
 import { AutoBePrismaSchemasEvent } from "@autobe/interface/src/events/AutoBePrismaSchemasEvent";
+import { StringUtil } from "@autobe/utils";
 import typia from "typia";
 
 import { TestFactory } from "../../TestFactory";
@@ -39,6 +40,16 @@ export const archive_prisma = async (
   };
   for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
     agent.on(type, listen);
+
+  agent.on("prismaStart", (e) => {
+    console.log(StringUtil.trim`
+        =================================
+          PRISMA INSTRUCTION
+        =================================
+        ${e.reason}
+        ---------------------------------
+      `);
+  });
 
   const schemas: AutoBePrismaSchemasEvent[] = [];
   const insufficients: AutoBePrismaInsufficientEvent[] = [];

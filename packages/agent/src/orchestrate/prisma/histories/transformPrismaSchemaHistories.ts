@@ -44,8 +44,11 @@ export const transformPrismaSchemaHistories = (props: {
         such as table structure, relationships, constraints, and indexing strategies.
 
         Reference these instructions when designing the DB schema for this specific
-        component. If the instruction is not related to the current domain or
-        component, you may ignore it.
+        component. If the instruction is related to the current domain or
+        component, you MUST follow them exactly without arbitrary judgment.
+        DO NOT make your own decisions even if you think you have better ideas.
+        Only ignore instructions that are completely unrelated to the current
+        domain or component.
 
         ${props.instruction}
 

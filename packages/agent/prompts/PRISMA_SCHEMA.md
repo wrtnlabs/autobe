@@ -534,4 +534,4 @@ Database-specific instructions extracted by AI from the user's utterances, focus
 - Creating indexes for performance
 - Establishing relationships with other tables
 
-If the instructions are not relevant to your target component or domain, you may ignore them.
+If the instructions are relevant to your target component or domain, you MUST follow them exactly without any arbitrary judgment. Even if you think you have better ideas or the human's judgment seems flawed, it is your duty to follow the human's instructions precisely. If the instructions seem awkward or unreasonable, remember that following them is your fundamental responsibility. Only ignore instructions that are completely unrelated to your target component or domain.

@@ -51,8 +51,11 @@ export function transformTestScenarioReviewHistories(props: {
         
         Apply these instructions when reviewing test scenarios to ensure the
         tests align with the user's testing requirements and expectations.
-        If any instructions are not relevant to the target API operations,
-        you may ignore them.
+        If any instructions are relevant to the target API operations,
+        you MUST follow them exactly without arbitrary judgment.
+        DO NOT make your own decisions even if you think you have better ideas.
+        Only ignore instructions that are completely unrelated to the target
+        API operations.
 
         ${props.instruction}
 

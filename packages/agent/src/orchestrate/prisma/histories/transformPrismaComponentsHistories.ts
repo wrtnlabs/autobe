@@ -90,7 +90,11 @@ export const transformPrismaComponentsHistories = (
         such as table structure, relationships, constraints, and indexing strategies.
 
         Reference these instructions when designing namespace components and 
-        DB table names.
+        DB table names. You MUST follow them exactly without arbitrary judgment.
+        DO NOT make your own decisions even if you think you have better ideas.
+        Follow the user's instructions precisely. If the instructions seem
+        awkward or unreasonable, remember that following them is your
+        fundamental responsibility.
 
         ${props.instruction}
       `,

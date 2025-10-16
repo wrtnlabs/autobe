@@ -7,6 +7,8 @@ pnpm run archive --vendor anthropic/claude-sonnet-4.5 --schema claude --project 
 pnpm run archive --vendor anthropic/claude-sonnet-4.5 --schema claude --project reddit > archive.claude-sonnet-4.5.reddit.log
 pnpm run archive --vendor anthropic/claude-sonnet-4.5 --schema claude --project shopping > archive.claude-sonnet-4.5.shopping.log
 
+pnpm run archive --vendor anthropic/claude-sonnet-4.5 --schema claude --project chat > archive.claude-sonnet-4.5.chat.log
+
 # anthropic/claude-haiku-4.5
 pnpm run archive --vendor anthropic/claude-haiku-4.5 --schema claude --project todo > archive.claude-haiku-4.5.todo.log
 pnpm run archive --vendor anthropic/claude-haiku-4.5 --schema claude --project bbs > archive.claude-haiku-4.5.bbs.log
@@ -35,6 +37,8 @@ pnpm run archive --vendor openai/gpt-5 --project todo > archive.openai-gpt-5.tod
 pnpm run archive --vendor openai/gpt-5 --project bbs > archive.openai-gpt-5.bbs.log
 pnpm run archive --vendor openai/gpt-5 --project reddit > archive.openai-gpt-5.reddit.log
 pnpm run archive --vendor openai/gpt-5 --project shopping > archive.openai-gpt-5.shopping.log
+
+pnpm run archive --vendor openai/gpt-5 --project chat > archive.openai-gpt-5.chat.log
 
 # openai/gpt-5-mini
 pnpm run archive --vendor openai/gpt-5-mini --project todo > archive.openai-gpt-5-mini.todo.log
