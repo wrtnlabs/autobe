@@ -22,6 +22,7 @@
   "author": "Wrtn Technologies",
   "license": "AGPL-3.0",
   "dependencies": {
+    "@agentica/core": "catalog:agentica",
     "@autobe/agent": "workspace:^",
     "@autobe/compiler": "workspace:^",
     "@autobe/filesystem": "workspace:^",
