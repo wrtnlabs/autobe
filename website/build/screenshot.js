@@ -2,13 +2,7 @@ const puppeteer = require("puppeteer");
 const path = require("path");
 const fs = require("fs");
 
-const MODELS = [
-  "openai/gpt-4.1",
-  "openai/gpt-4.1-mini",
-  "openai/gpt-5",
-  "openai/gpt-5-mini",
-  "qwen/qwen3-next-80b-a3b-instruct",
-];
+const benchmarks = require("../src/data/benchmark.json");
 
 async function captureScreenshots() {
   const browser = await puppeteer.launch({
@@ -28,13 +22,13 @@ async function captureScreenshots() {
   }
 
   try {
-    for (const model of MODELS) {
+    for (const model of benchmarks.map((b) => b.vendor)) {
       console.log(`Capturing screenshot for model: ${model}`);
-      
+
       // Navigate to the screenshot page with model query parameter
       const encodedModel = encodeURIComponent(model);
       const url = `http://localhost:3000/screenshot?model=${encodedModel}`;
-      
+
       console.log(`Navigating to: ${url}`);
       await page.goto(url, {
         waitUntil: "networkidle2",
@@ -46,26 +40,28 @@ async function captureScreenshots() {
 
       // Find the video container or main content element
       // Adjust selector based on actual component structure
-      const element = await page.$('.video-container, .movie-container, main > div:first-child');
-      
+      const element = await page.$(
+        ".video-container, .movie-container, main > div:first-child",
+      );
+
       const filename = `replay-${model.replace("/", "-")}.png`;
       const location = path.join(screenshotsDir, filename);
-      
+
       if (element) {
         // Get the bounding box of the element for tight cropping
         const box = await element.boundingBox();
-        
+
         // Take screenshot with tight crop and minimal padding
         if (box) {
           await page.screenshot({
             path: location,
             type: "png",
             clip: {
-              x: Math.max(0, box.x - 20),  // Small left padding
-              y: Math.max(0, box.y - 20),  // Small top padding 
-              width: box.width + 40,  // Add padding to width
-              height: box.height + 40  // Add padding to height
-            }
+              x: Math.max(0, box.x - 20), // Small left padding
+              y: Math.max(0, box.y - 20), // Small top padding
+              width: box.width + 40, // Add padding to width
+              height: box.height + 40, // Add padding to height
+            },
           });
           console.log(`✓ Screenshot saved: ${filename}`);
         } else {
@@ -78,7 +74,9 @@ async function captureScreenshots() {
         }
       } else {
         // If no element found, take full viewport screenshot
-        console.warn(`⚠ Element not found for model: ${model}, taking full viewport`);
+        console.warn(
+          `⚠ Element not found for model: ${model}, taking full viewport`,
+        );
         await page.screenshot({
           path: location,
           type: "png",
@@ -86,7 +84,7 @@ async function captureScreenshots() {
         console.log(`✓ Screenshot saved (viewport): ${filename}`);
       }
     }
-    
+
     console.log("\n✅ All screenshots captured successfully!");
   } catch (error) {
     console.error("❌ Error capturing screenshots:", error);

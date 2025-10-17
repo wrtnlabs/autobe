@@ -65,6 +65,8 @@ const readme = (experiments: IAutoBePlaygroundBenchmark[]): string => {
       ${row("bbs")}
       ${row("reddit")}
       ${row("shopping")}
+
+      ![](https://autobe.dev/images/demonstrate/replay-${exp.vendor.replaceAll("/", "-")}.png)
     `;
   };
   return StringUtil.trim`
