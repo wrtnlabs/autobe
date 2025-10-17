@@ -1,17 +1,26 @@
-import { IAutoBePlaygroundReplay } from "@autobe/interface";
+import {
+  IAutoBePlaygroundBenchmark,
+  IAutoBePlaygroundReplay,
+} from "@autobe/interface";
 import { Singleton } from "tstl";
 
-import data from "./replays.json";
+import json from "./benchmark.json";
 
 export namespace AutoBeDemoStorage {
-  export const getModels = () => vendorModels.get();
+  export const data = (): IAutoBePlaygroundBenchmark[] => json as any;
+
+  export const getModels = () => models.get();
+
+  export const getItems = () => items.get();
 
   export const getModelProjects = (
     model: string,
   ): IAutoBePlaygroundReplay.ISummary[] | null => {
-    const replays = (data as IAutoBePlaygroundReplay.Collection)[model];
-    if (replays === undefined) return null;
-    return replays.filter((r) => PROJECTS.includes(r.project));
+    const benchmark: IAutoBePlaygroundBenchmark | undefined = data().find(
+      (i) => i.vendor === model,
+    );
+    if (benchmark === undefined) return null;
+    return benchmark.replays;
   };
 
   export const getProject = (props: {
@@ -24,20 +33,12 @@ export namespace AutoBeDemoStorage {
   };
 }
 
-const PROJECTS = ["todo", "bbs", "reddit", "shopping"];
-const vendorModels = new Singleton(() => {
-  const success: string[] = [];
-  const passes: string[] = [];
-  const failure: string[] = [];
-  for (const [key, collection] of Object.entries(
-    data as IAutoBePlaygroundReplay.Collection,
-  )) {
-    const count: number = collection.filter(
-      (r) => r.realize !== null && r.realize.success === true,
-    ).length;
-    if (count >= 3) success.push(key);
-    else if (count !== 0) passes.push(key);
-    else failure.push(key);
-  }
-  return [...success.sort(), ...passes.sort(), ...failure.sort()];
-});
+const items = new Singleton(() =>
+  AutoBeDemoStorage.data().map((b) => ({
+    label: `${b.emoji} ${b.vendor}`,
+    data: b.vendor,
+  })),
+);
+const models = new Singleton(() =>
+  AutoBeDemoStorage.data().map((b) => b.vendor),
+);

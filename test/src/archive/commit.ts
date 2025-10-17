@@ -60,7 +60,7 @@ const readme = (experiments: IAutoBePlaygroundBenchmark[]): string => {
       ## \`${exp.vendor}\`
       
       Project | Score | Analyze | Prisma | Interface | Test | Realize
-      :-------|------:|:--------|:--------|:----------|:-----:|:--------
+      :-------|------:|:-------:|:------:|:----------|:----:|:-------:
       ${row("todo")}
       ${row("bbs")}
       ${row("reddit")}
@@ -72,8 +72,8 @@ const readme = (experiments: IAutoBePlaygroundBenchmark[]): string => {
 
     ## Benchmark
 
-    AI Model | Total Score | Status 
-    :--------|------------:|:-------
+    AI Model | Score | Status 
+    :--------|------:|:------:
     ${experiments
       .map((e) =>
         [
@@ -156,7 +156,7 @@ const main = async (): Promise<void> => {
   });
 
   // COMMIT
-  if (TestGlobal.getArguments("--no-commit") === null) {
+  if (TestGlobal.getArguments("no-commit") === null) {
     const execute = (command: string) => {
       cp.execSync(command, {
         cwd: `${TestGlobal.ROOT}/repositories/examples`,
