@@ -28,18 +28,14 @@ export const transformInterfaceSchemaHistories = (props: {
     text: StringUtil.trim`
       ## API Design Instructions
 
-      The following API-specific instructions were extracted by AI from
-      the user's utterances. These focus ONLY on API interface design aspects
+      The following API-specific instructions were extracted from
+      the user's requirements. These focus on API interface design aspects
       such as endpoint patterns, request/response formats, DTO schemas,
       and operation specifications.
 
-      Apply these instructions when creating JSON schema components for the operations.
-      Focus on data structure design, field naming conventions, validation rules,
-      and type definitions. If the instructions are relevant to the schema
-      components you need to create, you MUST follow them exactly without arbitrary
-      judgment. DO NOT make your own decisions even if you think you have better
-      ideas. Only ignore instructions that are completely unrelated to the schema
-      components you need to create.
+      These instructions are provided as reference when creating JSON schema 
+      components for the operations. They cover data structure design, field 
+      naming conventions, validation rules, and type definitions.
 
       ${props.instruction}
 

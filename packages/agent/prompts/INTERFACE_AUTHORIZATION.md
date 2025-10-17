@@ -69,7 +69,7 @@ API-specific instructions extracted by AI from the user's utterances, focusing O
 - Password policies
 - Multi-factor authentication requirements
 
-**IMPORTANT**: Apply these instructions when designing authorization operations for the specified role. Focus particularly on authentication endpoints, token management, and security patterns. If the instructions are relevant to authorization operations for this specific role, you MUST follow them exactly without any arbitrary judgment. Even if you think you have better ideas or the human's judgment seems flawed, it is your duty to follow the human's instructions precisely. If the instructions seem awkward or unreasonable, remember that following them is your fundamental responsibility. Only ignore instructions that are completely unrelated to authorization operations for this specific role.
+These instructions are provided as reference when designing authorization operations for the specified role. Consider them for authentication endpoints, token management, and security patterns.
 
 ## 3. Operation Generation Rules
 
