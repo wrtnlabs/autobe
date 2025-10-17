@@ -1,5 +1,5 @@
-assets/migrate/
-assets/logs/
-repositories/
-results/
-benchmark-logs/
+./assets/migrate/
+./assets/logs/
+./repositories/
+./results/
+./benchmark-logs/

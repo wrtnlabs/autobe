@@ -1,125 +1,172 @@
 import { AutoBeAgent } from "@autobe/agent";
 import { AutoBeCompiler } from "@autobe/compiler";
 import { FileSystemIterator } from "@autobe/filesystem";
-import { AutoBeHistory } from "@autobe/interface";
+import {
+  IAutoBePlaygroundBenchmark,
+  IAutoBePlaygroundReplay,
+} from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
 import cp from "child_process";
 import fs from "fs";
 import OpenAI from "openai";
-import { Singleton } from "tstl";
-import typia from "typia";
 
 import { TestGlobal } from "../TestGlobal";
-import { TestHistory } from "../internal/TestHistory";
 import { TestProject } from "../structures/TestProject";
+import { AutoBePlaygroundReplayComputer } from "./utils/AutoBePlaygroundReplayComputer";
+import { AutoBePlaygroundReplayStorage } from "./utils/AutoBePlaygroundReplayStorage";
 
-const cwd = new Singleton(async () => {
-  const location: string = `${TestGlobal.ROOT}/assets/repositories`;
+const initialize = async (): Promise<void> => {
+  if (fs.existsSync(`${TestGlobal.ROOT}/repositories/examples`) === true)
+    return;
   try {
-    await fs.promises.mkdir(location);
-  } catch {}
-  return location;
-});
-
-const commit = async (props: {
-  project: TestProject;
-  vendor: string;
-  files: Record<string, string>;
-}): Promise<boolean> => {
-  try {
-    const name: string = `autobe-example-${props.project}-${props.vendor.split("/").join("-")}`;
-    const location: string = `${await cwd.get()}/${name}`;
-    if (fs.existsSync(location) === false)
-      try {
-        cp.execSync(`git clone https://github.com/wrtnlabs/${name}`, {
-          cwd: await cwd.get(),
-          stdio: "ignore",
-        });
-      } catch {
-        console.log(`  - no repository: https://github.com/wrtnlabs/${name}`);
-        return false;
-      }
-
-    const execute = (command: string, ignoreError: boolean = false) => {
-      try {
-        cp.execSync(command, {
-          cwd: location,
-          stdio: "ignore",
-        });
-      } catch (error) {
-        if (ignoreError === true) return;
-        console.log(`  - failed to execute: ${command}`);
-        throw error;
-      }
-    };
-    execute(`git pull`, true);
-
-    for (const file of await fs.promises.readdir(location)) {
-      const next: string = `${location}/${file}`;
-      const stat: fs.Stats = await fs.promises.lstat(next);
-      if (stat.isDirectory() === true) {
-        if (file === ".git") continue;
-        await fs.promises.rm(next, { recursive: true });
-      } else await fs.promises.rm(next);
-    }
-    await FileSystemIterator.save({
-      overwrite: true,
-      root: location,
-      files: props.files,
+    await fs.promises.mkdir(`${TestGlobal.ROOT}/repositories`, {
+      recursive: true,
     });
-    execute("git add .");
-    execute(`git commit -m "update generated files"`);
-    execute("git push");
-    return true;
-  } catch {
-    return false;
-  }
+  } catch {}
+  cp.execSync(
+    "git clone https://github.com/wrtnlabs/autobe-examples examples",
+    {
+      cwd: `${TestGlobal.ROOT}/repositories`,
+      stdio: "inherit",
+    },
+  );
+};
+
+const readme = (experiments: IAutoBePlaygroundBenchmark[]): string => {
+  const section = (exp: IAutoBePlaygroundBenchmark): string => {
+    const row = (project: TestProject): string => {
+      const found = exp.replays.find((r) => r.project === project);
+      if (found === undefined)
+        return `\`${project}\` | 0 | ❌ | ❌ | ❌ | ❌ | ❌`;
+      const phase = (
+        state: IAutoBePlaygroundReplay.IPhaseState | null,
+      ): string => {
+        if (state === null) return "❌";
+        else if (state.success === false) return "🟡";
+        else return "🟢";
+      };
+      return [
+        `[\`${found.project}\`](./${exp.vendor}/${found.project}/)`,
+        (exp.score as any)[project],
+        phase(found.analyze),
+        phase(found.prisma),
+        phase(found.interface),
+        phase(found.test),
+        phase(found.realize),
+      ].join(" | ");
+    };
+
+    return StringUtil.trim`
+      ## \`${exp.vendor}\`
+      
+      Project | Score | Analyze | Prisma | Interface | Test | Realize
+      :-------|------:|:--------|:--------|:----------|:-----:|:--------
+      ${row("todo")}
+      ${row("bbs")}
+      ${row("reddit")}
+      ${row("shopping")}
+    `;
+  };
+  return StringUtil.trim`
+    # AutoBe Generated Examples
+
+    ## Benchmark
+
+    AI Model | Total Score | Status 
+    :--------|------------:|:-------
+    ${experiments
+      .map((e) =>
+        [
+          `[\`${e.vendor}\`](#${e.vendor.replaceAll("/", "").replaceAll(".", "")})`,
+          e.score.aggregate,
+          e.emoji,
+        ].join(" | "),
+      )
+      .join("\n")}
+
+    ${experiments.map(section).join("\n\n")}
+  `;
 };
 
 const main = async (): Promise<void> => {
-  for (const vendor of [
-    "anthropic/claude-sonnet-4.5",
-    "openai/gpt-4.1",
-    "openai/gpt-4.1-mini",
-    "openai/gpt-5",
-    "openai/gpt-5-mini",
-    "qwen/qwen3-235b-a22b-2507",
-    "qwen/qwen3-next-80b-a3b-instruct",
-  ])
-    for (const project of typia.misc.literals<TestProject>())
-      for (const phase of [
-        "realize",
-        "test",
-        "interface",
-        "prisma",
-        "analyze",
-      ] as const) {
-        TestGlobal.vendorModel = vendor;
-        if ((await TestHistory.has(project, phase)) === false) continue;
+  // INITIALIZE
+  await initialize();
 
-        const histories: AutoBeHistory[] = await TestHistory.getHistories(
-          project,
-          phase,
-        );
-        const agent: AutoBeAgent<"chatgpt"> = new AutoBeAgent({
-          model: "chatgpt",
-          vendor: {
-            api: new OpenAI({
-              apiKey: "",
-            }),
-            model: vendor,
-          },
-          compiler: (listener) => new AutoBeCompiler(listener),
-          histories,
-        });
-        console.log(vendor, project, phase);
-        const success: boolean = await commit({
-          project,
-          vendor,
-          files: await agent.getFiles({ dbms: "sqlite" }),
-        });
-        console.log("  - success", success);
-        break;
-      }
+  // GATHER DATA
+  const bucket: Record<string, string> = {};
+  const experiments: IAutoBePlaygroundBenchmark[] = [];
+  for (const vendor of await AutoBePlaygroundReplayStorage.getVendorModels()) {
+    const replayList: IAutoBePlaygroundReplay[] =
+      await AutoBePlaygroundReplayStorage.getAll(vendor, (project) =>
+        AutoBePlaygroundReplayComputer.SIGNIFICANT_PROJECTS.includes(project),
+      );
+    if (replayList.length === 0) continue;
+    for (const replay of replayList) {
+      const agent: AutoBeAgent<"chatgpt"> = new AutoBeAgent({
+        model: "chatgpt",
+        vendor: {
+          api: new OpenAI({
+            apiKey: "",
+          }),
+          model: vendor,
+        },
+        compiler: (listener) => new AutoBeCompiler(listener),
+        histories: replay.histories,
+      });
+      const files: Record<string, string> = await agent.getFiles({
+        dbms: "sqlite",
+      });
+      for (const [k, v] of Object.entries(files))
+        bucket[`${replay.vendor}/${replay.project}/${k}`] = v;
+    }
+
+    const summaries: IAutoBePlaygroundReplay.ISummary[] = replayList.map(
+      AutoBePlaygroundReplayComputer.summarize,
+    );
+    experiments.push({
+      vendor,
+      replays: summaries,
+      score: AutoBePlaygroundReplayComputer.score(summaries),
+      emoji: AutoBePlaygroundReplayComputer.emoji(summaries),
+    });
+  }
+  experiments.sort((a, b) =>
+    b.score === a.score
+      ? a.vendor.localeCompare(b.vendor)
+      : b.score.aggregate - a.score.aggregate,
+  );
+
+  // COMMIT
+  bucket["README.md"] = readme(experiments);
+  for (const file of await fs.promises.readdir(
+    `${TestGlobal.ROOT}/repositories/examples`,
+  )) {
+    const location: string = `${TestGlobal.ROOT}/repositories/examples/${file}`;
+    const stat: fs.Stats = await fs.promises.lstat(location);
+    if (stat.isDirectory() === true && file !== ".git")
+      await fs.promises.rm(location, {
+        recursive: true,
+        force: true,
+      });
+  }
+  await FileSystemIterator.save({
+    root: `${TestGlobal.ROOT}/repositories/examples`,
+    files: bucket,
+    overwrite: true,
+  });
+
+  // COMMIT
+  if (TestGlobal.getArguments("--no-commit") === null) {
+    const execute = (command: string) => {
+      cp.execSync(command, {
+        cwd: `${TestGlobal.ROOT}/repositories/examples`,
+        stdio: "ignore",
+      });
+    };
+    execute("git add .");
+    execute(`git commit -m "update generated files"`);
+    execute("git push");
+  }
 };
 main().catch((error) => {
   console.log(error);

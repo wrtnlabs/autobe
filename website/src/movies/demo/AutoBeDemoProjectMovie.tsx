@@ -10,7 +10,7 @@ export default function AutoBeDemoProjectMovie(
   // Use project name directly from replay data
   const replay: IAutoBePlaygroundReplay.ISummary | null =
     AutoBeDemoStorage.getProject(props);
-  
+
   if (replay === null) {
     return (
       <div className="block bg-white/5 border border-gray-600/30 rounded-2xl p-6 flex flex-col items-center justify-center min-h-[200px]">
@@ -25,7 +25,7 @@ export default function AutoBeDemoProjectMovie(
 
   // Generate URL based on vendor and project
   const vendor = replay.vendor.replace(/\//g, "-");
-  const url = `https://github.com/wrtnlabs/autobe-example-${replay.project}-${vendor}`;
+  const url = `https://github.com/wrtnlabs/autobe-examples/tree/main/${replay.vendor}/${replay.project}`;
 
   const tokenUsage = replay.tokenUsage.aggregate;
   const totalTokens = formatTokens(tokenUsage.total);

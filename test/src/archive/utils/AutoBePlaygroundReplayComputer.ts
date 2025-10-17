@@ -1,17 +1,78 @@
+import { AutoBeTokenUsage } from "@autobe/agent";
 import {
   AutoBeHistory,
   AutoBePhase,
+  IAutoBePlaygroundBenchmarkScore,
   IAutoBePlaygroundReplay,
-  IAutoBeTokenUsageJson,
 } from "@autobe/interface";
 
-export namespace AutoBePlaygroundReplayUtil {
-  export const summarize = (props: {
-    vendor: string;
-    project: string;
-    histories: AutoBeHistory[];
-    tokenUsage: IAutoBeTokenUsageJson;
-  }): IAutoBePlaygroundReplay.ISummary | null => {
+import { TestProject } from "../../structures/TestProject";
+
+export namespace AutoBePlaygroundReplayComputer {
+  export const SIGNIFICANT_PROJECTS: TestProject[] = [
+    "todo",
+    "bbs",
+    "reddit",
+    "shopping",
+  ];
+
+  export const emoji = (
+    summaries: IAutoBePlaygroundReplay.ISummary[],
+  ): string => {
+    const success: number = summaries.filter(
+      (s) => s.realize !== null && s.realize.success === true,
+    ).length;
+    if (success >= 3) return "🟢";
+
+    const tested: boolean = !!summaries.find((s) => s.test !== null);
+    return tested ? "🟡" : "❌";
+  };
+
+  export const score = (
+    summaries: IAutoBePlaygroundReplay.ISummary[],
+  ): IAutoBePlaygroundBenchmarkScore => {
+    // list up significant projects
+    summaries = summaries.filter((s) =>
+      ["todo", "bbs", "reddit", "shopping"].includes(s.project),
+    );
+
+    // the formula to compute the benchmark score
+    const compute = (summary: IAutoBePlaygroundReplay.ISummary): number => {
+      const add = (
+        phase: IAutoBePlaygroundReplay.IPhaseState | null,
+        success: number,
+        failure?: number,
+      ): number =>
+        phase !== null
+          ? phase.success === true
+            ? success
+            : (failure ?? success / 2)
+          : 0;
+      return (
+        add(summary.analyze, 10) +
+        add(summary.prisma, 20) +
+        add(summary.interface, 30) +
+        add(summary.test, 20) +
+        add(summary.realize, 20)
+      );
+    };
+    const individual = (project: TestProject): number => {
+      const found = summaries.find((s) => s.project === project);
+      if (found === undefined) return 0;
+      return compute(found);
+    };
+    return {
+      aggregate: summaries.map(compute).reduce((a, b) => a + b, 0) / 4,
+      todo: individual("todo"),
+      bbs: individual("bbs"),
+      reddit: individual("reddit"),
+      shopping: individual("shopping"),
+    };
+  };
+
+  export const summarize = (
+    replay: IAutoBePlaygroundReplay,
+  ): IAutoBePlaygroundReplay.ISummary => {
     const predicate = <Type extends AutoBePhase>(
       type: Type,
       success: (history: AutoBeHistory.Mapper[Type]) => boolean,
@@ -19,7 +80,7 @@ export namespace AutoBePlaygroundReplayUtil {
         history: AutoBeHistory.Mapper[Type],
       ) => Record<string, number>,
     ): IAutoBePlaygroundReplay.IPhaseState | null => {
-      const reversed: AutoBeHistory[] = props.histories.slice().reverse();
+      const reversed: AutoBeHistory[] = replay.histories.slice().reverse();
       const step: number | undefined = reversed.find(
         (h) => h.type === "analyze",
       )?.step;
@@ -97,10 +158,16 @@ export namespace AutoBePlaygroundReplayUtil {
         (key) => phaseStates[key] !== null,
       ) ?? null;
     return {
-      vendor: props.vendor,
-      project: props.project,
-      tokenUsage: props.tokenUsage,
-      elapsed: props.histories
+      vendor: replay.vendor,
+      project: replay.project,
+      tokenUsage:
+        replay.realize?.at(-1)?.tokenUsage ??
+        replay.test?.at(-1)?.tokenUsage ??
+        replay.interface?.at(-1)?.tokenUsage ??
+        replay.prisma?.at(-1)?.tokenUsage ??
+        replay.analyze?.at(-1)?.tokenUsage ??
+        new AutoBeTokenUsage().toJSON(),
+      elapsed: replay.histories
         .filter(
           (h) => h.type !== "userMessage" && h.type !== "assistantMessage",
         )

@@ -68,6 +68,5 @@ const emoji = (key: string): string => {
       ? 0
       : projects.filter((p) => p.realize !== null && p.realize.success === true)
           .length;
-  // return success >= 3 ? "🟢" : "❌";
   return success >= 3 ? "🟢" : success !== 0 ? "🟡" : "❌";
 };

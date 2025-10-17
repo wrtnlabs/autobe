@@ -1,17 +1,12 @@
-import { CompressUtil } from "@autobe/filesystem";
-import {
-  AutoBeEventSnapshot,
-  AutoBeHistory,
-  AutoBePhase,
-  IAutoBePlaygroundReplay,
-} from "@autobe/interface";
-import { AutoBePlaygroundReplayUtil } from "@autobe/utils";
+import { IAutoBePlaygroundReplay } from "@autobe/interface";
 import fs from "fs";
 import typia from "typia";
 
 import { TestGlobal } from "../TestGlobal";
 import { TestHistory } from "../internal/TestHistory";
 import { TestProject } from "../structures/TestProject";
+import { AutoBePlaygroundReplayComputer } from "./utils/AutoBePlaygroundReplayComputer";
+import { AutoBePlaygroundReplayStorage } from "./utils/AutoBePlaygroundReplayStorage";
 
 const SEQUENCE: Record<string, number> = {
   todo: 1,
@@ -20,53 +15,21 @@ const SEQUENCE: Record<string, number> = {
   shopping: 4,
 };
 
-const collect = async (props: {
-  vendor: string;
-  project: TestProject;
-}): Promise<IAutoBePlaygroundReplay.ISummary | null> => {
-  const phase: AutoBePhase | undefined = (
-    ["realize", "test", "interface", "prisma", "analyze"] as const
-  ).find(
-    (k) =>
-      fs.existsSync(
-        `${TestGlobal.ROOT}/assets/histories/${props.vendor}/${props.project}.${k}.json.gz`,
-      ) === true,
-  );
-  if (phase === undefined) return null;
-
-  const histories: AutoBeHistory[] = JSON.parse(
-    await CompressUtil.gunzip(
-      await fs.promises.readFile(
-        `${TestGlobal.ROOT}/assets/histories/${props.vendor}/${props.project}.${phase}.json.gz`,
-      ),
-    ),
-  );
-  const snapshots: AutoBeEventSnapshot[] = JSON.parse(
-    await CompressUtil.gunzip(
-      await fs.promises.readFile(
-        `${TestGlobal.ROOT}/assets/histories/${props.vendor}/${props.project}.${phase}.snapshots.json.gz`,
-      ),
-    ),
-  );
-  return AutoBePlaygroundReplayUtil.summarize({
-    vendor: props.vendor,
-    project: props.project,
-    histories,
-    tokenUsage: snapshots.at(-1)!.tokenUsage,
-  });
-};
-
 const main = async (): Promise<void> => {
   const collection: IAutoBePlaygroundReplay.Collection = {};
   for (const vendor of await TestHistory.getVendorModels())
     for (const project of typia.misc.literals<TestProject>()) {
-      const replay: IAutoBePlaygroundReplay.ISummary | null = await collect({
-        vendor,
-        project,
-      });
+      const replay: IAutoBePlaygroundReplay | null =
+        await AutoBePlaygroundReplayStorage.get({
+          vendor,
+          project,
+        });
       if (replay === null) continue;
+
+      const summary: IAutoBePlaygroundReplay.ISummary =
+        AutoBePlaygroundReplayComputer.summarize(replay);
       collection[vendor] ??= [];
-      collection[vendor].push(replay);
+      collection[vendor].push(summary);
     }
   for (const array of Object.values(collection))
     array.sort((x, y) => SEQUENCE[x.project] - SEQUENCE[y.project]);
