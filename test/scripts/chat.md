@@ -413,11 +413,11 @@ model wrtn_chat_session_histories {
 model wrtn_chat_session_history_files {
   id String @id @uuid
   wrtn_chat_session_history_id String @uuid
-  wrtn_file_id String @uuid
+  wrtn_attachment_file_id String @uuid
   sequence Int
 
   @@index([wrtn_chat_session_history_id])
-  @@index([wrtn_file_id])
+  @@index([wrtn_attachment_file_id])
 }
 
 // Aggregated metrics for chat sessions
@@ -477,26 +477,26 @@ export type IWrtnChatUserMessageContent =
   | IWrtnChatUserMessageTextContent
 export interface IWrtnChatUserMessageAudioContent {
   type: "audio";
-  file: IWrtnFile;
+  file: IWrtnAttachmentFile;
 }
 export interface IWrtnChatUserMessageFileContent {
-  type: "audio";
-  file: IWrtnFile;
+  type: "file";
+  file: IWrtnAttachmentFile;
 }
 export interface IWrtnChatUserMessageImageContent {
-  type: "audio";
-  file: IWrtnFile;
+  type: "image";
+  file: IWrtnAttachmentFile;
 }
 export interface IWrtnChatUserMessageTextContent {
-  type: "audio";
-  file: IWrtnFile;
+  type: "text";
+  text: IWrtnAttachmentFile;
 }
 
 export interface IWrtnChatAssistantMessageHistory {
   id: string & tags.Format<"uuid">;
   type: "assistantMessage";
   text: string;
-  files: IWrtnFile[];
+  files: IWrtnAttachmentFile[];
   created_at: string & tags.Format<"date-time">;
   completed_at: string & tags.Format<"date-time">;
 }
@@ -718,11 +718,43 @@ model wrtn_enterprise_team_procedures {
 }
 ```
 
-## 7. Statistics & Dashboard
+## 7. File Management
+
+```prisma
+model wrtn_attachment_files {
+  id String @id @uuid
+  name String
+  extension String
+  url String
+  created_at DateTime
+}
+```
+
+`wrtn_attachment_files`는 **AutoBE 시스템 전체의 중앙 파일 저장소**로, 모든 파일 첨부가 이곳에서 관리된다.
+
+이 테이블은 다음과 같은 모든 파일 업로드를 처리한다:
+- AI Chatbot의 대화 중 첨부된 파일 (이미지, 문서, 오디오 등)
+- AI Procedure의 입력/출력 파일 (생성된 이미지, 문서 등)
+- 게시판이나 공지사항의 첨부 파일
+- 사용자 프로필 이미지
+- 기업 로고 및 브랜드 자산
+- 기타 AutoBE가 추가로 구현하는 모든 기능의 파일 첨부
+
+파일의 실제 내용은 클라우드 스토리지(S3 등)에 저장되고, 이 테이블은 메타데이터와 접근 URL만을 관리한다. 특히 `wrtn_chat_session_history_files`와 같은 연결 테이블을 통해 각 도메인별로 어떤 파일이 사용되었는지 추적한다.
+
+> **중요**: AutoBE가 설계하는 시스템에서 발생하는 **모든 파일 업로드와 첨부**는 반드시 이 `wrtn_attachment_files` 테이블을 통해 관리되어야 한다. 각 도메인별로 별도의 파일 테이블을 만들지 말고, 이 중앙 테이블을 참조하는 연결 테이블만 생성하라.
+
+### 파일 관리 원칙
+- 파일 업로드는 별도의 파일 업로드 API를 통해 먼저 수행
+- 업로드 완료 후 반환된 file_id를 채팅이나 프로시저에서 참조
+- 한 번 업로드된 파일은 여러 곳에서 재사용 가능
+- 파일 삭제는 soft delete (`deleted_at`)로 처리하되, 이미 참조 중인 경우 실제 삭제 불가
+
+## 8. Statistics & Dashboard
 
 뤼튼 엔터프라이즈는 복잡한 조직 구조와 다층적 권한 체계에 맞춰, 각 사용자가 자신의 권한 범위 내에서만 통계와 대시보드에 접근할 수 있도록 설계되어야 한다.
 
-### 7.1. 권한별 접근 범위
+### 8.1. 권한별 접근 범위
 
 통계 시스템의 핵심은 **계층적 데이터 격리**이다. 각 역할은 다음과 같은 범위의 데이터에만 접근할 수 있다:
 
@@ -755,7 +787,7 @@ model wrtn_enterprise_team_procedures {
 **관찰자 (observer)**
 - 제한된 요약 통계만 조회 가능
 
-### 7.2. 수집해야 할 핵심 지표
+### 8.2. 수집해야 할 핵심 지표
 
 **사용량 메트릭**
 - 토큰 사용량 (입력/출력/캐시/추론 별도 집계)
@@ -781,7 +813,7 @@ model wrtn_enterprise_team_procedures {
 - 시스템 에러율
 - 세션당 평균 토큰 사용량
 
-### 7.3. 실시간 대시보드
+### 8.3. 실시간 대시보드
 
 대시보드는 사용자 역할에 따라 다른 레이아웃을 제공해야 한다:
 
@@ -790,7 +822,7 @@ model wrtn_enterprise_team_procedures {
 - **팀 대시보드**: 생산성과 협업 중심  
 - **개인 대시보드**: 본인 사용 패턴 분석
 
-### 7.4. 감사 추적 (Audit Trail)
+### 8.4. 감사 추적 (Audit Trail)
 
 > **감사 추적 설계 원칙**:
 > 
@@ -835,7 +867,7 @@ model wrtn_enterprise_team_procedures {
 
 이러한 통계 시스템을 통해 조직의 AI 사용을 효과적으로 모니터링하면서도, 개인정보와 기밀 데이터를 철저히 보호할 수 있다.
 
-### 7.5. 비정규화 및 집계 테이블 금지
+### 8.5. 비정규화 및 집계 테이블 금지
 
 > **절대적 원칙**: 통계/집계 목적의 비정규화 테이블을 절대 만들지 마라.
 > 
@@ -850,9 +882,9 @@ model wrtn_enterprise_team_procedures {
 > 3. 성능 문제가 발생하면 나중에 DBA가 직접 MATERIALIZED VIEW를 생성할 것이다
 > 4. AutoBE는 이러한 성능 최적화를 고려하지 말고 정규화된 설계에만 집중해라
 
-## 8. 결제 정책 및 서비스 연속성
+## 9. 결제 정책 및 서비스 연속성
 
-### 8.1. B2B SaaS 후불 결제 시스템
+### 9.1. B2B SaaS 후불 결제 시스템
 
 본 서비스는 B2B SaaS 서비스로써 **후불제(Post-paid)** 방식을 채택한다:
 
@@ -860,7 +892,7 @@ model wrtn_enterprise_team_procedures {
 - **신용 기반 거래**: 기업 간 거래의 특성상 선결제가 아닌 후불 정산
 - **사용량 기반 과금**: 실제 사용한 토큰, 스토리지, API 호출량에 따른 과금
 
-### 8.2. 서비스 연속성 보장
+### 9.2. 서비스 연속성 보장
 
 > **절대 금지사항**: 잔고 부족을 이유로 서비스를 차단하지 마라
 > 
@@ -877,7 +909,7 @@ model wrtn_enterprise_team_procedures {
 
 엔터프라이즈 B2B 환경에서는 서비스 연속성이 매우 중요하다. 일시적인 예산 초과나 결제 지연으로 인해 업무가 중단되어서는 안 된다. 이는 B2B SaaS의 기본 원칙이다.
 
-## 9. 절대 준수 체크리스트 - AI는 다음을 반드시 자가검증하라
+## 10. 절대 준수 체크리스트 - AI는 다음을 반드시 자가검증하라
 
 ### 시스템 완성도 검증
 - [ ] 본 문서의 약 25개 테이블 외에 추가 테이블을 설계했는가?
