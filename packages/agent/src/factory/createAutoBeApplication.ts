@@ -4,7 +4,7 @@ import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import typia from "typia";
 
 import { AutoBeContext } from "../context/AutoBeContext";
-import { IAutoBeApplication } from "../context/IAutoBeApplication";
+import { IAutoBeFacadeApplication } from "../context/IAutoBeFacadeApplication";
 import { assertSchemaModel } from "../context/assertSchemaModel";
 import { orchestrateAnalyze } from "../orchestrate/analyze/orchestrateAnalyze";
 import { orchestrateInterface } from "../orchestrate/interface/orchestrateInterface";
@@ -109,13 +109,13 @@ export const createAutoBeController = <Model extends ILlmSchema.Model>(props: {
             description: "API interfaces are not yet completed.",
           };
       },
-    } satisfies IAutoBeApplication,
+    } satisfies IAutoBeFacadeApplication,
   };
 };
 
-const claude = typia.llm.application<IAutoBeApplication, "claude">();
+const claude = typia.llm.application<IAutoBeFacadeApplication, "claude">();
 const collection = {
-  chatgpt: typia.llm.application<IAutoBeApplication, "chatgpt">(),
+  chatgpt: typia.llm.application<IAutoBeFacadeApplication, "chatgpt">(),
   claude,
   llama: claude,
   deepseek: claude,

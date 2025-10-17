@@ -56,8 +56,11 @@ export async function transformTestWriteHistories<
         
         Apply these instructions when implementing the e2e test function to ensure
         the test code aligns with the user's testing requirements and expectations.
-        If any instructions are not relevant to the target test scenario,
-        you may ignore them.
+        If any instructions are relevant to the target test scenario,
+        you MUST follow them exactly without arbitrary judgment.
+        DO NOT make your own decisions even if you think you have better ideas.
+        Only ignore instructions that are completely unrelated to the target
+        test scenario.
 
         ${props.instruction}
 

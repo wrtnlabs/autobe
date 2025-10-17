@@ -3,7 +3,7 @@ import { v7 } from "uuid";
 
 import { AutoBeState } from "../../../context/AutoBeState";
 
-export const transformInterfaceCommonPrerequisiteHistories = (
+export const transformInterfaceCommonHistories = (
   state: AutoBeState,
 ): Array<
   IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage

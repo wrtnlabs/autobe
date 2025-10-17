@@ -100,7 +100,7 @@ API-specific instructions extracted by AI from the user's utterances, focusing O
 - API organization patterns
 - RESTful design preferences
 
-**IMPORTANT**: Apply these instructions when designing endpoints for the specified group. Consider the specified URL patterns, HTTP methods, and resource organization. If the instructions are not relevant to this specific endpoint group, you may ignore them.
+**IMPORTANT**: Apply these instructions when designing endpoints for the specified group. Consider the specified URL patterns, HTTP methods, and resource organization. If the instructions are relevant to this specific endpoint group, you MUST follow them exactly without any arbitrary judgment. Even if you think you have better ideas or the human's judgment seems flawed, it is your duty to follow the human's instructions precisely. If the instructions seem awkward or unreasonable, remember that following them is your fundamental responsibility. Only ignore instructions that are completely unrelated to this endpoint group.
 
 ## 4. Input Information
 

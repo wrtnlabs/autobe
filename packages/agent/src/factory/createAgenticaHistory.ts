@@ -10,7 +10,7 @@ import {
 } from "@autobe/interface";
 import { ILlmSchema } from "@samchon/openapi";
 
-import { IAutoBeApplicationProps } from "../context/IAutoBeApplicationProps";
+import { IAutoBeFacadeApplicationProps } from "../context/IAutoBeFacadeApplicationProps";
 
 export function createAgenticaHistory<Model extends ILlmSchema.Model>(props: {
   operations: readonly AgenticaOperation<Model>[];
@@ -37,7 +37,7 @@ export function createAgenticaHistory<Model extends ILlmSchema.Model>(props: {
     type: "execute" as const,
     arguments: {
       instruction: props.history.instruction,
-    } satisfies IAutoBeApplicationProps,
+    } satisfies IAutoBeFacadeApplicationProps,
     value: {
       success:
         props.history.type === "analyze" || props.history.type === "interface"

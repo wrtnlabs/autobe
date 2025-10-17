@@ -37,8 +37,10 @@ export const transformInterfaceEndpointHistories = (props: {
 
       Apply these instructions when designing endpoints for the ${props.group.name} group.
       Consider the specified URL patterns, HTTP methods, parameter structures,
-      and response formats. If the instructions are not relevant to this specific
-      endpoint group, you may ignore them.
+      and response formats. If the instructions are relevant to this specific
+      endpoint group, you MUST follow them exactly without arbitrary judgment.
+      DO NOT make your own decisions even if you think you have better ideas.
+      Only ignore instructions that are completely unrelated to this endpoint group.
 
       ${props.instruction}
 

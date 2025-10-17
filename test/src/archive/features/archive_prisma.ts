@@ -40,6 +40,18 @@ export const archive_prisma = async (
   for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
     agent.on(type, listen);
 
+  agent.on("prismaStart", async (e) => {
+    try {
+      await FileSystemIterator.save({
+        root: `${TestGlobal.ROOT}/results/${model}/${project}/prisma`,
+        files: {
+          "histories.json": JSON.stringify(agent.getHistories(), null, 2),
+          "instruction.md": e.reason,
+        },
+      });
+    } catch {}
+  });
+
   const schemas: AutoBePrismaSchemasEvent[] = [];
   const insufficients: AutoBePrismaInsufficientEvent[] = [];
   agent.on("prismaSchemas", (event) => {
@@ -110,7 +122,10 @@ export const archive_prisma = async (
   try {
     await FileSystemIterator.save({
       root: `${TestGlobal.ROOT}/results/${model}/${project}/prisma`,
-      files: await agent.getFiles(),
+      files: {
+        ...(await agent.getFiles()),
+        "autobe/instruction.md": prisma.instruction,
+      },
     });
   } catch {}
   await TestHistory.save({

@@ -48,8 +48,11 @@ export const transformInterfaceComplementHistories = (props: {
 
       Apply these instructions when completing the missing schema types.
       Focus on ensuring the schemas align with the overall API design patterns
-      and data structure requirements. If the instructions are not relevant
-      to the specific schemas you need to create, you may ignore them.
+      and data structure requirements. If the instructions are relevant
+      to the specific schemas you need to create, you MUST follow them exactly
+      without arbitrary judgment. DO NOT make your own decisions even if you think
+      you have better ideas. Only ignore instructions that are completely unrelated
+      to the schemas you need to create.
 
       ${props.instruction}
 

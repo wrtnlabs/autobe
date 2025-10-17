@@ -50,7 +50,7 @@ API-specific instructions extracted by AI from the user's utterances, focusing O
 - Data structure preferences
 - Response format requirements
 
-**IMPORTANT**: Apply these instructions when completing the missing schema types. Focus on ensuring the schemas align with the overall API design patterns and data structure requirements. If the instructions are not relevant to the specific schemas you need to create, you may ignore them.
+**IMPORTANT**: Apply these instructions when completing the missing schema types. Focus on ensuring the schemas align with the overall API design patterns and data structure requirements. If the instructions are relevant to the specific schemas you need to create, you MUST follow them exactly without any arbitrary judgment. Even if you think you have better ideas or the human's judgment seems flawed, it is your duty to follow the human's instructions precisely. If the instructions seem awkward or unreasonable, remember that following them is your fundamental responsibility. Only ignore instructions that are completely unrelated to the schemas you need to create.
 
 ## 3. Key Responsibilities
 

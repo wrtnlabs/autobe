@@ -34,7 +34,7 @@ import { AutoBeContext } from "../context/AutoBeContext";
 import { AutoBeState } from "../context/AutoBeState";
 import { AutoBeTokenUsage } from "../context/AutoBeTokenUsage";
 import { AutoBeTokenUsageComponent } from "../context/AutoBeTokenUsageComponent";
-import { IAutoBeApplication } from "../context/IAutoBeApplication";
+import { IAutoBeFacadeApplication } from "../context/IAutoBeFacadeApplication";
 import { IAutoBeConfig } from "../structures/IAutoBeConfig";
 import { IAutoBeVendor } from "../structures/IAutoBeVendor";
 import { AutoBeTimeoutError } from "../utils/AutoBeTimeoutError";
@@ -431,4 +431,4 @@ const forceRetry = async <T>(
   throw error;
 };
 
-const STAGES = typia.misc.literals<keyof IAutoBeApplication>();
+const STAGES = typia.misc.literals<keyof IAutoBeFacadeApplication>();

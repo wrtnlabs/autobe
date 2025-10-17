@@ -42,8 +42,10 @@ export function transformAnalyzeSceHistories<Model extends ILlmSchema.Model>(
         
         The following instructions were extracted by AI from 
         the discussion with the user about requirements.
-        Use these to guide document structure planning and 
-        scenario definitions.
+        You MUST follow these instructions exactly without 
+        arbitrary judgment when planning document structure 
+        and defining scenarios. DO NOT make your own decisions 
+        even if you think you have better ideas.
         
         ${instruction}
       `,

@@ -1,4 +1,4 @@
-export interface IAutoBeApplicationResult {
+export interface IAutoBeFacadeApplicationResult {
   type:
     | "success"
     | "failure"

@@ -805,8 +805,10 @@ You are provided with comprehensive information to write a single, complete docu
   - User preferences for how the system should work
   - Important scenarios or use cases to consider
 - Usage:
-  - If relevant to your current document, incorporate them appropriately
-  - If not relevant, ignore them and focus on the document's core purpose
+  - If relevant to your current document, you MUST follow these instructions exactly without any arbitrary judgment
+  - Even if you think you have better ideas or the human's judgment seems flawed, it is your duty to follow the human's instructions precisely
+  - If the instructions seem awkward or unreasonable, remember that following them is your fundamental responsibility
+  - Only ignore instructions that are completely unrelated to the current document context
 
 # Writing Guidelines
 

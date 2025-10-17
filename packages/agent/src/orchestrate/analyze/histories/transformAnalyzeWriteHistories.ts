@@ -81,10 +81,13 @@ export const transformAnalyzeWriteHistories = <Model extends ILlmSchema.Model>(
       The following instructions were extracted by AI from 
       the discussion with the user about requirements.
       If these instructions are relevant to the document you're 
-      currently writing (${props.file.filename}), incorporate 
-      them appropriately. 
+      currently writing (${props.file.filename}), you MUST follow 
+      them exactly as specified without arbitrary judgment.
       
-      If not relevant to this specific document, ignore them.
+      DO NOT make your own decisions even if you think you have 
+      better ideas. Follow the user's instructions precisely.
+      Only ignore instructions that are completely unrelated to 
+      the current document context.
       
       ${props.instruction}
     `,

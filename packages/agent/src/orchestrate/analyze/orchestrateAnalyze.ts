@@ -11,7 +11,7 @@ import { ILlmSchema } from "@samchon/openapi";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { IAutoBeApplicationProps } from "../../context/IAutoBeApplicationProps";
+import { IAutoBeFacadeApplicationProps } from "../../context/IAutoBeFacadeApplicationProps";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { orchestrateAnalyzeReview } from "./orchestrateAnalyzeReview";
 import { orchestrateAnalyzeScenario } from "./orchestrateAnalyzeScenario";
@@ -20,7 +20,7 @@ import { orchestrateAnalyzeWrite } from "./orchestrateAnalyzeWrite";
 export const orchestrateAnalyze =
   <Model extends ILlmSchema.Model>(ctx: AutoBeContext<Model>) =>
   async (
-    props: IAutoBeApplicationProps,
+    props: IAutoBeFacadeApplicationProps,
   ): Promise<AutoBeAssistantMessageHistory | AutoBeAnalyzeHistory> => {
     // Initialize analysis state
     const step: number = (ctx.state().analyze?.step ?? -1) + 1;

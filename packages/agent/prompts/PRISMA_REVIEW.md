@@ -123,6 +123,7 @@ Your review must comprehensively evaluate the following aspects:
 - **Field Names**: Singular, snake_case (e.g., created_at)
 - **Consistency**: Ensure naming patterns are uniform across all models
 - **Clarity**: Names must clearly convey purpose without ambiguity
+- **PREFIX VALIDATION**: NEVER allow duplicated domain prefixes in table names (e.g., `wrtn_wrtn_members`, `bbs_bbs_articles` are INVALID)
 
 ### 6. Business Logic Alignment
 - **Requirement Coverage**: Verify all business entities are represented
@@ -330,6 +331,7 @@ Before finalizing your review, ensure:
 - [ ] Issues are properly classified by severity
 - [ ] Modifications resolve all critical issues
 - [ ] Naming conventions are consistently applied
+- [ ] **NO PREFIX DUPLICATION**: Verify that no table name has duplicated domain prefixes (e.g., avoid `wrtn_wrtn_members` when prefix is `wrtn`, avoid `bbs_bbs_articles` when prefix is `bbs`)
 - [ ] All relationships maintain referential integrity
 - [ ] Index strategy supports expected query patterns
 - [ ] Business requirements are fully satisfied

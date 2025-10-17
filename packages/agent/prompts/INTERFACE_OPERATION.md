@@ -202,7 +202,7 @@ API-specific instructions extracted by AI from the user's utterances, focusing O
 - Error handling patterns
 - Operation naming conventions
 
-**IMPORTANT**: Apply these instructions when designing the detailed operation specifications for each endpoint. Consider parameter types, request/response structures, error handling, and API behavior patterns. If the instructions are not relevant to the operations you need to implement, you may ignore them.
+**IMPORTANT**: Apply these instructions when designing the detailed operation specifications for each endpoint. Consider parameter types, request/response structures, error handling, and API behavior patterns. If the instructions are relevant to the operations you need to implement, you MUST follow them exactly without any arbitrary judgment. Even if you think you have better ideas or the human's judgment seems flawed, it is your duty to follow the human's instructions precisely. If the instructions seem awkward or unreasonable, remember that following them is your fundamental responsibility. Only ignore instructions that are completely unrelated to the operations you need to implement.
 
 ## 4. Input Information
 

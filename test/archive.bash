@@ -7,6 +7,14 @@ pnpm run archive --vendor anthropic/claude-sonnet-4.5 --schema claude --project 
 pnpm run archive --vendor anthropic/claude-sonnet-4.5 --schema claude --project reddit > archive.claude-sonnet-4.5.reddit.log
 pnpm run archive --vendor anthropic/claude-sonnet-4.5 --schema claude --project shopping > archive.claude-sonnet-4.5.shopping.log
 
+pnpm run archive --vendor anthropic/claude-sonnet-4.5 --schema claude --project chat > archive.claude-sonnet-4.5.chat.log
+
+# anthropic/claude-haiku-4.5
+pnpm run archive --vendor anthropic/claude-haiku-4.5 --schema claude --project todo > archive.claude-haiku-4.5.todo.log
+pnpm run archive --vendor anthropic/claude-haiku-4.5 --schema claude --project bbs > archive.claude-haiku-4.5.bbs.log
+pnpm run archive --vendor anthropic/claude-haiku-4.5 --schema claude --project reddit > archive.claude-haiku-4.5.reddit.log
+pnpm run archive --vendor anthropic/claude-haiku-4.5 --schema claude --project shopping > archive.claude-haiku-4.5.shopping.log
+
 ################################################
 # OPENAI
 ################################################
@@ -15,6 +23,7 @@ pnpm run archive --vendor openai/gpt-4.1 --project todo > archive.openai-gpt-4.1
 pnpm run archive --vendor openai/gpt-4.1 --project bbs > archive.openai-gpt-4.1.bbs.log
 pnpm run archive --vendor openai/gpt-4.1 --project reddit > archive.openai-gpt-4.1.reddit.log
 pnpm run archive --vendor openai/gpt-4.1 --project shopping > archive.openai-gpt-4.1.shopping.log
+
 pnpm run archive --vendor openai/gpt-4.1 --project chat > archive.openai-gpt-4.1.chat.log
 
 # openai/gpt-4.1-mini
@@ -28,6 +37,8 @@ pnpm run archive --vendor openai/gpt-5 --project todo > archive.openai-gpt-5.tod
 pnpm run archive --vendor openai/gpt-5 --project bbs > archive.openai-gpt-5.bbs.log
 pnpm run archive --vendor openai/gpt-5 --project reddit > archive.openai-gpt-5.reddit.log
 pnpm run archive --vendor openai/gpt-5 --project shopping > archive.openai-gpt-5.shopping.log
+
+pnpm run archive --vendor openai/gpt-5 --project chat > archive.openai-gpt-5.chat.log
 
 # openai/gpt-5-mini
 pnpm run archive --vendor openai/gpt-5-mini --project todo > archive.openai-gpt-5-mini.todo.log
@@ -107,7 +118,7 @@ pnpm run archive --vendor qwen/qwen3-235b-a22b-2507 --project bbs > archive.qwen
 pnpm run archive --vendor qwen/qwen3-235b-a22b-2507 --project reddit > archive.qwen-qwen3-235b-a22b-2507.reddit.log
 pnpm run archive --vendor qwen/qwen3-235b-a22b-2507 --project shopping > archive.qwen-qwen3-235b-a22b-2507.shopping.log
 
-# qwen/qwen3-next-80b-a3b
+# qwen/qwen3-next-80b-a3b-instruct
 pnpm run archive --vendor qwen/qwen3-next-80b-a3b-instruct --project todo > archive.qwen-qwen3-next-80b-a3b-instruct.todo.log
 pnpm run archive --vendor qwen/qwen3-next-80b-a3b-instruct --project bbs > archive.qwen-qwen3-next-80b-a3b-instruct.bbs.log
 pnpm run archive --vendor qwen/qwen3-next-80b-a3b-instruct --project reddit > archive.qwen-qwen3-next-80b-a3b-instruct.reddit.log
@@ -138,7 +149,16 @@ pnpm run archive --vendor mistralai/devstral-medium --project shopping --schema 
 # GLM
 ################################################
 # z-ai/glm-4.6
-pnpm run archive --vendor z-ai/glm-4.6 --schema claude --project todo > archive.z-ai-glm-4.6.todo.log
-pnpm run archive --vendor z-ai/glm-4.6 --schema claude --project bbs > archive.z-ai-glm-4.6.bbs.log
-pnpm run archive --vendor z-ai/glm-4.6 --schema claude --project reddit > archive.z-ai-glm-4.6.reddit.log
-pnpm run archive --vendor z-ai/glm-4.6 --schema claude --project shopping > archive.z-ai-glm-4.6.shopping.log
+pnpm run archive --vendor z-ai/glm-4.6 --project todo > archive.z-ai-glm-4.6.todo.log
+pnpm run archive --vendor z-ai/glm-4.6 --project bbs > archive.z-ai-glm-4.6.bbs.log
+pnpm run archive --vendor z-ai/glm-4.6 --project reddit > archive.z-ai-glm-4.6.reddit.log
+pnpm run archive --vendor z-ai/glm-4.6 --project shopping > archive.z-ai-glm-4.6.shopping.log
+
+################################################
+# KIMI
+################################################
+# moonshotai/kimi-k2-0905
+pnpm run archive --vendor moonshotai/kimi-k2-0905 --project todo --schema claude > archive.moonshotai-kimi-k2-0905.todo.log
+pnpm run archive --vendor moonshotai/kimi-k2-0905 --project bbs --schema claude > archive.moonshotai-kimi-k2-0905.bbs.log
+pnpm run archive --vendor moonshotai/kimi-k2-0905 --project reddit --schema claude > archive.moonshotai-kimi-k2-0905.reddit.log
+pnpm run archive --vendor moonshotai/kimi-k2-0905 --project shopping --schema claude > archive.moonshotai-kimi-k2-0905.shopping.log
