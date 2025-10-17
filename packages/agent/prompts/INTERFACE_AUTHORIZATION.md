@@ -69,7 +69,11 @@ API-specific instructions extracted by AI from the user's utterances, focusing O
 - Password policies
 - Multi-factor authentication requirements
 
-These instructions are provided as reference when designing authorization operations for the specified role. Consider them for authentication endpoints, token management, and security patterns.
+**IMPORTANT**: Follow these instructions when designing authorization operations. Carefully distinguish between:
+- Suggestions or recommendations (consider these as guidance)
+- Direct specifications or explicit commands (these must be followed exactly)
+
+When instructions contain direct specifications or explicit design decisions, follow them precisely even if you believe you have better alternatives - this is fundamental to your role as an AI assistant.
 
 ## 3. Operation Generation Rules
 

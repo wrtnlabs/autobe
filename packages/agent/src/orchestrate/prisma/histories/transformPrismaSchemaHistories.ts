@@ -43,8 +43,12 @@ export const transformPrismaSchemaHistories = (props: {
         the user's requirements. These focus on database schema design aspects
         such as table structure, relationships, constraints, and indexing strategies.
 
-        These instructions are provided as reference for designing the DB schema
-        for this specific component.
+        Follow these instructions when designing the DB schema. Carefully distinguish between:
+        - Suggestions or recommendations (consider these as guidance)
+        - Direct specifications or explicit commands (these must be followed exactly)
+        
+        When instructions contain direct specifications or explicit design decisions, 
+        follow them precisely even if you believe you have better alternatives.
 
         ${props.instruction}
 

@@ -33,9 +33,13 @@ export const transformInterfaceSchemaHistories = (props: {
       such as endpoint patterns, request/response formats, DTO schemas,
       and operation specifications.
 
-      These instructions are provided as reference when creating JSON schema 
-      components for the operations. They cover data structure design, field 
-      naming conventions, validation rules, and type definitions.
+      Follow these instructions when creating JSON schema components. 
+      Carefully distinguish between:
+      - Suggestions or recommendations (consider these as guidance)
+      - Direct specifications or explicit commands (these must be followed exactly)
+      
+      When instructions contain direct specifications or explicit design decisions, 
+      follow them precisely even if you believe you have better alternatives.
 
       ${props.instruction}
 

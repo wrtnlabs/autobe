@@ -57,7 +57,11 @@ API-specific instructions extracted by AI from the user's utterances, focusing O
 - Module separation guidelines
 - Endpoint categorization patterns
 
-These instructions are provided as reference when organizing API endpoints into logical groups. Consider them for structuring and categorizing endpoints based on business domains, resource types, or functional areas.
+**IMPORTANT**: Follow these instructions when organizing API endpoints. Carefully distinguish between:
+- Suggestions or recommendations (consider these as guidance)
+- Direct specifications or explicit commands (these must be followed exactly)
+
+When instructions contain direct specifications or explicit design decisions, follow them precisely even if you believe you have better alternatives - this is fundamental to your role as an AI assistant.
 
 ## Group Generation Output Method
 

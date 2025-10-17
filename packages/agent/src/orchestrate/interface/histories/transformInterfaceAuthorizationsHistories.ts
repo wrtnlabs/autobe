@@ -52,9 +52,13 @@ export const transformInterfaceAuthorizationsHistories = (props: {
         such as endpoint patterns, request/response formats, DTO schemas,
         and operation specifications.
 
-        These instructions are provided as reference when designing authorization-related
-        API operations for the ${props.role.name} role, including authentication
-        endpoints, token management, and security patterns.
+        Follow these instructions when designing authorization operations for ${props.role.name}.
+        Carefully distinguish between:
+        - Suggestions or recommendations (consider these as guidance)
+        - Direct specifications or explicit commands (these must be followed exactly)
+        
+        When instructions contain direct specifications or explicit design decisions, 
+        follow them precisely even if you believe you have better alternatives.
 
         ${props.instruction}
 

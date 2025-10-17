@@ -49,8 +49,13 @@ export function transformTestScenarioReviewHistories(props: {
         specific edge cases to validate, business logic verification strategies,
         and critical user workflows that must be tested.
         
-        These instructions are provided as reference when reviewing test scenarios
-        to ensure the tests align with the user's testing requirements and expectations.
+        Follow these instructions when reviewing test scenarios.
+        Carefully distinguish between:
+        - Suggestions or recommendations (consider these as guidance)
+        - Direct specifications or explicit commands (these must be followed exactly)
+        
+        When instructions contain direct specifications or explicit design decisions, 
+        follow them precisely even if you believe you have better alternatives.
 
         ${props.instruction}
 

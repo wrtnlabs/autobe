@@ -35,9 +35,13 @@ export const transformInterfaceEndpointHistories = (props: {
       such as endpoint patterns, request/response formats, DTO schemas,
       and operation specifications.
 
-      These instructions are provided as reference when designing endpoints
-      for the ${props.group.name} group, including URL patterns, HTTP methods,
-      parameter structures, and response formats.
+      Follow these instructions when designing endpoints for the ${props.group.name} group.
+      Carefully distinguish between:
+      - Suggestions or recommendations (consider these as guidance)
+      - Direct specifications or explicit commands (these must be followed exactly)
+      
+      When instructions contain direct specifications or explicit design decisions, 
+      follow them precisely even if you believe you have better alternatives.
 
       ${props.instruction}
 

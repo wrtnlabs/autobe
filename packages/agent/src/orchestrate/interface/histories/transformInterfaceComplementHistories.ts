@@ -46,9 +46,13 @@ export const transformInterfaceComplementHistories = (props: {
       such as endpoint patterns, request/response formats, DTO schemas,
       and operation specifications.
 
-      These instructions are provided as reference when completing the missing
-      schema types to ensure they align with the overall API design patterns
-      and data structure requirements.
+      Follow these instructions when completing missing schema types.
+      Carefully distinguish between:
+      - Suggestions or recommendations (consider these as guidance)
+      - Direct specifications or explicit commands (these must be followed exactly)
+      
+      When instructions contain direct specifications or explicit design decisions, 
+      follow them precisely even if you believe you have better alternatives.
 
       ${props.instruction}
 

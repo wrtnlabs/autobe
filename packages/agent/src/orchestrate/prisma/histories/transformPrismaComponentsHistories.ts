@@ -89,8 +89,13 @@ export const transformPrismaComponentsHistories = (
         the user's requirements. These focus on database schema design aspects
         such as table structure, relationships, constraints, and indexing strategies.
 
-        These instructions are provided as reference for designing namespace
-        components and DB table names.
+        Follow these instructions when designing namespace components and DB table names. 
+        Carefully distinguish between:
+        - Suggestions or recommendations (consider these as guidance)
+        - Direct specifications or explicit commands (these must be followed exactly)
+        
+        When instructions contain direct specifications or explicit design decisions, 
+        follow them precisely even if you believe you have better alternatives.
 
         ${props.instruction}
       `,

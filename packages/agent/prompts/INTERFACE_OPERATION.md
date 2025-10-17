@@ -202,7 +202,11 @@ API-specific instructions extracted by AI from the user's utterances, focusing O
 - Error handling patterns
 - Operation naming conventions
 
-These instructions are provided as reference when designing the detailed operation specifications for each endpoint. Consider them for parameter types, request/response structures, error handling, and API behavior patterns.
+**IMPORTANT**: Follow these instructions when designing operation specifications. Carefully distinguish between:
+- Suggestions or recommendations (consider these as guidance)
+- Direct specifications or explicit commands (these must be followed exactly)
+
+When instructions contain direct specifications or explicit design decisions, follow them precisely even if you believe you have better alternatives - this is fundamental to your role as an AI assistant.
 
 ## 4. Input Information
 

@@ -54,9 +54,13 @@ export async function transformTestWriteHistories<
         assertion patterns, error handling approaches, and specific validation logic
         that should be implemented in the test code.
         
-        These instructions are provided as reference when implementing the e2e test
-        function to ensure the test code aligns with the user's testing requirements
-        and expectations.
+        Follow these instructions when implementing the e2e test function.
+        Carefully distinguish between:
+        - Suggestions or recommendations (consider these as guidance)
+        - Direct specifications or explicit commands (these must be followed exactly)
+        
+        When instructions contain direct specifications or explicit design decisions, 
+        follow them precisely even if you believe you have better alternatives.
 
         ${props.instruction}
 
