@@ -17,7 +17,8 @@
     "archive:commit": "ts-node src/archive/commit.ts",
     "archive:local": "ts-node src/archive/local.ts",
     "archive:publish": "ts-node src/archive/publish.ts",
-    "bench": "ts-node src/benchmarks"
+    "bench": "ts-node src/benchmarks",
+    "experiment:instruction": "pnpm run build:prompt && ts-node src/experimental/instruction.ts"
   },
   "author": "Wrtn Technologies",
   "license": "AGPL-3.0",
