@@ -48,24 +48,9 @@ export interface IAutoBeFacadeApplication {
    */
   prisma(props: {
     /**
-     * Database design instructions - RAW USER CONTENT ONLY.
+     * Database design instructions from user conversation.
      *
-     * 🚨 **DO NOT WRITE "Design database according to user specification"** 🚨
-     *
-     * **PASTE THE ACTUAL SPECIFICATION:**
-     *
-     * - Every ```prisma block completely with ALL models
-     * - Every CREATE TABLE statement entirely
-     * - Every column, type, @unique, @index, @relation exactly
-     * - Every "DO NOT create" instruction
-     * - Every forbidden pattern like "no audit tables", "no subtype tables"
-     *
-     * **IF USER PROVIDED PRISMA MODELS:** Include ALL lines of ALL models, not
-     * a summary. Include ALL fields, relations, indexes, constraints. Include
-     * ALL comments and annotations.
-     *
-     * Focus on database phase ONLY but include COMPLETE schemas, not
-     * references. Code blocks are SACRED - include them COMPLETELY.
+     * Pass empty string "" if no database-specific instructions exist.
      */
     instruction: string;
   }): Promise<IAutoBeFacadeApplicationResult>;
@@ -85,24 +70,9 @@ export interface IAutoBeFacadeApplication {
    */
   interface(props: {
     /**
-     * API design instructions - RAW USER CONTENT ONLY.
+     * API design instructions from user conversation.
      *
-     * 🚨 **INSTRUCTION !== SUMMARY** 🚨
-     *
-     * **COPY-PASTE EVERYTHING ABOUT APIs:**
-     *
-     * - Complete OpenAPI/Swagger YAML/JSON blocks if provided
-     * - All endpoint paths like /api/v1/members/{id}
-     * - All HTTP methods, headers, query params specifications
-     * - All DTO structures with validation rules
-     * - All error codes and response formats
-     *
-     * **THE RULE:** User's API specs = 3000 characters? Your instruction = 3000
-     * characters User included code blocks? Include the SAME code blocks User
-     * wrote in broken English? Keep the broken English
-     *
-     * Focus on API phase ONLY but NEVER summarize or reference. Always PASTE
-     * the actual content.
+     * Pass empty string "" if no API-specific instructions exist.
      */
     instruction: string;
   }): Promise<IAutoBeFacadeApplicationResult>;
@@ -130,23 +100,9 @@ export interface IAutoBeFacadeApplication {
    */
   test(props: {
     /**
-     * Testing strategy instructions - RAW USER CONTENT ONLY.
+     * Testing strategy instructions from user conversation.
      *
-     * 🚨 **CTRL+C → CTRL+V, NOTHING ELSE** 🚨
-     *
-     * **INCLUDE EVERYTHING ABOUT TESTING:**
-     *
-     * - All test scenarios user mentioned
-     * - All edge cases and failure conditions
-     * - All coverage requirements ("test all CRUD operations")
-     * - All validation rules and assertions
-     * - All performance test requirements
-     *
-     * **REMEMBER:** You are not an editor. You are not a summarizer. You are a
-     * COPY-PASTE MACHINE. If user wrote test requirements in 20 bullet points,
-     * paste those 20 bullet points EXACTLY.
-     *
-     * Focus on test phase ONLY but include ALL user instructions about testing.
+     * Pass empty string "" if no test-specific instructions exist.
      */
     instruction: string;
   }): Promise<IAutoBeFacadeApplicationResult>;
@@ -174,25 +130,9 @@ export interface IAutoBeFacadeApplication {
    */
   realize(props: {
     /**
-     * Implementation instructions - RAW USER CONTENT ONLY.
+     * Implementation instructions from user conversation.
      *
-     * 🚨 **YOU ARE NOT PAID TO THINK, YOU ARE PAID TO COPY-PASTE** 🚨
-     *
-     * **PASTE ALL IMPLEMENTATION DETAILS:**
-     *
-     * - All business logic rules and algorithms
-     * - All performance requirements ("handle 10K requests/sec")
-     * - All caching strategies and optimization notes
-     * - All transaction handling requirements
-     * - All security and validation logic
-     * - All code examples user provided
-     *
-     * **GOLDEN RULE:** The instruction field is a TEXT BUFFER, not a SUMMARY
-     * FIELD. User wrote 100 lines about implementation? Paste 100 lines. User
-     * included pseudocode? Paste the pseudocode. User mixed Korean and English?
-     * Keep both languages.
-     *
-     * Focus on implementation phase ONLY but BE A PIPE, NOT A FILTER.
+     * Pass empty string "" if no implementation-specific instructions exist.
      */
     instruction: string;
   }): Promise<IAutoBeFacadeApplicationResult>;
