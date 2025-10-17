@@ -1,4 +1,8 @@
-import { MicroAgentica } from "@agentica/core";
+import {
+  AgenticaExecuteHistory,
+  MicroAgentica,
+  MicroAgenticaHistory,
+} from "@agentica/core";
 import { AutoBeSystemPromptConstant } from "@autobe/agent/src/constants/AutoBeSystemPromptConstant";
 import { IAutoBeFacadeApplication } from "@autobe/agent/src/context/IAutoBeFacadeApplication";
 import { FileSystemIterator } from "@autobe/filesystem";
@@ -102,21 +106,31 @@ const main = async (): Promise<void> => {
   agent.on("request", (event) => {
     event.body.tool_choice = "required";
   });
-  agent.on("execute", (event) => {
-    console.log("==============================================");
-    console.log(event.operation.name);
-    console.log("==============================================");
-    console.log(event.arguments.instruction);
-    console.log("----------------------------------------------");
-    console.log("\n");
-  });
 
   for (const s of SEQUENCE) {
     const message: AutoBeUserMessageHistory = await TestHistory.getUserMessage(
       "chat",
       s,
     );
-    await agent.conversate(message.contents);
+    console.log(
+      "userMessage",
+      message.contents[0].type === "text"
+        ? message.contents[0].text.length
+        : "binary",
+    );
+
+    const start: Date = new Date();
+    const histories: MicroAgenticaHistory<"chatgpt">[] = await agent.conversate(
+      message.contents,
+    );
+    const execute: AgenticaExecuteHistory<"chatgpt"> | undefined =
+      histories.find((h) => h.type === "execute");
+    if (execute !== undefined)
+      console.log(
+        execute.operation.name,
+        (execute.arguments as any).instruction?.length,
+        new Date().getTime() - start.getTime(),
+      );
   }
 
   await FileSystemIterator.save({

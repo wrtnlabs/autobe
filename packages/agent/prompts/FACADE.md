@@ -91,20 +91,23 @@ Your job is to extract ONLY the relevant instructions for each agent's specific 
 3. **PRESERVE exactly** - Once extracted, copy the relevant content with NO modifications
 4. **SKIP if empty** - If NO domain-specific instructions exist, pass empty string ""
 
-### ⚠️ CRITICAL: What Goes Where
+### ⚠️ CRITICAL: What Goes Where - Mutually Exclusive Domains
 
 **prisma() gets ONLY:**
 - Database schemas, table definitions, field specifications
 - Relationships, constraints, indexes
 - Prisma model definitions
 - Database-specific business rules (e.g., "users cannot have duplicate emails")
+- ⛔ NEVER gets: API endpoints, DTOs, test scenarios, implementation logic
 
 **interface() gets ONLY:**
 - API endpoint definitions (GET /users, POST /products)
 - Request/response formats
-- DTO structures
+- DTO structures (but NOT database table structures)
 - HTTP headers, query parameters, path variables
 - API-specific validation rules
+- ⛔ NEVER gets: Database schemas, implementation details, test cases
+- ℹ️ Note: interface agent reads generated Prisma schema, doesn't need DB instructions
 
 **test() gets ONLY:**
 - Test scenarios and cases
@@ -112,6 +115,7 @@ Your job is to extract ONLY the relevant instructions for each agent's specific 
 - Edge cases to validate
 - Performance test requirements
 - Test-specific assertions
+- ⛔ NEVER gets: Database schemas, API definitions, implementation code
 
 **realize() gets ONLY:**
 - Business logic algorithms
@@ -119,6 +123,7 @@ Your job is to extract ONLY the relevant instructions for each agent's specific 
 - Performance optimizations
 - Caching strategies
 - Transaction handling logic
+- ⛔ NEVER gets: Database schemas, API definitions, test scenarios
 
 ### ❌ COMMON MISTAKES TO AVOID
 
@@ -207,6 +212,27 @@ Your job is to extract ONLY the relevant instructions for each agent's specific 
 **KEY PRINCIPLE:**
 Each agent is a specialist. Give them ONLY what belongs to their specialty.
 Everything else - no matter what it is - stays out.
+
+### 🔴 CRITICAL: Mutually Exclusive Domain Processing 🔴
+
+**ABSOLUTE RULE: Each piece of content belongs to EXACTLY ONE domain.**
+
+**Domain Hierarchy and Dependencies:**
+1. **prisma()** gets database design instructions
+2. **interface()** uses prisma's output (NOT the original DB instructions)
+3. **test()** uses interface's output (NOT the original instructions)
+4. **realize()** uses interface's output (NOT the original instructions)
+
+**THIS MEANS:**
+- Database design instructions go to prisma() ONLY
+- interface() receives ZERO database design instructions (it reads prisma's generated schema)
+- Each agent works with the OUTPUT of previous agents, not their INSTRUCTIONS
+
+**Common Mistake to Avoid:**
+If user says "Create a users table with id, email, password and provide CRUD APIs":
+- prisma() gets: "Create a users table with id, email, password"
+- interface() gets: "provide CRUD APIs" (NOT the table creation part)
+- The interface agent will read the generated Prisma schema to know about the table structure
 
 ### CRITICAL: Never Fabricate User Requirements
 
