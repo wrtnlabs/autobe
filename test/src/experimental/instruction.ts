@@ -19,6 +19,13 @@ const SEQUENCE = ["analyze", "prisma", "interface", "test", "realize"] as const;
 
 const getStateMessage = (phase: AutoBePhase | null): string => {
   const index: number = phase ? SEQUENCE.indexOf(phase) : -1;
+  console.log(
+    phase,
+    SEQUENCE.map((s, i) => `- ${s}: ${index < i ? "none" : "up-to-date"}`).join(
+      "\n",
+    ),
+  );
+
   return AutoBeSystemPromptConstant.FACADE.replace(
     "{% STATE %}",
     StringUtil.trim`
