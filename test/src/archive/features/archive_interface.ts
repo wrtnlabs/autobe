@@ -66,6 +66,7 @@ export const archive_interface = async (
       files: {
         ...(await agent.getFiles()),
         "pnpm-workspace.yaml": "",
+        "autobe/instruction.md": result.instruction,
       },
     });
   } catch {}
@@ -77,32 +78,6 @@ export const archive_interface = async (
         tokenUsage: new AutoBeTokenUsage(s.tokenUsage).increment(zero).toJSON(),
       })),
     ),
-    // [`${project}.interface.groups.json`]: JSON.stringify(
-    //   snapshots
-    //     .map((s) => s.event)
-    //     .filter((e) => e.type === "interfaceGroups")
-    //     .map((e) => e.groups)
-    //     .flat() satisfies AutoBeInterfaceGroup[],
-    // ),
-    // [`${project}.interface.endpoints.json`]: JSON.stringify(
-    //   snapshots
-    //     .map((s) => s.event)
-    //     .filter((e) => e.type === "interfaceEndpoints")
-    //     .map((e) => e.endpoints)
-    //     .flat(),
-    // ),
-    // [`${project}.interface.operations.json`]: JSON.stringify(
-    //   result.document.operations,
-    // ),
-    // [`${project}.interface.schemas.json`]: JSON.stringify(
-    //   Object.fromEntries(
-    //     snapshots
-    //       .map((s) => s.event)
-    //       .filter((e) => e.type === "interfaceSchemas")
-    //       .map((e) => Object.entries(e.schemas))
-    //       .flat(),
-    //   ),
-    // ),
   });
   TestValidator.equals("missed", result.missed, []);
 };

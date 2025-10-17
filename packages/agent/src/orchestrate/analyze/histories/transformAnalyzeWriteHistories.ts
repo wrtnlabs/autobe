@@ -13,7 +13,6 @@ export const transformAnalyzeWriteHistories = <Model extends ILlmSchema.Model>(
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
     file: AutoBeAnalyzeFile.Scenario;
-    instruction: string;
   },
 ): Array<
   | IAgenticaHistoryJson.IUserMessage
@@ -75,21 +74,6 @@ export const transformAnalyzeWriteHistories = <Model extends ILlmSchema.Model>(
       \`\`\`json
       ${JSON.stringify(props.file)}
       \`\`\`
-
-      ## Instructions from Requirements Discussion
-      
-      The following instructions were extracted by AI from 
-      the discussion with the user about requirements.
-      If these instructions are relevant to the document you're 
-      currently writing (${props.file.filename}), you MUST follow 
-      them exactly as specified without arbitrary judgment.
-      
-      DO NOT make your own decisions even if you think you have 
-      better ideas. Follow the user's instructions precisely.
-      Only ignore instructions that are completely unrelated to 
-      the current document context.
-      
-      ${props.instruction}
     `,
   },
 ];

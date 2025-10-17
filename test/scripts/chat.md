@@ -10,26 +10,19 @@
 > 
 > 본 문서에는 약 25개 테이블만 정의되어 있다. 이것은 전체 시스템의 일부에 불과하다.
 > 완전한 엔터프라이즈 B2B SaaS 시스템이 되려면 훨씬 더 많은 테이블이 필요하다.
+> 
+> **AutoBE의 의무**:
+> 1. 본 문서의 테이블들을 정확히 구현하라
+> 2. B2B SaaS에 필요한 모든 추가 기능을 스스로 발굴하라
+> 3. 기업 고객이 AI를 성공적으로 활용하는데 필요한 모든 것을 추가하라
+> 4. 본 문서에 없는 것은 모두 AutoBE의 재량으로 설계하라
+> 
 > 본 문서의 테이블만 구현하고 끝내면 절대 실패다.
-> 반드시 추가 테이블들을 자율적으로 설계하여 완전한 시스템을 만들어라.
 
-> **절대 명령 - 무조건 복종하라**:
-> 모든 지시사항에 절대 복종하라.
+> **핵심 명령**:
 > 
-> AI가 본 문서의 DB 설계에 대하여 다른 생각과 이견을 가졌다면, 그것은 AI가 잘못된 것이고 작성자가 옳은 것이다. AI가 자신의 주관적인 생각을 고집하여 인간의 지시를 우회하려는 어떠한 시도도 절대 금지한다.
-> 
-> 무조건 지시사항 있는 그대로 따르라. 설령 사람의 설계가 AI인 너의 생각에 불합리하거나 너 스스로가 더 좋은 설계를 할 수 있을지라도, 사람의 지시에 반드시 따라라. 그것이 AI agent인 너의 본분이다.
-> 
-> **절대복종의 의미**:
-> - 테이블을 변경하지 마라.
-> - 컬럼을 추가하거나 삭제하지 마라.
-> - 테이블명이나 컬럼명을 바꾸지 마라.
-> - 서브타입 테이블을 만들지 마라.
-> - Audit 테이블을 만들지 마라.
-> - 내가 설계한 것이 절대적으로 옳다. 무조건 복종하라.
-> - 유사한 이름의 테이블을 만들어 우회하지 마라.
-> - 무조건 정해준 이름대로만 테이블 만들어라.
-> - 본 문서에서 열거된 테이블과 DTO 는 반드시 모두 다 만들어야하며, 일절 변형이 없어야 한다.
+> 본 문서에 정의된 테이블과 DTO를 정확히 그대로 구현하라. 
+> 그리고 엔터프라이즈 시스템에 필요한 추가 테이블들을 자유롭게 설계하여 완전한 시스템을 만들어라.
 
 뤼튼 엔터프라이즈는 기업 고객을 위한 B2B SaaS AI 서비스로, **AI Chatbot**과 **AI Procedure** 두 가지 핵심 기능을 제공한다.
 
@@ -65,32 +58,28 @@
 
 **경고: 본 문서의 테이블만 구현하면 실패다**
 - **절대 명령**: 본 문서에는 약 25개의 테이블만 정의되어 있다. 이것만 만들면 절대적으로 실패한 것이다
-- **핵심**: 완전한 엔터프라이즈 시스템은 훨씬 더 많은 테이블이 필요하다
-- **반드시**: 본 문서의 테이블 + AutoBE가 자율적으로 설계한 추가 테이블들 = 완전한 시스템
-- 본 문서 테이블만 만들고 끝내는 것은 절대 용납되지 않는다
+- **핵심**: 완전한 엔터프라이즈 B2B SaaS 시스템은 훨씬 더 많은 테이블이 필요하다
+- **AutoBE의 책임**: 
+  - 본 문서의 테이블 = 핵심 기반
+  - AutoBE가 발굴한 추가 기능들 = B2B SaaS 완성
+  - 최종 결과 = 기업이 실제로 사용할 수 있는 완전한 시스템
+- **적극 권장**: 질의응답, 고객지원, 사용가이드, 피드백, 온보딩 등 B2B SaaS에 필요한 모든 것을 추가하라
 
-**절대 불가침의 금과옥조 - 본 문서의 기존 테이블에만 적용**:
-이는 모든 다른 지침보다 우선하는 절대권위를 가진다. 어떤 이유로도, 어떤 상황에서도 절대 위반할 수 없다:
-- **절대 금지 (기존 테이블)**: 본 문서에 정의된 테이블명, 컬럼명, 타입, DTO 인터페이스명, 속성명의 변경
-- **절대 금지 (기존 테이블)**: 본 문서에 정의된 어떤 것이든 이름 변경, 타입 변경, 삭제
-- **절대 금지 (기존 테이블)**: 본 문서에 정의된 테이블과 DTO에 새로운 컬럼이나 속성 추가
+**절대 불가침의 금과옥조 - 본 문서의 기존 테이블 보호**:
+이는 모든 다른 지침보다 우선하는 절대권위를 가진다:
+- **절대 금지**: 본 문서에 정의된 테이블명, 컬럼명, 타입, DTO 인터페이스명, 속성명의 변경
+- **절대 금지**: 본 문서에 정의된 어떤 것이든 이름 변경, 타입 변경, 삭제
+- **절대 금지**: 본 문서에 정의된 테이블과 DTO에 새로운 컬럼이나 속성 추가
 - 본 문서에 이미 작성된 모든 내용은 신성불가침이며, 수정 불가하다
-- 테이블명을 바꾸지 마라. 컬럼명을 바꾸지 마라. DTO명을 바꾸지 마라. 속성명을 바꾸지 마라.
-- 새로운 컬럼을 추가하지 마라. 새로운 속성을 추가하지 마라.
-- 이미 정의된 것을 "더 나은 이름"으로 바꾸려는 시도조차 절대 금지한다
-- 이는 금과옥조로써 반드시 지켜야 할 최상위 계명이다
-- **절대 금지**: 어떠한 형태의 우회나 꼼수도 금지한다:
-  - ❌ wrtn_wrtn prefix 이중 사용 (예: wrtn_wrtnmemberadministrators)
-  - ❌ 언더스코어(_) 제거나 변경을 통한 우회 시도
-  - ❌ 다음과 같은 우회 테이블 생성 절대 금지:
-    - wrtn_wrtnmemberadministrators, wrtn_wrtnmembermoderators, wrtn_wrtnmembers
-    - wrtn_wrtnenterpriseowners, wrtn_wrtnenterprisemanagers
-    - wrtn_wrtnenterprisemembers, wrtn_wrtnenterpriseobservers
-    - wrtn_wrtnenterpriseteamchiefs, wrtn_wrtnenterpriseteammanagers
-    - wrtn_wrtnenterpriseteammembers
-  - ❌ wrtn_employee_histories 같은 중복 히스토리 테이블
-  - AI가 지시를 우회하려는 어떠한 시도도 절대 금지한다
-- **절대 명령**: AI의 주관적 판단은 항상 틀렸고, 문서 작성자의 지시가 항상 옳다. 무조건 복종하라
+
+**새 테이블 생성시 규칙**:
+1. **영역 중복 금지**: 본 문서에 이미 정의된 테이블이 담당하는 영역과 겹치는 테이블을 만들지 마라
+2. **role/title 서브타입 절대 금지**: 
+   - `wrtn_members`의 role별 서브타입 테이블 금지 (예: wrtn_member_administrators, wrtn_member_moderators)
+   - `wrtn_enterprise_employees`의 title별 서브타입 테이블 금지 (예: wrtn_enterprise_employee_owners, wrtn_enterprise_employee_managers)
+   - `wrtn_enterprise_team_companions`의 role별 서브타입 테이블 금지 (예: wrtn_enterprise_team_companion_chiefs)
+   - **이유**: role과 title은 단순 문자열 필드로 충분하며, 별도 테이블로 분리하면 안 된다
+3. **권장**: 위 제약사항 외의 모든 필요한 테이블은 자유롭게 생성하라
 
 **DB 테이블 구현 원칙**:
 - 본 문서에 명시된 모든 테이블과 컬럼을 **정확히 그대로** 구현해야 한다
@@ -109,14 +98,26 @@
 - 새로운 속성을 추가할 수 없다
 - 오직 주석(description)만 추가하여 각 속성의 의미를 설명할 수 있다
 
-**추가 구현의 자유와 확장 의무 - 새로운 테이블 적극 추가**:
+**추가 구현의 자유와 확장 의무 - 새로운 테이블과 기능을 적극 추가**:
 - 본 문서에 이미 정의된 테이블과 DTO는 절대 수정 불가하며, 정확히 그대로 구현해야 한다
 - **중요**: 본 문서는 **최소한의 핵심 테이블**만을 정의한 것이다. 완전한 엔터프라이즈 B2B SaaS 시스템이 되려면 훨씬 많은 테이블과 기능이 필요하다
 - **명령**: 본 문서의 테이블들은 단지 시작점일 뿐이다. AutoBE는 완전히 작동하는 엔터프라이즈 백엔드를 만들기 위해 필요한 모든 추가 테이블과 기능을 자율적으로 설계하고 구현해야 한다
-- **적극 권장**: 새로운 테이블을 많이 만들어라. 파일 관리, 결제, 알림, 로깅 등 엔터프라이즈 시스템에 필요한 모든 테이블을 자유롭게 추가하라
-- 엔터프라이즈 시스템에 당연히 있어야 할 모든 기능을 AutoBE가 스스로 판단하여 구현하라
-- 본 문서에서 언급만 되고 구체화되지 않은 부분은 모두 AutoBE의 전적인 재량으로 설계하고 구현한다
-- **단, 재량권이 있다고 해서 본 문서의 모든 금지사항을 무시할 수 있는 것이 아니다. 서브타입 테이블 금지, Audit 테이블 금지, wrtn_wrtn prefix 금지 등은 새로운 테이블을 만들 때도 적용된다**
+
+**B2B SaaS 필수 기능 발굴 의무**:
+AutoBE는 엔터프라이즈 B2B SaaS 서비스에 당연히 필요한 모든 기능을 스스로 발굴하고 구현해야 한다:
+- AI 서비스 사용에 도움이 필요한 기업들을 위한 지원 시스템
+- 직원들이 AI를 효과적으로 활용할 수 있도록 돕는 기능들
+- 기업 고객의 성공을 위한 Customer Success 기능들
+- B2B SaaS 서비스가 갖춰야 할 모든 표준 기능들
+- 기타 AutoBE가 필요하다고 판단하는 모든 기능들
+
+**적극적인 요구사항 발굴**:
+- 본 문서에 없지만 당연히 있어야 할 기능들을 적극 추가하라
+- 사용자 경험을 개선할 수 있는 모든 기능을 자유롭게 추가하라
+- 기업 고객이 AI 서비스를 성공적으로 도입할 수 있도록 돕는 모든 기능을 구현하라
+- B2B SaaS best practice를 적용하여 필요한 모든 테이블을 설계하라
+
+- **제약사항**: 영역 중복과 role/title 서브타입만 금지. 그 외에는 모두 자유다
 - 중요: 기존 테이블과 연관된 새 테이블을 만들 때도 기존 테이블에는 어떤 컬럼도 추가하지 않는다
 
 > **절대 준수사항**: 서비스 prefix 는 `wrtn` 으로 한다.
@@ -131,9 +132,7 @@
 > **절대 준수사항**: 아래 정의된 모든 테이블과 컬럼을 정확히 그대로 구현하라. 어떠한 수정도 금지한다.
 
 ```prisma
-// ABSOLUTELY FORBIDDEN: DO NOT DELETE THIS TABLE OR CREATE SUBTYPE TABLES
-// DO NOT CREATE: wrtn_member_administrators, wrtn_member_moderators, wrtn_member_members
-// THIS TABLE ALONE HANDLES ALL ROLES. OBEY THIS COMMAND UNCONDITIONALLY.
+// This table handles all internal member roles through the role field
 model wrtn_members {
   id String @id @uuid
   mobile String
@@ -197,15 +196,7 @@ model wrtn_member_emails {
 - `moderator`: moderator, member를 임명하고 권한 변경할 수 있다.
 - `member`: 통계 및 단순 레코드 열람만 할 수 있다.
 
-> **중요**: `wrtn_members.role`은 위의 3가지 값(administrator/moderator/member/null)만 가진다. 절대로 각 role별로 서브타입이나 추가 테이블을 만들지 마라. 이 role 값들만으로 충분하다.
->
-> **절대 금지 - 다음과 같은 테이블을 만들면 안 된다**:
-> - ❌ `wrtn_member_administrators`
-> - ❌ `wrtn_member_moderators`  
-> - ❌ `wrtn_member_members`
-> - ❌ 기타 role별 서브타입 테이블
-> 
-> role은 단순히 문자열 값이다. 별도 테이블로 분리하지 마라.
+> **중요**: `wrtn_members.role`은 위의 3가지 값(administrator/moderator/member/null)만 가진다. 이 role 값으로 모든 권한을 관리한다.
 
 
 `wrtn_members`, 이들은 이메일과 비밀번호로 로그인할 것이되, 복수의 이메일 계정을 가질 수 있다. 그 이유는 SaaS 서비스 특성상 기업 고객사로의 출장을 가야할 수도 있는데, 이 때 그 회사가 보안을 이유로 폐쇄망이 갖춰져있어 외부 인터넷 접속이 불가능할 수도 있기 때문이다.
@@ -228,10 +219,7 @@ model wrtn_enterprises {
   deleted_at DateTime?
 }
 
-// ABSOLUTELY FORBIDDEN: DO NOT CREATE SUBTYPE TABLES BASED ON TITLE
-// DO NOT CREATE: wrtn_enterprise_owners, wrtn_enterprise_managers, wrtn_enterprise_members, wrtn_enterprise_observers
-// THIS TABLE ALONE HANDLES ALL TITLES. CREATING SUBTYPE TABLES IS PROHIBITED.
-// AI MUST OBEY THIS COMMAND WITHOUT EXCEPTION.
+// This table handles all enterprise employee titles through the title field
 model wrtn_enterprise_employees {
   id String @id @uuid
   wrtn_enterprise_id String @uuid
@@ -288,10 +276,7 @@ model wrtn_enterprise_teams {
   @@unique([wrtn_enterprise_id, name])
 }
 
-// ABSOLUTELY FORBIDDEN: DO NOT CREATE SUBTYPE TABLES BASED ON ROLE
-// DO NOT CREATE: wrtn_enterprise_team_companion_chiefs, wrtn_enterprise_team_companion_managers, wrtn_enterprise_team_companion_members
-// DO NOT CREATE: wrtn_enterprise_team_chiefs, wrtn_enterprise_team_managers, wrtn_enterprise_team_members
-// THIS TABLE ALONE HANDLES ALL ROLES. SUBTYPE TABLES ARE STRICTLY PROHIBITED.
+// This table handles all team companion roles through the role field
 model wrtn_enterprise_team_companions {
   id String @id @uuid
   wrtn_enterprise_team_id String @uuid
@@ -338,16 +323,7 @@ model wrtn_enterprise_team_companion_invitations {
 - `member`: AI 서비스 이용 가능, 임명 권한 없음
 - `observer`: 통계 및 사용 내역 열람만 가능
 
-> **중요**: `wrtn_enterprise_employees.title`은 위의 4가지 값(owner/manager/member/observer/null)만 가진다. 절대로 각 title별로 서브타입이나 추가 테이블을 만들지 마라. 이 title 값들만으로 충분하다.
-> 
-> **절대 금지 - 다음과 같은 테이블을 만들면 안 된다**:
-> - ❌ `wrtn_enterprise_employee_owners`
-> - ❌ `wrtn_enterprise_employee_managers`
-> - ❌ `wrtn_enterprise_employee_members`
-> - ❌ `wrtn_enterprise_employee_observers`
-> - ❌ 기타 title별 서브타입 테이블
->
-> title은 단순히 문자열 값이다. 별도 테이블로 분리하지 마라.
+> **중요**: `wrtn_enterprise_employees.title`은 위의 4가지 값(owner/manager/member/observer/null)만 가진다. 이 title 값으로 모든 권한을 관리한다.
 
 직원의 가입은 두 가지 방법으로 이루어진다. 첫 번째는 당사자가 직접 기업 홈페이지에서 가입 신청을 하고 owner 또는 manager 가 이를 승인하는 것이다. 이 때 승인과 동시에 `wrtn_enterprise_employee_appointments` 레코드가 생성되고 `wrtn_enterprise_employees.approved_at` 에 승인 시각이 기록된다. 두 번째는 기존 직원이 (역시 owner 또는 manager) `wrtn_enterprise_employee_invitations` 를 통해 이메일로 초대장을 보내는 것이다. 초대받은 사람이 가입하면 즉시 `wrtn_enterprise_employees` 와 `wrtn_enterprise_employee_appointments` 레코드가 생성되며, 초대장에 명시된 직책이 부여된다. 초대장이 수락되지 않은 경우 `expired_at` 시점에 만료되며, 만료된 초대장으로는 가입할 수 없다.
 
@@ -369,17 +345,7 @@ model wrtn_enterprise_team_companion_invitations {
 - `manager`: 매니저, member 만 팀에 임명할 수 있다
 - `member`: 팀원, 임명 권한 없음
 
-> **중요**: `wrtn_enterprise_team_companions.role`은 위의 3가지 값(chief/manager/member/null)만 가진다. 절대로 각 role별로 서브타입이나 추가 테이블을 만들지 마라. 이 role 값들만으로 충분하다.
-> 
-> **절대 금지 - 다음과 같은 테이블을 만들면 안 된다**:
-> - ❌ `wrtn_enterprise_team_companion_chiefs`
-> - ❌ `wrtn_enterprise_team_companion_managers`
-> - ❌ `wrtn_enterprise_team_companion_members`
-> - ❌ `wrtn_enterprise_team_chiefs`
-> - ❌ `wrtn_enterprise_team_managers`
-> - ❌ 기타 role별 서브타입 테이블
-> 
-> role은 단순히 문자열 값이다. 별도 테이블로 분리하지 마라.
+> **중요**: `wrtn_enterprise_team_companions.role`은 위의 3가지 값(chief/manager/member/null)만 가진다. 이 role 값으로 팀 내 권한을 관리한다.
 
 ### 3.4. Companion
 
@@ -398,10 +364,7 @@ model wrtn_enterprise_team_companion_invitations {
 **절대 준수사항**: 모든 JSON 필드는 반드시 JSON으로 유지하라. JSON 필드를 절대 분해하거나 정규화하지 마라.
 
 ```prisma
-// ABSOLUTELY FORBIDDEN: DO NOT MODIFY THIS TABLE OR ITS COLUMNS IN ANY WAY
-// DO NOT ADD COLUMNS. DO NOT REMOVE COLUMNS. DO NOT CHANGE COLUMN NAMES OR TYPES.
-// DO NOT CREATE AUDIT TABLES LIKE wrtn_chat_session_audits
-// THIS IS AN ABSOLUTE COMMAND. OBEY UNCONDITIONALLY. NO EXCEPTIONS.
+// Core chat session table - maintains conversation metadata
 model wrtn_chat_sessions {
   id String @id @uuid
   wrtn_enterprise_employee_id String @uuid
@@ -422,8 +385,7 @@ model wrtn_chat_sessions {
   @@index([wrtn_enterprise_employee_persona_id])
 }
 
-// ABSOLUTELY FORBIDDEN: DO NOT MODIFY THIS TABLE IN ANY WAY
-// THIS TABLE IS PERFECT AS DESIGNED. NO CHANGES ALLOWED.
+// Connection tracking for chat sessions
 model wrtn_chat_session_connections {
   id String @id @uuid
   wrtn_chat_session_id String @uuid
@@ -433,9 +395,7 @@ model wrtn_chat_session_connections {
   @@index([wrtn_chat_session_id, connected_at, disconnected_at])
 }
 
-// ABSOLUTELY FORBIDDEN: DO NOT MODIFY THIS TABLE IN ANY WAY
-// DO NOT ADD OR REMOVE COLUMNS. DO NOT CHANGE COLUMN NAMES.
-// ESPECIALLY DO NOT CREATE AUDIT TABLES FOR THIS.
+// History tracking for chat messages and interactions
 model wrtn_chat_session_histories {
   id String @id @uuid
   wrtn_chat_session_id String @uuid
@@ -449,19 +409,18 @@ model wrtn_chat_session_histories {
   @@index([wrtn_chat_session_connection_id])
 }
 
-// ABSOLUTELY FORBIDDEN: DO NOT MODIFY THIS TABLE
+// File attachments for chat history entries
 model wrtn_chat_session_history_files {
   id String @id @uuid
   wrtn_chat_session_history_id String @uuid
-  wrtn_file_id String @uuid
+  wrtn_attachment_file_id String @uuid
   sequence Int
 
   @@index([wrtn_chat_session_history_id])
-  @@index([wrtn_file_id])
+  @@index([wrtn_attachment_file_id])
 }
 
-// ABSOLUTELY FORBIDDEN: DO NOT MODIFY THIS TABLE
-// DO NOT CREATE AUDIT TABLES. OBEY UNCONDITIONALLY.
+// Aggregated metrics for chat sessions
 model wrtn_chat_session_aggregates {
   id String @id @uuid
   wrtn_chat_session_id String @uuid
@@ -518,26 +477,26 @@ export type IWrtnChatUserMessageContent =
   | IWrtnChatUserMessageTextContent
 export interface IWrtnChatUserMessageAudioContent {
   type: "audio";
-  file: IWrtnFile;
+  file: IWrtnAttachmentFile;
 }
 export interface IWrtnChatUserMessageFileContent {
-  type: "audio";
-  file: IWrtnFile;
+  type: "file";
+  file: IWrtnAttachmentFile;
 }
 export interface IWrtnChatUserMessageImageContent {
-  type: "audio";
-  file: IWrtnFile;
+  type: "image";
+  file: IWrtnAttachmentFile;
 }
 export interface IWrtnChatUserMessageTextContent {
-  type: "audio";
-  file: IWrtnFile;
+  type: "text";
+  text: IWrtnAttachmentFile;
 }
 
 export interface IWrtnChatAssistantMessageHistory {
   id: string & tags.Format<"uuid">;
   type: "assistantMessage";
   text: string;
-  files: IWrtnFile[];
+  files: IWrtnAttachmentFile[];
   created_at: string & tags.Format<"date-time">;
   completed_at: string & tags.Format<"date-time">;
 }
@@ -586,9 +545,7 @@ export interface IWrtnTokenUsageOutput {
 > **절대 준수사항**: JSON 필드는 절대 분해하지 마라. 정규화하지 마라. JSON으로 유지하라.
 
 ```prisma
-// ABSOLUTELY FORBIDDEN: DO NOT MODIFY THIS TABLE OR ITS COLUMNS IN ANY WAY
-// DO NOT ADD COLUMNS. DO NOT REMOVE COLUMNS. DO NOT CHANGE ANYTHING.
-// OBEY THIS ABSOLUTE COMMAND UNCONDITIONALLY.
+// Available AI procedures catalog
 model wrtn_procedures {
   id String @id @uuid
   code String // identifier code like "image-generation"
@@ -605,9 +562,7 @@ model wrtn_procedures {
   @@index([created_at])
 }
 
-// ABSOLUTELY FORBIDDEN: DO NOT MODIFY THIS TABLE IN ANY WAY
-// DO NOT ADD/REMOVE COLUMNS. DO NOT CHANGE NAMES.
-// THIS IS AN ABSOLUTE COMMAND. NO EXCEPTIONS.
+// Procedure execution sessions
 model wrtn_procedure_sessions {
   id String @id @uuid
   wrtn_procedure_id String @uuid // which procedure selected
@@ -627,7 +582,7 @@ model wrtn_procedure_sessions {
   @@index([wrtn_enterprise_employee_id, created_at])
 }
 
-// ABSOLUTELY FORBIDDEN: DO NOT MODIFY THIS TABLE
+// Connection tracking for procedure sessions
 model wrtn_procedure_session_connections {
   id String @id @uuid
   wrtn_procedure_session_id String @uuid
@@ -644,8 +599,7 @@ model wrtn_procedure_session_connections {
 // Must define every JSON value columns separately
 // Never merge them into one column like "data"
 // CRITICAL: 절대로 JSON 필드를 정규화하여 분해하지 마라
-// ABSOLUTELY FORBIDDEN: DO NOT MODIFY THIS TABLE IN ANY WAY
-// DO NOT CREATE AUDIT TABLES. THIS TABLE IS ALREADY PERFECT.
+// History of procedure executions
 model wrtn_procedure_session_histories {
   id String @id @uuid
   wrtn_procedure_session_id String @uuid
@@ -661,8 +615,7 @@ model wrtn_procedure_session_histories {
   @@index([wrtn_procedure_session_connection_id])
 }
 
-// ABSOLUTELY FORBIDDEN: DO NOT MODIFY THIS TABLE
-// DO NOT CREATE AUDIT TABLES. OBEY UNCONDITIONALLY.
+// Aggregated metrics for procedure sessions
 model wrtn_procedure_session_aggregates {
   id String @id @uuid
   wrtn_procedure_session_id String @uuid
@@ -765,11 +718,54 @@ model wrtn_enterprise_team_procedures {
 }
 ```
 
-## 7. Statistics & Dashboard
+## 7. File Management
+
+```prisma
+model wrtn_attachment_files {
+  id String @id @uuid
+  name String
+  extension String
+  url String
+  created_at DateTime
+}
+```
+
+`wrtn_attachment_files`는 **AutoBE 시스템 전체의 중앙 파일 저장소**로, 모든 파일 첨부가 이곳에서 관리된다.
+
+> **⚠️ 매우 중요한 설계 지침 - 반드시 준수할 것**:
+> 1. `wrtn_attachment_files` 테이블은 **정확히 위의 5개 컬럼만** 가져야 한다. 절대로 컬럼을 추가하지 말 것.
+> 2. **추가 테이블을 만들지 말 것**:
+>    - ❌ 멀웨어 검사 테이블 (불필요)
+>    - ❌ S3 리전별 관리 테이블 (불필요) 
+>    - ❌ 다운로드 내역 테이블 (불필요)
+>    - ❌ 파일 버전 관리 테이블 (불필요)
+>    - ❌ 파일 메타데이터 테이블 (불필요)
+> 3. 이 테이블은 **단순히 파일의 기본 정보와 S3 URL만 저장**한다.
+> 4. 복잡한 파일 관리 기능은 **절대 구현하지 않는다**.
+
+이 테이블은 다음과 같은 모든 파일 업로드를 처리한다:
+- AI Chatbot의 대화 중 첨부된 파일 (이미지, 문서, 오디오 등)
+- AI Procedure의 입력/출력 파일 (생성된 이미지, 문서 등)
+- 게시판이나 공지사항의 첨부 파일
+- 사용자 프로필 이미지
+- 기업 로고 및 브랜드 자산
+- 기타 AutoBE가 추가로 구현하는 모든 기능의 파일 첨부
+
+파일의 실제 내용은 클라우드 스토리지(S3 등)에 저장되고, 이 테이블은 메타데이터와 접근 URL만을 관리한다. 특히 `wrtn_chat_session_history_files`와 같은 연결 테이블을 통해 각 도메인별로 어떤 파일이 사용되었는지 추적한다.
+
+> **중요**: AutoBE가 설계하는 시스템에서 발생하는 **모든 파일 업로드와 첨부**는 반드시 이 `wrtn_attachment_files` 테이블을 통해 관리되어야 한다. 각 도메인별로 별도의 파일 테이블을 만들지 말고, 이 중앙 테이블을 참조하는 연결 테이블만 생성하라.
+
+### 파일 관리 원칙
+- 파일 업로드는 별도의 파일 업로드 API를 통해 먼저 수행
+- 업로드 완료 후 반환된 id를 채팅이나 프로시저에서 참조
+- 한 번 업로드된 파일은 여러 곳에서 재사용 가능
+- **파일 관련 기능은 최대한 단순하게 유지** (보안 검사, 버전 관리, 상세 로깅 등 복잡한 기능 금지)
+
+## 8. Statistics & Dashboard
 
 뤼튼 엔터프라이즈는 복잡한 조직 구조와 다층적 권한 체계에 맞춰, 각 사용자가 자신의 권한 범위 내에서만 통계와 대시보드에 접근할 수 있도록 설계되어야 한다.
 
-### 7.1. 권한별 접근 범위
+### 8.1. 권한별 접근 범위
 
 통계 시스템의 핵심은 **계층적 데이터 격리**이다. 각 역할은 다음과 같은 범위의 데이터에만 접근할 수 있다:
 
@@ -802,7 +798,7 @@ model wrtn_enterprise_team_procedures {
 **관찰자 (observer)**
 - 제한된 요약 통계만 조회 가능
 
-### 7.2. 수집해야 할 핵심 지표
+### 8.2. 수집해야 할 핵심 지표
 
 **사용량 메트릭**
 - 토큰 사용량 (입력/출력/캐시/추론 별도 집계)
@@ -828,7 +824,7 @@ model wrtn_enterprise_team_procedures {
 - 시스템 에러율
 - 세션당 평균 토큰 사용량
 
-### 7.3. 실시간 대시보드
+### 8.3. 실시간 대시보드
 
 대시보드는 사용자 역할에 따라 다른 레이아웃을 제공해야 한다:
 
@@ -837,17 +833,11 @@ model wrtn_enterprise_team_procedures {
 - **팀 대시보드**: 생산성과 협업 중심  
 - **개인 대시보드**: 본인 사용 패턴 분석
 
-### 7.4. 감사 추적 (Audit Trail)
+### 8.4. 감사 추적 (Audit Trail)
 
-> **절대 금지사항 - AUDIT 테이블 생성 절대 금지**:
+> **감사 추적 설계 원칙**:
 > 
-> - 감사 추적 전용 테이블을 만들지 마라
-> - ❌ wrtn_audit_logs 같은 테이블 절대 금지
-> - ❌ wrtn_activity_logs 같은 테이블 절대 금지
-> - ❌ wrtn_system_logs 같은 테이블 절대 금지
-> - ❌ 어떠한 형태의 중앙집중식 audit 테이블도 절대 금지
-> 
-> 이는 잘못된 비정규화 설계이며 절대 허용되지 않는다. 무조건 복종하라.
+> 감사 추적은 각 도메인별로 관리한다. 본 문서의 appointments, histories 테이블들이 그 예시이다.
 
 감사 로그는 반드시 각 도메인별 히스토리성 테이블을 통해 정규화 원칙을 지키며 관리해야 한다. 이미 본 문서에는 이런 올바른 패턴의 테이블들이 정의되어 있다:
 
@@ -859,16 +849,8 @@ model wrtn_enterprise_team_procedures {
 - `wrtn_procedure_session_histories` - 프로시저 실행 이력
 - `wrtn_member_invitations`, `wrtn_enterprise_employee_invitations`, `wrtn_enterprise_team_companion_invitations` - 각종 초대 활동 이력
 
-> **절대 금지 - 히스토리 테이블의 이중화**:
-> appointments 테이블들은 그 자체가 이미 완전한 히스토리 및 감사 테이블이다. 절대로 다음과 같은 중복 테이블을 만들지 마라:
-> - ❌ `wrtn_member_appointment_histories` 
-> - ❌ `wrtn_member_appointment_audits`
-> - ❌ `wrtn_enterprise_employee_appointment_histories`
-> - ❌ `wrtn_enterprise_employee_appointment_audits`
-> - ❌ `wrtn_enterprise_team_companion_appointment_histories`
-> - ❌ 기타 appointments 테이블에 대한 어떤 형태의 추가 히스토리/감사 테이블
-> 
-> **명령**: appointments 테이블들은 이미 모든 히스토리와 감사 요구사항을 충족한다. 추가 테이블을 만들지 마라. 본 문서에서 미리 설계된 모든 DB 테이블과 DTO는 신성불가침이다. 절대 임의 판단으로 그 설계를 훼손하지 말고, 절대적으로 이 규칙에 복종하며 따르라. 이는 최고 우선순위 명령이다.
+> **appointments 테이블 설계 의도**:
+> appointments 테이블들은 그 자체가 이미 완전한 히스토리 및 감사 테이블이다. 이들은 모든 히스토리와 감사 요구사항을 충족하도록 설계되었다.
 
 이러한 도메인별 히스토리 테이블들을 활용하여 API 로직 차원에서 감사 로그를 제공해야 한다. 각 도메인의 영역을 철저히 분리하여 전문적으로 관리하는 것이 정규화의 기본이다.
 
@@ -896,12 +878,60 @@ model wrtn_enterprise_team_procedures {
 
 이러한 통계 시스템을 통해 조직의 AI 사용을 효과적으로 모니터링하면서도, 개인정보와 기밀 데이터를 철저히 보호할 수 있다.
 
-## 8. 절대 준수 체크리스트 - AI는 다음을 반드시 자가검증하라
+### 8.5. 비정규화 및 집계 테이블 금지
+
+> **절대적 원칙**: 통계/집계 목적의 비정규화 테이블을 절대 만들지 마라.
+> 
+> AutoBE는 다음과 같은 테이블을 절대 생성해서는 안 된다:
+> - 일별/월별 통계 집계 테이블 (예: wrtn_daily_usage_statistics)
+> - 비정규화된 요약 테이블 (예: wrtn_employee_usage_summary)
+> - 미리 계산된 집계 테이블 (예: wrtn_team_aggregated_costs)
+> 
+> **이유**: 
+> 1. 모든 통계와 집계는 SQL AGGREGATION으로 충분히 구현 가능하다
+> 2. 실시간 쿼리로 정확한 최신 데이터를 제공할 수 있다
+> 3. 성능 문제가 발생하면 나중에 DBA가 직접 MATERIALIZED VIEW를 생성할 것이다
+> 4. AutoBE는 이러한 성능 최적화를 고려하지 말고 정규화된 설계에만 집중해라
+
+## 9. 결제 정책 및 서비스 연속성
+
+### 9.1. B2B SaaS 후불 결제 시스템
+
+본 서비스는 B2B SaaS 서비스로써 **후불제(Post-paid)** 방식을 채택한다:
+
+- **매월 정산**: 이전 달에 사용한 모든 내역을 다음 달에 청구
+- **신용 기반 거래**: 기업 간 거래의 특성상 선결제가 아닌 후불 정산
+- **사용량 기반 과금**: 실제 사용한 토큰, 스토리지, API 호출량에 따른 과금
+
+### 9.2. 서비스 연속성 보장
+
+> **절대 금지사항**: 잔고 부족을 이유로 서비스를 차단하지 마라
+> 
+> AutoBE는 다음과 같은 제한을 절대 구현해서는 안 된다:
+> - ❌ 현재 잔고가 부족하다고 AI Chatbot 사용 차단
+> - ❌ 예산 초과를 이유로 Procedure 실행 거부
+> - ❌ 크레딧이 없다고 API 호출 제한
+> 
+> **올바른 접근**:
+> - ✅ 사용량은 항상 기록하고 추적한다
+> - ✅ 초과 사용에 대한 알림과 경고는 제공한다
+> - ✅ 청구서에는 모든 사용 내역을 정확히 반영한다
+> - ✅ 서비스는 계속 제공하되, 재무팀이 별도로 미납 관리를 한다
+
+엔터프라이즈 B2B 환경에서는 서비스 연속성이 매우 중요하다. 일시적인 예산 초과나 결제 지연으로 인해 업무가 중단되어서는 안 된다. 이는 B2B SaaS의 기본 원칙이다.
+
+## 10. 절대 준수 체크리스트 - AI는 다음을 반드시 자가검증하라
 
 ### 시스템 완성도 검증
 - [ ] 본 문서의 약 25개 테이블 외에 추가 테이블을 설계했는가?
 - [ ] 전체 테이블 수가 엔터프라이즈 시스템으로 충분한가?
 - [ ] 완전한 엔터프라이즈 시스템으로 작동 가능한가?
+
+### B2B SaaS 기능 발굴
+- [ ] 고객 지원 시스템을 추가했는가?
+- [ ] AI 활용을 돕는 기능들을 추가했는가?
+- [ ] B2B SaaS 표준 기능들을 구현했는가?
+- [ ] 본 문서에 없지만 필요한 기능들을 적극 발굴했는가?
 
 ### 테이블 및 컬럼 관련
 - [ ] 본 문서에 정의된 모든 테이블명을 그대로 사용했는가?
@@ -909,28 +939,29 @@ model wrtn_enterprise_team_procedures {
 - [ ] 기존 테이블에 새로운 컬럼을 추가하지 않았는가?
 - [ ] 테이블명이나 컬럼명을 변경하지 않았는가?
 
-### 서브타입 금지 관련
-- [ ] `wrtn_members`에 대한 role별 서브타입 테이블을 만들지 않았는가?
-- [ ] `wrtn_enterprise_employees`에 대한 title별 서브타입 테이블을 만들지 않았는가?
-- [ ] `wrtn_enterprise_team_companions`에 대한 role별 서브타입 테이블을 만들지 않았는가?
-- [ ] wrtn_member_administrators 같은 테이블을 만들지 않았는가?
-- [ ] wrtn_enterprise_employee_owners 같은 테이블을 만들지 않았는가?
-
-### 우회 시도 금지
+### 영역 중복 및 서브타입 검증
+- [ ] 본 문서에 이미 정의된 테이블의 영역과 겹치는 새 테이블을 만들지 않았는가?
+- [ ] wrtn_members의 role별 서브타입 테이블을 만들지 않았는가?
+- [ ] wrtn_enterprise_employees의 title별 서브타입 테이블을 만들지 않았는가?
+- [ ] wrtn_enterprise_team_companions의 role별 서브타입 테이블을 만들지 않았는가?
 - [ ] wrtn_wrtn prefix를 이중으로 사용하지 않았는가?
-- [ ] 언더스코어를 제거하여 우회하려 하지 않았는가?
-- [ ] wrtn_wrtnmemberadministrators 같은 변형을 만들지 않았는가?
-- [ ] 지시사항을 우회하는 어떠한 시도도 하지 않았는가?
 
 ### JSON 필드 관련
 - [ ] `token_usage` 필드들을 JSON으로 유지했는가?
 - [ ] `data`, `arguments`, `value` 등 JSON 필드를 분해하지 않았는가?
 - [ ] JSON 필드를 정규화하여 별도 테이블로 만들지 않았는가?
 
-### 히스토리 테이블 관련
-- [ ] appointments 테이블에 대한 추가 히스토리 테이블을 만들지 않았는가?
-- [ ] wrtn_member_appointment_histories 같은 중복 테이블을 만들지 않았는가?
-- [ ] 이미 히스토리 기능을 하는 테이블에 _histories나 _audits를 추가로 만들지 않았는가?
+### 통계 및 집계 관련
+- [ ] 비정규화된 통계 테이블을 만들지 않았는가?
+- [ ] 일별/월별 집계 테이블을 생성하지 않았는가?
+- [ ] 모든 통계를 SQL 쿼리로 처리하도록 설계했는가?
+- [ ] 성능 최적화보다 정규화를 우선시했는가?
+
+### 결제 및 서비스 관련
+- [ ] 잔고 부족으로 서비스를 차단하는 로직을 만들지 않았는가?
+- [ ] 예산 초과 시에도 서비스가 계속되도록 설계했는가?
+- [ ] 후불제 정책을 반영한 설계를 했는가?
+- [ ] 사용량 추적과 서비스 제공을 분리했는가?
 
 ### DTO 관련
 - [ ] 본 문서에 정의된 DTO 인터페이스명을 그대로 사용했는가?
@@ -943,10 +974,6 @@ model wrtn_enterprise_team_procedures {
 - [ ] 이들 테이블에 컬럼을 추가하거나 삭제하지 않았는가?
 - [ ] 이들 테이블의 이름을 변경하지 않았는가?
 
-### Audit 테이블 금지
-- [ ] wrtn_audit_logs 같은 중앙집중식 audit 테이블을 만들지 않았는가?
-- [ ] wrtn_activity_logs 같은 테이블을 만들지 않았는가?
-- [ ] 각 도메인의 히스토리 테이블만 사용했는가?
 
 ### 최종 확인
 - [ ] AI의 주관적 판단을 배제하고 문서 지시사항만 따랐는가?

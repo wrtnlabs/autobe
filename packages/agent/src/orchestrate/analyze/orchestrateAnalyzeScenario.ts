@@ -21,7 +21,6 @@ export const orchestrateAnalyzeScenario = async <
   Model extends ILlmSchema.Model,
 >(
   ctx: AutoBeContext<Model>,
-  instruction: string,
 ): Promise<AutoBeAnalyzeScenarioEvent | AutoBeAssistantMessageHistory> => {
   const start: Date = new Date();
   const pointer: IPointer<IAutoBeAnalyzeScenarioApplication.IProps | null> = {
@@ -33,7 +32,7 @@ export const orchestrateAnalyzeScenario = async <
       model: ctx.model,
       build: (value) => (pointer.value = value),
     }),
-    histories: transformAnalyzeSceHistories(ctx, instruction),
+    histories: transformAnalyzeSceHistories(ctx),
     enforceFunctionCall: false,
     message: StringUtil.trim`
       Design a complete list of documents and user roles for this project.

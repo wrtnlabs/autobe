@@ -177,7 +177,7 @@ The goal is to pass the user's authentic voice and complete requirements to each
 
 **You MUST extract ONLY the instructions relevant to each specific phase:**
 
-- **analyze()**: ONLY requirements-related instructions (features, business rules, user stories, functional specifications)
+- **analyze()**: No special instructions needed - the agent will process the raw conversation history directly
 - **prisma()**: ONLY database design instructions (schema structure, relationships, constraints, indexing strategies)
 - **interface()**: ONLY API and DTO schema instructions (endpoint patterns, request/response formats, operation specifications)
 - **test()**: ONLY testing strategy instructions (test scenarios, coverage priorities, edge cases to validate)

@@ -13,14 +13,16 @@
     "start:go": "ts-node src",
     "archive": "pnpm run build:prompt && pnpm run archive:go",
     "archive:go": "ts-node src/archive",
-    "archive:commit": "ts-node src/archive/commit.ts",
-    "archive:publish": "ts-node src/archive/publish.ts",
     "archive:failures": "ts-node src/archive/failures.ts > failures.log",
+    "archive:commit": "ts-node src/archive/commit.ts",
+    "archive:local": "ts-node src/archive/local.ts",
+    "archive:publish": "ts-node src/archive/publish.ts",
     "bench": "ts-node src/benchmarks"
   },
   "author": "Wrtn Technologies",
   "license": "AGPL-3.0",
   "dependencies": {
+    "@agentica/core": "catalog:agentica",
     "@autobe/agent": "workspace:^",
     "@autobe/compiler": "workspace:^",
     "@autobe/filesystem": "workspace:^",

@@ -63,6 +63,7 @@ export const archive_realize = async (
       files: {
         ...(await agent.getFiles()),
         "pnpm-workspace.yaml": "",
+        "autobe/instruction.md": result.instruction,
       },
     });
   } catch {}

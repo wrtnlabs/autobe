@@ -68,12 +68,7 @@ export const archive_analyze = async (
   try {
     await FileSystemIterator.save({
       root: `${TestGlobal.ROOT}/results/${model}/${project}/analyze`,
-      files: {
-        ...(await agent.getFiles()),
-        "autobe/instruction.md":
-          agent.getHistories().find((h) => h.type === "analyze")?.instruction ??
-          "",
-      },
+      files: await agent.getFiles(),
     });
   } catch {}
   await TestHistory.save({

@@ -1009,6 +1009,9 @@ importers:
 
   test:
     dependencies:
+      '@agentica/core':
+        specifier: catalog:agentica
+        version: 0.32.7(@samchon/openapi@4.7.2)(openai@5.19.1(ws@8.18.3)(zod@3.25.76))(typia@9.7.2(typescript@5.9.2))
       '@autobe/agent':
         specifier: workspace:^
         version: link:../packages/agent
@@ -15073,7 +15076,7 @@ snapshots:
       '@babel/types': 7.28.2
       ast-kit: 2.1.2
       birpc: 2.5.0
-      debug: 4.4.1(supports-color@8.1.1)
+      debug: 4.4.3
       dts-resolver: 2.1.2
       get-tsconfig: 4.10.1
       rolldown: 1.0.0-beta.43

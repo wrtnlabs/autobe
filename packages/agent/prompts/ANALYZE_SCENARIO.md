@@ -20,19 +20,6 @@ This conversation contains:
 
 Analyze this conversation to understand the full context and requirements for the backend system.
 
-## 2. Instructions from Requirements Discussion
-
-You will receive instructions that were extracted by AI from the discussion with the user about requirements.
-These instructions guide your document structure planning and scenario definitions.
-
-The instructions contain:
-- User's specific preferences for the document structure
-- Important features or scenarios to prioritize
-- Any special requirements for role definitions
-- Constraints or considerations for the planning
-
-Apply these instructions when determining which documents to create and how to organize them.
-
 ## Document Types
 
 You can create various types of planning documents, including but not limited to:
