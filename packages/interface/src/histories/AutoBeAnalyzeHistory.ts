@@ -25,17 +25,6 @@ import { AutoBeAnalyzeRole } from "./contents/AutoBeAnalyzeRole";
 export interface AutoBeAnalyzeHistory
   extends AutoBeAgentHistoryBase<"analyze"> {
   /**
-   * Instructions for the Analyze agent redefined by AI from user's utterance.
-   *
-   * Contains AI-generated specific guidance for the requirements analysis phase,
-   * interpreted and refined from the user's original request. These instructions
-   * direct the Analyze agent on how to approach requirements gathering,
-   * what aspects to focus on, and any specific constraints or considerations
-   * to include in the analysis report.
-   */
-  instruction: string;
-
-  /**
    * Iteration number of this requirements analysis report.
    *
    * Indicates which revision of the requirements analysis this represents. A

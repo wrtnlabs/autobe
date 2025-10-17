@@ -247,10 +247,9 @@ export function transformAutobeHistoriesForClient(
       return [
         {
           role: "user",
-          content: `${history.instruction}
-${Object.entries(history.files)
-  .map(([key, value]) => `- ${key}:\n\`\`\`${value}\`\`\``)
-  .join("\n\n")}`,
+          content: Object.entries(history.files)
+            .map(([key, value]) => `- ${key}:\n\`\`\`${value}\`\`\``)
+            .join("\n\n"),
         },
       ];
     case "prisma":

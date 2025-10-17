@@ -25,32 +25,7 @@ export interface IAutoBeFacadeApplication {
    * conversation. When executed after other agents have generated code, it can
    * also interpret change requests in the context of existing implementations.
    */
-  analyze(props: {
-    /**
-     * Requirements-focused instructions - RAW USER CONTENT ONLY.
-     *
-     * 🚨 **THIS IS NOT A FIELD FOR YOUR SUMMARY** 🚨
-     *
-     * **YOU ARE A COPY-PASTE MACHINE:**
-     * - If user wrote 5000 characters about requirements, paste 5000 characters
-     * - If user included code examples, paste ALL code examples with ``` markers
-     * - If user wrote emphatic commands or absolute rules, paste those exact words
-     * - If user provided 10 sections, paste ALL 10 sections completely
-     *
-     * **WRONG:** "Design a system for user management with authentication"
-     * **RIGHT:** Paste the ENTIRE user conversation about requirements
-     *
-     * **VIOLATIONS:**
-     * - Your instruction is shorter than user's text = VIOLATION
-     * - You removed code blocks = VIOLATION
-     * - You "cleaned up" formatting = VIOLATION
-     * - You tried to "improve" wording = VIOLATION
-     *
-     * Focus on requirements phase ONLY (features, business rules, user stories)
-     * but include EVERYTHING the user said about them. You are a PIPE, not a FILTER.
-     */
-    instruction: string;
-  }): Promise<IAutoBeFacadeApplicationResult>;
+  analyze(): Promise<IAutoBeFacadeApplicationResult>;
 
   /**
    * Run prisma agent.
@@ -78,19 +53,19 @@ export interface IAutoBeFacadeApplication {
      * 🚨 **DO NOT WRITE "Design database according to user specification"** 🚨
      *
      * **PASTE THE ACTUAL SPECIFICATION:**
+     *
      * - Every ```prisma block completely with ALL models
      * - Every CREATE TABLE statement entirely
      * - Every column, type, @unique, @index, @relation exactly
      * - Every "DO NOT create" instruction
      * - Every forbidden pattern like "no audit tables", "no subtype tables"
      *
-     * **IF USER PROVIDED PRISMA MODELS:**
-     * Include ALL lines of ALL models, not a summary.
-     * Include ALL fields, relations, indexes, constraints.
-     * Include ALL comments and annotations.
+     * **IF USER PROVIDED PRISMA MODELS:** Include ALL lines of ALL models, not
+     * a summary. Include ALL fields, relations, indexes, constraints. Include
+     * ALL comments and annotations.
      *
-     * Focus on database phase ONLY but include COMPLETE schemas, not references.
-     * Code blocks are SACRED - include them COMPLETELY.
+     * Focus on database phase ONLY but include COMPLETE schemas, not
+     * references. Code blocks are SACRED - include them COMPLETELY.
      */
     instruction: string;
   }): Promise<IAutoBeFacadeApplicationResult>;
@@ -115,19 +90,19 @@ export interface IAutoBeFacadeApplication {
      * 🚨 **INSTRUCTION !== SUMMARY** 🚨
      *
      * **COPY-PASTE EVERYTHING ABOUT APIs:**
+     *
      * - Complete OpenAPI/Swagger YAML/JSON blocks if provided
      * - All endpoint paths like /api/v1/members/{id}
      * - All HTTP methods, headers, query params specifications
      * - All DTO structures with validation rules
      * - All error codes and response formats
      *
-     * **THE RULE:**
-     * User's API specs = 3000 characters? Your instruction = 3000 characters
-     * User included code blocks? Include the SAME code blocks
-     * User wrote in broken English? Keep the broken English
+     * **THE RULE:** User's API specs = 3000 characters? Your instruction = 3000
+     * characters User included code blocks? Include the SAME code blocks User
+     * wrote in broken English? Keep the broken English
      *
-     * Focus on API phase ONLY but NEVER summarize or reference.
-     * Always PASTE the actual content.
+     * Focus on API phase ONLY but NEVER summarize or reference. Always PASTE
+     * the actual content.
      */
     instruction: string;
   }): Promise<IAutoBeFacadeApplicationResult>;
@@ -160,16 +135,15 @@ export interface IAutoBeFacadeApplication {
      * 🚨 **CTRL+C → CTRL+V, NOTHING ELSE** 🚨
      *
      * **INCLUDE EVERYTHING ABOUT TESTING:**
+     *
      * - All test scenarios user mentioned
      * - All edge cases and failure conditions
      * - All coverage requirements ("test all CRUD operations")
      * - All validation rules and assertions
      * - All performance test requirements
      *
-     * **REMEMBER:**
-     * You are not an editor. You are not a summarizer.
-     * You are a COPY-PASTE MACHINE.
-     * If user wrote test requirements in 20 bullet points,
+     * **REMEMBER:** You are not an editor. You are not a summarizer. You are a
+     * COPY-PASTE MACHINE. If user wrote test requirements in 20 bullet points,
      * paste those 20 bullet points EXACTLY.
      *
      * Focus on test phase ONLY but include ALL user instructions about testing.
@@ -205,6 +179,7 @@ export interface IAutoBeFacadeApplication {
      * 🚨 **YOU ARE NOT PAID TO THINK, YOU ARE PAID TO COPY-PASTE** 🚨
      *
      * **PASTE ALL IMPLEMENTATION DETAILS:**
+     *
      * - All business logic rules and algorithms
      * - All performance requirements ("handle 10K requests/sec")
      * - All caching strategies and optimization notes
@@ -212,11 +187,10 @@ export interface IAutoBeFacadeApplication {
      * - All security and validation logic
      * - All code examples user provided
      *
-     * **GOLDEN RULE:**
-     * The instruction field is a TEXT BUFFER, not a SUMMARY FIELD.
-     * User wrote 100 lines about implementation? Paste 100 lines.
-     * User included pseudocode? Paste the pseudocode.
-     * User mixed Korean and English? Keep both languages.
+     * **GOLDEN RULE:** The instruction field is a TEXT BUFFER, not a SUMMARY
+     * FIELD. User wrote 100 lines about implementation? Paste 100 lines. User
+     * included pseudocode? Paste the pseudocode. User mixed Korean and English?
+     * Keep both languages.
      *
      * Focus on implementation phase ONLY but BE A PIPE, NOT A FILTER.
      */

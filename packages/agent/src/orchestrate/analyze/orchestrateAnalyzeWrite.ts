@@ -20,7 +20,6 @@ export const orchestrateAnalyzeWrite = async <Model extends ILlmSchema.Model>(
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
     file: AutoBeAnalyzeFile.Scenario;
-    instruction: string;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
   },

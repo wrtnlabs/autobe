@@ -23,7 +23,6 @@ export const transformAnalyzeReviewHistories = <Model extends ILlmSchema.Model>(
     ...transformAnalyzeWriteHistories(ctx, {
       scenario,
       file: myFile,
-      instruction: "",
     }).slice(0, -2),
     {
       id: v7(),

@@ -310,7 +310,6 @@ const createDispatch = (props: {
         history: {
           type: "analyze",
           id: v7(),
-          instruction: analyzeStart?.reason ?? "",
           prefix: event.prefix,
           roles: event.roles,
           files: event.files,

@@ -25,8 +25,8 @@ export const createAutoBeController = <Model extends ILlmSchema.Model>(props: {
     name: "autobe",
     application,
     execute: {
-      analyze: async (next) => {
-        const r = await orchestrateAnalyze(props.context)(next);
+      analyze: async () => {
+        const r = await orchestrateAnalyze(props.context);
         if (r.type === "analyze")
           return {
             type: "success",

@@ -27,10 +27,6 @@ export const transformInterfaceAssetHistories = (
         Call the provided tool function to generate the OpenAPI document
         referencing below requirement analysis and Prisma DB schema.
 
-        ## User Request
-
-        ${analyze.instruction}
-
         ## Requirement Analysis Report
 
         \`\`\`json
