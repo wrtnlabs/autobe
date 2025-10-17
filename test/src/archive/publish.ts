@@ -1,41 +1,40 @@
-import { IAutoBePlaygroundReplay } from "@autobe/interface";
+import {
+  IAutoBePlaygroundBenchmark,
+  IAutoBePlaygroundReplay,
+} from "@autobe/interface";
 import fs from "fs";
-import typia from "typia";
 
 import { TestGlobal } from "../TestGlobal";
-import { TestHistory } from "../internal/TestHistory";
-import { TestProject } from "../structures/TestProject";
 import { AutoBePlaygroundReplayComputer } from "./utils/AutoBePlaygroundReplayComputer";
 import { AutoBePlaygroundReplayStorage } from "./utils/AutoBePlaygroundReplayStorage";
 
-const SEQUENCE: Record<string, number> = {
-  todo: 1,
-  bbs: 2,
-  reddit: 3,
-  shopping: 4,
-};
-
 const main = async (): Promise<void> => {
-  const collection: IAutoBePlaygroundReplay.Collection = {};
-  for (const vendor of await TestHistory.getVendorModels())
-    for (const project of typia.misc.literals<TestProject>()) {
-      const replay: IAutoBePlaygroundReplay | null =
-        await AutoBePlaygroundReplayStorage.get({
-          vendor,
-          project,
-        });
-      if (replay === null) continue;
+  const experiments: IAutoBePlaygroundBenchmark[] = [];
+  for (const vendor of await AutoBePlaygroundReplayStorage.getVendorModels()) {
+    const replayList: IAutoBePlaygroundReplay[] =
+      await AutoBePlaygroundReplayStorage.getAll(vendor, (project) =>
+        AutoBePlaygroundReplayComputer.SIGNIFICANT_PROJECTS.includes(project),
+      );
+    if (replayList.length === 0) continue;
+    const summaries: IAutoBePlaygroundReplay.ISummary[] = replayList.map(
+      AutoBePlaygroundReplayComputer.summarize,
+    );
+    experiments.push({
+      vendor,
+      replays: summaries,
+      score: AutoBePlaygroundReplayComputer.score(summaries),
+      emoji: AutoBePlaygroundReplayComputer.emoji(summaries),
+    });
+  }
+  experiments.sort((a, b) =>
+    b.score === a.score
+      ? a.vendor.localeCompare(b.vendor)
+      : b.score.aggregate - a.score.aggregate,
+  );
 
-      const summary: IAutoBePlaygroundReplay.ISummary =
-        AutoBePlaygroundReplayComputer.summarize(replay);
-      collection[vendor] ??= [];
-      collection[vendor].push(summary);
-    }
-  for (const array of Object.values(collection))
-    array.sort((x, y) => SEQUENCE[x.project] - SEQUENCE[y.project]);
   await fs.promises.writeFile(
-    `${TestGlobal.ROOT}/../website/src/data/replays.json`,
-    JSON.stringify(collection),
+    `${TestGlobal.ROOT}/../website/src/data/benchmark.json`,
+    JSON.stringify(experiments),
     "utf8",
   );
 };
