@@ -155,6 +155,19 @@ model wrtn_members {
   @@index([name])
 }
 
+// for audit tracing about individual events
+model wrtn_member_sessions {
+  id String @id @uuid
+  wrtn_member_id String
+  href String // connection URL
+  referrer String // referrer URL
+  ip String // IP address
+  created_at DateTime
+  expired_at DateTime?
+
+  @@index([wrtn_member_id, created_at])
+}
+
 model wrtn_member_appointments {
   id String @id @uuid
   wrtn_member_id String @uuid
@@ -162,17 +175,29 @@ model wrtn_member_appointments {
   // some member who appointed
   // however, it can be null due to the first membership seeding
   wrtn_appointer_id String? @uuid
+  wrtn_appointer_session_id String? @uuid // for audit tracing
+
   role String? // null := 보직 발령 대기
   created_at DateTime
+
+  @@index([wrtn_member_id, created_at])
+  @@index([wrtn_appointer_id])
+  @@index([wrtn_appointer_session_id])
 }
 
 model wrtn_member_invitations {
   id String @id @uuid
   wrtn_member_id String @uuid // invitor's member id
+  wrtn_member_session_id String @uuid // invitor's session id for audit tracing
   email String
   created_at DateTime
   expired_at DateTime?
   deleted_at DateTime?
+
+  @@index([wrtn_member_id])
+  @@index([wrtn_member_session_id])
+  @@index([email])
+  @@index([created_at])
 }
 
 model wrtn_member_emails {
@@ -198,12 +223,28 @@ model wrtn_member_emails {
 
 > **중요**: `wrtn_members.role`은 위의 3가지 값(administrator/moderator/member/null)만 가진다. 이 role 값으로 모든 권한을 관리한다.
 
-
 `wrtn_members`, 이들은 이메일과 비밀번호로 로그인할 것이되, 복수의 이메일 계정을 가질 수 있다. 그 이유는 SaaS 서비스 특성상 기업 고객사로의 출장을 가야할 수도 있는데, 이 때 그 회사가 보안을 이유로 폐쇄망이 갖춰져있어 외부 인터넷 접속이 불가능할 수도 있기 때문이다.
 
 또한 `wrtn_members` 의 가입은 크게 두 방법으로 이루어진다. 첫 번째는 당사자가 직접 뤼튼 엔터프라이즈의 내부 직원용 홈페이지에 들어와 가입 신청을 하거든, administrator 또는 moderator 가 이를 승인해주는 방법이다. 이 때에는 가입 승인 처리와 동시에 `wrtn_member_appointments` 레코드가 생성되고, `wrtn_members.approved_at` 에 그 시각이 기록된다. 두 번째 방법은 기존의 회원이 `wrtn_member_invitations` 레코드를 발행하며 새 회원에게 이메일로 초대장을 보내는 것이다. 이 때 초대받은 사람이 가입 신청을 하면, 그 즉시로 `wrtn_members` 와 함께 `wrtn_member_appointments` 레코드도 생성된다. 물론 이 때의 임명자는 바로 초대장을 보낸 바로 그 회원이며, `wrtn_member_emails.verified_at` 는 `wrtn_member_invitations.created_at` 의 것이 기록된다.
 
 이외에 administrator 나 moderator 가 기존의 회원을 탈퇴 처리하면, `wrtn_members.deleted_at` 에 그 시각이 기록되며, 이 때에도 역시 `wrtn_member_appointments` 레코드가 하나 더 생성된다. 이 때의 임명자는 탈퇴 처리를 한 바로 그 회원이며, 이 때 변경되는 역할은 `wrtn_members.role` 과 `wrtn_member_appointments.role` 모두 `null` 이 된다. 만일 회원 당사자 스스로가 탈퇴한 것이라면, `wrtn_member_appointments.wrtn_appointer_id` 는 자기 자신이 되며, 이 때의 `role` 역시 두 곳 모두 `null` 이 된다.
+
+> ### 추적을 위한 세션 관리
+> 
+> `wrtn_member_sessions`는 내부 관리자들의 모든 접속 세션을 기록한다. 이는 단순히 "누가 무엇을 했는가"를 넘어 "정확히 어느 접속 세션에서 했는가"까지 추적하기 위함이다. 각 세션은 다음 정보를 포함한다:
+> 
+> - **href**: 접속한 URL 주소
+> - **referrer**: 어디서 왔는지 (리퍼러 URL)
+> - **ip**: 접속자의 IP 주소
+> - **created_at**: 세션 시작 시각
+> - **expired_at**: 세션 종료 시각
+> 
+> 이를 통해 계정 도용이나 비정상 접근을 탐지할 수 있으며, 모든 중요한 행위는 해당 세션 ID와 함께 기록된다. 예를 들어:
+> - 기업 생성 시: `wrtn_enterprises` 테이블에 `wrtn_member_id`와 함께 `wrtn_member_session_id` 기록
+> - 회원 임명 시: `wrtn_member_appointments` 테이블에 `wrtn_appointer_id`와 함께 `wrtn_appointer_session_id` 기록
+> - 초대장 발송 시: `wrtn_member_invitations` 테이블에 `wrtn_member_id`와 함께 `wrtn_member_session_id` 기록
+> 
+> **AI 설계 원칙**: AutoBE가 내부 관리자와 관련된 새 테이블을 설계할 때도 이 세션 추적 원칙을 동일하게 적용해야 한다. 모든 관리자 행위 기록에는 반드시 `wrtn_member_id`와 함께 `wrtn_member_session_id`도 포함시켜라.
 
 ## 3. Enterprise
 
@@ -212,11 +253,20 @@ model wrtn_member_emails {
 ```prisma
 model wrtn_enterprises {
   id String @id @uuid
+  wrtn_member_id String @uuid // who created the enterprise record
+  wrtn_member_session_id String @uuid // for audit tracing
   code String
-  name String
+  name String @uuid
   created_at DateTime
   updated_at DateTime
   deleted_at DateTime?
+
+  @@unique([code])
+
+  @@index([wrtn_member_id])
+  @@index([wrtn_member_session_id])
+  @@index([name])
+  @@index([created_at])
 }
 
 // This table handles all enterprise employee titles through the title field
@@ -242,24 +292,48 @@ model wrtn_enterprise_employees {
   @@index([wrtn_enterprise_id, name])
 }
 
+// for audit tracing about individual events
+model wrtn_enterprise_employee_sessions {
+  id String @id @uuid
+  wrtn_enterprise_id String @uuid
+  href String
+  referrer String
+  ip String
+  created_at DateTime
+  expired_at DateTime?
+
+  @@index([wrtn_enterprise_id, created_at])
+}
+
 model wrtn_enterprise_employee_appointments {
   id String @id @uuid
   wrtn_enterprise_employee_id String @uuid
   wrtn_enterprise_appointer_id String? @uuid
+  wrtn_enterprise_appointer_session_id String? @uuid
   title String?
   created_at DateTime
+
+  @@index([wrtn_enterprise_employee_id, created_at])
+  @@index([wrtn_enterprise_appointer_id])
+  @@index([wrtn_enterprise_appointer_session_id])
 }
 
 model wrtn_enterprise_employee_invitations {
   id String @id @uuid
   wrtn_enterprise_id String @uuid
+  wrtn_enterprise_employee_id String @uuid
+  wrtn_enterprise_employee_session_id String @uuid
   wrtn_enterprise_team_id String? @uuid
-  wrtn_enterprise_invitor_id String @uuid
   email String @uuid
   title String
   created_at DateTime
   expired_at DateTime?
   deleted_at DateTime?
+
+  @@index([wrtn_enterprise_id, created_at])
+  @@index([wrtn_enterprise_employee_id])
+  @@index([wrtn_enterprise_employee_session_id])
+  @@index([wrtn_enterprise_team_id])
 }
 
 model wrtn_enterprise_teams {
@@ -274,6 +348,7 @@ model wrtn_enterprise_teams {
 
   @@unique([wrtn_enterprise_id, code])
   @@unique([wrtn_enterprise_id, name])
+  @@index([parent_id])
 }
 
 // This table handles all team companion roles through the role field
@@ -287,14 +362,20 @@ model wrtn_enterprise_team_companions {
   deleted_at DateTime?
   
   @@unique([wrtn_enterprise_team_id, wrtn_enterprise_employee_id])
+  @@index([wrtn_enterprise_employee_id])
 }
 
 model wrtn_enterprise_team_companion_appointments {
   id String @id @uuid
-  wrtn_enterprise_team_appointer_id String @uuid
   wrtn_enterprise_team_employee_id String @uuid
+  wrtn_enterprise_team_appointer_id String @uuid
+  wrtn_enterprise_team_appointer_session_id String @uuid
   role String?
   created_at DateTime
+
+  @@index([wrtn_enterprise_team_employee_id, created_at])
+  @@index([wrtn_enterprise_team_appointer_id])
+  @@index([wrtn_enterprise_team_appointer_session_id])
 }
 
 model wrtn_enterprise_team_companion_invitations {
@@ -302,9 +383,15 @@ model wrtn_enterprise_team_companion_invitations {
   wrtn_enterprise_team_id String @uuid // target team
   wrtn_enterprise_employee_id String @uuid // target employee to invite
   wrtn_enterprise_invitor_id String @uuid // some employee who invited
+  wrtn_enterprise_invitor_session_id String @uuid // for exact tracing
   created_at DateTime
   expired_at DateTime?
   deleted_at DateTime?
+
+  @@index([wrtn_enterprise_team_id, created_at])
+  @@index([wrtn_enterprise_employee_id])
+  @@index([wrtn_enterprise_invitor_id])
+  @@index([wrtn_enterprise_invitor_session_id])
 }
 ```
 
@@ -334,6 +421,22 @@ model wrtn_enterprise_team_companion_invitations {
 직원의 퇴사는 두 가지 경우로 나뉜다. 첫 번째는 owner 또는 manager 가 직원을 해고하는 경우이다. owner 는 모든 직책의 직원을 해고할 수 있으며, manager 는 member 와 observer 만 해고할 수 있다. 해고 처리 시 `wrtn_enterprise_employees.deleted_at` 에 그 시각이 기록되고, `wrtn_enterprise_employee_appointments` 레코드가 새로 생성된다. 이 때 임명자 (`wrtn_enterprise_appointer_id`) 는 해고를 집행한 그 직원이며, `title` 은 `null` 이 되어 더 이상 직책이 없음을 나타낸다.
 
 두 번째는 직원 본인이 스스로 사직하는 경우이다. 이 때도 마찬가지로 `wrtn_enterprise_employees.deleted_at` 에 시각이 기록되고 `wrtn_enterprise_employee_appointments` 레코드가 생성되지만, `wrtn_enterprise_appointer_id` 는 자기 자신의 ID가 되며, `title` 은 역시 `null` 이 된다. 이를 통해 자진 퇴사와 해고를 구분할 수 있다.
+
+> #### 세션 기반 감사 추적
+> 
+> `wrtn_enterprise_employee_sessions`는 기업 직원들의 모든 접속 세션을 기록한다. 내부 관리자의 세션 관리와 동일한 원칙으로, 기업 내에서 발생하는 모든 중요 행위를 "누가 + 언제 + 어느 세션에서" 했는지 완벽하게 추적한다.
+> 
+> 이 세션 정보는 기업 내 모든 활동과 연결된다:
+> - 직원 임명/해고: `wrtn_enterprise_employee_appointments`에 `wrtn_enterprise_appointer_session_id` 기록
+> - 초대장 발송: `wrtn_enterprise_employee_invitations`에 `wrtn_enterprise_employee_session_id` 기록
+> - 팀 구성원 관리: `wrtn_enterprise_team_companion_appointments`에 `wrtn_enterprise_team_appointer_session_id` 기록
+> - AI 채팅 생성: `wrtn_chat_sessions`에 `wrtn_enterprise_employee_session_id` 기록
+> - AI 프로시저 실행: `wrtn_procedure_sessions`에 `wrtn_enterprise_employee_session_id` 기록
+> - 페르소나 설정: `wrtn_enterprise_employee_personas`에 `wrtn_enterprise_employee_session_id` 기록
+> 
+> 이를 통해 기업은 직원들의 모든 활동을 정확하게 감사 추적할 수 있으며, 보안 사고 발생 시 정확한 원인 파악이 가능하다.
+> 
+> **AI 설계 원칙**: AutoBE가 기업 직원과 관련된 새 테이블을 설계할 때도 이 세션 추적 원칙을 동일하게 적용해야 한다. 모든 직원 행위 기록에는 반드시 `wrtn_enterprise_employee_id`와 함께  `wrtn_enterprise_employee_session_id`도 포함시켜라.
 
 ### 3.3. Team
 
@@ -367,10 +470,11 @@ model wrtn_enterprise_team_companion_invitations {
 // Core chat session table - maintains conversation metadata
 model wrtn_chat_sessions {
   id String @id @uuid
-  wrtn_enterprise_employee_id String @uuid
-  wrtn_enterprise_employee_persona_id String @uuid
+  wrtn_enterprise_employee_id String @uuid // employee who created the chatting session
+  wrtn_enterprise_employee_session_id String @uuid // for audit tracing
+  wrtn_enterprise_employee_persona_id String @uuid // persona setting
   wrtn_enterprise_team_id String? @uuid // 팀 소속이 없을 때만 null
-  vendor String
+  vendor String // AI vendor model name like "openai/gpt-4.1-mini"
   title String?
 
   // - private: only session creator can access
@@ -382,17 +486,23 @@ model wrtn_chat_sessions {
   deleted_at DateTime?
 
   @@index([wrtn_enterprise_employee_id, created_at])
+  @@index([wrtn_enterprise_employee_session_id])
   @@index([wrtn_enterprise_employee_persona_id])
+  @@index([wrtn_enterprise_team_id])
 }
 
 // Connection tracking for chat sessions
 model wrtn_chat_session_connections {
   id String @id @uuid
-  wrtn_chat_session_id String @uuid
+  wrtn_chat_session_id String @uuid // belonged session
+  wrtn_enterprise_employee_id String @uuid // employee who connected
+  wrtn_enterprise_employee_session_id String @uuid // for audit tracing
   connected_at DateTime
   disconnected_at DateTime?
 
   @@index([wrtn_chat_session_id, connected_at, disconnected_at])
+  @@index([wrtn_enterprise_employee_id])
+  @@index([wrtn_enterprise_employee_session_id])
 }
 
 // History tracking for chat messages and interactions
@@ -567,6 +677,7 @@ model wrtn_procedure_sessions {
   id String @id @uuid
   wrtn_procedure_id String @uuid // which procedure selected
   wrtn_enterprise_employee_id String @uuid // who created this session
+  wrtn_enterprise_employee_session_id String @uuid
   wrtn_enterprise_team_id String? @uuid // 팀 소속이 없을 때만 null
   title String?
 
@@ -580,12 +691,16 @@ model wrtn_procedure_sessions {
   
   @@index([wrtn_procedure_id])
   @@index([wrtn_enterprise_employee_id, created_at])
+  @@index([wrtn_enterprise_employee_session_id])
+  @@index([wrtn_enterprise_team_id])
 }
 
 // Connection tracking for procedure sessions
 model wrtn_procedure_session_connections {
   id String @id @uuid
-  wrtn_procedure_session_id String @uuid
+  wrtn_procedure_session_id String @uuid // belonged session
+  wrtn_enterprise_employee_id String @uuid // who connected
+  wrtn_enterprise_employee_session_id String @uuid // for audit tracing
   
   // - http
   // - websocket
@@ -593,7 +708,9 @@ model wrtn_procedure_session_connections {
   connected_at DateTime
   disconnected_at DateTime?
   
-  @@index([wrtn_procedure_session_id, created_at, disconnected_at])
+  @@index([wrtn_procedure_session_id, connected_at, disconnected_at])
+  @@index([wrtn_enterprise_employee_id])
+  @@index([wrtn_enterprise_employee_session_id])
 }
 
 // Must define every JSON value columns separately
@@ -667,6 +784,7 @@ Progress   | None    | Streaming
 model wrtn_enterprise_employee_personas {
   id String @id @uuid
   wrtn_enterprise_employee_id String @uuid
+  wrtn_enterprise_employee_session_id String @uuid // for audit tracing
   avatar_image_url String // 아바타 이미지 (gif)
   name String // 아바타 이름
   auto_web_search Boolean // 웹 검색 자동으로 사용 여부
@@ -678,6 +796,7 @@ model wrtn_enterprise_employee_personas {
   deleted_at DateTime?
 
   @@index([wrtn_enterprise_employee_id, created_at])
+  @@index([wrtn_enterprise_employee_session_id])
 }
 ```
 
@@ -696,6 +815,7 @@ model wrtn_enterprise_procedures {
   wrtn_enterprise_id String @uuid
   wrtn_procedure_id String @uuid
   wrtn_enterprise_configurator_id String? @uuid // employee.id
+  wrtn_enterprise_configurator_session_id String? @uuid // employeeSession.id for audit tracing
   sequence Int
   created_at DateTime
   deleted_at DateTime?
@@ -709,6 +829,7 @@ model wrtn_enterprise_team_procedures {
   wrtn_enterprise_team_id String @uuid
   wrtn_procedure_id String @uuid
   wrtn_enterprise_team_configurator_id String? @uuid // companion.id
+  wrtn_enterprise_team_configurator_session_id String? @uuid // employeeSession.id for audit tracing
   sequence Int
   created_at DateTime
   deleted_at DateTime?
@@ -837,17 +958,44 @@ model wrtn_attachment_files {
 
 > **감사 추적 설계 원칙**:
 > 
-> 감사 추적은 각 도메인별로 관리한다. 본 문서의 appointments, histories 테이블들이 그 예시이다.
+> 감사 추적은 각 도메인별로 관리한다. 본 문서의 appointments, histories, sessions 테이블들이 그 예시이다.
+
+> **세션 기반 감사 추적의 중요성**:
+> 
+> **핵심 원칙**: 모든 중요한 행위는 "누가(who)" + "언제(when)" + "어느 세션에서(which session)" 했는지를 기록해야 한다.
+> 
+> 1. **세션 테이블의 역할**:
+>    - `wrtn_member_sessions`: 내부 관리자의 각 접속 세션을 기록
+>    - `wrtn_enterprise_employee_sessions`: 기업 직원의 각 접속 세션을 기록
+>    - 각 세션은 IP 주소, 접속 URL, 리퍼러 등 접속 컨텍스트를 포함
+> 
+> 2. **세션 ID 기록 원칙**:
+>    - 모든 생성/수정/삭제 행위는 해당 세션 ID를 함께 기록
+>    - 예: 기업 생성 시 `wrtn_member_id`와 함께 `wrtn_member_session_id` 기록
+>    - 예: 직원 임명 시 `wrtn_enterprise_appointer_id`와 함께 `wrtn_enterprise_appointer_session_id` 기록
+> 
+> 3. **감사 추적의 완전성**:
+>    - 단순히 "관리자 A가 기업을 생성했다"가 아니라
+>    - "관리자 A가 2025-01-18 14:30에 IP 192.168.1.100에서 접속한 세션 xyz-123에서 기업을 생성했다"를 추적
+>    - 이를 통해 계정 도용이나 비정상 접근을 탐지할 수 있음
+> 
+> 4. **AI 설계 시 적용 원칙**:
+>    - **중요**: AutoBE가 새로운 테이블을 설계할 때도 이 원칙을 동일하게 적용해야 한다
+>    - 사용자 행위를 기록하는 모든 테이블에는 반드시 세션 ID를 포함시켜라
+>    - 내부 관리자가 수행하는 작업: `wrtn_member_session_id` 기록
+>    - 기업 직원이 수행하는 작업: `wrtn_enterprise_employee_session_id` 기록
 
 감사 로그는 반드시 각 도메인별 히스토리성 테이블을 통해 정규화 원칙을 지키며 관리해야 한다. 이미 본 문서에는 이런 올바른 패턴의 테이블들이 정의되어 있다:
 
-**도메인별 히스토리 테이블 예시**:
-- `wrtn_member_appointments` - 내부 회원 임명/권한 변경 이력
-- `wrtn_enterprise_employee_appointments` - 직원 임명/직책 변경 이력  
-- `wrtn_enterprise_team_companion_appointments` - 팀 구성원 임명/역할 변경 이력
-- `wrtn_chat_session_histories` - 채팅 세션의 모든 활동 이력
-- `wrtn_procedure_session_histories` - 프로시저 실행 이력
-- `wrtn_member_invitations`, `wrtn_enterprise_employee_invitations`, `wrtn_enterprise_team_companion_invitations` - 각종 초대 활동 이력
+**도메인별 히스토리 테이블 예시 (모두 세션 ID 포함)**:
+- `wrtn_member_appointments` - 내부 회원 임명/권한 변경 이력 (`wrtn_appointer_session_id` 포함)
+- `wrtn_enterprise_employee_appointments` - 직원 임명/직책 변경 이력 (`wrtn_enterprise_appointer_session_id` 포함)
+- `wrtn_enterprise_team_companion_appointments` - 팀 구성원 임명/역할 변경 이력 (`wrtn_enterprise_team_appointer_session_id` 포함)
+- `wrtn_chat_session_histories` - 채팅 세션의 모든 활동 이력 (연결된 `wrtn_chat_session_connection_id`를 통해 세션 추적)
+- `wrtn_procedure_session_histories` - 프로시저 실행 이력 (연결된 `wrtn_procedure_session_connection_id`를 통해 세션 추적)
+- `wrtn_member_invitations` - 내부 회원 초대 활동 이력 (`wrtn_member_session_id` 포함)
+- `wrtn_enterprise_employee_invitations` - 기업 직원 초대 활동 이력 (`wrtn_enterprise_employee_session_id` 포함)
+- `wrtn_enterprise_team_companion_invitations` - 팀 구성원 초대 활동 이력 (`wrtn_enterprise_invitor_session_id` 포함)
 
 > **appointments 테이블 설계 의도**:
 > appointments 테이블들은 그 자체가 이미 완전한 히스토리 및 감사 테이블이다. 이들은 모든 히스토리와 감사 요구사항을 충족하도록 설계되었다.
@@ -926,6 +1074,12 @@ model wrtn_attachment_files {
 - [ ] 본 문서의 약 25개 테이블 외에 추가 테이블을 설계했는가?
 - [ ] 전체 테이블 수가 엔터프라이즈 시스템으로 충분한가?
 - [ ] 완전한 엔터프라이즈 시스템으로 작동 가능한가?
+
+### 세션 기반 감사 추적 검증
+- [ ] 새로 설계하는 모든 테이블에서 사용자 행위 기록 시 세션 ID를 포함시켰는가?
+- [ ] 내부 관리자 작업 기록에 `wrtn_member_session_id`를 사용했는가?
+- [ ] 기업 직원 작업 기록에 `wrtn_enterprise_employee_session_id`를 사용했는가?
+- [ ] 모든 중요 행위에 대해 "누가 + 언제 + 어느 세션에서"를 추적 가능한가?
 
 ### B2B SaaS 기능 발굴
 - [ ] 고객 지원 시스템을 추가했는가?
