@@ -54,6 +54,146 @@
 
 이 시스템은 기업의 복잡한 조직 구조를 그대로 반영하면서도, 철저한 권한 관리와 데이터 보호를 통해 엔터프라이즈 환경에 최적화된 AI 서비스를 제공한다.
 
+## 2. Actor 분류 - 요구사항 분석의 핵심 원칙
+
+### 2.1. 시스템 Actor의 절대 원칙
+
+**⚠️ CRITICAL WARNING: 본 시스템의 Actor는 정확히 2개뿐이다**
+
+Analyze Agent는 요구사항 분석 시 반드시 이 원칙을 따라야 한다:
+- 전체 시스템에 존재하는 Actor는 오직 2개
+- 역할(role), 직책(title), 권한(permission)이 다르다고 해서 Actor가 늘어나는 것이 아님
+- 이는 시스템 설계의 근본 원칙이며, 절대 변경 불가
+
+### 2.2. 두 개의 Actor 정의
+
+#### 2.2.1. Internal Member Actor
+- **정의**: 뤼튼 내부 직원으로서 시스템을 운영하고 관리하는 주체
+- **대응 테이블**: `wrtn_members`
+- **AutoBeAnalyzeRole**: `internalMember`
+- **포함되는 역할들**:
+  - `admin`: 시스템 최고 관리자
+  - `moderator`: 콘텐츠 관리자
+  - `viewer`: 읽기 전용 관찰자
+- **핵심 이해**: 위 3개 역할은 모두 **하나의 Actor** 안에서의 권한 차이일 뿐
+
+#### 2.2.2. Enterprise Employee Actor  
+- **정의**: 기업 고객사의 직원으로서 AI 서비스를 사용하는 주체
+- **대응 테이블**: `wrtn_enterprise_employees`
+- **AutoBeAnalyzeRole**: `enterpriseEmployee`
+- **포함되는 직책들**:
+  - `owner`: 기업 전체 최고 권한자
+  - `manager`: 기업 관리자
+  - `member`: 일반 직원
+  - `observer`: 관찰자
+- **팀 내 역할** (`wrtn_enterprise_team_companions.role`):
+  - `chief`: 팀 리더
+  - `manager`: 팀 관리자
+  - `member`: 팀원
+- **핵심 이해**: 위 모든 직책과 역할은 **하나의 Actor** 안에서의 세부 구분일 뿐
+
+### 2.3. Actor 분류 시 절대 금지 사항
+
+#### 2.3.1. 잘못된 Actor 분류 (절대 금지)
+```typescript
+// ❌ 완전히 잘못된 설계 - role/title별로 Actor를 나눔
+enum AutoBeAnalyzeRole {
+    admin = "admin",
+    moderator = "moderator", 
+    viewer = "viewer",
+    owner = "owner",
+    manager = "manager",
+    member = "member",
+    chief = "chief"
+}
+```
+
+**왜 잘못되었는가?**
+- Actor와 Role을 혼동함
+- 권한 차이를 Actor 차이로 오해함
+- 시스템 복잡도를 불필요하게 증가시킴
+
+#### 2.3.2. 올바른 Actor 분류 (반드시 이렇게)
+```typescript
+// ✅ 올바른 설계 - 정확히 2개의 Actor만 존재
+enum AutoBeAnalyzeRole {
+    internalMember = "internalMember",      // 내부 관리자 Actor
+    enterpriseEmployee = "enterpriseEmployee" // 기업 직원 Actor
+}
+```
+
+### 2.4. Actor 분류가 시스템 전체에 미치는 영향
+
+#### 2.4.1. 요구사항 분석 단계
+- Analyze Agent는 모든 기능을 2개 Actor 관점에서 분석
+- Use Case는 Actor별로 정리되며, role/title은 조건문으로 처리
+- 요구사항 문서에서 Actor는 2개만 명시
+
+#### 2.4.2. API 설계 단계
+- 최상위 경로는 Actor별로 분리 (`/internal/*`, `/enterprise/*`)
+- 인증/인가는 Actor 단위로 처리
+- Actor 내부의 role/title은 권한 체크 로직에서 처리
+
+#### 2.4.3. 구현 단계
+- Guard/Interceptor는 Actor별로 구현
+- Service Layer는 Actor를 먼저 확인, 그 다음 role/title 체크
+- 로깅과 감사 추적도 Actor를 최우선으로 기록
+
+### 2.5. 실제 적용 예시
+
+#### 2.5.1. 챗봇 세션 생성 시
+```typescript
+// Analyze Agent의 요구사항 분석
+if (actor === AutoBeAnalyzeRole.internalMember) {
+    // 내부 관리자는 모든 기업의 세션 생성 가능
+    // role에 따라 생성 가능한 세션 타입이 달라질 수 있음
+} else if (actor === AutoBeAnalyzeRole.enterpriseEmployee) {
+    // 기업 직원은 자신이 속한 기업/팀의 세션만 생성
+    // title과 team role에 따라 권한이 세분화됨
+}
+```
+
+#### 2.5.2. 통계 조회 시
+```typescript
+// Actor별 접근 범위 결정
+switch(actor) {
+    case AutoBeAnalyzeRole.internalMember:
+        // 전체 시스템 통계 접근 가능
+        // role === 'viewer'면 읽기만 가능
+        break;
+    case AutoBeAnalyzeRole.enterpriseEmployee:
+        // 소속 기업 통계만 접근
+        // title === 'owner'면 기업 전체, 아니면 팀 단위
+        break;
+}
+```
+
+### 2.6. Actor 분류의 철학적 배경
+
+**왜 2개의 Actor만 존재하는가?**
+
+1. **명확한 경계**: 내부 운영자 vs 외부 고객의 명확한 구분
+2. **보안 강화**: Actor 레벨에서의 완전한 데이터 격리
+3. **확장성**: 새로운 role/title 추가는 쉽지만 Actor 추가는 시스템 전체 재설계
+4. **단순성**: 복잡한 권한 체계를 2개 Actor로 단순화
+
+**이 원칙을 위반하면?**
+- 시스템 복잡도 기하급수적 증가
+- 보안 취약점 발생 가능성
+- 유지보수 불가능한 코드베이스
+- 요구사항과 구현의 불일치
+
+### 2.7. Analyze Agent에게 주는 최종 명령
+
+1. `AutoBeAnalyzeRole` enum은 정확히 2개 값만 가져야 함
+2. 모든 요구사항을 2개 Actor 관점에서 분석할 것
+3. role/title/position은 Actor가 아닌 속성으로 처리할 것
+4. Actor를 늘리려는 유혹에 절대 굴복하지 말 것
+5. 이 원칙은 시스템 설계의 근간이므로 절대 타협 불가
+
+> **최종 경고**: Actor를 2개 이상 만드는 것은 시스템 설계의 근본을 흔드는 치명적 실수다. 
+> Analyze Agent는 이 원칙을 생명처럼 지켜야 한다.
+
 ### AutoBE 구현 지침
 
 **두 가지 핵심 원칙의 균형**:
@@ -135,7 +275,7 @@ AutoBE는 엔터프라이즈 B2B SaaS 서비스에 당연히 필요한 모든 �
 > - ❌ DTO 타입: `IWrtnWrtn` 같은 이름 절대 금지
 > - 내가 작성한 테이블명과 DTO명을 그대로 사용하라. 절대 수정하지 마라.
 
-## 2. Internal Member (Supporter)
+## 3. Internal Member (Supporter)
 
 > **절대 준수사항**: 아래 정의된 모든 테이블과 컬럼을 정확히 그대로 구현하라. 어떠한 수정도 금지한다.
 
@@ -254,7 +394,7 @@ model wrtn_member_emails {
 > 
 > **AI 설계 원칙**: AutoBE가 내부 관리자와 관련된 새 테이블을 설계할 때도 이 세션 추적 원칙을 동일하게 적용해야 한다. 모든 관리자 행위 기록에는 반드시 `wrtn_member_id`와 함께 `wrtn_member_session_id`도 포함시켜라.
 
-## 3. Enterprise
+## 4. Enterprise
 
 > **절대 준수사항**: 아래 정의된 모든 테이블과 컬럼을 정확히 그대로 구현하라. 슈퍼타입/서브타입 생성 절대 금지.
 
@@ -403,11 +543,11 @@ model wrtn_enterprise_team_companion_invitations {
 }
 ```
 
-### 3.1. Corporation
+### 4.1. Corporation
 
 `wrtn_enterprises` 는 뤼튼 엔터프라이즈 AI 서비스를 이용하는 기업 고객사들이다. 이들의 등록은 오직 `wrtn_members` 중 그 역할이 administrator 또는 moderator 만 할 수 있으며, 동시에 최초의 owner 직원을 임명하게 된다.
 
-### 3.2. Employee
+### 4.2. Employee
 
 `wrtn_enterprise_employees` 는 각 기업에 소속된 직원들을 형상화하였으며 곧 그들의 로그인 계정이다. 앞서 `wrtn_members` 에 의해 최초로 임명된 owner 직원에 이해 해당하여 기업 직원 계정을 최초 발급받는다. 그리고 이들 기업 직원들의 직책 (`wrtn_enterprise_employees.title`) 은 다음과 같이 네 가지로 구분된다.
 
@@ -446,7 +586,7 @@ model wrtn_enterprise_team_companion_invitations {
 > 
 > **AI 설계 원칙**: AutoBE가 기업 직원과 관련된 새 테이블을 설계할 때도 이 세션 추적 원칙을 동일하게 적용해야 한다. 모든 직원 행위 기록에는 반드시 `wrtn_enterprise_employee_id`와 함께  `wrtn_enterprise_employee_session_id`도 포함시켜라.
 
-### 3.3. Team
+### 4.3. Team
 
 `wrtn_enterprise_teams` 는 기업 내 조직이다. `parent_id` 를 통해 계층 구조를 가질 수 있어, "개발팀" 아래 "백엔드팀", "프론트엔드팀" 같은 하위 팀을 둘 수 있다. 각 팀은 기업 내에서 고유한 `code` 와 `name` 을 가진다. 참고로 `wrtn_enterprise_teams` 는 owner 또는 manager 직책을 가진 직원만이 만들 수 있으며, 팀 생성자는 동시에 해당 팀의 최초 chief 를 임명한다. 팀 삭제는 owner 또는 manager 직책을 가진 직원이 할 수 있으며, `wrtn_enterprise_teams.deleted_at` 에 그 시각이 기록된다.
 
@@ -458,7 +598,7 @@ model wrtn_enterprise_team_companion_invitations {
 
 > **중요**: `wrtn_enterprise_team_companions.role`은 위의 3가지 값(chief/manager/member/null)만 가진다. 이 role 값으로 팀 내 권한을 관리한다.
 
-### 3.4. Companion
+### 4.4. Companion
 
 팀 구성원의 임명은 팀 내 역할에 따라 권한이 다르다. chief 는 다른 chief, manager, member 를 모두 팀에 임명할 수 있고, manager 는 member 만 임명할 수 있다. member 는 임명 권한이 없다. 모든 임명 이력은 `wrtn_enterprise_team_companion_appointments` 에 기록되며, `wrtn_enterprise_team_appointer_id` 는 임명한 팀 구성원의 companion ID 이다. 
 
@@ -470,7 +610,7 @@ model wrtn_enterprise_team_companion_invitations {
 
 두 번째는 팀원 본인이 스스로 팀을 탈퇴하는 경우이다. 이 때도 마찬가지로 `wrtn_enterprise_team_companions.deleted_at` 에 시각이 기록되고 `wrtn_enterprise_team_companion_appointments` 레코드가 생성되지만, `wrtn_enterprise_team_appointer_id` 는 자기 자신의 companion ID가 되며, `role` 은 역시 `null` 이 된다. 이를 통해 자진 탈퇴와 강제 해촉을 구분할 수 있다.
 
-## 4. AI Chatbot
+## 5. AI Chatbot
 
 **절대 준수사항**: 모든 JSON 필드는 반드시 JSON으로 유지하라. JSON 필드를 절대 분해하거나 정규화하지 마라.
 
@@ -658,7 +798,7 @@ export interface IWrtnTokenUsageOutput {
 }
 ```
 
-## 5. AI Procedure
+## 6. AI Procedure
 
 > **절대 준수사항**: JSON 필드는 절대 분해하지 마라. 정규화하지 마라. JSON으로 유지하라.
 
@@ -778,8 +918,8 @@ Progress   | None    | Streaming
 
 이외에 `wrtn_procedure_session_aggregates` 테이블에는 각 `wrtn_procedure_session_histories` 가 완료될 때마다의 `token_usage` 총 사용량이 누적되어 기록되어야 한다. `token_usage` 에 기록되는 JSON value type 은 `IWrtnTokenUsage` 로써 앞서의 [4. AI Chatbot](#4-ai-chatbot) 때와 같다.
 
-## 6. Configurations
-### 6.1. Persona
+## 7. Configurations
+### 7.1. Persona
 뤼튼의 모든 엔터프라이즈 유저들은 (`wrtn_enterprise_employees`) 페르소나를 설정할 수 있다. 여기서 말하는 페르소나란, AI chatbot 의 말투 및 태도에 관한 것을 뜻한다.
 
 > **중요**: `wrtn_enterprise_employee_personas.memory` 필드는 JSON value로 유지해야 한다. 절대로 이를 분해하여 정규 컬럼으로 나누지 마라. 
@@ -808,7 +948,7 @@ model wrtn_enterprise_employee_personas {
 }
 ```
 
-### 6.2. Enterprise Procedure
+### 7.2. Enterprise Procedure
 각 회사는 당사가 사용할 수 있는 프로시저를 직접 지정할 수 있다. 이것을 관리하는 엔티티가 `wrtn_enterprise_procedures` 인데, 만일 아무런 레코드도 존재하지 않는다면, 그 회사는 정말 그 어떠한 프로시저도 사용할 수 없는 경우에 해당한다.
 
 그리고 각 회사의 각 팀은 다시 각 팀이 사용할 수 있는 프로시저를 스스로 설정할 수 있다; `wrtn_enterprise_team_procedures`. 그러나 설정할 수 있는 프로시저는 해당 회사가 지원하는 프로시저로 한정한다.
@@ -847,7 +987,7 @@ model wrtn_enterprise_team_procedures {
 }
 ```
 
-## 7. File Management
+## 8. File Management
 
 ```prisma
 model wrtn_attachment_files {
@@ -886,11 +1026,11 @@ model wrtn_attachment_files {
 - 한 번 업로드된 파일은 여러 곳에서 재사용 가능
 - **파일 관련 기능은 최대한 단순하게 유지** (보안 검사, 버전 관리, 상세 로깅 등 복잡한 기능 금지)
 
-## 8. Statistics & Dashboard
+## 9. Statistics & Dashboard
 
 뤼튼 엔터프라이즈는 복잡한 조직 구조와 다층적 권한 체계에 맞춰, 각 사용자가 자신의 권한 범위 내에서만 통계와 대시보드에 접근할 수 있도록 설계되어야 한다.
 
-### 8.1. 권한별 접근 범위
+### 9.1. 권한별 접근 범위
 
 통계 시스템의 핵심은 **계층적 데이터 격리**이다. 각 역할은 다음과 같은 범위의 데이터에만 접근할 수 있다:
 
@@ -923,7 +1063,7 @@ model wrtn_attachment_files {
 **관찰자 (observer)**
 - 제한된 요약 통계만 조회 가능
 
-### 8.2. 수집해야 할 핵심 지표
+### 9.2. 수집해야 할 핵심 지표
 
 **사용량 메트릭**
 - 토큰 사용량 (입력/출력/캐시/추론 별도 집계)
@@ -949,7 +1089,7 @@ model wrtn_attachment_files {
 - 시스템 에러율
 - 세션당 평균 토큰 사용량
 
-### 8.3. 실시간 대시보드
+### 9.3. 실시간 대시보드
 
 대시보드는 사용자 역할에 따라 다른 레이아웃을 제공해야 한다:
 
@@ -958,7 +1098,7 @@ model wrtn_attachment_files {
 - **팀 대시보드**: 생산성과 협업 중심  
 - **개인 대시보드**: 본인 사용 패턴 분석
 
-### 8.4. 감사 추적 (Audit Trail)
+### 9.4. 감사 추적 (Audit Trail)
 
 > **감사 추적 설계 원칙**:
 > 
@@ -1030,7 +1170,7 @@ model wrtn_attachment_files {
 
 이러한 통계 시스템을 통해 조직의 AI 사용을 효과적으로 모니터링하면서도, 개인정보와 기밀 데이터를 철저히 보호할 수 있다.
 
-### 8.5. 비정규화 및 집계 테이블 금지
+### 9.5. 비정규화 및 집계 테이블 금지
 
 > **절대적 원칙**: 통계/집계 목적의 비정규화 테이블을 절대 만들지 마라.
 > 
@@ -1045,9 +1185,9 @@ model wrtn_attachment_files {
 > 3. 성능 문제가 발생하면 나중에 DBA가 직접 MATERIALIZED VIEW를 생성할 것이다
 > 4. AutoBE는 이러한 성능 최적화를 고려하지 말고 정규화된 설계에만 집중해라
 
-## 9. 결제 정책 및 서비스 연속성
+## 10. 결제 정책 및 서비스 연속성
 
-### 9.1. B2B SaaS 후불 결제 시스템
+### 10.1. B2B SaaS 후불 결제 시스템
 
 본 서비스는 B2B SaaS 서비스로써 **후불제(Post-paid)** 방식을 채택한다:
 
@@ -1055,7 +1195,7 @@ model wrtn_attachment_files {
 - **신용 기반 거래**: 기업 간 거래의 특성상 선결제가 아닌 후불 정산
 - **사용량 기반 과금**: 실제 사용한 토큰, 스토리지, API 호출량에 따른 과금
 
-### 9.2. 서비스 연속성 보장
+### 10.2. 서비스 연속성 보장
 
 > **절대 금지사항**: 잔고 부족을 이유로 서비스를 차단하지 마라
 > 
@@ -1072,7 +1212,7 @@ model wrtn_attachment_files {
 
 엔터프라이즈 B2B 환경에서는 서비스 연속성이 매우 중요하다. 일시적인 예산 초과나 결제 지연으로 인해 업무가 중단되어서는 안 된다. 이는 B2B SaaS의 기본 원칙이다.
 
-## 10. 요구사항 분석과 DB 설계 종합 실습
+## 11. 요구사항 분석과 DB 설계 종합 실습
 
 > **핵심 과제**: 본 문서에 정의된 25개 테이블은 AI Chatbot과 AI Procedure 기능만 다룬다.
 > 완전한 B2B SaaS 시스템을 위해서는 추가 기능과 테이블이 필수적이다.
@@ -1156,7 +1296,13 @@ model wrtn_attachment_files {
 > 
 > 본 문서는 시작점일 뿐, 완성은 네가 하는 것이다.
 
-## 11. 절대 준수 체크리스트 - AI는 다음을 반드시 자가검증하라
+
+## 12. 절대 준수 체크리스트 - AI는 다음을 반드시 자가검증하라
+
+### Actor Role 검증
+- [ ] `AutoBeAnalyzeRole`을 정확히 2개(`internalMember`, `enterpriseEmployee`)만 정의했는가?
+- [ ] role/title/position별로 별도의 actor를 만들지 않았는가?
+- [ ] API 설계 시 2개의 actor 기준으로만 분리했는가?
 
 ### 시스템 완성도 검증
 - [ ] 본 문서의 약 25개 테이블 외에 필요한 만큼 추가 테이블을 설계했는가?
