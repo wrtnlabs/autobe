@@ -99,7 +99,7 @@ Analyze Agent는 요구사항 분석 시 반드시 이 원칙을 따라야 한�
 // ❌ 완전히 잘못된 설계 - role/title별로 Actor를 나눔
 enum AutoBeAnalyzeRole {
     admin = "admin",
-    manager = "manager", 
+    moderator = "moderator", 
     viewer = "viewer",
     owner = "owner",
     manager = "manager",
@@ -236,10 +236,10 @@ switch(actor) {
 - 오직 주석(description)만 추가하여 의미를 설명할 수 있다
 - **CRITICAL**: 각 섹션의 테이블들은 모두 동일한 namespace로 그룹핑해야 한다:
   - Section 3 (Moderator): 모든 `wrtn_moderator*` 테이블은 하나의 namespace
-  - Section 3 (Enterprise): 모든 `wrtn_enterprise*` 테이블은 하나의 namespace
-  - Section 4 (AI Chatbot): 모든 `wrtn_chat*` 테이블은 하나의 namespace
-  - Section 5 (AI Procedure): 모든 `wrtn_procedure*` 테이블은 하나의 namespace
-  - Section 6 (Configurations): 모든 config 관련 테이블은 하나의 namespace
+  - Section 4 (Enterprise): 모든 `wrtn_enterprise*` 테이블은 하나의 namespace
+  - Section 5 (AI Chatbot): 모든 `wrtn_chat*` 테이블은 하나의 namespace
+  - Section 6 (AI Procedure): 모든 `wrtn_procedure*` 테이블은 하나의 namespace
+  - Section 7 (Configurations): 모든 config 관련 테이블은 하나의 namespace
 
 **DTO 구현 원칙**:
 - DTO 인터페이스는 정의된 타입과 속성을 **정확히 그대로** 구현해야 한다
