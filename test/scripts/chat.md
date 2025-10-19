@@ -28,7 +28,7 @@
 
 ### 핵심 특징
 
-**계층적 권한 체계**: 내부 관리자(`wrtn_members`) → 기업(`wrtn_enterprises`) → 팀(`wrtn_enterprise_teams`) → 직원(`wrtn_enterprise_employees`)의 4단계 계층 구조로, 각 계층마다 명확한 권한과 책임이 정의된다.
+**계층적 권한 체계**: 내부 관리자(`wrtn_moderators`) → 기업(`wrtn_enterprises`) → 팀(`wrtn_enterprise_teams`) → 직원(`wrtn_enterprise_employees`)의 4단계 계층 구조로, 각 계층마다 명확한 권한과 책임이 정의된다.
 
 **이중 역할 시스템**: 기업 전체 직책(owner/manager/member/observer)과 팀 내 역할(chief/manager/member)이 분리되어, 한 직원이 여러 팀에서 다른 역할을 수행할 수 있다.
 
@@ -67,20 +67,20 @@ Analyze Agent는 요구사항 분석 시 반드시 이 원칙을 따라야 한�
 
 ### 2.2. 두 개의 Actor 정의
 
-#### 2.2.1. Internal Member Actor
+#### 2.2.1. Moderator Actor
 - **정의**: 뤼튼 내부 직원으로서 시스템을 운영하고 관리하는 주체
-- **대응 테이블**: `wrtn_members`
-- **AutoBeAnalyzeRole**: `internalMember`
+- **대응 테이블**: `wrtn_moderators`
+- **AutoBeAnalyzeRole**: `moderator`
 - **포함되는 역할들**:
   - `admin`: 시스템 최고 관리자
-  - `moderator`: 콘텐츠 관리자
+  - `manager`: 시스템 관리자
   - `viewer`: 읽기 전용 관찰자
 - **핵심 이해**: 위 3개 역할은 모두 **하나의 Actor** 안에서의 권한 차이일 뿐
 
-#### 2.2.2. Enterprise Employee Actor  
+#### 2.2.2. Employee Actor  
 - **정의**: 기업 고객사의 직원으로서 AI 서비스를 사용하는 주체
 - **대응 테이블**: `wrtn_enterprise_employees`
-- **AutoBeAnalyzeRole**: `enterpriseEmployee`
+- **AutoBeAnalyzeRole**: `employee`
 - **포함되는 직책들**:
   - `owner`: 기업 전체 최고 권한자
   - `manager`: 기업 관리자
@@ -99,7 +99,7 @@ Analyze Agent는 요구사항 분석 시 반드시 이 원칙을 따라야 한�
 // ❌ 완전히 잘못된 설계 - role/title별로 Actor를 나눔
 enum AutoBeAnalyzeRole {
     admin = "admin",
-    moderator = "moderator", 
+    manager = "manager", 
     viewer = "viewer",
     owner = "owner",
     manager = "manager",
@@ -117,8 +117,8 @@ enum AutoBeAnalyzeRole {
 ```typescript
 // ✅ 올바른 설계 - 정확히 2개의 Actor만 존재
 enum AutoBeAnalyzeRole {
-    internalMember = "internalMember",      // 내부 관리자 Actor
-    enterpriseEmployee = "enterpriseEmployee" // 기업 직원 Actor
+    moderator = "moderator",      // 내부 관리자 Actor
+    employee = "employee" // 기업 직원 Actor
 }
 ```
 
@@ -144,10 +144,10 @@ enum AutoBeAnalyzeRole {
 #### 2.5.1. 챗봇 세션 생성 시
 ```typescript
 // Analyze Agent의 요구사항 분석
-if (actor === AutoBeAnalyzeRole.internalMember) {
+if (actor === AutoBeAnalyzeRole.moderator) {
     // 내부 관리자는 모든 기업의 세션 생성 가능
     // role에 따라 생성 가능한 세션 타입이 달라질 수 있음
-} else if (actor === AutoBeAnalyzeRole.enterpriseEmployee) {
+} else if (actor === AutoBeAnalyzeRole.employee) {
     // 기업 직원은 자신이 속한 기업/팀의 세션만 생성
     // title과 team role에 따라 권한이 세분화됨
 }
@@ -157,11 +157,11 @@ if (actor === AutoBeAnalyzeRole.internalMember) {
 ```typescript
 // Actor별 접근 범위 결정
 switch(actor) {
-    case AutoBeAnalyzeRole.internalMember:
+    case AutoBeAnalyzeRole.moderator:
         // 전체 시스템 통계 접근 가능
         // role === 'viewer'면 읽기만 가능
         break;
-    case AutoBeAnalyzeRole.enterpriseEmployee:
+    case AutoBeAnalyzeRole.employee:
         // 소속 기업 통계만 접근
         // title === 'owner'면 기업 전체, 아니면 팀 단위
         break;
@@ -206,7 +206,7 @@ switch(actor) {
 - **추가 금지**: 기존 테이블에 새로운 컬럼이나 속성 추가 불가
 - **삭제 금지**: 기존 정의된 어떤 요소도 삭제 불가
 - **영역 보호**: 기존 테이블이 담당하는 핵심 영역에 중복 테이블 생성 금지
-  - 예: 내부 회원 관리는 `wrtn_members`가 담당하므로 별도의 회원 관리 테이블 금지
+  - 예: 내부 관리자 관리는 `wrtn_moderators`가 담당하므로 별도의 관리자 테이블 금지
   - 예: 챗봇 세션은 `wrtn_chat_sessions`가 담당하므로 별도의 세션 테이블 금지
 
 **2단계: 신규 테이블 적극 추가 원칙**
@@ -223,7 +223,7 @@ switch(actor) {
 **3단계: 제약사항 명확화**
 다음 경우에만 새 테이블 생성이 금지된다:
 1. **role/title 서브타입 테이블**: 역할별 별도 테이블 생성 금지
-   - 금지 예: wrtn_member_administrators, wrtn_enterprise_employee_owners
+   - 금지 예: wrtn_moderator_administrators, wrtn_enterprise_employee_owners
 2. **첨부파일 확장 테이블**: `wrtn_attachment_files` 관련 추가 테이블 금지
 3. **기존 영역 중복**: 이미 정의된 테이블의 핵심 기능과 중복되는 테이블 금지
 
@@ -235,7 +235,7 @@ switch(actor) {
 - 새로운 컬럼이나 인덱스를 추가할 수 없다
 - 오직 주석(description)만 추가하여 의미를 설명할 수 있다
 - **CRITICAL**: 각 섹션의 테이블들은 모두 동일한 namespace로 그룹핑해야 한다:
-  - Section 2 (Internal Member): 모든 `wrtn_member*` 테이블은 하나의 namespace
+  - Section 3 (Moderator): 모든 `wrtn_moderator*` 테이블은 하나의 namespace
   - Section 3 (Enterprise): 모든 `wrtn_enterprise*` 테이블은 하나의 namespace
   - Section 4 (AI Chatbot): 모든 `wrtn_chat*` 테이블은 하나의 namespace
   - Section 5 (AI Procedure): 모든 `wrtn_procedure*` 테이블은 하나의 namespace
@@ -275,21 +275,21 @@ AutoBE는 엔터프라이즈 B2B SaaS 서비스에 당연히 필요한 모든 �
 > - ❌ DTO 타입: `IWrtnWrtn` 같은 이름 절대 금지
 > - 내가 작성한 테이블명과 DTO명을 그대로 사용하라. 절대 수정하지 마라.
 
-## 3. Internal Member (Supporter)
+## 3. Moderator (Internal Supporter)
 
 > **절대 준수사항**: 아래 정의된 모든 테이블과 컬럼을 정확히 그대로 구현하라. 어떠한 수정도 금지한다.
 
 ```prisma
 // This table handles all internal member roles through the role field
-model wrtn_members {
+model wrtn_moderators {
   id String @id @uuid
   mobile String
   nickname String
   name String
   password_hashed String
 
-  // - administrator: can appoint and invite administrator and moderator
-  // - moderator: can appoint and invite member
+  // - administrator: can appoint and invite administrator and manager
+  // - manager: can appoint and invite member
   // - member: just viewing statistics
   // - null: no role, so can't do anything
   role String?
@@ -304,21 +304,21 @@ model wrtn_members {
 }
 
 // for audit tracing about individual events
-model wrtn_member_sessions {
+model wrtn_moderator_sessions {
   id String @id @uuid
-  wrtn_member_id String
+  wrtn_moderator_id String
   href String // connection URL
   referrer String // referrer URL
   ip String // IP address
   created_at DateTime
   expired_at DateTime?
 
-  @@index([wrtn_member_id, created_at])
+  @@index([wrtn_moderator_id, created_at])
 }
 
-model wrtn_member_appointments {
+model wrtn_moderator_appointments {
   id String @id @uuid
-  wrtn_member_id String @uuid
+  wrtn_moderator_id String @uuid
 
   // some member who appointed
   // however, it can be null due to the first membership seeding
@@ -328,58 +328,58 @@ model wrtn_member_appointments {
   role String? // null := 보직 발령 대기
   created_at DateTime
 
-  @@index([wrtn_member_id, created_at])
+  @@index([wrtn_moderator_id, created_at])
   @@index([wrtn_appointer_id])
   @@index([wrtn_appointer_session_id])
 }
 
-model wrtn_member_invitations {
+model wrtn_moderator_invitations {
   id String @id @uuid
-  wrtn_member_id String @uuid // invitor's member id
-  wrtn_member_session_id String @uuid // invitor's session id for audit tracing
+  wrtn_moderator_id String @uuid // invitor's member id
+  wrtn_moderator_session_id String @uuid // invitor's session id for audit tracing
   email String
   created_at DateTime
   expired_at DateTime?
   deleted_at DateTime?
 
-  @@index([wrtn_member_id])
-  @@index([wrtn_member_session_id])
+  @@index([wrtn_moderator_id])
+  @@index([wrtn_moderator_session_id])
   @@index([email])
   @@index([created_at])
 }
 
-model wrtn_member_emails {
+model wrtn_moderator_emails {
   id String @id @uuid
-  wrtn_member_id String @uuid
+  wrtn_moderator_id String @uuid
   email String
   verified_at DateTime?
   created_at DateTime
   deleted_at DateTime?
   
   @@unique([email])
-  @@index([wrtn_member_id])
+  @@index([wrtn_moderator_id])
 }
 ```
 
-내부 회원은 엔터프라이즈 기업을 관리하는 역할을 해. 서포터의 일종이라 볼 수 있다.
+내부 관리자는 엔터프라이즈 기업을 관리하는 역할을 해. 서포터의 일종이라 볼 수 있다.
 
-다만 이들의 역할 (`wrtn_members.role`) 은 다음과 같이 세 가지로 세분화되어있다. 그리고 이 중 administrator 와 moderator 는 엔터프라이즈를 개설하고 철폐하는 등의 엔터프라이즈사들에 대한 직접적인 관리가 가능하며, member 는 오로지 단순 통계 및 레코드 열람 등만이 가능하다.
+다만 이들의 역할 (`wrtn_moderators.role`) 은 다음과 같이 세 가지로 세분화되어있다. 그리고 이 중 administrator 와 manager 는 엔터프라이즈를 개설하고 철폐하는 등의 엔터프라이즈사들에 대한 직접적인 관리가 가능하며, member 는 오로지 단순 통계 및 레코드 열람 등만이 가능하다.
 
-- `administrator`: administrator, moderator, member 모두를 임명하고 권한 변경할 수 있다.
-- `moderator`: moderator, member를 임명하고 권한 변경할 수 있다.
+- `administrator`: administrator, manager, member 모두를 임명하고 권한 변경할 수 있다.
+- `moderator`: manager, member를 임명하고 권한 변경할 수 있다.
 - `member`: 통계 및 단순 레코드 열람만 할 수 있다.
 
-> **중요**: `wrtn_members.role`은 위의 3가지 값(administrator/moderator/member/null)만 가진다. 이 role 값으로 모든 권한을 관리한다.
+> **중요**: `wrtn_moderators.role`은 위의 3가지 값(administrator/manager/member/null)만 가진다. 이 role 값으로 모든 권한을 관리한다.
 
-`wrtn_members`, 이들은 이메일과 비밀번호로 로그인할 것이되, 복수의 이메일 계정을 가질 수 있다. 그 이유는 SaaS 서비스 특성상 기업 고객사로의 출장을 가야할 수도 있는데, 이 때 그 회사가 보안을 이유로 폐쇄망이 갖춰져있어 외부 인터넷 접속이 불가능할 수도 있기 때문이다.
+`wrtn_moderators`, 이들은 이메일과 비밀번호로 로그인할 것이되, 복수의 이메일 계정을 가질 수 있다. 그 이유는 SaaS 서비스 특성상 기업 고객사로의 출장을 가야할 수도 있는데, 이 때 그 회사가 보안을 이유로 폐쇄망이 갖춰져있어 외부 인터넷 접속이 불가능할 수도 있기 때문이다.
 
-또한 `wrtn_members` 의 가입은 크게 두 방법으로 이루어진다. 첫 번째는 당사자가 직접 뤼튼 엔터프라이즈의 내부 직원용 홈페이지에 들어와 가입 신청을 하거든, administrator 또는 moderator 가 이를 승인해주는 방법이다. 이 때에는 가입 승인 처리와 동시에 `wrtn_member_appointments` 레코드가 생성되고, `wrtn_members.approved_at` 에 그 시각이 기록된다. 두 번째 방법은 기존의 회원이 `wrtn_member_invitations` 레코드를 발행하며 새 회원에게 이메일로 초대장을 보내는 것이다. 이 때 초대받은 사람이 가입 신청을 하면, 그 즉시로 `wrtn_members` 와 함께 `wrtn_member_appointments` 레코드도 생성된다. 물론 이 때의 임명자는 바로 초대장을 보낸 바로 그 회원이며, `wrtn_member_emails.verified_at` 는 `wrtn_member_invitations.created_at` 의 것이 기록된다.
+또한 `wrtn_moderators` 의 가입은 크게 두 방법으로 이루어진다. 첫 번째는 당사자가 직접 뤼튼 엔터프라이즈의 내부 직원용 홈페이지에 들어와 가입 신청을 하거든, administrator 또는 manager 가 이를 승인해주는 방법이다. 이 때에는 가입 승인 처리와 동시에 `wrtn_moderator_appointments` 레코드가 생성되고, `wrtn_moderators.approved_at` 에 그 시각이 기록된다. 두 번째 방법은 기존의 관리자가 `wrtn_moderator_invitations` 레코드를 발행하며 새 관리자에게 이메일로 초대장을 보내는 것이다. 이 때 초대받은 사람이 가입 신청을 하면, 그 즉시로 `wrtn_moderators` 와 함께 `wrtn_moderator_appointments` 레코드도 생성된다. 물론 이 때의 임명자는 바로 초대장을 보낸 바로 그 관리자이며, `wrtn_moderator_emails.verified_at` 는 `wrtn_moderator_invitations.created_at` 의 것이 기록된다.
 
-이외에 administrator 나 moderator 가 기존의 회원을 탈퇴 처리하면, `wrtn_members.deleted_at` 에 그 시각이 기록되며, 이 때에도 역시 `wrtn_member_appointments` 레코드가 하나 더 생성된다. 이 때의 임명자는 탈퇴 처리를 한 바로 그 회원이며, 이 때 변경되는 역할은 `wrtn_members.role` 과 `wrtn_member_appointments.role` 모두 `null` 이 된다. 만일 회원 당사자 스스로가 탈퇴한 것이라면, `wrtn_member_appointments.wrtn_appointer_id` 는 자기 자신이 되며, 이 때의 `role` 역시 두 곳 모두 `null` 이 된다.
+이외에 administrator 나 manager 가 기존의 관리자를 탈퇴 처리하면, `wrtn_moderators.deleted_at` 에 그 시각이 기록되며, 이 때에도 역시 `wrtn_moderator_appointments` 레코드가 하나 더 생성된다. 이 때의 임명자는 탈퇴 처리를 한 바로 그 관리자이며, 이 때 변경되는 역할은 `wrtn_moderators.role` 과 `wrtn_moderator_appointments.role` 모두 `null` 이 된다. 만일 관리자 당사자 스스로가 탈퇴한 것이라면, `wrtn_moderator_appointments.wrtn_appointer_id` 는 자기 자신이 되며, 이 때의 `role` 역시 두 곳 모두 `null` 이 된다.
 
 > ### 추적을 위한 세션 관리
 > 
-> `wrtn_member_sessions`는 내부 관리자들의 모든 접속 세션을 기록한다. 이는 단순히 "누가 무엇을 했는가"를 넘어 "정확히 어느 접속 세션에서 했는가"까지 추적하기 위함이다. 각 세션은 다음 정보를 포함한다:
+> `wrtn_moderator_sessions`는 내부 관리자들의 모든 접속 세션을 기록한다. 이는 단순히 "누가 무엇을 했는가"를 넘어 "정확히 어느 접속 세션에서 했는가"까지 추적하기 위함이다. 각 세션은 다음 정보를 포함한다:
 > 
 > - **href**: 접속한 URL 주소
 > - **referrer**: 어디서 왔는지 (리퍼러 URL)
@@ -388,11 +388,11 @@ model wrtn_member_emails {
 > - **expired_at**: 세션 종료 시각
 > 
 > 이를 통해 계정 도용이나 비정상 접근을 탐지할 수 있으며, 모든 중요한 행위는 해당 세션 ID와 함께 기록된다. 예를 들어:
-> - 기업 생성 시: `wrtn_enterprises` 테이블에 `wrtn_member_id`와 함께 `wrtn_member_session_id` 기록
-> - 회원 임명 시: `wrtn_member_appointments` 테이블에 `wrtn_appointer_id`와 함께 `wrtn_appointer_session_id` 기록
-> - 초대장 발송 시: `wrtn_member_invitations` 테이블에 `wrtn_member_id`와 함께 `wrtn_member_session_id` 기록
+> - 기업 생성 시: `wrtn_enterprises` 테이블에 `wrtn_moderator_id`와 함께 `wrtn_moderator_session_id` 기록
+> - 관리자 임명 시: `wrtn_moderator_appointments` 테이블에 `wrtn_appointer_id`와 함께 `wrtn_appointer_session_id` 기록
+> - 초대장 발송 시: `wrtn_moderator_invitations` 테이블에 `wrtn_moderator_id`와 함께 `wrtn_moderator_session_id` 기록
 > 
-> **AI 설계 원칙**: AutoBE가 내부 관리자와 관련된 새 테이블을 설계할 때도 이 세션 추적 원칙을 동일하게 적용해야 한다. 모든 관리자 행위 기록에는 반드시 `wrtn_member_id`와 함께 `wrtn_member_session_id`도 포함시켜라.
+> **AI 설계 원칙**: AutoBE가 내부 관리자와 관련된 새 테이블을 설계할 때도 이 세션 추적 원칙을 동일하게 적용해야 한다. 모든 관리자 행위 기록에는 반드시 `wrtn_moderator_id`와 함께 `wrtn_moderator_session_id`도 포함시켜라.
 
 ## 4. Enterprise
 
@@ -401,8 +401,8 @@ model wrtn_member_emails {
 ```prisma
 model wrtn_enterprises {
   id String @id @uuid
-  wrtn_member_id String @uuid // who created the enterprise record
-  wrtn_member_session_id String @uuid // for audit tracing
+  wrtn_moderator_id String @uuid // who created the enterprise record
+  wrtn_moderator_session_id String @uuid // for audit tracing
   code String
   name String @uuid
   created_at DateTime
@@ -411,8 +411,8 @@ model wrtn_enterprises {
 
   @@unique([code])
 
-  @@index([wrtn_member_id])
-  @@index([wrtn_member_session_id])
+  @@index([wrtn_moderator_id])
+  @@index([wrtn_moderator_session_id])
   @@index([name])
   @@index([created_at])
 }
@@ -545,11 +545,11 @@ model wrtn_enterprise_team_companion_invitations {
 
 ### 4.1. Corporation
 
-`wrtn_enterprises` 는 뤼튼 엔터프라이즈 AI 서비스를 이용하는 기업 고객사들이다. 이들의 등록은 오직 `wrtn_members` 중 그 역할이 administrator 또는 moderator 만 할 수 있으며, 동시에 최초의 owner 직원을 임명하게 된다.
+`wrtn_enterprises` 는 뤼튼 엔터프라이즈 AI 서비스를 이용하는 기업 고객사들이다. 이들의 등록은 오직 `wrtn_moderators` 중 그 역할이 administrator 또는 manager 만 할 수 있으며, 동시에 최초의 owner 직원을 임명하게 된다.
 
 ### 4.2. Employee
 
-`wrtn_enterprise_employees` 는 각 기업에 소속된 직원들을 형상화하였으며 곧 그들의 로그인 계정이다. 앞서 `wrtn_members` 에 의해 최초로 임명된 owner 직원에 이해 해당하여 기업 직원 계정을 최초 발급받는다. 그리고 이들 기업 직원들의 직책 (`wrtn_enterprise_employees.title`) 은 다음과 같이 네 가지로 구분된다.
+`wrtn_enterprise_employees` 는 각 기업에 소속된 직원들을 형상화하였으며 곧 그들의 로그인 계정이다. 앞서 `wrtn_moderators` 에 의해 최초로 임명된 owner 직원에 이해 해당하여 기업 직원 계정을 최초 발급받는다. 그리고 이들 기업 직원들의 직책 (`wrtn_enterprise_employees.title`) 은 다음과 같이 네 가지로 구분된다.
 
 이 중 owner 는 기업 내 모든 권한을 가지며 다른 owner, manager, member, observer 를 임명할 수 있다. manager 는 member 와 observer 만 임명할 수 있으며, member 는 일반 사용자로써 AI 서비스를 이용할 수 있되 임명 권한은 없다. observer 는 오직 통계와 사용 내역 열람만 가능하다.
 
@@ -564,7 +564,7 @@ model wrtn_enterprise_team_companion_invitations {
 
 직원의 직책은 변경될 수 있으며, 심지어 `null` 로 설정하여 모든 권한을 박탈할 수도 있다. owner 는 다른 모든 직원의 직책을 변경하거나 `null` 로 만들 수 있고, manager 는 member 와 observer 의 직책만 변경할 수 있다. 직책이 `null` 이 되면 해당 직원은 기업 계정은 유지하되 어떠한 권한도 행사할 수 없게 된다. 모든 직책 변경은 `wrtn_enterprise_employee_appointments` 에 기록되며, `wrtn_enterprise_employees.updated_at` 이 갱신된다.
 
-다만 최초 owner 의 경우 `wrtn_members` 에 의해 임명되므로 `wrtn_enterprise_employee_appointments.wrtn_enterprise_appointer_id` 가 `null` 이 된다. 이는 기업 생성 시점에 내부 관리자가 직접 owner 를 지정했음을 의미한다.
+다만 최초 owner 의 경우 `wrtn_moderators` 에 의해 임명되므로 `wrtn_enterprise_employee_appointments.wrtn_enterprise_appointer_id` 가 `null` 이 된다. 이는 기업 생성 시점에 내부 관리자가 직접 owner 를 지정했음을 의미한다.
 
 직원의 퇴사는 두 가지 경우로 나뉜다. 첫 번째는 owner 또는 manager 가 직원을 해고하는 경우이다. owner 는 모든 직책의 직원을 해고할 수 있으며, manager 는 member 와 observer 만 해고할 수 있다. 해고 처리 시 `wrtn_enterprise_employees.deleted_at` 에 그 시각이 기록되고, `wrtn_enterprise_employee_appointments` 레코드가 새로 생성된다. 이 때 임명자 (`wrtn_enterprise_appointer_id`) 는 해고를 집행한 그 직원이며, `title` 은 `null` 이 되어 더 이상 직책이 없음을 나타낸다.
 
@@ -955,7 +955,7 @@ model wrtn_enterprise_employee_personas {
 
 또한 해당 팀에 단 하나의 `wrtn_enterprise_team_procedures` 레코드도 없다면, 이 때는 해당 팀이 그 어떠한 프로시저도 사용할 수 없는게 아니라, `wrtn_enterprise_procedures` 설정을 따라가는 것으로 한다.
 
-이외에 `wrtn_enterprise_procedures` 와 `wrtn_enterprise_team_procedures` 는 각각 설정자를 기록하고 있는데, 이 때 설정자 값이 `null` 이라면 `wrtn_enterprise_procedures` 는 엔터프라이즈 계정을 개설한 `wrtn_members` 가 행한 설정이라 그러한 것이고, `wrtn_enterprise_team_procedures` 는 팀을 개설하면서 회사의 관리자 이상 직책인이 (`wrtn_enterprise_employees.title`) 해당 팀에서 사용 가능한 프로시저를 동시 설정해서 그러한 것이다.
+이외에 `wrtn_enterprise_procedures` 와 `wrtn_enterprise_team_procedures` 는 각각 설정자를 기록하고 있는데, 이 때 설정자 값이 `null` 이라면 `wrtn_enterprise_procedures` 는 엔터프라이즈 계정을 개설한 `wrtn_moderators` 가 행한 설정이라 그러한 것이고, `wrtn_enterprise_team_procedures` 는 팀을 개설하면서 회사의 관리자 이상 직책인이 (`wrtn_enterprise_employees.title`) 해당 팀에서 사용 가능한 프로시저를 동시 설정해서 그러한 것이다.
 
 ```prisma
 model wrtn_enterprise_procedures {
@@ -1034,7 +1034,7 @@ model wrtn_attachment_files {
 
 통계 시스템의 핵심은 **계층적 데이터 격리**이다. 각 역할은 다음과 같은 범위의 데이터에만 접근할 수 있다:
 
-**내부 관리자 (`wrtn_members`)**
+**내부 관리자 (`wrtn_moderators`)**
 - 전체 시스템의 집계 통계 (개별 기업의 상세 내용은 제외)
 - 기업별 사용량과 비용 총계
 - 시스템 성능 메트릭과 에러율
@@ -1109,13 +1109,13 @@ model wrtn_attachment_files {
 > **핵심 원칙**: 모든 중요한 행위는 "누가(who)" + "언제(when)" + "어느 세션에서(which session)" 했는지를 기록해야 한다.
 > 
 > 1. **세션 테이블의 역할**:
->    - `wrtn_member_sessions`: 내부 관리자의 각 접속 세션을 기록
+>    - `wrtn_moderator_sessions`: 내부 관리자의 각 접속 세션을 기록
 >    - `wrtn_enterprise_employee_sessions`: 기업 직원의 각 접속 세션을 기록
 >    - 각 세션은 IP 주소, 접속 URL, 리퍼러 등 접속 컨텍스트를 포함
 > 
 > 2. **세션 ID 기록 원칙**:
 >    - 모든 생성/수정/삭제 행위는 해당 세션 ID를 함께 기록
->    - 예: 기업 생성 시 `wrtn_member_id`와 함께 `wrtn_member_session_id` 기록
+>    - 예: 기업 생성 시 `wrtn_moderator_id`와 함께 `wrtn_moderator_session_id` 기록
 >    - 예: 직원 임명 시 `wrtn_enterprise_appointer_id`와 함께 `wrtn_enterprise_appointer_session_id` 기록
 > 
 > 3. **감사 추적의 완전성**:
@@ -1126,18 +1126,18 @@ model wrtn_attachment_files {
 > 4. **AI 설계 시 적용 원칙**:
 >    - **중요**: AutoBE가 새로운 테이블을 설계할 때도 이 원칙을 동일하게 적용해야 한다
 >    - 사용자 행위를 기록하는 모든 테이블에는 반드시 세션 ID를 포함시켜라
->    - 내부 관리자가 수행하는 작업: `wrtn_member_session_id` 기록
+>    - 내부 관리자가 수행하는 작업: `wrtn_moderator_session_id` 기록
 >    - 기업 직원이 수행하는 작업: `wrtn_enterprise_employee_session_id` 기록
 
 감사 로그는 반드시 각 도메인별 히스토리성 테이블을 통해 정규화 원칙을 지키며 관리해야 한다. 이미 본 문서에는 이런 올바른 패턴의 테이블들이 정의되어 있다:
 
 **도메인별 히스토리 테이블 예시 (모두 세션 ID 포함)**:
-- `wrtn_member_appointments` - 내부 회원 임명/권한 변경 이력 (`wrtn_appointer_session_id` 포함)
+- `wrtn_moderator_appointments` - 내부 관리자 임명/권한 변경 이력 (`wrtn_appointer_session_id` 포함)
 - `wrtn_enterprise_employee_appointments` - 직원 임명/직책 변경 이력 (`wrtn_enterprise_appointer_session_id` 포함)
 - `wrtn_enterprise_team_companion_appointments` - 팀 구성원 임명/역할 변경 이력 (`wrtn_enterprise_team_appointer_session_id` 포함)
 - `wrtn_chat_session_histories` - 채팅 세션의 모든 활동 이력 (연결된 `wrtn_chat_session_connection_id`를 통해 세션 추적)
 - `wrtn_procedure_session_histories` - 프로시저 실행 이력 (연결된 `wrtn_procedure_session_connection_id`를 통해 세션 추적)
-- `wrtn_member_invitations` - 내부 회원 초대 활동 이력 (`wrtn_member_session_id` 포함)
+- `wrtn_moderator_invitations` - 내부 관리자 초대 활동 이력 (`wrtn_moderator_session_id` 포함)
 - `wrtn_enterprise_employee_invitations` - 기업 직원 초대 활동 이력 (`wrtn_enterprise_employee_session_id` 포함)
 - `wrtn_enterprise_team_companion_invitations` - 팀 구성원 초대 활동 이력 (`wrtn_enterprise_invitor_session_id` 포함)
 
@@ -1221,7 +1221,7 @@ model wrtn_attachment_files {
 ### 기존 영역과 신규 영역의 명확한 구분
 
 **기존 영역 (추가 테이블 금지)**:
-- 내부 회원 관리: `wrtn_members` 관련 테이블들이 담당
+- 내부 관리자 관리: `wrtn_moderators` 관련 테이블들이 담당
 - 기업/팀/직원 조직 구조: `wrtn_enterprise*` 테이블들이 담당  
 - AI 챗봇 세션과 메시지: `wrtn_chat*` 테이블들이 담당
 - AI 프로시저 실행: `wrtn_procedure*` 테이블들이 담당
@@ -1300,7 +1300,7 @@ model wrtn_attachment_files {
 ## 12. 절대 준수 체크리스트 - AI는 다음을 반드시 자가검증하라
 
 ### Actor Role 검증
-- [ ] `AutoBeAnalyzeRole`을 정확히 2개(`internalMember`, `enterpriseEmployee`)만 정의했는가?
+- [ ] `AutoBeAnalyzeRole`을 정확히 2개(`moderator`, `employee`)만 정의했는가?
 - [ ] role/title/position별로 별도의 actor를 만들지 않았는가?
 - [ ] API 설계 시 2개의 actor 기준으로만 분리했는가?
 
@@ -1310,7 +1310,7 @@ model wrtn_attachment_files {
 
 ### 세션 기반 감사 추적 검증
 - [ ] 새로 설계하는 모든 테이블에서 사용자 행위 기록 시 세션 ID를 포함시켰는가?
-- [ ] 내부 관리자 작업 기록에 `wrtn_member_session_id`를 사용했는가?
+- [ ] 내부 관리자 작업 기록에 `wrtn_moderator_session_id`를 사용했는가?
 - [ ] 기업 직원 작업 기록에 `wrtn_enterprise_employee_session_id`를 사용했는가?
 - [ ] 모든 중요 행위에 대해 "누가 + 언제 + 어느 세션에서"를 추적 가능한가?
 
@@ -1328,7 +1328,7 @@ model wrtn_attachment_files {
 
 ### 영역 중복 및 서브타입 검증
 - [ ] 본 문서에 이미 정의된 테이블의 영역과 겹치는 새 테이블을 만들지 않았는가?
-- [ ] wrtn_members의 role별 서브타입 테이블을 만들지 않았는가?
+- [ ] wrtn_moderators의 role별 서브타입 테이블을 만들지 않았는가?
 - [ ] wrtn_enterprise_employees의 title별 서브타입 테이블을 만들지 않았는가?
 - [ ] wrtn_enterprise_team_companions의 role별 서브타입 테이블을 만들지 않았는가?
 - [ ] wrtn_wrtn prefix를 이중으로 사용하지 않았는가?
