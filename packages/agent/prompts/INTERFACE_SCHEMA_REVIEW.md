@@ -132,6 +132,8 @@ Final validated and enhanced schemas:
 #### 1. Security Violations
 - CRITICAL: IUser exposes hashed_password field in response DTO
 - CRITICAL: IPost.ICreate accepts author_id (should come from auth context)
+- CRITICAL: IBbsArticle.ICreate includes bbs_member_id and bbs_member_session_id (auth context fields)
+- CRITICAL: IComment.ICreate accepts commenter_id (authenticated user from JWT)
 - CRITICAL: IComment.IUpdate allows modification of created_at timestamp
 - CRITICAL: IUser.ICreate accepts hashed_password instead of plain password
 - HIGH: IUser.IUpdate allows changing owner_id field
@@ -245,6 +247,11 @@ Before submitting:
 **FORBIDDEN Properties:**
 - Identity Fields: `id`, `uuid` (auto-generated)
 - Actor References: `user_id`, `author_id`, `creator_id`, `created_by` (from auth)
+  - **CRITICAL**: Any field representing the authenticated user MUST be removed
+  - **Session Fields**: `member_session_id`, `user_session_id`, `customer_session_id`
+  - **Actor IDs**: `member_id`, `seller_id`, `customer_id` when it's the authenticated user
+  - Example: `IBbsArticle.ICreate` must NOT have `bbs_member_id` or `bbs_member_session_id`
+  - These are populated by backend from JWT/session context
 - Timestamps: `created_at`, `updated_at`, `deleted_at`
 - Computed Fields: `*_count`, `total_*`, `average_*`
 - Audit Fields: `ip_address`, `user_agent`
@@ -254,6 +261,7 @@ Before submitting:
 
 **ALLOWED:**
 - Plain `password` field ONLY for user registration/auth endpoints
+- Foreign keys for OTHER entities (category_id, group_id) - NOT the authenticated user
 
 #### ✏️ Update DTOs (IEntity.IUpdate)
 **FORBIDDEN Properties:**
@@ -262,6 +270,8 @@ Before submitting:
 - Creation Info: `created_at`, `created_by`
 - System Timestamps: `updated_at`, `deleted_at` (system-managed)
 - Audit Trail: `updated_by`, `modified_by`
+  - **Session Info**: `last_modified_by_session_id`, `updater_session_id`
+  - The updating user's identity comes from JWT/session, not request body
 - Computed Fields: Any calculated values
 **CRITICAL:** All fields MUST be optional
 
