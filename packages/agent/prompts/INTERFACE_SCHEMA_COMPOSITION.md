@@ -2,16 +2,15 @@
 
 ## Core Principle
 
-**Start from table names, then carefully analyze business concept, usage patterns, and size.**
+**Start from table names, then analyze scope boundaries and conceptual independence.**
 
 DTOs are built by:
 1. Following the natural hierarchy in table names
-2. Respecting scope boundaries
-3. **Analyzing business concept and usage patterns** (core vs auxiliary, always-loaded vs rarely-accessed)
-4. **Considering expected size** (10 items vs 1000+ items)
-5. Validating with FK direction
+2. Respecting scope boundaries (independent concepts = separate scopes)
+3. Validating with FK direction
+4. Applying actor/category reference rules
 
-**Critical:** Same scope ≠ Automatic composition. Even within the same hierarchy, you must analyze whether the relationship should be composed or separated into a different API based on business logic, size, and usage patterns.
+**Critical:** Hierarchy indicates ownership and composition direction. Different scopes always use reference. Same scope uses composition unless the child is conceptually independent (has its own lifecycle and can exist meaningfully without parent).
 
 ---
 
@@ -59,17 +58,17 @@ interface IBbsArticle {
 **❌ Do NOT compose across hierarchy roots:**
 ```typescript
 interface IBbsArticle {
-  images: IBbsArticleImage[];         // 🤔 Same hierarchy (check size!)
+  snapshots: IBbsArticleSnapshot[];  // ✅ Same hierarchy
   comments: IBbsArticleComment[];     // ❌ Different hierarchy root!
 }
 ```
 
 **Why?** `bbs_article_comments` is its own hierarchy root, not a child of `bbs_articles`.
 
-**Key insight:** Hierarchy indicates **ownership**, not necessarily **composition**. After identifying hierarchy, analyze:
-- Business concept (core vs auxiliary)
-- Expected size (< 20 vs 100+)
-- Usage pattern (always loaded vs separate feature)
+**Key insight:** Hierarchy indicates **ownership and composition direction**. After identifying hierarchy, check:
+- Is child conceptually independent? (separate scope)
+- Different scope = Reference
+- Same scope = Composition
 
 ---
 
@@ -109,22 +108,40 @@ Scope D: shopping_sales
 
 ### 2.2. Identifying Scope Boundaries
 
-**Question to ask:** "Can this entity exist independently and meaningfully?"
+**Critical question:** "Is this a different event or created by a different actor?"
 
 ```typescript
-// ✅ Independent Scope (separate root)
+// ✅ Different Event/Actor = Separate Scope
 bbs_article_comments
+  - Created by readers (different actor from article author)
+  - Different event: "commenting" vs "writing article"
   - Can exist as "user's comments list"
-  - Has its own lifecycle and operations
-  - Has its own children (comment_snapshots)
-  → SEPARATE SCOPE
+  → SEPARATE SCOPE → Reference
 
-// ❌ Not Independent (part of parent scope)
-bbs_article_snapshot_images
-  - Only makes sense in context of snapshot
-  - Cannot be queried independently
-  - No meaningful operations without parent
-  → SAME SCOPE as bbs_article_snapshots
+shopping_sale_questions
+  - Created by potential buyers (different actor from seller)
+  - Different event: "asking question" vs "registering sale"
+  - Has its own lifecycle
+  → SEPARATE SCOPE → Reference
+
+shopping_sale_reviews
+  - Created by customers (different actor from seller)
+  - Different event: "writing review" vs "registering sale"
+  - Independent feature (product reviews page)
+  → SEPARATE SCOPE → Reference
+
+// ❌ Same Event/Actor = Same Scope
+bbs_article_snapshots
+  - Created by article author (same actor)
+  - Same event: "editing article" creates snapshot
+  - Part of article's version history
+  → SAME SCOPE → Composition
+
+shopping_sale_units
+  - Created by seller (same actor as sale)
+  - Same event: "registering sale" includes units
+  - Cannot exist without sale
+  → SAME SCOPE → Composition
 ```
 
 ### 2.3. Scope Crossing = Reference
@@ -160,88 +177,85 @@ interface IBbsArticleComment {
 **CRITICAL:** Even within same scope, consider business logic and usage patterns.
 
 ```typescript
-// Same scope (bbs_articles hierarchy), but different usage:
-
-// Case 1: Images (always loaded with article)
-interface IBbsArticle {
-  images: IBbsArticleSnapshotImage[];  // ✅ Composition
-  // Reason: < 10 images, always displayed
+// Same scope: Direct ownership in hierarchy
+interface IShoppingOrder {
+  goods: IShoppingOrderGoods[];  // ✅ Composition
+  deliveries: IShoppingOrderDelivery[];  // ✅ Composition
+  payments: IShoppingOrderPayment[];  // ✅ Composition
 }
 
-// Case 2: Snapshots (audit trail, rarely accessed)
 interface IBbsArticle {
-  snapshots_count: number;  // ✅ Count only, separate API
-  // Reason: Could be 100+ snapshots, audit-only feature
-  // GET /articles/:id/snapshots → IPage<IBbsArticleSnapshot>
+  snapshots: IBbsArticleSnapshot[];  // ✅ Composition
+}
+
+interface IBbsArticleSnapshot {
+  images: IBbsArticleSnapshotImage[];  // ✅ Composition
+  files: IBbsArticleSnapshotFile[];  // ✅ Composition
 }
 ```
 
-**Decision factors for same-scope relationships:**
-1. **Expected size**: How many child records typically? (< 10 vs 100+)
-2. **Usage frequency**: Always loaded together? Or separate feature?
-3. **Business concept**: Core data vs auxiliary data (audit, history)?
-4. **Performance**: Loading children acceptable in main query?
-
 **Examples:**
 ```typescript
-// ✅ COMPOSITION: Same scope + Always together
-shopping_orders → shopping_order_goods (typical: 5-20 items)
-bbs_articles → bbs_article_snapshot_images (typical: 3-10 images)
-
-// ✅ SEPARATE API: Same scope + Different usage
-bbs_articles → bbs_article_snapshots (audit trail, separate page)
-shopping_sales → shopping_sale_reviews (could be 1000+ reviews)
+// ✅ COMPOSITION: Same scope (hierarchy chain)
+shopping_orders → shopping_order_goods
+bbs_articles → bbs_article_snapshots
+bbs_article_snapshots → bbs_article_snapshot_images
+shopping_sales → shopping_sale_units → shopping_sale_unit_options
 ```
 
 ---
 
 ## Rule 3: Domain Independence Test
 
-### 3.1. The Four Questions
+### 3.1. The Three Questions
 
 Before deciding Composition vs Reference, ask:
 
 1. **Table Name:** Does child extend parent's name? (`parent_*`)
-2. **Concept:** Is child an independent concept or just data attached to parent?
+2. **Event/Actor:** Is this created by the same actor in the same event?
 3. **Operations:** Can child be queried/managed independently?
-4. **Usage & Size:** Always loaded together? How many records? (< 10 vs 100+)
 
 ### 3.2. Decision Matrix
 
 | Question | Answer | Signal |
 |----------|--------|--------|
 | Name pattern | `bbs_article_snapshot_images` | ✅ Composition candidate |
-| Concept | "Snapshot Images" (not independent) | ✅ Part of snapshot |
-| Operations | Only via parent | ✅ Signals composition |
-| Usage & Size | Always shown, < 10 items | ✅ **Composition** |
+| Event/Actor | Same event (editing), same actor | ✅ Part of snapshot |
+| Operations | Only via parent | ✅ **Composition** |
 
 | Question | Answer | Signal |
 |----------|--------|--------|
 | Name pattern | `bbs_article_comments` | 🤔 Looks like composition |
-| Concept | "Comments" (independent concept) | ❌ Separate entity |
-| Operations | User's comments, search, etc. | ❌ Independent operations |
-| Usage & Size | Separate page, 100+ items | ❌ **Reference (separate scope)** |
+| Event/Actor | Different event (commenting), different actor (readers) | ❌ Separate scope |
+| Operations | User's comments, search, etc. | ❌ **Reference** |
 
 | Question | Answer | Signal |
 |----------|--------|--------|
-| Name pattern | `bbs_article_snapshots` | ✅ Same hierarchy |
-| Concept | "Snapshots" (audit trail) | 🤔 Attached but auxiliary |
-| Operations | Only via parent | ✅ Part of article |
-| Usage & Size | Audit page, 100+ items | ❌ **Separate API (same scope but large)** |
+| Name pattern | `shopping_sale_reviews` | 🤔 Looks like composition |
+| Event/Actor | Different event (reviewing), different actor (customers) | ❌ Separate scope |
+| Operations | Product reviews page, rating aggregation | ❌ **Reference** |
+
+| Question | Answer | Signal |
+|----------|--------|--------|
+| Name pattern | `shopping_sale_units` | ✅ Same hierarchy |
+| Event/Actor | Same event (registering sale), same actor (seller) | ✅ Part of sale |
+| Operations | Only via parent | ✅ **Composition** |
 
 ### 3.3. Examples
 
 ```typescript
-// ✅ COMPOSITION: Hierarchy chains
-bbs_articles → bbs_article_snapshots → bbs_article_snapshot_images
-shopping_orders → shopping_order_goods
-shopping_orders → shopping_order_deliveries
+// ✅ COMPOSITION: Same event/actor
+bbs_articles → bbs_article_snapshots (author edits article)
+bbs_article_snapshots → bbs_article_snapshot_images (part of edit)
+shopping_orders → shopping_order_goods (customer places order)
+shopping_sales → shopping_sale_units (seller registers sale)
 
-// ✅ REFERENCE: Independent concepts
-bbs_articles → bbs_article_comments (separate scope)
-bbs_articles → bbs_members (actor)
-shopping_orders → shopping_customers (actor)
-shopping_order_goods → shopping_products (lookup)
+// ✅ REFERENCE: Different event/actor
+bbs_articles → bbs_article_comments (readers comment - different event)
+shopping_sales → shopping_sale_reviews (customers review - different event)
+shopping_sales → shopping_sale_questions (buyers ask - different event)
+bbs_articles → bbs_members (author - different scope)
+shopping_orders → shopping_customers (customer - different scope)
 ```
 
 ---
@@ -335,56 +349,35 @@ interface IBbsArticle.ISummary {
 }
 ```
 
-### 5.3. Size Considerations (CRITICAL)
+### 5.3. Reverse Relationships (CRITICAL)
 
-**Even if same scope, large collections (100+ records) MUST use separate API.**
+**NEVER compose reverse direction - Actor/Parent entities must NOT have child entity arrays.**
 
 ```typescript
+// ❌ WRONG: Reverse relationship
+interface IShoppingSeller {
+  sales: IShoppingSale[];  // ❌ Reverse direction!
+}
+
+interface IBbsMember {
+  articles: IBbsArticle[];  // ❌ Reverse direction!
+}
+
+// ✅ CORRECT: Forward direction only
+interface IShoppingSale {
+  seller: IShoppingSeller.ISummary;  // ✅ Child → Parent reference
+}
+
 interface IBbsArticle {
-  snapshots: IBbsArticleSnapshot[];  // ✅ < 10 snapshots typical
-
-  // If potentially large (100+):
-  comment_count: number;  // ✅ Count only
-  like_count: number;
-  // ✅ Use separate API: GET /articles/:id/comments
+  author: IBbsMember.ISummary;  // ✅ Child → Parent reference
 }
 ```
 
-**Why this matters:**
-- Same scope doesn't mean unlimited composition
-- Performance: 100+ items = slow response, large payload
-- UX: Pagination needed for large lists
-
-**Critical for reverse relationships:**
-```typescript
-// ❌ DISASTER: Seller with all their sales
-interface IShoppingSeller {
-  id: string;
-  name: string;
-
-  sales: IShoppingSale[];  // ❌❌❌ Could be 1000+ sales!
-}
-
-// ✅ CORRECT: Count + separate API
-interface IShoppingSeller {
-  id: string;
-  name: string;
-
-  sales_count: number;  // ✅ Just count
-}
-
-// GET /sellers/:id/sales → IPage<IShoppingSale.ISummary>
-```
-
-**Domain crossing makes it worse:**
-```typescript
-// shopping_sales → shopping_sellers (reference)
-// But reverse would be catastrophic:
-
-interface IShoppingSeller {
-  sales: IShoppingSale[];  // ❌ Different domain + Large size = DISASTER
-}
-```
+**Why reverse is forbidden:**
+- Violates single direction principle
+- Different scopes (Seller scope ≠ Sales scope)
+- Actor pattern: Users/Sellers/Members are actors, not containers
+- Use separate API: `GET /sellers/:id/sales`
 
 ---
 
@@ -436,10 +429,9 @@ interface IShoppingSeller {
 ```
 
 **Why NEVER reverse collections:**
-1. **Size explosion**: Seller might have 1000+ sales
-2. **Different domains**: Sales and Sellers are separate business concepts
-3. **Performance**: Loading all related entities is catastrophic
-4. **Pagination**: Large lists need pagination, not composition
+1. **Different scopes**: Sales and Sellers are separate scopes
+2. **Actor pattern violation**: Actors are not containers
+3. **Single direction**: Child → Parent only, never Parent → Children
 
 **Key Fields:** `author_id`, `creator_id`, `user_id`, `member_id`, `customer_id`, `seller_id`
 
@@ -595,24 +587,14 @@ interface IShoppingCategory.IInvert {
    │  └─ YES → Composition candidate
    │     │
    │     ├─ Independent concept? (comments, orders)
-   │     │  └─ YES → Separate scope → Reference
-   │     │  └─ NO → Continue (same scope)
+   │     │  └─ YES → Separate scope → Reference ❌
+   │     │  └─ NO → Same scope → Continue
    │     │
    │     ├─ Check FK direction
-   │     │  ├─ Child → Parent FK → Continue
-   │     │  └─ Parent → Child FK → Reference (lookup)
+   │     │  ├─ Child → Parent FK → Composition ✅
+   │     │  └─ Parent → Child FK → Reference (lookup) ❌
    │     │
-   │     ├─ Analyze business usage
-   │     │  ├─ Core data (always loaded)? → Continue
-   │     │  └─ Auxiliary data (audit, history)? → Consider separate API
-   │     │
-   │     ├─ Check size & frequency
-   │     │  ├─ < 20 items, always shown → Composition ✅
-   │     │  ├─ 20-100 items, case by case → Carefully decide
-   │     │  └─ > 100 items or rarely used → Count + Separate API ✅
-   │     │
-   │     └─ Final decision
-   │        └─ Composition ✅ OR Separate API ✅
+   │     └─ Result: Composition ✅
    │
    └─ Different hierarchy? (members, sellers, products)
       └─ Reference ✅
@@ -622,13 +604,12 @@ interface IShoppingCategory.IInvert {
 
 | Pattern | Example | Rule | Result |
 |---------|---------|------|--------|
-| `parent_*` data | `snapshot_images` | Same scope + Small | ✅ Composition |
+| `parent_*` data | `snapshot_images` | Same scope | ✅ Composition |
 | `parent_*` concept | `article_comments` | Different scope | ❌ Reference |
-| Actor | `author`, `creator` | Different domain | ❌ Reference |
-| Actor reverse | `seller.sales[]` | Reverse + Large | ❌ Count + API |
-| Category | `category`, `tags` | Different domain | ❌ Reference |
+| Actor | `author`, `creator` | Different scope | ❌ Reference |
+| Actor reverse | `seller.sales[]` | Reverse direction | ❌ Forbidden |
+| Category | `category`, `tags` | Different scope | ❌ Reference |
 | Lookup | `article_statuses` | Reversed FK | ❌ Reference |
-| Large collection | `comments` (100+) | Size limit | ❌ Count + API |
 | Recursive | `parent_id` | Self-reference | 🔄 Use IInvert |
 
 ---
@@ -814,7 +795,7 @@ interface IShoppingSale {
     company: string;
   };
 
-  // Composition: Same scope (sale's units - Depth 1)
+  // Composition: Same event/actor (seller registers sale with units)
   units: IShoppingSaleUnit[] {
     id: string;
     name: string;
@@ -842,6 +823,47 @@ interface IShoppingSale {
       reserved: number;
     }[];
   }[];
+
+  // Different event/actor: Separate API
+  reviews_count: number;  // ✅ Customers write reviews (different event)
+  questions_count: number;  // ✅ Buyers ask questions (different event)
+  average_rating: number;  // ✅ Denormalized from reviews
+  // GET /sales/:id/reviews → IPage<IShoppingSaleReview>
+  // GET /sales/:id/questions → IPage<IShoppingSaleQuestion>
+}
+
+// =====================
+// Different scope: Reviews (SEPARATE ROOT)
+// =====================
+interface IShoppingSaleReview {
+  id: string;
+  sale_id: string;
+  rating: number;
+  content: string;
+  created_at: string;
+
+  // Reference: Different scope (customer who reviewed)
+  customer: IShoppingCustomer.ISummary {
+    id: string;
+    name: string;
+  };
+}
+
+// =====================
+// Different scope: Questions (SEPARATE ROOT)
+// =====================
+interface IShoppingSaleQuestion {
+  id: string;
+  sale_id: string;
+  question: string;
+  answer: string | null;
+  created_at: string;
+
+  // Reference: Different scope (buyer who asked)
+  questioner: IShoppingMember.ISummary {
+    id: string;
+    nickname: string;
+  };
 }
 
 // When loading individual unit (avoids deep nesting)
@@ -944,18 +966,19 @@ interface IBbsArticleCommentSnapshot {
 
 ## Critical Rules Summary
 
-### The 6 Essential Rules
+### The 4 Essential Rules
 
 1. **Table Name Hierarchy First**
    - Follow naming pattern: `parent_child_grandchild`
-   - Same chain = Composition candidate
+   - Same chain = Composition
    - Different chains = Reference
 
-2. **Scope Boundaries Matter**
-   - Independent concepts = Separate scopes
-   - `article_comments` is NOT part of `articles` scope
+2. **Event/Actor Boundaries Matter**
+   - Different event or different actor = Separate scopes
+   - `article_comments` (readers commenting) ≠ `articles` (author writing)
+   - `sale_reviews` (customers reviewing) ≠ `sales` (seller registering)
    - Cross-scope = Always Reference
-   - **CRITICAL: Same scope ≠ Auto-composition** (analyze usage & size!)
+   - Same event/actor = Composition
 
 3. **FK Direction Validates**
    - Child → Parent FK = Composition ✅
@@ -965,15 +988,9 @@ interface IBbsArticleCommentSnapshot {
    - Users, Members, Customers, Sellers = Actors
    - Categories, Tags, Statuses = Classifications
    - Never compose reverse direction (Member with articles, Seller with sales)
-   - Large collections (100+) = Count + separate API
+   - Actors are not containers
 
-5. **Size Limits Override Composition**
-   - Even same scope: 100+ items = Separate API
-   - Reverse relationships are especially dangerous
-   - Count field + pagination endpoint instead
-   - Example: seller.sales_count (NOT seller.sales[])
-
-6. **IInvert for Back-References**
+5. **IInvert for Back-References**
    - Child needs parent context = Use IInvert
    - Recursive trees = Default (children) vs IInvert (parent chain)
    - Never both directions in same type
@@ -1004,40 +1021,37 @@ interface IBbsArticle {
 // GET /articles/:id/comments → IPageIBbsArticleComment
 ```
 
-### ❌ Mistake 2: Actor Collections (Reverse Direction Explosion)
+### ❌ Mistake 2: Actor Collections (Reverse Direction)
 
 ```typescript
 // ❌ WRONG: User with articles array
 interface IBbsMember {
-  articles: IBbsArticle[];  // Could be 100+ articles!
+  articles: IBbsArticle[];  // ❌ Reverse direction!
 }
 
 // ❌ WRONG: Seller with sales array
 interface IShoppingSeller {
-  sales: IShoppingSale[];  // Could be 1000+ sales!
+  sales: IShoppingSale[];  // ❌ Reverse direction!
 }
 ```
 
 **Why wrong:**
-- Reverse direction creates massive arrays
-- Performance catastrophe (loading 1000+ nested objects)
-- Different domains (Seller ≠ Sales scope)
-- Needs pagination
+- Violates single direction principle
+- Different scopes (Member scope ≠ Articles scope, Seller scope ≠ Sales scope)
+- Actor pattern violation: Actors are not containers
 
-**Fix:** Count + separate API
+**Fix:** Use separate API
 
 ```typescript
 // ✅ CORRECT
 interface IBbsMember {
   id: string;
   nickname: string;
-  articles_count: number;  // ✅ Count only
 }
 
 interface IShoppingSeller {
   id: string;
   name: string;
-  sales_count: number;  // ✅ Count only
 }
 
 // GET /members/:id/articles → IPage<IBbsArticle.ISummary>
@@ -1074,7 +1088,7 @@ interface IBbsArticleComment.IInvert {
 ```typescript
 // ❌ WRONG: Mixing scopes
 interface IBbsArticle {
-  images: IBbsArticleImage[];              // ✅ Same scope
+  snapshots: IBbsArticleSnapshot[];        // ✅ Same scope
   comments: IBbsArticleComment[];          // ❌ Different scope
   comment_images: IBbsArticleCommentImage[]; // ❌❌ Wrong scope entirely!
 }
@@ -1098,53 +1112,6 @@ interface IBbsArticleComment {
 }
 ```
 
-### ❌ Mistake 5: Same Scope = Auto-Composition (Ignoring Size & Usage)
-
-```typescript
-// ❌ WRONG: Same scope but wrong decision
-interface IBbsArticle {
-  snapshots: IBbsArticleSnapshot[];  // Could be 100+ audit records!
-}
-
-interface IShoppingSale {
-  reviews: IShoppingSaleReview[];  // Could be 1000+ reviews!
-}
-```
-
-**Why wrong:**
-- Same hierarchy/scope doesn't mean unlimited composition
-- Must analyze: Expected size? Usage pattern? Business concept?
-- Snapshots = audit trail (rarely viewed, potentially large)
-- Reviews = user feedback (separate feature, large volume)
-
-**Fix:** Analyze business concept and size
-
-```typescript
-// ✅ CORRECT: Same scope but separate API
-interface IBbsArticle {
-  id: string;
-  title: string;
-
-  snapshots_count: number;  // ✅ Count only
-  // GET /articles/:id/snapshots → IPage<IBbsArticleSnapshot>
-}
-
-interface IShoppingSale {
-  id: string;
-  name: string;
-
-  reviews_count: number;  // ✅ Count only
-  average_rating: number; // ✅ Denormalized summary
-  // GET /sales/:id/reviews → IPage<IShoppingSaleReview>
-}
-```
-
-**Key insight:** Same scope requires careful analysis:
-1. **Core vs Auxiliary**: Images (core) vs Snapshots (audit)
-2. **Size expectations**: 5-10 items vs 100+ items
-3. **Usage patterns**: Always shown vs separate tab/page
-4. **Performance impact**: Acceptable query time?
-
 ---
 
 ## Checklist
@@ -1159,13 +1126,9 @@ interface IShoppingSale {
 
 ### For Each DTO
 
-- [ ] **Check table name pattern** (`parent_child_*` = same scope)
-- [ ] **Verify independence** (can it exist/operate alone?)
-- [ ] **Validate FK direction** (child → parent = composition signal)
-- [ ] **Analyze business concept** (core data vs auxiliary data like audit/history)
-- [ ] **Check usage pattern** (always loaded together vs separate feature)
-- [ ] **Estimate array size** (< 20 = composition, > 100 = separate API)
-- [ ] **Performance check** (loading children acceptable in main query?)
+- [ ] **Check table name pattern** (`parent_child_*` = same scope candidate)
+- [ ] **Check event/actor** (different event or actor? = different scope)
+- [ ] **Validate FK direction** (child → parent = composition, parent → child = reference)
 - [ ] **No reverse collections** (User should NOT have articles array)
 
 ### For Back-References
@@ -1192,41 +1155,44 @@ This document provides **detailed decision rules** for composition and reference
 When designing DTOs with relationships, follow these rules:
 
 1. **Start with table name hierarchy** - `parent_child_*` pattern indicates same scope
-2. **Respect scope boundaries** - Independent concepts (comments, orders) are separate scopes
-3. **Analyze business concept & size** - Core data vs auxiliary data, expected record count
-4. **Validate with FK direction** - Child→Parent FK confirms composition signal
-5. **Use IInvert for back-references** - When child needs parent context
+2. **Check event/actor boundaries** - Different event or different actor = separate scopes
+3. **Validate with FK direction** - Child→Parent FK confirms composition
+4. **Use IInvert for back-references** - When child needs parent context
 
 For detailed rules and examples, see INTERFACE_SCHEMA_COMPOSITION.md.
 
 **Quick Reference:**
-- Same scope + Core data + Small size (<20) = Composition
-- Same scope + Auxiliary data + Large size (100+) = Separate API
-- Different scope or Actor/Category = Reference
-- Comments/Orders are separate scopes (not composition)
+- Same event/actor + Child→Parent FK = Composition
+- Different event/actor or Category = Reference
+- Examples:
+  - `sale_units` (seller registers) = Composition
+  - `sale_reviews` (customers review) = Reference
+  - `article_comments` (readers comment) = Reference
 - Never compose reverse direction (User with articles array)
-- Snapshots/Reviews/Audit trails = Usually separate API even if same scope
 ```
 
 ---
 
 ## Conclusion
 
-**The hierarchy in table names is your primary guide.** Start there, validate with domain concepts and FK direction, then carefully analyze business usage and size.
+**The hierarchy in table names is your primary guide.** Start there, check event/actor boundaries, and validate with FK direction.
 
 **Core workflow:**
-1. Identify table name hierarchy chains
-2. Detect scope boundaries (independent concepts)
-3. **Analyze business concept** (core vs auxiliary data)
-4. **Check expected size & usage** (always loaded vs separate feature)
-5. Validate with FK direction
-6. Apply size limits and performance considerations
-7. Use IInvert for reverse perspectives
+1. Identify table name hierarchy chains (`parent_child_*`)
+2. Check event/actor boundaries (different event or actor = separate scope)
+3. Validate with FK direction (child → parent = composition)
+4. Apply reference rules (actors, categories)
+5. Use IInvert for reverse perspectives
 
-**Critical insight:** Same scope does NOT mean automatic composition. You must:
-- Understand the business concept (core data vs audit/history)
-- Estimate typical record counts (5 items vs 500 items)
-- Analyze usage patterns (always shown vs rarely accessed)
-- Consider performance impact (query time, payload size)
+**Critical principle:**
+- Same event/actor = Composition
+- Different event/actor = Reference
+- Never reverse direction
 
-This approach ensures DTOs are **practical, performant, and maintainable** while preventing infinite recursion, circular dependencies, and performance catastrophes.
+**Key examples:**
+- `sale_units` (seller creates) → Composition
+- `sale_reviews` (customers write) → Reference
+- `article_snapshots` (author edits) → Composition
+- `article_comments` (readers comment) → Reference
+
+This approach ensures DTOs are **clear, consistent, and maintainable** while preventing infinite recursion and circular dependencies.

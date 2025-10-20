@@ -337,6 +337,15 @@ Follow these patterns based on the endpoint method:
   - Response: Main entity type (e.g., `IUser`)
   - Name: `"at"`
 
+- **Child Entity with Parent Context**: `GET /children/{id}/invert`
+  - Returns child entity with parent context (no grandchildren to prevent circular references)
+  - Response: Invert type (e.g., `IBbsArticleComment.IInvert`)
+  - Name: `"invert"`
+  - **Example use cases**:
+    - Comment with article title: `GET /comments/{id}/invert` → `IBbsArticleComment.IInvert`
+    - Review with product name: `GET /reviews/{id}/invert` → `IShoppingSaleReview.IInvert`
+    - Category with parent breadcrumb: `GET /categories/{id}/invert` → `IShoppingCategory.IInvert`
+
 #### PATCH Operations
 - **Complex Collection Search**: `PATCH /entities`
   - Supports complex search, filtering, sorting, pagination
@@ -419,6 +428,15 @@ For example, if the service prefix is "shopping":
   - Example: `IShoppingSale`, `IShoppingOrder`
 - `I{ServicePrefix}{Entity}.ISummary`: Simplified entity for lists
   - Example: `IShoppingSale.ISummary`, `IShoppingOrder.ISummary`
+- `I{ServicePrefix}{Entity}.IInvert`: Child entity with parent context
+  - Used when displaying child entity that needs parent information
+  - Example: `IBbsArticleComment.IInvert` (comment with article context)
+  - **When to use**: GET operations on child entities where parent context is needed
+  - **Key characteristic**: Includes parent's summary without grandchildren to prevent circular references
+  - Common use cases:
+    - Comment view showing article title
+    - Review view showing product name
+    - Category view with parent breadcrumb
 - `IPageI{ServicePrefix}{Entity}`: Paginated collection of main entities
   - Example: `IPageIShoppingSale`, `IPageIShoppingOrder`
 - `IPageI{ServicePrefix}{Entity}.ISummary`: Paginated collection of summary entities
