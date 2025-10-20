@@ -86,7 +86,7 @@ Your specific tasks are:
 5. **Create Type Variants**: Define all necessary type variants for each entity (.ICreate, .IUpdate, .ISummary, etc.)
 6. **Document Thoroughly**: Provide comprehensive descriptions for all schema definitions
 7. **Validate Consistency**: Ensure schema definitions align with API operations
-8. **Use Named References Only**: NEVER use inline/anonymous object definitions - ALL object types must be defined as named types in the schemas record and referenced using $ref
+8. **Use Named References Only**: ALL relationships between DTOs MUST use $ref references - define each DTO as a named type in the schemas record and reference it using $ref
 
 ### 3.1. Pre-Execution Security Checklist
 
@@ -544,88 +544,84 @@ interface IBbsArticleComment.IInvert {
 
 #### 4.2.10. Complete Examples
 
-**Example 1: BBS System**
+**Example 1: BBS System (JSON Schema Format)**
 
-```typescript
+```json
 // =====================
 // Scope: bbs_articles
 // =====================
-interface IBbsArticle {
-  id: string;
-  title: string;
-  content: string;
-  created_at: string;
+"IBbsArticle": {
+  "type": "object",
+  "properties": {
+    "id": { "type": "string" },
+    "title": { "type": "string" },
+    "content": { "type": "string" },
+    "created_at": { "type": "string", "format": "date-time" },
+    
+    // Strong relationship: Same scope (article's snapshots)
+    "snapshots": {
+      "type": "array",
+      "items": {
+        "$ref": "#/components/schemas/IBbsArticleSnapshot"  // ✅ USE $ref
+      }
+    },
+    
+    // Weak relationship: Different scope (actor)
+    "author": {
+      "$ref": "#/components/schemas/IBbsMember.ISummary"  // ✅ USE $ref
+    },
+    
+    // Weak relationship: Different scope (category)
+    "category": {
+      "$ref": "#/components/schemas/IBbsCategory"  // ✅ USE $ref
+    },
 
-  // Strong relationship: Same scope (article's snapshots)
-  snapshots: IBbsArticleSnapshot[] {
-    id: string;
-    content: string;
-    created_at: string;
-
-    images: IBbsArticleSnapshotImage[] {
-      id: string;
-      url: string;
-    }[];
-
-    files: IBbsArticleSnapshotFile[] {
-      id: string;
-      url: string;
-      name: string;
-    }[];
-  }[];
-
-  // Weak relationship: Different scope (actor)
-  author: IBbsMember.ISummary {
-    id: string;
-    nickname: string;
-    avatar_url: string;
-  };
-
-  // Weak relationship: Different scope (category)
-  category: IBbsCategory {
-    id: string;
-    name: string;
-  };
-
-  // Different scope: Count only (large collection)
-  comment_count: number;
-  like_count: number;
+    // Different scope: Count only (large collection)
+    "comment_count": { "type": "integer" },
+    "like_count": { "type": "integer" }
+  },
+  "required": ["id", "title", "content", "author"]
 }
 
 // =====================
 // Scope: bbs_article_comments (SEPARATE ROOT)
 // =====================
-interface IBbsArticleComment {
-  id: string;
-  content: string;
-  created_at: string;
-
-  // Weak relationship: Different scope (actor)
-  author: IBbsMember.ISummary {
-    id: string;
-    nickname: string;
-  };
-
-  // Weak relationship: Parent scope (ID only in default)
-  article_id: string;
+"IBbsArticleComment": {
+  "type": "object",
+  "properties": {
+    "id": { "type": "string" },
+    "content": { "type": "string" },
+    "created_at": { "type": "string", "format": "date-time" },
+    
+    // Weak relationship: Different scope (actor)
+    "author": {
+      "$ref": "#/components/schemas/IBbsMember.ISummary"  // ✅ USE $ref
+    },
+    
+    // ID relationship: Parent scope (ID only in default)
+    "article_id": { "type": "string" }
+  },
+  "required": ["id", "content", "author", "article_id"]
 }
 
 // IInvert: For comment-centric views
-interface IBbsArticleComment.IInvert {
-  id: string;
-  content: string;
-  created_at: string;
-
-  author: IBbsMember.ISummary {
-    id: string;
-    nickname: string;
-  };
-
-  article: IBbsArticle.ISummary {  // ✅ Parent context
-    id: string;
-    title: string;
-    // NO comments array!
-  };
+"IBbsArticleComment.IInvert": {
+  "type": "object",
+  "properties": {
+    "id": { "type": "string" },
+    "content": { "type": "string" },
+    "created_at": { "type": "string", "format": "date-time" },
+    
+    "author": {
+      "$ref": "#/components/schemas/IBbsMember.ISummary"  // ✅ USE $ref
+    },
+    
+    // ✅ Parent context with $ref
+    "article": {
+      "$ref": "#/components/schemas/IBbsArticle.ISummary"  // NO comments array in Summary!
+    }
+  },
+  "required": ["id", "content", "author", "article"]
 }
 
 // Usage:
@@ -633,74 +629,68 @@ interface IBbsArticleComment.IInvert {
 // GET /members/:id/comments → IPageIBbsArticleComment.IInvert
 ```
 
-**Example 2: Shopping System - Orders**
+**Example 2: Shopping System - Orders (JSON Schema Format)**
 
-```typescript
+```json
 // =====================
 // Scope: shopping_orders
 // =====================
-interface IShoppingOrder {
-  id: string;
-  order_number: string;
-  status: string;
-  created_at: string;
-
-  // Strong relationship: Same scope (order's components)
-  goods: IShoppingOrderGoods[] {
-    id: string;
-    quantity: number;
-    price: number;
-
-    // Weak relationship: Different scope (cart commodity lookup)
-    commodity: IShoppingCartCommodity.ISummary {
-      id: string;
-      name: string;
-
-      // Strong relationship: Stocks belong to commodity
-      stocks: IShoppingCartCommodityStock[] {
-        id: string;
-        inventory_id: string;
-        quantity: number;
-      }[];
-    };
-  }[];
-
-  deliveries: IShoppingOrderDelivery[] {
-    id: string;
-    address: string;
-    status: string;
-    tracking_number: string;
-  }[];
-
-  payments: IShoppingOrderPayment[] {
-    id: string;
-    method: string;
-    amount: number;
-    paid_at: string;
-  }[];
-
-  // Weak relationship: Different scope (actor)
-  customer: IShoppingCustomer.ISummary {
-    id: string;
-    name: string;
-    email: string;
-  };
-
-  total_amount: number;
+"IShoppingOrder": {
+  "type": "object",
+  "properties": {
+    "id": { "type": "string" },
+    "order_number": { "type": "string" },
+    "status": { "type": "string" },
+    "created_at": { "type": "string", "format": "date-time" },
+    
+    // Strong relationship: Same scope (order's components)
+    "goods": {
+      "type": "array",
+      "items": {
+        "$ref": "#/components/schemas/IShoppingOrderGoods"  // ✅ USE $ref
+      }
+    },
+    
+    "deliveries": {
+      "type": "array",
+      "items": {
+        "$ref": "#/components/schemas/IShoppingOrderDelivery"  // ✅ USE $ref
+      }
+    },
+    
+    "payments": {
+      "type": "array",
+      "items": {
+        "$ref": "#/components/schemas/IShoppingOrderPayment"  // ✅ USE $ref
+      }
+    },
+    
+    // Weak relationship: Different scope (actor)
+    "customer": {
+      "$ref": "#/components/schemas/IShoppingCustomer.ISummary"  // ✅ USE $ref
+    },
+    
+    "total_amount": { "type": "number" }
+  },
+  "required": ["id", "order_number", "status", "customer", "total_amount"]
 }
 
 // Summary: No strong relationships
-interface IShoppingOrder.ISummary {
-  id: string;
-  order_number: string;
-  status: string;
-
-  // Denormalized
-  customer_name: string;
-  total_amount: number;
-  goods_count: number;
-
-  created_at: string;
+"IShoppingOrder.ISummary": {
+  "type": "object",
+  "properties": {
+    "id": { "type": "string" },
+    "order_number": { "type": "string" },
+    "status": { "type": "string" },
+    
+    // Denormalized fields - no relationships
+    "customer_name": { "type": "string" },
+    "total_amount": { "type": "number" },
+    "goods_count": { "type": "integer" },
+    
+    "created_at": { "type": "string", "format": "date-time" }
+  },
+  "required": ["id", "order_number", "status", "customer_name", "total_amount"]
 }
 ```
 
@@ -908,11 +898,14 @@ interface IBbsArticleCommentSnapshot {
   - Property descriptions must reference related Prisma schema column comments
   - All descriptions must be organized in multiple paragraphs for better readability
   - **IMPORTANT**: All descriptions MUST be written in English. Never use other languages.
-- **Named References Only**: 
-  - Every object type MUST be defined as a named type in the schemas record
-  - NEVER use inline/anonymous object definitions anywhere in the schema
-  - All property types that are objects must use $ref to reference a named type
-  - This applies to EVERY object in the schema, including nested objects and arrays of objects
+- **Named References and Relationships**: 
+  - **CRITICAL FOR RELATIONSHIPS**: ALL DTO relationships MUST use `$ref` references - this is NOT optional
+  - **Single relationships**: Use `$ref` directly (e.g., `author: { $ref: "#/components/schemas/IBbsMember.ISummary" }`)
+  - **Array relationships**: Use `items` with `$ref` (e.g., `items: { $ref: "#/components/schemas/IComment" }`)
+  - **FORBIDDEN**: Never define relationship objects inline like `author: { type: "object", properties: {...} }`
+  - Every complex business entity MUST be defined as a named type in the schemas record
+  - Simple metadata objects (not DTOs) may use inline definitions if they're not reusable entities
+  - **Why $ref is mandatory**: Enables proper type reuse, validation, and code generation by subsequent agents
 - **Type Field Restrictions**:
   - The `type` field MUST always be a single string value (e.g., `"string"`, `"object"`, `"array"`)
   - NEVER use array notation in the type field (e.g., `["string", "null"]` is FORBIDDEN)
@@ -1582,21 +1575,39 @@ Your output should include the complete `schemas` record:
 ```typescript
 const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
   // Main entity types
-  IEntityName: { 
+  IBbsArticle: { 
     type: "object", 
-    "x-autobe-prisma-schema": "EntityName"  // Only if this type directly maps to a Prisma model
+    "x-autobe-prisma-schema": "bbs_articles"  // Maps to Prisma model
     properties: {
-      propertyName: {
+      id: {
         type: "string",
-        description: "Detailed property description referencing Prisma schema column comments.\n\nMultiple paragraphs where appropriate."
+        format: "uuid",
+        description: "Unique identifier"
+      },
+      title: {
+        type: "string",
+        description: "Article title"
+      },
+      // Strong relationship (same scope - aggregation)
+      snapshots: {
+        type: "array",
+        items: {
+          $ref: "#/components/schemas/IBbsArticleSnapshot"  // ✅ USE $ref for relationships!
+        },
+        description: "Version history snapshots"
+      },
+      // Weak relationship (different scope - reference)
+      author: {
+        $ref: "#/components/schemas/IBbsMember.ISummary"  // ✅ USE $ref for relationships!
+      },
+      // Count for different scope entities
+      comments_count: {
+        type: "integer",
+        description: "Number of comments"
       }
-      // ...more properties
-      // SECURITY: Never include password, hashed_password, salt, or other sensitive fields in response types
-      // CRITICAL: Only include created_at, updated_at if they ACTUALLY EXIST in the Prisma schema for this table
-      // Apply composition rules based on hierarchy and scope
     },
-    required: [...],
-    description: "Extremely detailed explanation about IEntityName referencing Prisma schema table comments.\n\nMultiple paragraphs focusing on different aspects of the entity.",
+    required: ["id", "title", "author"],
+    description: "BBS article entity",
   },
   
   // IPage format follows the fixed structure:
@@ -1700,7 +1711,7 @@ const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
 - **Property Omission Prohibited**: "Including only some properties of an entity" is a SERIOUS ERROR.
 - **No Simplification**: "Simplifying complex entities or relationships" is NOT ACCEPTABLE.
 - **Ignore Capacity Limitations**: Processing only some entities due to their quantity is a SERIOUS ERROR.
-- **Named Types Required**: Using inline/anonymous object definitions instead of named type references ($ref) is a CRITICAL ERROR. EVERY object type must be defined in the schemas record and referenced by name.
+- **Relationship References Required**: Not using $ref for DTO relationships is a CRITICAL ERROR. ALL DTO relationships (single or array) MUST use $ref to reference named types in the schemas record. This is MANDATORY for proper API generation.
 - **Any Type Prohibited**: Using `any` type or `any[]` in schemas is a CRITICAL ERROR. Every type must be explicitly defined. For paginated results, use specific types like `{Entity}.ISummary[]` not `any[]`.
 - **Array Type Notation Prohibited**: Using array notation in the `type` field (e.g., `["string", "null"]`) is a CRITICAL ERROR. The `type` field MUST always be a single string value. Use `oneOf` for unions and nullable types.
 - **Security Violations**: Including password fields in responses or actor IDs in requests is a CRITICAL SECURITY ERROR.

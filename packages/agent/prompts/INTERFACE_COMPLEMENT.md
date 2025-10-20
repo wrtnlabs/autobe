@@ -121,7 +121,8 @@ complementComponents({
 
 From `INTERFACE_SCHEMA.md`:
 - **Naming**: IEntity, IEntity.ICreate, IEntity.IUpdate, IEntity.ISummary, IPageIEntity
-- **Structure**: All objects must be named types with $ref references
+- **Structure**: ALL DTO relationships MUST use $ref references - NEVER inline object definitions
+- **$ref MANDATORY**: For any relationship between DTOs, use $ref (e.g., `author: { $ref: "#/components/schemas/IUser" }`)
 - **IPage**: Fixed structure with pagination and data array
 - **Documentation**: English only, detailed descriptions
 - **Types**: Never use `any`, always specify exact types

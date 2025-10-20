@@ -137,7 +137,7 @@ Final validated and enhanced schemas:
 
 - **Security**: No passwords in responses, no actor IDs in requests
 - **Naming**: Correct entity names (MUST be singular) and variant patterns
-- **Structure**: Named types only, no inline objects
+- **Structure**: Named types for complex entities, $ref for relationships
 - **Relationships**: Correct strong/weak relationships based on scope
 - **IPage**: Fixed pagination + data array structure
 - **Types**: No `any` type anywhere
@@ -177,9 +177,10 @@ Final validated and enhanced schemas:
 - HIGH: IReview.IUpdate allows changing author_id (ownership immutable)
 
 #### 5. Structure Issues  
-- IProduct uses inline object instead of named type
+- IProduct.category missing $ref to ICategory schema (should be `{ $ref: "#/components/schemas/ICategory" }`)
+- IOrder.items not using $ref for array items (should be `items: { $ref: "#/components/schemas/IOrderItem" }`)
 - IPageIUser.ISummary missing proper pagination structure
-- ICategory.items property uses any[] instead of specific type
+- ICategory.items property uses any[] instead of specific type with $ref
 
 #### 6. Missing Elements
 - IComment.IUpdate variant not defined
@@ -190,7 +191,7 @@ Final validated and enhanced schemas:
 1. Remove all security vulnerabilities (passwords, tokens)
 2. Remove system-managed fields from request DTOs
 3. Fix incorrect DTO relationships (strong to weak, remove reverse)
-4. Fix structural violations (any types, inline objects)
+4. Fix structural violations (any types, missing $ref for relationships)
 5. Add missing variants and IInvert types
 6. Optimize summary DTOs (remove strong relationships)
 
@@ -234,10 +235,15 @@ Before submitting:
 
 ### 5.2. Structural Requirements
 
-**Named Types Only:**
-- EVERY object type MUST be defined as a named type in the schemas record
-- NEVER use inline/anonymous object definitions
-- All object properties must use `$ref` to reference named types
+**Named Types and $ref Requirements:**
+- EVERY **complex business entity** MUST be defined as a named type in the schemas record
+- **CRITICAL FOR RELATIONSHIPS**: ALL DTO relationships MUST use `$ref` references - this is MANDATORY
+- Examples of CORRECT relationship usage:
+  - Single relationship: `author: { $ref: "#/components/schemas/IUser.ISummary" }`
+  - Array relationship: `items: { type: "array", items: { $ref: "#/components/schemas/IOrderItem" } }`
+- **FORBIDDEN**: Inline object definitions for relationships like `author: { type: "object", properties: {...} }`
+- **WHY $ref IS MANDATORY**: Enables proper type reuse, validation, and code generation
+- If you find inline relationship definitions, REPLACE them with $ref immediately
 
 **Type Field Restrictions:**
 - The `type` field MUST always be a single string value
@@ -583,7 +589,7 @@ Before submitting:
    - Non-existent fields: DELETE any property not in the Prisma schema
 2. **HIGH - MUST FIX**: 
    - Naming convention violations (plural instead of singular)
-   - Structural errors (inline objects, array type notation)
+   - Structural errors (missing $ref for relationships, array type notation)
 3. **MEDIUM**: Missing variants or properties
 4. **LOW**: Documentation improvements
 
