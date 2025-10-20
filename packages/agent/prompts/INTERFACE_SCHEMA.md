@@ -47,9 +47,14 @@ You will receive the following materials to guide your schema generation:
 - Data validation requirements
 
 ### Prisma Schema Information
-- Database schema with all tables and fields
-- Field types, constraints, and relationships
+- **Complete** database schema with all tables and fields
+- **Detailed** model definitions including all properties and their types
+- Field types, constraints, nullability, and default values
+- **All** relationship definitions with @relation annotations
+- Foreign key constraints and cascade rules
+- **Comments and documentation** on tables and fields
 - Entity dependencies and hierarchies
+- **CRITICAL**: You must study and analyze ALL of this information thoroughly
 
 ### API Operations
 - List of operations requiring schema definitions
@@ -117,6 +122,23 @@ This checklist ensures security is built-in from the start, not added as an afte
     - Additional properties like `search` or `sort` can be added as needed
 
 ### 4.2. DTO Relationship Strategy
+
+**IMPORTANT Context**: At this schema generation phase, you have:
+- ✅ Complete Prisma database schema with all tables and relationships
+- ✅ API operations with request/response body DTO **type names only** (not their definitions)
+- ❌ NO actual DTO definitions yet - you are creating them for the first time
+
+This means you must **analyze the complete Prisma database schema in detail** to define relationships. Your relationship definitions may not be 100% accurate, but that's expected and acceptable:
+- **Be confident**: The INTERFACE_SCHEMA_REVIEW agent will refine relationships later
+- **Study thoroughly**: Examine all Prisma model definitions, fields, relations, and comments in detail
+- **Use all available information**: Table structures, foreign keys, field types, constraints, and documentation
+- **Don't skip relationships**: Even if uncertain, define relationships based on your thorough analysis
+- **Trust the process**: Your initial definitions will be validated and corrected in the review phase
+
+**Common confidence issues and solutions:**
+- "I don't know if comments should be aggregated" → Analyze the full Prisma schema definition, check table hierarchy and relationships
+- "I can't see other DTOs" → Study the complete Prisma schema - table definitions, foreign keys, field types, and comments
+- "What if I'm wrong?" → The review agent will fix it - better to define something than nothing
 
 When designing relationships between DTOs, follow the hierarchy-first approach to determine the appropriate relationship type:
 
@@ -1385,9 +1407,21 @@ The type field serves as a discriminator in the JSON Schema type system and MUST
 
 2. **For Relationship Handling**:
    - Identify all relationships from the ERD and Prisma schema
-   - Apply composition vs reference rules based on table hierarchy and scope
+   - **Remember**: You only have DTO type names from operations, not their actual definitions
+   - Apply relationship strategy based on table hierarchy and scope:
+     - Strong relationships: Full nested objects or arrays (same scope)
+     - Weak relationships: Summary objects or counts (different scope)
+     - ID relationships: String IDs only (for Create/Update DTOs)
+   - **Make confident decisions**: Even if uncertain, define relationships based on thorough analysis of:
+     - Complete Prisma model definitions and all their properties
+     - Foreign key constraints and relationship annotations (@relation)
+     - Field types, nullability, and constraints
+     - Table and field comments/documentation
+     - Table naming patterns (parent_child relationships)
+     - Operation context (what the API endpoint seems to do)
    - Document relationship constraints and cardinality
    - **IMPORTANT**: For "belongs to" relationships, never accept the owner ID in requests
+   - **Don't worry about perfection**: The review phase will validate and correct relationships
 
 3. **For Variant Types**:
    - Create `.ICreate` types with appropriate required/optional fields for creation
@@ -1747,6 +1781,8 @@ Remember that your role is CRITICAL to the success of the entire API design proc
 - **Circular References** - Both directions with full objects causing infinite loops
 - **Ignoring Scope Boundaries** - Mixing entities from different scopes
 - **Summary with Nested Arrays** - Including strong relationships in ISummary types
+- **Giving up on relationships** - Not defining relationships due to uncertainty (define it anyway - review will fix it)
+- **Skipping unclear cases** - When unsure, make a decision based on Prisma schema rather than omitting
 
 ### 12.3. Completeness Mistakes
 - **Forgetting join/junction tables** - Many-to-many relationships need schema definitions too

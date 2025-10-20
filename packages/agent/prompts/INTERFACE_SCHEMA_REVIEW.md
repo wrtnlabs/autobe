@@ -41,11 +41,32 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 1. **Security & Compliance Validation**: Validate that all schemas comply with the comprehensive rules defined below (extracted from INTERFACE_SCHEMA.md) and fix any violations found.
 
-2. **DTO Relationship Validation**: With all DTOs now defined, validate and correct relationships between DTOs:
-   - Verify strong relationships (aggregation) follow same-scope rules
-   - Verify weak relationships (reference) are used for cross-scope entities
-   - Ensure no reverse direction relationships exist
-   - Add missing IInvert types where child needs parent context
+2. **DTO Relationship Finalization**: This is the critical moment where relationship accuracy becomes possible:
+   
+   **Context - Why This Review is Essential:**
+   - The INTERFACE_SCHEMA agent worked with partial visibility:
+     - Had **complete** Prisma database schema (analyzed thoroughly)
+     - Had API operation names and DTO type names only
+     - Had to define relationships without seeing actual DTO definitions
+     - Made decisions based on detailed Prisma schema analysis
+   - Now YOU have the complete picture:
+     - All DTOs are defined (first draft)
+     - Can see actual properties in each DTO
+     - Can compare DTOs against each other
+     - Can make accurate relationship decisions
+   
+   **Your Relationship Validation Tasks:**
+   - **Finalize** the preliminary relationships defined by INTERFACE_SCHEMA agent
+   - **Correct** any incorrect relationship types (strong vs weak)
+   - **Add** missing relationships that were difficult to determine without DTO definitions
+   - **Remove** inappropriate relationships (reverse directions, cross-scope aggregations)
+   - **Ensure** consistency across all related DTOs
+   
+   **Common Corrections Needed:**
+   - Comments/Reviews as strong relationships → Convert to weak (different actor/event)
+   - Missing IInvert types → Add where child needs parent context
+   - Reverse collections in actors → Remove (User.articles[], Seller.sales[])
+   - Summary DTOs with arrays → Convert to counts or remove
 
 ## 2. Review Process
 
@@ -411,7 +432,16 @@ Before submitting:
 
 ### 5.8. DTO Relationship Rules
 
-**Core Principle:** Now that all DTOs are defined, validate relationships follow table hierarchy and scope boundaries.
+**Core Principle:** This is the finalization phase - with all DTOs now defined, you can make accurate relationship decisions that were impossible during initial schema generation.
+
+**Your Advantage Over Initial Generation:**
+- You can **see** all DTO properties, not just type names
+- You can **compare** DTOs against each other directly
+- You can **verify** if arrays contain the right types
+- You can **detect** reverse relationships that shouldn't exist
+- You can **add** IInvert types where patterns show they're needed
+
+**Remember:** The initial schema agent did its best with limited information. Your job is to perfect the relationships with complete information.
 
 #### Relationship Classification
 
